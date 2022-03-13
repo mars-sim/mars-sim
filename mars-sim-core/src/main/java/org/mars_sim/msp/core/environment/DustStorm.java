@@ -11,7 +11,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.air.CompositionOfAir;
+import org.mars_sim.msp.core.air.AirComposition;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
@@ -102,7 +102,7 @@ public class DustStorm implements Serializable {
 			Settlement s = settlements.get(0);
 			double meanPressure = (DEFAULT_MEAN_PRESSURE
 					+ weather.calculateAirPressure(s.getCoordinates(), HEIGHT)) / 2D;
-			double t = s.getOutsideTemperature() + CompositionOfAir.C_TO_K;
+			double t = s.getOutsideTemperature() + AirComposition.C_TO_K;
 			speed = Math.sqrt(R * t * DEFAULT_DELTA_PRESSURE / meanPressure);
 			size = RandomUtil.getRandomInt(3);
 		}

@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.structure.building.function;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -22,8 +21,7 @@ import org.mars_sim.msp.core.time.MarsClock;
  * The Heating class is a building function for regulating temperature in a settlement..
  */
 public class Heating
-extends Function
-implements Serializable {
+extends Function {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -76,8 +74,6 @@ implements Serializable {
 	/** The speed of the ventilation fan */
 	private static final double CFM  = 50;
 	
-	/** The average volume of a airlock [m^3] */	
-    private static double AIRLOCK_VOLUME_IN_CM = Building.AIRLOCK_VOLUME_IN_CM; // = 12 [in m^3]
     /**  convert meters to feet  */
 //	private static final double M_TO_FT = 3.2808399;//10.764;
 	/**  Specific Heat Capacity = 4.0 for a typical U.S. house */
@@ -120,8 +116,6 @@ implements Serializable {
     
 //    private static final int HEAT_CAP = 200;  
  	private static final int PER_UPDATE = 2 ; // must be a multiple of 2
-    /** The cache for msols */     
- 	private int msolCache;
     /** The counter for heating cycle */ 	
 	//private int counts;
     /** the heat gain from equipment in kW */
@@ -131,7 +125,7 @@ implements Serializable {
 	/** Density of dry breathable air [kg/m3] */	
 	private double dryAirDensity = 1.275D; //
 	/** Factor for calculating airlock heat loss during EVA egress */
-	private double energy_factor_EVA = C_p * AIRLOCK_VOLUME_IN_CM * dryAirDensity /1000; 
+	private double energy_factor_EVA = C_p * BuildingAirlock.AIRLOCK_VOLUME_IN_CM * dryAirDensity /1000; 
 
     private double width;
     
@@ -991,14 +985,8 @@ implements Serializable {
 		double t_out = building.getSettlement().getOutsideTemperature();
 
 		if (mass == 0) {
-			int id = building.getInhabitableID();
-			double[] totalMass = building.getSettlement().getCompositionOfAir().getTotalMass();
-			if (totalMass.length <= id)
-				return;
-			mass = totalMass[id]; 
+			mass = building.getLifeSupport().getAir().getTotalMass();
 			conversion_factor = C_s * mass / timeSlice; 
-			//System.out.println(building.getNickName() + "'s total mass : " + mass);
-			// also, mass = density * HEIGHT * floorArea * M_TO_FT * M_TO_FT * M_TO_FT;
 		}
 		
 		// STEP 1 : CALCULATE HEAT GAIN/LOSS AND RELATE IT TO THE TEMPERATURE CHANGE

@@ -30,7 +30,7 @@ import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-import org.mars_sim.msp.core.air.CompositionOfAir;
+import org.mars_sim.msp.core.air.AirComposition;
 import org.mars_sim.msp.core.data.DataLogger;
 import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.environment.Environment;
@@ -393,6 +393,7 @@ public class Simulation implements ClockListener, Serializable {
 
 		// Initialize instances in Airlock
 		Airlock.initializeInstances(unitManager, marsSurface, marsClock);
+		AirComposition.initializeInstances(pc);
 		// Initialize instances in TaskSchedule
 		TaskSchedule.initializeInstances(marsClock);
 		
@@ -712,7 +713,7 @@ public class Simulation implements ClockListener, Serializable {
 		GoodsManager.initializeInstances(this, marsClock, missionManager, unitManager, pc);
 
 		// Miscs.
-		CompositionOfAir.initializeInstances(pc, unitManager);
+		AirComposition.initializeInstances(pc);
 		Crop.initializeInstances(simulationConfig.getCropConfiguration());
 		SolarHeatSource.initializeInstances(surfaceFeatures);
 		PowerSource.initializeInstances(environment, surfaceFeatures, orbit, weather);

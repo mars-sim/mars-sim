@@ -117,8 +117,6 @@ public class BuildingManager implements Serializable {
 	// Data members
 	/** The id of the settlement. */
 	private Integer settlementID;
-	/** The id of the next inhabitable building. */
-	private int nextInhabitableID = 0;
 	/** The population capacity (determined by the # of beds) of the settlement. */
 	private int popCap = 0;
 
@@ -402,14 +400,8 @@ public class BuildingManager implements Serializable {
 			unitManager.addUnit(newBuilding);
 
 			buildings.add(newBuilding);
-//			System.out.println(newBuilding.getIdentifier());
 			buildingInts.add(newBuilding.getIdentifier());
 
-			int id = newBuilding.getInhabitableID();
-
-			// Add tracking air composition
-			if (settlement.getCompositionOfAir() != null && id != -1)
-				settlement.getCompositionOfAir().addAirNew(newBuilding);
 			// Insert this new building into buildingFunctionsMap
 			addNewBuildingtoBFMap(newBuilding);
 
@@ -1903,27 +1895,6 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
-	 * Obtains the inhabitable building having that particular id
-	 *
-	 * @param id
-	 * @return inhabitable building
-	 */
-	public Building getInhabitableBuilding(int id) {
-		// Use Java 8 stream
-//		return buildings.stream().filter(b -> b.getInhabitableID() == id).findFirst().orElse(null);// .get();
-//    	Building result = null;
-        Iterator<Building> i = buildings.iterator();
-        while (i.hasNext()) {
-            Building b = i.next();
-            if (b.getInhabitableID() == id) {
-            	return b;
-            }
-        }
-
-        return null;
-	}
-
-	/**
 	 * Gets the next template ID for a new building in a settlement (but not unique
 	 * in a simulation)
 	 *
@@ -1940,25 +1911,6 @@ public class BuildingManager implements Serializable {
 		}
 
 		return largestID + 1;
-	}
-
-	/**
-	 * Gets a unique ID for a new inhabitable building in a settlement (but not
-	 * unique in a simulation)
-	 *
-	 * @return inhabitable ID (starting from 0).
-	 */
-	public int obtainNextInhabitableID() {
-		return nextInhabitableID++;
-	}
-
-	/**
-	 * Gets the total number of inhabitable buildings in a settlement
-	 *
-	 * @return inhabitable ID (starting from 0).
-	 */
-	public int getNumInhabitables() {
-		return nextInhabitableID;
 	}
 
 	/**

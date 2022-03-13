@@ -16,7 +16,7 @@ import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitType;
-import org.mars_sim.msp.core.air.CompositionOfAir;
+import org.mars_sim.msp.core.air.AirComposition;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
@@ -137,8 +137,7 @@ public class EVASuit extends Equipment
 
 		 MIN_O2_PRESSURE = personConfig.getMinSuitO2Pressure();
 
-		 FULL_O2_PARTIAL_PRESSURE = CompositionOfAir.KPA_PER_ATM * OXYGEN_CAPACITY
-				 / CompositionOfAir.O2_MOLAR_MASS * CompositionOfAir.R_GAS_CONSTANT / TOTAL_VOLUME;
+		 FULL_O2_PARTIAL_PRESSURE = AirComposition.getOxygenPressure(OXYGEN_CAPACITY, TOTAL_VOLUME);
 
 		 MASS_O2_MINIMUM_LIMIT = MIN_O2_PRESSURE / FULL_O2_PARTIAL_PRESSURE * OXYGEN_CAPACITY;
 
@@ -379,9 +378,7 @@ public class EVASuit extends Equipment
 		double oxygenLeft = getAmountResourceStored(OXYGEN_ID);
 		// Assuming that we can maintain a constant oxygen partial pressure unless it falls below massO2NominalLimit
 		if (oxygenLeft < MASS_O2_NOMINAL_LIMIT) {
-			double remainingMass = oxygenLeft;
-			double pp = CompositionOfAir.KPA_PER_ATM * remainingMass / CompositionOfAir.O2_MOLAR_MASS
-					* CompositionOfAir.R_GAS_CONSTANT / TOTAL_VOLUME;
+			double pp = AirComposition.getOxygenPressure(oxygenLeft, TOTAL_VOLUME);
 			logger.log(this, getOwner(), Level.WARNING, 30_000,
 					" got " + Math.round(oxygenLeft*100.0)/100.0
 						+ " kg O2 left at partial pressure of " + Math.round(pp*100.0)/100.0 + " kPa.");
