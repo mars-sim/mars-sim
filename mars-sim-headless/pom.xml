@@ -180,7 +180,8 @@
 				</executions>
 			</plugin>
 			<!-- Copy the headless JAR to a fixed name without a version number  -->
-			<!-- https://mvnrepository.com/artifact/com.coderplus.maven.plugins/copy-rename-maven-plugin -->
+			<!-- The destination file must be an exclude in the dockerignore to be accessable in the Docker build -->
+			<!-- This is causing a problem in VSCode IDE ??? Need to revisit
 			<plugin>
 				<groupId>com.coderplus.maven.plugins</groupId>
 				<artifactId>copy-rename-maven-plugin</artifactId>
@@ -193,12 +194,12 @@
 						</goals>
 						<configuration>
 							<sourceFile>${project.build.directory}/${project.build.finalName}-jar-with-dependencies.jar</sourceFile>
-							<!-- The destination file must be an exclude in the dockerignore to be accessable in the Docker build -->
 							<destinationFile>${project.build.directory}/${project.name}.jar</destinationFile>
 						</configuration>
 					</execution>
 				</executions>
 			</plugin>
+		-->
 		</plugins>
 	</build>
 	<repositories>
@@ -208,4 +209,3 @@
 		</repository>
 	</repositories>
 </project>
-

@@ -365,14 +365,6 @@ public class Settlement extends Structure implements Serializable, Temporal,
 	}
 
 	/**
-	 * The static factory method called by ConstructionStageTest to return a new
-	 * instance of Settlement for maven testing.
-	 */
-	public static Settlement createConstructionStage() {
-		return new Settlement();
-	}
-
-	/**
 	 * Constructor 2 called by MockSettlement for maven testing.
 	 *
 	 * @param name
