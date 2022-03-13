@@ -36,7 +36,11 @@ jobs:
         
       - name: Build imagewith Package Docker
         run: |
-          docker build . --file Dockerfile.package --tag $IMAGE_NAME
+          # Find the project version off the MVN pom
+          MARS_VERSION=$(mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.version -q -DforceStdout)
+          
+          # Build the image
+          docker build . --build-arg version_name=$MARS_VERSION --file Dockerfile --tag $IMAGE_NAME
 
           
       - name: Log into registry
