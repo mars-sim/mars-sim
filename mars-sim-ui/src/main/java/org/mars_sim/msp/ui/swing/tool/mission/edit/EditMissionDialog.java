@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EditMissionDialog.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-03-17
  * @author Scott Davis
  */
 
@@ -71,7 +71,7 @@ public class EditMissionDialog extends ModalInternalFrame {
         add(buttonPane, BorderLayout.SOUTH);
         
         // Create the modify button.
-        WebButton modifyButton = new WebButton("Modify");
+        WebButton modifyButton = new WebButton("Execute");
         modifyButton.addActionListener(
         		new ActionListener() {
         			public void actionPerformed(ActionEvent e) {
@@ -96,18 +96,12 @@ public class EditMissionDialog extends ModalInternalFrame {
 		// Finish and display dialog.
 		//pack();
 		//setLocationRelativeTo(owner);
-		//setResizable(false);
-		//setVisible(true);
-		
-        // Add to its own tab pane
-//        if (desktop.getMainScene() != null)
-//        	desktop.add(this);
-//        	//desktop.getMainScene().getDesktops().get(1).add(this);
-//        else 
-        	desktop.add(this);
+		setResizable(false);
+
+        desktop.add(this);
 	    
 	    
-        setSize(new Dimension(700, 550));
+        setSize(new Dimension(400, 400));
 		Dimension desktopSize = desktop.getParent().getSize();
 	    Dimension jInternalFrameSize = this.getSize();
 	    int width = (desktopSize.width - jInternalFrameSize.width) / 2;

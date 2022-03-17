@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MissionWindow.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-03-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.mission;
@@ -16,12 +16,15 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.JList;
 import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.mission.create.CreateMissionWizard;
+import org.mars_sim.msp.ui.swing.tool.mission.edit.EditMissionDialog;
 import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 
 import com.alee.laf.button.WebButton;
@@ -57,7 +60,7 @@ public class MissionWindow extends ToolWindow {
 
 	private CreateMissionWizard createMissionWizard;
 
-//	Future: may add back EditMissionDialog
+	private EditMissionDialog editMissionDialog;
 
 	/**
 	 * Constructor.
@@ -155,22 +158,22 @@ public class MissionWindow extends ToolWindow {
 		final WebButton editButton = new WebButton("Modify Mission");
 		editButton.setEnabled(false);
 
-//		editButton.addActionListener(
-//				new ActionListener() {
-//					public void actionPerformed(ActionEvent e) {
-//						// Edit the mission.
-//						mission = (Mission) missionList.getSelectedValue();
-//						if (mission != null) editMission(mission);
-//					}
-//				});
-//		missionList.addListSelectionListener(
-//			new ListSelectionListener() {
-//				public void valueChanged(ListSelectionEvent e) {
-//					// Enable button if mission is selected in list.
-//					editButton.setEnabled(missionList.getSelectedValue() != null);
-//				}
-//			}
-//		);
+		editButton.addActionListener(
+				new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						// Edit the mission.
+						mission = (Mission) missionList.getSelectedValue();
+						if (mission != null) editMission(mission);
+					}
+				});
+		missionList.addListSelectionListener(
+			new ListSelectionListener() {
+				public void valueChanged(ListSelectionEvent e) {
+					// Enable button if mission is selected in list.
+					editButton.setEnabled(missionList.getSelectedValue() != null);
+				}
+			}
+		);
 
 		buttonPane.add(editButton);
 
@@ -321,24 +324,13 @@ public class MissionWindow extends ToolWindow {
 		createMissionWizard = new CreateMissionWizard(desktop, this);
 	}
 
-//	/**
-//	 * Open wizard to edit a mission.
-//	 * @param mission the mission to edit.
-//	 */
-//	private void editMission(Mission mission) {
-//
-//		if (ms != null)  {
-//			// Track the current pause state
-//			boolean previous = ms.startPause();
-//
-//			editMissionDialog = new EditMissionDialog(desktop, mission, this);
-//
-//			ms.endPause(previous);
-//
-//		} else
-//
-//			editMissionDialog = new EditMissionDialog(desktop, mission, this);
-//	}
+	/**
+	 * Open wizard to edit a mission.
+	 * @param mission the mission to edit.
+	 */
+	private void editMission(Mission mission) {
+		editMissionDialog = new EditMissionDialog(desktop, mission, this);
+	}
 
 	public CreateMissionWizard getCreateMissionWizard() {
 		return createMissionWizard;

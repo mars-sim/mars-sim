@@ -18,7 +18,6 @@ import javax.swing.WindowConstants;
 import javax.swing.plaf.LayerUI;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.SpotlightLayerUI;
 import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;

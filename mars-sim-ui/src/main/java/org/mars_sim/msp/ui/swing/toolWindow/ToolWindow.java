@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ToolWindow.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-03-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.toolWindow;
@@ -20,7 +20,8 @@ import org.mars_sim.msp.ui.swing.MainWindow;
 public abstract class ToolWindow extends JInternalFrame {
 
 	// Data members
-
+	public static final String SPACE = "          ";
+	
 	/** True if window is open. */
 	protected boolean opened;
 
@@ -39,7 +40,7 @@ public abstract class ToolWindow extends JInternalFrame {
 	public ToolWindow(String name, MainDesktopPane desktop) {
 
 		// use JInternalFrame constructor
-		super(name, true, // resizable
+		super(SPACE + name, true, // resizable
 				true, // closable
 				false, // maximizable
 				false // iconifiable
