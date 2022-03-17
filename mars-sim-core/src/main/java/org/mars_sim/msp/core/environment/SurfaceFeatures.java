@@ -256,7 +256,8 @@ public class SurfaceFeatures implements Serializable, Temporal {
 			return lightTrend.get(location);
 		}
 
-		return -5;
+		// If no trend then assume constant light
+		return 0;
 	}
 
 	/**
@@ -325,7 +326,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	 * @param location
 	 * @return
 	 */
-	public double calculateSolarIrradiance(Coordinates location) {
+	private double calculateSolarIrradiance(Coordinates location) {
 		// Approach 1
 //		double s1 = 0;
 //        double L_s = mars.getOrbitInfo().getL_s();

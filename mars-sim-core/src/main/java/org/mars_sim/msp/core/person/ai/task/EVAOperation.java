@@ -6,8 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-//import java.awt.geom.Point2D;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -49,7 +47,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  * The EVAOperation class is an abstract task that involves an extra vehicular
  * activity.
  */
-public abstract class EVAOperation extends Task implements Serializable {
+public abstract class EVAOperation extends Task {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -253,7 +251,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 	 */
 	private double walkToOutsideSitePhase(double time) {
 	    // If not at field work site location, create walk outside subtask.
-        if (person.isInside()) {// || !closeToLocation) {
+        if (person.isInside()) {
         	// A person is walking toward an airlock or inside an airlock
             Walk walkingTask = Walk.createWalkingTask(person, outsideSitePos, 0, null);
             if (walkingTask != null) {
