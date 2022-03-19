@@ -181,7 +181,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
                     tt ->   {
 			           	tt.print(System.lineSeparator()
 			           		+ System.lineSeparator()
-			           		+ "    ----------------------- Sponsors Listing -----------------------"
+			           		+ "    ----------------------- Sponsor Listing -----------------------"
 			           		+ System.lineSeparator()
 			           		+ System.lineSeparator());
 			        	tt.print(printOneColumn(list));
@@ -344,7 +344,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
        	List<String> newList = new ArrayList<>();
 
         for (int i=0; i< list.size(); i++) {
-        	newList.add(String.format("(%2d). %s", (i+1), list.get(i)));
+        	newList.add(String.format("(%1d). %s", (i+1), list.get(i)));
         }
 
         return newList;

@@ -49,11 +49,14 @@ public class MarsProject {
 	private static final String LOGGING_PROPERTIES = "/logging.properties";
 	private static final String NOAUDIO = "noaudio";
 	private static final String NOGUI = "nogui";
-	private static final String DISPLAYHELP = "help";
-	private static final String GENERATEHELP = "html";
-	private static final String SITEEDITOR = "editor";
+	private static final String DISPLAY_HELP = "help";
+	private static final String GENERATE_HELP = "html";
 	private static final String NEW = "new";
 	private static final String CLEANUI = "cleanui";
+	private static final String SITE_EDITOR = "site";
+	private static final String PROFILE = "profile";
+	
+	private static final String SANDBOX_MODE_Q = "Do you want to bypass the console menu and start a new default simulation in Sandbox Mode ?";
 	
 	/** true if displaying graphic user interface. */
 	private boolean useGUI = true;
@@ -63,6 +66,8 @@ public class MarsProject {
 	private boolean useCleanUI = false;
 	
 	private boolean useSiteEditor;
+	
+	private boolean useProfile = false;
 
 	private InteractiveTerm interactiveTerm = new InteractiveTerm(false);
 
@@ -80,20 +85,20 @@ public class MarsProject {
 	};
 
 	/**
-	 * Check for confirmation in a dialog box
+	 * Check for confirmation of bypassing the text console main menu via a dialog box
 	 * 
 	 * @return
 	 */
-	public boolean checkDialogBox() {
-		logger.config("Do you want go straight to starting a new default simulation in Sandbox Mode  ?");
-		logger.config("To proceed, please choose 'Yes' or 'No' button in the dialog box.");
+	public boolean bypassConsoleMenuDialog() {
+		logger.config(SANDBOX_MODE_Q);
+		logger.config("To proceed, please choose 'Yes' or 'No' button in the dialog.");
 		// Ask the player if wanting to do a 'Quick Start'
 		int reply = JOptionPane.showConfirmDialog(interactiveTerm.getTerminal().getFrame(),
-				"Do you want to go straight to starting a new default simulation in Sandbox Mode ? ", 
+				SANDBOX_MODE_Q, 
 				"Quick Start", 
 				JOptionPane.YES_NO_OPTION);
         if (reply == JOptionPane.YES_OPTION) {
-			logger.config("You choose Yes. Go straight starting a new default simulation in Sandbox Mode.");	
+			logger.config("You choose Yes. Go straight to starting a new default simulation in Sandbox Mode.");	
 			return true;
         }
         
@@ -126,6 +131,7 @@ public class MarsProject {
 				if (!MainWindow.OS.contains("linux")) {
 					System.setProperty("sun.java2d.ddforcevram", "true");
 				}
+				
 			}
 
 			// Preload the Config
@@ -135,31 +141,37 @@ public class MarsProject {
 				logger.config("Start the Scenario Editor...");
 				startScenarioEditor(builder);
 			}
-			// Get user choices if there is no template defined or a preload
-			else if (!builder.isFullyDefined() && !useNew) {
-
-				if (checkDialogBox())
-					return;
+			else if (useProfile) {
+				setupProfile();
+			}
 		
-				logger.config("Please go to the Console Main Menu to choose an option.");
-				int type = interactiveTerm.startConsoleMainMenu();
-				if (type == 1) {
-					logger.config("Start the Scenario Editor...");
-					startScenarioEditor(builder);
-				}
-
-				else if (type == 2) {
-					// Load simulation
-					logger.config("Load the sim...");
-					String filePath = selectSimFile(false);
-					if (filePath != null) {
-						builder.setSimFile(filePath);
+			// Go to console main menu if there is no template well-defined in the startup string
+			else if (!builder.isFullyDefined() && useNew) {
+		
+				// Ask if running in standard Sandbox mode or Go to Console Menu
+				if (!bypassConsoleMenuDialog()) {
+					logger.config("Please go to the Console Main Menu to choose an option.");
+					int type = interactiveTerm.startConsoleMainMenu();
+					if (type == 1) {
+						logger.config("Start the Scenario Editor...");
+						startScenarioEditor(builder);
 					}
+
+					else if (type == 2) {
+						// Load simulation
+						logger.config("Load the sim...");
+						String filePath = selectSimFile(false);
+						if (filePath != null) {
+							builder.setSimFile(filePath);
+						}
+					}
+					else {
+						// Check out crew flag
+						builder.setUseCrews(interactiveTerm.getUseCrew());
+					}
+
 				}
-				else {
-					// Check out crew flag
-					builder.setUseCrews(interactiveTerm.getUseCrew());
-				}
+				
 			}
 
 			// Build and run the simulator
@@ -194,7 +206,7 @@ public class MarsProject {
 			options.addOption(o);
 		}
 
-		options.addOption(Option.builder(DISPLAYHELP)
+		options.addOption(Option.builder(DISPLAY_HELP)
 				.desc("Display help options").build());
 		options.addOption(Option.builder(NOAUDIO)
 				.desc("Disable the audio").build());
@@ -204,11 +216,13 @@ public class MarsProject {
 				.desc("Disable loading stored UI configurations").build());
 		options.addOption(Option.builder(NEW)
 				.desc("Enable quick start").build());
-		options.addOption(Option.builder(GENERATEHELP)
+		options.addOption(Option.builder(GENERATE_HELP)
 				.desc("Generate HTML help").build());
-		options.addOption(Option.builder(SITEEDITOR)
+		options.addOption(Option.builder(SITE_EDITOR)
 				.desc("Start the Scenario Editor").build());
-
+		options.addOption(Option.builder(PROFILE)
+				.desc("Set up the Commander Profile").build());
+		
 		CommandLineParser commandline = new DefaultParser();
 		try {
 			CommandLine line = commandline.parse(options, args);
@@ -219,7 +233,7 @@ public class MarsProject {
 				// Disable all audio not just the volume
 				AudioPlayer.disableVolume();
 			}
-			if (line.hasOption(DISPLAYHELP)) {
+			if (line.hasOption(DISPLAY_HELP)) {
 				usage("Available options", options);
 			}
 			if (line.hasOption(NOGUI)) {
@@ -231,11 +245,14 @@ public class MarsProject {
 			if (line.hasOption(CLEANUI)) {
 				useCleanUI = true;
 			}
-			if (line.hasOption(SITEEDITOR)) {
+			if (line.hasOption(SITE_EDITOR)) {
 				useSiteEditor = true;
 			}
-			if (line.hasOption(GENERATEHELP)) {
+			if (line.hasOption(GENERATE_HELP)) {
 				generateHelp();
+			}
+			if (line.hasOption(PROFILE)) {
+				useProfile = true;
 			}
 
 		}
@@ -311,6 +328,18 @@ public class MarsProject {
 		return null;
 	}
 
+	/**
+	 * Sets up the commander profile 
+	 */
+	private void setupProfile() {
+		logger.config("Note: direct setup of the Commander Profile has NOT been implemented.");
+		logger.config("Choose 'No' to start the Console Main Menu");
+		logger.config("Select '1. Start a new Sim'");
+		logger.config("Select '1. Command Mode'");
+		logger.config("Select '5. Set up a new commander profile'");
+		logger.config("When done, select '6. Load an exiting commander profile'");
+	}
+	
 	/**
 	 * Generates the html help files
 	 */
