@@ -38,7 +38,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<dependency>
 			<groupId>com.github.Dansoftowner</groupId>
 			<artifactId>jSystemThemeDetector</artifactId>
-			<version>3.7</version>
+			<version>3.8</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.jfree/jfreesvg/ : 43KB
