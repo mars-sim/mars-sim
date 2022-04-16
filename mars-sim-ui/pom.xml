@@ -12,12 +12,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<artifactId>mars-sim-ui</artifactId>
 	<name>mars-sim-ui</name>
 	<dependencies>
-		<!-->dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>${junit.version}</version>
-			<scope>test</scope>
-		</dependency-->
+
 		<dependency>
 			<groupId>com.github.mars-sim</groupId>
 			<artifactId>mars-sim-core</artifactId>
@@ -41,14 +36,6 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<version>3.8</version>
 		</dependency>
 
-		<!-- https://mvnrepository.com/artifact/org.jfree/jfreesvg/ : 43KB
-		     can jfreesvg potentially replace batik ?
-		     see http://object-refinery.com/blog/blog-20140423.html
-		<dependency>
-			<groupId>org.jfree</groupId>
-			<artifactId>jfreesvg</artifactId>
-			<version>3.4.2</version>
-		</dependency-->
 
  		<!-- https://mvnrepository.com/artifact/org.jfree/jfreechart : 1.5MB -->
 		<dependency>
@@ -71,16 +58,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		    <version>3.9.31.2</version>
 		</dependency>
 
-		<!-- trident is required by steelseries.extras in mars-sim-ui
-		https://mvnrepository.com/artifact/com.github.insubstantial/trident : (106 KB)
-			https://github.com/Insubstantial/insubstantial/tree/master/trident
-			Use radiance-trident instead
-		<dependency>
-			<groupId>com.github.insubstantial</groupId>
-			<artifactId>trident</artifactId>
-			<version>7.3</version>
-		</dependency>
-		-->
+
 		<!-- trident animation library is required by steelseries.extras in mars-sim-ui
 		     https://search.maven.org/artifact/org.pushing-pixels/radiance-trident
 		     https://mvnrepository.com/artifact/org.pushing-pixels/radiance-trident/1.0.2 : 78KB
@@ -131,24 +109,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		    <artifactId>weblaf-plugin</artifactId>
             <version>1.2.13</version>
 		</dependency>
-		<!--dependency>
-		    <groupId>com.weblookandfeel</groupId>
-		    <artifactId>weblaf-demo</artifactId>
-            <version>1.2.13</version>
-		</dependency-->
-		<!--dependency>
-			<groupId>com.thoughtworks.xstream</groupId>
-			<artifactId>xstream</artifactId>
-			<version>1.4.13</version>
-		</dependency-->
 
-		<!-- https://mvnrepository.com/artifact/com.jidesoft/jide-oss : 1.2 MB
-			 https://github.com/jidesoft/jide-oss-->
-		<!--dependency>
-     		<groupId>net.janklab.opp</groupId>
-			<artifactId>jide-oss</artifactId>
-			<version>3.7.4</version>
-		</dependency-->
 		<!-- See https://github.com/jidesoft/jide-oss/issues/48 for user's build info -->
 		<dependency>
 			<groupId>com.formdev</groupId>
@@ -169,92 +130,10 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<repositories>
 	    <repository>
-	        <id>maven-central-repo</id>
-	        <url>https://repo1.maven.org/maven2</url>
-	        <releases>
-                <enabled>true</enabled>
-            </releases>
-	        <snapshots>
-	            <enabled>true</enabled>
-	        </snapshots>
-	    </repository>
-	    <repository>
-            <id>oss-sonatype</id>
-            <url>https://oss.sonatype.org/content/repositories/</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-	    <repository>
-			<id>oss.sonatype.org-snapshot</id>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-	    </repository>
-  		<repository>
-	        <id>jerady</id>
-	        <url>https://dl.bintray.com/jerady/maven/</url>
-	    </repository>
-	    <repository>
-	    <!-- jcenter required by ikonli-javafx -->
-	        <id>central</id>
-	        <name>jcenter</name>
-	        <url>https://jcenter.bintray.com</url>
-	    </repository>
-		<repository>
-	        <id>in-sidefx</id>
-	        <url>https://dl.bintray.com/in-sidefx/maven/</url>
-	    </repository>
-		<repository>
-			<id>bintray</id>
-			<name>Medusa</name>
-			<url>https://dl.bintray.com/hansolo/Medusa/</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-			<releases>
-                <enabled>true</enabled>
-            </releases>
-		</repository>
-		<repository>
-			<id>oxbow-repository</id>
-			<url>https://github.com/eugener/oxbow/raw/master/maven/repository</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-		<repository>
-			<id>glg2d-repo</id>
-			<url>https://brandonborkholder.github.com/glg2d/maven2/</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-	    <repository>
 		    <id>jitpack.io</id>
 		    <url>https://jitpack.io</url>
 	    </repository>
-		<repository>
-            <id>spring-releases</id>
-            <url>https://repo.spring.io/libs-release</url>
-        </repository>
-		<repository>
-	        <id>spring-snapshots</id>
-	        <name>Spring Snapshots</name>
-	        <url>https://repo.spring.io/libs-snapshot</url>
-	        <snapshots>
-	            <enabled>true</enabled>
-	        </snapshots>
-	    </repository>
+
 	</repositories>
+
 </project>
