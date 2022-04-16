@@ -1,6 +1,6 @@
 :: Please replace the [$CURRENT_VERSION] with the correct build version in your jarfile 
 :: e.g. [$CURRENT_VERSION] as 3.1.2 or a build number such as 5348
 @echo off
-call java -jar ./[$CURRENT_VERSION]_swing_java14.jar new
+call java -jar ./mars-sim-main-[$CURRENT_VERSION]-jar-with-dependencies.jar new
 echo Exit Code = %ERRORLEVEL%
 if "%ERRORLEVEL%" == "1" exit /B 1

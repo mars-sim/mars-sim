@@ -13,6 +13,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<domainNameMainClass>org.mars_sim.main.MarsProjectStarter</domainNameMainClass>
+		<mainClass>org.mars_sim.main.MarsProject</mainClass>
 	</properties>
 	
 	<dependencies>
@@ -91,7 +92,7 @@
 					</descriptorRefs>
 					<archive>
 						<manifest>
-							<mainClass>${domainNameMainClass}</mainClass>
+							<mainClass>${mainClass}</mainClass>
 						</manifest>
 						<manifestEntries>
 						    <Multi-Release>true</Multi-Release>
