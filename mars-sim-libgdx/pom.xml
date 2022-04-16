@@ -70,25 +70,5 @@
         </dependency>
         		
 	</dependencies>
-	
-	<repositories>
-		<repository>
-			<id>sonatype</id>
-			<name>Sonatype</name>
-			<url>https://oss.sonatype.org/content/repositories/releases</url>
-		</repository>
-		<repository>
-			<id>oss.sonatype.org-snapshot</id>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-		</repository>
-        <repository>
-            <id>jcenter</id>
-            <name>JCenter</name>
-            <url>https://jcenter.bintray.com/</url>
-        </repository>
-        <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
-        </repository>		
-	</repositories>
+
 </project>

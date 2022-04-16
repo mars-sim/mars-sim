@@ -383,6 +383,16 @@
 	<!-- ************************************************************************************************* -->
 	<repositories>
 		<repository>
+	        <id>maven-central-repo</id>
+	        <url>http://repo1.maven.org/maven2</url>
+	        <releases>
+                <enabled>true</enabled>
+            </releases>
+	        <snapshots>
+	            <enabled>true</enabled>
+	        </snapshots>
+	    </repository>
+		<repository>
 			<id>mars-sim</id>
 			<name>Mars-sim Project Maven Repository</name>
 			<url>https://mars-sim.sourceforge.io/maven-repo/</url>
@@ -403,10 +413,5 @@
 			<name>Sonatype</name>
 			<url>https://oss.sonatype.org/content/repositories/releases</url>
 		</pluginRepository>
-		<pluginRepository>
-			<id>jcenter</id>
-			<url>https://jcenter.bintray.com/</url>
-		</pluginRepository>
-
 	</pluginRepositories>
 </project>
