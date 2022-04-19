@@ -67,7 +67,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<dependency>
 		  <groupId>org.pushing-pixels</groupId>
 		  <artifactId>radiance-trident</artifactId>
-		  <version>1.0.2</version>
+		  <version>4.5.0</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-transcoder/ : 126 KB
