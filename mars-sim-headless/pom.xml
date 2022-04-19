@@ -108,7 +108,7 @@
 				<!-- https://mvnrepository.com/artifact/org.vafer/jdeb : 1.8 MB -->
 				<groupId>org.vafer</groupId>
 				<artifactId>jdeb</artifactId>
-				<version>1.9</version>
+				<version>1.10</version>
 				<executions>
 					<execution>
 						<phase>package</phase>
