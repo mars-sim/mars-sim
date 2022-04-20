@@ -48,7 +48,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<dependency>
 		    <groupId>org.jfree</groupId>
 		    <artifactId>org.jfree.chart3d</artifactId>
-		    <version>2.0</version>
+		    <version>2.1.0</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.bidib.jbidib.eu.hansolo/SteelSeries -->
