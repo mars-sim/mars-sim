@@ -1,6 +1,6 @@
 # Only a packing stage. JAR must be available
 # Package stage
-FROM openjdk:11.0.14.1-jre-slim
+FROM openjdk:11.0.15-jre-slim
 WORKDIR /app
 
 # Version name
