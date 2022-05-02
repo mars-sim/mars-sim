@@ -286,22 +286,17 @@ public class Exploration extends RoverMission
 	/**
 	 * Ends the exploration at a site.
 	 */
-	public void endExplorationAtSite() {
-		logger.info(getStartingPerson(), "Exploration ended due to external trigger.");
-		endExploringSite = true;
+	@Override
+	public void abortPhase() {
+		if (EXPLORE_SITE.equals(getPhase())) {
 
-		// End each member's explore site task.
-		Iterator<MissionMember> i = getMembers().iterator();
-		while (i.hasNext()) {
-			MissionMember member = i.next();
-			if (member instanceof Person) {
-				Person person = (Person) member;
-				Task task = person.getMind().getTaskManager().getTask();
-				if (task instanceof ExploreSite) {
-					((ExploreSite) task).endEVA();
-				}
-			}
+			logger.info(getStartingPerson(), "Exploration ended due to external trigger.");
+			endExploringSite = true;
+
+			endAllEVA();
 		}
+		else
+			super.abortPhase();
 	}
 
 	/**

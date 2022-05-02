@@ -356,12 +356,32 @@ public abstract class TravelMission extends Mission {
 	}
 
 	/**
+	 * For a Travel mission; return home as soon as possible
+	 */
+	@Override
+	public void abortMission() {
+		addMissionStatus(MissionStatus.USER_ABORTED_MISSION);
+		returnHome();
+	}
+
+	/**
+	 * Have the mission return home and end collection phase if necessary.
+	 */
+	protected void returnHome() {
+		int offset = 2;
+		if (getPhase().equals(VehicleMission.TRAVELLING))
+			offset = 1;
+		setNextNavpointIndex(getNumberOfNavpoints() - offset);
+		updateTravelDestination();
+		abortPhase();
+	}
+
+	/**
 	 * Performs the travel phase of the mission.
 	 * 
 	 * @param member the mission member currently performing the mission.
 	 */
 	protected abstract void performTravelPhase(MissionMember member);
-//    protected abstract void performTravelPhase(Robot robot);
 
 	/**
 	 * Gets the starting time of the current leg of the mission.

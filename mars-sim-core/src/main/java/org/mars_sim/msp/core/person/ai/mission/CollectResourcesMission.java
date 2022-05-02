@@ -320,22 +320,19 @@ public abstract class CollectResourcesMission extends RoverMission
 		}
 	}
 
-	public void endCollectingAtSite() {
+	/**
+	 * If collecting phase then stop all EVA
+	 */
+	@Override
+	public void abortPhase() {
+		if (COLLECT_RESOURCES.equals(getPhase())) {
 
-		endCollectingSite = true;
+			endCollectingSite = true;
 
-		// End each member's collection task.
-		Iterator<MissionMember> i = getMembers().iterator();
-		while (i.hasNext()) {
-			MissionMember member = i.next();
-			if (member instanceof Person) {
-				Person person = (Person) member;
-				Task task = person.getMind().getTaskManager().getTask();
-				if (task instanceof CollectResources) {
-					((EVAOperation) task).endEVA();
-				}
-			}
+			endAllEVA();
 		}
+		else 
+			super.abortPhase();
 	}
 
 	/**

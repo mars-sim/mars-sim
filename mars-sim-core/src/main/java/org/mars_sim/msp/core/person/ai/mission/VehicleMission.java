@@ -1176,8 +1176,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 					+ " km    Duration : "
 					+ Math.round(newTripTime * 100.0 / 1000.0) / 100.0 + " sols");
 
-			endCollectionPhase();
-			returnHome();
+			abortMission();
 		}
 
 		else {
@@ -1212,7 +1211,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 
 			// Added updateTravelDestination() below
 			updateTravelDestination();
-			endCollectionPhase();
+			abortPhase();
 		}
 	}
 
@@ -1303,7 +1302,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 
 		// Need help
 		if (requestHelp) {
-			endCollectionPhase();
+			abortPhase();
 			getHelp(hasMedicalEmergency ? MissionStatus.MEDICAL_EMERGENCY :
 				MissionStatus.NO_EMERGENCY_SETTLEMENT_DESTINATION_FOUND);
 		}
@@ -1361,7 +1360,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			addNavpoint(nearestSettlement);
 			// Note: Not sure if they should become citizens of another settlement
 			updateTravelDestination();
-			endCollectionPhase();
+			abortPhase();
 		}
 	}
 

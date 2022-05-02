@@ -328,23 +328,17 @@ public abstract class FieldStudyMission extends RoverMission implements Serializ
 	}
 
 	/**
-	 * Ends the research at a field site.
+	 * Ends the research at a field site if correct phase.
 	 */
-	private void endResearchAtFieldSite() {
-		endFieldSite = true;
+	@Override
+	public void abortPhase() {
+		if (RESEARCH_SITE.equals(getPhase())) {
+			endFieldSite = true;
 
-		// End each member's field work task.
-		Iterator<MissionMember> i = getMembers().iterator();
-		while (i.hasNext()) {
-			MissionMember member = i.next();
-			if (member instanceof Person) {
-				Person person = (Person) member;
-				Task task = person.getMind().getTaskManager().getTask();
-				if (task instanceof EVAOperation) {
-					((EVAOperation) task).endEVA();
-				}
-			}
+			endAllEVA();
 		}
+		else 
+			super.abortPhase();
 	}
 
 	/**
@@ -403,7 +397,7 @@ public abstract class FieldStudyMission extends RoverMission implements Serializ
 		// tasks.
 		else if (timeExpired) {
 			logger.info(member, "Triggers end of field study for " + getName());
-			endResearchAtFieldSite();
+			abortPhase();
 		}
 
 		if (!getPhaseEnded()) {

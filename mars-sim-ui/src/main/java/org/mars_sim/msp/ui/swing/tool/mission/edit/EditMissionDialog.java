@@ -16,7 +16,6 @@ import java.util.Iterator;
 
 import javax.swing.JComponent;
 
-import org.mars_sim.msp.core.person.ai.mission.CollectResourcesMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
@@ -131,17 +130,18 @@ public class EditMissionDialog extends ModalInternalFrame {
 	 * @param action the action string.
 	 */
 	private void setAction(String action) {
-		if (action.equals(InfoPanel.ACTION_CONTINUE)) endCollectionPhase();
+		if (action.equals(InfoPanel.ACTION_CONTINUE)) endEVAPhase();
 		else if (action.equals(InfoPanel.ACTION_HOME)) returnHome();
 		else if (action.equals(InfoPanel.ACTION_NEAREST)) goToNearestSettlement();
 	}
 	
 	/**
-	 * End the mission collection phase at the current site.
+	 * End the mission EVA phase at the current site.
 	 */
-	private void endCollectionPhase() {
-		if (mission instanceof CollectResourcesMission) 
-			((CollectResourcesMission) mission).endCollectingAtSite();
+	private void endEVAPhase() {
+		if (mission != null) {
+			mission.abortPhase();
+		}
 	}
 	
 	/**
@@ -149,7 +149,7 @@ public class EditMissionDialog extends ModalInternalFrame {
 	 */
 	private void returnHome() {
 		if (mission != null) {
-			mission.returnHome();
+			mission.abortMission();
 		}
 	}
 	
