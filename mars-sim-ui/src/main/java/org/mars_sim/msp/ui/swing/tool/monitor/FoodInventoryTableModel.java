@@ -45,7 +45,7 @@ public class FoodInventoryTableModel extends AbstractTableModel
 
 	// Data members
 	private List<Food> foodList;
-	private List<Settlement> settlements = new ArrayList<Settlement>();
+	private List<Settlement> settlements = new ArrayList<>();
 
 	private Settlement commanderSettlement;
 

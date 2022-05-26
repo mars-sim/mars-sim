@@ -33,11 +33,12 @@ implements UnitManagerListener {
 
 	/**
 	 * constructor.
+	 * @param settlement
 	 * @param window {@link MonitorWindow} the containing window.
 	 */
-	public TradeTab(final MonitorWindow window) {
+	public TradeTab(Settlement settlement, final MonitorWindow window) {
 		// Use TableTab constructor
-		super(window, new TradeTableModel(), true, false, MonitorWindow.TRADE_ICON);
+		super(window, new TradeTableModel(settlement), true, false, MonitorWindow.TRADE_ICON);
 
 		// Override default cell renderer for formatting double values.
 //		table.setDefaultRenderer(Double.class, new NumberCellRenderer(NUM_DIGITS, true));

@@ -37,7 +37,7 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 
 	private static final String TRADE_GOODS = "Good(s)";
 	private static final String TRADE_NAME = "Name";
-	private static final String QUANTITY = "kg/# - ";
+	private static final String QUANTITY = "# or kg - ";
 	private static final String VP_AT = "Value - ";
 	private static final String PRICE_AT = "Price - ";
 	private static final String CATEGORY = "Category";
@@ -52,18 +52,23 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 	private List<Good> goodsList;
 	private List<Settlement> settlements;
 
+//	private Settlement selectedSettlement;
+	
 	protected static UnitManager unitManager = Simulation.instance().getUnitManager();
 
 	/**
-	 * Constructor.
+	 * Constructor 2.
 	 */
-	public TradeTableModel() {
-
+	public TradeTableModel(Settlement selectedSettlement) {
+//		this.selectedSettlement = selectedSettlement;
+		
 		// Initialize goods list.
 		goodsList = GoodsUtil.getGoodsList();
-
+		
 		// Initialize settlements.
-		settlements = new ArrayList<Settlement>(unitManager.getSettlements());
+		settlements = new ArrayList<>();
+//		settlements.addAll(unitManager.getSettlements());
+		settlements.add(selectedSettlement);
 
 		// Add table as listener to each settlement.
 		Iterator<Settlement> i = settlements.iterator();
@@ -72,7 +77,7 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 		// Add as unit manager listener.
 		unitManager.addUnitManagerListener(this);
 	}
-
+	
 	/**
 	 * Catch unit update event.
 	 *
@@ -192,6 +197,7 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 	}
 
 	public Object getValueAt(int rowIndex, int columnIndex) {
+		
 		if (columnIndex == 0) {
 			return Conversion.capitalize(goodsList.get(rowIndex).getName());
 		}
