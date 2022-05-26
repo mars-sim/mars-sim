@@ -15,13 +15,13 @@
 
 # mars-sim
 *The Mars Simulation Project* is a Java-based [open source](https://opensource.dev/) project that
-simulates the activities of the first generation of settlers on Mars with a higher fidelity of
+simulates daily activities of the first generation of settlers on Mars with a higher fidelity of
 modeling and simulation details than a typical PC strategy game.
 
 ---
 
 ## Simulation
-mars-sim is a **general purpose** simulator depicting the early development of human settlements on Mars.
+mars-sim is designed to be a **general purpose** simulator depicting the early development of human settlements on Mars.
 
 According to *Encyclopædia Britannica*, a computer simulation is the use of a computer to represent
 the dynamic responses of one system by the behavior of another system modeled after it. In essence,
@@ -32,8 +32,8 @@ biology, economics, psychology, and social science) as possible to simulate the 
 of people, social structure, physical and mechanical systems, and environment in the context of
 developing human settlements on Mars.
 
-mars-sim models each settler as an intelligent agent which possess, to varying degrees, autonomy, and mobility.
-It is a symbolic model of reality, given a capacity to learn from experience and an ability to
+mars-sim models each settler as an intelligent agent which possess varying degrees of autonomy and mobility.
+It is a symbolic model of reality, given a capacity to learn from experiences and an ability to
 cooperate with other agents and systems. A settler has prescribed attributes and skills and makes
 weighted decisions and interacts with one another to produce unexpected results in a sandbox world.
 
@@ -167,8 +167,8 @@ planetary surface.
         width="100">
 </a>
 
-Currently, mars-sim supports Java 11. We will transition to Java 17 as
-JDK 17 is the next long-term support (LTS) release.
+Currently, mars-sim supports Java 11. We will transition to Java 17 in near future
+as JDK 17 is one of the next long-term support (LTS) releases.
 
 * Requires only JRE 11 for running mars-sim
 * Requires only JDK 11 (or openjdk 11) for compiling binary
@@ -185,7 +185,7 @@ Currently, mars-sim does not require JavaFX.
 > Note 1 : Specifically, the official release of v3.1.0, v3.2.0 and v3.3.0 of mars-sim do not
 utilize JavaFX / OpenJFX. Therefore, it's NOT a requirement to install them.
 
-However, if you want to run any JavaFX apps, make sure you also download and
+However, if you want to run any JavaFX apps, make sure you download and
 configure the OpenJFX or JavaFX package on top of the JDK.
 
 See ticket #156 to read the discussions on how to set up JavaFX to run it

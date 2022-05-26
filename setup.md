@@ -1,6 +1,6 @@
 # Mars Simulation Project
 
-Copyright (C) 2021 Scott Davis
+Copyright (C) 2022 Scott Davis
 https://mars-sim.github.io
 https://github.com/mars-sim/mars-sim
 
