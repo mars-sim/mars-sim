@@ -42,14 +42,14 @@ implements Serializable, Comparable<Food> {
 		if (name != null) this.name = name.trim().toLowerCase();
 		else throw new IllegalArgumentException("name cannot be null.");
 
-		if (object != null) {
+		if (ar != null) {
 			this.object = ar;
 			this.classType = ar.getClass();		
 			this.type = foodType.getName(); 
 			this.id = ar.getID();
 		}
 		
-		else throw new IllegalArgumentException("object cannot be null.");
+		else throw new IllegalArgumentException("ar cannot be null.");
 
 //		if (isValidCategory(category)) this.category = category;
 //		else throw new IllegalArgumentException("category: " + category + " not valid.");

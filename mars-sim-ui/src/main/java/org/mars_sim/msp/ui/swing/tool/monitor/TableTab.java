@@ -335,7 +335,7 @@ abstract class TableTab extends MonitorTab {
 		int indexes[] = {};
 		if (table != null)
 			indexes = table.getSelectedRows();
-		ArrayList<Object> selectedRows = new ArrayList<Object>();
+		List<Object> selectedRows = new ArrayList<>();
 		for (int indexe : indexes) {
 			Object selected = target.getObject(indexe);
 			if (selected != null)

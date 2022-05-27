@@ -220,14 +220,15 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 			addTab(new UnitTab(this, new BuildingTableModel(selectedSettlement), true, BUILDING_ICON));
 			addTab(new UnitTab(this, new CropTableModel(selectedSettlement), true, CROP_ICON));
 			
+			addTab(new FoodInventoryTab(selectedSettlement, this));
+			addTab(new TradeTab(selectedSettlement, this));
+			
 			eventsTab = new EventTab(this, desktop);
 			addTab(eventsTab);
 			
 			addTab(new MissionTab(this));
 			addTab(new UnitTab(this, new VehicleTableModel(selectedSettlement), true, VEHICLE_ICON));
 			
-			addTab(new FoodInventoryTab(selectedSettlement, this));
-			addTab(new TradeTab(selectedSettlement, this));
 
 		} catch (Exception e) {
 			logger.severe("Problems in adding tabs in MonitorWindow: " + e.getMessage());
