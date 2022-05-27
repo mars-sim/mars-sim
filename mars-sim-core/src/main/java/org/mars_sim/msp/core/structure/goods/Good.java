@@ -174,6 +174,11 @@ public class Good implements Serializable, Comparable<Good> {
 		return EquipmentType.convertName2Enum(name);
 	}
 
+	/**
+	 * Gets the good's id
+	 * 
+	 * @return
+	 */
 	public int getID() {
 		return id;
 	}

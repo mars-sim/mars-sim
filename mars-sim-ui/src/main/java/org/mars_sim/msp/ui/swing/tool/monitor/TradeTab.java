@@ -33,30 +33,32 @@ implements UnitManagerListener {
 
 	/**
 	 * constructor.
-	 * @param settlement
+	 * 
+	 * @param selectedSettlement
 	 * @param window {@link MonitorWindow} the containing window.
 	 */
-	public TradeTab(Settlement settlement, final MonitorWindow window) {
+	public TradeTab(Settlement selectedSettlement, final MonitorWindow window) {
 		// Use TableTab constructor
-		super(window, new TradeTableModel(settlement), true, false, MonitorWindow.TRADE_ICON);
-
+		super(window, new TradeTableModel(selectedSettlement), true, false, MonitorWindow.TRADE_ICON);
+		System.out.println("TradeTab : " + selectedSettlement);
+		
 		// Override default cell renderer for formatting double values.
 //		table.setDefaultRenderer(Double.class, new NumberCellRenderer(NUM_DIGITS, true));
 
 		TableColumnModel m = table.getColumnModel();
-
+		int num = TradeTableModel.NUM_INITIAL_COLUMNS;
+		int cols = TradeTableModel.NUM_DATA_COL;
 		for (int i= 0; i < m.getColumnCount(); i++) {
-			if (i >= TradeTableModel.NUM_INITIAL_COLUMNS) {
-				int col = i - TradeTableModel.NUM_INITIAL_COLUMNS;
-				if (col % 3 == 0)
+			if (i >= num) {
+				int col = i - num;
+				if (col % cols == 0)
 					m.getColumn(i).setCellRenderer(NumberRenderer.getIntegerRenderer());
-				else if (col % 3 == 1)
+				else if (col % cols == 1)
 					m.getColumn(i).setCellRenderer(new NumberCellRenderer(NUM_DIGITS, true));
-				else if (col % 3 == 2)
+				else if (col % cols == 2)
 					m.getColumn(i).setCellRenderer(NumberRenderer.getCurrencyRenderer());
 			}
 		}
-
 
 		// Add as unit manager listener.
 		Simulation.instance().getUnitManager().addUnitManagerListener(this);
@@ -97,6 +99,7 @@ implements UnitManagerListener {
 
 		/**
 		 * Constructor
+		 * 
 		 * @param column the column to add or remove.
 		 * @param addColumn true for adding column or false for removing column.
 		 */

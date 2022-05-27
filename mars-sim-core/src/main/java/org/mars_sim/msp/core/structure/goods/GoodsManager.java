@@ -4278,6 +4278,7 @@ public class GoodsManager implements Serializable, Temporal {
 		return getGoodValuePerItem(good.getID());
 	}
 
+
 	/**
 	 * Gets the value per item of a good.
 	 *

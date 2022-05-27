@@ -223,12 +223,11 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 			eventsTab = new EventTab(this, desktop);
 			addTab(eventsTab);
 			
-			addTab(new FoodInventoryTab(this));
-			
-			addTab(new TradeTab(selectedSettlement, this));
-			
 			addTab(new MissionTab(this));
 			addTab(new UnitTab(this, new VehicleTableModel(selectedSettlement), true, VEHICLE_ICON));
+			
+			addTab(new FoodInventoryTab(selectedSettlement, this));
+			addTab(new TradeTab(selectedSettlement, this));
 
 		} catch (Exception e) {
 			logger.severe("Problems in adding tabs in MonitorWindow: " + e.getMessage());
@@ -577,7 +576,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 				buttonDetails.setEnabled(true);
 				buttonFilter.setEnabled(true);
 
-				newTab = new FoodInventoryTab(this);
+				newTab = new FoodInventoryTab(selectedSettlement, this);
 
 			} else if (selectedTab instanceof TradeTab) {
 				// Enable these buttons

@@ -1157,7 +1157,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 					// Yes it's breached !
 					// Simulate the meteorite impact as a malfunction event for now
 					Malfunction mal = malfunctionManager.triggerMalfunction(MalfunctionFactory
-							.getMalfunctionByname(MalfunctionFactory.METEORITE_IMPACT_DAMAGE),
+							.getMalfunctionByName(MalfunctionFactory.METEORITE_IMPACT_DAMAGE),
 							true, null);
 
 					String victimName = "None";

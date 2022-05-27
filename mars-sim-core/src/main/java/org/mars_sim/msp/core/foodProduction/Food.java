@@ -20,11 +20,16 @@ implements Serializable, Comparable<Food> {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
+	
 	// Data members
+	private int id;
+	
 	private String name;
 	private String type;
+	
 	private Class<?> classType;
 	private Object object;
+	
 	private FoodType foodType;
 
 	/**
@@ -33,14 +38,15 @@ implements Serializable, Comparable<Food> {
 	 * @param object the food's object if any.
 	 * @param foodType the food's category.
 	 */
-	Food(String name, AmountResource object, FoodType foodType) {
+	Food(String name, AmountResource ar, FoodType foodType) {
 		if (name != null) this.name = name.trim().toLowerCase();
 		else throw new IllegalArgumentException("name cannot be null.");
 
 		if (object != null) {
-			this.object = object;
-			this.classType = object.getClass();		
+			this.object = ar;
+			this.classType = ar.getClass();		
 			this.type = foodType.getName(); 
+			this.id = ar.getID();
 		}
 		
 		else throw new IllegalArgumentException("object cannot be null.");
@@ -135,6 +141,15 @@ implements Serializable, Comparable<Food> {
 	 */
 	public String getType() {
 		return type;
+	}
+	
+	/**
+	 * Gets the good's id
+	 * 
+	 * @return
+	 */
+	public int getID() {
+		return id;
 	}
 	
 	/**
