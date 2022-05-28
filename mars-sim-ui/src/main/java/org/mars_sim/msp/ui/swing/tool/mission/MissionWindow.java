@@ -181,14 +181,14 @@ public class MissionWindow extends ToolWindow {
 		final WebButton abortButton = new WebButton("Abort Mission");
 		abortButton.setEnabled(false);
 
-//		abortButton.addActionListener(
-//				new ActionListener() {
-//					public void actionPerformed(ActionEvent e) {
-//						// End the mission.
-//						mission = (Mission) missionList.getSelectedValue();
-//						if (mission != null) endMission(mission);
-//					}
-//				});
+		abortButton.addActionListener(
+				new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						// End the mission.
+						mission = missionList.getSelectedValue();
+						if (mission != null) mission.abortMission();
+					}
+				});
 //		missionList.addListSelectionListener(
 //				new ListSelectionListener() {
 //					public void valueChanged(ListSelectionEvent e) {

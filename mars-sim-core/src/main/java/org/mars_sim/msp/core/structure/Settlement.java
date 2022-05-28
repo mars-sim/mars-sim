@@ -7,7 +7,6 @@
 
 package org.mars_sim.msp.core.structure;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
@@ -51,7 +50,6 @@ import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
-import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.task.EatDrink;
 import org.mars_sim.msp.core.person.ai.task.HaveConversation;
@@ -89,7 +87,7 @@ import org.mars_sim.msp.core.vehicle.VehicleType;
  * The Settlement class represents a settlement unit on virtual Mars. It
  * contains information related to the state of the settlement.
  */
-public class Settlement extends Structure implements Serializable, Temporal,
+public class Settlement extends Structure implements Temporal,
 	LifeSupportInterface, Objective, EquipmentOwner, ItemHolder  {
 
 	/** default serial id. */
@@ -178,8 +176,6 @@ public class Settlement extends Structure implements Serializable, Temporal,
 
 	/** The flag for checking if the simulation has just started. */
 	private boolean justLoaded = true;
-	/** The base mission probability of the settlement. */
-	private boolean missionProbability = false;
 	/** The water ration level of the settlement. */
 	private int waterRationLevel = 1;
 	/** The number of people at the start of the settlement. */
@@ -1073,7 +1069,6 @@ public class Settlement extends Structure implements Serializable, Temporal,
 			remainder = msol % CHECK_MISSION;
 			if (remainder == 1) {
 				// Reset the mission probability back to 1
-				missionProbability = false;
 				mineralValue = -1;
 			}
 
@@ -2766,7 +2761,7 @@ public class Settlement extends Structure implements Serializable, Temporal,
 	public ShiftType getAnEmptyWorkShift(int population) {
 		int pop = 0;
 		if (population == -1)
-			pop = this.getNumCitizens();// getIndoorPeopleCount();
+			pop = this.getNumCitizens();
 		else
 			pop = population;
 
@@ -3499,76 +3494,7 @@ public class Settlement extends Structure implements Serializable, Temporal,
 	 * @return probability value
 	 */
 	public boolean getMissionBaseProbability(MissionType mission) {
-
-		if (disabledMissions.contains(mission)) {
-			return false;
-		}
-
-		// If the Settlement mission probably is false; then recheck it
-		// This get reset in the timePulse method
-		if (!missionProbability) {
-			missionProbability = isMissionPossible();
-		}
-
-		return missionProbability;
-	}
-
-
-	/**
-	 * Can this settlement start a mission ?
-	 *
-	 * @return
-	 */
-	public boolean isMissionPossible() {
-
-		if (!missionProbability) {
-			// 1. Check if a mission-capable rover is available.
-			if (!RoverMission.areVehiclesAvailable(this, false)) {
-				return false;
-			}
-			// 2. Check if available backup rover.
-			if (!RoverMission.hasBackupRover(this)) {
-				return false;
-			}
-			// 3. Check if at least 1 person is there
-			// A settlement with <= 4 population can always do DigLocalRegolith task
-			// should avoid the risk of mission.
-			if (getIndoorPeopleCount() <= 1) {// .getAllAssociatedPeople().size() <= 4)
-				return false;
-			}
-			// 4. Check if minimum number of people are available at the settlement.
-			if (!RoverMission.minAvailablePeopleAtSettlement(this, RoverMission.MIN_STAYING_MEMBERS)) {
-				return false;
-			}
-
-			// 5. Check if min number of EVA suits at settlement.
-			if (findNumContainersOfType(EquipmentType.EVA_SUIT) < RoverMission.MIN_GOING_MEMBERS) {
-				return false;
-			}
-
-			// 6. Check if settlement has enough basic resources for a rover mission.
-			if (!hasEnoughBasicResources(true)) {
-				return false;
-			}
-
-			// 7. Check if starting settlement has minimum amount of methane fuel.
-			if (getAmountResourceStored(METHANE_ID) < RoverMission.MIN_STARTING_SETTLEMENT_METHANE) {
-				return false;
-			}
-
-			if (VehicleMission.numEmbarkingMissions(this) > getNumCitizens() / 4D) {
-				return false;
-			}
-
-			if (VehicleMission.numApprovingMissions(this) > getNumCitizens() / 4D) {
-				return false;
-			}
-
-			missionProbability = true;
-
-		}
-
-		return missionProbability;
+		return !disabledMissions.contains(mission);
 	}
 
 	public double getTotalMineralValue(Rover rover) {
@@ -3581,39 +3507,6 @@ public class Settlement extends Structure implements Serializable, Temporal,
 			}
 		}
 		return mineralValue;
-	}
-
-	/**
-	 * Checks if there are enough basic mission resources at the settlement to start
-	 * mission.
-	 *
-	 * @param settlement the starting settlement.
-	 * @return true if enough resources.
-	 */
-	private boolean hasEnoughBasicResources(boolean unmasked) {
-		// if unmasked is false, it won't check the amount of H2O and O2.
-		// the goal of this mission can potentially increase O2 & H2O of the settlement
-		// e.g. an ice mission is desperately needed especially when there's
-		// not enough water since ice will produce water.
-
-		try {
-			if (getAmountResourceStored(METHANE_ID) < minMethane) {
-				return false;
-			}
-			if (unmasked && getAmountResourceStored(OXYGEN_ID) < mineOxygen) {
-				return false;
-			}
-			if (unmasked && getAmountResourceStored(WATER_ID) < minWater) {
-				return false;
-			}
-			if (getAmountResourceStored(FOOD_ID) < minFood) {
-				return false;
-			}
-		} catch (Exception e) {
-			logger.severe("Problems in hasEnoughBasicResources(): " + e.getMessage());
-		}
-
-		return true;
 	}
 
     public double getIceCollectionRate() {
