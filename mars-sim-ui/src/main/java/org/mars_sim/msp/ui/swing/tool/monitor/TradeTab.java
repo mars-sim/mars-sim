@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TradeTab.java
- * @date 2021-12-07
+ * @date 2022-05-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
@@ -40,8 +40,7 @@ implements UnitManagerListener {
 	public TradeTab(Settlement selectedSettlement, final MonitorWindow window) {
 		// Use TableTab constructor
 		super(window, new TradeTableModel(selectedSettlement), true, false, MonitorWindow.TRADE_ICON);
-		System.out.println("TradeTab : " + selectedSettlement);
-		
+
 		// Override default cell renderer for formatting double values.
 //		table.setDefaultRenderer(Double.class, new NumberCellRenderer(NUM_DIGITS, true));
 

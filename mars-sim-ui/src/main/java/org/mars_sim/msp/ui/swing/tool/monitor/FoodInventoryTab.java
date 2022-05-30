@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
- * FoodProductionTab.java
- * @version 3.2.0 2021-06-20
+ * FoodInventoryTab.java
+ * @date 2022-05-27
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
@@ -38,8 +38,7 @@ public class FoodInventoryTab extends TableTab implements UnitManagerListener {
 	public FoodInventoryTab(Settlement selectedSettlement, final MonitorWindow window) {
 		// Use TableTab constructor
 		super(window, new FoodInventoryTableModel(selectedSettlement), true, false, MonitorWindow.FOOD_ICON);
-		System.out.println("FoodInventoryTab : " + selectedSettlement);
-		
+	
 		// Override default cell renderer for format double values.
 //		table.setDefaultRenderer(Double.class, new NumberCellRenderer(2));
 

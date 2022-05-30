@@ -1,16 +1,13 @@
 /**
  * Mars Simulation Project
  * Food.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-05-27
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.foodProduction;
 
 import java.io.Serializable;
-
 import org.mars_sim.msp.core.resource.AmountResource;
-
-//import org.mars_sim.msp.core.equipment.Equipment;
 
 /**
  * A meta class describing an economic food in the simulation.
@@ -157,21 +154,30 @@ implements Serializable, Comparable<Food> {
 	 * @param object the object to compare.
 	 * @return true if equal
 	 */
-	public boolean equals(Object object) {
-		boolean result = true;
-		if (object instanceof Food) {
-			Food food = (Food) object;
-			if (!name.equals(food.name)) result = false;
-			if (!classType.equals(food.classType)) result = false;
-			if (this.object != null) {
-				if (!this.object.equals(food.object)) result = false;
-			}
-			if (!foodType.equals(food.foodType)) result = false;
-		}
-		else result = false;
-
-		return result;
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (this.getClass() != obj.getClass()) return false;
+		Food f = (Food) obj;
+		if (!classType.equals(f.classType)) return false;
+		return this.getName().equals(f.getName())
+				&& this.id == f.getID();
 	}
+	
+//	public boolean equals(Object object) {
+//		boolean result = true;
+//		if (object instanceof Food) {
+//			Food food = (Food) object;
+//			if (!name.equals(food.name)) result = false;
+//			if (!classType.equals(food.classType)) result = false;
+//			if (this.object != null) {
+//				if (!this.object.equals(food.object)) result = false;
+//			}
+//			if (!foodType.equals(food.foodType)) result = false;
+//		}
+//		else result = false;
+//		return result;
+//	}
 
 	/**
 	 * Gets the hash code value.

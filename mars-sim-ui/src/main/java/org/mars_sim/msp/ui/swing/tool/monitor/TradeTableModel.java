@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TradeTableModel.java
- * @date 2021-11-15
+ * @date 2022-05-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
@@ -14,8 +14,6 @@ import java.util.List;
 import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
-import org.mars_sim.msp.core.GameManager;
-import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEvent;
@@ -73,8 +71,6 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 //		else {
 //			settlements.addAll(unitManager.getSettlements());
 			settlements.add(selectedSettlement);
-			System.out.println("TradeTableModel : " + selectedSettlement);
-			System.out.println("TradeTableModel : " + settlements);
 //		}
 
 		// Add table as listener to each settlement.

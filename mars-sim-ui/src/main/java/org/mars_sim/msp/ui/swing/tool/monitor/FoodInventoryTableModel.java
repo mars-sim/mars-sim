@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * FoodInventoryTableModel.java
- * @date 2021-10-21
+ * @date 2022-05-27
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
@@ -13,7 +13,6 @@ import java.util.List;
 import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
-import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
@@ -72,8 +71,6 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 //		else {
 //			settlements.addAll(unitManager.getSettlements());
 			settlements.add(selectedSettlement);
-			System.out.println("FoodInventoryTableModel : " + selectedSettlement);
-			System.out.println("FoodInventoryTableModel : " + settlements);
 //		}
 			
 		// Add table as listener to each settlement.
