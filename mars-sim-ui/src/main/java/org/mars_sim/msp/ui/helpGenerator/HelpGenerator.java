@@ -19,9 +19,9 @@ import java.util.logging.Level;
 
 import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.foodProduction.FoodProductionProcessInfo;
-import org.mars_sim.msp.core.foodProduction.FoodProductionProcessItem;
-import org.mars_sim.msp.core.foodProduction.FoodProductionUtil;
+import org.mars_sim.msp.core.food.FoodProductionProcessInfo;
+import org.mars_sim.msp.core.food.FoodProductionProcessItem;
+import org.mars_sim.msp.core.food.FoodProductionUtil;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessInfo;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessItem;

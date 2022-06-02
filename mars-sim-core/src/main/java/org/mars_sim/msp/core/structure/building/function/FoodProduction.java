@@ -16,10 +16,10 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
-import org.mars_sim.msp.core.foodProduction.FoodProductionProcess;
-import org.mars_sim.msp.core.foodProduction.FoodProductionProcessInfo;
-import org.mars_sim.msp.core.foodProduction.FoodProductionProcessItem;
-import org.mars_sim.msp.core.foodProduction.FoodProductionUtil;
+import org.mars_sim.msp.core.food.FoodProductionProcess;
+import org.mars_sim.msp.core.food.FoodProductionProcessInfo;
+import org.mars_sim.msp.core.food.FoodProductionProcessItem;
+import org.mars_sim.msp.core.food.FoodProductionUtil;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;

@@ -14,6 +14,9 @@ import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
 import org.mars_sim.msp.core.GameManager.GameMode;
+import org.mars_sim.msp.core.food.Food;
+import org.mars_sim.msp.core.food.FoodUtil;
+import org.mars_sim.msp.core.goods.Good;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
@@ -25,11 +28,8 @@ import org.mars_sim.msp.core.UnitManagerEvent;
 import org.mars_sim.msp.core.UnitManagerEventType;
 import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.UnitType;
-import org.mars_sim.msp.core.foodProduction.Food;
-import org.mars_sim.msp.core.foodProduction.FoodUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.goods.Good;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 
 @SuppressWarnings("serial")

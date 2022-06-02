@@ -17,7 +17,7 @@ import java.util.logging.Level;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.data.SolMetricDataLogger;
 import org.mars_sim.msp.core.data.SolSingleMetricDataLogger;
-import org.mars_sim.msp.core.foodProduction.FoodType;
+import org.mars_sim.msp.core.food.FoodType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.TendGreenhouse;

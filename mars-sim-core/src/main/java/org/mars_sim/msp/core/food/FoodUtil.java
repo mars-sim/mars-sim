@@ -4,7 +4,7 @@
  * @date 2022-05-27
  * @author Manny Kung
  */
-package org.mars_sim.msp.core.foodProduction;
+package org.mars_sim.msp.core.food;
 
 import java.util.ArrayList;
 import java.util.Collections;

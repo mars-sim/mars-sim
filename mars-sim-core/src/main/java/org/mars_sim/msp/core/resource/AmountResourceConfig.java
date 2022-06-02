@@ -14,7 +14,7 @@ import java.util.TreeSet;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
-import org.mars_sim.msp.core.foodProduction.FoodType;
+import org.mars_sim.msp.core.food.FoodType;
 
 /**
  * Provides configuration information about amount resources. Uses a DOM

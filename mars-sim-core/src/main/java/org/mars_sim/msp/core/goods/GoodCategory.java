@@ -4,7 +4,7 @@
  * @version 3.2.0 2021-06-20
  * @author stpa
  */
-package org.mars_sim.msp.core.structure.goods;
+package org.mars_sim.msp.core.goods;
 
 import org.mars_sim.msp.core.Msg;
 

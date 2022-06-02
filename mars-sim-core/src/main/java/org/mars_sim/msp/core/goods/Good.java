@@ -4,15 +4,15 @@
  * @version 3.2.0 2021-06-20
  * @author Scott Davis
  */
-package org.mars_sim.msp.core.structure.goods;
+package org.mars_sim.msp.core.goods;
 
 import java.io.Serializable;
 import java.util.List;
 
 import org.mars_sim.msp.core.equipment.EquipmentType;
-import org.mars_sim.msp.core.foodProduction.FoodProductionProcessInfo;
-import org.mars_sim.msp.core.foodProduction.FoodProductionProcessItem;
-import org.mars_sim.msp.core.foodProduction.FoodProductionUtil;
+import org.mars_sim.msp.core.food.FoodProductionProcessInfo;
+import org.mars_sim.msp.core.food.FoodProductionProcessItem;
+import org.mars_sim.msp.core.food.FoodProductionUtil;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessInfo;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessItem;
 import org.mars_sim.msp.core.manufacture.ManufactureUtil;

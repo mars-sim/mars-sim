@@ -1,4 +1,4 @@
-/**
+/*
  * Mars Simulation Project
  * TradeTab.java
  * @date 2022-05-27

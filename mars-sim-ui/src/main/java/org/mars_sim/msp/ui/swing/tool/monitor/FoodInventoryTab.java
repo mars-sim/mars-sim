@@ -1,4 +1,4 @@
-/**
+/*
  * Mars Simulation Project
  * FoodInventoryTab.java
  * @date 2022-05-27

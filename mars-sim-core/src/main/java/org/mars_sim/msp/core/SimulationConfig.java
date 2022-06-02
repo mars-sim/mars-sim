@@ -36,7 +36,7 @@ import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import org.mars_sim.msp.core.environment.LandmarkConfig;
 import org.mars_sim.msp.core.environment.MineralMapConfig;
-import org.mars_sim.msp.core.foodProduction.FoodProductionConfig;
+import org.mars_sim.msp.core.food.FoodProductionConfig;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyConfig;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.MalfunctionConfig;

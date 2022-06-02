@@ -4,7 +4,7 @@
  * @date 2021-10-21
  * @author Scott Davis
  */
-package org.mars_sim.msp.core.structure.goods;
+package org.mars_sim.msp.core.goods;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -24,10 +24,10 @@ import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.ContainerUtil;
 import org.mars_sim.msp.core.equipment.EquipmentType;
-import org.mars_sim.msp.core.foodProduction.FoodProductionProcess;
-import org.mars_sim.msp.core.foodProduction.FoodProductionProcessInfo;
-import org.mars_sim.msp.core.foodProduction.FoodProductionProcessItem;
-import org.mars_sim.msp.core.foodProduction.FoodProductionUtil;
+import org.mars_sim.msp.core.food.FoodProductionProcess;
+import org.mars_sim.msp.core.food.FoodProductionProcessInfo;
+import org.mars_sim.msp.core.food.FoodProductionProcessItem;
+import org.mars_sim.msp.core.food.FoodProductionUtil;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
