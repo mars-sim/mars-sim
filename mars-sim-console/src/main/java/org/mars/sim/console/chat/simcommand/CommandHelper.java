@@ -27,7 +27,6 @@ import org.mars_sim.msp.core.person.ai.mission.MissionPlanning;
 import org.mars_sim.msp.core.person.ai.mission.MissionStatus;
 import org.mars_sim.msp.core.person.ai.mission.NavPoint;
 import org.mars_sim.msp.core.person.ai.mission.PlanType;
-import org.mars_sim.msp.core.person.ai.mission.TravelMission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.task.LoadingController;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
@@ -302,8 +301,8 @@ public class CommandHelper {
 			response.appendNumberedList("Members", names);
 		
 			// Travel mission has a route
-			if (mission instanceof TravelMission) {
-				TravelMission tm = (TravelMission) mission;
+			if (mission instanceof VehicleMission) {
+				VehicleMission tm = (VehicleMission) mission;
 				int navPoints = tm.getNumberOfNavpoints();
 				if (navPoints > 0) {
 					response.appendText("Itinerary:");
@@ -320,11 +319,9 @@ public class CommandHelper {
 					}
 					response.appendBlankLine();				
 				}
-			}
 		
-			// Vehicle mission has a loading
-			if (mission instanceof VehicleMission) {
-				LoadingController lp = ((VehicleMission) mission).getLoadingPlan();
+				// Vehicle mission has a loading
+				LoadingController lp = tm.getLoadingPlan();
 				if ((lp != null) && !lp.isCompleted()) {
 					response.appendText("Loading from " + lp.getSettlement().getName() + " :");
 					outputResources("Resources", response, lp.getResourcesManifest());	

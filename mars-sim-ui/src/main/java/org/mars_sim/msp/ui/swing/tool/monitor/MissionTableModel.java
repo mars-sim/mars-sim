@@ -27,7 +27,6 @@ import org.mars_sim.msp.core.person.ai.mission.MissionListener;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.MissionManagerListener;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
-import org.mars_sim.msp.core.person.ai.mission.TravelMission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
@@ -426,9 +425,9 @@ public class MissionTableModel extends AbstractTableModel
 					break;
 
 				case NAVPOINT_NUM: {
-					if (MissionType.isTravelMission(mission.getMissionType())) {
-						TravelMission travelMission = (TravelMission) mission;
-						result = travelMission.getNumberOfNavpoints();
+					if (MissionType.isVehicleMission(mission.getMissionType())) {
+						VehicleMission vehicleMission = (VehicleMission) mission;
+						result = vehicleMission.getNumberOfNavpoints();
 					} else
 						result = 0;
 				}
@@ -444,16 +443,12 @@ public class MissionTableModel extends AbstractTableModel
 					break;
 
 				case REMAINING_DISTANCE: {
-					if (MissionType.isTravelMission(mission.getMissionType())) {
-						TravelMission travelMission = (TravelMission) mission;
-						if (mission == null || travelMission == null)
+					if (MissionType.isVehicleMission(mission.getMissionType())) {
+						VehicleMission vehicleMission = (VehicleMission) mission;
+						try {
+							result = decFormatter.format(vehicleMission.getEstimatedTotalRemainingDistance());
+						} catch (Exception e) {
 							result = 0;
-						else {
-							try {
-								result = decFormatter.format(travelMission.getEstimatedTotalRemainingDistance());
-							} catch (Exception e) {
-								result = 0;
-							}
 						}
 					} else
 						result = 0;
@@ -462,10 +457,10 @@ public class MissionTableModel extends AbstractTableModel
 				break;
 
 				case PROPOSED_ROUTE_DISTANCE: {
-					if (MissionType.isTravelMission(mission.getMissionType())) {
-						TravelMission travelMission = (TravelMission) mission;
+					if (MissionType.isVehicleMission(mission.getMissionType())) {
+						VehicleMission vehicleMission = (VehicleMission) mission;
 						try {
-							result = decFormatter.format(travelMission.getEstimatedTotalDistance());
+							result = decFormatter.format(vehicleMission.getEstimatedTotalDistance());
 						} catch (Exception e) {
 						}
 					} else

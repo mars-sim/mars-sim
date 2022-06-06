@@ -37,7 +37,6 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.mission.MissionPhase;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
-import org.mars_sim.msp.core.person.ai.mission.TravelMission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -245,19 +244,17 @@ public class InfoPanel extends JPanel {
 				actions.add(ACTION_CONTINUE);
 		}
 		
-		// Check if go home action can be added.
-		if (mission instanceof TravelMission) {
-			TravelMission travelMission = (TravelMission) mission;
-			int nextNavpointIndex = travelMission.getNextNavpointIndex();
-			if ((nextNavpointIndex > -1) && (nextNavpointIndex < (travelMission.getNumberOfNavpoints() - 1))) {
+		if (mission instanceof VehicleMission) {
+			VehicleMission vehicleMission = (VehicleMission) mission;
+
+			// Check if go home action can be added.
+			int nextNavpointIndex = vehicleMission.getNextNavpointIndex();
+			if ((nextNavpointIndex > -1) && (nextNavpointIndex < (vehicleMission.getNumberOfNavpoints() - 1))) {
 				if (!mission.getPhase().equals(VehicleMission.EMBARKING))
 					actions.add(ACTION_HOME);
 			}
-		}
-		
-		// Check if nearest settlement action can be added.
-		if (mission instanceof VehicleMission) {
-			VehicleMission vehicleMission = (VehicleMission) mission;
+
+			// Check if nearest settlement action can be added.
 			try {
 				Settlement closestSettlement = vehicleMission.findClosestSettlement();
 				if ((closestSettlement != null) && !closestSettlement.equals(vehicleMission.getAssociatedSettlement())) {
@@ -276,13 +273,13 @@ public class InfoPanel extends JPanel {
 	 * @return collection of available members.
 	 */
 	private Collection<MissionMember> getAvailableMembers() {
-		Collection<MissionMember> result = new ConcurrentLinkedQueue<MissionMember>();
+		Collection<MissionMember> result = new ConcurrentLinkedQueue<>();
 	
 		// Add people and robots in the settlement or rover.
 		if (mission instanceof RoverMission) {
 			Rover rover = ((RoverMission) mission).getRover();
 			MissionPhase phase = mission.getPhase();
-			Collection<MissionMember> membersAtLocation = new ArrayList<MissionMember>();
+			Collection<MissionMember> membersAtLocation = new ArrayList<>();
 			if (rover != null) {
 				if (phase.equals(RoverMission.EMBARKING) || 
 						phase.equals(RoverMission.DISEMBARKING)) {

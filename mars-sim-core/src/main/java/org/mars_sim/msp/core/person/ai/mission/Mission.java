@@ -1295,7 +1295,7 @@ public abstract class Mission implements Serializable, Temporal {
 
 				logger.log(p, Level.INFO, 0, "Getting ready to embark on " + getDescription() + ".");
 
-				if (!(this instanceof TravelMission)) {
+				if (!(this instanceof VehicleMission)) {
 					// Set the members' work shift to on-call to get ready
 					for (MissionMember m : members) {
 						 ((Person) m).setShiftType(ShiftType.ON_CALL);

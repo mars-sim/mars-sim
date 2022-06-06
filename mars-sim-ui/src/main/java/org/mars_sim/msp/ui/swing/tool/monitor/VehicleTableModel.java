@@ -37,7 +37,6 @@ import org.mars_sim.msp.core.person.ai.mission.MissionListener;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.MissionManagerListener;
 import org.mars_sim.msp.core.person.ai.mission.NavPoint;
-import org.mars_sim.msp.core.person.ai.mission.TravelMission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -272,14 +271,14 @@ public class VehicleTableModel extends UnitTableModel {
 						VehicleMission vehicleMission = (VehicleMission) mission;
 						String status = vehicleMission.getTravelStatus();
 						if (status != null) {
-							if (status.equals(TravelMission.TRAVEL_TO_NAVPOINT)) {
+							if (status.equals(VehicleMission.TRAVEL_TO_NAVPOINT)) {
 								NavPoint destination = vehicleMission.getNextNavpoint();
 								if (destination.isSettlementAtNavpoint())
 									result = destination.getSettlement().getName();
 								else
 									result = Conversion.capitalize(destination.getDescription()) + " - " + destination.getLocation().getFormattedString();
 							}
-							else if (status.equals(TravelMission.AT_NAVPOINT)) {
+							else if (status.equals(VehicleMission.AT_NAVPOINT)) {
 								NavPoint destination = vehicleMission.getCurrentNavpoint();
 //								result = destination.getLocation().getFormattedString();
 								result = Conversion.capitalize(destination.getDescription());
