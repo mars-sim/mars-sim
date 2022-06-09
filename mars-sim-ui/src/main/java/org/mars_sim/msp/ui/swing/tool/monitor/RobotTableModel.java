@@ -46,9 +46,6 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 @SuppressWarnings("serial")
 public class RobotTableModel extends UnitTableModel {
 
-	// private static final Logger logger =
-	// Logger.getLogger(RobotTableModel.class.getName());
-
 	// Column indexes
 	/** Robot name column. */
 	private final static int NAME = 0;
