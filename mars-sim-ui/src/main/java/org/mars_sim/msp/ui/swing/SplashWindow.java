@@ -34,7 +34,7 @@ public class SplashWindow extends JComponent {
 	private JFrame window;
 
 	// Constant data member
-	private static final String VERSION_STRING = "v" + Simulation.VERSION;
+	private static final String VERSION_STRING = Simulation.VERSION;
 	private static final String BUILD_STRING = "Build " + Simulation.BUILD;
 	private static final String MSP_STRING = Msg.getString("SplashWindow.title"); //$NON-NLS-1$
 	private static final String AUTHOR_STRING = "Picture from NASA Ames Research Center, 2005";

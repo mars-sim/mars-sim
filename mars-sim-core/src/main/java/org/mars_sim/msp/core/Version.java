@@ -31,7 +31,7 @@ public final class Version {
 	private static final String VERSION_PROPERTIES = "version.properties";
 
 	private static String build = "Unknown";
-	private static String versionTag = "Unknwon";
+	private static String versionTag = "Unknown";
 
 	// Load the properties file
 	static {

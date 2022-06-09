@@ -57,7 +57,7 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
     		+ "                   "
 			+ Simulation.VERSION
 			+ "\n"
-    		+ "                   2021";
+    		+ "                   2022";
 
 	private static final int DEFAULT_WIDTH = 1024;
 	private static final int DEFAULT_HEIGHT = 600;
