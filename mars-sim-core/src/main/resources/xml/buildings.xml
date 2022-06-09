@@ -578,8 +578,6 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="carbon dioxide" rate="40.0" ambient="false" />
 				</process>
 
-
-
 				<!-- Activity spot for toggling resource process on and off. -->
 				<activity>
 					<activity-spot xloc="-0.9" yloc="-2.49" />
@@ -816,7 +814,6 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</research>
 
 			<resource-processing power-down-level="0.0">
-			<!-- CO2 pump will make use of Solid Oxide Electrolysis Cell: Yttria-Stabilized Zirconia (YSZ) -->
 				<process name="Carbon Dioxide Pump" power-required="1.0" default="off">
 					<input resource="carbon dioxide" rate="100.0" ambient="true" />
 					<output resource="carbon dioxide" rate="100.0" ambient="false" />

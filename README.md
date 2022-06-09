@@ -213,7 +213,7 @@ For windows platform, choose MSI version that will automatically set up the envi
 
 ### OS Platforms
 
-Assuming that OpenJDK 11 is being used
+Assuming that OpenJDK 11 is being used.
 
 #### Linux
 
@@ -288,29 +288,24 @@ your machine, JCP won't be able to recognize them.
 6. To track what versions of openjdk have been installed on your machine.
 Use [JDKMon](https://harmoniccode.blogspot.com/2021/04/friday-fun-lxiii-jdkmon.html).
 
----
-
-## Remote Console Connection
+### Remote Console Connection
 
 To set up true headless mode in your platform, follow the steps in this
 [wiki](https://github.com/mars-sim/mars-sim/wiki/Remote-Console-Connection).
 
----
 
-## Outreach
+### Outreach
 Feel free to use our [Facebook community](https://www.facebook.com/groups/125541663548/)
 to discuss relevant topics with regard to the development of mars-sim. See also
 old/archived [SF discussions](https://sourceforge.net/p/mars-sim/discussion/).
 
----
 
-## Discussions
+### Discussions
 Feel free to start a thread on a particular topic at our GitHub
 [Discussion](https://github.com/mars-sim/mars-sim/discussions) page.
 
----
 
-## Issues/Tickets
+### Issues/Tickets
 * Current : [GH Issues](https://github.com/mars-sim/mars-sim/issues)
 * Past/Archived : [SF Issues](https://sourceforge.net/p/mars-sim/tickets/search/?q=status%3Awont-fix+or+status%3Aclosed)
 
@@ -356,39 +351,31 @@ a JVM be created but it fails to load MainScene. In Windows OS, you may hit Ctrl
 scroll down to see any "orphaned" instances of `Java(TM) Platform SE binary` running in the background. Be sure you
 clear them off the memory by right-clicking on it and choosing `End Task`.
 
----
 
-## How to contribute
+### How to contribute
 We welcome anyone to contribute to mars-sim in terms of ideas, concepts and coding. If you would like to contribute
 to coding, see this [wiki](https://github.com/mars-sim/mars-sim/wiki/Development-Environment) for developers.
 Also, we will answer your questions in our [Gitter chatroom](https://gitter.im/mokun/mars-sim).
 
----
 
-
-## Website
+### Website
 For a more detail description of this project, see our [project website](https://mars-sim.github.io/).
 
----
 
-## Wiki
+### Wiki
 * Check out our [wikis](https://github.com/mars-sim/mars-sim/wiki) at GitHub.
 
----
 
-## Supported Platforms
+### Supported Platforms
 * Windows
 * MacOS
 * Linux
 
----
-
-## Official Codebase
+### Official Codebase
 * https://github.com/mars-sim/mars-sim
 
----
 
-## Download
+### Download
 Check out the most recent pre-release build in the [GitHub's Release Tab](https://github.com/mars-sim/mars-sim/releases).
 
 Also, see the previous and official release version at
@@ -398,9 +385,8 @@ If you like, click on the SF's button below to automatically sense the correct O
 
 [![Download Mars Simulation Project](https://a.fsdn.com/con/app/sf-download-button)](https://sourceforge.net/projects/mars-sim/files/latest/download)
 
----
 
-## License
+### License
 This project is licensed under the terms of the GPL v3.0 license.
 <!--stackedit_data:
 eyJoaXN0b3J5IjpbMjAwMTcyNzM3OCwtODY5ODg0NTgwXX0=
