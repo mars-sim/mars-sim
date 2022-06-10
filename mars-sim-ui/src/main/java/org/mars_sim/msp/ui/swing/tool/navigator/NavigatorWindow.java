@@ -32,9 +32,6 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
-import javax.swing.border.BevelBorder;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.LineBorder;
 
 import org.mars_sim.mapdata.MapDataUtil;
 import org.mars_sim.msp.core.Coordinates;
@@ -77,7 +74,6 @@ import com.alee.laf.label.WebLabel;
 import com.alee.laf.menu.WebCheckBoxMenuItem;
 import com.alee.laf.menu.WebPopupMenu;
 import com.alee.laf.panel.WebPanel;
-import com.alee.laf.text.WebTextField;
 import com.alee.managers.style.StyleId;
 
 /**
@@ -95,7 +91,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 	public static final int HORIZONTAL_FULL = HORIZONTAL_SURFACE_MAP * 2;
 	public static final int HORIZONTAL_LEFT_HALF = HORIZONTAL_SURFACE_MAP; 
 	public static final int HEIGHT_BUTTON_PANE = 26;
-	public static final int HEIGHT = (int)(HORIZONTAL_SURFACE_MAP + 3.5 * HEIGHT_BUTTON_PANE);
+	public static final int HEIGHT = 400; //(int)(HORIZONTAL_SURFACE_MAP + 3.5 * HEIGHT_BUTTON_PANE);
 	
 	public static final int CB_WIDTH = 120;
 
@@ -127,12 +123,12 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 	private GlobeDisplay globeNav;
 	/** Compass navigation buttons. */
 	// private NavButtonDisplay navButtons;
-	/** Topographical and distance legend. */
-	private LegendDisplay ruler;
-	/** Latitude entry. */
-	private WebTextField latText;
-	/** Longitude entry. */
-	private WebTextField longText;
+//	/** Topographical and distance legend. */
+//	private LegendDisplay ruler;
+//	/** Latitude entry. */
+//	private WebTextField latText;
+//	/** Longitude entry. */
+//	private WebTextField longText;
 	/** Latitude direction choice. */
 	private JComboBoxMW<?> latDir;
 	/** Longitude direction choice. */
@@ -202,8 +198,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		this.landmarks = mars.getSurfaceFeatures().getLandmarks();
 		this.unitManager = sim.getUnitManager();
 
-		setPreferredSize(new Dimension(HORIZONTAL_FULL + 10, HEIGHT));
-		setMaximumSize(getPreferredSize());
+//		setPreferredSize(new Dimension(HORIZONTAL_FULL, HEIGHT));
+//		setMaximumSize(getPreferredSize());
 		
 		// Prepare content pane		
 		JPanel contentPane = new JPanel(new BorderLayout(0, 0));
@@ -211,25 +207,25 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		
 		// Prepare whole pane
 		JPanel wholePane = new JPanel(new GridLayout(1, 2));
-		wholePane.setPreferredSize(new Dimension(HORIZONTAL_FULL + 10, HEIGHT));
+//		wholePane.setMaximumSize(new Dimension(HORIZONTAL_FULL, HEIGHT));
 //		wholePane.setLayout(new BoxLayout(wholePane, BoxLayout.Y_AXIS));
 		contentPane.add(wholePane, BorderLayout.CENTER);
 
 		JPanel leftPane = new JPanel(new BorderLayout(0, 0));
-		leftPane.setPreferredSize(new Dimension(HORIZONTAL_LEFT_HALF + 5, HORIZONTAL_SURFACE_MAP + 5 + HEIGHT_BUTTON_PANE));
+		leftPane.setMaximumSize(new Dimension(HORIZONTAL_LEFT_HALF, HORIZONTAL_SURFACE_MAP));
 		wholePane.add(leftPane);
 		
 		// Prepare globe display
 		globeNav = new GlobeDisplay(this);
 		WebPanel globePane = new WebPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
-		globePane.setPreferredSize(new Dimension(HORIZONTAL_LEFT_HALF + 5, HORIZONTAL_SURFACE_MAP + 5 + HEIGHT_BUTTON_PANE));
+		globePane.setMaximumSize(new Dimension(HORIZONTAL_LEFT_HALF, HORIZONTAL_SURFACE_MAP));
 		globePane.setBackground(Color.black);
 		globePane.setOpaque(true);
-		globePane.setBorder(new CompoundBorder(new BevelBorder(BevelBorder.LOWERED), new LineBorder(Color.gray)));
+//		globePane.setBorder(new CompoundBorder(new BevelBorder(BevelBorder.LOWERED), new LineBorder(Color.gray)));
 		globePane.add(globeNav);
 
 		globePane.setAlignmentX(Component.CENTER_ALIGNMENT);
-		globePane.setAlignmentY(Component.CENTER_ALIGNMENT);
+		globePane.setAlignmentY(Component.TOP_ALIGNMENT);
 		leftPane.add(globePane, BorderLayout.CENTER);
 
 		
@@ -237,13 +233,13 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 
 		
 		JPanel rightPane = new JPanel(new BorderLayout(0, 0));
-		rightPane.setPreferredSize(new Dimension(HORIZONTAL_SURFACE_MAP  + 5, HORIZONTAL_SURFACE_MAP + 5 + HEIGHT_BUTTON_PANE));
+//		rightPane.setMaximumSize(new Dimension(HORIZONTAL_SURFACE_MAP, HORIZONTAL_SURFACE_MAP + HEIGHT_BUTTON_PANE));
 		wholePane.add(rightPane);
 	
 		WebPanel detailPane = new WebPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
 		rightPane.add(detailPane, BorderLayout.CENTER);
 		
-		detailPane.setPreferredSize(new Dimension(HORIZONTAL_SURFACE_MAP + 5, HORIZONTAL_SURFACE_MAP + 5 + HEIGHT_BUTTON_PANE));
+//		detailPane.setMaximumSize(new Dimension(HORIZONTAL_SURFACE_MAP, HORIZONTAL_SURFACE_MAP + HEIGHT_BUTTON_PANE));
 		// detailPane.setBorder( new CompoundBorder(new BevelBorder(BevelBorder.LOWERED), new LineBorder(Color.gray)));
 //		detailPane.setBackground(Color.black);
 //		detailPane.setOpaque(true);
@@ -251,16 +247,16 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		mapPaneInner = new WebPanel(new BorderLayout(0, 0));
 		detailPane.add(mapPaneInner);
 		
-		mapPaneInner.setBorder(new CompoundBorder(new BevelBorder(BevelBorder.LOWERED), new LineBorder(Color.gray)));
+//		mapPaneInner.setBorder(new CompoundBorder(new BevelBorder(BevelBorder.LOWERED), new LineBorder(Color.gray)));
 		mapPaneInner.setBackground(Color.black);
-		mapPaneInner.setPreferredSize(new Dimension(HORIZONTAL_SURFACE_MAP + 5, HORIZONTAL_SURFACE_MAP + 5 + HEIGHT_BUTTON_PANE));
+//		mapPaneInner.setMaximumSize(new Dimension(HORIZONTAL_SURFACE_MAP, HORIZONTAL_SURFACE_MAP + HEIGHT_BUTTON_PANE));
 		mapPaneInner.setOpaque(true);
 		mapPaneInner.setAlignmentX(CENTER_ALIGNMENT);
 		mapPaneInner.setAlignmentY(TOP_ALIGNMENT);
 		// mapPaneInner.setCursor(new Cursor(java.awt.Cursor.DEFAULT_CURSOR));
 
 		mapLayerPanel = new MapPanel(desktop, 500L);
-		mapLayerPanel.setPreferredSize(new Dimension(HORIZONTAL_SURFACE_MAP + 5, HORIZONTAL_SURFACE_MAP + 5 + HEIGHT_BUTTON_PANE));
+//		mapLayerPanel.setMaximumSize(new Dimension(HORIZONTAL_SURFACE_MAP, HORIZONTAL_SURFACE_MAP + HEIGHT_BUTTON_PANE));
 		mapLayerPanel.setNavWin(this);
 		mapLayerPanel.addMouseListener(new MouseListener());
 		mapLayerPanel.addMouseMotionListener(new MouseMotionListener());
@@ -293,11 +289,10 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		setMapLayer(false, 0, shadingLayer);
 		globeNav.setDayNightTracking(false);
 		
-		
 		///////////////////////////////////////////////////////////////////////////
 		
 
-		// Prepare position entry panel
+		// Prepare position coordination entry panel on the left pane
 		WebPanel coordPane = new WebPanel(new GridLayout(1, 6, 0, 0));
 		coordPane.setAlignmentX(Component.CENTER_ALIGNMENT);
 		coordPane.setAlignmentY(Component.BOTTOM_ALIGNMENT);
@@ -305,7 +300,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		leftPane.add(coordPane, BorderLayout.SOUTH);
 		
 		// coordPane.setBorder(new EmptyBorder(6, 6, 3, 3));
-		coordPane.setMaximumHeight(HEIGHT_BUTTON_PANE);
+//		coordPane.setMaximumHeight(HEIGHT_BUTTON_PANE);
+//		coordPane.setPreferredHeight(HEIGHT_BUTTON_PANE);
 //		coordPane.setMaximumSize(new Dimension(300, HEIGHT_BUTTON_PANE));
 		coordPane.setAlignmentX(Component.CENTER_ALIGNMENT);
 		coordPane.setAlignmentY(Component.TOP_ALIGNMENT);
@@ -339,7 +335,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		};
 		latDir = new JComboBoxMW<Object>(latStrings);
 		latDir.setEditable(false);
-		latDir.setPreferredSize(new Dimension(20, -1));
+		latDir.setSize(new Dimension(20, -1));
 		coordPane.add(latDir);
 
 		// Prepare longitude entry components
@@ -358,15 +354,17 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		};
 		longDir = new JComboBoxMW<Object>(longStrings);
 		longDir.setEditable(false);
-		longDir.setPreferredSize(new Dimension(20, -1));
+		longDir.setSize(new Dimension(20, -1));
 		coordPane.add(longDir);
 
-		// Prepare options panel
+		///////////////////////////////////////////////////////////////////////////
+		
+		// Prepare options panel on the right pane
 		WebPanel optionsPane = new WebPanel(new GridLayout(1, 3));
 //		controlPane.add(optionsPane);
 		rightPane.add(optionsPane, BorderLayout.SOUTH);
 		
-		optionsPane.setPreferredHeight(HEIGHT_BUTTON_PANE);
+//		optionsPane.setPreferredHeight(HEIGHT_BUTTON_PANE);
 //		optionsPane.setMaximumSize(new Dimension(300, HEIGHT_BUTTON_PANE));
 		optionsPane.setAlignmentX(Component.CENTER_ALIGNMENT);
 		optionsPane.setAlignmentY(Component.BOTTOM_ALIGNMENT);
@@ -1005,7 +1003,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
          popOver.setPadding(2);
          popOver.setTitle(landmark.getLandmarkName());
          
-         final WebPanel c = new WebPanel(StyleId.panelTransparent, new BorderLayout(5,5));
+         final WebPanel c = new WebPanel(StyleId.panelTransparent, new BorderLayout(5, 5));
 
          final WebLabel l = new WebLabel(landmark.getLandmarkLandingLocation(), WebLabel.CENTER);
          c.add(l, BorderLayout.NORTH);
@@ -1030,9 +1028,9 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		longCB = null;
 		mapLayerPanel = null;
 		globeNav = null;
-		ruler = null;
-		latText = null;
-		longText = null;
+//		ruler = null;
+//		latText = null;
+//		longText = null;
 		latDir = null;
 		longDir = null;
 		goThere = null;

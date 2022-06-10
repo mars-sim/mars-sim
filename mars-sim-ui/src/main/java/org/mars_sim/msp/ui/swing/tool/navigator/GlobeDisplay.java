@@ -350,7 +350,7 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 		// Image starfield = ImageLoader.getImage("starfield.gif"); //TODO: localize
 		g2d.drawImage(starfield, 0, 0, Color.black, null);
 
-		// Draw real or topo globe
+		// Draw real, topo or geo globe
 		MarsMap globe = null;
 		
 		if (mapType == 0) {
