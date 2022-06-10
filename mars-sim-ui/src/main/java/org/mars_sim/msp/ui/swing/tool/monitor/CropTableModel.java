@@ -92,7 +92,7 @@ public class CropTableModel extends UnitTableModel {
 	private Map<Integer, String> catMap;
 
 	private Settlement commanderSettlement;
-	private Settlement settlement;
+	private Settlement selectedSettlement;
 
 	private static UnitManager unitManager = Simulation.instance().getUnitManager();
 
@@ -103,7 +103,7 @@ public class CropTableModel extends UnitTableModel {
 	 * @param unitManager Unit manager that holds settlements.
 	 */
 	public CropTableModel() throws Exception {
-		super(Msg.getString("CropTableModel.tabName"), //$NON-NLS-1$
+		super (Msg.getString("CropTableModel.tabName"), //$NON-NLS-1$
 				"CropTableModel.countingCrops", //$NON-NLS-1$
 				columnNames, columnTypes);
 
@@ -114,33 +114,53 @@ public class CropTableModel extends UnitTableModel {
 		if (GameManager.getGameMode() == GameMode.COMMAND) {
 			mode = GameMode.COMMAND;
 			commanderSettlement = unitManager.getCommanderSettlement();
+			paddedSettlements.add(commanderSettlement);
 			addUnit(commanderSettlement);
 		}
 		else {
-			setSource(unitManager.getSettlements());
+			paddedSettlements.addAll(unitManager.getSettlements());
+			setSource(paddedSettlements);
 		}
 
 		init();
+		
+		addBuildings();
 	}
 
 	public CropTableModel(Settlement settlement) throws Exception {
-		super(Msg.getString("CropTableModel.tabName"), //$NON-NLS-1$
+		super (Msg.getString("CropTableModel.tabName"), //$NON-NLS-1$
 				"CropTableModel.countingCrops", //$NON-NLS-1$
 				columnNames, columnTypes);
 
-		this.settlement = settlement;
+		selectedSettlement = settlement;
 		totalNumCropMap = new ConcurrentHashMap<>();
 		buildings = new ArrayList<>();
 		paddedSettlements = new ArrayList<>();
-
-		addUnit(settlement);
-
+		
+		paddedSettlements.add(selectedSettlement);
+		addUnit(selectedSettlement);
+		
 		init();
+		
+		addBuildings();
+	}
+	
+	public void addBuildings() {
+		Iterator<Settlement> i = paddedSettlements.iterator();
+		while (i.hasNext()) {
+			Settlement s = i.next();
+			List<Building> ghs = s.getBuildingManager().getBuildings(FunctionType.FARMING);
+			Collections.sort(ghs);
+			Iterator<Building> j = ghs.iterator();
+			while (j.hasNext()) {
+				Building b = j.next();
+				if (!buildings.contains(b))
+					buildings.add(b);
+			}
+		}
 	}
 
 	public void init() {
-		updateMaps();
-
 		unitManagerListener = new LocalUnitManagerListener();
 		unitManager.addUnitManagerListener(unitManagerListener);
 
@@ -159,7 +179,7 @@ public class CropTableModel extends UnitTableModel {
 		paddedSettlements.clear();
 		buildings.clear();
 
-		List<Settlement> settlements = new ArrayList<Settlement>();
+		List<Settlement> settlements = new ArrayList<>();
 
 		if (mode == GameMode.COMMAND) {
 			settlements.add(commanderSettlement);
@@ -169,18 +189,18 @@ public class CropTableModel extends UnitTableModel {
 			Collections.sort(settlements);
 		}
 
-		Iterator<Settlement> i = settlements.iterator();
-		while (i.hasNext()) {
-			Settlement s = i.next();
-			List<Building> ghs = s.getBuildingManager().getBuildings(FunctionType.FARMING);
-			Collections.sort(ghs);
-			Iterator<Building> j = ghs.iterator();
-			while (j.hasNext()) {
-				Building b = j.next();
-				paddedSettlements.add(s);
-				buildings.add(b);
-			}
+		if (selectedSettlement != null) {
+			paddedSettlements.add(selectedSettlement);
+			addUnit(selectedSettlement);	
 		}
+		else {
+			paddedSettlements.addAll(unitManager.getSettlements());
+			setSource(paddedSettlements);
+		}
+		
+		paddedSettlements.addAll(settlements);
+		
+		addBuildings();
 	}
 
 	/**
@@ -226,7 +246,7 @@ public class CropTableModel extends UnitTableModel {
 				switch (columnIndex) {
 
 				case SETTLEMENT_NAME: {
-					String i = paddedSettlements.get(rowIndex).getName();
+					String i = buildings.get(rowIndex).getSettlement().getName();
 					result = (Object) i;
 				}
 					break;
@@ -314,7 +334,7 @@ public class CropTableModel extends UnitTableModel {
 	 * @param Unit newUnit
 	 * @return an Integer List
 	 */
-	public List<Integer> setUpNewCropCache(Building b) {// Unit newUnit) {
+	public List<Integer> setUpNewCropCache(Building b) {
 
 		List<Integer> intList = new ArrayList<Integer>(numCropCat);
 		// initialize the intList
@@ -450,19 +470,7 @@ public class CropTableModel extends UnitTableModel {
 	protected void addUnit(Unit newUnit) {
 		if (cropCatMap == null)
 			cropCatMap = new ConcurrentHashMap<>();
-		// if cropCache does not a record of the settlement
-		if (!paddedSettlements.contains(newUnit)) {
-			try {// Setup a cropCache and cropMap in CropTableModel
-				// All crops are to be newly added to the settlement
-				updateMaps();
 
-				for (Building b : buildings) {
-					List<Integer> cropCache = setUpNewCropCache(b);
-					cropCatMap.put(b, cropCache);
-				}
-			} catch (Exception e) {
-			}
-		}
 		super.addUnit(newUnit);
 	}
 
@@ -472,17 +480,13 @@ public class CropTableModel extends UnitTableModel {
 	 * @param oldUnit Unit to remove from the model.
 	 */
 	protected void removeUnit(Unit oldUnit) {
-		if (paddedSettlements.contains(oldUnit)) {
+		updateMaps();
 
-			updateMaps();
-
-			for (Building b : buildings) {
-				if (b.getSettlement().equals(oldUnit))
-					cropCatMap.remove(b);
+		for (Building b : buildings) {
+			if (b.getSettlement().equals(oldUnit)) {
+				cropCatMap.remove(b);
+				buildings.remove(b);
 			}
-
-			buildings.remove(oldUnit);
-
 		}
 
 		super.removeUnit(oldUnit);
@@ -504,7 +508,7 @@ public class CropTableModel extends UnitTableModel {
 
 	@Override
 	public Unit getUnit(int row) {
-		return (Unit) paddedSettlements.get(row);
+		return (Unit) buildings.get(row).getSettlement();
 	}
 
 	/**

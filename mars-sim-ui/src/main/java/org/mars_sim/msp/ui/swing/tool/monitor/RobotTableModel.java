@@ -205,10 +205,11 @@ public class RobotTableModel extends UnitTableModel {
 	 *                      displayed?
 	 */
 	public RobotTableModel(Settlement settlement, boolean allAssociated) throws Exception {
-		super((allAssociated ? Msg.getString("RobotTableModel.nameAssociatedRobots", //$NON-NLS-1$
-				settlement.getName())
+		super ((allAssociated ? Msg.getString("RobotTableModel.nameAssociatedRobots") //$NON-NLS-1$
+//					settlement.getName())
 				: Msg.getString("RobotTableModel.nameRobots", //$NON-NLS-1$
-						settlement.getName())),
+					settlement.getName())
+				),
 				(allAssociated ? "RobotTableModel.countingRobots" : //$NON-NLS-1$
 						"RobotTableModel.countingResidents" //$NON-NLS-1$
 				), columnNames, columnTypes);

@@ -216,10 +216,11 @@ public class PersonTableModel extends UnitTableModel {
 	 *                      displayed?
 	 */
 	public PersonTableModel(Settlement settlement, boolean allAssociated) throws Exception {
-		super((allAssociated ? Msg.getString("PersonTableModel.nameAllCitizens", //$NON-NLS-1$
-						settlement.getName())
+		super ((allAssociated ? Msg.getString("PersonTableModel.nameAllCitizens") //$NON-NLS-1$
+//						settlement.getName())
 							 : Msg.getString("PersonTableModel.nameIndoor", //$NON-NLS-1$
-						settlement.getName())),
+						settlement.getName())
+							 ),
 				(allAssociated ? "PersonTableModel.countingCitizens" : //$NON-NLS-1$
 								 "PersonTableModel.countingIndoor"), //$NON-NLS-1$
 									columnNames, columnTypes);
