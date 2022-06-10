@@ -47,7 +47,7 @@ public abstract class HistoricalEvent implements Serializable {
 
 	/**
 	 * Construct an event with the appropriate information. The time is not defined
-	 * until the evnet is registered with the Event Manager.
+	 * until the event is registered with the Event Manager.
 	 * 
 	 * @param category    {@link HistoricalEventCategory} Category of event.
 	 * @param type        {@link EventType} Type of event.

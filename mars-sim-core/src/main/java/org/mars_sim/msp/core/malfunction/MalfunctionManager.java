@@ -443,7 +443,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 		}
 
 		// Meteorite override the event type
-		if (malfunction.getName().equalsIgnoreCase(MalfunctionFactory.METEORITE_IMPACT_DAMAGE)) {
+		if (malfunction.getMalfunctionMeta().getName().contains(MalfunctionFactory.METEORITE_IMPACT_DAMAGE)) {
 			eventType = EventType.MALFUNCTION_ACT_OF_GOD;
 		}
 
