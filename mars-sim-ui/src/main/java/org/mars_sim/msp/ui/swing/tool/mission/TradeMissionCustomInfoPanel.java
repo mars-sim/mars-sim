@@ -17,11 +17,11 @@ import java.util.Map;
 
 import javax.swing.table.AbstractTableModel;
 
+import org.mars_sim.msp.core.goods.Good;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
 import org.mars_sim.msp.core.person.ai.mission.MissionEventType;
 import org.mars_sim.msp.core.person.ai.mission.Trade;
-import org.mars_sim.msp.core.structure.goods.Good;
 
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;

@@ -5,7 +5,7 @@
  * @author Scott Davis
  */
 
-package org.mars_sim.msp.core.structure.goods;
+package org.mars_sim.msp.core.goods;
 
 /**
  * Interface for a credit event listener.

@@ -5,7 +5,7 @@
  * @author Manny Kung
  */
 
-package org.mars_sim.msp.core.foodProduction;
+package org.mars_sim.msp.core.food;
 
 import java.io.Serializable;
 import java.util.ArrayList;

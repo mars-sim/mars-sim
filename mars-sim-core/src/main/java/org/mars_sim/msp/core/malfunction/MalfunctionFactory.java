@@ -295,11 +295,11 @@ public final class MalfunctionFactory implements Serializable {
 	 * @param malfunctionName
 	 * @return {@link Malfunction}
 	 */
-	public static MalfunctionMeta getMalfunctionByname(String malfunctionName) {
+	public static MalfunctionMeta getMalfunctionByName(String malfunctionName) {
 		MalfunctionMeta result = null;
 
 		for (MalfunctionMeta m : mc.getMalfunctionList()) {
-			if (m.getName().equals(malfunctionName))
+			if (m.getName().equalsIgnoreCase(malfunctionName))
 				result = m;
 		}
 

@@ -51,7 +51,6 @@ import org.mars_sim.msp.ui.swing.sound.AudioPlayer;
 import org.mars_sim.msp.ui.swing.tool.commander.CommanderWindow;
 import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
 import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
-import org.mars_sim.msp.ui.swing.tool.monitor.EventTableModel;
 import org.mars_sim.msp.ui.swing.tool.monitor.MonitorWindow;
 import org.mars_sim.msp.ui.swing.tool.monitor.UnitTableModel;
 import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
@@ -163,10 +162,6 @@ public class MainDesktopPane extends JDesktopPane
 		moveToBack(backgroundLabel);
 		// Initialize firstDisplay to true
 		firstDisplay = true;
-//		// Set background paper size
-//		Dimension selectedSize = mainWindow.getSelectedSize();
-//		if (selectedSize != null)
-//			setPreferredSize(new Dimension(selectedSize.width - 20, selectedSize.height - 35));
 		// Prep listeners
 		prepareListeners();
 
@@ -182,6 +177,20 @@ public class MainDesktopPane extends JDesktopPane
 		
 		// Add clock listener with a minimum duration of 1s
 		sim.getMasterClock().addClockListener(this, 1000L);
+		
+		// Set background paper size
+		Dimension selectedSize = mainWindow.getSelectedSize();
+		if (selectedSize != null) {
+			int w = selectedSize.width - 20;
+			int h = selectedSize.height - 35;
+			setSize(new Dimension(w, h));
+			setPreferredSize(new Dimension(w, h));
+			logger.config("The background image is set to " 
+					+ w  
+					+ " x "
+					+ h
+					+ ".");	
+		}
 	}
 
 	/**
@@ -283,7 +292,6 @@ public class MainDesktopPane extends JDesktopPane
 		UnitManager unitManager = sim.getUnitManager();
 		unitManager.addUnitManagerListener(this);
 
-		// Add addUnitListener()
 		Collection<Settlement> settlements = unitManager.getSettlements();
 
 		// Attach UnitListener to each settlement

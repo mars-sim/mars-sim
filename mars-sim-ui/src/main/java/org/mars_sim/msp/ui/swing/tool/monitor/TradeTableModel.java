@@ -1,12 +1,13 @@
 /*
  * Mars Simulation Project
  * TradeTableModel.java
- * @date 2021-11-15
+ * @date 2022-05-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
 import java.util.ArrayList;
+
 import java.util.Iterator;
 import java.util.List;
 
@@ -24,20 +25,20 @@ import org.mars_sim.msp.core.UnitManagerEventType;
 import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.equipment.EquipmentType;
+import org.mars_sim.msp.core.goods.Good;
+import org.mars_sim.msp.core.goods.GoodsUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.goods.Good;
-import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.vehicle.VehicleType;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
+
 @SuppressWarnings("serial")
-public class TradeTableModel
-extends AbstractTableModel
+public class TradeTableModel extends AbstractTableModel
 implements UnitListener, MonitorModel, UnitManagerListener {
 
 	private static final String TRADE_GOODS = "Good(s)";
 	private static final String TRADE_NAME = "Name";
-	private static final String QUANTITY = "kg/# - ";
+	private static final String QUANTITY = "# or kg - ";
 	private static final String VP_AT = "Value - ";
 	private static final String PRICE_AT = "Price - ";
 	private static final String CATEGORY = "Category";
@@ -46,24 +47,31 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 	private static final String ONE_SPACE = " ";
 
 	protected static final int NUM_INITIAL_COLUMNS = 3;
-	private static final int NUM_DATA_COL = 3;
+	protected static final int NUM_DATA_COL = 3;
 
 	// Data members
 	private List<Good> goodsList;
-	private List<Settlement> settlements;
+	private List<Settlement> settlements = new ArrayList<>();
 
 	protected static UnitManager unitManager = Simulation.instance().getUnitManager();
 
 	/**
-	 * Constructor.
+	 * Constructor 2.
 	 */
-	public TradeTableModel() {
-
+	public TradeTableModel(Settlement selectedSettlement) {
+	
 		// Initialize goods list.
 		goodsList = GoodsUtil.getGoodsList();
-
+		
 		// Initialize settlements.
-		settlements = new ArrayList<Settlement>(unitManager.getSettlements());
+//		if (GameManager.getGameMode() == GameMode.COMMAND) {
+//			Settlement commanderSettlement = unitManager.getCommanderSettlement();
+//			settlements.add(commanderSettlement);
+//		}
+//		else {
+//			settlements.addAll(unitManager.getSettlements());
+			settlements.add(selectedSettlement);
+//		}
 
 		// Add table as listener to each settlement.
 		Iterator<Settlement> i = settlements.iterator();
@@ -72,7 +80,7 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 		// Add as unit manager listener.
 		unitManager.addUnitManagerListener(this);
 	}
-
+	
 	/**
 	 * Catch unit update event.
 	 *
@@ -85,20 +93,6 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 		}
 	}
 
-	/**
-	 * Prepares the model for deletion.
-	 */
-	@Override
-	public void destroy() {
-		// Remove as listener for all settlements.
-		Iterator<Settlement> i = settlements.iterator();
-		while (i.hasNext()) i.next().removeUnitListener(this);
-
-		// Remove as listener to unit manager.
-		unitManager.removeUnitManagerListener(this);
-
-		unitManager = null;
-	}
 
 	/**
 	 * Gets the model count string.
@@ -171,15 +165,6 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 			return String.class;
 		else {
 			return Double.class;
-//			int col = columnIndex - NUM_INITIAL_COLUMNS;
-//			int r = col % NUM_DATA_COL;
-//			if (r == 0)
-//				// Note: if using Number.class, this column will NOT be able to sort
-//				return Number.class;
-//			else if (r == 1)
-//				return Double.class;
-//			else
-//				return Double.class;
 		}
 	}
 
@@ -192,6 +177,7 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 	}
 
 	public Object getValueAt(int rowIndex, int columnIndex) {
+		
 		if (columnIndex == 0) {
 			return Conversion.capitalize(goodsList.get(rowIndex).getName());
 		}
@@ -251,6 +237,23 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 		return good.getCategory().getMsgKey();
 	}
 
+	/**
+	 * Prepares the model for deletion.
+	 */
+	@Override
+	public void destroy() {
+		// Remove as listener for all settlements.
+		Iterator<Settlement> i = settlements.iterator();
+		while (i.hasNext()) i.next().removeUnitListener(this);
+
+		// Remove as listener to unit manager.
+		unitManager.removeUnitManagerListener(this);
+		
+		goodsList = null;
+//		settlements = null;
+		unitManager = null;
+	}
+	
 	/**
 	 * Inner class for updating goods table.
 	 */

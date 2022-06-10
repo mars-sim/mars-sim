@@ -1377,10 +1377,13 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	@Override
 	public void clockPulse(ClockPulse pulse) {
 		if (isVisible() || isShowing()) {
-			// THis can be removed once uiPulse is collapsed into timePulse
+			// This can be removed once uiPulse is collapsed into timePulse
 			MarsClock marsClock = pulse.getMarsTime();
 			if (marsClock.isStable() && bannerBar != null && weatherButtons[0] != null) {
 				Settlement s = (Settlement) settlementListBox.getSelectedItem();
+				// When loading from a saved sim, s may be initially null
+				if (s == null) 
+					return;
 				displayBanner(s);
 				updateIcon();
 				updateSunData(pulse, s);

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * FoodInventoryTableModel.java
- * @date 2021-10-21
+ * @date 2022-05-27
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
@@ -13,8 +13,10 @@ import java.util.List;
 import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
-import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.GameManager.GameMode;
+import org.mars_sim.msp.core.food.Food;
+import org.mars_sim.msp.core.food.FoodUtil;
+import org.mars_sim.msp.core.goods.Good;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
@@ -26,26 +28,28 @@ import org.mars_sim.msp.core.UnitManagerEvent;
 import org.mars_sim.msp.core.UnitManagerEventType;
 import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.UnitType;
-import org.mars_sim.msp.core.foodProduction.Food;
-import org.mars_sim.msp.core.foodProduction.FoodUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.goods.Good;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 
 @SuppressWarnings("serial")
 public class FoodInventoryTableModel extends AbstractTableModel
-		implements UnitListener, MonitorModel, UnitManagerListener {
-
-	private static final int STARTING_COLUMN = 2;
+implements UnitListener, MonitorModel, UnitManagerListener {
 
 	private static final String FOOD_ITEMS = " Food Items";
-
+	private static final String MASS = "kg - ";
+	private static final String VP_AT = "Value - ";
+	private static final String PRICE_AT = "Price - ";
+	private static final String TYPE = "Type";
+	
+	protected static final int NUM_INITIAL_COLUMNS = 2;
+	protected static final int NUM_DATA_COL = 3;
+	
 	private GameMode mode;
 
 	// Data members
 	private List<Food> foodList;
-	private List<Settlement> settlements = new ArrayList<Settlement>();
+	private List<Settlement> settlements = new ArrayList<>();
 
 	private Settlement commanderSettlement;
 
@@ -54,27 +58,27 @@ public class FoodInventoryTableModel extends AbstractTableModel
 	/**
 	 * Constructor.
 	 */
-	public FoodInventoryTableModel() {
+	public FoodInventoryTableModel(Settlement selectedSettlement) {
 
 		// Initialize food list.
 		foodList = FoodUtil.getFoodList();
 
 		// Initialize settlements.
-		if (GameManager.getGameMode() == GameMode.COMMAND) {
-			commanderSettlement = unitManager.getCommanderSettlement();
-			settlements.add(commanderSettlement);
-		}
-		else
-			settlements.addAll(unitManager.getSettlements());
-
+//		if (GameManager.getGameMode() == GameMode.COMMAND) {
+//			commanderSettlement = unitManager.getCommanderSettlement();
+//			settlements.add(commanderSettlement);
+//		}
+//		else {
+//			settlements.addAll(unitManager.getSettlements());
+			settlements.add(selectedSettlement);
+//		}
+			
 		// Add table as listener to each settlement.
 		Iterator<Settlement> i = settlements.iterator();
-		while (i.hasNext())
-			i.next().addUnitListener(this);
+		while (i.hasNext()) i.next().addUnitListener(this);
 
 		// Add as unit manager listener.
 		unitManager.addUnitManagerListener(this);
-
 	}
 
 	/**
@@ -150,6 +154,23 @@ public class FoodInventoryTableModel extends AbstractTableModel
 		return false;
 	}
 
+//	/**
+//	 * Return the name of the column requested.
+//	 *
+//	 * @param columnIndex Index of column.
+//	 * @return name of specified column.
+//	 */
+//	public String getColumnName(int columnIndex) {
+//		if (columnIndex == 0)
+//			return Msg.getString("FoodInventoryTableModel.firstColumn");
+//		else if (columnIndex == 1)
+//			return "Type";
+//		else  {
+//			return Msg.getString("FoodInventoryTableModel.settlementColumns",
+//					settlements.get(columnIndex - STARTING_COLUMN).getName());
+//		}
+//	}
+	
 	/**
 	 * Return the name of the column requested.
 	 *
@@ -157,13 +178,20 @@ public class FoodInventoryTableModel extends AbstractTableModel
 	 * @return name of specified column.
 	 */
 	public String getColumnName(int columnIndex) {
-		if (columnIndex == 0)
+		if (columnIndex == 0) 
 			return Msg.getString("FoodInventoryTableModel.firstColumn");
-		else if (columnIndex == 1)
-			return "Type";
-		else  {
-			return Msg.getString("FoodInventoryTableModel.settlementColumns",
-					settlements.get(columnIndex - STARTING_COLUMN).getName());
+		else if (columnIndex == 1) 
+			return TYPE;
+		else {
+			int col = columnIndex - NUM_INITIAL_COLUMNS;
+			int q = col / NUM_DATA_COL;
+			int r = col % NUM_DATA_COL;
+			if (r == 0)
+				return MASS + settlements.get(q).getName();
+			else if (r == 1)
+				return VP_AT + settlements.get(q).getName();
+			else
+				return PRICE_AT + settlements.get(q).getName();
 		}
 	}
 
@@ -174,16 +202,15 @@ public class FoodInventoryTableModel extends AbstractTableModel
 	 * @return Class of specified column.
 	 */
 	public Class<?> getColumnClass(int columnIndex) {
-		if (columnIndex == 0)
+		if (columnIndex < NUM_INITIAL_COLUMNS)
 			return String.class;
-		else if (columnIndex == 1)
-			return String.class;
-		else
+		else {
 			return Double.class;
+		}
 	}
 
 	public int getColumnCount() {
-		return settlements.size() + STARTING_COLUMN;
+		return settlements.size() * NUM_DATA_COL + NUM_INITIAL_COLUMNS;
 	}
 
 	public int getRowCount() {
@@ -192,43 +219,59 @@ public class FoodInventoryTableModel extends AbstractTableModel
 
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		if (columnIndex == 0) {
-			// Capitalize Resource Names
-			Object result = foodList.get(rowIndex).getName();
-			return Conversion.capitalize(result.toString());
+			return Conversion.capitalize(foodList.get(rowIndex).getName());
 		}
 
 		else if (columnIndex == 1) {
-//			FoodType result = getFoodType(foodList.get(rowIndex));
-			Object result = foodList.get(rowIndex).getType();
-			return Conversion.capitalize(result.toString());
+			return Conversion.capitalize(foodList.get(rowIndex).getType());
 		}
 
 		else {
-			try {
-				// Settlement settlement = settlements.get(columnIndex - 1);
-				// Food food = foodList.get(rowIndex);
-				// Inventory inv = settlement.getInventory();
-				// String foodName = food.getName();
-				// AmountResource ar = ResourceUtil.findAmountResource(foodName);
-				// double foodAvailable = inv.getAmountResourceStored(ar, false);
-				return settlements.get(columnIndex - STARTING_COLUMN).getAmountResourceStored(
-						ResourceUtil.findAmountResource(foodList.get(rowIndex).getName()).getID());
-			} catch (Exception e) {
-				return null;
-			}
+			int col = columnIndex - NUM_INITIAL_COLUMNS;
+			int q = col / NUM_DATA_COL;
+			int r = col % NUM_DATA_COL;
+			if (r == 0)
+				return //getQuantity(settlements.get(q), foodList.get(rowIndex).getID());
+					settlements.get(columnIndex - NUM_INITIAL_COLUMNS).getAmountResourceStored(
+					ResourceUtil.findAmountResource(foodList.get(rowIndex).getName()).getID());
+			else if (r == 1)
+				return settlements.get(q).getGoodsManager().getGoodValuePerItem(foodList.get(rowIndex).getID());
+			else
+				return Math.round(settlements.get(q).getGoodsManager().getPricePerItem(foodList.get(rowIndex).getID())*100.0)/100.0;
 		}
+			
+//			try {
+//				// Settlement settlement = settlements.get(columnIndex - 1);
+//				// Food food = foodList.get(rowIndex);
+//				// Inventory inv = settlement.getInventory();
+//				// String foodName = food.getName();
+//				// AmountResource ar = ResourceUtil.findAmountResource(foodName);
+//				// double foodAvailable = inv.getAmountResourceStored(ar, false);
+//				return settlements.get(columnIndex - NUM_INITIAL_COLUMNS).getAmountResourceStored(
+//						ResourceUtil.findAmountResource(foodList.get(rowIndex).getName()).getID());
+//			} catch (Exception e) {
+//				return null;
+//			}
 	}
+	
+	/**
+	 * Prepares the model for deletion.
+	 */
+	@Override
+	public void destroy() {
+		// Remove as listener for all settlements.
+		Iterator<Settlement> i = settlements.iterator();
+		while (i.hasNext()) i.next().removeUnitListener(this);
 
-//	/**
-//	 * gives back the internationalized name of a food's category.
-//	 */
-//	public FoodType getFoodType(Food food) {
-//		return food.getFoodType();
-//	}
-//	public Object getFoodType(Food food) {
-//		return food.getFoodType();
-//	}
-
+		// Remove as listener to unit manager.
+		unitManager.removeUnitManagerListener(this);
+		
+		foodList = null;
+		commanderSettlement = null;
+//		settlements = null;
+		unitManager = null;
+	}
+	
 	/**
 	 * Inner class for updating food table.
 	 */
@@ -244,9 +287,8 @@ public class FoodInventoryTableModel extends AbstractTableModel
 			if (event.getTarget() == null)
 				fireTableDataChanged();
 			else {
-//				foodList = FoodUtil.getFoodList();
 				int rowIndex = foodList.indexOf(event.getTarget());
-				int columnIndex = settlements.indexOf(event.getSource()) + STARTING_COLUMN;
+				int columnIndex = settlements.indexOf(event.getSource()) * NUM_DATA_COL + NUM_INITIAL_COLUMNS;
 				fireTableCellUpdated(rowIndex, columnIndex);
 			}
 		}
@@ -298,22 +340,6 @@ public class FoodInventoryTableModel extends AbstractTableModel
 			}
 		}
 	}
-
-	/**
-	 * Prepares the model for deletion.
-	 */
-	@Override
-	public void destroy() {
-		// Remove as listener for all settlements.
-		Iterator<Settlement> i = settlements.iterator();
-		while (i.hasNext())
-			i.next().removeUnitListener(this);
-
-		// Remove as listener to unit manager.
-		unitManager.removeUnitManagerListener(this);
-
-		foodList = null;
-		settlements = null;
-		unitManager = null;
-	}
 }
+
+

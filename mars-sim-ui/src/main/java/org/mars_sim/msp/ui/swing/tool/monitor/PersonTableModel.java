@@ -99,11 +99,7 @@ public class PersonTableModel extends UnitTableModel {
 	private final static String DEYDRATED = "Deydrated";
 //	private final static String THIRSTY = "Thirsty";
 	private final static String STARVING = "Starving";
-//	private final static String MALE = "male";
-//	private final static String M = "M";
-//	private final static String F = "F";
-//	private final static String WALK = "walk";
-
+	
 	/**
 	 * The static initializer creates the name & type arrays.
 	 */
@@ -112,10 +108,6 @@ public class PersonTableModel extends UnitTableModel {
 		columnTypes = new Class[COLUMNCOUNT];
 		columnNames[NAME] = Msg.getString("PersonTableModel.column.name"); //$NON-NLS-1$
 		columnTypes[NAME] = String.class;
-//		columnNames[GENDER] = Msg.getString("PersonTableModel.column.gender"); //$NON-NLS-1$
-//		columnTypes[GENDER] = String.class;
-//		columnNames[PERSONALITY] = Msg.getString("PersonTableModel.column.personality"); //$NON-NLS-1$
-//		columnTypes[PERSONALITY] = String.class;
 		columnNames[HEALTH] = Msg.getString("PersonTableModel.column.health"); //$NON-NLS-1$
 		columnTypes[HEALTH] = String.class;
 		columnNames[ENERGY] = Msg.getString("PersonTableModel.column.energy"); //$NON-NLS-1$
@@ -154,15 +146,11 @@ public class PersonTableModel extends UnitTableModel {
 
 	private static UnitManager unitManager = Simulation.instance().getUnitManager();
 
-//	private String taskCache = "Relaxing";
-
 	private ValidSourceType sourceType;
 
 	private Crewable vehicle;
 	private Settlement settlement;
 	private Mission mission;
-
-//	private MainDesktopPane desktop;
 
 	private UnitListener crewListener;
 	private UnitListener settlementListener;
@@ -186,7 +174,6 @@ public class PersonTableModel extends UnitTableModel {
 				"PersonTableModel.countingPeople", //$NON-NLS-1$
 				columnNames, columnTypes);
 
-//		this.desktop = desktop;
 		sourceType = ValidSourceType.ALL_PEOPLE;
 
 		if (GameManager.getGameMode() == GameMode.COMMAND)
@@ -229,10 +216,11 @@ public class PersonTableModel extends UnitTableModel {
 	 *                      displayed?
 	 */
 	public PersonTableModel(Settlement settlement, boolean allAssociated) throws Exception {
-		super((allAssociated ? Msg.getString("PersonTableModel.nameCitizens", //$NON-NLS-1$
-						settlement.getName())
+		super ((allAssociated ? Msg.getString("PersonTableModel.nameAllCitizens") //$NON-NLS-1$
+//						settlement.getName())
 							 : Msg.getString("PersonTableModel.nameIndoor", //$NON-NLS-1$
-						settlement.getName())),
+						settlement.getName())
+							 ),
 				(allAssociated ? "PersonTableModel.countingCitizens" : //$NON-NLS-1$
 								 "PersonTableModel.countingIndoor"), //$NON-NLS-1$
 									columnNames, columnTypes);

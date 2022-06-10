@@ -11,8 +11,8 @@ import java.util.Arrays;
 
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
+import org.mars_sim.msp.core.goods.GoodsManager;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.goods.GoodsManager;
 
 public class LevelCommand extends AbstractSettlementCommand {
 	public static final ChatCommand LEVEL = new LevelCommand();

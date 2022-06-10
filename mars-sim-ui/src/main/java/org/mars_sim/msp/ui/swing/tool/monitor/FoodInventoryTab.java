@@ -1,13 +1,14 @@
-/**
+/*
  * Mars Simulation Project
- * FoodProductionTab.java
- * @version 3.2.0 2021-06-20
+ * FoodInventoryTab.java
+ * @date 2022-05-27
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
 import javax.swing.SwingUtilities;
 import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManagerEvent;
@@ -16,6 +17,7 @@ import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
+import org.mars_sim.msp.ui.swing.tool.NumberRenderer;
 
 /**
  * This class represents an inventory of food at settlements displayed within
@@ -23,18 +25,38 @@ import org.mars_sim.msp.ui.swing.NumberCellRenderer;
  */
 @SuppressWarnings("serial")
 public class FoodInventoryTab extends TableTab implements UnitManagerListener {
+	
+	/** The minimum number of decimal places to be displayed. */
+	private static final int NUM_DIGITS = 2;
+	
 	/**
 	 * constructor.
 	 *
+	 * @param selectedSettlement
 	 * @param window {@link MonitorWindow} the containing window.
 	 */
-	public FoodInventoryTab(final MonitorWindow window) {
+	public FoodInventoryTab(Settlement selectedSettlement, final MonitorWindow window) {
 		// Use TableTab constructor
-		super(window, new FoodInventoryTableModel(), true, false, MonitorWindow.FOOD_ICON);
-
+		super(window, new FoodInventoryTableModel(selectedSettlement), true, false, MonitorWindow.FOOD_ICON);
+	
 		// Override default cell renderer for format double values.
-		table.setDefaultRenderer(Double.class, new NumberCellRenderer(2));
+//		table.setDefaultRenderer(Double.class, new NumberCellRenderer(2));
 
+		TableColumnModel m = table.getColumnModel();
+		int num = FoodInventoryTableModel.NUM_INITIAL_COLUMNS;
+		int cols = FoodInventoryTableModel.NUM_DATA_COL;
+		for (int i= 0; i < m.getColumnCount(); i++) {
+			if (i >= num) {
+				int col = i - num;
+				if (col % cols == 0)
+					m.getColumn(i).setCellRenderer(NumberRenderer.getIntegerRenderer());
+				else if (col % cols == 1)
+					m.getColumn(i).setCellRenderer(new NumberCellRenderer(NUM_DIGITS, true));
+				else if (col % cols == 2)
+					m.getColumn(i).setCellRenderer(NumberRenderer.getCurrencyRenderer());
+			}
+		}
+		
 		// Add as unit manager listener.
 		Simulation.instance().getUnitManager().addUnitManagerListener(this);
 	}
@@ -51,7 +73,8 @@ public class FoodInventoryTab extends TableTab implements UnitManagerListener {
 				TableColumn column = new TableColumn(table.getColumnCount());
 				column.setHeaderValue(settlement.getName());
 				SwingUtilities.invokeLater(new FoodColumnModifier(column, true));
-			} else if (UnitManagerEventType.REMOVE_UNIT == event.getEventType()) {
+			} 
+			else if (UnitManagerEventType.REMOVE_UNIT == event.getEventType()) {
 				// If settlement is gone, remove from settlement columns.
 				TableColumn column = table.getColumn(settlement.getName());
 				if (column != null) {
@@ -59,7 +82,6 @@ public class FoodInventoryTab extends TableTab implements UnitManagerListener {
 				}
 			}
 		}
-
 	}
 
 	/**

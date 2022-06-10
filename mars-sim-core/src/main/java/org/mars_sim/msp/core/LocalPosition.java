@@ -14,9 +14,8 @@ import java.io.Serializable;
  * This represent a position within the local frame of reference of a Unit, e.g. Vehicle, Building
  */
 public class LocalPosition implements Serializable {
-	/**
-	 *
-	 */
+	
+	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
 	/**

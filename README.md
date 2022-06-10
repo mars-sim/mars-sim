@@ -15,13 +15,13 @@
 
 # mars-sim
 *The Mars Simulation Project* is a Java-based [open source](https://opensource.dev/) project that
-simulates the activities of the first generation of settlers on Mars with a higher fidelity of
+simulates daily activities of the first generation of settlers on Mars with a higher fidelity of
 modeling and simulation details than a typical PC strategy game.
 
 ---
 
 ## Simulation
-mars-sim is a **general purpose** simulator depicting the early development of human settlements on Mars.
+mars-sim is designed to be a **general purpose** simulator depicting the early development of human settlements on Mars.
 
 According to *Encyclopædia Britannica*, a computer simulation is the use of a computer to represent
 the dynamic responses of one system by the behavior of another system modeled after it. In essence,
@@ -32,8 +32,8 @@ biology, economics, psychology, and social science) as possible to simulate the 
 of people, social structure, physical and mechanical systems, and environment in the context of
 developing human settlements on Mars.
 
-mars-sim models each settler as an intelligent agent which possess, to varying degrees, autonomy, and mobility.
-It is a symbolic model of reality, given a capacity to learn from experience and an ability to
+mars-sim models each settler as an intelligent agent which possess varying degrees of autonomy and mobility.
+It is a symbolic model of reality, given a capacity to learn from experiences and an ability to
 cooperate with other agents and systems. A settler has prescribed attributes and skills and makes
 weighted decisions and interacts with one another to produce unexpected results in a sandbox world.
 
@@ -50,54 +50,95 @@ mars-sim depicts near-term human exploration and settlement on Mars. It speaks o
 language selected from research journal and paper in defining operation paradigms and programming models
 that are based on present-day technologies.
 
-For instance, the simulation assumes a low-pressure living environment that facilitates EVA and reduces
-structural requirements on buildings.
+### Indoor Atmospheric Modeling
 
 While at the Earth's sea level, the atmospheric pressure is **101 kPa** (14.7 psi) and has 20.9% oxygen,
 in mars-sim, a low pressure atmosphere of **34 kPa** (4.93 psi) is chosen for the settlement living with
-the composition of oxygen at 58.8%. However, inside a rover or an
-[EVA suit](https://github.com/mars-sim/mars-sim/wiki/EVA-Suit), an even lower pressurized
-environment of **17 kPa** (2.47 psi) is adopted for more optimal use of resources and design specifications.
-See [Atmosphere](https://github.com/mars-sim/mars-sim/wiki/Atmosphere) wiki.
+the composition of oxygen at 58.8%. 
 
-Each building has life-support system [functions](https://github.com/mars-sim/mars-sim/wiki/Building-Function)
-that continuously monitored and periodically replenished oxygen, carbon dioxide, and water moisture.
+However, [EVA suit](https://github.com/mars-sim/mars-sim/wiki/EVA-Suit) or rovers (inside a vehicle) 
+adopt an even lower pressurized environment of **17 kPa** (2.47 psi) for more optimal use of resources 
+and design specifications. In comparison, National Aeronautics and Space Administration (NASA)'s 
+Extravehicular Mobility Units (EMU) has the operating pressure of 4.3 psi.
+
+See [Atmosphere](https://github.com/mars-sim/mars-sim/wiki/Atmosphere) wiki for more design details.
+
+In mars-sim, each habitable building has a life-support system with various 
+[functions](https://github.com/mars-sim/mars-sim/wiki/Building-Function) built-in
+that continuously monitor and periodically replenish oxygen, carbon dioxide, and water moisture.
 These gases are produced via chemical systems such as **Sabatier Reverse Water Gas (SRWG)**, and
 **Oxygen Generation System (OGS)**, etc.
 
-An example of operation modeling is the sequence of steps involving the ingress and egress of airlocks
-before and after an **Extra-Vehicular Activity (EVA)**.
+Structurally speaking, a low-pressure environment reduces the need for a rigid structure that supports
+various load requirements for a building. It also facilitates occupants' Extra-Vehicular Activity (EVA)
+with the outside world.
+
+### EVA Modeling 
+
+An example of operation modeling is the sequence of steps involving the ingress and egress of airlocks.
 
 To walk onto the surface of Mars, a settler must come through an intermediate chamber
 called the *airlock* to exit the settlement. The airlock allows the passage of people between
 a pressure vessel and its surroundings while minimizing the change of pressure in the vessel and loss of
-air from it. In mars-sim, the airlock is a separate building joined to any *Hab* (which stands for cylindrical
+air from it. 
+
+In mars-sim, the airlock is a separate building joined to any *Hab* (which stands for cylindrical
 *habitation module*) such as *Lander Hab*, or *Outpost Hub*, *Astronomy Observatory*, etc.
 All rovers have vehicular airlock built-in.
 
----
-
-## Extra-Vehicular Activity (EVA)
-To perform a team EVA, one of will be selected as the *airlock operator*, who will ensure that proper
+To perform a team EVA, one of the members will be selected as the *airlock operator*, who will ensure that proper
 procedures be followed before going out for an EVA or after coming back from an EVA.
 
 In case of an egress operation, (1) the airlock would have to be *pressurized*. (2) The air would be heated
-so that the atmospheric pressure and temperature are equalized. (3) Then the airlcok operator would unlock
+so that the atmospheric pressure and temperature are equalized. (3) Next, the airlock operator would unlock
 and open the inner door. (4) The whole team would enter into the airlock. (5) After all have donned
-EVA suits, the operator will depressurize the chamber and the gases would be re-captured to match the
+EVA suits, the operator will depressurize the chamber and gases would be re-captured to match the
 outside air pressure. (6) At last, he/she would unlock and open the outer door and the whole team will
 exit to the outside surface of Mars.
 
-Our third example is the [Radiation Modeling](https://github.com/mars-sim/mars-sim/wiki/Radiation-Exposure),
- which account for how often the **Galactic Cosmic Ray (GCR)** and **Solar Energetic Particles (SEP)**
- would occur during EVA. The cumulative dose is closely monitored in 3 specific exposure interval,
- namely, the 30-day, the annual and the career lifetime of a settler. It would affect 3 different regions
- of our body, namely, the *Blood Forming Organs (BFO)*, the *Ocular Lens*, and the *Skin*. The dose limits are
- measured in *milli-Severt*.
+### Radiation Modeling 
+
+Another example is [Radiation Modeling](https://github.com/mars-sim/mars-sim/wiki/Radiation-Exposure),
+which account for how often the **Galactic Cosmic Ray (GCR)** and **Solar Energetic Particles (SEP)**
+would occur during EVA. The cumulative dose is closely monitored in 3 specific exposure interval,
+namely, the 30-day, the annual and the career lifetime of a settler. It would affect 3 different regions
+of our body, namely, the *Blood Forming Organs (BFO)*, the *Ocular Lens*, and the *Skin*. The dose limits are
+measured in *milli-Severt*.
+
+### Economic Modeling
+
+In terms of [economic](https://github.com/mars-sim/mars-sim/wiki/Economics) modeling, mars-sim implements the
+**Value Point (VP)** system, which keeps track of the supply and demand on each good and resource.
+As there is no standard currency established on Mars yet, settlers barter trades with neighboring settlements
+by keeping track of the credits and deficit based on the VPs of the resources in exchange in each trading session.
+
+### Job and Mission Modeling
+
+Settlers spend much of their time learning to *live off the land*. Assigning meaningful
+[jobs](https://github.com/mars-sim/mars-sim/wiki/Jobs) to the settlers are vital to the health of the economy of
+the settlements. Settlers engage in various [tasks](https://github.com/mars-sim/mars-sim/wiki/Tasks) such as
+maintenance, ensuring life support resources are plentifully supplied, growing food crops in
+[greenhouses](https://github.com/mars-sim/mars-sim/wiki/Greenhouse-Operation), making secondary
+[food products](https://github.com/mars-sim/mars-sim/wiki/Food-Production), and manufacturing needed parts
+and equipment in workshops.
+
+Settlers will also go out on field [Missions](https://github.com/mars-sim/mars-sim/wiki/Missions) to explore and
+study the surrounding landscapes, to prospect and mine minerals, and to trade with neighboring settlements, etc.
+They may even decide to migrate from one settlement to another.
+
+### Reliability, Maintenance and Malfunction Modeling
+
+The perils of living on Mars are very real. There is a total of 39 types of [Malfunctions](https://github.com/mars-sim/mars-sim/wiki/Malfunctions)
+that can occur at a given moment. There are 3 metrics
+for tracking how reliable a part is, namely, [Reliability](https://github.com/mars-sim/mars-sim/wiki/Reliability)
+percentage, Failure Rate, Mean Time Between Failure (MTBF), which are dynamically updated in light of any incidents
+that occur during the simulation. Workshops and machinery factories are to produce parts for
+replenishing parts to be used during [Maintenance](https://github.com/mars-sim/mars-sim/wiki/Maintenance) tasks.
 
 ---
 
 ## Settlement Development
+
 One of the goals of mars-sim is to populate the surface of Mars with human settlements.
 Each settlement has an initial sponsor to guide its development but will eventually develop
 its own *[command structure](https://github.com/mars-sim/mars-sim/wiki/Role)* and
@@ -113,45 +154,12 @@ each level of template may vary in the numbers and types of building it contains
 
 ---
 
-## Economics
-In terms of [economic](https://github.com/mars-sim/mars-sim/wiki/Economics) modeling, mars-sim implements the
-**Value Point (VP)** system, which keeps track of the supply and demand on each good and resource.
-As there is no standard currency established on Mars yet, settlers barter trades with neighboring settlements
-by keeping track of the credits and deficit based on the VPs of the resources in exchange in each trading session.
-
----
-
-## Jobs and Missions
-Settlers spend much of their time learning to *live off the land*. Assigning meaningful
-[jobs](https://github.com/mars-sim/mars-sim/wiki/Jobs) to the settlers are vital to the health of the economy of
-the settlements. Settlers engage in various [tasks](https://github.com/mars-sim/mars-sim/wiki/Tasks) such as
-maintenance, ensuring life support resources are plentifully supplied, growing food crops in
-[greenhouses](https://github.com/mars-sim/mars-sim/wiki/Greenhouse-Operation), making secondary
-[food products](https://github.com/mars-sim/mars-sim/wiki/Food-Production), and manufacturing needed parts
-and equipment in workshops.
-
-Settlers will also go out on field [Missions](https://github.com/mars-sim/mars-sim/wiki/Missions) to explore and
-study the surrounding landscapes, to prospect and mine minerals, and to trade with neighboring settlements, etc.
-They may even decide to migrate from one settlement to another.
-
----
-
-## Reliability, Maintenance and Malfunctions
-The perils of living on Mars are very real. There is a total of 39 types of [Malfunctions](https://github.com/mars-sim/mars-sim/wiki/Malfunctions)
-that can occur at a given moment. There are 3 metrics
-for tracking how reliable a part is, namely, [Reliability](https://github.com/mars-sim/mars-sim/wiki/Reliability)
-percentage, Failure Rate, Mean Time Between Failure (MTBF), which are dynamically updated in light of any incidents
-that occur during the simulation. Workshops and machinery factories are to produce parts for
-replenishing parts to be used during [Maintenance](https://github.com/mars-sim/mars-sim/wiki/Maintenance) tasks.
-
----
-
 ## Summary
 Mars is a harsh world but is certainly less unforgiving than our Moon. Settlers come face-to-face with accidents,
 equipment malfunctions, illnesses, injuries, and even death. Survival depends on how well they work together,
 improve their survival skills and balance individual versus settlement needs.
 
-As the settlers learn how to survive the hardship and build up their settlements, players are rewarded with the
+As the settlers learn how to survive hardship and build up their settlements, players are rewarded with the
 pure joy of participating in this grand social experiment of creating a new branch of human society on another
 planetary surface.
 
@@ -167,8 +175,8 @@ planetary surface.
         width="100">
 </a>
 
-Currently, mars-sim supports Java 11. We will transition to Java 17 as
-JDK 17 is the next long-term support (LTS) release.
+Currently, mars-sim supports Java 11. We will transition to Java 17 in near future
+as JDK 17 is one of the next long-term support (LTS) releases.
 
 * Requires only JRE 11 for running mars-sim
 * Requires only JDK 11 (or openjdk 11) for compiling binary
@@ -185,7 +193,7 @@ Currently, mars-sim does not require JavaFX.
 > Note 1 : Specifically, the official release of v3.1.0, v3.2.0 and v3.3.0 of mars-sim do not
 utilize JavaFX / OpenJFX. Therefore, it's NOT a requirement to install them.
 
-However, if you want to run any JavaFX apps, make sure you also download and
+However, if you want to run any JavaFX apps, make sure you download and
 configure the OpenJFX or JavaFX package on top of the JDK.
 
 See ticket #156 to read the discussions on how to set up JavaFX to run it
@@ -205,7 +213,7 @@ For windows platform, choose MSI version that will automatically set up the envi
 
 ### OS Platforms
 
-Assuming that OpenJDK 11 is being used
+Assuming that OpenJDK 11 is being used.
 
 #### Linux
 
@@ -280,29 +288,24 @@ your machine, JCP won't be able to recognize them.
 6. To track what versions of openjdk have been installed on your machine.
 Use [JDKMon](https://harmoniccode.blogspot.com/2021/04/friday-fun-lxiii-jdkmon.html).
 
----
-
-## Remote Console Connection
+### Remote Console Connection
 
 To set up true headless mode in your platform, follow the steps in this
 [wiki](https://github.com/mars-sim/mars-sim/wiki/Remote-Console-Connection).
 
----
 
-## Outreach
+### Outreach
 Feel free to use our [Facebook community](https://www.facebook.com/groups/125541663548/)
 to discuss relevant topics with regard to the development of mars-sim. See also
 old/archived [SF discussions](https://sourceforge.net/p/mars-sim/discussion/).
 
----
 
-## Discussions
+### Discussions
 Feel free to start a thread on a particular topic at our GitHub
 [Discussion](https://github.com/mars-sim/mars-sim/discussions) page.
 
----
 
-## Issues/Tickets
+### Issues/Tickets
 * Current : [GH Issues](https://github.com/mars-sim/mars-sim/issues)
 * Past/Archived : [SF Issues](https://sourceforge.net/p/mars-sim/tickets/search/?q=status%3Awont-fix+or+status%3Aclosed)
 
@@ -348,39 +351,31 @@ a JVM be created but it fails to load MainScene. In Windows OS, you may hit Ctrl
 scroll down to see any "orphaned" instances of `Java(TM) Platform SE binary` running in the background. Be sure you
 clear them off the memory by right-clicking on it and choosing `End Task`.
 
----
 
-## How to contribute
+### How to contribute
 We welcome anyone to contribute to mars-sim in terms of ideas, concepts and coding. If you would like to contribute
 to coding, see this [wiki](https://github.com/mars-sim/mars-sim/wiki/Development-Environment) for developers.
 Also, we will answer your questions in our [Gitter chatroom](https://gitter.im/mokun/mars-sim).
 
----
 
-
-## Website
+### Website
 For a more detail description of this project, see our [project website](https://mars-sim.github.io/).
 
----
 
-## Wiki
+### Wiki
 * Check out our [wikis](https://github.com/mars-sim/mars-sim/wiki) at GitHub.
 
----
 
-## Supported Platforms
+### Supported Platforms
 * Windows
 * MacOS
 * Linux
 
----
-
-## Official Codebase
+### Official Codebase
 * https://github.com/mars-sim/mars-sim
 
----
 
-## Download
+### Download
 Check out the most recent pre-release build in the [GitHub's Release Tab](https://github.com/mars-sim/mars-sim/releases).
 
 Also, see the previous and official release version at
@@ -390,9 +385,8 @@ If you like, click on the SF's button below to automatically sense the correct O
 
 [![Download Mars Simulation Project](https://a.fsdn.com/con/app/sf-download-button)](https://sourceforge.net/projects/mars-sim/files/latest/download)
 
----
 
-## License
+### License
 This project is licensed under the terms of the GPL v3.0 license.
 <!--stackedit_data:
 eyJoaXN0b3J5IjpbMjAwMTcyNzM3OCwtODY5ODg0NTgwXX0=

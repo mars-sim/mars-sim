@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MonitorWindow.java
- * @date 2021-12-06
+ * @date 2022-05-27
  * @author Barry Evans
  */
 
@@ -217,18 +217,18 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 			addTab(new UnitTab(this, new SettlementTableModel(selectedSettlement), true, COLONY_ICON));
 			addTab(new UnitTab(this, new PersonTableModel(selectedSettlement, true), true, PEOPLE_ICON));
 			addTab(new UnitTab(this, new RobotTableModel(selectedSettlement), true, BOT_ICON));
-			
 			addTab(new UnitTab(this, new BuildingTableModel(selectedSettlement), true, BUILDING_ICON));
-			
 			addTab(new UnitTab(this, new CropTableModel(selectedSettlement), true, CROP_ICON));
+			
+			addTab(new FoodInventoryTab(selectedSettlement, this));
+			addTab(new TradeTab(selectedSettlement, this));
 			
 			eventsTab = new EventTab(this, desktop);
 			addTab(eventsTab);
 			
-			addTab(new FoodInventoryTab(this));
-			addTab(new TradeTab(this));
 			addTab(new MissionTab(this));
 			addTab(new UnitTab(this, new VehicleTableModel(selectedSettlement), true, VEHICLE_ICON));
+			
 
 		} catch (Exception e) {
 			logger.severe("Problems in adding tabs in MonitorWindow: " + e.getMessage());
@@ -577,7 +577,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 				buttonDetails.setEnabled(true);
 				buttonFilter.setEnabled(true);
 
-				newTab = new FoodInventoryTab(this);
+				newTab = new FoodInventoryTab(selectedSettlement, this);
 
 			} else if (selectedTab instanceof TradeTab) {
 				// Enable these buttons
@@ -586,7 +586,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 				buttonDetails.setEnabled(true);
 				buttonFilter.setEnabled(true);
 
-				newTab = new TradeTab(this);
+				newTab = new TradeTab(selectedSettlement, this);
 			}
 
 			swapTab(selectedTab, newTab);

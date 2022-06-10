@@ -1,16 +1,18 @@
 /**
  * Mars Simulation Project
  * LocalBoundedObject.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-06-09
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.core;
 
+import java.io.Serializable;
+
 /**
  * Interface for a rectangle-bounded object in the local area.
  */
-public interface LocalBoundedObject {
+public interface LocalBoundedObject extends Serializable {
 
 	/**
 	 * Gets the X location of the object from the local area's center point.

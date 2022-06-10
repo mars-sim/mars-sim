@@ -7,13 +7,13 @@
 	<groupId>com.github.mars-sim</groupId>
 	<artifactId>mars-sim</artifactId>
 	<packaging>pom</packaging>
-	<version>3.4.0</version>
+	<version>pre-3.4.0</version>
 	<name>mars-sim</name>
 	<url>https://github.com/mars-sim/mars-sim</url>
 	<inceptionYear>2009</inceptionYear>
 	<properties>
 		<release>11</release>
-		<project.version>3.4.0</project.version>
+		<project.version>pre-3.4.0</project.version>
 		<fxgl.version>11.17</fxgl.version>
 		<junit-jupiter.version>5.8.2</junit-jupiter.version>
         <!-- optional : if we want to use a junit4 specific version -->
@@ -26,7 +26,7 @@
 
 		<libgdx.version>1.10.0</libgdx.version>
 		<lwjgl.version>3.2.3</lwjgl.version>
-		<kotlin.version>1.6.21</kotlin.version>
+		<kotlin.version>1.7.0</kotlin.version>
 		<!--  TextIO needs 1.8 -->
 		<slf4j.version>2.0.0-alpha7</slf4j.version>
 		<commons-cli.version>1.5.0</commons-cli.version>
@@ -233,13 +233,13 @@
 				<!-- https://mvnrepository.com/artifact/com.github.spotbugs/spotbugs-maven-plugin -->
 				  <groupId>com.github.spotbugs</groupId>
 				  <artifactId>spotbugs-maven-plugin</artifactId>
-				  <version>4.6.0.0</version>
+				  <version>4.7.0.0</version>
 				  <dependencies>
 				    <!-- https://github.com/spotbugs/spotbugs -->
 				    <dependency>
 				      <groupId>com.github.spotbugs</groupId>
 				      <artifactId>spotbugs</artifactId>
-				      <version>4.6.0.0</version>
+				      <version>4.7.0</version>
 				    </dependency>
 				  </dependencies>
 				</plugin>
@@ -247,7 +247,7 @@
 				<plugin>
 				    <groupId>org.codehaus.mojo</groupId>
 				    <artifactId>versions-maven-plugin</artifactId>
-				    <version>2.10.0</version>
+				    <version>2.11.0</version>
 				    <configuration>
 				        <generateBackupPoms>false</generateBackupPoms>
 				    </configuration>
@@ -256,7 +256,7 @@
 				<plugin>
 				    <groupId>org.apache.maven.plugins</groupId>
 				    <artifactId>maven-surefire-plugin</artifactId>
-				    <version>3.0.0-M6</version>
+				    <version>3.0.0-M7</version>
 				    <configuration>
 				        <argLine>
 				            --illegal-access=permit
@@ -267,7 +267,7 @@
 				<plugin>
 				    <groupId>org.apache.maven.plugins</groupId>
 				    <artifactId>maven-failsafe-plugin</artifactId>
-				    <version>3.0.0-M6</version>
+				    <version>3.0.0-M7</version>
 				    <configuration>
 				        <argLine>
 				            --illegal-access=permit

@@ -64,7 +64,7 @@ public class MalfunctionMeta implements Serializable {
 	 *
 	 * @param name name of the malfunction
 	 */
-	public MalfunctionMeta(String name,int severity, double probability, Map<MalfunctionRepairWork, EffortSpec> repairEffort,
+	public MalfunctionMeta(String name, int severity, double probability, Map<MalfunctionRepairWork, EffortSpec> repairEffort,
 			Set<String> entities, Map<Integer, Double> resourceEffects,
 			Map<String, Double> lifeSupportEffects, Map<ComplaintType, Double> medicalComplaints,
 			List<RepairPart> parts) {

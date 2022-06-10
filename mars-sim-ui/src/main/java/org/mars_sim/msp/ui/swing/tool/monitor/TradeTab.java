@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * TradeTab.java
- * @date 2021-12-07
+ * @date 2022-05-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
@@ -33,29 +33,31 @@ implements UnitManagerListener {
 
 	/**
 	 * constructor.
+	 * 
+	 * @param selectedSettlement
 	 * @param window {@link MonitorWindow} the containing window.
 	 */
-	public TradeTab(final MonitorWindow window) {
+	public TradeTab(Settlement selectedSettlement, final MonitorWindow window) {
 		// Use TableTab constructor
-		super(window, new TradeTableModel(), true, false, MonitorWindow.TRADE_ICON);
+		super(window, new TradeTableModel(selectedSettlement), true, false, MonitorWindow.TRADE_ICON);
 
 		// Override default cell renderer for formatting double values.
 //		table.setDefaultRenderer(Double.class, new NumberCellRenderer(NUM_DIGITS, true));
 
 		TableColumnModel m = table.getColumnModel();
-
+		int num = TradeTableModel.NUM_INITIAL_COLUMNS;
+		int cols = TradeTableModel.NUM_DATA_COL;
 		for (int i= 0; i < m.getColumnCount(); i++) {
-			if (i >= TradeTableModel.NUM_INITIAL_COLUMNS) {
-				int col = i - TradeTableModel.NUM_INITIAL_COLUMNS;
-				if (col % 3 == 0)
+			if (i >= num) {
+				int col = i - num;
+				if (col % cols == 0)
 					m.getColumn(i).setCellRenderer(NumberRenderer.getIntegerRenderer());
-				else if (col % 3 == 1)
+				else if (col % cols == 1)
 					m.getColumn(i).setCellRenderer(new NumberCellRenderer(NUM_DIGITS, true));
-				else if (col % 3 == 2)
+				else if (col % cols == 2)
 					m.getColumn(i).setCellRenderer(NumberRenderer.getCurrencyRenderer());
 			}
 		}
-
 
 		// Add as unit manager listener.
 		Simulation.instance().getUnitManager().addUnitManagerListener(this);
@@ -96,6 +98,7 @@ implements UnitManagerListener {
 
 		/**
 		 * Constructor
+		 * 
 		 * @param column the column to add or remove.
 		 * @param addColumn true for adding column or false for removing column.
 		 */

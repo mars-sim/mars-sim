@@ -91,9 +91,11 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 		homeButton.addActionListener(this);
 
 		backButton.setToolTipText(Msg.getString("GuideWindow.tooltip.back")); //$NON-NLS-1$
+		backButton.setSize(16, 16);
 		backButton.addActionListener(this);
 
 		forwardButton.setToolTipText(Msg.getString("GuideWindow.tooltip.forward")); //$NON-NLS-1$
+		forwardButton.setSize(16, 16);
 		forwardButton.addActionListener(this);
 
 		// Create the main panel
@@ -111,7 +113,7 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 		homePanel.add(homeButton);
 		homePanel.add(forwardButton);
 		
-		JPanel linkPanel = new JPanel(new FlowLayout(3, 3, FlowLayout.TRAILING));
+		JPanel linkPanel = new JPanel(new FlowLayout(2, 2, FlowLayout.LEFT));
 		topPanel.add(linkPanel, BorderLayout.EAST);
 		
 		link = new WebLink(StyleId.linkShadow, new UrlLinkAction(WIKI_URL));

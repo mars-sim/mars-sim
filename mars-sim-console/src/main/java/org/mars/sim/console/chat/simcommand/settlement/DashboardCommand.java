@@ -9,8 +9,8 @@ package org.mars.sim.console.chat.simcommand.settlement;
 
 import org.mars.sim.console.chat.Conversation;
 import org.mars.sim.console.chat.simcommand.StructuredResponse;
+import org.mars_sim.msp.core.goods.GoodsManager;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.goods.GoodsManager;
 
 /**
  * Command to display dashboard for this settlement

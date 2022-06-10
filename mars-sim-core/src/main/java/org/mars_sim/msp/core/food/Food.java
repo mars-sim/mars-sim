@@ -1,16 +1,14 @@
-/**
+/*
  * Mars Simulation Project
  * Food.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-05-27
  * @author Manny Kung
  */
-package org.mars_sim.msp.core.foodProduction;
+
+package org.mars_sim.msp.core.food;
 
 import java.io.Serializable;
-
 import org.mars_sim.msp.core.resource.AmountResource;
-
-//import org.mars_sim.msp.core.equipment.Equipment;
 
 /**
  * A meta class describing an economic food in the simulation.
@@ -20,11 +18,16 @@ implements Serializable, Comparable<Food> {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
+	
 	// Data members
+	private int id;
+	
 	private String name;
 	private String type;
+	
 	private Class<?> classType;
 	private Object object;
+	
 	private FoodType foodType;
 
 	/**
@@ -33,17 +36,18 @@ implements Serializable, Comparable<Food> {
 	 * @param object the food's object if any.
 	 * @param foodType the food's category.
 	 */
-	Food(String name, AmountResource object, FoodType foodType) {
+	Food(String name, AmountResource ar, FoodType foodType) {
 		if (name != null) this.name = name.trim().toLowerCase();
 		else throw new IllegalArgumentException("name cannot be null.");
 
-		if (object != null) {
-			this.object = object;
-			this.classType = object.getClass();		
+		if (ar != null) {
+			this.object = ar;
+			this.classType = ar.getClass();		
 			this.type = foodType.getName(); 
+			this.id = ar.getID();
 		}
 		
-		else throw new IllegalArgumentException("object cannot be null.");
+		else throw new IllegalArgumentException("ar cannot be null.");
 
 //		if (isValidCategory(category)) this.category = category;
 //		else throw new IllegalArgumentException("category: " + category + " not valid.");
@@ -138,25 +142,43 @@ implements Serializable, Comparable<Food> {
 	}
 	
 	/**
+	 * Gets the good's id
+	 * 
+	 * @return
+	 */
+	public int getID() {
+		return id;
+	}
+	
+	/**
 	 * Checks if an object is equal to this object.
 	 * @param object the object to compare.
 	 * @return true if equal
 	 */
-	public boolean equals(Object object) {
-		boolean result = true;
-		if (object instanceof Food) {
-			Food food = (Food) object;
-			if (!name.equals(food.name)) result = false;
-			if (!classType.equals(food.classType)) result = false;
-			if (this.object != null) {
-				if (!this.object.equals(food.object)) result = false;
-			}
-			if (!foodType.equals(food.foodType)) result = false;
-		}
-		else result = false;
-
-		return result;
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (this.getClass() != obj.getClass()) return false;
+		Food f = (Food) obj;
+		if (!classType.equals(f.classType)) return false;
+		return this.getName().equals(f.getName())
+				&& this.id == f.getID();
 	}
+	
+//	public boolean equals(Object object) {
+//		boolean result = true;
+//		if (object instanceof Food) {
+//			Food food = (Food) object;
+//			if (!name.equals(food.name)) result = false;
+//			if (!classType.equals(food.classType)) result = false;
+//			if (this.object != null) {
+//				if (!this.object.equals(food.object)) result = false;
+//			}
+//			if (!foodType.equals(food.foodType)) result = false;
+//		}
+//		else result = false;
+//		return result;
+//	}
 
 	/**
 	 * Gets the hash code value.

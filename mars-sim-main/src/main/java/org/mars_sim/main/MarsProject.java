@@ -82,7 +82,7 @@ public class MarsProject {
 		logger.config("Starting " + Simulation.title);
 		// Set the InteractionTerm instance
 		MainWindow.setInteractiveTerm(interactiveTerm);
-	};
+	}
 
 	/**
 	 * Check for confirmation of bypassing the text console main menu via a dialog box
@@ -111,7 +111,9 @@ public class MarsProject {
 	 * @param args
 	 */
 	public void parseArgs(String[] args) {
-		logger.config("List of input args : " + Arrays.toString(args));
+		String s = Arrays.toString(args);
+		
+		logger.config("List of input args : " + s);
 		
 		SimulationBuilder builder = new SimulationBuilder();
 

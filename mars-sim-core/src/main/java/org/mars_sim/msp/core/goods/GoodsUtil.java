@@ -5,7 +5,7 @@
  * @version 3.2.0 2021-06-20
  * @author Scott Davis
  */
-package org.mars_sim.msp.core.structure.goods;
+package org.mars_sim.msp.core.goods;
 
 import java.util.ArrayList;
 import java.util.HashMap;
