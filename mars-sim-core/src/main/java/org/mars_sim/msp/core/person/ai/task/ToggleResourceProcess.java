@@ -274,7 +274,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 		double outputValue = getResourcesValue(settlement, process, false);
 		double diff = 0.01;
 
-		if (inputValue > SMALL_AMOUNT) {
+		if (inputValue > 0 && inputValue > SMALL_AMOUNT) {
 			diff = (outputValue - inputValue) / inputValue;
 		}
 

@@ -139,21 +139,19 @@ public abstract class EVAOperation extends Task {
 			}
 		}
 
-		else if (person.isInVehicle()) {
-			if (person.getVehicle() instanceof Rover) {
-				interiorObject = (Rover) person.getVehicle();
-				if (interiorObject == null) {
-					logger.warning(person, "Is supposed to be in a vehicle but interiorObject is null.");
-				}
-				// Add task phases.
-				addPhase(WALK_TO_OUTSIDE_SITE);
-				addPhase(WALK_BACK_INSIDE);
-
-				// Set initial phase.
-				setPhase(WALK_TO_OUTSIDE_SITE);
-			} else {
-				logger.severe(person, "Not in a rover vehicle: " + person.getVehicle());
+		else if (person.isInVehicle() &&
+			person.getVehicle() instanceof Rover) {
+			
+			interiorObject = person.getVehicle();
+			if (interiorObject == null) {
+				logger.warning(person, "Is supposed to be in a vehicle but interiorObject is null.");
 			}
+			// Add task phases.
+			addPhase(WALK_TO_OUTSIDE_SITE);
+			addPhase(WALK_BACK_INSIDE);
+
+			// Set initial phase.
+			setPhase(WALK_TO_OUTSIDE_SITE);
 		}
 	}
 
@@ -234,10 +232,10 @@ public abstract class EVAOperation extends Task {
 			return walkToOutsideSitePhase(time);
 		} else if (WALK_BACK_INSIDE.equals(getPhase())) {
 			return walkBackInsidePhase(time);
-//		} else if (WALK_TO_BIN.equals(getPhase())) {
-//			return walkToBin(time);
-//		} else if (DROP_OFF_RESOURCE.equals(getPhase())) {
-//			return dropOffResource(time);
+		} else if (WALK_TO_BIN.equals(getPhase())) {
+			return walkToBin(time);
+		} else if (DROP_OFF_RESOURCE.equals(getPhase())) {
+			return dropOffResource(time);
 		}
 
 		return time;
@@ -451,10 +449,8 @@ public abstract class EVAOperation extends Task {
 	 */
 	public static boolean hasEVAProblem(Person person) {
 		boolean result = false;
-		EVASuit suit = person.getSuit();//(EVASuit) person.getInventory().findUnitOfClass(EVASuit.class);
+		EVASuit suit = person.getSuit();
 		if (suit == null) {
-//			logger.log(person, Level.WARNING, 20_000,
-//					"Ended " + person.getTaskDescription() + " : no EVA suit is available.");
 			return true;
 		}
 
@@ -477,7 +473,6 @@ public abstract class EVAOperation extends Task {
 						suit.getName() + " reported less than 10% water left when "
 										+ person.getTaskDescription() + ".");
 				// Running out of water should not stop a person from doing EVA
-//				return true;
 			}
 
 			// Check if life support system in suit is working properly.
@@ -510,10 +505,6 @@ public abstract class EVAOperation extends Task {
 		}
 
 		return result;
-	}
-
-	public static boolean hasEVAProblem(Robot robot) {
-		return true;
 	}
 
 	/**
@@ -555,7 +546,7 @@ public abstract class EVAOperation extends Task {
 		// Experience points adjusted by person's "Experience Aptitude" attribute.
 		NaturalAttributeManager nManager = worker.getNaturalAttributeManager();
 		int experienceAptitude = nManager.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
-		double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
+		double experienceAptitudeModifier = (experienceAptitude - 50D) / 100D;
 		evaExperience += evaExperience * experienceAptitudeModifier;
 		evaExperience *= getTeachingExperienceModifier();
 		worker.getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
@@ -738,13 +729,9 @@ public abstract class EVAOperation extends Task {
 	public static boolean rescueOperation(Rover r, Person p, Settlement s) {
 		boolean result = false;
 		if (p.isDeclaredDead()) {
-//			Unit cu = p.getPhysicalCondition().getDeathDetails().getContainerUnit();
 			result = p.transfer(s);
 		}
-		else if (r != null) {
-			result = p.transfer(s);
-		}
-		else if (p.isOutside()) {
+		else if (r != null || p.isOutside()) {
 			result = p.transfer(s);
 		}
 
