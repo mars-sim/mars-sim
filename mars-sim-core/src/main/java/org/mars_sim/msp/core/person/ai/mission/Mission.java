@@ -41,6 +41,7 @@ import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
+import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.RobotJob;
@@ -724,29 +725,38 @@ public abstract class Mission implements Serializable, Temporal {
 		}
 	}
 
-	/**
-	 * End the mission collection phase at the current site.
+
+	/** 
+	 * Abort the current phase; nothign on the base class
 	 */
-	protected void endCollectionPhase() {
-		if (getMissionType() == MissionType.COLLECT_ICE || getMissionType() == MissionType.COLLECT_REGOLITH)
-			((CollectResourcesMission) this).endCollectingAtSite();
+	public void abortPhase() {
+		// Do nothing
 	}
 
 	/**
-	 * Have the mission return home and end collection phase if necessary.
+	 * Abort the mission. Will not immediately stop
 	 */
-	public void returnHome() {
-		if (this instanceof TravelMission) {
-			TravelMission travelMission = (TravelMission) this;
-			int offset = 2;
-			if (travelMission.getPhase().equals(VehicleMission.TRAVELLING))
-				offset = 1;
-			travelMission.setNextNavpointIndex(travelMission.getNumberOfNavpoints() - offset);
-			travelMission.updateTravelDestination();
-			endCollectionPhase();
+	public void abortMission() {
+		// Normal mission can not be aborted
+	}
+
+	/**
+	 * End all EVA Operations
+	 */
+	protected void endAllEVA() {
+		// End each member's EVA task.
+		Iterator<MissionMember> i = getMembers().iterator();
+		while (i.hasNext()) {
+			MissionMember member = i.next();
+			if (member instanceof Person) {
+				Person person = (Person) member;
+				Task task = person.getMind().getTaskManager().getTask();
+				if (task instanceof EVAOperation) {
+					((EVAOperation) task).endEVA();
+				}
+			}
 		}
 	}
-
 
 	/**
 	 * Computes the mission experience score
@@ -781,15 +791,6 @@ public abstract class Mission implements Serializable, Temporal {
 	}
 
 	/**
-	 * Finalizes the mission. String reason Reason for ending mission. Mission can
-	 * override this to perform necessary finalizing operations.
-	 *
-	 */
-	protected final void endMission() {
-		endMission(null);
-	}
-
-	/**
 	 * Finalizes the mission. Reason for ending mission. Mission can
 	 * override this to perform necessary finalizing operations.
 	 *
@@ -803,9 +804,7 @@ public abstract class Mission implements Serializable, Temporal {
 		}
 
 		// Ended with a status
-		if (endStatus != null) {
-			missionStatus.add(endStatus);
-		}
+		missionStatus.add(endStatus);
 
 		// Add mission experience score
 		addMissionScore();
@@ -826,7 +825,9 @@ public abstract class Mission implements Serializable, Temporal {
 			}
 		}
 
-		if ((endStatus == null) || endStatus == MissionStatus.MISSION_ACCOMPLISHED) {
+		// Mission is completed if it has not been abort by user AND mission status is marked as accomplished
+		if (!haveMissionStatus(MissionStatus.USER_ABORTED_MISSION)
+				&& (endStatus == MissionStatus.MISSION_ACCOMPLISHED)) {
 			setPhase(COMPLETED, null);
 		}
 
@@ -1294,7 +1295,7 @@ public abstract class Mission implements Serializable, Temporal {
 
 				logger.log(p, Level.INFO, 0, "Getting ready to embark on " + getDescription() + ".");
 
-				if (!(this instanceof TravelMission)) {
+				if (!(this instanceof VehicleMission)) {
 					// Set the members' work shift to on-call to get ready
 					for (MissionMember m : members) {
 						 ((Person) m).setShiftType(ShiftType.ON_CALL);

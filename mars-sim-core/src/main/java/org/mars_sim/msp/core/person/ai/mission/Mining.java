@@ -498,26 +498,17 @@ public class Mining extends RoverMission
 	/**
 	 * Ends mining at a site.
 	 */
-	public void endMiningAtSite() {
-		logger.log(Level.INFO, "Mining site phase ended due to external trigger.");
-		endMiningSite = true;
+	@Override
+	public void abortPhase() {
+		if (MINING_SITE.equals(getPhase())) {
 
-		// End each member's mining site task.
-		Iterator<MissionMember> i = getMembers().iterator();
-		while (i.hasNext()) {
-			MissionMember member = i.next();
-			if (member.getUnitType() == UnitType.PERSON) {
-				Person person = (Person) member;
+			logger.log(Level.INFO, "Mining site phase ended due to external trigger.");
+			endMiningSite = true;
 
-				Task task = person.getMind().getTaskManager().getTask();
-				if (task instanceof MineSite) {
-					((MineSite) task).endEVA();
-				}
-				if (task instanceof CollectMinedMinerals) {
-					((CollectMinedMinerals) task).endEVA();
-				}
-			}
+			endAllEVA();
 		}
+		else
+			super.abortPhase();
 	}
 
 	/**

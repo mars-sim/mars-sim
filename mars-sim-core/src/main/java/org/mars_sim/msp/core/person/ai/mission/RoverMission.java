@@ -304,7 +304,7 @@ public abstract class RoverMission extends VehicleMission {
 
 		// While still in the settlement, check if the beacon is turned on and and endMission()
 		else if (v.isBeaconOn()) {
-			endMission();
+			endMission(MissionStatus.VEHICLE_BEACON_ACTIVE);
 			return;
 		}
 

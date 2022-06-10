@@ -39,6 +39,10 @@ public class InventoryUtil {
 	 */
 	public static EVASuit getGoodEVASuit(Person p) {
 		Unit cu = p.getContainerUnit();
+		if (!(cu instanceof EquipmentOwner)) {
+			logger.warning(p, "No EVA from " + cu.getName());
+			return null;
+		}
 		Collection<Equipment> candidates = ((EquipmentOwner)cu).getEquipmentSet();
 
  		// Find suit without malfunction

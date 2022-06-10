@@ -69,6 +69,7 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
 import org.mars_sim.msp.core.person.ai.mission.MissionEventType;
 import org.mars_sim.msp.core.person.ai.mission.MissionListener;
+import org.mars_sim.msp.core.person.ai.mission.MissionLogEntry;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
@@ -141,6 +142,8 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 
 	private Map<String, MissionCustomInfoPanel> customInfoPanels;
 
+	private LogTableModel logTableModel;
+
 	/**
 	 * Constructor.
 	 *
@@ -181,24 +184,21 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 		WebPanel bottomBox = new WebPanel(new BorderLayout(1, 1));
 		mainBox.add(bottomBox, BorderLayout.SOUTH);
 
-		initDescriptionPane(topBox);
+		topBox.add(initDescriptionPane(), BorderLayout.NORTH);
+		topBox.add(initMissionPane(), BorderLayout.CENTER);
+		topBox.add(initLogPane(), BorderLayout.SOUTH);
 
-		initMissionPane(topBox);
+		centerBox.add(initVehiclePane(), BorderLayout.NORTH);
+		centerBox.add(initTravelPane(), BorderLayout.CENTER);
 
-		initVehiclePane(centerBox);
-
-		initMemberPane(bottomBox);
-
-		initCustomMissionPane(bottomBox);
-
+		bottomBox.add(initMemberPane(), BorderLayout.NORTH);
+		bottomBox.add(initCustomMissionPane(), BorderLayout.SOUTH);
 	}
 
-	private void initDescriptionPane(WebPanel topBox) {
-
+	private WebPanel initDescriptionPane() {
 		// Create the des spring layout.
 		WebPanel descLayout = new WebPanel(new SpringLayout());
 		descLayout.setPreferredSize(new Dimension(-1, HEIGHT_0));
-		topBox.add(descLayout, BorderLayout.NORTH);
 
 		// Create the description label.
 		WebLabel descriptionLabel0 = new WebLabel(Msg.getString("MainDetailPanel.title.description", JLabel.LEFT)); //$NON-NLS-1$
@@ -228,17 +228,18 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 
 		// Prepare SpringLayout.
 		SpringUtilities.makeCompactGrid(descLayout,
-				1, 2, // rows, cols
-				3, 2, // initX, initY
-				35, 2); // xPad, yPad
+				1, 2,
+				3, 2, 
+				35, 2); 
+		
+		return descLayout;
 	}
 
-	private void initMissionPane(WebPanel topBox) {
+	private WebPanel initMissionPane() {
 
 		// Create the mission pane spring layout.
 		WebPanel missionPane = new WebPanel(new SpringLayout());
 		missionPane.setPreferredSize(new Dimension(-1, HEIGHT_3));
-		topBox.add(missionPane, BorderLayout.CENTER);
 
 		// Create the designation label.
 		WebLabel designationLabel0 = new WebLabel(Msg.getString("MainDetailPanel.designation", JLabel.LEFT)); //$NON-NLS-1$
@@ -291,17 +292,18 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 
 		// Prepare SpringLayout.
 		SpringUtilities.makeCompactGrid(missionPane,
-				5, 2, // rows, cols
-				3, 2, // initX, initY
-				25, 2); // xPad, yPad
+				5, 2, 
+				3, 2,
+				25, 2); 
+
+		return missionPane;
 	}
 
-	private void initVehiclePane(WebPanel centerBox) {
+	private WebPanel initVehiclePane() {
 
 		// Create the vehicle grid panel.
 		WebPanel vehicleLayout = new WebPanel(new SpringLayout());
 		vehicleLayout.setPreferredSize(new Dimension(-1, HEIGHT_0));
-		centerBox.add(vehicleLayout, BorderLayout.NORTH);
 
 		// Create the vehicle pane.
 		WebPanel vehiclePane = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
@@ -365,26 +367,25 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 				1, 2, // rows, cols
 				3, 2, // initX, initY
 				20, 1); // xPad, yPad
+		return vehicleLayout;
+	}
 
+	private WebPanel initTravelPane() {
 		// Prepare travelPane Spring Layout.
 		WebPanel travelPane = new WebPanel(new SpringLayout());
 		travelPane.setPreferredSize(new Dimension(-1, HEIGHT_2));
-		centerBox.add(travelPane, BorderLayout.CENTER);
 
 		// Create the vehicle status label.
 		WebLabel vehicleStatusLabel0 = new WebLabel(Msg.getString("MainDetailPanel.vehicleStatus", JLabel.LEFT)); //$NON-NLS-2$
-		// vehicleStatusLabel0.setAlignmentX(Component.LEFT_ALIGNMENT);
 		travelPane.add(vehicleStatusLabel0);
 
 		vehicleStatusLabel = new WebLabel(" ", WebLabel.LEFT);
-		// vehicleStatusLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		WebPanel wrapper01 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		wrapper01.add(vehicleStatusLabel);
 		travelPane.add(wrapper01);
 
 		// Create the speed label.
 		WebLabel speedLabel0 = new WebLabel(Msg.getString("MainDetailPanel.vehicleSpeed", JLabel.LEFT)); //$NON-NLS-1$
-		// speedLabel0.setAlignmentX(Component.LEFT_ALIGNMENT);
 		travelPane.add(speedLabel0);
 
 		speedLabel = new WebLabel(" ", WebLabel.LEFT);
@@ -415,18 +416,42 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 
 		// Prepare SpringLayout
 		SpringUtilities.makeCompactGrid(travelPane,
-				4, 2, // rows, cols
-				3, 2, // initX, initY
-				25, 1); // xPad, yPad
+				4, 2,
+				3, 2,
+				25, 1);
 
+		return travelPane;
 	}
 
-	private void initMemberPane(WebPanel bottomBox) {
+	private WebPanel initLogPane() {
+
+		// Create the member panel.
+		WebPanel logPane = new WebPanel(new BorderLayout());
+		logPane.setAlignmentX(Component.LEFT_ALIGNMENT);
+		logPane.setPreferredSize(new Dimension(100, HEIGHT_1));
+
+		// Create scroll panel for member list.
+		WebScrollPane logScrollPane = new WebScrollPane();
+		logPane.add(logScrollPane, BorderLayout.CENTER);
+
+		// Create member table model.
+		logTableModel = new LogTableModel();
+
+		// Create member table.
+		JTable logTable = new ZebraJTable(logTableModel);
+		logTable.getColumnModel().getColumn(0).setPreferredWidth(80);
+		logTable.getColumnModel().getColumn(1).setPreferredWidth(150);
+
+		logScrollPane.setViewportView(logTable);
+
+		return logPane;
+	}
+
+	private WebPanel initMemberPane() {
 
 		// Create the member panel.
 		WebPanel memberPane = new WebPanel(new BorderLayout());
 		memberPane.setAlignmentX(Component.LEFT_ALIGNMENT);
-		bottomBox.add(memberPane, BorderLayout.NORTH);
 
 		// Create member bottom panel.
 		WebPanel memberBottomPane = new WebPanel(new BorderLayout(5, 5));
@@ -469,15 +494,15 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 		});
 		memberScrollPane.setViewportView(memberTable);
 
+		return memberPane;
 	}
 
-	private void initCustomMissionPane(WebPanel bottomBox) {
+	private WebPanel initCustomMissionPane() {
 
 		// Create the mission custom panel.
 		customPanelLayout = new CardLayout(10, 10);
 		missionCustomPane = new WebPanel(customPanelLayout);
 		missionCustomPane.setAlignmentX(Component.LEFT_ALIGNMENT);
-		bottomBox.add(missionCustomPane, BorderLayout.SOUTH);
 
 		// Create custom empty panel.
 		WebPanel emptyCustomPanel = new WebPanel();
@@ -561,6 +586,8 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 		String emergencySupplyMissionName = EmergencySupply.class.getName();
 		customInfoPanels.put(emergencySupplyMissionName, emergencySupplyPanel);
 		missionCustomPane.add(emergencySupplyPanel, emergencySupplyMissionName);
+
+		return missionCustomPane;
 	}
 
 
@@ -728,6 +755,7 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 		String settlementText = mission.getSettlmentName();
 		settlementLabel.setText(settlementText);
 
+		logTableModel.setMission(mission);
 		memberTableModel.setMission(mission);
 		centerMapButton.setEnabled(true);
 
@@ -837,6 +865,7 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 		phaseLabel.setText(" ");
 		settlementLabel.setText(" ");
 		memberTableModel.setMission(null);
+		logTableModel.setMission(null);
 		centerMapButton.setEnabled(false);
 		vehicleButton.setVisible(false);
 		vehicleStatusLabel.setText(" ");
@@ -1008,6 +1037,81 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 				vehicleStatusLabel.setText(vehicle.printStatusTypes());
 			} else if (type == UnitEventType.SPEED_EVENT)
 				speedLabel.setText(Msg.getString("MainDetailPanel.kmhSpeed", formatter.format(vehicle.getSpeed()))); //$NON-NLS-1$
+		}
+	}
+
+	/**
+	 * Adapter for the mission log
+	 */
+	private class LogTableModel extends AbstractTableModel {
+		private Mission mission;
+
+		/**
+		 * Constructor.
+		 */
+		private LogTableModel() {
+			mission = null;
+		}
+
+		/**
+		 * Gets the row count.
+		 *
+		 * @return row count.
+		 */
+		public int getRowCount() {
+			return (mission != null ? mission.getLog().size() : 0);
+		}
+
+		/**
+		 * Gets the column count.
+		 *
+		 * @return column count.
+		 */
+		public int getColumnCount() {
+			return 2;
+		}
+
+		/**
+		 * Gets the column name at a given index.
+		 *
+		 * @param columnIndex the column's index.
+		 * @return the column name.
+		 */
+		public String getColumnName(int columnIndex) {
+			if (columnIndex == 0)
+				return "Date"; //$NON-NLS-1$
+			else if (columnIndex == 1)
+				return "Phase";
+			else
+				return Msg.getString("unknown"); //$NON-NLS-1$
+		}
+
+		/**
+		 * Gets the value at a given row and column.
+		 *
+		 * @param row    the table row.
+		 * @param column the table column.
+		 * @return the value.
+		 */
+		public Object getValueAt(int row, int column) {
+			List<MissionLogEntry> entries = mission.getLog();
+			if (row < entries.size()) {
+				if (column == 0)
+					return entries.get(row).getTime();
+				else
+					return entries.get(row).getPhase().getName();
+			} else
+				return Msg.getString("unknown"); //$NON-NLS-1$
+		}
+
+		/**
+		 * Sets the mission for this table model.
+		 *
+		 * @param newMission the new mission.
+		 */
+		void setMission(Mission newMission) {
+			this.mission = newMission;
+			fireTableDataChanged();
 		}
 	}
 

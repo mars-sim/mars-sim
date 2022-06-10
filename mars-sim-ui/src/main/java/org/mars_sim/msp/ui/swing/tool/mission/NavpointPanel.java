@@ -46,7 +46,6 @@ import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
 import org.mars_sim.msp.core.person.ai.mission.MissionEventType;
 import org.mars_sim.msp.core.person.ai.mission.MissionListener;
 import org.mars_sim.msp.core.person.ai.mission.NavPoint;
-import org.mars_sim.msp.core.person.ai.mission.TravelMission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.ImageLoader;
@@ -257,8 +256,8 @@ implements ListSelectionListener, MissionListener {
             	public void valueChanged(ListSelectionEvent e) {
             		if (e.getValueIsAdjusting()) {
             			// Recenter map on selected navpoint.
-            			if ((currentMission != null) && (currentMission instanceof TravelMission)) {
-            				TravelMission travelMission = (TravelMission) currentMission;
+            			if ((currentMission != null) && (currentMission instanceof VehicleMission)) {
+            				VehicleMission travelMission = (VehicleMission) currentMission;
             				int index = navpointTable.getSelectedRow();
             				if (index > -1) {
             					NavPoint navpoint = travelMission.getNavpoint(index); 
@@ -556,9 +555,9 @@ implements ListSelectionListener, MissionListener {
 		 */
 		public void updateNavpoints() {
 		    
-			if ((currentMission != null) && (currentMission instanceof TravelMission)) {
+			if ((currentMission != null) && (currentMission instanceof VehicleMission)) {
 				navpoints.clear();
-				TravelMission travelMission = (TravelMission) currentMission;
+				VehicleMission travelMission = (VehicleMission) currentMission;
 				for (int x=0; x < travelMission.getNumberOfNavpoints(); x++) 
 					navpoints.add(travelMission.getNavpoint(x));
 				fireTableDataChanged();

@@ -58,6 +58,7 @@ public enum MissionStatus {
 	TARGET_VEHICLE_NOT_FOUND 						("Target vehicle not found"),
 	SELLING_VEHICLE_NOT_AVAILABLE_FOR_TRADE			("Selling vehicle NOT available for trade"),
 	CANNOT_ENTER_ROVER								("Cannot enter rover"),
+	VEHICLE_BEACON_ACTIVE							("Vehicle beacon active"),
 
 	// Trade related
 	COULD_NOT_ESTIMATE_TRADE_PROFIT					("Could not estimate trade profit"),

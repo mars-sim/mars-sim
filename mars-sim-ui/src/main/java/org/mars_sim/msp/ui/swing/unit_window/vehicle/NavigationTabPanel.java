@@ -30,7 +30,6 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.NavPoint;
-import org.mars_sim.msp.core.person.ai.mission.TravelMission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -181,7 +180,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
 
             VehicleMission vehicleMission = (VehicleMission) mission;
             if (vehicleMission != null
-            		&& vehicleMission.getTravelStatus().equals(TravelMission.TRAVEL_TO_NAVPOINT)) {
+            		&& vehicleMission.getTravelStatus().equals(VehicleMission.TRAVEL_TO_NAVPOINT)) {
                 hasDestination = true;
                 destinationLocationCache = vehicleMission.getNextNavpoint().getLocation();
                 NavPoint destinationPoint = vehicleMission.getNextNavpoint();
@@ -231,8 +230,8 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
 
         // Prepare distance label.
         String distanceText;
-		if ((mission != null) && (mission instanceof VehicleMission) &&
-                ((VehicleMission) mission).getTravelStatus().equals(TravelMission.TRAVEL_TO_NAVPOINT)) {
+		if ((mission instanceof VehicleMission) &&
+                ((VehicleMission) mission).getTravelStatus().equals(VehicleMission.TRAVEL_TO_NAVPOINT)) {
         	try {
         		remainingDistanceCache = ((VehicleMission) mission).getEstimatedTotalRemainingDistance();
         	}
@@ -353,7 +352,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         boolean hasDestination = false;
         		
         if ((mission != null) && (mission instanceof VehicleMission)
-                && ((VehicleMission) mission).getTravelStatus().equals(TravelMission.TRAVEL_TO_NAVPOINT)) {
+                && ((VehicleMission) mission).getTravelStatus().equals(VehicleMission.TRAVEL_TO_NAVPOINT)) {
         	NavPoint destinationPoint = ((VehicleMission) mission).getNextNavpoint();
         	
         	hasDestination = true;
@@ -391,7 +390,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
 
         // Update latitude and longitude panels if necessary.
         if ((mission != null) && (mission instanceof VehicleMission)
-                && ((VehicleMission) mission).getTravelStatus().equals(TravelMission.TRAVEL_TO_NAVPOINT)) {
+                && ((VehicleMission) mission).getTravelStatus().equals(VehicleMission.TRAVEL_TO_NAVPOINT)) {
             VehicleMission vehicleMission = (VehicleMission) mission;
         	if (destinationLocationCache == null)
         		destinationLocationCache = new Coordinates(vehicleMission.getNextNavpoint().getLocation());
