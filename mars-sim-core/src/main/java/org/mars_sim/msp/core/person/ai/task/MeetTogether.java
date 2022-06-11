@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MeetTogether.java
- * @date 2021-09-27
+ * @date 2022-06-10
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -19,9 +19,8 @@ import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.person.ai.role.RoleUtil;
-import org.mars_sim.msp.core.person.ai.social.Relationship;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
-import org.mars_sim.msp.core.person.ai.social.Relationship.RelationshipType;
+import org.mars_sim.msp.core.person.ai.social.RelationshipType;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.structure.Settlement;

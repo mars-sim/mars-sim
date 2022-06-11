@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * ScientificStudyUtil.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-06-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.science;
@@ -16,7 +16,6 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.JobType;
-import org.mars_sim.msp.core.person.ai.social.Relationship;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.time.MarsClock;
 

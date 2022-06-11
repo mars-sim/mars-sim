@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
- * SettlementConfig.java
- * @date 2021-11-30
+ * SettlementBuilder.java
+ * @date 2022-06-10
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.structure;
@@ -37,9 +37,8 @@ import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ai.job.JobAssignmentType;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.job.JobUtil;
-import org.mars_sim.msp.core.person.ai.social.Relationship;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
-import org.mars_sim.msp.core.person.ai.social.Relationship.RelationshipType;
+import org.mars_sim.msp.core.person.ai.social.RelationshipType;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
 import org.mars_sim.msp.core.resource.AmountResource;

@@ -27,12 +27,9 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.MBTIPersonality;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
-import org.mars_sim.msp.core.person.ai.social.Relationship.RelationshipType;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.tool.RandomUtil;
-
-import com.phoenixst.plexus.NoSuchNodeException;
 
 /**
  * The RelationshipManager class keeps track of all the social relationships
@@ -78,52 +75,6 @@ public class RelationshipManager implements Serializable {
 	public RelationshipManager() {
 	}
 
-//	/**
-//	 * Adds an initial settler who will have an existing relationship with all the
-//	 * other inhabitants if his/her settlement.
-//	 * 
-//	 * @param person     the person to add.
-//	 * @param settlement the settlement the person starts at.
-//	 */
-//	public void addInitialSettler(Person person, Settlement settlement) {
-//		addPerson(person, settlement.getIndoorPeople());
-//	}
-
-//	/**
-//	 * Adds a new resupply immigrant who will have an existing relationship with the
-//	 * other immigrants in his/her group.
-//	 * 
-//	 * @param person         the person to add.
-//	 * @param immigrantGroup the groups of immigrants this person belongs to.
-//	 */
-//	public void addNewImmigrant(Person person, Collection<Person> immigrantGroup) {
-//		addPerson(person, immigrantGroup);
-//	}
-
-//	/**
-//	 * Adds a new person for the relationship manager.
-//	 * 
-//	 * @param person       the new person
-//	 * @param initialGroup the group that this person has existing relationships
-//	 *                     with.
-//	 */
-//	private void addPerson(Person person, Collection<Person> initialGroup) {
-//		if ((person == null) || (initialGroup == null))
-//			throw new IllegalArgumentException("RelationshipManager.addPerson(): null parameter.");
-//	
-//		if (!relationshipGraph.containsNode(person.getIdentifier())) {
-//			relationshipGraph.addNode(person.getIdentifier());
-//			Iterator<Person> i = initialGroup.iterator();
-//			while (i.hasNext()) {
-//				Person person2 = i.next();
-//				if (!person2.equals(person)) {
-//					addRelationship(person, person2, RelationshipType.FIRST_IMPRESSION);
-//					logger.finest(person.getName() + " and " + person2.getName() + " have existing relationship.");
-//				}
-//			}
-//		}
-//	}
-
 	/**
 	 * Adds a new relationship between two people.
 	 * 
@@ -133,19 +84,15 @@ public class RelationshipManager implements Serializable {
 	 *                         members)
 	 */
 	public void createRelationship(Person person1, Person person2, RelationshipType startingRelationship) {
-		try {
-			if (RelationshipType.FIRST_IMPRESSION == startingRelationship) {
-				setOpinion(person1, person2, getFirstImpression(person1, person2));
-				setOpinion(person2, person1, getFirstImpression(person2, person1));
-			} else if (RelationshipType.EXISTING_RELATIONSHIP == startingRelationship) {
-				setOpinion(person1, person2, getExistingRelationship(person1, person2));
-				setOpinion(person2, person1, getExistingRelationship(person2, person1));
-			} else if (RelationshipType.COMMUNICATION_MEETING == startingRelationship) {
-				setOpinion(person1, person2, getCommunicationMeeting(person1, person2));
-				setOpinion(person2, person1, getCommunicationMeeting(person2, person1));
-			}
-		} catch (NoSuchNodeException e) {
-          	logger.log(Level.SEVERE, "Cannot instantiate relationship: "+ e.getMessage());
+		if (RelationshipType.FIRST_IMPRESSION == startingRelationship) {
+			setOpinion(person1, person2, getFirstImpression(person1, person2));
+			setOpinion(person2, person1, getFirstImpression(person2, person1));
+		} else if (RelationshipType.EXISTING_RELATIONSHIP == startingRelationship) {
+			setOpinion(person1, person2, getExistingRelationship(person1, person2));
+			setOpinion(person2, person1, getExistingRelationship(person2, person1));
+		} else if (RelationshipType.COMMUNICATION_MEETING == startingRelationship) {
+			setOpinion(person1, person2, getCommunicationMeeting(person1, person2));
+			setOpinion(person2, person1, getCommunicationMeeting(person2, person1));
 		}
 	}
 

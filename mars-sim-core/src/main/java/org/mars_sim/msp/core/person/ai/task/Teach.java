@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Teach.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-06-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -19,7 +19,6 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.social.Relationship;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;

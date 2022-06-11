@@ -11,9 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.mars_sim.msp.core.person.Gene;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.social.Relationship.RelationshipType;
 
 /**
  * The Relation class represents the relational connection between two people.
