@@ -4,7 +4,6 @@
  * @date 2021-11-24
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.core.structure.building;
 
 import java.io.Serializable;
@@ -2172,15 +2171,10 @@ public class BuildingManager implements Serializable {
 		while (i.hasNext()) {
 			i.next().destroy();
 		}
-		// buildings.clear();
 		buildings = null;
-//		settlement = null;
-		// buildingValuesNewCache.clear();
 		vPNewCache = null;
-		// buildingValuesOldCache.clear();
 		vPOldCache = null;
 		lastVPUpdateTime = null;
-//		resupply = null;
 		meteorite = null;
 		marsClock = null;
 		masterClock = null;

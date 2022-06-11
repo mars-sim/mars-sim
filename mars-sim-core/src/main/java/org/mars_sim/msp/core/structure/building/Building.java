@@ -20,18 +20,22 @@ import org.mars_sim.msp.core.BoundedObject;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.LocalPosition;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.equipment.ItemHolder;
 import org.mars_sim.msp.core.equipment.ResourceHolder;
+import org.mars_sim.msp.core.events.HistoricalEvent;
+import org.mars_sim.msp.core.hazard.HazardEvent;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
+import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
@@ -1122,19 +1126,16 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	 * Checks for possible meteorite impact for this building
 	 */
 	private void checkForMeteoriteImpact(ClockPulse pulse) {
-		// check for the passing of each day
-
+		// Reset the impact time
 		int moment_of_impact = 0;
-
-		BuildingManager manager = settlement.getBuildingManager();
 
 		// if assuming a gauissan profile, p = mean + RandomUtil.getGaussianDouble() * standardDeviation
 		// Note: Will have 70% of values will fall between mean +/- standardDeviation, i.e., within one std deviation
-		double probability = floorArea * manager.getProbabilityOfImpactPerSQMPerSol();
-		// probability is in percentage unit between 0% and 100%
+		double probability = floorArea * getBuildingManager().getProbabilityOfImpactPerSQMPerSol();
+		// Probability is in percentage unit between 0% and 100%
 		if (probability > 0 && RandomUtil.getRandomDouble(100D) <= probability) {
 			isImpactImminent = true;
-			// set a time for the impact to happen any time between 0 and 1000 milisols
+			// Set a time for the impact to happen any time between 0 and 1000 milisols
 			moment_of_impact = RandomUtil.getRandomInt(1000);
 		}
 
@@ -1144,14 +1145,15 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 			// Note: at the fastest sim speed, up to ~5 millisols may be skipped.
 			// need to set up detection of the impactTimeInMillisol with a +/- 3 range.
 			int delta = (int) Math.sqrt(Math.sqrt(pulse.getMasterClock().getActualTR()));
+			
 			if (now > moment_of_impact - 2 * delta && now < moment_of_impact + 2 * delta) {
 				logger.log(this, Level.INFO, 0, "A meteorite impact over is imminent.");
 
-				// Reset the boolean immmediately. This is for keeping track of whether the
-				// impact has occurred at msols
+				// Reset the boolean immediately for keeping track of whether 
+				// the impact has occurred
 				isImpactImminent = false;
-				// find the length this meteorite can penetrate
-				double penetrated_length = manager.getWallPenetration();
+				// Find the length this meteorite can penetrate
+				double penetrated_length = getBuildingManager().getWallPenetration();
 
 				if (penetrated_length >= wallThickness) {
 					// Yes it's breached !
@@ -1188,9 +1190,9 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 							mal.setTraumatized(victimName);
 
 							// Store the meteorite fragment in the settlement
-							settlement.storeAmountResource(ResourceUtil.meteoriteID, manager.getDebrisMass());
+							settlement.storeAmountResource(ResourceUtil.meteoriteID, getBuildingManager().getDebrisMass());
 
-							logger.log(this, Level.INFO, 0, "Found " + Math.round(manager.getDebrisMass() * 100.0)/100.0
+							logger.log(this, Level.INFO, 0, "Found " + Math.round(getBuildingManager().getDebrisMass() * 100.0)/100.0
 									+ " kg of meteorite fragments in " + getNickName() + ".");
 
 							if (pc.getStress() > 30)
@@ -1198,6 +1200,24 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 
 						}
 					}
+				}
+				else {
+					
+					logger.log(this, Level.INFO, 0, "Meteorite Impact event observed but damage not detected.");
+
+					HistoricalEvent hEvent = new HazardEvent(
+							EventType.HAZARD_METEORITE_IMPACT,
+							getAssociatedSettlement(),
+							"Meteorite Hit",
+							"None",
+							getNickName(), 
+							getLocationTag().getImmediateLocation(),
+							getLocationTag().getLocale(),
+							getAssociatedSettlement().getName()
+							);
+					Simulation.instance().getEventManager().registerNewEvent(hEvent);
+
+					fireUnitUpdate(UnitEventType.METEORITE_EVENT);
 				}
 			}
 		}

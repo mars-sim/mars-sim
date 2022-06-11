@@ -44,15 +44,17 @@ public enum UnitEventType {
 	STRESS_EVENT					("stress event"),
 	EMOTION_EVENT					("emotion event"),
 	PERFORMANCE_EVENT				("performance event"),
+	
+	// Others
 	ILLNESS_EVENT					("illness event"),
 	DEATH_EVENT						("death event"),
 	BURIAL_EVENT					("burial event"),
 	RADIATION_EVENT					("radiation event"),
-
-
+	METEORITE_EVENT					("meteorite event"),
+	
 	// For MalfunctionManager
 	MALFUNCTION_EVENT				("malfunction"),
-
+	
 	// For TaskManager
 	TASK_EVENT						("task"),
 
@@ -125,7 +127,7 @@ public enum UnitEventType {
 	// For settlement sensor detection grid
 	BASELINE_EVENT					("baseline radiation event"),
 	SEP_EVENT						("SEP event"),	
-	GCR_EVENT						("GCR event"),
+	GCR_EVENT						("GCR event")
 	;
 	
 	private String name;
