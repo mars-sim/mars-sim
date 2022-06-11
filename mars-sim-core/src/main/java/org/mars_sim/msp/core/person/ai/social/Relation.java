@@ -23,7 +23,7 @@ public class Relation implements Serializable {
 	
 	/** The person's opinion toward another person. */
 	private Map<Integer, Double> opinionMap = new HashMap<>();
-	
+
 	/**
 	 * Constructor.
 	 * 
@@ -32,6 +32,12 @@ public class Relation implements Serializable {
 	public Relation(Person person)  {
 	}
 	
+	/**
+	 * Gets the opinion regarding a person
+	 * 
+	 * @param personID
+	 * @return
+	 */
 	public double getOpinion(int personID) {
 		if (opinionMap.containsKey(personID))
 			return opinionMap.get(personID);
@@ -39,6 +45,12 @@ public class Relation implements Serializable {
 			return 0;
 	}
 	
+	/**
+	 * Sets the opinion regarding a person
+	 * 
+	 * @param personID
+	 * @param opinion
+	 */
 	public void setOpinion(int personID, double opinion) {
 		if (opinion < 1)
 			opinion = 1;
@@ -47,6 +59,12 @@ public class Relation implements Serializable {
 		opinionMap.put(personID, opinion);
 	}
 	
+	/**
+	 * Changes the opinion regarding a person
+	 * 
+	 * @param personID
+	 * @param mod
+	 */
 	public void changeOpinion(int personID, double mod) {
 		double result = getOpinion(personID) + mod;
 		if (result < 1)
@@ -56,7 +74,20 @@ public class Relation implements Serializable {
 		opinionMap.put(personID, result);
 	}
 	
-	public Set<Integer> getPeople() {
+	/**
+	 * Gets a set of people's ids
+	 * 
+	 * @return a set of people's ids
+	 */
+	public Set<Integer> getPeopleIDs() {
 		return opinionMap.keySet();
+	}
+	
+	/**
+	 * Prepare object for garbage collection.
+	 */
+	public void destroy() {
+		opinionMap.clear();
+		opinionMap = null;
 	}
 }

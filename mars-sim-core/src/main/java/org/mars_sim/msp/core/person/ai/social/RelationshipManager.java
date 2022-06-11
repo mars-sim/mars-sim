@@ -4,7 +4,6 @@
  * @date 2022-06-10
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.core.person.ai.social;
 
 import java.io.Serializable;
@@ -14,12 +13,12 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.UnitManager;
@@ -70,11 +69,11 @@ public class RelationshipManager implements Serializable {
 	private static UnitManager unitManager;
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 */
 	public RelationshipManager() {
 	}
-
+	
 	/**
 	 * Adds a new relationship between two people.
 	 * 
@@ -147,15 +146,12 @@ public class RelationshipManager implements Serializable {
 	 * @param person the person
 	 * @return a list of the people the person knows.
 	 */
-	public Collection<Person> getAllKnownPeople(Person person) {
-
-		Collection<Person> result = new ConcurrentLinkedQueue<Person>();
-		for (int id : person.getRelation().getPeople()) {
-			result.add(unitManager.getPersonByID(id));
-		}
-		return result;
+	public Set<Person> getAllKnownPeople(Person person) {
+		return person.getRelation().getPeopleIDs().stream()
+				.map(id -> unitManager.getPersonByID(id))
+				.collect(Collectors.toSet());
 	}
-
+	
 	/**
 	 * Gets a map of my opinions over them
 	 * 
@@ -171,7 +167,7 @@ public class RelationshipManager implements Serializable {
 				double score = getOpinionOfPerson(person, pp);
 				if (highestScore <= score)
 					highestScore = score;
-					friends.put(pp, score);
+				friends.put(pp, score);
 			}
 		}
 
@@ -193,7 +189,7 @@ public class RelationshipManager implements Serializable {
 				double score = getOpinionOfPerson(pp, person);
 				if (highestScore <= score)
 					highestScore = score;
-					friends.put(pp, score);
+				friends.put(pp, score);
 			}
 		}
 
@@ -217,7 +213,7 @@ public class RelationshipManager implements Serializable {
 
 	    Map<K, V> result = new ConcurrentHashMap<>();
 	    for (Iterator<Entry<K, V>> it = list.iterator(); it.hasNext();) {
-	        Map.Entry<K, V> entry = (Map.Entry<K, V>) it.next();
+	        Map.Entry<K, V> entry = it.next();
 	        result.put(entry.getKey(), entry.getValue());
 	    }
 
@@ -239,14 +235,16 @@ public class RelationshipManager implements Serializable {
 		
 		else if (size > 1) {
 			double hScore = 0;
-			for (Person p : bestFriends.keySet()) {
+			for (Entry<Person, Double> entry : bestFriends.entrySet()) {
+				Person p = entry.getKey();
 				double score = bestFriends.get(p);
 				if (hScore < score) {
 					hScore = score;
 				}
 			}	
 			Map<Person, Double> list = new ConcurrentHashMap<>();
-			for (Person p : bestFriends.keySet()) {
+			for (Entry<Person, Double> entry : bestFriends.entrySet()) {
+				Person p = entry.getKey();
 				double score = bestFriends.get(p);
 				if (score >= hScore) {
 					// in case if more than one person has the same score
@@ -293,7 +291,7 @@ public class RelationshipManager implements Serializable {
 		if (people == null)
 			throw new IllegalArgumentException("people is null");
 
-		if (people.size() > 0) {
+		if (!people.isEmpty()) {
 			double result = 0D;
 			Iterator<Person> i = people.iterator();
 			while (i.hasNext()) {
@@ -381,19 +379,22 @@ public class RelationshipManager implements Serializable {
 					double attractivenessModifier = (attractiveness - 50D) / 50D;
 					attractivenessModifier *= BASE_ATTRACTIVENESS_MODIFIER * time;
 					boolean oppositeGenders = (!person.getGender().equals(localPerson.getGender()));
-					if (oppositeGenders)
-						RandomUtil.getRandomDouble(changeAmount += attractivenessModifier);
-	
+					if (oppositeGenders) {
+						changeAmount += attractivenessModifier;
+						RandomUtil.getRandomDouble(changeAmount);
+					}
 					// Modify based on same-gender bonding.
 					double genderBondingModifier = BASE_GENDER_BONDING_MODIFIER * time;
-					if (!oppositeGenders)
-						RandomUtil.getRandomDouble(changeAmount += genderBondingModifier);
+					if (!oppositeGenders){
+						changeAmount += genderBondingModifier;
+						RandomUtil.getRandomDouble(changeAmount);
+					}
 	
 					// Modify based on personality differences.
 					MBTIPersonality personPersonality = person.getMind().getMBTI();
 					MBTIPersonality localPersonality = localPerson.getMind().getMBTI();
 					double personalityDiffModifier = (2D
-							- (double) personPersonality.getPersonalityDifference(localPersonality.getTypeString())) / 2D;
+							- personPersonality.getPersonalityDifference(localPersonality.getTypeString())) / 2D;
 					personalityDiffModifier *= PERSONALITY_DIFF_MODIFIER * time;
 					changeAmount += RandomUtil.getRandomDouble(personalityDiffModifier);
 	
@@ -412,7 +413,6 @@ public class RelationshipManager implements Serializable {
 				}
 			}
 		}
-//		count2++;
 	}
 
 	/**
@@ -468,9 +468,10 @@ public class RelationshipManager implements Serializable {
 
 		int count = 0;
 		for (Person pp : s.getAllAssociatedPeople()) {
-			Map<Person, Double> friends = getTheirOpinionsOfMe(pp);//.getMyOpinionsOfThem(pp);
-			if (!friends.isEmpty()) {
-				for( Person p : friends.keySet()) {
+			Map<Person, Double> friends = getTheirOpinionsOfMe(pp);
+			if (!friends.isEmpty()) {	
+				for (Entry<Person, Double> entry : friends.entrySet()) {
+					Person p = entry.getKey();
 					score += friends.get(p);
 					count++;
 				}
@@ -503,13 +504,13 @@ public class RelationshipManager implements Serializable {
 		NaturalAttributeManager attributes = impressionee.getNaturalAttributeManager();
 
 		// Modify based on conversation attribute.
-		double conversationModifier = (double) attributes.getAttribute(NaturalAttributeType.CONVERSATION) - 50D;
+		double conversationModifier = attributes.getAttribute(NaturalAttributeType.CONVERSATION) - 50D;
 		result += RandomUtil.getRandomDouble(conversationModifier);
 
 		// Modify based on attractiveness attribute if people are of opposite genders.
 		// Note: We may add sexual orientation later that will add further complexity to
 		// this.
-		double attractivenessModifier = (double) attributes.getAttribute(NaturalAttributeType.ATTRACTIVENESS) - 50D;
+		double attractivenessModifier = attributes.getAttribute(NaturalAttributeType.ATTRACTIVENESS) - 50D;
 		boolean oppositeGenders = (!impressioner.getGender().equals(impressionee.getGender()));
 		if (oppositeGenders)
 			result += RandomUtil.getRandomDouble(attractivenessModifier);
@@ -544,16 +545,16 @@ public class RelationshipManager implements Serializable {
 			result += RandomUtil.getRandomDouble(100D);
 		result /= numberOfIterations;
 
-		NaturalAttributeManager attributes = target.getNaturalAttributeManager();
-
-		// Modify based on conversation attribute.
-		double conversationModifier = (double) attributes.getAttribute(NaturalAttributeType.CONVERSATION) - 50D;
-		result += RandomUtil.getRandomDouble(conversationModifier);
-
+		// Modify based on person's conversation attribute.
+		double conversationModifier0 = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.CONVERSATION) - 50D;
+		// Modify based on target conversation attribute.
+		double conversationModifier1 = target.getNaturalAttributeManager().getAttribute(NaturalAttributeType.CONVERSATION) - 50D;
+		result += RandomUtil.getRandomDouble((conversationModifier0 + conversationModifier1)/8.0);
+		
 		// Modify based on attractiveness attribute if people are of opposite genders.
 		// Note: We may add sexual orientation later that will add further complexity to
 		// this.
-		double attractivenessModifier = (double) attributes.getAttribute(NaturalAttributeType.ATTRACTIVENESS) - 50D;
+		double attractivenessModifier = target.getNaturalAttributeManager().getAttribute(NaturalAttributeType.ATTRACTIVENESS) - 50D;
 		boolean oppositeGenders = (!person.getGender().equals(target.getGender()));
 		if (oppositeGenders)
 			result += RandomUtil.getRandomDouble(attractivenessModifier);
@@ -561,7 +562,7 @@ public class RelationshipManager implements Serializable {
 		// Personality diff modifier
 		MBTIPersonality personType = person.getMind().getMBTI();
 		MBTIPersonality targetType = target.getMind().getMBTI();
-		double personalityDiffModifier = (2D - (double) personType.getPersonalityDifference(targetType.getTypeString()))
+		double personalityDiffModifier = (2D - personType.getPersonalityDifference(targetType.getTypeString()))
 				* 50D;
 		result += RandomUtil.getRandomDouble(personalityDiffModifier);
 
@@ -589,11 +590,15 @@ public class RelationshipManager implements Serializable {
 	 * @return the person's opinion of the target as a value from 0 to 100.
 	 */
 	private double getCommunicationMeeting(Person person, Person target) {
-		double result = 0D;
-
 		// Default to 50 for now.
-		result = 50D;
+		double result = 50D;
 
+		// Modify based on person's conversation attribute.
+		double conversationModifier0 = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.CONVERSATION) - 50D;
+		// Modify based on target conversation attribute.
+		double conversationModifier1 = target.getNaturalAttributeManager().getAttribute(NaturalAttributeType.CONVERSATION) - 50D;
+		result += RandomUtil.getRandomDouble((conversationModifier0 + conversationModifier1)/4.0);
+	
 		// Modify based on total scientific achievement.
 		result += target.getTotalScientificAchievement() / 10D;
 
@@ -613,7 +618,6 @@ public class RelationshipManager implements Serializable {
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {
-		unitManager = null;
 	}
 
 }

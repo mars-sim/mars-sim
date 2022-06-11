@@ -58,6 +58,7 @@ import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.MissionPlanning;
 import org.mars_sim.msp.core.person.ai.role.Role;
 import org.mars_sim.msp.core.person.ai.role.RoleUtil;
+import org.mars_sim.msp.core.person.ai.social.Relation;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTaskUtil;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
@@ -420,6 +421,7 @@ public class Simulation implements ClockListener, Serializable {
 											medicalManager, eventManager,
 											simulationConfig.getPartConfiguration());
 		RelationshipManager.initializeInstances(unitManager);
+
 		RadiationExposure.initializeInstances(masterClock, marsClock);
 
 		//  Re-initialize the GameManager
@@ -665,6 +667,7 @@ public class Simulation implements ClockListener, Serializable {
 		rf.discoverReportingAuthorities(unitManager);
 
 		RelationshipManager.initializeInstances(unitManager);
+
 		MalfunctionManager.initializeInstances(masterClock, marsClock, malfunctionFactory,
 												medicalManager, eventManager,
 												simulationConfig.getPartConfiguration());

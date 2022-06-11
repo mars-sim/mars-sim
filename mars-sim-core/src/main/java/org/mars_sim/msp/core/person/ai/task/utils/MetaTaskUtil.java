@@ -96,7 +96,7 @@ public class MetaTaskUtil {
 	 * Private constructor for utility class.
 	 */
 	private MetaTaskUtil() {
-	};
+	}
 
 	/**
 	 * Lazy initialisation of metaTasks list.
