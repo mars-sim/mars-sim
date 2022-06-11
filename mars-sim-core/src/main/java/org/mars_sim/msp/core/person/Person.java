@@ -53,6 +53,7 @@ import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.role.Role;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
+import org.mars_sim.msp.core.person.ai.social.Relation;
 import org.mars_sim.msp.core.person.ai.task.meta.WorkoutMeta;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskManager;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskSchedule;
@@ -2261,6 +2262,15 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
+	 * Gets the relation instance 
+	 * 
+	 * @return
+	 */
+	public Relation getRelation( ) {
+		return mind.getRelation();
+	}
+	
+	/**
 	 * Reinitialize references after loading from a saved sim
 	 */
 	public void reinit() {
@@ -2269,7 +2279,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
-	 * Compares if an object is the same as this equipment
+	 * Compares if an object is the same as this person
 	 *
 	 * @param obj
 	 */

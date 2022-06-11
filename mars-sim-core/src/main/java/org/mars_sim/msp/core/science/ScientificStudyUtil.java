@@ -81,11 +81,7 @@ public class ScientificStudyUtil {
         while (i.hasNext()) {
             Person person = i.next();
             if (science == ScienceType.getJobScience(person.getMind().getJob())) {
-                Relationship relationship = relationshipManager.getRelationship(researcher, person);
-                if (relationship != null) {
-                    double currentOpinion = relationship.getPersonOpinion(person);
-                    relationship.setPersonOpinion(person, currentOpinion + achievement);
-                }
+                relationshipManager.changeOpinion(researcher, person, achievement);
             }
         }
     }

@@ -13,11 +13,13 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.social.Relationship;
+import org.mars_sim.msp.core.person.ai.social.Relationship.RelationshipType;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -322,12 +324,6 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
 	 * @param time the time assisting.
 	 */
 	private void addRelationshipModifier(double time) {
-//		RelationshipManager manager = Simulation.instance().getRelationshipManager();
-		double currentOpinion = relationshipManager.getOpinionOfPerson(researcher, person);
-		double newOpinion = currentOpinion + (BASE_RELATIONSHIP_MODIFIER * time);
-		Relationship relationship = relationshipManager.getRelationship(researcher, person);
-		if (relationship != null) {
-			relationship.setPersonOpinion(researcher, newOpinion);
-		}
+        relationshipManager.changeOpinion(researcher, person, BASE_RELATIONSHIP_MODIFIER * time);
 	}
 }

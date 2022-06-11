@@ -22,6 +22,7 @@ import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
+import org.mars_sim.msp.core.person.ai.social.Relation;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.person.ai.task.utils.PersonTaskManager;
 import org.mars_sim.msp.core.structure.OverrideType;
@@ -68,7 +69,9 @@ public class Mind implements Serializable, Temporal {
 	private EmotionManager emotion;
 	/** The person's personality trait manager. */
 	private PersonalityTraitManager trait;
-
+	/** The person's relationship with others. */
+	private Relation relation;
+	
 	private static MissionManager missionManager;
 	private static RelationshipManager relationshipManager;
 	private static SurfaceFeatures surfaceFeatures;
@@ -102,8 +105,10 @@ public class Mind implements Serializable, Temporal {
 		mbti = new MBTIPersonality(person);
 		// Construct the emotion states.
 		emotion = new EmotionManager(person);
-		// Construct the task manager
+		// Construct the task manager.
 		taskManager = new PersonTaskManager(this);
+		// Construct the Relation instance.
+		relation = new Relation(person);
 	}
 
 	/**
@@ -689,10 +694,23 @@ public class Mind implements Serializable, Temporal {
 		jobLock = value;
 	}
 
+	/**
+	 * Gets the PersonalityTraitManager instance 
+	 * 
+	 * @return the PersonalityTraitManager instance 
+	 */
 	public PersonalityTraitManager getTraitManager() {
 		return trait;
 	}
 
+	/**
+	 * Gets the relation instance 
+	 * 
+	 * @return the relation instance 
+	 */
+	public Relation getRelation( ) {
+		return relation;
+	}
 
 	/**
 	 * Reloads instances after loading from a saved sim

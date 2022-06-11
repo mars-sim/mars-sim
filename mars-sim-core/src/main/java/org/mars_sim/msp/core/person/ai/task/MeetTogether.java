@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.person.ai.role.RoleUtil;
 import org.mars_sim.msp.core.person.ai.social.Relationship;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
+import org.mars_sim.msp.core.person.ai.social.Relationship.RelationshipType;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -155,21 +156,15 @@ implements Serializable {
         settlement = candidate.getSettlement();
         
         if (settlement != null) {
-            // Check if existing relationship between primary researcher and invitee.
+
             if (relationshipManager == null)
             	relationshipManager = Simulation.instance().getRelationshipManager();
-            	
-            Relationship relationship = null;
-            
+            // Check if existing relationship between candidate and inviter.      
             if (!relationshipManager.hasRelationship(candidate, inviter)) {
-                // Add new communication meeting relationship.
-            	relationship = relationshipManager.addRelationship(candidate, inviter, Relationship.COMMUNICATION_MEETING);
+                // Create new communication meeting relationship.
+            	relationshipManager.createRelationship(candidate, inviter, RelationshipType.COMMUNICATION_MEETING);
             }
-
-            if (relationship != null) {
-	            double currentOpinion = relationship.getPersonOpinion(inviter);
-	            relationship.setPersonOpinion(inviter, currentOpinion + RandomUtil.getRandomDouble(1));
-            }
+            relationshipManager.changeOpinion(candidate, inviter, RandomUtil.getRandomDouble(1));
         }
     }
     
@@ -217,18 +212,14 @@ implements Serializable {
 	
 		        if (getDuration() <= (getTimeCompleted() + time)) {
 		
-		            // Check if existing relationship between primary researcher and invitee.
 		            if (relationshipManager == null)
 		            	relationshipManager = Simulation.instance().getRelationshipManager();
-		            	
+		            // Check if existing relationship between person and candidate.
 		            if (!relationshipManager.hasRelationship(person, candidate)) {
-		                // Add new communication meeting relationship.
-		                relationshipManager.addRelationship(person, candidate, Relationship.COMMUNICATION_MEETING);
+		                // Create new communication meeting relationship.
+		            	relationshipManager.createRelationship(person, candidate, RelationshipType.COMMUNICATION_MEETING);
 		            }
-		            // Add 1 point to the opinion of the candidate toward the person
-		            Relationship relationship = relationshipManager.getRelationship(candidate, person);
-		            double currentOpinion = relationship.getPersonOpinion(person);
-		            relationship.setPersonOpinion(person, currentOpinion + RandomUtil.getRandomDouble(1));
+		            relationshipManager.changeOpinion(person, candidate, RandomUtil.getRandomDouble(1));
 		        }
 		    }
     	}

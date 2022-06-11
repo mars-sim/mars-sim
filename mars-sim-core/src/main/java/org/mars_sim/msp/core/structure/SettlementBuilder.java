@@ -39,6 +39,7 @@ import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.social.Relationship;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
+import org.mars_sim.msp.core.person.ai.social.Relationship.RelationshipType;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
 import org.mars_sim.msp.core.resource.AmountResource;
@@ -378,7 +379,7 @@ public final class SettlementBuilder {
 			// Set the container unit
 			person.setContainerUnit(settlement);
 
-			relationshipManager.addInitialSettler(person, settlement);
+//			relationshipManager.addInitialSettler(person, settlement);
 
 			// Set up preference
 			person.getPreference().initializePreference();
@@ -489,7 +490,7 @@ public final class SettlementBuilder {
 				if (relMap != null) {
 					addedCrew.put(person, relMap);
 				}
-				relationshipManager.addInitialSettler(person, settlement);
+//				relationshipManager.addInitialSettler(person, settlement);
 
 				// Set person's job (if any).
 				String jobName = m.getJob();
@@ -556,15 +557,14 @@ public final class SettlementBuilder {
 					if (potentialFriend.getName().equals(friendName)) {
 						int opinion = friend.getValue();
 
-						// Set the relationship opinion.
-						Relationship relationship = relationshipManager.getRelationship(person, potentialFriend);
-						if (relationship != null) {
-							relationship.setPersonOpinion(person, opinion);
-						} else {
-							relationship = relationshipManager.addRelationship(person, potentialFriend,
-									Relationship.EXISTING_RELATIONSHIP);
-							relationship.setPersonOpinion(potentialFriend, opinion);
-						}
+			            if (relationshipManager == null)
+			            	relationshipManager = Simulation.instance().getRelationshipManager();
+			            // Check if existing relationship between person and potentialFriend.      
+			            if (!relationshipManager.hasRelationship(person, potentialFriend)) {
+			                // Create new communication meeting relationship.
+			            	relationshipManager.createRelationship(person, potentialFriend, RelationshipType.EXISTING_RELATIONSHIP);
+			            }
+			            relationshipManager.changeOpinion(person, potentialFriend, opinion);
 					}
 				}
 			}

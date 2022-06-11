@@ -795,6 +795,11 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 		return name;
 	}
 
+	/**
+	 * Compares if an object is the same as this unit
+	 *
+	 * @param obj
+	 */
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;

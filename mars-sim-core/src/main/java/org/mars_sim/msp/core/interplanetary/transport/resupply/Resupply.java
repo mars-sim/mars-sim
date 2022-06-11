@@ -534,7 +534,8 @@ public class Resupply implements Serializable, Transportable {
 			// Set the container unit
 			immigrant.setContainerUnit(settlement);
 			
-			relationshipManager.addNewImmigrant(immigrant, immigrants);
+//			relationshipManager.addNewImmigrant(immigrant, immigrants);
+			
 			immigrants.add(immigrant);
 
 			logger.config(immigrantName + " arrived on Mars at " + settlementName);

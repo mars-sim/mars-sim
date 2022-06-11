@@ -180,8 +180,6 @@ public class RespondToStudyInvitation extends Task implements Serializable {
 
 			// Get relationship between invitee and primary researcher.
 			Person primaryResearcher = study.getPrimaryResearcher();
-//            RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
-			Relationship relationship = relationshipManager.getRelationship(person, primaryResearcher);
 
 			// Decide response to invitation.
 			if (decideResponse()) {
@@ -190,10 +188,7 @@ public class RespondToStudyInvitation extends Task implements Serializable {
 
 				// Add 10 points to primary researcher's opinion of invitee for accepting
 				// invitation.
-				if (relationship != null) {
-					double currentOpinion = relationship.getPersonOpinion(primaryResearcher);
-					relationship.setPersonOpinion(primaryResearcher, currentOpinion + 10D);
-				}
+		        relationshipManager.changeOpinion(primaryResearcher, person, RandomUtil.getRandomDouble(5));
 
 				logger.log(person, Level.FINE, 0, "Accepted invitation from " + primaryResearcher.getName()
 							+ " to collaborate on "	+ study.getName() + ".");
@@ -201,10 +196,7 @@ public class RespondToStudyInvitation extends Task implements Serializable {
 
 				// Subtract 10 points from primary researcher's opinion of invitee for rejecting
 				// invitation.
-				if (relationship != null) {
-					double currentOpinion = relationship.getPersonOpinion(primaryResearcher);
-					relationship.setPersonOpinion(primaryResearcher, currentOpinion - 10D);
-				}
+		        relationshipManager.changeOpinion(primaryResearcher, person, RandomUtil.getRandomDouble(-5));
 
 				logger.log(person, Level.FINE, 0, "Rejected invitation from " + primaryResearcher.getName()
 							+ " to collaborate on "	+ study.getName() + ".");

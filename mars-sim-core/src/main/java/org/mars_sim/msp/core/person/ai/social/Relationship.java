@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Relationship.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-06-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.social;
@@ -23,14 +23,16 @@ public class Relationship implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	// TODO Types of starting relationships should be an enum.
-	/** First impression if for meeting a new person. */
-	public static final String FIRST_IMPRESSION = "First Impression";
-	/** Existing relationship is for meeting a person who is already known. */
-	public static final String EXISTING_RELATIONSHIP = "Existing Relationship";
-	/** Communication meeting is for meeting a new person remotely (email, etc). */
-	public static final String COMMUNICATION_MEETING = "Communication Meeting";
-
+	/** Types of relationship. */
+	public enum RelationshipType {
+		/** First impression if for meeting a new person. */
+		FIRST_IMPRESSION, 
+		/** Existing relationship is for meeting a person who is already known. */
+		EXISTING_RELATIONSHIP, 
+		/** Communication meeting is for meeting a new person remotely (email, etc). */
+		COMMUNICATION_MEETING
+	}
+	
 	/**
 	 * Relationship modifier for settlers since they are trained to get along with
 	 * each other.
@@ -42,7 +44,7 @@ public class Relationship implements Serializable {
 	private double person1Opinion;
 	private int person2;
 	private double person2Opinion;
-
+	
 	/**
 	 * Constructor.
 	 * 
@@ -53,19 +55,19 @@ public class Relationship implements Serializable {
 	 *                             strings above)
 	 * @throws IllegalArgumentException if invalid parameters
 	 */
-	Relationship(Person person1, Person person2, String startingRelationship) throws IllegalArgumentException {
-
+	Relationship(Person person1, Person person2, RelationshipType startingRelationship) throws IllegalArgumentException {
+		
 		// Initialize data members
 		this.person1 = person1.getIdentifier();
 		this.person2 = person2.getIdentifier();
 
-		if (FIRST_IMPRESSION.equals(startingRelationship)) {
+		if (RelationshipType.FIRST_IMPRESSION == startingRelationship) {
 			setPerson1Opinion(getFirstImpression(person1, person2));
 			setPerson2Opinion(getFirstImpression(person2, person1));
-		} else if (EXISTING_RELATIONSHIP.equals(startingRelationship)) {
+		} else if (RelationshipType.EXISTING_RELATIONSHIP == startingRelationship) {
 			setPerson1Opinion(getExistingRelationship(person1, person2));
 			setPerson2Opinion(getExistingRelationship(person2, person1));
-		} else if (COMMUNICATION_MEETING.equals(startingRelationship)) {
+		} else if (RelationshipType.COMMUNICATION_MEETING == startingRelationship) {
 			setPerson1Opinion(getCommunicationMeeting(person1, person2));
 			setPerson2Opinion(getCommunicationMeeting(person2, person1));
 		} else

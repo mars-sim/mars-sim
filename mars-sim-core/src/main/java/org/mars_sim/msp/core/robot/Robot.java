@@ -1620,6 +1620,12 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		}
 	}
 
+	/**
+	 * Compares if an object is the same as this robot
+	 *
+	 * @param obj
+	 */
+	@Override
 	public boolean equals(Object obj) {
 		return super.equals(obj);
 	}

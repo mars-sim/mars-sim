@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.social.Relationship;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
+import org.mars_sim.msp.core.person.ai.social.Relationship.RelationshipType;
 import org.mars_sim.msp.core.person.ai.task.meta.HaveConversationMeta;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
@@ -351,19 +352,14 @@ implements Serializable {
 	            else
 	            	return 0D;
 
-	            if (relationshipManager != null && !relationshipManager.hasRelationship(invitee, person)) {
-	                // Add new communication meeting relationship.
-	            	Relationship relationship = relationshipManager.addRelationship(invitee, person, Relationship.COMMUNICATION_MEETING);
-	                
-	                if (relationship == null) {
-						relationshipManager.addRelationship(person, invitee,
-								Relationship.EXISTING_RELATIONSHIP);
-						relationship = relationshipManager.getRelationship(invitee, person);
-					}
-	                
-	                double currentOpinion = relationship.getPersonOpinion(invitee);
-	                relationship.setPersonOpinion(invitee, currentOpinion + RandomUtil.getRandomDouble(1));
+	            if (relationshipManager == null)
+	            	relationshipManager = Simulation.instance().getRelationshipManager();
+	            // Check if existing relationship between invitee and person.      
+	            if (!relationshipManager.hasRelationship(invitee, person)) {
+	                // Create new communication meeting relationship.
+	            	relationshipManager.createRelationship(invitee, person, RelationshipType.COMMUNICATION_MEETING);
 	            }
+	            relationshipManager.changeOpinion(invitee, person, RandomUtil.getRandomDouble(1));
         	}
         }
 

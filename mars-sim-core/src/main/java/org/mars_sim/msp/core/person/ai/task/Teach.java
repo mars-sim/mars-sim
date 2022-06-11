@@ -219,13 +219,7 @@ public class Teach extends Task implements Serializable {
 	 * @param time the time teaching.
 	 */
 	private void addRelationshipModifier(double time) {
-		RelationshipManager manager = Simulation.instance().getRelationshipManager();
-		double currentOpinion = manager.getOpinionOfPerson(student, person);
-		double newOpinion = currentOpinion + (BASE_RELATIONSHIP_MODIFIER * time);
-		Relationship relationship = manager.getRelationship(student, person);
-		if (relationship != null) {
-			relationship.setPersonOpinion(student, newOpinion);
-		}
+        relationshipManager.changeOpinion(student, person, BASE_RELATIONSHIP_MODIFIER * time);
 	}
 
 	@Override

@@ -1,9 +1,10 @@
 /*
  * Mars Simulation Project
  * RelationshipManager.java
- * @date 2021-08-28
+ * @date 2022-06-10
  * @author Scott Davis
  */
+
 package org.mars_sim.msp.core.person.ai.social;
 
 import java.io.Serializable;
@@ -23,19 +24,15 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.MBTIPersonality;
+import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
+import org.mars_sim.msp.core.person.ai.social.Relationship.RelationshipType;
+import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
-import com.phoenixst.plexus.DefaultGraph;
-import com.phoenixst.plexus.EdgePredicate;
-import com.phoenixst.plexus.EdgePredicateFactory;
-import com.phoenixst.plexus.Graph;
-import com.phoenixst.plexus.GraphUtils;
 import com.phoenixst.plexus.NoSuchNodeException;
-import com.phoenixst.plexus.Traverser;
 
 /**
  * The RelationshipManager class keeps track of all the social relationships
@@ -50,7 +47,7 @@ public class RelationshipManager implements Serializable {
 
 	/** default serial id. */
 	private static final Logger logger = Logger.getLogger(RelationshipManager.class.getName());
-
+	
 	/** The base % chance of a relationship change per millisol. */
 	private static final double BASE_RELATIONSHIP_CHANGE_PROBABILITY = .1D;
 	/** The base change amount per millisol. */
@@ -73,67 +70,59 @@ public class RelationshipManager implements Serializable {
 	 */
 	private static final double SETTLER_MODIFIER = .02D;
 
-	/** The relationship graph. */
-	private Graph relationshipGraph;
-	
 	private static UnitManager unitManager;
 
 	/**
 	 * Constructor
 	 */
 	public RelationshipManager() {
-		// Create new graph for relationships.
-		if (relationshipGraph == null)
-			relationshipGraph = new DefaultGraph();
 	}
 
-	/**
-	 * Adds an initial settler who will have an existing relationship with all the
-	 * other inhabitants if his/her settlement.
-	 * 
-	 * @param person     the person to add.
-	 * @param settlement the settlement the person starts at.
-	 */
-	public void addInitialSettler(Person person, Settlement settlement) {
-		addPerson(person, settlement.getIndoorPeople());
-	}
+//	/**
+//	 * Adds an initial settler who will have an existing relationship with all the
+//	 * other inhabitants if his/her settlement.
+//	 * 
+//	 * @param person     the person to add.
+//	 * @param settlement the settlement the person starts at.
+//	 */
+//	public void addInitialSettler(Person person, Settlement settlement) {
+//		addPerson(person, settlement.getIndoorPeople());
+//	}
 
-	/**
-	 * Adds a new resupply immigrant who will have an existing relationship with the
-	 * other immigrants in his/her group.
-	 * 
-	 * @param person         the person to add.
-	 * @param immigrantGroup the groups of immigrants this person belongs to.
-	 */
-	public void addNewImmigrant(Person person, Collection<Person> immigrantGroup) {
-		addPerson(person, immigrantGroup);
-	}
+//	/**
+//	 * Adds a new resupply immigrant who will have an existing relationship with the
+//	 * other immigrants in his/her group.
+//	 * 
+//	 * @param person         the person to add.
+//	 * @param immigrantGroup the groups of immigrants this person belongs to.
+//	 */
+//	public void addNewImmigrant(Person person, Collection<Person> immigrantGroup) {
+//		addPerson(person, immigrantGroup);
+//	}
 
-	/**
-	 * Adds a new person for the relationship manager.
-	 * 
-	 * @param person       the new person
-	 * @param initialGroup the group that this person has existing relationships
-	 *                     with.
-	 */
-	private void addPerson(Person person, Collection<Person> initialGroup) {
-		if ((person == null) || (initialGroup == null))
-			throw new IllegalArgumentException("RelationshipManager.addPerson(): null parameter.");
-	
-		if (!relationshipGraph.containsNode(person.getIdentifier())) {
-			relationshipGraph.addNode(person.getIdentifier());
-			Iterator<Person> i = initialGroup.iterator();
-			while (i.hasNext()) {
-				Person person2 = i.next();
-				if (!person2.equals(person)) {
-					addRelationship(person, person2, Relationship.FIRST_IMPRESSION);
-//					if (logger.isLoggable(Level.FINEST)) {
-						logger.finest(person.getName() + " and " + person2.getName() + " have existing relationship.");
-//					}
-				}
-			}
-		}
-	}
+//	/**
+//	 * Adds a new person for the relationship manager.
+//	 * 
+//	 * @param person       the new person
+//	 * @param initialGroup the group that this person has existing relationships
+//	 *                     with.
+//	 */
+//	private void addPerson(Person person, Collection<Person> initialGroup) {
+//		if ((person == null) || (initialGroup == null))
+//			throw new IllegalArgumentException("RelationshipManager.addPerson(): null parameter.");
+//	
+//		if (!relationshipGraph.containsNode(person.getIdentifier())) {
+//			relationshipGraph.addNode(person.getIdentifier());
+//			Iterator<Person> i = initialGroup.iterator();
+//			while (i.hasNext()) {
+//				Person person2 = i.next();
+//				if (!person2.equals(person)) {
+//					addRelationship(person, person2, RelationshipType.FIRST_IMPRESSION);
+//					logger.finest(person.getName() + " and " + person2.getName() + " have existing relationship.");
+//				}
+//			}
+//		}
+//	}
 
 	/**
 	 * Adds a new relationship between two people.
@@ -143,17 +132,56 @@ public class RelationshipManager implements Serializable {
 	 * @param relationshipType the type of relationship (see Relationship static
 	 *                         members)
 	 */
-	public Relationship addRelationship(Person person1, Person person2, String relationshipType) {
+	public void createRelationship(Person person1, Person person2, RelationshipType startingRelationship) {
 		try {
-			Relationship relationship = new Relationship(person1, person2, relationshipType);
-			relationshipGraph.addEdge(relationship, person1.getIdentifier(), person2.getIdentifier(), false);
-			return relationship;
+			if (RelationshipType.FIRST_IMPRESSION == startingRelationship) {
+				setOpinion(person1, person2, getFirstImpression(person1, person2));
+				setOpinion(person2, person1, getFirstImpression(person2, person1));
+			} else if (RelationshipType.EXISTING_RELATIONSHIP == startingRelationship) {
+				setOpinion(person1, person2, getExistingRelationship(person1, person2));
+				setOpinion(person2, person1, getExistingRelationship(person2, person1));
+			} else if (RelationshipType.COMMUNICATION_MEETING == startingRelationship) {
+				setOpinion(person1, person2, getCommunicationMeeting(person1, person2));
+				setOpinion(person2, person1, getCommunicationMeeting(person2, person1));
+			}
 		} catch (NoSuchNodeException e) {
           	logger.log(Level.SEVERE, "Cannot instantiate relationship: "+ e.getMessage());
 		}
-		return null;
 	}
 
+	/**
+	 * Sets the opinion of person1 toward person2
+	 * 
+	 * @param person1
+	 * @param person2
+	 * @param opinion
+	 */
+	public void setOpinion(Person person1, Person person2, double opinion) {
+		person1.getRelation().setOpinion(person2.getIdentifier(), opinion);
+	}
+	
+	/**
+	 * Changes the opinion of person1 toward person2
+	 * 
+	 * @param person1
+	 * @param person2
+	 * @param opinion
+	 */
+	public void changeOpinion(Person person1, Person person2, double mod) {
+		person1.getRelation().changeOpinion(person2.getIdentifier(), mod);
+	}
+	
+	/**
+	 * Gets the opinion of person1 toward person2
+	 * 
+	 * @param person1
+	 * @param person2
+	 * return opinion
+	 */
+	public double getOpinion(Person person1, Person person2) {
+		return person1.getRelation().getOpinion(person2.getIdentifier());
+	}
+	
 	/**
 	 * Checks if a person has a relationship with another person.
 	 * 
@@ -162,45 +190,8 @@ public class RelationshipManager implements Serializable {
 	 * @return true if the two people have a relationship
 	 */
 	public boolean hasRelationship(Person person1, Person person2) {
-		EdgePredicate edgePredicate = EdgePredicateFactory.createEqualsNodes(person1.getIdentifier(), person2.getIdentifier(),
-				GraphUtils.UNDIRECTED_MASK);
-		return (relationshipGraph.getEdge(edgePredicate) != null);
-	}
-
-	/**
-	 * Gets the relationship between two people.
-	 * 
-	 * @param person1 the first person (order isn't important)
-	 * @param person2 the second person (order isn't important)
-	 * @return the relationship or null if none.
-	 */
-	public Relationship getRelationship(Person person1, Person person2) {
-		Relationship result = null;
-		if (hasRelationship(person1, person2)) {
-			EdgePredicate edgePredicate = EdgePredicateFactory.createEqualsNodes(person1.getIdentifier(), person2.getIdentifier(),
-					GraphUtils.UNDIRECTED_MASK);
-			result = (Relationship) relationshipGraph.getEdge(edgePredicate).getUserObject();
-		}
-		return result;
-	}
-
-	/**
-	 * Gets all of a person's relationships.
-	 * 
-	 * @param person the person
-	 * @return a list of the person's Relationship objects.
-	 */
-	public List<Relationship> getAllRelationships(Person person) {
-//		if (allRelationshipList == null) {
-		 List<Relationship> allRelationshipList = new CopyOnWriteArrayList<Relationship>();
-			Traverser traverser = relationshipGraph.traverser(person.getIdentifier(), GraphUtils.UNDIRECTED_TRAVERSER_PREDICATE);
-			while (traverser.hasNext()) {
-				traverser.next();
-				Relationship relationship = (Relationship) traverser.getEdge().getUserObject();
-				allRelationshipList.add(relationship);
-			}
-//		}
-		return allRelationshipList;
+		return (person1.getRelation().getOpinion(person2.getIdentifier()) != 0
+				|| person2.getRelation().getOpinion(person1.getIdentifier()) != 0);
 	}
 
 	/**
@@ -210,11 +201,10 @@ public class RelationshipManager implements Serializable {
 	 * @return a list of the people the person knows.
 	 */
 	public Collection<Person> getAllKnownPeople(Person person) {
+
 		Collection<Person> result = new ConcurrentLinkedQueue<Person>();
-		Traverser traverser = relationshipGraph.traverser(person.getIdentifier(), GraphUtils.UNDIRECTED_TRAVERSER_PREDICATE);
-		while (traverser.hasNext()) {
-			Person knownPerson = unitManager.getPersonByID((Integer)traverser.next());
-			result.add(knownPerson);
+		for (int id : person.getRelation().getPeople()) {
+			result.add(unitManager.getPersonByID(id));
 		}
 		return result;
 	}
@@ -228,9 +218,7 @@ public class RelationshipManager implements Serializable {
 	public Map<Person, Double> getMyOpinionsOfThem(Person person) {
 		Map<Person, Double> friends = new ConcurrentHashMap<>();
 		Collection<Person> list = getAllKnownPeople(person);
-//		System.out.println("list : " + list);
 		double highestScore = 0;
-//		double nextScore = 0;	
 		if (!list.isEmpty()) {
 			for (Person pp : list) {
 				double score = getOpinionOfPerson(person, pp);
@@ -252,9 +240,7 @@ public class RelationshipManager implements Serializable {
 	public Map<Person, Double> getTheirOpinionsOfMe(Person person) {
 		Map<Person, Double> friends = new ConcurrentHashMap<>();
 		Collection<Person> list = getAllKnownPeople(person);
-//		System.out.println("list : " + list);
 		double highestScore = 0;
-//		double nextScore = 0;	
 		if (!list.isEmpty()) {
 			for (Person pp : list) {
 				double score = getOpinionOfPerson(pp, person);
@@ -311,8 +297,7 @@ public class RelationshipManager implements Serializable {
 				if (hScore < score) {
 					hScore = score;
 				}
-			}
-//			System.out.println("best score : " + hScore);		
+			}	
 			Map<Person, Double> list = new ConcurrentHashMap<>();
 			for (Person p : bestFriends.keySet()) {
 				double score = bestFriends.get(p);
@@ -321,11 +306,9 @@ public class RelationshipManager implements Serializable {
 					list.put(p, score);
 				}
 			}
-//			System.out.println("list : " + list);
 			return list;
 			
 		}
-//		System.out.println("bestFriends : " + bestFriends);
 		return bestFriends;
 	}
 	
@@ -342,8 +325,7 @@ public class RelationshipManager implements Serializable {
 		double result = 50D;
 
 		if (hasRelationship(person1, person2)) {
-			Relationship relationship = getRelationship(person1, person2);
-			result = relationship.getPersonOpinion(person1);
+			result = getOpinion(person1, person2);
 		}
 
 		return result;
@@ -417,10 +399,8 @@ public class RelationshipManager implements Serializable {
 	
 				// Check if new relationship.
 				if (!hasRelationship(person, localPerson)) {
-					addRelationship(person, localPerson, Relationship.EXISTING_RELATIONSHIP);
-	//				if (logger.isLoggable(Level.FINEST)) {
-						logger.finest(person.getName() + " and " + localPerson.getName() + " meet for the first time.");
-	//				}
+					createRelationship(person, localPerson, RelationshipType.EXISTING_RELATIONSHIP);
+					logger.finest(person.getName() + " and " + localPerson.getName() + " meet for the first time.");
 				}
 	
 				// Determine probability of relationship change per millisol.
@@ -479,13 +459,9 @@ public class RelationshipManager implements Serializable {
 					changeAmount *= stressChangeModifier;
 	
 					// Change the person's opinion of the other person.
-					Relationship relationship = getRelationship(person, localPerson);
-					if (relationship != null)
-						relationship.setPersonOpinion(person, relationship.getPersonOpinion(person) + changeAmount);
-	//				if (logger.isLoggable(Level.FINEST)) {
-						logger.finest(person.getName() + " has changed opinion of " + localPerson.getName() + " by "
+			        changeOpinion(person, localPerson, changeAmount);
+					logger.finest(person.getName() + " has changed opinion of " + localPerson.getName() + " by "
 								+ changeAmount);
-	//				}
 				}
 			}
 		}
@@ -561,6 +537,127 @@ public class RelationshipManager implements Serializable {
 		return score;
 	}
 	
+	/**
+	 * Gets the first impression a person has of another person.
+	 * 
+	 * @param impressioner the person getting the impression.
+	 * @param impressionee the person who's the object of the impression.
+	 * @return the opinion of the impressioner as a value from 0 to 100.
+	 */
+	private double getFirstImpression(Person impressioner, Person impressionee) {
+		double result = 0;
+
+		// Random with bell curve around 50.
+		int numberOfIterations = 3;
+		for (int x = 0; x < numberOfIterations; x++)
+			result += RandomUtil.getRandomDouble(100D);
+		result /= numberOfIterations;
+
+		NaturalAttributeManager attributes = impressionee.getNaturalAttributeManager();
+
+		// Modify based on conversation attribute.
+		double conversationModifier = (double) attributes.getAttribute(NaturalAttributeType.CONVERSATION) - 50D;
+		result += RandomUtil.getRandomDouble(conversationModifier);
+
+		// Modify based on attractiveness attribute if people are of opposite genders.
+		// Note: We may add sexual orientation later that will add further complexity to
+		// this.
+		double attractivenessModifier = (double) attributes.getAttribute(NaturalAttributeType.ATTRACTIVENESS) - 50D;
+		boolean oppositeGenders = (!impressioner.getGender().equals(impressionee.getGender()));
+		if (oppositeGenders)
+			result += RandomUtil.getRandomDouble(attractivenessModifier);
+		// Modify based on total scientific achievement.
+		result += impressionee.getTotalScientificAchievement() / 10D;
+		// If impressioner is a scientist, modify based on impressionee's achievement in
+		// scientific field.
+		
+		ScienceType science = ScienceType.getJobScience(impressioner.getMind().getJob());
+		result += impressionee.getScientificAchievement(science);
+		// Modify as settlers are trained to try to get along with each other.
+		if (result < 50D)
+			result += RandomUtil.getRandomDouble(SETTLER_MODIFIER);
+
+		return result;
+	}
+
+	/**
+	 * Gets an existing relationship between two people who have spent time
+	 * together.
+	 * 
+	 * @param person the person who has a relationship with the target person.
+	 * @param target the person who is the target of the relationship.
+	 * @return the person's opinion of the target as a value from 0 to 100.
+	 */
+	private double getExistingRelationship(Person person, Person target) {
+		double result = 0D;
+
+		// Random with bell curve around 50.
+		int numberOfIterations = 3;
+		for (int x = 0; x < numberOfIterations; x++)
+			result += RandomUtil.getRandomDouble(100D);
+		result /= numberOfIterations;
+
+		NaturalAttributeManager attributes = target.getNaturalAttributeManager();
+
+		// Modify based on conversation attribute.
+		double conversationModifier = (double) attributes.getAttribute(NaturalAttributeType.CONVERSATION) - 50D;
+		result += RandomUtil.getRandomDouble(conversationModifier);
+
+		// Modify based on attractiveness attribute if people are of opposite genders.
+		// Note: We may add sexual orientation later that will add further complexity to
+		// this.
+		double attractivenessModifier = (double) attributes.getAttribute(NaturalAttributeType.ATTRACTIVENESS) - 50D;
+		boolean oppositeGenders = (!person.getGender().equals(target.getGender()));
+		if (oppositeGenders)
+			result += RandomUtil.getRandomDouble(attractivenessModifier);
+
+		// Personality diff modifier
+		MBTIPersonality personType = person.getMind().getMBTI();
+		MBTIPersonality targetType = target.getMind().getMBTI();
+		double personalityDiffModifier = (2D - (double) personType.getPersonalityDifference(targetType.getTypeString()))
+				* 50D;
+		result += RandomUtil.getRandomDouble(personalityDiffModifier);
+
+		// Modify based on total scientific achievement.
+		result += target.getTotalScientificAchievement() / 10D;
+
+		// If impressioner is a scientist, modify based on target's achievement in
+		// scientific field.
+		ScienceType science = ScienceType.getJobScience(target.getMind().getJob());
+		result += target.getScientificAchievement(science);
+
+		// Modify as settlers are trained to try to get along with each other.
+		if (result < 50D)
+			result += RandomUtil.getRandomDouble(SETTLER_MODIFIER);
+
+		return result;
+	}
+
+	/**
+	 * Gets an new relationship between two people who meet via remote
+	 * communication.
+	 * 
+	 * @param person the person who has a relationship with the target person.
+	 * @param target the person who is the target of the relationship.
+	 * @return the person's opinion of the target as a value from 0 to 100.
+	 */
+	private double getCommunicationMeeting(Person person, Person target) {
+		double result = 0D;
+
+		// Default to 50 for now.
+		result = 50D;
+
+		// Modify based on total scientific achievement.
+		result += target.getTotalScientificAchievement() / 10D;
+
+		// If impressioner is a scientist, modify based on target's achievement in
+		// scientific field.
+		ScienceType science = ScienceType.getJobScience(target.getMind().getJob());
+		result += target.getScientificAchievement(science);
+
+		return result;
+	}
+	
 	public static void initializeInstances(UnitManager u) {
 		unitManager = u;		
 	}
@@ -569,7 +666,7 @@ public class RelationshipManager implements Serializable {
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {
-		relationshipGraph = null;
+		unitManager = null;
 	}
 
 }
