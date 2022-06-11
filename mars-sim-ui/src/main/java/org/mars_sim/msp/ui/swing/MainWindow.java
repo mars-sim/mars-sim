@@ -463,11 +463,11 @@ extends JComponent implements ClockListener {
 				logger.config("Use last saved window size " + frameSize.width + " x " + frameSize.height);	
 			}
 		}
+		
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		if (screenSize != null) {
 			logger.config("Current toolkit screen size is " + screenSize.width + " x " + screenSize.height);
 		}
-
 				
 		if (frameSize != null) {
 			// Check selected is not bigger than the screen

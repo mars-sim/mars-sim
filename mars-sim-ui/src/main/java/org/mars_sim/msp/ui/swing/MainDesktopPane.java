@@ -181,11 +181,11 @@ public class MainDesktopPane extends JDesktopPane
 		// Set background paper size
 		Dimension selectedSize = mainWindow.getSelectedSize();
 		if (selectedSize != null) {
-			int w = selectedSize.width - 20;
-			int h = selectedSize.height - 35;
+			int w = selectedSize.width;
+			int h = selectedSize.height;
 			setSize(new Dimension(w, h));
 			setPreferredSize(new Dimension(w, h));
-			logger.config("The background image is set to " 
+			logger.config("The main desktop pane is initially set to " 
 					+ w  
 					+ " x "
 					+ h
@@ -202,25 +202,29 @@ public class MainDesktopPane extends JDesktopPane
 	 */
 	@Override
 	public void componentResized(ComponentEvent e) {
-		// If displayed for the first time, create background image tile.
-		// The size of the background tile cannot be determined during construction
-		// since it requires the MainDesktopPane be displayed first.
-		if (firstDisplay) {
-			ImageIcon baseImageIcon = ImageLoader.getIcon(Msg.getString("img.background")); //$NON-NLS-1$
-			Dimension screen_size = Toolkit.getDefaultToolkit().getScreenSize();
-			Image backgroundImage = createImage((int) screen_size.getWidth(), (int) screen_size.getHeight());
-			Graphics backgroundGraphics = backgroundImage.getGraphics();
 
-			for (int x = 0; x < backgroundImage.getWidth(this); x += baseImageIcon.getIconWidth()) {
-				for (int y = 0; y < backgroundImage.getHeight(this); y += baseImageIcon.getIconHeight()) {
-					backgroundGraphics.drawImage(baseImageIcon.getImage(), x, y, this);
-				}
-			}
-
-			backgroundImageIcon.setImage(backgroundImage);
-
-			firstDisplay = false;
+		ImageIcon baseImageIcon = ImageLoader.getIcon(Msg.getString("img.background")); //$NON-NLS-1$
+		
+		Dimension screen_size = mainWindow.getFrame().getSize();
+		
+		if (screen_size == null || (int) screen_size.getWidth() == 0 || (int) screen_size.getHeight() == 0) {
+			screen_size = Toolkit.getDefaultToolkit().getScreenSize();
+//			logger.config("Current toolkit screen size is " + screen_size.width + " x " + screen_size.height);
 		}
+//		else
+//			logger.config("Current main window frame is " + screen_size.width + " x " + screen_size.height);
+		
+		Image backgroundImage = createImage((int) screen_size.getWidth(), (int) screen_size.getHeight());
+		Graphics backgroundGraphics = backgroundImage.getGraphics();
+
+		for (int x = 0; x < backgroundImage.getWidth(this); x += baseImageIcon.getIconWidth()) {
+			for (int y = 0; y < backgroundImage.getHeight(this); y += baseImageIcon.getIconHeight()) {
+				backgroundGraphics.drawImage(baseImageIcon.getImage(), x, y, this);
+			}
+		}
+
+		backgroundImageIcon.setImage(backgroundImage);
+
 
 		// Set the backgroundLabel size to the size of the desktop
 		backgroundLabel.setSize(getSize());
@@ -628,7 +632,6 @@ public class MainDesktopPane extends JDesktopPane
 				} catch (java.beans.PropertyVetoException e) {
 				}
 			}
-
 		});
 	}
 
@@ -663,7 +666,6 @@ public class MainDesktopPane extends JDesktopPane
 			if (tempWindow.isClosed()) {
 				add(tempWindow, 0);
 			}
-
 		}
 
 		else {
@@ -687,7 +689,6 @@ public class MainDesktopPane extends JDesktopPane
 			// Add unit window to unit windows
 			unitWindows.add(tempWindow);
 
-
 			// Create new unit button in tool bar if necessary
 			if (mainWindow != null)
 				mainWindow.createUnitButton(unit);
@@ -709,7 +710,6 @@ public class MainDesktopPane extends JDesktopPane
 				soundPlayer.playSound(soundFilePath);
 			}
 		}
-
 	}
 
 	/**
