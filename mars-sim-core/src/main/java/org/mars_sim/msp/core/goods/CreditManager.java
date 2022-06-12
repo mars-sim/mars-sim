@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core.goods;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -53,6 +54,41 @@ public class CreditManager implements Serializable {
 	}
 
 	/**
+	 * Constructor 2. For maven test only
+	 * 
+	 * @param settlement
+	 * @param settlements
+	 */
+	public CreditManager(Settlement settlement, Collection<Settlement> settlements) {
+		settlementID = settlement.getIdentifier();
+		// Creates credit manager with all settlements in the simulation.
+		Iterator<Settlement> i = settlements.iterator();
+		while (i.hasNext()) {
+			int id = i.next().getIdentifier();
+			if (!creditMap.containsKey(id) && settlementID != id)
+				creditMap.put(id, 0.0);
+		}
+	}
+	
+	/**
+	 * Constructor 3. For maven test only
+	 * 
+	 * @param settlement
+	 * @param unitManager
+	 */
+	public CreditManager(Settlement settlement, UnitManager unitManager) {
+		settlementID = settlement.getIdentifier();
+		// Creates credit manager with all settlements in the simulation.
+		Iterator<Settlement> i = unitManager.getSettlements().iterator();
+		while (i.hasNext()) {
+			int id = i.next().getIdentifier();
+			if (!creditMap.containsKey(id) && settlementID != id)
+				creditMap.put(id, 0.0);
+		}
+	}
+	
+	
+	/**
 	 * Sets the credit between two settlements.
 	 * 
 	 * @param settlement1 the first settlement.
@@ -66,7 +102,7 @@ public class CreditManager implements Serializable {
 		int id = settlement2.getIdentifier();
 		
 		if (settlement1.getCreditManager().getCreditMap().containsKey(id))
-			settlement1.getCreditManager().getCreditMap().put(id, 0.0);
+			settlement1.getCreditManager().getCreditMap().put(id, amount);
 		
 		// Update listeners.
 		synchronized (settlement1.getCreditManager().getListeners()) {

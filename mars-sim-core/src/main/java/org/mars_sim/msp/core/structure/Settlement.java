@@ -395,8 +395,8 @@ public class Settlement extends Structure implements Temporal,
 		final double GEN_MAX = 1_000_000;
 		// Create EquipmentInventory instance
 		eqmInventory = new EquipmentInventory(this, GEN_MAX);
-		// Create CreditManager instance
-		creditManager = new CreditManager(this);
+		
+		creditManager = new CreditManager(this, unitManager);
 	}
 
 	/**
@@ -3875,6 +3875,10 @@ public class Settlement extends Structure implements Temporal,
 	 */
 	public CreditManager getCreditManager() {
 		return creditManager;
+	}
+	
+	public void setCreditManager(CreditManager cm) {
+		creditManager = cm;
 	}
 	
 	/**

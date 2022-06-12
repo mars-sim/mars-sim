@@ -26,6 +26,10 @@ public class TestCreditManager extends TestCase {
         Settlement settlement2 = new MockSettlement();
         settlements.add(settlement2);
  
+        // Need to manually initialize them
+        settlement1.setCreditManager(new CreditManager(settlement1, settlements));
+        settlement2.setCreditManager(new CreditManager(settlement2, settlements));
+        
         // Sleeping the thread for a short time to allow the credit manager to finish loading.
         try {
             Thread.sleep(100L);

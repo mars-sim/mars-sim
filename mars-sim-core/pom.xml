@@ -34,11 +34,12 @@
 		    <artifactId>commons-cli</artifactId>
 		    <version>${commons-cli.version}</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/commons-collections/commons-collections -->
 		<dependency>
-			<groupId>com.phoenixst</groupId>
-			<artifactId>plexus-core</artifactId>
-			<version>0.9</version>
-		</dependency> 
+		    <groupId>commons-collections</groupId>
+		    <artifactId>commons-collections</artifactId>
+		    <version>3.2.2</version>
+		</dependency>
 		<dependency>
 		    <groupId>org.jdom</groupId>
 		    <artifactId>jdom2</artifactId>
