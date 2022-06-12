@@ -1202,7 +1202,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 					}
 				}
 				else {
-					
+					// If it's not breached, how to record the damage
 					logger.log(this, Level.INFO, 0, "Meteorite Impact event observed but damage not detected.");
 
 					HistoricalEvent hEvent = new HazardEvent(

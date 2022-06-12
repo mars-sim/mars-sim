@@ -10,7 +10,9 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.Person;
 
 /**
@@ -23,6 +25,8 @@ public class Relation implements Serializable {
 	
 	/** The person's opinion toward another person. */
 	private Map<Integer, Double> opinionMap = new HashMap<>();
+
+	private static UnitManager unitManager;
 
 	/**
 	 * Constructor.
@@ -81,6 +85,27 @@ public class Relation implements Serializable {
 	 */
 	public Set<Integer> getPeopleIDs() {
 		return opinionMap.keySet();
+	}
+	
+	/**
+	 * Gets all the people that a person knows (has met).
+	 * 
+	 * @param person the person
+	 * @return a list of the people the person knows.
+	 */
+	public Set<Person> getAllKnownPeople(Person person) {
+		return getPeopleIDs().stream()
+				.map(id -> unitManager.getPersonByID(id))
+				.collect(Collectors.toSet());
+	}
+	
+	/**
+	 * Initialize instances
+	 * 
+	 * @param um the unitManager instance
+	 */
+	public static void initializeInstances(UnitManager um) {
+		unitManager = um;		
 	}
 	
 	/**

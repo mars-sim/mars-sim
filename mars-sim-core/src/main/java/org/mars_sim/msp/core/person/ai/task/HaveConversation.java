@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * HaveConversation.java
- * @date 2022-06-10
+ * @date 2022-06-11
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -15,11 +15,10 @@ import java.util.Set;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
-import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
+import org.mars_sim.msp.core.person.ai.social.RelationshipUtil;
 import org.mars_sim.msp.core.person.ai.social.RelationshipType;
 import org.mars_sim.msp.core.person.ai.task.meta.HaveConversationMeta;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
@@ -72,8 +71,6 @@ implements Serializable {
         SAME_VEHICLE
     }
 
-    private static RelationshipManager relationshipManager;
-
     /**
      * Constructor. This is an effort-driven task.
      * @param person the person performing the task.
@@ -125,10 +122,9 @@ implements Serializable {
     	int size = list.size();
     	double bestScore = 0;
     	Person bestFriend = null;
-    	if (relationshipManager == null)
-    		relationshipManager = Simulation.instance().getRelationshipManager();
+
     	for (int i= 0; i<size; i++) {
-    		double score = relationshipManager.getOpinionOfPerson(person, list.get(i));
+    		double score = RelationshipUtil.getOpinionOfPerson(person, list.get(i));
     		if (score > bestScore) {
     			bestScore = score;
     			bestFriend = list.get(i);
@@ -351,14 +347,7 @@ implements Serializable {
 	            else
 	            	return 0D;
 
-	            if (relationshipManager == null)
-	            	relationshipManager = Simulation.instance().getRelationshipManager();
-	            // Check if existing relationship between invitee and person.      
-	            if (!relationshipManager.hasRelationship(invitee, person)) {
-	                // Create new communication meeting relationship.
-	            	relationshipManager.createRelationship(invitee, person, RelationshipType.COMMUNICATION_MEETING);
-	            }
-	            relationshipManager.changeOpinion(invitee, person, RandomUtil.getRandomDouble(1));
+	            RelationshipUtil.changeOpinion(invitee, person, RelationshipType.COMMUNICATION_MEETING, RandomUtil.getRandomDouble(1));
         	}
         }
 

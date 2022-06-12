@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * AssistScientificStudyResearcher.java
- * @date 2022-06-10
+ * @date 2022-06-11
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.person.ai.social.RelationshipUtil;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -188,7 +189,7 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
 		Iterator<Person> k = leastCrowded.iterator();
 		while (k.hasNext()) {
 			Person researcher = k.next();
-			double opinion = relationshipManager.getOpinionOfPerson(assistant, researcher);
+			double opinion = RelationshipUtil.getOpinionOfPerson(assistant, researcher);
 			if (opinion > favorite)
 				favorite = opinion;
 		}
@@ -197,7 +198,7 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
 		k = leastCrowded.iterator();
 		while (k.hasNext()) {
 			Person researcher = k.next();
-			double opinion = relationshipManager.getOpinionOfPerson(assistant, researcher);
+			double opinion = RelationshipUtil.getOpinionOfPerson(assistant, researcher);
 			if (opinion == favorite)
 				favoriteResearchers.add(researcher);
 		}
@@ -321,6 +322,6 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
 	 * @param time the time assisting.
 	 */
 	private void addRelationshipModifier(double time) {
-        relationshipManager.changeOpinion(researcher, person, BASE_RELATIONSHIP_MODIFIER * time);
+        RelationshipUtil.changeOpinion(researcher, person, BASE_RELATIONSHIP_MODIFIER * time);
 	}
 }

@@ -16,7 +16,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.JobType;
-import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
+import org.mars_sim.msp.core.person.ai.social.RelationshipUtil;
 import org.mars_sim.msp.core.time.MarsClock;
 
 /**
@@ -26,7 +26,6 @@ public class ScientificStudyUtil {
 
 	private static Simulation sim = Simulation.instance();
 	private static UnitManager unitManager = sim.getUnitManager();
-	private static RelationshipManager relationshipManager = sim.getRelationshipManager();
 
 	/**
 	 * Private constructor for utility class.
@@ -76,11 +75,11 @@ public class ScientificStudyUtil {
     static void modifyScientistRelationshipsFromAchievement(Person researcher,
             ScienceType science, double achievement) {
 
-        Iterator<Person> i = relationshipManager.getAllKnownPeople(researcher).iterator();
+        Iterator<Person> i = RelationshipUtil.getAllKnownPeople(researcher).iterator();
         while (i.hasNext()) {
             Person person = i.next();
             if (science == ScienceType.getJobScience(person.getMind().getJob())) {
-                relationshipManager.changeOpinion(researcher, person, achievement);
+                RelationshipUtil.changeOpinion(researcher, person, achievement);
             }
         }
     }
@@ -90,8 +89,7 @@ public class ScientificStudyUtil {
 	 *
 	 * @param {{@link MarsClock}
 	 */
-	public static void initializeInstances(RelationshipManager r, UnitManager u) {
+	public static void initializeInstances(UnitManager u) {
 		unitManager = u;
-		relationshipManager = r;
 	}
 }

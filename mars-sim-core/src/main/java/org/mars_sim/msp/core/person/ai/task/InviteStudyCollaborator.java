@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * InviteStudyCollaborator.java
- * @date 2022-06-10
+ * @date 2022-06-11
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -15,11 +15,11 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.person.ai.social.RelationshipUtil;
 import org.mars_sim.msp.core.person.ai.social.RelationshipType;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
@@ -192,7 +192,7 @@ implements Serializable {
             inviteeValue += (totalAchievement / 10D);
 
             // Modify based on study researcher's personal opinion of invitee.
-            double opinion = relationshipManager.getOpinionOfPerson(study.getPrimaryResearcher(), invitee);
+            double opinion = RelationshipUtil.getOpinionOfPerson(study.getPrimaryResearcher(), invitee);
             inviteeValue *= (opinion / 100D);
 
             // Modify based on current number of studies researcher is currently collaborating on.
@@ -241,15 +241,8 @@ implements Serializable {
         	for (Person invitee : invitees) {
 	            // Add invitation to study.
 	            study.addInvitedResearcher(invitee);
-	            
-	            if (relationshipManager == null)
-	            	relationshipManager = Simulation.instance().getRelationshipManager();
-	            // Check if existing relationship between person and invitee.      
-	            if (!relationshipManager.hasRelationship(person, invitee)) {
-	                // Create new communication meeting relationship.
-	            	relationshipManager.createRelationship(person, invitee, RelationshipType.COMMUNICATION_MEETING);
-	            }
-	            relationshipManager.changeOpinion(person, invitee, RandomUtil.getRandomDouble(5));
+
+	            RelationshipUtil.changeOpinion(person, invitee, RelationshipType.COMMUNICATION_MEETING, RandomUtil.getRandomDouble(5));
 	            
 	            logger.log(worker, Level.FINE, 0, "Inviting " + invitee.getName() +
 	                    " to collaborate in " + study.getName() + ".");

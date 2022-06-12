@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * SocialCommand.java
- * @version 3.1.2 2020-12-30
+ * @date 2022-06-11
  * @author Barry Evans
  */
 
@@ -16,7 +16,7 @@ import org.mars.sim.console.chat.Conversation;
 import org.mars.sim.console.chat.simcommand.CommandHelper;
 import org.mars.sim.console.chat.simcommand.StructuredResponse;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
+import org.mars_sim.msp.core.person.ai.social.RelationshipUtil;
 
 /** 
  * Social circle of the Person
@@ -30,10 +30,9 @@ public class SocialCommand extends AbstractPersonCommand {
 
 	@Override
 	public boolean execute(Conversation context, String input, Person person) {
-		RelationshipManager relationshipManager = context.getSim().getRelationshipManager();
 
 		// My opinions of them
-		Map<Person, Double> friends = relationshipManager.getMyOpinionsOfThem(person);
+		Map<Person, Double> friends = RelationshipUtil.getMyOpinionsOfThem(person);
 		if (friends.isEmpty()) {
 			context.println("I don't have any friends yet.");
 		}
@@ -49,7 +48,7 @@ public class SocialCommand extends AbstractPersonCommand {
 			for (Person friend : list) {
 				double score = friends.get(friend);
 				sum += score;
-				String relation = RelationshipManager.describeRelationship(score);
+				String relation = RelationshipUtil.describeRelationship(score);
 
 				score = Math.round(score * 10.0) / 10.0;
 
@@ -61,7 +60,7 @@ public class SocialCommand extends AbstractPersonCommand {
 			response.appendHeading("Their Opinion of me");
 
 			// Their opinions of me
-			friends = relationshipManager.getTheirOpinionsOfMe(person);
+			friends = RelationshipUtil.getTheirOpinionsOfMe(person);
 			list = new ArrayList<>(friends.keySet());
 			
 			response.appendTableHeading("Person towards me", CommandHelper.PERSON_WIDTH, "Score", "Their Attitude");
@@ -70,7 +69,7 @@ public class SocialCommand extends AbstractPersonCommand {
 			for (Person friend : list) {
 				double score = friends.get(friend);
 				sum += score;
-				String relation = RelationshipManager.describeRelationship(score);
+				String relation = RelationshipUtil.describeRelationship(score);
 
 				score = Math.round(score * 10.0) / 10.0;
 

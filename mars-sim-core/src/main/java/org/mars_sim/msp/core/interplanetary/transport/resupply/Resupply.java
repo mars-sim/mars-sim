@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Resupply.java
- * @date 2021-10-20
+ * @date 2022-06-11
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.interplanetary.transport.resupply;
@@ -39,7 +39,6 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.ai.job.JobUtil;
-import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
@@ -496,7 +495,6 @@ public class Resupply implements Serializable, Transportable {
 		// Deliver immigrants.
 		// TODO : add a crew editor for user to define what team and who to send
 		Collection<Person> immigrants = new ConcurrentLinkedQueue<Person>();
-		RelationshipManager relationshipManager = sim.getRelationshipManager();
 		for (int x = 0; x < getNewImmigrantNum(); x++) {
 			GenderType gender = GenderType.FEMALE;
 			if (RandomUtil.getRandomDouble(1.0D) <= personConfig.getGenderRatio()) {
@@ -533,8 +531,6 @@ public class Resupply implements Serializable, Transportable {
 			settlement.addACitizen(immigrant);
 			// Set the container unit
 			immigrant.setContainerUnit(settlement);
-			
-//			relationshipManager.addNewImmigrant(immigrant, immigrants);
 			
 			immigrants.add(immigrant);
 

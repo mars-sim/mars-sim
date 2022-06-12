@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * FriendCommand.java
- * @version 3.1.2 2020-12-30
+ * @date 2022-06-11
  * @author Barry Evans
  */
 
@@ -16,7 +16,7 @@ import org.mars.sim.console.chat.Conversation;
 import org.mars.sim.console.chat.simcommand.CommandHelper;
 import org.mars.sim.console.chat.simcommand.StructuredResponse;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
+import org.mars_sim.msp.core.person.ai.social.RelationshipUtil;
 
 /** 
  * Display details about pERSON'S FRIEND
@@ -30,9 +30,8 @@ public class FriendCommand extends AbstractPersonCommand {
 
 	@Override
 	public boolean execute(Conversation context, String input, Person person) {
-		RelationshipManager relationshipManager = context.getSim().getRelationshipManager();
 
-		Map<Person, Double> bestFriends = relationshipManager.getBestFriends(person);
+		Map<Person, Double> bestFriends = RelationshipUtil.getBestFriends(person);
 		if (bestFriends.isEmpty()) {
 			context.println("I don't have any friends yet.");
 		}

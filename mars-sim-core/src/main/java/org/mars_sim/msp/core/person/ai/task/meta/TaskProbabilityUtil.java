@@ -1,16 +1,15 @@
-/**
+/*
  * Mars Simulation Project
  * TaskProbabilityUtil.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-06-11
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
 import java.util.Iterator;
 
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
+import org.mars_sim.msp.core.person.ai.social.RelationshipUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -95,9 +94,7 @@ public class TaskProbabilityUtil {
     protected static double getRelationshipModifier(Person person, Building building) {
         double result = 1D;
 
-        RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
-
-        if ((person == null) || (building == null)) {
+         if ((person == null) || (building == null)) {
             throw new IllegalArgumentException("Task.getRelationshipModifier(): null parameter.");
         }
         else {
@@ -108,7 +105,7 @@ public class TaskProbabilityUtil {
                 while (i.hasNext()) {
                     Person occupant = i.next();
                     if (person != occupant) {
-                        totalOpinion+= ((relationshipManager.getOpinionOfPerson(person, occupant) - 50D) / 50D);
+                        totalOpinion+= ((RelationshipUtil.getOpinionOfPerson(person, occupant) - 50D) / 50D);
                     }
                 }
 

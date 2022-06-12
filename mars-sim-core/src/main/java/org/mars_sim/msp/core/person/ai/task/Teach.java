@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Teach.java
- * @date 2022-06-10
+ * @date 2022-06-11
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -15,11 +15,10 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
+import org.mars_sim.msp.core.person.ai.social.RelationshipUtil;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.person.ai.task.utils.Worker;
@@ -218,7 +217,7 @@ public class Teach extends Task implements Serializable {
 	 * @param time the time teaching.
 	 */
 	private void addRelationshipModifier(double time) {
-        relationshipManager.changeOpinion(student, person, BASE_RELATIONSHIP_MODIFIER * time);
+        RelationshipUtil.changeOpinion(student, person, BASE_RELATIONSHIP_MODIFIER * time);
 	}
 
 	@Override
@@ -320,7 +319,6 @@ public class Teach extends Task implements Serializable {
 		}
 
 		// Get the teacher's favorite students.
-		RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
 		Collection<Person> favoriteStudents = new ConcurrentLinkedQueue<Person>();
 
 		// Find favorite opinion.
@@ -328,7 +326,7 @@ public class Teach extends Task implements Serializable {
 		Iterator<Person> k = leastCrowded.iterator();
 		while (k.hasNext()) {
 			Person student = k.next();
-			double opinion = relationshipManager.getOpinionOfPerson(teacher, student);
+			double opinion = RelationshipUtil.getOpinionOfPerson(teacher, student);
 			if (opinion > favorite) {
 				favorite = opinion;
 			}
@@ -338,7 +336,7 @@ public class Teach extends Task implements Serializable {
 		k = leastCrowded.iterator();
 		while (k.hasNext()) {
 			Person student = k.next();
-			double opinion = relationshipManager.getOpinionOfPerson(teacher, student);
+			double opinion = RelationshipUtil.getOpinionOfPerson(teacher, student);
 			if (opinion == favorite) {
 				favoriteStudents.add(student);
 			}

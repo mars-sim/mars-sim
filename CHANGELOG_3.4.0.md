@@ -5,30 +5,34 @@ Copyright (C) 2022 Scott Davis
 
 ------------------------------------------|---------------------
 
-## v3.4.0 (build ____) - 2022-05-__
+## v3.4.0 (build ____) - 2022-06-__
 
 ### ISSUES ADDRESSED :
 
 
 ### CORE ENGINE IMPROVEMENTS :
-1. Implement a reservation system for EVA egress.
-2. Add new Computation building function, new Computer Science
-   studies, new Computer Scientist job, new Computer
-   Specialist role and new Computing skill type.
-3. Make a person's carrying capacity to be age-dependent.
-4. Replace with lightweight inventory for all units.
-
+  <LI>Inventory : Replace with lightweight inventory for all units. Revamp the storage of resources/equipment and transfer of person/vehicle between locales.</LI>
+  <LI>Airlock : Implement airlock reservation system for EVA egress. </LI>
+  <LI>Computing : Add new Computation building function, new Computer Science subject, new Computer Scientist job, new Computing specialist and Chief of Computing role, and new Computing skill. </LI>
+  <LI>Base Mass : Add base mass to all buildings, in preparation for calculating overall rocket payload mass. </LI>
+  <LI>Building : Add building general info such as dimensions and mass. </LI>
+  <LI>Scenario : Arriving future Settlements are configured from a scenario. Scenarios can be exported and shared. </LI>
+  <LI>Parts : Add garment. </LI>
+  <LI>Filter : New Settlement filter and Building tab to the Monitor Tool. </LI>
+  <LI>Building Window : New dedicated Building Unit Window which replaces the Building tab in the Settlement window.</LI>
+  <LI>Person : Make a person's carrying capacity to be age-dependent.</LI>
+  <LI>Mission : Restructure and simplify handling of Mission.</LI>
+  <LI>Social : Remove global relationship graph and simplify codes.</LI>
 
 ### UI IMPROVEMENT :
-
+  <LI>Crew Editor : Edit and load basic scenarios.</LI>
 
 ### FIXES :
-1. Consider loading/Unloading edge cases for Trading/Delivery.
-2. Resolve stalled delivery negotiation.
-3. Exploration Mission revisits existing sites until they reach
-   an evaluation ready for Mining.
-4. Fix the mission selection that stop Navigation Tab from
-   displaying sites and navpoints.
+  <LI>Consider loading/Unloading edge cases for Trading/Delivery.</LI>
+  <LI>Resolve stalled delivery negotiation.</LI>
+  <LI>Exploration Mission revisits existing sites until they reach
+   an evaluation ready for Mining.</LI>
+  <LI>Fix the mission selection that stop Navigation Tab from displaying sites and navpoints.</LI>
 
 
 ------------------------------------------|---------------------

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * RespondToStudyInvitation.java
- * @date 2022-06-10
+ * @date 2022-06-11
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.JobType;
+import org.mars_sim.msp.core.person.ai.social.RelationshipUtil;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.science.ScienceConfig;
@@ -56,8 +57,6 @@ public class RespondToStudyInvitation extends Task implements Serializable {
 
 	/** The scientific study. */
 	private ScientificStudy study;
-
-//	private static Map<Integer, Person> lookupPerson = unitManager.getLookupPerson();
 
 	/**
 	 * Constructor
@@ -185,17 +184,17 @@ public class RespondToStudyInvitation extends Task implements Serializable {
 				ScienceType science = ScienceType.getJobScience(job);
 				study.addCollaborativeResearcher(person, science);
 
-				// Add 10 points to primary researcher's opinion of invitee for accepting
+				// Add 5 points to primary researcher's opinion of invitee for accepting
 				// invitation.
-		        relationshipManager.changeOpinion(primaryResearcher, person, RandomUtil.getRandomDouble(5));
+		        RelationshipUtil.changeOpinion(primaryResearcher, person, RandomUtil.getRandomDouble(5));
 
 				logger.log(person, Level.FINE, 0, "Accepted invitation from " + primaryResearcher.getName()
 							+ " to collaborate on "	+ study.getName() + ".");
 			} else {
 
-				// Subtract 10 points from primary researcher's opinion of invitee for rejecting
+				// Subtract 5 points from primary researcher's opinion of invitee for rejecting
 				// invitation.
-		        relationshipManager.changeOpinion(primaryResearcher, person, RandomUtil.getRandomDouble(-5));
+		        RelationshipUtil.changeOpinion(primaryResearcher, person, RandomUtil.getRandomDouble(-5));
 
 				logger.log(person, Level.FINE, 0, "Rejected invitation from " + primaryResearcher.getName()
 							+ " to collaborate on "	+ study.getName() + ".");
@@ -256,7 +255,7 @@ public class RespondToStudyInvitation extends Task implements Serializable {
 				acceptChance *= ((double) difficultyLevel / (double) skillLevel);
 
 				// Modify based on researchers opinion of primary researcher.
-				double researcherOpinion = relationshipManager.getOpinionOfPerson(person, study.getPrimaryResearcher());
+				double researcherOpinion = RelationshipUtil.getOpinionOfPerson(person, study.getPrimaryResearcher());
 				acceptChance *= (researcherOpinion / 50D);
 
 				// Modify based on if researcher and primary researcher are at same settlement.

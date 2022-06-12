@@ -24,7 +24,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
+import org.mars_sim.msp.core.person.ai.social.RelationshipUtil;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
@@ -147,13 +147,11 @@ implements ListSelectionListener {
 	 */
 	private class RelationshipTableModel extends AbstractTableModel {
 
-		private RelationshipManager manager;
 		private Person person;
 
 		private RelationshipTableModel(Person person) {
 			this.person = person;
-			manager = Simulation.instance().getRelationshipManager();
-			knownPeople = manager.getAllKnownPeople(person);
+			knownPeople = RelationshipUtil.getAllKnownPeople(person);
 		}
 
 		public int getRowCount() {
@@ -188,18 +186,18 @@ implements ListSelectionListener {
 			else if (column == 1) 
 				return p;
 			else if (column == 2) {
-				double opinion = manager.getOpinionOfPerson(person, p);
+				double opinion = RelationshipUtil.getOpinionOfPerson(person, p);
 				return Math.round(opinion*10.0)/10.0;
 			}
 			else if (column == 3) {
-				double opinion = manager.getOpinionOfPerson(person, p);
+				double opinion = RelationshipUtil.getOpinionOfPerson(person, p);
 				return " " + getRelationshipString(opinion);
 			}
 			else return null;
 		}
 
 		public void update() {
-			Collection<Person> newKnownPeople = manager.getAllKnownPeople(person);
+			Collection<Person> newKnownPeople = RelationshipUtil.getAllKnownPeople(person);
 			if (!knownPeople.equals(newKnownPeople)) {
 				knownPeople = newKnownPeople;
 				//fireTableDataChanged();
@@ -210,7 +208,7 @@ implements ListSelectionListener {
 		}
 
 		private String getRelationshipString(double opinion) {
-			return Conversion.capitalize(RelationshipManager.describeRelationship(opinion));
+			return Conversion.capitalize(RelationshipUtil.describeRelationship(opinion));
 		}
 	}
 }

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
- * RelationshipManager.java
- * @date 2022-06-10
+ * RelationshipUtil.java
+ * @date 2022-06-11
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.social;
@@ -13,15 +13,13 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.MBTIPersonality;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
@@ -31,18 +29,15 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
- * The RelationshipManager class keeps track of all the social relationships
- * between people.<br/>
- * <br/>
- * The simulation instance has only one relationship manager.
+ * The RelationshipUtil class computes the changes in social relationships between people.
  */
-public class RelationshipManager implements Serializable {
+public class RelationshipUtil implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
 	/** default serial id. */
-	private static final Logger logger = Logger.getLogger(RelationshipManager.class.getName());
+	private static final Logger logger = Logger.getLogger(RelationshipUtil.class.getName());
 	
 	/** The base % chance of a relationship change per millisol. */
 	private static final double BASE_RELATIONSHIP_CHANGE_PROBABILITY = .1D;
@@ -66,14 +61,6 @@ public class RelationshipManager implements Serializable {
 	 */
 	private static final double SETTLER_MODIFIER = .02D;
 
-	private static UnitManager unitManager;
-
-	/**
-	 * Constructor.
-	 */
-	public RelationshipManager() {
-	}
-	
 	/**
 	 * Adds a new relationship between two people.
 	 * 
@@ -82,7 +69,7 @@ public class RelationshipManager implements Serializable {
 	 * @param relationshipType the type of relationship (see Relationship static
 	 *                         members)
 	 */
-	public void createRelationship(Person person1, Person person2, RelationshipType startingRelationship) {
+	public static void createRelationship(Person person1, Person person2, RelationshipType startingRelationship) {
 		if (RelationshipType.FIRST_IMPRESSION == startingRelationship) {
 			setOpinion(person1, person2, getFirstImpression(person1, person2));
 			setOpinion(person2, person1, getFirstImpression(person2, person1));
@@ -102,7 +89,7 @@ public class RelationshipManager implements Serializable {
 	 * @param person2
 	 * @param opinion
 	 */
-	public void setOpinion(Person person1, Person person2, double opinion) {
+	public static void setOpinion(Person person1, Person person2, double opinion) {
 		person1.getRelation().setOpinion(person2.getIdentifier(), opinion);
 	}
 	
@@ -113,7 +100,7 @@ public class RelationshipManager implements Serializable {
 	 * @param person2
 	 * @param opinion
 	 */
-	public void changeOpinion(Person person1, Person person2, double mod) {
+	public static void changeOpinion(Person person1, Person person2, double mod) {
 		person1.getRelation().changeOpinion(person2.getIdentifier(), mod);
 	}
 	
@@ -124,7 +111,7 @@ public class RelationshipManager implements Serializable {
 	 * @param person2
 	 * return opinion
 	 */
-	public double getOpinion(Person person1, Person person2) {
+	public static double getOpinion(Person person1, Person person2) {
 		return person1.getRelation().getOpinion(person2.getIdentifier());
 	}
 	
@@ -135,21 +122,36 @@ public class RelationshipManager implements Serializable {
 	 * @param person2 the second person (order isn't important)
 	 * @return true if the two people have a relationship
 	 */
-	public boolean hasRelationship(Person person1, Person person2) {
+	public static boolean hasRelationship(Person person1, Person person2) {
 		return (person1.getRelation().getOpinion(person2.getIdentifier()) != 0
 				|| person2.getRelation().getOpinion(person1.getIdentifier()) != 0);
 	}
 
+	/**
+	 * Changes the opinion of person1 toward person2
+	 * 
+	 * @param person1
+	 * @param person2
+	 * @param type
+	 * @param mod
+	 */
+	public static void changeOpinion(Person person1, Person person2, RelationshipType type, double mod) {
+        // Check if existing relationship between person1 and person2.      
+        if (!hasRelationship(person1, person2)) {
+            // Create new relationship.
+        	createRelationship(person1, person2, type);
+        }
+        changeOpinion(person1, person2, mod);
+	}
+	
 	/**
 	 * Gets all the people that a person knows (has met).
 	 * 
 	 * @param person the person
 	 * @return a list of the people the person knows.
 	 */
-	public Set<Person> getAllKnownPeople(Person person) {
-		return person.getRelation().getPeopleIDs().stream()
-				.map(id -> unitManager.getPersonByID(id))
-				.collect(Collectors.toSet());
+	public static Set<Person> getAllKnownPeople(Person person) {
+		return person.getRelation().getAllKnownPeople(person);
 	}
 	
 	/**
@@ -158,7 +160,7 @@ public class RelationshipManager implements Serializable {
 	 * @param person
 	 * @return {@link Person} map
 	 */
-	public Map<Person, Double> getMyOpinionsOfThem(Person person) {
+	public static Map<Person, Double> getMyOpinionsOfThem(Person person) {
 		Map<Person, Double> friends = new ConcurrentHashMap<>();
 		Collection<Person> list = getAllKnownPeople(person);
 		double highestScore = 0;
@@ -180,7 +182,7 @@ public class RelationshipManager implements Serializable {
 	 * @param person
 	 * @return {@link Person} map
 	 */
-	public Map<Person, Double> getTheirOpinionsOfMe(Person person) {
+	public static Map<Person, Double> getTheirOpinionsOfMe(Person person) {
 		Map<Person, Double> friends = new ConcurrentHashMap<>();
 		Collection<Person> list = getAllKnownPeople(person);
 		double highestScore = 0;
@@ -226,7 +228,7 @@ public class RelationshipManager implements Serializable {
 	 * @param person
 	 * @return {@link Person} array
 	 */
-	public Map<Person, Double> getBestFriends(Person person) {
+	public static Map<Person, Double> getBestFriends(Person person) {
 		Map<Person, Double> bestFriends = getMyOpinionsOfThem(person);
 		int size = bestFriends.size();
 		if (size == 1) {
@@ -266,7 +268,7 @@ public class RelationshipManager implements Serializable {
 	 * @return opinion value from 0 (enemy) to 50 (indifferent) to 100 (close
 	 *         friend).
 	 */
-	public double getOpinionOfPerson(Person person1, Person person2) {
+	public static double getOpinionOfPerson(Person person1, Person person2) {
 		double result = 50D;
 
 		if (hasRelationship(person1, person2)) {
@@ -286,7 +288,7 @@ public class RelationshipManager implements Serializable {
 	 * @return opinion value from 0 (enemy) to 50 (indifferent) to 100 (close
 	 *         friend).
 	 */
-	public double getAverageOpinionOfPeople(Person person1, Collection<Person> people) {
+	public static double getAverageOpinionOfPeople(Person person1, Collection<Person> people) {
 
 		if (people == null)
 			throw new IllegalArgumentException("people is null");
@@ -312,7 +314,7 @@ public class RelationshipManager implements Serializable {
 	 * @param time   the time passing (millisols)
 	 * @throws Exception if error.
 	 */
-	public void timePassing(Person person, double time) {
+	public static void timePassing(Person person, double time) {
 
 		// Update the person's relationships.
 		updateRelationships(person, time);
@@ -328,7 +330,7 @@ public class RelationshipManager implements Serializable {
 	 * @param time   the time passing (millisols)
 	 * @throws Exception if error
 	 */
-	private void updateRelationships(Person person, double time) {
+	private static void updateRelationships(Person person, double time) {
 
 		double personStress = person.getPhysicalCondition().getStress();
 
@@ -422,7 +424,7 @@ public class RelationshipManager implements Serializable {
 	 * @param time   the time passing (millisols)
 	 * @throws Exception if error
 	 */
-	private void modifyStress(Person person, double time) {
+	private static void modifyStress(Person person, double time) {
 		double stressModifier = 0D;
 
 		Iterator<Person> i = person.getLocalGroup().iterator();
@@ -463,7 +465,7 @@ public class RelationshipManager implements Serializable {
 	 * @param s Settlement
 	 * @return the score
 	 */
-	public double getRelationshipScore(Settlement s) {
+	public static double getRelationshipScore(Settlement s) {
 		double score = 0;
 
 		int count = 0;
@@ -492,7 +494,7 @@ public class RelationshipManager implements Serializable {
 	 * @param impressionee the person who's the object of the impression.
 	 * @return the opinion of the impressioner as a value from 0 to 100.
 	 */
-	private double getFirstImpression(Person impressioner, Person impressionee) {
+	private static double getFirstImpression(Person impressioner, Person impressionee) {
 		double result = 0;
 
 		// Random with bell curve around 50.
@@ -536,7 +538,7 @@ public class RelationshipManager implements Serializable {
 	 * @param target the person who is the target of the relationship.
 	 * @return the person's opinion of the target as a value from 0 to 100.
 	 */
-	private double getExistingRelationship(Person person, Person target) {
+	private static double getExistingRelationship(Person person, Person target) {
 		double result = 0D;
 
 		// Random with bell curve around 50.
@@ -589,7 +591,7 @@ public class RelationshipManager implements Serializable {
 	 * @param target the person who is the target of the relationship.
 	 * @return the person's opinion of the target as a value from 0 to 100.
 	 */
-	private double getCommunicationMeeting(Person person, Person target) {
+	private static double getCommunicationMeeting(Person person, Person target) {
 		// Default to 50 for now.
 		double result = 50D;
 
@@ -608,10 +610,6 @@ public class RelationshipManager implements Serializable {
 		result += target.getScientificAchievement(science);
 
 		return result;
-	}
-	
-	public static void initializeInstances(UnitManager u) {
-		unitManager = u;		
 	}
 	
 	/**

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MeetTogether.java
- * @date 2022-06-10
+ * @date 2022-06-11
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -14,12 +14,11 @@ import java.util.List;
 import java.util.Set;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.person.ai.role.RoleUtil;
-import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
+import org.mars_sim.msp.core.person.ai.social.RelationshipUtil;
 import org.mars_sim.msp.core.person.ai.social.RelationshipType;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
@@ -59,8 +58,7 @@ implements Serializable {
     private Person inviter;
     
     private Settlement settlement;
-    
-    private static RelationshipManager relationshipManager;
+
     
     /**
      * Constructor. This is an effort-driven task.
@@ -155,15 +153,7 @@ implements Serializable {
         settlement = candidate.getSettlement();
         
         if (settlement != null) {
-
-            if (relationshipManager == null)
-            	relationshipManager = Simulation.instance().getRelationshipManager();
-            // Check if existing relationship between candidate and inviter.      
-            if (!relationshipManager.hasRelationship(candidate, inviter)) {
-                // Create new communication meeting relationship.
-            	relationshipManager.createRelationship(candidate, inviter, RelationshipType.COMMUNICATION_MEETING);
-            }
-            relationshipManager.changeOpinion(candidate, inviter, RandomUtil.getRandomDouble(1));
+            RelationshipUtil.changeOpinion(candidate, inviter, RelationshipType.COMMUNICATION_MEETING, RandomUtil.getRandomDouble(1));
         }
     }
     
@@ -210,15 +200,7 @@ implements Serializable {
 				logger.fine(person, Msg.getString("Task.description.meetTogether.detail", candidate.getName()));
 	
 		        if (getDuration() <= (getTimeCompleted() + time)) {
-		
-		            if (relationshipManager == null)
-		            	relationshipManager = Simulation.instance().getRelationshipManager();
-		            // Check if existing relationship between person and candidate.
-		            if (!relationshipManager.hasRelationship(person, candidate)) {
-		                // Create new communication meeting relationship.
-		            	relationshipManager.createRelationship(person, candidate, RelationshipType.COMMUNICATION_MEETING);
-		            }
-		            relationshipManager.changeOpinion(person, candidate, RandomUtil.getRandomDouble(1));
+		            RelationshipUtil.changeOpinion(person, candidate, RelationshipType.COMMUNICATION_MEETING, RandomUtil.getRandomDouble(1));
 		        }
 		    }
     	}

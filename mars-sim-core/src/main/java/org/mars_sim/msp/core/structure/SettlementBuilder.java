@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * SettlementBuilder.java
- * @date 2022-06-10
+ * @date 2022-06-11
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.structure;
@@ -37,7 +37,7 @@ import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ai.job.JobAssignmentType;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.job.JobUtil;
-import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
+import org.mars_sim.msp.core.person.ai.social.RelationshipUtil;
 import org.mars_sim.msp.core.person.ai.social.RelationshipType;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
@@ -67,7 +67,6 @@ public final class SettlementBuilder {
 	private static final boolean MEASURE_PHASES = false;
 
 	private UnitManager unitManager;
-	private RelationshipManager relationshipManager;
 	private CreditManager creditManager;
 
 	private SettlementConfig settlementConfig;
@@ -79,7 +78,6 @@ public final class SettlementBuilder {
 	public SettlementBuilder(Simulation sim, SimulationConfig simConfig) {
 		super();
 		this.unitManager = sim.getUnitManager();
-		this.relationshipManager = sim.getRelationshipManager();
 		this.creditManager = sim.getCreditManager();
 		this.settlementConfig = simConfig.getSettlementConfiguration();
 		this.personConfig = simConfig.getPersonConfig();
@@ -555,15 +553,7 @@ public final class SettlementBuilder {
 				for (Person potentialFriend : addedCrew.keySet()) {
 					if (potentialFriend.getName().equals(friendName)) {
 						int opinion = friend.getValue();
-
-			            if (relationshipManager == null)
-			            	relationshipManager = Simulation.instance().getRelationshipManager();
-			            // Check if existing relationship between person and potentialFriend.      
-			            if (!relationshipManager.hasRelationship(person, potentialFriend)) {
-			                // Create new communication meeting relationship.
-			            	relationshipManager.createRelationship(person, potentialFriend, RelationshipType.EXISTING_RELATIONSHIP);
-			            }
-			            relationshipManager.changeOpinion(person, potentialFriend, opinion);
+			            RelationshipUtil.changeOpinion(person, potentialFriend, RelationshipType.EXISTING_RELATIONSHIP, opinion);
 					}
 				}
 			}

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ReviewMissionPlan.java
- * @date 2021-09-27
+ * @date 2022-06-11
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -30,6 +30,7 @@ import org.mars_sim.msp.core.person.ai.mission.PlanType;
 import org.mars_sim.msp.core.person.ai.mission.SiteMission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
+import org.mars_sim.msp.core.person.ai.social.RelationshipUtil;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.structure.ObjectiveType;
@@ -240,12 +241,12 @@ public class ReviewMissionPlan extends Task implements Serializable {
 								// 2. Relationship Score 
 								
 								// 2a. Reviewer's view of the mission lead
-								double relationshipWithReviewer = relationshipManager.getOpinionOfPerson(person, p);
+								double relationshipWithReviewer = RelationshipUtil.getOpinionOfPerson(person, p);
 									
 								double relationshipWithOthers = 0;
 								int num = reviewerSettlement.getAllAssociatedPeople().size();
 								for (Person pp : reviewerSettlement.getAllAssociatedPeople()) {
-									relationshipWithOthers += relationshipManager.getOpinionOfPerson(person, pp);
+									relationshipWithOthers += RelationshipUtil.getOpinionOfPerson(person, pp);
 								}
 								
 								// 2b. Others' view of the mission lead

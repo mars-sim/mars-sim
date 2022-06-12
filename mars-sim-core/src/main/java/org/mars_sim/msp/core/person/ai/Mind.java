@@ -23,7 +23,7 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.social.Relation;
-import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
+import org.mars_sim.msp.core.person.ai.social.RelationshipUtil;
 import org.mars_sim.msp.core.person.ai.task.utils.PersonTaskManager;
 import org.mars_sim.msp.core.structure.OverrideType;
 import org.mars_sim.msp.core.time.ClockPulse;
@@ -73,15 +73,12 @@ public class Mind implements Serializable, Temporal {
 	private Relation relation;
 	
 	private static MissionManager missionManager;
-	private static RelationshipManager relationshipManager;
 	private static SurfaceFeatures surfaceFeatures;
 
 	static {
 		Simulation sim = Simulation.instance();
 		// Load the mission manager
 		missionManager = sim.getMissionManager();
-		// Load the relationship manager
-		relationshipManager = sim.getRelationshipManager();
 		// Load SurfaceFeatures
 		surfaceFeatures = sim.getMars().getSurfaceFeatures();
 	}
@@ -136,7 +133,7 @@ public class Mind implements Serializable, Temporal {
 			updateEmotion();
 
 			// Update relationships.
-			relationshipManager.timePassing(person, pulse.getElapsed());
+			RelationshipUtil.timePassing(person, pulse.getElapsed());
 		}
 
 		// Note : for now a Mayor/Manager cannot switch job
@@ -717,8 +714,7 @@ public class Mind implements Serializable, Temporal {
 	 *
 	 * @param clock
 	 */
-	public static void initializeInstances(MissionManager m, RelationshipManager r) {
-		relationshipManager = r;
+	public static void initializeInstances(MissionManager m) {
 		missionManager = m;
 	}
 

@@ -36,7 +36,7 @@ import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
-import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
+import org.mars_sim.msp.core.person.ai.social.RelationshipUtil;
 import org.mars_sim.msp.core.person.ai.task.Walk;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
@@ -135,8 +135,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	protected static MarsClock marsClock;
 	/** The static instance of the event manager */
 	protected static HistoricalEventManager eventManager;
-	/** The static instance of the relationship manager */
-	protected static RelationshipManager relationshipManager;
 	/** The static instance of the UnitManager */
 	protected static UnitManager unitManager;
 	/** The static instance of the ScientificStudyManager */
@@ -856,7 +854,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 				while (i.hasNext()) {
 					Person occupant = i.next();
 					if (person != occupant) {
-						totalOpinion += ((relationshipManager.getOpinionOfPerson(person, occupant) - 50D) / 50D);
+						totalOpinion += ((RelationshipUtil.getOpinionOfPerson(person, occupant) - 50D) / 50D);
 					}
 				}
 
@@ -1400,7 +1398,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * 
 	 * @param c  {@link MarsClock}
 	 * @param e  {@link HistoricalEventManager}
-	 * @param r  {@link RelationshipManager}
+	 * @param r  {@link RelationshipUtil}
 	 * @param u  {@link UnitManager}
 	 * @param s  {@link ScientificStudyManager}
 	 * @param sf {@link SurfaceFeatures}
@@ -1408,11 +1406,10 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @param m  {@link MissionManager}
 	 * @param pc  {@link PersonConfig}
 	 */
-	public static void initializeInstances(MarsClock c, HistoricalEventManager e, RelationshipManager r, UnitManager u,
+	public static void initializeInstances(MarsClock c, HistoricalEventManager e, UnitManager u,
 			ScientificStudyManager s, SurfaceFeatures sf, OrbitInfo oi, MissionManager m, PersonConfig pc) {
 		marsClock = c;
 		eventManager = e;
-		relationshipManager = r;
 		unitManager = u;
 		scientificStudyManager = s;
 		surfaceFeatures = sf;

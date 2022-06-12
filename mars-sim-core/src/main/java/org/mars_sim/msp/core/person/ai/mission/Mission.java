@@ -40,7 +40,7 @@ import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.job.JobType;
-import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
+import org.mars_sim.msp.core.person.ai.social.RelationshipUtil;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.robot.Robot;
@@ -174,7 +174,6 @@ public abstract class Mission implements Serializable, Temporal {
 	protected static SurfaceFeatures surfaceFeatures;
 	protected static PersonConfig personConfig;
 	protected static MarsClock marsClock;
-	protected static RelationshipManager relationshipManager;
 	protected static CreditManager creditManager;
 	protected static TerrainElevation terrainElevation;
 
@@ -984,7 +983,7 @@ public abstract class Mission implements Serializable, Temporal {
 				// Determine how much the recruiter likes the person.
 				double likability = 50D;
 				if (startingMember.getUnitType() == UnitType.PERSON) {
-					likability = relationshipManager.getOpinionOfPerson((Person) startingMember, person);
+					likability = RelationshipUtil.getOpinionOfPerson((Person) startingMember, person);
 				}
 
 				// Check if person is the best recruit.
@@ -1053,7 +1052,7 @@ public abstract class Mission implements Serializable, Temporal {
 			// Get the recruitee's social opinion of the recruiter.
 			double recruiterLikability = 50D;
 			if (recruiter.getUnitType() == UnitType.PERSON) {
-				recruiterLikability = relationshipManager.getOpinionOfPerson(recruitee, (Person) recruiter);
+				recruiterLikability = RelationshipUtil.getOpinionOfPerson(recruitee, (Person) recruiter);
 			}
 
 			// Get the recruitee's average opinion of all the current mission members.
@@ -1065,7 +1064,7 @@ public abstract class Mission implements Serializable, Temporal {
 					people.add((Person) member);
 				}
 			}
-			double groupLikability = relationshipManager.getAverageOpinionOfPeople(recruitee, people);
+			double groupLikability = RelationshipUtil.getAverageOpinionOfPeople(recruitee, people);
 
 			double recruitmentChance = (qualification + recruiterLikability + groupLikability) / 3D;
 			if (recruitmentChance > 100D) {
@@ -1446,7 +1445,7 @@ public abstract class Mission implements Serializable, Temporal {
 	 */
 	public static void initializeInstances(Simulation si, MarsClock c, HistoricalEventManager e,
 			UnitManager u, SurfaceFeatures sf, TerrainElevation te,
-			MissionManager m, RelationshipManager r, PersonConfig pc, CreditManager cm) {
+			MissionManager m, PersonConfig pc, CreditManager cm) {
 		sim = si;
 		marsClock = c;
 		eventManager = e;
@@ -1455,7 +1454,6 @@ public abstract class Mission implements Serializable, Temporal {
 		terrainElevation = te;
 		missionManager = m;
 		personConfig = pc;
-		relationshipManager = r;
 		creditManager = cm;
 	}
 

@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * NegotiateDelivery.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-06-11
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -13,6 +13,7 @@ import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.goods.CreditManager;
 import org.mars_sim.msp.core.goods.Good;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -21,7 +22,7 @@ import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.DeliveryUtil;
-import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
+import org.mars_sim.msp.core.person.ai.social.RelationshipUtil;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.person.ai.task.utils.Worker;
@@ -211,17 +212,11 @@ public class NegotiateDelivery extends Task implements Serializable {
 		modifier += sellingTrader.getSkillManager().getEffectiveSkillLevel(SkillType.TRADING) / 10D;
 
 		// Modify by 10% for the relationship between the buyer and seller.
-		RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
-		if (buyingTrader instanceof Person && sellingTrader instanceof Person) {
+		if (buyingTrader.getUnitType() == UnitType.PERSON && sellingTrader.getUnitType() == UnitType.PERSON) {
 			Person person1 = (Person) buyingTrader;
 			Person person2 = (Person) sellingTrader;
-			modifier += relationshipManager.getOpinionOfPerson(person1, person2) / 1000D;
-		}
-
-		if (buyingTrader instanceof Person && sellingTrader instanceof Person) {
-			Person person1 = (Person) sellingTrader;
-			Person person2 = (Person) buyingTrader;
-			modifier += relationshipManager.getOpinionOfPerson(person1, person2) / 1000D;
+			modifier += RelationshipUtil.getOpinionOfPerson(person1, person2) / 1000D;
+			modifier += RelationshipUtil.getOpinionOfPerson(person2, person1) / 1000D;
 		}
 
 		return modifier;

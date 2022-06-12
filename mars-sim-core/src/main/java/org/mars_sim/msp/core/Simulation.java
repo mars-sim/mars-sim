@@ -59,7 +59,6 @@ import org.mars_sim.msp.core.person.ai.mission.MissionPlanning;
 import org.mars_sim.msp.core.person.ai.role.Role;
 import org.mars_sim.msp.core.person.ai.role.RoleUtil;
 import org.mars_sim.msp.core.person.ai.social.Relation;
-import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTaskUtil;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskManager;
@@ -198,7 +197,7 @@ public class Simulation implements ClockListener, Serializable {
 	/** Mission controller. */
 	private MissionManager missionManager;
 	/** Manages all personal relationships. */
-	private RelationshipManager relationshipManager;
+//	private RelationshipManager relationshipManager;
 	/** Medical complaints. */
 	private MedicalManager medicalManager;
 	/** Master clock for the simulation. */
@@ -365,7 +364,7 @@ public class Simulation implements ClockListener, Serializable {
 		orbit = new OrbitInfo(marsClock);
 
 		missionManager = new MissionManager();
-		relationshipManager = new RelationshipManager();
+//		relationshipManager = new RelationshipManager();
 		medicalManager = new MedicalManager();
 		scientificStudyManager = new ScientificStudyManager();
 
@@ -420,7 +419,7 @@ public class Simulation implements ClockListener, Serializable {
 		MalfunctionManager.initializeInstances(masterClock, marsClock, malfunctionFactory,
 											medicalManager, eventManager,
 											simulationConfig.getPartConfiguration());
-		RelationshipManager.initializeInstances(unitManager);
+		Relation.initializeInstances(unitManager);
 
 		RadiationExposure.initializeInstances(masterClock, marsClock);
 
@@ -429,8 +428,8 @@ public class Simulation implements ClockListener, Serializable {
 
 		// Set instances for classes that extend Unit and Task and Mission
 		Mission.initializeInstances(this, marsClock, eventManager, unitManager,
-				surfaceFeatures, terrainElevation, missionManager, relationshipManager, pc, creditManager);
-		Task.initializeInstances(marsClock, eventManager, relationshipManager, unitManager,
+				surfaceFeatures, terrainElevation, missionManager, pc, creditManager);
+		Task.initializeInstances(marsClock, eventManager, unitManager,
 				scientificStudyManager, surfaceFeatures, orbit, missionManager, pc);
 		LocalAreaUtil.initializeInstances(unitManager, marsClock);
 		
@@ -515,7 +514,6 @@ public class Simulation implements ClockListener, Serializable {
 			eventManager = (HistoricalEventManager) ois.readObject();
 			creditManager = (CreditManager) ois.readObject();
 			transportManager = (TransportManager) ois.readObject();
-			relationshipManager = (RelationshipManager) ois.readObject();
 			unitManager = (UnitManager) ois.readObject();
 			masterClock = (MasterClock) ois.readObject();
 
@@ -666,13 +664,13 @@ public class Simulation implements ClockListener, Serializable {
 		ReportingAuthorityFactory rf  = simulationConfig.getReportingAuthorityFactory();
 		rf.discoverReportingAuthorities(unitManager);
 
-		RelationshipManager.initializeInstances(unitManager);
+		Relation.initializeInstances(unitManager);
 
 		MalfunctionManager.initializeInstances(masterClock, marsClock, malfunctionFactory,
 												medicalManager, eventManager,
 												simulationConfig.getPartConfiguration());
 		ScientificStudy.initializeInstances(marsClock);
-		ScientificStudyUtil.initializeInstances(relationshipManager, unitManager);
+		ScientificStudyUtil.initializeInstances(unitManager);
 
 		Resupply.initializeInstances(bc, unitManager);
 
@@ -680,7 +678,7 @@ public class Simulation implements ClockListener, Serializable {
 		SalvageValues.initializeInstances(unitManager);
 
 		// Re-initialize Person/Robot related class
-		Mind.initializeInstances(missionManager, relationshipManager);
+		Mind.initializeInstances(missionManager);
 		PhysicalCondition.initializeInstances(this, masterClock, marsClock, medicalManager);
 		RadiationExposure.initializeInstances(masterClock, marsClock);
 		Role.initializeInstances(marsClock);
@@ -688,7 +686,7 @@ public class Simulation implements ClockListener, Serializable {
 		HealthProblem.initializeInstances(medicalManager, eventManager);
 
 		// Re-initialize Structure related class
-		BuildingManager.initializeInstances(this, masterClock, marsClock, eventManager, relationshipManager, unitManager);
+		BuildingManager.initializeInstances(this, masterClock, marsClock, eventManager, unitManager);
 		Settlement.initializeInstances(unitManager);		// loadDefaultValues()
 		GoodsManager.initializeInstances(this, marsClock, missionManager, unitManager, pc);
 
@@ -703,13 +701,13 @@ public class Simulation implements ClockListener, Serializable {
 //		CreditEvent.initializeInstances(unitManager, missionManager);
 
 		// Re-initialize Task related class
-		Task.initializeInstances(marsClock, eventManager, relationshipManager, unitManager,
+		Task.initializeInstances(marsClock, eventManager, unitManager,
 				scientificStudyManager, surfaceFeatures, orbit, missionManager, pc);
 		LocalAreaUtil.initializeInstances(unitManager, marsClock);
 		
 		// Re-initialize Mission related class
 		Mission.initializeInstances(this, marsClock, eventManager, unitManager,
-				surfaceFeatures, terrainElevation, missionManager, relationshipManager, pc, creditManager);
+				surfaceFeatures, terrainElevation, missionManager, pc, creditManager);
 		MissionPlanning.initializeInstances(marsClock);
 
 		// Start a chain of calls to set instances
@@ -875,7 +873,6 @@ public class Simulation implements ClockListener, Serializable {
 			oos.writeObject(eventManager);
 			oos.writeObject(creditManager);
 			oos.writeObject(transportManager);
-			oos.writeObject(relationshipManager);
 			oos.writeObject(unitManager);
 			oos.writeObject(masterClock);
 
@@ -941,7 +938,6 @@ public class Simulation implements ClockListener, Serializable {
 				transportManager,
 				creditManager,
 				eventManager,
-				relationshipManager,
 				unitManager,
 				masterClock
 		);
@@ -1102,15 +1098,6 @@ public class Simulation implements ClockListener, Serializable {
 	}
 
 	/**
-	 * Get the relationship manager.
-	 *
-	 * @return relationship manager.
-	 */
-	public RelationshipManager getRelationshipManager() {
-		return relationshipManager;
-	}
-
-	/**
 	 * Gets the credit manager.
 	 *
 	 * @return credit manager.
@@ -1260,11 +1247,6 @@ public class Simulation implements ClockListener, Serializable {
 		if (missionManager != null) {
 			missionManager.destroy();
 			missionManager = null;
-		}
-
-		if (relationshipManager != null) {
-			relationshipManager.destroy();
-			relationshipManager = null;
 		}
 
 		if (medicalManager != null) {

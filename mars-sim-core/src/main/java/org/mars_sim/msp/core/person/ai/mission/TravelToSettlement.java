@@ -19,7 +19,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.job.JobUtil;
-import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
+import org.mars_sim.msp.core.person.ai.social.RelationshipUtil;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -265,13 +265,12 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 		// Determine relationship factor in destination settlement relative to
 		// starting settlement.
 		double relationshipFactor = 0D;
-		if (relationshipManager == null)
-			relationshipManager = Simulation.instance().getRelationshipManager();
+
 		if (member instanceof Person) {
 			Person person = (Person) member;
-			double currentOpinion = relationshipManager.getAverageOpinionOfPeople(person,
+			double currentOpinion = RelationshipUtil.getAverageOpinionOfPeople(person,
 					startingSettlement.getAllAssociatedPeople());
-			double destinationOpinion = relationshipManager.getAverageOpinionOfPeople(person,
+			double destinationOpinion = RelationshipUtil.getAverageOpinionOfPeople(person,
 					destinationSettlement.getAllAssociatedPeople());
 			relationshipFactor = (destinationOpinion - currentOpinion) / 100D;
 		}
@@ -340,13 +339,11 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 		if (member instanceof Person) {
 			Person person = (Person) member;
 
-			RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
-
 			// Add modifier for average relationship with inhabitants of
 			// destination settlement.
 			if (destinationSettlement != null) {
 				Collection<Person> destinationInhabitants = destinationSettlement.getAllAssociatedPeople();
-				double destinationSocialModifier = (relationshipManager.getAverageOpinionOfPeople(person,
+				double destinationSocialModifier = (RelationshipUtil.getAverageOpinionOfPeople(person,
 						destinationInhabitants) - 50D) / 50D;
 				result += destinationSocialModifier;
 			}
@@ -361,7 +358,7 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 						i.remove();
 					}
 				}
-				double startingSocialModifier = (relationshipManager.getAverageOpinionOfPeople(person,
+				double startingSocialModifier = (RelationshipUtil.getAverageOpinionOfPeople(person,
 						startingInhabitants) - 50D) / 50D;
 				result -= startingSocialModifier;
 			}

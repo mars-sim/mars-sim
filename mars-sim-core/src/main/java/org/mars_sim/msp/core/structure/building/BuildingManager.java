@@ -33,7 +33,7 @@ import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
+import org.mars_sim.msp.core.person.ai.social.RelationshipUtil;
 import org.mars_sim.msp.core.person.ai.task.HaveConversation;
 import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.robot.Robot;
@@ -137,7 +137,6 @@ public class BuildingManager implements Serializable {
 	private static HistoricalEventManager eventManager;
 	private static MarsClock marsClock;
 	private static MasterClock masterClock;
-	private static RelationshipManager relationshipManager;
 	private static UnitManager unitManager = sim.getUnitManager();
 	private static SettlementConfig settlementConfig = simulationConfig.getSettlementConfiguration();
 
@@ -170,7 +169,6 @@ public class BuildingManager implements Serializable {
 		marsClock = masterClock.getMarsClock();
 
 		eventManager = sim.getEventManager();
-		relationshipManager = sim.getRelationshipManager();
 		unitManager = sim.getUnitManager();
 
 		// Construct all buildings in the settlement.
@@ -210,7 +208,6 @@ public class BuildingManager implements Serializable {
 		this.settlement = settlement;
 		this.settlementID = (Integer) settlement.getIdentifier();
 
-		relationshipManager = sim.getRelationshipManager();
 		unitManager = sim.getUnitManager();
 
 		// Construct all buildings in the settlement.
@@ -1333,7 +1330,7 @@ public class BuildingManager implements Serializable {
 				int numPeople = 0;
 				for (Person occupant : lifeSupport.getOccupants()) {
 					if (person != occupant) {
-						buildingRelationships += relationshipManager.getOpinionOfPerson(person, occupant);
+						buildingRelationships += RelationshipUtil.getOpinionOfPerson(person, occupant);
 						numPeople++;
 					}
 				}
@@ -2136,13 +2133,12 @@ public class BuildingManager implements Serializable {
 	 * @param {{@link MarsClock}
 	 */
 	public static void initializeInstances(Simulation s, MasterClock c0, MarsClock c1,
-			HistoricalEventManager e, RelationshipManager r, UnitManager u) {
+			HistoricalEventManager e, UnitManager u) {
 		sim = s;
 		simulationConfig = SimulationConfig.instance();
 		masterClock = c0;
 		marsClock = c1;
 		eventManager = e;
-		relationshipManager = r;
 		unitManager = u;
 	}
 
