@@ -38,6 +38,7 @@ import org.mars_sim.msp.core.equipment.EquipmentInventory;
 import org.mars_sim.msp.core.equipment.EquipmentOwner;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.equipment.ItemHolder;
+import org.mars_sim.msp.core.goods.CreditManager;
 import org.mars_sim.msp.core.goods.Good;
 import org.mars_sim.msp.core.goods.GoodsManager;
 import org.mars_sim.msp.core.goods.GoodsUtil;
@@ -285,9 +286,11 @@ public class Settlement extends Structure implements Temporal,
 	private Coordinates location;
 	/** The settlement's last dust storm. */
 	private DustStorm storm;
-	/** The person's EquipmentInventory instance. */
+	/** The settlement's EquipmentInventory instance. */
 	private EquipmentInventory eqmInventory;
-
+	/** The settlement's CreditManager instance manages trade credit between settlements. */
+	private CreditManager creditManager;
+	
 	/** The settlement objective type instance. */
 	private ObjectiveType objectiveType;
 
@@ -392,6 +395,8 @@ public class Settlement extends Structure implements Temporal,
 		final double GEN_MAX = 1_000_000;
 		// Create EquipmentInventory instance
 		eqmInventory = new EquipmentInventory(this, GEN_MAX);
+		// Create CreditManager instance
+		creditManager = new CreditManager(this);
 	}
 
 	/**
@@ -482,6 +487,9 @@ public class Settlement extends Structure implements Temporal,
 		// Initialize building connector manager.
 		buildingConnectorManager = new BuildingConnectorManager(this);
 
+		// Initialize Credit Manager.
+		creditManager = new CreditManager(this);
+		
 		// Initialize goods manager.
 		goodsManager = new GoodsManager(this);
 
@@ -3861,6 +3869,15 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
+	 * Gets the credit manager.
+	 *
+	 * @return credit manager.
+	 */
+	public CreditManager getCreditManager() {
+		return creditManager;
+	}
+	
+	/**
 	 * Gets the unit's container unit. Returns null if unit has no container unit.
 	 *
 	 * @return the unit's container unit
@@ -3934,6 +3951,11 @@ public class Settlement extends Structure implements Temporal,
 		}
 		thermalSystem = null;
 
+		if (creditManager != null) {
+			creditManager.destroy();
+			creditManager = null;
+		}
+		
 		template = null;
 
 		scientificAchievement = null;

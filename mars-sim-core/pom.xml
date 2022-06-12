@@ -38,7 +38,7 @@
 			<groupId>com.phoenixst</groupId>
 			<artifactId>plexus-core</artifactId>
 			<version>0.9</version>
-		</dependency>
+		</dependency> 
 		<dependency>
 		    <groupId>org.jdom</groupId>
 		    <artifactId>jdom2</artifactId>

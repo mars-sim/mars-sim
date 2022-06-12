@@ -25,12 +25,7 @@ public class TestCreditManager extends TestCase {
         settlements.add(settlement1);
         Settlement settlement2 = new MockSettlement();
         settlements.add(settlement2);
-        CreditManager manager = new CreditManager(settlements);
-        
-        // Only if managerExecutor (ThreadPoolExecutor) is in use
-        //Thread creditThread = new Thread(manager); 
-        //creditThread.start();
-
+ 
         // Sleeping the thread for a short time to allow the credit manager to finish loading.
         try {
             Thread.sleep(100L);
@@ -39,13 +34,13 @@ public class TestCreditManager extends TestCase {
             fail();
         }
         
-        manager.setCredit(settlement1, settlement2, 100D);
-        assertEquals( 100D, manager.getCredit(settlement1, settlement2));
+        CreditManager.setCredit(settlement1, settlement2, 100D);
+        assertEquals( 100D, CreditManager.getCredit(settlement1, settlement2));
 
-        manager.setCredit(settlement1, settlement2, -100D);
-        assertEquals( -100D, manager.getCredit(settlement1, settlement2));
+        CreditManager.setCredit(settlement1, settlement2, -100D);
+        assertEquals( -100D, CreditManager.getCredit(settlement1, settlement2));
 
-        manager.setCredit(settlement2, settlement1, 100D);
-        assertEquals( -100D, manager.getCredit(settlement1, settlement2));
+        CreditManager.setCredit(settlement2, settlement1, 100D);
+        assertEquals( -100D, CreditManager.getCredit(settlement1, settlement2));
 	}
 }

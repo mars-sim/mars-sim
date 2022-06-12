@@ -196,14 +196,10 @@ public class Simulation implements ClockListener, Serializable {
 	private UnitManager unitManager;
 	/** Mission controller. */
 	private MissionManager missionManager;
-	/** Manages all personal relationships. */
-//	private RelationshipManager relationshipManager;
 	/** Medical complaints. */
 	private MedicalManager medicalManager;
 	/** Master clock for the simulation. */
 	private MasterClock masterClock;
-	/** Manages trade credit between settlements. */
-	private CreditManager creditManager;
 	/** Manages scientific studies. */
 	private ScientificStudyManager scientificStudyManager;
 	/** Manages transportation of settlements and resupplies from Earth. */
@@ -364,7 +360,6 @@ public class Simulation implements ClockListener, Serializable {
 		orbit = new OrbitInfo(marsClock);
 
 		missionManager = new MissionManager();
-//		relationshipManager = new RelationshipManager();
 		medicalManager = new MedicalManager();
 		scientificStudyManager = new ScientificStudyManager();
 
@@ -406,7 +401,6 @@ public class Simulation implements ClockListener, Serializable {
 		MetaTaskUtil.initializeMetaTasks();
 
 		eventManager = new HistoricalEventManager();
-		creditManager = new CreditManager();
 		transportManager = new TransportManager(eventManager);
 
         // Initialize ManufactureUtil
@@ -420,6 +414,7 @@ public class Simulation implements ClockListener, Serializable {
 											medicalManager, eventManager,
 											simulationConfig.getPartConfiguration());
 		Relation.initializeInstances(unitManager);
+		CreditManager.initializeInstances(unitManager);	
 
 		RadiationExposure.initializeInstances(masterClock, marsClock);
 
@@ -428,7 +423,7 @@ public class Simulation implements ClockListener, Serializable {
 
 		// Set instances for classes that extend Unit and Task and Mission
 		Mission.initializeInstances(this, marsClock, eventManager, unitManager,
-				surfaceFeatures, terrainElevation, missionManager, pc, creditManager);
+				surfaceFeatures, terrainElevation, missionManager, pc);
 		Task.initializeInstances(marsClock, eventManager, unitManager,
 				scientificStudyManager, surfaceFeatures, orbit, missionManager, pc);
 		LocalAreaUtil.initializeInstances(unitManager, marsClock);
@@ -512,7 +507,7 @@ public class Simulation implements ClockListener, Serializable {
 			medicalManager = (MedicalManager) ois.readObject();
 			scientificStudyManager = (ScientificStudyManager) ois.readObject();
 			eventManager = (HistoricalEventManager) ois.readObject();
-			creditManager = (CreditManager) ois.readObject();
+//			creditManager = (CreditManager) ois.readObject();
 			transportManager = (TransportManager) ois.readObject();
 			unitManager = (UnitManager) ois.readObject();
 			masterClock = (MasterClock) ois.readObject();
@@ -665,6 +660,7 @@ public class Simulation implements ClockListener, Serializable {
 		rf.discoverReportingAuthorities(unitManager);
 
 		Relation.initializeInstances(unitManager);
+		CreditManager.initializeInstances(unitManager);
 
 		MalfunctionManager.initializeInstances(masterClock, marsClock, malfunctionFactory,
 												medicalManager, eventManager,
@@ -707,7 +703,7 @@ public class Simulation implements ClockListener, Serializable {
 		
 		// Re-initialize Mission related class
 		Mission.initializeInstances(this, marsClock, eventManager, unitManager,
-				surfaceFeatures, terrainElevation, missionManager, pc, creditManager);
+				surfaceFeatures, terrainElevation, missionManager, pc);
 		MissionPlanning.initializeInstances(marsClock);
 
 		// Start a chain of calls to set instances
@@ -871,7 +867,6 @@ public class Simulation implements ClockListener, Serializable {
 			oos.writeObject(medicalManager);
 			oos.writeObject(scientificStudyManager);
 			oos.writeObject(eventManager);
-			oos.writeObject(creditManager);
 			oos.writeObject(transportManager);
 			oos.writeObject(unitManager);
 			oos.writeObject(masterClock);
@@ -936,7 +931,6 @@ public class Simulation implements ClockListener, Serializable {
 				medicalManager,
 				scientificStudyManager,
 				transportManager,
-				creditManager,
 				eventManager,
 				unitManager,
 				masterClock
@@ -1098,15 +1092,6 @@ public class Simulation implements ClockListener, Serializable {
 	}
 
 	/**
-	 * Gets the credit manager.
-	 *
-	 * @return credit manager.
-	 */
-	public CreditManager getCreditManager() {
-		return creditManager;
-	}
-
-	/**
 	 * Get the malfunction factory.
 	 *
 	 * @return malfunction factory
@@ -1264,11 +1249,6 @@ public class Simulation implements ClockListener, Serializable {
 		if (unitManager != null) {
 			unitManager.destroy();
 			unitManager = null;
-		}
-
-		if (creditManager != null) {
-			creditManager.destroy();
-			creditManager = null;
 		}
 
 		if (scientificStudyManager != null) {

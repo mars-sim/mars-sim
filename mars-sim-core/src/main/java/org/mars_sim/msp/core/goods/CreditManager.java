@@ -1,32 +1,24 @@
-/**
+/*
  * Mars Simulation Project
  * CreditManager.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-06-11
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.core.goods;
 
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.structure.Settlement;
-
-import com.phoenixst.plexus.DefaultGraph;
-import com.phoenixst.plexus.EdgePredicate;
-import com.phoenixst.plexus.EdgePredicateFactory;
-import com.phoenixst.plexus.Graph;
-import com.phoenixst.plexus.Graph.Edge;
-import com.phoenixst.plexus.GraphUtils;
 
 /**
  * The CreditManager class keeps track of all credits/debts between settlements.
- * The simulation instance has only one credit manager.
  */
 public class CreditManager implements Serializable {
 
@@ -34,32 +26,30 @@ public class CreditManager implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	// Domain members
-	private Graph creditGraph;
+	private int settlementID;
+	
 	/** Credit listeners. */
 	private transient List<CreditListener> listeners;
-
-	/**
-	 * Constructor.
-	 */
-	public CreditManager() {
-		// Creates credit manager with all settlements in the simulation.
-		this(Simulation.instance().getUnitManager().getSettlements());
-	}
-
+	/** The person's opinion toward another person. */
+	private Map<Integer, Double> creditMap = new HashMap<>();
+	
+	/** The Unit Manager instance. */
+	private static UnitManager unitManager;
+	
 	/**
 	 * Constructor.
 	 * 
-	 * @param settlements collection of settlements to use.
+	 * @param settlement
 	 */
-	public CreditManager(Collection<Settlement> settlements) {
-
-		// Create new graph for credit.
-		creditGraph = new DefaultGraph();
-
-		// Add all settlements as nodes.
-		Iterator<Settlement> i = settlements.iterator();
-		while (i.hasNext())
-			creditGraph.addNode(i.next().getIdentifier());
+	public CreditManager(Settlement settlement) {
+		settlementID = settlement.getIdentifier();
+		// Creates credit manager with all settlements in the simulation.
+		Iterator<Settlement> i = unitManager.getSettlements().iterator();
+		while (i.hasNext()) {
+			int id = i.next().getIdentifier();
+			if (!creditMap.containsKey(id) && settlementID != id)
+				creditMap.put(id, 0.0);
+		}
 	}
 
 	/**
@@ -70,32 +60,17 @@ public class CreditManager implements Serializable {
 	 * @param amount      the credit amount (VP) that the first settlement has with
 	 *                    the second settlement. (negative value if the first
 	 *                    settlement owes the second settlement).
-	 * @throws Exception if error setting the credit between the settlements.
 	 */
-	public void setCredit(Settlement settlement1, Settlement settlement2, double amount) {
+	public static void setCredit(Settlement settlement1, Settlement settlement2, double amount) {
 
-		// Check that settlements are in graph.
-		if (!creditGraph.containsNode(settlement1.getIdentifier()))
-			throw new IllegalArgumentException("settlement: " + settlement1 + " is invalid");
-		if (!creditGraph.containsNode(settlement2.getIdentifier()))
-			throw new IllegalArgumentException("settlement: " + settlement2 + " is invalid");
-
-		// Remove existing edge between settlements if any.
-		EdgePredicate edgePredicate = EdgePredicateFactory.createEqualsNodes(settlement1.getIdentifier(), settlement2.getIdentifier(),
-				GraphUtils.ANY_DIRECTION_MASK);
-		Edge existingEdge = creditGraph.getEdge(edgePredicate);
-		if (existingEdge != null)
-			creditGraph.removeEdge(existingEdge);
-
-		// Add edge for credit.
-		if (amount >= 0D)
-			creditGraph.addEdge(Math.abs(amount), settlement1.getIdentifier(), settlement2.getIdentifier(), true);
-		else
-			creditGraph.addEdge(Math.abs(amount), settlement2.getIdentifier(), settlement1.getIdentifier(), true);
-
+		int id = settlement2.getIdentifier();
+		
+		if (settlement1.getCreditManager().getCreditMap().containsKey(id))
+			settlement1.getCreditManager().getCreditMap().put(id, 0.0);
+		
 		// Update listeners.
-		synchronized (getListeners()) {
-			Iterator<CreditListener> i = getListeners().iterator();
+		synchronized (settlement1.getCreditManager().getListeners()) {
+			Iterator<CreditListener> i = settlement1.getCreditManager().getListeners().iterator();
 			while (i.hasNext())
 				i.next().creditUpdate(new CreditEvent(settlement1, settlement2, amount));
 		}
@@ -109,24 +84,12 @@ public class CreditManager implements Serializable {
 	 * @return the credit amount (VP) that the first settlement has with the second
 	 *         settlement. (negative value if the first settlement owes the second
 	 *         settlement).
-	 * @throws Exception if error getting the credit between the settlements.
 	 */
-	public double getCredit(Settlement settlement1, Settlement settlement2) {
-
-		double result = 0D;
-
-		// Gets an edge associated with these two settlements if any.
-		EdgePredicate edgePredicate = EdgePredicateFactory.createEqualsNodes(settlement1.getIdentifier(), settlement2.getIdentifier(),
-				GraphUtils.ANY_DIRECTION_MASK);
-		Edge existingEdge = creditGraph.getEdge(edgePredicate);
-		if (existingEdge != null) {
-			result = (Double) existingEdge.getUserObject();
-//			if (existingEdge.getHead() == settlement1)
-			if ((Integer) existingEdge.getHead() == settlement1.getIdentifier())
-				result *= -1D;
-		}
-
-		return result;
+	public static double getCredit(Settlement settlement1, Settlement settlement2) {
+		int id = settlement2.getIdentifier();
+		if (settlement1.getCreditManager().getCreditMap().containsKey(id))
+			return settlement1.getCreditManager().getCreditMap().get(id);
+		return 0;
 	}
 
 	/**
@@ -138,13 +101,20 @@ public class CreditManager implements Serializable {
 		if (newSettlement == null) {
 			throw new IllegalArgumentException("Settlement is null");
 		}
-		if (creditGraph.containsNode(newSettlement.getIdentifier())) {
-			throw new IllegalArgumentException("Settlement: " + newSettlement + " already exists in credit graph.");
-		}
-
-		creditGraph.addNode(newSettlement.getIdentifier());
+		int id = newSettlement.getIdentifier();
+		if (!creditMap.containsKey(id) && settlementID != id)
+			creditMap.put(id, 0.0);
 	}
 
+	/**
+	 * Returns the credit map
+	 * 
+	 * @return
+	 */
+	public Map<Integer, Double> getCreditMap() {
+		return creditMap;
+	}
+	
 	/**
 	 * Gets the list of credit listeners.
 	 * 
@@ -177,10 +147,19 @@ public class CreditManager implements Serializable {
 	}
 
 	/**
+	 * Initialize instances
+	 * 
+	 * @param um the unitManager instance
+	 */
+	public static void initializeInstances(UnitManager um) {
+		unitManager = um;		
+	}
+	
+	/**
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {
-		creditGraph = null;
+		unitManager = null;
 		if (listeners != null)
 			listeners.clear();
 		listeners = null;

@@ -116,10 +116,9 @@ public class NegotiateDelivery extends Task implements Serializable {
 
 			// Get the credit that the starting settlement has with the destination
 			// settlement.
-			CreditManager creditManager = Simulation.instance().getCreditManager();
-			double credit = creditManager.getCredit(buyingSettlement, sellingSettlement);
+			double credit = CreditManager.getCredit(buyingSettlement, sellingSettlement);
 			credit += soldCredit;
-			creditManager.setCredit(buyingSettlement, sellingSettlement, credit);
+			CreditManager.setCredit(buyingSettlement, sellingSettlement, credit);
 			
 			logger.log(person, Level.INFO, 0, 
 					"Completed a delivery negotiation as follows: "
@@ -141,7 +140,7 @@ public class NegotiateDelivery extends Task implements Serializable {
 
 				// Update the credit value between the starting and destination settlements.
 				credit -= buyLoadValue;
-				creditManager.setCredit(buyingSettlement, sellingSettlement, credit);
+				CreditManager.setCredit(buyingSettlement, sellingSettlement, credit);
 				
 				logger.log(person, Level.INFO, 0,
 						"Updated the account ledger as follows: "

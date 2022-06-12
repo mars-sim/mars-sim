@@ -174,7 +174,6 @@ public abstract class Mission implements Serializable, Temporal {
 	protected static SurfaceFeatures surfaceFeatures;
 	protected static PersonConfig personConfig;
 	protected static MarsClock marsClock;
-	protected static CreditManager creditManager;
 	protected static TerrainElevation terrainElevation;
 
 	/**
@@ -1445,7 +1444,7 @@ public abstract class Mission implements Serializable, Temporal {
 	 */
 	public static void initializeInstances(Simulation si, MarsClock c, HistoricalEventManager e,
 			UnitManager u, SurfaceFeatures sf, TerrainElevation te,
-			MissionManager m, PersonConfig pc, CreditManager cm) {
+			MissionManager m, PersonConfig pc) {
 		sim = si;
 		marsClock = c;
 		eventManager = e;
@@ -1454,7 +1453,6 @@ public abstract class Mission implements Serializable, Temporal {
 		terrainElevation = te;
 		missionManager = m;
 		personConfig = pc;
-		creditManager = cm;
 	}
 
 	/**

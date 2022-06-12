@@ -126,8 +126,6 @@ extends TabPanel {
 		private static final long serialVersionUID = 1L;
 
 		// Data members
-		private CreditManager creditManager = Simulation.instance().getCreditManager();
-
 		private Collection<Settlement> settlements;
 		private Settlement thisSettlement;
 		private UnitManager unitManager = Simulation.instance().getUnitManager();
@@ -144,10 +142,11 @@ extends TabPanel {
 			Iterator<Settlement> i = CollectionUtils.sortByName(unitManager.getSettlements()).iterator();
 			while (i.hasNext()) {
 				Settlement settlement = i.next();
-				if (settlement != thisSettlement) settlements.add(settlement);
+				if (settlement != thisSettlement) {
+					settlements.add(settlement);
+					settlement.getCreditManager().addListener(this);
+				}
 			}
-
-			creditManager.addListener(this);
 
 			unitManager.addUnitManagerListener(this);
 		}
@@ -187,7 +186,7 @@ extends TabPanel {
 				else {
 					double credit = 0D;
 					try {
-						credit = creditManager.getCredit(thisSettlement, settlement);
+						credit = CreditManager.getCredit(thisSettlement, settlement);
 					}
 					catch (Exception e) {
 					}
@@ -206,6 +205,7 @@ extends TabPanel {
 
 		/**
 		 * Catch credit update event.
+		 * 
 		 * @param event the credit event.
 		 */
 		@Override
@@ -219,6 +219,7 @@ extends TabPanel {
 						@Override
 						public void run() {
 							fireTableDataChanged();
+							// FUTURE : update only the affected row
 						}
 					}
 				);
@@ -244,6 +245,7 @@ extends TabPanel {
 						@Override
 						public void run() {
 							fireTableDataChanged();
+							// FUTURE : update only the affected row
 						}
 					}
 				);

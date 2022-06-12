@@ -72,7 +72,6 @@ public final class TradeUtil {
 
 	private static Simulation sim = Simulation.instance();
 	private static MissionManager missionManager = sim.getMissionManager();
-	private static CreditManager creditManager = sim.getCreditManager();
 	private static UnitManager unitManager = sim.getUnitManager();
 
 			
@@ -188,7 +187,7 @@ public final class TradeUtil {
 			Settlement tradingSettlement) {
 
 		// Get credit between starting settlement and trading settlement.
-		double credit = creditManager.getCredit(startingSettlement, tradingSettlement);
+		double credit = CreditManager.getCredit(startingSettlement, tradingSettlement);
 
 		Map<Good, Integer> buyLoad = null;
 		if (credit > (TradeUtil.SELL_CREDIT_LIMIT * -1D)) {

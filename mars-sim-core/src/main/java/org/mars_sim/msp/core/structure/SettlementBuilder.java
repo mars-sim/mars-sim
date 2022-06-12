@@ -67,7 +67,6 @@ public final class SettlementBuilder {
 	private static final boolean MEASURE_PHASES = false;
 
 	private UnitManager unitManager;
-	private CreditManager creditManager;
 
 	private SettlementConfig settlementConfig;
 	private PersonConfig personConfig;
@@ -78,7 +77,6 @@ public final class SettlementBuilder {
 	public SettlementBuilder(Simulation sim, SimulationConfig simConfig) {
 		super();
 		this.unitManager = sim.getUnitManager();
-		this.creditManager = sim.getCreditManager();
 		this.settlementConfig = simConfig.getSettlementConfiguration();
 		this.personConfig = simConfig.getPersonConfig();
 		this.robotConfig = simConfig.getRobotConfiguration();
@@ -153,9 +151,6 @@ public final class SettlementBuilder {
 		// Manually add job positions
 		settlement.tuneJobDeficit();
 		outputTimecheck(settlement, watch, "Tune Job");
-
-		// Add new settlement to credit manager.
-		creditManager.addSettlement(settlement);
 
 		watch.stop();
 		if (MEASURE_PHASES) {

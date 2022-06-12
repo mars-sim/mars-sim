@@ -20,6 +20,7 @@ import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.EquipmentType;
+import org.mars_sim.msp.core.goods.CreditManager;
 import org.mars_sim.msp.core.goods.Good;
 import org.mars_sim.msp.core.goods.GoodCategory;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -121,7 +122,7 @@ public class Trade extends RoverMission implements Serializable {
 			if (!isDone()) {
 				// Get the credit that the starting settlement has with the destination
 				// settlement.
-				double credit = creditManager.getCredit(s, tradingSettlement);
+				double credit = CreditManager.getCredit(s, tradingSettlement);
 
 				if (credit > (TradeUtil.SELL_CREDIT_LIMIT * -1D)) {
 					// Determine desired buy load,

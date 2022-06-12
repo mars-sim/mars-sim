@@ -17,6 +17,7 @@ import java.util.logging.Level;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.goods.CreditManager;
 import org.mars_sim.msp.core.goods.Good;
 import org.mars_sim.msp.core.goods.GoodCategory;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -112,7 +113,7 @@ public class Delivery extends DroneMission implements Serializable {
 			if (!isDone()) {
 				// Get the credit that the starting settlement has with the destination
 				// settlement.
-				double credit = creditManager.getCredit(s, tradingSettlement);
+				double credit = CreditManager.getCredit(s, tradingSettlement);
 
 				if (credit > (DeliveryUtil.SELL_CREDIT_LIMIT * -1D)) {
 					// Determine desired buy load,

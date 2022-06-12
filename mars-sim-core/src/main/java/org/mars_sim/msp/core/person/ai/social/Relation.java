@@ -25,7 +25,7 @@ public class Relation implements Serializable {
 	
 	/** The person's opinion toward another person. */
 	private Map<Integer, Double> opinionMap = new HashMap<>();
-
+	/** The Unit Manager instance. */
 	private static UnitManager unitManager;
 
 	/**
