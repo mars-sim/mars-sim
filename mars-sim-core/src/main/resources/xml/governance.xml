@@ -113,9 +113,9 @@
 				<modifier mission="TRAVEL_TO_SETTLEMENT" value="1"/>
 			</sub-agenda>
 		</agenda>
-		<agenda name="Human Habits"
+		<agenda name="Human Habitation"
 				objective="Determining Human Habitability"
-				findings="Updating the report of the habitability of this local region for human beings."
+				findings="Updating the report of the habitability of a local region for human beings."
 				samples="Analyzing soil samples, atmospheric condition dataset and geographical factors of how suitable human beings are to live in this local region.">
 			<sub-agenda description="Predict meteorological changes">
 				<modifier mission="AREOLOGY" value="3"/>
@@ -159,7 +159,7 @@
 			</sub-agenda>
 		</agenda>
 		<agenda name="Prospect Minerals"
-				objective="Prospercting Precious Minerals on Mars"
+				objective="Prospecting Precious Minerals on Mars"
 				findings="Updating the report of trace mineral content in the collected soil samples."
 				samples="Analyzing the wealth of mineral contents from the colleted soil samples.">
 			<sub-agenda description="Analyze various signatures of minerals">
@@ -300,6 +300,7 @@
 			<settlement-name name="Xin Chongqing" />
 			<settlement-name name="New Manchuria" />
 			<settlement-name name="Xin Xianggang" />
+			<rover-name name="Shenzhou" />  <!-- Chinese for divine craft -->
 			<rover-name name="Huoxing" />  <!-- Chinese for "Mars" -->
 			<rover-name name="Zidan" />    <!-- Chinese for bullet -->
 			<rover-name name="Huojian" />  <!-- Chinese for rocket -->
@@ -422,6 +423,10 @@
 			<settlement-name name="Marshal" />
 			<settlement-name name="Base Sani" />
 			<settlement-name name="Basti" />
+			<rover-name name="Tata" /> <!-- Indian for "bye" or "out of station" -->
+			<rover-name name="Maruti" /> <!-- Indian for "one born from Marut (or air)" -->
+			<rover-name name="Ashok" /> <!-- Sanskrit origion, meaning "yes" or "like" -->
+			<rover-name name="Opel" /> <!-- Indian  for "jewel" -->						
 			<rover-name name="Agni" /> <!-- Hindi for "fire" -->
 			<rover-name name="Naag" /> <!-- Hindi for "snake" -->
 			<rover-name name="Angaraka" /> <!-- Mars in Jyotish astrology (alternate name) -->
@@ -550,7 +555,13 @@
 			<settlement-name name="Goddard Base" />
 			<settlement-name name="Ares One" />
 			<settlement-name name="Asimov Base" />
-
+			<settlement-name name="Ames Town" />
+			<settlement-name name="Orion City" />
+			<settlement-name name="New Boston" />
+			<settlement-name name="New Albany" />
+			<settlement-name name="JFK City" />
+			<settlement-name name="Port of Tranquility" />
+																		
 			<rover-name name="Agartha" /> <!-- Agartha is a legendary city that is said to be located in the Earth's core -->
 			<rover-name name="Atlanta" /> <!-- The meaning of Atlanta is secure, immovable -->
 			<rover-name name="Crater Crab" />
@@ -583,6 +594,13 @@
 			<settlement-name name="Chebyshev" />
 			<settlement-name name="Mendeleev" />
 			<settlement-name name="Kaspersky" />
+			<settlement-name name="Star City" />
+			<settlement-name name="Munku-Sardyk" /> <!-- which means "eternal bald peak" in Russian -->
+			<settlement-name name="Ropa" /> <!-- which means mountain in Russian -->	
+			<settlement-name name="Otechestvo" /> <!-- which means fatherland or in Russian -->
+			<settlement-name name="Rodina" /> <!-- which means homeland or motherland in Russian -->
+			<rover-name name="Kliper" /> <!-- which means clipper in Russian -->
+			<rover-name name="Ropa" /> <!-- which means mountain or in Russian -->
 			<rover-name name="Chizhevsky" />
 			<rover-name name="Lomonosov" />
 			<rover-name name="Lvov" />
@@ -606,13 +624,15 @@
 			<settlement-name name="MuskVille" />
 			<settlement-name name="Falcon Station" />
 			<settlement-name name="Nicolas Town" />
-			<settlement-name name="Starcity" />
+			<settlement-name name="AI City" />
 			<settlement-name name="Solar City" />
 			<settlement-name name="New Eden" />
 			<settlement-name name="IronVille" />
 			<settlement-name name="Boring Town" />
 			<settlement-name name="Hawthorne" />
 			<settlement-name name="XAEberg" />
+			<rover-name name="Raptor" />
+			<rover-name name="Merlin" />
 			<rover-name name="Roadster" />
 			<rover-name name="Gypsea" />
 			<rover-name name="Nomad" />

@@ -216,9 +216,9 @@ public class GoodsManager implements Serializable, Temporal {
 	private static final double BARREL_DEMAND = .2;
 
 	private static final double SCRAP_METAL_DEMAND = .05;
-	private static final double INGOT_METAL_DEMAND = .05;
-	private static final double SHEET_METAL_DEMAND = .05;
-	private static final double STEEL_DEMAND = .05;
+	private static final double INGOT_METAL_DEMAND = .1;
+	private static final double SHEET_METAL_DEMAND = .5;
+	private static final double STEEL_DEMAND = .1;
 
 	private static final double BOTTLE_DEMAND = .002;
 	private static final double FIBERGLASS_DEMAND = .05;

@@ -29,7 +29,6 @@ import javax.swing.table.DefaultTableCellRenderer;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.air.AirComposition;
-import org.mars_sim.msp.core.air.AirComposition.GasDetails;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -259,7 +258,6 @@ public class TabPanelAirComposition extends TabPanel {
 		radioPane.add(mass_p);
     
 		WebPanel vol_p = new WebPanel(new FlowLayout());
-		vol_p.setSize(60, 40);
 		vol_p.setBorder(BorderFactory.createTitledBorder("Content"));
 		vol_p.add(percent_btn);
 		radioPane.add(vol_p);

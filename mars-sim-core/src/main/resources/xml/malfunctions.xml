@@ -1051,15 +1051,13 @@
 		<repair-parts-list>
 			<part name="fire extinguisher" number="1" probability="10" />
 			<part name="airleak patch" number="5" probability="10" />
-			<part name="aluminum sheet" number="2" probability="10" />
-			<part name="polycarbonate roofing" number="2" probability="20" />
-			<part name="plastic sheet" number="2" probability="10" />
+			<part name="polycarbonate roofing" number="1" probability="5" />
+			<part name="plastic tubing" number="1" probability="10" />
 			<part name="fiberglass" number="2" probability="5" />
-			<part name="plastic pipe" number="2" probability="10" />
+			<part name="plastic pipe" number="2" probability="5" />
 			<part name="valve" number="2" probability="5" />
-			<part name="steel sheet" number="5" probability="10" />
-			<part name="fiberglass cloth" number="5" probability="10" />
-			<part name="work gloves" number="1" probability="20" />
+			<part name="fiberglass cloth" number="2" probability="10" />
+			<part name="work gloves" number="1" probability="10" />
 		</repair-parts-list>
 	</malfunction>
 

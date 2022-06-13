@@ -66,7 +66,7 @@ public class InviteStudyCollaboratorMeta extends MetaTask {
 
                     // Check that there's scientists available for invitation.
                     if (ScientificStudyUtil.getAvailableCollaboratorsForInvite(study).isEmpty()) {
-                    	logger.warning(person, "Can not find anyone to invide for " + study.getName());
+                    	logger.warning(person, "Can not find anyone to invite for " + study.getName());
                     }
                     else {
 

@@ -110,7 +110,7 @@ public final class DeliveryUtil {
 		bestDeliverySettlementCache = bestSettlement;
 		
 		if (bestProfit > 0)
-			logger.info(startingSettlement, "Delivering to " + bestSettlement + "  best profit: " + Math.round(bestProfit*10.0)/10.0);
+			logger.fine(startingSettlement, "Delivering to " + bestSettlement + "  best profit: " + Math.round(bestProfit*10.0)/10.0);
 		
 		return bestProfit;
 	}
@@ -160,11 +160,11 @@ public final class DeliveryUtil {
 
 		// Determine estimated delivery revenue.
 		double revenue = getEstimatedDeliveryRevenue(startingSettlement, drone, tradingSettlement);
-		logger.info(startingSettlement, "Estimated Revenue: " + Math.round(revenue*10.0)/10.0);
+		logger.fine(startingSettlement, "Estimated Revenue: " + Math.round(revenue*10.0)/10.0);
 		// Determine estimated mission cost.
 		double distance = startingSettlement.getCoordinates().getDistance(tradingSettlement.getCoordinates()) * 2D;
 		double cost = getEstimatedMissionCost(startingSettlement, drone, distance);
-		logger.info(startingSettlement, "Estimated Cost: " + Math.round(cost*10.0)/10.0);
+		logger.fine(startingSettlement, "Estimated Cost: " + Math.round(cost*10.0)/10.0);
 		return revenue - cost;
 	}
 
@@ -209,13 +209,13 @@ public final class DeliveryUtil {
 		double buyingCreditRemote = DeliveryUtil.determineLoadCredit(buyLoad, tradingSettlement, false);
 		double buyingProfit = buyingCreditHome - buyingCreditRemote;
 
-		logger.info(startingSettlement, "Selling Credit Home: " + Math.round(sellingCreditHome*10.0)/10.0);
-		logger.info(tradingSettlement,  "Selling Credit Remote: " + Math.round(sellingCreditRemote*10.0)/10.0);
-		logger.info(startingSettlement, "Buying Credit Home: " + Math.round(buyingCreditHome*10.0)/10.0);
-		logger.info(tradingSettlement,  "Buying Credit Remote: " + Math.round(buyingCreditRemote*10.0)/10.0);
+		logger.fine(startingSettlement, "Selling Credit Home: " + Math.round(sellingCreditHome*10.0)/10.0);
+		logger.fine(tradingSettlement,  "Selling Credit Remote: " + Math.round(sellingCreditRemote*10.0)/10.0);
+		logger.fine(startingSettlement, "Buying Credit Home: " + Math.round(buyingCreditHome*10.0)/10.0);
+		logger.fine(tradingSettlement,  "Buying Credit Remote: " + Math.round(buyingCreditRemote*10.0)/10.0);
 		
 		double totalProfit = sellingProfit + buyingProfit;
-		logger.info(tradingSettlement,  "totalProfit: " + Math.round(totalProfit*10.0)/10.0);
+		logger.fine(tradingSettlement,  "Total Profit: " + Math.round(totalProfit*10.0)/10.0);
 		return totalProfit;
 	}
 
@@ -365,12 +365,12 @@ public final class DeliveryUtil {
 			previousGood = good;
 		}
 
-		logger.info(drone, 
+		logger.fine(drone, 
 				  "Buyer: " + buyingSettlement
 				+ "  Seller: " + sellingSettlement
 //				+ "  buyGoodValue: " + Math.round(buyGoodValue*10.0)/10.0
-				+ "  buyerLoadValue: " + Math.round(buyerLoadValue*10.0)/10.0
-				+ "  deliveryList: " + deliveryList.keySet()
+				+ "  Buyer Load Value: " + Math.round(buyerLoadValue*10.0)/10.0
+				+ "  Delivery List: " + deliveryList.keySet()
 				);
 		
 		return deliveryList;
@@ -428,7 +428,7 @@ public final class DeliveryUtil {
 			}
 		}
 
-		logger.info(settlement, "Load Credit: " + Math.round(result*10.0)/10.0);
+		logger.fine(settlement, "Load Credit: " + Math.round(result*10.0)/10.0);
 		
 		return result;
 	}
@@ -490,9 +490,9 @@ public final class DeliveryUtil {
 		}
 
 		if (result != null && bestValue > 0.04)
-			logger.info(missionDrone, 
+			logger.fine(missionDrone, 
 					result.getName() 
-							+ " (balue: " + Math.round(bestValue*10.0)/10.0 + ")"
+							+ " (Value: " + Math.round(bestValue*10.0)/10.0 + ")"
 							+ "  Buyer: "  + buyingSettlement 
 							+ "  Seller: " + sellingSettlement 
 							+ ".");
@@ -563,7 +563,7 @@ public final class DeliveryUtil {
 			result = 1;
 		
 //		if (itemResourceGood != null)
-			logger.info(missionDrone, 
+			logger.fine(missionDrone, 
 					itemResourceGood.getName() + " -" 
 							+ " Buyer: "  + buyingSettlement 
 							+ "  Seller: " + sellingSettlement 
@@ -681,7 +681,7 @@ public final class DeliveryUtil {
 			}
 		}
 
-//		logger.info(missionDrone, 
+//		logger.fine(missionDrone, 
 //				good.getName() + " -" 
 //				+ "  buyer: "  + buyingSettlement  + " (value: " + Math.round(buyingValue*10.0)/10.0
 //				+ ")  seller: " + sellingSettlement + " (value: " + Math.round(sellingValue*10.0)/10.0 + ")"

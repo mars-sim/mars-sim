@@ -189,10 +189,10 @@ public class Malfunction implements Serializable {
 		for (Entry<MalfunctionRepairWork, EffortSpec> effort : workEffort.entrySet()) {
 			MalfunctionRepairWork type = effort.getKey();
 			
-			// If inside repairs; then change to EVA
+			// If it's an inhabitable building, change to EVA
 			if (!supportsInside && (type == MalfunctionRepairWork.INSIDE)) {
 				type = MalfunctionRepairWork.EVA;
-				logger.warning(0, name + " cannot do " + effort.getKey() + ", changed to " + type);
+				logger.warning(0, name + " cannot do " + effort.getKey() + " repair on inhabitable structure. Change to " + type + " repair.");
 			}
 			
 			double workTime = effort.getValue().getWorkTime();
