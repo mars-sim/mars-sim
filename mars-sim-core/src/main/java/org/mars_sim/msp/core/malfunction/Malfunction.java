@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Malfunction.java
- * @date 2021-11-16
+ * @date 2022-06-14
  * @author Scott Davis
  */
 
@@ -193,14 +193,14 @@ public class Malfunction implements Serializable {
 			// If it's an inhabitable building, change to EVA
 			if (!supportsInside && (type == MalfunctionRepairWork.INSIDE)) {
 				type = MalfunctionRepairWork.EVA;
-				logger.warning(0, name + " cannot do inside repair on inhabitable structure. Change to EVA repair.");
+				logger.warning(0, "'" + name + "' cannot do inside repair on inhabitable structure. Change to EVA repair.");
 			}
 			
 			double workTime = effort.getValue().getWorkTime();
 			double actualEffort = computeWorkTime(workTime);
 			if (actualEffort > (2 * Double.MIN_VALUE)) {
-				logger.info(10_000, name + " " + type + " repair - Estimated work time: "
-								+ Math.round(actualEffort*10.0)/10.0 + " msol");
+				logger.info(10_000, "'" + name + "' " + type.toString() + " repair - Estimated work time: "
+								+ Math.round(actualEffort*10.0)/10.0 + " millisol");
 				work.put(type, new RepairWork(actualEffort, effort.getValue().getDesiredWorkers()));
 			}
 		}
@@ -211,6 +211,7 @@ public class Malfunction implements Serializable {
 
 	/**
 	 * This find the details of a work type for this malfunction.
+	 * 
 	 * @param type Requested type
 	 * @return the RepairWork instance
 	 * @throws IllegalArgumentException If the type is not supported for this Malfunction
@@ -218,8 +219,8 @@ public class Malfunction implements Serializable {
 	private RepairWork getWorkType(MalfunctionRepairWork type) {
 		RepairWork w = work.get(type);
 		if (w == null) {
-			throw new IllegalArgumentException("Malfunction " + getName()
-							+ " does not need " + type);
+			throw new IllegalArgumentException("'" + getName()
+							+ "' does not need " + type.toString() + " repair.");
 		}
 		return w;
 	}
@@ -445,7 +446,7 @@ public class Malfunction implements Serializable {
 			// if this malfunction has repair work
 			if (!w.isCompleted()) {
 				if ((w.workCompleted == 0) && (time > 0D)) {
-					logger.info(10_000, name + " - " + workType + " repair work initiated by " + repairer + ".");
+					logger.info(10_000, name + " - " + workType.toString() + " repair work initiated by " + repairer + ".");
 				}
 
 				// How much can be used
@@ -489,10 +490,12 @@ public class Malfunction implements Serializable {
 	 */
 	public String getMostProductiveRepairer() {
 		// Collate all values
-		Map<String, Double> totalWork = work.values().stream().flatMap(w -> w.activeWorkers.entrySet().stream())
+		Map<String, Double> totalWork = work.values().stream()
+			.flatMap(w -> w.activeWorkers.entrySet().stream())
 			.collect(Collectors.toMap(Map.Entry::getKey,
 								  Map.Entry::getValue,
-								  (v1, v2) -> Double.sum(v1, v2)));
+								  Double::sum								  
+								  ));
 
 		// Find the max
 		Map.Entry<String, Double> maxEntry = totalWork.entrySet()
@@ -578,38 +581,39 @@ public class Malfunction implements Serializable {
 	 * @param inv the inventory
 	 */
 	public void repairWithParts(Integer id, int number, Unit containerUnit) {
-		if (repairParts.containsKey(id)) {
+		if (!repairParts.containsKey(id)) {
+			logger.severe(containerUnit, ItemResourceUtil.findItemResourceName(id) + "' - Not needed for repairs.");
+			return;
+		}
 
-			int numberNeeded = repairParts.get(id);
-			if (number > numberNeeded)
-				throw new IllegalArgumentException(
-						"number " + number + " is greater that number of parts needed: " + numberNeeded);
-			else {
-				numberNeeded -= number;
+		int numberNeeded = repairParts.get(id);
+		if (number > numberNeeded) {
+			logger.severe(containerUnit, "number " + number + " is greater that number of parts needed: " + numberNeeded);
+			return;
+		}
+		
+		numberNeeded -= number;
 
-				//  Add producing solid waste
-				double mass = ItemResourceUtil.findItemResource(id).getMassPerItem();
-				if (mass > 0) {
+		//  Add producing solid waste
+		double mass = ItemResourceUtil.findItemResource(id).getMassPerItem();
+		if (mass > 0) {
 
-					if (containerUnit.getUnitType() == UnitType.SETTLEMENT) {
-						((Settlement)containerUnit).storeAmountResource(ResourceUtil.solidWasteID, mass);
-					}
-					else if (containerUnit.getUnitType() == UnitType.VEHICLE) {
-						((Vehicle)containerUnit).storeAmountResource(ResourceUtil.solidWasteID, mass);
-					}
-					else {
-						logger.warning(containerUnit, 10_000L, "Trying to store " + ResourceUtil.solidWasteID);
-					}
-				}
-
-				if (numberNeeded > 0) {
-					repairParts.put(id, numberNeeded);
-				}
-				else
-					repairParts.remove(id);
+			if (containerUnit.getUnitType() == UnitType.SETTLEMENT) {
+				((Settlement)containerUnit).storeAmountResource(ResourceUtil.solidWasteID, mass);
 			}
-		} else
-			throw new IllegalArgumentException("'" + ItemResourceUtil.findItemResourceName(id) + "' - Not needed for repairs.");
+			else if (containerUnit.getUnitType() == UnitType.VEHICLE) {
+				((Vehicle)containerUnit).storeAmountResource(ResourceUtil.solidWasteID, mass);
+			}
+			else {
+				logger.warning(containerUnit, 10_000L, "Can't find a place to store " + ResourceUtil.solidWasteID + ".");
+			}
+		}
+
+		if (numberNeeded > 0) {
+			repairParts.put(id, numberNeeded);
+		}
+		else
+			repairParts.remove(id);
 	}
 
 	/**

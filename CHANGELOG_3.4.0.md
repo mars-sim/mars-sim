@@ -22,7 +22,7 @@ Copyright (C) 2022 Scott Davis
   <LI>Building Window : New dedicated Building Unit Window which replaces the Building tab in the Settlement window.</LI>
   <LI>Person : Make a person's carrying capacity to be age-dependent.</LI>
   <LI>Mission : Restructure and simplify handling of Mission.</LI>
-  <LI>Social : Remove global relationship graph and simplify codes.</LI>
+  <LI>Social : Remove global relationship & credit graphs.</LI>
 
 ### UI IMPROVEMENT :
   <LI>Crew Editor : Edit and load basic scenarios.</LI>

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MalfunctionManager.java
- * @date 2021-11-16
+ * @date 2022-06-14
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.malfunction;
@@ -50,9 +50,9 @@ import org.mars_sim.msp.core.time.Temporal;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
- * The MalfunctionManager class manages the current malfunctions in each of the
- * 6 types of units (namely, Building, BuildingKit, EVASuit, Robot,
- * MockBuilding, or Vehicle). Each building has its own MalfunctionManager
+ * The MalfunctionManager class manages malfunctions for units such as 
+ * Building, BuildingKit, EVASuit, Robot, MockBuilding, or Vehicle). 
+ * Each building has its own MalfunctionManager
  */
 public class MalfunctionManager implements Serializable, Temporal {
 
@@ -305,10 +305,11 @@ public class MalfunctionManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * Triggers a particular malfunction (used by VehicleChatUtils)
+	 * Triggers a particular malfunction.
 	 *
-	 * @param {@link Malfunction}
-	 * @param value
+	 * @param {@link MalfunctionMeta}
+	 * @param registerEvent
+	 * @param actor
 	 */
 	public Malfunction triggerMalfunction(MalfunctionMeta m, boolean registerEvent, Worker actor) {
 		Malfunction malfunction = new Malfunction(factory.getNewIncidentNum(), m, supportsInside);
@@ -322,6 +323,9 @@ public class MalfunctionManager implements Serializable, Temporal {
 			registerAMalfunction(malfunction, actor);
 		}
 
+		if (malfunction.getRepairParts().isEmpty())
+			logger.info("'" + malfunction.getName() + "' needs no repair parts.");
+			
 		// Register the failure of the Parts involved
 		for (Entry<Integer, Integer> p : malfunction.getRepairParts().entrySet()) {
 			int num = p.getValue();

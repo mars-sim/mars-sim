@@ -164,8 +164,6 @@ public class PhysicalCondition implements Serializable {
 	/** Person's food appetite (0.0 to 1.0) */
 	private double appetite;
 
-	private double inclination_factor;
-
 	private double starvationStartTime;
 
 	private double dehydrationStartTime;
@@ -1169,7 +1167,7 @@ public class PhysicalCondition implements Serializable {
 
 			clocks.add(marsClock.getDateTimeStamp());
 			healthHistory.put(type, clocks);
-			logger.log(person, Level.INFO, 60_000, type.getName());
+			logger.log(person, Level.INFO, 1_000L, "Suffered from " + type.getName());
 			recalculatePerformance();
 		}
 	}

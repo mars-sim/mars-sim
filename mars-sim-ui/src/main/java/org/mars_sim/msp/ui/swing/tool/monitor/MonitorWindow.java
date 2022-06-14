@@ -114,7 +114,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	private WebButton buttonProps;
 
 	/** Settlement Combo box */
-	private WebComboBox settlementListBox;
+	private WebComboBox settlementComboBox;
 	private WebPanel statusPanel;
 
 	private JTable table;
@@ -151,7 +151,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		// Create settlement pane
 		WebPanel settlementPane = new WebPanel(new BorderLayout(5, 5));
         settlementPane.setSize(getNameLength() * 14, 30);
-		settlementPane.add(settlementListBox, BorderLayout.CENTER);
+		settlementPane.add(settlementComboBox, BorderLayout.CENTER);
 		topPane.add(new JPanel());
 		topPane.add(new JPanel());
 		topPane.add(settlementPane);
@@ -164,6 +164,9 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		tabsSection.setForeground(Color.DARK_GRAY);
 		// Add all the tabs
 		addAllTabs();
+		
+		// Hide settlement box at startup since the all settlement tab is being selected by default
+		setSettlementBox(true);
 		
 //		Note: may use lambda tabsSection.addChangeListener(e -> updateTab())
 		
@@ -344,22 +347,22 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	@SuppressWarnings("unchecked")
 	public void buildSettlementNameComboBox() {
 
-		settlementListBox = new WebComboBox(StyleId.comboboxHover, getSettlements());
-		settlementListBox.setWidePopup(true);
-		settlementListBox.setSize(getNameLength() * 12, 30);
-		settlementListBox.setBackground(new Color(205, 133, 63, 128));// (51, 35, 0, 128) is dull gold color
-		settlementListBox.setOpaque(false);
-		settlementListBox.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 16));
-		settlementListBox.setForeground(Color.ORANGE.darker());
-		settlementListBox.setToolTipText(Msg.getString("SettlementWindow.tooltip.selectSettlement")); //$NON-NLS-1$
-		settlementListBox.setRenderer(new PromptComboBoxRenderer());
+		settlementComboBox = new WebComboBox(StyleId.comboboxHover, getSettlements());
+		settlementComboBox.setWidePopup(true);
+		settlementComboBox.setSize(getNameLength() * 12, 30);
+//		settlementComboBox.setBackground(new Color(205, 133, 63, 128));// (51, 35, 0, 128) is dull gold color
+		settlementComboBox.setOpaque(false);
+		settlementComboBox.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 16));
+		settlementComboBox.setForeground(Color.ORANGE.darker());
+		settlementComboBox.setToolTipText(Msg.getString("SettlementWindow.tooltip.selectSettlement")); //$NON-NLS-1$
+		settlementComboBox.setRenderer(new PromptComboBoxRenderer());
 
-		int size = settlementListBox.getModel().getSize();
+		int size = settlementComboBox.getModel().getSize();
 		if (size > 1) {
 			// Gets the selected settlement from SettlementMapPanel
 			Settlement s = desktop.getSettlementMapPanel().getSettlement();
 			// Selects the settlement in the combo box
-			settlementListBox.setSelectedItem(s);
+			settlementComboBox.setSelectedItem(s);
 			// Change to the selected settlement in SettlementMapPanel
 			if (s != null)
 				setSettlement(s);
@@ -367,15 +370,15 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 
 		else if (size == 1) {
 			// Selects the first settlement
-			settlementListBox.setSelectedIndex(0);
+			settlementComboBox.setSelectedIndex(0);
 			// Gets the settlement
-			Settlement s = (Settlement) settlementListBox.getSelectedItem();
+			Settlement s = (Settlement) settlementComboBox.getSelectedItem();
 			// Change to the selected settlement in SettlementMapPanel
 			setSettlement(s);
 		}
 
 		// Set the item listener only after the setup is done
-		settlementListBox.addItemListener(new ItemListener() {
+		settlementComboBox.addItemListener(new ItemListener() {
 			// Note: ensure unitUpdate() update combobox when a new building is added
 			@Override
 			public void itemStateChanged(ItemEvent event) {
@@ -400,9 +403,21 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		// Set the selected settlement
 		selectedSettlement = s;
 		// Set the box opaque
-		settlementListBox.setOpaque(false);
+		settlementComboBox.setOpaque(false);
 	}
 
+	/**
+	 * Sets the opaqueness of the settlement box 
+	 * 
+	 * @param isOpaque
+	 */
+	public void setSettlementBox(boolean isOpaque) {
+		// Set the box opaque
+		settlementComboBox.setOpaque(isOpaque);
+		settlementComboBox.setEnabled(!isOpaque);
+		settlementComboBox.setVisible(!isOpaque);
+	}
+	
     /**
      * Gets the length of the most lengthy settlement name
      *
@@ -452,8 +467,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	}
 
 	/**
-	 * This method creates a new chart window based on the model of the currently
-	 * selected window. The chart is added as a separate tab to the window.
+	 * Creates a bar chart and adds it as a new separate tab.
 	 */
 	private void createBarChart() {
 		MonitorModel model = getSelected().getModel();
@@ -464,6 +478,9 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		}
 	}
 
+	/**
+	 * Creates a pie chart and adds it as a new separate tab.
+	 */
 	private void createPieChart() {
 		MonitorModel model = getSelected().getModel();
 		if (model != null) {
@@ -503,15 +520,18 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 			return;
 		
 		int index = tabsSection.indexOfComponent(selectedTab);
-		// if it's the all settlements tab, exit 
-		if (index == 0)
+
+		// if the all settlements tab is being selected 
+		if (index == 0) {
+			// Set the opaqueness of the settlement box
+			setSettlementBox(true);
 			return;
+		}
+		
+		tabsSection.removeChangeListener(tabsSection.getChangeListeners()[0]);
 		
 		MonitorModel model = selectedTab.getModel();
-		TableTab tableTab = null;
-		JTable table = null;
-		tabsSection.removeChangeListener(tabsSection.getChangeListeners()[0]);
-		selectedTab.getModel().removeTableModelListener(this);
+		model.removeTableModelListener(this);
 
 		// Disable all buttons
 		buttonBar.setEnabled(false);
@@ -520,7 +540,13 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		buttonMissions.setEnabled(false);
 		buttonFilter.setEnabled(false);
 
+		// Set the opaqueness of the settlement box
+		boolean isOpaque = false;
+		
 		try {
+			TableTab tableTab = null;
+			JTable table = null;
+
 			MonitorTab newTab = null;
 			if (selectedTab instanceof UnitTab) {
 				// Enable these buttons
@@ -537,7 +563,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 					unitTableModel = new CropTableModel(selectedSettlement);
 					newTab = new UnitTab(this, unitTableModel, true, CROP_ICON);
 				}
-				else if (model instanceof SettlementTableModel) {
+				else if (model instanceof SettlementTableModel) {				
 					unitTableModel = new SettlementTableModel(selectedSettlement);
 					newTab = new UnitTab(this, unitTableModel, true, COLONY_ICON);
 				}
@@ -559,6 +585,9 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 				buttonMap.setEnabled(true);
 				buttonMissions.setEnabled(true);
 
+				// Hide the settlement box
+				isOpaque = true;
+				
 				newTab = new MissionTab(this);
 
 			} else if (selectedTab instanceof EventTab) {
@@ -567,6 +596,9 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 				buttonDetails.setEnabled(true);
 				buttonFilter.setEnabled(true);
 
+				// Hide the settlement box
+				isOpaque = true;
+				
 				eventsTab = new EventTab(this, desktop);
 				newTab = eventsTab;
 
@@ -591,16 +623,21 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 
 			swapTab(selectedTab, newTab);
 			model = newTab.getModel();
+			model.addTableModelListener(this);
+			
 			tableTab = (TableTab)newTab;
 			table = tableTab.getTable();
 			this.table = table;
-			model.addTableModelListener(this);
+			
 			tabsSection.setSelectedComponent(newTab);
 			tabsSection.addChangeListener(e -> updateTab());
 
 			// Update the row count label with new numbers
 			rowCount.setText(newTab.getCountString());
 
+			// Set the opaqueness of the settlement box
+			setSettlementBox(isOpaque);
+			
 		} catch (Exception e) {
 			logger.severe("Problems in re-creating tabs in MonitorWindow: " + e.getMessage());
 		}
