@@ -82,7 +82,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 
 	private static final String OXYGEN = "Oxygen";
 
-	private static final String CAUSE = ". Probable Cause : ";
+	private static final String CAUSE = ". Probable Cause: ";
 	private static final String CAUSED_BY = " caused by ";
 
 	private static final int SCORE_DEFAULT = 50;
@@ -167,6 +167,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 
 	/**
 	 * Does this malfunctionable support inside Repairs?
+	 * 
 	 * @param supported New inside repairs supported
 	 */
 	public void setSupportsInside(boolean supported) {
@@ -233,7 +234,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	/**
 	 * Gets the most serious general malfunction the entity has.
 	 * Malfunction must need work of the specified work type and
-	 * have worker slots vacent.
+	 * have worker slots vacant.
 	 *
 	 * @return malfunction
 	 */
@@ -485,7 +486,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 					+ "# of sols since last check-up: " + solsLastMaint + ". Condition: " + Math.round(currentWearCondition*10.0)/10.0
 					+ " %.");
 
-			// TODO: how to connect maintenance to field reliability statistics when selecting a malfunction ?
+			// FUTURE : how to connect maintenance to field reliability statistics when selecting a malfunction ?
 			selectMalfunction(null);
 		}
 	}

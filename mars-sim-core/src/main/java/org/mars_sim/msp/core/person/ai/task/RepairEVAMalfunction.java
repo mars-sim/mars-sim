@@ -44,6 +44,8 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 	/** Task phases. */
 	private static final TaskPhase REPAIRING = new TaskPhase(Msg.getString("Task.phase.repairing")); //$NON-NLS-1$
 
+	private static final String WORK_FORMAT = " (%.1f millisols spent).";
+	
 	// Data members
 	/** The malfunctionable entity being repaired. */
 	private Malfunctionable entity;
@@ -238,13 +240,12 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 			workTime += workTime * (.2D * mechanicSkill);
 
 		if (RepairHelper.hasRepairParts(containerUnit, malfunction)) {
-			logger.info(worker, 10_000, "Repair parts for the malfunction'" + malfunction + "' were available. Proceeding to repair.");
+			logger.log(worker, Level.FINE, 10_000, "Parts for repairing malfunction '" + malfunction + "' available from " + containerUnit.getName() + ".");
 			RepairHelper.claimRepairParts(containerUnit, malfunction);
 		}
 
 		else {
-			logger.info(worker, 10_000, "Repair parts not available for "
-					+ malfunction + " from " + containerUnit.getName() + ".");
+			logger.log(worker, Level.FINE, 10_000, "Parts for repairing malfunction '" + malfunction + "' not available from " + containerUnit.getName() + ".");
 
         	if (worker.isOutside()) {
         		setPhase(WALK_BACK_INSIDE);
@@ -255,12 +256,6 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
             return time;
 		}
 
-		// Add EVA work to malfunction.
-		double workTimeLeft = 0D;
-		if (!malfunction.isWorkDone(MalfunctionRepairWork.EVA)) {
-			logger.info(worker, 10_000, "Performing EVA repair on malfunction'" + malfunction + "'.");
-			workTimeLeft = malfunction.addWorkTime(MalfunctionRepairWork.EVA, workTime, worker.getName());
-		}
 
 		// Add experience points
 		addExperience(time);
@@ -268,11 +263,18 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 		// Check if an accident happens during repair.
 		checkForAccident(time);
 
+		double workTimeLeft = 0D;
 		// Check if there are no more malfunctions.
-		if (malfunction.isWorkDone(MalfunctionRepairWork.EVA)) {
-			logger.info(worker, "Wrapped up the EVA of " + malfunction.getName()
-					+ " in "+ entity + " ("
-					+ Math.round(malfunction.getCompletedWorkTime(MalfunctionRepairWork.EVA)*10.0)/10.0 + " millisols spent).");
+		if (!malfunction.isWorkDone(MalfunctionRepairWork.EVA)) {
+			logger.log(worker, Level.FINE, 10_000, "Performing EVA repair on malfunction '" + malfunction + "' at " + containerUnit.getName() + ".");
+			// Add EVA work to malfunction.
+			workTimeLeft = malfunction.addWorkTime(MalfunctionRepairWork.EVA, workTime, worker.getName());
+		}
+		else {
+			logger.log(worker, Level.INFO, 1_000, "Wrapped up EVA repair work for '" 
+					+ malfunction.getName() + "' in " + entity 
+					+ String.format(WORK_FORMAT,
+							malfunction.getCompletedWorkTime(MalfunctionRepairWork.EVA)));
             if (worker.isOutside()) {
             	setPhase(WALK_BACK_INSIDE);
             }

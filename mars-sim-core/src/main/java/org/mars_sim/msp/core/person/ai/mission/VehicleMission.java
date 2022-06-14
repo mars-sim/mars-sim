@@ -932,7 +932,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 		double distance = getEstimatedTotalRemainingDistance();
 		if (distance > 0) {
 			double time = getEstimatedTripTime(useMargin, distance);
-			logger.info(vehicle, 20_000, this + " has an estimated remaining trip time of " + time);
+			logger.info(vehicle, 20_000, this + " has an estimated remaining trip time of " +  Math.round(time * 10.0)/10.0 + " millisols.");
 			return time;
 		}
 

@@ -1162,8 +1162,8 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 							.getMalfunctionByName(MalfunctionFactory.METEORITE_IMPACT_DAMAGE),
 							true, null);
 
-					logger.log(this, Level.INFO, 0, "Malfunction's name : " + mal.getName() + ".");
-					logger.log(this, Level.INFO, 0, "EventType : " + mal.getMalfunctionMeta().getName() + ".");
+					logger.log(this, Level.INFO, 0, mal.getName() + " just occurred.");
+					logger.log(this, Level.INFO, 0, "EventType: " + mal.getMalfunctionMeta().getName() + ".");
 					
 					String victimName = "None";
 //					String task = "N/A";

@@ -244,7 +244,7 @@ public class HealthProblem implements Serializable {
 		MedicalEvent treatedEvent = new MedicalEvent(sufferer, this, EventType.MEDICAL_TREATED);
 		eventManager.registerNewEvent(treatedEvent);
 
-		logger.info(getSufferer(), " began to receive treatment for " + toString().toLowerCase() + ".");
+		logger.info(getSufferer(), "Began to receive treatment for " + toString().toLowerCase() + ".");
 	}
 
 	/**

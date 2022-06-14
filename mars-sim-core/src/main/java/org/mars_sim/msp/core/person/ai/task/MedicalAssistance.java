@@ -104,7 +104,7 @@ public class MedicalAssistance extends Task implements Serializable {
 			try {
 				medical.startTreatment(problem, duration);
 				
-				logger.log(worker, Level.INFO, 0, "Was treating " + problem.getIllness().getType().getName());
+				logger.log(worker, Level.INFO, 0, "Treating " + problem.getIllness().getType().getName());
 
 				// Add person to medical care building if necessary.
 				if (medical instanceof MedicalCare) {

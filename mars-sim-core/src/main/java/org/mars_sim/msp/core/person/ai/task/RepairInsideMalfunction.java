@@ -168,19 +168,24 @@ public class RepairInsideMalfunction extends Task implements Repair, Serializabl
 			workTime += workTime * (.2D * mechanicSkill);
 		}
 
+		Unit containerUnit = worker.getTopContainerUnit();
+		
 		// Add repair parts if necessary.
 		if (RepairHelper.hasRepairParts(worker.getTopContainerUnit(), malfunction)) {
 			setDescription(Msg.getString("Task.description.repairMalfunction.detail", malfunction.getName(),
 					entity.getNickName())); // $NON-NLS-1$
 
-			Unit containerUnit = worker.getTopContainerUnit();
 			if (!worker.isOutside()) {
+				logger.log(worker, Level.FINE, 10_000, "Parts for repairing malfunction '" + malfunction + "' available from " + containerUnit.getName() + ".");
 				RepairHelper.claimRepairParts(containerUnit, malfunction);
 			}
+		} 
+		else {
+			logger.log(worker, Level.FINE, 10_000, "Parts for repairing malfunction '" + malfunction + "' not available from " + containerUnit.getName() + ".");
 		}
 
 		// Add work to malfunction.
-		malfunction.addWorkTime(MalfunctionRepairWork.INSIDE, workTime, worker.getName());
+//		double workTimeLeft = malfunction.addWorkTime(MalfunctionRepairWork.INSIDE, workTime, worker.getName());
 
 		// Add experience
 		addExperience(time);
@@ -188,16 +193,25 @@ public class RepairInsideMalfunction extends Task implements Repair, Serializabl
 		// Check if an accident happens during repair.
 		checkForAccident(entity, time, 0.001D, getEffectiveSkillLevel(), "Repairing " + entity.getNickName());
 
-		// Is the whole malfunction completed
-		if (malfunction.isWorkDone(MalfunctionRepairWork.INSIDE)) {
-			logger.log(worker, Level.INFO, 1_000, "Wrapped up the inside work for '"
-						+ malfunction.getName()	+ "' in "+ entity
-						+ String.format(WORK_FORMAT,
-								malfunction.getCompletedWorkTime(MalfunctionRepairWork.INSIDE)));
+		// Add EVA work to malfunction.
+		double workTimeLeft = 0D;
+		if (!malfunction.isWorkDone(MalfunctionRepairWork.INSIDE)) {
+			logger.log(worker, Level.FINE, 10_000, "Performing inside repair on malfunction '" + malfunction + "' at " + containerUnit.getName() + ".");
+			// Add work to malfunction.
+			workTimeLeft = malfunction.addWorkTime(MalfunctionRepairWork.INSIDE, workTime, worker.getName());
+		}
+		else {
+			// Work fully completed
+			logger.log(worker, Level.INFO, 1_000, "Wrapped up inside repair work for '"
+					+ malfunction.getName()	+ "' in " + entity
+					+ String.format(WORK_FORMAT,
+							malfunction.getCompletedWorkTime(MalfunctionRepairWork.INSIDE)));
+			
 			endTask();
 		}
 
-		return 0; // Used all available time repairing
+		return workTimeLeft;
+//		return 0; // Used all available time repairing
 	}
 
 

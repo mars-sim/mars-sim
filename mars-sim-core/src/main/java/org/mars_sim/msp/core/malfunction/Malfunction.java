@@ -25,6 +25,7 @@ import org.mars_sim.msp.core.person.health.ComplaintType;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -192,14 +193,14 @@ public class Malfunction implements Serializable {
 			// If it's an inhabitable building, change to EVA
 			if (!supportsInside && (type == MalfunctionRepairWork.INSIDE)) {
 				type = MalfunctionRepairWork.EVA;
-				logger.warning(0, name + " cannot do " + effort.getKey() + " repair on inhabitable structure. Change to " + type + " repair.");
+				logger.warning(0, name + " cannot do inside repair on inhabitable structure. Change to EVA repair.");
 			}
 			
 			double workTime = effort.getValue().getWorkTime();
 			double actualEffort = computeWorkTime(workTime);
 			if (actualEffort > (2 * Double.MIN_VALUE)) {
-				logger.info(10_000, name + " - Estimated " + type + " work time: "
-								+ Math.round(actualEffort*10.0)/10.0);
+				logger.info(10_000, name + " " + type + " repair - Estimated work time: "
+								+ Math.round(actualEffort*10.0)/10.0 + " msol");
 				work.put(type, new RepairWork(actualEffort, effort.getValue().getDesiredWorkers()));
 			}
 		}

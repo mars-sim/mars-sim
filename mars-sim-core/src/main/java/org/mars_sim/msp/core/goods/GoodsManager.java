@@ -128,6 +128,9 @@ public class GoodsManager implements Serializable, Temporal {
 	private static final String EMERGENCY_SUPPLY_MISSION = "deliver emergency supplies";
 	private static final String DELIVERY_MISSION = "deliver resources";
 
+	private static final int MALFUNCTION_REPAIR_COEF = 50;
+	private static final int MAINTENANCE_REPAIR_COEF = 10;
+
 	// Number modifiers for outstanding repair and maintenance parts ane EVA parts.
 	private static final int BASE_REPAIR_PART = 150;
 	private static final int BASE_MAINT_PART = 15;
@@ -2621,13 +2624,13 @@ public class GoodsManager implements Serializable, Temporal {
 			sumPartsDemand(partsProbDemand, getEstimatedOrbitRepairParts(entity), wearModifier);
 
 			// Add outstanding repair parts required.
-			sumPartsDemand(partsProbDemand, getOutstandingRepairParts(entity), wearModifier);
+			sumPartsDemand(partsProbDemand, getOutstandingRepairParts(entity), MALFUNCTION_REPAIR_COEF);
 
 			// Estimate maintenance parts needed per orbit for entity.
 			sumPartsDemand(partsProbDemand, getEstimatedOrbitMaintenanceParts(entity), wearModifier);
 
 			// Add outstanding maintenance parts required.
-			sumPartsDemand(partsProbDemand, getOutstandingMaintenanceParts(entity), wearModifier);
+			sumPartsDemand(partsProbDemand, getOutstandingMaintenanceParts(entity), MAINTENANCE_REPAIR_COEF);
 		}
 
 		// Add demand for vehicle attachment parts.
@@ -2707,7 +2710,7 @@ public class GoodsManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * Gets the outstanding repair parts by entity
+	 * Gets the outstanding repair parts by entity.
 	 *
 	 * @param entity
 	 * @return
@@ -2732,6 +2735,12 @@ public class GoodsManager implements Serializable, Temporal {
 		return result;
 	}
 
+	/**
+	 * Gets an estimated orbit maintenance parts.
+	 * 
+	 * @param entity
+	 * @return
+	 */
 	private Map<Integer, Number> getEstimatedOrbitMaintenanceParts(Malfunctionable entity) {
 		Map<Integer, Number> result = new HashMap<>();
 
@@ -2753,6 +2762,12 @@ public class GoodsManager implements Serializable, Temporal {
 		return result;
 	}
 
+	/**
+	 * Gets outstanding maintenance parts.
+	 * 
+	 * @param entity
+	 * @return
+	 */
 	private Map<Integer, Number> getOutstandingMaintenanceParts(Malfunctionable entity) {
 		Map<Integer, Number> result = new HashMap<>();
 

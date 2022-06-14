@@ -330,7 +330,7 @@ public class SelfTreatHealthProblem extends Task implements Serializable {
             medicalAid.requestTreatment(healthProblem);
             medicalAid.startTreatment(healthProblem, duration);
 
-        	logger.log(person, Level.INFO, 0, "Is self-treating " 
+        	logger.log(person, Level.INFO, 0, "Self-treating " 
         			+ healthProblem.getIllness().getType().getName());
 
             // Create starting task event if needed.

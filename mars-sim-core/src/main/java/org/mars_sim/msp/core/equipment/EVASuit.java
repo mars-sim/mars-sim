@@ -430,6 +430,7 @@ public class EVASuit extends Equipment
 
 	/**
 	 * Gets a list of people affected by this equipment
+	 * 
 	 * @return Collection<Person>
 	 */
 	@Override
@@ -464,7 +465,8 @@ public class EVASuit extends Equipment
 	}
 
 	/**
-	 * Return the parts that mau normally fail on a EVA Suit
+	 * Return the parts that normally fail on a EVA Suit
+	 * 
 	 * @return
 	 */
 	public static Map<Integer, Double> getNormalRepairPart() {
@@ -473,6 +475,7 @@ public class EVASuit extends Equipment
 
 	/**
 	 * Load the resources need from a source. Also unload any waste
+	 * 
 	 * @param source Source of resources
 	 * @return The %age full of the suit
 	 */
@@ -486,6 +489,7 @@ public class EVASuit extends Equipment
 
 	/**
 	 * Fully load a resource into the EVASuit
+	 * 
 	 * @param source
 	 * @param resourceId
 	 * @return Suit is fully loaded with resource
@@ -504,6 +508,7 @@ public class EVASuit extends Equipment
 
 	/**
 	 * Unload any waste products to the holder
+	 * 
 	 * @param newSuitOwner
 	 */
 	public void unloadWaste(EquipmentOwner holder) {
@@ -516,6 +521,7 @@ public class EVASuit extends Equipment
 
 	/**
 	 * How fully loaded is the Suit; lowest of water and oxygen
+	 * 
 	 * @return Percentage of lowest resource
 	 */
 	public double getFullness() {
