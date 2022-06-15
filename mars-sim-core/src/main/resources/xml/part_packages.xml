@@ -50,7 +50,8 @@
 		<part type="microcontroller" number="60" />
 		<part type="microwave" number="3" />
 		<part type="water tank" number="5" />
-		<part type="small water pump" number="3" />
+		<part type="water pump - small" number="3" />
+		<part type="water pump - large" number="1" />
 		<part type="carbon dioxide pump" number="3" />
 		<part type="small transformer" number="5" />
 		<part type="power transistor" number="60" />
@@ -126,9 +127,9 @@
 		<part type="bore drill pipe" number="20" />
 		<part type="drilling rig" number="1" />
 		<part type="condenser coil" number="1" />
-		<part type="water pump" number="1" />
 		<part type="decontamination kit" number="2" />
-
+		<part type="plasma cutter" number="2" />
+		
 	</part-package>
 
 	<part-package name="package 2" >
@@ -161,7 +162,8 @@
 		<part type="microcontroller" number="120" />
 		<part type="microwave" number="10" />
 		<part type="water tank" number="10" />
-		<part type="small water pump" number="10" />
+		<part type="water pump - small" number="6" />
+		<part type="water pump - large" number="2" />
 		<part type="carbon dioxide pump" number="10" />
 		<part type="small transformer" number="10" />
 		<part type="power transistor" number="120" />
@@ -237,11 +239,11 @@
 		<part type="bore drill pipe" number="30" />
 		<part type="drilling rig" number="2" />
 		<part type="condenser coil" number="2" />
-		<part type="water pump" number="2" />
 		<part type="steel post" number="15" />
 		<part type="plastic sheet" number="6" />
 		<part type="decontamination kit" number="4" />
-
+		<part type="plasma cutter" number="3" />
+		
 	</part-package>
 
 	<part-package name="package 3">
@@ -274,7 +276,8 @@
 		<part type="microcontroller" number="160" />
 		<part type="microwave" number="15" />
 		<part type="water tank" number="15" />
-		<part type="small water pump" number="15" />
+		<part type="water pump - small" number="9" />
+		<part type="water pump - large" number="3" />
 		<part type="carbon dioxide pump" number="15" />
 		<part type="small transformer" number="15" />
 		<part type="power transistor" number="160" />
@@ -350,11 +353,11 @@
 		<part type="bore drill pipe" number="40" />
 		<part type="drilling rig" number="4" />
 		<part type="condenser coil" number="4" />
-		<part type="water pump" number="4" />
 		<part type="steel post" number="15" />
 		<part type="plastic sheet" number="6" />
 		<part type="decontamination kit" number="6" />
-
+		<part type="plasma cutter" number="4" />
+		
 	</part-package>
 
 	<part-package name="package 4">
@@ -387,7 +390,8 @@
 		<part type="microcontroller" number="400" />
 		<part type="microwave" number="10" />
 		<part type="water tank" number="25" />
-		<part type="small water pump" number="20" />
+		<part type="water pump - small" number="12" />
+		<part type="water pump - large" number="4" />
 		<part type="carbon dioxide pump" number="15" />
 		<part type="small transformer" number="25" />
 		<part type="power transistor" number="400" />
@@ -463,10 +467,10 @@
 		<part type="bore drill pipe" number="60" />
 		<part type="drilling rig" number="6" />
 		<part type="condenser coil" number="6" />
-		<part type="water pump" number="6" />
 		<part type="steel post" number="40" />
 		<part type="plastic sheet" number="16" />
 		<part type="decontamination kit" number="12" />
+		<part type="plasma cutter" number="5" />
 
 	</part-package>
 

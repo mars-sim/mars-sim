@@ -70,6 +70,7 @@ import org.mars_sim.msp.core.structure.building.function.RoboticStation;
 import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.core.structure.building.function.ThermalGeneration;
 import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
+import org.mars_sim.msp.core.structure.building.function.WasteProcessing;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.core.structure.building.function.cooking.Dining;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
@@ -1747,8 +1748,8 @@ public class BuildingManager implements Serializable {
 					result += ThermalGeneration.getFunctionValue(buildingType, newBuilding, settlement);
 					break;
 
-				case WASTE_DISPOSAL:
-					// Nothing to count here
+				case WASTE_PROCESSING:
+					result += WasteProcessing.getFunctionValue(buildingType, newBuilding, settlement);
 					break;
 
 				default:

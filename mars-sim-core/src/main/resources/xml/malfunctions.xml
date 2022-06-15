@@ -142,7 +142,7 @@
 		<probability value="3.0" />
 		<repair-inside time="40.0" repairers="4"/>
 		<system-list>
-			<system name="waste disposal" />
+			<system name="waste processing" />
 			<system name="life support" />
 		</system-list>
 		<medical-complaint-list>
@@ -548,10 +548,10 @@
 			<part name="valve" number="1" probability="15" />
 			<part name="plastic tubing" number="2" probability="15" />
 			<part name="epoxy resin bottle" number="1" probability="15" />
-			<part name="copper pipe" number="1" probability="15" />
+			<part name="copper pipe" number="1" probability="2" />
 		<!-- 2014-11-19 Added water tank and small water pump -->
-			<part name="water tank" number="1" probability="10" />
-			<part name="small water pump" number="1" probability="15" />
+			<part name="water tank" number="1" probability="3" />
+			<part name="water pump - small" number="1" probability="15" />
 		</repair-parts-list>
 	</malfunction>
 
@@ -770,7 +770,7 @@
 		<repair-parts-list>
 			<part name="electrical wire" number="2" probability="10" />
 			<part name="wire connector" number="2" probability="10" />
-			<part name="water pump" number="1" probability="70" />
+			<part name="water pump" number="1" probability="50" />
 			<part name="lubricant bottle" number="1" probability="10" />
 		</repair-parts-list>
 	</malfunction>

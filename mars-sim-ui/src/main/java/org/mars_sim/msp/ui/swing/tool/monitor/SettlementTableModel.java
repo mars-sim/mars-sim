@@ -143,7 +143,7 @@ public class SettlementTableModel extends UnitTableModel {
 	 * simulation.
 	 */
 	public SettlementTableModel() throws Exception {
-		super("All Settlements", "SettlementTableModel.countingSettlements",
+		super("Mars", "SettlementTableModel.countingSettlements",
 				columnNames, columnTypes);
 
 //		if (GameManager.mode == GameMode.COMMAND)

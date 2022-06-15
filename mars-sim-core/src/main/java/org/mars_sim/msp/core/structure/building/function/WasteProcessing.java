@@ -1,8 +1,8 @@
 /*
  * Mars Simulation Project
- * ResourceProcessing.java
- * @date 2021-12-18
- * @author Scott Davis
+ * WasteProcessing.java
+ * @date 2022-06-15
+ * @author Manny Kung
  */
 package org.mars_sim.msp.core.structure.building.function;
 
@@ -12,71 +12,66 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.ResourceProcessSpec;
+import org.mars_sim.msp.core.structure.building.WasteProcessSpec;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
 
 /**
- * The ResourceProcessing class is a building function indicating that the
- * building has a set of resource processes.
+ * The WasteProcessing class is a building function for handling waste disposal and recycling.
  */
-public class ResourceProcessing extends Function implements Serializable {
+public class WasteProcessing extends Function implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	/** default logger. */
-//	private static SimLogger logger = SimLogger.getLogger(ResourceProcessing.class.getName());
-
-	public static final String SABATIER = "sabatier";
-	
 	public static final double PROCESS_MAX_VALUE = 100D;
 
 	private double powerDownProcessingLevel;
 
-	private List<ResourceProcess> resourceProcesses;
+	private List<WasteProcess> wasteProcesses;
 
 	/**
 	 * Constructor.
-	 *
-	 * @param building the building the function is for.
-	 * @throws BuildingException if function cannot be constructed.
+	 * 
+	 * @param building the building this function is for.
 	 */
-	public ResourceProcessing(Building building) {
+	public WasteProcessing(Building building) {
 		// Use Function constructor
-		super(FunctionType.RESOURCE_PROCESSING, building);
+		super(FunctionType.WASTE_PROCESSING, building);
 
-		powerDownProcessingLevel = buildingConfig.getResourceProcessingPowerDown(building.getBuildingType());
-		resourceProcesses = new ArrayList<>();
-		for (ResourceProcessSpec spec : buildingConfig.getResourceProcesses(building.getBuildingType())) {
-			resourceProcesses.add(new ResourceProcess(spec));
+		powerDownProcessingLevel = buildingConfig.getWasteProcessingPowerDown(building.getBuildingType());
+		wasteProcesses = new ArrayList<>();
+		for (WasteProcessSpec spec : buildingConfig.getWasteProcesses(building.getBuildingType())) {
+			wasteProcesses.add(new WasteProcess(spec));
 		}
 	}
 
 	/**
 	 * Gets the value of the function for a named building.
-	 *
+	 * 
 	 * @param buildingName the building name.
 	 * @param newBuilding  true if adding a new building.
 	 * @param settlement   the settlement.
 	 * @return value (VP) of building function.
-	 * @throws Exception if error getting function value.
 	 */
 	public static double getFunctionValue(String buildingName, boolean newBuilding, Settlement settlement) {
 
 		double result = 0D;
-		Iterator<ResourceProcessSpec> i = buildingConfig.getResourceProcesses(buildingName).iterator();
+		Iterator<WasteProcessSpec> i = buildingConfig.getWasteProcesses(buildingName).iterator();
 		while (i.hasNext()) {
-			ResourceProcessSpec process = i.next();
+			WasteProcessSpec process = i.next();
 			double processValue = 0D;
 			Iterator<Integer> ii = process.getOutputResources().iterator();
 			while (ii.hasNext()) {
 				int resource = ii.next();
 				if (!process.isWasteOutputResource(resource)) {
-					double rate = process.getMaxOutputResourceRate(resource);
+					double rate = process.getMaxOutputRate(resource);
 					processValue += settlement.getGoodsManager().getGoodValuePerItem(resource) * rate;
 				}
 			}
@@ -86,7 +81,7 @@ public class ResourceProcessing extends Function implements Serializable {
 		    while (iii.hasNext()) {
 		    	int resource = iii.next();
 				if (!process.isAmbientInputResource(resource)) {
-					double rate = process.getMaxInputResourceRate(resource);
+					double rate = process.getMaxInputRate(resource);
 					processValue -= settlement.getGoodsManager().getGoodValuePerItem(resource) * rate;
 
 					// Check inventory limit.
@@ -123,20 +118,20 @@ public class ResourceProcessing extends Function implements Serializable {
 	}
 
 	/**
-	 * Gets the resource processes in this building.
+	 * Gets the waste processes in this building.
 	 *
 	 * @return list of processes.
 	 */
-	public List<ResourceProcess> getProcesses() {
-		return resourceProcesses;
+	public List<WasteProcess> getProcesses() {
+		return wasteProcesses;
 	}
 
 	/**
-	 * Gets the power down mode resource processing level.
+	 * Gets the power down mode waste processing level.
 	 *
 	 * @return proportion of max processing rate (0D - 1D)
 	 */
-	public double getPowerDownResourceProcessingLevel() {
+	public double getPowerDownWasteProcessingLevel() {
 		return powerDownProcessingLevel;
 	}
 
@@ -157,7 +152,7 @@ public class ResourceProcessing extends Function implements Serializable {
 			else if (getBuilding().getPowerMode() == PowerMode.POWER_DOWN)
 				productionLevel = powerDownProcessingLevel;
 			// Run each resource process.
-			Iterator<ResourceProcess> i = resourceProcesses.iterator();
+			Iterator<WasteProcess> i = wasteProcesses.iterator();
 			while (i.hasNext()) {
 				i.next().processResources(pulse, productionLevel, getBuilding().getSettlement());
 			}
@@ -172,9 +167,9 @@ public class ResourceProcessing extends Function implements Serializable {
 	 */
 	public double getFullPowerRequired() {
 		double result = 0D;
-		Iterator<ResourceProcess> i = resourceProcesses.iterator();
+		Iterator<WasteProcess> i = wasteProcesses.iterator();
 		while (i.hasNext()) {
-			ResourceProcess process = i.next();
+			WasteProcess process = i.next();
 			if (process.isProcessRunning()) {
 				result += process.getPowerRequired();
 			}
@@ -189,9 +184,9 @@ public class ResourceProcessing extends Function implements Serializable {
 	 */
 	public double getPoweredDownPowerRequired() {
 		double result = 0D;
-		Iterator<ResourceProcess> i = resourceProcesses.iterator();
+		Iterator<WasteProcess> i = wasteProcesses.iterator();
 		while (i.hasNext()) {
-			ResourceProcess process = i.next();
+			WasteProcess process = i.next();
 			if (process.isProcessRunning()) {
 				result += process.getPowerRequired();
 			}
@@ -201,13 +196,13 @@ public class ResourceProcessing extends Function implements Serializable {
 
 	@Override
 	public double getMaintenanceTime() {
-		return resourceProcesses.size() * 5D;
+		return wasteProcesses.size() * 5D;
 	}
 
 	@Override
 	public void destroy() {
 		super.destroy();
 
-		resourceProcesses = null;
+		wasteProcesses = null;
 	}
 }

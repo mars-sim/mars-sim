@@ -835,36 +835,37 @@
 		to produce a high pressure fluid for feeding a combustion chamber. </description>
 	</part>
 
-	<!-- An electric water pump. -->
-	<part name="water pump" type="utility" mass="5.0" >
+	<!-- An large electric water pump. -->
+	<part name="water pump - large" type="utility" mass="5.0" >
 		<maintenance-entity-list>
-			<entity name="areothermal power source" probability="5" max-number="1" />
+			<entity name="areothermal power source" probability="3" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 
 	<!-- 2014-11-19 Added a small water pump for greenhouse. -->
-	<part name="small water pump" type="utility" mass="1.0" >
+	<part name="water pump - small" type="utility" mass="1.0" >
 		<maintenance-entity-list>
-			<entity name="farming" probability="5" max-number="10" />
+			<entity name="farming" probability="3" max-number="5" />
+			<entity name="vehicle" probability="3" max-number="1" />			
 		</maintenance-entity-list>
 	</part>
 
 	<!-- 2014-11-19 Added carbon dioxide pump for greenhouse. -->
 	<part name="carbon dioxide pump" type="utility" mass="1.0" >
 		<maintenance-entity-list>
-			<entity name="farming" probability="5" max-number="5" />
+			<entity name="farming" probability="3" max-number="5" />
 		</maintenance-entity-list>
 	</part>
 
 	<part name="fuel pump" type="utility" mass="5.0" >
 		<maintenance-entity-list>
-			<entity name="rover" probability="5" max-number="1" />
+			<entity name="rover" probability="3" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 
 	<part name="oxygen pump" type="utility" mass="5.0" >
 		<maintenance-entity-list>
-			<entity name="rover" probability="5" max-number="1" />
+			<entity name="rover" probability="3" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 
@@ -895,27 +896,27 @@
 	<part name="small hammer" type="tool" mass="1.5" >
 		<description>an utility hammer for light use</description>
 		<maintenance-entity-list>
-			<entity name="manufacture" probability="5" max-number="1" />
+			<entity name="manufacture" probability=".1" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 
 	<part name="socket wrench" type="tool" mass="1.0" >
 		<description>a socket wrench for vehicle</description>
 		<maintenance-entity-list>
-			<entity name="Vehicle Maintenance" probability="2" max-number="1" />
+			<entity name="vehicle maintenance" probability="1" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 
 	<part name="pipe wrench" type="tool" mass="1.5" >
 		<description>a socket wrench for vehicle</description>
 		<maintenance-entity-list>
-			<entity name="Vehicle Maintenance" probability="2" max-number="1" />
+			<entity name="vehicle maintenance" probability="1" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 
 	<part name="winch" type="tool" mass="75.0" >
 		<maintenance-entity-list>
-			<entity name="rover" probability="5" max-number="1" />
+			<entity name="rover" probability="1" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 
@@ -941,8 +942,8 @@
 		using conductive tracks, pads and other features etched from copper
 		sheets laminated onto a non-conductive substrate.</description>
 		<maintenance-entity-list>
-			<entity name="vehicle" probability="2" max-number="1" />
-			<entity name="communication" probability="2" max-number="1" />
+			<entity name="vehicle" probability=".1" max-number="1" />
+			<entity name="communication" probability=".1" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 
@@ -950,7 +951,7 @@
 		<description>a pair of utility work gloves for medium to heavy use.</description>
 		<maintenance-entity-list>
 			<entity name="manufacture" probability="5" max-number="1" />
-			<entity name="Vehicle Maintenance" probability="5" max-number="1" />
+			<entity name="vehicle maintenance" probability="5" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 
@@ -963,6 +964,16 @@
 
 	<part name="petri dish" type="lab" mass="0.03">
 		<description>a small dish shaped like a cylinder for growing cells. Made of polystyrene.</description>
+	</part>
+
+	<part name="plasma cutter" type="instrument" mass="20">
+		<description> Plasma is electrified gas. a plasma cutter will cut any material 
+			that conducts electricity. Aluminum, steel, stainless, brass, copper, etc.
+		</description>
+		<maintenance-entity-list>
+			<entity name="manufacture" probability=".1" max-number="2" />
+			<entity name="vehicle maintenance" probability=".1" max-number="1" />
+		</maintenance-entity-list>
 	</part>
 
 

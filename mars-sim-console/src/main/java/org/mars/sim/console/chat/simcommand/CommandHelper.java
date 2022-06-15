@@ -45,6 +45,7 @@ public class CommandHelper {
 	
 	public static final int MALFUNCTION_WIDTH = 28;
 	public static final int BUILIDNG_WIDTH = 26;
+	public static final int PROCESS_WIDTH = 30;
 	//Width of a Person value
 	public static final int PERSON_WIDTH = 22;
 	// Width of a Job vlaue

@@ -38,8 +38,7 @@ public enum FunctionType {
 	ROBOTIC_STATION				(Msg.getString("FunctionType.roboticStation")), //$NON-NLS-1$
 	STORAGE						(Msg.getString("FunctionType.storage")),  //$NON-NLS-1$
 	THERMAL_GENERATION			(Msg.getString("FunctionType.thermalGeneration")), //$NON-NLS-1$
-	WASTE_DISPOSAL				(Msg.getString("FunctionType.wasteDisposal")), //$NON-NLS-1$
-	// TODO: implement FIELD_STUDY
+	WASTE_PROCESSING			(Msg.getString("FunctionType.wasteProcessing")), //$NON-NLS-1$
 	FIELD_STUDY					(Msg.getString("FunctionType.fieldStudy")), //$NON-NLS-1$
 	UNKNOWN						(Msg.getString("FunctionType.unknown")) //$NON-NLS-1$
 	;

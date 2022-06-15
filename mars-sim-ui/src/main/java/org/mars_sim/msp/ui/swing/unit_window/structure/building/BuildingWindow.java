@@ -101,6 +101,9 @@ public class BuildingWindow extends UnitWindow {
 			case THERMAL_GENERATION:
 				addTabPanel(new BuildingPanelThermal(building.getThermalGeneration(), desktop));
 				break;
+			case WASTE_PROCESSING:
+				addTabPanel( new BuildingPanelWasteProcessing(building.getWasteProcessing(), desktop));
+				break;
 			default:
 				break;
         	}

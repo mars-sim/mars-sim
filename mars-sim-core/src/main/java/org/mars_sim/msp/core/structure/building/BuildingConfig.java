@@ -54,9 +54,6 @@ public class BuildingConfig implements Serializable {
 	private static final String FUNCTIONS = "functions";
 	private static final String CAPACITY = "capacity";
 
-	private static final String WASTE_DISPOSAL = "waste-disposal";
-	//private static final String WASTE_SPECIALTY = "waste-specialty";
-
 	private static final String RESEARCH = "research";
 	private static final String TECH_LEVEL = "tech-level";
 	private static final String RESEARCH_SPECIALTY = "research-specialty";
@@ -69,6 +66,9 @@ public class BuildingConfig implements Serializable {
 	private static final String BASE_POWER_DOWN_POWER = "base-power-down-power";
 	private static final String POWER_DOWN_LEVEL = "power-down-level";
 
+	private static final String CONCURRENT_PROCESSES = "concurrent-processes";
+	private static final String DEFAULT = "default";
+	
 	private static final String PROCESS = "process";
 	private static final String INPUT = "input";
 	private static final String OUTPUT = "output";
@@ -91,8 +91,8 @@ public class BuildingConfig implements Serializable {
 	private static final String GROWING_AREA = "growing-area";
 	private static final String GROUND_VEHICLE_MAINTENANCE = "ground-vehicle-maintenance";
 	private static final String PARKING_LOCATION = "parking-location";
-	private static final String DEFAULT = "default";
-	private static final String CONCURRENT_PROCESSES = "concurrent-processes";
+
+	private static final String WASTE_PROCESSING = "waste-processing";
 
 	private static final String POPULATION_SUPPORT = "population-support";
 	private static final String ACTIVITY = "activity";
@@ -247,9 +247,9 @@ public class BuildingConfig implements Serializable {
 			parseResourceProcessing(newSpec, resourceProcessingElement);
 		}
 
-		Element wasteElement = functionsElement.getChild(WASTE_DISPOSAL);
-		if (wasteElement != null) {
-			parseWaste(newSpec, wasteElement);
+		Element wasteProcessingElement = functionsElement.getChild(WASTE_PROCESSING);
+		if (wasteProcessingElement != null) {
+			parseWasteProcessing(newSpec, wasteProcessingElement);
 		}
 
 		Element vehicleElement = functionsElement.getChild(GROUND_VEHICLE_MAINTENANCE);
@@ -269,7 +269,8 @@ public class BuildingConfig implements Serializable {
 	}
 
 	/**
-	 * Parse the specific Resource processing function details
+	 * Parse the specific Resource processing function details.
+	 * 
 	 * @param newSpec
 	 * @param resourceProcessingElement
 	 */
@@ -332,6 +333,69 @@ public class BuildingConfig implements Serializable {
 		newSpec.setResourceProcess(resourceProcesses);
 	}
 
+	/**
+	 * Parse the specific Waste processing function details.
+	 * 
+	 * @param newSpec
+	 * @param wasteProcessingElement
+	 */
+	private void parseWasteProcessing(BuildingSpec newSpec, Element wasteProcessingElement) {
+		List<WasteProcessSpec> processes = new ArrayList<>();
+
+		List<Element> processNodes = wasteProcessingElement.getChildren(PROCESS);
+
+		for (Element processElement : processNodes) {
+
+			String defaultString = processElement.getAttributeValue(DEFAULT);
+			boolean defaultOn = !defaultString.equals("off");
+
+            double powerRequired = Double.parseDouble(processElement.getAttributeValue(POWER_REQUIRED));
+
+            int modules = 1;
+
+            String mods = processElement.getAttributeValue(NUMBER_MODULES);
+
+            if (mods != null)
+            	modules = Integer.parseInt(mods);
+
+			WasteProcessSpec process = new WasteProcessSpec(processElement.getAttributeValue(NAME), modules, powerRequired,
+					defaultOn);
+
+			// Check optional attrs
+			String duration = processElement.getAttributeValue(TOGGLE_DURATION);
+			if (duration != null) {
+				process.setToggleDuration(Integer.parseInt(duration));
+			}
+			String periodicity = processElement.getAttributeValue(TOGGLE_PERIODICITY);
+			if (periodicity != null) {
+				process.setTogglePeriodicity(Integer.parseInt(periodicity));
+			}
+
+			// Get input resources.
+			List<Element> inputNodes = processElement.getChildren(INPUT);
+			for (Element inputElement : inputNodes) {
+				String resourceName = inputElement.getAttributeValue(RESOURCE).toLowerCase();
+				Integer id = ResourceUtil.findIDbyAmountResourceName(resourceName);
+				double rate = Double.parseDouble(inputElement.getAttributeValue(RATE)) / 1000D;
+				boolean ambient = Boolean.valueOf(inputElement.getAttributeValue(AMBIENT));
+				process.addMaxInputRate(id, rate, ambient);
+			}
+
+			// Get output resources.
+			List<Element> outputNodes = processElement.getChildren(OUTPUT);
+			for (Element outputElement : outputNodes) {
+				String resourceName = outputElement.getAttributeValue(RESOURCE).toLowerCase();
+				Integer id = ResourceUtil.findIDbyAmountResourceName(resourceName);
+				double rate = Double.parseDouble(outputElement.getAttributeValue(RATE)) / 1000D;
+				boolean ambient = Boolean.valueOf(outputElement.getAttributeValue(AMBIENT));
+				process.addMaxOutputRate(id, rate, ambient);
+			}
+
+			processes.add(process);
+		}
+		newSpec.setWasteProcess(processes);
+	}
+	
 	/**
 	 * Parse a specific computation details
 	 * @param newSpec
@@ -461,24 +525,6 @@ public class BuildingConfig implements Serializable {
 			}
 		}
 		return result;
-	}
-
-	/**
-	 * Parse the waste function.
-	 * @param newSpec
-	 * @param wasteElement
-	 */
-	private void parseWaste(BuildingSpec newSpec, Element wasteElement) {
-		List<ScienceType> result = new ArrayList<>();
-
-//		The ScienceType in buildings.xml does not match current ScienceTypes
-//		List<Element> wasteSpecialities = wasteElement.getChildren(WASTE_SPECIALTY);
-//		for (Element wasteSpecialityElement : wasteSpecialities) {
-//			String value = wasteSpecialityElement.getAttributeValue(NAME);
-//			// Take care that entries in buildings.xml conform to enum values of {@linkcScienceType}
-//			result.add(ScienceType.valueOf(ScienceType.class, value.toUpperCase().replace(" ", "_")));
-//		}
-		newSpec.setWasteSpecialties(result);
 	}
 
 	/**
@@ -666,18 +712,6 @@ public class BuildingConfig implements Serializable {
 	}
 
 	/**
-	 * Gets a list of waste specialties for the building's lab.
-	 *
-	 * @param buildingType the type of the building
-	 * @return list of waste specialties as {@link ScienceType}.
-	 * @throws Exception if building type cannot be found or XML parsing error.
-	 */
-	public List<ScienceType> getWasteSpecialties(String buildingType) {
-		return getBuildingSpec(buildingType).getWasteSpecialties();
-
-	}
-
-	/**
 	 * Gets the relative position of airlock position.
 	 *
 	 * @param buildingType the type of the building.
@@ -711,6 +745,30 @@ public class BuildingConfig implements Serializable {
 		return getBuildingSpec(buildingType).getResourceProcess();
 	}
 
+	/**
+	 * Gets the level of waste processing when the building is in power down
+	 * mode.
+	 *
+	 * @param buildingType the type of the building
+	 * @return power down level
+	 * @throws Exception if building type cannot be found or XML parsing error.
+	 */
+	public double getWasteProcessingPowerDown(String buildingType) {
+		return getFunctionDoubleProperty(buildingType, FunctionType.WASTE_PROCESSING, POWER_DOWN_LEVEL);
+	}
+
+	/**
+	 * Gets the building's waste processes.
+	 *
+	 * @param buildingType the type of the building.
+	 * @return a list of waste processes.
+	 * @throws Exception if building type cannot be found or XML parsing error.
+	 */
+	public List<WasteProcessSpec> getWasteProcesses(String buildingType) {
+		return getBuildingSpec(buildingType).getWasteProcess();
+	}
+
+	
 	/**
 	 * Gets a list of the building's resource capacities.
 	 *

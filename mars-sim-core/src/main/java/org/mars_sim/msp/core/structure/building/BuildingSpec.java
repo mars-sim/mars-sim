@@ -56,6 +56,7 @@ public class BuildingSpec {
 	private static final List<SourceSpec> EMPTY_SOURCE = new ArrayList<>();
 	private static final List<ScienceType> EMPTY_SCIENCE = new ArrayList<>();
 	private static final List<ResourceProcessSpec> EMPTY_RESOURCE = new ArrayList<>();
+	private static final List<WasteProcessSpec> EMPTY_WASTE_RESOURCE = new ArrayList<>();
 	
 	private int baseLevel;
 	private int maintenanceTime;
@@ -90,7 +91,9 @@ public class BuildingSpec {
 	private List<SourceSpec> powerSource = EMPTY_SOURCE;
 	private List<ScienceType> scienceType = EMPTY_SCIENCE;
 	private List<ResourceProcessSpec> resourceProcess = EMPTY_RESOURCE;
+	private List<WasteProcessSpec> wasteProcess = EMPTY_WASTE_RESOURCE;
 
+	
 	private List<LocalPosition> beds;
 	private List<LocalPosition> parking;
 
@@ -245,6 +248,14 @@ public class BuildingSpec {
 		return resourceProcess;
 	}
 	
+	public void setWasteProcess(List<WasteProcessSpec> wasteProcess) {
+		this.wasteProcess = wasteProcess;
+	}
+
+	public List<WasteProcessSpec> getWasteProcess() {
+		return wasteProcess;
+	}
+	
 	public String toString() {
 		return name;
 	}
@@ -265,14 +276,6 @@ public class BuildingSpec {
 		this.parking = Collections.unmodifiableList(parking);
 	}
 
-	public List<ScienceType> getWasteSpecialties() {
-		return wasteSpecialties;
-	}
-
-	public void setWasteSpecialties(List<ScienceType> wasteSpecialties) {
-		this.wasteSpecialties = wasteSpecialties;
-	}
-	
 	public double getComputingUnit() {
 		return computingUnit;
 	}

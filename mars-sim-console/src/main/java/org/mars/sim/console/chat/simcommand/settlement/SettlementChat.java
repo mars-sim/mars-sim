@@ -48,7 +48,7 @@ public class SettlementChat extends ConnectedUnitCommand {
 																	new UnitLocationCommand(SETTLEMENT_GROUP),
 																	MalfunctionCommand.MALFUNCTION,
 																	new MalfunctionCreateCommand(SETTLEMENT_GROUP),
-																	ProcessCommand.PROCESS,
+																	ResourceProcessCommand.PROCESS,
 																	ObjectiveCommand.OBJECTIVE,
 																	ResearcherCommand.RESEARCHER,
 																	ResourceCommand.RESOURCE,
@@ -59,6 +59,7 @@ public class SettlementChat extends ConnectedUnitCommand {
 																	StudyCommand.STUDY,
 																	TaskCommand.TASK,
 																	VehicleCommand.VEHICLE,
+																	WasteProcessCommand.WASTE,
 																	WeatherCommand.WEATHER);
 
 

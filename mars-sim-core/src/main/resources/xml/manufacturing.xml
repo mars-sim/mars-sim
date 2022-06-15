@@ -45,7 +45,85 @@ http://canada.marssociety.org/winnipeg/soil.html
 <!-- List of all manufacturing processes. -->
 <manufacturing-processes>
 
-	<process name="extract minerals from basaltic deposits" tech="1" skill="1" work-time="10" process-time="100"
+
+<!-- 
+ work-time means the amount of time it takes for settlers to examine, operate and direct this process.
+ process-time means the amount of time it takes for the output resource to be synthesized.
+-->
+	<process name="process regolith-B rich in poly-hydrated sulfate" tech="1" skill="1" work-time="10" process-time="20"
+			power-required="0.1">
+		<description>
+			Gypsum is CaSO&lt;sub&gt;4&lt;/sub&gt; * 2H&lt;sub&gt;2&lt;/sub&gt;O.
+			This is Case B (Deposit Type : Poly-hydrated) in NASA Mars ISRU Water Study,
+					40% gypsum;
+					3% allophane;
+					3% akaganeite;
+					3% smectite;
+		</description>
+		<inputs>
+			<resource name="regolith-B" amount="50.0" />
+		</inputs>
+		<outputs>
+			<resource name="gypsum" amount="20.0" />
+			<resource name="allophane" amount="1.5" />
+			<resource name="akaganeite" amount="1.5" />
+			<resource name="smectite" amount="1.5" />
+			<resource name="sand" amount="20.0" />
+		</outputs>
+	</process>
+
+	<process name="process regolith-C rich in phyllo-silicate" tech="1" skill="1" work-time="10" process-time="20"
+			power-required="0.1">
+		<description>
+			Gypsum is CaSO&lt;sub&gt;4&lt;/sub&gt; * 2H&lt;sub&gt;2&lt;/sub&gt;O.
+			This is Case C (Deposit Type : Clay) in NASA Mars ISRU Water Study,
+					40% smectite;
+					3% allophane;
+					3% akaganeite;
+					3% bassanite;
+		</description>
+		<inputs>
+			<resource name="regolith-C" amount="50.0" />
+		</inputs>
+		<outputs>
+			<resource name="smectite" amount="20.0" />
+			<resource name="allophane" amount="1.5" />
+			<resource name="akaganeite" amount="1.5" />
+			<resource name="bassanite" amount="1.5" />
+			<resource name="sand" amount="20.0" />
+		</outputs>
+	</process>
+
+	<process name="process regolith-D basaltic" tech="1" skill="1" work-time="10" process-time="20"
+			power-required="0.1">
+		<description>
+			Gypsum is CaSO&lt;sub&gt;4&lt;/sub&gt; * 2H&lt;sub&gt;2&lt;/sub&gt;O.
+			This is Case D (Deposit Type : typical regolith) in NASA Mars ISRU Water Study,
+					23.5% basaltic;
+					3% allophane;
+					3% akaganeite;
+					3% bassanite;
+					3% smectite;
+		</description>
+		<inputs>
+			<resource name="regolith-D" amount="50.0" />
+		</inputs>
+		<outputs>
+			<resource name="basaltic" amount="11.75" />
+			<resource name="smectite" amount="1.5" />
+			<resource name="allophane" amount="1.5" />
+			<resource name="akaganeite" amount="1.5" />
+			<resource name="bassanite" amount="1.5" />
+			<resource name="sand" amount="25.0" />
+			<!-- According to http://canada.marssociety.org/winnipeg/soil.html
+			regolith is estimated to contain 11.3% sodium bicarbonate (baking
+			soda) and 1.15% of sodium chloride (table salt) -->
+			<resource name="baking powder" amount="4.0" />
+			<resource name="table salt" amount="0.4" />
+		</outputs>
+	</process>
+
+	<process name="extract minerals from basaltic deposits" tech="1" skill="1" work-time="10" process-time="20"
 			power-required="0.2">
 		<inputs>
 			<resource name="basaltic" amount="50.0" />
@@ -62,7 +140,7 @@ http://canada.marssociety.org/winnipeg/soil.html
 		</outputs>
 	</process>
 
-	<process name="extract minerals from smectite deposits" tech="1" skill="1" work-time="10" process-time="100"
+	<process name="extract minerals from smectite deposits" tech="1" skill="1" work-time="10" process-time="20"
 			power-required="0.2">
 		<inputs>
 			<resource name="smectite" amount="50.0" />
@@ -81,7 +159,7 @@ http://canada.marssociety.org/winnipeg/soil.html
 		</outputs>
 	</process>
 
-	<process name="extract minerals from allophane deposits" tech="1" skill="1" work-time="10" process-time="100"
+	<process name="extract minerals from allophane deposits" tech="1" skill="1" work-time="10" process-time="20"
 			power-required="0.2">
 		<inputs>
 			<resource name="allophane" amount="50.0" />
@@ -94,7 +172,7 @@ http://canada.marssociety.org/winnipeg/soil.html
 		</outputs>
 	</process>
 
-	<process name="extract minerals from akaganeite deposits" tech="1" skill="1" work-time="10" process-time="100"
+	<process name="extract minerals from akaganeite deposits" tech="1" skill="1" work-time="10" process-time="20"
 			power-required="0.2">
 		<inputs>
 			<resource name="akaganeite" amount="50.0" />
@@ -107,7 +185,7 @@ http://canada.marssociety.org/winnipeg/soil.html
 		</outputs>
 	</process>
 
-	<process name="extract minerals from bassanite deposits" tech="1" skill="1" work-time="10" process-time="100"
+	<process name="extract minerals from bassanite deposits" tech="1" skill="1" work-time="10" process-time="20"
 			power-required="0.2">
 		<inputs>
 			<resource name="bassanite" amount="50.0" />
@@ -124,7 +202,7 @@ http://canada.marssociety.org/winnipeg/soil.html
 -->
 	<!-- Purify Rock Salt to Food Grade Table Salt -->
 	<process name="purify rock salt into table/epsom salt and other compounds"
-	tech="1" skill="1" work-time="10.0" process-time="100"
+	tech="1" skill="1" work-time="10.0" process-time="10"
 			power-required=".4">
 		<description> http://www.madehow.com/Volume-2/Salt.html
 			One method of evaporating brine is solar evaporation.
@@ -186,7 +264,6 @@ http://canada.marssociety.org/winnipeg/soil.html
 		</outputs>
 	</process>
 -->
-
 	<process name="turn compost into soil"
 			tech="2" skill="2"
 			work-time="50"
@@ -196,20 +273,7 @@ http://canada.marssociety.org/winnipeg/soil.html
 			<resource name="compost" amount="10" />
 		</inputs>
 		<outputs>
-			<resource name="Soil" amount="10" />
-		</outputs>
-	</process>
-
-	<process name="turn compost into soil (large batch)"
-			tech="2" skill="2"
-			work-time="150"
-			process-time="3000"
-			power-required=".1">
-		<inputs>
-			<resource name="compost" amount="100" />
-		</inputs>
-		<outputs>
-			<resource name="Soil" amount="100" />
+			<resource name="soil" amount="10" />
 		</outputs>
 	</process>
 
@@ -1140,89 +1204,6 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		</inputs>
 		<outputs>
 			<resource name="sodium carbonate" amount="5.0" />
-		</outputs>
-	</process>
-
-	<!--
-		NASA Mars ISRU Water Study
-		Case B :
-				Deposit Type : Poly-hydrated
-					40% gypsum
-					3% allophane
-					3% akaganeite
-					3 smectite
-
-	-->
-	<process name="process regolith-B rich in poly-hydrated sulfate" tech="1" skill="1" work-time="100" process-time="0"
-			power-required="0.1">
-		<description>
-			Gypsum is CaSO&lt;sub&gt;4&lt;/sub&gt; * 2H&lt;sub&gt;2&lt;/sub&gt;O.
-			This is Case B (Deposit Type : Poly-hydrated) in NASA Mars ISRU Water Study,
-					40% gypsum;
-					3% allophane;
-					3% akaganeite;
-					3% smectite;
-		</description>
-		<inputs>
-			<resource name="regolith-B" amount="50.0" />
-		</inputs>
-		<outputs>
-			<resource name="gypsum" amount="20.0" />
-			<resource name="allophane" amount="1.5" />
-			<resource name="akaganeite" amount="1.5" />
-			<resource name="smectite" amount="1.5" />
-			<resource name="sand" amount="20.0" />
-		</outputs>
-	</process>
-
-	<process name="process regolith-C rich in phyllo-silicate" tech="1" skill="1" work-time="100" process-time="0"
-			power-required="0.1">
-		<description>
-			Gypsum is CaSO&lt;sub&gt;4&lt;/sub&gt; * 2H&lt;sub&gt;2&lt;/sub&gt;O.
-			This is Case C (Deposit Type : Clay) in NASA Mars ISRU Water Study,
-					40% smectite;
-					3% allophane;
-					3% akaganeite;
-					3% bassanite;
-		</description>
-		<inputs>
-			<resource name="regolith-C" amount="50.0" />
-		</inputs>
-		<outputs>
-			<resource name="smectite" amount="20.0" />
-			<resource name="allophane" amount="1.5" />
-			<resource name="akaganeite" amount="1.5" />
-			<resource name="bassanite" amount="1.5" />
-			<resource name="sand" amount="20.0" />
-		</outputs>
-	</process>
-
-	<process name="process regolith-D basaltic" tech="1" skill="1" work-time="100" process-time="0"
-			power-required="0.1">
-		<description>
-			Gypsum is CaSO&lt;sub&gt;4&lt;/sub&gt; * 2H&lt;sub&gt;2&lt;/sub&gt;O.
-			This is Case D (Deposit Type : typical regolith) in NASA Mars ISRU Water Study,
-					23.5% basaltic;
-					3% allophane;
-					3% akaganeite;
-					3% bassanite;
-					3% smectite;
-		</description>
-		<inputs>
-			<resource name="regolith-D" amount="50.0" />
-		</inputs>
-		<outputs>
-			<resource name="basaltic" amount="11.75" />
-			<resource name="smectite" amount="1.5" />
-			<resource name="allophane" amount="1.5" />
-			<resource name="akaganeite" amount="1.5" />
-			<resource name="bassanite" amount="1.5" />
-			<resource name="sand" amount="25.0" />
-			<!-- According to http://canada.marssociety.org/winnipeg/soil.html
-			regolith is estimated to contain 11.3% sodium bicarbonate (baking
-			soda) and 1.15% of sodium chloride (table salt) -->
-			<resource name="baking powder" amount="4.0" />
-			<resource name="table salt" amount="0.4" />
 		</outputs>
 	</process>
 
@@ -2547,15 +2528,16 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		</outputs>
 	</process>
 
-	<process name="make heating element" tech="4" skill="3" work-time="200" process-time="400"
+	<process name="make heating element" tech="2" skill="1" work-time="100" process-time="50"
 			power-required="1.0">
 		<inputs>
 			<resource name="magnesium" amount=".25" />
 			<resource name="lime" amount=".25" />
 			<resource name="sand" amount=".25" />
 			<part name="copper wire" number="1" />
-			<part name="electrical wire" number="2" />
-			<part name="wire connector" number="2" />
+			<part name="steel wire" number="1" />
+			<part name="electrical wire" number="4" />
+			<part name="wire connector" number="4" />
 		</inputs>
 		<outputs>
 			<part name="heating element" number="2" />
@@ -3118,31 +3100,20 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		</outputs>
 	</process>
 
-	<!-- Manufacturing a water pump. -->
-	<process name="make water pump" tech="1" skill="1" work-time="200" process-time="100"
+	<!-- Manufacturing a large water pump. -->
+	<process name="make large water pump" tech="1" skill="1" work-time="200" process-time="100"
 			power-required=".2">
 		<inputs>
-			<part name="iron ingot" number="3" />
-			<part name="aluminum wire" number="1" />
-			<part name="steel sheet" number="1" />
-			<part name="electrical wire" number="1" />
+			<part name="iron ingot" number="2" />
+			<part name="aluminum wire" number="5" />
+			<part name="steel sheet" number="2" />
+			<part name="electrical wire" number="10" />
 			<part name="wire connector" number="10" />
 		</inputs>
 		<outputs>
-			<part name="water pump" number="5" />
+			<part name="water pump - large" number="1" />
 		</outputs>
 	</process>
-
-	<!-- Pumping carbon dioxide in from the ambient atmosphere. -->
-	<!-- Note: Commenting out for now due to over use and limited value. - Scott -->
-	<!--
-	<process name="co2 pumping" tech="1" skill="0" work-time="10" process-time="100" power-required="4.0">
-		<inputs />
-		<outputs>
-			<resource name="carbon dioxide" amount="10.0" />
-		</outputs>
-	</process>
-	-->
 
 	<!-- Electrolyzing water into oxygen and hydrogen. -->
 	<process name="do water electrolysis" tech="1" skill="1" work-time="10" process-time="100" power-required="2.0">
@@ -3184,13 +3155,13 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			power-required="1.0">
 		<inputs>
 			<part name="iron ingot" number="1" />
-			<part name="aluminum wire" number="1" />
+			<part name="aluminum wire" number="6" />
 			<part name="steel sheet" number="1" />
-			<part name="electrical wire" number="1" />
-			<part name="wire connector" number="3" />
+			<part name="electrical wire" number="6" />
+			<part name="wire connector" number="6" />
 		</inputs>
 		<outputs>
-			<part name="small water pump" number="2" />
+			<part name="water pump - small" number="3" />
 		</outputs>
 	</process>
 
@@ -3294,7 +3265,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 	</process>
 
 	<!-- 2014-11-19 Added manufacturing a kitchen stove. -->
-	<process name="manufacture kitchen stove" tech="1" skill="1" work-time="300" process-time="20"
+	<process name="manufacture kitchen stove" tech="2" skill="1" work-time="300" process-time="100"
 			power-required="1.0">
 		<inputs>
 			<part name="aluminum wire" number="2" />
@@ -3319,7 +3290,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="electrical wire" number="3" />
 			<part name="wire connector" number="6" />
 			<part name="plastic sheet" number="2" />
-			<part name="small water pump" number="4" />
+			<part name="water pump - small" number="2" />
 			<part name="heat pump" number="1" />
 		</inputs>
 		<outputs>
@@ -3328,7 +3299,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 	</process>
 
 	<!-- 2014-11-19 Added manufacturing an autoclave. -->
-	<process name="manufacture autoclave" tech="1" skill="2" work-time="700" process-time="50"
+	<process name="manufacture autoclave" tech="2" skill="2" work-time="700" process-time="100"
 			power-required="2.0">
 		<inputs>
 			<part name="aluminum wire" number="2" />
@@ -3336,8 +3307,8 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="electrical wire" number="3" />
 			<part name="wire connector" number="6" />
 			<part name="plastic sheet" number="2" />
-			<part name="small water pump" number="4" />
-			<part name="heating element" number="4" />
+			<part name="water pump - small" number="2" />
+			<part name="heating element" number="6" />
 			<part name="microcontroller" number="1" />
 			<part name="ventilation fan" number="1" />
 			<part name="logic board" number="1" />
@@ -3354,8 +3325,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		<inputs>
 			<part name="oxygen pump" number="2" />
 			<part name="carbon dioxide pump" number="2" />
-			<part name="small water pump" number="2" />
-			<part name="heating element" number="3" />
+			<part name="heating element" number="2" />
 			<part name="electrical wire" number="1" />
 			<part name="wire connector" number="2" />
 			<part name="fiberglass cloth" number="3" />
@@ -3523,7 +3493,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="electrical wire" number="5" />
 			<part name="wire connector" number="10" />
 			<part name="plastic sheet" number="2" />
-			<part name="small water pump" number="2" />
+			<part name="water pump - small" number="2" />
 			<part name="heating element" number="2" />
 			<part name="heat pipe" number="2" />
 			<part name="microcontroller" number="2" />
@@ -3682,7 +3652,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 
 	<!-- manufacturing solid oxide fuel cell. -->
 	<process name="make solid oxide fuel cells" tech="3" skill="4" work-time="1000" process-time="100"
-			power-required="5">
+			power-required="1">
 		<description>
 			Each solid oxide fuel cell (SOFC) can generate 200W.
 		</description>
@@ -3701,7 +3671,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 
 	<!-- 2015-09-28 Added manufacturing fuel cell stack. -->
 	<process name="make fuel cell stack" tech="3" skill="4" work-time="1000" process-time="100"
-			power-required="5">
+			power-required="2">
 		<description>
 			Each fuel cell stack comprises 75 solid oxide fuel cells at 15 kWe.
 		</description>
@@ -3765,7 +3735,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 
 		<!-- 2017-09-11 Added manufacture capacitors -->
 	<process name="manufacture capacitors" tech="1" skill="2" work-time="75" process-time="300"
-			power-required="2">
+			power-required="1">
 		<inputs>
 			<resource name="aluminum" amount="0.1" />
 			<resource name="aluminum oxide" amount="0.1" />
@@ -3785,7 +3755,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 	Today, most diodes are made of silicon, but other semiconductors
 	such as selenium and germanium are sometimes used.	-->
 	<process name="manufacture diodes" tech="1" skill="2" work-time="200" process-time="500"
-			power-required="5">
+			power-required="1">
 		<inputs>
 			<resource name="aluminum" amount="0.1" />
 			<resource name="aluminum oxide" amount="0.1" />
@@ -3799,7 +3769,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 
 	<!-- 2017-09-11 Added manufacture logic board -->
 	<process name="manufacture logic board" tech="3" skill="2" work-time="200" process-time="300"
-			power-required="5">
+			power-required="3">
 		<inputs>
 			<resource name="copper" amount="0.2" />
 			<resource name="iron" amount="0.2" />
@@ -3813,6 +3783,24 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		</inputs>
 		<outputs>
 			<part name="logic board" number="80" />
+		</outputs>
+	</process>
+
+	<!-- 2022-06-15 Added manufacture plasma cutter -->
+	<process name="manufacture plasma cutter" tech="3" skill="2" work-time="200" process-time="100"
+			power-required="1">
+		<inputs>
+			<resource name="copper" amount="0.2" />
+			<resource name="iron" amount="0.2" />
+			<resource name="aluminum" amount="0.1" />
+			<part name="steel sheet" number="1" />
+			<part name="heating element" number="6" />
+			<part name="resistor" number="10" />
+			<part name="capacitor" number="10" />
+			<part name="diode" number="10" />
+		</inputs>
+		<outputs>
+			<part name="plasma cutter" number="1" />
 		</outputs>
 	</process>
 

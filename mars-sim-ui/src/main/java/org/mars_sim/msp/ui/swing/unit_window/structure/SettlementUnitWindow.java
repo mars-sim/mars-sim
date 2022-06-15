@@ -87,6 +87,8 @@ public class SettlementUnitWindow extends UnitWindow {
 
 		addTabPanel(new TabPanelWeather(settlement, desktop));
 
+		addTabPanel(new TabPanelWasteProcesses(settlement, desktop));
+
 		sortTabPanels();
 	}
 

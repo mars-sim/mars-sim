@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * BuildingPanelResourceProcessing.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-06-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
@@ -24,8 +24,8 @@ import java.util.List;
 import javax.swing.JPanel;
 
 /**
- * The ResourceProcessingBuildingPanel class is a building function panel representing
- * the resource processes of a settlement building.
+ * The BuildingPanelResourceProcessing class is a building function panel representing
+ * the resource processes of a building.
  */
 @SuppressWarnings("serial")
 public class BuildingPanelResourceProcessing

@@ -79,7 +79,7 @@ import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.core.structure.building.function.SystemType;
 import org.mars_sim.msp.core.structure.building.function.ThermalGeneration;
 import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
-import org.mars_sim.msp.core.structure.building.function.WasteDisposal;
+import org.mars_sim.msp.core.structure.building.function.WasteProcessing;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.core.structure.building.function.cooking.Dining;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
@@ -201,12 +201,12 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	private PreparingDessert preparingDessert;
 	private Recreation rec;
 	private Research lab;
-	private ResourceProcessing processing;
+	private ResourceProcessing resourceProcessing;
 	private RoboticStation roboticStation;
 	private Storage storage;
-	private WasteDisposal waste;
 	private VehicleMaintenance vehicleMaintenance;
-
+	private WasteProcessing wasteProcessing;
+	
 	protected PowerMode powerModeCache;
 	protected HeatMode heatModeCache;
 
@@ -501,11 +501,11 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	}
 
 	public ResourceProcessing getResourceProcessing() {
-		if (processing == null)
-			processing = (ResourceProcessing) getFunction(FunctionType.RESOURCE_PROCESSING);
-		return processing;
+		if (resourceProcessing == null)
+			resourceProcessing = (ResourceProcessing) getFunction(FunctionType.RESOURCE_PROCESSING);
+		return resourceProcessing;
 	}
-
+	
 	public RoboticStation getRoboticStation() {
 		if (roboticStation == null)
 			roboticStation = (RoboticStation) getFunction(FunctionType.ROBOTIC_STATION);
@@ -525,18 +525,18 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 		return storage;
 	}
 
-	public WasteDisposal getWaste() {
-		if (waste == null)
-			waste = (WasteDisposal) getFunction(FunctionType.WASTE_DISPOSAL);
-		return waste;
-	}
-
 	public VehicleMaintenance getVehicleMaintenance() {
 		if (vehicleMaintenance == null)
 			vehicleMaintenance = (VehicleMaintenance) getFunction(FunctionType.GROUND_VEHICLE_MAINTENANCE);
 		return vehicleMaintenance;
 	}
 
+	public WasteProcessing getWasteProcessing() {
+		if (wasteProcessing == null)
+			wasteProcessing = (WasteProcessing) getFunction(FunctionType.WASTE_PROCESSING);
+		return wasteProcessing;
+	}
+	
 	/**
 	 * Gets the temperature of a building.
 	 *
@@ -705,9 +705,8 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 				buildingFunctions.add(new ThermalGeneration(this));
 				break;
 
-			case WASTE_DISPOSAL:
-				// No Waste Disposal at the moment. Why ?
-				//buildingFunctions.add(new WasteDisposal(this));
+			case WASTE_PROCESSING:
+				buildingFunctions.add(new WasteProcessing(this));
 				break;
 
 			default:

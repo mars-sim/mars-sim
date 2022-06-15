@@ -20,7 +20,7 @@
 	communication?, computation?, cooking?, dining?, earth-return?, EVA?, exercise?, food-production?, farming?, fishery?,
 	ground-vehicle-maintenance?, life-support?, living-accommodations?, management?, manufacture?,
 	medical-care?, power-generation?, power-storage?, recreation?, research?,
-	resource-processing?, robotic-station?, storage?, thermal-generation?, thermal-storage?, waste-disposal? )>
+	resource-processing?, robotic-station?, storage?, thermal-generation?, thermal-storage?, waste-processing? )>
 
 	<!ELEMENT administration (activity?)>
 	<!ATTLIST administration capacity CDATA #REQUIRED>
@@ -70,15 +70,7 @@
 	<!ELEMENT parking-location EMPTY>
 	<!ATTLIST parking-location xloc CDATA #REQUIRED>
 	<!ATTLIST parking-location yloc CDATA #REQUIRED>
-	<!ELEMENT thermal-generation (heat-source+)>
-	<!ELEMENT heat-source EMPTY>
-	<!ATTLIST heat-source type CDATA #REQUIRED>
-	<!ATTLIST heat-source toggle (true|false) #IMPLIED>
-	<!ATTLIST heat-source capacity CDATA #REQUIRED>
-	<!ATTLIST heat-source fuel-type CDATA #IMPLIED>
-	<!ATTLIST heat-source consumption-rate CDATA #IMPLIED>
-	<!ELEMENT thermal-storage EMPTY>
-	<!ATTLIST thermal-storage capacity CDATA #REQUIRED>
+
 	<!ELEMENT life-support EMPTY>
 	<!ATTLIST life-support capacity CDATA #REQUIRED>
 	<!ATTLIST life-support power-required CDATA #REQUIRED>
@@ -112,6 +104,18 @@
 	<!ATTLIST resource-processing power-down-level CDATA #REQUIRED>
 	<!ELEMENT robotic-station (activity?)>
 	<!ATTLIST robotic-station capacity CDATA #REQUIRED>
+	<!ELEMENT thermal-generation (heat-source+)>
+	<!ELEMENT heat-source EMPTY>
+	<!ATTLIST heat-source type CDATA #REQUIRED>
+	<!ATTLIST heat-source toggle (true|false) #IMPLIED>
+	<!ATTLIST heat-source capacity CDATA #REQUIRED>
+	<!ATTLIST heat-source fuel-type CDATA #IMPLIED>
+	<!ATTLIST heat-source consumption-rate CDATA #IMPLIED>
+	<!ELEMENT thermal-storage EMPTY>
+	<!ATTLIST thermal-storage capacity CDATA #REQUIRED>
+	<!ELEMENT waste-processing (process+, activity?)>
+	<!ATTLIST waste-processing power-down-level CDATA #REQUIRED>
+	
 	<!ELEMENT process (input+, output+)>
 	<!ATTLIST process name CDATA #REQUIRED>
 	<!ATTLIST process power-required CDATA #REQUIRED>
@@ -135,11 +139,7 @@
 	<!ELEMENT resource-initial EMPTY>
 	<!ATTLIST resource-initial resource CDATA #REQUIRED>
 	<!ATTLIST resource-initial amount CDATA #REQUIRED>
-	<!ELEMENT waste-disposal (waste-specialty+, activity?)>
-	<!ATTLIST waste-disposal tech-level CDATA #REQUIRED>
-	<!ATTLIST waste-disposal capacity CDATA #REQUIRED>
-	<!ELEMENT waste-specialty EMPTY>
-	<!ATTLIST waste-specialty name CDATA #REQUIRED>
+
 	<!ELEMENT activity (activity-spot+)>
 	<!ELEMENT activity-spot EMPTY>
 	<!ATTLIST activity-spot xloc CDATA #REQUIRED>
@@ -340,181 +340,63 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			<resource-processing power-down-level="0.0">
 
-			<!-- NASA's Regenerative ECLSS Water Recovery System (WRS)
-			consumes a time averaged 743 W-hr/hr in overall.
+				<!-- A. Sabatier process :
 
-			NASA's Waste Processing Assembly (WPA) removes free gas
-			and solid materials such as hair and lint, before the water
-			goes through a series of multifiltration beds for further
-			purification. It consumes about 320 W-hr/hr aboard ISS.
-
-			https://www.nasa.gov/centers/marshall/pdf/104840main_eclss.pdf
-			https://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/20090033097.pdf
-
-			It uses the state-of-the-art forward osmosis secondary treatment
-			system (FOST) as well as Synthetic Biological Membrane (SBM)
-			developed at NASA Ames.
-
-			We assume a waste processor capable of daily processsing
-			40 kg grey water (with .5 kg Cl2) and generate 38 kg clean
-			water and 2 kg of solid waste. Note that .5 kg of water is lost
-			through evaporation.
-			-->
-				<!-- Grey Water Recycling process for cleaning grey water. -->
-				<process name="Grey Water Processor" power-required=".32" default="off">
-					<!-- Input: grey water, oxygen, chlorine  -->
-					<!-- resource: the resource added to the process. -->
-					<!-- See resources.xml -->
-					<!-- rate: the rate (kg/sol) the resource is added -->
-					<!-- ambient: true if resource is freely available from outside -->
-					<!--          false if supplied from settlement's inventory. -->
-
-					<input resource="grey water" rate="40.0" ambient="false" />
-					<!-- Residual requirement for using chlorine in water treatment
-					     is 0.25 to 1 mg of Cl gas per kg of water. Thus 40 kg water
-					     requires 10 mg of Cl gas -->
-					<input resource="chlorine" rate=".00001" ambient="false" />
-
-					<!-- Output : clean water, solid waste -->
-					<!-- resource: the resource resulting from the process. -->
-					<!-- See resources.xml -->
-					<!-- rate: the rate (kg/sol) the resource is produced -->
-					<!-- ambient: true if resource is vented outside -->
-					<!--          false if kept by settlement's inventory. -->
-					<output resource="water" rate="38" ambient="false" />
-					<output resource="solid waste" rate="2" ambient="false" />
-				</process>
-
-				<!-- NASA's Urine Processor Assembly (UPA) uses low pressure
-				vacuum distillation process is used to recover water from
-		 		urine. The entire process occurs within a rotating
-				distillation assembly that compensates for the absence
-				of gravity and therefore aids in the separation of liquids
-				and gases in space.
-
-				UPA is designed to process a nominal load of 9 kg/day
-				(19.8 lbs/day) of wastewater consisting of urine and flush.
-				It uses a time average of 315 W-hr/hr
-
-				Product water from the Urine Processor is combined with
-				all other wastewaters and delivered to the Water Processor
-				for treatment.
-
-				We assume a urine/fece processor capable of daily processsing
-				20 kg black water and generate 17 kg grey water and
-				2 kg of toxic waste. There is a lost of 1 kg of water.
--->
-				<process name="Black Water Processor" power-required=".315" default="off">
-					<input resource="black water" rate="20" ambient="false" />
-					<!-- Residual requirement for using chlorine in water treatment
-					     is 0.25 to 1 mg of Cl gas per kg of water. Thus 20 kg water
-					     requires 20 mg of Cl gas -->
-					<input resource="chlorine" rate=".00002" ambient="false" />
-					<input resource="nitrospira spp" rate="0.02" ambient="false" />
-					<input resource="nitrosomonas spp" rate="0.02" ambient="false" />
-
-					<output resource="grey water" rate="17" ambient="false" />
-					<output resource="toxic waste" rate="1" ambient="false" />
-					<output resource="nitrogen" rate=".5" ambient="false" />
-					<output resource="nitrite" rate=".5" ambient="false" />
-					<output resource="nitrate" rate=".5" ambient="false" />
-					<output resource="phosphorus" rate=".5" ambient="false" />
-				</process>
-
-				<!--
-				TODO: chemist can isolate these bacteria and grow them in the lab
-
-			 	Note 1: https://microbewiki.kenyon.edu/index.php/Nitrospira.
-
-				Nitrospira are nitrite-oxidizing bacteria that are important
-				for healthy marine ecosystems/habitats and find their use in wastewater treatment plants.
-				If the ammonia/nitrite/nitrate cycle is thrown off, the ecosystems suffers and fish can get sick or die.
-
-				Note 2: http://www.dep.state.fl.us/legal/Rules/drinkingwater/62-555.pdf
-
-				All suppliers of water shall maintain a minimum free chlorine residual of 0.2 milligram per liter,
-
-				The precursor technology is based on an experimental device
-				being researched in by NASA called Vortical Oxidative Reactor
-				Technology Experiment (VORTEX).
-
-				Burning, or oxidizing, organic waste would produce four major
-				by-products: ash, carbon dioxide, water and heat. Ash can be
-				converted to fertilizer for farming.
-
-				Also, Solid Waste Management
-
-				https://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/20160003882.pdf
-				http://www.nasa.gov/audience/foreducators/k-4/features/F_Recycling_for_Moon.html
-
-				We assume 10 kg of waste will turn into 8 kg of by-products per sol.
+					CO2 + 4H2 -> CH4 + 2H2O, exothermic heat = -165 kJ/mol
+	
+					CO2 : 44 g/mol
+					4H2 : 8 g/mol
+					CH4 : 16 g/mol
+					2H2O : 36 g/mol
+	
+					B. The Reverse Water Gas Shift (RWGS) process is a
+					candidate technology for water and oxygen production
+					on Mars. RWGS uses carbon dioxide and hydrogen as
+					reactants to produce oxygen and carbon monoxide with a
+					copper on alumina catalyst, or in the precsence of an
+					iron-chrome catalyst.
+	
+					CO2 + H2 = CO + H2O
+	
+					Because the RWGS reaction is only mildly endothermic (at 400 deg C,
+					9 kcal/mole for RWGS compared to 57 kcal/mole for water electrolysis),
+					it's better than just having the water electrolysis alone.
+	
+					Moreover, since the thermal power required by the RWGS is less than that
+					produced by the Sabatier reactor and their operating temperatures are comparable, a
+					Sabatier reactor can be used to provide the heat required to drive the RWGS
+					reactor.
+	
+					C. Sabatier with Reverse Water Gas Shift (RWGS) :
+	
+					3CO2 + 6H2 -> CH4 + 2CO + 4H2O, exothermic heat = -83 kJ/mol
+	
+					3CO2 : 132 g/mol
+					6H2 : 12 g/mol
+					CH4 : 16 g/mol
+					2CO : 56 g/mol
+					4H2O : 72 g/mol
+	
+					The primary disadvantage of the Sabatier process is that twice
+					as much hydrogen is consumed as can be recovered by the
+					electrolysis of the produced water.
+	
+					In one in-situ propellant prooduction system (ISPP), it uses
+					Sabatier and Reverse Water Gas Shift (RWGS) to convert H2
+					and CO2 into OX and CH4 (with CO as waste).  It requires 470 W
+					to produce 1 kg of propellant per sol, per Zurin's paper on
+					"Integrated Mars In-Situ Propellant Production System.
+	
+					We assume a system that's 4 times more efficient in producing
+					CH4 below
+	
+					CO2 : 39.6 kg/sol
+					4H2 : 3.6 kg/sol
+					CH4 : 4.8 kg/sol
+					2CO : 16.8 g/mol
+					4H2O : 21.6 kg/sol
 				-->
-				<process name= "Solid Waste Management" power-required=".3" default="off">
-					<input resource="toxic waste" rate="4" ambient="false" />
-					<input resource="solid waste" rate="6" ambient="false" />
-					<output resource="fertilizer" rate="2" ambient="false" />
-					<output resource="carbon dioxide" rate="2" ambient="false" />
-					<output resource="water" rate="2" ambient="false" />
-					<output resource="carbon" rate="2" ambient="false" />
-				</process>
-
-				<!--
-				A. Sabatier process :
-
-				CO2 + 4H2 -> CH4 + 2H2O, exothermic heat = -165 kJ/mol
-
-				CO2 : 44 g/mol
-				4H2 : 8 g/mol
-				CH4 : 16 g/mol
-				2H2O : 36 g/mol
-
-				B. The Reverse Water Gas Shift (RWGS) process is a
-				candidate technology for water and oxygen production
-				on Mars. RWGS uses carbon dioxide and hydrogen as
-				reactants to produce oxygen and carbon monoxide with a
-				copper on alumina catalyst, or in the precsence of an
-				iron-chrome catalyst.
-
-				CO2 + H2 = CO + H2O
-
-				Because the RWGS reaction is only mildly endothermic (at 400 deg C,
-				9 kcal/mole for RWGS compared to 57 kcal/mole for water electrolysis),
-				it's better than just having the water electrolysis alone.
-
-				Moreover, since the thermal power required by the RWGS is less than that
-				produced by the Sabatier reactor and their operating temperatures are comparable, a
-				Sabatier reactor can be used to provide the heat required to drive the RWGS
-				reactor.
-
-				C. Sabatier with Reverse Water Gas Shift (RWGS) :
-
-				3CO2 + 6H2 -> CH4 + 2CO + 4H2O, exothermic heat = -83 kJ/mol
-
-				3CO2 : 132 g/mol
-				6H2 : 12 g/mol
-				CH4 : 16 g/mol
-				2CO : 56 g/mol
-				4H2O : 72 g/mol
-
-				The primary disadvantage of the Sabatier process is that twice
-				as much hydrogen is consumed as can be recovered by the
-				electrolysis of the produced water.
-
-				In one in-situ propellant prooduction system (ISPP), it uses
-				Sabatier and Reverse Water Gas Shift (RWGS) to convert H2
-				and CO2 into OX and CH4 (with CO as waste).  It requires 470 W
-				to produce 1 kg of propellant per sol, per Zurin's paper on
-				"Integrated Mars In-Situ Propellant Production System.
-
-				We assume a system that's 4 times more efficient in producing
-				CH4 below
-
-				CO2 : 39.6 kg/sol
-				4H2 : 3.6 kg/sol
-				CH4 : 4.8 kg/sol
-				2CO : 16.8 g/mol
-				4H2O : 21.6 kg/sol
-				-->
+			
 				<process name="Sabatier RWGS Reactor" number-modules="4" power-required="0.47" default="on">
 				<!-- 33.6g imported from outside. 6g from storage -->
 					<input resource="carbon dioxide" rate="39.6" ambient="true" />
@@ -705,18 +587,132 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<heat-source type="Electric Heating" capacity="20.0" />
 			</thermal-generation>
 
-			<waste-disposal tech-level="1" capacity="2">
-				<waste-specialty name="composting" />
-				<waste-specialty name="recycling" />
-			<!--
-				<waste-specialty name="hazardous material" />
-				<waste-specialty name="radiactive material" />
+			<waste-processing power-down-level="0.0">
+
+			<!-- NASA's Regenerative ECLSS Water Recovery System (WRS)
+			consumes a time averaged 743 W-hr/hr in overall.
+
+			NASA's Waste Processing Assembly (WPA) removes free gas
+			and solid materials such as hair and lint, before the water
+			goes through a series of multifiltration beds for further
+			purification. It consumes about 320 W-hr/hr aboard ISS.
+
+			https://www.nasa.gov/centers/marshall/pdf/104840main_eclss.pdf
+			https://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/20090033097.pdf
+
+			It uses the state-of-the-art forward osmosis secondary treatment
+			system (FOST) as well as Synthetic Biological Membrane (SBM)
+			developed at NASA Ames.
+
+			We assume a waste processor capable of daily processsing
+			40 kg grey water (with .5 kg Cl2) and generate 38 kg clean
+			water and 2 kg of solid waste. Note that .5 kg of water is lost
+			through evaporation.
 			-->
+				<!-- Grey Water Recycling process for cleaning grey water. -->
+				<process name="Grey Water Processor" power-required=".32" default="off">
+					<!-- Input: grey water, oxygen, chlorine  -->
+					<!-- resource: the resource added to the process. -->
+					<!-- See resources.xml -->
+					<!-- rate: the rate (kg/sol) the resource is added -->
+					<!-- ambient: true if resource is freely available from outside -->
+					<!--          false if supplied from settlement's inventory. -->
+
+					<input resource="grey water" rate="40.0" ambient="false" />
+					<!-- Residual requirement for using chlorine in water treatment
+					     is 0.25 to 1 mg of Cl gas per kg of water. Thus 40 kg water
+					     requires 10 mg of Cl gas -->
+					<input resource="chlorine" rate=".00001" ambient="false" />
+
+					<!-- Output : clean water, solid waste -->
+					<!-- resource: the resource resulting from the process. -->
+					<!-- See resources.xml -->
+					<!-- rate: the rate (kg/sol) the resource is produced -->
+					<!-- ambient: true if resource is vented outside -->
+					<!--          false if kept by settlement's inventory. -->
+					<output resource="water" rate="38" ambient="false" />
+					<output resource="solid waste" rate="2" ambient="false" />
+				</process>
+
+				<!-- NASA's Urine Processor Assembly (UPA) uses low pressure
+				vacuum distillation process is used to recover water from
+		 		urine. The entire process occurs within a rotating
+				distillation assembly that compensates for the absence
+				of gravity and therefore aids in the separation of liquids
+				and gases in space.
+
+				UPA is designed to process a nominal load of 9 kg/day
+				(19.8 lbs/day) of wastewater consisting of urine and flush.
+				It uses a time average of 315 W-hr/hr
+
+				Product water from the Urine Processor is combined with
+				all other wastewaters and delivered to the Water Processor
+				for treatment.
+
+				We assume a urine/fece processor capable of daily processsing
+				20 kg black water and generate 17 kg grey water and
+				2 kg of toxic waste. There is a lost of 1 kg of water.
+				-->
+				<process name="Black Water Processor" power-required=".315" default="off">
+					<input resource="black water" rate="20" ambient="false" />
+					<!-- Residual requirement for using chlorine in water treatment
+					     is 0.25 to 1 mg of Cl gas per kg of water. Thus 20 kg water
+					     requires 20 mg of Cl gas -->
+					<input resource="chlorine" rate=".00002" ambient="false" />
+					<input resource="nitrospira spp" rate="0.02" ambient="false" />
+					<input resource="nitrosomonas spp" rate="0.02" ambient="false" />
+
+					<output resource="grey water" rate="17" ambient="false" />
+					<output resource="toxic waste" rate="1" ambient="false" />
+					<output resource="nitrogen" rate=".5" ambient="false" />
+					<output resource="nitrite" rate=".5" ambient="false" />
+					<output resource="nitrate" rate=".5" ambient="false" />
+					<output resource="phosphorus" rate=".5" ambient="false" />
+				</process>
+
+
+				<!-- Also, For Solid Waste Management
+
+				https://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/20160003882.pdf
+				http://www.nasa.gov/audience/foreducators/k-4/features/F_Recycling_for_Moon.html
+
+				We assume 10 kg of waste will turn into 8 kg of by-products per sol.
+				-->
+				<process name= "Solid Waste Management" power-required=".3" default="off">
+					<input resource="toxic waste" rate="4" ambient="false" />
+					<input resource="solid waste" rate="6" ambient="false" />
+					<output resource="fertilizer" rate="2" ambient="false" />
+					<output resource="carbon dioxide" rate="2" ambient="false" />
+					<output resource="water" rate="2" ambient="false" />
+					<output resource="carbon" rate="2" ambient="false" />
+				</process>				
+				
+				<!-- TODO: chemist can isolate these bacteria and grow them in the lab
+
+			 	Note 1: https://microbewiki.kenyon.edu/index.php/Nitrospira.
+
+				Nitrospira are nitrite-oxidizing bacteria that are important
+				for healthy marine ecosystems/habitats and find their use in wastewater treatment plants.
+				If the ammonia/nitrite/nitrate cycle is thrown off, the ecosystems suffers and fish can get sick or die.
+
+				Note 2: http://www.dep.state.fl.us/legal/Rules/drinkingwater/62-555.pdf
+
+				All suppliers of water shall maintain a minimum free chlorine residual of 0.2 milligram per liter,
+
+				The precursor technology is based on an experimental device
+				being researched in by NASA called Vortical Oxidative Reactor
+				Technology Experiment (VORTEX).
+
+				Burning, or oxidizing, organic waste would produce four major
+				by-products: ash, carbon dioxide, water and heat. Ash can be
+				converted to fertilizer for farming.
+				-->
+				
 				<activity>
 					<activity-spot xloc="-1.38" yloc="-3.36" />
 					<activity-spot xloc="-1.92" yloc="-3.11" />
 				</activity>
-			</waste-disposal>
+			</waste-processing>
 
 		</functions>
 
@@ -1364,7 +1360,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="0" base-mass="15">
 		<description> The Atmospheric Processor is an resource-processing
 		building providing black/water recyling, air processing and waste
-		incineration functions for the settlement.
+		recycling functions for the settlement.
 		</description>
 
 		<!-- see water tank calculation on Mars
@@ -1376,8 +1372,44 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
 			</power-generation>
+			
 			<power-storage capacity="20.0" />
+			
 			<resource-processing power-down-level="0.0">
+			
+				<process name="Sabatier RWGS Reactor" number-modules="8" power-required="0.47" default="on">
+					<input resource="carbon dioxide" rate="39.6" ambient="true" />
+					<input resource="hydrogen" rate="3.6" ambient="false" />
+					<output resource="methane" rate="4.8" ambient="false" />
+					<output resource="carbon monoxide" rate="16.8" ambient="false" />
+					<output resource="water" rate="21.6" ambient="false" />
+				</process>
+
+				<process name="Oxygen Generation System" power-required="3.0" default="on">
+					<input resource="water" rate="72" ambient="false" />
+					<output resource="hydrogen" rate="8" ambient="false" />
+					<output resource="oxygen" rate="64" ambient="false" />
+				</process>
+				
+			</resource-processing>
+
+			<storage stock-capacity="10000">
+				<resource-storage resource="methane" capacity="10000.0" />
+				<resource-storage resource="water" capacity="10000.0" />
+				<resource-storage resource="hydrogen" capacity="10000.0" />
+				<resource-storage resource="oxygen" capacity="10000.0" />
+
+				<resource-storage resource="solid waste" capacity="1000.0" />
+				<resource-storage resource="toxic waste" capacity="1000.0" />
+				<resource-storage resource="fertilizer" capacity="1000.0" />
+				<resource-storage resource="chlorine" capacity="1000.0" />
+
+				<resource-storage resource="grey water" capacity="10000.0" />
+				<resource-storage resource="black water" capacity="10000.0" />
+
+			</storage>
+			
+			<waste-processing power-down-level="0.0">
 			    <!-- The grey water processor below is 3 times more powerful
 			         than the one fund in Lander Hab or Outpost Hub  -->
 				<process name="Grey Water Processor" power-required="1" default="off">
@@ -1415,23 +1447,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="carbon" rate="8" ambient="false" />
 				</process>
 
-			</resource-processing>
-
-			<storage stock-capacity="10000">
-				<resource-storage resource="methane" capacity="10000.0" />
-				<resource-storage resource="water" capacity="10000.0" />
-				<resource-storage resource="hydrogen" capacity="10000.0" />
-				<resource-storage resource="oxygen" capacity="10000.0" />
-
-				<resource-storage resource="solid waste" capacity="1000.0" />
-				<resource-storage resource="toxic waste" capacity="1000.0" />
-				<resource-storage resource="fertilizer" capacity="1000.0" />
-				<resource-storage resource="chlorine" capacity="1000.0" />
-
-				<resource-storage resource="grey water" capacity="10000.0" />
-				<resource-storage resource="black water" capacity="10000.0" />
-
-			</storage>
+			</waste-processing>
+						
 		</functions>
 	</building>
 <!-- end of Atmospheric Processor -->
@@ -2732,7 +2749,6 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 <!-- The buildings below are underground and are used primarily for
      Trading and Mining settlements -->
 
-
 	<building type="Outpost Hub" width="10.0" length="10.0" base-level="-1"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="22.5" base-mass="30">
 		<description> The Outpost Hub is a vaulted brick building that acts
@@ -2846,40 +2862,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="1.8"  yloc="-2.6" />
 				</activity>
 			</research>
-
+			
 			<resource-processing power-down-level="0.0">
-				<process name="Grey Water Processor" power-required=".32" default="off">
-					<input resource="grey water" rate="40.0" ambient="false" />
-					<input resource="chlorine" rate="0.5" ambient="false" />
-
-					<output resource="water" rate="38" ambient="false" />
-					<output resource="solid waste" rate="2" ambient="false" />
-
-				</process>
-					<process name="Black Water Processor" power-required=".315" default="off">
-					<input resource="black water" rate="20" ambient="false" />
-					<input resource="chlorine" rate="0.1" ambient="false" />
-					<input resource="nitrospira spp" rate="0.02" ambient="false" />
-					<input resource="nitrosomonas spp" rate="0.02" ambient="false" />
-
-					<output resource="grey water" rate="17" ambient="false" />
-					<output resource="toxic waste" rate="1" ambient="false" />
-					<output resource="nitrogen" rate=".5" ambient="false" />
-					<output resource="nitrite" rate=".5" ambient="false" />
-					<output resource="nitrate" rate=".5" ambient="false" />
-					<output resource="phosphorus" rate=".5" ambient="false" />
-				</process>
-
-				<process name= "Solid Waste Management" power-required=".3" default="off"
-							toggle-duration="30" toggle-periodicity="500">
-					<input resource="toxic waste" rate="4" ambient="false" />
-					<input resource="solid waste" rate="6" ambient="false" />
-					<output resource="fertilizer" rate="2" ambient="false" />
-					<output resource="carbon dioxide" rate="2" ambient="false" />
-					<output resource="water" rate="2" ambient="false" />
-					<output resource="carbon" rate="2" ambient="false" />
-				</process>
-
 				<process name="Sabatier RWGS Reactor" number-modules="4" power-required="0.47" default="on">
 					<input resource="carbon dioxide" rate="39.6" ambient="true" />
 					<input resource="hydrogen" rate="3.6" ambient="false" />
@@ -2978,12 +2962,49 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-initial resource="soil" amount="50.0" />
 
 			</storage>
+			
 			<thermal-generation>
 				<heat-source type="Solar Heating" capacity="5.0" />
 				<heat-source type="Fuel Heating" toggle="true"
 					fuel-type="methane"	consumption-rate="31.919" capacity="20.0" />
 				<heat-source type="Electric Heating" capacity="20.0" />
 			</thermal-generation>
+
+			<waste-processing power-down-level="0.0">
+				<process name="Grey Water Processor" power-required=".32" default="off">
+					<input resource="grey water" rate="40.0" ambient="false" />
+					<input resource="chlorine" rate="0.5" ambient="false" />
+
+					<output resource="water" rate="38" ambient="false" />
+					<output resource="solid waste" rate="2" ambient="false" />
+
+				</process>
+					<process name="Black Water Processor" power-required=".315" default="off">
+					<input resource="black water" rate="20" ambient="false" />
+					<input resource="chlorine" rate="0.1" ambient="false" />
+					<input resource="nitrospira spp" rate="0.02" ambient="false" />
+					<input resource="nitrosomonas spp" rate="0.02" ambient="false" />
+
+					<output resource="grey water" rate="17" ambient="false" />
+					<output resource="toxic waste" rate="1" ambient="false" />
+					<output resource="nitrogen" rate=".5" ambient="false" />
+					<output resource="nitrite" rate=".5" ambient="false" />
+					<output resource="nitrate" rate=".5" ambient="false" />
+					<output resource="phosphorus" rate=".5" ambient="false" />
+				</process>
+
+				<process name= "Solid Waste Management" power-required=".3" default="off"
+							toggle-duration="30" toggle-periodicity="500">
+					<input resource="toxic waste" rate="4" ambient="false" />
+					<input resource="solid waste" rate="6" ambient="false" />
+					<output resource="fertilizer" rate="2" ambient="false" />
+					<output resource="carbon dioxide" rate="2" ambient="false" />
+					<output resource="water" rate="2" ambient="false" />
+					<output resource="carbon" rate="2" ambient="false" />
+				</process>
+
+			</waste-processing>			
+			
 		</functions>
 	</building>
 <!-- end of Outpost Hub  -->

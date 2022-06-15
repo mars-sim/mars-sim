@@ -521,18 +521,17 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		
 		int index = tabsSection.indexOfComponent(selectedTab);
 
-		// if the all settlements tab is being selected 
+		// if "Mars" tab is being selected 
 		if (index == 0) {
-			// Set the opaqueness of the settlement box
+			// Hide the settlement box
 			setSettlementBox(true);
 			return;
 		}
 		
-		tabsSection.removeChangeListener(tabsSection.getChangeListeners()[0]);
-		
 		MonitorModel model = selectedTab.getModel();
 		model.removeTableModelListener(this);
-
+		tabsSection.removeChangeListener(tabsSection.getChangeListeners()[0]);
+		
 		// Disable all buttons
 		buttonBar.setEnabled(false);
 		buttonMap.setEnabled(false);
