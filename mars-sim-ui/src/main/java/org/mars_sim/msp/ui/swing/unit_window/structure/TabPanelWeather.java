@@ -27,6 +27,7 @@ import org.mars_sim.msp.core.environment.Weather;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 //import org.mars_sim.msp.ui.swing.tool.MarsViewer;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
@@ -80,8 +81,8 @@ extends TabPanel {
 	
 	private String iconCache;
 
-	private WebPanel locationCoordsPanel;
-	private WebPanel locationLabelPanel;
+	private WebPanel coordsPanel;
+	private WebPanel latlonPanel;
 
 	private WebLabel latitudeLabel;
 	private WebLabel longitudeLabel;
@@ -115,75 +116,77 @@ extends TabPanel {
         // Initialize location cache
         locationCache = getUnit().getCoordinates();
 
-        locationCoordsPanel = new WebPanel();
-        locationCoordsPanel.setLayout(new BorderLayout(0, 0));
+        coordsPanel = new WebPanel(new BorderLayout(0, 0));
 
+        WebPanel mainPanel = new WebPanel(new BorderLayout(0, 0));
+        mainPanel.setBorder(new MarsPanelBorder());
+        content.add(mainPanel, BorderLayout.NORTH);
+		
+        Font font = new Font("Serif", Font.BOLD, 15);
+        
         // Prepare latitude label
         latitudeLabel = new WebLabel(getLatitudeString());
         latitudeLabel.setOpaque(false);
-        latitudeLabel.setFont(new Font("San Serif", Font.ITALIC, 15));
+        latitudeLabel.setFont(font);
         latitudeLabel.setHorizontalAlignment(SwingConstants.LEFT);
-        locationCoordsPanel.add(latitudeLabel, BorderLayout.NORTH);
+        coordsPanel.add(latitudeLabel, BorderLayout.NORTH);
 
         // Prepare longitude label
         longitudeLabel = new WebLabel(getLongitudeString());
         longitudeLabel.setOpaque(false);
-        longitudeLabel.setFont(new Font("San Serif", Font.ITALIC, 15));
+        longitudeLabel.setFont(font);
         longitudeLabel.setHorizontalAlignment(SwingConstants.LEFT);
-        locationCoordsPanel.add(longitudeLabel, BorderLayout.CENTER);
+        coordsPanel.add(longitudeLabel, BorderLayout.CENTER);
 
-        locationLabelPanel = new WebPanel();
-        locationLabelPanel.setLayout(new BorderLayout(0, 0));
+        latlonPanel = new WebPanel();
+        latlonPanel.setLayout(new BorderLayout(0, 0));
         WebLabel latLabel = new WebLabel("Lat : ");//, JLabel.RIGHT);
-        latLabel.setFont(new Font("San Serif", Font.ITALIC, 15));
+        latLabel.setFont(font);
         latLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-        WebLabel longLabel = new WebLabel("Lon : ");//, JLabel.RIGHT);
-        longLabel.setFont(new Font("San Serif", Font.ITALIC, 15));
+        WebLabel longLabel = new WebLabel("Lon : ");
+        longLabel.setFont(font);
         longLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-        locationLabelPanel.add(latLabel, BorderLayout.NORTH);
-        locationLabelPanel.add(longLabel, BorderLayout.CENTER);
+        latlonPanel.add(latLabel, BorderLayout.CENTER);
+        latlonPanel.add(longLabel, BorderLayout.SOUTH);
 
         // Create location panel
-        WebPanel locationPanel = new WebPanel(new GridLayout(1, 2)); //new BorderLayout(0,0));
-        locationPanel.setBorder(new EmptyBorder(15, 15, 15, 15));
-        locationPanel.add(locationLabelPanel);
-        locationPanel.add(locationCoordsPanel);
+        WebPanel northEastPanel = new WebPanel(new GridLayout(1, 2)); 
+        northEastPanel.setBorder(new EmptyBorder(1, 1, 1, 1));
+        northEastPanel.add(latlonPanel);
+        northEastPanel.add(coordsPanel);
 
-        WebPanel leftPanel = new WebPanel(new BorderLayout(0, 0));
-        leftPanel.setMaximumSize(new Dimension(180, 350));
-        leftPanel.setPreferredSize(new Dimension(180, 350));
-        leftPanel.add(locationPanel, BorderLayout.NORTH);
-                
-        content.add(leftPanel, BorderLayout.WEST);
+      	// Create weatherPanel
+        WebPanel centerEastPanel = new WebPanel(new BorderLayout(0, 0));
+        centerEastPanel.setBorder(new EmptyBorder(1, 1, 1, 1));
+        centerEastPanel.add(northEastPanel, BorderLayout.NORTH);
+        
+        WebPanel eastPanel = new WebPanel(new BorderLayout(0, 10));       
+        mainPanel.add(eastPanel, BorderLayout.EAST);
+        eastPanel.add(centerEastPanel, BorderLayout.CENTER);
 
-      	// Create weatherPanel and imgPanel.
-        WebPanel weatherPanel = new WebPanel(new BorderLayout(0, 0));//new GridLayout(2, 1));//new FlowLayout(FlowLayout.CENTER));
-        locationPanel.setBorder(new EmptyBorder(25, 15, 15, 15));
-        leftPanel.add(weatherPanel, BorderLayout.CENTER);
-
-    	WebPanel imgPanel = new WebPanel(new FlowLayout());
+        // Create imgPanel
+    	WebPanel imgPanel = new WebPanel(new FlowLayout(FlowLayout.LEADING, 0, 0));
         weatherLabel = new WebLabel();
-        weatherLabel.setPreferredSize(96, 96);
     	imgPanel.add(weatherLabel, WebLabel.CENTER);
-    	weatherPanel.add(imgPanel, BorderLayout.NORTH);
+    	centerEastPanel.add(imgPanel, BorderLayout.SOUTH);
 
     	// Prepare temperature panel
         WebPanel temperaturePanel = new WebPanel(new FlowLayout());
-        weatherPanel.add(temperaturePanel, BorderLayout.CENTER);
+        centerEastPanel.add(temperaturePanel, BorderLayout.CENTER);
 
         // Prepare temperature label
         temperatureValueLabel = new WebLabel(getTemperatureString(getTemperature()), WebLabel.CENTER);
         temperatureValueLabel.setOpaque(false);
         temperatureValueLabel.setFont(new Font("Serif", Font.BOLD, 28));
-        temperatureValueLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        temperaturePanel.add(temperatureValueLabel);//, BorderLayout.NORTH);
+//        temperatureValueLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        temperaturePanel.add(temperatureValueLabel);
 
-        WebPanel rightPanel = new WebPanel(new BorderLayout(10, 10));//new FlowLayout());//new GridLayout(3, 1));//new BorderLayout(0, 0));
-        content.add(rightPanel, BorderLayout.CENTER);
+        WebPanel metricsPanel = new WebPanel(new BorderLayout(0, 0));
+        mainPanel.add(metricsPanel, BorderLayout.CENTER);
 
-        // Create spring layout dataPanel
-        WebPanel springPanel = new WebPanel(new SpringLayout());//GridLayout(10, 2));
-        rightPanel.add(springPanel, BorderLayout.NORTH);
+        // Create spring layout panel
+        WebPanel springPanel = new WebPanel(new SpringLayout());
+        metricsPanel.add(springPanel, BorderLayout.NORTH);
 
         // Prepare air pressure label
         WebLabel airPressureLabel = new WebLabel(Msg.getString("TabPanelWeather.airPressure.label"), WebLabel.RIGHT);
@@ -196,7 +199,7 @@ extends TabPanel {
         pressureTF.setEditable(false);
         pressureTF.setColumns(8);
         pressureTF.setFont(new Font("Serif", Font.PLAIN, 12));
-        wrapper1.add(pressureTF);//, BorderLayout.CENTER);
+        wrapper1.add(pressureTF);
         springPanel.add(wrapper1);
 
         // Prepare air density label
@@ -211,8 +214,7 @@ extends TabPanel {
         airDensityTF.setColumns(8);
         airDensityTF.setOpaque(false);
         airDensityTF.setFont(new Font("Serif", Font.PLAIN, 12));
-        //airDensityValueLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        wrapper2.add(airDensityTF);//, BorderLayout.CENTER);
+        wrapper2.add(airDensityTF);
         springPanel.add(wrapper2);
 
         WebLabel windSpeedLabel = new WebLabel(Msg.getString("TabPanelWeather.windspeed.label"), WebLabel.RIGHT);
@@ -247,7 +249,6 @@ extends TabPanel {
         springPanel.add(solarIrradianceLabel);
 
 		WebPanel wrapper5 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEFT));
-        //solarIrradianceCache = getSolarIrradiance();
         solarIrradianceTF = new WebTextField(getSolarIrradianceString(0.0));
         solarIrradianceTF.setEditable(false);
         solarIrradianceTF.setColumns(8);
@@ -265,7 +266,6 @@ extends TabPanel {
         opticalDepthTF = new WebTextField();
         opticalDepthTF.setEditable(false);
         opticalDepthTF.setColumns(8);
-        //opticalDepthTF.setPreferredSize(new Dimension(60, 24));
         opticalDepthTF.setOpaque(false);
         opticalDepthTF.setFont(new Font("Serif", Font.PLAIN, 12));
         wrapper6.add(opticalDepthTF);
@@ -274,7 +274,6 @@ extends TabPanel {
         WebLabel zenithAngleLabel = new WebLabel(Msg.getString("TabPanelWeather.zenithAngle.label"), WebLabel.RIGHT);
         zenithAngleLabel.setOpaque(false);
         zenithAngleLabel.setFont(new Font("Serif", Font.PLAIN, 12));
-        //zenithAngleLabel.setVerticalAlignment(SwingConstants.TOP);
         springPanel.add(zenithAngleLabel);
 
 		WebPanel wrapper7 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEFT));
@@ -282,14 +281,12 @@ extends TabPanel {
         zenithAngleTF.setEditable(false);
         zenithAngleTF.setColumns(8);
         zenithAngleTF.setFont(new Font("Serif", Font.PLAIN, 12));
-        //zenithAngleValueLabel.setHorizontalAlignment(SwingConstants.CENTER);
         wrapper7.add(zenithAngleTF);
         springPanel.add(wrapper7);
 
         WebLabel solarDeclinationLabel = new WebLabel(Msg.getString("TabPanelWeather.solarDeclination.label"), WebLabel.RIGHT);
         solarDeclinationLabel.setOpaque(false);
         solarDeclinationLabel.setFont(new Font("Serif", Font.PLAIN, 12));
-        //solarDeclinationLabel.setHorizontalAlignment(SwingConstants.CENTER);
         springPanel.add(solarDeclinationLabel);
 
 		WebPanel wrapper8 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEFT));
@@ -297,7 +294,6 @@ extends TabPanel {
         solarDeclinationTF.setEditable(false);
         solarDeclinationTF.setColumns(8);
         solarDeclinationTF.setFont(new Font("Serif", Font.PLAIN, 12));
-        //solarDeclinationValueLabel.setHorizontalAlignment(SwingConstants.CENTER);
         wrapper8.add(solarDeclinationTF);
         springPanel.add(wrapper8);
 
@@ -520,8 +516,8 @@ extends TabPanel {
 
     	temperatureValueLabel = null;
     	
-    	locationCoordsPanel = null;
-    	locationLabelPanel = null;
+    	coordsPanel = null;
+    	latlonPanel = null;
 
     	latitudeLabel = null;
     	longitudeLabel = null;

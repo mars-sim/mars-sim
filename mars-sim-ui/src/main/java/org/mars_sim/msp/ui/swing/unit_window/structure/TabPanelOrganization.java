@@ -22,9 +22,7 @@ import java.util.Map;
 import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTree;
-import javax.swing.ScrollPaneConstants;
 import javax.swing.UIManager;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -156,8 +154,7 @@ public class TabPanelOrganization extends TabPanel {
 		defaultTreeModel = new DefaultTreeModel(root);
 		tree.setModel(defaultTreeModel);
 
-		content.add(new JScrollPane(tree, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
-				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER), BorderLayout.CENTER);
+		content.add(tree);
 
 		buildTreeNodes();
 

@@ -8,12 +8,9 @@ package org.mars_sim.msp.ui.swing.unit_window.structure;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 import java.util.Collections;
 import java.util.Iterator;
@@ -24,7 +21,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
+import javax.swing.border.EmptyBorder;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
@@ -38,6 +35,7 @@ import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcessing;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
@@ -52,7 +50,6 @@ extends TabPanel {
 	private Settlement settlement;
 	
 	private List<Building> buildings;
-	private JScrollPane processesScrollPane;
 	private JPanel processListPanel;
 	private JCheckBox overrideCheckbox;
 
@@ -62,6 +59,7 @@ extends TabPanel {
 
 	/**
 	 * Constructor.
+	 * 
 	 * @param unit the unit to display.
 	 * @param desktop the main desktop.
 	 */
@@ -84,32 +82,23 @@ extends TabPanel {
 		buildings = mgr.getBuildings(FunctionType.RESOURCE_PROCESSING);
 		size = buildings.size();
 
-		// Create scroll panel for the outer table panel.
-		processesScrollPane = new JScrollPane();
-		processesScrollPane.setPreferredSize(new Dimension(220, 280));
-		// increase vertical mousewheel scrolling speed for this one
-		processesScrollPane.getVerticalScrollBar().setUnitIncrement(16);
-		content.add(processesScrollPane,BorderLayout.CENTER);
-
 		// Prepare process list panel.
 		processListPanel = new JPanel(new GridLayout(0, 1, 5, 2));
-//		processListPanel.setBorder(new MarsPanelBorder());
-		processesScrollPane.setViewportView(processListPanel);
+		processListPanel.setAlignmentY(TOP_ALIGNMENT);
+		processListPanel.setBorder(new MarsPanelBorder());
+		content.add(processListPanel, BorderLayout.CENTER);
 		populateProcessList();
 
 		// Create override check box panel.
 		JPanel overrideCheckboxPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		content.add(overrideCheckboxPane,BorderLayout.NORTH);
+		content.add(overrideCheckboxPane, BorderLayout.NORTH);
 
 		// Create override check box.
 		overrideCheckbox = new JCheckBox(Msg.getString("TabPanelResourceProcesses.checkbox.overrideResourceProcessToggling")); //$NON-NLS-1$
 		overrideCheckbox.setToolTipText(Msg.getString("TabPanelResourceProcesses.tooltip.overrideResourceProcessToggling")); //$NON-NLS-1$
-		overrideCheckbox.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				setResourceProcessOverride(overrideCheckbox.isSelected());
-			}
-		});
-		//overrideCheckbox.setSelected(settlement.getManufactureOverride());
+		overrideCheckbox.addActionListener(e ->
+			setResourceProcessOverride(overrideCheckbox.isSelected())
+		);
 		overrideCheckbox.setSelected(settlement.getProcessOverride(OverrideType.RESOURCE_PROCESS));
 		overrideCheckboxPane.add(overrideCheckbox);
 	}
@@ -137,20 +126,18 @@ extends TabPanel {
 	@Override
 	public void update() {
 		// Check if building list has changed.
-		List<Building> newBuildings = selectBuildingsWithRP();
+		List<Building> newBuildings = selectBuildings();
 		int newSize = buildings.size();
 		if (size != newSize) {
 			size = newSize;
-			buildings = selectBuildingsWithRP();
+			buildings = selectBuildings();
 			Collections.sort(buildings);
 			populateProcessList();
-			processesScrollPane.validate();
 		}
 		else if (!buildings.equals(newBuildings)) {
 			buildings = newBuildings;
 			Collections.sort(buildings);
 			populateProcessList();
-			processesScrollPane.validate();
 		}
 		else {
 			// Update process list.
@@ -162,7 +149,7 @@ extends TabPanel {
 		}
 	}
 
-	private List<Building> selectBuildingsWithRP() {
+	private List<Building> selectBuildings() {
 		return mgr.getBuildings(FunctionType.RESOURCE_PROCESSING);
 	}
 
@@ -206,12 +193,10 @@ extends TabPanel {
 
 			toggleButton = new JButton();
 			toggleButton.setMargin(new Insets(0, 0, 0, 0));
-			toggleButton.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent event) {
-					ResourceProcess process = getProcess();
-					process.setProcessRunning(!process.isProcessRunning());
+			toggleButton.addActionListener(e -> {
+					ResourceProcess p = getProcess();
+					p.setProcessRunning(!p.isProcessRunning());
 					update();
-				}
 			});
 			toggleButton.setToolTipText(Msg.getString("TabPanelResourceProcesses.tooltip.toggleButton")); //$NON-NLS-1$
 			add(toggleButton);
@@ -291,7 +276,6 @@ extends TabPanel {
 		super.destroy();
 		
 		buildings = null;
-		processesScrollPane = null;
 		processListPanel = null;
 		overrideCheckbox = null;
 		settlement = null;

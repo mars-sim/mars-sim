@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * SettlementUnitWindow.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-06-16
  * @author Scott Davis
  */
 
@@ -15,7 +15,6 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.unit_window.InventoryTabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.LocationTabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.NotesTabPanel;
-import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.food.TabPanelCooking;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.food.TabPanelFoodProduction;
@@ -26,9 +25,6 @@ import org.mars_sim.msp.ui.swing.unit_window.structure.building.food.TabPanelFoo
 @SuppressWarnings("serial")
 public class SettlementUnitWindow extends UnitWindow {
 
-	/** The cache for the currently selected TabPanel. */
-	private TabPanel oldTab;
-	
 	/**
 	 * Constructor
 	 *
@@ -102,15 +98,6 @@ public class SettlementUnitWindow extends UnitWindow {
 
 	@Override
 	public void stateChanged(ChangeEvent e) {
-		// SwingUtilities.updateComponentTreeUI(this);
-//		TabPanel newTab = getSelected();
-//
-//		if (oldTab == null || newTab != oldTab) {
-//			oldTab = newTab;
-//			
-//			if (!newTab.isUIDone());
-//				newTab.initializeUI();
-//		}
 	}
 
 }

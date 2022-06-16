@@ -36,9 +36,11 @@ public class Weather implements Serializable, Temporal {
 	private static final SimLogger logger = SimLogger.getLogger(Weather.class.getName());
 
 	// Static data
-	/** Extreme cold surface temperatures on Mars at Kelvin */
-	private static final double EXTREME_COLD = 120D; // [ in deg Kelvin] or -153.17 C
-
+	/** The effect of sunlight on the surface temperatures on Mars. */
+	private static final double LIGHT_EFFECT = 1.2;
+	/** Extreme cold surface temperatures on Mars at deg Kelvin [or at -153.17 C] */
+	private static final double EXTREME_COLD = 120D; 
+	
 	/** Viking 1's latitude */
 	private static final double VIKING_LATITUDE = 22.48D; // At 22.48E
 	private final static double VIKING_DT = Math.round((28D - 15D *
@@ -49,7 +51,7 @@ public class Weather implements Serializable, Temporal {
 	public static final double PARTIAL_PRESSURE_WATER_VAPOR_ROOM_CONDITION = 1.6D; // in kPa. under Earth's atmosphere,
 																					// at 25 C, 50% relative humidity
 
-	private static final int MILLISOLS_PER_UPDATE = 5; // one update per x millisols
+	private static final int MILLISOLS_PER_UPDATE = 2; // one update per x millisols
 
 	private static final double DX = 255D * Math.PI / 180D - Math.PI;
 	
@@ -351,15 +353,7 @@ public class Weather implements Serializable, Temporal {
 	 * @return temperature in deg Celsius.
 	 */
 	public double getTemperature(Coordinates location) {
-		return getCachedTemperature(location);
-	}
 
-	/**
-	 * Gets the cached temperature at a given location.
-	 * 
-	 * @return temperature in deg Celsius.
-	 */
-	public double getCachedTemperature(Coordinates location) {
 		checkLocation(location);
 
 		// Lazy instantiation of temperatureCacheMap.
@@ -367,13 +361,24 @@ public class Weather implements Serializable, Temporal {
 			temperatureCacheMap = new HashMap<>();
 		}
 
+		double t = 0;
+		
 		if (marsClock.getMillisolInt() % MILLISOLS_PER_UPDATE == 0) {
 			double newT = calculateTemperature(location);
 			temperatureCacheMap.put(location, newT);
-			return newT;
+			t = newT;
 		} else {
-			return getCachedReading(temperatureCacheMap, location);
+			t = getCachedReading(temperatureCacheMap, location);
 		}
+		
+		double previousTemperature = 0;
+		if (temperatureCacheMap.containsKey(location)) {
+			previousTemperature = temperatureCacheMap.get(location);
+		}
+
+		t = Math.round((t + previousTemperature) / 2.0 * 100.0) / 100.0;
+		
+		return t;
 	}
 
 	/***
@@ -454,7 +459,7 @@ public class Weather implements Serializable, Temporal {
 			else if (lS <= 360)
 				t = .25 * lS + 55;
 
-			t = t + RandomUtil.getRandomDouble(3) - RandomUtil.getRandomDouble(3) - AirComposition.C_TO_K;
+			t = t + RandomUtil.getRandomDouble(-1.0, 1.0) - AirComposition.C_TO_K;
 
 		} else {
 			// We arrived at this temperature model based on Viking 1 & Opportunity Rover
@@ -474,7 +479,7 @@ public class Weather implements Serializable, Temporal {
 //	        double x_offset = time + theta - VIKING_LONGITUDE_OFFSET_IN_MILLISOLS ;
 //	        double equatorial_temperature = 27.5D * Math.sin  ( Math.PI * x_offset / 500D) - 58.5D ;
 			
-			double lightFactor = surfaceFeatures.getSunlightRatio(location) * 2;
+			double lightFactor = surfaceFeatures.getSunlightRatio(location) * LIGHT_EFFECT;
 
 			// Equation below is modeled after Viking's data.
 			double equatorialTemperature = 27.5D * lightFactor - 58.5D;
@@ -504,23 +509,14 @@ public class Weather implements Serializable, Temporal {
 			// (3). Latitude
 			double latDegree = location.getPhi2Lat();
 
-			// System.out.print(" degree: " + Math.round (degree * 10.0)/10.0 );
-			double latDt = -15D - 15D * Math.sin(2D * latDegree * Math.PI / 180D + Math.PI / 2D);
-//			lat_dt = Math.round(lat_dt * 100.0) / 100.0;
-			// System.out.println(" lat_dt: " + lat_dt );
+			double latDt = -15D * (1 + Math.sin(2D * latDegree * Math.PI / 180D + Math.PI / 2D));
 
 			// (4). Seasonal variation
 			double latAdjustment = TEMPERATURE_DELTA_PER_DEG_LAT * latDegree; // an educated guess
 			int solElapsed = marsClock.getMissionSol();
 			double seasonalDt = latAdjustment * Math.sin(2 * Math.PI / 1000D * (solElapsed - 142));
 
-
-			// (5). Add randomness
-			double up = RandomUtil.getRandomDouble(2);
-			double down = RandomUtil.getRandomDouble(2);
-
-			// (6). Add windspeed
-
+			// (5). Add windspeed
 			double windDt = 0;
 			if (windSpeedCacheMap == null)
 				windSpeedCacheMap = new HashMap<>();
@@ -528,21 +524,27 @@ public class Weather implements Serializable, Temporal {
 			if (windSpeedCacheMap.containsKey(location))
 				windDt = 10.0 / (1 + Math.exp(-.15 * windSpeedCacheMap.get(location)));
 
-			// Conclusion : 			
-			t = equatorialTemperature + VIKING_DT - latDt - terrain_dt + seasonalDt + up - down;
+			// Subtotal		
+			t = equatorialTemperature + VIKING_DT - latDt - terrain_dt + seasonalDt;
 
 			if (t > 0)
 				t = t + windDt;
 			else
 				t = t - windDt;
 			
-			// Limit the highest and lowest temperature
+			// (5). Limit the highest and lowest temperature
 			if (t > 40)
 				t = 40;
 			
 			else if (t < -160)
 				t = -160;
+
+			// (6). Add randomness
+			double rand = RandomUtil.getRandomDouble(-1.0, 1.0);
 			
+			// (7). Total
+			t += rand;  
+					
 			double previousTemperature = 0;
 			if (temperatureCacheMap == null) {
 				temperatureCacheMap = new HashMap<>();
