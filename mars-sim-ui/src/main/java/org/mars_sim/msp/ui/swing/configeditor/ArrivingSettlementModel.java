@@ -1,3 +1,9 @@
+/*
+ * Mars Simulation Project
+ * ArrivingSettlementModel.java
+ * @date 2022-06-15
+ * @author Barry Evans
+ */
 package org.mars_sim.msp.ui.swing.configeditor;
 
 import java.util.ArrayList;

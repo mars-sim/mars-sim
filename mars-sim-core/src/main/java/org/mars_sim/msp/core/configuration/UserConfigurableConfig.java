@@ -4,7 +4,6 @@
  * @date 2021-09-25
  * @author Barry Evans
  */
-
 package org.mars_sim.msp.core.configuration;
 
 import java.io.File;
@@ -38,7 +37,7 @@ import org.mars_sim.msp.core.SimulationFiles;
 import org.mars_sim.msp.core.tool.Conversion;
 
 /**
- * This is a manager class of a catagory of UserConfigurable class.
+ * This is a manager class of a category of UserConfigurable class.
  * It provides a means to manage a static collection of them and read/write
  * to file system
  */
@@ -53,7 +52,8 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 	private static final String DEFAULT_DIR = "defaults";
 
 	/**
-	 * Save an attribute to a Element if it is defined
+	 * Saves an attribute to a Element if it is defined.
+	 * 
 	 * @param node
 	 * @param attrName
 	 * @param value
@@ -68,7 +68,8 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 	private Map<String,T> knownItems = new HashMap<>();
 
 	/**
-	 * Construct a config of a UserConfigurable subclass.
+	 * Constructs a config of a UserConfigurable subclass.
+	 * 
 	 * @param itemPrefix The prefix to add when saving to an item,
 	 */
 	protected UserConfigurableConfig(String itemPrefix) {
@@ -76,7 +77,7 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 	}
 
 	/**
-	 * Load the user defined configuration items.
+	 * Loads the user defined configuration items.
 	 */
 	protected void loadUserDefined() {
 		// Scan saved items folder
@@ -98,7 +99,8 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 	}
 
 	/**
-	 * Load the predefined defaults that are bundled in the code base
+	 * Loads the predefined defaults that are bundled in the code base.
+	 * 
 	 * @param predefined The predefined items that are bundled with the release.
 	 */
 	protected void loadDefaults(String [] predefined) {
@@ -110,7 +112,8 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 	}
 
 	/**
-	 * Load a configuration from external or bundled XML.
+	 * Loads a configuration from external or bundled XML.
+	 * 
 	 * @param name
 	 * @return
 	 */
@@ -142,7 +145,8 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 	}
 
 	/**
-	 * Get a item by it's name
+	 * Gets a item by its name.
+	 * 
 	 * @param name
 	 * @return
 	 */
@@ -151,7 +155,8 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 	}
 
 	/**
-	 * Add an items that has been explicitly created to the control list.
+	 * Adds an items that has been explicitly created to the control list.
+	 * 
 	 * @param newItem
 	 */
 	protected void addItem(T newItem) {
@@ -159,7 +164,8 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 	}
 
 	/**
-	 * Delete the item.
+	 * Deletes the item.
+	 * 
 	 * @param name
 	 */
 	public void deleteItem(String name) {
@@ -174,7 +180,8 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 
 
 	/**
-	 * Gte teh filename for an item based on it's name
+	 * Gets the filename for an item based on its name.
+	 * 
 	 * @param crewName
 	 * @return
 	 */
@@ -184,7 +191,8 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 	}
 
 	/**
-	 * Estimate the configurable name from the file name
+	 * Estimates the configurable name from the file name.
+	 * 
 	 * @param configFile
 	 * @return
 	 */
@@ -194,7 +202,8 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 	}
 
 	/**
-	 * Location and stream the contents of the required configuration item
+	 * Gets the Location and streams the contents of the required configuration item.
+	 * 
 	 * @param filename Name of the item to locate
 	 * @param bundled Is it bundled with the application
 	 * @throws FileNotFoundException
@@ -231,7 +240,7 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 
 
 	/**
-	 * Save the XML document for this item.
+	 * Saves the XML document for this item.
 	 *
 	 * @param item The details to save
 	 */
@@ -251,7 +260,7 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 			File itemBackup = new File(storagePath, filename + BACKUP);
 			try {
 				if (Files.deleteIfExists(itemBackup.toPath())) {
-					// Delete the beta_crew.bak
+					// Delete old backup file
 				    logger.config("Old " + itemBackup.getName() + " deleted.");
 				}
 			} catch (IOException e) {
@@ -260,7 +269,7 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 
 
 			try {
-				// Back up the previous version of beta_crew.xml as beta_crew.bak
+				// Back up the previous version of the crew xml file
 				FileUtils.moveFile(itemFile, itemBackup);
 			    logger.config(itemFile.getName() + " --> " + itemBackup.getName());
 			} catch (IOException e1) {
@@ -297,7 +306,8 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 	}
 
 	/**
-	 * Get the names of the known items.
+	 * Gets the names of the known items.
+	 * 
 	 * @return Alphabetically sorted names.
 	 */
 	public List<String> getItemNames() {
@@ -307,7 +317,8 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 	}
 
 	/**
-	 * Convert an Item into am XML representation
+	 * Converts an Item into am XML representation.
+	 * 
 	 * @param item Item to parse.
 	 * @see #parseXML(Document, boolean)
 	 * @return
@@ -315,7 +326,8 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 	protected abstract Document createItemDoc(T item);
 
 	/**
-	 * Parse an XML document to create an item instance.
+	 * Parses an XML document to create an item instance.
+	 * 
 	 * @param doc Document of details
 	 * @param predefined Is this item predefined or user defined.
 	 * @see #createItemDoc(UserConfigurable)

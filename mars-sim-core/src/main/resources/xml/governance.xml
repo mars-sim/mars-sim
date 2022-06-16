@@ -506,22 +506,25 @@
 			<country name="USA"/>
 			<settlement-name name="New Cairo" />
 			<settlement-name name="New Boulder" />
-			<settlement-name name="Burroughstown" />
+			<settlement-name name="Burroughsburg" />
 			<settlement-name name="Zubrin City" />
 			<settlement-name name="Clarketown" />
 			<settlement-name name="Sojourner Station" />
 			<settlement-name name="Viking Base" />
-			<settlement-name name="Mariner Settlement" />
 			<settlement-name name="Camp Bradbury" />
-			<settlement-name name="Heinlein Station" />
+			<settlement-name name="Camp Wells" />
+			<settlement-name name="Heinlein" />
 			<settlement-name name="Port Kokh" />
-			<settlement-name name="Red Colony" />
-			<settlement-name name="Robinson Camp" />
+			<settlement-name name="Port Lowell" />			
+			<settlement-name name="Heinlein" />
+			<settlement-name name="Burroughs" />
+			<settlement-name name="Robinson" />
 			<settlement-name name="Hartmann Base" />
-			<settlement-name name="Shoemaker Base" />
+			<settlement-name name="Shoemaker" />
 			<rover-name name="Dusty Star" />
 			<rover-name name="Dust Storm" />
 			<rover-name name="Dust Sprite" />
+			<rover-name name="Dust Bowl" />
 			<rover-name name="Martian Escape" />
 			<rover-name name="Martian Cloud" />
 			<rover-name name="Ma'adim" /> <!-- Hebrew for "Mars" -->
@@ -560,7 +563,9 @@
 			<settlement-name name="New Boston" />
 			<settlement-name name="New Albany" />
 			<settlement-name name="JFK City" />
-			<settlement-name name="Port of Tranquility" />
+			<settlement-name name="Camp Huygens" />				
+			<settlement-name name="Camp Kelper" />				
+			<settlement-name name="Tranquility" />
 																		
 			<rover-name name="Agartha" /> <!-- Agartha is a legendary city that is said to be located in the Earth's core -->
 			<rover-name name="Atlanta" /> <!-- The meaning of Atlanta is secure, immovable -->
@@ -574,13 +579,14 @@
 			<rover-name name="Jetson" />
 			<rover-name name="Marina" />
 			<rover-name name="Opportunity II" />
+			<rover-name name="Curosity II" />	
+			<rover-name name="Perseverance II" />
+			<rover-name name="Pathfinder II" />					
 			<rover-name name="Buggy" />
 			<rover-name name="Gemini" />
 			<rover-name name="Mercury" />
 			<rover-name name="Schrodinger" />
 			<rover-name name="Artemis" />
-			<rover-name name="Perseverance II" />
-			<rover-name name="Pathfinder II" />
 		</authority>
 
 		<authority code="RKA" name="Roscosmos"
@@ -627,10 +633,15 @@
 			<settlement-name name="AI City" />
 			<settlement-name name="Solar City" />
 			<settlement-name name="New Eden" />
+			<settlement-name name="Teslapolis " />		
 			<settlement-name name="IronVille" />
-			<settlement-name name="Boring Town" />
+			<settlement-name name="Boringburg" />
 			<settlement-name name="Hawthorne" />
-			<settlement-name name="XAEberg" />
+			<settlement-name name="XAE City" />
+			<settlement-name name="New Vegas" />
+			<settlement-name name="Brownsville" />			
+			<rover-name name="Genesis" />
+			<rover-name name="Vega" />
 			<rover-name name="Raptor" />
 			<rover-name name="Merlin" />
 			<rover-name name="Roadster" />
@@ -643,6 +654,7 @@
 			<rover-name name="Princess" />
 			<rover-name name="Serenity" />
 			<rover-name name="Ironman" />
+			<rover-name name="Mariner" />			
 		</authority>
 	</authorities>
 </governance>

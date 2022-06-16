@@ -89,15 +89,15 @@ public class BuildingSpec {
 
 	private List<SourceSpec> heatSourceList = EMPTY_SOURCE;
 	private List<SourceSpec> powerSource = EMPTY_SOURCE;
+	
 	private List<ScienceType> scienceType = EMPTY_SCIENCE;
+	
 	private List<ResourceProcessSpec> resourceProcess = EMPTY_RESOURCE;
 	private List<WasteProcessSpec> wasteProcess = EMPTY_WASTE_RESOURCE;
 
-	
 	private List<LocalPosition> beds;
 	private List<LocalPosition> parking;
 
-	private List<ScienceType> wasteSpecialties;
 	
 	public BuildingSpec(String name, String description, double width, double length, int baseLevel,
 			double roomTemperature, int maintenanceTime,

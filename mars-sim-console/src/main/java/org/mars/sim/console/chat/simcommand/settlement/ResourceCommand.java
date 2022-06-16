@@ -25,7 +25,6 @@ import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcessing;
 import org.mars_sim.msp.core.structure.building.function.WasteProcess;
-import org.mars_sim.msp.core.structure.building.function.WasteProcessing;
 import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 
 public class ResourceCommand extends AbstractSettlementCommand {
@@ -43,15 +42,16 @@ public class ResourceCommand extends AbstractSettlementCommand {
 
 	private static final String CURRENT_RESERVE = "Current reserve";
 
-	private static final String GREENHOUSE_FARMING = "Greenhouse Farming";
-	
-	private static final String WHITESPACES = "         ";
-	
-	private static final String KG_M2_SOL_FORMAT = "%0.2f kg/m^2/sol";
+	private static final String O2_FARMING	= "         Oxygen Generation from Farming";
+	private static final String H2O_FARMING	= "         Water Consumption from Farming";
+	private static final String CO2_FARMING	= "     Carbon Dioxide Consumption from Farming";
 
-	private static final String KG_SOL_FORMAT = "%0.2f kg/sol";
+	
+	private static final String KG_M2_SOL_FORMAT = "%8.2f kg/m^2/sol";
 
-	private static final String M2_FORMAT = "%0.2f m^2";
+	private static final String KG_SOL_FORMAT = "%8.2f kg/sol";
+
+	private static final String M2_FORMAT = "%8.2f m^2";
 	
 	public static final ChatCommand RESOURCE = new ResourceCommand();
 	
@@ -62,8 +62,6 @@ public class ResourceCommand extends AbstractSettlementCommand {
 
 	private ResourceCommand() {
 		super("rs", "resource", "Settlement resources; either oxygen, co2 or water");
-		
-		setIntroduction(" Display the Resources held");
 		
 		// Setup the fixed arguments
 		setArguments(Arrays.asList(OXYGEN, CO2, WATER));
@@ -110,7 +108,7 @@ public class ResourceCommand extends AbstractSettlementCommand {
 		double totalArea = 0;
 		double reserve = settlement.getAmountResourceStored(ResourceUtil.co2ID);
 
-		response.appendHeading(WHITESPACES + "CO2 Usage & " + GREENHOUSE_FARMING);
+		response.appendHeading(CO2_FARMING);
 		response.appendLabeledString(CURRENT_RESERVE, String.format(CommandHelper.KG_FORMAT, reserve));
 
 		// Prints greenhouse usage
@@ -132,7 +130,7 @@ public class ResourceCommand extends AbstractSettlementCommand {
 		double reserve = settlement.getAmountResourceStored(ResourceUtil.waterID);
 		response.appendLabeledString(CURRENT_RESERVE, String.format(CommandHelper.KG_FORMAT, reserve));
 		response.appendBlankLine();
-		
+			
 		double usage = 0;
 		double totalArea = 0;
 
@@ -144,7 +142,7 @@ public class ResourceCommand extends AbstractSettlementCommand {
 			totalArea += f.getGrowingArea();
 		}
 
-		response.appendHeading(WHITESPACES + "Water Usage & " + GREENHOUSE_FARMING);
+		response.appendHeading(H2O_FARMING); 
 		response.appendLabeledString(TOTAL_GROWING_AREA, String.format(M2_FORMAT, totalArea));
 		if (totalArea > 0) {
 			response.appendLabeledString(CONSUMED_DAILY_PER_M2,	String.format(KG_M2_SOL_FORMAT, (usage / totalArea)));
@@ -155,6 +153,7 @@ public class ResourceCommand extends AbstractSettlementCommand {
 
 		double net = 0;
 		double greenhouseUsage = 0;
+		
 		// Prints greenhouse usage
 		for (Building b : farms) {
 			Farming f = b.getFarming();
@@ -188,8 +187,7 @@ public class ResourceCommand extends AbstractSettlementCommand {
 		for (Building b : quarters) {
 			LivingAccommodations la = b.getLivingAccommodations();
 			livingUsage += la.getDailyAverageWaterUsage();
-
-		}
+		}		
 		response.appendTableRow("Accommodation", Math.round(-livingUsage * 100.0) / 100.0);
 		net = net - livingUsage;
 
@@ -215,11 +213,8 @@ public class ResourceCommand extends AbstractSettlementCommand {
 		
 		// Prints output from waste processing
 		double output2 = 0;
-		List<Building> bldgs2 = settlement.getBuildingManager().getBuildings(FunctionType.WASTE_PROCESSING);
-		for (Building b : bldgs2) {
-			WasteProcessing wp = b.getWasteProcessing();
-			List<WasteProcess> processes = wp.getProcesses();
-			for (WasteProcess p : processes) {
+		for (Building b : settlement.getBuildingManager().getBuildings(FunctionType.WASTE_PROCESSING)) {
+			for (WasteProcess p : b.getWasteProcessing().getProcesses()) {
 				if (p.isProcessRunning())
 					output2 += p.getMaxOutputRate(ResourceUtil.waterID);
 			}
@@ -235,7 +230,7 @@ public class ResourceCommand extends AbstractSettlementCommand {
 		double totalArea = 0;
 		double reserve = settlement.getAmountResourceStored(ResourceUtil.oxygenID);
 		
-		response.appendHeading(WHITESPACES + "O2 Usage & " + GREENHOUSE_FARMING);
+		response.appendHeading(O2_FARMING);
 		response.appendLabeledString(CURRENT_RESERVE, String.format(CommandHelper.KG_FORMAT, reserve));
 
 		// Prints greenhouse usage

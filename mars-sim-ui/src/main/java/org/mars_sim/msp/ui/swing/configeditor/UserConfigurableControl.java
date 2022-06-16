@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * UserConfigurableControl.java
- * @version 3.3.0 2021-08-20
+ * @date 2022-06-15
  * @author Barry Evans
  */
 package org.mars_sim.msp.ui.swing.configeditor;

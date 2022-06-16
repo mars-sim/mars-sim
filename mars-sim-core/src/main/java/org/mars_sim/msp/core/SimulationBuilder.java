@@ -64,7 +64,8 @@ public class SimulationBuilder {
 	}
 
 	/**
-	 * Set the time ratio to a specific rate
+	 * Sets the time ratio to a specific rate.
+	 * 
 	 * @param timeRatio
 	 */
 	public void setTimeRatio(int timeRatio) {
@@ -72,7 +73,8 @@ public class SimulationBuilder {
 	}
 
 	/**
-	 * Set the loading of the crews
+	 * Sets the loading of the crews.
+	 * 
 	 * @param useCrew
 	 */
 	public void setUseCrews(boolean useCrew) {
@@ -96,7 +98,8 @@ public class SimulationBuilder {
 	}
 	
 	/**
-	 * Set the name of the template for a single Settlement simulation
+	 * Sets the name of the template for a single Settlement simulation.
+	 * 
 	 * @param optionValue
 	 */
 	public void setTemplate(String optionValue) {
@@ -138,7 +141,8 @@ public class SimulationBuilder {
 	}
 
 	/**
-	 * Define a set of crews to be used
+	 * Defines a set of crews to be used.
+	 * 
 	 * @param crewConfig
 	 */
 	public void setCrewConfig(UserConfigurableConfig<Crew> crewConfig) {
@@ -146,7 +150,8 @@ public class SimulationBuilder {
 	}
 
 	/**
-	 * Set the scenario for a new simulation
+	 * Sets the scenario for a new simulation.
+	 * 
 	 * @param scenario
 	 */
 	public void setScenario(Scenario scenario) {
@@ -154,8 +159,9 @@ public class SimulationBuilder {
 	}
 	
 	/**
-	 * Get the list of core command line options that are supported bu this builder
-	 * @return
+	 * Gets the list of core command line options that are supported by this builder
+	 * 
+	 * @return the list
 	 */
 	public List<Option> getCmdLineOptions() {
 		List<Option> options = new ArrayList<>();
@@ -187,7 +193,8 @@ public class SimulationBuilder {
 	}
 
 	/**
-	 * Parse the command line and process the core Simulation arguments
+	 * Parses the command line and process the core Simulation arguments.
+	 * 
 	 * @param line
 	 */
 	public void parseCommandLine(CommandLine line) {	
@@ -228,7 +235,8 @@ public class SimulationBuilder {
 	}
 
 	/**
-	 * Set teh bootstrap Scenario based on the name.
+	 * Sets the bootstrap Scenario based on the name.
+	 * 
 	 * @param name
 	 */
 	private void setScenarioName(String name) {
@@ -311,7 +319,9 @@ public class SimulationBuilder {
 	}
 
 	/**
-	 * Load a previously saved simulation.
+	 * Loads a previously saved simulation.
+	 * 
+	 * @return true if loaded
 	 */
 	private boolean loadSimulation() {
 		
@@ -340,8 +350,10 @@ public class SimulationBuilder {
 	}
 
 	/**
-	 * Loads the prescribed settlement template
+	 * Loads the prescribed settlement template.
+	 * 
 	 * @param simulationConfig 
+	 * @return InitialSettlement
 	 */
 	private InitialSettlement loadSettlementTemplate(SimulationConfig simulationConfig) {
 		SettlementConfig settlementConfig = simulationConfig.getSettlementConfiguration();
@@ -376,7 +388,8 @@ public class SimulationBuilder {
 	}
 
 	/**
-	 * Are all the pre-condition defined to start a simulation.
+	 * Are all the pre-condition defined to start a simulation?
+	 * 
 	 * @return
 	 */
 	public boolean isFullyDefined() {

@@ -94,7 +94,6 @@ extends TabPanel {
 
 		// Prepare process list panel.
 		processListPanel = new JPanel(new GridLayout(0, 1, 5, 2));
-//		processListPanel.setBorder(new MarsPanelBorder());
 		processesScrollPane.setViewportView(processListPanel);
 		populateProcessList();
 
@@ -105,12 +104,9 @@ extends TabPanel {
 		// Create override check box.
 		overrideCheckbox = new JCheckBox(Msg.getString("TabPanelWasteProcesses.checkbox.overrideWasteProcessToggling")); //$NON-NLS-1$
 		overrideCheckbox.setToolTipText(Msg.getString("TabPanelWasteProcesses.tooltip.overrideWasteProcessToggling")); //$NON-NLS-1$
-		overrideCheckbox.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				setWasteProcessesOverride(overrideCheckbox.isSelected());
-			}
+		overrideCheckbox.addActionListener(e -> {
+			setWasteProcessesOverride(overrideCheckbox.isSelected());
 		});
-		//overrideCheckbox.setSelected(settlement.getManufactureOverride());
 		overrideCheckbox.setSelected(settlement.getProcessOverride(OverrideType.WASTE_PROCESSING));
 		overrideCheckboxPane.add(overrideCheckbox);
 	}
@@ -207,12 +203,10 @@ extends TabPanel {
 
 			toggleButton = new JButton();
 			toggleButton.setMargin(new Insets(0, 0, 0, 0));
-			toggleButton.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent event) {
-					WasteProcess process = getProcess();
-					process.setProcessRunning(!process.isProcessRunning());
-					update();
-				}
+			toggleButton.addActionListener(e -> {
+				WasteProcess p = getProcess();
+				p.setProcessRunning(!p.isProcessRunning());
+				update();
 			});
 			toggleButton.setToolTipText(Msg.getString("TabPanelWasteProcesses.tooltip.toggleButton")); //$NON-NLS-1$
 			add(toggleButton);
@@ -245,7 +239,6 @@ extends TabPanel {
 				Integer resource = i.next();
 				double rate = process.getMaxInputRate(resource) * 1000D;
 				String rateString = decFormatter.format(rate);
-				//result.append("&nbsp;&nbsp;&emsp;");
 				if (process.isAmbientInputResource(resource)) ambientStr = "*";
 				result.append(Conversion.capitalize(ResourceUtil.findAmountResource(resource).getName()))
 					.append(ambientStr).append(" @ ")
@@ -265,8 +258,8 @@ extends TabPanel {
 				jj++;
 			}
 			// Added a note to denote an ambient input resource
-			if (ambientStr == "*")
-				result.append("&emsp;<i>Note:  * denotes an ambient resource</i>");
+			if (ambientStr.equals("*"))
+				result.append("&emsp;<i>Note: * denotes an ambient resource</i>");
 			result.append("</html>");
 			return result.toString();
 		}
