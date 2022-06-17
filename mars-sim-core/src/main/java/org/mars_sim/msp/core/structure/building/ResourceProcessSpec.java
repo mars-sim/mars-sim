@@ -4,7 +4,6 @@
  * @date 2021-08-20
  * @author Barry Evans
  */
-
 package org.mars_sim.msp.core.structure.building;
 
 import java.io.Serializable;

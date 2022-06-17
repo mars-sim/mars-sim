@@ -291,8 +291,12 @@ public class GoodsManager implements Serializable, Temporal {
 
 	private Map<Integer, Integer> deflationIndexMap = new HashMap<>();
 
-//	 private Map<Good, Double> goodsSupplyCache;
+	private Map<Integer, Double> amountSupplyCache = new HashMap<>();
+	private Map<Integer, Double> partSupplyCache = new HashMap<>();
 
+	private Map<Integer, Double> vehicleSupplyCache = new HashMap<>();
+	private Map<Integer, Double> equipmentSupplyCache = new HashMap<>();
+				
 	private Map<String, Double> vehicleBuyValueCache;
 	private Map<String, Double> vehicleSellValueCache;
 
@@ -675,6 +679,9 @@ public class GoodsManager implements Serializable, Temporal {
 //				totalSupply = MAX_SUPPLY;
 			totalSupply = Math.min(MAX_SUPPLY, totalSupply);
 
+			// Store the average supply
+			amountSupplyCache.put(id, totalSupply);
+			
 			// Calculate the value point
 			value = totalDemand / totalSupply;
 
@@ -838,6 +845,9 @@ public class GoodsManager implements Serializable, Temporal {
 
 		double aveSupply = 1 + Math.log((1 + supply * requests + supplyStored) / solElapsed);
 
+		if (aveSupply < 0)
+			aveSupply = 0.1;
+		
 //		if (resource == ResourceUtil.regolithID)
 //			System.out.println("aas. " + resource
 //				+ "  " + ResourceUtil.findAmountResourceName(resource)
@@ -864,6 +874,9 @@ public class GoodsManager implements Serializable, Temporal {
 
 		double aveSupply = 1 + Math.log((1 + supply * requests + supplyStored) / solElapsed);
 
+		if (aveSupply < 0)
+			aveSupply = 0.1;
+		
 //		if (resource == ItemResourceUtil.steelIngotID)
 //			System.out.println("ais. " + resource
 //				+ "  " + ItemResourceUtil.findItemResourceName(resource)
@@ -2569,7 +2582,10 @@ public class GoodsManager implements Serializable, Temporal {
 					supply = settlement.getItemResourceStored(id);
 
 				totalSupply = getAverageItemSupply(id, supply, solElapsed);
-
+				
+				// Save the average supply
+				partSupplyCache.put(id, totalSupply);
+				
 				if (totalSupply < MIN_SUPPLY)
 					totalSupply = MIN_SUPPLY;
 
@@ -3182,13 +3198,15 @@ public class GoodsManager implements Serializable, Temporal {
 
 			// Determine average demand.
 			average = determineEquipmentDemand(EquipmentType.convertID2Type(id));
-//			logger.info(settlement, equipmentGood.getName() + " average demand: " + average);
-			// Add trade demand.
-//            demand += determineTradeDemand(equipmentGood, useCache);
+
+			if (supply == 0)
+				supply = settlement.findNumContainersOfType(EquipmentType.convertID2Type(id));
+			
+			double averageSupply = supply + 1;
+			
+			equipmentSupplyCache.put(id, averageSupply);
+			
 			double trade = determineTradeDemand(equipmentGood, useCache);
-//			if (tradeDemand > demand) {
-//				demand = tradeDemand;
-//			}
 
 			if (previous == 0) {
 				totalDemand = .5 * average + .5 * trade;
@@ -3201,10 +3219,7 @@ public class GoodsManager implements Serializable, Temporal {
 
 			equipmentDemandCache.put(id, totalDemand);
 
-			if (supply == 0)
-				supply = settlement.findNumContainersOfType(EquipmentType.convertID2Type(id));
-
-			value = totalDemand / (1 + Math.log(supply + 1D));
+			value = totalDemand / averageSupply; //(1 + Math.log(averageSupply));
 
 			// Check if it surpass the max VP
 			if (value > MAX_VP) {
@@ -3239,11 +3254,11 @@ public class GoodsManager implements Serializable, Temporal {
 
 		double areologistFactor = (1 + getJobNum(JobType.AREOLOGIST)) / 3.0;
 
-		if (type == EquipmentType.ROBOT)
-			return ROBOT_FACTOR ;
+//		if (type == EquipmentType.ROBOT)
+//			return ROBOT_FACTOR ;
 
 		// Determine number of EVA suits that are needed
-		else if (type == EquipmentType.EVA_SUIT) {
+		if (type == EquipmentType.EVA_SUIT) {
 			// Add the whole EVA Suit demand.
 			baseDemand += getWholeEVASuitDemand();
 
@@ -3432,6 +3447,10 @@ public class GoodsManager implements Serializable, Temporal {
 //			System.out.println(vehicleGood.getName() + "  average: " + average);
 			double previous = getVehicleDemandValue(id);
 
+			double averageSupply = supply + 1;
+			
+			vehicleSupplyCache.put(id, averageSupply);
+			
 			double tradeValue = determineTradeVehicleValue(vehicleGood, useCache);
 //			if (tradeValue > demandValue) {
 //				demandValue = tradeValue;
@@ -3448,14 +3467,8 @@ public class GoodsManager implements Serializable, Temporal {
 
 			vehicleDemandCache.put(id, totalDemand);
 
-			if (buy) {
-				vehicleBuyValueCache.put(vehicleType, totalDemand);
-			} else {
-				vehicleSellValueCache.put(vehicleType, totalDemand);
-			}
-
-			value = (totalDemand) / (supply + 1);
-
+			value = (totalDemand) / averageSupply;
+			
 			// Check if it surpass the max VP
 			if (value > MAX_VP) {
 				// Update deflationIndexMap for other resources of the same category
@@ -3473,6 +3486,12 @@ public class GoodsManager implements Serializable, Temporal {
 			value = tuneToAverageValue(vehicleGood, value);
 			// Save the value point
 			goodsValues.put(id, value);
+			
+			if (buy) {
+				vehicleBuyValueCache.put(vehicleType, value);
+			} else {
+				vehicleSellValueCache.put(vehicleType, value);
+			}
 		}
 
 		return value;
@@ -4381,6 +4400,10 @@ public class GoodsManager implements Serializable, Temporal {
 		return 10;
 	}
 
+	public double getRobotDemandValue() {
+		return 10;
+	}
+	
 	public double getDemandValue(Good good) {
 		int id = good.getID();
 		if (id < ResourceUtil.FIRST_AMOUNT_RESOURCE_ID)
@@ -4391,10 +4414,29 @@ public class GoodsManager implements Serializable, Temporal {
 			return getPartDemandValue(id);
 		if (id < ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID)
 			return getVehicleDemandValue(id);
-
-		return getEquipmentDemandValue(id);
+		if (id < ResourceUtil.FIRST_ROBOT_RESOURCE_ID)
+			return getEquipmentDemandValue(id);
+		
+		return getRobotDemandValue();
 	}
 
+	public double getSupplyValue(Good good) {
+		int id = good.getID();
+		if (id < ResourceUtil.FIRST_AMOUNT_RESOURCE_ID)
+			return 0;
+		if (id < ResourceUtil.FIRST_ITEM_RESOURCE_ID)
+			return amountSupplyCache.get(id);
+		if (id < ResourceUtil.FIRST_VEHICLE_RESOURCE_ID)
+			return partSupplyCache.get(id);
+		if (id < ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID)
+			return vehicleSupplyCache.get(id);
+		if (id < ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID)
+			return equipmentSupplyCache.get(id);
+		
+		return 1; // For now, robot supply cache is 1
+	}
+
+	
 	/**
 	 * Calculates the good value of a good.
 	 *

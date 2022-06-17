@@ -37,7 +37,7 @@ public enum VehicleType {
 	}
 	
 	/**
-	 * Gets a set of equipment ids
+	 * Gets a set of vehicle resource ids
 	 * 
 	 * @return
 	 */

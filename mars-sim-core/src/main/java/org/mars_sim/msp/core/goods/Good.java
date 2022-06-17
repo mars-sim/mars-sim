@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Good.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-06-16
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.goods;
@@ -141,19 +141,6 @@ public class Good implements Serializable, Comparable<Good> {
 				return true;
 		}
 		return false;
-
-//		boolean result = false;
-//
-//		if (GoodType.AMOUNT_RESOURCE == category)
-//			result = true;
-//		else if (GoodType.ITEM_RESOURCE == category)
-//			result = true;
-//		else if (GoodType.EQUIPMENT == category)
-//			result = true;
-//		else if (GoodType.VEHICLE == category)
-//			result = true;
-//
-//		return result;
 	}
 
 	/**

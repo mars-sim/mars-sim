@@ -2234,6 +2234,21 @@ public class Settlement extends Structure implements Temporal,
 		return false;
 	}
 
+	
+	/**
+	 * Gets a vehicle of this particular vehicle type.
+	 * 
+	 * @param vehicleType
+	 * @return
+	 */
+	public Vehicle getAVehicle(VehicleType vehicleType) {
+		return ownedVehicles
+		.stream()
+		.filter(v -> v.getVehicleType() == vehicleType)
+		.findAny().orElse(null);
+	}
+	
+	
 	/**
 	 * Adds an equipment to be owned by the settlement
 	 *
@@ -3613,7 +3628,7 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Get the equipment list
+	 * Gets the equipment list.
 	 *
 	 * @return the equipment list
 	 */
@@ -3623,7 +3638,7 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Get a list of the equipment with particular equipment type
+	 * Gets a list of the equipment with particular equipment type.
 	 *
 	 * @return the equipment list
 	 */
@@ -3634,7 +3649,19 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Does it possess an equipment of this equipment type
+	 * Gets the number of available EVA suits.
+	 * 
+	 * @return
+	 */
+	public int getNumEVASuit() {
+		Set<Equipment> suits = getEquipmentTypeList(EquipmentType.EVA_SUIT);
+		if (suits == null || suits.isEmpty())
+			return 0;
+		return suits.size();
+	}
+	
+	/**
+	 * Does it possess an equipment of this equipment type ?
 	 *
 	 * @param typeID
 	 * @return true if this person possess this equipment type

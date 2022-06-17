@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TradeTab.java
- * @date 2022-05-27
+ * @date 2022-06-16
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
@@ -50,11 +50,12 @@ implements UnitManagerListener {
 		for (int i= 0; i < m.getColumnCount(); i++) {
 			if (i >= num) {
 				int col = i - num;
-				if (col % cols == 0)
+				int c = col % cols;
+				if (c == 2)
 					m.getColumn(i).setCellRenderer(NumberRenderer.getIntegerRenderer());
-				else if (col % cols == 1)
+				else if (c <= 4) // 0, 1, 3, 4
 					m.getColumn(i).setCellRenderer(new NumberCellRenderer(NUM_DIGITS, true));
-				else if (col % cols == 2)
+				else if (c == 5)
 					m.getColumn(i).setCellRenderer(NumberRenderer.getCurrencyRenderer());
 			}
 		}

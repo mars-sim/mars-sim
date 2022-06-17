@@ -8,9 +8,12 @@ package org.mars_sim.msp.core.robot;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 
 public enum RobotType {
@@ -26,6 +29,8 @@ public enum RobotType {
 
 	private String name;
 
+	private static Set<Integer> idSet;
+	
 	/** hidden constructor. */
 	private RobotType(String name) {
 		this.name = name;
@@ -100,4 +105,40 @@ public enum RobotType {
 			return FunctionType.ROBOTIC_STATION;
 		}
 	}
+	
+	/**
+	 * Gets a set of robot resource ids
+	 * 
+	 * @return
+	 */
+	public static Set<Integer> getIDs() {
+		if (idSet == null) {
+			idSet = new HashSet<Integer>();
+			for (RobotType e : RobotType.values()) {
+				idSet.add(e.ordinal() + ResourceUtil.FIRST_ROBOT_RESOURCE_ID);
+			}
+		}
+		return idSet;
+	}
+	
+	/**
+	 * Convert robot id to vehicle type
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public static RobotType convertID2Type(int id) {
+		return RobotType.values()[id - ResourceUtil.FIRST_ROBOT_RESOURCE_ID];
+	}
+	
+	/**
+	 * Convert an robot type to the associated resourceID.
+	 * Note : Needs revisiting. Equipment should be referenced by the RobotType enum.
+	 * 
+	 * @return
+	 */
+	public static int getResourceID(RobotType type) {
+		return type.ordinal() + ResourceUtil.FIRST_ROBOT_RESOURCE_ID;
+	}
+	
 }

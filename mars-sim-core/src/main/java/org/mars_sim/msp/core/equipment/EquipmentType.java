@@ -17,8 +17,7 @@ public enum EquipmentType {
 	
 	// non-container
 	EVA_SUIT			(Msg.getString("EquipmentType.EVASuit")), //$NON-NLS-1$ 
-	ROBOT				("Robot"), 
-	
+
 	// Container 
 	BAG 				(Msg.getString("EquipmentType.bag")), //$NON-NLS-1$
 	BARREL 				(Msg.getString("EquipmentType.barrel")), //$NON-NLS-1$
@@ -89,9 +88,9 @@ public enum EquipmentType {
 	}
 	
 	/**
-	 * COnvert an EquipmentType to the associated resourceID.
-	 * This is not good and Equipment should be referenced by the EquipmentType enum everywhere.
-	 * Needs revisiting
+	 * Convert an EquipmentType to the associated resourceID.
+	 * Note : Needs revisiting. Equipment should be referenced by the EquipmentType enum everywhere.
+	 * 
 	 * @return
 	 */
 	public static int getResourceID(EquipmentType type) {

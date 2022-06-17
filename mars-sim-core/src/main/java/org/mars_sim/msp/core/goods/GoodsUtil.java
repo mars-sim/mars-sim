@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * GoodsUtil.java
- *
- * @version 3.2.0 2021-06-20
+ * @date 2022-06-16
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.goods;
@@ -24,6 +23,9 @@ import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.Resource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
+import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.robot.RobotConfig;
+import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.vehicle.VehicleConfig;
 import org.mars_sim.msp.core.vehicle.VehicleType;
@@ -36,9 +38,9 @@ public class GoodsUtil {
     /** default logger. */
     private static final SimLogger logger = SimLogger.getLogger(GoodsUtil.class.getName());
 
-    private static final String HEAVY = "Vehicle Heavy";
-    private static final String MID = "Vehicle Mid";
-    private static final String SMALL = "Vehicle Small";
+    private static final String HEAVY = "Vehicle - Heavy";
+    private static final String MEDIUM = "Vehicle - Medium";
+    private static final String SMALL = "Vehicle - Small";
 
     public static final String CHEMICAL = "Chemical";
     public static final String ELEMENT = "Element";
@@ -57,6 +59,8 @@ public class GoodsUtil {
     private static List<Good> goodsList = null;
 
     private static VehicleConfig vehicleConfig = SimulationConfig.instance().getVehicleConfiguration();
+
+    private static RobotConfig robotConfig = SimulationConfig.instance().getRobotConfiguration();
 
 
     /**
@@ -139,12 +143,19 @@ public class GoodsUtil {
         return getGoodsMap().get(id);
     }
 
-    private static Good createEquipmentGood(int id) {
-        if (EquipmentType.convertID2Type(id) == EquipmentType.EVA_SUIT)
-            return new Good(EquipmentType.convertID2Type(id).getName(), id, GoodCategory.EQUIPMENT);
-        else
-            return new Good(EquipmentType.convertID2Type(id).getName(), id, GoodCategory.CONTAINER);
-    }
+//    /**
+//     * Gets the good category for a given good.
+//     * 
+//     * @param id
+//     * @return the Good
+//     */
+//    private static Good createEquipmentGood(int id) {
+//    	EquipmentType type = EquipmentType.convertID2Type(id);
+//        if (type == EquipmentType.EVA_SUIT)
+//            return new Good(EquipmentType.convertID2Type(id).getName(), id, GoodCategory.EQUIPMENT);
+//        else  
+//            return new Good(EquipmentType.convertID2Type(id).getName(), id, GoodCategory.CONTAINER);
+//    }
 
     /**
      * Gets a good object for a given equipment class.
@@ -176,19 +187,31 @@ public class GoodsUtil {
     }
 
 
+    /**
+     * Gets the string type for a given vehicle type.
+     * 
+     * @param vehicleType
+     * @return
+     */
     public static String getVehicleCategory(VehicleType vehicleType) {
         if (vehicleType == VehicleType.CARGO_ROVER || vehicleType == VehicleType.TRANSPORT_ROVER)
             return HEAVY;
         else if (vehicleType == VehicleType.EXPLORER_ROVER)
-            return MID;
+            return MEDIUM;
         else if (vehicleType == VehicleType.LUV || vehicleType == VehicleType.DELIVERY_DRONE)
             return SMALL;
         return "";
     }
 
-    private static Good createVehicleGood(int id) {
-        return new Good(VehicleType.convertID2Type(id).getName(), id, GoodCategory.VEHICLE);
-    }
+//    /**
+//     * Creates a vehicle good for a given vehicle resource id
+//     * 
+//     * @param id
+//     * @return
+//     */
+//    private static Good createVehicleGood(int id) {
+//        return new Good(VehicleType.convertID2Type(id).getName(), id, GoodCategory.VEHICLE);
+//    }
 
     /**
      * Gets a good object for the given vehicle type.
@@ -205,6 +228,16 @@ public class GoodsUtil {
         return getGoodsMap().get(id);
     }
 
+//    /**
+//     * Creates a robot good for a given robot resource id
+//     * 
+//     * @param id
+//     * @return
+//     */
+//    private static Good createRobotGood(int id) {
+//        return new Good(RobotType.convertID2Type(id).getName(), id, GoodCategory.ROBOT);
+//    }
+    
     /**
      * Gets a good object for the given vehicle type.
      *
@@ -244,6 +277,9 @@ public class GoodsUtil {
         // Populate vehicles.
         newMap = populateVehicles(newMap);
 
+        // Populate robots.
+        newMap = populateRobots(newMap);
+        
         goodsMap = newMap;
     }
 
@@ -280,15 +316,19 @@ public class GoodsUtil {
      * @param newList
      */
     private static Map<Integer, Good> populateEquipment(Map<Integer, Good> newMap) {
-        for(EquipmentType eType : EquipmentType.values()) {
-            int id = EquipmentType.getResourceID(eType);
-            newMap.put(id, createEquipmentGood(id));
+        for(EquipmentType type : EquipmentType.values()) {
+            int id = EquipmentType.getResourceID(type);
+            if (type == EquipmentType.EVA_SUIT)
+            	newMap.put(id, new Good(EquipmentType.convertID2Type(id).getName(), id, GoodCategory.EQUIPMENT));
+            else  
+            	newMap.put(id, new Good(EquipmentType.convertID2Type(id).getName(), id, GoodCategory.CONTAINER));
         }
         return newMap;
     }
 
     /**
      * Populates the goods list with all vehicles.
+     * 
      * @param newMap
      * @param newList
      */
@@ -297,9 +337,25 @@ public class GoodsUtil {
         while (i.hasNext()) {
             String name = i.next();
             int id = VehicleType.convertName2ID(name);
-            newMap.put(id, createVehicleGood(id));
+            newMap.put(id, new Good(name, id, GoodCategory.VEHICLE));
         }
         return newMap;
+    }
+    
+    /**
+     * Populates the goods list with all robots
+     * 
+     * @param newMap
+     * @return
+     */
+    private static Map<Integer, Good> populateRobots(Map<Integer, Good> newMap) {
+    	 Iterator<RobotType> i = robotConfig.getRobotMap().keySet().iterator();
+         while (i.hasNext()) {
+        	 RobotType type = i.next();
+             int id = RobotType.getResourceID(type);
+             newMap.put(id, new Good(type.getName(), id, GoodCategory.ROBOT));
+         }
+         return newMap;
     }
 
     /**
@@ -322,7 +378,10 @@ public class GoodsUtil {
         else if (GoodCategory.VEHICLE == good.getCategory()) {
             result = vehicleConfig.getVehicleSpec(good.getName()).getEmptyMass();
         }
-
+        else if (GoodCategory.ROBOT == good.getCategory()) {
+            result = Robot.EMPTY_MASS;
+        }
+        
         return result;
     }
 
@@ -336,139 +395,23 @@ public class GoodsUtil {
         GoodCategory cat = good.getCategory();
 
         if (cat == GoodCategory.AMOUNT_RESOURCE) {
-            AmountResource ar = ResourceUtil.findAmountResource(good.getID());
-            String type = ar.getType();
+            String type = ResourceUtil.findAmountResource(good.getID()).getType();
             if (type != null)
                 return type;
             else
                 return "";
         } else if (cat == GoodCategory.ITEM_RESOURCE) {
-
 			return ItemResourceUtil.findItemResource(good.getName().toLowerCase()).getType();
-
-//            String name = good.getName().toLowerCase();
-//
-//            if (name.contains("eva ")
-//                    || name.equalsIgnoreCase("helmet visor")
-//                    || name.contains("suit")
-//                    || name.equalsIgnoreCase("coveralls"))
-//                return EVASuit.GOODTYPE;
-//
-//            else if (name.contains("rover ")
-//                    || name.contains("wheel")
-//                    || name.contains("chassle")
-//                    || name.contains("vehicle frame")
-//                    || name.contains("utility vehicle")
-//            		)
-//                return VEHICLE_PART;
-//
-//            else if (vehicleConfig.getAttachmentNames().contains(name))
-//                return ATTACHMENT;
-//
-//            else if (name.contains("brick")
-//            		|| name.contains("fiberglass")
-//            		|| name.contains("sheet")
-//            		|| name.contains("roofing")
-//               		|| name.contains("truss")
-//            		)
-//            	return CONSTRUCTION;
-//
-//            else if (name.contains("pump")
-//                    || name.contains("tank")
-//                    || name.contains("gasket")
-//                    || name.contains("tube")
-//                    || name.contains("heat pipe")
-//                    || name.contains("plastic")
-//                    || name.contains("air")
-//                    || name.contains("glove")
-//                    || name.contains("decontamination")
-//                    || name.contains("heating")
-//                    || name.contains("bottle")
-//                    || name.contains("containment")
-//                    || name.contains("hose")
-//                    || name.contains("belt")
-//                    || name.contains("valve")
-//                    || name.contains("filter")
-//                    || name.contains("hammer")
-//                    || name.contains("wrench")
-//                    || name.contains("extinguisher")
-//                    || name.contains("winch")
-//            		)
-//
-//                return UTILITY;
-//
-//            else if (name.contains("wire")
-//                    || name.contains("copper")
-//                    || name.contains("aluminum")
-//                    || name.contains("steel")
-//                    || name.contains("iron")
-//                    || name.contains("ingot")
-//                    )
-//
-//                return METALLIC;
-//
-//            else if (name.contains("resistor")
-//                    || name.contains("capacitor")
-//                    || name.contains("coil")
-//                    || name.contains("fuel cell")
-//                    || name.contains("diode")
-//                    || name.contains("motor")
-//                    || name.contains("lamp")
-//                    || name.contains("light")
-//                    || name.contains("transistor")
-//                    || name.contains("cable")
-//                    || name.contains("antenna")
-//                    || name.contains("satellite dish")
-//                    || name.contains("transformer")
-//                    || name.contains("solar")
-//                    || name.contains("spark")
-//                    || name.contains("generator")
-//
-//            		)
-//                return ELECTRICAL;
-//
-//            else if (name.contains("stove")
-//                    || name.contains("autoclave")
-//                    || name.contains("microwave")
-//                    || name.contains("refrigerator")
-//                    || name.contains("blender")
-//                    || name.contains("oven")
-//                    || name.contains("fan")
-//            		)
-//                return KITCHEN;
-//
-//            else if (name.contains("printer")
-//                    || name.contains("laser")
-//                    || name.contains("circuit")
-//                    || name.contains("bore drill")
-//                    || name.contains("optical")
-//                    || name.contains("logic board")
-//                    || name.contains("microcontroller")
-//                    || name.contains("lens")
-//                    || name.contains("purification")
-//                    || name.contains("chromatograph")
-//                    || name.contains("spectrometer")
-//                    || name.contains("camera")
-//                    || name.contains("blade")
-//                    || name.contains("probe")
-//                    || name.contains("precipitator")
-//            		)
-//                return INSTRUMENT;
-//
-//            else if (name.contains("wafer")
-//            		)
-//                return RAW;
-
-//            return Conversion.capitalize(cat.getMsgKey());
-
         } else if (cat == GoodCategory.CONTAINER) {
             return Conversion.capitalize(cat.getMsgKey());
         } else if (cat == GoodCategory.EQUIPMENT) {
             return EVASuit.GOOD_TYPE;
         } else if (cat == GoodCategory.VEHICLE) {
             return GoodsUtil.getVehicleCategory(VehicleType.convertNameToVehicleType(good.getName()));
+        } else if (cat == GoodCategory.ROBOT) {
+        	return RobotType.valueOfIgnoreCase(good.getName()).getName();
         }
-
+        
         return null;
     }
 

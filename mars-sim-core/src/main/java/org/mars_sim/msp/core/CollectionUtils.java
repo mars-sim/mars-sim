@@ -19,6 +19,8 @@ import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.core.vehicle.VehicleType;
 
 /**
  * This class provides general collection manipulation convenience methods.
@@ -32,12 +34,13 @@ public class CollectionUtils {
 	) {
 		return units
 				.stream()
-				.filter(u-> u instanceof Equipment)
+				.filter(u -> u instanceof Equipment)
 				.map(u -> (Equipment) u)
-				.filter(u-> !u.isSalvaged())
+				.filter(u -> !u.isSalvaged())
 				.collect(Collectors.toList());
 	}
 
+	
 	public static Collection<Robot> getRobot(
 		Collection<Unit> units
 	) {
@@ -57,7 +60,25 @@ public class CollectionUtils {
 
 	}
 
-
+	/**
+	 * Gets the base mass of a vehicle type.
+	 * 
+	 * @param vehicleType
+	 * @return
+	 */
+	public static double getVehicleTypeBaseMass(VehicleType vehicleType) {
+		Vehicle vv = unitManager.getVehicles()
+			.stream()
+			.filter(v -> v.getVehicleType() == vehicleType)
+			.findAny().orElse(null);
+		
+		if (vv == null)
+			return 0;
+		
+		return vv.getBaseMass();
+	}
+	
+	
 	/**
 	 * Finds the settlement's unique id based on its name
 	 *

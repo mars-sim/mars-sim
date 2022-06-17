@@ -549,7 +549,6 @@
 			<part name="plastic tubing" number="2" probability="15" />
 			<part name="epoxy resin bottle" number="1" probability="15" />
 			<part name="copper pipe" number="1" probability="2" />
-		<!-- 2014-11-19 Added water tank and small water pump -->
 			<part name="water tank" number="1" probability="3" />
 			<part name="water pump - small" number="1" probability="15" />
 		</repair-parts-list>
@@ -770,7 +769,7 @@
 		<repair-parts-list>
 			<part name="electrical wire" number="2" probability="10" />
 			<part name="wire connector" number="2" probability="10" />
-			<part name="water pump" number="1" probability="50" />
+			<part name="water pump - small" number="1" probability="50" />
 			<part name="lubricant bottle" number="1" probability="10" />
 		</repair-parts-list>
 	</malfunction>
@@ -855,7 +854,7 @@
 		<repair-parts-list>
 			<part name="electrical wire" number="2" probability="25" />
 			<part name="wire connector" number="2" probability="25" />
-			<part name="small water pump" number="1"  probability="5"/>
+			<part name="water pump - small" number="1"  probability="5"/>
 			<part name="heating element" number="1" probability="5" />
 			<part name="heat pipe" number="2" probability="5" />
 			<part name="microcontroller" number="1"  probability="1"/>
@@ -956,7 +955,7 @@
 		<repair-parts-list>
 			<part name="oxygen pump" number="3" probability="5" />
 			<part name="carbon dioxide pump" number="3" probability="5" />
-			<part name="small water pump" number="3" probability="10" />
+			<part name="water pump - small" number="3" probability="10" />
 			<part name="heating element" number="3" probability="10" />
 			<part name="electrical wire" number="3" probability="20" />
 			<part name="wire connector" number="6" probability="20" />
@@ -982,7 +981,7 @@
 			<part name="aluminum wire" number="2" probability="5"  />
 			<part name="electrical wire" number="2" probability="25" />
 			<part name="wire connector" number="2" probability="20" />
-			<part name="small water pump" number="1" probability="5" />
+			<part name="water pump - small" number="1" probability="5" />
 			<part name="heating element" number="1" probability="5" />
 			<part name="heat pipe" number="1" probability="5" />
 			<part name="microcontroller" number="1" probability="1" />

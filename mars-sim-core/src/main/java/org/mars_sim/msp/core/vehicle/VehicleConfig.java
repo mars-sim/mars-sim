@@ -84,7 +84,9 @@ public class VehicleConfig implements Serializable {
 	}
 
 	/**
-	 * parse only once, store resulting config data for later use.
+	 * Parses only once, store resulting data for later use.
+	 * 
+	 * @param vehicleDoc
 	 */
 	private synchronized void loadVehicleSpecs(Document vehicleDoc) {
 		if (map != null) {

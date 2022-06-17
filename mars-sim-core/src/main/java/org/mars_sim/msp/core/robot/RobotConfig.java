@@ -1,12 +1,14 @@
-/**
+/*
  * Mars Simulation Project
  * RobotConfig.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-06-16
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.robot;
 
 import java.io.Serializable;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -16,7 +18,7 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 
 /**
- * Provides configuration information about robot units. Uses a JDOM document to
+ * Provides configuration information about robots. Uses a JDOM document to
  * get the information.
  */
 public class RobotConfig implements Serializable {
@@ -29,35 +31,51 @@ public class RobotConfig implements Serializable {
 	private List<String> alphaRobotCrewJob; // = new ArrayList<String>();
 
 	// Element names
+	private static final String ROBOT_LIST = "robot-list";
+	private static final String ROBOT = "robot";
+
 	private static final String ROBOT_NAME = "name";
 	private static final String ROBOT_TYPE = "type";
+	private static final String SETTLEMENT = "settlement";
+	private static final String JOB = "job";
+	
 	private static final String POWER_CONSUMPTION_RATE = "power-consumption-rate";
 	private static final String POWER_DEPRIVATION_TIME = "power-deprivation-time";
 	private static final String FUEL_CONSUMPTION_RATE = "fuel-consumption-rate";
-	private static final String FUEL_DEPRIVATION_TIME = "fuel-deprivation-time";
-
 	private static final String LOW_POWER_MODE_START_TIME = "low-power-mode-start-time";
 	private static final String MIN_AIR_PRESSURE = "min-air-pressure";
 	private static final String DECOMPRESSION_TIME = "decompression-time";
 	private static final String MIN_TEMPERATURE = "min-temperature";
 	private static final String MAX_TEMPERATURE = "max-temperature";
 	private static final String FREEZING_TIME = "freezing-time";
-	private static final String ROBOT_LIST = "robot-list";
-	private static final String ROBOT = "robot";
-	private static final String SETTLEMENT = "settlement";
-	private static final String JOB = "job";
+
 	private static final String ROBOTIC_ATTRIBUTE_LIST = "robotic-attribute-list";
 	private static final String ROBOTIC_ATTRIBUTE = "robotic-attribute";
 	private static final String NAME = "name";
 	private static final String VALUE = "value";
+	
 	private static final String SKILL_LIST = "skill-list";
 	private static final String SKILL = "skill";
 	private static final String LEVEL = "level";
-//	private static final String OPINION = "opinion";
-//	private static final String PERCENTAGE = "percentage";
 
+	// power-consumption-rate
+	private static double pcr;
+	// fuel-consumption-rate
+	private static double fcr ;
+	// low-power-mode-start-time
+	private static double lpmst;
+	// min-air-pressure
+	private static double minap;
+	// min-temperature
+	private static double minT;
+	// max-temperature
+	private static double maxT;
+	// freezing-time
+	private static double ft;
+	
 	private Document robotDoc;
-	private List<String> nameList;
+	
+	private Map<RobotType, RobotSpec> map;
 
 	/**
 	 * Constructor
@@ -66,31 +84,102 @@ public class RobotConfig implements Serializable {
 	 */
 	public RobotConfig(Document robotDoc) {
 		this.robotDoc = robotDoc;
-		
+		loadRobotSpecs(robotDoc);
 	}
 
-//	/**
-//	 * Gets a list of Robot names for settlers.
-//	 * @return List of Robot names.
-//	 * @throws Exception if Robot names could not be found.
-//	 
-//    @SuppressWarnings("unchecked")
-//	public List<String> getRobotList() {
-//
-//		if (nameList == null) {
-//			nameList = new ArrayList<String>();
-//			Element root = robotDoc.getRootElement();
-//			Element robotNameList = root.getChild(ROBOT_NAME);
-//			List<Element> robotNames = robotNameList.getChildren(ROBOT_TYPE);
-//
-//			for (Element nameElement : robotNames) {
-//				nameList.add(nameElement.getAttributeValue(VALUE));
-//			}
-//		}
-//
-//		return nameList;
-//	}
+	/**
+	 * Parses only once, store resulting data for later use.
+	 * 
+	 * @param robotDoc
+	 */
+	private synchronized void loadRobotSpecs(Document robotDoc) {
+		if (map != null) {
+			// just in case if another thread is being created
+			return;
+		}
+		
+		// Build the global list in a temp to avoid access before it is built
+		Map<RobotType, RobotSpec> newMap = new HashMap<>();
+		
+		Element root = robotDoc.getRootElement();
+	
+		Element pcrElement = root.getChild("power-consumption-rate");
+		pcr = Double.parseDouble(pcrElement.getAttributeValue(VALUE));
+		
+		Element fcrElement = root.getChild("fuel-consumption-rate");
+		fcr = Double.parseDouble(fcrElement.getAttributeValue(VALUE));
+		
+		Element lpmstElement = root.getChild("low-power-mode-start-time");
+		lpmst = Double.parseDouble(lpmstElement.getAttributeValue(VALUE));
+		
+		Element minapElement = root.getChild("min-air-pressure");
+		minap = Double.parseDouble(minapElement.getAttributeValue(VALUE));
+		
+		Element minTElement = root.getChild("min-temperature");
+		minT = Double.parseDouble(minTElement.getAttributeValue(VALUE));
+		
+		Element maxTElement = root.getChild("max-temperature");
+		maxT = Double.parseDouble(maxTElement.getAttributeValue(VALUE));
+		
+		Element ftElement = root.getChild("freezing-time");
+		ft = Double.parseDouble(ftElement.getAttributeValue(VALUE));
+		
+		Element rlElement = root.getChild(ROBOT_LIST);
+		List<Element> listNodes = rlElement.getChildren(ROBOT);
+		for (Element listElement : listNodes) {
+			String name = listElement.getAttributeValue(ROBOT_NAME).toLowerCase();
+			String type = listElement.getAttributeValue(ROBOT_TYPE).toLowerCase();
+			RobotType robotType = RobotType.valueOfIgnoreCase(type);
+			String settlementName = listElement.getAttributeValue(SETTLEMENT).toLowerCase();
+			String jobName = listElement.getAttributeValue(JOB).toLowerCase();
 
+			// Attributes
+			Element attributeListElement = listElement.getChild(ROBOTIC_ATTRIBUTE_LIST);
+			if (attributeListElement != null) {
+				Map<String, Double> attributeMap = new HashMap<>();
+				List<Element> attributesElement = attributeListElement.getChildren(ROBOTIC_ATTRIBUTE);
+				for (Element attributeElement : attributesElement) {
+					String attributeName = attributeElement.getAttributeValue(NAME).toLowerCase();
+					double value = Double.parseDouble(attributeElement.getAttributeValue(VALUE));
+					attributeMap.put(attributeName, value);
+				}
+			}
+
+			// Skills
+			Element skillListElement = listElement.getChild(SKILL_LIST);
+			if (skillListElement != null) {
+				Map<String, Double> skillMap = new HashMap<>();
+				List<Element> skillsElement = skillListElement.getChildren(SKILL);
+				for (Element skillElement : skillsElement) {
+					String skillName = skillElement.getAttributeValue(NAME).toLowerCase();
+					double level = Double.parseDouble(skillElement.getAttributeValue(LEVEL));
+					skillMap.put(skillName, level);
+				}
+			}
+
+			RobotSpec spec = new RobotSpec(
+					name, 
+					robotType, 
+					settlementName, 
+					jobName);
+
+			// and keep results for later use
+			newMap.put(robotType, spec);
+		}
+		
+		map = Collections.unmodifiableMap(newMap);
+	}
+	
+	
+	/**
+	 * Gets the robot map.
+	 * 
+	 * @return
+	 */
+	public Map<RobotType, RobotSpec> getRobotMap() {
+		return map;
+	}
+	
 	/**
 	 * Gets the Power consumption rate.
 	 * 
@@ -181,22 +270,6 @@ public class RobotConfig implements Serializable {
 		return getValueAsDouble(FREEZING_TIME);
 	}
 
-//	/**
-//	 * Gets the configured robot's name.
-//	 * @param index the robot's index.
-//	 * @return name or null if none.
-//	 * @throws Exception if error in XML parsing.
-//	 
-//	public String getConfiguredRobotType(int index) {
-//		//String s = getValueAsString(index,TYPE);
-//		//alphaCrewName.add(s);
-//		//return s;	
-//		if (alphaRobotCrewName != null)
-//			return alphaRobotCrewName.get(index) ;
-//		else 
-//			return getValueAsString(index,ROBOT_TYPE);
-//	}
-
 	/**
 	 * Gets the configured robot's starting settlement.
 	 * 
@@ -230,15 +303,6 @@ public class RobotConfig implements Serializable {
 		} else
 			alphaRobotCrewName.add(value);
 	}
-
-//	public void setPersonPersonality(int index, String value) {
-//		if (alphaCrewPersonality == null)  
-//			alphaCrewPersonality = new ArrayList<String>(4);
-//		if (alphaCrewPersonality.size() == 4) {
-//			alphaCrewPersonality.set(index, value);
-//		} else
-//			alphaCrewPersonality.add(value);
-//	}
 
 	public void setRobotJob(int index, String value) {
 		if (alphaRobotCrewJob == null)
@@ -301,7 +365,7 @@ public class RobotConfig implements Serializable {
 	 * @throws Exception if error in XML parsing.
 	 */
 	public Map<String, Integer> getRoboticAttributeMap(int index) {
-		Map<String, Integer> result = new ConcurrentHashMap<String, Integer>();
+		Map<String, Integer> result = new ConcurrentHashMap<>();
 		Element root = robotDoc.getRootElement();
 		Element robotList = root.getChild(ROBOT_LIST);
 		Element robotElement = (Element) robotList.getChildren(ROBOT).get(index);
@@ -343,7 +407,7 @@ public class RobotConfig implements Serializable {
 	 * @throws Exception if error in XML parsing.
 	 */
 	public Map<String, Integer> getSkillMap(int index) {
-		Map<String, Integer> result = new ConcurrentHashMap<String, Integer>();
+		Map<String, Integer> result = new ConcurrentHashMap<>();
 		Element root = robotDoc.getRootElement();
 		Element robotList = root.getChild(ROBOT_LIST);
 		Element robotElement = (Element) robotList.getChildren(ROBOT).get(index);
@@ -366,10 +430,6 @@ public class RobotConfig implements Serializable {
 	 */
 	public void destroy() {
 		robotDoc = null;
-		if (nameList != null) {
-			nameList.clear();
-			nameList = null;
-		}
 
 		if (alphaRobotCrewName != null) {
 			alphaRobotCrewName.clear();

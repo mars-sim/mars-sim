@@ -132,6 +132,12 @@ public final class JobUtil {
 		return jobSpecs.values();
 	}
 
+	/**
+	 * Gets the robot job class from its job class name
+	 * 
+	 * @param jobClassName
+	 * @return
+	 */
 	public static RobotJob getRobotJob(String jobClassName) {
 		if (robotJobs == null)
 			loadRobotJobs();
@@ -172,8 +178,16 @@ public final class JobUtil {
 		return result;
 	}
 
-	// NOTE: determine the need for this method since it promotes robotJob switching
-	// For robots
+	
+	/**
+	 * Gets the remaining settlement need.
+	 * 
+	 * NOTE: determine the need for this method since it promotes robotJob switching
+	 * 
+	 * @param settlement
+	 * @param robotJob
+	 * @return
+	 */
 	public static double getRemainingSettlementNeed(Settlement settlement, RobotJob robotJob) {
 		double result = robotJob.getSettlementNeed(settlement);
 

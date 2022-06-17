@@ -1,19 +1,19 @@
 /*
  * Mars Simulation Project
  * TradeTableModel.java
- * @date 2022-05-27
+ * @date 2022-06-16
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
 import java.util.ArrayList;
-
 import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
+import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEvent;
@@ -24,10 +24,14 @@ import org.mars_sim.msp.core.UnitManagerEvent;
 import org.mars_sim.msp.core.UnitManagerEventType;
 import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.UnitType;
+import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.goods.Good;
 import org.mars_sim.msp.core.goods.GoodsUtil;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
+import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.VehicleType;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
@@ -37,17 +41,22 @@ public class TradeTableModel extends AbstractTableModel
 implements UnitListener, MonitorModel, UnitManagerListener {
 
 	private static final String TRADE_GOODS = "Good(s)";
-	private static final String TRADE_NAME = "Name";
-	private static final String QUANTITY = "# or kg - ";
-	private static final String VP_AT = "Value - ";
-	private static final String PRICE_AT = "Price - ";
-	private static final String CATEGORY = "Category";
-	private static final String TYPE = "Type";
+	
+	private static final String GOOD_COL = "Good";
+	private static final String CATEGORY_COL = "Category";
+	private static final String TYPE_COL = "Type";
+
+	private static final String DEMAND_COL = "Demand - ";
+	private static final String SUPPLY_COL = "Supply - ";
+	private static final String QUANTITY_COL = "# - ";
+	private static final String MASS_COL = "kg - ";
+	private static final String VALUE_COL = "Value - ";
+	private static final String PRICE_COL = "Price - ";
 
 	private static final String ONE_SPACE = " ";
 
 	protected static final int NUM_INITIAL_COLUMNS = 3;
-	protected static final int NUM_DATA_COL = 3;
+	protected static final int NUM_DATA_COL = 6;
 
 	// Data members
 	private List<Good> goodsList;
@@ -139,19 +148,28 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 	 * @return name of specified column.
 	 */
 	public String getColumnName(int columnIndex) {
-		if (columnIndex == 0) return TRADE_NAME;
-		else if (columnIndex == 1) return CATEGORY;
-		else if (columnIndex == 2) return TYPE;
+		if (columnIndex == 0) return GOOD_COL;
+		else if (columnIndex == 1) return CATEGORY_COL;
+		else if (columnIndex == 2) return TYPE_COL;
 		else {
 			int col = columnIndex - NUM_INITIAL_COLUMNS;
 			int q = col / NUM_DATA_COL;
 			int r = col % NUM_DATA_COL;
+			String s = null;
 			if (r == 0)
-				return QUANTITY + settlements.get(q).getName();
+				s = DEMAND_COL;
 			else if (r == 1)
-				return VP_AT + settlements.get(q).getName();
+				s = SUPPLY_COL;
+			else if (r == 2)
+				s = QUANTITY_COL;
+			else if (r == 3)
+				s = MASS_COL;
+			else if (r == 4)
+				s = VALUE_COL;
 			else
-				return PRICE_AT + settlements.get(q).getName();
+				s = PRICE_COL;
+			
+			return s + settlements.get(q).getName();
 		}
 	}
 
@@ -194,9 +212,16 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 			int col = columnIndex - NUM_INITIAL_COLUMNS;
 			int q = col / NUM_DATA_COL;
 			int r = col % NUM_DATA_COL;
+
 			if (r == 0)
-				return getQuantity(settlements.get(q), goodsList.get(rowIndex).getID());
+				return settlements.get(q).getGoodsManager().getDemandValue(goodsList.get(rowIndex));
 			else if (r == 1)
+				return settlements.get(q).getGoodsManager().getSupplyValue(goodsList.get(rowIndex));
+			else if (r == 2)
+				return getQuantity(settlements.get(q), goodsList.get(rowIndex).getID());
+			else if (r == 3)
+				return getTotalMass(settlements.get(q), goodsList.get(rowIndex));
+			else if (r == 4)
 				return settlements.get(q).getGoodsManager().getGoodValuePerItem(goodsList.get(rowIndex).getID());
 			else
 				return Math.round(settlements.get(q).getGoodsManager().getPricePerItem(goodsList.get(rowIndex))*100.0)/100.0;
@@ -210,10 +235,10 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 	 * @param id
 	 * @return
 	 */
-    private double getQuantity(Settlement settlement, int id) {
+    private Object getQuantity(Settlement settlement, int id) {
 
     	if (id < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
-    		return Math.round(settlement.getAmountResourceStored(id) * 1.0)/1.0;
+    		return null;
     	}
     	else if (id < ResourceUtil.FIRST_VEHICLE_RESOURCE_ID) {
     		return settlement.getItemResourceStored(id);
@@ -221,11 +246,57 @@ implements UnitListener, MonitorModel, UnitManagerListener {
     	else if (id < ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID) {
     		return settlement.findNumVehiclesOfType(VehicleType.convertID2Type(id));
     	}
+    	else if (id < ResourceUtil.FIRST_ROBOT_RESOURCE_ID) {
+    		EquipmentType type = EquipmentType.convertID2Type(id);
+    		if (type == EquipmentType.EVA_SUIT)
+    			return settlement.getNumEVASuit();
+    		
+    		return settlement.findNumContainersOfType(type);
+    	}
     	else {
-    		return settlement.findNumContainersOfType(EquipmentType.convertID2Type(id));
+    		return settlement.getInitialNumOfRobots();
     	}
     }
 
+	/**
+	 * Gets the quantity/amount of the resource
+	 *
+	 * @param settlement
+	 * @param id
+	 * @return
+	 */
+    private Object getTotalMass(Settlement settlement, Good good) {
+    	int id = good.getID(); 
+    	
+    	if (id < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
+      		// For Amount Resource
+    		return Math.round(settlement.getAmountResourceStored(id) * 1.0)/1.0;
+    	}
+    	else if (id < ResourceUtil.FIRST_VEHICLE_RESOURCE_ID) {
+    		// For Item Resource
+    		return settlement.getItemResourceStored(id) * ItemResourceUtil.findItemResource(id).getMassPerItem();
+    	}
+    	else if (id < ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID) {
+    		// For Vehicle
+    		VehicleType vehicleType = VehicleType.convertID2Type(id);
+    		if (settlement.getAVehicle(vehicleType) == null)
+    			return 0;
+    		
+    		return settlement.findNumVehiclesOfType(vehicleType) * CollectionUtils.getVehicleTypeBaseMass(vehicleType); 
+    	}
+    	else if (id < ResourceUtil.FIRST_ROBOT_RESOURCE_ID) {
+    		// For Equipment   		
+    		EquipmentType type = EquipmentType.convertID2Type(id);
+
+    		if (type == EquipmentType.EVA_SUIT)
+    			return settlement.getNumEVASuit() * EVASuit.emptyMass;
+    		
+    		return settlement.findNumContainersOfType(type) * EquipmentFactory.getEquipmentMass(type);		
+    	}
+    	else {
+    		return settlement.getInitialNumOfRobots() * Robot.EMPTY_MASS;
+    	}
+    }
 
 	/**
 	 * Gets the good category name in the internationalized string

@@ -1,3 +1,9 @@
+/*
+ * Mars Simulation Project
+ * VehicleSpec.java
+ * @date 2021-08-20
+ * @author Barry Evans
+ */
 package org.mars_sim.msp.core.vehicle;
 
 import java.io.Serializable;
@@ -10,7 +16,7 @@ import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.science.ScienceType;
 
 /** 
- * The Specification of a Vehicle loaded from teh external configuration.
+ * The Specification of a Vehicle loaded from the external configuration.
  */
 public class VehicleSpec implements Serializable {
 

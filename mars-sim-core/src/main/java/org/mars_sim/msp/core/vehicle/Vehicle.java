@@ -970,6 +970,13 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
+	 * Records the beginning weight of the vehicle and its payload
+	 */
+	public double getStartMass() {
+		return startMass;
+	}
+	
+	/**
 	 * Gets the estimated average fuel consumption of the vehicle [km/kg] for a trip
 	 * Note: Assume that it is half of two fuel consumption values (between the beginning and the end of the trip)
 	 *
