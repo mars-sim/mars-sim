@@ -34,39 +34,42 @@ import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.Temporal;
 
 /**
+ * 
  * The EVASuit class represents an EVA suit which provides life support for a
  * person during a EVA operation.
  *
- * According to https://en.wikipedia.org/wiki/Space_suit,
+ * <p>According to https://en.wikipedia.org/wiki/Space_suit,
  *
- * Generally speaking, in order to supply enough oxygen for respiration, a space suit
+ * <p>Generally speaking, in order to supply enough oxygen for respiration, a space suit
  * using pure oxygen should have a pressure of about
+ * <p> (A) 32.4 kPa (240 Torr; 4.7 psi),
  *
- * (A) 32.4 kPa (240 Torr; 4.7 psi),
- *
- *     which is equal to the 20.7 kPa (160 Torr; 3.0 psi) partial pressure of oxygen
+ * <p>    which is equal to the 20.7 kPa (160 Torr; 3.0 psi) partial pressure of oxygen
  *     in the Earth's atmosphere at sea level,
  *
- * (B) plus 5.31 kPa (40 Torr; 0.77 psi) CO2 and 6.28 kPa (47 Torr; 0.91 psi) water vapor
+ * <p> (B) plus 5.31 kPa (40 Torr; 0.77 psi) CO2 and 6.28 kPa (47 Torr; 0.91 psi) water vapor
  *     pressure,
- *
- * both of which must be subtracted from the alveolar pressure to get alveolar oxygen
+ * 
+ * <p> both of which must be subtracted from the alveolar pressure to get alveolar oxygen
  * partial pressure in 100% oxygen atmospheres, by the alveolar gas equation.
  *
- * According to https://en.wikipedia.org/wiki/Mars_suit#Breathing for a Mars suit, the
+ * <p>According to https://en.wikipedia.org/wiki/Mars_suit#Breathing for a Mars suit, the
  * absolute minimum safe O2 requirement is a partial pressure of 11.94 kPa (1.732 psi)
  *
- * In contrast, The Russian Orlan spacesuit system operates at 40.0 kPa (5.8 psia).
+ * <p>In contrast, The Russian Orlan spacesuit system operates at 40.0 kPa (5.8 psia).
  * On the other hand, the U.S. EMU system operates at 29.6 kPa (4.3 psia) of oxygen,
  * with traces of CO2 and water vapor.
  *
- * The Russian EVA preparation protocol includes a 30-minute oxygen pre-breathe in
+ * <p>The Russian EVA preparation protocol includes a 30-minute oxygen pre-breathe in
  * the Orlan spacesuit at a pressure of 73 kPa (10.6 psia) to partially wash out
  * nitrogen from crew members’ blood and tissues (Barer and Filipenkov, 1994)
  *
- * See https://msis.jsc.nasa.gov/sections/section14.htm for more design and
+ * <p>See https://msis.jsc.nasa.gov/sections/section14.htm for more design and
  * operational considerations.
  *
+ * <p>For an intro to Extravehicular Mobility Unit (EMU), see 
+ * https://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
+ * `Extravehicular Activity Suit Systems Design How to Walk, Talk, and Breathe on Mars` 
  */
 public class EVASuit extends Equipment
 	implements LifeSupportInterface, Serializable, Malfunctionable, ResourceHolder, ItemHolder,
@@ -81,7 +84,7 @@ public class EVASuit extends Equipment
 	// Static members
 	public static String TYPE = SystemType.EVA_SUIT.getName();
 
-	public static String GOOD_TYPE = "Equipment";
+	public static String GOOD_TYPE = "EVA";
 
 	/** Total gas tank volume of EVA suit (Liter). */
 	public static final double TOTAL_VOLUME = 3.9D;
@@ -114,7 +117,6 @@ public class EVASuit extends Equipment
 	
 	/** Unloaded mass of EVA suit (kg.). The combined total of the mass of all parts. */
 	public static double emptyMass;
-
 
 	// Data members
 	/** The equipment's malfunction manager. */

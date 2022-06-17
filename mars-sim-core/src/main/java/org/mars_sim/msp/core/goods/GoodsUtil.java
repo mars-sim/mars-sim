@@ -31,7 +31,7 @@ import org.mars_sim.msp.core.vehicle.VehicleConfig;
 import org.mars_sim.msp.core.vehicle.VehicleType;
 
 /**
- * Utility class for goods information.
+ * Utility class for all goods.
  */
 public class GoodsUtil {
 
@@ -59,9 +59,7 @@ public class GoodsUtil {
     private static List<Good> goodsList = null;
 
     private static VehicleConfig vehicleConfig = SimulationConfig.instance().getVehicleConfiguration();
-
     private static RobotConfig robotConfig = SimulationConfig.instance().getRobotConfiguration();
-
 
     /**
      * Private constructor for utility class.
@@ -96,7 +94,6 @@ public class GoodsUtil {
         return goodsMap;
     }
 
-
     /**
      * Calculates the cost of each good
      */
@@ -106,7 +103,12 @@ public class GoodsUtil {
         }
     }
 
-
+    /**
+     * Creates the good from either amount resource or item resource.
+     * 
+     * @param resource
+     * @return good for the resource.
+     */
     private static Good createResourceGood(Resource resource) {
         if (resource == null) {
             logger.severe("resource is NOT supposed to be null.");
@@ -142,20 +144,6 @@ public class GoodsUtil {
     public static Good getResourceGood(int id) {
         return getGoodsMap().get(id);
     }
-
-//    /**
-//     * Gets the good category for a given good.
-//     * 
-//     * @param id
-//     * @return the Good
-//     */
-//    private static Good createEquipmentGood(int id) {
-//    	EquipmentType type = EquipmentType.convertID2Type(id);
-//        if (type == EquipmentType.EVA_SUIT)
-//            return new Good(EquipmentType.convertID2Type(id).getName(), id, GoodCategory.EQUIPMENT);
-//        else  
-//            return new Good(EquipmentType.convertID2Type(id).getName(), id, GoodCategory.CONTAINER);
-//    }
 
     /**
      * Gets a good object for a given equipment class.
@@ -203,16 +191,6 @@ public class GoodsUtil {
         return "";
     }
 
-//    /**
-//     * Creates a vehicle good for a given vehicle resource id
-//     * 
-//     * @param id
-//     * @return
-//     */
-//    private static Good createVehicleGood(int id) {
-//        return new Good(VehicleType.convertID2Type(id).getName(), id, GoodCategory.VEHICLE);
-//    }
-
     /**
      * Gets a good object for the given vehicle type.
      *
@@ -228,16 +206,6 @@ public class GoodsUtil {
         return getGoodsMap().get(id);
     }
 
-//    /**
-//     * Creates a robot good for a given robot resource id
-//     * 
-//     * @param id
-//     * @return
-//     */
-//    private static Good createRobotGood(int id) {
-//        return new Good(RobotType.convertID2Type(id).getName(), id, GoodCategory.ROBOT);
-//    }
-    
     /**
      * Gets a good object for the given vehicle type.
      *
@@ -286,6 +254,7 @@ public class GoodsUtil {
 
     /**
      * Populates the goods list with all amount resources.
+     * 
      * @param newMap
      * @param newList
      */
@@ -300,6 +269,9 @@ public class GoodsUtil {
 
     /**
      * Populates the goods list with all item resources.
+     * 
+     * @param newMap
+     * @return
      */
     private static Map<Integer, Good> populateItemResources(Map<Integer, Good> newMap) {
         Iterator<Part> i = ItemResourceUtil.getItemResources().iterator();
@@ -312,16 +284,14 @@ public class GoodsUtil {
 
     /**
      * Populates the goods list with all equipment.
+     * 
      * @param newMap
      * @param newList
      */
     private static Map<Integer, Good> populateEquipment(Map<Integer, Good> newMap) {
         for(EquipmentType type : EquipmentType.values()) {
             int id = EquipmentType.getResourceID(type);
-            if (type == EquipmentType.EVA_SUIT)
-            	newMap.put(id, new Good(EquipmentType.convertID2Type(id).getName(), id, GoodCategory.EQUIPMENT));
-            else  
-            	newMap.put(id, new Good(EquipmentType.convertID2Type(id).getName(), id, GoodCategory.CONTAINER));
+            newMap.put(id, new Good(type.getName(), id, GoodCategory.EQUIPMENT));
         }
         return newMap;
     }
