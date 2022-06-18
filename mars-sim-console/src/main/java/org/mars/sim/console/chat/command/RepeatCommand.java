@@ -36,15 +36,29 @@ public class RepeatCommand extends ChatCommand implements CancellableCommand {
 	public boolean execute(Conversation context, String input) {
 		InteractiveChatCommand parent = context.getCurrentCommand();
 		
-		// Extract seconds delay
-		String[] parts = input.split(" ", 3);
-		int delaySec = Integer.parseInt(parts[0]);
-		if ((delaySec < MIN_DELAY) || (delaySec > MAX_DELAY)) {
-			context.println("Delay must be between " + MIN_DELAY + " and " + MAX_DELAY + " secs");
+		// Extract repate parameters
+		String[] parts = ((input != null) ? input : "").split(" ", 3);
+		boolean badFormat = (parts.length != 3);
+		int delaySec = 0;
+		int repeatCount = 0;
+		if (!badFormat) {
+			try {
+				delaySec = Integer.parseInt(parts[0]);
+				if ((delaySec < MIN_DELAY) || (delaySec > MAX_DELAY)) {
+					context.println("Delay must be between " + MIN_DELAY + " and " + MAX_DELAY + " secs");
+					return false;
+				}
+				repeatCount = Integer.parseInt(parts[1]);
+			}
+			catch(NumberFormatException nfe) {
+				badFormat = true;
+			}
+		}
+		if (badFormat) {
+			context.println("Command must be <seconds delay> <repeat count> <command>");
 			return false;
 		}
-		int repeatCount = Integer.parseInt(parts[1]);
-		
+
 		// Check the command is not interactive
 		String commandStr = parts[2].trim();
 		ParseResult parsedCommand = parent.parseInput(context, commandStr);
