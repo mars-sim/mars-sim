@@ -66,9 +66,9 @@ public final class TradeUtil {
 	/** Cache for the best trade settlement. */
 	public static Settlement bestTradeSettlementCache = null;
 
-	private static int oxygenID = ResourceUtil.oxygenID;
-	private static int waterID = ResourceUtil.waterID;
-	private static int foodID = ResourceUtil.foodID;
+	private static final int OXYGEN_ID = ResourceUtil.oxygenID;
+	private static final int WATER_ID = ResourceUtil.waterID;
+	private static final int FOOD_ID = ResourceUtil.foodID;
 
 	private static Simulation sim = Simulation.instance();
 	private static MissionManager missionManager = sim.getMissionManager();
@@ -771,19 +771,19 @@ public final class TradeUtil {
 		// Get oxygen amount.
 		double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * tripTimeSols * Trade.MAX_MEMBERS
 				* Mission.OXYGEN_MARGIN * life_support_margin;
-		Good oxygenGood = GoodsUtil.getResourceGood(oxygenID);
+		Good oxygenGood = GoodsUtil.getResourceGood(OXYGEN_ID);
 		neededResources.put(oxygenGood, (int) oxygenAmount);
 
 		// Get water amount.
 		double waterAmount = PhysicalCondition.getWaterConsumptionRate() * tripTimeSols * Trade.MAX_MEMBERS
 				* Mission.WATER_MARGIN * life_support_margin;
-		Good waterGood = GoodsUtil.getResourceGood(waterID);
+		Good waterGood = GoodsUtil.getResourceGood(WATER_ID);
 		neededResources.put(waterGood, (int) waterAmount);
 
 		// Get food amount.
 		double foodAmount = PhysicalCondition.getFoodConsumptionRate() * tripTimeSols * Trade.MAX_MEMBERS
 				* Mission.FOOD_MARGIN * life_support_margin;
-		Good foodGood = GoodsUtil.getResourceGood(foodID);
+		Good foodGood = GoodsUtil.getResourceGood(FOOD_ID);
 		neededResources.put(foodGood, (int) foodAmount);
 
 		// Get cost of resources.

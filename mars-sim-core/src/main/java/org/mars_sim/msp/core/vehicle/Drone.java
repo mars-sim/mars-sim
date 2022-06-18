@@ -4,7 +4,6 @@
  * @date 2021-10-16
  * @author Manny Kung
  */
-
 package org.mars_sim.msp.core.vehicle;
 
 import java.io.Serializable;

@@ -4,7 +4,6 @@
  * @date 2022-06-15
  * @author Manny Kung
  */
-
 package org.mars.sim.console.chat.simcommand.settlement;
 
 import org.mars.sim.console.chat.ChatCommand;
@@ -14,8 +13,6 @@ import org.mars.sim.console.chat.simcommand.StructuredResponse;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
-import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
-import org.mars_sim.msp.core.structure.building.function.ResourceProcessing;
 import org.mars_sim.msp.core.structure.building.function.WasteProcess;
 import org.mars_sim.msp.core.structure.building.function.WasteProcessing;
 import org.mars_sim.msp.core.time.MarsClock;

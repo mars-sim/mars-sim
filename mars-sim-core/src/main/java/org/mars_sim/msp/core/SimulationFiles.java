@@ -1,15 +1,12 @@
-/**
+/*
  * Mars Simulation Project
  * SimulationFiles.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-06-17
  * @author Barry Evans
  */
-
 package org.mars_sim.msp.core;
 
 import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Comparator;
 

@@ -38,8 +38,8 @@ public class FuelHeatSource extends HeatSource implements Serializable {
 
 	private boolean toggle = false;
 
-	private static int oxygenID = ResourceUtil.oxygenID;
-	private static int methaneID = ResourceUtil.methaneID;
+	private static final int OXYGEN_ID = ResourceUtil.oxygenID;
+	private static final int METHANE_ID = ResourceUtil.methaneID;
 	
 	private Building building;
 
@@ -86,8 +86,8 @@ public class FuelHeatSource extends HeatSource implements Serializable {
 		// System.out.println("maxFuel : "+maxFuel);
 		double consumed = 0;
 
-		double fuelStored = settlement.getAmountResourceStored(methaneID);
-		double o2Stored = settlement.getAmountResourceStored(oxygenID);
+		double fuelStored = settlement.getAmountResourceStored(METHANE_ID);
+		double o2Stored = settlement.getAmountResourceStored(OXYGEN_ID);
 
 		// Note that 16 g of methane requires 64 g of oxygen, a 1 to 4 ratio
 		consumed = Math.min(maxFuel, Math.min(fuelStored, o2Stored / 4D));
@@ -108,8 +108,8 @@ public class FuelHeatSource extends HeatSource implements Serializable {
 //			consumed = Math.min(fuelStored, o2Stored/4D);
 //		}				
 
-		settlement.retrieveAmountResource(methaneID, consumed);
-		settlement.retrieveAmountResource(oxygenID, 4D * consumed);
+		settlement.retrieveAmountResource(METHANE_ID, consumed);
+		settlement.retrieveAmountResource(OXYGEN_ID, consumed * 4);
 
 //		inv.addAmountDemandTotalRequest(methaneID, consumed);
 //		inv.addAmountDemand(methaneID, consumed);
@@ -126,16 +126,8 @@ public class FuelHeatSource extends HeatSource implements Serializable {
 	 * @return amount resource.
 	 */
 	public int getFuelResourceID() {
-		return methaneID;
+		return METHANE_ID;
 	}
-
-//	/**
-//	 * Gets the amount resource used as fuel.
-//	 * @return amount resource.
-//	 */
-//	 public AmountResource getFuelResource() {
-//		return methaneAR;
-//	}
 
 	/**
 	 * Gets the rate the fuel is consumed.
@@ -160,7 +152,7 @@ public class FuelHeatSource extends HeatSource implements Serializable {
 	@Override
 	public double getAverageHeat(Settlement settlement) {
 		double fuelHeat = getMaxHeat();
-		double fuelValue = settlement.getGoodsManager().getGoodValuePerItem(methaneID);
+		double fuelValue = settlement.getGoodsManager().getGoodValuePerItem(METHANE_ID);
 		fuelValue *= getFuelConsumptionRate();
 		fuelHeat -= fuelValue;
 		if (fuelHeat < 0D)

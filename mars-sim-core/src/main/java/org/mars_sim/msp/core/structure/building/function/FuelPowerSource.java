@@ -43,8 +43,8 @@ implements Serializable {
 	
 	private boolean toggle = false;
 	
-	private static int oxygenID = ResourceUtil.oxygenID;
-	private static int methaneID = ResourceUtil.methaneID;
+	private static final int oxygenID = ResourceUtil.oxygenID;
+	private static final int methaneID = ResourceUtil.methaneID;
 
 	/**
 	 * Constructor.

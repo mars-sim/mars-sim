@@ -7,7 +7,6 @@
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
 import java.awt.BorderLayout;
-import java.text.DecimalFormat;
 
 import javax.swing.JPanel;
 import javax.swing.JTextField;

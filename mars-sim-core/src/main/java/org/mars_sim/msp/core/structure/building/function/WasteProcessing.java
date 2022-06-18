@@ -12,12 +12,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
-import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
-import org.mars_sim.msp.core.structure.building.ResourceProcessSpec;
 import org.mars_sim.msp.core.structure.building.WasteProcessSpec;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;

@@ -1,10 +1,9 @@
-/**
+/*
  * Mars Simulation Project
  * ThermalGeneration.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-06-17
  * @author Manny Kung
  */
-
 package org.mars_sim.msp.core.structure.building.function;
 
 import java.io.Serializable;
@@ -99,10 +98,9 @@ implements Serializable {
 					&& !removedBuilding) {
 				removedBuilding = true;
 			} else {
-				ThermalGeneration heatFunction = building.getThermalGeneration();
 				double wearModifier = (building.getMalfunctionManager()
 						.getWearCondition() / 100D) * .75D + .25D;
-				supply += getHeatSourceSupply(heatFunction.heatSources) * wearModifier;
+				supply += getHeatSourceSupply(building.getThermalGeneration().heatSources) * wearModifier;
 			}
 		}
 

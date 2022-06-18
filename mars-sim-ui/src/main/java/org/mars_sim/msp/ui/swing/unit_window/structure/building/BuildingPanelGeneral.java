@@ -8,17 +8,15 @@ package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.GridLayout;
 import java.awt.FlowLayout;
+import java.awt.GridLayout;
 
 import javax.swing.JPanel;
-import javax.swing.SpringLayout;
 import javax.swing.border.EmptyBorder;
 
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementMapPanel;
 
 /**

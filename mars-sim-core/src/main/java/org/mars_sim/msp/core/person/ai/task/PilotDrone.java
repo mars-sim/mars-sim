@@ -1,10 +1,9 @@
-/**
+/*
  * Mars Simulation Project
  * PilotDrone.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-06-17
  * @author Manny
  */
-
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.io.Serializable;
@@ -248,10 +247,6 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 		// Add experience points
 		addExperience(time);
 
-		// Check for accident.
-//		if (!isDone())
-//			checkForAccident(timeUsed);
-
 		// If vehicle has malfunction, end task.
 		if (flyer.getMalfunctionManager().hasMalfunction())
 			endTask();
@@ -314,7 +309,6 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 
 	@Override
 	protected void updateVehicleElevationAltitude() {
-		// TODO Auto-generated method stub
 	}
 	
 	/**
@@ -366,47 +360,7 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 	 * @param time the amount of time vehicle is driven (millisols)
 	 */
 	protected void checkForAccident(double time) {
-
-//		Flyer vehicle = (Flyer) getVehicle();
-//
-//		double chance = PilotDrone.BASE_ACCIDENT_CHANCE;
-//
-//		// Driver skill modification.
-//		int skill = getEffectiveSkillLevel();
-//		if (skill <= 3)
-//			chance *= (4 - skill);
-//		else
-//			chance /= (skill - 2);
-//
-//		// Get task phase modification.
-//		if (AVOID_COLLISION.equals(getPhase()))
-//			chance *= 1.2D;
-////		else if (WINCH_VEHICLE.equals(getPhase()))
-////			chance *= 1.3D;
-//
-////		// Terrain modification.
-////		chance *= (1D + Math.sin(vehicle.getTerrainGrade()));
-////
-////		// Vehicle handling modification.
-////		chance /= (1D + vehicle.getTerrainHandlingCapability());
-//
-//		// Light condition modification.
-//		double lightConditions = surfaceFeatures.getSunlightRatio(vehicle.getCoordinates());
-//		chance *= (5D * (1D - lightConditions)) + 1D;
-//		if (chance < 0D) {
-//			chance = 0D;
-//		}
-//
-//		// if (malfunctionManager == null)
-//		MalfunctionManager malfunctionManager = vehicle.getMalfunctionManager();
-//		// Modify based on the vehicle's wear condition.
-//		chance *= malfunctionManager.getWearConditionAccidentModifier();
-//
-//		if (RandomUtil.lessThanRandPercent(chance * time)) {
-//			malfunctionManager.createASeriesOfMalfunctions(vehicle.getName(), worker);
-//		}
 	}
-
 
 	/**
 	 * Adds experience to the worker skills used in this task.
@@ -434,10 +388,8 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 	 */
 	protected void clearDown() {
 		if (getVehicle() != null) {
-//			getVehicle().setSpeed(0D);
 		    // Need to set the vehicle operator to null before clearing the driving task 
 	        getVehicle().setOperator(null);
-//        	System.out.println("just called setOperator(null) in PilotDrone:clearDown");
 		}
 	}
 }

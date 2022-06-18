@@ -9,10 +9,6 @@ package org.mars_sim.msp.core.robot;
 import java.io.Serializable;
 import java.util.Map;
 
-import org.mars_sim.msp.core.person.ai.job.Job;
-import org.mars_sim.msp.core.person.ai.job.JobType;
-import org.mars_sim.msp.core.robot.ai.job.RobotJob;
-
 /** 
  * The Specification of a robot loaded from the external configuration.
  */

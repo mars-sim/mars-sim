@@ -4,7 +4,6 @@
  * @date 2021-11-30
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.core.person.ai.mission;
 
 import java.io.Serializable;
@@ -25,7 +24,6 @@ import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.CollectResources;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
-import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -68,6 +66,12 @@ public abstract class CollectResourcesMission extends RoverMission
 	private static final int MAX_PEOPLE = 6;
 
 	// Data members
+	/** External flag for ending collection at the current site. */
+	private boolean endCollectingSite;
+	/** The number of containers needed for the mission. */
+	private int containerNum;
+	/** The type of resource to collect. */
+	protected int resourceID;
 	/** The total site score of this prospective resource collection mission. */
 	private double totalSiteScore;
 	/** The amount of resources (kg) collected at a collection site. */
@@ -78,16 +82,12 @@ public abstract class CollectResourcesMission extends RoverMission
 	private double siteResourceGoal;
 	/** The resource collection rate for a person (kg/millisol). */
 	protected double resourceCollectionRate;
-	/** The number of containers needed for the mission. */
-	private int containerNum;
-	/** External flag for ending collection at the current site. */
-	private boolean endCollectingSite;
+
+
 	/** The total amount (kg) of resources collected. */
-	private Map<Integer,Double> collected;
+	private Map<Integer, Double> collected;
 	/** The type of container needed for the mission or null if none. */
 	private EquipmentType containerID;
-	/** The type of resource to collect. */
-	protected int resourceID;
 
 	/**
 	 * Constructor

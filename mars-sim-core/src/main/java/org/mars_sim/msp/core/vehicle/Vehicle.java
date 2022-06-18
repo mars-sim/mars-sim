@@ -4,7 +4,6 @@
  * @date 2021-10-16
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.core.vehicle;
 
 import java.io.Serializable;
@@ -90,16 +89,23 @@ public abstract class Vehicle extends Unit
 	private static double fuel_range_error_margin;
 	private static double life_support_range_error_margin;
 
-	// For Methane :
-	// Specific energy is 55.5	MJ/kg, or 15,416 Wh/kg, or 15.416kWh / kg
-	// Energy density is 0.0364 MJ/L, 36.4 kJ/L or 10 Wh/L
-	// Note : 1 MJ = 0.277778 kWh; 1 kWh = 3.6 MJ
-	// as comparison, 1 gallon (or 3.7854 L) of gasoline (which, for the record, it says is 33.7 kilowatt-hours) +> 8.9 kWh / L
+	// Future : may move fuel specs to a separate config file
+	/**
+	 * <p> Methane's Specific Energy is 55.5 MJ/kg, or 15,416 Wh/kg, or 15.416kWh/kg
+	 * <p> Energy density is 0.0364 MJ/L, 36.4 kJ/L, or 10 Wh/L
+	 * <p> Note : 1 MJ = 0.277778 kWh; 1 kWh = 3.6 MJ
+	 * <p> As comparison, 1 gallon (or 3.7854 L) of gasoline has 33.7 kWh of energy. Energy Density is 8.9 kWh/L
+	 */
+	public static final double METHANE_SPECIFIC_ENERGY = 15.416D; // [in kWh/kg]
 
-	/** The specific energy of CH4 [kWh/kg] */
-	public static final double METHANE_SPECIFIC_ENERGY = 15.416D;
-	/** The Solid Oxide Fuel Cell Conversion Efficiency (dimension-less) */
+	/**
+	 * The Solid Oxide Fuel Cell (SOFC) Conversion Efficiency for using methane is dimension-less.
+	 * Light hydrocarbon fuels, such as methane can be internally reformed within the anode of the fuel cells.
+	 */
 	public static final double SOFC_CONVERSION_EFFICIENCY = .65;
+	
+	public static final double FUEL_KG_PER_KWH = SOFC_CONVERSION_EFFICIENCY / METHANE_SPECIFIC_ENERGY; 
+	
 //	/** Lifetime Wear in millisols **/
 //	private static final double WEAR_LIFETIME = 668_000; // 668 Sols (1 orbit)
 	/** Estimated Number of hours traveled each day. **/

@@ -1,6 +1,6 @@
 /*
  * Mars Simulation Project
- * AreologyFieldStudy.java
+ * FieldStudyMission.java
  * @date 2021-08-15
  * @author Scott Davis
  */
@@ -19,7 +19,6 @@ import org.mars_sim.msp.core.Direction;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.JobType;
-import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.ScientificStudyFieldWork;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.science.ScienceType;

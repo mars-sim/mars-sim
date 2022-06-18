@@ -4,7 +4,6 @@
  * @date 2022-06-14
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.core.malfunction;
 
 import java.io.Serializable;
@@ -25,7 +24,6 @@ import org.mars_sim.msp.core.person.health.ComplaintType;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 

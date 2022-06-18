@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * OperateVehicle.java
- * @date 2021-09-04
+ * @date 2022-06-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -30,6 +30,7 @@ import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskManager;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.person.ai.task.utils.Worker;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -56,6 +57,12 @@ public abstract class OperateVehicle extends Task implements Serializable {
     protected static final TaskPhase MOBILIZE = new TaskPhase(Msg.getString(
             "Task.phase.mobilize")); //$NON-NLS-1$
     
+    /** Need to provide oxygen as fuel oxidizer for the fuel cells. */
+	public static final int OXYGEN_ID = ResourceUtil.oxygenID;
+	
+    /** The fuel cells will generate 2.25 kg of water per 1 kg of methane being used. */
+	public static final int WATER_ID = ResourceUtil.waterID;
+	
 	/** Half the PI. */
 	private static final double HALF_PI = Math.PI / 2D;
 	
@@ -341,12 +348,14 @@ public abstract class OperateVehicle extends Task implements Serializable {
         int fuelType = vehicle.getFuelType();
         
         double remainingFuel = vehicle.getAmountResourceStored(fuelType);
+        double remainingOxidizer = vehicle.getAmountResourceStored(OXYGEN_ID);
+                
+        if (!vehicle.isInSettlement() && 
+        		(remainingFuel < LEAST_AMOUNT || remainingOxidizer < LEAST_AMOUNT)) {
+        	// Case 0 : no fuel or oxidizer left
 
-        if (!vehicle.isInSettlement() && remainingFuel < LEAST_AMOUNT) {
-        	// Case 1 : no fuel left
-        	// TODO: need to turn on emergency beacon and ask for rescue here or in RoverMission ?
-        	logger.log(vehicle, Level.SEVERE, 30_000, 
-					"Out of methane. Cannot drive.");
+        	logger.log(vehicle, Level.SEVERE, 20_000, 
+					"Out of fuel or oxidizer. Cannot drive.");
 
 	    	// Turn on emergency beacon
 	    	turnOnBeacon();
@@ -401,7 +410,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
         
         double delta_E = energyNeeded;// + kinetic_E;
         		
-        double fuelUsed = delta_E / Vehicle.METHANE_SPECIFIC_ENERGY * Vehicle.SOFC_CONVERSION_EFFICIENCY;
+        double fuelUsed = delta_E * Vehicle.FUEL_KG_PER_KWH;
     	
 //        logger.log(vehicle, Level.SEVERE, 2_000, 
 //        			"fuelNeeded: " + Math.round(fuelNeeded * 10_000.0)/10_000.0 + " kg   "
@@ -423,46 +432,59 @@ public abstract class OperateVehicle extends Task implements Serializable {
     	
         if (Double.isNaN(distanceTraveled) || Double.isNaN(startingDistanceToDestination)) {
         	logger.severe("NAN distancedtraveled " + distanceTraveled + ", startingDistance " + startingDistanceToDestination );
+        	return time;
         }
         
+    	// Case 1 : just used up the last drop of fuel 
         if (fuelNeeded > remainingFuel) {
-        	// Case 2 : just used up the last drop of fuel 
         	fuelNeeded = remainingFuel;
         	
+            // Update the distance traveled.
+            distanceTraveled  = fuelNeeded * vehicle.getIFuelEconomy();
+            // Determine new position.
+            vehicle.setCoordinates(vehicle.getCoordinates().getNewLocation(vehicle.getDirection(), distanceTraveled));
+            // Add distance traveled to vehicle's odometer.
+            vehicle.addOdometerMileage(distanceTraveled);
+            // Track maintenance due to distance traveled.
+            vehicle.addDistanceLastMaintenance(distanceTraveled);
+            
+        	// Retrieve the fuel needed for the distance traveled.
 		    vehicle.retrieveAmountResource(fuelType, fuelNeeded);
+		    // Retrieve the same amount of oxygen as fuel oxidizer
+		    vehicle.retrieveAmountResource(OXYGEN_ID, fuelNeeded);
+		    // Generate 2.25 times amount of the water from the fuel cells
+		    vehicle.storeAmountResource(WATER_ID, fuelNeeded * 2.25);
         	
-        	// Update and reduce the distanceTraveled since there is not enough fuel
-        	distanceTraveled = fuelNeeded * vehicle.getIFuelEconomy();
         	if (!vehicle.haveStatusType(StatusType.MOVING))
         		vehicle.addStatus(StatusType.MOVING);
         	if (vehicle.haveStatusType(StatusType.OUT_OF_FUEL))
         		vehicle.removeStatus(StatusType.OUT_OF_FUEL);
-        	
-            // Add distance traveled to vehicle's odometer.
-//        	vehicle.addOdometerReading(distanceTraveled);
-            vehicle.addOdometerMileage(distanceTraveled);
-            vehicle.addDistanceLastMaintenance(distanceTraveled);
-        	return time - MarsClock.MILLISOLS_PER_HOUR * distanceTraveled / vehicle.getSpeed();
-        	
+            
+            // Calculate the remaining time
+            result = time - MarsClock.MILLISOLS_PER_HOUR * distanceTraveled / vehicle.getSpeed();
         }
         
         else {
-        	
+            // Case 2 : if starting distance to destination is less than distance traveled, stop at destination.	
             if (startingDistanceToDestination <= (distanceTraveled + DESTINATION_BUFFER)) {
-                // Case 3 : if starting distance to destination is less than distance traveled, stop at destination.
-                
+            
             	distanceTraveled = startingDistanceToDestination;
+                // Determine new position.
+                vehicle.setCoordinates(destination);
+                // Add distance traveled to vehicle's odometer.
+                vehicle.addOdometerMileage(distanceTraveled);
+                // Track maintenance due to distance traveled.
+                vehicle.addDistanceLastMaintenance(distanceTraveled);
                 
                 // Update the fuel needed for distance traveled.
                 fuelNeeded = distanceTraveled / vehicle.getIFuelEconomy();
-                
-                vehicle.retrieveAmountResource(fuelType, fuelNeeded);
-                	
-		        // Add distance traveled to vehicle's odometer.
-		        vehicle.addOdometerMileage(distanceTraveled);
-		        vehicle.addDistanceLastMaintenance(distanceTraveled);
-		        
-	            vehicle.setCoordinates(destination);
+            	// Retrieve the fuel needed for the distance traveled.
+    		    vehicle.retrieveAmountResource(fuelType, fuelNeeded);
+    		    // Retrieve the same amount of oxygen as fuel oxidizer.
+    		    vehicle.retrieveAmountResource(OXYGEN_ID, fuelNeeded);
+    		    // Generate 2.25 times amount of the water from the fuel cells
+    		    vehicle.storeAmountResource(WATER_ID, fuelNeeded * 2.25);
+    		    
                 vehicle.setSpeed(0D);
                 
                 if (!vehicle.haveStatusType(StatusType.PARKED))
@@ -488,28 +510,28 @@ public abstract class OperateVehicle extends Task implements Serializable {
                 result = time;
                 if (speed > 0) {
                 	result = time - MarsClock.MILLISOLS_PER_HOUR * distanceTraveled / speed;
-                }
-//	            endTask();
-	                
+                }             
             }
             
             else {
-            	
-            	// Case 4 : the rover may use all the prescribed time to drive 
+            	// Case 3 : the rover may use all the prescribed time to drive 
                 distanceTraveled = hrsTime * vehicle.getSpeed();
-                
-             // Update the fuel needed for distance traveled.
-                fuelNeeded = distanceTraveled / vehicle.getIFuelEconomy();
-                
-                vehicle.retrieveAmountResource(fuelType, fuelNeeded);
-                	    	
                 // Determine new position.
                 vehicle.setCoordinates(vehicle.getCoordinates().getNewLocation(vehicle.getDirection(), distanceTraveled));
-                
                 // Add distance traveled to vehicle's odometer.
                 vehicle.addOdometerMileage(distanceTraveled);
+                // Track maintenance due to distance traveled.
                 vehicle.addDistanceLastMaintenance(distanceTraveled);
                 
+                // Update the fuel needed for distance traveled.
+                fuelNeeded = distanceTraveled / vehicle.getIFuelEconomy();
+            	// Retrieve the fuel needed for the distance traveled.
+    		    vehicle.retrieveAmountResource(fuelType, fuelNeeded);
+    		    // Retrieve the same amount of oxygen as fuel oxidizer.
+    		    vehicle.retrieveAmountResource(OXYGEN_ID, fuelNeeded);
+    		    // Generate 2.25 times amount of the water from the fuel cells
+    		    vehicle.storeAmountResource(WATER_ID, fuelNeeded * 2.25);
+    		    
                 // Use up all of the available time
                 result = 0; 
             }   
@@ -518,6 +540,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
         return result;
 	}
 	
+
 	/**
 	 * Checks if the destination is at the location of a settlement.
 	 * 

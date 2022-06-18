@@ -61,6 +61,10 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(VehicleMission.class.getName());
 
+	protected static final int OXYGEN_ID = ResourceUtil.oxygenID;
+	protected static final int WATER_ID = ResourceUtil.waterID;
+	protected static final int FOOD_ID = ResourceUtil.foodID;
+	
 	/** Mission phases. */
 	public static final MissionPhase REVIEWING = new MissionPhase("Mission.phase.reviewing");
 	public static final MissionPhase EMBARKING = new MissionPhase("Mission.phase.embarking");
@@ -822,7 +826,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 		if (reachedDestination) {
 			Settlement base = destination.getSettlement();
 			if (vehicle.getAssociatedSettlement().equals(base)) {
-				logger.info(vehicle, "Arrived back home " + base.getName());
+				logger.info(vehicle, "Arrived back home " + base.getName() + ".");
 				vehicle.transfer(base);
 
 				// TODO There is a problem with the Vehicle not being on the
@@ -830,7 +834,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 				// This is temporary fix pending #474 which will revisit transfers
 				if (!base.equals(vehicle.getContainerUnit())) {
 					vehicle.setContainerUnit(base);
-					logger.warning(vehicle, "Had to force container to home base");
+					logger.severe(vehicle, "Had to force its container unit to become its home base.");
 				}
 			}
 
@@ -1009,15 +1013,25 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	public Map<Integer, Number> getResourcesNeededForTrip(boolean useMargin, double distance) {
 		Map<Integer, Number> result = new HashMap<>();
 		if (vehicle != null) {
-			// Add the methane resource
+			double amount = 0;
+			// Add methane
 			if (getPhase() == null || getPhase().equals(VehicleMission.EMBARKING) || getPhase().equals(VehicleMission.REVIEWING)
-					|| useMargin)
+					|| useMargin) {
+				amount = getFuelNeededForTrip(vehicle, distance, vehicle.getEstimatedAveFuelEconomy(), true);
 				// Use margin only when estimating how much fuel needed before starting the mission
-				result.put(vehicle.getFuelType(), getFuelNeededForTrip(vehicle, distance, vehicle.getEstimatedAveFuelEconomy(), true));
-			else
+			}
+			else {
+				amount = getFuelNeededForTrip(vehicle, distance, vehicle.getIFuelEconomy(), false);
 				// When the vehicle is already on the road, do NOT use margin
 				// or else it would constantly complain not having enough fuel
-				result.put(vehicle.getFuelType(), getFuelNeededForTrip(vehicle, distance, vehicle.getIFuelEconomy(), false));
+			}
+			result.put(vehicle.getFuelType(), amount);
+			
+			// Add oxygen
+			double o2 = 0;
+			if (!result.isEmpty() && result.containsKey(OXYGEN_ID))
+				o2 = (double)result.get(OXYGEN_ID);
+			result.put(OXYGEN_ID, amount + o2);
 		}
 		return result;
 	}

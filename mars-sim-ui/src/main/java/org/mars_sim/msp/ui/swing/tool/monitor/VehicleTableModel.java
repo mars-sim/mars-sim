@@ -146,13 +146,12 @@ public class VehicleTableModel extends UnitTableModel {
 		columnTypes[ICE] = Integer.class;
 	}
 
-
-	private final static int foodID = ResourceUtil.foodID;
-	private final static int oxygenID = ResourceUtil.oxygenID;
-	private final static int waterID = ResourceUtil.waterID;
-	private final static int methaneID = ResourceUtil.methaneID;
-	private final static int rockSamplesID = ResourceUtil.rockSamplesID;
-	private final static int iceID = ResourceUtil.iceID;
+	private static final int FOOD_ID = ResourceUtil.foodID;
+	private static final int OXYGEN_ID = ResourceUtil.oxygenID;
+	private static final int WATER_ID = ResourceUtil.waterID;
+	private static final int METHANE_ID = ResourceUtil.methaneID;
+	private static final int ROCK_SAMPLES_ID = ResourceUtil.rockSamplesID;
+	private static final int ICE_ID = ResourceUtil.iceID;
 
 	private final static AmountResource [] availableDesserts = PreparingDessert.getArrayOfDessertsAR();
 
@@ -359,7 +358,7 @@ public class VehicleTableModel extends UnitTableModel {
 
 				case WATER : {
 					//result = decFormatter.format(resourceMap.get(AmountResource.findAmountResource(LifeSupport.WATER)));
-					double value = resourceMap.get(waterID);
+					double value = resourceMap.get(WATER_ID);
 					if (value == 0)
 						result = "--";
 					else
@@ -368,7 +367,7 @@ public class VehicleTableModel extends UnitTableModel {
 
 				case FOOD : {
 					//result = decFormatter.format(resourceMap.get(AmountResource.findAmountResource(LifeSupport.FOOD)));
-					double value = resourceMap.get(foodID);
+					double value = resourceMap.get(FOOD_ID);
 					if (value == 0)
 						result = "--";
 					else
@@ -401,7 +400,7 @@ public class VehicleTableModel extends UnitTableModel {
 
 				case OXYGEN : {
 					//result = decFormatter.format(resourceMap.get(AmountResource.findAmountResource(LifeSupport.OXYGEN)));
-					double value = resourceMap.get(oxygenID);
+					double value = resourceMap.get(OXYGEN_ID);
 					if (value == 0)
 						result = "--";
 					else
@@ -410,7 +409,7 @@ public class VehicleTableModel extends UnitTableModel {
 
 				case METHANE : {
 					//result = decFormatter.format(resourceMap.get(AmountResource.findAmountResource("methane")));
-					double value = resourceMap.get(methaneID);
+					double value = resourceMap.get(METHANE_ID);
 					if (value == 0)
 						result = "--";
 					else
@@ -419,7 +418,7 @@ public class VehicleTableModel extends UnitTableModel {
 
 				case ROCK_SAMPLES : {
 					//result = decFormatter.format(resourceMap.get(AmountResource.findAmountResource("rock samples")));
-					double value = resourceMap.get(rockSamplesID);
+					double value = resourceMap.get(ROCK_SAMPLES_ID);
 					if (value == 0)
 						result = "--";
 					else
@@ -428,7 +427,7 @@ public class VehicleTableModel extends UnitTableModel {
 
 				case ICE : {
 					//result = decFormatter.format(resourceMap.get(AmountResource.findAmountResource("ice")));
-					result = resourceMap.get(iceID);
+					result = resourceMap.get(ICE_ID);
 				} break;
 
 				}
@@ -499,29 +498,29 @@ public class VehicleTableModel extends UnitTableModel {
 						double currentValue = 0.0;
 						Map<Integer, Double> resourceMap = resourceCache.get(vehicle);
 
-						if (target == oxygenID) {
+						if (target == OXYGEN_ID) {
 							tempColumnNum = OXYGEN;
-							currentValue = resourceMap.get(oxygenID);
+							currentValue = resourceMap.get(OXYGEN_ID);
 						}
-						else if (target == methaneID) {
+						else if (target == METHANE_ID) {
 							tempColumnNum = METHANE;
-							currentValue = resourceMap.get(methaneID);
+							currentValue = resourceMap.get(METHANE_ID);
 						}
-						else if (target == foodID) {
+						else if (target == FOOD_ID) {
 							tempColumnNum = FOOD;
-							currentValue = resourceMap.get(foodID);
+							currentValue = resourceMap.get(FOOD_ID);
 						}
-						else if (target == waterID) {
+						else if (target == WATER_ID) {
 							tempColumnNum = WATER;
-							currentValue = resourceMap.get(waterID);
+							currentValue = resourceMap.get(WATER_ID);
 						}
-						else if (target == rockSamplesID) {
+						else if (target == ROCK_SAMPLES_ID) {
 							tempColumnNum = ROCK_SAMPLES;
-							currentValue = resourceMap.get(rockSamplesID);
+							currentValue = resourceMap.get(ROCK_SAMPLES_ID);
 						}
-						else if (target == iceID) {
+						else if (target == ICE_ID) {
 							tempColumnNum = ICE;
-							currentValue = resourceMap.get(iceID);
+							currentValue = resourceMap.get(ICE_ID);
 						}
 						else {
 						  	// Put together a list of available dessert
@@ -571,12 +570,12 @@ public class VehicleTableModel extends UnitTableModel {
 		if (!resourceCache.containsKey(newUnit)) {
 			try {
 				Map<Integer, Double> resourceMap = new HashMap<Integer, Double>();
-				resourceMap.put(foodID, Math.round(100.0 * getResourceStored(newUnit, foodID))/100.0);
-				resourceMap.put(oxygenID, Math.round(100.0 * getResourceStored(newUnit, oxygenID))/100.0);
-				resourceMap.put(waterID, Math.round(100.0 * getResourceStored(newUnit, waterID))/100.0);
-				resourceMap.put(methaneID, Math.round(100.0 *getResourceStored(newUnit, methaneID))/100.0);
-				resourceMap.put(rockSamplesID, Math.round(100.0 *getResourceStored(newUnit, rockSamplesID))/100.0);
-				resourceMap.put(iceID, Math.round(100.0 *getResourceStored(newUnit, iceID))/100.0);
+				resourceMap.put(FOOD_ID, Math.round(100.0 * getResourceStored(newUnit, FOOD_ID))/100.0);
+				resourceMap.put(OXYGEN_ID, Math.round(100.0 * getResourceStored(newUnit, OXYGEN_ID))/100.0);
+				resourceMap.put(WATER_ID, Math.round(100.0 * getResourceStored(newUnit, WATER_ID))/100.0);
+				resourceMap.put(METHANE_ID, Math.round(100.0 *getResourceStored(newUnit, METHANE_ID))/100.0);
+				resourceMap.put(ROCK_SAMPLES_ID, Math.round(100.0 *getResourceStored(newUnit, ROCK_SAMPLES_ID))/100.0);
+				resourceMap.put(ICE_ID, Math.round(100.0 *getResourceStored(newUnit, ICE_ID))/100.0);
 			  	// Put together a list of available dessert
 		        for(AmountResource ar : availableDesserts) {
 		        	resourceMap.put(ar.getID(), Math.round(100.0 *getResourceStored(newUnit, ar.getID()))/100.0);

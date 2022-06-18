@@ -48,7 +48,7 @@ public class LoadingController implements Serializable {
 	};
 
 	// Avoid transferring micro-small amount
-	private static final double SMALLEST_RESOURCE_LOAD = 0D; //0.001D;
+	private static final double SMALLEST_RESOURCE_LOAD = 0.01;
 
 	// Have to limit the precision of the amount loading to avoid
 	// problem with the double precision

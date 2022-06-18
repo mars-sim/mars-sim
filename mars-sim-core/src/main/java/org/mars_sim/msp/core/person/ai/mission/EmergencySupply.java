@@ -203,6 +203,9 @@ public class EmergencySupply extends RoverMission implements Serializable {
 					}
 				}
 				break;
+				
+			case ROBOT:
+			default: 
 			}
 		}
 

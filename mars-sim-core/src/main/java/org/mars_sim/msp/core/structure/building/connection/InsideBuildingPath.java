@@ -1,12 +1,11 @@
-/**
+/*
  * Mars Simulation Project
- * BuildingPath.java
- * @version 3.2.0 2021-06-20
+ * InsideBuildingPath.java
+ * @date 2022-06-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.connection;
 
-import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
