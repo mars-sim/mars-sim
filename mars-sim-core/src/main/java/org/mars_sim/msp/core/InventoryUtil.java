@@ -4,7 +4,6 @@
  * @date 2021-10-20
  * @author Manny Kung
  */
-
 package org.mars_sim.msp.core;
 
 import java.util.ArrayList;
@@ -33,30 +32,32 @@ public class InventoryUtil {
 	/**
 	 * Gets a good EVA suit
 	 *
-	 * @param housing The unit housing the airlock to be used.
-	 * @param p
+	 * @param p the person who may have an EVA Suit
 	 * @return
 	 */
 	public static EVASuit getGoodEVASuit(Person p) {
 		Unit cu = p.getContainerUnit();
 		if (!(cu instanceof EquipmentOwner)) {
-			logger.warning(p, "No EVA from " + cu.getName());
+			logger.warning(p, "Can't find any EVA Suit from " + cu.getName() + ".");
 			return null;
 		}
+		
 		Collection<Equipment> candidates = ((EquipmentOwner)cu).getEquipmentSet();
-
  		// Find suit without malfunction
- 		// TODO favorite a previous one
 		for (Equipment e : candidates) {
-			if ((e.getEquipmentType() == EquipmentType.EVA_SUIT)
-					&& !((EVASuit)e).getMalfunctionManager().hasMalfunction()) {
-				return (EVASuit)e;
+			if (e.getEquipmentType() == EquipmentType.EVA_SUIT) {
+				if (((EVASuit)e).getMalfunctionManager().hasMalfunction()) {
+					logger.log(p, Level.WARNING, 50_000,
+							"Spotted malfunction with " + ((EVASuit)e).getName() + " when being examined.");
+				}
+				else
+					return (EVASuit)e;
 			}
 		}
 
 		int numEVASuit = ((EquipmentOwner)cu).findNumContainersOfType(EquipmentType.EVA_SUIT);
 
-		logger.warning(p, "Could not find a good EVA suit in " + cu.getName() + "(" + numEVASuit + ").");
+		logger.warning(p, "Could not find a working EVA suit in " + cu.getName() + "(# of Available EVA Suits: " + numEVASuit + ").");
 		return null;
 	}
 
@@ -64,10 +65,10 @@ public class InventoryUtil {
 	 * Gets a good working EVA suit from an inventory.
 	 *
 	 * @param inv the inventory to check.
+	 * @param p the person to check.
 	 * @return EVA suit or null if none available.
 	 */
 	public static EVASuit getGoodEVASuitNResource(EquipmentOwner owner, Person p) {
-//		List<EVASuit> malSuits = new ArrayList<>(0);
 		List<EVASuit> noResourceSuits = new ArrayList<>(0);
 		List<EVASuit> goodSuits = new ArrayList<>(0);
 		List<EVASuit> suits = new ArrayList<>();
@@ -80,7 +81,7 @@ public class InventoryUtil {
 				}
 				else
 					logger.log(p, Level.WARNING, 50_000,
-						"Spotted the malfunction with " + suit.getName() + " when being examined.");
+						"Spotted malfunction with " + suit.getName() + " when being examined.");
 
 				try {
 					boolean hasEnoughResources = hasEnoughResourcesForSuit(owner, suit);
@@ -131,11 +132,10 @@ public class InventoryUtil {
 	 * @param entityInv the entity unit.
 	 * @param suit      the EVA suit.
 	 * @return true if enough supplies.
-	 * @throws Exception if error checking suit resources.
 	 */
 	private static boolean hasEnoughResourcesForSuit(EquipmentOwner owner, EVASuit suit) {
 		int otherPeopleNum = 0;
-		if (owner instanceof Settlement)
+		if (owner.getHolder().getUnitType() == UnitType.SETTLEMENT)
 			otherPeopleNum = ((Settlement) owner).getIndoorPeopleCount() - 1;
 
 		// Check if enough oxygen.
