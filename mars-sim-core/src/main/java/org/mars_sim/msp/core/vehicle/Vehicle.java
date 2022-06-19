@@ -744,7 +744,9 @@ public abstract class Vehicle extends Unit
 	 * Records the status in the vehicle log
 	 */
 	private void writeLog() {
-		vehicleLog.addDataPoint(new HashSet<>(statusTypes));
+		if (!statusTypes.isEmpty()) {
+			vehicleLog.addDataPoint(new HashSet<>(statusTypes));
+		}
 	}
 
 	/**

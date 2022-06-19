@@ -37,6 +37,7 @@ public class AbstractMetaMission implements MetaMission {
 		this.name = Msg.getString("Mission.description." + nameKey);
 	}
 
+	@Override
 	public MissionType getType() {
 		return type;
 	}

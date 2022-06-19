@@ -360,6 +360,8 @@ public class Simulation implements ClockListener, Serializable {
 		orbit = new OrbitInfo(marsClock);
 
 		missionManager = new MissionManager();
+		missionManager.initializeInstances(simulationConfig);
+
 		medicalManager = new MedicalManager();
 		scientificStudyManager = new ScientificStudyManager();
 
@@ -623,6 +625,9 @@ public class Simulation implements ClockListener, Serializable {
 		BuildingConfig bc = simulationConfig.getBuildingConfiguration();
 		PersonConfig pc = simulationConfig.getPersonConfig();
 		CropConfig cc = simulationConfig.getCropConfiguration();
+
+		// Reload mission configs
+		missionManager.initializeInstances(simulationConfig);
 
 		//  Re-initialize the GameManager
 		GameManager.initializeInstances(unitManager);
