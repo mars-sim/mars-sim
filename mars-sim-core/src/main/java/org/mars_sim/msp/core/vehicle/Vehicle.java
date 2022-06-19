@@ -972,6 +972,14 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
+	 * Gets the base fuel consumption of the vehicle [km/kWh].
+	 * @return
+	 */
+	public double getBaseFuelConsumption() {
+		return baseFuelConsumption;
+	}
+	
+	/**
 	 * Gets the instantaneous fuel economy of the vehicle [km/kg]
 	 * Note: assume that it is primarily dependent upon the current weight of the vehicle
 	 *

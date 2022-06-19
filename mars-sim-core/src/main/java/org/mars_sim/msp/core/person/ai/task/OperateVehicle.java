@@ -342,7 +342,8 @@ public abstract class OperateVehicle extends Task implements Serializable {
 		vehicle.setSpeed(0D);
 		vehicle.addStatus(StatusType.OUT_OF_FUEL);
 		vehicle.removeStatus(StatusType.MOVING);
-    	
+        vehicle.addStatus(StatusType.PARKED);
+        
     	if (!vehicle.isBeaconOn()) {
     		Mission m = vehicle.getMission();
     		if (person != null)
@@ -455,9 +456,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
         else {
         	// Case 2 : the rover may use all the prescribed time to drive 
 //            logger.log(vehicle, Level.CONFIG,  1_000L, "Case 2: Use all the prescribed time to drive.");
-            
-            distanceTraveled = hrsTime * vehicle.getSpeed();
-       
+
             // Calculate the fuel needed
             fuelUsed = calculateFuelUsed(distanceTraveled, hrsTime);
 		    
@@ -475,30 +474,27 @@ public abstract class OperateVehicle extends Task implements Serializable {
             result = 0; 
         }
 	    
-        // Case 3 : just used up the last drop of fuel 
+        // Case 3 : fuel is less than needed. Just used up the last drop of fuel 
         if (fuelUsed > remainingFuel) {
+        	// Limit the fuel to be used
         	fuelUsed = remainingFuel;
         	
             logger.log(vehicle, Level.WARNING,  1_000L, "Case 2: Just used up the last drop of fuel.");
             
-        	// Slow down the vehicle
-        	v = distanceTraveled / hrsTime;
+            // Recompute the distance it could travel
+            distanceTraveled = vehicle.getBaseFuelConsumption() * fuelUsed * Vehicle.METHANE_SPECIFIC_ENERGY;
+            
+        	// Slow down the vehicle            
+            v = distanceTraveled / hrsTime;
+            
         	// Adjust the speed
         	vehicle.setSpeed(v);
-        	
-            // Recalculate the fuel needed
-        	fuelUsed = calculateFuelUsed(distanceTraveled, hrsTime);
-        	
+
             // Determine new position.
             vehicle.setCoordinates(vehicle.getCoordinates().getNewLocation(vehicle.getDirection(), distanceTraveled));
-            
-            // Update vehicle status
-        	if (vehicle.haveStatusType(StatusType.MOVING))
-        		vehicle.removeStatus(StatusType.MOVING);
-        	if (!vehicle.haveStatusType(StatusType.OUT_OF_FUEL))
-        		vehicle.addStatus(StatusType.OUT_OF_FUEL);
-            if (!vehicle.haveStatusType(StatusType.PARKED))
-            	vehicle.addStatus(StatusType.PARKED);
+  
+        	if (!vehicle.haveStatusType(StatusType.MOVING))
+        		vehicle.addStatus(StatusType.MOVING);
         	
         	result = time - MarsClock.MILLISOLS_PER_HOUR * distanceTraveled / v;
         }
