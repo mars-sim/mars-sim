@@ -23,7 +23,9 @@ import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 
@@ -42,6 +44,7 @@ import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.MalfunctionConfig;
 import org.mars_sim.msp.core.manufacture.ManufactureConfig;
 import org.mars_sim.msp.core.person.PersonConfig;
+import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.health.MedicalConfig;
 import org.mars_sim.msp.core.quotation.QuotationConfig;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
@@ -117,6 +120,11 @@ public class SimulationConfig implements Serializable {
 	private static final String BASE_TIME_RATIO = "base-time-ratio";
 	private static final String DEFAULT_UNUSEDCORES = "unused-cores";
 
+	private static final String MISSION_CONFIGURATION = "mission-configuration";
+	private static final String MISSION_TYPE = "mission-type";
+	private static final String BOOST = "boost";
+	private static final String NAME = "name";
+
 	private transient String marsStartDate = null;
 	private transient String earthStartDate = null;
 
@@ -165,6 +173,8 @@ public class SimulationConfig implements Serializable {
 	private transient List<String> excludedList;
 
 	private transient ReportingAuthorityFactory raFactory;
+
+	private transient Map<MissionType, Integer> missionBoosts = new EnumMap<>(MissionType.class);
 
 	/*
 	 * -----------------------------------------------------------------------------
@@ -222,19 +232,30 @@ public class SimulationConfig implements Serializable {
 		// Load simulation document
 		Document simulationDoc = parseXMLFileAsJDOMDocument(SIMULATION_FILE, true);
 
-		earthStartDate = loadValue(simulationDoc, TIME_CONFIGURATION, EARTH_START_DATE_TIME);	
-		marsStartDate = loadValue(simulationDoc, TIME_CONFIGURATION, MARS_START_DATE_TIME);
+		// Load time configurations
+		Element root = simulationDoc.getRootElement();
+		Element timeConfig = root.getChild(TIME_CONFIGURATION);
+		earthStartDate = loadValue(timeConfig, EARTH_START_DATE_TIME);	
+		marsStartDate = loadValue(timeConfig, MARS_START_DATE_TIME);
 		
-		accuracyBias =  loadDoubleValue(simulationDoc, TIME_CONFIGURATION, ACCURACY_BIAS, 0D, 1D);
-		minSimulatedPulse = loadDoubleValue(simulationDoc, TIME_CONFIGURATION, MIN_SIMULATED_PULSE, 0.0001D, 5D);
-		maxSimulatedPulse = loadDoubleValue(simulationDoc, TIME_CONFIGURATION, MAX_SIMULATED_PULSE, 0.0001D, 5D);
+		accuracyBias =  loadDoubleValue(timeConfig, ACCURACY_BIAS, 0D, 1D);
+		minSimulatedPulse = loadDoubleValue(timeConfig, MIN_SIMULATED_PULSE, 0.0001D, 5D);
+		maxSimulatedPulse = loadDoubleValue(timeConfig, MAX_SIMULATED_PULSE, 0.0001D, 5D);
 	
-		defaultTimePulse = loadIntValue(simulationDoc,  TIME_CONFIGURATION, DEFAULT_TIME_PULSE, 1, 2048);
-		baseTimeRatio = loadIntValue(simulationDoc, TIME_CONFIGURATION, BASE_TIME_RATIO, 16, 2048);
-		unusedCores = loadIntValue(simulationDoc, TIME_CONFIGURATION, DEFAULT_UNUSEDCORES, 1, 360);
-		averageTransitTime = loadIntValue(simulationDoc, TIME_CONFIGURATION, AVERAGE_TRANSIT_TIME, 0, 430);
-		autosaveInterval = loadIntValue(simulationDoc, TIME_CONFIGURATION, AUTOSAVE_INTERVAL, 1, 360);
-		numberOfAutoSaves = loadIntValue(simulationDoc, TIME_CONFIGURATION, AUTOSAVE_NUMBER, 1, 100);
+		defaultTimePulse = loadIntValue(timeConfig, DEFAULT_TIME_PULSE, 1, 2048);
+		baseTimeRatio = loadIntValue(timeConfig, BASE_TIME_RATIO, 16, 2048);
+		unusedCores = loadIntValue(timeConfig, DEFAULT_UNUSEDCORES, 1, 360);
+		averageTransitTime = loadIntValue(timeConfig, AVERAGE_TRANSIT_TIME, 0, 430);
+		autosaveInterval = loadIntValue(timeConfig, AUTOSAVE_INTERVAL, 1, 360);
+		numberOfAutoSaves = loadIntValue(timeConfig, AUTOSAVE_NUMBER, 1, 100);
+
+		// LOad MIssion Types
+		Element missionConfig = root.getChild(MISSION_CONFIGURATION);
+		for(Element mission : missionConfig.getChildren(MISSION_TYPE)) {
+			MissionType mt = MissionType.valueOf(mission.getAttributeValue(NAME).toUpperCase());
+			int boost = Integer.parseInt(mission.getAttributeValue(BOOST));
+			missionBoosts.put(mt, boost);
+		}
 
 		checkXMLFileVersion();
 
@@ -475,35 +496,32 @@ public class SimulationConfig implements Serializable {
 	 * @param child Value element
 	 * @return String value found
 	 */
-	private static String loadValue(Document simulationDoc, String parent, String child) {
-		Element root = simulationDoc.getRootElement();
-		Element parentConfig = root.getChild(parent);
+	private static String loadValue(Element parentConfig, String child) {
 		Element childItem = parentConfig.getChild(child);
 		String str = childItem.getAttributeValue(VALUE);
 
 
 		if ((str == null) || str.trim().length() == 0)
-			throw new IllegalStateException(parent + "->" + child + " must be greater than zero and cannot be blank.");
+			throw new IllegalStateException(parentConfig.getName() + "->" + child + " must be greater than zero and cannot be blank.");
 		return str.trim();
 	}
 
 	/**
 	 * Load an integer value that is held as a 'value' attribute.
-	 * @param simulationDoc parent doc
 	 * @param parent Parent XML node
 	 * @param child XML Node containing the 'value'
 	 * @param minValue Minimum allowable value
 	 * @param maxValue Maximum allowable value
 	 */
-	private static int loadIntValue(Document simulationDoc, String parent, String child,
+	private static int loadIntValue(Element parent, String child,
 									   int minValue, int maxValue) {
-		String str = loadValue(simulationDoc, parent, child);
+		String str = loadValue(parent, child);
 		int i = 0;
 		try {
 			i = Integer.parseInt(str);
 
 		} catch (NumberFormatException nfe) {
-			logger.severe("NumberFormatException found in " + parent + "->" + child
+			logger.severe("NumberFormatException found in " + parent.getName() + "->" + child
 								+ " : " + nfe.getMessage());
 			throw nfe;
 		}
@@ -514,20 +532,19 @@ public class SimulationConfig implements Serializable {
 
 	/**
 	 * Load an double value that is held as a 'value' attribute.
-	 * @param simulationDoc parent doc
 	 * @param parent Parent XML node
 	 * @param child XML Node containing the 'value'
 	 * @param minValue Minimum allowable value
 	 * @param maxValue Maximum allowable value
 	 */
-	private double loadDoubleValue(Document simulationDoc, String parent, String child, double minValue, double maxValue) {
-		String str = loadValue(simulationDoc, parent, child);
+	private double loadDoubleValue(Element parent, String child, double minValue, double maxValue) {
+		String str = loadValue(parent, child);
 		double d = 0;
 		try {
 			d = Double.parseDouble(str);
 
 		} catch (NumberFormatException nfe) {
-			logger.severe("NumberFormatException found in " + parent + "->" + child
+			logger.severe("NumberFormatException found in " + parent.getName() + "->" + child
 								+ " : " + nfe.getMessage());
 			throw nfe;
 		}
@@ -541,6 +558,13 @@ public class SimulationConfig implements Serializable {
 	 * Getter
 	 * -----------------------------------------------------------------------------
 	 */
+
+	/**
+	 * Any mission boosts applied
+	 */
+	public Map<MissionType, Integer> getMissionBoosts() {
+		return missionBoosts;
+	}
 
 	/**
 	 * Gets the ratio of simulation time to real time in simulation.xml
@@ -957,7 +981,11 @@ public class SimulationConfig implements Serializable {
 			if (exceptionFile.exists()) {
 				// Read the exception.txt file to see if it mentions this particular xml file
 				try (BufferedReader buffer = new BufferedReader(new FileReader(exceptionFile))) {
-					excludedList.add(buffer.readLine());
+					String nextLine = buffer.readLine();
+					// Support commenting out lines
+					if (!nextLine.startsWith("#")) {
+						excludedList.add(nextLine);
+					}
 				} catch (IOException e) {
 					logger.warning("Problem loading the exception file " + e.getMessage());
 				}

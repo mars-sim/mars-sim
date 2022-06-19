@@ -8,13 +8,16 @@ package org.mars_sim.msp.core.person.ai.mission;
 
 import java.io.Serializable;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.data.SolMetricDataLogger;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
@@ -54,6 +57,8 @@ public class MissionManager implements Serializable, Temporal {
 
 	private Map<String, Integer> settlementID;
 
+	/** Prob boost for Mission Types */
+	private transient Map<MissionType,Integer> missionBoost = new EnumMap<>(MissionType.class);
 
 	/**
 	 * Constructor.
@@ -261,8 +266,14 @@ public class MissionManager implements Serializable, Temporal {
 							+ probability);
 			}
 			else if (probability > 0D) {
-				logger.info(person, "Mission " + metaMission.getName() + " with probability=" + probability);
-				missionProbCache.put(metaMission, probability);
+				// Get any overriding ratio
+				int boost = missionBoost.getOrDefault(metaMission.getType(), 0);
+
+				probability += boost;
+				logger.info(person, "Mission " + metaMission.getName() + " with probability=" + probability
+								+ " boost=" + boost);
+
+								missionProbCache.put(metaMission, probability);
 				totalProbCache += probability;
 			}
 		}
@@ -278,15 +289,14 @@ public class MissionManager implements Serializable, Temporal {
 
 		// Determine which mission is selected.
 		MetaMission selectedMetaMission = null;
-		Iterator<MetaMission> m = missionProbCache.keySet().iterator();
-		while (m.hasNext() && (selectedMetaMission == null)) {
-			MetaMission metaMission = m.next();
-			double probWeight = missionProbCache.get(metaMission);
-			if (r <= probWeight && probWeight != 0) {
-				selectedMetaMission = metaMission;
-			} else {
-				r -= probWeight;
-			}
+		for (Entry<MetaMission, Double> possible : missionProbCache.entrySet()) {
+			double probWeight = possible.getValue();
+			if (r <= probWeight) {
+				selectedMetaMission = possible.getKey();
+				break;
+			} 
+
+			r -= probWeight;
 		}
 
 		if (selectedMetaMission == null) {
@@ -517,6 +527,18 @@ public class MissionManager implements Serializable, Temporal {
 		if (listeners != null) {
 			listeners.clear();
 			listeners = null;
+		}
+	}
+
+	/**
+	 * Set up any Mission configurations
+	 */
+	public void initializeInstances(SimulationConfig simulationConfig) {
+		if (missionBoost == null) {
+			missionBoost = simulationConfig.getMissionBoosts();
+		}
+		else {
+			missionBoost.putAll(simulationConfig.getMissionBoosts());
 		}
 	}
 }
