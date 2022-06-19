@@ -956,7 +956,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 		double totalSpeed = 0D;
 		int count = 0;
 		for (MissionMember member : getMembers()) {
-			if (member instanceof Person) {
+			if (member.getUnitType() == UnitType.PERSON) {
 				totalSpeed += getAverageVehicleSpeedForOperator((Person) member);
 				count++;
 			}
@@ -1282,7 +1282,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 		Person person = (Person) member;
 		String reason = "";
 
-		if (member instanceof Person
+		if (member.getUnitType() == UnitType.PERSON
 				&& (hasAnyPotentialMedicalProblems() ||
 						person.getPhysicalCondition().hasSeriousMedicalProblems() || hasEmergencyAllCrew())
 				) {
@@ -1374,7 +1374,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 		if (beaconOn) {
 			String settlement = null;
 
-			if (member instanceof Person) {
+			if (member.getUnitType() == UnitType.PERSON) {
 				settlement = ((Person)member).getAssociatedSettlement().getName();
 			}
 			else {
@@ -1394,10 +1394,10 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 
 			eventManager.registerNewEvent(newEvent);
 			logger.info(vehicle, member.getName()
-					+ " activated emergency beacon on");
+					+ " activated emergency beacon.");
 		} else {
 			logger.info(vehicle, member.getName()
-					+ " deactivated emergency beacon on");
+					+ " deactivated emergency beacon.");
 		}
 
 		vehicle.setEmergencyBeacon(beaconOn);

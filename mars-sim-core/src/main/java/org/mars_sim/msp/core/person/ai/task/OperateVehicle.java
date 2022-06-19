@@ -59,37 +59,44 @@ public abstract class OperateVehicle extends Task implements Serializable {
     
     /** Need to provide oxygen as fuel oxidizer for the fuel cells. */
 	public static final int OXYGEN_ID = ResourceUtil.oxygenID;
-	
     /** The fuel cells will generate 2.25 kg of water per 1 kg of methane being used. */
 	public static final int WATER_ID = ResourceUtil.waterID;
-	
+    /** Mars surface gravity is 3.72 m/s2. */
+    private static final double GRAVITY = 3.72;
+	/** Conversion factor : 1 kWh = 3.6 M Joules */
+    private static final double JOULES_PER_KWH = 3_600_000.0;
+	/** Conversion factor : 1 m/s = 3.6 km/h (or kph) */
+	private static final double KPH_CONV = 3.6;
+	/** The Square of 3.6 km/h (or kph) */	
+	private static final double KPH_CONV_SQ = 12.96;
 	/** Half the PI. */
 	private static final double HALF_PI = Math.PI / 2D;
-	
 	/** Comparison to indicate a small but non-zero amount of fuel (methane) in kg that can still work on the fuel cell to propel the engine. */
     private static final double LEAST_AMOUNT = RoverMission.LEAST_AMOUNT;
-	
-    // Distance buffer for arriving at destination (km).
-    private final static double DESTINATION_BUFFER = .001D;
-    
-    // The base percentage chance of an accident while operating vehicle per millisol.
+    /** Distance buffer for arriving at destination (km). */
+    private static final double DESTINATION_BUFFER = .001D;
+    /** The base percentage chance of an accident while operating vehicle per millisol. */
     public static final double BASE_ACCIDENT_CHANCE = .01D;
-
-    // Sometimes a negative speed is calculated due to modifiers
+    /** Sometimes a negative speed is calculated due to modifiers. */
 	private static final double MIN_SPEED = 0.1; 
 	
 	// Data members
-	private double startTripDistance; // The distance (km) to the destination at the start of the trip.
-	   
-	private Vehicle vehicle; // The vehicle to operate.
-	private Coordinates destination; // The location of the destination of the trip.
-	private MarsClock startTripTime; // The time/date the trip is starting.
-	
+	/** The fuel type of this vehicle. */
+	private int fuelType;
+	/** The distance (km) to the destination at the start of the trip. */
+	private double startTripDistance; 
+	/** The vehicle to operate. */ 
+	private Vehicle vehicle;
+	/** The location of the destination of the trip. */
+	private Coordinates destination;
+	/** The timestamp the trip is starting. */
+	private MarsClock startTripTime;
+	/** The malfunctionManager of this vehicle. */
 	private MalfunctionManager malfunctionManager;
 	
-
 	/**
-	 * Default Constructor
+	 * Constructor for a human pilot.
+	 * 
 	 * @param name the name of the particular task.
 	 * @param person the person performing the task.
 	 * @param vehicle the vehicle to operate.
@@ -113,13 +120,9 @@ public abstract class OperateVehicle extends Task implements Serializable {
 		this.startTripTime = startTripTime;
 		this.startTripDistance = startTripDistance;
 		
-//		surface = Simulation.instance().getMars().getSurfaceFeatures();
-		malfunctionManager = vehicle.getMalfunctionManager();
+        fuelType = vehicle.getFuelType();
 		
-		// Check for valid parameters.
-//		if (vehicle == null) {
-//		    throw new IllegalArgumentException("vehicle is null");
-//		}
+		malfunctionManager = vehicle.getMalfunctionManager();
 		
 		if (destination == null) {
 		    throw new IllegalArgumentException("destination is null");
@@ -135,7 +138,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
 		
 		// Select the vehicle operator
 		Worker vo = vehicle.getOperator();
-//		Person driver = (Person) vo;
+
 		// Check if there is a driver assigned to this vehicle.
 		if (vo == null) 
 			vehicle.setOperator(person);
@@ -158,6 +161,19 @@ public abstract class OperateVehicle extends Task implements Serializable {
 		setPhase(MOBILIZE);
 	}
 	
+	/**
+	 * Constructor for a robot pilot.
+	 * 
+	 * @param name
+	 * @param robot
+	 * @param vehicle
+	 * @param destination
+	 * @param startTripTime
+	 * @param startTripDistance
+	 * @param stressModifier
+	 * @param hasDuration
+	 * @param duration
+	 */
 	public OperateVehicle(String name, Robot robot, Vehicle vehicle, Coordinates destination, 
 			MarsClock startTripTime, double startTripDistance, double stressModifier, 
 			boolean hasDuration, double duration) {
@@ -171,11 +187,9 @@ public abstract class OperateVehicle extends Task implements Serializable {
 		this.startTripTime = startTripTime;
 		this.startTripDistance = startTripDistance;
 		
+        fuelType = vehicle.getFuelType();
+        
 		// Check for valid parameters.
-		if (vehicle == null) {
-		    throw new IllegalArgumentException("vehicle is null");
-		}
-		
 		if (destination == null) {
 		    throw new IllegalArgumentException("destination is null");
 		}
@@ -186,12 +200,10 @@ public abstract class OperateVehicle extends Task implements Serializable {
 		    throw new IllegalArgumentException("startTripDistance is < 0");
 		}
 		
-//		surface = Simulation.instance().getMars().getSurfaceFeatures();
 		malfunctionManager = vehicle.getMalfunctionManager();
 		// Select the vehicle operator
 		Worker vo = vehicle.getOperator();
-//		Robot roboDriver = (Robot) vo;
-		
+	
 		// Check if there is a driver assigned to this vehicle.
 		if (vo == null) 
 			vehicle.setOperator(robot);
@@ -233,6 +245,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
 	
 	/**
 	 * Gets the vehicle operated with this task.
+	 * 
 	 * @return vehicle
 	 */
 	public Vehicle getVehicle() {
@@ -241,6 +254,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
 	
 	/** 
 	 * Gets the location of the destination of the trip.
+	 * 
 	 * @return location of destination
 	 */
 	public Coordinates getDestination() {
@@ -249,6 +263,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
 	
 	/**
 	 * Sets the location of the destination of this trip.
+	 * 
 	 * @param newDestination location of the destination.
 	 */
 	public void setDestination(Coordinates newDestination) {
@@ -258,6 +273,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
 	
 	/**
 	 * Gets the time/date the trip was started on.
+	 * 
 	 * @return start time
 	 */
 	protected MarsClock getStartTripTime() {
@@ -266,22 +282,29 @@ public abstract class OperateVehicle extends Task implements Serializable {
 	
 	/**
 	 * Gets the distance to the destination at the start of the trip.
+	 * 
 	 * @return distance (km) to destination.
 	 */
 	protected double getStartTripDistance() {
 		return startTripDistance;
 	}
 	
+	/**
+	 * Clears this task in the task manager
+	 * 
+	 * @param vo
+	 */
 	protected void clearDrivingTask(Worker vo) {
     	// Clear the OperateVehicle task from the last driver
-		TaskManager taskManager = person.getTaskManager();
+		TaskManager taskManager = vo.getTaskManager();
 		taskManager.clearSpecificTask(DriveGroundVehicle.class.getSimpleName());
 		taskManager.clearSpecificTask(PilotDrone.class.getSimpleName());
 		taskManager.clearSpecificTask(OperateVehicle.class.getSimpleName());
 	}
 	
 	/**
-	 * Perform the mobilize vehicle phase for the amount of time given.
+	 * Performs the mobilize vehicle phase for the amount of time given.
+	 * 
 	 * @param time the amount of time (ms) to perform the phase.
 	 * @return the amount of time left over after performing the phase.
 	 */
@@ -340,206 +363,258 @@ public abstract class OperateVehicle extends Task implements Serializable {
 	 */
 	protected double mobilizeVehicle(double time) {
         double result = 0;
-        double distanceTraveled = 0;
-        
+   
         // Find starting distance to destination.
         double startingDistanceToDestination = getDistanceToDestination();
-
-        int fuelType = vehicle.getFuelType();
+        
+        if (Double.isNaN(startingDistanceToDestination)) {
+        	logger.severe("startingDistance is " + startingDistanceToDestination );
+        	return time;
+        }
         
         double remainingFuel = vehicle.getAmountResourceStored(fuelType);
         double remainingOxidizer = vehicle.getAmountResourceStored(OXYGEN_ID);
-                
-        if (!vehicle.isInSettlement() && 
-        		(remainingFuel < LEAST_AMOUNT || remainingOxidizer < LEAST_AMOUNT)) {
-        	// Case 0 : no fuel or oxidizer left
-
-        	logger.log(vehicle, Level.SEVERE, 20_000, 
-					"Out of fuel or oxidizer. Cannot drive.");
-
-	    	// Turn on emergency beacon
-	    	turnOnBeacon();
-        	
-        	endTask();
-        	return time;
-        }
         
+    	// Case 0 : no fuel or oxidizer left     
+        if (!vehicle.isInSettlement()) {
+        	if (remainingFuel < LEAST_AMOUNT) {
+        		logger.log(vehicle, Level.SEVERE, 20_000, 
+    					"Out of fuel. Cannot drive.");
+        		// Turn on emergency beacon
+    	    	turnOnBeacon();
+            	
+            	endTask();
+            	return time;
+        	}
+             
+        	else if (remainingOxidizer < LEAST_AMOUNT) {
+        		logger.log(vehicle, Level.SEVERE, 20_000, 
+    					"Out of fuel oxidizer. Cannot drive.");
+        		// Turn on emergency beacon
+    	    	turnOnBeacon();
+            	
+            	endTask();
+            	return time;
+            }
+        }
         
         // Determine the hours used.
         double hrsTime = MarsClock.HOURS_PER_MILLISOL * time;
-
-        double JoulesTokWh = 1.0 / 3600.0 / 1000.0;
         
-        double v = vehicle.getSpeed();
+        double v = vehicle.getSpeed(); // [in km/hr]
+        double fuelUsed = 0;
         
         // Determine distance traveled in time given.
-        distanceTraveled = hrsTime * v;
-
-        // Note: 1 m/s = 3.6 km/h (or kph)
+        double distanceTraveled = hrsTime * v; // [in km]
         
-        // Consume fuel for distance traveled.
-        double fuelNeeded = distanceTraveled / vehicle.getIFuelEconomy();
-
-        //  For Ground rover, it doesn't need as much
-        // Road load (friction) force = road rolling resistance coeff *  mass * gravity * cos (slope angle)
-        double F_againstGravity = 0.11 * vehicle.getMass() * 9.8;  
-        
-        if (vehicle instanceof Drone) {
-            // For drones, it need energy to keep hovering in the air
-            // Note: refine this equation for drones
-        	 F_againstGravity = F_againstGravity * 1.3;
-        }
-        
-        double delta_v = vehicle.getSpeed() - vehicle.getPreviousSpeed();
-        
-        double v_sq = v * v;
-        
-        double F_initialFriction = 0;
-        
-        if (delta_v != 0)
-        	F_initialFriction = 5 / v * 3.6;
-        
-        // aerodynamic drag force = air drag coeff * air density * vehicle frontal area
-        //                          / 2 * vehicle speed 
-        double F_aeroDragForce = 0.27 * 0.1 * 1.5 / 2.0 * v_sq / 3.6 / 3.6;
-        
-        double energyNeeded = JoulesTokWh * 1000.0 * distanceTraveled * (F_initialFriction + F_againstGravity + F_aeroDragForce);
-        
-//        double kinetic_E = vehicle.getMass() / 2.0 * delta_v_squared / 3.6 / 1_000.0;
-        // Question: what to do with the kinetic_E ?		
-        
-        double delta_E = energyNeeded;// + kinetic_E;
-        		
-        double fuelUsed = delta_E * Vehicle.FUEL_KG_PER_KWH;
-    	
-//        logger.log(vehicle, Level.SEVERE, 2_000, 
-//        			"fuelNeeded: " + Math.round(fuelNeeded * 10_000.0)/10_000.0 + " kg   "
-//            		+ "fuelUsed: " + Math.round(fuelUsed * 10_000.0)/10_000.0 + " kg   "
-//                	+ "v: " + Math.round(v * 10_000.0)/10_000.0 + " km/h   "
-//        			+ "delta_v: " + Math.round(delta_v * 10_000.0)/10_000.0 + " km/h   "
-//        			+ "F_initialFriction: " + Math.round(F_initialFriction * 10_000.0)/10_000.0 + " N   "
-//        			+ "F_againstGravity: " + Math.round(F_againstGravity * 10_000.0)/10_000.0 + " N   "
-//    				+ "F_airResistance: " + Math.round(F_aeroDragForce * 10_000.0)/10_000.0 + " N   "
-//    				+ "energyNeeded: " + Math.round(energyNeeded * 10_000.0)/10_000.0 + " kWh   "
-//    	    		+ "kinetic_E: " + Math.round(kinetic_E * 10_000.0)/10_000.0 + " kWh   "
-//    				+ "delta_E: " + Math.round(delta_E * 10_000.0)/10_000.0 + " kWh   "
-//    				);
-        	
-        if (fuelNeeded > fuelUsed) {
-    		// Use fuelUsed since it's more accurate in computing the delta kinetic energy needed to change the speed
-    		fuelNeeded = fuelUsed;
-    	}
-    	
-        if (Double.isNaN(distanceTraveled) || Double.isNaN(startingDistanceToDestination)) {
-        	logger.severe("NAN distancedtraveled " + distanceTraveled + ", startingDistance " + startingDistanceToDestination );
+        if (Double.isNaN(distanceTraveled)) {
+        	logger.severe("distancedtraveled is " + distanceTraveled);
         	return time;
         }
         
-    	// Case 1 : just used up the last drop of fuel 
-        if (fuelNeeded > remainingFuel) {
-        	fuelNeeded = remainingFuel;
+        // Case 1
+        if (startingDistanceToDestination <= (distanceTraveled + DESTINATION_BUFFER)) {
+        	logger.log(vehicle, Level.CONFIG,  1_000L, "Case 1: Arriving at the settlement, needs to slow down.");
         	
-            // Update the distance traveled.
-            distanceTraveled  = fuelNeeded * vehicle.getIFuelEconomy();
-            // Determine new position.
-            vehicle.setCoordinates(vehicle.getCoordinates().getNewLocation(vehicle.getDirection(), distanceTraveled));
-            // Add distance traveled to vehicle's odometer.
-            vehicle.addOdometerMileage(distanceTraveled);
-            // Track maintenance due to distance traveled.
-            vehicle.addDistanceLastMaintenance(distanceTraveled);
+        	// Shorten the distance the vehicle will travel
+        	distanceTraveled = startingDistanceToDestination;
+        	// Slow down the vehicle
+        	v = distanceTraveled / hrsTime;
+        	// Adjust the speed
+        	vehicle.setSpeed(v);
+        	
+            // Calculate the fuel needed
+            fuelUsed = calculateFuelUsed(distanceTraveled, hrsTime);
+       
+            // Set speed to zero
+            vehicle.setSpeed(0D);
+       	 	// Determine new position.
+            vehicle.setCoordinates(destination);
+        	// Remove the vehicle operator
+            vehicle.setOperator(null);
             
-        	// Retrieve the fuel needed for the distance traveled.
-		    vehicle.retrieveAmountResource(fuelType, fuelNeeded);
-		    // Retrieve the same amount of oxygen as fuel oxidizer
-		    vehicle.retrieveAmountResource(OXYGEN_ID, fuelNeeded);
-		    // Generate 2.25 times amount of the water from the fuel cells
-		    vehicle.storeAmountResource(WATER_ID, fuelNeeded * 2.25);
-        	
+            // Update vehicle status
+            if (!vehicle.haveStatusType(StatusType.PARKED))
+            	vehicle.addStatus(StatusType.PARKED);
+            if (vehicle.haveStatusType(StatusType.MOVING))
+            	vehicle.removeStatus(StatusType.MOVING);
+        	if (vehicle.haveStatusType(StatusType.OUT_OF_FUEL))
+        		vehicle.removeStatus(StatusType.OUT_OF_FUEL);
+
+
+            updateVehicleElevationAltitude();
+            
+            if (isSettlementDestination()) {
+                determineInitialSettlementParkedLocation();
+            }
+            
+            // Calculate the remaining time
+            result = time - MarsClock.MILLISOLS_PER_HOUR * distanceTraveled / v;
+        }
+        
+        else {
+        	// Case 2 : the rover may use all the prescribed time to drive 
+//            logger.log(vehicle, Level.CONFIG,  1_000L, "Case 2: Use all the prescribed time to drive.");
+            
+            distanceTraveled = hrsTime * vehicle.getSpeed();
+       
+            // Calculate the fuel needed
+            fuelUsed = calculateFuelUsed(distanceTraveled, hrsTime);
+		    
+            // Update vehicle status
         	if (!vehicle.haveStatusType(StatusType.MOVING))
         		vehicle.addStatus(StatusType.MOVING);
         	if (vehicle.haveStatusType(StatusType.OUT_OF_FUEL))
         		vehicle.removeStatus(StatusType.OUT_OF_FUEL);
+            if (vehicle.haveStatusType(StatusType.PARKED))
+            	vehicle.removeStatus(StatusType.PARKED);
             
-            // Calculate the remaining time
-            result = time - MarsClock.MILLISOLS_PER_HOUR * distanceTraveled / vehicle.getSpeed();
+            // Determine new position.
+            vehicle.setCoordinates(vehicle.getCoordinates().getNewLocation(vehicle.getDirection(), distanceTraveled));
+            // Use up all of the available time
+            result = 0; 
+        }
+	    
+        // Case 3 : just used up the last drop of fuel 
+        if (fuelUsed > remainingFuel) {
+        	fuelUsed = remainingFuel;
+        	
+            logger.log(vehicle, Level.WARNING,  1_000L, "Case 2: Just used up the last drop of fuel.");
+            
+        	// Slow down the vehicle
+        	v = distanceTraveled / hrsTime;
+        	// Adjust the speed
+        	vehicle.setSpeed(v);
+        	
+            // Recalculate the fuel needed
+        	fuelUsed = calculateFuelUsed(distanceTraveled, hrsTime);
+        	
+            // Determine new position.
+            vehicle.setCoordinates(vehicle.getCoordinates().getNewLocation(vehicle.getDirection(), distanceTraveled));
+            
+            // Update vehicle status
+        	if (vehicle.haveStatusType(StatusType.MOVING))
+        		vehicle.removeStatus(StatusType.MOVING);
+        	if (!vehicle.haveStatusType(StatusType.OUT_OF_FUEL))
+        		vehicle.addStatus(StatusType.OUT_OF_FUEL);
+            if (!vehicle.haveStatusType(StatusType.PARKED))
+            	vehicle.addStatus(StatusType.PARKED);
+        	
+        	result = time - MarsClock.MILLISOLS_PER_HOUR * distanceTraveled / v;
+        }
+
+        // Add distance traveled to vehicle's odometer.
+        vehicle.addOdometerMileage(distanceTraveled);
+        // Track maintenance due to distance traveled.
+        vehicle.addDistanceLastMaintenance(distanceTraveled);
+        
+    	// Retrieve the fuel needed for the distance traveled.
+	    vehicle.retrieveAmountResource(fuelType, fuelUsed);
+	    // Retrieve the same amount of oxygen as fuel oxidizer.
+	    vehicle.retrieveAmountResource(OXYGEN_ID, fuelUsed);
+	    // Generate 2.25 times amount of the water from the fuel cells
+	    vehicle.storeAmountResource(WATER_ID, fuelUsed * 2.25);
+        
+        return result;   
+	}
+        
+	/**
+	 * Calculate the fuel to be used up
+	 * 
+	 * @param distanceTraveled
+	 * @param hrsTime
+	 * @return
+	 */
+    public double calculateFuelUsed(double distanceTraveled, double hrsTime) {
+        
+        double v = vehicle.getSpeed(); // [in km/hr]
+        double mass = vehicle.getMass(); // [in kg]
+        double fe = vehicle.getIFuelEconomy(); // [in km/kg]
+        // Calculate force against Mars surface gravity
+        double F_againstGravity = 0; 
+        
+        // Calculate force on rolling resistance 
+        double F_rolling = 0;
+        
+        if (vehicle instanceof Drone) {
+            // For drones, it needs energy to ascend into the air and hover in the air
+            // Note: Refine this equation for drones
+        	 F_againstGravity = GRAVITY * mass;
         }
         
-        else {
-            // Case 2 : if starting distance to destination is less than distance traveled, stop at destination.	
-            if (startingDistanceToDestination <= (distanceTraveled + DESTINATION_BUFFER)) {
-            
-            	distanceTraveled = startingDistanceToDestination;
-                // Determine new position.
-                vehicle.setCoordinates(destination);
-                // Add distance traveled to vehicle's odometer.
-                vehicle.addOdometerMileage(distanceTraveled);
-                // Track maintenance due to distance traveled.
-                vehicle.addDistanceLastMaintenance(distanceTraveled);
-                
-                // Update the fuel needed for distance traveled.
-                fuelNeeded = distanceTraveled / vehicle.getIFuelEconomy();
-            	// Retrieve the fuel needed for the distance traveled.
-    		    vehicle.retrieveAmountResource(fuelType, fuelNeeded);
-    		    // Retrieve the same amount of oxygen as fuel oxidizer.
-    		    vehicle.retrieveAmountResource(OXYGEN_ID, fuelNeeded);
-    		    // Generate 2.25 times amount of the water from the fuel cells
-    		    vehicle.storeAmountResource(WATER_ID, fuelNeeded * 2.25);
-    		    
-                vehicle.setSpeed(0D);
-                
-                if (!vehicle.haveStatusType(StatusType.PARKED))
-                	vehicle.addStatus(StatusType.PARKED);
-                if (vehicle.haveStatusType(StatusType.MOVING))
-                	vehicle.removeStatus(StatusType.MOVING);
-                
-                vehicle.setOperator(null);
-
-                updateVehicleElevationAltitude();
-                
-                if (isSettlementDestination()) {
-                    determineInitialSettlementParkedLocation();
-                }
-//                else {
-//                    double radDir = vehicle.getDirection().getDirection();
-//                    double degDir = radDir * 180D / Math.PI;
-//                    vehicle.setParkedLocation(0D, 0D, degDir);
-//                }
-                
-                // Calculate the remaining time
-                double speed = vehicle.getSpeed();
-                result = time;
-                if (speed > 0) {
-                	result = time - MarsClock.MILLISOLS_PER_HOUR * distanceTraveled / speed;
-                }             
-            }
-            
-            else {
-            	// Case 3 : the rover may use all the prescribed time to drive 
-                distanceTraveled = hrsTime * vehicle.getSpeed();
-                // Determine new position.
-                vehicle.setCoordinates(vehicle.getCoordinates().getNewLocation(vehicle.getDirection(), distanceTraveled));
-                // Add distance traveled to vehicle's odometer.
-                vehicle.addOdometerMileage(distanceTraveled);
-                // Track maintenance due to distance traveled.
-                vehicle.addDistanceLastMaintenance(distanceTraveled);
-                
-                // Update the fuel needed for distance traveled.
-                fuelNeeded = distanceTraveled / vehicle.getIFuelEconomy();
-            	// Retrieve the fuel needed for the distance traveled.
-    		    vehicle.retrieveAmountResource(fuelType, fuelNeeded);
-    		    // Retrieve the same amount of oxygen as fuel oxidizer.
-    		    vehicle.retrieveAmountResource(OXYGEN_ID, fuelNeeded);
-    		    // Generate 2.25 times amount of the water from the fuel cells
-    		    vehicle.storeAmountResource(WATER_ID, fuelNeeded * 2.25);
-    		    
-                // Use up all of the available time
-                result = 0; 
-            }   
+        if (vehicle instanceof Rover) {
+           	// For Ground rover, it doesn't need as much
+            // In general, road load (friction) force = road rolling resistance coeff *  mass * gravity * cos (slope angle)
+        	// Note: for now, assume slope is zero
+        	F_rolling = 0.11 * mass * GRAVITY * Math.cos(vehicle.getTerrainGrade() / Math.PI); 
+            // Note: need to see if below is good
         }
+ 
+//        double delta_v = v - vehicle.getPreviousSpeed();
+        
+        double v_squared = v * v;
+        
+        double F_initialFriction = 0;
+        // Note: 1 m/s = 3.6 km/hr (or kph)
 
-        return result;
-	}
-	
+        F_initialFriction = 5 / v * KPH_CONV;
+        
+        // Note : Aerodynamic drag force = air drag coeff * air density 
+        // 			* vehicle frontal area / 2 * vehicle speed 
+        double F_aeroDragForce = 0.5 * 0.1 * 1.5 / 2.0 * v_squared / KPH_CONV_SQ;
+        
+        double F_total = F_initialFriction + F_againstGravity + F_aeroDragForce + F_rolling;
+        
+        double power = F_total * v / 3.6; // [ N * m / s]
+        
+        double energy = power * hrsTime * 3600; // [in J]
+        
+        energy = energy / JOULES_PER_KWH ; // [in kWh]
+        
+        // Note : 1 J = 1 N * m
+//        double energyNeeded =  1000 * distanceTraveled * F_total / JOULES_PER_KWH; // [in kWh]
+        
+//      double kinetic_E = vehicle.getMass() / 2.0 * delta_v_squared / KPH_CONV / 1_000.0;
+        // Question: what to do with the kinetic_E ?		
+           
+//        double delta_E = energy; // + kinetic_E;
+        
+        // Derive the mass of fuel needed
+        double fuelUsed = energy * Vehicle.FUEL_KG_PER_KWH;
+
+        // Derive the instantaneous fuel economy [in km/kg]
+        double ife = distanceTraveled / fuelUsed;
+        
+        // Derive the instantaneous fuel consumption [in km/kWh]
+        double ifc = distanceTraveled / energy;
+        
+        // Calculate the average power for this time period  [in kW]
+        double aveP = v * energy / ife / fuelUsed;
+        
+        logger.log(vehicle, Level.INFO, 10_000, 
+        			"type: " + vehicle.getVehicleTypeString() + "   "
+        		 	+ "mass: " + Math.round(mass * 100.0)/100.0 + " kg   "
+        	        + "distanceTraveled: " + Math.round(distanceTraveled * 10_000.0)/10_000.0 + " km   "
+                	+ "v: " + Math.round(v * 10_000.0)/10_000.0 + " km/h   "
+//                	+ "v_squared: " + Math.round(v_squared * 10_000.0)/10_000.0 + " km/h   "
+//        			+ "delta_v: " + Math.round(delta_v * 10_000.0)/10_000.0 + " km/h   "
+        			+ "F_initialFriction: " + Math.round(F_initialFriction * 10_000.0)/10_000.0 + " N   "
+        			+ "F_againstGravity: " + Math.round(F_againstGravity * 10_000.0)/10_000.0 + " N   "
+        			+ "F_aeroDragForce: " + Math.round(F_aeroDragForce * 10_000.0)/10_000.0 + " N   "
+    	    		+ "F_rolling: " + Math.round(F_rolling * 10_000.0)/10_000.0 + " N   "
+    	    		+ "F_total: " + Math.round(F_total * 10_000.0)/10_000.0 + " N   "
+    	    		+ "power: " + Math.round(power * 10_000.0)/10_000.0 + " kW   "
+    				+ "energy: " + Math.round(energy * 100_000.0)/100_000.0 + " kWh   "
+            		+ "fuelUsed: " + Math.round(fuelUsed * 100_000.0)/100_000.0 + " kg   "  
+                	+ "est fe: " + Math.round(vehicle.getEstimatedAveFuelEconomy() * 100.0)/100.0 + " km/kg   "
+                	+ "fe: " + Math.round(fe * 100.0)/100.0 + " km/kg   "
+    	    		+ "ife: " + Math.round(ife * 10_000.0)/10_000.0 + " km/kg   "  
+    	    		+ "ifc: " + Math.round(ifc * 10_000.0)/10_000.0 + " km/kWh   "    
+    				+ "aveP: " + Math.round(aveP * 100_000.0)/100_000.0 + " kW   "
+    				);
+        
+        return fuelUsed;
+    }
 
 	/**
 	 * Checks if the destination is at the location of a settlement.

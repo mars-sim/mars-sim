@@ -73,7 +73,7 @@ public class TerrainElevation implements Serializable {
 
 	/**
 	 * Returns terrain steepness angle from location by sampling 11.1 km in given
-	 * direction
+	 * direction.
 	 *
 	 * @param currentLocation  the coordinates of the current location
 	 * @param currentDirection the current direction (in radians)
@@ -90,7 +90,7 @@ public class TerrainElevation implements Serializable {
 
 	/**
 	 * Determines the terrain steepness angle from location by sampling 11.1 km in given
-	 * direction and elevation
+	 * direction and elevation.
 	 *
 	 * @param currentLocation
 	 * @param elevation

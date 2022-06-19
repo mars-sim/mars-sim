@@ -678,7 +678,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 				We assume 10 kg of waste will turn into 8 kg of by-products per sol.
 				-->
-				<process name= "Solid Waste Management" power-required=".3" default="on">
+				<process name= "Solid Waste Management" power-required=".3" default="off">
 					<input resource="toxic waste" rate="4" ambient="false" />
 					<input resource="solid waste" rate="6" ambient="false" />
 					<output resource="fertilizer" rate="2" ambient="false" />

@@ -157,7 +157,7 @@ public abstract class Vehicle extends Unit
 	private double odometerMileage; //
 	/** Distance traveled by vehicle since last maintenance (km) . */
 	private double distanceMaint; //
-	/** The efficiency of the vehicle's drivetrain. (kWh/km). */
+	/** The efficiency of the vehicle's drivetrain. [dimension-less] */
 	private double drivetrainEfficiency;
 	/** The average power output of the vehicle. (kW). */
 	private double averagePower = 0;
@@ -260,23 +260,23 @@ public abstract class Vehicle extends Unit
 		if (vehicleTypeString.equalsIgnoreCase(VehicleType.DELIVERY_DRONE.getName())) {
 			baseWearLifetime = 668_000 * .75; // 668 Sols (1 orbit)
 			// Note: Hard code the value of averagePower for the time being
-			averagePower = 45;
+			averagePower = 10; //45; 
 		}
 		else if (vehicleTypeString.equalsIgnoreCase(VehicleType.LUV.getName())) {
 			baseWearLifetime = 668_000 * 2D; // 668 Sols (1 orbit)
-			averagePower = 15;
+			averagePower = 5; //15;
 		}
 		else if (vehicleTypeString.equalsIgnoreCase(VehicleType.EXPLORER_ROVER.getName())) {
 			baseWearLifetime = 668_000; // 668 Sols (1 orbit)
-			averagePower = 60;
+			averagePower = 15; //60;
 		}
 		else if (vehicleTypeString.equalsIgnoreCase(VehicleType.TRANSPORT_ROVER.getName())) {
 			baseWearLifetime = 668_000 * 1.5; // 668 Sols (1 orbit)
-			averagePower = 75;
+			averagePower = 20; //75;
 		}
 		else if (vehicleTypeString.equalsIgnoreCase(VehicleType.CARGO_ROVER.getName())) {
 			baseWearLifetime = 668_000 * 1.25; // 668 Sols (1 orbit)
-			averagePower = 90;
+			averagePower = 25; //90;
 		}
 
 		direction = new Direction(0);
@@ -319,40 +319,30 @@ public abstract class Vehicle extends Unit
 		distanceMaint = 0;
 		// Set base speed.
 		baseSpeed = spec.getBaseSpeed();
-
 		// Set the empty mass of the vehicle.
 		setBaseMass(spec.getEmptyMass());
-
-		// Set the drivetrain efficiency [in kWh/km] of the vehicle.
+		// Set the drivetrain efficiency [dimension-less] of the vehicle.
 		drivetrainEfficiency = spec.getDriveTrainEff();
 		// Gets the capacity [in kg] of vehicle's fuel tank
 		fuelCapacity = spec.getCargoCapacity(ResourceUtil.findAmountResourceName(getFuelType()));
-
 		// Gets the total energy [in kWh] on a full tank of methane
 		totalEnergy = METHANE_SPECIFIC_ENERGY * fuelCapacity * SOFC_CONVERSION_EFFICIENCY * drivetrainEfficiency;
-
-		// Assume Peak power as 3x average power.
-		peakPower = averagePower * 3.0;
-
+		// Assume the peak power is 6x the average power.
+		peakPower = averagePower * 6.0;
 		// Gets the maximum total # of hours the vehicle is capable of operating
-		totalHours = totalEnergy / averagePower * 3.0;
-
+		totalHours = totalEnergy / averagePower;
 		// Gets the base range [in km] of the vehicle
 		baseRange = baseSpeed * totalHours;
-
 		// Gets the base fuel economy [in km/kg] of this vehicle
 		baseFuelEconomy = baseRange / fuelCapacity;
-
 		// Gets the base fuel consumption [in km/kWh] of this vehicle
 		baseFuelConsumption = baseRange / totalEnergy;
-
 		// Gets the crew capacity
 		int numCrew = spec.getCrewSize();
-
+		// Gets estimated total crew weight
 		estimatedTotalCrewWeight = numCrew * Person.getAverageWeight();
-
+		// Gets cargo capacity
 		cargoCapacity = spec.getTotalCapacity();
-
 		// Create microInventory instance
 		eqmInventory = new EquipmentInventory(this, cargoCapacity);
 
@@ -363,14 +353,14 @@ public abstract class Vehicle extends Unit
 		}
 
 		if (this instanceof Rover) {
-
+			// Gets beginning mass
 			beginningMass = getBaseMass() + estimatedTotalCrewWeight + 500;
 			// Accounts for the rock sample, ice or regolith collected
 			endMass = getBaseMass() + estimatedTotalCrewWeight + 1000;
 		}
 
 		else if (vehicleType == VehicleType.DELIVERY_DRONE || vehicleType == VehicleType.LUV) {
-
+			// Gets beginning mass
 			beginningMass = getBaseMass() + 300;
 			// Accounts for the rock sample, ice or regolith collected
 			endMass = getBaseMass()  + 300;
@@ -379,10 +369,28 @@ public abstract class Vehicle extends Unit
 		if (vehicleType == VehicleType.DELIVERY_DRONE || this instanceof Rover) {
 			// Gets the estimated average fuel economy for a trip [km/kg]
 			estimatedAveFuelEconomy = baseFuelEconomy * (beginningMass / endMass * .75);
-			// Gets the acceleration in m/s2
+			// Gets the base acceleration in m/s2
 			baseAccel = averagePower / beginningMass / baseSpeed * 1000 * 3.6;
 		}
 
+		logger.log(this, Level.INFO, 10_000L, 
+				"type: " + vehicleType + "   "
+				+ "fuelCapacity: " + Math.round(fuelCapacity * 100.0)/100.0 + " kg   " 
+	   		 	+ "baseSpeed: " + Math.round(baseSpeed * 100.0)/100.0 + " kW/hr   " 
+    		 	+ "averagePower: " + Math.round(averagePower * 100.0)/100.0 + " kW   "
+    	    	+ "totalEnergy: " + Math.round(totalEnergy * 100.0)/100.0 + " km/kg   "   		 	
+    		 	+ "totalHours: " + Math.round(totalHours * 100.0)/100.0 + " hr   "
+    		 	+ "baseRange: " + Math.round(baseRange * 100.0)/100.0 + " km   "
+    		 	+ "baseFuelEconomy: " + Math.round(baseFuelEconomy * 100.0)/100.0 + " km/kg   "
+    		 	+ "baseFuelConsumption: " + Math.round(baseFuelConsumption * 100.0)/100.0 + " km/kWh   "
+    		 	+ "baseFuelEconomy: " + Math.round(baseFuelEconomy * 100.0)/100.0 + " km/kg   "
+    		 	+ "cargoCapacity: " + Math.round(cargoCapacity * 100.0)/100.0 + " kg   "   
+       		 	+ "beginningMass: " + Math.round(beginningMass * 100.0)/100.0 + " kg   "
+    		 	+ "endMass: " + Math.round(endMass * 100.0)/100.0 + " kg   "
+    		 	+ "estimatedAveFuelEconomy: " + Math.round(estimatedAveFuelEconomy * 100.0)/100.0 + " km/kg   "  
+    	    	+ "baseAccel: " + Math.round(baseAccel * 100.0)/100.0 + " m/s2  "  
+				);
+    		 	
 		// Add to the settlement
 		settlement.addOwnedVehicle(this);
 		setCoordinates(settlement.getCoordinates());
@@ -467,6 +475,12 @@ public abstract class Vehicle extends Unit
 
 	}
 
+	/**
+	 * Gets the vehicle description
+	 * 
+	 * @param vehicleType
+	 * @return
+	 */
 	public String getDescription(String vehicleType) {
 		VehicleConfig vehicleConfig = simulationConfig.getVehicleConfiguration();
 		return vehicleConfig.getVehicleSpec(vehicleType).getDescription();
@@ -594,6 +608,8 @@ public abstract class Vehicle extends Unit
 	/**
 	 * Sets the positions of all human crew members (if any) to the vehicle's
 	 * location.
+	 * 
+	 * @param currentCrewPositions
 	 */
 	private void setCrewPositions(Map<Person, LocalPosition> currentCrewPositions) {
 
@@ -614,6 +630,8 @@ public abstract class Vehicle extends Unit
 	/**
 	 * Sets the positions of all robot crew members (if any) to the vehicle's
 	 * location.
+	 * 
+	 * @param currentRobotCrewPositions
 	 */
 	private void setRobotCrewPositions(Map<Robot, LocalPosition> currentRobotCrewPositions) {
 
@@ -641,7 +659,7 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
-	 * Prints a string list of status types
+	 * Prints a string list of status types.
 	 *
 	 * @return
 	 */
@@ -651,7 +669,7 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
-	 * Checks if this vehicle has already been tagged with a status type
+	 * Checks if this vehicle has already been tagged with a status type.
 	 *
 	 * @param status the status type of interest
 	 * @return yes if it has it

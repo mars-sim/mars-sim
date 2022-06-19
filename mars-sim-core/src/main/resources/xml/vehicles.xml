@@ -80,22 +80,22 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 
 
 <vehicle-configuration>
-
+	<!-- The size of the rover [in m]. (required) -->
 	<vehicle type="Explorer Rover" width="3.5" length="8.0">
 		<!-- Note: the vehicle types used here must match those in message.properties -->
 
 		<description>A rover for collecting rock samples from remote sites and ice prospecting.
 			The Explorer Rover is the only rover that has both a lab and a sick bay bed.</description>
 
-		<!-- The efficiency of the vehicle's drivetrain. (required) -->
+		<!-- The efficiency of the vehicle's drivetrain [dimension-less]. (required) -->
 		<!-- Default: varied according to the type of vehicle -->
 		<drivetrain-efficiency value=".75" />
 
-		<!-- Base speed of rover (km/hr) (required) -->
+		<!-- Base speed of rover [km/hr](required) -->
 		<!-- Default: varies according to the type of vehicle -->
 		<base-speed value="30.0" />
 
-		<!-- Empty mass of rover (kg) (required) -->
+		<!-- Empty mass of rover [kg] (required) -->
 		<!-- Default: varies according to the type of vehicle  -->
 		<empty-mass value="2000.0" />
 

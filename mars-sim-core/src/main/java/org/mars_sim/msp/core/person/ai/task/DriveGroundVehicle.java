@@ -154,7 +154,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 
 		if (getPhase() == null) {
 //			throw new IllegalArgumentException("Task phase is null");
-			logger.log(worker, Level.INFO, 10_000, "Had an unknown phase when driving");
+			logger.log(worker, Level.INFO, 10_000, "Had an unknown phase when driving.");
 			// If it called endTask() in OperateVehicle, then Task is no longer available
 			// WARNING: do NOT call endTask() here or it will end up calling endTask() 
 			// recursively.
