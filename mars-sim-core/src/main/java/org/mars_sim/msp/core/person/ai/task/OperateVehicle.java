@@ -527,53 +527,48 @@ public abstract class OperateVehicle extends Task implements Serializable {
         double mass = vehicle.getMass(); // [in kg]
         double fe = vehicle.getIFuelEconomy(); // [in km/kg]
         // Calculate force against Mars surface gravity
-        double F_againstGravity = 0; 
+        double fGravity = 0; 
         
         // Calculate force on rolling resistance 
-        double F_rolling = 0;
+        double fRolling = 0;
         
         if (vehicle instanceof Drone) {
             // For drones, it needs energy to ascend into the air and hover in the air
             // Note: Refine this equation for drones
-        	 F_againstGravity = GRAVITY * mass;
+        	 fGravity = GRAVITY * mass;
         }
         
         if (vehicle instanceof Rover) {
            	// For Ground rover, it doesn't need as much
             // In general, road load (friction) force = road rolling resistance coeff *  mass * gravity * cos (slope angle)
         	// Note: for now, assume slope is zero
-        	F_rolling = 0.11 * mass * GRAVITY * Math.cos(vehicle.getTerrainGrade() / Math.PI); 
+        	fRolling = 0.11 * mass * GRAVITY * Math.cos(vehicle.getTerrainGrade() / Math.PI); 
             // Note: need to see if below is good
         }
- 
-//        double delta_v = v - vehicle.getPreviousSpeed();
+    
+        double vSQ = v * v;
         
-        double v_squared = v * v;
-        
-        double F_initialFriction = 0;
+        double fInitialFriction = 0;
         // Note: 1 m/s = 3.6 km/hr (or kph)
 
-        F_initialFriction = 5 / v * KPH_CONV;
+        fInitialFriction = 5 / v * KPH_CONV;
         
         // Note : Aerodynamic drag force = air drag coeff * air density 
         // 			* vehicle frontal area / 2 * vehicle speed 
-        double F_aeroDragForce = 0.5 * 0.1 * 1.5 / 2.0 * v_squared / KPH_CONV_SQ;
+        double fAeroDrag = 0.5 * 0.1 * 1.5 / 2.0 * vSQ / KPH_CONV_SQ;
         
-        double F_total = F_initialFriction + F_againstGravity + F_aeroDragForce + F_rolling;
+        double fTot = fInitialFriction + fGravity + fAeroDrag + fRolling;
         
-        double power = F_total * v / 3.6; // [ N * m / s]
+        double power = fTot * v / 3.6; // [ N * m / s]
         
         double energy = power * hrsTime * 3600; // [in J]
         
         energy = energy / JOULES_PER_KWH ; // [in kWh]
         
-        // Note : 1 J = 1 N * m
-//        double energyNeeded =  1000 * distanceTraveled * F_total / JOULES_PER_KWH; // [in kWh]
-        
-//      double kinetic_E = vehicle.getMass() / 2.0 * delta_v_squared / KPH_CONV / 1_000.0;
-        // Question: what to do with the kinetic_E ?		
-           
-//        double delta_E = energy; // + kinetic_E;
+        // Note : 1 J = 1 N*m
+//      Note : double energyNeeded =  1000 * distanceTraveled * F_total / JOULES_PER_KWH; // [in kWh]
+//      Note : double kinetic_E = vehicle.getMass() / 2.0 * delta_v_squared / KPH_CONV / 1_000.0;
+//      Note : double delta_E = energy; // + kinetic_E;
         
         // Derive the mass of fuel needed
         double fuelUsed = energy * Vehicle.FUEL_KG_PER_KWH;
@@ -594,11 +589,11 @@ public abstract class OperateVehicle extends Task implements Serializable {
                 	+ "v: " + Math.round(v * 10_000.0)/10_000.0 + " km/h   "
 //                	+ "v_squared: " + Math.round(v_squared * 10_000.0)/10_000.0 + " km/h   "
 //        			+ "delta_v: " + Math.round(delta_v * 10_000.0)/10_000.0 + " km/h   "
-        			+ "F_initialFriction: " + Math.round(F_initialFriction * 10_000.0)/10_000.0 + " N   "
-        			+ "F_againstGravity: " + Math.round(F_againstGravity * 10_000.0)/10_000.0 + " N   "
-        			+ "F_aeroDragForce: " + Math.round(F_aeroDragForce * 10_000.0)/10_000.0 + " N   "
-    	    		+ "F_rolling: " + Math.round(F_rolling * 10_000.0)/10_000.0 + " N   "
-    	    		+ "F_total: " + Math.round(F_total * 10_000.0)/10_000.0 + " N   "
+        			+ "F_initialFriction: " + Math.round(fInitialFriction * 10_000.0)/10_000.0 + " N   "
+        			+ "F_againstGravity: " + Math.round(fGravity * 10_000.0)/10_000.0 + " N   "
+        			+ "F_aeroDragForce: " + Math.round(fAeroDrag * 10_000.0)/10_000.0 + " N   "
+    	    		+ "F_rolling: " + Math.round(fRolling * 10_000.0)/10_000.0 + " N   "
+    	    		+ "F_total: " + Math.round(fTot * 10_000.0)/10_000.0 + " N   "
     	    		+ "power: " + Math.round(power * 10_000.0)/10_000.0 + " kW   "
     				+ "energy: " + Math.round(energy * 100_000.0)/100_000.0 + " kWh   "
             		+ "fuelUsed: " + Math.round(fuelUsed * 100_000.0)/100_000.0 + " kg   "  

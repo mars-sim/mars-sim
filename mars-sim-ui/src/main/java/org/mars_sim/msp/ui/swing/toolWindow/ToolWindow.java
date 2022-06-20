@@ -26,7 +26,7 @@ public abstract class ToolWindow extends JInternalFrame {
 	protected boolean opened;
 
 	/** The name of the tool the window is for. */
-	protected String name;
+	protected String toolName;
 
 	/** The main desktop. */
 	protected MainDesktopPane desktop;
@@ -47,7 +47,7 @@ public abstract class ToolWindow extends JInternalFrame {
 		);
 
 		// Initialize data members
-		this.name = name;
+		this.toolName = name;
 		this.desktop = desktop;
 
 		opened = false;
@@ -75,7 +75,7 @@ public abstract class ToolWindow extends JInternalFrame {
 	 * @return tool name
 	 */
 	public String getToolName() {
-		return name;
+		return toolName;
 	}
 
 	/**

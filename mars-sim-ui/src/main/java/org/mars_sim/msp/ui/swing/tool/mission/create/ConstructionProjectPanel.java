@@ -69,7 +69,7 @@ class ConstructionProjectPanel extends WizardPanel {
     private JList<ConstructionStageInfo> projectList;
     private MaterialsTableModel materialsTableModel;
     private JTable materialsTable;
-    private CreateMissionWizard wizard;
+    private CreateMissionWizard cMWizard;
     
     /**
      * Constructor.
@@ -78,7 +78,7 @@ class ConstructionProjectPanel extends WizardPanel {
     public ConstructionProjectPanel(final CreateMissionWizard wizard) {
         // Use WizardPanel constructor.
         super(wizard);
-        this.wizard  = wizard;
+        this.cMWizard  = wizard;
         
         // Set the layout.
         setLayout(new BorderLayout(0, 0));
@@ -463,11 +463,11 @@ class ConstructionProjectPanel extends WizardPanel {
         					"Error checking construction stage info: ", e);
                 }
             } else if (selectedSite.contains(" - Under Construction")) {
-            	if (wizard.getMissionBean().getMixedMembers() == null)
-            		if (wizard.getMissionBean().getMixedMembers().isEmpty()) {
+            	if (cMWizard.getMissionBean().getMixedMembers() == null)
+            		if (cMWizard.getMissionBean().getMixedMembers().isEmpty()) {
             			// Add checking if members of an on-going site were departed
             			loadSite(selectedSite, selectedSiteIndex);
-            			wizard.getMissionWindow().update();
+            			cMWizard.getMissionWindow().update();
             		}
             	else {            	
 	                errorMessageTextPane.setText("Cannot start mission on a site already undergoing construction.");             

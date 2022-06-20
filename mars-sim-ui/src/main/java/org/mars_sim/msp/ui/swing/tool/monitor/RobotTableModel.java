@@ -1,4 +1,4 @@
-/**
+/*
  * Mars Simulation Project
  * RobotTableModel.java
  * @date 2021-12-07
@@ -54,7 +54,7 @@ public class RobotTableModel extends UnitTableModel {
 	/** Location column. */
 	private final static int LOCATION = 2;
 	/** Settlement column. */
-	 private final static int SETTLEMENT = 3;
+	private final static int SETTLEMENT_COL = 3;
 	/** Health column. */
 	private final static int HEALTH = 4;
 	/** Hunger column. */
@@ -106,8 +106,8 @@ public class RobotTableModel extends UnitTableModel {
 		columnTypes[PERFORMANCE] = String.class;
 		columnNames[LOCATION] = Msg.getString("RobotTableModel.column.location"); //$NON-NLS-1$
 		columnTypes[LOCATION] = String.class;
-		columnNames[SETTLEMENT] = Msg.getString("RobotTableModel.column.settlement"); //$NON-NLS-1$
-		columnTypes[SETTLEMENT] = String.class;
+		columnNames[SETTLEMENT_COL] = Msg.getString("RobotTableModel.column.settlement"); //$NON-NLS-1$
+		columnTypes[SETTLEMENT_COL] = String.class;
 		columnNames[JOB] = Msg.getString("RobotTableModel.column.job"); //$NON-NLS-1$
 		columnTypes[JOB] = String.class;
 		columnNames[MISSION] = Msg.getString("RobotTableModel.column.mission"); //$NON-NLS-1$
@@ -357,7 +357,7 @@ public class RobotTableModel extends UnitTableModel {
 			}
 				break;
 
-			case SETTLEMENT: {
+			case SETTLEMENT_COL: {
 				result = robot.getLocationTag().getLocale(); // getQuickLocation();//
 			}
 				break;
@@ -511,8 +511,8 @@ public class RobotTableModel extends UnitTableModel {
 			HashMap<UnitEventType, Integer> m = new HashMap<UnitEventType, Integer>();
 			m.put(UnitEventType.NAME_EVENT, NAME);
 			m.put(UnitEventType.LOCATION_EVENT, LOCATION);
-			m.put(UnitEventType.ADD_ASSOCIATED_ROBOT_EVENT, SETTLEMENT);
-			m.put(UnitEventType.REMOVE_ASSOCIATED_ROBOT_EVENT, SETTLEMENT);
+			m.put(UnitEventType.ADD_ASSOCIATED_ROBOT_EVENT, SETTLEMENT_COL);
+			m.put(UnitEventType.REMOVE_ASSOCIATED_ROBOT_EVENT, SETTLEMENT_COL);
 			m.put(UnitEventType.HUNGER_EVENT, BATTERY);
 			// m.put(UnitEventType.FATIGUE_EVENT, FATIGUE);
 			// m.put(UnitEventType.STRESS_EVENT, STRESS);

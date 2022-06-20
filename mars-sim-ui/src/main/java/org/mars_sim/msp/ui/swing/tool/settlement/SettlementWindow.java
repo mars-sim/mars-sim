@@ -66,8 +66,9 @@ public class SettlementWindow extends ToolWindow {
 	/** Map panel. */
 	private SettlementMapPanel mapPanel;
 
-	private Font font = new Font("SansSerif", Font.PLAIN, 12);
-
+	private Font sansSerif12Plain = new Font("SansSerif", Font.PLAIN, 12);
+	private Font sansSerif13Bold = new Font("SansSerif", Font.BOLD, 13);
+	
 	/**
 	 * Constructor.
 	 *
@@ -88,19 +89,17 @@ public class SettlementWindow extends ToolWindow {
         statusBar = new WebStatusBar();
         mainPanel.add(statusBar, BorderLayout.SOUTH);
 
-		Font font1 = new Font("SansSerif", Font.BOLD, 13);
-
         popLabel = new WebStyledLabel(StyleId.styledlabelShadow);
-        popLabel.setFont(font1);
+        popLabel.setFont(sansSerif13Bold);
         popLabel.setForeground(Color.DARK_GRAY);
 	    buildingXYLabel = new WebStyledLabel(StyleId.styledlabelShadow);
-	    buildingXYLabel.setFont(font);
+	    buildingXYLabel.setFont(sansSerif12Plain);
 	    buildingXYLabel.setForeground(Color.GREEN.darker().darker().darker());
 	    mapXYLabel = new WebStyledLabel(StyleId.styledlabelShadow);
-	    mapXYLabel.setFont(font);
+	    mapXYLabel.setFont(sansSerif12Plain);
 	    mapXYLabel.setForeground(Color.ORANGE.darker());
 	    pixelXYLabel = new WebStyledLabel(StyleId.styledlabelShadow);
-	    pixelXYLabel.setFont(font);
+	    pixelXYLabel.setFont(sansSerif12Plain);
 	    pixelXYLabel.setForeground(Color.GRAY);
 
 	    WebPanel emptyPanel = new WebPanel();

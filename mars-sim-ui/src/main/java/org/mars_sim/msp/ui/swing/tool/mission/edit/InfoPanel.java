@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * InfoPanel.java
- * @version 3.2.0 2021-06-20
+ * @date 2021-10-21
  * @author Scott Davis
  */
 
@@ -68,7 +68,7 @@ public class InfoPanel extends JPanel {
 	
 	// Data members.
 	protected Mission mission;
-	protected JInternalFrame parent;
+	protected JInternalFrame frame;
 	protected MainDesktopPane desktop;	
 	
 	protected WebTextField descriptionField;
@@ -89,7 +89,7 @@ public class InfoPanel extends JPanel {
 		
 		// Data members
 		this.mission = mission;
-		this.parent = parent;
+		this.frame = parent;
 		this.desktop = desktop;
 		
 		// Sets the layout.
@@ -207,7 +207,7 @@ public class InfoPanel extends JPanel {
 	 * Open the add members dialog.
 	 */
 	private void addMembers() {
-		new AddMembersDialog(parent, desktop, mission, memberListModel, getAvailableMembers());
+		new AddMembersDialog(frame, desktop, mission, memberListModel, getAvailableMembers());
 		addMembersButton.setEnabled(canAddMembers());
 	}
 	
@@ -359,7 +359,7 @@ public class InfoPanel extends JPanel {
 	}
 	
 	public JInternalFrame getParent() {
-		return parent;
+		return frame;
 	}
 	
 	

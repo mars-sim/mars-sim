@@ -29,7 +29,7 @@ import com.alee.laf.panel.WebPanel;
 @SuppressWarnings("serial")
 public class TabPanelTow extends TabPanel {
 
-	private static final Font font = new Font("Monospaced", Font.BOLD, 12);
+	private static final Font f = new Font("Monospaced", Font.BOLD, 12);
 
 	// Data members
 	private WebPanel towingLabelPanel;
@@ -71,7 +71,7 @@ public class TabPanelTow extends TabPanel {
 			
 			// Create towing label.
 			WebLabel towLabel = new WebLabel("  " + Msg.getString("TabPanelTow.towing"), WebLabel.CENTER); //$NON-NLS-1$
-			towLabel.setFont(font);
+			towLabel.setFont(f);
 			towingLabelPanel.add(towLabel);
 
 			// Create the towing button.
@@ -84,7 +84,7 @@ public class TabPanelTow extends TabPanel {
 
 			// Create the towing text label.
 			towingTextLabel = new WebLabel(Msg.getString("TabPanelTow.none"), WebLabel.LEFT); //$NON-NLS-1$
-			towingTextLabel.setFont(font);
+			towingTextLabel.setFont(f);
 			
 			// Add the towing button or towing text label depending on the situation.
 			Vehicle towedVehicle = ((Towing) vehicle).getTowedVehicle();
@@ -101,7 +101,7 @@ public class TabPanelTow extends TabPanel {
 
 		// Create towed label.
 		WebLabel towedLabel = new WebLabel(Msg.getString("TabPanelTow.towedBy"), WebLabel.CENTER); //$NON-NLS-1$
-		towedLabel.setFont(font);
+		towedLabel.setFont(f);
 		towedLabelPanel.add(towedLabel);
 
 		// Create the towed button.
@@ -114,7 +114,7 @@ public class TabPanelTow extends TabPanel {
 
 		// Create towed text label.
 		towedTextLabel = new WebLabel(Msg.getString("TabPanelTow.none"), WebLabel.LEFT); //$NON-NLS-1$
-		towedTextLabel.setFont(font);
+		towedTextLabel.setFont(f);
 		
 		// Add the towed button or towed text label depending on the situation.
 		if (vehicle.getTowingVehicle() != null) {

@@ -1,4 +1,4 @@
-/**
+/*
  * Mars Simulation Project
  * PersonTableModel.java
  * @date 2021-12-07
@@ -59,7 +59,7 @@ public class PersonTableModel extends UnitTableModel {
 	/** Task column. */
 	private final static int TASK = 1;
 	/** Mission column. */
-	private final static int MISSION = 2;
+	private final static int MISSION_COL = 2;
 	/** Job column. */
 	private final static int JOB = 3;
 	/** Role column. */
@@ -69,7 +69,7 @@ public class PersonTableModel extends UnitTableModel {
 	/** Location column. */
 	private final static int LOCATION = 6;
 	/** Locale column. */
-	private final static int  LOCALE = 7;
+	private final static int LOCALE = 7;
 //	/** Gender column. */
 //	private final static int GENDER = 7;
 //	/** Personality column. */
@@ -132,8 +132,8 @@ public class PersonTableModel extends UnitTableModel {
 		columnTypes[JOB] = String.class;
 		columnNames[SHIFT] = Msg.getString("PersonTableModel.column.shift"); //$NON-NLS-1$
 		columnTypes[SHIFT] = String.class;
-		columnNames[MISSION] = Msg.getString("PersonTableModel.column.mission"); //$NON-NLS-1$
-		columnTypes[MISSION] = String.class;
+		columnNames[MISSION_COL] = Msg.getString("PersonTableModel.column.mission"); //$NON-NLS-1$
+		columnTypes[MISSION_COL] = String.class;
 		columnNames[TASK] = Msg.getString("PersonTableModel.column.task"); //$NON-NLS-1$
 		columnTypes[TASK] = String.class;
 
@@ -376,7 +376,7 @@ public class PersonTableModel extends UnitTableModel {
 			}
 				break;
 
-			case MISSION: {
+			case MISSION_COL: {
 				Mission mission = person.getMind().getMission();
 				if (mission != null) {
 					result = mission.getFullMissionDesignation();//getDescription();
@@ -600,7 +600,7 @@ public class PersonTableModel extends UnitTableModel {
 			m.put(UnitEventType.TASK_DESCRIPTION_EVENT, TASK);
 			m.put(UnitEventType.TASK_ENDED_EVENT, TASK);
 			m.put(UnitEventType.TASK_SUBTASK_EVENT, TASK);
-			m.put(UnitEventType.MISSION_EVENT, MISSION);
+			m.put(UnitEventType.MISSION_EVENT, MISSION_COL);
 			m.put(UnitEventType.ILLNESS_EVENT, HEALTH);
 			m.put(UnitEventType.DEATH_EVENT, HEALTH);
 			EVENT_COLUMN_MAPPING = Collections.unmodifiableMap(m);
