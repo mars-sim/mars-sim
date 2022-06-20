@@ -919,7 +919,7 @@ public class SimulationConfig implements Serializable {
 			if (f.exists() && f.canRead()) {
 				if (checksumOldFile != null && !checksumOldFile.equals(checksumTestFile)) {
 					// need to back it up.
-					logger.config("Old MD5: "+ checksumOldFile + "  New MD5: "+ checksumTestFile);
+					logger.config(f.getName() + ": " + "Old MD5: "+ checksumOldFile + "  New MD5: "+ checksumTestFile);
 
 					if (!excludeXMLFile(filename)) {
 						String s0 = SimulationFiles.getBackupDir() + File.separator + Simulation.BUILD;
@@ -969,6 +969,7 @@ public class SimulationConfig implements Serializable {
 
 	/**
 	 * Checks if this bundled XML file is excluded from the automatic extraction.
+	 * 
 	 * @param filename
 	 * @return
 	 */
@@ -983,7 +984,7 @@ public class SimulationConfig implements Serializable {
 				try (BufferedReader buffer = new BufferedReader(new FileReader(exceptionFile))) {
 					String nextLine = buffer.readLine();
 					// Support commenting out lines
-					if (!nextLine.startsWith("#")) {
+					if (nextLine != null && !nextLine.startsWith("#")) {
 						excludedList.add(nextLine);
 					}
 				} catch (IOException e) {

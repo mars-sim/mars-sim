@@ -11,11 +11,9 @@ import java.util.Iterator;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ShiftType;
-import org.mars_sim.msp.core.person.ai.task.DriveGroundVehicle;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
