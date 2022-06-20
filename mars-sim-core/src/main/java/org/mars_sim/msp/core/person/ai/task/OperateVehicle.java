@@ -387,22 +387,8 @@ public abstract class OperateVehicle extends Task implements Serializable {
         if (startingDistanceToDestination <= DESTINATION_BUFFER) {
         	logger.log(vehicle, Level.CONFIG,  20_000L, "Case 0: Arrived near a destination.");
 
-        	 // Set speed to zero
-            vehicle.setSpeed(0D);
-       	 	// Determine new position.
-            vehicle.setCoordinates(destination);
-        	// Remove the vehicle operator
-            vehicle.setOperator(null);
-            
-            // Update vehicle status
-            if (!vehicle.haveStatusType(StatusType.PARKED))
-            	vehicle.addStatus(StatusType.PARKED);
-            if (vehicle.haveStatusType(StatusType.MOVING))
-            	vehicle.removeStatus(StatusType.MOVING);
-        	if (vehicle.haveStatusType(StatusType.OUT_OF_FUEL))
-        		vehicle.removeStatus(StatusType.OUT_OF_FUEL);
-
-            updateVehicleElevationAltitude();
+        	// Stop the vehicle
+        	haltVehicle();
             
         	return time;
         }
@@ -456,28 +442,13 @@ public abstract class OperateVehicle extends Task implements Serializable {
         	// Slow down the vehicle
         	v = distanceTraveled / hrsTime;
         	// Adjust the speed
-//        	vehicle.setSpeed(v);
+        	vehicle.setSpeed(v);
         	
             // Calculate the fuel needed
             fuelUsed = calculateFuelUsed(distanceTraveled, hrsTime);
        
-            // Set speed to zero
-            vehicle.setSpeed(0D);
-       	 	// Determine new position.
-            vehicle.setCoordinates(destination);
-        	// Remove the vehicle operator
-            vehicle.setOperator(null);
-            
-            // Update vehicle status
-            if (!vehicle.haveStatusType(StatusType.PARKED))
-            	vehicle.addStatus(StatusType.PARKED);
-            if (vehicle.haveStatusType(StatusType.MOVING))
-            	vehicle.removeStatus(StatusType.MOVING);
-        	if (vehicle.haveStatusType(StatusType.OUT_OF_FUEL))
-        		vehicle.removeStatus(StatusType.OUT_OF_FUEL);
-
-
-            updateVehicleElevationAltitude();
+            // Stops the vehicle
+            haltVehicle();
             
             if (isSettlementDestination()) {
                 determineInitialSettlementParkedLocation();
@@ -547,6 +518,28 @@ public abstract class OperateVehicle extends Task implements Serializable {
         return result;   
 	}
         
+	/**
+	 * Stop the vehicle
+	 */
+	public void haltVehicle() {
+		// Set speed to zero
+		vehicle.setSpeed(0D);
+		// Determine new position.
+		vehicle.setCoordinates(destination);
+		// Remove the vehicle operator
+		vehicle.setOperator(null);
+	   
+		// Update vehicle status
+		if (!vehicle.haveStatusType(StatusType.PARKED))
+			vehicle.addStatus(StatusType.PARKED);
+		if (vehicle.haveStatusType(StatusType.MOVING))
+			vehicle.removeStatus(StatusType.MOVING);
+		if (vehicle.haveStatusType(StatusType.OUT_OF_FUEL))
+			vehicle.removeStatus(StatusType.OUT_OF_FUEL);
+
+		updateVehicleElevationAltitude();
+	}	
+
 	/**
 	 * Calculate the fuel to be used up
 	 * 

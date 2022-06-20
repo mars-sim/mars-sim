@@ -281,8 +281,6 @@ public class OGGSoundClip {
 	 * Play the clip once - for sound effects
 	 */
 	public void play() {
-		// System.out.println("OGGSoundClip's play() is on " +
-		// Thread.currentThread().getName());
 		stop();
 
 		try {
@@ -297,12 +295,17 @@ public class OGGSoundClip {
 			public void run() {
 				 try {
 					 playStream(Thread.currentThread());
-				 } catch (Exception e) {
-					 logger.log(Level.SEVERE, "Can't play the bit stream in play()", e.getMessage());
+				 } catch (Exception e) {	
+						playerThread = null;
+						
+					 if (AudioPlayer.isMusicMute()) {
+						 logger.log(Level.CONFIG, "The sound effect is muted.");
+					 }
+					 else
+						 logger.log(Level.SEVERE, "Can't play the bit stream in play()", e.getMessage());
 				 }
 
 				try {
-
 					bitStream.reset();
 				} catch (IOException e) {
 					logger.log(Level.SEVERE, "Trouble resetting the bit stream for the sound effect of " + name,
@@ -335,7 +338,12 @@ public class OGGSoundClip {
 					// Note: "Troubleshooting audio : have you plugged in a speaker/headphone? "
 					// + "Please check your audio source.", e.getMessage());
 					playerThread = null;
-					logger.log(Level.SEVERE, "Can't play the bit stream in loop(). ", e.getMessage());
+	
+					if (AudioPlayer.isMusicMute()) {
+						logger.log(Level.CONFIG, "The music is muted.");
+					}
+					else
+						logger.log(Level.SEVERE, "Can't play the bit stream in loop()", e.getMessage());
 				}
 
 				try {
