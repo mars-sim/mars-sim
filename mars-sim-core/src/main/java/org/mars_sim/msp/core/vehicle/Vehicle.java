@@ -171,6 +171,8 @@ public abstract class Vehicle extends Unit
 	private double totalEnergy = 100D;
 	/** The base fuel economy of the vehicle [km/kg]. */
 	private double baseFuelEconomy;
+	/** The instantaneous fuel economy of the vehicle [km/kg]. */
+	private double iFuelEconomy;
 	/** The base fuel consumption of the vehicle [km/kWh]. */
 	private double baseFuelConsumption;
 	/** The estimated average fuel economy of the vehicle for a trip [km/kg]. */
@@ -935,7 +937,7 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
-	 * Gets the base range of the vehicle
+	 * Gets the base range of the vehicle.
 	 *
 	 * @return the base range of the vehicle (in km)
 	 * @throws Exception if error getting range.
@@ -965,6 +967,7 @@ public abstract class Vehicle extends Unit
 
 	/**
 	 * Gets the base fuel economy of the vehicle [km/kg].
+	 * 
 	 * @return
 	 */
 	public double getBaseFuelEconomy() {
@@ -973,6 +976,7 @@ public abstract class Vehicle extends Unit
 
 	/**
 	 * Gets the base fuel consumption of the vehicle [km/kWh].
+	 * 
 	 * @return
 	 */
 	public double getBaseFuelConsumption() {
@@ -980,12 +984,30 @@ public abstract class Vehicle extends Unit
 	}
 	
 	/**
-	 * Gets the instantaneous fuel economy of the vehicle [km/kg]
+	 * Sets the instantaneous fuel economy of the vehicle [km/kg].
+	 * 
+	 * @param iFuelEconomy
+	 */
+	public void setIFuelEconomy(double iFuelEconomy) {
+		this.iFuelEconomy = iFuelEconomy;
+	}
+	
+	/**
+	 * Gets the instantaneous fuel economy of the vehicle [km/kg].
+	 * 
+	 * @return
+	 */
+	public double getIFuelEconomy() {
+		return iFuelEconomy;
+	}
+	
+	/**
+	 * Gets the initial fuel economy of the vehicle [km/kg].
 	 * Note: assume that it is primarily dependent upon the current weight of the vehicle
 	 *
 	 * @return
 	 */
-	public double getIFuelEconomy() {
+	public double getInitialFuelEconomy() {
 //		if (speed > 0 && startMass != getMass())
 //			logger.info(this
 //				+ "   current mass : " + Math.round(getMass()*10.0)/10.0
@@ -993,7 +1015,6 @@ public abstract class Vehicle extends Unit
 //				+ "   driveTrain : " + drivetrainEfficiency
 //				+ "   IFC : " + Math.round(estimatedAveFuelEconomy * startMass / getMass()*10.0)/10.0);
 		return estimatedAveFuelEconomy * startMass / getMass();
-
 	}
 
 	/**

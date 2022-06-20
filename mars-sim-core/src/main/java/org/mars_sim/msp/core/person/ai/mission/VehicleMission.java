@@ -1021,7 +1021,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 				// Use margin only when estimating how much fuel needed before starting the mission
 			}
 			else {
-				amount = getFuelNeededForTrip(vehicle, distance, vehicle.getIFuelEconomy(), false);
+				amount = getFuelNeededForTrip(vehicle, distance, vehicle.getInitialFuelEconomy(), false);
 				// When the vehicle is already on the road, do NOT use margin
 				// or else it would constantly complain not having enough fuel
 			}

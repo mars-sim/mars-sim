@@ -66,7 +66,8 @@ public class VehicleSpecCommand extends ChatCommand {
 			buffer.appendLabeledString("Base Range Est.", String.format(CommandHelper.KM_FORMAT, source.getBaseRange()));
 			buffer.appendLabeledString("Base Fuel Economy", String.format(KM_KG_FORMAT, source.getBaseFuelEconomy()));
 			buffer.appendLabeledString("Est. Average Economy", String.format(KM_KG_FORMAT, source.getEstimatedAveFuelEconomy()));
-			buffer.appendLabeledString("Actual Economy", String.format(KM_KG_FORMAT, source.getIFuelEconomy()));
+			buffer.appendLabeledString("Initial Fuel Economy", String.format(KM_KG_FORMAT, source.getInitialFuelEconomy()));
+			buffer.appendLabeledString("Instantaneous Fuel Economy", String.format(KM_KG_FORMAT, source.getIFuelEconomy()));
 			buffer.appendLabeledString("Terrain Handling", String.format("%.2f", gv.getTerrainHandlingCapability()));
 		}
 
