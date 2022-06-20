@@ -390,7 +390,7 @@ public class AudioPlayer {
 	 * 
 	 * @return true if mute.
 	 */
-	public boolean isEffectMute() {
+	public static boolean isEffectMute() {
 		if (currentSoundClip == null || currentSoundVol <= 0) {
 			return true;
 		}
