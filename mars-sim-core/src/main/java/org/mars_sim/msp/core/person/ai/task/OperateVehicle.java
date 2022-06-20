@@ -369,6 +369,11 @@ public abstract class OperateVehicle extends Task implements Serializable {
 	 * @return the amount of time (ms) left over after driving (if any)
 	 */
 	protected double mobilizeVehicle(double time) {
+		if (time < 0) {
+			logger.severe("time is " + time);
+        	return 0;
+		}
+		
         double result = 0;
    
         // Find starting distance to destination.
@@ -376,6 +381,29 @@ public abstract class OperateVehicle extends Task implements Serializable {
         
         if (Double.isNaN(startingDistanceToDestination)) {
         	logger.severe("startingDistance is " + startingDistanceToDestination );
+        	return time;
+        }
+        
+        if (startingDistanceToDestination <= DESTINATION_BUFFER) {
+        	logger.log(vehicle, Level.CONFIG,  20_000L, "Case 0: Arrived near a destination.");
+
+        	 // Set speed to zero
+            vehicle.setSpeed(0D);
+       	 	// Determine new position.
+            vehicle.setCoordinates(destination);
+        	// Remove the vehicle operator
+            vehicle.setOperator(null);
+            
+            // Update vehicle status
+            if (!vehicle.haveStatusType(StatusType.PARKED))
+            	vehicle.addStatus(StatusType.PARKED);
+            if (vehicle.haveStatusType(StatusType.MOVING))
+            	vehicle.removeStatus(StatusType.MOVING);
+        	if (vehicle.haveStatusType(StatusType.OUT_OF_FUEL))
+        		vehicle.removeStatus(StatusType.OUT_OF_FUEL);
+
+            updateVehicleElevationAltitude();
+            
         	return time;
         }
         
@@ -421,14 +449,14 @@ public abstract class OperateVehicle extends Task implements Serializable {
         
         // Case 1
         if (startingDistanceToDestination <= (distanceTraveled + DESTINATION_BUFFER)) {
-        	logger.log(vehicle, Level.CONFIG,  1_000L, "Case 1: Arriving at the settlement, needs to slow down.");
+        	logger.log(vehicle, Level.CONFIG,  20_000L, "Case 1: Slowing down and arriving near a destination that's " + Math.round(startingDistanceToDestination * 10_000)/10_000 + " km away.");
         	
         	// Shorten the distance the vehicle will travel
         	distanceTraveled = startingDistanceToDestination;
         	// Slow down the vehicle
         	v = distanceTraveled / hrsTime;
         	// Adjust the speed
-        	vehicle.setSpeed(v);
+//        	vehicle.setSpeed(v);
         	
             // Calculate the fuel needed
             fuelUsed = calculateFuelUsed(distanceTraveled, hrsTime);
@@ -456,7 +484,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
             }
             
             // Calculate the remaining time
-            result = time - MarsClock.MILLISOLS_PER_HOUR * distanceTraveled / v;
+            result = 0;
         }
         
         else {
@@ -484,7 +512,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
         	// Limit the fuel to be used
         	fuelUsed = remainingFuel;
         	
-            logger.log(vehicle, Level.WARNING,  1_000L, "Case 2: Just used up the last drop of fuel.");
+            logger.log(vehicle, Level.WARNING,  20_000L, "Case 2: Just used up the last drop of fuel.");
             
             // Recompute the distance it could travel
             distanceTraveled = vehicle.getBaseFuelConsumption() * fuelUsed * Vehicle.METHANE_SPECIFIC_ENERGY;
@@ -501,7 +529,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
         	if (!vehicle.haveStatusType(StatusType.MOVING))
         		vehicle.addStatus(StatusType.MOVING);
         	
-        	result = time - MarsClock.MILLISOLS_PER_HOUR * distanceTraveled / v;
+        	result = time - distanceTraveled / v / MarsClock.MILLISOLS_PER_HOUR;
         }
 
         // Add distance traveled to vehicle's odometer.

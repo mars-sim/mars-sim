@@ -1700,7 +1700,7 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
-	 * Mass of Equipment is the base mass plus what every it is storing
+	 * Mass of Equipment is the stored mass plus the base mass.
 	 */
 	@Override
 	public double getMass() {

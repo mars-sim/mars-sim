@@ -31,11 +31,12 @@ Copyright (C) 2022 Scott Davis
   <LI>Location : Show areocentric longitude of Mars (where Mars is at in the solar system) in Time Tool. </LI>  
   
 ### FIXES :
-  <LI>Consider loading/Unloading edge cases for Trading/Delivery.</LI>
-  <LI>Resolve stalled delivery negotiation.</LI>
-  <LI>Exploration Mission revisits existing sites until they reach
-   an evaluation ready for Mining.</LI>
+  <LI>Consider loading/Unloading edge cases for Trading/Delivery. </LI>
+  <LI>Resolve stalled delivery negotiation. </LI>
+  <LI>Exploration mission revisits existing sites until they reach an evaluation ready for Mining. </LI>
+  <LI>Ground vehicle maintenance no longer stalls when EVA is aborted. </LI>
   <LI>Fix the mission selection that stop Navigation Tab from displaying sites and navpoints.</LI>
+  <LI>Correct vehicle fuel calculation.</LI>
 
 
 ------------------------------------------|---------------------
