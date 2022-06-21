@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * CropConfig.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-06-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function.farming;
@@ -62,15 +62,15 @@ public class CropConfig implements Serializable {
 	/** The consumption rates for co2, o2, water. **/
 	private double[] consumptionRates = new double[] { 0, 0, 0 };
 
-	/** A list of crop type names. */
-	private List<String> cropTypeNames;
-	/** A list of crop type. */
-	private List<CropSpec> cropTypes;
-	/** The lookup table for crop type. */
-	private Map<String, CropSpec> lookUpCropType = new HashMap<>();
+	/** A list of crop names. */
+	private List<String> cropNames;
+	/** A list of crop specs. */
+	private List<CropSpec> cropSpecs;
+	/** The lookup table for crop specs. */
+	private Map<String, CropSpec> lookUpCropSpecMap = new HashMap<>();
 
 	/** Lookup of crop phases **/
-	private transient Map <CropCategoryType, List<Phase>> lookupPhases = new EnumMap<>(CropCategoryType.class);
+	private transient Map <CropCategory, List<Phase>> lookupPhases = new EnumMap<>(CropCategory.class);
 
 	private transient PersonConfig personConfig;
 	
@@ -101,7 +101,7 @@ public class CropConfig implements Serializable {
 	 * @return list of crop types
 	 */
 	public List<CropSpec> getCropTypes() {
-		return cropTypes;
+		return cropSpecs;
 	}
 	
 	/**
@@ -109,7 +109,7 @@ public class CropConfig implements Serializable {
 	 * @param rootDoc
 	 */
 	private synchronized void parseCropTypes(Document rootDoc) {
-		if (cropTypes != null) {
+		if (cropSpecs != null) {
 			// just in case if another thread is being created
 			return;
 		}
@@ -137,7 +137,7 @@ public class CropConfig implements Serializable {
 			String lifeCycle = crop.getAttributeValue(LIFE_CYCLE);
 
 			// Add checking against the crop category enum
-			CropCategoryType cat = CropCategoryType.valueOf(cropCategory.toUpperCase());
+			CropCategory cat = CropCategory.valueOf(cropCategory.toUpperCase());
 
 			// Get edibleBiomass
 			String edibleBiomassStr = crop.getAttributeValue(EDIBLE_BIOMASS);
@@ -166,19 +166,19 @@ public class CropConfig implements Serializable {
 			// Set up the default growth phases of a crop
 			List<Phase> phases = lookupPhases.get(cat);
 			
-			CropSpec cropType = new CropSpec(cropID++, name, growingTime * 1000D,
+			CropSpec spec = new CropSpec(cropID++, name, growingTime * 1000D,
 									cat, lifeCycle, edibleBiomass,
 									edibleWaterContent, inedibleBiomass,
 									dailyPAR, phases, seedName, seedPlant );
 
-			newList.add(cropType);
+			newList.add(spec);
 
-			lookUpCropType.put(name.toLowerCase(), cropType);
+			lookUpCropSpecMap.put(name.toLowerCase(), spec);
 		}
 		
 
 		// Assign the newList now built
-		cropTypes = Collections.unmodifiableList(newList);
+		cropSpecs = Collections.unmodifiableList(newList);
 	}
 	
 
@@ -187,7 +187,7 @@ public class CropConfig implements Serializable {
 	 * TODO - Should come from the crops.xml
 	 */
 	private void buildPhases() {
-		for (CropCategoryType cat : CropCategoryType.values()) {
+		for (CropCategory cat : CropCategory.values()) {
 			List<Phase> phases = new ArrayList<>();
 			switch (cat) {
 			case BULBS:
@@ -399,7 +399,7 @@ public class CropConfig implements Serializable {
 	 * @return
 	 */
 	public int getNumCropTypes() {
-		return cropTypes.size();
+		return cropSpecs.size();
 	}
 
 	/**
@@ -409,7 +409,7 @@ public class CropConfig implements Serializable {
 	 * @return
 	 */
 	public CropSpec getCropTypeByName(String name) {
-		return lookUpCropType.get(name.toLowerCase());
+		return lookUpCropSpecMap.get(name.toLowerCase());
 	}
 	
 	/**
@@ -418,15 +418,15 @@ public class CropConfig implements Serializable {
 	 * @return
 	 */
 	public List<String> getCropTypeNames() {
-		if  (cropTypeNames == null) {
-			cropTypeNames = new ArrayList<>();
-			for (CropSpec ct : cropTypes) {
-				cropTypeNames.add(ct.getName());
+		if  (cropNames == null) {
+			cropNames = new ArrayList<>();
+			for (CropSpec ct : cropSpecs) {
+				cropNames.add(ct.getName());
 			}
 			
-			Collections.sort(cropTypeNames);
+			Collections.sort(cropNames);
 		}
-		return cropTypeNames;
+		return cropNames;
 	}
 	
 	/**
@@ -435,7 +435,7 @@ public class CropConfig implements Serializable {
 	 * @return crop type
 	 */
 	public CropSpec getRandomCropType() {
-		return cropTypes.get(RandomUtil.getRandomInt(cropTypes.size() - 1));
+		return cropSpecs.get(RandomUtil.getRandomInt(cropSpecs.size() - 1));
 	}
 
 	/**
@@ -446,10 +446,10 @@ public class CropConfig implements Serializable {
 	public double getAverageCropGrowingTime() {
 		if (averageCropGrowingTime == -1) {
 			double totalGrowingTime = 0D;
-			for (CropSpec ct : cropTypes) {
+			for (CropSpec ct : cropSpecs) {
 				totalGrowingTime += ct.getGrowingTime(); 
 			}
-			averageCropGrowingTime = totalGrowingTime / cropTypes.size();
+			averageCropGrowingTime = totalGrowingTime / cropSpecs.size();
 		}
 		return averageCropGrowingTime;
 	}
@@ -468,11 +468,11 @@ public class CropConfig implements Serializable {
 			// Determine average amount (kg) of food produced per farm area (m^2).
 			// CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
 			double totalFoodPerSolPerArea = 0D;
-			for (CropSpec c : cropTypes)
+			for (CropSpec c : cropSpecs)
 				// Crop type average edible biomass (kg) per Sol.
 				totalFoodPerSolPerArea += c.getEdibleBiomass() / 1000D;
 	
-			double producedFoodPerSolPerArea = totalFoodPerSolPerArea / cropTypes.size();
+			double producedFoodPerSolPerArea = totalFoodPerSolPerArea / cropSpecs.size();
 	
 			if (producedFoodPerSolPerArea > 0) {
 				farmingAreaNeededPerPerson = neededFoodPerSol / producedFoodPerSolPerArea;

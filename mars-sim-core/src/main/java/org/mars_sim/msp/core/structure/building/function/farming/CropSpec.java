@@ -24,9 +24,9 @@ public class CropSpec implements Serializable, Comparable<CropSpec> {
 	private static final int BIENNIAL = 2;
 
 	// Data members
-	/** The id of this crop type. */
+	/** The id of this crop spec. */
 	private int id;
-	/** The length of the crop type's growing phase. */
+	/** The length of the growing phase. */
 	private double growingTime;
 	/** The fresh basis edible biomass productivity [in gram per sq m per day] */
 	private double edibleBiomass;
@@ -41,14 +41,14 @@ public class CropSpec implements Serializable, Comparable<CropSpec> {
 	private double dailyPAR; // Note: not umol / m^2 / s // PAR is the instantaneous light with a wavelength
 								// between 400 to 700 nm
 
-	/** TODO The name of the type of crop should be internationalizable. */
+	/** TODO The name of the crop spec should be internationalizable. */
 	private String name;
 	/** The life cycle type of this crop. */
 	private String lifeCycle;
 	/** THe phenological phases of this crop */
 	private List<Phase> phases = null;
-	/** The type of crop */
-	private CropCategoryType cropCategoryType;
+	/** The category of this crop */
+	private CropCategory cropCategory;
 
 	private int cropID;
 
@@ -62,7 +62,7 @@ public class CropSpec implements Serializable, Comparable<CropSpec> {
 	 * @param id               id of the crop.
 	 * @param name             Name of the crop.
 	 * @param growingTime        Length of growing phase for crop in millisols.
-	 * @param cropCategoryType  The type of crop.
+	 * @param cropCategory  The category of crop.
 	 * @param lifeCycle
 	 * @param edibleBiomass
 	 * @param edibleWaterContent
@@ -72,14 +72,14 @@ public class CropSpec implements Serializable, Comparable<CropSpec> {
 	 * @param seedName
 	 * @param seedOnly
 	 */
-	CropSpec(int id, String name, double growingTime, CropCategoryType cropCategoryType, String lifeCycle,
+	CropSpec(int id, String name, double growingTime, CropCategory cropCategory, String lifeCycle,
 			double edibleBiomass, double edibleWaterContent, double inedibleBiomass, double dailyPAR,
 			List<Phase> phases, String seedName, boolean seedOnly) {
 
 		this.id = id;
 		this.name = name;
 		this.growingTime = growingTime;
-		this.cropCategoryType = cropCategoryType;
+		this.cropCategory = cropCategory;
 		this.lifeCycle = lifeCycle;
 		this.edibleBiomass = edibleBiomass;
 		this.edibleWaterContent = edibleWaterContent;
@@ -152,12 +152,12 @@ public class CropSpec implements Serializable, Comparable<CropSpec> {
 	}
 
 	/**
-	 * Gets the crop's category type.
+	 * Gets the crop's category.
 	 *
-	 * @return cropCategoryType
+	 * @return cropCategory
 	 */
-	public CropCategoryType getCropCategoryType() {
-		return cropCategoryType;
+	public CropCategory getCropCategory() {
+		return cropCategory;
 	}
 
 	/**
@@ -271,7 +271,7 @@ public class CropSpec implements Serializable, Comparable<CropSpec> {
 	 * @return
 	 */
 	public boolean needsLight() {
-		return (cropCategoryType != CropCategoryType.FUNGI);
+		return (cropCategory != CropCategory.FUNGI);
 	}
 
 	/**

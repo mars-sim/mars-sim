@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * LocationTag.java
- * @vdate 2021-09-20
+ * @date 2021-09-20
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.location;
@@ -13,7 +13,6 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitManager;
-import org.mars_sim.msp.core.environment.MarsSurface;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
@@ -42,7 +41,7 @@ public class LocationTag implements LocationState, Serializable {
 	private Building b = null;
 	private Vehicle v = null;
 	private Settlement s = null;
-	private MarsSurface ms = null;
+//	private MarsSurface ms = null;
 
 
 	private static UnitManager unitManager = Simulation.instance().getUnitManager();
@@ -61,8 +60,8 @@ public class LocationTag implements LocationState, Serializable {
 			v = (Vehicle) unit;
 		else if (unit instanceof Settlement)
 			s = (Settlement) unit;
-		else if (unit instanceof MarsSurface)
-			ms = (MarsSurface) unit;
+//		else if (unit instanceof MarsSurface)
+//			ms = (MarsSurface) unit;
 	}
 
 	/**
@@ -438,19 +437,6 @@ public class LocationTag implements LocationState, Serializable {
 		return unit.getLocationStateType();
 	}
 
-//	public LocationSituation getLocationSituation() {
-//		if (p != null) {
-//			if (p.getLocationSituation() != null)
-//				return p.getLocationSituation();
-//		} else if (e != null) {
-//			if (e.getLocationSituation() != null)
-//				return e.getLocationSituation();
-//		} else if (r != null) {
-//			if (r.getLocationSituation() != null)
-//				return r.getLocationSituation();
-//		}
-//		return LocationSituation.UNKNOWN;
-//	}
 
 	@Override
 	public String getName() {

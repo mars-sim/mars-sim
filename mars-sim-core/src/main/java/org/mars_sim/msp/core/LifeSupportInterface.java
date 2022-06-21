@@ -1,28 +1,23 @@
-/**
+/*
  * Mars Simulation Project
  * LifeSupportInterface.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-06-20
  * @author Barry Evans
  */
 package org.mars_sim.msp.core;
 
 /**
- * This interface represents a Life Support system that provides Oxygen, Water
- * Temperature and Air Pressure to a Person. Implementations of this interface
- * are used by the PhysicalCondition entity.
+ * This interface represents a Life Support system that provides oxygen and water
+ * and provides temperature and air pressure regulation to a Person. 
+ * Implementations of this interface are used by the PhysicalCondition entity.
  * 
  * @see org.mars_sim.msp.core.person.PhysicalCondition
  */
 public interface LifeSupportInterface {
 
-	public static final String OXYGEN = "oxygen";
-	public static final String WATER = "water";
-	public static final String FOOD = "food";
-	public static final String CO2 = "carbon dioxide";
 
 	/**
-	 * Returns true if life support is working properly and is not out of oxygen or
-	 * water.
+	 * Is life support working properly ?
 	 * 
 	 * @return true if life support is OK
 	 * @throws Exception if error checking life support.

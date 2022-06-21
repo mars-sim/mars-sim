@@ -234,7 +234,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 			
 
 		} catch (Exception e) {
-			logger.severe("Problems in adding tabs in MonitorWindow: " + e.getMessage());
+			logger.severe("Problems in adding tabs in MonitorWindow - " + e.getMessage());
 		}
 	}
 

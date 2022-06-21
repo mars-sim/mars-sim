@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * RepeatCommand.java
- * @version 3.1.2 2020-12-30
+ * @date 2022-06-20
  * @author Barry Evans
  */
 
@@ -24,11 +24,13 @@ public class RepeatCommand extends ChatCommand implements CancellableCommand {
 
 	private static final int MIN_DELAY = 1;
 	private static final int MAX_DELAY = 60;
-
+	
+	private static final String DES = "repeat [delay seconds] [counts] {command}";
+	
 	private boolean stopRun;
 
 	public RepeatCommand() {
-		super(COMMAND_GROUP, "rt", "repeat", "Repeatedly call a command; > repeat [delay sec] [repeat] {command}");
+		super(COMMAND_GROUP, "rt", "repeat", "Repeatedly call a command; > " + DES);
 		setInteractive(true);
 	}
 
@@ -55,7 +57,8 @@ public class RepeatCommand extends ChatCommand implements CancellableCommand {
 			}
 		}
 		if (badFormat) {
-			context.println("Command must be <seconds delay> <repeat count> <command>");
+			context.println("Command must be '" + DES + "'");
+			context.println("e.g. > /rt 20 10 /d");
 			return false;
 		}
 
@@ -72,8 +75,8 @@ public class RepeatCommand extends ChatCommand implements CancellableCommand {
 		}
 		
 		// Execute the requested command first time including the description
-		context.println("Going to execute '" + commandStr + "' every " + delaySec + " secs");
-		context.println("To stop press " + Conversation.CANCEL_KEY);
+		context.println("Going to execute '" + commandStr + "' every " + delaySec + " secs for " + repeatCount + " times");
+		context.println("To stop, press '" + Conversation.CANCEL_KEY + "'");
 		
 		
 		boolean result = parsedCommand.command.execute(context, parsedCommand.parameter);

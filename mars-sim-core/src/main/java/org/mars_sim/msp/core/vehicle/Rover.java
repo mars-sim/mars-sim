@@ -168,7 +168,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 
 		// Gets the estimated cabin compartment air volume.
 		cabinAirVolume =  .8 * spec.getLength() * spec.getWidth() * 2D;
-		oxygenCapacity = spec.getCargoCapacity(LifeSupportInterface.OXYGEN);
+		oxygenCapacity = spec.getCargoCapacity(ResourceUtil.OXYGEN);
 
 		fullO2PartialPressure = Math.round(AirComposition.getOxygenPressure(oxygenCapacity, cabinAirVolume)*1_000.0)/1_000.0;
 		massO2MinimumLimit = Math.round(MIN_O2_PRESSURE / fullO2PartialPressure * oxygenCapacity*10_000.0)/10_000.0;

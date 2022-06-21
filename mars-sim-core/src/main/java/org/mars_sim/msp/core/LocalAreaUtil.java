@@ -39,7 +39,7 @@ public class LocalAreaUtil {
 	private static final double INNER_BOUNDARY_DISTANCE = 1.5D;
 
 	/** A very small distance (meters) for measuring how close two locations are. */
-	private static final double VERY_SMALL_DISTANCE = .00001D;
+//	private static final double VERY_SMALL_DISTANCE = .00001D;
 
 	/**
 	 * Cache for total area containing obstacles for a given coordinate location.

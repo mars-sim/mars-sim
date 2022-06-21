@@ -17,7 +17,6 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.logging.Level;
 
-import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.food.FoodProductionProcessInfo;
 import org.mars_sim.msp.core.food.FoodProductionProcessItem;
@@ -453,9 +452,9 @@ public class HelpGenerator {
 		String[] cargoArray = new String[] {
 			"hydrogen",
 			"methane",
-			LifeSupportInterface.OXYGEN,
-			LifeSupportInterface.WATER,
-			LifeSupportInterface.FOOD,
+			ResourceUtil.OXYGEN,
+			ResourceUtil.WATER,
+			ResourceUtil.FOOD,
 			"dessert",
 			"rock samples",
 			"ice"

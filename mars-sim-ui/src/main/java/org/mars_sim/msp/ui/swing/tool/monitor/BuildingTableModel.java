@@ -1,13 +1,25 @@
-/**
+/*
  * Mars Simulation Project
- * RobotTableModel.java
+ * BuildingTableModel.java
  * @date 2021-12-07
- * @author Manny Kung
+ * @author Barry Evans
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Logger;
+
+import javax.swing.SwingUtilities;
+
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEvent;
+import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.UnitManagerEvent;
+import org.mars_sim.msp.core.UnitManagerEventType;
+import org.mars_sim.msp.core.UnitManagerListener;
+import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -19,6 +31,9 @@ import org.mars_sim.msp.core.structure.building.BuildingManager;
 @SuppressWarnings("serial")
 public class BuildingTableModel extends UnitTableModel {
 
+	/** default logger. */
+	private static final Logger logger = Logger.getLogger(BuildingTableModel.class.getName());
+	
 	// Column indexes
 	private static final int NAME = 0;
 	private static final int TYPE = 1;
@@ -33,10 +48,22 @@ public class BuildingTableModel extends UnitTableModel {
 	/** Types of Columns. */
 	private static Class<?> columnTypes[];
 
+	private UnitManagerListener unitManagerListener;
+
+	private static List<UnitEventType> powerEvents = new ArrayList<>();
+
 	/**
 	 * The static initializer creates the name & type arrays.
 	 */
 	static {
+		
+		powerEvents.add(UnitEventType.POWER_MODE_EVENT);
+		powerEvents.add(UnitEventType.GENERATED_POWER_EVENT);
+		powerEvents.add(UnitEventType.STORED_POWER_EVENT);
+		powerEvents.add(UnitEventType.STORED_POWER_CAPACITY_EVENT);
+		powerEvents.add(UnitEventType.REQUIRED_POWER_EVENT);
+		powerEvents.add(UnitEventType.POWER_VALUE_EVENT);
+		
 		columnNames = new String[COLUMNCOUNT];
 		columnTypes = new Class[COLUMNCOUNT];
 		columnNames[NAME] = Msg.getString("BuildingTableModel.column.name"); //$NON-NLS-1$
@@ -59,6 +86,9 @@ public class BuildingTableModel extends UnitTableModel {
 				"BuildingTableModel.countingBuilding", //$NON-NLS-1$
 				columnNames, columnTypes);
 		
+		unitManagerListener = new LocalUnitManagerListener();
+		unitManager.addUnitManagerListener(unitManagerListener);
+
 		BuildingManager bm = settlement.getBuildingManager();
 		for(Building b : bm.getBuildings()) {
 			addUnit(b);
@@ -71,7 +101,41 @@ public class BuildingTableModel extends UnitTableModel {
 	 * @param event the unit event.
 	 */
 	public void unitUpdate(UnitEvent event) {
-		//SwingUtilities.invokeLater(new RobotTableUpdater(event, this));
+		Unit unit = (Unit) event.getSource();
+		UnitEventType eventType = event.getType();
+		Object target = event.getTarget();
+
+		int unitIndex = -1;
+		int columnNum = -1;
+		
+		if (eventType == UnitEventType.REMOVE_BUILDING_EVENT) {
+			
+			unitIndex = getUnitIndex(unit);
+			fireTableRowsDeleted(unitIndex, unitIndex);
+		}
+		else if (eventType == UnitEventType.ADD_BUILDING_EVENT) {
+			// Determine the new row to be added
+			Building building = (Building)unit;
+			addUnit(building);
+			
+			fireTableStructureChanged();
+		}
+
+		else { 
+			try {
+				for (UnitEventType type: powerEvents) {				
+					if (type == eventType) {
+						int tempColumnNum = -1;
+					}
+				}
+			} catch (Exception e) {
+				logger.severe("unitUpdate not working: " + e.getMessage());
+			}
+		}
+			
+		if (columnNum > -1) {
+			SwingUtilities.invokeLater(new BuildingTableCellUpdater(unitIndex, columnNum));
+		}
 	}
 
 	/**
@@ -109,7 +173,7 @@ public class BuildingTableModel extends UnitTableModel {
 				break;
 				
 			case TEMPERATURE:
-				result = building.getCurrentTemperature();
+				result = Math.round(building.getCurrentTemperature() * 10.0)/10.0;
 				break;
 			}
 		}
@@ -117,32 +181,49 @@ public class BuildingTableModel extends UnitTableModel {
 		return result;
 	}
 
-
-
 	/**
 	 * Prepares the model for deletion.
 	 */
 	@Override
 	public void destroy() {
 		super.destroy();
-//
-//		if (sourceType == ValidSourceType.ALL_ROBOTS) {
-//			UnitManager unitManager = Simulation.instance().getUnitManager();
-//			unitManager.removeUnitManagerListener(unitManagerListener);
-//			unitManagerListener = null;
-//		} else if (sourceType == ValidSourceType.VEHICLE_ROBOTS) {
-//			((Unit) vehicle).removeUnitListener(crewListener);
-//			crewListener = null;
-//			vehicle = null;
-//		} else if (sourceType == ValidSourceType.MISSION_ROBOTS) {
-//			mission.removeMissionListener(missionListener);
-//			missionListener = null;
-//			mission = null;
-//		} else {
-//			settlement.removeUnitListener(settlementListener);
-//			settlementListener = null;
-//			settlement = null;
-//		}
 	}
+	
+	/**
+	 * UnitManagerListener inner class.
+	 */
+	private class LocalUnitManagerListener implements UnitManagerListener {
 
+		/**
+		 * Catch unit manager update event.
+		 *
+		 * @param event the unit event.
+		 */
+		public void unitManagerUpdate(UnitManagerEvent event) {
+			Unit unit = event.getUnit();
+			UnitManagerEventType eventType = event.getEventType();
+
+			if (unit.getUnitType() == UnitType.BUILDING) {
+				if (eventType == UnitManagerEventType.ADD_UNIT && !containsUnit(unit)) {
+					addUnit(unit);
+				} else if (eventType == UnitManagerEventType.REMOVE_UNIT && containsUnit(unit)) {
+					removeUnit(unit);
+				}
+			}
+		}
+	}
+	
+	private class BuildingTableCellUpdater implements Runnable {
+		private int row;
+		private int column;
+
+		private BuildingTableCellUpdater(int row, int column) {
+			this.row = row;
+			this.column = column;
+		}
+
+		public void run() {
+			fireTableCellUpdated(row, column);
+		}
+	}
 }

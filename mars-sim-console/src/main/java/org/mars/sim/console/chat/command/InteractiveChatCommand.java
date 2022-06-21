@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * InteractiveChatCommand.java
- * @version 3.1.2 2020-12-30
+ * @date 2022-06-20
  * @author Barry Evans
  */
 
@@ -70,6 +70,7 @@ public class InteractiveChatCommand extends ChatCommand {
 
 	/**
 	 * Add a new sub-command to this interaction. It is registered with both the short & long command.
+	 * 
 	 * @param command New command
 	 */
 	protected void addSubCommand(ChatCommand command) {
@@ -77,7 +78,8 @@ public class InteractiveChatCommand extends ChatCommand {
 	}
 
 	/**
-	 * Convience method to add a multiple ChatCommand as one operation
+	 * Convey a method to add a multiple ChatCommand as one operation.
+	 * 
 	 * @param commands
 	 */
 	protected void addSubCommands(Collection<ChatCommand> commands) {
@@ -120,6 +122,7 @@ public class InteractiveChatCommand extends ChatCommand {
 	
 	/**
 	 * Default implementation check if the command matches any of the subcommands.
+	 * 
 	 * @param context
 	 * @param input 
 	 * @return Did it execute
@@ -147,7 +150,8 @@ public class InteractiveChatCommand extends ChatCommand {
 	}
 
 	/**
-	 * Get the list of options that match the partial input.
+	 * Gets the list of options that match the partial input.
+	 * 
 	 * @param partialInput
 	 * @return List of potential full commands.
 	 */
@@ -192,8 +196,8 @@ public class InteractiveChatCommand extends ChatCommand {
 	}
 
 	/**
-	 * Get the prompt for interactive Chat Commands.
-	 * The default implementation returns a static text
+	 * Gets the prompt for interactive Chat Commands. The default implementation returns a static text.
+	 * 
 	 * @param context Conversation in progress; may be needed in overriding methods
 	 * @return Prompt to be displayed
 	 */
@@ -202,7 +206,8 @@ public class InteractiveChatCommand extends ChatCommand {
 	}
 
 	/**
-	 * Get a list of the commands 
+	 * Gets a list of the commands.
+	 * 
 	 * @return
 	 */
 	public List<ChatCommand> getSubCommands() {
@@ -210,7 +215,9 @@ public class InteractiveChatCommand extends ChatCommand {
 	}
 
 	/**
-	 * Parse the input and find any commands either via the long or short word. Also extract any remaining parameters.
+	 * Parses the input and find any commands either via the long or short word. 
+	 * Also extract any remaining parameters.
+	 * 
 	 * @param input User entry.
 	 * @param context 
 	 * @return

@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * ChatCommand.java
- * @version 3.1.2 2020-12-30
+ * @date 2022-06-20
  * @author Barry Evans
  */
 
@@ -37,6 +37,7 @@ public abstract class ChatCommand implements Comparable<ChatCommand> {
 
 	/**
 	 * This processes input from a user.
+	 * 
 	 * @param context
 	 * @param input 
 	 * @return Has the input been accepted and understood
@@ -45,6 +46,7 @@ public abstract class ChatCommand implements Comparable<ChatCommand> {
 
 	/**
 	 * What is the short command?
+	 * 
 	 * @return
 	 */
 	public String getShortCommand() {
@@ -52,7 +54,8 @@ public abstract class ChatCommand implements Comparable<ChatCommand> {
 	}
 	
 	/**
-	 * The keyword that triggers the execution of this command
+	 * The keyword that triggers the execution of this command.
+	 * 
 	 * @return
 	 */
 	public String getLongCommand() {
@@ -60,7 +63,8 @@ public abstract class ChatCommand implements Comparable<ChatCommand> {
 	}
 
 	/**
-	 * A description abouve the command; used for help
+	 * A description about the command; used for help.
+	 * 
 	 * @return
 	 */
 	public String getDescription() {
@@ -69,6 +73,7 @@ public abstract class ChatCommand implements Comparable<ChatCommand> {
 	
 	/**
 	 * The command group this is held in.
+	 * 
 	 * @return
 	 */
 	public String getCommandGroup() {

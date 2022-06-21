@@ -1,13 +1,13 @@
 /*
  * Mars Simulation Project
- * CropCategoryType.java
- * @version 3.2.0 2021-06-20
+ * CropCategory.java
+ * @date 2022-06-20
  * @author Manny Kung
  */
 
 package org.mars_sim.msp.core.structure.building.function.farming;
 
-public enum CropCategoryType {
+public enum CropCategory {
 	
 	BULBS("bulbs"),
 	CORMS("corms"),
@@ -30,7 +30,7 @@ public enum CropCategoryType {
 
 	private String name;
 
-	private CropCategoryType(String name) {
+	private CropCategory(String name) {
 		this.name = name;
 	}	
 

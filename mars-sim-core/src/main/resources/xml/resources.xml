@@ -27,17 +27,18 @@
 	<resource name="oxygen" type="element" phase="gas" life-support="true" />
 	<resource name="carbon dioxide" type="compound" phase="gas" life-support="true"/>
 
-	<resource name="ice" type="compound" phase="solid">Ice-rich permafrost soil</resource>
+	<resource name="ice" type="compound" phase="solid">Extracted from ice-rich permafrost outside soil</resource>
 
 	<!-- see https://space.stackexchange.com/questions/8449/is-there-a-cost-effective-way-to-obtain-nitrogen-argon-on-mars-for-usage-in-a-hu/8548 -->
 	<!-- Other Gas Resources -->
-	<resource name="argon" type="element" phase="gas"/>
-	<resource name="carbon monoxide" type="compound" phase="gas" />
-	<resource name="ethylene" type="compound" phase="gas" />
 	<resource name="hydrogen" type="element" phase="gas" />
 	<resource name="methane" type="compound" phase="gas" />
 	<resource name="nitrogen" type="element" phase="gas"> N2 is an odorless gas </resource>
+
+	<resource name="argon" type="element" phase="gas"/>
+	<resource name="carbon monoxide" type="compound" phase="gas" />
 	<resource name="chlorine" type="element" phase="gas"/>
+	<resource name="ethylene" type="compound" phase="gas" />
 
 <!-- Elements -->
 	<resource name="iron powder" type="element" phase="solid" />

@@ -13,11 +13,13 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
+import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitListener;
 import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.GameManager.GameMode;
 
 /**
  * The UnitTableModel that maintains a table model of Units objects. It is only
@@ -44,6 +46,8 @@ abstract public class UnitTableModel extends AbstractTableModel implements Monit
 	/** Collection of units. */
 	private Collection<Unit> units;
 
+	protected static GameMode mode = GameManager.getGameMode();
+	
 	protected static UnitManager unitManager = Simulation.instance().getUnitManager();
 
 	/**

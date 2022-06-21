@@ -10,18 +10,17 @@ package org.mars_sim.msp.core;
 import org.mars_sim.msp.core.structure.MockSettlement;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.MockVehicle;
-import org.mars_sim.msp.core.vehicle.Vehicle;
 
 import junit.framework.TestCase;
 
 public class TestInventory extends TestCase {
 
-    private static final String CARBON_DIOXIDE = "carbon dioxide";
-    private static final String HYDROGEN = "hydrogen";
-    private static final String METHANE = "methane";
-    private static final String FOOD = LifeSupportInterface.FOOD;
-    
-	private Vehicle vehicle;
+//    private static final String CARBON_DIOXIDE = "carbon dioxide";
+//    private static final String HYDROGEN = "hydrogen";
+//    private static final String METHANE = "methane";
+//    private static final String FOOD = ResourceUtil.FOOD;
+//    
+//	private Vehicle vehicle;
 	private Settlement settlement;
 	private UnitManager unitManager;
 

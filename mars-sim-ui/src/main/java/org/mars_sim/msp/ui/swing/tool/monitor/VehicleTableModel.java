@@ -167,10 +167,8 @@ public class VehicleTableModel extends UnitTableModel {
 
 	private Map<Vehicle, Map<Integer, Double>> resourceCache;
 
-	private GameMode mode;
-
 	private Settlement commanderSettlement;
-	private Settlement settlement;
+//	private Settlement settlement;
 
 	/**
 	 * Constructs a VehicleTableModel object. It creates the list of possible
@@ -205,7 +203,7 @@ public class VehicleTableModel extends UnitTableModel {
 			columnTypes
 		);
 
-		this.settlement = settlement;
+//		this.settlement = settlement;
 		setSource(settlement.getAllAssociatedVehicles());
 
 		init();

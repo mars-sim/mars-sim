@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MicroInventory.java
- * @date 2021-10-21
+ * @date 2022-06-20
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.equipment;
@@ -222,9 +222,11 @@ public class MicroInventory implements Serializable {
 		if (remaining < quantity) {
 			excess = quantity - remaining;
 			quantity = remaining;
-			// This generates warnings during collect ice & regolith because the Task do not check the capacity before digging
 			String name = ResourceUtil.findAmountResourceName(resource);
-			logger.warning(owner, 20_000L, "Storage is full. Excess " + Math.round(excess * 1_000.0)/1_000.0 + " kg " + name + ".");
+			for (int i: ResourceUtil.getEssentialResources()) {
+				if (i == resource)
+					logger.warning(owner, 120_000L, "Storage is full. Excess " + Math.round(excess * 1_000.0)/1_000.0 + " kg " + name + ".");
+			}
 		}
 
 		s.storedAmount += quantity;

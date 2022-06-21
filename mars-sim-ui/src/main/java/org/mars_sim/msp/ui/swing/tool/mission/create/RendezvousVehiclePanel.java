@@ -26,9 +26,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
@@ -56,8 +54,7 @@ class RendezvousVehiclePanel extends WizardPanel {
 	private JLabel errorMessageLabel;
 	
 	private static MissionManager missionManager;
-	private static UnitManager unitManager = Simulation.instance().getUnitManager();
-	
+
 	/**
 	 * Constructor.
 	 * @param wizard the create mission wizard.
@@ -217,15 +214,15 @@ class RendezvousVehiclePanel extends WizardPanel {
             		else if (column == 2) 
             			result = vehicle.getCrewNum();
             		else if (column == 3) {
-            			AmountResource oxygen = ResourceUtil.findAmountResource(LifeSupportInterface.OXYGEN);
+            			AmountResource oxygen = ResourceUtil.findAmountResource(ResourceUtil.OXYGEN);
             			result = (int) vehicle.getAmountResourceStored(oxygen.getID());
             		}
                 	else if (column == 4) {
-                		AmountResource water = ResourceUtil.findAmountResource(LifeSupportInterface.WATER);
+                		AmountResource water = ResourceUtil.findAmountResource(ResourceUtil.WATER);
                 		result = (int) vehicle.getAmountResourceStored(water.getID());
                 	}
                 	else if (column == 5) { 
-                		AmountResource food = ResourceUtil.findAmountResource(LifeSupportInterface.FOOD);
+                		AmountResource food = ResourceUtil.findAmountResource(ResourceUtil.FOOD);
                 		result = (int) vehicle.getAmountResourceStored(food.getID());
                 	}
                 	else if (column == 6) { 

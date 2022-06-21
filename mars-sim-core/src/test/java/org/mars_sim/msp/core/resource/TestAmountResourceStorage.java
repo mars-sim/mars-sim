@@ -2,19 +2,18 @@ package org.mars_sim.msp.core.resource;
 
 import java.util.Set;
 
-import junit.framework.TestCase;
-
-import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.structure.MockSettlement;
 import org.mars_sim.msp.core.structure.Settlement;
 
+import junit.framework.TestCase;
+
 public class TestAmountResourceStorage extends TestCase {
 
 	private static final String CARBON_DIOXIDE = "carbon dioxide";
 	private static final String HYDROGEN = "hydrogen";
-	private static final String WATER = LifeSupportInterface.WATER;
+	private static final String WATER = ResourceUtil.WATER;
 	private Settlement settlement;
 	
     @Override

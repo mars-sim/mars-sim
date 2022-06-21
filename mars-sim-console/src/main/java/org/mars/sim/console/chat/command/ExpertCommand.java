@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * ExpertCommand.java
- * @version 3.1.2 2020-12-30
+ * @date 2022-06-20
  * @author Barry Evans
  */
 

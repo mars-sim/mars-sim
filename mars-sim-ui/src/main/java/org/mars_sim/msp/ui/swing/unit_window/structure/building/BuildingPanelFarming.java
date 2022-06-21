@@ -349,7 +349,7 @@ implements MouseListener {
             Crop crop = crops.get(row);
             CropSpec ct = crop.getCropType();
         	cropName = Conversion.capitalize(crop.getCropName());
-            cat = ct.getCropCategoryType().getName();
+            cat = ct.getCropCategory().getName();
         	mass0 = ct.getEdibleBiomass();
         	water = 100 * ct.getEdibleWaterContent();
         	mass1 = ct.getInedibleBiomass();
@@ -381,7 +381,7 @@ implements MouseListener {
         if (col == -1) {
         	cropName = Conversion.capitalize(n);
         	CropSpec cType = cropConfig.getCropTypeByName(n);
-            cat = cType.getCropCategoryType().getName();
+            cat = cType.getCropCategory().getName();
         	mass0 = cType.getEdibleBiomass();
         	water = 100 * cType.getEdibleWaterContent();
         	mass1 = cType.getInedibleBiomass();
@@ -640,7 +640,7 @@ implements MouseListener {
 			Crop crop = crops.get(row);
 			//String phase = crop.getPhase();
 			PhaseType currentPhase = crop.getPhaseType();
-			String category = crop.getCropType().getCropCategoryType().getName();
+			String category = crop.getCropType().getCropCategory().getName();
 
 			if (column == 0) {
 				double condition = crop.getHealthCondition();

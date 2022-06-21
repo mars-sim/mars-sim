@@ -146,7 +146,7 @@ public class SettlementTableModel extends UnitTableModel {
 		super("Mars", "SettlementTableModel.countingSettlements",
 				columnNames, columnTypes);
 
-//		if (GameManager.mode == GameMode.COMMAND)
+//		if (mode == GameMode.COMMAND)
 //			addUnit(unitManager.getCommanderSettlement());
 //		else
 			setSource(unitManager.getSettlements());

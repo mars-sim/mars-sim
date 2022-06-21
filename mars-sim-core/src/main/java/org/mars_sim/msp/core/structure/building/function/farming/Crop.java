@@ -489,7 +489,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 		double total = 0;
 		int size = environmentalFactor.length;
 		for (int i=0; i< size; i++) {
-			if (cropSpec.getCropCategoryType() == CropCategoryType.FUNGI) {
+			if (cropSpec.getCropCategory() == CropCategory.FUNGI) {
 				if (i == LIGHT_FACTOR)
 					total = total + 1;
 				else
@@ -674,7 +674,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 			store(cropWaste, CROP_WASTE_ID, source);
 		}
 
-		if (cropSpec.getCropCategoryType() == CropCategoryType.LEAVES) {
+		if (cropSpec.getCropCategory() == CropCategory.LEAVES) {
 			double leaves = inedible - cropWaste;
 			if (leaves > 0) {
 				store(leaves, ResourceUtil.leavesID, source);

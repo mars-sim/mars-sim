@@ -64,7 +64,7 @@ public class ResupplyConfig implements Serializable {
     	// Initialize amountResourceConfig in this constructor
     	ResourceUtil.getInstance().initializeNewSim();
 
-        resupplyTemplates = new ArrayList<ResupplyTemplate>();
+        resupplyTemplates = new ArrayList<>();
         loadResupplyTemplates(resupplyDoc, partPackageConfig);
     }
 

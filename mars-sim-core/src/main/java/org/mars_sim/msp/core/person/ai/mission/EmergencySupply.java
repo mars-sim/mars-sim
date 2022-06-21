@@ -616,7 +616,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 
 		double result = 0D;
 
-		if (ResourceUtil.findAmountResource(resource).isLifeSupport()) {
+		if (ResourceUtil.isLifeSupport(resource)) {
 			double amountNeededSol = 0D;
 			if (resource.equals(OXYGEN_ID))
 				amountNeededSol = personConfig.getNominalO2ConsumptionRate();
