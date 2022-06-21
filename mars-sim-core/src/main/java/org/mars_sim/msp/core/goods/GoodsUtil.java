@@ -1,4 +1,4 @@
-/**
+/*
  * Mars Simulation Project
  * GoodsUtil.java
  * @date 2022-06-16
@@ -95,7 +95,7 @@ public class GoodsUtil {
     }
 
     /**
-     * Calculates the cost of each good
+     * Calculates the cost of each good.
      */
     private static void calculateGoodCost() {
         for (Good g : goodsList) {
@@ -165,7 +165,7 @@ public class GoodsUtil {
 
 
     /**
-     * Gets a good object for a given equipment id
+     * Gets a good object for a given equipment id.
      *
      * @param id
      * @return
@@ -313,7 +313,7 @@ public class GoodsUtil {
     }
     
     /**
-     * Populates the goods list with all robots
+     * Populates the goods list with all robots.
      * 
      * @param newMap
      * @return
@@ -356,7 +356,8 @@ public class GoodsUtil {
     }
 
     /**
-     * Gets the good category name in the internationalized string
+     * Gets the good category name.
+     * 
      * @param good
      * @return
      */
@@ -385,6 +386,12 @@ public class GoodsUtil {
         return null;
     }
 
+    /**
+     * Gets the good id.
+     * 
+     * @param name
+     * @return
+     */
     public static int getGoodID(String name) {
         List<Good> list = getGoodsList();
         Good good = null;

@@ -73,8 +73,6 @@ public class Good implements Serializable, Comparable<Good> {
 	private int id;
 	private int count0_out;
 	private int count1_out;
-//	private int count0_in;
-//	private int count1_in;
 
 	private double laborTime;
 	private double power;
@@ -119,10 +117,6 @@ public class Good implements Serializable, Comparable<Good> {
 		manufactureProcessInfos = ManufactureUtil.getManufactureProcessesWithGivenOutput(name);
 		foodProductionProcessInfos = FoodProductionUtil.getFoodProductionProcessesWithGivenOutput(name);
 
-//		componentManuInfos = ManufactureUtil.getManufactureProcessesWithGivenInput(name);
-//		componentFoodInfos = FoodProductionUtil.getFoodProductionProcessesWithGivenInput(name);
-//		resourceProcesses = BuildingConfig.getResourceProcessMap();
-
 		// Compute the cost of output
 		computeBaseCost();
 		// Compute the cost of output
@@ -162,7 +156,7 @@ public class Good implements Serializable, Comparable<Good> {
 	}
 
 	/**
-	 * Gets the good's id
+	 * Gets the good's id.
 	 * 
 	 * @return
 	 */
@@ -261,9 +255,7 @@ public class Good implements Serializable, Comparable<Good> {
 		}
 
 		else if (category == GoodCategory.EQUIPMENT) {
-//			if (name.contains("suit")) {
 				return EVA_SUIT_VALUE;
-//			}
 		}
 
 		else if (category == GoodCategory.CONTAINER) {
@@ -312,9 +304,6 @@ public class Good implements Serializable, Comparable<Good> {
 					+ getPower() / POWER_FACTOR
 					+ getSkill() / SKILL_FACTOR
 					+ getTech() / TECH_FACTOR);
-//			System.out.println(name
-//				+ "'s modifier: " + modifier
-//				+ "   cost of output: " + costOutput);
 		}
 	}
 
@@ -322,9 +311,6 @@ public class Good implements Serializable, Comparable<Good> {
 		return averageGoodValue;
 	}
 
-	public void setAverageGoodValue(double value) {
-		averageGoodValue = value;
-	}
 
 	public void adjustGoodValue() {
 		// deflate the value by 5%
@@ -517,231 +503,15 @@ public class Good implements Serializable, Comparable<Good> {
 		else
 			tech = (tech0_out + tech1_out)/2D;
 
-//		String s = String.format(" %20s\n "
-//		+ "%12s %3.0f\n "
-//		+ "%12s %3.0f\n "
-//
-//		+ "%12s %5.1f\n "
-//		+ "%12s %5.1f\n "
-//		+ "%12s %5.1f\n "
-//		+ "%12s %5.1f\n "
-//		+ "%12s %5.1f\n "
-//
-//		+ "%12s %.5f\n "
-//		+ "%12s %.5f\n "
-//		+ "%12s %.5f\n",
-//		name,
-//		"count", getCount0(),
-//		"count1", getCount1(),
-//
-//		"labor Time", laborTime,
-//		"power", power,
-//		"processTime", processTime,
-//		"skill", skill,
-//		"tech", tech,
-//
-//		"Output Cost", getTotalCostOutput(),
-//		"Value", getGoodValue(),
-//		"Input Price", computeInputPrice()
-//		);
-//
-//		System.out.println(s);
-
-		// TODO: how to compute for crop growth
-
-//		double power3 = 0;
-//		double rate3 = 0;
-//		if (resourceProcesses != null || !resourceProcesses.isEmpty()) {
-//			Set<String> buildingTypes = BuildingConfig.getBuildingTypes();
-//			// Note: each settlement have different # of building types
-//			for (String type : buildingTypes) {
-//				for (ResourceProcess i: resourceProcesses.get(type)) {
-//					Set<Integer> resources = i.getOutputResources();
-//					for (Integer ii : resources) {
-//						if (ii == id) {
-//							double power = i.getPowerRequired();
-//							double rate = i.getMaxOutputResourceRate(ii);
-//						}
-//					}
-//				}
-//			}
-//		}
 	}
 
 
-//	/**
-//	 * Computes the base price of each input resource
-//	 */
-//	public double computeInputPrice() {
-//
-////		double labor0_in = 0;
-////		double power0_in = 0;
-////		double process0_in = 0;
-////		double skill0_in = 0;
-////		double tech0_in = 0;
-//
-//		double totalPrice = 0;
-//
-//		if (manufactureProcessInfos != null || !manufactureProcessInfos.isEmpty()) {
-//
-//			for (ManufactureProcessInfo i: manufactureProcessInfos) {
-//				// Compute the input resources
-//				List<ManufactureProcessItem> inputList = i.getInputList();
-//				for (ManufactureProcessItem j: inputList) {
-//
-//					Good g = GoodsUtil.getResourceGood(j.getName());
-//
-//					double amount_in = j.getAmount();
-//
-//					if (g != null) {
-////						double cost = g.getTotalCostOutput() * amount_in;
-////						double price = g.getGoodValue() * cost;
-////						totalPrice += goodsManager.getPricePerItem(g);
-//					}
-//					else
-//						logger.severe("Can't find the good with the name '" + j.getName() + "'");
-//				}
-//
-////				double laborTime01 = i.getWorkTimeRequired();
-////				double power01 = i.getPowerRequired();
-////				double processTime01 = i.getProcessTimeRequired();
-////				int skillLevel01 = i.getSkillLevelRequired();
-////				int techLevel01 = i.getTechLevelRequired();
-////
-////				labor0_in += laborTime01;
-////				power0_in += power01;
-////				process0_in += processTime01;
-////				skill0_in += skillLevel01;
-////				tech0_in += techLevel01;
-////				count0_in++;
-////
-////				if (count0_in != 0) {
-////					labor0_in = labor0_in/totalAmount_in;
-////					power0_in = power0_in/totalAmount_in;
-////					process0_in = process0_in/totalAmount_in;
-////					skill0_in = skill0_in/totalAmount_in;
-////					tech0_in = tech0_in/totalAmount_in;
-////				}
-//			}
-//		}
-//
-//		if (foodProductionProcessInfos != null || !foodProductionProcessInfos.isEmpty()) {
-//
-//			for (FoodProductionProcessInfo i: foodProductionProcessInfos) {
-//				// Compute the input resources
-//				List<FoodProductionProcessItem> inputList = i.getInputList();
-//				for (FoodProductionProcessItem j: inputList) {
-//
-//					Good g = GoodsUtil.getResourceGood(j.getName());
-//
-//					double amount_in = j.getAmount();
-//
-//					if (g != null) {
-////						double cost = getTotalCostOutput() * amount_in;
-////						double price = g.getGoodValue() * cost;
-////						totalPrice += price;
-////					}
-//
-//					else
-//						logger.severe("Can't find the good with the name '" + j.getName() + "'");
-//				}
-//			}
-//		}
-//
-////		totalPriceInput = (labor0_in / 250 + process0_in / 1000
-////				+ power0_in
-////				+ skill0_in
-////				+ tech0_in) * getModifier();
-//
-//		return totalPrice;
-//	}
-
-//	/**
-//	 * Computes the base good value of each input resource
-//	 */
-//	public double computeInputValue() {
-//
-////		double labor0_in = 0;
-////		double power0_in = 0;
-////		double process0_in = 0;
-////		double skill0_in = 0;
-////		double tech0_in = 0;
-//
-//		double totalValue = 0;
-//
-//		if (manufactureProcessInfos != null || !manufactureProcessInfos.isEmpty()) {
-//
-//			for (ManufactureProcessInfo i: manufactureProcessInfos) {
-//				// Compute the input resources
-//				List<ManufactureProcessItem> inputList = i.getInputList();
-//				for (ManufactureProcessItem j: inputList) {
-//
-//					Good g = GoodsUtil.getResourceGood(j.getName());
-//
-//					double amount_in = j.getAmount();
-//
-//					if (g != null) {
-//						double value = g.getGoodValue() / amount_in;
-//						totalValue += value;
-//					}
-//					else
-//						logger.severe("Can't find the good with the name '" + j.getName() + "'");
-//				}
-//
-////				double laborTime01 = i.getWorkTimeRequired();
-////				double power01 = i.getPowerRequired();
-////				double processTime01 = i.getProcessTimeRequired();
-////				int skillLevel01 = i.getSkillLevelRequired();
-////				int techLevel01 = i.getTechLevelRequired();
-////
-////				labor0_in += laborTime01;
-////				power0_in += power01;
-////				process0_in += processTime01;
-////				skill0_in += skillLevel01;
-////				tech0_in += techLevel01;
-////				count0_in++;
-////
-////				if (count0_in != 0) {
-////					labor0_in = labor0_in/totalAmount_in;
-////					power0_in = power0_in/totalAmount_in;
-////					process0_in = process0_in/totalAmount_in;
-////					skill0_in = skill0_in/totalAmount_in;
-////					tech0_in = tech0_in/totalAmount_in;
-////				}
-//			}
-//		}
-//
-//		if (foodProductionProcessInfos != null || !foodProductionProcessInfos.isEmpty()) {
-//
-//			for (FoodProductionProcessInfo i: foodProductionProcessInfos) {
-//				// Compute the input resources
-//				List<FoodProductionProcessItem> inputList = i.getInputList();
-//				for (FoodProductionProcessItem j: inputList) {
-//
-//					Good g = GoodsUtil.getResourceGood(j.getName());
-//
-//					double amount_in = j.getAmount();
-//
-//					if (g != null) {
-//						double value = g.getGoodValue() / amount_in;
-//						totalValue += value;
-//					}
-//
-//					else
-//						logger.severe("Can't find the good with the name '" + j.getName() + "'");
-//				}
-//			}
-//		}
-//
-////		totalPriceInput = (labor0_in / 250 + process0_in / 1000
-////				+ power0_in
-////				+ skill0_in
-////				+ tech0_in) * getModifier();
-//
-//		return totalValue;
-//	}
-
-	public void setGoodValue(double value) {
+	/**
+	 * Sets the average good value.
+	 * 
+	 * @param value
+	 */
+	public void setAverageGoodValue(double value) {
 		averageGoodValue = value;
 	}
 
@@ -777,6 +547,9 @@ public class Good implements Serializable, Comparable<Good> {
 		return name.compareTo(o.name);
 	}
 
+	/**
+	 * Is this object the same as another object ?
+	 */
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
 		if (obj == null) return false;

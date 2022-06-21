@@ -124,6 +124,7 @@ public class BuildingTableModel extends UnitTableModel {
 			try {
 				for (UnitEventType type: powerEvents) {				
 					if (type == eventType) {
+						// Will fill in the codes here to update values in various columns
 					}
 				}
 			} catch (Exception e) {
