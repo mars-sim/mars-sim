@@ -21,6 +21,10 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
+/**
+ * The LocationTag class stores the location information of an object.
+ *
+ */
 public class LocationTag implements LocationState, Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -41,8 +45,6 @@ public class LocationTag implements LocationState, Serializable {
 	private Building b = null;
 	private Vehicle v = null;
 	private Settlement s = null;
-//	private MarsSurface ms = null;
-
 
 	private static UnitManager unitManager = Simulation.instance().getUnitManager();
 
@@ -60,8 +62,6 @@ public class LocationTag implements LocationState, Serializable {
 			v = (Vehicle) unit;
 		else if (unit instanceof Settlement)
 			s = (Settlement) unit;
-//		else if (unit instanceof MarsSurface)
-//			ms = (MarsSurface) unit;
 	}
 
 	/**

@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * LocalAreaUtil.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-06-20
  * @author Scott Davis
  */
 
@@ -39,7 +39,7 @@ public class LocalAreaUtil {
 	private static final double INNER_BOUNDARY_DISTANCE = 1.5D;
 
 	/** A very small distance (meters) for measuring how close two locations are. */
-//	private static final double VERY_SMALL_DISTANCE = .00001D;
+	private static final double VERY_SMALL_DISTANCE = .00001D;
 
 	/**
 	 * Cache for total area containing obstacles for a given coordinate location.
@@ -570,7 +570,7 @@ public class LocalAreaUtil {
 	}
 
 	/**
-	 * Create a thin (1 mm wide) rectangle path representing a line.
+	 * Creates a thin (1 mm wide) rectangle path representing a line.
 	 *
 	 * @param line the line.
 	 * @return rectangle path for the line.
@@ -732,7 +732,8 @@ public class LocalAreaUtil {
 	}
 
 	/**
-	 * Initialise the simulation globals
+	 * Initializes the simulation globals.
+	 * 
 	 * @param unitMgr
 	 * @param marsClk
 	 */

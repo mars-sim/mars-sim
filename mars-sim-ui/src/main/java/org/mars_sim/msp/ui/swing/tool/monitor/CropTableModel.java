@@ -46,11 +46,11 @@ public class CropTableModel extends UnitTableModel {
 	private static final Logger logger = Logger.getLogger(CropTableModel.class.getName());
 
 	// Column indexes
-	private final static int SETTLEMENT_NAME = 0;
-	private final static int GREENHOUSE_NAME = 1;
-	private final static int INITIAL_COLS = 2;
+	private static final int SETTLEMENT_NAME = 0;
+	private static final int GREENHOUSE_NAME = 1;
+	private static final int INITIAL_COLS = 2;
 
-	private final static int FIRST_CROP_CAT = INITIAL_COLS + 1;
+	private static final int FIRST_CROP_CAT = INITIAL_COLS + 1;
 	
 	/** The total number of available crop category. */
 	private static int numCropCat = CropCategory.values().length;// = 14
@@ -491,16 +491,17 @@ public class CropTableModel extends UnitTableModel {
 	}
 
 	/**
-	 * Add a unit (a settlement) to the model.
+	 * Adds a unit (a settlement) to the model.
 	 *
 	 * @param newUnit Unit to add to the model.
 	 */
 	protected void addUnit(Unit newUnit) {
+		// Future Placeholder 
 		super.addUnit(newUnit);
 	}
 
 	/**
-	 * Remove a unit from the model.
+	 * Removes a unit from the model.
 	 *
 	 * @param oldUnit Unit to remove from the model.
 	 */
@@ -517,6 +518,8 @@ public class CropTableModel extends UnitTableModel {
 		super.removeUnit(oldUnit);
 	}
 
+
+	// Need to find out how to call this method and how to associate it with TableTab.
 	public String getToolTip(int row, int col) {
 		StringBuilder tt = new StringBuilder();
 		Building b = buildings.get(row);
@@ -528,6 +531,8 @@ public class CropTableModel extends UnitTableModel {
 			if (cat1 == cat)
 				tt.append(c.getCropName()).append(System.lineSeparator());
 		}
+		
+		
 		return tt.toString();
 	}
 
@@ -576,21 +581,16 @@ public class CropTableModel extends UnitTableModel {
 		 * @param event the unit event.
 		 */
 		public void unitManagerUpdate(UnitManagerEvent event) {
-//			if (mode == GameMode.COMMAND) {
-//				; // do nothing
-//			}
-//			else {
-				Unit unit = event.getUnit();
-				UnitManagerEventType eventType = event.getEventType();
+			Unit unit = event.getUnit();
+			UnitManagerEventType eventType = event.getEventType();
 
-				if (unit.getUnitType() == UnitType.SETTLEMENT) {
-					if (eventType == UnitManagerEventType.ADD_UNIT && !containsUnit(unit)) {
-						addUnit(unit);
-					} else if (eventType == UnitManagerEventType.REMOVE_UNIT && containsUnit(unit)) {
-						removeUnit(unit);
-					}
+			if (unit.getUnitType() == UnitType.SETTLEMENT) {
+				if (eventType == UnitManagerEventType.ADD_UNIT && !containsUnit(unit)) {
+					addUnit(unit);
+				} else if (eventType == UnitManagerEventType.REMOVE_UNIT && containsUnit(unit)) {
+					removeUnit(unit);
 				}
-//			}
+			}
 		}
 	}
 }

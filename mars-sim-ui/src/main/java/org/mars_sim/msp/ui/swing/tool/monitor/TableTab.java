@@ -1,4 +1,4 @@
-/**
+/*
  * Mars Simulation Project
  * TableTab.java
  * @date 2021-12-07
@@ -65,7 +65,7 @@ abstract class TableTab extends MonitorTab {
 	private int sortedColumn = 0;
 
 	/**
-	 * Create a table within a tab displaying the specified model.
+	 * Creates a table within a tab displaying the specified model.
 	 *
 	 * @param model           The model of Units to display.
 	 * @param mandatory       Is this table view mandatory.
@@ -123,7 +123,7 @@ abstract class TableTab extends MonitorTab {
 //                 * contents in wider than the cell
 //
 //                public String getToolTipText(MouseEvent e) {
-//                	// TODO: create tooltip text for greenhouse crop
+//                	// Note: create tooltip text for greenhouse crop
 //                    return getCellText(e);
 //                };
 
@@ -199,7 +199,7 @@ abstract class TableTab extends MonitorTab {
 				}
 
 				/**
-				 * Display the cell contents as a tooltip. Useful when cell contents in wider
+				 * Displays the cell contents as a tooltip. Useful when cell contents in wider
 				 * than the cell
 				 */
 				public String getToolTipText(MouseEvent e) {
@@ -346,7 +346,7 @@ abstract class TableTab extends MonitorTab {
 	}
 
 	/**
-	 * Get the cell contents under the MouseEvent, this will be displayed as a
+	 * Gets the cell contents under the MouseEvent, this will be displayed as a
 	 * tooltip.
 	 *
 	 * @param e MouseEvent triggering tool tip.
@@ -360,7 +360,7 @@ abstract class TableTab extends MonitorTab {
 		if ((column >= 0) && (row >= 0)) {
 			Object cell = table.getValueAt(row, column);
 			if (cell != null) {
-				// TODO: below is NOT working
+				// Note: below is NOT working
 //            	MonitorModel target = (sortedModel != null ? sortedModel : getModel());
 //                if (target instanceof CropTableModel) {
 //                	System.out.println("It's CropTableModel");
@@ -376,7 +376,7 @@ abstract class TableTab extends MonitorTab {
 	}
 
 	/**
-	 * Remove this view.
+	 * Removes this tab.
 	 */
 	public void removeTab() {
 		super.removeTab();
@@ -387,6 +387,11 @@ abstract class TableTab extends MonitorTab {
 		}
 	}
 
+	/**
+	 * Sets this column.
+	 * 
+	 * @param index
+	 */
 	private void setSortColumn(int index) {
 		if (sortedModel != null) {
 			if (sortedColumn == index) {

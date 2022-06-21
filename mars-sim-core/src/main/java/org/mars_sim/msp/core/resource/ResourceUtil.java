@@ -139,7 +139,7 @@ public class ResourceUtil implements Serializable {
 	private static Set<AmountResource> resources;
 	private static List<AmountResource> sortedResources;
 	
-	/** A set of life support resources.	 */
+	/** A set of life support resources. */
 	private static Set<Integer> lifeSupportResources;
 
 	public static int waterID;
@@ -266,7 +266,7 @@ public class ResourceUtil implements Serializable {
 	/**
 	 * Create a set of life support resources.
 	 */
-	public void createLifeSupportResources() {
+	public static void createLifeSupportResources() {
 		lifeSupportResources = new HashSet<>();
 		for (AmountResource ar: resources) {
 			if (ar.isLifeSupport())
@@ -300,7 +300,7 @@ public class ResourceUtil implements Serializable {
 	/**
 	 * Create a set of essential resources.
 	 */
-	public void createEssentialResources() {
+	public static void createEssentialResources() {
 		essentialResources = new HashSet<>();
 		for (Food f: FoodUtil.getFoodList()) {
 			essentialResources.add(f.getID());

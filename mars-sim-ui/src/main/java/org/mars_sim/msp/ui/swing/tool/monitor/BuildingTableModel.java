@@ -103,7 +103,6 @@ public class BuildingTableModel extends UnitTableModel {
 	public void unitUpdate(UnitEvent event) {
 		Unit unit = (Unit) event.getSource();
 		UnitEventType eventType = event.getType();
-		Object target = event.getTarget();
 
 		int unitIndex = -1;
 		int columnNum = -1;
@@ -125,7 +124,6 @@ public class BuildingTableModel extends UnitTableModel {
 			try {
 				for (UnitEventType type: powerEvents) {				
 					if (type == eventType) {
-						int tempColumnNum = -1;
 					}
 				}
 			} catch (Exception e) {
