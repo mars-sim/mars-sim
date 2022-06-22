@@ -33,6 +33,10 @@ import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 
+/**
+ * This class model how mission data is organized and displayed
+ * within the Monitor Window for all settlements.
+ */
 @SuppressWarnings("serial")
 public class MissionTableModel extends AbstractTableModel
 		implements MonitorModel, MissionManagerListener, MissionListener {
@@ -73,15 +77,19 @@ public class MissionTableModel extends AbstractTableModel
 	/** Types of Columns. */
 	private static Class<?> columnTypes[];
 
+	private GameMode mode = GameManager.getGameMode();
+	
 	private List<Mission> missionCache;
 
 	private Settlement commanderSettlement;
 
-	private static MissionManager missionManager = Simulation.instance().getMissionManager();
-
 	private DecimalFormat decFormatter = new DecimalFormat("#,###,##0.0");
 
+	private static MissionManager missionManager = Simulation.instance().getMissionManager();
 
+	/**
+	 * Constructor.
+	 */
 	public MissionTableModel() throws Exception {
 		columnNames = new String[COLUMNCOUNT];
 		columnTypes = new Class[COLUMNCOUNT];
@@ -114,7 +122,7 @@ public class MissionTableModel extends AbstractTableModel
 		columnNames[PROPOSED_ROUTE_DISTANCE] = Msg.getString("MissionTableModel.column.proposedDistance"); //$NON-NLS-1$
 		columnTypes[PROPOSED_ROUTE_DISTANCE] = Integer.class;
 
-		if (GameManager.getGameMode() == GameMode.COMMAND) {
+		if (mode == GameMode.COMMAND) {
 			commanderSettlement = Simulation.instance().getUnitManager().getCommanderSettlement();
 
 			// Must take a copy
@@ -139,7 +147,7 @@ public class MissionTableModel extends AbstractTableModel
 	}
 
 	/**
-	 * Get the name of this model. The name will be a description helping the user
+	 * Gets the name of this model. The name will be a description helping the user
 	 * understand the contents.
 	 *
 	 * @return Descriptive name.
@@ -158,7 +166,7 @@ public class MissionTableModel extends AbstractTableModel
 			return;
 
 		boolean goodToGo = false;
-		if (GameManager.getGameMode() == GameMode.COMMAND) {
+		if (mode == GameMode.COMMAND) {
 			if (mission.getStartingPerson().getAssociatedSettlement().getName().equals(commanderSettlement.getName())) {
 				goodToGo = true;
 			}

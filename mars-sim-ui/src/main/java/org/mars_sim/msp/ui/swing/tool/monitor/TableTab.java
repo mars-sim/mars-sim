@@ -241,10 +241,10 @@ abstract class TableTab extends MonitorTab {
 		setName(model.getName());
 		setSortColumn(0);
 
-		// Add ColumnResizer
 		if (table != null) {
-			adjustColumnWidth(table);
+			// Use column resizer
 			// Note: may need to use SwingUtilities.invokeLater(() -> adjustColumnWidth(table))
+			adjustColumnWidth(table);
 			// Update the selected row after each sorting
 			table.setUpdateSelectionOnSort(true);
 		}

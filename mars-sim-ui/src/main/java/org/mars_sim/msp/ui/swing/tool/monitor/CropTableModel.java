@@ -124,7 +124,6 @@ public class CropTableModel extends UnitTableModel {
 		cropCategoryList = new ArrayList<>();
 		paddedSettlements = new ArrayList<>();
 		
-
 		if (mode == GameMode.COMMAND) {
 			commanderSettlement = unitManager.getCommanderSettlement();
 			paddedSettlements.add(commanderSettlement);
@@ -399,18 +398,10 @@ public class CropTableModel extends UnitTableModel {
 	 * @param event the unit event.
 	 */
 	public void unitUpdate(UnitEvent event) {
-		int unitIndex = -1;
 		Unit unit = (Unit) event.getSource();
+		int unitIndex = getUnitIndex(unit);
 		UnitEventType eventType = event.getType();
 		Object target = event.getTarget();
-
-
-		if (mode == GameMode.COMMAND) {
-			; // do nothing
-		}
-		else {
-			unitIndex = getUnitIndex(unit);
-		}
 
 		int columnNum = -1;
 		if (eventType == UnitEventType.NAME_EVENT)
@@ -449,7 +440,6 @@ public class CropTableModel extends UnitTableModel {
 		}
 		if (columnNum > -1) {
 			SwingUtilities.invokeLater(new FoodTableCellUpdater(unitIndex, columnNum));
-
 		}
 	}
 

@@ -285,14 +285,16 @@ public class Good implements Serializable, Comparable<Good> {
 	}
 
 	/**
-	 * Get the cost of output
+	 * Gets the cost of output.
 	 */
 	public double getCostOutput() {
+		if (costOutput == -1)
+			computeOutputCost();
 		return costOutput;
 	}
 
 	/**
-	 * Calculate the modified cost of output
+	 * Calculates the modified cost of output.
 	 */
 	public void computeOutputCost() {
 		// First compute the modifier

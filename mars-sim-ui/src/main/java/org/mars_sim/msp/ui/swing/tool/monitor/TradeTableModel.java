@@ -14,8 +14,11 @@ import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
 import org.mars_sim.msp.core.CollectionUtils;
+import org.mars_sim.msp.core.GameManager;
+import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEvent;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitListener;
@@ -40,47 +43,43 @@ import org.mars_sim.msp.ui.swing.tool.Conversion;
 public class TradeTableModel extends AbstractTableModel
 implements UnitListener, MonitorModel, UnitManagerListener {
 
-	private static final String TRADE_GOODS = "Good(s)";
+	private static final String TRADE_GOODS = "Trade Goods";
 	
-	private static final String GOOD_COL = "Good";
+	private static final String GOOD_COL = "Good at ";
 	private static final String CATEGORY_COL = "Category";
 	private static final String TYPE_COL = "Type";
 
-	private static final String DEMAND_COL = "Demand - ";
-	private static final String SUPPLY_COL = "Supply - ";
-	private static final String QUANTITY_COL = "# - ";
-	private static final String MASS_COL = "kg - ";
-	private static final String VALUE_COL = "Value - ";
-	private static final String PRICE_COL = "Price - ";
-
+	private static final String DEMAND_COL = "Demand";
+	private static final String SUPPLY_COL = "Supply";
+	private static final String QUANTITY_COL = "Quantity";
+	private static final String MASS_COL = "Tot Mass [kg]";
+	private static final String VALUE_COL = "Value";
+	private static final String PRICE_COL = "Price [M$]";
+	private static final String COST_COL = "Cost [M$]";
+	
 	private static final String ONE_SPACE = " ";
 
 	protected static final int NUM_INITIAL_COLUMNS = 3;
-	protected static final int NUM_DATA_COL = 6;
+	protected static final int NUM_DATA_COL = 7;
 
 	// Data members
+	private GameMode mode = GameManager.getGameMode();
+	
 	private List<Good> goodsList;
 	private List<Settlement> settlements = new ArrayList<>();
-
+	
 	protected static UnitManager unitManager = Simulation.instance().getUnitManager();
 
 	/**
 	 * Constructor 2.
 	 */
 	public TradeTableModel(Settlement selectedSettlement) {
-	
+		
 		// Initialize goods list.
 		goodsList = GoodsUtil.getGoodsList();
 		
 		// Initialize settlements.
-//		if (GameManager.getGameMode() == GameMode.COMMAND) {
-//			Settlement commanderSettlement = unitManager.getCommanderSettlement();
-//			settlements.add(commanderSettlement);
-//		}
-//		else {
-//			settlements.addAll(unitManager.getSettlements());
-			settlements.add(selectedSettlement);
-//		}
+		settlements.add(selectedSettlement);
 
 		// Add table as listener to each settlement.
 		Iterator<Settlement> i = settlements.iterator();
@@ -91,14 +90,22 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 	}
 	
 	/**
-	 * Catch unit update event.
+	 * Catches unit update event.
 	 *
 	 * @param event the unit event.
 	 */
 	@Override
 	public void unitUpdate(UnitEvent event) {
-		if (event.getType() == UnitEventType.GOODS_VALUE_EVENT) {
-			SwingUtilities.invokeLater(new TradeTableUpdater(event));
+		Unit unit = (Unit) event.getSource();
+		UnitEventType eventType = event.getType();
+		if (eventType == UnitEventType.GOODS_VALUE_EVENT
+				|| eventType == UnitEventType.FOOD_EVENT) {
+			if (event.getTarget() instanceof Good && unit instanceof Settlement) {
+				if ((mode == GameMode.COMMAND && unit.getName().equalsIgnoreCase(settlements.get(0).getName()))
+						|| unit.getName().equalsIgnoreCase(settlements.get(0).getName())) {
+					SwingUtilities.invokeLater(new TradeTableUpdater(event));			
+				}
+			}
 		}
 	}
 
@@ -112,7 +119,7 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 	}
 
 	/**
-	 * Get the name of this model. The name will be a description helping
+	 * Gets the name of this model. The name will be a description helping
 	 * the user understand the contents.
 	 *
 	 * @return Descriptive name.
@@ -123,7 +130,7 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 	}
 
 	/**
-	 * Return the object at the specified row indexes.
+	 * Returns the object at the specified row indexes.
 	 *
 	 * @param row Index of the row object.
 	 * @return Object at the specified row.
@@ -142,39 +149,38 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 	}
 
 	/**
-	 * Return the name of the column requested.
+	 * Returns the name of the column requested.
 	 *
 	 * @param columnIndex Index of column.
 	 * @return name of specified column.
 	 */
 	public String getColumnName(int columnIndex) {
-		if (columnIndex == 0) return GOOD_COL;
+		if (columnIndex == 0) return GOOD_COL + settlements.get(0).getName();
 		else if (columnIndex == 1) return CATEGORY_COL;
 		else if (columnIndex == 2) return TYPE_COL;
 		else {
 			int col = columnIndex - NUM_INITIAL_COLUMNS;
-			int q = col / NUM_DATA_COL;
 			int r = col % NUM_DATA_COL;
-			String s = null;
 			if (r == 0)
-				s = DEMAND_COL;
+				return DEMAND_COL;
 			else if (r == 1)
-				s = SUPPLY_COL;
+				return SUPPLY_COL;
 			else if (r == 2)
-				s = QUANTITY_COL;
+				return QUANTITY_COL;
 			else if (r == 3)
-				s = MASS_COL;
+				return MASS_COL;
 			else if (r == 4)
-				s = VALUE_COL;
+				return VALUE_COL;
+			else if (r == 5)
+				return PRICE_COL;
 			else
-				s = PRICE_COL;
-			
-			return s + settlements.get(q).getName();
+				return COST_COL;
 		}
 	}
 
 	/**
-	 * Return the type of the column requested.
+	 * Returns the type of the column requested.
+	 * 
 	 * @param columnIndex Index of column.
 	 * @return Class of specified column.
 	 */
@@ -195,7 +201,6 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 	}
 
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		
 		if (columnIndex == 0) {
 			return Conversion.capitalize(goodsList.get(rowIndex).getName());
 		}
@@ -210,26 +215,26 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 
 		else {
 			int col = columnIndex - NUM_INITIAL_COLUMNS;
-			int q = col / NUM_DATA_COL;
 			int r = col % NUM_DATA_COL;
-
 			if (r == 0)
-				return settlements.get(q).getGoodsManager().getDemandValue(goodsList.get(rowIndex));
+				return settlements.get(0).getGoodsManager().getDemandValue(goodsList.get(rowIndex));
 			else if (r == 1)
-				return settlements.get(q).getGoodsManager().getSupplyValue(goodsList.get(rowIndex));
+				return settlements.get(0).getGoodsManager().getSupplyValue(goodsList.get(rowIndex));
 			else if (r == 2)
-				return getQuantity(settlements.get(q), goodsList.get(rowIndex).getID());
+				return getQuantity(settlements.get(0), goodsList.get(rowIndex).getID());
 			else if (r == 3)
-				return getTotalMass(settlements.get(q), goodsList.get(rowIndex));
+				return getTotalMass(settlements.get(0), goodsList.get(rowIndex));
 			else if (r == 4)
-				return settlements.get(q).getGoodsManager().getGoodValuePerItem(goodsList.get(rowIndex).getID());
+				return settlements.get(0).getGoodsManager().getGoodValuePerItem(goodsList.get(rowIndex).getID());
+			else if (r == 5)
+				return Math.round(settlements.get(0).getGoodsManager().getPricePerItem(goodsList.get(rowIndex))*100.0)/100.0;
 			else
-				return Math.round(settlements.get(q).getGoodsManager().getPricePerItem(goodsList.get(rowIndex))*100.0)/100.0;
+				return Math.round(goodsList.get(rowIndex).getCostOutput()*100.0)/100.0;
 		}
 	}
 
 	/**
-	 * Gets the quantity/amount of the resource
+	 * Gets the quantity of a resource.
 	 *
 	 * @param settlement
 	 * @param id
@@ -259,7 +264,7 @@ implements UnitListener, MonitorModel, UnitManagerListener {
     }
 
 	/**
-	 * Gets the quantity/amount of the resource
+	 * Gets the total mass of a good.
 	 *
 	 * @param settlement
 	 * @param id
@@ -299,7 +304,7 @@ implements UnitListener, MonitorModel, UnitManagerListener {
     }
 
 	/**
-	 * Gets the good category name in the internationalized string
+	 * Gets the good category name in the internationalized string.
 	 *
 	 * @param good
 	 * @return
@@ -349,10 +354,11 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 
 	@Override
 	public void unitManagerUpdate(UnitManagerEvent event) {
+		Unit unit = event.getUnit();
+		if (unit.getUnitType() == UnitType.SETTLEMENT
+				&& unit.getName().equalsIgnoreCase(settlements.get(0).getName())) {
 
-		if (event.getUnit().getUnitType() == UnitType.SETTLEMENT) {
-
-			Settlement settlement = (Settlement) event.getUnit();
+			Settlement settlement = (Settlement) unit;
 
 			if (UnitManagerEventType.ADD_UNIT == event.getEventType()) {
 				// If settlement is new, add to settlement list.
@@ -360,8 +366,7 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 					settlements.add(settlement);
 					settlement.addUnitListener(this);
 				}
-			}
-			else if (UnitManagerEventType.REMOVE_UNIT == event.getEventType()) {
+			} else if (UnitManagerEventType.REMOVE_UNIT == event.getEventType()) {
 				// If settlement is gone, remove from settlement list.
 				if (settlements.contains(settlement)) {
 					settlements.remove(settlement);

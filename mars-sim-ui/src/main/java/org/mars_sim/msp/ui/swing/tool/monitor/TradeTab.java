@@ -45,18 +45,16 @@ implements UnitManagerListener {
 //		table.setDefaultRenderer(Double.class, new NumberCellRenderer(NUM_DIGITS, true));
 
 		TableColumnModel m = table.getColumnModel();
-		int num = TradeTableModel.NUM_INITIAL_COLUMNS;
-		int cols = TradeTableModel.NUM_DATA_COL;
+		int init = TradeTableModel.NUM_INITIAL_COLUMNS;
+		int numCols = TradeTableModel.NUM_DATA_COL;
 		for (int i= 0; i < m.getColumnCount(); i++) {
-			if (i >= num) {
-				int col = i - num;
-				int c = col % cols;
-				if (c == 2)
+			if (i >= init) {
+				int col = i - init;
+				int c = col % numCols;
+				if (c == 2 || c > 4) // 2, 5, 6
 					m.getColumn(i).setCellRenderer(NumberRenderer.getIntegerRenderer());
-				else if (c <= 4) // 0, 1, 3, 4
+				else // 0, 1, 3, 4
 					m.getColumn(i).setCellRenderer(new NumberCellRenderer(NUM_DIGITS, true));
-				else if (c == 5)
-					m.getColumn(i).setCellRenderer(NumberRenderer.getCurrencyRenderer());
 			}
 		}
 

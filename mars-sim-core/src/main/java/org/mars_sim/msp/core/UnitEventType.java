@@ -84,6 +84,9 @@ public enum UnitEventType {
 	END_TRANSPORT_WIZARD_EVENT		("end transport wizard"),
 	FINISH_BUILDING_PLACEMENT_EVENT	("finish building placement"),
 
+	// For Cooking and PreparingDessert
+	FOOD_EVENT						("food event"),
+	
 	// For Farming
 	CROP_EVENT						("crop event"),
 	
@@ -98,7 +101,7 @@ public enum UnitEventType {
 	MISSION_EVENT					("mission event"),
 
 	// For GoodsManager
-	GOODS_VALUE_EVENT				("goods values"),
+	GOODS_VALUE_EVENT				("values of goods"),
 	PRICE_EVENT						("price of goods"),
 	
 	// For Vehicle

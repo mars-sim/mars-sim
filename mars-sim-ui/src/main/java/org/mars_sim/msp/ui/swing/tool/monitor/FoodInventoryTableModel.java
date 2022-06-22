@@ -13,10 +13,8 @@ import java.util.List;
 import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
+import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.GameManager.GameMode;
-import org.mars_sim.msp.core.food.Food;
-import org.mars_sim.msp.core.food.FoodUtil;
-import org.mars_sim.msp.core.goods.Good;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
@@ -28,24 +26,33 @@ import org.mars_sim.msp.core.UnitManagerEvent;
 import org.mars_sim.msp.core.UnitManagerEventType;
 import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.UnitType;
-import org.mars_sim.msp.core.resource.ResourceUtil;
+import org.mars_sim.msp.core.food.Food;
+import org.mars_sim.msp.core.food.FoodUtil;
+import org.mars_sim.msp.core.goods.Good;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 
+/**
+ * This class model how food data is organized and displayed
+ * within the Monitor Window for a settlement.
+ */
 @SuppressWarnings("serial")
 public class FoodInventoryTableModel extends AbstractTableModel
 implements UnitListener, MonitorModel, UnitManagerListener {
 
 	private static final String FOOD_ITEMS = " Food Items";
-	private static final String MASS = "kg - ";
-	private static final String VP_AT = "Value - ";
-	private static final String PRICE_AT = "Price - ";
+	
+	private static final String FOOD_COL = "Food - ";
 	private static final String TYPE = "Type";
+	
+	private static final String MASS = "kg";
+	private static final String VP_AT = "Value";
+	private static final String PRICE_AT = "Price";
 	
 	protected static final int NUM_INITIAL_COLUMNS = 2;
 	protected static final int NUM_DATA_COL = 3;
 	
-	private GameMode mode;
+	private GameMode mode = GameManager.getGameMode();
 
 	// Data members
 	private List<Food> foodList;
@@ -64,14 +71,7 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 		foodList = FoodUtil.getFoodList();
 
 		// Initialize settlements.
-//		if (GameManager.getGameMode() == GameMode.COMMAND) {
-//			commanderSettlement = unitManager.getCommanderSettlement();
-//			settlements.add(commanderSettlement);
-//		}
-//		else {
-//			settlements.addAll(unitManager.getSettlements());
-			settlements.add(selectedSettlement);
-//		}
+		settlements.add(selectedSettlement);
 			
 		// Add table as listener to each settlement.
 		Iterator<Settlement> i = settlements.iterator();
@@ -90,39 +90,22 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 	public void unitUpdate(UnitEvent event) {
 		Unit unit = (Unit) event.getSource();
 		UnitEventType eventType = event.getType();
-		Object source = event.getTarget();
-		if (eventType == UnitEventType.GOODS_VALUE_EVENT) {
-			if (mode == GameMode.COMMAND) {
-				if (source instanceof Good
-						&& unit instanceof Settlement
-						&& unit.getName().equalsIgnoreCase(commanderSettlement.getName()))
-					SwingUtilities.invokeLater(new FoodTableUpdater(event));
-			}
-			else {
-				SwingUtilities.invokeLater(new FoodTableUpdater(event));
+		if (eventType == UnitEventType.FOOD_EVENT) {
+			if (event.getTarget() instanceof Good && unit instanceof Settlement) {
+				if ((mode == GameMode.COMMAND && unit.getName().equalsIgnoreCase(commanderSettlement.getName()))
+						|| unit.getName().equalsIgnoreCase(settlements.get(0).getName())) {
+					SwingUtilities.invokeLater(new FoodTableUpdater(event));			
+				}
 			}
 		}
 	}
-
-//	/**
-//	 * Gets the index of the row a given unit is at.
-//	 *
-//	 * @param unit the unit to find.
-//	 * @return the row index or -1 if not in table model.
-//	 */
-//	protected int getUnitIndex(Unit unit) {
-//		if ((units != null) && units.contains(unit))
-//			return getIndex(unit);
-//		else
-//			return -1;
-//	}
 
 	/**
 	 * Gets the model count string.
 	 */
 	@Override
 	public String getCountString() {
-		return " " + foodList.size() + FOOD_ITEMS; // do need a white space before Food Items
+		return " " + foodList.size() + FOOD_ITEMS;
 	}
 
 	/**
@@ -154,23 +137,6 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 		return false;
 	}
 
-//	/**
-//	 * Return the name of the column requested.
-//	 *
-//	 * @param columnIndex Index of column.
-//	 * @return name of specified column.
-//	 */
-//	public String getColumnName(int columnIndex) {
-//		if (columnIndex == 0)
-//			return Msg.getString("FoodInventoryTableModel.firstColumn");
-//		else if (columnIndex == 1)
-//			return "Type";
-//		else  {
-//			return Msg.getString("FoodInventoryTableModel.settlementColumns",
-//					settlements.get(columnIndex - STARTING_COLUMN).getName());
-//		}
-//	}
-	
 	/**
 	 * Return the name of the column requested.
 	 *
@@ -179,19 +145,18 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 	 */
 	public String getColumnName(int columnIndex) {
 		if (columnIndex == 0) 
-			return Msg.getString("FoodInventoryTableModel.firstColumn");
+			return FOOD_COL + settlements.get(0).getName();
 		else if (columnIndex == 1) 
 			return TYPE;
 		else {
 			int col = columnIndex - NUM_INITIAL_COLUMNS;
-			int q = col / NUM_DATA_COL;
 			int r = col % NUM_DATA_COL;
 			if (r == 0)
-				return MASS + settlements.get(q).getName();
+				return MASS;
 			else if (r == 1)
-				return VP_AT + settlements.get(q).getName();
+				return VP_AT;
 			else
-				return PRICE_AT + settlements.get(q).getName();
+				return PRICE_AT;
 		}
 	}
 
@@ -228,30 +193,14 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 
 		else {
 			int col = columnIndex - NUM_INITIAL_COLUMNS;
-			int q = col / NUM_DATA_COL;
 			int r = col % NUM_DATA_COL;
 			if (r == 0)
-				return //getQuantity(settlements.get(q), foodList.get(rowIndex).getID());
-					settlements.get(columnIndex - NUM_INITIAL_COLUMNS).getAmountResourceStored(
-					ResourceUtil.findAmountResource(foodList.get(rowIndex).getName()).getID());
+				return settlements.get(0).getAmountResourceStored(foodList.get(rowIndex).getID());
 			else if (r == 1)
-				return settlements.get(q).getGoodsManager().getGoodValuePerItem(foodList.get(rowIndex).getID());
+				return settlements.get(0).getGoodsManager().getGoodValuePerItem(foodList.get(rowIndex).getID());
 			else
-				return Math.round(settlements.get(q).getGoodsManager().getPricePerItem(foodList.get(rowIndex).getID())*100.0)/100.0;
+				return Math.round(settlements.get(0).getGoodsManager().getPricePerItem(foodList.get(rowIndex).getID())*100.0)/100.0;
 		}
-			
-//			try {
-//				// Settlement settlement = settlements.get(columnIndex - 1);
-//				// Food food = foodList.get(rowIndex);
-//				// Inventory inv = settlement.getInventory();
-//				// String foodName = food.getName();
-//				// AmountResource ar = ResourceUtil.findAmountResource(foodName);
-//				// double foodAvailable = inv.getAmountResourceStored(ar, false);
-//				return settlements.get(columnIndex - NUM_INITIAL_COLUMNS).getAmountResourceStored(
-//						ResourceUtil.findAmountResource(foodList.get(rowIndex).getName()).getID());
-//			} catch (Exception e) {
-//				return null;
-//			}
 	}
 	
 	/**
@@ -267,8 +216,7 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 		unitManager.removeUnitManagerListener(this);
 		
 		foodList = null;
-		commanderSettlement = null;
-//		settlements = null;
+//		commanderSettlement = null;
 		unitManager = null;
 	}
 	
@@ -296,48 +244,33 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 
 	@Override
 	public void unitManagerUpdate(UnitManagerEvent event) {
+		Unit unit = event.getUnit();
+		if (unit.getUnitType() == UnitType.SETTLEMENT
+				&& unit.getName().equalsIgnoreCase(settlements.get(0).getName())) {
 
-		if (mode == GameMode.COMMAND
-				&& event.getUnit().getUnitType() == UnitType.SETTLEMENT
-				&&  settlements.contains((Settlement) event.getUnit())) {
-				// Update table structure due to cells changing.
-				SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						fireTableStructureChanged();
-//						fireTableStructureChanged();
-					}
-				});
-		}
+			Settlement settlement = (Settlement) unit;
 
-		else {
-			if (event.getUnit().getUnitType() == UnitType.SETTLEMENT) {
-
-				Settlement settlement = (Settlement) event.getUnit();
-
-				if (UnitManagerEventType.ADD_UNIT == event.getEventType()) {
-					// If settlement is new, add to settlement list.
-					if (!settlements.contains(settlement)) {
-						settlements.add(settlement);
-						settlement.addUnitListener(this);
-					}
-				} else if (UnitManagerEventType.REMOVE_UNIT == event.getEventType()) {
-					// If settlement is gone, remove from settlement list.
-					if (settlements.contains(settlement)) {
-						settlements.remove(settlement);
-						settlement.removeUnitListener(this);
-					}
+			if (UnitManagerEventType.ADD_UNIT == event.getEventType()) {
+				// If settlement is new, add to settlement list.
+				if (!settlements.contains(settlement)) {
+					settlements.add(settlement);
+					settlement.addUnitListener(this);
 				}
-
-				// Update table structure due to cells changing.
-				SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						fireTableStructureChanged();
-//						fireTableStructureChanged();
-					}
-				});
+			} else if (UnitManagerEventType.REMOVE_UNIT == event.getEventType()) {
+				// If settlement is gone, remove from settlement list.
+				if (settlements.contains(settlement)) {
+					settlements.remove(settlement);
+					settlement.removeUnitListener(this);
+				}
 			}
+
+			// Update table structure due to cells changing.
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					fireTableStructureChanged();
+				}
+			});
 		}
 	}
 }
