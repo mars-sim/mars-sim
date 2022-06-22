@@ -126,7 +126,7 @@
 					<!-- https://medium.com/graalvm/gradle-and-maven-plugins-for-native-image-with-initial-junit-testing-support-dde00a8caf0b -->
 					<groupId>org.graalvm.buildtools</groupId>
 					<artifactId>native-maven-plugin</artifactId>
-					<version>0.9.11</version>
+					<version>0.9.12</version>
 					<executions>
 						<execution>
 							<id>test-native</id>
