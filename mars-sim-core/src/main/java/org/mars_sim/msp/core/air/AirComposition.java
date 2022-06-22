@@ -25,6 +25,8 @@ public class AirComposition implements Serializable {
 	// nitrogen, final volume will equal sum of
 	// volumes, also final mass will equal sum of masses.
 
+	private static final long serialVersionUID = 1L;
+
 	/**
      * Details of a specific Gas
      */
@@ -35,6 +37,8 @@ public class AirComposition implements Serializable {
     	private double mass;
     	private double standardMoles;
     
+    	private static final long serialVersionUID = 1L;
+
     	public double getPercent() {
     		return percent;
     	}

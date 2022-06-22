@@ -939,7 +939,7 @@ public abstract class Vehicle extends Unit
 	/**
 	 * Gets the base range of the vehicle.
 	 *
-	 * @return the base range of the vehicle (in km)
+	 * @return the base range of the vehicle [km]
 	 * @throws Exception if error getting range.
 	 */
 	public double getBaseRange() {
@@ -947,7 +947,7 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
-	 * Gets the fuel capaacity of the vehicle [kg].
+	 * Gets the fuel capacity of the vehicle [kg].
 	 *
 	 * @return
 	 */

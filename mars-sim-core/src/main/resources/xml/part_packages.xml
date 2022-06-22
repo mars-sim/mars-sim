@@ -129,6 +129,7 @@
 		<part type="condenser coil" number="1" />
 		<part type="decontamination kit" number="2" />
 		<part type="plasma cutter" number="2" />
+		<part type="semiconductor wafer" number="5" />
 		
 	</part-package>
 
@@ -243,7 +244,8 @@
 		<part type="plastic sheet" number="6" />
 		<part type="decontamination kit" number="4" />
 		<part type="plasma cutter" number="3" />
-		
+		<part type="semiconductor wafer" number="10" />
+				
 	</part-package>
 
 	<part-package name="package 3">
@@ -357,6 +359,7 @@
 		<part type="plastic sheet" number="6" />
 		<part type="decontamination kit" number="6" />
 		<part type="plasma cutter" number="4" />
+		<part type="semiconductor wafer" number="15" />
 		
 	</part-package>
 
@@ -471,7 +474,8 @@
 		<part type="plastic sheet" number="16" />
 		<part type="decontamination kit" number="12" />
 		<part type="plasma cutter" number="5" />
-
+		<part type="semiconductor wafer" number="20" />
+		
 	</part-package>
 
 </part-package-list>

@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
@@ -23,6 +24,8 @@ import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.ContainerUtil;
+import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.food.FoodProductionProcess;
 import org.mars_sim.msp.core.food.FoodProductionProcessInfo;
@@ -52,6 +55,8 @@ import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ItemType;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
+import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -2149,7 +2154,8 @@ public class GoodsManager implements Serializable, Temporal {
 				return getNumberOfEquipmentForSettlement(good, good.getEquipmentType());
 			if (GoodCategory.VEHICLE == good.getCategory())
 				return getNumberOfVehiclesForSettlement(good.getName());
-
+			if (GoodCategory.ROBOT == good.getCategory())
+				return getNumberOfRobotsForSettlement(good.getName());
 			return 0;
 		}
 
@@ -2159,6 +2165,7 @@ public class GoodsManager implements Serializable, Temporal {
 		return 0;
 	}
 
+	
 	/**
 	 * Gets the amount of an amount resource in use for a settlement.
 	 *
@@ -2359,8 +2366,8 @@ public class GoodsManager implements Serializable, Temporal {
 				}
 
 				else {
-					// Intentionally lose 10% of its value
-					totalDemand = .7 * previous + .05 * repair + .05 * average + .05 * projected + .05 * trade;
+					// Intentionally lose 1% of its value
+					totalDemand = .94 * previous + .01 * repair + .01 * average + .01 * projected + .01 * trade;
 				}
 
 				if (totalDemand < MIN_DEMAND)
@@ -3791,6 +3798,23 @@ public class GoodsManager implements Serializable, Temporal {
 	}
 
 	/**
+	 * Gets the number of robots of this type in this settlement.
+	 * 
+	 * @param name
+	 * @return
+	 */
+	private double getNumberOfRobotsForSettlement(String name) {
+		int result = 0;
+		// Get number of robots.
+		Iterator<Robot> j = settlement.getAllAssociatedRobots().iterator();
+		while (j.hasNext()) {
+			if (j.next().getRobotType() == RobotType.valueOfIgnoreCase(name))
+				result++;
+		}
+		return result;		
+	}
+	
+	/**
 	 * Determines the trade demand for a good at a settlement.
 	 *
 	 * @param good          the good.
@@ -3880,7 +3904,6 @@ public class GoodsManager implements Serializable, Temporal {
 
 	public void setMaintenancePriority(int level) {
 		maintenanceMod = computeModifier(BASE_MAINT_PART, level);
-
 	}
 
 	public void setEVASuitPriority(int level) {
@@ -3919,7 +3942,7 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @return
 	 */
 	public double getPricePerItem(Good good) {
-		return good.getCostOutput();
+		return getPrice(good);
 	}
 
 	/**
@@ -3929,9 +3952,73 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @return
 	 */
 	public double getPricePerItem(int id) {
-		return GoodsUtil.getResourceGood(id).getCostOutput();
+		return getPrice(GoodsUtil.getResourceGood(id));
 	}
 
+	/**
+	 * Gets the price for a good
+	 *
+	 * @param good the good
+	 * @return
+	 */
+	public double getPrice(Good good) {
+		double cost = good.getCostOutput();
+		double value = getGoodValuePerItem(good);
+		double factor = 0;
+		double price = 0;
+		
+		int id = good.getID();
+		if (id < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
+			// For Amount Resource
+			double totalMass = Math.round(settlement.getAmountResourceStored(id) * 100.0)/100.0;
+			factor = 1.5 / (.5 + Math.log(totalMass + 1));
+		}
+		else if (id < ResourceUtil.FIRST_VEHICLE_RESOURCE_ID) {
+			// For Item Resource
+			Part part = (Part) ItemResourceUtil.findItemResource(id);
+			double mass = part.getMassPerItem();
+			double quantity = settlement.getItemResourceStored(id) ;
+			factor = 1.2 * Math.log(mass + 1) / (.3 + Math.log(quantity + 1));
+		}
+			
+		else if (id < ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID) {
+			// For Vehicle
+			VehicleType vehicleType = VehicleType.convertID2Type(id);
+			double mass = CollectionUtils.getVehicleTypeBaseMass(vehicleType);
+			double quantity = settlement.findNumVehiclesOfType(vehicleType);
+			factor = Math.log(mass/1600.0 + 1) / (5 + Math.log(quantity + 1));
+		}
+			
+		else if (id < ResourceUtil.FIRST_ROBOT_RESOURCE_ID) {
+			// For Equipment   		
+    		EquipmentType type = EquipmentType.convertID2Type(id);
+    		double mass = 0;
+			double quantity = 0;
+    		if (type == EquipmentType.EVA_SUIT) {
+    			mass = EVASuit.emptyMass;
+    			quantity = settlement.getNumEVASuit();
+    			factor = 1.2 * Math.log(mass/50.0 + 1) / (.1 + Math.log(quantity + 1));
+    		}
+    		else {
+    			// For containers
+    			mass = EquipmentFactory.getEquipmentMass(type);
+    			quantity = settlement.findNumContainersOfType(type);
+    			factor = 1.2 * Math.log(mass + 1) / (.1 + Math.log(quantity + 1));
+    		}
+		}
+			
+		else {
+			// For Robot
+			double mass = Robot.EMPTY_MASS;
+			double quantity = settlement.getInitialNumOfRobots() ;
+			factor = Math.log(mass/10.0 + 1) / (5 + Math.log(quantity + 1));
+		}
+			
+		// Note: the profit = 2 * cost * factor * Math.log(value + 1)
+		price = cost * (1 + 2 * factor * Math.log(value + 1));
+		return price;
+	}
+	
 	/**
 	 * Gets the value per item of a good.
 	 *

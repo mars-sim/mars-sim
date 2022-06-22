@@ -28,6 +28,7 @@ import org.mars_sim.msp.core.vehicle.VehicleType;
 public class CollectionUtils {
 
 	private static UnitManager unitManager = Simulation.instance().getUnitManager();
+	private static SimulationConfig simulationConfig = SimulationConfig.instance();
 
 	public static Collection<Equipment> getEquipment(
 		Collection<Unit> units
@@ -67,15 +68,7 @@ public class CollectionUtils {
 	 * @return
 	 */
 	public static double getVehicleTypeBaseMass(VehicleType vehicleType) {
-		Vehicle vv = unitManager.getVehicles()
-			.stream()
-			.filter(v -> v.getVehicleType() == vehicleType)
-			.findAny().orElse(null);
-		
-		if (vv == null)
-			return 0;
-		
-		return vv.getBaseMass();
+		return simulationConfig.getVehicleConfiguration().getVehicleSpec(vehicleType.getName()).getEmptyMass();
 	}
 	
 	

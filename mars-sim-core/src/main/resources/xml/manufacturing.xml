@@ -1137,7 +1137,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Assuming 10% loss during production. -->
-	<!-- but where does it go?? into atmosphere? into life support? -->
+	<!-- will need a container to hold it -->
 	<process name="produce polyethylene" tech="3" skill="2" work-time="50" process-time="400"
 			power-required="0.1">
 		<description>Assuming 10% loss during production.</description>
@@ -2671,7 +2671,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="electrical wire" number="4" />
 			<part name="wire connector" number="10" />
 			<part name="fiberglass" number="2" />
-			<part name="small semiconductor wafer" number="2" />
+			<part name="semiconductor wafer" number="2" />
 			<part name="logic board" number="2" />
 		</inputs>
 		<outputs>
@@ -3374,14 +3374,14 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		</outputs>
 	</process>
 
-	<!-- 2015-05-19 Added manufacturing small semiconductor wafer. -->
-	<process name="fabricate small semiconductor wafer" tech="3" skill="4" work-time="400" process-time="800"
+	<!-- 2015-05-19 Added manufacturing semiconductor wafer. -->
+	<process name="fabricate semiconductor wafer" tech="3" skill="4" work-time="400" process-time="800"
 			power-required="1.0">
 		<inputs>
 			<resource name="silicon" amount="1.2" />
 		</inputs>
 		<outputs>
-			<part name="small semiconductor wafer" number="1" />
+			<part name="semiconductor wafer" number="1" />
 		</outputs>
 	</process>
 
@@ -3389,7 +3389,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 	<process name="manufacture light emitting diode bulb" tech="3" skill="3" work-time="200" process-time="500"
 			power-required="0.5">
 		<inputs>
-			<part name="small semiconductor wafer" number="1" />
+			<part name="semiconductor wafer" number="1" />
 		</inputs>
 		<outputs>
 			<part name="light emitting diode bulb" number="40" />
@@ -3400,7 +3400,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 	<process name="manufacture microcontroller" tech="4" skill="4" work-time="300" process-time="200"
 			power-required="0.5">
 		<inputs>
-			<part name="small semiconductor wafer" number="1" />
+			<part name="semiconductor wafer" number="1" />
 		</inputs>
 		<outputs>
 			<part name="microcontroller" number="40" />
@@ -3427,15 +3427,15 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 	<process name="manufacture carbon dioxide laser" tech="3" skill="4" work-time="400" process-time="600"
 			power-required="1.0">
 		<inputs>
-			<part name="small semiconductor wafer" number="1" />
+			<part name="semiconductor wafer" number="1" />
 			<part name="steel sheet" number="1" />
 			<part name="electrical wire" number="1" />
 			<part name="wire connector" number="1" />
-			<part name="light emitting diode kit" number="1" />
+			<part name="light emitting diode kit" number="5" />
 			<part name="glass sheet" number="1" />
-			<part name="optical lens" number="3" />
+			<part name="optical lens" number="10" />
 			<part name="plastic sheet" number="1" />
-			<part name="diode" number="3" />
+			<part name="diode" number="15" />
 		</inputs>
 		<outputs>
 			<part name="carbon dioxide laser" number="5" />
@@ -3468,16 +3468,16 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 	<process name="manufacture helium neon laser" tech="3" skill="4" work-time="400" process-time="600"
 			power-required="2.0">
 		<inputs>
-			<part name="small semiconductor wafer" number="1" />
+			<part name="semiconductor wafer" number="1" />
 			<part name="steel sheet" number="1" />
 			<part name="electrical wire" number="1" />
 			<part name="wire connector" number="1" />
-			<part name="light emitting diode kit" number="1" />
+			<part name="light emitting diode kit" number="5" />
 			<part name="glass sheet" number="1" />
-			<part name="optical lens" number="3" />
-			<part name="optical prism" number="3" />
+			<part name="optical lens" number="10" />
+			<part name="optical prism" number="10" />
 			<part name="plastic sheet" number="1" />
-			<part name="diode" number="3" />
+			<part name="diode" number="20" />
 		</inputs>
 		<outputs>
 			<part name="helium neon laser" number="5" />
@@ -3779,7 +3779,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="resistor" number="40" />
 			<part name="capacitor" number="20" />
 			<part name="diode" number="10" />
-			<part name="small semiconductor wafer" number="1" />
+			<part name="semiconductor wafer" number="1" />
 		</inputs>
 		<outputs>
 			<part name="logic board" number="80" />

@@ -1,12 +1,13 @@
-/**
+/*
  * Mars Simulation Project
  * FunctionType.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-06-21
  * @author stpa				
  */
 package org.mars_sim.msp.core.structure.building.function;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.robot.RobotType;
 
 public enum FunctionType {
 
@@ -53,5 +54,38 @@ public enum FunctionType {
 
 	public String getName() {
 		return this.name;
+	}
+	
+	/**
+	 * Gets the default Function for a Robot Type.
+	 * 
+	 * @return FunctionType
+	 */
+	public static FunctionType getDefaultFunction(RobotType type) {
+		switch (type) {
+		case CHEFBOT:
+			return FunctionType.COOKING;
+		
+		case CONSTRUCTIONBOT:
+			return FunctionType.MANUFACTURE;
+			
+		case DELIVERYBOT:
+			return FunctionType.GROUND_VEHICLE_MAINTENANCE;
+			
+		case GARDENBOT:
+			return FunctionType.FARMING;
+			
+		case MAKERBOT:
+			return FunctionType.MANUFACTURE;
+			
+		case MEDICBOT:
+			return FunctionType.MEDICAL_CARE;
+			
+		case REPAIRBOT:
+			return FunctionType.LIFE_SUPPORT;
+			
+		default:
+			return FunctionType.ROBOTIC_STATION;
+		}
 	}
 }

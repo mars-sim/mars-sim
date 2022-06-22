@@ -484,7 +484,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	}
 
 	/**
-	 * Gets the location state type based on the type of the new container unit
+	 * Gets the location state type based on the type of the new container unit.
 	 *
 	 * @param newContainer
 	 * @return {@link LocationStateType}
@@ -524,13 +524,14 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	 * @throws Exception if error getting the mass.
 	 */
 	public double getMass() {
-		return baseMass;// + getStoredMass();
+		// Note: this method will be overridden by those inheriting this Unit
+		return baseMass;// + getStoredMass(); ?
 	}
 
 	/**
 	 * Sets the unit's base mass.
 	 *
-	 * @param baseMass mass (kg)
+	 * @param base mass (kg)
 	 */
 	protected final void setBaseMass(double baseMass) {
 		this.baseMass = baseMass;
@@ -540,7 +541,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	/**
 	 * Gets the base mass of the unit.
 	 *
-	 * @return base mass (kg).
+	 * @return base mass (kg)
 	 */
 	public double getBaseMass() {
 		return baseMass;
@@ -553,7 +554,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	}
 
 	/**
-	 * Adds a unit listener
+	 * Adds a unit listener.
 	 *
 	 * @param newListener the listener to add.
 	 */
@@ -569,7 +570,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	}
 
 	/**
-	 * Removes a unit listener
+	 * Removes a unit listener.
 	 *
 	 * @param oldListener the listener to remove.
 	 */
@@ -583,7 +584,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	}
 
 	/**
-	 * Fire a unit update event.
+	 * Fires a unit update event.
 	 *
 	 * @param updateType the update type.
 	 */
@@ -592,7 +593,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	}
 
 	/**
-	 * Fire a unit update event.
+	 * Fires a unit update event.
 	 *
 	 * @param updateType the update type.
 	 * @param target     the event target object or null if none.
@@ -623,7 +624,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	public abstract Settlement getSettlement();
 
 	/**
-	 * Gets the building this unit is at
+	 * Gets the building this unit is at.
 	 *
 	 * @return the building
 	 */
@@ -632,7 +633,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	}
 
 	/**
-	 * Gets the associated settlement this unit is with
+	 * Gets the associated settlement this unit is with.
 	 *
 	 * @return the associated settlement
 	 */
@@ -641,7 +642,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	}
 
 	/**
-	 * Get the vehicle this unit is in, null if not in vehicle
+	 * Gets the vehicle this unit is in, null if not in vehicle.
 	 *
 	 * @return the vehicle
 	 */
@@ -651,7 +652,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 
 	/**
 	 * Is this unit inside an environmentally enclosed breathable living space such
-	 * as inside a settlement or a vehicle (NOT including in an EVA Suit)
+	 * as inside a settlement or a vehicle (NOT including in an EVA Suit) ?
 	 *
 	 * @return true if the unit is inside a breathable environment
 	 */
@@ -668,7 +669,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 
 	/**
 	 * Is this unit outside on the surface of Mars, including wearing an EVA Suit
-	 * and being outside the settlement/building/vehicle
+	 * and being outside the settlement/building/vehicle ?
 	 *
 	 * @return true if the unit is outside
 	 */
@@ -684,7 +685,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	}
 
 	/**
-	 * Is this unit inside a vehicle
+	 * Is this unit inside a vehicle ?
 	 *
 	 * @return true if the unit is inside a vehicle
 	 */
@@ -702,14 +703,14 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	}
 
 	/**
-	 * Is this unit inside a settlement
+	 * Is this unit inside a settlement ?
 	 *
 	 * @return true if the unit is inside a settlement
 	 */
 	public abstract boolean isInSettlement();
 
 	/**
-	 * Is this unit in the vicinity of a settlement
+	 * Is this unit in the vicinity of a settlement ?
 	 *
 	 * @return true if the unit is inside a settlement
 	 */
@@ -732,7 +733,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	}
 
 	/**
-	 * Gets the total capacity of this unit
+	 * Gets the total capacity of this unit.
 	 *
 	 * @return
 	 */
@@ -746,7 +747,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	}
 
 	/**
-	 * Loads instances
+	 * Loads instances.
 	 *
 	 * @param c0 {@link MasterClock}
 	 * @param c1 {@link MarsClock}
@@ -821,7 +822,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	}
 
 	/**
-	 * Prepare object for garbage collection.
+	 * PrepareS object for garbage collection.
 	 */
 	public void destroy() {
 		location = null;

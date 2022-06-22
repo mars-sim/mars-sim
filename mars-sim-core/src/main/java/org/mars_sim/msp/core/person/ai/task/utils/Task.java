@@ -1322,7 +1322,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 
 			if (currentBuilding != null) {
 				RobotType type = robot.getRobotType();
-				FunctionType fct = type.getDefaultFunction();
+				FunctionType fct = FunctionType.getDefaultFunction(type);
 
 				List<Building> buildingList = currentBuilding.getBuildingManager().getBuildingsNoHallwayTunnelObs(fct);
 

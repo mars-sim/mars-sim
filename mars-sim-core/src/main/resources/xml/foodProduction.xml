@@ -405,7 +405,7 @@
 	</process>
 
 	<process name="Process Rice into White Rice and rice bran oil"
-		tech="1" skill="0" work-time="50" process-time="50" power-required=".1">
+		tech="1" skill="0" work-time="5" process-time="50" power-required=".1">
 		<description> Remove hulls, bran layers and germ from rice.
 		May enrich milled rice with vitamins and minerals </description>
 
@@ -783,8 +783,8 @@
 	</process>
 
 	<process name="Process fish oil from fish meat"
-		tech="1" skill="1" work-time="50" process-time="50"
-			power-required="0.2">
+		tech="1" skill="1" work-time="5" process-time="50"
+			power-required="0.1">
 
 		<description>Derive fish oil from fish meats. Press and refine it
 			for use </description>

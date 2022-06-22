@@ -291,7 +291,11 @@ public class GoodsUtil {
     private static Map<Integer, Good> populateEquipment(Map<Integer, Good> newMap) {
         for(EquipmentType type : EquipmentType.values()) {
             int id = EquipmentType.getResourceID(type);
-            newMap.put(id, new Good(type.getName(), id, GoodCategory.EQUIPMENT));
+            if (type == EquipmentType.EVA_SUIT) {
+            	newMap.put(id, new Good(type.getName(), id, GoodCategory.EQUIPMENT));
+            }
+            else
+            	newMap.put(id, new Good(type.getName(), id, GoodCategory.CONTAINER));
         }
         return newMap;
     }

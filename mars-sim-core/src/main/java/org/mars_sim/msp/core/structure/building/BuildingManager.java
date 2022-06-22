@@ -941,7 +941,7 @@ public class BuildingManager implements Serializable {
 			manager = s.getBuildingManager();
 		}
 		
-		final FunctionType function = robot.getRobotType().getDefaultFunction();
+		final FunctionType function = FunctionType.getDefaultFunction(robot.getRobotType());
 
 		final List<Building> functionBuildings = manager.getBuildings(function);
 

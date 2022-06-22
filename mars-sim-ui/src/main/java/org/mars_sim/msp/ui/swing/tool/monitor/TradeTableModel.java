@@ -45,7 +45,7 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 
 	private static final String TRADE_GOODS = "Trade Goods";
 	
-	private static final String GOOD_COL = "Good at ";
+	private static final String GOOD_COL = "Good - ";
 	private static final String CATEGORY_COL = "Category";
 	private static final String TYPE_COL = "Type";
 
@@ -54,8 +54,8 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 	private static final String QUANTITY_COL = "Quantity";
 	private static final String MASS_COL = "Tot Mass [kg]";
 	private static final String VALUE_COL = "Value";
-	private static final String PRICE_COL = "Price [M$]";
-	private static final String COST_COL = "Cost [M$]";
+	private static final String PRICE_COL = "Price [$]";
+	private static final String COST_COL = "Cost [$]";
 	
 	private static final String ONE_SPACE = " ";
 
@@ -172,9 +172,9 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 			else if (r == 4)
 				return VALUE_COL;
 			else if (r == 5)
-				return PRICE_COL;
-			else
 				return COST_COL;
+			else
+				return PRICE_COL;
 		}
 	}
 
@@ -227,9 +227,9 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 			else if (r == 4)
 				return settlements.get(0).getGoodsManager().getGoodValuePerItem(goodsList.get(rowIndex).getID());
 			else if (r == 5)
-				return Math.round(settlements.get(0).getGoodsManager().getPricePerItem(goodsList.get(rowIndex))*100.0)/100.0;
-			else
 				return Math.round(goodsList.get(rowIndex).getCostOutput()*100.0)/100.0;
+			else
+				return Math.round(settlements.get(0).getGoodsManager().getPricePerItem(goodsList.get(rowIndex))*100.0)/100.0; 
 		}
 	}
 
@@ -275,7 +275,7 @@ implements UnitListener, MonitorModel, UnitManagerListener {
     	
     	if (id < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
       		// For Amount Resource
-    		return Math.round(settlement.getAmountResourceStored(id) * 1.0)/1.0;
+    		return Math.round(settlement.getAmountResourceStored(id) * 100.0)/100.0;
     	}
     	else if (id < ResourceUtil.FIRST_VEHICLE_RESOURCE_ID) {
     		// For Item Resource

@@ -280,7 +280,6 @@ class DeliveryGoodsPanel extends WizardPanel {
 	 * @return true if enough containers
 	 * @throws Exception if error checking containers.
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private boolean hasEnoughContainers(Settlement settlement) {
 		boolean result = true;
 

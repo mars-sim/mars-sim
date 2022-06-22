@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * RobotType.java
- * @date 2021-12-20
+ * @date 2022-06-21
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.robot;
@@ -14,7 +14,6 @@ import java.util.Set;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.resource.ResourceUtil;
-import org.mars_sim.msp.core.structure.building.function.FunctionType;
 
 public enum RobotType {
 
@@ -54,8 +53,14 @@ public enum RobotType {
 		return this.name;
 	}
 
+	/**
+	 * Returns the robot type enum.
+	 * 
+	 * @param s
+	 * @return
+	 */
 	public static RobotType valueOfIgnoreCase(String s) {
-		return valueOf(s.toUpperCase().replace(' ', '_'));
+		return valueOf(s.toUpperCase());
 	}
 
 	/**
@@ -70,40 +75,6 @@ public enum RobotType {
 		}
 		Collections.sort(list);
 		return list.toArray(new String[] {});
-	}
-
-	/**
-	 * What is the default Function for a Robot Type.
-	 * Not sure this is the best place for this implementation.
-	 * 
-	 * @return FunctionType
-	 */
-	public FunctionType getDefaultFunction() {
-		switch (this) {
-		case CHEFBOT:
-			return FunctionType.COOKING;
-		
-		case CONSTRUCTIONBOT:
-			return FunctionType.MANUFACTURE;
-			
-		case DELIVERYBOT:
-			return FunctionType.GROUND_VEHICLE_MAINTENANCE;
-			
-		case GARDENBOT:
-			return FunctionType.FARMING;
-			
-		case MAKERBOT:
-			return FunctionType.MANUFACTURE;
-			
-		case MEDICBOT:
-			return FunctionType.MEDICAL_CARE;
-			
-		case REPAIRBOT:
-			return FunctionType.LIFE_SUPPORT;
-			
-		default:
-			return FunctionType.ROBOTIC_STATION;
-		}
 	}
 	
 	/**

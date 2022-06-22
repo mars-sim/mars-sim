@@ -675,7 +675,7 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="small semiconductor wafer" type="electronic" mass="1"/>
+	<part name="semiconductor wafer" type="electronic" mass="1"/>
 
 	<part name="laser sintering 3d printer" type="electronic" mass="50.0">
 		<maintenance-entity-list>

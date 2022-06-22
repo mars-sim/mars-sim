@@ -29,8 +29,9 @@ extends TableTab
 implements UnitManagerListener {
 
 	/** The minimum number of decimal places to be displayed. */
-	private static final int NUM_DIGITS = 2;
-
+	private static final int TWO_DIGITS = 2;
+	private static final int THREE_DIGITS = 3;
+	
 	/**
 	 * constructor.
 	 * 
@@ -51,10 +52,12 @@ implements UnitManagerListener {
 			if (i >= init) {
 				int col = i - init;
 				int c = col % numCols;
-				if (c == 2 || c > 4) // 2, 5, 6
+				if (c == 2) // 2
 					m.getColumn(i).setCellRenderer(NumberRenderer.getIntegerRenderer());
+//				else if (c > 4) // 5, 6
+//					m.getColumn(i).setCellRenderer(new NumberCellRenderer(THREE_DIGITS, true));
 				else // 0, 1, 3, 4
-					m.getColumn(i).setCellRenderer(new NumberCellRenderer(NUM_DIGITS, true));
+					m.getColumn(i).setCellRenderer(new NumberCellRenderer(TWO_DIGITS, true));
 			}
 		}
 

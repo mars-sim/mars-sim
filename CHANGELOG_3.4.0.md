@@ -21,6 +21,7 @@ Copyright (C) 2022 Scott Davis
   <LI>Mission : Restructure and simplify handling of Mission.</LI>
   <LI>Parts : Add garment. </LI>
   <LI>Person : Make a person's carrying capacity to be age-dependent.</LI>
+  <LI>Trading : Compute and relate the cost, profit, and price of a good.</LI>
   <LI>Scenario : Arriving future Settlements are configured from a scenario. Scenarios can be exported and shared. </LI>
   <LI>Social : Remove global relationship graph and simplify codes.</LI>
   <LI>Waste : Split grey/black water & solid waste management resource processes into a separate waste processing function.</LI>
@@ -29,6 +30,7 @@ Copyright (C) 2022 Scott Davis
   <LI>Scenario : Edit and load basic scenarios.</LI>
   <LI>Authority Editor : Customize sponsors/authorities.</LI> 
   <LI>Location : Show areocentric longitude of Mars (where Mars is at in the solar system) in Time Tool. </LI>  
+  <LI>Economic : Display the cost/profit/price of a good in each settlement for comparison.</LI>
   
 ### FIXES :
   <LI>Consider loading/Unloading edge cases for Trading/Delivery. </LI>

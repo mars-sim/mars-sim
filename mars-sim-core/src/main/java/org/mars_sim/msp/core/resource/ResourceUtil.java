@@ -331,7 +331,6 @@ public class ResourceUtil implements Serializable {
 		return essentialResources;
 	}
 	
-	
 	/**
 	 * Starts ItemResourceUtil
 	 */
