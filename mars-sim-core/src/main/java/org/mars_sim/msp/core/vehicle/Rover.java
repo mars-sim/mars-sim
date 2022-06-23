@@ -210,10 +210,10 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 
 		if (towedVehicle != null) {
 			// if towedVehicle is not null, it means this rover has just hooked up for towing the towedVehicle
-			addStatus(StatusType.TOWING);
+			addSecondaryStatus(StatusType.TOWING);
 		}
 		else {
-			removeStatus(StatusType.TOWING);
+			removeSecondaryStatus(StatusType.TOWING);
 		}
 
 		this.towedVehicle = towedVehicle;
@@ -780,16 +780,6 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 					plugInAirPressure(pulse.getElapsed());
 				}
 			}
-
-			if (getAmountResourceStored(getFuelType()) > GroundVehicle.LEAST_AMOUNT)
-				if (super.haveStatusType(StatusType.OUT_OF_FUEL))
-					super.removeStatus(StatusType.OUT_OF_FUEL);
-
-//			String s = this + " is plugged in.  " +  + airPressure + " kPa  " + temperature + " C";
-//			if (!sCache.equals(s)) {
-//				sCache = s;
-//				logger.info(sCache);
-//			}
 		}
 
 		else if (crewCapacity <= 0) {

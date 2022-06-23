@@ -198,7 +198,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 		super.setVehicle(newVehicle);
 		if (newVehicle.isReservedForMaintenance()) {
 			newVehicle.setReservedForMaintenance(false);
-			newVehicle.removeStatus(StatusType.MAINTENANCE);
+			newVehicle.removeSecondaryStatus(StatusType.MAINTENANCE);
 		}
 	}
 

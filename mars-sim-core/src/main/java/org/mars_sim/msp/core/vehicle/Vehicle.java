@@ -211,6 +211,8 @@ public abstract class Vehicle extends Unit
 	private List<LocalPosition> passengerActivitySpots;
 	/** List of status types. */
 	private Set<StatusType> statusTypes = new HashSet<>();
+	private StatusType primaryStatus;
+
 	/** The vehicle's status log. */
 	private MSolDataLogger<Set<StatusType>> vehicleLog = new MSolDataLogger<>(5);
 
@@ -305,7 +307,8 @@ public abstract class Vehicle extends Unit
 			malfunctionManager.addScopeString(SystemType.ROVER.getName());
 		}
 
-		addStatus(StatusType.PARKED);
+		primaryStatus = StatusType.PARKED;
+		writeLog();
 
 		// Set width and length of vehicle.
 		VehicleConfig vehicleConfig = simulationConfig.getVehicleConfiguration();
@@ -470,7 +473,8 @@ public abstract class Vehicle extends Unit
 		malfunctionManager = new MalfunctionManager(this, getBaseWearLifetime(), maintenanceWorkTime);
 		malfunctionManager.addScopeString(SystemType.VEHICLE.getName());
 
-		addStatus(StatusType.PARKED);
+		primaryStatus = StatusType.PARKED;
+		writeLog();
 
 		// Add to the settlement
 		settlement.addOwnedVehicle(this);
@@ -694,12 +698,57 @@ public abstract class Vehicle extends Unit
 	    return true;
 	}
 
+	public StatusType getPrimaryStatus() {
+		return primaryStatus;
+	}
+	
 	/**
-	 * Adds a status type for this vehicle
+	 * Sets the Primary status of a Vehicle that represents it's situation.
+	 * @param newStatus Must be a primary status value
+	 */
+	public void setPrimaryStatus(StatusType newStatus) {
+		setPrimaryStatus(newStatus, null);
+	}
+
+	/**
+	 * Sets the Primary status of a Vehicle that represents it's situation. Also there is 
+	 * a Secondary status on why the primary has changed.
+	 * @param newStatus Must be a primary status value
+	 * @param secondary Reason for the change; can be null be none given
+	 */
+	public void setPrimaryStatus(StatusType newStatus, StatusType secondary) {
+		if (!newStatus.isPrimary()) {
+			throw new IllegalArgumentException("Status is not Primary " + newStatus.getName());
+		}
+
+		boolean doEvent = false;
+		if (primaryStatus != newStatus) {
+			primaryStatus = newStatus;
+			doEvent = true;
+		}
+
+		// Seconary is optional
+		if ((secondary != null) && !statusTypes.contains(secondary)) {
+			statusTypes.add(secondary);
+			doEvent = true;
+		}
+
+		if (doEvent) {
+			writeLog();
+			fireUnitUpdate(UnitEventType.STATUS_EVENT, newStatus);
+		}
+	}
+
+	/**
+	 * Adds a Secondary status type for this vehicle
 	 *
 	 * @param newStatus the status to be added
 	 */
-	public void addStatus(StatusType newStatus) {
+	public void addSecondaryStatus(StatusType newStatus) {
+		if (newStatus.isPrimary()) {
+			throw new IllegalArgumentException("Status is not Secondary " + newStatus.getName());
+		}
+
 		// Update status based on current situation.
 		if (!statusTypes.contains(newStatus)) {
 			statusTypes.add(newStatus);
@@ -709,11 +758,11 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
-	 * Remove a status type for this vehicle
+	 * Remove a Secondary status type for this vehicle
 	 *
 	 * @param oldStatus the status to be removed
 	 */
-	public void removeStatus(StatusType oldStatus) {
+	public void removeSecondaryStatus(StatusType oldStatus) {
 		// Update status based on current situation.
 		if (statusTypes.contains(oldStatus)) {
 			statusTypes.remove(oldStatus);
@@ -746,9 +795,9 @@ public abstract class Vehicle extends Unit
 	 * Records the status in the vehicle log
 	 */
 	private void writeLog() {
-		if (!statusTypes.isEmpty()) {
-			vehicleLog.addDataPoint(new HashSet<>(statusTypes));
-		}
+		Set<StatusType> entry = new HashSet<>(statusTypes);
+		entry.add(primaryStatus);
+		vehicleLog.addDataPoint(entry);
 	}
 
 	/**
@@ -822,10 +871,10 @@ public abstract class Vehicle extends Unit
 
 		if (towingVehicle != null) {
 			// if towedVehicle is not null, it means this rover has just hooked up for towing the towedVehicle
-			addStatus(StatusType.TOWED);
+			addSecondaryStatus(StatusType.TOWED);
 		}
 		else {
-			removeStatus(StatusType.TOWED);
+			removeSecondaryStatus(StatusType.TOWED);
 		}
 
 		this.towingVehicle = towingVehicle;
@@ -1222,7 +1271,7 @@ public abstract class Vehicle extends Unit
 		if (haveStatusType(StatusType.MAINTENANCE)) {
 			if (malfunctionManager.getEffectiveTimeSinceLastMaintenance() <= 0D) {
 				setReservedForMaintenance(false);
-				removeStatus(StatusType.MAINTENANCE);
+				removeSecondaryStatus(StatusType.MAINTENANCE);
 			}
 		}
 		else { // not under maintenance
@@ -1232,7 +1281,7 @@ public abstract class Vehicle extends Unit
 
 		if (haveStatusType(StatusType.MALFUNCTION)
 			&& malfunctionManager.getMalfunctions().size() == 0) {
-				removeStatus(StatusType.MALFUNCTION);
+				removeSecondaryStatus(StatusType.MALFUNCTION);
 		}
 
 		// Add the location to the trail if outside on a mission

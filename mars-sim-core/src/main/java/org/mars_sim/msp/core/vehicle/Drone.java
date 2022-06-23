@@ -93,11 +93,6 @@ public class Drone extends Flyer implements Serializable {
 					}
 				}
 			}
-
-			if (getAmountResourceStored(getFuelType()) > Flyer.LEAST_AMOUNT) {
-				if (super.haveStatusType(StatusType.OUT_OF_FUEL))
-					super.removeStatus(StatusType.OUT_OF_FUEL);
-			}
 		}
 
 
@@ -120,6 +115,7 @@ public class Drone extends Flyer implements Serializable {
 	 * @return the range of the vehicle (in km)
 	 * @throws Exception if error getting range.
 	 */
+	@Override
 	public double getRange(MissionType missionType) {
 		// Note: multiply by 0.9 would account for the extra distance travelled in between sites
 		double fuelRange = super.getRange(missionType) * FUEL_RANGE_FACTOR;

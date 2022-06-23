@@ -95,7 +95,7 @@ implements Serializable {
 			}
 			
             vehicle.setReservedForMaintenance(true);
-            vehicle.addStatus(StatusType.MAINTENANCE);
+            vehicle.addSecondaryStatus(StatusType.MAINTENANCE);
             // Determine location for maintenance.
             setOutsideLocation(vehicle);
             
@@ -244,7 +244,7 @@ implements Serializable {
 	protected void clearDown() {
         if (vehicle != null) {
         	vehicle.setReservedForMaintenance(false);
-            vehicle.removeStatus(StatusType.MAINTENANCE);
+            vehicle.removeSecondaryStatus(StatusType.MAINTENANCE);
         }
 		super.clearDown();
 	}

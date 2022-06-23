@@ -1020,8 +1020,9 @@ public class BuildingManager implements Serializable {
 		List<Building> garages = getGarages();
 
 		if (garages.isEmpty()) {
-			// This settlement has no garages at all
-			vehicle.removeStatus(StatusType.GARAGED);
+			// This settlement has no garages at all.
+			// SHould this code ever be active ?
+			vehicle.setPrimaryStatus(StatusType.PARKED);
 			return null;
 		}
 
@@ -1088,12 +1089,13 @@ public class BuildingManager implements Serializable {
 
 		if (garages.isEmpty()) {
 			// This settlement has no garages at all
-			vehicle.removeStatus(StatusType.GARAGED);
+			vehicle.setPrimaryStatus(StatusType.PARKED);
 			return false;
 		}
 
 		if (isInGarage(vehicle)) {
-			vehicle.addStatus(StatusType.GARAGED);
+			// Vehicle already on Garage
+			vehicle.setPrimaryStatus(StatusType.GARAGED);
 
 			return true;
 		}
@@ -1110,6 +1112,8 @@ public class BuildingManager implements Serializable {
 
 					logger.log(settlement, vehicle, Level.INFO, 60_000,
  							   "Stowed inside " + garage.getBuilding().getNickName() + ".");
+					vehicle.setPrimaryStatus(StatusType.GARAGED);
+
 					return true;
 				}
 			}

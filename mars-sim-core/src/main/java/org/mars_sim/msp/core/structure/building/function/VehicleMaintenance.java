@@ -116,9 +116,7 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 				}
 			}		
 		
-			vehicle.removeStatus(StatusType.MOVING);
-			vehicle.removeStatus(StatusType.PARKED);
-			vehicle.addStatus(StatusType.GARAGED);
+			vehicle.setPrimaryStatus(StatusType.GARAGED);
 		
 			// Update the vehicle's location state type
 			vehicle.updateLocationStateType(LocationStateType.INSIDE_SETTLEMENT);
@@ -179,8 +177,7 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 					parkedLoc.clearParking();
 				}
 	
-				vehicle.removeStatus(StatusType.GARAGED);
-				vehicle.addStatus(StatusType.PARKED);
+				vehicle.setPrimaryStatus(StatusType.PARKED);
 				
 				// Update the vehicle's location state type
 				vehicle.updateLocationStateType(LocationStateType.WITHIN_SETTLEMENT_VICINITY);

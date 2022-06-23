@@ -78,7 +78,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 			vehicle = getNeedyGroundVehicle(lperson);
 			if (vehicle != null) {
 				vehicle.setReservedForMaintenance(true);
-	            vehicle.addStatus(StatusType.MAINTENANCE);
+	            vehicle.addSecondaryStatus(StatusType.MAINTENANCE);
 			}
 			else
 				endTask();
@@ -91,7 +91,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 			vehicle = getNeedyGroundVehicle(lrobot);
 			if (vehicle != null) {
 				vehicle.setReservedForMaintenance(true);
-	            vehicle.addStatus(StatusType.MAINTENANCE);
+	            vehicle.addSecondaryStatus(StatusType.MAINTENANCE);
 			}
 			else
 				endTask();
@@ -244,7 +244,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 	protected void clearDown() {
 		if (vehicle != null) {
 			vehicle.setReservedForMaintenance(false);
-	        vehicle.removeStatus(StatusType.MAINTENANCE);
+	        vehicle.removeSecondaryStatus(StatusType.MAINTENANCE);
 	        
 			if (vehicle instanceof Crewable) {
 				Crewable crewableVehicle = (Crewable) vehicle;

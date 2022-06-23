@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
@@ -176,7 +177,6 @@ public class LoadingController implements Serializable {
 
 		// Temporarily remove rover from settlement so that inventory doesn't get mixed
 		// in.
-//		Inventory sInv = settlement.getInventory();
 		boolean vehicleInSettlement = false;
 		if (settlement.containsParkedVehicle(vehicle)) {
 			vehicleInSettlement = true;
@@ -212,6 +212,8 @@ public class LoadingController implements Serializable {
 		// use load amount (that means load couldn't complete it
 		boolean completed = isCompleted();
 		if (completed) {
+			// Can remove assume fuel is reloaded
+			vehicle.removeSecondaryStatus(StatusType.OUT_OF_FUEL);
 			logger.fine(vehicle, "Loading completed by " + worker.getName());
 		}
 		return (amountLoading > 0D) || completed;

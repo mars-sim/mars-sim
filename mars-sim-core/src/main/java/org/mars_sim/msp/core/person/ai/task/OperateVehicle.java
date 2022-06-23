@@ -344,11 +344,9 @@ public abstract class OperateVehicle extends Task implements Serializable {
         return time - timeUsed;
 	}
 	
-	private void turnOnBeacon() {
+	private void turnOnBeaconOutOfFuel() {
 		vehicle.setSpeed(0D);
-		vehicle.addStatus(StatusType.OUT_OF_FUEL);
-		vehicle.removeStatus(StatusType.MOVING);
-        vehicle.addStatus(StatusType.PARKED);
+		vehicle.setPrimaryStatus(StatusType.PARKED, StatusType.OUT_OF_FUEL);
         
     	if (!vehicle.isBeaconOn()) {
     		Mission m = vehicle.getMission();
@@ -402,7 +400,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
         		logger.log(vehicle, Level.SEVERE, 20_000, 
     					"Out of fuel. Cannot drive.");
         		// Turn on emergency beacon
-    	    	turnOnBeacon();
+    	    	turnOnBeaconOutOfFuel();
             	
             	endTask();
             	return time;
@@ -412,7 +410,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
         		logger.log(vehicle, Level.SEVERE, 20_000, 
     					"Out of fuel oxidizer. Cannot drive.");
         		// Turn on emergency beacon
-    	    	turnOnBeacon();
+    	    	turnOnBeaconOutOfFuel();
             	
             	endTask();
             	return time;
@@ -465,13 +463,8 @@ public abstract class OperateVehicle extends Task implements Serializable {
             fuelUsed = calculateFuelUsed(distanceTraveled, hrsTime);
 		    
             // Update vehicle status
-        	if (!vehicle.haveStatusType(StatusType.MOVING))
-        		vehicle.addStatus(StatusType.MOVING);
-        	if (vehicle.haveStatusType(StatusType.OUT_OF_FUEL))
-        		vehicle.removeStatus(StatusType.OUT_OF_FUEL);
-            if (vehicle.haveStatusType(StatusType.PARKED))
-            	vehicle.removeStatus(StatusType.PARKED);
-            
+        	vehicle.setPrimaryStatus(StatusType.MOVING);
+
             // Determine new position.
             vehicle.setCoordinates(vehicle.getCoordinates().getNewLocation(vehicle.getDirection(), distanceTraveled));
             // Use up all of the available time
@@ -497,8 +490,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
             // Determine new position.
             vehicle.setCoordinates(vehicle.getCoordinates().getNewLocation(vehicle.getDirection(), distanceTraveled));
   
-        	if (!vehicle.haveStatusType(StatusType.MOVING))
-        		vehicle.addStatus(StatusType.MOVING);
+        	vehicle.setPrimaryStatus(StatusType.MOVING);
         	
         	result = time - distanceTraveled / v / MarsClock.MILLISOLS_PER_HOUR;
         }
@@ -530,12 +522,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
 		vehicle.setOperator(null);
 	   
 		// Update vehicle status
-		if (!vehicle.haveStatusType(StatusType.PARKED))
-			vehicle.addStatus(StatusType.PARKED);
-		if (vehicle.haveStatusType(StatusType.MOVING))
-			vehicle.removeStatus(StatusType.MOVING);
-		if (vehicle.haveStatusType(StatusType.OUT_OF_FUEL))
-			vehicle.removeStatus(StatusType.OUT_OF_FUEL);
+		vehicle.setPrimaryStatus(StatusType.PARKED);
 
 		updateVehicleElevationAltitude();
 	}	

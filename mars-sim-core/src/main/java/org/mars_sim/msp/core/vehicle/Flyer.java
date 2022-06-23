@@ -63,7 +63,7 @@ public abstract class Flyer extends Vehicle implements Serializable {
 	 * @param settlement          settlement the airborne vehicle is parked at
 	 * @param maintenanceWorkTime the work time required for maintenance (millisols)
 	 */
-	public Flyer(String name, String description, Settlement settlement, double maintenanceWorkTime) {
+	protected Flyer(String name, String description, Settlement settlement, double maintenanceWorkTime) {
 		// use Vehicle constructor
 		super(name, description, settlement, maintenanceWorkTime);
 	}
@@ -234,6 +234,7 @@ public abstract class Flyer extends Vehicle implements Serializable {
 	 * @param fuelConsumed
 	 * @return true if it has enough fuel
 	 */
+/* 
 	protected boolean hasEnoughFuel(double fuelConsumed) {
 		Vehicle v = getVehicle();
         int fuelType = v.getFuelType();
@@ -242,7 +243,7 @@ public abstract class Flyer extends Vehicle implements Serializable {
     		double remainingFuel = v.getAmountResourceStored(fuelType);
 //	
     		if (remainingFuel < LEAST_AMOUNT) {
-    			v.addStatus(StatusType.OUT_OF_FUEL);
+    			v.addSecondaryStatus(StatusType.OUT_OF_FUEL);
     			return false;
     		}
     			
@@ -259,10 +260,5 @@ public abstract class Flyer extends Vehicle implements Serializable {
 	    	return false;
 	    }
 	}
-	
-	/**
-	 * Prepare object for garbage collection.
-	 */
-	public void destroy() {
-	}
+	*/
 }
