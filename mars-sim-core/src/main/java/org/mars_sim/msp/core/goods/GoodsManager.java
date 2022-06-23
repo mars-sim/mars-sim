@@ -585,8 +585,9 @@ public class GoodsManager implements Serializable, Temporal {
 				totalDemand = .899 * average + .1 * projected + .01 * trade ;
 			}
 			else {
+				// Intentionally loses .01% 
 				// Allows only very small fluctuations of demand as possible
-				totalDemand = .9999 * previous + .00005 * projected + .00005 * trade ; 
+				totalDemand = .9998 * previous + .00005 * projected + .00005 * trade ; 
 			}
 
 			if (totalDemand < MIN_DEMAND)
@@ -620,12 +621,12 @@ public class GoodsManager implements Serializable, Temporal {
 			// Calculate the value point
 			value = totalDemand / totalSupply;
 
-			// Check if it surpass the max VP
+			// Check if it surpasses MAX_VP
 			if (value > MAX_VP) {
 				// Update deflationIndexMap for other resources of the same category
 				value = updateDeflationMap(id, value, resourceGood.getCategory(), true);
 			}
-			// Check if it falls below 1
+			// Check if it falls below MIN_VP
 			else if (value < MIN_VP) {
 				// Update deflationIndexMap for other resources of the same category
 				value = updateDeflationMap(id, value, resourceGood.getCategory(), false);
@@ -675,6 +676,9 @@ public class GoodsManager implements Serializable, Temporal {
 
 			if (newAve0 > MAX_FINAL_VP)
 				newAve0 = MAX_FINAL_VP;
+			
+			if (newAve0 < MIN_VP)
+				newAve0 = MIN_VP;
 		}
 
 		good.setAverageGoodValue(newAve0);
@@ -2367,7 +2371,7 @@ public class GoodsManager implements Serializable, Temporal {
 
 				else {
 					// Intentionally lose 1% of its value
-					totalDemand = .94 * previous + .01 * repair + .01 * average + .01 * projected + .01 * trade;
+					totalDemand = .986 * previous + .001 * repair + .001 * average + .001 * projected + .001 * trade;
 				}
 
 				if (totalDemand < MIN_DEMAND)
@@ -2413,6 +2417,7 @@ public class GoodsManager implements Serializable, Temporal {
 				value = checkDeflation(id, value);
 				// Adjust the value to the average value
 				value = tuneToAverageValue(resourceGood, value);
+						
 				// Save the value point
 				goodsValues.put(id, value);
 			}
@@ -3012,10 +3017,16 @@ public class GoodsManager implements Serializable, Temporal {
 			}
 
 			else {
-				// Intentionally lose 10% of its value
-				totalDemand = .75 * previous + .1 * average + .05 * trade;
+				// Intentionally lose 1% of its value
+				totalDemand = .98 * previous + .005 * average + .005 * trade;
 			}
 
+			if (totalDemand > MAX_DEMAND)
+				totalDemand = MAX_DEMAND;
+			
+			if (totalDemand < MIN_DEMAND)
+				totalDemand = MIN_DEMAND;
+			
 			equipmentDemandCache.put(id, totalDemand);
 
 			value = totalDemand / averageSupply;
@@ -3035,6 +3046,8 @@ public class GoodsManager implements Serializable, Temporal {
 			value = checkDeflation(id, value);
 			// Adjust the value to the average value
 			value = tuneToAverageValue(equipmentGood, value);
+			
+	
 			// Save the value point
 			goodsValues.put(id, value);
 
@@ -3253,10 +3266,16 @@ public class GoodsManager implements Serializable, Temporal {
 			}
 
 			else {
-				// Intentionally lose 10% of its value
-				totalDemand = .75 * previous + .05 * average + .05 * projected + .05 * tradeValue;
+				// Intentionally lose 1% of its value
+				totalDemand = .98 * previous + .003 * average + .003 * projected + .003 * tradeValue;
 			}
 
+			if (totalDemand > MAX_DEMAND)
+				totalDemand = MAX_DEMAND;
+			
+			if (totalDemand < MIN_DEMAND)
+				totalDemand = MIN_DEMAND;
+					
 			vehicleDemandCache.put(id, totalDemand);
 
 			value = (totalDemand) / averageSupply;
