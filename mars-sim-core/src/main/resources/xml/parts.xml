@@ -76,30 +76,6 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="electrical wire" type="electrical" mass=".1">
-		<maintenance-entity-list>
-			<entity name="building" probability="5" max-number="6" />
-			<entity name="vehicle" probability="5" max-number="6" />
-			<entity name="power generation" probability="5" max-number="4" />
-			<entity name="manufacture" probability="5" max-number="4" />
-			<entity name="settlement" probability="5" max-number="8" />
-		</maintenance-entity-list>
-	</part>
-
-	<part name="power cable" type="electrical" mass="1">
-		<maintenance-entity-list>
-			<entity name="power generation" probability="1" max-number="2" />
-		</maintenance-entity-list>
-	</part>
-
-	<part name="wire connector" type="electrical" mass=".005">
-		<maintenance-entity-list>
-			<entity name="vehicle" probability="5" max-number="6" />
-			<entity name="power generation" probability="5" max-number="4" />
-			<entity name="manufacture" probability="5" max-number="4" />
-		</maintenance-entity-list>
-	</part>
-
 	<part name="plastic tubing" type="utility" mass=".1">
 		<maintenance-entity-list>
 			<entity name="rover" probability="5" max-number="4" />
@@ -163,7 +139,6 @@
 		<description>A density of 7.8 g/cm3. 1m x 1m x 1mm sheet of steel</description>
 	</part>
 
-
 	<part name="iron sheet" type="metalic" mass="7.85" >
 		<description>A density of 7.85 g/cm3. 1m x 1m x 1mm sheet of iron</description>
 	</part>
@@ -177,17 +152,43 @@
 		<description>A density of 8.94 g/cm3. 1m x 1m x 1mm sheet of copper</description>
 	</part>
 
-	<!-- 1kg spool of thin copper wire -->
-	<part name="copper wire" type="electrical" mass="1.0" />
+	<!-- a small spool of thin copper wire -->
+	<part name="copper wire" type="electrical" mass="0.526" />
 
-	<!-- 1kg spool of thick steel wire -->
-	<part name="steel wire" type="electrical" mass="1.0" />
+	<!-- a small spool of thick steel wire -->
+	<part name="steel wire" type="electrical" mass="0.52" />
 
-	<!-- 5kg spool of thick steel cable -->
-	<part name="steel cable" type="electrical" mass="5.0" />
+	<!-- a small spool of thin aluminum wire -->
+	<part name="aluminum wire" type="electrical" mass="0.544" />
 
-	<!-- 1kg spool of thin aluminum wire -->
-	<part name="aluminum wire" type="electrical" mass="1.0" />
+	<!-- a small spool of thin electrical wire -->
+	<part name="electrical wire" type="electrical" mass="0.05">
+		<maintenance-entity-list>
+			<entity name="building" probability="5" max-number="6" />
+			<entity name="vehicle" probability="5" max-number="6" />
+			<entity name="power generation" probability="5" max-number="4" />
+			<entity name="manufacture" probability="5" max-number="4" />
+			<entity name="settlement" probability="5" max-number="8" />
+		</maintenance-entity-list>
+	</part>
+
+	<!-- Composed of 20 electrical wires braided together -->
+	<part name="steel cable" type="electrical" mass="1" />
+
+	<!-- Composed of 20 electrical wires braided together -->
+	<part name="power cable" type="electrical" mass="1">
+		<maintenance-entity-list>
+			<entity name="power generation" probability="1" max-number="2" />
+		</maintenance-entity-list>
+	</part>
+
+	<part name="wire connector" type="electrical" mass=".005">
+		<maintenance-entity-list>
+			<entity name="vehicle" probability="5" max-number="6" />
+			<entity name="power generation" probability="5" max-number="4" />
+			<entity name="manufacture" probability="5" max-number="4" />
+		</maintenance-entity-list>
+	</part>
 
 	<part name="steel pipe" type="metalic" mass="0.882">
 	<description>A density of 7.8 g/cm3. length of 1m. Thickness of 2mm. Diameter of 20mm</description>
@@ -948,7 +949,7 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="optical cable" type="instrument" mass="0.01">
+	<part name="optical cable" type="electronic" mass="0.01">
 		<description>a cable made of optic fiber</description>
 		<maintenance-entity-list>
 			<entity name="communication" probability="2" max-number="2" />

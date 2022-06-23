@@ -3017,8 +3017,8 @@ public class GoodsManager implements Serializable, Temporal {
 			}
 
 			else {
-				// Intentionally lose 1% of its value
-				totalDemand = .98 * previous + .005 * average + .005 * trade;
+				// Intentionally lose 2% of its value
+				totalDemand = .97 * previous + .005 * average + .005 * trade;
 			}
 
 			if (totalDemand > MAX_DEMAND)
@@ -3266,8 +3266,8 @@ public class GoodsManager implements Serializable, Temporal {
 			}
 
 			else {
-				// Intentionally lose 1% of its value
-				totalDemand = .98 * previous + .003 * average + .003 * projected + .003 * tradeValue;
+				// Intentionally lose 2% of its value
+				totalDemand = .97 * previous + .003 * average + .003 * projected + .003 * tradeValue;
 			}
 
 			if (totalDemand > MAX_DEMAND)

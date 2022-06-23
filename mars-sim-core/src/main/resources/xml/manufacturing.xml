@@ -678,7 +678,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<process name="do carbon monoxide iron reduction (large batch)"
-			tech="1" skill="3"
+			tech="1" skill="2"
 			work-time="250"
 			process-time="1000"
 			power-required="1.0">
@@ -711,7 +711,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<process name="do hydrogen iron reduction (large batch)"
-			tech="1" skill="3"
+			tech="1" skill="2"
 			work-time="250"
 			process-time="1000"
 			power-required="1">
@@ -728,10 +728,10 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces 5x 5kg iron ingots. -->
-	<process name="cast iron ingot" tech="2" skill="2" work-time="50" process-time="200"
+	<process name="cast iron ingot" tech="2" skill="1" work-time="50" process-time="200"
 			power-required=".2">
 		<inputs>
-			<resource name="iron powder" amount="25.0" />
+			<resource name="iron powder" amount="35.0" />
 		</inputs>
 		<outputs>
 			<part name="iron ingot" number="5" />
@@ -739,10 +739,10 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces 50x 5kg iron ingots. -->
-	<process name="cast iron ingot (large batch)" tech="2" skill="4" work-time="150" process-time="600"
+	<process name="cast iron ingot (large batch)" tech="2" skill="2" work-time="150" process-time="600"
 			power-required="1.0">
 		<inputs>
-			<resource name="iron powder" amount="250.0" />
+			<resource name="iron powder" amount="350.0" />
 		</inputs>
 		<outputs>
 			<part name="iron ingot" number="50" />
@@ -753,7 +753,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="make iron sheet" tech="2" skill="2" work-time="50" process-time="200"
 			power-required=".5">
 		<inputs>
-			<resource name="iron powder" amount="16" />
+			<resource name="iron powder" amount="15.7" />
 		</inputs>
 		<outputs>
 			<part name="iron sheet" number="2" />
@@ -761,13 +761,14 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces 1m x 1m x 1mm (7.85kg) sheet of iron. -->
-	<process name="do iron sheet rolling" tech="2" skill="2" work-time="50" process-time="200"
+	<process name="roll iron sheet" tech="2" skill="2" work-time="50" process-time="200"
 			power-required=".5">
 		<inputs>
 			<part name="iron ingot" number="8" />
 		</inputs>
 		<outputs>
-			<part name="iron sheet" number="5" />
+			<resource name="iron powder" amount="1.05" />		
+			<part name="iron sheet" number="7" />	
 		</outputs>
 	</process>
 
@@ -817,29 +818,18 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces 1m x 1m x 1mm (2.72kg) sheet of aluminum. -->
-	<process name="do aluminum sheet rolling" tech="1" skill="1" work-time="50" process-time="20"
+	<process name="roll aluminum sheet" tech="1" skill="1" work-time="50" process-time="20"
 			power-required=".4">
 		<inputs>
 			<part name="aluminum ingot" number="9" />
 		</inputs>
 		<outputs>
-			<resource name="aluminum oxide" amount="0.8" />
+			<resource name="aluminum oxide" amount="0.84" />
 			<part name="aluminum sheet" number="3" />
 		</outputs>
 	</process>
 
-	<!-- Produces 1kg spool of thin aluminum wire. -->
-	<process name="do aluminum wire drawing" tech="1" skill="1" work-time="50" process-time="20"
-			power-required=".3">
-		<inputs>
-			<part name="aluminum sheet" number="1" />
-		</inputs>
-		<outputs>
-			<part name="aluminum wire" number="5" />
-		</outputs>
-	</process>
-
-	<process name="do pyrolyze reaction" tech="1" skill="1" work-time="25" process-time="200"
+	<process name="do pyrolyze reaction" tech="1" skill="1" work-time="25" process-time="20"
 			power-required=".1">
 		<description>CH&lt;sub&gt;4&lt;/sub&gt; -> C + 2H&lt;sub&gt;2&lt;/sub&gt;</description>
 		<inputs>
@@ -851,7 +841,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="do advanced pyrolyze reaction" tech="2" skill="2" work-time="50" process-time="400"
+	<process name="do advanced pyrolyze reaction" tech="2" skill="2" work-time="50" process-time="40"
 			power-required=".5">
 		<description>CH&lt;sub&gt;4&lt;/sub&gt; -> C + 2H&lt;sub&gt;2&lt;/sub&gt;</description>
 		<inputs>
@@ -906,30 +896,30 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="steel ingot" number="8" />
 		</inputs>
 		<outputs>
-			<resource name="iron powder" amount="1" />
+			<resource name="iron powder" amount="1.0" />
 			<part name="steel sheet" number="5" />
 		</outputs>
 	</process>
 
-	<!-- Produces 1kg spool of thick steel wire. -->
+	<!-- Produces 0.05 kg spool of thick steel wire from 5 kg steel ingot. -->
 	<process name="draw steel wire" tech="0" skill="0" work-time="50" process-time="20"
 			power-required=".2">
 		<inputs>
 			<part name="steel ingot" number="1" />
 		</inputs>
 		<outputs>
-			<part name="steel wire" number="5" />
+			<part name="steel wire" number="100" />
 		</outputs>
 	</process>
 
-	<!-- Produces 5kg of steel cable. -->
+	<!-- Produces 1kg of steel cable from 5kg steel ingot. -->
 	<process name="do steel cable winding" tech="0" skill="0" work-time="50" process-time="20"
 			power-required="0.1">
 		<inputs>
-			<part name="steel ingot" number="5" />
+			<part name="steel ingot" number="1" />
 		</inputs>
 		<outputs>
-			<part name="steel cable" number="1" />
+			<part name="steel cable" number="5" />
 		</outputs>
 	</process>
 
@@ -1428,39 +1418,6 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		</inputs>
 		<outputs>
 			<part name="timing belt" number="5" />
-		</outputs>
-	</process>
-
-	<process name="make electrical wire" tech="4" skill="3" work-time="200" process-time="400"
-			power-required=".1">
-		<inputs>
-			<resource name="styrene" amount="1.0" />
-			<part name="aluminum wire" number="1" />
-		</inputs>
-		<outputs>
-			<part name="electrical wire" number="10" />
-		</outputs>
-	</process>
-
-	<process name="make power cable" tech="4" skill="3" work-time="200" process-time="400"
-			power-required=".1">
-		<inputs>
-			<resource name="styrene" amount="1.0" />
-			<part name="aluminum wire" number="1" />
-		</inputs>
-		<outputs>
-			<part name="power cable" number="1" />
-		</outputs>
-	</process>
-
-	<process name="make wire connector" tech="4" skill="3" work-time="200" process-time="400"
-			power-required=".1">
-		<inputs>
-			<resource name="styrene" amount=".5" />
-			<part name="aluminum wire" number="1" />
-		</inputs>
-		<outputs>
-			<part name="wire connector" number="15" />
 		</outputs>
 	</process>
 
@@ -2461,8 +2418,52 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		</outputs>
 	</process>
 
+	<!-- Produces a small spool of thin aluminum wire. -->
+	<process name="draw aluminum wire" tech="1" skill="1" work-time="50" process-time="20"
+			power-required=".3">
+		<inputs>
+			<part name="aluminum sheet" number="1" />
+		</inputs>
+		<outputs>
+			<part name="aluminum wire" number="5" />
+		</outputs>
+	</process>
+	
+	<process name="make electrical wire" tech="2" skill="1" work-time="200" process-time="400"
+			power-required=".1">
+		<inputs>
+			<resource name="styrene" amount="1.0" />
+			<part name="aluminum wire" number="1" />
+		</inputs>
+		<outputs>
+			<part name="electrical wire" number="10" />
+		</outputs>
+	</process>
+
+	<process name="make aluminum power cable" tech="2" skill="1" work-time="200" process-time="400"
+			power-required=".1">
+		<inputs>
+			<resource name="styrene" amount="1.0" />
+			<part name="aluminum wire" number="20" />
+		</inputs>
+		<outputs>
+			<part name="power cable" number="1" />
+		</outputs>
+	</process>
+
+	<process name="make wire connector" tech="2" skill="1" work-time="200" process-time="400"
+			power-required=".1">
+		<inputs>
+			<resource name="styrene" amount=".5" />
+			<part name="aluminum wire" number="1" />
+		</inputs>
+		<outputs>
+			<part name="wire connector" number="15" />
+		</outputs>
+	</process>
+
 	<!-- Produces 1m x 2m x 1mm (5kg) sheet of copper. -->
-	<process name="make copper sheet" tech="1" skill="1" work-time="200" process-time="20"
+	<process name="make copper sheet" tech="2" skill="1" work-time="200" process-time="20"
 			power-required=".5">
 		<inputs>
 			<resource name="copper" amount="8.94" />
@@ -2473,13 +2474,13 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 	</process>
 
 	<!-- Produces 1kg spool of thin copper wire. -->
-	<process name="draw copper wire" tech="1" skill="1" work-time="300" process-time="20"
+	<process name="draw copper wire" tech="1" skill="0" work-time="300" process-time="20"
 			power-required="2.0">
 		<inputs>
 			<part name="copper sheet" number="1" />
 		</inputs>
 		<outputs>
-			<part name="copper wire" number="8" />
+			<part name="copper wire" number="17" />
 		</outputs>
 	</process>
 
@@ -2498,7 +2499,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			power-required=".5">
 		<inputs>
 			<resource name="styrene" amount="1.0" />
-			<part name="copper wire" number="1" />
+			<part name="copper wire" number="20" />
 		</inputs>
 		<outputs>
 			<part name="power cable" number="1" />
@@ -3025,7 +3026,9 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<resource name="potash lye" amount="7.0" />
 			<resource name="polyethylene" amount="4.0" />
 			<part name="iron sheet" number="1" />
+			<part name="logic board" number="1" />
 			<part name="wire connector" number="6" />
+			<part name="electrical wire" number="6" />
 		</inputs>
 		<outputs>
 			<part name="eva battery" number="3" />
@@ -3116,7 +3119,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 	</process>
 
 	<!-- Electrolyzing water into oxygen and hydrogen. -->
-	<process name="do water electrolysis" tech="1" skill="1" work-time="10" process-time="100" power-required="2.0">
+	<process name="do water electrolysis" tech="0" skill="0" work-time="10" process-time="10" power-required="2.0">
 		<inputs>
 			<resource name="water" amount="10.0" />
 		</inputs>
@@ -3127,7 +3130,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 	</process>
 
 	<!-- Sabatier process converting co2 and hydrogen into water and methane. -->
-	<process name="do sabatier processing" tech="1" skill="1" work-time="10" process-time="100" power-required="2.0">
+	<process name="do sabatier processing" tech="1" skill="0" work-time="10" process-time="10" power-required="2.0">
 		<inputs>
 			<resource name="carbon dioxide" amount="10.0" />
 			<resource name="hydrogen" amount="1.7" />
@@ -3139,8 +3142,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 	</process>
 
 	<!-- Reducing carbon dioxide in oxygen and carbon monoxide. -->
-	<process name="do CO2 reduction" tech="2" skill="2" work-time="10" process-time="100"
-	power-required="1.0">
+	<process name="do CO2 reduction" tech="1" skill="0" work-time="10" process-time="10" power-required="1.0">
 		<inputs>
 			<resource name="carbon dioxide" amount="10.0" />
 		</inputs>

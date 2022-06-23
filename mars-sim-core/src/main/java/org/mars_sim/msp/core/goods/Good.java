@@ -72,7 +72,8 @@ public class Good implements Serializable, Comparable<Good> {
 	private static final double BOARD_VALUE = 1;
 	private static final double CPU_VALUE = 10;
 	private static final double WAFER_VALUE = 50;
-	private static final double BATTERY_VALUE = 5;
+	private static final double BATTERY_VALUE = 2;
+	private static final double INSTRUMENT_VALUE = 1;
 	private static final double WIRE_VALUE = .005;
 	private static final double ELECTRONIC_VALUE = .1;
 	
@@ -329,7 +330,7 @@ public class Good implements Serializable, Comparable<Good> {
 			else if (name.contains("battery"))
 				result += BATTERY_VALUE;
 			else if (name.contains("instrument"))
-				result += BATTERY_VALUE;
+				result += INSTRUMENT_VALUE;
 			else if (name.contains("wire"))
 				result += WIRE_VALUE;
 
