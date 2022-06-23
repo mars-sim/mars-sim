@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.vehicle;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -68,7 +67,6 @@ import org.mars_sim.msp.core.structure.building.function.SystemType;
 import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.Temporal;
-import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
@@ -78,7 +76,7 @@ import org.mars_sim.msp.core.tool.RandomUtil;
  */
 public abstract class Vehicle extends Unit
 		implements Malfunctionable, Salvagable, Temporal, Indoor,
-		LocalBoundedObject, Serializable, EquipmentOwner, ItemHolder {
+		LocalBoundedObject, EquipmentOwner, ItemHolder {
 
 	private static final long serialVersionUID = 1L;
 
@@ -656,22 +654,18 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
-	 * Returns a list of vehicle's status types
-	 *
-	 * @return the vehicle's status types
-	 */
-	public Set<StatusType> getStatusTypes() {
-		return statusTypes;
-	}
-
-	/**
 	 * Prints a string list of status types.
 	 *
 	 * @return
 	 */
 	public String printStatusTypes() {
-		String s = statusTypes.toString();
-		return Conversion.capitalize(s.substring(1 , s.length() - 1).toLowerCase());
+		StringBuilder builder = new StringBuilder();
+		builder.append(primaryStatus.getName());
+
+		for (StatusType st : statusTypes) {
+			builder.append(", ").append(st.getName());
+		}
+		return builder.toString();
 	}
 
 	/**
@@ -701,7 +695,7 @@ public abstract class Vehicle extends Unit
 	public StatusType getPrimaryStatus() {
 		return primaryStatus;
 	}
-	
+
 	/**
 	 * Sets the Primary status of a Vehicle that represents it's situation.
 	 * @param newStatus Must be a primary status value
@@ -1253,13 +1247,12 @@ public abstract class Vehicle extends Unit
 //		// Checks status.
 //		checkStatus();
 
-		if (haveStatusType(StatusType.MOVING)) {
+		if (primaryStatus == StatusType.MOVING) {
 			// Assume the wear and tear factor is at 100% by being used in a mission
 			malfunctionManager.activeTimePassing(pulse.getElapsed());
 		}
 
 		// If it's back at a settlement and is NOT in a garage
-//		else if (getSettlement() != null && !isVehicleInAGarage()) {
 		else if (LocationStateType.WITHIN_SETTLEMENT_VICINITY == getLocationStateType()) {
 			if (!haveStatusType(StatusType.MAINTENANCE)) {
 				// Assume the wear and tear factor is 75% less by being exposed outdoor
@@ -1535,23 +1528,6 @@ public abstract class Vehicle extends Unit
         return getLocationStateType() == LocationStateType.WITHIN_SETTLEMENT_VICINITY;
 	}
 
-	/**
-	 * Is the vehicle parked
-	 *
-	 * @return
-	 */
-	public boolean isParked() {
-		if (haveStatusType(StatusType.MOVING)) {
-			return false;
-		} else if (haveStatusType(StatusType.TOWED)) {
-			Vehicle towingVehicle = getTowingVehicle();
-            return towingVehicle == null
-                    || (!towingVehicle.haveStatusType(StatusType.MOVING)
-                    && !towingVehicle.haveStatusType(StatusType.TOWING));
-		}
-
-		return true;
-	}
 
 	@Override
 	public Building getBuildingLocation() {
@@ -1670,16 +1646,7 @@ public abstract class Vehicle extends Unit
 
 		if (person.isInVehicle()) {
 			Vehicle vehicle = person.getVehicle();
-			if (vehicle.haveStatusType(StatusType.MOVING)) {
-				result = true;
-			} else if (vehicle.haveStatusType(StatusType.TOWED)) {
-				Vehicle towingVehicle = vehicle.getTowingVehicle();
-				if (towingVehicle != null
-						&& (towingVehicle.haveStatusType(StatusType.MOVING)
-						|| towingVehicle.haveStatusType(StatusType.TOWING))) {
-					result = true;
-				}
-			}
+			result = vehicle.getPrimaryStatus() == StatusType.MOVING;
 		}
 
 		return result;

@@ -494,7 +494,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 		if (isInSettlement())
 			return true;
 
-		if (haveStatusType(StatusType.GARAGED))
+		if (getPrimaryStatus() == StatusType.GARAGED)
 			return true;
 
         return haveStatusType(StatusType.TOWED);
@@ -639,7 +639,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 				// TODO: need to model the power usage
 
 				double p = 0;
-				if (haveStatusType(StatusType.GARAGED))
+				if (getPrimaryStatus() == StatusType.GARAGED)
 					p = getGarage().getCurrentTemperature();
 				else
 					p = getSettlement().getTemperature();// * (malfunctionManager.getTemperatureModifier() / 100D);
@@ -687,10 +687,10 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 				// TODO: need to model the power usage
 
 				double p = 0;
-				if (haveStatusType(StatusType.GARAGED))
+				if (getPrimaryStatus() == StatusType.GARAGED)
 					p = getGarage().getCurrentAirPressure();
 				else
-					p = getSettlement().getAirPressure();// * (malfunctionManager.getAirPressureModifier() / 100D);
+					p = getSettlement().getAirPressure();
 
 				double delta = airPressure - p;
 				if (delta > 5)

@@ -58,10 +58,11 @@ public class RoverDisplayInfoBean extends VehicleDisplayInfoBean {
 	 */
 	public String getSound(Unit unit) {
 		Vehicle rover = (Vehicle) unit;
-    	if (rover.haveStatusType(StatusType.MOVING)) return SoundConstants.SND_ROVER_MOVING;
+		StatusType primStatus = rover.getPrimaryStatus();
+    	if (primStatus == StatusType.MOVING) return SoundConstants.SND_ROVER_MOVING;
     	else if (rover.haveStatusType(StatusType.MAINTENANCE)) return SoundConstants.SND_ROVER_MAINTENANCE;
     	else if (rover.haveStatusType(StatusType.MALFUNCTION)) return SoundConstants.SND_ROVER_MALFUNCTION;
-    	else if (rover.haveStatusType(StatusType.GARAGED) || rover.haveStatusType(StatusType.PARKED)) return SoundConstants.SND_ROVER_PARKED;
+    	else if ((primStatus == StatusType.GARAGED) || (primStatus == StatusType.PARKED)) return SoundConstants.SND_ROVER_PARKED;
     	else return "";
 	}
 }

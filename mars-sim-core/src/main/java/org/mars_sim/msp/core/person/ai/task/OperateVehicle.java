@@ -462,38 +462,37 @@ public abstract class OperateVehicle extends Task implements Serializable {
             // Calculate the fuel needed
             fuelUsed = calculateFuelUsed(distanceTraveled, hrsTime);
 		    
-            // Update vehicle status
-        	vehicle.setPrimaryStatus(StatusType.MOVING);
+           
+			// Case 3 : fuel is less than needed. Just used up the last drop of fuel 
+			if (fuelUsed > remainingFuel) {
+				// Limit the fuel to be used
+				fuelUsed = remainingFuel;
+				
+				logger.log(vehicle, Level.WARNING,  20_000L, "Case 2: Just used up the last drop of fuel.");
+				
+				// Recompute the distance it could travel
+				distanceTraveled = vehicle.getBaseFuelConsumption() * fuelUsed * Vehicle.METHANE_SPECIFIC_ENERGY;
+				
+				// Slow down the vehicle            
+				v = distanceTraveled / hrsTime;
+				
+				// Adjust the speed
+				vehicle.setSpeed(v);
+				
+				result = time - distanceTraveled / v / MarsClock.MILLISOLS_PER_HOUR;
+        	}
+			else {
+            	// Use up all of the available time
+            	result = 0; 
+			}
+ 			
+			// Update vehicle status
+ 			vehicle.setPrimaryStatus(StatusType.MOVING);
 
             // Determine new position.
             vehicle.setCoordinates(vehicle.getCoordinates().getNewLocation(vehicle.getDirection(), distanceTraveled));
-            // Use up all of the available time
-            result = 0; 
-        }
-	    
-        // Case 3 : fuel is less than needed. Just used up the last drop of fuel 
-        if (fuelUsed > remainingFuel) {
-        	// Limit the fuel to be used
-        	fuelUsed = remainingFuel;
-        	
-            logger.log(vehicle, Level.WARNING,  20_000L, "Case 2: Just used up the last drop of fuel.");
-            
-            // Recompute the distance it could travel
-            distanceTraveled = vehicle.getBaseFuelConsumption() * fuelUsed * Vehicle.METHANE_SPECIFIC_ENERGY;
-            
-        	// Slow down the vehicle            
-            v = distanceTraveled / hrsTime;
-            
-        	// Adjust the speed
-        	vehicle.setSpeed(v);
 
-            // Determine new position.
-            vehicle.setCoordinates(vehicle.getCoordinates().getNewLocation(vehicle.getDirection(), distanceTraveled));
-  
-        	vehicle.setPrimaryStatus(StatusType.MOVING);
-        	
-        	result = time - distanceTraveled / v / MarsClock.MILLISOLS_PER_HOUR;
-        }
+		}
 
         // Add distance traveled to vehicle's odometer.
         vehicle.addOdometerMileage(distanceTraveled);
@@ -584,7 +583,9 @@ public abstract class OperateVehicle extends Task implements Serializable {
         // Derive the instantaneous fuel economy [in km/kg]
         double iFE = distanceTraveled / fuelUsed;
         vehicle.setIFuelEconomy(iFE);
-        
+        /*
+		 * Expensive output message so hold off using.
+		 *  
         // Derive the instantaneous fuel consumption [in km/kWh]
         double iFC = distanceTraveled / energy;
         
@@ -612,7 +613,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
     	    		+ "iFE: " + Math.round(iFC * 1_000.0)/1_000.0 + " km/kWh   "    
     				+ "aveP: " + Math.round(aveP * 1_000.0)/1_000.0 + KW
     				);
-        
+        */
         return fuelUsed;
     }
 

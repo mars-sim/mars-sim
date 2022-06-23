@@ -94,7 +94,7 @@ public class TerrainDisplayPanel extends JPanel {
 
 		// Find terrain grade.
 		double terrainGrade = 0D;
-		if (vehicle.haveStatusType(StatusType.MOVING))
+		if (vehicle.getPrimaryStatus() == StatusType.MOVING)
 			terrainGrade = vehicle.getTerrainGrade();
 
 		// Determine y difference
