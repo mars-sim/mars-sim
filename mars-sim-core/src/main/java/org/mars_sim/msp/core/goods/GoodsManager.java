@@ -299,8 +299,8 @@ public class GoodsManager implements Serializable, Temporal {
 	private Map<Integer, Double> vehicleSupplyCache = new HashMap<>();
 	private Map<Integer, Double> equipmentSupplyCache = new HashMap<>();
 				
-	private Map<String, Double> vehicleBuyValueCache;
-	private Map<String, Double> vehicleSellValueCache;
+//	private Map<String, Double> vehicleBuyValueCache;
+//	private Map<String, Double> vehicleSellValueCache;
 
 	private Map<Malfunctionable, Map<Integer, Number>> orbitRepairParts = new HashMap<>();
 
@@ -388,8 +388,8 @@ public class GoodsManager implements Serializable, Temporal {
 		}
 
 		// Create vehicle caches.
-		vehicleBuyValueCache = new HashMap<String, Double>();
-		vehicleSellValueCache = new HashMap<String, Double>();
+//		vehicleBuyValueCache = new HashMap<>();
+//		vehicleSellValueCache = new HashMap<>();
 	}
 
 	/**
@@ -3153,33 +3153,36 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @return the value (value points).
 	 */
 	private double determineVehicleGoodValue(Good good, double supply, boolean useCache) {
-		boolean buy = false;
+//		boolean buy = false;
 		String vehicleType = good.getName();
 		
 		int id = good.getID();
 		double previousDemand = getDemandValue(good);
-		
+
 		if (useCache) {
-			if (buy) {
-				if (vehicleBuyValueCache.containsKey(vehicleType)) {
-					return vehicleBuyValueCache.get(vehicleType);
-				} else {
-					return previousDemand / supply; //determineVehicleGoodValue(good, supply, false);
-				}
-			} else {
-				if (vehicleSellValueCache.containsKey(vehicleType)) {
-					return vehicleSellValueCache.get(vehicleType);
-				} else {
-					return previousDemand / supply; //determineVehicleGoodValue(good, supply, false);
-				}
-			}
-		} 	
+			return previousDemand / supply;
+		}
+		
+//		if (useCache) {
+//			if (buy) {
+//				if (vehicleBuyValueCache.containsKey(vehicleType)) {
+//					return vehicleBuyValueCache.get(vehicleType);
+//				} else {
+//					return previousDemand / supply; //determineVehicleGoodValue(good, supply, false);
+//				}
+//			} else {
+//				if (vehicleSellValueCache.containsKey(vehicleType)) {
+//					return vehicleSellValueCache.get(vehicleType);
+//				} else {
+//					return previousDemand / supply; //determineVehicleGoodValue(good, supply, false);
+//				}
+//			}
+//		} 	
 		
 		double value = 0D;
 		double totalDemand = 0;
 		double totalSupply = 0;
 		double trade = 0;
-
 
 		// Needed for loading a saved sim
 		int solElapsed = marsClock.getMissionSol();
@@ -3189,13 +3192,13 @@ public class GoodsManager implements Serializable, Temporal {
 		// Calculate total supply
 		totalSupply = limitMaxMin(getAverageVehicleSupply(getNumberOfVehiclesForSettlement(vehicleType), numSol), MIN_SUPPLY, MAX_SUPPLY);
 		
-		buy = true;
+		vehicleSupplyCache.put(id, totalSupply);
+		
+//		buy = true;
 		
 		double projected = limitMaxMin(determineVehicleProjectedDemand(good, useCache), MIN_PROJ_DEMAND, MAX_PROJ_DEMAND);
 		
 		double average = computeVehiclePartsCost(good);
-		
-		vehicleSupplyCache.put(id, totalSupply);
 		
 		trade = limitMaxMin(determineTradeVehicleValue(good, useCache), MIN_DEMAND, MAX_DEMAND);
 		
@@ -3232,11 +3235,11 @@ public class GoodsManager implements Serializable, Temporal {
 		// Save the value point
 		goodsValues.put(id, value);
 		
-		if (buy) {
-			vehicleBuyValueCache.put(vehicleType, value);
-		} else {
-			vehicleSellValueCache.put(vehicleType, value);
-		}
+//		if (buy) {
+//			vehicleBuyValueCache.put(vehicleType, value);
+//		} else {
+//			vehicleSellValueCache.put(vehicleType, value);
+//		}
 
 		return value;
 	}
@@ -3803,8 +3806,8 @@ public class GoodsManager implements Serializable, Temporal {
 	 */
 	public void prepareForLoadCalculation() {
 		// Clear vehicle buy and sell value caches.
-		vehicleBuyValueCache.clear();
-		vehicleSellValueCache.clear();
+//		vehicleBuyValueCache.clear();
+//		vehicleSellValueCache.clear();
 	}
 
 	/**
@@ -4175,22 +4178,34 @@ public class GoodsManager implements Serializable, Temporal {
 		vehicleDemandCache.clear();
 		vehicleDemandCache = null;
 
-		if (vehicleBuyValueCache != null) {
-			vehicleBuyValueCache.clear();
-			vehicleBuyValueCache = null;
-		}
-
-		if (vehicleSellValueCache != null) {
-			vehicleSellValueCache.clear();
-			vehicleSellValueCache = null;
-		}
+//		if (vehicleBuyValueCache != null) {
+//			vehicleBuyValueCache.clear();
+//			vehicleBuyValueCache = null;
+//		}
+//
+//		if (vehicleSellValueCache != null) {
+//			vehicleSellValueCache.clear();
+//			vehicleSellValueCache = null;
+//		}
 
 		if (partDemandCache != null) {
 			partDemandCache.clear();
 			partDemandCache = null;
 		}
 
-		// Destroy goods list in GoodsUtil.
+		deflationIndexMap = null;
+
+		amountSupplyCache = null;
+		partSupplyCache = null;
+
+		vehicleSupplyCache = null;
+		equipmentSupplyCache = null;
+			
+		orbitRepairParts = null;
+
+		exclusionBuyList = null;
+		buyList = null;
+		
 		GoodsUtil.destroyGoods();
 	}
 }

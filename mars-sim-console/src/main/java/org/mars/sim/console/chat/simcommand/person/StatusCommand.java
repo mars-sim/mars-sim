@@ -57,10 +57,10 @@ public class StatusCommand extends AbstractPersonCommand {
 			buffer.append(death.getCause());
 		}
 		else {
-			buffer.append("At the moment I am ");
+			buffer.append("At the moment, I am ");
 			buffer.append(person.getTaskDescription());
 			buffer.append(System.lineSeparator());
-			buffer.append("Status is ");
+			buffer.append("I am ");
 
 			double p = condition.getPerformanceFactor();
 			double h = condition.getHunger();
@@ -75,6 +75,7 @@ public class StatusCommand extends AbstractPersonCommand {
 			buffer.append(PhysicalCondition.getThirstyStatus(t)).append(", ");
 			buffer.append(PhysicalCondition.getStressStatus(s)).append(" and ");
 			buffer.append(PhysicalCondition.getFatigueStatus(f)).append(".");
+			buffer.append(System.lineSeparator());
 		}
 		return buffer.toString();
 	}

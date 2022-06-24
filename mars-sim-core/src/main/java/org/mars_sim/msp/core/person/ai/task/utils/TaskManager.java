@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * TaskManager.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-06-24
  * @author Scott Davis
  */
 
@@ -351,7 +351,7 @@ public abstract class TaskManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * Ends all sub tasks
+	 * Ends all sub tasks.
 	 */
 	public void endSubTask() {
 		if (currentTask != null && currentTask.getSubTask() != null) {
@@ -360,7 +360,8 @@ public abstract class TaskManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * Start a new task
+	 * Starts a new task.
+	 * 
 	 * @param newTask
 	 */
 	public void startTask(Task newTask) {
@@ -440,7 +441,7 @@ public abstract class TaskManager implements Serializable, Temporal {
 		}
 
 	/**
-	 * Ends the current task
+	 * Ends the current task.
 	 */
 	public void endCurrentTask() {
 		if (currentTask != null) {
@@ -451,7 +452,7 @@ public abstract class TaskManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * Clears a specific task
+	 * Clears a specific task.
 	 * 
 	 * @param taskString
 	 */
@@ -512,6 +513,7 @@ public abstract class TaskManager implements Serializable, Temporal {
 
 	/**
 	 * Calculates and caches the probabilities.
+	 * 
 	 * This will NOT use the cache but assumes the callers know when a cahce can be used or not used. 
 	 */
 	protected abstract void rebuildTaskCache();
@@ -569,22 +571,35 @@ public abstract class TaskManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * Actually constructs a new Task of the specified type.
+	 * Constructs a new Task of the specified type.
+	 * 
 	 * @param selectedMetaTask Type of task to create.
 	 * @return New Task.
 	 */
 	protected abstract Task createTask(MetaTask selectedMetaTask);
 
 	/**
-	 * This return the last calculated probability map.
+	 * Returns the last calculated probability map.
+	 * 
 	 * @return
 	 */
 	public Map<MetaTask, Double> getLatestTaskProbability() {
 		return taskProbCache;
 	}
+	
+	/**
+	 * Returns the sum of all the values of the map.
+	 * 
+	 * @return
+	 */
+	public double getTotalProbabilityScore() {
+		return taskProbCache.entrySet().stream().mapToDouble
+		   (e -> e.getValue()).sum();
+	}
 
 	/**
-	 * This method output the cache to a file for diagnostics.
+	 * Outputs the cache to a file for diagnostics.
+	 * 
 	 * @param extras Extra details about Task
 	 */
 	protected void outputCache(String... extras) {	
@@ -624,7 +639,7 @@ public abstract class TaskManager implements Serializable, Temporal {
 	}
 	
 	/**
-	 * Records a task onto the schedule
+	 * Records a task onto the schedule.
 	 * 
 	 * @param changed The active task.
 	 * @param mission Associated mission.
@@ -661,6 +676,7 @@ public abstract class TaskManager implements Serializable, Temporal {
 	
 	/**
 	 * Checks if the person or robot is walking through a given vehicle.
+	 * 
 	 * @param vehicle the vehicle.
 	 * @return true if walking through vehicle.
 	 */
@@ -707,7 +723,7 @@ public abstract class TaskManager implements Serializable, Temporal {
 	}
 	
 	/**
-	 * Reloads instances after loading from a saved sim
+	 * Reloads instances after loading from a saved sim.
 	 * 
 	 * @param clock
 	 */

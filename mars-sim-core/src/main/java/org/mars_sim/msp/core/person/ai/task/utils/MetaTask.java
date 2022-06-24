@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * MetaTask.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-06-24
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.utils;
@@ -78,6 +78,7 @@ public abstract class MetaTask {
 	/**
 	 * Defines the Person favourites for this Task. This will overwrite any
 	 * previous favourites.
+	 * 
 	 * @param fav
 	 */
 	protected void setFavorite(FavoriteType... fav) {
@@ -87,6 +88,7 @@ public abstract class MetaTask {
 	/**
 	 * Defines the Task traits for this Task. This will overwrite any
 	 * previous traits.
+	 * 
 	 * @param trait
 	 */
 	protected void setTrait(TaskTrait... trait) {
@@ -102,7 +104,8 @@ public abstract class MetaTask {
 	}
 	
 	/**
-	 * Set the preferred jobs for this Task. This overwrites any previous values.
+	 * Sets the preferred jobs for this Task. This overwrites any previous values.
+	 * 
 	 * @param jobs
 	 */
     protected void setPreferredJob(Set<JobType> jobs) {
@@ -110,7 +113,8 @@ public abstract class MetaTask {
 	}
 
 	/**
-	 * Set the preferred jobs for this Task
+	 * Sets the preferred jobs for this Task.
+	 * 
 	 * @param jobs
 	 */
     protected void setPreferredJob(JobType... jobs) {
@@ -127,7 +131,8 @@ public abstract class MetaTask {
 	}
 
 	/**
-	 * Get the Job that is most suitable to this Task.
+	 * Gets the Job that is most suitable to this Task.
+	 * 
 	 * @return
 	 */
 	public Set<JobType> getPreferredJob() {
@@ -135,14 +140,16 @@ public abstract class MetaTask {
 	}
 	
 	/**
-	 * What is the scope for this Task is be done.
+	 * Returns the scope for this Task is be done.
+	 * 
 	 */
 	public final TaskScope getScope() {
 		return scope;
 	}
 
 	/**
-	 * What worker type is supported by this task.
+	 * Returns worker type supported by this task.
+	 * 
 	 * @return
 	 */
 	public final WorkerType getSupported() {
@@ -150,7 +157,8 @@ public abstract class MetaTask {
 	}
 	
 	/**
-	 * Get the traits of this Task
+	 * Gets the traits of this Task.
+	 * 
 	 * @return
 	 */
 	public Set<TaskTrait> getTraits() {
@@ -158,7 +166,8 @@ public abstract class MetaTask {
 	}
 
 	/**
-	 * Get the Person Favourites that are suited to this Task
+	 * Gets the Person Favourites that are suited to this Task
+	 * 
 	 * @return
 	 */
 	public Set<FavoriteType> getFavourites() {

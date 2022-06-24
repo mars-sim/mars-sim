@@ -51,11 +51,17 @@ public class WorkerWorkCommand extends AbstractUnitCommand {
 		}
 		
 		Map<MetaTask, Double> tasks = tm.getLatestTaskProbability();
-		response.appendTableHeading("Task", CommandHelper.TASK_WIDTH, "Prob", 6,
-									"Trait", 14, "Favourite");
+		double sum = tm.getTotalProbabilityScore();
+		response.appendTableHeading("Task", CommandHelper.TASK_WIDTH, 
+									"P Score", 9,
+									"P %", 6,
+									"Trait", 25, 
+									"Favourite");
 		for (Entry<MetaTask, Double> item : tasks.entrySet()) {
 			MetaTask mt = item.getKey();
-			response.appendTableRow(mt.getName(), item.getValue(),
+			response.appendTableRow(mt.getName(), 
+									item.getValue(),
+									Math.round(item.getValue()/sum*10_000.0)/10.0,							
 									mt.getTraits(),
 									mt.getFavourites()
 									);
