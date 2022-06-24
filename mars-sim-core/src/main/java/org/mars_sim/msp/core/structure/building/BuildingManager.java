@@ -1017,11 +1017,8 @@ public class BuildingManager implements Serializable {
 				return null;
 		}
 
-		List<Building> garages = getGarages();
-
 		if (garages.isEmpty()) {
-			// This settlement has no garages at all.
-			// SHould this code ever be active ?
+			// The vehicle may already be PARKED ?
 			vehicle.setPrimaryStatus(StatusType.PARKED);
 			return null;
 		}
@@ -1029,16 +1026,15 @@ public class BuildingManager implements Serializable {
 		for (Building garageBuilding : garages) {
 			VehicleMaintenance garage = garageBuilding.getVehicleMaintenance();
 
-			if (garage != null && garage.containsVehicle(vehicle)) {
+			if (garage != null) {
+				if (garage.containsVehicle(vehicle)) {
+					logger.log(settlement, vehicle, Level.INFO, 60_000,
+							"Already inside " + garage.getBuilding().getNickName() + ".");
 
-				logger.log(settlement, vehicle, Level.INFO, 60_000,
-						   "Already inside " + garage.getBuilding().getNickName() + ".");
-
-				return garageBuilding;
-			}
-			else {
-				if (garage.getCurrentVehicleNumber() < garage.getVehicleCapacity()
-					&& garage.addVehicle(vehicle)) {
+					return garageBuilding;
+				}
+				else if ((garage.getAvailableCapacity() > 0)
+							&& garage.addVehicle(vehicle)) {
 
 					logger.log(settlement, vehicle, Level.INFO, 60_000,
  							   "Just stowed inside " + garage.getBuilding().getNickName() + ".");
@@ -1077,22 +1073,6 @@ public class BuildingManager implements Serializable {
 	 * @return true if it's already in the garage or added to a garage
 	 */
 	public boolean addToGarage(Vehicle vehicle) {
-		if (vehicle.isBeingTowed())
-			return false;
-
-		if (VehicleType.isRover(vehicle.getVehicleType())) {
-			if (((Rover)vehicle).isTowingAVehicle())
-				return false;
-		}
-
-		List<Building> garages = getGarages();
-
-		if (garages.isEmpty()) {
-			// This settlement has no garages at all
-			vehicle.setPrimaryStatus(StatusType.PARKED);
-			return false;
-		}
-
 		if (isInGarage(vehicle)) {
 			// Vehicle already on Garage
 			vehicle.setPrimaryStatus(StatusType.GARAGED);
@@ -1100,26 +1080,7 @@ public class BuildingManager implements Serializable {
 			return true;
 		}
 
-		else {
-			// Checks if this settlement have open garage space
-			for (Building garageBuilding : garages) {
-				VehicleMaintenance garage = garageBuilding.getVehicleMaintenance();
-				if (garage.getCurrentVehicleNumber() < garage.getVehicleCapacity()
-					&& garage.addVehicle(vehicle)) {
-
-					// Update the vehicle's location state type
-					vehicle.updateLocationStateType(LocationStateType.INSIDE_SETTLEMENT);
-
-					logger.log(settlement, vehicle, Level.INFO, 60_000,
- 							   "Stowed inside " + garage.getBuilding().getNickName() + ".");
-					vehicle.setPrimaryStatus(StatusType.GARAGED);
-
-					return true;
-				}
-			}
-		}
-
-		return false;
+		return (addToGarageBuilding(vehicle) != null);
 	}
 
 
@@ -1160,49 +1121,19 @@ public class BuildingManager implements Serializable {
 	 * Gets the vehicle maintenance building a given vehicle is in.
 	 *
 	 * @return building or null if none.
+	 * @deprecated Should use {@link Vehicle#getGarage()}
 	 */
 	public static Building getBuilding(Vehicle vehicle) {
 		if (vehicle == null)
 			throw new IllegalArgumentException("vehicle is null");
-		Building result = null;
+
 		Settlement settlement = vehicle.getSettlement();
 		if (settlement != null) {
-			List<Building> list = settlement.getBuildingManager().getBuildings(FunctionType.GROUND_VEHICLE_MAINTENANCE);
+			List<Building> list = settlement.getBuildingManager().getGarages();
 			for (Building garageBuilding : list) {
-				try {
-					VehicleMaintenance garage = garageBuilding.getVehicleMaintenance();
-					if (garage != null && garage.containsVehicle(vehicle)) {
-						return garageBuilding;
-					}
-				} catch (Exception e) {
-					logger.log(settlement, vehicle, Level.SEVERE, 2000,
-							   "is not in a building.", e);
-				}
-			}
-		}
-		return result;
-	}
-
-	/**
-	 * Gets the vehicle maintenance building a given vehicle is in.
-	 *
-	 * @return building or null if none.
-	 */
-	public static Building getBuilding(Vehicle vehicle, Settlement settlement) {
-		if (vehicle == null)
-			throw new IllegalArgumentException("vehicle is null");
-		if (settlement != null) {
-			List<Building> list = settlement.getBuildingManager().getBuildings(FunctionType.GROUND_VEHICLE_MAINTENANCE);
-			for (Building garageBuilding : list) {
-				try {
-					VehicleMaintenance garage = garageBuilding.getVehicleMaintenance();
-					if (garage != null && garage.containsVehicle(vehicle)) {
-						return garageBuilding;
-					}
-				} catch (Exception e) {
-//					logger.log(Level.SEVERE, "Calling getBuilding(vehicle, settlement) : " + e.getMessage());
-					logger.log(settlement, vehicle, Level.SEVERE, 2000,
-							   "is not in a building.", e);
+				VehicleMaintenance garage = garageBuilding.getVehicleMaintenance();
+				if (garage != null && garage.containsVehicle(vehicle)) {
+					return garageBuilding;
 				}
 			}
 		}

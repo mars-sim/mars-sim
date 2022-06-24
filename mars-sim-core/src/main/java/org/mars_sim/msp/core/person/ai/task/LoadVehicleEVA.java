@@ -6,10 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Msg;
@@ -17,17 +13,15 @@ import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
-import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.tool.RandomUtil;
-import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * The LoadVehicleEVA class is a task for loading a vehicle with fuel and
  * supplies when the vehicle is outside.
  */
-public class LoadVehicleEVA extends EVAOperation implements Serializable {
+public class LoadVehicleEVA extends EVAOperation {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -41,12 +35,6 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 	/** Task phases. */
 	private static final TaskPhase LOADING = new TaskPhase(Msg.getString("Task.phase.loading")); //$NON-NLS-1$
 
-	/**
-	 * The amount of resources (kg) one person of average strength can load per
-	 * millisol.
-	 */
-	private static final double WATER_NEED = 10D;
-	private static final double OXYGEN_NEED = 10D;
 
 	// Data members
 	/** The vehicle that needs to be loaded. */
@@ -238,49 +226,14 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 	 */
 	private static boolean anyVehiclesNeedEVA(Settlement settlement) {
 
-		Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
-		while (i.hasNext()) {
-			Vehicle vehicle = i.next();
-			if (vehicle.isReservedForMission()) { 
-				if (!settlement.getBuildingManager().isInGarage(vehicle)) {
-					return true;
-				}
+		for(Vehicle vehicle : settlement.getParkedVehicles()) {
+			if (vehicle.isReservedForMission()
+					&& !settlement.getBuildingManager().isInGarage(vehicle)) {
+				return true;
 			}
 		}
 		return false;
 	}
-	
-	/**
-	 * Gets a list of rovers with crew who are missing EVA suits.
-	 * 
-	 * @param settlement the settlement.
-	 * @return list of rovers.
-	 */
-	public static List<Rover> getRoversNeedingEVASuits(Settlement settlement) {
-
-		List<Rover> result = new ArrayList<>();
-
-		for(Vehicle vehicle : settlement.getParkedVehicles()) {
-			if (vehicle instanceof Rover) {
-				Rover rover = (Rover) vehicle;
-				if (!settlement.getBuildingManager().addToGarage(vehicle)) {
-					int peopleOnboard = rover.getCrewNum();
-					if ((peopleOnboard > 0)) {
-						int numSuits = rover.findNumEVASuits();
-						double water = rover.getAmountResourceStored(ResourceUtil.waterID);
-						double oxygen = rover.getAmountResourceStored(ResourceUtil.oxygenID);
-						if ((numSuits == 0) || (water < WATER_NEED) || (oxygen < OXYGEN_NEED)) {
-							result.add(rover);
-						}
-					}
-				}
-			}
-		}
-
-		return result;
-	}
-
-
 
 	/**
 	 * Gets the vehicle being loaded.

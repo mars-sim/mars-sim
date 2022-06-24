@@ -6,6 +6,7 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.mars_sim.msp.core.Msg;
@@ -21,12 +22,22 @@ import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.vehicle.Rover;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * Meta task for the LoadVehicleEVA task.
  */
 public class LoadVehicleEVAMeta extends MetaTask {
+
+	/**
+	 * The amount of resources (kg) one person of average strength can load per
+	 * millisol.
+	 */
+	private static final double WATER_NEED = 10D;
+	private static final double OXYGEN_NEED = 10D;
 
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -105,7 +116,7 @@ public class LoadVehicleEVAMeta extends MetaTask {
 	        }
 
 	        // Check if any rovers are in need of EVA suits to allow occupants to exit.
-	        if (LoadVehicleEVA.getRoversNeedingEVASuits(settlement).size() > 0) {
+	        if (!getRoversNeedingEVASuits(settlement).isEmpty()) {
 	            int numEVASuits = settlement.findNumContainersOfType(EquipmentType.EVA_SUIT);
 	            if (numEVASuits == 0)
 	            	return 0;
@@ -136,4 +147,35 @@ public class LoadVehicleEVAMeta extends MetaTask {
 
         return result;
     }
+
+		
+	/**
+	 * Gets a list of rovers with crew who are missing EVA suits.
+	 * 
+	 * @param settlement the settlement.
+	 * @return list of rovers.
+	 */
+	private List<Rover> getRoversNeedingEVASuits(Settlement settlement) {
+
+		List<Rover> result = new ArrayList<>();
+
+		for(Vehicle vehicle : settlement.getParkedVehicles()) {
+			if (vehicle instanceof Rover) {
+				Rover rover = (Rover) vehicle;
+				int peopleOnboard = rover.getCrewNum();
+				if (peopleOnboard > 0) {
+					int numSuits = rover.findNumEVASuits();
+					double water = rover.getAmountResourceStored(ResourceUtil.waterID);
+					double oxygen = rover.getAmountResourceStored(ResourceUtil.oxygenID);
+					if (((numSuits == 0) || (water < WATER_NEED) || (oxygen < OXYGEN_NEED))
+						&& !settlement.getBuildingManager().isInGarage(vehicle)) {
+						logger.warning(rover, "Parked with crew but no EVA Suits");
+						result.add(rover);
+					}
+				}
+			}
+		}
+
+		return result;
+	}
 }

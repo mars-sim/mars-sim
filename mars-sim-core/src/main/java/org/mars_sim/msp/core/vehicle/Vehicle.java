@@ -1219,7 +1219,7 @@ public abstract class Vehicle extends Unit
 	 * @return {@link Vehicle}
 	 */
 	public Building getGarage() {
-		return BuildingManager.getBuilding(this, getSettlement());
+		return BuildingManager.getBuilding(this);
 	}
 
 	/**

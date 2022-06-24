@@ -118,7 +118,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 					try {
 						Building garageBuilding = j.next();
 						VehicleMaintenance garageTemp = garageBuilding.getVehicleMaintenance();
-						if (garageTemp.getCurrentVehicleNumber() < garageTemp.getVehicleCapacity()) {
+						if (garageTemp.getAvailableCapacity() > 0) {
 							garage = garageTemp;
 							garage.addVehicle(vehicle);
 

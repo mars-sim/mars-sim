@@ -91,7 +91,7 @@ public class MaintainGroundVehicleEVAMeta extends MetaTask {
 					Building building = j.next();
 					VehicleMaintenance garage = building.getGroundVehicleMaintenance();
 					totalCap += garage.getVehicleCapacity();
-					available += (garage.getVehicleCapacity() - garage.getCurrentVehicleNumber());
+					available += garage.getAvailableCapacity();
 				} catch (Exception e) {
 				}
 			}

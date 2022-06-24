@@ -56,8 +56,8 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 		// Use Function constructor.
 		super(function, building);
 
-		vehicles = new ConcurrentLinkedQueue<Vehicle>();
-		parkingLocations = new ArrayList<ParkingLocation>();
+		vehicles = new ConcurrentLinkedQueue<>();
+		parkingLocations = new ArrayList<>();
 	}
 
 	/**
@@ -76,6 +76,14 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 	 */
 	public int getCurrentVehicleNumber() {
 		return vehicles.size();
+	}
+
+	/**
+	 * How many available locations unoccupied does the Garage have?
+	 * @param Available parking locations.
+	 */
+	public int getAvailableCapacity() {
+		return vehicleCapacity - vehicles.size();
 	}
 
 	/**
@@ -276,7 +284,7 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 		ParkingLocation result = null;
 
 		// Get list of empty parking locations.
-		List<ParkingLocation> emptyLocations = new ArrayList<ParkingLocation>(parkingLocations.size());
+		List<ParkingLocation> emptyLocations = new ArrayList<>(parkingLocations.size());
 		Iterator<ParkingLocation> i = parkingLocations.iterator();
 		while (i.hasNext()) {
 			ParkingLocation parkingLocation = i.next();
