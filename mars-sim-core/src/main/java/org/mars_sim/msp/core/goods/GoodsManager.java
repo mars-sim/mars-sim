@@ -157,9 +157,9 @@ public class GoodsManager implements Serializable, Temporal {
 	private static final double WASTE_VALUE = .05D;
 	private static final double USEFUL_WASTE_VALUE = 1.05D;
 
-	private static final double EVA_SUIT_VALUE = 3D;
+	private static final int EVA_SUIT_VALUE = 60;
 
-	private static final double EVA_PARTS_VALUE = 1.2;
+	private static final int EVA_PARTS_VALUE = 20;
 
 	private static final double ORE_VALUE = .9;
 	private static final double MINERAL_VALUE = .9;
@@ -193,8 +193,8 @@ public class GoodsManager implements Serializable, Temporal {
 	private static final double CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR = 100D;
 	private static final double CONSTRUCTION_SITE_REQUIRED_PART_FACTOR = 100D;
 
-	private static final double MIN_SUPPLY = 0.001;
-	private static final double MIN_DEMAND = 0.001;
+	private static final double MIN_SUPPLY = 0.01;
+	private static final double MIN_DEMAND = 0.01;
 	
 	private static final int MAX_SUPPLY = 5_000;
 	private static final int MAX_DEMAND = 10_000;
@@ -203,7 +203,7 @@ public class GoodsManager implements Serializable, Temporal {
 	private static final double MIN_PROJ_DEMAND = 0.001;
 	
 	private static final int MAX_VP = 10_000;
-	private static final double MIN_VP = 0.001;
+	private static final double MIN_VP = 0.01;
 	
 	private static final double PERCENT_110 = 1.1;
 	private static final double PERCENT_90 = .9;
@@ -238,13 +238,13 @@ public class GoodsManager implements Serializable, Temporal {
 	private static final double FIBERGLASS_DEMAND = .1;
 	private static final double BRICK_DEMAND = .005;
 
-	private static final double REGOLITH_DEMAND_FACTOR = .5;
+	private static final double REGOLITH_DEMAND_FACTOR = 10;
 	private static final double CHEMICAL_DEMAND_FACTOR = .01;
 	private static final double COMPOUND_DEMAND_FACTOR = .01;
 	private static final double ELEMENT_DEMAND_FACTOR = .1;
 
 	private static final double ELECTRICAL_DEMAND = .09;
-	private static final double INSTRUMENT_DEMAND = .999;
+	private static final double INSTRUMENT_DEMAND = 1.2;
 	private static final double METALLIC_DEMAND = .999;
 	private static final double UTILITY_DEMAND = .999;
 	private static final double KITCHEN_DEMAND = .999;
@@ -488,6 +488,8 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @return value the value point 
 	 */
 	private double determineAmountResourceGoodValue(Good resourceGood, double supply, boolean useCache) {
+		boolean estimationOnly = (supply == 0);  
+		
 		int id = resourceGood.getID();
 
 		if (useCache) {
@@ -576,7 +578,7 @@ public class GoodsManager implements Serializable, Temporal {
 		amountDemandCache.put(id, totalDemand);
 		
 		// Calculate total supply
-		if (supply > 0)
+		if (estimationOnly)
 			// For estimating trade/delivery mission, use this specified resources as supply
 			totalSupply = getAverageAmountSupply(supply, numSol);
 		else
@@ -585,35 +587,38 @@ public class GoodsManager implements Serializable, Temporal {
 		totalSupply = limitMaxMin(totalSupply, MIN_SUPPLY, MAX_SUPPLY);
 
 		// Store the average supply
-		amountSupplyCache.put(id, totalSupply);
+		if (!estimationOnly)
+			amountSupplyCache.put(id, totalSupply);
 		
 		// Calculate the value point
 		value = totalDemand / totalSupply;
 
-		// Check if it surpasses MAX_VP
-		if (value > MAX_VP) {
-			// Update deflationIndexMap for other resources of the same category
-			value = updateDeflationMap(id, value, resourceGood.getCategory(), true);
-		}
-		// Check if it falls below MIN_VP
-		else if (value < MIN_VP) {
-			// Update deflationIndexMap for other resources of the same category
-			value = updateDeflationMap(id, value, resourceGood.getCategory(), false);
-		}
-
-		// Check for inflation and deflation adjustment due to other resources
-		value = checkDeflation(id, value);
-		// Adjust the value to the average value
-		value = tuneToAverageValue(resourceGood, value);
-		// Save the value point
-		goodsValues.put(id, value);
+		if (!estimationOnly) {
+			// Check if it surpasses MAX_VP
+			if (value > MAX_VP) {
+				// Update deflationIndexMap for other resources of the same category
+				value = updateDeflationMap(id, value, resourceGood.getCategory(), true);
+			}
+			// Check if it falls below MIN_VP
+			else if (value < MIN_VP) {
+				// Update deflationIndexMap for other resources of the same category
+				value = updateDeflationMap(id, value, resourceGood.getCategory(), false);
+			}
 	
+			// Check for inflation and deflation adjustment due to other resources
+			value = checkDeflation(id, value);
+			// Adjust the value to the average value
+			value = tuneToAverageValue(resourceGood, value);
+			// Save the value point
+			goodsValues.put(id, value);
+		}
+		
 		return value;
 	}
 
 
 	/**
-	 * Tunes up the value of a good with the national average.
+	 * Tunes the value of a good to be closer to the national average.
 	 * 
 	 * @param good
 	 * @param value
@@ -1336,10 +1341,12 @@ public class GoodsManager implements Serializable, Temporal {
 
 		else if (type.equalsIgnoreCase("regolith")
 				|| type.equalsIgnoreCase("ore")
-				|| type.equalsIgnoreCase("mineral")
-				|| type.equalsIgnoreCase("rock"))
+				|| type.equalsIgnoreCase("mineral"))
 			demand = REGOLITH_DEMAND_FACTOR;
 
+		else if (type.equalsIgnoreCase("rock"))
+			demand = 2;
+		
 		else if (type.equalsIgnoreCase(GoodsUtil.CHEMICAL))
 			demand = CHEMICAL_DEMAND_FACTOR;
 
@@ -2262,7 +2269,8 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @return value (Value Points / item)
 	 */
 	private double determineItemResourceGoodValue(Good resourceGood, double supply, boolean useCache) {
-
+		boolean estimationOnly = (supply == 0);
+		
 		double value = 1;
 		double totalDemand = 0;
 		double previous = 0;
@@ -2275,111 +2283,108 @@ public class GoodsManager implements Serializable, Temporal {
 		int numSol = solElapsed % Settlement.SUPPLY_DEMAND_REFRESH + 1;
 
 		int id = resourceGood.getID();
+		Part part = (Part) ItemResourceUtil.findItemResource(id);
 
-		if (id >= ResourceUtil.FIRST_ITEM_RESOURCE_ID && id < ResourceUtil.FIRST_VEHICLE_RESOURCE_ID) {
+		if (useCache) {
+			return goodsValues.get(id);
+		}
 
-			Part part = (Part) ItemResourceUtil.findItemResource(id);
+		if (partDemandCache.containsKey(id)) {
+			// Get previous demand
+			previous = partDemandCache.get(id);
+		}
 
-			if (useCache) {
-				return goodsValues.get(id);
+		average = getAverageItemDemand(id, numSol);
+
+		// Get demand for a part.
+		// NOTE: the following estimates are for each orbit (Martian year) :
+
+		double projected = 
+			// Add manufacturing demand.					
+			(getPartManufacturingDemand(part)
+			// Add food production demand.
+			+ getPartFoodProductionDemand(part)
+			// Add construction demand.
+			+ getPartConstructionDemand(id)
+			// Add construction site demand.
+			+ getPartConstructionSiteDemand(id)
+			// Calculate individual EVA suit-related part demand.
+			+ getEVASuitPartsDemand(part)
+			// Calculate individual attachment part demand.
+			+ getAttachmentPartsDemand(part)
+			// Calculate kitchen part demand.
+			+ getKitchenPartDemand(part))
+			// Calculate vehicle part demand.
+			* getVehiclePartDemand(part)
+			// Flatten raw part demand.
+			* flattenRawPartDemand(part)
+			// Flatten certain part demand.
+			* flattenPartDemand(resourceGood);
+
+		projected = limitMaxMin(projected, MIN_PROJ_DEMAND, MAX_PROJ_DEMAND);
+
+		// Add trade demand.
+		double trade = determineTradeDemand(resourceGood, useCache);
+
+		trade = limitMaxMin(trade, MIN_DEMAND, MAX_DEMAND);
+		
+		// Recalculate the partsDemandCache
+		determineRepairPartsDemand();
+		// Gets the repair part demand
+		double repair = partDemandCache.get(id);
+
+		if (previous == 0) {
+			// At the start of the sim
+			totalDemand = .4 * repair + .1 * average + .4 * projected + .1 * trade;
+		}
+
+		else {
+			// Intentionally lose 1% of its value
+			totalDemand = .986 * previous + .001 * repair + .001 * average + .001 * projected + .001 * trade;
+		}
+
+		totalDemand = limitMaxMin(totalDemand, MIN_DEMAND, MAX_DEMAND);
+		
+
+		// Calculate total supply
+		if (estimationOnly) {
+			// For estimating trade/delivery mission, use specified resources as supply
+			totalSupply = getAverageItemSupply(supply, numSol);
+		}
+		else {
+			// Save the goods demand
+			partDemandCache.put(id, totalDemand);
+			totalSupply = getAverageItemSupply(settlement.getItemResourceStored(id), numSol);
+		}
+		
+		totalSupply = limitMaxMin(totalSupply, MIN_SUPPLY, MAX_SUPPLY);
+		
+		// Save the average supply
+		if (!estimationOnly)
+			partSupplyCache.put(id, totalSupply);
+
+		// Calculate item value
+		value = totalDemand / totalSupply;
+
+		if (!estimationOnly) {
+		// Check if it surpass the max VP
+			if (value > MAX_VP) {
+				// Update deflationIndexMap for other resources of the same category
+				value = updateDeflationMap(id, value, resourceGood.getCategory(), true);
+			}
+			// Check if it falls below 1
+			else if (value < MIN_VP) {
+				// Update deflationIndexMap for other resources of the same category
+				value = updateDeflationMap(id, value, resourceGood.getCategory(), false);
 			}
 
-			else {
-
-				if (partDemandCache.containsKey(id)) {
-					// Get previous demand
-					previous = partDemandCache.get(id);
-				}
-
-				average = getAverageItemDemand(id, numSol);
-
-				// Get demand for a part.
-				// NOTE: the following estimates are for each orbit (Martian year) :
-
-				double projected = 
-					// Add manufacturing demand.					
-					(getPartManufacturingDemand(part)
-					// Add food production demand.
-					+ getPartFoodProductionDemand(part)
-					// Add construction demand.
-					+ getPartConstructionDemand(id)
-					// Add construction site demand.
-					+ getPartConstructionSiteDemand(id)
-					// Calculate individual EVA suit-related part demand.
-					+ getEVASuitPartsDemand(part)
-					// Calculate individual attachment part demand.
-					+ getAttachmentPartsDemand(part)
-					// Calculate kitchen part demand.
-					+ getKitchenPartDemand(part))
-					// Calculate vehicle part demand.
-					* getVehiclePartDemand(part)
-					// Flatten raw part demand.
-					* flattenRawPartDemand(part)
-					// Flatten certain part demand.
-					* flattenPartDemand(resourceGood);
-
-				projected = limitMaxMin(projected, MIN_PROJ_DEMAND, MAX_PROJ_DEMAND);
-
-				// Add trade demand.
-				double trade = determineTradeDemand(resourceGood, useCache);
-
-				trade = limitMaxMin(trade, MIN_DEMAND, MAX_DEMAND);
-				
-				// Recalculate the partsDemandCache
-				determineRepairPartsDemand();
-				// Gets the repair part demand
-				double repair = partDemandCache.get(id);
-
-				if (previous == 0) {
-					// At the start of the sim
-					totalDemand = .4 * repair + .1 * average + .4 * projected + .1 * trade;
-				}
-
-				else {
-					// Intentionally lose 1% of its value
-					totalDemand = .986 * previous + .001 * repair + .001 * average + .001 * projected + .001 * trade;
-				}
-
-				totalDemand = limitMaxMin(totalDemand, MIN_DEMAND, MAX_DEMAND);
-				
-				// Save the goods demand
-				partDemandCache.put(id, totalDemand);
-
-				// Calculate total supply
-				if (supply > 0)
-					// For estimating trade/delivery mission, use specified resources as supply
-					totalSupply = getAverageItemSupply(supply, numSol);
-				else
-					totalSupply = getAverageItemSupply(settlement.getItemResourceStored(id), numSol);
-				
-				// Save the average supply
-				partSupplyCache.put(id, totalSupply);
-				
-				totalSupply = limitMaxMin(totalSupply, MIN_SUPPLY, MAX_SUPPLY);
-			
-				// Calculate item value
-				value = totalDemand / totalSupply;
-
-				// Check if it surpass the max VP
-				if (value > MAX_VP) {
-					// Update deflationIndexMap for other resources of the same category
-					value = updateDeflationMap(id, value, resourceGood.getCategory(), true);
-				}
-				// Check if it falls below 1
-				else if (value < MIN_VP) {
-					// Update deflationIndexMap for other resources of the same category
-					value = updateDeflationMap(id, value, resourceGood.getCategory(), false);
-				}
-
-				// Check for inflation and deflation adjustment due to other resources
-				value = checkDeflation(id, value);
-				// Adjust the value to the average value
-				value = tuneToAverageValue(resourceGood, value);
-						
-				// Save the value point
-				goodsValues.put(id, value);
-			}
-
+			// Check for inflation and deflation adjustment due to other resources
+			value = checkDeflation(id, value);
+			// Adjust the value to the average value
+			value = tuneToAverageValue(resourceGood, value);
+					
+			// Save the value point
+			goodsValues.put(id, value);
 		}
 
 		return value;
@@ -2945,6 +2950,7 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @return the value (value points)
 	 */
 	private double determineEquipmentGoodValue(Good equipmentGood, double supply, boolean useCache) {
+
 		double value = 0D;
 		double average = 0D;
 		double previous = 0D;
@@ -2956,71 +2962,68 @@ public class GoodsManager implements Serializable, Temporal {
 			return goodsValues.get(id);
 		}
 
-		else {
-			EquipmentType equipmentType = EquipmentType.convertID2Type(id);
-			
-			// Needed for loading a saved sim
-			int solElapsed = marsClock.getMissionSol();
-			// Compact and/or clear supply and demand maps every x days
-			int numSol = solElapsed % Settlement.SUPPLY_DEMAND_REFRESH + 1;
+		EquipmentType equipmentType = EquipmentType.convertID2Type(id);		
+		// Needed for loading a saved sim
+		int solElapsed = marsClock.getMissionSol();
+		// Compact and/or clear supply and demand maps every x days
+		int numSol = solElapsed % Settlement.SUPPLY_DEMAND_REFRESH + 1;
 
-			previous = getEquipmentDemandValue(id);
+		previous = getEquipmentDemandValue(id);
 
-			// Determine average demand.
-			average = determineEquipmentDemand(equipmentType);
+		// Determine average demand.
+		average = determineEquipmentDemand(equipmentType);
 
-			double totalSupply = 0;
-			
-			if (supply > 0)
-				// For estimating trade/delivery mission, use specified resources as supply
-				totalSupply = getAverageEquipmentSupply(supply, numSol);
-			else
-				totalSupply = getAverageEquipmentSupply(settlement.findNumContainersOfType(equipmentType), numSol);
-			
-			totalSupply = limitMaxMin(totalSupply, MIN_SUPPLY, MAX_SUPPLY);
-			
-			equipmentSupplyCache.put(id, totalSupply);
-			
-			double trade = determineTradeDemand(equipmentGood, useCache);
+		double totalSupply = 0;
+		
+		if (supply > 0)
+			// For estimating trade/delivery mission, use specified resources as supply
+			totalSupply = getAverageEquipmentSupply(supply, numSol);
+		else
+			totalSupply = getAverageEquipmentSupply(settlement.findNumContainersOfType(equipmentType), numSol);
+		
+		totalSupply = limitMaxMin(totalSupply, MIN_SUPPLY, MAX_SUPPLY);
+		
+		equipmentSupplyCache.put(id, totalSupply);
+		
+		double trade = determineTradeDemand(equipmentGood, useCache);
 
-			trade = limitMaxMin(trade, MIN_DEMAND, MAX_DEMAND);
-			
-			if (previous == 0) {
-				totalDemand = .5 * average + .5 * trade;
-			}
-
-			else {
-				// Intentionally lose 2% of its value
-				totalDemand = .97 * previous + .005 * average + .005 * trade;
-			}
-			
-			totalDemand = limitMaxMin(totalDemand, MIN_DEMAND, MAX_DEMAND);
-			
-			equipmentDemandCache.put(id, totalDemand);
-
-			value = totalDemand / totalSupply;
-
-			// Check if it surpass the max VP
-			if (value > MAX_VP) {
-				// Update deflationIndexMap for other resources of the same category
-				value = updateDeflationMap(id, value, equipmentGood.getCategory(), true);
-			}
-			// Check if it falls below 1
-			else if (value < MIN_VP) {
-				// Update deflationIndexMap for other resources of the same category
-				value = updateDeflationMap(id, value, equipmentGood.getCategory(), false);
-			}
-
-			// Check for inflation and deflation adjustment due to other equipment
-			value = checkDeflation(id, value);
-			// Adjust the value to the average value
-			value = tuneToAverageValue(equipmentGood, value);
-	
-			// Save the value point
-			goodsValues.put(id, value);
-
-			return value;
+		trade = limitMaxMin(trade, MIN_DEMAND, MAX_DEMAND);
+		
+		if (previous == 0) {
+			totalDemand = .5 * average + .5 * trade;
 		}
+
+		else {
+			// Intentionally lose 2% of its value
+			totalDemand = .97 * previous + .005 * average + .005 * trade;
+		}
+		
+		totalDemand = limitMaxMin(totalDemand, MIN_DEMAND, MAX_DEMAND);
+		
+		equipmentDemandCache.put(id, totalDemand);
+
+		value = totalDemand / totalSupply;
+
+		// Check if it surpass the max VP
+		if (value > MAX_VP) {
+			// Update deflationIndexMap for other resources of the same category
+			value = updateDeflationMap(id, value, equipmentGood.getCategory(), true);
+		}
+		// Check if it falls below 1
+		else if (value < MIN_VP) {
+			// Update deflationIndexMap for other resources of the same category
+			value = updateDeflationMap(id, value, equipmentGood.getCategory(), false);
+		}
+
+		// Check for inflation and deflation adjustment due to other equipment
+		value = checkDeflation(id, value);
+		// Adjust the value to the average value
+		value = tuneToAverageValue(equipmentGood, value);
+
+		// Save the value point
+		goodsValues.put(id, value);
+
+		return value;
 	}
 
 	/**
@@ -3042,57 +3045,55 @@ public class GoodsManager implements Serializable, Temporal {
 			return baseDemand += eVASuitMod * EVA_SUIT_VALUE;
 		}
 
-		else {
-			// Determine the number of containers that are needed.
+		// Determine the number of containers that are needed.
 
-			double containerCapacity = ContainerUtil.getContainerCapacity(type);
-			double totalPhaseOverfill = 0D;
+		double containerCapacity = ContainerUtil.getContainerCapacity(type);
+		double totalPhaseOverfill = 0D;
 
-			Iterator<AmountResource> i = ResourceUtil.getAmountResources().iterator();
-			while (i.hasNext()) {
-				AmountResource resource = i.next();
+		Iterator<AmountResource> i = ResourceUtil.getAmountResources().iterator();
+		while (i.hasNext()) {
+			AmountResource resource = i.next();
 
-				if (ContainerUtil.getContainerClassToHoldResource(resource.getID()) == type) {
-					double settlementCapacity = settlement.getAmountResourceCapacity(resource.getID());
+			if (ContainerUtil.getContainerClassToHoldResource(resource.getID()) == type) {
+				double settlementCapacity = settlement.getAmountResourceCapacity(resource.getID());
 
-					double resourceDemand = getAmountDemandValue(resource.getID());
+				double resourceDemand = getAmountDemandValue(resource.getID());
 
-					if (resourceDemand > settlementCapacity) {
-						double resourceOverfill = resourceDemand - settlementCapacity;
-						totalPhaseOverfill += resourceOverfill;
-					}
+				if (resourceDemand > settlementCapacity) {
+					double resourceOverfill = resourceDemand - settlementCapacity;
+					totalPhaseOverfill += resourceOverfill;
 				}
 			}
+		}
 
-			baseDemand += totalPhaseOverfill * containerCapacity;
+		baseDemand += totalPhaseOverfill * containerCapacity;
 
-			double ratio = computeUsageFactor(type);
+		double ratio = computeUsageFactor(type);
 
-			switch (type) {
-				case BAG:
-					return Math.max(baseDemand * ratio *settlement.getRegolithCollectionRate() / 1_000, 1000) * areologistFactor * BAG_DEMAND;
+		switch (type) {
+			case BAG:
+				return Math.max(baseDemand * ratio *settlement.getRegolithCollectionRate() / 1_000, 1000) * areologistFactor * BAG_DEMAND;
 
-				case LARGE_BAG:
-					return Math.max(baseDemand * ratio * CollectRegolith.REQUIRED_LARGE_BAGS, 1000) * LARGE_BAG_DEMAND;
+			case LARGE_BAG:
+				return Math.max(baseDemand * ratio * CollectRegolith.REQUIRED_LARGE_BAGS, 1000) * LARGE_BAG_DEMAND;
 
-				case BARREL:
-					return Math.max(baseDemand * ratio * CollectIce.REQUIRED_BARRELS, 1000) * areologistFactor * BARREL_DEMAND;
+			case BARREL:
+				return Math.max(baseDemand * ratio * CollectIce.REQUIRED_BARRELS, 1000) * areologistFactor * BARREL_DEMAND;
 
-				case SPECIMEN_BOX:
-					return Math.max(baseDemand * ratio * Exploration.REQUIRED_SPECIMEN_CONTAINERS, 1000) * areologistFactor * SPECIMEN_BOX_DEMAND;
+			case SPECIMEN_BOX:
+				return Math.max(baseDemand * ratio * Exploration.REQUIRED_SPECIMEN_CONTAINERS, 1000) * areologistFactor * SPECIMEN_BOX_DEMAND;
 
-				case GAS_CANISTER:
-					return Math.max(baseDemand * ratio * PROJECTED_GAS_CANISTERS, 1000) * areologistFactor * GAS_CANISTER_DEMAND;
+			case GAS_CANISTER:
+				return Math.max(baseDemand * ratio * PROJECTED_GAS_CANISTERS, 1000) * areologistFactor * GAS_CANISTER_DEMAND;
 
-				default:
-					throw new IllegalArgumentException("Do not know how to calculate demand for " + type);
-			}
+			default:
+				throw new IllegalArgumentException("Do not know how to calculate demand for " + type);
 		}
 	}
 
 	/**
 	 * Computes the usage factor (the used number of container / the total number)
-	 * of a type of container
+	 * of a type of container.
 	 *
 	 * @param containerType
 	 * @return the usage factor
@@ -3975,7 +3976,7 @@ public class GoodsManager implements Serializable, Temporal {
 			double mass = part.getMassPerItem();
 			double quantity = settlement.getItemResourceStored(id) ;
 			factor = 1.2 * Math.log(mass + 1) / (1.2 + Math.log(quantity + 1));
-			price = cost * (1 + 2 * factor * Math.log(value/5.0 + 1));
+			price = cost * (1 + 5 * factor * Math.log(Math.sqrt(value)/2.0 + 1));
 		}
 			
 		else if (id < ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID) {

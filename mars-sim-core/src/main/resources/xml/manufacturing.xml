@@ -978,8 +978,9 @@ Note: 1 kg of H2 is 14.13 liter
 			<resource name="polyester resin" amount=".5" />
 			<resource name="styrene" amount=".5" />
 			<part name="fiberglass" number="1" />
+			<part name="aluminum ingot" number="1" />			
 			<part name="aluminum sheet" number="1" />
-			<part name="electrical wire" number="1" />
+			<part name="electrical wire" number="3" />
 			<part name="wire connector" number="4" />
 			<part name="optical cable" number="2" />
 		</inputs>
@@ -1813,7 +1814,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="steel ingot" number="30" />
 		</inputs>
 		<outputs>
-			<part name="small vehicle frame" number="1" />
+			<part name="vehicle frame - small" number="1" />
 		</outputs>
 	</process>
 
@@ -1823,7 +1824,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="steel ingot" number="50" />
 		</inputs>
 		<outputs>
-			<part name="large vehicle frame" number="1" />
+			<part name="vehicle frame - large" number="1" />
 		</outputs>
 	</process>
 
@@ -2095,7 +2096,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			process-time="0"
 			power-required="0.0">
 		<inputs>
-			<part name="small vehicle frame" number="1" />
+			<part name="vehicle frame - small" number="1" />
 			<part name="motor - large" number="1" />
 			<part name="rover battery" number="1" />
 			<part name="utility vehicle control panel" number="1" />
@@ -2118,7 +2119,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="navigation circuit board" number="1" />
 			<part name="communications circuit board" number="1" />
 			<part name="optical lens" number="2" />
-			<part name="small vehicle frame" number="1" />
+			<part name="vehicle frame - small" number="1" />
 			<part name="rover chassis panel" number="2" />
 			<part name="motor - small" number="4" />
 			<part name="fuel cell stack" number="3" />
@@ -2145,7 +2146,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		<inputs>
 			<part name="navigation circuit board" number="1" />
 			<part name="communications circuit board" number="1" />
-			<part name="small vehicle frame" number="1" />
+			<part name="vehicle frame - small" number="1" />
 			<part name="rover chassis panel" number="3" />
 			<part name="motor - small" number="4" />
 			<part name="fuel cell stack" number="1" />
@@ -2174,7 +2175,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="navigation circuit board" number="1" />
 			<part name="communications circuit board" number="1" />
 
-			<part name="large vehicle frame" number="1" />
+			<part name="vehicle frame - large" number="1" />
 			<part name="rover chassis panel" number="6" />
 			<part name="rover windshield" number="1" />
 			<part name="rover window" number="5" />
@@ -2212,7 +2213,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="navigation circuit board" number="1" />
 			<part name="communications circuit board" number="1" />
 
-			<part name="large vehicle frame" number="1" />
+			<part name="vehicle frame - large" number="1" />
 			<part name="rover chassis panel" number="10" />
 			<part name="rover windshield" number="1" />
 			<part name="rover window" number="7" />
@@ -2250,7 +2251,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="navigation circuit board" number="1" />
 			<part name="communications circuit board" number="1" />
 
-			<part name="large vehicle frame" number="1" />
+			<part name="vehicle frame - large" number="1" />
 			<part name="rover chassis panel" number="10" />
 			<part name="rover windshield" number="1" />
 			<part name="rover window" number="7" />
@@ -3854,7 +3855,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 
 	<!-- Salvage process for an explorer rover. -->
 	<salvage item-name="explorer rover" type="vehicle" tech="3" skill="4" work-time="1000">
-		<part-salvage name="large vehicle frame" number="1" />
+		<part-salvage name="vehicle frame - large" number="1" />
 		<part-salvage name="rover chassis panel" number="10" />
 		<part-salvage name="rover windshield" number="1" />
 		<part-salvage name="rover window" number="5" />
@@ -3886,7 +3887,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 
 	<!-- Salvage process for a transport rover. -->
 	<salvage item-name="transport rover" type="vehicle" tech="3" skill="4" work-time="1000">
-		<part-salvage name="large vehicle frame" number="1" />
+		<part-salvage name="vehicle frame - large" number="1" />
 		<part-salvage name="rover chassis panel" number="10" />
 		<part-salvage name="rover windshield" number="1" />
 		<part-salvage name="rover window" number="5" />
@@ -3918,7 +3919,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 
 	<!-- Salvage process for a cargo rover. -->
 	<salvage item-name="cargo rover" type="vehicle" tech="3" skill="4" work-time="1000">
-		<part-salvage name="large vehicle frame" number="1" />
+		<part-salvage name="vehicle frame - large" number="1" />
 		<part-salvage name="rover chassis panel" number="10" />
 		<part-salvage name="rover windshield" number="1" />
 		<part-salvage name="rover window" number="5" />
@@ -3950,7 +3951,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 
 	<!-- Salvage process for a light utility vehicle (LUV) -->
 	<salvage item-name="light utility vehicle" type="vehicle" tech="3" skill="3" work-time="700">
-		<part-salvage name="small vehicle frame" number="1" />
+		<part-salvage name="vehicle frame - small" number="1" />
 		<part-salvage name="fuel cell stack" number="1" />
 		<part-salvage name="motor - large" number="2" />
 		<part-salvage name="rover battery" number="1" />

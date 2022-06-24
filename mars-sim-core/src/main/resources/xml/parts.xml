@@ -98,7 +98,7 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="satellite dish" type="electronic" mass="10.0">
+	<part name="satellite dish" type="electronic" mass="4.0">
 		<maintenance-entity-list>
 			<entity name="vehicle" probability="5" max-number="1" />
 			<entity name="communication" probability="5" max-number="1" />
@@ -324,7 +324,7 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="large vehicle frame" type="vehicle" mass="5000.0">
+	<part name="vehicle frame - large" type="vehicle" mass="5000.0">
 		<description>Heavy steel frame</description>
 	</part>
 
@@ -453,7 +453,7 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="small vehicle frame" type="vehicle" mass="250.0" />
+	<part name="vehicle frame - small" type="vehicle" mass="250.0" />
 
 	<part name="wheel - small" type="vehicle"  mass="10.0" >
 		<maintenance-entity-list>
