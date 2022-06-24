@@ -323,7 +323,7 @@ public final class ManufactureUtil {
 	 */
 	public static boolean canProcessBeStarted(ManufactureProcessInfo process, Manufacture workshop) {
 		// Check to see if this workshop can accommodate another process.
-		if (workshop.getMaxProcesses() <= workshop.getCurrentProcesses()) {
+		if (workshop.getMaxProcesses() < workshop.getCurrentProcesses()) {
 			// NOTE: create a map to show which process has a 3D printer in use and which doesn't
 			return false;
 		}

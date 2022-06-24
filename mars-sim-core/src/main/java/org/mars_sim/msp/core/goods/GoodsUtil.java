@@ -396,16 +396,25 @@ public class GoodsUtil {
      * @param name
      * @return
      */
-    public static int getGoodID(String name) {
+    public static Good getGood(String name) {
         List<Good> list = getGoodsList();
-        Good good = null;
         for (Good g : list) {
             if (g.getName().equalsIgnoreCase(name)) {
-                good = g;
-                break;
+                return g;
             }
         }
 
+        return null;
+    }
+    
+    /**
+     * Gets the good id.
+     * 
+     * @param name
+     * @return
+     */
+    public static int getGoodID(String name) {
+        Good good = getGood(name);
         if (good != null)
             return good.getID();
 

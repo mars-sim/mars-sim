@@ -420,7 +420,8 @@ public class Manufacture extends Function implements Serializable {
 			while (i.hasNext()) {
 				ManufactureProcess process = i.next();
 				boolean workRequired = (process.getWorkTimeRemaining() > 0D);
-				boolean skillRequired = (process.getInfo().getSkillLevelRequired() <= skill);
+				// Allow a low material science skill person to have access to do the next level skill process
+				boolean skillRequired = (process.getInfo().getSkillLevelRequired() <= skill + 1);
 				if (workRequired && skillRequired)
 					result = true;
 			}
@@ -445,7 +446,8 @@ public class Manufacture extends Function implements Serializable {
 			while (i.hasNext()) {
 				SalvageProcess process = i.next();
 				boolean workRequired = (process.getWorkTimeRemaining() > 0D);
-				boolean skillRequired = (process.getInfo().getSkillLevelRequired() <= skill);
+				// Allow a low material science skill person to have access to do the next level skill process
+				boolean skillRequired = (process.getInfo().getSkillLevelRequired() <= skill + 1);
 				if (workRequired && skillRequired)
 					result = true;
 			}
@@ -482,8 +484,6 @@ public class Manufacture extends Function implements Serializable {
 							amount = capacity;
 						}
 						settlement.storeAmountResource(id, amount);
-						// Add tracking supply
-//						inv.addAmountSupply(id, amount);
 						// Add to the daily output
 						settlement.addOutput(id, amount, process.getTotalWorkTime());
 					}
@@ -497,8 +497,6 @@ public class Manufacture extends Function implements Serializable {
 						double capacity = settlement.getCargoCapacity();
 						if (mass <= capacity) {
 							settlement.storeItemResource(id, num);
-							// Add tracking supply
-//							inv.addItemSupply(id, num);
 							// Add to the daily output
 							settlement.addOutput(id, num, process.getTotalWorkTime());
 						}
@@ -549,8 +547,8 @@ public class Manufacture extends Function implements Serializable {
 						throw new IllegalStateException(
 								"Manufacture.addProcess(): output: " + item.getType() + " not a valid type.");
 
-					// Recalculate settlement good value for output item.
-//					settlement.getGoodsManager().updateGoodValue(ManufactureUtil.getGood(item), false);
+					// Recalculate settlement good value for the output item.
+					settlement.getGoodsManager().determineGoodValue(GoodsUtil.getGood(item.getName()));
 				}
 			}
 		}
@@ -620,9 +618,6 @@ public class Manufacture extends Function implements Serializable {
 					else
 						throw new IllegalStateException(
 								"Manufacture.addProcess(): output: " + item.getType() + " not a valid type.");
-
-					// Recalculate settlement good value for output item.
-//					settlement.getGoodsManager().updateGoodValue(ManufactureUtil.getGood(item), false);
 				}
 			}
 		}
@@ -689,7 +684,7 @@ public class Manufacture extends Function implements Serializable {
 						settlement.storeItemResource(id, totalNumber);
 
 					// Recalculate settlement good value for salvaged part.
-//					settlement.getGoodsManager().updateGoodValue(GoodsUtil.getResourceGood(part), false);
+					settlement.getGoodsManager().determineGoodValue(GoodsUtil.getGood(part.getName()));
 				}
 			}
 		}
@@ -729,12 +724,7 @@ public class Manufacture extends Function implements Serializable {
 			// Gets the available number of printers in storage
 			int numAvailable = building.getSettlement().getItemResourceStored(printerID);
 
-//			logger.info(building.getSettlement()
-//					+ "'s supportingProcesses: " + supportingProcesses
-//					+ "   maxProcesses: " + maxProcesses);
-
 			// NOTE: it's reasonable to create a settler's task to install a 3-D printer manually over a period of time
-
 			if (numPrintersInUse < numMaxConcurrentProcesses) {
 				int deficit = numMaxConcurrentProcesses - numPrintersInUse;
 				logger.info(getBuilding().getSettlement(), 20_000,

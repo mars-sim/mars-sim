@@ -104,9 +104,9 @@ public class GoodsManager implements Serializable, Temporal {
 	private static final String TRUSS = "steel truss";
 	private static final String STEEL = "steel";
 
+	private static final String HEAT_PROBE = "heat probe";
 	private static final String BOTTLE = "bottle";
 	private static final String FIBERGLASS = "fiberglass";
-	private static final String FIBERGLASS_CLOTH = "fiberglass cloth";
 	private static final String METHANE = "methane";
 	private static final String BRICK = "brick";
 	private static final String METEORITE = "meteorite";
@@ -228,13 +228,14 @@ public class GoodsManager implements Serializable, Temporal {
 	private static final double BAG_DEMAND = .1;
 	private static final double BARREL_DEMAND = .2;
 
-	private static final double SCRAP_METAL_DEMAND = .05;
-	private static final double INGOT_METAL_DEMAND = .1;
-	private static final double SHEET_METAL_DEMAND = .5;
+	private static final double SCRAP_METAL_DEMAND = .01;
+	private static final double INGOT_METAL_DEMAND = .01;
+	private static final double SHEET_METAL_DEMAND = .1;
+	private static final double TRUSS_DEMAND = .05;
 	private static final double STEEL_DEMAND = .1;
 
-	private static final double BOTTLE_DEMAND = .002;
-	private static final double FIBERGLASS_DEMAND = .05;
+	private static final double BOTTLE_DEMAND = .02;
+	private static final double FIBERGLASS_DEMAND = .1;
 	private static final double BRICK_DEMAND = .005;
 
 	private static final double REGOLITH_DEMAND_FACTOR = .5;
@@ -561,7 +562,7 @@ public class GoodsManager implements Serializable, Temporal {
 		
 		if (previous == 0) {
 			// At the start of the sim
-			totalDemand = .899 * average + .1 * projected + .01 * trade ;
+			totalDemand = .5 * average + .1 * projected + .01 * trade ;
 		}
 		else {
 			// Intentionally loses .01% 
@@ -758,14 +759,14 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @return
 	 */
 	public double getAverageAmountSupply(double supplyStored, int solElapsed) {
-		double aveSupply = 1 + Math.log((1 + 5 * supplyStored) / solElapsed);
+		double aveSupply = 0.5 + Math.log((1 + 5 * supplyStored) / solElapsed);
 
-		if (aveSupply < 0.1)
-			aveSupply = 0.1;
+		if (aveSupply < 0.5)
+			aveSupply = 0.5;
 
 		return aveSupply;
 	}
-	
+
 	/**
 	 * Gets the total supply for the item resource.
 	 *
@@ -775,10 +776,10 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @return
 	 */
 	public double getAverageItemSupply(double supplyStored, int solElapsed) {
-		double aveSupply = 0.5 + Math.log((1 + 2 * supplyStored) / solElapsed);
+		double aveSupply = 1.0 + Math.log((1 + 2 * supplyStored) / solElapsed);
 
-		if (aveSupply < 0.1)
-			aveSupply = 0.1;
+		if (aveSupply < 1.0)
+			aveSupply = 1.0;
 		
 		return aveSupply;
 	}
@@ -1327,7 +1328,7 @@ public class GoodsManager implements Serializable, Temporal {
 		double demand = 0;
 		String name = good.getName();
 		String type = GoodsUtil.getGoodType(good);
-
+		
 		if (name.contains("polyester")
 				|| name.contains("styrene")
 				|| name.contains("polyethylene"))
@@ -1367,6 +1368,37 @@ public class GoodsManager implements Serializable, Temporal {
 		String name = good.getName();
 		String type = GoodsUtil.getGoodType(good);
 
+		if (name.contains("electrical wire"))
+			return 0.1 * ELECTRICAL_DEMAND;
+
+		if (name.contains("wire connector"))
+			return 0.5 * ELECTRICAL_DEMAND;
+		
+		if (name.contains("pipe"))
+			return .1;
+		
+		if (name.contains("valve"))
+			return .05;
+
+		if (name.contains("plastic"))
+			return 1.1;
+		
+		// Note that there are 'plastic pipe', 'plastic sheet', 'plastic tubing'
+		if (name.contains("tank"))
+			return .1;
+		
+		if (name.contains(HEAT_PROBE))
+			return .05;
+
+		if (name.contains(BOTTLE))
+			return BOTTLE_DEMAND;
+
+		if (name.contains("duct"))
+			return .1;
+
+		if (name.contains("gasket"))
+			return .1;
+		
 		if (type.equalsIgnoreCase(GoodsUtil.ELECTRICAL)
 				|| name.contains("light")
 				|| name.contains("resistor")
@@ -1379,45 +1411,13 @@ public class GoodsManager implements Serializable, Temporal {
 
 		if (type.equalsIgnoreCase(GoodsUtil.METALLIC))
 			return  METALLIC_DEMAND;
-
-		if (name.contains("electrical wire"))
-			return 0.1 * ELECTRICAL_DEMAND;
-
-		if (name.contains("wire connector"))
-			return 0.5 * ELECTRICAL_DEMAND;
-		
-		if (name.equalsIgnoreCase("glass sheet"))
-			return .5;
-		
-		if (name.contains("pipe"))
-			return .05;
-		
-		if (name.contains("valve"))
-			return .05;
-
-		if (name.contains("plastic"))
-			return 1.1;
-		
-		// Note that there are 'plastic pipe', 'plastic sheet', 'plastic tubing'
-		if (name.contains("tank"))
-			return .1;
-
-		if (name.contains("bottle"))
-			return .05;
-
-		if (name.contains("duct"))
-			return .1;
-
-		if (name.contains("gasket"))
-			return .1;
-		
 		if (type.equalsIgnoreCase(GoodsUtil.UTILITY))
 			return UTILITY_DEMAND;
 
 		if (type.equalsIgnoreCase(GoodsUtil.CONSTRUCTION))
 			return CONSTRUCTION_DEMAND;
 
-		if (type.equalsIgnoreCase(GoodsUtil.RAW))
+		if (type.equalsIgnoreCase(GoodsUtil.INSTRUMENT))
 			return INSTRUMENT_DEMAND;
 
 		return 1;
@@ -1439,30 +1439,27 @@ public class GoodsManager implements Serializable, Temporal {
 		// May recycle the steel/AL scrap back to ingot
 		// Note: the VP of a scrap metal could be heavily influence by VP of regolith
 
-		else if (name.contains(INGOT))
+		if (name.contains(INGOT))
 			return INGOT_METAL_DEMAND;
 
-		else if (name.contains(SHEET))
+		if (name.contains(SHEET))
 			return SHEET_METAL_DEMAND;
 
-		else if (name.equalsIgnoreCase(TRUSS))
-			return SHEET_METAL_DEMAND;
+		if (name.contains(TRUSS))
+			return TRUSS_DEMAND;
 
-		else if (name.contains(STEEL))
+		if (name.contains(STEEL))
 			return STEEL_DEMAND;
 
-		else if (name.equalsIgnoreCase(BOTTLE))
-			return BOTTLE_DEMAND;
-
-		else if (name.equalsIgnoreCase(FIBERGLASS_CLOTH))
-			return FIBERGLASS_DEMAND;
-
-		else if (name.equalsIgnoreCase(FIBERGLASS))
+		if (name.contains(FIBERGLASS))
 			return FIBERGLASS_DEMAND;
 
 		if (name.equalsIgnoreCase(BRICK))
 			return BRICK_DEMAND;
 
+		if (name.equalsIgnoreCase("glass sheet"))
+			return .5;
+		
 		return 1;
 	}
 
@@ -2656,7 +2653,7 @@ public class GoodsManager implements Serializable, Temporal {
 				demand += manufacturingDemand * (1 + techLevel);
 			}
 		}
-		return Math.min(1000, demand);
+		return Math.min(MAX_DEMAND, demand);
 	}
 
 	/**
@@ -3977,7 +3974,7 @@ public class GoodsManager implements Serializable, Temporal {
 			Part part = (Part) ItemResourceUtil.findItemResource(id);
 			double mass = part.getMassPerItem();
 			double quantity = settlement.getItemResourceStored(id) ;
-			factor = 1.2 * Math.log(mass + 1) / (.3 + Math.log(quantity + 1));
+			factor = 1.2 * Math.log(mass + 1) / (1.2 + Math.log(quantity + 1));
 			price = cost * (1 + 2 * factor * Math.log(value/5.0 + 1));
 		}
 			

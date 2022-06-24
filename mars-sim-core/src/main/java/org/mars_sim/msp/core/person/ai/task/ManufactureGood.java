@@ -1,4 +1,4 @@
-/**
+/*
  * Mars Simulation Project
  * ManufactureGood.java
  * @date 2021-12-22
@@ -157,7 +157,8 @@ public class ManufactureGood extends Task implements Serializable {
 						manufacturingFunction.getProcesses());
 				for (ManufactureProcess process : processes) {
 					int processSkillLevel = process.getInfo().getSkillLevelRequired();
-					if (processSkillLevel > highestSkillLevel) {
+					// NOTE: allow a low material science skill person to have access to do the next level skill process
+					if (processSkillLevel - 1 > highestSkillLevel) {
 						// Cancel manufacturing process.
 						manufacturingFunction.endManufacturingProcess(process, true);
 					}
@@ -165,49 +166,6 @@ public class ManufactureGood extends Task implements Serializable {
 			}
 		}
 	}
-
-//	public static void cancelDifficultManufacturingProcesses(Robot robot) {
-//
-//		Settlement settlement = robot.getSettlement();
-//		if (settlement != null) {
-//			int highestSkillLevel = 0;
-//			SkillManager skillManager = null;
-//			for (Person tempPerson : settlement.getAllAssociatedPeople()) {
-//				if (skillManager == null)
-//					skillManager = tempPerson.getSkillManager();
-//				int skill = skillManager.getSkillLevel(SkillType.MATERIALS_SCIENCE);
-//				if (skill > highestSkillLevel) {
-//					highestSkillLevel = skill;
-//				}
-//			}
-//
-//			skillManager = null;
-//			for (Robot tempRobot : settlement.getAllAssociatedRobots()) {
-//				if (robot.getBotMind().getRobotJob() instanceof Makerbot) {
-//					if (skillManager == null)
-//						skillManager = tempRobot.getSkillManager();
-//					int skill = skillManager.getSkillLevel(SkillType.MATERIALS_SCIENCE);
-//					if (skill > highestSkillLevel) {
-//						highestSkillLevel = skill;
-//					}
-//				}
-//			}
-//
-//			BuildingManager buildingManager = robot.getSettlement().getBuildingManager();
-//			for (Building building : buildingManager.getBuildings(FunctionType.MANUFACTURE)) {
-//				Manufacture manufacturingFunction = building.getManufacture();
-//				List<ManufactureProcess> processes = new ArrayList<ManufactureProcess>(
-//						manufacturingFunction.getProcesses());
-//				for (ManufactureProcess process : processes) {
-//					int processSkillLevel = process.getInfo().getSkillLevelRequired();
-//					if (processSkillLevel > highestSkillLevel) {
-//						// Cancel manufacturing process.
-//						manufacturingFunction.endManufacturingProcess(process, true);
-//					}
-//				}
-//			}
-//		}
-//	}
 
 	/**
 	 * Gets an available manufacturing building that the person can use. Returns
