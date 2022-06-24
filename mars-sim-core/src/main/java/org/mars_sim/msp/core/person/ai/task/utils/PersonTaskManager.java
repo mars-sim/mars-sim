@@ -134,7 +134,7 @@ public class PersonTaskManager extends TaskManager implements Serializable {
 
 	/**
 	 * Calculates and caches the probabilities.
-	 * This will NOT use the cache but assumes the callers know when a cahce can be used or not used.
+	 * This will NOT use the cache but assumes the callers know when a cache can be used or not used.
 	 */
 	@Override
 	protected synchronized void rebuildTaskCache() {

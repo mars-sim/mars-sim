@@ -251,12 +251,12 @@ public class GoodsManager implements Serializable, Temporal {
 	private static final double CONSTRUCTION_DEMAND = .999;
 
 	/** VP probability modifier. */
-	public static final double ICE_VALUE_MODIFIER = .005D;
+	public static final double ICE_VALUE_MODIFIER = 5D;
 	private static final double WATER_VALUE_MODIFIER = 1D;
 
 	public static final double SOIL_VALUE_MODIFIER = .5;
-	public static final double REGOLITH_VALUE_MODIFIER = .25D;
-	public static final double SAND_VALUE_MODIFIER = .5D;
+	public static final double REGOLITH_VALUE_MODIFIER = 25D;
+	public static final double SAND_VALUE_MODIFIER = 5D;
 	public static final double CONCRETE_VALUE_MODIFIER = .5D;
 	public static final double ROCK_MODIFIER = 0.99D;
 	public static final double METEORITE_MODIFIER = 1.05;
@@ -481,27 +481,26 @@ public class GoodsManager implements Serializable, Temporal {
 	/**
 	 * Determines the value of an amount resource.
 	 *
-	 * @param resourceGood the amount resource good.
+	 * @param good the amount resource good.
 	 * @param supply       the current supply (kg) of the good.
 	 * @param useCache     use the cache to determine value. always true if just
 	 *                     traded
 	 * @return value the value point 
 	 */
-	private double determineAmountResourceGoodValue(Good resourceGood, double supply, boolean useCache) {
-		boolean estimationOnly = (supply == 0);  
+	private double determineAmountResourceGoodValue(Good good, double supply, boolean useCache) {	
+		int id = good.getID();
+		double previousDemand = getDemandValue(good);
 		
-		int id = resourceGood.getID();
-
 		if (useCache) {
-			return goodsValues.get(id);
+			return previousDemand / supply;
 		}
 
 		double value = 0;
-		double previous = 0;
+
 		double average = 0;
 		double trade = 0;
-
 		double totalDemand = 0;
+		
 		double totalSupply = 0;
 
 		// Needed for loading a saved sim
@@ -509,17 +508,13 @@ public class GoodsManager implements Serializable, Temporal {
 		// Compact and/or clear supply and demand maps every x days
 		int numSol = solElapsed % Settlement.SUPPLY_DEMAND_REFRESH + 1;
 
-		if (amountDemandCache.containsKey(id)) {
-			// Get previous demand
-			previous = amountDemandCache.get(id);
-		}
-
 		// Calculate the average demand
 		average = getAverageCapAmountDemand(id, numSol);
 
 		// Calculate projected demand
-		// Tune ice demand.
-		double projected = (computeIceProjectedDemand(id)
+		double projected = limitMaxMin(
+			// Tune ice demand.
+			(computeIceProjectedDemand(id)
 			// Tune regolith projected demand.
 			+ computeRegolithProjectedDemand(id)
 			// Tune life support demand if applicable.
@@ -553,65 +548,50 @@ public class GoodsManager implements Serializable, Temporal {
 			// Adjust the demand on minerals and ores.
 			+ getMineralDemand(id))
 			// Flatten certain types of demand.
-			* flattenAmountDemand(resourceGood);
-		
-		projected = limitMaxMin(projected, MIN_PROJ_DEMAND, MAX_PROJ_DEMAND);
+			* flattenAmountDemand(good), MIN_PROJ_DEMAND, MAX_PROJ_DEMAND);
 			
 		// Add trade value.
-		trade = determineTradeDemand(resourceGood, useCache);
-
-		trade = limitMaxMin(trade, MIN_DEMAND, MAX_DEMAND);
+		trade = limitMaxMin(determineTradeDemand(good, useCache), MIN_DEMAND, MAX_DEMAND);
 		
-		if (previous == 0) {
+		if (previousDemand == 0) {
 			// At the start of the sim
-			totalDemand = .5 * average + .1 * projected + .01 * trade ;
+			totalDemand = limitMaxMin(.5 * average + .1 * projected + .01 * trade, MIN_DEMAND, MAX_DEMAND);
 		}
 		else {
 			// Intentionally loses .01% 
 			// Allows only very small fluctuations of demand as possible
-			totalDemand = .9998 * previous + .00005 * projected + .00005 * trade ; 
+			totalDemand = limitMaxMin(.9998 * previousDemand + .00005 * projected + .00005 * trade, MIN_DEMAND, MAX_DEMAND);
 		}
-
-		totalDemand = limitMaxMin(totalDemand, MIN_DEMAND, MAX_DEMAND);
 
 		// Save the goods demand
 		amountDemandCache.put(id, totalDemand);
 		
 		// Calculate total supply
-		if (estimationOnly)
-			// For estimating trade/delivery mission, use this specified resources as supply
-			totalSupply = getAverageAmountSupply(supply, numSol);
-		else
-			totalSupply = getAverageAmountSupply(settlement.getAmountResourceStored(id), numSol);
-		
-		totalSupply = limitMaxMin(totalSupply, MIN_SUPPLY, MAX_SUPPLY);
+		totalSupply = limitMaxMin(getAverageAmountSupply(settlement.getAmountResourceStored(id), numSol), MIN_SUPPLY, MAX_SUPPLY);
 
 		// Store the average supply
-		if (!estimationOnly)
-			amountSupplyCache.put(id, totalSupply);
+		amountSupplyCache.put(id, totalSupply);
 		
 		// Calculate the value point
 		value = totalDemand / totalSupply;
 
-		if (!estimationOnly) {
-			// Check if it surpasses MAX_VP
-			if (value > MAX_VP) {
-				// Update deflationIndexMap for other resources of the same category
-				value = updateDeflationMap(id, value, resourceGood.getCategory(), true);
-			}
-			// Check if it falls below MIN_VP
-			else if (value < MIN_VP) {
-				// Update deflationIndexMap for other resources of the same category
-				value = updateDeflationMap(id, value, resourceGood.getCategory(), false);
-			}
-	
-			// Check for inflation and deflation adjustment due to other resources
-			value = checkDeflation(id, value);
-			// Adjust the value to the average value
-			value = tuneToAverageValue(resourceGood, value);
-			// Save the value point
-			goodsValues.put(id, value);
+		// Check if it surpasses MAX_VP
+		if (value > MAX_VP) {
+			// Update deflationIndexMap for other resources of the same category
+			value = updateDeflationMap(id, value, good.getCategory(), true);
 		}
+		// Check if it falls below MIN_VP
+		else if (value < MIN_VP) {
+			// Update deflationIndexMap for other resources of the same category
+			value = updateDeflationMap(id, value, good.getCategory(), false);
+		}
+
+		// Check for inflation and deflation adjustment due to other resources
+		value = checkDeflation(id, value);
+		// Adjust the value to the average value
+		value = tuneToAverageValue(good, value);
+		// Save the value point
+		goodsValues.put(id, value);
 		
 		return value;
 	}
@@ -2263,17 +2243,21 @@ public class GoodsManager implements Serializable, Temporal {
 	/**
 	 * Determines the value of an item resource.
 	 *
-	 * @param resourceGood the resource good to check.
+	 * @param good the resource good to check.
 	 * @param supply       the current supply (# items) of the good.
 	 * @param useCache     use the cache to determine value.
 	 * @return value (Value Points / item)
 	 */
-	private double determineItemResourceGoodValue(Good resourceGood, double supply, boolean useCache) {
-		boolean estimationOnly = (supply == 0);
+	private double determineItemResourceGoodValue(Good good, double supply, boolean useCache) {
+		int id = good.getID();
+		double previousDemand = getDemandValue(good);
+		
+		if (useCache) {
+			return previousDemand / supply;
+		}
 		
 		double value = 1;
 		double totalDemand = 0;
-		double previous = 0;
 		double average = 0;
 		double totalSupply = 0;
 
@@ -2282,24 +2266,13 @@ public class GoodsManager implements Serializable, Temporal {
 		// Compact and/or clear supply and demand maps every x days
 		int numSol = solElapsed % Settlement.SUPPLY_DEMAND_REFRESH + 1;
 
-		int id = resourceGood.getID();
 		Part part = (Part) ItemResourceUtil.findItemResource(id);
-
-		if (useCache) {
-			return goodsValues.get(id);
-		}
-
-		if (partDemandCache.containsKey(id)) {
-			// Get previous demand
-			previous = partDemandCache.get(id);
-		}
 
 		average = getAverageItemDemand(id, numSol);
 
 		// Get demand for a part.
 		// NOTE: the following estimates are for each orbit (Martian year) :
-
-		double projected = 
+		double projected = limitMaxMin(
 			// Add manufacturing demand.					
 			(getPartManufacturingDemand(part)
 			// Add food production demand.
@@ -2319,73 +2292,65 @@ public class GoodsManager implements Serializable, Temporal {
 			// Flatten raw part demand.
 			* flattenRawPartDemand(part)
 			// Flatten certain part demand.
-			* flattenPartDemand(resourceGood);
-
-		projected = limitMaxMin(projected, MIN_PROJ_DEMAND, MAX_PROJ_DEMAND);
+			* flattenPartDemand(good), MIN_PROJ_DEMAND, MAX_PROJ_DEMAND);
 
 		// Add trade demand.
-		double trade = determineTradeDemand(resourceGood, useCache);
+		double trade = limitMaxMin(determineTradeDemand(good, useCache), MIN_DEMAND, MAX_DEMAND);
 
-		trade = limitMaxMin(trade, MIN_DEMAND, MAX_DEMAND);
-		
 		// Recalculate the partsDemandCache
 		determineRepairPartsDemand();
 		// Gets the repair part demand
 		double repair = partDemandCache.get(id);
 
-		if (previous == 0) {
+		if (previousDemand == 0) {
 			// At the start of the sim
-			totalDemand = .4 * repair + .1 * average + .4 * projected + .1 * trade;
+			totalDemand = limitMaxMin(.4 * repair 
+					+ .1 * average 
+					+ .4 * projected 
+					+ .1 * trade, 
+					MIN_DEMAND, MAX_DEMAND);
 		}
 
 		else {
 			// Intentionally lose 1% of its value
-			totalDemand = .986 * previous + .001 * repair + .001 * average + .001 * projected + .001 * trade;
+			totalDemand = limitMaxMin(.986 * previousDemand + .001 * repair 
+					+ .001 * average 
+					+ .001 * projected 
+					+ .001 * trade, 
+					MIN_DEMAND, MAX_DEMAND);
 		}
-
-		totalDemand = limitMaxMin(totalDemand, MIN_DEMAND, MAX_DEMAND);
 		
-
+		// Save the goods demand
+		partDemandCache.put(id, totalDemand);
+		
 		// Calculate total supply
-		if (estimationOnly) {
-			// For estimating trade/delivery mission, use specified resources as supply
-			totalSupply = getAverageItemSupply(supply, numSol);
-		}
-		else {
-			// Save the goods demand
-			partDemandCache.put(id, totalDemand);
-			totalSupply = getAverageItemSupply(settlement.getItemResourceStored(id), numSol);
-		}
-		
-		totalSupply = limitMaxMin(totalSupply, MIN_SUPPLY, MAX_SUPPLY);
-		
+		totalSupply = limitMaxMin(getAverageItemSupply(settlement.getItemResourceStored(id), numSol), 
+							MIN_SUPPLY, MAX_SUPPLY);
+
 		// Save the average supply
-		if (!estimationOnly)
-			partSupplyCache.put(id, totalSupply);
+		partSupplyCache.put(id, totalSupply);
 
 		// Calculate item value
 		value = totalDemand / totalSupply;
 
-		if (!estimationOnly) {
 		// Check if it surpass the max VP
-			if (value > MAX_VP) {
-				// Update deflationIndexMap for other resources of the same category
-				value = updateDeflationMap(id, value, resourceGood.getCategory(), true);
-			}
-			// Check if it falls below 1
-			else if (value < MIN_VP) {
-				// Update deflationIndexMap for other resources of the same category
-				value = updateDeflationMap(id, value, resourceGood.getCategory(), false);
-			}
-
-			// Check for inflation and deflation adjustment due to other resources
-			value = checkDeflation(id, value);
-			// Adjust the value to the average value
-			value = tuneToAverageValue(resourceGood, value);
-					
-			// Save the value point
-			goodsValues.put(id, value);
+		if (value > MAX_VP) {
+			// Update deflationIndexMap for other resources of the same category
+			value = updateDeflationMap(id, value, good.getCategory(), true);
 		}
+		// Check if it falls below 1
+		else if (value < MIN_VP) {
+			// Update deflationIndexMap for other resources of the same category
+			value = updateDeflationMap(id, value, good.getCategory(), false);
+		}
+
+		// Check for inflation and deflation adjustment due to other resources
+		value = checkDeflation(id, value);
+		// Adjust the value to the average value
+		value = tuneToAverageValue(good, value);
+				
+		// Save the value point
+		goodsValues.put(id, value);
 
 		return value;
 	}
@@ -2407,20 +2372,20 @@ public class GoodsManager implements Serializable, Temporal {
 			double wearModifier = (entity.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
 
 			// Estimate repair parts needed per orbit for entity.
-			sumPartsDemand(partsProbDemand, getEstimatedOrbitRepairParts(entity), wearModifier);
+			partsProbDemand = sumPartsDemand(partsProbDemand, getEstimatedOrbitRepairParts(entity), wearModifier);
 
 			// Add outstanding repair parts required.
-			sumPartsDemand(partsProbDemand, getOutstandingRepairParts(entity), MALFUNCTION_REPAIR_COEF);
+			partsProbDemand = sumPartsDemand(partsProbDemand, getOutstandingRepairParts(entity), MALFUNCTION_REPAIR_COEF);
 
 			// Estimate maintenance parts needed per orbit for entity.
-			sumPartsDemand(partsProbDemand, getEstimatedOrbitMaintenanceParts(entity), wearModifier);
+			partsProbDemand = sumPartsDemand(partsProbDemand, getEstimatedOrbitMaintenanceParts(entity), wearModifier);
 
 			// Add outstanding maintenance parts required.
-			sumPartsDemand(partsProbDemand, getOutstandingMaintenanceParts(entity), MAINTENANCE_REPAIR_COEF);
+			partsProbDemand = sumPartsDemand(partsProbDemand, getOutstandingMaintenanceParts(entity), MAINTENANCE_REPAIR_COEF);
 		}
-
+	
 		// Add demand for vehicle attachment parts.
-		sumPartsDemand(partsProbDemand, getVehicleAttachmentParts(), 1D);
+		partsProbDemand = sumPartsDemand(partsProbDemand, getVehicleAttachmentParts(), 1D);
 
 		// Store in parts demand cache.
 		Iterator<Integer> j = partsProbDemand.keySet().iterator();
@@ -2439,9 +2404,12 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @param totalPartsDemand      the total parts number.
 	 * @param additionalPartsDemand the additional parts number.
 	 * @param multiplier            the multiplier for the additional parts number.
+	 * @return
 	 */
-	private void sumPartsDemand(Map<Integer, Double> totalPartsDemand, Map<Integer, Number> additionalPartsDemand,
+	private Map<Integer, Double> sumPartsDemand(Map<Integer, Double> totalPartsDemand, Map<Integer, Number> additionalPartsDemand,
 			double multiplier) {
+		Map<Integer, Double> demand = new HashMap<>();
+
 		Iterator<Integer> i = additionalPartsDemand.keySet().iterator();
 		while (i.hasNext()) {
 			Integer part = i.next();
@@ -2450,6 +2418,8 @@ public class GoodsManager implements Serializable, Temporal {
 				number += totalPartsDemand.get(part);
 			totalPartsDemand.put(part, number);
 		}
+		demand = totalPartsDemand;
+		return demand;
 	}
 
 	/**
@@ -2944,31 +2914,28 @@ public class GoodsManager implements Serializable, Temporal {
 	/**
 	 * Determines the value of an equipment.
 	 *
-	 * @param equipmentGood the equipment good to check.
+	 * @param good the equipment good to check.
 	 * @param supply        the current supply (# of items) of the good.
 	 * @param useCache      use the cache to determine value.
 	 * @return the value (value points)
 	 */
-	private double determineEquipmentGoodValue(Good equipmentGood, double supply, boolean useCache) {
-
+	private double determineEquipmentGoodValue(Good good, double supply, boolean useCache) {
+		int id = good.getID();
+		double previousDemand = getDemandValue(good);
+		
+		if (useCache) {
+			return previousDemand / supply;
+		}
+		
 		double value = 0D;
 		double average = 0D;
-		double previous = 0D;
 		double totalDemand = 0;
-
-		int id = equipmentGood.getID();
-
-		if (useCache) {
-			return goodsValues.get(id);
-		}
-
+		
 		EquipmentType equipmentType = EquipmentType.convertID2Type(id);		
 		// Needed for loading a saved sim
 		int solElapsed = marsClock.getMissionSol();
 		// Compact and/or clear supply and demand maps every x days
 		int numSol = solElapsed % Settlement.SUPPLY_DEMAND_REFRESH + 1;
-
-		previous = getEquipmentDemandValue(id);
 
 		// Determine average demand.
 		average = determineEquipmentDemand(equipmentType);
@@ -2985,17 +2952,17 @@ public class GoodsManager implements Serializable, Temporal {
 		
 		equipmentSupplyCache.put(id, totalSupply);
 		
-		double trade = determineTradeDemand(equipmentGood, useCache);
+		double trade = determineTradeDemand(good, useCache);
 
 		trade = limitMaxMin(trade, MIN_DEMAND, MAX_DEMAND);
 		
-		if (previous == 0) {
+		if (previousDemand == 0) {
 			totalDemand = .5 * average + .5 * trade;
 		}
 
 		else {
 			// Intentionally lose 2% of its value
-			totalDemand = .97 * previous + .005 * average + .005 * trade;
+			totalDemand = .97 * previousDemand + .005 * average + .005 * trade;
 		}
 		
 		totalDemand = limitMaxMin(totalDemand, MIN_DEMAND, MAX_DEMAND);
@@ -3007,18 +2974,18 @@ public class GoodsManager implements Serializable, Temporal {
 		// Check if it surpass the max VP
 		if (value > MAX_VP) {
 			// Update deflationIndexMap for other resources of the same category
-			value = updateDeflationMap(id, value, equipmentGood.getCategory(), true);
+			value = updateDeflationMap(id, value, good.getCategory(), true);
 		}
 		// Check if it falls below 1
 		else if (value < MIN_VP) {
 			// Update deflationIndexMap for other resources of the same category
-			value = updateDeflationMap(id, value, equipmentGood.getCategory(), false);
+			value = updateDeflationMap(id, value, good.getCategory(), false);
 		}
 
 		// Check for inflation and deflation adjustment due to other equipment
 		value = checkDeflation(id, value);
 		// Adjust the value to the average value
-		value = tuneToAverageValue(equipmentGood, value);
+		value = tuneToAverageValue(good, value);
 
 		// Save the value point
 		goodsValues.put(id, value);
@@ -3180,20 +3147,39 @@ public class GoodsManager implements Serializable, Temporal {
 	/**
 	 * Determines the value of a vehicle good.
 	 *
-	 * @param vehicleGood the vehicle good.
+	 * @param good the vehicle good.
 	 * @param supply      the current supply (# of vehicles) of the good.
 	 * @param useCache    use the cache to determine value.
 	 * @return the value (value points).
 	 */
-	private double determineVehicleGoodValue(Good vehicleGood, double supply, boolean useCache) {
+	private double determineVehicleGoodValue(Good good, double supply, boolean useCache) {
+		boolean buy = false;
+		String vehicleType = good.getName();
+		
+		int id = good.getID();
+		double previousDemand = getDemandValue(good);
+		
+		if (useCache) {
+			if (buy) {
+				if (vehicleBuyValueCache.containsKey(vehicleType)) {
+					return vehicleBuyValueCache.get(vehicleType);
+				} else {
+					return previousDemand / supply; //determineVehicleGoodValue(good, supply, false);
+				}
+			} else {
+				if (vehicleSellValueCache.containsKey(vehicleType)) {
+					return vehicleSellValueCache.get(vehicleType);
+				} else {
+					return previousDemand / supply; //determineVehicleGoodValue(good, supply, false);
+				}
+			}
+		} 	
+		
 		double value = 0D;
 		double totalDemand = 0;
 		double totalSupply = 0;
-		
-		String vehicleType = vehicleGood.getName();
-		int id = vehicleGood.getID();
-		
-		boolean buy = false;
+		double trade = 0;
+
 
 		// Needed for loading a saved sim
 		int solElapsed = marsClock.getMissionSol();
@@ -3201,85 +3187,55 @@ public class GoodsManager implements Serializable, Temporal {
 		int numSol = solElapsed % Settlement.SUPPLY_DEMAND_REFRESH + 1;
 
 		// Calculate total supply
-		if (supply > 0)
-			// For estimating trade/delivery mission, use specified resources as supply
-			totalSupply = getAverageVehicleSupply(supply, numSol);
-		else {
-			totalSupply = getAverageVehicleSupply(getNumberOfVehiclesForSettlement(vehicleType), numSol);
-			buy = true;
-		}
-	
-		totalSupply = limitMaxMin(totalSupply, MIN_SUPPLY, MAX_SUPPLY);
+		totalSupply = limitMaxMin(getAverageVehicleSupply(getNumberOfVehiclesForSettlement(vehicleType), numSol), MIN_SUPPLY, MAX_SUPPLY);
 		
-		if (useCache) {
-			if (buy) {
-				if (vehicleBuyValueCache.containsKey(vehicleType)) {
-					value = vehicleBuyValueCache.get(vehicleType);
-				} else {
-					value = determineVehicleGoodValue(vehicleGood, totalSupply, false);
-				}
-			} else {
-				if (vehicleSellValueCache.containsKey(vehicleType)) {
-					value = vehicleSellValueCache.get(vehicleType);
-				} else {
-					value = determineVehicleGoodValue(vehicleGood, totalSupply, false);
-				}
-			}
+		buy = true;
+		
+		double projected = limitMaxMin(determineVehicleProjectedDemand(good, useCache), MIN_PROJ_DEMAND, MAX_PROJ_DEMAND);
+		
+		double average = computeVehiclePartsCost(good);
+		
+		vehicleSupplyCache.put(id, totalSupply);
+		
+		trade = limitMaxMin(determineTradeVehicleValue(good, useCache), MIN_DEMAND, MAX_DEMAND);
+		
+		if (previousDemand == 0) {
+			totalDemand = .5 * average + .25 * projected + .25 * trade;
+		}
 
+		else {
+			// Intentionally lose 2% of its value
+			totalDemand = .97 * previousDemand + .003 * average + .003 * projected + .003 * trade;
+		}
+
+		totalDemand = limitMaxMin(totalDemand, MIN_DEMAND, MAX_DEMAND);
+				
+		vehicleDemandCache.put(id, totalDemand);
+
+		value = totalDemand / totalSupply;
+		
+		// Check if it surpass the max VP
+		if (value > MAX_VP) {
+			// Update deflationIndexMap for other resources of the same category
+			value = updateDeflationMap(id, value, good.getCategory(), true);
+		}
+		// Check if it falls below 1
+		else if (value < MIN_VP) {
+			// Update deflationIndexMap for other resources of the same category
+			value = updateDeflationMap(id, value, good.getCategory(), false);
+		}
+
+		// Check for inflation and deflation adjustment due to other vehicle
+		value = checkDeflation(id, value);
+		// Adjust the value to the average value
+		value = tuneToAverageValue(good, value);
+		// Save the value point
+		goodsValues.put(id, value);
+		
+		if (buy) {
+			vehicleBuyValueCache.put(vehicleType, value);
 		} else {
-
-			double projected = determineVehicleProjectedDemand(vehicleGood, useCache);
-			
-			projected = limitMaxMin(projected, MIN_PROJ_DEMAND, MAX_PROJ_DEMAND);
-			
-			double average = computeVehiclePartsCost(vehicleGood);
-			
-			double previous = getVehicleDemandValue(id);
-
-			vehicleSupplyCache.put(id, totalSupply);
-			
-			double trade = determineTradeVehicleValue(vehicleGood, useCache);
-
-			trade = limitMaxMin(trade, MIN_DEMAND, MAX_DEMAND);
-			
-			if (previous == 0) {
-				totalDemand = .5 * average + .25 * projected + .25 * trade;
-			}
-
-			else {
-				// Intentionally lose 2% of its value
-				totalDemand = .97 * previous + .003 * average + .003 * projected + .003 * trade;
-			}
-
-			totalDemand = limitMaxMin(totalDemand, MIN_DEMAND, MAX_DEMAND);
-					
-			vehicleDemandCache.put(id, totalDemand);
-
-			value = totalDemand / totalSupply;
-			
-			// Check if it surpass the max VP
-			if (value > MAX_VP) {
-				// Update deflationIndexMap for other resources of the same category
-				value = updateDeflationMap(id, value, vehicleGood.getCategory(), true);
-			}
-			// Check if it falls below 1
-			else if (value < MIN_VP) {
-				// Update deflationIndexMap for other resources of the same category
-				value = updateDeflationMap(id, value, vehicleGood.getCategory(), false);
-			}
-
-			// Check for inflation and deflation adjustment due to other vehicle
-			value = checkDeflation(id, value);
-			// Adjust the value to the average value
-			value = tuneToAverageValue(vehicleGood, value);
-			// Save the value point
-			goodsValues.put(id, value);
-			
-			if (buy) {
-				vehicleBuyValueCache.put(vehicleType, value);
-			} else {
-				vehicleSellValueCache.put(vehicleType, value);
-			}
+			vehicleSellValueCache.put(vehicleType, value);
 		}
 
 		return value;

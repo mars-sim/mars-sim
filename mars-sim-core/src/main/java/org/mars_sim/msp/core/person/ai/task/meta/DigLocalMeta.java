@@ -1,4 +1,4 @@
-/**
+/*
  * Mars Simulation Project
  * DigLocalMeta.java
  * @date 2021-10-21
@@ -22,10 +22,11 @@ public abstract class DigLocalMeta extends MetaTask {
 
 	private static final double VALUE = 2.0;
 	private EquipmentType containerType;
-
+	private String name;
 
     public DigLocalMeta(String name, EquipmentType containerType) {
 		super(name, WorkerType.PERSON, TaskScope.WORK_HOUR);
+		this.name = name;
 		setFavorite(FavoriteType.OPERATION);
 		setTrait(TaskTrait.STRENGTH);
 
@@ -89,21 +90,25 @@ public abstract class DigLocalMeta extends MetaTask {
 
 	        result = collectionProbability * VALUE;
 
-	        if (result > 3000)
-	        	result = 3000;
+	        if (result > 5000)
+	        	result = 5000;
 
             result = result - stress * 3 - fatigue/2 - hunger/2;
 
 	        if (result < 0)
 	        	return 0;
 
-	        // Crowded settlement modifier
-        if (settlement.getIndoorPeopleCount() > settlement.getPopulationCapacity())
-            result = result * (settlement.getIndoorPeopleCount() - settlement.getPopulationCapacity());
+	    
+	    int indoor = settlement.getIndoorPeopleCount(); 
+	    int citizen = settlement.getNumCitizens();
+	    
+	    // Crowded settlement modifier
+        if (indoor > settlement.getPopulationCapacity())
+            result = result * (indoor - settlement.getPopulationCapacity());
 
-        if (settlement.getIndoorPeopleCount() <= 4)
-            result *= 1.5D;
-
+        // Due to the ratio of # indoor people vs. those outside already doing EVA 
+        result *= 2.0 / (1 + citizen) * (1 + indoor) / (1 + settlement.getNumOutsideEVA()) ;
+        
         result = applyPersonModifier(result, person);
 
     	if (exposed[0]) {

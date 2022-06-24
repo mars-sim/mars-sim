@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * CollectionUtils.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-06-24
  * @author Sebastien Venot
  */
 package org.mars_sim.msp.core;
@@ -19,7 +19,6 @@ import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleType;
 
 /**

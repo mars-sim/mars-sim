@@ -227,9 +227,9 @@ public class Settlement extends Structure implements Temporal,
 	/** The flag signifying this settlement as the destination of the user-defined commander. */
 	private boolean hasDesignatedCommander = false;
 
-	/** The average regolith collection rate nearby */
+	/** The average regolith collection rate nearby. */
 	private double regolithCollectionRate = RandomUtil.getRandomDouble(4, 8);
-	/** The average ice collection rate of the water ice nearby */
+	/** The average ice collection rate of the water ice nearby. */
 	private double iceCollectionRate = RandomUtil.getRandomDouble(0.2, 1);
 	/** The composite value of the minerals nearby. */
 	public double mineralValue = -1;
@@ -563,15 +563,15 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/*
-	 * Gets sponsoring agency for the person
+	 * Gets sponsoring agency for the person.
 	 */
 	public ReportingAuthority getSponsor() {
 		return ra;
 	}
 
 	/**
-	 * Create a map of buildings with their lists of building connectors attached to
-	 * it
+	 * Creates a map of buildings with their lists of building connectors attached to
+	 * it.
 	 *
 	 * @return a map
 	 */
@@ -587,7 +587,7 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Gets a list of building connectors attached to this building
+	 * Gets a list of building connectors attached to this building.
 	 *
 	 * @param building
 	 * @return
@@ -600,7 +600,7 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Creates a list of adjacent buildings attached to this building
+	 * Creates a list of adjacent buildings attached to this building.
 	 *
 	 * @param building
 	 * @return a list of adjacent buildings
@@ -668,7 +668,7 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Gets the population capacity of the settlement
+	 * Gets the population capacity of the settlement.
 	 *
 	 * @return the population capacity
 	 */
@@ -677,7 +677,7 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Gets the current number of people who are inside the settlement
+	 * Gets the current number of people who are inside the settlement.
 	 *
 	 * @return the number indoor
 	 */
@@ -685,6 +685,9 @@ public class Settlement extends Structure implements Temporal,
 		return peopleWithin.size();
 	}
 
+	/**
+	 * Ends all the indoor tasks people are doing.
+	 */
 	public void endAllIndoorTasks() {
 		for (Person p : getIndoorPeople()) {
 			logger.log(this, p, Level.INFO, 4_000,
@@ -709,15 +712,26 @@ public class Settlement extends Structure implements Temporal,
 	 * @return Collection of people
 	 */
 	public Collection<Person> getOutsideEVAPeople() {
-
 		return citizens.stream()
 				.filter(p -> !p.isDeclaredDead()
 						&& (p.getLocationStateType() == LocationStateType.WITHIN_SETTLEMENT_VICINITY
 						|| p.getLocationStateType() == LocationStateType.MARS_SURFACE))
 				.collect(Collectors.toList());
-
 	}
 
+	/**
+	 * Gets the number of citizens doing EVA outside.
+	 * 
+	 * @return
+	 */
+	public Long getNumOutsideEVA() {
+		return citizens.stream()
+				.filter(p -> !p.isDeclaredDead()
+						&& (p.getLocationStateType() == LocationStateType.WITHIN_SETTLEMENT_VICINITY
+						|| p.getLocationStateType() == LocationStateType.MARS_SURFACE))
+				.collect(Collectors.counting());
+	}
+	
 	/**
 	 * Gets a collection of people who are doing EVA outside the settlement.
 	 *
@@ -3198,7 +3212,7 @@ public class Settlement extends Structure implements Temporal,
 		}
 	}
 
-	/***
+	/**
 	 * Computes the probability of the presence of regolith
 	 *
 	 * @return probability of finding regolith
@@ -3206,15 +3220,13 @@ public class Settlement extends Structure implements Temporal,
 	private double computeRegolithProbability() {
 		double result = 0;
 
-		double regolith_value = goodsManager.getGoodValuePerItem(REGOLITH_ID);
-		regolith_value = regolith_value * GoodsManager.REGOLITH_VALUE_MODIFIER;
+		double regolith_value = goodsManager.getGoodValuePerItem(REGOLITH_ID) * GoodsManager.REGOLITH_VALUE_MODIFIER;
 		if (regolith_value > REGOLITH_MAX)
 			regolith_value = REGOLITH_MAX;
 		else if (regolith_value < 0)
 			return 0;
 
-		double sand_value = goodsManager.getGoodValuePerItem(SAND_ID);
-		sand_value = sand_value * GoodsManager.SAND_VALUE_MODIFIER;
+		double sand_value = goodsManager.getGoodValuePerItem(SAND_ID) * GoodsManager.SAND_VALUE_MODIFIER;
 		if (sand_value > REGOLITH_MAX)
 			sand_value = REGOLITH_MAX;
 		else if (sand_value < 0)
@@ -3235,7 +3247,7 @@ public class Settlement extends Structure implements Temporal,
 			// no change to missionProbability
 		}
 		else {
-			result = 5 * (MIN_REGOLITH_RESERVE * pop - regolith_available);
+			result = 50 * (MIN_REGOLITH_RESERVE * pop - regolith_available);
 		}
 
 		if (result < 0)
@@ -3751,7 +3763,7 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Obtains the remaining general storage space
+	 * Obtains the remaining general storage space.
 	 *
 	 * @return quantity
 	 */
@@ -3771,7 +3783,7 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Gets the amount resource stored
+	 * Gets the amount resource stored.
 	 *
 	 * @param resource
 	 * @return quantity
@@ -3782,7 +3794,7 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Gets all stored amount resources
+	 * Gets all stored amount resources.
 	 *
 	 * @return all stored amount resources.
 	 */
@@ -3792,7 +3804,7 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Gets all stored item resources
+	 * Gets all stored item resources.
 	 *
 	 * @return all stored item resources.
 	 */
@@ -3813,7 +3825,7 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Gets the remaining quantity of an item resource
+	 * Gets the remaining quantity of an item resource.
 	 *
 	 * @param resource
 	 * @return quantity
@@ -3837,7 +3849,7 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Finds the number of containers of a particular type
+	 * Finds the number of containers of a particular type.
 	 *
 	 * @param containerType the equipment type.
 	 * @return number of empty containers.

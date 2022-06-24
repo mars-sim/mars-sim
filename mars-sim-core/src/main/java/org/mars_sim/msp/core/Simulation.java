@@ -844,6 +844,12 @@ public class Simulation implements ClockListener, Serializable {
         }
     }
 
+    /**
+     * Prints the format for the size of files.
+     * 
+     * @param v
+     * @return
+     */
     private static String formatSize(long v) {
         if (v < 1024) return v + " B";
         int z = (63 - Long.numberOfLeadingZeros(v)) / 10;
@@ -851,7 +857,8 @@ public class Simulation implements ClockListener, Serializable {
     }
 
     /**
-     * Serialize the given object and save it to a given file.
+     * Serializes the given object and save it to a given file.
+     * 
      * @return 
      */
     private boolean serialize(SaveType type, File file, Path srcPath, Path destPath)
@@ -880,7 +887,7 @@ public class Simulation implements ClockListener, Serializable {
 			oos.close();
 
 			// Print the size of the saved sim
-			logger.config("           File size : " + computeFileSize(file));
+			logger.config("           File size: " + computeFileSize(file));
 			logger.config("Done saving. The simulation resumes.");
 			success = true;
 
@@ -921,7 +928,8 @@ public class Simulation implements ClockListener, Serializable {
     }
 
 	/**
-	 * Prints the object and its size
+	 * Prints the object and its size.
+	 * 
 	 * @throws IOException
 	 */
 	public StringBuilder printObjectSize(int type) {
@@ -1041,7 +1049,7 @@ public class Simulation implements ClockListener, Serializable {
 
 
 	/**
-	 * Ends the current simulation
+	 * Ends the current simulation.
 	 */
 	public void endSimulation() {
 		logger.log(Level.CONFIG, "Exiting the simulation. Good Bye !");
@@ -1058,7 +1066,7 @@ public class Simulation implements ClockListener, Serializable {
 	}
 
 	/**
-	 * Stop the simulation.
+	 * Stops the simulation.
 	 */
 	public void stop() {
 		if (masterClock != null) {
