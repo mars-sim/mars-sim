@@ -1790,7 +1790,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="steel wire" number="15" />
 		</inputs>
 		<outputs>
-			<part name="small wheel" number="2" />
+			<part name="wheel - small" number="2" />
 		</outputs>
 	</process>
 
@@ -1803,7 +1803,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="steel wire" number="45" />
 		</inputs>
 		<outputs>
-			<part name="rover wheel" number="2" />
+			<part name="wheel - rover" number="2" />
 		</outputs>
 	</process>
 
@@ -1919,7 +1919,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 
 		</inputs>
 		<outputs>
-			<part name="small stepper motor" number="4" />
+			<part name="stepper motor - small" number="4" />
 		</outputs>
 	</process>
 
@@ -1934,7 +1934,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="wire connector" number="4" />
 		</inputs>
 		<outputs>
-			<part name="small motor" number="4" />
+			<part name="motor - small" number="4" />
 		</outputs>
 	</process>
 
@@ -1949,7 +1949,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="wire connector" number="8" />
 		</inputs>
 		<outputs>
-			<part name="large motor" number="1" />
+			<part name="motor - large" number="1" />
 		</outputs>
 	</process>
 
@@ -2096,14 +2096,14 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			power-required="0.0">
 		<inputs>
 			<part name="small vehicle frame" number="1" />
-			<part name="large motor" number="1" />
+			<part name="motor - large" number="1" />
 			<part name="rover battery" number="1" />
 			<part name="utility vehicle control panel" number="1" />
 			<part name="electrical wire" number="10" />
 			<part name="wire connector" number="10" />
 			<part name="epoxy resin bottle" number="1" />
 			<part name="lubricant bottle" number="1" />
-			<part name="small wheel" number="4" />
+			<part name="wheel - small" number="4" />
 			<part name="radio antenna" number="1" />
 			<part name="satellite dish" number="1" />
 		</inputs>
@@ -2120,7 +2120,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="optical lens" number="2" />
 			<part name="small vehicle frame" number="1" />
 			<part name="rover chassis panel" number="2" />
-			<part name="small motor" number="4" />
+			<part name="motor - small" number="4" />
 			<part name="fuel cell stack" number="3" />
 			<part name="rover battery" number="1" />
 			<part name="electrical wire" number="10" />
@@ -2129,7 +2129,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="plastic pipe" number="1" />
 			<part name="epoxy resin bottle" number="1" />
 			<part name="lubricant bottle" number="1" />
-			<part name="small wheel" number="8" />
+			<part name="wheel - small" number="8" />
 			<part name="radio antenna" number="1" />
 			<part name="optical cable" number="4" />
 			<part name="fuel tank" number="1" />
@@ -2147,7 +2147,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="communications circuit board" number="1" />
 			<part name="small vehicle frame" number="1" />
 			<part name="rover chassis panel" number="3" />
-			<part name="small motor" number="4" />
+			<part name="motor - small" number="4" />
 			<part name="fuel cell stack" number="1" />
 			<part name="rover battery" number="1" />
 			<part name="utility vehicle control panel" number="1" />
@@ -2157,7 +2157,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="plastic pipe" number="2" />
 			<part name="epoxy resin bottle" number="1" />
 			<part name="lubricant bottle" number="1" />
-			<part name="small wheel" number="8" />
+			<part name="wheel - small" number="8" />
 			<part name="radio antenna" number="1" />
 			<part name="optical cable" number="4" />
 			<part name="fuel tank" number="1" />
@@ -2181,7 +2181,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="winch" number="1" />
 			<part name="rover generator" number="1" />
 			<part name="fuel cell stack" number="4" />
-			<part name="large motor" number="3" />
+			<part name="motor - large" number="3" />
 			<part name="rover battery" number="2" />
 			<part name="rover control panel" number="1" />
 			<part name="fuel tank" number="1" />
@@ -2198,7 +2198,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="steel pipe" number="2" />
 			<part name="epoxy resin bottle" number="5" />
 			<part name="lubricant bottle" number="2" />
-			<part name="rover wheel" number="12" />
+			<part name="wheel - rover" number="12" />
 			<part name="optical cable" number="6" />
 		</inputs>
 		<outputs>
@@ -2219,7 +2219,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="winch" number="1" />
 			<part name="rover generator" number="1" />
 			<part name="fuel cell stack" number="5" />
-			<part name="large motor" number="4" />
+			<part name="motor - large" number="4" />
 			<part name="rover battery" number="3" />
 			<part name="rover control panel" number="1" />
 			<part name="fuel tank" number="1" />
@@ -2236,7 +2236,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="steel pipe" number="2" />
 			<part name="epoxy resin bottle" number="5" />
 			<part name="lubricant bottle" number="2" />
-			<part name="rover wheel" number="16" />
+			<part name="wheel - rover" number="16" />
 			<part name="optical cable" number="8" />
 		</inputs>
 		<outputs>
@@ -2257,7 +2257,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="winch" number="1" />
 			<part name="rover generator" number="1" />
 			<part name="fuel cell stack" number="6" />
-			<part name="large motor" number="5" />
+			<part name="motor - large" number="5" />
 			<part name="rover battery" number="4" />
 			<part name="rover control panel" number="1" />
 			<part name="fuel tank" number="1" />
@@ -2274,7 +2274,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="steel pipe" number="2" />
 			<part name="epoxy resin bottle" number="5" />
 			<part name="lubricant bottle" number="2" />
-			<part name="rover wheel" number="14" />
+			<part name="wheel - rover" number="14" />
 			<part name="optical cable" number="10" />
 		</inputs>
 		<outputs>
@@ -2588,7 +2588,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="steel sheet" number="1" />
 			<part name="electrical wire" number="2" />
 			<part name="wire connector" number="2" />
-			<part name="small motor" number="1" />
+			<part name="motor - small" number="1" />
 			<part name="steel wire" number="1" />
 		</inputs>
 		<outputs>
@@ -2613,7 +2613,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="steel sheet" number="4" />
 			<part name="electrical wire" number="2" />
 			<part name="wire connector" number="2" />
-			<part name="small motor" number="1" />
+			<part name="motor - small" number="1" />
 			<part name="steel wire" number="5" />
 		</inputs>
 		<outputs>
@@ -3083,7 +3083,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 	<process name="assemble drilling rig" tech="3" skill="3" work-time="50" process-time="0.0"
 			power-required="1.0">
 		<inputs>
-			<part name="large motor" number="1" />
+			<part name="motor - large" number="1" />
 			<part name="steel cable" number="4" />
 			<part name="steel sheet" number="1" />
 		</inputs>
@@ -3192,7 +3192,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="aluminum wire" number="1" />
 			<part name="electrical wire" number="1" />
 			<part name="wire connector" number="3" />
-			<part name="small motor" number="1" />
+			<part name="motor - small" number="1" />
 		</inputs>
 		<outputs>
 			<part name="air compressor" number="1" />
@@ -3207,7 +3207,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="electrical wire" number="1" />
 			<part name="wire connector" number="5" />
 			<part name="plastic sheet" number="1" />
-			<part name="small motor" number="1" />
+			<part name="motor - small" number="1" />
 		</inputs>
 		<outputs>
 			<part name="blender" number="1" />
@@ -3240,7 +3240,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="wire connector" number="5" />
 			<part name="plastic sheet" number="1" />
 			<part name="microcontroller" number="1" />
-			<part name="small transformer" number="1" />
+			<part name="transformer" number="1" />
 <!--		<part name="magnetron tube" number="1" /> 		-->
 			<part name="power transistor" number="1" />
 			<part name="logic board" number="1" />
@@ -3259,7 +3259,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="electrical wire" number="1" />
 			<part name="wire connector" number="3" />
 			<part name="plastic sheet" number="1" />
-			<part name="small motor" number="1" />
+			<part name="motor - small" number="1" />
 		</inputs>
 		<outputs>
 			<part name="ventilation fan" number="1" />
@@ -3504,7 +3504,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="carbon dioxide laser" number="2" />
 			<part name="fiberglass" number="2" />
 			<part name="glass sheet" number="1" />
-			<part name="small stepper motor" number="3" />
+			<part name="stepper motor - small" number="3" />
 			<part name="timing belt" number="3" />
 			<part name="optical prism" number="3" />
 			<part name="diode" number="5" />
@@ -3529,20 +3529,18 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 
 
 	<!-- 2015-05-22 Added manufacturing pathogen filtering system. -->
-	<process name="manufacture pathogen filtering system" tech="2" skill="2" work-time="500" process-time="200"
+	<process name="manufacture pathogen filter" tech="2" skill="2" work-time="500" process-time="200"
 			power-required=".1">
 		<inputs>
-			<part name="electrostatic precipitator" number="2" />
 			<part name="electrical wire" number="1" />
 			<part name="wire connector" number="1" />
 			<part name="charcoal filter" number="2" />
 			<part name="plastic sheet" number="1" />
 			<part name="flexible hose" number="2" />
 			<part name="valve" number="4" />
-
 		</inputs>
 		<outputs>
-			<part name="pathogen filtering system" number="1" />
+			<part name="pathogen filter" number="1" />
 		</outputs>
 	</process>
 
@@ -3559,15 +3557,34 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		</outputs>
 	</process>
 
+	<!-- A small transformer for stepping the voltage up and down for electrical appliances. -->
+	<process name="manufacture transformer" tech="3" skill="3" work-time="300" process-time="200"
+			power-required=".5">
+		<inputs>
+			<part name="steel sheet" number="1" />
+			<part name="copper wire" number="2" />
+			<part name="aluminum wire" number="2" />			
+			<part name="electrical wire" number="10" />
+			<part name="power cable" number="2" />
+			<part name="iron ingot" number="2" />			
+			<part name="wire connector" number="10" />
+			<part name="steel pipe" number="2" />
+		</inputs>
+		<outputs>
+			<part name="transformer" number="1" />
+		</outputs>
+	</process>
+	
 	<!-- 2015-05-22 Added manufacturing electrostatic precipitator. -->
 	<process name="manufacture electrostatic precipitator" tech="3" skill="3" work-time="300" process-time="200"
 			power-required=".5">
 		<inputs>
-			<part name="steel sheet" number="2" />
-			<part name="electrical wire" number="1" />
-			<part name="wire connector" number="3" />
-			<part name="small transformer" number="1" />
-			<part name="steel pipe" number="2" />
+			<part name="pathogen filter" number="1" />
+			<part name="steel sheet" number="3" />
+			<part name="electrical wire" number="5" />
+			<part name="wire connector" number="5" />
+			<part name="transformer" number="1" />
+			<part name="steel pipe" number="6" />
 		</inputs>
 		<outputs>
 			<part name="electrostatic precipitator" number="1" />
@@ -3581,7 +3598,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="aluminum sheet" number="1" />
 		</inputs>
 		<outputs>
-			<part name="large air duct" number="2" />
+			<part name="air duct" number="2" />
 		</outputs>
 	</process>
 
@@ -3843,7 +3860,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		<part-salvage name="rover window" number="5" />
 		<part-salvage name="winch" number="1" />
 		<part-salvage name="rover generator" number="1" />
-		<part-salvage name="large motor" number="3" />
+		<part-salvage name="motor - large" number="3" />
 		<part-salvage name="rover battery" number="2" />
 		<part-salvage name="fuel cell stack" number="4" />
 		<part-salvage name="rover control panel" number="1" />
@@ -3861,7 +3878,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		<part-salvage name="steel pipe" number="2" />
 		<part-salvage name="epoxy resin bottle" number="5" />
 		<part-salvage name="lubricant bottle" number="2" />
-		<part-salvage name="rover wheel" number="12" />
+		<part-salvage name="wheel - rover" number="12" />
 		<part-salvage name="steel scrap" number="4" />
 		<part-salvage name="aluminum scrap" number="7" />
 		<part-salvage name="optical cable" number="10" />
@@ -3876,7 +3893,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		<part-salvage name="winch" number="1" />
 		<part-salvage name="rover generator" number="1" />
 		<part-salvage name="fuel cell stack" number="5" />
-		<part-salvage name="large motor" number="4" />
+		<part-salvage name="motor - large" number="4" />
 		<part-salvage name="rover battery" number="3" />
 		<part-salvage name="rover control panel" number="1" />
 		<part-salvage name="fuel tank" number="1" />
@@ -3893,7 +3910,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		<part-salvage name="steel pipe" number="2" />
 		<part-salvage name="epoxy resin bottle" number="5" />
 		<part-salvage name="lubricant bottle" number="2" />
-		<part-salvage name="rover wheel" number="16" />
+		<part-salvage name="wheel - rover" number="16" />
 		<part-salvage name="steel scrap" number="5" />
 		<part-salvage name="aluminum scrap" number="7" />
 		<part-salvage name="optical cable" number="10" />
@@ -3908,7 +3925,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		<part-salvage name="winch" number="1" />
 		<part-salvage name="rover generator" number="1" />
 		<part-salvage name="fuel cell stack" number="6" />
-		<part-salvage name="large motor" number="5" />
+		<part-salvage name="motor - large" number="5" />
 		<part-salvage name="rover battery" number="3" />
 		<part-salvage name="rover control panel" number="1" />
 		<part-salvage name="fuel tank" number="1" />
@@ -3925,7 +3942,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		<part-salvage name="steel pipe" number="2" />
 		<part-salvage name="epoxy resin bottle" number="5" />
 		<part-salvage name="lubricant bottle" number="2" />
-		<part-salvage name="rover wheel" number="14" />
+		<part-salvage name="wheel - rover" number="14" />
 		<part-salvage name="steel scrap" number="4" />
 		<part-salvage name="aluminum scrap" number="8" />
 		<part-salvage name="optical cable" number="10" />
@@ -3935,14 +3952,14 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 	<salvage item-name="light utility vehicle" type="vehicle" tech="3" skill="3" work-time="700">
 		<part-salvage name="small vehicle frame" number="1" />
 		<part-salvage name="fuel cell stack" number="1" />
-		<part-salvage name="large motor" number="2" />
+		<part-salvage name="motor - large" number="2" />
 		<part-salvage name="rover battery" number="1" />
 		<part-salvage name="utility vehicle control panel" number="1" />
 		<part-salvage name="electrical wire" number="10" />
 		<part-salvage name="wire connector" number="10" />
 		<part-salvage name="epoxy resin bottle" number="1" />
 		<part-salvage name="lubricant bottle" number="1" />
-		<part-salvage name="small wheel" number="8" />
+		<part-salvage name="wheel - small" number="8" />
 		<part-salvage name="radio antenna" number="1" />
 		<part-salvage name="steel scrap" number="1" />
 		<part-salvage name="aluminum scrap" number="2" />

@@ -159,7 +159,7 @@ public class GoodsManager implements Serializable, Temporal {
 
 	private static final double EVA_SUIT_VALUE = 3D;
 
-	private static final double EVA_PARTS_VALUE = .2;
+	private static final double EVA_PARTS_VALUE = 1.2;
 
 	private static final double ORE_VALUE = .9;
 	private static final double MINERAL_VALUE = .9;
@@ -552,25 +552,13 @@ public class GoodsManager implements Serializable, Temporal {
 			// Flatten certain types of demand.
 			* flattenAmountDemand(resourceGood);
 		
-	
-		if (projected > MAX_PROJ_DEMAND)
-			projected = MAX_PROJ_DEMAND;		
-//		projected = Math.min(MAX_PROJ_DEMAND, projected);
-		
-//		if (projected < MIN_PROJ_DEMAND)
-//			projected = MIN_PROJ_DEMAND;
-		projected = Math.max(MIN_PROJ_DEMAND, projected);
+		projected = limitMaxMin(projected, MIN_PROJ_DEMAND, MAX_PROJ_DEMAND);
 			
 		// Add trade value.
 		trade = determineTradeDemand(resourceGood, useCache);
 
-		if (trade < MIN_DEMAND)
-			trade = MIN_DEMAND;
-
-		if (trade > MAX_DEMAND)
-			trade = MAX_DEMAND;
-//		trade = Math.min(MAX_PROJ_DEMAND, trade);
-			
+		trade = limitMaxMin(trade, MIN_DEMAND, MAX_DEMAND);
+		
 		if (previous == 0) {
 			// At the start of the sim
 			totalDemand = .899 * average + .1 * projected + .01 * trade ;
@@ -581,13 +569,7 @@ public class GoodsManager implements Serializable, Temporal {
 			totalDemand = .9998 * previous + .00005 * projected + .00005 * trade ; 
 		}
 
-		if (totalDemand < MIN_DEMAND)
-			totalDemand = MIN_DEMAND;
-//			totalDemand = Math.max(MIN_DEMAND, totalDemand);
-		
-//		if (totalDemand > MAX_DEMAND)
-//			totalDemand = MAX_DEMAND;
-			totalDemand = Math.min(MAX_DEMAND, totalDemand);
+		totalDemand = limitMaxMin(totalDemand, MIN_DEMAND, MAX_DEMAND);
 
 		// Save the goods demand
 		amountDemandCache.put(id, totalDemand);
@@ -595,17 +577,11 @@ public class GoodsManager implements Serializable, Temporal {
 		// Calculate total supply
 		if (supply > 0)
 			// For estimating trade/delivery mission, use this specified resources as supply
-			totalSupply = getAverageAmountSupply(id, supply, numSol);
+			totalSupply = getAverageAmountSupply(supply, numSol);
 		else
-			totalSupply = getAverageAmountSupply(id, settlement.getAmountResourceStored(id), numSol);
+			totalSupply = getAverageAmountSupply(settlement.getAmountResourceStored(id), numSol);
 		
-//			if (totalSupply < MIN_SUPPLY)
-//				totalSupply = MIN_SUPPLY;
-		totalSupply = Math.max(MIN_SUPPLY, totalSupply);
-
-//			if (totalSupply > MAX_SUPPLY)
-//				totalSupply = MAX_SUPPLY;
-		totalSupply = Math.min(MAX_SUPPLY, totalSupply);
+		totalSupply = limitMaxMin(totalSupply, MIN_SUPPLY, MAX_SUPPLY);
 
 		// Store the average supply
 		amountSupplyCache.put(id, totalSupply);
@@ -781,7 +757,7 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @param solElapsed
 	 * @return
 	 */
-	public double getAverageAmountSupply(int resource, double supplyStored, int solElapsed) {
+	public double getAverageAmountSupply(double supplyStored, int solElapsed) {
 		double aveSupply = 1 + Math.log((1 + 5 * supplyStored) / solElapsed);
 
 		if (aveSupply < 0.1)
@@ -798,7 +774,7 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @param solElapsed
 	 * @return
 	 */
-	public double getAverageItemSupply(int resource, double supplyStored, int solElapsed) {
+	public double getAverageItemSupply(double supplyStored, int solElapsed) {
 		double aveSupply = 0.5 + Math.log((1 + 2 * supplyStored) / solElapsed);
 
 		if (aveSupply < 0.1)
@@ -815,7 +791,7 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @param solElapsed
 	 * @return
 	 */
-	public double getAverageEquipmentSupply(int resource, double supplyStored, int solElapsed) {
+	public double getAverageEquipmentSupply(double supplyStored, int solElapsed) {
 		double aveSupply = 0.25 + Math.log((1 + supplyStored) / solElapsed);
 
 		if (aveSupply < 0.5)
@@ -832,7 +808,7 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @param solElapsed
 	 * @return
 	 */
-	public double getAverageVehicleSupply(int resource, double supplyStored, int solElapsed) {
+	public double getAverageVehicleSupply(double supplyStored, int solElapsed) {
 		double aveSupply = 0.05 + Math.log((1 + 0.5 * supplyStored) / solElapsed);
 
 		if (aveSupply < 0.5)
@@ -1388,79 +1364,63 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @return
 	 */
 	public double flattenPartDemand(Good good) {
-		double demand = 0;
 		String name = good.getName();
 		String type = GoodsUtil.getGoodType(good);
 
-		if (type.equalsIgnoreCase(GoodsUtil.ELECTRICAL)) {
-			demand = ELECTRICAL_DEMAND;
+		if (type.equalsIgnoreCase(GoodsUtil.ELECTRICAL)
+				|| name.contains("light")
+				|| name.contains("resistor")
+				|| name.contains("capacitor")
+				|| name.contains("diode"))
+			return ELECTRICAL_DEMAND;
 
-			if (name.contains("light"))
-				demand *= ELECTRICAL_DEMAND;
+		if (type.equalsIgnoreCase(GoodsUtil.INSTRUMENT))
+			return INSTRUMENT_DEMAND;
 
-			else if (name.contains("resistor"))
-				demand *= ELECTRICAL_DEMAND;
+		if (type.equalsIgnoreCase(GoodsUtil.METALLIC))
+			return  METALLIC_DEMAND;
 
-			else if (name.contains("capacitor"))
-				demand *= ELECTRICAL_DEMAND;
+		if (name.contains("electrical wire"))
+			return 0.1 * ELECTRICAL_DEMAND;
 
-			else if (name.contains("diode"))
-				demand *= ELECTRICAL_DEMAND;
-		}
+		if (name.contains("wire connector"))
+			return 0.5 * ELECTRICAL_DEMAND;
+		
+		if (name.equalsIgnoreCase("glass sheet"))
+			return .5;
+		
+		if (name.contains("pipe"))
+			return .05;
+		
+		if (name.contains("valve"))
+			return .05;
 
-		else if (type.equalsIgnoreCase(GoodsUtil.INSTRUMENT))
-			demand = INSTRUMENT_DEMAND;
+		if (name.contains("plastic"))
+			return 1.1;
+		
+		// Note that there are 'plastic pipe', 'plastic sheet', 'plastic tubing'
+		if (name.contains("tank"))
+			return .1;
 
-		else if (type.equalsIgnoreCase(GoodsUtil.METALLIC)) {
-			demand = METALLIC_DEMAND;
+		if (name.contains("bottle"))
+			return .05;
 
-			if (name.contains("electrical wire"))
-				demand *= ELECTRICAL_DEMAND;
+		if (name.contains("duct"))
+			return .1;
 
-			else if (name.contains("wire connector"))
-				demand *= ELECTRICAL_DEMAND;
-		}
+		if (name.contains("gasket"))
+			return .1;
+		
+		if (type.equalsIgnoreCase(GoodsUtil.UTILITY))
+			return UTILITY_DEMAND;
 
-		else if (type.equalsIgnoreCase(GoodsUtil.UTILITY)) {
-			demand = UTILITY_DEMAND;
+		if (type.equalsIgnoreCase(GoodsUtil.CONSTRUCTION))
+			return CONSTRUCTION_DEMAND;
 
-			if (name.equalsIgnoreCase("glass sheet"))
-				demand *= .5;
-			
-			if (name.contains("pipe"))
-				demand *= .05;
-			
-			if (name.contains("valve"))
-				demand *= .05;
+		if (type.equalsIgnoreCase(GoodsUtil.RAW))
+			return INSTRUMENT_DEMAND;
 
-			if (name.contains("plastic"))
-				demand *= 1.1;
-			
-			// Note that there are 'plastic pipe', 'plastic sheet', 'plastic tubing'
-			else if (name.contains("tank"))
-				demand *= .1;
-
-			else if (name.contains("bottle"))
-				demand *= .05;
-
-			else if (name.contains("duct"))
-				demand *= .1;
-
-			else if (name.contains("gasket"))
-				demand *= .1;
-
-		}
-
-		else if (type.equalsIgnoreCase(GoodsUtil.CONSTRUCTION))
-			demand = CONSTRUCTION_DEMAND;
-
-		else if (type.equalsIgnoreCase(GoodsUtil.RAW))
-			demand = INSTRUMENT_DEMAND;
-
-		else
-			return 1;
-
-		return demand;
+		return 1;
 	}
 
 	/**
@@ -1469,46 +1429,41 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @param part   the part.
 	 */
 	private double flattenRawPartDemand(Part part) {
-		double demand = 0;
 		String name = part.getName();
 		// Reduce the demand on the steel/aluminum scrap metal
 		// since they can only be produced by salvaging a vehicle
 		// therefore it's not reasonable to have high VP
 
 		if (name.contains(SCRAP))
-			demand = SCRAP_METAL_DEMAND;
+			return SCRAP_METAL_DEMAND;
 		// May recycle the steel/AL scrap back to ingot
 		// Note: the VP of a scrap metal could be heavily influence by VP of regolith
 
 		else if (name.contains(INGOT))
-			demand = INGOT_METAL_DEMAND;
+			return INGOT_METAL_DEMAND;
 
 		else if (name.contains(SHEET))
-			demand = SHEET_METAL_DEMAND;
+			return SHEET_METAL_DEMAND;
 
 		else if (name.equalsIgnoreCase(TRUSS))
-			demand = SHEET_METAL_DEMAND;
+			return SHEET_METAL_DEMAND;
 
 		else if (name.contains(STEEL))
-			demand = STEEL_DEMAND;
+			return STEEL_DEMAND;
 
 		else if (name.equalsIgnoreCase(BOTTLE))
-			demand = BOTTLE_DEMAND;
+			return BOTTLE_DEMAND;
 
 		else if (name.equalsIgnoreCase(FIBERGLASS_CLOTH))
-			demand = FIBERGLASS_DEMAND;
+			return FIBERGLASS_DEMAND;
 
 		else if (name.equalsIgnoreCase(FIBERGLASS))
-			demand = FIBERGLASS_DEMAND;
+			return FIBERGLASS_DEMAND;
 
-		else if (name.equalsIgnoreCase(BRICK))
-			demand = BRICK_DEMAND;
+		if (name.equalsIgnoreCase(BRICK))
+			return BRICK_DEMAND;
 
-		else
-			return 1;
-
-		return demand;
-
+		return 1;
 	}
 
 	/**
@@ -1524,8 +1479,7 @@ public class GoodsManager implements Serializable, Temporal {
 		// Get all resource processes at settlement.
 		Iterator<ResourceProcess> i = getResourceProcesses().iterator();
 		while (i.hasNext()) {
-			ResourceProcess process = i.next();
-			double processDemand = getResourceProcessDemand(process, resource);
+			double processDemand = getResourceProcessDemand(i.next(), resource);
 			demand += processDemand;
 		}
 
@@ -2367,15 +2321,13 @@ public class GoodsManager implements Serializable, Temporal {
 					// Flatten certain part demand.
 					* flattenPartDemand(resourceGood);
 
-				if (projected < MIN_DEMAND)
-					projected = MIN_DEMAND;
-
-				if (projected > MAX_PROJ_DEMAND)
-					projected = MAX_PROJ_DEMAND;
+				projected = limitMaxMin(projected, MIN_PROJ_DEMAND, MAX_PROJ_DEMAND);
 
 				// Add trade demand.
 				double trade = determineTradeDemand(resourceGood, useCache);
 
+				trade = limitMaxMin(trade, MIN_DEMAND, MAX_DEMAND);
+				
 				// Recalculate the partsDemandCache
 				determineRepairPartsDemand();
 				// Gets the repair part demand
@@ -2391,31 +2343,23 @@ public class GoodsManager implements Serializable, Temporal {
 					totalDemand = .986 * previous + .001 * repair + .001 * average + .001 * projected + .001 * trade;
 				}
 
-				if (totalDemand < MIN_DEMAND)
-					totalDemand = MIN_DEMAND;
-
-				if (totalDemand > MAX_DEMAND)
-					totalDemand = MAX_DEMAND;
-
+				totalDemand = limitMaxMin(totalDemand, MIN_DEMAND, MAX_DEMAND);
+				
 				// Save the goods demand
 				partDemandCache.put(id, totalDemand);
 
 				// Calculate total supply
 				if (supply > 0)
 					// For estimating trade/delivery mission, use specified resources as supply
-					totalSupply = getAverageItemSupply(id, supply, numSol);
+					totalSupply = getAverageItemSupply(supply, numSol);
 				else
-					totalSupply = getAverageItemSupply(id, settlement.getItemResourceStored(id), numSol);
+					totalSupply = getAverageItemSupply(settlement.getItemResourceStored(id), numSol);
 				
 				// Save the average supply
 				partSupplyCache.put(id, totalSupply);
 				
-				if (totalSupply < MIN_SUPPLY)
-					totalSupply = MIN_SUPPLY;
-
-				if (totalSupply > MAX_SUPPLY)
-					totalSupply = MAX_SUPPLY;
-
+				totalSupply = limitMaxMin(totalSupply, MIN_SUPPLY, MAX_SUPPLY);
+			
 				// Calculate item value
 				value = totalDemand / totalSupply;
 
@@ -3032,14 +2976,18 @@ public class GoodsManager implements Serializable, Temporal {
 			
 			if (supply > 0)
 				// For estimating trade/delivery mission, use specified resources as supply
-				totalSupply = getAverageEquipmentSupply(id, supply, numSol);
+				totalSupply = getAverageEquipmentSupply(supply, numSol);
 			else
-				totalSupply = getAverageEquipmentSupply(id, settlement.findNumContainersOfType(equipmentType), numSol);
+				totalSupply = getAverageEquipmentSupply(settlement.findNumContainersOfType(equipmentType), numSol);
+			
+			totalSupply = limitMaxMin(totalSupply, MIN_SUPPLY, MAX_SUPPLY);
 			
 			equipmentSupplyCache.put(id, totalSupply);
 			
 			double trade = determineTradeDemand(equipmentGood, useCache);
 
+			trade = limitMaxMin(trade, MIN_DEMAND, MAX_DEMAND);
+			
 			if (previous == 0) {
 				totalDemand = .5 * average + .5 * trade;
 			}
@@ -3048,12 +2996,8 @@ public class GoodsManager implements Serializable, Temporal {
 				// Intentionally lose 2% of its value
 				totalDemand = .97 * previous + .005 * average + .005 * trade;
 			}
-
-			if (totalDemand > MAX_DEMAND)
-				totalDemand = MAX_DEMAND;
 			
-			if (totalDemand < MIN_DEMAND)
-				totalDemand = MIN_DEMAND;
+			totalDemand = limitMaxMin(totalDemand, MIN_DEMAND, MAX_DEMAND);
 			
 			equipmentDemandCache.put(id, totalDemand);
 
@@ -3074,7 +3018,6 @@ public class GoodsManager implements Serializable, Temporal {
 			value = checkDeflation(id, value);
 			// Adjust the value to the average value
 			value = tuneToAverageValue(equipmentGood, value);
-			
 	
 			// Save the value point
 			goodsValues.put(id, value);
@@ -3262,12 +3205,14 @@ public class GoodsManager implements Serializable, Temporal {
 		// Calculate total supply
 		if (supply > 0)
 			// For estimating trade/delivery mission, use specified resources as supply
-			totalSupply = getAverageVehicleSupply(id, supply, numSol);
+			totalSupply = getAverageVehicleSupply(supply, numSol);
 		else {
-			totalSupply = getAverageVehicleSupply(id, getNumberOfVehiclesForSettlement(vehicleType), numSol);
+			totalSupply = getAverageVehicleSupply(getNumberOfVehiclesForSettlement(vehicleType), numSol);
 			buy = true;
 		}
 	
+		totalSupply = limitMaxMin(totalSupply, MIN_SUPPLY, MAX_SUPPLY);
+		
 		if (useCache) {
 			if (buy) {
 				if (vehicleBuyValueCache.containsKey(vehicleType)) {
@@ -3286,29 +3231,29 @@ public class GoodsManager implements Serializable, Temporal {
 		} else {
 
 			double projected = determineVehicleProjectedDemand(vehicleGood, useCache);
-
+			
+			projected = limitMaxMin(projected, MIN_PROJ_DEMAND, MAX_PROJ_DEMAND);
+			
 			double average = computeVehiclePartsCost(vehicleGood);
 			
 			double previous = getVehicleDemandValue(id);
 
 			vehicleSupplyCache.put(id, totalSupply);
 			
-			double tradeValue = determineTradeVehicleValue(vehicleGood, useCache);
+			double trade = determineTradeVehicleValue(vehicleGood, useCache);
 
+			trade = limitMaxMin(trade, MIN_DEMAND, MAX_DEMAND);
+			
 			if (previous == 0) {
-				totalDemand = .5 * average + .25 * projected + .25 * tradeValue;
+				totalDemand = .5 * average + .25 * projected + .25 * trade;
 			}
 
 			else {
 				// Intentionally lose 2% of its value
-				totalDemand = .97 * previous + .003 * average + .003 * projected + .003 * tradeValue;
+				totalDemand = .97 * previous + .003 * average + .003 * projected + .003 * trade;
 			}
 
-			if (totalDemand > MAX_DEMAND)
-				totalDemand = MAX_DEMAND;
-			
-			if (totalDemand < MIN_DEMAND)
-				totalDemand = MIN_DEMAND;
+			totalDemand = limitMaxMin(totalDemand, MIN_DEMAND, MAX_DEMAND);
 					
 			vehicleDemandCache.put(id, totalDemand);
 
@@ -4025,6 +3970,7 @@ public class GoodsManager implements Serializable, Temporal {
 			// For Amount Resource
 			double totalMass = Math.round(settlement.getAmountResourceStored(id) * 100.0)/100.0;
 			factor = 1.5 / (.5 + Math.log(totalMass + 1));
+			price = cost * (1 + 2 * factor * Math.log(value + 1));
 		}
 		else if (id < ResourceUtil.FIRST_VEHICLE_RESOURCE_ID) {
 			// For Item Resource
@@ -4032,6 +3978,7 @@ public class GoodsManager implements Serializable, Temporal {
 			double mass = part.getMassPerItem();
 			double quantity = settlement.getItemResourceStored(id) ;
 			factor = 1.2 * Math.log(mass + 1) / (.3 + Math.log(quantity + 1));
+			price = cost * (1 + 2 * factor * Math.log(value/5.0 + 1));
 		}
 			
 		else if (id < ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID) {
@@ -4040,6 +3987,7 @@ public class GoodsManager implements Serializable, Temporal {
 			double mass = CollectionUtils.getVehicleTypeBaseMass(vehicleType);
 			double quantity = settlement.findNumVehiclesOfType(vehicleType);
 			factor = Math.log(mass/1600.0 + 1) / (5 + Math.log(quantity + 1));
+			price = cost * (1 + 2 * factor * Math.log(value + 1));
 		}
 			
 		else if (id < ResourceUtil.FIRST_ROBOT_RESOURCE_ID) {
@@ -4050,6 +3998,7 @@ public class GoodsManager implements Serializable, Temporal {
     		if (type == EquipmentType.EVA_SUIT) {
     			mass = EVASuit.emptyMass;
     			quantity = settlement.getNumEVASuit();
+    			// Need to increase the value for EVA
     			factor = 1.2 * Math.log(mass/50.0 + 1) / (.1 + Math.log(quantity + 1));
     		}
     		else {
@@ -4058,6 +4007,7 @@ public class GoodsManager implements Serializable, Temporal {
     			quantity = settlement.findNumContainersOfType(type);
     			factor = 1.2 * Math.log(mass + 1) / (.1 + Math.log(quantity + 1));
     		}
+    		price = cost * (1 + 2 * factor * Math.log(value + 1));
 		}
 			
 		else {
@@ -4065,10 +4015,11 @@ public class GoodsManager implements Serializable, Temporal {
 			double mass = Robot.EMPTY_MASS;
 			double quantity = settlement.getInitialNumOfRobots() ;
 			factor = Math.log(mass/10.0 + 1) / (5 + Math.log(quantity + 1));
+			// Need to increase the value for robots
+			price = cost * (1 + 2 * factor * Math.log(value + 1));
 		}
 			
-		// Note: the profit = 2 * cost * factor * Math.log(value + 1)
-		price = cost * (1 + 2 * factor * Math.log(value + 1));
+		
 		return price;
 	}
 	
@@ -4221,6 +4172,18 @@ public class GoodsManager implements Serializable, Temporal {
 		return 0;
 	}
 
+	/**
+	 * Bounds a prescribed parameter with upper and lower allowable limit.
+	 * 
+	 * @param param
+	 * @param min
+	 * @param max
+	 * @return
+	 */
+	public double limitMaxMin(double param, double min, double max) {
+		return Math.max(min, Math.min(max, param));
+	}
+	
 	/**
 	 * Reloads instances after loading from a saved sim
 	 *

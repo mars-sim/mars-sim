@@ -225,6 +225,7 @@
 			<part name="electrical wire" number="5" probability="20" />
 			<part name="wire connector" number="5" probability="20" />
 			<part name="work gloves" number="1" probability="20" />
+			<part name="transformer" number="1" probability="1" />			
 		</repair-parts-list>
 	</malfunction>
 
@@ -307,7 +308,7 @@
 			<system name="rover" />
 		</system-list>
 		<repair-parts-list>
-			<part name="rover wheel" number="2" probability="70" />
+			<part name="wheel - rover" number="2" probability="20" />
 			<part name="work gloves" number="1" probability="20" />
 			<part name="valve" number="1" probability="10" />
 			<part name="plastic tubing" number="2" probability="10" />
@@ -325,7 +326,7 @@
 			<system name="light utility vehicle" />
 		</system-list>
 		<repair-parts-list>
-			<part name="small wheel" number="2" probability="70" />
+			<part name="wheel - small" number="2" probability="20" />
 			<part name="work gloves" number="1" probability="20" />
 			<part name="valve" number="1" probability="10" />
 			<part name="plastic tubing" number="2" probability="10" />
@@ -524,7 +525,7 @@
 			<part name="light emitting diode kit" number="1" probability="10" />
 			<part name="logic board" number="1" probability="5" />
 			<part name="microcontroller" number="1" probability="1" />
-			<part name="utility vehicle control panel" number="1" probability="20" />
+			<part name="utility vehicle control panel" number="1" probability="10" />
 		</repair-parts-list>
 	</malfunction>
 
@@ -602,6 +603,8 @@
 			<part name="plastic pipe" number="2" probability="15" />
 			<part name="flexible hose" number="2" probability="10" />
 			<part name="water tank" number="2" probability="10" />
+			<part name="charcoal filter" number="1" probability="3" />
+			<part name="pathogen filter" number="1" probability="1" />
 		</repair-parts-list>
 	</malfunction>
 
@@ -609,7 +612,7 @@
 	<malfunction name="Food Contamination">
 		<severity value="60" />
 		<probability value="3.0" />
-		<repair-inside time="100.0" />
+		<repair-inside time="3.0" />
 		<system-list>
 			<system name="cooking" />
 			<system name="rover" />
@@ -628,9 +631,37 @@
 			<part name="valve" number="1" probability="5" />
 			<part name="plastic tubing" number="5" probability="5" />
 			<part name="plastic pipe" number="2" probability="5" />
-			<part name="decontamination kit" number="1" probability="50" />
+			<part name="decontamination kit" number="1" probability="25" />
 		</repair-parts-list>
 	</malfunction>
+
+	<!-- Contamination of the air flow/supply. -->
+	<malfunction name="Air Contamination">
+		<severity value="40" />
+		<probability value="3.0" />
+		<repair-inside time="50.0" />
+		<system-list>
+			<system name="life support" />			
+		</system-list>
+		<effect-list>
+			<!-- use sodium hypochlorite as bleaching agent for cleaning -->
+			<effect type="resource" name="sodium hypochlorite" change-rate="-0.02" />
+		</effect-list>
+		<medical-complaint-list>
+			<medical-complaint name="Suffocation" probability="1.0" />
+			<medical-complaint name="Heartburn" probability="10.0" />
+		</medical-complaint-list>
+		<repair-parts-list>
+			<part name="gasket" number="1" probability="5" />
+			<part name="valve" number="1" probability="5" />
+			<part name="plastic tubing" number="5" probability="5" />
+			<part name="plastic pipe" number="2" probability="5" />
+			<part name="electrostatic precipitator" number="1" probability="2" />
+			<part name="air duct" number="2" probability="3" />
+			<part name="decontamination kit" number="1" probability="10" />
+		</repair-parts-list>
+	</malfunction>
+
 
 	<!-- Dangerous chemical spill. -->
 	<malfunction name="Chemical Spill">
@@ -719,7 +750,7 @@
 	</malfunction>
 
 	<!-- Problems with one of the rover's electric motors. -->
-	<malfunction name="Motor Failure">
+	<malfunction name="Rover Motor Failure">
 		<severity value="50" />
 		<probability value="2.0" />
 		<repair-inside time="50.0" />
@@ -729,14 +760,36 @@
 		</system-list>
 		<repair-parts-list>
 			<part name="aluminum wire" number="2" probability="20" />
+			<part name="copper wire" number="2" probability="20" />			
 			<part name="electrical wire" number="2" probability="25" />
 			<part name="wire connector" number="2" probability="25" />
 			<part name="lubricant bottle" number="1" probability="20" />
-			<part name="small motor" number="1" probability="5" />
+			<part name="motor - large" number="1" probability="5" />
 			<part name="work gloves" number="1" probability="20" />
 		</repair-parts-list>
 	</malfunction>
 
+	<!-- Problems with one of the rover's electric motors. -->
+	<malfunction name="Small Vehicle Motor Failure">
+		<severity value="50" />
+		<probability value="2.0" />
+		<repair-inside time="50.0" />
+		<system-list>
+			<system name="robot" />
+			<system name="light utility vehicle" />
+			<system name="delivery drone" />
+		</system-list>
+		<repair-parts-list>
+			<part name="aluminum wire" number="2" probability="20" />
+			<part name="copper wire" number="2" probability="20" />			
+			<part name="electrical wire" number="2" probability="25" />
+			<part name="wire connector" number="2" probability="25" />
+			<part name="lubricant bottle" number="1" probability="20" />
+			<part name="motor - small" number="1" probability="5" />
+			<part name="work gloves" number="1" probability="20" />
+		</repair-parts-list>
+	</malfunction>
+	
 	<!-- Problems with the rover's fuel pump. -->
 	<malfunction name="Fuel Pump Failure">
 		<severity value="50" />
@@ -821,7 +874,7 @@
 		<repair-parts-list>
 			<part name="electrical wire" number="2" probability="25" />
 			<part name="wire connector" number="2" probability="25" />
-			<part name="small motor" number="1" probability="20" />
+			<part name="motor - small" number="1" probability="10" />
 			<part name="ventilation fan" number="1" probability="30" />
 		</repair-parts-list>
 	</malfunction>
@@ -898,10 +951,10 @@
 			<part name="steel sheet" number="2" probability="5" />
 			<part name="wire connector" number="5" probability="30" />
 			<part name="microcontroller" number="1" probability="1" />
-			<part name="logic board" number="1" probability="5" />
-			<part name="small transformer" number="1" probability="5" />
+			<part name="logic board" number="1" probability="1" />
+			<part name="transformer" number="1" probability="1" />
 			<part name="power transistor" number="1" probability="3" />
-			<part name="microwave" number="1" probability="5" />
+			<part name="microwave" number="1" probability="1" />
 		</repair-parts-list>
 	</malfunction>
 
@@ -987,7 +1040,7 @@
 			<part name="microcontroller" number="1" probability="1" />
 			<part name="ventilation fan" number="1" probability="5" />
 			<part name="carbon dioxide laser" number="1" probability="5" />
-			<part name="small stepper motor" number="1" probability="5" />
+			<part name="stepper motor - small" number="1" probability="5" />
 			<part name="timing belt" number="1" probability="5" />
 			<part name="optical prism" number="1" probability="5" />
 			<part name="Laser Sintering 3D Printer" number="1" probability="1" />

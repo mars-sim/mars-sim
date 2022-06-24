@@ -432,7 +432,7 @@
 		 salvagable="true" work-time="1.0" skill-required="2" frame="array frame" >
 			<part name="solar panel" number="6" />
 			<part name="power cable" number="2" />
-			<part name="small motor" number="2" />
+			<part name="motor - small" number="2" />
 			<part name="electrical wire" number="20" />
 			<part name="wire connector" number="20" />
 			<vehicle type="light utility vehicle" >
@@ -447,7 +447,7 @@
 			<part name="power cable" number="2" />
 			<part name="glass tube" number="6" />
 			<part name="steel pipe" number="10" />
-			<part name="small motor" number="2" />
+			<part name="motor - small" number="2" />
 			<part name="heat pump" number="1" />
 			<part name="water pump - large" number="2" />
 			<part name="electrical wire" number="20" />
@@ -525,9 +525,10 @@
 			<part name="electrical wire" number="50" />
 			<part name="wire connector" number="50" />
 			<part name="epoxy resin bottle" number="25" />
-			<part name="small motor" number="1" />
+			<part name="motor - small" number="1" />
 			<part name="brick" number="100" />
 			<part name="gas tank" number="3" />
+			<part name="air duct" number="5" />			
 			<vehicle type="light utility vehicle" >
 				<attachment-part name="crane boom" />
 			</vehicle>
@@ -545,6 +546,7 @@
 			<part name="electrical wire" number="10" />
 			<part name="wire connector" number="10" />
 			<part name="epoxy resin bottle" number="25" />
+			<part name="air duct" number="3" />				
 			<vehicle type="light utility vehicle" >
 				<attachment-part name="crane boom" />
 			</vehicle>
@@ -555,7 +557,7 @@
 			<resource name="nickel" amount="1.0" />
 			<part name="valve" number="18" />
 			<part name="gasket" number="6" />
-			<part name="small motor" number="6" />
+			<part name="motor - small" number="6" />
 			<part name="plastic tubing" number="18" />
 			<part name="power cable" number="6" />
 			<part name="electrical wire" number="60" />
@@ -594,6 +596,7 @@
 			<part name="gas tank" number="5" />
 			<part name="fuel tank" number="1" />
 			<part name="water tank" number="1" />
+			<part name="air duct" number="10" />	
 		</building>
 
 		<!-- Storage hab building project that is a modified lander hab. -->
@@ -611,6 +614,7 @@
 			<part name="valve" number="15" />
 			<part name="electrical wire" number="15" />
 			<part name="wire connector" number="15" />
+			<part name="air duct" number="10" />				
 		</building>
 
 		<!-- Research hab building project that is a modified lander hab. -->
@@ -627,6 +631,7 @@
 			<part name="valve" number="5" />
 			<part name="electrical wire" number="25" />
 			<part name="wire connector" number="25" />
+			<part name="air duct" number="10" />				
 		</building>
 
 		<!-- Residential hab building project that is a modified lander hab. -->
@@ -643,6 +648,7 @@
 			<part name="valve" number="3" />
 			<part name="electrical wire" number="10" />
 			<part name="wire connector" number="10" />
+			<part name="air duct" number="10" />				
 		</building>
 
 		<!-- Medical hab building project that is a modified lander hab. -->
@@ -659,6 +665,7 @@
 			<part name="valve" number="5" />
 			<part name="electrical wire" number="25" />
 			<part name="wire connector" number="25" />
+			<part name="air duct" number="10" />				
 		</building>
 
 		<!-- Machinery hab building project that is a modified lander hab. -->
@@ -675,6 +682,7 @@
 			<part name="valve" number="5" />
 			<part name="electrical wire" number="25" />
 			<part name="wire connector" number="25" />
+			<part name="air duct" number="10" />				
 		</building>
 
 		<!-- Inflatable greenhouse building project for refitting or salvaging. -->
@@ -690,6 +698,7 @@
 			<part name="valve" number="5" />
 			<part name="electrical wire" number="5" />
 			<part name="wire connector" number="5" />
+			<part name="air duct" number="10" />				
 		</building>
 
 		<!-- Atmospheric processor building project for refitting or salvaging. -->
@@ -721,6 +730,7 @@
 			<part name="valve" number="7" />
 			<part name="electrical wire" number="5" />
 			<part name="wire connector" number="5" />
+			<part name="air duct" number="10" />				
 		</building>
 
 		<!-- Lounge building project for refitting or salvaging. -->
@@ -734,6 +744,7 @@
 			<part name="fiberglass" number="5" />
 			<part name="electrical wire" number="2" />
 			<part name="wire connector" number="2" />
+			<part name="air duct" number="10" />			
 		</building>
 
 		<!-- Infirmary building project for refitting or salvaging. -->
@@ -750,6 +761,7 @@
 			<part name="valve" number="7" />
 			<part name="electrical wire" number="5" />
 			<part name="wire connector" number="5" />
+			<part name="air duct" number="7" />			
 		</building>
 
 		<!-- Command and control building project for refitting or salvaging. -->
@@ -766,6 +778,7 @@
 			<part name="valve" number="7" />
 			<part name="electrical wire" number="5" />
 			<part name="wire connector" number="5" />
+			<part name="air duct" number="7" />			
 		</building>
 
 		<!-- Large greenhouse building project for refitting or salvaging. -->
@@ -781,6 +794,7 @@
 			<part name="valve" number="15" />
 			<part name="electrical wire" number="15" />
 			<part name="wire connector" number="15" />
+			<part name="air duct" number="15" />			
 		</building>
 
 <!-- Add fish farm -->
@@ -816,6 +830,7 @@
 			<part name="electrical wire" number="5" />
 			<part name="wire connector" number="5" />
 			<part name="gas tank" number="5" />
+			<part name="air duct" number="10" />			
 		</building>
 
 		<!-- Garage building project for refitting or salvaging. -->
@@ -829,9 +844,10 @@
 			<part name="fiberglass" number="5" />
 			<part name="plastic pipe" number="7" />
 			<part name="valve" number="7" />
-			<part name="large motor" number="1" />
+			<part name="motor - large" number="1" />
 			<part name="electrical wire" number="5" />
 			<part name="wire connector" number="5" />
+			<part name="air duct" number="10" />			
 		</building>
 
 		<!-- Workshop building project for refitting or salvaging. -->
@@ -848,6 +864,7 @@
 			<part name="valve" number="7" />
 			<part name="electrical wire" number="5" />
 			<part name="wire connector" number="5" />
+			<part name="air duct" number="10" />			
 		</building>
 
 		<!-- Astronomy observatory building project for refitting or salvaging. -->
@@ -865,6 +882,7 @@
 			<part name="valve" number="7" />
 			<part name="electrical wire" number="5" />
 			<part name="wire connector" number="5" />
+			<part name="air duct" number="7" />			
 		</building>
 
 		<!-- Small areothermal well for generating electricity. -->
@@ -921,6 +939,7 @@
 			<part name="gas tank" number="5" />
 			<part name="fuel tank" number="1" />
 			<part name="water tank" number="1" />
+			<part name="air duct" number="10" />			
 			<vehicle type="light utility vehicle" >
 				<attachment-part name="crane boom" />
 			</vehicle>
@@ -940,6 +959,7 @@
 			<part name="valve" number="7" />
 			<part name="electrical wire" number="7" />
 			<part name="wire connector" number="7" />
+			<part name="air duct" number="3" />			
 		</building>
 
 		<building name="loading dock garage" width="15.0" length="18.0" base-level="-1" constructable="true"
@@ -955,6 +975,7 @@
 			<part name="valve" number="7" />
 			<part name="electrical wire" number="5" />
 			<part name="wire connector" number="5" />
+			<part name="air duct" number="20" />			
 			<vehicle type="light utility vehicle" >
 				<attachment-part name="crane boom" />
 			</vehicle>
@@ -972,8 +993,9 @@
 			<part name="electrical wire" number="50" />
 			<part name="wire connector" number="50" />
 			<part name="epoxy resin bottle" number="25" />
-			<part name="small motor" number="1" />
+			<part name="motor - small" number="1" />
 			<part name="brick" number="100" />
+			<part name="air duct" number="5" />			
 			<vehicle type="light utility vehicle" >
 				<attachment-part name="crane boom" />
 			</vehicle>
@@ -991,6 +1013,7 @@
 			<part name="valve" number="5" />
 			<part name="electrical wire" number="5" />
 			<part name="wire connector" number="5" />
+			<part name="air duct" number="7" />			
 			<vehicle type="light utility vehicle" >
 				<attachment-part name="crane boom" />
 			</vehicle>
@@ -1004,6 +1027,7 @@
 			<part name="gasket" number="4" />
 			<part name="electrical wire" number="3" />
 			<part name="wire connector" number="3" />
+			<part name="air duct" number="1" />			
 		</building>
 
 		<building name="tunnel" width="3.0" length="-1.0" base-level="-1" constructable="true"
@@ -1014,6 +1038,7 @@
 			<part name="electrical wire" number="3" />
 			<part name="wire connector" number="3" />
 			<part name="epoxy resin bottle" number="15" />
+			<part name="air duct" number="1" />			
 			<vehicle type="light utility vehicle" >
 				<attachment-part name="crane boom" />
 			</vehicle>

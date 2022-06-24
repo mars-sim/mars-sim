@@ -29,10 +29,10 @@
 		<part type="fuel cell stack" number="20"/>
 		<part type="polycarbonate roofing" number="10"/>
 		<!-- 2015-05-22 Added the following new parts -->
-		<part type="pathogen filtering system" number="3"/>
+		<part type="pathogen filter" number="3"/>
 		<part type="charcoal filter" number="5"/>
 		<part type="electrostatic precipitator" number="5"/>
-		<part type="large air duct" number="10"/>
+		<part type="air duct" number="10"/>
 		<part type="flexible hose" number="10"/>
 
 		<!-- 2015-05-18 Added the following new parts -->
@@ -53,7 +53,7 @@
 		<part type="water pump - small" number="3" />
 		<part type="water pump - large" number="1" />
 		<part type="carbon dioxide pump" number="3" />
-		<part type="small transformer" number="5" />
+		<part type="transformer" number="5" />
 		<part type="power transistor" number="60" />
 		<part type="autoclave" number="3" />
 		<part type="blender" number="3" />
@@ -65,7 +65,7 @@
  		<!-- Prior to 2014-11-20 -->
 		<part type="airleak patch" number="160" />
 		<part type="fire extinguisher" number="26" />
-		<part type="rover wheel" number="12" />
+		<part type="wheel - rover" number="12" />
 		<part type="gasket" number="94" />
 		<part type="timing belt" number="16" />
 		<part type="valve" number="48" />
@@ -104,9 +104,9 @@
 		<part type="rover windshield" number="2" />
 		<part type="rover window" number="4" />
 		<part type="winch" number="2" />
-		<part type="small motor" number="2" />
-		<part type="large motor" number="4" />
-		<part type="small stepper motor" number="4"/>
+		<part type="motor - small" number="2" />
+		<part type="motor - large" number="4" />
+		<part type="stepper motor - small" number="4"/>
 		<part type="rover chassis panel" number="4" />
 		<part type="rover generator" number="2" />
 		<part type="rover control panel" number="2" />
@@ -120,7 +120,7 @@
 		<part type="bulldozer blade" number="2" />
 		<part type="soil compactor" number="2" />
 		<part type="crane boom" number="2" />
-		<part type="small wheel" number="2" />
+		<part type="wheel - small" number="2" />
 		<part type="utility vehicle control panel" number="2" />
 		<part type="solar panel" number="2" />
 		<part type="bore drill bit" number="1" />
@@ -143,10 +143,10 @@
 		<part type="fuel cell stack" number="30"/>
 		<part type="polycarbonate roofing" number="20"/>
 		<!-- 2015-05-22 Added the following new parts -->
-		<part type="pathogen filtering system" number="6"/>
+		<part type="pathogen filter" number="6"/>
 		<part type="charcoal filter" number="10"/>
 		<part type="electrostatic precipitator" number="10"/>
-		<part type="large air duct" number="20"/>
+		<part type="air duct" number="20"/>
 		<part type="flexible hose" number="20"/>
 		<!-- 2015-05-18 Added the following new parts -->
 		<part type="laser sintering 3d printer" number="6"/>
@@ -166,7 +166,7 @@
 		<part type="water pump - small" number="6" />
 		<part type="water pump - large" number="2" />
 		<part type="carbon dioxide pump" number="10" />
-		<part type="small transformer" number="10" />
+		<part type="transformer" number="10" />
 		<part type="power transistor" number="120" />
 		<part type="autoclave" number="10" />
 		<part type="blender" number="10" />
@@ -178,7 +178,7 @@
  		<!-- Prior to 2014-11-20 -->
 		<part type="airleak patch" number="306" />
 		<part type="fire extinguisher" number="46" />
-		<part type="rover wheel" number="12" />
+		<part type="wheel - rover" number="12" />
 		<part type="gasket" number="168" />
 		<part type="timing belt" number="16" />
 		<part type="valve" number="92" />
@@ -217,9 +217,9 @@
 		<part type="rover windshield" number="2" />
 		<part type="rover window" number="4" />
 		<part type="winch" number="2" />
-		<part type="small motor" number="2" />
-		<part type="large motor" number="4" />
-		<part type="small stepper motor" number="4"/>
+		<part type="motor - small" number="2" />
+		<part type="motor - large" number="4" />
+		<part type="stepper motor - small" number="4"/>
 		<part type="rover chassis panel" number="4" />
 		<part type="rover generator" number="2" />
 		<part type="rover control panel" number="2" />
@@ -233,7 +233,7 @@
 		<part type="bulldozer blade" number="2" />
 		<part type="soil compactor" number="2" />
 		<part type="crane boom" number="2" />
-		<part type="small wheel" number="2" />
+		<part type="wheel - small" number="2" />
 		<part type="utility vehicle control panel" number="2" />
 		<part type="solar panel" number="6" />
 		<part type="bore drill bit" number="2" />
@@ -258,10 +258,10 @@
 		<part type="fuel cell stack" number="40"/>
 		<part type="polycarbonate roofing" number="30"/>
 		<!-- 2015-05-22 Added the following new parts -->
-		<part type="pathogen filtering system" number="9"/>
+		<part type="pathogen filter" number="9"/>
 		<part type="charcoal filter" number="15"/>
 		<part type="electrostatic precipitator" number="15"/>
-		<part type="large air duct" number="30"/>
+		<part type="air duct" number="30"/>
 		<part type="flexible hose" number="30"/>
 		<!-- 2015-05-18 Added the following new parts -->
 		<part type="laser sintering 3d printer" number="8"/>
@@ -281,7 +281,7 @@
 		<part type="water pump - small" number="9" />
 		<part type="water pump - large" number="3" />
 		<part type="carbon dioxide pump" number="15" />
-		<part type="small transformer" number="15" />
+		<part type="transformer" number="15" />
 		<part type="power transistor" number="160" />
 		<part type="autoclave" number="15" />
 		<part type="blender" number="15" />
@@ -293,7 +293,7 @@
  		<!-- Prior to 2014-11-20 -->
 		<part type="airleak patch" number="468" />
 		<part type="fire extinguisher" number="72" />
-		<part type="rover wheel" number="22" />
+		<part type="wheel - rover" number="22" />
 		<part type="gasket" number="258" />
 		<part type="timing belt" number="34" />
 		<part type="valve" number="138" />
@@ -332,9 +332,9 @@
 		<part type="rover windshield" number="4" />
 		<part type="rover window" number="8" />
 		<part type="winch" number="4" />
-		<part type="small motor" number="3" />
-		<part type="large motor" number="6" />
-		<part type="small stepper motor" number="6"/>
+		<part type="motor - small" number="3" />
+		<part type="motor - large" number="6" />
+		<part type="stepper motor - small" number="6"/>
 		<part type="rover chassis panel" number="8" />
 		<part type="rover generator" number="4" />
 		<part type="rover control panel" number="4" />
@@ -348,7 +348,7 @@
 		<part type="bulldozer blade" number="4" />
 		<part type="soil compactor" number="4" />
 		<part type="crane boom" number="4" />
-		<part type="small wheel" number="2" />
+		<part type="wheel - small" number="2" />
 		<part type="utility vehicle control panel" number="2" />
 		<part type="solar panel" number="8" />
 		<part type="bore drill bit" number="4" />
@@ -373,10 +373,10 @@
 		<part type="fuel cell stack" number="50"/>
 		<part type="polycarbonate roofing" number="50"/>
 		<!-- 2015-05-22 Added the following new parts -->
-		<part type="pathogen filtering system" number="12"/>
+		<part type="pathogen filter" number="12"/>
 		<part type="charcoal filter" number="20"/>
 		<part type="electrostatic precipitator" number="20"/>
-		<part type="large air duct" number="40"/>
+		<part type="air duct" number="40"/>
 		<part type="flexible hose" number="40"/>
 		<!-- 2015-05-18 Added the following new parts -->
 		<part type="laser sintering 3d printer" number="16"/>
@@ -396,7 +396,7 @@
 		<part type="water pump - small" number="12" />
 		<part type="water pump - large" number="4" />
 		<part type="carbon dioxide pump" number="15" />
-		<part type="small transformer" number="25" />
+		<part type="transformer" number="25" />
 		<part type="power transistor" number="400" />
 		<part type="autoclave" number="15" />
 		<part type="blender" number="15" />
@@ -408,7 +408,7 @@
  		<!-- Prior to 2014-11-20 -->
 		<part type="airleak patch" number="536" />
 		<part type="fire extinguisher" number="78" />
-		<part type="rover wheel" number="38" />
+		<part type="wheel - rover" number="38" />
 		<part type="gasket" number="372" />
 		<part type="timing belt" number="58" />
 		<part type="valve" number="202" />
@@ -447,9 +447,9 @@
 		<part type="rover windshield" number="8" />
 		<part type="rover window" number="12" />
 		<part type="winch" number="8" />
-		<part type="small motor" number="6" />
-		<part type="large motor" number="12" />
-		<part type="small stepper motor" number="12"/>
+		<part type="motor - small" number="6" />
+		<part type="motor - large" number="12" />
+		<part type="stepper motor - small" number="12"/>
 		<part type="rover chassis panel" number="14" />
 		<part type="rover generator" number="8" />
 		<part type="rover control panel" number="8" />
@@ -463,7 +463,7 @@
 		<part type="bulldozer blade" number="6" />
 		<part type="soil compactor" number="6" />
 		<part type="crane boom" number="6" />
-		<part type="small wheel" number="4" />
+		<part type="wheel - small" number="4" />
 		<part type="utility vehicle control panel" number="4" />
 		<part type="solar panel" number="8" />
 		<part type="bore drill bit" number="6" />

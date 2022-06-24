@@ -345,7 +345,7 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="rover wheel" type="vehicle" mass="15.0">
+	<part name="wheel - rover" type="vehicle" mass="15.0">
 		<description>Rover wheels are made of steel and steel wire.</description>
 		<maintenance-entity-list>
 			<entity name="rover" probability="5" max-number="6" />
@@ -371,7 +371,7 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="large motor" type="vehicle" mass="100.0" >
+	<part name="motor - large" type="vehicle" mass="100.0" >
 		<maintenance-entity-list>
 			<entity name="rover" probability="5" max-number="4" />
 			<entity name="wind power source" probability="1" max-number="1" />
@@ -445,7 +445,7 @@
 		<description>Attachment part for LUV. A long, telescopic or fixed arm for moving objects</description>
 	</part>
 
-	<part name="small motor" type="electrical" mass="10.0" >
+	<part name="motor - small" type="electrical" mass="10.0" >
 		<maintenance-entity-list>
 			<entity name="robot" probability="1" max-number="1" />
 			<entity name="light utility vehicle" probability="1" max-number="4" />
@@ -455,7 +455,7 @@
 
 	<part name="small vehicle frame" type="vehicle" mass="250.0" />
 
-	<part name="small wheel" type="vehicle"  mass="10.0" >
+	<part name="wheel - small" type="vehicle"  mass="10.0" >
 		<maintenance-entity-list>
 			<entity name="light utility vehicle" probability="5" max-number="1" />
 		</maintenance-entity-list>
@@ -589,8 +589,8 @@
 		</maintenance-entity-list>
 	</part>
 
-	<!-- 2014-11-19 Added a small transformer. -->
-	<part name="small transformer" type="electrical" mass="0.5" >
+	<!-- 2014-11-19 Added transformer. -->
+	<part name="transformer" type="electrical" mass="5.0" >
 		<maintenance-entity-list>
 		<entity name="farming" probability="3" max-number="1" />
 		<entity name="vehicle" probability="3" max-number="1" />
@@ -696,7 +696,7 @@
 
 	<part name="optical prism" type="electronic" mass=".1"/>
 
-	<part name="pathogen filtering system" type="utility" mass="3.0">
+	<part name="pathogen filter" type="utility" mass="3.0">
 		<maintenance-entity-list>
 			<entity name="farming" probability="1" max-number="2" />
 			<entity name="dining" probability="2" max-number="2" />
@@ -727,7 +727,7 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="large air duct" type="utility" mass=".3">
+	<part name="air duct" type="utility" mass=".3">
 		<maintenance-entity-list>
 			<entity name="cooking" probability="2" max-number="2" />
 			<entity name="farming" probability="2" max-number="2" />
@@ -744,7 +744,7 @@
 			roofing for greenhouses</description>
 	</part>
 
-	<part name="small stepper motor" type="electrical" mass="2">
+	<part name="stepper motor - small" type="electrical" mass="2">
 		<description>precision motor for use in 3D printing</description>
 		<maintenance-entity-list>
 			<entity name="manufacture" probability="1" max-number="2" />
@@ -765,13 +765,6 @@
 	    <maintenance-entity-list>
 			<entity name="vehicle" probability="1" max-number="1" />
 			<entity name="fuel power source" probability="1" max-number="1" />
-		</maintenance-entity-list>
-	</part>
-
-	<part name="portable water purification unit" type="utility" mass="1">
-		<description>The PWPU recycle liquid wastes and is used inside a vehicle/rover </description>
-	    <maintenance-entity-list>
-			<entity name="vehicle" probability="2" max-number="2" />
 		</maintenance-entity-list>
 	</part>
 
