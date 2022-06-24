@@ -56,12 +56,12 @@ public class WorkerWorkCommand extends AbstractUnitCommand {
 									"P Score", 9,
 									"P %", 6,
 									"Trait", 25, 
-									"Favourite");
+									"Favourite", 18);
 		for (Entry<MetaTask, Double> item : tasks.entrySet()) {
 			MetaTask mt = item.getKey();
 			response.appendTableRow(mt.getName(), 
 									item.getValue(),
-									Math.round(item.getValue()/sum*10_000.0)/10.0,							
+									Math.round(item.getValue()/sum*10_000.0)/100.0,							
 									mt.getTraits(),
 									mt.getFavourites()
 									);
