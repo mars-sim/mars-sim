@@ -351,6 +351,9 @@ public class Simulation implements ClockListener, Serializable {
 		MarsClock marsClock = masterClock.getMarsClock();
 		EarthClock earthClock = masterClock.getEarthClock();
 
+		// Set log data
+		DataLogger.changeTime(marsClock);
+
 		// Set instances for logging
 		SimuLoggingFormatter.initializeInstances(masterClock);
 
@@ -611,9 +614,10 @@ public class Simulation implements ClockListener, Serializable {
 	 */
 	private void reinitializeInstances() {
 		SimuLoggingFormatter.initializeInstances(masterClock);
-
+		
 		// Re-initialize the utility class for getting lists of meta tasks.
 		MetaTaskUtil.initializeMetaTasks();
+
 
 		// Re-initialize the resources for the saved sim
 		ResourceUtil.getInstance().initializeInstances();

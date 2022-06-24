@@ -136,9 +136,7 @@ public class MaintainGroundVehicleGarageMeta extends MetaTask {
 		while (j.hasNext() && !garageSpace) {
 			Building building = j.next();
 			VehicleMaintenance garage = building.getGroundVehicleMaintenance();
-			if (garage.getCurrentVehicleNumber() < garage.getVehicleCapacity()) {
-				garageSpace = true;
-			}
+			garageSpace = (garage.getAvailableCapacity() > 0);
 
 			Iterator<Vehicle> i = garage.getVehicles().iterator();
 			while (i.hasNext()) {

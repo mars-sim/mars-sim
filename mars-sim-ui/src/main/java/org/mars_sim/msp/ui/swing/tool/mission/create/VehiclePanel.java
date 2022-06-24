@@ -297,7 +297,7 @@ class VehiclePanel extends WizardPanel {
 				if (vehicle.getStoredMass() > 0D)
 					result = true;
 			} else if (column == 8) {
-				if (!vehicle.haveStatusType(StatusType.PARKED) && !vehicle.haveStatusType(StatusType.GARAGED))
+				if ((vehicle.getPrimaryStatus() != StatusType.PARKED) && (vehicle.getPrimaryStatus() != StatusType.GARAGED))
 					result = true;
 
 				// Allow rescue/salvage mission to use vehicle undergoing maintenance.

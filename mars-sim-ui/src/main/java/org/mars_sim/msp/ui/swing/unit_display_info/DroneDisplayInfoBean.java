@@ -52,7 +52,7 @@ public class DroneDisplayInfoBean extends VehicleDisplayInfoBean {
 		Drone drone = (Drone) unit;
     	if (drone.haveStatusType(StatusType.MAINTENANCE)) return SoundConstants.SND_ROVER_MAINTENANCE;
     	else if (drone.haveStatusType(StatusType.MALFUNCTION)) return SoundConstants.SND_ROVER_MALFUNCTION;
-    	else if (drone.haveStatusType(StatusType.GARAGED) || drone.haveStatusType(StatusType.PARKED)) return SoundConstants.SND_ROVER_PARKED;
+    	else if ((drone.getPrimaryStatus() == StatusType.GARAGED) || (drone.getPrimaryStatus() == StatusType.PARKED)) return SoundConstants.SND_ROVER_PARKED;
     	else if (drone.getSpeed() > 0) return SoundConstants.SND_ROVER_MOVING;
     	else return "";
 	}

@@ -235,7 +235,7 @@ extends WizardPanel {
 			LightUtilityVehicle vehicle = (LightUtilityVehicle) getUnit(row);
 
 			if (column == 1) {
-				if (!vehicle.haveStatusType(StatusType.PARKED) && !vehicle.haveStatusType(StatusType.GARAGED))
+				if ((vehicle.getPrimaryStatus() != StatusType.PARKED) && (vehicle.getPrimaryStatus() != StatusType.GARAGED))
 					result = true;
 			}
 			else if (column == 2) {

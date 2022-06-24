@@ -27,7 +27,7 @@ public abstract class DataLogger<T> implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private static int currentSol = 0;
+	private static int currentSol = 1;
 	protected static int currentMsol = 0;
 	
 	private int maxSols = 7;
@@ -38,7 +38,6 @@ public abstract class DataLogger<T> implements Serializable {
 	public DataLogger(int maxSols) {
 		super();
 		this.maxSols = maxSols;
-		newSol(1);
 	}
 	
 	/**

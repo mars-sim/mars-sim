@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.vehicle;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -68,7 +67,6 @@ import org.mars_sim.msp.core.structure.building.function.SystemType;
 import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.Temporal;
-import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
@@ -78,7 +76,7 @@ import org.mars_sim.msp.core.tool.RandomUtil;
  */
 public abstract class Vehicle extends Unit
 		implements Malfunctionable, Salvagable, Temporal, Indoor,
-		LocalBoundedObject, Serializable, EquipmentOwner, ItemHolder {
+		LocalBoundedObject, EquipmentOwner, ItemHolder {
 
 	private static final long serialVersionUID = 1L;
 
@@ -211,6 +209,8 @@ public abstract class Vehicle extends Unit
 	private List<LocalPosition> passengerActivitySpots;
 	/** List of status types. */
 	private Set<StatusType> statusTypes = new HashSet<>();
+	private StatusType primaryStatus;
+
 	/** The vehicle's status log. */
 	private MSolDataLogger<Set<StatusType>> vehicleLog = new MSolDataLogger<>(5);
 
@@ -305,7 +305,8 @@ public abstract class Vehicle extends Unit
 			malfunctionManager.addScopeString(SystemType.ROVER.getName());
 		}
 
-		addStatus(StatusType.PARKED);
+		primaryStatus = StatusType.PARKED;
+		writeLog();
 
 		// Set width and length of vehicle.
 		VehicleConfig vehicleConfig = simulationConfig.getVehicleConfiguration();
@@ -470,7 +471,8 @@ public abstract class Vehicle extends Unit
 		malfunctionManager = new MalfunctionManager(this, getBaseWearLifetime(), maintenanceWorkTime);
 		malfunctionManager.addScopeString(SystemType.VEHICLE.getName());
 
-		addStatus(StatusType.PARKED);
+		primaryStatus = StatusType.PARKED;
+		writeLog();
 
 		// Add to the settlement
 		settlement.addOwnedVehicle(this);
@@ -652,22 +654,18 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
-	 * Returns a list of vehicle's status types
-	 *
-	 * @return the vehicle's status types
-	 */
-	public Set<StatusType> getStatusTypes() {
-		return statusTypes;
-	}
-
-	/**
 	 * Prints a string list of status types.
 	 *
 	 * @return
 	 */
 	public String printStatusTypes() {
-		String s = statusTypes.toString();
-		return Conversion.capitalize(s.substring(1 , s.length() - 1).toLowerCase());
+		StringBuilder builder = new StringBuilder();
+		builder.append(primaryStatus.getName());
+
+		for (StatusType st : statusTypes) {
+			builder.append(", ").append(st.getName());
+		}
+		return builder.toString();
 	}
 
 	/**
@@ -694,12 +692,57 @@ public abstract class Vehicle extends Unit
 	    return true;
 	}
 
+	public StatusType getPrimaryStatus() {
+		return primaryStatus;
+	}
+
 	/**
-	 * Adds a status type for this vehicle
+	 * Sets the Primary status of a Vehicle that represents it's situation.
+	 * @param newStatus Must be a primary status value
+	 */
+	public void setPrimaryStatus(StatusType newStatus) {
+		setPrimaryStatus(newStatus, null);
+	}
+
+	/**
+	 * Sets the Primary status of a Vehicle that represents it's situation. Also there is 
+	 * a Secondary status on why the primary has changed.
+	 * @param newStatus Must be a primary status value
+	 * @param secondary Reason for the change; can be null be none given
+	 */
+	public void setPrimaryStatus(StatusType newStatus, StatusType secondary) {
+		if (!newStatus.isPrimary()) {
+			throw new IllegalArgumentException("Status is not Primary " + newStatus.getName());
+		}
+
+		boolean doEvent = false;
+		if (primaryStatus != newStatus) {
+			primaryStatus = newStatus;
+			doEvent = true;
+		}
+
+		// Seconary is optional
+		if ((secondary != null) && !statusTypes.contains(secondary)) {
+			statusTypes.add(secondary);
+			doEvent = true;
+		}
+
+		if (doEvent) {
+			writeLog();
+			fireUnitUpdate(UnitEventType.STATUS_EVENT, newStatus);
+		}
+	}
+
+	/**
+	 * Adds a Secondary status type for this vehicle
 	 *
 	 * @param newStatus the status to be added
 	 */
-	public void addStatus(StatusType newStatus) {
+	public void addSecondaryStatus(StatusType newStatus) {
+		if (newStatus.isPrimary()) {
+			throw new IllegalArgumentException("Status is not Secondary " + newStatus.getName());
+		}
+
 		// Update status based on current situation.
 		if (!statusTypes.contains(newStatus)) {
 			statusTypes.add(newStatus);
@@ -709,11 +752,11 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
-	 * Remove a status type for this vehicle
+	 * Remove a Secondary status type for this vehicle
 	 *
 	 * @param oldStatus the status to be removed
 	 */
-	public void removeStatus(StatusType oldStatus) {
+	public void removeSecondaryStatus(StatusType oldStatus) {
 		// Update status based on current situation.
 		if (statusTypes.contains(oldStatus)) {
 			statusTypes.remove(oldStatus);
@@ -746,9 +789,9 @@ public abstract class Vehicle extends Unit
 	 * Records the status in the vehicle log
 	 */
 	private void writeLog() {
-		if (!statusTypes.isEmpty()) {
-			vehicleLog.addDataPoint(new HashSet<>(statusTypes));
-		}
+		Set<StatusType> entry = new HashSet<>(statusTypes);
+		entry.add(primaryStatus);
+		vehicleLog.addDataPoint(entry);
 	}
 
 	/**
@@ -822,10 +865,10 @@ public abstract class Vehicle extends Unit
 
 		if (towingVehicle != null) {
 			// if towedVehicle is not null, it means this rover has just hooked up for towing the towedVehicle
-			addStatus(StatusType.TOWED);
+			addSecondaryStatus(StatusType.TOWED);
 		}
 		else {
-			removeStatus(StatusType.TOWED);
+			removeSecondaryStatus(StatusType.TOWED);
 		}
 
 		this.towingVehicle = towingVehicle;
@@ -1176,7 +1219,7 @@ public abstract class Vehicle extends Unit
 	 * @return {@link Vehicle}
 	 */
 	public Building getGarage() {
-		return BuildingManager.getBuilding(this, getSettlement());
+		return BuildingManager.getBuilding(this);
 	}
 
 	/**
@@ -1204,13 +1247,12 @@ public abstract class Vehicle extends Unit
 //		// Checks status.
 //		checkStatus();
 
-		if (haveStatusType(StatusType.MOVING)) {
+		if (primaryStatus == StatusType.MOVING) {
 			// Assume the wear and tear factor is at 100% by being used in a mission
 			malfunctionManager.activeTimePassing(pulse.getElapsed());
 		}
 
 		// If it's back at a settlement and is NOT in a garage
-//		else if (getSettlement() != null && !isVehicleInAGarage()) {
 		else if (LocationStateType.WITHIN_SETTLEMENT_VICINITY == getLocationStateType()) {
 			if (!haveStatusType(StatusType.MAINTENANCE)) {
 				// Assume the wear and tear factor is 75% less by being exposed outdoor
@@ -1222,7 +1264,7 @@ public abstract class Vehicle extends Unit
 		if (haveStatusType(StatusType.MAINTENANCE)) {
 			if (malfunctionManager.getEffectiveTimeSinceLastMaintenance() <= 0D) {
 				setReservedForMaintenance(false);
-				removeStatus(StatusType.MAINTENANCE);
+				removeSecondaryStatus(StatusType.MAINTENANCE);
 			}
 		}
 		else { // not under maintenance
@@ -1232,7 +1274,7 @@ public abstract class Vehicle extends Unit
 
 		if (haveStatusType(StatusType.MALFUNCTION)
 			&& malfunctionManager.getMalfunctions().size() == 0) {
-				removeStatus(StatusType.MALFUNCTION);
+				removeSecondaryStatus(StatusType.MALFUNCTION);
 		}
 
 		// Add the location to the trail if outside on a mission
@@ -1486,23 +1528,6 @@ public abstract class Vehicle extends Unit
         return getLocationStateType() == LocationStateType.WITHIN_SETTLEMENT_VICINITY;
 	}
 
-	/**
-	 * Is the vehicle parked
-	 *
-	 * @return
-	 */
-	public boolean isParked() {
-		if (haveStatusType(StatusType.MOVING)) {
-			return false;
-		} else if (haveStatusType(StatusType.TOWED)) {
-			Vehicle towingVehicle = getTowingVehicle();
-            return towingVehicle == null
-                    || (!towingVehicle.haveStatusType(StatusType.MOVING)
-                    && !towingVehicle.haveStatusType(StatusType.TOWING));
-		}
-
-		return true;
-	}
 
 	@Override
 	public Building getBuildingLocation() {
@@ -1621,16 +1646,7 @@ public abstract class Vehicle extends Unit
 
 		if (person.isInVehicle()) {
 			Vehicle vehicle = person.getVehicle();
-			if (vehicle.haveStatusType(StatusType.MOVING)) {
-				result = true;
-			} else if (vehicle.haveStatusType(StatusType.TOWED)) {
-				Vehicle towingVehicle = vehicle.getTowingVehicle();
-				if (towingVehicle != null
-						&& (towingVehicle.haveStatusType(StatusType.MOVING)
-						|| towingVehicle.haveStatusType(StatusType.TOWING))) {
-					result = true;
-				}
-			}
+			result = vehicle.getPrimaryStatus() == StatusType.MOVING;
 		}
 
 		return result;

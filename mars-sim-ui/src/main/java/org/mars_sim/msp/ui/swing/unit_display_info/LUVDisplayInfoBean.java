@@ -54,7 +54,7 @@ public class LUVDisplayInfoBean extends VehicleDisplayInfoBean {
 		LightUtilityVehicle luv = (LightUtilityVehicle) unit;
     	if (luv.haveStatusType(StatusType.MAINTENANCE)) return SoundConstants.SND_ROVER_MAINTENANCE;
     	else if (luv.haveStatusType(StatusType.MALFUNCTION)) return SoundConstants.SND_ROVER_MALFUNCTION;
-    	else if (luv.haveStatusType(StatusType.GARAGED) || luv.haveStatusType(StatusType.PARKED)) return SoundConstants.SND_ROVER_PARKED;
+    	else if ((luv.getPrimaryStatus() == StatusType.GARAGED) || (luv.getPrimaryStatus() == StatusType.PARKED)) return SoundConstants.SND_ROVER_PARKED;
     	else if (luv.getCrewNum() > 0 || luv.getRobotCrewNum() > 0) return SoundConstants.SND_ROVER_MOVING;
     	else return "";
 	}

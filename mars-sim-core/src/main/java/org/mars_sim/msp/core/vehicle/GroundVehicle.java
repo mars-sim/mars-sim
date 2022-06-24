@@ -6,8 +6,6 @@
  */
 package org.mars_sim.msp.core.vehicle;
 
-import java.io.Serializable;
-import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Direction;
 import org.mars_sim.msp.core.LocalAreaUtil;
@@ -23,7 +21,7 @@ import org.mars_sim.msp.core.tool.RandomUtil;
  * The GroundVehicle class represents a ground-type vehicle. It is abstract and
  * should be extended to a particular type of ground vehicle.
  */
-public abstract class GroundVehicle extends Vehicle implements Serializable {
+public abstract class GroundVehicle extends Vehicle {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -148,7 +146,7 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
 	public void setStuck(boolean stuck) {
 		isStuck = stuck;
 		if (isStuck) {
-			addStatus(StatusType.STUCK);
+			setPrimaryStatus(StatusType.PARKED, StatusType.STUCK);
 			setSpeed(0D);
 			setParkedLocation(LocalPosition.DEFAULT_POSITION, getDirection().getDirection());
 		}
@@ -258,6 +256,7 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
 	 * @param fuelConsumed
 	 * @return
 	 */
+	/* 
 	protected boolean hasEnoughFuel(double fuelConsumed) {
 		Vehicle v = getVehicle();
         int fuelType = v.getFuelType();
@@ -266,7 +265,7 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
     		double remainingFuel = v.getAmountResourceStored(fuelType);
 	
     		if (remainingFuel < LEAST_AMOUNT) {
-    			v.addStatus(StatusType.OUT_OF_FUEL);
+    			v.setPrimaryStatus(StatusType.PARKED, StatusType.OUT_OF_FUEL);
     			return false;
     		}
     			
@@ -283,12 +282,5 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
 	    	return false;
 	    }
 	}
-	
-	/**
-	 * Prepare object for garbage collection.
-	 */
-	public void destroy() {
-//		surface = null;
-//		terrain = null;
-	}
+	*/
 }

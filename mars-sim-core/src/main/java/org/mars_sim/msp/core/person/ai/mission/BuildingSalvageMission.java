@@ -557,7 +557,8 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 
 			if (vehicle instanceof LightUtilityVehicle) {
 				LightUtilityVehicle luvTemp = (LightUtilityVehicle) vehicle;
-				if ((luvTemp.haveStatusType(StatusType.PARKED) || luvTemp.haveStatusType(StatusType.GARAGED))
+				StatusType primStatus = luvTemp.getPrimaryStatus();
+				if (((primStatus == StatusType.PARKED) || (primStatus == StatusType.GARAGED))
 						&& !luvTemp.isReserved() && (luvTemp.getCrewNum() == 0) && (luvTemp.getRobotCrewNum() == 0)) {
 					result = luvTemp;
 					luvTemp.setReservedForMission(true);

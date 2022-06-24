@@ -808,6 +808,8 @@ public class Walk extends Task implements Serializable {
 				logger.log(person, Level.FINER, 4_000,
 								"Ended the walk task. Could not enter the airlock in "
 	      						+ airlock.getEntityName() + ".");
+				// Consume all of the time waiting to enter; prevents repeated tries
+				timeLeft = 0D;
 				endTask();
 			}
 
