@@ -52,8 +52,6 @@ public class DeliveryMeta extends AbstractMetaMission {
 
 		double missionProbability = 0D;
 
-		// Check if person is in a settlement.
-
 		// Check if mission is possible for person based on their circumstance.
 		Settlement settlement = person.getAssociatedSettlement();
 
@@ -98,6 +96,12 @@ public class DeliveryMeta extends AbstractMetaMission {
 	}
 
 	
+	/**
+	 * Gets the settlement contribution of the probability of the delivery mission.
+	 * 
+	 * @param settlement
+	 * @return
+	 */
 	private double getSettlementProbability(Settlement settlement) {
 
 		double missionProbability = 0;

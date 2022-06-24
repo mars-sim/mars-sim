@@ -325,7 +325,7 @@ public class Good implements Serializable, Comparable<Good> {
 				result += BOARD_VALUE;
 			else if (name.equalsIgnoreCase("microcontroller"))
 				result += CPU_VALUE;
-			else if (name.equalsIgnoreCase("small semiconductor wafer"))
+			else if (name.equalsIgnoreCase("semiconductor wafer"))
 				result += WAFER_VALUE;
 			else if (name.contains("battery"))
 				result += BATTERY_VALUE;

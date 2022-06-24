@@ -1050,8 +1050,7 @@ public class Settlement extends Structure implements Temporal,
 				// Initialize the good values
 				Iterator<Good> i = GoodsUtil.getGoodsList().iterator();
 				while (i.hasNext()) {
-					Good g = i.next();
-					goodsManager.determineGoodValue(g, 0, false);
+					goodsManager.determineGoodValue(i.next());
 				}
 			}
 
@@ -1059,7 +1058,6 @@ public class Settlement extends Structure implements Temporal,
 			checkAvailableAirlocks();
 
 			// May update the goods manager updateGoodsManager(pulse);
-
 			int cycles = settlementConfig.getTemplateID();
 			int remainder = msol % cycles;
 			if (remainder == templateID) {
@@ -1068,8 +1066,8 @@ public class Settlement extends Structure implements Temporal,
 					Iterator<Good> i = GoodsUtil.getGoodsList().iterator();
 					while (i.hasNext()) {
 						Good g = i.next();
+						goodsManager.determineGoodValue(g);
 						g.adjustGoodValue();
-						goodsManager.determineGoodValue(g, 1, false);
 					}
 				}
 			}

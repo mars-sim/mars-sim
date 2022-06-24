@@ -120,11 +120,11 @@ public class NegotiateDelivery extends Task implements Serializable {
 			CreditManager.setCredit(buyingSettlement, sellingSettlement, credit);
 			
 			logger.log(person, Level.INFO, 0, 
-					"Completed a delivery negotiation as follows: "
+					"Delivery negotiation completed - "
 					+ "  Buyer: " + buyingSettlement.getName() 
 					+ "  Seller: " + sellingSettlement.getName()
 					+ "  Credit: " + Math.round(credit* 10.0)/10.0 
-					+ "  Mod: " + Math.round(tradeModifier * 10.0)/10.0
+					+ "  Trade Mod: " + Math.round(tradeModifier * 10.0)/10.0
 					);
 
 			// Check if buying settlement owes the selling settlement too much for them to
@@ -142,9 +142,10 @@ public class NegotiateDelivery extends Task implements Serializable {
 				CreditManager.setCredit(buyingSettlement, sellingSettlement, credit);
 				
 				logger.log(person, Level.INFO, 0,
-						"Updated the account ledger as follows: "
+						"Account ledger updated - "
+						+ "  Base Buy Load: " + Math.round(baseBuyLoadValue * 10.0)/10.0
 						+ "  Credit: " + Math.round(credit * 10.0)/10.0
-						+ "  Mod: " + Math.round(tradeModifier * 10.0)/10.0
+						+ "  Trade Mod: " + Math.round(tradeModifier * 10.0)/10.0
 						);
 			} else {
 				buyLoad = new HashMap<>();
@@ -156,7 +157,7 @@ public class NegotiateDelivery extends Task implements Serializable {
 	}
 
 	/**
-	 * Has the buying trader follow the selling trader if he/she has moved to a
+	 * Have the buying trader follow the selling trader if he/she has moved to a
 	 * different building.
 	 */
 	private void followSeller() {

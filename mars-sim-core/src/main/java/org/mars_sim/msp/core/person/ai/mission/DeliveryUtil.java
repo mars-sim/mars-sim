@@ -110,7 +110,7 @@ public final class DeliveryUtil {
 		bestDeliverySettlementCache = bestSettlement;
 		
 		if (bestProfit > 0)
-			logger.fine(startingSettlement, "Delivering to " + bestSettlement + "  best profit: " + Math.round(bestProfit*10.0)/10.0);
+			logger.fine(startingSettlement, "Delivering to " + bestSettlement + "  Best Profit: " + Math.round(bestProfit*10.0)/10.0);
 		
 		return bestProfit;
 	}
@@ -278,7 +278,7 @@ public final class DeliveryUtil {
 
 
 		// Determine repair parts for trip.
-		Set<Integer> repairParts = Collections.emptySet();//new HashSet<>();//drone.getMalfunctionManager().getRepairPartProbabilities().keySet();
+		Set<Integer> repairParts = Collections.emptySet();
 
 		// Determine the load.
 		boolean done = false;
@@ -473,11 +473,11 @@ public final class DeliveryUtil {
 			if (allowNegValue)
 				bestValue = Double.NEGATIVE_INFINITY;
 			
-			// TODO: allow player commander to custom-tailor this buy list
+			// Future: allow player commander to custom-tailor this buy list
 			List<Good> list = buyingSettlement.getBuyList();
 			Iterator<Good> i = list.iterator();
 			while (i.hasNext()) {
-			Good good = i.next();
+				Good good = i.next();
 				if (!nonDeliveryGoods.contains(good)) {
 					double deliveryValue = getDeliveryValue(good, sellingSettlement, buyingSettlement, deliveredGoods,
 							remainingCapacity, hasVehicle, missionDrone, allowNegValue, repairParts);
