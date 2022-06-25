@@ -345,7 +345,7 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="wheel - rover" type="vehicle" mass="15.0">
+	<part name="rover wheel" type="vehicle" mass="15.0">
 		<description>Rover wheels are made of steel and steel wire.</description>
 		<maintenance-entity-list>
 			<entity name="rover" probability="5" max-number="6" />

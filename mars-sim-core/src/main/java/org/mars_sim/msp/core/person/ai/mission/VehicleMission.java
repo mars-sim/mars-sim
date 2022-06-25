@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.person.ai.mission;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -829,7 +830,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 				logger.info(vehicle, "Arrived back home " + base.getName() + ".");
 				vehicle.transfer(base);
 
-				// TODO There is a problem with the Vehicle not being on the
+				// Note: There is a problem with the Vehicle not being on the
 				// surface vehicle list. The problem is a lack of transfer at the start of TRAVEL phase
 				// This is temporary fix pending #474 which will revisit transfers
 				if (!base.equals(vehicle.getContainerUnit())) {
@@ -1043,17 +1044,16 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	 * @return map of part resources and their number.
 	 */
 	protected Map<Integer, Number> getSparePartsForTrip(double distance) {
-		Map<Integer, Number> result = null;
 
 		// Determine vehicle parts. only if there is a change of distance
 		if (vehicle != null) {
 
 			// If the distance is the same as last time then use the cached value
 			if ((cachedDistance == distance) && (cachedParts != null)) {
-				result = cachedParts;
+				return cachedParts;
 			}
 			else {
-				result = new HashMap<>();
+				Map<Integer, Number> result = new HashMap<>();
 				cachedParts = result;
 				cachedDistance = distance;
 
@@ -1090,18 +1090,15 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 
 				// Manually override the number of wheel and battery needed for each mission
 				if (VehicleType.isRover(vehicle.getVehicleType())) {
-					Integer wheel = ItemResourceUtil.findIDbyItemResourceName(ROVER_WHEEL);
-					Integer battery = ItemResourceUtil.findIDbyItemResourceName(ROVER_BATTERY);
+					Integer wheel = ItemResourceUtil.roverWheel.getID();
+					Integer battery = ItemResourceUtil.roverBattery.getID();
 					result.put(wheel, 2);
 					result.put(battery, 1);
 				}
 			}
 		}
-		else {
-			result = new HashMap<>();
-		}
 
-		return result;
+		return Collections.emptyMap();
 	}
 
 
@@ -1550,7 +1547,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 
 		// Figure out the type of containers needed by optional amount resources.
 		Map<Integer, Number> optionalResources = getOptionalResourcesToLoad();
-		Iterator<Integer> i = optionalResources.keySet().iterator();
+		Iterator<Integer> i = optionalResources.keySet().iterator();			
 		while (i.hasNext()) {
 			Integer id = i.next();
 			// Check if it's an amount resource that can be stored inside

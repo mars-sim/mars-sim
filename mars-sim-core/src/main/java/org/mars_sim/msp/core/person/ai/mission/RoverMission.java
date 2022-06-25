@@ -900,7 +900,8 @@ public abstract class RoverMission extends VehicleMission {
 
 		// Gets a spare EVA suit for each 4 members in a mission
 		int numEVA = (int) (getPeopleNumber() * EXTRA_EVA_SUIT_FACTOR);
-		result.put(EquipmentType.getResourceID(EquipmentType.EVA_SUIT), numEVA);
+		int id = EquipmentType.getResourceID(EquipmentType.EVA_SUIT);
+		result.put(id, numEVA);
 
 		return result;
 	}

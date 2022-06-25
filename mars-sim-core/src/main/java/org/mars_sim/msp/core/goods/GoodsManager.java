@@ -3449,6 +3449,7 @@ public class GoodsManager implements Serializable, Temporal {
 				|| MissionType.BUILDING_SALVAGE == missionType) {
 			return getJobNum(JobType.ARCHITECT);
 		}
+		
 		if (MissionType.TRAVEL_TO_SETTLEMENT == missionType
 				|| MissionType.RESCUE_SALVAGE_VEHICLE == missionType) {
 			return getJobNum(JobType.PILOT)
@@ -3457,22 +3458,16 @@ public class GoodsManager implements Serializable, Temporal {
 		} 
 
 		if (MissionType.COLLECT_ICE == missionType) {
-			double demand = getAmountDemandValue(GoodsUtil.getResourceGood(ResourceUtil.iceID));
-			if (demand > 100D)
-				demand = 100D;
-			return demand;
+			return Math.min(getAmountDemandValue(GoodsUtil.getResourceGood(ResourceUtil.iceID)), 100);
 		} 
-		
+
 		if (MissionType.TRADE == missionType
 				|| MissionType.DELIVERY == missionType) {
 			return getJobNum(JobType.TRADER);
 		}
 		
 		if (MissionType.COLLECT_REGOLITH == missionType) {
-			double demand = getAmountDemandValue(GoodsUtil.getResourceGood(ResourceUtil.regolithID));
-			if (demand > 100D)
-				demand = 100D;
-			return demand;
+			return Math.min(getAmountDemandValue(GoodsUtil.getResourceGood(ResourceUtil.regolithID)), 100);
 		}
 		
 		if (MissionType.MINING == missionType
@@ -3490,11 +3485,7 @@ public class GoodsManager implements Serializable, Temporal {
 		} 
 		
 		if (MissionType.EMERGENCY_SUPPLY == missionType) {
-			double demand = unitManager.getSettlementNum() - 1D;
-			if (demand < 0D) {
-				demand = 0D;
-			}
-			return demand;
+			return Math.max(unitManager.getSettlementNum() - 1D, 0);
 		}
 		return 0;
 	}

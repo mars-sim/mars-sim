@@ -55,6 +55,10 @@ public class ItemResourceUtil implements Serializable {
 	public static final String IRON_SHEET = "iron sheet";
 	public static final String STEEL_SHEET = "steel sheet";
 
+	public static final String ROVER_WHEEL = "rover wheel";
+	public static final String ROVER_BATTERY = "rover battery";
+
+	
 	public static final Part pneumaticDrillAR = (Part) findItemResource(PNEUMATIC_DRILL);
 	public static final Part backhoeAR = (Part) findItemResource(BACKHOE);
 	public static final Part socketWrenchAR = (Part) findItemResource(SOCKET_WRENCH);
@@ -65,6 +69,10 @@ public class ItemResourceUtil implements Serializable {
 	public static final Part mushroomBoxAR = (Part) findItemResource(CONTAINMENT_KIT);
 	public static final Part smallHammerAR = (Part) findItemResource(SMALL_HAMMER);
 
+	public static final Part roverWheel = (Part) findItemResource(ROVER_WHEEL);
+	public static final Part roverBattery = (Part) findItemResource(ROVER_BATTERY);
+	
+	
 	public static int garmentID;
 	public static int pressureSuitID;
 	public static int PETRI_DISH_ID;

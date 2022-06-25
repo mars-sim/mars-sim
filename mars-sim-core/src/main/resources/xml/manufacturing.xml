@@ -1804,7 +1804,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="steel wire" number="45" />
 		</inputs>
 		<outputs>
-			<part name="wheel - rover" number="2" />
+			<part name="rover wheel" number="2" />
 		</outputs>
 	</process>
 
@@ -2199,7 +2199,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="steel pipe" number="2" />
 			<part name="epoxy resin bottle" number="5" />
 			<part name="lubricant bottle" number="2" />
-			<part name="wheel - rover" number="12" />
+			<part name="rover wheel" number="12" />
 			<part name="optical cable" number="6" />
 		</inputs>
 		<outputs>
@@ -2237,7 +2237,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="steel pipe" number="2" />
 			<part name="epoxy resin bottle" number="5" />
 			<part name="lubricant bottle" number="2" />
-			<part name="wheel - rover" number="16" />
+			<part name="rover wheel" number="16" />
 			<part name="optical cable" number="8" />
 		</inputs>
 		<outputs>
@@ -2275,7 +2275,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="steel pipe" number="2" />
 			<part name="epoxy resin bottle" number="5" />
 			<part name="lubricant bottle" number="2" />
-			<part name="wheel - rover" number="14" />
+			<part name="rover wheel" number="14" />
 			<part name="optical cable" number="10" />
 		</inputs>
 		<outputs>
@@ -3879,7 +3879,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		<part-salvage name="steel pipe" number="2" />
 		<part-salvage name="epoxy resin bottle" number="5" />
 		<part-salvage name="lubricant bottle" number="2" />
-		<part-salvage name="wheel - rover" number="12" />
+		<part-salvage name="rover wheel" number="12" />
 		<part-salvage name="steel scrap" number="4" />
 		<part-salvage name="aluminum scrap" number="7" />
 		<part-salvage name="optical cable" number="10" />
@@ -3911,7 +3911,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		<part-salvage name="steel pipe" number="2" />
 		<part-salvage name="epoxy resin bottle" number="5" />
 		<part-salvage name="lubricant bottle" number="2" />
-		<part-salvage name="wheel - rover" number="16" />
+		<part-salvage name="rover wheel" number="16" />
 		<part-salvage name="steel scrap" number="5" />
 		<part-salvage name="aluminum scrap" number="7" />
 		<part-salvage name="optical cable" number="10" />
@@ -3943,7 +3943,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		<part-salvage name="steel pipe" number="2" />
 		<part-salvage name="epoxy resin bottle" number="5" />
 		<part-salvage name="lubricant bottle" number="2" />
-		<part-salvage name="wheel - rover" number="14" />
+		<part-salvage name="rover wheel" number="14" />
 		<part-salvage name="steel scrap" number="4" />
 		<part-salvage name="aluminum scrap" number="8" />
 		<part-salvage name="optical cable" number="10" />

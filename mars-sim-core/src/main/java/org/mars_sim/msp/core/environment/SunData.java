@@ -1,10 +1,9 @@
-/**
+/*
  * Mars Simulation Project
  * SunData.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-06-24
  * @author Barry Evans
  */
-
 package org.mars_sim.msp.core.environment;
 
 /**

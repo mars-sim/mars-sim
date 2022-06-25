@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * SettlementTransparentPanel.java
- * @date 2021-12-17
+ * @date 2022-06-24
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;
@@ -69,6 +69,7 @@ import org.mars_sim.msp.core.environment.OrbitInfo;
 import org.mars_sim.msp.core.environment.SunData;
 import org.mars_sim.msp.core.environment.SurfaceFeatures;
 import org.mars_sim.msp.core.environment.Weather;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -99,7 +100,7 @@ import eu.hansolo.steelseries.tools.LcdColor;
 public class SettlementTransparentPanel extends WebComponent implements ClockListener {
 
 	/** default logger. */
-//	private static SimLogger logger = SimLogger.getLogger(SettlementTransparentPanel.class.getName());
+	private static SimLogger logger = SimLogger.getLogger(SettlementTransparentPanel.class.getName());
 
 	/** Rotation change (radians per rotation button press). */
 	private static final double ROTATION_CHANGE = Math.PI / 20D;
@@ -345,6 +346,11 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
         mapPanel.setVisible(true);
     }
 
+    /**
+     * Creates the sun data panel.
+     * 
+     * @return
+     */
     private WebPanel createSunPane() {
 	    WebPanel sunPane = new WebPanel(new BorderLayout(5, 5));
 	    sunPane.setBackground(new Color(0,0,0,128));
@@ -370,7 +376,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 
 	    roundPane.setBackground(new Color(0,0,0,128));
 	    roundPane.setOpaque(false);
-	    roundPane.setPreferredSize(240, 135);
+	    roundPane.setPreferredSize(240, 140);
 	    sunPane.add(roundPane, BorderLayout.EAST);
 
 	    sunriseLabel = new WebLabel(StyleId.labelShadow, SUNRISE + PENDING);
@@ -715,7 +721,6 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	        	}
 	        	else if (sIcon.equals(ICE_SVG)) {
 	        		icon = ice;
-
 	        	}
 	        	else if (sIcon.equals("")) {
 	        		icon = emptyIcon;
@@ -1337,15 +1342,17 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	}
 
 	/**
-	 * Gets the sunlight data and display it on the top left panel of the settlement map
+	 * Gets the sunlight data and display it on the top left panel of the settlement map.
 	 */
 	public void displaySunData(Coordinates location) {
 
 		SunData list = weather.getSunRecord(location);
 
-		if (list == null)
+		if (list == null) {
+			logger.warning(10_000L, "Sun data at " + location + " is not available.");
 			return;
-
+		}
+		
 		sunriseLabel.setText(   SUNRISE + list.getSunrise() + MSOL);
 		sunsetLabel.setText(    SUNSET + list.getSunset() + MSOL);
 		daylightLabel.setText(  DAYLIGHT + list.getDaylight() + MSOL);

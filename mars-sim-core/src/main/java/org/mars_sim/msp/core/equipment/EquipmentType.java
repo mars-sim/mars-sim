@@ -44,7 +44,7 @@ public enum EquipmentType {
 	}
 
 	/**
-	 * Obtains the type id (not the ordinal id) of the equipment
+	 * Obtains the type id (not the ordinal id) of the equipment.
 	 * 
 	 * @param name
 	 * @return type id
@@ -61,7 +61,7 @@ public enum EquipmentType {
 	}
 	
 	/**
-	 * Obtains the enum type of the equipment with its type id
+	 * Obtains the enum type of the equipment with its type id.
 	 * 
 	 * @param typeID
 	 * @return {@link EquipmentType}
@@ -71,7 +71,7 @@ public enum EquipmentType {
 	}
 
 	/**
-	 * Obtains the enum type of the equipment with its name
+	 * Obtains the enum type of the equipment with its name.
 	 * 
 	 * @param name
 	 * @return {@link EquipmentType}
@@ -88,7 +88,8 @@ public enum EquipmentType {
 	}
 	
 	/**
-	 * Convert an EquipmentType to the associated resourceID.
+	 * Converts an EquipmentType to the associated resourceID.
+	 * 
 	 * Note : Needs revisiting. Equipment should be referenced by the EquipmentType enum everywhere.
 	 * 
 	 * @return

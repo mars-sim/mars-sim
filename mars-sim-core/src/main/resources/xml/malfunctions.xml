@@ -308,7 +308,7 @@
 			<system name="rover" />
 		</system-list>
 		<repair-parts-list>
-			<part name="wheel - rover" number="2" probability="20" />
+			<part name="rover wheel" number="2" probability="20" />
 			<part name="work gloves" number="1" probability="20" />
 			<part name="valve" number="1" probability="10" />
 			<part name="plastic tubing" number="2" probability="10" />

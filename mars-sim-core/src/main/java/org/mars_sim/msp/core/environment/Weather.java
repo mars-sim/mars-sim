@@ -694,7 +694,7 @@ public class Weather implements Serializable, Temporal {
 	}
 
 	/**
-	 * Obtains the sunlight data of a settlement
+	 * Obtains the sunlight data of a settlement.
 	 * 
 	 * @param c
 	 * @return
@@ -702,10 +702,13 @@ public class Weather implements Serializable, Temporal {
 	public SunData getSunRecord(Coordinates c) {	
 		MSolDataLogger<DailyWeather> w = weatherDataMap.get(c);
 		if (w == null) {
+			logger.warning(10_000L, "Weather data at " + c + " is not available.");
 			return null;
 		}
+		
 		List<MSolDataItem<DailyWeather>> dailyWeather = w.getYesterdayData();
 		if (dailyWeather == null) {
+			logger.warning(10_000L, "Weather data from yesterday is not available.");
 			return null;
 		}
 		
@@ -716,10 +719,11 @@ public class Weather implements Serializable, Temporal {
 		int maxSun = 0;
 		int previous = 0;
 		int daylight = 0;
+		
 		for (MSolDataItem<DailyWeather> dataPoint : dailyWeather) {
 			// Gets the solar irradiance at this instant of time
 			int current = (int)(Math.round(dataPoint.getData().getSolarIrradiance()*10.0)/10.0);
-			// Gets t at this instant of time
+			// Gets this instant of time
 			int t = dataPoint.getMsol();
 			if (current > 0) {
 				// Sun up

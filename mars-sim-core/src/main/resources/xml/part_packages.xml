@@ -65,7 +65,7 @@
  		<!-- Prior to 2014-11-20 -->
 		<part type="airleak patch" number="160" />
 		<part type="fire extinguisher" number="26" />
-		<part type="wheel - rover" number="12" />
+		<part type="rover wheel" number="12" />
 		<part type="gasket" number="94" />
 		<part type="timing belt" number="16" />
 		<part type="valve" number="48" />
@@ -178,7 +178,7 @@
  		<!-- Prior to 2014-11-20 -->
 		<part type="airleak patch" number="306" />
 		<part type="fire extinguisher" number="46" />
-		<part type="wheel - rover" number="12" />
+		<part type="rover wheel" number="12" />
 		<part type="gasket" number="168" />
 		<part type="timing belt" number="16" />
 		<part type="valve" number="92" />
@@ -293,7 +293,7 @@
  		<!-- Prior to 2014-11-20 -->
 		<part type="airleak patch" number="468" />
 		<part type="fire extinguisher" number="72" />
-		<part type="wheel - rover" number="22" />
+		<part type="rover wheel" number="22" />
 		<part type="gasket" number="258" />
 		<part type="timing belt" number="34" />
 		<part type="valve" number="138" />
@@ -408,7 +408,7 @@
  		<!-- Prior to 2014-11-20 -->
 		<part type="airleak patch" number="536" />
 		<part type="fire extinguisher" number="78" />
-		<part type="wheel - rover" number="38" />
+		<part type="rover wheel" number="38" />
 		<part type="gasket" number="372" />
 		<part type="timing belt" number="58" />
 		<part type="valve" number="202" />
