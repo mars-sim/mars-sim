@@ -48,6 +48,7 @@ import org.mars_sim.msp.core.person.ai.mission.CollectRegolith;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
+import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
@@ -114,22 +115,22 @@ public class GoodsManager implements Serializable, Temporal {
 	private static final String VEHICLE = "vehicle";
 
 	// NOTE : Mission types should be an enum.
-	private static final String TRAVEL_TO_SETTLEMENT_MISSION = "travel to settlement";
-	private static final String EXPLORATION_MISSION = "exploration";
-	private static final String COLLECT_ICE_MISSION = "collect ice";
-	private static final String RESCUE_SALVAGE_MISSION = "rescue/salvage mission";
-	private static final String TRADE_MISSION = "trade";
-
-	private static final String COLLECT_REGOLITH_MISSION = "collect regolith";
-	private static final String MINING_MISSION = "mining";
-	private static final String CONSTRUCT_BUILDING_MISSION = "construct building";
-	private static final String AREOLOGY_STUDY_FIELD_MISSION = "areology field study";
-	private static final String BIOLOGY_STUDY_FIELD_MISSION = "biology field study";
-	private static final String METEOROLOGY_STUDY_FIELD_MISSION = "meterology field study";
-
-	private static final String SALVAGE_BUILDING_MISSION = "salvage building";
-	private static final String EMERGENCY_SUPPLY_MISSION = "deliver emergency supplies";
-	private static final String DELIVERY_MISSION = "deliver resources";
+//	private static final String TRAVEL_TO_SETTLEMENT_MISSION = "travel to settlement";
+//	private static final String EXPLORATION_MISSION = "exploration";
+//	private static final String COLLECT_ICE_MISSION = "collect ice";
+//	private static final String RESCUE_SALVAGE_MISSION = "rescue/salvage mission";
+//	private static final String TRADE_MISSION = "trade";
+//
+//	private static final String COLLECT_REGOLITH_MISSION = "collect regolith";
+//	private static final String MINING_MISSION = "mining";
+//	private static final String CONSTRUCT_BUILDING_MISSION = "construct building";
+//	private static final String AREOLOGY_STUDY_FIELD_MISSION = "areology field study";
+//	private static final String BIOLOGY_STUDY_FIELD_MISSION = "biology field study";
+//	private static final String METEOROLOGY_STUDY_FIELD_MISSION = "meterology field study";
+//
+//	private static final String SALVAGE_BUILDING_MISSION = "salvage building";
+//	private static final String EMERGENCY_SUPPLY_MISSION = "deliver emergency supplies";
+//	private static final String DELIVERY_MISSION = "deliver resources";
 
 	private static final int MALFUNCTION_REPAIR_COEF = 50;
 	private static final int MAINTENANCE_REPAIR_COEF = 10;
@@ -3254,7 +3255,7 @@ public class GoodsManager implements Serializable, Temporal {
 	private double determineVehicleProjectedDemand(Good vehicleGood, boolean useCache) {
 		double demand = 0D;
 
-		String vehicleType = vehicleGood.getName();
+		VehicleType vehicleType = VehicleType.convertNameToVehicleType(vehicleGood.getName());
 
 		if (useCache) {
 			demand = vehicleDemandCache.get(vehicleGood.getID());
@@ -3263,12 +3264,12 @@ public class GoodsManager implements Serializable, Temporal {
 		else {
 			boolean buy = false;
 
-			if (vehicleType.equalsIgnoreCase(LightUtilityVehicle.NAME)) {
+			if (vehicleType == VehicleType.LUV) {
 				demand = determineLUVValue(buy);
 			}
 
-			else if (vehicleType.equalsIgnoreCase(Drone.NAME)) {
-				double tradeMissionValue = determineMissionVehicleDemand(TRADE_MISSION, vehicleType, buy);
+			else if (vehicleType == VehicleType.DELIVERY_DRONE) {
+				double tradeMissionValue = determineMissionVehicleDemand(MissionType.TRADE, vehicleType, buy);
 				if (tradeMissionValue > demand) {
 					demand = tradeMissionValue;
 				}
@@ -3276,82 +3277,82 @@ public class GoodsManager implements Serializable, Temporal {
 			}
 
 			else {
-				double travelToSettlementMissionValue = determineMissionVehicleDemand(TRAVEL_TO_SETTLEMENT_MISSION,
+				double travelToSettlementMissionValue = determineMissionVehicleDemand(MissionType.TRAVEL_TO_SETTLEMENT,
 						vehicleType, buy);
 				if (travelToSettlementMissionValue > demand) {
 					demand = travelToSettlementMissionValue;
 				}
 
-				double explorationMissionValue = determineMissionVehicleDemand(EXPLORATION_MISSION, vehicleType, buy);
+				double explorationMissionValue = determineMissionVehicleDemand(MissionType.EXPLORATION, vehicleType, buy);
 				if (explorationMissionValue > demand) {
 					demand = explorationMissionValue;
 				}
 
-				double collectIceMissionValue = determineMissionVehicleDemand(COLLECT_ICE_MISSION, vehicleType, buy);
+				double collectIceMissionValue = determineMissionVehicleDemand(MissionType.COLLECT_ICE, vehicleType, buy);
 				if (collectIceMissionValue > demand) {
 					demand = collectIceMissionValue;
 				}
 
-				double rescueMissionValue = determineMissionVehicleDemand(RESCUE_SALVAGE_MISSION, vehicleType, buy);
+				double rescueMissionValue = determineMissionVehicleDemand(MissionType.RESCUE_SALVAGE_VEHICLE, vehicleType, buy);
 				if (rescueMissionValue > demand) {
 					demand = rescueMissionValue;
 				}
 
-				double tradeMissionValue = determineMissionVehicleDemand(TRADE_MISSION, vehicleType, buy);
+				double tradeMissionValue = determineMissionVehicleDemand(MissionType.TRADE, vehicleType, buy);
 				if (tradeMissionValue > demand) {
 					demand = tradeMissionValue;
 				}
 
-				double collectRegolithMissionValue = determineMissionVehicleDemand(COLLECT_REGOLITH_MISSION, vehicleType,
+				double collectRegolithMissionValue = determineMissionVehicleDemand(MissionType.COLLECT_REGOLITH, vehicleType,
 						buy);
 				if (collectRegolithMissionValue > demand) {
 					demand = collectRegolithMissionValue;
 				}
 
-				double miningMissionValue = determineMissionVehicleDemand(MINING_MISSION, vehicleType, buy);
+				double miningMissionValue = determineMissionVehicleDemand(MissionType.MINING, vehicleType, buy);
 				if (miningMissionValue > demand) {
 					demand = miningMissionValue;
 				}
 
-				double constructionMissionValue = determineMissionVehicleDemand(CONSTRUCT_BUILDING_MISSION, vehicleType,
+				double constructionMissionValue = determineMissionVehicleDemand(MissionType.BUILDING_CONSTRUCTION, vehicleType,
 						buy);
 				if (constructionMissionValue > demand) {
 					demand = constructionMissionValue;
 				}
 
-				double salvageMissionValue = determineMissionVehicleDemand(SALVAGE_BUILDING_MISSION, vehicleType, buy);
+				double salvageMissionValue = determineMissionVehicleDemand(MissionType.BUILDING_SALVAGE, vehicleType, buy);
 				if (salvageMissionValue > demand) {
 					demand = salvageMissionValue;
 				}
 
-				double areologyFieldMissionValue = determineMissionVehicleDemand(AREOLOGY_STUDY_FIELD_MISSION,
+				double areologyFieldMissionValue = determineMissionVehicleDemand(MissionType.AREOLOGY,
 						vehicleType, buy);
 				if (areologyFieldMissionValue > demand) {
 					demand = areologyFieldMissionValue;
 				}
 
-				double biologyFieldMissionValue = determineMissionVehicleDemand(BIOLOGY_STUDY_FIELD_MISSION, vehicleType,
+				double biologyFieldMissionValue = determineMissionVehicleDemand(MissionType.BIOLOGY, vehicleType,
 						buy);
 				if (biologyFieldMissionValue > demand) {
 					demand = biologyFieldMissionValue;
 				}
 
-				double emergencySupplyMissionValue = determineMissionVehicleDemand(EMERGENCY_SUPPLY_MISSION, vehicleType,
+				double emergencySupplyMissionValue = determineMissionVehicleDemand(MissionType.EMERGENCY_SUPPLY, vehicleType,
 						buy);
 				if (emergencySupplyMissionValue > demand) {
 					demand = emergencySupplyMissionValue;
 				}
 			}
 
-			if (vehicleType.equalsIgnoreCase(VehicleType.CARGO_ROVER.getName()))
+			if (vehicleType == VehicleType.CARGO_ROVER)
 				demand *= (.5 + transportation_factor) * CARGO_VEHICLE_FACTOR;
-			else if (vehicleType.equalsIgnoreCase(VehicleType.TRANSPORT_ROVER.getName()))
+			else if (vehicleType == VehicleType.TRANSPORT_ROVER)
 				demand *= (.5 + transportation_factor) * TRANSPORT_VEHICLE_FACTOR;
-			else if (vehicleType.equalsIgnoreCase(VehicleType.EXPLORER_ROVER.getName()))
+			else if (vehicleType == VehicleType.EXPLORER_ROVER)
 				demand *= (.5 + transportation_factor) * EXPLORER_VEHICLE_FACTOR;
-			else if (vehicleType.equalsIgnoreCase(VehicleType.DELIVERY_DRONE.getName()))
+			else if (vehicleType == VehicleType.DELIVERY_DRONE)
 				demand *= (.5 + transportation_factor) * DRONE_VEHICLE_FACTOR;
-			else if (vehicleType.equalsIgnoreCase(VehicleType.LUV.getName()))
+			else if (vehicleType == VehicleType.LUV)
 				demand *= (.5 + transportation_factor) * LUV_VEHICLE_FACTOR;
 		}
 
@@ -3432,20 +3433,19 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @param buy
 	 * @return
 	 */
-	private double determineMissionVehicleDemand(String missionType, String vehicleType, boolean buy) {
+	private double determineMissionVehicleDemand(MissionType missionType, VehicleType vehicleType, boolean buy) {
 
-		double demand = determineMissionVehicleDemand(missionType);
+		double demand = determineMissionJob(missionType);
 
 		double currentCapacity = 0D;
 		boolean soldFlag = false;
 		Iterator<Vehicle> i = settlement.getAllAssociatedVehicles().iterator();
 		while (i.hasNext()) {
 			Vehicle v = i.next();
-			String type = v.getDescription().toLowerCase();
-			if (!buy && !soldFlag && (type.equalsIgnoreCase(vehicleType)))
+			if (!buy && !soldFlag && (v.getVehicleType() == vehicleType))
 				soldFlag = true;
 			else
-				currentCapacity += determineMissionVehicleCapacity(missionType, type);
+				currentCapacity += determineMissionVehicleCapacity(missionType, v.getVehicleType());
 		}
 
 		double vehicleCapacity = determineMissionVehicleCapacity(missionType, vehicleType);
@@ -3456,52 +3456,62 @@ public class GoodsManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * Determines the mission vehicle demand based on mission type.
+	 * Determines the mission vehicle demand based on mission type and job numbers.
 	 * 
 	 * @param missionType
 	 * @return
 	 */
-	private double determineMissionVehicleDemand(String missionType) {
-		double demand = 0D;
-
-		if (TRAVEL_TO_SETTLEMENT_MISSION.equals(missionType)) {
-			demand = getJobNum(JobType.PILOT);
-			demand *= ((double) settlement.getNumCitizens() / (double) settlement.getPopulationCapacity());
-		} else if (EXPLORATION_MISSION.equals(missionType)) {
-			demand = getJobNum(JobType.AREOLOGIST);
-		} else if (COLLECT_ICE_MISSION.equals(missionType)) {
-			demand = getAmountDemandValue(GoodsUtil.getResourceGood(ResourceUtil.iceID));
+	private double determineMissionJob(MissionType missionType) {
+	
+		if (MissionType.BUILDING_CONSTRUCTION == missionType
+				|| MissionType.BUILDING_CONSTRUCTION == missionType) {
+			return getJobNum(JobType.ARCHITECT);
+		}
+		if (MissionType.TRAVEL_TO_SETTLEMENT == missionType) {
+			return getJobNum(JobType.PILOT)
+					* ((double) settlement.getNumCitizens() 
+					/ (double) settlement.getPopulationCapacity());
+		} 
+		if (MissionType.EXPLORATION == missionType) {
+			return getJobNum(JobType.AREOLOGIST);
+		} 
+		if (MissionType.COLLECT_ICE == missionType) {
+			double demand = getAmountDemandValue(GoodsUtil.getResourceGood(ResourceUtil.iceID));
 			if (demand > 100D)
 				demand = 100D;
-		} else if (RESCUE_SALVAGE_MISSION.equals(missionType)) {
-			demand = getJobNum(JobType.PILOT);
-		} else if (TRADE_MISSION.equals(missionType)) {
-			demand = getJobNum(JobType.TRADER);
-		} else if (DELIVERY_MISSION.equals(missionType)) {
-			demand = getJobNum(JobType.TRADER);
-		} else if (COLLECT_REGOLITH_MISSION.equals(missionType)) {
-			demand = getAmountDemandValue(GoodsUtil.getResourceGood(ResourceUtil.regolithID));
+			return demand;
+		} 
+		if (MissionType.RESCUE_SALVAGE_VEHICLE == missionType) {
+			return getJobNum(JobType.PILOT);
+		}
+		if (MissionType.TRADE == missionType
+				|| MissionType.DELIVERY == missionType) {
+			return getJobNum(JobType.TRADER);
+		}
+		if (MissionType.COLLECT_REGOLITH == missionType) {
+			double demand = getAmountDemandValue(GoodsUtil.getResourceGood(ResourceUtil.regolithID));
 			if (demand > 100D)
 				demand = 100D;
-		} else if (MINING_MISSION.equals(missionType)) {
-			demand = getJobNum(JobType.AREOLOGIST);
-		} else if (AREOLOGY_STUDY_FIELD_MISSION.equals(missionType)) {
-			demand = getJobNum(JobType.AREOLOGIST);
-		} else if (BIOLOGY_STUDY_FIELD_MISSION.equals(missionType)) {
-			demand = getJobNum(JobType.BIOLOGIST);
-		} else if (METEOROLOGY_STUDY_FIELD_MISSION.equals(missionType)) {
-			demand = getJobNum(JobType.METEOROLOGIST);
-		} else if (EMERGENCY_SUPPLY_MISSION.equals(missionType)) {
-			demand = unitManager.getSettlementNum() - 1D;
+			return demand;
+		}
+		if (MissionType.MINING == missionType
+				|| MissionType.AREOLOGY == missionType) {
+			return getJobNum(JobType.AREOLOGIST);
+		} 
+		if (MissionType.BIOLOGY == missionType) {
+			return getJobNum(JobType.BIOLOGIST);
+		} 
+		if (MissionType.METEOROLOGY == missionType) {
+			return getJobNum(JobType.METEOROLOGIST);
+		} 
+		if (MissionType.EMERGENCY_SUPPLY == missionType) {
+			double demand = unitManager.getSettlementNum() - 1D;
 			if (demand < 0D) {
 				demand = 0D;
 			}
-//		} else if (CONSTRUCT_BUILDING_MISSION.equals(missionType)) {
-//		// No demand for rover vehicles.
-//		} else if (SALVAGE_BUILDING_MISSION.equals(missionType)) {
-//		// No demand for rover vehicles.
+			return demand;
 		}
-		return demand;
+		return 0;
 	}
 
 	/**
@@ -3511,13 +3521,13 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @param vehicleType
 	 * @return
 	 */
-	private double determineMissionVehicleCapacity(String missionType, String vehicleType) {
+	private double determineMissionVehicleCapacity(MissionType missionType, VehicleType vehicleType) {
 		double capacity = 0D;
 
-		VehicleSpec v = vehicleConfig.getVehicleSpec(vehicleType);
+		VehicleSpec v = vehicleConfig.getVehicleSpec(vehicleType.getName());
 		int crewCapacity = v.getCrewSize();
 
-		if (TRAVEL_TO_SETTLEMENT_MISSION.equals(missionType)) {
+		if (MissionType.TRAVEL_TO_SETTLEMENT == missionType) {
 			if (crewCapacity >= 2)
 				capacity = 1D;
 			capacity *= crewCapacity / 8D;
@@ -3525,7 +3535,7 @@ public class GoodsManager implements Serializable, Temporal {
 			double range = getVehicleRange(v);
 			capacity *= range / 2000D;
 
-		} else if (EXPLORATION_MISSION.equals(missionType)) {
+		} else if (MissionType.EXPLORATION == missionType) {
 			if (crewCapacity >= 2)
 				capacity = 1D;
 
@@ -3541,7 +3551,7 @@ public class GoodsManager implements Serializable, Temporal {
 			if (range == 0D)
 				capacity = 0D;
 
-		} else if (COLLECT_ICE_MISSION.equals(missionType)) {
+		} else if (MissionType.COLLECT_ICE == missionType) {
 			if (crewCapacity >= 2)
 				capacity = 1D;
 
@@ -3553,14 +3563,14 @@ public class GoodsManager implements Serializable, Temporal {
 			if (range == 0D)
 				capacity = 0D;
 
-		} else if (RESCUE_SALVAGE_MISSION.equals(missionType)) {
+		} else if (MissionType.RESCUE_SALVAGE_VEHICLE == missionType) {
 			if (crewCapacity >= 2)
 				capacity = 1D;
 
 			double range = getVehicleRange(v);
 			capacity *= range / 2000D;
 
-		} else if (TRADE_MISSION.equals(missionType)) {
+		} else if (MissionType.TRADE == missionType) {
 			if (crewCapacity >= 2)
 				capacity = 1D;
 
@@ -3570,7 +3580,7 @@ public class GoodsManager implements Serializable, Temporal {
 			double range = getVehicleRange(v);
 			capacity *= range / 2000D;
 
-		} else if (DELIVERY_MISSION.equals(missionType)) {
+		} else if (MissionType.DELIVERY == missionType) {
 			capacity = 1D;
 
 			double cargoCapacity = v.getTotalCapacity();
@@ -3579,7 +3589,7 @@ public class GoodsManager implements Serializable, Temporal {
 			double range = getDroneRange(v);
 			capacity *= range / 2000D;
 
-		} else if (COLLECT_REGOLITH_MISSION.equals(missionType)) {
+		} else if (MissionType.COLLECT_REGOLITH == missionType) {
 			if (crewCapacity >= 2)
 				capacity = 1D;
 
@@ -3591,7 +3601,7 @@ public class GoodsManager implements Serializable, Temporal {
 			if (range == 0D)
 				capacity = 0D;
 
-		} else if (MINING_MISSION.equals(missionType)) {
+		} else if (MissionType.MINING == missionType) {
 			if (crewCapacity >= 2)
 				capacity = 1D;
 
@@ -3603,7 +3613,7 @@ public class GoodsManager implements Serializable, Temporal {
 			if (range == 0D)
 				capacity = 0D;
 			
-		} else if (AREOLOGY_STUDY_FIELD_MISSION.equals(missionType)) {
+		} else if (MissionType.AREOLOGY == missionType) {
 			if (crewCapacity >= 2)
 				capacity = 1D;
 
@@ -3619,7 +3629,7 @@ public class GoodsManager implements Serializable, Temporal {
 			if (range == 0D)
 				capacity = 0D;
 
-		} else if (BIOLOGY_STUDY_FIELD_MISSION.equals(missionType)) {
+		} else if (MissionType.BIOLOGY == missionType) {
 			if (crewCapacity >= 2)
 				capacity = 1D;
 
@@ -3635,7 +3645,7 @@ public class GoodsManager implements Serializable, Temporal {
 			if (range == 0D)
 				capacity = 0D;
 
-		} else if (METEOROLOGY_STUDY_FIELD_MISSION.equals(missionType)) {
+		} else if (MissionType.METEOROLOGY == missionType) {
 			if (crewCapacity >= 2)
 				capacity = 1D;
 
@@ -3651,7 +3661,7 @@ public class GoodsManager implements Serializable, Temporal {
 			if (range == 0D)
 				capacity = 0D;
 
-		} else if (EMERGENCY_SUPPLY_MISSION.equals(missionType)) {
+		} else if (MissionType.EMERGENCY_SUPPLY == missionType) {
 			if (crewCapacity >= 2)
 				capacity = 1D;
 
@@ -3660,10 +3670,6 @@ public class GoodsManager implements Serializable, Temporal {
 
 			double range = getVehicleRange(v);
 			capacity *= range / 2000D;
-//		} else if (CONSTRUCT_BUILDING_MISSION.equals(missionType)) {
-//			// No rover vehicles needed.
-//		} else if (SALVAGE_BUILDING_MISSION.equals(missionType)) {
-//			// No rover vehicles needed.
 		}
 		
 
