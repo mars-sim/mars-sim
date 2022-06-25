@@ -58,6 +58,19 @@ public class ItemResourceUtil implements Serializable {
 	public static final String ROVER_WHEEL = "rover wheel";
 	public static final String ROVER_BATTERY = "rover battery";
 
+	private static final String LASER = "laser";
+	private static final String STEPPER_MOTOR = "stepper motor";
+	private static final String OVEN = "oven";
+	private static final String BLENDER = "blender";
+	private static final String AUTOCLAVE = "autoclave";
+	private static final String REFRIGERATOR = "refrigerator";
+	private static final String STOVE = "stove";
+	private static final String MICROWAVE = "microwave";
+	private static final String POLY_ROOFING = "polycarbonate roofing";
+	private static final String LENS = "lens";
+	private static final String FIBERGLASS = "fiberglass";
+	private static final String SHEET = "sheet";
+	private static final String PRISM = "prism";
 	
 	public static final Part pneumaticDrillAR = (Part) findItemResource(PNEUMATIC_DRILL);
 	public static final Part backhoeAR = (Part) findItemResource(BACKHOE);
@@ -71,7 +84,6 @@ public class ItemResourceUtil implements Serializable {
 
 	public static final Part roverWheel = (Part) findItemResource(ROVER_WHEEL);
 	public static final Part roverBattery = (Part) findItemResource(ROVER_BATTERY);
-	
 	
 	public static int garmentID;
 	public static int pressureSuitID;
@@ -113,6 +125,21 @@ public class ItemResourceUtil implements Serializable {
 			SOIL_COMPACTOR
 	};
 
+	public static final String[] UNNEEDED_PARTS = { 
+									LASER,
+									STEPPER_MOTOR,
+									OVEN,
+									BLENDER,
+									AUTOCLAVE,
+									REFRIGERATOR,
+									STOVE,
+									MICROWAVE,
+									POLY_ROOFING,
+									LENS,
+									FIBERGLASS,
+									SHEET,
+									PRISM };
+	
 	public static final List<Integer> ATTACHMENTS_ID = new ArrayList<>();
 
 	private static final String[] EVASUIT_PARTS = new String[] {
@@ -441,5 +468,36 @@ public class ItemResourceUtil implements Serializable {
 		return resourceNames;
 	}
 
+
+	/**
+	 * Removes a variable list of parts from a resource part
+	 *
+	 * @param parts a map of parts
+	 * @param names
+	 * @return a map of parts
+	 */
+	public static Map<Integer, Double> removeParts(Map<Integer, Double> parts, String... names) {
+		for (String n : names) {
+			Integer i = ItemResourceUtil.findIDbyItemResourceName(n);
+			if (i != null) {
+				parts.remove(i);
+			}
+		}
+
+		return parts;
+	}
+
+	public static Map<Integer, Double> removePartMap(Map<Integer, Double> parts, String[] unneeded) {
+		for (String n : unneeded) {
+			Integer i = ItemResourceUtil.findIDbyItemResourceName(n);
+			if (i != null) {
+				parts.remove(i);
+			}
+		}
+
+		return parts;
+	}
+	
+	
 
 }

@@ -208,6 +208,7 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 
 	/**
 	 * Action event occurs.
+	 * 
 	 * @param event the action event
 	 */
 	public void actionPerformed(ActionEvent event) {
@@ -309,16 +310,16 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 		}
 
 		/**
-		 * Has this person boarded the vehicle ?
+		 * Has this member boarded the vehicle ?
 		 *
 		 * @param member
 		 * @return
 		 */
 		boolean boarded(MissionMember member) {
-			if (mission instanceof VehicleMission) {
-				Rover r = (Rover)(((VehicleMission)mission).getVehicle());
+			if (mission instanceof VehicleMission) {			
 				if (member.getUnitType() == UnitType.PERSON) {
-					if (r.isCrewmember((Person)member))
+					Rover r = (Rover)(((VehicleMission)mission).getVehicle());
+					if (r != null && r.isCrewmember((Person)member))
 						return true;
 				}
 			}

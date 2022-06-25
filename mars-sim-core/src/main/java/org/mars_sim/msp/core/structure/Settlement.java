@@ -3664,10 +3664,9 @@ public class Settlement extends Structure implements Temporal,
 	 * @return
 	 */
 	public int getNumEVASuit() {
-		Set<Equipment> suits = getEquipmentTypeList(EquipmentType.EVA_SUIT);
-		if (suits == null || suits.isEmpty())
-			return 0;
-		return suits.size();
+		return Math.toIntExact(getEquipmentTypeList(EquipmentType.EVA_SUIT)
+				.stream()
+				.collect(Collectors.counting()));
 	}
 	
 	/**

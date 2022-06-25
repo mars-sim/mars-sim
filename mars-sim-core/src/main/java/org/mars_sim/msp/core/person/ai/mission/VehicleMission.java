@@ -73,21 +73,6 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	public static final MissionPhase DISEMBARKING = new MissionPhase("Mission.phase.disembarking");
 
 	// Static members
-	private static final String ROVER_WHEEL = "rover wheel";
-	private static final String ROVER_BATTERY = "rover battery";
-	private static final String LASER = "laser";
-	private static final String STEPPER_MOTOR = "stepper motor";
-	private static final String OVEN = "oven";
-	private static final String BLENDER = "blender";
-	private static final String AUTOCLAVE = "autoclave";
-	private static final String REFRIGERATOR = "refrigerator";
-	private static final String STOVE = "stove";
-	private static final String MICROWAVE = "microwave";
-	private static final String POLY_ROOFING = "polycarbonate roofing";
-	private static final String LENS = "lens";
-	private static final String FIBERGLASS = "fiberglass";
-	private static final String SHEET = "sheet";
-	private static final String PRISM = "prism";
 
 	// Travel Mission status
 	public final static String AT_NAVPOINT = "At a navpoint";
@@ -110,6 +95,8 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 
 	/** True if a person is submitting the mission plan request. */
 	private boolean isMissionPlanReady;
+	// When was the last check on the remaining resources
+	private int lastResourceCheck = 0;
 	/** Vehicle traveled distance at start of mission. */
 	private double startingTravelledDistance;
 	/** Total traveled distance. */
@@ -125,22 +112,15 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	/** Details of the loading operation */
 	private LoadingController loadingPlan;
 
-	/** Caches */
-	private transient Map<Integer, Integer> equipmentNeededCache;
-
-	private transient Map<Integer, Number> cachedParts = null;
 
 	private transient double cachedDistance = -1;
 
 	private Settlement startingSettlement;
 
-	// When was the last check on the remaining resources
-	private int lastResourceCheck = 0;
-
 	private String dateEmbarked;
+	/** The current traveling status of the mission. */
+	private String travelStatus;
 
-	/** List of navpoints for the mission. */
-	private List<NavPoint> navPoints = new ArrayList<>();
 	/** The current navpoint index. */
 	private int navIndex = 0;
 	
@@ -151,11 +131,15 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	/** The estimated total remaining distance at this moment. */
 	private double estimatedTotalRemainingDistance;
 	
-	/** The current traveling status of the mission. */
-	private String travelStatus;
-	
 	/** The last navpoint the mission stopped at. */
 	private NavPoint lastStopNavpoint;
+	
+	/** Equipment Caches */
+	private transient Map<Integer, Integer> equipmentNeededCache;
+
+	private transient Map<Integer, Number> cachedParts = null;
+	/** List of navpoints for the mission. */
+	private List<NavPoint> navPoints = new ArrayList<>();
 		
 	/**
 	 * Constructor 1. Started by RoverMission or DroneMission constructor 1.
@@ -835,7 +819,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 				// This is temporary fix pending #474 which will revisit transfers
 				if (!base.equals(vehicle.getContainerUnit())) {
 					vehicle.setContainerUnit(base);
-					logger.severe(vehicle, "Had to force its container unit to become its home base.");
+					logger.severe(vehicle, "Forced its container unit to become its home base.");
 				}
 			}
 
@@ -937,7 +921,9 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 		double distance = getEstimatedTotalRemainingDistance();
 		if (distance > 0) {
 			double time = getEstimatedTripTime(useMargin, distance);
-			logger.info(vehicle, 20_000, this + " has an estimated remaining trip time of " +  Math.round(time * 10.0)/10.0 + " millisols.");
+			logger.info(vehicle, 20_000, this 
+					+ " - Estimated remaining trip time: " 
+					+  Math.round(time * 10.0)/10.0 + " millisols.");
 			return time;
 		}
 
@@ -993,7 +979,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	protected Map<Integer, Number> getResourcesNeededForRemainingMission(boolean useMargin) {
 		double distance = getEstimatedTotalRemainingDistance();
 		if (distance > 0) {
-			logger.info(vehicle, 20_000, "1. " + this + " has an estimated remaining distance of "
+			logger.info(vehicle, 20_000, this + " - Remaining Distance: "
 					+ Math.round(distance * 10.0)/10.0 + " km.");
 			return getResourcesNeededForTrip(useMargin, distance);
 		}
@@ -1016,7 +1002,8 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 		if (vehicle != null) {
 			double amount = 0;
 			// Add methane
-			if (getPhase() == null || getPhase().equals(VehicleMission.EMBARKING) || getPhase().equals(VehicleMission.REVIEWING)
+			if (getPhase() == null || getPhase().equals(VehicleMission.EMBARKING) 
+					|| getPhase().equals(VehicleMission.REVIEWING)
 					|| useMargin) {
 				amount = getFuelNeededForTrip(vehicle, distance, vehicle.getEstimatedAveFuelEconomy(), true);
 				// Use margin only when estimating how much fuel needed before starting the mission
@@ -1063,24 +1050,11 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 
 				Map<Integer, Double> parts = vehicle.getMalfunctionManager().getRepairPartProbabilities();
 
-				// Note: need to figure out why a vehicle's scope would contain the following parts :
-				parts = removeParts(parts,
-						LASER,
-						STEPPER_MOTOR,
-						OVEN,
-						BLENDER,
-						AUTOCLAVE,
-						REFRIGERATOR,
-						STOVE,
-						MICROWAVE,
-						POLY_ROOFING,
-						LENS,
-						FIBERGLASS,
-						SHEET,
-						PRISM);
+				// Note: need to figure out why a mission vehicle's scope would contain 
+				// the following unneeded parts that must be removed:
+				parts = ItemResourceUtil.removePartMap(parts, ItemResourceUtil.UNNEEDED_PARTS);
 
 				for (Integer id : parts.keySet()) {
-
 					double freq = parts.get(id) * numberMalfunctions * PARTS_NUMBER_MODIFIER;
 					int number = (int) Math.round(freq);
 					if (number > 0) {
@@ -1088,38 +1062,31 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 					}
 				}
 
-				// Manually override the number of wheel and battery needed for each mission
+				// Manually override the number of wheels and battery needed for each mission
+				// since the automated process is not reliable
 				if (VehicleType.isRover(vehicle.getVehicleType())) {
 					Integer wheel = ItemResourceUtil.roverWheel.getID();
 					Integer battery = ItemResourceUtil.roverBattery.getID();
-					result.put(wheel, 2);
-					result.put(battery, 1);
+					
+					if (!result.containsKey(wheel)) {
+						if (vehicle.getVehicleType() == VehicleType.EXPLORER_ROVER) 
+							result.put(wheel, 1);
+						else if (vehicle.getVehicleType() == VehicleType.CARGO_ROVER) 
+							result.put(wheel, 2);
+						else if (vehicle.getVehicleType() == VehicleType.CARGO_ROVER) 
+							result.put(wheel, 3);
+					}
+					
+					if (!result.containsKey(battery)) 
+						result.put(battery, 1);
 				}
+				
+				return result;
 			}
 		}
 
 		return Collections.emptyMap();
 	}
-
-
-	/**
-	 * Removes a variable list of parts from a resource part
-	 *
-	 * @param parts a map of parts
-	 * @param names
-	 * @return a map of parts
-	 */
-	private static Map<Integer, Double> removeParts(Map<Integer, Double> parts, String... names) {
-		for (String n : names) {
-			Integer i = ItemResourceUtil.findIDbyItemResourceName(n);
-			if (i != null) {
-				parts.remove(i);
-			}
-		}
-
-		return parts;
-	}
-
 
 	/**
 	 * Checks if there are enough resources available in the vehicle for the

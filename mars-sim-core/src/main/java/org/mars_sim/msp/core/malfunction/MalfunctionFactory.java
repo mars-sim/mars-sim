@@ -273,8 +273,7 @@ public final class MalfunctionFactory implements Serializable {
 	 */
 	static Map<Integer, Double> getMaintenancePartProbabilities(Set<String> scope) {
 		Map<Integer, Double> maintenancePartProbabilities = new HashMap<>();
-		PartConfig partConfig = SimulationConfig.instance().getPartConfiguration();
-		for (MaintenanceScope maintenance : partConfig.getMaintenance(scope)) {
+		for (MaintenanceScope maintenance : SimulationConfig.instance().getPartConfiguration().getMaintenance(scope)) {
 			double prob = maintenance.getProbability() / 100D;
 			int partNumber = maintenance.getMaxNumber();
 			double averageNumber = RandomUtil.getRandomRegressionIntegerAverageValue(partNumber);
