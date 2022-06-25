@@ -458,8 +458,8 @@ public class SurfaceFeatures implements Serializable, Temporal {
 
 			// Assume a linear relationship, use the formula y = mx + c
 			// Let x = G_dh/G_bh, y = cos_z
-	    	// if (cos_z = .9), G_dh = G_bh / 6 = 0.167 * G_bh;
-	    	// if (cos_z = 0), G_dh = G_bh;	
+	    	// Set cos_z = .9, G_dh = G_bh / 6 = 0.167 * G_bh;
+	    	// Set cos_z = 0, G_dh = G_bh;	
 			
 			if (cos_z > 0)
 				G_dh = G_bh * (-0.822 * cos_z + 1);

@@ -114,24 +114,6 @@ public class GoodsManager implements Serializable, Temporal {
 	private static final String ROCK = "rock";
 	private static final String VEHICLE = "vehicle";
 
-	// NOTE : Mission types should be an enum.
-//	private static final String TRAVEL_TO_SETTLEMENT_MISSION = "travel to settlement";
-//	private static final String EXPLORATION_MISSION = "exploration";
-//	private static final String COLLECT_ICE_MISSION = "collect ice";
-//	private static final String RESCUE_SALVAGE_MISSION = "rescue/salvage mission";
-//	private static final String TRADE_MISSION = "trade";
-//
-//	private static final String COLLECT_REGOLITH_MISSION = "collect regolith";
-//	private static final String MINING_MISSION = "mining";
-//	private static final String CONSTRUCT_BUILDING_MISSION = "construct building";
-//	private static final String AREOLOGY_STUDY_FIELD_MISSION = "areology field study";
-//	private static final String BIOLOGY_STUDY_FIELD_MISSION = "biology field study";
-//	private static final String METEOROLOGY_STUDY_FIELD_MISSION = "meterology field study";
-//
-//	private static final String SALVAGE_BUILDING_MISSION = "salvage building";
-//	private static final String EMERGENCY_SUPPLY_MISSION = "deliver emergency supplies";
-//	private static final String DELIVERY_MISSION = "deliver resources";
-
 	private static final int MALFUNCTION_REPAIR_COEF = 50;
 	private static final int MAINTENANCE_REPAIR_COEF = 10;
 
@@ -3464,46 +3446,49 @@ public class GoodsManager implements Serializable, Temporal {
 	private double determineMissionJob(MissionType missionType) {
 	
 		if (MissionType.BUILDING_CONSTRUCTION == missionType
-				|| MissionType.BUILDING_CONSTRUCTION == missionType) {
+				|| MissionType.BUILDING_SALVAGE == missionType) {
 			return getJobNum(JobType.ARCHITECT);
 		}
-		if (MissionType.TRAVEL_TO_SETTLEMENT == missionType) {
+		if (MissionType.TRAVEL_TO_SETTLEMENT == missionType
+				|| MissionType.RESCUE_SALVAGE_VEHICLE == missionType) {
 			return getJobNum(JobType.PILOT)
 					* ((double) settlement.getNumCitizens() 
 					/ (double) settlement.getPopulationCapacity());
 		} 
-		if (MissionType.EXPLORATION == missionType) {
-			return getJobNum(JobType.AREOLOGIST);
-		} 
+
 		if (MissionType.COLLECT_ICE == missionType) {
 			double demand = getAmountDemandValue(GoodsUtil.getResourceGood(ResourceUtil.iceID));
 			if (demand > 100D)
 				demand = 100D;
 			return demand;
 		} 
-		if (MissionType.RESCUE_SALVAGE_VEHICLE == missionType) {
-			return getJobNum(JobType.PILOT);
-		}
+		
 		if (MissionType.TRADE == missionType
 				|| MissionType.DELIVERY == missionType) {
 			return getJobNum(JobType.TRADER);
 		}
+		
 		if (MissionType.COLLECT_REGOLITH == missionType) {
 			double demand = getAmountDemandValue(GoodsUtil.getResourceGood(ResourceUtil.regolithID));
 			if (demand > 100D)
 				demand = 100D;
 			return demand;
 		}
+		
 		if (MissionType.MINING == missionType
-				|| MissionType.AREOLOGY == missionType) {
+				|| MissionType.AREOLOGY == missionType
+				|| MissionType.EXPLORATION == missionType) {
 			return getJobNum(JobType.AREOLOGIST);
 		} 
+		
 		if (MissionType.BIOLOGY == missionType) {
 			return getJobNum(JobType.BIOLOGIST);
 		} 
+		
 		if (MissionType.METEOROLOGY == missionType) {
 			return getJobNum(JobType.METEOROLOGIST);
 		} 
+		
 		if (MissionType.EMERGENCY_SUPPLY == missionType) {
 			double demand = unitManager.getSettlementNum() - 1D;
 			if (demand < 0D) {
@@ -3551,7 +3536,8 @@ public class GoodsManager implements Serializable, Temporal {
 			if (range == 0D)
 				capacity = 0D;
 
-		} else if (MissionType.COLLECT_ICE == missionType) {
+		} else if (MissionType.COLLECT_ICE == missionType
+				|| MissionType.COLLECT_REGOLITH == missionType) {
 			if (crewCapacity >= 2)
 				capacity = 1D;
 
@@ -3562,7 +3548,7 @@ public class GoodsManager implements Serializable, Temporal {
 			double range = getVehicleRange(v);
 			if (range == 0D)
 				capacity = 0D;
-
+			
 		} else if (MissionType.RESCUE_SALVAGE_VEHICLE == missionType) {
 			if (crewCapacity >= 2)
 				capacity = 1D;
@@ -3570,7 +3556,8 @@ public class GoodsManager implements Serializable, Temporal {
 			double range = getVehicleRange(v);
 			capacity *= range / 2000D;
 
-		} else if (MissionType.TRADE == missionType) {
+		} else if (MissionType.TRADE == missionType
+				|| MissionType.EMERGENCY_SUPPLY == missionType) {
 			if (crewCapacity >= 2)
 				capacity = 1D;
 
@@ -3587,19 +3574,7 @@ public class GoodsManager implements Serializable, Temporal {
 			capacity *= cargoCapacity / 10000D;
 
 			double range = getDroneRange(v);
-			capacity *= range / 2000D;
-
-		} else if (MissionType.COLLECT_REGOLITH == missionType) {
-			if (crewCapacity >= 2)
-				capacity = 1D;
-
-			double cargoCapacity = v.getTotalCapacity();
-			if (cargoCapacity < 1250D)
-				capacity = 0D;
-
-			double range = getVehicleRange(v);
-			if (range == 0D)
-				capacity = 0D;
+			capacity *= range / 2000D;			
 
 		} else if (MissionType.MINING == missionType) {
 			if (crewCapacity >= 2)
@@ -3660,16 +3635,6 @@ public class GoodsManager implements Serializable, Temporal {
 			double range = getVehicleRange(v);
 			if (range == 0D)
 				capacity = 0D;
-
-		} else if (MissionType.EMERGENCY_SUPPLY == missionType) {
-			if (crewCapacity >= 2)
-				capacity = 1D;
-
-			double cargoCapacity = v.getTotalCapacity();
-			capacity *= cargoCapacity / 10000D;
-
-			double range = getVehicleRange(v);
-			capacity *= range / 2000D;
 		}
 		
 

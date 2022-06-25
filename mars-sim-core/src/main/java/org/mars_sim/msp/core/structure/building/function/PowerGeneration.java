@@ -181,8 +181,7 @@ public class PowerGeneration extends Function implements Serializable {
 		Iterator<PowerSource> i = powerSources.iterator();
 		while (i.hasNext()) {
 			PowerSource powerSource = i.next();
-			if (powerSource.getType().equals(PowerSourceType.FUEL_POWER)) {
-				// System.out.println(heatSource.toString() + " at building "+
+			if (powerSource.getType() == PowerSourceType.FUEL_POWER) {
 				// building.getNickName() + " is HEAT_OFF");
 				powerSource.setTime(time);
 			}
@@ -314,7 +313,7 @@ public class PowerGeneration extends Function implements Serializable {
 	}
 	
 	/**
-	 * Return the fuel cell stacks to the inventory
+	 * Returns the power source to the inventory.
 	 */
 	public void removeFromSettlement() {
 		Iterator<PowerSource> i = powerSources.iterator();

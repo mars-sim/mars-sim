@@ -64,10 +64,12 @@ implements Serializable {
 
 	@Override
 	public void removeFromSettlement() {
+		// May model how to salvage the parts from this power source
 	}
 
 	@Override
 	public void setTime(double time) {
+		// May use this method to control turning on and off this power source
 	}
 	
 	@Override
