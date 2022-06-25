@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * SurfaceFeatures.java
- * @date 2021-12-17
+ * @date 2022-06-24
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.environment;
@@ -35,7 +35,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 
 	// May add back SimLogger logger = SimLogger.getLogger(SurfaceFeatures.class.getName())
 
-	public static double MEAN_SOLAR_IRRADIANCE = 586D; // in flux or [W/m2] = 1371 / (1.52*1.52)
+	public static final int MEAN_SOLAR_IRRADIANCE = 586; // in flux or [W/m2] = 1371 / (1.52*1.52)
 
 	// This is the so-called "solar constant" of Mars (not really a constant per
 	// se), which is the flux of solar radiation at the top of the atmosphere (TOA)
@@ -49,7 +49,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	// see
 	// http://ccar.colorado.edu/asen5050/projects/projects_2001/benoit/solar_irradiance_on_mars.htm
 
-	public static double MAX_SOLAR_IRRADIANCE = 717D;
+	public static final int MAX_SOLAR_IRRADIANCE = 717;
 
 	private static final double HALF_PI = Math.PI / 2d;
 
@@ -168,7 +168,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 		double z = orbitInfo.getSolarZenithAngle(location);
 		// System.out.println("z2 : " + Math.round(z * 180D / Math.PI * 1000D)/1000D);
 
-		// double twilightzone = .2D;
+		// double twilight zone = .2D;
 		if (z < 1.4708) {
 			result = 1D;
 		} else if (z > 1.6708) {
@@ -195,8 +195,8 @@ public class SurfaceFeatures implements Serializable, Temporal {
 		}
 	}
 
-	/***
-	 * Computes the optical depth due to the martian dust
+	/**
+	 * Computes the optical depth due to the martian dust.
 	 *
 	 * @param location
 	 * @return tau
@@ -204,6 +204,16 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	private double computeOpticalDepth(Coordinates location) {
 
 		double tau = 0;
+		// Reference :
+		// See Chapter 2.3.1 and equation (2.44,45) on page 63 from the book "Mars:
+		// Prospective Energy and Material Resources" by Badescu, Springer 2009.
+				
+		// Optical depth is well correlated to the daily variation of surface pressure
+		// and to the standard deviation of daily surface pressure
+		// The lower the value of tau, the clearer the sky
+				
+		// Note: tau has an "inverse" relationship with the daily global solar
+		// irradiance in Fig 2.8.
 
 		double newTau = 0.2237 * weather.getDailyVariationAirPressure(location);
 
@@ -215,35 +225,26 @@ public class SurfaceFeatures implements Serializable, Temporal {
 			tau = OPTICAL_DEPTH_STARTING + newTau;
 		}
 
-		// Reference :
-		// see Chapter 2.3.1 and equation (2.44,45) on page 63 from the book "Mars:
-		// Prospective Energy and Material Resources" by Badescu, Springer 2009.
-		// Optical depth is well correlated to the daily variation of surface pressure
-		// and to the standard deviation of daily surface pressure
-		// The lower the value of tau, the clearer the sky
-		// Note: tau has an "inverse" relationship with the daily global solar
-		// irradiance in Fig 2.8.
-
-		// Add randomness to optical depth
-		tau = tau + RandomUtil.getRandomDouble(-.03, .03);
+		// Make tau oscillate between .1 and 6 
+		if (tau > 3.0)
+			tau = tau - RandomUtil.getRandomDouble((6.0 - tau)/36.0);
+		else 
+			tau = tau + RandomUtil.getRandomDouble((tau - .1)/36.0);
+		// According to R. M. Haberlet Et al. Page 860, Table IV,
+		// tau is usually between .1 and 6 on the surface of Mars
+		
 		// Notes:
 		// (1) during relatively periods of clear sky, typical values for optical depth
 		// were between 0.2 and 0.5
 		// (2) typical observable range is between .32 and .52 (average is 42%).
-		// (3) From Viking data, at no time did the optical depth fall below 0.18,
-
-		// tau is usually between .1 and 6, Page 860, Table IV of R. M. Haberlet Et al.
-		if (tau > 6)
-			tau = 6;
-		if (tau < .1)
-			tau = .1;
+		// (3) From Viking data, at no time did the optical depth fall below 0.18
 
 		return tau;
 	}
 
 
 	/**
-	 * Gets the trend (positive if getting bright, negative if getting dark)
+	 * Gets the trend (positive if getting bright, negative if getting dark).
 	 *
 	 * @param location
 	 * @return a number
@@ -261,7 +262,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	}
 
 	/**
-	 * Calculate the solar irradiance ratio (between 0 and 1) at a particular location on Mars
+	 * Calculates the solar irradiance ratio (between 0 and 1) at a particular location on Mars.
 	 *
 	 * @param location the coordinate location on Mars.
 	 * @return (between 0 and 1)
@@ -272,7 +273,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	}
 
 	/**
-	 * Calculate the solar irradiance at a particular location on Mars
+	 * Calculates the solar irradiance at a particular location on Mars.
 	 *
 	 * @param location the coordinate location on Mars.
 	 * @return solar irradiance (W/m2)
@@ -310,18 +311,16 @@ public class SurfaceFeatures implements Serializable, Temporal {
 			return d;
 		}
 
-		else {
-			// If location is not in cache, calculate the solar irradiance
-			double G_h = calculateSolarIrradiance(location);
-			// Save the value in the cache
-			currentIrradiance.put(location, G_h);
+		// If location is not in cache, calculate the solar irradiance
+		double G_h = calculateSolarIrradiance(location);
+		// Save the value in the cache
+		currentIrradiance.put(location, G_h);
 
-			return G_h;
-		}
+		return G_h;
 	}
 
 	/**
-	 * Calculates the solar irradiance
+	 * Calculates the solar irradiance.
 	 *
 	 * @param location
 	 * @return
@@ -329,39 +328,42 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	private double calculateSolarIrradiance(Coordinates location) {
 		// Approach 1
 //		double s1 = 0;
-//        double L_s = mars.getOrbitInfo().getL_s();
-//        double e = OrbitInfo.ECCENTRICITY;
+//      double L_s = mars.getOrbitInfo().getL_s();
+//      double e = OrbitInfo.ECCENTRICITY;
 //    	double z = mars.getOrbitInfo().getSolarZenithAngle(phi);
 //    	double num =  1 + e * Math.cos( (L_s - 248) /180D * Math.PI);
 //    	double den = 1 - e * e;
 //    	s1 = MEAN_SOLAR_IRRADIANCE * Math.cos(z) * num / den * num / den  ;
-//    	System.out.println("solar irradiance s1 is " + s1);
 
 		// Approach 2 consists of 5 parts
 		// PART 1 : COSINE SOLAR ZENITH ANGLE
-		double G_0 = 0;
-		double G_h = 0;
-		double G_bh = 0;
-		double G_dh = 0;
+		
 		// G_0: direct solar irradiance at the top of the atmosphere
+		double G_0 = 0;
 		// G_h: global irradiance on a horizontal surface
+		double G_h = 0;
 		// G_bh: direct beam irradiance on a horizontal surface
+		double G_bh = 0;
 		// G_dh: diffuse irradiance on a horizontal surface
+		double G_dh = 0;
 
+		// Obtains the cosine solar zenith angle
 		double cos_z = orbitInfo.getCosineSolarZenithAngle(location);
+		// Find zenith
 		double z = Math.acos(cos_z);
 
-		if (z >= Math.PI / 2D) {
+		if (z >= HALF_PI) {
 			// if Mars is in the so-called twilight zone,
-			// Set it to a maximum of 12 degree below the horizon
-			// indirect sunlight such as diffuse/scattering/reflective sunlight will light
+			// then set it to a maximum of 12 degree below the horizon
+			
+			// Indirect sunlight such as diffuse/scattering/reflective sunlight will light
 			// up the Martian sky
-			if (z <= Math.PI / 2D + .1) {
-				// twilight zone is defined as bwtween 0.1 to -0.1 in radians above and below
+			if (z <= HALF_PI + .1) {
+				// Note: twilight zone is defined as between 0.1 to -0.1 in radians above and below
 				// the horizon
-				G_h = Math.round((-200 * z + 100 * Math.PI + 20) * 100.00) / 100.00; // keep a minimum of G_h at 20
-																						// W/m2 if the sun is within
-																						// the twilight zone
+				G_h = Math.round((-200 * z + 100 * Math.PI + 20) * 100.00) / 100.00; 
+				
+				// Note: need to keep a minimum of G_h at 20 W/m2 if the sun is within the twilight zone
 				// G_h = Math.round((0.2094 + z)*100D);
 				// This an arbitrary model set G_0 to 41.8879 W/ m-2 when Mars is at the horizon
 			}
@@ -397,16 +399,21 @@ public class SurfaceFeatures implements Serializable, Temporal {
 			// PART 4 : OPTICAL DEPTH - CALCULATING ABSORPTION AND SCATTERING OF SOLAR
 			// RADIATION
 
-			double tau = computeOpticalDepth(location);
-
-			// TODO: Part 4a : reducing opacity of the Martian atmosphere due to local dust
+			double tau = getOpticalDepth(location);
+			// Save tau onto opticalDepthMap
+			opticalDepthMap.put(location, tau);
+			
+			// For future,
+			// Part 4a : Reduce the opacity of the Martian atmosphere due to local dust
 			// storm
 
 			// Note 1 : The extinction of radiation through the Martian atmosphere is caused
 			// mainly by suspended dust particles.
+			
 			// Although dust particles are effective at scattering direct solar irradiance,
 			// a substantial amount of diffuse light is able to penetrate to the surface of
 			// the planet.
+			
 			// The amount of PAR available on the Martian surface can then be calculated to
 			// be 42% of the total PAR to reach the surface.
 
@@ -415,8 +422,9 @@ public class SurfaceFeatures implements Serializable, Temporal {
 			// Duration of a global dust storm is 35 - 70 sols. Local dust storms last a few
 			// days.
 
-			// Note 3: TODO: Model how dust clouds, water/ice clouds, CO2 clouds affects tau
+			// Note 3: In future, model how dust clouds, water/ice clouds, CO2 clouds affects tau
 			// differently
+			
 			// REFERENCE: http://www.sciencedirect.com/science/article/pii/S0019103514001559
 			// The solar longitude (LS) 20 deg 136 deg period is also characterized by the
 			// presence of cirriform clouds at the Opportunity site,
@@ -428,19 +436,13 @@ public class SurfaceFeatures implements Serializable, Temporal {
 			// G_bh = G_0 * cos_z * Math.exp(-tau/cos_z);
 
 			// Choice 2 : The pure scattering transmissivity = (1 + tau / 2 / cos_z)^ -1
+			G_bh = G_0 * cos_z / (1 + tau / 2.0 / cos_z);
 
-			G_bh = G_0 * cos_z / (1 + tau / 2 / cos_z);
-
-			// assuming the reflection from the surface is negligible
-			// ref:
-			// http://www.uapress.arizona.edu/onlinebks/ResourcesNearEarthSpace/resources30.pdf
-
+			// Assuming the reflection from the surface is negligible
+	
 			// Note: m(z), the air mass, is estimated as ~ 1/cos_z
 
-			// save tau onto opticalDepthMap
-			opticalDepthMap.put(location, tau);
-
-			// Note: one can estimate m(z), the air mass, as ~ 1/cos_z
+			// In future, one can estimate m(z), the air mass, as ~ 1/cos_z
 
 			// PART 5 : DIFFUSE SOLAR IRRADIANCE
 
@@ -450,38 +452,25 @@ public class SurfaceFeatures implements Serializable, Temporal {
 			// On Mars, the role of diffuse solar irradiance is more prominent than that on
 			// Earth.
 
-			// TODO: Modeling the diffuse effect of solar irradiance with formula
+			// Future: Modeling the diffuse effect of solar irradiance with formula
 			// Note: the value of G_dh to decrease more slowly when value cos_z is
 			// diminishing
 
-//    	    	if (cos_z > .9)
-//    	    		G_dh = G_bh / 6;
-//    	    	else if (cos_z > .8)
-//    	    		G_dh = G_bh / 4.8;
-//    	    	else if (cos_z > .7)
-//    	    		G_dh = G_bh / 3.7D;
-//    	    	else if (cos_z > .6)
-//    	    		G_dh = G_bh / 2.5;
-//    	    	else if (cos_z > .5)
-//    	    		G_dh = G_bh / 2.2D;
-//    	    	else if (cos_z > .4)
-//    	    		G_dh = G_bh / 1.8D;
-//    	    	else if (cos_z > .3)
-//    	    		G_dh = G_bh / 1.6D;
-//    	    	else if (cos_z > .2)
-//    	    		G_dh = G_bh / 1.4D;
-//    	    	else if (cos_z > .1)
-//    	    		G_dh = G_bh / 1.2D;
-//    	    	else if (cos_z > .05)
-//    	    		G_dh = G_bh;
-
-			G_dh = G_bh * .2;
-
+			// Assume a linear relationship, use the formula y = mx + c
+			// Let x = G_dh/G_bh, y = cos_z
+	    	// if (cos_z = .9), G_dh = G_bh / 6 = 0.167 * G_bh;
+	    	// if (cos_z = 0), G_dh = G_bh;	
+			
+			if (cos_z > 0)
+				G_dh = G_bh * (-0.822 * cos_z + 1);
+			else
+				G_dh = G_bh;
+			
 			// Finally,
 			G_h = G_bh + G_dh;
 
-			if (G_h > SurfaceFeatures.MAX_SOLAR_IRRADIANCE)
-				G_h = SurfaceFeatures.MAX_SOLAR_IRRADIANCE;
+			if (G_h > MAX_SOLAR_IRRADIANCE)
+				G_h = MAX_SOLAR_IRRADIANCE;
 
 			else if (G_h < 20.94)
 				G_h = 20.94;
@@ -493,7 +482,8 @@ public class SurfaceFeatures implements Serializable, Temporal {
 			// + " G_dh : " + fmt3.format(G_dh)
 			// + " G_h : " + fmt3.format(G_h));
 
-			// TODO: Part 6 : calculate other components on Mars such as twilight and
+			// For future,
+			// Part 6 : calculate other components on Mars such as twilight and
 			// reflective irradiance
 
 			// Note: A lot of code use of this method depends on dark night time = 0 solar
@@ -540,7 +530,8 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	}
 
 	/**
-	 * Estimate when the sunrise is for this location
+	 * Estimates when the sunrise is for this location.
+	 * 
 	 * @param location
 	 * @return
 	 */
@@ -660,6 +651,13 @@ public class SurfaceFeatures implements Serializable, Temporal {
 
 		isNewMSol = pulse.isNewMSol();
 
+		if (isNewMSol) {
+			// Recompute the optical depth for each msol
+			for (Coordinates location: opticalDepthMap.keySet()) {
+				computeOpticalDepth(location);
+			}
+		}
+		
 		// Is this needed ? Mining Mission unreserves the site when it completes
 		// so this is just to caught problems (bugs) within the simulation logic.
 		// Update any reserved explored locations.

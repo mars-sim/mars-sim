@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * SolarThermalPowerSource.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-06-24
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -24,7 +24,7 @@ implements Serializable {
 
 	private static final double MAINTENANCE_FACTOR = 2.5D;
 	
-	private static double efficiency_solar_thermal = .70;
+	private static double efficiencySolarThermal = .70;
 	
 //	public static double ARRAY_AREA = 100D;		// in square feet
 		
@@ -38,7 +38,7 @@ implements Serializable {
 	}
 
 	public static double getEfficiency() {
-		return efficiency_solar_thermal;
+		return efficiencySolarThermal;
 	}
 
 	@Override
@@ -64,14 +64,10 @@ implements Serializable {
 
 	@Override
 	public void removeFromSettlement() {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void setTime(double time) {
-		// TODO Auto-generated method stub
-		
 	}
 	
 	@Override

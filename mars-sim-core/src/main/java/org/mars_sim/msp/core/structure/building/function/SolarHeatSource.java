@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * SolarHeatSource.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-06-24
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -21,22 +21,20 @@ implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-	/** default logger. */
-//	private static final Logger logger = Logger.getLogger(SolarHeatSource.class.getName());
-
-	// Tentatively set to 0.14% or (.0014) efficiency degradation per sol as reported by NASA MER
-	public static double DEGRADATION_RATE_PER_SOL = .0014;
 	
-	public static double MEAN_SOLAR_IRRADIANCE = SurfaceFeatures.MEAN_SOLAR_IRRADIANCE;
+	// Tentatively set to 0.14% or (.0014) efficiency degradation per sol as reported by NASA MER
+	public static final double DEGRADATION_RATE_PER_SOL = .0014;
+	
+	public static final double MEAN_SOLAR_IRRADIANCE = SurfaceFeatures.MEAN_SOLAR_IRRADIANCE;
 	/**
 	 * The dust deposition rates is proportional to the dust loading. Here we use MER program's extended the analysis 
 	 * to account for variations in the atmospheric columnar dust amount.
 	 */
 //	private double dust_deposition_rate = 0;
 	
-	private double efficiency_solar_to_heat = .68;
+	private double efficiencySolar2Heat = .68;
 	
-	private double efficiency_solar_to_electricity = .55;
+	private double efficiencySolar2Electricity = .55;
 
 	private Building building;
 	
@@ -73,19 +71,19 @@ implements Serializable {
 	}
 
 	public double getEfficiencySolarHeat() {
-		return efficiency_solar_to_heat;
+		return efficiencySolar2Heat;
 	}
 
 	public double getEfficiencyElectricHeat() {
-		return efficiency_solar_to_electricity;
+		return efficiencySolar2Electricity;
 	}
 
 	public void setEfficiencyToHeat(double value) {
-		efficiency_solar_to_heat = value;
+		efficiencySolar2Heat = value;
 	}
 
 	public void setEfficiencyToElectricity(double value) {
-		efficiency_solar_to_electricity = value;
+		efficiencySolar2Electricity = value;
 	}
 
 	@Override

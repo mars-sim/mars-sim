@@ -1,10 +1,9 @@
-/**
+/*
  * Mars Simulation Project
  * StatusCommand.java
- * @version 3.1.2 2020-12-30
+ * @date 2022-06-24
  * @author Barry Evans
  */
-
 package org.mars.sim.console.chat.simcommand.person;
 
 import org.mars.sim.console.chat.ChatCommand;
