@@ -27,7 +27,7 @@ import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 /**
  * A meta class describing an economic good in the simulation.
  */
-public class Good implements Serializable, Comparable<Good> {
+public abstract class Good implements Serializable, Comparable<Good> {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -101,8 +101,6 @@ public class Good implements Serializable, Comparable<Good> {
 	private double averageGoodValue;
 	private double costOutput = -1;
 
-	private GoodCategory category;
-
 	private List<ManufactureProcessInfo> manufactureProcessInfos;
 	private List<FoodProductionProcessInfo> foodProductionProcessInfos;
 
@@ -111,19 +109,10 @@ public class Good implements Serializable, Comparable<Good> {
 	 *
 	 * @param name     the name of the good.
 	 * @param object   the good's object if any.
-	 * @param category the good's category.
 	 */
-	Good (String name, int id, GoodCategory category) {
-		if (name != null)
-			this.name = name.trim().toLowerCase();
-		else
-			throw new IllegalArgumentException("name cannot be null.");
+	protected Good (String name, int id) {
+		this.name = name;
 		this.id = id;
-
-		if (isValidCategory(category))
-			this.category = category;
-		else
-			throw new IllegalArgumentException("category: " + category + " not valid.");
 	}
 
 	/**
@@ -139,19 +128,6 @@ public class Good implements Serializable, Comparable<Good> {
 		computeOutputCost();
 	}
 
-	/**
-	 * Checks if a category string is valid.
-	 *
-	 * @param category the category enum to check.
-	 * @return true if valid category.
-	 */
-	private static boolean isValidCategory(GoodCategory category) {
-		for (GoodCategory cat : GoodCategory.values()) {
-			if (cat == category)
-				return true;
-		}
-		return false;
-	}
 
 	/**
 	 * Gets the good's name.
@@ -185,9 +161,7 @@ public class Good implements Serializable, Comparable<Good> {
 	 *
 	 * @return category.
 	 */
-	public GoodCategory getCategory() {
-		return category;
-	}
+	public abstract GoodCategory getCategory();
 
 	public double getlaborTime() {
 		return laborTime;
@@ -252,7 +226,9 @@ public class Good implements Serializable, Comparable<Good> {
 	 * 
 	 * @return
 	 */
-	public double computeCostModifier() {
+	protected double computeCostModifier() {
+	 	GoodCategory category = getCategory();
+
 		double result = 0;
 		if (category == GoodCategory.AMOUNT_RESOURCE) {
 
@@ -370,7 +346,7 @@ public class Good implements Serializable, Comparable<Good> {
 		
 		return result;
 	}
-	
+
 	public double getAverageGoodValue() {
 		return averageGoodValue;
 	}
@@ -594,10 +570,7 @@ public class Good implements Serializable, Comparable<Good> {
 	 * @return hash code
 	 */
 	public int hashCode() {
-		int hashCode = name.hashCode();
-		hashCode *= id;
-		hashCode *= category.hashCode();
-		return hashCode;
+		return id % 64;
 	}
 
 	/**
@@ -619,8 +592,10 @@ public class Good implements Serializable, Comparable<Good> {
 		if (obj == null) return false;
 		if (this.getClass() != obj.getClass()) return false;
 		Good g = (Good) obj;
-		return this.getName().equals(g.getName())
-				&& this.id == g.getID();
+		return this.id == g.getID();
 	}
 
+    public abstract double getMassPerItem();
+
+	public abstract GoodType getGoodType();
 }

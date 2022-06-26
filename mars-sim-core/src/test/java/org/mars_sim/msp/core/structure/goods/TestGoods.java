@@ -52,13 +52,13 @@ public class TestGoods extends TestCase {
 	}
 
 	public void testGoodsListContainsHammer() {
-        Good hammerGood = GoodsUtil.createResourceGood(hammer);
+        Good hammerGood = GoodsUtil.getResourceGood(hammer);
         // hammer is not a standardized part and is NOT registered on the goodsMap
         assertFalse(GoodsUtil.containsGood(hammerGood));
 	}
 
 //	public void testGoodsListContainsBag() {
-//		Good bagGood = GoodsUtil.getEquipmentGood(Bag.class);
+//		Good bagGoogood_issued = GoodsUtil.getEquipmentGood(Bag.class);
 //		assertTrue(GoodsUtil.containsGood(bagGood));
 //	}
 //
