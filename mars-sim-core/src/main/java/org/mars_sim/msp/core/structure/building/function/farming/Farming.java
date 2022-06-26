@@ -66,7 +66,7 @@ public class Farming extends Function implements Serializable {
 	private static final int SOIL_ID = ResourceUtil.soilID;
 	private static final int FERTILIZER_ID = ResourceUtil.fertilizerID;
 
-	public static final String TISSUE_CULTURE = " " + FoodType.TISSUE.getName();
+	public static final String TISSUE = " " + FoodType.TISSUE.getName();
 
 	/** The average temperature tolerance of a crop [in C]. */
 	private static final double T_TOLERANCE = 3D;
@@ -109,6 +109,9 @@ public class Farming extends Function implements Serializable {
 	/** The daily water usage in this facility [kg/sol]. */
 	private SolSingleMetricDataLogger dailyWaterUsage;
 
+	/** The last crop the workers were tending. */
+	private Crop needyCropCache;
+	
 	private Research lab;
 	private HouseKeeping houseKeeping;
 
@@ -337,7 +340,7 @@ public class Farming extends Function implements Serializable {
 	private boolean hasTooMany(CropSpec name) {
 		int num = 0;
 		for (Crop c : crops) {
-			if (c.getCropType().equals(name))
+			if (c.getCropSpec().equals(name))
 				num++;
 		}
 
@@ -443,7 +446,7 @@ public class Farming extends Function implements Serializable {
 
 		double requestedAmount = cropArea * cropType.getEdibleBiomass() * TISSUE_PER_SQM;
 
-		String tissueName = cropType.getName() + TISSUE_CULTURE;
+		String tissueName = cropType.getName() + TISSUE;
 		// String name = Conversion.capitalize(cropType.getName()) + TISSUE_CULTURE;
 		int tissueID = ResourceUtil.findIDbyAmountResourceName(tissueName);
 
@@ -602,58 +605,78 @@ public class Farming extends Function implements Serializable {
 	 */
 	public double addWork(double workTime, TendGreenhouse h, Worker worker) {
 		double t = workTime;
-		Crop needyCropCache = null;
+	
 		Crop needyCrop = getNeedyCrop(needyCropCache);
+		
+		if (needyCrop != null)
+			h.setCropDescription(needyCrop);
+		else
+			h.setDescriptionCropDone();
+		
 		// NOTE: Redesign addWork() to check on each food crop
 		while (needyCrop != null && t > MIN) {
 			// WARNING : ensure timeRemaining gets smaller
 			// or else creating an infinite loop
 			t = needyCrop.addWork(worker, t) * .9999;
-
+			// Save/Cache the needy crop
 			needyCropCache = needyCrop;
-			// Get a new needy crop
+			// Obtain a new needy crop
 			needyCrop = getNeedyCrop(needyCropCache);
 
-			if (needyCrop != null && !needyCropCache.equals(needyCrop)) {
-				// Update the name of the crop being worked on in the task
-				// description
-				h.setCropDescription(needyCrop);
+			if (needyCrop != null) {
+				if (!needyCropCache.equals(needyCrop)) {
+					// Update the name of the crop being worked on in the task
+					// description
+					h.setCropDescription(needyCrop);
+				}
 			}
+			else
+				h.setDescriptionCropDone();
 		}
 
 		return t;
 	}
 
 	/**
-	 * Gets a crop that needs planting, tending, or harvesting.
+	 * Gets a crop that needs work time.
 	 *
-	 * @param lastCrop
-	 * @param unit     a person or a bot
+	 * @param currentCrop
 	 * @return crop or null if none found.
 	 */
-	private Crop getNeedyCrop(Crop lastCrop) {
+	public Crop getNeedyCrop(Crop currentCrop) {
 		if (crops == null || crops.isEmpty())
 			return null;
 
-		Crop result = null;
-
+		int rand = RandomUtil.getRandomInt(1);
+		
+		// Half the chance it will pick the current crop to work on
+		if (rand == 0 && currentCrop != null
+			&& currentCrop.requiresWork()) {
+			// Pick the current crop again unless it no longer requires work
+			return currentCrop;
+		}			
+			
+		Crop nextCrop = null;
+		
+		// Pick another crop that requires work
 		List<Crop> needyCrops = new ArrayList<>();
 		for (Crop c : crops) {
 			if (c.requiresWork()) {
-				if (lastCrop != null) {
-					if (c.getCropType().equals(lastCrop.getCropType()))
-						return c;
-				} else
+//				if (currentCrop != null) {
+					// Give priority to choosing a crop having the same crop spec
+//					if (c.getCropSpec().equals(lastCrop.getCropSpec()))
+//						return c;
+//				} else
 					needyCrops.add(c);
 			}
 		}
 
 		if (!needyCrops.isEmpty()) {
-			result = needyCrops.get(RandomUtil.getRandomInt(0,
+			nextCrop = needyCrops.get(RandomUtil.getRandomInt(0,
 								needyCrops.size() - 1));
 		}
 
-		return result;
+		return nextCrop;
 	}
 
 	/**
@@ -761,7 +784,7 @@ public class Farming extends Function implements Serializable {
 	}
 
 	/**
-	 * Transfers the seedling
+	 * Transfers the seedling.
 	 * Note: Enable this task to take time to complete the work
 	 *
 	 * @param time
@@ -973,7 +996,7 @@ public class Farming extends Function implements Serializable {
 	 */
 	private boolean growCropTissue(Research lab, CropSpec type, Worker worker) {
 		String cropName = type.getName();
-		String tissueName = cropName + TISSUE_CULTURE;
+		String tissueName = cropName + TISSUE;
 		// NOTE: re-tune the amount of tissue culture not just based on the edible
 		// biomass (actualHarvest)
 		// but also the inedible biomass and the crop category
@@ -999,14 +1022,14 @@ public class Farming extends Function implements Serializable {
 					// Store the tissues
 					building.getSettlement().storeAmountResource(tissueID, amountExtracted - lacking);
 					logger.log(building, worker, Level.INFO, 10_000,
-								"Found no " + Conversion.capitalize(cropName) + TISSUE_CULTURE
+								"Found no " + Conversion.capitalize(cropName) + TISSUE
 								+ " in stock. Extracted " + (amountExtracted - lacking)
 								+ " kg from its adult crop samples.");
 					isDone = true;
 				}
 				else {
 					logger.log(building, worker, Level.INFO, 10_000,
-							"Found no " + Conversion.capitalize(cropName) + TISSUE_CULTURE
+							"Found no " + Conversion.capitalize(cropName) + TISSUE
 							+ " in stock. Cloned it from cryofreeze samples.");
 					
 					// For now, allow the tissue culture to be grown from backup samples
@@ -1035,7 +1058,7 @@ public class Farming extends Function implements Serializable {
 						store(amountExtracted, tissueID, "Farming::growCropTissue");
 						logger.log(building, worker, Level.FINE, 3_000,  "Cloned "
 							+ Math.round(amountExtracted*1000.0)/1000.0D + " kg "
-							+ cropName + TISSUE_CULTURE
+							+ cropName + TISSUE
 							+ " in Botany lab.");
 
 						isDone = true;

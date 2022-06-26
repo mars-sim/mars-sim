@@ -30,11 +30,13 @@ public class Crop implements Comparable<Crop>, Serializable {
 	private static final long serialVersionUID = 1L;
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(Crop.class.getName());
-
+	/** The mininum time offset [in millisols] for a crop that requires work. */
+	private static final double CROP_TIME_OFFSET = 5;
+	
 	// TODO both of these should be configurable from CropConfig
-	// How often are the crops checked in mSols
+	/** How often are the crops checked in mSols */
 	private static final double CHECK_CROP_PERIOD = 4D;
-	// How often to calculate the crop health
+	/** How often to calculate the crop health */
 	private static final int CHECK_HEALTH_FREQUENCY = 20;
 
 	private static final double TUNING_FACTOR = .18;
@@ -317,7 +319,8 @@ public class Crop implements Comparable<Crop>, Serializable {
 	}
 
 	/**
-	 * Update the current phase to a new type.
+	 * Updates the current phase to a new type.
+	 * 
 	 * @param phaseType
 	 */
 	private void updatePhase(PhaseType phaseType) {
@@ -325,7 +328,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 	}
 
 	/**
-	 * Set up mushroom
+	 * Sets up mushroom.
 	 */
 	private void setupMushroom() {
 		if (building.getSettlement().hasItemResource(MUSHROOM_BOX_ID)) {
@@ -352,16 +355,16 @@ public class Crop implements Comparable<Crop>, Serializable {
 	}
 
 	/**
-	 * Gets the crop type that defines this Crop
+	 * Gets the crop spec that defines this Crop.
 	 *
 	 * @return crop type ID
 	 */
-	public CropSpec getCropType() {
+	public CropSpec getCropSpec() {
 		return cropSpec;
 	}
 
 	/**
-	 * Gets the crop name
+	 * Gets the crop name.
 	 *
 	 * @return crop name
 	 */
@@ -403,15 +406,17 @@ public class Crop implements Comparable<Crop>, Serializable {
 	 * @return true if more work needed.
 	 */
 	public boolean requiresWork() {
+		// Note that harvesting phase works differently
 		if (currentPhase.getPhaseType() == PhaseType.HARVESTING)
 			return true;
 
-		return currentPhase.getWorkRequired() * 1000D >= currentPhaseWorkCompleted;
+		return currentPhase.getWorkRequired() * 1000D - CROP_TIME_OFFSET > currentPhaseWorkCompleted;
 	}
 
 
 	/**
 	 * Tracks the overall health condition of the crop.
+	 * 
 	 * @return condition as value from 0 (poor) to 1 (healthy)
 	 */
 	private double trackHealth() {
@@ -482,7 +487,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 	}
 
 	/*
-	 * Computes the health of a crop
+	 * Computes the health of a crop.
 	 */
 	private double calculateHealth() {
 		double health = 0;
@@ -640,7 +645,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 	}
 
 	/**
-	 * Advanc ethe crop to the next phase of growth
+	 * Advances the crop to the next phase of growth.
 	 */
 	private void advancePhase() {
 		currentPhase = cropSpec.getNextPhase(currentPhase);
@@ -683,7 +688,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 	}
 
 	/**
-	 * Update the usage of all three major farming resources.
+	 * Updates the usage of all three major farming resources.
 	 *
 	 * @param currentSol
 	 */
@@ -1405,7 +1410,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 
 	@Override
 	public int compareTo(Crop o) {
-		return cropSpec.compareTo(o.getCropType());
+		return cropSpec.compareTo(o.getCropSpec());
 	}
 
 }

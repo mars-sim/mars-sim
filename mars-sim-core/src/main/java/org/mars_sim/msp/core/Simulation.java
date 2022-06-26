@@ -1287,16 +1287,19 @@ public class Simulation implements ClockListener, Serializable {
 	}
 
 	/**
-	 * Request that the simulation is saved on the next idle period
+	 * Requests that the simulation is saved on the next idle period.
+	 * 
 	 * @param saveFile Optional file to save info, null means default file.
 	 */
 	public void requestSave(File saveFile) {
+		logger.log(Level.CONFIG, "Submitting the request for saving the simulation."); 
 		savePending = (saveFile == null ? SaveType.SAVE_DEFAULT : SaveType.SAVE_AS);
 		savePendingFile = saveFile;		
 	}
 
 	/**
-	 * Is a save request still pending
+	 * Is a save request still pending ?
+	 * 
 	 * @return
 	 */
 	public boolean isSavePending() {

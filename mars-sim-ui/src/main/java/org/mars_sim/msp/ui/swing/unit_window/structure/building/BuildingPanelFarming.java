@@ -347,7 +347,7 @@ implements MouseListener {
         if (n == null || n.equals("")) {
     		List<Crop> crops = farm.getCrops();
             Crop crop = crops.get(row);
-            CropSpec ct = crop.getCropType();
+            CropSpec ct = crop.getCropSpec();
         	cropName = Conversion.capitalize(crop.getCropName());
             cat = ct.getCropCategory().getName();
         	mass0 = ct.getEdibleBiomass();
@@ -640,7 +640,7 @@ implements MouseListener {
 			Crop crop = crops.get(row);
 			//String phase = crop.getPhase();
 			PhaseType currentPhase = crop.getPhaseType();
-			String category = crop.getCropType().getCropCategory().getName();
+			String category = crop.getCropSpec().getCropCategory().getName();
 
 			if (column == 0) {
 				double condition = crop.getHealthCondition();

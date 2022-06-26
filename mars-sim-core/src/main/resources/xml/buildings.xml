@@ -610,7 +610,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			through evaporation.
 			-->
 				<!-- Grey Water Recycling process for cleaning grey water. -->
-				<process name="Grey Water Processor" power-required=".32" default="on">
+				<process name="Grey Water Processor" power-required=".32" default="off">
 					<!-- Input: grey water, oxygen, chlorine  -->
 					<!-- resource: the resource added to the process. -->
 					<!-- See resources.xml -->
@@ -653,7 +653,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				20 kg black water and generate 17 kg grey water and
 				2 kg of toxic waste. There is a lost of 1 kg of water.
 				-->
-				<process name="Black Water Processor" power-required=".315" default="on">
+				<process name="Black Water Processor" power-required=".315" default="off">
 					<input resource="black water" rate="20" ambient="false" />
 					<!-- Residual requirement for using chlorine in water treatment
 					     is 0.25 to 1 mg of Cl gas per kg of water. Thus 20 kg water
@@ -1398,7 +1398,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-storage resource="water" capacity="10000.0" />
 				<resource-storage resource="hydrogen" capacity="10000.0" />
 				<resource-storage resource="oxygen" capacity="10000.0" />
-
+				<resource-storage resource="carbon monoxide" capacity="5000.0" />
+				
 				<resource-storage resource="solid waste" capacity="1000.0" />
 				<resource-storage resource="toxic waste" capacity="1000.0" />
 				<resource-storage resource="fertilizer" capacity="1000.0" />

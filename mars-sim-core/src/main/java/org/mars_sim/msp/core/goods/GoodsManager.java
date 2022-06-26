@@ -1144,7 +1144,7 @@ public class GoodsManager implements Serializable, Temporal {
 
 			AmountResource ar = ResourceUtil.findAmountResource(it.getAmountResourceID());
 			if (ar != null && ar.getGoodType() == GoodType.CROP) {
-				String tissueName = it.getName() + Farming.TISSUE_CULTURE;
+				String tissueName = it.getName() + Farming.TISSUE;
 
 				if (it.getAmountResourceID() == resource) {
 					// Tune demand with various factors
@@ -1164,7 +1164,7 @@ public class GoodsManager implements Serializable, Temporal {
 
 			AmountResource ar = ResourceUtil.findAmountResource(it.getAmountResourceID());
 			if (ar != null && ar.getGoodType() == GoodType.CROP) {
-				String tissueName = it.getName() + Farming.TISSUE_CULTURE;
+				String tissueName = it.getName() + Farming.TISSUE;
 
 				if (it.getAmountResourceID() == resource) {
 					// Tune demand with various factors
