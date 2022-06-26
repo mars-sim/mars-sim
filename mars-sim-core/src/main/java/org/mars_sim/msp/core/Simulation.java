@@ -738,7 +738,9 @@ public class Simulation implements ClockListener, Serializable {
 
 		// Stops the master clock and removes the Simulation clock listener
 		masterClock.stop();
-		if (!isAlreadyPaused) masterClock.setPaused(true, false);
+		
+		if (!isAlreadyPaused) 
+			masterClock.setPaused(true, false);
 
 		// Call up garbage collector. But it's up to the gc what it will do.
 		System.gc();
@@ -829,7 +831,9 @@ public class Simulation implements ClockListener, Serializable {
 		}
 		
 		// Restarts the master clock and adds back the Simulation clock listener
-		if (!isAlreadyPaused) masterClock.setPaused(false, false);
+		if (!isAlreadyPaused) 
+			masterClock.setPaused(false, false);
+		
 		masterClock.restart();
 	}
 
@@ -1202,6 +1206,7 @@ public class Simulation implements ClockListener, Serializable {
 		if (doneInitializing && !clockOnPause) {
 			// Refresh all Data loggers; this can be refactored later to a Manager class
 			DataLogger.changeTime(pulse.getMarsTime());
+			
 			environment.timePassing(pulse);
 
 			missionManager.timePassing(pulse);

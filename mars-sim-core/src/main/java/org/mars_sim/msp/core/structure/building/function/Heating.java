@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Heating.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-06-25
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -30,8 +30,6 @@ extends Function {
 
 	private static String sourceName = logger.getName();
     
-	/** default logger. */
-	//private static final Logger logger = Logger.getLogger(Heating.class.getName());
 	private static final FunctionType FUNCTION = FunctionType.LIFE_SUPPORT;
 
 	// Heat gain and heat loss calculation
@@ -41,14 +39,14 @@ extends Function {
 	// Revised ver at https://www.researchgate.net/publication/7890528_Engineering_concepts_for_inflatable_Mars_surface_greenhouses
 
 	// Data members
-	//private static final double KG_TO_LB = 2.204623;
+	// KG_TO_LB = 2.204623;
 	private static final double DEFAULT_ROOM_TEMPERATURE = 22.5;
-	//private static final double kW_TO_kBTU_PER_HOUR = 3.41214; // 1 kW = 3412.14 BTU/hr
+	// kW_TO_kBTU_PER_HOUR = 3.41214; // 1 kW = 3412.14 BTU/hr
 	private static final double C_TO_K = 273.15;
 	private static final double TRANSMITTANCE_GREENHOUSE_HIGH_PRESSURE = .55 ;
 	private static final double EMISSIVITY_DAY = 0.8 ;
 	private static final double EMISSIVITY_NIGHT = 1.0 ;
-	//private static final double EMISSIVITY_INSULATED = 0.05 ;
+	// EMISSIVITY_INSULATED = 0.05 ;
 	private static final double STEFAN_BOLTZMANN_CONSTANT = 0.0000000567 ; // in W / (m^2 K^4)
 
 	private static final double LARGE_INSULATION_CANOPY = 0.2; // [in kW]
@@ -62,9 +60,9 @@ extends Function {
 
     private static final double HEAT_DISSIPATED_PER_PERSON = .1; //[in kW]
     
-//    private static final double MSOL_LIMIT = 1.5;
-//    private static final double kPASCAL_PER_ATM = 1D/0.00986923267 ; // 1 kilopascal = 0.00986923267 atm
-//    private static final double R_GAS_CONSTANT = 8.31441; //R = 8.31441 m3 Pa K−1 mol−1
+    // MSOL_LIMIT = 1.5;
+    // kPASCAL_PER_ATM = 1D/0.00986923267 ; // 1 kilopascal = 0.00986923267 atm
+    // R_GAS_CONSTANT = 8.31441; //R = 8.31441 m3 Pa K−1 mol−1
 	// 1 kilopascal = 0.00986923267 atm
 	// 1 cubic ft = L * 0.035315
     // A full scale pressurized Mars rover prototype may have an airlock volume of 5.7 m^3
@@ -75,11 +73,11 @@ extends Function {
 	private static final double CFM  = 50;
 	
     /**  convert meters to feet  */
-//	private static final double M_TO_FT = 3.2808399;//10.764;
+	// M_TO_FT = 3.2808399;//10.764;
 	/**  Specific Heat Capacity = 4.0 for a typical U.S. house */
-//	private static final double SHC = 6.0; // [in BTU / sq ft / °F]
+	//	SHC = 6.0; // [in BTU / sq ft / °F]
 	/** Building Loss Coefficient (BLC) is 1.0 for a typical U.S. house  */
-//	private static double BLC = 0.2;
+	//	BLC = 0.2;
 
 	/** 
 	 * Cooling Load Factor accounts for the fact that building thermal mass creates a time lag between 
@@ -95,7 +93,7 @@ extends Function {
 	private static double U_value = 0.1;
 
 	/**  R-value is a measure of thermal resistance, or ability of heat to transfer from hot to cold, through materials such as insulation */
-	//private static final double R_value = 30;
+	// R_value = 30;
 	
     private static double U_value_area_crack_length, U_value_area_crack_length_for_airlock;
     
@@ -109,15 +107,13 @@ extends Function {
     // Molar mass of CO2 = 44.0095 g/mol
     // average density of air : 0.020 kg/m3
 	// double n = weather.getAirDensity(coordinates) * vol / 44D;
-//	private double n_CO2 = .02D * VOLUME_OF_AIRLOCK / 44*1000;
+    // n_CO2 = .02D * VOLUME_OF_AIRLOCK / 44*1000;
 	// 1 cubic feet of air has a total weight of 38.76 g
-//	private double n_air = 1D;
-//	private double n_sum = n_CO2 + n_air;
+    // n_air = 1D;
+    // n_sum = n_CO2 + n_air;
     
-//    private static final int HEAT_CAP = 200;  
  	private static final int PER_UPDATE = 2 ; // must be a multiple of 2
-    /** The counter for heating cycle */ 	
-	//private int counts;
+ 	
     /** the heat gain from equipment in kW */
     private double heatGainEqiupment;
 	/** specific heat capacity of air at 300K [kJ/kg*K] */	 
@@ -129,7 +125,6 @@ extends Function {
 
     private double width;
     
-	//private double length;
 	/** The floor area of the building. */	
 	private double floorArea;
 	/** The area spanning the side wall. */
@@ -164,9 +159,7 @@ extends Function {
 	private double timeSlice; 
 	
 	private double t_initial;
-	
-	//private double emissivity;
-	
+
 	private double conversion_factor;
 	
 	private double heat_sink = 0;
@@ -184,7 +177,7 @@ extends Function {
 	private Farming farm;
 
 	/** THe emissivity of the greenhouse canopy per millisol */
-	//private static Map<Integer, Double> emissivityMap;
+	// Map<Integer, Double> emissivityMap;
 	
 	private List<Building> adjacentBuildings;
 	

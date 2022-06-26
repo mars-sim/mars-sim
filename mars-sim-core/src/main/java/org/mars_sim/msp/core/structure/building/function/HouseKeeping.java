@@ -1,10 +1,9 @@
-/**
+/*
  * Mars Simulation Project
  * HouseKeeping.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-06-25
  * @author Barry Evans
  */
-
 package org.mars_sim.msp.core.structure.building.function;
 
 import java.io.Serializable;
@@ -19,9 +18,6 @@ import java.util.Map.Entry;
  */
 public class HouseKeeping implements Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	
 	// Number of inspections
@@ -46,21 +42,22 @@ public class HouseKeeping implements Serializable {
 	}
 
 	/**
-	 * Reset all the cleaning tasks to back zero
+	 * Resets all the cleaning tasks to back zero.
 	 */
 	public void resetCleaning() {
 		cleaningMap.replaceAll((s, v) -> 0);
 	}
 
 	/**
-	 * Reset all the cleaning tasks to back zero
+	 * Resets all the cleaning tasks to back zero.
 	 */
 	public void resetInspected() {
 		inspectionMap.replaceAll((s, v) -> 0);
 	}
 	
 	/**
-	 * Get list of items not inspected
+	 * Gets list of items not inspected.
+	 * 
 	 * @return
 	 */
 	public List<String> getUninspected() {
@@ -73,7 +70,8 @@ public class HouseKeeping implements Serializable {
 	}
 
 	/**
-	 * Get a list of items not cleaned
+	 * Gets a list of items not cleaned.
+	 * 
 	 * @return
 	 */
 	public List<String> getUncleaned() {
@@ -86,7 +84,8 @@ public class HouseKeeping implements Serializable {
 	}
 
 	/**
-	 * A item has been inspected
+	 * A item has been inspected.
+	 * 
 	 * @param s
 	 */
 	public void inspected(String s) {
@@ -94,7 +93,8 @@ public class HouseKeeping implements Serializable {
 	}
 
 	/**
-	 * An item has been cleaned
+	 * An item has been cleaned.
+	 * 
 	 * @param s
 	 */
 	public void cleaned(String s) {

@@ -120,8 +120,7 @@ public class MasterClock implements Serializable {
 	 * @throws Exception if clock could not be constructed.
 	 */
 	public MasterClock(int userTimeRatio) {
-		// logger.config("MasterClock's constructor is on " + Thread.currentThread().getName() + " Thread");
-
+	
 		// Create a martian clock
 		marsClock = MarsClockFormat.fromDateString(simulationConfig.getMarsStartDateTime());
 
@@ -164,7 +163,7 @@ public class MasterClock implements Serializable {
 	}
 
 	/**
-	 * Returns the Martian clock
+	 * Returns the Martian clock.
 	 *
 	 * @return Martian clock instance
 	 */
@@ -182,7 +181,7 @@ public class MasterClock implements Serializable {
 	}
 
 	/**
-	 * Returns the Earth clock
+	 * Returns the Earth clock.
 	 *
 	 * @return Earth clock instance
 	 */
@@ -191,7 +190,7 @@ public class MasterClock implements Serializable {
 	}
 
 	/**
-	 * Returns uptime timer
+	 * Returns uptime timer.
 	 *
 	 * @return uptimer instance
 	 */
@@ -222,7 +221,7 @@ public class MasterClock implements Serializable {
 	}
 
 	/**
-	 * Removes a clock listener
+	 * Removes a clock listener.
 	 *
 	 * @param oldListener the listener to remove.
 	 */
@@ -234,7 +233,7 @@ public class MasterClock implements Serializable {
 	}
 
 	/**
-	 * Does it has the clock listener
+	 * Does it have this clock listener ?
 	 *
 	 * @param listener
 	 * @return
@@ -250,7 +249,7 @@ public class MasterClock implements Serializable {
 	}
 
 	/**
-	 * Retrieve the clock listener task instance, given its clock listener
+	 * Retrieves the clock listener task instance, given its clock listener.
 	 *
 	 * @param listener the clock listener
 	 */
@@ -275,14 +274,14 @@ public class MasterClock implements Serializable {
 	}
 
 	/*
-	 * Gets the total number of pulses since the start of the sim
+	 * Gets the total number of pulses since the start of the sim.
 	 */
 	public long getTotalPulses() {
 		return nextPulseId;
 	}
 
 	/**
-	 * Resets the clock listener thread
+	 * Resets the clock listener thread.
 	 */
 	private void resetClockListeners() {
 		// If the clockListenerExecutor is not working, need to restart it
@@ -300,8 +299,7 @@ public class MasterClock implements Serializable {
 
 
 	/**
-	 * Sets the simulation target time ratio and adjust the value of time between update
-	 * (TBU)
+	 * Sets the simulation target time ratio and adjust the value of time between update.
 	 *
 	 * @param ratio
 	 */
@@ -322,7 +320,7 @@ public class MasterClock implements Serializable {
 	}
 	
 	/**
-	 * Gets the actual time ratio
+	 * Gets the actual time ratio.
 	 *
 	 * @return
 	 */
@@ -331,7 +329,7 @@ public class MasterClock implements Serializable {
 	}
 
 	/**
-	 * Runs master clock's thread using ThreadPoolExecutor
+	 * Runs master clock's thread using ThreadPoolExecutor.
 	 */
 	private class ClockThreadTask implements Runnable, Serializable {
 
@@ -413,7 +411,7 @@ public class MasterClock implements Serializable {
 	}
 
 	/**
-	 * Sets the pause time for the Command Mode
+	 * Sets the pause time for the Command Mode.
 	 *
 	 * @param value0
 	 * @param value1
@@ -567,7 +565,7 @@ public class MasterClock implements Serializable {
 	}
 
 	/**
-	 * Fires the clock pulse to each clock listener
+	 * Fires the clock pulse to each clock listener.
 	 *
 	 * @param time
 	 */
@@ -605,7 +603,7 @@ public class MasterClock implements Serializable {
 	}
 
 	/**
-	 * Execute the clock listener task
+	 * Executes the clock listener task.
 	 *
 	 * @param task
 	 */
@@ -630,14 +628,14 @@ public class MasterClock implements Serializable {
 	}
 
 	/**
-	 * Stop the clock
+	 * Stops the clock.
 	 */
 	public void stop() {
 		keepRunning = false;
 	}
 
 	/**
-	 * Restarts the clock
+	 * Restarts the clock.
 	 */
 	public void restart() {
 		keepRunning = true;
@@ -645,14 +643,14 @@ public class MasterClock implements Serializable {
 	}
 
 	/**
-	 * Timestamps the last pulse, used to calculate elapsed pulse time
+	 * Timestamps the last pulse, used to calculate elapsed pulse time.
 	 */
 	private void timestampPulseStart() {
 		tLast = System.currentTimeMillis();
 	}
 
 	/**
-	 * Starts the clock
+	 * Starts the clock.
 	 */
 	public void start() {
 		keepRunning = true;
@@ -671,14 +669,14 @@ public class MasterClock implements Serializable {
 	}
 
 	/**
-	 * Increases the speed / time ratio
+	 * Increases the speed / time ratio.
 	 */
 	public void increaseSpeed() {
 		desiredTR *= 2;
 	}
 
 	/**
-	 * Decreases the speed / time ratio
+	 * Decreases the speed / time ratio.
 	 */
 	public void decreaseSpeed() {
 		desiredTR /= 2;
@@ -689,7 +687,7 @@ public class MasterClock implements Serializable {
 
 
 	/**
-	 * Set if the simulation is paused or not.
+	 * Sets if the simulation is paused or not.
 	 *
 	 * @param value the state to be set.
 	 * @param showPane true if the pane should be shown.
@@ -718,7 +716,7 @@ public class MasterClock implements Serializable {
 	}
 
 	/**
-	 * Send a pulse change event to all clock listeners.
+	 * Sends a pulse change event to all clock listeners.
 	 *
 	 * @param isPaused
 	 * @param showPane
@@ -728,7 +726,7 @@ public class MasterClock implements Serializable {
 	}
 
 	/**
-	 * Starts clock listener thread pool executor
+	 * Starts clock listener thread pool executor.
 	 */
 	private void startClockListenerExecutor() {
 		if (listenerExecutor == null) {
@@ -741,7 +739,7 @@ public class MasterClock implements Serializable {
 	}
 
 	/**
-	 * Shuts down clock listener thread pool executor
+	 * Shuts down clock listener thread pool executor.
 	 */
 	public void shutdown() {
 		if (listenerExecutor != null)
@@ -752,7 +750,7 @@ public class MasterClock implements Serializable {
 
 
 	/**
-	 * Gets the Frame per second
+	 * Gets the Frame per second.
 	 *
 	 * @return
 	 */
@@ -762,7 +760,7 @@ public class MasterClock implements Serializable {
 	}
 
 	/**
-	 * Gets the sleep time in milliseconds
+	 * Gets the sleep time in milliseconds.
 	 *
 	 * @return
 	 */
@@ -771,7 +769,7 @@ public class MasterClock implements Serializable {
 	}
 
 	/**
-	 * Gets the millisols covered in the last pulse
+	 * Gets the millisols covered in the last pulse.
 	 *
 	 * @return
 	 */
@@ -780,7 +778,7 @@ public class MasterClock implements Serializable {
 	}
 
 	/**
-	 * Gets the time [in microseconds] taken to execute one frame in the game loop
+	 * Gets the time [in microseconds] taken to execute one frame in the game loop.
 	 *
 	 * @return
 	 */
@@ -790,7 +788,7 @@ public class MasterClock implements Serializable {
 
 
 	/**
-	 * How many pulses per second
+	 * Returns the current # pulses per second.
 	 *
 	 * @return
 	 */
@@ -814,7 +812,7 @@ public class MasterClock implements Serializable {
 	}
 	
 	/**
-	 * How many pulses per second
+	 * Returns the average # pulses per second.
 	 *
 	 * @return
 	 */
@@ -837,7 +835,7 @@ public class MasterClock implements Serializable {
 	}
 
 	/**
-	 * Gets the clock pulse
+	 * Gets the clock pulse.
 	 *
 	 * @return
 	 */
@@ -846,7 +844,7 @@ public class MasterClock implements Serializable {
 	}
 
 	/**
-	 * Prepare object for garbage collection.
+	 * Prepares object for garbage collection.
 	 */
 	public void destroy() {
 		marsClock = null;
