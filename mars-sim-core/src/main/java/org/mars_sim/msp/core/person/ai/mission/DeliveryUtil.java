@@ -330,7 +330,7 @@ public final class DeliveryUtil {
 							number = (int) getResourceDeliveryAmount(resource);
 						else if (isItemResource)
 							number = itemResourceNum;
-						massCapacity -= (GoodsUtil.getGoodMassPerItem(good) * number);
+						massCapacity -= (good.getMassPerItem() * number);
 					}
 					
 					int currentNum = 0;

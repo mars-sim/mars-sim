@@ -101,26 +101,6 @@ public class GoodsUtil {
         }
     }
 
-    /**
-     * Creates the good from either amount resource or item resource.
-     * 
-     * @param resource
-     * @return good for the resource.
-     * @deprecated
-     */
-/* 
-     public static Good createResourceGood(Resource resource) {
-        if (resource == null) {
-            logger.severe("resource is NOT supposed to be null.");
-        }
-        GoodCategory category = null;
-        if (resource instanceof AmountResource)
-            category = GoodCategory.AMOUNT_RESOURCE;
-        else if (resource instanceof ItemResource)
-            category = GoodCategory.ITEM_RESOURCE;
-        return new Good(resource.getName(), resource.getID(), category);
-    }
-*/
 
     /**
      * Gets a good object for a given resource.
@@ -338,86 +318,6 @@ public class GoodsUtil {
          return newMap;
     }
 
-    /**
-     * Gets the mass per item for a good.
-     *
-     * @param good the good to check.
-     * @return mass (kg) per item (or 1kg for amount resources).
-     * @throws Exception if error getting mass per item.
-     */
-    public static double getGoodMassPerItem(Good good) {
-/*         double result = 0D;
-
-        if (GoodCategory.AMOUNT_RESOURCE == good.getCategory())
-            result = 1D;
-        else if (GoodCategory.ITEM_RESOURCE == good.getCategory())
-            result = ItemResourceUtil.findItemResource(good.getID()).getMassPerItem();
-        else if (GoodCategory.EQUIPMENT == good.getCategory()
-                || GoodCategory.CONTAINER == good.getCategory())
-            result = EquipmentFactory.getEquipmentMass(good.getEquipmentType());
-        else if (GoodCategory.VEHICLE == good.getCategory()) {
-            result = vehicleConfig.getVehicleSpec(good.getName()).getEmptyMass();
-        }
-        else if (GoodCategory.ROBOT == good.getCategory()) {
-            result = Robot.EMPTY_MASS;
-        }
-        
-        return result;
-        */
-        return good.getMassPerItem();
-    }
-
-    /**
-     * Gets the good category name.
-     * 
-     * @param good
-     * @return
-     */
-    public static GoodType getGoodType(Good good) {
-/* 
-        GoodCategory cat = good.getCategory();
-
-        if (cat == GoodCategory.AMOUNT_RESOURCE) {
-        	return ResourceUtil.findAmountResource(good.getID()).getGoodType();
-        } else if (cat == GoodCategory.ITEM_RESOURCE) {
-			return ItemResourceUtil.findItemResource(good.getID()).getGoodType();
-        } else if (cat == GoodCategory.CONTAINER) {
-            return GoodType.CONTAINER;
-        } else if (cat == GoodCategory.EQUIPMENT) {
-            return GoodType.EVA;
-        } else if (cat == GoodCategory.VEHICLE) {
-            return getVehicleGoodType(good.getName());
-        } else if (cat == GoodCategory.ROBOT) {
-        	return GoodType.convertName2Enum(good.getName());
-        }
-        
-        return null;
-        */
-        return good.getGoodType();
-    }
-
-	/**
-	 * Returns the good type of this vehicle.
-	 * 
-	 * @param name
-	 * @return
-	 */
-    /* 
-	public static GoodType getVehicleGoodType(String name) {
-		VehicleType vehicleType = VehicleType.convertNameToVehicleType(name);
-		if (vehicleType == VehicleType.DELIVERY_DRONE
-			|| vehicleType == VehicleType.LUV)
-			return GoodType.VEHICLE_HEAVY;
-		if (vehicleType == VehicleType.EXPLORER_ROVER) 
-			return GoodType.VEHICLE_MEDIUM;
-		if (vehicleType == VehicleType.TRANSPORT_ROVER) 
-			return GoodType.VEHICLE_HEAVY;
-		if (vehicleType == VehicleType.CARGO_ROVER) 
-			return GoodType.VEHICLE_HEAVY;
-		logger.severe(name + " has unknown vehicle type.");
-		return null;
-	}
-	*/
 
     /**
      * Gets the good id.

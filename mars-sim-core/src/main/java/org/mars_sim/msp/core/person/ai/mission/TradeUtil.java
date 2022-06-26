@@ -339,7 +339,7 @@ public final class TradeUtil {
 							number = (int) getResourceTradeAmount(resource);
 						else if (isItemResource)
 							number = itemResourceNum;
-						massCapacity -= (GoodsUtil.getGoodMassPerItem(good) * number);
+						massCapacity -= (good.getMassPerItem() * number);
 					}
 					
 					int currentNum = 0;

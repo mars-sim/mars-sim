@@ -1,9 +1,20 @@
+/*
+ * Mars Simulation Project
+ * RobotGood.java
+ * @date 2022-06-26
+ * @author Barry Evans
+ */
 package org.mars_sim.msp.core.goods;
 
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
 
+/**
+ * This class represents how a Robot can be traded.
+ */
 class RobotGood extends Good {
+	
+	private static final int ROBOT_VALUE = 200;
 
     private RobotType robotType;
 
@@ -37,5 +48,10 @@ class RobotGood extends Good {
         }
 
         throw new IllegalStateException("Cannot mapt robot type " + robotType + " to GoodType");
+    }
+
+    @Override
+    protected double computeCostModifier() {
+        return ROBOT_VALUE;
     }
 }

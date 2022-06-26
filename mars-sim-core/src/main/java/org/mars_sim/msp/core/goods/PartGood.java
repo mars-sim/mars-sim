@@ -1,9 +1,31 @@
+/*
+ * Mars Simulation Project
+ * PartGood.java
+ * @date 2022-06-26
+ * @author Barry Evans
+ */
 package org.mars_sim.msp.core.goods;
 
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 
+/*
+ * This class is the representation of a Part instance as a Good that is tradable.
+ */
 class PartGood extends Good {
+
+    	
+	private static final int VEHICLE_PART_VALUE = 3;
+	private static final double ITEM_VALUE = 1.1D;
+	private static final double FC_STACK_VALUE = 8;
+	private static final double FC_VALUE = 1;
+	private static final double BOARD_VALUE = 1;
+	private static final double CPU_VALUE = 10;
+	private static final double WAFER_VALUE = 50;
+	private static final double BATTERY_VALUE = 2;
+	private static final double INSTRUMENT_VALUE = 1;
+	private static final double WIRE_VALUE = .005;
+	private static final double ELECTRONIC_VALUE = .5;
 
     public PartGood(Part p) {
         super(p.getName(), p.getID());
@@ -26,5 +48,45 @@ class PartGood extends Good {
     @Override
     public GoodType getGoodType() {
         return getPart().getGoodType();
+    }
+
+    /**
+	 * Computes the cost modifier for calculating output cost.
+	 * 
+	 * @return
+	 */
+    @Override
+    protected double computeCostModifier() {
+        Part part = getPart();
+        String name = part.getName().toLowerCase();
+        
+        if (name.contains("wire"))
+            return WIRE_VALUE;
+        
+        GoodType type = part.getGoodType();
+        
+        if (type == GoodType.VEHICLE)
+            return VEHICLE_PART_VALUE;
+        
+        else if (type == GoodType.ELECTRONIC)
+            return ELECTRONIC_VALUE;
+        
+        else if (type == GoodType.INSTRUMENT)
+            return INSTRUMENT_VALUE;
+        
+        if (name.equalsIgnoreCase("fuel cell stack"))
+            return FC_STACK_VALUE;
+        else if (name.equalsIgnoreCase("solid oxide fuel cell"))
+            return FC_VALUE;
+        else if (name.contains("board"))
+            return BOARD_VALUE;
+        else if (name.equalsIgnoreCase("microcontroller"))
+            return CPU_VALUE;
+        else if (name.equalsIgnoreCase("semiconductor wafer"))
+            return WAFER_VALUE;
+        else if (name.contains("battery"))
+            return BATTERY_VALUE;
+        
+        return ITEM_VALUE;
     }
 }

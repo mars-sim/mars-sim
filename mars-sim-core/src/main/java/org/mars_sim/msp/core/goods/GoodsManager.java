@@ -380,7 +380,7 @@ public class GoodsManager implements Serializable, Temporal {
 	 *
 	 * @return
 	 */
-	public static List<Good> getExclusionBuyList() {
+	private static List<Good> getExclusionBuyList() {
 		if (exclusionBuyList == null) {
 			exclusionBuyList = new ArrayList<>();
 			for (VehicleType type : VehicleType.values()) {
@@ -1302,7 +1302,7 @@ public class GoodsManager implements Serializable, Temporal {
 	public double flattenAmountDemand(Good good) {
 		double demand = 0;
 		String name = good.getName();
-		GoodType type = GoodsUtil.getGoodType(good);
+		GoodType type = good.getGoodType();
 		
 		if (name.contains("polyester")
 				|| name.contains("styrene")
@@ -1343,7 +1343,7 @@ public class GoodsManager implements Serializable, Temporal {
 	 */
 	public double flattenPartDemand(Good good) {
 		String name = good.getName();
-		GoodType type = GoodsUtil.getGoodType(good);
+		GoodType type = good.getGoodType();
 
 		if (name.contains("electrical wire"))
 			return 0.1 * ELECTRICAL_DEMAND;
