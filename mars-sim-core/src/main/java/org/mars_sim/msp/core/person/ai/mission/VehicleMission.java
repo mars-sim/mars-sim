@@ -28,6 +28,7 @@ import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.equipment.ContainerUtil;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.events.HistoricalEvent;
+import org.mars_sim.msp.core.goods.GoodsUtil;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
@@ -75,8 +76,8 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	// Static members
 
 	// Travel Mission status
-	public final static String AT_NAVPOINT = "At a navpoint";
-	public final static String TRAVEL_TO_NAVPOINT = "Traveling to navpoint";
+	public static final String AT_NAVPOINT = "At a navpoint";
+	public static final String TRAVEL_TO_NAVPOINT = "Traveling to navpoint";
 
 	/** The small insignificant amount of distance in km. */
 	private static final double SMALL_DISTANCE = .1;
@@ -207,6 +208,8 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	 */
 	protected boolean reserveVehicle() {
 		MissionMember startingMember = getStartingPerson();
+		if (startingMember.getSettlement() == null)
+			return false;
 		// Reserve a vehicle.
 		if (!reserveVehicle(startingMember)) {
 			endMission(MissionStatus.NO_RESERVABLE_VEHICLES);
@@ -216,6 +219,48 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 		return true;
 	}
 
+	/**
+	 * Reserves a vehicle for the mission if possible.
+	 *
+	 * @param person the person reserving the vehicle.
+	 * @return true if vehicle is reserved, false if unable to.
+	 * @throws MissionException if error reserving vehicle.
+	 */
+	protected final boolean reserveVehicle(MissionMember member) {
+		Collection<Vehicle> vList = getAvailableVehicles(member.getSettlement());
+		if (vList.isEmpty())
+			return false;
+
+		Collection<Vehicle> bestVehicles = new ConcurrentLinkedQueue<>();
+
+		for (Vehicle v : vList) {
+			if (!bestVehicles.isEmpty()) {
+				int comparison = compareVehicles(v, (Vehicle) bestVehicles.toArray()[0]);
+				if (comparison == 0) {
+					bestVehicles.add(v);
+				} else if (comparison == 1) {
+					bestVehicles.clear();
+					bestVehicles.add(v);
+				}
+			} else
+				bestVehicles.add(v);
+		}
+
+		// Randomly select from the best vehicles.
+		if (!bestVehicles.isEmpty()) {
+			Vehicle selected = null;
+			int bestVehicleIndex = RandomUtil.getRandomInt(bestVehicles.size() - 1);
+			try {
+				selected = (Vehicle) bestVehicles.toArray()[bestVehicleIndex];
+				setVehicle(selected);
+			} catch (Exception e) {
+				logger.severe(selected, "Cannot set the best vehicle: ", e);
+			}
+		}
+
+		return hasVehicle();
+	}
+	
 	/**
 	 * Is the vehicle under maintenance and unable to be embarked ?
 	 *
@@ -376,51 +421,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 		}
 	}
 
-	/**
-	 * Reserves a vehicle for the mission if possible.
-	 *
-	 * @param person the person reserving the vehicle.
-	 * @return true if vehicle is reserved, false if unable to.
-	 * @throws MissionException if error reserving vehicle.
-	 */
-	protected final boolean reserveVehicle(MissionMember member) {
-
-		Collection<Vehicle> bestVehicles = new ConcurrentLinkedQueue<>();
-		if (member.getSettlement() == null)
-			return false;
-		Collection<Vehicle> vList = getAvailableVehicles(member.getSettlement());
-
-		if (vList.isEmpty()) {
-			return false;
-		} else {
-			for (Vehicle v : vList) {
-				if (!bestVehicles.isEmpty()) {
-					int comparison = compareVehicles(v, (Vehicle) bestVehicles.toArray()[0]);
-					if (comparison == 0) {
-						bestVehicles.add(v);
-					} else if (comparison == 1) {
-						bestVehicles.clear();
-						bestVehicles.add(v);
-					}
-				} else
-					bestVehicles.add(v);
-			}
-
-			// Randomly select from the best vehicles.
-			if (!bestVehicles.isEmpty()) {
-				Vehicle selected = null;
-				int bestVehicleIndex = RandomUtil.getRandomInt(bestVehicles.size() - 1);
-				try {
-					selected = (Vehicle) bestVehicles.toArray()[bestVehicleIndex];
-					setVehicle(selected);
-				} catch (Exception e) {
-					logger.severe(selected, "Cannot set the best vehicle: ", e);
-				}
-			}
-
-			return hasVehicle();
-		}
-	}
+	
 
 	/**
 	 * Gets a collection of available vehicles at a settlement that are usable for
@@ -431,41 +432,63 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	 * @throws MissionException if problem determining if vehicles are usable.
 	 */
 	private Collection<Vehicle> getAvailableVehicles(Settlement settlement) {
-		Collection<Vehicle> result = new ConcurrentLinkedQueue<>();
-
 		if (getMissionType() == MissionType.DELIVERY) {
-			Collection<Drone> list = settlement.getParkedDrones();
-			if (!list.isEmpty()) {
-				for (Drone v : list) {
-					if (!v.haveStatusType(StatusType.MAINTENANCE)
-							&& v.getMalfunctionManager().getMalfunctions().isEmpty()
-							&& isUsableVehicle(v)
-							&& !v.isReserved()) {
-						result.add(v);
-					}
-				}
-			}
+			return getDrones(settlement);
 		}
 		else {
-			Collection<Vehicle> vList = settlement.getParkedVehicles();
-			if (!vList.isEmpty()) {
-				for (Vehicle v : vList) {
-					if (VehicleType.isRover(v.getVehicleType())
-							&& !v.haveStatusType(StatusType.MAINTENANCE)
-							&& v.getMalfunctionManager().getMalfunctions().isEmpty()
-							&& isUsableVehicle(v)
-							&& !v.isReserved()) {
-						result.add(v);
-					}
-				}
-			}
+			return getRovers(settlement);
 		}
-
-		return result;
 	}
 
 	/**
-	 * Finalizes the mission
+	 * Gets a collection of available drones at a settlement that are usable for
+	 * this mission.
+	 * 
+	 * @param settlement
+	 * @return
+	 */
+	private Collection<Vehicle> getDrones(Settlement settlement) {
+		Collection<Vehicle> result = new ConcurrentLinkedQueue<>();
+		Collection<Drone> list = settlement.getParkedDrones();
+		if (!list.isEmpty())
+			return result;
+		for (Drone v : list) {
+			if (!v.haveStatusType(StatusType.MAINTENANCE)
+					&& v.getMalfunctionManager().getMalfunctions().isEmpty()
+					&& isUsableVehicle(v)
+					&& !v.isReserved()) {
+				result.add(v);
+			}
+		}
+		return result;
+	}
+	
+	/**
+	 * Gets a collection of available rovers at a settlement that are usable for
+	 * this mission.
+	 * 
+	 * @param settlement
+	 * @return
+	 */
+	private Collection<Vehicle> getRovers(Settlement settlement) {
+		Collection<Vehicle> result = new ConcurrentLinkedQueue<>();
+		Collection<Vehicle> vList = settlement.getParkedVehicles();
+		if (!vList.isEmpty())
+			return result;
+		for (Vehicle v : vList) {
+			if (VehicleType.isRover(v.getVehicleType())
+					&& !v.haveStatusType(StatusType.MAINTENANCE)
+					&& v.getMalfunctionManager().getMalfunctions().isEmpty()
+					&& isUsableVehicle(v)
+					&& !v.isReserved()) {
+				result.add(v);
+			}
+		}
+		return result;
+	}
+	
+	/**
+	 * Finalizes the mission.
 	 *
 	 * @param reason the reason of ending the mission.
 	 */
@@ -488,19 +511,17 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 			// for ALL OTHER REASONS
 			setPhaseEnded(true);
 
-			if (vehicle.getVehicleType() == VehicleType.DELIVERY_DRONE) {
-				if (vehicle.getStoredMass() != 0D) {
+			if (vehicle.getVehicleType() == VehicleType.DELIVERY_DRONE
+				&& vehicle.getStoredMass() != 0D) {
 					continueToEndMission = false;
 					startDisembarkingPhase();
-				}
 			}
 
-			else if (VehicleType.isRover(vehicle.getVehicleType())) {
-				if (((Rover)vehicle).getCrewNum() != 0
-						|| (vehicle.getStoredMass() != 0D)) {
+			else if (VehicleType.isRover(vehicle.getVehicleType())
+					&& (((Rover)vehicle).getCrewNum() != 0
+						|| vehicle.getStoredMass() != 0D)) {
 					continueToEndMission = false;
 					startDisembarkingPhase();
-				}
 			}
 		}
 
@@ -665,7 +686,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 		if (REVIEWING.equals(getPhase())) {
 			// Check the vehicle is loadable before starting the embarking
 			if (isVehicleLoadable()) {
-				setPhase(EMBARKING, getCurrentNavpoint().getDescription());
+				setPhase(EMBARKING, getCurrentNavpointDescription());
 			}
 			else {
 				logger.warning(vehicle, getName() + " cannot load Resources.");
@@ -727,7 +748,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 			performTravelPhase(member);
 		}
 		else if (DISEMBARKING.equals(getPhase())) {
-			performDisembarkToSettlementPhase(member, getCurrentNavpoint().getSettlement());
+			performDisembarkToSettlementPhase(member, getCurrentNavpointSettlement());
 		}
 		else if (COMPLETED.equals(getPhase())) {
 			setPhaseEnded(true);
@@ -944,7 +965,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 		int count = 0;
 		for (MissionMember member : getMembers()) {
 			if (member.getUnitType() == UnitType.PERSON) {
-				totalSpeed += getAverageVehicleSpeedForOperator((Person) member);
+				totalSpeed += getAverageVehicleSpeedForOperator(member);
 				count++;
 			}
 		}
@@ -1031,61 +1052,53 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	 * @return map of part resources and their number.
 	 */
 	protected Map<Integer, Number> getSparePartsForTrip(double distance) {
-
 		// Determine vehicle parts. only if there is a change of distance
-		if (vehicle != null) {
 
-			// If the distance is the same as last time then use the cached value
-			if ((cachedDistance == distance) && (cachedParts != null)) {
-				return cachedParts;
-			}
-			else {
-				Map<Integer, Number> result = new HashMap<>();
-				cachedParts = result;
-				cachedDistance = distance;
+		// If the distance is the same as last time then use the cached value
+		if ((cachedDistance == distance) && (cachedParts != null)) {
+			return cachedParts;
+		}
 
-				double drivingTime = getEstimatedTripTime(true, distance);
-				double numberAccidents = drivingTime * OperateVehicle.BASE_ACCIDENT_CHANCE;
-				double numberMalfunctions = numberAccidents * AVERAGE_NUM_MALFUNCTION;
+		Map<Integer, Number> result = new HashMap<>();
+		cachedParts = result;
+		cachedDistance = distance;
 
-				Map<Integer, Double> parts = vehicle.getMalfunctionManager().getRepairPartProbabilities();
+		double drivingTime = getEstimatedTripTime(true, distance);
+		double numberAccidents = drivingTime * OperateVehicle.BASE_ACCIDENT_CHANCE;
+		double numberMalfunctions = numberAccidents * AVERAGE_NUM_MALFUNCTION;
 
-				// Note: need to figure out why a mission vehicle's scope would contain 
-				// the following unneeded parts that must be removed:
-				parts = ItemResourceUtil.removePartMap(parts, ItemResourceUtil.UNNEEDED_PARTS);
+		Map<Integer, Double> parts = vehicle.getMalfunctionManager().getRepairPartProbabilities();
 
-				for (Integer id : parts.keySet()) {
-					double freq = parts.get(id) * numberMalfunctions * PARTS_NUMBER_MODIFIER;
-					int number = (int) Math.round(freq);
-					if (number > 0) {
-						result.put(id, number);
-					}
-				}
+		// Note: need to figure out why a mission vehicle's scope would contain 
+		// the following unneeded parts that must be removed:
+		parts = ItemResourceUtil.removePartMap(parts, ItemResourceUtil.UNNEEDED_PARTS);
 
-				// Manually override the number of wheels and battery needed for each mission
-				// since the automated process is not reliable
-				if (VehicleType.isRover(vehicle.getVehicleType())) {
-					Integer wheel = ItemResourceUtil.roverWheel.getID();
-					Integer battery = ItemResourceUtil.roverBattery.getID();
-					
-					if (!result.containsKey(wheel)) {
-						if (vehicle.getVehicleType() == VehicleType.EXPLORER_ROVER) 
-							result.put(wheel, 1);
-						else if (vehicle.getVehicleType() == VehicleType.CARGO_ROVER) 
-							result.put(wheel, 2);
-						else if (vehicle.getVehicleType() == VehicleType.CARGO_ROVER) 
-							result.put(wheel, 3);
-					}
-					
-					if (!result.containsKey(battery)) 
-						result.put(battery, 1);
-				}
-				
-				return result;
+		for (Map.Entry<Integer, Double> entry : parts.entrySet()) {
+			Integer id = entry.getKey();
+			double value = entry.getValue();
+			double freq = value * numberMalfunctions * PARTS_NUMBER_MODIFIER;
+			int number = (int) Math.round(freq);
+			if (number > 0) {
+				result.put(id, number);
 			}
 		}
 
-		return Collections.emptyMap();
+		// Manually override the number of wheels and battery needed for each mission
+		// since the automated process is not reliable
+		if (VehicleType.isRover(vehicle.getVehicleType())) {
+			Integer wheel = ItemResourceUtil.roverWheel.getID();
+			Integer battery = ItemResourceUtil.roverBattery.getID();
+			
+			if (vehicle.getVehicleType() == VehicleType.EXPLORER_ROVER) 
+				result.computeIfAbsent(wheel, k -> 2);
+			else if (vehicle.getVehicleType() == VehicleType.CARGO_ROVER
+					|| vehicle.getVehicleType() == VehicleType.TRANSPORT_ROVER) 
+				result.computeIfAbsent(wheel, k -> 4);
+			
+			result.computeIfAbsent(battery, k -> 1);
+		}
+		
+		return result;
 	}
 
 	/**
@@ -1116,46 +1129,41 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	 */
 	private boolean hasEnoughResources(Map<Integer, Number> neededResources) {
 		boolean result = true;
+		
+		for (Map.Entry<Integer, Number> entry : neededResources.entrySet()) {
+			int id = entry.getKey();
+			Object value = entry.getValue();
 
-		if (vehicle != null) {
+			if (id < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
 
-			for (Map.Entry<Integer, Number> entry : neededResources.entrySet()) {
-				int id = entry.getKey();
-				Object value = entry.getValue();
+				double amount = (Double) value;
+				double amountStored = vehicle.getAmountResourceStored(id);
 
-				if (id < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
-
-					double amount = (Double) value;
-					double amountStored = vehicle.getAmountResourceStored(id);
-
-					if (amountStored < amount) {
-						String newLog = "Not enough "
-								+ ResourceUtil.findAmountResourceName(id) + " to continue with "
-								+ getTypeID() + "  Required: " + Math.round(amount * 100D) / 100D + " kg  Vehicle stored: "
-								+ Math.round(amountStored * 100D) / 100D + " kg";
-						logger.log(vehicle, Level.WARNING, 10_000, newLog);
-						return false;
-					}
-				}
-
-				else if (id >= ResourceUtil.FIRST_ITEM_RESOURCE_ID && id < ResourceUtil.FIRST_VEHICLE_RESOURCE_ID) {
-					int num = (Integer) value;
-					int numStored = vehicle.getItemResourceStored(id);
-
-					if (numStored < num) {
-						String newLog = "Not enough "
-								+ ItemResourceUtil.findItemResource(id).getName() + " to continue with "
-								+ getTypeID() + "  Required: " + num + "  Vehicle stored: " + numStored + ".";
-						logger.log(vehicle, Level.WARNING, 10_000,  newLog);
-						return false;
-					}
-				}
-
-				else {
-					throw new IllegalStateException(getPhase() + " : issues with the resource type of "
-							+ ResourceUtil.findAmountResourceName(id));
+				if (amountStored < amount) {
+					String newLog = "Not enough "
+							+ ResourceUtil.findAmountResourceName(id) + " to continue with "
+							+ getTypeID() + "  Required: " + Math.round(amount * 100D) / 100D + " kg  Vehicle stored: "
+							+ Math.round(amountStored * 100D) / 100D + " kg";
+					logger.log(vehicle, Level.WARNING, 10_000, newLog);
+					return false;
 				}
 			}
+
+			else if (id < ResourceUtil.FIRST_VEHICLE_RESOURCE_ID) {
+				int num = (Integer) value;
+				int numStored = vehicle.getItemResourceStored(id);
+
+				if (numStored < num) {
+					String newLog = "Not enough "
+							+ ItemResourceUtil.findItemResource(id).getName() + " to continue with "
+							+ getTypeID() + "  Required: " + num + "  Vehicle stored: " + numStored + ".";
+					logger.log(vehicle, Level.WARNING, 10_000,  newLog);
+					return false;
+				}
+			}
+
+			logger.warning(vehicle, " at " + getPhase() + ": issues with the resource type of "
+						+ GoodsUtil.getResourceGood(id));
 		}
 		return result;
 	}
@@ -1227,7 +1235,6 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 			// Note: need to consider if enough beds are available at the destination settlement
 			// Note: can they go back to the settlement of their origin ?
 
-			// Added updateTravelDestination() below
 			updateTravelDestination();
 			abortPhase();
 		}
@@ -1285,13 +1292,14 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 		// Determine closest settlement.
 		boolean requestHelp = false;
 		Settlement newDestination = findClosestSettlement();
+		
 		if (newDestination != null) {
 
 			double newDistance = Coordinates.computeDistance(getCurrentMissionLocation(), newDestination.getCoordinates());
 			boolean enough = true;
 
 			// for delivery mission, Will need to alert the player differently if it runs out of fuel
-			if (!(this instanceof Delivery)) {
+			if (getMissionType() != MissionType.DELIVERY) {
 
 				enough = hasEnoughResources(getResourcesNeededForTrip(false, newDistance));
 
@@ -1388,11 +1396,11 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	public void updateTravelDestination() {
 		NavPoint nextPoint = getNextNavpoint();
 
-		if (operateVehicleTask != null) {
+		if (operateVehicleTask != null && nextPoint != null) {
 			operateVehicleTask.setDestination(nextPoint.getLocation());
 		}
 		setPhaseDescription(MessageFormat.format(TRAVELLING.getDescriptionTemplate(),
-										  getNextNavpoint().getDescription())); // $NON-NLS-1$
+										  getNextNavpointDescription()));
 	}
 
 	/**
@@ -1527,11 +1535,8 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 				double capacity = ContainerUtil.getContainerCapacity(containerType);
 				int numContainers = (int) Math.ceil(amount / capacity);
 
-				if (result.containsKey(containerID)) {
-					numContainers += result.get(containerID);
-				}
-
-				result.put(containerID, numContainers);
+				result.computeIfAbsent(containerID, k -> numContainers);
+				result.computeIfPresent(containerID, (key, value) -> value + numContainers);
 			}
 
 			// Note: containers are NOT designed to hold parts
@@ -1544,11 +1549,9 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	/**
 	 * Checks if the vehicle has a malfunction that cannot be repaired.
 	 *
-	 * @return true if unrepairable malfunction.
+	 * @return true if unrepairable malfunction due to lack of parts for repair.
 	 */
 	private boolean hasUnrepairableMalfunction() {
-		boolean result = false;
-
 		if (vehicle != null) {
 			vehicle.getMalfunctionManager();
 			Iterator<Malfunction> i = vehicle.getMalfunctionManager().getMalfunctions().iterator();
@@ -1560,14 +1563,13 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 					Integer part = j.next();
 					int number = parts.get(part);
 					if (vehicle.getItemResourceStored(part) < number) {
-//						vehicle.getInventory().addItemDemand(part, number);
-						result = true;
+						return true;
 					}
 				}
 			}
 		}
 
-		return result;
+		return false;
 	}
 
 	/**
@@ -1766,6 +1768,8 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 		int numNavpoints = getNumberOfNavpoints();
 		for (int x = index; x < numNavpoints; x++) {
 			navPoints.remove(index);
+			// To compensate the shifted index upon removal of this navPoint
+			x--;
 			fireMissionUpdate(MissionEventType.NAVPOINTS_EVENT);
 		}
 	}
@@ -1791,6 +1795,19 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 			return null;
 	}
 
+	/**
+	 * Gets the next navpoint the mission is stopped at.
+	 * 
+	 * @return the description of the next navpoint.
+	 */
+	public final String getNextNavpointDescription() {
+		if (navIndex < navPoints.size()) {
+			return navPoints.get(navIndex).getDescription();
+		}
+		
+		return "Null Next Location";
+	}
+			
 	/**
 	 * Gets the mission's next navpoint index.
 	 * 
@@ -1876,15 +1893,57 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	 * @return navpoint or null if mission is not stopped at a navpoint.
 	 */
 	public final NavPoint getCurrentNavpoint() {
-		if (travelStatus != null && AT_NAVPOINT.equals(travelStatus)) {
-			if (navIndex < navPoints.size())
-				return navPoints.get(navIndex);
-			else
-				return null;
-		} else
-			return null;
+		if (travelStatus != null && AT_NAVPOINT.equals(travelStatus)
+			&& navIndex < navPoints.size()) {
+			return navPoints.get(navIndex);
+		}
+		
+		return null;
 	}
 
+	/**
+	 * Gets the current navpoint the mission is stopped at.
+	 * 
+	 * @return navpoint or null if mission is not stopped at a navpoint.
+	 */
+	public final boolean isCurrentNavpointSettlement() {
+		if (travelStatus != null && AT_NAVPOINT.equals(travelStatus)
+			&& navIndex < navPoints.size()
+			&& navPoints.get(navIndex).getSettlement() != null) {
+			return true;
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Gets the settlement at the current navpoint the mission is stopped at.
+	 * 
+	 * @return Settlement or null if mission is not stopped at a Settlement.
+	 */
+	public final Settlement getCurrentNavpointSettlement() {
+		if (travelStatus != null && AT_NAVPOINT.equals(travelStatus)
+			&& navIndex < navPoints.size()) {
+			return navPoints.get(navIndex).getSettlement();
+		}
+		
+		return null;
+	}
+
+	/**
+	 * Gets the current navpoint the mission is stopped at.
+	 * 
+	 * @return the description of the current navpoint.
+	 */
+	public final String getCurrentNavpointDescription() {
+		if (travelStatus != null && AT_NAVPOINT.equals(travelStatus)
+			&& navIndex < navPoints.size()) {
+			return navPoints.get(navIndex).getDescription();
+		}
+		
+		return "Null Location";
+	}
+	
 	/**
 	 * Gets the index of the current navpoint the mission is stopped at.
 	 * 
@@ -2003,17 +2062,16 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 			
 			Coordinates c1 = null;
 			
+			// In case of TravelToSettlement, it's an one-way trip
+			if (this instanceof TravelToSettlement) {
+				c1 = ((TravelToSettlement)this).getDestinationSettlement().getCoordinates();	
+			}
+			
 			NavPoint next = getNextNavpoint();
 			if (next != null) {
 				c1 = next.getLocation();
 			}
-			/*
-			This feels wrong. Any mission should be using the NavPoints
-			else if (this instanceof TravelToSettlement) {
-				c1 = ((TravelToSettlement)this).getDestinationSettlement().getCoordinates();	
-			}
-			
-			*/
+
 			double dist = 0;
 			
 			if (c1 != null) {
@@ -2030,13 +2088,11 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 				currentLegRemainingDistance = dist;
 				fireMissionUpdate(MissionEventType.DISTANCE_EVENT);
 			}
-					
-//			System.out.println("   c0 : " + c0 + "   c1 : " + c1 + "   dist : " + dist);
+			
 			return dist;
 		}
 
-		else
-			return 0D;
+		return 0D;
 	}
 
 	/**
@@ -2045,24 +2101,22 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	 * @return distance (km)
 	 */
 	public final void computeEstimatedTotalDistance() {
-//		if (estimatedTotalDistance == 0) {
-			if (navPoints.size() > 1) {
-				double result = 0D;
-				
-				for (int x = 1; x < navPoints.size(); x++) {
-					NavPoint prevNav = navPoints.get(x - 1);
-					NavPoint currNav = navPoints.get(x);
-					double distance = Coordinates.computeDistance(currNav.getLocation(), prevNav.getLocation());
-					result += distance;
-				}
-				
-				if (estimatedTotalDistance != result) {
-					// Record the distance
-					estimatedTotalDistance = result;
-					fireMissionUpdate(MissionEventType.DISTANCE_EVENT);	
-				}
+		if (navPoints.size() > 1) {
+			double result = 0D;
+			
+			for (int x = 1; x < navPoints.size(); x++) {
+				NavPoint prevNav = navPoints.get(x - 1);
+				NavPoint currNav = navPoints.get(x);
+				double distance = Coordinates.computeDistance(currNav.getLocation(), prevNav.getLocation());
+				result += distance;
 			}
-//		}
+			
+			if (estimatedTotalDistance != result) {
+				// Record the distance
+				estimatedTotalDistance = result;
+				fireMissionUpdate(MissionEventType.DISTANCE_EVENT);	
+			}
+		}
 	}
 
 	/**
@@ -2177,7 +2231,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 			dateEmbarked = marsClock.getTrucatedDateTimeStamp();
 		}
 		startTravelToNextNode();
-		setPhase(TRAVELLING, getNextNavpoint().getDescription());
+		setPhase(TRAVELLING, getNextNavpointDescription());
 	}
 
 	/**

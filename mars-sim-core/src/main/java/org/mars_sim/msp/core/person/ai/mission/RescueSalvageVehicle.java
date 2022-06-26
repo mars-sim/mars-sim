@@ -231,7 +231,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 	
 		if (!super.determineNewPhase()) {
 			if (TRAVELLING.equals(getPhase())) {
-				if (null != getCurrentNavpoint() && getCurrentNavpoint().isSettlementAtNavpoint()) {
+				if (isCurrentNavpointSettlement()) {
 					startDisembarkingPhase();
 				}
 				else {

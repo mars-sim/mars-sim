@@ -259,11 +259,11 @@ public class Exploration extends RoverMission
 					startDisembarkingPhase();
 				}
 				else if (canStartEVA()) {
-					setPhase(EXPLORE_SITE, getCurrentNavpoint().getDescription());
+					setPhase(EXPLORE_SITE, getCurrentNavpointDescription());
 				}
 			}
 			else if (WAIT_SUNLIGHT.equals(getPhase())) {
-				setPhase(EXPLORE_SITE, getCurrentNavpoint().getDescription());
+				setPhase(EXPLORE_SITE, getCurrentNavpointDescription());
 			}
 			else if (EXPLORE_SITE.equals(getPhase())) {
 				startTravellingPhase();
@@ -339,8 +339,8 @@ public class Exploration extends RoverMission
 		} else if (completion < 0D) {
 			completion = 0D;
 		}
-		explorationSiteCompletion.put(getCurrentNavpoint().getDescription(), completion);
-		fireMissionUpdate(MissionEventType.SITE_EXPLORATION_EVENT, getCurrentNavpoint().getDescription());
+		explorationSiteCompletion.put(getCurrentNavpointDescription(), completion);
+		fireMissionUpdate(MissionEventType.SITE_EXPLORATION_EVENT, getCurrentNavpointDescription());
 
 		if (isEveryoneInRover()) {
 

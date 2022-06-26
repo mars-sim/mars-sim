@@ -287,18 +287,18 @@ public abstract class CollectResourcesMission extends RoverMission
 				if (getCurrentNavpoint() == null)
 					// go back home
 					returnHome();
-				else if (getCurrentNavpoint().isSettlementAtNavpoint()) {
+				else if (isCurrentNavpointSettlement()) {
 					startDisembarkingPhase();
 				}
 
 				else if (canStartEVA()) {
 					setPhase(COLLECT_RESOURCES,
-							getCurrentNavpoint().getDescription());
+							getCurrentNavpointDescription());
 				}
 			}
 			else if (WAIT_SUNLIGHT.equals(getPhase())) {
 				setPhase(COLLECT_RESOURCES,
-						getCurrentNavpoint().getDescription());
+						getCurrentNavpointDescription());
 			}
 			else if (COLLECT_RESOURCES.equals(getPhase())) {
 				// Update the resource collected

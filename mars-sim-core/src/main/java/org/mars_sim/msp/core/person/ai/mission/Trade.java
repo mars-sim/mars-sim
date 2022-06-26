@@ -215,7 +215,7 @@ public class Trade extends RoverMission implements Serializable {
 		boolean handled = true;
 		if (!super.determineNewPhase()) {
 			if (TRAVELLING.equals(getPhase())) {
-				if (getCurrentNavpoint().isSettlementAtNavpoint()) {
+				if (isCurrentNavpointSettlement()) {
 					if (outbound) {
 						setPhase(TRADE_DISEMBARKING, tradingSettlement.getName());
 					}

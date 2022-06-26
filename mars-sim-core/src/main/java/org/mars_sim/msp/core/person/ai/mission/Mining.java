@@ -243,11 +243,11 @@ public class Mining extends RoverMission
 		boolean handled = true;
 		if (!super.determineNewPhase()) {
 			if (TRAVELLING.equals(getPhase())) {
-				if (getCurrentNavpoint().isSettlementAtNavpoint()) {
+				if (isCurrentNavpointSettlement()) {
 					startDisembarkingPhase();
 				}
 				else {
-					setPhase(MINING_SITE, getCurrentNavpoint().getDescription());
+					setPhase(MINING_SITE, getCurrentNavpointDescription());
 				}
 			} 
 			

@@ -228,7 +228,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 		boolean handled = true;
 		if (!super.determineNewPhase()) {
 			if (TRAVELLING.equals(getPhase())) {
-				if (getCurrentNavpoint().isSettlementAtNavpoint()) {
+				if (isCurrentNavpointSettlement()) {
 					if (outbound) {
 						setPhase(SUPPLY_DELIVERY_DISEMBARKING, emergencySettlement.getName());
 					} else {

@@ -143,7 +143,7 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 	
 		if (!super.determineNewPhase()) {
 			if (TRAVELLING.equals(getPhase())) {
-				if (getCurrentNavpoint().isSettlementAtNavpoint()) {
+				if (isCurrentNavpointSettlement()) {
 					startDisembarkingPhase();
 				}
 			} 

@@ -299,16 +299,55 @@
 		</repair-parts-list>
 	</malfunction>
 
-	<!-- Damaged wheel on rover. -->
-	<malfunction name="Rover Damaged Wheel">
+	<!-- Damaged wheel on cargo rover. -->
+	<malfunction name="Cargo Rover Damaged Wheel">
 		<severity value="65" />
 		<probability value="5.0" />
 		<repair-eva time="50.0" />
 		<system-list>
-			<system name="rover" />
+			<system name="cargo rover" />
 		</system-list>
 		<repair-parts-list>
 			<part name="rover wheel" number="2" probability="20" />
+			<part name="steel wire" number="4" probability="20" />
+			<part name="work gloves" number="1" probability="20" />
+			<part name="valve" number="1" probability="10" />
+			<part name="plastic tubing" number="2" probability="10" />
+			<part name="epoxy resin bottle" number="1" probability="10" />
+			<part name="heat pipe" number="1" probability="5" />
+		</repair-parts-list>
+	</malfunction>
+	
+	<!-- Damaged wheel on transport rover. -->
+	<malfunction name="Transport Rover Damaged Wheel">
+		<severity value="65" />
+		<probability value="5.0" />
+		<repair-eva time="50.0" />
+		<system-list>
+			<system name="transport rover" />
+		</system-list>
+		<repair-parts-list>
+			<part name="rover wheel" number="2" probability="20" />
+			<part name="steel wire" number="4" probability="20" />			
+			<part name="work gloves" number="1" probability="20" />
+			<part name="valve" number="1" probability="10" />
+			<part name="plastic tubing" number="2" probability="10" />
+			<part name="epoxy resin bottle" number="1" probability="10" />
+			<part name="heat pipe" number="1" probability="5" />
+		</repair-parts-list>
+	</malfunction>
+	
+	<!-- Damaged wheel on explorer rover. -->
+	<malfunction name="Explorer Rover Damaged Wheel">
+		<severity value="65" />
+		<probability value="5.0" />
+		<repair-eva time="50.0" />
+		<system-list>
+			<system name="explorer rover" />
+		</system-list>
+		<repair-parts-list>
+			<part name="rover wheel" number="1" probability="20" />
+			<part name="steel wire" number="2" probability="20" />			
 			<part name="work gloves" number="1" probability="20" />
 			<part name="valve" number="1" probability="10" />
 			<part name="plastic tubing" number="2" probability="10" />
@@ -326,7 +365,8 @@
 			<system name="light utility vehicle" />
 		</system-list>
 		<repair-parts-list>
-			<part name="wheel - small" number="2" probability="20" />
+			<part name="wheel - small" number="1" probability="20" />
+			<part name="steel wire" number="1" probability="20" />			
 			<part name="work gloves" number="1" probability="20" />
 			<part name="valve" number="1" probability="10" />
 			<part name="plastic tubing" number="2" probability="10" />

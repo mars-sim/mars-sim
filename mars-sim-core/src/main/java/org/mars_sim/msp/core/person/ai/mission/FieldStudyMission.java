@@ -297,15 +297,15 @@ public abstract class FieldStudyMission extends RoverMission implements Serializ
 		boolean handled = true;
 		if (!super.determineNewPhase()) {
 			if (TRAVELLING.equals(getPhase())) {
-				if (getCurrentNavpoint().isSettlementAtNavpoint()) {
+				if (isCurrentNavpointSettlement()) {
 					startDisembarkingPhase();
 				}
 				else if (canStartEVA()) {
-					setPhase(RESEARCH_SITE, getCurrentNavpoint().getDescription());
+					setPhase(RESEARCH_SITE, getCurrentNavpointDescription());
 				}
 			}
 			else if (WAIT_SUNLIGHT.equals(getPhase())) {
-				setPhase(RESEARCH_SITE, getCurrentNavpoint().getDescription());
+				setPhase(RESEARCH_SITE, getCurrentNavpointDescription());
 			}
 			else if (RESEARCH_SITE.equals(getPhase())) {
 				startTravellingPhase();

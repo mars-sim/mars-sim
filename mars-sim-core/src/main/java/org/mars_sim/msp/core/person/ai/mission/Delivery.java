@@ -203,7 +203,7 @@ public class Delivery extends DroneMission implements Serializable {
 
 		if (!super.determineNewPhase()) {
 			if (TRAVELLING.equals(getPhase())) {
-				if (getCurrentNavpoint().isSettlementAtNavpoint()) {
+				if (isCurrentNavpointSettlement()) {
 					if (outbound) {
 						setPhase(TRADE_DISEMBARKING, tradingSettlement.getName());
 					} else {

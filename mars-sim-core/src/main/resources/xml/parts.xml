@@ -324,7 +324,7 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="vehicle frame - large" type="vehicle" mass="5000.0">
+	<part name="vehicle frame - large" type="vehicle" mass="250.0">
 		<description>Heavy steel frame</description>
 	</part>
 
@@ -345,10 +345,10 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="rover wheel" type="vehicle" mass="15.0">
+	<part name="rover wheel" type="vehicle" mass="8.9">
 		<description>Rover wheels are made of steel and steel wire.</description>
 		<maintenance-entity-list>
-			<entity name="rover" probability="5" max-number="6" />
+			<entity name="rover" probability="5" max-number="4" />
 		</maintenance-entity-list>
 	</part>
 
@@ -453,11 +453,11 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="vehicle frame - small" type="vehicle" mass="250.0" />
+	<part name="vehicle frame - small" type="vehicle" mass="75.0" />
 
-	<part name="wheel - small" type="vehicle"  mass="10.0" >
+	<part name="wheel - small" type="vehicle"  mass="4.45" >
 		<maintenance-entity-list>
-			<entity name="light utility vehicle" probability="5" max-number="1" />
+			<entity name="light utility vehicle" probability="5" max-number="2" />
 		</maintenance-entity-list>
 	</part>
 
