@@ -111,7 +111,6 @@ public class GoodsManager implements Serializable, Temporal {
 	private static final String METHANE = "methane";
 	private static final String BRICK = "brick";
 	private static final String METEORITE = "meteorite";
-	private static final String ROCK = "rock";
 	private static final String VEHICLE = "vehicle";
 
 	private static final int MALFUNCTION_REPAIR_COEF = 50;
@@ -226,12 +225,13 @@ public class GoodsManager implements Serializable, Temporal {
 	private static final double COMPOUND_DEMAND_FACTOR = .01;
 	private static final double ELEMENT_DEMAND_FACTOR = .1;
 
-	private static final double ELECTRICAL_DEMAND = .09;
+	private static final double ELECTRICAL_DEMAND = .8;
 	private static final double INSTRUMENT_DEMAND = 1.2;
-	private static final double METALLIC_DEMAND = .999;
-	private static final double UTILITY_DEMAND = .999;
-	private static final double KITCHEN_DEMAND = .999;
-	private static final double CONSTRUCTION_DEMAND = .999;
+	private static final double METALLIC_DEMAND = .7;
+	private static final double UTILITY_DEMAND = .7;
+	private static final double TOOL_DEMAND = .8;
+	private static final double KITCHEN_DEMAND = 1.5;
+	private static final double CONSTRUCTION_DEMAND = .8;
 
 	/** VP probability modifier. */
 	public static final double ICE_VALUE_MODIFIER = 5D;
@@ -910,8 +910,8 @@ public class GoodsManager implements Serializable, Temporal {
 			}
 
 			// Checks if this resource is a ROCK type
-			String type = ResourceUtil.findAmountResource(resource).getType();
-			if (type != null && type.equalsIgnoreCase(ROCK)) {
+			GoodType type = ResourceUtil.findAmountResource(resource).getGoodType();
+			if (type != null && type == GoodType.ROCK) {
 				double vp = goodsValues.get(resource);
 
 				if (resource == METEORITE_ID)
@@ -965,8 +965,8 @@ public class GoodsManager implements Serializable, Temporal {
 		}
 
 		else {
-			String type = ResourceUtil.findAmountResource(resource).getType();
-			if (type != null && type.equalsIgnoreCase("waste")) {
+			GoodType type = ResourceUtil.findAmountResource(resource).getGoodType();
+			if (type != null && type == GoodType.WASTE) {
 				return WASTE_VALUE;
 			}
 
@@ -1143,7 +1143,7 @@ public class GoodsManager implements Serializable, Temporal {
 			Ingredient it = ii.next();
 
 			AmountResource ar = ResourceUtil.findAmountResource(it.getAmountResourceID());
-			if (ar.getType() != null && ar.getType().equalsIgnoreCase("crop")) {
+			if (ar != null && ar.getGoodType() == GoodType.CROP) {
 				String tissueName = it.getName() + Farming.TISSUE_CULTURE;
 
 				if (it.getAmountResourceID() == resource) {
@@ -1163,7 +1163,7 @@ public class GoodsManager implements Serializable, Temporal {
 			Ingredient it = iii.next();
 
 			AmountResource ar = ResourceUtil.findAmountResource(it.getAmountResourceID());
-			if (ar.getType() != null && ar.getType().equalsIgnoreCase("crop")) {
+			if (ar != null && ar.getGoodType() == GoodType.CROP) {
 				String tissueName = it.getName() + Farming.TISSUE_CULTURE;
 
 				if (it.getAmountResourceID() == resource) {
@@ -1182,6 +1182,13 @@ public class GoodsManager implements Serializable, Temporal {
 	}
 
 
+	/**
+	 * Gets an instance of the hot meal.
+	 * 
+	 * @param dishList
+	 * @param dish
+	 * @return
+	 */
 	public HotMeal getHotMeal(List<HotMeal> dishList, String dish) {
 		Iterator<HotMeal> i = dishList.iterator();
 		while (i.hasNext()) {
@@ -1295,31 +1302,31 @@ public class GoodsManager implements Serializable, Temporal {
 	public double flattenAmountDemand(Good good) {
 		double demand = 0;
 		String name = good.getName();
-		String type = GoodsUtil.getGoodType(good);
+		GoodType type = GoodsUtil.getGoodType(good);
 		
 		if (name.contains("polyester")
 				|| name.contains("styrene")
 				|| name.contains("polyethylene"))
 			demand = CHEMICAL_DEMAND_FACTOR;
-
-		else if (type.equalsIgnoreCase("regolith")
-				|| type.equalsIgnoreCase("ore")
-				|| type.equalsIgnoreCase("mineral"))
+		
+		else if (type == GoodType.REGOLITH
+				|| type == GoodType.ORE
+				|| type == GoodType.MINERAL)
 			demand = REGOLITH_DEMAND_FACTOR;
 
-		else if (type.equalsIgnoreCase("rock"))
+		else if (type == GoodType.ROCK)
 			demand = 2;
 		
-		else if (type.equalsIgnoreCase(GoodsUtil.CHEMICAL))
+		else if (type == GoodType.CHEMICAL)
 			demand = CHEMICAL_DEMAND_FACTOR;
 
-		else if (type.equalsIgnoreCase(GoodsUtil.ELEMENT))
+		else if (type == GoodType.ELEMENT)
 			demand = ELEMENT_DEMAND_FACTOR;
 
-		else if (type.equalsIgnoreCase(GoodsUtil.COMPOUND))
+		else if (type == GoodType.COMPOUND)
 			demand = COMPOUND_DEMAND_FACTOR;
 
-		else if (type.equalsIgnoreCase("waste"))
+		else if (type == GoodType.WASTE)
 			demand = WASTE_VALUE;
 
 		else
@@ -1336,7 +1343,7 @@ public class GoodsManager implements Serializable, Temporal {
 	 */
 	public double flattenPartDemand(Good good) {
 		String name = good.getName();
-		String type = GoodsUtil.getGoodType(good);
+		GoodType type = GoodsUtil.getGoodType(good);
 
 		if (name.contains("electrical wire"))
 			return 0.1 * ELECTRICAL_DEMAND;
@@ -1369,25 +1376,29 @@ public class GoodsManager implements Serializable, Temporal {
 		if (name.contains("gasket"))
 			return .1;
 		
-		if (type.equalsIgnoreCase(GoodsUtil.ELECTRICAL)
+		if (type == GoodType.ELECTRICAL
 				|| name.contains("light")
 				|| name.contains("resistor")
 				|| name.contains("capacitor")
 				|| name.contains("diode"))
 			return ELECTRICAL_DEMAND;
 
-		if (type.equalsIgnoreCase(GoodsUtil.INSTRUMENT))
+		if (type == GoodType.INSTRUMENT)
 			return INSTRUMENT_DEMAND;
 
-		if (type.equalsIgnoreCase(GoodsUtil.METALLIC))
+		if (type == GoodType.METALLIC)
 			return  METALLIC_DEMAND;
-		if (type.equalsIgnoreCase(GoodsUtil.UTILITY))
+		
+		if (type == GoodType.UTILITY)
 			return UTILITY_DEMAND;
+		
+		if (type == GoodType.TOOL)
+			return TOOL_DEMAND;
 
-		if (type.equalsIgnoreCase(GoodsUtil.CONSTRUCTION))
+		if (type == GoodType.CONSTRUCTION)
 			return CONSTRUCTION_DEMAND;
 
-		if (type.equalsIgnoreCase(GoodsUtil.INSTRUMENT))
+		if (type == GoodType.INSTRUMENT)
 			return INSTRUMENT_DEMAND;
 
 		return 1;
@@ -2636,8 +2647,8 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @return
 	 */
 	private double getVehiclePartDemand(Part part) {
-		String type = part.getType();
-		if (type.equalsIgnoreCase(VEHICLE)) {
+		GoodType type = part.getGoodType();
+		if (type == GoodType.VEHICLE) {
 			return (1 + tourism_factor/30.0) * VEHICLE_PART_DEMAND;
 		}
 		return 1;
@@ -3933,7 +3944,7 @@ public class GoodsManager implements Serializable, Temporal {
 			// For Robot
 			double mass = Robot.EMPTY_MASS;
 			double quantity = settlement.getInitialNumOfRobots() ;
-			factor = Math.log(mass/10.0 + 1) / (5 + Math.log(quantity + 1));
+			factor = Math.log(mass/50.0 + 1) / (5 + Math.log(quantity + 1));
 			// Need to increase the value for robots
 			price = cost * (1 + 2 * factor * Math.log(value + 1));
 		}

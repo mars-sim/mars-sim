@@ -210,7 +210,7 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 		}
 
 		else if (columnIndex == 2) {
-			return Conversion.capitalize(GoodsUtil.getGoodType(goodsList.get(rowIndex)));
+			return Conversion.capitalize(GoodsUtil.getGoodType(goodsList.get(rowIndex)).getName());
 		}
 
 		else {

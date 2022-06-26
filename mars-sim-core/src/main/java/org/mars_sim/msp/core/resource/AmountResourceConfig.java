@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * AmountResourceConfig.java
- * @date 2021-08-28
+ * @date 2022-06-25
  * @author Scott Davis
  */
 
@@ -15,6 +15,7 @@ import java.util.TreeSet;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.mars_sim.msp.core.food.FoodType;
+import org.mars_sim.msp.core.goods.GoodType;
 
 /**
  * Provides configuration information about amount resources. Uses a DOM
@@ -33,7 +34,6 @@ public class AmountResourceConfig implements Serializable {
 	private static final String LIFE_SUPPORT = "life-support";
 	private static final String EDIBLE = "edible";
 	private static final String TYPE = "type";
-	private static final String CROP = "crop";
 	private static int nextID = ResourceUtil.FIRST_AMOUNT_RESOURCE_ID;
 
 	// Data members.
@@ -66,6 +66,8 @@ public class AmountResourceConfig implements Serializable {
 
 				String type = resourceElement.getAttributeValue(TYPE);
 
+				GoodType goodType = GoodType.convertName2Enum(type.toLowerCase());
+						
 				String description = resourceElement.getText();
 				// Get phase.
 				String phaseString = resourceElement.getAttributeValue(PHASE).toLowerCase();
@@ -78,7 +80,7 @@ public class AmountResourceConfig implements Serializable {
 
 				Boolean edible = Boolean.parseBoolean(resourceElement.getAttributeValue(EDIBLE));
 
-				AmountResource resource = new AmountResource(nextID, name, type, description, phaseType, lifeSupport, edible);
+				AmountResource resource = new AmountResource(nextID, name, goodType, description, phaseType, lifeSupport, edible);
 
 				if (phaseString == null || phaseType == null)
 					throw new IllegalStateException(
@@ -92,11 +94,12 @@ public class AmountResourceConfig implements Serializable {
 
 				resourceSet.add(resource);
 
-				if (type != null && type.toLowerCase().equals(CROP)) {
+				if (goodType != null && goodType == GoodType.CROP) {
 					nextID++;
-					// Create the tissue culture for each crop.
+					
+					// Create a tissue culture object for each crop.
 					// Note: may set edible to true
-					AmountResource tissue = new AmountResource(nextID, name + " " + TISSUE_CULTURE, TISSUE_CULTURE,
+					AmountResource tissue = new AmountResource(nextID, (name + " " + TISSUE_CULTURE), GoodType.TISSUE,
 							description, phaseType, lifeSupport, false);
 					tissueCultureSet.add(nextID);
 

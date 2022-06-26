@@ -32,12 +32,11 @@ public enum VehicleType {
 	}
 
 	public String getName() {
-		// TODO change all names to i18n-keys for accessing messages.properties
 		return this.name;
 	}
 	
 	/**
-	 * Gets a set of vehicle resource ids
+	 * Gets a set of vehicle resource ids.
 	 * 
 	 * @return
 	 */
@@ -52,7 +51,7 @@ public enum VehicleType {
 	}
 	
 	/**
-	 * Convert vehicle name to vehicle type
+	 * Converts vehicle name to vehicle type.
 	 * 
 	 * @param name
 	 * @return VehicleType
@@ -69,7 +68,7 @@ public enum VehicleType {
 	}
 	
 	/**
-	 * Convert vehicle name to vehicle id
+	 * Converts vehicle name to vehicle id.
 	 * 
 	 * @param name
 	 * @return
@@ -86,7 +85,7 @@ public enum VehicleType {
 	}
 	
 	/**
-	 * Convert vehicle id to vehicle type
+	 * Converts vehicle id to vehicle type.
 	 * 
 	 * @param id
 	 * @return
@@ -96,7 +95,7 @@ public enum VehicleType {
 	}
 	
 	/**
-	 * Convert vehicle type to id
+	 * Converts vehicle type to id.
 	 * 
 	 * @param type
 	 * @return

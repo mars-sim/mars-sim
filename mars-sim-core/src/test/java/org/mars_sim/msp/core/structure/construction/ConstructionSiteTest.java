@@ -14,6 +14,7 @@ import java.util.Map;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.goods.GoodType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
@@ -47,8 +48,9 @@ public class ConstructionSiteTest extends TestCase {
         site = new ConstructionSite(settlement);
 
         Map<Integer, Integer> parts = new HashMap<>(1);
-
-        Part ir = ItemResourceUtil.createItemResource("test part", 1, "test part description", "test type", 1D, 1);
+        GoodType type = GoodType.CONSTRUCTION;
+        
+        Part ir = ItemResourceUtil.createItemResource("test part", 1, "test part description", type, 1D, 1);
         parts.put(ir.getID(), 1);
 
         Map<Integer, Double> resources = new HashMap<>(1);
@@ -59,8 +61,9 @@ public class ConstructionSiteTest extends TestCase {
         List<ConstructionVehicleType> vehicles =
             new ArrayList<>(1);
         List<Integer> attachments = new ArrayList<>(1);
-
-        ItemResource atth = ItemResourceUtil.createItemResource("attachment part", 2, "test attachment description", "test type", 1D, 1);
+        GoodType aType = GoodType.VEHICLE;
+        
+        ItemResource atth = ItemResourceUtil.createItemResource("attachment part", 2, "test attachment description", aType, 1D, 1);
         parts.put(atth.getID(), 1);
 
         attachments.add(atth.getID());

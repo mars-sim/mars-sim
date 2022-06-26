@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
+import org.mars_sim.msp.core.goods.GoodType;
 
 
 /**
@@ -95,12 +96,14 @@ public final class PartConfig implements Serializable {
 
 			// Get type.
 			String type = partElement.getAttributeValue(TYPE);
-
-			if (type == null || partElement.getAttributeValue(TYPE) == null)
+			
+			GoodType goodType = GoodType.convertName2Enum(type.toLowerCase());
+			
+			if (type == null || goodType == null)
 				throw new IllegalStateException(
 						"PartConfig detected invalid type in parts.xml : " + type);
 
-			Part p = new Part(name, nextID, description, type, mass, 1);
+			Part p = new Part(name, nextID, description, goodType, mass, 1);
 
 			for (Part pp: partSet) {
 				if (pp.getName().equalsIgnoreCase(name))

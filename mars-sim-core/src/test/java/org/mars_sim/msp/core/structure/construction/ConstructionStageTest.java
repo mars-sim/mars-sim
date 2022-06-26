@@ -14,6 +14,7 @@ import java.util.Map;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.goods.GoodType;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -45,7 +46,7 @@ public class ConstructionStageTest extends TestCase {
         List<ConstructionVehicleType> vehicles =
             new ArrayList<ConstructionVehicleType>(1);
         List<Integer> attachments = new ArrayList<Integer>(1);
-        attachments.add(new Part("attachment part", 2, "test resource description", "test type", 1D, 1).getID());
+        attachments.add(new Part("attachment part", 2, "test resource description", GoodType.UTILITY, 1D, 1).getID());
         vehicles.add(new ConstructionVehicleType("Light Utility Vehicle", LightUtilityVehicle.class,
                 attachments));
 

@@ -10,6 +10,7 @@ package org.mars_sim.msp.core.structure.construction;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.mars_sim.msp.core.goods.GoodType;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
@@ -28,8 +29,8 @@ public class ConstructionVehicleTypeTest extends TestCase {
         super.setUp();
 
         List<Integer> attachments = new ArrayList<Integer>(1);
-
-        Part p = ItemResourceUtil.createItemResource("attachment part", 1, "test resource description", "test type", 1D, 1);
+        GoodType type = GoodType.CONSTRUCTION;
+        Part p = ItemResourceUtil.createItemResource("attachment part", 1, "test resource description", type, 1D, 1);
         attachments.add(p.getID());
 
         vehicleType = new ConstructionVehicleType("Light Utility Vehicle",

@@ -129,26 +129,26 @@
 
 	<part name="bottle" type="utility" mass=".1" />
 
-	<part name="iron ingot" type="metalic" mass="7.0" />
+	<part name="iron ingot" type="metallic" mass="7.0" />
 
-	<part name="steel ingot" type="metalic" mass="5.0" />
+	<part name="steel ingot" type="metallic" mass="5.0" />
 
-	<part name="aluminum ingot" type="metalic" mass="1.0" />
+	<part name="aluminum ingot" type="metallic" mass="1.0" />
 
-	<part name="steel sheet" type="metalic" mass="7.8" >
+	<part name="steel sheet" type="metallic" mass="7.8" >
 		<description>A density of 7.8 g/cm3. 1m x 1m x 1mm sheet of steel</description>
 	</part>
 
-	<part name="iron sheet" type="metalic" mass="7.85" >
+	<part name="iron sheet" type="metallic" mass="7.85" >
 		<description>A density of 7.85 g/cm3. 1m x 1m x 1mm sheet of iron</description>
 	</part>
 
 	<!-- based on https://www.gigacalculator.com/calculators/metal-weight-calculator.php  -->
-	<part name="aluminum sheet" type="metalic" mass="2.72" >
+	<part name="aluminum sheet" type="metallic" mass="2.72" >
 		<description>A density of 2.72 g/cm3. 1m x 1m x 1mm sheet of aluminum</description>
 	</part>
 
-	<part name="copper sheet" type="metalic" mass="8.94">
+	<part name="copper sheet" type="metallic" mass="8.94">
 		<description>A density of 8.94 g/cm3. 1m x 1m x 1mm sheet of copper</description>
 	</part>
 
@@ -190,7 +190,7 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="steel pipe" type="metalic" mass="0.882">
+	<part name="steel pipe" type="metallic" mass="0.882">
 	<description>A density of 7.8 g/cm3. length of 1m. Thickness of 2mm. Diameter of 20mm</description>
 		<maintenance-entity-list>
 			<entity name="farming" probability="1" max-number="2" />
@@ -200,7 +200,7 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="iron pipe" type="metalic" mass="0.888">
+	<part name="iron pipe" type="metallic" mass="0.888">
 		<description>A density of 7.85 g/cm3. length of 1m. Thickness of 2mm. Diameter of 20mm</description>
 		<maintenance-entity-list>
 			<entity name="farming" probability="1" max-number="2" />
@@ -210,7 +210,7 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="copper pipe" type="metalic" mass="	1.011">
+	<part name="copper pipe" type="metallic" mass="	1.011">
 		<description>A density of 8.94 g/cm3. length of 1m. Thickness of 2mm. Diameter of 20mm</description>
 		<maintenance-entity-list>
 			<entity name="living accommodations" probability="2" max-number="1" />
@@ -525,11 +525,11 @@
 		<description>Construction brick (215mm x 102.5mm x 65mm) 2.86kg</description>
 	</part>
 
-	<part name="steel scrap" type="metalic" mass="25.0">
+	<part name="steel scrap" type="metallic" mass="25.0">
 		<description>A 25 kg piece of salvaged steel scrap.</description>
 	</part>
 
-	<part name="aluminum scrap" type="metalic" mass="5.0">
+	<part name="aluminum scrap" type="metallic" mass="5.0">
 		<description>A 5 kg piece of salvaged aluminum scrap.</description>
 	</part>
 
@@ -670,7 +670,7 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="mushroom containment kit" type="lab" mass="1.0">
+	<part name="mushroom containment kit" type="tool" mass="1.0">
 		<maintenance-entity-list>
 			<entity name="farming" probability="1" max-number="1" />
 		</maintenance-entity-list>
@@ -949,7 +949,7 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="petri dish" type="lab" mass="0.03">
+	<part name="petri dish" type="container" mass="0.03">
 		<description>a small dish shaped like a cylinder for growing cells. Made of polystyrene.</description>
 	</part>
 

@@ -84,8 +84,6 @@ public class EVASuit extends Equipment
 	// Static members
 	public static String TYPE = SystemType.EVA_SUIT.getName();
 
-	public static String GOOD_TYPE = "EVA";
-
 	/** Total gas tank volume of EVA suit (Liter). */
 	public static final double TOTAL_VOLUME = 3.9D;
 	/** Oxygen capacity (kg.). */

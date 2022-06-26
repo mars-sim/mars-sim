@@ -9,6 +9,8 @@ package org.mars_sim.msp.core.resource;
 
 import java.io.Serializable;
 
+import org.mars_sim.msp.core.goods.GoodType;
+
 /**
  * The ItemResource class represents a type of resource measured in countable
  * units of quantity. It's for simple tools and parts.
@@ -21,7 +23,7 @@ public class ItemResource extends ResourceAbstract implements Serializable {
 	// Data members
 	private double massPerItem;
 	private int startSol;
-	protected String type;
+	protected GoodType type;
 
 	/**
 	 * Constructor.
@@ -31,7 +33,7 @@ public class ItemResource extends ResourceAbstract implements Serializable {
 	 * @param massPerItem the mass (kg) of the resource per item.
 	 * @param the         sol when this resource is put to use.
 	 */
-	protected ItemResource(String name, int id, String description, String type, double massPerItem, int startSol) {
+	protected ItemResource(String name, int id, String description, GoodType type, double massPerItem, int startSol) {
 		super(name, id, description);
 
 		this.massPerItem = massPerItem;
@@ -62,7 +64,7 @@ public class ItemResource extends ResourceAbstract implements Serializable {
 	 *
 	 * @return type
 	 */
-	public String getType() {
+	public GoodType getGoodType() {
 		return type;
 	}
 

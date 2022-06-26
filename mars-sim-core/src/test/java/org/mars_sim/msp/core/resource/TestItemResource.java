@@ -7,6 +7,7 @@ import java.util.Collection;
 import junit.framework.TestCase;
 
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.goods.GoodType;
 
 public class TestItemResource extends TestCase {
 
@@ -26,10 +27,11 @@ public class TestItemResource extends TestCase {
         // initialize
        	ResourceUtil.getInstance();
         resources = ItemResourceUtil.getItemResources();
-
-        hammer = ItemResourceUtil.createItemResource("hammer", 1, "a hand tool", "tool", 1.4D, 1);
-        socketWrench = ItemResourceUtil.createItemResource("socket wrench", 2, "a hand tool", "tool", .5D, 1);
-        pipeWrench = ItemResourceUtil.createItemResource("pipe wrench", 3, "a hand tool", "tool", 2.5D, 1);
+        GoodType type = GoodType.TOOL;
+        
+        hammer = ItemResourceUtil.createItemResource("hammer", 1, "a hand tool", type, 1.4D, 1);
+        socketWrench = ItemResourceUtil.createItemResource("socket wrench", 2, "a hand tool", type, .5D, 1);
+        pipeWrench = ItemResourceUtil.createItemResource("pipe wrench", 3, "a hand tool", type, 2.5D, 1);
 
         resources = Arrays.asList(hammer, socketWrench, pipeWrench);
 

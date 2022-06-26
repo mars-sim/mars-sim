@@ -13,6 +13,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.environment.Environment;
+import org.mars_sim.msp.core.goods.GoodType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
@@ -59,7 +60,7 @@ extends TestCase {
 
         String resourceName = "hammer";
         String description = "a hand tool";
-        String type = "tool";
+        GoodType type = GoodType.UTILITY;
         int id = 1;
         double massPerItem = 1.4D;
         ItemResource hammer = ItemResourceUtil.createItemResource(resourceName,id,description,type,massPerItem, 1);

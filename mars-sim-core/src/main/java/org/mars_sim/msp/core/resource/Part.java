@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.resource;
 import java.util.Set;
 
 import org.mars_sim.msp.core.CollectionUtils;
+import org.mars_sim.msp.core.goods.GoodType;
 
 /**
  * The Part class represents a type of unit resource that is used for
@@ -42,7 +43,7 @@ public class Part extends ItemResource {
 	 * @param mass        the mass of the part (kg)
 	 * @param the         sol when this part is put to use
 	 */
-	public Part(String name, int id, String description, String type, double mass, int solsUsed) {
+	public Part(String name, int id, String description, GoodType type, double mass, int solsUsed) {
 		// Use ItemResource constructor.
 		super(name, id, description, type, mass, solsUsed);
 	}

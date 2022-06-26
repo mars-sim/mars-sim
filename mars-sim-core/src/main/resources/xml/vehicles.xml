@@ -110,7 +110,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<!-- See Rover.java for adding capacity for each resource -->
 		<!-- total-capacity: total cargo capacity of rover. (kg) -->
 		<!-- Default: varies according to the type of vehicle -->
-		<cargo total-capacity="3000.0">
+		<cargo total-capacity="2000.0">
 
 			<!-- If assuming a 10 sol excursion, each person would
       			 consume the following : -->

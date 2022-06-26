@@ -22,6 +22,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.goods.GoodType;
 
 public class ItemResourceUtil implements Serializable {
 
@@ -190,7 +191,7 @@ public class ItemResourceUtil implements Serializable {
 	 * @param solsUsed
 	 * @return
 	 */
-	public static Part createItemResource(String resourceName, int id, String description, String type, double massPerItem,
+	public static Part createItemResource(String resourceName, int id, String description, GoodType type, double massPerItem,
 			int solsUsed) {
 		Part p = new Part(resourceName, id, description, type, massPerItem, solsUsed);
 		ItemResourceUtil.registerBrandNewPart(p);

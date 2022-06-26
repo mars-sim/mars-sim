@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * FoodUtil.java
- * @date 2022-05-27
+ * @date 2022-06-25
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.food;
@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import org.mars_sim.msp.core.goods.GoodType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 
@@ -67,28 +68,26 @@ public class FoodUtil {
 		}
 		
 		FoodType foodType = null;
-		String type = resource.getType();
+		GoodType type = resource.getGoodType();
 
-		if (type.equalsIgnoreCase(FoodType.ANIMAL.getName()))
+		if (type == GoodType.ANIMAL)
 			foodType = FoodType.ANIMAL;
-		else if (type.equalsIgnoreCase(FoodType.CHEMICAL.getName()))
+		else if (type == GoodType.CHEMICAL)
 			foodType = FoodType.CHEMICAL;
-		else if (type.equalsIgnoreCase(FoodType.CROP.getName()))
+		else if (type == GoodType.CROP)
 			foodType = FoodType.CROP;
-		else if (type.equalsIgnoreCase(FoodType.DERIVED.getName()))
+		else if (type == GoodType.DERIVED)
 			foodType = FoodType.DERIVED;
-		else if (type.equalsIgnoreCase(FoodType.INSECT.getName()))
+		else if (type == GoodType.INSECT)
 			foodType = FoodType.INSECT;
-		else if (type.equalsIgnoreCase(FoodType.OIL.getName()))
+		else if (type == GoodType.OIL)
 			foodType = FoodType.OIL;
-		else if (type.equalsIgnoreCase(FoodType.ORGANISM.getName()))
+		else if (type == GoodType.ORGANISM)
 			foodType = FoodType.ORGANISM;	
-		else if (type.equalsIgnoreCase(FoodType.SOY_BASED.getName()))
+		else if (type == GoodType.SOY_BASED)
 			foodType = FoodType.SOY_BASED;
-		else if (type.equalsIgnoreCase(FoodType.TISSUE.getName()))
+		else if (type == GoodType.TISSUE)
 			foodType = FoodType.TISSUE;
-		
-//		System.out.println(resource.getName() + " : " + type + ", " + foodType + ", " + foodType.getName());
 		
 		return new Food(resource.getName(), resource, foodType);
 	}
@@ -121,18 +120,12 @@ public class FoodUtil {
 	 * Populates the food list with all amount resources.
 	 */
 	private static void populateAmountResources() {
-//		String type = null;
 		AmountResource ar = null;
-		boolean edible = false;
 		Iterator<AmountResource> i = ResourceUtil.getAmountResources().iterator();
 		while (i.hasNext()) {
 			ar = i.next();
-//			type = ar.getType();
-			edible = ar.isEdible();
-			if (edible) {
-				Food food = createFoodResource(ar);
-				if (food != null)
-					foodList.add(food);
+			if (ar.isEdible()) {
+				foodList.add(createFoodResource(ar));
 			}
 		}
 	}

@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -26,7 +25,6 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotConfig;
 import org.mars_sim.msp.core.robot.RobotType;
-import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.vehicle.VehicleConfig;
 import org.mars_sim.msp.core.vehicle.VehicleType;
 
@@ -109,7 +107,7 @@ public class GoodsUtil {
      * @param resource
      * @return good for the resource.
      */
-    private static Good createResourceGood(Resource resource) {
+    public static Good createResourceGood(Resource resource) {
         if (resource == null) {
             logger.severe("resource is NOT supposed to be null.");
         }
@@ -145,6 +143,20 @@ public class GoodsUtil {
         return getGoodsMap().get(id);
     }
 
+    
+    /**
+     * Does the goods list contain this good ?
+     * 
+     * @param good
+     * @return
+     */
+	public static boolean containsGood(Good good) {
+		populateGoods();
+		if (goodsList.contains(good))
+			return true;
+		return false;
+	}
+	
     /**
      * Gets a good object for a given equipment class.
      *
@@ -365,31 +377,48 @@ public class GoodsUtil {
      * @param good
      * @return
      */
-    public static String getGoodType(Good good) {
+    public static GoodType getGoodType(Good good) {
 
         GoodCategory cat = good.getCategory();
 
         if (cat == GoodCategory.AMOUNT_RESOURCE) {
-            String type = ResourceUtil.findAmountResource(good.getID()).getType();
-            if (type != null)
-                return type;
-            else
-                return "";
+        	return ResourceUtil.findAmountResource(good.getID()).getGoodType();
         } else if (cat == GoodCategory.ITEM_RESOURCE) {
-			return ItemResourceUtil.findItemResource(good.getName().toLowerCase()).getType();
+			return ItemResourceUtil.findItemResource(good.getID()).getGoodType();
         } else if (cat == GoodCategory.CONTAINER) {
-            return Conversion.capitalize(cat.getMsgKey());
+            return GoodType.CONTAINER;
         } else if (cat == GoodCategory.EQUIPMENT) {
-            return EVASuit.GOOD_TYPE;
+            return GoodType.EVA;
         } else if (cat == GoodCategory.VEHICLE) {
-            return GoodsUtil.getVehicleCategory(VehicleType.convertNameToVehicleType(good.getName()));
+            return getVehicleGoodType(good.getName());
         } else if (cat == GoodCategory.ROBOT) {
-        	return RobotType.valueOfIgnoreCase(good.getName()).getName();
+        	return GoodType.convertName2Enum(good.getName());
         }
         
         return null;
     }
 
+	/**
+	 * Returns the good type of this vehicle.
+	 * 
+	 * @param name
+	 * @return
+	 */
+	public static GoodType getVehicleGoodType(String name) {
+		VehicleType vehicleType = VehicleType.convertNameToVehicleType(name);
+		if (vehicleType == VehicleType.DELIVERY_DRONE
+			|| vehicleType == VehicleType.LUV)
+			return GoodType.VEHICLE_HEAVY;
+		if (vehicleType == VehicleType.EXPLORER_ROVER) 
+			return GoodType.VEHICLE_MEDIUM;
+		if (vehicleType == VehicleType.TRANSPORT_ROVER) 
+			return GoodType.VEHICLE_HEAVY;
+		if (vehicleType == VehicleType.CARGO_ROVER) 
+			return GoodType.VEHICLE_HEAVY;
+		logger.severe(name + " has unknown vehicle type.");
+		return null;
+	}
+	
     /**
      * Gets the good id.
      * 

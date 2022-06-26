@@ -75,7 +75,7 @@ public class Good implements Serializable, Comparable<Good> {
 	private static final double BATTERY_VALUE = 2;
 	private static final double INSTRUMENT_VALUE = 1;
 	private static final double WIRE_VALUE = .005;
-	private static final double ELECTRONIC_VALUE = .1;
+	private static final double ELECTRONIC_VALUE = .5;
 	
 	private static final double LABOR_FACTOR = 150D ;
 	private static final double PROCESS_TIME_FACTOR = 500D;
@@ -259,12 +259,23 @@ public class Good implements Serializable, Comparable<Good> {
 			AmountResource ar = ResourceUtil.findAmountResource(id);
 			boolean edible = ar.isEdible();
 			boolean lifeSupport = ar.isLifeSupport();
-			String type = ar.getType();
+			GoodType type = ar.getGoodType();
 
 			if (lifeSupport)
 				result += LIFE_SUPPORT_VALUE;
 			
-			if (type != null && type.equalsIgnoreCase("waste"))
+			else if (edible) {
+				if (type != null && type == GoodType.DERIVED)
+					result += DERIVED_VALUE;
+				else if (type != null && type == GoodType.SOY_BASED)
+					result += SOY_VALUE;
+				else if (type != null && type == GoodType.ANIMAL)
+					result += ANIMAL_VALUE;
+				else
+					result += FOOD_VALUE;
+			}
+			
+			else if (type != null && type == GoodType.WASTE)
 				result += WASTE_VALUE ;
 			
 			else if (ar.getName().equalsIgnoreCase("chlorine"))
@@ -274,67 +285,62 @@ public class Good implements Serializable, Comparable<Good> {
 			else if (ar.getName().equalsIgnoreCase("ice"))
 				result += ICE_VALUE;
 
-			else if (edible) {
-				if (type != null && type.equalsIgnoreCase("derived"))
-					result += DERIVED_VALUE;
-				else if (type != null && type.equalsIgnoreCase("soy-based"))
-					result += SOY_VALUE;
-				else if (type != null && type.equalsIgnoreCase("animal"))
-					result += ANIMAL_VALUE;
-				else
-					result += FOOD_VALUE;
-			}
 
-			else if (type != null && type.equalsIgnoreCase("medical"))
+			else if (type != null && type == GoodType.MEDICAL)
 				result += MEDICAL_VALUE;
-			else if (type != null && type.equalsIgnoreCase("oil"))
+			else if (type != null && type == GoodType.OIL)
 				result += OIL_VALUE;
-			else if (type != null && type.equalsIgnoreCase("crop"))
+			else if (type != null && type == GoodType.CROP)
 				result += CROP_VALUE;
-			else if (type != null && type.equalsIgnoreCase("rock"))
+			else if (type != null && type == GoodType.ROCK)
 				result += ROCK_VALUE;
-			else if (type != null && type.equalsIgnoreCase("regolith"))
+			else if (type != null && type == GoodType.REGOLITH)
 				result += REGOLITH_VALUE;
-			else if (type != null && type.equalsIgnoreCase("ore"))
+			else if (type != null && type == GoodType.ORE)
 				result += ORE_VALUE;
-			else if (type != null && type.equalsIgnoreCase("mineral"))
+			else if (type != null && type == GoodType.MINERAL)
 				result += MINERAL_VALUE;
-			else if (type != null && type.equalsIgnoreCase("element"))
+			else if (type != null && type == GoodType.ELEMENT)
 				result += ELEMENT_VALUE;
-			else if (type != null && type.equalsIgnoreCase("chemical"))
+			else if (type != null && type == GoodType.CHEMICAL)
 				result += CHEMICAL_VALUE;
 			else
 				result += STANDARD_AMOUNT_VALUE ;
+			
 		}
 
 		else if (category == GoodCategory.ITEM_RESOURCE) {
 			Part part = ItemResourceUtil.findItemResource(id);
 			String name = part.getName().toLowerCase();
-			String type = part.getType();
 			
-			if (type != null && type.equalsIgnoreCase("vehicle"))
-				result += VEHICLE_PART_VALUE ;
-			else if (name.contains("electronic"))
-				result += ELECTRONIC_VALUE;
+			if (name.contains("wire"))
+				return WIRE_VALUE;
+			
+			GoodType type = part.getGoodType();
+			
+			if (type == GoodType.VEHICLE)
+				return VEHICLE_PART_VALUE;
+			
+			else if (type == GoodType.ELECTRONIC)
+				return ELECTRONIC_VALUE;
+			
+			else if (type == GoodType.INSTRUMENT)
+				return INSTRUMENT_VALUE;
 			
 			if (name.equalsIgnoreCase("fuel cell stack"))
-				result += FC_STACK_VALUE;
+				return FC_STACK_VALUE;
 			else if (name.equalsIgnoreCase("solid oxide fuel cell"))
-				result += FC_VALUE;
+				return FC_VALUE;
 			else if (name.contains("board"))
-				result += BOARD_VALUE;
+				return BOARD_VALUE;
 			else if (name.equalsIgnoreCase("microcontroller"))
-				result += CPU_VALUE;
+				return CPU_VALUE;
 			else if (name.equalsIgnoreCase("semiconductor wafer"))
-				result += WAFER_VALUE;
+				return WAFER_VALUE;
 			else if (name.contains("battery"))
-				result += BATTERY_VALUE;
-			else if (name.contains("instrument"))
-				result += INSTRUMENT_VALUE;
-			else if (name.contains("wire"))
-				result += WIRE_VALUE;
-
-			result += ITEM_VALUE;// * weight;
+				return BATTERY_VALUE;
+			
+			return ITEM_VALUE;
 		}
 
 		// Note: 
@@ -351,7 +357,6 @@ public class Good implements Serializable, Comparable<Good> {
 		}
 		
 		else if (category == GoodCategory.VEHICLE) {
-
 			if (name.contains(LightUtilityVehicle.NAME))
 				return LUV_VALUE;
 			else if (name.contains(Drone.NAME))

@@ -9,6 +9,8 @@ package org.mars_sim.msp.core.resource;
 
 import java.io.Serializable;
 
+import org.mars_sim.msp.core.goods.GoodType;
+
 /**
  * The AmountResource class represents a type of resource measured in mass kg.
  */
@@ -41,38 +43,38 @@ public final class AmountResource extends ResourceAbstract implements Serializab
 
 	private boolean lifeSupport;
 
-	private String type;
+	private GoodType goodType;
 
 	private PhaseType phase;
 
 	/**
 	 * Constructor
 	 *
-	 * @param name        the resource's name
+	 * @param name			the resource's name
+	 * @param goodType		the good type
 	 * @param description {@link String}
-	 * @param phase       the material phase of the resource.
-	 * @param lifeSupport true if life support resource.
+	 * @param phase			the material phase of the resource.
+	 * @param lifeSupport	true if life support resource.
+	 * @param edible		true if edible.
 	 */
-	public AmountResource(int id, String name, String type, String description, PhaseType phase, boolean lifeSupport,
+	public AmountResource(int id, String name, GoodType goodType, String description, PhaseType phase, boolean lifeSupport,
 			boolean edible) {
 		super(name.toLowerCase(), id, description);
-		this.type = type;
+		this.goodType = goodType;
 		this.phase = phase;
 		this.lifeSupport = lifeSupport;
 		this.edible = edible;
 		this.hashcode = getName().toLowerCase().hashCode() * phase.hashCode();
 	}
-
+	
 	/**
-	 * Gets the resource's type.
+	 * Gets the resource's good type.
 	 *
-	 * @return type of resource.
+	 * @return the good type.
 	 */
-	// @Override
-	public String getType() {
-		return type;
+	public GoodType getGoodType() {
+		return goodType;
 	}
-
 
 	/**
 	 * Gets the resources material phase.
