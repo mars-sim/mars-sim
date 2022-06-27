@@ -16,6 +16,7 @@ import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Lab;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.vehicle.Crewable;
+import org.mars_sim.msp.core.vehicle.Flyer;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Medical;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -30,7 +31,10 @@ public class VehicleSpecCommand extends ChatCommand {
 
 	public static final ChatCommand SPEC = new VehicleSpecCommand();
 	private static final String KM_KG_FORMAT = "%.2f km/kg";
-
+	private static final String KM_KWh_FORMAT = "%.2f km/kWh";
+	private static final String KWh_FORMAT = "%.2f kWh";
+	private static final String M_PER_S_FORMAT = "%.2f m/s^2";
+	
 	private VehicleSpecCommand() {
 		super(VehicleChat.VEHICLE_GROUP, "spe", "specs", "What are the vehicle specs.");
 	}
@@ -46,37 +50,41 @@ public class VehicleSpecCommand extends ChatCommand {
 		
 		// Rovers has more capabilities.
 		boolean isRover = (source instanceof Rover);
-
+		boolean isDrone = (source instanceof Flyer);
+		
 		StructuredResponse buffer = new StructuredResponse();
 		buffer.appendLabeledString("Name", source.getName());
-		buffer.appendLabeledString("Type", source.getVehicleTypeString());
-		buffer.appendLabeledString("Description", source.getDescription());
+		buffer.appendLabeledString("Type", Conversion.capitalize(source.getVehicleTypeString()));
+		buffer.appendLabeledString("Description", Conversion.capitalize(source.getDescription()));
 		buffer.appendLabeledString("Base Mass", String.format(CommandHelper.KG_FORMAT, source.getBaseMass()));
 		buffer.appendLabeledString("Base Speed", String.format(CommandHelper.KMPH_FORMAT,source.getBaseSpeed()));
-		buffer.appendLabeledString("Drivetrain Efficiency", source.getDrivetrainEfficiency() + " kWh/km");
+		buffer.appendLabeledString("Drivetrain Efficiency", source.getDrivetrainEfficiency() + "");
 
 		int id = source.getFuelType();
 		String fuelName = ResourceUtil.findAmountResourceName(id);
 		buffer.appendLabeledString("Power Source",Conversion.capitalize(fuelName));
 
-		if (source instanceof GroundVehicle) {
+		buffer.appendLabeledString("Fuel Capacity", String.format(CommandHelper.KG_FORMAT, source.getFuelCapacity()));
+		buffer.appendLabeledString("Base Acceleration", String.format(M_PER_S_FORMAT, source.getAccel()));
+		buffer.appendLabeledString("Base Range", String.format(CommandHelper.KM_FORMAT, source.getBaseRange()));
+		buffer.appendLabeledString("Base Fuel Economy", String.format(KM_KG_FORMAT, source.getBaseFuelEconomy()));
+		buffer.appendLabeledString("Estimated Fuel Economy", String.format(KM_KG_FORMAT, source.getEstimatedAveFuelEconomy()));
+		buffer.appendLabeledString("Initial Fuel Economy", String.format(KM_KG_FORMAT, source.getInitialFuelEconomy()));
+		buffer.appendLabeledString("Instantaneous Fuel Economy", String.format(KM_KG_FORMAT, source.getIFuelEconomy()));
+		buffer.appendLabeledString("Base Fuel Consumption", String.format(KM_KWh_FORMAT, source.getBaseFuelConsumption()));
+		buffer.appendLabeledString("Total Energy", String.format(KWh_FORMAT, source.getBaseFuelConsumption()));
+		
+		if (source instanceof Vehicle) {
 			GroundVehicle gv = (GroundVehicle) source;
-
-			buffer.appendLabeledString("Fuel Capacity", String.format(CommandHelper.KG_FORMAT, source.getFuelCapacity()));
-			buffer.appendLabeledString("Base Range Est.", String.format(CommandHelper.KM_FORMAT, source.getBaseRange()));
-			buffer.appendLabeledString("Base Fuel Economy", String.format(KM_KG_FORMAT, source.getBaseFuelEconomy()));
-			buffer.appendLabeledString("Est. Average Economy", String.format(KM_KG_FORMAT, source.getEstimatedAveFuelEconomy()));
-			buffer.appendLabeledString("Initial Fuel Economy", String.format(KM_KG_FORMAT, source.getInitialFuelEconomy()));
-			buffer.appendLabeledString("Instantaneous Fuel Economy", String.format(KM_KG_FORMAT, source.getIFuelEconomy()));
 			buffer.appendLabeledString("Terrain Handling", String.format("%.2f", gv.getTerrainHandlingCapability()));
 		}
-
+	
 		if (source instanceof Crewable) {
 			int crewSize = ((Crewable) source).getCrewCapacity();
 			buffer.appendLabelledDigit("Crew Size", crewSize);
 		}	
 
-		if (isRover) {
+		if (isRover || isDrone) {
 			double cargo = ((Rover) source).getCargoCapacity();
 			buffer.appendLabeledString("Cargo Capacity", String.format(CommandHelper.KG_FORMAT, cargo));
 		}

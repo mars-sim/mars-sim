@@ -926,7 +926,7 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 			String template = (String) templateCB.getSelectedItem();
 			int popNum = Integer.parseInt(populationTF.getText());
 			int numOfRobots = Integer.parseInt(numOfRobotsTF.getText());
-			MarsClock arrivalDate = getArrivalDate();
+//			MarsClock arrivalDate = getArrivalDate();
 			int arrivalSols = 1;
 			Coordinates landingLoc = getLandingLocation();
 			String sponsor = (String) sponsorCB.getSelectedItem();

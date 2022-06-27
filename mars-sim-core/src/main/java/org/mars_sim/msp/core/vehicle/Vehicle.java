@@ -1059,7 +1059,10 @@ public abstract class Vehicle extends Unit
 //				+ "   start mass : " + Math.round(startMass*10.0)/10.0
 //				+ "   driveTrain : " + drivetrainEfficiency
 //				+ "   estFC : " + Math.round(estimatedAveFuelEconomy * startMass / getMass()*10.0)/10.0);
-		return estimatedAveFuelEconomy * startMass / getMass();
+		if (startMass == 0)
+			return estimatedAveFuelEconomy * beginningMass / getMass();
+		else
+			return estimatedAveFuelEconomy * startMass / getMass();
 	}
 
 	/**

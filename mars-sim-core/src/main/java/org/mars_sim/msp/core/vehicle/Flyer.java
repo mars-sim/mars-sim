@@ -8,7 +8,6 @@
 package org.mars_sim.msp.core.vehicle;
 
 import java.io.Serializable;
-import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Direction;
 import org.mars_sim.msp.core.LocalAreaUtil;
