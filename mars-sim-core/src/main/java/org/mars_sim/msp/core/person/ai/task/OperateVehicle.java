@@ -560,17 +560,14 @@ public abstract class OperateVehicle extends Task implements Serializable {
     
         double vSQ = v * v;
         
-        double fInitialFriction = 0;
-        // Note: 1 m/s = 3.6 km/hr (or kph)
-
-        fInitialFriction = 5 / v * KPH_CONV;
+        double fInitialFriction = 5 / v * KPH_CONV;
         
         // Note : Aerodynamic drag force = air drag coeff * air density 
         // 			* vehicle frontal area / 2 * vehicle speed 
         double fAeroDrag = 0.5 * 0.1 * 1.5 / 2.0 * vSQ / KPH_CONV_SQ;
         
         double fTot = fInitialFriction + fGravity + fAeroDrag + fRolling;
-        
+        // Note: 1 m/s = 3.6 km/hr (or kph)
         double power = fTot * v / 3.6; // [ N * m / s]
         
         double energy = power * hrsTime * 3600; // [in J]
@@ -582,38 +579,49 @@ public abstract class OperateVehicle extends Task implements Serializable {
 
         // Derive the instantaneous fuel economy [in km/kg]
         double iFE = distanceTraveled / fuelUsed;
+        
         vehicle.setIFuelEconomy(iFE);
+        
         /*
 		 * Expensive output message so hold off using.
-		 *  
+		 */
+        
         // Derive the instantaneous fuel consumption [in km/kWh]
         double iFC = distanceTraveled / energy;
+        
+        double bFC = vehicle.getBaseFuelConsumption();
+        
+        double bFE = vehicle.getBaseFuelEconomy();
+        
+        double estFE = vehicle.getEstimatedAveFuelEconomy();
         
         // Calculate the average power for this time period  [in kW]
         double aveP = v * energy / iFE / fuelUsed;
         
         logger.log(vehicle, Level.INFO, 10_000, 
-        			"type: " + vehicle.getVehicleTypeString() + "   "
-        		 	+ "mass: " + Math.round(mass * 100.0)/100.0 + KG
-        	        + "distanceTraveled: " + Math.round(distanceTraveled * 10_000.0)/10_000.0 + KM
-                	+ "v: " + Math.round(v * 10_000.0)/10_000.0 + " km/h   "
+        			"type: " 				+ vehicle.getVehicleTypeString() + "   "
+        		 	+ "mass: " 				+ Math.round(mass * 100.0)/100.0 + KG
+        	        + "distanceTraveled: " 	+ Math.round(distanceTraveled * 10_000.0)/10_000.0 + KM
+                	+ "v: " 				+ Math.round(v * 10_000.0)/10_000.0 + " km/h   "
 //                	+ "v_squared: " + Math.round(v_squared * 10_000.0)/10_000.0 + " km/h   "
 //        			+ "delta_v: " + Math.round(delta_v * 10_000.0)/10_000.0 + " km/h   "
         			+ "F_initialFriction: " + Math.round(fInitialFriction * 10_000.0)/10_000.0 + N
-        			+ "F_againstGravity: " + Math.round(fGravity * 10_000.0)/10_000.0 + N
-        			+ "F_aeroDragForce: " + Math.round(fAeroDrag * 10_000.0)/10_000.0 + N
+        			+ "F_againstGravity: " 	+ Math.round(fGravity * 10_000.0)/10_000.0 + N
+        			+ "F_aeroDragForce: " 	+ Math.round(fAeroDrag * 10_000.0)/10_000.0 + N
     	    		+ "F_rolling: " + Math.round(fRolling * 10_000.0)/10_000.0 + N
-    	    		+ "F_total: " + Math.round(fTot * 10_000.0)/10_000.0 + N
-    	    		+ "power: " + Math.round(power * 10_000.0)/10_000.0 + KW
-    				+ "energy: " + Math.round(energy * 100_000.0)/100_000.0 + " kWh   "
-            		+ "fuelUsed: " + Math.round(fuelUsed * 100_000.0)/100_000.0 + KG 
-                	+ "estFE: " + Math.round(vehicle.getEstimatedAveFuelEconomy() * 1_000.0)/1_000.0 + KM_KG
-                	+ "initFE: " + Math.round(initFE * 1_000.0)/1_000.0 + KM_KG
-    	    		+ "iFE: " + Math.round(iFE * 1_000.0)/1_000.0 + KM_KG  
-    	    		+ "iFE: " + Math.round(iFC * 1_000.0)/1_000.0 + " km/kWh   "    
-    				+ "aveP: " + Math.round(aveP * 1_000.0)/1_000.0 + KW
+    	    		+ "F_total: " 	+ Math.round(fTot * 10_000.0)/10_000.0 + N
+    	    		+ "power: " 	+ Math.round(power * 10_000.0)/10_000.0 + KW
+    				+ "energy: " 	+ Math.round(energy * 100_000.0)/100_000.0 + " kWh   "
+            		+ "fuelUsed: " 	+ Math.round(fuelUsed * 100_000.0)/100_000.0 + KG 
+    	    		+ "bFE: " 		+ Math.round(bFE * 1_000.0)/1_000.0 + KM_KG  
+                   	+ "estFE: " 	+ Math.round(estFE * 1_000.0)/1_000.0 + KM_KG
+                   	+ "initFE: " 	+ Math.round(initFE * 1_000.0)/1_000.0 + KM_KG
+    	    		+ "iFE: " 		+ Math.round(iFE * 1_000.0)/1_000.0 + KM_KG  
+    	    		+ "bFC: " 		+ Math.round(bFC * 1_000.0)/1_000.0 + " km/kWh   "  
+    	    		+ "iFC: " 		+ Math.round(iFC * 1_000.0)/1_000.0 + " km/kWh   "    
+    				+ "aveP: " 		+ Math.round(aveP * 1_000.0)/1_000.0 + KW
     				);
-        */
+        
         return fuelUsed;
     }
 

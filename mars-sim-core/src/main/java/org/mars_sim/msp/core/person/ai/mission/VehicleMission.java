@@ -66,6 +66,9 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	protected static final int WATER_ID = ResourceUtil.waterID;
 	protected static final int FOOD_ID = ResourceUtil.foodID;
 	
+	/** The factor for estimating the adjusted fuel economy. */
+	protected static final double FE_FACTOR = 2.0;
+	
 	/** Mission phases. */
 	public static final MissionPhase REVIEWING = new MissionPhase("Mission.phase.reviewing");
 	public static final MissionPhase EMBARKING = new MissionPhase("Mission.phase.embarking");
@@ -1038,15 +1041,15 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 		Map<Integer, Number> result = new HashMap<>();
 		if (vehicle != null) {
 			double amount = 0;
-			// Add methane
+			// Add methane\
 			if (getPhase() == null || getPhase().equals(VehicleMission.EMBARKING) 
 					|| getPhase().equals(VehicleMission.REVIEWING)
 					|| useMargin) {
-				amount = getFuelNeededForTrip(vehicle, distance, vehicle.getEstimatedAveFuelEconomy(), true);
+				amount = getFuelNeededForTrip(vehicle, distance, vehicle.getEstimatedAveFuelEconomy() * FE_FACTOR, true);
 				// Use margin only when estimating how much fuel needed before starting the mission
 			}
 			else {
-				amount = getFuelNeededForTrip(vehicle, distance, vehicle.getInitialFuelEconomy(), false);
+				amount = getFuelNeededForTrip(vehicle, distance, vehicle.getIFuelEconomy() / FE_FACTOR, false);
 				// When the vehicle is already on the road, do NOT use margin
 				// or else it would constantly complain not having enough fuel
 			}

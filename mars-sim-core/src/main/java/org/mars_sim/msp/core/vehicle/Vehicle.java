@@ -386,8 +386,8 @@ public abstract class Vehicle extends Unit
     		 	"totalHours: " + Math.round(totalHours * 100.0)/100.0 + " hr   "
     		 	+ "baseRange: " + Math.round(baseRange * 100.0)/100.0 + " km   "
     		 	+ "baseFuelEconomy: " + Math.round(baseFuelEconomy * 100.0)/100.0 + " km/kg   "
-    		 	+ "baseFuelConsumption: " + Math.round(baseFuelConsumption * 100.0)/100.0 + " km/kWh   "
-    		 	+ "baseFuelEconomy: " + Math.round(baseFuelEconomy * 100.0)/100.0 + " km/kg   ");
+    		 	+ "estimatedAveFuelEconomy: " + Math.round(estimatedAveFuelEconomy * 100.0)/100.0 + " km/kg   "
+	 			+ "baseFuelConsumption: " + Math.round(baseFuelConsumption * 100.0)/100.0 + " km/kWh   ");
     	logger.log(this, Level.INFO, 0, 	 	
     		 	"cargoCapacity: " + Math.round(cargoCapacity * 100.0)/100.0 + " kg   "   
        		 	+ "beginningMass: " + Math.round(beginningMass * 100.0)/100.0 + " kg   "
@@ -1058,26 +1058,26 @@ public abstract class Vehicle extends Unit
 //				+ "   current mass : " + Math.round(getMass()*10.0)/10.0
 //				+ "   start mass : " + Math.round(startMass*10.0)/10.0
 //				+ "   driveTrain : " + drivetrainEfficiency
-//				+ "   IFC : " + Math.round(estimatedAveFuelEconomy * startMass / getMass()*10.0)/10.0);
+//				+ "   estFC : " + Math.round(estimatedAveFuelEconomy * startMass / getMass()*10.0)/10.0);
 		return estimatedAveFuelEconomy * startMass / getMass();
 	}
 
 	/**
-	 * Records the beginning weight of the vehicle and its payload
+	 * Records the beginning weight of the vehicle and its payload.
 	 */
 	public void recordStartMass() {
 		startMass = getMass();
 	}
 
 	/**
-	 * Records the beginning weight of the vehicle and its payload
+	 * Records the beginning weight of the vehicle and its payload.
 	 */
 	public double getStartMass() {
 		return startMass;
 	}
 	
 	/**
-	 * Gets the estimated average fuel consumption of the vehicle [km/kg] for a trip
+	 * Gets the estimated average fuel consumption of the vehicle [km/kg] for a trip.
 	 * Note: Assume that it is half of two fuel consumption values (between the beginning and the end of the trip)
 	 *
 	 * @return
