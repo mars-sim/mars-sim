@@ -22,11 +22,9 @@ public abstract class DigLocalMeta extends MetaTask {
 
 	private static final double VALUE = 2.0;
 	private EquipmentType containerType;
-	private String name;
 
     public DigLocalMeta(String name, EquipmentType containerType) {
 		super(name, WorkerType.PERSON, TaskScope.WORK_HOUR);
-		this.name = name;
 		setFavorite(FavoriteType.OPERATION);
 		setTrait(TaskTrait.STRENGTH);
 

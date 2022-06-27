@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ClockPulse.java
- * @date 2021-12-17
+ * @date 2022-06-26
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.time;
@@ -102,7 +102,8 @@ public class ClockPulse {
 	}
 
 	/**
-	 * Create a new pulse based on this one but add extra msol elapsed time.
+	 * Creates a new pulse based on this one but add extra msol elapsed time.
+	 * 
 	 * This does not change any of the original flags; only the elapses time.
 	 * @param msolsSkipped 
 	 * @return
@@ -112,6 +113,7 @@ public class ClockPulse {
 		
 		// This pulse cross a day or the total elapsed since the last pulse cross the sol boundary
 		boolean actualNewSol = newSol || (actualElapsed > marsTime.getMillisol());
+		
 		
 		return new ClockPulse(id, actualElapsed, marsTime, earthTime, master, actualNewSol, newMSol);
 	}

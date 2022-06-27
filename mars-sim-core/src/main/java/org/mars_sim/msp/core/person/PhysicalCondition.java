@@ -1397,12 +1397,17 @@ public class PhysicalCondition implements Serializable {
 		return isStarving;
 	}
 
-	public boolean isDeydrated() {
+	/**
+	 * Checks if the person is dehydrated.
+	 * 
+	 * @return
+	 */
+	public boolean isDehydrated() {
 		return isDehydrated;
 	}
 
 	/**
-	 * Get a string description of the most serious health situation.
+	 * Gets a string description of the most serious health situation.
 	 *
 	 * @return A string containing the current illness if any.
 	 */
@@ -1428,14 +1433,14 @@ public class PhysicalCondition implements Serializable {
 	}
 
 	/**
-	 * The collection of known Medical Problems.
+	 * Returns a collection of known medical problems.
 	 */
 	public Collection<HealthProblem> getProblems() {
 		return problems;
 	}
 
 	/**
-	 * Calculate how the most serious problem and other metrics would affect a
+	 * Calculates how the most serious problem and other metrics would affect a
 	 * person's performance.
 	 */
 	private void recalculatePerformance() {
@@ -1503,7 +1508,7 @@ public class PhysicalCondition implements Serializable {
 	}
 
 	/**
-	 * Give the status of a person's hunger level
+	 * Gives the status of a person's hunger level.
 	 *
 	 * @param hunger
 	 * @return status
@@ -1528,7 +1533,7 @@ public class PhysicalCondition implements Serializable {
 	}
 
 	/**
-	 * Give the status of a person's water level
+	 * Gives the status of a person's water level.
 	 *
 	 * @param water
 	 * @return status
@@ -1550,7 +1555,7 @@ public class PhysicalCondition implements Serializable {
 	}
 
 	/**
-	 * Give the status of a person's fatigue level
+	 * Gives the status of a person's fatigue level.
 	 *
 	 * @param fatigue
 	 * @return status
@@ -1571,7 +1576,7 @@ public class PhysicalCondition implements Serializable {
 	}
 
 	/**
-	 * Give the status of a person's stress level
+	 * Gives the status of a person's stress level.
 	 *
 	 * @param hunger
 	 * @return status
@@ -1592,7 +1597,7 @@ public class PhysicalCondition implements Serializable {
 	}
 
 	/**
-	 * Give the status of a person's hunger level
+	 * Gives the status of a person's hunger level.
 	 *
 	 * @param hunger
 	 * @return status
@@ -1628,7 +1633,7 @@ public class PhysicalCondition implements Serializable {
 	}
 
 	/**
-	 * Checks if a person is fit
+	 * Checks if a person is fit.
 	 *
 	 * @return true if a person is fit
 	 */
@@ -1638,7 +1643,8 @@ public class PhysicalCondition implements Serializable {
     }
 
 	/**
-	 * Check fitness against some maximum levels
+	 * Checks fitness against some maximum levels.
+	 * 
 	 * @param fatMax
 	 * @param stressMax
 	 * @param hunMax
@@ -1650,7 +1656,7 @@ public class PhysicalCondition implements Serializable {
 	}
 
 	/**
-	 * Compute the fitness level
+	 * Computes the fitness level.
 	 *
 	 * @return
 	 */

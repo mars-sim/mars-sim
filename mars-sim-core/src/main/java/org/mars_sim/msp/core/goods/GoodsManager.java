@@ -111,7 +111,6 @@ public class GoodsManager implements Serializable, Temporal {
 	private static final String METHANE = "methane";
 	private static final String BRICK = "brick";
 	private static final String METEORITE = "meteorite";
-	private static final String VEHICLE = "vehicle";
 
 	private static final int MALFUNCTION_REPAIR_COEF = 50;
 	private static final int MAINTENANCE_REPAIR_COEF = 10;
@@ -168,7 +167,7 @@ public class GoodsManager implements Serializable, Temporal {
 	private static final double DESSERT_FACTOR = .1;
 	private static final double FOOD_PRODUCTION_INPUT_FACTOR = .1;
 	private static final double FARMING_FACTOR = .1;
-	private static final double TISSUE_CULTURE_FACTOR = .25;
+	private static final double TISSUE_CULTURE_FACTOR = .75;
 	private static final double LEAVES_FACTOR = .5;
 	private static final double CROP_FACTOR = .1;
 
@@ -220,7 +219,7 @@ public class GoodsManager implements Serializable, Temporal {
 	private static final double FIBERGLASS_DEMAND = .1;
 	private static final double BRICK_DEMAND = .005;
 
-	private static final double REGOLITH_DEMAND_FACTOR = 10;
+	private static final double REGOLITH_DEMAND_FACTOR = 30;
 	private static final double CHEMICAL_DEMAND_FACTOR = .01;
 	private static final double COMPOUND_DEMAND_FACTOR = .01;
 	private static final double ELEMENT_DEMAND_FACTOR = .1;

@@ -121,9 +121,7 @@ public class TendGreenhouse extends Task implements Serializable {
 					else
 						acceptedTask = TENDING;
 				}
-				
-//				logger.log(farmBuilding, worker, Level.CONFIG, 30_000, "Case 1. Accepted the task of " + acceptedTask.getName().toLowerCase() + ".");
-				
+								
 				addPhase(acceptedTask);
 				setPhase(acceptedTask);
 			}
@@ -140,11 +138,9 @@ public class TendGreenhouse extends Task implements Serializable {
 				else if (rand == 2)
 					acceptedTask = SAMPLING;
 	
-				else // if (rand == 3)
+				else 
 					acceptedTask = GROWING_TISSUE;
-				
-//				logger.log(farmBuilding, worker, Level.CONFIG, 0, "Case 2. Accepted the task of " + acceptedTask.getName().toLowerCase() + ".");
-	
+
 				addPhase(acceptedTask);
 				setPhase(acceptedTask);
 			}

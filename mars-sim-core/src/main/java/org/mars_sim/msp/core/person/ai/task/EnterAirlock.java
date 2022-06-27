@@ -899,7 +899,7 @@ public class EnterAirlock extends Task implements Serializable {
 	public void completeAirlockTask() {
 		// Clear the person as the airlock operator if task ended prematurely.
 		if (airlock != null && person.getName().equals(airlock.getOperatorName())) {
-			if (airlock.getEntity() instanceof Settlement) {
+			if (airlock.getEntity() instanceof Building) {
 				logger.log(((Building) (airlock.getEntity())).getSettlement(), person, Level.FINE, 4_000,
 						"Concluded the building airlock operator task.");
 			}

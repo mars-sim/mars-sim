@@ -133,7 +133,7 @@
 
 	<part name="steel ingot" type="metallic" mass="5.0" />
 
-	<part name="aluminum ingot" type="metallic" mass="1.0" />
+	<part name="aluminum ingot" type="metallic" mass="5.0" />
 
 	<part name="steel sheet" type="metallic" mass="7.8" >
 		<description>A density of 7.8 g/cm3. 1m x 1m x 1mm sheet of steel</description>

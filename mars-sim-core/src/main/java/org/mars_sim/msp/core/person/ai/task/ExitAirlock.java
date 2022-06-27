@@ -293,22 +293,48 @@ public class ExitAirlock extends Task implements Serializable {
 	}
 
 	/**
+	 * Walks to another location outside the airlock and ends the egress
+	 *
+	 * @param person the person of interest
+	 * @param reason the reason for walking away
+	 */
+	private void walkAway(Person person, String reason) {
+		airlock.removeID(person.getIdentifier());
+
+		// This doesn't make sense. The endTask call will be for the current task
+		// and if 'person' is the same then the walk subTask will be immediately
+		// cancelled by the endTask
+//		person.getTaskManager().getTask().walkToRandomLocation(false);
+//		endTask();
+
+		logger.warning(person.getSettlement(), person, reason);
+		
+		// Note: For person in a vehicle with high fatigue or hunger,
+		// need to call clearAllTasks() to cause a person to quit the task
+		// or else it gets stuck forever in the vehicle airlock
+		person.getTaskManager().clearAllTasks(reason);
+	}
+	
+	/**
 	 * Request the entry of the airlock
 	 *
 	 * @param time the pulse
 	 * @return the remaining time
 	 */
 	private double requestEgress(double time) {
-
+		logger.log(person, Level.INFO, 20_000,
+				"Requesting EVA egress in " + airlock.getEntity().toString() + ".");
+		
 		double remainingTime = 0;
-
-		if (inSettlement && !airlock.addReservation(person.getIdentifier())) {
-			walkAway(person, "Reservation not found");
+		
+		// If a person is in a vehicle, not needed of checking for reservation
+		if (inSettlement && airlock.hasReservation(person.getIdentifier())) {
+			walkAway(person, "Reservation not made.");
 			return 0;
 		}
 
 		if (inSettlement && !isFit()) {
-			walkAway(person, "Not fit for egress");
+			walkAway(person, "Not fit for egress.");
 			return 0;
 		}
 
@@ -321,8 +347,8 @@ public class ExitAirlock extends Task implements Serializable {
 			airlock.setActivated(true);
 		}
 
-		logger.log(person, Level.FINE, 20_000,
-				"Requested EVA egress in " + airlock.getEntity().toString() + ".");
+//		logger.log(person, Level.INFO, 20_000,
+//				"Requested EVA egress in " + airlock.getEntity().toString() + ".");
 
 		boolean canProceed = false;
 
@@ -357,17 +383,17 @@ public class ExitAirlock extends Task implements Serializable {
 						}
 					}
 					else {
-						walkAway(person, "Cannot transition to zone 0");
+						walkAway(person, "Cannot transition to zone 0.");
 						return 0;
 					}
 				}
 				else {
-					walkAway(person, "Chamber full");
+					walkAway(person, "Chamber full.");
 					return 0;
 				}
 			}
 			else {
-				walkAway(person, "Cannot wait at " + airlock.getEntity().toString() + " inner door");
+				walkAway(person, "Cannot wait at " + airlock.getEntity().toString() + " inner door.");
 				return 0;
 			}
 		}
@@ -383,7 +409,7 @@ public class ExitAirlock extends Task implements Serializable {
 					canProceed = true;
 				}
 				else {
-					walkAway(person, "Cannot wait at " + airlock.getEntity().toString() + " inner door");
+					walkAway(person, "Cannot wait at " + airlock.getEntity().toString() + " inner door.");
 					return 0;
 				}
 //			}
@@ -404,7 +430,7 @@ public class ExitAirlock extends Task implements Serializable {
 				// If airlock has already been pressurized,
 				// then it's ready for entry
 
-				logger.log(person, Level.FINE, 4_000,
+				logger.log(person, Level.INFO, 4_000,
 						"Chamber already pressurized for entry in "
 					+ airlock.getEntity().toString() + ".");
 
@@ -422,7 +448,7 @@ public class ExitAirlock extends Task implements Serializable {
 
 				if (airlock.isOperator(id)) {
 
-					logger.log(person, Level.FINE, 4_000, "Ready to pressurize the chamber.");
+					logger.log(person, Level.INFO, 4_000, "Ready to pressurize the chamber.");
 
 					if (!airlock.isPressurized() || !airlock.isPressurizing()) {
 						// Get ready for pressurization
@@ -1009,28 +1035,6 @@ public class ExitAirlock extends Task implements Serializable {
 		}
 
 		return remainingTime;
-	}
-
-
-	/**
-	 * Walks to another location outside the airlock and ends the egress
-	 *
-	 * @param person the person of interest
-	 * @param reason the reason for walking away
-	 */
-	private void walkAway(Person person, String reason) {
-		airlock.removeID(person.getIdentifier());
-
-		// This doesn't make sense. The endTask call will be for the current task
-		// and if 'person' is the same then the walk subTask will be immediately
-		// cancelled by the endTask
-//		person.getTaskManager().getTask().walkToRandomLocation(false);
-//		endTask();
-
-		// Note: For person in a vehicle with high fatigue or hunger,
-		// need to call clearAllTasks() to cause a person to quit the task
-		// or else it gets stuck forever in the vehicle airlock
-		person.getTaskManager().clearAllTasks(reason);
 	}
 
 	/**

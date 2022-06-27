@@ -1045,7 +1045,7 @@ public class Settlement extends Structure implements Temporal,
 
 		// Avoid checking at < 10 or 1000 millisols
 		// due to high cpu util during the change of day
-		if (pulse.isNewMSol() && msol >= 10 && msol != 1000) {
+		if (pulse.isNewMSol() && msol >= 10 && msol < 995) {
 
 			// Initialize tasks at the start of the sim only
 			if (justLoaded) {

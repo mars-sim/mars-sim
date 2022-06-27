@@ -29,6 +29,8 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.BuildingAirlock;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.vehicle.Rover;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 // see discussions on Airlocks for Mars Colony at
 // https://forum.nasaspaceflight.com/index.php?topic=42098.0
@@ -36,7 +38,7 @@ import org.mars_sim.msp.core.time.MarsClock;
 // Astronauts aboard the International Space Station preparing for extra-vehicular activity (EVA)
 // "camp out" at low atmospheric pressure, 10.2 psi (0.70 sbar), spending eight sleeping hours
 // in the Quest airlock chamber before their spacewalk. During the EVA they breathe 100% oxygen
-// in their spacesuits, which operate at 4.3 psi (0.30 bar),[71] although research has examined
+// in their space suits, which operate at 4.3 psi (0.30 bar),[71] although research has examined
 // the possibility of using 100% O2 at 9.5 psi (0.66 bar) in the suits to lessen the pressure
 // reduction, and hence the risk of DCS.[72]
 //
@@ -63,6 +65,9 @@ public abstract class Airlock implements Serializable {
 	/** The maximum number of reservations that can be made for an airlock. */
 	public static final int MAX_RESERVED = 4;
 
+	/** The effective reservation period [in millisols]. */
+	public static final int RESERVATION_PERIOD = 40;
+	
 	/**
 	 * Available Airlock States
 	 */
@@ -153,12 +158,12 @@ public abstract class Airlock implements Serializable {
 				diff = msol + 1000 - lastMsol;
 			else
 				diff = msol - lastMsol;
-			if (diff < 30) {
+			if (diff < RESERVATION_PERIOD) {
 				return true;
 			}
 			else {
-				// Note: the reservation will automatically
-				// be expired after 30 msols.
+				// Removes the expired reservation 
+				// since it goes beyond the RESERVATION_PERIOD msols.
 				reservationMap.remove(personInt);
 			}
 		}
@@ -172,15 +177,24 @@ public abstract class Airlock implements Serializable {
 	 * @return
 	 */
 	public boolean removeReservation(int personInt) {
-		List<Airlock> airlocks = ((Building)getEntity()).getSettlement().getAllAirlocks();
+		List<Airlock> airlocks = null;
+		if (getEntity() instanceof Building) {
+			airlocks = ((Building)getEntity()).getSettlement().getAllAirlocks();
+			for (Airlock a: airlocks) {
+				if (a.getReservationMap().containsKey(personInt)) {
+					a.getReservationMap().remove(personInt);
+					return true;
+				}
+			}
 
-		for (Airlock a: airlocks) {
+		}
+		else {
+			Airlock a = ((Rover)(Vehicle)getEntity()).getAirlock();
 			if (a.getReservationMap().containsKey(personInt)) {
 				a.getReservationMap().remove(personInt);
 				return true;
 			}
 		}
-
 		return false;
 	}
 
@@ -198,6 +212,8 @@ public abstract class Airlock implements Serializable {
 				reservationMap.put(personInt, msol);
 				return true;
 			}
+			
+			System.out.println("1. " + reservationMap);
 		}
 		else {
 			int msol = marsClock.getMillisolInt();
@@ -208,17 +224,20 @@ public abstract class Airlock implements Serializable {
 			else
 				diff = msol - lastMsol;
 
-			// If it has been 30 msols since the reservation was made,
+			// If it has been RESERVATION_PERIOD msols since the reservation was made,
 			// reserve it again
-			if (diff > 30) {
+			if (diff > RESERVATION_PERIOD) {
+				System.out.println("2. " + reservationMap);
 				// Remove the name from all reservations
-				removeReservation(personInt);
+//				removeReservation(personInt);
 				// Add the name and the new msol
 				reservationMap.put(personInt, msol);
+				System.out.println("3. " + reservationMap);
 				return true;
 			}
+			System.out.println("4. " + reservationMap);
 		}
-
+		System.out.println("5. " + reservationMap);
 		return false;
 	}
 
