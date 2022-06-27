@@ -307,7 +307,7 @@ public class ExitAirlock extends Task implements Serializable {
 //		person.getTaskManager().getTask().walkToRandomLocation(false);
 //		endTask();
 
-		logger.warning(person.getSettlement(), person, reason);
+		logger.log(person.getSettlement(), person, Level.WARNING, 4_000, reason);
 		
 		// Note: For person in a vehicle with high fatigue or hunger,
 		// need to call clearAllTasks() to cause a person to quit the task
@@ -322,13 +322,13 @@ public class ExitAirlock extends Task implements Serializable {
 	 * @return the remaining time
 	 */
 	private double requestEgress(double time) {
-		logger.log(person, Level.INFO, 20_000,
+		logger.log(person, Level.FINE, 4_000,
 				"Requesting EVA egress in " + airlock.getEntity().toString() + ".");
 		
 		double remainingTime = 0;
 		
 		// If a person is in a vehicle, not needed of checking for reservation
-		if (inSettlement && airlock.hasReservation(person.getIdentifier())) {
+		if (inSettlement && !airlock.addReservation(person.getIdentifier())) {
 			walkAway(person, "Reservation not made.");
 			return 0;
 		}
@@ -346,9 +346,6 @@ public class ExitAirlock extends Task implements Serializable {
 			// Only the airlock operator may activate the airlock
 			airlock.setActivated(true);
 		}
-
-//		logger.log(person, Level.INFO, 20_000,
-//				"Requested EVA egress in " + airlock.getEntity().toString() + ".");
 
 		boolean canProceed = false;
 
@@ -430,7 +427,7 @@ public class ExitAirlock extends Task implements Serializable {
 				// If airlock has already been pressurized,
 				// then it's ready for entry
 
-				logger.log(person, Level.INFO, 4_000,
+				logger.log(person, Level.FINE, 4_000,
 						"Chamber already pressurized for entry in "
 					+ airlock.getEntity().toString() + ".");
 
@@ -448,7 +445,7 @@ public class ExitAirlock extends Task implements Serializable {
 
 				if (airlock.isOperator(id)) {
 
-					logger.log(person, Level.INFO, 4_000, "Ready to pressurize the chamber.");
+					logger.log(person, Level.FINE, 4_000, "Ready to pressurize the chamber.");
 
 					if (!airlock.isPressurized() || !airlock.isPressurizing()) {
 						// Get ready for pressurization

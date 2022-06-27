@@ -212,7 +212,7 @@ public class TendGreenhouse extends Task implements Serializable {
 	 */
 	private void printDescription(String text) {
 		setDescription(text);
-		logger.log(greenhouse.getBuilding(), worker, Level.INFO, 30_000, text);
+		logger.log(greenhouse.getBuilding(), worker, Level.INFO, 30_000, text + ".");
 	}
 	
 	/**
@@ -354,7 +354,7 @@ public class TendGreenhouse extends Task implements Serializable {
 		
 		if (greenhouse.checkBotanyLab(type, worker))  {
 			
-			printDescription(Msg.getString("Task.description.tendGreenhouse.grow.detail", type.getName()));
+			printDescription(Msg.getString("Task.description.tendGreenhouse.grow.detail", type.getName().toLowerCase()));
 			
 			logger.log(greenhouse.getBuilding(), worker, Level.INFO, 30_000, "Growing "
 					+ type.getName() + Farming.TISSUE
@@ -402,7 +402,7 @@ public class TendGreenhouse extends Task implements Serializable {
 			}
 		}
 
-		printDescription(Msg.getString("Task.description.tendGreenhouse.inspect.detail", goal));
+		printDescription(Msg.getString("Task.description.tendGreenhouse.inspect.detail", goal.toLowerCase()));
 
 		double mod = 0;
 		// Determine amount of effective work time based on "Botany" skill
@@ -444,7 +444,7 @@ public class TendGreenhouse extends Task implements Serializable {
 			}
 		}
 
-		printDescription(Msg.getString("Task.description.tendGreenhouse.clean.detail", goal));
+		printDescription(Msg.getString("Task.description.tendGreenhouse.clean.detail", goal.toLowerCase()));
 				
 		double mod = 0;
 		// Determine amount of effective work time based on "Botany" skill
@@ -497,7 +497,7 @@ public class TendGreenhouse extends Task implements Serializable {
 			if (hasWork) {
 				
 				setDescription(Msg.getString("Task.description.tendGreenhouse.sample.detail",
-					Conversion.capitalize(type.getName()) + Farming.TISSUE));
+					type.getName()) + Farming.TISSUE);
 
 				logger.log(greenhouse.getBuilding(), worker, Level.INFO, 30_000,
 						"Sampling " + type.getName() + Farming.TISSUE

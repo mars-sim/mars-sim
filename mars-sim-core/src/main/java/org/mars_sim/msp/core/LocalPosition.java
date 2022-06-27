@@ -176,7 +176,7 @@ public class LocalPosition implements Serializable {
 
 	@Override
 	public String toString() {
-		return "[x=" + x + ", y=" + y + "]";
+		return "(" + Math.round(x*10_000.0)/10_000.0 + ", " + Math.round(y*10_000.0)/10_000.0 + ")";
 	}
 
 	/**

@@ -109,13 +109,6 @@ implements Serializable {
 			    endTask();
 			    return;
 	        }
-	        else {
-	        	if (!airlock.addReservation(person.getIdentifier())) {
-	        		logger.log(person, Level.WARNING, 4_000, "Can't make reservation for airlock.");
-				    endTask();
-				    return;
-	        	}
-	        }
      	}
 
         // Take bags for collecting resource.
@@ -140,7 +133,7 @@ implements Serializable {
         LocalPosition diggingLoc = determineDiggingLocation();
         if (diggingLoc != null) {
         	setOutsideSiteLocation(diggingLoc);
-           	logger.info(person, 20_000L, "Selected an outside digging site at " + diggingLoc + ".");
+           	logger.info(person, "Selected an outside digging site at " + diggingLoc + ".");
         }
 
 		// set the boolean to true so that it won't be done again today

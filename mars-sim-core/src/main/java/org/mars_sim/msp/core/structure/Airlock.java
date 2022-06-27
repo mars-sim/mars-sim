@@ -158,7 +158,7 @@ public abstract class Airlock implements Serializable {
 				diff = msol + 1000 - lastMsol;
 			else
 				diff = msol - lastMsol;
-			if (diff < RESERVATION_PERIOD) {
+			if (diff <= RESERVATION_PERIOD) {
 				return true;
 			}
 			else {
@@ -171,22 +171,18 @@ public abstract class Airlock implements Serializable {
 	}
 
 	/**
-	 * Removes the id from all reservation maps
+	 * Removes the id from all reservation maps.
 	 *
 	 * @param personInt
 	 * @return
 	 */
 	public boolean removeReservation(int personInt) {
-		List<Airlock> airlocks = null;
 		if (getEntity() instanceof Building) {
-			airlocks = ((Building)getEntity()).getSettlement().getAllAirlocks();
-			for (Airlock a: airlocks) {
-				if (a.getReservationMap().containsKey(personInt)) {
-					a.getReservationMap().remove(personInt);
-					return true;
-				}
+			Airlock a = ((Building)getEntity()).getEVA().getAirlock();
+			if (a.getReservationMap().containsKey(personInt)) {
+				a.getReservationMap().remove(personInt);
+				return true;
 			}
-
 		}
 		else {
 			Airlock a = ((Rover)(Vehicle)getEntity()).getAirlock();
@@ -199,7 +195,7 @@ public abstract class Airlock implements Serializable {
 	}
 
 	/**
-	 * Adds a person's id to the reservation map
+	 * Adds a person's id to the reservation map.
 	 *
 	 * @param personInt
 	 * @return true if the id can be added or is already in reservation
@@ -212,8 +208,8 @@ public abstract class Airlock implements Serializable {
 				reservationMap.put(personInt, msol);
 				return true;
 			}
-			
-			System.out.println("1. " + reservationMap);
+			else
+				return false;
 		}
 		else {
 			int msol = marsClock.getMillisolInt();
@@ -226,23 +222,17 @@ public abstract class Airlock implements Serializable {
 
 			// If it has been RESERVATION_PERIOD msols since the reservation was made,
 			// reserve it again
-			if (diff > RESERVATION_PERIOD) {
-				System.out.println("2. " + reservationMap);
-				// Remove the name from all reservations
-//				removeReservation(personInt);
-				// Add the name and the new msol
+			if (diff >= RESERVATION_PERIOD) {
+				// Replace it with the new msol
 				reservationMap.put(personInt, msol);
-				System.out.println("3. " + reservationMap);
-				return true;
 			}
-			System.out.println("4. " + reservationMap);
+			
+			return true;
 		}
-		System.out.println("5. " + reservationMap);
-		return false;
 	}
 
 	/**
-	 * Gets the reservation ids
+	 * Gets the reservation ids.
 	 *
 	 * @return
 	 */
@@ -251,7 +241,7 @@ public abstract class Airlock implements Serializable {
 	}
 
 	/**
-	 * Gets the number of people reserved
+	 * Gets the number of people reserved.
 	 *
 	 * @return
 	 */
@@ -260,7 +250,7 @@ public abstract class Airlock implements Serializable {
 	}
 	
 	/**
-	 * Gets the reservation map
+	 * Gets the reservation map.
 	 *
 	 * @return
 	 */
@@ -338,7 +328,7 @@ public abstract class Airlock implements Serializable {
 
 
 	/**
-	 * Transfer a person into zone 1, 2 and 3
+	 * Transfers a person into zone 1, 2 and 3.
 	 *
 	 * @param person {@link Person} the person to enter the airlock
 	 * @param id the person's id
@@ -389,7 +379,7 @@ public abstract class Airlock implements Serializable {
 	}
 
 	/**
-	 * Transfer a person out of airlock zone 1, 2, and 3
+	 * Transfers a person out of airlock zone 1, 2, and 3.
 	 *
 	 * @param id the person's id
 	 * @return {@link boolean} <code>true</code> if person exiting the airlock
@@ -405,7 +395,7 @@ public abstract class Airlock implements Serializable {
 	}
 
 	/**
-	 * Remove the id of a person
+	 * Removes the id of a person.
 	 *
 	 * @param id the person's id
 	 */
@@ -449,7 +439,7 @@ public abstract class Airlock implements Serializable {
 	}
 
 	/**
-	 * Sets to the pressurizing state
+	 * Sets to the pressurizing state.
 	 *
 	 * @return
 	 */
@@ -465,7 +455,7 @@ public abstract class Airlock implements Serializable {
 	}
 
 	/**
-	 * Sets to the depressurizing state
+	 * Sets to the depressurizing state.
 	 *
 	 * @return
 	 */
@@ -481,7 +471,7 @@ public abstract class Airlock implements Serializable {
 	}
 
 	/**
-	 * Checks if the airlock has been depressurized
+	 * Checks if the airlock has been depressurized.
 	 *
 	 * @return
 	 */
@@ -490,7 +480,7 @@ public abstract class Airlock implements Serializable {
 	}
 
 	/**
-	 * Checks if the airlock has been pressurized
+	 * Checks if the airlock has been pressurized.
 	 *
 	 * @return
 	 */
@@ -500,7 +490,7 @@ public abstract class Airlock implements Serializable {
 
 
 	/**
-	 * Go to the next steady state
+	 * Goes to the next steady state.
 	 *
 	 * @return true if the switch is successful
 	 */
@@ -527,7 +517,7 @@ public abstract class Airlock implements Serializable {
 	}
 
 	/**
-	 * Add airlock cycle time.
+	 * Adds airlock cycle time.
 	 *
 	 * @param time cycle time (millisols)
 	 * @return The the time consumed
@@ -552,6 +542,11 @@ public abstract class Airlock implements Serializable {
 		return consumed;
 	}
 
+	/**
+	 * Activates the airlock.
+	 * 
+	 * @param value
+	 */
 	public void setActivated(boolean value) {
 		if (!value) {
 			// Reset the cycle count down timer back to the default
@@ -572,7 +567,7 @@ public abstract class Airlock implements Serializable {
 	}
 
 	/**
-	 * Gets the operator's Person instance
+	 * Gets the operator's Person instance.
 	 *
 	 * @return
 	 */
@@ -590,7 +585,7 @@ public abstract class Airlock implements Serializable {
 	}
 
 	/**
-     * Gets a set of occupants from a particular zone
+     * Gets a set of occupants from a particular zone.
      *
      * @param zone the zone of interest
 	 * @return a set of occupants in the zone of the interest
@@ -598,14 +593,14 @@ public abstract class Airlock implements Serializable {
     public abstract Set<Integer> getZoneOccupants(int zone);
 
     /**
-     * Gets the exact number of occupants who are within the chamber
+     * Gets the exact number of occupants who are within the chamber.
      * 
      * @return
      */
     public abstract int getNumInChamber();
     
 	/**
-	 * Obtains a prioritized pool of candidates from a particular zone
+	 * Obtains a prioritized pool of candidates from a particular zone.
 	 *
 	 * return a pool of candidates
 	 */
@@ -642,7 +637,7 @@ public abstract class Airlock implements Serializable {
 	}
 
 	/**
-	 * Elects an operator with the best EVA skill level/experiences
+	 * Elects an operator with the best EVA skill level/experiences.
 	 *
 	 * @param pool a pool of candidates
 	 */
@@ -722,7 +717,7 @@ public abstract class Airlock implements Serializable {
 	}
 
 	/**
-	 * Sets the airlock's inner door locked to true or false
+	 * Sets the airlock's inner door locked to true or false.
 	 *
 	 * @param lock
 	 */
@@ -731,7 +726,7 @@ public abstract class Airlock implements Serializable {
 	}
 
 	/**
-	 * Sets the airlock's outer door locked to true or false
+	 * Sets the airlock's outer door locked to true or false.
 	 *
 	 * @param lock
 	 */
@@ -750,7 +745,7 @@ public abstract class Airlock implements Serializable {
 	}
 
 	/**
-	 * Sets the inTransition to true if changing the airlock's state
+	 * Sets the inTransition to true if changing the airlock's state.
 	 *
 	 * @param value
 	 */
@@ -808,7 +803,7 @@ public abstract class Airlock implements Serializable {
 	}
 
 	/**
-	 * Adds this unit to the set or zone (for zone 0 and zone 4 only)
+	 * Adds this unit to the set or zone (for zone 0 and zone 4 only).
 	 *
 	 * @param set
 	 * @param id
@@ -830,7 +825,7 @@ public abstract class Airlock implements Serializable {
 	}
 
 	/**
-	 * Gets the number of people waiting at the inner door
+	 * Gets the number of people waiting at the inner door.
 	 *
 	 * @return the number of people waiting at the inner door
 	 */
@@ -839,7 +834,7 @@ public abstract class Airlock implements Serializable {
 	}
 
 	/**
-	 * Gets the number of people waiting at the outer door
+	 * Gets the number of people waiting at the outer door.
 	 *
 	 * @return the number of people waiting at the outer door
 	 */
@@ -848,7 +843,7 @@ public abstract class Airlock implements Serializable {
 	}
 
 	/**
-	 * Gets the set of people waiting at the inner door
+	 * Gets the set of people waiting at the inner door.
 	 *
 	 * @return the set of people waiting at the inner door
 	 */
@@ -857,7 +852,7 @@ public abstract class Airlock implements Serializable {
 	}
 
 	/**
-	 * Gets the set of people waiting at the outer door
+	 * Gets the set of people waiting at the outer door.
 	 *
 	 * @return the set of people waiting at the outer door
 	 */
@@ -866,7 +861,7 @@ public abstract class Airlock implements Serializable {
 	}
 
 	/**
-	 * Checks if anyone is waiting at the outer door
+	 * Checks if anyone is waiting at the outer door.
 	 *
 	 * @return true if someone is waiting at the outer door
 	 */
@@ -875,7 +870,7 @@ public abstract class Airlock implements Serializable {
 	}
 
 	/**
-	 * Checks if anyone is waiting at the inner door
+	 * Checks if anyone is waiting at the inner door.
 	 *
 	 * @return
 	 */
@@ -884,7 +879,7 @@ public abstract class Airlock implements Serializable {
 	}
 
 	/**
-	 * Check the occupants'id
+	 * Checks the occupants'id.
 	 */
 	public void checkOccupantIDs() {
 		// If this person is not physically in this airlock, remove his id
@@ -910,7 +905,7 @@ public abstract class Airlock implements Serializable {
 	}
 	
 	/**
-	 * Check the airlock operator
+	 * Checks the airlock operator.
 	 */
 	public void checkOperator() {
 		// If no one is being assigned as an operator
@@ -931,7 +926,7 @@ public abstract class Airlock implements Serializable {
 	}
 	
 	/**
-	 * Time passing for airlock. Check for unusual situations and deal with them.
+	 * Time passing for airlock. Checks for unusual situations and deal with them.
 	 * Called from the unit owning the airlock.
 	 *
 	 * @param pulse
@@ -956,7 +951,7 @@ public abstract class Airlock implements Serializable {
 	}
 
 	/**
-	 * Remove the record of the deceased person from the map and sets
+	 * Removes the record of the deceased person from the map and sets.
 	 *
 	 * @param person
 	 */
@@ -1043,7 +1038,7 @@ public abstract class Airlock implements Serializable {
 	public abstract LocalPosition getAvailableExteriorPosition();
 
 	/**
-	 * Gets an available airlock position
+	 * Gets an available airlock position.
 	 *
 	 * @return available airlock position.
 	 */
@@ -1066,7 +1061,7 @@ public abstract class Airlock implements Serializable {
 	}
 
 	/**
-	 * Gets a collection of occupants' ids
+	 * Gets a collection of occupants' ids.
 	 *
 	 * @return
 	 */
@@ -1075,7 +1070,7 @@ public abstract class Airlock implements Serializable {
 	}
 
 	/**
-	 * Is this person's id in any zones (0 to 4)
+	 * Is this person's id in any zones (0 to 4) ?
 	 * @param id
 	 * @return
 	 */
@@ -1086,14 +1081,14 @@ public abstract class Airlock implements Serializable {
 	}
 	
 	/**
-	 * Gets a collection of occupants' ids
+	 * Gets a collection of occupants' ids.
 	 *
 	 * @return
 	 */
 	public abstract Set<Integer> getAllInsideOccupants();
 
 	/**
-	 * Checks if any occupants wear no EVA Suit
+	 * Checks if any occupants wear no EVA Suit.
 	 *
 	 * @return
 	 */
@@ -1107,7 +1102,7 @@ public abstract class Airlock implements Serializable {
 	}
 
 	/**
-	 * Gets a set of those having no EVA suit worn
+	 * Gets a set of those having no EVA suit worn.
 	 *
 	 * @return
 	 */
@@ -1117,26 +1112,17 @@ public abstract class Airlock implements Serializable {
 				.map(i -> getPersonByID(i))
 				.filter(p -> (p == null))
 				.collect(Collectors.toSet());
-
-//		Set<Person> list = new HashSet<>();
-//		Set<Integer> intList = getAllInsideOccupants();
-//		for (Integer id: intList) {
-//			Person p = getPersonByID(id);
-//			if (p.getSuit() == null)
-//				list.add(p);
-//		}
-//		return list;
 	}
 
 	/**
-	 * Gets the number of occupants currently inside the airlock zone 1, 2, and 3
+	 * Gets the number of occupants currently inside the airlock zone 1, 2, and 3.
 	 *
 	 * @return the number of occupants
 	 */
 	public abstract int getNumOccupants();
 
 	/**
-	 * Gets the number of empty slots
+	 * Gets the number of empty slots.
 	 *
 	 * @return the number of empty slots
 	 */
@@ -1145,14 +1131,14 @@ public abstract class Airlock implements Serializable {
 	}
 
 	/**
-	 * Checks if the chamber is full
+	 * Checks if the chamber is full.
 	 *
 	 * @return
 	 */
 	public abstract boolean isChamberFull();
 
 	/**
-	 * Checks if there is no occupants inside the airlock
+	 * Checks if there is no occupants inside the airlock.
 	 *
 	 * @return true if the airlock is empty
 	 */
@@ -1161,7 +1147,7 @@ public abstract class Airlock implements Serializable {
 	}
 
 	/**
-	 * Checks if there is an empty slot left in Zone 1, 2 and 3
+	 * Checks if there is an empty slot left in Zone 1, 2 and 3.
 	 *
 	 * @return true if there is space
 	 */
@@ -1182,7 +1168,7 @@ public abstract class Airlock implements Serializable {
 	}
 
 	/**
-	 * Gets a person's ID
+	 * Gets a person's ID.
 	 *
 	 * @param id
 	 * @return
@@ -1196,14 +1182,14 @@ public abstract class Airlock implements Serializable {
 	}
 
 	/**
-	 * Gets the type of airlock
+	 * Gets the type of airlock.
 	 *
 	 * @return AirlockType
 	 */
 	public abstract AirlockType getAirlockType();
 
 	/**
-	 * Initializes instances
+	 * Initializes instances.
 	 *
 	 * @param um {@link UnitManager}
 	 * @param ms {@link MarsSurface}
