@@ -2103,28 +2103,29 @@ public class GoodsManager implements Serializable, Temporal {
 	 *
 	 * @param good the good to check.
 	 * @return the number of the good (or amount (kg) if amount resource good).
+	 * @deprecated
 	 */
 	public double getNumberOfGoodForSettlement(Good good) {
+		return good.getNumberForSettlement(settlement);
+		// if (good != null) {
+		// 	if (GoodCategory.AMOUNT_RESOURCE == good.getCategory())
+		// 		return getAmountOfResourceForSettlement(ResourceUtil.findAmountResource(good.getID()));
+		// 	if (GoodCategory.ITEM_RESOURCE == good.getCategory())
+		// 		return getNumItemResourceForSettlement(ItemResourceUtil.findItemResource(good.getID()));
+		// 	if (GoodCategory.EQUIPMENT == good.getCategory()
+		// 			|| GoodCategory.CONTAINER == good.getCategory())
+		// 		return getNumberOfEquipmentForSettlement(good, good.getEquipmentType());
+		// 	if (GoodCategory.VEHICLE == good.getCategory())
+		// 		return getNumberOfVehiclesForSettlement(good.getName());
+		// 	if (GoodCategory.ROBOT == good.getCategory())
+		// 		return getNumberOfRobotsForSettlement(good.getName());
+		// 	return 0;
+		// }
 
-		if (good != null) {
-			if (GoodCategory.AMOUNT_RESOURCE == good.getCategory())
-				return getAmountOfResourceForSettlement(ResourceUtil.findAmountResource(good.getID()));
-			if (GoodCategory.ITEM_RESOURCE == good.getCategory())
-				return getNumItemResourceForSettlement(ItemResourceUtil.findItemResource(good.getID()));
-			if (GoodCategory.EQUIPMENT == good.getCategory()
-					|| GoodCategory.CONTAINER == good.getCategory())
-				return getNumberOfEquipmentForSettlement(good, good.getEquipmentType());
-			if (GoodCategory.VEHICLE == good.getCategory())
-				return getNumberOfVehiclesForSettlement(good.getName());
-			if (GoodCategory.ROBOT == good.getCategory())
-				return getNumberOfRobotsForSettlement(good.getName());
-			return 0;
-		}
+		// else
+		// 	logger.severe(settlement, "Good is null.");
 
-		else
-			logger.severe(settlement, "Good is null.");
-
-		return 0;
+		// return 0;
 	}
 
 	
@@ -2134,42 +2135,42 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @param resource the resource to check.
 	 * @return amount (kg) of resource for the settlement.
 	 */
-	private double getAmountOfResourceForSettlement(AmountResource resource) {
-		double amount = 0D;
+	// private double getAmountOfResourceForSettlement(AmountResource resource) {
+	// 	double amount = 0D;
 
-		// Get amount of resource in settlement storage.
-		amount += settlement.getAmountResourceStored(resource.getID());
+	// 	// Get amount of resource in settlement storage.
+	// 	amount += settlement.getAmountResourceStored(resource.getID());
 
-		// Get amount of resource out on mission vehicles.
-		Iterator<Mission> i = missionManager.getMissionsForSettlement(settlement).iterator();
-		while (i.hasNext()) {
-			Mission mission = i.next();
-			if (mission instanceof VehicleMission) {
-				Vehicle vehicle = ((VehicleMission) mission).getVehicle();
-				if ((vehicle != null) && !settlement.equals(vehicle.getSettlement()))
-					amount += vehicle.getAmountResourceStored(resource.getID());
-			}
-		}
+	// 	// Get amount of resource out on mission vehicles.
+	// 	Iterator<Mission> i = missionManager.getMissionsForSettlement(settlement).iterator();
+	// 	while (i.hasNext()) {
+	// 		Mission mission = i.next();
+	// 		if (mission instanceof VehicleMission) {
+	// 			Vehicle vehicle = ((VehicleMission) mission).getVehicle();
+	// 			if ((vehicle != null) && !settlement.equals(vehicle.getSettlement()))
+	// 				amount += vehicle.getAmountResourceStored(resource.getID());
+	// 		}
+	// 	}
 
-		// Get amount of resource carried by people on EVA.
-		Iterator<Person> j = settlement.getAllAssociatedPeople().iterator();
-		while (j.hasNext()) {
-			Person person = j.next();
-			if (person.isOutside())
-				amount += person.getAmountResourceStored(resource.getID());
-		}
+	// 	// Get amount of resource carried by people on EVA.
+	// 	Iterator<Person> j = settlement.getAllAssociatedPeople().iterator();
+	// 	while (j.hasNext()) {
+	// 		Person person = j.next();
+	// 		if (person.isOutside())
+	// 			amount += person.getAmountResourceStored(resource.getID());
+	// 	}
 
-		// Get the amount of the resource that will be produced by ongoing manufacturing
-		// processes.
-		Good amountResourceGood = GoodsUtil.getResourceGood(resource);
-		amount += getManufacturingProcessOutput(amountResourceGood);
+	// 	// Get the amount of the resource that will be produced by ongoing manufacturing
+	// 	// processes.
+	// 	Good amountResourceGood = GoodsUtil.getResourceGood(resource);
+	// 	amount += getManufacturingProcessOutput(amountResourceGood);
 
-		// Get the amount of the resource that will be produced by ongoing food
-		// production processes.
-		amount += getFoodProductionOutput(amountResourceGood);
+	// 	// Get the amount of the resource that will be produced by ongoing food
+	// 	// production processes.
+	// 	amount += getFoodProductionOutput(amountResourceGood);
 
-		return amount;
-	}
+	// 	return amount;
+	// }
 
 	/**
 	 * Gets the amount of the good being produced at the settlement by ongoing food
@@ -2179,29 +2180,29 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @return amount (kg for amount resources, number for parts, equipment, and
 	 *         vehicles).
 	 */
-	private double getFoodProductionOutput(Good good) {
-		double result = 0D;
+	// private double getFoodProductionOutput(Good good) {
+	// 	double result = 0D;
 
-		// Get the amount of the resource that will be produced by ongoing food
-		// production processes.
-		Iterator<Building> p = settlement.getBuildingManager().getBuildings(FunctionType.FOOD_PRODUCTION).iterator();
-		while (p.hasNext()) {
-			// Go through each ongoing food production process.
-			Iterator<FoodProductionProcess> q = p.next().getFoodProduction().getProcesses().iterator();
-			while (q.hasNext()) {
-				FoodProductionProcess process = q.next();
-				Iterator<FoodProductionProcessItem> r = process.getInfo().getOutputList().iterator();
-				while (r.hasNext()) {
-					FoodProductionProcessItem item = r.next();
-					if (item.getName().equalsIgnoreCase(good.getName())) {
-						result += item.getAmount();
-					}
-				}
-			}
-		}
+	// 	// Get the amount of the resource that will be produced by ongoing food
+	// 	// production processes.
+	// 	Iterator<Building> p = settlement.getBuildingManager().getBuildings(FunctionType.FOOD_PRODUCTION).iterator();
+	// 	while (p.hasNext()) {
+	// 		// Go through each ongoing food production process.
+	// 		Iterator<FoodProductionProcess> q = p.next().getFoodProduction().getProcesses().iterator();
+	// 		while (q.hasNext()) {
+	// 			FoodProductionProcess process = q.next();
+	// 			Iterator<FoodProductionProcessItem> r = process.getInfo().getOutputList().iterator();
+	// 			while (r.hasNext()) {
+	// 				FoodProductionProcessItem item = r.next();
+	// 				if (item.getName().equalsIgnoreCase(good.getName())) {
+	// 					result += item.getAmount();
+	// 				}
+	// 			}
+	// 		}
+	// 	}
 
-		return result;
-	}
+	// 	return result;
+	// }
 
 	/**
 	 * Gets the amount of the good being produced at the settlement by ongoing
@@ -2211,28 +2212,28 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @return amount (kg for amount resources, number for parts, equipment, and
 	 *         vehicles).
 	 */
-	private double getManufacturingProcessOutput(Good good) {
+	// private double getManufacturingProcessOutput(Good good) {
 
-		double result = 0D;
+	// 	double result = 0D;
 
-		Iterator<Building> i = settlement.getBuildingManager().getBuildings(FunctionType.MANUFACTURE).iterator();
-		while (i.hasNext()) {
-			// Go through each ongoing manufacturing process.
-			Iterator<ManufactureProcess> j = i.next().getManufacture().getProcesses().iterator();
-			while (j.hasNext()) {
-				ManufactureProcess process = j.next();
-				Iterator<ManufactureProcessItem> k = process.getInfo().getOutputList().iterator();
-				while (k.hasNext()) {
-					ManufactureProcessItem item = k.next();
-					if (item.getName().equalsIgnoreCase(good.getName())) {
-						result += item.getAmount();
-					}
-				}
-			}
-		}
+	// 	Iterator<Building> i = settlement.getBuildingManager().getBuildings(FunctionType.MANUFACTURE).iterator();
+	// 	while (i.hasNext()) {
+	// 		// Go through each ongoing manufacturing process.
+	// 		Iterator<ManufactureProcess> j = i.next().getManufacture().getProcesses().iterator();
+	// 		while (j.hasNext()) {
+	// 			ManufactureProcess process = j.next();
+	// 			Iterator<ManufactureProcessItem> k = process.getInfo().getOutputList().iterator();
+	// 			while (k.hasNext()) {
+	// 				ManufactureProcessItem item = k.next();
+	// 				if (item.getName().equalsIgnoreCase(good.getName())) {
+	// 					result += item.getAmount();
+	// 				}
+	// 			}
+	// 		}
+	// 	}
 
-		return result;
-	}
+	// 	return result;
+	// }
 
 	/**
 	 * Determines the value of an item resource.
@@ -2870,40 +2871,40 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @param resource the resource to check.
 	 * @return number of resource for the settlement.
 	 */
-	private double getNumItemResourceForSettlement(ItemResource resource) {
-		double number = 0D;
+	// private double getNumItemResourceForSettlement(ItemResource resource) {
+	// 	double number = 0D;
 
-		// Get number of resources in settlement storage.
-		number += settlement.getItemResourceStored(resource.getID());
+	// 	// Get number of resources in settlement storage.
+	// 	number += settlement.getItemResourceStored(resource.getID());
 
-		// Get number of resources out on mission vehicles.
-		Iterator<Mission> i = missionManager.getMissionsForSettlement(settlement).iterator();
-		while (i.hasNext()) {
-			Mission mission = i.next();
-			if (mission instanceof VehicleMission) {
-				Vehicle vehicle = ((VehicleMission) mission).getVehicle();
-				if ((vehicle != null) && !settlement.equals(vehicle.getSettlement()))
-					number += vehicle.getItemResourceStored(resource.getID());
-			}
-		}
+	// 	// Get number of resources out on mission vehicles.
+	// 	Iterator<Mission> i = missionManager.getMissionsForSettlement(settlement).iterator();
+	// 	while (i.hasNext()) {
+	// 		Mission mission = i.next();
+	// 		if (mission instanceof VehicleMission) {
+	// 			Vehicle vehicle = ((VehicleMission) mission).getVehicle();
+	// 			if ((vehicle != null) && !settlement.equals(vehicle.getSettlement()))
+	// 				number += vehicle.getItemResourceStored(resource.getID());
+	// 		}
+	// 	}
 
-		// Get number of resources carried by people on EVA.
-		Iterator<Person> j = settlement.getAllAssociatedPeople().iterator();
-		while (j.hasNext()) {
-			Person person = j.next();
-			if (person.isOutside())
-				number += person.getItemResourceStored(resource.getID());
-		}
+	// 	// Get number of resources carried by people on EVA.
+	// 	Iterator<Person> j = settlement.getAllAssociatedPeople().iterator();
+	// 	while (j.hasNext()) {
+	// 		Person person = j.next();
+	// 		if (person.isOutside())
+	// 			number += person.getItemResourceStored(resource.getID());
+	// 	}
 
-		// Get the number of resources that will be produced by ongoing manufacturing
-		// processes.
-		Good amountResourceGood = GoodsUtil.getResourceGood(resource);
-		number += getManufacturingProcessOutput(amountResourceGood);
+	// 	// Get the number of resources that will be produced by ongoing manufacturing
+	// 	// processes.
+	// 	Good amountResourceGood = GoodsUtil.getResourceGood(resource);
+	// 	number += getManufacturingProcessOutput(amountResourceGood);
 
-		number += getFoodProductionOutput(amountResourceGood);
+	// 	number += getFoodProductionOutput(amountResourceGood);
 
-		return number;
-	}
+	// 	return number;
+	// }
 
 	/**
 	 * Determines the value of an equipment.
@@ -3106,37 +3107,37 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @param equipmentClass the equipmentType to check.
 	 * @return number of equipment for the settlement.
 	 */
-	private double getNumberOfEquipmentForSettlement(Good good, EquipmentType equipmentType) {
-		double number = 0D;
+	// private double getNumberOfEquipmentForSettlement(Good good, EquipmentType equipmentType) {
+	// 	double number = 0D;
 
-		// Get number of the equipment in settlement storage.
-		number += settlement.findNumEmptyContainersOfType(equipmentType, false);
+	// 	// Get number of the equipment in settlement storage.
+	// 	number += settlement.findNumEmptyContainersOfType(equipmentType, false);
 
-		// Get number of equipment out on mission vehicles.
-		Iterator<Mission> i = missionManager.getMissionsForSettlement(settlement).iterator();
-		while (i.hasNext()) {
-			Mission mission = i.next();
-			if (mission instanceof VehicleMission) {
-				Vehicle vehicle = ((VehicleMission) mission).getVehicle();
-				if ((vehicle != null) && !settlement.equals(vehicle.getSettlement()))
-					number += vehicle.findNumEmptyContainersOfType(equipmentType, false);
-			}
-		}
+	// 	// Get number of equipment out on mission vehicles.
+	// 	Iterator<Mission> i = missionManager.getMissionsForSettlement(settlement).iterator();
+	// 	while (i.hasNext()) {
+	// 		Mission mission = i.next();
+	// 		if (mission instanceof VehicleMission) {
+	// 			Vehicle vehicle = ((VehicleMission) mission).getVehicle();
+	// 			if ((vehicle != null) && !settlement.equals(vehicle.getSettlement()))
+	// 				number += vehicle.findNumEmptyContainersOfType(equipmentType, false);
+	// 		}
+	// 	}
 
-		// Get number of equipment carried by people on EVA.
-		Iterator<Person> j = settlement.getAllAssociatedPeople().iterator();
-		while (j.hasNext()) {
-			Person person = j.next();
-			if (person.isOutside())
-				number += person.findNumEmptyContainersOfType(equipmentType, false);
-		}
+	// 	// Get number of equipment carried by people on EVA.
+	// 	Iterator<Person> j = settlement.getAllAssociatedPeople().iterator();
+	// 	while (j.hasNext()) {
+	// 		Person person = j.next();
+	// 		if (person.isOutside())
+	// 			number += person.findNumEmptyContainersOfType(equipmentType, false);
+	// 	}
 
-		// Get the number of equipment that will be produced by ongoing manufacturing
-		// processes.
-		number += getManufacturingProcessOutput(good);
+	// 	// Get the number of equipment that will be produced by ongoing manufacturing
+	// 	// processes.
+	// 	number += getManufacturingProcessOutput(good);
 
-		return number;
-	}
+	// 	return number;
+	// }
 
 	/**
 	 * Determines the value of a vehicle good.
@@ -3184,7 +3185,7 @@ public class GoodsManager implements Serializable, Temporal {
 		int numSol = solElapsed % Settlement.SUPPLY_DEMAND_REFRESH + 1;
 
 		// Calculate total supply
-		totalSupply = limitMaxMin(getAverageVehicleSupply(getNumberOfVehiclesForSettlement(vehicleType), numSol), MIN_SUPPLY, MAX_SUPPLY);
+		totalSupply = limitMaxMin(getAverageVehicleSupply(good.getNumberForSettlement(settlement), numSol), MIN_SUPPLY, MAX_SUPPLY);
 		
 		vehicleSupplyCache.put(id, totalSupply);
 		
@@ -3361,7 +3362,7 @@ public class GoodsManager implements Serializable, Temporal {
 	 */
 	private double determineTradeVehicleValue(Good vehicleGood, boolean useCache) {
 		double tradeDemand = determineTradeDemand(vehicleGood, useCache);
-		double supply = getNumberOfVehiclesForSettlement(vehicleGood.getName());
+		double supply = vehicleGood.getNumberForSettlement(settlement);
 		return tradeDemand / (supply + 1D);
 	}
 
@@ -3381,7 +3382,8 @@ public class GoodsManager implements Serializable, Temporal {
 		// Add demand for mining missions by engineers.
 		demand += Math.min(8, getJobNum(JobType.TRADER) * 1.2);
 
-		double supply = getNumberOfVehiclesForSettlement(Drone.NAME);
+		Good droneGood = GoodsUtil.getVehicleGood(Drone.NAME);
+		double supply = droneGood.getNumberForSettlement(settlement);
 		if (!buy)
 			supply--;
 		if (supply < 0D)
@@ -3409,7 +3411,8 @@ public class GoodsManager implements Serializable, Temporal {
 		// Add demand for mining missions by engineers.
 		demand += Math.min(6, getJobNum(JobType.ENGINEER) * 1.1);
 
-		double supply = getNumberOfVehiclesForSettlement(LightUtilityVehicle.NAME);
+		Good luvGood = GoodsUtil.getVehicleGood(LightUtilityVehicle.NAME);
+		double supply = luvGood.getNumberForSettlement(settlement);
 		if (!buy)
 			supply--;
 		if (supply < 0D)
@@ -3707,23 +3710,24 @@ public class GoodsManager implements Serializable, Temporal {
 	/**
 	 * Gets the number of the vehicle for the settlement.
 	 *
+	 * @param settlement Settlement being checked
 	 * @param vehicleType the vehicle type.
 	 * @return the number of vehicles.
 	 */
-	private double getNumberOfVehiclesForSettlement(String vehicleType) {
-		double number = 0D;
-		for (Vehicle vehicle : settlement.getAllAssociatedVehicles()) {
-			if (vehicleType.equalsIgnoreCase(vehicle.getDescription()))
-				number += 1D;
-		}
+	// static int getNumberOfVehiclesForSettlement(Settlement settlement, String vehicleType) {
+	// 	double number = 0D;
+	// 	for (Vehicle vehicle : settlement.getAllAssociatedVehicles()) {
+	// 		if (vehicleType.equalsIgnoreCase(vehicle.getDescription()))
+	// 			number += 1D;
+	// 	}
 
-		// Get the number of vehicles that will be produced by ongoing manufacturing
-		// processes.
-		Good vehicleGood = GoodsUtil.getVehicleGood(vehicleType);
-		number += getManufacturingProcessOutput(vehicleGood);
+	// 	// Get the number of vehicles that will be produced by ongoing manufacturing
+	// 	// processes.
+	// 	Good vehicleGood = GoodsUtil.getVehicleGood(vehicleType);
+	// 	number += getManufacturingProcessOutput(vehicleGood);
 
-		return number;
-	}
+	// 	return number;
+	// }
 
 	/**
 	 * Gets the number of robots of this type in this settlement.
@@ -3731,17 +3735,17 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @param name
 	 * @return
 	 */
-	private double getNumberOfRobotsForSettlement(String name) {
-		int result = 0;
-		// Get number of robots.
-		Iterator<Robot> j = settlement.getAllAssociatedRobots().iterator();
-		while (j.hasNext()) {
-			if (j.next().getRobotType() == RobotType.valueOfIgnoreCase(name))
-				result++;
-		}
-		return result;		
-	}
-	
+	// private double getNumberOfRobotsForSettlement(String name) {
+	// 	int result = 0;
+	// 	// Get number of robots.
+	// 	Iterator<Robot> j = settlement.getAllAssociatedRobots().iterator();
+	// 	while (j.hasNext()) {
+	// 		if (j.next().getRobotType() == RobotType.valueOfIgnoreCase(name))
+	// 			result++;
+	// 	}
+	// 	return result;		
+	// }
+
 	/**
 	 * Determines the trade demand for a good at a settlement.
 	 *
@@ -3788,7 +3792,7 @@ public class GoodsManager implements Serializable, Temporal {
 	 *
 	 * @return
 	 */
-	public int getNthPower(double num) {
+	private int getNthPower(double num) {
 		int power = 0;
 		int base = 2;
 		int n = (int) num;
@@ -3800,7 +3804,7 @@ public class GoodsManager implements Serializable, Temporal {
 		return -power;
 	}
 
-	public int computeLevel(double ratio) {
+	private int computeLevel(double ratio) {
 		double lvl = 0;
 		if (ratio < 1) {
 			lvl = 0;
@@ -3838,7 +3842,7 @@ public class GoodsManager implements Serializable, Temporal {
 		eVASuitMod = computeModifier(BASE_EVA_SUIT, level);
 	}
 
-	public double computeModifier(int baseValue, int level) {
+	private double computeModifier(int baseValue, int level) {
 		double mod = 0;
 		if (level == 1) {
 			mod = baseValue;
@@ -3861,16 +3865,6 @@ public class GoodsManager implements Serializable, Temporal {
 			buyList.removeAll(getExclusionBuyList());
 		}
 		return buyList;
-	}
-
-	/**
-	 * Gets the price per item for a good
-	 *
-	 * @param good
-	 * @return
-	 */
-	public double getPricePerItem(Good good) {
-		return getPrice(good);
 	}
 
 	/**

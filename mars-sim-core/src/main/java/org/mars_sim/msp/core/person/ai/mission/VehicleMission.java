@@ -450,7 +450,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	private Collection<Vehicle> getDrones(Settlement settlement) {
 		Collection<Vehicle> result = new ConcurrentLinkedQueue<>();
 		Collection<Drone> list = settlement.getParkedDrones();
-		if (!list.isEmpty())
+		if (list.isEmpty())
 			return result;
 		for (Drone v : list) {
 			if (!v.haveStatusType(StatusType.MAINTENANCE)
@@ -1162,8 +1162,6 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 				}
 			}
 
-			logger.warning(vehicle, " at " + getPhase() + ": issues with the resource type of "
-						+ GoodsUtil.getResourceGood(id));
 		}
 		return result;
 	}

@@ -229,7 +229,7 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 			else if (r == 5)
 				return Math.round(goodsList.get(rowIndex).getCostOutput()*100.0)/100.0;
 			else
-				return Math.round(settlements.get(0).getGoodsManager().getPricePerItem(goodsList.get(rowIndex))*100.0)/100.0; 
+				return Math.round(settlements.get(0).getGoodsManager().getPrice(goodsList.get(rowIndex))*100.0)/100.0; 
 		}
 	}
 

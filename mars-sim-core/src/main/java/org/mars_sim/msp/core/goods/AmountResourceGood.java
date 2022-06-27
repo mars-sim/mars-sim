@@ -6,8 +6,21 @@
  */
 package org.mars_sim.msp.core.goods;
 
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import org.mars_sim.msp.core.food.FoodProductionProcess;
+import org.mars_sim.msp.core.food.FoodProductionProcessItem;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
+import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * This represents how a Amount Resource can be traded.
@@ -116,5 +129,62 @@ class AmountResourceGood extends Good {
             result += STANDARD_AMOUNT_VALUE ;
 
         return result;
+    }
+
+    /**
+	 * Gets the amount of the good being produced at the settlement by ongoing food
+	 * production.
+	 *
+	 * @param settlement the good.
+	 * @return amount (kg for amount resources, number for parts, equipment, and
+	 *         vehicles).
+	 */
+	private double getFoodProductionOutput(Settlement settlement) {
+		double result = 0D;
+
+		// Get the amount of the resource that will be produced by ongoing food
+		// production processes.
+		for(Building b : settlement.getBuildingManager().getBuildings(FunctionType.FOOD_PRODUCTION)) {
+			// Go through each ongoing food production process.
+			for(FoodProductionProcess process : b.getFoodProduction().getProcesses()) {
+				for(FoodProductionProcessItem item : process.getInfo().getOutputList()) {
+					if (item.getName().equalsIgnoreCase(getName())) {
+						result += item.getAmount();
+					}
+				}
+			}
+		}
+
+		return result;
+	}
+
+
+    @Override
+    public double getNumberForSettlement(Settlement settlement) {
+        double amount = 0D;
+
+		// Get amount of resource in settlement storage.
+		amount += settlement.getAmountResourceStored(getID());
+        
+        // Get amount of resource out on mission vehicles.
+        amount += getVehiclesOnMissions(settlement)
+                        .map(v -> v.getAmountResourceStored(getID()))
+                        .collect(Collectors.summingDouble(f -> f));
+
+		// Get amount of resource carried by people on EVA.
+		amount += getPersonOnEVA(settlement)
+                    .map(p -> p.getAmountResourceStored(getID()))
+                    .collect(Collectors.summingDouble(f -> f));
+
+
+		// Get the amount of the resource that will be produced by ongoing manufacturing
+		// processes.
+		amount += getManufacturingProcessOutput(settlement);
+
+		// Get the amount of the resource that will be produced by ongoing food
+		// production processes.
+		amount += getFoodProductionOutput(settlement);
+
+		return amount;
     }
 }

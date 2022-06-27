@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core.goods;
 
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.VehicleConfig;
 import org.mars_sim.msp.core.vehicle.VehicleType;
 
@@ -78,5 +79,19 @@ class VehicleGood extends Good {
             default:
                 return VEHICLE_VALUE;
         }
+    }
+
+    @Override
+    public double getNumberForSettlement(Settlement settlement) {
+        final String vName = getName();
+		double number = settlement.getAllAssociatedVehicles().stream()
+			                    .filter(v -> vName.equalsIgnoreCase(v.getDescription()))
+                                .count();
+
+		// Get the number of vehicles that will be produced by ongoing manufacturing
+		// processes.
+		number += getManufacturingProcessOutput(settlement);
+
+		return number;
     }
 }

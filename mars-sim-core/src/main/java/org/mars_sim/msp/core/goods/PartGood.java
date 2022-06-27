@@ -6,8 +6,11 @@
  */
 package org.mars_sim.msp.core.goods;
 
+import java.util.stream.Collectors;
+
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
+import org.mars_sim.msp.core.structure.Settlement;
 
 /*
  * This class is the representation of a Part instance as a Good that is tradable.
@@ -88,5 +91,29 @@ class PartGood extends Good {
             return BATTERY_VALUE;
         
         return ITEM_VALUE;
+    }
+
+    @Override
+    public double getNumberForSettlement(Settlement settlement) {
+		double number = 0D;
+
+		// Get number of resources in settlement storage.
+		number += settlement.getItemResourceStored(getID());
+
+		// Get number of resources out on mission vehicles.
+        number += getVehiclesOnMissions(settlement)
+               .map(v -> v.getItemResourceStored(getID()))
+               .collect(Collectors.summingInt(Integer::intValue));
+
+		// Get number of resources carried by people on EVA.
+        number += getPersonOnEVA(settlement)
+                    .map(p -> p.getItemResourceStored(getID()))
+                    .collect(Collectors.summingInt(Integer::intValue));
+
+		// Get the number of resources that will be produced by ongoing manufacturing
+		// processes.
+		number += getManufacturingProcessOutput(settlement);
+
+		return number;
     }
 }

@@ -8,16 +8,27 @@ package org.mars_sim.msp.core.goods;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Stream;
 
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.food.FoodProductionProcessInfo;
 import org.mars_sim.msp.core.food.FoodProductionProcessItem;
 import org.mars_sim.msp.core.food.FoodProductionUtil;
+import org.mars_sim.msp.core.manufacture.ManufactureProcess;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessInfo;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessItem;
 import org.mars_sim.msp.core.manufacture.ManufactureUtil;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.mission.MissionManager;
+import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ItemType;
+import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * A meta class describing an economic good in the simulation.
@@ -26,14 +37,15 @@ public abstract class Good implements Serializable, Comparable<Good> {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
-	private static final double DOLLAR_PER_UNIT = 0.5;
 	
 	private static final double LABOR_FACTOR = 150D ;
 	private static final double PROCESS_TIME_FACTOR = 500D;
 	private static final double POWER_FACTOR = 1D;
 	private static final double SKILL_FACTOR = 1D;
 	private static final double TECH_FACTOR = 2D;
+
+	//TODO Initialise explictly
+	protected static MissionManager missionManager = Simulation.instance().getMissionManager();
 
 	// Data members
 	private String name;
@@ -378,6 +390,32 @@ public abstract class Good implements Serializable, Comparable<Good> {
 	}
 
 	/**
+	 * Gets the amount of this good being produced at the settlement by ongoing
+	 * manufacturing processes.
+	 *
+	 * @param settlement Place producing the Good
+	 * @return amount (kg for amount resources, number for parts, equipment, and
+	 *         vehicles).
+	 */
+	protected double getManufacturingProcessOutput(Settlement settlement) {
+
+		double result = 0D;
+
+		for(Building b : settlement.getBuildingManager().getBuildings(FunctionType.MANUFACTURE)) {
+			// Go through each ongoing active manufacturing process.
+			for(ManufactureProcess process : b.getManufacture().getProcesses()) {
+				for(ManufactureProcessItem item : process.getInfo().getOutputList()) {
+					if (item.getName().equalsIgnoreCase(name)) {
+						result += item.getAmount();
+					}
+				}
+			}
+		}
+
+		return result;
+	}
+
+	/**
 	 * Gets a string representation of the good.
 	 *
 	 * @return string.
@@ -431,4 +469,35 @@ public abstract class Good implements Serializable, Comparable<Good> {
      * @return
      */
 	public abstract GoodType getGoodType();
+
+	
+	/**
+	 * Gets the number of this good being in use or being produced at this moment at
+	 * the settlement.
+	 *
+	 * @param settlement Settlement to check
+	 * @return the number of the good (or amount (kg) if amount resource good).
+	 */
+	abstract double getNumberForSettlement(Settlement settlement);
+
+	    /**
+     * Get a stream of all Vehciles on Missions from the target Settlement
+     * @param settlement Settlement being checked
+     */
+    protected Stream<Vehicle> getVehiclesOnMissions(Settlement settlement) {
+        return missionManager.getMissionsForSettlement(settlement).stream()
+                .filter(VehicleMission.class::isInstance)
+                .map(vm -> ((VehicleMission) vm).getVehicle())
+                .filter(Objects::nonNull);
+    }
+    
+    /**
+     * Get a stream of Person on EVA at the Settlement
+     * @param settlement
+     * @return
+     */
+    protected Stream<Person> getPersonOnEVA(Settlement settlement) {
+        return  settlement.getAllAssociatedPeople().stream()
+			              .filter(p -> p.isOutside());
+    }
 }

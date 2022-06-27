@@ -8,6 +8,7 @@ package org.mars_sim.msp.core.goods;
 
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
+import org.mars_sim.msp.core.structure.Settlement;
 
 /**
  * This class represents how a Robot can be traded.
@@ -53,5 +54,13 @@ class RobotGood extends Good {
     @Override
     protected double computeCostModifier() {
         return ROBOT_VALUE;
+    }
+
+    @Override
+    public double getNumberForSettlement(Settlement settlement) {
+		// Get number of robots.
+		return (int) settlement.getAllAssociatedRobots().stream()
+                        .filter( r -> r.getRobotType() == robotType)
+                        .count();	
     }
 }
