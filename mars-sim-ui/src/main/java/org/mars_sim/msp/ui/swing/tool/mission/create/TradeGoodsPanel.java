@@ -99,7 +99,7 @@ class TradeGoodsPanel extends WizardPanel {
 		availableGoodsPane.add(goodsScrollPane, BorderLayout.CENTER);
 		goodsTableModel = new GoodsTableModel();
 		goodsTable = new JTable(goodsTableModel);
-		TableStyle.setTableStyle(tradeTable);
+		TableStyle.setTableStyle(goodsTable);
 		goodsTable.setAutoCreateRowSorter(true);
 		goodsTable.setRowSelectionAllowed(true);
 		goodsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);

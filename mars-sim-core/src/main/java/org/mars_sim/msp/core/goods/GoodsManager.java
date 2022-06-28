@@ -27,7 +27,6 @@ import org.mars_sim.msp.core.equipment.ContainerUtil;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.equipment.EquipmentType;
-import org.mars_sim.msp.core.food.FoodProductionProcess;
 import org.mars_sim.msp.core.food.FoodProductionProcessInfo;
 import org.mars_sim.msp.core.food.FoodProductionProcessItem;
 import org.mars_sim.msp.core.food.FoodProductionUtil;
@@ -36,13 +35,13 @@ import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
-import org.mars_sim.msp.core.manufacture.ManufactureProcess;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessInfo;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessItem;
 import org.mars_sim.msp.core.manufacture.ManufactureUtil;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ai.job.JobType;
+import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.mission.CollectIce;
 import org.mars_sim.msp.core.person.ai.mission.CollectRegolith;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
@@ -51,13 +50,11 @@ import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ItemType;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -379,7 +376,7 @@ public class GoodsManager implements Serializable, Temporal {
 	 *
 	 * @return
 	 */
-	public static List<Good> getExclusionBuyList() {
+	private static List<Good> getExclusionBuyList() {
 		if (exclusionBuyList == null) {
 			exclusionBuyList = new ArrayList<>();
 			for (VehicleType type : VehicleType.values()) {
@@ -434,22 +431,29 @@ public class GoodsManager implements Serializable, Temporal {
 		if (good != null) {
 			double value = 0D;
 
-			// Determine all amount resource good values.
-			if (GoodCategory.AMOUNT_RESOURCE == good.getCategory())
+			switch(good.getCategory()) {
+			case AMOUNT_RESOURCE:
 				value = determineAmountResourceGoodValue(good, supply, useCache);
+				break;
 
-			// Determine all item resource values.
-			if (GoodCategory.ITEM_RESOURCE == good.getCategory())
+			case ITEM_RESOURCE:
 				value = determineItemResourceGoodValue(good, supply, useCache);
+				break;
 
-			// Determine all equipment values.
-			if (GoodCategory.EQUIPMENT == good.getCategory()
-					|| GoodCategory.CONTAINER == good.getCategory())
+			case EQUIPMENT:
+			case CONTAINER:
 				value = determineEquipmentGoodValue(good, supply, useCache);
+				break;
 
-			// Determine all vehicle values.
-			if (GoodCategory.VEHICLE == good.getCategory())
+			case VEHICLE:
 				value = determineVehicleGoodValue(good, supply, useCache);
+				break;
+
+			case ROBOT:
+				// Why no Robot good value ?
+				value = 0D;
+				break;
+			}
 
 			settlement.fireUnitUpdate(UnitEventType.GOODS_VALUE_EVENT, good);
 			
@@ -1301,7 +1305,7 @@ public class GoodsManager implements Serializable, Temporal {
 	public double flattenAmountDemand(Good good) {
 		double demand = 0;
 		String name = good.getName();
-		GoodType type = GoodsUtil.getGoodType(good);
+		GoodType type = good.getGoodType();
 		
 		if (name.contains("polyester")
 				|| name.contains("styrene")
@@ -1342,7 +1346,7 @@ public class GoodsManager implements Serializable, Temporal {
 	 */
 	public double flattenPartDemand(Good good) {
 		String name = good.getName();
-		GoodType type = GoodsUtil.getGoodType(good);
+		GoodType type = good.getGoodType();
 
 		if (name.contains("electrical wire"))
 			return 0.1 * ELECTRICAL_DEMAND;
@@ -2097,143 +2101,6 @@ public class GoodsManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * Gets the number of a good being in use or being produced at this moment at
-	 * the settlement.
-	 *
-	 * @param good the good to check.
-	 * @return the number of the good (or amount (kg) if amount resource good).
-	 */
-	public double getNumberOfGoodForSettlement(Good good) {
-
-		if (good != null) {
-			if (GoodCategory.AMOUNT_RESOURCE == good.getCategory())
-				return getAmountOfResourceForSettlement(ResourceUtil.findAmountResource(good.getID()));
-			if (GoodCategory.ITEM_RESOURCE == good.getCategory())
-				return getNumItemResourceForSettlement(ItemResourceUtil.findItemResource(good.getID()));
-			if (GoodCategory.EQUIPMENT == good.getCategory()
-					|| GoodCategory.CONTAINER == good.getCategory())
-				return getNumberOfEquipmentForSettlement(good, good.getEquipmentType());
-			if (GoodCategory.VEHICLE == good.getCategory())
-				return getNumberOfVehiclesForSettlement(good.getName());
-			if (GoodCategory.ROBOT == good.getCategory())
-				return getNumberOfRobotsForSettlement(good.getName());
-			return 0;
-		}
-
-		else
-			logger.severe(settlement, "Good is null.");
-
-		return 0;
-	}
-
-	
-	/**
-	 * Gets the amount of an amount resource in use for a settlement.
-	 *
-	 * @param resource the resource to check.
-	 * @return amount (kg) of resource for the settlement.
-	 */
-	private double getAmountOfResourceForSettlement(AmountResource resource) {
-		double amount = 0D;
-
-		// Get amount of resource in settlement storage.
-		amount += settlement.getAmountResourceStored(resource.getID());
-
-		// Get amount of resource out on mission vehicles.
-		Iterator<Mission> i = missionManager.getMissionsForSettlement(settlement).iterator();
-		while (i.hasNext()) {
-			Mission mission = i.next();
-			if (mission instanceof VehicleMission) {
-				Vehicle vehicle = ((VehicleMission) mission).getVehicle();
-				if ((vehicle != null) && !settlement.equals(vehicle.getSettlement()))
-					amount += vehicle.getAmountResourceStored(resource.getID());
-			}
-		}
-
-		// Get amount of resource carried by people on EVA.
-		Iterator<Person> j = settlement.getAllAssociatedPeople().iterator();
-		while (j.hasNext()) {
-			Person person = j.next();
-			if (person.isOutside())
-				amount += person.getAmountResourceStored(resource.getID());
-		}
-
-		// Get the amount of the resource that will be produced by ongoing manufacturing
-		// processes.
-		Good amountResourceGood = GoodsUtil.getResourceGood(resource);
-		amount += getManufacturingProcessOutput(amountResourceGood);
-
-		// Get the amount of the resource that will be produced by ongoing food
-		// production processes.
-		amount += getFoodProductionOutput(amountResourceGood);
-
-		return amount;
-	}
-
-	/**
-	 * Gets the amount of the good being produced at the settlement by ongoing food
-	 * production.
-	 *
-	 * @param good the good.
-	 * @return amount (kg for amount resources, number for parts, equipment, and
-	 *         vehicles).
-	 */
-	private double getFoodProductionOutput(Good good) {
-		double result = 0D;
-
-		// Get the amount of the resource that will be produced by ongoing food
-		// production processes.
-		Iterator<Building> p = settlement.getBuildingManager().getBuildings(FunctionType.FOOD_PRODUCTION).iterator();
-		while (p.hasNext()) {
-			// Go through each ongoing food production process.
-			Iterator<FoodProductionProcess> q = p.next().getFoodProduction().getProcesses().iterator();
-			while (q.hasNext()) {
-				FoodProductionProcess process = q.next();
-				Iterator<FoodProductionProcessItem> r = process.getInfo().getOutputList().iterator();
-				while (r.hasNext()) {
-					FoodProductionProcessItem item = r.next();
-					if (item.getName().equalsIgnoreCase(good.getName())) {
-						result += item.getAmount();
-					}
-				}
-			}
-		}
-
-		return result;
-	}
-
-	/**
-	 * Gets the amount of the good being produced at the settlement by ongoing
-	 * manufacturing processes.
-	 *
-	 * @param good the good.
-	 * @return amount (kg for amount resources, number for parts, equipment, and
-	 *         vehicles).
-	 */
-	private double getManufacturingProcessOutput(Good good) {
-
-		double result = 0D;
-
-		Iterator<Building> i = settlement.getBuildingManager().getBuildings(FunctionType.MANUFACTURE).iterator();
-		while (i.hasNext()) {
-			// Go through each ongoing manufacturing process.
-			Iterator<ManufactureProcess> j = i.next().getManufacture().getProcesses().iterator();
-			while (j.hasNext()) {
-				ManufactureProcess process = j.next();
-				Iterator<ManufactureProcessItem> k = process.getInfo().getOutputList().iterator();
-				while (k.hasNext()) {
-					ManufactureProcessItem item = k.next();
-					if (item.getName().equalsIgnoreCase(good.getName())) {
-						result += item.getAmount();
-					}
-				}
-			}
-		}
-
-		return result;
-	}
-
-	/**
 	 * Determines the value of an item resource.
 	 *
 	 * @param good the resource good to check.
@@ -2863,47 +2730,7 @@ public class GoodsManager implements Serializable, Temporal {
 		return demand;
 	}
 
-	/**
-	 * Gets the number of an item resource in use for a settlement.
-	 *
-	 * @param resource the resource to check.
-	 * @return number of resource for the settlement.
-	 */
-	private double getNumItemResourceForSettlement(ItemResource resource) {
-		double number = 0D;
-
-		// Get number of resources in settlement storage.
-		number += settlement.getItemResourceStored(resource.getID());
-
-		// Get number of resources out on mission vehicles.
-		Iterator<Mission> i = missionManager.getMissionsForSettlement(settlement).iterator();
-		while (i.hasNext()) {
-			Mission mission = i.next();
-			if (mission instanceof VehicleMission) {
-				Vehicle vehicle = ((VehicleMission) mission).getVehicle();
-				if ((vehicle != null) && !settlement.equals(vehicle.getSettlement()))
-					number += vehicle.getItemResourceStored(resource.getID());
-			}
-		}
-
-		// Get number of resources carried by people on EVA.
-		Iterator<Person> j = settlement.getAllAssociatedPeople().iterator();
-		while (j.hasNext()) {
-			Person person = j.next();
-			if (person.isOutside())
-				number += person.getItemResourceStored(resource.getID());
-		}
-
-		// Get the number of resources that will be produced by ongoing manufacturing
-		// processes.
-		Good amountResourceGood = GoodsUtil.getResourceGood(resource);
-		number += getManufacturingProcessOutput(amountResourceGood);
-
-		number += getFoodProductionOutput(amountResourceGood);
-
-		return number;
-	}
-
+	
 	/**
 	 * Determines the value of an equipment.
 	 *
@@ -2995,7 +2822,7 @@ public class GoodsManager implements Serializable, Temporal {
 	private double determineEquipmentDemand(EquipmentType type) {
 		double baseDemand = 1;
 
-		double areologistFactor = (1 + getJobNum(JobType.AREOLOGIST)) / 3.0;
+		double areologistFactor = (1 + JobUtil.numJobs(JobType.AREOLOGIST, settlement)) / 3.0;
 
 		// Determine number of EVA suits that are needed
 		if (type == EquipmentType.EVA_SUIT) {
@@ -3083,60 +2910,6 @@ public class GoodsManager implements Serializable, Temporal {
 		return  (1 + numUsed) / (1 + total);
 	}
 
-
-	/**
-	 * Gets the number of people in a job associated with the settlement.
-	 *
-	 * @return number of people
-	 */
-	private int getJobNum(JobType jobType) {
-		int result = 0;
-		Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
-		while (i.hasNext()) {
-			if (i.next().getMind().getJob() == jobType)
-				result++;
-		}
-		return result;
-	}
-
-	/**
-	 * Gets the number of equipment for a settlement.
-	 *
-	 * @param equipmentClass the equipmentType to check.
-	 * @return number of equipment for the settlement.
-	 */
-	private double getNumberOfEquipmentForSettlement(Good good, EquipmentType equipmentType) {
-		double number = 0D;
-
-		// Get number of the equipment in settlement storage.
-		number += settlement.findNumEmptyContainersOfType(equipmentType, false);
-
-		// Get number of equipment out on mission vehicles.
-		Iterator<Mission> i = missionManager.getMissionsForSettlement(settlement).iterator();
-		while (i.hasNext()) {
-			Mission mission = i.next();
-			if (mission instanceof VehicleMission) {
-				Vehicle vehicle = ((VehicleMission) mission).getVehicle();
-				if ((vehicle != null) && !settlement.equals(vehicle.getSettlement()))
-					number += vehicle.findNumEmptyContainersOfType(equipmentType, false);
-			}
-		}
-
-		// Get number of equipment carried by people on EVA.
-		Iterator<Person> j = settlement.getAllAssociatedPeople().iterator();
-		while (j.hasNext()) {
-			Person person = j.next();
-			if (person.isOutside())
-				number += person.findNumEmptyContainersOfType(equipmentType, false);
-		}
-
-		// Get the number of equipment that will be produced by ongoing manufacturing
-		// processes.
-		number += getManufacturingProcessOutput(good);
-
-		return number;
-	}
-
 	/**
 	 * Determines the value of a vehicle good.
 	 *
@@ -3183,7 +2956,7 @@ public class GoodsManager implements Serializable, Temporal {
 		int numSol = solElapsed % Settlement.SUPPLY_DEMAND_REFRESH + 1;
 
 		// Calculate total supply
-		totalSupply = limitMaxMin(getAverageVehicleSupply(getNumberOfVehiclesForSettlement(vehicleType), numSol), MIN_SUPPLY, MAX_SUPPLY);
+		totalSupply = limitMaxMin(getAverageVehicleSupply(good.getNumberForSettlement(settlement), numSol), MIN_SUPPLY, MAX_SUPPLY);
 		
 		vehicleSupplyCache.put(id, totalSupply);
 		
@@ -3269,6 +3042,7 @@ public class GoodsManager implements Serializable, Temporal {
 			}
 
 			else {
+				// TODO Should interate over MissionMeta to get these values.
 				double travelToSettlementMissionValue = determineMissionVehicleDemand(MissionType.TRAVEL_TO_SETTLEMENT,
 						vehicleType, buy);
 				if (travelToSettlementMissionValue > demand) {
@@ -3360,7 +3134,7 @@ public class GoodsManager implements Serializable, Temporal {
 	 */
 	private double determineTradeVehicleValue(Good vehicleGood, boolean useCache) {
 		double tradeDemand = determineTradeDemand(vehicleGood, useCache);
-		double supply = getNumberOfVehiclesForSettlement(vehicleGood.getName());
+		double supply = vehicleGood.getNumberForSettlement(settlement);
 		return tradeDemand / (supply + 1D);
 	}
 
@@ -3375,12 +3149,13 @@ public class GoodsManager implements Serializable, Temporal {
 		double demand = 1D;
 
 		// Add demand for construction missions by architects.
-		demand += Math.min(7, getJobNum(JobType.PILOT) * 1.1);
+		demand += Math.min(7, JobUtil.numJobs(JobType.PILOT, settlement) * 1.1);
 
 		// Add demand for mining missions by engineers.
-		demand += Math.min(8, getJobNum(JobType.TRADER) * 1.2);
+		demand += Math.min(8, JobUtil.numJobs(JobType.TRADER, settlement) * 1.2);
 
-		double supply = getNumberOfVehiclesForSettlement(Drone.NAME);
+		Good droneGood = GoodsUtil.getVehicleGood(Drone.NAME);
+		double supply = droneGood.getNumberForSettlement(settlement);
 		if (!buy)
 			supply--;
 		if (supply < 0D)
@@ -3400,15 +3175,16 @@ public class GoodsManager implements Serializable, Temporal {
 		double demand = 1;
 
 		// Add demand for mining missions by areologists.
-		demand += Math.min(10, getJobNum(JobType.AREOLOGIST) * 1.3);
+		demand += Math.min(10, JobUtil.numJobs(JobType.AREOLOGIST, settlement) * 1.3);
 
 		// Add demand for construction missions by architects.
-		demand += Math.min(8, getJobNum(JobType.ARCHITECT) * 1.2);
+		demand += Math.min(8, JobUtil.numJobs(JobType.ARCHITECT, settlement) * 1.2);
 
 		// Add demand for mining missions by engineers.
-		demand += Math.min(6, getJobNum(JobType.ENGINEER) * 1.1);
+		demand += Math.min(6, JobUtil.numJobs(JobType.ENGINEER, settlement) * 1.1);
 
-		double supply = getNumberOfVehiclesForSettlement(LightUtilityVehicle.NAME);
+		Good luvGood = GoodsUtil.getVehicleGood(LightUtilityVehicle.NAME);
+		double supply = luvGood.getNumberForSettlement(settlement);
 		if (!buy)
 			supply--;
 		if (supply < 0D)
@@ -3454,49 +3230,43 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @return
 	 */
 	private double determineMissionJob(MissionType missionType) {
-	
-		if (MissionType.BUILDING_CONSTRUCTION == missionType
-				|| MissionType.BUILDING_SALVAGE == missionType) {
-			return getJobNum(JobType.ARCHITECT);
-		}
+		// TODO should come from MissionMeta classes
+		switch(missionType) {
+			case BUILDING_CONSTRUCTION:
+			case BUILDING_SALVAGE:
+				return JobUtil.numJobs(JobType.ARCHITECT, settlement);
 		
-		if (MissionType.TRAVEL_TO_SETTLEMENT == missionType
-				|| MissionType.RESCUE_SALVAGE_VEHICLE == missionType) {
-			return getJobNum(JobType.PILOT)
+		case TRAVEL_TO_SETTLEMENT:
+		case RESCUE_SALVAGE_VEHICLE:
+			return JobUtil.numJobs(JobType.PILOT, settlement)
 					* ((double) settlement.getNumCitizens() 
 					/ (double) settlement.getPopulationCapacity());
-		} 
 
-		if (MissionType.COLLECT_ICE == missionType) {
+		case COLLECT_ICE:
 			return Math.min(getAmountDemandValue(GoodsUtil.getResourceGood(ResourceUtil.iceID)), 100);
-		} 
-
-		if (MissionType.TRADE == missionType
-				|| MissionType.DELIVERY == missionType) {
-			return getJobNum(JobType.TRADER);
-		}
 		
-		if (MissionType.COLLECT_REGOLITH == missionType) {
+		case TRADE:
+		case DELIVERY:
+			return JobUtil.numJobs(JobType.TRADER, settlement);
+		
+		case COLLECT_REGOLITH:
 			return Math.min(getAmountDemandValue(GoodsUtil.getResourceGood(ResourceUtil.regolithID)), 100);
-		}
 		
-		if (MissionType.MINING == missionType
-				|| MissionType.AREOLOGY == missionType
-				|| MissionType.EXPLORATION == missionType) {
-			return getJobNum(JobType.AREOLOGIST);
-		} 
+		case MINING:
+		case AREOLOGY:
+		case EXPLORATION:
+			return JobUtil.numJobs(JobType.AREOLOGIST, settlement);
 		
-		if (MissionType.BIOLOGY == missionType) {
-			return getJobNum(JobType.BIOLOGIST);
-		} 
+		case BIOLOGY:
+			return JobUtil.numJobs(JobType.BIOLOGIST, settlement);
 		
-		if (MissionType.METEOROLOGY == missionType) {
-			return getJobNum(JobType.METEOROLOGIST);
-		} 
+		case METEOROLOGY:
+			return JobUtil.numJobs(JobType.METEOROLOGIST, settlement);
 		
-		if (MissionType.EMERGENCY_SUPPLY == missionType) {
+		case EMERGENCY_SUPPLY:
 			return Math.max(unitManager.getSettlementNum() - 1D, 0);
 		}
+
 		return 0;
 	}
 
@@ -3513,131 +3283,147 @@ public class GoodsManager implements Serializable, Temporal {
 		VehicleSpec v = vehicleConfig.getVehicleSpec(vehicleType.getName());
 		int crewCapacity = v.getCrewSize();
 
-		if (MissionType.TRAVEL_TO_SETTLEMENT == missionType) {
-			if (crewCapacity >= 2)
-				capacity = 1D;
-			capacity *= crewCapacity / 8D;
+		// TODO This logic should be pushed into the MissionMeta to remove knowledge of different Mission types.
+		switch (missionType) {
+		case TRAVEL_TO_SETTLEMENT: {
+				if (crewCapacity >= 2)
+					capacity = 1D;
+				capacity *= crewCapacity / 8D;
 
-			double range = getVehicleRange(v);
-			capacity *= range / 2000D;
+				double range = getVehicleRange(v);
+				capacity *= range / 2000D;
+			} break;
 
-		} else if (MissionType.EXPLORATION == missionType) {
-			if (crewCapacity >= 2)
-				capacity = 1D;
+		case EXPLORATION: {
+				if (crewCapacity >= 2)
+					capacity = 1D;
 
-			double cargoCapacity = v.getTotalCapacity();
-			if (cargoCapacity < 500D)
-				capacity = 0D;
+				double cargoCapacity = v.getTotalCapacity();
+				if (cargoCapacity < 500D)
+					capacity = 0D;
 
-			boolean hasAreologyLab = v.hasLab() && v.getLabTechSpecialties().contains(ScienceType.AREOLOGY);
-            if (!hasAreologyLab)
-				capacity /= 2D;
-
-			double range = getVehicleRange(v);
-			if (range == 0D)
-				capacity = 0D;
-
-		} else if (MissionType.COLLECT_ICE == missionType
-				|| MissionType.COLLECT_REGOLITH == missionType) {
-			if (crewCapacity >= 2)
-				capacity = 1D;
-
-			double cargoCapacity = v.getTotalCapacity();
-			if (cargoCapacity < 1250D)
-				capacity = 0D;
-
-			double range = getVehicleRange(v);
-			if (range == 0D)
-				capacity = 0D;
-			
-		} else if (MissionType.RESCUE_SALVAGE_VEHICLE == missionType) {
-			if (crewCapacity >= 2)
-				capacity = 1D;
-
-			double range = getVehicleRange(v);
-			capacity *= range / 2000D;
-
-		} else if (MissionType.TRADE == missionType
-				|| MissionType.EMERGENCY_SUPPLY == missionType) {
-			if (crewCapacity >= 2)
-				capacity = 1D;
-
-			double cargoCapacity = v.getTotalCapacity();
-			capacity *= cargoCapacity / 10000D;
-
-			double range = getVehicleRange(v);
-			capacity *= range / 2000D;
-
-		} else if (MissionType.DELIVERY == missionType) {
-			capacity = 1D;
-
-			double cargoCapacity = v.getTotalCapacity();
-			capacity *= cargoCapacity / 10000D;
-
-			double range = getDroneRange(v);
-			capacity *= range / 2000D;			
-
-		} else if (MissionType.MINING == missionType) {
-			if (crewCapacity >= 2)
-				capacity = 1D;
-
-			double cargoCapacity = v.getTotalCapacity();
-			if (cargoCapacity < 1000D)
-				capacity = 0D;
-
-			double range = getVehicleRange(v);
-			if (range == 0D)
-				capacity = 0D;
-			
-		} else if (MissionType.AREOLOGY == missionType) {
-			if (crewCapacity >= 2)
-				capacity = 1D;
-
-			if (v.hasLab()) {
-				if (v.getLabTechSpecialties().contains(ScienceType.AREOLOGY)) {
-					capacity += v.getLabTechLevel();
-				} else {
+				boolean hasAreologyLab = v.hasLab() && v.getLabTechSpecialties().contains(ScienceType.AREOLOGY);
+				if (!hasAreologyLab)
 					capacity /= 2D;
-				}
+
+				double range = getVehicleRange(v);
+				if (range == 0D)
+					capacity = 0D;
+			} break;
+
+		case COLLECT_ICE:
+		case COLLECT_REGOLITH: {
+				if (crewCapacity >= 2)
+					capacity = 1D;
+
+				double cargoCapacity = v.getTotalCapacity();
+				if (cargoCapacity < 1250D)
+					capacity = 0D;
+
+				double range = getVehicleRange(v);
+				if (range == 0D)
+					capacity = 0D;
+			} break;
+
+		case RESCUE_SALVAGE_VEHICLE: {
+				if (crewCapacity >= 2)
+					capacity = 1D;
+
+				double range = getVehicleRange(v);
+				capacity *= range / 2000D;
 			}
+			break;
 
-			double range = getVehicleRange(v);
-			if (range == 0D)
-				capacity = 0D;
+		case TRADE:
+		case EMERGENCY_SUPPLY: {
+				if (crewCapacity >= 2)
+					capacity = 1D;
 
-		} else if (MissionType.BIOLOGY == missionType) {
-			if (crewCapacity >= 2)
+				double cargoCapacity = v.getTotalCapacity();
+				capacity *= cargoCapacity / 10000D;
+
+				double range = getVehicleRange(v);
+				capacity *= range / 2000D;
+			} break;
+
+		case DELIVERY: {
 				capacity = 1D;
 
-			if (v.hasLab()) {
-				if (v.getLabTechSpecialties().contains(ScienceType.BIOLOGY)) {
-					capacity += v.getLabTechLevel();
-				} else {
-					capacity /= 2D;
+				double cargoCapacity = v.getTotalCapacity();
+				capacity *= cargoCapacity / 10000D;
+
+				double range = getDroneRange(v);
+				capacity *= range / 2000D;			
+			} break;
+
+		case MINING: {
+				if (crewCapacity >= 2)
+					capacity = 1D;
+
+				double cargoCapacity = v.getTotalCapacity();
+				if (cargoCapacity < 1000D)
+					capacity = 0D;
+
+				double range = getVehicleRange(v);
+				if (range == 0D)
+					capacity = 0D;
+			} break;
+
+		case AREOLOGY: {
+				if (crewCapacity >= 2)
+					capacity = 1D;
+
+				if (v.hasLab()) {
+					if (v.getLabTechSpecialties().contains(ScienceType.AREOLOGY)) {
+						capacity += v.getLabTechLevel();
+					} else {
+						capacity /= 2D;
+					}
 				}
-			}
 
-			double range = getVehicleRange(v);
-			if (range == 0D)
-				capacity = 0D;
+				double range = getVehicleRange(v);
+				if (range == 0D)
+					capacity = 0D;
+			} break;
 
-		} else if (MissionType.METEOROLOGY == missionType) {
-			if (crewCapacity >= 2)
-				capacity = 1D;
+		case BIOLOGY: {
+				if (crewCapacity >= 2)
+					capacity = 1D;
 
-			if (v.hasLab()) {
-				if (v.getLabTechSpecialties().contains(ScienceType.METEOROLOGY)) {
-					capacity += v.getLabTechLevel();
-				} else {
-					capacity /= 2D;
+				if (v.hasLab()) {
+					if (v.getLabTechSpecialties().contains(ScienceType.BIOLOGY)) {
+						capacity += v.getLabTechLevel();
+					} else {
+						capacity /= 2D;
+					}
 				}
-			}
 
-			double range = getVehicleRange(v);
-			if (range == 0D)
-				capacity = 0D;
-		}
+				double range = getVehicleRange(v);
+				if (range == 0D)
+					capacity = 0D;
+			} break;
+
+		case METEOROLOGY: {
+				if (crewCapacity >= 2)
+					capacity = 1D;
+
+				if (v.hasLab()) {
+					if (v.getLabTechSpecialties().contains(ScienceType.METEOROLOGY)) {
+						capacity += v.getLabTechLevel();
+					} else {
+						capacity /= 2D;
+					}
+				}
+
+				double range = getVehicleRange(v);
+				if (range == 0D)
+					capacity = 0D;
+			} break;
 		
+			default:
+				capacity = 1D;
+				break;
+		}
 
 		return capacity;
 	}
@@ -3703,44 +3489,7 @@ public class GoodsManager implements Serializable, Temporal {
 		return range;
 	}
 
-	/**
-	 * Gets the number of the vehicle for the settlement.
-	 *
-	 * @param vehicleType the vehicle type.
-	 * @return the number of vehicles.
-	 */
-	private double getNumberOfVehiclesForSettlement(String vehicleType) {
-		double number = 0D;
-		for (Vehicle vehicle : settlement.getAllAssociatedVehicles()) {
-			if (vehicleType.equalsIgnoreCase(vehicle.getDescription()))
-				number += 1D;
-		}
 
-		// Get the number of vehicles that will be produced by ongoing manufacturing
-		// processes.
-		Good vehicleGood = GoodsUtil.getVehicleGood(vehicleType);
-		number += getManufacturingProcessOutput(vehicleGood);
-
-		return number;
-	}
-
-	/**
-	 * Gets the number of robots of this type in this settlement.
-	 * 
-	 * @param name
-	 * @return
-	 */
-	private double getNumberOfRobotsForSettlement(String name) {
-		int result = 0;
-		// Get number of robots.
-		Iterator<Robot> j = settlement.getAllAssociatedRobots().iterator();
-		while (j.hasNext()) {
-			if (j.next().getRobotType() == RobotType.valueOfIgnoreCase(name))
-				result++;
-		}
-		return result;		
-	}
-	
 	/**
 	 * Determines the trade demand for a good at a settlement.
 	 *
@@ -3787,7 +3536,7 @@ public class GoodsManager implements Serializable, Temporal {
 	 *
 	 * @return
 	 */
-	public int getNthPower(double num) {
+	private int getNthPower(double num) {
 		int power = 0;
 		int base = 2;
 		int n = (int) num;
@@ -3799,7 +3548,7 @@ public class GoodsManager implements Serializable, Temporal {
 		return -power;
 	}
 
-	public int computeLevel(double ratio) {
+	private int computeLevel(double ratio) {
 		double lvl = 0;
 		if (ratio < 1) {
 			lvl = 0;
@@ -3837,7 +3586,7 @@ public class GoodsManager implements Serializable, Temporal {
 		eVASuitMod = computeModifier(BASE_EVA_SUIT, level);
 	}
 
-	public double computeModifier(int baseValue, int level) {
+	private double computeModifier(int baseValue, int level) {
 		double mod = 0;
 		if (level == 1) {
 			mod = baseValue;
@@ -3860,16 +3609,6 @@ public class GoodsManager implements Serializable, Temporal {
 			buyList.removeAll(getExclusionBuyList());
 		}
 		return buyList;
-	}
-
-	/**
-	 * Gets the price per item for a good
-	 *
-	 * @param good
-	 * @return
-	 */
-	public double getPricePerItem(Good good) {
-		return getPrice(good);
 	}
 
 	/**

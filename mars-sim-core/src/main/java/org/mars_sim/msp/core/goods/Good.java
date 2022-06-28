@@ -8,80 +8,44 @@ package org.mars_sim.msp.core.goods;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Stream;
 
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.food.FoodProductionProcessInfo;
 import org.mars_sim.msp.core.food.FoodProductionProcessItem;
 import org.mars_sim.msp.core.food.FoodProductionUtil;
+import org.mars_sim.msp.core.manufacture.ManufactureProcess;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessInfo;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessItem;
 import org.mars_sim.msp.core.manufacture.ManufactureUtil;
-import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.mission.MissionManager;
+import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ItemType;
-import org.mars_sim.msp.core.resource.Part;
-import org.mars_sim.msp.core.resource.ResourceUtil;
-import org.mars_sim.msp.core.vehicle.Drone;
-import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
+import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * A meta class describing an economic good in the simulation.
  */
-public class Good implements Serializable, Comparable<Good> {
+public abstract class Good implements Serializable, Comparable<Good> {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
-	private static final double DOLLAR_PER_UNIT = 0.5;
-	private static final double EVA_SUIT_VALUE = 50;
-	private static final double CONTAINER_VALUE = .1;
-	
-	private static final int ROBOT_VALUE = 200;
-	
-	private static final int VEHICLE_PART_VALUE = 3;
-	
-	private static final int VEHICLE_VALUE = 20;
-	private static final int LUV_VALUE = 750;
-	private static final int DRONE_VALUE = 50;
-
-	private static final double CO2_VALUE = 0.0001;
-	private static final double CL_VALUE = 0.01;
-	private static final double ICE_VALUE = 1.5;
-	private static final double FOOD_VALUE = 0.1;
-	private static final double DERIVED_VALUE = .07;
-	private static final double SOY_VALUE = .05;
-	
-	private static final int CROP_VALUE = 3;
-	
-	private static final double ANIMAL_VALUE = .1;
-	private static final double CHEMICAL_VALUE = 0.01;
-	private static final double MEDICAL_VALUE = 0.001;
-	private static final double WASTE_VALUE = 0.0001;
-	private static final double OIL_VALUE = 0.001;
-	private static final double ROCK_VALUE = 0.005;
-	private static final double REGOLITH_VALUE = .02;
-	private static final double ORE_VALUE = 0.03;
-	private static final double MINERAL_VALUE = 0.1;
-	private static final double STANDARD_AMOUNT_VALUE = 0.3;
-	private static final double ELEMENT_VALUE = 0.5;
-	private static final double LIFE_SUPPORT_VALUE = 1;
-
-	private static final double ITEM_VALUE = 1.1D;
-	private static final double FC_STACK_VALUE = 8;
-	private static final double FC_VALUE = 1;
-	private static final double BOARD_VALUE = 1;
-	private static final double CPU_VALUE = 10;
-	private static final double WAFER_VALUE = 50;
-	private static final double BATTERY_VALUE = 2;
-	private static final double INSTRUMENT_VALUE = 1;
-	private static final double WIRE_VALUE = .005;
-	private static final double ELECTRONIC_VALUE = .5;
 	
 	private static final double LABOR_FACTOR = 150D ;
 	private static final double PROCESS_TIME_FACTOR = 500D;
 	private static final double POWER_FACTOR = 1D;
 	private static final double SKILL_FACTOR = 1D;
 	private static final double TECH_FACTOR = 2D;
+
+	//TODO Initialise explictly
+	protected static MissionManager missionManager = Simulation.instance().getMissionManager();
 
 	// Data members
 	private String name;
@@ -101,8 +65,6 @@ public class Good implements Serializable, Comparable<Good> {
 	private double averageGoodValue;
 	private double costOutput = -1;
 
-	private GoodCategory category;
-
 	private List<ManufactureProcessInfo> manufactureProcessInfos;
 	private List<FoodProductionProcessInfo> foodProductionProcessInfos;
 
@@ -111,19 +73,10 @@ public class Good implements Serializable, Comparable<Good> {
 	 *
 	 * @param name     the name of the good.
 	 * @param object   the good's object if any.
-	 * @param category the good's category.
 	 */
-	Good (String name, int id, GoodCategory category) {
-		if (name != null)
-			this.name = name.trim().toLowerCase();
-		else
-			throw new IllegalArgumentException("name cannot be null.");
+	protected Good (String name, int id) {
+		this.name = name;
 		this.id = id;
-
-		if (isValidCategory(category))
-			this.category = category;
-		else
-			throw new IllegalArgumentException("category: " + category + " not valid.");
 	}
 
 	/**
@@ -139,19 +92,6 @@ public class Good implements Serializable, Comparable<Good> {
 		computeOutputCost();
 	}
 
-	/**
-	 * Checks if a category string is valid.
-	 *
-	 * @param category the category enum to check.
-	 * @return true if valid category.
-	 */
-	private static boolean isValidCategory(GoodCategory category) {
-		for (GoodCategory cat : GoodCategory.values()) {
-			if (cat == category)
-				return true;
-		}
-		return false;
-	}
 
 	/**
 	 * Gets the good's name.
@@ -166,6 +106,7 @@ public class Good implements Serializable, Comparable<Good> {
 	 * Gets the good's equipment class.
 	 *
 	 * @return equipment class
+	 * @deprecated
 	 */
 	public EquipmentType getEquipmentType() {
 		return EquipmentType.convertName2Enum(name);
@@ -185,9 +126,7 @@ public class Good implements Serializable, Comparable<Good> {
 	 *
 	 * @return category.
 	 */
-	public GoodCategory getCategory() {
-		return category;
-	}
+	public abstract GoodCategory getCategory();
 
 	public double getlaborTime() {
 		return laborTime;
@@ -252,129 +191,11 @@ public class Good implements Serializable, Comparable<Good> {
 	 * 
 	 * @return
 	 */
-	public double computeCostModifier() {
-		double result = 0;
-		if (category == GoodCategory.AMOUNT_RESOURCE) {
+	protected abstract double computeCostModifier();
 
-			AmountResource ar = ResourceUtil.findAmountResource(id);
-			boolean edible = ar.isEdible();
-			boolean lifeSupport = ar.isLifeSupport();
-			GoodType type = ar.getGoodType();
-
-			if (lifeSupport)
-				result += LIFE_SUPPORT_VALUE;
-			
-			else if (edible) {
-				if (type != null && type == GoodType.DERIVED)
-					result += DERIVED_VALUE;
-				else if (type != null && type == GoodType.SOY_BASED)
-					result += SOY_VALUE;
-				else if (type != null && type == GoodType.ANIMAL)
-					result += ANIMAL_VALUE;
-				else
-					result += FOOD_VALUE;
-			}
-			
-			else if (type != null && type == GoodType.WASTE)
-				result += WASTE_VALUE ;
-			
-			else if (ar.getName().equalsIgnoreCase("chlorine"))
-				result += CL_VALUE;
-			else if (ar.getName().equalsIgnoreCase("carbon dioxide"))
-				result += CO2_VALUE;
-			else if (ar.getName().equalsIgnoreCase("ice"))
-				result += ICE_VALUE;
-
-
-			else if (type != null && type == GoodType.MEDICAL)
-				result += MEDICAL_VALUE;
-			else if (type != null && type == GoodType.OIL)
-				result += OIL_VALUE;
-			else if (type != null && type == GoodType.CROP)
-				result += CROP_VALUE;
-			else if (type != null && type == GoodType.ROCK)
-				result += ROCK_VALUE;
-			else if (type != null && type == GoodType.REGOLITH)
-				result += REGOLITH_VALUE;
-			else if (type != null && type == GoodType.ORE)
-				result += ORE_VALUE;
-			else if (type != null && type == GoodType.MINERAL)
-				result += MINERAL_VALUE;
-			else if (type != null && type == GoodType.ELEMENT)
-				result += ELEMENT_VALUE;
-			else if (type != null && type == GoodType.CHEMICAL)
-				result += CHEMICAL_VALUE;
-			else
-				result += STANDARD_AMOUNT_VALUE ;
-			
-		}
-
-		else if (category == GoodCategory.ITEM_RESOURCE) {
-			Part part = ItemResourceUtil.findItemResource(id);
-			String name = part.getName().toLowerCase();
-			
-			if (name.contains("wire"))
-				return WIRE_VALUE;
-			
-			GoodType type = part.getGoodType();
-			
-			if (type == GoodType.VEHICLE)
-				return VEHICLE_PART_VALUE;
-			
-			else if (type == GoodType.ELECTRONIC)
-				return ELECTRONIC_VALUE;
-			
-			else if (type == GoodType.INSTRUMENT)
-				return INSTRUMENT_VALUE;
-			
-			if (name.equalsIgnoreCase("fuel cell stack"))
-				return FC_STACK_VALUE;
-			else if (name.equalsIgnoreCase("solid oxide fuel cell"))
-				return FC_VALUE;
-			else if (name.contains("board"))
-				return BOARD_VALUE;
-			else if (name.equalsIgnoreCase("microcontroller"))
-				return CPU_VALUE;
-			else if (name.equalsIgnoreCase("semiconductor wafer"))
-				return WAFER_VALUE;
-			else if (name.contains("battery"))
-				return BATTERY_VALUE;
-			
-			return ITEM_VALUE;
-		}
-
-		// Note: 
-		else if (category == GoodCategory.CONTAINER) {
-			return CONTAINER_VALUE;
-		}
-		
-		else if (category == GoodCategory.EQUIPMENT) {
-			return EVA_SUIT_VALUE;
-		}
-
-		else if (category == GoodCategory.ROBOT) {
-			return ROBOT_VALUE;
-		}
-		
-		else if (category == GoodCategory.VEHICLE) {
-			if (name.contains(LightUtilityVehicle.NAME))
-				return LUV_VALUE;
-			else if (name.contains(Drone.NAME))
-				return DRONE_VALUE;
-			else
-				return VEHICLE_VALUE;
-		}
-
-		else
-			return DOLLAR_PER_UNIT;
-		
-		return result;
-	}
-	
 	public double getAverageGoodValue() {
 		return averageGoodValue;
 	}
-
 
 	public void adjustGoodValue() {
 		// deflate the value by 5%
@@ -455,11 +276,6 @@ public class Good implements Serializable, Comparable<Good> {
 				skill0_out	 = skill0_out / numProcesses;
 				tech0_out 	 = tech0_out / numProcesses;
 			}
-//			System.out.println(name + " labor0_out: " + labor0_out);
-//			System.out.println(name + " power0_out: " + power0_out);
-//			System.out.println(name + " process0_out: " + process0_out);
-//			System.out.println(name + " skill0_out: " + skill0_out);
-//			System.out.println(name + " tech0_out: " + tech0_out);
 		}
 
 		double labor1_out = 0;
@@ -524,12 +340,6 @@ public class Good implements Serializable, Comparable<Good> {
 				skill1_out	 = skill1_out / numProcesses;
 				tech1_out 	 = tech1_out / numProcesses;
 			}
-
-//			System.out.println(name + " labor1_out: " + labor1_out);
-//			System.out.println(name + " power1_out: " + power1_out);
-//			System.out.println(name + " process1_out: " + process1_out);
-//			System.out.println(name + " skill1_out: " + skill1_out);
-//			System.out.println(name + " tech1_out: " + tech1_out);
 		}
 
 		if (labor0_out == 0)
@@ -580,6 +390,32 @@ public class Good implements Serializable, Comparable<Good> {
 	}
 
 	/**
+	 * Gets the amount of this good being produced at the settlement by ongoing
+	 * manufacturing processes.
+	 *
+	 * @param settlement Place producing the Good
+	 * @return amount (kg for amount resources, number for parts, equipment, and
+	 *         vehicles).
+	 */
+	protected double getManufacturingProcessOutput(Settlement settlement) {
+
+		double result = 0D;
+
+		for(Building b : settlement.getBuildingManager().getBuildings(FunctionType.MANUFACTURE)) {
+			// Go through each ongoing active manufacturing process.
+			for(ManufactureProcess process : b.getManufacture().getProcesses()) {
+				for(ManufactureProcessItem item : process.getInfo().getOutputList()) {
+					if (item.getName().equalsIgnoreCase(name)) {
+						result += item.getAmount();
+					}
+				}
+			}
+		}
+
+		return result;
+	}
+
+	/**
 	 * Gets a string representation of the good.
 	 *
 	 * @return string.
@@ -594,10 +430,7 @@ public class Good implements Serializable, Comparable<Good> {
 	 * @return hash code
 	 */
 	public int hashCode() {
-		int hashCode = name.hashCode();
-		hashCode *= id;
-		hashCode *= category.hashCode();
-		return hashCode;
+		return id % 64;
 	}
 
 	/**
@@ -619,8 +452,52 @@ public class Good implements Serializable, Comparable<Good> {
 		if (obj == null) return false;
 		if (this.getClass() != obj.getClass()) return false;
 		Good g = (Good) obj;
-		return this.getName().equals(g.getName())
-				&& this.id == g.getID();
+		return this.id == g.getID();
 	}
+    
+	/**
+     * Gets the mass per item for a good.
+     *
+     * @return mass (kg) per item (or 1kg for amount resources).
+     * @throws Exception if error getting mass per item.
+     */
+    public abstract double getMassPerItem();
 
+	/**
+     * Gets the good type
+     * 
+     * @return
+     */
+	public abstract GoodType getGoodType();
+
+	
+	/**
+	 * Gets the number of this good being in use or being produced at this moment at
+	 * the settlement.
+	 *
+	 * @param settlement Settlement to check
+	 * @return the number of the good (or amount (kg) if amount resource good).
+	 */
+	public abstract double getNumberForSettlement(Settlement settlement);
+
+	    /**
+     * Get a stream of all Vehciles on Missions from the target Settlement
+     * @param settlement Settlement being checked
+     */
+    protected Stream<Vehicle> getVehiclesOnMissions(Settlement settlement) {
+        return missionManager.getMissionsForSettlement(settlement).stream()
+                .filter(VehicleMission.class::isInstance)
+                .map(vm -> ((VehicleMission) vm).getVehicle())
+                .filter(Objects::nonNull);
+    }
+    
+    /**
+     * Get a stream of Person on EVA at the Settlement
+     * @param settlement
+     * @return
+     */
+    protected Stream<Person> getPersonOnEVA(Settlement settlement) {
+        return  settlement.getAllAssociatedPeople().stream()
+			              .filter(p -> p.isOutside());
+    }
 }

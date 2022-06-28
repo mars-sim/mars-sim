@@ -306,7 +306,7 @@ public final class DeliveryUtil {
 							int containerNum = 0;
 							if (deliveryList.containsKey(containerGood))
 								containerNum = deliveryList.get(containerGood);
-							double containerSupply = buyerGoodsManager.getNumberOfGoodForSettlement(containerGood);
+							double containerSupply = containerGood.getNumberForSettlement(buyingSettlement);
 							double totalContainerNum = containerNum + containerSupply;
 							buyerLoadValue += buyerGoodsManager.determineGoodValueWithSupply(containerGood, totalContainerNum);
 							deliveryList.put(containerGood, (containerNum + 1));
@@ -330,13 +330,13 @@ public final class DeliveryUtil {
 							number = (int) getResourceDeliveryAmount(resource);
 						else if (isItemResource)
 							number = itemResourceNum;
-						massCapacity -= (GoodsUtil.getGoodMassPerItem(good) * number);
+						massCapacity -= (good.getMassPerItem() * number);
 					}
 					
 					int currentNum = 0;
 					if (deliveryList.containsKey(good))
 						currentNum = deliveryList.get(good);
-					double supply = buyerGoodsManager.getNumberOfGoodForSettlement(good);
+					double supply = good.getNumberForSettlement(buyingSettlement);
 					double goodNum = 1D;
 					
 					if (isAmountResource)
@@ -395,7 +395,7 @@ public final class DeliveryUtil {
 			Good good = i.next();
 			double cost = good.getCostOutput();
 			int goodNumber = load.get(good);
-			double supply = manager.getNumberOfGoodForSettlement(good);
+			double supply = good.getNumberForSettlement(settlement);
 			double multiplier = 1D;
 			if (good.getCategory() == GoodCategory.AMOUNT_RESOURCE) {
 				double amount = getResourceDeliveryAmount(ResourceUtil.findAmountResource(good.getID()));

@@ -2,7 +2,7 @@
  * Mars Simulation Project
  * MobileLaboratory.java
  * @date 2021-11-23
- * @author Scott Davis
+ * @author Barry Evans
  */
 
 package org.mars_sim.msp.core.vehicle;
