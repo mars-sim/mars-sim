@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * SimLogger.java
- * @date 2021-10-07
+ * @date 2022-06-27
  * @author Barry Evans
  */
 
@@ -25,7 +25,7 @@ import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 public class SimLogger {
 
 	/**
-	 * TimeAndCount keeps track of the between time and the number of times the message has appeared
+	 * TimeAndCount keeps track of the between time and the number of times the message has appeared.
 	 */
 	private static class TimeAndCount {
 		protected long startTime;
@@ -165,6 +165,7 @@ public class SimLogger {
 
 	/**
 	 * Does the actual logging to the logger.
+	 * 
 	 * @param location
 	 * @param actor
 	 * @param level
@@ -215,7 +216,7 @@ public class SimLogger {
 		else if (actor instanceof ConstructionSite) {
 			outputMessage.append(actor.getName()).append(CLOSED_BRACKET_SPACE);
 		}
-		else {
+		else { // In case of a person or robot or building
 			// Need container hierarchy in brackets
 			if (location == null) {
 				outputMessage.append(LocationFormat.getLocationDescription(actor));
@@ -240,7 +241,7 @@ public class SimLogger {
 	}
 
 	/**
-	 * Returns the line
+	 * Returns the line.
 	 *
 	 * @return
 	 */
@@ -263,7 +264,8 @@ public class SimLogger {
 	}
 
 	/**
-	 * log directly without formatting
+	 * Logs directly without formatting.
+	 * 
 	 * @param level
 	 * @param message
 	 */
@@ -272,7 +274,8 @@ public class SimLogger {
 	}
 
 	/**
-	 * log directly without formatting
+	 * Logs directly without formatting.
+	 * 
 	 * @param level
 	 * @param message
 	 * @param e Exception
@@ -282,7 +285,8 @@ public class SimLogger {
 	}
 
 	/**
-	 * log directly without formatting
+	 * Logs directly without formatting.
+	 * 
 	 * @param message
 	 */
 	public void fine(String message) {
@@ -291,6 +295,7 @@ public class SimLogger {
 
 	/**
 	 * Helper method just to log a fine message. Message timeout is predefined.
+	 * 
 	 * @param actor
 	 * @param string
 	 */
@@ -299,7 +304,8 @@ public class SimLogger {
 	}
 
 	/**
-	 * log directly without formatting
+	 * Logs directly without formatting.
+	 * 
 	 * @param message
 	 */
 	public void info(String message) {
@@ -308,6 +314,7 @@ public class SimLogger {
 
 	/**
 	 * Helper method just to log an info message.
+	 * 
 	 * @param actor
 	 * @param timeBetweenLogs Milliseconds to wait between similar log messages.
 	 * @param string
@@ -318,6 +325,7 @@ public class SimLogger {
 
 	/**
 	 * Helper method just to log an info message.
+	 * 
 	 * @param actor
 	 * @param timeBetweenLogs Milliseconds to wait between similar log messages.
 	 * @param string
@@ -328,6 +336,7 @@ public class SimLogger {
 
 	/**
 	 * Helper method just to log a info message. Message timeout is predefined.
+	 * 
 	 * @param actor
 	 * @param string
 	 */
@@ -337,6 +346,7 @@ public class SimLogger {
 
 	/**
 	 * Helper method just to log a info message. Message timeout is predefined.
+	 * 
 	 * @param location
 	 * @param actor
 	 * @param string
@@ -347,6 +357,7 @@ public class SimLogger {
 
 	/**
 	 * Helper method just to log a info message. Message timeout is predefined.
+	 * 
 	 * @param location
 	 * @param actor
 	 * @param string
@@ -356,7 +367,8 @@ public class SimLogger {
 	}
 	
 	/**
-	 * log directly without formatting
+	 * Logs directly without formatting.
+	 * 
 	 * @param message
 	 */
 	public void warning(String message) {
@@ -365,6 +377,7 @@ public class SimLogger {
 
 	/**
 	 * Helper method just to log a warning message.
+	 * 
 	 * @param actor
 	 * @param timeBetweenLogs Milliseconds to wait between similar log messages.
 	 * @param string
@@ -375,6 +388,7 @@ public class SimLogger {
 
 	/**
 	 * Helper method just to log a warning message. Message  timeout is predefined.
+	 * 
 	 * @param actor
 	 * @param string
 	 */
@@ -384,6 +398,7 @@ public class SimLogger {
 
 	/**
 	 * Helper method just to log a warning message. Message timeout is predefined.
+	 * 
 	 * @param location
 	 * @param actor
 	 * @param string
@@ -397,7 +412,8 @@ public class SimLogger {
 	}
 
 	/**
-	 * log directly without formatting
+	 * Log directly without formatting.
+	 * 
 	 * @param message
 	 */
 	public void severe(String message) {
@@ -406,6 +422,7 @@ public class SimLogger {
 
 	/**
 	 * Helper method just to log a severe message. Message timeout is predefined.
+	 * 
 	 * @param actor
 	 * @param message
 	 */
@@ -415,6 +432,7 @@ public class SimLogger {
 
 	/**
 	 * Helper method just to log a severe message.
+	 * 
 	 * @param actor
 	 * @param timeBetweenLogs Milliseconds to wait between similar log messages.
 	 * @param string
@@ -426,6 +444,7 @@ public class SimLogger {
 
 	/**
 	 * Helper method just to log a severe message.
+	 * 
 	 * @param actor
 	 * @param timeBetweenLogs Milliseconds to wait between similar log messages.
 	 * @param string
@@ -436,6 +455,7 @@ public class SimLogger {
 
 	/**
 	 * Helper method just to log a severe message. Message timeout is predefined.
+	 * 
 	 * @param location
 	 * @param actor
 	 * @param message
@@ -446,6 +466,7 @@ public class SimLogger {
 
 	/**
 	 * Helper method just to log a severe message. Message timeout is predefined.
+	 * 
 	 * @param actor
 	 * @param message
 	 * @param reason
@@ -455,21 +476,41 @@ public class SimLogger {
 	}
 
 	/**
-	 * log directly without formatting
+	 * Logs directly without formatting.
+	 * 
 	 * @param message
 	 */
 	public void config(String message) {
 		log(Level.CONFIG, message);
 	}
 
+	/**
+	 * Helper method just to log a config message. Message timeout is predefined.
+	 * 
+	 * @param actor
+	 * @param message
+	 * @param reason
+	 */
 	public void config(Loggable actor, String message, Throwable reason) {
 		log(null, actor, Level.CONFIG, 0, message, reason);
 	}
 
+	/**
+	 * Helper method just to log a config message. Message timeout is predefined.
+	 * 
+	 * @param actor
+	 * @param message
+	 */
 	public void config(Loggable actor, String message) {
 		log(null, actor, Level.CONFIG, 0, message, null);
 	}
 
+	/**
+	 * Helper method just to log a config message. 
+	 *  
+	 * @param timeBetweenLogs
+	 * @param message
+	 */
 	public void config(long timeBetweenLogs, String message) {
 		log(null, null, Level.CONFIG, timeBetweenLogs, sourceName + " : " + message, null);
 	}

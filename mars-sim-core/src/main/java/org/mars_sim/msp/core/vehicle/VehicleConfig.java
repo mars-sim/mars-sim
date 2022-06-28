@@ -45,6 +45,7 @@ public class VehicleConfig implements Serializable {
 	private static final String DESCRIPTION = "description";
 	private static final String DRIVETRAIN_EFFICIENCY = "drivetrain-efficiency";
 	private static final String BASE_SPEED = "base-speed";
+	private static final String AVERAGE_POWER = "average-power";
 	private static final String EMPTY_MASS = "empty-mass";
 	private static final String CREW_SIZE = "crew-size";
 	private static final String CARGO = "cargo";
@@ -112,10 +113,11 @@ public class VehicleConfig implements Serializable {
 			double drivetrainEff = Double
 					.parseDouble(vehicleElement.getChild(DRIVETRAIN_EFFICIENCY).getAttributeValue(VALUE));
 			double baseSpeed = Double.parseDouble(vehicleElement.getChild(BASE_SPEED).getAttributeValue(VALUE));
+			double averagePower = Double.parseDouble(vehicleElement.getChild(AVERAGE_POWER).getAttributeValue(VALUE));
 			double emptyMass = Double.parseDouble(vehicleElement.getChild(EMPTY_MASS).getAttributeValue(VALUE));
 			int crewSize = Integer.parseInt(vehicleElement.getChild(CREW_SIZE).getAttributeValue(VALUE));
 
-			VehicleSpec v = new VehicleSpec(width, length, description, drivetrainEff, baseSpeed, emptyMass, crewSize);
+			VehicleSpec v = new VehicleSpec(width, length, description, drivetrainEff, baseSpeed, averagePower, emptyMass, crewSize);
 			
 			// Ground vehicle details
 			if (vehicleElement.getChild(TERRAIN_HANDLING) != null) {

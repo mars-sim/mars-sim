@@ -63,7 +63,7 @@ implements Serializable {
 	// Resource being collected
 	private int resourceID;
 	private String resourceName;
-
+	private LocalPosition diggingLoc;
 	private EquipmentType containerType;
 
 	/**
@@ -130,10 +130,12 @@ implements Serializable {
 
 
         // Determine digging location.
-        LocalPosition diggingLoc = determineDiggingLocation();
-        if (diggingLoc != null) {
-        	setOutsideSiteLocation(diggingLoc);
-           	logger.info(person, "Selected an outside digging site at " + diggingLoc + ".");
+        if (diggingLoc == null) {
+        	diggingLoc = determineDiggingLocation();
+	        if (diggingLoc != null) {
+	        	setOutsideSiteLocation(diggingLoc);
+	           	logger.info(person, 4_000L, "Selected an outside digging site at " + diggingLoc + ".");
+	        }
         }
 
 		// set the boolean to true so that it won't be done again today

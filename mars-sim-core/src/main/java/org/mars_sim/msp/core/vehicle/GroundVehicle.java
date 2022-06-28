@@ -217,8 +217,8 @@ public abstract class GroundVehicle extends Vehicle {
 			double step = 10D;
 			boolean foundGoodLocation = false;
 
-			boolean isSmallVehicle = getVehicleTypeString().equalsIgnoreCase(VehicleType.DELIVERY_DRONE.getName())
-					|| getVehicleTypeString().equalsIgnoreCase(VehicleType.LUV.getName());
+			boolean isSmallVehicle = getVehicleType() == VehicleType.DELIVERY_DRONE
+					|| getVehicleType() == VehicleType.LUV;
 
 			double d = VEHICLE_CLEARANCE_0;
 			if (isSmallVehicle)

@@ -737,14 +737,14 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
-	 * Get the settlement in vicinity. This is used assume the person is not at a settlement
+	 * Gets the settlement in vicinity. This is used assume the person is not at a settlement.
 	 *
 	 * @return the person's settlement
 	 */
 	public Settlement getNearbySettlement() {
 		return CollectionUtils.findSettlement(getCoordinates());
 	}
-
+	
 	/**
 	 * Get the settlement the person is at.
 	 * Returns null if person is not at a settlement.

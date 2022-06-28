@@ -25,7 +25,7 @@ public class VehicleSpec implements Serializable {
 
 	private String description;
 	private double width, length;
-	private double drivetrainEff, baseSpeed, emptyMass;
+	private double drivetrainEff, baseSpeed, averagePower, emptyMass;
 	private int crewSize;
 	private double totalCapacity = 0D;
 	private Map<String, Double> cargoCapacityMap;
@@ -47,13 +47,15 @@ public class VehicleSpec implements Serializable {
 
 	private double terrainHandling;
 
-	public VehicleSpec(double width2, double length2, String description2, double drivetrainEff2, double baseSpeed2,
+	public VehicleSpec(double width2, double length2, String description2, double drivetrainEff2, 
+			double baseSpeed2, double averagePower2,
 			double emptyMass2, int crewSize2) {
 		this.width = width2;
 		this.length = length2;
 		this.description = description2;
 		this.drivetrainEff = drivetrainEff2;
 		this.baseSpeed = baseSpeed2;
+		this.averagePower = averagePower2;
 		this.emptyMass = emptyMass2;
 		this.crewSize = crewSize2;
 	}
@@ -95,6 +97,11 @@ public class VehicleSpec implements Serializable {
 	/** @return the baseSpeed */
 	public final double getBaseSpeed() {
 		return baseSpeed;
+	}
+	
+	/** @return the averagePower */
+	public final double getAveragePower() {
+		return averagePower;
 	}
 
 	/** @return the emptyMass */

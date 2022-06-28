@@ -212,7 +212,7 @@ public class TendGreenhouse extends Task implements Serializable {
 	 */
 	private void printDescription(String text) {
 		setDescription(text);
-		logger.log(greenhouse.getBuilding(), worker, Level.INFO, 30_000, text + ".");
+		logger.log(greenhouse.getBuilding(), worker, Level.INFO, 30_000L, text + ".");
 	}
 	
 	/**

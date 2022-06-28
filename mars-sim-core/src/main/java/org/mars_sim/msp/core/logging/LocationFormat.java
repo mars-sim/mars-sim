@@ -12,16 +12,17 @@ import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.structure.building.Building;
 
 /**
- * This provides methods that can provide a String decription of the locaiton of
+ * This provides methods that can provide a String description of the location of
  * a Loggable entity.
- * Where possible the output will display teh containment hierachy including
+ * Where possible the output will display the containment hierarchy including
  * the coordinates where appropriate.
  *
  */
 public final class LocationFormat {
 
 	/**
-	 * Get a description ot the current location of an entity.
+	 * Gets a description of the current location of an entity.
+	 * 
 	 * @param entity Entity in question.
 	 */
 	public static String getLocationDescription(Loggable entity) {
@@ -36,7 +37,8 @@ public final class LocationFormat {
 	}
 	
 	/**
-	 * Get the description of an Entities location in a particualr content.
+	 * Gets the description of an Entities location in a particular content.
+	 * 
 	 * @param entity
 	 * @param context
 	 * @return
@@ -61,6 +63,7 @@ public final class LocationFormat {
 	/**
 	 * Walks up the hierarchy of containment adding the name of each Unit it
 	 * visits.
+	 * 
 	 * @param location
 	 * @param outputMessage
 	 */
@@ -80,7 +83,7 @@ public final class LocationFormat {
 				outputMessage.append(" - ");
 			}
 			else if (location.getUnitType() != UnitType.SETTLEMENT) {
-				// On teh surface so show coords if not a Settlement
+				// On the surface so show coords if not a Settlement
 				outputCoordinates(location, outputMessage);
 				outputMessage.append(" - ");
 			}
@@ -90,7 +93,8 @@ public final class LocationFormat {
 	}
 	
 	/**
-	 * Output a coordinate
+	 * Outputs a coordinate.
+	 * 
 	 * @param location
 	 * @param outputMessage
 	 */
@@ -99,5 +103,7 @@ public final class LocationFormat {
 		outputMessage.append(coords.getFormattedLatitudeString());
 		outputMessage.append(' ');
 		outputMessage.append(coords.getFormattedLongitudeString());
+//		outputMessage.append(" - ");
+//		outputMessage.append(CollectionUtils.getNearbyObjectName(coords));
 	}
 }

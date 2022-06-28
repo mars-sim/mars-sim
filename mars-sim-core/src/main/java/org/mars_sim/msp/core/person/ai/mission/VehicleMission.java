@@ -1041,7 +1041,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 		Map<Integer, Number> result = new HashMap<>();
 		if (vehicle != null) {
 			double amount = 0;
-			// Add methane\
+			// Add methane
 			if (getPhase() == null || getPhase().equals(VehicleMission.EMBARKING) 
 					|| getPhase().equals(VehicleMission.REVIEWING)
 					|| useMargin) {
@@ -1055,11 +1055,13 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 			}
 			result.put(vehicle.getFuelType(), amount);
 			
-			// Add oxygen
-			double o2 = 0;
+			// Add oxygen (as fuel oxidizer)
+			double existingO2 = 0;
 			if (!result.isEmpty() && result.containsKey(OXYGEN_ID))
-				o2 = (double)result.get(OXYGEN_ID);
-			result.put(OXYGEN_ID, amount + o2);
+				existingO2 = (double)result.get(OXYGEN_ID);
+			// Note: oxygen required is twice the amount of methane
+			result.put(OXYGEN_ID, 2 * amount + existingO2);
+
 		}
 		return result;
 	}

@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * RoverDisplayInfoBean.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-06-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_display_info;
@@ -30,7 +30,6 @@ public class RoverDisplayInfoBean extends VehicleDisplayInfoBean {
 		super();
 	}
 
-
 	/**
 	 * Gets the icon of this unit
 	 * (non-Javadoc)
@@ -40,15 +39,13 @@ public class RoverDisplayInfoBean extends VehicleDisplayInfoBean {
 	 * @return the icon
 	 */
 	public Icon getButtonIcon(Unit unit) {
-//		Vehicle v = (Vehicle) unit;
-//		Rover rover = (Rover) v;
-		String type = ((Vehicle) unit).getVehicleTypeString();
+		VehicleType type = ((Vehicle) unit).getVehicleType();
 		
-		if (type.equalsIgnoreCase(VehicleType.EXPLORER_ROVER.getName()))
+		if (type == VehicleType.EXPLORER_ROVER)
 			buttonIcon = ImageLoader.getIcon("ExplorerRoverIcon", ImageLoader.VEHICLE_ICON_DIR);
-		else if (type.equalsIgnoreCase(VehicleType.CARGO_ROVER.getName()))
+		else if (type == VehicleType.CARGO_ROVER)
 			buttonIcon = ImageLoader.getIcon("CargoRoverIcon", ImageLoader.VEHICLE_ICON_DIR);
-		else if (type.equalsIgnoreCase(VehicleType.TRANSPORT_ROVER.getName()))
+		else if (type == VehicleType.TRANSPORT_ROVER)
 			buttonIcon = ImageLoader.getIcon("TransportRoverIcon", ImageLoader.VEHICLE_ICON_DIR);	
 		return buttonIcon;
 	}

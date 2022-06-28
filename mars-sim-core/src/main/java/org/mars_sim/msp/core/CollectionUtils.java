@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleType;
 
 /**
@@ -111,7 +112,7 @@ public class CollectionUtils {
 
 
 	/**
-	 * Finds a nearby settlement based on its coordinate
+	 * Finds a nearby settlement based on its coordinates.
 	 *
 	 * @param c {@link Coordinates}
 	 * @return
@@ -127,9 +128,44 @@ public class CollectionUtils {
 		}
 
 		return null;
-		// WARNING : using associated settlement needs to exercise more caution
 	}
 
+	/**
+	 * Finds a nearby vehicle based on its coordinates.
+	 *
+	 * @param c {@link Coordinates}
+	 * @return
+	 */
+	public static Vehicle findVehicle(Coordinates c) {
+		if (unitManager == null)
+			unitManager = Simulation.instance().getUnitManager();
+
+		Collection<Vehicle> list = unitManager.getVehicles();
+		for (Vehicle v : list) {
+			if (v.getCoordinates().equals(c) || v.getCoordinates() == c)
+				return v;
+		}
+
+		return null;
+	}
+	
+	/**
+	 * Gets the nearby object name.
+	 * 
+	 * @param c the coordinates of interest
+	 * @return
+	 */
+	public static String getNearbyObjectName(Coordinates c) {
+		Settlement settlement = findSettlement(c);
+		if (settlement == null) {
+			Vehicle vehicle = CollectionUtils.findVehicle(c);
+			if (vehicle != null) {
+				return vehicle.getName();
+			}
+		}
+		return "Outside";
+	}
+	
 	public static <T extends Unit> Collection<T> sortByName(
 		Collection<T> collection
 	) {
@@ -160,7 +196,6 @@ public class CollectionUtils {
 			Iterator<Person> i = unitManager.getPeople().iterator();
 			while (i.hasNext()) {
 				Person person = i.next();
-
 				// Only select living people.
 				if (!person.getPhysicalCondition().isDead()) {
 
