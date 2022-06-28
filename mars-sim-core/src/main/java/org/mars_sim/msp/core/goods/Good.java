@@ -478,7 +478,7 @@ public abstract class Good implements Serializable, Comparable<Good> {
 	 * @param settlement Settlement to check
 	 * @return the number of the good (or amount (kg) if amount resource good).
 	 */
-	abstract double getNumberForSettlement(Settlement settlement);
+	public abstract double getNumberForSettlement(Settlement settlement);
 
 	    /**
      * Get a stream of all Vehciles on Missions from the target Settlement

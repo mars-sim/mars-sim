@@ -316,7 +316,7 @@ public final class TradeUtil {
 							int containerNum = 0;
 							if (tradeList.containsKey(containerGood))
 								containerNum = tradeList.get(containerGood);
-							double containerSupply = buyerGoodsManager.getNumberOfGoodForSettlement(containerGood);
+							double containerSupply = containerGood.getNumberForSettlement(buyingSettlement);
 							double totalContainerNum = containerNum + containerSupply;
 							buyerLoadValue += buyerGoodsManager.determineGoodValueWithSupply(containerGood, totalContainerNum);
 							tradeList.put(containerGood, (containerNum + 1));
@@ -345,7 +345,7 @@ public final class TradeUtil {
 					int currentNum = 0;
 					if (tradeList.containsKey(good))
 						currentNum = tradeList.get(good);
-					double supply = buyerGoodsManager.getNumberOfGoodForSettlement(good);
+					double supply = good.getNumberForSettlement(buyingSettlement);
 					double goodNum = 1D;
 					
 					if (isAmountResource)
@@ -396,7 +396,7 @@ public final class TradeUtil {
 			Good good = i.next();
 			double cost = good.getCostOutput();
 			int goodNumber = load.get(good);
-			double supply = manager.getNumberOfGoodForSettlement(good);
+			double supply = good.getNumberForSettlement(settlement);
 			double multiplier = 1D;
 			if (good.getCategory() == GoodCategory.AMOUNT_RESOURCE) {	
 				double amount = getResourceTradeAmount(ResourceUtil.findAmountResource(good.getID()));
