@@ -1,3 +1,4 @@
+
 ---
 name: Issue template
 about: Help us by filling in the info below when submitting an issue
@@ -29,6 +30,8 @@ e.g. Include the followings :
  b. Settlement/Vehicle Window 
  c. Monitor Tool's showing People/Vehicle/Mission tabs  
  d. Settlement Map, etc.
+ e. Text dump from console
+ f. stack trace log statements
 
 **Specifications  (please complete the following information):**
  - OS version : [e.g. Windows 10, macOS 10.13, Ubuntu 14.04, etc.]
