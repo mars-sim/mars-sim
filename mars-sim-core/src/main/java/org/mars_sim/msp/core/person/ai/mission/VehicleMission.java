@@ -9,7 +9,6 @@ package org.mars_sim.msp.core.person.ai.mission;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -472,10 +471,10 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	 */
 	private Collection<Vehicle> getRovers(Settlement settlement) {
 		Collection<Vehicle> result = new ConcurrentLinkedQueue<>();
-		Collection<Vehicle> vList = settlement.getParkedVehicles();
-		if (!vList.isEmpty())
+		Collection<Vehicle> list = settlement.getParkedVehicles();
+		if (list.isEmpty())
 			return result;
-		for (Vehicle v : vList) {
+		for (Vehicle v : list) {
 			if (VehicleType.isRover(v.getVehicleType())
 					&& !v.haveStatusType(StatusType.MAINTENANCE)
 					&& v.getMalfunctionManager().getMalfunctions().isEmpty()
@@ -511,17 +510,9 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 			// for ALL OTHER REASONS
 			setPhaseEnded(true);
 
-			if (vehicle.getVehicleType() == VehicleType.DELIVERY_DRONE
-				&& vehicle.getStoredMass() != 0D) {
-					continueToEndMission = false;
-					startDisembarkingPhase();
-			}
-
-			else if (VehicleType.isRover(vehicle.getVehicleType())
-					&& (((Rover)vehicle).getCrewNum() != 0
-						|| vehicle.getStoredMass() != 0D)) {
-					continueToEndMission = false;
-					startDisembarkingPhase();
+			if (isDroneDone() || isRoverDone()) {
+				continueToEndMission = false;
+				startDisembarkingPhase();
 			}
 		}
 
@@ -532,6 +523,31 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 		}
 	}
 
+	/**
+	 * Is the unloading done on this drone ?
+	 * 
+	 * @return
+	 */
+	public boolean isDroneDone() {
+		if ((vehicle.getVehicleType() == VehicleType.DELIVERY_DRONE
+				&& vehicle.getStoredMass() != 0D))
+			return true;
+		return false;
+	}
+	
+	/**
+	 * Is the unloading done on this rover ?
+	 * 
+	 * @return
+	 */
+	public boolean isRoverDone() {
+		if (VehicleType.isRover(vehicle.getVehicleType())
+				&& (((Rover)vehicle).getCrewNum() != 0
+				|| vehicle.getStoredMass() != 0D))
+			return true;
+		return false;
+	}
+	
 	/**
 	 * Get help for the mission. The reason becomes a Mission Status.
 	 * @param reason The reason why help is needed.
@@ -1766,8 +1782,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 		int numNavpoints = getNumberOfNavpoints();
 		for (int x = index; x < numNavpoints; x++) {
 			navPoints.remove(index);
-			// To compensate the shifted index upon removal of this navPoint
-			x--;
+			// Note: how to compensate the shifted index upon removal of this navPoint
 			fireMissionUpdate(MissionEventType.NAVPOINTS_EVENT);
 		}
 	}

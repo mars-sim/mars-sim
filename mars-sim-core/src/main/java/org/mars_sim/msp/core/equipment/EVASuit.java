@@ -116,6 +116,8 @@ public class EVASuit extends Equipment
 	/** Unloaded mass of EVA suit (kg.). The combined total of the mass of all parts. */
 	public static double emptyMass;
 
+	public static final String DASHES = " ---------------------------------------------------------";
+	
 	// Data members
 	/** The equipment's malfunction manager. */
 	private MalfunctionManager malfunctionManager;
@@ -143,6 +145,7 @@ public class EVASuit extends Equipment
 
 		 MASS_O2_NOMINAL_LIMIT = NORMAL_AIR_PRESSURE / MIN_O2_PRESSURE * MASS_O2_MINIMUM_LIMIT;
 
+		 logger.config(DASHES);
 		 logger.config(" EVA suit's unloaded weight : " + Math.round(emptyMass*1_000.0)/1_000.0 + " kg");
 		 logger.config("      Total gas tank volume : " + Math.round(TOTAL_VOLUME*100.0)/100.0 + "L");
 		 logger.config("               Full Tank O2 : " + Math.round(FULL_O2_PARTIAL_PRESSURE*100.0)/100.0 + " kPa -> "
@@ -151,7 +154,8 @@ public class EVASuit extends Equipment
 				 		+ Math.round(MASS_O2_NOMINAL_LIMIT*10_000.0)/10_000.0  + " kg - Suit target pressure");
 		 logger.config("                 Minimum O2 : " + Math.round(MIN_O2_PRESSURE*100.0)/100.0 + " kPa -> "
 				 		+ Math.round(MASS_O2_MINIMUM_LIMIT*10_000.0)/10_000.0  + " kg - Safety limit");
-
+		 logger.config(DASHES);
+			
 			// 66.61 kPa -> 1      kg (full tank O2 pressure)
 			// 20.7  kPa -> 0.3107 kg
 			// 17    kPa -> 0.2552 kg (target O2 pressure)

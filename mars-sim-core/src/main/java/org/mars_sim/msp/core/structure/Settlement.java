@@ -3247,7 +3247,7 @@ public class Settlement extends Structure implements Temporal,
 			// no change to missionProbability
 		}
 		else {
-			result = 50 * (MIN_REGOLITH_RESERVE * pop - regolith_available);
+			result = 2.5 * (MIN_REGOLITH_RESERVE * pop - regolith_available);
 		}
 
 		if (result < 0)

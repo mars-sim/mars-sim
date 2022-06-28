@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Farming.java
- * @date 2021-10-21
+ * @date 2022-06-25
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function.farming;
@@ -58,7 +58,7 @@ public class Farming extends Function implements Serializable {
 													  "Water and Irrigation System"};
 	private static final String [] CLEANING_LIST = {"Floor", "Curtains", "Canopy", "Equipment",
 													"Pipings", "Trays", "Valves"};
-
+ 
 	private static final int MAX_NUM_SOLS = 14;
 	private static final int MAX_SAME_CROPTYPE = 3;
 
@@ -76,11 +76,6 @@ public class Farming extends Function implements Serializable {
 	private static final double STANDARD_AMOUNT_TISSUE_CULTURE = 0.05;
 	private static final double MIN  = .00001D;// 0.0000000001;
 
-	/** Does The interval of time [in millisols] need a reset ? */
-	private static volatile boolean resetInterval = true;
-	/** The interval of time [in millisols] between each crop update call. */
-	private static volatile double processInterval = 1.0;
-
 	/** The default number of crops allowed by the building type. */
 	private int defaultCropNum;
 	/** The id of a crop in this greenhouse. */
@@ -92,14 +87,23 @@ public class Farming extends Function implements Serializable {
 	private double powerSustainingCrop;
 	private double maxGrowingArea;
 	private double remainingGrowingArea;
-
+	
+	public enum Aspect {
+	    ATTRACTIVENESS,
+	    CLEANINESS,
+	    MANAGEMENT,
+	    SCIENCE,
+	    UTILIZATION
+	  }
+	
 	/** List of crop types in queue */
 	private List<String> cropListInQueue;
 	/** List of crops the greenhouse is currently growing */
 	private List<Crop> crops;
 	/** A map of all the crops ever planted in this greenhouse. */
 	private Map<Integer, String> cropHistory;
-
+	/** The attribute scores map for this greenhouse. */
+	private Map<Aspect, Double> attributes;
 	/** The crop usage on each crop in this facility [kg/sol]. */
 	private Map<String, SolMetricDataLogger<Integer>> cropUsage;
 	/** The daily water usage in this facility [kg/sol]. */
@@ -107,7 +111,6 @@ public class Farming extends Function implements Serializable {
 
 	private Research lab;
 	private HouseKeeping houseKeeping;
-
 
 	/**
 	 * Constructor.
@@ -119,6 +122,9 @@ public class Farming extends Function implements Serializable {
 		// Use Function constructor.
 		super(FunctionType.FARMING, building);
 
+		// Initialize the attribute scores map
+		initAttributeScores();
+		
 		// LED_Item = ItemResource.findItemResource(LED_KIT);
 		// HPS_Item = ItemResource.findItemResource(HPS_LAMP);
 
@@ -155,7 +161,45 @@ public class Farming extends Function implements Serializable {
 			}
 		}
 	}
+	
+	/**
+	 * Initializes the attribute scores.
+	 */
+	private void initAttributeScores() {
+		attributes = new HashMap<>(); 
+		attributes.put(Aspect.ATTRACTIVENESS, .5);
+		attributes.put(Aspect.CLEANINESS, .5);
+		attributes.put(Aspect.MANAGEMENT, .5);
+		attributes.put(Aspect.SCIENCE, .5);
+		attributes.put(Aspect.UTILIZATION, .5);
+	}
 
+	/**
+	 * Updates an attribute score
+	 * 
+	 * @param aspect
+	 * @param amount
+	 */
+	public void updateAttribute(Aspect aspect, double amount) {
+		attributes.computeIfPresent(aspect, (k, v) -> v = adjust(v, amount));
+	}
+	
+	/**
+	 * Adjusts an attribute score.
+	 * 
+	 * @param score
+	 * @param change
+	 * @return
+	 */
+	private double adjust(double score, double change) {
+		double result = score + change;
+		if (result > 1.0)
+			return 1.0;
+		else if (result < 0.0)
+			return 0.0;
+		return result;
+	}
+	
 	/**
 	 * Picks a crop type
 	 *
@@ -650,6 +694,12 @@ public class Farming extends Function implements Serializable {
 			// check for the passing of each day
 			if (pulse.isNewSol()) {
 
+				// Gradually reduce aspect score by default
+				for (Aspect aspect: attributes.keySet()) {
+					updateAttribute(aspect, -0.01);
+				}
+				
+				// Reset the cleaning
 				houseKeeping.resetCleaning();
 
 				// Inspect every 2 days
@@ -687,11 +737,6 @@ public class Farming extends Function implements Serializable {
 			List<Crop> toRemove = new ArrayList<>();
 			for(Crop crop : crops) {
 
-//				if (resetInterval) {
-//					crop.setInterval(processInterval);
-//					resetInterval = false;
-//				}
-
 				try {
 					crop.timePassing(pulse, productionLevel, solarIrradiance,
 									 greyFilterRate, temperatureModifier);
@@ -717,11 +762,13 @@ public class Farming extends Function implements Serializable {
 
 	/**
 	 * Transfers the seedling
+	 * Note: Enable this task to take time to complete the work
 	 *
 	 * @param time
 	 * @param worker
+	 * @return Crop
 	 */
-	public void transferSeedling(double time, Worker worker) {
+	public Crop transferSeedling(double time, Worker worker) {
 		// Add any new crops.
 		for (int x = 0; x < numCrops2Plant; x++) {
 			CropSpec ct;
@@ -743,11 +790,11 @@ public class Farming extends Function implements Serializable {
 				building.fireUnitUpdate(UnitEventType.CROP_EVENT, crop);
 
 				logger.log(building, worker, Level.INFO, 3_000, "Planted a new crop of " + crop.getCropName() + ".");
-
 				numCrops2Plant--;
-				break;
+				return crop;
 			}
 		}
+		return null;
 	}
 
 	/**
@@ -761,19 +808,27 @@ public class Farming extends Function implements Serializable {
 		double powerRequired = 0D;
 
 		for (Crop crop : crops) {
-			if (crop.getPhaseType() == PhaseType.PLANTING || crop.getPhaseType() == PhaseType.INCUBATION)
-				powerRequired += powerGrowingCrop / 2D; // half power is needed for illumination and crop monitoring
-			else if (crop.getPhaseType() == PhaseType.HARVESTING || crop.getPhaseType() == PhaseType.FINISHED)
+			// Tailor the lighting according to the phase type the crop is at
+			if (crop.getPhaseType() == PhaseType.PLANTING 
+					|| crop.getPhaseType() == PhaseType.INCUBATION)
+				// More power is needed for illumination and crop monitoring
+				powerRequired += powerGrowingCrop / 2D; 
+			else if (crop.getPhaseType() == PhaseType.GERMINATION)
+				powerRequired += powerGrowingCrop / 10D;
+			else if (crop.getPhaseType() == PhaseType.HARVESTING 
+					|| crop.getPhaseType() == PhaseType.FINISHED)
+				// Winding down the growth
 				powerRequired += powerGrowingCrop / 5D;
-			// else //if (crop.getPhaseType() == PhaseType.GROWING || crop.getPhaseType() ==
-			// PhaseType.GERMINATION)
-			// powerRequired += powerGrowingCrop + crop.getLightingPower();
+			else if (crop.getPhaseType() == PhaseType.FINISHED)
+				;// do nothing
+			else
+				powerRequired += crop.getLightingPower();
 		}
 
-		powerRequired += getTotalLightingPower();
+		// The normal lighting power during growing phase
+//		powerRequired += getTotalLightingPower();
 
 		// Note: add separate auxiliary power for subsystem, not just lighting power
-
 		return powerRequired;
 	}
 
@@ -840,8 +895,6 @@ public class Farming extends Function implements Serializable {
 		boolean hasEmptySpace = false;
 		boolean done = false;
 
-		// List<String> tissues = lab0.getTissueCultureList();
-
 		// Check to see if the local greenhouse has a research slot
 		if (lab == null)
 			lab = building.getResearch();
@@ -872,12 +925,12 @@ public class Farming extends Function implements Serializable {
 					if (hasEmptySpace) {
 						hasEmptySpace = lab1.addResearcher();
 						if (hasEmptySpace) {
-							boolean workDone = growCropTissue(lab1, type, worker);// true);
+							boolean workDone = growCropTissue(lab1, type, worker);
 							lab.removeResearcher();
 							return workDone;
 						}
 
-						// TODO: compute research ooints to determine if it can be carried out.
+						// Note: compute research points to determine if it can be carried out.
 						// int points += (double) (lab.getResearcherNum() * lab.getTechnologyLevel()) /
 						// 2D;
 					}
@@ -888,7 +941,7 @@ public class Farming extends Function implements Serializable {
 		// Check to see if a person can still "squeeze into" this busy lab to get lab
 		// time
 		if (!hasEmptySpace && (lab.getLaboratorySize() == lab.getResearcherNum())) {
-			return growCropTissue(lab, type, worker);// , false);
+			return growCropTissue(lab, type, worker);
 		}
 
 		else {
@@ -902,7 +955,7 @@ public class Farming extends Function implements Serializable {
 				if (lab2.hasSpecialty(ScienceType.BOTANY)) {
 					hasEmptySpace = lab2.checkAvailability();
 					if (lab2.getLaboratorySize() == lab2.getResearcherNum()) {
-						boolean workDone = growCropTissue(lab2, type, worker);// , false);
+						boolean workDone = growCropTissue(lab2, type, worker);
 						return workDone;
 					}
 				}
@@ -1142,21 +1195,4 @@ public class Farming extends Function implements Serializable {
 
 		return cropsNeedingTending;
 	}
-
-//	/**
-//	 * Set the interval reset to true
-//	 */
-//	public static void resetInterval() {
-//		resetInterval = true;
-//	}
-//
-//	/**
-//	 * Sets the process interval
-//	 *
-//	 * @param value
-//	 */
-//	public static void setInterval(double value) {
-//		processInterval = value;
-//		resetInterval = true;
-//	}
 }

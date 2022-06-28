@@ -385,8 +385,8 @@ public class ReviewMissionPlan extends Task implements Serializable {
 								// 10. luck
 								int luck = RandomUtil.getRandomInt(-5, 5);	
 								
-								// TODO: 9. Go to him/her to have a chat
-								// TODO: 10. mission lead's leadership/charisma
+								// Future: 9. Go to him/her to have a chat
+								// Future: 10. mission lead's leadership/charisma
 								
 								score = Math.round((rating + relation + qual + obj + emer + siteValue + dist + leadership + reviewerRole + luck)* 10.0)/10.0;
 	

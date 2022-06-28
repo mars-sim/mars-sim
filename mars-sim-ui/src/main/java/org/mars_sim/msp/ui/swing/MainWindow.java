@@ -299,14 +299,12 @@ extends JComponent implements ClockListener {
 		int screenWidth = graphicsDevice.getDisplayMode().getWidth();
 		int screenHeight = graphicsDevice.getDisplayMode().getHeight();
 
-		
 		if (cleanUI) {
 			useDefaultScreenConfig(screenWidth, screenHeight);
 		}
 		else {
 			askScreenConfig(screenWidth, screenHeight);
-		}
-		
+		}	
 
 		// Set up MainDesktopPane
 		desktop = new MainDesktopPane(this, sim);
@@ -334,7 +332,7 @@ extends JComponent implements ClockListener {
 	}
 
 	/**
-	 * Asks if the player wants to use last saved screen configuration
+	 * Asks if the player wants to use last saved screen configuration.
 	 * 
 	 * @param screenWidth
 	 * @param screenHeight
@@ -358,7 +356,7 @@ extends JComponent implements ClockListener {
 			// Set the UI configuration
 			useDefault = UIConfig.INSTANCE.useUIDefault();
 			
-			logger.config("useDefault is: " + useDefault);
+//			logger.config("useDefault is: " + useDefault);
 			
 			if (useDefault) {
 //				selectedSize = calculatedScreenSize(screenWidth, screenHeight);
@@ -412,7 +410,10 @@ extends JComponent implements ClockListener {
 	}
 	
 	/**
-	 * Use the default screen config
+	 * Uses the default screen config.
+	 * 
+	 * @param screenWidth
+	 * @param screenHeight
 	 */
 	private void useDefaultScreenConfig(int screenWidth, int screenHeight) {
 	   	selectedSize = interactiveTerm.getSelectedScreen();
@@ -831,11 +832,9 @@ extends JComponent implements ClockListener {
 				ImageLoader.getIcon(Msg.getString("img.speed.pause")));
 		TooltipManager.setTooltip(pauseSwitch, "Pause or Resume the Simulation", TooltipWay.up);
 
-		pauseSwitch.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-                masterClock.setPaused(!pauseSwitch.isSelected(), false);
-			};
-		});
+		pauseSwitch.addActionListener(e -> 
+                masterClock.setPaused(!pauseSwitch.isSelected(), false)
+		);
 	}
 
 	/**
@@ -1012,8 +1011,6 @@ extends JComponent implements ClockListener {
 		earthTimer = new javax.swing.Timer(TIME_DELAY, new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent evt) {
-
-
 				// Increment both the earth and mars clocks
 				incrementClocks();
 

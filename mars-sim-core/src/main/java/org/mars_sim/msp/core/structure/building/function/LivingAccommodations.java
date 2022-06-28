@@ -209,8 +209,8 @@ public class LivingAccommodations extends Function implements Serializable {
 		person.setBed(bed);
 		person.setQuarters(building);
 
-		logger.log(building, person, Level.INFO, 0, "Designated a bed at "
-					+ bed.getShortFormat() + ".", null);
+		logger.log(building, person, Level.FINE, 0, "Designated a bed at "
+					+ bed.getShortFormat() + ".");
 	}
 
 	/**

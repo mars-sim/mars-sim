@@ -372,22 +372,24 @@ public abstract class Vehicle extends Unit
 		if (vehicleType == VehicleType.DELIVERY_DRONE || this instanceof Rover) {
 			// Gets the estimated average fuel economy for a trip [km/kg]
 			estimatedAveFuelEconomy = baseFuelEconomy * (beginningMass / endMass * .75);
-			// Gets the base acceleration in m/s2
+			// Gets the base acceleration [m/s2]
 			baseAccel = averagePower / beginningMass / baseSpeed * 1000 * 3.6;
 		}
 
-		logger.log(this, Level.INFO, 10_000L, 
-				"type: " + vehicleType + "   "
+		logger.log(this, Level.INFO, 0, 
+				vehicleType.getName() + "   "
 				+ "fuelCapacity: " + Math.round(fuelCapacity * 100.0)/100.0 + " kg   " 
 	   		 	+ "baseSpeed: " + Math.round(baseSpeed * 100.0)/100.0 + " kW/hr   " 
     		 	+ "averagePower: " + Math.round(averagePower * 100.0)/100.0 + " kW   "
-    	    	+ "totalEnergy: " + Math.round(totalEnergy * 100.0)/100.0 + " km/kg   "   		 	
-    		 	+ "totalHours: " + Math.round(totalHours * 100.0)/100.0 + " hr   "
+    	    	+ "totalEnergy: " + Math.round(totalEnergy * 100.0)/100.0 + " km/kg   ");   		
+    	logger.log(this, Level.INFO, 0, 	     	    	
+    		 	"totalHours: " + Math.round(totalHours * 100.0)/100.0 + " hr   "
     		 	+ "baseRange: " + Math.round(baseRange * 100.0)/100.0 + " km   "
     		 	+ "baseFuelEconomy: " + Math.round(baseFuelEconomy * 100.0)/100.0 + " km/kg   "
     		 	+ "baseFuelConsumption: " + Math.round(baseFuelConsumption * 100.0)/100.0 + " km/kWh   "
-    		 	+ "baseFuelEconomy: " + Math.round(baseFuelEconomy * 100.0)/100.0 + " km/kg   "
-    		 	+ "cargoCapacity: " + Math.round(cargoCapacity * 100.0)/100.0 + " kg   "   
+    		 	+ "baseFuelEconomy: " + Math.round(baseFuelEconomy * 100.0)/100.0 + " km/kg   ");
+    	logger.log(this, Level.INFO, 0, 	 	
+    		 	"cargoCapacity: " + Math.round(cargoCapacity * 100.0)/100.0 + " kg   "   
        		 	+ "beginningMass: " + Math.round(beginningMass * 100.0)/100.0 + " kg   "
     		 	+ "endMass: " + Math.round(endMass * 100.0)/100.0 + " kg   "
     		 	+ "estimatedAveFuelEconomy: " + Math.round(estimatedAveFuelEconomy * 100.0)/100.0 + " km/kg   "  
@@ -414,10 +416,10 @@ public abstract class Vehicle extends Unit
 	 * @param name                the vehicle's name
 	 * @param vehicleType         the configuration description of the vehicle.
 	 * @param settlement          the settlement the vehicle is parked at.
-	 * @param baseSpeed           the base speed of the vehicle (kph)
-	 * @param baseMass            the base mass of the vehicle (kg)
-	 * @param fuelEconomy		  the fuel economy of the vehicle (km/kg)
-	 * @param maintenanceWorkTime the work time required for maintenance (millisols)
+	 * @param baseSpeed           the base speed of the vehicle [kph]
+	 * @param baseMass            the base mass of the vehicle [kg]
+	 * @param fuelEconomy		  the fuel economy of the vehicle [km/kg]
+	 * @param maintenanceWorkTime the work time required for maintenance [millisols]
 	 */
 	protected Vehicle(String name, String vehicleType, Settlement settlement, double baseSpeed, double baseMass,
 			double fuelEconomy, double maintenanceWorkTime) {
