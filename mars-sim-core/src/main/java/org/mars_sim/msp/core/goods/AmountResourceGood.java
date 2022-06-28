@@ -6,21 +6,15 @@
  */
 package org.mars_sim.msp.core.goods;
 
-import java.util.Objects;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.mars_sim.msp.core.food.FoodProductionProcess;
 import org.mars_sim.msp.core.food.FoodProductionProcessItem;
-import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
-import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * This represents how a Amount Resource can be traded.
@@ -186,5 +180,12 @@ class AmountResourceGood extends Good {
 		amount += getFoodProductionOutput(settlement);
 
 		return amount;
+    }
+
+    @Override
+    double getPrice(Settlement settlement, double value) {
+		double totalMass = Math.round(settlement.getAmountResourceStored(getID()) * 100.0)/100.0;
+		double factor = 1.5 / (.5 + Math.log(totalMass + 1));
+	    return getCostOutput() * (1 + 2 * factor * Math.log(value + 1));
     }
 }

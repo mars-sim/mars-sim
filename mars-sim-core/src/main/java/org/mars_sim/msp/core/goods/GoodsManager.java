@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
@@ -24,8 +23,6 @@ import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.ContainerUtil;
-import org.mars_sim.msp.core.equipment.EVASuit;
-import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.food.FoodProductionProcessInfo;
 import org.mars_sim.msp.core.food.FoodProductionProcessItem;
@@ -54,7 +51,6 @@ import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ItemType;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -427,7 +423,7 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @param useCache use demand and trade caches to determine value?
 	 * @return value of good.
 	 */
-	public double determineGoodValue(Good good, double supply, boolean useCache) {
+	private double determineGoodValue(Good good, double supply, boolean useCache) {
 		if (good != null) {
 			double value = 0D;
 
@@ -670,7 +666,7 @@ public class GoodsManager implements Serializable, Temporal {
 	 *               the lower limit
 	 * @return the adjusted value
 	 */
-	public double updateDeflationMap(int id, double value, GoodCategory type, boolean exceed) {
+	private double updateDeflationMap(int id, double value, GoodCategory type, boolean exceed) {
 
 		for (int i : deflationIndexMap.keySet()) {
 			if (id != i) {
@@ -705,7 +701,7 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @param resource
 	 * @return
 	 */
-	public double getAverageCapAmountDemand(int resource, int solElapsed) {
+	private double getAverageCapAmountDemand(int resource, int solElapsed) {
 		return capLifeSupportAmountDemand(resource, getAverageAmountDemand(resource, solElapsed));		
 	}
 
@@ -717,7 +713,7 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @param solElapsed
 	 * @return
 	 */
-	public double getAverageAmountDemand(int resource, int solElapsed) {
+	private double getAverageAmountDemand(int resource, int solElapsed) {
 		return Math.min(10, getAmountDemandValue(resource) / solElapsed);
 	}
 	
@@ -729,7 +725,7 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @param solElapsed
 	 * @return
 	 */
-	public double getAverageAmountSupply(double supplyStored, int solElapsed) {
+	private double getAverageAmountSupply(double supplyStored, int solElapsed) {
 		double aveSupply = 0.5 + Math.log((1 + 5 * supplyStored) / solElapsed);
 
 		if (aveSupply < 0.5)
@@ -746,7 +742,7 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @param solElapsed
 	 * @return
 	 */
-	public double getAverageItemSupply(double supplyStored, int solElapsed) {
+	private double getAverageItemSupply(double supplyStored, int solElapsed) {
 		double aveSupply = 1.0 + Math.log((1 + 2 * supplyStored) / solElapsed);
 
 		if (aveSupply < 1.0)
@@ -763,7 +759,7 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @param solElapsed
 	 * @return
 	 */
-	public double getAverageEquipmentSupply(double supplyStored, int solElapsed) {
+	private double getAverageEquipmentSupply(double supplyStored, int solElapsed) {
 		double aveSupply = 0.25 + Math.log((1 + supplyStored) / solElapsed);
 
 		if (aveSupply < 0.5)
@@ -780,7 +776,7 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @param solElapsed
 	 * @return
 	 */
-	public double getAverageVehicleSupply(double supplyStored, int solElapsed) {
+	private double getAverageVehicleSupply(double supplyStored, int solElapsed) {
 		double aveSupply = 0.05 + Math.log((1 + 0.5 * supplyStored) / solElapsed);
 
 		if (aveSupply < 0.5)
@@ -796,7 +792,7 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @param solElapsed
 	 * @return
 	 */
-	public double getAverageItemDemand(int resource, int solElapsed) {
+	private double getAverageItemDemand(int resource, int solElapsed) {
 		double aveDemand = getPartDemandValue(resource) / solElapsed;
 		return Math.min(500, aveDemand);
 	}
@@ -1302,7 +1298,7 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @param good
 	 * @return
 	 */
-	public double flattenAmountDemand(Good good) {
+	private double flattenAmountDemand(Good good) {
 		double demand = 0;
 		String name = good.getName();
 		GoodType type = good.getGoodType();
@@ -3042,71 +3038,13 @@ public class GoodsManager implements Serializable, Temporal {
 			}
 
 			else {
-				// TODO Should interate over MissionMeta to get these values.
-				double travelToSettlementMissionValue = determineMissionVehicleDemand(MissionType.TRAVEL_TO_SETTLEMENT,
-						vehicleType, buy);
-				if (travelToSettlementMissionValue > demand) {
-					demand = travelToSettlementMissionValue;
-				}
-
-				double explorationMissionValue = determineMissionVehicleDemand(MissionType.EXPLORATION, vehicleType, buy);
-				if (explorationMissionValue > demand) {
-					demand = explorationMissionValue;
-				}
-
-				double collectIceMissionValue = determineMissionVehicleDemand(MissionType.COLLECT_ICE, vehicleType, buy);
-				if (collectIceMissionValue > demand) {
-					demand = collectIceMissionValue;
-				}
-
-				double rescueMissionValue = determineMissionVehicleDemand(MissionType.RESCUE_SALVAGE_VEHICLE, vehicleType, buy);
-				if (rescueMissionValue > demand) {
-					demand = rescueMissionValue;
-				}
-
-				double tradeMissionValue = determineMissionVehicleDemand(MissionType.TRADE, vehicleType, buy);
-				if (tradeMissionValue > demand) {
-					demand = tradeMissionValue;
-				}
-
-				double collectRegolithMissionValue = determineMissionVehicleDemand(MissionType.COLLECT_REGOLITH, vehicleType,
-						buy);
-				if (collectRegolithMissionValue > demand) {
-					demand = collectRegolithMissionValue;
-				}
-
-				double miningMissionValue = determineMissionVehicleDemand(MissionType.MINING, vehicleType, buy);
-				if (miningMissionValue > demand) {
-					demand = miningMissionValue;
-				}
-
-				double constructionMissionValue = determineMissionVehicleDemand(MissionType.BUILDING_CONSTRUCTION, vehicleType,
-						buy);
-				if (constructionMissionValue > demand) {
-					demand = constructionMissionValue;
-				}
-
-				double salvageMissionValue = determineMissionVehicleDemand(MissionType.BUILDING_SALVAGE, vehicleType, buy);
-				if (salvageMissionValue > demand) {
-					demand = salvageMissionValue;
-				}
-
-				double areologyFieldMissionValue = determineMissionVehicleDemand(MissionType.AREOLOGY,
-						vehicleType, buy);
-				if (areologyFieldMissionValue > demand) {
-					demand = areologyFieldMissionValue;
-				}
-
-				double biologyFieldMissionValue = determineMissionVehicleDemand(MissionType.BIOLOGY, vehicleType,
-						buy);
-				if (biologyFieldMissionValue > demand) {
-					demand = biologyFieldMissionValue;
-				}
-
-				double emergencySupplyMissionValue = determineMissionVehicleDemand(MissionType.EMERGENCY_SUPPLY, vehicleType,
-						buy);
-				if (emergencySupplyMissionValue > demand) {
-					demand = emergencySupplyMissionValue;
+				// Check all missions and take highest demand
+				for (MissionType missionType : MissionType.values()) {
+					double missionDemand = determineMissionVehicleDemand(missionType,
+													vehicleType, buy);
+					if (missionDemand > demand) {
+						demand = missionDemand;
+					}
 				}
 			}
 
@@ -3628,67 +3566,9 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @return
 	 */
 	public double getPrice(Good good) {
-		double cost = good.getCostOutput();
 		double value = getGoodValuePerItem(good);
-		double factor = 0;
-		double price = 0;
-		
-		int id = good.getID();
-		if (id < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
-			// For Amount Resource
-			double totalMass = Math.round(settlement.getAmountResourceStored(id) * 100.0)/100.0;
-			factor = 1.5 / (.5 + Math.log(totalMass + 1));
-			price = cost * (1 + 2 * factor * Math.log(value + 1));
-		}
-		else if (id < ResourceUtil.FIRST_VEHICLE_RESOURCE_ID) {
-			// For Item Resource
-			Part part = (Part) ItemResourceUtil.findItemResource(id);
-			double mass = part.getMassPerItem();
-			double quantity = settlement.getItemResourceStored(id) ;
-			factor = 1.2 * Math.log(mass + 1) / (1.2 + Math.log(quantity + 1));
-			price = cost * (1 + 5 * factor * Math.log(Math.sqrt(value)/2.0 + 1));
-		}
-			
-		else if (id < ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID) {
-			// For Vehicle
-			VehicleType vehicleType = VehicleType.convertID2Type(id);
-			double mass = CollectionUtils.getVehicleTypeBaseMass(vehicleType);
-			double quantity = settlement.findNumVehiclesOfType(vehicleType);
-			factor = Math.log(mass/1600.0 + 1) / (5 + Math.log(quantity + 1));
-			price = cost * (1 + 2 * factor * Math.log(value + 1));
-		}
-			
-		else if (id < ResourceUtil.FIRST_ROBOT_RESOURCE_ID) {
-			// For Equipment   		
-    		EquipmentType type = EquipmentType.convertID2Type(id);
-    		double mass = 0;
-			double quantity = 0;
-    		if (type == EquipmentType.EVA_SUIT) {
-    			mass = EVASuit.emptyMass;
-    			quantity = settlement.getNumEVASuit();
-    			// Need to increase the value for EVA
-    			factor = 1.2 * Math.log(mass/50.0 + 1) / (.1 + Math.log(quantity + 1));
-    		}
-    		else {
-    			// For containers
-    			mass = EquipmentFactory.getEquipmentMass(type);
-    			quantity = settlement.findNumContainersOfType(type);
-    			factor = 1.2 * Math.log(mass + 1) / (.1 + Math.log(quantity + 1));
-    		}
-    		price = cost * (1 + 2 * factor * Math.log(value + 1));
-		}
-			
-		else {
-			// For Robot
-			double mass = Robot.EMPTY_MASS;
-			double quantity = settlement.getInitialNumOfRobots() ;
-			factor = Math.log(mass/50.0 + 1) / (5 + Math.log(quantity + 1));
-			// Need to increase the value for robots
-			price = cost * (1 + 2 * factor * Math.log(value + 1));
-		}
-			
-		
-		return price;
+
+		return good.getPrice(settlement, value);
 	}
 	
 	/**
@@ -3732,7 +3612,7 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @param good's id.
 	 * @return value (VP)
 	 */
-	public double getPartDemandValue(int id) {
+	private double getPartDemandValue(int id) {
 		if (partDemandCache.containsKey(id))
 			return partDemandCache.get(id);
 		else
@@ -3747,7 +3627,7 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @param good the good to check.
 	 * @return demand value
 	 */
-	public double getAmountDemandValue(Good good) {
+	private double getAmountDemandValue(Good good) {
 		return getAmountDemandValue(good.getID());
 	}
 
@@ -3772,7 +3652,7 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @param equipment id.
 	 * @return demand value
 	 */
-	public double getEquipmentDemandValue(int id) {
+	private double getEquipmentDemandValue(int id) {
 		if (equipmentDemandCache.containsKey(id))
 			return equipmentDemandCache.get(id);
 		else
@@ -3781,7 +3661,7 @@ public class GoodsManager implements Serializable, Temporal {
 		return 5;
 	}
 
-	public double getVehicleDemandValue(int id) {
+	private double getVehicleDemandValue(int id) {
 		if (vehicleDemandCache.containsKey(id))
 			return vehicleDemandCache.get(id);
 		else
@@ -3789,7 +3669,7 @@ public class GoodsManager implements Serializable, Temporal {
 		return 10;
 	}
 
-	public double getRobotDemandValue() {
+	private double getRobotDemandValue() {
 		return 10;
 	}
 	
@@ -3848,7 +3728,7 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @param max
 	 * @return
 	 */
-	public double limitMaxMin(double param, double min, double max) {
+	private static double limitMaxMin(double param, double min, double max) {
 		return Math.max(min, Math.min(max, param));
 	}
 	

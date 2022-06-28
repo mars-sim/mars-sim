@@ -6,6 +6,7 @@
  */
 package org.mars_sim.msp.core.goods;
 
+import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.person.Person;
@@ -87,5 +88,27 @@ public class EquipmentGood extends Good {
 		number += getManufacturingProcessOutput(settlement);
 
 		return number;
+    }
+
+    @Override
+    double getPrice(Settlement settlement, double value) {
+		// For Equipment   		
+    	double mass = 0;
+		double quantity = 0;
+    	double factor = 0;
+        if (equipmentType == EquipmentType.EVA_SUIT) {
+    		mass = EVASuit.emptyMass;
+    		quantity = settlement.getNumEVASuit();
+    		
+            // Need to increase the value for EVA
+    		factor = 1.2 * Math.log(mass/50.0 + 1) / (.1 + Math.log(quantity + 1));
+    	}
+    	else {
+    		// For containers
+    		mass = EquipmentFactory.getEquipmentMass(equipmentType);
+    		quantity = settlement.findNumContainersOfType(equipmentType);
+    		factor = 1.2 * Math.log(mass + 1) / (.1 + Math.log(quantity + 1));
+    	}
+        return getCostOutput() * (1 + 2 * factor * Math.log(value + 1));   
     }
 }

@@ -500,4 +500,11 @@ public abstract class Good implements Serializable, Comparable<Good> {
         return  settlement.getAllAssociatedPeople().stream()
 			              .filter(p -> p.isOutside());
     }
+
+	/**
+	 * Get the price for this Good at a Settlment with a specific Value Point
+	 * @param settlement Get the price at
+	 * @param value Value Point for the good
+	 */
+    abstract double getPrice(Settlement settlement, double value);
 }

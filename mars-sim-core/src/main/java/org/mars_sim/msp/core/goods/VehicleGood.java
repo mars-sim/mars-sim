@@ -6,6 +6,7 @@
  */
 package org.mars_sim.msp.core.goods;
 
+import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.VehicleConfig;
@@ -93,5 +94,13 @@ class VehicleGood extends Good {
 		number += getManufacturingProcessOutput(settlement);
 
 		return number;
+    }
+
+    @Override
+    double getPrice(Settlement settlement, double value) {
+        double mass = CollectionUtils.getVehicleTypeBaseMass(vehicleType);
+        double quantity = settlement.findNumVehiclesOfType(vehicleType);
+        double factor = Math.log(mass/1600.0 + 1) / (5 + Math.log(quantity + 1));
+        return getCostOutput() * (1 + 2 * factor * Math.log(value + 1));
     }
 }
