@@ -143,7 +143,7 @@ public class EnterAirlock extends Task implements Serializable {
 	}
 
 	/**
-	 * Transitions the person into a particular zone
+	 * Transitions the person into a particular zone.
 	 *
 	 * @param zone the destination
 	 * @return true if the transition is successful
@@ -151,30 +151,25 @@ public class EnterAirlock extends Task implements Serializable {
 	private boolean transitionTo(int zone) {
 
 		// Is the person already in this zone
-		if (isInZone(zone)) {
+		if (isInZone(zone))
 			return true;
-		}
-
+		// For ingress, the previous zone # is the more this zone
 		int previousZone = zone + 1;
 		LocalPosition newPos = fetchNewPos(zone);
-		if (newPos != null) {
-			if (airlock.occupy(zone, newPos, id)) {
-				if (previousZone <= 4) {
-					if (airlock.vacate(previousZone, id)) {
-						moveThere(newPos, zone);
-						return true;
-					}
-				}
-				else {
-					moveThere(newPos, zone);
-					return true;
-				}
+		if (newPos != null && airlock.occupy(zone, newPos, id)) {
+			if (previousZone <= 4 && airlock.vacate(previousZone, id)) {
+				moveThere(newPos, zone);
+				return true;
+			}
+			else {
+				moveThere(newPos, zone);
+				return true;
 			}
 		}
 
 		return false;
 	}
-
+	
 	/**
 	 * Checks if the person is already in a particular zone
 	 *

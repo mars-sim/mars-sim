@@ -720,42 +720,32 @@ public abstract class EVAOperation extends Task {
 	}
 
 	/**
-	 * Rescue the person from the rover
+	 * Sends a person to a medical building.
+	 * 
+	 * Note: this is more like a hack, rather than a legitimate 
+	 * way of transferring a person through the airlock into the settlement.			
 	 *
-	 * @param r the rover
 	 * @param p the person
 	 * @param s the settlement
 	 */
-	public static boolean rescueOperation(Rover r, Person p, Settlement s) {
-		boolean result = false;
-		if (p.isDeclaredDead()) {
-			result = p.transfer(s);
-		}
-		else if (r != null || p.isOutside()) {
-			result = p.transfer(s);
-		}
+	public static void send2Medical(Person p, Settlement s) {
+		// Gets the settlement id
+		int id = s.getIdentifier();
+		// Store the person into a medical building
+		BuildingManager.addToMedicalBuilding(p, id);
 
-		if (result) {
-			// Gets the settlement id
-			int id = s.getIdentifier();
-			// Store the person into a medical building
-			BuildingManager.addToMedicalBuilding(p, id);
-
-			Collection<HealthProblem> problems = p.getPhysicalCondition().getProblems();
-			Complaint complaint = p.getPhysicalCondition().getMostSerious();
-			HealthProblem problem = null;
-			for (HealthProblem hp : problems) {
-				if (complaint.getType() == hp.getType()) {
-					problem = hp;
-					break;
-				}
+		Collection<HealthProblem> problems = p.getPhysicalCondition().getProblems();
+		Complaint complaint = p.getPhysicalCondition().getMostSerious();
+		HealthProblem problem = null;
+		for (HealthProblem hp : problems) {
+			if (complaint.getType() == hp.getType()) {
+				problem = hp;
+				break;
 			}
-
-			// Register the historical event
-			HistoricalEvent rescueEvent = new MedicalEvent(p, problem, EventType.MEDICAL_RESCUE);
-			registerNewEvent(rescueEvent);
 		}
 
-		return result;
+		// Register the historical event
+		HistoricalEvent rescueEvent = new MedicalEvent(p, problem, EventType.MEDICAL_RESCUE);
+		registerNewEvent(rescueEvent);
 	}
 }

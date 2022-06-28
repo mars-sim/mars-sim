@@ -142,10 +142,8 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
 
 		// Check if person can exit the settlement airlock.
 		Airlock airlock = getClosestWalkableAvailableAirlock(person, site.getPosition(), false);
-		if (airlock != null) {
-			if (!ExitAirlock.canExitAirlock(person, airlock))
-				return false;
-		}
+		if (airlock != null && !ExitAirlock.canExitAirlock(person, airlock))
+			return false;
 
 		// Check if person's medical condition will not allow task.
 		if (person.getPerformanceRating() < .3D)
@@ -159,8 +157,6 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
 		// Checking stage for NullPointerException
 		if (stage != null)
 			workAvailable = stage.getCompletableWorkTime() > stage.getCompletedWorkTime();
-
-		// System.out.println("stage is " + stage); // test if stage is null
 
 		return (workAvailable);
 	}

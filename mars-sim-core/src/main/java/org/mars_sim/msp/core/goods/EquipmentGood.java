@@ -19,8 +19,10 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  * THis represents the attributes of how an Equipment can be traded
  */
 public class EquipmentGood extends Good {
-
-    private static final double EVA_SUIT_VALUE = 50;
+	
+	private static final long serialVersionUID = 1L;
+	
+	private static final double EVA_SUIT_VALUE = 50;
 	private static final double CONTAINER_VALUE = .1;
 
     private EquipmentType equipmentType;

@@ -21,7 +21,9 @@ import org.mars_sim.msp.core.structure.building.function.FunctionType;
  */
 class AmountResourceGood extends Good {
 	
-    // TODO, move these to the AmountResource class via XML config
+	private static final long serialVersionUID = 1L;
+	
+	// TODO, move these to the AmountResource class via XML config
     private static final double CO2_VALUE = 0.0001;
 	private static final double CL_VALUE = 0.01;
 	private static final double ICE_VALUE = 1.5;

@@ -85,8 +85,6 @@ public class ExitAirlock extends Task implements Serializable {
 	private boolean hasSuit = false;
 	/** The remaining time in donning the EVA suit. */
 	private double remainingDonningTime;
-	/** True if person has an reserved spot. */
-//	private boolean reservedSpot = false;
 
 	/** The airlock to be used. */
 	private Airlock airlock;
@@ -140,8 +138,7 @@ public class ExitAirlock extends Task implements Serializable {
 	 */
 	protected double performMappedPhase(double time) {
 		if (getPhase() == null) {
-			return 0;
-//			throw new IllegalArgumentException("Task phase is null");
+			throw new IllegalArgumentException("Task phase is null");
 
 		} else if (REQUEST_EGRESS.equals(getPhase())) {
 			return requestEgress(time);
@@ -165,7 +162,7 @@ public class ExitAirlock extends Task implements Serializable {
 	}
 
 	/**
-	 * Transition the person into a particular zone
+	 * Transitions the person into a particular zone.
 	 *
 	 * @param zone the destination
 	 * @return true if the transition is successful
@@ -175,33 +172,26 @@ public class ExitAirlock extends Task implements Serializable {
 		if (isInZone(zone)) {
 			return true;
 		}
-
-		else {
-			int previousZone = zone - 1;
-			LocalPosition newPos = fetchNewPos(zone);
-			if (newPos != null) {
-				if (airlock.occupy(zone, newPos, id)) {
-					if (previousZone >= 0) {
-						if (airlock.vacate(previousZone, id)) {
-							moveThere(newPos, zone);
-							return true;
-						}
-						else
-							return false;
-					}
-					else {
-						moveThere(newPos, zone);
-						return true;
-					}
-				}
+		// For egress, the previous zone # is the less this zone
+		int previousZone = zone - 1;
+		LocalPosition newPos = fetchNewPos(zone);
+		if (newPos != null && airlock.occupy(zone, newPos, id)) {
+			if (previousZone >= 0 && airlock.vacate(previousZone, id)) {
+				moveThere(newPos, zone);
+				return true;
+			}
+			else {
+				moveThere(newPos, zone);
+				return true;
 			}
 		}
+			
 		return false;
 	}
 
 
 	/**
-	 * Checks if the person is already in a particular zone
+	 * Checks if the person is already in a particular zone.
 	 *
 	 * @param zone the zone the person is at
 	 * @return true if the person is a particular zone
@@ -211,7 +201,7 @@ public class ExitAirlock extends Task implements Serializable {
 	}
 
 	/**
-	 * Obtains a new position in the target zone
+	 * Obtains a new position in the target zone.
 	 *
 	 * @param zone the destination zone
 	 * @return LocalPosition a new location
@@ -235,14 +225,11 @@ public class ExitAirlock extends Task implements Serializable {
 			newPos = airlock.getAvailableExteriorPosition(false);
 		}
 
-//		if (newPos != null && airlock.joinQueue(zone, newPos, id))
-//			airlock.removePosition(zone, oldPos, id);
-
 		return newPos;
 	}
 
 	/**
-	 * Moves the person to a particular zone
+	 * Moves the person to a particular zone.
 	 *
 	 * @param newPos the target position in that zone
 	 * @param zone the destination zone
@@ -272,7 +259,7 @@ public class ExitAirlock extends Task implements Serializable {
 	}
 
 	/**
-	 * Checks if a person is tired, too stressful or hungry and need to take break, eat and/or sleep
+	 * Checks if a person is tired, too stressful or hungry and need to take break, eat and/or sleep.
 	 *
 	 * @return true if a person is fit
 	 */
@@ -280,11 +267,6 @@ public class ExitAirlock extends Task implements Serializable {
 		// if the person is in the airlock next to the observatory
 		// he will always be qualified to leave that place, or else
 		// he will get stranded
-        //			logger.log(person, Level.INFO, 20_000,
-        //					"Not fit enough in doing EVA egress in "
-        //							+ airlock.getEntity().toString() + ".");
-        //					+ Math.round(person.getXLocation()*10.0)/10.0 + ", "
-        //					+ Math.round(person.getYLocation()*10.0)/10.0 + ")."
         if (person.isAdjacentBuildingType(Building.ASTRONOMY_OBSERVATORY)) {
 			return true;
 		}
@@ -294,7 +276,7 @@ public class ExitAirlock extends Task implements Serializable {
 	}
 
 	/**
-	 * Walks to another location outside the airlock and ends the egress
+	 * Walks to another location outside the airlock and ends the egress.
 	 *
 	 * @param person the person of interest
 	 * @param reason the reason for walking away
@@ -317,7 +299,7 @@ public class ExitAirlock extends Task implements Serializable {
 	}
 	
 	/**
-	 * Request the entry of the airlock
+	 * Requests the entry of the airlock.
 	 *
 	 * @param time the pulse
 	 * @return the remaining time
@@ -410,16 +392,6 @@ public class ExitAirlock extends Task implements Serializable {
 					walkAway(person, "Cannot wait at " + airlock.getEntity().toString() + " inner door.");
 					return 0;
 				}
-//			}
-//
-//			else {
-//				Rover airlockRover = (Rover) airlock.getEntity();
-//				logger.log((Unit)airlock.getEntity(), person, Level.INFO, 4_000,
-//						"Walked toward the inner door in " + airlockRover);
-//		 		// Walk to interior airlock position.
-//		 		addSubTask(new WalkRoverInterior(person, airlockRover,
-//		 				interiorDoorPos.getX(), interiorDoorPos.getY()));
-//			}
 		}
 
 		if (canProceed) {
@@ -456,22 +428,11 @@ public class ExitAirlock extends Task implements Serializable {
 			}
 		}
 
-//		else {
-			// Can't enter the airlock
-//			endTask();
-//			walkAway(person, "Cannot egress");
-
-//			logger.log((Unit)airlock.getEntity(), person, Level.WARNING, 4_000,
-//				"Unable to use "
-//				+ airlock.getEntity().toString() + " for EVA egress.");
-//			return 0;
-//		}
-
 		return remainingTime;
 	}
 
 	/**
-	 * Pressurize the chamber
+	 * Pressurizes the chamber.
 	 *
 	 * @param time
 	 * @return the remaining time
@@ -524,7 +485,7 @@ public class ExitAirlock extends Task implements Serializable {
 	}
 
 	/**
-	 * Enter through the inner door into the chamber of the airlock
+	 * Enters through the inner door into the chamber of the airlock.
 	 *
 	 * @param time
 	 * @return the remaining time
@@ -624,7 +585,7 @@ public class ExitAirlock extends Task implements Serializable {
 	}
 
 	/**
-	 * Walk to the chamber
+	 * Walks to the chamber.
 	 *
 	 * @param time
 	 * @return canProceed
@@ -807,6 +768,10 @@ public class ExitAirlock extends Task implements Serializable {
 					"Could not find a working EVA suit. End this task.");
 
 			// TODO: what to do if person still doesn't have an EVA suit ?
+			// Q: why would a person be allowed to initiate this task in the first place 
+			//    if there is no known working EVA suit ? Unless there is a sync issue 
+			// Q: how do we make an EVA suit pre-assigned to a person prior to starting 
+			//    the process of EVA. 
 			endTask();
 
 			// Will need to clear the task that create the ExitAirlock sub task
@@ -887,7 +852,7 @@ public class ExitAirlock extends Task implements Serializable {
 	}
 
 	/**
-	 * Depressurize the chamber
+	 * Depressurizes the chamber.
 	 *
 	 * @param time the pulse
 	 * @return the remaining time
@@ -965,7 +930,7 @@ public class ExitAirlock extends Task implements Serializable {
 	}
 
 	/**
-	 * Depart the chamber through the outer door of the airlock
+	 * Departs the chamber through the outer door of the airlock.
 	 *
 	 * @param time the pulse
 	 * @return the remaining time
@@ -1035,7 +1000,7 @@ public class ExitAirlock extends Task implements Serializable {
 	}
 
 	/**
-	 * Remove the person from airlock and walk away and ends the airlock and walk tasks
+	 * Removes the person from airlock and walk away and ends the airlock and walk tasks.
 	 */
 	public void completeAirlockTask() {
 		// Clear the person as the airlock operator if task ended prematurely.
@@ -1070,28 +1035,30 @@ public class ExitAirlock extends Task implements Serializable {
 	 */
 	public static boolean canExitAirlock(Person person, Airlock airlock) {
 		boolean result = false;
+		// Note: rescueOperation() is more like a hack, rather than a legitimate way 
+		// of transferring a person through the airlock into the settlement 
+		
 		// Check if person is incapacitated.
 		if (person.getPerformanceRating() <= MIN_PERFORMANCE) {
-			// TODO: if incapacitated, should someone else help this person to get out?
-
 			// Prevent the logger statement below from being repeated multiple times
 			logger.log((Unit)airlock.getEntity(), person, Level.INFO, 4_000,
 					"Could not exit the airlock from " + airlock.getEntityName()
 					+ " due to crippling performance rating of " + person.getPerformanceRating() + ".");
 
+			// May need to relocate the following code to a proper place
 			try {
 				if (person.isInVehicle()) {
 					Settlement nearbySettlement = CollectionUtils.findSettlement(person.getVehicle().getCoordinates());
-					if (nearbySettlement != null)
+					if (nearbySettlement != null) {				
 						// Attempt a rescue operation
-						result = EVAOperation.rescueOperation((Rover)(person.getVehicle()), person, nearbySettlement);
+						result = person.rescueOperation((Rover) person.getVehicle(), person, nearbySettlement);
+					}
 				}
 				else if (person.isOutside()) {
 					Settlement nearbySettlement = CollectionUtils.findSettlement(person.getCoordinates());
-//					Settlement nearbySettlement =  ((Building) (airlock.getEntity())).getSettlement()
 					if (nearbySettlement != null)
 						// Attempt a rescue operation
-						result = EVAOperation.rescueOperation(null, person, ((Building) (airlock.getEntity())).getSettlement());
+						result = person.rescueOperation(null, person, ((Building) (airlock.getEntity())).getSettlement());
 				}
 
 			} catch (Exception e) {

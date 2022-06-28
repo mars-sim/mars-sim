@@ -164,8 +164,6 @@ public abstract class Vehicle extends Unit
 	private double drivetrainEfficiency;
 	/** The average power output of the vehicle. (kW). */
 	private double averagePower = 0;
-	/** The peak power output of the vehicle. (kW). */
-	private double peakPower = 0;
 	/** The total number of hours the vehicle is capable of operating. (hr). */
 	private double totalHours;
 	/** The maximum fuel capacity of the vehicle [kg] */
@@ -184,10 +182,6 @@ public abstract class Vehicle extends Unit
 	private double baseFuelConsumption;
 	/** The instantaneous fuel consumption of the vehicle [Wh/km]. */
 	private double iFuelConsumption;
-	/** The estimated combined total crew weight for a trip [km/kg]. */
-	private double estimatedTotalCrewWeight;
-	/** The cargo capacity of the vehicle for a trip [km/kg]. */
-	private double cargoCapacity;
 	/** The actual start mass of the vehicle (base mass + crew weight + full cargo weight) for a trip [km/kg]. */
 	private double startMass = 0;
 	/** The estimated beginning mass of the vehicle (base mass + crew weight + full cargo weight) for a trip [km/kg]. */
@@ -358,9 +352,9 @@ public abstract class Vehicle extends Unit
 		// Gets the crew capacity
 		int numCrew = spec.getCrewSize();
 		// Gets estimated total crew weight
-		estimatedTotalCrewWeight = numCrew * Person.getAverageWeight();
+		double estimatedTotalCrewWeight = numCrew * Person.getAverageWeight();
 		// Gets cargo capacity
-		cargoCapacity = spec.getTotalCapacity();
+		double cargoCapacity = spec.getTotalCapacity();
 		// Create microInventory instance
 		eqmInventory = new EquipmentInventory(this, cargoCapacity);
 
@@ -386,8 +380,8 @@ public abstract class Vehicle extends Unit
 		fuelCapacity = spec.getCargoCapacity(ResourceUtil.findAmountResourceName(getFuelType()));
 		// Gets the total energy [in kWh] on a full tank of methane
 		energyCapacity = METHANE_SPECIFIC_ENERGY * fuelCapacity * SOFC_CONVERSION_EFFICIENCY * drivetrainEfficiency;
-		// Assume the peak power is 6x the average power.
-		peakPower = averagePower * 6.0;
+		// Assume the peak power is 4x the average power.
+		double peakPower = averagePower * 4.0;
 		
 		if (vehicleType == VehicleType.DELIVERY_DRONE) {
 			// Gets the estimated energy available for drivetrain [in kWh]

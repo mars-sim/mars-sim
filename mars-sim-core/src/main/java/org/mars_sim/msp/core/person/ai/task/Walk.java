@@ -405,9 +405,6 @@ public class Walk extends Task implements Serializable {
 	 * @return true is all airlocks can be exited (or no airlocks in walk steps).
 	 */
 	private static boolean canExitAllAirlocks(Person person, WalkingSteps walkingSteps) {
-
-		boolean result = true;
-
 		List<WalkingSteps.WalkStep> stepList = walkingSteps.getWalkingStepsList();
 		if (stepList != null) {
 			Iterator<WalkingSteps.WalkStep> i = stepList.iterator();
@@ -416,23 +413,21 @@ public class Walk extends Task implements Serializable {
 				if (step.stepType == WalkingSteps.WalkStep.EXIT_AIRLOCK) {
 					Airlock airlock = step.airlock;
 					if (!ExitAirlock.canExitAirlock(person, airlock)) {
-						result = false;
-
 						logger.log(person, Level.WARNING, 0,
 								"Could not exit " + airlock.getEntityName());
+						return false;
 					}
 				}
 			}
 		}
 
-		return result;
+		return true;
 	}
 
 	@Override
 	protected double performMappedPhase(double time) {
 		if (getPhase() == null) {
-			return 0;
-//            throw new IllegalArgumentException("Task phase is null");
+			throw new IllegalArgumentException("Task phase is null");
 		} else if (WALKING_SETTLEMENT_INTERIOR.equals(getPhase())) {
 			return walkingSettlementInteriorPhase(time);
 		} else if (WALKING_ROVER_INTERIOR.equals(getPhase())) {

@@ -17,6 +17,8 @@ import org.mars_sim.msp.core.vehicle.VehicleType;
  */
 class VehicleGood extends Good {
 	
+	private static final long serialVersionUID = 1L;
+	
 	private static final int VEHICLE_VALUE = 20;
 	private static final int LUV_VALUE = 750;
 	private static final int DRONE_VALUE = 50;
