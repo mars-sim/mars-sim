@@ -772,20 +772,21 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<!-- Produces 5x 1kg aluminum ingots. -->
+	<!-- Produces one 5kg aluminum ingots. -->
 	<process name="cast aluminum ingot"
 			tech="1" skill="1"
 			work-time="50"
 			process-time="50"
 			power-required=".2">
-		<description>Al&lt;sub&gt;2&lt;/sub&gt;O&lt;sub&gt;3&lt;/sub&gt; + 3C -> 2Al + 3CO</description>
+		<description>Al&lt;sub&gt;2&lt;/sub&gt;O&lt;sub&gt;3&lt;/sub&gt; + 3C -> 2Al + 3CO; 
+		1 mole - Al2CO3: 101.96g; 3C: 36g; 2Al: 54g; 3CO: 64g</description>
 		<inputs>
-			<resource name="aluminum oxide" amount="9.5" />
-			<resource name="carbon" amount="3.0" />
+			<resource name="aluminum oxide" amount="9.44" />
+			<resource name="carbon" amount="3.33" />
 		</inputs>
 		<outputs>
-			<resource name="carbon monoxide" amount="7.5" />
-			<part name="aluminum ingot" number="5" />
+			<resource name="carbon monoxide" amount="7.78" />
+			<part name="aluminum ingot" number="1" />
 		</outputs>
 	</process>
 
@@ -794,12 +795,12 @@ Note: 1 kg of H2 is 14.13 liter
 			power-required="1">
 		<description>Al&lt;sub&gt;2&lt;/sub&gt;O&lt;sub&gt;3&lt;/sub&gt; + 3C -> 2Al + 3CO</description>
 		<inputs>
-			<resource name="aluminum oxide" amount="95.0" />
-			<resource name="carbon" amount="30.0" />
+			<resource name="aluminum oxide" amount="94.4" />
+			<resource name="carbon" amount="33.3" />
 		</inputs>
 		<outputs>
-			<resource name="carbon monoxide" amount="75.0" />
-			<part name="aluminum ingot" number="50" />
+			<resource name="carbon monoxide" amount="77.8" />
+			<part name="aluminum ingot" number="10" />
 		</outputs>
 	</process>
 
@@ -817,14 +818,14 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<!-- Produces 1m x 1m x 1mm (2.72kg) sheet of aluminum. -->
+	<!-- Produces 1m x 1m x 1mm (2.72kg) sheet of aluminum. Each Al ingot is 5kg-->
 	<process name="roll aluminum sheet" tech="1" skill="1" work-time="50" process-time="20"
 			power-required=".4">
 		<inputs>
-			<part name="aluminum ingot" number="9" />
+			<part name="aluminum ingot" number="2" />
 		</inputs>
 		<outputs>
-			<resource name="aluminum oxide" amount="0.84" />
+			<resource name="aluminum oxide" amount="1.84" />
 			<part name="aluminum sheet" number="3" />
 		</outputs>
 	</process>
@@ -977,8 +978,7 @@ Note: 1 kg of H2 is 14.13 liter
 		<inputs>
 			<resource name="polyester resin" amount=".5" />
 			<resource name="styrene" amount=".5" />
-			<part name="fiberglass" number="1" />
-			<part name="aluminum ingot" number="1" />			
+			<part name="fiberglass" number="1" />		
 			<part name="aluminum sheet" number="1" />
 			<part name="electrical wire" number="3" />
 			<part name="wire connector" number="4" />
@@ -3056,7 +3056,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="aluminum scrap" number="1" />
 		</inputs>
 		<outputs>
-			<part name="aluminum ingot" number="5" />
+			<part name="aluminum ingot" number="1" />
 		</outputs>
 	</process>
 
@@ -3416,7 +3416,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 	<process name="make light emitting diode kit" tech="3" skill="3" work-time="200" process-time="500"
 			power-required="0.5">
 		<inputs>
-			<part name="aluminum ingot" number="1" />
+			<part name="aluminum sheet" number="1" />
 			<part name="electrical wire" number="1" />
 			<part name="wire connector" number="1" />
 			<part name="light emitting diode bulb" number="20" />

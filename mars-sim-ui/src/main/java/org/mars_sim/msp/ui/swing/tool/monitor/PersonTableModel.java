@@ -421,7 +421,7 @@ public class PersonTableModel extends UnitTableModel {
 				PhysicalCondition pc = person.getPhysicalCondition();
 				if (pc.isDead())
 					result = "";
-				else if (pc.isDeydrated())
+				else if (pc.isDehydrated())
 					result = DEYDRATED;
 				else {
 					result = PhysicalCondition.getThirstyStatus(pc.getThirst());

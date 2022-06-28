@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * TendFishTank.java
- * @date 2021-10-29
+ * @date 2022-06-25
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -298,7 +298,7 @@ public class TendFishTank extends Task implements Serializable {
 
 			fishTank.markInspected(goal);
 
-			setDescription(Msg.getString("Task.description.tendGreenhouse.inspect", goal));
+			setDescription(Msg.getString("Task.description.tendFishTank.inspect", goal));
 		}
 		setPhase(CLEANING);
 		return 0;
@@ -322,7 +322,7 @@ public class TendFishTank extends Task implements Serializable {
 
 			fishTank.markCleaned(goal);
 
-			setDescription(Msg.getString("Task.description.tendGreenhouse.clean", goal));
+			setDescription(Msg.getString("Task.description.tendFishTank.clean", goal));
 		}
 
 		endTask();

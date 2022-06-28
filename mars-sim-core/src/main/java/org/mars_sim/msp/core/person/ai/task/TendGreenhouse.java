@@ -95,8 +95,39 @@ public class TendGreenhouse extends Task implements Serializable {
 			// Walk to greenhouse.
 			walkToTaskSpecificActivitySpotInBuilding(farmBuilding, FunctionType.FARMING, false);
 
-			if (acceptedTask == null) {
-				int rand = RandomUtil.getRandomInt(20);
+			// Checks quickly to see if a needy crop is available
+			Crop crop = greenhouse.getNeedyCrop(null);
+			
+			if (crop != null) {
+				
+				int rand = RandomUtil.getRandomInt(10);
+				
+				if (rand == 0)
+					acceptedTask = INSPECTING;
+	
+				else if (rand == 1)
+					acceptedTask = CLEANING;
+	
+				else if (rand == 2)
+					acceptedTask = SAMPLING;
+	
+				else  if (rand == 3)
+					acceptedTask = GROWING_TISSUE;
+				
+				else {
+					// Plant a crop or tending a crop
+					if (greenhouse.getNumCrops2Plant() > 0)
+						acceptedTask = TRANSFERRING_SEEDLING;
+					else
+						acceptedTask = TENDING;
+				}
+								
+				addPhase(acceptedTask);
+				setPhase(acceptedTask);
+			}
+			
+			else if (acceptedTask == null) {
+				int rand = RandomUtil.getRandomInt(3);
 	
 				if (rand == 0)
 					acceptedTask = INSPECTING;
@@ -107,18 +138,9 @@ public class TendGreenhouse extends Task implements Serializable {
 				else if (rand == 2)
 					acceptedTask = SAMPLING;
 	
-				else if (rand == 3)
+				else 
 					acceptedTask = GROWING_TISSUE;
-	
-				else {
-					if (greenhouse.getNumCrops2Plant() > 0)
-						acceptedTask = TRANSFERRING_SEEDLING;
-					else
-						acceptedTask = TENDING;
-				}
-	
-//				logger.info(farmBuilding, worker, 10_000, "Accepted the task of " + acceptedTask.getName() + ".");
-				
+
 				addPhase(acceptedTask);
 				setPhase(acceptedTask);
 			}
@@ -165,8 +187,7 @@ public class TendGreenhouse extends Task implements Serializable {
 	@Override
 	protected double performMappedPhase(double time) {
 		if (getPhase() == null) {
-			return 0;
-//			throw new IllegalArgumentException("Task phase is null");
+			throw new IllegalArgumentException("Task phase is null");
 		} else if (TENDING.equals(getPhase())) {
 			return tendingPhase(time);
 		} else if (INSPECTING.equals(getPhase())) {
@@ -184,6 +205,35 @@ public class TendGreenhouse extends Task implements Serializable {
 		}
 	}
 
+	/**
+	 * Sets the description and print. the log.
+	 * 
+	 * @param text
+	 */
+	private void printDescription(String text) {
+		setDescription(text);
+		logger.log(greenhouse.getBuilding(), worker, Level.INFO, 30_000L, text + ".");
+	}
+	
+	/**
+	 * Sets the task description for tending a specific crop for the person.
+	 * 
+	 * @param needyCrop
+	 */
+	public void setCropDescription(Crop needyCrop) {
+		logger.log(greenhouse.getBuilding(), worker, Level.CONFIG, 30_000L, "Tending " + needyCrop.getCropName() + ".");
+		setDescription(Msg.getString("Task.description.tendGreenhouse.tend.detail",
+				Conversion.capitalize(needyCrop.getCropName())));
+	}
+
+	/**
+	 * Sets the task description of being done with tending crops.
+	 */
+	public void setDescriptionCropDone() {
+		logger.log(greenhouse.getBuilding(), worker, Level.CONFIG, 30_000L, "Done tending crops.");
+		setDescription(Msg.getString("Task.description.tendGreenhouse.tend.done"));
+	}
+	
 	/**
 	 * Performs the tending phase.
 	 *
@@ -227,7 +277,7 @@ public class TendGreenhouse extends Task implements Serializable {
 		workTime = time * mod;
 
 		double modRemainingTime = greenhouse.addWork(workTime, this, worker);
-
+		
 		// Add experience
 		addExperience(time);
 
@@ -257,13 +307,7 @@ public class TendGreenhouse extends Task implements Serializable {
 		
 		return remainingTime;
 	}
-
-	public void setCropDescription(Crop needyCrop) {
-		setDescription(Msg.getString("Task.description.tendGreenhouse.tend",
-				Conversion.capitalize(needyCrop.getCropName())));
-
-	}
-
+	
 	/**
 	 * Transfers seedlings.
 	 * 
@@ -285,11 +329,11 @@ public class TendGreenhouse extends Task implements Serializable {
 		
 		addExperience(workTime);
 		
-		setDescription(Msg.getString("Task.description.tendGreenhouse.transfer"));
+		printDescription(Msg.getString("Task.description.tendGreenhouse.transfer"));
 		
 		if (getDuration() <= (getTimeCompleted() + time)) {
-			Crop crop = greenhouse.transferSeedling(time, worker);
-			setDescription(Msg.getString("Task.description.tendGreenhouse.plant.detail", crop.getCropName()));
+			Crop crop = greenhouse.transferSeedling(getTimeCompleted() + time, worker);
+			printDescription(Msg.getString("Task.description.tendGreenhouse.plant.detail", crop.getCropName()));
 			endTask();
 		}
 
@@ -305,12 +349,16 @@ public class TendGreenhouse extends Task implements Serializable {
 	private double growingTissue(double time) {
 		// Obtain the crop with the highest VP to work on in the lab
 		CropSpec type = greenhouse.selectVPCrop();
-
+		
+		printDescription(Msg.getString("Task.description.tendGreenhouse.grow"));
+		
 		if (greenhouse.checkBotanyLab(type, worker))  {
-
+			
+			printDescription(Msg.getString("Task.description.tendGreenhouse.grow.detail", type.getName().toLowerCase()));
+			
 			logger.log(greenhouse.getBuilding(), worker, Level.INFO, 30_000, "Growing "
-					+ type.getName() + Farming.TISSUE_CULTURE
-					+ " in the botany lab.", null);
+					+ type.getName() + Farming.TISSUE
+					+ " in botany lab.");
 			
 			double mod = 0;
 			// Determine amount of effective work time based on "Botany" skill
@@ -324,9 +372,7 @@ public class TendGreenhouse extends Task implements Serializable {
 			double workTime = time * mod;
 			
 			addExperience(workTime);
-			
-			setDescription(Msg.getString("Task.description.tendGreenhouse.grow", type.getName()));
-			
+	
 			if (getDuration() <= (getTimeCompleted() + time)) {
 				endTask();
 			}
@@ -344,7 +390,7 @@ public class TendGreenhouse extends Task implements Serializable {
 	 * @return the amount of time (millisols) left over after performing the phase.
 	 */
 	private double inspectingPhase(double time) {
-
+	
 		if (goal == null) {
 			List<String> uninspected = greenhouse.getUninspected();
 			int size = uninspected.size();
@@ -355,6 +401,8 @@ public class TendGreenhouse extends Task implements Serializable {
 				goal = uninspected.get(rand);
 			}
 		}
+
+		printDescription(Msg.getString("Task.description.tendGreenhouse.inspect.detail", goal.toLowerCase()));
 
 		double mod = 0;
 		// Determine amount of effective work time based on "Botany" skill
@@ -368,8 +416,6 @@ public class TendGreenhouse extends Task implements Serializable {
 		double workTime = time * mod;
 		
 		addExperience(workTime);
-    	
-		setDescription(Msg.getString("Task.description.tendGreenhouse.inspect", goal));
 		
 		if (getDuration() <= (getTimeCompleted() + time)) {
 			greenhouse.markInspected(goal);
@@ -386,7 +432,7 @@ public class TendGreenhouse extends Task implements Serializable {
 	 * @return the amount of time (millisols) left over after performing the phase.
 	 */
 	private double cleaningPhase(double time) {
-
+	
 		if (goal == null) {
 			List<String> uncleaned = greenhouse.getUncleaned();
 			int size = uncleaned.size();
@@ -397,7 +443,9 @@ public class TendGreenhouse extends Task implements Serializable {
 				goal = uncleaned.get(rand);
 			}
 		}
-		
+
+		printDescription(Msg.getString("Task.description.tendGreenhouse.clean.detail", goal.toLowerCase()));
+				
 		double mod = 0;
 		// Determine amount of effective work time based on "Botany" skill
 		int greenhouseSkill = getEffectiveSkillLevel();
@@ -410,8 +458,6 @@ public class TendGreenhouse extends Task implements Serializable {
 		double workTime = time * mod;
 		
 		addExperience(workTime);
-    	
-		setDescription(Msg.getString("Task.description.tendGreenhouse.clean", goal));
 		
 		if (getDuration() <= (getTimeCompleted() + time)) {
 			greenhouse.markCleaned(goal);
@@ -429,6 +475,8 @@ public class TendGreenhouse extends Task implements Serializable {
 	 */
 	private double samplingPhase(double time) {
 
+		printDescription(Msg.getString("Task.description.tendGreenhouse.sample"));
+				
 		CropSpec type = null;
 
 		int rand = RandomUtil.getRandomInt(5);
@@ -447,13 +495,13 @@ public class TendGreenhouse extends Task implements Serializable {
 			boolean hasWork = greenhouse.checkBotanyLab(type, worker);
 
 			if (hasWork) {
-				setDescription(Msg.getString("Task.description.tendGreenhouse.sample",
-					Conversion.capitalize(type.getName()) + Farming.TISSUE_CULTURE
-						+ " for lab work"));
+				
+				setDescription(Msg.getString("Task.description.tendGreenhouse.sample.detail",
+					type.getName()) + Farming.TISSUE);
 
 				logger.log(greenhouse.getBuilding(), worker, Level.INFO, 30_000,
-						"Sampling " + type.getName() + Farming.TISSUE_CULTURE
-						+ " in the botany lab.", null);
+						"Sampling " + type.getName() + Farming.TISSUE
+						+ " in botany lab.");
 				
 				double mod = 0;
 				// Determine amount of effective work time based on "Botany" skill
@@ -529,8 +577,8 @@ public class TendGreenhouse extends Task implements Serializable {
 						for (Building b : farmBuildings) {
 							if (b == robot.getBuildingLocation())
 								return b;
-							// TODO: choose the farmBuilding closest to the robot
-							// TODO: check if other robots are already in this farmBuilding, i.e. checking
+							// Note: choose the farmBuilding closest to the robot
+							// Note: check if other robots are already in this farmBuilding, i.e. checking
 							// for the crowdliness of this farmBuilding
 						}
 
@@ -540,7 +588,7 @@ public class TendGreenhouse extends Task implements Serializable {
 					}
 				}
 
-				// TODO: add person's good/bad feeling toward robots
+				// Note: add person's good/bad feeling toward robots
 //                int size = farmBuildings.size();
 //                //System.out.println("size is "+size);
 //                int selected = 0;

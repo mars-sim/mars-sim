@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * MissionPlanCommand.java
- * @version 3.1.2 2020-12-30
+ * @date 2022-06-26
  * @author Barry Evans
  */
 
@@ -101,18 +101,24 @@ public class MissionPlanCommand extends ChatCommand {
 		int lastSol = Math.max(0, today - max); // Don't go negative
 		for (int i = firstSol; i > lastSol; i--) {
 			Map<String, Double> plans = plannings.get(i);
-			int approved = (int) plans.getOrDefault(PlanType.APPROVED.name(), 0D).doubleValue();
-			int notApproved = (int) plans.getOrDefault(PlanType.NOT_APPROVED.name(), 0D).doubleValue();
-
-			if (totals) {
-				totalApproved += approved;
-				totalNotApproved += notApproved;
+			if (plans != null) {
+				int approved = (int) plans.getOrDefault(PlanType.APPROVED.name(), 0D).doubleValue();
+				int notApproved = (int) plans.getOrDefault(PlanType.NOT_APPROVED.name(), 0D).doubleValue();
+	
+				if (totals) {
+					totalApproved += approved;
+					totalNotApproved += notApproved;
+				}
+				else {
+					response.appendText("Stats for sol " + i);
+					response.appendLabelledDigit("# of plans approved", approved);
+					response.appendLabelledDigit("# of plans not approved", notApproved);
+				}
 			}
 			else {
-				response.appendText("Stats for sol " + i);
-				response.appendLabelledDigit("# of plans approved", approved);
-				response.appendLabelledDigit("# of plans not approved", notApproved);
-			}
+	        	context.println("No plans submitted.");
+	        	return false;
+	        }
 		}
 		
 		if (totals) {

@@ -27,7 +27,7 @@ public class AmountResourceConfig implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	// Element names
-	private static final String TISSUE_CULTURE = FoodType.TISSUE.getName();
+	private static final String TISSUE = FoodType.TISSUE.getName();
 	private static final String RESOURCE = "resource";
 	private static final String NAME = "name";
 	private static final String PHASE = "phase";
@@ -99,7 +99,7 @@ public class AmountResourceConfig implements Serializable {
 					
 					// Create a tissue culture object for each crop.
 					// Note: may set edible to true
-					AmountResource tissue = new AmountResource(nextID, (name + " " + TISSUE_CULTURE), GoodType.TISSUE,
+					AmountResource tissue = new AmountResource(nextID, (name + " " + TISSUE), GoodType.TISSUE,
 							description, phaseType, lifeSupport, false);
 					tissueCultureSet.add(nextID);
 

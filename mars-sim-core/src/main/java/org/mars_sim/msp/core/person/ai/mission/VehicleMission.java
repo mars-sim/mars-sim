@@ -66,6 +66,9 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	protected static final int WATER_ID = ResourceUtil.waterID;
 	protected static final int FOOD_ID = ResourceUtil.foodID;
 	
+	/** The factor for estimating the adjusted fuel economy. */
+	protected static final double FE_FACTOR = 2.0;
+	
 	/** Mission phases. */
 	public static final MissionPhase REVIEWING = new MissionPhase("Mission.phase.reviewing");
 	public static final MissionPhase EMBARKING = new MissionPhase("Mission.phase.embarking");
@@ -1042,21 +1045,23 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 			if (getPhase() == null || getPhase().equals(VehicleMission.EMBARKING) 
 					|| getPhase().equals(VehicleMission.REVIEWING)
 					|| useMargin) {
-				amount = getFuelNeededForTrip(vehicle, distance, vehicle.getEstimatedAveFuelEconomy(), true);
+				amount = getFuelNeededForTrip(vehicle, distance, vehicle.getEstimatedAveFuelEconomy() * FE_FACTOR, true);
 				// Use margin only when estimating how much fuel needed before starting the mission
 			}
 			else {
-				amount = getFuelNeededForTrip(vehicle, distance, vehicle.getInitialFuelEconomy(), false);
+				amount = getFuelNeededForTrip(vehicle, distance, vehicle.getIFuelEconomy() / FE_FACTOR, false);
 				// When the vehicle is already on the road, do NOT use margin
 				// or else it would constantly complain not having enough fuel
 			}
 			result.put(vehicle.getFuelType(), amount);
 			
-			// Add oxygen
-			double o2 = 0;
+			// Add oxygen (as fuel oxidizer)
+			double existingO2 = 0;
 			if (!result.isEmpty() && result.containsKey(OXYGEN_ID))
-				o2 = (double)result.get(OXYGEN_ID);
-			result.put(OXYGEN_ID, amount + o2);
+				existingO2 = (double)result.get(OXYGEN_ID);
+			// Note: oxygen required is twice the amount of methane
+			result.put(OXYGEN_ID, 2 * amount + existingO2);
+
 		}
 		return result;
 	}
@@ -1178,6 +1183,9 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 				}
 			}
 
+			else
+				logger.warning(vehicle, "Phase: " + getPhase() + ": unable to process the resource '"
+						+ GoodsUtil.getResourceGood(id) + "'.");
 		}
 		return result;
 	}

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Vehicle.java
- * @date 2021-10-16
+ * @date 2022-06-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.vehicle;
@@ -166,21 +166,25 @@ public abstract class Vehicle extends Unit
 	/** The maximum fuel capacity of the vehicle [kg] */
 	private double fuelCapacity;
 	/** The total energy of the vehicle in full tank [kWh]. */
-	private double totalEnergy = 100D;
+	private double energyCapacity;
+	/** The estimated energy available for the drivetrain [kWh]. */
+	private double drivetrainEnergy;
 	/** The base fuel economy of the vehicle [km/kg]. */
 	private double baseFuelEconomy;
-	/** The instantaneous fuel economy of the vehicle [km/kg]. */
-	private double iFuelEconomy;
-	/** The base fuel consumption of the vehicle [km/kWh]. */
-	private double baseFuelConsumption;
 	/** The estimated average fuel economy of the vehicle for a trip [km/kg]. */
 	private double estimatedAveFuelEconomy;
+	/** The instantaneous fuel economy of the vehicle [km/kg]. */
+	private double iFuelEconomy;
+	/** The base fuel consumption of the vehicle [Wh/km]. See https://ev-database.org/cheatsheet/energy-consumption-electric-car */
+	private double baseFuelConsumption;
+	/** The instantaneous fuel consumption of the vehicle [Wh/km]. */
+	private double iFuelConsumption;
 	/** The estimated combined total crew weight for a trip [km/kg]. */
 	private double estimatedTotalCrewWeight;
 	/** The cargo capacity of the vehicle for a trip [km/kg]. */
 	private double cargoCapacity;
 	/** The actual start mass of the vehicle (base mass + crew weight + full cargo weight) for a trip [km/kg]. */
-	private double startMass;
+	private double startMass = 0;
 	/** The estimated beginning mass of the vehicle (base mass + crew weight + full cargo weight) for a trip [km/kg]. */
 	private double beginningMass;
 	/** The base acceleration of the vehicle [m/s2]. */
@@ -259,26 +263,20 @@ public abstract class Vehicle extends Unit
 		// Add this vehicle to be owned by the settlement
 		settlement.addOwnedVehicle(this);
 
-		if (vehicleTypeString.equalsIgnoreCase(VehicleType.DELIVERY_DRONE.getName())) {
+		if (vehicleType == VehicleType.DELIVERY_DRONE) {
 			baseWearLifetime = 668_000 * .75; // 668 Sols (1 orbit)
-			// Note: Hard code the value of averagePower for the time being
-			averagePower = 10; //45; 
 		}
-		else if (vehicleTypeString.equalsIgnoreCase(VehicleType.LUV.getName())) {
+		else if (vehicleType == VehicleType.LUV) {
 			baseWearLifetime = 668_000 * 2D; // 668 Sols (1 orbit)
-			averagePower = 5; //15;
 		}
-		else if (vehicleTypeString.equalsIgnoreCase(VehicleType.EXPLORER_ROVER.getName())) {
+		else if (vehicleType == VehicleType.EXPLORER_ROVER) {
 			baseWearLifetime = 668_000; // 668 Sols (1 orbit)
-			averagePower = 15; //60;
 		}
-		else if (vehicleTypeString.equalsIgnoreCase(VehicleType.TRANSPORT_ROVER.getName())) {
+		else if (vehicleType == VehicleType.TRANSPORT_ROVER) {
 			baseWearLifetime = 668_000 * 1.5; // 668 Sols (1 orbit)
-			averagePower = 20; //75;
 		}
-		else if (vehicleTypeString.equalsIgnoreCase(VehicleType.CARGO_ROVER.getName())) {
+		else if (vehicleType == VehicleType.CARGO_ROVER) {
 			baseWearLifetime = 668_000 * 1.25; // 668 Sols (1 orbit)
-			averagePower = 25; //90;
 		}
 
 		direction = new Direction(0);
@@ -322,6 +320,8 @@ public abstract class Vehicle extends Unit
 		distanceMaint = 0;
 		// Set base speed.
 		baseSpeed = spec.getBaseSpeed();
+		// Set average power when operating the vehicle at base/average speed.
+		averagePower = spec.getAveragePower();
 		// Set the empty mass of the vehicle.
 		setBaseMass(spec.getEmptyMass());
 		// Set the drivetrain efficiency [dimension-less] of the vehicle.
@@ -329,17 +329,47 @@ public abstract class Vehicle extends Unit
 		// Gets the capacity [in kg] of vehicle's fuel tank
 		fuelCapacity = spec.getCargoCapacity(ResourceUtil.findAmountResourceName(getFuelType()));
 		// Gets the total energy [in kWh] on a full tank of methane
-		totalEnergy = METHANE_SPECIFIC_ENERGY * fuelCapacity * SOFC_CONVERSION_EFFICIENCY * drivetrainEfficiency;
+		energyCapacity = METHANE_SPECIFIC_ENERGY * fuelCapacity * SOFC_CONVERSION_EFFICIENCY * drivetrainEfficiency;
 		// Assume the peak power is 6x the average power.
 		peakPower = averagePower * 6.0;
-		// Gets the maximum total # of hours the vehicle is capable of operating
-		totalHours = totalEnergy / averagePower;
+		
+		if (vehicleType == VehicleType.DELIVERY_DRONE) {
+			// Gets the estimated energy available for drivetrain [in kWh]
+			drivetrainEnergy = energyCapacity * (1 - 0.05);
+			// Gets the maximum total # of hours the vehicle is capable of operating
+			totalHours = drivetrainEnergy / averagePower;
+		}
+		else if (vehicleType == VehicleType.LUV) {
+			// Gets the estimated energy available for drivetrain [in kWh]
+			drivetrainEnergy = energyCapacity * (1 - 0.8);
+			// Gets the maximum total # of hours the vehicle is capable of operating
+			totalHours = drivetrainEnergy / averagePower;
+		}
+		else if (vehicleType == VehicleType.EXPLORER_ROVER) {
+			// Gets theestimated energy available for drivetrain [in kWh]
+			drivetrainEnergy = energyCapacity * (1 - 0.1);
+			// Gets the maximum total # of hours the vehicle is capable of operating
+			totalHours = drivetrainEnergy / averagePower;
+		}
+		else if (vehicleType == VehicleType.CARGO_ROVER) {
+			// Gets estimated energy available for drivetrain [in kWh]
+			drivetrainEnergy = energyCapacity * (1 - 0.05);			
+			// Gets the maximum total # of hours the vehicle is capable of operating
+			totalHours = drivetrainEnergy / averagePower;
+		}
+		else if (vehicleType == VehicleType.TRANSPORT_ROVER) {
+			// Gets estimated energy available for drivetrain [in kWh]
+			drivetrainEnergy = energyCapacity * (1 - 0.15);
+			// Gets the maximum total # of hours the vehicle is capable of operating
+			totalHours = drivetrainEnergy / averagePower;
+		}
+
 		// Gets the base range [in km] of the vehicle
 		baseRange = baseSpeed * totalHours;
 		// Gets the base fuel economy [in km/kg] of this vehicle
 		baseFuelEconomy = baseRange / fuelCapacity;
-		// Gets the base fuel consumption [in km/kWh] of this vehicle
-		baseFuelConsumption = baseRange / totalEnergy;
+		// Gets the base fuel consumption [in Wh/km] of this vehicle
+		baseFuelConsumption =  energyCapacity * 1000.0 / baseRange;
 		// Gets the crew capacity
 		int numCrew = spec.getCrewSize();
 		// Gets estimated total crew weight
@@ -355,47 +385,70 @@ public abstract class Vehicle extends Unit
 			eqmInventory.setResourceCapacityMap(capacities);
 		}
 
-		if (this instanceof Rover) {
-			// Gets beginning mass
-			beginningMass = getBaseMass() + estimatedTotalCrewWeight + 500;
+		if (vehicleType == VehicleType.EXPLORER_ROVER) {
+			// Accounts for the occupant consumables
+			beginningMass = getBaseMass() + estimatedTotalCrewWeight + 4 * 50;
 			// Accounts for the rock sample, ice or regolith collected
-			endMass = getBaseMass() + estimatedTotalCrewWeight + 1000;
+			endMass = getBaseMass() + estimatedTotalCrewWeight + 1000;	
+		}
+			
+		else if (vehicleType == VehicleType.CARGO_ROVER) {
+			// Accounts for the occupant consumables and traded goods 
+			beginningMass = getBaseMass() + estimatedTotalCrewWeight + 2 * 50 + 1500;
+			// Accounts for the occupant consumables and traded goods
+			endMass = getBaseMass() + estimatedTotalCrewWeight + 1500;		
+		}
+			
+		else if (vehicleType == VehicleType.TRANSPORT_ROVER) {
+			// // Accounts for the occupant consumables and personal possession
+			beginningMass = getBaseMass() + estimatedTotalCrewWeight + 8 * (50 + 100);
+			// Accounts for the reduced occupant consumables
+			endMass = getBaseMass() + estimatedTotalCrewWeight + 8 * 100;	
 		}
 
-		else if (vehicleType == VehicleType.DELIVERY_DRONE || vehicleType == VehicleType.LUV) {
-			// Gets beginning mass
-			beginningMass = getBaseMass() + 300;
-			// Accounts for the rock sample, ice or regolith collected
-			endMass = getBaseMass()  + 300;
+		else if (vehicleType == VehicleType.DELIVERY_DRONE) {
+			// Accounts for the fuel (methane and oxygen) and the traded goods
+			beginningMass = getBaseMass() + 500;
+			// Accounts for water and the traded goods
+			endMass = getBaseMass() + 450;
 		}
 
-		if (vehicleType == VehicleType.DELIVERY_DRONE || this instanceof Rover) {
-			// Gets the estimated average fuel economy for a trip [km/kg]
-			estimatedAveFuelEconomy = baseFuelEconomy * (beginningMass / endMass * .75);
-			// Gets the base acceleration [m/s2]
-			baseAccel = averagePower / beginningMass / baseSpeed * 1000 * 3.6;
+		else if (vehicleType == VehicleType.LUV) {
+			// Accounts for the occupant weight
+			beginningMass = getBaseMass() + estimatedTotalCrewWeight;
+			// Accounts for the occupant weight
+			endMass = getBaseMass() + estimatedTotalCrewWeight;
 		}
+		
+		// Gets the estimated average fuel economy for a trip [km/kg]
+		estimatedAveFuelEconomy = baseFuelEconomy * beginningMass / endMass * .75;
+		// Gets the base acceleration [m/s2]
+		baseAccel = peakPower / beginningMass / baseSpeed * 1000 * 3.6;
 
 		logger.log(this, Level.INFO, 0, 
 				vehicleType.getName() + "   "
-				+ "fuelCapacity: " + Math.round(fuelCapacity * 100.0)/100.0 + " kg   " 
+				+ "drivetrainEfficiency: " + Math.round(drivetrainEfficiency * 100.0)/100.0 + "   " 
 	   		 	+ "baseSpeed: " + Math.round(baseSpeed * 100.0)/100.0 + " kW/hr   " 
     		 	+ "averagePower: " + Math.round(averagePower * 100.0)/100.0 + " kW   "
-    	    	+ "totalEnergy: " + Math.round(totalEnergy * 100.0)/100.0 + " km/kg   ");   		
+    	    	+ "baseAccel: " + Math.round(baseAccel * 100.0)/100.0 + " m/s2  "      		 	
+    	    	+ "energyCapacity: " + Math.round(energyCapacity * 100.0)/100.0 + " kWh   "
+    	    	+ "drivetrainEnergy: " + Math.round(drivetrainEnergy * 100.0)/100.0 + " kWh   ");  
+
     	logger.log(this, Level.INFO, 0, 	     	    	
     		 	"totalHours: " + Math.round(totalHours * 100.0)/100.0 + " hr   "
     		 	+ "baseRange: " + Math.round(baseRange * 100.0)/100.0 + " km   "
     		 	+ "baseFuelEconomy: " + Math.round(baseFuelEconomy * 100.0)/100.0 + " km/kg   "
-    		 	+ "baseFuelConsumption: " + Math.round(baseFuelConsumption * 100.0)/100.0 + " km/kWh   "
-    		 	+ "baseFuelEconomy: " + Math.round(baseFuelEconomy * 100.0)/100.0 + " km/kg   ");
-    	logger.log(this, Level.INFO, 0, 	 	
-    		 	"cargoCapacity: " + Math.round(cargoCapacity * 100.0)/100.0 + " kg   "   
-       		 	+ "beginningMass: " + Math.round(beginningMass * 100.0)/100.0 + " kg   "
-    		 	+ "endMass: " + Math.round(endMass * 100.0)/100.0 + " kg   "
-    		 	+ "estimatedAveFuelEconomy: " + Math.round(estimatedAveFuelEconomy * 100.0)/100.0 + " km/kg   "  
-    	    	+ "baseAccel: " + Math.round(baseAccel * 100.0)/100.0 + " m/s2  "  
-				);
+    		 	+ "estimatedAveFuelEconomy: " + Math.round(estimatedAveFuelEconomy * 100.0)/100.0 + " km/kg   "
+    	    	+ "initial FuelEconomy: " + Math.round(getInitialFuelEconomy() * 100.0)/100.0 + " km/kg   "      		 	
+	 			+ "baseFuelConsumption: " + Math.round(baseFuelConsumption * 100.0)/100.0 + " Wh/km   ");
     		 	
+    	logger.log(this, Level.INFO, 0, 	 	
+				"fuelCapacity: " + Math.round(fuelCapacity * 100.0)/100.0 + " kg   " 			
+    		 	+ "cargoCapacity: " + Math.round(cargoCapacity * 100.0)/100.0 + " kg   " 
+    	       	+ "baseMass: " + Math.round(getBaseMass() * 100.0)/100.0 + " kg   "
+       		 	+ "beginningMass: " + Math.round(beginningMass * 100.0)/100.0 + " kg   "
+    		 	+ "endMass: " + Math.round(endMass * 100.0)/100.0 + " kg   ");  	
+    	
 		// Add to the settlement
 		settlement.addOwnedVehicle(this);
 		setCoordinates(settlement.getCoordinates());
@@ -440,7 +493,6 @@ public abstract class Vehicle extends Unit
 		trail = new ArrayList<>();
 		statusTypes = new HashSet<>();
 
-
 		// Set description
 		setDescription(vehicleType);
 		// Set total distance traveled by vehicle [km]
@@ -478,7 +530,6 @@ public abstract class Vehicle extends Unit
 
 		// Add to the settlement
 		settlement.addOwnedVehicle(this);
-
 	}
 
 	/**
@@ -886,7 +937,7 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
-	 * Check if this vehicle is being towed (by another vehicle).
+	 * Checks if this vehicle is being towed (by another vehicle).
 	 *
 	 * @return true if it is being towed
 	 */
@@ -895,7 +946,16 @@ public abstract class Vehicle extends Unit
     }
 
 	/**
-	 * Gets the speed of vehicle
+	 * Gets the average power of the vehicle when operating [kW].
+	 * 
+	 * @return
+	 */
+	public double getAveragePower() {
+		return averagePower;
+	}
+	
+	/**
+	 * Gets the speed of vehicle.
 	 *
 	 * @return the vehicle's speed (in km/hr)
 	 */
@@ -904,7 +964,7 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
-	 * Gets the previous speed of vehicle
+	 * Gets the previous speed of vehicle.
 	 *
 	 * @return the vehicle's previous speed (in km/hr)
 	 */
@@ -913,7 +973,7 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
-	 * Sets the vehicle's current speed
+	 * Sets the vehicle's current speed.
 	 *
 	 * @param speed the vehicle's speed (in km/hr)
 	 */
@@ -948,7 +1008,7 @@ public abstract class Vehicle extends Unit
 //	}
 
 	/**
-	 * Gets the current fuel range of the vehicle
+	 * Gets the current fuel range of the vehicle.
 	 * Note : this method will be overridden by Rover's getRange().
 	 *
 	 * @param missionType the type of mission (needed in vehicle's getRange())
@@ -962,18 +1022,18 @@ public abstract class Vehicle extends Unit
 
         if (mission == null) {
         	// Before the mission is created, the range would be based on vehicle's capacity
-        	range = estimatedAveFuelEconomy * fuelCapacity * getBaseMass() / getMass();// / fuel_range_error_margin;
+        	range = estimatedAveFuelEconomy * fuelCapacity * getBaseMass() / getMass();// * fuel_range_error_margin
         }
         else if (VehicleMission.REVIEWING.equals(mission.getPhase())
         	|| VehicleMission.EMBARKING.equals(mission.getPhase())) {
         	// Before loading/embarking phase, the amountOfFuel to be loaded is still zero.
         	// So the range would be based on vehicle's capacity
-        	range = estimatedAveFuelEconomy * fuelCapacity * getBaseMass() / getMass();// / fuel_range_error_margin;
+        	range = estimatedAveFuelEconomy * fuelCapacity * getBaseMass() / getMass();
         }
         else {
             double amountOfFuel = getAmountResourceStored(getFuelType());
         	// During the journey, the range would be based on the amount of fuel in the vehicle
-    		range = estimatedAveFuelEconomy * amountOfFuel * getBaseMass() / getMass();// / fuel_range_error_margin;
+    		range = estimatedAveFuelEconomy * amountOfFuel * getBaseMass() / getMass();
         }
 
 		range = Math.min(radius, (int)range);
@@ -1006,10 +1066,19 @@ public abstract class Vehicle extends Unit
 	 *
 	 * @return
 	 */
-	public double getFullEnergy() {
-		return totalEnergy;
+	public double getEnergyCapacity() {
+		return energyCapacity;
 	}
 
+	/**
+	 * Gets the estimated energy available for the drivetrain [kWh].
+	 *
+	 * @return
+	 */
+	public double getDrivetrainEnergy() {
+		return drivetrainEnergy;
+	}
+	
 	/**
 	 * Gets the base fuel economy of the vehicle [km/kg].
 	 * 
@@ -1020,12 +1089,30 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
-	 * Gets the base fuel consumption of the vehicle [km/kWh].
+	 * Gets the base fuel consumption of the vehicle [Wh/km].
 	 * 
 	 * @return
 	 */
 	public double getBaseFuelConsumption() {
 		return baseFuelConsumption;
+	}
+	
+	/**
+	 * Gets the instantaneous fuel consumption of the vehicle [Wh/km].
+	 * 
+	 * @return
+	 */
+	public double getIFuelConsumption() {
+		return iFuelConsumption;
+	}
+	
+	/**
+	 * Sets the instantaneous fuel consumption of the vehicle [kWh/km].
+	 * 
+	 * @param iFuelC
+	 */
+	public void setIFuelConsumption(double iFuelC) {
+		this.iFuelConsumption = iFuelC;
 	}
 	
 	/**
@@ -1053,31 +1140,25 @@ public abstract class Vehicle extends Unit
 	 * @return
 	 */
 	public double getInitialFuelEconomy() {
-//		if (speed > 0 && startMass != getMass())
-//			logger.info(this
-//				+ "   current mass : " + Math.round(getMass()*10.0)/10.0
-//				+ "   start mass : " + Math.round(startMass*10.0)/10.0
-//				+ "   driveTrain : " + drivetrainEfficiency
-//				+ "   IFC : " + Math.round(estimatedAveFuelEconomy * startMass / getMass()*10.0)/10.0);
-		return estimatedAveFuelEconomy * startMass / getMass();
+		return estimatedAveFuelEconomy * (startMass + beginningMass) / 2.0 / getMass();
 	}
 
 	/**
-	 * Records the beginning weight of the vehicle and its payload
+	 * Records the beginning weight of the vehicle and its payload.
 	 */
 	public void recordStartMass() {
 		startMass = getMass();
 	}
 
 	/**
-	 * Records the beginning weight of the vehicle and its payload
+	 * Records the beginning weight of the vehicle and its payload.
 	 */
 	public double getStartMass() {
 		return startMass;
 	}
 	
 	/**
-	 * Gets the estimated average fuel consumption of the vehicle [km/kg] for a trip
+	 * Gets the estimated average fuel consumption of the vehicle [km/kg] for a trip.
 	 * Note: Assume that it is half of two fuel consumption values (between the beginning and the end of the trip)
 	 *
 	 * @return

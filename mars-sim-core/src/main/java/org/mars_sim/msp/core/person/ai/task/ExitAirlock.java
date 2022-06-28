@@ -16,6 +16,7 @@ import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.InventoryUtil;
 import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.EquipmentOwner;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -127,7 +128,7 @@ public class ExitAirlock extends Task implements Serializable {
 
 		setPhase(REQUEST_EGRESS);
 
-		logger.log(person, Level.FINER, 4_000,
+		logger.log((Unit)airlock.getEntity(), person, Level.FINER, 4_000,
 				"Starting the EVA egress in " + airlock.getEntityName() + ".");
 	}
 
@@ -265,7 +266,7 @@ public class ExitAirlock extends Task implements Serializable {
 			person.setPosition(newPos);
 		}
 
-		logger.log(person, Level.FINER, 4_000,
+		logger.log((Unit)airlock.getEntity(), person, Level.FINER, 4_000,
 				"Arrived at ("
 			+ newPos + ") in airlock zone " + zone + ".");
 	}
@@ -293,22 +294,48 @@ public class ExitAirlock extends Task implements Serializable {
 	}
 
 	/**
+	 * Walks to another location outside the airlock and ends the egress
+	 *
+	 * @param person the person of interest
+	 * @param reason the reason for walking away
+	 */
+	private void walkAway(Person person, String reason) {
+		airlock.removeID(person.getIdentifier());
+
+		// This doesn't make sense. The endTask call will be for the current task
+		// and if 'person' is the same then the walk subTask will be immediately
+		// cancelled by the endTask
+//		person.getTaskManager().getTask().walkToRandomLocation(false);
+//		endTask();
+
+		logger.log((Unit)airlock.getEntity(), person, Level.WARNING, 4_000, reason);
+		
+		// Note: For person in a vehicle with high fatigue or hunger,
+		// need to call clearAllTasks() to cause a person to quit the task
+		// or else it gets stuck forever in the vehicle airlock
+		person.getTaskManager().clearAllTasks(reason);
+	}
+	
+	/**
 	 * Request the entry of the airlock
 	 *
 	 * @param time the pulse
 	 * @return the remaining time
 	 */
 	private double requestEgress(double time) {
-
+		logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4_000,
+				"Requesting EVA egress in " + airlock.getEntity().toString() + ".");
+		
 		double remainingTime = 0;
-
+		
+		// If a person is in a vehicle, not needed of checking for reservation
 		if (inSettlement && !airlock.addReservation(person.getIdentifier())) {
-			walkAway(person, "Reservation not found");
+			walkAway(person, "Reservation not made.");
 			return 0;
 		}
 
 		if (inSettlement && !isFit()) {
-			walkAway(person, "Not fit for egress");
+			walkAway(person, "Not fit for egress.");
 			return 0;
 		}
 
@@ -320,9 +347,6 @@ public class ExitAirlock extends Task implements Serializable {
 			// Only the airlock operator may activate the airlock
 			airlock.setActivated(true);
 		}
-
-		logger.log(person, Level.FINE, 20_000,
-				"Requested EVA egress in " + airlock.getEntity().toString() + ".");
 
 		boolean canProceed = false;
 
@@ -357,17 +381,17 @@ public class ExitAirlock extends Task implements Serializable {
 						}
 					}
 					else {
-						walkAway(person, "Cannot transition to zone 0");
+						walkAway(person, "Cannot transition to zone 0.");
 						return 0;
 					}
 				}
 				else {
-					walkAway(person, "Chamber full");
+					walkAway(person, "Chamber full.");
 					return 0;
 				}
 			}
 			else {
-				walkAway(person, "Cannot wait at " + airlock.getEntity().toString() + " inner door");
+				walkAway(person, "Cannot wait at " + airlock.getEntity().toString() + " inner door.");
 				return 0;
 			}
 		}
@@ -383,14 +407,14 @@ public class ExitAirlock extends Task implements Serializable {
 					canProceed = true;
 				}
 				else {
-					walkAway(person, "Cannot wait at " + airlock.getEntity().toString() + " inner door");
+					walkAway(person, "Cannot wait at " + airlock.getEntity().toString() + " inner door.");
 					return 0;
 				}
 //			}
 //
 //			else {
 //				Rover airlockRover = (Rover) airlock.getEntity();
-//				logger.log(person, Level.INFO, 4_000,
+//				logger.log((Unit)airlock.getEntity(), person, Level.INFO, 4_000,
 //						"Walked toward the inner door in " + airlockRover);
 //		 		// Walk to interior airlock position.
 //		 		addSubTask(new WalkRoverInterior(person, airlockRover,
@@ -404,7 +428,7 @@ public class ExitAirlock extends Task implements Serializable {
 				// If airlock has already been pressurized,
 				// then it's ready for entry
 
-				logger.log(person, Level.FINE, 4_000,
+				logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4_000,
 						"Chamber already pressurized for entry in "
 					+ airlock.getEntity().toString() + ".");
 
@@ -422,7 +446,7 @@ public class ExitAirlock extends Task implements Serializable {
 
 				if (airlock.isOperator(id)) {
 
-					logger.log(person, Level.FINE, 4_000, "Ready to pressurize the chamber.");
+					logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4_000, "Ready to pressurize the chamber.");
 
 					if (!airlock.isPressurized() || !airlock.isPressurizing()) {
 						// Get ready for pressurization
@@ -437,7 +461,7 @@ public class ExitAirlock extends Task implements Serializable {
 //			endTask();
 //			walkAway(person, "Cannot egress");
 
-//			logger.log(person, Level.WARNING, 4_000,
+//			logger.log((Unit)airlock.getEntity(), person, Level.WARNING, 4_000,
 //				"Unable to use "
 //				+ airlock.getEntity().toString() + " for EVA egress.");
 //			return 0;
@@ -457,7 +481,7 @@ public class ExitAirlock extends Task implements Serializable {
 		double remainingTime = 0;
 
 		if (!isFit()) {
-			walkAway(person, "Not fit before pressurization");
+			walkAway(person, "Not fit before pressurization.");
 			return 0;
 		}
 
@@ -468,7 +492,7 @@ public class ExitAirlock extends Task implements Serializable {
 
 		if (airlock.isPressurized() && !airlock.isInnerDoorLocked()) {
 
-			logger.log(person, Level.FINE, 4_000,
+			logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4_000,
 					"The chamber already pressurized in "
 				+ airlock.getEntity().toString() + ".");
 
@@ -488,7 +512,7 @@ public class ExitAirlock extends Task implements Serializable {
 				// Command the airlock state to be transitioned to "pressurized"
 				airlock.setTransitioning(true);
 
-				logger.log(person, Level.FINE, 4_000,
+				logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4_000,
 						"Started pressurizing the chamber in "
 							+ airlock.getEntity().toString() + ".");
 				// Pressurizing the chamber
@@ -506,14 +530,13 @@ public class ExitAirlock extends Task implements Serializable {
 	 * @return the remaining time
 	 */
 	private double enterAirlock(double time) {
-//		logger.log(person, Level.INFO, 20_000,
-//				"called enterAirlock() in " + airlock.getEntity().toString() + ".");
+
 		double remainingTime = 0;
 
 		boolean canProceed = false;
 
 		if (!isFit()) {
-			walkAway(person, "Not fit to enter");
+			walkAway(person, "Not fit enough to proceed.");
 			return 0;
 		}
 
@@ -537,14 +560,14 @@ public class ExitAirlock extends Task implements Serializable {
 
                     // true if the person is already inside the chamber from previous cycle
                     if (canProceed && transitionTo(1)) {
-//						logger.log(person, Level.INFO, 20_000,
+//						logger.log((Unit)airlock.getEntity(), person, Level.INFO, 20_000,
 //								"called transitionTo(1) in " + airlock.getEntity().toString() + ".");
 						canProceed = true;
 					}
 					else canProceed = isInZone(2);
 				}
 				else {
-					walkAway(person, "Chamber full");
+					walkAway(person, "Chamber full.");
 					return 0;
 				}
 			}
@@ -577,7 +600,7 @@ public class ExitAirlock extends Task implements Serializable {
 //		 		addSubTask(new WalkRoverInterior(person, airlockRover,
 //		 				interiorDoorPos.getX(), interiorDoorPos.getY()));
 //
-//				logger.log(person, Level.FINER, 4_000,
+//				logger.log((Unit)airlock.getEntity(), person, Level.FINER, 4_000,
 //						"Walked close to the interior door in " + airlockRover);
 //			}
 		}
@@ -587,7 +610,7 @@ public class ExitAirlock extends Task implements Serializable {
 			if (inSettlement)
 				airlock.removeReservation(person.getIdentifier());
 
-			logger.log(person, Level.FINE, 4_000,
+			logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4_000,
 					"Just entered through the inner door into "
 					+ airlock.getEntity().toString() + ".");
 
@@ -611,7 +634,7 @@ public class ExitAirlock extends Task implements Serializable {
 		double remainingTime = 0;
 
 		if (!isFit()) {
-			walkAway(person, "Not fit to walk to chamber");
+			walkAway(person, "Not fit to walk to chamber.");
 			return 0;
 		}
 
@@ -621,7 +644,7 @@ public class ExitAirlock extends Task implements Serializable {
 			return 0;
 		}
 
-		logger.log(person, Level.FINE, 4_000,
+		logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4_000,
 				"Walking to a chamber in " + airlock.getEntity().toString() + ".");
 
 		boolean canProceed = false;
@@ -656,7 +679,7 @@ public class ExitAirlock extends Task implements Serializable {
 
 //			else {
 //				Rover airlockRover = (Rover) airlock.getEntity();
-//				logger.log(person, Level.FINER, 4_000,
+//				logger.log((Unit)airlock.getEntity(), person, Level.FINER, 4_000,
 //						"Walked to the reference position.");
 //
 //		 		// Walk to interior airlock position.
@@ -682,7 +705,7 @@ public class ExitAirlock extends Task implements Serializable {
 			}
 
 			if (airlock.isPressurized()) {
-				logger.log(person, Level.FINE, 4_000,
+				logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4_000,
 						"Chamber already pressurized for entry in " + airlock.getEntity().toString() + ".");
 
 		 		// Reset the suit donning time
@@ -710,7 +733,7 @@ public class ExitAirlock extends Task implements Serializable {
 		double remainingTime = 0;
 
 		if (!isFit()) {
-			walkAway(person, "Not fit to don EVASuit");
+			walkAway(person, "Not fit to don EVASuit.");
 			return 0;
 		}
 
@@ -753,7 +776,7 @@ public class ExitAirlock extends Task implements Serializable {
 			// 3. Register the suit the person will take into the airlock to don
 			person.registerSuit(suit);
 			// Print log
-			logger.log(person, Level.FINE, 4_000, "Just donned the " + suit.getName() + ".");
+			logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4_000, "Just donned the " + suit.getName() + ".");
 			// 4. Loads the resources into the EVA suit
 			if (suit.loadResources(housing) < 0.9D) {
 				logger.warning(suit, "Being used but not full loaded.");
@@ -780,7 +803,7 @@ public class ExitAirlock extends Task implements Serializable {
 
 		else {
 
-			logger.log(person, Level.WARNING, 4_000,
+			logger.log((Unit)airlock.getEntity(), person, Level.WARNING, 4_000,
 					"Could not find a working EVA suit. End this task.");
 
 			// TODO: what to do if person still doesn't have an EVA suit ?
@@ -816,7 +839,7 @@ public class ExitAirlock extends Task implements Serializable {
 		if (hasSuit && person.getSuit() != null) {
 
 			if (pc.isThreeQuarterDonePrebreathing() || pc.isDonePrebreathing()) {
-				logger.log(person, Level.FINER, 4_000,
+				logger.log((Unit)airlock.getEntity(), person, Level.FINER, 4_000,
 						"Done pre-breathing.");
 
 				List<Integer> list = new ArrayList<>(airlock.getOccupants());
@@ -849,7 +872,7 @@ public class ExitAirlock extends Task implements Serializable {
 			}
 
 			if (airlock.isDepressurized()) {
-				logger.log(person, Level.FINE, 4_000,
+				logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4_000,
 						"Chamber already depressurized for exit in " + airlock.getEntity().toString() + ".");
 
 				setPhase(LEAVE_AIRLOCK);
@@ -880,7 +903,7 @@ public class ExitAirlock extends Task implements Serializable {
 
 		if (airlock.isDepressurized()) {
 
-			logger.log(person, Level.FINE, 4_000,
+			logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4_000,
 					"Chamber already depressurized for exit in "
 				+ airlock.getEntity().toString() + ".");
 
@@ -911,19 +934,19 @@ public class ExitAirlock extends Task implements Serializable {
 					// Depressurizing the chamber
 					boolean succeed = airlock.setDepressurizing();
 					if (!succeed) {
-						logger.log(person, Level.WARNING, 4_000,
+						logger.log((Unit)airlock.getEntity(), person, Level.WARNING, 4_000,
 								"Could not depressurize " + airlock.getEntity().toString() + ".");
 					}
 
 					else {
-						logger.log(person, Level.FINE, 4_000,
+						logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4_000,
 								"Depressurizing " + airlock.getEntity().toString() + ".");
 					}
 				}
 			}
 
 			else {
-				logger.log(person, Level.WARNING, 4_000,
+				logger.log((Unit)airlock.getEntity(), person, Level.WARNING, 4_000,
 						"Could not depressurize " + airlock.getEntity().toString()
 						+ ". " + list + " inside not wearing EVA suit.");
 
@@ -986,7 +1009,7 @@ public class ExitAirlock extends Task implements Serializable {
 
 //			else {
 //				Rover airlockRover = (Rover) airlock.getEntity();
-//				logger.log(person, Level.FINER, 4_000,
+//				logger.log((Unit)airlock.getEntity(), person, Level.FINER, 4_000,
 //						"Tried walking close to the exterior door.");
 //
 //				addSubTask(new WalkRoverInterior(person, airlockRover,
@@ -999,7 +1022,7 @@ public class ExitAirlock extends Task implements Serializable {
 			// Add experience
 	 		addExperience(time);
 
-			logger.log(person, Level.FINE, 4_000,
+			logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4_000,
 					"Leaving " + airlock.getEntity().toString() + ".");
 
 
@@ -1011,28 +1034,6 @@ public class ExitAirlock extends Task implements Serializable {
 		return remainingTime;
 	}
 
-
-	/**
-	 * Walks to another location outside the airlock and ends the egress
-	 *
-	 * @param person the person of interest
-	 * @param reason the reason for walking away
-	 */
-	private void walkAway(Person person, String reason) {
-		airlock.removeID(person.getIdentifier());
-
-		// This doesn't make sense. The endTask call will be for the current task
-		// and if 'person' is the same then the walk subTask will be immediately
-		// cancelled by the endTask
-//		person.getTaskManager().getTask().walkToRandomLocation(false);
-//		endTask();
-
-		// Note: For person in a vehicle with high fatigue or hunger,
-		// need to call clearAllTasks() to cause a person to quit the task
-		// or else it gets stuck forever in the vehicle airlock
-		person.getTaskManager().clearAllTasks(reason);
-	}
-
 	/**
 	 * Remove the person from airlock and walk away and ends the airlock and walk tasks
 	 */
@@ -1040,11 +1041,11 @@ public class ExitAirlock extends Task implements Serializable {
 		// Clear the person as the airlock operator if task ended prematurely.
 		if (airlock != null && person.getName().equals(airlock.getOperatorName())) {
 			if (inSettlement) {
-				logger.log(person, Level.FINER, 4_000,
+				logger.log((Unit)airlock.getEntity(), person, Level.FINER, 4_000,
 						"Concluded the airlock operator task.");
 			}
 			else {
-				logger.log(person, Level.FINER, 4_000,
+				logger.log((Unit)airlock.getEntity(), person, Level.FINER, 4_000,
 						"Concluded the vehicle airlock operator task.");
 			}
 
@@ -1074,7 +1075,7 @@ public class ExitAirlock extends Task implements Serializable {
 			// TODO: if incapacitated, should someone else help this person to get out?
 
 			// Prevent the logger statement below from being repeated multiple times
-			logger.log(person, Level.INFO, 4_000,
+			logger.log((Unit)airlock.getEntity(), person, Level.INFO, 4_000,
 					"Could not exit the airlock from " + airlock.getEntityName()
 					+ " due to crippling performance rating of " + person.getPerformanceRating() + ".");
 
@@ -1094,7 +1095,7 @@ public class ExitAirlock extends Task implements Serializable {
 				}
 
 			} catch (Exception e) {
-				logger.log(person, Level.SEVERE, 4_000, "Could not get new action: ", e);
+				logger.log((Unit)airlock.getEntity(), person, Level.SEVERE, 4_000, "Could not get new action: ", e);
 			}
 
 			return result;
@@ -1102,7 +1103,7 @@ public class ExitAirlock extends Task implements Serializable {
 
 		// Check if person is outside.
 		if (person.isOutside()) {
-			logger.log(person, Level.FINER, 4_000,
+			logger.log((Unit)airlock.getEntity(), person, Level.FINER, 4_000,
 					"Already outside. No need to exit " + airlock.getEntityName() + ".");
 
 			return false;
@@ -1118,7 +1119,7 @@ public class ExitAirlock extends Task implements Serializable {
 			}
 
 			else {
-				logger.log(person, Level.WARNING, 4_000,
+				logger.log((Unit)airlock.getEntity(), person, Level.WARNING, 4_000,
 						"Could not find a working EVA suit and needed to wait.");
 
 				airlock.addCheckEVASuit();
@@ -1137,7 +1138,7 @@ public class ExitAirlock extends Task implements Serializable {
 			}
 
 			else {
-				logger.log(person, Level.WARNING, 4_000,
+				logger.log((Unit)airlock.getEntity(), person, Level.WARNING, 4_000,
 						"Could not find a working EVA suit and needed to wait.");
 
 				Vehicle v = person.getVehicle();
@@ -1146,7 +1147,7 @@ public class ExitAirlock extends Task implements Serializable {
 				if (m != null)
 					hasMission = " for " + m.getTypeID();
 				// Mission m = missionManager.getMission(person);
-				logger.log(person, Level.WARNING, 20_000,
+				logger.log((Unit)airlock.getEntity(), person, Level.WARNING, 20_000,
 						v.getName() + hasMission
 						+ ". No working EVA suit, awaiting the response for rescue.");
 
@@ -1155,7 +1156,7 @@ public class ExitAirlock extends Task implements Serializable {
 				if (v != null && m != null && !v.isBeaconOn() && !v.isBeingTowed()) {
 
 					// Repair this EVASuit by himself/herself
-					logger.log(person, Level.WARNING, 20_000,
+					logger.log((Unit)airlock.getEntity(), person, Level.WARNING, 20_000,
 							v.getName() + hasMission
 							+ ". Will try to repair an EVA suit.");
 

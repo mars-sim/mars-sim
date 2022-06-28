@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * VehicleCommand.java
- * @version 3.1.2 2020-12-30
+ * @date 2022-06-27
  * @author Barry Evans
  */
 
@@ -17,7 +17,6 @@ import org.mars.sim.console.chat.simcommand.CommandHelper;
 import org.mars.sim.console.chat.simcommand.StructuredResponse;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleType;
 
@@ -40,7 +39,7 @@ public class VehicleCommand extends AbstractSettlementCommand {
 	protected boolean execute(Conversation context, String input, Settlement settlement) {
 		StructuredResponse response = new StructuredResponse();
 
-		Collection<Vehicle> parked = settlement.getParkedVehicles();
+//		Collection<Vehicle> parked = settlement.getParkedVehicles();
 		
 		response.appendHeading("Vehicles");
 		
@@ -52,7 +51,6 @@ public class VehicleCommand extends AbstractSettlementCommand {
 		response.appendTableHeading("Name", CommandHelper.PERSON_WIDTH, "Type", 15, 
 									"Status", "Home", "Reserved", "Mission", 25);
 
-		BuildingManager bm = settlement.getBuildingManager();
 		var missionMgr = context.getSim().getMissionManager();
 		for (Vehicle v : vlist) {
 			VehicleType vt = v.getVehicleType();

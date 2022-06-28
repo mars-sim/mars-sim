@@ -25,7 +25,7 @@ public class AnnouncementWindow extends JInternalFrame {
 
 	private JLabel announcementLabel;
 
-	private MainDesktopPane desktop;
+//	private MainDesktopPane desktop;
 
 	/**
 	 * Constructor .
@@ -38,7 +38,7 @@ public class AnnouncementWindow extends JInternalFrame {
 		// Use JDialog constructor
 		super("", false, false, false, false); //$NON-NLS-1$
 
-		this.desktop = desktop;
+//		this.desktop = desktop;
 		// Create the main panel
 		JPanel mainPane = new JPanel();
 		mainPane.setLayout(new BorderLayout());

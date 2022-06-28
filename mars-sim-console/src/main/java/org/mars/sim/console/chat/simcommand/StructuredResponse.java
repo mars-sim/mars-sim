@@ -21,8 +21,8 @@ public class StructuredResponse {
 
 	// Formats
 	private static final String HEADING_FORMAT = " %s%n";
-	private static final String ONE_COLUMN = "%27s : %s%n";
-	private static final String ONE_DIGITCOLUMN = "%27s : %d%n";
+	private static final String ONE_COLUMN = "%30s : %s%n";
+	private static final String ONE_DIGITCOLUMN = "%30s : %d%n";
 	
 	private static final String LIST = "  %2d - %s%n";
 	

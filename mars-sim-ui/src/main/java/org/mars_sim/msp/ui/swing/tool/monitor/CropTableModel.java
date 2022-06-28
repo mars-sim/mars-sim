@@ -217,7 +217,7 @@ public class CropTableModel extends UnitTableModel {
 				List<Crop> cropsList = f.getCrops();
 				Iterator<Crop> k = cropsList.iterator();
 				while (k.hasNext()) {
-					CropCategory cat = k.next().getCropType().getCropCategory();
+					CropCategory cat = k.next().getCropSpec().getCropCategory();
 					Map<CropCategory, Integer> innerCatMap = null;
 					if (cropCatMap.containsKey(b)) {
 						innerCatMap = cropCatMap.get(b);
@@ -413,7 +413,7 @@ public class CropTableModel extends UnitTableModel {
 
 		else if (eventType == UnitEventType.CROP_EVENT) {
 			Crop crop = (Crop) target;
-			CropCategory cat = crop.getCropType().getCropCategory();
+			CropCategory cat = crop.getCropSpec().getCropCategory();
 
 			try {
 				int tempColumnNum = -1;
@@ -457,7 +457,7 @@ public class CropTableModel extends UnitTableModel {
 				Iterator<Crop> j = farm.getCrops().iterator();
 				while (j.hasNext()) {
 					Crop crop = j.next();
-					CropCategory cat = crop.getCropType().getCropCategory();
+					CropCategory cat = crop.getCropSpec().getCropCategory();
 					// Match the crop name within the current list of crops having the same cropCategory
 					if (cat == cropCat) {
 						result++;
@@ -517,7 +517,7 @@ public class CropTableModel extends UnitTableModel {
 
 		Farming f = b.getFarming();
 		for (Crop c : f.getCrops()) {
-			CropCategory cat1 = c.getCropType().getCropCategory();
+			CropCategory cat1 = c.getCropSpec().getCropCategory();
 			if (cat1 == cat)
 				tt.append(c.getCropName()).append(System.lineSeparator());
 		}

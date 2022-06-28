@@ -63,7 +63,7 @@ implements Serializable {
 	// Resource being collected
 	private int resourceID;
 	private String resourceName;
-
+	private LocalPosition diggingLoc;
 	private EquipmentType containerType;
 
 	/**
@@ -90,7 +90,7 @@ implements Serializable {
 
         // To dig local a person must be in a Settlement
         if (!person.isInSettlement()) {
-        	logger.warning(person, "Is not in a settlement to start a DigLocal Task");
+        	logger.warning(person, "Not in a settlement to start a DigLocal Task");
         	endTask();
         	return;
         }
@@ -105,14 +105,9 @@ implements Serializable {
      	if (person.isInSettlement()) {
 	        airlock = getWalkableAvailableEgressAirlock(person);
 	        if (airlock == null) {
+	        	logger.log(person, Level.WARNING, 4_000, "No walkable airlock for egress.");
 			    endTask();
 			    return;
-	        }
-	        else {
-	        	if (!airlock.addReservation(person.getIdentifier())) {
-				    endTask();
-				    return;
-	        	}
 	        }
      	}
 
@@ -135,9 +130,13 @@ implements Serializable {
 
 
         // Determine digging location.
-        LocalPosition diggingLoc = determineDiggingLocation();
-        if (diggingLoc != null)
-        	setOutsideSiteLocation(diggingLoc);
+        if (diggingLoc == null) {
+        	diggingLoc = determineDiggingLocation();
+	        if (diggingLoc != null) {
+	        	setOutsideSiteLocation(diggingLoc);
+	           	logger.info(person, 4_000L, "Selected an outside digging site at " + diggingLoc + ".");
+	        }
+        }
 
 		// set the boolean to true so that it won't be done again today
 //		person.getPreference().setTaskDue(this, true);
@@ -158,7 +157,8 @@ implements Serializable {
     }
 
 	/**
-	 * Get the settlement where digging is taking place
+	 * Gets the settlement where digging is taking place.
+	 * 
 	 * @return
 	 */
 	protected Settlement getSettlement() {
@@ -166,7 +166,8 @@ implements Serializable {
 	}
 
 	/**
-	 * This set the colleciton trate for the resource.
+	 * Sets the collection rate for the resource.
+	 * 
 	 * @param collectionRate
 	 */
 	protected void setCollectionRate(double collectionRate) {
@@ -181,6 +182,7 @@ implements Serializable {
 
     /**
      * Performs the method mapped to the task's current phase.
+     * 
      * @param time the amount of time the phase is to be performed.
      * @return the remaining time after the phase has been performed.
      */

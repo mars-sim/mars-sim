@@ -384,8 +384,8 @@ public class EVASuit extends Equipment
 		if (oxygenLeft < MASS_O2_NOMINAL_LIMIT) {
 			double pp = AirComposition.getOxygenPressure(oxygenLeft, TOTAL_VOLUME);
 			logger.log(this, getOwner(), Level.WARNING, 30_000,
-					" got " + Math.round(oxygenLeft*100.0)/100.0
-						+ " kg O2 left at partial pressure of " + Math.round(pp*100.0)/100.0 + " kPa.");
+					"Only " + Math.round(oxygenLeft*1000.0)/1000.0
+						+ " kg O2 left at partial pressure of " + Math.round(pp*1000.0)/1000.0 + " kPa.");
 			return pp;
 		}
 //		Note: the outside ambient air pressure is weather.getAirPressure(getCoordinates());

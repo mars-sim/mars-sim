@@ -1,7 +1,7 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <!DOCTYPE vehicle-configuration [
 	<!ELEMENT vehicle-configuration (vehicle*)>
-	<!ELEMENT vehicle (description?, drivetrain-efficiency, base-speed,
+	<!ELEMENT vehicle (description?, drivetrain-efficiency, base-speed, average-power,
 	empty-mass, terrain-handling?, crew-size?, cargo?, part-attachment?, sickbay?, lab?,
 	airlock?, activity?)>
 	<!ATTLIST vehicle type CDATA #REQUIRED>
@@ -12,6 +12,8 @@
 	<!ATTLIST drivetrain-efficiency value CDATA #REQUIRED>
 	<!ELEMENT base-speed EMPTY>
 	<!ATTLIST base-speed value CDATA #REQUIRED>
+	<!ELEMENT average-power EMPTY>
+	<!ATTLIST average-power value CDATA #REQUIRED>
 	<!ELEMENT empty-mass EMPTY>
 	<!ATTLIST empty-mass value CDATA #REQUIRED>
 	<!ELEMENT crew-size EMPTY>
@@ -93,8 +95,12 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 
 		<!-- Base speed of rover [km/hr](required) -->
 		<!-- Default: varies according to the type of vehicle -->
-		<base-speed value="30.0" />
-
+		<base-speed value="35.0" />
+		
+		<!-- Average power exerted when operating at base speed [kW](required) -->
+		<!-- Default: varies according to the type of vehicle -->
+		<average-power value = "20" />
+		
 		<!-- Empty mass of rover [kg] (required) -->
 		<!-- Default: varies according to the type of vehicle  -->
 		<empty-mass value="2000.0" />
@@ -118,63 +124,47 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 			<!--    Food :  6.2 kg -->
 			<!-- Dessert :  3.0 kg -->
 			<!--  Oxygen :  8.4 kg -->
-
-			<!-- The methane cargo capacity of the rover (kg) -->
+			
 			<!-- Default: varies according to the type of vehicle -->
 			<!-- The H2 tank on Toyota Mirai has a 5 kg capacity http://www.mytoyotamirai.com/toyota-mirai-specifications/ -->
-			<capacity resource="methane" value="180.0" />
+			<capacity resource="methane" value="150.0" />
 
-			<!-- The oxygen cargo capacity of the rover (kg) -->
 			<!-- Default: varies according to the type of vehicle  -->
-			<capacity resource="oxygen" value="300.0" />
+			<capacity resource="oxygen" value="400.0" />
 
-			<!-- The oxygen cargo capacity of the rover (kg) -->
 			<!-- Default: varies according to the type of vehicle  -->
-			<capacity resource="nitrogen" value="110.0" />
+			<capacity resource="nitrogen" value="50.0" />
 
-			<!-- The carbon dioxide capacity of the rover (kg) -->
 			<!-- Default: varies according to the type of vehicle  -->
-			<capacity resource="carbon dioxide" value="8.0" />
+			<capacity resource="carbon dioxide" value="10.0" />
 
-			<!-- The water cargo capacity of the rover (kg) -->
 			<!-- Default: varies according to the type of vehicle  -->
 			<capacity resource="water" value="400.0" />
 
-			<!-- The food cargo capacity of the rover (kg) -->
 			<!-- Default: varies according to the type of vehicle  -->
 			<capacity resource="food" value="256.0" />
 
-			<!-- The dessert cargo capacity of the rover (kg) -->
 			<!-- Default: varies according to the type of vehicle -->
 			<capacity resource="dessert" value="120.0" />
 
-			<!-- The rock samples cargo capacity of the rover (kg) -->
-			<!-- See resources.txt -->
 			<!-- Default: varies according to the type of vehicle -->
 			<capacity resource="rock samples" value="400.0" />
 
-			<!-- The ice cargo capacity of the rover (kg) -->
-			<!-- See resources.txt -->
 			<!-- Default: varies according to the type of vehicle -->
 			<capacity resource="ice" value="400.0" />
 
-			<!-- The food waste capacity of the rover (kg) -->
 			<!-- Default: varies according to the type of vehicle  -->
 			<capacity resource="food waste" value="40.0" />
 
-			<!-- The solid waste capacity of the rover (kg) -->
 			<!-- Default: varies according to the type of vehicle  -->
 			<capacity resource="solid waste" value="80.0" />
 
-			<!-- The toxic waste capacity of the rover (kg) -->
 			<!-- Default: varies according to the type of vehicle  -->
 			<capacity resource="toxic waste" value="40.0" />
 
-			<!-- The grey water capacity of the rover (kg) -->
 			<!-- Default: varies according to the type of vehicle  -->
 			<capacity resource="grey water" value="240.0" />
 
-			<!-- The black water capacity of the rover (kg) -->
 			<!-- Default: varies according to the type of vehicle  -->
 			<capacity resource="black water" value="60.0" />
 
@@ -221,16 +211,17 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 			and can accommodate up to 8 people.</description>
 		<drivetrain-efficiency value=".7" />
 		<base-speed value="25.0" />
+		<average-power value = "25" />
 		<empty-mass value="3000.0" />
 		<terrain-handling value="2.5"/>
 		<crew-size value="8" />
 		<cargo total-capacity="4000.0">
-			<capacity resource="methane" value="220.0" />
-			<capacity resource="oxygen" value="400.0" />
-			<capacity resource="nitrogen" value="176.0" />
-			<capacity resource="carbon dioxide" value="16.0" />
-			<capacity resource="water" value="800.0" />
-
+			<capacity resource="methane" value="300.0" />
+			<capacity resource="oxygen" value="800.0" />
+			<capacity resource="nitrogen" value="100.0" />
+			<capacity resource="carbon dioxide" value="10.0" />
+			<capacity resource="water" value="500.0" />
+			
 			<capacity resource="food" value="512.0" />
 			<capacity resource="dessert" value="240.0" />
 
@@ -269,15 +260,16 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 			and can have fit two people only to maximize cargo space.</description>
 		<drivetrain-efficiency value=".7" />
 		<base-speed value="25.0" />
+		<average-power value = "30" />		
 		<empty-mass value="2500.0" />
 		<terrain-handling value="2.5"/>
 		<crew-size value="2" />
 		<cargo total-capacity="6000.0">
-			<capacity resource="methane" value="260.0" />
-			<capacity resource="oxygen" value="350.0" />
-			<capacity resource="nitrogen" value="66.0" />
-			<capacity resource="carbon dioxide" value="4.0" />
-			<capacity resource="water" value="200.0" />
+			<capacity resource="methane" value="300.0" />
+			<capacity resource="oxygen" value="700.0" />
+			<capacity resource="nitrogen" value="100.0" />
+			<capacity resource="carbon dioxide" value="10.0" />
+			<capacity resource="water" value="300.0" />
 
 			<capacity resource="food" value="128.0" />
 			<capacity resource="dessert" value="60" />
@@ -310,11 +302,14 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 	<vehicle type="Light Utility Vehicle" width="1.7" length="2.55">
 		<description>A small, unpressurized, one crew utility vehicle with attachable parts.</description>
 		<drivetrain-efficiency value=".8" />
-		<base-speed value="30.0" />
-		<empty-mass value="300.0" />
+		<base-speed value="20.0" />
+		<average-power value = "10" />		
+		<empty-mass value="400.0" />
 		<terrain-handling value="1.0"/>
 		<crew-size value="1" />
 		<cargo total-capacity="300.0">
+			<capacity resource="methane" value="20.0" />
+			<capacity resource="oxygen" value="20.0" />		
 		</cargo>
 		<part-attachment number-slots="3">
             <part name="bulldozer blade" />
@@ -334,11 +329,13 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<description>An unmanned aerial vehicle used for transport of light cargo between settlements</description>
 		<drivetrain-efficiency value=".85" />
 		<base-speed value="100.0" />
-		<empty-mass value="100.0" />
+		<average-power value = "20" />		
+		<empty-mass value="200.0" />
 		<crew-size value="0" />
-		<cargo total-capacity="400.0">
-			<capacity resource="methane" value="100.0" />
+		<cargo total-capacity="500.0">
+			<capacity resource="methane" value="50.0" />
 			<capacity resource="oxygen" value="100.0" />
+			<capacity resource="water" value="100.0" />
 		</cargo>
 	</vehicle>
 

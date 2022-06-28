@@ -355,7 +355,6 @@ extends JComponent implements ClockListener {
 			
 			// Set the UI configuration
 			useDefault = UIConfig.INSTANCE.useUIDefault();
-			
 //			logger.config("useDefault is: " + useDefault);
 			
 			if (useDefault) {
@@ -418,27 +417,27 @@ extends JComponent implements ClockListener {
 	private void useDefaultScreenConfig(int screenWidth, int screenHeight) {
 	   	selectedSize = interactiveTerm.getSelectedScreen();
 		
-				logger.config("You choose No. Loading default screen dimension "
-						+ selectedSize.width
-						+ " x "
-						+ selectedSize.height
-						+ ".");
-				
-				// Set frame size
-				frame.setSize(selectedSize);
-				
-				// Center frame on screen
-				frame.setLocation(
-					((screenWidth - selectedSize.width) / 2),
-					((screenHeight - selectedSize.height) / 2)
-				);
-				
-				logger.config("Use default configuration to set frame to the center of the screen.");
-				logger.config("The window frame is centered and starts at (" 
-						+ (screenWidth - selectedSize.width) / 2 
-						+ ", "
-						+ (screenHeight - selectedSize.height) / 2
-						+ ").");	
+		logger.config("You choose No. Loading default screen dimension "
+				+ selectedSize.width
+				+ " x "
+				+ selectedSize.height
+				+ ".");
+		
+		// Set frame size
+		frame.setSize(selectedSize);
+		
+		// Center frame on screen
+		frame.setLocation(
+			((screenWidth - selectedSize.width) / 2),
+			((screenHeight - selectedSize.height) / 2)
+		);
+		
+		logger.config("Use default configuration to set frame to the center of the screen.");
+		logger.config("The window frame is centered and starts at (" 
+				+ (screenWidth - selectedSize.width) / 2 
+				+ ", "
+				+ (screenHeight - selectedSize.height) / 2
+				+ ").");	
 	}
 	
 	/**
@@ -1095,6 +1094,7 @@ extends JComponent implements ClockListener {
 		UIConfig.INSTANCE.saveFile(this);
 
 		// Note: may use SwingUtilities.invokeLater(() -> layerUI.stop());
+		logger.log(Level.CONFIG, "Done calling saveSimulation()."); 
 	}
 
 	public void stopSleeping() {

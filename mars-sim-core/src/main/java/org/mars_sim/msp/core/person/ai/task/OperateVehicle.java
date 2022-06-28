@@ -502,9 +502,9 @@ public abstract class OperateVehicle extends Task implements Serializable {
     	// Retrieve the fuel needed for the distance traveled.
 	    vehicle.retrieveAmountResource(fuelType, fuelUsed);
 	    // Retrieve the same amount of oxygen as fuel oxidizer.
-	    vehicle.retrieveAmountResource(OXYGEN_ID, fuelUsed);
+	    vehicle.retrieveAmountResource(OXYGEN_ID, 2 * fuelUsed);
 	    // Generate 2.25 times amount of the water from the fuel cells
-	    vehicle.storeAmountResource(WATER_ID, fuelUsed * 2.25);
+	    vehicle.storeAmountResource(WATER_ID, 2.25 * fuelUsed);
         
         return result;   
 	}
@@ -560,60 +560,71 @@ public abstract class OperateVehicle extends Task implements Serializable {
     
         double vSQ = v * v;
         
-        double fInitialFriction = 0;
-        // Note: 1 m/s = 3.6 km/hr (or kph)
-
-        fInitialFriction = 5 / v * KPH_CONV;
+        double fInitialFriction = 5 / v * KPH_CONV;
         
         // Note : Aerodynamic drag force = air drag coeff * air density 
         // 			* vehicle frontal area / 2 * vehicle speed 
         double fAeroDrag = 0.5 * 0.1 * 1.5 / 2.0 * vSQ / KPH_CONV_SQ;
         
         double fTot = fInitialFriction + fGravity + fAeroDrag + fRolling;
+        // Note: 1 m/s = 3.6 km/hr (or kph)
+        double power = fTot * v / KPH_CONV ; // [in W]
         
-        double power = fTot * v / 3.6; // [ N * m / s]
+        double energyUsed = power * hrsTime * 3600; // [in J]
         
-        double energy = power * hrsTime * 3600; // [in J]
-        
-        energy = energy / JOULES_PER_KWH ; // [in kWh]
+        energyUsed = energyUsed / JOULES_PER_KWH ; // [in kWh]
               
         // Derive the mass of fuel needed
-        double fuelUsed = energy * Vehicle.FUEL_KG_PER_KWH;
+        double fuelUsed = energyUsed * Vehicle.FUEL_KG_PER_KWH;
 
         // Derive the instantaneous fuel economy [in km/kg]
         double iFE = distanceTraveled / fuelUsed;
+        // Set the  instantaneous fuel economy [in km/kg]
         vehicle.setIFuelEconomy(iFE);
+        
         /*
 		 * Expensive output message so hold off using.
-		 *  
-        // Derive the instantaneous fuel consumption [in km/kWh]
-        double iFC = distanceTraveled / energy;
+		 */
         
-        // Calculate the average power for this time period  [in kW]
-        double aveP = v * energy / iFE / fuelUsed;
+        // Derive the instantaneous fuel consumption [Wh/km]
+        double iFC = energyUsed * 1000 / distanceTraveled;
+        // Set the instantaneous fuel consumption [Wh/km]
+        vehicle.setIFuelConsumption(iFC);
+        
+        
+        double bFC = vehicle.getBaseFuelConsumption();
+        
+        double bFE = vehicle.getBaseFuelEconomy();
+        
+        double estFE = vehicle.getEstimatedAveFuelEconomy();
+        
+        // Calculate the average power for this time period [in kW]
+        double aveP = v * energyUsed / iFE / fuelUsed;
         
         logger.log(vehicle, Level.INFO, 10_000, 
-        			"type: " + vehicle.getVehicleTypeString() + "   "
-        		 	+ "mass: " + Math.round(mass * 100.0)/100.0 + KG
-        	        + "distanceTraveled: " + Math.round(distanceTraveled * 10_000.0)/10_000.0 + KM
-                	+ "v: " + Math.round(v * 10_000.0)/10_000.0 + " km/h   "
+        			"type: " 				+ vehicle.getVehicleTypeString() + "   "
+        		 	+ "mass: " 				+ Math.round(mass * 100.0)/100.0 + KG
+        	        + "distanceTraveled: " 	+ Math.round(distanceTraveled * 10_000.0)/10_000.0 + KM
+                	+ "v: " 				+ Math.round(v * 10_000.0)/10_000.0 + " km/h   "
 //                	+ "v_squared: " + Math.round(v_squared * 10_000.0)/10_000.0 + " km/h   "
 //        			+ "delta_v: " + Math.round(delta_v * 10_000.0)/10_000.0 + " km/h   "
         			+ "F_initialFriction: " + Math.round(fInitialFriction * 10_000.0)/10_000.0 + N
-        			+ "F_againstGravity: " + Math.round(fGravity * 10_000.0)/10_000.0 + N
-        			+ "F_aeroDragForce: " + Math.round(fAeroDrag * 10_000.0)/10_000.0 + N
+        			+ "F_againstGravity: " 	+ Math.round(fGravity * 10_000.0)/10_000.0 + N
+        			+ "F_aeroDragForce: " 	+ Math.round(fAeroDrag * 10_000.0)/10_000.0 + N
     	    		+ "F_rolling: " + Math.round(fRolling * 10_000.0)/10_000.0 + N
-    	    		+ "F_total: " + Math.round(fTot * 10_000.0)/10_000.0 + N
-    	    		+ "power: " + Math.round(power * 10_000.0)/10_000.0 + KW
-    				+ "energy: " + Math.round(energy * 100_000.0)/100_000.0 + " kWh   "
-            		+ "fuelUsed: " + Math.round(fuelUsed * 100_000.0)/100_000.0 + KG 
-                	+ "estFE: " + Math.round(vehicle.getEstimatedAveFuelEconomy() * 1_000.0)/1_000.0 + KM_KG
-                	+ "initFE: " + Math.round(initFE * 1_000.0)/1_000.0 + KM_KG
-    	    		+ "iFE: " + Math.round(iFE * 1_000.0)/1_000.0 + KM_KG  
-    	    		+ "iFE: " + Math.round(iFC * 1_000.0)/1_000.0 + " km/kWh   "    
-    				+ "aveP: " + Math.round(aveP * 1_000.0)/1_000.0 + KW
+    	    		+ "F_total: " 	+ Math.round(fTot * 10_000.0)/10_000.0 + N
+    	    		+ "Power: " 	+ Math.round(power)/1_000.0 + KW
+    				+ "Energy Used: " 	+ Math.round(energyUsed * 100_000.0)/100_000.0 + " kWh   "
+            		+ "fuelUsed: " 	+ Math.round(fuelUsed * 100_000.0)/100_000.0 + KG 
+    	    		+ "bFE: " 		+ Math.round(bFE * 1_000.0)/1_000.0 + KM_KG  
+                   	+ "estFE: " 	+ Math.round(estFE * 1_000.0)/1_000.0 + KM_KG
+                   	+ "initFE: " 	+ Math.round(initFE * 1_000.0)/1_000.0 + KM_KG
+    	    		+ "iFE: " 		+ Math.round(iFE * 1_000.0)/1_000.0 + KM_KG  
+    	    		+ "bFC: " 		+ Math.round(bFC * 1_000.0)/1_000.0 + " Wh/km   "  
+    	    		+ "iFC: " 		+ Math.round(iFC * 1_000.0)/1_000.0 + " Wh/km   "    
+    				+ "aveP: " 		+ Math.round(aveP * 1_000.0)/1_000.0 + KW
     				);
-        */
+        
         return fuelUsed;
     }
 
