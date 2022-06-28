@@ -47,11 +47,9 @@ public class VehicleSpec implements Serializable {
 
 	private double terrainHandling;
 
-	public VehicleSpec(double width2, double length2, String description2, double drivetrainEff2, 
+	public VehicleSpec(String description2, double drivetrainEff2, 
 			double baseSpeed2, double averagePower2,
 			double emptyMass2, int crewSize2) {
-		this.width = width2;
-		this.length = length2;
 		this.description = description2;
 		this.drivetrainEff = drivetrainEff2;
 		this.baseSpeed = baseSpeed2;
@@ -60,6 +58,14 @@ public class VehicleSpec implements Serializable {
 		this.crewSize = crewSize2;
 	}
 
+	public final void setWidth(double width) {
+		this.width = width;
+	}
+	
+	public final void setLength(double length) {
+		this.length = length;
+	}
+	
 	/**
 	 * get <code>0.0d</code> or capacity for given cargo.
 	 * 
@@ -220,7 +226,6 @@ public class VehicleSpec implements Serializable {
 		this.hasPartAttachments = true;
 		this.attachmentSlots = attachmentSlots2;
 		this.attachableParts = Collections.unmodifiableList(attachableParts2);
-		
 	}
 
 	void setActivitySpots(List<LocalPosition> operatorActivitySpots2, List<LocalPosition> passengerActivitySpots2,

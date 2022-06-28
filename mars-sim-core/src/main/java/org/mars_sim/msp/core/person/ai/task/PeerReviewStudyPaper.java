@@ -114,6 +114,7 @@ implements Serializable {
 
     /**
      * Gets an available administration building that the person can use.
+     * 
      * @param person the person
      * @return available administration building or null if none.
      */
@@ -124,8 +125,8 @@ implements Serializable {
         if (person.isInSettlement()) {
             BuildingManager manager = person.getSettlement().getBuildingManager();
             List<Building> administrationBuildings = manager.getBuildings(FunctionType.ADMINISTRATION);
-            administrationBuildings = BuildingManager.getNonMalfunctioningBuildings(administrationBuildings);
-            administrationBuildings = BuildingManager.getLeastCrowdedBuildings(administrationBuildings);
+            administrationBuildings = BuildingManager.getLeastCrowdedBuildings(
+            		BuildingManager.getNonMalfunctioningBuildings(administrationBuildings));
 
             if (administrationBuildings.size() > 0) {
                 Map<Building, Double> administrationBuildingProbs = BuildingManager.getBestRelationshipBuildings(

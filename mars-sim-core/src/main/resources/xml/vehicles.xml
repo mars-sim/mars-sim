@@ -63,22 +63,18 @@ http://www.nasa.gov/pdf/464826main_SEV_Concept_FactSheet.pdf
 http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.121.575&rep=rep1&type=pdf
 
 4. For methane gas,
-
-Specific energy is 55.5	MJ/kg, or 15,416 Wh/kg, or 15.416kWh / kg
-
+Specific energy is 55.5	MJ/kg, or 15,416 Wh/kg, or 15.416kWh/kg
 Energy density is 0.0364 MJ/L, 36.4 kJ/L or 10 Wh/L
-
 Note : 1 MJ = 0.277778 kWh; 1 kWh = 3.6 MJ
 
 5. Assume Solid Oxide Fuel Cell (SOFC) has 57% efficiency.
- https://www.sciencedaily.com/releases/2012/05/120531165720.htm
+https://www.sciencedaily.com/releases/2012/05/120531165720.htm
 
 6. According to Zubrin, it is estimated that a 1 tonne pressurized ground rover would require about 0.5 kg of
 methane/oxygen bipropellant to travel 1 km. Thus a 800 km round trip excursion would consume about 400 kg of
 propellant.
 http://www.marspapers.org/paper/Zubrin_1991.pdf
-
- -->
+-->
 
 
 <vehicle-configuration>
@@ -99,7 +95,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		
 		<!-- Average power exerted when operating at base speed [kW](required) -->
 		<!-- Default: varies according to the type of vehicle -->
-		<average-power value = "20" />
+		<average-power value="20" />
 		
 		<!-- Empty mass of rover [kg] (required) -->
 		<!-- Default: varies according to the type of vehicle  -->
@@ -211,7 +207,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 			and can accommodate up to 8 people.</description>
 		<drivetrain-efficiency value=".7" />
 		<base-speed value="25.0" />
-		<average-power value = "25" />
+		<average-power value="25" />
 		<empty-mass value="3000.0" />
 		<terrain-handling value="2.5"/>
 		<crew-size value="8" />
@@ -260,7 +256,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 			and can have fit two people only to maximize cargo space.</description>
 		<drivetrain-efficiency value=".7" />
 		<base-speed value="25.0" />
-		<average-power value = "30" />		
+		<average-power value="30" />		
 		<empty-mass value="2500.0" />
 		<terrain-handling value="2.5"/>
 		<crew-size value="2" />
@@ -303,7 +299,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<description>A small, unpressurized, one crew utility vehicle with attachable parts.</description>
 		<drivetrain-efficiency value=".8" />
 		<base-speed value="20.0" />
-		<average-power value = "10" />		
+		<average-power value="10" />		
 		<empty-mass value="400.0" />
 		<terrain-handling value="1.0"/>
 		<crew-size value="1" />
@@ -329,7 +325,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<description>An unmanned aerial vehicle used for transport of light cargo between settlements</description>
 		<drivetrain-efficiency value=".85" />
 		<base-speed value="100.0" />
-		<average-power value = "20" />		
+		<average-power value ="20" />		
 		<empty-mass value="200.0" />
 		<crew-size value="0" />
 		<cargo total-capacity="500.0">

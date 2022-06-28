@@ -38,9 +38,7 @@ public class VehicleCommand extends AbstractSettlementCommand {
 	@Override
 	protected boolean execute(Conversation context, String input, Settlement settlement) {
 		StructuredResponse response = new StructuredResponse();
-
-//		Collection<Vehicle> parked = settlement.getParkedVehicles();
-		
+	
 		response.appendHeading("Vehicles");
 		
 		// Sort the vehicle list according to the type

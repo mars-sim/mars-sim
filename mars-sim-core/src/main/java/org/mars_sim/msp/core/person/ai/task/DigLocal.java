@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * DigLocalRegolith.java
- * @date 2021-10-21
+ * @date 2022-06-28
  * @author Scott Davis
  */
 
@@ -27,12 +27,10 @@ import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Airlock;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
- * The DigLocal class is a task for performing
- * collecting a resource outside a settlement.
+ * The DigLocal class is a task for collecting a resource outside a settlement.
  */
 public abstract class DigLocal
 extends EVAOperation
@@ -46,6 +44,9 @@ implements Serializable {
 
 	public static final double SMALL_AMOUNT = 0.00001;
 
+	// Resource being collected
+	private int resourceID;
+
 	private double compositeRate;
 
 	private double factor;
@@ -53,6 +54,8 @@ implements Serializable {
 	/** Total resource collected in kg. */
 	private double totalCollected;
 
+	private String resourceName;
+	
 	/** Airlock to be used for EVA. */
 	private Airlock airlock;
 
@@ -60,10 +63,8 @@ implements Serializable {
 
 	private TaskPhase collectionPhase;
 
-	// Resource being collected
-	private int resourceID;
-	private String resourceName;
 	private LocalPosition diggingLoc;
+	
 	private EquipmentType containerType;
 
 	/**
@@ -80,26 +81,18 @@ implements Serializable {
         this.resourceName = ResourceUtil.findAmountResourceName(resourceID);
         this.collectionPhase = collectionPhase;
 
-        if (!person.isFit()) {
-			if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
-	      	return;
-		}
+        if (!person.isFit() || isReturning())
+        	return;
 
         // To dig local a person must be in a Settlement
         if (!person.isInSettlement()) {
         	logger.warning(person, "Not in a settlement to start a DigLocal Task");
         	endTask();
-        	return;
         }
 
      	settlement = CollectionUtils.findSettlement(person.getCoordinates());
-     	if (settlement == null) {
+     	if (settlement == null)
      		endTask();
-     		return;
-     	}
 
         // Get an available airlock in a settlement
      	if (person.isInSettlement()) {
@@ -107,27 +100,17 @@ implements Serializable {
 	        if (airlock == null) {
 	        	logger.log(person, Level.WARNING, 4_000, "No walkable airlock for egress.");
 			    endTask();
-			    return;
 	        }
      	}
 
         // Take bags for collecting resource.
-     	Container aBag = transferContainer();
-
         // If bags are not available, end task.
-        if (aBag == null) {
+        if (transferContainer() == null) {
         	logger.log(person, Level.WARNING, 4_000, "No " + containerType.name()
         				+ " for " + resourceName + " are available.");
-
-        	if (person.isOutside()){
-                setPhase(WALK_BACK_INSIDE);
-            }
-        	else {
-            	endTask();
-        	}
-	      	return;
+        	if (isReturning())
+        	    return;
         }
-
 
         // Determine digging location.
         if (diggingLoc == null) {
@@ -138,24 +121,27 @@ implements Serializable {
 	        }
         }
 
-		// set the boolean to true so that it won't be done again today
-//		person.getPreference().setTaskDue(this, true);
-
-        // Note: For Future
-        // Determine storage bin location.
-//      Point2D.Double binLoc = determineBinLocation();
-//      setBinLocation(binLoc.getX(), binLoc.getY());
-
        	// Add task phases
     	addPhase(collectionPhase);
-
-        // Note: For Future
-//      addPhase(WALK_TO_BIN);
-//      addPhase(DROP_OFF_RESOURCE);
 
         setPhase(WALK_TO_OUTSIDE_SITE);
     }
 
+	/**
+	 * Is the person supposed to be coming back inside ?
+	 * 
+	 * @return
+	 */
+	private boolean isReturning() {
+		if (person.isOutside()) {
+            setPhase(WALK_BACK_INSIDE);
+            return true;
+		}
+    	else
+        	endTask();
+    	return false;
+	}
+	
 	/**
 	 * Gets the settlement where digging is taking place.
 	 * 
@@ -202,7 +188,7 @@ implements Serializable {
 
 
 	/**
-     * Perform collect resource phase.
+     * Performs collect resource phase.
      *
      * @param time time (millisol) to perform phase.
      * @return time (millisol) remaining after performing phase.
@@ -212,27 +198,18 @@ implements Serializable {
 
 		// Check for radiation exposure during the EVA operation.
 		if (isDone() || isRadiationDetected(time)) {
-			if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
+			isReturning();
 			return time;
 		}
 
         // Check if there is any EVA problems and if on-site time is over.
 		if (shouldEndEVAOperation() || addTimeOnSite(time)) {
-			if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
+			isReturning();
 			return time;
 		}
 
 		if (!person.isFit()) {
-			if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
+			isReturning();
 			return time;
 		}
 
@@ -246,11 +223,7 @@ implements Serializable {
         if (aBag == null) {
         	logger.log(person, Level.WARNING, 4_000, "Has no " + containerType.getName()
         			+ " for " + resourceName);
-        	if (person.isOutside())
-            	setPhase(WALK_BACK_INSIDE);
-            else {
-            	endTask();
-            }
+        	isReturning();
         	return 0;
         }
 
@@ -266,7 +239,6 @@ implements Serializable {
 		}
 
         boolean finishedCollecting = false;
-
 
         if (collected > SMALL_AMOUNT) {
             double bagCap = aBag.getAmountResourceRemainingCapacity(resourceID);
@@ -307,12 +279,8 @@ implements Serializable {
             	+ Math.round(totalCollected*100D)/100D
         		+ " kg " + resourceName + ".");
 
-            if (person.isOutside())
-            	setPhase(WALK_BACK_INSIDE);
-            else {
-            	endTask();
-         		return 0;
-            }
+            isReturning();
+         	return 0;
     	}
 
 	    // Check for an accident during the EVA operation.
@@ -322,7 +290,8 @@ implements Serializable {
     }
 
     /**
-     * Transfers an empty bag from a settlement to a person
+     * Transfers an empty bag from a settlement to a person.
+     * 
      * @return a bag
      */
     private Container transferContainer() {
@@ -334,12 +303,12 @@ implements Serializable {
         	// Doesn't have a Bag
         	aBag = settlement.findContainer(containerType, true, resourceID);
 	        if (aBag != null) {
-	            	boolean successful = aBag.transfer(person);
-	            	if (!successful) {
-	            		aBag = null;
-	                	logger.log(person, Level.WARNING, 10_000, "Strangely unable to transfer an empty bag for " + resourceName + ".");
-	                	endTask();
-	                }
+            	boolean successful = aBag.transfer(person);
+            	if (!successful) {
+            		aBag = null;
+                	logger.log(person, Level.WARNING, 10_000, "Strangely unable to transfer an empty bag for " + resourceName + ".");
+                	endTask();
+                }
 	        }
 	        else {
 	        	logger.log(person, Level.WARNING, 10_000, "Unable to find an empty bag in the inventory for " + resourceName + ".");
@@ -355,7 +324,8 @@ implements Serializable {
     }
 
     /**
-     * Determine location for digging regolith.
+     * Determines location for digging regolith.
+     * 
      * @return digging X and Y location outside settlement.
      */
     private LocalPosition determineDiggingLocation() {
@@ -380,46 +350,12 @@ implements Serializable {
         return newLocation;
     }
 
-    public Building findBin() {
-    	return null;
-    }
-
     /**
-     * Determine storage bin location for dropping off regolith.
-     * @return storage bin X and Y location outside settlement.
-     */
-    private LocalPosition determineBinLocation() {
-
-    	Building bin = findBin();
-    	double x = bin.getPosition().getX();
-    	double y = bin.getPosition().getY();
-    	int facing = (int)bin.getFacing();
-
-    	if (facing == 0) {
-			x -= 3;
-		} else if (facing == 90) {
-			y -= 3;
-		} else if (facing == 180) {
-			x += 3;
-		} else if (facing == 270) {
-			y += 3;
-		} else {
-			x -= 3;
-		}
-
-        return new LocalPosition(x, y);
-    }
-
-    /**
-     * Closes out this task. If person is inside then transfer the resource from the bag to the Settlement
+     * Closes out this task. If person is inside then transfer the resource from the bag to the Settlement.
      */
     @Override
     protected void clearDown() {
-    	if (person.isOutside()) {
-    		setPhase(WALK_BACK_INSIDE);
-    	}
-
-    	else {
+    	if (!isReturning()) {
 	    	Container bag = person.findContainer(containerType, false, resourceID);
 	    	if (bag == null)
 	    		return;
@@ -442,7 +378,6 @@ implements Serializable {
 	            	logger.fine(person,
 	            			"Checking in " + Math.round(amount*10.0)/10.0 + " kg " + resourceName + ".");
 	            }
-
 
                 // Transfer the bag
                 bag.transfer(settlement);

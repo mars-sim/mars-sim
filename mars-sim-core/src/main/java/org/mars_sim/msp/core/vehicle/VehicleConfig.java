@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * VehicleConfig.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-06-28
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.vehicle;
@@ -35,8 +35,7 @@ public class VehicleConfig implements Serializable {
 	private static final long serialVersionUID = 2L;
 
 	private static final Logger logger = Logger.getLogger(VehicleConfig.class.getName());
-
-
+	
 	// Element names
 	private static final String VEHICLE = "vehicle";
 	private static final String TYPE = "type";
@@ -85,7 +84,7 @@ public class VehicleConfig implements Serializable {
 	}
 
 	/**
-	 * Parses only once, store resulting data for later use.
+	 * Parses only once. Stores resulting data for later use.
 	 * 
 	 * @param vehicleDoc
 	 */
@@ -117,7 +116,10 @@ public class VehicleConfig implements Serializable {
 			double emptyMass = Double.parseDouble(vehicleElement.getChild(EMPTY_MASS).getAttributeValue(VALUE));
 			int crewSize = Integer.parseInt(vehicleElement.getChild(CREW_SIZE).getAttributeValue(VALUE));
 
-			VehicleSpec v = new VehicleSpec(width, length, description, drivetrainEff, baseSpeed, averagePower, emptyMass, crewSize);
+			VehicleSpec v = new VehicleSpec(description, drivetrainEff, baseSpeed, averagePower, emptyMass, crewSize);
+
+			v.setWidth(width);
+			v.setLength(length);
 			
 			// Ground vehicle details
 			if (vehicleElement.getChild(TERRAIN_HANDLING) != null) {
@@ -232,7 +234,7 @@ public class VehicleConfig implements Serializable {
 				v.setActivitySpots(operatorActivitySpots, passengerActivitySpots, sickBayActivitySpots, labActivitySpots);
 			}
 
-			// and keep results for later use
+			// Keep results for later use
 			newMap.put(type, v);
 		}
 		
@@ -250,7 +252,7 @@ public class VehicleConfig implements Serializable {
 	}
 
 	/**
-	 * Gets the vehicle description class
+	 * Gets the vehicle description class.
 	 * 
 	 * @param vehicleType
 	 * @return {@link VehicleSpec}
@@ -260,12 +262,11 @@ public class VehicleConfig implements Serializable {
 	}
 	
 	/**
-	 * Prepare object for garbage collection. or simulation reboot.
+	 * Prepares object for garbage collection. or simulation reboot.
 	 */
 	public void destroy() {
 		if (map != null) {
 			map = null;
 		}
 	}
-
 }

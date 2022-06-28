@@ -82,7 +82,7 @@ public abstract class Vehicle extends Unit
 
 	// default logger.
 	private static final SimLogger logger = SimLogger.getLogger(Vehicle.class.getName());
-
+	
 	/** The error margin for determining vehicle range. (Actual distance / Safe distance). */
 	private static double fuel_range_error_margin;
 	private static double life_support_range_error_margin;
@@ -109,6 +109,11 @@ public abstract class Vehicle extends Unit
 	/** Estimated Number of hours traveled each day. **/
 	private static final int ESTIMATED_NUM_HOURS = 16;
 
+	// Format for unit
+	private static final String KWH = " kWh   ";
+	private static final String KG = " kg   ";
+	private static final String KM_KG = " km/kg   ";
+	
 	// Name format for numbers units
 	private static final String VEHICLE_TAG_NAME = "%s %03d";
 
@@ -217,8 +222,6 @@ public abstract class Vehicle extends Unit
 
 	/** The vehicle's status log. */
 	private MSolDataLogger<Set<StatusType>> vehicleLog = new MSolDataLogger<>(5);
-
-
 	/** The malfunction manager for the vehicle. */
 	protected MalfunctionManager malfunctionManager;
 	/** Direction vehicle is traveling */
@@ -253,16 +256,66 @@ public abstract class Vehicle extends Unit
 
 		if (unitManager == null)
 			unitManager = sim.getUnitManager();
-
+		
 		this.vehicleTypeString = vehicleTypeString.toLowerCase();
+		// Set description
+		setDescription(vehicleTypeString);
+		
 		vehicleType = VehicleType.convertNameToVehicleType(vehicleTypeString);
 
 		// Obtain the associated settlement ID
 		associatedSettlementID = settlement.getIdentifier();
 
-		// Add this vehicle to be owned by the settlement
-		settlement.addOwnedVehicle(this);
+		direction = new Direction(0);
+		trail = new ArrayList<>();
+		statusTypes = new HashSet<>();
 
+		isReservedMission = false;
+		distanceMark = false;
+		reservedForMaintenance = false;
+		emergencyBeacon = false;
+		isSalvaged = false;
+		
+		// Make this vehicle to be owned by the settlement
+		settlement.addOwnedVehicle(this);
+		// Manually add this vehicle to the settlement
+		settlement.addOwnedVehicle(this);
+		// Set the initial coordinates to be that of the settlement
+		setCoordinates(settlement.getCoordinates());
+		
+		setupBaseWear();
+
+		// Initialize malfunction manager.
+		malfunctionManager = new MalfunctionManager(this, baseWearLifetime, maintenanceWorkTime);
+
+		setupScopeString();
+
+		primaryStatus = StatusType.PARKED;
+		
+		writeLog();
+
+		VehicleSpec spec = simulationConfig.getVehicleConfiguration().getVehicleSpec(vehicleTypeString);
+		// Set width and length of vehicle.
+		width = spec.getWidth();
+		length = spec.getLength();
+
+		setupSpecs(spec);
+
+		// Set initial parked location and facing at settlement.
+		findNewParkingLoc();
+
+		// Initialize operator activity spots.
+		operatorActivitySpots = spec.getOperatorActivitySpots();
+
+		// Initialize passenger activity spots.
+		passengerActivitySpots = spec.getPassengerActivitySpots();
+	}
+
+	/**
+	 * Sets the base wear life time.
+	 */
+	private void setupBaseWear() {
+	
 		if (vehicleType == VehicleType.DELIVERY_DRONE) {
 			baseWearLifetime = 668_000 * .75; // 668 Sols (1 orbit)
 		}
@@ -278,42 +331,45 @@ public abstract class Vehicle extends Unit
 		else if (vehicleType == VehicleType.CARGO_ROVER) {
 			baseWearLifetime = 668_000 * 1.25; // 668 Sols (1 orbit)
 		}
-
-		direction = new Direction(0);
-		trail = new ArrayList<>();
-		statusTypes = new HashSet<>();
-
-		isReservedMission = false;
-		distanceMark = false;
-		reservedForMaintenance = false;
-		emergencyBeacon = false;
-		isSalvaged = false;
-
-		// Initialize malfunction manager.
-		malfunctionManager = new MalfunctionManager(this, baseWearLifetime, maintenanceWorkTime);
-
+	}
+	
+	/**
+	 * Sets the scope string.
+	 */
+	private void setupScopeString() {
 		// Add "vehicle" as scope
 		malfunctionManager.addScopeString(SystemType.VEHICLE.getName());
-
+	
 		// Add its vehicle type as scope
 		malfunctionManager.addScopeString(vehicleTypeString);
-
+	
 		// Add "rover" as scope
 		if (vehicleTypeString.contains(SystemType.ROVER.getName())) {
 			malfunctionManager.addScopeString(SystemType.ROVER.getName());
 		}
+	}
+	
+	/**
+	 * Sets up the vehicle specs.
+	 * 
+	 * @param spec
+	 */
+	private void setupSpecs(VehicleSpec spec) {
+		// Gets the crew capacity
+		int numCrew = spec.getCrewSize();
+		// Gets estimated total crew weight
+		estimatedTotalCrewWeight = numCrew * Person.getAverageWeight();
+		// Gets cargo capacity
+		cargoCapacity = spec.getTotalCapacity();
+		// Create microInventory instance
+		eqmInventory = new EquipmentInventory(this, cargoCapacity);
 
-		primaryStatus = StatusType.PARKED;
-		writeLog();
+		// Set the capacities for each supported resource
+		Map<String, Double> capacities = spec.getCargoCapacityMap();
+		if (capacities != null) {
+			eqmInventory.setResourceCapacityMap(capacities);
+		}
 
-		// Set width and length of vehicle.
-		VehicleConfig vehicleConfig = simulationConfig.getVehicleConfiguration();
-		VehicleSpec spec = vehicleConfig.getVehicleSpec(vehicleTypeString);
-		width = spec.getWidth();
-		length = spec.getLength();
-
-		// Set description
-		setDescription(vehicleTypeString);
 		// Set total distance traveled by vehicle (km)
 		odometerMileage = 0;
 		// Set distance traveled by vehicle since last maintenance (km)
@@ -338,88 +394,100 @@ public abstract class Vehicle extends Unit
 			drivetrainEnergy = energyCapacity * (1 - 0.05);
 			// Gets the maximum total # of hours the vehicle is capable of operating
 			totalHours = drivetrainEnergy / averagePower;
+
+			// Gets the base range [in km] of the vehicle
+			baseRange = baseSpeed * totalHours;
+			// Gets the base fuel economy [in km/kg] of this vehicle
+			baseFuelEconomy = baseRange / fuelCapacity;
+			// Gets the base fuel consumption [in Wh/km] of this vehicle
+			baseFuelConsumption =  energyCapacity * 1000.0 / baseRange;
+
+			// Accounts for the fuel (methane and oxygen) and the traded goods
+			beginningMass = getBaseMass() + 500;
+			// Accounts for water and the traded goods
+			endMass = getBaseMass() + 450;			
 		}
+		
 		else if (vehicleType == VehicleType.LUV) {
 			// Gets the estimated energy available for drivetrain [in kWh]
 			drivetrainEnergy = energyCapacity * (1 - 0.8);
 			// Gets the maximum total # of hours the vehicle is capable of operating
 			totalHours = drivetrainEnergy / averagePower;
+			
+
+			// Gets the base range [in km] of the vehicle
+			baseRange = baseSpeed * totalHours;
+			// Gets the base fuel economy [in km/kg] of this vehicle
+			baseFuelEconomy = baseRange / fuelCapacity;
+			// Gets the base fuel consumption [in Wh/km] of this vehicle
+			baseFuelConsumption =  energyCapacity * 1000.0 / baseRange;
+
+			// Accounts for the occupant weight
+			beginningMass = getBaseMass() + estimatedTotalCrewWeight;
+			// Accounts for the occupant weight
+			endMass = getBaseMass() + estimatedTotalCrewWeight;			
 		}
+		
 		else if (vehicleType == VehicleType.EXPLORER_ROVER) {
 			// Gets theestimated energy available for drivetrain [in kWh]
 			drivetrainEnergy = energyCapacity * (1 - 0.1);
 			// Gets the maximum total # of hours the vehicle is capable of operating
 			totalHours = drivetrainEnergy / averagePower;
+			
+
+			// Gets the base range [in km] of the vehicle
+			baseRange = baseSpeed * totalHours;
+			// Gets the base fuel economy [in km/kg] of this vehicle
+			baseFuelEconomy = baseRange / fuelCapacity;
+			// Gets the base fuel consumption [in Wh/km] of this vehicle
+			baseFuelConsumption =  energyCapacity * 1000.0 / baseRange;
+			
+			// Accounts for the occupant consumables
+			beginningMass = getBaseMass() + estimatedTotalCrewWeight + 4 * 50;
+			// Accounts for the rock sample, ice or regolith collected
+			endMass = getBaseMass() + estimatedTotalCrewWeight + 1000;	
+			
 		}
+		
 		else if (vehicleType == VehicleType.CARGO_ROVER) {
 			// Gets estimated energy available for drivetrain [in kWh]
 			drivetrainEnergy = energyCapacity * (1 - 0.05);			
 			// Gets the maximum total # of hours the vehicle is capable of operating
 			totalHours = drivetrainEnergy / averagePower;
+			
+
+			// Gets the base range [in km] of the vehicle
+			baseRange = baseSpeed * totalHours;
+			// Gets the base fuel economy [in km/kg] of this vehicle
+			baseFuelEconomy = baseRange / fuelCapacity;
+			// Gets the base fuel consumption [in Wh/km] of this vehicle
+			baseFuelConsumption =  energyCapacity * 1000.0 / baseRange;
+
+			// Accounts for the occupant consumables and traded goods 
+			beginningMass = getBaseMass() + estimatedTotalCrewWeight + 2 * 50 + 1500;
+			// Accounts for the occupant consumables and traded goods
+			endMass = getBaseMass() + estimatedTotalCrewWeight + 1500;				
 		}
+		
 		else if (vehicleType == VehicleType.TRANSPORT_ROVER) {
 			// Gets estimated energy available for drivetrain [in kWh]
 			drivetrainEnergy = energyCapacity * (1 - 0.15);
 			// Gets the maximum total # of hours the vehicle is capable of operating
 			totalHours = drivetrainEnergy / averagePower;
-		}
-
-		// Gets the base range [in km] of the vehicle
-		baseRange = baseSpeed * totalHours;
-		// Gets the base fuel economy [in km/kg] of this vehicle
-		baseFuelEconomy = baseRange / fuelCapacity;
-		// Gets the base fuel consumption [in Wh/km] of this vehicle
-		baseFuelConsumption =  energyCapacity * 1000.0 / baseRange;
-		// Gets the crew capacity
-		int numCrew = spec.getCrewSize();
-		// Gets estimated total crew weight
-		estimatedTotalCrewWeight = numCrew * Person.getAverageWeight();
-		// Gets cargo capacity
-		cargoCapacity = spec.getTotalCapacity();
-		// Create microInventory instance
-		eqmInventory = new EquipmentInventory(this, cargoCapacity);
-
-		// Set the capacities for each supported resource
-		Map<String, Double> capacities = spec.getCargoCapacityMap();
-		if (capacities != null) {
-			eqmInventory.setResourceCapacityMap(capacities);
-		}
-
-		if (vehicleType == VehicleType.EXPLORER_ROVER) {
-			// Accounts for the occupant consumables
-			beginningMass = getBaseMass() + estimatedTotalCrewWeight + 4 * 50;
-			// Accounts for the rock sample, ice or regolith collected
-			endMass = getBaseMass() + estimatedTotalCrewWeight + 1000;	
-		}
 			
-		else if (vehicleType == VehicleType.CARGO_ROVER) {
-			// Accounts for the occupant consumables and traded goods 
-			beginningMass = getBaseMass() + estimatedTotalCrewWeight + 2 * 50 + 1500;
-			// Accounts for the occupant consumables and traded goods
-			endMass = getBaseMass() + estimatedTotalCrewWeight + 1500;		
-		}
-			
-		else if (vehicleType == VehicleType.TRANSPORT_ROVER) {
+			// Gets the base range [in km] of the vehicle
+			baseRange = baseSpeed * totalHours;
+			// Gets the base fuel economy [in km/kg] of this vehicle
+			baseFuelEconomy = baseRange / fuelCapacity;
+			// Gets the base fuel consumption [in Wh/km] of this vehicle
+			baseFuelConsumption =  energyCapacity * 1000.0 / baseRange;
+
 			// // Accounts for the occupant consumables and personal possession
 			beginningMass = getBaseMass() + estimatedTotalCrewWeight + 8 * (50 + 100);
 			// Accounts for the reduced occupant consumables
-			endMass = getBaseMass() + estimatedTotalCrewWeight + 8 * 100;	
+			endMass = getBaseMass() + estimatedTotalCrewWeight + 8 * 100;				
 		}
 
-		else if (vehicleType == VehicleType.DELIVERY_DRONE) {
-			// Accounts for the fuel (methane and oxygen) and the traded goods
-			beginningMass = getBaseMass() + 500;
-			// Accounts for water and the traded goods
-			endMass = getBaseMass() + 450;
-		}
-
-		else if (vehicleType == VehicleType.LUV) {
-			// Accounts for the occupant weight
-			beginningMass = getBaseMass() + estimatedTotalCrewWeight;
-			// Accounts for the occupant weight
-			endMass = getBaseMass() + estimatedTotalCrewWeight;
-		}
-		
 		// Gets the estimated average fuel economy for a trip [km/kg]
 		estimatedAveFuelEconomy = baseFuelEconomy * beginningMass / endMass * .75;
 		// Gets the base acceleration [m/s2]
@@ -431,38 +499,25 @@ public abstract class Vehicle extends Unit
 	   		 	+ "baseSpeed: " + Math.round(baseSpeed * 100.0)/100.0 + " kW/hr   " 
     		 	+ "averagePower: " + Math.round(averagePower * 100.0)/100.0 + " kW   "
     	    	+ "baseAccel: " + Math.round(baseAccel * 100.0)/100.0 + " m/s2  "      		 	
-    	    	+ "energyCapacity: " + Math.round(energyCapacity * 100.0)/100.0 + " kWh   "
-    	    	+ "drivetrainEnergy: " + Math.round(drivetrainEnergy * 100.0)/100.0 + " kWh   ");  
+    	    	+ "energyCapacity: " + Math.round(energyCapacity * 100.0)/100.0 + KWH 
+    	    	+ "drivetrainEnergy: " + Math.round(drivetrainEnergy * 100.0)/100.0 + KWH);  
 
     	logger.log(this, Level.INFO, 0, 	     	    	
     		 	"totalHours: " + Math.round(totalHours * 100.0)/100.0 + " hr   "
     		 	+ "baseRange: " + Math.round(baseRange * 100.0)/100.0 + " km   "
-    		 	+ "baseFuelEconomy: " + Math.round(baseFuelEconomy * 100.0)/100.0 + " km/kg   "
-    		 	+ "estimatedAveFuelEconomy: " + Math.round(estimatedAveFuelEconomy * 100.0)/100.0 + " km/kg   "
-    	    	+ "initial FuelEconomy: " + Math.round(getInitialFuelEconomy() * 100.0)/100.0 + " km/kg   "      		 	
+    		 	+ "baseFuelEconomy: " + Math.round(baseFuelEconomy * 100.0)/100.0 + KM_KG
+    		 	+ "estimatedAveFuelEconomy: " + Math.round(estimatedAveFuelEconomy * 100.0)/100.0 + KM_KG
+    	    	+ "initial FuelEconomy: " + Math.round(getInitialFuelEconomy() * 100.0)/100.0 + KM_KG     		 	
 	 			+ "baseFuelConsumption: " + Math.round(baseFuelConsumption * 100.0)/100.0 + " Wh/km   ");
     		 	
     	logger.log(this, Level.INFO, 0, 	 	
-				"fuelCapacity: " + Math.round(fuelCapacity * 100.0)/100.0 + " kg   " 			
-    		 	+ "cargoCapacity: " + Math.round(cargoCapacity * 100.0)/100.0 + " kg   " 
-    	       	+ "baseMass: " + Math.round(getBaseMass() * 100.0)/100.0 + " kg   "
-       		 	+ "beginningMass: " + Math.round(beginningMass * 100.0)/100.0 + " kg   "
-    		 	+ "endMass: " + Math.round(endMass * 100.0)/100.0 + " kg   ");  	
-    	
-		// Add to the settlement
-		settlement.addOwnedVehicle(this);
-		setCoordinates(settlement.getCoordinates());
-
-		// Set initial parked location and facing at settlement.
-		findNewParkingLoc();
-
-		// Initialize operator activity spots.
-		operatorActivitySpots = spec.getOperatorActivitySpots();
-
-		// Initialize passenger activity spots.
-		passengerActivitySpots = spec.getPassengerActivitySpots();
+				"fuelCapacity: " + Math.round(fuelCapacity * 100.0)/100.0 + KG 			
+    		 	+ "cargoCapacity: " + Math.round(cargoCapacity * 100.0)/100.0 + KG
+    	       	+ "baseMass: " + Math.round(getBaseMass() * 100.0)/100.0 + KG
+       		 	+ "beginningMass: " + Math.round(beginningMass * 100.0)/100.0 + KG
+    		 	+ "endMass: " + Math.round(endMass * 100.0)/100.0 + KG);  	
 	}
-
+	
 	/**
 	 * Constructor 2 : prepares a Vehicle object for testing (called by MockVehicle)
 	 *

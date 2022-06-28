@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * BuildingConnectorManager.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-06-28
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.connection;
@@ -100,7 +100,6 @@ public class BuildingConnectorManager implements Serializable {
 			BuildingTemplate buildingTemplate = i.next();
 			int buildingID = buildingTemplate.getID();
 			Building building = buildingManager.getBuildingByTemplateID(buildingID);
-			// Building building = buildingManager.getBuilding(0);
 			if (building == null) {
 				throw new IllegalStateException(
 						"On buildingTemplate " + buildingTemplate
@@ -201,7 +200,7 @@ public class BuildingConnectorManager implements Serializable {
 	}
 
 	/**
-	 * Get the settlement.
+	 * Gets the settlement.
 	 * 
 	 * @return settlement.
 	 */
@@ -238,7 +237,7 @@ public class BuildingConnectorManager implements Serializable {
 	}
 
 	/**
-	 * Remove all building connectors to a given building.
+	 * Removes all building connectors to a given building.
 	 * 
 	 * @param building the building.
 	 */
@@ -313,8 +312,6 @@ public class BuildingConnectorManager implements Serializable {
 			}
 		}
 
-		// System.out.println("# of connectors for " + building.getNickName() + " : " +
-		// result.size());
 		return result;
 	}
 
@@ -451,7 +448,7 @@ public class BuildingConnectorManager implements Serializable {
 				newPath.addPathLocation(connectionBuilding);
 
 				// Recursively call this method with new path and connection building.
-				// TODO: how to avoid StackOverflow ?
+				// Note: how to avoid StackOverflow ?
 //				logger.config(connectionBuilding.getNickName() + " -> " + targetBuilding.getNickName() 
 //					+ " (" + endingLocation.getXLocation() + ", " + endingLocation.getYLocation() + ")");
 				bestPath = determineShortestPath(newPath, connectionBuilding, targetBuilding, endingLocation);
@@ -468,7 +465,7 @@ public class BuildingConnectorManager implements Serializable {
 	}
 
 	/**
-	 * Create building connections from a new building to the surrounding buildings.
+	 * Creates building connections from a new building to the surrounding buildings.
 	 * 
 	 * @param newBuilding the new building.
 	 */
@@ -476,12 +473,6 @@ public class BuildingConnectorManager implements Serializable {
 
 		boolean isBuildingConnector = newBuilding.hasFunction(FunctionType.BUILDING_CONNECTION);
 		boolean hasLifeSupport = newBuilding.hasFunction(FunctionType.LIFE_SUPPORT);
-
-		// boolean needEndCap = false;
-		// if (newBuilding.getBuildingType().equalsIgnoreCase("hallway")
-		// || newBuilding.getBuildingType().equalsIgnoreCase("tunnel")) {
-		// needEndCap = true;
-		// }
 
 		// Only create building connections for inhabitable buildings.
 		if (hasLifeSupport) {
@@ -495,11 +486,10 @@ public class BuildingConnectorManager implements Serializable {
 			// Determine connections at points along each of the building's four sides.
 			createBuildingConnectionsAlongSides(newBuilding);
 		}
-
 	}
 
 	/**
-	 * Create connections from the North and South ends of a building connector
+	 * Creates connections from the North and South ends of a building connector
 	 * building.
 	 * 
 	 * @param newBuilding the new building connector building.
@@ -538,7 +528,7 @@ public class BuildingConnectorManager implements Serializable {
 	}
 
 	/**
-	 * Create connections along the four sides of the new building.
+	 * Creates connections along the four sides of the new building.
 	 * 
 	 * @param newBuilding the new building.
 	 */
@@ -558,7 +548,7 @@ public class BuildingConnectorManager implements Serializable {
 	}
 
 	/**
-	 * Create building connections along a width side (front or back) of a building.
+	 * Creates building connections along a width side (front or back) of a building.
 	 * 
 	 * @param newBuilding the new building.
 	 * @param yLoc        the building-local Y location of the width side.
@@ -582,7 +572,7 @@ public class BuildingConnectorManager implements Serializable {
 	}
 
 	/**
-	 * Create building connections along a length side (left or right) of a
+	 * Creates building connections along a length side (left or right) of a
 	 * building.
 	 * 
 	 * @param newBuilding the new building.
@@ -607,7 +597,7 @@ public class BuildingConnectorManager implements Serializable {
 	}
 
 	/**
-	 * Try to create another building connection at a given location along the edge
+	 * Tries to create another building connection at a given location along the edge
 	 * of a building.
 	 * 
 	 * @param newBuilding     the new building.
@@ -705,7 +695,7 @@ public class BuildingConnectorManager implements Serializable {
 	}
 
 	/**
-	 * Check if the new connection point location is too close to an existing
+	 * Checks if the new connection point location is too close to an existing
 	 * connection point on a building.
 	 * 
 	 * @param building        the building.
@@ -800,7 +790,7 @@ public class BuildingConnectorManager implements Serializable {
 	}
 
 	/**
-	 * Prepare object for garbage collection.
+	 * Prepares object for garbage collection.
 	 */
 	public void destroy() {
 		settlement = null;
@@ -841,5 +831,4 @@ public class BuildingConnectorManager implements Serializable {
 			this.connectToBuilding = connectToBuilding;
 		}
 	}
-
 }

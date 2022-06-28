@@ -103,7 +103,5 @@ public final class LocationFormat {
 		outputMessage.append(coords.getFormattedLatitudeString());
 		outputMessage.append(' ');
 		outputMessage.append(coords.getFormattedLongitudeString());
-//		outputMessage.append(" - ");
-//		outputMessage.append(CollectionUtils.getNearbyObjectName(coords));
 	}
 }

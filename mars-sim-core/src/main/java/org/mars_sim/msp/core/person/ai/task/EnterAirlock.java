@@ -155,23 +155,19 @@ public class EnterAirlock extends Task implements Serializable {
 			return true;
 		}
 
-		else {
-			int previousZone = zone + 1;
-			LocalPosition newPos = fetchNewPos(zone);
-			if (newPos != null) {
-				if (airlock.occupy(zone, newPos, id)) {
-					if (previousZone <= 4) {
-						if (airlock.vacate(previousZone, id)) {
-							moveThere(newPos, zone);
-							return true;
-						}
-						else
-							return false;
-					}
-					else {
+		int previousZone = zone + 1;
+		LocalPosition newPos = fetchNewPos(zone);
+		if (newPos != null) {
+			if (airlock.occupy(zone, newPos, id)) {
+				if (previousZone <= 4) {
+					if (airlock.vacate(previousZone, id)) {
 						moveThere(newPos, zone);
 						return true;
 					}
+				}
+				else {
+					moveThere(newPos, zone);
+					return true;
 				}
 			}
 		}
