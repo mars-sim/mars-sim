@@ -37,6 +37,7 @@ import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentInventory;
 import org.mars_sim.msp.core.equipment.EquipmentOwner;
 import org.mars_sim.msp.core.equipment.EquipmentType;
+import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.Mind;
@@ -54,9 +55,13 @@ import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.role.Role;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.person.ai.social.Relation;
+import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.meta.WorkoutMeta;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskManager;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskSchedule;
+import org.mars_sim.msp.core.person.health.Complaint;
+import org.mars_sim.msp.core.person.health.HealthProblem;
+import org.mars_sim.msp.core.person.health.MedicalEvent;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.science.ScienceType;
@@ -70,6 +75,7 @@ import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.Temporal;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Crewable;
+import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleType;
 
@@ -2261,6 +2267,30 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 		return false;
 	}
 
+	/**
+	 * Rescues the person from the rover.
+	 * Note: this is more like a hack, rather than a legitimate 
+	 * way of transferring a person through the airlock into the settlement.			
+	 *
+	 * @param r the rover
+	 * @param p the person
+	 * @param s the settlement
+	 */
+	public boolean rescueOperation(Rover r, Person p, Settlement s) {
+		boolean result = false;
+		
+		if (p.isDeclaredDead()) {
+			result = p.transfer(s);
+		}
+		else if (r != null || p.isOutside()) {
+			result = p.transfer(s);
+		}
+
+		EVAOperation.send2Medical(p, s);
+		
+		return result;
+	}
+	
 	/**
 	 * Gets the relation instance 
 	 * 

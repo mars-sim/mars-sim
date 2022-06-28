@@ -6,28 +6,24 @@
  */
 package org.mars_sim.msp.core.goods;
 
-import java.util.Objects;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.mars_sim.msp.core.food.FoodProductionProcess;
 import org.mars_sim.msp.core.food.FoodProductionProcessItem;
-import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
-import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * This represents how a Amount Resource can be traded.
  */
 class AmountResourceGood extends Good {
 	
-    // TODO, move these to the AmountResource class via XML config
+	private static final long serialVersionUID = 1L;
+	
+	// TODO, move these to the AmountResource class via XML config
     private static final double CO2_VALUE = 0.0001;
 	private static final double CL_VALUE = 0.01;
 	private static final double ICE_VALUE = 1.5;

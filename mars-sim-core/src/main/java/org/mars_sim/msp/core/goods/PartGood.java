@@ -16,7 +16,8 @@ import org.mars_sim.msp.core.structure.Settlement;
  * This class is the representation of a Part instance as a Good that is tradable.
  */
 class PartGood extends Good {
-
+	
+	private static final long serialVersionUID = 1L;
     	
 	private static final int VEHICLE_PART_VALUE = 3;
 	private static final double ITEM_VALUE = 1.1D;

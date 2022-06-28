@@ -93,7 +93,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<!-- Default: varies according to the type of vehicle -->
 		<base-speed value="35.0" />
 		
-		<!-- Average power exerted when operating at base speed [kW](required) -->
+		<!-- Average power exerted when operating at base speed under normal condition [kW](required) -->
 		<!-- Default: varies according to the type of vehicle -->
 		<average-power value="20" />
 		

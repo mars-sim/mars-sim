@@ -44,7 +44,7 @@ public abstract class Good implements Serializable, Comparable<Good> {
 	private static final double SKILL_FACTOR = 1D;
 	private static final double TECH_FACTOR = 2D;
 
-	//TODO Initialise explictly
+	//TODO Initialise explicitly
 	protected static MissionManager missionManager = Simulation.instance().getMissionManager();
 
 	// Data members
@@ -86,7 +86,7 @@ public abstract class Good implements Serializable, Comparable<Good> {
 		manufactureProcessInfos = ManufactureUtil.getManufactureProcessesWithGivenOutput(name);
 		foodProductionProcessInfos = FoodProductionUtil.getFoodProductionProcessesWithGivenOutput(name);
 
-		// Compute the cost of output
+		// Compute the base cost
 		computeBaseCost();
 		// Compute the cost of output
 		computeOutputCost();
@@ -470,7 +470,6 @@ public abstract class Good implements Serializable, Comparable<Good> {
      */
 	public abstract GoodType getGoodType();
 
-	
 	/**
 	 * Gets the number of this good being in use or being produced at this moment at
 	 * the settlement.
@@ -480,8 +479,9 @@ public abstract class Good implements Serializable, Comparable<Good> {
 	 */
 	public abstract double getNumberForSettlement(Settlement settlement);
 
-	    /**
-     * Get a stream of all Vehciles on Missions from the target Settlement
+	/**
+     * Gets a stream of all Vehicles on Missions from the target Settlement.
+     * 
      * @param settlement Settlement being checked
      */
     protected Stream<Vehicle> getVehiclesOnMissions(Settlement settlement) {
@@ -492,7 +492,8 @@ public abstract class Good implements Serializable, Comparable<Good> {
     }
     
     /**
-     * Get a stream of Person on EVA at the Settlement
+     * Gets a stream of Person on EVA at the Settlement.
+     * 
      * @param settlement
      * @return
      */

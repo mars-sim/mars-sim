@@ -15,6 +15,8 @@ import org.mars_sim.msp.core.structure.Settlement;
  */
 class RobotGood extends Good {
 	
+	private static final long serialVersionUID = 1L;
+	
 	private static final int ROBOT_VALUE = 200;
 
     private RobotType robotType;

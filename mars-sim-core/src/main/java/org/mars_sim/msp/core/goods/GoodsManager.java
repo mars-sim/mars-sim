@@ -2920,7 +2920,7 @@ public class GoodsManager implements Serializable, Temporal {
 	 */
 	private double determineVehicleGoodValue(Good good, double supply, boolean useCache) {
 //		boolean buy = false;
-		String vehicleType = good.getName();
+//		String vehicleType = good.getName();
 		
 		int id = good.getID();
 		double previousDemand = getDemandValue(good);
@@ -3431,7 +3431,7 @@ public class GoodsManager implements Serializable, Temporal {
 	/**
 	 * Gets the range of the vehicle type.
 	 *
-	 * @param v {@link VehicleDescription}.
+	 * @param v {@link VehicleSpec}.
 	 * @return range (km)
 	 */
 	private double getVehicleRange(VehicleSpec v) {
