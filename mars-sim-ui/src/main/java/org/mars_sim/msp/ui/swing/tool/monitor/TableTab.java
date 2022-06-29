@@ -175,7 +175,6 @@ abstract class TableTab extends MonitorTab {
 				 * deleted.
 				 */
 				public void tableChanged(TableModelEvent e) {
-					// System.out.println("table is " + table.getName());
 
 					if (e.getType() == TableModelEvent.DELETE) {
 						// Store selected row objects.
@@ -190,7 +189,7 @@ abstract class TableTab extends MonitorTab {
 						while (i.hasNext()) {
 							Object selectedObject = i.next();
 							for (int x = 0; x < model.getRowCount(); x++) {
-								if (selectedObject == model.getObject(x))
+								if (selectedObject.equals(model.getObject(x)))
 									addRowSelectionInterval(x, x);
 							}
 						}
@@ -367,9 +366,8 @@ abstract class TableTab extends MonitorTab {
 //                	CropTableModel model = (CropTableModel) (table.getModel());
 //                	result = model.getToolTip(row, column);
 //                }
-//
-//                else
 				result = cell.toString();
+				System.out.println("(" + row + ", " + column + "): " + result);
 			}
 		}
 		return result;

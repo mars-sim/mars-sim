@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * BuildingTableModel.java
- * @date 2021-12-07
+ * @date 2022-06-28
  * @author Barry Evans
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
@@ -80,6 +80,12 @@ public class BuildingTableModel extends UnitTableModel {
 		columnTypes[POWER_REQUIRED] = Double.class;
 	}
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param settlement
+	 * @throws Exception
+	 */
 	public BuildingTableModel(Settlement settlement) throws Exception {
 		super(Msg.getString("BuildingTableModel.nameBuildings", //$NON-NLS-1$
 				settlement.getName()),
@@ -96,7 +102,7 @@ public class BuildingTableModel extends UnitTableModel {
 	}
 
 	/**
-	 * Catch unit update event.
+	 * Catches unit update event.
 	 *
 	 * @param event the unit event.
 	 */
@@ -138,7 +144,7 @@ public class BuildingTableModel extends UnitTableModel {
 	}
 
 	/**
-	 * Return the value of a Cell
+	 * Returns the value of a Cell.
 	 *
 	 * @param rowIndex    Row index of the cell.
 	 * @param columnIndex Column index of the cell.
@@ -194,7 +200,7 @@ public class BuildingTableModel extends UnitTableModel {
 	private class LocalUnitManagerListener implements UnitManagerListener {
 
 		/**
-		 * Catch unit manager update event.
+		 * Catches unit manager update event.
 		 *
 		 * @param event the unit event.
 		 */
@@ -212,6 +218,9 @@ public class BuildingTableModel extends UnitTableModel {
 		}
 	}
 	
+	/**
+	 * The class for updating the table cell.
+	 */
 	private class BuildingTableCellUpdater implements Runnable {
 		private int row;
 		private int column;

@@ -66,10 +66,10 @@ public abstract class MonitorTab extends JPanel {
 		Iterator<?> it = rows.iterator();
 		while (it.hasNext()) {
 			Object selected = it.next();
-			if (selected instanceof Unit)
+			if (selected instanceof Unit) {
 				desktop.openUnitWindow((Unit) selected, false);
+			}
 			else if (selected instanceof Mission) {
-//				((MissionWindow) desktop.getToolWindow(MissionWindow.NAME)).selectMission((Mission) selected);
 				desktop.openToolWindow(MissionWindow.NAME, (Mission) selected);
 			}
 		}
