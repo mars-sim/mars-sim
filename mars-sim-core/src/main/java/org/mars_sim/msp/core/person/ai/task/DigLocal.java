@@ -81,8 +81,10 @@ implements Serializable {
         this.resourceName = ResourceUtil.findAmountResourceName(resourceID);
         this.collectionPhase = collectionPhase;
 
-        if (!person.isFit() || isReturning())
-        	return;
+        if (!person.isFit()) {
+			checkLocation();
+			return;
+		}
 
         // To dig local a person must be in a Settlement
         if (!person.isInSettlement()) {
@@ -108,8 +110,8 @@ implements Serializable {
         if (transferContainer() == null) {
         	logger.log(person, Level.WARNING, 4_000, "No " + containerType.name()
         				+ " for " + resourceName + " are available.");
-        	if (isReturning())
-        	    return;
+        	checkLocation();
+        	return;
         }
 
         // Determine digging location.
@@ -118,6 +120,10 @@ implements Serializable {
 	        if (diggingLoc != null) {
 	        	setOutsideSiteLocation(diggingLoc);
 	           	logger.info(person, 4_000L, "Selected an outside digging site at " + diggingLoc + ".");
+	        }
+	        else {
+	        	checkLocation();
+	        	return;
 	        }
         }
 
@@ -128,18 +134,14 @@ implements Serializable {
     }
 
 	/**
-	 * Is the person supposed to be coming back inside ?
+	 * Checks to see if the person is supposed to be outside.
 	 * 
-	 * @return
 	 */
-	private boolean isReturning() {
-		if (person.isOutside()) {
+	private void checkLocation() {
+		if (person.isOutside())
             setPhase(WALK_BACK_INSIDE);
-            return true;
-		}
     	else
         	endTask();
-    	return false;
 	}
 	
 	/**
@@ -198,18 +200,18 @@ implements Serializable {
 
 		// Check for radiation exposure during the EVA operation.
 		if (isDone() || isRadiationDetected(time)) {
-			isReturning();
+        	checkLocation();
 			return time;
 		}
 
         // Check if there is any EVA problems and if on-site time is over.
 		if (shouldEndEVAOperation() || addTimeOnSite(time)) {
-			isReturning();
+			checkLocation();
 			return time;
 		}
 
 		if (!person.isFit()) {
-			isReturning();
+			checkLocation();
 			return time;
 		}
 
@@ -223,7 +225,7 @@ implements Serializable {
         if (aBag == null) {
         	logger.log(person, Level.WARNING, 4_000, "Has no " + containerType.getName()
         			+ " for " + resourceName);
-        	isReturning();
+        	checkLocation();
         	return 0;
         }
 
@@ -274,12 +276,11 @@ implements Serializable {
         addExperience(time);
 
         if (finishedCollecting) {
-
             logger.log(person, Level.FINE, 4_000, "Collected a total of "
             	+ Math.round(totalCollected*100D)/100D
         		+ " kg " + resourceName + ".");
 
-            isReturning();
+            checkLocation();
          	return 0;
     	}
 
@@ -329,8 +330,6 @@ implements Serializable {
      * @return digging X and Y location outside settlement.
      */
     private LocalPosition determineDiggingLocation() {
-
-        LocalPosition newLocation = null;
         boolean goodLocation = false;
         for (int x = 0; (x < 5) && !goodLocation; x++) {
             for (int y = 0; (y < 10) && !goodLocation; y++) {
@@ -341,13 +340,16 @@ implements Serializable {
                     double radianDirection = RandomUtil.getRandomDouble(Math.PI * 2D);
                     LocalPosition boundedLocalPoint = boundedObject.getPosition().getPosition(distance, radianDirection);
 
-                    newLocation = LocalAreaUtil.getLocalRelativePosition(boundedLocalPoint, boundedObject);
+                    LocalPosition newLocation = LocalAreaUtil.getLocalRelativePosition(boundedLocalPoint, boundedObject);
                     goodLocation = LocalAreaUtil.isPositionCollisionFree(newLocation, person.getCoordinates());
+                    
+                    if (goodLocation)
+                    	return newLocation;
                 }
             }
         }
 
-        return newLocation;
+        return null;
     }
 
     /**
@@ -355,7 +357,9 @@ implements Serializable {
      */
     @Override
     protected void clearDown() {
-    	if (!isReturning()) {
+		if (person.isOutside())
+            setPhase(WALK_BACK_INSIDE);
+    	else {
 	    	Container bag = person.findContainer(containerType, false, resourceID);
 	    	if (bag == null)
 	    		return;

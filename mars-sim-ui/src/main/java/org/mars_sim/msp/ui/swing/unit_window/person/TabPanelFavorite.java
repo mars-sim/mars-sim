@@ -160,10 +160,9 @@ extends TabPanel {
 		
 		// Create scroll panel
 		WebScrollPane scrollPane = new WebScrollPane();
-//		scrollPane.setBorder(new MarsPanelBorder());
 		scrollPane.getVerticalScrollBar().setUnitIncrement(10);
 		scrollPane.setHorizontalScrollBarPolicy(WebScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		content.add(scrollPane, BorderLayout.CENTER);
+		topPanel.add(scrollPane, BorderLayout.CENTER);
 		
 		// Create skill table
 		tableModel = new PreferenceTableModel(person);

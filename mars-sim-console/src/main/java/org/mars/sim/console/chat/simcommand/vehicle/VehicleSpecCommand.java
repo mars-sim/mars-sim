@@ -89,7 +89,7 @@ public class VehicleSpecCommand extends ChatCommand {
 		}	
 
 		if (isRover || isDrone) {
-			double cargo = ((Rover) source).getCargoCapacity();
+			double cargo = source.getCargoCapacity();
 			buffer.appendLabeledString("Cargo Capacity", String.format(CommandHelper.KG_FORMAT, cargo));
 		}
 

@@ -40,7 +40,7 @@ public abstract class TabPanel extends JScrollPane {
 
 	// Font used in tab panel title
 	protected static final Font TITLE_FONT = new Font("Serif", Font.BOLD, 16);
-	protected static final Font SUBTITLE_FONT = new Font("Serif", Font.BOLD, 12);
+	protected static final Font SUBTITLE_FONT = new Font("Serif", Font.BOLD, 14);
 	
 	// Default Decimal formatter
 	protected static final DecimalFormat DECIMAL_PLACES3 = new DecimalFormat("0.000");

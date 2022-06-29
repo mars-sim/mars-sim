@@ -1375,29 +1375,23 @@ public abstract class Vehicle extends Unit
 			return false;
 		}
 
-//		int msol = pulse.getMarsTime().getMillisolInt();
-//		// Checks status.
-//		checkStatus();
-
 		if (primaryStatus == StatusType.MOVING) {
 			// Assume the wear and tear factor is at 100% by being used in a mission
 			malfunctionManager.activeTimePassing(pulse.getElapsed());
 		}
 
 		// If it's back at a settlement and is NOT in a garage
-		else if (LocationStateType.WITHIN_SETTLEMENT_VICINITY == getLocationStateType()) {
-			if (!haveStatusType(StatusType.MAINTENANCE)) {
-				// Assume the wear and tear factor is 75% less by being exposed outdoor
-				malfunctionManager.activeTimePassing(pulse.getElapsed() * .25);
-			}
+		else if (LocationStateType.WITHIN_SETTLEMENT_VICINITY == getLocationStateType()
+			&& !haveStatusType(StatusType.MAINTENANCE)) {
+			// Assume the wear and tear factor is 75% less by being exposed outdoor
+			malfunctionManager.activeTimePassing(pulse.getElapsed() * .25);
 		}
 
 		// Make sure reservedForMaintenance is false if vehicle needs no maintenance.
-		if (haveStatusType(StatusType.MAINTENANCE)) {
-			if (malfunctionManager.getEffectiveTimeSinceLastMaintenance() <= 0D) {
-				setReservedForMaintenance(false);
-				removeSecondaryStatus(StatusType.MAINTENANCE);
-			}
+		if (haveStatusType(StatusType.MAINTENANCE) 
+			&& malfunctionManager.getEffectiveTimeSinceLastMaintenance() <= 0D) {
+			setReservedForMaintenance(false);
+			removeSecondaryStatus(StatusType.MAINTENANCE);
 		}
 		else { // not under maintenance
 			// Note: during maintenance, it doesn't need to be checking for malfunction.
@@ -1421,20 +1415,17 @@ public abstract class Vehicle extends Unit
 	 * Resets the vehicle reservation status
 	 */
 	public void correctVehicleReservation() {
-		if (isReservedMission) {
+		if (isReservedMission
 			// Set reserved for mission to false if the vehicle is not associated with a
 			// mission.
-			if (missionManager.getMissionForVehicle(this) == null) {
+			&& missionManager.getMissionForVehicle(this) == null) {
 				logger.log(this, Level.FINE, 5000,
 						"Found reserved for an non-existing mission. Untagging it.");
 				setReservedForMission(false);
-			}
-		} else {
-			if (missionManager.getMissionForVehicle(this) != null) {
+		} else if (missionManager.getMissionForVehicle(this) != null) {
 				logger.log(this, Level.FINE, 5000,
 						"On a mission but not registered as mission reserved. Correcting it.");
 				setReservedForMission(true);
-			}
 		}
 	}
 

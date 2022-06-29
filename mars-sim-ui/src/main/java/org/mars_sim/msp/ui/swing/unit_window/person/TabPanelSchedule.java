@@ -174,8 +174,6 @@ public class TabPanelSchedule extends TabPanel {
 		content.add(topPanel, BorderLayout.NORTH);
 		topPanel.add(buttonPane, BorderLayout.NORTH);
 
-		
-//		today = taskSchedule.getSolCache();
 		today = marsClock.getMissionSol();
 		
 		todayInteger = (Integer) today;
@@ -188,13 +186,6 @@ public class TabPanelSchedule extends TabPanel {
 				solList.add(i);
 		}
 		
-//		for (int key : allActivities.keySet()) {
-//			solList.add(key);
-//		}
-//
-//		if (!solList.contains(today))
-//			solList.add(today);
-
 		// Create comboBoxModel
 		Collections.sort(solList, Collections.reverseOrder());
 		comboBoxModel = new DefaultComboBoxModel<Object>();
@@ -264,8 +255,7 @@ public class TabPanelSchedule extends TabPanel {
 
 		// Create attribute scroll panel
 		WebScrollPane scrollPanel = new WebScrollPane();
-//		scrollPanel.setBorder(new MarsPanelBorder());
-		content.add(scrollPanel);
+		topPanel.add(scrollPanel);
 
 		// Create schedule table
 		table = new ZebraJTable(scheduleTableModel);

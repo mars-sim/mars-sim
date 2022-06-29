@@ -93,25 +93,28 @@ public class TabPanelGeneral extends TabPanel {
 
 		// Prepare birth location textfield
 		String birthLocation = person.getBirthplace();
-		addTextField(infoPanel, Msg.getString("TabPanelGeneral.birthLocation"), Conversion.capitalize(birthLocation), null);		
+		addTextField(infoPanel, Msg.getString("TabPanelGeneral.birthLocation"), //$NON-NLS-1$
+				Conversion.capitalize(birthLocation), null);		
 		
 		// Prepare birth location textfield
 		String country = person.getCountry();
-		addTextField(infoPanel, Msg.getString("TabPanelGeneral.country"), Conversion.capitalize(country), null);
+		addTextField(infoPanel, Msg.getString("TabPanelGeneral.country"), //$NON-NLS-1$
+				Conversion.capitalize(country), null);
 
 		// Prepare weight textfield
-		addTextField(infoPanel, Msg.getString("TabPanelGeneral.weight"),
+		addTextField(infoPanel, Msg.getString("TabPanelGeneral.weight"), //$NON-NLS-1$
 				  							  DECIMAL_KG.format(person.getBaseMass()), null);
 		
 		// Prepare height name label
-		addTextField(infoPanel, Msg.getString("TabPanelGeneral.height"), 
+		addTextField(infoPanel, Msg.getString("TabPanelGeneral.height"), //$NON-NLS-1$
 					 DECIMAL_PLACES1.format(person.getHeight()) + " m", null);
 
 		// Prepare BMI label
 		double height = person.getHeight()/100D;
 		double heightSquared = height*height;
 		double BMI = person.getBaseMass()/heightSquared;
-		// categorize according to general weight class
+		
+		// Categorize according to general weight class
 		String weightClass = "";
 		if (BMI <= 18.5) {weightClass = Msg.getString("TabPanelGeneral.bmi.underweight");} //$NON-NLS-1$
 		if (BMI > 18.5) {weightClass = Msg.getString("TabPanelGeneral.bmi.normal");} //$NON-NLS-1$
@@ -122,15 +125,17 @@ public class TabPanelGeneral extends TabPanel {
 
 		String BMItext = Msg.getString("TabPanelGeneral.bmiValue", //$NON-NLS-1$
 				Math.round(BMI*100.0)/100.0, weightClass);
-		addTextField(infoPanel, Msg.getString("TabPanelGeneral.bmi"), BMItext, null);
+		addTextField(infoPanel, Msg.getString("TabPanelGeneral.bmi"), //$NON-NLS-1$
+				BMItext, null); 
 		
 		// Prepare loading cap label
-		addTextField(infoPanel, Msg.getString("TabPanelGeneral.loadCap"), DECIMAL_KG.format(person.getCarryingCapacity()), null);
+		addTextField(infoPanel, Msg.getString("TabPanelGeneral.loadCap"), //$NON-NLS-1$
+				DECIMAL_KG.format(person.getCarryingCapacity()), null); 
 		
 		// Use spring panel layout.
 		SpringUtilities.makeCompactGrid(infoPanel,
 		                                8, 2, //rows, cols
-		                                50, 10,        //initX, initY
+		                                50, 2,        //initX, initY
 		                                XPAD_DEFAULT, YPAD_DEFAULT);       //xPad, yPad
 		
 		MBTIPersonality p = person.getMind().getMBTI();
@@ -143,9 +148,10 @@ public class TabPanelGeneral extends TabPanel {
 	
 	
 	/**
-	 * Creates the MBTI text area
+	 * Creates the MBTI text area.
 	 * 
 	 * @param p an instance of MBTIPersonality
+	 * @param content
 	 */
 	private void createMBTI(MBTIPersonality p, JPanel content) {
 		
@@ -169,11 +175,9 @@ public class TabPanelGeneral extends TabPanel {
 		ta.setSelectedTextColor(Color.ORANGE.darker());
 		ta.setFont(MONOSPACED_PLAIN_12);
 		ta.setColumns(13);
-//		specialtyTA.setSize(100, 60);
 		ta.setBorder(new MarsPanelBorder());
 		
 		WebPanel mbtiPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
-//		mbtiPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		mbtiPanel.add(ta);
 		
 		WebPanel listPanel = new WebPanel(new BorderLayout(1, 1));
@@ -233,7 +237,6 @@ public class TabPanelGeneral extends TabPanel {
 		}
 	
 		for (int i = 0; i < 4; i++) {
-//			StringBuffer sb = new StringBuffer();
 			String s = types[i];
 			int size = 14 - s.length();
 			while (size > 0) {
@@ -249,7 +252,9 @@ public class TabPanelGeneral extends TabPanel {
 	}
 
 	/**
-	 * Create the text area for the Big Five
+	 * Creates the text area for the Big Five.
+	 * 
+	 * @param content
 	 */
 	private void createBigFive(JPanel content) {
 		PersonalityTraitManager p = person.getMind().getTraitManager();
@@ -268,9 +273,14 @@ public class TabPanelGeneral extends TabPanel {
 		ta.setFont(MONOSPACED_PLAIN_12);
 		ta.setSelectedTextColor(Color.ORANGE.darker());
 		ta.setColumns(14);
-//		specialtyTA.setSize(100, 60);
 		ta.setBorder(new MarsPanelBorder());
 		
+		String tip =  "<html>          Openness : 0 to 100" 
+				  	  + "<br> Conscientiousness : 0 to 100"
+				  	  + "<br>      Extraversion : 0 to 100"
+				  	  + "<br>       Neuroticism : 0 to 100</html>";
+		ta.setToolTipText(tip);
+	
 		WebPanel listPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 		listPanel.setToolTipText(Msg.getString("TabPanelGeneral.bigFive.label"));//$NON-NLS-1$
 		listPanel.setSize(110, 150);
@@ -285,7 +295,6 @@ public class TabPanelGeneral extends TabPanel {
 		
     
 		for (int i = 0; i < 5; i++) {
-//			StringBuffer sb = new StringBuffer();
 			String s = types[i];
 			int size = 18 - s.length();
 			while (size > 0) {
@@ -297,7 +306,6 @@ public class TabPanelGeneral extends TabPanel {
 				//if it's NOT the last one
 				ta.append("\n");
 		}
-		
 	}
 	
 	/**
@@ -312,7 +320,7 @@ public class TabPanelGeneral extends TabPanel {
 		String birthdate = Msg.getString(
 			TAB_BIRTH_DATE_AGE,
 			birthDate,
-			Integer.toString(person.getAge())); //$NON-NLS-1$
+			Integer.toString(person.getAge())); 
 				
 		birthDateTF.setText(birthdate); 
 	}
