@@ -97,45 +97,6 @@ public class GoodsUtil {
             g.computeCost();
         }
     }
-
-
-    /**
-     * Gets a good object for a given resource.
-     *
-     * @param resource the resource.
-     * @return good for the resource.
-     */
-    public static Good getResourceGood(Resource resource) {
-        if (resource == null) {
-            throw new IllegalArgumentException("resource is NOT supposed to be null.");
-        }
-
-        return getResourceGood(resource.getID());
-    }
-
-    /**
-     * Gets a good object for a given resource.
-     *
-     * @param id the resource id.
-     * @return good for the resource.
-     */
-    public static Good getResourceGood(int id) {
-        return getGoodsMap().get(id);
-    }
-
-    
-    /**
-     * Does the goods list contain this good ?
-     * 
-     * @param good
-     * @return
-     */
-	public static boolean containsGood(Good good) {
-		populateGoods();
-		if (goodsList.contains(good))
-			return true;
-		return false;
-	}
 	
     /**
      * Gets a good object for a given equipment class.
@@ -149,21 +110,10 @@ public class GoodsUtil {
         }
         int id = EquipmentType.getResourceID(equipmentClass);
         if (id > 0) {
-            return getEquipmentGood(id);
+            return getGood(id);
         }
 
         return null;
-    }
-
-
-    /**
-     * Gets a good object for a given equipment id.
-     *
-     * @param id
-     * @return
-     */
-    public static Good getEquipmentGood(int id) {
-        return getGoodsMap().get(id);
     }
 
 
@@ -315,6 +265,15 @@ public class GoodsUtil {
          return newMap;
     }
 
+    /**
+     * Gets a good object for a given resource id.
+     *
+     * @param id the resource id.
+     * @return good for the resource.
+     */
+    public static Good getGood(int id) {
+        return getGoodsMap().get(id);
+    }
 
     /**
      * Gets the good id.

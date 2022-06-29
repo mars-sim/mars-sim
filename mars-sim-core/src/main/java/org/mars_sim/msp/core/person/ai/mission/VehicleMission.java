@@ -1185,7 +1185,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 
 			else
 				logger.warning(vehicle, "Phase: " + getPhase() + ": unable to process the resource '"
-						+ GoodsUtil.getResourceGood(id) + "'.");
+						+ GoodsUtil.getGood(id) + "'.");
 		}
 		return result;
 	}

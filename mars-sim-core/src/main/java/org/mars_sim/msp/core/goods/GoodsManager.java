@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -51,6 +52,7 @@ import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ItemType;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
+import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -71,9 +73,7 @@ import org.mars_sim.msp.core.structure.construction.ConstructionStage;
 import org.mars_sim.msp.core.structure.construction.ConstructionStageInfo;
 import org.mars_sim.msp.core.structure.construction.ConstructionUtil;
 import org.mars_sim.msp.core.structure.construction.ConstructionValues;
-import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.time.Temporal;
 import org.mars_sim.msp.core.vehicle.Drone;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -84,7 +84,7 @@ import org.mars_sim.msp.core.vehicle.VehicleType;
 /**
  * A manager for computing the values of goods at a settlement.
  */
-public class GoodsManager implements Serializable, Temporal {
+public class GoodsManager implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 12L;
@@ -261,10 +261,7 @@ public class GoodsManager implements Serializable, Temporal {
 	private Map<Integer, Double> goodsValues = new HashMap<>();
 	private Map<Integer, Double> tradeCache = new HashMap<>();
 
-	private Map<Integer, Double> amountDemandCache = new HashMap<>();
-	private Map<Integer, Double> partDemandCache = new HashMap<>();
-	private Map<Integer, Double> vehicleDemandCache = new HashMap<>();
-	private Map<Integer, Double> equipmentDemandCache = new HashMap<>();
+	private Map<Integer, Double> demandCache = new HashMap<>();
 
 	private Map<Integer, Integer> deflationIndexMap = new HashMap<>();
 
@@ -310,15 +307,6 @@ public class GoodsManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * Checks if goods manager has been initialized.
-	 *
-	 * @return initialized.
-	 */
-	public boolean isInitialized() {
-		return initialized;
-	}
-
-	/**
 	 * Populates the cache maps.
 	 */
 	private void populateGoodsValues() {
@@ -335,7 +323,7 @@ public class GoodsManager implements Serializable, Temporal {
 		Iterator<Integer> r = ResourceUtil.getIDs().iterator();
 		while (r.hasNext()) {
 			int id = r.next();
-			amountDemandCache.put(id, INITIAL_AMOUNT_DEMAND);
+			demandCache.put(id, INITIAL_AMOUNT_DEMAND);
 			amountSupplyCache.put(id, INITIAL_AMOUNT_SUPPLY);
 		}
 
@@ -343,14 +331,14 @@ public class GoodsManager implements Serializable, Temporal {
 		Iterator<Integer> p = ItemResourceUtil.getItemIDs().iterator();
 		while (p.hasNext()) {
 			int id = p.next();
-			partDemandCache.put(id, INITIAL_PART_DEMAND);
+			demandCache.put(id, INITIAL_PART_DEMAND);
 			partSupplyCache.put(id, INITIAL_PART_SUPPLY);
 		}
 
 		// Create equipment supply and demand cache.
 		for(EquipmentType eType : EquipmentType.values()) {
 			int id = EquipmentType.getResourceID(eType);
-			equipmentDemandCache.put(id, INITIAL_EQUIPMENT_DEMAND);
+			demandCache.put(id, INITIAL_EQUIPMENT_DEMAND);
 			equipmentSupplyCache.put(id, INITIAL_EQUIPMENT_SUPPLY);
 		}
 
@@ -358,13 +346,15 @@ public class GoodsManager implements Serializable, Temporal {
 		Iterator<Integer> v = VehicleType.getIDs().iterator();
 		while (v.hasNext()) {
 			int id = v.next();
-			vehicleDemandCache.put(id, INITIAL_VEHICLE_DEMAND);
+			demandCache.put(id, INITIAL_VEHICLE_DEMAND);
 			vehicleSupplyCache.put(id, INITIAL_VEHICLE_SUPPLY);
 		}
 
-		// Create vehicle caches.
-//		vehicleBuyValueCache = new HashMap<>();
-//		vehicleSellValueCache = new HashMap<>();
+		// Create Robot caches
+		for(RobotType rType : RobotType.values()) {
+			int id = RobotType.getResourceID(rType);
+			demandCache.put(id, 10D);
+		}
 	}
 
 	/**
@@ -378,31 +368,36 @@ public class GoodsManager implements Serializable, Temporal {
 			for (VehicleType type : VehicleType.values()) {
 				exclusionBuyList.add(GoodsUtil.getVehicleGood(type));
 			}
-			exclusionBuyList.add(GoodsUtil.getResourceGood(ResourceUtil.regolithID));
-			exclusionBuyList.add(GoodsUtil.getResourceGood(ResourceUtil.iceID));
-			exclusionBuyList.add(GoodsUtil.getResourceGood(ResourceUtil.co2ID));
-			exclusionBuyList.add(GoodsUtil.getResourceGood(ResourceUtil.coID));
-			exclusionBuyList.add(GoodsUtil.getResourceGood(ResourceUtil.sandID));
-			exclusionBuyList.add(GoodsUtil.getResourceGood(ResourceUtil.greyWaterID));
-			exclusionBuyList.add(GoodsUtil.getResourceGood(ResourceUtil.blackWaterID));
-			exclusionBuyList.add(GoodsUtil.getResourceGood(ResourceUtil.compostID));
-			exclusionBuyList.add(GoodsUtil.getResourceGood(ResourceUtil.eWasteID));
-			exclusionBuyList.add(GoodsUtil.getResourceGood(ResourceUtil.toxicWasteID));
-			exclusionBuyList.add(GoodsUtil.getResourceGood(ResourceUtil.cropWasteID));
+			exclusionBuyList.add(GoodsUtil.getGood(ResourceUtil.regolithID));
+			exclusionBuyList.add(GoodsUtil.getGood(ResourceUtil.iceID));
+			exclusionBuyList.add(GoodsUtil.getGood(ResourceUtil.co2ID));
+			exclusionBuyList.add(GoodsUtil.getGood(ResourceUtil.coID));
+			exclusionBuyList.add(GoodsUtil.getGood(ResourceUtil.sandID));
+			exclusionBuyList.add(GoodsUtil.getGood(ResourceUtil.greyWaterID));
+			exclusionBuyList.add(GoodsUtil.getGood(ResourceUtil.blackWaterID));
+			exclusionBuyList.add(GoodsUtil.getGood(ResourceUtil.compostID));
+			exclusionBuyList.add(GoodsUtil.getGood(ResourceUtil.eWasteID));
+			exclusionBuyList.add(GoodsUtil.getGood(ResourceUtil.toxicWasteID));
+			exclusionBuyList.add(GoodsUtil.getGood(ResourceUtil.cropWasteID));
 			// Note: add vehicles to this list ?
 		}
 		return exclusionBuyList;
 	}
 
 	/**
-	 * Time passing
-	 *
-	 * @param time the amount of time passing (millisols).
+	 * Update the Good values of all good.
 	 */
-	@Override
-	public boolean timePassing(ClockPulse pulse) {
+	public void updateGoodValues() {
+ 		// Update the goods value gradually with the use of buffers
+		for(Good g: GoodsUtil.getGoodsList()) {
+			determineGoodValue(g);
+			
+			if (initialized) {
+				g.adjustGoodValue();
+			}
+		}
+				
 		initialized = true;
-		return true;
 	}
 
 	/**
@@ -546,7 +541,7 @@ public class GoodsManager implements Serializable, Temporal {
 		}
 
 		// Save the goods demand
-		amountDemandCache.put(id, totalDemand);
+		setDemandValue(good, totalDemand);
 		
 		// Calculate total supply
 		totalSupply = limitMaxMin(getAverageAmountSupply(settlement.getAmountResourceStored(id), numSol), MIN_SUPPLY, MAX_SUPPLY);
@@ -670,7 +665,7 @@ public class GoodsManager implements Serializable, Temporal {
 
 		for (int i : deflationIndexMap.keySet()) {
 			if (id != i) {
-				if (type == GoodsUtil.getResourceGood(i).getCategory()) {
+				if (type == GoodsUtil.getGood(i).getCategory()) {
 					// This good is of the same category as the one that cause the
 					// inflation/deflation
 					int oldIndex = deflationIndexMap.get(i);
@@ -792,8 +787,8 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @param solElapsed
 	 * @return
 	 */
-	private double getAverageItemDemand(int resource, int solElapsed) {
-		double aveDemand = getPartDemandValue(resource) / solElapsed;
+	private double getAverageItemDemand(Good resource, int solElapsed) {
+		double aveDemand = getDemandValue(resource) / solElapsed;
 		return Math.min(500, aveDemand);
 	}
 
@@ -1483,7 +1478,7 @@ public class GoodsManager implements Serializable, Temporal {
 				Integer output = i.next();
 				double outputRate = process.getMaxOutputResourceRate(output);
 				if (!process.isWasteOutputResource(resource)) {
-					outputValue += (getAmountDemandValue(GoodsUtil.getResourceGood(output)) * outputRate);
+					outputValue += (getDemandValue(GoodsUtil.getGood(output)) * outputRate);
 				}
 			}
 
@@ -1768,7 +1763,6 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @param resource the amount resource.
 	 * @return demand (kg)
 	 */
-
 	private double getResourceDessertDemand(int resource) {
 		double demand = 0D;
 
@@ -2124,7 +2118,7 @@ public class GoodsManager implements Serializable, Temporal {
 
 		Part part = (Part) ItemResourceUtil.findItemResource(id);
 
-		average = getAverageItemDemand(id, numSol);
+		average = getAverageItemDemand(good, numSol);
 
 		// Get demand for a part.
 		// NOTE: the following estimates are for each orbit (Martian year) :
@@ -2138,17 +2132,17 @@ public class GoodsManager implements Serializable, Temporal {
 			// Add construction site demand.
 			+ getPartConstructionSiteDemand(id)
 			// Calculate individual EVA suit-related part demand.
-			+ getEVASuitPartsDemand(part)
+			+ getEVASuitPartsDemand(good)
 			// Calculate individual attachment part demand.
-			+ getAttachmentPartsDemand(part)
+			+ getAttachmentPartsDemand(good)
 			// Calculate kitchen part demand.
-			+ getKitchenPartDemand(part))
+			+ getKitchenPartDemand(good)
 			// Calculate vehicle part demand.
 			* getVehiclePartDemand(part)
 			// Flatten raw part demand.
 			* flattenRawPartDemand(part)
 			// Flatten certain part demand.
-			* flattenPartDemand(good), MIN_PROJ_DEMAND, MAX_PROJ_DEMAND);
+			* flattenPartDemand(good)), MIN_PROJ_DEMAND, MAX_PROJ_DEMAND);
 
 		// Add trade demand.
 		double trade = limitMaxMin(determineTradeDemand(good, useCache), MIN_DEMAND, MAX_DEMAND);
@@ -2156,7 +2150,7 @@ public class GoodsManager implements Serializable, Temporal {
 		// Recalculate the partsDemandCache
 		determineRepairPartsDemand();
 		// Gets the repair part demand
-		double repair = partDemandCache.get(id);
+		double repair = demandCache.get(id);
 
 		if (previousDemand == 0) {
 			// At the start of the sim
@@ -2177,7 +2171,7 @@ public class GoodsManager implements Serializable, Temporal {
 		}
 		
 		// Save the goods demand
-		partDemandCache.put(id, totalDemand);
+		demandCache.put(id, totalDemand);
 		
 		// Calculate total supply
 		totalSupply = limitMaxMin(getAverageItemSupply(settlement.getItemResourceStored(id), numSol), 
@@ -2217,7 +2211,7 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @return map of parts and their demand.
 	 */
 	private void determineRepairPartsDemand() {
-		Map<Integer, Double> partsProbDemand = new HashMap<>(ItemResourceUtil.getItemIDs().size());
+		Map<Good, Double> partsProbDemand = new HashMap<>();
 
 		// Get all malfunctionables associated with settlement.
 		Iterator<Malfunctionable> i = MalfunctionFactory.getAssociatedMalfunctionables(settlement).iterator();
@@ -2244,13 +2238,13 @@ public class GoodsManager implements Serializable, Temporal {
 		partsProbDemand = sumPartsDemand(partsProbDemand, getVehicleAttachmentParts(), 1D);
 
 		// Store in parts demand cache.
-		Iterator<Integer> j = partsProbDemand.keySet().iterator();
+		Iterator<Good> j = partsProbDemand.keySet().iterator();
 		while (j.hasNext()) {
-			Integer part = j.next();
-			if (getPartDemandValue(part) < 1)
-				partDemandCache.put(part, 1.0);
+			Good part = j.next();
+			if (getDemandValue(part) < 1)
+				setDemandValue(part, 1.0);
 			else
-				partDemandCache.put(part, partsProbDemand.get(part));
+				setDemandValue(part, partsProbDemand.get(part));
 		}
 	}
 
@@ -2262,20 +2256,18 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @param multiplier            the multiplier for the additional parts number.
 	 * @return
 	 */
-	private Map<Integer, Double> sumPartsDemand(Map<Integer, Double> totalPartsDemand, Map<Integer, Number> additionalPartsDemand,
+	private Map<Good, Double> sumPartsDemand(Map<Good, Double> totalPartsDemand, Map<Integer, Number> additionalPartsDemand,
 			double multiplier) {
-		Map<Integer, Double> demand = new HashMap<>();
 
-		Iterator<Integer> i = additionalPartsDemand.keySet().iterator();
-		while (i.hasNext()) {
-			Integer part = i.next();
-			double number = additionalPartsDemand.get(part).doubleValue() * multiplier;
+		for (Entry<Integer, Number> item : additionalPartsDemand.entrySet()) {
+			Good part = GoodsUtil.getGood(item.getKey());
+			double number = item.getValue().doubleValue() * multiplier;
 			if (totalPartsDemand.containsKey(part))
 				number += totalPartsDemand.get(part);
 			totalPartsDemand.put(part, number);
 		}
-		demand = totalPartsDemand;
-		return demand;
+		
+		return totalPartsDemand;
 	}
 
 	/**
@@ -2427,11 +2419,9 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @param part the part.
 	 * @return demand
 	 */
-	private double getAttachmentPartsDemand(Part part) {
-		for (int id : ItemResourceUtil.ATTACHMENTS_ID) {
-			if (part.getID() == id) {
-				return ATTACHMENT_PARTS_DEMAND * getPartDemandValue(id);
-			}
+	private double getAttachmentPartsDemand(Good part) {
+		if (ItemResourceUtil.ATTACHMENTS_ID.contains(part.getID())) {
+			return ATTACHMENT_PARTS_DEMAND * getDemandValue(part);
 		}
 		return 0;
 	}
@@ -2442,11 +2432,9 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @param part the part.
 	 * @return demand
 	 */
-	private double getEVASuitPartsDemand(Part part) {
-		for (int id : ItemResourceUtil.EVASUIT_PARTS_ID) {
-			if (part.getID() == id) {
-				return eVASuitMod * EVA_PARTS_VALUE * getPartDemandValue(id);
-			}
+	private double getEVASuitPartsDemand(Good part) {
+		if (ItemResourceUtil.EVASUIT_PARTS_ID.contains(part.getID())) {
+			return eVASuitMod * EVA_PARTS_VALUE * getDemandValue(part);
 		}
 		return 0;
 	}
@@ -2460,7 +2448,7 @@ public class GoodsManager implements Serializable, Temporal {
 	private double getWholeEVASuitDemand() {
 		double demand = 0;
 		for (int id : ItemResourceUtil.EVASUIT_PARTS_ID) {
-			demand += getPartDemandValue(id);
+			demand += getDemandValue(GoodsUtil.getGood(id));
 		}
 		return demand;
 	}
@@ -2494,10 +2482,9 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @param demand the original demand.
 	 * @return the flattened demand
 	 */
-	private double getKitchenPartDemand(Part part) {
-		for (int id : ItemResourceUtil.KITCHEN_WARE_ID) {
-			if (part.getID() == id)
-				return getPartDemandValue(id) * KITCHEN_DEMAND;
+	private double getKitchenPartDemand(Good part) {
+		if (ItemResourceUtil.KITCHEN_WARE_ID.contains(part.getID())) {
+			return getDemandValue(part) * KITCHEN_DEMAND;
 		}
 		return 0;
 	}
@@ -2783,7 +2770,7 @@ public class GoodsManager implements Serializable, Temporal {
 		
 		totalDemand = limitMaxMin(totalDemand, MIN_DEMAND, MAX_DEMAND);
 		
-		equipmentDemandCache.put(id, totalDemand);
+		setDemandValue(good, totalDemand);
 
 		value = totalDemand / totalSupply;
 
@@ -2825,7 +2812,7 @@ public class GoodsManager implements Serializable, Temporal {
 			// Add the whole EVA Suit demand.
 			baseDemand += getWholeEVASuitDemand();
 
-			return baseDemand += eVASuitMod * EVA_SUIT_VALUE;
+			return baseDemand + eVASuitMod * EVA_SUIT_VALUE;
 		}
 
 		// Determine the number of containers that are needed.
@@ -2975,7 +2962,7 @@ public class GoodsManager implements Serializable, Temporal {
 
 		totalDemand = limitMaxMin(totalDemand, MIN_DEMAND, MAX_DEMAND);
 				
-		vehicleDemandCache.put(id, totalDemand);
+		setDemandValue(good, totalDemand);
 
 		value = totalDemand / totalSupply;
 		
@@ -3019,7 +3006,7 @@ public class GoodsManager implements Serializable, Temporal {
 		VehicleType vehicleType = VehicleType.convertNameToVehicleType(vehicleGood.getName());
 
 		if (useCache) {
-			demand = vehicleDemandCache.get(vehicleGood.getID());
+			demand = demandCache.get(vehicleGood.getID());
 		}
 
 		else {
@@ -3181,14 +3168,14 @@ public class GoodsManager implements Serializable, Temporal {
 					/ (double) settlement.getPopulationCapacity());
 
 		case COLLECT_ICE:
-			return Math.min(getAmountDemandValue(GoodsUtil.getResourceGood(ResourceUtil.iceID)), 100);
+			return Math.min(getDemandValue(GoodsUtil.getGood(ResourceUtil.iceID)), 100);
 		
 		case TRADE:
 		case DELIVERY:
 			return JobUtil.numJobs(JobType.TRADER, settlement);
 		
 		case COLLECT_REGOLITH:
-			return Math.min(getAmountDemandValue(GoodsUtil.getResourceGood(ResourceUtil.regolithID)), 100);
+			return Math.min(getDemandValue(GoodsUtil.getGood(ResourceUtil.regolithID)), 100);
 		
 		case MINING:
 		case AREOLOGY:
@@ -3556,7 +3543,7 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @return
 	 */
 	public double getPricePerItem(int id) {
-		return getPrice(GoodsUtil.getResourceGood(id));
+		return getPrice(GoodsUtil.getGood(id));
 	}
 
 	/**
@@ -3597,96 +3584,30 @@ public class GoodsManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * Gets the demand value of a part
-	 *
-	 * @param good the good to check.
-	 * @return value (VP)
-	 */
-	public double getPartDemandValue(Good good) {
-		return getPartDemandValue(good.getID());
-	}
-
-	/**
-	 * Gets the demand value of a part
-	 *
-	 * @param good's id.
-	 * @return value (VP)
-	 */
-	private double getPartDemandValue(int id) {
-		if (partDemandCache.containsKey(id))
-			return partDemandCache.get(id);
-		else
-			logger.severe(settlement,
-					" - Part  " + ItemResourceUtil.findItemResourceName(id) + "(" + id + ")" + " not valid.");
-		return 1;
-	}
-
-	/**
-	 * Gets the demand value of a resource.
-	 *
-	 * @param good the good to check.
-	 * @return demand value
-	 */
-	private double getAmountDemandValue(Good good) {
-		return getAmountDemandValue(good.getID());
-	}
-
-	/**
 	 * Gets the demand value of a resource.
 	 *
 	 * @param good's id.
 	 * @return demand value
 	 */
 	public double getAmountDemandValue(int id) {
-		if (amountDemandCache.containsKey(id))
-			return amountDemandCache.get(id);
+		if (demandCache.containsKey(id))
+			return demandCache.get(id);
 		else
 			logger.severe(settlement,
 					" - Amount resource " + ResourceUtil.findAmountResourceName(id) + "(" + id + ")" + " not valid.");
 		return 1;
 	}
 
-	/**
-	 * Gets the demand value of an equipment.
-	 *
-	 * @param equipment id.
-	 * @return demand value
-	 */
-	private double getEquipmentDemandValue(int id) {
-		if (equipmentDemandCache.containsKey(id))
-			return equipmentDemandCache.get(id);
-		else
-			logger.severe(settlement,
-					" - Equipment " + EquipmentType.convertID2Type(id) + "(" + id + ")" + " not valid.");
-		return 5;
-	}
-
-	private double getVehicleDemandValue(int id) {
-		if (vehicleDemandCache.containsKey(id))
-			return vehicleDemandCache.get(id);
-		else
-			logger.severe(settlement, " - Vehicle " + VehicleType.convertID2Type(id) + "(" + id + ")" + " not valid.");
-		return 10;
-	}
-
-	private double getRobotDemandValue() {
-		return 10;
-	}
-	
 	public double getDemandValue(Good good) {
-		int id = good.getID();
-		if (id < ResourceUtil.FIRST_AMOUNT_RESOURCE_ID)
-			return 0;
-		if (id < ResourceUtil.FIRST_ITEM_RESOURCE_ID)
-			return getAmountDemandValue(id);
-		if (id < ResourceUtil.FIRST_VEHICLE_RESOURCE_ID)
-			return getPartDemandValue(id);
-		if (id < ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID)
-			return getVehicleDemandValue(id);
-		if (id < ResourceUtil.FIRST_ROBOT_RESOURCE_ID)
-			return getEquipmentDemandValue(id);
-		
-		return getRobotDemandValue();
+		return demandCache.get(good.getID());
+	}
+
+	private void setDemandValue(Good good, double newValue) {
+		double oldValue = getDemandValue(good);
+		demandCache.put(good.getID(), newValue);
+
+		logger.info(settlement, "Demand cache update for " + good.getName() + " old=" + oldValue + " new=" + newValue
+					+ " size=" + demandCache.size());
 	}
 
 	public double getSupplyValue(Good good) {
@@ -3760,29 +3681,10 @@ public class GoodsManager implements Serializable, Temporal {
 		settlement = null;
 		goodsValues.clear();
 		goodsValues = null;
-		amountDemandCache.clear();
-		amountDemandCache = null;
+		demandCache.clear();
+		demandCache = null;
 		tradeCache.clear();
 		tradeCache = null;
-		equipmentDemandCache.clear();
-		equipmentDemandCache = null;
-		vehicleDemandCache.clear();
-		vehicleDemandCache = null;
-
-//		if (vehicleBuyValueCache != null) {
-//			vehicleBuyValueCache.clear();
-//			vehicleBuyValueCache = null;
-//		}
-//
-//		if (vehicleSellValueCache != null) {
-//			vehicleSellValueCache.clear();
-//			vehicleSellValueCache = null;
-//		}
-
-		if (partDemandCache != null) {
-			partDemandCache.clear();
-			partDemandCache = null;
-		}
 
 		deflationIndexMap = null;
 

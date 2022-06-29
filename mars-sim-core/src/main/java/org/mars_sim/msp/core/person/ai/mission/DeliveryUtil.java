@@ -789,7 +789,7 @@ public final class DeliveryUtil {
 		Map<Good, Integer> neededResources = new HashMap<Good, Integer>(4);
 
 		// Get required fuel.
-		Good fuelGood = GoodsUtil.getResourceGood(drone.getFuelType());
+		Good fuelGood = GoodsUtil.getGood(drone.getFuelType());
 		neededResources.put(fuelGood, (int) VehicleMission.getFuelNeededForTrip(drone, distance, drone.getEstimatedAveFuelEconomy() * VehicleMission.FE_FACTOR, false));
 
 		// Get cost of resources.

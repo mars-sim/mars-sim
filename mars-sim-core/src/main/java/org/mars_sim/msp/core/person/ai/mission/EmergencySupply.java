@@ -994,7 +994,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 		while (i.hasNext()) {
 			Integer id = i.next();
 			double amount = emergencyResources.get(id);
-			result.put(GoodsUtil.getResourceGood(id), (int) amount);
+			result.put(GoodsUtil.getGood(id), (int) amount);
 		}
 
 		// Add emergency parts.
@@ -1002,7 +1002,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 		while (j.hasNext()) {
 			Integer id = j.next();
 			int number = emergencyParts.get(id);
-			result.put(GoodsUtil.getResourceGood(id), number);
+			result.put(GoodsUtil.getGood(id), number);
 		}
 
 		// Add emergency equipment.
@@ -1010,7 +1010,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 		while (k.hasNext()) {
 			Integer id = k.next();
 			int number = emergencyEquipment.get(id);
-			result.put(GoodsUtil.getEquipmentGood(id), number);
+			result.put(GoodsUtil.getGood(id), number);
 		}
 
 		// Add emergency vehicle.
