@@ -52,7 +52,6 @@ import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ItemType;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
-import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -116,16 +115,6 @@ public class GoodsManager implements Serializable {
 	private static final double ATTACHMENT_PARTS_DEMAND = 1.2;
 
 	private static final int PROJECTED_GAS_CANISTERS = 10;
-
-	private static final double INITIAL_AMOUNT_DEMAND = 0;
-	private static final double INITIAL_PART_DEMAND = 0;
-	private static final double INITIAL_EQUIPMENT_DEMAND = 0;
-	private static final double INITIAL_VEHICLE_DEMAND = 0;
-	
-	private static final double INITIAL_AMOUNT_SUPPLY = 0;
-	private static final double INITIAL_PART_SUPPLY = 0;
-	private static final double INITIAL_EQUIPMENT_SUPPLY = 0;
-	private static final double INITIAL_VEHICLE_SUPPLY = 0;
 
 	private static final double WASTE_WATER_VALUE = .05D;
 	private static final double WASTE_VALUE = .05D;
@@ -262,17 +251,9 @@ public class GoodsManager implements Serializable {
 	private Map<Integer, Double> tradeCache = new HashMap<>();
 
 	private Map<Integer, Double> demandCache = new HashMap<>();
+	private Map<Integer, Double> supplyCache = new HashMap<>();
 
 	private Map<Integer, Integer> deflationIndexMap = new HashMap<>();
-
-	private Map<Integer, Double> amountSupplyCache = new HashMap<>();
-	private Map<Integer, Double> partSupplyCache = new HashMap<>();
-
-	private Map<Integer, Double> vehicleSupplyCache = new HashMap<>();
-	private Map<Integer, Double> equipmentSupplyCache = new HashMap<>();
-				
-//	private Map<String, Double> vehicleBuyValueCache;
-//	private Map<String, Double> vehicleSellValueCache;
 
 	private Map<Malfunctionable, Map<Integer, Number>> orbitRepairParts = new HashMap<>();
 
@@ -319,41 +300,11 @@ public class GoodsManager implements Serializable {
 			deflationIndexMap.put(id, 0);
 		}
 
-		// Create amount supply and demand cache.
-		Iterator<Integer> r = ResourceUtil.getIDs().iterator();
-		while (r.hasNext()) {
-			int id = r.next();
-			demandCache.put(id, INITIAL_AMOUNT_DEMAND);
-			amountSupplyCache.put(id, INITIAL_AMOUNT_SUPPLY);
-		}
+		// Preload the good cache
+		for(Good good : GoodsUtil.getGoodsList()) {
+			demandCache.put(good.getID(), good.getDefaultDemandValue());
+			supplyCache.put(good.getID(), good.getDefaultSupplyValue());
 
-		// Create parts supply and demand cache.
-		Iterator<Integer> p = ItemResourceUtil.getItemIDs().iterator();
-		while (p.hasNext()) {
-			int id = p.next();
-			demandCache.put(id, INITIAL_PART_DEMAND);
-			partSupplyCache.put(id, INITIAL_PART_SUPPLY);
-		}
-
-		// Create equipment supply and demand cache.
-		for(EquipmentType eType : EquipmentType.values()) {
-			int id = EquipmentType.getResourceID(eType);
-			demandCache.put(id, INITIAL_EQUIPMENT_DEMAND);
-			equipmentSupplyCache.put(id, INITIAL_EQUIPMENT_SUPPLY);
-		}
-
-		// Create equipment supply and demand cache.
-		Iterator<Integer> v = VehicleType.getIDs().iterator();
-		while (v.hasNext()) {
-			int id = v.next();
-			demandCache.put(id, INITIAL_VEHICLE_DEMAND);
-			vehicleSupplyCache.put(id, INITIAL_VEHICLE_SUPPLY);
-		}
-
-		// Create Robot caches
-		for(RobotType rType : RobotType.values()) {
-			int id = RobotType.getResourceID(rType);
-			demandCache.put(id, 10D);
 		}
 	}
 
@@ -420,24 +371,31 @@ public class GoodsManager implements Serializable {
 	 */
 	private double determineGoodValue(Good good, double supply, boolean useCache) {
 		if (good != null) {
+
+			double previousDemand = getDemandValue(good);
+
+			if (useCache) {
+				return previousDemand / supply;
+			}
+
 			double value = 0D;
 
 			switch(good.getCategory()) {
 			case AMOUNT_RESOURCE:
-				value = determineAmountResourceGoodValue(good, supply, useCache);
+				value = determineAmountResourceGoodValue(good, supply);
 				break;
 
 			case ITEM_RESOURCE:
-				value = determineItemResourceGoodValue(good, supply, useCache);
+				value = determineItemResourceGoodValue(good, supply);
 				break;
 
 			case EQUIPMENT:
 			case CONTAINER:
-				value = determineEquipmentGoodValue(good, supply, useCache);
+				value = determineEquipmentGoodValue(good, supply);
 				break;
 
 			case VEHICLE:
-				value = determineVehicleGoodValue(good, supply, useCache);
+				value = determineVehicleGoodValue(good, supply);
 				break;
 
 			case ROBOT:
@@ -460,17 +418,11 @@ public class GoodsManager implements Serializable {
 	 *
 	 * @param good the amount resource good.
 	 * @param supply       the current supply (kg) of the good.
-	 * @param useCache     use the cache to determine value. always true if just
-	 *                     traded
 	 * @return value the value point 
 	 */
-	private double determineAmountResourceGoodValue(Good good, double supply, boolean useCache) {	
+	private double determineAmountResourceGoodValue(Good good, double supply) {	
 		int id = good.getID();
 		double previousDemand = getDemandValue(good);
-		
-		if (useCache) {
-			return previousDemand / supply;
-		}
 
 		double value = 0;
 
@@ -486,7 +438,7 @@ public class GoodsManager implements Serializable {
 		int numSol = solElapsed % Settlement.SUPPLY_DEMAND_REFRESH + 1;
 
 		// Calculate the average demand
-		average = getAverageCapAmountDemand(id, numSol);
+		average = getAverageCapAmountDemand(good, numSol);
 
 		// Calculate projected demand
 		double projected = limitMaxMin(
@@ -527,8 +479,8 @@ public class GoodsManager implements Serializable {
 			// Flatten certain types of demand.
 			* flattenAmountDemand(good), MIN_PROJ_DEMAND, MAX_PROJ_DEMAND);
 			
-		// Add trade value.
-		trade = limitMaxMin(determineTradeDemand(good, useCache), MIN_DEMAND, MAX_DEMAND);
+		// Add trade value. Cache is always false if this method is called
+		trade = limitMaxMin(determineTradeDemand(good), MIN_DEMAND, MAX_DEMAND);
 		
 		if (previousDemand == 0) {
 			// At the start of the sim
@@ -547,7 +499,7 @@ public class GoodsManager implements Serializable {
 		totalSupply = limitMaxMin(getAverageAmountSupply(settlement.getAmountResourceStored(id), numSol), MIN_SUPPLY, MAX_SUPPLY);
 
 		// Store the average supply
-		amountSupplyCache.put(id, totalSupply);
+		setSupplyValue( good, totalSupply);
 		
 		// Calculate the value point
 		value = totalDemand / totalSupply;
@@ -696,8 +648,8 @@ public class GoodsManager implements Serializable {
 	 * @param resource
 	 * @return
 	 */
-	private double getAverageCapAmountDemand(int resource, int solElapsed) {
-		return capLifeSupportAmountDemand(resource, getAverageAmountDemand(resource, solElapsed));		
+	private double getAverageCapAmountDemand(Good resource, int solElapsed) {
+		return capLifeSupportAmountDemand(resource.getID(), getAverageAmountDemand(resource, solElapsed));		
 	}
 
 	/**
@@ -708,8 +660,8 @@ public class GoodsManager implements Serializable {
 	 * @param solElapsed
 	 * @return
 	 */
-	private double getAverageAmountDemand(int resource, int solElapsed) {
-		return Math.min(10, getAmountDemandValue(resource) / solElapsed);
+	private double getAverageAmountDemand(Good resource, int solElapsed) {
+		return Math.min(10, getDemandValue(resource) / solElapsed);
 	}
 	
 	/**
@@ -2095,16 +2047,11 @@ public class GoodsManager implements Serializable {
 	 *
 	 * @param good the resource good to check.
 	 * @param supply       the current supply (# items) of the good.
-	 * @param useCache     use the cache to determine value.
 	 * @return value (Value Points / item)
 	 */
-	private double determineItemResourceGoodValue(Good good, double supply, boolean useCache) {
+	private double determineItemResourceGoodValue(Good good, double supply) {
 		int id = good.getID();
 		double previousDemand = getDemandValue(good);
-		
-		if (useCache) {
-			return previousDemand / supply;
-		}
 		
 		double value = 1;
 		double totalDemand = 0;
@@ -2145,7 +2092,7 @@ public class GoodsManager implements Serializable {
 			* flattenPartDemand(good)), MIN_PROJ_DEMAND, MAX_PROJ_DEMAND);
 
 		// Add trade demand.
-		double trade = limitMaxMin(determineTradeDemand(good, useCache), MIN_DEMAND, MAX_DEMAND);
+		double trade = limitMaxMin(determineTradeDemand(good), MIN_DEMAND, MAX_DEMAND);
 
 		// Recalculate the partsDemandCache
 		determineRepairPartsDemand();
@@ -2171,14 +2118,14 @@ public class GoodsManager implements Serializable {
 		}
 		
 		// Save the goods demand
-		demandCache.put(id, totalDemand);
+		setDemandValue(good, totalDemand);
 		
 		// Calculate total supply
 		totalSupply = limitMaxMin(getAverageItemSupply(settlement.getItemResourceStored(id), numSol), 
 							MIN_SUPPLY, MAX_SUPPLY);
 
 		// Save the average supply
-		partSupplyCache.put(id, totalSupply);
+		setSupplyValue(good, totalSupply);
 
 		// Calculate item value
 		value = totalDemand / totalSupply;
@@ -2222,41 +2169,40 @@ public class GoodsManager implements Serializable {
 			double wearModifier = (entity.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
 
 			// Estimate repair parts needed per orbit for entity.
-			partsProbDemand = sumPartsDemand(partsProbDemand, getEstimatedOrbitRepairParts(entity), wearModifier);
+			sumPartsDemand(partsProbDemand, getEstimatedOrbitRepairParts(entity), wearModifier);
 
 			// Add outstanding repair parts required.
-			partsProbDemand = sumPartsDemand(partsProbDemand, getOutstandingRepairParts(entity), MALFUNCTION_REPAIR_COEF);
+			sumPartsDemand(partsProbDemand, getOutstandingRepairParts(entity), MALFUNCTION_REPAIR_COEF);
 
 			// Estimate maintenance parts needed per orbit for entity.
-			partsProbDemand = sumPartsDemand(partsProbDemand, getEstimatedOrbitMaintenanceParts(entity), wearModifier);
+			sumPartsDemand(partsProbDemand, getEstimatedOrbitMaintenanceParts(entity), wearModifier);
 
 			// Add outstanding maintenance parts required.
-			partsProbDemand = sumPartsDemand(partsProbDemand, getOutstandingMaintenanceParts(entity), MAINTENANCE_REPAIR_COEF);
+			sumPartsDemand(partsProbDemand, getOutstandingMaintenanceParts(entity), MAINTENANCE_REPAIR_COEF);
 		}
 	
 		// Add demand for vehicle attachment parts.
-		partsProbDemand = sumPartsDemand(partsProbDemand, getVehicleAttachmentParts(), 1D);
+		sumPartsDemand(partsProbDemand, getVehicleAttachmentParts(), 1D);
 
 		// Store in parts demand cache.
-		Iterator<Good> j = partsProbDemand.keySet().iterator();
-		while (j.hasNext()) {
-			Good part = j.next();
+		for(Entry<Good, Double> entry : partsProbDemand.entrySet()) {
+			Good part = entry.getKey();
+
 			if (getDemandValue(part) < 1)
 				setDemandValue(part, 1.0);
 			else
-				setDemandValue(part, partsProbDemand.get(part));
+				setDemandValue(part, entry.getValue());
 		}
 	}
 
 	/**
 	 * Sums the additional parts number map into a total parts number map.
 	 *
-	 * @param totalPartsDemand      the total parts number.
+	 * @param totalPartsDemand      the total parts number; will be updated
 	 * @param additionalPartsDemand the additional parts number.
 	 * @param multiplier            the multiplier for the additional parts number.
-	 * @return
 	 */
-	private Map<Good, Double> sumPartsDemand(Map<Good, Double> totalPartsDemand, Map<Integer, Number> additionalPartsDemand,
+	private void sumPartsDemand(Map<Good, Double> totalPartsDemand, Map<Integer, Number> additionalPartsDemand,
 			double multiplier) {
 
 		for (Entry<Integer, Number> item : additionalPartsDemand.entrySet()) {
@@ -2266,8 +2212,6 @@ public class GoodsManager implements Serializable {
 				number += totalPartsDemand.get(part);
 			totalPartsDemand.put(part, number);
 		}
-		
-		return totalPartsDemand;
 	}
 
 	/**
@@ -2567,8 +2511,8 @@ public class GoodsManager implements Serializable {
 			Iterator<FoodProductionProcessInfo> i = FoodProductionUtil.getFoodProductionProcessesForTechLevel(techLevel)
 					.iterator();
 			while (i.hasNext()) {
-				double FoodProductionDemand = getPartFoodProductionProcessDemand(part, i.next());
-				demand += FoodProductionDemand;
+				double foodProductionDemand = getPartFoodProductionProcessDemand(part, i.next());
+				demand += foodProductionDemand;
 			}
 		}
 
@@ -2719,19 +2663,12 @@ public class GoodsManager implements Serializable {
 	 *
 	 * @param good the equipment good to check.
 	 * @param supply        the current supply (# of items) of the good.
-	 * @param useCache      use the cache to determine value.
 	 * @return the value (value points)
 	 */
-	private double determineEquipmentGoodValue(Good good, double supply, boolean useCache) {
+	private double determineEquipmentGoodValue(Good good, double supply) {
 		int id = good.getID();
 		double previousDemand = getDemandValue(good);
-		
-		if (useCache) {
-			return previousDemand / supply;
-		}
-		
-		double value = 0D;
-		double average = 0D;
+
 		double totalDemand = 0;
 		
 		EquipmentType equipmentType = EquipmentType.convertID2Type(id);		
@@ -2741,7 +2678,7 @@ public class GoodsManager implements Serializable {
 		int numSol = solElapsed % Settlement.SUPPLY_DEMAND_REFRESH + 1;
 
 		// Determine average demand.
-		average = determineEquipmentDemand(equipmentType);
+		double average = determineEquipmentDemand(equipmentType);
 
 		double totalSupply = 0;
 		
@@ -2753,9 +2690,10 @@ public class GoodsManager implements Serializable {
 		
 		totalSupply = limitMaxMin(totalSupply, MIN_SUPPLY, MAX_SUPPLY);
 		
-		equipmentSupplyCache.put(id, totalSupply);
+		setSupplyValue(good, totalSupply);
 		
-		double trade = determineTradeDemand(good, useCache);
+		// This method is not using cache
+		double trade = determineTradeDemand(good);
 
 		trade = limitMaxMin(trade, MIN_DEMAND, MAX_DEMAND);
 		
@@ -2772,7 +2710,7 @@ public class GoodsManager implements Serializable {
 		
 		setDemandValue(good, totalDemand);
 
-		value = totalDemand / totalSupply;
+		double value = totalDemand / totalSupply;
 
 		// Check if it surpass the max VP
 		if (value > MAX_VP) {
@@ -2820,14 +2758,11 @@ public class GoodsManager implements Serializable {
 		double containerCapacity = ContainerUtil.getContainerCapacity(type);
 		double totalPhaseOverfill = 0D;
 
-		Iterator<AmountResource> i = ResourceUtil.getAmountResources().iterator();
-		while (i.hasNext()) {
-			AmountResource resource = i.next();
-
+		for(AmountResource resource : ResourceUtil.getAmountResources()) {
 			if (ContainerUtil.getContainerClassToHoldResource(resource.getID()) == type) {
 				double settlementCapacity = settlement.getAmountResourceCapacity(resource.getID());
 
-				double resourceDemand = getAmountDemandValue(resource.getID());
+				double resourceDemand = demandCache.get(resource.getID());
 
 				if (resourceDemand > settlementCapacity) {
 					double resourceOverfill = resourceDemand - settlementCapacity;
@@ -2898,40 +2833,12 @@ public class GoodsManager implements Serializable {
 	 *
 	 * @param good the vehicle good.
 	 * @param supply      the current supply (# of vehicles) of the good.
-	 * @param useCache    use the cache to determine value.
 	 * @return the value (value points).
 	 */
-	private double determineVehicleGoodValue(Good good, double supply, boolean useCache) {
-//		boolean buy = false;
-//		String vehicleType = good.getName();
+	private double determineVehicleGoodValue(Good good, double supply) {
 		
 		int id = good.getID();
 		double previousDemand = getDemandValue(good);
-
-		if (useCache) {
-			return previousDemand / supply;
-		}
-		
-//		if (useCache) {
-//			if (buy) {
-//				if (vehicleBuyValueCache.containsKey(vehicleType)) {
-//					return vehicleBuyValueCache.get(vehicleType);
-//				} else {
-//					return previousDemand / supply; //determineVehicleGoodValue(good, supply, false);
-//				}
-//			} else {
-//				if (vehicleSellValueCache.containsKey(vehicleType)) {
-//					return vehicleSellValueCache.get(vehicleType);
-//				} else {
-//					return previousDemand / supply; //determineVehicleGoodValue(good, supply, false);
-//				}
-//			}
-//		} 	
-		
-		double value = 0D;
-		double totalDemand = 0;
-		double totalSupply = 0;
-		double trade = 0;
 
 		// Needed for loading a saved sim
 		int solElapsed = marsClock.getMissionSol();
@@ -2939,18 +2846,18 @@ public class GoodsManager implements Serializable {
 		int numSol = solElapsed % Settlement.SUPPLY_DEMAND_REFRESH + 1;
 
 		// Calculate total supply
-		totalSupply = limitMaxMin(getAverageVehicleSupply(good.getNumberForSettlement(settlement), numSol), MIN_SUPPLY, MAX_SUPPLY);
+		double totalSupply = limitMaxMin(getAverageVehicleSupply(good.getNumberForSettlement(settlement), numSol), MIN_SUPPLY, MAX_SUPPLY);
 		
-		vehicleSupplyCache.put(id, totalSupply);
-		
-//		buy = true;
-		
-		double projected = limitMaxMin(determineVehicleProjectedDemand(good, useCache), MIN_PROJ_DEMAND, MAX_PROJ_DEMAND);
+		setSupplyValue(good, totalSupply);
+			
+		// Doesn't use cache value sin this method
+		double projected = limitMaxMin(determineVehicleProjectedDemand(good), MIN_PROJ_DEMAND, MAX_PROJ_DEMAND);
 		
 		double average = computeVehiclePartsCost(good);
 		
-		trade = limitMaxMin(determineTradeVehicleValue(good, useCache), MIN_DEMAND, MAX_DEMAND);
+		double trade = limitMaxMin(determineTradeVehicleValue(good), MIN_DEMAND, MAX_DEMAND);
 		
+		double totalDemand = 0D;
 		if (previousDemand == 0) {
 			totalDemand = .5 * average + .25 * projected + .25 * trade;
 		}
@@ -2964,7 +2871,7 @@ public class GoodsManager implements Serializable {
 				
 		setDemandValue(good, totalDemand);
 
-		value = totalDemand / totalSupply;
+		double value = totalDemand / totalSupply;
 		
 		// Check if it surpass the max VP
 		if (value > MAX_VP) {
@@ -2984,12 +2891,6 @@ public class GoodsManager implements Serializable {
 		// Save the value point
 		goodsValues.put(id, value);
 		
-//		if (buy) {
-//			vehicleBuyValueCache.put(vehicleType, value);
-//		} else {
-//			vehicleSellValueCache.put(vehicleType, value);
-//		}
-
 		return value;
 	}
 
@@ -2997,55 +2898,48 @@ public class GoodsManager implements Serializable {
 	 * Determines the vehicle projected demand
 	 *
 	 * @param vehicleGood
-	 * @param useCache
 	 * @return the vehicle demand
 	 */
-	private double determineVehicleProjectedDemand(Good vehicleGood, boolean useCache) {
+	private double determineVehicleProjectedDemand(Good vehicleGood) {
 		double demand = 0D;
 
 		VehicleType vehicleType = VehicleType.convertNameToVehicleType(vehicleGood.getName());
 
-		if (useCache) {
-			demand = demandCache.get(vehicleGood.getID());
+		boolean buy = false;
+
+		if (vehicleType == VehicleType.LUV) {
+			demand = determineLUVValue(buy);
+		}
+
+		else if (vehicleType == VehicleType.DELIVERY_DRONE) {
+			double tradeMissionValue = determineMissionVehicleDemand(MissionType.TRADE, vehicleType, buy);
+			if (tradeMissionValue > demand) {
+				demand = tradeMissionValue;
+			}
+			demand += determineDroneValue(buy);
 		}
 
 		else {
-			boolean buy = false;
-
-			if (vehicleType == VehicleType.LUV) {
-				demand = determineLUVValue(buy);
-			}
-
-			else if (vehicleType == VehicleType.DELIVERY_DRONE) {
-				double tradeMissionValue = determineMissionVehicleDemand(MissionType.TRADE, vehicleType, buy);
-				if (tradeMissionValue > demand) {
-					demand = tradeMissionValue;
-				}
-				demand += determineDroneValue(buy);
-			}
-
-			else {
-				// Check all missions and take highest demand
-				for (MissionType missionType : MissionType.values()) {
-					double missionDemand = determineMissionVehicleDemand(missionType,
-													vehicleType, buy);
-					if (missionDemand > demand) {
-						demand = missionDemand;
-					}
+			// Check all missions and take highest demand
+			for (MissionType missionType : MissionType.values()) {
+				double missionDemand = determineMissionVehicleDemand(missionType,
+												vehicleType, buy);
+				if (missionDemand > demand) {
+					demand = missionDemand;
 				}
 			}
-
-			if (vehicleType == VehicleType.CARGO_ROVER)
-				demand *= (.5 + transportation_factor) * CARGO_VEHICLE_FACTOR;
-			else if (vehicleType == VehicleType.TRANSPORT_ROVER)
-				demand *= (.5 + transportation_factor) * TRANSPORT_VEHICLE_FACTOR;
-			else if (vehicleType == VehicleType.EXPLORER_ROVER)
-				demand *= (.5 + transportation_factor) * EXPLORER_VEHICLE_FACTOR;
-			else if (vehicleType == VehicleType.DELIVERY_DRONE)
-				demand *= (.5 + transportation_factor) * DRONE_VEHICLE_FACTOR;
-			else if (vehicleType == VehicleType.LUV)
-				demand *= (.5 + transportation_factor) * LUV_VEHICLE_FACTOR;
 		}
+
+		if (vehicleType == VehicleType.CARGO_ROVER)
+			demand *= (.5 + transportation_factor) * CARGO_VEHICLE_FACTOR;
+		else if (vehicleType == VehicleType.TRANSPORT_ROVER)
+			demand *= (.5 + transportation_factor) * TRANSPORT_VEHICLE_FACTOR;
+		else if (vehicleType == VehicleType.EXPLORER_ROVER)
+			demand *= (.5 + transportation_factor) * EXPLORER_VEHICLE_FACTOR;
+		else if (vehicleType == VehicleType.DELIVERY_DRONE)
+			demand *= (.5 + transportation_factor) * DRONE_VEHICLE_FACTOR;
+		else if (vehicleType == VehicleType.LUV)
+			demand *= (.5 + transportation_factor) * LUV_VEHICLE_FACTOR;
 
 		return demand;
 	}
@@ -3054,11 +2948,10 @@ public class GoodsManager implements Serializable {
 	 * Determines the trade vehicle value
 	 *
 	 * @param vehicleGood
-	 * @param useCache
 	 * @return the trade vehicle value
 	 */
-	private double determineTradeVehicleValue(Good vehicleGood, boolean useCache) {
-		double tradeDemand = determineTradeDemand(vehicleGood, useCache);
+	private double determineTradeVehicleValue(Good vehicleGood) {
+		double tradeDemand = determineTradeDemand(vehicleGood);
 		double supply = vehicleGood.getNumberForSettlement(settlement);
 		return tradeDemand / (supply + 1D);
 	}
@@ -3405,13 +3298,10 @@ public class GoodsManager implements Serializable {
 	 * @return range (km)
 	 */
 	private double getDroneRange(VehicleSpec v) {
-		double range = 0D;
 
 		double fuelCapacity = v.getCargoCapacity(METHANE);
 		double fuelEfficiency = v.getDriveTrainEff();
-		range = fuelCapacity * fuelEfficiency * Vehicle.SOFC_CONVERSION_EFFICIENCY;
-
-		return range;
+		return fuelCapacity * fuelEfficiency * Vehicle.SOFC_CONVERSION_EFFICIENCY;
 	}
 
 
@@ -3419,32 +3309,24 @@ public class GoodsManager implements Serializable {
 	 * Determines the trade demand for a good at a settlement.
 	 *
 	 * @param good          the good.
-	 * @param useTradeCache use the goods trade cache to determine trade demand?
 	 * @return the trade demand.
 	 */
-	private double determineTradeDemand(Good good, boolean useTradeCache) {
-		if (useTradeCache) {
-			if (tradeCache.containsKey(good.getID()))
-				return tradeCache.get(good.getID());
-			else
-				logger.severe(settlement, " - Good value of " + good + " not valid.");
-		} else {
-			double bestTradeValue = 0D;
+	private double determineTradeDemand(Good good) {
 
-			for (Settlement tempSettlement : unitManager.getSettlements()) {
-				if (tempSettlement != settlement) {
-					double baseValue = tempSettlement.getGoodsManager().getGoodValuePerItem(good);
-					double distance = Coordinates.computeDistance(settlement.getCoordinates(),
-							tempSettlement.getCoordinates());
-					double tradeValue = baseValue / (1D + (distance / 1000D));
-					if (tradeValue > bestTradeValue)
-						bestTradeValue = tradeValue;
-				}
+		double bestTradeValue = 0D;
+
+		for (Settlement tempSettlement : unitManager.getSettlements()) {
+			if (tempSettlement != settlement) {
+				double baseValue = tempSettlement.getGoodsManager().getGoodValuePerItem(good);
+				double distance = Coordinates.computeDistance(settlement.getCoordinates(),
+						tempSettlement.getCoordinates());
+				double tradeValue = baseValue / (1D + (distance / 1000D));
+				if (tradeValue > bestTradeValue)
+					bestTradeValue = tradeValue;
 			}
-			tradeCache.put(good.getID(), bestTradeValue);
-			return bestTradeValue;
 		}
-		return 0;
+		tradeCache.put(good.getID(), bestTradeValue);
+		return bestTradeValue;
 	}
 
 	/**
@@ -3603,29 +3485,20 @@ public class GoodsManager implements Serializable {
 	}
 
 	private void setDemandValue(Good good, double newValue) {
-		double oldValue = getDemandValue(good);
+		//double oldValue = getDemandValue(good);
 		demandCache.put(good.getID(), newValue);
 
-		logger.info(settlement, "Demand cache update for " + good.getName() + " old=" + oldValue + " new=" + newValue
-					+ " size=" + demandCache.size());
+		//logger.info(settlement, "Demand cache update for " + good.getName() + " old=" + oldValue + " new=" + newValue
+		//			+ " size=" + demandCache.size());
+	}
+
+	private void setSupplyValue(Good good, double newValue) {
+		supplyCache.put(good.getID(), newValue);
 	}
 
 	public double getSupplyValue(Good good) {
-		int id = good.getID();
-		if (id < ResourceUtil.FIRST_AMOUNT_RESOURCE_ID)
-			return 0;
-		if (id < ResourceUtil.FIRST_ITEM_RESOURCE_ID)
-			return amountSupplyCache.get(id);
-		if (id < ResourceUtil.FIRST_VEHICLE_RESOURCE_ID)
-			return partSupplyCache.get(id);
-		if (id < ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID)
-			return vehicleSupplyCache.get(id);
-		if (id < ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID)
-			return equipmentSupplyCache.get(id);
-		
-		return 1; // For now, robot supply cache is 1
+		return supplyCache.get(good.getID());
 	}
-
 	
 	/**
 	 * Calculates the good value of a good.
@@ -3688,11 +3561,7 @@ public class GoodsManager implements Serializable {
 
 		deflationIndexMap = null;
 
-		amountSupplyCache = null;
-		partSupplyCache = null;
-
-		vehicleSupplyCache = null;
-		equipmentSupplyCache = null;
+		supplyCache = null;
 			
 		orbitRepairParts = null;
 

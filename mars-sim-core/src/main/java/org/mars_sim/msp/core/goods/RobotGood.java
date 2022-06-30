@@ -17,6 +17,9 @@ class RobotGood extends Good {
 	
 	private static final long serialVersionUID = 1L;
 	
+    private static double INITIAL_ROBOT_DEMAND = 10;
+    private static double INITIAL_ROBOT_SUPPLY = 10;
+
 	private static final int ROBOT_VALUE = 200;
 
     private RobotType robotType;
@@ -73,5 +76,15 @@ class RobotGood extends Good {
         double factor = Math.log(mass/50.0 + 1) / (5 + Math.log(quantity + 1));
         // Need to increase the value for robots
         return getCostOutput() * (1 + 2 * factor * Math.log(value + 1));
+    }
+
+    @Override
+    double getDefaultDemandValue() {
+        return INITIAL_ROBOT_DEMAND;
+    }
+
+    @Override
+    double getDefaultSupplyValue() {
+        return INITIAL_ROBOT_SUPPLY;
     }
 }

@@ -24,6 +24,9 @@ class AmountResourceGood extends Good {
 	private static final long serialVersionUID = 1L;
 	
 	// TODO, move these to the AmountResource class via XML config
+	private static final double INITIAL_AMOUNT_DEMAND = 0;
+	private static final double INITIAL_AMOUNT_SUPPLY = 0;
+
     private static final double CO2_VALUE = 0.0001;
 	private static final double CL_VALUE = 0.01;
 	private static final double ICE_VALUE = 1.5;
@@ -189,5 +192,15 @@ class AmountResourceGood extends Good {
 		double totalMass = Math.round(settlement.getAmountResourceStored(getID()) * 100.0)/100.0;
 		double factor = 1.5 / (.5 + Math.log(totalMass + 1));
 	    return getCostOutput() * (1 + 2 * factor * Math.log(value + 1));
+    }
+
+    @Override
+    double getDefaultDemandValue() {
+        return INITIAL_AMOUNT_DEMAND;
+    }
+
+    @Override
+    double getDefaultSupplyValue() {
+        return INITIAL_AMOUNT_SUPPLY;
     }
 }

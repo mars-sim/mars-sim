@@ -22,6 +22,8 @@ public class EquipmentGood extends Good {
 	
 	private static final long serialVersionUID = 1L;
 	
+	private static final double INITIAL_EQUIPMENT_DEMAND = 0;
+	private static final double INITIAL_EQUIPMENT_SUPPLY = 0;
 	private static final double EVA_SUIT_VALUE = 50;
 	private static final double CONTAINER_VALUE = .1;
 
@@ -113,4 +115,14 @@ public class EquipmentGood extends Good {
     	}
         return getCostOutput() * (1 + 2 * factor * Math.log(value + 1));   
     }
+
+	@Override
+	double getDefaultDemandValue() {
+		return INITIAL_EQUIPMENT_DEMAND;
+	}
+
+	@Override
+	double getDefaultSupplyValue() {
+		return INITIAL_EQUIPMENT_SUPPLY;
+	}
 }

@@ -30,6 +30,8 @@ class PartGood extends Good {
 	private static final double INSTRUMENT_VALUE = 1;
 	private static final double WIRE_VALUE = .005;
 	private static final double ELECTRONIC_VALUE = .5;
+    private static final double INITIAL_PART_DEMAND = 0;
+	private static final double INITIAL_PART_SUPPLY = 0;
 
     public PartGood(Part p) {
         super(p.getName(), p.getID());
@@ -124,5 +126,15 @@ class PartGood extends Good {
         double quantity = settlement.getItemResourceStored(getID()) ;
         double factor = 1.2 * Math.log(mass + 1) / (1.2 + Math.log(quantity + 1));
         return getCostOutput() * (1 + 5 * factor * Math.log(Math.sqrt(value)/2.0 + 1));
+    }
+
+    @Override
+    double getDefaultDemandValue() {
+        return INITIAL_PART_DEMAND;
+    }
+
+    @Override
+    double getDefaultSupplyValue() {
+        return INITIAL_PART_SUPPLY;
     }
 }

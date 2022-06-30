@@ -508,4 +508,14 @@ public abstract class Good implements Serializable, Comparable<Good> {
 	 * @param value Value Point for the good
 	 */
     abstract double getPrice(Settlement settlement, double value);
+
+	/**
+	 * Get the default initial demand value for this Good.
+	 */
+    abstract double getDefaultDemandValue();
+
+	/**
+	 * Get the default initial supply value for this Good.
+	 */
+    abstract double getDefaultSupplyValue();
 }

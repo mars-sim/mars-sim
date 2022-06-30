@@ -19,6 +19,8 @@ class VehicleGood extends Good {
 	
 	private static final long serialVersionUID = 1L;
 	
+    private static final double INITIAL_VEHICLE_DEMAND = 0;
+	private static final double INITIAL_VEHICLE_SUPPLY = 0;
 	private static final int VEHICLE_VALUE = 20;
 	private static final int LUV_VALUE = 750;
 	private static final int DRONE_VALUE = 50;
@@ -104,5 +106,15 @@ class VehicleGood extends Good {
         double quantity = settlement.findNumVehiclesOfType(vehicleType);
         double factor = Math.log(mass/1600.0 + 1) / (5 + Math.log(quantity + 1));
         return getCostOutput() * (1 + 2 * factor * Math.log(value + 1));
+    }
+
+    @Override
+    double getDefaultDemandValue() {
+        return INITIAL_VEHICLE_DEMAND;
+    }
+
+    @Override
+    double getDefaultSupplyValue() {
+        return INITIAL_VEHICLE_SUPPLY;
     }
 }
