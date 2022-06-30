@@ -38,7 +38,6 @@ public class TableWaitLayer {
 	private final JButton startButton = new JButton();
 	private final WaitLayerUI layerUI = new WaitLayerUI();
 
-	@SuppressWarnings("serial")
 	public JComponent makeUI() {
 		startButton.setAction(new AbstractAction("start") {
 			@Override

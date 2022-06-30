@@ -82,19 +82,13 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 		super(NAME, person, true, 25, null);
 
 		if (!person.isFit()) {
-			if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
+			checkLocation();
         	return;
 		}
 		
 		settlement = CollectionUtils.findSettlement(person.getCoordinates());
 		if (settlement == null) {
-        	if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
+			checkLocation();
 		}
 		
 		VehicleMission mission = getMissionNeedingUnloading();
@@ -114,10 +108,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 			// Add the rover to a garage if possible.
 			if (settlement.getBuildingManager().addToGarage(vehicle)) {
 				// no need of doing EVA
-	        	if (person.isOutside())
-	        		setPhase(WALK_BACK_INSIDE);
-	        	else
-	        		endTask();
+				checkLocation();
 	        	return;
 			}
 			
@@ -132,10 +123,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 			logger.log(person, Level.FINE, 20_000, "Going to unload "  + vehicle.getName() + ".");
 
 		} else {
-        	if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
+			checkLocation();
 		}
 	}
 
@@ -153,10 +141,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 		this.vehicle = vehicle;
 
 		if (!person.isFit()) {
-			if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
+			checkLocation();
         	return;
 		}
 		
@@ -200,49 +185,17 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 	 * @return the amount of time (millisol) after performing the phase.
 	 */
 	protected double unloadingPhase(double time) {		
-		if (isDone()){
-			if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
-        }
-		
-        // Check for radiation exposure during the EVA operation.
-        if (isRadiationDetected(time)){
-			if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
-        }
-		
-        // Check if there is a reason to cut short and return.
-        if (addTimeOnSite(time)){
-			if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
-        }
 	
-		if (!person.isFit()) {
-			if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
-		}
-
+		if (checkReadiness(time) > 0)
+			return time;
+		
 		if (settlement == null || vehicle == null) {
-        	if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
+			checkLocation();
 			return 0;
 		}
 
 		if (settlement.getBuildingManager().isInGarage(vehicle)) {
-        	if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
+			checkLocation();
 			return 0;
 		}
 		
@@ -390,10 +343,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 						+ " kg of resources from " + vehicle.getName() + ".");
 			}
 			
-        	if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
+			checkLocation();
 	        return 0;
 		}
 		

@@ -47,7 +47,7 @@ public class VehicleCommand extends AbstractSettlementCommand {
 				.collect(Collectors.toList());
 
 		response.appendTableHeading("Name", CommandHelper.PERSON_WIDTH, "Type", 15, 
-									"Status", "Home", "Reserved", "Mission", 25);
+									"Status", 7, "Home", "Reserved", "Mission", 25);
 
 		var missionMgr = context.getSim().getMissionManager();
 		for (Vehicle v : vlist) {

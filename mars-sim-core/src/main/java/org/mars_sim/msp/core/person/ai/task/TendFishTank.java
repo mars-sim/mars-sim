@@ -13,6 +13,7 @@ import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -123,8 +124,9 @@ public class TendFishTank extends Task implements Serializable {
 		}
 
 		// Get available greenhouse if any.
-		building = getAvailableFishTank(person);
-		if (building != null) {			
+		building = getAvailableFishTank(robot);
+		if (building != null) {		
+			
 			fishTank = building.getFishery();
 
 			// Walk to fishtank.
@@ -343,7 +345,7 @@ public class TendFishTank extends Task implements Serializable {
 		Robot robot = null;
 		BuildingManager buildingManager;
 
-		if (unit instanceof Person) {
+		if (unit.getUnitType() == UnitType.PERSON) {
 			person = (Person) unit;
 			if (person.isInSettlement()) {
 				buildingManager = person.getSettlement().getBuildingManager();
@@ -357,7 +359,7 @@ public class TendFishTank extends Task implements Serializable {
 			}
 		}
 
-		else if (unit instanceof Robot) {
+		else {
 			robot = (Robot) unit;
 			if (robot.isInSettlement()) {
 				buildingManager = robot.getSettlement().getBuildingManager();

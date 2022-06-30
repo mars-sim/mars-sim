@@ -132,17 +132,6 @@ implements Serializable {
 
         setPhase(WALK_TO_OUTSIDE_SITE);
     }
-
-	/**
-	 * Checks to see if the person is supposed to be outside.
-	 * 
-	 */
-	private void checkLocation() {
-		if (person.isOutside())
-            setPhase(WALK_BACK_INSIDE);
-    	else
-        	endTask();
-	}
 	
 	/**
 	 * Gets the settlement where digging is taking place.
@@ -198,23 +187,9 @@ implements Serializable {
      */
     private double collectResource(double time) {
 
-		// Check for radiation exposure during the EVA operation.
-		if (isDone() || isRadiationDetected(time)) {
-        	checkLocation();
+		if (checkReadiness(time) > 0)
 			return time;
-		}
-
-        // Check if there is any EVA problems and if on-site time is over.
-		if (shouldEndEVAOperation() || addTimeOnSite(time)) {
-			checkLocation();
-			return time;
-		}
-
-		if (!person.isFit()) {
-			checkLocation();
-			return time;
-		}
-
+		
      	if (person.isInSettlement()) {
      		endTask();
      		return 0;
@@ -279,7 +254,6 @@ implements Serializable {
             logger.log(person, Level.FINE, 4_000, "Collected a total of "
             	+ Math.round(totalCollected*100D)/100D
         		+ " kg " + resourceName + ".");
-
             checkLocation();
          	return 0;
     	}

@@ -376,12 +376,12 @@ public abstract class OperateVehicle extends Task implements Serializable {
 			logger.severe("time is " + time);
         	return 0;
 		}
-		
+
         double result = 0;
-   
+
         double remainingFuel = vehicle.getAmountResourceStored(fuelType);
         double remainingOxidizer = vehicle.getAmountResourceStored(OXYGEN_ID);
-        
+
     	// Case 0 : no fuel or oxidizer left     
         if (!vehicle.isInSettlement()) {
         	if (remainingFuel < LEAST_AMOUNT) {
@@ -389,11 +389,11 @@ public abstract class OperateVehicle extends Task implements Serializable {
     					"Case A: Out of fuel. Cannot drive.");
         		// Turn on emergency beacon
     	    	turnOnBeaconOutOfFuel();
-            	
+
             	endTask();
             	return time;
         	}
-             
+
         	else if (remainingOxidizer < LEAST_AMOUNT) {
         		logger.log(vehicle, Level.SEVERE, 20_000, 
     					"Case B: Out of fuel oxidizer. Cannot drive.");
@@ -459,7 +459,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
         }
         
         // Case 1
-        if (startingDistanceToDestination <= (d_km + DESTINATION_BUFFER)) {
+        else if (startingDistanceToDestination <= (d_km + DESTINATION_BUFFER)) {
         	logger.log(vehicle, Level.CONFIG,  20_000L, "Case 1: Arriving near "
         			+ destination + " - only " 
         			+ Math.round(startingDistanceToDestination * 1_000)/1_000 + " km away.");

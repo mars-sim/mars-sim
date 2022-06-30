@@ -68,12 +68,12 @@ implements SettlementMapLayer {
 	private static final Color VEHICLE_LABEL_COLOR = new Color(249, 134, 134); // light-red //127, 0, 127); // magenta-purple
 	private static final Color VEHICLE_LABEL_OUTLINE_COLOR = new Color(0, 0, 0, 150);//(255, 255, 255, 190);
 
-	static final Color FEMALE_COLOR = new Color(255, 153, 225); // light bright pink
+	static final Color FEMALE_COLOR = new Color(159, 7, 118); //dark pinkish purple  //(255, 153, 225) light bright pink
 	static final Color FEMALE_SELECTED_COLOR = FEMALE_COLOR.darker();
 	static final Color FEMALE_OUTLINE_COLOR = Color.MAGENTA;
 	static final Color FEMALE_SELECTED_OUTLINE_COLOR = FEMALE_OUTLINE_COLOR.darker();
 	
-	static final Color MALE_COLOR = new Color(154, 204, 255); // light blue
+	static final Color MALE_COLOR = new Color(0, 0, 128); //navy blue      //(154, 204, 255) light blue
 	static final Color MALE_SELECTED_COLOR = MALE_COLOR.darker();
 	static final Color MALE_OUTLINE_COLOR = Color.cyan.darker(); // (210, 210, 210, 190).brighter();
 	static final Color MALE_SELECTED_OUTLINE_COLOR = MALE_OUTLINE_COLOR.darker();

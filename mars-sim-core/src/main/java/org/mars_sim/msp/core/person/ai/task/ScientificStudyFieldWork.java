@@ -127,10 +127,7 @@ public abstract class ScientificStudyFieldWork extends EVAOperation implements S
 		if (isDone() || isRadiationDetected(time)
 				|| shouldEndEVAOperation() || addTimeOnSite(time)
 				|| performStudy(time)) {
-			if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
+			checkLocation();
 			return time;
 		}
 

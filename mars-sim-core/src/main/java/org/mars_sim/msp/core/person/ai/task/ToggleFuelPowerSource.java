@@ -69,7 +69,6 @@ implements Serializable {
     /** The building the resource process is in. */
     private Building building;
 
-
     /**
      * Constructor
      * @param person the person performing the task.
@@ -79,11 +78,7 @@ implements Serializable {
         super(NAME_ON, person, false, 0D, SkillType.MECHANICS);
 
 		if (!person.isFit()) {
-			if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
-        	return;
+			checkLocation();
 		}
 
         building = getFuelPowerSourceBuilding(person);
@@ -92,10 +87,7 @@ implements Serializable {
             powerSource = getFuelPowerSource(building);
 
             if (powerSource == null) {
-            	if (person.isOutside())
-            		setPhase(WALK_BACK_INSIDE);
-            	else
-            		endTask();
+            	checkLocation();
             	return;
             }
 
@@ -432,8 +424,19 @@ implements Serializable {
      * @return the amount of time (millisols) left over after performing the phase.
      */
     private double togglePowerSourcePhase(double time) {
-    	// Check for end task conditions
-    	checkEndTask(time);
+    	
+		if (checkReadiness(time) > 0)
+			return time;
+		
+        // If person is incapacitated, end task.
+        if (person.getPerformanceRating() == 0D) {
+        	checkLocation();
+        }
+
+        // Check if toggle has already been completed.
+        if (powerSource.isToggleON() == toggleOn) {
+            checkLocation();
+        }
 
         if (isDone()) {
 			endTask();
@@ -469,55 +472,6 @@ implements Serializable {
         return 0D;
     }
 
-    /**
-     * Checks if it fits any end task conditions
-     *
-     * @param time
-     */
-    private void checkEndTask(double time) {
-        // Check for radiation exposure during the EVA operation.
-        if (isDone() || isRadiationDetected(time)){
-			if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
-        }
-
-        // Check if there is a reason to cut short and return.
-        if (shouldEndEVAOperation() || addTimeOnSite(time)){
-			if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
-        }
-
-		if (!person.isFit()) {
-			if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
-		}
-
-        // If person is incapacitated, end task.
-        if (person.getPerformanceRating() == 0D) {
-            if (person.isOutside()) {
-                setPhase(WALK_BACK_INSIDE);
-            }
-            else {
-                endTask();
-            }
-        }
-
-        // Check if toggle has already been completed.
-        if (powerSource.isToggleON() == toggleOn) {
-            if (person.isOutside()) {
-                setPhase(WALK_BACK_INSIDE);
-            }
-            else {
-                endTask();
-            }
-        }
-    }
 
     /**
      * Check for accident with entity during toggle resource phase.
@@ -534,6 +488,6 @@ implements Serializable {
 
         // Mechanic skill modification.
         int skill = person.getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
-        checkForAccident(building, time, .005D, skill, null);
+        checkForAccident(building, time, .005D, skill, powerSource.toString());
     }
 }
