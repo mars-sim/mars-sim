@@ -99,19 +99,19 @@ public abstract class Mission implements Serializable, Temporal {
 	/**
 	 * The marginal factor for the amount of water to be brought during a mission.
 	 */
-	public static final double WATER_MARGIN = 1.5;
+	public static final double WATER_MARGIN = 1.0;
 	/**
 	 * The marginal factor for the amount of oxygen to be brought during a mission.
 	 */
-	public static final double OXYGEN_MARGIN = 1.5;
+	public static final double OXYGEN_MARGIN = 1.25;
 	/**
 	 * The marginal factor for the amount of food to be brought during a mission.
 	 */
-	public static final double FOOD_MARGIN = 1.5;
+	public static final double FOOD_MARGIN = 1.25;
 	/**
 	 * The marginal factor for the amount of dessert to be brought during a mission.
 	 */
-	public static final double DESSERT_MARGIN = 1.5;
+	public static final double DESSERT_MARGIN = 1.25;
 
 
 	// Data members

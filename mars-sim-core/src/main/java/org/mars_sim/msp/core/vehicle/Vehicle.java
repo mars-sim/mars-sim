@@ -181,7 +181,7 @@ public abstract class Vehicle extends Unit
 	/** The base fuel economy of the vehicle [km/kg]. */
 	private double baseFuelEconomy;
 	/** The estimated average fuel economy of the vehicle for a trip [km/kg]. */
-	private double estimatedAveFuelEconomy;
+	private double estimatedFuelEconomy;
 	/** The instantaneous fuel economy of the vehicle [km/kg]. */
 	private double iFuelEconomy;
 	/** The base fuel consumption of the vehicle [Wh/km]. See https://ev-database.org/cheatsheet/energy-consumption-electric-car */
@@ -416,7 +416,7 @@ public abstract class Vehicle extends Unit
 		
 		else if (vehicleType == VehicleType.LUV) {
 			// Hard-code percent energy usage for this vehicle.
-			otherEnergyUsage = 80.0;
+			otherEnergyUsage = 30.0;
 			// Gets the estimated energy available for drivetrain [in kWh]
 			drivetrainEnergy = energyCapacity * (1.0 - otherEnergyUsage / 100.0) * drivetrainEfficiency;
 			// Gets the maximum total # of hours the vehicle is capable of operating
@@ -500,7 +500,7 @@ public abstract class Vehicle extends Unit
 		}
 
 		// Gets the estimated average fuel economy for a trip [km/kg]
-		estimatedAveFuelEconomy = baseFuelEconomy * beginningMass / endMass * .75;
+		estimatedFuelEconomy = baseFuelEconomy * beginningMass / endMass * .75;
 		// Gets the base acceleration [m/s2]
 		baseAccel = peakPower / beginningMass / baseSpeed * 1000 * 3.6;
 
@@ -517,7 +517,7 @@ public abstract class Vehicle extends Unit
     		 	"totalHours: " + Math.round(totalHours * 100.0)/100.0 + " hr   "
     		 	+ "baseRange: " + Math.round(baseRange * 100.0)/100.0 + " km   "
     		 	+ "baseFuelEconomy: " + Math.round(baseFuelEconomy * 100.0)/100.0 + KM_KG
-    		 	+ "estimatedAveFuelEconomy: " + Math.round(estimatedAveFuelEconomy * 100.0)/100.0 + KM_KG
+    		 	+ "estimatedAveFuelEconomy: " + Math.round(estimatedFuelEconomy * 100.0)/100.0 + KM_KG
     	    	+ "initial FuelEconomy: " + Math.round(getInitialFuelEconomy() * 100.0)/100.0 + KM_KG     		 	
 	 			+ "baseFuelConsumption: " + Math.round(baseFuelConsumption * 100.0)/100.0 + " Wh/km   ");
     		 	
@@ -1062,16 +1062,6 @@ public abstract class Vehicle extends Unit
 		return baseSpeed;
 	}
 
-//	/**
-//	 * Sets the base speed of vehicle
-//	 *
-//	 * @param speed the vehicle's base speed (in km/hr)
-//	 */
-//	public void setBaseSpeed(double speed) {
-//		if (speed < 0D)
-//			throw new IllegalArgumentException("Vehicle base speed cannot be less than 0 km/hr");
-//		baseSpeed = speed;
-//	}
 
 	/**
 	 * Gets the current fuel range of the vehicle.
@@ -1088,18 +1078,18 @@ public abstract class Vehicle extends Unit
 
         if (mission == null) {
         	// Before the mission is created, the range would be based on vehicle's capacity
-        	range = estimatedAveFuelEconomy * fuelCapacity * getBaseMass() / getMass();// * fuel_range_error_margin
+        	range = estimatedFuelEconomy * fuelCapacity * getBaseMass() / getMass();// * fuel_range_error_margin
         }
         else if (VehicleMission.REVIEWING.equals(mission.getPhase())
         	|| VehicleMission.EMBARKING.equals(mission.getPhase())) {
         	// Before loading/embarking phase, the amountOfFuel to be loaded is still zero.
         	// So the range would be based on vehicle's capacity
-        	range = estimatedAveFuelEconomy * fuelCapacity * getBaseMass() / getMass();
+        	range = estimatedFuelEconomy * fuelCapacity * getBaseMass() / getMass();
         }
         else {
             double amountOfFuel = getAmountResourceStored(getFuelType());
         	// During the journey, the range would be based on the amount of fuel in the vehicle
-    		range = estimatedAveFuelEconomy * amountOfFuel * getBaseMass() / getMass();
+    		range = estimatedFuelEconomy * amountOfFuel * getBaseMass() / getMass();
         }
 
 		range = Math.min(radius, (int)range);
@@ -1154,7 +1144,7 @@ public abstract class Vehicle extends Unit
 	}
 	
 	/**
-	 * Gets the fuel to drive energy conversion.
+	 * Gets the fuel to energy conversion factor.
 	 * 
 	 * @return
 	 */
@@ -1168,6 +1158,8 @@ public abstract class Vehicle extends Unit
 	 * @return
 	 */
 	public double getCumFuelEconomy() {
+		if (fuelCumUsed == 0.0d)
+			return 0;
 		return odometerMileage / fuelCumUsed;
 	}
 	
@@ -1243,7 +1235,7 @@ public abstract class Vehicle extends Unit
 	 * @return
 	 */
 	public double getInitialFuelEconomy() {
-		return estimatedAveFuelEconomy * (startMass + beginningMass) / 2.0 / getMass();
+		return estimatedFuelEconomy * (startMass + beginningMass) / 2.0 / getMass();
 	}
 
 	/**
@@ -1266,8 +1258,8 @@ public abstract class Vehicle extends Unit
 	 *
 	 * @return
 	 */
-	public double getEstimatedAveFuelEconomy() {
-		return estimatedAveFuelEconomy;
+	public double getEstimatedFuelEconomy() {
+		return estimatedFuelEconomy;
 	}
 
 	/**

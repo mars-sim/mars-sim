@@ -67,7 +67,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	protected static final int FOOD_ID = ResourceUtil.foodID;
 	
 	/** The factor for estimating the adjusted fuel economy. */
-	protected static final double FE_FACTOR = 2.0;
+	protected static final double FE_FACTOR = 3.0;
 	
 	/** Mission phases. */
 	public static final MissionPhase REVIEWING = new MissionPhase("Mission.phase.reviewing");
@@ -387,8 +387,8 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 			if (vehicle.getStoredMass() > 0D)
 				usable = false;
 
-			logger.log(vehicle, Level.FINER, 1000, "Was checked on the status: (available : "
-						+ usable + ") for " + getTypeID() + ".");
+			logger.log(vehicle, Level.FINER, 1000, "Availability : "
+						+ usable + " [ID: " + getTypeID() + "].");
 			return usable;
 
 		} else {
@@ -646,7 +646,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 		double tripTime = getEstimatedRemainingMissionTime(true);
 		if (tripTime == 0) {
 			// Disapprove this mission
-			logger.warning(settlement, "Has estimated zero trip time");
+			logger.warning(settlement, "Estimated zero trip time");
 			return false;
 		}
 
@@ -673,23 +673,19 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 		double result = tripDistance / fuelEconomy;
 		double factor = 1;
 		if (useMargin) {
-			if (tripDistance < 1000) {
+			if (tripDistance < 200) {
 				// Note: use formula below to add more extra fuel for short travel distance on top of the fuel margin
-				// For short trips, there has been a history of getting stranded and require 4x more fuel to come back home
-				factor = Vehicle.getFuelRangeErrorMargin() + (2 - 0.002 * tripDistance);
-				}
-			else {
-				// beyond 1000 km, no more modding on top of the fuel margin
-				factor = Vehicle.getFuelRangeErrorMargin();
-			}
-
+				// in case of getting stranded locally
+				factor = - tripDistance / 100.0 + 3 ;
+			}	
+			factor *= Vehicle.getFuelRangeErrorMargin();
 			result *= factor;
 		}
 
-		logger.info(vehicle, 30_000, "Est Trip Distance: " + Math.round(tripDistance * 10.0)/10.0 + " km   "
-				+ "Est Fuel Economy: " + Math.round(fuelEconomy * 10.0)/10.0 + " km/kg   "
-				+ "Fuel Margin: " + Math.round(factor * 10.0)/10.0 + "   "
-				+ "Est Fuel with margin: " + Math.round(result * 10.0)/10.0 + " kg");
+		logger.info(vehicle, 20_000, "Projected Trip Distance: " + Math.round(tripDistance * 10.0)/10.0 + " km   "
+				+ "Projected Fuel Economy: " + Math.round(fuelEconomy * 10.0)/10.0 + " km/kg   "
+				+ "Margin for Fuel: " + Math.round(factor * 10.0)/10.0 + "   "
+				+ "Fuel needed: " + Math.round(result * 10.0)/10.0 + " kg");
 
 		return result;
 	}
@@ -1046,12 +1042,12 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 					|| getPhase().equals(VehicleMission.REVIEWING)
 					|| useMargin) {
 				amount = getFuelNeededForTrip(vehicle, distance, 
-						(vehicle.getCumFuelEconomy() + vehicle.getEstimatedAveFuelEconomy()) /FE_FACTOR, true);
+						vehicle.getEstimatedFuelEconomy(), true);
 				// Use margin only when estimating how much fuel needed before starting the mission
 			}
 			else {
 				amount = getFuelNeededForTrip(vehicle, distance, 
-						(vehicle.getCumFuelEconomy() + vehicle.getIFuelEconomy()) / FE_FACTOR, false);
+						(vehicle.getEstimatedFuelEconomy() + vehicle.getInitialFuelEconomy()) / FE_FACTOR, false);
 				// When the vehicle is already on the road, do NOT use margin
 				// or else it would constantly complain not having enough fuel
 			}
@@ -1212,7 +1208,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 
 		if (newDestination == oldHome) {
 			// If the closest settlement is already the next navpoint.
-			logger.log(vehicle, Level.WARNING, 10000, "Emergency encountered.  Returning to home settlement (" + newDestination.getName()
+			logger.log(vehicle, Level.WARNING, 10_000L, "Emergency encountered.  Returning to home settlement (" + newDestination.getName()
 					+ ") : " + Math.round(newDistance * 100D) / 100D
 					+ " km    Duration : "
 					+ Math.round(newTripTime * 100.0 / 1000.0) / 100.0 + " sols");
@@ -1222,7 +1218,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 
 		else {
 			// If the closet settlement is not the home settlement
-			logger.log(vehicle, Level.WARNING, 10000, "Emergency encountered.  Home settlement (" + oldHome.getName() + ") : "
+			logger.log(vehicle, Level.WARNING, 10_000L, "Emergency encountered.  Home settlement (" + oldHome.getName() + ") : "
 					+ Math.round(oldDistance * 100D) / 100D
 					+ " km    Going to nearest Settlement (" + newDestination.getName() + ") : "
 					+ Math.round(newDistance * 100D) / 100D
