@@ -351,61 +351,71 @@ public class GoodsManager implements Serializable {
 		initialized = true;
 	}
 
+	
 	/**
-	 * Determines the value of a good.
+	 * Determines the value of a good. This reclaculated the Supply & Demand in addition.
 	 *
 	 * @param good     the good to check.
 	 * @return value of good.
 	 */
 	public double determineGoodValue(Good good) {
-		return determineGoodValue(good, 0, false);
-	}
-	
-	/**
-	 * Determines the value of a good with a designated value of supply.
-	 *
-	 * @param good     the good to check.
-	 * @param supply   the current supply (# of items) of the good.
-	 * @param useCache use demand and trade caches to determine value?
-	 * @return value of good.
-	 */
-	private double determineGoodValue(Good good, double supply, boolean useCache) {
 		if (good != null) {
-
-			double previousDemand = getDemandValue(good);
-
-			if (useCache) {
-				return previousDemand / supply;
-			}
-
-			double value = 0D;
 
 			switch(good.getCategory()) {
 			case AMOUNT_RESOURCE:
-				value = determineAmountResourceGoodValue(good, supply);
+				determineAmountResourceGoodValue(good);
 				break;
 
 			case ITEM_RESOURCE:
-				value = determineItemResourceGoodValue(good, supply);
+				determineItemResourceGoodValue(good);
 				break;
 
 			case EQUIPMENT:
 			case CONTAINER:
-				value = determineEquipmentGoodValue(good, supply);
+				determineEquipmentGoodValue(good);
 				break;
 
 			case VEHICLE:
-				value = determineVehicleGoodValue(good, supply);
+				determineVehicleGoodValue(good);
 				break;
 
 			case ROBOT:
 				// Why no Robot good value ?
-				value = 0D;
+				// Use the existing cached values
 				break;
 			}
 
-			settlement.fireUnitUpdate(UnitEventType.GOODS_VALUE_EVENT, good);
-			
+			int id = good.getID();
+		
+			// Calculate the value point
+			double totalSupply = supplyCache.get(id);
+			double totalDemand = demandCache.get(id);
+			double value = totalDemand / totalSupply;
+
+			// Check if it surpasses MAX_VP
+			if (value > MAX_VP) {
+				// Update deflationIndexMap for other resources of the same category
+				value = updateDeflationMap(id, value, good.getCategory(), true);
+			}
+			// Check if it falls below MIN_VP
+			else if (value < MIN_VP) {
+				// Update deflationIndexMap for other resources of the same category
+				updateDeflationMap(id, value, good.getCategory(), false);
+			}
+
+			// Check for inflation and deflation adjustment due to other resources
+			value = checkDeflation(id, value);
+			// Adjust the value to the average value
+			value = tuneToAverageValue(good, value);
+
+			// Save the value point if it has changed
+			double oldValue = goodsValues.get(id);
+			if (oldValue != value) {
+				goodsValues.put(id, value);
+
+				settlement.fireUnitUpdate(UnitEventType.GOODS_VALUE_EVENT, good);
+			}
+
 			return value;
 		} else
 			logger.severe(settlement, "Good is null.");
@@ -417,14 +427,10 @@ public class GoodsManager implements Serializable {
 	 * Determines the value of an amount resource.
 	 *
 	 * @param good the amount resource good.
-	 * @param supply       the current supply (kg) of the good.
-	 * @return value the value point 
 	 */
-	private double determineAmountResourceGoodValue(Good good, double supply) {	
+	private void determineAmountResourceGoodValue(Good good) {	
 		int id = good.getID();
 		double previousDemand = getDemandValue(good);
-
-		double value = 0;
 
 		double average = 0;
 		double trade = 0;
@@ -499,30 +505,7 @@ public class GoodsManager implements Serializable {
 		totalSupply = limitMaxMin(getAverageAmountSupply(settlement.getAmountResourceStored(id), numSol), MIN_SUPPLY, MAX_SUPPLY);
 
 		// Store the average supply
-		setSupplyValue( good, totalSupply);
-		
-		// Calculate the value point
-		value = totalDemand / totalSupply;
-
-		// Check if it surpasses MAX_VP
-		if (value > MAX_VP) {
-			// Update deflationIndexMap for other resources of the same category
-			value = updateDeflationMap(id, value, good.getCategory(), true);
-		}
-		// Check if it falls below MIN_VP
-		else if (value < MIN_VP) {
-			// Update deflationIndexMap for other resources of the same category
-			value = updateDeflationMap(id, value, good.getCategory(), false);
-		}
-
-		// Check for inflation and deflation adjustment due to other resources
-		value = checkDeflation(id, value);
-		// Adjust the value to the average value
-		value = tuneToAverageValue(good, value);
-		// Save the value point
-		goodsValues.put(id, value);
-		
-		return value;
+		setSupplyValue(good, totalSupply);
 	}
 
 
@@ -1480,7 +1463,7 @@ public class GoodsManager implements Serializable {
 		double result = 0;
 		String name = good.getName();
 
-		List<ManufactureProcessInfo> manufactureProcessInfos = new ArrayList<ManufactureProcessInfo>();
+		List<ManufactureProcessInfo> manufactureProcessInfos = new ArrayList<>();
 		Iterator<ManufactureProcessInfo> i = ManufactureUtil.getAllManufactureProcesses().iterator();
 		while (i.hasNext()) {
 			ManufactureProcessInfo process = i.next();
@@ -2046,14 +2029,11 @@ public class GoodsManager implements Serializable {
 	 * Determines the value of an item resource.
 	 *
 	 * @param good the resource good to check.
-	 * @param supply       the current supply (# items) of the good.
-	 * @return value (Value Points / item)
 	 */
-	private double determineItemResourceGoodValue(Good good, double supply) {
+	private void determineItemResourceGoodValue(Good good) {
 		int id = good.getID();
 		double previousDemand = getDemandValue(good);
 		
-		double value = 1;
 		double totalDemand = 0;
 		double average = 0;
 		double totalSupply = 0;
@@ -2126,30 +2106,6 @@ public class GoodsManager implements Serializable {
 
 		// Save the average supply
 		setSupplyValue(good, totalSupply);
-
-		// Calculate item value
-		value = totalDemand / totalSupply;
-
-		// Check if it surpass the max VP
-		if (value > MAX_VP) {
-			// Update deflationIndexMap for other resources of the same category
-			value = updateDeflationMap(id, value, good.getCategory(), true);
-		}
-		// Check if it falls below 1
-		else if (value < MIN_VP) {
-			// Update deflationIndexMap for other resources of the same category
-			value = updateDeflationMap(id, value, good.getCategory(), false);
-		}
-
-		// Check for inflation and deflation adjustment due to other resources
-		value = checkDeflation(id, value);
-		// Adjust the value to the average value
-		value = tuneToAverageValue(good, value);
-				
-		// Save the value point
-		goodsValues.put(id, value);
-
-		return value;
 	}
 
 	/**
@@ -2662,10 +2618,8 @@ public class GoodsManager implements Serializable {
 	 * Determines the value of an equipment.
 	 *
 	 * @param good the equipment good to check.
-	 * @param supply        the current supply (# of items) of the good.
-	 * @return the value (value points)
 	 */
-	private double determineEquipmentGoodValue(Good good, double supply) {
+	private void determineEquipmentGoodValue(Good good) {
 		int id = good.getID();
 		double previousDemand = getDemandValue(good);
 
@@ -2680,13 +2634,7 @@ public class GoodsManager implements Serializable {
 		// Determine average demand.
 		double average = determineEquipmentDemand(equipmentType);
 
-		double totalSupply = 0;
-		
-		if (supply > 0)
-			// For estimating trade/delivery mission, use specified resources as supply
-			totalSupply = getAverageEquipmentSupply(supply, numSol);
-		else
-			totalSupply = getAverageEquipmentSupply(settlement.findNumContainersOfType(equipmentType), numSol);
+		double totalSupply = getAverageEquipmentSupply(settlement.findNumContainersOfType(equipmentType), numSol);
 		
 		totalSupply = limitMaxMin(totalSupply, MIN_SUPPLY, MAX_SUPPLY);
 		
@@ -2709,29 +2657,6 @@ public class GoodsManager implements Serializable {
 		totalDemand = limitMaxMin(totalDemand, MIN_DEMAND, MAX_DEMAND);
 		
 		setDemandValue(good, totalDemand);
-
-		double value = totalDemand / totalSupply;
-
-		// Check if it surpass the max VP
-		if (value > MAX_VP) {
-			// Update deflationIndexMap for other resources of the same category
-			value = updateDeflationMap(id, value, good.getCategory(), true);
-		}
-		// Check if it falls below 1
-		else if (value < MIN_VP) {
-			// Update deflationIndexMap for other resources of the same category
-			value = updateDeflationMap(id, value, good.getCategory(), false);
-		}
-
-		// Check for inflation and deflation adjustment due to other equipment
-		value = checkDeflation(id, value);
-		// Adjust the value to the average value
-		value = tuneToAverageValue(good, value);
-
-		// Save the value point
-		goodsValues.put(id, value);
-
-		return value;
 	}
 
 	/**
@@ -2832,12 +2757,9 @@ public class GoodsManager implements Serializable {
 	 * Determines the value of a vehicle good.
 	 *
 	 * @param good the vehicle good.
-	 * @param supply      the current supply (# of vehicles) of the good.
-	 * @return the value (value points).
 	 */
-	private double determineVehicleGoodValue(Good good, double supply) {
+	private void determineVehicleGoodValue(Good good) {
 		
-		int id = good.getID();
 		double previousDemand = getDemandValue(good);
 
 		// Needed for loading a saved sim
@@ -2870,28 +2792,6 @@ public class GoodsManager implements Serializable {
 		totalDemand = limitMaxMin(totalDemand, MIN_DEMAND, MAX_DEMAND);
 				
 		setDemandValue(good, totalDemand);
-
-		double value = totalDemand / totalSupply;
-		
-		// Check if it surpass the max VP
-		if (value > MAX_VP) {
-			// Update deflationIndexMap for other resources of the same category
-			value = updateDeflationMap(id, value, good.getCategory(), true);
-		}
-		// Check if it falls below 1
-		else if (value < MIN_VP) {
-			// Update deflationIndexMap for other resources of the same category
-			value = updateDeflationMap(id, value, good.getCategory(), false);
-		}
-
-		// Check for inflation and deflation adjustment due to other vehicle
-		value = checkDeflation(id, value);
-		// Adjust the value to the average value
-		value = tuneToAverageValue(good, value);
-		// Save the value point
-		goodsValues.put(id, value);
-		
-		return value;
 	}
 
 	/**
@@ -3485,11 +3385,12 @@ public class GoodsManager implements Serializable {
 	}
 
 	private void setDemandValue(Good good, double newValue) {
-		//double oldValue = getDemandValue(good);
+		double oldValue = getDemandValue(good);
 		demandCache.put(good.getID(), newValue);
 
-		//logger.info(settlement, "Demand cache update for " + good.getName() + " old=" + oldValue + " new=" + newValue
-		//			+ " size=" + demandCache.size());
+		// if (oldValue != newValue) {
+		// 	logger.info(settlement, "Demand updated for " + good.getName() + " old=" + oldValue + " new=" + newValue);
+		// }
 	}
 
 	private void setSupplyValue(Good good, double newValue) {
@@ -3507,11 +3408,8 @@ public class GoodsManager implements Serializable {
 	 * @return value (VP)
 	 */
 	public double determineGoodValueWithSupply(Good good, double supply) {
-		if (goodsValues.containsKey(good.getID()))
-			return determineGoodValue(good, supply, true);
-		else
-			logger.severe(settlement, " - Good Value of : " + good + " not valid.");
-		return 0;
+		double previousDemand = getDemandValue(good);
+		return previousDemand / supply;
 	}
 
 	/**
