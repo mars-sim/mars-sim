@@ -244,21 +244,21 @@ public class TabPanelAirComposition extends TabPanel {
 			}
 		});
 
-		WebPanel pressure_p = new WebPanel(new FlowLayout());
-		pressure_p.setBorder(BorderFactory.createTitledBorder("Pressure"));
+		WebPanel pressure_p = new WebPanel(new FlowLayout(FlowLayout.CENTER, 3, 3));
+		pressure_p.setBorder(BorderFactory.createTitledBorder("Pressure "));
 		pressure_p.add(kPa_btn);
 		pressure_p.add(atm_btn);
 		pressure_p.add(mb_btn);
 		pressure_p.add(psi_btn);
 		radioPane.add(pressure_p);
 		
-		WebPanel mass_p = new WebPanel(new FlowLayout());
-		mass_p.setBorder(BorderFactory.createTitledBorder("Mass"));
+		WebPanel mass_p = new WebPanel(new FlowLayout(FlowLayout.CENTER, 3, 3));
+		mass_p.setBorder(BorderFactory.createTitledBorder("Mass "));
 		mass_p.add(mass_btn);
 		radioPane.add(mass_p);
     
-		WebPanel vol_p = new WebPanel(new FlowLayout());
-		vol_p.setBorder(BorderFactory.createTitledBorder("Content"));
+		WebPanel vol_p = new WebPanel(new FlowLayout(FlowLayout.CENTER, 3, 3));
+		vol_p.setBorder(BorderFactory.createTitledBorder("Vol "));
 		vol_p.add(percent_btn);
 		radioPane.add(vol_p);
 

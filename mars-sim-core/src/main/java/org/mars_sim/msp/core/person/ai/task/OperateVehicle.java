@@ -74,7 +74,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
 	/** Comparison to indicate a small but non-zero amount of fuel (methane) in kg that can still work on the fuel cell to propel the engine. */
     private static final double LEAST_AMOUNT = RoverMission.LEAST_AMOUNT;
     /** Distance buffer for arriving at destination (km). */
-    private static final double DESTINATION_BUFFER = .001D;
+    private static final double DESTINATION_BUFFER = .000_1;
     /** The base percentage chance of an accident while operating vehicle per millisol. */
     public static final double BASE_ACCIDENT_CHANCE = .01D;
     /** Sometimes a negative speed is calculated due to modifiers. */
@@ -83,6 +83,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
 	private static final String KG = " kg   ";
 	private static final String N = " N   ";
 	private static final String KM_KG = " km/kg   ";
+	private static final String WH_KM = " Wh/km   ";
 	private static final String KM = " km   ";
 	private static final String KW = " kW   ";
 			
@@ -374,23 +375,6 @@ public abstract class OperateVehicle extends Task implements Serializable {
 		
         double result = 0;
    
-        // Find starting distance to destination.
-        double startingDistanceToDestination = getDistanceToDestination();
-        
-        if (Double.isNaN(startingDistanceToDestination)) {
-        	logger.severe("startingDistance is " + startingDistanceToDestination );
-        	return time;
-        }
-        
-        if (startingDistanceToDestination <= DESTINATION_BUFFER) {
-        	logger.log(vehicle, Level.CONFIG,  20_000L, "Case 0: Arrived near a destination.");
-
-        	// Stop the vehicle
-        	haltVehicle();
-            
-        	return time;
-        }
-        
         double remainingFuel = vehicle.getAmountResourceStored(fuelType);
         double remainingOxidizer = vehicle.getAmountResourceStored(OXYGEN_ID);
         
@@ -398,7 +382,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
         if (!vehicle.isInSettlement()) {
         	if (remainingFuel < LEAST_AMOUNT) {
         		logger.log(vehicle, Level.SEVERE, 20_000, 
-    					"Out of fuel. Cannot drive.");
+    					"Case A: Out of fuel. Cannot drive.");
         		// Turn on emergency beacon
     	    	turnOnBeaconOutOfFuel();
             	
@@ -408,14 +392,14 @@ public abstract class OperateVehicle extends Task implements Serializable {
              
         	else if (remainingOxidizer < LEAST_AMOUNT) {
         		logger.log(vehicle, Level.SEVERE, 20_000, 
-    					"Out of fuel oxidizer. Cannot drive.");
+    					"Case B: Out of fuel oxidizer. Cannot drive.");
         		// Turn on emergency beacon
     	    	turnOnBeaconOutOfFuel();
             	
             	endTask();
             	return time;
             }
-        }
+        }    
         
         // Determine the hours used.
         double hrsTime = MarsClock.HOURS_PER_MILLISOL * time;
@@ -426,8 +410,42 @@ public abstract class OperateVehicle extends Task implements Serializable {
         // Determine distance traveled in time given.
         double distanceTraveled = hrsTime * v; // [in km]
         
+        double startingDistanceToDestination = 0;
+        
+        if (Double.isNaN(startingDistanceToDestination)) {
+        	logger.severe("startingDistance is " + startingDistanceToDestination );
+        	return time;
+        }
+        
         if (Double.isNaN(distanceTraveled)) {
-        	logger.severe("distancedtraveled is " + distanceTraveled);
+        	logger.severe("distancedtraveled is NaN.");
+        	return time;
+        }
+           
+        // Find the starting distance here to destination.
+        startingDistanceToDestination = getDistanceToDestination();
+        
+        // Case 0
+        if (startingDistanceToDestination <= DESTINATION_BUFFER) {
+        	logger.log(vehicle, Level.CONFIG,  20_000L, "Case 0: Arrived near a destination.");
+
+        	// Note: Need to consider the case in which VehicleMission's determineEmergencyDestination() causes the 
+        	// the vehicle to switch the destination to a settlement when this settlement is within a very short
+        	// distance away.
+        	
+        	// Shorten the distance the vehicle will travel
+        	distanceTraveled = startingDistanceToDestination;
+        	// Slow down the vehicle
+        	v = distanceTraveled / hrsTime;
+        	// Adjust the speed
+        	vehicle.setSpeed(v);
+        	
+        	// Calculate the fuel needed
+            fuelUsed = calculateFuelUsed(distanceTraveled, hrsTime);
+            
+        	// Stop the vehicle
+        	haltVehicle();
+            
         	return time;
         }
         
@@ -495,7 +513,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
 		}
 
         // Add distance traveled to vehicle's odometer.
-        vehicle.addOdometerMileage(distanceTraveled);
+        vehicle.addOdometerMileage(distanceTraveled, fuelUsed);
         // Track maintenance due to distance traveled.
         vehicle.addDistanceLastMaintenance(distanceTraveled);
         
@@ -575,7 +593,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
         energyUsed = energyUsed / JOULES_PER_KWH ; // [in kWh]
               
         // Derive the mass of fuel needed
-        double fuelUsed = energyUsed * Vehicle.FUEL_KG_PER_KWH;
+        double fuelUsed = energyUsed / vehicle.getFuelConv() ;
 
         // Derive the instantaneous fuel economy [in km/kg]
         double iFE = distanceTraveled / fuelUsed;
@@ -587,7 +605,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
 		 */
         
         // Derive the instantaneous fuel consumption [Wh/km]
-        double iFC = energyUsed * 1000 / distanceTraveled;
+        double iFC = 1000 * energyUsed / distanceTraveled;
         // Set the instantaneous fuel consumption [Wh/km]
         vehicle.setIFuelConsumption(iFC);
         
@@ -606,8 +624,6 @@ public abstract class OperateVehicle extends Task implements Serializable {
         		 	+ "mass: " 				+ Math.round(mass * 100.0)/100.0 + KG
         	        + "distanceTraveled: " 	+ Math.round(distanceTraveled * 10_000.0)/10_000.0 + KM
                 	+ "v: " 				+ Math.round(v * 10_000.0)/10_000.0 + " km/h   "
-//                	+ "v_squared: " + Math.round(v_squared * 10_000.0)/10_000.0 + " km/h   "
-//        			+ "delta_v: " + Math.round(delta_v * 10_000.0)/10_000.0 + " km/h   "
         			+ "F_initialFriction: " + Math.round(fInitialFriction * 10_000.0)/10_000.0 + N
         			+ "F_againstGravity: " 	+ Math.round(fGravity * 10_000.0)/10_000.0 + N
         			+ "F_aeroDragForce: " 	+ Math.round(fAeroDrag * 10_000.0)/10_000.0 + N
@@ -616,13 +632,15 @@ public abstract class OperateVehicle extends Task implements Serializable {
     	    		+ "Power: " 	+ Math.round(power)/1_000.0 + KW
     				+ "Energy Used: " 	+ Math.round(energyUsed * 100_000.0)/100_000.0 + " kWh   "
             		+ "fuelUsed: " 	+ Math.round(fuelUsed * 100_000.0)/100_000.0 + KG 
-    	    		+ "bFE: " 		+ Math.round(bFE * 1_000.0)/1_000.0 + KM_KG  
+    	    		+ "baseFE: " 		+ Math.round(bFE * 1_000.0)/1_000.0 + KM_KG  
                    	+ "estFE: " 	+ Math.round(estFE * 1_000.0)/1_000.0 + KM_KG
                    	+ "initFE: " 	+ Math.round(initFE * 1_000.0)/1_000.0 + KM_KG
-    	    		+ "iFE: " 		+ Math.round(iFE * 1_000.0)/1_000.0 + KM_KG  
-    	    		+ "bFC: " 		+ Math.round(bFC * 1_000.0)/1_000.0 + " Wh/km   "  
-    	    		+ "iFC: " 		+ Math.round(iFC * 1_000.0)/1_000.0 + " Wh/km   "    
-    				+ "aveP: " 		+ Math.round(aveP * 1_000.0)/1_000.0 + KW
+    	    		+ "instantFE: " 		+ Math.round(iFE * 1_000.0)/1_000.0 + KM_KG  
+       	    		+ "cumFE: " 		+ Math.round(vehicle.getCumFuelEconomy() * 1_000.0)/1_000.0 + KM_KG  
+    	    		+ "baseFC: " 		+ Math.round(bFC * 1_000.0)/1_000.0 + WH_KM 
+    	    		+ "instantFC: " 		+ Math.round(iFC * 1_000.0)/1_000.0 + WH_KM    
+ 	      	   		+ "cumFC: " 		+ Math.round(vehicle.getCumFuelConsumption() * 1_000.0)/1_000.0 + WH_KM  
+    	    		+ "aveP: " 		+ Math.round(aveP * 1_000.0)/1_000.0 + KW
     				);
         
         return fuelUsed;

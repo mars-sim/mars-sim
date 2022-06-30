@@ -686,10 +686,10 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 			result *= factor;
 		}
 
-		logger.info(vehicle, 30_000, "Trip Distance: " + Math.round(tripDistance * 10.0)/10.0 + " km   "
-				+ "Fuel Economy: " + Math.round(fuelEconomy * 10.0)/10.0 + " km/kg   "
+		logger.info(vehicle, 30_000, "Est Trip Distance: " + Math.round(tripDistance * 10.0)/10.0 + " km   "
+				+ "Est Fuel Economy: " + Math.round(fuelEconomy * 10.0)/10.0 + " km/kg   "
 				+ "Fuel Margin: " + Math.round(factor * 10.0)/10.0 + "   "
-				+ "Fuel: " + Math.round(result * 10.0)/10.0 + " kg");
+				+ "Est Fuel with margin: " + Math.round(result * 10.0)/10.0 + " kg");
 
 		return result;
 	}
@@ -1045,22 +1045,17 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 			if (getPhase() == null || getPhase().equals(VehicleMission.EMBARKING) 
 					|| getPhase().equals(VehicleMission.REVIEWING)
 					|| useMargin) {
-				amount = getFuelNeededForTrip(vehicle, distance, vehicle.getEstimatedAveFuelEconomy() * FE_FACTOR, true);
+				amount = getFuelNeededForTrip(vehicle, distance, 
+						(vehicle.getCumFuelEconomy() + vehicle.getEstimatedAveFuelEconomy()) /FE_FACTOR, true);
 				// Use margin only when estimating how much fuel needed before starting the mission
 			}
 			else {
-				amount = getFuelNeededForTrip(vehicle, distance, vehicle.getIFuelEconomy() / FE_FACTOR, false);
+				amount = getFuelNeededForTrip(vehicle, distance, 
+						(vehicle.getCumFuelEconomy() + vehicle.getIFuelEconomy()) / FE_FACTOR, false);
 				// When the vehicle is already on the road, do NOT use margin
 				// or else it would constantly complain not having enough fuel
 			}
 			result.put(vehicle.getFuelType(), amount);
-			
-			// Add oxygen (as fuel oxidizer)
-			double existingO2 = 0;
-			if (!result.isEmpty() && result.containsKey(OXYGEN_ID))
-				existingO2 = (double)result.get(OXYGEN_ID);
-			// Note: oxygen required is twice the amount of methane
-			result.put(OXYGEN_ID, 2 * amount + existingO2);
 
 		}
 		return result;
@@ -1150,7 +1145,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	 */
 	private boolean hasEnoughResources(Map<Integer, Number> neededResources) {
 		boolean result = true;
-		
+
 		for (Map.Entry<Integer, Number> entry : neededResources.entrySet()) {
 			int id = entry.getKey();
 			Object value = entry.getValue();
@@ -1163,7 +1158,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 				if (amountStored < amount) {
 					String newLog = "Not enough "
 							+ ResourceUtil.findAmountResourceName(id) + " to continue with "
-							+ getTypeID() + "  Required: " + Math.round(amount * 100D) / 100D + " kg  Vehicle stored: "
+							+ getTypeID() + " - Required: " + Math.round(amount * 100D) / 100D + " kg - Vehicle stored: "
 							+ Math.round(amountStored * 100D) / 100D + " kg";
 					logger.log(vehicle, Level.WARNING, 10_000, newLog);
 					return false;
@@ -1177,7 +1172,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 				if (numStored < num) {
 					String newLog = "Not enough "
 							+ ItemResourceUtil.findItemResource(id).getName() + " to continue with "
-							+ getTypeID() + "  Required: " + num + "  Vehicle stored: " + numStored + ".";
+							+ getTypeID() + " - Required: " + num + " - Vehicle stored: " + numStored + ".";
 					logger.log(vehicle, Level.WARNING, 10_000,  newLog);
 					return false;
 				}
@@ -1215,9 +1210,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	protected void travel(String reason, MissionMember member, Settlement oldHome, Settlement newDestination, double oldDistance, double newDistance) {
 		double newTripTime = getEstimatedTripTime(false, newDistance);
 
-		NavPoint nextNav = getNextNavpoint();
-
-		if ((nextNav != null) && (newDestination == nextNav.getSettlement())) {
+		if (newDestination == oldHome) {
 			// If the closest settlement is already the next navpoint.
 			logger.log(vehicle, Level.WARNING, 10000, "Emergency encountered.  Returning to home settlement (" + newDestination.getName()
 					+ ") : " + Math.round(newDistance * 100D) / 100D

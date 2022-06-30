@@ -70,18 +70,20 @@ public class VehicleSpecCommand extends ChatCommand {
 		buffer.appendLabeledString("Base Acceleration", String.format(M_PER_S_FORMAT, source.getAccel()));
 		buffer.appendLabeledString("averagePower", String.format("%.2f kW", source.getAveragePower()));
 		buffer.appendLabeledString("Base Range", String.format(CommandHelper.KM_FORMAT, source.getBaseRange()));
+	
+		if (source instanceof GroundVehicle) {
+			GroundVehicle gv = (GroundVehicle) source;
+			buffer.appendLabeledString("Terrain Handling", String.format("%.2f", gv.getTerrainHandlingCapability()));
+		}
 		
 		buffer.appendLabeledString("Base Fuel Economy", String.format(KM_PER_KG_FORMAT, source.getBaseFuelEconomy()));
 		buffer.appendLabeledString("Estimated Fuel Economy", String.format(KM_PER_KG_FORMAT, source.getEstimatedAveFuelEconomy()));
 		buffer.appendLabeledString("Initial Fuel Economy", String.format(KM_PER_KG_FORMAT, source.getInitialFuelEconomy()));
 		buffer.appendLabeledString("Instantaneous Fuel Economy", String.format(KM_PER_KG_FORMAT, source.getIFuelEconomy()));
+		buffer.appendLabeledString("Cumulative Fuel Economy", String.format(KM_PER_KG_FORMAT, source.getCumFuelEconomy()));
 		buffer.appendLabeledString("Base Fuel Consumption", String.format(WH_PER_KM_FORMAT, source.getBaseFuelConsumption()));
 		buffer.appendLabeledString("Instantaneous Fuel Consumption", String.format(WH_PER_KM_FORMAT, source.getIFuelConsumption()));
-		
-		if (source instanceof GroundVehicle) {
-			GroundVehicle gv = (GroundVehicle) source;
-			buffer.appendLabeledString("Terrain Handling", String.format("%.2f", gv.getTerrainHandlingCapability()));
-		}
+		buffer.appendLabeledString("Cumulative Fuel Consumption", String.format(WH_PER_KM_FORMAT, source.getCumFuelConsumption()));	
 	
 		if (source instanceof Crewable) {
 			int crewSize = ((Crewable) source).getCrewCapacity();
@@ -89,8 +91,9 @@ public class VehicleSpecCommand extends ChatCommand {
 		}	
 
 		if (isRover || isDrone) {
-			double cargo = source.getCargoCapacity();
-			buffer.appendLabeledString("Cargo Capacity", String.format(CommandHelper.KG_FORMAT, cargo));
+			buffer.appendLabeledString("Cargo Capacity", String.format(CommandHelper.KG_FORMAT, source.getCargoCapacity()));
+			buffer.appendLabeledString("Odometer Distance", String.format(CommandHelper.KM_FORMAT, source.getOdometerMileage()));	
+			buffer.appendLabeledString("Cumulative Fuel Usage", String.format(CommandHelper.KG_FORMAT, source.getFuelCumulativeUsage()));	
 		}
 
 		if (source instanceof Medical) {
