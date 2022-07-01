@@ -682,17 +682,19 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 			result *= factor;
 		}
 
-		logger.info(vehicle, 20_000, "Projected Trip Distance: " + Math.round(tripDistance * 10.0)/10.0 + " km   "
-				+ "Projected Fuel Economy: " + Math.round(fuelEconomy * 10.0)/10.0 + " km/kg   "
-				+ "Margin for Fuel: " + Math.round(factor * 10.0)/10.0 + "   "
-				+ "Fuel needed: " + Math.round(result * 10.0)/10.0 + " kg");
+		logger.info(vehicle, 20_000, "Total remaining distance: " + Math.round(tripDistance * 1000.0)/1000.0 + " km   "
+				+ "Projected fuel economy: " + Math.round(fuelEconomy * 10.0)/10.0 + " km/kg   "
+				+ "Margin for fuel: " + Math.round(factor * 10.0)/10.0 + "   "
+				+ "Fuel needed: " + Math.round(result * 1000.0)/1000.0 + " kg   "
+				+ "Fuel onboard: " + Math.round(vehicle.getAmountResourceStored(vehicle.getFuelType()) * 1000.0)/1000.0 + " kg"
+				);
 
 		return result;
 	}
 
 	/**
 	 * Determines a new phase for the mission when the current phase has ended.
-	 * Subclass are expected to determine the  next Phase for TRAVELLING
+	 * Subclass are expected to determine the next Phase for TRAVELLING.
 	 *
 	 * @throws MissionException if problem setting a new phase.
 	 */
@@ -922,29 +924,6 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 		}
 	}
 
-	/**
-	 * Gets the estimated time for a trip.
-	 *
-	 * @param useMargin use time buffers in estimation if true.
-	 * @param distance  the distance of the trip.
-	 * @return time (millisols)
-	 * @throws MissionException
-	 */
-	public final double getEstimatedTripTime(boolean useMargin, double distance) {
-		double result = 0;
-		// Determine average driving speed for all mission members.
-		double averageSpeed = getAverageVehicleSpeedForOperators();
-		if (averageSpeed > 0) {
-			double averageSpeedMillisol = averageSpeed / MarsClock.MILLISOLS_PER_HOUR;
-			result = distance / averageSpeedMillisol;
-		}
-
-		// If buffer, add one sol.
-		if (useMargin) {
-			result += 500D;
-		}
-		return result;
-	}
 
 	/**
 	 * Gets the estimated time remaining for the mission.
@@ -957,13 +936,38 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 		double distance = getEstimatedTotalRemainingDistance();
 		if (distance > 0) {
 			double time = getEstimatedTripTime(useMargin, distance);
-			logger.info(vehicle, 20_000, this 
-					+ " - Estimated remaining trip time: " 
-					+  Math.round(time * 10.0)/10.0 + " millisols.");
+			logger.log(vehicle, Level.FINE, 20_000L, this 
+					+ " - Projected remaining waypoint time: " 
+					+  Math.round(time * MarsClock.HOURS_PER_MILLISOL * 10.0)/10.0 + " hrs ("
+					+  Math.round(time * 10.0)/10.0 + " millisols)");
 			return time;
 		}
 
 		return 0;
+	}
+	
+	/**
+	 * Gets the estimated time for a trip.
+	 *
+	 * @param useMargin use time buffers in estimation if true.
+	 * @param distance  the distance of the trip.
+	 * @return time (millisols)
+	 * @throws MissionException
+	 */
+	public final double getEstimatedTripTime(boolean useMargin, double distance) {
+		double result = 0;
+		// Determine average driving speed for all mission members.
+		double averageSpeed = getAverageVehicleSpeedForOperators();
+		logger.log(vehicle, Level.FINE, 10_000, "Estimated average speed: " + Math.round(averageSpeed * 100.0)/100.0 + " kph.");
+		if (averageSpeed > 0) {
+			result = distance / averageSpeed * MarsClock.MILLISOLS_PER_HOUR;
+		}
+
+		// If buffer, multiply by 1.2
+		if (useMargin) {
+			result *= 1.2;
+		}
+		return result;
 	}
 
 	/**
@@ -989,7 +993,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 			result = totalSpeed / count;
 		}
 		if (result == 0) {
-			result = DEFAULT_SPEED;
+			result = vehicle.getBaseSpeed();
 		}
 		return result;
 	}
@@ -998,10 +1002,10 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	 * Gets the average speed of a vehicle with a given person operating it.
 	 *
 	 * @param operator the vehicle operator.
-	 * @return average speed (km/h)
+	 * @return average speed (kph or km/h)
 	 */
 	private double getAverageVehicleSpeedForOperator(Worker operator) {
-		return OperateVehicle.getAverageVehicleSpeed(vehicle, operator, this);
+		return OperateVehicle.getAverageVehicleSpeed(vehicle, operator);
 	}
 
 	/**
@@ -1015,8 +1019,6 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	protected Map<Integer, Number> getResourcesNeededForRemainingMission(boolean useMargin) {
 		double distance = getEstimatedTotalRemainingDistance();
 		if (distance > 0) {
-			logger.info(vehicle, 20_000, this + " - Remaining Distance: "
-					+ Math.round(distance * 10.0)/10.0 + " km.");
 			return getResourcesNeededForTrip(useMargin, distance);
 		}
 
@@ -1027,7 +1029,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	 * Gets the number and amounts of resources needed for a trip.
 	 *
 	 * @param useMargin Apply safety margin when loading resources before embarking if true.
-	 * Note : True if estimating trip. False if calculating remaining trip.
+	 * Note : True if estimating trip only. False if calculating for the remaining trip.
 	 *
 	 * @param distance  the distance (km) of the trip.
 	 * @return map of amount and item resources and their Double amount or Integer
@@ -1037,20 +1039,21 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 		Map<Integer, Number> result = new HashMap<>();
 		if (vehicle != null) {
 			double amount = 0;
-			// Add methane
+
 			if (getPhase() == null || getPhase().equals(VehicleMission.EMBARKING) 
 					|| getPhase().equals(VehicleMission.REVIEWING)
 					|| useMargin) {
 				amount = getFuelNeededForTrip(vehicle, distance, 
-						vehicle.getEstimatedFuelEconomy(), true);
+							vehicle.getEstimatedFuelEconomy(), true);
 				// Use margin only when estimating how much fuel needed before starting the mission
 			}
 			else {
 				amount = getFuelNeededForTrip(vehicle, distance, 
-						(vehicle.getEstimatedFuelEconomy() + vehicle.getInitialFuelEconomy()) / FE_FACTOR, false);
+							(vehicle.getEstimatedFuelEconomy() + vehicle.getInitialFuelEconomy()) / FE_FACTOR, false);
 				// When the vehicle is already on the road, do NOT use margin
 				// or else it would constantly complain not having enough fuel
 			}
+			// Add methane
 			result.put(vehicle.getFuelType(), amount);
 
 		}
@@ -1208,12 +1211,12 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 
 		if (newDestination == oldHome) {
 			// If the closest settlement is already the next navpoint.
-			logger.log(vehicle, Level.WARNING, 10_000L, "Emergency encountered.  Returning to home settlement (" + newDestination.getName()
+			logger.log(vehicle, Level.WARNING, 10_000L, "Emergency encountered. Returning to home settlement (" + newDestination.getName()
 					+ ") : " + Math.round(newDistance * 100D) / 100D
 					+ " km    Duration : "
 					+ Math.round(newTripTime * 100.0 / 1000.0) / 100.0 + " sols");
-
-			abortMission();
+			
+			returnHome();
 		}
 
 		else {
@@ -1224,34 +1227,46 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 					+ Math.round(newDistance * 100D) / 100D
 					+ " km    Duration : "
 					+ Math.round(newTripTime * 100.0 / 1000.0) / 100.0 + " sols");
-
-			// Creating emergency destination mission event for going to a new settlement.
-			HistoricalEvent newEvent = new MissionHistoricalEvent(EventType.MISSION_EMERGENCY_DESTINATION,
-					this,
-					reason,
-					this.getTypeID(),
-					member.getName(),
-					vehicle.getName(),
-					vehicle.getCoordinates().getCoordinateString(),
-					oldHome.getName()
-					);
-			eventManager.registerNewEvent(newEvent);
-
-			// Note: use Mission.goToNearestSettlement() as reference
-
-			// Set the new destination as the travel mission's next and final navpoint.
-			clearRemainingNavpoints();
-			addNavpoint(newDestination);
-			// each member to switch the associated settlement to the new destination
-			// Note: need to consider if enough beds are available at the destination settlement
-			// Note: can they go back to the settlement of their origin ?
-
-			updateTravelDestination();
-			abortPhase();
+			
+			routeTo(reason, member, oldHome, newDestination);
 		}
 	}
 
 
+	/**
+	 * Goes to a new destination.
+	 * 
+	 * @param reason
+	 * @param member
+	 * @param oldHome
+	 * @param newDestination
+	 */
+	public void routeTo(String reason, MissionMember member, Settlement oldHome, Settlement newDestination) {
+		// Creating emergency destination mission event for going to a new settlement.
+		HistoricalEvent newEvent = new MissionHistoricalEvent(EventType.MISSION_EMERGENCY_DESTINATION,
+				this,
+				reason,
+				this.getTypeID(),
+				member.getName(),
+				vehicle.getName(),
+				vehicle.getCoordinates().getCoordinateString(),
+				oldHome.getName()
+				);
+		eventManager.registerNewEvent(newEvent);
+
+		// Note: use Mission.goToNearestSettlement() as reference
+
+		// Set the new destination as the travel mission's next and final navpoint.
+		clearRemainingNavpoints();
+		addNavpoint(newDestination);
+		// each member to switch the associated settlement to the new destination
+		// Note: need to consider if enough beds are available at the destination settlement
+		// Note: can they go back to the settlement of their origin ?
+
+		updateTravelDestination();
+		abortPhase();
+	}
+	
 	/**
 	 * Determines the emergency destination settlement for the mission if one is
 	 * reachable, otherwise sets the emergency beacon and ends the mission.
@@ -2007,11 +2022,11 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	}
 
 	/**
-	 * For a Travel mission; return home as soon as possible
+	 * For a travel mission, return home as soon as possible
 	 */
 	@Override
 	public void abortMission() {
-		addMissionStatus(MissionStatus.USER_ABORTED_MISSION);
+		addMissionStatus(MissionStatus.ABORTED_MISSION);
 		returnHome();
 	}
 
@@ -2182,9 +2197,13 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 		if (estimatedTotalRemainingDistance != total) {
 			// Record the distance
 			estimatedTotalRemainingDistance = total;
+			
 			fireMissionUpdate(MissionEventType.DISTANCE_EVENT);	
 		}
 			
+		logger.log(vehicle, Level.FINE, 20_000, this 
+				+ " - Current waypoint remaining distance: "	+ Math.round(leg * 1000.0)/1000.0 + " km.   "
+				+ "Total remaining distance: "	+ Math.round(total * 1000.0)/1000.0 + " km.");
 		
 		return total;
 	}

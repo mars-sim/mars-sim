@@ -69,8 +69,8 @@ implements Serializable {
 
 		// Initialize data members
 		if (person.isInSettlement()) {
-		    //setDescription(Msg.getString("Task.description.produceFood.detail",
-            //        person.getParkedSettlement().getName())); //$NON-NLS-1$
+		    setDescription(Msg.getString("Task.description.produceFood.detail", //$NON-NLS-1$
+                    person.getSettlement().getName())); 
 	
 			// Get available foodProduction foodFactory if any.
 			Building foodProductionBuilding = getAvailableFoodProductionBuilding(person);
@@ -103,8 +103,8 @@ implements Serializable {
 
 		// Initialize data members
 		if (robot.isInSettlement()) {
-		    //setDescription(Msg.getString("Task.description.produceFood.detail",
-            //        robot.getParkedSettlement().getName())); //$NON-NLS-1$
+		    setDescription(Msg.getString("Task.description.produceFood.detail", //$NON-NLS-1$
+                    robot.getSettlement().getName()));
 	
 			// Get available foodProduction foodFactory if any.
 			Building foodProductionBuilding = getAvailableFoodProductionBuilding(robot);
@@ -555,8 +555,8 @@ implements Serializable {
 	
 				if (process != null)
 					// Insert process into setDescription()
-					setDescription(Msg.getString("Task.description.produceFood.detail",
-	                    Conversion.capitalize(process.toString()))); //$NON-NLS-1$
+					setDescription(Msg.getString("Task.description.produceFood.detail", //$NON-NLS-1$
+	                    Conversion.capitalize(process.toString())));
 				else
 					setDescription(Msg.getString("Task.description.produceFood.checking")); //$NON-NLS-1$
 			}

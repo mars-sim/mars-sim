@@ -31,6 +31,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
+import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Airlockable;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -49,8 +50,10 @@ public class Walk extends Task implements Serializable {
 	private static SimLogger logger = SimLogger.getLogger(Walk.class.getName());
 
 	// Static members
-	static final double PERSON_WALKING_SPEED = 1D; // [km per hr].
-	static final double ROBOT_WALKING_SPEED = 0.25; // [km per hr].
+	static final double PERSON_WALKING_SPEED = 1D; // [kph].
+	static final double ROBOT_WALKING_SPEED = 0.25; // [kph].
+	static final double PERSON_WALKING_SPEED_PER_MILLISOL = PERSON_WALKING_SPEED * MarsClock.MILLISOLS_PER_HOUR; // [km per millisol].
+	static final double ROBOT_WALKING_SPEED_PER_MILLISOL = ROBOT_WALKING_SPEED * MarsClock.MILLISOLS_PER_HOUR; // [km per millisol].
 
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = -.25D;
@@ -842,12 +845,6 @@ public class Walk extends Task implements Serializable {
 		setDescription(Msg.getString("Task.description.walk.exitingRoverInGarage")); //$NON-NLS-1$
 
 		if (person != null) {
-
-//			logger.log(person, Level.FINER, 4_000,
-//					"About to exit the rover " + rover.getName()
-//					+ " in " + garageBuilding + ".");
-
-
 			// Exit the rover parked inside a garage onto the settlement
 			if (person.isInVehicleInGarage()) {
 
@@ -858,30 +855,10 @@ public class Walk extends Task implements Serializable {
 					endTask();
 					return timeLeft;
 				}
-
-//				if (rover.removePerson(person)) {
-//					rover.getSettlement().addPeopleWithin(person);
-//					BuildingManager.addPersonOrRobotToBuilding(person, garageBuilding);
-//					logger.log(person, Level.INFO, 4_000,
-//						"Exited rover " + rover.getName()
-//						+ " inside " + garageBuilding + ".");
-//					endTask();
-//					return timeLeft;
-//				}
-//				else {
-//					logger.log(person, Level.WARNING, 4_000,
-//						"Failed to exit rover " + rover.getName()
-//						+ " inside " + garageBuilding + ".");
-//				}
 			}
 		}
 
 		else {
-
-//			logger.log(robot, Level.FINER, 4_000,
-//					"About to exit rover " + rover.getName()
-//					+ " in " + garageBuilding + ".");
-
 			// Exit the rover parked inside a garage onto the settlement
 			if (robot.isInVehicleInGarage()) {
 
@@ -892,21 +869,6 @@ public class Walk extends Task implements Serializable {
 					endTask();
 					return timeLeft;
 				}
-
-//				if (rover.removeRobot(robot)) {
-//					rover.getSettlement().addRobot(robot);
-//					BuildingManager.addPersonOrRobotToBuilding(robot, garageBuilding);
-//					logger.log(robot, Level.INFO, 4_000,
-//						"Exited rover " + rover.getName()
-//						+ " inside " + garageBuilding + ".");
-//					endTask();
-//					return timeLeft;
-//				}
-//				else {
-//					logger.log(robot, Level.WARNING, 4_000,
-//						"Failed to exit rover " + rover.getName()
-//						+ " inside " + garageBuilding + ".");
-//				}
 			}
 		}
 
@@ -929,72 +891,45 @@ public class Walk extends Task implements Serializable {
 	 */
 	private double enteringRoverInsideGaragePhase(double time) {
 
-		double timeLeft = time;
+		double timeLeft = 0;
 
 		WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
 		Rover rover = step.rover;
 		Building garageBuilding = step.building;
-
+		double distance = garageBuilding.getWidth() /2.0;
+		double timeTraveled = 0;
 		setDescription(Msg.getString("Task.description.walk.enteringRoverInsideGarage")); //$NON-NLS-1$
 
 		if (person != null) {
-//			logger.log(person, Level.FINER, 4_000,
-//					"About to enter the rover " + rover.getName()
-//					+ " in " + garageBuilding + ".");
-
 			// Place this person within a vehicle inside a garage in a settlement
 			if (person.transfer(rover)) {
 				logger.log(person, Level.INFO, 4_000,
 						"Entered rover " + rover.getName()
 						+ " inside " + garageBuilding + ".");
 				endTask();
-				return timeLeft;
+				
+				timeTraveled = distance / PERSON_WALKING_SPEED_PER_MILLISOL;
+				timeLeft = time - timeTraveled;
+				if (timeLeft < 0)
+					timeLeft = 0;
+				return timeLeft ;
 			}
-
-//			if (rover.addPerson(person)) {
-//				rover.getSettlement().removePeopleWithin(person);
-//				BuildingManager.removePersonFromBuilding(person, garageBuilding);
-//				logger.log(person, Level.INFO, 4_000,
-//						"Entered rover " + rover.getName()
-//						+ " inside " + garageBuilding + ".");
-//				endTask();
-//				return timeLeft;
-//			}
-//			else {
-//				logger.log(person, Level.WARNING, 4_000,
-//						"Failed to enter rover " + rover.getName()
-//						+ " inside " + garageBuilding + ".");
-//			}
 		}
 
 		else {
-//			logger.log(robot, Level.FINER, 4_000,
-//					"About to enter the rover " + rover.getName()
-//					+ " in " + garageBuilding + ".");
-
 			// Place this robot within a vehicle inside a garage in a settlement
 			if (robot.transfer(rover)) {
 				logger.log(robot, Level.INFO, 4_000,
 						"Entered rover " + rover.getName()
 						+ " inside " + garageBuilding + ".");
 				endTask();
-				return timeLeft;
+				
+				timeTraveled = distance / PERSON_WALKING_SPEED_PER_MILLISOL;
+				timeLeft = time - timeTraveled;
+				if (timeLeft < 0)
+					timeLeft = 0;
+				return timeLeft ;
 			}
-
-//			if (rover.addRobot(robot)) {
-//				rover.getSettlement().removeRobot(robot);
-//				BuildingManager.removeRobotFromBuilding(robot, garageBuilding);
-//				logger.log(robot, Level.INFO, 4_000,
-//					"Entered rover " + rover.getName()
-//					+ " inside " + garageBuilding + ".");
-//				endTask();
-//				return timeLeft;
-//			}
-//			else {
-//				logger.log(robot, Level.WARNING, 4_000,
-//					"Failed to enter rover " + rover.getName()
-//					+ " inside " + garageBuilding + ".");
-//			}
 		}
 
 		if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
@@ -1008,7 +943,7 @@ public class Walk extends Task implements Serializable {
 	}
 
 	/**
-	 * Climbing up the ladder to the next level
+	 * Climbs up the ladder to the next level.
 	 *
 	 * @param time
 	 * @return
@@ -1043,7 +978,7 @@ public class Walk extends Task implements Serializable {
 	}
 
 	/**
-	 * Climbing down the ladder to the lower level
+	 * Climbs down the ladder to the lower level.
 	 *
 	 * @param time
 	 * @return

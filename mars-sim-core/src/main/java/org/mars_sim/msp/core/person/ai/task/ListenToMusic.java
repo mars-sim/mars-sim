@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * ListenToMusic.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-06-30
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -52,6 +52,7 @@ implements Serializable {
 
 	/**
 	 * Constructor.
+	 * 
 	 * @param person the person to perform the task
 	 */
 	public ListenToMusic(Person person) {
@@ -140,7 +141,6 @@ implements Serializable {
 
     		setPhase(FINDING_A_SONG);
 		}
-
 	}
 
 	@Override
@@ -161,41 +161,45 @@ implements Serializable {
 
 	/**
 	 * Performs the listening phase of the task.
+	 * 
 	 * @param time the amount of time (millisol) to perform the phase.
 	 * @return the amount of time (millisol) left after performing the phase.
 	 */
 	private double listeningPhase(double time) {
 		if (person.isOutside()) {
 			endTask();
-			return 0;
+			return time;
 		}
-		else {
-	        // Reduce person's fatigue
-	        double newFatigue = person.getPhysicalCondition().getFatigue() - (10D * time);
-	        if (newFatigue < 0D) {
-	            newFatigue = 0D;
-	        }
-	        person.getPhysicalCondition().setFatigue(newFatigue);
-	        setDescription(Msg.getString("Task.description.listenToMusic"));//$NON-NLS-1$
-			return 0D;
-		}
+        // Reduce person's fatigue
+        double fatigue = person.getPhysicalCondition().getFatigue() - (10D * time);
+		if (fatigue < 0D)
+			fatigue = 0D;
+        person.getPhysicalCondition().setFatigue(fatigue);
+        // Reduce person's stress
+        double stress = person.getPhysicalCondition().getStress() - (2.5 * time);
+		if (stress < 0D)
+			stress = 0D;
+        person.getPhysicalCondition().setStress(stress);
+
+        setDescription(Msg.getString("Task.description.listenToMusic"));//$NON-NLS-1$
+		return 0D;
 	}
 
 	/**
 	 * Performs the finding phase of the task.
+	 * 
 	 * @param time the amount of time (millisol) to perform the phase.
 	 * @return the amount of time (millisol) left after performing the phase.
 	 */
 	private double findingPhase(double time) {
 		if (person.isOutside()) {
 			endTask();
-			return 0;
+			return time;
 		}
-		else {
-	        setDescription(Msg.getString("Task.description.listenToMusic.findingSong"));//$NON-NLS-1$
-			// TODO: add codes for selecting a particular type of music		
-			setPhase(LISTENING_TO_MUSIC);
-			return time * .75D;
-		}
+		
+		setDescription(Msg.getString("Task.description.listenToMusic.findingSong"));//$NON-NLS-1$
+		// Note: add codes for selecting a particular type of music		
+		setPhase(LISTENING_TO_MUSIC);
+		return time * .75D;
 	}
 }

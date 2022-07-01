@@ -1313,13 +1313,13 @@ public abstract class Vehicle extends Unit
 			distanceMark = true;
 	}
 
-	/** Sets vehicle's distance since last maintenance to zero */
+	/** Sets vehicle's distance since last maintenance to zero. */
 	public void clearDistanceLastMaintenance() {
 		distanceMaint = 0;
 	}
 
 	/**
-	 * Returns direction of vehicle (0 = north, clockwise in radians)
+	 * Returns direction of vehicle (0 = north, clockwise in radians).
 	 *
 	 * @return the direction the vehicle is traveling (in radians)
 	 */

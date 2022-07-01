@@ -85,7 +85,7 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 	private Map<Settlement, Robot> selectedRobot;
 	private Map<Settlement, Building> selectedBuilding;
 
-	private Font font = new Font("SansSerif", Font.BOLD, 11);
+	private Font sansSerif = new Font("SansSerif", Font.BOLD, 11);
 
 	/**
 	 * Constructor 1 A panel for displaying a settlement map.
@@ -1047,7 +1047,7 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 				|| (desktop != null && settlementWindow.isShowing() && desktop.isToolWindowOpen(SettlementWindow.NAME))) {
 			Graphics2D g2d = (Graphics2D) g;
 
-			g2d.setFont(font);
+			g2d.setFont(sansSerif);
 
 			// Set graphics rendering hints.
 			g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);

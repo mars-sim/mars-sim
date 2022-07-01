@@ -313,12 +313,12 @@ public class ExitAirlock extends Task implements Serializable {
 		// If a person is in a vehicle, not needed of checking for reservation
 		if (inSettlement && !airlock.addReservation(person.getIdentifier())) {
 			walkAway(person, "Reservation not made.");
-			return 0;
+			return remainingTime;
 		}
 
 		if (inSettlement && !isFit()) {
 			walkAway(person, "Not fit for egress.");
-			return 0;
+			return remainingTime;
 		}
 
 		if (person.isOutside()) {
@@ -390,7 +390,7 @@ public class ExitAirlock extends Task implements Serializable {
 				}
 				else {
 					walkAway(person, "Cannot wait at " + airlock.getEntity().toString() + " inner door.");
-					return 0;
+					return remainingTime;
 				}
 		}
 
@@ -443,7 +443,7 @@ public class ExitAirlock extends Task implements Serializable {
 
 		if (!isFit()) {
 			walkAway(person, "Not fit before pressurization.");
-			return 0;
+			return remainingTime;
 		}
 
 		if (!airlock.isActivated()) {
@@ -498,13 +498,13 @@ public class ExitAirlock extends Task implements Serializable {
 
 		if (!isFit()) {
 			walkAway(person, "Not fit enough to proceed.");
-			return 0;
+			return remainingTime;
 		}
 
 		if (!airlock.isPressurized()) {
 			// Go back to the previous phase
 			setPhase(PRESSURIZE_CHAMBER);
-			return 0;
+			return remainingTime;
 		}
 
 		if (inSettlement) {
@@ -529,7 +529,7 @@ public class ExitAirlock extends Task implements Serializable {
 				}
 				else {
 					walkAway(person, "Chamber full.");
-					return 0;
+					return remainingTime;
 				}
 			}
 		}

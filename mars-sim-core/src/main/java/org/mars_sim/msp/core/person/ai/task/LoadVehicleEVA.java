@@ -160,9 +160,9 @@ public class LoadVehicleEVA extends EVAOperation {
 	private double loadingPhase(double time) {
 		boolean stopLoading = false;
 		
-		if (checkReadiness(time) > 0) {
+		// Check for radiation exposure during the EVA operation.
+		if (isDone() || isRadiationDetected(time)) {
 			stopLoading = true;
-			return time;
 		}
 
 		stopLoading = stopLoading || (shouldEndEVAOperation() || addTimeOnSite(time));

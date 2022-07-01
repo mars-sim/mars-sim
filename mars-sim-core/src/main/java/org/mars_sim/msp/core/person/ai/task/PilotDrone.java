@@ -324,34 +324,28 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 		double newGroundE = getGroundElevation();
 		
 		double ascentE = (Flyer.ELEVATION_ABOVE_GROUND - currentE) + (newGroundE - oldGroundE);
+		double climbE = 0;
 		
 		if (ascentE > 0) {
 			// TODO: Use Newton's law to determine the amount of height the flyer can climb 
 			double tSec = time * ClockUtils.SECONDS_PER_MILLISOL;
 			double speed = .0025 * mod;
-			double climbE = speed * tSec;
+			climbE = speed * tSec;
 			
-			((Flyer) getVehicle()).setElevation(climbE + oldGroundE);
 		}
 		else if (ascentE < 0) {
 			// TODO: Use Newton's law to determine the amount of height the flyer can climb 
 			double tSec = time * ClockUtils.SECONDS_PER_MILLISOL;
 			double speed = -.02 * mod;
-			double climbE = speed * tSec;
-				
-			((Flyer) getVehicle()).setElevation(climbE + oldGroundE);
+			climbE = speed * tSec;
 		}
-	}
-
-	/**
-	 * Determine vehicle speed for a given direction.
-	 * 
-	 * @param direction the direction of travel
-	 * @return speed in km/hr
-	 */
-	@Override
-	protected double determineSpeed(Direction direction, double time) {
-		return super.determineSpeed(direction, time);
+		
+		double elev = climbE + oldGroundE;
+		((Flyer) getVehicle()).setElevation(elev);
+		
+		logger.log(((Flyer) getVehicle()), person, Level.INFO, 20_000, 
+				"Old Elevation: " + Math.round(oldGroundE * 100.00)/100.00 + " km."
+				+ "   New Elevation: " + Math.round(elev * 100.00)/100.00 + " km.");
 	}
 
 	/**

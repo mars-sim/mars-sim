@@ -44,9 +44,6 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = .2D;
-
-	/** The speed at which the obstacle / winching phase commence. */
-	private static final double LOW_SPEED = .2;
 	
 	// Side directions.
 	private final static int NONE = 0;
@@ -177,21 +174,21 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 	 * @return the amount of time (ms) left over after driving (if any)
 	 */
 	protected double mobilizeVehicle(double time) {
-
 		// If vehicle is stuck, try winching.
 		if (((GroundVehicle) getVehicle()).isStuck() && (!WINCH_VEHICLE.equals(getPhase()))) {
 			setPhase(WINCH_VEHICLE);
-			return (time);
 		}
 
-		// If speed is less than or equal to the .5 kph, change to avoiding obstacle phase.
-		if ((getVehicle().getSpeed() <= LOW_SPEED) 
+		// If speed is less than or equal to LOW_SPEED, change to avoiding obstacle phase.
+		if (!getVehicle().isInSettlement() && (getVehicle().getSpeed() <= LOW_SPEED) 
 				&& (!AVOID_OBSTACLE.equals(getPhase()))
 				&& (!WINCH_VEHICLE.equals(getPhase()))) {
 			setPhase(AVOID_OBSTACLE);
-			return (time);
-		} else
-			return super.mobilizeVehicle(time);
+		} 
+		else
+			 return super.mobilizeVehicle(time);
+		
+		return time;
 	}
 
 	/**
@@ -273,7 +270,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 
 		// If speed given the terrain would be better than 1kph, return to normal
 		// driving.
-		// Otherwise, set speed to .2kph for winching speed.
+		// Otherwise, set speed to LOW_SPEED for winching speed.
 		if (testSpeed(vehicle.getDirection()) > LOW_SPEED) {
 			setPhase(OperateVehicle.MOBILIZE);
 			vehicle.setStuck(false);
@@ -356,17 +353,6 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 	protected void updateVehicleElevationAltitude() {
 		// Update vehicle elevation.
 		((GroundVehicle) getVehicle()).setElevation(getGroundElevation());
-	}
-
-	/**
-	 * Determine vehicle speed for a given direction.
-	 * 
-	 * @param direction the direction of travel
-	 * @return speed in km/hr
-	 */
-	@Override
-	protected double determineSpeed(Direction direction, double time) {
-		return super.determineSpeed(direction, time);
 	}
 
 	/**

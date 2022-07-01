@@ -3826,6 +3826,23 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		</outputs>
 	</process>
 
+	<!-- Turn sugarcane into ethanol or methanol for fuel production -->
+	<process name="gasify sugarcane and biomass into methanol"
+		tech="1" skill="1" work-time="10" process-time="100"
+			power-required="1.0">
+		<description>Use biomass gasification to derive methanol, which is useful for powering PEM fuel cells.</description>
+		<inputs>
+			<!-- <equipment name="oven" number="1" -->
+			<resource name="sugarcane" amount="5" />
+			<resource name="crop waste" amount="5" />
+			<resource name="carbon dioxide" amount="5" />	
+		</inputs>
+		<outputs>
+			<resource name="methanol" amount="9" />
+			<resource name="carbon" amount="6" />
+		</outputs>
+	</process>
+
 	<!-- To be added :
 
 	1. Zirconia, Silicon Nittride Si3N4, 	manufacturing ceramic tile.

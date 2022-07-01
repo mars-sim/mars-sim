@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * MedicalStation.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-06-30
  * @author Scott Davis
  * Based on Barry Evan's SickBay class
  */
@@ -79,6 +79,10 @@ public class MedicalStation implements MedicalAid, Serializable {
 		vehicle = v;
 	}
 
+	public Vehicle getVehicle() {
+		return vehicle;
+	}
+	
 	public void setBuilding(Building b) {
 		building = b;
 	}
@@ -117,7 +121,7 @@ public class MedicalStation implements MedicalAid, Serializable {
 	}
 
 	/**
-	 * Checks if there are any empty beds for new patients
+	 * Checks if there are any empty beds for new patients.
 	 * 
 	 * @return true or false
 	 */
@@ -276,12 +280,8 @@ public class MedicalStation implements MedicalAid, Serializable {
 		return level;
 	}
 
-//	public MedicalCare getMedicalCare() {
-//		return medicalCare;
-//	}
-
 	/**
-	 * Prepare object for garbage collection.
+	 * Prepares object for garbage collection.
 	 */
 	public void destroy() {
 		problemsBeingTreated.clear();

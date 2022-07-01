@@ -181,7 +181,7 @@ public class EnterAirlock extends Task implements Serializable {
 	}
 
 	/**
-	 * Obtains a new position in the target zone
+	 * Obtains a new position in the target zone.
 	 *
 	 * @param zone the destination
 	 * @param id   the id of the person
@@ -233,7 +233,7 @@ public class EnterAirlock extends Task implements Serializable {
 	}
 
 	/**
-	 * Request the entry of the airlock
+	 * Requests the entry of the airlock.
 	 *
 	 * @param time
 	 * @return
@@ -278,8 +278,6 @@ public class EnterAirlock extends Task implements Serializable {
 				else {
 					logger.log((Unit)airlock.getEntity(), person, Level.FINE, 60_000,
 							"Waiting to enter via the outer door in " + airlock.getEntity().toString() + ".");
-	//				endTask();
-					return 0;
 				}
 			}
 		}
@@ -345,7 +343,7 @@ public class EnterAirlock extends Task implements Serializable {
 	}
 
 	/**
-	 * Depressurize the chamber
+	 * Depressurizes the chamber.
 	 *
 	 * @param time
 	 * @return
@@ -407,7 +405,7 @@ public class EnterAirlock extends Task implements Serializable {
 	}
 
 	/**
-	 * Enter through the outer door into the chamber of the airlock
+	 * Enters through the outer door into the chamber of the airlock.
 	 *
 	 * @param time
 	 * @return
@@ -421,7 +419,7 @@ public class EnterAirlock extends Task implements Serializable {
 		if (!airlock.isDepressurized()) {
 			// Go back to the previous phase
 			setPhase(DEPRESSURIZE_CHAMBER);
-			return 0;
+			return remainingTime;
 		}
 
 		if (inSettlement) {
@@ -485,7 +483,7 @@ public class EnterAirlock extends Task implements Serializable {
 
 				else {
 					setPhase(REQUEST_INGRESS);
-					return 0;
+					return remainingTime;
 				}
 //			}
 //
@@ -515,7 +513,7 @@ public class EnterAirlock extends Task implements Serializable {
 	}
 
 	/**
-	 * Walk to the chamber
+	 * Walks to the chamber.
 	 *
 	 * @param time
 	 * @return
@@ -654,7 +652,7 @@ public class EnterAirlock extends Task implements Serializable {
 		if (!airlock.isPressurized()) {
 			// Go back to the previous phase
 			setPhase(PRESSURIZE_CHAMBER);
-			return 0;
+			return remainingTime;
 		}
 
 		if (airlock.isPressurized()) {
@@ -740,7 +738,7 @@ public class EnterAirlock extends Task implements Serializable {
 		if (!airlock.isPressurized()) {
 			// Go back to the previous phase
 			setPhase(PRESSURIZE_CHAMBER);
-			return 0;
+			return remainingTime;
 		}
 
 		boolean doneCleaning = false;

@@ -30,14 +30,30 @@ public class Crop implements Comparable<Crop>, Serializable {
 	private static final long serialVersionUID = 1L;
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(Crop.class.getName());
+	
+	private static final int WATER_ID = ResourceUtil.waterID;
+	private static final int OXYGEN_ID = ResourceUtil.oxygenID;
+	private static final int CO2_ID = ResourceUtil.co2ID;
+	private static final int GREY_WATER_ID = ResourceUtil.greyWaterID;
+	private static final int CROP_WASTE_ID = ResourceUtil.cropWasteID;
+	private static final int FERTILIZER_ID = ResourceUtil.fertilizerID;
+	private static final int MUSHROOM_BOX_ID = ItemResourceUtil.mushroomBoxID;
+
+	private static final int LIGHT_FACTOR = 0;
+	private static final int FERTILIZER_FACTOR = 1;
+	private static final int TEMPERATURE_FACTOR = 2;
+	private static final int WATER_FACTOR = 3;
+	private static final int O2_FACTOR = 4;
+	private static final int CO2_FACTOR = 5;
+	/** How often to calculate the crop health */
+	private static final int CHECK_HEALTH_FREQUENCY = 20;
+	
 	/** The mininum time offset [in millisols] for a crop that requires work. */
 	private static final double CROP_TIME_OFFSET = 5;
 	
-	// TODO both of these should be configurable from CropConfig
+	// Future: Move params into crops.xml and load from CropConfig
 	/** How often are the crops checked in mSols */
 	private static final double CHECK_CROP_PERIOD = 4D;
-	/** How often to calculate the crop health */
-	private static final int CHECK_HEALTH_FREQUENCY = 20;
 
 	private static final double TUNING_FACTOR = .18;
 	/**
@@ -70,17 +86,20 @@ public class Crop implements Comparable<Crop>, Serializable {
 	/**
 	 * The rate of carbon dioxide to oxygen during night time when O2 is absorbed
 	 * and CO2 is released by the crop.
+	 * <p> Note: 6CO2 --> 6O2 since
+	 * <p> 6nCO2 + 5nH2O ⇒ (C6H10O5)n + 6nO2
 	 */
-	private static final double CO2_TO_O2_RATIO = 32 / 44D; // 6 CO2 --> 6 O2
-	// 6nCO2+5nH2O⇒(C6H10O5)n+6nO2
+	private static final double CO2_TO_O2_RATIO = 32 / 44D; 
 
-	// public static final double SOLAR_IRRADIANCE_TO_PAR_RATIO = .42; // only 42%
-	// are EM within 400 to 700 nm
-	// see
-	// http://ccar.colorado.edu/asen5050/projects/projects_2001/benoit/solar_irradiance_on_mars.htm#_top
-	// public static final double WATT_TO_PHOTON_CONVERSION_RATIO = 4.609; // in u
-	// mol / m2 /s / W m-2 for Mars only
+	/**  only 42% are EM within 400 to 700 nm. */
+	// public static final double SOLAR_IRRADIANCE_TO_PAR_RATIO = .42; 
 
+	/** For Mars, the unit is mol/m2/s/Wm-2 . */
+	// public static final double WATT_TO_PHOTON_CONVERSION_RATIO = 4.609; 
+	
+	/** SurfaceFeatures.MEAN_SOLAR_IRRADIANCE * 4.56 * (not 88775.244)/1e6 = 237.2217 */
+	// public static final double MEAN_DAILY_PAR = 237.2217D ; // in [umol/m2/day]
+	
 	/** The wattage of a 400W high pressure sodium (HPS) lamp. */
 	private static final double KW_PER_HPS = .4;
 	/** The lamp efficiency of the high pressure sodium (HPS) lamp. */
@@ -95,20 +114,15 @@ public class Crop implements Comparable<Crop>, Serializable {
 	public static final double LOSS_FACTOR_HPS = NON_VISIBLE_RADIATION_HPS * .75 + CONDUCTION_CONVECTION_HPS / 2D;
 	/** The minimal amount of resource to be retrieved. */
 	private static final double MIN = 0.001;
+
 	/** The string reference for mushroom */
 	private static final String MUSHROOM = "mushroom";
-
-	// public static final double MEAN_DAILY_PAR = 237.2217D ; // in [mol/m2/day]
-	// SurfaceFeatures.MEAN_SOLAR_IRRADIANCE * 4.56 * (not 88775.244)/1e6 = 237.2217
 
 	// Data members
 	/** The crop identifier (unique only within a greenhouse). */
 	private int identifier;
 	/** True if this crop is generated at the start of the sim . */
 	private boolean isStartup;
-
-	/** True if this crop is a seeded plant. e.g. the sesame plant */
-	//private boolean isSeedPlant = false;
 	/** The total amount of light received by this crop. */
 	private double effectivePAR;
 	/** The ratio between inedible and edible biomass */
@@ -160,21 +174,11 @@ public class Crop implements Comparable<Crop>, Serializable {
 
 	private double co2Cache = 0;
 	private double o2Cache = 0;
-
-	/** The interval of time [in millisols] between each crop update call. */
-//	private double processInterval = 1.0;
 	/** The time accumulated [in millisols] for each crop update call. */
 	private double accumulatedTime = RandomUtil.getRandomDouble(0, 1.0);
 
 	private final double co2Threshold;
 	private final double o2Threshold;
-
-	private final static int LIGHT_FACTOR = 0;
-	private final static int FERTILIZER_FACTOR = 1;
-	private final static int TEMPERATURE_FACTOR = 2;
-	private final static int WATER_FACTOR = 3;
-	private final static int O2_FACTOR = 4;
-	private final static int CO2_FACTOR = 5;
 
 	/** The cache values of the past environment factors influencing the crop */
 	private double[] environmentalFactor = new double[CO2_FACTOR+1];
@@ -188,15 +192,6 @@ public class Crop implements Comparable<Crop>, Serializable {
 
 	private Farming farm;
 	private Building building;
-
-	private static final int WATER_ID = ResourceUtil.waterID;
-	private static final int OXYGEN_ID = ResourceUtil.oxygenID;
-	private static final int CO2_ID = ResourceUtil.co2ID;
-	private static final int GREY_WATER_ID = ResourceUtil.greyWaterID;
-	private static final int CROP_WASTE_ID = ResourceUtil.cropWasteID;
-	private static final int FERTILIZER_ID = ResourceUtil.fertilizerID;
-	private static final int MUSHROOM_BOX_ID = ItemResourceUtil.mushroomBoxID;
-
 
 	private static CropConfig cropConfig;
 
@@ -651,7 +646,13 @@ public class Crop implements Comparable<Crop>, Serializable {
 		currentPhase = cropSpec.getNextPhase(currentPhase);
 		logger.fine(building, name + " is now in " + currentPhase.getPhaseType());
 	}
-
+	
+	
+	/**
+	 * Collects the produce during harvest.
+	 * 
+	 * @param harvestMass
+	 */
 	private void collectProduce(double harvestMass) {
 		boolean isSeedPlant = cropSpec.isSeedPlant();
 		int seedID = cropSpec.getSeedID();
@@ -743,14 +744,13 @@ public class Crop implements Comparable<Crop>, Serializable {
 							   double temperatureModifier) {
 		PhaseType phaseType = currentPhase.getPhaseType();
 		if (phaseType == PhaseType.FINISHED) {
-			return true;
+			return false;
 		}
 
 		double elapsed = pulse.getElapsed();
 		accumulatedTime += elapsed;
 
 		if (accumulatedTime >= CHECK_CROP_PERIOD) {
-//			logger.info("pulse width: " + elapsed + "  accumulatedTime: " + accumulatedTime + "  processInterval: " + processInterval);
 
 			accumulatedTime = accumulatedTime - CHECK_CROP_PERIOD;
 
@@ -763,15 +763,6 @@ public class Crop implements Comparable<Crop>, Serializable {
 			if (phaseType != PhaseType.HARVESTING && percentageGrowth > cropSpec.getNextPhasePercentage(phaseType)) {
 				// Advance onto the next phase
 				advancePhase();
-			}
-
-			if (checkNewSol(pulse))
-				return true;
-
-			int msol = pulse.getMarsTime().getMillisolInt();
-			if (msol % CHECK_HEALTH_FREQUENCY == 0) {
-				// Checks on crop health
-				trackHealth();
 			}
 
 			// max possible harvest within this period of time
@@ -797,16 +788,25 @@ public class Crop implements Comparable<Crop>, Serializable {
 			}
 		}
 
+		// Resets thing at the end of a sol.
+		if (resetEndOfSol(pulse)) {
+			int msol = pulse.getMarsTime().getMillisolInt();
+			if (msol % CHECK_HEALTH_FREQUENCY == 0) {
+				// Checks on crop health
+				trackHealth();
+			}
+		}
+		
 		return true;
 	}
 
 	/**
-	 * Check for the passing of each day
+	 * Resets things at the end of a sol.
 	 *
 	 * @param pulse
 	 * @return
 	 */
-	public boolean checkNewSol(ClockPulse pulse) {
+	public boolean resetEndOfSol(ClockPulse pulse) {
 		if (pulse.isNewSol()) {
 
 			// Resets the daily harvest back to zero

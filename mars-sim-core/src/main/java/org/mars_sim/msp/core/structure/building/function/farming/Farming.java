@@ -405,26 +405,25 @@ public class Farming extends Function implements Serializable {
 	}
 
 	/**
-	 * Retrieves new soil when planting new crop
+	 * Retrieves new soil when planting new crop.
+	 * 
+	 * @param cropArea
 	 */
 	private void provideNewSoil(double cropArea) {
-		// Replace some amount of old soil with new soil
-
-		double rand = RandomUtil.getRandomDouble(1.2);
+		double rand = RandomUtil.getRandomDouble(0.8, 1.2);
 
 		double amount = Crop.NEW_SOIL_NEEDED_PER_SQM * cropArea * rand;
 
-		// Note: adjust how much old soil should be turned to crop waste
-		store(amount, CROP_WASTE_ID, "Farming::provideNewSoil");
-
-		// Note: adjust how much new soil is needed to replenish the soil bed
-		if (amount > MIN)
+		if (amount > MIN) {
+			// Collect some old crop and turn them into crop waste 
+			store(amount, CROP_WASTE_ID, "Farming::provideNewSoil");
+			// Note: adjust how much new soil is needed to replenish the soil bed
 			retrieve(amount, SOIL_ID, true);
-
+		}
 	}
 
 	/**
-	 * Retrieves the fertilizer and add to the soil when planting the crop
+	 * Retrieves the fertilizer and add to the soil when planting the crop.
 	 */
 	private void provideFertilizer(double cropArea) {
 		double rand = RandomUtil.getRandomDouble(2);

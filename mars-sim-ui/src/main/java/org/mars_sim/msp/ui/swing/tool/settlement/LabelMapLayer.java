@@ -69,19 +69,19 @@ implements SettlementMapLayer {
 	private static final Color VEHICLE_LABEL_OUTLINE_COLOR = new Color(0, 0, 0, 150);//(255, 255, 255, 190);
 
 	static final Color FEMALE_COLOR = new Color(159, 7, 118); //dark pinkish purple  //(255, 153, 225) light bright pink
-	static final Color FEMALE_SELECTED_COLOR = FEMALE_COLOR.darker();
+	static final Color FEMALE_SELECTED_COLOR = Color.MAGENTA.darker();
 	static final Color FEMALE_OUTLINE_COLOR = Color.MAGENTA;
-	static final Color FEMALE_SELECTED_OUTLINE_COLOR = FEMALE_OUTLINE_COLOR.darker();
+	static final Color FEMALE_SELECTED_OUTLINE_COLOR = FEMALE_COLOR.darker();
 	
 	static final Color MALE_COLOR = new Color(0, 0, 128); //navy blue      //(154, 204, 255) light blue
-	static final Color MALE_SELECTED_COLOR = MALE_COLOR.darker();
-	static final Color MALE_OUTLINE_COLOR = Color.cyan.darker(); // (210, 210, 210, 190).brighter();
-	static final Color MALE_SELECTED_OUTLINE_COLOR = MALE_OUTLINE_COLOR.darker();
+	static final Color MALE_SELECTED_COLOR = Color.cyan.darker();
+	static final Color MALE_OUTLINE_COLOR = Color.cyan; // (210, 210, 210, 190).brighter();
+	static final Color MALE_SELECTED_OUTLINE_COLOR = MALE_COLOR;
 
-	static final Color ROBOT_COLOR = Color.ORANGE;//.darker();
-	static final Color ROBOT_SELECTED_COLOR = ROBOT_COLOR.brighter();//.darker();
-	static final Color ROBOT_OUTLINE_COLOR = new Color(210, 210, 210, 190);
-	static final Color ROBOT_SELECTED_OUTLINE_COLOR = ROBOT_OUTLINE_COLOR.darker();
+	static final Color ROBOT_COLOR = new Color(156, 126, 9); //Color.ORANGE;//.darker();
+	static final Color ROBOT_SELECTED_COLOR = Color.yellow.darker(); // brighter
+	static final Color ROBOT_OUTLINE_COLOR = Color.yellow; //new Color(210, 210, 210);
+	static final Color ROBOT_SELECTED_OUTLINE_COLOR = ROBOT_COLOR.darker();
 
 //	private Font font = new Font("Courier New", Font.PLAIN, 11); 
 

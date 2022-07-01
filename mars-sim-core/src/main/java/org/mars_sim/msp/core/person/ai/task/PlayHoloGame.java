@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * PlayHoloGame.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-06-30
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -138,11 +138,6 @@ public class PlayHoloGame extends Task implements Serializable {
 	 * @return the amount of time (millisol) left after performing the phase.
 	 */
 	private double playingPhase(double time) {
-
-//		if (isDone()) {
-//			LogConsolidated.log(Level.INFO, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "
-//					+ person + " was done playing hologames in " + person.getLocationTag().getImmediateLocation());
-//		}
 		
 		// Either +ve or -ve
 		double rand = RandomUtil.getRandomInt(1);
@@ -156,17 +151,18 @@ public class PlayHoloGame extends Task implements Serializable {
         
         if (hunger > 1000) {
         	endTask();
-        	return 0;
         }
         
 		// Reduce stress but may increase or reduce a person's fatigue level
 		double newFatigue = fatigue - (2D * time * rand);
-		if (newFatigue < 0D) {
+		if (newFatigue < 0D)
 			newFatigue = 0D;
-		}
-		
 		condition.setFatigue(newFatigue);
-
+		
+        // Reduce person's stress
+        double stress = condition.getStress() - (2.5 * time);
+        condition.setStress(stress);
+        
 		return 0D;
 	}
 

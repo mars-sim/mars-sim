@@ -14,7 +14,7 @@ public enum MissionStatus {
 	MISSION_NOT_APPROVED 							("Mission not approved"),
 	
 	CURRENT_MISSION_PHASE_IS_NULL 					("Current mission phase is null"),	
-	USER_ABORTED_MISSION 							("Mission aborted by user"),
+	ABORTED_MISSION 							("Mission aborted by user"),
 	
 	UNREPAIRABLE_MALFUNCTION  						("Unrepairable malfunction"),
 	
@@ -23,6 +23,7 @@ public enum MissionStatus {
 	
 	NO_MEMBERS_AVAILABLE 							("No members available for mission"),
 	NO_METHANE										("No more methane"),
+	NO_OXYGEN 										("No more oxygen"),
 	NO_EMERGENCY_SETTLEMENT_DESTINATION_FOUND 		("No emergency settlement destination found"),
 	NO_TRADING_SETTLEMENT 							("No trading settlement found"),
 	NO_ONGOING_SCIENTIFIC_STUDY 					("No on-going scientific study being conducted in this subject"),
