@@ -330,11 +330,7 @@ public class TestCoordinates extends TestCase {
         String latString01 = "17.23" + Msg.getString("direction.degreeSign") + " N";
         double lat01 = Math.round(Coordinates.parseLatitude2Phi(latString01)*100.0)/100.0;
         assertEquals(1.27, lat01);
-        
-//        String latString02 = "18.5" + Msg.getString("direction.degreeSign") + " S";
-//        double lat02 = Coordinates.parseLatitude2Phi(latString02);
-//        assertEquals(Math.PI, lat02);
-        
+               
         String latString3 = "90.0 N";
         double lat3 = Coordinates.parseLatitude2Phi(latString3);
         assertEquals(0D, lat3);
@@ -354,8 +350,11 @@ public class TestCoordinates extends TestCase {
         DecimalFormat format = new DecimalFormat();
         char decimalPoint = format.getDecimalFormatSymbols().getDecimalSeparator();
 //        String s2 = "  0" + decimalPoint + "00" + Msg.getString("direction.degreeSign") + " E";
-        String s2 = "0" + decimalPoint + "00 E";
+        String s2 = "0" + decimalPoint + "0000 E";
         assertEquals(s2, lonString1);
+        
+//        String s3 = "0" + decimalPoint + "0001 E";
+//        assertNotEquals(s3, lonString1);
     }
     
     /**
@@ -368,7 +367,7 @@ public class TestCoordinates extends TestCase {
         DecimalFormat format = new DecimalFormat();
         char decimalPoint = format.getDecimalFormatSymbols().getDecimalSeparator();
 //        String s2 = " 90" + decimalPoint + "00" + Msg.getString("direction.degreeSign") + " E";
-        String s2 = "90" + decimalPoint + "00 E";
+        String s2 = "90" + decimalPoint + "0000 E";
         assertEquals(s2, lonString1);
     }
     
@@ -381,7 +380,7 @@ public class TestCoordinates extends TestCase {
         String latString1 = loc1.getFormattedLatitudeString();
         DecimalFormat format = new DecimalFormat();
         char decimalPoint = format.getDecimalFormatSymbols().getDecimalSeparator();
-        String s2 = "90"+ decimalPoint + "00 N";
+        String s2 = "90"+ decimalPoint + "0000 N";
         assertEquals(s2, latString1);
     }
 }

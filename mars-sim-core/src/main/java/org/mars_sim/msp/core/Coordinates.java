@@ -97,7 +97,7 @@ public class Coordinates implements Serializable {
 	 * abbreviations according to current locale, so for english NESW, for german
 	 * NOSW, french NESO, etc.
 	 *
-	 * @param latitude  String representing latitude value. ex. "25.344 N"
+	 * @param latitude  String representing latitude value. ex. "25.3443 N"
 	 * @param longitude String representing longitude value. ex. "63.5532 W"
 	 */
 	public Coordinates(String latitude, String longitude) {
@@ -750,6 +750,7 @@ public class Coordinates implements Serializable {
 			String dir = s.substring(s.length() - 1, s.length());
 			Character c = dir.charAt(0);
 			if (Character.isDigit(c)) {
+				logger.warning(2_000, "An input latitude [" + s + "] is missing the direction sign.");
 				return LAT_BAD_FORMAT; //$NON-NLS-1$
 			}
 
@@ -802,7 +803,7 @@ public class Coordinates implements Serializable {
 			String dir = s.substring(s.length() - 1, s.length());
 			Character c = dir.charAt(0);
 			if (Character.isDigit(c)) {
-				logger.warning(2_000, "The longitude [" + s + "] is missing the direction sign.");
+				logger.warning(2_000, "An input longitude [" + s + "] is missing the direction sign.");
 				return LON_BAD_FORMAT; //$NON-NLS-1$
 			}
 

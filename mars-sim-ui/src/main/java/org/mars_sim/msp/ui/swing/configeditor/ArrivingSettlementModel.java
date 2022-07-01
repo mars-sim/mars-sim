@@ -53,6 +53,8 @@ class ArrivingSettlementModel extends AbstractTableModel {
 	public static final int LAT_COL = 6;
 	public static final int LON_COL = 7;
 	
+	public static final double DECIMAL_PLACES = 10000.0;
+	
 	private String[] columns;
 	private List<ArrivalInfo> arrivalInfos;
 	private SettlementConfig settlementConfig;
@@ -277,7 +279,7 @@ class ArrivingSettlementModel extends AbstractTableModel {
 					if (dir1.equalsIgnoreCase("N") || dir1.equalsIgnoreCase("S")) {
 						if (latStr.length() > 2) {
 							doubleLat = Double.parseDouble(latStr.substring(0, latStr.length() - 1));
-							doubleLat = Math.round(doubleLat * 100.0) / 100.0;
+							doubleLat = Math.round(doubleLat * DECIMAL_PLACES) / DECIMAL_PLACES;
 							info.latitude = doubleLat + " " + dir1.toUpperCase();
 						}
 						else {
@@ -299,7 +301,7 @@ class ArrivingSettlementModel extends AbstractTableModel {
 					if (dir2.equalsIgnoreCase("E") || dir2.equalsIgnoreCase("W")) {
 						if (longStr.length() > 2) {
 							doubleLong = Double.parseDouble(longStr.substring(0, longStr.length() - 1));
-							doubleLong = Math.round(doubleLong * 100.0) / 100.0;
+							doubleLong = Math.round(doubleLong * DECIMAL_PLACES) / DECIMAL_PLACES;
 							info.longitude = doubleLong + " " + dir2.toUpperCase();
 						}
 						else {

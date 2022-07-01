@@ -662,7 +662,7 @@ public class SimulationConfigEditor {
 	}
 
 	/**
-	 * Check the table models for errors
+	 * Checks the table models for errors.
 	 */
 	private void checkModelErrors() {
 		String errorMessage  = settlementTableModel.getErrorMessage();
@@ -757,7 +757,7 @@ public class SimulationConfigEditor {
 	}
 
 	/**
-	 * Close and dispose dialog window.
+	 * Closes and disposes dialog window.
 	 */
 	private void closeWindow() {
 		f.dispose();
@@ -765,7 +765,7 @@ public class SimulationConfigEditor {
 	}
 
 	/**
-	 * Method must be synchronized to register locks
+	 * Method must be synchronized to register locks.
 	 */
 	private synchronized void wakeUpWaiters() {
 		// Wake up the waiters
@@ -805,7 +805,7 @@ public class SimulationConfigEditor {
 	}
 
 	/**
-	 * Get a new Location ofr a Settlement
+	 * Gets a new Location for a Settlement.
 	 * @return
 	 */
 	private Coordinates determineNewSettlementLocation() {
@@ -817,7 +817,7 @@ public class SimulationConfigEditor {
 	}
 
 	/**
-	 * Wait for the user to complete the configuration
+	 * Waits for the user to complete the configuration.
 	 */
 	public synchronized void waitForCompletion() {
         while (!completed ) {
@@ -832,7 +832,7 @@ public class SimulationConfigEditor {
 	}
 
 	/**
-	 * Crew configuration if to be used. If returns null then no Crews
+	 * Crew configuration if to be used. If returns null then no Crews.
 	 * @return
 	 */
 	public UserConfigurableConfig<Crew> getCrewConfig() {
