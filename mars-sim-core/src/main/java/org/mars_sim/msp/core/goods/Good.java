@@ -12,6 +12,7 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.food.FoodProductionProcessInfo;
 import org.mars_sim.msp.core.food.FoodProductionProcessItem;
@@ -21,6 +22,7 @@ import org.mars_sim.msp.core.manufacture.ManufactureProcessInfo;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessItem;
 import org.mars_sim.msp.core.manufacture.ManufactureUtil;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
@@ -28,7 +30,11 @@ import org.mars_sim.msp.core.resource.ItemType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
+import org.mars_sim.msp.core.structure.building.function.farming.CropConfig;
+import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.core.vehicle.VehicleConfig;
+import org.tukaani.xz.UnsupportedOptionsException;
 
 /**
  * A meta class describing an economic good in the simulation.
@@ -46,6 +52,13 @@ public abstract class Good implements Serializable, Comparable<Good> {
 
 	//TODO Initialise explicitly
 	protected static MissionManager missionManager = Simulation.instance().getMissionManager();
+	protected static MarsClock marsClock = Simulation.instance().getMasterClock().getMarsClock();
+
+    // TODO, should load of an instance and not a static
+    protected static VehicleConfig vehicleConfig = SimulationConfig.instance().getVehicleConfiguration();
+	protected static PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
+	protected static CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
+
 
 	// Data members
 	private String name;
@@ -518,4 +531,10 @@ public abstract class Good implements Serializable, Comparable<Good> {
 	 * Get the default initial supply value for this Good.
 	 */
     abstract double getDefaultSupplyValue();
+
+	/**
+	 * Refresh the Supply and Demand values associated with this Good for a specific Settlement.
+	 * @param owner Owner of the Supply/Demand values.
+	 */
+	abstract void refreshSupplyDemandValue(GoodsManager owner);
 }

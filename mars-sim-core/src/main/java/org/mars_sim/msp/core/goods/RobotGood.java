@@ -87,4 +87,9 @@ class RobotGood extends Good {
     double getDefaultSupplyValue() {
         return INITIAL_ROBOT_SUPPLY;
     }
+
+    @Override
+    void refreshSupplyDemandValue(GoodsManager owner) {
+        // There is no logic to calculate Supply & Demand for Robots currently
+    }
 }
