@@ -43,6 +43,8 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
     private static final String FILENAME = "commander.txt";
     private static final String EXT = ".txt";
 
+    private static final String BOOKMARK_ = "bookmark_";
+    
     private static final int SPACES = 18;
 
     private int choiceIndex = -1;
@@ -233,12 +235,12 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
 
         int step = 0;
         while(step < operations.size()) {
-            terminal.setBookmark("bookmark_" + step);
+            terminal.setBookmark(BOOKMARK_ + step);
             try {
                 operations.get(step).run();
             } catch (ReadAbortedException e) {
                 if(step > 0) step--;
-                terminal.resetToBookmark("bookmark_" + step);
+                terminal.resetToBookmark(BOOKMARK_ + step);
                 continue;
             }
             step++;

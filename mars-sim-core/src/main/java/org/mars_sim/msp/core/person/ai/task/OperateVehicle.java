@@ -486,7 +486,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
         	// Note: assume no emergency and the vehicle will choose to use constant velocity to get there
         	hrsTime = d_km / u_kph; // [in hrs]
 
-        	// Maintain the constant speed. Set v as u.
+        	// Maintain the constant speed. Assign v as u.
         	v_kph = u_kph;
         	
     		v_ms = u_ms;

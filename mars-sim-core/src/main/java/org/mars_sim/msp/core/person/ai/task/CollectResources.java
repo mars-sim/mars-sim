@@ -209,10 +209,9 @@ public class CollectResources extends EVAOperation implements Serializable {
 		}
 
 		// Modify collection rate by polar region if ice collecting.
-		if (resourceType == ResourceUtil.iceID) {
-			if (surfaceFeatures.inPolarRegion(person.getCoordinates())) {
-				samplesCollected *= 10D;
-			}
+		if (resourceType == ResourceUtil.iceID
+			&& surfaceFeatures.inPolarRegion(person.getCoordinates())) {
+			samplesCollected *= 10D;
 		}
 
 		// Add experience points
@@ -247,8 +246,8 @@ public class CollectResources extends EVAOperation implements Serializable {
 	 * @param resourceType  the resource to collect.
 	 * @return true if person can perform the task.
 	 */
-	public static boolean canCollectResources(MissionMember member, Rover rover, EquipmentType containerType,
-			Integer resourceType) {
+	public static boolean canCollectResources(MissionMember member, Rover rover, 
+			EquipmentType containerType, Integer resourceType) {
 
 		boolean result = false;
 
@@ -302,5 +301,4 @@ public class CollectResources extends EVAOperation implements Serializable {
 			returnEquipmentToVehicle(rover);
 		}
 	}
-
 }

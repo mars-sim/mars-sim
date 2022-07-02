@@ -75,8 +75,6 @@ public class ResourceUtil implements Serializable {
 	public static final String SOLID_WASTE = "solid waste";
 	public static final String TOXIC_WASTE = "toxic waste";
 
-//	public static final String TOILET_WASTE = "toilet waste";
-
 	public static final String GREY_WATER = "grey water";
 	public static final String BLACK_WATER = "black water";
 	public static final String TABLE_SALT = "table salt";
