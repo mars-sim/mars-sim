@@ -44,6 +44,7 @@ implements Serializable {
 	 * 
 	 * @return vehicle
 	 */
+	@Override
 	public Vehicle getVehicle() {
 		return vehicle;
 	}

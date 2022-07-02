@@ -1053,7 +1053,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 				// When the vehicle is already on the road, do NOT use margin
 				// or else it would constantly complain not having enough fuel
 			}
-			// Add methane
+
 			result.put(vehicle.getFuelType(), amount);
 
 		}

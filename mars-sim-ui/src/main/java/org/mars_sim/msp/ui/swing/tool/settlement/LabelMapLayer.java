@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LabelMapLayer.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-01
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;
@@ -73,17 +73,15 @@ implements SettlementMapLayer {
 	static final Color FEMALE_OUTLINE_COLOR = Color.MAGENTA;
 	static final Color FEMALE_SELECTED_OUTLINE_COLOR = FEMALE_COLOR.darker();
 	
-	static final Color MALE_COLOR = new Color(0, 0, 128); //navy blue      //(154, 204, 255) light blue
+	static final Color MALE_COLOR = new Color(0, 0, 128); //navy blue //(154, 204, 255) light blue
 	static final Color MALE_SELECTED_COLOR = Color.cyan.darker();
 	static final Color MALE_OUTLINE_COLOR = Color.cyan; // (210, 210, 210, 190).brighter();
 	static final Color MALE_SELECTED_OUTLINE_COLOR = MALE_COLOR;
 
-	static final Color ROBOT_COLOR = new Color(156, 126, 9); //Color.ORANGE;//.darker();
+	static final Color ROBOT_COLOR = new Color(156, 126, 9); // Color.ORANGE;//.darker();
 	static final Color ROBOT_SELECTED_COLOR = Color.yellow.darker(); // brighter
-	static final Color ROBOT_OUTLINE_COLOR = Color.yellow; //new Color(210, 210, 210);
+	static final Color ROBOT_OUTLINE_COLOR = Color.yellow; // Color(210, 210, 210);
 	static final Color ROBOT_SELECTED_OUTLINE_COLOR = ROBOT_COLOR.darker();
-
-//	private Font font = new Font("Courier New", Font.PLAIN, 11); 
 
 	// Data members
 	private SettlementMapPanel mapPanel;
@@ -157,7 +155,8 @@ implements SettlementMapLayer {
     }
     
 	/**
-	 * Draw labels for all of the buildings in the settlement.
+	 * Draws labels for all of the buildings in the settlement.
+	 * 
 	 * @param g2d the graphics context.
 	 * @param settlement the settlement.
 	 */
@@ -328,7 +327,8 @@ implements SettlementMapLayer {
 	}
  
 	/**
-	 * Draw labels for all of the construction sites in the settlement.
+	 * Draws labels for all of the construction sites in the settlement.
+	 * 
 	 * @param g2d the graphics context.
 	 * @param settlement the settlement.
 	 */
@@ -381,6 +381,7 @@ implements SettlementMapLayer {
 
 	/**
 	 * Gets the label for a construction site.
+	 * 
 	 * @param site the construction site.
 	 * @return the construction label.
 	 */
@@ -408,7 +409,8 @@ implements SettlementMapLayer {
 	}
 
 	/**
-	 * Draw labels for all of the vehicles parked at the settlement.
+	 * Draws labels for all of the vehicles parked at the settlement.
+	 * 
 	 * @param g2d the graphics context.
 	 * @param settlement the settlement.
 	 */
@@ -447,7 +449,7 @@ implements SettlementMapLayer {
 	}
 
 	/**
-	 * Draw labels for all people at the settlement.
+	 * Draws labels for all people at the settlement.
 	 * 
 	 * @param g2d the graphics context.
 	 * @param settlement the settlement.
@@ -657,6 +659,7 @@ implements SettlementMapLayer {
 
 	/**
 	 * Draws a label to the right of an X, Y location.
+	 * 
 	 * @param g2d the graphics 2D context.
 	 * @param label the label string.
 	 * @param loc the location from center of settlement (meters).
@@ -712,6 +715,7 @@ implements SettlementMapLayer {
 
 	/**
 	 * Gets an image of the label from cache or creates one if it doesn't exist.
+	 * 
 	 * @param label the label string.
 	 * @param font the font to use.
 	 * @param fontRenderContext the font render context to use.
@@ -784,6 +788,7 @@ implements SettlementMapLayer {
 
 	/**
 	 * Creates a label image.
+	 * 
 	 * @param label the label string.
 	 * @param font the font to use.
 	 * @param fontRenderContext the font render context to use.

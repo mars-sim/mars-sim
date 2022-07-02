@@ -319,9 +319,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
 	 * @return the amount of time left over after performing the phase.
 	 */
 	protected double mobilizeVehiclePhase(double time) {
-//		logger.log(vehicle, Level.CONFIG, 20_000L, 
-//				"mobilizeVehiclePhase(). time: " + Math.round(time * 1000.0)/1000.0 + " millisols");
-		
+	
         // Find current direction and update vehicle.
         vehicle.setDirection(vehicle.getCoordinates().getDirectionToPoint(destination));
         
@@ -358,12 +356,12 @@ public abstract class OperateVehicle extends Task implements Serializable {
 	private void turnOnBeacon(int resource) {
 		vehicle.setSpeed(0D);
 		vehicle.setPrimaryStatus(StatusType.PARKED, StatusType.OUT_OF_FUEL);
-        MissionStatus status = null;
-        if (resource == ResourceUtil.methaneID) {
-        	status = MissionStatus.NO_METHANE;
-        }
-        else if (resource == ResourceUtil.oxygenID) {
+        MissionStatus status = MissionStatus.NO_METHANE;
+        if (resource == ResourceUtil.oxygenID) {
         	status = MissionStatus.NO_OXYGEN;        
+        }
+        else if (resource == ResourceUtil.methanolID) {
+        	status = MissionStatus.NO_METHANOL;        
         }
         	
     	if (!vehicle.isBeaconOn()) {
@@ -387,10 +385,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
 	 * @return the amount of time (ms) left over after driving (if any)
 	 */
 	protected double mobilizeVehicle(double time) {
-//		logger.log(vehicle, Level.CONFIG, 20_000L, 
-//				"phase: " + this.getPhase() 
-//				+ "   time: " + Math.round(time * 1000.0)/1000.0 + " millisols");
-		
+
 		if (time < 0) {
 			logger.severe(vehicle, "Negative time: " + time);
         	return 0;
@@ -410,7 +405,6 @@ public abstract class OperateVehicle extends Task implements Serializable {
 					"Case A: Out of fuel. Cannot drive.");
     		// Turn on emergency beacon
 	    	turnOnBeacon(fuelType);
-
         	endTask();
         	return time;
     	}
@@ -420,7 +414,6 @@ public abstract class OperateVehicle extends Task implements Serializable {
 					"Case B: Out of fuel oxidizer. Cannot drive.");
     		// Turn on emergency beacon
 	    	turnOnBeacon(OXYGEN_ID);
-        	
         	endTask();
         	return time;
         }
@@ -468,7 +461,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
     	v_kph = Math.min(v_kph, getAverageVehicleSpeed(vehicle, person));
     	v_ms = v_kph / KPH_CONV;
    
-    	logger.log(vehicle, Level.CONFIG, 20_000L, 
+    	logger.log(vehicle, Level.FINE, 20_000L, 
 				"max v_kph: " + Math.round(v_kph * 1000.0)/1000.0 + " kph");
     	
     	// Determine distance traveled in time given.
@@ -496,7 +489,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
         	// Maintain the constant speed. Set v as u.
         	v_kph = u_kph;
         	
-    		v_ms = v_kph / KPH_CONV;
+    		v_ms = u_ms;
     		
             // Calculate the fuel needed
             fuelUsed = calculateFuelUsed(u_ms, v_ms, d_km, hrsTime, remainingFuel);
@@ -626,7 +619,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
     
         double vSQ = v_ms * v_ms; // [in (m/s)^2]
         
-        double fInitialFriction = 5.0 / v_ms;  //[in N]
+        double fInitialFriction = 5.0 / (0.5 + v_ms);  //[in N]
         
         // Note : Aerodynamic drag force = air drag coeff * air density * vehicle frontal area / 2 * vehicle speed 
         double fAeroDrag = 0.4 * 0.02 * 1.5 / 2.0 * vSQ;

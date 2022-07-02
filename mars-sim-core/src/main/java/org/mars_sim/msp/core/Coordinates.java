@@ -170,8 +170,7 @@ public class Coordinates implements Serializable {
 		else if (temp4 < -1D)
 			temp4 = -1D;
 
-		double result = Math.acos(temp4);
-		return result;
+		return Math.acos(temp4);
 	}
 
 	/**
@@ -191,8 +190,7 @@ public class Coordinates implements Serializable {
 		double temp1 = Math.pow(Math.sin(diffPhi / 2D), 2D);
 		double temp2 = Math.cos(phi1) * Math.cos(phi2) * Math.pow(Math.sin(diffTheta / 2D), 2D);
 		double temp3 = Math.sqrt(temp1 + temp2);
-		double result = 2D * Math.asin(temp3);
-		return result;
+		return 2D * Math.asin(temp3);
 	}
 
 	/**

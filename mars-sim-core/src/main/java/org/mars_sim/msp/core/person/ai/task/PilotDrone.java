@@ -327,14 +327,14 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 		double climbE = 0;
 		
 		if (ascentE > 0) {
-			// TODO: Use Newton's law to determine the amount of height the flyer can climb 
+			// Future: Use Newton's law to determine the amount of height the flyer can climb 
 			double tSec = time * ClockUtils.SECONDS_PER_MILLISOL;
 			double speed = .0025 * mod;
 			climbE = speed * tSec;
 			
 		}
 		else if (ascentE < 0) {
-			// TODO: Use Newton's law to determine the amount of height the flyer can climb 
+			// Future: Use Newton's law to determine the amount of height the flyer can climb 
 			double tSec = time * ClockUtils.SECONDS_PER_MILLISOL;
 			double speed = -.02 * mod;
 			climbE = speed * tSec;
@@ -343,7 +343,7 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 		double elev = climbE + oldGroundE;
 		((Flyer) getVehicle()).setElevation(elev);
 		
-		logger.log(((Flyer) getVehicle()), person, Level.INFO, 20_000, 
+		logger.log(getVehicle(), person, Level.INFO, 20_000, 
 				"Old Elevation: " + Math.round(oldGroundE * 100.00)/100.00 + " km."
 				+ "   New Elevation: " + Math.round(elev * 100.00)/100.00 + " km.");
 	}
