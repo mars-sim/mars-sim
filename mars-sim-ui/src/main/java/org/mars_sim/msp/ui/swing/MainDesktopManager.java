@@ -33,10 +33,9 @@ class MainDesktopManager extends DefaultDesktopManager {
 	}
 
 	/**
-	 * Iconifies frame (overridden)
+	 * Iconifies frame (overridden).
 	 *
-	 * @param frame
-	 *            the internal frame
+	 * @param frame the internal frame
 	 */
 	@Override
 	public void iconifyFrame(JInternalFrame frame) {
@@ -45,12 +44,12 @@ class MainDesktopManager extends DefaultDesktopManager {
 
 	@Override
 	public void beginDraggingFrame(JComponent f) {
-
+		// nothing
 	}
-
 	@Override
-	public void beginResizingFrame(JComponent f, int direction) {
 
+	public void beginResizingFrame(JComponent f, int direction) {
+		// nothing
 	}
 
 	@Override

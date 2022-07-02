@@ -247,6 +247,9 @@ public class TendGreenhouse extends Task implements Serializable {
 		if (isDone()) {
 			return time;
 		}
+		
+    	if (getTimeCompleted() > getDuration())
+        	endTask();
 
 		Building farmBuilding = greenhouse.getBuilding();
 		

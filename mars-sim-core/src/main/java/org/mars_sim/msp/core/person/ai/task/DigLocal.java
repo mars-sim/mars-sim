@@ -119,7 +119,7 @@ implements Serializable {
         	diggingLoc = determineDiggingLocation();
 	        if (diggingLoc != null) {
 	        	setOutsideSiteLocation(diggingLoc);
-	           	logger.info(person, 4_000L, "Selected an outside digging site at " + diggingLoc + ".");
+//	           	logger.info(person, 4_000L, "Selected an outside digging site at " + diggingLoc + ".");
 	        }
 	        else {
 	        	checkLocation();
