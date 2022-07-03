@@ -24,14 +24,11 @@ import org.mars_sim.msp.ui.swing.tool.NumberRenderer;
  * within the Monitor Window.
  */
 @SuppressWarnings("serial")
-public class TradeTab
-extends TableTab
-implements UnitManagerListener {
+public class TradeTab extends TableTab implements UnitManagerListener {
 
 	/** The minimum number of decimal places to be displayed. */
 	private static final int TWO_DIGITS = 2;
-	private static final int THREE_DIGITS = 3;
-	
+
 	/**
 	 * constructor.
 	 * 
@@ -40,7 +37,7 @@ implements UnitManagerListener {
 	 */
 	public TradeTab(Settlement selectedSettlement, final MonitorWindow window) {
 		// Use TableTab constructor
-		super(window, new TradeTableModel(selectedSettlement), true, false, MonitorWindow.TRADE_ICON);
+		super(window, new TradeTableModel(selectedSettlement, window), true, false, MonitorWindow.TRADE_ICON);
 
 		// Override default cell renderer for formatting double values.
 //		table.setDefaultRenderer(Double.class, new NumberCellRenderer(NUM_DIGITS, true));

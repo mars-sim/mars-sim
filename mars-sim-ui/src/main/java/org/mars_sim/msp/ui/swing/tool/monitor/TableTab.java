@@ -71,11 +71,10 @@ abstract class TableTab extends MonitorTab {
 	 * @param mandatory       Is this table view mandatory.
 	 * @param singleSelection Does this table only allow single selection?
 	 */
-	public TableTab(final MonitorWindow window, MonitorModel model, boolean mandatory, boolean singleSelection,
+	public TableTab(final MonitorWindow window, final MonitorModel model, boolean mandatory, boolean singleSelection,
 			String icon) {
 		super(model, mandatory, ImageLoader.getNewIcon(icon));
-
-
+	
 		// Can not create icons until UIManager is up and running
 		if (ascendingIcon == null) {
 			Color baseColor = UIManager.getColor("Label.background");
@@ -118,14 +117,14 @@ abstract class TableTab extends MonitorTab {
 						super.tableChanged(e);
 				}
 
-//                /**
-//                 * Display the cell contents as a tooltip. Useful when cell
-//                 * contents in wider than the cell
-//
-//                public String getToolTipText(MouseEvent e) {
-//                	// Note: create tooltip text for greenhouse crop
-//                    return getCellText(e);
-//                };
+                /**
+                 * Display the cell contents as a tooltip. Useful when cell
+                 * contents in wider than the cell
+				 */
+                public String getToolTipText(MouseEvent e) {
+                	// Future: Figure out how to create a custom tooltip text for showing the greenhouse crop in Crop tab
+                    return getCellText(e);
+                };
 
 			};
 
@@ -151,7 +150,7 @@ abstract class TableTab extends MonitorTab {
 			});
 
 			sortedModel.addTableModelListener(table);
-
+		
 			// Add a mouse listener for the mouse event selecting the sorted column
 			// Not the best way but no double click is provided on Header class
 			// Get the TableColumn header to display sorted column
@@ -359,15 +358,7 @@ abstract class TableTab extends MonitorTab {
 		if ((column >= 0) && (row >= 0)) {
 			Object cell = table.getValueAt(row, column);
 			if (cell != null) {
-				// Note: below is NOT working
-//            	MonitorModel target = (sortedModel != null ? sortedModel : getModel());
-//                if (target instanceof CropTableModel) {
-//                	System.out.println("It's CropTableModel");
-//                	CropTableModel model = (CropTableModel) (table.getModel());
-//                	result = model.getToolTip(row, column);
-//                }
 				result = cell.toString();
-				System.out.println("(" + row + ", " + column + "): " + result);
 			}
 		}
 		return result;

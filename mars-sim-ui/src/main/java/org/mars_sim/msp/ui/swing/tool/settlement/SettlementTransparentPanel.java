@@ -160,21 +160,23 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	private JSlider zoomSlider;
 	private JPanel controlCenterPane, eastPane, labelPane, buttonPane, controlPane;
 
-	public static ImageIcon sandstorm;
-	public static ImageIcon dustDevil;
+	private ImageIcon sand = new LazyIcon("sand").getIcon();
+	private ImageIcon sandstorm = new LazyIcon("sandstorm").getIcon();
+	private ImageIcon dustDevil = new LazyIcon("dustDevil").getIcon();
 
-	public static ImageIcon cold_wind;
-	public static ImageIcon frost_wind;
+	private ImageIcon cold_wind = new LazyIcon("cold_wind").getIcon();
+	private ImageIcon frost_wind = new LazyIcon("frost_wind").getIcon();
 
-	public static ImageIcon sun;
-	public static ImageIcon desert_sun;
-	public static ImageIcon cloudy;
-	public static ImageIcon snowflake;
-	public static ImageIcon ice;
-	public static ImageIcon hazy;
-	public static ImageIcon sand;
-	public static ImageIcon emptyIcon = new ImageIcon();
-
+	private ImageIcon snowflake = new LazyIcon("snowflake").getIcon();
+	private ImageIcon ice = new LazyIcon("ice").getIcon();
+	private ImageIcon hazy = new LazyIcon("hazy").getIcon();
+	private ImageIcon cloudy = new LazyIcon("cloudy").getIcon();
+	
+	private ImageIcon sun = new LazyIcon("sun").getIcon();
+	private ImageIcon desert_sun = new LazyIcon("desert_sun").getIcon();
+	
+	private ImageIcon emptyIcon = new ImageIcon();
+    
 	/** label for sunrise time. */
 	private WebLabel sunriseLabel;
 	/** label for sunset time. */
@@ -642,21 +644,6 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
      * Builds the weather panel
      */
 	public void buildWeatherPanel() {
-        sandstorm = new LazyIcon("sandstorm").getIcon();
-        dustDevil = new LazyIcon("dustDevil").getIcon();
-
-        cold_wind = new LazyIcon("cold_wind").getIcon();
-        frost_wind = new LazyIcon("frost_wind").getIcon();
-
-        sun = new LazyIcon("sun").getIcon();
-        desert_sun = new LazyIcon("desert_sun").getIcon();
-        cloudy = new LazyIcon("cloudy").getIcon();
-        snowflake = new LazyIcon("snowflake").getIcon();
-        ice = new LazyIcon("ice").getIcon();
-
-        hazy = new LazyIcon("hazy").getIcon();
-        sand = new LazyIcon("sand").getIcon();
-
         int size = MainWindow.WEATHER_ICON_SIZE;
 
     	weatherButton00 = new WebButton(StyleId.buttonUndecorated);

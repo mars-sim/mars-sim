@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * MonitorTab.java
- * @date 2021-12-07
+ * @date 2022-07-02
  * @author Barry Evans
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
@@ -47,7 +47,6 @@ public abstract class MonitorTab extends JPanel {
 
 		// Create a panel
 		setLayout(new BorderLayout());
-		// setBorder(MainDesktopPane.newEmptyBorder());
 	}
 
 	/**

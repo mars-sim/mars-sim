@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MonitorWindow.java
- * @date 2022-05-27
+ * @date 2022-07-02
  * @author Barry Evans
  */
 
@@ -29,9 +29,8 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
+import javax.swing.JViewport;
 import javax.swing.SwingConstants;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
@@ -57,7 +56,6 @@ import com.alee.laf.tabbedpane.WebTabbedPane;
 import com.alee.managers.style.StyleId;
 import com.alee.managers.tooltip.TooltipManager;
 import com.alee.managers.tooltip.TooltipWay;
-
 
 /**
  * The MonitorWindow is a tool window that displays a selection of tables each
@@ -102,8 +100,11 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	private WebTabbedPane tabsSection;
 	// Note: may use JideTabbedPane instead
 	private WebLabel rowCount;
-	/** Tab showing historical events. */
+	/** The Tab showing historical events. */
 	private EventTab eventsTab;
+	/** The Tab for displaying goods. */
+	private TradeTab tradeTab;
+
 	private WebButton buttonPie;
 	private WebButton buttonBar;
 	private WebButton buttonRemoveTab;
@@ -145,6 +146,9 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		topPane.setPreferredHeight(30);
 		mainPane.add(topPane, BorderLayout.NORTH);
 
+		// Set up settlements
+		setupSettlements();
+		
 		// Create the settlement combo box
         buildSettlementNameComboBox();
 
@@ -162,21 +166,16 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		tabsSection = new WebTabbedPane(StyleId.tabbedpane, SwingConstants.LEFT, JTabbedPane.SCROLL_TAB_LAYOUT);
 		// May choose WRAP_TAB_LAYOUT
 		tabsSection.setForeground(Color.DARK_GRAY);
+		
 		// Add all the tabs
 		addAllTabs();
 		
 		// Hide settlement box at startup since the all settlement tab is being selected by default
 		setSettlementBox(true);
 		
-//		Note: may use lambda tabsSection.addChangeListener(e -> updateTab())
-		
-		// Add a listener for the tab changes
-		tabsSection.addChangeListener(new ChangeListener() {
-			@Override
-			public void stateChanged(ChangeEvent e) {
-				updateTab();
-			}
-		});
+		// Use lambda to add a listener for the tab changes
+		// Invoked when player clicks on another tab
+		tabsSection.addChangeListener(e -> updateTab());
 					
 		mainPane.add(tabsSection, BorderLayout.CENTER);
 		
@@ -208,7 +207,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	}
 
 	/**
-	 * Adds all the tabs
+	 * Adds all the tabs.
 	 */
 	public void addAllTabs() {
 		// Add tabs into the table
@@ -224,14 +223,16 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 			addTab(new UnitTab(this, new CropTableModel(selectedSettlement), true, CROP_ICON));
 			
 			addTab(new FoodInventoryTab(selectedSettlement, this));
-			addTab(new TradeTab(selectedSettlement, this));
+			
+			tradeTab = new TradeTab(selectedSettlement, this);
+			addTab(tradeTab);
+			((TradeTableModel)tradeTab.getModel()).setUpRowSelection();
 			
 			eventsTab = new EventTab(this, desktop);
 			addTab(eventsTab);
 			
 			addTab(new MissionTab(this));
 			addTab(new UnitTab(this, new VehicleTableModel(selectedSettlement), true, VEHICLE_ICON));
-			
 
 		} catch (Exception e) {
 			// Note: May add calling e.printStackTrace() when debugging which tab has the exception.
@@ -240,7 +241,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	}
 
 	/**
-	 * Adds the bottom bar
+	 * Adds the bottom bar.
 	 */
 	public void addBottomBar() {
 		// Prepare row count label
@@ -298,7 +299,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	}
 
 	/**
-	 * This method add the specified Unit table as a new tab in the Monitor. The
+	 * This method adds the specified Unit table as a new tab in the Monitor. The
 	 * model is displayed as a table by default. The name of the tab is that of the
 	 * Model.
 	 *
@@ -319,11 +320,11 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	}
 
 	/**
-	 * Gets a list of sponsored settlements
+	 * Sets up a list of settlements.
 	 *
 	 * @return List<Settlement>
 	 */
-	public List<Settlement> getSettlements() {
+	public void setupSettlements() {
 		if (settlementList == null) {
 			List<Settlement> settlements = new ArrayList<>();
 
@@ -338,12 +339,19 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 			Collections.sort(settlements);
 			settlementList = settlements;
 		}
-
-		return settlementList;
 	}
 
 	/**
-	 * Builds the settlement combo box
+	 * Gets a list of settlements.
+	 *
+	 * @return List<Settlement>
+	 */
+	public List<Settlement> getSettlements() {
+		return settlementList;
+	}
+	
+	/**
+	 * Builds the settlement combo box/
 	 */
 	@SuppressWarnings("unchecked")
 	public void buildSettlementNameComboBox() {
@@ -380,23 +388,23 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 
 		// Set the item listener only after the setup is done
 		settlementComboBox.addItemListener(new ItemListener() {
-			// Note: ensure unitUpdate() update combobox when a new building is added
+			// Note: need to ensure unitUpdate() would update combobox when a new settlement is added
 			@Override
+			// Invoked when an item has been selected or deselected by the user.
 			public void itemStateChanged(ItemEvent event) {
 				Settlement newSettlement = (Settlement) event.getItem();
 				// Change to the selected settlement in SettlementMapPanel
 				if (newSettlement != selectedSettlement) {
 					setSettlement(newSettlement);
+					// Need to update the existing tab
+					updateTab();
 				}
-
-				// Still need to update the existing tab
-				updateTab();
 			}
 		});
 	}
 
 	/**
-	 * Change the map display to the selected settlement
+	 * Changes the map display to the selected settlement.
 	 *
 	 * @param s
 	 */
@@ -408,7 +416,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	}
 
 	/**
-	 * Sets the opaqueness of the settlement box 
+	 * Sets the opaqueness of the settlement box.
 	 * 
 	 * @param isOpaque
 	 */
@@ -420,7 +428,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	}
 	
     /**
-     * Gets the length of the most lengthy settlement name
+     * Gets the length of the most lengthy settlement name/
      *
      * @return
      */
@@ -493,37 +501,58 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	}
 
 	/**
-	 * Return the currently selected tab.
+	 * Returns the currently selected tab.
 	 *
 	 * @return Monitor tab being displayed.
 	 */
 	public MonitorTab getSelected() {
 		Component c = tabsSection.getSelectedComponent();
-		if (c != null)
+		if (c != null) {
 			return (MonitorTab)c;
+		}
 		else {
 			logger.severe("No tab selected.");
 			return null;
 		}
 	}
 
+	/**
+	 * Gets the selected tab.
+	 * 
+	 * @return
+	 */
 	public int getSelectedTab() {
 		return tabsSection.getSelectedIndex();
 	}
 
 	/**
-	 * Updates the tab content
+	 * Updates the tab content.
 	 */
 	public void updateTab() {
-		// SwingUtilities.updateComponentTreeUI(this);
+		
 		MonitorTab selectedTab = getSelected();
 		if (selectedTab == null)
 			return;
-		
 		int index = tabsSection.indexOfComponent(selectedTab);
+		
+		if (settlementList.size() == 1) {
+			if (selectedTab instanceof TradeTab) {
+				// Enable these buttons
+				buttonBar.setEnabled(true);
+				buttonMap.setEnabled(true);
+				buttonDetails.setEnabled(true);
+				buttonFilter.setEnabled(true);
 
+				int rowIndex = ((TradeTableModel)tradeTab.getModel()).returnLastRowIndex(selectedSettlement);
+
+				scrollToVisible(tradeTab.getTable(), rowIndex, 0);
+			}
+			
+			return;
+		}
+			
 		// if "Mars" tab is being selected 
-		if (index == 0) {
+		else if (index == 0) {
 			// Hide the settlement box
 			setSettlementBox(true);
 			return;
@@ -619,6 +648,12 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 				buttonFilter.setEnabled(true);
 
 				newTab = new TradeTab(selectedSettlement, this);
+				tradeTab = (TradeTab) newTab;
+				((TradeTableModel)newTab.getModel()).setUpRowSelection();
+				
+				int rowIndex = ((TradeTableModel)newTab.getModel()).returnLastRowIndex(selectedSettlement);
+				
+				scrollToVisible(((TableTab)newTab).getTable(), rowIndex, 0);
 			}
 
 			swapTab(selectedTab, newTab);
@@ -655,7 +690,21 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		// SwingUtilities.updateComponentTreeUI(this);
 	}
 
-
+	/**
+	 * Scrolls the mouse cursor to a particular row and column.
+	 * 
+	 * @param table
+	 * @param rowIndex
+	 * @param vColIndex
+	 */
+	public static void scrollToVisible(JTable table, int rowIndex, int vColIndex) {
+        if (!(table.getParent() instanceof JViewport)) {
+            return;
+        }
+        
+        table.scrollRectToVisible(table.getCellRect(rowIndex, vColIndex, true));
+    }
+	
 //	public void createSearchableBar(JTable table) {
 //		// Searchable searchable = null;
 //		// SearchableBar _tableSearchableBar = null;
@@ -766,7 +815,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	}
 
 	/**
-	 * Adds a new tab to Monitor Tool
+	 * Adds a new tab to Monitor Tool.
 	 *
 	 * @param newTab
 	 */
@@ -775,7 +824,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	}
 
 	/**
-	 * Swaps out the old tab with a new tab
+	 * Swaps out the old tab with a new tab.
 	 *
 	 * @param oldTab
 	 * @param newTab
@@ -789,7 +838,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 
 
 	/**
-	 * Retires a tab from Monitor Tool
+	 * Retires a tab from Monitor Tool.
 	 *
 	 * @param tab
 	 */
@@ -799,7 +848,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	}
 
 	/**
-	 * Removes a tab from Monitor Tool
+	 * Removes a tab from Monitor Tool.
 	 *
 	 * @param oldTab
 	 */
@@ -846,7 +895,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	}
 
 	/*
-	 * Refreshes the table theme style and row count
+	 * Refreshes the table theme style and row count.
 	 */
 	public void refreshTableStyle() {
 		if (table != null) {
@@ -860,6 +909,15 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		}
 	}
 
+	/**
+	 * Gets the trade tab instance.
+	 * 
+	 * @return
+	 */
+	public TradeTab getTradeTab() {
+		return tradeTab;
+	}
+	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		Object source = e.getSource();
@@ -886,7 +944,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	}
 
 	/**
-	 * Prepare tool window for deletion.
+	 * Prepares tool window for deletion.
 	 */
 	@Override
 	public void destroy() {

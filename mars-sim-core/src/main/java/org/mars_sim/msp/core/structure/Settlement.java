@@ -123,7 +123,6 @@ public class Settlement extends Structure implements Temporal,
 	private static final int HYDROGEN_ID = ResourceUtil.hydrogenID;
 	private static final int WATER_ID = ResourceUtil.waterID;
 	private static final int CO2_ID = ResourceUtil.co2ID;
-	private static final int FOOD_ID = ResourceUtil.foodID;
 	private static final int METHANE_ID = ResourceUtil.methaneID;
 	private static final int REGOLITH_ID = ResourceUtil.regolithID;
 	private static final int SAND_ID = ResourceUtil.sandID;

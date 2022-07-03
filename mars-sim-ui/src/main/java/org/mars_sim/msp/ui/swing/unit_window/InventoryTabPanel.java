@@ -78,7 +78,8 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
     private JTable equipmentTable;
 
     /**
-     * Constructor
+     * Constructor.
+     * 
      * @param unit the unit to display.
      * @param desktop the main desktop.
      */
@@ -170,7 +171,6 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 
 		// Added setTableStyle()
 		TableStyle.setTableStyle(itemTable);
-
 
         // Create equipment panel
         WebScrollPane equipmentPanel = new WebScrollPane();

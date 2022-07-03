@@ -785,7 +785,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 		// Bury the body
 		isBuried = true;
 		// Back up the last container unit
-		condition.getDeathDetails().backupContainerID(getContainerID());
+		condition.getDeathDetails().backupContainerUnit(getContainerUnit());
 		// set container unit to null if not done so
 		setContainerUnit(null);
 		// Set his/her currentStateType

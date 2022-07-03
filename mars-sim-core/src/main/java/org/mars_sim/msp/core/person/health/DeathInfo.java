@@ -97,8 +97,6 @@ public class DeathInfo implements Serializable {
 	private HealthProblem problem;
 	/** Container unit at time of death. */
 	private Unit containerUnit;
-	/** Container id at time of death. */	
-	private int containerID;
 	/** Coordinate at time of death. */
 	private Coordinates locationOfDeath;
 	/** The person's job at time of death. */
@@ -110,13 +108,10 @@ public class DeathInfo implements Serializable {
 	
 	/** Medical cause of death. */
 	private ComplaintType illness;
-	/** Person's Gender. */
-	private GenderType gender;
 	/** Bot's RoboType. */
 	private RobotType robotType;
 	/** Person's role type. */
 	private RoleType roleType;
-	
 
 	/**
 	 * The construct creates an instance of a DeathInfo class.
@@ -127,8 +122,6 @@ public class DeathInfo implements Serializable {
 		this.person = person;
 		this.problem = problem;
 		this.causeOfDeath = cause;
-//		this.lastWord = lastWord;
-		this.gender = person.getGender();
 
 		// Initialize data members
 		if (lastWord.equals("")) {
@@ -154,13 +147,10 @@ public class DeathInfo implements Serializable {
 		}
 		
 		MasterClock masterClock = Simulation.instance().getMasterClock();
-		
-		timeOfDeath = masterClock.getMarsClock().getDateTimeStamp();
-				
+		timeOfDeath = masterClock.getMarsClock().getDateTimeStamp();	
 		missionSol = masterClock.getMarsClock().getMissionSol();
-		
 		earthTimeOfDeath = masterClock.getEarthClock().getTimeStampF1();
-				
+
 		if (problem == null) {
 			Complaint serious = person.getPhysicalCondition().getMostSerious();
 			if (serious != null) {
@@ -347,12 +337,13 @@ public class DeathInfo implements Serializable {
 		return containerUnit;
 	}
 
+	/**
+	 * Backs up the container unit.
+	 * 
+	 * @param c
+	 */
 	public void backupContainerUnit(Unit c) {
 		containerUnit = c;
-	}
-	
-	public void backupContainerID(int c) {
-		containerID = c;
 	}
 	
 	/**
