@@ -6,12 +6,24 @@
  */
 package org.mars_sim.msp.core.goods;
 
+import java.util.Collection;
+
+import org.mars_sim.msp.core.equipment.Container;
+import org.mars_sim.msp.core.equipment.ContainerUtil;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.job.JobType;
+import org.mars_sim.msp.core.person.ai.job.JobUtil;
+import org.mars_sim.msp.core.person.ai.mission.CollectIce;
+import org.mars_sim.msp.core.person.ai.mission.CollectRegolith;
+import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
+import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -22,6 +34,15 @@ public class EquipmentGood extends Good {
 	
 	private static final long serialVersionUID = 1L;
 	
+	private static final int PROJECTED_GAS_CANISTERS = 10;
+	private static final double GAS_CANISTER_DEMAND = 1;
+	private static final double SPECIMEN_BOX_DEMAND = 1.2;
+	private static final double LARGE_BAG_DEMAND = .5;
+	private static final double BAG_DEMAND = .1;
+	private static final double BARREL_DEMAND = .2;
+
+	private static final double INITIAL_EQUIPMENT_DEMAND = 0;
+	private static final double INITIAL_EQUIPMENT_SUPPLY = 0;
 	private static final double EVA_SUIT_VALUE = 50;
 	private static final double CONTAINER_VALUE = .1;
 
@@ -113,4 +134,175 @@ public class EquipmentGood extends Good {
     	}
         return getCostOutput() * (1 + 2 * factor * Math.log(value + 1));   
     }
+
+	@Override
+	double getDefaultDemandValue() {
+		return INITIAL_EQUIPMENT_DEMAND;
+	}
+
+	@Override
+	double getDefaultSupplyValue() {
+		return INITIAL_EQUIPMENT_SUPPLY;
+	}
+
+	@Override
+	void refreshSupplyDemandValue(GoodsManager owner) {
+		Settlement settlement = owner.getSettlement();
+		double previousDemand = owner.getDemandValue(this);
+
+		double totalDemand = 0;
+		
+		// Needed for loading a saved sim
+		int solElapsed = marsClock.getMissionSol();
+		// Compact and/or clear supply and demand maps every x days
+		int numSol = solElapsed % Settlement.SUPPLY_DEMAND_REFRESH + 1;
+
+		// Determine average demand.
+		double average = determineEquipmentDemand(owner, settlement);
+
+		double totalSupply = getAverageEquipmentSupply(settlement.findNumContainersOfType(equipmentType), numSol);
+		
+		
+		owner.setSupplyValue(this, totalSupply);
+		
+		// This method is not using cache
+		double trade = owner.determineTradeDemand(this);
+		if (previousDemand == 0) {
+			totalDemand = .5 * average + .5 * trade;
+		}
+		else {
+			// Intentionally lose 2% of its value
+			totalDemand = .97 * previousDemand + .005 * average + .005 * trade;
+		}
+				
+		owner.setDemandValue(this, totalDemand);
+	}
+
+	/**
+	 * Determines the demand for a type of equipment.
+	 *
+	 * @param settlement the locaiton of this demand
+	 * @return demand (# of equipment).
+	 */
+	private double determineEquipmentDemand(GoodsManager owner, Settlement settlement) {
+		double baseDemand = 1;
+
+		double areologistFactor = (1 + JobUtil.numJobs(JobType.AREOLOGIST, settlement)) / 3.0;
+
+		// Determine number of EVA suits that are needed
+		if (equipmentType == EquipmentType.EVA_SUIT) {
+			// Add the whole EVA Suit demand.
+			baseDemand += getWholeEVASuitDemand(owner);
+
+			return baseDemand + owner.getEVASuitMod() * EVA_SUIT_VALUE;
+		}
+
+		// Determine the number of containers that are needed.
+		double containerCapacity = ContainerUtil.getContainerCapacity(equipmentType);
+		double totalPhaseOverfill = 0D;
+
+		// Scan resources that can be held in this Container
+		// TODO This can be pre-calculated in the constructor as a one off for a list of Goods
+		for(AmountResource resource : ResourceUtil.getAmountResources()) {
+			if (ContainerUtil.getContainerClassToHoldResource(resource.getID()) == equipmentType) {
+				double settlementCapacity = settlement.getAmountResourceCapacity(resource.getID());
+
+				Good content = GoodsUtil.getGood(resource.getID());
+				double resourceDemand = owner.getDemandValue(content);
+
+				if (resourceDemand > settlementCapacity) {
+					double resourceOverfill = resourceDemand - settlementCapacity;
+					totalPhaseOverfill += resourceOverfill;
+				}
+			}
+		}
+
+		baseDemand += totalPhaseOverfill * containerCapacity;
+
+		double ratio = computeUsageFactor(settlement);
+
+		switch (equipmentType) {
+			case BAG:
+				return Math.max(baseDemand * ratio *settlement.getRegolithCollectionRate() / 1_000, 1000) * areologistFactor * BAG_DEMAND;
+
+			case LARGE_BAG:
+				return Math.max(baseDemand * ratio * CollectRegolith.REQUIRED_LARGE_BAGS, 1000) * LARGE_BAG_DEMAND;
+
+			case BARREL:
+				return Math.max(baseDemand * ratio * CollectIce.REQUIRED_BARRELS, 1000) * areologistFactor * BARREL_DEMAND;
+
+			case SPECIMEN_BOX:
+				return Math.max(baseDemand * ratio * Exploration.REQUIRED_SPECIMEN_CONTAINERS, 1000) * areologistFactor * SPECIMEN_BOX_DEMAND;
+
+			case GAS_CANISTER:
+				return Math.max(baseDemand * ratio * PROJECTED_GAS_CANISTERS, 1000) * areologistFactor * GAS_CANISTER_DEMAND;
+
+			default:
+				throw new IllegalArgumentException("Do not know how to calculate demand for " + equipmentType);
+		}
+	}
+
+	
+	/**
+	 * Computes the usage factor (the used number of container / the total number)
+	 * of a type of container.
+	 *
+	 * @param containerType
+	 * @return the usage factor
+	 */
+	private double computeUsageFactor(Settlement settlement) {
+		int numUsed = 0;
+
+		Collection<Container> equipmentList = settlement.findContainersOfType(equipmentType);
+
+		for(Mission mission : missionManager.getMissionsForSettlement(settlement)) {
+			if (mission instanceof VehicleMission) {
+				Vehicle vehicle = ((VehicleMission) mission).getVehicle();
+				if ((vehicle != null) && (vehicle.getSettlement() == null)) {
+					equipmentList.addAll(vehicle.findContainersOfType(equipmentType));
+				}
+			}
+		}
+
+		double total = equipmentList.size();
+		for(Container c: equipmentList) {
+			if (c.getStoredMass() > 0)
+				numUsed++;
+		}
+
+		return  (1 + numUsed) / (1 + total);
+	}
+
+	/**
+	 * Gets the EVA suit demand from its part.
+	 *
+	 * @param owner Owner of Goods
+	 * @return demand
+	 */
+	private static double getWholeEVASuitDemand(GoodsManager owner) {
+		double demand = 0;
+		// TODO Pre-build in constructor to avoid getGood lookup
+		for (int id : ItemResourceUtil.EVASUIT_PARTS_ID) {
+			demand += owner.getDemandValue(GoodsUtil.getGood(id));
+		}
+		return demand;
+	}
+
+	/**
+	 * Gets the total supply for the equipment.
+	 *
+	 * @param resource`
+	 * @param supplyStored
+	 * @param solElapsed
+	 * @return
+	 */
+	private static double getAverageEquipmentSupply(double supplyStored, int solElapsed) {
+		double aveSupply = 0.25 + Math.log((1 + supplyStored) / solElapsed);
+
+		if (aveSupply < 0.5)
+			aveSupply = 0.5;
+
+		return aveSupply;
+	}
+	
 }

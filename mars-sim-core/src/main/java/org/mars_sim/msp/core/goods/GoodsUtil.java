@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.math3.random.ValueServer;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -23,6 +24,7 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.RobotConfig;
 import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.vehicle.VehicleConfig;
+import org.mars_sim.msp.core.vehicle.VehicleSpec;
 import org.mars_sim.msp.core.vehicle.VehicleType;
 
 /**
@@ -97,45 +99,6 @@ public class GoodsUtil {
             g.computeCost();
         }
     }
-
-
-    /**
-     * Gets a good object for a given resource.
-     *
-     * @param resource the resource.
-     * @return good for the resource.
-     */
-    public static Good getResourceGood(Resource resource) {
-        if (resource == null) {
-            throw new IllegalArgumentException("resource is NOT supposed to be null.");
-        }
-
-        return getResourceGood(resource.getID());
-    }
-
-    /**
-     * Gets a good object for a given resource.
-     *
-     * @param id the resource id.
-     * @return good for the resource.
-     */
-    public static Good getResourceGood(int id) {
-        return getGoodsMap().get(id);
-    }
-
-    
-    /**
-     * Does the goods list contain this good ?
-     * 
-     * @param good
-     * @return
-     */
-	public static boolean containsGood(Good good) {
-		populateGoods();
-		if (goodsList.contains(good))
-			return true;
-		return false;
-	}
 	
     /**
      * Gets a good object for a given equipment class.
@@ -149,21 +112,10 @@ public class GoodsUtil {
         }
         int id = EquipmentType.getResourceID(equipmentClass);
         if (id > 0) {
-            return getEquipmentGood(id);
+            return getGood(id);
         }
 
         return null;
-    }
-
-
-    /**
-     * Gets a good object for a given equipment id.
-     *
-     * @param id
-     * @return
-     */
-    public static Good getEquipmentGood(int id) {
-        return getGoodsMap().get(id);
     }
 
 
@@ -292,10 +244,9 @@ public class GoodsUtil {
      * @param newList
      */
     private static Map<Integer, Good> populateVehicles(Map<Integer, Good> newMap) {
-        Iterator<String> i = vehicleConfig.getVehicleTypes().iterator();
-        while (i.hasNext()) {
-            String name = i.next();
-            Good newGood = new VehicleGood(name);
+        for(String name : vehicleConfig.getVehicleTypes()) {
+            VehicleSpec vs = vehicleConfig.getVehicleSpec(name);
+            Good newGood = new VehicleGood(name, vs);
             newMap.put(newGood.getID(), newGood);
         }
         return newMap;
@@ -315,6 +266,15 @@ public class GoodsUtil {
          return newMap;
     }
 
+    /**
+     * Gets a good object for a given resource id.
+     *
+     * @param id the resource id.
+     * @return good for the resource.
+     */
+    public static Good getGood(int id) {
+        return getGoodsMap().get(id);
+    }
 
     /**
      * Gets the good id.

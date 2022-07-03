@@ -402,7 +402,7 @@ implements ConstructionListener {
                 while (i.hasNext()) {
                 	Integer resource = i.next();
                     double amount = stage.getRemainingResources().get(resource);
-                    Good good = GoodsUtil.getResourceGood(ResourceUtil.findAmountResource(resource));
+                    Good good = GoodsUtil.getGood(resource);
                     goodsMap.put(good, (int) amount);
                 }
 
@@ -411,7 +411,7 @@ implements ConstructionListener {
                 while (j.hasNext()) {
                 	Integer part = j.next();
                     int num = stage.getRemainingParts().get(part);
-                    Good good = GoodsUtil.getResourceGood(ItemResourceUtil.findItemResource(part));
+                    Good good = GoodsUtil.getGood(part);
                     goodsMap.put(good, num);
                 }
             }

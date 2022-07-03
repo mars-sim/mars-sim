@@ -362,9 +362,9 @@ public final class FoodProductionUtil {
 	public static Good getGood(FoodProductionProcessItem item) {
 		Good result = null;
 		if (ItemType.AMOUNT_RESOURCE == item.getType()) {
-			result = GoodsUtil.getResourceGood(ResourceUtil.findAmountResource(item.getName()));
+			result = GoodsUtil.getGood(ResourceUtil.findAmountResource(item.getName()).getID());
 		} else if (ItemType.PART == item.getType()) {
-			result = GoodsUtil.getResourceGood(ItemResourceUtil.findItemResource(item.getName()));
+			result = GoodsUtil.getGood(ItemResourceUtil.findItemResource(item.getName()).getID());
 		} else if (ItemType.EQUIPMENT == item.getType()) {
 			result = GoodsUtil.getEquipmentGood(EquipmentType.convertName2Enum(item.getName()));
 		}

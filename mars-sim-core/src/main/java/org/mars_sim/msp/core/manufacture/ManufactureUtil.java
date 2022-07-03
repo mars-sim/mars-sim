@@ -245,7 +245,7 @@ public final class ManufactureUtil {
 			Iterator<PartSalvage> i = process.getPartSalvageList().iterator();
 			while (i.hasNext()) {
 				PartSalvage partSalvage = i.next();
-				Good partGood = GoodsUtil.getResourceGood(ItemResourceUtil.findItemResource(partSalvage.getName()));
+				Good partGood = GoodsUtil.getGood(ItemResourceUtil.findItemResource(partSalvage.getName()).getID());
 				double partValue = goodsManager.getGoodValuePerItem(partGood.getID()) * partSalvage.getNumber();
 				totalPartsGoodValue += partValue;
 			}

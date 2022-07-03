@@ -759,7 +759,7 @@ public final class TradeUtil {
 		Map<Good, Integer> neededResources = new HashMap<Good, Integer>(4);
 
 		// Get required fuel.
-		Good fuelGood = GoodsUtil.getResourceGood(rover.getFuelType());
+		Good fuelGood = GoodsUtil.getGood(rover.getFuelType());
 		neededResources.put(fuelGood, (int) VehicleMission.getFuelNeededForTrip(rover, distance, 
 				(rover.getCumFuelEconomy() + rover.getEstimatedFuelEconomy()) / VehicleMission.FE_FACTOR, false));
 
@@ -772,19 +772,19 @@ public final class TradeUtil {
 		// Get oxygen amount.
 		double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * tripTimeSols * Trade.MAX_MEMBERS
 				* Mission.OXYGEN_MARGIN * life_support_margin;
-		Good oxygenGood = GoodsUtil.getResourceGood(OXYGEN_ID);
+		Good oxygenGood = GoodsUtil.getGood(OXYGEN_ID);
 		neededResources.put(oxygenGood, (int) oxygenAmount);
 
 		// Get water amount.
 		double waterAmount = PhysicalCondition.getWaterConsumptionRate() * tripTimeSols * Trade.MAX_MEMBERS
 				* Mission.WATER_MARGIN * life_support_margin;
-		Good waterGood = GoodsUtil.getResourceGood(WATER_ID);
+		Good waterGood = GoodsUtil.getGood(WATER_ID);
 		neededResources.put(waterGood, (int) waterAmount);
 
 		// Get food amount.
 		double foodAmount = PhysicalCondition.getFoodConsumptionRate() * tripTimeSols * Trade.MAX_MEMBERS
 				* Mission.FOOD_MARGIN * life_support_margin;
-		Good foodGood = GoodsUtil.getResourceGood(FOOD_ID);
+		Good foodGood = GoodsUtil.getGood(FOOD_ID);
 		neededResources.put(foodGood, (int) foodAmount);
 
 		// Get cost of resources.

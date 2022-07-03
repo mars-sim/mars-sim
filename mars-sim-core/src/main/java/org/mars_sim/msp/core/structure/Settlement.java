@@ -1058,13 +1058,7 @@ public class Settlement extends Structure implements Temporal,
 				}
 
 				// Initialize the goods manager
-				goodsManager.timePassing(pulse);
-
-				// Initialize the good values
-				Iterator<Good> i = GoodsUtil.getGoodsList().iterator();
-				while (i.hasNext()) {
-					goodsManager.determineGoodValue(i.next());
-				}
+				goodsManager.updateGoodValues();
 			}
 
 			// Check for available airlocks
@@ -1075,14 +1069,7 @@ public class Settlement extends Structure implements Temporal,
 			int remainder = msol % cycles;
 			if (remainder == templateID) {
 				// Update the goods value gradually with the use of buffers
-				if (goodsManager.isInitialized()) {
-					Iterator<Good> i = GoodsUtil.getGoodsList().iterator();
-					while (i.hasNext()) {
-						Good g = i.next();
-						goodsManager.determineGoodValue(g);
-						g.adjustGoodValue();
-					}
-				}
+				goodsManager.updateGoodValues();
 			}
 
 			remainder = msol % CHECK_MISSION;
@@ -1552,23 +1539,6 @@ public class Settlement extends Structure implements Temporal,
 			weather.clearMap();
 		}
 	}
-
-	/**
-	 * Updates the GoodsManager twice per day
-	 *
-	 * @param time
-	 */
-	private void updateGoodsManager(ClockPulse pulse) {
-		goodsManagerUpdateTime += pulse.getElapsed();
-
-		// Randomly update goods manager at a certain time
-		double timeThreshold = 250D + RandomUtil.getRandomRegressionInteger(125);
-		if (!goodsManager.isInitialized() || (goodsManagerUpdateTime > timeThreshold)) {
-			goodsManager.timePassing(pulse);
-			goodsManagerUpdateTime = 0D;
-		}
-	}
-
 
 	/**
 	 * Gets a collection of people who are available for social conversation in the

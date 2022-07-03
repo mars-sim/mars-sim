@@ -420,6 +420,7 @@ public class Simulation implements ClockListener, Serializable {
 											simulationConfig.getPartConfiguration());
 		Relation.initializeInstances(unitManager);
 		CreditManager.initializeInstances(unitManager);	
+		GoodsManager.initializeInstances(simulationConfig, marsClock, missionManager, unitManager);
 
 		RadiationExposure.initializeInstances(masterClock, marsClock);
 
@@ -693,7 +694,7 @@ public class Simulation implements ClockListener, Serializable {
 		// Re-initialize Structure related class
 		BuildingManager.initializeInstances(this, masterClock, marsClock, eventManager, unitManager);
 		Settlement.initializeInstances(unitManager);		// loadDefaultValues()
-		GoodsManager.initializeInstances(this, marsClock, missionManager, unitManager, pc);
+		GoodsManager.initializeInstances(simulationConfig, marsClock, missionManager, unitManager);
 
 		// Miscs.
 		AirComposition.initializeInstances(pc);

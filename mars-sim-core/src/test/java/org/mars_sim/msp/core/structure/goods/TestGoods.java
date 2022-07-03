@@ -46,15 +46,14 @@ public class TestGoods extends TestCase {
 	}
 
 	public void testGoodsListContainsWater() throws Exception {
-		AmountResource water = ResourceUtil.findAmountResource(ResourceUtil.WATER);
-		Good waterGood = GoodsUtil.getResourceGood(water);
-		assertTrue(GoodsUtil.containsGood(waterGood));
+		Good waterGood = GoodsUtil.getGood(ResourceUtil.waterID);
+		assertNotNull(waterGood);
 	}
 
 	public void testGoodsListContainsHammer() {
-        Good hammerGood = GoodsUtil.getResourceGood(hammer);
+        Good hammerGood = GoodsUtil.getGood(hammer.getID());
         // hammer is not a standardized part and is NOT registered on the goodsMap
-        assertFalse(GoodsUtil.containsGood(hammerGood));
+        assertNull(hammerGood);
 	}
 
 //	public void testGoodsListContainsBag() {
