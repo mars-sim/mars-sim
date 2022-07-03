@@ -7,11 +7,14 @@
 package org.mars_sim.msp.core.goods;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessInfo;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessItem;
 import org.mars_sim.msp.core.manufacture.ManufactureUtil;
@@ -37,6 +40,8 @@ class VehicleGood extends Good {
 	
 	private static final long serialVersionUID = 1L;
 	
+	private static SimLogger logger = SimLogger.getLogger(VehicleGood.class.getName());
+
 	private static final double LUV_FACTOR = 2;
 	private static final double DRONE_FACTOR = 2;
     private static final double TRANSPORT_VEHICLE_FACTOR = 5;
@@ -59,6 +64,9 @@ class VehicleGood extends Good {
     private VehicleType vehicleType;
 
 	private double theoreticalRange;
+
+	// Suitability of this vehicle type for different Missions
+	private transient Map<MissionType,Double> missionCapacities = new EnumMap<>(MissionType.class);
 
     public VehicleGood(String name, VehicleSpec vs) {
         super(name, VehicleType.convertName2ID(name));
@@ -373,7 +381,7 @@ class VehicleGood extends Good {
 
 		double demand = determineMissionJob(owner, settlement, missionType);
 
-		double currentCapacity = 0D;
+		int potentialVehicle = 0;
 		boolean soldFlag = false;
 		Iterator<Vehicle> i = settlement.getAllAssociatedVehicles().iterator();
 		while (i.hasNext()) {
@@ -381,12 +389,12 @@ class VehicleGood extends Good {
 			if (!buy && !soldFlag && (v.getVehicleType() == vehicleType))
 				soldFlag = true;
 			else
-				currentCapacity += determineMissionVehicleCapacity(missionType);
+				potentialVehicle++;
 		}
 
 		double vehicleCapacity = determineMissionVehicleCapacity(missionType);
 
-		double baseValue = (demand / (currentCapacity + 1D)) * vehicleCapacity;
+		double baseValue = (demand / ((potentialVehicle * vehicleCapacity) + 1D)) * vehicleCapacity;
 
 		return baseValue;
 	}
@@ -443,10 +451,22 @@ class VehicleGood extends Good {
 	 * Determines the mission vehicle capacity.
 	 * 
 	 * @param missionType
-	 * @param vehicleType
 	 * @return
 	 */
 	private double determineMissionVehicleCapacity(MissionType missionType) {
+		if (missionCapacities.containsKey(missionType)) {
+			return missionCapacities.get(missionType);
+		}
+		return calculateMissionVehicleCapacity(missionType);
+	}
+
+	/**
+	 * Calculate the capticy for this vehicle type to perform a Mission and updte the cache
+	 */
+	private synchronized double calculateMissionVehicleCapacity(MissionType missionType) {
+		if (missionCapacities.containsKey(missionType)) {
+			return missionCapacities.get(missionType);
+		}
 		double capacity = 0D;
 
 		VehicleSpec v = vehicleConfig.getVehicleSpec(vehicleType.getName());
@@ -584,6 +604,7 @@ class VehicleGood extends Good {
 				break;
 		}
 
+		missionCapacities.put(missionType, capacity);
 		return capacity;
 	}
 
