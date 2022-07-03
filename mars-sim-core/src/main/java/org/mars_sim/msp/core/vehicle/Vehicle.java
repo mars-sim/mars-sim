@@ -109,7 +109,7 @@ public abstract class Vehicle extends Unit
 	//	/** Lifetime Wear in millisols **/
 //	private static final double WEAR_LIFETIME = 668_000; // 668 Sols (1 orbit)
 	/** Estimated Number of hours traveled each day. **/
-	private static final int ESTIMATED_NUM_HOURS = 16;
+	private static final int ESTIMATED_TRAVEL_HOURS_PER_SOL = 16;
 
 	// Format for unit
 	private static final String KWH = " kWh   ";
@@ -243,7 +243,7 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
-	 * Constructor 1 : prepares a Vehicle object with a given settlement
+	 * Constructor 1 : prepares a Vehicle object with a given settlement.
 	 *
 	 * @param name                the vehicle's name
 	 * @param vehicleType         the configuration description of the vehicle.
@@ -530,7 +530,7 @@ public abstract class Vehicle extends Unit
 	}
 	
 	/**
-	 * Constructor 2 : prepares a Vehicle object for testing (called by MockVehicle)
+	 * Constructor 2 : prepares a Vehicle object for testing (called by MockVehicle).
 	 *
 	 * @param name                the vehicle's name
 	 * @param vehicleType         the configuration description of the vehicle.
@@ -599,7 +599,7 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
-	 * Gets the vehicle description
+	 * Gets the vehicle description.
 	 * 
 	 * @param vehicleType
 	 * @return
@@ -798,7 +798,7 @@ public abstract class Vehicle extends Unit
     }
 
 	/**
-	 * Checks if this vehicle has no issues and is ready for mission
+	 * Checks if this vehicle has no issues and is ready for mission.
 	 *
 	 * @return yes if it has anyone of the bad status types
 	 */
@@ -817,6 +817,7 @@ public abstract class Vehicle extends Unit
 
 	/**
 	 * Sets the Primary status of a Vehicle that represents it's situation.
+	 * 
 	 * @param newStatus Must be a primary status value
 	 */
 	public void setPrimaryStatus(StatusType newStatus) {
@@ -826,6 +827,7 @@ public abstract class Vehicle extends Unit
 	/**
 	 * Sets the Primary status of a Vehicle that represents it's situation. Also there is 
 	 * a Secondary status on why the primary has changed.
+	 * 
 	 * @param newStatus Must be a primary status value
 	 * @param secondary Reason for the change; can be null be none given
 	 */
@@ -840,7 +842,7 @@ public abstract class Vehicle extends Unit
 			doEvent = true;
 		}
 
-		// Seconary is optional
+		// Secondary is optional
 		if ((secondary != null) && !statusTypes.contains(secondary)) {
 			statusTypes.add(secondary);
 			doEvent = true;
@@ -853,7 +855,7 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
-	 * Adds a Secondary status type for this vehicle
+	 * Adds a Secondary status type for this vehicle.
 	 *
 	 * @param newStatus the status to be added
 	 */
@@ -871,7 +873,7 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
-	 * Remove a Secondary status type for this vehicle
+	 * Removes a Secondary status type for this vehicle.
 	 *
 	 * @param oldStatus the status to be removed
 	 */
@@ -905,7 +907,7 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
-	 * Records the status in the vehicle log
+	 * Records the status in the vehicle log.
 	 */
 	private void writeLog() {
 		Set<StatusType> entry = new HashSet<>(statusTypes);
@@ -914,7 +916,7 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
-	 * Gets the vehicle log
+	 * Gets the vehicle log.
 	 *
 	 * @return a map of vehicle status by sol
 	 */
@@ -1303,7 +1305,7 @@ public abstract class Vehicle extends Unit
 
 	/**
 	 * Adds a distance to the vehicle's distance since last maintenance.
-	 * Set distanceMark to true if vehicle is due for maintenance.
+	 * Sets distanceMark to true if vehicle is due for maintenance.
 	 *
 	 * @param distance distance to add ([km]
 	 */
@@ -1313,7 +1315,9 @@ public abstract class Vehicle extends Unit
 			distanceMark = true;
 	}
 
-	/** Sets vehicle's distance since last maintenance to zero. */
+	/** 
+	 * Sets vehicle's distance since last maintenance to zero. 
+	 */
 	public void clearDistanceLastMaintenance() {
 		distanceMaint = 0;
 	}
@@ -1328,7 +1332,7 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
-	 * Sets the vehicle's facing direction (0 = north, clockwise in radians)
+	 * Sets the vehicle's facing direction (0 = north, clockwise in radians).
 	 *
 	 * @param direction the direction the vehicle is traveling (in radians)
 	 */
@@ -1337,7 +1341,8 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
-	 * Gets the instantaneous acceleration of the vehicle [m/s2]
+	 * Gets the instantaneous acceleration of the vehicle [m/s2].
+	 * 
 	 * @return
 	 */
 	public double getAccel() {
@@ -1351,7 +1356,7 @@ public abstract class Vehicle extends Unit
 	public abstract double getElevation();
 
 	/**
-	 * Gets the operator of the vehicle (person or AI)
+	 * Gets the operator of the vehicle (person or AI).
 	 *
 	 * @return the vehicle operator
 	 */
@@ -1360,7 +1365,7 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
-	 * Sets the operator of the vehicle
+	 * Sets the operator of the vehicle.
 	 *
 	 * @param vehicleOperator the vehicle operator
 	 */
@@ -1394,7 +1399,7 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
-	 * Get the garage building that the vehicle is at
+	 * Gets the garage building that the vehicle is at.
 	 *
 	 * @return {@link Vehicle}
 	 */
@@ -1460,7 +1465,7 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
-	 * Resets the vehicle reservation status
+	 * Resets the vehicle reservation status.
 	 */
 	public void correctVehicleReservation() {
 		if (isReservedMission
@@ -1509,7 +1514,7 @@ public abstract class Vehicle extends Unit
 
 	/**
 	 * Gets a collection of people who are available for social conversation in this
-	 * vehicle
+	 * vehicle.
 	 *
 	 * @return person collection
 	 */
@@ -1602,10 +1607,8 @@ public abstract class Vehicle extends Unit
 	 * @return distance traveled (km)
 	 */
 	public double getEstimatedTravelDistancePerSol() {
-		// Get estimated average speed (km / hr).
-//    	double estSpeed = baseSpeed / 2D;
 		// Return estimated average speed in km / sol.
-		return baseSpeed * ESTIMATED_NUM_HOURS; // 60D / 60D / MarsClock.convertSecondsToMillisols(1D) * 1000D;
+		return baseSpeed * ESTIMATED_TRAVEL_HOURS_PER_SOL;
 	}
 
 	/**
@@ -1639,7 +1642,7 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
-	 * Indicate the start of a salvage process on the item.
+	 * Indicates the start of a salvage process on the item.
 	 *
 	 * @param info       the salvage process info.
 	 * @param settlement the settlement where the salvage is taking place.
@@ -1659,7 +1662,7 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
-	 * Set initial parked location and facing at settlement.
+	 * Sets initial parked location and facing at settlement.
 	 */
 	public abstract void findNewParkingLoc();
 
@@ -1691,7 +1694,7 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
-	 * Is the vehicle outside of a settlement but within its vicinity
+	 * Is the vehicle outside of a settlement but within its vicinity ?
 	 *
 	 * @return
 	 */
@@ -1706,7 +1709,7 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
-	 * Checks if this vehicle is involved in a mission
+	 * Checks if this vehicle is involved in a mission.
 	 *
 	 * @return true if yes
 	 */
@@ -1741,7 +1744,7 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
-	 * Checks if this vehicle is involved in a mission
+	 * Returns the mission range prescribed by its home settlement.
 	 *
 	 * @return true if yes
 	 */
@@ -1750,59 +1753,12 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
-	 * Checks if this vehicle is involved in a mission
+	 * Checks if this vehicle not in a settlement and is outside on a mission on the surface of Mars.
 	 *
 	 * @return true if yes
 	 */
-	public boolean isOnAMission() {
-		Iterator<Mission> i = missionManager.getMissions().iterator();
-		while (i.hasNext()) {
-			Mission mission = i.next();
-			if (!mission.isDone()) {
-				if (mission instanceof VehicleMission) {
-					if (((VehicleMission) mission).getVehicle() == this) {
-						return true;
-					}
-
-					if (mission.getMissionType() == MissionType.MINING) {
-						if (((Mining) mission).getLightUtilityVehicle() == this) {
-							return true;
-						}
-					}
-
-					if (mission.getMissionType() == MissionType.TRADE) {
-						Rover towingRover = (Rover) ((Trade) mission).getVehicle();
-						if (towingRover != null) {
-							if (towingRover.getTowedVehicle() == this) {
-								return true;
-							}
-						}
-					}
-
-					if (mission.getMissionType() == MissionType.DELIVERY) {
-						if (((VehicleMission) mission).getVehicle() == this) {
-								return true;
-						}
-					}
-
-				} else if (mission.getMissionType() == MissionType.BUILDING_CONSTRUCTION) {
-					BuildingConstructionMission construction = (BuildingConstructionMission) mission;
-					if (!construction.getConstructionVehicles().isEmpty()
-						 && construction.getConstructionVehicles().contains(this)) {
-							return true;
-					}
-
-				} else if (mission.getMissionType() == MissionType.BUILDING_SALVAGE) {
-					BuildingSalvageMission salvage = (BuildingSalvageMission) mission;
-					if (!salvage.getConstructionVehicles().isEmpty()
-						&& salvage.getConstructionVehicles().contains(this)) {
-							return true;
-					}
-				}
-			}
-		}
-
-		return false;
+	public boolean isOutsideOnMarsMission() {
+		return LocationStateType.MARS_SURFACE == currentStateType;
 	}
 
 	/**

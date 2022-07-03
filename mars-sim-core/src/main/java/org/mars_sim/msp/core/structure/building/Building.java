@@ -100,15 +100,8 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	// default logger.
 	private static final SimLogger logger = SimLogger.getLogger(Building.class.getName());
 
-	public static final String WORKSHOP = "workshop";
-	public static final String MANUFACTURING = "manufacturing shed";
-	public static final String MACHINERY = "machinery hab";
-	public static final String LOUNGE = "lounge";
 	public static final String LANDER_HAB = "lander hab";
 	public static final String OUTPOST_HUB = "outpost hub";
-	public static final String INFIRMARY = "infirmary";
-	public static final String MEDICAL = "medical";
-	public static final String GARAGE = "garage";
 	public static final String HALLWAY = "hallway";
 	public static final String TUNNEL = "tunnel";
 	public static final String ASTRONOMY_OBSERVATORY = "Astronomy Observatory";
@@ -117,7 +110,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	public static final String GREENHOUSE = "Greenhouse";
 	public static final String INFLATABLE_GREENHOUSE = "Inflatable " + GREENHOUSE;
 	public static final String INGROUND_GREENHOUSE = "Inground " + GREENHOUSE;
-	public static final String LARGE_GREENHOUSE = "large " + GREENHOUSE;
+	public static final String LARGE_GREENHOUSE = "Large " + GREENHOUSE;
 	public static final String ARRAY = "Array";
 	public static final String TURBINE = "Turbine";
 	public static final String WELL = "Well";
@@ -1075,16 +1068,16 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 		return people;
 	}
 
-	/**
-	 * Compares this object with the specified object for order.
-	 *
-	 * @param o the Object to be compared.
-	 * @return a negative integer, zero, or a positive integer as this object is
-	 *         less than, equal to, or greater than the specified object.
-	 */
-	public int compareTo(Building o) {
-		return buildingType.compareToIgnoreCase(o.buildingType);
-	}
+//	/**
+//	 * Compares this object with the specified object for order.
+//	 *
+//	 * @param o the Object to be compared.
+//	 * @return a negative integer, zero, or a positive integer as this object is
+//	 *         less than, equal to, or greater than the specified object.
+//	 */
+//	public int compareTo(Building o) {
+//		return buildingType.compareToIgnoreCase(o.buildingType);
+//	}
 
 	/**
 	 * Time passing for building.

@@ -746,7 +746,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 
 		airlock.timePassing(pulse);
 
-		boolean onAMission = isOnAMission();
+		boolean onAMission = isOutsideOnMarsMission();
 		if (onAMission || isReservedForMission()) {
 
 			Mission mission = getMission();

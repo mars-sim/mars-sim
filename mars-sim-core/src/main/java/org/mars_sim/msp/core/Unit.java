@@ -669,7 +669,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 
 	/**
 	 * Is this unit outside on the surface of Mars, including wearing an EVA Suit
-	 * and being outside the settlement/building/vehicle ?
+	 * and being just right outside in a settlement/building/vehicle vicinity
 	 *
 	 * @return true if the unit is outside
 	 */

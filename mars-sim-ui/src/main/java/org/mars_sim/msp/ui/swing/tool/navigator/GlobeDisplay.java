@@ -457,7 +457,7 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 			Unit unit = i.next();
 			
 			if (unit.getUnitType() == UnitType.VEHICLE) {
-				if (((Vehicle)unit).isOnAMission()) {
+				if (((Vehicle)unit).isOutsideOnMarsMission()) {
 					// Proceed to below to set cursor;
 				}
 				else 

@@ -67,7 +67,7 @@ abstract class UnitMapLayer implements MapLayer {
 
 		for (Unit unit : units) {
 			if (unit.getUnitType() == UnitType.VEHICLE) {
-				if (((Vehicle)unit).isOnAMission()) {
+				if (((Vehicle)unit).isOutsideOnMarsMission()) {
 					// Proceed to below to set cursor;
 				}
 				else 

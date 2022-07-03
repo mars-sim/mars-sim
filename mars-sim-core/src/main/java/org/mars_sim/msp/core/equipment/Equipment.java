@@ -55,8 +55,6 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	private final EquipmentType equipmentType;
 	/** The SalvageInfo instance. */
 	private SalvageInfo salvageInfo;
-	/** The MicroInventory instance. */
-//	protected MicroInventory microInventory;
 
 	/**
 	 * Constructs an Equipment object
@@ -88,29 +86,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 
 		// Gets the settlement id
 		associatedSettlementID = settlement.getIdentifier();
-
-//		microInventory = new MicroInventory(this);
-
-//		settlement.addEquipment(this);
 	}
-
-//	/**
-//	 * Gets a list of all stored amount resources
-//	 *
-//	 * @return a list of resource ids
-//	 */
-//	public Set<Integer> getAmountResourceIDs() {
-//		return microInventory.getResourcesStored();
-//	}
-
-//	/**
-//	 * Gets all stored item resources
-//	 *
-//	 * @return a list of resource ids
-//	 */
-//	public Set<Integer> getItemResourceIDs() {
-//		return microInventory.getItemsStored();
-//	}
 
 	/**
 	 * Mass of Equipment is the base mass plus what every it is storing
@@ -127,8 +103,6 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	 * @return
 	 */
 	public abstract double getStoredMass();
-//		return microInventory.getStoredMass();
-//	}
 
 	/**
      * Gets the total capacity of resource that this container can hold.
@@ -139,34 +113,6 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 		return ContainerUtil.getContainerCapacity(equipmentType);
 	}
 
-//	/**
-//     * Gets the capacity of this amount resource that this container can hold.
-//     * @return capacity (kg).
-//     */
-//    public double getCapacity(int resource) {
-//        return microInventory.getCapacity(resource);
-//    }
-
-//	/**
-//	 * Sets the capacity of a particular resource
-//	 *
-//	 * @param resource
-//	 * @param capacity
-//	 */
-//	public void setCapacity(int resource, double capacity) {
-//		microInventory.setCapacity(resource, capacity);
-//	}
-
-//	/**
-//	 * Is this resource supported ?
-//	 *
-//	 * @param resource
-//	 * @return true if this resource is supported
-//	 */
-//	public boolean isResourceSupported(int resource) {
-//		return microInventory.isResourceSupported(resource);
-//	}
-
 	/**
 	 * Stores the resource
 	 *
@@ -175,15 +121,8 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	 * @return excess quantity that cannot be stored
 	 */
 	public abstract double storeAmountResource(int resource, double quantity);
-//		// Question: if a bag was filled with regolith and later was emptied out
-//		// should it be tagged for only regolith and NOT for another resource ?
-//		if (!isResourceSupported(resource)) {
-//			// Allocate the capacity to this new resource
-//			microInventory.setCapacity(resource, getCargoCapacity());
-//		}
-//
-//		return microInventory.storeAmountResource(resource, quantity);
-//	}
+		// Question: if a bag was filled with regolith and later was emptied out
+		// should it be tagged for only regolith and NOT for another resource ?
 
 	/**
 	 * Retrieves the resource
@@ -193,18 +132,6 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	 * @return quantity that cannot be retrieved
 	 */
 	public abstract double retrieveAmountResource(int resource, double quantity);
-//		if (isResourceSupported(resource)) {
-//			return microInventory.retrieveAmountResource(resource, quantity);
-//		}
-//
-////		else {
-////			String name = ResourceUtil.findAmountResourceName(resource);
-////			logger.warning(this, "No such resource. Cannot retrieve "
-////					+ Math.round(quantity* 1_000.0)/1_000.0 + " kg "+ name + ".");
-////			return quantity;
-////		}
-//		return quantity;
-//	}
 
 	/**
 	 * Gets the capacity of a particular amount resource
@@ -213,23 +140,6 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	 * @return capacity
 	 */
 	public abstract double getAmountResourceCapacity(int resource);
-//		// Note: this method is different from
-//		// EVASuit's getAmountResourceRemainingCapacity
-//		if (isResourceSupported(resource)) {
-//			return getCargoCapacity();
-//		}
-//		return 0;
-//	}
-
-//	/**
-//	 * Obtains the remaining storage space of a particular amount resource
-//	 *
-//	 * @param resource
-//	 * @return quantity
-//	 */
-//	public double getAmountResourceRemainingCapacity(int resource) {
-//		return microInventory.getAmountResourceRemainingCapacity(resource);
-//	}
 
 	/**
 	 * Gets the amount resource stored
@@ -238,18 +148,6 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	 * @return quantity
 	 */
 	public abstract double getAmountResourceStored(int resource);
-//		return microInventory.getAmountResourceStored(resource);
-//	}
-
-//	/**
-//	 * Gets the item resource stored
-//	 *
-//	 * @param resource
-//	 * @return quantity
-//	 */
-//	public int getItemResourceStored(int resource) {
-//		return microInventory.getItemResourceStored(resource);
-//	}
 
 	/**
 	 * Is this equipment empty ?
@@ -258,28 +156,6 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	 * @return
 	 */
 	public abstract boolean isEmpty(boolean brandNew);
-//		if (brandNew) {
-//			return (getLastOwnerID() == -1);
-//		}
-//
-//		return microInventory.isEmpty();
-//	}
-
-
-
-//	/**
-//	 * Does this unit have this resource ?
-//	 *
-//	 * @param resource
-//	 * @return
-//	 */
-//	public boolean hasResource(int resource) {
-//		for (int id: getAmountResourceIDs()) {
-//			if (id == resource)
-//				return true;
-//		}
-//		return false;
-//	}
 
 	/**
 	 * Gets a collection of people affected by this entity.
@@ -345,8 +221,6 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	public SalvageInfo getSalvageInfo() {
 		return salvageInfo;
 	}
-
-
 
 	/**
 	 * Get vehicle the equipment is in, null if not in vehicle
@@ -458,13 +332,6 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 		int number = unitManager.incrementTypeCount(baseName);
 		return String.format("%s %03d", baseName, number);
 	}
-
-//	/**
-//	 * Clean this container for future use
-//	 */
-//	public void clean() {
-//		microInventory.clean();
-//	}
 
 	/**
 	 * Sets the unit's container unit.
@@ -664,5 +531,4 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 			salvageInfo.destroy();
 		salvageInfo = null;
 	}
-
 }

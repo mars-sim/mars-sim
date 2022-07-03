@@ -325,7 +325,7 @@ implements ListSelectionListener, MissionListener {
 				Unit unit = i.next();
 				
 				if (unit.getUnitType() == UnitType.VEHICLE) {
-					if (((Vehicle)unit).isOnAMission()) {
+					if (((Vehicle)unit).isOutsideOnMarsMission()) {
 						// Proceed to below to set cursor;
 					}
 					else 
@@ -366,7 +366,7 @@ implements ListSelectionListener, MissionListener {
 				Unit unit = i.next();
 				
 				if (unit.getUnitType() == UnitType.VEHICLE) {
-					if (((Vehicle)unit).isOnAMission()) {
+					if (((Vehicle)unit).isOutsideOnMarsMission()) {
 						// Proceed to below to set cursor;
 					}
 					else 

@@ -36,6 +36,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.structure.construction.ConstructionStage;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.core.vehicle.VehicleType;
 
 /**
  * A settlement map layer for displaying labels for map objects.
@@ -183,14 +184,14 @@ implements SettlementMapLayer {
 				
 				if (num == 1) {
 //					System.out.println(name);
-					if (type.equalsIgnoreCase("Hallway")) {
+					if (type.equalsIgnoreCase(Building.HALLWAY)) {
 						// Shrink the size of a hallway label.
 						//e.g. Turned "Hallway 12 " into "H12"
 						String newName = "H " + words[1];
 						drawStructureLabel(g2d, newName, building.getPosition(),
 								HALLWAY_LABEL_COLOR, WHITE_LABEL_OUTLINE_COLOR, 0);
 					}
-					else if (type.equalsIgnoreCase("Tunnel")) {
+					else if (type.equalsIgnoreCase(Building.TUNNEL)) {
 						// Shrink the size of a hallway label.
 						//e.g. Turned "Hallway 12 " into "H12"
 						String newName = "T " + words[1];
@@ -429,7 +430,7 @@ implements SettlementMapLayer {
 				Coordinates vehicleLoc = vehicle.getCoordinates();
 				if (vehicleLoc.equals(settlementLoc)) {
 					
-					if (vehicle.getName().contains("LUV")) {
+					if (vehicle.getVehicleType() == VehicleType.LUV) {
 						drawStructureLabel(g2d,vehicle.getName(), vehicle.getPosition(),
 							VEHICLE_LABEL_COLOR, VEHICLE_LABEL_OUTLINE_COLOR, 0);
 					}
@@ -520,7 +521,7 @@ implements SettlementMapLayer {
 						if (j == 0) n = words[0];
 						else n += " " + words[j].substring(0, 1) + ".";
 					}	
-					boolean male = person.getGender().equals(GenderType.MALE);
+					boolean male = person.getGender() == GenderType.MALE;
 					drawPersonRobotLabel(g2d, n, person.getPosition(),
 								(male ? MALE_COLOR : FEMALE_COLOR),
 								(male ? MALE_OUTLINE_COLOR : FEMALE_OUTLINE_COLOR), xoffset, 0);

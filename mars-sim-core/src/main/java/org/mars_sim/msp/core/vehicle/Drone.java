@@ -62,7 +62,7 @@ public class Drone extends Flyer implements Serializable {
 			return false;
 		}
 
-		boolean onAMission = isOnAMission();
+		boolean onAMission = isOutsideOnMarsMission();
 		if (onAMission || isReservedForMission()) {
 
 			Mission mission = getMission();

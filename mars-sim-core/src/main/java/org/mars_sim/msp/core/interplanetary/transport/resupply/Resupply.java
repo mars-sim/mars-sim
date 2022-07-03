@@ -69,8 +69,6 @@ public class Resupply implements Serializable, Transportable {
 	/** default logger. */
 	private static final Logger logger = Logger.getLogger(Resupply.class.getName());
 
-	public static final String ASTRONOMY_OBSERVATORY = "Astronomy Observatory";
-	
 	public static final String LAUNCH_ON = "Resupply Mission launched on ";
 	
 	public static final String POSITIONING = "Positioning ";
@@ -399,7 +397,7 @@ public class Resupply implements Serializable, Transportable {
 		boolean hasLifeSupport = buildingConfig.hasFunction(bt.getBuildingType(), FunctionType.LIFE_SUPPORT);
 		if (hasLifeSupport) {
 
-			if (bt.getBuildingType().equalsIgnoreCase(ASTRONOMY_OBSERVATORY)) {
+			if (bt.getBuildingType().equalsIgnoreCase(Building.ASTRONOMY_OBSERVATORY)) {
 				leastDistance = MIN_OBSERVATORY_BUILDING_DISTANCE;
 			} else {
 				leastDistance = MIN_INHABITABLE_BUILDING_DISTANCE;
@@ -477,7 +475,6 @@ public class Resupply implements Serializable, Transportable {
 			if (amount > capacity)
 				amount = capacity;
 			settlement.storeAmountResource(id, amount);
-//			inv.addAmountSupply(id, amount);
 		}
 
 		// Deliver parts.
@@ -486,7 +483,6 @@ public class Resupply implements Serializable, Transportable {
 			Part part = partsI.next();
 			int number = getNewParts().get(part);
 			settlement.storeItemResource(part.getID(), number);
-//			inv.addItemSupply(part.getID(), number);
 		}
 
 		// Deliver Robots.
@@ -523,9 +519,6 @@ public class Resupply implements Serializable, Transportable {
 			// Add preference
 			immigrant.getPreference().initializePreference();
 
-			// Assign sponsor
-//			immigrant.assignReportingAuthority();
-
 			unitManager.addUnit(immigrant);
 			
 			settlement.addACitizen(immigrant);
@@ -544,14 +537,10 @@ public class Resupply implements Serializable, Transportable {
 		if (immigrants.size() > 0) {
 
 			// Reset work shift schedules at settlement.
-			// unitManager.setupShift(settlement, popSize);
 			settlement.reassignWorkShift();
 			
 			// Reset command/government system at settlement.
 			settlement.getChainOfCommand().establishSettlementGovernance();
-			
-//			// Assign a role to each person
-//			unitManager.assignRoles(settlement);
 		}
 
 	}
@@ -655,23 +644,21 @@ public class Resupply implements Serializable, Transportable {
 				while (i.hasNext()) {
 					Building building = i.next();
 					// Note: Don't want to place any building next to the observatory
-//					if (!building.getBuildingType().equalsIgnoreCase(ASTRONOMY_OBSERVATORY)) {
-						double dist1 = 0;
-						if (buildingType.equalsIgnoreCase(ASTRONOMY_OBSERVATORY)) {
-							dist1 = RandomUtil.getRandomRegressionInteger(MIN_OBSERVATORY_BUILDING_DISTANCE * 2,
-									MAX_OBSERVATORY_BUILDING_DISTANCE * 2) / 2D;
-						} else {
-							dist1 = RandomUtil.getRandomRegressionInteger(MIN_INHABITABLE_BUILDING_DISTANCE * 2,
-									MAX_INHABITABLE_BUILDING_DISTANCE * 2) / 2D;
-						}
+					double dist1 = 0;
+					if (buildingType.equalsIgnoreCase(Building.ASTRONOMY_OBSERVATORY)) {
+						dist1 = RandomUtil.getRandomRegressionInteger(MIN_OBSERVATORY_BUILDING_DISTANCE * 2,
+								MAX_OBSERVATORY_BUILDING_DISTANCE * 2) / 2D;
+					} else {
+						dist1 = RandomUtil.getRandomRegressionInteger(MIN_INHABITABLE_BUILDING_DISTANCE * 2,
+								MAX_INHABITABLE_BUILDING_DISTANCE * 2) / 2D;
+					}
 
-						newPosition = positionNextToBuilding(buildingType, building, Math.round(dist1), false);
-						if (newPosition != null) {
-							logger.config(POSITIONING + building.getNickName()
-									+ " near a different building type with life support");
-							break;
-						}
-//					}
+					newPosition = positionNextToBuilding(buildingType, building, Math.round(dist1), false);
+					if (newPosition != null) {
+						logger.config(POSITIONING + building.getNickName()
+								+ " near a different building type with life support");
+						break;
+					}
 				}
 			}
 		} else {
@@ -749,24 +736,22 @@ public class Resupply implements Serializable, Transportable {
 		while (j.hasNext()) {
 			Building building = j.next();
 			// Note: Don't want to place any building next to the observatory
-//			if (!building.getBuildingType().equalsIgnoreCase(ASTRONOMY_OBSERVATORY)) {
-				double dist2 = 0;
-				if (lifeSupport) {
-					if (buildingType.equalsIgnoreCase(ASTRONOMY_OBSERVATORY)) {
-						dist2 = RandomUtil.getRandomRegressionInteger(MIN_OBSERVATORY_BUILDING_DISTANCE * 2,
-								MAX_OBSERVATORY_BUILDING_DISTANCE * 2) / 2D;
-					} else {
-						dist2 = RandomUtil.getRandomRegressionInteger(MIN_INHABITABLE_BUILDING_DISTANCE * 2,
-								MAX_INHABITABLE_BUILDING_DISTANCE * 2) / 2D;
-					}
-				} else
-					dist2 = RandomUtil.getRandomRegressionInteger(MIN_NONINHABITABLE_BUILDING_DISTANCE * 2,
-							MAX_NONINHABITABLE_BUILDING_DISTANCE * 2) / 2D;
-				newPosition = positionNextToBuilding(buildingType, building, Math.round(dist2), false);
-				if (newPosition != null) {
-					break;
+			double dist2 = 0;
+			if (lifeSupport) {
+				if (buildingType.equalsIgnoreCase(Building.ASTRONOMY_OBSERVATORY)) {
+					dist2 = RandomUtil.getRandomRegressionInteger(MIN_OBSERVATORY_BUILDING_DISTANCE * 2,
+							MAX_OBSERVATORY_BUILDING_DISTANCE * 2) / 2D;
+				} else {
+					dist2 = RandomUtil.getRandomRegressionInteger(MIN_INHABITABLE_BUILDING_DISTANCE * 2,
+							MAX_INHABITABLE_BUILDING_DISTANCE * 2) / 2D;
 				}
-//			}
+			} else
+				dist2 = RandomUtil.getRandomRegressionInteger(MIN_NONINHABITABLE_BUILDING_DISTANCE * 2,
+						MAX_NONINHABITABLE_BUILDING_DISTANCE * 2) / 2D;
+			newPosition = positionNextToBuilding(buildingType, building, Math.round(dist2), false);
+			if (newPosition != null) {
+				break;
+			}
 		}
 		return newPosition;
 	}
@@ -1061,7 +1046,7 @@ public class Resupply implements Serializable, Transportable {
 
 				String buildingNickName = newBuildingType + " " + buildingTypeID;
 
-				logger.config("Positioning at (" + Math.round(rectCenterX * 10D) / 10D + ", "
+				logger.config(POSITIONING + "at (" + Math.round(rectCenterX * 10D) / 10D + ", "
 						+ Math.round(rectCenterY * 10D) / 10D + ") at " + Math.round(rectRotation) + " deg");
 
 				newPosition = new BuildingTemplate(

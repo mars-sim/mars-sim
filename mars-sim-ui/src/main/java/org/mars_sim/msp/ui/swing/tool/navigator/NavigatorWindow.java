@@ -845,7 +845,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 				Unit unit = i.next();
 				
 				if (unit.getUnitType() == UnitType.VEHICLE) {
-					if (((Vehicle)unit).isOnAMission()) {
+					if (((Vehicle)unit).isOutsideOnMarsMission()) {
 						// Proceed to below to set cursor;
 					}
 					else 
@@ -925,7 +925,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 				Unit unit = i.next();
 
 				if (unit.getUnitType() == UnitType.VEHICLE) {
-					if (((Vehicle)unit).isOnAMission()) {
+					if (((Vehicle)unit).isOutsideOnMarsMission()) {
 						// Proceed to below to set cursor;
 					}
 					else 
