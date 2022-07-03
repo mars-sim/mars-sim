@@ -52,6 +52,7 @@ import org.mars_sim.msp.core.resource.ItemType;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.science.ScienceType;
+import org.mars_sim.msp.core.structure.ObjectiveType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
@@ -195,6 +196,7 @@ public class GoodsManager implements Serializable, Temporal {
 	private static final double TRANSPORT_BASE = 1;
 	private static final double TRADE_BASE = 1;
 	private static final double TOURISM_BASE = 1;
+	private static final double BUILDERS_BASE = 1;
 
 	private static final double GAS_CANISTER_DEMAND = 1;
 	private static final double SPECIMEN_BOX_DEMAND = 1.2;
@@ -257,6 +259,7 @@ public class GoodsManager implements Serializable, Temporal {
 	private double transportation_factor = 1;
 	private double trade_factor = 1;
 	private double tourism_factor = 1;
+	private double builders_factor = 1;
 
 	private Map<Integer, Double> goodsValues = new HashMap<>();
 	private Map<Integer, Double> tradeCache = new HashMap<>();
@@ -1062,7 +1065,7 @@ public class GoodsManager implements Serializable, Temporal {
 			Iterator<Vehicle> i = getAssociatedVehicles().iterator();
 			while (i.hasNext()) {
 				double fuelDemand = i.next().getAmountResourceCapacity(resource);
-				demand += fuelDemand * transportation_factor * VEHICLE_FUEL_FACTOR;
+				demand += fuelDemand * builders_factor * transportation_factor * VEHICLE_FUEL_FACTOR;
 			}
 		}
 
@@ -1220,6 +1223,14 @@ public class GoodsManager implements Serializable, Temporal {
 		tourism_factor = value * TOURISM_BASE;
 	}
 
+	public void setBuildersFactor(double value) {
+		builders_factor = value * BUILDERS_BASE;
+	}
+	
+	public double getBuildersFactor() {
+		return builders_factor;
+	}
+	
 	public double getCropFarmFactor() {
 		return cropFarm_factor;
 	}
@@ -1616,13 +1627,14 @@ public class GoodsManager implements Serializable, Temporal {
 	 */
 	private double getResourceManufacturingProcessDemand(int resource, ManufactureProcessInfo process) {
 		double demand = 0D;
-		String r = ResourceUtil.findAmountResourceName(resource).toLowerCase();
+		AmountResource ar = ResourceUtil.findAmountResource(resource);
+		String name = ar.getName().toLowerCase();
 
 		ManufactureProcessItem resourceInput = null;
 		Iterator<ManufactureProcessItem> i = process.getInputList().iterator();
 		while ((resourceInput == null) && i.hasNext()) {
 			ManufactureProcessItem item = i.next();
-			if (ItemType.AMOUNT_RESOURCE.equals(item.getType()) && r.equals(item.getName())) {
+			if (ItemType.AMOUNT_RESOURCE == item.getType() && name.equals(item.getName())) {
 				resourceInput = item;
 				break;
 			}
@@ -1646,8 +1658,46 @@ public class GoodsManager implements Serializable, Temporal {
 			double powerHrsRequiredPerMillisol = process.getPowerRequired() * MarsClock.HOURS_PER_MILLISOL;
 			double powerValue = powerHrsRequiredPerMillisol * settlement.getPowerGrid().getPowerValue();
 
-			double totalInputsValue = (outputsValue - powerValue) * trade_factor * manufacturing_factor
-					* MANUFACTURING_INPUT_FACTOR;
+			// Obtain the value of this resource
+			double totalInputsValue = (outputsValue - powerValue);
+			
+			ObjectiveType objective = settlement.getObjective();
+			GoodType type = ar.getGoodType();
+			if (ObjectiveType.BUILDERS_HAVEN == objective 
+					&& (GoodType.REGOLITH == type
+					|| GoodType.MINERAL == type
+					|| GoodType.ORE == type
+					|| GoodType.UTILITY == type)) {
+				totalInputsValue *= builders_factor;
+			}
+			else if (ObjectiveType.CROP_FARM == objective
+					&& (GoodType.CROP == type
+					|| GoodType.DERIVED == type
+					|| GoodType.SOY_BASED == type)) {
+				totalInputsValue *= cropFarm_factor;
+			}
+			else if (ObjectiveType.MANUFACTURING_DEPOT == objective) {
+				totalInputsValue *= manufacturing_factor;
+			}
+			else if (ObjectiveType.RESEARCH_CAMPUS == objective 
+					&& (GoodType.MEDICAL == type
+					|| GoodType.ORGANISM == type
+					|| GoodType.CHEMICAL == type
+					|| GoodType.ROCK == type)) {
+				totalInputsValue *= research_factor;
+			}
+			else if (ObjectiveType.TRADE_CENTER == objective) {
+				totalInputsValue *= trade_factor;
+			}
+			else if (ObjectiveType.TRANSPORTATION_HUB == objective
+					&& (resource == ResourceUtil.methaneID
+					|| resource == ResourceUtil.methanolID
+					|| resource == ResourceUtil.hydrogenID)) {
+				totalInputsValue *= transportation_factor;
+			}
+			
+			// Modify by other factors
+			totalInputsValue *= MANUFACTURING_INPUT_FACTOR;
 
 			if (totalItems > 0) {
 				demand = (1D / totalItems) * totalInputsValue;
@@ -2521,7 +2571,7 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @param process the manufacturing process.
 	 * @return demand (# of parts)
 	 */
-	private double getPartManufacturingProcessDemand(Part part, ManufactureProcessInfo process) {
+	private double getPartManufacturingProcessDemand(Part part, ManufactureProcessInfo process) {	
 		double demand = 0D;
 		double totalInputNum = 0D;
 
@@ -2550,8 +2600,55 @@ public class GoodsManager implements Serializable, Temporal {
 			double powerHrsRequiredPerMillisol = process.getPowerRequired() * MarsClock.HOURS_PER_MILLISOL;
 			double powerValue = powerHrsRequiredPerMillisol * settlement.getPowerGrid().getPowerValue();
 
-			double totalInputsValue = (outputsValue - powerValue) * trade_factor * manufacturing_factor
-					* MANUFACTURING_INPUT_FACTOR;
+			// Obtain the value of this resource
+			double totalInputsValue = (outputsValue - powerValue);
+	
+			ObjectiveType objective = settlement.getObjective();
+			GoodType type = part.getGoodType();
+			if (ObjectiveType.BUILDERS_HAVEN == objective 
+					&& (GoodType.UTILITY == type
+					|| GoodType.TOOL == type
+					|| GoodType.RAW == type
+					|| GoodType.CONSTRUCTION == type
+					|| GoodType.ATTACHMENT == type
+					|| GoodType.ELECTRICAL == type
+					|| GoodType.METALLIC == type
+					|| GoodType.ATTACHMENT == type)) {
+				totalInputsValue *= builders_factor;
+			}
+			else if (ObjectiveType.CROP_FARM == objective
+					&& (GoodType.KITCHEN == type)) {
+				totalInputsValue *= cropFarm_factor;
+			}
+			else if (ObjectiveType.MANUFACTURING_DEPOT == objective) {
+				totalInputsValue *= manufacturing_factor;
+			}
+			else if (ObjectiveType.RESEARCH_CAMPUS == objective 
+					&& (GoodType.INSTRUMENT == type
+					|| GoodType.ELECTRICAL == type
+					|| GoodType.ELECTRONIC == type)) {
+				totalInputsValue *= research_factor;
+			}
+			else if (ObjectiveType.TRADE_CENTER == objective
+					&& part.getGoodType() == GoodType.VEHICLE) {
+				totalInputsValue *= trade_factor;
+			}
+			else if (ObjectiveType.TRANSPORTATION_HUB == objective
+					&& part.getGoodType() == GoodType.VEHICLE) {
+				totalInputsValue *= transportation_factor;
+			}
+			else if (ObjectiveType.TOURISM == objective
+					&& part.getGoodType() == GoodType.VEHICLE
+					&& (GoodType.EVA == type
+							|| GoodType.VEHICLE_HEAVY == type
+							|| GoodType.VEHICLE == type
+							|| GoodType.GEMSTONE == type)) {
+				totalInputsValue *= tourism_factor;
+			}
+			
+			// Modify by other factors
+			totalInputsValue *= MANUFACTURING_INPUT_FACTOR;
+
 
 			if (totalInputsValue > 0D) {
 				double partNum = partInput.getAmount();
@@ -3055,7 +3152,7 @@ public class GoodsManager implements Serializable, Temporal {
 			else if (vehicleType == VehicleType.DELIVERY_DRONE)
 				demand *= (.5 + transportation_factor) * DRONE_VEHICLE_FACTOR;
 			else if (vehicleType == VehicleType.LUV)
-				demand *= (.5 + transportation_factor) * LUV_VEHICLE_FACTOR;
+				demand *= (.5 + transportation_factor + builders_factor) * LUV_VEHICLE_FACTOR;
 		}
 
 		return demand;

@@ -470,6 +470,21 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="methanol" rate="32.0" ambient="false" />
 				</process>
 
+				<!-- Future: allow scientific studies to "unlock" future tech 
+				     such as using electric field.
+				     
+				     For instance, CO2 methanation was conducted by imposing an electric field. 
+				     Screening tests revealed that 5 wt %Ru/CeO2 catalyst is a suitable catalyst
+				     for CO2 methanation with the electric field. 
+				     
+				      The electric field promoted the reaction over Ru/CeO2 catalyst even at low 
+				      temperatures such as 340 K via a non-conventional catalytic mechanism.
+				     
+				     1. Low-temperature Conversion of Carbon Dioxide to Methane in an Electric Field
+				        https://www.journal.csj.jp/doi/10.1246/cl.190930
+ 
+				-->
+
 				<!-- Activity spot for toggling resource process on and off. -->
 				<activity>
 					<activity-spot xloc="-0.9" yloc="-2.49" />
@@ -1210,7 +1225,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				analogue regolith and analyzed by ion chromatography.
 				The MARE contained (mg/L) Nitrogen-containing species NO3- has 773
 				and NO2- has 6.9 -->
-				<process name="Convert Regolith to Sand" power-required="2.0" default="off">
+				<process name="Convert Regolith to Ores and Sand" power-required="0.5" default="off">
 					<input resource="regolith" rate="100.0" ambient="false" />
 
 					<output resource="basaltic" rate="5.0" ambient="false" />
@@ -1255,11 +1270,11 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="glass" rate="50.0" ambient="false" />
 				</process>
 -->
-				<process name="Make Cement" power-required="0.5" default="off">
+				<process name="Make Cement" power-required="1.0" default="off">
 					<input resource="regolith" rate="80.0" ambient="false" />
-					<input resource="gypsum" rate="16.0" ambient="false" />
-					<input resource="aluminum oxide" rate="2.0" ambient="false" />
-					<input resource="iron oxide" rate="2.0" ambient="false" />
+					<input resource="gypsum" rate="10.0" ambient="false" />
+					<input resource="aluminum oxide" rate="5.0" ambient="false" />
+					<input resource="iron oxide" rate="5.0" ambient="false" />
 
 					<output resource="cement" rate="100.0" ambient="false" />
 				</process>
@@ -1298,15 +1313,18 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</process>
 
 				<!-- Serpentinization : olivine (Mg,Fe)2 + SiO4 produces H2 and Mg(OH)2, which in terms
-					 produce water
+					 produce water 
+					 
 					 Decarbonation : MgCO3 at 670 C gives CO2 and MgO. Use Mg silica hydrate as binder
 
 					 63 kg of [(Mg Fe)2 SiO4] + 9 kg of H2O -> 1 kg of H2 + 71 kg * [2 MgO + 2 FeO + SiO2]
 
 					 SiO2 - amorphous silica
 					 MgO:Si paste - Mg Silicate Hydrate (MSH) binder
-					 1. https://agupubs.onlinelibrary.wiley.com/doi/pdf/10.1029/2017EA000353 -->
-				<process name="Make MgO concrete" power-required="1.0" default="off">
+					 
+					 1. Constructing Mars: Concrete and Energy Production from Serpentinization Products 
+					    https://agupubs.onlinelibrary.wiley.com/doi/pdf/10.1029/2017EA000353 -->
+				<process name="Make Magnesium-based Concrete" power-required="1.0" default="off">
 					<input resource="olivine" rate="63.0" ambient="false" />
 					<input resource="water" rate="9.0" ambient="false" />
 

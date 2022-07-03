@@ -227,58 +227,8 @@ http://canada.marssociety.org/winnipeg/soil.html
 		</outputs>
 	</process>
 
-<!-- Transfer this manufacturing process to resource process
-	<process name="extract nitrogen compounds from regolith (large batch)"
-			tech="0" skill="1"
-			work-time="50"
-			process-time="500"
-			power-required=".5">
-		<inputs>
-			<resource name="regolith" amount="500.0" />
-		</inputs>
-		<outputs>
-			<resource name="Nitrate" amount="10.0" />
-			<resource name="Nitrite" amount="2.0" />
-			<resource name="Nitrogen" amount="10.0" />
-			<resource name="Ammonia" amount="10.0" />
-			<resource name="argon" amount="1.0" />
-			<resource name="regolith" amount="450.0" />
-		</outputs>
-	</process>
-
-	<process name="extract nitrogen compounds from regolith"
-			tech="0" skill="0"
-			work-time="10"
-			process-time="100"
-			power-required="0.1">
-		<inputs>
-			<resource name="regolith" amount="50.0" />
-		</inputs>
-		<outputs>
-			<resource name="Nitrate" amount="1.0" />
-			<resource name="Nitrite" amount="0.2" />
-			<resource name="Nitrogen" amount="1.0" />
-			<resource name="Ammonia" amount="1.0" />
-			<resource name="argon" amount="0.1" />
-			<resource name="regolith" amount="45.0" />
-		</outputs>
-	</process>
--->
-	<process name="turn compost into soil"
-			tech="2" skill="2"
-			work-time="50"
-			process-time="1000"
-			power-required=".025">
-		<inputs>
-			<resource name="compost" amount="10" />
-		</inputs>
-		<outputs>
-			<resource name="soil" amount="10" />
-		</outputs>
-	</process>
-
 	<process name="make pulp from cane fiber and crop waste"
-			tech="2" skill="2"
+			tech="2" skill="0"
 			work-time="50"
 			process-time="300"
 			power-required=".1">
@@ -422,34 +372,6 @@ Note: 1 kg of H2 is 14.13 liter
 		<outputs>
 			<resource name="sodium hypochlorite" amount="74.5" />
 			<resource name="hydrogen" amount="2" />
-		</outputs>
-	</process>
-
-	<process name="make compost by mixing crop waste and food waste"
-			tech="1" skill="0"
-			work-time="10"
-			process-time="100"
-			power-required=".1">
-		<inputs>
-			<resource name="crop waste" amount="7.0" />
-			<resource name="food waste" amount="3.0" />
-		</inputs>
-		<outputs>
-			<resource name="compost" amount="10" />
-		</outputs>
-	</process>
-
-	<process name="make compost by mixing crop waste and food waste (large batch)"
-			tech="1" skill="0"
-			work-time="50"
-			process-time="1000"
-			power-required=".3">
-		<inputs>
-			<resource name="crop waste" amount="70.0" />
-			<resource name="food waste" amount="30.0" />
-		</inputs>
-		<outputs>
-			<resource name="compost" amount="100" />
 		</outputs>
 	</process>
 

@@ -34,9 +34,11 @@ public enum GoodType {
 	REGOLITH	("regolith"),
 	WASTE		("waste"),
 	
+	// For amount resources
+    COMPOUND		("Compound"),
+    
 	// For Parts
 	ATTACHMENT		("Attachment"),
-    COMPOUND		("Compound"),
     CONSTRUCTION	("Construction"),
     ELECTRICAL		("Electrical"),
     ELECTRONIC		("Electronic"),
@@ -45,12 +47,12 @@ public enum GoodType {
     METALLIC		("Metallic"),
     RAW				("Raw"),
     TOOL			("Tool"),
-    UTILITY			("Utility"),
     VEHICLE			("Vehicle"),
     
 	// For both Amount Resources or Parts
 	CHEMICAL		(Msg.getString("FoodType.chemical")), //$NON-NLS-1$ 
     ELEMENT			("Element"),
+    UTILITY			("Utility"),
     
     // For containers
     CONTAINER		("Container"),
