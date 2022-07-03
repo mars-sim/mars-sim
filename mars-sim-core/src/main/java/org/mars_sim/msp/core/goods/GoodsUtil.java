@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.math3.random.ValueServer;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -23,6 +24,7 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.RobotConfig;
 import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.vehicle.VehicleConfig;
+import org.mars_sim.msp.core.vehicle.VehicleSpec;
 import org.mars_sim.msp.core.vehicle.VehicleType;
 
 /**
@@ -242,10 +244,9 @@ public class GoodsUtil {
      * @param newList
      */
     private static Map<Integer, Good> populateVehicles(Map<Integer, Good> newMap) {
-        Iterator<String> i = vehicleConfig.getVehicleTypes().iterator();
-        while (i.hasNext()) {
-            String name = i.next();
-            Good newGood = new VehicleGood(name);
+        for(String name : vehicleConfig.getVehicleTypes()) {
+            VehicleSpec vs = vehicleConfig.getVehicleSpec(name);
+            Good newGood = new VehicleGood(name, vs);
             newMap.put(newGood.getID(), newGood);
         }
         return newMap;

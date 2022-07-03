@@ -546,7 +546,7 @@ class PartGood extends Good {
 			ConstructionStageInfo stage = i.next();
 			double stageValue = stageValues.get(stage);
 			if (stageValue > 0D && ConstructionStageInfo.BUILDING.equals(stage.getType())
-					&& owner.isLocallyConstructable(stage)) {
+					&& isLocallyConstructable(settlement, stage)) {
 				double constructionStageDemand = getPartConstructionStageDemand(owner, getID(), stage, stageValue);
 				if (constructionStageDemand > 0D) {
 					demand += constructionStageDemand;
@@ -572,8 +572,8 @@ class PartGood extends Good {
 		int partNumber = getPrerequisiteConstructionPartNum(part, stage);
 
 		if (partNumber > 0) {
-			Map<Integer, Double> resources = owner.getAllPrerequisiteConstructionResources(stage);
-			Map<Integer, Integer> parts = owner.getAllPrerequisiteConstructionParts(stage);
+			Map<Integer, Double> resources = getAllPrerequisiteConstructionResources(stage);
+			Map<Integer, Integer> parts = getAllPrerequisiteConstructionParts(stage);
 
 			double totalNumber = 0D;
 

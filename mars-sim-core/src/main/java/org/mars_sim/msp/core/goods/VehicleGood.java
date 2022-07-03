@@ -58,7 +58,9 @@ class VehicleGood extends Good {
     private GoodType goodType;
     private VehicleType vehicleType;
 
-    public VehicleGood(String name) {
+	private double theoreticalRange;
+
+    public VehicleGood(String name, VehicleSpec vs) {
         super(name, VehicleType.convertName2ID(name));
 
         this.vehicleType = VehicleType.convertNameToVehicleType(name);
@@ -84,6 +86,7 @@ class VehicleGood extends Good {
             throw new IllegalArgumentException(name + " has unknown vehicle type.");
         }
 
+		this.theoreticalRange = getVehicleRange(vs);
     }
 
     @Override
@@ -459,8 +462,7 @@ class VehicleGood extends Good {
 					capacity = 1D;
 				capacity *= crewCapacity / 8D;
 
-				double range = getVehicleRange(v);
-				capacity *= range / 2000D;
+				capacity *= theoreticalRange / 2000D;
 			} break;
 
 		case EXPLORATION: {
@@ -475,8 +477,7 @@ class VehicleGood extends Good {
 				if (!hasAreologyLab)
 					capacity /= 2D;
 
-				double range = getVehicleRange(v);
-				if (range == 0D)
+				if (theoreticalRange == 0D)
 					capacity = 0D;
 			} break;
 
@@ -489,8 +490,7 @@ class VehicleGood extends Good {
 				if (cargoCapacity < 1250D)
 					capacity = 0D;
 
-				double range = getVehicleRange(v);
-				if (range == 0D)
+				if (theoreticalRange == 0D)
 					capacity = 0D;
 			} break;
 
@@ -498,8 +498,7 @@ class VehicleGood extends Good {
 				if (crewCapacity >= 2)
 					capacity = 1D;
 
-				double range = getVehicleRange(v);
-				capacity *= range / 2000D;
+				capacity *= theoreticalRange / 2000D;
 			}
 			break;
 
@@ -511,8 +510,7 @@ class VehicleGood extends Good {
 				double cargoCapacity = v.getTotalCapacity();
 				capacity *= cargoCapacity / 10000D;
 
-				double range = getVehicleRange(v);
-				capacity *= range / 2000D;
+				capacity *= theoreticalRange / 2000D;
 			} break;
 
 		case DELIVERY: {
@@ -521,8 +519,7 @@ class VehicleGood extends Good {
 				double cargoCapacity = v.getTotalCapacity();
 				capacity *= cargoCapacity / 10000D;
 
-				double range = getVehicleRange(v);
-				capacity *= range / 2000D;			
+				capacity *= theoreticalRange / 2000D;			
 			} break;
 
 		case MINING: {
@@ -533,8 +530,7 @@ class VehicleGood extends Good {
 				if (cargoCapacity < 1000D)
 					capacity = 0D;
 
-				double range = getVehicleRange(v);
-				if (range == 0D)
+				if (theoreticalRange == 0D)
 					capacity = 0D;
 			} break;
 
@@ -550,8 +546,7 @@ class VehicleGood extends Good {
 					}
 				}
 
-				double range = getVehicleRange(v);
-				if (range == 0D)
+				if (theoreticalRange == 0D)
 					capacity = 0D;
 			} break;
 
@@ -567,8 +562,7 @@ class VehicleGood extends Good {
 					}
 				}
 
-				double range = getVehicleRange(v);
-				if (range == 0D)
+				if (theoreticalRange == 0D)
 					capacity = 0D;
 			} break;
 
@@ -584,8 +578,7 @@ class VehicleGood extends Good {
 					}
 				}
 
-				double range = getVehicleRange(v);
-				if (range == 0D)
+				if (theoreticalRange == 0D)
 					capacity = 0D;
 			} break;
 		

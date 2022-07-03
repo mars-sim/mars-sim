@@ -9,34 +9,19 @@ package org.mars_sim.msp.core.goods;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.logging.SimLogger;
-import org.mars_sim.msp.core.malfunction.Malfunction;
-import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
-import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
-import org.mars_sim.msp.core.resource.ItemResourceUtil;
-import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.function.farming.CropConfig;
-import org.mars_sim.msp.core.structure.construction.ConstructionStageInfo;
-import org.mars_sim.msp.core.structure.construction.ConstructionUtil;
 import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.vehicle.Vehicle;
-import org.mars_sim.msp.core.vehicle.VehicleConfig;
-import org.mars_sim.msp.core.vehicle.VehicleSpec;
 import org.mars_sim.msp.core.vehicle.VehicleType;
 
 /**
@@ -131,11 +116,7 @@ public class GoodsManager implements Serializable {
 
 	private Settlement settlement;
 
-	private static SimulationConfig simulationConfig = SimulationConfig.instance();
-	private static VehicleConfig vehicleConfig = simulationConfig.getVehicleConfiguration();
-
-	private static Simulation sim = Simulation.instance();
-	private static UnitManager unitManager = sim.getUnitManager();
+	private static UnitManager unitManager;
 
 	/**
 	 * Constructor.
@@ -152,19 +133,14 @@ public class GoodsManager implements Serializable {
 	 * Populates the cache maps.
 	 */
 	private void populateGoodsValues() {
-		Set<Integer> ids = GoodsUtil.getGoodsMap().keySet();
-		Iterator<Integer> i = ids.iterator();
-		while (i.hasNext()) {
-			int id = i.next();
+		// Preload the good cache
+		for(Good good : GoodsUtil.getGoodsList()) {
+			int id = good.getID();
 			goodsValues.put(id, 1D);
 			tradeCache.put(id, 0D);
 			deflationIndexMap.put(id, 0);
-		}
-
-		// Preload the good cache
-		for(Good good : GoodsUtil.getGoodsList()) {
-			demandCache.put(good.getID(), good.getDefaultDemandValue());
-			supplyCache.put(good.getID(), good.getDefaultSupplyValue());
+			demandCache.put(id, good.getDefaultDemandValue());
+			supplyCache.put(id, good.getDefaultSupplyValue());
 
 		}
 	}
@@ -426,139 +402,6 @@ public class GoodsManager implements Serializable {
 		return tourism_factor;
 	}
 
-	/**
-	 * Checks if a building construction stage can be constructed at the local
-	 * settlement.
-	 *
-	 * @param buildingStage the building construction stage info.
-	 * @return true if building can be constructed.
-	 */
-	boolean isLocallyConstructable(ConstructionStageInfo buildingStage) {
-
-		if (buildingStage.isConstructable()) {
-			ConstructionStageInfo frameStage = ConstructionUtil.getPrerequisiteStage(buildingStage);
-			if (frameStage != null) {
-				ConstructionStageInfo foundationStage = ConstructionUtil.getPrerequisiteStage(frameStage);
-				if (foundationStage != null) {
-					if (frameStage.isConstructable() && foundationStage.isConstructable()) {
-						return true;
-					} else {
-						// Check if any existing buildings have same frame stage and can be refit or
-						// refurbished
-						// into new building.
-						Iterator<Building> i = settlement.getBuildingManager().getACopyOfBuildings().iterator();
-						while (i.hasNext()) {
-							ConstructionStageInfo tempBuildingStage = ConstructionUtil
-									.getConstructionStageInfo(i.next().getBuildingType());
-							if (tempBuildingStage != null) {
-								ConstructionStageInfo tempFrameStage = ConstructionUtil
-										.getPrerequisiteStage(tempBuildingStage);
-								if (frameStage.equals(tempFrameStage)) {
-									return true;
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-
-		return false;
-	}
-
-
-
-	/**
-	 * Gets all resource amounts required to build a stage including all pre-stages.
-	 *
-	 * @param stage the stage.
-	 * @return map of resources and their amounts (kg).
-	 */
-	Map<Integer, Double> getAllPrerequisiteConstructionResources(ConstructionStageInfo stage) {
-
-		// Start with all resources required to build stage.
-		Map<Integer, Double> result = new HashMap<>(stage.getResources());
-
-		// Add all resources required to build first prestage, if any.
-		ConstructionStageInfo preStage1 = ConstructionUtil.getPrerequisiteStage(stage);
-		if ((preStage1 != null)) {
-			Iterator<Integer> i = preStage1.getResources().keySet().iterator();
-			while (i.hasNext()) {
-				Integer resource = i.next();
-				double amount = preStage1.getResources().get(resource);
-				if (result.containsKey(resource)) {
-					double totalAmount = result.get(resource) + amount;
-					result.put(resource, totalAmount);
-				} else {
-					result.put(resource, amount);
-				}
-			}
-
-			// Add all resources required to build second prestage, if any.
-			ConstructionStageInfo preStage2 = ConstructionUtil.getPrerequisiteStage(preStage1);
-			if ((preStage2 != null)) {
-				Iterator<Integer> j = preStage2.getResources().keySet().iterator();
-				while (j.hasNext()) {
-					Integer resource = j.next();
-					double amount = preStage2.getResources().get(resource);
-					if (result.containsKey(resource)) {
-						double totalAmount = result.get(resource) + amount;
-						result.put(resource, totalAmount);
-					} else {
-						result.put(resource, amount);
-					}
-				}
-			}
-		}
-
-		return result;
-	}
-
-	/**
-	 * Gets a map of all parts required to build a stage including all pre-stages.
-	 *
-	 * @param stage the stage.
-	 * @return map of parts and their numbers.
-	 */
-	static Map<Integer, Integer> getAllPrerequisiteConstructionParts(ConstructionStageInfo stage) {
-
-		// Start with all parts required to build stage.
-		Map<Integer, Integer> result = new HashMap<>(stage.getParts());
-
-		// Add parts from first prestage, if any.
-		ConstructionStageInfo preStage1 = ConstructionUtil.getPrerequisiteStage(stage);
-		if ((preStage1 != null)) {
-			Iterator<Integer> i = preStage1.getParts().keySet().iterator();
-			while (i.hasNext()) {
-				Integer part = i.next();
-				int number = preStage1.getParts().get(part);
-				if (result.containsKey(part)) {
-					int totalNumber = result.get(part) + number;
-					result.put(part, totalNumber);
-				} else {
-					result.put(part, number);
-				}
-			}
-
-			// Add parts from second pre-stage, if any.
-			ConstructionStageInfo preStage2 = ConstructionUtil.getPrerequisiteStage(preStage1);
-			if ((preStage2 != null)) {
-				Iterator<Integer> j = preStage2.getParts().keySet().iterator();
-				while (j.hasNext()) {
-					Integer part = j.next();
-					int number = preStage2.getParts().get(part);
-					if (result.containsKey(part)) {
-						int totalNumber = result.get(part) + number;
-						result.put(part, totalNumber);
-					} else {
-						result.put(part, number);
-					}
-				}
-			}
-		}
-
-		return result;
-	}
 
 	/**
 	 * Clears the previous calculation on estimated orbit repair parts.
@@ -573,35 +416,35 @@ public class GoodsManager implements Serializable {
 	 * @param entity
 	 * @return
 	 */
-	private Map<Integer, Number> getEstimatedOrbitRepairParts(Malfunctionable entity) {
+	// private Map<Integer, Number> getEstimatedOrbitRepairParts(Malfunctionable entity) {
 
-		if (!orbitRepairParts.containsKey(entity)) {
+	// 	if (!orbitRepairParts.containsKey(entity)) {
 
-			Map<Integer, Number> result = new HashMap<>();
+	// 		Map<Integer, Number> result = new HashMap<>();
 
-			MalfunctionManager manager = entity.getMalfunctionManager();
+	// 		MalfunctionManager manager = entity.getMalfunctionManager();
 
-			// Estimate number of malfunctions for entity per orbit.
-			double orbitMalfunctions = manager.getEstimatedNumberOfMalfunctionsPerOrbit();
+	// 		// Estimate number of malfunctions for entity per orbit.
+	// 		double orbitMalfunctions = manager.getEstimatedNumberOfMalfunctionsPerOrbit();
 
-			// Estimate parts needed per malfunction.
-			Map<Integer, Double> partsPerMalfunction = manager.getRepairPartProbabilities();
+	// 		// Estimate parts needed per malfunction.
+	// 		Map<Integer, Double> partsPerMalfunction = manager.getRepairPartProbabilities();
 
-			// Multiply parts needed by malfunctions per orbit.
-			Iterator<Integer> i = partsPerMalfunction.keySet().iterator();
-			while (i.hasNext()) {
-				Integer part = i.next();
-				result.put(part, partsPerMalfunction.get(part) * orbitMalfunctions);
-			}
+	// 		// Multiply parts needed by malfunctions per orbit.
+	// 		Iterator<Integer> i = partsPerMalfunction.keySet().iterator();
+	// 		while (i.hasNext()) {
+	// 			Integer part = i.next();
+	// 			result.put(part, partsPerMalfunction.get(part) * orbitMalfunctions);
+	// 		}
 
-			orbitRepairParts.put(entity, result);
-			return result;
-		}
+	// 		orbitRepairParts.put(entity, result);
+	// 		return result;
+	// 	}
 
-		else {
-			return orbitRepairParts.get(entity);
-		}
-	}
+	// 	else {
+	// 		return orbitRepairParts.get(entity);
+	// 	}
+	// }
 
 	/**
 	 * Gets the outstanding repair parts by entity.
@@ -609,25 +452,25 @@ public class GoodsManager implements Serializable {
 	 * @param entity
 	 * @return
 	 */
-	private Map<Integer, Number> getOutstandingRepairParts(Malfunctionable entity) {
-		Map<Integer, Number> result = new HashMap<>(0);
+	// private Map<Integer, Number> getOutstandingRepairParts(Malfunctionable entity) {
+	// 	Map<Integer, Number> result = new HashMap<>(0);
 
-		Iterator<Malfunction> i = entity.getMalfunctionManager().getMalfunctions().iterator();
-		while (i.hasNext()) {
-			Malfunction malfunction = i.next();
-			Map<Integer, Integer> repairParts = malfunction.getRepairParts();
-			Iterator<Integer> j = repairParts.keySet().iterator();
-			while (j.hasNext()) {
-				Integer part = j.next();
-				int number = (int) Math.round(repairParts.get(part) * repairMod);
-				if (result.containsKey(part))
-					number += result.get(part).intValue();
-				result.put(part, number);
-			}
-		}
+	// 	Iterator<Malfunction> i = entity.getMalfunctionManager().getMalfunctions().iterator();
+	// 	while (i.hasNext()) {
+	// 		Malfunction malfunction = i.next();
+	// 		Map<Integer, Integer> repairParts = malfunction.getRepairParts();
+	// 		Iterator<Integer> j = repairParts.keySet().iterator();
+	// 		while (j.hasNext()) {
+	// 			Integer part = j.next();
+	// 			int number = (int) Math.round(repairParts.get(part) * repairMod);
+	// 			if (result.containsKey(part))
+	// 				number += result.get(part).intValue();
+	// 			result.put(part, number);
+	// 		}
+	// 	}
 
-		return result;
-	}
+	// 	return result;
+	// }
 
 	/**
 	 * Gets an estimated orbit maintenance parts.
@@ -635,26 +478,26 @@ public class GoodsManager implements Serializable {
 	 * @param entity
 	 * @return
 	 */
-	private Map<Integer, Number> getEstimatedOrbitMaintenanceParts(Malfunctionable entity) {
-		Map<Integer, Number> result = new HashMap<>();
+	// private Map<Integer, Number> getEstimatedOrbitMaintenanceParts(Malfunctionable entity) {
+	// 	Map<Integer, Number> result = new HashMap<>();
 
-		MalfunctionManager manager = entity.getMalfunctionManager();
+	// 	MalfunctionManager manager = entity.getMalfunctionManager();
 
-		// Estimate number of maintenances for entity per orbit.
-		double orbitMaintenances = manager.getEstimatedNumberOfMaintenancesPerOrbit();
+	// 	// Estimate number of maintenances for entity per orbit.
+	// 	double orbitMaintenances = manager.getEstimatedNumberOfMaintenancesPerOrbit();
 
-		// Estimate parts needed per maintenance.
-		Map<Integer, Double> partsPerMaintenance = manager.getMaintenancePartProbabilities();
+	// 	// Estimate parts needed per maintenance.
+	// 	Map<Integer, Double> partsPerMaintenance = manager.getMaintenancePartProbabilities();
 
-		// Multiply parts needed by maintenances per orbit.
-		Iterator<Integer> i = partsPerMaintenance.keySet().iterator();
-		while (i.hasNext()) {
-			Integer part = i.next();
-			result.put(part, partsPerMaintenance.get(part) * orbitMaintenances);
-		}
+	// 	// Multiply parts needed by maintenances per orbit.
+	// 	Iterator<Integer> i = partsPerMaintenance.keySet().iterator();
+	// 	while (i.hasNext()) {
+	// 		Integer part = i.next();
+	// 		result.put(part, partsPerMaintenance.get(part) * orbitMaintenances);
+	// 	}
 
-		return result;
-	}
+	// 	return result;
+	// }
 
 	/**
 	 * Gets outstanding maintenance parts.
@@ -662,46 +505,46 @@ public class GoodsManager implements Serializable {
 	 * @param entity
 	 * @return
 	 */
-	private Map<Integer, Number> getOutstandingMaintenanceParts(Malfunctionable entity) {
-		Map<Integer, Number> result = new HashMap<>();
+	// private Map<Integer, Number> getOutstandingMaintenanceParts(Malfunctionable entity) {
+	// 	Map<Integer, Number> result = new HashMap<>();
 
-		Map<Integer, Integer> maintParts = entity.getMalfunctionManager().getMaintenanceParts();
-		Iterator<Integer> i = maintParts.keySet().iterator();
-		while (i.hasNext()) {
-			Integer part = i.next();
-			int number = (int) Math.round(maintParts.get(part) * maintenanceMod);
-			result.put(part, number);
-		}
+	// 	Map<Integer, Integer> maintParts = entity.getMalfunctionManager().getMaintenanceParts();
+	// 	Iterator<Integer> i = maintParts.keySet().iterator();
+	// 	while (i.hasNext()) {
+	// 		Integer part = i.next();
+	// 		int number = (int) Math.round(maintParts.get(part) * maintenanceMod);
+	// 		result.put(part, number);
+	// 	}
 
-		return result;
-	}
+	// 	return result;
+	// }
 
 	/**
 	 * Gets the part demand for vehicle attachments.
 	 *
 	 * @return map of parts and demand number.
 	 */
-	private Map<Integer, Number> getVehicleAttachmentParts() {
-		Map<Integer, Number> result = new HashMap<>();
+	// private Map<Integer, Number> getVehicleAttachmentParts() {
+	// 	Map<Integer, Number> result = new HashMap<>();
 
-		Iterator<Vehicle> i = settlement.getAllAssociatedVehicles().iterator();
-		while (i.hasNext()) {
-			String type = i.next().getDescription().toLowerCase();
-			VehicleSpec spec = vehicleConfig.getVehicleSpec(type);
-			if (spec.hasPartAttachments()) {
-				Iterator<Part> j = spec.getAttachableParts().iterator();
-				while (j.hasNext()) {
-					Part part = j.next();
-					double demand = ATTACHMENT_PARTS_DEMAND;
-					if (result.containsKey(part.getID()))
-						demand += result.get(part.getID()).intValue();
-					result.put(ItemResourceUtil.findIDbyItemResourceName(part.getName()), demand);
-				}
-			}
-		}
+	// 	Iterator<Vehicle> i = settlement.getAllAssociatedVehicles().iterator();
+	// 	while (i.hasNext()) {
+	// 		String type = i.next().getDescription().toLowerCase();
+	// 		VehicleSpec spec = vehicleConfig.getVehicleSpec(type);
+	// 		if (spec.hasPartAttachments()) {
+	// 			Iterator<Part> j = spec.getAttachableParts().iterator();
+	// 			while (j.hasNext()) {
+	// 				Part part = j.next();
+	// 				double demand = ATTACHMENT_PARTS_DEMAND;
+	// 				if (result.containsKey(part.getID()))
+	// 					demand += result.get(part.getID()).intValue();
+	// 				result.put(ItemResourceUtil.findIDbyItemResourceName(part.getName()), demand);
+	// 			}
+	// 		}
+	// 	}
 
-		return result;
-	}
+	// 	return result;
+	// }
 
 	/**
 	 * Determines the trade demand for a good at a settlement.
@@ -933,18 +776,15 @@ public class GoodsManager implements Serializable {
 	/**
 	 * Reloads instances after loading from a saved sim
 	 *
-	 * @param s  {@link Simulation}
+	 * @param s  {@link SimulationConfg}
 	 * @param c  {@link MarsClock}
 	 * @param m  {@link MissionManager}
 	 * @param u  {@link UnitManager}
-	 * @param pc {@link PersonConfig}
 	 */
-	public static void initializeInstances(Simulation s, MarsClock c, MissionManager m, UnitManager u,
-			PersonConfig pc) {
-		sim = s;
-		simulationConfig = SimulationConfig.instance();
+	public static void initializeInstances(SimulationConfig sc, MarsClock c, MissionManager m, UnitManager u) {
 		unitManager = u;
-		vehicleConfig = simulationConfig.getVehicleConfiguration();
+
+		Good.initializeInstances(sc, c, m);
 	}
 
 	/**

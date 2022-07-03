@@ -7,7 +7,10 @@
 package org.mars_sim.msp.core.goods;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Stream;
 
@@ -31,10 +34,11 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.farming.CropConfig;
+import org.mars_sim.msp.core.structure.construction.ConstructionStageInfo;
+import org.mars_sim.msp.core.structure.construction.ConstructionUtil;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleConfig;
-import org.tukaani.xz.UnsupportedOptionsException;
 
 /**
  * A meta class describing an economic good in the simulation.
@@ -51,8 +55,8 @@ public abstract class Good implements Serializable, Comparable<Good> {
 	private static final double TECH_FACTOR = 2D;
 
 	//TODO Initialise explicitly
-	protected static MissionManager missionManager = Simulation.instance().getMissionManager();
-	protected static MarsClock marsClock = Simulation.instance().getMasterClock().getMarsClock();
+	protected static MissionManager missionManager;
+	protected static MarsClock marsClock;
 
     // TODO, should load of an instance and not a static
     protected static VehicleConfig vehicleConfig = SimulationConfig.instance().getVehicleConfiguration();
@@ -428,6 +432,141 @@ public abstract class Good implements Serializable, Comparable<Good> {
 		return result;
 	}
 
+	
+	/**
+	 * Checks if a building construction stage can be constructed at the local
+	 * settlement.
+	 *
+	 * @param buildingStage the building construction stage info.
+	 * @return true if building can be constructed.
+	 */
+	protected static boolean isLocallyConstructable(Settlement settlement, ConstructionStageInfo buildingStage) {
+
+		if (buildingStage.isConstructable()) {
+			ConstructionStageInfo frameStage = ConstructionUtil.getPrerequisiteStage(buildingStage);
+			if (frameStage != null) {
+				ConstructionStageInfo foundationStage = ConstructionUtil.getPrerequisiteStage(frameStage);
+				if (foundationStage != null) {
+					if (frameStage.isConstructable() && foundationStage.isConstructable()) {
+						return true;
+					} else {
+						// Check if any existing buildings have same frame stage and can be refit or
+						// refurbished
+						// into new building.
+						Iterator<Building> i = settlement.getBuildingManager().getACopyOfBuildings().iterator();
+						while (i.hasNext()) {
+							ConstructionStageInfo tempBuildingStage = ConstructionUtil
+									.getConstructionStageInfo(i.next().getBuildingType());
+							if (tempBuildingStage != null) {
+								ConstructionStageInfo tempFrameStage = ConstructionUtil
+										.getPrerequisiteStage(tempBuildingStage);
+								if (frameStage.equals(tempFrameStage)) {
+									return true;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		return false;
+	}
+
+
+
+	/**
+	 * Gets all resource amounts required to build a stage including all pre-stages.
+	 *
+	 * @param stage the stage.
+	 * @return map of resources and their amounts (kg).
+	 */
+	protected Map<Integer, Double> getAllPrerequisiteConstructionResources(ConstructionStageInfo stage) {
+
+		// Start with all resources required to build stage.
+		Map<Integer, Double> result = new HashMap<>(stage.getResources());
+
+		// Add all resources required to build first prestage, if any.
+		ConstructionStageInfo preStage1 = ConstructionUtil.getPrerequisiteStage(stage);
+		if ((preStage1 != null)) {
+			Iterator<Integer> i = preStage1.getResources().keySet().iterator();
+			while (i.hasNext()) {
+				Integer resource = i.next();
+				double amount = preStage1.getResources().get(resource);
+				if (result.containsKey(resource)) {
+					double totalAmount = result.get(resource) + amount;
+					result.put(resource, totalAmount);
+				} else {
+					result.put(resource, amount);
+				}
+			}
+
+			// Add all resources required to build second prestage, if any.
+			ConstructionStageInfo preStage2 = ConstructionUtil.getPrerequisiteStage(preStage1);
+			if ((preStage2 != null)) {
+				Iterator<Integer> j = preStage2.getResources().keySet().iterator();
+				while (j.hasNext()) {
+					Integer resource = j.next();
+					double amount = preStage2.getResources().get(resource);
+					if (result.containsKey(resource)) {
+						double totalAmount = result.get(resource) + amount;
+						result.put(resource, totalAmount);
+					} else {
+						result.put(resource, amount);
+					}
+				}
+			}
+		}
+
+		return result;
+	}
+
+	/**
+	 * Gets a map of all parts required to build a stage including all pre-stages.
+	 *
+	 * @param stage the stage.
+	 * @return map of parts and their numbers.
+	 */
+	protected static Map<Integer, Integer> getAllPrerequisiteConstructionParts(ConstructionStageInfo stage) {
+
+		// Start with all parts required to build stage.
+		Map<Integer, Integer> result = new HashMap<>(stage.getParts());
+
+		// Add parts from first prestage, if any.
+		ConstructionStageInfo preStage1 = ConstructionUtil.getPrerequisiteStage(stage);
+		if ((preStage1 != null)) {
+			Iterator<Integer> i = preStage1.getParts().keySet().iterator();
+			while (i.hasNext()) {
+				Integer part = i.next();
+				int number = preStage1.getParts().get(part);
+				if (result.containsKey(part)) {
+					int totalNumber = result.get(part) + number;
+					result.put(part, totalNumber);
+				} else {
+					result.put(part, number);
+				}
+			}
+
+			// Add parts from second pre-stage, if any.
+			ConstructionStageInfo preStage2 = ConstructionUtil.getPrerequisiteStage(preStage1);
+			if ((preStage2 != null)) {
+				Iterator<Integer> j = preStage2.getParts().keySet().iterator();
+				while (j.hasNext()) {
+					Integer part = j.next();
+					int number = preStage2.getParts().get(part);
+					if (result.containsKey(part)) {
+						int totalNumber = result.get(part) + number;
+						result.put(part, totalNumber);
+					} else {
+						result.put(part, number);
+					}
+				}
+			}
+		}
+
+		return result;
+	}
+
 	/**
 	 * Gets a string representation of the good.
 	 *
@@ -537,4 +676,16 @@ public abstract class Good implements Serializable, Comparable<Good> {
 	 * @param owner Owner of the Supply/Demand values.
 	 */
 	abstract void refreshSupplyDemandValue(GoodsManager owner);
+
+	/**
+	 * Initialise the constant configs
+	 */
+	static void initializeInstances(SimulationConfig sc, MarsClock c, MissionManager m) {
+		missionManager = m;
+		marsClock = c;
+
+		vehicleConfig = sc.getVehicleConfiguration();
+		personConfig = sc.getPersonConfig();
+		cropConfig = sc.getCropConfiguration();
+	}
 }

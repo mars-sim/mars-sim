@@ -323,7 +323,7 @@ class AmountResourceGood extends Good {
 			// Tune dessert demand.
 			+ getResourceDessertDemand(settlement)
 			// Tune construction demand.
-			+ getResourceConstructionDemand(owner, settlement)
+			+ getResourceConstructionDemand(settlement)
 			// Tune construction site demand.
 			+ getResourceConstructionSiteDemand(settlement)
 			// Adjust the demand on various waste products with the disposal cost.
@@ -750,7 +750,7 @@ class AmountResourceGood extends Good {
 	 *
 	 * @return demand (kg)
 	 */
-	private double getResourceConstructionDemand(GoodsManager owner, Settlement settlement) {
+	private double getResourceConstructionDemand(Settlement settlement) {
 		double demand = 0D;
 
 		ConstructionValues values = settlement.getConstructionManager().getConstructionValues();
@@ -759,8 +759,8 @@ class AmountResourceGood extends Good {
 			ConstructionStageInfo stage = stageDetail.getKey();
 			double stageValue = stageDetail.getValue();
 			if (stageValue > 0D && ConstructionStageInfo.BUILDING.equals(stage.getType())
-					&& owner.isLocallyConstructable(stage)) {
-				double constructionDemand = getResourceConstructionStageDemand(owner, stage, stageValue);
+					&& isLocallyConstructable(settlement, stage)) {
+				double constructionDemand = getResourceConstructionStageDemand(stage, stageValue);
 				if (constructionDemand > 0D) {
 					demand += constructionDemand;
 				}
@@ -778,7 +778,7 @@ class AmountResourceGood extends Good {
 	 * @param stageValue the building construction stage value (VP).
 	 * @return demand (kg)
 	 */
-	private double getResourceConstructionStageDemand(GoodsManager owner, ConstructionStageInfo stage,
+	private double getResourceConstructionStageDemand(ConstructionStageInfo stage,
 			double stageValue) {
 
 		double demand = 0D;
@@ -786,8 +786,8 @@ class AmountResourceGood extends Good {
 
 		// TODO Not sure this makes sense
 		if (resourceAmount > 0D) {
-			Map<Integer, Double> resources = owner.getAllPrerequisiteConstructionResources(stage);
-			Map<Integer, Integer> parts = owner.getAllPrerequisiteConstructionParts(stage);
+			Map<Integer, Double> resources = getAllPrerequisiteConstructionResources(stage);
+			Map<Integer, Integer> parts = getAllPrerequisiteConstructionParts(stage);
 
 			double totalItems = 0D;
 
