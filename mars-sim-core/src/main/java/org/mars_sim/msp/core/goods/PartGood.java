@@ -81,8 +81,18 @@ class PartGood extends Good {
 
 	private static final double MANUFACTURING_INPUT_FACTOR = 2D;
 
+	private double flattenDemand;
+	private double flattenRawDemand;
+	private double costModifier;
+
     public PartGood(Part p) {
         super(p.getName(), p.getID());
+
+		// Pre-calaculate the fixed values
+		flattenDemand = calculateFlattenPartDemand(p);
+		flattenRawDemand = calculateFlattenRawPartDemand(p);
+		costModifier = calculateCostModifier(p);
+
     }
 
     private Part getPart() {
@@ -111,7 +121,13 @@ class PartGood extends Good {
 	 */
     @Override
     protected double computeCostModifier() {
-        Part part = getPart();
+		return costModifier;
+	}
+
+	/**
+	 * Calculate the cost modifier
+	 */
+	private static double calculateCostModifier(Part part) {
         String name = part.getName().toLowerCase();
         
         if (name.contains("wire"))
@@ -225,9 +241,9 @@ class PartGood extends Good {
 			// Calculate vehicle part demand.
 			* getVehiclePartDemand(owner)
 			// Flatten raw part demand.
-			* flattenRawPartDemand(part)
+			* flattenRawDemand
 			// Flatten certain part demand.
-			* flattenPartDemand(this));
+			* flattenDemand);
 
 		// Add trade demand.
 		double trade = owner.determineTradeDemand(this);
@@ -289,7 +305,7 @@ class PartGood extends Good {
 	 * @param part   the part.
 	 * TODO Replace this with value off Part class which comes form the XML file
 	 */
-	private static double flattenRawPartDemand(Part part) {
+	private static double calculateFlattenRawPartDemand(Part part) {
 		String name = part.getName();
 		// Reduce the demand on the steel/aluminum scrap metal
 		// since they can only be produced by salvaging a vehicle
@@ -324,15 +340,15 @@ class PartGood extends Good {
 		return 1;
 	}
 
-		/**
-	 * Limits the part demand based on types.
+	/**
+	 * Calculate the part demand based on types.
 	 * 
-	 * @param good
+	 * @param part
 	 * @return
 	 */
-	public static double flattenPartDemand(Good good) {
-		String name = good.getName();
-		GoodType type = good.getGoodType();
+	private static double calculateFlattenPartDemand(Part part) {
+		String name = part.getName();
+		GoodType type = part.getGoodType();
 
 		if (name.contains("electrical wire"))
 			return 0.1 * ELECTRICAL_DEMAND;
@@ -386,9 +402,6 @@ class PartGood extends Good {
 
 		if (type == GoodType.CONSTRUCTION)
 			return CONSTRUCTION_DEMAND;
-
-		if (type == GoodType.INSTRUMENT)
-			return INSTRUMENT_DEMAND;
 
 		return 1;
 	}

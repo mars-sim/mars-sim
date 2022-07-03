@@ -117,8 +117,16 @@ class AmountResourceGood extends Good {
 
 	private static final int METEORITE_ID = ResourceUtil.findIDbyAmountResourceName("meteorite");
 
+	private double flattenDemand;
+
+	private double costModifier;
+
     AmountResourceGood(AmountResource ar) {
         super(ar.getName(), ar.getID());
+
+		// Calcualted fixed values
+		flattenDemand = calculateFlattenAmountDemand(ar);
+		costModifier = calculateCostModifier(ar);
     }
 
     @Override
@@ -143,10 +151,16 @@ class AmountResourceGood extends Good {
 
     @Override
     protected double computeCostModifier() {
-        AmountResource ar =getAmountResource();
+		return costModifier;
+	}
+
+	/**
+	 * Calculate the cost modifier from a resource
+	 */
+	private static double calculateCostModifier(AmountResource ar) {
         boolean edible = ar.isEdible();
         boolean lifeSupport = ar.isLifeSupport();
-        GoodType type = getGoodType();
+        GoodType type = ar.getGoodType();
         double result = 0D;
 
         if (lifeSupport)
@@ -330,7 +344,7 @@ class AmountResourceGood extends Good {
 			// Adjust the demand on minerals and ores.
 			+ getMineralDemand(owner, settlement)
 			// Flatten certain types of demand.
-			* flattenAmountDemand();
+			* flattenDemand;
 			
 		// Add trade value. Cache is always false if this method is called
 		trade = owner.determineTradeDemand(this);
@@ -388,12 +402,12 @@ class AmountResourceGood extends Good {
 	/**
 	 * Flattens the amount demand on certain selected resources or types of resources.
 	 * 
-	 * @param good
+	 * @param resource
 	 * @return
 	 */
-	private double flattenAmountDemand() {
+	private static double calculateFlattenAmountDemand(AmountResource ar) {
 		double demand = 0;
-		String name = getName();
+		String name = ar.getName();
 		
 		if (name.contains("polyester")
 				|| name.contains("styrene")
@@ -401,7 +415,7 @@ class AmountResourceGood extends Good {
 			demand = CHEMICAL_DEMAND_FACTOR;
 		
 		else {
-			switch(getGoodType()) {
+			switch(ar.getGoodType()) {
 				case REGOLITH:
 				case ORE:
 				case MINERAL:
