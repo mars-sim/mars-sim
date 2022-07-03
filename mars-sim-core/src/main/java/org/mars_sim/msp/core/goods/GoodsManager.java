@@ -40,8 +40,6 @@ public class GoodsManager implements Serializable {
 	private static final int BASE_MAINT_PART = 15;
 	private static final int BASE_EVA_SUIT = 1;
 
-	private static final double ATTACHMENT_PARTS_DEMAND = 1.2;
-
 	static final double MANUFACTURING_INPUT_FACTOR = 2D;
 	static final double CONSTRUCTING_INPUT_FACTOR = 2D;
 
@@ -72,7 +70,6 @@ public class GoodsManager implements Serializable {
 
 	/** VP probability modifier. */
 	public static final double ICE_VALUE_MODIFIER = 5D;
-	private static final double WATER_VALUE_MODIFIER = 1D;
 
 	public static final double SOIL_VALUE_MODIFIER = .5;
 	public static final double REGOLITH_VALUE_MODIFIER = 25D;
@@ -89,17 +86,16 @@ public class GoodsManager implements Serializable {
 	private double repairMod = BASE_REPAIR_PART;
 	private double maintenanceMod = BASE_MAINT_PART;
 	private double eVASuitMod = BASE_EVA_SUIT;
-	private double waterValue = WATER_VALUE_MODIFIER;
 
 	private boolean initialized = false;
 	// Add modifiers due to Settlement Development Objectives
-	private double cropFarm_factor = 1;
-	private double manufacturing_factor = 1;
-	private double research_factor = 1;
-	private double transportation_factor = 1;
-	private double trade_factor = 1;
-	private double tourism_factor = 1;
-	private double builders_factor = 1;
+	private double cropFarmFactor = 1;
+	private double manufactureFactor = 1;
+	private double researchFactor = 1;
+	private double transportFactor = 1;
+	private double tradeFactor = 1;
+	private double tourismFactor = 1;
+	private double buildersFactor = 1;
 
 	private Map<Integer, Double> goodsValues = new HashMap<>();
 	private Map<Integer, Double> tradeCache = new HashMap<>();
@@ -355,59 +351,59 @@ public class GoodsManager implements Serializable {
 	}
 
 	public void setCropFarmFactor(double value) {
-		cropFarm_factor = value * CROPFARM_BASE;
+		cropFarmFactor = value * CROPFARM_BASE;
 	}
 
 	public void setManufacturingFactor(double value) {
-		manufacturing_factor = value * MANU_BASE;
+		manufactureFactor = value * MANU_BASE;
 	}
 
 	public void setTransportationFactor(double value) {
-		transportation_factor = value * TRANSPORT_BASE;
+		transportFactor = value * TRANSPORT_BASE;
 	}
 
 	public void setResearchFactor(double value) {
-		research_factor = value * RESEARCH_BASE;
+		researchFactor = value * RESEARCH_BASE;
 	}
 
 	public void setTradeFactor(double value) {
-		trade_factor = value * TRADE_BASE;
+		tradeFactor = value * TRADE_BASE;
 	}
 
 	public void setTourismFactor(double value) {
-		tourism_factor = value * TOURISM_BASE;
+		tourismFactor = value * TOURISM_BASE;
 	}
 
 	public void setBuildersFactor(double value) {
-		builders_factor = value * BUILDERS_BASE;
+		buildersFactor = value * BUILDERS_BASE;
 	}
 
 	public double getBuildersFactor() {
-		return builders_factor;
+		return buildersFactor;
 	}
 
 	public double getCropFarmFactor() {
-		return cropFarm_factor;
+		return cropFarmFactor;
 	}
 
 	public double getManufacturingFactor() {
-		return manufacturing_factor;
+		return manufactureFactor;
 	}
 
 	public double getTransportationFactor() {
-		return transportation_factor;
+		return transportFactor;
 	}
 
 	public double getResearchFactor() {
-		return research_factor;
+		return researchFactor;
 	}
 
 	public double getTradeFactor() {
-		return trade_factor;
+		return tradeFactor;
 	}
 
 	public double getTourismFactor() {
-		return tourism_factor;
+		return tourismFactor;
 	}
 
 
@@ -738,19 +734,12 @@ public class GoodsManager implements Serializable {
 	}
 
 	void setDemandValue(Good good, double newValue) {
-		double oldValue = getDemandValue(good);
-
 		double clippedValue = limitMaxMin(newValue, MIN_DEMAND, MAX_DEMAND);
 		demandCache.put(good.getID(), clippedValue);
-
-		// if (oldValue != newValue) {
-		// 	logger.info(settlement, "Demand updated for " + good.getName() + " old=" + oldValue + " new=" + clippedValue);
-		// }
 	}
 
 	void setSupplyValue(Good good, double newValue) {
 		double clippedValue = limitMaxMin(newValue, MIN_SUPPLY, MAX_SUPPLY);
-
 		supplyCache.put(good.getID(), clippedValue);
 	}
 

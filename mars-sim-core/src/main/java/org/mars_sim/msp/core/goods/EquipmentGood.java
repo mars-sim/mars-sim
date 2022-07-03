@@ -161,8 +161,7 @@ public class EquipmentGood extends Good {
 		double average = determineEquipmentDemand(owner, settlement);
 
 		double totalSupply = getAverageEquipmentSupply(settlement.findNumContainersOfType(equipmentType), numSol);
-		
-		
+				
 		owner.setSupplyValue(this, totalSupply);
 		
 		// This method is not using cache

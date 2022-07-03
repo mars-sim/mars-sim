@@ -358,6 +358,12 @@ abstract class TableTab extends MonitorTab {
 		if ((column >= 0) && (row >= 0)) {
 			Object cell = table.getValueAt(row, column);
 			if (cell != null) {
+				if (cell instanceof Integer) {
+					return ((Integer) cell).intValue()  + "" ;
+				}
+				else if (cell instanceof Double) {
+					return Math.round(((Double) cell).doubleValue() * 10_000.0)/10_000.0 + "" ;
+				}
 				result = cell.toString();
 			}
 		}

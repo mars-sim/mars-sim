@@ -128,12 +128,12 @@ public class OrbitInfo implements Serializable, Temporal {
 	// The areocentric longitude at perihelion, L_s = 251 + 0.0064891 * (yr - 2000),
 
 	/** The areocentric longitude at perihelion. */
-	private double L_s_perihelion;// = 251D + 0.0064891 * (2043- 2000); when L_s at ~250
+//	private double L_s_perihelion;// = 251D + 0.0064891 * (2043- 2000); when L_s at ~250
 	// e.g. At year 2000, L_s_perihelion = 251.2790
 	// e.g. At year 2043, L_s_perihelion = 251
 
 	/** The areocentric longitude at aphelion. */
-	private double L_s_aphelion;// = L_s_perihelion - 180D; when L_s at ~70
+//	private double L_s_aphelion;// = L_s_perihelion - 180D; when L_s at ~70
 
 	// Note 3 : L_s_perihelion indicates a near alignment of the planet's closest
 	// approach to the Sun

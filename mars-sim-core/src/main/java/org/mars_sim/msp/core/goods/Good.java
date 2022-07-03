@@ -14,7 +14,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.food.FoodProductionProcessInfo;

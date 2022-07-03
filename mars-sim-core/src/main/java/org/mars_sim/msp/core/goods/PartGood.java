@@ -225,7 +225,7 @@ class PartGood extends Good {
 		// NOTE: the following estimates are for each orbit (Martian year) :
 		double projected = 
 			// Add manufacturing demand.					
-			(getPartManufacturingDemand(owner, settlement, part)
+			getPartManufacturingDemand(owner, settlement, part)
 			// Add food production demand.
 			+ getPartFoodProductionDemand(owner, settlement, part)
 			// Add construction demand.
@@ -239,11 +239,13 @@ class PartGood extends Good {
 			// Calculate kitchen part demand.
 			+ getKitchenPartDemand(owner)
 			// Calculate vehicle part demand.
-			* getVehiclePartDemand(owner)
+			* getVehiclePartDemand(owner);
+			
+		projected = projected
 			// Flatten raw part demand.
 			* flattenRawDemand
 			// Flatten certain part demand.
-			* flattenDemand);
+			* flattenDemand;
 
 		// Add trade demand.
 		double trade = owner.determineTradeDemand(this);

@@ -315,7 +315,7 @@ public class SettlementTableModel extends UnitTableModel {
 					break;
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.severe("getValueAt is invalid: " + e.getMessage());
 			}
 		}
 

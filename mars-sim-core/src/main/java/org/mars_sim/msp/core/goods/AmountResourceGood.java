@@ -342,7 +342,9 @@ class AmountResourceGood extends Good {
 			// Adjust the demand on various waste products with the disposal cost.
 			+ getWasteDisposalSinkCost()
 			// Adjust the demand on minerals and ores.
-			+ getMineralDemand(owner, settlement)
+			+ getMineralDemand(owner, settlement);
+		
+		projected = projected
 			// Flatten certain types of demand.
 			* flattenDemand;
 			

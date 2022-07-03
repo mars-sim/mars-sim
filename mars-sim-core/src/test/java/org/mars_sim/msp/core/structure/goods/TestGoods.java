@@ -6,7 +6,6 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.goods.Good;
 import org.mars_sim.msp.core.goods.GoodType;
 import org.mars_sim.msp.core.goods.GoodsUtil;
-import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;

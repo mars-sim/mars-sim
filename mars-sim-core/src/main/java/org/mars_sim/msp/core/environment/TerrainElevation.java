@@ -292,7 +292,7 @@ public class TerrainElevation implements Serializable {
 		return new int[] {red, green, blue};
 	}
 
-	public static float[] getHSB(int[] rgb) {
+	public float[] getHSB(int[] rgb) {
 		float[] hsb = Color.RGBtoHSB(rgb[0], rgb[1], rgb[2], null);
 		float hue = hsb[0];
 		float saturation = hsb[1];

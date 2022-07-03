@@ -602,13 +602,13 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		showToolBarItem.setSelected(desktop.getMainWindow().getToolToolBar().isVisible());
 
 		musicVolumeSlider.setValue((int) Math.round(soundPlayer.getMusicVolume() * 10));
-		musicVolumeSlider.setEnabled(!soundPlayer.isMusicMute());
+		musicVolumeSlider.setEnabled(!AudioPlayer.isMusicMute());
 
 		effectVolumeSlider.setValue((int) Math.round(soundPlayer.getEffectVolume() * 10));
-		effectVolumeSlider.setEnabled(!soundPlayer.isEffectMute());
+		effectVolumeSlider.setEnabled(!AudioPlayer.isEffectMute());
 
-		musicMuteItem.setSelected(soundPlayer.isMusicMute());
-		effectMuteItem.setSelected(soundPlayer.isEffectMute());
+		musicMuteItem.setSelected(AudioPlayer.isMusicMute());
+		effectMuteItem.setSelected(AudioPlayer.isEffectMute());
 	}
 
 	public void menuCanceled(MenuEvent event) {

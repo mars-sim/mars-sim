@@ -6,6 +6,8 @@
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -13,8 +15,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.SwingUtilities;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 
 import org.mars_sim.msp.core.CollectionUtils;
@@ -106,15 +106,20 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 	 * Sets up the row selection map.
 	 */
 	public void setUpRowSelection() {
-		window.getTradeTab().getTable().getSelectionModel().addListSelectionListener(new ListSelectionListener(){
-	        @Override
-			public void valueChanged(ListSelectionEvent event) {
-	        	if (!event.getValueIsAdjusting() && event != null){
-		        	int row = window.getTradeTab().getTable().getSelectedRow();
-		        	lastRowMap.put(selectedSettlement, row);
-		        }
-	        }
-	    });
+		window.getTradeTab().getTable().addMouseListener(
+				new MouseListener() {
+					public void mouseReleased(MouseEvent e) {}
+					public void mousePressed(MouseEvent e) {}
+					public void mouseExited(MouseEvent e) {}
+					public void mouseEntered(MouseEvent e) {}
+					public void mouseClicked(MouseEvent e) {
+						if (e.getClickCount() == 1 && !e.isConsumed()) {
+							int row = window.getTradeTab().getTable().getSelectedRow();
+				        	lastRowMap.put(selectedSettlement, row);
+						}
+					}
+				}
+			);
 	}
 	
 	/**
