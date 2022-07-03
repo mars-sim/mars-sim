@@ -64,9 +64,12 @@ public class ReviewMissionPlan extends Task implements Serializable {
 	private static final double STRESS_MODIFIER = -.1D;
 
 	// Mapping of the preferred MissionType for each Objective
-	private static final Map<ObjectiveType,Set<MissionType>> OBJECTIVE_TO_MISSION = new EnumMap<>(ObjectiveType.class);
+	private static final Map<ObjectiveType, Set<MissionType>> OBJECTIVE_TO_MISSION = new EnumMap<>(ObjectiveType.class);
 	
 	static {
+		OBJECTIVE_TO_MISSION.put(ObjectiveType.BUILDERS_HAVEN,
+				   Set.of(MissionType.COLLECT_REGOLITH,
+						  MissionType.MINING));
 		OBJECTIVE_TO_MISSION.put(ObjectiveType.CROP_FARM,
 							   Set.of(MissionType.COLLECT_ICE,
 									  MissionType.BIOLOGY));
@@ -77,7 +80,8 @@ public class ReviewMissionPlan extends Task implements Serializable {
 									  MissionType.METEOROLOGY,
 									  MissionType.TRAVEL_TO_SETTLEMENT));
 		OBJECTIVE_TO_MISSION.put(ObjectiveType.TRADE_CENTER,
-								Set.of(MissionType.TRADE));
+								Set.of(MissionType.TRADE, 
+										MissionType.DELIVERY));
 		OBJECTIVE_TO_MISSION.put(ObjectiveType.TRANSPORTATION_HUB,
 								Set.of(MissionType.TRAVEL_TO_SETTLEMENT,
 									   MissionType.EXPLORATION));
@@ -296,12 +300,16 @@ public class ReviewMissionPlan extends Task implements Serializable {
 								ObjectiveType objective = reviewerSettlement.getObjective();
 								if (OBJECTIVE_TO_MISSION.getOrDefault(objective, Collections.emptySet()).contains(mt)) {
 									switch (objective) {
+									case BUILDERS_HAVEN:
+										obj += 5D * goodsManager.getBuildersFactor(); 
+										break;
+										
 									case CROP_FARM:
 										obj += 5D * goodsManager.getCropFarmFactor();
 										break;
 									
 									case TOURISM:
-										obj += 5D * goodsManager.getCropFarmFactor();
+										obj += 5D * goodsManager.getTourismFactor();
 										break;
 									
 									case TRADE_CENTER:

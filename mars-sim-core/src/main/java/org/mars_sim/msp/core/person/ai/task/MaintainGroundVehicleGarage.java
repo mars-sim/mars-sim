@@ -201,10 +201,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 				int number = parts.get(part);
 				// This is within a garage in a settlement
 				settlement.retrieveItemResource(part, number);
-				manager.maintainWithParts(part, number);			
-				// Add item demand
-//				inv.addItemDemandTotalRequest(part, number);
-//				inv.addItemDemand(part, number);
+				manager.maintainWithParts(part, number);
 			}
 		} else {
 			endTask();
@@ -243,6 +240,8 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 	@Override
 	protected void clearDown() {
 		if (vehicle != null) {
+			vehicle.clearDistanceLastMaintenance();
+			
 			vehicle.setReservedForMaintenance(false);
 	        vehicle.removeSecondaryStatus(StatusType.MAINTENANCE);
 	        
@@ -340,8 +339,11 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 		if (!Maintenance.hasMaintenanceParts(mechanic, vehicle)) 
 			return 0;
 		
+		
+		double mileageSinceLastM = vehicle.getDistanceLastMaintenance();		
+		
 		double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();
-		boolean minTime = (effectiveTime >= 1000D);
+		boolean minTime = (effectiveTime >= 1000D || mileageSinceLastM > 3000);
 
 		if (minTime) {
 			result = effectiveTime;

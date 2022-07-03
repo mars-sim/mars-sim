@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * UnitEventType.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-01
  * @author stpa
  */
 

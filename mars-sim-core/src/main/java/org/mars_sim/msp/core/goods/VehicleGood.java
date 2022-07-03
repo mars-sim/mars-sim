@@ -48,7 +48,7 @@ class VehicleGood extends Good {
     private static final double INITIAL_VEHICLE_DEMAND = 0;
 	private static final double INITIAL_VEHICLE_SUPPLY = 0;
 	private static final int VEHICLE_VALUE = 20;
-	private static final int LUV_VALUE = 750;
+	private static final int LUV_VALUE = 10;
 	private static final int DRONE_VALUE = 50;
 
     private static final String METHANE = "methane";
@@ -67,7 +67,7 @@ class VehicleGood extends Good {
         switch(vehicleType) {
 		case DELIVERY_DRONE:
 		case LUV:
-			goodType = GoodType.VEHICLE_HEAVY;
+			goodType = GoodType.VEHICLE_SMALL;
             break;
 
 		case EXPLORER_ROVER:
@@ -75,9 +75,6 @@ class VehicleGood extends Good {
             break;
 
 		case TRANSPORT_ROVER:
-            goodType =  GoodType.VEHICLE_HEAVY;
-            break;
-
 		case CARGO_ROVER:
             goodType = GoodType.VEHICLE_HEAVY;
             break;

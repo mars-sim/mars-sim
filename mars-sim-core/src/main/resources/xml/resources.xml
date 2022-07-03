@@ -33,6 +33,9 @@
 	<!-- Other Gas Resources -->
 	<resource name="hydrogen" type="element" phase="gas" />
 	<resource name="methane" type="compound" phase="gas" />
+	<resource name="methanol" type="compound" phase="liquid">Methanol CH3OH can be used as a fuel source, solvent, pesticide, or 
+	 a chemical feedstock for production of a range of important industrial chemicals such as polyester. 
+	 It appears as a colorless fairly volatile liquid with a faintly sweet pungent odor like that of ethyl alcohol. </resource>
 	<resource name="nitrogen" type="element" phase="gas"> N2 is an odorless gas </resource>
 
 	<resource name="argon" type="element" phase="gas"/>

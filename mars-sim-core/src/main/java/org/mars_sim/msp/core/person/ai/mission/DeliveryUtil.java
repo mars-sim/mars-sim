@@ -790,7 +790,9 @@ public final class DeliveryUtil {
 
 		// Get required fuel.
 		Good fuelGood = GoodsUtil.getGood(drone.getFuelType());
-		neededResources.put(fuelGood, (int) VehicleMission.getFuelNeededForTrip(drone, distance, drone.getEstimatedAveFuelEconomy() * VehicleMission.FE_FACTOR, false));
+		neededResources.put(fuelGood, (int) VehicleMission.getFuelNeededForTrip(drone, distance, 
+				(drone.getCumFuelEconomy() + drone.getEstimatedFuelEconomy()) / VehicleMission.FE_FACTOR, false));
+
 
 		// Get cost of resources.
 		return determineLoadCredit(neededResources, startingSettlement, false);

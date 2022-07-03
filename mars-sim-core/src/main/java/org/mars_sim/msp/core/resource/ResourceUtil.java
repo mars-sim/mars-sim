@@ -50,6 +50,7 @@ public class ResourceUtil implements Serializable {
 
 	public static final String HYDROGEN = "hydrogen";
 	public static final String METHANE = "methane";
+	public static final String METHANOL = "methanol";
 	public static final String SOIL = "soil";
 	public static final String ICE = "ice";
 	public static final String COMPOST = "compost";
@@ -73,8 +74,6 @@ public class ResourceUtil implements Serializable {
 	public static final String FOOD_WASTE = "food waste";
 	public static final String SOLID_WASTE = "solid waste";
 	public static final String TOXIC_WASTE = "toxic waste";
-
-//	public static final String TOILET_WASTE = "toilet waste";
 
 	public static final String GREY_WATER = "grey water";
 	public static final String BLACK_WATER = "black water";
@@ -151,6 +150,7 @@ public class ResourceUtil implements Serializable {
 	public static int nitrogenID;
 	public static int hydrogenID;
 	public static int methaneID;
+	public static int methanolID;
 	public static int coID;
 
 	public static int iceID;
@@ -426,6 +426,7 @@ public class ResourceUtil implements Serializable {
 
 		hydrogenID = findIDbyAmountResourceName(HYDROGEN); 
 		methaneID = findIDbyAmountResourceName(METHANE);
+		methanolID = findIDbyAmountResourceName(METHANOL);
 		nitrogenID = findIDbyAmountResourceName(NITROGEN); 
 
 		iceID = findIDbyAmountResourceName(ICE); 

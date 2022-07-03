@@ -22,7 +22,6 @@ import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.Structure;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -64,19 +63,13 @@ implements Serializable {
 		super(NAME, person, true, RandomUtil.getRandomDouble(50D) + 10D, SkillType.MECHANICS);
 
 		if (!person.isFit()) {
-			if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
+			checkLocation();
         	return;
 		}
 		
       	settlement = CollectionUtils.findSettlement(person.getCoordinates());
         if (settlement == null) {
-        	if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
+        	checkLocation();
         	return;
         }
         	
@@ -84,27 +77,18 @@ implements Serializable {
 			entity = getMaintenanceMalfunctionable();
 			if (entity != null) {
 				if (!Maintenance.hasMaintenanceParts(settlement, entity)) {		
-		        	if (person.isOutside())
-		        		setPhase(WALK_BACK_INSIDE);
-		        	else
-		        		endTask();
+					checkLocation();
 				    return;
 				}
 			}
 			else {
-	        	if (person.isOutside())
-	        		setPhase(WALK_BACK_INSIDE);
-	        	else
-	        		endTask();
+				checkLocation();
 			    return;
 			}
 		}
 		catch (Exception e) {
 		    logger.log(Level.SEVERE,"MaintenanceEVA.constructor()",e);
-        	if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
+		    checkLocation();
 			return;
 		}
 
@@ -116,34 +100,6 @@ implements Serializable {
 
 		logger.fine(person, "Starting " + getDescription());
 	}
-
-	public MaintenanceEVA(Robot robot) {
-		super(NAME, robot, true, RandomUtil.getRandomDouble(50D) + 10D, SkillType.MECHANICS);
-
-//		settlement = robot.getSettlement();
-//
-//		try {
-//			entity = getMaintenanceMalfunctionable();
-//			if (entity == null) {
-//			    endTask();
-//			    return;
-//			}
-//		}
-//		catch (Exception e) {
-//		    logger.log(Level.SEVERE,"MaintenanceEVA.constructor()",e);
-//			endTask();
-//		}
-//
-//        // Determine location for maintenance.
-//        Point2D maintenanceLoc = determineMaintenanceLocation();
-//        setOutsideSiteLocation(maintenanceLoc.getX(), maintenanceLoc.getY());
-//
-//		// Initialize phase
-//		addPhase(MAINTAIN);
-//
-//		logger.finest(robot.getName() + " is starting " + getDescription());
-	}
-
 
     @Override
     protected TaskPhase getOutsideSitePhase() {
@@ -167,7 +123,7 @@ implements Serializable {
 
 
 	/**
-	 * Perform the maintenance phase of the task.
+	 * Performs the maintenance phase of the task.
 	 * 
 	 * @param time the time to perform this phase (in millisols)
 	 * @return the time remaining after performing this phase (in millisols)
@@ -175,35 +131,15 @@ implements Serializable {
 	 */
 	private double maintenancePhase(double time) {
 		
-        // Check for radiation exposure during the EVA operation.
-        if (isRadiationDetected(time)){
-			if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
-        }
-	
-        // Check if there is a reason to cut short and return.
-        if (shouldEndEVAOperation() || addTimeOnSite(time)){
-			if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
-        }
-        
-		if (!person.isFit()) {
-			if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
-		}
+		if (checkReadiness(time) > 0)
+			return time;
 		
 		MalfunctionManager manager = entity.getMalfunctionManager();
 		boolean malfunction = manager.hasMalfunction();
 		boolean finishedMaintenance = (manager.getEffectiveTimeSinceLastMaintenance() < 1000D);
 
-		if (person.isOutside() && (finishedMaintenance || malfunction)) {
-			setPhase(WALK_BACK_INSIDE);
+		if (finishedMaintenance || malfunction) {
+			checkLocation();
 			return 0;
 		}
 
@@ -258,11 +194,12 @@ implements Serializable {
 		super.checkForAccident(time);
 
 		int skill = worker.getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
-		checkForAccident(entity, time, 0.005D, skill, null);
+		checkForAccident(entity, time, 0.005D, skill, entity.getName());
 	}
 
 	/**
 	 * Gets a random malfunctionable to perform maintenance on.
+	 * 
 	 * @return malfunctionable or null.
 	 * @throws Exception if error finding malfunctionable.
 	 */
@@ -307,6 +244,7 @@ implements Serializable {
 
 	/**
 	 * Gets the probability weight for a malfunctionable.
+	 * 
 	 * @param malfunctionable the malfunctionable.
 	 * @return the probability weight.
 	 */

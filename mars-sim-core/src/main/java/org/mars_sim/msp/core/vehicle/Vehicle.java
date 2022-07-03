@@ -94,7 +94,7 @@ public abstract class Vehicle extends Unit
 	 * <p> Note : 1 MJ = 0.277778 kWh; 1 kWh = 3.6 MJ
 	 * <p> As comparison, 1 gallon (or 3.7854 L) of gasoline has 33.7 kWh of energy. Energy Density is 8.9 kWh/L
 	 */
-	public static final double METHANE_SPECIFIC_ENERGY = 15.416D; // [in kWh/kg]
+	public static final double METHANE_SPECIFIC_ENERGY = 15.416; // [in kWh/kg]
 
 	/**
 	 * The Solid Oxide Fuel Cell (SOFC) Conversion Efficiency for using methane is dimension-less.
@@ -102,9 +102,11 @@ public abstract class Vehicle extends Unit
 	 */
 	public static final double SOFC_CONVERSION_EFFICIENCY = .65;
 	
-	public static final double FUEL_KG_PER_KWH = SOFC_CONVERSION_EFFICIENCY / METHANE_SPECIFIC_ENERGY; 
+	public static final double KG_PER_KWH = 1.0 / SOFC_CONVERSION_EFFICIENCY / METHANE_SPECIFIC_ENERGY; 
 	
-//	/** Lifetime Wear in millisols **/
+	public static final double WH_PER_KG = 1000.0 * SOFC_CONVERSION_EFFICIENCY * METHANE_SPECIFIC_ENERGY;
+
+	//	/** Lifetime Wear in millisols **/
 //	private static final double WEAR_LIFETIME = 668_000; // 668 Sols (1 orbit)
 	/** Estimated Number of hours traveled each day. **/
 	private static final int ESTIMATED_NUM_HOURS = 16;
@@ -162,10 +164,14 @@ public abstract class Vehicle extends Unit
 	private double distanceMaint; //
 	/** The efficiency of the vehicle's drivetrain. [dimension-less] */
 	private double drivetrainEfficiency;
+	/** The conversion fuel-to-drive energy factor for a specific vehicle type [Wh/kg] */
+	private double conversionFuel2DriveEnergy;
 	/** The average power output of the vehicle. (kW). */
 	private double averagePower = 0;
 	/** The total number of hours the vehicle is capable of operating. (hr). */
 	private double totalHours;
+	/** The cumulative fuel usage of the vehicle [kg] */
+	private double fuelCumUsed;
 	/** The maximum fuel capacity of the vehicle [kg] */
 	private double fuelCapacity;
 	/** The total energy of the vehicle in full tank [kWh]. */
@@ -175,7 +181,7 @@ public abstract class Vehicle extends Unit
 	/** The base fuel economy of the vehicle [km/kg]. */
 	private double baseFuelEconomy;
 	/** The estimated average fuel economy of the vehicle for a trip [km/kg]. */
-	private double estimatedAveFuelEconomy;
+	private double estimatedFuelEconomy;
 	/** The instantaneous fuel economy of the vehicle [km/kg]. */
 	private double iFuelEconomy;
 	/** The base fuel consumption of the vehicle [Wh/km]. See https://ev-database.org/cheatsheet/energy-consumption-electric-car */
@@ -378,14 +384,20 @@ public abstract class Vehicle extends Unit
 		drivetrainEfficiency = spec.getDriveTrainEff();
 		// Gets the capacity [in kg] of vehicle's fuel tank
 		fuelCapacity = spec.getCargoCapacity(ResourceUtil.findAmountResourceName(getFuelType()));
-		// Gets the total energy [in kWh] on a full tank of methane
-		energyCapacity = METHANE_SPECIFIC_ENERGY * fuelCapacity * SOFC_CONVERSION_EFFICIENCY * drivetrainEfficiency;
+		// Gets the energy capacity [kWh] based on a full tank of methane
+		energyCapacity = fuelCapacity / KG_PER_KWH;
+		// Gets the conversion factor for a specific vehicle
+		conversionFuel2DriveEnergy = KG_PER_KWH * drivetrainEfficiency;
+		// Define percent of other energy usage (other than for drivetrain)
+		double otherEnergyUsage = 0;
 		// Assume the peak power is 4x the average power.
 		double peakPower = averagePower * 4.0;
 		
 		if (vehicleType == VehicleType.DELIVERY_DRONE) {
+			// Hard-code percent energy usage for this vehicle.
+			otherEnergyUsage = 5.0;
 			// Gets the estimated energy available for drivetrain [in kWh]
-			drivetrainEnergy = energyCapacity * (1 - 0.05);
+			drivetrainEnergy = energyCapacity * (1.0 - otherEnergyUsage / 100.0) * drivetrainEfficiency;
 			// Gets the maximum total # of hours the vehicle is capable of operating
 			totalHours = drivetrainEnergy / averagePower;
 
@@ -403,12 +415,13 @@ public abstract class Vehicle extends Unit
 		}
 		
 		else if (vehicleType == VehicleType.LUV) {
+			// Hard-code percent energy usage for this vehicle.
+			otherEnergyUsage = 30.0;
 			// Gets the estimated energy available for drivetrain [in kWh]
-			drivetrainEnergy = energyCapacity * (1 - 0.8);
+			drivetrainEnergy = energyCapacity * (1.0 - otherEnergyUsage / 100.0) * drivetrainEfficiency;
 			// Gets the maximum total # of hours the vehicle is capable of operating
 			totalHours = drivetrainEnergy / averagePower;
 			
-
 			// Gets the base range [in km] of the vehicle
 			baseRange = baseSpeed * totalHours;
 			// Gets the base fuel economy [in km/kg] of this vehicle
@@ -423,12 +436,13 @@ public abstract class Vehicle extends Unit
 		}
 		
 		else if (vehicleType == VehicleType.EXPLORER_ROVER) {
-			// Gets theestimated energy available for drivetrain [in kWh]
-			drivetrainEnergy = energyCapacity * (1 - 0.1);
+			// Hard-code percent energy usage for this vehicle.
+			otherEnergyUsage = 15.0;
+			// Gets the estimated energy available for drivetrain [in kWh]
+			drivetrainEnergy = energyCapacity * (1.0 - otherEnergyUsage / 100.0) * drivetrainEfficiency;
 			// Gets the maximum total # of hours the vehicle is capable of operating
 			totalHours = drivetrainEnergy / averagePower;
 			
-
 			// Gets the base range [in km] of the vehicle
 			baseRange = baseSpeed * totalHours;
 			// Gets the base fuel economy [in km/kg] of this vehicle
@@ -439,17 +453,18 @@ public abstract class Vehicle extends Unit
 			// Accounts for the occupant consumables
 			beginningMass = getBaseMass() + estimatedTotalCrewWeight + 4 * 50;
 			// Accounts for the rock sample, ice or regolith collected
-			endMass = getBaseMass() + estimatedTotalCrewWeight + 1000;	
+			endMass = getBaseMass() + estimatedTotalCrewWeight + 800;	
 			
 		}
 		
 		else if (vehicleType == VehicleType.CARGO_ROVER) {
-			// Gets estimated energy available for drivetrain [in kWh]
-			drivetrainEnergy = energyCapacity * (1 - 0.05);			
+			// Hard-code percent energy usage for this vehicle.
+			otherEnergyUsage = 10.0;
+			// Gets the estimated energy available for drivetrain [in kWh]
+			drivetrainEnergy = energyCapacity * (1.0 - otherEnergyUsage / 100.0) * drivetrainEfficiency;		
 			// Gets the maximum total # of hours the vehicle is capable of operating
 			totalHours = drivetrainEnergy / averagePower;
 			
-
 			// Gets the base range [in km] of the vehicle
 			baseRange = baseSpeed * totalHours;
 			// Gets the base fuel economy [in km/kg] of this vehicle
@@ -464,8 +479,10 @@ public abstract class Vehicle extends Unit
 		}
 		
 		else if (vehicleType == VehicleType.TRANSPORT_ROVER) {
-			// Gets estimated energy available for drivetrain [in kWh]
-			drivetrainEnergy = energyCapacity * (1 - 0.15);
+			// Hard-code percent energy usage for this vehicle.
+			otherEnergyUsage = 20.0;
+			// Gets the estimated energy available for drivetrain [in kWh]
+			drivetrainEnergy = energyCapacity * (1.0 - otherEnergyUsage / 100.0) * drivetrainEfficiency;
 			// Gets the maximum total # of hours the vehicle is capable of operating
 			totalHours = drivetrainEnergy / averagePower;
 			
@@ -483,7 +500,7 @@ public abstract class Vehicle extends Unit
 		}
 
 		// Gets the estimated average fuel economy for a trip [km/kg]
-		estimatedAveFuelEconomy = baseFuelEconomy * beginningMass / endMass * .75;
+		estimatedFuelEconomy = baseFuelEconomy * beginningMass / endMass * .75;
 		// Gets the base acceleration [m/s2]
 		baseAccel = peakPower / beginningMass / baseSpeed * 1000 * 3.6;
 
@@ -500,7 +517,7 @@ public abstract class Vehicle extends Unit
     		 	"totalHours: " + Math.round(totalHours * 100.0)/100.0 + " hr   "
     		 	+ "baseRange: " + Math.round(baseRange * 100.0)/100.0 + " km   "
     		 	+ "baseFuelEconomy: " + Math.round(baseFuelEconomy * 100.0)/100.0 + KM_KG
-    		 	+ "estimatedAveFuelEconomy: " + Math.round(estimatedAveFuelEconomy * 100.0)/100.0 + KM_KG
+    		 	+ "estimatedAveFuelEconomy: " + Math.round(estimatedFuelEconomy * 100.0)/100.0 + KM_KG
     	    	+ "initial FuelEconomy: " + Math.round(getInitialFuelEconomy() * 100.0)/100.0 + KM_KG     		 	
 	 			+ "baseFuelConsumption: " + Math.round(baseFuelConsumption * 100.0)/100.0 + " Wh/km   ");
     		 	
@@ -1045,16 +1062,6 @@ public abstract class Vehicle extends Unit
 		return baseSpeed;
 	}
 
-//	/**
-//	 * Sets the base speed of vehicle
-//	 *
-//	 * @param speed the vehicle's base speed (in km/hr)
-//	 */
-//	public void setBaseSpeed(double speed) {
-//		if (speed < 0D)
-//			throw new IllegalArgumentException("Vehicle base speed cannot be less than 0 km/hr");
-//		baseSpeed = speed;
-//	}
 
 	/**
 	 * Gets the current fuel range of the vehicle.
@@ -1071,18 +1078,18 @@ public abstract class Vehicle extends Unit
 
         if (mission == null) {
         	// Before the mission is created, the range would be based on vehicle's capacity
-        	range = estimatedAveFuelEconomy * fuelCapacity * getBaseMass() / getMass();// * fuel_range_error_margin
+        	range = estimatedFuelEconomy * fuelCapacity * getBaseMass() / getMass();// * fuel_range_error_margin
         }
         else if (VehicleMission.REVIEWING.equals(mission.getPhase())
         	|| VehicleMission.EMBARKING.equals(mission.getPhase())) {
         	// Before loading/embarking phase, the amountOfFuel to be loaded is still zero.
         	// So the range would be based on vehicle's capacity
-        	range = estimatedAveFuelEconomy * fuelCapacity * getBaseMass() / getMass();
+        	range = estimatedFuelEconomy * fuelCapacity * getBaseMass() / getMass();
         }
         else {
             double amountOfFuel = getAmountResourceStored(getFuelType());
         	// During the journey, the range would be based on the amount of fuel in the vehicle
-    		range = estimatedAveFuelEconomy * amountOfFuel * getBaseMass() / getMass();
+    		range = estimatedFuelEconomy * amountOfFuel * getBaseMass() / getMass();
         }
 
 		range = Math.min(radius, (int)range);
@@ -1109,7 +1116,15 @@ public abstract class Vehicle extends Unit
 		return fuelCapacity;
 	}
 
-
+	/**
+	 * Gets the cumulative fuel usage of the vehicle [kg].
+	 *
+	 * @return
+	 */
+	public double getFuelCumulativeUsage() {
+		return fuelCumUsed;
+	}
+	
 	/**
 	 * Gets the energy available at the full tank [kWh].
 	 *
@@ -1128,6 +1143,37 @@ public abstract class Vehicle extends Unit
 		return drivetrainEnergy;
 	}
 	
+	/**
+	 * Gets the fuel to energy conversion factor.
+	 * 
+	 * @return
+	 */
+	public double getFuelConv() {
+		return conversionFuel2DriveEnergy;
+	}
+	
+	/**
+	 * Gets the cumulative fuel economy [km/kg].
+	 * 
+	 * @return
+	 */
+	public double getCumFuelEconomy() {
+		if (fuelCumUsed == 0.0d)
+			return 0;
+		return odometerMileage / fuelCumUsed;
+	}
+	
+	/**
+	 * Gets the cumulative fuel consumption [Wh/km].
+	 * 
+	 * @return
+	 */
+	public double getCumFuelConsumption() {
+		if (odometerMileage == 0.0d)
+			return 0;
+		return WH_PER_KG * fuelCumUsed / odometerMileage;
+	}
+
 	/**
 	 * Gets the base fuel economy of the vehicle [km/kg].
 	 * 
@@ -1189,18 +1235,18 @@ public abstract class Vehicle extends Unit
 	 * @return
 	 */
 	public double getInitialFuelEconomy() {
-		return estimatedAveFuelEconomy * (startMass + beginningMass) / 2.0 / getMass();
+		return estimatedFuelEconomy * (startMass + beginningMass) / 2.0 / getMass();
 	}
 
 	/**
-	 * Records the beginning weight of the vehicle and its payload.
+	 * Records the beginning weight of the vehicle and its payload [kg].
 	 */
 	public void recordStartMass() {
 		startMass = getMass();
 	}
 
 	/**
-	 * Records the beginning weight of the vehicle and its payload.
+	 * Records the beginning weight of the vehicle and its payload [kg].
 	 */
 	public double getStartMass() {
 		return startMass;
@@ -1212,8 +1258,8 @@ public abstract class Vehicle extends Unit
 	 *
 	 * @return
 	 */
-	public double getEstimatedAveFuelEconomy() {
-		return estimatedAveFuelEconomy;
+	public double getEstimatedFuelEconomy() {
+		return estimatedFuelEconomy;
 	}
 
 	/**
@@ -1226,37 +1272,40 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
-	 * Returns total distance traveled by vehicle (in km.)
+	 * Returns total distance traveled by vehicle [km].
 	 *
-	 * @return the total distanced traveled by the vehicle (in km)
+	 * @return the total distanced traveled by the vehicle [km]
 	 */
 	public double getOdometerMileage() {
 		return odometerMileage;
 	}
 
 	/**
-	 * Adds a distance ]in km] to the vehicle's odometer (total distance traveled)
+	 * Adds the distance traveled to vehicle's odometer (total distance traveled)
+	 * and record the fuel used.
 	 *
-	 * @param distance distance to add to total distance traveled (in km)
+	 * @param distance the distance traveled traveled [km]
+	 * @param fuelUsed the fuel used [kg]
 	 */
-	public void addOdometerMileage(double distance) {
+	public void addOdometerMileage(double distance, double fuelUsed) {
 		odometerMileage += distance;
+		fuelCumUsed += fuelUsed;
 	}
 
 	/**
-	 * Returns distance traveled by vehicle since last maintenance (in km.)
+	 * Returns distance traveled by vehicle since last maintenance [km].
 	 *
-	 * @return distance traveled by vehicle since last maintenance (in km)
+	 * @return distance traveled by vehicle since last maintenance [km]
 	 */
 	public double getDistanceLastMaintenance() {
 		return distanceMaint;
 	}
 
 	/**
-	 * Adds a distance (in km.) to the vehicle's distance since last maintenance.
+	 * Adds a distance to the vehicle's distance since last maintenance.
 	 * Set distanceMark to true if vehicle is due for maintenance.
 	 *
-	 * @param distance distance to add (in km)
+	 * @param distance distance to add ([km]
 	 */
 	public void addDistanceLastMaintenance(double distance) {
 		distanceMaint += distance;
@@ -1264,13 +1313,13 @@ public abstract class Vehicle extends Unit
 			distanceMark = true;
 	}
 
-	/** Sets vehicle's distance since last maintenance to zero */
+	/** Sets vehicle's distance since last maintenance to zero. */
 	public void clearDistanceLastMaintenance() {
 		distanceMaint = 0;
 	}
 
 	/**
-	 * Returns direction of vehicle (0 = north, clockwise in radians)
+	 * Returns direction of vehicle (0 = north, clockwise in radians).
 	 *
 	 * @return the direction the vehicle is traveling (in radians)
 	 */
@@ -1338,9 +1387,8 @@ public abstract class Vehicle extends Unit
 			return (Settlement) c;
 
 		// If this unit is an LUV and it is within a rover
-		if (c.getUnitType() == UnitType.VEHICLE) {
+		if (c.getUnitType() == UnitType.VEHICLE)
 			return ((Vehicle)c).getSettlement();
-		}
 
 		return null;
 	}

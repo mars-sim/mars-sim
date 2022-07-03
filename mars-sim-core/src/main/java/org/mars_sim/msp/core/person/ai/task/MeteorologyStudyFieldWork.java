@@ -79,10 +79,7 @@ public class MeteorologyStudyFieldWork extends ScientificStudyFieldWork implemen
 		if (totalCollected < AVERAGE_ROCKS_COLLECTED_SITE)
 			collectRocks(time);
 		else {
-			if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
+			checkLocation();
 			completed = true;
 		}
 		

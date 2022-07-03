@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Coordinates.java
- * @date 2021-12-06
+ * @date 2022-07-01
  * @author Scott Davis
  */
 
@@ -97,7 +97,7 @@ public class Coordinates implements Serializable {
 	 * abbreviations according to current locale, so for english NESW, for german
 	 * NOSW, french NESO, etc.
 	 *
-	 * @param latitude  String representing latitude value. ex. "25.344 N"
+	 * @param latitude  String representing latitude value. ex. "25.3443 N"
 	 * @param longitude String representing longitude value. ex. "63.5532 W"
 	 */
 	public Coordinates(String latitude, String longitude) {
@@ -153,26 +153,25 @@ public class Coordinates implements Serializable {
 	 * @param otherCoords the destination location.
 	 * @return the arc angle (radians)
 	 */
-//	public double getAngleSLC(Coordinates otherCoords) {
-//
-//		double phi1 = -1D * (phi - PI_HALF);
-//		double phi2 = -1D * (otherCoords.phi - PI_HALF);
-//		double diffTheta = Math.abs(theta - otherCoords.theta);
-//
-//		double temp1 = Math.cos(phi1) * Math.cos(phi2);
-//		double temp2 = Math.sin(phi1) * Math.sin(phi2);
-//		double temp3 = Math.cos(diffTheta);
-//		double temp4 = temp2 + (temp1 * temp3);
-//
-//		// Make sure temp4 is in valid -1 to 1 range.
-//		if (temp4 > 1D)
-//			temp4 = 1D;
-//		else if (temp4 < -1D)
-//			temp4 = -1D;
-//
-//		double result = Math.acos(temp4);
-//		return result;
-//	}
+	public double getAngleSLC(Coordinates otherCoords) {
+
+		double phi1 = -1D * (phi - PI_HALF);
+		double phi2 = -1D * (otherCoords.phi - PI_HALF);
+		double diffTheta = Math.abs(theta - otherCoords.theta);
+
+		double temp1 = Math.cos(phi1) * Math.cos(phi2);
+		double temp2 = Math.sin(phi1) * Math.sin(phi2);
+		double temp3 = Math.cos(diffTheta);
+		double temp4 = temp2 + (temp1 * temp3);
+
+		// Make sure temp4 is in valid -1 to 1 range.
+		if (temp4 > 1D)
+			temp4 = 1D;
+		else if (temp4 < -1D)
+			temp4 = -1D;
+
+		return Math.acos(temp4);
+	}
 
 	/**
 	 * Calculates the arc angle between this location and a given location using the
@@ -191,8 +190,7 @@ public class Coordinates implements Serializable {
 		double temp1 = Math.pow(Math.sin(diffPhi / 2D), 2D);
 		double temp2 = Math.cos(phi1) * Math.cos(phi2) * Math.pow(Math.sin(diffTheta / 2D), 2D);
 		double temp3 = Math.sqrt(temp1 + temp2);
-		double result = 2D * Math.asin(temp3);
-		return result;
+		return 2D * Math.asin(temp3);
 	}
 
 	/**
@@ -202,29 +200,29 @@ public class Coordinates implements Serializable {
 	 * @param otherCoords the destination location.
 	 * @return the arc angle (radians).
 	 */
-//	public double getAngleVincenty(Coordinates otherCoords) {
-//
-//		double phi1 = -1D * (phi - PI_HALF);
-//		double phi2 = -1D * (otherCoords.phi - PI_HALF);
-//		double diffTheta = Math.abs(theta - otherCoords.theta);
-//
-//		double temp1 = Math.pow(Math.cos(phi2) * Math.sin(diffTheta), 2D);
-//		double temp2 = Math.cos(phi1) * Math.sin(phi2);
-//		double temp3 = Math.sin(phi1) * Math.cos(phi2) * Math.cos(diffTheta);
-//		double temp4 = Math.pow(temp2 - temp3, 2D);
-//		double temp5 = Math.sqrt(temp1 + temp4);
-//
-//		double temp6 = Math.sin(phi1) * Math.sin(phi2);
-//		double temp7 = Math.cos(phi1) * Math.cos(phi2) * Math.cos(diffTheta);
-//		double temp8 = temp6 + temp7;
-//
-//		double result = Math.atan2(temp5, temp8);
-//		return result;
-//	}
+	public double getAngleVincenty(Coordinates otherCoords) {
+
+		double phi1 = -1D * (phi - PI_HALF);
+		double phi2 = -1D * (otherCoords.phi - PI_HALF);
+		double diffTheta = Math.abs(theta - otherCoords.theta);
+
+		double temp1 = Math.pow(Math.cos(phi2) * Math.sin(diffTheta), 2D);
+		double temp2 = Math.cos(phi1) * Math.sin(phi2);
+		double temp3 = Math.sin(phi1) * Math.cos(phi2) * Math.cos(diffTheta);
+		double temp4 = Math.pow(temp2 - temp3, 2D);
+		double temp5 = Math.sqrt(temp1 + temp4);
+
+		double temp6 = Math.sin(phi1) * Math.sin(phi2);
+		double temp7 = Math.cos(phi1) * Math.cos(phi2) * Math.cos(diffTheta);
+		double temp8 = temp6 + temp7;
+
+		double result = Math.atan2(temp5, temp8);
+		return result;
+	}
 
 	/**
 	 * Returns the distance in kilometers between this location and the given
-	 * coordinates
+	 * coordinates.
 	 *
 	 * @param otherCoords remote Coordinates object
 	 * @return distance (in km) to the remote Coordinates object
@@ -292,7 +290,7 @@ public class Coordinates implements Serializable {
 
 	/**
 	 * Gets a common formatted string to represent longitude for this location. ex.
-	 * "35.6 E"
+	 * "35.60 E"
 	 *
 	 * @return formatted longitude string for this Coordinates object
 	 */
@@ -304,7 +302,7 @@ public class Coordinates implements Serializable {
 	}
 
 	/**
-	 * Gets a double to represent longitude for this location. ex. "-35.6"
+	 * Gets a double to represent longitude for this location. e.g. "-35.60"
 	 *
 	 * @return double longitude
 	 */
@@ -322,8 +320,8 @@ public class Coordinates implements Serializable {
 	}
 
 	/**
-	 * Gets a common formatted string to represent longitude for this location. ex.
-	 * "35.6 E"
+	 * Gets a common formatted string to represent longitude for this location. 
+	 * e.g. "35.60 E"
 	 *
 	 * @param theta the radian theta value for the location.
 	 * @return formatted longitude string for this Coordinates object
@@ -346,7 +344,7 @@ public class Coordinates implements Serializable {
 
 	/**
 	 * Gets a common formatted string to represent latitude for this location. ex.
-	 * "35.6 S"
+	 * "35.60 S"
 	 *
 	 * @return formatted latitude string for this Coordinates object
 	 */
@@ -379,7 +377,7 @@ public class Coordinates implements Serializable {
 
 	/**
 	 * Gets a common formatted string to represent latitude for this location. ex.
-	 * "35.6 S"
+	 * "35.60 S"
 	 *
 	 * @param phi the radian phi value for the location.
 	 * @return formatted latitude string for this Coordinates object
@@ -396,7 +394,6 @@ public class Coordinates implements Serializable {
 			direction = SOUTH_SHORT; //$NON-NLS-1$
 		}
 
-		// Note : direction.decimalFormat = 0.0
 		// Add a whitespace in between the degree and its directional sign
 		return formatter.format(degrees) + " " + direction; //$NON-NLS-1$
 	}
@@ -751,6 +748,7 @@ public class Coordinates implements Serializable {
 			String dir = s.substring(s.length() - 1, s.length());
 			Character c = dir.charAt(0);
 			if (Character.isDigit(c)) {
+				logger.warning(2_000, "An input latitude [" + s + "] is missing the direction sign.");
 				return LAT_BAD_FORMAT; //$NON-NLS-1$
 			}
 
@@ -803,7 +801,7 @@ public class Coordinates implements Serializable {
 			String dir = s.substring(s.length() - 1, s.length());
 			Character c = dir.charAt(0);
 			if (Character.isDigit(c)) {
-				logger.warning(2_000, "The longitude [" + s + "] is missing the direction sign.");
+				logger.warning(2_000, "An input longitude [" + s + "] is missing the direction sign.");
 				return LON_BAD_FORMAT; //$NON-NLS-1$
 			}
 

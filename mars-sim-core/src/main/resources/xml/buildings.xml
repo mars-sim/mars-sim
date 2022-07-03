@@ -460,6 +460,31 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="carbon dioxide" rate="40.0" ambient="false" />
 				</process>
 
+				<!-- Synthesis gas (or Syngas) is used to produce methanol as in the following reaction.
+					https://www.essentialchemicalindustry.org/chemicals/methanol.html 
+				-->
+				<process name="Syngas Plant" power-required=".1" default="off">
+					<input resource="carbon dioxide" rate="44" ambient="true" />
+					<input resource="hydrogen" rate="6.0" ambient="false" />
+					<output resource="water" rate="18.0" ambient="false" />
+					<output resource="methanol" rate="32.0" ambient="false" />
+				</process>
+
+				<!-- Future: allow scientific studies to "unlock" future tech 
+				     such as using electric field.
+				     
+				     For instance, CO2 methanation was conducted by imposing an electric field. 
+				     Screening tests revealed that 5 wt %Ru/CeO2 catalyst is a suitable catalyst
+				     for CO2 methanation with the electric field. 
+				     
+				      The electric field promoted the reaction over Ru/CeO2 catalyst even at low 
+				      temperatures such as 340 K via a non-conventional catalytic mechanism.
+				     
+				     1. Low-temperature Conversion of Carbon Dioxide to Methane in an Electric Field
+				        https://www.journal.csj.jp/doi/10.1246/cl.190930
+ 
+				-->
+
 				<!-- Activity spot for toggling resource process on and off. -->
 				<activity>
 					<activity-spot xloc="-0.9" yloc="-2.49" />
@@ -479,7 +504,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!-- This building is capable of storing the following resources. -->
 				<!-- stock-capacity: the building's default capacity (kg) for
 				     all the resources. -->
-			<storage stock-capacity="10000">
+			<storage stock-capacity="50000">
 
 				<!-- The building's storage capacity for oxygen. -->
 				<!-- resource: the specific resources that the building may
@@ -671,22 +696,40 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</process>
 
 
-				<!-- Also, For Solid Waste Management
-
+				<!-- For Waste Management
 				https://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/20160003882.pdf
 				http://www.nasa.gov/audience/foreducators/k-4/features/F_Recycling_for_Moon.html
-
-				We assume 10 kg of waste will turn into 8 kg of by-products per sol.
 				-->
-				<process name= "Solid Waste Management" power-required=".3" default="off">
-					<input resource="toxic waste" rate="4" ambient="false" />
-					<input resource="solid waste" rate="6" ambient="false" />
-					<output resource="fertilizer" rate="2" ambient="false" />
-					<output resource="carbon dioxide" rate="2" ambient="false" />
-					<output resource="water" rate="2" ambient="false" />
+				<process name= "Solid Waste Management" power-required=".2" default="off">
+					<input resource="solid waste" rate="10" ambient="false" />
+					<output resource="fertilizer" rate="1" ambient="false" />
+					<output resource="compost" rate="7" ambient="false" />
 					<output resource="carbon" rate="2" ambient="false" />
 				</process>				
-				
+
+				<process name= "Food Waste Management" power-required=".2" default="off">
+					<input resource="food waste" rate="10" ambient="false" />
+					<output resource="fertilizer" rate="1" ambient="false" />					
+					<output resource="compost" rate="7" ambient="false" />
+					<output resource="carbon" rate="2" ambient="false" />					
+				</process>		
+
+				<process name= "Hazard Waste Incineration" power-required=".5" default="off">
+					<input resource="toxic waste" rate="10" ambient="false" />
+					<output resource="carbon" rate="10" ambient="false" />					
+				</process>		
+	
+				<process name= "Electronic Waste Disposal" power-required=".5" default="off">
+					<input resource="electronic waste" rate="10" ambient="false" />
+					<output resource="carbon" rate="10" ambient="false" />					
+				</process>
+
+				<process name= "Soil Generation" power-required=".1" default="off">
+					<input resource="crop waste" rate="5" ambient="false" />
+					<input resource="compost" rate="5" ambient="false" />
+					<output resource="soil" rate="10" ambient="false" />					
+				</process>
+																				
 				<!-- TODO: chemist can isolate these bacteria and grow them in the lab
 
 			 	Note 1: https://microbewiki.kenyon.edu/index.php/Nitrospira.
@@ -1121,9 +1164,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</process>
 			</resource-processing>
 
-			<storage stock-capacity="80000">
+			<storage stock-capacity="100000">
 				<resource-storage resource="hydrogen" capacity="20000.0" />
 				<resource-storage resource="methane" capacity="20000.0" />
+				<resource-storage resource="methanol" capacity="20000.0" />
 				<resource-storage resource="oxygen" capacity="20000.0" />
 				<resource-storage resource="water" capacity="19000.0" />
 				<resource-storage resource="carbon dioxide" capacity="1000.0" />
@@ -1137,6 +1181,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<!-- Produced on Mars -->
 				<resource-initial resource="oxygen" amount="16080.0" />
 				<resource-initial resource="methane" amount="8400.0" />
+				<resource-initial resource="methanol" amount="8400.0" />
 				<resource-initial resource="hydrogen" amount="6300.0" />
 				<resource-initial resource="water" amount="18900.0" />
 
@@ -1180,7 +1225,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				analogue regolith and analyzed by ion chromatography.
 				The MARE contained (mg/L) Nitrogen-containing species NO3- has 773
 				and NO2- has 6.9 -->
-				<process name="Convert Regolith to Sand" power-required="2.0" default="off">
+				<process name="Convert Regolith to Ores and Sand" power-required="0.5" default="off">
 					<input resource="regolith" rate="100.0" ambient="false" />
 
 					<output resource="basaltic" rate="5.0" ambient="false" />
@@ -1225,11 +1270,11 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="glass" rate="50.0" ambient="false" />
 				</process>
 -->
-				<process name="Make Cement" power-required="0.5" default="off">
+				<process name="Make Cement" power-required="1.0" default="off">
 					<input resource="regolith" rate="80.0" ambient="false" />
-					<input resource="gypsum" rate="16.0" ambient="false" />
-					<input resource="aluminum oxide" rate="2.0" ambient="false" />
-					<input resource="iron oxide" rate="2.0" ambient="false" />
+					<input resource="gypsum" rate="10.0" ambient="false" />
+					<input resource="aluminum oxide" rate="5.0" ambient="false" />
+					<input resource="iron oxide" rate="5.0" ambient="false" />
 
 					<output resource="cement" rate="100.0" ambient="false" />
 				</process>
@@ -1268,15 +1313,18 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</process>
 
 				<!-- Serpentinization : olivine (Mg,Fe)2 + SiO4 produces H2 and Mg(OH)2, which in terms
-					 produce water
+					 produce water 
+					 
 					 Decarbonation : MgCO3 at 670 C gives CO2 and MgO. Use Mg silica hydrate as binder
 
 					 63 kg of [(Mg Fe)2 SiO4] + 9 kg of H2O -> 1 kg of H2 + 71 kg * [2 MgO + 2 FeO + SiO2]
 
 					 SiO2 - amorphous silica
 					 MgO:Si paste - Mg Silicate Hydrate (MSH) binder
-					 1. https://agupubs.onlinelibrary.wiley.com/doi/pdf/10.1029/2017EA000353 -->
-				<process name="Make MgO concrete" power-required="1.0" default="off">
+					 
+					 1. Constructing Mars: Concrete and Energy Production from Serpentinization Products 
+					    https://agupubs.onlinelibrary.wiley.com/doi/pdf/10.1029/2017EA000353 -->
+				<process name="Make Magnesium-based Concrete" power-required="1.0" default="off">
 					<input resource="olivine" rate="63.0" ambient="false" />
 					<input resource="water" rate="9.0" ambient="false" />
 
@@ -1286,9 +1334,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			</resource-processing>
 
-			<storage stock-capacity="80000">
+			<storage stock-capacity="90000">
 				<resource-storage resource="hydrogen" capacity="10000.0" />
 				<resource-storage resource="methane" capacity="10000.0" />
+				<resource-storage resource="methanol" capacity="10000.0" />
 				<resource-storage resource="oxygen" capacity="10000.0" />
 				<resource-storage resource="water" capacity="10000.0" />
 
@@ -1393,8 +1442,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				
 			</resource-processing>
 
-			<storage stock-capacity="10000">
+			<storage stock-capacity="100000">
 				<resource-storage resource="methane" capacity="10000.0" />
+				<resource-storage resource="methanol" capacity="10000.0" />				
 				<resource-storage resource="water" capacity="10000.0" />
 				<resource-storage resource="hydrogen" capacity="10000.0" />
 				<resource-storage resource="oxygen" capacity="10000.0" />
@@ -1438,16 +1488,36 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 				<!-- The Solid Waste Management below is 4 times more powerful
 				     than the one found in Lander Hab or Outpost Hub  -->
-				<process name= "Solid Waste Management" power-required="1" default="off"
-						 toggle-duration="30" toggle-periodicity="500">
-					<input resource="toxic waste" rate="16" ambient="false" />
-					<input resource="solid waste" rate="24" ambient="false" />
-					<output resource="fertilizer" rate="8" ambient="false" />
-					<output resource="carbon dioxide" rate="8" ambient="false" />
-					<output resource="water" rate="8" ambient="false" />
+				<process name= "Solid Waste Management" power-required=".6" default="off">
+					<input resource="solid waste" rate="40" ambient="false" />
+					<output resource="fertilizer" rate="4" ambient="false" />
+					<output resource="compost" rate="28" ambient="false" />
 					<output resource="carbon" rate="8" ambient="false" />
-				</process>
+				</process>				
 
+				<process name= "Food Waste Management" power-required=".6" default="off">
+					<input resource="food waste" rate="40" ambient="false" />
+					<output resource="fertilizer" rate="4" ambient="false" />					
+					<output resource="compost" rate="28" ambient="false" />
+					<output resource="carbon" rate="8" ambient="false" />					
+				</process>		
+
+				<process name= "Hazard Waste Incineration" power-required="1.5" default="off">
+					<input resource="toxic waste" rate="40" ambient="false" />
+					<output resource="carbon" rate="40" ambient="false" />					
+				</process>		
+	
+				<process name= "Electronic Waste Disposal" power-required="1.5" default="off">
+					<input resource="electronic waste" rate="40" ambient="false" />
+					<output resource="carbon" rate="40" ambient="false" />					
+				</process>
+				
+				<process name= "Soil Generation" power-required=".3" default="off">
+					<input resource="crop waste" rate="20" ambient="false" />
+					<input resource="compost" rate="20" ambient="false" />
+					<output resource="soil" rate="40" ambient="false" />					
+				</process>
+								
 			</waste-processing>
 						
 		</functions>
@@ -1986,6 +2056,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</robotic-station>
 			<storage stock-capacity="10000">
 				<resource-storage resource="methane" capacity="2000.0" />
+				<resource-storage resource="methanol" capacity="2000.0" />				
 			</storage>
 			<thermal-generation>
 				<heat-source type="Solar Heating" capacity="10.0" />
@@ -2474,6 +2545,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-storage resource="grey water" capacity="2000.0" />
 				<resource-storage resource="carbon dioxide" capacity="2000.0" />
 				<resource-storage resource="methane" capacity="2000.0" />
+				<resource-storage resource="methanol" capacity="2000.0" />
 			</storage>
 			<thermal-generation>
 				<heat-source type="Solar Heating" capacity="5.0" />
@@ -2879,6 +2951,21 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="oxygen" rate="64" ambient="false" />
 				</process>
 
+				<process name="Carbon Dioxide Pump" power-required=".4" default="off">
+					<input resource="carbon dioxide" rate="40.0" ambient="true" />
+					<output resource="carbon dioxide" rate="40.0" ambient="false" />
+				</process>
+				
+				<!-- Synthesis gas (or Syngas) is used to produce methanol as in the following reaction.
+					https://www.essentialchemicalindustry.org/chemicals/methanol.html 
+				-->
+				<process name="Syngas Plant" power-required=".1" default="off">
+					<input resource="carbon dioxide" rate="44" ambient="true" />
+					<input resource="hydrogen" rate="6.0" ambient="false" />
+					<output resource="water" rate="18.0" ambient="false" />
+					<output resource="methanol" rate="32.0" ambient="false" />
+				</process>
+				
 				<activity>
 					<activity-spot xloc="-2.6" yloc="-2.13" />
 				</activity>
@@ -2916,7 +3003,6 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-storage resource="toilet tissue" capacity="100.0" />
 				<resource-storage resource="paper" capacity="100.0" />
 				<resource-storage resource="napkin" capacity="100.0" />
-
 
 				<!-- life support: 5000 kg  -->
 				<resource-initial resource="water" amount="500.0" />
@@ -2994,16 +3080,36 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="phosphorus" rate=".5" ambient="false" />
 				</process>
 
-				<process name= "Solid Waste Management" power-required=".3" default="off"
-							toggle-duration="30" toggle-periodicity="500">
-					<input resource="toxic waste" rate="4" ambient="false" />
-					<input resource="solid waste" rate="6" ambient="false" />
-					<output resource="fertilizer" rate="2" ambient="false" />
-					<output resource="carbon dioxide" rate="2" ambient="false" />
-					<output resource="water" rate="2" ambient="false" />
+				<process name= "Solid Waste Management" power-required=".2" default="off">
+					<input resource="solid waste" rate="10" ambient="false" />
+					<output resource="fertilizer" rate="1" ambient="false" />
+					<output resource="compost" rate="7" ambient="false" />
 					<output resource="carbon" rate="2" ambient="false" />
+				</process>				
+
+				<process name= "Food Waste Management" power-required=".2" default="off">
+					<input resource="food waste" rate="10" ambient="false" />
+					<output resource="fertilizer" rate="1" ambient="false" />					
+					<output resource="compost" rate="7" ambient="false" />
+					<output resource="carbon" rate="2" ambient="false" />					
+				</process>		
+
+				<process name= "Hazard Waste Incineration" power-required=".5" default="off">
+					<input resource="toxic waste" rate="10" ambient="false" />
+					<output resource="carbon" rate="10" ambient="false" />					
+				</process>		
+	
+				<process name= "Electronic Waste Disposal" power-required=".5" default="off">
+					<input resource="electronic waste" rate="10" ambient="false" />
+					<output resource="carbon" rate="10" ambient="false" />					
 				</process>
 
+				<process name= "Soil Generation" power-required=".1" default="off">
+					<input resource="crop waste" rate="5" ambient="false" />
+					<input resource="compost" rate="5" ambient="false" />
+					<output resource="soil" rate="10" ambient="false" />					
+				</process>
+				
 			</waste-processing>			
 			
 		</functions>
@@ -3122,6 +3228,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</robotic-station>
 			<storage stock-capacity="10000">
 				<resource-storage resource="methane" capacity="2000.0" />
+				<resource-storage resource="methanol" capacity="2000.0" />
 			</storage>
 			<thermal-generation>
 				<heat-source type="Solar Heating" capacity="5.0" />

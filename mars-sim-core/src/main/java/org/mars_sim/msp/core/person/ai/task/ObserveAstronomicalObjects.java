@@ -70,12 +70,6 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 			  100D + RandomUtil.getRandomDouble(100D));
 		setExperienceAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
 		
-//		if (person.getPhysicalCondition().computeFitnessLevel() < 2) {
-//			logger.log(person, Level.WARNING, 0, 
-//					"Ended observing astronomical objects. Not feeling well.");
-//			endTask();
-//		}
-		
 		// Determine study.
 		study = determineStudy();
 		if (study != null) {

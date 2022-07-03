@@ -79,6 +79,8 @@ class PartGood extends Good {
     private static final double INITIAL_PART_DEMAND = 0;
 	private static final double INITIAL_PART_SUPPLY = 0;
 
+	private static final double MANUFACTURING_INPUT_FACTOR = 2D;
+
     public PartGood(Part p) {
         super(p.getName(), p.getID());
     }
@@ -516,9 +518,65 @@ class PartGood extends Good {
 			double powerHrsRequiredPerMillisol = process.getPowerRequired() * MarsClock.HOURS_PER_MILLISOL;
 			double powerValue = powerHrsRequiredPerMillisol * settlement.getPowerGrid().getPowerValue();
 
-			double totalInputsValue = (outputsValue - powerValue) * owner.getTradeFactor() * owner.getManufacturingFactor()
-					* GoodsManager.MANUFACTURING_INPUT_FACTOR;
+			// Obtain the value of this resource
+			double totalInputsValue = (outputsValue - powerValue);
 
+			GoodType type = part.getGoodType();
+			switch(settlement.getObjective()) {
+				case BUILDERS_HAVEN: {
+					if (GoodType.UTILITY == type
+					|| GoodType.TOOL == type
+					|| GoodType.RAW == type
+					|| GoodType.CONSTRUCTION == type
+					|| GoodType.ELECTRICAL == type
+					|| GoodType.METALLIC == type
+					|| GoodType.ATTACHMENT == type) {
+						totalInputsValue *= owner.getBuildersFactor();
+					}
+				} break;
+
+				case CROP_FARM: {
+					if (GoodType.KITCHEN == type) {
+						totalInputsValue *= owner.getCropFarmFactor();
+					}
+				} break;
+
+				case MANUFACTURING_DEPOT:
+					totalInputsValue *= owner.getManufacturingFactor();
+				break;
+
+				case RESEARCH_CAMPUS: {
+					if (GoodType.INSTRUMENT == type
+					|| GoodType.ELECTRICAL == type
+					|| GoodType.ELECTRONIC == type) {
+						totalInputsValue *= owner.getResearchFactor();
+					}
+				} break;
+
+				case TRADE_CENTER: {
+					if (type == GoodType.VEHICLE) {
+						totalInputsValue *= owner.getTradeFactor();
+					}
+				} break;
+
+				case TRANSPORTATION_HUB: {
+					if (type == GoodType.VEHICLE) {
+						totalInputsValue *= owner.getTransportationFactor();
+					}
+				} break;
+
+				case TOURISM: {
+					if (GoodType.EVA == type
+							|| GoodType.VEHICLE_HEAVY == type
+							|| GoodType.VEHICLE == type
+							|| GoodType.GEMSTONE == type) {
+						totalInputsValue *= owner.getTourismFactor();
+					}
+				} break;
+			}
+
+			// Modify by other factors
+			totalInputsValue *= MANUFACTURING_INPUT_FACTOR;
 			if (totalInputsValue > 0D) {
 				double partNum = partInput.getAmount();
 
@@ -547,7 +605,7 @@ class PartGood extends Good {
 			double stageValue = stageValues.get(stage);
 			if (stageValue > 0D && ConstructionStageInfo.BUILDING.equals(stage.getType())
 					&& isLocallyConstructable(settlement, stage)) {
-				double constructionStageDemand = getPartConstructionStageDemand(owner, getID(), stage, stageValue);
+				double constructionStageDemand = getPartConstructionStageDemand(getID(), stage, stageValue);
 				if (constructionStageDemand > 0D) {
 					demand += constructionStageDemand;
 				}
@@ -566,7 +624,7 @@ class PartGood extends Good {
 	 * @param stageValue the building construction stage value (VP).
 	 * @return demand (# of parts).
 	 */
-	private double getPartConstructionStageDemand(GoodsManager owner, int part, ConstructionStageInfo stage, double stageValue) {
+	private double getPartConstructionStageDemand(int part, ConstructionStageInfo stage, double stageValue) {
 		double demand = 0D;
 
 		int partNumber = getPrerequisiteConstructionPartNum(part, stage);

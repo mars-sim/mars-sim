@@ -96,7 +96,6 @@ public abstract class ModalInternalFrame extends JInternalFrame {
 
 						// Implement this bug fix posted in
 						// https://community.oracle.com/thread/1358431?start=0&tstart=0
-						//
 						if (!this.contains(m.getPoint()) && e.getID() != MouseEvent.MOUSE_DRAGGED
 								&& !e.getSource().getClass().getName().equals("javax.swing.Popup$HeavyWeightWindow")
 								&& e.getID() != MouseEvent.MOUSE_RELEASED) {
@@ -137,14 +136,14 @@ public abstract class ModalInternalFrame extends JInternalFrame {
 	}
 
 	/**
-	 * Stop the modal behavior.
+	 * Stops the modal behavior.
 	 */
 	private synchronized void stopModal() {
 		notifyAll();
 	}
 
 	/**
-	 * Set if the frame is modal.
+	 * Sets if the frame is modal.
 	 *
 	 * @param modal
 	 *            true if frame is modal.

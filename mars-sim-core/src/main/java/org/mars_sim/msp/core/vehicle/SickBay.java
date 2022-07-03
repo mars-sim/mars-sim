@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * SickBay.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-06-30
  * @author Scott Davis
  */
 
@@ -26,6 +26,7 @@ implements Serializable {
 
 	/**
 	 * Constructor.
+	 * 
 	 * @param vehicle The vehicle the sickbay is in.
 	 * @param treatmentLevel The treatment level of the medical station.
 	 * @param sickBedNum Number of sickbeds. 
@@ -40,8 +41,10 @@ implements Serializable {
 
 	/**
 	 * Gets the vehicle this sickbay is in.
+	 * 
 	 * @return vehicle
 	 */
+	@Override
 	public Vehicle getVehicle() {
 		return vehicle;
 	}

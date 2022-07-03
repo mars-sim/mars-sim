@@ -238,23 +238,28 @@ extends JComponent implements ClockListener {
 	 */
 	public MainWindow(boolean cleanUI, Simulation sim) {
 		this.sim = sim;
-		
+				
 		if (GameManager.getGameMode() == GameMode.COMMAND) {
 			logger.log(Level.CONFIG, "Running mars-sim in Command Mode.");
 		} else {
 			logger.log(Level.CONFIG, "Running mars-sim in Sandbox Mode.");
 		}
+		
 		logger.log(Level.CONFIG, "Checking OS color scheme.");
+		
     	// Detect if OS dark theme is in use
 		final OsThemeDetector detector = OsThemeDetector.getDetector();
+		
 		boolean supported = OsThemeDetector.isSupported();
 		if (supported)
 			logger.log(Level.CONFIG, "OsThemeDetector is supported.");
+		
 		boolean dark = detector.isDark();
 		if (dark)
 			logger.log(Level.CONFIG, "OS is using a dark theme.");
 		else
 			logger.log(Level.CONFIG, "OS is using a light theme.");
+		
 		detector.registerListener(isDark -> {
 		    SwingUtilities.invokeLater(() -> {
 		        if (isDark) {

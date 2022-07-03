@@ -76,18 +76,12 @@ public class MineSite extends EVAOperation implements Serializable {
 		operatingLUV = false;
 
 		if (shouldEndEVAOperation()) {
-        	if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
+			checkLocation();
         	return;
         }
 
 		if (!person.isFit()) {
-			if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
+			checkLocation();
         	return;
 		}
 
@@ -152,29 +146,13 @@ public class MineSite extends EVAOperation implements Serializable {
 	 * @throws Exception if error performing phase.
 	 */
 	private double miningPhase(double time) {
-		// Check for radiation exposure during the EVA operation.
-		if (isDone() || isRadiationDetected(time)) {
-        	if (worker.isOutside()) {
-        		setPhase(WALK_BACK_INSIDE);
-        	}
-        	else {
-        		endTask();
-        	}
+		
+		if (checkReadiness(time) > 0)
 			return time;
-		}
-
-		if (!person.isFit()) {
-        	if (worker.isOutside()) {
-        		setPhase(WALK_BACK_INSIDE);
-        	}
-        	else {
-        		endTask();
-        	}
-		}
 
 		// Check if there is reason to cut the mining phase short and return
 		// to the rover.
-		if (shouldEndEVAOperation() || addTimeOnSite(time)) {
+		if (addTimeOnSite(time)) {
 			// End operating light utility vehicle.
 			if (person != null && ((Crewable)luv).isCrewmember(person)) {
 				luv.removePerson(person);
@@ -187,12 +165,7 @@ public class MineSite extends EVAOperation implements Serializable {
 				operatingLUV = false;
 			}
 
-        	if (worker.isOutside()) {
-        		setPhase(WALK_BACK_INSIDE);
-        	}
-        	else {
-        		endTask();
-        	}
+			checkLocation();
 		}
 
 		// Operate light utility vehicle if no one else is operating it.

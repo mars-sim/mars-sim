@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Flyer.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-01
  * @author Manny
  */
 
@@ -30,9 +30,6 @@ public abstract class Flyer extends Vehicle implements Serializable {
 	// default logger.
 	private static final SimLogger logger = SimLogger.getLogger(Flyer.class.getName());
 	
-	public static final String LANDER_HAB = "Lander Hab";
-	public static final String OUTPOST_HUB = "Outpost Hub";
-			
 	/** Comparison to indicate a small but non-zero amount of fuel (methane) in kg that can still work on the fuel cell to propel the engine. */
     public static final double LEAST_AMOUNT = .001D;
     
@@ -159,8 +156,8 @@ public abstract class Flyer extends Vehicle implements Serializable {
 
 			int weight = 2;
 
-			long numHab = settlement.getBuildingManager().getNumBuildingsOfSameType(LANDER_HAB);
-			long numHub = settlement.getBuildingManager().getNumBuildingsOfSameType(OUTPOST_HUB);
+			long numHab = settlement.getBuildingManager().getNumBuildingsOfSameType(Building.LANDER_HAB);
+			long numHub = settlement.getBuildingManager().getNumBuildingsOfSameType(Building.OUTPOST_HUB);
 			int numGarages = settlement.getBuildingManager().getBuildings(FunctionType.GROUND_VEHICLE_MAINTENANCE)
 					.size();
 			int total = (int)(numHab + numHub + numGarages * weight - 1);
@@ -174,12 +171,12 @@ public abstract class Flyer extends Vehicle implements Serializable {
 				
 				if (rand < numHab + numHub) {
 					int r0 = RandomUtil.getRandomInt((int)numHab - 1);
-					Building hab = settlement.getBuildingManager().getBuildingsOfSameType(LANDER_HAB).get(r0);
+					Building hab = settlement.getBuildingManager().getBuildingsOfSameType(Building.LANDER_HAB).get(r0);
 					int r1 = 0;
 					Building hub = null;
 					if (numHub > 0) {
 						r1 = RandomUtil.getRandomInt((int)numHub - 1);
-						hub = settlement.getBuildingManager().getBuildingsOfSameType(OUTPOST_HUB).get(r1);
+						hub = settlement.getBuildingManager().getBuildingsOfSameType(Building.OUTPOST_HUB).get(r1);
 					}
 
 					if (hab != null) {

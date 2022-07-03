@@ -70,10 +70,9 @@ public class SplashWindow extends JComponent {
 	private int height;
 
 
+	@SuppressWarnings("serial")
 	public SplashWindow() {
 		window = new JFrame() {
-			/** default serial id. */
-			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void paint(Graphics g) {

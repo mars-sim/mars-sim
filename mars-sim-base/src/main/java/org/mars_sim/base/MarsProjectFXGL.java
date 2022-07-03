@@ -17,6 +17,7 @@ import java.util.logging.Logger;
 
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -121,7 +122,7 @@ public class MarsProjectFXGL extends GameApplication {
 		try {
 			if (useGUI) {
 				// Start the splash window
-				MainWindow.startSplash();
+				SwingUtilities.invokeLater(() -> MainWindow.startSplash());
 				// Use opengl
 				// Question: How compatible are linux and macos with opengl ?
 				// System.setProperty("sun.java2d.opengl", "true"); // not compatible with

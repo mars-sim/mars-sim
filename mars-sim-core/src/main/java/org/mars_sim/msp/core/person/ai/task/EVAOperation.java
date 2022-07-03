@@ -155,6 +155,15 @@ public abstract class EVAOperation extends Task {
 		}
 	}
 
+	/**
+	 * Constructor 2.
+	 * 
+	 * @param name
+	 * @param robot
+	 * @param hasSiteDuration
+	 * @param siteDuration
+	 * @param outsideSkill
+	 */
 	protected EVAOperation(String name, Robot robot, boolean hasSiteDuration, double siteDuration, SkillType outsideSkill) {
 		super(name, robot, true, false, STRESS_MODIFIER, SkillType.EVA_OPERATIONS, 100D);
 
@@ -167,14 +176,14 @@ public abstract class EVAOperation extends Task {
 	}
 
 	/**
-	 * Check if EVA should end.
+	 * Checks if EVA should end.
 	 */
 	public void endEVA() {
 		endEVA = true;
 	}
 
 	/**
-	 * Add time at EVA site.
+	 * Adds time at EVA site.
 	 *
 	 * @param time the time to add (millisols).
 	 * @return true if site phase should end.
@@ -200,7 +209,7 @@ public abstract class EVAOperation extends Task {
 	protected abstract TaskPhase getOutsideSitePhase();
 
 	/**
-	 * Set the outside side local location.
+	 * Sets the outside side local location.
 	 *
 	 * @param pos The outside position of the EVA
 	 */
@@ -209,7 +218,8 @@ public abstract class EVAOperation extends Task {
 	}
 
 	/**
-	 * Set the outside side local location
+	 * Sets the outside side local location.
+	 * 
 	 * @param pos Position of the Bin
 	 */
 	protected void setBinLocation(LocalPosition pos) {
@@ -242,7 +252,7 @@ public abstract class EVAOperation extends Task {
 	}
 
 	/**
-	 * Perform the walk to outside site phase.
+	 * Performs the walk to outside site phase.
 	 *
 	 * @param time the time to perform the phase.
 	 * @return remaining time after performing the phase.
@@ -294,7 +304,7 @@ public abstract class EVAOperation extends Task {
     }
 
 	/**
-	 * Perform the walk back inside phase.
+	 * Performs the walk back inside phase.
 	 *
 	 * @param time the time to perform the phase.
 	 * @return remaining time after performing the phase.
@@ -422,7 +432,7 @@ public abstract class EVAOperation extends Task {
 	}
 
 	/**
-	 * Checks if the sky is dimming and is at dusk
+	 * Checks if the sky is dimming and is at dusk.
 	 *
 	 * @param person
 	 * @return
@@ -433,7 +443,8 @@ public abstract class EVAOperation extends Task {
 		}
 
 		// if it's at night
-		if (surfaceFeatures.getSunlightRatio(person.getCoordinates()) < 0) {
+		// Note: sunlight ratio cannot be smaller than zero.
+		if (surfaceFeatures.getSunlightRatio(person.getCoordinates()) < .01) {
 			return false;
 		}
 
@@ -441,6 +452,43 @@ public abstract class EVAOperation extends Task {
         return surfaceFeatures.getTrend(person.getCoordinates()) < 0;
     }
 
+	/**
+	 * Checks if this EVA operation is ready for prime time.
+	 * 
+	 * @param time
+	 * @return
+	 */
+	public double checkReadiness(double time) {
+		// Check for radiation exposure during the EVA operation.
+		if (isDone() || isRadiationDetected(time)) {
+			checkLocation();
+			return time;
+		}
+
+        // Check if there is a reason to cut short and return.
+		if (shouldEndEVAOperation() || addTimeOnSite(time)) {
+			checkLocation();
+			return time;
+		}
+
+		if (!person.isFit()) {
+			checkLocation();
+			return time;
+		}
+		return 0;
+	}
+	
+	/**
+	 * Checks to see if the person is supposed to be outside.
+	 */
+	protected void checkLocation() {
+		if (person.isOutside())
+            setPhase(WALK_BACK_INSIDE);
+    	else
+        	endTask();
+	}
+	
+	
 	/**
 	 * Checks if there is an EVA problem for a person.
 	 *
@@ -508,7 +556,7 @@ public abstract class EVAOperation extends Task {
 	}
 
 	/**
-	 * Checks if the person's settlement is at meal time and is hungry
+	 * Checks if the person's settlement is at meal time and is hungry.
 	 *
 	 * @param person
 	 * @return
@@ -519,7 +567,7 @@ public abstract class EVAOperation extends Task {
     }
 
 	/**
-	 * Checks if the person's settlement is physically drained
+	 * Checks if the person's settlement is physically drained.
 	 *
 	 * @param person
 	 * @return
@@ -531,10 +579,12 @@ public abstract class EVAOperation extends Task {
     }
 
 	/**
-	 * Add experience for this EVA task. The EVA_OPERATIONS skill is updated.
+	 * Adds experience for this EVA task. The EVA_OPERATIONS skill is updated.
+	 * 
 	 * If the {@link #getPhase()} matches the value of {@link #getOutsideSitePhase()} then experience is also added
 	 * to the outsideSkill property defined for this task.
 	 * If the phase is not outside; then only EVA_OPERATIONS is updated.
+	 * 
 	 * @param time
 	 */
 	@Override
@@ -551,7 +601,6 @@ public abstract class EVAOperation extends Task {
 		evaExperience *= getTeachingExperienceModifier();
 		worker.getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
 
-
 		// If phase is outside, add experience to outside skill.
 		if (getOutsideSitePhase().equals(getPhase()) && (outsideSkill != null)) {
 			// 1 base experience point per 10 millisols of collection time spent.
@@ -563,7 +612,7 @@ public abstract class EVAOperation extends Task {
 	}
 
 	/**
-	 * Check for accident with EVA suit.
+	 * Checks for accident with EVA suit.
 	 *
 	 * @param time the amount of time on EVA (in millisols)
 	 */
@@ -575,13 +624,13 @@ public abstract class EVAOperation extends Task {
 
 				// EVA operations skill modification.
 				int skill = person.getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
-				checkForAccident(suit, time, BASE_ACCIDENT_CHANCE, skill, "EVA operation");
+				checkForAccident(suit, time, BASE_ACCIDENT_CHANCE, skill, "EVA operation at " + person.getCoordinates().toString());
 			}
 		}
 	}
 
 	/**
-	 * Check for radiation exposure of the person performing this EVA.
+	 * Checks for radiation exposure of the person performing this EVA.
 	 *
 	 * @param time the amount of time on EVA (in millisols)
 	 * @result true if detected
@@ -594,9 +643,9 @@ public abstract class EVAOperation extends Task {
 
 
 	/**
-	 * Determine a random location for for working outside a Rover for the
+	 * Determines a random location for for working outside a Rover for the
 	 * assigned Worker.
-	 * If no site is found then the Task is ended
+	 * <p>If no site is found then the Task is ended.
 	 *
 	 * @param rover Base rover hosting EVA
 	 * @return Was a site found
@@ -629,7 +678,7 @@ public abstract class EVAOperation extends Task {
 	}
 
 	/**
-	 * Set the outside location near a BoundedObject
+	 * Sets the outside location near a BoundedObject.
 	 *
 	 * @param basePoint
 	 * @return A location has been chosen.
@@ -707,7 +756,8 @@ public abstract class EVAOperation extends Task {
 	}
 
 	/**
-	 * Unload any held Equipment back to a Vehicle
+	 * Unloads any held Equipment back to a Vehicle.
+	 * 
 	 * @param destination
 	 */
 	protected void returnEquipmentToVehicle(Vehicle destination) {

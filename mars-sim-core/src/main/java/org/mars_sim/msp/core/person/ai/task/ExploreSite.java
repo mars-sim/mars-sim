@@ -164,28 +164,11 @@ public class ExploreSite extends EVAOperation implements Serializable {
 	 */
 	private double exploringPhase(double time) {
 
-		// Check for radiation exposure during the EVA operation.
-		if (isDone() || shouldEndEVAOperation() || isRadiationDetected(time)) {
-			if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
+		if (checkReadiness(time) > 0)
 			return time;
-		}
-
-		if (person.getPhysicalCondition().computeFitnessLevel() < 3) {
-			if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
-			return time;
-		}
 
 		if (totalCollected >= AVERAGE_ROCK_SAMPLES_COLLECTED_SITE) {
-			if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
+			checkLocation();
 			return time;
 		}
 
@@ -200,7 +183,7 @@ public class ExploreSite extends EVAOperation implements Serializable {
 			collectRockSamples(time);
 		}
 
-		// TODO: Add other site exploration activities later.
+		// FUTURE: Add other site exploration activities later.
 
 		// Add experience points
 		addExperience(time);
@@ -211,10 +194,7 @@ public class ExploreSite extends EVAOperation implements Serializable {
 		// Check if site duration has ended or there is reason to cut the exploring
 		// phase short and return to the rover.
 		if (addTimeOnSite(time)) {
-			if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
+			checkLocation();
 			return 0;
 		}
 

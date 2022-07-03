@@ -68,6 +68,7 @@ public class GoodsManager implements Serializable {
 	private static final double TRANSPORT_BASE = 1;
 	private static final double TRADE_BASE = 1;
 	private static final double TOURISM_BASE = 1;
+	private static final double BUILDERS_BASE = 1;
 
 	/** VP probability modifier. */
 	public static final double ICE_VALUE_MODIFIER = 5D;
@@ -98,6 +99,7 @@ public class GoodsManager implements Serializable {
 	private double transportation_factor = 1;
 	private double trade_factor = 1;
 	private double tourism_factor = 1;
+	private double builders_factor = 1;
 
 	private Map<Integer, Double> goodsValues = new HashMap<>();
 	private Map<Integer, Double> tradeCache = new HashMap<>();
@@ -163,10 +165,8 @@ public class GoodsManager implements Serializable {
 			exclusionBuyList.add(GoodsUtil.getGood(ResourceUtil.sandID));
 			exclusionBuyList.add(GoodsUtil.getGood(ResourceUtil.greyWaterID));
 			exclusionBuyList.add(GoodsUtil.getGood(ResourceUtil.blackWaterID));
-			exclusionBuyList.add(GoodsUtil.getGood(ResourceUtil.compostID));
 			exclusionBuyList.add(GoodsUtil.getGood(ResourceUtil.eWasteID));
 			exclusionBuyList.add(GoodsUtil.getGood(ResourceUtil.toxicWasteID));
-			exclusionBuyList.add(GoodsUtil.getGood(ResourceUtil.cropWasteID));
 			// Note: add vehicles to this list ?
 		}
 		return exclusionBuyList;
@@ -376,6 +376,14 @@ public class GoodsManager implements Serializable {
 
 	public void setTourismFactor(double value) {
 		tourism_factor = value * TOURISM_BASE;
+	}
+
+	public void setBuildersFactor(double value) {
+		builders_factor = value * BUILDERS_BASE;
+	}
+
+	public double getBuildersFactor() {
+		return builders_factor;
 	}
 
 	public double getCropFarmFactor() {

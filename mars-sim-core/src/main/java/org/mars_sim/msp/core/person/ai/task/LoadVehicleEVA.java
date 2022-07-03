@@ -9,7 +9,6 @@ package org.mars_sim.msp.core.person.ai.task;
 
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
@@ -27,7 +26,7 @@ public class LoadVehicleEVA extends EVAOperation {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static SimLogger logger = SimLogger.getLogger(LoadVehicleEVA.class.getName());
+//	private static SimLogger logger = SimLogger.getLogger(LoadVehicleEVA.class.getName());
 
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.loadVehicleEVA"); //$NON-NLS-1$
@@ -56,37 +55,25 @@ public class LoadVehicleEVA extends EVAOperation {
 		super(NAME, person, true, 20D + RandomUtil.getRandomInt(5) - RandomUtil.getRandomInt(5), null);
 		
 		if (!person.isFit()) {
-			if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
+			checkLocation();
         	return;
 		}
 
 		settlement = CollectionUtils.findSettlement(person.getCoordinates());
 		if (settlement == null) {
-        	if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
+			checkLocation();
         	return;
 		}
 		
         if (!anyVehiclesNeedEVA(settlement)) {
-        	if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
+        	checkLocation();
         	return;
         }
 
 		vehicleMission = LoadVehicleGarage.getMissionNeedingLoading(settlement,
 																	false);
 		if (vehicleMission == null) {
-        	if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
+			checkLocation();
 			return;
 		}		
 			
@@ -102,10 +89,7 @@ public class LoadVehicleEVA extends EVAOperation {
 			// Add the rover to a garage if possible.
 			if (settlement.getBuildingManager().addToGarage(vehicle)) {
 				// no need of doing EVA
-	        	if (starter.isOutside())
-	        		setPhase(WALK_BACK_INSIDE);
-	        	else
-	        		endTask();
+				checkLocation();
 	        	return;
 			}
 
@@ -119,10 +103,7 @@ public class LoadVehicleEVA extends EVAOperation {
 		}
 		else {
 			// no need of doing EVA
-        	if (starter.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
+			checkLocation();
 		}
 	}
 
@@ -143,10 +124,7 @@ public class LoadVehicleEVA extends EVAOperation {
 		this.vehicleMission = mission;
 
 		if (!person.isFit()) {
-			if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
+			checkLocation();
         	return;
 		}
 		
@@ -209,10 +187,7 @@ public class LoadVehicleEVA extends EVAOperation {
 		}
 
 		if (stopLoading) {
-			if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
+			checkLocation();
 			return time;
 		}
 		return 0;

@@ -69,10 +69,7 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
 		super(NAME, person, true, RandomUtil.getRandomDouble(5D) + 100D, SkillType.CONSTRUCTION);
 
 		if (!person.isFit()) {
-			if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
+			checkLocation();
         	return;
 		}
 
@@ -117,10 +114,7 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
 		this.vehicles = vehicles;
 
 		if (!person.isFit()) {
-			if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
+			checkLocation();
         	return;
 		}
 
@@ -239,30 +233,9 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
 	 */
 	private double constructionPhase(double time) {
 
-		// Check for radiation exposure during the EVA operation.
-		if (isRadiationDetected(time)) {
-			if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
+		if (checkReadiness(time) > 0)
 			return time;
-		}
-
-		if (shouldEndEVAOperation() || addTimeOnSite(time)) {
-			if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
-			return time;
-		}
-
-		if (!person.isFit()) {
-			if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
-		}
-
+		
 		// Operate light utility vehicle if no one else is operating it.
 		if (!operatingLUV) {
 			obtainVehicle();
@@ -297,10 +270,7 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
 				returnVehicle();
 			}
 
-			if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
+			checkLocation();
 			return time;
 		}
 
@@ -323,16 +293,8 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
 				if (vehicle instanceof LightUtilityVehicle) {
 					LightUtilityVehicle tempLuv = (LightUtilityVehicle) vehicle;
 					if (tempLuv.getOperator() == null) {
-
-//                    	 if (person != null) {
 						tempLuv.addPerson(person);
 						tempLuv.setOperator(person);
-//                    	 }
-//
-//                         else if (robot != null) {
-//	                        //tempLuv.getInventory().storeUnit(robot);
-//	                        //tempLuv.setOperator(robot);
-//	                     }
 
 						luv = tempLuv;
 						operatingLUV = true;
@@ -354,11 +316,7 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
 	 * @throws Exception if error returning construction vehicle.
 	 */
 	private void returnVehicle() {
-//    	if (person != null)
 		luv.removePerson(person);
-//		else if (robot != null)
-//	        luv.getInventory().retrieveUnit(robot);
-
 		luv.setOperator(null);
 		operatingLUV = false;
 	}

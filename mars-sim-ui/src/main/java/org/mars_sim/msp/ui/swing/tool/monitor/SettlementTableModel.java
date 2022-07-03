@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * SettlementTableModel.java
- * @date 2021-12-24
+ * @date 2022-07-01
  * @author Barry Evans
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
@@ -52,23 +52,24 @@ public class SettlementTableModel extends UnitTableModel {
 
 	private final static int MALFUNCTION = 5;
 
-	private final static int OXYGEN = 6;
-	private final static int HYDROGEN = 7;
-	private final static int CO2 = 8;
-	private final static int METHANE = 9;
-
-	private final static int WATER = 10;
-	private final static int ICE = 11;
-
-	private final static int ROCK_SAMPLES = 12;
-	private final static int REGOLITH = 13;
-	private final static int CONCRETE = 14;
-	private final static int CEMENT = 15;
-
-	private int type = -1;
+	private final static int OXYGEN_COL = 6;
+	private final static int HYDROGEN_COL = 7;
+	private final static int METHANE_COL = 8;
+	private final static int METHANOL_COL = 9;
 	
+	private final static int WATER_COL = 10;
+	private final static int ICE_COL = 11;
+
+	private final static int CONCRETE_COL = 12;
+	private final static int CEMENT_COL = 13;
+	
+	private final static int REGOLITHS_COL = 14;
+	private final static int ROCKS_COL = 15;
+	private final static int ORES_COL = 16;
+	private final static int MINERALS_COL = 17;
+
 	/** The number of Columns. */
-	private final static int COLUMNCOUNT = 16;
+	private final static int COLUMNCOUNT = 18;
 	/** Names of Columns. */
 	private final static String columnNames[];
 	/** Types of columns. */
@@ -89,26 +90,35 @@ public class SettlementTableModel extends UnitTableModel {
 		columnTypes[POWER] = Number.class;
 		columnNames[MALFUNCTION] = "Malfunction";
 		columnTypes[MALFUNCTION] = String.class;
-		columnNames[OXYGEN] = "Oxygen";
-		columnTypes[OXYGEN] = Number.class;
-		columnNames[HYDROGEN] = "Hydrogen";
-		columnTypes[HYDROGEN] = Number.class;
-		columnNames[CO2] = "CO2";
-		columnTypes[CO2] = Number.class;
-		columnNames[WATER] = "Water";
-		columnTypes[WATER] = Number.class;
-		columnNames[METHANE] = "Methane";
-		columnTypes[METHANE] = Number.class;
-		columnNames[CONCRETE] = "Concrete";
-		columnTypes[CONCRETE] = Number.class;
-		columnNames[CEMENT] = "Cement";
-		columnTypes[CEMENT] = Number.class;
-		columnNames[ROCK_SAMPLES] = "Rock Samples";
-		columnTypes[ROCK_SAMPLES] = Number.class;
-		columnNames[REGOLITH] = "Regolith";
-		columnTypes[REGOLITH] = Number.class;
-		columnNames[ICE] = "Ice";
-		columnTypes[ICE] = Number.class;
+		
+		columnNames[OXYGEN_COL] = "Oxygen";
+		columnTypes[OXYGEN_COL] = Number.class;
+		columnNames[HYDROGEN_COL] = "Hydrogen";
+		columnTypes[HYDROGEN_COL] = Number.class;	
+		columnNames[METHANE_COL] = "Methane";
+		columnTypes[METHANE_COL] = Number.class;	
+		columnNames[METHANOL_COL] = "Methanol";
+		columnTypes[METHANOL_COL] = Number.class;
+		
+		columnNames[WATER_COL] = "Water";
+		columnTypes[WATER_COL] = Number.class;
+		columnNames[ICE_COL] = "Ice";
+		columnTypes[ICE_COL] = Number.class;
+		
+		columnNames[CONCRETE_COL] = "Concrete";
+		columnTypes[CONCRETE_COL] = Number.class;
+		columnNames[CEMENT_COL] = "Cement";
+		columnTypes[CEMENT_COL] = Number.class;
+		
+		columnNames[REGOLITHS_COL] = "Regoliths";
+		columnTypes[REGOLITHS_COL] = Number.class;	
+		columnNames[ROCKS_COL] = "Rocks";
+		columnTypes[ROCKS_COL] = Number.class;	
+		columnNames[ORES_COL] = "Ores";
+		columnTypes[ORES_COL] = Number.class;	
+		columnNames[MINERALS_COL] = "Minerals";
+		columnTypes[MINERALS_COL] = Number.class;
+
 	};
 
 	private static UnitManager unitManager = Simulation.instance().getUnitManager();
@@ -124,15 +134,18 @@ public class SettlementTableModel extends UnitTableModel {
 	private static final int ICE_ID = ResourceUtil.iceID;
 
 	private static final int OXYGEN_ID = ResourceUtil.oxygenID;
-	private static final int CO2_ID = ResourceUtil.co2ID;
 	private static final int HYDROGEN_ID = ResourceUtil.hydrogenID;
 	private static final int METHANE_ID = ResourceUtil.methaneID;
+	private static final int METHANOL_ID = ResourceUtil.methanolID;
 
-	private static final int REGOLITH_ID = ResourceUtil.regolithID;
+	private static final int[] REGOLITH_IDS = ResourceUtil.REGOLITH_TYPES;
+	private static final int[] ROCK_IDS = ResourceUtil.rockIDs;
+	private static final int[] MINERAL_IDS = ResourceUtil.mineralConcIDs;
+	private static final int[] ORE_IDS = ResourceUtil.oreDepositIDs;
+
 	private static final int CONCRETE_ID = ResourceUtil.concreteID;
 	private static final int CEMENT_ID = ResourceUtil.cementID;
-	private static final int ROCK_SAMPLES_ID = ResourceUtil.rockSamplesID;
-
+	
 	static {
 		df.setMinimumFractionDigits(2);
 		df.setMinimumIntegerDigits(1);
@@ -153,8 +166,6 @@ public class SettlementTableModel extends UnitTableModel {
 
 		unitManagerListener = new LocalUnitManagerListener();
 		unitManager.addUnitManagerListener(unitManagerListener);
-
-		type = 0;
 	}
 
 	/**
@@ -172,8 +183,6 @@ public class SettlementTableModel extends UnitTableModel {
 
 		unitManagerListener = new LocalUnitManagerListener();
 		unitManager.addUnitManagerListener(unitManagerListener);
-		
-		type = 1;
 	}
 
 	/**
@@ -195,42 +204,7 @@ public class SettlementTableModel extends UnitTableModel {
 					result = settle.getName();
 				}
 					break;
-
-				case WATER: {
-					result = df.format(resourceMap.get(WATER_ID));
-				}
-					break;
-
-				case OXYGEN: {
-					result = df.format(resourceMap.get(OXYGEN_ID));
-				}
-					break;
-
-				case METHANE: {
-					result = df.format(resourceMap.get(METHANE_ID));
-				}
-					break;
-
-				case HYDROGEN: {
-					result = df.format(resourceMap.get(HYDROGEN_ID));
-				}
-					break;
-
-				case CO2: {
-					result = df.format(resourceMap.get(CO2_ID));
-				}
-					break;
-
-				case ROCK_SAMPLES: {
-					result = df.format(resourceMap.get(ROCK_SAMPLES_ID));
-				}
-					break;
-
-				case REGOLITH: {
-					result = df.format(resourceMap.get(REGOLITH_ID));
-				}
-					break;
-
+					
 				case PARKED: {
 					result = settle.getParkedVehicleNum();
 				}
@@ -250,30 +224,6 @@ public class SettlementTableModel extends UnitTableModel {
 				}
 					break;
 
-//				case GREY_WATER: {
-//					result = df.format(resourceMap.get(greyWaterID));
-//				}
-//					break;
-//
-//				case BLACK_WATER: {
-//					result = df.format(resourceMap.get(blackWaterID));
-//				}
-//					break;
-
-				case CONCRETE: {
-					result = df.format(resourceMap.get(CONCRETE_ID));
-				}
-					break;
-
-				case CEMENT: {
-					result = df.format(resourceMap.get(CEMENT_ID));
-				}
-					break;
-
-				case ICE: {
-					result = df.format(resourceMap.get(ICE_ID));
-				}
-					break;
 
 				case POPULATION: {
 					result = settle.getNumCitizens();
@@ -299,14 +249,95 @@ public class SettlementTableModel extends UnitTableModel {
 				}
 					break;
 
+				case OXYGEN_COL: {
+					result = df.format(resourceMap.get(OXYGEN_ID));
+				}
+					break;
+
+				case HYDROGEN_COL: {
+					result = df.format(resourceMap.get(HYDROGEN_ID));
+				}
+					break;
+					
+				case METHANE_COL: {
+					result = df.format(resourceMap.get(METHANE_ID));
+				}
+					break;
+
+				case METHANOL_COL: {
+					result = df.format(resourceMap.get(METHANOL_ID));
+				}
+					break;
+					
+					
+				case WATER_COL: {
+					result = df.format(resourceMap.get(WATER_ID));
+				}
+					break;
+					
+				case ICE_COL: {
+					result = df.format(resourceMap.get(ICE_ID));
+				}
+					break;
+	
+				case CONCRETE_COL: {
+					result = df.format(resourceMap.get(CONCRETE_ID));
+				}
+					break;
+
+				case CEMENT_COL: {
+					result = df.format(resourceMap.get(CEMENT_ID));
+				}
+					break;
+														
+				case REGOLITHS_COL: {
+					result = df.format(getTotalAmount(REGOLITH_IDS, resourceMap));
+				}
+					break;
+
+				case ROCKS_COL: {
+					result = df.format(getTotalAmount(ROCK_IDS, resourceMap));
+				}
+					break;
+					
+					
+				case ORES_COL: {
+					result = df.format(getTotalAmount(ORE_IDS, resourceMap));
+				}
+					break;
+					
+				case MINERALS_COL: {
+					result = df.format(getTotalAmount(MINERAL_IDS, resourceMap));
+				}
+					break;
+				
+				default:
+					break;
 				}
 			} catch (Exception e) {
+				e.printStackTrace();
 			}
 		}
 
 		return result;
 	}
 
+	/**
+	 * Gets the sum of the amount of the same types of resources.
+	 * 
+	 * @param types
+	 * @param resourceMap
+	 * @return
+	 */
+	private double getTotalAmount(int [] types, Map<Integer, Double> resourceMap) {
+		double result = 0;
+		for (int i = 0; i < types.length; i++) {
+			int id = types[i];
+			result += resourceMap.get(id);
+		}
+		return result;
+	}
+	
 	/**
 	 * Catch unit update event.
 	 * @param event the unit event.
@@ -331,63 +362,93 @@ public class SettlementTableModel extends UnitTableModel {
 			if (source instanceof AmountResource) {
 				target = ((AmountResource)source).getID();
 			}
-
 			else if (source instanceof Integer) {
+				// Note: most likely, the source is an integer id
 				target = (Integer)source;
 				if (target >= ResourceUtil.FIRST_ITEM_RESOURCE_ID)
 					// if it's an item resource, quit
 					return;
 			}
-
+			else
+				return;
+			
 			try {
 				int tempColumnNum = -1;
 				double currentValue = 0.0;
 				Map<Integer, Double> resourceMap = resourceCache.get(unit);
 
 				if (target == OXYGEN_ID) {
-					tempColumnNum = OXYGEN;
+					tempColumnNum = OXYGEN_COL;
 					currentValue = resourceMap.get(OXYGEN_ID);
 				}
 				else if (target == HYDROGEN_ID) {
-					tempColumnNum = HYDROGEN;
+					tempColumnNum = HYDROGEN_COL;
 					currentValue = resourceMap.get(HYDROGEN_ID);
 				}
-				else if (target == CO2_ID) {
-					tempColumnNum = CO2;
-					currentValue = resourceMap.get(CO2_ID);
+				else if (target == METHANOL_ID) {
+					tempColumnNum = METHANOL_COL;
+					currentValue = resourceMap.get(METHANOL_ID);
 				}
 				else if (target == METHANE_ID) {
-					tempColumnNum = METHANE;
+					tempColumnNum = METHANE_COL;
 					currentValue = resourceMap.get(METHANE_ID);
 				}
 				else if (target == WATER_ID) {
-					tempColumnNum = WATER;
+					tempColumnNum = WATER_COL;
 					currentValue = resourceMap.get(WATER_ID);
 				}
+				else if (target == ICE_ID) {
+					tempColumnNum = ICE_COL;
+					currentValue = resourceMap.get(ICE_ID);
+				}
 				else if (target == CONCRETE_ID) {
-					tempColumnNum = CONCRETE;
+					tempColumnNum = CONCRETE_COL;
 					currentValue = resourceMap.get(CONCRETE_ID);
 				}
 				else if (target == CEMENT_ID) {
-					tempColumnNum = CEMENT;
+					tempColumnNum = CEMENT_COL;
 					currentValue = resourceMap.get(CEMENT_ID);
 				}
-				else if (target == ROCK_SAMPLES_ID) {
-					tempColumnNum = ROCK_SAMPLES;
-					currentValue = resourceMap.get(ROCK_SAMPLES_ID);
-				}
-				else if (target == REGOLITH_ID) {
-					tempColumnNum = REGOLITH;
-					currentValue = resourceMap.get(REGOLITH_ID);
-				}
-				else if (target == ICE_ID) {
-					tempColumnNum = ICE;
-					currentValue = resourceMap.get(ICE_ID);
+				else {
+					boolean found = false;
+					for (int i = 0; i < REGOLITH_IDS.length; i++) {
+						if (!found && target == REGOLITH_IDS[i]) {
+							tempColumnNum = REGOLITHS_COL;
+							currentValue = resourceMap.get(target);
+							found = true;
+						}
+					}
+					if (!found) {
+						for (int i = 0; i < ORE_IDS.length; i++) {
+							if (!found && target == ORE_IDS[i]) {
+								tempColumnNum = ORES_COL;
+								currentValue = resourceMap.get(target);
+								found = true;
+							}
+						}
+					}
+					if (!found) {
+						for (int i = 0; i < MINERAL_IDS.length; i++) {
+							if (!found && target == MINERAL_IDS[i]) {
+								tempColumnNum = MINERALS_COL;
+								currentValue = resourceMap.get(target);
+								found = true;
+							}
+						}
+					}
+					if (!found) {
+						for (int i = 0; i < ROCK_IDS.length; i++) {
+							if (!found && target == ROCK_IDS[i]) {
+								tempColumnNum = ROCKS_COL;
+								currentValue = resourceMap.get(target);
+								found = true;
+							}
+						}
+					}
 				}
 
 				if (tempColumnNum > -1) {
-					currentValue = Math.round (currentValue * 10.0 ) / 10.0;
-					double newValue = Math.round (getResourceStored((Settlement)unit, target) * 10.0 ) / 10.0;
+					double newValue = getResourceStored((Settlement)unit, target);
 					if (currentValue != newValue) {
 						columnNum = tempColumnNum;
 						resourceMap.put(target, newValue);
@@ -416,31 +477,42 @@ public class SettlementTableModel extends UnitTableModel {
 	@Override
 	protected void addUnit(Unit newUnit) {
 		if (resourceCache == null)
-			resourceCache = new HashMap<Unit, Map<Integer, Double>>();
+			resourceCache = new HashMap<>();
 		if (!resourceCache.containsKey(newUnit)) {
 			try {
 				Map<Integer, Double> resourceMap = new HashMap<>();
 				Settlement settlement = (Settlement)newUnit;
 				resourceMap.put(OXYGEN_ID, getResourceStored(settlement, OXYGEN_ID));
-				resourceMap.put(WATER_ID, getResourceStored(settlement, WATER_ID));
 				resourceMap.put(HYDROGEN_ID, getResourceStored(settlement, HYDROGEN_ID));
 				resourceMap.put(METHANE_ID, getResourceStored(settlement, METHANE_ID));
-				resourceMap.put(ROCK_SAMPLES_ID, getResourceStored(settlement, ROCK_SAMPLES_ID));
-				resourceMap.put(REGOLITH_ID, getResourceStored(settlement, REGOLITH_ID));
-//				resourceMap.put(greyWaterID, getResourceStored(settlement, greyWaterID));
-//				resourceMap.put(blackWaterID, getResourceStored(settlement, blackWaterID));
+				resourceMap.put(METHANOL_ID, getResourceStored(settlement, METHANOL_ID));
+				
+				resourceMap.put(WATER_ID, getResourceStored(settlement, WATER_ID));
+				resourceMap.put(ICE_ID, getResourceStored(settlement, ICE_ID));
+				
 				resourceMap.put(CONCRETE_ID, getResourceStored(settlement, CONCRETE_ID));
 				resourceMap.put(CEMENT_ID, getResourceStored(settlement, CEMENT_ID));
-				resourceMap.put(ICE_ID, getResourceStored(settlement, ICE_ID));
-				resourceMap.put(CO2_ID, getResourceStored(settlement, CO2_ID));
 
+				for (int i = 0; i < REGOLITH_IDS.length; i++) {
+					resourceMap.put(REGOLITH_IDS[i], getResourceStored(settlement, REGOLITH_IDS[i]));
+				}		
+				for (int i = 0; i < ORE_IDS.length; i++) {
+					resourceMap.put(ORE_IDS[i], getResourceStored(settlement, ORE_IDS[i]));
+				}			
+				for (int i = 0; i < MINERAL_IDS.length; i++) {
+					resourceMap.put(MINERAL_IDS[i], getResourceStored(settlement, MINERAL_IDS[i]));
+				}
+				for (int i = 0; i < ROCK_IDS.length; i++) {
+					resourceMap.put(ROCK_IDS[i], getResourceStored(settlement, ROCK_IDS[i]));
+				}
+	
 				resourceCache.put(newUnit, resourceMap);
 			} catch (Exception e) {
 			}
 		}
 		super.addUnit(newUnit);
 	}
-
+	
 	@Override
 	protected void removeUnit(Unit oldUnit) {
 		if (resourceCache == null)
@@ -464,10 +536,6 @@ public class SettlementTableModel extends UnitTableModel {
 		// This is the quickest way but it may or may not work if the object reference
 		// of ARs have changed during (de)serialization.
 		return Math.round(settlement.getAmountResourceStored(resource) * 100.0) / 100.0;
-	}
-
-	public int getType() {
-		return type;
 	}
 	
 	/**

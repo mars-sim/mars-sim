@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * ScientificStudy.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-06-30
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.science;
@@ -1037,18 +1037,16 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	 */
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
-		// Make a method to remove dead & inactive collaborators
-		//
+
 		// Check if primary researcher has died.
 		if (primaryResearcher.getPhysicalCondition().isDead()) {
 			setCompleted(ScientificStudy.CANCELED);
 			logger.log(primaryResearcher, Level.INFO, 0, 
 					toString() + " was canceled/abandoned due to " 
 							+ primaryResearcher.getGender().toString() + " death.");
-			return true;
 		}
 		
-		// Check if collaborators have died. Take a copy as removal is possible
+		// Check if collaborators have died. Remove dead & inactive collaborators
 		cleanDeadCollaborators();
 
 		switch (phase) {

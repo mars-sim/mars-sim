@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * CollectResources.java
- * @date 2021-10-12
+ * @date 2022-06-30
  * @author Scott Davis
  */
 
@@ -83,10 +83,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 				SkillType.AREOLOGY);
 
 		if (!person.isFit()) {
-			if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
+			checkLocation();
 	      	return;
 		}
 
@@ -176,7 +173,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 	}
 
 	/**
-	 * Perform the collect resources phase of the task.
+	 * Performs the collect resources phase of the task.
 	 *
 	 * @param time the time to perform this phase (in millisols)
 	 * @return the time remaining after performing this phase (in millisols)
@@ -184,40 +181,14 @@ public class CollectResources extends EVAOperation implements Serializable {
 	 */
 	private double collectResources(double time) {
 		double result = 0;
-
-		// Check for radiation exposure during the EVA operation.
-		if (isDone() || isRadiationDetected(time)) {
-			if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
+		
+		if (checkReadiness(time) > 0)
 			return time;
-		}
-
-        // Check if there is a reason to cut short and return.
-		if (shouldEndEVAOperation() || addTimeOnSite(time)) {
-			if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
-			return time;
-		}
-
-		if (!person.isFit()) {
-			if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
-			return time;
-		}
 
 		// Collect resources.
 		Container container = person.findContainer(containerType, false, resourceType);
 		if (container == null) {
-			if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
+			checkLocation();
 			return time;
 		}
 
@@ -238,10 +209,9 @@ public class CollectResources extends EVAOperation implements Serializable {
 		}
 
 		// Modify collection rate by polar region if ice collecting.
-		if (resourceType == ResourceUtil.iceID) {
-			if (surfaceFeatures.inPolarRegion(person.getCoordinates())) {
-				samplesCollected *= 10D;
-			}
+		if (resourceType == ResourceUtil.iceID
+			&& surfaceFeatures.inPolarRegion(person.getCoordinates())) {
+			samplesCollected *= 10D;
 		}
 
 		// Add experience points
@@ -260,20 +230,11 @@ public class CollectResources extends EVAOperation implements Serializable {
 			}
 			setPhase(WALK_BACK_INSIDE);
 			result = time - (sampleLimit / collectionRate);
+			if (result < 0)
+				result = 0;
 		}
 
 		return result;
-	}
-
-	/**
-	 * Release workers inventory
-	 */
-	@Override
-	protected void clearDown() {
-		if (rover != null) {
-			// Task may end early before a Rover is selected
-			returnEquipmentToVehicle(rover);
-		}
 	}
 
 	/**
@@ -285,8 +246,8 @@ public class CollectResources extends EVAOperation implements Serializable {
 	 * @param resourceType  the resource to collect.
 	 * @return true if person can perform the task.
 	 */
-	public static boolean canCollectResources(MissionMember member, Rover rover, EquipmentType containerType,
-			Integer resourceType) {
+	public static boolean canCollectResources(MissionMember member, Rover rover, 
+			EquipmentType containerType, Integer resourceType) {
 
 		boolean result = false;
 
@@ -297,9 +258,9 @@ public class CollectResources extends EVAOperation implements Serializable {
 			if (!ExitAirlock.canExitAirlock(person, rover.getAirlock()))
 				return false;
 
-			if (EVAOperation.isGettingDark(person)) {
+			// Check if sunlight is insufficient
+			if (EVAOperation.isGettingDark(person))
 				return false;
-			}
 
 			// Check if person's medical condition will not allow task.
 			if (person.getPerformanceRating() < .2D)
@@ -328,5 +289,16 @@ public class CollectResources extends EVAOperation implements Serializable {
 		}
 
 		return result;
+	}
+	
+	/**
+	 * Release workers inventory
+	 */
+	@Override
+	protected void clearDown() {
+		if (rover != null) {
+			// Task may end early before a Rover is selected
+			returnEquipmentToVehicle(rover);
+		}
 	}
 }

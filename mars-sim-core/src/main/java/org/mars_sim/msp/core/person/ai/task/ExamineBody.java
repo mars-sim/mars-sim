@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * ExamineBody.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-06-30
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -122,7 +122,7 @@ public class ExamineBody extends Task implements Serializable {
 					// Get the person's stress resilience						
 					int resilient = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.STRESS_RESILIENCE);
 					
-					// TODO: how to determine how long it takes ? Cause of death ?
+					// Note: how to determine how long it takes ? Cause of death ?
 					duration = 150 + STRESS_MODIFIER * (200 - stab - resilient) / 5D / skill + 2 * RandomUtil.getRandomInt(num+5);
 					
 					deathInfo.setEstTimeExam(duration);
@@ -289,12 +289,9 @@ public class ExamineBody extends Task implements Serializable {
 			
 			// Ready to go to the next task phase
 			setPhase(RECORDING);
-			
-			return timeLeft;
 		}
 
 		else {
-//			System.out.println("timeExam : " + timeExam);
 			// Get the person's medical skill.
 			double skill = person.getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
 			if (skill == 0)

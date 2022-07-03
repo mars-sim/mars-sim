@@ -44,9 +44,15 @@ implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** Task name */
-    private static final String NAME = Msg.getString(
-            "Task.description.produceFood"); //$NON-NLS-1$
+    private static final String TASK_DESCRIPTION_PRODUCE_FOOD = "Task.description.produceFood";
 
+    private static final String DETAIL = ".detail";
+    
+    private static final String DETAIL_DESCRIPTION = TASK_DESCRIPTION_PRODUCE_FOOD + DETAIL;
+    
+	private static final String NAME = Msg.getString(
+			TASK_DESCRIPTION_PRODUCE_FOOD); //$NON-NLS-1$
+	
     /** Task phases. */
     private static final TaskPhase PRODUCE_FOOD = new TaskPhase(Msg.getString(
             "Task.phase.produceFood")); //$NON-NLS-1$
@@ -69,8 +75,8 @@ implements Serializable {
 
 		// Initialize data members
 		if (person.isInSettlement()) {
-		    //setDescription(Msg.getString("Task.description.produceFood.detail",
-            //        person.getParkedSettlement().getName())); //$NON-NLS-1$
+		    setDescription(Msg.getString(DETAIL_DESCRIPTION, //$NON-NLS-1$
+                    person.getSettlement().getName())); 
 	
 			// Get available foodProduction foodFactory if any.
 			Building foodProductionBuilding = getAvailableFoodProductionBuilding(person);
@@ -103,8 +109,8 @@ implements Serializable {
 
 		// Initialize data members
 		if (robot.isInSettlement()) {
-		    //setDescription(Msg.getString("Task.description.produceFood.detail",
-            //        robot.getParkedSettlement().getName())); //$NON-NLS-1$
+		    setDescription(Msg.getString(DETAIL_DESCRIPTION, //$NON-NLS-1$
+                    robot.getSettlement().getName()));
 	
 			// Get available foodProduction foodFactory if any.
 			Building foodProductionBuilding = getAvailableFoodProductionBuilding(robot);
@@ -134,7 +140,6 @@ implements Serializable {
 		if (settlement != null) {
 		    int highestSkillLevel = getHighestSkillAtSettlement(settlement);
 
-//			BuildingManager buildingManager = person.getSettlement().getBuildingManager();
 			Iterator<Building> j = settlement.getBuildingManager().getBuildings(FunctionType.FOOD_PRODUCTION).iterator();
 			while (j.hasNext()) {
 				Building building = (Building) j.next();
@@ -555,10 +560,10 @@ implements Serializable {
 	
 				if (process != null)
 					// Insert process into setDescription()
-					setDescription(Msg.getString("Task.description.produceFood.detail",
-	                    Conversion.capitalize(process.toString()))); //$NON-NLS-1$
+					setDescription(Msg.getString(DETAIL_DESCRIPTION, //$NON-NLS-1$
+	                    Conversion.capitalize(process.toString())));
 				else
-					setDescription(Msg.getString("Task.description.produceFood.checking")); //$NON-NLS-1$
+					setDescription(Msg.getString(TASK_DESCRIPTION_PRODUCE_FOOD + ".checking")); //$NON-NLS-1$ 		
 			}
 	
 			// Add experience

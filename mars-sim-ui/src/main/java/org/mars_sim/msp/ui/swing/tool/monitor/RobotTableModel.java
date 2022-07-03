@@ -69,7 +69,7 @@ public class RobotTableModel extends UnitTableModel {
 	/** Task column. */
 	private final static int TASK = 8;
 	/** Mission column. */
-	private final static int MISSION = 9;
+	private final static int MISSION_COL = 9;
 
 	/** The number of Columns. */
 	private final static int COLUMNCOUNT = 10;
@@ -109,8 +109,8 @@ public class RobotTableModel extends UnitTableModel {
 		columnTypes[SETTLEMENT_COL] = String.class;
 		columnNames[JOB] = Msg.getString("RobotTableModel.column.job"); //$NON-NLS-1$
 		columnTypes[JOB] = String.class;
-		columnNames[MISSION] = Msg.getString("RobotTableModel.column.mission"); //$NON-NLS-1$
-		columnTypes[MISSION] = String.class;
+		columnNames[MISSION_COL] = Msg.getString("RobotTableModel.column.mission"); //$NON-NLS-1$
+		columnTypes[MISSION_COL] = String.class;
 		columnNames[TASK] = Msg.getString("RobotTableModel.column.task"); //$NON-NLS-1$
 		columnTypes[TASK] = String.class;
 
@@ -120,24 +120,6 @@ public class RobotTableModel extends UnitTableModel {
 	private enum ValidSourceType {
 		ALL_ROBOTS, VEHICLE_ROBOTS, SETTLEMENT_ROBOTS, SETTLEMENT_ALL_ASSOCIATED_ROBOTS, MISSION_ROBOTS;
 	}
-
-//    static final Map<String, Integer> EVENT_COLUMN_MAPPING;//= new HashMap<String, Integer>(12);
-//
-//        static {
-//            HashMap<String, Integer> m = new HashMap<String, Integer>();
-//            m.put(Unit.NAME_EVENT, NAME);
-//            m.put(Unit.LOCATION_EVENT, LOCATION);
-//            m.put(SystemCondition.HUNGER_EVENT, HUNGER);
-//            m.put(SystemCondition.FATIGUE_EVENT, FATIGUE);
-//            m.put(SystemCondition.STRESS_EVENT, STRESS);
-//            m.put(SystemCondition.PERFORMANCE_EVENT, PERFORMANCE);
-//            m.put(Mind.JOB_EVENT, JOB);
-//            m.put(TaskManager.TASK_EVENT, TASK);
-//            m.put(Mind.MISSION_EVENT, MISSION);
-//            m.put(SystemCondition.ILLNESS_EVENT, HEALTH);
-//            m.put(SystemCondition.DEATH_EVENT, HEALTH);
-//                    EVENT_COLUMN_MAPPING = Collections.unmodifiableMap(m);
-//        }
 
 	private static UnitManager unitManager = Simulation.instance().getUnitManager();
 
@@ -190,9 +172,6 @@ public class RobotTableModel extends UnitTableModel {
 
 		sourceType = ValidSourceType.VEHICLE_ROBOTS;
 		this.vehicle = vehicle;
-		// setSource(vehicle.getCrew());
-		// crewListener = new LocalCrewListener();
-		// ((Unit) vehicle).addUnitListener(crewListener);
 	}
 
 	/**
@@ -205,7 +184,6 @@ public class RobotTableModel extends UnitTableModel {
 	 */
 	public RobotTableModel(Settlement settlement, boolean allAssociated) throws Exception {
 		super ((allAssociated ? Msg.getString("RobotTableModel.nameAssociatedRobots") //$NON-NLS-1$
-//					settlement.getName())
 				: Msg.getString("RobotTableModel.nameRobots", //$NON-NLS-1$
 					settlement.getName())
 				),
@@ -253,9 +231,6 @@ public class RobotTableModel extends UnitTableModel {
 
 		sourceType = ValidSourceType.MISSION_ROBOTS;
 		this.mission = mission;
-		// setSource(mission.getRobots());
-		// missionListener = new LocalMissionListener();
-		// mission.addMissionListener(missionListener);
 	}
 
 	/**
@@ -288,8 +263,6 @@ public class RobotTableModel extends UnitTableModel {
 		if (rowIndex < getUnitNumber()) {
 			Robot robot = (Robot) getUnit(rowIndex);
 
-//			Boolean isDead = robot.getSystemCondition().isInoperable();
-
 			switch (columnIndex) {
 
 			case NAME: {
@@ -299,16 +272,10 @@ public class RobotTableModel extends UnitTableModel {
 
 			case TYPE: {
 				String typeStr = robot.getRobotType().getName();
-				// String letter;
-				// if (typeStr.equals("male")) letter = "M";
-				// else letter = "F";
+
 				result = typeStr;
 			}
 				break;
-
-			// case PERSONALITY : {
-			// result = robot.getMind().getRobotalityType().getTypeString();
-			// } break;
 
 			case BATTERY: {
 				double hunger = robot.getSystemCondition().getPowerDischarge();
@@ -319,27 +286,6 @@ public class RobotTableModel extends UnitTableModel {
 					result = getHungerStatus(hunger);
 			}
 				break;
-
-//			case FATIGUE : {
-//				double fatigue = robot.getSystemCondition().getFatigue();
-//				//result = new Float(fatigue).intValue();
-//			if (isDead)	result = "";
-//					else result = getFatigueStatus(fatigue);
-//			} break;
-//
-//			case STRESS : {
-//				double stress = robot.getSystemCondition().getStress();
-//				//result = new Double(stress).intValue();
-//				if (isDead)	result = "";
-//					else result = getStressStatus(stress);
-//			} break;
-//
-//			case PERFORMANCE : {
-//				double performance = robot.getSystemCondition().getPerformanceFactor();
-//				//result = new Float(performance * 100D).intValue();
-//				if (isDead)	result = "";
-//					else result = getPerformanceStatus(performance* 100D);
-//			} break;
 
 			case HEALTH: {
 				{
@@ -357,7 +303,7 @@ public class RobotTableModel extends UnitTableModel {
 				break;
 
 			case SETTLEMENT_COL: {
-				result = robot.getLocationTag().getLocale(); // getQuickLocation();//
+				result = robot.getLocationTag().getLocale();
 			}
 				break;
 
@@ -373,7 +319,7 @@ public class RobotTableModel extends UnitTableModel {
 			}
 				break;
 
-			case MISSION: {
+			case MISSION_COL: {
 				Mission mission = robot.getBotMind().getMission();
 				if (mission != null) {
 					result = mission.getDescription();
@@ -521,7 +467,7 @@ public class RobotTableModel extends UnitTableModel {
 			m.put(UnitEventType.TASK_NAME_EVENT, TASK);
 			m.put(UnitEventType.TASK_ENDED_EVENT, TASK);
 			m.put(UnitEventType.TASK_SUBTASK_EVENT, TASK);
-			m.put(UnitEventType.MISSION_EVENT, MISSION);
+			m.put(UnitEventType.MISSION_EVENT, MISSION_COL);
 			// m.put(UnitEventType.ILLNESS_EVENT, HEALTH);
 			m.put(UnitEventType.DEATH_EVENT, HEALTH);
 			EVENT_COLUMN_MAPPING = Collections.unmodifiableMap(m);

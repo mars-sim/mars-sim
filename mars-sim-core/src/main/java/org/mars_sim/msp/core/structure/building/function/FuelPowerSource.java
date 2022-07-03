@@ -7,7 +7,9 @@
 package org.mars_sim.msp.core.structure.building.function;
 
 import java.io.Serializable;
+import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -22,7 +24,7 @@ implements Serializable {
 	private static final double MAINTENANCE_FACTOR = 2D;
 	
 	/** default logger. */
-//	private static final Logger logger = Logger.getLogger(FuelPowerSource.class.getName());
+	private static final Logger logger = Logger.getLogger(FuelPowerSource.class.getName());
 
 	/** The work time (millisol) required to toggle this power source on or off. */
 	public static final double TOGGLE_RUNNING_WORK_TIME_REQUIRED = 2D;
@@ -48,6 +50,7 @@ implements Serializable {
 
 	/**
 	 * Constructor.
+	 * 
 	 * @param _maxPower the maximum power (kW) of the power source.
 	 * @param _toggle if the power source is toggled on or off.
 	 * @param fuelType the fuel type.
@@ -81,7 +84,8 @@ implements Serializable {
 //	 This translate to 71.25 % efficiency
 
 	/**
-	 * Consumes the fuel
+	 * Consumes the fuel.
+	 * 
 	 * @param time
 	 * @param inv
 	 * @return the amount of fuel consumed
@@ -103,13 +107,7 @@ implements Serializable {
 
 		settlement.retrieveAmountResource(methaneID, consumed);
 		settlement.retrieveAmountResource(oxygenID, 4D*consumed);
-		
-//	    inv.addAmountDemandTotalRequest(methaneID, consumed);
-//	   	inv.addAmountDemand(methaneID, consumed);
-//	   	
-//	    inv.addAmountDemandTotalRequest(oxygenID, consumed);
-//	   	inv.addAmountDemand(oxygenID, 4D*consumed);
-	   	
+
 		return consumed;
 	}
 	
@@ -157,15 +155,6 @@ implements Serializable {
 		return toggle;
 	}
 
-
-//	/**
-//	 * Gets the amount resource used as fuel.
-//	 * @return amount resource.
-//	 */
-//	 public AmountResource getFuelResource() {
-//		return methaneAR;
-//	}
-
 	/**
 	 * Gets the amount resource used as fuel.
 	 * @return amount resource.
@@ -192,21 +181,18 @@ implements Serializable {
 		 if (toggleRunningWorkTime >= TOGGLE_RUNNING_WORK_TIME_REQUIRED) {
 			 toggleRunningWorkTime = 0D;
 			 toggle = !toggle;
-//			 if (toggle) logger.info(Msg.getString("FuelPowerSource.log.turnedOn",getType().getName())); //$NON-NLS-1$
-//			 else logger.info(Msg.getString("FuelPowerSource.log.turnedOff",getType().getName())); //$NON-NLS-1$
+			 if (toggle) logger.fine(Msg.getString("FuelPowerSource.log.turnedOn",getType().getName())); //$NON-NLS-1$
+			 else logger.fine(Msg.getString("FuelPowerSource.log.turnedOff",getType().getName())); //$NON-NLS-1$
 		 }
 	 }
 
 	 @Override
 	 public double getAveragePower(Settlement settlement) {
 		double fuelPower = getMaxPower();
-//			Good fuelGood = GoodsUtil.getResourceGood(methaneID);
-//			GoodsManager goodsManager = settlement.getGoodsManager();
 		double fuelValue = settlement.getGoodsManager().getGoodValuePerItem(methaneID);
 		fuelValue *= getFuelConsumptionRate() / 1000D * time;
 		fuelPower -= fuelValue;
 		if (fuelPower < 0D) fuelPower = 0D;
-//		logger.info("getAveragePower(). fuelPower: " +  Math.round(fuelPower* 100.0)/100.0 + " kW");
 		return fuelPower;
 	 }
 
@@ -217,7 +203,10 @@ implements Serializable {
 
 	 // Return the fuel cell stacks to the inventory
 	 public void removeFromSettlement() {
-//		//if (installed) {
+		 // FUTURE: one practical application is to upgrade the existing fuel cell stack 
+		 // by swapping out the old one for recycling with a new one.
+
+//		 if (installed) {
 //			//double numCellStack = building.getSettlementInventory().getItemResourceNum(cellStack);
 //			building.getSettlementInventory().storeItemResources(cellStack, numFuelCellStackinUse);
 //			installed = false;

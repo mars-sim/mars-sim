@@ -110,7 +110,6 @@ class AmountResourceGood extends Good {
 	private static final double FOOD_PRODUCTION_INPUT_FACTOR = .1;
 	private static final double RESOURCE_PROCESSING_INPUT_FACTOR = .5;
 	private static final double CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR = 100D;
-	private static final double CONSTRUCTION_SITE_REQUIRED_PART_FACTOR = 100D;
 	private static final double CONSTRUCTING_INPUT_FACTOR = 2D;
 
 
@@ -588,8 +587,60 @@ class AmountResourceGood extends Good {
 			double powerHrsRequiredPerMillisol = process.getPowerRequired() * MarsClock.HOURS_PER_MILLISOL;
 			double powerValue = powerHrsRequiredPerMillisol * settlement.getPowerGrid().getPowerValue();
 
-			double totalInputsValue = (outputsValue - powerValue) * owner.getTradeFactor()
-								* owner.getManufacturingFactor() * MANUFACTURING_INPUT_FACTOR;
+			// Obtain the value of this resource
+			double totalInputsValue = (outputsValue - powerValue);
+
+			int resource = getID();
+			GoodType type = getGoodType();
+			switch(settlement.getObjective()) {
+				case BUILDERS_HAVEN: { 
+					if (GoodType.REGOLITH == type
+					|| GoodType.MINERAL == type
+					|| GoodType.ORE == type
+					|| GoodType.UTILITY == type) {
+						totalInputsValue *= owner.getBuildersFactor();
+					}
+				} break;
+
+				case CROP_FARM: {
+					if (GoodType.CROP == type
+					|| GoodType.DERIVED == type
+					|| GoodType.SOY_BASED == type) {
+						totalInputsValue *= owner.getCropFarmFactor();
+					}
+				} break;
+
+				case MANUFACTURING_DEPOT: 
+					totalInputsValue *= owner.getManufacturingFactor();
+				break;
+
+				case RESEARCH_CAMPUS: { 
+					if (GoodType.MEDICAL == type
+					|| GoodType.ORGANISM == type
+					|| GoodType.CHEMICAL == type
+					|| GoodType.ROCK == type) {
+						totalInputsValue *= owner.getResearchFactor();
+					}
+				} break;
+
+				case TRADE_CENTER:
+						totalInputsValue *= owner.getTradeFactor();
+				break;
+
+				case TRANSPORTATION_HUB: {
+					if (resource == ResourceUtil.methaneID
+					|| resource == ResourceUtil.methanolID
+					|| resource == ResourceUtil.hydrogenID) {
+						totalInputsValue *= owner.getTransportationFactor();
+					}
+				} break;
+
+				default:
+					break;
+			}
+
+			// Modify by other factors
+			totalInputsValue *= MANUFACTURING_INPUT_FACTOR;
 
 			if (totalItems > 0) {
 				demand = (1D / totalItems) * totalInputsValue;

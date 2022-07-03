@@ -54,6 +54,9 @@ class InitialSettlementModel extends AbstractTableModel {
 	public static final int LAT_COL = 6;
 	public static final int LON_COL = 7;
 	
+	public static final int NUM_DECIMAL_PLACES = 4;
+	public static final double DECIMAL_PLACES = 10000.0;
+	
 	private String[] columns;
 	private List<SettlementInfo> settlementInfoList;
 	private SettlementConfig settlementConfig;
@@ -272,9 +275,9 @@ class InitialSettlementModel extends AbstractTableModel {
 					double doubleLat = 0;
 					String dir1 = latStr.substring(latStr.length() - 1, latStr.length());
 					if (dir1.equalsIgnoreCase("N") || dir1.equalsIgnoreCase("S")) {
-						if (latStr.length() > 2) {
+						if (latStr.length() > NUM_DECIMAL_PLACES) {
 							doubleLat = Double.parseDouble(latStr.substring(0, latStr.length() - 1));
-							doubleLat = Math.round(doubleLat * 100.0) / 100.0;
+							doubleLat = Math.round(doubleLat * DECIMAL_PLACES) / DECIMAL_PLACES;
 							info.latitude = doubleLat + " " + dir1.toUpperCase();
 						}
 						else {
@@ -294,9 +297,9 @@ class InitialSettlementModel extends AbstractTableModel {
 					double doubleLong = 0;
 					String dir2 = longStr.substring(longStr.length() - 1, longStr.length());
 					if (dir2.equalsIgnoreCase("E") || dir2.equalsIgnoreCase("W")) {
-						if (longStr.length() > 2) {
+						if (longStr.length() > NUM_DECIMAL_PLACES) {
 							doubleLong = Double.parseDouble(longStr.substring(0, longStr.length() - 1));
-							doubleLong = Math.round(doubleLong * 100.0) / 100.0;
+							doubleLong = Math.round(doubleLong * DECIMAL_PLACES) / DECIMAL_PLACES;
 							info.longitude = doubleLong + " " + dir2.toUpperCase();
 						}
 						else {

@@ -79,8 +79,8 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 	private WebButton locatorButton;
 	private SettlementMapPanel mapPanel;
 
-	private DisplaySingle lcdLong, lcdLat, lcdText; // lcdElev,
-	private DisplayCircular gauge;// RadialQuarterN gauge;
+	private DisplaySingle lcdLong, lcdLat, lcdText; 
+	private DisplayCircular gauge;
 
 	private TerrainElevation terrainElevation = getMars().getSurfaceFeatures().getTerrainElevation();
 	
@@ -151,7 +151,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 		lcdLat.setGlowColor(Color.orange);
 		// lcd1.setBorder(new EmptyBorder(5, 5, 5, 5));
 		lcdLat.setDigitalFont(true);
-		lcdLat.setLcdDecimals(2);
+		lcdLat.setLcdDecimals(4);
 		lcdLat.setSize(new Dimension(150, 45));
 		lcdLat.setMaximumSize(new Dimension(150, 45));
 		lcdLat.setPreferredSize(new Dimension(150, 45));
@@ -205,14 +205,13 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 //		lcdLong.setBackgroundColor(BackgroundColor.LINEN);
 		lcdLong.setGlowColor(Color.yellow);
 		lcdLong.setDigitalFont(true);
-		lcdLong.setLcdDecimals(2);
+		lcdLong.setLcdDecimals(4);
 		lcdLong.setSize(new Dimension(120, 45));
 		lcdLong.setMaximumSize(new Dimension(120, 45));
 		lcdLong.setPreferredSize(new Dimension(120, 45));
 		lcdLong.setVisible(true);
 		lcdPanel.add(lcdLong);
 		northPanel.add(lcdPanel);
-
 
 		JPanel gaugePanel = new JPanel();
 		gauge = new DisplayCircular();

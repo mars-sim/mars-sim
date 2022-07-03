@@ -60,10 +60,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 		super(NAME, person, true, 25, SkillType.MECHANICS);
 
 		if (!person.isFit()) {
-			if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
+			checkLocation();
         	return;
 		}
 
@@ -115,10 +112,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 			}
 		}
 		else {
-        	if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
+			checkLocation();
 		}
 	}
 
@@ -212,14 +206,10 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 		endTask |= malfunction.isWorkDone(MalfunctionRepairWork.EVA);
 		endTask |= (shouldEndEVAOperation() || addTimeOnSite(time));
 		endTask |= (person != null && !person.isFit());
+		
 		if (endTask) {
 			// Return all the time
-	        if (worker.isOutside()) {
-	        	setPhase(WALK_BACK_INSIDE);
-	        }
-	        else {
-	    		endTask();
-	        }
+			checkLocation();
     		return time;
         }
 
@@ -246,13 +236,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 
 		else {
 			logger.log(worker, Level.FINE, 10_000, "Parts for repairing malfunction '" + malfunction + "' not available from " + containerUnit.getName() + ".");
-
-        	if (worker.isOutside()) {
-        		setPhase(WALK_BACK_INSIDE);
-        	}
-        	else {
-        		endTask();
-        	}
+			checkLocation();
             return time;
 		}
 
@@ -275,12 +259,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 					+ malfunction.getName() + "' in " + entity 
 					+ String.format(WORK_FORMAT,
 							malfunction.getCompletedWorkTime(MalfunctionRepairWork.EVA)));
-            if (worker.isOutside()) {
-            	setPhase(WALK_BACK_INSIDE);
-            }
-            else {
-        		endTask();
-            }
+			checkLocation();
 		}
 
 		return workTimeLeft;

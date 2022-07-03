@@ -99,19 +99,19 @@ public abstract class Mission implements Serializable, Temporal {
 	/**
 	 * The marginal factor for the amount of water to be brought during a mission.
 	 */
-	public static final double WATER_MARGIN = 1.5;
+	public static final double WATER_MARGIN = 1;
 	/**
 	 * The marginal factor for the amount of oxygen to be brought during a mission.
 	 */
-	public static final double OXYGEN_MARGIN = 1.5;
+	public static final double OXYGEN_MARGIN = 1.25;
 	/**
 	 * The marginal factor for the amount of food to be brought during a mission.
 	 */
-	public static final double FOOD_MARGIN = 1.5;
+	public static final double FOOD_MARGIN = 1.25;
 	/**
 	 * The marginal factor for the amount of dessert to be brought during a mission.
 	 */
-	public static final double DESSERT_MARGIN = 1.5;
+	public static final double DESSERT_MARGIN = 1.25;
 
 
 	// Data members
@@ -822,15 +822,14 @@ public abstract class Mission implements Serializable, Temporal {
 			}
 		}
 
-		// Mission is completed if it has not been abort by user AND mission status is marked as accomplished
-		if (!haveMissionStatus(MissionStatus.USER_ABORTED_MISSION)
-				&& (endStatus == MissionStatus.MISSION_ACCOMPLISHED)) {
-			setPhase(COMPLETED, null);
-		}
-
-		else {
+		if (haveMissionStatus(MissionStatus.ABORTED_MISSION)) {
 			setPhase(ABORTED,
 					missionStatus.stream().map(MissionStatus::getName).collect(Collectors.joining(", ")));
+		}
+		
+		// Mission is completed if it has not been abort by user AND mission status is marked as accomplished
+		else if (endStatus == MissionStatus.MISSION_ACCOMPLISHED) {
+			setPhase(COMPLETED, null);
 		}
 
 		// Proactively call removeMission to update the list in MissionManager right away
