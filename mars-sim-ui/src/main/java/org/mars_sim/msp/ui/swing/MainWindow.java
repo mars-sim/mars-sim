@@ -60,6 +60,7 @@ import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationFiles;
+import org.mars_sim.msp.core.SimulationListener;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.ClockPulse;
@@ -179,8 +180,6 @@ extends JComponent implements ClockListener {
 	private MainDesktopPane desktop;
 
 	private MainWindowMenu mainWindowMenu;
-
-	private final AtomicBoolean sleeping = new AtomicBoolean(false);
 
 	private Timer delayTimer;
 	private Timer delayTimer1;
@@ -1082,28 +1081,16 @@ extends JComponent implements ClockListener {
 		}
 
 		// Request the save
-		sim.requestSave(fileLocn);
+		sim.requestSave(fileLocn, action -> {
+			if (SimulationListener.SAVE_COMPLETED.equals(action)) {
+				// Save the current main window ui config
+				UIConfig.INSTANCE.saveFile(this);
 
-		sleeping.set(true);
-		while (sleeping.get() && sim.isSavePending()) {
-			try {
-				TimeUnit.MILLISECONDS.sleep(200L);
-			} catch (InterruptedException e) {
-				Thread.currentThread().interrupt();
-				logger.log(Level.SEVERE, Msg.getString("MainWindow.log.sleepInterrupt") + ". " + e); //$NON-NLS-1$
+				logger.log(Level.CONFIG, "Done calling saveSimulation().");
 			}
-			// do something here
-		}
+		});
 
-		// Save the current main window ui config
-		UIConfig.INSTANCE.saveFile(this);
-
-		// Note: may use SwingUtilities.invokeLater(() -> layerUI.stop());
-		logger.log(Level.CONFIG, "Done calling saveSimulation()."); 
-	}
-
-	public void stopSleeping() {
-		sleeping.set(false);
+		logger.log(Level.CONFIG, "Save requested"); 
 	}
 
 	/**

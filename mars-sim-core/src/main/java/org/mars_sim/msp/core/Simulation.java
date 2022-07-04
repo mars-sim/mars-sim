@@ -209,6 +209,7 @@ public class Simulation implements ClockListener, Serializable {
 
 	private transient SaveType savePending = null;
 	private transient File savePendingFile = null;
+	private transient SimulationListener saveCallback = null;
 
 	/**
 	 * Private constructor for the Singleton Simulation. This prevents instantiation
@@ -723,16 +724,13 @@ public class Simulation implements ClockListener, Serializable {
 
 	}
 
-	public boolean isDoneInitializing() {
-		return doneInitializing;
-	}
-
 	/**
 	 * Saves a simulation instance to a save file.
 	 *
 	 * @param file the file to be saved to.
+	 * @param callback
 	 */
-	private synchronized void saveSimulation(SaveType type, File file) {
+	private synchronized void saveSimulation(SaveType type, File file, SimulationListener callback) {
 
 		// Checks to see if the simulation is on pause
 		boolean isAlreadyPaused = masterClock.isPaused();
@@ -831,6 +829,10 @@ public class Simulation implements ClockListener, Serializable {
 			logger.severe("Problem saving simulation " + ioe.getMessage());
 		}
 		
+		if (callback != null) {
+			callback.eventPerformed(SimulationListener.SAVE_COMPLETED);
+		}
+
 		// Restarts the master clock and adds back the Simulation clock listener
 		if (!isAlreadyPaused) 
 			masterClock.setPaused(false, false);
@@ -1218,7 +1220,8 @@ public class Simulation implements ClockListener, Serializable {
 			
 			// Pending save
 			if (savePending != null) {
-				saveSimulation(savePending, savePendingFile);
+				saveSimulation(savePending, savePendingFile, saveCallback);
+				saveCallback = null;
 				savePending = null;
 			}
 		}
@@ -1291,11 +1294,13 @@ public class Simulation implements ClockListener, Serializable {
 	 * Requests that the simulation is saved on the next idle period.
 	 * 
 	 * @param saveFile Optional file to save info, null means default file.
+	 * @param callback Optional callback when save is completed
 	 */
-	public void requestSave(File saveFile) {
+	public void requestSave(File saveFile, SimulationListener callback) {
 		logger.log(Level.CONFIG, "Submitting the request for saving the simulation."); 
 		savePending = (saveFile == null ? SaveType.SAVE_DEFAULT : SaveType.SAVE_AS);
-		savePendingFile = saveFile;		
+		savePendingFile = saveFile;	
+		saveCallback = callback;	
 	}
 
 	/**

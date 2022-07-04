@@ -7,9 +7,15 @@
 
 package org.mars.sim.console.chat.simcommand;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
 import org.mars.sim.console.chat.ConversationRole;
+import org.mars_sim.msp.core.SimulationListener;
 
 public class SaveCommand extends ChatCommand {
 
@@ -26,7 +32,20 @@ public class SaveCommand extends ChatCommand {
 	
         if ("Y".equalsIgnoreCase(toSave)) {
             context.println("Saving Simulation...");
-            context.getSim().requestSave(null); 
+
+			CompletableFuture<Boolean> lock = new CompletableFuture<>();
+				context.getSim().requestSave(null, action -> {
+					if (SimulationListener.SAVE_COMPLETED.equals(action)) {
+						lock.complete(true);
+					}
+				});
+
+			// Wait for the save to complete
+			try {
+				lock.get(20, TimeUnit.SECONDS);
+			} catch (InterruptedException | ExecutionException | TimeoutException e) {
+				System.err.println("Problem completing save wait" + e);
+			}
         }
 
 		context.println("Done");
