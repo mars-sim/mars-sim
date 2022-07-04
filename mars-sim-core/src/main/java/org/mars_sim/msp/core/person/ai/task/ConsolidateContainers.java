@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
 import java.util.Iterator;
 
 import org.mars_sim.msp.core.Msg;
@@ -14,6 +13,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.EquipmentOwner;
+import org.mars_sim.msp.core.equipment.ResourceHolder;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
@@ -29,8 +29,7 @@ import org.mars_sim.msp.core.vehicle.Rover;
  * A task for consolidating the resources stored in local containers.
  */
 public class ConsolidateContainers 
-extends Task 
-implements Serializable {
+extends Task {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
@@ -55,9 +54,6 @@ implements Serializable {
     /** Time (millisols) duration. */
     private static final double DURATION = 30D;
     
-    // Data members.
-//    private Inventory topInventory = null;
-    
     /**
      * Constructor.
      * @param person the person performing the task.
@@ -73,7 +69,6 @@ implements Serializable {
         }
         
         else if (person.isInVehicle()) {
-//        	topInventory = person.getTopContainerUnit().getInventory();
             // If person is in rover, walk to passenger activity spot.
             if (person.getVehicle() instanceof Rover) {
                 walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), true);
@@ -81,7 +76,6 @@ implements Serializable {
         }
         
         else if (person.isInSettlement()) {
-//        	topInventory = person.getTopContainerUnit().getInventory();
         	Building storage = person.getSettlement().getBuildingManager().getABuilding(FunctionType.STORAGE);
         	walkToActivitySpotInBuilding(storage, FunctionType.STORAGE, true);
         }
@@ -186,7 +180,7 @@ implements Serializable {
      * @return the amount of time (millisol) left after performing the consolidating phase.
      */
     private double consolidatingPhase(double time) {
-    	EquipmentOwner eo = (EquipmentOwner)(worker.getContainerUnit());
+    	EquipmentOwner parent = (EquipmentOwner)(worker.getContainerUnit());
     	boolean useTopInventory = worker.isInSettlement();
     	
         // Determine consolidation load rate.
@@ -197,62 +191,45 @@ implements Serializable {
         double remainingAmountLoading = totalAmountLoading;
         
         // Go through each container in top inventory.   
-        for (Container e: eo.findAllContainers()) {
-        	int resourceID = e.getResource();
+        for (Container source: parent.findAllContainers()) {
+        	int resourceID = source.getResource();
             if (resourceID != -1) {
             	// resourceID = -1 means the container has not been initialized
-                double amount = e.getAmountResourceStored(resourceID);
-                if (amount > 0D) {
+                double sourceAmount = source.getAmountResourceStored(resourceID);
+                if (sourceAmount > 0D) {
 	                // Move resource in container to top inventory if possible.
-	                double topRemainingCapacity = eo.getAmountResourceRemainingCapacity(resourceID);
+	                double topRemainingCapacity = parent.getAmountResourceRemainingCapacity(resourceID);
 	                if (useTopInventory && (topRemainingCapacity > 0D)) {
-	                    double loadAmount = topRemainingCapacity;
-	                    if (loadAmount > amount) {
-	                        loadAmount = amount;
-	                    }
-	                    
-	                    if (loadAmount > remainingAmountLoading) {
-	                        loadAmount = remainingAmountLoading;
-	                    }
-	                    
-	                    e.retrieveAmountResource(resourceID, loadAmount);
-	                    
-	                    eo.storeAmountResource(resourceID, loadAmount);
+                        double loadAmount = transferResource(source, sourceAmount, resourceID,
+                                                             topRemainingCapacity,
+                                                             parent, topRemainingCapacity);
+	                   
 	                    remainingAmountLoading -= loadAmount;
-	                    amount -= loadAmount;
+	                    sourceAmount -= loadAmount;
 	                    if (remainingAmountLoading <= 0D) {
 	                    	return 0D;
 	                    }
 	                }
 	                
 	                // Check if container is empty.
-	                if (amount > 0D) {
+	                if (sourceAmount > 0D) {
 	                    // Go through each other container in top inventory and try to consolidate resource.
-	                    Iterator<Container> k = eo.findAllContainers().iterator();
-	                    while (k.hasNext() && (remainingAmountLoading > 0D) && (amount > 0D)) {
+	                    Iterator<Container> k = parent.findAllContainers().iterator();
+	                    while (k.hasNext() && (remainingAmountLoading > 0D) && (sourceAmount > 0D)) {
 	                    	Container otherUnit = k.next();
-	                        if (otherUnit != e && otherUnit instanceof Container) {
+	                        if (otherUnit != source && otherUnit instanceof Container) {
 	                            double otherAmount = otherUnit.getAmountResourceStored(resourceID);
 	                            if (otherAmount > 0D) {
 	                                double otherRemainingCapacity = otherUnit.getAmountResourceRemainingCapacity(resourceID);
 	                                if (otherRemainingCapacity > 0D) {
-	                                    double loadAmount = otherRemainingCapacity;
-	                                    amount = e.getAmountResourceStored(resourceID);
-	                                    
-	                                    if (loadAmount > amount) {
-	                                        loadAmount = amount;
-	                                    }
-	
-	                                    if (loadAmount > remainingAmountLoading) {
-	                                        loadAmount = remainingAmountLoading;
-	                                    }
-	                                    
-	                                    e.retrieveAmountResource(resourceID, loadAmount);
-	                                    otherUnit.storeAmountResource(resourceID, loadAmount);
+                                        double loadAmount = transferResource(source, sourceAmount, resourceID,
+                                                                             remainingAmountLoading,
+                                                                             otherUnit, otherRemainingCapacity);
+
 	                                    remainingAmountLoading -= loadAmount;
-	                                    amount -= loadAmount;
+	                                    sourceAmount -= loadAmount;
 	            	                    if (remainingAmountLoading <= 0D) {
-	            	                    	return 0D;
+                                            return 0D;
 	            	                    }
 	                                }
 	                            }
@@ -271,5 +248,35 @@ implements Serializable {
         }
         
         return remainingTime;
+    }
+
+    /**
+     * Transfer resource from a Container into a parent holder. 
+     * @param source Source container
+     * @param sourceAmount Amount availble in the source
+     * @param sourceResource Resource being transferred
+     * @param transferAmount Maximum amount to be transferred
+     * @param target Target resource holder
+     * @param targetCapacity Capacity in the target
+     * @return
+     */
+    private static double transferResource(Container source, double sourceAmount, int sourceResource,
+                                           double transferAmount,
+                                           ResourceHolder target, double targetCapacity) {
+       double loadAmount = targetCapacity;
+        if (loadAmount > sourceAmount) {
+            loadAmount = sourceAmount;
+        }
+        
+        if (loadAmount > transferAmount) {
+            loadAmount = transferAmount;
+        }
+        
+        source.retrieveAmountResource(sourceResource, loadAmount);
+        if (source.getStoredMass() == 0) {
+            source.clean();
+        }
+        target.storeAmountResource(sourceResource, loadAmount);
+        return loadAmount;
     }
 }

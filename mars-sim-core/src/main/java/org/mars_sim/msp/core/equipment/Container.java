@@ -15,7 +15,10 @@ public interface Container extends ResourceHolder {
 
 	public EquipmentType getEquipmentType();
 
-	// Containers only support a single resource
+	/**
+	 * Containers only support a single resource.
+	 * @return Resource ID assigned to the container.
+	 */
 	public int getResource();
 	
 	public double getBaseMass();
@@ -23,5 +26,10 @@ public interface Container extends ResourceHolder {
 	public boolean transfer(Unit newOwner);
 
 	public double getStoredMass();
+
+	/**
+	 * Clean the container if empty. This will reset the assigned Resource
+	 */
+    public void clean();
 	
 }

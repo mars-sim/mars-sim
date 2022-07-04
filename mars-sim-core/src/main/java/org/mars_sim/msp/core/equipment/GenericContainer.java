@@ -6,11 +6,11 @@
  */
 package org.mars_sim.msp.core.equipment;
 
-import java.io.Serializable;
 import java.util.Collections;
 import java.util.Set;
 
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -19,10 +19,12 @@ import org.mars_sim.msp.core.structure.building.Building;
 /**
  * A container class for holding resources.
  */
-class GenericContainer extends Equipment implements Container, Serializable {
+class GenericContainer extends Equipment implements Container {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
+
+	private static SimLogger logger = SimLogger.getLogger(GenericContainer.class.getName());
 
 	private double totalCapacity;
 	private double amountStored;
@@ -250,5 +252,18 @@ class GenericContainer extends Equipment implements Container, Serializable {
 	@Override
 	public Unit getHolder() {
 		return this;
+	}
+
+	/**
+	 * Clean the container by resettingthe assigned resource.
+	 */
+	@Override
+	public void clean() {
+		if (amountStored > 0) {
+			logger.warning(this, "Not empty during cleaning");
+		}
+		else {
+			resourceHeld = -1;
+		}
 	}
 }
