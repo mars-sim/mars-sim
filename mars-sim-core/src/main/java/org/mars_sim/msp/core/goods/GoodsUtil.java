@@ -256,7 +256,7 @@ public class GoodsUtil {
      * @return
      */
     private static Map<Integer, Good> populateRobots(Map<Integer, Good> newMap) {
-    	 for( RobotType type : robotConfig.getRobotMap().keySet()) {
+    	 for (RobotType type : RobotType.values()) {
              Good newGood = new RobotGood(type);
              newMap.put(newGood.getID(), newGood);
          }

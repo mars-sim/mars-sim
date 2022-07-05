@@ -41,7 +41,7 @@ class RobotGood extends Good {
 
     @Override
     public GoodType getGoodType() {
-        // TODO Must be a better way to use GoodType
+        // TODO Must be a better way 
         switch(robotType) {
             case CHEFBOT: return GoodType.CHEFBOT;
             case CONSTRUCTIONBOT: return GoodType.CONSTRUCTIONBOT;
@@ -50,7 +50,6 @@ class RobotGood extends Good {
             case MAKERBOT: return GoodType.MAKERBOT;
             case MEDICBOT: return GoodType.MEDICBOT;
             case REPAIRBOT: return GoodType.REPAIRBOT;
-            case UNKNOWN: break;
         }
 
         throw new IllegalStateException("Cannot mapt robot type " + robotType + " to GoodType");

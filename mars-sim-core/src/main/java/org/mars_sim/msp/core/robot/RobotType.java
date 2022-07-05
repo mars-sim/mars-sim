@@ -24,8 +24,8 @@ public enum RobotType {
 	MAKERBOT			(Msg.getString("RobotType.makerBot")), //$NON-NLS-1$
 	MEDICBOT			(Msg.getString("RobotType.medicBot")), //$NON-NLS-1$
 	REPAIRBOT			(Msg.getString("RobotType.repairBot")), //$NON-NLS-1$
-	UNKNOWN				(Msg.getString("unknown")); //$NON-NLS-1$
-
+	;
+	
 	private String name;
 
 	private static Set<Integer> idSet;

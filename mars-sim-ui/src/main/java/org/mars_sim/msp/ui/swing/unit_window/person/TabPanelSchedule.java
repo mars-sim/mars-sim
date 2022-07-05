@@ -127,8 +127,7 @@ public class TabPanelSchedule extends TabPanel {
 		
 		if (marsClock == null)
 			marsClock = getSimulation().getMasterClock().getMarsClock();
-		
-//		this.desktop = desktop;
+
 		isRealTimeUpdate = true;
 
 		// Prepare combo box
@@ -255,7 +254,7 @@ public class TabPanelSchedule extends TabPanel {
 
 		// Create attribute scroll panel
 		WebScrollPane scrollPanel = new WebScrollPane();
-		topPanel.add(scrollPanel);
+		content.add(scrollPanel);
 
 		// Create schedule table
 		table = new ZebraJTable(scheduleTableModel);
