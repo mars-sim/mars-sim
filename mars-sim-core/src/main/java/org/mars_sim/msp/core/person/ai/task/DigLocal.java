@@ -74,7 +74,7 @@ implements Serializable {
 	public DigLocal(String name, TaskPhase collectionPhase, int resourceID,
 					EquipmentType containerType, Person person) {
         // Use EVAOperation constructor.
-        super(name, person, false, 20, SkillType.AREOLOGY);
+        super(name, person, false, 100, SkillType.AREOLOGY);
 
         this.containerType = containerType;
         this.resourceID = resourceID;
@@ -243,9 +243,10 @@ implements Serializable {
         PhysicalCondition condition = person.getPhysicalCondition();
         double fatigue = condition.getFatigue();
         double strengthMod = condition.getStrengthMod();
-
+        double skillMod = person.getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);		
+        		
         // Add penalty to the fatigue
-        condition.setFatigue(fatigue + time * factor * (1.1D - strengthMod));
+        condition.setFatigue(fatigue + time * factor * (1.1D - strengthMod)/skillMod);
 
         // Add experience points
         addExperience(time);

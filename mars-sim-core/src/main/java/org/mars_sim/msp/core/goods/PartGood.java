@@ -72,7 +72,7 @@ class PartGood extends Good {
 	private static final double BOARD_VALUE = 1;
 	private static final double CPU_VALUE = 10;
 	private static final double WAFER_VALUE = 50;
-	private static final double BATTERY_VALUE = 2;
+	private static final double BATTERY_VALUE = 5;
 	private static final double INSTRUMENT_VALUE = 1;
 	private static final double WIRE_VALUE = .005;
 	private static final double ELECTRONIC_VALUE = .5;
@@ -88,11 +88,10 @@ class PartGood extends Good {
     public PartGood(Part p) {
         super(p.getName(), p.getID());
 
-		// Pre-calaculate the fixed values
+		// Pre-calculate the fixed values
 		flattenDemand = calculateFlattenPartDemand(p);
 		flattenRawDemand = calculateFlattenRawPartDemand(p);
 		costModifier = calculateCostModifier(p);
-
     }
 
     private Part getPart() {
@@ -135,8 +134,7 @@ class PartGood extends Good {
         
         GoodType type = part.getGoodType();
         
-        if (name.contains("battery")
-        		|| name.contains("fuel cell"))
+        if (name.contains("battery"))
             return BATTERY_VALUE;
         
         if (type == GoodType.VEHICLE)
@@ -148,9 +146,9 @@ class PartGood extends Good {
         else if (type == GoodType.INSTRUMENT)
             return INSTRUMENT_VALUE;
         
-        if (name.equalsIgnoreCase("fuel cell stack"))
+        if (name.equalsIgnoreCase("stack"))
             return FC_STACK_VALUE;
-        else if (name.equalsIgnoreCase("solid oxide fuel cell"))
+        else if (name.equalsIgnoreCase("fuel cell"))
             return FC_VALUE;
         else if (name.contains("board"))
             return BOARD_VALUE;
@@ -242,7 +240,10 @@ class PartGood extends Good {
 			// Calculate kitchen part demand.
 			+ getKitchenPartDemand(owner)
 			// Calculate vehicle part demand.
-			* getVehiclePartDemand(owner);
+			+ getVehiclePartDemand(owner)
+			// Calculate battery cell part demand.
+			+ geFuelCellDemand(owner);
+
 			
 		projected = projected
 			// Flatten raw part demand.
@@ -726,7 +727,7 @@ class PartGood extends Good {
 	/**
 	 * Gets the vehicle part factor for part demand.
 	 * 
-	 * @param part
+	 * @param owner
 	 * @return
 	 */
 	private double getVehiclePartDemand(GoodsManager owner) {
@@ -734,10 +735,27 @@ class PartGood extends Good {
 		if (type == GoodType.VEHICLE) {
 			return (1 + owner.getTourismFactor()/30.0) * VEHICLE_PART_DEMAND;
 		}
-		return 1;
+		return 0;
 	}
 
-    	/**
+	/**
+	 * Adjusts the fuel cell factor for part demand.
+	 * 
+	 * @param owner
+	 * @return
+	 */
+	private double geFuelCellDemand(GoodsManager owner) {
+		String name = getName().toLowerCase();
+		if (name.contains("fuel cell")) {
+			return FC_VALUE;
+		}
+		if (name.contains("stack")) {
+			return FC_STACK_VALUE;
+		}
+		return 0;
+	}
+	
+    /**
 	 * Gets the Food Production demand for a part.
 	 *
 	 * @param part the part.

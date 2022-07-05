@@ -70,7 +70,7 @@ public enum GoodType {
 	GARDENBOT			(Msg.getString("RobotType.gardenBot")), //$NON-NLS-1$
 	MAKERBOT			(Msg.getString("RobotType.makerBot")), //$NON-NLS-1$
 	MEDICBOT			(Msg.getString("RobotType.medicBot")), //$NON-NLS-1$
-	REPAIRBOT			(Msg.getString("RobotType.repairBot")),
+	REPAIRBOT			(Msg.getString("RobotType.repairBot")), //$NON-NLS-1$
     ;
     
 	private String name;	
