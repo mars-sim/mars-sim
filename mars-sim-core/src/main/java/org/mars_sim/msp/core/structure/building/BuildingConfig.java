@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -21,6 +22,7 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.configuration.ConfigHelper;
+import org.mars_sim.msp.core.logging.Loggable;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.building.BuildingSpec.FunctionSpec;
@@ -195,7 +197,19 @@ public class BuildingConfig implements Serializable {
 
 			supportedFunctions.put(function, fspec);
 		}
-		BuildingSpec newSpec = new BuildingSpec(buildingTypeName, desc, width, length, baseLevel,
+
+		String categoryString = buildingElement.getAttributeValue("category");
+		BuildingCategory category = null;
+		if (categoryString != null) {
+			category = BuildingCategory.valueOf(categoryString.toUpperCase());
+		}
+		else {
+			// Derive category from Functions
+			category = deriveCategory(supportedFunctions.keySet());
+
+		}
+
+		BuildingSpec newSpec = new BuildingSpec(buildingTypeName, desc, category, width, length, baseLevel,
 			 	roomTemp, maintenanceTime, wearLifeTime,
 			 	basePowerRequirement, basePowerDownPowerRequirement,
 			 	supportedFunctions);
@@ -266,6 +280,101 @@ public class BuildingConfig implements Serializable {
 			newSpec.setBeds(beds);
 		}
 		return newSpec;
+	}
+
+	/**
+	 * Dervie the category from the types of Functions.
+	 */
+	private BuildingCategory deriveCategory(Set<FunctionType> functions) {
+
+		// Get a set of categories
+		Set<BuildingCategory> cats = new HashSet<>();
+		for (FunctionType fType : functions) {
+			switch(fType) {
+				case EARTH_RETURN:
+					cats.add(BuildingCategory.ERV);
+					break;
+
+				case EVA:
+					cats.add(BuildingCategory.EVA_AIRLOCK);
+					break;
+
+				case FARMING:
+				case FISHERY:
+					cats.add(BuildingCategory.FARMING);
+					break;
+
+				case BUILDING_CONNECTION:
+					cats.add(BuildingCategory.HALLWAY);
+					break;
+
+				case ADMINISTRATION:
+				case COMMUNICATION:
+				case COMPUTATION:
+				case MANAGEMENT:
+					cats.add(BuildingCategory.HABITAT);
+					break;
+
+				case ASTRONOMICAL_OBSERVATION:
+				case FIELD_STUDY:
+				case RESEARCH:
+					cats.add(BuildingCategory.LABORATORY);
+					break;
+
+				case COOKING:
+				case DINING:
+				case EXERCISE:
+				case FOOD_PRODUCTION:
+				case LIVING_ACCOMMODATIONS:
+				case RECREATION:
+					cats.add(BuildingCategory.LIVING);
+					break;
+
+				case STORAGE:
+					cats.add(BuildingCategory.STORAGE);
+					break;
+					
+				case MEDICAL_CARE:
+					cats.add(BuildingCategory.MEDICAL);
+					break;
+
+				case POWER_GENERATION:
+				case POWER_STORAGE:
+				case THERMAL_GENERATION:
+					cats.add(BuildingCategory.POWER);
+					break; 
+
+				case RESOURCE_PROCESSING:
+				case WASTE_PROCESSING:
+					cats.add(BuildingCategory.PROCESSING);
+					break;
+
+				case GROUND_VEHICLE_MAINTENANCE:
+					cats.add(BuildingCategory.VEHICLE);
+					break;
+
+				case MANUFACTURE:
+					cats.add(BuildingCategory.WORKSHOP);
+					break;
+
+				default:
+					// Not important
+			}
+		}
+
+		BuildingCategory category = BuildingCategory.HALLWAY;
+		if (!cats.isEmpty()) {
+			// Find the category with the lowest Ordinal as that is the best to represent
+			// this set of Functions
+			int lowestOrdinal = 999;
+			for (BuildingCategory c : cats) {
+				if (c.ordinal() < lowestOrdinal) {
+					lowestOrdinal = c.ordinal();
+					category = c;
+				}
+			}
+		}
+		return category;
 	}
 
 	/**

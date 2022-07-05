@@ -37,16 +37,17 @@ public class BuildingTableModel extends UnitTableModel {
 	// Column indexes
 	private static final int NAME = 0;
 	private static final int TYPE = 1;
-	private static final int POWER_MODE = 2;
-	private static final int POWER_REQUIRED = 3;
-	private static final int HEAT_MODE = 4;
-	private static final int TEMPERATURE = 5;
-	private static final int COLUMNCOUNT = 6;
+	private static final int CATEGORY = 2;
+	private static final int POWER_MODE = 3;
+	private static final int POWER_REQUIRED = 4;
+	private static final int HEAT_MODE = 5;
+	private static final int TEMPERATURE = 6;
+	private static final int COLUMNCOUNT = 7;
 
 	/** Names of Columns. */
-	private static String columnNames[];
+	private static String[] columnNames;
 	/** Types of Columns. */
-	private static Class<?> columnTypes[];
+	private static Class<?>[] columnTypes;
 
 	private UnitManagerListener unitManagerListener;
 
@@ -70,6 +71,8 @@ public class BuildingTableModel extends UnitTableModel {
 		columnTypes[NAME] = String.class;
 		columnNames[TYPE] = Msg.getString("BuildingTableModel.column.type"); //$NON-NLS-1$
 		columnTypes[TYPE] = String.class;
+		columnNames[CATEGORY] = Msg.getString("BuildingTableModel.column.category"); //$NON-NLS-1$
+		columnTypes[CATEGORY] = String.class;	
 		columnNames[POWER_MODE] = Msg.getString("BuildingTableModel.column.powerMode"); //$NON-NLS-1$
 		columnTypes[POWER_MODE] = String.class;		
 		columnNames[HEAT_MODE] = Msg.getString("BuildingTableModel.column.heatMode"); //$NON-NLS-1$
@@ -163,6 +166,10 @@ public class BuildingTableModel extends UnitTableModel {
 
 			case TYPE: 
 				result = building.getBuildingType();
+				break;
+			
+			case CATEGORY:
+				result = building.getCategory().getName();
 				break;
 
 			case POWER_MODE:

@@ -202,6 +202,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	
 	protected PowerMode powerModeCache;
 	protected HeatMode heatModeCache;
+	private BuildingCategory category;
 
 	/**
 	 * Constructor 1. Constructs a Building object.
@@ -273,6 +274,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 
 		baseLevel = spec.getBaseLevel();
 		description = spec.getDescription();
+		this.category = spec.getCategory();
 
 		// Get the building's functions
 		functions = buildFunctions(spec);
@@ -337,8 +339,16 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	 *
 	 * @return String description
 	 */
+	@Override
 	public String getDescription() {
 		return description;
+	}
+
+	/**
+	 * Get the category of this building
+	 */
+	public BuildingCategory getCategory() {
+		return category;
 	}
 
 	/**

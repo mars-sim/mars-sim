@@ -174,131 +174,95 @@ implements SettlementMapLayer {
 			while (i.hasNext()) {
 				Building building = i.next();
 				String name = building.getNickName();
-				String type = building.getBuildingType();
+
 				int num = spaceCount(name);
 				String words[] = name.split(" ");
 				int s = words.length;
 				
-				Color frontColor = WHITE_LABEL_OUTLINE_COLOR;
-				Color outlineColor = BLACK_LABEL_OUTLINE_COLOR;
-				
+				Color frontColor = BUILDING_LABEL_COLOR;
+				Color outlineColor = WHITE_LABEL_OUTLINE_COLOR;
+				switch(building.getCategory()) {
+					case WORKSHOP:
+						frontColor = SHOP_LABEL_COLOR;
+						outlineColor = BLACK_LABEL_OUTLINE_COLOR;
+						break;
+					case LABORATORY:
+						frontColor = LAB_LABEL_COLOR;
+						outlineColor = BLACK_LABEL_OUTLINE_COLOR;
+						break;
+					case LIVING:
+						frontColor = LIVING_LABEL_COLOR;
+						outlineColor = BLACK_LABEL_OUTLINE_COLOR;
+						break;
+					case MEDICAL:
+						frontColor = MEDICAL_LABEL_COLOR;
+						outlineColor = WHITE_LABEL_OUTLINE_COLOR;
+						break;
+					case HABITAT:
+						frontColor = HAB_LABEL_COLOR;
+						outlineColor = BLACK_LABEL_OUTLINE_COLOR;
+						break;
+					case VEHICLE: 
+						frontColor = GARAGE_LABEL_COLOR;
+						outlineColor = BLACK_LABEL_OUTLINE_COLOR;
+						break;
+					case HALLWAY: 
+						frontColor = HALLWAY_LABEL_COLOR;
+						outlineColor = WHITE_LABEL_OUTLINE_COLOR;
+						break;
+					case FARMING:
+						frontColor = GREENHOUSE_LABEL_COLOR;
+						outlineColor = BLACK_LABEL_OUTLINE_COLOR;
+						break;
+					case PROCESSING:
+						frontColor = RESOURCE_LABEL_COLOR;
+						outlineColor = BLACK_LABEL_OUTLINE_COLOR;
+						break;
+					case POWER:
+						frontColor = REACTOR_LABEL_COLOR;
+						outlineColor = BLACK_LABEL_OUTLINE_COLOR;
+						break;
+					case EVA_AIRLOCK:
+						frontColor = EVA_LABEL_COLOR;
+						outlineColor = BLACK_LABEL_OUTLINE_COLOR;
+						break;
+					case ERV:
+						frontColor = ERV_LABEL_COLOR;
+						outlineColor = WHITE_LABEL_OUTLINE_COLOR;
+						break;
+					default:
+						break;
+				}
+						
 				if (num == 1) {
-//					System.out.println(name);
-					if (type.equalsIgnoreCase(Building.HALLWAY)) {
-						// Shrink the size of a hallway label.
-						//e.g. Turned "Hallway 12 " into "H12"
-						String newName = "H " + words[1];
-						drawStructureLabel(g2d, newName, building.getPosition(),
-								HALLWAY_LABEL_COLOR, WHITE_LABEL_OUTLINE_COLOR, 0);
-					}
-					else if (type.equalsIgnoreCase(Building.TUNNEL)) {
-						// Shrink the size of a hallway label.
-						//e.g. Turned "Hallway 12 " into "H12"
-						String newName = "T " + words[1];
-						drawStructureLabel(g2d, newName, building.getPosition(),
-								HALLWAY_LABEL_COLOR, WHITE_LABEL_OUTLINE_COLOR, 0);
-					}
-					else {
-						if (type.equalsIgnoreCase("Workshop")) {
-							frontColor = SHOP_LABEL_COLOR;
-							outlineColor = BLACK_LABEL_OUTLINE_COLOR;
-						}
-						
-						else if (type.equalsIgnoreCase("Laboratory")) {
-							frontColor = LAB_LABEL_COLOR;
-							outlineColor = BLACK_LABEL_OUTLINE_COLOR;
-						}
-						
-						else if (type.equalsIgnoreCase("Lounge")) {
-							frontColor = LIVING_LABEL_COLOR;
-							outlineColor = BLACK_LABEL_OUTLINE_COLOR;
-						}
-						
-						else if (type.equalsIgnoreCase("Infirmary")) {
-							frontColor = MEDICAL_LABEL_COLOR;
-							outlineColor = WHITE_LABEL_OUTLINE_COLOR;
-						}
-						
-						else if (type.equalsIgnoreCase("Bunkhouse")) {
-							frontColor = HAB_LABEL_COLOR;
-							outlineColor = BLACK_LABEL_OUTLINE_COLOR;
-						}
-						
-						
-						else if (type.equalsIgnoreCase("Garage")) {
-							frontColor = GARAGE_LABEL_COLOR;
-							outlineColor = BLACK_LABEL_OUTLINE_COLOR;
-						}
-											
+					// if (type.equalsIgnoreCase(Building.HALLWAY)) {
+					// 	// Shrink the size of a hallway label.
+					// 	//e.g. Turned "Hallway 12 " into "H12"
+					// 	String newName = "H " + words[1];
+					// 	drawStructureLabel(g2d, newName, building.getPosition(),
+					// 	frontColor, outlineColor, 0);
+					// }
+					// else if (type.equalsIgnoreCase(Building.TUNNEL)) {
+					// 	// Shrink the size of a hallway label.
+					// 	//e.g. Turned "Hallway 12 " into "H12"
+					// 	String newName = "T " + words[1];
+					// 	drawStructureLabel(g2d, newName, building.getPosition(),
+					// 	frontColor, outlineColor, 0);
+					// }
+					// else {
+			
 						drawStructureLabel(g2d, name, building.getPosition(),
 								frontColor, outlineColor, 0);
-					}
+					//}
 				}
 				
 				else { // more than one whitespace
-					
 					String last_1 = words[s-1];
 					String last_2 = words[s-2];		
 					words[s-2] = last_2 + " " + last_1;
 					s = s-1;
 						
 					// Split up the name into multiple lines
-					if (name.contains("Reactor") || name.contains("Solar")
-							|| name.contains("Wind") || name.contains("Power")
-							|| name.contains("Generator") || name.contains("Battery")
-							|| name.contains("Areothermal")) {
-						frontColor = REACTOR_LABEL_COLOR;
-						outlineColor = BLACK_LABEL_OUTLINE_COLOR;
-					}
-					else if (name.contains(Building.ERV)) {
-						frontColor = ERV_LABEL_COLOR;
-						outlineColor = WHITE_LABEL_OUTLINE_COLOR;
-					}
-					else if (name.contains("Command") || name.contains("Hub")
-							|| name.contains("Lander")) {
-						frontColor = HAB_LABEL_COLOR;
-						outlineColor = WHITE_LABEL_OUTLINE_COLOR;
-					}
-					else if (name.contains(Building.GREENHOUSE)) {
-						frontColor = GREENHOUSE_LABEL_COLOR;
-						outlineColor = BLACK_LABEL_OUTLINE_COLOR;
-					}
-					else if (name.contains("Processor")) {
-						frontColor = RESOURCE_LABEL_COLOR;
-						outlineColor = BLACK_LABEL_OUTLINE_COLOR;
-					}
-					else if (name.contains("Residential")) {
-						frontColor = LIVING_LABEL_COLOR;
-						outlineColor = BLACK_LABEL_OUTLINE_COLOR;
-					}
-					else if (name.contains("Bin") || name.contains("Workshop")
-							|| name.contains("Manu") || name.contains("Storage")
-							|| name.contains("Machin")) {
-						frontColor = SHOP_LABEL_COLOR;
-						outlineColor = BLACK_LABEL_OUTLINE_COLOR;
-					}
-					else if (name.contains("Garage")) {
-						frontColor = GARAGE_LABEL_COLOR;
-						outlineColor = BLACK_LABEL_OUTLINE_COLOR;
-					}
-					else if (name.contains("Medical")) {
-						frontColor = MEDICAL_LABEL_COLOR;
-						outlineColor = WHITE_LABEL_OUTLINE_COLOR;
-					}
-					else if (name.contains("Observatory")
-							|| name.contains("Research")) {
-						frontColor = LAB_LABEL_COLOR;
-						outlineColor = BLACK_LABEL_OUTLINE_COLOR;
-					}
-					else if (type.equalsIgnoreCase(Building.EVA_AIRLOCK)) {
-						frontColor = EVA_LABEL_COLOR;
-						outlineColor = BLACK_LABEL_OUTLINE_COLOR;
-					}
-					else {
-						frontColor = BUILDING_LABEL_COLOR;
-						outlineColor = WHITE_LABEL_OUTLINE_COLOR;
-					}
-					
 					for (int j = 0; j < s; j++) {
 						
 						int y = 0;

@@ -4,7 +4,6 @@
  * @date 2021-10-01
  * @author Barry Evans
  */
-
 package org.mars_sim.msp.core.structure.building;
 
 import java.util.ArrayList;
@@ -98,8 +97,10 @@ public class BuildingSpec {
 	private List<LocalPosition> beds;
 	private List<LocalPosition> parking;
 
+	private BuildingCategory category;
+
 	
-	public BuildingSpec(String name, String description, double width, double length, int baseLevel,
+	BuildingSpec(String name, String description, BuildingCategory category, double width, double length, int baseLevel,
 			double roomTemperature, int maintenanceTime,
 			int wearLifeTime, double basePowerRequirement, double basePowerDownPowerRequirement,
 			Map<FunctionType, FunctionSpec> supportedFunctions) {
@@ -108,6 +109,7 @@ public class BuildingSpec {
 		
 		this.name = name;
 		this.description = description;
+		this.category = category;
 		this.width = width;
 		this.length = length;
 		this.baseLevel = baseLevel;
@@ -154,6 +156,10 @@ public class BuildingSpec {
 
 	public String getDescription() {
 		return description;
+	}
+
+	public BuildingCategory getCategory() {
+		return category;
 	}
 
 	public double getBasePowerRequirement() {

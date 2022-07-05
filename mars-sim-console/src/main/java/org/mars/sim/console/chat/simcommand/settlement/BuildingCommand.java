@@ -33,10 +33,10 @@ public class BuildingCommand extends AbstractSettlementCommand {
 		BuildingManager bm = settlement.getBuildingManager();
 		List<Building> i = bm.getBuildings();
 		
-		response.appendTableHeading("Building", CommandHelper.BUILIDNG_WIDTH, "Power", 10, "Demand (kwh)", "Heat %",
-									"Temp.", "People");
+		response.appendTableHeading("Building", CommandHelper.BUILIDNG_WIDTH, "Category", 12, "Power", 10, "Demand (kwh)", "Heat %",
+									"Temp.", 6, "People");
 		for (Building building : i) {
-			response.appendTableRow(building.getName(), building.getPowerMode().getName(),
+			response.appendTableRow(building.getName(), building.getCategory().getName(), building.getPowerMode().getName(),
 									building.getFullPowerRequired(),
 									building.getHeatMode().getPercentage(), building.getCurrentTemperature(),
 									building.getNumPeople());
