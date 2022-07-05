@@ -135,6 +135,10 @@ class PartGood extends Good {
         
         GoodType type = part.getGoodType();
         
+        if (name.contains("battery")
+        		|| name.contains("fuel cell"))
+            return BATTERY_VALUE;
+        
         if (type == GoodType.VEHICLE)
             return VEHICLE_PART_VALUE;
         
@@ -154,8 +158,7 @@ class PartGood extends Good {
             return CPU_VALUE;
         else if (name.equalsIgnoreCase("semiconductor wafer"))
             return WAFER_VALUE;
-        else if (name.contains("battery"))
-            return BATTERY_VALUE;
+
         
         return ITEM_VALUE;
     }

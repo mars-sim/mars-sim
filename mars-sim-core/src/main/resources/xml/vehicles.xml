@@ -300,7 +300,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<drivetrain-efficiency value=".8" />
 		<base-speed value="20.0" />
 		<average-power value="10" />		
-		<empty-mass value="400.0" />
+		<empty-mass value="500.0" />
 		<terrain-handling value="1.0"/>
 		<crew-size value="1" />
 		<cargo total-capacity="300.0">

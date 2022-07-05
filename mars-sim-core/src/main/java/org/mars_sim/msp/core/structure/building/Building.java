@@ -1068,17 +1068,6 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 		return people;
 	}
 
-//	/**
-//	 * Compares this object with the specified object for order.
-//	 *
-//	 * @param o the Object to be compared.
-//	 * @return a negative integer, zero, or a positive integer as this object is
-//	 *         less than, equal to, or greater than the specified object.
-//	 */
-//	public int compareTo(Building o) {
-//		return buildingType.compareToIgnoreCase(o.buildingType);
-//	}
-
 	/**
 	 * Time passing for building.
 	 *

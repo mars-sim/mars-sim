@@ -116,21 +116,24 @@
 	<!ELEMENT waste-processing (process+, activity?)>
 	<!ATTLIST waste-processing power-down-level CDATA #REQUIRED>
 	
-	<!ELEMENT process (input+, output+)>
+	<!ELEMENT process (description?, input+, output+)>
 	<!ATTLIST process name CDATA #REQUIRED>
 	<!ATTLIST process power-required CDATA #REQUIRED>
 	<!ATTLIST process default (on|off) #REQUIRED>
 	<!ATTLIST process toggle-duration CDATA #IMPLIED>
 	<!ATTLIST process toggle-periodicity CDATA #IMPLIED>
 	<!ATTLIST process number-modules CDATA #IMPLIED>
+	
 	<!ELEMENT input EMPTY>
 	<!ATTLIST input resource CDATA #REQUIRED>
 	<!ATTLIST input rate CDATA #REQUIRED>
 	<!ATTLIST input ambient (true|false) #REQUIRED>
+	
 	<!ELEMENT output EMPTY>
 	<!ATTLIST output resource CDATA #REQUIRED>
 	<!ATTLIST output rate CDATA #REQUIRED>
 	<!ATTLIST output ambient (true|false) #REQUIRED>
+	
 	<!ELEMENT storage (resource-storage*, resource-initial*)>
 	<!ATTLIST storage stock-capacity CDATA #REQUIRED>
 	<!ELEMENT resource-storage EMPTY>
@@ -1149,6 +1152,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</power-generation>
 			<power-storage capacity="20.0" />
 			<resource-processing power-down-level="0.0">
+			
 				<process name="Sabatier RWGS Reactor" number-modules="5" power-required="1.88" default="on">
 					<!-- the amount of input and output (per module) -->
 					<input resource="carbon dioxide" rate="158.4" ambient="true" />
@@ -1157,11 +1161,49 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="carbon monoxide" rate="67.2" ambient="false" />
 					<output resource="water" rate="86.4" ambient="false" />
 				</process>
+				
 				<process name="Oxygen Generation System" power-required="2.5" default="on">
 					<input resource="water" rate="144" ambient="true" />
 					<output resource="hydrogen" rate="16" ambient="false" />
 					<output resource="oxygen" rate="128" ambient="false" />
 				</process>
+				
+				<process name="melt and filter ice" power-required="7" default="on">
+					<description> Melting permafrost ice and filtering the water. 
+						Requires 450kJ/kg extraction energy.
+						
+						Specific heat capacity of ice is 2.09 J/g/C
+				
+						e.g. For 1 mol of ice, from -25 C to 0 C
+						= 18 g * 2.09 * (0 -(-25)) = 0.941 kJ
+				
+						To transition from ice to liquid, it takes a total of 6.02 kJ/mol
+				
+						Specific heat capacity of water is 4.18 J/g/C
+				
+						To warm liquid water to vapor, it takes a total of 7.52 kJ/mol
+				
+						It's (.941 + 6.02) kJ / 18 g = 386.7 kJ / kg
+				
+						For 1 kg, heating for 25 millisols,
+						Heat req = 386.7 kJ/(88.775244*25) = 0.1742 kW / kg
+				
+						or 1.3939 kW for 8 kg of ice
+										
+						See "Water and Brines on Mars: Current Evidence and Implications for MSL", 2013						
+						
+						Note: assume using vacuum chamber, microwaving, or field effects, electrocatalysis, 
+						or other techniques to reduce power usage of ice melting by ~10-fold.
+						
+					</description>
+					<input resource="ice" rate="400.0" ambient="false" />
+					
+					<output resource="grey water" rate="120.0" ambient="false" />
+					<output resource="regolith" rate="75" ambient="false" />
+					<!-- Amount of rock salt or Halite is arbitrary. Need more research -->
+					<output resource="rock salt" rate="25" ambient="false" />
+				</process>
+					
 			</resource-processing>
 
 			<storage stock-capacity="100000">
@@ -1169,9 +1211,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-storage resource="methane" capacity="20000.0" />
 				<resource-storage resource="methanol" capacity="20000.0" />
 				<resource-storage resource="oxygen" capacity="20000.0" />
-				<resource-storage resource="water" capacity="19000.0" />
-				<resource-storage resource="carbon dioxide" capacity="1000.0" />
-
+				<resource-storage resource="water" capacity="10000.0" />
+				<resource-storage resource="grey water" capacity="2500.0" />				
+				<resource-storage resource="rock salt" capacity="2500.0" />
+				<resource-storage resource="ice" capacity="5000.0" />
 				<!-- Payload imported from Earth
 				resource-initial resource="hydrogen" amount="6300.0" /-->
 
@@ -1208,8 +1251,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	<building type="ERV-B" width="10.0" length="10.0" base-level="0"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="0" base-mass="20">
 		<description> The Earth Return Vehicle Type B (ERV-B) is a flight-ready space
-		vehicle and arrives on Mars with a Lander Hab. It provides regolith processing
-		equipment package not found in 'ERV-A'. It may in principle be
+		vehicle and arrives on Mars with a Lander Hab. It furnishes a regolith processing
+		equipment package not available in ERV-A. It may in principle be
 		reconfigured to provide for habitation space.
 		</description>
 		<power-required base-power="0.5" base-power-down-power="0.05"/>
@@ -1221,11 +1264,13 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</power-generation>
 			<power-storage capacity="20.0" />
 			<resource-processing power-down-level="0.0">
-				<!-- A Mars Aqueous Regolith Extract (MARE) was prepared from the Phoenix
-				analogue regolith and analyzed by ion chromatography.
-				The MARE contained (mg/L) Nitrogen-containing species NO3- has 773
-				and NO2- has 6.9 -->
-				<process name="Convert Regolith to Ores and Sand" power-required="0.5" default="off">
+			
+				<process name="convert regolith to ores with sand" 
+					power-required="0.5" default="off">
+					<description> A Mars Aqueous Regolith Extract (MARE) was prepared from the Phoenix
+					analogue regolith and analyzed by ion chromatography. The MARE contained (mg/L) 
+					Nitrogen-containing species NO3- has 773 and NO2- has 6.9 
+					</description>
 					<input resource="regolith" rate="100.0" ambient="false" />
 
 					<output resource="basaltic" rate="5.0" ambient="false" />
@@ -1239,7 +1284,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="oxygen" rate="2.0" ambient="false" />
 				</process>
 
-				<!-- Makes dry mortar mix with cement and regolith (1:5 mixture).
+				<!-- makes dry mortar mix with cement and regolith (1:5 mixture).
 				<process name="Make Mortar from Regolith" power-required="2.0" default="off">
 					<input resource="regolith" rate="83.0" ambient="false" />
 					<input resource="cement" rate="17.0" ambient="false" />
@@ -1247,53 +1292,138 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="mortar" rate="100.0" ambient="false" />
 				</process>
 				-->
-
-				<!--  Extract various minerals from regolith -->
-				<process name="Extract Minerals from Regolith" power-required="1.0" default="off">
-					<input resource="regolith" rate="80.0" ambient="false" />
-
-					<output resource="aluminum oxide" rate="6.0" ambient="false" />
-					<output resource="silicon" rate="6.0" ambient="false" />
-					<output resource="sulfur" rate="8.0" ambient="false" />
-					<output resource="sand" rate="60.0" ambient="false" />
+				
+				<process name="extract nitrogen compounds from regolith"
+					power-required="0.1" default="off">
+					<input resource="regolith" rate="5.0" ambient="false" />
+					
+					<output resource="nitrate" rate="1.0" ambient="false" />
+					<output resource="nitrite" rate="0.2" ambient="false" />
+					<output resource="nitrogen" rate="1.0" ambient="false" />
+					<output resource="ammonia" rate="1.0" ambient="false" />
+					<output resource="argon" rate="0.1" ambient="false" />
 				</process>
-
-<!--
-				<process name="Make Glass from Sand" power-required="1.0" default="off">
-					<input resource="sand" rate="100.0" ambient="false" />
-					<input resource="sodium carbonate" rate="100.0" ambient="false" />
+				
+				<process name="extract minerals from sand" power-required="1.0" default="off">
+					<description>Typically, manufactured glass contains around 15% sodium oxide, 70% silica
+				     (silicon dioxide) and 9% lime (calcium oxide). The sodium carbonate "soda"
+				     serves as a flux to lower the temperature at which the silica melts.
+				     https://en.wikipedia.org/wiki/Sodium_oxide
+					</description>
+					<input resource="sand" rate="80.0" ambient="false" />					
+					<input resource="sodium carbonate" rate="10.0" ambient="false" />
 
 					<output resource="aluminum oxide" rate="4.0" ambient="false" />
 					<output resource="aluminum" rate="16.0" ambient="false" />
-					<output resource="silicon dioxide" rate="26.0" ambient="false"/>
-					<output resource="silicon" rate="4.0" ambient="false"/>
-					<output resource="glass" rate="50.0" ambient="false" />
+					<output resource="sulfur" rate="8.0" ambient="false" />					
+					<output resource="silica" rate="26.0" ambient="false" />
+					<output resource="silicon" rate="4.0" ambient="false" />
+					<output resource="glass" rate="50.0" ambient="false" />				
 				</process>
--->
-				<process name="Make Cement" power-required="1.0" default="off">
-					<input resource="regolith" rate="80.0" ambient="false" />
+
+				<!-- Process for reducing gypsum to calcium carbonate using carbon. -->
+				<!-- Wrapping two processes: -->
+				<!-- CaSO4*2H2O (gypsum) + 2C -> CaS + 2CO2 + 2H2O -->
+				<!-- CaS + H2O + CO2 -> CaCO3 (calcium carbonate) + H2S -->
+				<!-- Note: ignoring hydrogen sulfide as waste for now. -->
+				<process name="reduce gypsum to calcium carbonate with carbon" power-required=".1" default="off">
+					<description>
+						Reducing gypsum to calcium carbonate using carbon. Gypsum on earth has up to 8.6 % water. Wrapping two processes below:
+						CaSO&lt;sub&gt;4&lt;/sub&gt; * 2H&lt;sub&gt;2&lt;/sub&gt;O (gypsum) + 2C -> CaS + 2CO&lt;sub&gt;2&lt;/sub&gt; + 2H&lt;sub&gt;2&lt;/sub&gt;O
+						CaS + H&lt;sub&gt;2&lt;/sub&gt;O + CO&lt;sub&gt;2&lt;/sub&gt; -> CaCO&lt;sub&gt;3&lt;/sub&gt; (calcium carbonate) + H&lt;sub&gt;2&lt;/sub&gt;S
+						Note: ignoring hydrogen sulfide as waste for now. 
+					</description>
+					<input resource="gypsum" rate="50.0" ambient="false" />
+					<input resource="carbon" rate="7.0" ambient="false" />
+					
+					<output resource="calcium carbonate" rate="29.0" ambient="false" />
+					<output resource="carbon dioxide" rate="12.7" ambient="true" />
+					<output resource="grey water" rate="5.2" ambient="false" />
+				</process>
+
+				<process name="reduce gypsum to calcium carbonate with carbon monoxide" power-required=".1" default="off">
+					<description>
+						Process for reducing gypsum to calcium carbonate using carbon monoxide.
+						Wrapping two processes:
+						CaSO4*2H2O (gypsum) + 4CO -> CaS + 4CO2 + 2H2O
+						CaS + H2O + CO2 -> CaCO3 (calcium carbonate) + H2S
+						Note: ignoring hydrogen sulfide as waste for now.
+					</description>
+					<input resource="gypsum" rate="50.0" ambient="false" />
+					<input resource="carbon monoxide" rate="32.5" ambient="false" />
+					
+					<output resource="calcium carbonate" rate="29.0" ambient="false" />
+					<output resource="carbon dioxide" rate="38.1" ambient="true" />
+					<output resource="grey water" rate="5.2" ambient="false" />
+				</process>
+		
+				<process name="reduce gypsum to calcium carbonate with hydrogen" power-required=".1" default="off">
+					<description>
+						Process for reducing gypsum to calcium carbonate using hydrogen.
+						Wrapping two processes:
+						CaSO4*2H2O (gypsum) + 4H2 -> CaS + 6H2O
+						CaS + H2O + CO2 -> CaCO3 (calcium carbonate) + H2S
+						Note: ignoring hydrogen sulfide as waste for now.
+					</description>					
+					<input resource="gypsum" rate="50.0" ambient="false" />
+					<input resource="hydrogen" rate="2.3" ambient="false" />
+					<input resource="carbon dioxide" rate="12.8" ambient="true" />
+					
+					<output resource="calcium carbonate" rate="29.0" ambient="false" />
+					<output resource="grey water" rate="26.0" ambient="false" />
+				</process>
+			
+				<process name="make quartz from silica" power-required="1.0" default="off">
+					<input resource="silica" rate="45.0" ambient="false" />
+					<input resource="calcium carbonate" rate="1.0" ambient="false" />
+					<input resource="sodium carbonate" rate="1.0" ambient="false" />
+					
+					<output resource="quartz" rate="40.0" ambient="false" />
+				</process>
+
+
+				<process name="make soda from sodium oxide" power-required=".1" default="off">
+					<description>
+						Soda is sodium carbonate. That is a salt. Sodium exists in Martian regolith as an
+						oxide or super oxide and can be converted into soda. Dissolve the sodium oxide
+						in water, then bubble carbon dioxide through the water. Oxygen will be released and soda created.
+						Boil down the result to extract the water and you have soda.
+					</description>	
+					<input resource="sodium oxide" rate="10.0" ambient="false" />
+					<input resource="water" rate="1.0" ambient="false" />	
+					<input resource="carbon dioxide" rate="1.0" ambient="true" />
+					
+					<output resource="sodium carbonate" rate="5.0" ambient="false" />
+				</process>
+
+
+				<process name="make cement" power-required="1.0" default="off">
+					<input resource="regolith" rate="70.0" ambient="false" />
 					<input resource="gypsum" rate="10.0" ambient="false" />
 					<input resource="aluminum oxide" rate="5.0" ambient="false" />
 					<input resource="iron oxide" rate="5.0" ambient="false" />
+					<input resource="silica" rate="10.0" ambient="false" />
 
 					<output resource="cement" rate="100.0" ambient="false" />
 				</process>
 
-				<!-- Makes sulfur concrete using sulfur as the cement, with sand and regolith as aggregates.
-				1. https://www.fastcompany.com/3055172/why-martian-concrete-might-be-the-best-building-material-in-the-solar-system
-				2. https://www.frontiersin.org/articles/10.3389/fmats.2019.00083/full
-				3. https://www.howden.com/en-us/articles/cement/how-is-cement-made
-				4. https://www.cnet.com/news/concrete-for-mars-shelters-made-from-martian-materials/
-				5. https://phys.org/news/2016-01-martian-concrete-materials-red-planet.html
-				6. [Construction by Contour Crafting using Sulfur Concrete with Planetary Applications](http://utw10945.utweb.utexas.edu/sites/default/files/2015/2015-141-Khoshnevis.pdf)
-				7. https://cen.acs.org/articles/96/i1/build-settlements-Mars-ll-need.html
-				8. https://pubs.acs.org/doi/pdf/10.1021/acscentsci.7b00538
-				9. https://www.technologyreview.com/2016/01/05/109321/materials-scientists-make-martian-concrete/
-				10. https://www.azom.com/news.aspx?newsID=43710
-				11. https://www.sustainableconcrete.org.uk/MPA-ACP/media/SustainableCon-Media-Library/Pdfs%20-%20Performance%20reports/TIC_innovation_Feb19.pdf
-				12. [Facile preparation of sulfur polymer cement via low-temperature curing](https://repository.hanyang.ac.kr/bitstream/20.500.11754/112544/1/Facile%20preparation%20of%20sulfur%20polymer%20cement%20via%20lowtemperature%20curing.pdf)
-				13. [Characterization of a sustainable sulfur polymer concrete using activated fillers](https://www.researchgate.net/publication/290653757_Characterization_of_a_sustainable_sulfur_polymer_concrete_using_activated_fillers)-->
-				<process name="Mix Sulfur Concrete" power-required="1.0" default="off">
+				<process name="mix sulfur concrete" power-required="1.0" default="off">
+					<description>
+					Makes sulfur concrete using sulfur as the cement, with sand and regolith as aggregates.
+					1. https://www.fastcompany.com/3055172/why-martian-concrete-might-be-the-best-building-material-in-the-solar-system
+					2. https://www.frontiersin.org/articles/10.3389/fmats.2019.00083/full
+					3. https://www.howden.com/en-us/articles/cement/how-is-cement-made
+					4. https://www.cnet.com/news/concrete-for-mars-shelters-made-from-martian-materials/
+					5. https://phys.org/news/2016-01-martian-concrete-materials-red-planet.html
+					6. [Construction by Contour Crafting using Sulfur Concrete with Planetary Applications](http://utw10945.utweb.utexas.edu/sites/default/files/2015/2015-141-Khoshnevis.pdf)
+					7. https://cen.acs.org/articles/96/i1/build-settlements-Mars-ll-need.html
+					8. https://pubs.acs.org/doi/pdf/10.1021/acscentsci.7b00538
+					9. https://www.technologyreview.com/2016/01/05/109321/materials-scientists-make-martian-concrete/
+					10. https://www.azom.com/news.aspx?newsID=43710
+					11. https://www.sustainableconcrete.org.uk/MPA-ACP/media/SustainableCon-Media-Library/Pdfs%20-%20Performance%20reports/TIC_innovation_Feb19.pdf
+					12. [Facile preparation of sulfur polymer cement via low-temperature curing](https://repository.hanyang.ac.kr/bitstream/20.500.11754/112544/1/Facile%20preparation%20of%20sulfur%20polymer%20cement%20via%20lowtemperature%20curing.pdf)
+					13. [Characterization of a sustainable sulfur polymer concrete using activated fillers](https://www.researchgate.net/publication/290653757_Characterization_of_a_sustainable_sulfur_polymer_concrete_using_activated_fillers)
+					</description>						
 					<input resource="sulfur" rate="25.0" ambient="false" />
 					<input resource="sand" rate="35.0" ambient="false" />
 					<input resource="cement" rate="60.0" ambient="false" />
@@ -1303,7 +1433,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</process>
 
 				<!-- Same as concrete mixing but using lime in place of cement. -->
-				<process name="Mix Limecrete" power-required="1.0" default="off">
+				<process name="mix limecrete" power-required="1.0" default="off">
 					<input resource="sulfur" rate="10.0" ambient="false" />
 					<input resource="sand" rate="40.0" ambient="false" />
 					<input resource="lime" rate="50.0" ambient="false" />
@@ -1312,8 +1442,11 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="concrete" rate="100.0" ambient="false" />
 				</process>
 
-				<!-- Serpentinization : olivine (Mg,Fe)2 + SiO4 produces H2 and Mg(OH)2, which in terms
-					 produce water 
+
+				<process name="make magnesium-based concrete" power-required="1.0" default="off">
+					<description> 
+					 Serpentinization : olivine (Mg,Fe)2 + SiO4 produces H2 and Mg(OH)2, 
+					 which in terms produce water 
 					 
 					 Decarbonation : MgCO3 at 670 C gives CO2 and MgO. Use Mg silica hydrate as binder
 
@@ -1322,9 +1455,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					 SiO2 - amorphous silica
 					 MgO:Si paste - Mg Silicate Hydrate (MSH) binder
 					 
-					 1. Constructing Mars: Concrete and Energy Production from Serpentinization Products 
-					    https://agupubs.onlinelibrary.wiley.com/doi/pdf/10.1029/2017EA000353 -->
-				<process name="Make Magnesium-based Concrete" power-required="1.0" default="off">
+					 See 'Constructing Mars: Concrete and Energy Production from Serpentinization Products' 
+					    https://agupubs.onlinelibrary.wiley.com/doi/pdf/10.1029/2017EA000353 
+					</description>
 					<input resource="olivine" rate="63.0" ambient="false" />
 					<input resource="water" rate="9.0" ambient="false" />
 
@@ -1332,21 +1465,25 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="concrete" rate="71.0" ambient="false" />
 				</process>
 
+					
 			</resource-processing>
 
-			<storage stock-capacity="90000">
-				<resource-storage resource="hydrogen" capacity="10000.0" />
-				<resource-storage resource="methane" capacity="10000.0" />
-				<resource-storage resource="methanol" capacity="10000.0" />
-				<resource-storage resource="oxygen" capacity="10000.0" />
-				<resource-storage resource="water" capacity="10000.0" />
+			<storage stock-capacity="100000">
 
-				<resource-storage resource="concrete" capacity="10000.0" />
-				<resource-storage resource="cement" capacity="10000.0" />
+				<resource-storage resource="glass" capacity="5000.0" />
+				<resource-storage resource="silica" capacity="5000.0" />
+				<resource-storage resource="aluminum oxide" capacity="5000.0" />
+				<resource-storage resource="aluminum" capacity="5000.0" />
+				<resource-storage resource="calcium carbonate" capacity="2500.0" />	 			
+				<resource-storage resource="sulfur" capacity="2500.0" />
+				<resource-storage resource="lime" capacity="5000.0" />			
+				
+				<resource-storage resource="gypsum" capacity="10000.0" />
+				<resource-storage resource="regolith" capacity="10000.0" />
+				<resource-storage resource="concrete" capacity="20000.0" />
+				<resource-storage resource="cement" capacity="20000.0" />
 				<resource-storage resource="sand" capacity="10000.0" />
-				<resource-storage resource="sulfur" capacity="5000.0" />
-				<resource-storage resource="lime" capacity="5000.0" />
-
+				
 			</storage>
 		</functions>
 	</building>

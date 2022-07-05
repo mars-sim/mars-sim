@@ -312,7 +312,12 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="eva battery" type="EVA" mass="2.5" >
+	<part name="eva battery" type="EVA" mass="2.4" >
+		<description>Assuming the achievement of 500 Wh/kg, this 
+		rechargeable battery module is rated for 150 W at 18V 
+		for providing 8 hrs of electrical power to the EVA suit. 
+		Total energy capacity is 150 * 8 = 1.2 kWh. Weight: 1.2/.5 = 2.4 kg
+		</description>
 		<maintenance-entity-list>
 			<entity name="eva suit" probability="2" max-number="1" />
 		</maintenance-entity-list>
@@ -335,9 +340,16 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="rover battery" type="vehicle" mass="50.0">
-		<description>This rechargeable battery module provide auxiliary electric power
-		to the vehicle.</description>
+	<part name="vehicle battery" type="vehicle" mass="225.0">
+		<description>Assuming the achievement of 15 kg/kWh 
+		for a full battery with supportive structures, 
+		this 15kWh rechargeable battery provides 'auxiliary' 
+		electrical power to the vehicle, on top of the primary
+		fuel cell stack. It operates at 400V. With 15 kWh capacity,
+		or 37.5 Ah (= 15/.4). Assume 6.43 km/kWh (based on a Tesla Model S
+		battery pack weighing 2240 kg with 100 kWh capacity that can travel 
+		643 km), this battery allows traveling a distance of 96.5 km on a single charge.
+		</description>
 		<maintenance-entity-list>
 			<entity name="rover" probability="2" max-number="4" />
 			<entity name="light utility vehicle" probability="2" max-number="1" />
@@ -751,17 +763,33 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="solid oxide fuel cell" type="electronic" mass=".2">
-		<description>Each solid oxide fuel cell (SOFC) can generate 200W.
-		It consumes methane and has attained a rating of 65% efficiency</description>
-		<!--maintenance-entity-list>
-			<entity name="fuel cell stack" probability="1" max-number="25" />
-		</maintenance-entity-list-->
+	<part name="methane fuel cell" type="electronic" mass=".2">
+		<description>Assume each solid oxide fuel cell (SOFC) can generate 200W
+		with the achievement of 1kWh/kg. Weight: 200W * 1kWh/kg = 0.2 kg
+		</description>
 	</part>
 
-	<part name="fuel cell stack" type="electronic" mass="15">
-		<description>Each fuel cell stack comprises 75 solid oxide fuel cells
-			(SOFC), totalling 15 kWe</description>
+	<part name="methane fuel cell stack" type="electronic" mass="60">
+		<description>A 15 kW Solid Oxide Fuel Cell (SOFC) stack comprises 
+		    75 fuel cells, furnished with valves, coolant and pump, filter, sensors,
+		    cold plate and heat pipes. 
+		</description>
+	    <maintenance-entity-list>
+			<entity name="vehicle" probability="1" max-number="1" />
+			<entity name="fuel power source" probability="1" max-number="1" />
+		</maintenance-entity-list>
+	</part>
+	
+	<part name="methanol fuel cell" type="electronic" mass=".2">
+		<description>Assume each methanol fuel cell can generate 200W
+		continuous power.
+		</description>
+	</part>
+	
+	<part name="methanol fuel cell stack" type="electronic" mass="80">
+		<description>A 15 kW Reformed Methanol Fuel Cell (RMFC) stack comprises 
+		   75 fuel cells and heat exchanger, radiator and supporting structure.
+		</description>		
 	    <maintenance-entity-list>
 			<entity name="vehicle" probability="1" max-number="1" />
 			<entity name="fuel power source" probability="1" max-number="1" />

@@ -121,6 +121,7 @@ abstract class TableTab extends MonitorTab {
                  * Display the cell contents as a tooltip. Useful when cell
                  * contents in wider than the cell
 				 */
+				@Override
                 public String getToolTipText(MouseEvent e) {
                 	// Future: Figure out how to create a custom tooltip text for showing the greenhouse crop in Crop tab
                     return getCellText(e);
@@ -130,22 +131,27 @@ abstract class TableTab extends MonitorTab {
 
 			// call it a click to display details button when user double clicks the table
 			table.addMouseListener(new MouseListener() {
-				public void mouseReleased(MouseEvent e) {
-				}
-
-				public void mousePressed(MouseEvent e) {
-				}
-
-				public void mouseExited(MouseEvent e) {
-				}
-
-				public void mouseEntered(MouseEvent e) {
-				}
-
+				@Override
 				public void mouseClicked(MouseEvent e) {
 					if (e.getClickCount() == 2 && !e.isConsumed()) {
 						window.displayDetails();
 					}
+				}
+				@Override
+				public void mousePressed(MouseEvent e) {
+					// nothing	
+				}
+				@Override
+				public void mouseReleased(MouseEvent e) {
+					// nothing	
+				}
+				@Override
+				public void mouseEntered(MouseEvent e) {
+					// nothing				
+				}
+				@Override
+				public void mouseExited(MouseEvent e) {
+					// nothing			
 				}
 			});
 
@@ -200,6 +206,7 @@ abstract class TableTab extends MonitorTab {
 				 * Displays the cell contents as a tooltip. Useful when cell contents in wider
 				 * than the cell
 				 */
+				@Override
 				public String getToolTipText(MouseEvent e) {
 					return getCellText(e);
 				};

@@ -164,8 +164,8 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	private ImageIcon sandstorm = new LazyIcon("sandstorm").getIcon();
 	private ImageIcon dustDevil = new LazyIcon("dustDevil").getIcon();
 
-	private ImageIcon cold_wind = new LazyIcon("cold_wind").getIcon();
-	private ImageIcon frost_wind = new LazyIcon("frost_wind").getIcon();
+	private ImageIcon coldWind = new LazyIcon("cold_wind").getIcon();
+	private ImageIcon frostWind = new LazyIcon("frost_wind").getIcon();
 
 	private ImageIcon snowflake = new LazyIcon("snowflake").getIcon();
 	private ImageIcon ice = new LazyIcon("ice").getIcon();
@@ -173,7 +173,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	private ImageIcon cloudy = new LazyIcon("cloudy").getIcon();
 	
 	private ImageIcon sun = new LazyIcon("sun").getIcon();
-	private ImageIcon desert_sun = new LazyIcon("desert_sun").getIcon();
+	private ImageIcon desertSun = new LazyIcon("desert_sun").getIcon();
 	
 	private ImageIcon emptyIcon = new ImageIcon();
     
@@ -688,17 +688,17 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	        	}
 
 	        	else if (sIcon.equals(COLD_WIND_SVG)) {
-	        		icon = cold_wind;
+	        		icon = coldWind;
 	        	}
 	        	if (sIcon.equals(FROST_WIND_SVG)) {
-	        		icon = frost_wind;
+	        		icon = frostWind;
 	        	}
 
 	        	else if (sIcon.equals(SUN_SVG)) {
 	        		icon = sun;
 	        	}
 	        	else if (sIcon.equals(DESERT_SUN_SVG)) {
-	        		icon = desert_sun;
+	        		icon = desertSun;
 	        	}
 	        	else if (sIcon.equals(CLOUDY_SVG)) {
 	        		icon = cloudy;

@@ -533,6 +533,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		MonitorTab selectedTab = getSelected();
 		if (selectedTab == null)
 			return;
+		
 		int index = tabsSection.indexOfComponent(selectedTab);
 		
 		if (settlementList.size() == 1) {
@@ -557,6 +558,16 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 			setSettlementBox(true);
 			return;
 		}
+		
+		selectNewTab(selectedTab);
+	}
+	
+	/**
+	 * Selects a new tab.
+	 * 
+	 * @param selectedTab
+	 */
+	private void selectNewTab(MonitorTab selectedTab) {
 		
 		MonitorModel model = selectedTab.getModel();
 		model.removeTableModelListener(this);

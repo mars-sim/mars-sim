@@ -166,7 +166,7 @@ http://canada.marssociety.org/winnipeg/soil.html
 		</inputs>
 		<outputs>
 			<resource name="aluminum oxide" amount="30.0" />
-			<resource name="silicon dioxide" amount="1.0" />
+			<resource name="silica" amount="1.0" />
 			<resource name="sand" amount="6.0" />
 			<resource name="grey water" amount="10.0" />
 		</outputs>
@@ -451,137 +451,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 	 TODO: Need to find the real molecular mass of the initial and resulting product
 			Fe2O3 + 3C → 2Fe + 3CO
-
 -->
-<!--  Transfer the manufacturing process below to resource process
-	<process name="extract aluminum oxide from regolith"
-			tech="1" skill="0"
-			work-time="50"
-			process-time="100"
-			power-required="0.2">
-		<inputs>
-			<resource name="regolith" amount="50.0" />
-		</inputs>
-		<outputs>
-			<resource name="aluminum oxide" amount="2.0" />
-			<resource name="silicon" amount="1.0" />
-			<resource name="sulfur" amount="1.0" />
-			<resource name="sand" amount="40.0" />
-		</outputs>
-	</process>
-
-	<process name="extract aluminum oxide from regolith (large batch)"
-			tech="1" skill="2"
-			work-time="250"
-			process-time="500"
-			power-required="1.0">
-		<inputs>
-			<resource name="regolith" amount="500.0" />
-		</inputs>
-		<outputs>
-			<resource name="aluminum oxide" amount="20.0" />
-			<resource name="silicon" amount="10.0" />
-			<resource name="sulfur" amount="10.0" />
-			<resource name="sand" amount="400.0" />
-		</outputs>
-	</process>
-
-	<process name="extract silicon dioxide from sand"
-	tech="1" skill="0"
-			work-time="20"
-			process-time="100"
-			power-required="0.2">
-		<inputs>
-			<resource name="sand" amount="50.0" />
-		</inputs>
-		<outputs>
-			<resource name="aluminum" amount="5.0" />
-			<resource name="silicon dioxide" amount="45.0" />
-		</outputs>
-	</process>
-
-	<process name="extract silicon dioxide from sand (large batch)"
-	tech="1" skill="2"
-			work-time="100"
-			process-time="500"
-			power-required="1.0">
-		<inputs>
-			<resource name="sand" amount="500.0" />
-		</inputs>
-		<outputs>
-			<resource name="aluminum" amount="50.0" />
-			<resource name="silicon dioxide" amount="450.0" />
-		</outputs>
-	</process>
--->
-
-<!-- Typically, manufactured glass contains around 15% sodium oxide, 70% silica
-     (silicon dioxide) and 9% lime (calcium oxide). The sodium carbonate "soda"
-     serves as a flux to lower the temperature at which the silica melts.
-     https://en.wikipedia.org/wiki/Sodium_oxide -->
-
-	<process name="make glass from sand"
-	tech="1" skill="0"
-			work-time="50"
-			process-time="100"
-			power-required="0.2">
-		<inputs>
-			<resource name="sand" amount="50.0" />
-			<resource name="sodium carbonate" amount="5.0" />
-
-		</inputs>
-		<outputs>
-			<resource name="glass" amount="30.0" />
-			<resource name="silicon dioxide" amount="10.0" />
-		</outputs>
-	</process>
-
-
-	<process name="make quartz from silicon dioxide"
-	tech="1" skill="0"
-			work-time="50"
-			process-time="100"
-			power-required="0.2">
-		<inputs>
-			<resource name="silicon dioxide" amount="45.0" />
-			<resource name="calcium carbonate" amount="1.0" />
-			<resource name="sodium carbonate" amount="1.0" />
-		</inputs>
-		<outputs>
-			<resource name="quartz" amount="40.0" />
-		</outputs>
-	</process>
-<!--
-	<process name="extract aluminum and oxide from sand"
-	tech="1" skill="0"
-			work-time="50"
-			process-time="100"
-			power-required="0.2">
-		<inputs>
-			<resource name="sand" amount="50.0" />
-		</inputs>
-		<outputs>
-			<resource name="aluminum oxide" amount="2.0" />
-			<resource name="aluminum" amount="1.0" />
-			<resource name="silicon" amount="1.0" />
-		</outputs>
-	</process>
-
-	<process name="extract aluminum and oxide from sand (large batch)"
-	tech="1" skill="2"
-			work-time="250"
-			process-time="500"
-			power-required="1.0">
-		<inputs>
-			<resource name="sand" amount="500.0" />
-		</inputs>
-		<outputs>
-			<resource name="aluminum oxide" amount="20.0" />
-			<resource name="aluminum" amount="10.0" />
-			<resource name="silicon" amount="10.0" />
-		</outputs>
-	</process>
- -->
 
 	<process name="do carbon monoxide iron reduction"
 			tech="1" skill="1"
@@ -1101,142 +971,6 @@ Note: 1 kg of H2 is 14.13 liter
 		</inputs>
 		<outputs>
 			<part name="bottle" number="10" />
-		</outputs>
-	</process>
-
-<!-- Soda is sodium carbonate. That is a salt. Sodium exists in Martian regolith as an
-oxide or super oxide and can be converted into soda. Just dissolve the sodium oxide
- in water, then bubble carbon dioxide through the water. Oxygen will be released and soda created.
-  Boil down the result to extract the water and you have soda. -->
-	<process name="make soda from sodium oxide" tech="2" skill="1" work-time="50" process-time="50"
-			power-required=".1">
-		<inputs>
-			<resource name="sodium oxide" amount="10.0" />
-			<resource name="water" amount="1.0" />
-			<resource name="carbon dioxide" amount="1.0" />
-		</inputs>
-		<outputs>
-			<resource name="sodium carbonate" amount="5.0" />
-		</outputs>
-	</process>
-
-	<!-- Process for reducing gypsum to calcium carbonate using carbon. -->
-	<process name="reduce gypsum to calcium carbonate with carbon" tech="1" skill="1" work-time="100"
-			process-time="200" power-required=".1">
-		<description>
-			Wrapping two processes:
-			CaSO&lt;sub&gt;4&lt;/sub&gt; * 2H&lt;sub&gt;2&lt;/sub&gt;O (gypsum) + 2C -> CaS + 2CO&lt;sub&gt;2&lt;/sub&gt; + 2H&lt;sub&gt;2&lt;/sub&gt;O
-			CaS + H&lt;sub&gt;2&lt;/sub&gt;O + CO&lt;sub&gt;2&lt;/sub&gt; -> CaCO&lt;sub&gt;3&lt;/sub&gt; (calcium carbonate) + H&lt;sub&gt;2&lt;/sub&gt;S
-			Note: ignoring hydrogen sulfide as waste for now.
-
-			Gypsum has up to 8.6 % water
-		</description>
-		<inputs>
-			<resource name="gypsum" amount="50.0" />
-			<resource name="carbon" amount="7.0" />
-		</inputs>
-		<outputs>
-			<resource name="calcium carbonate" amount="29.0" />
-			<resource name="carbon dioxide" amount="12.7" />
-			<resource name="grey water" amount="5.2" />
-		</outputs>
-	</process>
-
-	<!-- Process for reducing gypsum to calcium carbonate using carbon. -->
-	<!-- Wrapping two processes: -->
-	<!-- CaSO4*2H2O (gypsum) + 2C -> CaS + 2CO2 + 2H2O -->
-	<!-- CaS + H2O + CO2 -> CaCO3 (calcium carbonate) + H2S -->
-	<!-- Note: ignoring hydrogen sulfide as waste for now. -->
-	<process name="reduce gypsum to calcium carbonate with carbon (large batch)" tech="1" skill="3" work-time="500"
-			process-time="1000" power-required=".5">
-		<description>
-			Wrapping two processes:
-			CaSO&lt;sub&gt;4&lt;/sub&gt; * 2H&lt;sub&gt;2&lt;/sub&gt;O (gypsum) + 2C -> CaS + 2CO&lt;sub&gt;2&lt;/sub&gt; + 2H&lt;sub&gt;2&lt;/sub&gt;O
-			CaS + H&lt;sub&gt;2&lt;/sub&gt;O + CO&lt;sub&gt;2&lt;/sub&gt; -> CaCO&lt;sub&gt;3&lt;/sub&gt; (calcium carbonate) + H&lt;sub&gt;2&lt;/sub&gt;S
-			Note: ignoring hydrogen sulfide as waste for now.
-
-			Gypsum has up to 8.6 % water
-		</description>
-		<inputs>
-			<resource name="gypsum" amount="500.0" />
-			<resource name="carbon" amount="70.0" />
-		</inputs>
-		<outputs>
-			<resource name="calcium carbonate" amount="290.0" />
-			<resource name="carbon dioxide" amount="127.0" />
-			<resource name="grey water" amount="52.0" />
-		</outputs>
-	</process>
-
-	<!-- Process for reducing gypsum to calcium carbonate using carbon monoxide. -->
-	<!-- Wrapping two processes: -->
-	<!-- CaSO4*2H2O (gypsum) + 4CO -> CaS + 4CO2 + 2H2O -->
-	<!-- CaS + H2O + CO2 -> CaCO3 (calcium carbonate) + H2S -->
-	<!-- Note: ignoring hydrogen sulfide as waste for now. -->
-	<process name="reduce gypsum to calcium carbonate with carbon monoxide" tech="1" skill="1" work-time="100"
-			process-time="200" power-required=".1">
-		<inputs>
-			<resource name="gypsum" amount="50.0" />
-			<resource name="carbon monoxide" amount="32.5" />
-		</inputs>
-		<outputs>
-			<resource name="calcium carbonate" amount="29.0" />
-			<resource name="carbon dioxide" amount="38.1" />
-			<resource name="grey water" amount="5.2" />
-		</outputs>
-	</process>
-
-	<!-- Process for reducing gypsum to calcium carbonate using carbon monoxide. -->
-	<!-- Wrapping two processes: -->
-	<!-- CaSO4*2H2O (gypsum) + 4CO -> CaS + 4CO2 + 2H2O -->
-	<!-- CaS + H2O + CO2 -> CaCO3 (calcium carbonate) + H2S -->
-	<!-- Note: ignoring hydrogen sulfide as waste for now. -->
-	<process name="reduce gypsum to calcium carbonate with carbon monoxide (large batch)" tech="1" skill="3" work-time="500"
-			process-time="1000" power-required=".5">
-		<inputs>
-			<resource name="gypsum" amount="500.0" />
-			<resource name="carbon monoxide" amount="325.0" />
-		</inputs>
-		<outputs>
-			<resource name="calcium carbonate" amount="290.0" />
-			<resource name="carbon dioxide" amount="381.0" />
-			<resource name="grey water" amount="52.0" />
-		</outputs>
-	</process>
-
-	<!-- Process for reducing gypsum to calcium carbonate using hydrogen. -->
-	<!-- Wrapping two processes: -->
-	<!-- CaSO4*2H2O (gypsum) + 4H2 -> CaS + 6H2O -->
-	<!-- CaS + H2O + CO2 -> CaCO3 (calcium carbonate) + H2S -->
-	<!-- Note: ignoring hydrogen sulfide as waste for now. -->
-	<process name="reduce gypsum to calcium carbonate with hydrogen" tech="1" skill="1" work-time="100"
-			process-time="200" power-required=".1">
-		<inputs>
-			<resource name="gypsum" amount="50.0" />
-			<resource name="hydrogen" amount="2.3" />
-			<resource name="carbon dioxide" amount="12.8" />
-		</inputs>
-		<outputs>
-			<resource name="calcium carbonate" amount="29.0" />
-			<resource name="grey water" amount="26.0" />
-		</outputs>
-	</process>
-
-	<!-- Process for reducing gypsum to calcium carbonate using hydrogen. -->
-	<!-- Wrapping two processes: -->
-	<!-- CaSO4*2H2O (gypsum) + 4H2 -> CaS + 6H2O -->
-	<!-- CaS + H2O + CO2 -> CaCO3 (calcium carbonate) + H2S -->
-	<!-- Note: ignoring hydrogen sulfide as waste for now. -->
-	<process name="reduce gypsum to calcium carbonate with hydrogen (large batch)" tech="1" skill="3" work-time="500"
-			process-time="1000" power-required="0.5">
-		<inputs>
-			<resource name="gypsum" amount="500.0" />
-			<resource name="hydrogen" amount="23.0" />
-			<resource name="carbon dioxide" amount="128.0" />
-		</inputs>
-		<outputs>
-			<resource name="calcium carbonate" amount="290.0" />
-			<resource name="grey water" amount="260.0" />
 		</outputs>
 	</process>
 
@@ -2020,7 +1754,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		<inputs>
 			<part name="vehicle frame - small" number="1" />
 			<part name="motor - large" number="1" />
-			<part name="rover battery" number="1" />
+			<part name="vehicle battery" number="1" />
 			<part name="utility vehicle control panel" number="1" />
 			<part name="electrical wire" number="10" />
 			<part name="wire connector" number="10" />
@@ -2045,8 +1779,8 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="aluminum sheet" number="5" />
 			<part name="rover chassis panel" number="2" />
 			<part name="motor - small" number="4" />
-			<part name="fuel cell stack" number="3" />
-			<part name="rover battery" number="1" />
+			<part name="methane fuel cell stack" number="3" />
+			<part name="vehicle battery" number="1" />
 			<part name="electrical wire" number="10" />
 			<part name="wire connector" number="10" />
 			<part name="plastic tubing" number="2" />
@@ -2073,8 +1807,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="rover chassis panel" number="3" />
 			<part name="aluminum sheet" number="5" />			
 			<part name="motor - small" number="4" />
-			<part name="fuel cell stack" number="1" />
-			<part name="rover battery" number="1" />
+			<part name="methane fuel cell stack" number="1" />
 			<part name="utility vehicle control panel" number="1" />
 			<part name="electrical wire" number="10" />
 			<part name="wire connector" number="10" />
@@ -2105,9 +1838,9 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="rover window" number="5" />
 			<part name="winch" number="1" />
 			<part name="rover generator" number="1" />
-			<part name="fuel cell stack" number="4" />
+			<part name="methane fuel cell stack" number="4" />
 			<part name="motor - large" number="3" />
-			<part name="rover battery" number="2" />
+			<part name="vehicle battery" number="2" />
 			<part name="rover control panel" number="1" />
 			<part name="fuel tank" number="1" />
 			<part name="gas tank" number="1" />
@@ -2143,9 +1876,9 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="rover window" number="7" />
 			<part name="winch" number="1" />
 			<part name="rover generator" number="1" />
-			<part name="fuel cell stack" number="5" />
+			<part name="methane fuel cell stack" number="5" />
 			<part name="motor - large" number="4" />
-			<part name="rover battery" number="3" />
+			<part name="vehicle battery" number="3" />
 			<part name="rover control panel" number="1" />
 			<part name="fuel tank" number="1" />
 			<part name="gas tank" number="1" />
@@ -2181,9 +1914,9 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="rover window" number="7" />
 			<part name="winch" number="1" />
 			<part name="rover generator" number="1" />
-			<part name="fuel cell stack" number="6" />
+			<part name="methane fuel cell stack" number="6" />
 			<part name="motor - large" number="5" />
-			<part name="rover battery" number="4" />
+			<part name="vehicle battery" number="4" />
 			<part name="rover control panel" number="1" />
 			<part name="fuel tank" number="1" />
 			<part name="gas tank" number="1" />
@@ -2266,7 +1999,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		<outputs>
 			<resource name="magnesium" amount="14.4" />
 			<resource name="carbon dioxide" amount="52.2" />
-			<resource name="silicon dioxide" amount="5" />
+			<resource name="silica" amount="5" />
 		</outputs>
 	</process>
 
@@ -2846,64 +2579,6 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		</outputs>
 	</process>
 
-	<!-- Melting permafrost ice and filtering the water.
-	     Note : Melting ice requires 450kJ/kg exraction energy
-
-		Specific heat capacity of ice is 2.09 J/g/C
-
-		e.g. For 1 mol of ice, from -25 C to 0 C
-		= 18 g * 2.09 * (0 -(-25)) = 0.941 kJ
-
-		.941 kJ /mol
-
-		To transition from ice to liquid, it takes a total of 6.02 kJ/mol
-
-		Specific heat capacity of water is 4.18 J/g/C
-
-		To warm liquid water to vapor, it takes a total of 7.52 kJ/mol
-
-		It's (.941 + 6.02) kJ / 18 g = 386.7 kJ / kg
-
-		For 1 kg, heating for 25 millisols,
-		Heat req = 386.7 kJ/(88.775244*25) = 0.1742 kW / kg
-
-		or 1.3939 kW for 8 kg of ice
-
-		Note: assume using vacuum chamber/microwaving/other techniques to reduce
-		      power usage and speed up melting by 5-fold
-	     -->
-	<process name="melt and filter ice" tech="1" skill="0" work-time="2" process-time="5"
-			power-required="1.39">
-		<inputs>
-			<resource name="ice" amount="10.0" />
-		</inputs>
-		<outputs>
-			<resource name="grey water" amount="8.0" />
-			<resource name="regolith" amount="1.5" />
-			<!-- Amount of rock salt or Halite is arbitrary. Need more research -->
-			<resource name="rock salt" amount=".5" />
-		</outputs>
-	</process>
-
-		<!-- Melting permafrost ice and filtering the water (large batch). -->
-	<process name="melt and filter ice (large batch)" tech="1" skill="0" work-time="2" process-time="5"
-			power-required="13.9">
-		<inputs>
-			<resource name="ice" amount="100.0" />
-		</inputs>
-		<outputs>
-			<resource name="grey water" amount="80.0" />
-			<resource name="regolith" amount="15" />
-			<!-- Amount of rock salt or Halite is arbitrary. Need more research -->
-			<resource name="rock salt" amount="5" />
-		</outputs>
-	</process>
-
-	<!-- see "Water and Brines on Mars: Current Evidence and Implications for MSL", 2013
-	see http://download.springer.com/static/pdf/858/art%253A10.1007%252Fs11214-012-9956-3.pdf?auth66=1421432558_9bf0c795e4178cf6a503949883374ecf&ext=.pdf
-	-->
-
-
 	<!-- Electrolysis of potassium chloride (sylvite) in water to produce potassium hydroxide (potash lye) -->
 	<!-- and chlorine gas  -->
 	<!-- 2 K+(aq) + 2H2O(l) + 2e− → H2(g) + 2 KOH(aq) -->
@@ -2925,20 +2600,27 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		</outputs>
 	</process>
 
-	<!-- Manufacturing a nickel-iron (NiFe) battery for use with vehicles and settlement battery arrays. -->
-	<!-- http://en.wikipedia.org/wiki/Nickel-iron_battery -->
-	<process name="manufacture rover battery" tech="2" skill="3" work-time="500" process-time="50"
+
+	<process name="manufacture vehicle battery" tech="2" skill="3" work-time="500" process-time="50"
 			power-required="1.0">
+		<description> At operating voltage of 4.2V, the lithium content is 0.075g/Wh.
+		 For a cathode material (LiMn1.5Ni0.5O4) on a lithium ion battery, when cycled at C/30 
+		 in the 2.5-4.3V voltage range, the theoretical capacity of LiNMC Q_specific is 165 mAh g-1.
+		 or 160 Ah kg-1. At 3.8V, 3.8V * 160 mAh g-1 = 608 Wh kg-1. Content is 1.6447 kg/kWh
+		 Assume li-ion battery capacity is 17 kWh.
+		</description> 	
 		<inputs>
-			<resource name="nickel" amount="5.0" />
+			<resource name="nickel" amount="2" />
+			<resource name="lithium" amount=".4" />			
 			<resource name="potash lye" amount="10.0" />
 			<resource name="polyethylene" amount="5.0" />
 			<part name="iron sheet" number="2" />
-			<part name="wire connector" number="2" />
 			<part name="logic board" number="2" />
+			<part name="wire connector" number="2" />
+			<part name="electrical wire" number="12" />			
 		</inputs>
 		<outputs>
-			<part name="rover battery" number="1" />
+			<part name="vehicle battery" number="1" />
 		</outputs>
 	</process>
 
@@ -2946,6 +2628,8 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 	<!-- http://en.wikipedia.org/wiki/Nickel-iron_battery -->
 	<process name="manufacture eva battery" tech="2" skill="3" work-time="200" process-time="50"
 			power-required="1.0">
+		<description>  Assume EVA battery capacity is 500Wh.
+		</description>			
 		<inputs>
 			<resource name="nickel" amount="3.0" />
 			<resource name="potash lye" amount="7.0" />
@@ -3594,11 +3278,11 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		</outputs>
 	</process>
 
-	<!-- manufacturing solid oxide fuel cell. -->
-	<process name="make solid oxide fuel cells" tech="3" skill="4" work-time="1000" process-time="100"
+	<!-- manufacturing methane solid oxide fuel cell. -->
+	<process name="make methane solid oxide fuel cells" tech="3" skill="4" work-time="200" process-time="50"
 			power-required="1">
 		<description>
-			Each solid oxide fuel cell (SOFC) can generate 200W.
+			Each methane solid oxide fuel cell (SOFC) can generate 200W.
 		</description>
 		<inputs>
 			<resource name="sodium carbonate" amount=".25" />
@@ -3609,12 +3293,31 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<resource name="glass" amount=".5" />
 		</inputs>
 		<outputs>
-			<part name="solid oxide fuel cell" number="20" />
+			<part name="methane fuel cell" number="10" />
 		</outputs>
 	</process>
 
+	<!-- manufacturing methanol fuel cell. -->
+	<process name="make methanol fuel cells" tech="3" skill="4" work-time="200" process-time="50"
+			power-required="1">
+		<description>
+			Each methanol fuel cell (SOFC) can generate 200W.
+		</description>
+		<inputs>
+			<resource name="sodium carbonate" amount=".25" />
+			<resource name="aluminum" amount=".5" />
+			<resource name="nickel" amount=".05" />
+			<resource name="lithium" amount=".05" />
+			<resource name="iron powder" amount=".5" />
+			<resource name="glass" amount=".5" />
+		</inputs>
+		<outputs>
+			<part name="methane fuel cell" number="10" />
+		</outputs>
+	</process>
+	
 	<!-- 2015-09-28 Added manufacturing fuel cell stack. -->
-	<process name="make fuel cell stack" tech="3" skill="4" work-time="1000" process-time="100"
+	<process name="make methane fuel cell stack" tech="3" skill="4" work-time="800" process-time="100"
 			power-required="2">
 		<description>
 			Each fuel cell stack comprises 75 solid oxide fuel cells at 15 kWe.
@@ -3622,16 +3325,38 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		<inputs>
 			<part name="steel sheet" number="1" />
 			<part name="plastic sheet" number="1" />
-			<part name="electrical wire" number="2" />
+			<part name="electrical wire" number="20" />
 			<part name="wire connector" number="5" />
 			<part name="steel pipe" number="2" />
-			<part name="solid oxide fuel cell" number="75" />
+			<part name="methane fuel cell" number="75" />
 			<part name="logic board" number="1" />
 		</inputs>
 		<outputs>
-			<part name="fuel cell stack" number="1" />
+			<part name="methane fuel cell stack" number="1" />
 		</outputs>
 	</process>
+
+	
+	
+	<process name="make methanol fuel cell stack" tech="3" skill="4" work-time="800" process-time="100"
+			power-required="2">
+		<description>
+			Each fuel cell stack comprises 75 solid oxide fuel cells at 15 kW.
+		</description>
+		<inputs>
+			<part name="steel sheet" number="1" />
+			<part name="plastic sheet" number="1" />
+			<part name="electrical wire" number="20" />
+			<part name="wire connector" number="5" />
+			<part name="steel pipe" number="2" />
+			<part name="methanol fuel cell" number="75" />
+			<part name="logic board" number="1" />
+		</inputs>
+		<outputs>
+			<part name="methanol fuel cell stack" number="1" />
+		</outputs>
+	</process>
+	
 
 		<!-- 2016-05-08 Added turbopump manufacturing -->
 	<process name="manufacture turbopump" tech="3" skill="4" work-time="500" process-time="100"
@@ -3803,8 +3528,8 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		<part-salvage name="winch" number="1" />
 		<part-salvage name="rover generator" number="1" />
 		<part-salvage name="motor - large" number="3" />
-		<part-salvage name="rover battery" number="2" />
-		<part-salvage name="fuel cell stack" number="4" />
+		<part-salvage name="vehicle battery" number="2" />
+		<part-salvage name="methane fuel cell stack" number="4" />
 		<part-salvage name="rover control panel" number="1" />
 		<part-salvage name="fuel tank" number="1" />
 		<part-salvage name="gas tank" number="1" />
@@ -3834,9 +3559,9 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		<part-salvage name="rover window" number="5" />
 		<part-salvage name="winch" number="1" />
 		<part-salvage name="rover generator" number="1" />
-		<part-salvage name="fuel cell stack" number="5" />
+		<part-salvage name="methane fuel cell stack" number="5" />
 		<part-salvage name="motor - large" number="4" />
-		<part-salvage name="rover battery" number="3" />
+		<part-salvage name="vehicle battery" number="3" />
 		<part-salvage name="rover control panel" number="1" />
 		<part-salvage name="fuel tank" number="1" />
 		<part-salvage name="gas tank" number="1" />
@@ -3866,9 +3591,9 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		<part-salvage name="rover window" number="5" />
 		<part-salvage name="winch" number="1" />
 		<part-salvage name="rover generator" number="1" />
-		<part-salvage name="fuel cell stack" number="6" />
+		<part-salvage name="methane fuel cell stack" number="6" />
 		<part-salvage name="motor - large" number="5" />
-		<part-salvage name="rover battery" number="3" />
+		<part-salvage name="vehicle battery" number="3" />
 		<part-salvage name="rover control panel" number="1" />
 		<part-salvage name="fuel tank" number="1" />
 		<part-salvage name="gas tank" number="1" />
@@ -3893,9 +3618,9 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 	<!-- Salvage process for a light utility vehicle (LUV) -->
 	<salvage item-name="light utility vehicle" type="vehicle" tech="3" skill="3" work-time="700">
 		<part-salvage name="vehicle frame - small" number="1" />
-		<part-salvage name="fuel cell stack" number="1" />
+		<part-salvage name="methane fuel cell stack" number="1" />
 		<part-salvage name="motor - large" number="2" />
-		<part-salvage name="rover battery" number="1" />
+		<part-salvage name="vehicle battery" number="1" />
 		<part-salvage name="utility vehicle control panel" number="1" />
 		<part-salvage name="electrical wire" number="10" />
 		<part-salvage name="wire connector" number="10" />

@@ -108,15 +108,28 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 	public void setUpRowSelection() {
 		window.getTradeTab().getTable().addMouseListener(
 				new MouseListener() {
-					public void mouseReleased(MouseEvent e) {}
-					public void mousePressed(MouseEvent e) {}
-					public void mouseExited(MouseEvent e) {}
-					public void mouseEntered(MouseEvent e) {}
+					@Override
 					public void mouseClicked(MouseEvent e) {
 						if (e.getClickCount() == 1 && !e.isConsumed()) {
 							int row = window.getTradeTab().getTable().getSelectedRow();
 				        	lastRowMap.put(selectedSettlement, row);
 						}
+					}
+					@Override
+					public void mousePressed(MouseEvent e) {
+						// nothing	
+					}
+					@Override
+					public void mouseReleased(MouseEvent e) {
+						// nothing	
+					}
+					@Override
+					public void mouseEntered(MouseEvent e) {
+						// nothing				
+					}
+					@Override
+					public void mouseExited(MouseEvent e) {
+						// nothing			
 					}
 				}
 			);
@@ -131,14 +144,12 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 	public void unitUpdate(UnitEvent event) {
 		Unit unit = (Unit) event.getSource();
 		UnitEventType eventType = event.getType();
-		if (eventType == UnitEventType.GOODS_VALUE_EVENT
-				|| eventType == UnitEventType.FOOD_EVENT) {
-			if (event.getTarget() instanceof Good && unit instanceof Settlement) {
-				if ((mode == GameMode.COMMAND && unit.getName().equalsIgnoreCase(selectedSettlement.getName()))
-						|| unit.getName().equalsIgnoreCase(selectedSettlement.getName())) {
-					SwingUtilities.invokeLater(new TradeTableUpdater(event));			
-				}
-			}
+		if ((eventType == UnitEventType.GOODS_VALUE_EVENT
+			|| eventType == UnitEventType.FOOD_EVENT)
+			&& event.getTarget() instanceof Good 
+			&& unit instanceof Settlement
+			&& unit.getName().equalsIgnoreCase(selectedSettlement.getName())) {
+				SwingUtilities.invokeLater(new TradeTableUpdater(event));			
 		}
 	}
 
@@ -368,12 +379,10 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 		Iterator<Settlement> i = settlements.iterator();
 		while (i.hasNext()) i.next().removeUnitListener(this);
 		settlements = null;
-		
-		// Remove as listener to unit manager.
 		unitManager.removeUnitManagerListener(this);
 		unitManager = null;		
-		goodsList = null;
 		mode = null;
+		goodsList.clear();
 		goodsList = null;
 		lastRowMap = null;
 		selectedSettlement = null;

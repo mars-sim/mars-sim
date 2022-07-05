@@ -25,8 +25,10 @@
 		<part type="fiberglass" number="3"/>
 		<part type="fiberglass cloth" number="10"/>
 		<part type="logic board" number="25"/>
-		<part type="solid oxide fuel cell" number="200"/>
-		<part type="fuel cell stack" number="20"/>
+		<part type="methane fuel cell" number="200"/>
+		<part type="methane fuel cell stack" number="4"/>
+		<part type="methanol fuel cell" number="200"/>
+		<part type="methanol fuel cell stack" number="4"/>		
 		<part type="polycarbonate roofing" number="10"/>
 		<!-- 2015-05-22 Added the following new parts -->
 		<part type="pathogen filter" number="3"/>
@@ -77,7 +79,7 @@
 		<part type="wire connector" number="216" />
 		<part type="plastic tubing" number="60" />
 		<part type="lubricant bottle" number="22" />
-		<part type="rover battery" number="4" />
+		<part type="vehicle battery" number="4" />
 		<part type="radio antenna" number="8" />
 		<part type="satellite dish" number="4" />
 		<part type="communications circuit board" number="6" />
@@ -139,8 +141,10 @@
 		<part type="fiberglass" number="6"/>
 		<part type="fiberglass cloth" number="20"/>
 		<part type="logic board" number="50"/>
-	    <part type="solid oxide fuel cell" number="400"/>
-		<part type="fuel cell stack" number="30"/>
+	    <part type="methane fuel cell" number="400"/>
+		<part type="methane fuel cell stack" number="6"/>
+		<part type="methanol fuel cell" number="400"/>
+		<part type="methanol fuel cell stack" number="6"/>			
 		<part type="polycarbonate roofing" number="20"/>
 		<!-- 2015-05-22 Added the following new parts -->
 		<part type="pathogen filter" number="6"/>
@@ -190,7 +194,7 @@
 		<part type="wire connector" number="331" />
 		<part type="plastic tubing" number="104" />
 		<part type="lubricant bottle" number="24" />
-		<part type="rover battery" number="4" />
+		<part type="vehicle battery" number="4" />
 		<part type="radio antenna" number="10" />
 		<part type="satellite dish" number="6" />
 		<part type="communications circuit board" number="4" />
@@ -254,8 +258,10 @@
 		<part type="fiberglass" number="12"/>
 		<part type="fiberglass cloth" number="40"/>
 		<part type="logic board" number="100"/>
-		<part type="solid oxide fuel cell" number="600"/>
-		<part type="fuel cell stack" number="40"/>
+		<part type="methane fuel cell" number="600"/>
+		<part type="methane fuel cell stack" number="8"/>
+		<part type="methanol fuel cell" number="600"/>
+		<part type="methanol fuel cell stack" number="8"/>			
 		<part type="polycarbonate roofing" number="30"/>
 		<!-- 2015-05-22 Added the following new parts -->
 		<part type="pathogen filter" number="9"/>
@@ -305,7 +311,7 @@
 		<part type="wire connector" number="511" />
 		<part type="plastic tubing" number="160" />
 		<part type="lubricant bottle" number="46" />
-		<part type="rover battery" number="10" />
+		<part type="vehicle battery" number="10" />
 		<part type="radio antenna" number="20" />
 		<part type="satellite dish" number="10" />
 		<part type="communications circuit board" number="8" />
@@ -369,8 +375,10 @@
 		<part type="fiberglass" number="24"/>
 		<part type="fiberglass cloth" number="80"/>
 		<part type="logic board" number="200"/>
-		<part type="solid oxide fuel cell" number="800"/>
-		<part type="fuel cell stack" number="50"/>
+		<part type="methane fuel cell" number="800"/>
+		<part type="methane fuel cell stack" number="12"/>
+		<part type="methanol fuel cell" number="800"/>
+		<part type="methanol fuel cell stack" number="12"/>			
 		<part type="polycarbonate roofing" number="50"/>
 		<!-- 2015-05-22 Added the following new parts -->
 		<part type="pathogen filter" number="12"/>
@@ -420,7 +428,7 @@
 		<part type="wire connector" number="716" />
 		<part type="plastic tubing" number="220" />
 		<part type="lubricant bottle" number="74" />
-		<part type="rover battery" number="16" />
+		<part type="vehicle battery" number="16" />
 		<part type="radio antenna" number="30" />
 		<part type="satellite dish" number="16" />
 		<part type="communications circuit board" number="12" />

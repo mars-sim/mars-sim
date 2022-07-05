@@ -262,7 +262,7 @@ public class SimulationConfig implements Serializable {
 		try {
 			loadDefaultConfiguration();
 		} catch (Exception e) {
-          	logger.log(Level.SEVERE, "Cannot load default config : " + e.getMessage(), e);
+          	logger.log(Level.SEVERE, "Cannot load default config : " + e.getMessage());
 		}
 	}
 
