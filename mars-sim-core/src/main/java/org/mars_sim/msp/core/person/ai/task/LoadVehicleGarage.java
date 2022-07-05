@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * LoadVehicleGarage.java
- * @date 2021-10-21
+ * @date 2022-07-05
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -286,8 +286,10 @@ public class LoadVehicleGarage extends Task implements Serializable {
 			throw new IllegalArgumentException("settlement is null");
 
 		boolean roverInSettlement = false;
+		// Check defensively to make sure the vehicle is NOT parked in the settlement vicinity
 		if (settlement.containsParkedVehicle(vehicle)) {
 			roverInSettlement = true;
+			// Ensure that this vehicle is inside a garage when running this LoadVehicleGarage task
 			settlement.removeParkedVehicle(vehicle);
 		}
 
@@ -306,7 +308,6 @@ public class LoadVehicleGarage extends Task implements Serializable {
 					if (logger.isLoggable(Level.INFO))
 						logSettlementShortage(vehicle, ResourceUtil.findAmountResourceName(resource),
 								loaded, needed, settlementNeed, stored);
-//					inv.addAmountDemandTotalRequest(resource, totalNeeded);
 					return false;
 				}
 			}
@@ -321,7 +322,6 @@ public class LoadVehicleGarage extends Task implements Serializable {
 					if (logger.isLoggable(Level.INFO))
 						logSettlementShortage(vehicle, ResourceUtil.findAmountResourceName(resource),
 								numLoaded, needed, settlementNeed, stored);
-//					inv.addItemDemandTotalRequest(resource, totalNeeded);
 					return false;
 				}
 			} else
@@ -352,6 +352,16 @@ public class LoadVehicleGarage extends Task implements Serializable {
 		return true;
 	}
 
+	/**
+	 * Logs the settlement shortage.
+	 * 
+	 * @param vehicle
+	 * @param resource
+	 * @param numLoaded
+	 * @param needed
+	 * @param settlementNeed
+	 * @param stored
+	 */
 	private final static void logSettlementShortage(Vehicle vehicle, String resource,
 									double numLoaded, double needed, double settlementNeed, double stored) {
 		StringBuilder msg = new StringBuilder();

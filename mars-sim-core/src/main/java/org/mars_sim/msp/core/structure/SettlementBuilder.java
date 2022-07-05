@@ -481,7 +481,6 @@ public final class SettlementBuilder {
 				if (relMap != null) {
 					addedCrew.put(person, relMap);
 				}
-//				relationshipManager.addInitialSettler(person, settlement);
 
 				// Set person's job (if any).
 				String jobName = m.getJob();

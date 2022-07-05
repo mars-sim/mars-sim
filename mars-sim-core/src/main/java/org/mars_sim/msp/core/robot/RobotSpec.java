@@ -22,22 +22,17 @@ public class RobotSpec implements Serializable {
 	private String jobName;
 	private String settlementName;
 	
-	private Map<String, Double> attributeMap;
+	private Map<String, Integer> attributeMap;
 	private Map<String, Integer> skillMap;
 
-//	private double powerConsumptionRate;
-//	private double fuelConsumptionRate;
-//	private double lowPowerModeStartTime;
-//	private double minAirPressure;
-//	private double minTemperature;
-//	private double maxTemperature;
-//	private double freezingTime;
-	
-	public RobotSpec(String name, RobotType robotType, String settlementName, String jobName) {
+	public RobotSpec(String name, RobotType robotType, String settlementName, String jobName,
+			Map<String, Integer> attributeMap, Map<String, Integer> skillMap) {
 		this.name = name;
 		this.robotType = robotType;
 		this.settlementName = settlementName;
 		this.jobName = jobName;
+		this.attributeMap = attributeMap;
+		this.skillMap = skillMap;
 	}
 
 	/**
@@ -81,7 +76,7 @@ public class RobotSpec implements Serializable {
 	 * 
 	 * @return
 	 */
-	public final Map<String, Double> getAttributeMap() {
+	public final Map<String, Integer> getAttributeMap() {
 		return attributeMap;
 	}
 

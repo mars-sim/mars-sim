@@ -1999,7 +1999,7 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Makes this person within this settlement
+	 * Makes this person's physical location to be inside this settlement.
 	 *
 	 * @param p the person
 	 * @return true if added successfully
@@ -2016,7 +2016,7 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Removes this person from being within this settlement
+	 * Removes this person's physical location from being inside this settlement.
 	 *
 	 * @param p the person
 	 * @return true if removed successfully
@@ -2031,7 +2031,7 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Makes this person a legal citizen of this settlement
+	 * Assigns a person to be a legal citizen of this settlement.
 	 *
 	 * @param p the person
 	 * @return true if removed successfully
@@ -2052,7 +2052,7 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Removes this person from being a legal citizen of this settlement
+	 * Removes this person from being a legal citizen of this settlement.
 	 *
 	 * @param p the person
 	 */
@@ -2070,7 +2070,7 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Adds a robot to be owned by the settlement
+	 * Assigns a robot to be owned by the settlement.
 	 *
 	 * @param r
 	 */
@@ -2089,7 +2089,7 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Removes a robot from being owned by the settlement
+	 * Removes a robot from being owned by the settlement.
 	 *
 	 * @param r
 	 */
@@ -2105,7 +2105,7 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Adds a robot to be owned by the settlement
+	 * Assigns a robot to be owned by the settlement.
 	 *
 	 * @param r
 	 */
@@ -2120,7 +2120,7 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Removes a robot from being owned by the settlement
+	 * Removes a robot from being owned by the settlement.
 	 *
 	 * @param r
 	 */
@@ -2135,7 +2135,7 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Adds a parked vehicle
+	 * Adds a parked vehicle.
 	 *
 	 * @param vehicle
 	 * @param true if the parked vehicle can be added
@@ -2145,6 +2145,8 @@ public class Settlement extends Structure implements Temporal,
 			return true;
 		}
 		if (parkedVehicles.add(vehicle)) {
+			// Directly update the location state type
+			vehicle.updateLocationStateType(LocationStateType.WITHIN_SETTLEMENT_VICINITY);
 			vehicle.setContainerUnit(this);
 			return true;
 		}
