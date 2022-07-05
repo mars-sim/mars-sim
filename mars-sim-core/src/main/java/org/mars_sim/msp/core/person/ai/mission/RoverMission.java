@@ -369,7 +369,7 @@ public abstract class RoverMission extends VehicleMission {
 					}
 
 					else { // this crew member cannot find the walking steps to enter the rover
-						logger.severe(member, Msg.getString("RoverMission.log.unableToEnter", person.getName(), //$NON-NLS-1$
+						logger.warning(member, Msg.getString("RoverMission.log.unableToEnter", //$NON-NLS-1$
 								v.getName()));
 					}
 				}
@@ -385,7 +385,7 @@ public abstract class RoverMission extends VehicleMission {
 					}
 				}
 				else {
-					logger.severe(member, Msg.getString("RoverMission.log.unableToEnter", robot.getName(), //$NON-NLS-1$
+					logger.severe(member, Msg.getString("RoverMission.log.unableToEnter", //$NON-NLS-1$
 							v.getName()));
 				}
 			}

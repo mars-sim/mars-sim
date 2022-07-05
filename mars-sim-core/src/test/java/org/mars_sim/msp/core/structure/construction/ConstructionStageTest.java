@@ -38,7 +38,7 @@ public class ConstructionStageTest extends TestCase {
         Simulation.instance().testRun();
 
         Map<Integer, Integer> parts = new HashMap<Integer, Integer>(1);
-        parts.put(ItemResourceUtil.smallHammerAR.getID(), 1);
+        parts.put(ItemResourceUtil.smallHammer.getID(), 1);
 
         Map<Integer, Double> resources = new HashMap<Integer, Double>(1);
         resources.put(ResourceUtil.methaneAR.getID(), 1D);

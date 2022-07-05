@@ -106,7 +106,7 @@ extends TestCase {
 	 * Test method loading Equipment
 	 */
 	public void testItemOverloading() throws Exception {
-		Part drillPart = ItemResourceUtil.pneumaticDrillAR;
+		Part drillPart = ItemResourceUtil.pneumaticDrill;
 
 		int maxDrills = 2;
 		EquipmentInventory inv = new EquipmentInventory(settlement, drillPart.getMassPerItem() * 2);

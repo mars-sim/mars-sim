@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * ItemResourceUtil.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-05
  * @author Manny Kung
  */
 
@@ -30,8 +30,10 @@ public class ItemResourceUtil implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	public static final String PRESSURE_SUIT = "pressure suit";
-
-	// Light utility vehicle attachment parts for mining.
+	public static final String PETRI_DISH = "petri dish";
+	public static final String GARMENT = "garment";
+	
+	// Light utility vehicle attachment parts for mining or construction.
 	public static final String BACKHOE = "backhoe";
 	public static final String BULLDOZER_BLADE = "bulldozer blade";
 	public static final String CRANE_BOOM = "crane boom";
@@ -40,9 +42,8 @@ public class ItemResourceUtil implements Serializable {
 	public static final String SOCKET_WRENCH = "socket wrench";
 	public static final String SOIL_COMPACTOR = "soil compactor";
 
+	// Tools
 	public static final String PIPE_WRENCH = "pipe wrench";
-
-	// Other strings
 	public static final String DECONTAMINATION_KIT = "decontamination kit";
 	public static final String AIRLEAK_PATCH = "airleak patch";
 	public static final String FIRE_EXTINGUSHER = "fire extinguisher";
@@ -57,7 +58,7 @@ public class ItemResourceUtil implements Serializable {
 	public static final String STEEL_SHEET = "steel sheet";
 
 	public static final String ROVER_WHEEL = "rover wheel";
-	public static final String ROVER_BATTERY = "rover battery";
+	public static final String VEHICLE_BATTERY = "vehicle battery";
 
 	private static final String LASER = "laser";
 	private static final String STEPPER_MOTOR = "stepper motor";
@@ -73,18 +74,18 @@ public class ItemResourceUtil implements Serializable {
 	private static final String SHEET = "sheet";
 	private static final String PRISM = "prism";
 	
-	public static final Part pneumaticDrillAR = (Part) findItemResource(PNEUMATIC_DRILL);
-	public static final Part backhoeAR = (Part) findItemResource(BACKHOE);
-	public static final Part socketWrenchAR = (Part) findItemResource(SOCKET_WRENCH);
-	public static final Part pipeWrenchAR = (Part) findItemResource(PIPE_WRENCH);
+	public static Part pneumaticDrill;
+	public static Part backhoe;
+	public static Part socketWrench;
+	public static Part pipeWrench;
 
-	public static final Part fireExtinguisherAR = (Part) findItemResource(FIRE_EXTINGUSHER);
-	public static final Part workGlovesAR = (Part) findItemResource(WORK_GLOVES);
-	public static final Part mushroomBoxAR = (Part) findItemResource(CONTAINMENT_KIT);
-	public static final Part smallHammerAR = (Part) findItemResource(SMALL_HAMMER);
+	public static Part fireExtinguisher;
+	public static Part workGloves;
+	public static Part mushroomBox;
+	public static Part smallHammer;
 
-	public static final Part roverWheel = (Part) findItemResource(ROVER_WHEEL);
-	public static final Part roverBattery = (Part) findItemResource(ROVER_BATTERY);
+	public static Part roverWheel;
+	public static Part roverBattery;
 	
 	public static int garmentID;
 	public static int pressureSuitID;
@@ -117,6 +118,7 @@ public class ItemResourceUtil implements Serializable {
 
 	private static PartConfig partConfig = SimulationConfig.instance().getPartConfiguration();
 
+	// Light utility vehicle attachment parts for mining or construction.
 	private static final String[] ATTACHMENTS = new String[] {
 			BACKHOE,
 			BULLDOZER_BLADE,
@@ -126,6 +128,9 @@ public class ItemResourceUtil implements Serializable {
 			SOIL_COMPACTOR
 	};
 
+	/**
+	 * Parts that are not needed to be fetched as repair parts for vehicle missions.
+	 */
 	public static final String[] UNNEEDED_PARTS = { 
 									LASER,
 									STEPPER_MOTOR,
@@ -202,6 +207,19 @@ public class ItemResourceUtil implements Serializable {
 	 * Prepares the id's of a few item resources
 	 */
 	public void createIDs() {
+		pneumaticDrill = (Part) findItemResource(PNEUMATIC_DRILL);
+		backhoe = (Part) findItemResource(BACKHOE);
+		socketWrench = (Part) findItemResource(SOCKET_WRENCH);
+		pipeWrench = (Part) findItemResource(PIPE_WRENCH);
+
+		fireExtinguisher = (Part) findItemResource(FIRE_EXTINGUSHER);
+		workGloves = (Part) findItemResource(WORK_GLOVES);
+		mushroomBox = (Part) findItemResource(CONTAINMENT_KIT);
+		smallHammer = (Part) findItemResource(SMALL_HAMMER);
+
+		roverWheel = (Part) findItemResource(ROVER_WHEEL);
+		roverBattery = (Part) findItemResource(VEHICLE_BATTERY);
+		
 		PETRI_DISH_ID = findIDbyItemResourceName("petri dish");
 		garmentID = findIDbyItemResourceName("garment");
 		pressureSuitID = findIDbyItemResourceName(PRESSURE_SUIT);

@@ -416,7 +416,7 @@ public class Walk extends Task implements Serializable {
 				if (step.stepType == WalkingSteps.WalkStep.EXIT_AIRLOCK) {
 					Airlock airlock = step.airlock;
 					if (!ExitAirlock.canExitAirlock(person, airlock)) {
-						logger.log(person, Level.WARNING, 0,
+						logger.log(person, Level.WARNING, 10_000L,
 								"Could not exit " + airlock.getEntityName());
 						return false;
 					}
