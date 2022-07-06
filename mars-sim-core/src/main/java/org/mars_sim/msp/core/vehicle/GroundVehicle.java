@@ -7,12 +7,15 @@
 package org.mars_sim.msp.core.vehicle;
 
 
+import java.util.List;
+
 import org.mars_sim.msp.core.Direction;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingCategory;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -173,35 +176,20 @@ public abstract class GroundVehicle extends Vehicle {
 
 			int weight = 2;
 
-			long numHab = settlement.getBuildingManager().getNumBuildingsOfSameType(LANDER_HAB);
-			long numHub = settlement.getBuildingManager().getNumBuildingsOfSameType(OUTPOST_HUB);
+			List<Building> evas = settlement.getBuildingManager().getBuildingsOfSameCategory(BuildingCategory.EVA_AIRLOCK);
 			int numGarages = settlement.getBuildingManager().getBuildings(FunctionType.GROUND_VEHICLE_MAINTENANCE)
 					.size();
-			int total = (int)(numHab + numHub + numGarages * weight - 1);
+			int total = (int)(evas.size() + numGarages * weight - 1);
 			if (total < 0)
 				total = 0;
 			int rand = RandomUtil.getRandomInt(total);
 
 			if (rand != 0) {
 
-				// Try parking near the lander hab or outpost hub	
-				if (rand < numHab + numHub) {
-					int r0 = RandomUtil.getRandomInt((int)numHab - 1);
-					Building hab = settlement.getBuildingManager().getBuildingsOfSameType(LANDER_HAB).get(r0);
-					
-					if (hab != null) {
-						centerLoc = hab.getPosition();
-					} else  { //if (hub != null) {
-						
-						int r1 = 0;
-						Building hub = null;
-						if (numHub > 0) {
-							r1 = RandomUtil.getRandomInt((int)numHub - 1);
-							hub = settlement.getBuildingManager().getBuildingsOfSameType(OUTPOST_HUB).get(r1);
-									
-							centerLoc = hub.getPosition();
-						}
-					}
+				// Try parking near the EVA for shortest walk	
+				if (rand < evas.size()) {
+					Building eva = evas.get(rand);
+					centerLoc = eva.getPosition();
 				}
 
 				else {

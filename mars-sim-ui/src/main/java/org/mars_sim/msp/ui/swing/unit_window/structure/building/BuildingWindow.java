@@ -108,6 +108,8 @@ public class BuildingWindow extends UnitWindow {
 
         }
 
+		// Need this to display the first panel
+		sortTabPanels();
     }
 
     @Override

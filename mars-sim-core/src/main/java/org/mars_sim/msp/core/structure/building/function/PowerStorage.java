@@ -38,6 +38,11 @@ implements Serializable {
 	
 	public static final double PERCENT_BATTERY_RECONDITIONING_PER_CYCLE = .1; // [in %]
 
+	/**
+	 * This is Building.xml property for the Power storage functino to control discharge
+	 */
+	private static final String DISCHARGE_RATE = "discharge-rate";
+
 	/** The number of cells per modules of the battery. */
 	private static int cellsPerModule = 104; // 3.6 V * 104 = 374.4 V 
 	// Note : Tesla Model S has 104 cells per module
@@ -120,15 +125,8 @@ implements Serializable {
 		
 		ampHours = 1000D * currentMaxCap/SECONDARY_LINE_VOLTAGE; 
 
-		if (building.getBuildingType().contains(Building.ARRAY))
-			C_rating *= 1.75;
-		else if (building.getBuildingType().contains(Building.TURBINE))
-			C_rating *= 1.5;
-		else if (building.getBuildingType().contains(Building.WELL))
-			C_rating *= 1.25;
-		else
-			C_rating *= 1.25;
-		
+		C_rating = buildingConfig.getFunctionDoubleProperty(building.getBuildingType(), FunctionType.POWER_STORAGE,
+														DISCHARGE_RATE);	
 		// At the start of sim, set to a random value		
 		kWhStored = .5 * max_kWh_nameplate + RandomUtil.getRandomDouble(.5 * max_kWh_nameplate);		
 		//logger.info("initial kWattHoursStored is " + kWattHoursStored);

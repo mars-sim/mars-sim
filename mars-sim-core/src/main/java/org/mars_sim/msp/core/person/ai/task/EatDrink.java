@@ -30,6 +30,7 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingCategory;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
@@ -184,7 +185,7 @@ public class EatDrink extends Task implements Serializable {
 
 		if (person.isInSettlement()) {
 			Building currentBuilding = BuildingManager.getBuilding(person);
-			if (currentBuilding != null && currentBuilding.getBuildingType().equalsIgnoreCase(Building.EVA_AIRLOCK)) {
+			if (currentBuilding != null && currentBuilding.getCategory() == BuildingCategory.EVA_AIRLOCK) {
 				// Walk out of the EVA Airlock
 				walkToRandomLocation(false);
 			}

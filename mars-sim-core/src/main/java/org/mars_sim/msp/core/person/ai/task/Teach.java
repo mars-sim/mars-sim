@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingCategory;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -42,9 +43,6 @@ public class Teach extends Task implements Serializable {
 
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.teach"); //$NON-NLS-1$
-
-	/** EVA airlock String */
-	private static final String EVA_AIRLOCK = Building.EVA_AIRLOCK;
 	
 	/** Task phases. */
 	private static final TaskPhase TEACHING = new TaskPhase(Msg.getString("Task.phase.teaching")); //$NON-NLS-1$
@@ -147,7 +145,7 @@ public class Teach extends Task implements Serializable {
 					Building studentBuilding = BuildingManager.getBuilding(student);
 
 					if (studentBuilding != null && 
-							!studentBuilding.getBuildingType().equalsIgnoreCase(EVA_AIRLOCK)) {
+							studentBuilding.getCategory() != BuildingCategory.EVA_AIRLOCK) {
 						// Walk to random location in student's building.
 						walkToRandomLocInBuilding(BuildingManager.getBuilding(student), false);
 				

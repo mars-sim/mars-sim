@@ -530,20 +530,6 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
-	 * Gets a list of settlement's buildings (not including  hallway or tunnel) having a particular function type
-	 *
-	 * @param functionType
-	 * @return list of buildings
-	 */
-	public List<Building> getBuildingsNoHallwayTunnel(FunctionType functionType) {
-		// Filter off hallways and tunnels
-		return getBuildings(functionType).stream().filter(b ->
-				!b.getBuildingType().equalsIgnoreCase(Building.HALLWAY)
-				&& !b.getBuildingType().equalsIgnoreCase(Building.TUNNEL)
-				).collect(Collectors.toList());
-	}
-
-	/**
 	 * Gets a list of settlement's buildings (not including hallway, tunnel or observatory)
 	 * having a particular function type
 	 *
@@ -553,9 +539,8 @@ public class BuildingManager implements Serializable {
 	public List<Building> getBuildingsNoHallwayTunnelObs(FunctionType functionType) {
 		// Filter off hallways and tunnels
 		return getBuildings(functionType).stream().filter(b ->
-				!b.getBuildingType().equalsIgnoreCase(Building.HALLWAY)
-				&& !b.getBuildingType().equalsIgnoreCase(Building.TUNNEL)
-				&& !b.getBuildingType().equalsIgnoreCase(Building.ASTRONOMY_OBSERVATORY)
+				b.getCategory() != BuildingCategory.HALLWAY
+				&& !b.hasFunction(FunctionType.ASTRONOMICAL_OBSERVATION)
 				).collect(Collectors.toList());
 	}
 
@@ -723,10 +708,24 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
+	 * Gets the buildings in the settlement with a given building category.
+	 *
+	 * @param category the building type.
+	 * @return list of buildings.
+	 */
+	public List<Building> getBuildingsOfSameCategory(BuildingCategory category) {
+		// Called by Resupply.java and BuildingConstructionMission.java
+		// for putting new building next to the same building "type".
+		return buildings.stream()
+				.filter(b -> b.getCategory() == category)
+				.collect(Collectors.toList());
+	}
+	/**
 	 * Gets the buildings in the settlement with a given building type.
 	 *
 	 * @param buildingType the building type.
 	 * @return list of buildings.
+	 * @deprecated Use #getBuildingsOfSameCategory
 	 */
 	public List<Building> getBuildingsOfSameType(String buildingType) {
 		// Called by Resupply.java and BuildingConstructionMission.java
@@ -768,18 +767,6 @@ public class BuildingManager implements Serializable {
 		return buildings.stream()
 				.filter(b -> b.hasFunction(f1) && b.hasFunction(f2))
 				.findFirst().get();
-	}
-
-	/**
-	 * Gets the number of the same type of building.
-	 *
-	 * @param buildingType
-	 * @return a number
-	 */
-	public Long getNumBuildingsOfSameType(String buildingType) {
-		return buildings.stream()
-				.filter(b -> b.getBuildingType().equalsIgnoreCase(buildingType))
-				.collect(Collectors.counting());
 	}
 
 	/**
@@ -949,11 +936,9 @@ public class BuildingManager implements Serializable {
 			RoboticStation roboticStation = bldg.getRoboticStation();
 			if (roboticStation != null) {
 				Building destination = null;
-				String type = bldg.getBuildingType();
-				// Do not add robot to hallway, tunnel, or observatory
-				if (!(type.equalsIgnoreCase(Building.HALLWAY)
-						|| type.equalsIgnoreCase(Building.TUNNEL)
-						|| type.equalsIgnoreCase(Building.ASTRONOMY_OBSERVATORY))
+				BuildingCategory category = bldg.getCategory();
+				// Do not add robot to hallway, tunnel
+				if ((category != BuildingCategory.HALLWAY)
 						&& bldg.hasFunction(function)) {
 					destination = bldg;
 					addRobotToBuildingRandomLocation(robot, destination);
@@ -972,17 +957,9 @@ public class BuildingManager implements Serializable {
 	public static void addToRandomBuilding(Robot robot, BuildingManager manager) {
 		Building destination = null;
 		List<Building> validBuildings1 = new ArrayList<>();
-		List<Building> stations = manager.getBuildings(FunctionType.ROBOTIC_STATION);
+		List<Building> stations = manager.getBuildingsNoHallwayTunnelObs(FunctionType.ROBOTIC_STATION);
 		for (Building bldg : stations) {
-			String type = bldg.getBuildingType();
-			// Do not add hallway, tunnel, observatory
-			if (type.equalsIgnoreCase(Building.HALLWAY)
-					|| type.equalsIgnoreCase(Building.TUNNEL)
-					|| type.equalsIgnoreCase(Building.ASTRONOMY_OBSERVATORY)) {
-				// do nothing
-			} else {
-				validBuildings1.add(bldg);
-			}
+			validBuildings1.add(bldg);
 		}
 		// Randomly pick one of the buildings
 		if (!validBuildings1.isEmpty()) {
@@ -1203,7 +1180,7 @@ public class BuildingManager implements Serializable {
 		// Find least crowded population.
 		int leastCrowded = Integer.MAX_VALUE;
 		for (Building b0 : buildingList) {
-			if (!b0.getBuildingType().equalsIgnoreCase(Building.EVA_AIRLOCK)) {
+			if (b0.getCategory() != BuildingCategory.EVA_AIRLOCK) {
 				LifeSupport lifeSupport = b0.getLifeSupport();
 				int crowded = lifeSupport.getOccupantNumber() - lifeSupport.getOccupantCapacity();
 				if (crowded < -1)
@@ -1259,7 +1236,7 @@ public class BuildingManager implements Serializable {
 		Map<Building, Double> result = new HashMap<>(buildingList.size());
 		// Determine probabilities based on relationships in buildings.
 		for (Building building : buildingList) {
-			if (!building.getBuildingType().equalsIgnoreCase(Building.EVA_AIRLOCK)) {
+			if (building.getCategory() != BuildingCategory.EVA_AIRLOCK) {
 				LifeSupport lifeSupport = building.getLifeSupport();
 				double buildingRelationships = 0D;
 				int numPeople = 0;
@@ -1292,18 +1269,16 @@ public class BuildingManager implements Serializable {
 
 		List<Building> result = new ArrayList<>();
 		for (Building building : buildingList) {
-			if (!building.getBuildingType().equalsIgnoreCase(Building.EVA_AIRLOCK)) {
-				LifeSupport lifeSupport = building.getLifeSupport();
-				int numPeople = 0;
-				for (Person occupant : lifeSupport.getOccupants()) {
-					// Task task = occupant.getMind().getTaskManager().getTask();
-					if (occupant.getMind().getTaskManager().getTask() instanceof HaveConversation) {
-						numPeople++;
-					}
+			LifeSupport lifeSupport = building.getLifeSupport();
+			int numPeople = 0;
+			for (Person occupant : lifeSupport.getOccupants()) {
+				// Task task = occupant.getMind().getTaskManager().getTask();
+				if (occupant.getMind().getTaskManager().getTask() instanceof HaveConversation) {
+					numPeople++;
 				}
-				if (numPeople > 0)
-					result.add(building);
 			}
+			if (numPeople > 0)
+				result.add(building);
 		}
 		return result;
 	}
@@ -1366,11 +1341,6 @@ public class BuildingManager implements Serializable {
 		}
 		return result;
 	}
-
-	public static boolean isInBuildingAirlock(Person person) {
-		Building b = person.getBuildingLocation();
-        return b != null && b.getBuildingType().equalsIgnoreCase(Building.EVA_AIRLOCK);
-    }
 
 	/**
 	 * Adds the person to the building if possible.

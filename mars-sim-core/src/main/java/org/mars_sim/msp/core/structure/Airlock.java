@@ -26,6 +26,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.BuildingAirlock;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -887,7 +888,7 @@ public abstract class Airlock implements Serializable {
 			int id = i.next();
 			Building b = unitManager.getPersonByID(id).getBuildingLocation();
 			if (b != null) {
-				if (!b.getBuildingType().equalsIgnoreCase(Building.EVA_AIRLOCK)) {
+				if (!b.hasFunction(FunctionType.EVA)) {
 					occupantIDs.remove(id);
 				}
 				else if (b.getEVA().getAirlock() != this) {

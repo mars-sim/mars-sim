@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingCategory;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
@@ -46,7 +47,7 @@ public class SleepMeta extends MetaTask {
     	
     	if (person.isInSettlement()) {
 	        Building b = person.getBuildingLocation();
-	        if ((b != null) && b.getBuildingType().equalsIgnoreCase(Building.EVA_AIRLOCK)) {
+	        if ((b != null) && (b.getCategory() == BuildingCategory.EVA_AIRLOCK)) {
 	        	return 0;
 	        }
     	}

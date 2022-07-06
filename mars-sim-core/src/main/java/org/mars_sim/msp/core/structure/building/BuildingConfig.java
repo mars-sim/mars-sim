@@ -695,7 +695,7 @@ public class BuildingConfig implements Serializable {
 	 * @param name Property name
 	 * @return
 	 */
-	private double getFunctionDoubleProperty(String buildingType, FunctionType function, String name) {
+	public double getFunctionDoubleProperty(String buildingType, FunctionType function, String name) {
 		return Double.parseDouble((String) getBuildingSpec(buildingType).getFunctionSpec(function).getProperty(name));
 	}
 
@@ -793,19 +793,25 @@ public class BuildingConfig implements Serializable {
 		return getFunctionDoubleProperty(buildingType, FunctionType.LIFE_SUPPORT, HEAT_REQUIRED);
 	}
 
+	/**
+	 * @deprecated  For individual properties use {@link #getBuildingSpec(String)}
+	 */
 	public double getComputingUnit(String buildingType) {
 		return getBuildingSpec(buildingType).getComputingUnit();
-//		return getFunctionDoubleProperty(buildingType, FunctionType.COMPUTATION, COMPUTING_UNIT);
 	}
 
+	/**
+	 * @deprecated For individual properties use {@link #getBuildingSpec(String)}
+	 */
 	public double getPowerDemand(String buildingType) {
 		return getBuildingSpec(buildingType).getPowerDemand();
-//		return getFunctionDoubleProperty(buildingType, FunctionType.COMPUTATION, POWER_DEMAND);
 	}
 
+	/**
+	 * @deprecated For individual properties use {@link #getBuildingSpec(String)}
+	 */
 	public double getCoolingDemand(String buildingType) {
 		return getBuildingSpec(buildingType).getCoolingDemand();
-//		return getFunctionDoubleProperty(buildingType, FunctionType.COMPUTATION, COOLING_DEMAND);
 	}
 
 	/**

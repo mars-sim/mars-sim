@@ -100,20 +100,11 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	// default logger.
 	private static final SimLogger logger = SimLogger.getLogger(Building.class.getName());
 
-	public static final String LANDER_HAB = "lander hab";
-	public static final String OUTPOST_HUB = "outpost hub";
-	public static final String HALLWAY = "hallway";
-	public static final String TUNNEL = "tunnel";
 	public static final String ASTRONOMY_OBSERVATORY = "Astronomy Observatory";
-	public static final String EVA_AIRLOCK = "EVA Airlock";
-	public static final String ERV = "ERV";
 	public static final String GREENHOUSE = "Greenhouse";
 	public static final String INFLATABLE_GREENHOUSE = "Inflatable " + GREENHOUSE;
 	public static final String INGROUND_GREENHOUSE = "Inground " + GREENHOUSE;
 	public static final String LARGE_GREENHOUSE = "Large " + GREENHOUSE;
-	public static final String ARRAY = "Array";
-	public static final String TURBINE = "Turbine";
-	public static final String WELL = "Well";
 
 	public static final int TISSUE_CAPACITY = 20;
 
