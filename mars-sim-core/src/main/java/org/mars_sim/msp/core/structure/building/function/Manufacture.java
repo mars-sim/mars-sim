@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.structure.building.function;
 
-import java.io.Serializable;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -43,6 +42,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.FunctionSpec;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Drone;
@@ -54,13 +54,14 @@ import org.mars_sim.msp.core.vehicle.VehicleType;
 /**
  * A building function for manufacturing.
  */
-public class Manufacture extends Function implements Serializable {
+public class Manufacture extends Function {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(Manufacture.class.getName());
+	private static final String CONCURRENT_PROCESSES = "concurrent-processes";
 
 	private static final double PROCESS_MAX_VALUE = 100D;
 
@@ -82,14 +83,15 @@ public class Manufacture extends Function implements Serializable {
 	 * Constructor.
 	 *
 	 * @param building the building the function is for.
+	 * @param spec Details of teh Funciton at hand
 	 * @throws BuildingException if error constructing function.
 	 */
-	public Manufacture(Building building) {
+	public Manufacture(Building building, FunctionSpec spec) {
 		// Use Function constructor.
 		super(FunctionType.MANUFACTURE, building);
 
-		techLevel = buildingConfig.getFunctionTechLevel(building.getBuildingType(), FunctionType.MANUFACTURE);
-		numMaxConcurrentProcesses = buildingConfig.getManufactureConcurrentProcesses(building.getBuildingType());
+		techLevel = spec.getTechLevel();
+		numMaxConcurrentProcesses = spec.getIntegerProperty(CONCURRENT_PROCESSES);
 		numPrintersInUse = numMaxConcurrentProcesses;
 
 		processes = new CopyOnWriteArrayList<>();
@@ -97,19 +99,20 @@ public class Manufacture extends Function implements Serializable {
 	}
 
 	/**
-	 * Gets the value of the function for a named building.
+	 * Gets the value of the function for a named building type.
 	 *
-	 * @param buildingName the building name.
+	 * @param type the building type.
 	 * @param newBuilding  true if adding a new building.
 	 * @param settlement   the settlement.
 	 * @return value (VP) of building function.
 	 * @throws Exception if error getting function value.
 	 */
-	public static double getFunctionValue(String buildingName, boolean newBuilding, Settlement settlement) {
+	public static double getFunctionValue(String type, boolean newBuilding, Settlement settlement) {
 
 		double result = 0D;
 
-		int buildingTech = buildingConfig.getFunctionTechLevel(buildingName, FunctionType.MANUFACTURE);
+		FunctionSpec spec = buildingConfig.getFunctionSpec(type, FunctionType.MANUFACTURE);
+		int buildingTech = spec.getTechLevel();
 
 		double demand = 0D;
 		Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
@@ -124,7 +127,7 @@ public class Manufacture extends Function implements Serializable {
 		Iterator<Building> j = buildingManager.getBuildings(FunctionType.MANUFACTURE).iterator();
 		while (j.hasNext()) {
 			Building building = j.next();
-			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(buildingName) && !removedBuilding) {
+			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(type) && !removedBuilding) {
 				removedBuilding = true;
 			} else {
 				Manufacture manFunction = building.getManufacture();
@@ -141,7 +144,7 @@ public class Manufacture extends Function implements Serializable {
 
 		double baseManufactureValue = demand / (supply + 1D);
 
-		double processes = buildingConfig.getManufactureConcurrentProcesses(buildingName);
+		double processes = spec.getIntegerProperty(CONCURRENT_PROCESSES);
 		double manufactureValue = (buildingTech * buildingTech) * processes;
 
 		result = manufactureValue * baseManufactureValue;

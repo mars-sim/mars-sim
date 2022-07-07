@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.structure.building.function;
 
-import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +19,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
+import org.mars_sim.msp.core.structure.building.FunctionSpec;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
@@ -27,7 +27,7 @@ import org.mars_sim.msp.core.tool.RandomUtil;
  * The LivingAccommodations class is a building function for a living
  * accommodations.
  */
-public class LivingAccommodations extends Function implements Serializable {
+public class LivingAccommodations extends Function {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -65,15 +65,16 @@ public class LivingAccommodations extends Function implements Serializable {
 	 * Constructor
 	 *
 	 * @param building the building this function is for.
+	 * @param spec Details of the Living details
 	 * @throws BuildingException if error in constructing function.
 	 */
-	public LivingAccommodations(Building building) {
+	public LivingAccommodations(Building building, FunctionSpec spec) {
 		// Call Function constructor.
 		super(FunctionType.LIVING_ACCOMMODATIONS, building);
 
 		dailyWaterUsage = new SolSingleMetricDataLogger(MAX_NUM_SOLS);
 		// Loads the max # of beds available
-		maxNumBeds = buildingConfig.getFunctionCapacity(building.getBuildingType(), FunctionType.LIVING_ACCOMMODATIONS);
+		maxNumBeds = spec.getCapacity();
 		// Loads the wash water usage kg/sol
 		washWaterUsage = personConfig.getWaterUsageRate();
 		// Loads the grey to black water ratio
@@ -112,7 +113,7 @@ public class LivingAccommodations extends Function implements Serializable {
 
 		double bedCapacityValue = demand / (supply + 1D);
 
-		double bedCapacity = buildingConfig.getFunctionCapacity(buildingName, FunctionType.LIVING_ACCOMMODATIONS);
+		double bedCapacity = buildingConfig.getFunctionSpec(buildingName, FunctionType.LIVING_ACCOMMODATIONS).getCapacity();
 
 		return bedCapacity * bedCapacityValue;
 	}

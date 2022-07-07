@@ -22,29 +22,6 @@ import org.mars_sim.msp.core.structure.building.function.FunctionType;
  */
 public class BuildingSpec {
 
-	static class FunctionSpec {
-		private Map<String, Object> props;
-		private List<LocalPosition> spots;
-
-		public FunctionSpec(Map<String, Object> props, List<LocalPosition> spots) {
-			this.props = props;
-			this.spots = Collections.unmodifiableList(spots);
-		}
-
-		public List<LocalPosition> getActivitySpots() {
-			return spots;
-		}
-		
-		/**
-		 * Get the custom Function property
-		 * @param name
-		 * @return
-		 */
-		public Object getProperty(String name) {
-			return props.get(name);
-		}
-	}
-	
 	/**
 	 * The thickness of the Aluminum wall of a building in meter. Typically between
 	 * 10^-5 (.00001) and 10^-2 (.01) [in m]
@@ -70,12 +47,6 @@ public class BuildingSpec {
 	private double thickness = WALL_THICKNESS_ALUMINUM;
 	
 	private double baseMass;
-	
-	private double computingUnit;
-	private double powerDemand;
-	private double coolingDemand;
-	
-	private double stockCapacity = 0;
 	
 	private String name;
 	private String description;
@@ -198,10 +169,6 @@ public class BuildingSpec {
 		baseMass = value;
 	}
 	
-	public double getStockCapacity() {
-		return stockCapacity;
-	}
-	
 	public Map<Integer, Double> getStorage() {
 		return storageMap;
 	}
@@ -210,16 +177,9 @@ public class BuildingSpec {
 		return initialMap;
 	}
 
-	void setStorage(double stockCapacity, Map<Integer, Double> storageMap, Map<Integer, Double> initialMap) {
-		this.stockCapacity = stockCapacity;
+	void setStorage(Map<Integer, Double> storageMap, Map<Integer, Double> initialMap) {
 		this.storageMap = storageMap;
 		this.initialMap = initialMap;
-	}
-
-	void setComputation(double computingUnit, double powerDemand, double coolingDemand) {
-		this.computingUnit = computingUnit;
-		this.powerDemand = powerDemand;
-		this.coolingDemand = coolingDemand;
 	}
 
 	public void setHeatSource(List<SourceSpec> heatSourceList) {
@@ -280,17 +240,5 @@ public class BuildingSpec {
 
 	void setParking(List<LocalPosition> parking) {
 		this.parking = Collections.unmodifiableList(parking);
-	}
-
-	public double getComputingUnit() {
-		return computingUnit;
-	}
-	
-	public double getPowerDemand() {
-		return powerDemand;
-	}
-	
-	public double getCoolingDemand() {
-		return coolingDemand;
 	}
 }

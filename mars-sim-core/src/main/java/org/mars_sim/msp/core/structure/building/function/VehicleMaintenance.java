@@ -40,8 +40,6 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 
 	// default logger.
 	private static final SimLogger logger = SimLogger.getLogger(VehicleMaintenance.class.getName());
-	
-	protected int vehicleCapacity;
 
 	protected List<ParkingLocation> parkingLocations;
 	private Collection<Vehicle> vehicles;
@@ -66,7 +64,7 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 	 * @return vehicle capacity
 	 */
 	public int getVehicleCapacity() {
-		return vehicleCapacity;
+		return parkingLocations.size();
 	}
 
 	/**
@@ -83,7 +81,7 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 	 * @param Available parking locations.
 	 */
 	public int getAvailableCapacity() {
-		return vehicleCapacity - vehicles.size();
+		return parkingLocations.size() - vehicles.size();
 	}
 
 	/**
@@ -101,7 +99,7 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 			 return false;
 		}
 		
-		if (vehicles.size() >= vehicleCapacity) {
+		if (vehicles.size() >= parkingLocations.size()) {
 			logger.log(vehicle, Level.INFO, 1000,
 				building + " already full.");
 			return false;
@@ -304,7 +302,7 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 
 	@Override
 	public double getMaintenanceTime() {
-		return vehicleCapacity * 50D;
+		return parkingLocations.size() * 50D;
 	}
 
 	@Override

@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.structure.building.function;
 
-import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -20,11 +19,12 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
+import org.mars_sim.msp.core.structure.building.FunctionSpec;
 
 /**
  * The storage class is a building function for storing resources and units.
  */
-public class Storage extends Function implements Serializable {
+public class Storage extends Function {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -39,9 +39,10 @@ public class Storage extends Function implements Serializable {
 	 * Constructor.
 	 *
 	 * @param building the building the function is for.
+	 * @param spec Spec of teh Storage capability
 	 * @throws BuildingException if function cannot be constructed.
 	 */
-	public Storage(Building building) {
+	public Storage(Building building, FunctionSpec spec) {
 		// Use Function constructor.
 		super(FunctionType.STORAGE, building);
 
@@ -51,27 +52,19 @@ public class Storage extends Function implements Serializable {
 		// Note: A capacity of a resource in a settlement is the sum of the capacity of
 		// the same resource in all buildings of that settlement
 
-		// Initialize resource capacities for this building.
-//		Set<Integer> capSet = resourceCapacities.keySet();
-//		for (Integer i : capSet) {
-//			double capacity = resourceCapacities.get(i);
-//			// Adds the capacity for this resource
-//			building.getSettlement().addAmountResourceTypeCapacity(i, capacity);
-//		}
-
 		// Set the capacities for each supported resource
 		Settlement owner = building.getSettlement();
 		EquipmentInventory inv = owner.getEquipmentInventory();
 		// Set capacity of resources for this building.
 		inv.setResourceCapacityMap(resourceCapacities, true);
 
-		double stockCapacity = buildingConfig.getStockCapacity(building.getBuildingType());
+		double stockCapacity = spec.getCapacity();
+
 		// Add stock or general or cargo capacity to this building.
 		inv.addCargoCapacity(stockCapacity);
 
 		Map<Integer, Double> initialResources = buildingConfig.getInitialResources(building.getBuildingType());
-		// Add capacity to each initial resource for this building.
-//		inv.setResourceCapacityMap(initialResources, true);
+
 
 		// Add initial resources to this building.
 		for (Entry<Integer, Double> i : initialResources.entrySet()) {

@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.structure.building.function;
 
-import java.io.Serializable;
 import java.util.Iterator;
 
 import org.mars_sim.msp.core.LocalPosition;
@@ -18,8 +17,7 @@ import org.mars_sim.msp.core.structure.building.Building;
  * capable of maintaining ground vehicles.
  */
 public class GroundVehicleMaintenance
-extends VehicleMaintenance
-implements Serializable {
+extends VehicleMaintenance {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -32,9 +30,6 @@ implements Serializable {
 		// Call VehicleMaintenance constructor.
 		super(FunctionType.GROUND_VEHICLE_MAINTENANCE, building);
 
-		vehicleCapacity = buildingConfig.getFunctionCapacity(building.getBuildingType(),
-															 FunctionType.GROUND_VEHICLE_MAINTENANCE);
-
 		for (LocalPosition parkingLocationPoint : buildingConfig.getParkingLocations(building.getBuildingType())) {
 			addParkingLocation(parkingLocationPoint);
 		}
@@ -43,15 +38,11 @@ implements Serializable {
 	/**
 	 * Constructor.
 	 * @param building the building the function is for.
-	 * @param vehicleCapacity the number of vehicles that can be parked.
 	 * @param parkingLocations the parking locations.
 	 */
-	public GroundVehicleMaintenance(Building building, int vehicleCapacity, 
-			LocalPosition[] parkingLocations) {
+	public GroundVehicleMaintenance(Building building, LocalPosition[] parkingLocations) {
 		// Call VehicleMaintenance constructor.
 		super(FunctionType.GROUND_VEHICLE_MAINTENANCE, building);
-
-		this.vehicleCapacity = vehicleCapacity;
 		
 		for (LocalPosition parkingLocation : parkingLocations) {
 			addParkingLocation(parkingLocation);
@@ -89,7 +80,7 @@ implements Serializable {
 
 		double vehicleCapacityValue = demand / (supply + 1D);
 
-		double vehicleCapacity = buildingConfig.getFunctionCapacity(buildingName, FunctionType.GROUND_VEHICLE_MAINTENANCE);
+		double vehicleCapacity = buildingConfig.getParkingLocations(buildingName).size();
 
 		return vehicleCapacity * vehicleCapacityValue;
 	}

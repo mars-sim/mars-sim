@@ -588,14 +588,15 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 		List<Function> buildingFunctions = new ArrayList<>();
 
 		for(FunctionType supported : spec.getFunctionSupported()) {
+			FunctionSpec fSpec = spec.getFunctionSpec(supported);
 			switch (supported) {
 
 			case ADMINISTRATION:
-				buildingFunctions.add(new Administration(this));
+				buildingFunctions.add(new Administration(this, fSpec));
 				break;
 
 			case ASTRONOMICAL_OBSERVATION:
-				buildingFunctions.add(new AstronomicalObservation(this));
+				buildingFunctions.add(new AstronomicalObservation(this, fSpec));
 				break;
 
 			case BUILDING_CONNECTION:
@@ -607,7 +608,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 				break;
 
 			case COMPUTATION:
-				buildingFunctions.add(new Computation(this));
+				buildingFunctions.add(new Computation(this, fSpec));
 				break;
 
 			case COOKING:
@@ -624,7 +625,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 				break;
 
 			case EVA:
-				buildingFunctions.add(new EVA(this));
+				buildingFunctions.add(new EVA(this, fSpec));
 				break;
 
 			case EXERCISE:
@@ -632,15 +633,15 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 				break;
 
 			case FARMING:
-				buildingFunctions.add(new Farming(this));
+				buildingFunctions.add(new Farming(this, fSpec));
 				break;
 
 			case FISHERY:
-				buildingFunctions.add(new Fishery(this));
+				buildingFunctions.add(new Fishery(this, fSpec));
 				break;
 
 			case FOOD_PRODUCTION:
-				buildingFunctions.add(new FoodProduction(this));
+				buildingFunctions.add(new FoodProduction(this, fSpec));
 				break;
 
 			case GROUND_VEHICLE_MAINTENANCE:
@@ -648,23 +649,23 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 				break;
 
 			case LIFE_SUPPORT:
-				buildingFunctions.add(new LifeSupport(this));
+				buildingFunctions.add(new LifeSupport(this, fSpec));
 				break;
 
 			case LIVING_ACCOMMODATIONS:
-				buildingFunctions.add(new LivingAccommodations(this));
+				buildingFunctions.add(new LivingAccommodations(this, fSpec));
 				break;
 
 			case MANAGEMENT:
-				buildingFunctions.add(new Management(this));
+				buildingFunctions.add(new Management(this, fSpec));
 				break;
 
 			case MANUFACTURE:
-				buildingFunctions.add(new Manufacture(this));
+				buildingFunctions.add(new Manufacture(this, fSpec));
 				break;
 
 			case MEDICAL_CARE:
-				buildingFunctions.add(new MedicalCare(this));
+				buildingFunctions.add(new MedicalCare(this, fSpec));
 				break;
 
 			case POWER_GENERATION:
@@ -672,27 +673,27 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 				break;
 
 			case POWER_STORAGE:
-				buildingFunctions.add(new PowerStorage(this));
+				buildingFunctions.add(new PowerStorage(this, fSpec));
 				break;
 
 			case RECREATION:
-				buildingFunctions.add(new Recreation(this));
+				buildingFunctions.add(new Recreation(this, fSpec));
 				break;
 
 			case RESEARCH:
-				buildingFunctions.add(new Research(this));
+				buildingFunctions.add(new Research(this, fSpec));
 				break;
 
 			case RESOURCE_PROCESSING:
-				buildingFunctions.add(new ResourceProcessing(this));
+				buildingFunctions.add(new ResourceProcessing(this, fSpec));
 				break;
 
 			case ROBOTIC_STATION:
-				buildingFunctions.add(new RoboticStation(this));
+				buildingFunctions.add(new RoboticStation(this, fSpec));
 				break;
 
 			case STORAGE:
-				buildingFunctions.add(new Storage(this));
+				buildingFunctions.add(new Storage(this, fSpec));
 				break;
 
 			case THERMAL_GENERATION:
@@ -700,7 +701,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 				break;
 
 			case WASTE_PROCESSING:
-				buildingFunctions.add(new WasteProcessing(this));
+				buildingFunctions.add(new WasteProcessing(this, fSpec));
 				break;
 
 			default:

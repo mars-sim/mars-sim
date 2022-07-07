@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.structure.building.function;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -22,12 +21,13 @@ import org.mars_sim.msp.core.person.health.Treatment;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
+import org.mars_sim.msp.core.structure.building.FunctionSpec;
 
 /**
  * The MedicalCare class represents a building function for providing medical
  * care.
  */
-public class MedicalCare extends Function implements MedicalAid, Serializable {
+public class MedicalCare extends Function implements MedicalAid {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -38,14 +38,15 @@ public class MedicalCare extends Function implements MedicalAid, Serializable {
 	 * Constructor.
 	 * 
 	 * @param building the building this function is for.
+	 * @param spec Specification of Function
 	 * @throws BuildingException if function could not be constructed.
 	 */
-	public MedicalCare(Building building) {
+	public MedicalCare(Building building, FunctionSpec spec) {
 		// Use Function constructor.
 		super(FunctionType.MEDICAL_CARE, building);
 
-		int techLevel = buildingConfig.getFunctionTechLevel(building.getBuildingType(), FunctionType.MEDICAL_CARE);
-		int beds = buildingConfig.getFunctionCapacity(building.getBuildingType(), FunctionType.MEDICAL_CARE);
+		int techLevel = spec.getTechLevel();
+		int beds = spec.getCapacity();
 		medicalStation = new MedicalStation(techLevel, beds);
 		medicalStation.setBuilding(building);
 
@@ -54,25 +55,23 @@ public class MedicalCare extends Function implements MedicalAid, Serializable {
 	}
 
 	/**
-	 * Gets the value of the function for a named building.
+	 * Gets the value of the function for a named building type.
 	 * 
-	 * @param buildingName the building name.
+	 * @param type the building type.
 	 * @param newBuilding  true if adding a new building.
 	 * @param settlement   the settlement.
 	 * @return value (VP) of building function.
 	 * @throws Exception if error getting function value.
 	 */
-	public static double getFunctionValue(String buildingName, boolean newBuilding, Settlement settlement) {
+	public static double getFunctionValue(String type, boolean newBuilding, Settlement settlement) {
 
 		// Demand is 5 medical points per inhabitant.
 		double demand = settlement.getNumCitizens() * 5D;
 
 		double supply = 0D;
 		boolean removedBuilding = false;
-		Iterator<Building> i = settlement.getBuildingManager().getBuildings(FunctionType.MEDICAL_CARE).iterator();
-		while (i.hasNext()) {
-			Building building = i.next();
-			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(buildingName) && !removedBuilding) {
+		for(Building building : settlement.getBuildingManager().getBuildings(FunctionType.MEDICAL_CARE)) {
+			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(type) && !removedBuilding) {
 				removedBuilding = true;
 			} else {
 				MedicalCare medFunction = building.getMedical();
@@ -85,10 +84,9 @@ public class MedicalCare extends Function implements MedicalAid, Serializable {
 
 		double medicalPointValue = demand / (supply + 1D) / 10D;
 
-		// BuildingConfig config =
-		// SimulationConfig.instance().getBuildingConfiguration();
-		double tech = buildingConfig.getFunctionTechLevel(buildingName, FunctionType.MEDICAL_CARE);
-		double beds = buildingConfig.getFunctionCapacity(buildingName, FunctionType.MEDICAL_CARE);
+		FunctionSpec fSpec = buildingConfig.getFunctionSpec(type, FunctionType.MEDICAL_CARE);
+		double tech = fSpec.getTechLevel();
+		double beds = fSpec.getCapacity();
 		double medicalPoints = (tech * tech) * beds;
 
 		return medicalPoints * medicalPointValue;

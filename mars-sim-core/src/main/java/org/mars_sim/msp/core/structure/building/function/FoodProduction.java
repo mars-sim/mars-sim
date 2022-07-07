@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.structure.building.function;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -29,15 +28,18 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
+import org.mars_sim.msp.core.structure.building.FunctionSpec;
 import org.mars_sim.msp.core.time.ClockPulse;
 
 /**
  * A building function for foodProduction.
  */
-public class FoodProduction extends Function implements Serializable {
+public class FoodProduction extends Function {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
+
+	private static final String CONCURRENT_PROCESSES = "concurrent-processes";
 
 	/** default logger. */
 	private static final Logger logger = Logger.getLogger(FoodProduction.class.getName());
@@ -54,22 +56,23 @@ public class FoodProduction extends Function implements Serializable {
 	 * Constructor.
 	 * 
 	 * @param building the building the function is for.
+	 * @param spec Spec of the function
 	 * @throws BuildingException if error constructing function.
 	 */
-	public FoodProduction(Building building) {
+	public FoodProduction(Building building, FunctionSpec spec) {
 		// Use Function constructor.
 		super(FunctionType.FOOD_PRODUCTION, building);
 
-		techLevel = buildingConfig.getFunctionTechLevel(building.getBuildingType(), FunctionType.FOOD_PRODUCTION);
-		concurrentProcesses = buildingConfig.getFoodProductionConcurrentProcesses(building.getBuildingType());
+		techLevel = spec.getTechLevel();
+		concurrentProcesses = spec.getIntegerProperty(CONCURRENT_PROCESSES);
 
-		processes = new ArrayList<FoodProductionProcess>();
+		processes = new ArrayList<>();
 	}
 
 	/**
-	 * Gets the value of the function for a named building.
+	 * Gets the value of the function for a named building type.
 	 * 
-	 * @param buildingType the building name.
+	 * @param buildingType the building type.
 	 * @param newBuilding  true if adding a new building.
 	 * @param settlement   the settlement.
 	 * @return value (VP) of building function.
@@ -79,24 +82,23 @@ public class FoodProduction extends Function implements Serializable {
 
 		double result = 0D;
 
-		int buildingTech = buildingConfig.getFunctionTechLevel(buildingType, FunctionType.FOOD_PRODUCTION);
+		FunctionSpec spec = buildingConfig.getFunctionSpec(buildingType, FunctionType.FOOD_PRODUCTION);
+
+		int buildingTech = spec.getTechLevel();
 
 		double demand = 0D;
-		Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
-		while (i.hasNext()) {
-			demand += i.next().getSkillManager().getSkillLevel(SkillType.COOKING);
+		for(Person p : settlement.getAllAssociatedPeople()) {
+			demand += p.getSkillManager().getSkillLevel(SkillType.COOKING);
 		}
 
 		double supply = 0D;
 		int highestExistingTechLevel = 0;
 		boolean removedBuilding = false;
-		Iterator<Building> j = settlement.getBuildingManager().getBuildings(FunctionType.FOOD_PRODUCTION).iterator();
-		while (j.hasNext()) {
-			Building building = j.next();
+		for(Building building : settlement.getBuildingManager().getBuildings(FunctionType.FOOD_PRODUCTION)) {
 			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(buildingType) && !removedBuilding) {
 				removedBuilding = true;
 			} else {
-				FoodProduction manFunction = (FoodProduction) building.getFunction(FunctionType.FOOD_PRODUCTION);
+				FoodProduction manFunction = building.getFoodProduction();
 				int tech = manFunction.techLevel;
 				double processes = manFunction.concurrentProcesses;
 				double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
@@ -110,7 +112,7 @@ public class FoodProduction extends Function implements Serializable {
 
 		double baseFoodProductionValue = demand / (supply + 1D);
 
-		double processes = buildingConfig.getFoodProductionConcurrentProcesses(buildingType);
+		double processes = spec.getIntegerProperty(CONCURRENT_PROCESSES);
 		double foodProductionValue = (buildingTech * buildingTech) * processes;
 
 		result = foodProductionValue * baseFoodProductionValue;

@@ -6,18 +6,16 @@
  */
 package org.mars_sim.msp.core.structure.building.function;
 
-import java.io.Serializable;
 import java.util.Iterator;
 
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.FunctionSpec;
 
 /**
  * The Recreation class is a building function for recreation.
  */
-public class Recreation
-extends Function
-implements Serializable {
+public class Recreation extends Function {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
@@ -28,13 +26,14 @@ implements Serializable {
     /**
      * Constructor.
      * @param building the building this function is for.
+     * @param spec Details of teh Recreation function.
      */
-    public Recreation(Building building) {
+    public Recreation(Building building, FunctionSpec spec) {
         // Use Function constructor.
         super(FunctionType.RECREATION, building);
 
         // Populate data members.
-        populationSupport = buildingConfig.getFunctionCapacity(building.getBuildingType(), FunctionType.RECREATION);
+        populationSupport = spec.getCapacity();
     }
 
     /**
@@ -62,7 +61,7 @@ implements Serializable {
         }
 
         if (!newBuilding) {
-            supply -= buildingConfig.getFunctionCapacity(buildingName, FunctionType.RECREATION);
+            supply -= buildingConfig.getFunctionSpec(buildingName, FunctionType.RECREATION).getCapacity();
             if (supply < 0D) supply = 0D;
         }
 

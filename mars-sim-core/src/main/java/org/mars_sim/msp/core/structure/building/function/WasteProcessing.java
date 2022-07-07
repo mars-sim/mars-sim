@@ -6,15 +6,14 @@
  */
 package org.mars_sim.msp.core.structure.building.function;
 
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
+import org.mars_sim.msp.core.structure.building.FunctionSpec;
 import org.mars_sim.msp.core.structure.building.WasteProcessSpec;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -22,10 +21,11 @@ import org.mars_sim.msp.core.time.MarsClock;
 /**
  * The WasteProcessing class is a building function for handling waste disposal and recycling.
  */
-public class WasteProcessing extends Function implements Serializable {
+public class WasteProcessing extends Function {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
+	private static final String POWER_DOWN_LEVEL = "power-down-level";
 
 	public static final double PROCESS_MAX_VALUE = 100D;
 
@@ -38,51 +38,45 @@ public class WasteProcessing extends Function implements Serializable {
 	 * 
 	 * @param building the building this function is for.
 	 */
-	public WasteProcessing(Building building) {
+	public WasteProcessing(Building building, FunctionSpec spec) {
 		// Use Function constructor
 		super(FunctionType.WASTE_PROCESSING, building);
 
-		powerDownProcessingLevel = buildingConfig.getWasteProcessingPowerDown(building.getBuildingType());
+		powerDownProcessingLevel = spec.getDoubleProperty(POWER_DOWN_LEVEL);
 		wasteProcesses = new ArrayList<>();
-		for (WasteProcessSpec spec : buildingConfig.getWasteProcesses(building.getBuildingType())) {
-			wasteProcesses.add(new WasteProcess(spec));
+		for (WasteProcessSpec wspec : buildingConfig.getWasteProcesses(building.getBuildingType())) {
+			wasteProcesses.add(new WasteProcess(wspec));
 		}
 	}
 
 	/**
 	 * Gets the value of the function for a named building.
 	 * 
-	 * @param buildingName the building name.
+	 * @param type the building name.
 	 * @param newBuilding  true if adding a new building.
 	 * @param settlement   the settlement.
 	 * @return value (VP) of building function.
 	 */
-	public static double getFunctionValue(String buildingName, boolean newBuilding, Settlement settlement) {
+	public static double getFunctionValue(String type, boolean newBuilding, Settlement settlement) {
 
 		double result = 0D;
-		Iterator<WasteProcessSpec> i = buildingConfig.getWasteProcesses(buildingName).iterator();
-		while (i.hasNext()) {
-			WasteProcessSpec process = i.next();
+		for(WasteProcessSpec process : buildingConfig.getWasteProcesses(type)) {
 			double processValue = 0D;
-			Iterator<Integer> ii = process.getOutputResources().iterator();
-			while (ii.hasNext()) {
-				int resource = ii.next();
-				if (!process.isWasteOutputResource(resource)) {
-					double rate = process.getMaxOutputRate(resource);
-					processValue += settlement.getGoodsManager().getGoodValuePerItem(resource) * rate;
+			for(Integer outResource : process.getOutputResources()) {
+				if (!process.isWasteOutputResource(outResource)) {
+					double rate = process.getMaxOutputRate(outResource);
+					processValue += settlement.getGoodsManager().getGoodValuePerItem(outResource) * rate;
 				}
 			}
 
 			double inputInventoryLimit = 1D;
-			Iterator<Integer> iii = new HashSet<>(process.getInputResources()).iterator();
-		    while (iii.hasNext()) {
-		    	int resource = iii.next();
-				if (!process.isAmbientInputResource(resource)) {
-					double rate = process.getMaxInputRate(resource);
-					processValue -= settlement.getGoodsManager().getGoodValuePerItem(resource) * rate;
+			for(int inResource : process.getInputResources()) {
+				if (!process.isAmbientInputResource(inResource)) {
+					double rate = process.getMaxInputRate(inResource);
+					processValue -= settlement.getGoodsManager().getGoodValuePerItem(inResource) * rate;
 
 					// Check inventory limit.
-					double inputSupply = settlement.getAmountResourceStored(resource);
+					double inputSupply = settlement.getAmountResourceStored(inResource);
 					if (inputSupply < rate) {
 						double limit = inputSupply / rate;
 						if (limit < inputInventoryLimit) {
@@ -162,6 +156,7 @@ public class WasteProcessing extends Function implements Serializable {
 	 *
 	 * @return power (kW)
 	 */
+	@Override
 	public double getFullPowerRequired() {
 		double result = 0D;
 		Iterator<WasteProcess> i = wasteProcesses.iterator();
@@ -179,6 +174,7 @@ public class WasteProcessing extends Function implements Serializable {
 	 *
 	 * @return power (kW)
 	 */
+	@Override
 	public double getPoweredDownPowerRequired() {
 		double result = 0D;
 		Iterator<WasteProcess> i = wasteProcesses.iterator();

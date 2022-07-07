@@ -86,7 +86,7 @@ public abstract class AbstractMarsSimUnitTest extends TestCase {
 	    building0.addFunction(new EVA(building0, airlock0));
 	
 	    LocalPosition parkingLocation = LocalPosition.DEFAULT_POSITION;
-	    GroundVehicleMaintenance garage = new GroundVehicleMaintenance(building0, 1,
+	    GroundVehicleMaintenance garage = new GroundVehicleMaintenance(building0,
 	            new LocalPosition[] { parkingLocation });
 	    building0.addFunction(garage);
 	    

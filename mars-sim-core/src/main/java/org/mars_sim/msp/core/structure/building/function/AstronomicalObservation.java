@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.structure.building.function;
 
-import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -15,7 +14,9 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingException;
+import org.mars_sim.msp.core.structure.building.FunctionSpec;
 import org.mars_sim.msp.core.time.MarsClock;
 
 /**
@@ -39,17 +40,16 @@ public class AstronomicalObservation extends Function {
 	 * Constructor.
 	 * 
 	 * @param building the building the function is for.
+	 * @param spec Function details
 	 * @throws BuildingException if error creating building function.
 	 */
-	public AstronomicalObservation(Building building) {
+	public AstronomicalObservation(Building building, FunctionSpec spec) {
 		// Use function constructor.
 		super(FunctionType.ASTRONOMICAL_OBSERVATION, building);
 
-		powerRequired = buildingConfig.getAstronomicalObservationPowerRequirement(building.getBuildingType());
-		techLevel = buildingConfig.getFunctionTechLevel(building.getBuildingType(),
-														FunctionType.ASTRONOMICAL_OBSERVATION);
-		observatoryCapacity = buildingConfig.getFunctionCapacity(building.getBuildingType(),
-																 FunctionType.ASTRONOMICAL_OBSERVATION);
+		powerRequired = spec.getDoubleProperty(BuildingConfig.POWER_REQUIRED);
+		techLevel = spec.getTechLevel();
+		observatoryCapacity = spec.getCapacity();
 	}
 
 	/**
@@ -57,6 +57,7 @@ public class AstronomicalObservation extends Function {
 	 * 
 	 * @return power (kW)
 	 */
+	@Override
 	public double getFullPowerRequired() {
 		return powerRequired;
 	}
@@ -117,33 +118,30 @@ public class AstronomicalObservation extends Function {
 	}
 
 	/**
-	 * Gets the value of the function for a named building.
+	 * Gets the value of the function for a named building type.
 	 * 
-	 * @param buildingName the building name.
+	 * @param type  the building type.
 	 * @param newBuilding  true if adding a new building.
 	 * @param settlement   the settlement.
 	 * @return value (VP) of building function.
 	 * @throws Exception if error getting function value.
 	 */
-	public static double getFunctionValue(String buildingName, boolean newBuilding, Settlement settlement) {
+	public static double getFunctionValue(String type, boolean newBuilding, Settlement settlement) {
 
 		double observatoryDemand = 0D;
 		ScienceType astronomyScience = ScienceType.ASTRONOMY;
 
 		// Determine settlement demand for astronomical observatories.
 		SkillType astronomySkill = astronomyScience.getSkill();
-		Iterator<Person> j = settlement.getAllAssociatedPeople().iterator();
-		while (j.hasNext()) {
-			observatoryDemand += j.next().getSkillManager().getSkillLevel(astronomySkill);
+		for(Person p : settlement.getAllAssociatedPeople()) {
+			observatoryDemand += p.getSkillManager().getSkillLevel(astronomySkill);
 		}
 
 		// Determine existing settlement supply of astronomical observatories.
 		double observatorySupply = 0D;
 		boolean removedBuilding = false;
-		Iterator<Building> k = settlement.getBuildingManager().getBuildings(FunctionType.ASTRONOMICAL_OBSERVATION).iterator();
-		while (k.hasNext()) {
-			Building building = k.next();
-			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(buildingName) && !removedBuilding) {
+		for(Building building : settlement.getBuildingManager().getBuildings(FunctionType.ASTRONOMICAL_OBSERVATION)) {
+			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(type) && !removedBuilding) {
 				removedBuilding = true;
 			} else {
 				AstronomicalObservation astroFunction = building.getAstronomicalObservation();
@@ -159,16 +157,15 @@ public class AstronomicalObservation extends Function {
 
 		// Determine settlement value for this building's astronomical observatory
 		// function.
-
-		int techLevel = buildingConfig.getFunctionTechLevel(buildingName, FunctionType.ASTRONOMICAL_OBSERVATION);
-		int observatorySize = buildingConfig.getFunctionCapacity(buildingName, FunctionType.ASTRONOMICAL_OBSERVATION);
+		FunctionSpec fSpec = buildingConfig.getFunctionSpec(type, FunctionType.ASTRONOMICAL_OBSERVATION);
+		int techLevel = fSpec.getTechLevel();
+		int observatorySize = fSpec.getCapacity();
 		int buildingObservatorySupply = techLevel * observatorySize;
 
 		double result = buildingObservatorySupply * existingObservatoryValue;
 
 		// Subtract power usage cost per sol.
-		double power = buildingConfig.getAstronomicalObservationPowerRequirement(buildingName);
-//		double hoursInSol = MarsClock.convertMillisolsToSeconds(1000D) / 60D / 60D;
+		double power = fSpec.getDoubleProperty(BuildingConfig.POWER_REQUIRED);
 		double powerPerSol = power * MarsClock.HOURS_PER_MILLISOL * 1000D;
 		double powerValue = powerPerSol * settlement.getPowerGrid().getPowerValue();
 		result -= powerValue;
