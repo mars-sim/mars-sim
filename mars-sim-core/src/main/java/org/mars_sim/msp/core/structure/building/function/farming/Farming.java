@@ -129,7 +129,7 @@ public class Farming extends Function {
 	 */
 	public Farming(Building building, FunctionSpec spec) {
 		// Use Function constructor.
-		super(FunctionType.FARMING, building);
+		super(FunctionType.FARMING, spec, building);
 
 		// Initialize the attribute scores map
 		initAttributeScores();

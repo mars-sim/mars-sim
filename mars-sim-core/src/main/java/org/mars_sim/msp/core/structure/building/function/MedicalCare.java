@@ -43,7 +43,7 @@ public class MedicalCare extends Function implements MedicalAid {
 	 */
 	public MedicalCare(Building building, FunctionSpec spec) {
 		// Use Function constructor.
-		super(FunctionType.MEDICAL_CARE, building);
+		super(FunctionType.MEDICAL_CARE, spec, building);
 
 		int techLevel = spec.getTechLevel();
 		int beds = spec.getCapacity();

@@ -9,12 +9,12 @@ package org.mars_sim.msp.core.structure.building.function.farming;
 
 import java.io.Serializable;
 
+import org.mars_sim.msp.core.structure.building.FunctionSpec;
 import org.mars_sim.msp.core.structure.building.function.Function;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.time.ClockPulse;
 
-public class BeeGrowing extends Function
-implements Serializable {
+public class BeeGrowing extends Function {
 	
 	/** default serial id. */
     private static final long serialVersionUID = 1L;
@@ -27,9 +27,9 @@ implements Serializable {
     private Farming farm;
     private BeeHive hive;
 
-    public BeeGrowing(Farming farm) {
+    public BeeGrowing(Farming farm, FunctionSpec spec) {
         // Use Function constructor.
-        super(FunctionType.FARMING, farm.getBuilding());
+        super(FunctionType.FARMING, spec, farm.getBuilding());
 		
         this.farm = farm;      
         		

@@ -600,11 +600,11 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 				break;
 
 			case BUILDING_CONNECTION:
-				buildingFunctions.add(new BuildingConnection(this));
+				buildingFunctions.add(new BuildingConnection(this, fSpec));
 				break;
 
 			case COMMUNICATION:
-				buildingFunctions.add(new Communication(this));
+				buildingFunctions.add(new Communication(this, fSpec));
 				break;
 
 			case COMPUTATION:
@@ -612,16 +612,16 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 				break;
 
 			case COOKING:
-				buildingFunctions.add(new Cooking(this));
-				buildingFunctions.add(new PreparingDessert(this));
+				buildingFunctions.add(new Cooking(this, fSpec));
+				buildingFunctions.add(new PreparingDessert(this, fSpec));
 				break;
 
 			case DINING:
-				buildingFunctions.add(new Dining(this));
+				buildingFunctions.add(new Dining(this, fSpec));
 				break;
 
 			case EARTH_RETURN:
-				buildingFunctions.add(new EarthReturn(this));
+				buildingFunctions.add(new EarthReturn(this, fSpec));
 				break;
 
 			case EVA:
@@ -629,7 +629,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 				break;
 
 			case EXERCISE:
-				buildingFunctions.add(new Exercise(this));
+				buildingFunctions.add(new Exercise(this, fSpec));
 				break;
 
 			case FARMING:
@@ -645,7 +645,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 				break;
 
 			case GROUND_VEHICLE_MAINTENANCE:
-				buildingFunctions.add(new GroundVehicleMaintenance(this));
+				buildingFunctions.add(new GroundVehicleMaintenance(this, fSpec));
 				break;
 
 			case LIFE_SUPPORT:
@@ -669,7 +669,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 				break;
 
 			case POWER_GENERATION:
-				buildingFunctions.add(new PowerGeneration(this));
+				buildingFunctions.add(new PowerGeneration(this, fSpec));
 				break;
 
 			case POWER_STORAGE:
@@ -697,7 +697,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 				break;
 
 			case THERMAL_GENERATION:
-				buildingFunctions.add(new ThermalGeneration(this));
+				buildingFunctions.add(new ThermalGeneration(this, fSpec));
 				break;
 
 			case WASTE_PROCESSING:

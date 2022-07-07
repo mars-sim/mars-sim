@@ -47,7 +47,7 @@ public class RoboticStation extends Function {
 	 */
 	public RoboticStation(Building building, FunctionSpec spec) {
 		// Call Function constructor.
-		super(FunctionType.ROBOTIC_STATION, building);
+		super(FunctionType.ROBOTIC_STATION, spec, building);
 
 		robotOccupants = new HashSet<>();
 		// Set occupant capacity.

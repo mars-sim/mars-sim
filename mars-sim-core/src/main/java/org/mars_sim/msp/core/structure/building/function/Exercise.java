@@ -6,19 +6,17 @@
  */
 package org.mars_sim.msp.core.structure.building.function;
 
-import java.io.Serializable;
 import java.util.Iterator;
 
-import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingException;
+import org.mars_sim.msp.core.structure.building.FunctionSpec;
 
 /**
  * The Exercise class is a building function for exercise.
  */
-public class Exercise extends Function implements Serializable {
+public class Exercise extends Function {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -31,13 +29,14 @@ public class Exercise extends Function implements Serializable {
 	 * Constructor.
 	 * 
 	 * @param building the building this function is for.
+	 * @param spec Define the details of the Function
 	 * @throws BuildingException if error in constructing function.
 	 */
-	public Exercise(Building building) {
+	public Exercise(Building building, FunctionSpec spec) {
 		// Use Function constructor.
-		super(FunctionType.EXERCISE, building);
+		super(FunctionType.EXERCISE, spec, building);
 
-		this.exerciserCapacity = buildingConfig.getFunctionCapacity(building.getBuildingType(), FunctionType.EXERCISE);
+		this.exerciserCapacity = spec.getCapacity();
 	}
 
 	/**
@@ -70,8 +69,7 @@ public class Exercise extends Function implements Serializable {
 
 		double valueExerciser = demand / (supply + 1D);
 
-		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
-		double exerciserCapacity = config.getFunctionCapacity(buildingName, FunctionType.EXERCISE);
+		double exerciserCapacity = buildingConfig.getFunctionSpec(buildingName, FunctionType.EXERCISE).getCapacity();
 
 		return exerciserCapacity * valueExerciser;
 	}

@@ -70,7 +70,7 @@ public class LivingAccommodations extends Function {
 	 */
 	public LivingAccommodations(Building building, FunctionSpec spec) {
 		// Call Function constructor.
-		super(FunctionType.LIVING_ACCOMMODATIONS, building);
+		super(FunctionType.LIVING_ACCOMMODATIONS, spec, building);
 
 		dailyWaterUsage = new SolSingleMetricDataLogger(MAX_NUM_SOLS);
 		// Loads the max # of beds available

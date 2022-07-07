@@ -45,7 +45,7 @@ public class AstronomicalObservation extends Function {
 	 */
 	public AstronomicalObservation(Building building, FunctionSpec spec) {
 		// Use function constructor.
-		super(FunctionType.ASTRONOMICAL_OBSERVATION, building);
+		super(FunctionType.ASTRONOMICAL_OBSERVATION, spec, building);
 
 		powerRequired = spec.getDoubleProperty(BuildingConfig.POWER_REQUIRED);
 		techLevel = spec.getTechLevel();

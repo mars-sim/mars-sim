@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.structure.building.function.cooking;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -28,6 +27,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.WaterUseType;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
+import org.mars_sim.msp.core.structure.building.FunctionSpec;
 import org.mars_sim.msp.core.structure.building.function.Function;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
@@ -39,7 +39,7 @@ import org.mars_sim.msp.core.tool.RandomUtil;
 /**
  * The PreparingDessert class is a building function for making dessert.
  */
-public class PreparingDessert extends Function implements Serializable {
+public class PreparingDessert extends Function {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -82,7 +82,6 @@ public class PreparingDessert extends Function implements Serializable {
 	private static int NUM_DESSERTS = availableDesserts.length;
 
 	private static int waterID = ResourceUtil.waterID;
-//	private static int greyWaterID = ResourceUtil.greyWaterID;
 	private static int foodWasteID = ResourceUtil.foodWasteID;
 	public static int NaClOID = ResourceUtil.NaClOID;
 
@@ -132,9 +131,9 @@ public class PreparingDessert extends Function implements Serializable {
 	 * @param building the building this function is for.
 	 * @throws BuildingException if error in constructing function.
 	 */
-	public PreparingDessert(Building building) {
+	public PreparingDessert(Building building, FunctionSpec spec) {
 		// Use Function constructor but uses COOKING as the configuration type
-		super(FunctionType.PREPARING_DESSERT, FunctionType.COOKING, building);
+		super(FunctionType.PREPARING_DESSERT, spec, building);
 
 		dessertMassPerServing = personConfig.getDessertConsumptionRate() / (double) NUM_OF_DESSERT_PER_SOL
 				* DESSERT_SERVING_FRACTION;
@@ -147,7 +146,7 @@ public class PreparingDessert extends Function implements Serializable {
 		preparingWorkTime = 0D;
 		servingsOfDessert = new CopyOnWriteArrayList<>();
 
-		this.cookCapacity = buildingConfig.getFunctionCapacity(building.getBuildingType(), FunctionType.COOKING);
+		this.cookCapacity = spec.getCapacity();
 	}
 
 	public static String[] getArrayOfDesserts() {
@@ -218,7 +217,7 @@ public class PreparingDessert extends Function implements Serializable {
 
 		double preparingDessertCapacityValue = demand / (supply + 1D);
 
-		double preparingDessertCapacity = buildingConfig.getFunctionCapacity(buildingType, FunctionType.COOKING);
+		double preparingDessertCapacity = buildingConfig.getFunctionSpec(buildingType, FunctionType.COOKING).getCapacity();
 
 		return preparingDessertCapacity * preparingDessertCapacityValue;
 	}
@@ -694,6 +693,7 @@ public class PreparingDessert extends Function implements Serializable {
 	 * 
 	 * @return power (kW)
 	 */
+	@Override
 	public double getFullPowerRequired() {
 		return getNumCooks() * 10D;
 	}

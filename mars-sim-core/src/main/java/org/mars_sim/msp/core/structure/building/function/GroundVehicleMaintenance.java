@@ -11,6 +11,7 @@ import java.util.Iterator;
 import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.FunctionSpec;
 
 /**
  * The GroundVehicleMaintenance class is a building function for a building
@@ -25,10 +26,11 @@ extends VehicleMaintenance {
 	/**
 	 * Constructor.
 	 * @param building the building the function is for.
+	 * @param spec Defines the Function details
 	 */
-	public GroundVehicleMaintenance(Building building) {
+	public GroundVehicleMaintenance(Building building, FunctionSpec spec) {
 		// Call VehicleMaintenance constructor.
-		super(FunctionType.GROUND_VEHICLE_MAINTENANCE, building);
+		super(FunctionType.GROUND_VEHICLE_MAINTENANCE, spec, building);
 
 		for (LocalPosition parkingLocationPoint : buildingConfig.getParkingLocations(building.getBuildingType())) {
 			addParkingLocation(parkingLocationPoint);
@@ -42,7 +44,7 @@ extends VehicleMaintenance {
 	 */
 	public GroundVehicleMaintenance(Building building, LocalPosition[] parkingLocations) {
 		// Call VehicleMaintenance constructor.
-		super(FunctionType.GROUND_VEHICLE_MAINTENANCE, building);
+		super(FunctionType.GROUND_VEHICLE_MAINTENANCE, null, building);
 		
 		for (LocalPosition parkingLocation : parkingLocations) {
 			addParkingLocation(parkingLocation);

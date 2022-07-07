@@ -44,7 +44,7 @@ public class Storage extends Function {
 	 */
 	public Storage(Building building, FunctionSpec spec) {
 		// Use Function constructor.
-		super(FunctionType.STORAGE, building);
+		super(FunctionType.STORAGE, spec, building);
 
 		// Get capacity for each resource.
 		resourceCapacities = buildingConfig.getStorageCapacities(building.getBuildingType());

@@ -38,7 +38,7 @@ public class Computation extends Function{
 	 */
 	public Computation(Building building, FunctionSpec spec) {
 		// Call Function constructor.
-		super(FunctionType.COMPUTATION, building);
+		super(FunctionType.COMPUTATION, spec, building);
 		
 		computingUnit = spec.getDoubleProperty(COMPUTING_UNIT);
 		powerDemand = spec.getDoubleProperty(POWER_DEMAND);

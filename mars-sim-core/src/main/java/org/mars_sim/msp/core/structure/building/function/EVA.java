@@ -22,8 +22,6 @@ public class EVA extends Function {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private static final FunctionType FUNCTION = FunctionType.EVA;
-
 	private static final double MAINTENANCE_FACTOR = 5D;
 
 	// Nmaes of the different Positions of an Airlock; must match the buildings.xml
@@ -43,7 +41,7 @@ public class EVA extends Function {
 	 */
 	public EVA(Building building, FunctionSpec spec) {
 		// Use Function constructor.
-		super(FUNCTION, building);
+		super(FunctionType.EVA, spec, building);
 
 		// Add a building airlock.
 		airlockCapacity = spec.getCapacity();
@@ -63,7 +61,7 @@ public class EVA extends Function {
 	 */
 	public EVA(Building building, BuildingAirlock airlock) {
 		// Use Function constructor.
-		super(FUNCTION, building);
+		super(FunctionType.EVA, null, building);
 
 		// Add building airlock
 		this.airlock = airlock;
@@ -85,7 +83,7 @@ public class EVA extends Function {
 
 		double supply = 0D;
 		boolean removedBuilding = false;
-		for(Building building : settlement.getBuildingManager().getBuildings(FUNCTION)) {
+		for(Building building : settlement.getBuildingManager().getBuildings(FunctionType.EVA)) {
 			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(type) && !removedBuilding) {
 				removedBuilding = true;
 			}
@@ -98,7 +96,7 @@ public class EVA extends Function {
 		double airlockCapacityValue = demand / (supply + 1D);
 
 		// Note: building.getEVA().airlock.getCapacity() is the same as the airlockCapacity below
-		double airlockCapacity = buildingConfig.getFunctionCapacity(type, FUNCTION);
+		double airlockCapacity = buildingConfig.getFunctionSpec(type, FunctionType.EVA).getCapacity();
 
 		return airlockCapacity * airlockCapacityValue;
 	}

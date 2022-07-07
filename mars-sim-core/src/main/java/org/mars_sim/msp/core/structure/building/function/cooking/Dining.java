@@ -6,20 +6,18 @@
  */
 package org.mars_sim.msp.core.structure.building.function.cooking;
 
-import java.io.Serializable;
 import java.util.Iterator;
 
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.FunctionSpec;
 import org.mars_sim.msp.core.structure.building.function.Function;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 
 /**
  * The Dining class is a building function for dining.
  */
-public class Dining
-extends Function
-implements Serializable {
+public class Dining extends Function {
 
     /** default serial id.*/
     private static final long serialVersionUID = 1L;
@@ -30,13 +28,14 @@ implements Serializable {
     /**
      * Constructor.
      * @param building the building this function is for.
+     * @param spec Define sthe Function details
      */
-    public Dining(Building building) {
+    public Dining(Building building, FunctionSpec spec) {
         // Use Function constructor.
-        super(FunctionType.DINING, building);
+        super(FunctionType.DINING, spec, building);
 
         // Populate data members.
-        capacity = buildingConfig.getFunctionCapacity(building.getBuildingType(), FunctionType.DINING);
+        capacity = spec.getCapacity();
     }
 
     /**
@@ -65,7 +64,7 @@ implements Serializable {
         }
 
         if (!newBuilding) {
-            double capacity = buildingConfig.getFunctionCapacity(buildingName, FunctionType.DINING);
+            double capacity = buildingConfig.getFunctionSpec(buildingName, FunctionType.DINING).getCapacity();
             supply -= capacity;
             if (supply < 0D) supply = 0D;
         }

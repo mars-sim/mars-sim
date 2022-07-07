@@ -52,7 +52,7 @@ implements Lab {
      */
     public Research(Building building, FunctionSpec spec) {
         // Use Function constructor
-        super(FunctionType.RESEARCH, building);
+        super(FunctionType.RESEARCH, spec, building);
 
         setupTissueCultures();
         

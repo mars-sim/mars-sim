@@ -16,11 +16,11 @@ import org.mars_sim.msp.core.LocalPosition;
  * Represents a specification of a Building Function in a generic fashion
  */
 public class FunctionSpec {
-    // Name  of the standard capacity property
-    public static final String CAPACITY = "capacity";
+  // Name  of the standard capacity property
+  public static final String CAPACITY = "capacity";
 
-    // Name  of the standard tech level property
-    private static final String TECH_LEVEL = "tech-level";
+  // Name  of the standard tech level property
+  private static final String TECH_LEVEL = "tech-level";
 
 	private Map<String, Object> props;
 	private List<LocalPosition> spots;

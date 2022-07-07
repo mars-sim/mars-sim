@@ -61,7 +61,7 @@ public class FoodProduction extends Function {
 	 */
 	public FoodProduction(Building building, FunctionSpec spec) {
 		// Use Function constructor.
-		super(FunctionType.FOOD_PRODUCTION, building);
+		super(FunctionType.FOOD_PRODUCTION, spec, building);
 
 		techLevel = spec.getTechLevel();
 		concurrentProcesses = spec.getIntegerProperty(CONCURRENT_PROCESSES);

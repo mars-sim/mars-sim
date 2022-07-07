@@ -88,7 +88,7 @@ public class Manufacture extends Function {
 	 */
 	public Manufacture(Building building, FunctionSpec spec) {
 		// Use Function constructor.
-		super(FunctionType.MANUFACTURE, building);
+		super(FunctionType.MANUFACTURE, spec, building);
 
 		techLevel = spec.getTechLevel();
 		numMaxConcurrentProcesses = spec.getIntegerProperty(CONCURRENT_PROCESSES);

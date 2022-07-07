@@ -119,7 +119,7 @@ public class Fishery extends Function {
 	 */
 	public Fishery(Building building, FunctionSpec spec) {
 		// Use Function constructor.
-		super(FunctionType.FISHERY, building);
+		super(FunctionType.FISHERY, spec, building);
 		
 		houseKeeping = new HouseKeeping(CLEANING_LIST, INSPECTION_LIST);
 

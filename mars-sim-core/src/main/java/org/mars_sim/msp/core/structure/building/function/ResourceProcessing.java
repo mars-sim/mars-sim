@@ -46,7 +46,7 @@ public class ResourceProcessing extends Function {
 	 */
 	public ResourceProcessing(Building building, FunctionSpec spec) {
 		// Use Function constructor
-		super(FunctionType.RESOURCE_PROCESSING, building);
+		super(FunctionType.RESOURCE_PROCESSING, spec, building);
 
 		powerDownProcessingLevel = spec.getDoubleProperty(POWER_DOWN_LEVEL);
 		resourceProcesses = new ArrayList<>();

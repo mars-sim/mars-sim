@@ -41,7 +41,7 @@ public class Management extends Function {
      */
     public Management(Building building, FunctionSpec spec) {
         // Use Function constructor.
-        super(FunctionType.MANAGEMENT, building);
+        super(FunctionType.MANAGEMENT, spec, building);
 
 		staffCapacity = spec.getCapacity();
     }

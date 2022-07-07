@@ -53,7 +53,7 @@ public class LifeSupport extends Function {
 	 * @param spec Defiens the Life support capability
 	 */
 	public LifeSupport(Building building, FunctionSpec spec) {
-		super(FunctionType.LIFE_SUPPORT, building);
+		super(FunctionType.LIFE_SUPPORT, spec, building);
 
 		occupants = new HashSet<>();
 

@@ -145,17 +145,4 @@ public class ConnectWithEarth extends Task implements Serializable {
 	private double connectingEarth(double time) {
 		return 0D;
 	}
-
-
-	/** 
-	 * Remove user from Communication.
-	 */
-	@Override
-	protected void clearDown() {
-
-		// Remove person from comm function so others can use it.
-		if (comm != null && comm.getNumUser() > 0) {
-			comm.removeUser();
-		}
-	}
 }

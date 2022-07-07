@@ -14,6 +14,7 @@ import java.util.List;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
+import org.mars_sim.msp.core.structure.building.FunctionSpec;
 import org.mars_sim.msp.core.structure.building.SourceSpec;
 import org.mars_sim.msp.core.time.ClockPulse;
 
@@ -39,15 +40,15 @@ public class PowerGeneration extends Function implements Serializable {
 	 * @param building the building this function is for.
 	 * @throws BuildingException if error in constructing function.
 	 */
-	public PowerGeneration(Building building) {
+	public PowerGeneration(Building building, FunctionSpec spec) {
 		// Call Function constructor.
-		super(FunctionType.POWER_GENERATION, building);
+		super(FunctionType.POWER_GENERATION, spec, building);
 
 		// Determine power sources.
 		powerSources = new ArrayList<>();
-		for (SourceSpec spec : buildingConfig.getPowerSources(building.getBuildingType())) {
-			String type = spec.getType();
-			double power = spec.getCapacity();
+		for (SourceSpec sourceSpec : buildingConfig.getPowerSources(building.getBuildingType())) {
+			String type = sourceSpec.getType();
+			double power = sourceSpec.getCapacity();
 		
 			PowerSource powerSource = null;
 			PowerSourceType powerType = PowerSourceType.getType(type);
@@ -65,9 +66,9 @@ public class PowerGeneration extends Function implements Serializable {
 				break;
 				
 			case FUEL_POWER:
-				boolean toggleStafe = Boolean.parseBoolean(spec.getAttribute(SourceSpec.TOGGLE));
-				String fuelType = spec.getAttribute(SourceSpec.FUEL_TYPE);
-				double consumptionSpeed = Double.parseDouble(spec.getAttribute(SourceSpec.CONSUMPTION_RATE));
+				boolean toggleStafe = Boolean.parseBoolean(sourceSpec.getAttribute(SourceSpec.TOGGLE));
+				String fuelType = sourceSpec.getAttribute(SourceSpec.FUEL_TYPE);
+				double consumptionSpeed = Double.parseDouble(sourceSpec.getAttribute(SourceSpec.CONSUMPTION_RATE));
 				powerSource = new FuelPowerSource(power, toggleStafe, fuelType, consumptionSpeed);
 				break;
 				

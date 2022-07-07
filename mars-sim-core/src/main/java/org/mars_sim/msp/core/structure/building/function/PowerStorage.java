@@ -112,7 +112,7 @@ public class PowerStorage extends Function {
 	 */
 	public PowerStorage(Building building, FunctionSpec spec) {
 		// Call Function constructor.
-		super(FunctionType.POWER_STORAGE, building);
+		super(FunctionType.POWER_STORAGE, spec, building);
 		
 		max_kWh_nameplate = spec.getCapacity();
 		

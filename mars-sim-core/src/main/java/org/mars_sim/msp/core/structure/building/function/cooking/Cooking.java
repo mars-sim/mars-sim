@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.structure.building.function.cooking;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -30,6 +29,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.WaterUseType;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
+import org.mars_sim.msp.core.structure.building.FunctionSpec;
 import org.mars_sim.msp.core.structure.building.function.Function;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.Storage;
@@ -44,7 +44,7 @@ import com.google.common.collect.Multimap;
 /**
  * The Cooking class is a building function for cooking meals.
  */
-public class Cooking extends Function implements Serializable {
+public class Cooking extends Function {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -115,16 +115,16 @@ public class Cooking extends Function implements Serializable {
 	 */
 	// TODO: create a CookingManager so that many parameters don't have to load
 	// multiple times
-	public Cooking(Building building) {
+	public Cooking(Building building, FunctionSpec spec) {
 		// Use Function constructor.
-		super(FunctionType.COOKING, building);
+		super(FunctionType.COOKING, spec, building);
 
 		cookedMeals = new CopyOnWriteArrayList<>();
 		ingredientMap = new ConcurrentHashMap<>();
 
 		cookingWorkTime = 0D;
 
-		this.cookCapacity = buildingConfig.getFunctionCapacity(building.getBuildingType(), FunctionType.COOKING);
+		this.cookCapacity = spec.getCapacity();
 
 		MealConfig mealConfig = SimulationConfig.instance().getMealConfiguration(); // need this to pass maven test
 
@@ -248,7 +248,7 @@ public class Cooking extends Function implements Serializable {
 		}
 
 		double cookingCapacityValue = demand / (supply + 1D);
-		double cookingCapacity = buildingConfig.getFunctionCapacity(buildingName, FunctionType.COOKING);
+		double cookingCapacity = buildingConfig.getFunctionSpec(buildingName, FunctionType.COOKING).getCapacity();
 		return cookingCapacity * cookingCapacityValue;
 	}
 

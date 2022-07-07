@@ -7,16 +7,16 @@
 
 package org.mars_sim.msp.core.structure.building.function;
 
-import java.io.Serializable;
 import java.util.Iterator;
 
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.FunctionSpec;
 
 /**
  * A building function for launching an Earth return mission.
  */
-public class EarthReturn extends Function implements Serializable {
+public class EarthReturn extends Function {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -30,12 +30,12 @@ public class EarthReturn extends Function implements Serializable {
 	 *
 	 * @param building the building this function is for.
 	 */
-	public EarthReturn(Building building) {
+	public EarthReturn(Building building, FunctionSpec spec) {
 		// Use Function constructor.
-		super(FunctionType.EARTH_RETURN, building);
+		super(FunctionType.EARTH_RETURN,spec, building);
 
 		// Populate data members.
-		crewCapacity = buildingConfig.getFunctionCapacity(building.getBuildingType(), FunctionType.EARTH_RETURN);
+		crewCapacity = spec.getCapacity();
 
 		// Initialize hasLaunched to false.
 		hasLaunched = false;
@@ -66,7 +66,7 @@ public class EarthReturn extends Function implements Serializable {
 		}
 
 		if (!newBuilding) {
-			supply -= buildingConfig.getFunctionCapacity(buildingName, FunctionType.EARTH_RETURN);
+			supply -= buildingConfig.getFunctionSpec(buildingName, FunctionType.EARTH_RETURN).getCapacity();
 			if (supply < 0D)
 				supply = 0D;
 		}

@@ -48,7 +48,7 @@ public class Administration extends Function {
 	 */
 	public Administration(Building building, FunctionSpec spec) {
 		// Use Function constructor.
-		super(FunctionType.ADMINISTRATION, building);
+		super(FunctionType.ADMINISTRATION, spec, building);
 
 		populationSupport = spec.getIntegerProperty(POPULATION_SUPPORT);
 

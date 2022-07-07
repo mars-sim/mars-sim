@@ -40,7 +40,7 @@ public class WasteProcessing extends Function {
 	 */
 	public WasteProcessing(Building building, FunctionSpec spec) {
 		// Use Function constructor
-		super(FunctionType.WASTE_PROCESSING, building);
+		super(FunctionType.WASTE_PROCESSING, spec, building);
 
 		powerDownProcessingLevel = spec.getDoubleProperty(POWER_DOWN_LEVEL);
 		wasteProcesses = new ArrayList<>();

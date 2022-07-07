@@ -30,7 +30,7 @@ public class Recreation extends Function {
      */
     public Recreation(Building building, FunctionSpec spec) {
         // Use Function constructor.
-        super(FunctionType.RECREATION, building);
+        super(FunctionType.RECREATION, spec, building);
 
         // Populate data members.
         populationSupport = spec.getCapacity();

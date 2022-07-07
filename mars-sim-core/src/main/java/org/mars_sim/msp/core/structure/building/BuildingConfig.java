@@ -68,7 +68,6 @@ public class BuildingConfig implements Serializable {
 	private static final String BASE_POWER = "base-power";
 	private static final String BASE_POWER_DOWN_POWER = "base-power-down-power";
 
-	private static final String CONCURRENT_PROCESSES = "concurrent-processes";
 	private static final String DEFAULT = "default";
 	
 	private static final String PROCESS = "process";
@@ -627,81 +626,6 @@ public class BuildingConfig implements Serializable {
 	 */
 	public boolean hasFunction(String buildingType, FunctionType function) {
 		return getBuildingSpec(buildingType).getFunctionSupported().contains(function);
-	}
-
-	/**
-	 * Get teh activity spots for a function.
-	 * @param buildingType
-	 * @param function
-	 * @return
-	 */
-	public List<LocalPosition> getActivitySpots(String buildingType, FunctionType function) {
-		FunctionSpec fs = getBuildingSpec(buildingType).getFunctionSpec(function);
-		List<LocalPosition> result = null;
-		if (fs != null) {
-			result = fs.getActivitySpots();
-		}
-
-		return result;
-	}
-
-	/**
-	 * Get a property for a Function from a building type.
-	 * @param buildingType Building type name
-	 * @param function Function type
-	 * @param name Property name
-	 * @return
-	 */
-	private int getFunctionIntProperty(String buildingType, FunctionType function, String name) {
-		return Integer.parseInt((String) getBuildingSpec(buildingType).getFunctionSpec(function).getProperty(name));
-	}
-
-	/**
-	 * Gets the capacity for a Function. This capacity usually reference to the number of Unit
-	 * supported by a function but it could be used differently
-	 *
-	 * @param buildingType the type of the building
-	 * @param function Type of function
-	 * @return number of people
-	 * @throws Exception if building type cannot be found or XML parsing error.
-	 */
-	public int getFunctionCapacity(String buildingType, FunctionType function) {
-		return getFunctionIntProperty(buildingType, function, CAPACITY);
-	}
-
-	/**
-	 * Gets the building width.
-	 *
-	 * @param buildingType the type of the building.
-	 * @return building width (meters).
-	 * @throws Exception if building type cannot be found.
-	 * @deprecated Use {@link #getBuildingSpec(String)}
-	 */
-	public double getWidth(String buildingType) {
-		return getBuildingSpec(buildingType).getWidth();
-	}
-
-	/**
-	 * Gets the building length.
-	 *
-	 * @param buildingType the type of the building.
-	 * @return building length (meters).
-	 * @throws Exception if building type cannot be found or XML parsing error.
-	 * @deprecated Use {@link #getBuildingSpec(String)}
-	 */
-	public double getLength(String buildingType) {
-		return getBuildingSpec(buildingType).getLength();
-	}
-
-	/**
-	 * Gets the base level of the building.
-	 *
-	 * @param buildingType the type of the building.
-	 * @return -1 for in-ground, 0 for above-ground.
-	 * @deprecated Use {@link #getBuildingSpec(String)}
-	 */
-	public int getBaseLevel(String buildingType) {
-		return getBuildingSpec(buildingType).getBaseLevel();
 	}
 
 	/**

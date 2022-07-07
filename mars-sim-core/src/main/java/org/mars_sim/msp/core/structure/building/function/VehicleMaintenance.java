@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.FunctionSpec;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.StatusType;
@@ -50,9 +51,9 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 	 * @param function the name of the child function.
 	 * @param building the building this function is for.
 	 */
-	public VehicleMaintenance(FunctionType function, Building building) {
+	public VehicleMaintenance(FunctionType function, FunctionSpec spec, Building building) {
 		// Use Function constructor.
-		super(function, building);
+		super(function,spec, building);
 
 		vehicles = new ConcurrentLinkedQueue<>();
 		parkingLocations = new ArrayList<>();
