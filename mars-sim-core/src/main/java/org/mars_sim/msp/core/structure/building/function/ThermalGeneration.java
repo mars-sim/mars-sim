@@ -19,7 +19,7 @@ import org.mars_sim.msp.core.time.ClockPulse;
 
 /**
  * The ThermalGeneration class handles how the buildings of a settlement
- * generate and control temperature by heating 
+ * generate and control temperature by heating .
  */
 public class ThermalGeneration
 extends Function
@@ -79,6 +79,7 @@ implements Serializable {
 
 	/**
 	 * Gets the value of the function for a named building.
+	 * 
 	 * @param buildingName the building name.
 	 * @param newBuilding true if adding a new building.
 	 * @param settlement the settlement.
@@ -114,6 +115,7 @@ implements Serializable {
 
 	/**
 	 * Gets the supply value of a list of heat sources.
+	 * 
 	 * @param heatSources list of heat sources.
 	 * @param settlement the settlement.
 	 * @return supply value.
@@ -131,6 +133,7 @@ implements Serializable {
 
 	/**
 	 * Gets the total amount of heat that this building is capable of producing (regardless malfunctions).
+	 * 
 	 * @return heat generated in kW (heat flow rate)
 	 */
 	public double getHeatGenerationCapacity() {
@@ -143,7 +146,8 @@ implements Serializable {
 	}
 
 	/**
-	 * Gets the total amount of heat that this building is CURRENTLY producing
+	 * Gets the total amount of heat that this building is CURRENTLY producing.
+	 * 
 	 * @return heat generated in kW (heat flow rate)
 	 */
 	public double getGeneratedHeat() {
@@ -151,7 +155,8 @@ implements Serializable {
 	}
 
 	/**
-	 * Gets the total amount of power that this building is CURRENTLY producing
+	 * Gets the total amount of power that this building is CURRENTLY producing.
+	 * 
 	 * @return power generated in kW ()
 	 */
 	public double getGeneratedPower() {
@@ -159,8 +164,8 @@ implements Serializable {
 	}
 
 	/**
-	 * Calculate the total amount of heat that this building is CURRENTLY producing
-	 * and also the power required to generate the heat
+	 * Calculates the total amount of heat that this building is CURRENTLY producing
+	 * and also the power required to generate the heat.
 	 * 
 	 * @return heat generated in kW
 	 */
@@ -192,7 +197,7 @@ implements Serializable {
 
 
 	/**
-	 * Calculate the total amount of power that this building is CURRENTLY producing from heat sources
+	 * Calculates the total amount of power that this building is CURRENTLY producing from heat sources.
 	 * 
 	 * @return power generated in kW
 	 */

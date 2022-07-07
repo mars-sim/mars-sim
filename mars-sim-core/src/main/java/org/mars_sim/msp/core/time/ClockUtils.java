@@ -35,7 +35,7 @@ public class ClockUtils implements Serializable {
 	public static final double SOLS_PER_ORBIT = 668.5921;
 	public static final double DAYS_PER_ORBIT = 686.9726;
 
-	// A Mars solar day has a mean period of 24 hours 39 minutes 35.244 seconds,
+	// A Mars solar day has a mean period of 24 hours and 39 minutes and 35.244 seconds,
 	public static final double SECONDS_PER_SOLAR_DAY_ON_MARS = 24 * 60 * 60 + 39 * 60 + 35.244;
 	// customarily referred to as a "sol" in order to distinguish this from the
 	// roughly 3% shorter solar day on Earth.
