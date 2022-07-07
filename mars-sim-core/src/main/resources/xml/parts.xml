@@ -889,7 +889,9 @@
 			<entity name="farming" probability="3" max-number="2" />
 			<entity name="vehicle" probability="3" max-number="1" />
 			<entity name="manufacture" probability="3" max-number="2" />
+			<entity name="large areothermal well" probability="1" max-number="2" />
 			<entity name="living accommodations" probability="3" max-number="2" />
+			<entity name="small areothermal well" probability="1" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 
@@ -899,12 +901,14 @@
 		results in heat transfer capabilities from one hundred to several thousand
 		times that of an equivalent piece of copper.</description>
 		<maintenance-entity-list>
-			<entity name="manufacture" probability="1" max-number="1" />
-			<entity name="vehicle" probability="1" max-number="1" />
-			<entity name="Living Accommodations" probability="1" max-number="1" />
-			<entity name="Life Support" probability="1" max-number="1" />
 			<entity name="Farming" probability="1" max-number="1" />
-			<entity name="Thermal Generation" probability="1" max-number="1" />
+			<entity name="large areothermal well" probability="1" max-number="6" />
+			<entity name="life support" probability="1" max-number="1" />
+			<entity name="manufacture" probability="1" max-number="1" />
+			<entity name="living accommodations" probability="3" max-number="2" />
+			<entity name="small areothermal well" probability="1" max-number="3" />			
+			<entity name="thermal generation" probability="1" max-number="1" />
+			<entity name="vehicle" probability="1" max-number="1" />			
 		</maintenance-entity-list>
 	</part>
 

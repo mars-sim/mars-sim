@@ -140,7 +140,7 @@ public class BuildingConfig implements Serializable {
 	 * @return set of building types.
 	 */
 	public Set<String> getBuildingTypes() {
-		return  buildSpecMap.values().stream().map(BuildingSpec::getName).collect(Collectors.toSet());
+		return  buildSpecMap.values().stream().map(BuildingSpec::getBuildingType).collect(Collectors.toSet());
 	}
 
 	/**

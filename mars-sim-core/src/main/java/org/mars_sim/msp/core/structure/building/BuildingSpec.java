@@ -77,7 +77,7 @@ public class BuildingSpec {
 	
 	private double stockCapacity = 0;
 	
-	private String name;
+	private String buildingType;
 	private String description;
 	
 	private Map<FunctionType, FunctionSpec> supportedFunctions;
@@ -100,14 +100,14 @@ public class BuildingSpec {
 	private BuildingCategory category;
 
 	
-	BuildingSpec(String name, String description, BuildingCategory category, double width, double length, int baseLevel,
+	BuildingSpec(String buildingType, String description, BuildingCategory category, double width, double length, int baseLevel,
 			double roomTemperature, int maintenanceTime,
 			int wearLifeTime, double basePowerRequirement, double basePowerDownPowerRequirement,
 			Map<FunctionType, FunctionSpec> supportedFunctions) {
 		
 		super();
 		
-		this.name = name;
+		this.buildingType = buildingType;
 		this.description = description;
 		this.category = category;
 		this.width = width;
@@ -150,8 +150,8 @@ public class BuildingSpec {
 		return baseLevel;
 	}
 	
-	public String getName() {
-		return name;
+	public String getBuildingType() {
+		return buildingType;
 	}
 
 	public String getDescription() {
@@ -263,7 +263,7 @@ public class BuildingSpec {
 	}
 	
 	public String toString() {
-		return name;
+		return buildingType;
 	}
 	
 	public List<LocalPosition> getBeds() {

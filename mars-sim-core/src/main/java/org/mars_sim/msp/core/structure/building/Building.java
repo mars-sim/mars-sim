@@ -285,9 +285,11 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 
 		// Set up malfunction manager.
 		malfunctionManager = new MalfunctionManager(this, spec.getWearLifeTime(), totalMaintenanceTime);
-		// Add scope to malfunction manager.
+		// Add 'Building' to malfunction manager.
 		malfunctionManager.addScopeString(SystemType.BUILDING.getName());
-
+		// Add building's type to malfunction manager.
+		malfunctionManager.addScopeString(spec.getBuildingType());
+		
 		// Add each function to the malfunction scope.
 		for (Function sfunction : functions) {
 			String[] scopes = sfunction.getMalfunctionScopeStrings();
