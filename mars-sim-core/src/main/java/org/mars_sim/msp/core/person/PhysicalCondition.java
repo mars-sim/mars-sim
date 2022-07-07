@@ -55,27 +55,27 @@ public class PhysicalCondition implements Serializable {
 	/** The amount of thirst threshold [millisols]. */
 	public static final int THIRST_THRESHOLD = 150;// + RandomUtil.getRandomInt(20);
 	/** The amount of thirst threshold [millisols]. */
-	public static final int HUNGER_THRESHOLD = 500;// + RandomUtil.getRandomInt(30);
+	private static final int HUNGER_THRESHOLD = 500;// + RandomUtil.getRandomInt(30);
 	/** The amount of thirst threshold [millisols]. */
-	public static final int ENERGY_THRESHOLD = 2525;// + RandomUtil.getRandomInt(20);
+	private static final int ENERGY_THRESHOLD = 2525;// + RandomUtil.getRandomInt(20);
 	/** The amount of fatigue threshold [millisols]. */
-	public static final int FATIGUE_THRESHOLD = 500;
+	private static final int FATIGUE_THRESHOLD = 500;
 	/** The amount of stress threshold [millisols]. */
-	public static final int STRESS_THRESHOLD = 65;
+	private static final int STRESS_THRESHOLD = 65;
 
 	/** Life support minimum value. */
 	private static final int MIN_VALUE = 0;
 	/** Life support maximum value. */
 	private static final int MAX_VALUE = 1;
 
-	public static final int OXYGEN_ID = ResourceUtil.oxygenID;
+	private static final int OXYGEN_ID = ResourceUtil.oxygenID;
 
-	/** The amount of fatigue for the mental breakdown to occur [millisols]. */
-	public static final double MENTAL_BREAKDOWN = 100D;
-	/** Stress jump resulting from being in an accident. */
-	public static final double ACCIDENT_STRESS = 10D;
-	/** The food reserve factor. */
-	public static final double FOOD_RESERVE_FACTOR = 1.5D;
+//	/** The amount of fatigue for the mental breakdown to occur [millisols]. */
+//	private static final double MENTAL_BREAKDOWN = 100D;
+//	/** Stress jump resulting from being in an accident. */
+//	private static final double ACCIDENT_STRESS = 10D;
+//	/** The food reserve factor. */
+//	private static final double FOOD_RESERVE_FACTOR = 1.5D;
 	/** Performance modifier for thirst. */
 	private static final double THIRST_PERFORMANCE_MODIFIER = .00015D;
 	/** Performance modifier for hunger. */
@@ -653,40 +653,88 @@ public class PhysicalCondition implements Serializable {
 	 * @param newPerformance new performance (between 0 and 1).
 	 */
 	public void setPerformanceFactor(double p) {
-		if (p > 1D)
-			p = 1D;
-		else if (p < 0)
-			p = 0;
-		if (performance != p) {
-			performance = p;
+		double pp = p;
+		if (pp > 1D)
+			pp = 1D;
+		else if (pp < 0)
+			pp = 0;
+		if (performance != pp) {
+			performance = pp;
 			person.fireUnitUpdate(UnitEventType.PERFORMANCE_EVENT);
 		}
 	}
 
 	/**
-	 * Define the fatigue setting for this person
+	 * Sets the fatigue value for this person.
 	 *
 	 * @param newFatigue New fatigue.
 	 */
 	public void setFatigue(double f) {
-		if (f > 3000)
-			fatigue = 3000;
-		else if (f < 0)
-			f = 0;
+		double ff = f;
+		if (ff > 10_000)
+			ff = 10_000;
+		else if (ff < 0)
+			ff = 0;
 
-		fatigue = f;
+		fatigue = ff;
 		person.fireUnitUpdate(UnitEventType.FATIGUE_EVENT);
 	}
 
+	/**
+	 * Sets the thirst value for this person.
+	 * 
+	 * @param t
+	 */
 	public void setThirst(double t) {
-		if (t > 4000)
-			t = 4000;
-		thirst = t;
+		double tt = t;
+		if (tt > 10_000)
+			tt = 10_000;
+		else if (tt < 0)
+			tt = 0;
+
+		thirst = tt;
 		person.fireUnitUpdate(UnitEventType.THIRST_EVENT);
 	}
 
 	/**
-	 * Gets the person's hunger level
+	 * Sets the person's stress level.
+	 *
+	 * @param newStress the new stress level (0.0 to 100.0)
+	 */
+	public void setStress(double s) {
+		if (stress != s) {
+			double ss = s;
+			if (ss > 100D)
+				ss = 100D;
+			else if (ss < 0D)
+				ss = 0D;
+			else if (Double.isNaN(stress))
+				ss = 0D;
+			
+			stress = ss;
+			person.fireUnitUpdate(UnitEventType.STRESS_EVENT);
+		}
+	}
+	
+	/**
+	 * Adds to a person's stress level.
+	 *
+	 * @param deltaStress
+	 */
+	public void addStress(double d) {
+		double ss = stress + d;
+		if (ss > 100D)
+			ss = 100D;
+		else if (ss < 0D
+			|| Double.isNaN(ss))
+			ss = 0D;
+		
+		stress = ss;
+		person.fireUnitUpdate(UnitEventType.STRESS_EVENT);
+	}
+
+	/**
+	 * Gets the person's hunger level.
 	 *
 	 * @return person's hunger
 	 */
@@ -695,7 +743,7 @@ public class PhysicalCondition implements Serializable {
 	}
 
 	/**
-	 * Checks if a person is starving or no longer starving
+	 * Checks if a person is starving or no longer starving.
 	 *
 	 * @param hunger
 	 */
@@ -774,7 +822,7 @@ public class PhysicalCondition implements Serializable {
 	}
 
 	/**
-	 * Gets the starvation health problem instance
+	 * Gets the starvation health problem instance.
 	 *
 	 * @return
 	 */
@@ -788,7 +836,7 @@ public class PhysicalCondition implements Serializable {
 	}
 
 	/**
-	 * Checks if a person is dehydrated
+	 * Checks if a person is dehydrated.
 	 *
 	 * @param hunger
 	 */
@@ -859,7 +907,7 @@ public class PhysicalCondition implements Serializable {
 	}
 
 	/**
-	 * Gets the dehydrated health problem
+	 * Gets the dehydrated health problem.
 	 *
 	 * @return dehydrated
 	 */
@@ -873,7 +921,7 @@ public class PhysicalCondition implements Serializable {
 	}
 
 	/**
-	 * Gets the radiation poisoning health problem
+	 * Gets the radiation poisoning health problem.
 	 *
 	 * @return radiationPoisoning
 	 */
@@ -884,39 +932,6 @@ public class PhysicalCondition implements Serializable {
 			}
 		}
 		return null;
-	}
-
-	/**
-	 * Sets the person's stress level.
-	 *
-	 * @param newStress the new stress level (0.0 to 100.0)
-	 */
-	public void setStress(double newStress) {
-		if (stress != newStress) {
-			stress = newStress;
-			if (stress > 100D)
-				stress = 100D;
-			else if (stress < 0D)
-				stress = 0D;
-			else if (Double.isNaN(stress))
-				stress = 0D;
-			person.fireUnitUpdate(UnitEventType.STRESS_EVENT);
-		}
-	}
-	
-	/**
-	 * Adds to a person's stress level.
-	 *
-	 * @param deltaStress
-	 */
-	public void addStress(double deltaStress) {
-		stress += deltaStress;
-		if (stress > 100D)
-			stress = 100D;
-		else if (stress < 0D)
-			stress = 0D;
-		else if (Double.isNaN(stress))
-			stress = 0D;
 	}
 
 	/**
@@ -991,7 +1006,7 @@ public class PhysicalCondition implements Serializable {
 
 
 	/**
-	 * Check for any random ailments that a person comes down with over a period of
+	 * Checks for any random ailments that a person comes down with over a period of
 	 * time.
 	 *
 	 * @param time the time period (millisols).
@@ -1130,6 +1145,12 @@ public class PhysicalCondition implements Serializable {
 		return result;
 	}
 
+	/**
+	 * Does he have any complaints ?
+	 * 
+	 * @param c
+	 * @return
+	 */
 	private boolean hasComplaint(Complaint c) {
 		for (HealthProblem problem : problems) {
 			if (problem.getType() == c.getType()) {
@@ -1174,7 +1195,7 @@ public class PhysicalCondition implements Serializable {
 
 
 	/**
-	 * Person consumes given amount of oxygen
+	 * Does the person consume enough oxygen ?
 	 *
 	 * @param support Life support system providing oxygen.
 	 * @param amount  amount of oxygen to consume (in kg)
@@ -1238,11 +1259,11 @@ public class PhysicalCondition implements Serializable {
 			}
 			if (ct == ComplaintType.FREEZING) {
 				reading = "Low Temperature";
-				unit = " C";
+				unit = " " + Msg.getString("temperature.sign.degreeCelsius");
 			}
 			if (ct == ComplaintType.HEAT_STROKE) {
 				reading = "High Temperature";
-				unit = " C";
+				unit = " " + Msg.getString("temperature.sign.degreeCelsius");
 			}
 			String s = reading + " sensor triggered. "
 					+ "  Actual: " + Math.round(actual*decimals)/decimals + unit

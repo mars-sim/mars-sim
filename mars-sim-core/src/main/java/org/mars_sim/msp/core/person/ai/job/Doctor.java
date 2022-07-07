@@ -27,7 +27,7 @@ class Doctor extends Job {
 	/** Constructor. */
 	public Doctor() {
 		// Use Job constructor
-		super(JobType.DOCTOR, Job.buildRoleMap(20.0, 10.0, 5.0, 5.0, 5.0, 20.0, 15.0, 30.0));
+		super(JobType.DOCTOR, Job.buildRoleMap(20.0, 10.0, 5.0, 5.0, 5.0, 20.0, 15.0, 20.0));
 	}
 
 	/**
@@ -53,7 +53,7 @@ class Doctor extends Job {
 	}
 
 	/**
-	 * Gets the base settlement need for this job.
+	 * Gets the base settlement demand for this job.
 	 * 
 	 * @param settlement the settlement in need.
 	 * @return the base need >= 0
@@ -65,7 +65,7 @@ class Doctor extends Job {
 		int population = settlement.getNumCitizens();
 
 		// Add (labspace * tech level) / 2 for all labs with medical specialties.
-		result += getBuildingScienceDemand(settlement, ScienceType.MEDICINE, 3D);
+		result += getBuildingScienceDemand(settlement, ScienceType.MEDICINE, 5D);
 
 		// Add (tech level / 2) for all medical infirmaries.
 		List<Building> medicalBuildings = settlement.getBuildingManager().getBuildings(FunctionType.MEDICAL_CARE);
@@ -76,7 +76,7 @@ class Doctor extends Job {
 			result += (double) infirmary.getTechLevel() / 3D;
 		}
 
-		result = (result + population / 8D) / 2.0;
+		result = (result + population / 10D) / 5.0;
 				
 		return result;
 	}

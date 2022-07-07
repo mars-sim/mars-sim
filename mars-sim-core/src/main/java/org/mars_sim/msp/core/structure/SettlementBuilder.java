@@ -369,12 +369,8 @@ public final class SettlementBuilder {
 			settlement.addACitizen(person);
 			// Set the container unit
 			person.setContainerUnit(settlement);
-
-//			relationshipManager.addInitialSettler(person, settlement);
-
 			// Set up preference
 			person.getPreference().initializePreference();
-
 			// Assign a job
 			person.getMind().getInitialJob(JobUtil.MISSION_CONTROL);
 		}

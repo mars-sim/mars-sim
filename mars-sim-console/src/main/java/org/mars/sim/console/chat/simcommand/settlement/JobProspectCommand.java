@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * JobProspectCommand.java
- * @version 3.1.2 2020-12-30
+ * @date 2022-07-06
  * @author Barry Evans
  */
 
@@ -71,12 +71,16 @@ public class JobProspectCommand extends AbstractSettlementCommand {
 		boolean result = true;
 		
 		if (input == null || input.isBlank()) {
-			response.append("Must specify as Job as an argument" + System.lineSeparator());
+			response.append("Must specify a job as an argument. (e.g. /jp psychologist)" + System.lineSeparator());
 			result = false;
 		}
 		else {
 			final JobType job = JobType.getJobTypeByName(input); 
-
+			if (job == null) {
+				response.append("Invalid job. Please try again." + System.lineSeparator());
+				return false;
+			}
+			
 			List<JobProspect> prospects = settlement.getAllAssociatedPeople().stream()
 					.map(p -> new JobProspect(p, JobUtil.getJobProspect(p, job, settlement, true)))
 					.sorted((p1, p2) -> p1.compareTo(p2))

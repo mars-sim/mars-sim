@@ -3413,6 +3413,12 @@ public class Settlement extends Structure implements Temporal,
 		return waterConsumption.getDailyAverage(type);
 	}
 
+	/**
+	 * Assigns the best candidate to a job position.
+	 * 
+	 * @param settlement
+	 * @param job
+	 */
 	private static void assignBestCandidate(Settlement settlement, JobType job) {
 		Person p0 = JobUtil.findBestFit(settlement, job);
 		// Designate a specific job to a person

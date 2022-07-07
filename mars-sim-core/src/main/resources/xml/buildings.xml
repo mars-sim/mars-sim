@@ -1468,7 +1468,20 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="concrete" rate="71.0" ambient="false" />
 				</process>
 
-					
+
+				<process name="produce ethylene" power-required="0.2" default="off">
+					<description>
+						2CO + 4H&lt;sub&gt;2&lt;/sub&gt; -> C&lt;sub&gt;2&lt;/sub&gt;H&lt;sub&gt;4&lt;/sub&gt; (ethylene) + 2H&lt;sub&gt;2&lt;/sub&gt;O
+						Requires iron catalyst.
+					</description>
+					<input resource="carbon dioxide" rate="100.0"  ambient="true" />
+					<input resource="hydrogen" rate="15.0"  ambient="false" />
+					<input resource="iron powder" rate="1.0"  ambient="false" />
+					<output resource="ethylene" rate="50.0"  ambient="false" />
+					<output resource="grey water" rate="64.2" ambient="false" />
+					<output resource="iron powder" rate="1.0" ambient="false" />
+				</process>
+						
 			</resource-processing>
 
 			<storage stock-capacity="100000">
