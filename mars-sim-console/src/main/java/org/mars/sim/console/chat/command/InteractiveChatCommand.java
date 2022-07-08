@@ -33,7 +33,7 @@ public class InteractiveChatCommand extends ChatCommand {
 			this.parameter = parameter;
 			this.matchedCommand = matchedCommand;
 		}
-	};
+	}
 	
     private static final Logger LOGGER = Logger.getLogger(InteractiveChatCommand.class.getName());
 	

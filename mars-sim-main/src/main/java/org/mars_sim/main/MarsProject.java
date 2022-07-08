@@ -125,7 +125,7 @@ public class MarsProject {
 			if (useGUI) {
 				// Start the splash window
 				if (!useSiteEditor) {
-					SwingUtilities.invokeLater(() -> MainWindow.startSplash());
+					SwingUtilities.invokeLater(MainWindow::startSplash);
 				}
 				
 				// Use opengl

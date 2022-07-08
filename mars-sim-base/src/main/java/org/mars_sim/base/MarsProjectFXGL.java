@@ -57,7 +57,7 @@ public class MarsProjectFXGL extends GameApplication {
 	/** true if displaying graphic user interface. */
 	private boolean useGUI = true;
 
-	private Simulation sim = Simulation.instance();
+//	private Simulation sim = Simulation.instance();
 
 	private SimulationConfig simulationConfig = SimulationConfig.instance();
 
@@ -122,7 +122,7 @@ public class MarsProjectFXGL extends GameApplication {
 		try {
 			if (useGUI) {
 				// Start the splash window
-				SwingUtilities.invokeLater(() -> MainWindow.startSplash());
+				SwingUtilities.invokeLater(MainWindow::startSplash);
 				// Use opengl
 				// Question: How compatible are linux and macos with opengl ?
 				// System.setProperty("sun.java2d.opengl", "true"); // not compatible with

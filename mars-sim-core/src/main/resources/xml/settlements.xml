@@ -448,7 +448,6 @@
 
 			<building type="Large Sabatier Processor" xloc="0.0"
 				yloc="-40.0" facing="90.0" />
-
 			<building type="Large Sabatier Processor" xloc="0.0"
 				yloc="-65.0" facing="90.0" />
 
@@ -2934,7 +2933,9 @@
 
 			<building type="ERV-A" xloc="80.0" yloc="45.0"
 				facing="0.0" />
-
+			<building type="ERV-A" xloc="120.0" yloc="45.0"
+				facing="0.0" />
+				
 			<building type="ERV-B" xloc="80.0" yloc="-15.0"
 				facing="0.0" />
 			<building type="ERV-B" xloc="120.0" yloc="-15.0"
@@ -3289,7 +3290,9 @@
 
 			<building type="ERV-A" xloc="80.0" yloc="45.0"
 				facing="0.0" />
-
+			<building type="ERV-A" xloc="120.0" yloc="45.0"
+				facing="0.0" />
+				
 			<building type="ERV-B" xloc="80.0" yloc="-15.0"
 				facing="0.0" />
 			<building type="ERV-B" xloc="120.0" yloc="-15.0"
@@ -3648,7 +3651,9 @@
 
 			<building type="ERV-A" xloc="80.0" yloc="45.0"
 				facing="0.0" />
-
+			<building type="ERV-A" xloc="120.0" yloc="45.0"
+				facing="0.0" />
+				
 			<building type="ERV-B" xloc="80.0" yloc="-15.0"
 				facing="0.0" />
 			<building type="ERV-B" xloc="120.0" yloc="-15.0"
@@ -3997,7 +4002,9 @@
 
 			<building type="ERV-A" xloc="80.0" yloc="45.0"
 				facing="0.0" />
-
+			<building type="ERV-A" xloc="120.0" yloc="45.0"
+				facing="0.0" />
+				
 			<building type="ERV-B" xloc="80.0" yloc="-15.0"
 				facing="0.0" />
 			<building type="ERV-B" xloc="120.0" yloc="-15.0"
@@ -4350,7 +4357,9 @@
 
 			<building type="ERV-A" xloc="80.0" yloc="45.0"
 				facing="0.0" />
-
+			<building type="ERV-A" xloc="120.0" yloc="45.0"
+				facing="0.0" />
+				
 			<building type="ERV-B" xloc="80.0" yloc="-15.0"
 				facing="0.0" />
 			<building type="ERV-B" xloc="120.0" yloc="-15.0"
@@ -4693,7 +4702,9 @@
 				facing="0.0" />
 			<building type="ERV-A" xloc="160.0" yloc="45.0"
 				facing="0.0" />
-
+			<building type="ERV-A" xloc="200.0" yloc="45.0"
+				facing="0.0" />
+				
 			<building type="ERV-B" xloc="80.0" yloc="-15.0"
 				facing="0.0" />
 			<building type="ERV-B" xloc="120.0" yloc="-15.0"
@@ -4703,6 +4714,11 @@
 			<building type="ERV-B" xloc="200.0" yloc="-15.0"
 				facing="0.0" />
 
+			<building type="Atmospheric Processor" xloc="0.0"
+				yloc="-20.0" facing="90.0" />
+			<building type="Atmospheric Processor" xloc="0.0"
+				yloc="-30.0" facing="90.0" />
+				
 			<building type="Large Sabatier Processor" xloc="0.0"
 				yloc="-40.0" facing="90.0" />
 			<building type="Large Sabatier Processor" xloc="0.0"
@@ -5180,7 +5196,17 @@
 
 			<building type="ERV-A" xloc="80.0" yloc="45.0"
 				facing="0.0" />
-
+			<building type="ERV-A" xloc="120.0" yloc="45.0"
+				facing="0.0" />
+			<building type="ERV-A" xloc="160.0" yloc="45.0"
+				facing="0.0" />
+			<building type="ERV-A" xloc="200.0" yloc="45.0"
+				facing="0.0" />
+			<building type="ERV-A" xloc="240.0" yloc="45.0"
+				facing="0.0" />
+			<building type="ERV-A" xloc="280.0" yloc="45.0"
+				facing="0.0" />
+				
 			<building type="ERV-B" xloc="80.0" yloc="-15.0"
 				facing="0.0" />
 			<building type="ERV-B" xloc="120.0" yloc="-15.0"
@@ -5192,6 +5218,8 @@
 
 			<building type="Atmospheric Processor" xloc="0.0"
 				yloc="-20.0" facing="90.0" />
+			<building type="Atmospheric Processor" xloc="0.0"
+				yloc="-30.0" facing="90.0" />
 
 			<building type="Large Sabatier Processor" xloc="0.0"
 				yloc="-40.0" facing="90.0" />

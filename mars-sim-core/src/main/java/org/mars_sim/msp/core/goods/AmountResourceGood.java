@@ -89,11 +89,11 @@ class AmountResourceGood extends Good {
 	private static final double METEORITE_MODIFIER = 1.05;
 	private static final double SALT_VALUE_MODIFIER = .2;
 	private static final double OXYGEN_VALUE_MODIFIER = .02D;
-	private static final double METHANE_VALUE_MODIFIER = .5D;
+	private static final double METHANE_VALUE_MODIFIER = 5D;
 	private static final double LIFE_SUPPORT_FACTOR = .005;
 	private static final double FOOD_VALUE_MODIFIER = .1;
 
-	private static final double VEHICLE_FUEL_FACTOR = .5;
+	private static final double VEHICLE_FUEL_FACTOR = 1;
 	private static final double FARMING_FACTOR = .1;
 	private static final double TISSUE_CULTURE_FACTOR = .75;
 	private static final double LEAVES_FACTOR = .5;
@@ -101,9 +101,10 @@ class AmountResourceGood extends Good {
 	private static final double DESSERT_FACTOR = .1;
 
 	private static final double REGOLITH_DEMAND_FACTOR = 30;
-	private static final double CHEMICAL_DEMAND_FACTOR = .01;
-	private static final double COMPOUND_DEMAND_FACTOR = .01;
-	private static final double ELEMENT_DEMAND_FACTOR = .1;
+	private static final double CHEMICAL_DEMAND_FACTOR = 2;
+	private static final double COMPOUND_DEMAND_FACTOR = 2;
+	private static final double ELEMENT_DEMAND_FACTOR = 2;
+	private static final double ROCK_DEMAND_FACTOR = 5;
 
 	private static final double COOKED_MEAL_INPUT_FACTOR = .5;
 	private static final double MANUFACTURING_INPUT_FACTOR = 2D;
@@ -409,14 +410,14 @@ class AmountResourceGood extends Good {
 	 */
 	private static double calculateFlattenAmountDemand(AmountResource ar) {
 		double demand = 0;
-		String name = ar.getName();
-		
-		if (name.contains("polyester")
-				|| name.contains("styrene")
-				|| name.contains("polyethylene"))
-			demand = CHEMICAL_DEMAND_FACTOR;
-		
-		else {
+//		String name = ar.getName();
+//		
+//		if (name.contains("polyester")
+//				|| name.contains("styrene")
+//				|| name.contains("polyethylene"))
+//			demand = CHEMICAL_DEMAND_FACTOR;
+//		
+//		else {
 			switch(ar.getGoodType()) {
 				case REGOLITH:
 				case ORE:
@@ -425,7 +426,7 @@ class AmountResourceGood extends Good {
 					break;
 
 				case ROCK:
-					demand = 2;
+					demand = ROCK_DEMAND_FACTOR;
 					break;
 		
 				case CHEMICAL:
@@ -446,13 +447,13 @@ class AmountResourceGood extends Good {
 
 				default:
 					demand = 1;
-			}
+//			}
 		}
 
 		return demand;
 	}
 
-		/**
+	/**
 	 * Gets the demand for a resource from all automated resource processes at a
 	 * settlement.
 	 *
@@ -468,7 +469,7 @@ class AmountResourceGood extends Good {
 			demand += processDemand;
 		}
 
-		return Math.min(1000, demand);
+		return Math.min(2000, demand);
 	}
 
 	/**
@@ -1300,7 +1301,7 @@ class AmountResourceGood extends Good {
 		if (getID() == ResourceUtil.methaneID) {
 			for(Vehicle v: settlement.getAllAssociatedVehicles()) {
 				double fuelDemand = v.getAmountResourceCapacity(getID());
-				demand += fuelDemand * owner.getTransportationFactor() * VEHICLE_FUEL_FACTOR;
+				demand += fuelDemand * owner.getTransportationFactor() * VEHICLE_FUEL_FACTOR * METHANE_VALUE_MODIFIER;
 			}
 		}
 

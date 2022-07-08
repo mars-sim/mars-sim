@@ -452,14 +452,33 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				https://www.nasa.gov/pdf/570243main_OxygenGen_CHEM_ST.pdf
 
 				We assume a power usage of 1kW system for splitting 18 kg water
-				into 2 kg H2 and 16 kg O2
+				into 2 kg H2 and 16 kg O2, still a very energy intensive process.
 				-->
-				<process name="Oxygen Generation System" power-required="3.0" default="on">
+				<process name="Oxygen Generation System" power-required="4" default="on">
 					<input resource="water" rate="72" ambient="false" />
 					<output resource="hydrogen" rate="8" ambient="false" />
 					<output resource="oxygen" rate="64" ambient="false" />
 				</process>
 
+				<process name="Low Temperature Plasma CO2 Decomposition" power-required="0.2" default="on">
+					<description> 
+						The atmosphere is mainly CO2, so there is no need to capture it and plasma can 
+						be ignited in ambient Martian atmosphere. The traces of Ar and N2 present can only
+						help: argon aids shaping the electron energy distribution to higher energies, contributing
+						to an increased efficiency of this decomposition process.
+						The pressure on Mars – of 600 Pa (4.5 Torr), about 150 times lower than on Earth 
+						– is close to the ideal for advantageous plasma operation, so there is no need 
+						to use vacuum pumps or compressors on the first steps of the process.
+						Reference :
+						1. https://www.europhysicsnews.org/articles/epn/pdf/2018/03/epn2018493p15.pdf
+						2. https://www.space.com/comet-tech-generate-breathable-air-mars.html
+						3. https://www.nature.com/articles/s41467-019-10342-6.pdf
+					</description>
+					<input resource="carbon dioxide" rate="176" ambient="true" />
+					<output resource="carbon monoxide" rate="56" ambient="false" />
+					<output resource="oxygen" rate="64" ambient="false" />
+				</process>
+				
 				<process name="Carbon Dioxide Pump" power-required=".4" default="off">
 					<input resource="carbon dioxide" rate="40.0" ambient="true" />
 					<output resource="carbon dioxide" rate="40.0" ambient="false" />
@@ -1165,9 +1184,25 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="water" rate="86.4" ambient="false" />
 				</process>
 				
-				<process name="Oxygen Generation System" power-required="2.5" default="on">
+				<process name="Oxygen Generation System" power-required="8" default="on">
 					<input resource="water" rate="144" ambient="true" />
 					<output resource="hydrogen" rate="16" ambient="false" />
+					<output resource="oxygen" rate="128" ambient="false" />
+				</process>
+				
+				<process name="Low Temperature Plasma CO2 Decomposition" power-required="0.2" default="on">
+					<description> 
+						The atmosphere is mainly CO2, so there is no need to capture it and plasma can 
+						be ignited in ambient Martian atmosphere. The traces of Ar and N2 present can only
+						help: argon aids shaping the electron energy distribution to higher energies, contributing
+						to an increased efficiency of this decomposition process.
+						The pressure on Mars – of 600 Pa (4.5 Torr), about 150 times lower than on Earth 
+						– is close to the ideal for advantageous plasma operation, so there is no need 
+						to use vacuum pumps or compressors on the first steps of the process.
+						See https://www.europhysicsnews.org/articles/epn/pdf/2018/03/epn2018493p15.pdf
+					</description>
+					<input resource="carbon dioxide" rate="352" ambient="true" />
+					<output resource="carbon monoxide" rate="112" ambient="false" />
 					<output resource="oxygen" rate="128" ambient="false" />
 				</process>
 				
@@ -1736,10 +1771,26 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="water" rate="21.6" ambient="false" />
 				</process>
 
-				<process name="Oxygen Generation System" power-required="3.0" default="on">
-					<input resource="water" rate="72" ambient="false" />
-					<output resource="hydrogen" rate="8" ambient="false" />
-					<output resource="oxygen" rate="64" ambient="false" />
+				<process name="Oxygen Generation System" power-required="8" default="on">
+					<input resource="water" rate="144" ambient="true" />
+					<output resource="hydrogen" rate="16" ambient="false" />
+					<output resource="oxygen" rate="128" ambient="false" />
+				</process>
+				
+				<process name="Low Temperature Plasma CO2 Decomposition" power-required="0.2" default="on">
+					<description> 
+						The atmosphere is mainly CO2, so there is no need to capture it and plasma can 
+						be ignited in ambient Martian atmosphere. The traces of Ar and N2 present can only
+						help: argon aids shaping the electron energy distribution to higher energies, contributing
+						to an increased efficiency of this decomposition process.
+						The pressure on Mars – of 600 Pa (4.5 Torr), about 150 times lower than on Earth 
+						– is close to the ideal for advantageous plasma operation, so there is no need 
+						to use vacuum pumps or compressors on the first steps of the process.
+						See https://www.europhysicsnews.org/articles/epn/pdf/2018/03/epn2018493p15.pdf
+					</description>
+					<input resource="carbon dioxide" rate="352" ambient="true" />
+					<output resource="carbon monoxide" rate="112" ambient="false" />
+					<output resource="oxygen" rate="128" ambient="false" />
 				</process>
 				
 			</resource-processing>
@@ -3246,12 +3297,28 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="water" rate="21.6" ambient="false" />
 				</process>
 
-				<process name="Oxygen Generation System" power-required="3.0" default="on">
+				<process name="Oxygen Generation System" power-required="4" default="on">
 					<input resource="water" rate="72" ambient="false" />
 					<output resource="hydrogen" rate="8" ambient="false" />
 					<output resource="oxygen" rate="64" ambient="false" />
 				</process>
 
+				<process name="Low Temperature Plasma CO2 Decomposition" power-required="0.2" default="on">
+					<description> 
+						The atmosphere is mainly CO2, so there is no need to capture it and plasma can 
+						be ignited in ambient Martian atmosphere. The traces of Ar and N2 present can only
+						help: argon aids shaping the electron energy distribution to higher energies, contributing
+						to an increased efficiency of this decomposition process.
+						The pressure on Mars – of 600 Pa (4.5 Torr), about 150 times lower than on Earth 
+						– is close to the ideal for advantageous plasma operation, so there is no need 
+						to use vacuum pumps or compressors on the first steps of the process.
+						See https://www.europhysicsnews.org/articles/epn/pdf/2018/03/epn2018493p15.pdf
+					</description>
+					<input resource="carbon dioxide" rate="176" ambient="true" />
+					<output resource="carbon monoxide" rate="56" ambient="false" />
+					<output resource="oxygen" rate="64" ambient="false" />
+				</process>
+				
 				<process name="Carbon Dioxide Pump" power-required=".4" default="off">
 					<input resource="carbon dioxide" rate="40.0" ambient="true" />
 					<output resource="carbon dioxide" rate="40.0" ambient="false" />
