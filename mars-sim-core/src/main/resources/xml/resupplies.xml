@@ -49,8 +49,9 @@
 
 		<building type="MD1 Nuclear Reactor" xloc="60.0" yloc="-80.0" facing="0.0" />
 
-		<building type="ERV Base" xloc="40.0" yloc="-15.0" facing="45.0" />
-
+		<building type="ERV-A" xloc="120.0" yloc="45.0" facing="0.0" />
+		<building type="ERV-B" xloc="120.0" yloc="-15.0" facing="0.0" />
+								
 		<building type="Hallway" length="4.0" xloc="0.0" yloc="6.5" facing="0.0" />
 		<building type="Hallway" length="3.0" xloc="-6.0" yloc="13.0" facing="270.0" />
 
@@ -89,10 +90,13 @@
 	
 		<building type="MD4 Nuclear Reactor" xloc="100.0" yloc="-100" facing="0.0" />
 		
-		<building type="ERV Base" xloc="40.0" yloc="15.0" facing="135.0" />		
-	
+		<building type="ERV-A" xloc="160.0" yloc="45.0" facing="0.0" />
+		<building type="ERV-B" xloc="160.0" yloc="-15.0" facing="0.0" />
+						
 		<building type="Hallway" length="4.0" xloc="0.0" yloc="19.5" facing="0.0" />
 		<building type="Hallway" length="3.0" xloc="-6.0" yloc="26.0" facing="270.0" />
+		
+		<building type="Atmospheric Processor" xloc="15.0" yloc="-50.0" facing="90.0" />
 		
 		<building type="Large Sabatier Processor" xloc="0.0" yloc="-50.0" facing="90.0" />
 					
@@ -123,8 +127,13 @@
 		
 		<building type="MD4 Nuclear Reactor" xloc="120.0" yloc="-100" facing="0.0" />
 						
-		<building type="ERV Base" xloc="40.0" yloc="-15.0" facing="45.0" />			
-		<building type="Atmospheric Processor" xloc="0.0" yloc="-20.0" facing="90.0" />
+		<building type="ERV-A" xloc="200.0" yloc="45.0" facing="0.0" />
+		<building type="ERV-B" xloc="200.0" yloc="-15.0" facing="0.0" />
+									
+		<building type="Atmospheric Processor" xloc="15.0" yloc="-60.0" facing="90.0" />												
+		<building type="Atmospheric Processor" xloc="15.0" yloc="-70.0" facing="90.0" />
+		<building type="Atmospheric Processor" xloc="15.0" yloc="-80.0" facing="90.0" />
+		
 		<building type="Large Sabatier Processor" xloc="-30.0" yloc="-20.0" facing="90.0" />
 
 		<building type="Command and Control" xloc="0.0" yloc="38" facing="270.0" />

@@ -113,7 +113,6 @@ class AmountResourceGood extends Good {
 	private static final double CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR = 100D;
 	private static final double CONSTRUCTING_INPUT_FACTOR = 2D;
 
-
 	private static final double LIFE_SUPPORT_MAX = 100;
 
 	private static final int METEORITE_ID = ResourceUtil.findIDbyAmountResourceName("meteorite");
@@ -410,44 +409,35 @@ class AmountResourceGood extends Good {
 	 */
 	private static double calculateFlattenAmountDemand(AmountResource ar) {
 		double demand = 0;
-//		String name = ar.getName();
-//		
-//		if (name.contains("polyester")
-//				|| name.contains("styrene")
-//				|| name.contains("polyethylene"))
-//			demand = CHEMICAL_DEMAND_FACTOR;
-//		
-//		else {
-			switch(ar.getGoodType()) {
-				case REGOLITH:
-				case ORE:
-				case MINERAL:
-					demand = REGOLITH_DEMAND_FACTOR;
-					break;
+		switch(ar.getGoodType()) {
+			case REGOLITH:
+			case ORE:
+			case MINERAL:
+				demand = REGOLITH_DEMAND_FACTOR;
+				break;
 
-				case ROCK:
-					demand = ROCK_DEMAND_FACTOR;
-					break;
-		
-				case CHEMICAL:
-					demand = CHEMICAL_DEMAND_FACTOR;
-					break;
+			case ROCK:
+				demand = ROCK_DEMAND_FACTOR;
+				break;
+	
+			case CHEMICAL:
+				demand = CHEMICAL_DEMAND_FACTOR;
+				break;
 
-				case ELEMENT:
-					demand = ELEMENT_DEMAND_FACTOR;
-					break;
+			case ELEMENT:
+				demand = ELEMENT_DEMAND_FACTOR;
+				break;
 
-				case COMPOUND:
-					demand = COMPOUND_DEMAND_FACTOR;
-					break;
+			case COMPOUND:
+				demand = COMPOUND_DEMAND_FACTOR;
+				break;
 
-				case WASTE:
-					demand = WASTE_VALUE;
-					break;
+			case WASTE:
+				demand = WASTE_VALUE;
+				break;
 
-				default:
-					demand = 1;
-//			}
+			default:
+				demand = 1;
 		}
 
 		return demand;

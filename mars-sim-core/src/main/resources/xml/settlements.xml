@@ -157,8 +157,7 @@
 			</building>
 
 			<!-- EVA Airlock is attached to the lander hab -->
-			<building id="1" type="EVA Airlock" xloc="7.5" yloc="0.0"
-				facing="0.0">
+			<building id="1" type="EVA Airlock" xloc="7.5" yloc="0.0" facing="0.0">
 				<connection-list>
 					<connection id="0" xloc="-3.0" yloc="0.0" />
 				</connection-list>
@@ -167,8 +166,7 @@
 			<!-- Hallway connecting lander hab and inflatable greenhouse. -->
 			<!-- Note: Aa hallway has fixed width but variable length. Therefore,
 				the length argument must be provided below. -->
-			<building id="2" type="Hallway" length="3.0" xloc="-6.0"
-				yloc="0.0" facing="270.0">
+			<building id="2" type="Hallway" length="3.0" xloc="-6.0" yloc="0.0" facing="270.0">
 				<connection-list>
 					<connection id="0" xloc="0.0" yloc="1.5" />
 					<connection id="3" xloc="0.0" yloc="-1.5" />
@@ -176,8 +174,7 @@
 			</building>
 
 			<!-- Inflatable greenhouse can be used to grow crops. -->
-			<building id="3" type="Inflatable Greenhouse" xloc="-12.0"
-				yloc="0.0" facing="270.0">
+			<building id="3" type="Inflatable Greenhouse" xloc="-12.0" yloc="0.0" facing="270.0">
 				<connection-list>
 					<connection id="2" xloc="0.0" yloc="4.5" />
 				</connection-list>
@@ -194,13 +191,11 @@
 			<!-- Earth Return Vehicle Type A building has a Sabatier reactor for converting
 				hydrogen and carbon dioxide into methane, water and oxygen. It has a full
 				load of hydrogen and has not reacted yet. -->
-			<building type="ERV-A" xloc="80.0" yloc="45.0"
-				facing="0.0" />
+			<building type="ERV-A" xloc="80.0" yloc="45.0" facing="0.0" />
 
 			<!-- Earth Return Vehicle Type B building has numerous regolith processing
 			     capabilities for making cement and concrete for construction purposes. -->
-			<building type="ERV-B" xloc="80.0" yloc="-15.0"
-				facing="0.0" />
+			<building type="ERV-B" xloc="80.0" yloc="-15.0" facing="0.0" />
 
 			<building type="Large Sabatier Processor" xloc="0.0"
 				yloc="-40.0" facing="90.0" />
@@ -268,7 +263,8 @@
 					arrival-time="2004.0" />
 			</resupply>
 		</template>
-
+		<!-- end of Phase 1-M -->
+		
 		<!-- For each settlement template, use one of the single letter designation
 			as follows for each sponsor : U - National Aeronautics and Space Administration
 			(NASA) C - CNSA I - Indian Space Research Organisation (ISRO) R - Roscosmos
@@ -332,11 +328,9 @@
 			<building type="MD1 Nuclear Reactor" xloc="60.0"
 				yloc="-60.0" facing="0.0" />
 
-			<building type="ERV-A" xloc="80.0" yloc="45.0"
-				facing="0.0" />
+			<building type="ERV-A" xloc="80.0" yloc="45.0" facing="0.0" />
 
-			<building type="ERV-B" xloc="80.0" yloc="-15.0"
-				facing="0.0" />
+			<building type="ERV-B" xloc="80.0" yloc="-15.0" facing="0.0" />
 
 			<building type="Large Sabatier Processor" xloc="0.0"
 				yloc="-40.0" facing="90.0" />
@@ -382,7 +376,8 @@
 					arrival-time="2004.0" />
 			</resupply>
 		</template>
-
+		<!-- end of Phase 1-U -->
+		
 		<template name="Phase 1-C" default-population="4"
 			number-of-robots="3" sponsor="CNSA">
 
@@ -440,11 +435,9 @@
 			<building type="MD1 Nuclear Reactor" xloc="60.0"
 				yloc="-60.0" facing="0.0" />
 
-			<building type="ERV-A" xloc="80.0" yloc="45.0"
-				facing="0.0" />
+			<building type="ERV-A" xloc="80.0" yloc="45.0" facing="0.0" />
 
-			<building type="ERV-B" xloc="80.0" yloc="-15.0"
-				facing="0.0" />
+			<building type="ERV-B" xloc="80.0" yloc="-15.0" facing="0.0" />
 
 			<building type="Large Sabatier Processor" xloc="0.0"
 				yloc="-40.0" facing="90.0" />
@@ -490,7 +483,8 @@
 					arrival-time="2004.0" />
 			</resupply>
 		</template>
-
+		<!-- end of Phase 1-C -->
+		
 		<template name="Phase 1-I" default-population="4"
 			number-of-robots="3" sponsor="ISRO">
 
@@ -548,11 +542,9 @@
 			<building type="MD1 Nuclear Reactor" xloc="60.0"
 				yloc="-60.0" facing="0.0" />
 
-			<building type="ERV-A" xloc="80.0" yloc="45.0"
-				facing="0.0" />
+			<building type="ERV-A" xloc="80.0" yloc="45.0" facing="0.0" />
 
-			<building type="ERV-B" xloc="80.0" yloc="-15.0"
-				facing="0.0" />
+			<building type="ERV-B" xloc="80.0" yloc="-15.0" facing="0.0" />
 
 			<building type="Large Sabatier Processor" xloc="0.0"
 				yloc="-40.0" facing="90.0" />
@@ -599,7 +591,8 @@
 					arrival-time="2004.0" />
 			</resupply>
 		</template>
-
+		<!-- end of Phase 1-I -->
+		
 		<template name="Phase 1-R" default-population="4"
 			number-of-robots="3" sponsor="RKA">
 
@@ -657,11 +650,9 @@
 			<building type="MD1 Nuclear Reactor" xloc="60.0"
 				yloc="-60.0" facing="0.0" />
 
-			<building type="ERV-A" xloc="80.0" yloc="45.0"
-				facing="0.0" />
+			<building type="ERV-A" xloc="80.0" yloc="45.0" facing="0.0" />
 
-			<building type="ERV-B" xloc="80.0" yloc="-15.0"
-				facing="0.0" />
+			<building type="ERV-B" xloc="80.0" yloc="-15.0" facing="0.0" />
 
 			<building type="Large Sabatier Processor" xloc="0.0"
 				yloc="-40.0" facing="90.0" />
@@ -707,7 +698,8 @@
 					arrival-time="2004.0" />
 			</resupply>
 		</template>
-
+		<!-- end of Phase 1-R -->
+		
 		<template name="Phase 1-X" default-population="4"
 			number-of-robots="3" sponsor="SPACEX">
 
@@ -758,15 +750,14 @@
 				</connection-list>
 			</building>
 
-			<building type="ERV-A" xloc="80.0" yloc="45.0"
-				facing="0.0" />
-			<building type="ERV-A" xloc="120.0" yloc="45.0"
-				facing="0.0" />
+			<building type="ERV-A" xloc="80.0" yloc="45.0" facing="0.0" />
 
-			<building type="ERV-B" xloc="80.0" yloc="-15.0"
-				facing="0.0" />
-			<building type="ERV-B" xloc="120.0" yloc="-15.0"
-				facing="0.0" />
+			<building type="ERV-B" xloc="80.0" yloc="-15.0" facing="0.0" />
+
+			<building type="Atmospheric Processor" xloc="30.0"
+				yloc="-50.0" facing="90.0" />
+			<building type="Atmospheric Processor" xloc="30.0"
+				yloc="-60.0" facing="90.0" />
 
 			<building type="Solar Photovoltaic Array" xloc="40.0"
 				yloc="-70.0" facing="0.0" />
@@ -840,7 +831,8 @@
 					arrival-time="2004.0" />
 			</resupply>
 		</template>
-
+		<!-- end of Phase 1-X -->
+		
 		<template name="Phase 2-M" default-population="8"
 			number-of-robots="5" sponsor="MS">
 			<building id="0" type="Lander Hab" xloc="0.0" yloc="0.0"
@@ -910,7 +902,9 @@
 
 			<building type="ERV-A" xloc="80.0" yloc="45.0"
 				facing="0.0" />
-
+			<building type="ERV-A" xloc="120.0" yloc="45.0"
+				facing="0.0" />
+				
 			<building type="ERV-B" xloc="80.0" yloc="-15.0"
 				facing="0.0" />
 			<building type="ERV-B" xloc="120.0" yloc="-15.0"
@@ -1067,7 +1061,8 @@
 					arrival-time="1337.0" />
 			</resupply>
 		</template>
-
+		<!-- end of Phase 2-M -->
+		'
 		<template name="Phase 2-U" default-population="8"
 			number-of-robots="5" sponsor="NASA">
 			<building id="0" type="Lander Hab" xloc="0.0" yloc="0.0"
@@ -1190,7 +1185,9 @@
 
 			<building type="ERV-A" xloc="80.0" yloc="45.0"
 				facing="0.0" />
-
+			<building type="ERV-A" xloc="120.0" yloc="45.0"
+				facing="0.0" />
+				
 			<building type="ERV-B" xloc="80.0" yloc="-15.0"
 				facing="0.0" />
 			<building type="ERV-B" xloc="120.0" yloc="-15.0"
@@ -1344,7 +1341,8 @@
 					arrival-time="1337.0" />
 			</resupply>
 		</template>
-
+		<!-- end of Phase 2-U -->
+		
 		<template name="Phase 2-E" default-population="8"
 			number-of-robots="5" sponsor="ESA">
 			<building id="0" type="Lander Hab" xloc="0.0" yloc="0.0"
@@ -1467,7 +1465,9 @@
 
 			<building type="ERV-A" xloc="80.0" yloc="45.0"
 				facing="0.0" />
-
+			<building type="ERV-A" xloc="120.0" yloc="45.0"
+				facing="0.0" />
+				
 			<building type="ERV-B" xloc="80.0" yloc="-15.0"
 				facing="0.0" />
 			<building type="ERV-B" xloc="120.0" yloc="-15.0"
@@ -1622,7 +1622,8 @@
 					arrival-time="1337.0" />
 			</resupply>
 		</template>
-
+		<!-- end of Phase 2-E -->
+		
 		<template name="Phase 2-C" default-population="8"
 			number-of-robots="5" sponsor="CNSA">
 			<building id="0" type="Lander Hab" xloc="0.0" yloc="0.0"
@@ -1745,7 +1746,9 @@
 
 			<building type="ERV-A" xloc="80.0" yloc="45.0"
 				facing="0.0" />
-
+			<building type="ERV-A" xloc="120.0" yloc="45.0"
+				facing="0.0" />
+				
 			<building type="ERV-B" xloc="80.0" yloc="-15.0"
 				facing="0.0" />
 			<building type="ERV-B" xloc="120.0" yloc="-15.0"
@@ -1900,7 +1903,8 @@
 					arrival-time="1337.0" />
 			</resupply>
 		</template>
-
+		<!-- end of Phase 2-C -->
+		
 		<template name="Phase 2-I" default-population="8"
 			number-of-robots="5" sponsor="ISRO">
 			<building id="0" type="Lander Hab" xloc="0.0" yloc="0.0"
@@ -2062,7 +2066,9 @@
 
 			<building type="ERV-A" xloc="80.0" yloc="45.0"
 				facing="0.0" />
-
+			<building type="ERV-A" xloc="120.0" yloc="45.0"
+				facing="0.0" />
+				
 			<building type="ERV-B" xloc="80.0" yloc="-15.0"
 				facing="0.0" />
 			<building type="ERV-B" xloc="120.0" yloc="-15.0"
@@ -2216,7 +2222,8 @@
 					arrival-time="1337.0" />
 			</resupply>
 		</template>
-
+		<!-- end of Phase 2-I -->
+		
 		<template name="Phase 2-J" default-population="8"
 			number-of-robots="5" sponsor="JAXA">
 			<building id="0" type="Lander Hab" xloc="0.0" yloc="0.0"
@@ -2378,7 +2385,9 @@
 
 			<building type="ERV-A" xloc="80.0" yloc="45.0"
 				facing="0.0" />
-
+			<building type="ERV-A" xloc="120.0" yloc="45.0"
+				facing="0.0" />
+				
 			<building type="ERV-B" xloc="80.0" yloc="-15.0"
 				facing="0.0" />
 			<building type="ERV-B" xloc="120.0" yloc="-15.0"
@@ -2426,9 +2435,7 @@
 			<resource type="food waste" amount="25.0" />
 			<resource type="solid waste" amount="25.0" />
 			<resource type="crop waste" amount="25.0" />
-			<!-- <resource type="nitrogen" amount="1000.0" /> <resource type="hydrogen"
-				amount="6000.0" /> <resource type="methane" amount="6000.0" /> <resource
-				type="carbon dioxide" amount="10.0" /> -->
+
 			<resource type="argon" amount="60.0" />
 
 			<resource type="fertilizer" amount="50.0" />
@@ -2532,7 +2539,8 @@
 					arrival-time="1337.0" />
 			</resupply>
 		</template>
-
+		<!-- end of Phase 2-J -->
+		
 		<template name="Phase 2-R" default-population="8"
 			number-of-robots="5" sponsor="RKA">
 			<building id="0" type="Lander Hab" xloc="0.0" yloc="0.0"
@@ -2676,7 +2684,9 @@
 
 			<building type="ERV-A" xloc="80.0" yloc="45.0"
 				facing="0.0" />
-
+			<building type="ERV-A" xloc="120.0" yloc="45.0"
+				facing="0.0" />
+				
 			<building type="ERV-B" xloc="80.0" yloc="-15.0"
 				facing="0.0" />
 			<building type="ERV-B" xloc="120.0" yloc="-15.0"
@@ -2830,7 +2840,8 @@
 					arrival-time="1337.0" />
 			</resupply>
 		</template>
-
+		<!-- end of Phase 2-R -->
+		
 		<template name="Phase 3-M" default-population="12"
 			number-of-robots="7" sponsor="MS">
 			<building id="0" type="Lander Hab" xloc="0.0" yloc="0.0"
@@ -2935,13 +2946,18 @@
 				facing="0.0" />
 			<building type="ERV-A" xloc="120.0" yloc="45.0"
 				facing="0.0" />
-				
+			<building type="ERV-A" xloc="160.0" yloc="45.0"
+				facing="0.0" />
+								
 			<building type="ERV-B" xloc="80.0" yloc="-15.0"
 				facing="0.0" />
 			<building type="ERV-B" xloc="120.0" yloc="-15.0"
 				facing="0.0" />
 			<building type="ERV-B" xloc="160.0" yloc="-15.0"
 				facing="0.0" />
+
+			<building type="Atmospheric Processor" xloc="15.0"
+				yloc="-50.0" facing="90.0" />
 
 			<building type="Large Sabatier Processor" xloc="0.0"
 				yloc="-40.0" facing="90.0" />
@@ -2992,9 +3008,7 @@
 			<resource type="food waste" amount="25.0" />
 			<resource type="solid waste" amount="25.0" />
 			<resource type="crop waste" amount="25.0" />
-			<!-- <resource type="nitrogen" amount="2000.0" /> <resource type="hydrogen"
-				amount="9000.0" /> <resource type="methane" amount="9000.0" /> <resource
-				type="carbon dioxide" amount="10.0" /> -->
+
 			<resource type="argon" amount="90.0" />
 
 			<resource type="fertilizer" amount="50.0" />
@@ -3041,7 +3055,6 @@
 
 			<resource type="Mustard Seed" amount="50.0" />
 			<resource type="Sesame Seed" amount="50.0" />
-
 
 			<!-- Kitchen Resources -->
 			<resource type="chlorine" amount="50.0" />
@@ -3094,7 +3107,8 @@
 					arrival-time="670.0" />
 			</resupply>
 		</template>
-
+		<!-- end of Phase 3-M -->
+		
 		<template name="Phase 3-U" default-population="12"
 			number-of-robots="7" sponsor="NASA">
 			<building id="0" type="Lander Hab" xloc="0.0" yloc="0.0"
@@ -3292,13 +3306,18 @@
 				facing="0.0" />
 			<building type="ERV-A" xloc="120.0" yloc="45.0"
 				facing="0.0" />
-				
+			<building type="ERV-A" xloc="160.0" yloc="45.0"
+				facing="0.0" />
+								
 			<building type="ERV-B" xloc="80.0" yloc="-15.0"
 				facing="0.0" />
 			<building type="ERV-B" xloc="120.0" yloc="-15.0"
 				facing="0.0" />
 			<building type="ERV-B" xloc="160.0" yloc="-15.0"
 				facing="0.0" />
+
+			<building type="Atmospheric Processor" xloc="15.0"
+				yloc="-50.0" facing="90.0" />
 
 			<building type="Large Sabatier Processor" xloc="0.0"
 				yloc="-40.0" facing="90.0" />
@@ -3349,9 +3368,7 @@
 			<resource type="food waste" amount="25.0" />
 			<resource type="solid waste" amount="25.0" />
 			<resource type="crop waste" amount="25.0" />
-			<!-- <resource type="nitrogen" amount="2000.0" /> <resource type="hydrogen"
-				amount="9000.0" /> <resource type="methane" amount="9000.0" /> <resource
-				type="carbon dioxide" amount="10.0" /> -->
+
 			<resource type="argon" amount="90.0" />
 			<resource type="fertilizer" amount="50.0" />
 
@@ -3450,6 +3467,7 @@
 			</resupply>
 		</template>
 		<!-- end of Phase 3-U -->
+		
 		<template name="Phase 3-C" default-population="12"
 			number-of-robots="7" sponsor="CNSA">
 			<building id="0" type="Lander Hab" xloc="0.0" yloc="0.0"
@@ -3653,13 +3671,18 @@
 				facing="0.0" />
 			<building type="ERV-A" xloc="120.0" yloc="45.0"
 				facing="0.0" />
-				
+			<building type="ERV-A" xloc="160.0" yloc="45.0"
+				facing="0.0" />
+								
 			<building type="ERV-B" xloc="80.0" yloc="-15.0"
 				facing="0.0" />
 			<building type="ERV-B" xloc="120.0" yloc="-15.0"
 				facing="0.0" />
 			<building type="ERV-B" xloc="160.0" yloc="-15.0"
 				facing="0.0" />
+
+			<building type="Atmospheric Processor" xloc="15.0"
+				yloc="-50.0" facing="90.0" />
 
 			<building type="Large Sabatier Processor" xloc="0.0"
 				yloc="-40.0" facing="90.0" />
@@ -3808,6 +3831,7 @@
 			</resupply>
 		</template>
 		<!-- end of Phase 3-C -->
+		
 		<template name="Phase 3-I" default-population="12"
 			number-of-robots="7" sponsor="ISRO">
 			<building id="0" type="Lander Hab" xloc="0.0" yloc="0.0"
@@ -4004,7 +4028,9 @@
 				facing="0.0" />
 			<building type="ERV-A" xloc="120.0" yloc="45.0"
 				facing="0.0" />
-				
+			<building type="ERV-A" xloc="160.0" yloc="45.0"
+				facing="0.0" />
+								
 			<building type="ERV-B" xloc="80.0" yloc="-15.0"
 				facing="0.0" />
 			<building type="ERV-B" xloc="120.0" yloc="-15.0"
@@ -4012,6 +4038,9 @@
 			<building type="ERV-B" xloc="160.0" yloc="-15.0"
 				facing="0.0" />
 
+			<building type="Atmospheric Processor" xloc="15.0"
+				yloc="-50.0" facing="90.0" />
+				
 			<building type="Large Sabatier Processor" xloc="0.0"
 				yloc="-40.0" facing="90.0" />
 			<building type="Large Sabatier Processor" xloc="0.0"
@@ -4160,6 +4189,7 @@
 			</resupply>
 		</template>
 		<!-- end of Phase 3-I -->
+		
 		<template name="Phase 3-R" default-population="12"
 			number-of-robots="7" sponsor="RKA">
 			<building id="0" type="Lander Hab" xloc="0.0" yloc="0.0"
@@ -4359,7 +4389,9 @@
 				facing="0.0" />
 			<building type="ERV-A" xloc="120.0" yloc="45.0"
 				facing="0.0" />
-				
+			<building type="ERV-A" xloc="160.0" yloc="45.0"
+				facing="0.0" />
+								
 			<building type="ERV-B" xloc="80.0" yloc="-15.0"
 				facing="0.0" />
 			<building type="ERV-B" xloc="120.0" yloc="-15.0"
@@ -4367,6 +4399,9 @@
 			<building type="ERV-B" xloc="160.0" yloc="-15.0"
 				facing="0.0" />
 
+			<building type="Atmospheric Processor" xloc="15.0"
+				yloc="-50.0" facing="90.0" />
+				
 			<building type="Large Sabatier Processor" xloc="0.0"
 				yloc="-40.0" facing="90.0" />
 			<building type="Large Sabatier Processor" xloc="0.0"
@@ -4702,8 +4737,6 @@
 				facing="0.0" />
 			<building type="ERV-A" xloc="160.0" yloc="45.0"
 				facing="0.0" />
-			<building type="ERV-A" xloc="200.0" yloc="45.0"
-				facing="0.0" />
 				
 			<building type="ERV-B" xloc="80.0" yloc="-15.0"
 				facing="0.0" />
@@ -4711,14 +4744,17 @@
 				facing="0.0" />
 			<building type="ERV-B" xloc="160.0" yloc="-15.0"
 				facing="0.0" />
-			<building type="ERV-B" xloc="200.0" yloc="-15.0"
-				facing="0.0" />
 
-			<building type="Atmospheric Processor" xloc="0.0"
-				yloc="-20.0" facing="90.0" />
-			<building type="Atmospheric Processor" xloc="0.0"
-				yloc="-30.0" facing="90.0" />
+			<building type="Atmospheric Processor" xloc="15.0"
+				yloc="-50.0" facing="90.0" />
+			<building type="Atmospheric Processor" xloc="15.0"
+				yloc="-60.0" facing="90.0" />
 				
+			<building type="Atmospheric Processor" xloc="30.0"
+				yloc="-50.0" facing="90.0" />
+			<building type="Atmospheric Processor" xloc="30.0"
+				yloc="-60.0" facing="90.0" />
+								
 			<building type="Large Sabatier Processor" xloc="0.0"
 				yloc="-40.0" facing="90.0" />
 			<building type="Large Sabatier Processor" xloc="0.0"
@@ -4851,9 +4887,7 @@
 			<resource type="food waste" amount="25.0" />
 			<resource type="solid waste" amount="25.0" />
 			<resource type="crop waste" amount="25.0" />
-			<!-- <resource type="nitrogen" amount="2000.0" /> <resource type="hydrogen"
-				amount="9000.0" /> <resource type="methane" amount="9000.0" /> <resource
-				type="carbon dioxide" amount="10.0" /> -->
+
 			<resource type="argon" amount="90.0" />
 
 			<resource type="fertilizer" amount="50.0" />
@@ -4900,7 +4934,6 @@
 
 			<resource type="Mustard Seed" amount="50.0" />
 			<resource type="Sesame Seed" amount="50.0" />
-
 
 			<!-- Kitchen Resources -->
 			<resource type="chlorine" amount="50.0" />
@@ -5202,10 +5235,6 @@
 				facing="0.0" />
 			<building type="ERV-A" xloc="200.0" yloc="45.0"
 				facing="0.0" />
-			<building type="ERV-A" xloc="240.0" yloc="45.0"
-				facing="0.0" />
-			<building type="ERV-A" xloc="280.0" yloc="45.0"
-				facing="0.0" />
 				
 			<building type="ERV-B" xloc="80.0" yloc="-15.0"
 				facing="0.0" />
@@ -5216,11 +5245,15 @@
 			<building type="ERV-B" xloc="200.0" yloc="-15.0"
 				facing="0.0" />
 
-			<building type="Atmospheric Processor" xloc="0.0"
-				yloc="-20.0" facing="90.0" />
-			<building type="Atmospheric Processor" xloc="0.0"
-				yloc="-30.0" facing="90.0" />
-
+			<building type="Atmospheric Processor" xloc="15.0"
+				yloc="-50.0" facing="90.0" />
+			<building type="Atmospheric Processor" xloc="15.0"
+				yloc="-60.0" facing="90.0" />
+			<building type="Atmospheric Processor" xloc="15.0"
+				yloc="-70.0" facing="90.0" />
+			<building type="Atmospheric Processor" xloc="15.0"
+				yloc="-80.0" facing="90.0" />
+								
 			<building type="Large Sabatier Processor" xloc="0.0"
 				yloc="-40.0" facing="90.0" />
 			<building type="Large Sabatier Processor" xloc="0.0"
@@ -5290,9 +5323,7 @@
 			<resource type="food waste" amount="25.0" />
 			<resource type="solid waste" amount="25.0" />
 			<resource type="crop waste" amount="25.0" />
-			<!-- <resource type="nitrogen" amount="3000.0" /> <resource type="hydrogen"
-				amount="12000.0" /> <resource type="methane" amount="12000.0" /> <resource
-				type="carbon dioxide" amount="10.0" /> -->
+
 			<resource type="argon" amount="120.0" />
 
 			<resource type="fertilizer" amount="50.0" />
@@ -5386,7 +5417,8 @@
 
 			<part-package name="package 4" number="1" />
 		</template>
-		<!-- end of Phase Alpha Base -->
+		<!-- end of Alpha Base -->
+		
 		<template name="Trading Outpost" default-population="4"
 			number-of-robots="3" sponsor="MS">
 			<building id="0" type="Outpost Hub" xloc="0.0" yloc="0.0"
@@ -5545,6 +5577,11 @@
 			<building type="Methane Power Generator" xloc="-44.5"
 				yloc="0.0" facing="270.0" />
 
+			<building type="Atmospheric Processor" xloc="15.0"
+				yloc="-50.0" facing="90.0" />
+			<building type="Atmospheric Processor" xloc="15.0"
+				yloc="-60.0" facing="90.0" />
+				
 			<building type="Large Sabatier Processor" xloc="0.0"
 				yloc="-40.0" facing="90.0" />
 			<building type="Large Sabatier Processor" xloc="0.0"
@@ -5564,9 +5601,7 @@
 			<resource type="oxygen" amount="4000.0" />
 			<resource type="water" amount="8000.0" />
 			<resource type="food" amount="4000.0" />
-			<!-- <resource type="nitrogen" amount="4000.0" /> <resource type="hydrogen"
-				amount="16000.0" /> <resource type="methane" amount="16000.0" /> <resource
-				type="carbon dioxide" amount="10.0" /> -->
+
 			<resource type="argon" amount="160.0" />
 
 			<resource type="fertilizer" amount="50.0" />
@@ -5581,7 +5616,8 @@
 
 			<part-package name="package 1" number="1" />
 		</template>
-
+		<!-- end of Trading Outpost -->
+		
 		<template name="Mining Outpost" default-population="4"
 			number-of-robots="3" sponsor="MS">
 			<building id="0" type="Outpost Hub" xloc="0.0" yloc="0.0"
@@ -5759,6 +5795,11 @@
 			<building type="Methane Power Generator" xloc="-44.5"
 				yloc="0.0" facing="270.0" />
 
+			<building type="Atmospheric Processor" xloc="15.0"
+				yloc="-50.0" facing="90.0" />
+			<building type="Atmospheric Processor" xloc="15.0"
+				yloc="-60.0" facing="90.0" />
+				
 			<building type="Large Sabatier Processor" xloc="0.0"
 				yloc="-40.0" facing="90.0" />
 			<building type="Large Sabatier Processor" xloc="0.0"
@@ -5778,9 +5819,7 @@
 			<resource type="oxygen" amount="4000.0" />
 			<resource type="water" amount="8000.0" />
 			<resource type="food" amount="4000.0" />
-			<!-- <resource type="nitrogen" amount="4000.0" /> <resource type="hydrogen"
-				amount="16000.0" /> <resource type="methane" amount="16000.0" /> <resource
-				type="carbon dioxide" amount="10.0" /> -->
+
 			<resource type="argon" amount="160.0" />
 
 			<resource type="fertilizer" amount="50.0" />
@@ -5796,6 +5835,7 @@
 
 			<part-package name="package 1" number="1" />
 		</template>
-
+		<!-- end of Mining Outpost -->
+		
 	</settlement-template-list>
 </settlement-configuration>

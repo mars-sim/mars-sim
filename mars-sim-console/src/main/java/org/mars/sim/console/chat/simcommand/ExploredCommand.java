@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * ExploredCommand.java
- * @version 3.3.1 2021-10-05
+ * @date 2022-07-07
  * @author Barry Evans
  */
 
@@ -69,7 +69,12 @@ public class ExploredCommand extends ChatCommand {
 				// Create summary of minerals
 				Optional<Entry<String, Double>> highest = s.getEstimatedMineralConcentrations().entrySet().stream()
 					      		   .max(Comparator.comparing(v -> v.getValue()));
-				mineral = String.format("%s - %.2f", highest.get().getKey(), highest.get().getValue());
+				if (highest.isPresent())
+					mineral = String.format("%s - %.2f", highest.get().getKey(), highest.get().getValue());
+		        else {
+		        	context.println("Invalid mineral concentrations. Try again later.");
+		        	return false;
+		        }
 			}
 			
 			String status = (s.isMined() ? "Mined" : (s.isReserved() ? "Reserved" : (s.isExplored() ? "Explored" : "")));
