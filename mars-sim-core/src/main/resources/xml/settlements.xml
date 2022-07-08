@@ -131,9 +131,21 @@
 
 	</life-support-requirements>
 
+	<!-- For each settlement template, use one of the single letter designation
+			as follows for each sponsor : 
+			1. U - National Aeronautics and Space Administration (NASA) 
+			2. C - China National Space Administration (CNSA) 
+			3. I - Indian Space Research Organisation (ISRO) 
+			4. R - Roscosmos (RKA) 
+			5. A - Canadian Space Agency (CSA) 
+			6. E - European Space Agency (ESA) 
+			7. J - Japan Aerospace Exploration Agency (JAXA) 
+			8. M - Mars Society (MS) 
+			9. X - Space Exploration Technologies (SpaceX) 
+			   e.g. "Phase 1-U" means a NASA Phase 1 settlement -->
+			
 	<!-- List of templates for settlements -->
 	<settlement-template-list>
-
 		<!-- Settlement template for the Zubrin Mars Direct mission plan. -->
 		<!-- See http://www.marssociety.org/home/about/mars-direct for more info. -->
 		<!-- default-population: the default population capacity for the template. -->
@@ -263,14 +275,8 @@
 					arrival-time="2004.0" />
 			</resupply>
 		</template>
-		<!-- end of Phase 1-M -->
-		
-		<!-- For each settlement template, use one of the single letter designation
-			as follows for each sponsor : U - National Aeronautics and Space Administration
-			(NASA) C - CNSA I - Indian Space Research Organisation (ISRO) R - Roscosmos
-			(RKA) A - Canadian Space Agency (CSA) E - European Space Agency (ESA) J -
-			Japan Aerospace Exploration Agency (JAXA) M - Mars Society (MS) X - Space
-			Exploration Technologies (SpaceX) e.g. "Phase 1-U" means a NASA Phase 1 settlement -->
+		<!-- end of Phase 1-M -->		
+
 		<template name="Phase 1-U" default-population="4"
 			number-of-robots="3" sponsor="NASA">
 
@@ -376,7 +382,7 @@
 					arrival-time="2004.0" />
 			</resupply>
 		</template>
-		<!-- end of Phase 1-U -->
+		<!-- end of Phase 1-U -->		
 		
 		<template name="Phase 1-C" default-population="4"
 			number-of-robots="3" sponsor="CNSA">
@@ -698,7 +704,7 @@
 			</resupply>
 		</template>
 		<!-- end of Phase 1-R -->
-		
+			
 		<template name="Phase 1-X" default-population="4"
 			number-of-robots="3" sponsor="SPACEX">
 
@@ -848,7 +854,7 @@
 			</resupply>
 		</template>
 		<!-- end of Phase 1-X -->
-		
+				
 		<template name="Phase 2-M" default-population="8"
 			number-of-robots="5" sponsor="MS">
 			<building id="0" type="Lander Hab" xloc="0.0" yloc="0.0"
@@ -970,10 +976,6 @@
 			<resource type="solid waste" amount="25.0" />
 			<resource type="crop waste" amount="25.0" />
 
-			<!-- <resource type="nitrogen" amount="1000.0" /> <resource type="hydrogen"
-				amount="6000.0" /> <resource type="methane" amount="6000.0" /> <resource
-				type="carbon dioxide" amount="10.0" /> -->
-
 			<resource type="argon" amount="60.0" />
 
 			<resource type="fertilizer" amount="50.0" />
@@ -1078,7 +1080,7 @@
 			</resupply>
 		</template>
 		<!-- end of Phase 2-M -->
-		'
+		
 		<template name="Phase 2-U" default-population="8"
 			number-of-robots="5" sponsor="NASA">
 			<building id="0" type="Lander Hab" xloc="0.0" yloc="0.0"
@@ -1251,9 +1253,7 @@
 			<resource type="food waste" amount="25.0" />
 			<resource type="solid waste" amount="25.0" />
 			<resource type="crop waste" amount="25.0" />
-			<!-- <resource type="nitrogen" amount="1000.0" /> <resource type="hydrogen"
-				amount="6000.0" /> <resource type="methane" amount="6000.0" /> <resource
-				type="carbon dioxide" amount="10.0" /> -->
+
 			<resource type="argon" amount="60.0" />
 
 			<resource type="fertilizer" amount="50.0" />
@@ -1358,7 +1358,7 @@
 			</resupply>
 		</template>
 		<!-- end of Phase 2-U -->
-		
+			
 		<template name="Phase 2-E" default-population="8"
 			number-of-robots="5" sponsor="ESA">
 			<building id="0" type="Lander Hab" xloc="0.0" yloc="0.0"
@@ -1532,9 +1532,7 @@
 			<resource type="food waste" amount="25.0" />
 			<resource type="solid waste" amount="25.0" />
 			<resource type="crop waste" amount="25.0" />
-			<!-- <resource type="nitrogen" amount="1000.0" /> <resource type="hydrogen"
-				amount="6000.0" /> <resource type="methane" amount="6000.0" /> <resource
-				type="carbon dioxide" amount="10.0" /> -->
+	
 			<resource type="argon" amount="60.0" />
 
 			<resource type="fertilizer" amount="50.0" />
@@ -1638,7 +1636,7 @@
 					arrival-time="1337.0" />
 			</resupply>
 		</template>
-		<!-- end of Phase 2-E -->
+		<!-- end of Phase 2-E -->		
 		
 		<template name="Phase 2-C" default-population="8"
 			number-of-robots="5" sponsor="CNSA">
@@ -1813,9 +1811,7 @@
 			<resource type="food waste" amount="25.0" />
 			<resource type="solid waste" amount="25.0" />
 			<resource type="crop waste" amount="25.0" />
-			<!-- <resource type="nitrogen" amount="1000.0" /> <resource type="hydrogen"
-				amount="6000.0" /> <resource type="methane" amount="6000.0" /> <resource
-				type="carbon dioxide" amount="10.0" /> -->
+			
 			<resource type="argon" amount="60.0" />
 
 			<resource type="fertilizer" amount="50.0" />
@@ -1920,7 +1916,7 @@
 			</resupply>
 		</template>
 		<!-- end of Phase 2-C -->
-		
+
 		<template name="Phase 2-I" default-population="8"
 			number-of-robots="5" sponsor="ISRO">
 			<building id="0" type="Lander Hab" xloc="0.0" yloc="0.0"
@@ -2132,9 +2128,7 @@
 			<resource type="food waste" amount="25.0" />
 			<resource type="solid waste" amount="25.0" />
 			<resource type="crop waste" amount="25.0" />
-			<!-- <resource type="nitrogen" amount="1000.0" /> <resource type="hydrogen"
-				amount="6000.0" /> <resource type="methane" amount="6000.0" /> <resource
-				type="carbon dioxide" amount="10.0" /> -->
+
 			<resource type="argon" amount="60.0" />
 
 			<resource type="fertilizer" amount="50.0" />
@@ -2239,7 +2233,7 @@
 			</resupply>
 		</template>
 		<!-- end of Phase 2-I -->
-		
+	
 		<template name="Phase 2-J" default-population="8"
 			number-of-robots="5" sponsor="JAXA">
 			<building id="0" type="Lander Hab" xloc="0.0" yloc="0.0"
@@ -2750,9 +2744,7 @@
 			<resource type="food waste" amount="25.0" />
 			<resource type="solid waste" amount="25.0" />
 			<resource type="crop waste" amount="25.0" />
-			<!-- <resource type="nitrogen" amount="1000.0" /> <resource type="hydrogen"
-				amount="6000.0" /> <resource type="methane" amount="6000.0" /> <resource
-				type="carbon dioxide" amount="10.0" /> -->
+	
 			<resource type="argon" amount="60.0" />
 
 			<resource type="fertilizer" amount="50.0" />
@@ -2857,7 +2849,7 @@
 			</resupply>
 		</template>
 		<!-- end of Phase 2-R -->
-		
+			
 		<template name="Phase 3-M" default-population="12"
 			number-of-robots="7" sponsor="MS">
 			<building id="0" type="Lander Hab" xloc="0.0" yloc="0.0"
@@ -3483,7 +3475,7 @@
 			</resupply>
 		</template>
 		<!-- end of Phase 3-U -->
-		
+
 		<template name="Phase 3-C" default-population="12"
 			number-of-robots="7" sponsor="CNSA">
 			<building id="0" type="Lander Hab" xloc="0.0" yloc="0.0"
@@ -5488,7 +5480,7 @@
 			<part-package name="package 4" number="1" />
 		</template>
 		<!-- end of Alpha Base -->
-		
+			
 		<template name="Trading Outpost" default-population="4"
 			number-of-robots="3" sponsor="MS">
 			<building id="0" type="Outpost Hub" xloc="0.0" yloc="0.0"
@@ -5906,7 +5898,7 @@
 			<part-package name="package 1" number="1" />
 		</template>
 		<!-- end of Mining Outpost -->
-		
+																					
 	</settlement-template-list>
 	
 </settlement-configuration>

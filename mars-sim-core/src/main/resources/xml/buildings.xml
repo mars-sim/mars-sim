@@ -426,10 +426,6 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 				Oxygen Generator Assembly (OGA) uses 1312 W of power.
 
-				https://www.nasa.gov/centers/marshall/pdf/104840main_eclss.pdf
-
-				See also https://www.quora.com/How-is-oxygen-generated-on-the-ISS
-
 				Available water electrolysis units using solid polymer
 				electrolytes are highly efficient (>90%) and extremely rugged,
 				as they have been designed for nuclear submarine use with
@@ -448,13 +444,18 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 				50A * 120 = 6kW
 
-				https://www.nasa.gov/pdf/570243main_OxygenGen_CHEM_ST.pdf
-
-				By synthesizing pyrochlore electrocatalyst, we assume a much lower power usage 
-				of .5kW system for splitting 18 kg water into 2 kg H2 and 16 kg O2, although 
-				it is still a very energy intensive process.
+				We assume by use of nanosheet and synthesizing appropriate electrocatalyst, 
+				a much lower power usage of 125W system is required for splitting 18 kg water 
+				into 2 kg H2 and 16 kg O2.
+				
+				Reference: 
+				1. https://www.nasa.gov/centers/marshall/pdf/104840main_eclss.pdf
+				2. https://www.quora.com/How-is-oxygen-generated-on-the-ISS
+				3. https://www.nasa.gov/pdf/570243main_OxygenGen_CHEM_ST.pdf
+				4. https://www.sciencedaily.com/releases/2021/03/210317141722.htm
+				5. https://www.researchgate.net/publication/265608781_Decoupled_catalytic_hydrogen_evolution_from_a_molecular_metal_oxide_redox_mediator_in_water_splitting
 				-->
-				<process name="Oxygen Generation System" power-required="2" default="on">
+				<process name="Oxygen Generation System" power-required=".5" default="on">
 					<input resource="water" rate="72" ambient="false" />
 					<output resource="hydrogen" rate="8" ambient="false" />
 					<output resource="oxygen" rate="64" ambient="false" />
@@ -1184,7 +1185,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="water" rate="86.4" ambient="false" />
 				</process>
 				
-				<process name="Oxygen Generation System" power-required="2" default="on">
+				<process name="Oxygen Generation System" power-required=".5" default="on">
 					<input resource="water" rate="72" ambient="false" />
 					<output resource="hydrogen" rate="8" ambient="false" />
 					<output resource="oxygen" rate="64" ambient="false" />
@@ -1770,7 +1771,13 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="water" rate="21.6" ambient="false" />
 				</process>
 				
-				<process name="Low Temperature Plasma CO2 Decomposition" power-required="3.2" default="on">
+				<process name="Oxygen Generation System" number-modules="4" power-required="2" default="on">
+					<input resource="water" rate="288" ambient="false" />
+					<output resource="hydrogen" rate="32" ambient="false" />
+					<output resource="oxygen" rate="256" ambient="false" />
+				</process>
+				
+				<process name="Low Temperature Plasma CO2 Decomposition" number-modules="8" power-required="3.2" default="on">
 					<description> 
 						The atmosphere is mainly CO2, so there is no need to capture it and plasma can 
 						be ignited in ambient Martian atmosphere. The traces of Ar and N2 present can only
@@ -1781,9 +1788,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 						to use vacuum pumps or compressors on the first steps of the process.
 						See https://www.europhysicsnews.org/articles/epn/pdf/2018/03/epn2018493p15.pdf
 					</description>
-					<input resource="carbon dioxide" rate="2816" ambient="true" />
-					<output resource="carbon monoxide" rate="896" ambient="false" />
-					<output resource="oxygen" rate="1024" ambient="false" />
+					<input resource="carbon dioxide" rate="352" ambient="true" />
+					<output resource="carbon monoxide" rate="112" ambient="false" />
+					<output resource="oxygen" rate="128" ambient="false" />
 				</process>
 				
 			</resource-processing>
@@ -3290,7 +3297,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="water" rate="21.6" ambient="false" />
 				</process>
 				 
-				<process name="Oxygen Generation System" power-required="2" default="on">
+				<process name="Oxygen Generation System" power-required=".5" default="on">
 					<input resource="water" rate="72" ambient="false" />
 					<output resource="hydrogen" rate="8" ambient="false" />
 					<output resource="oxygen" rate="64" ambient="false" />

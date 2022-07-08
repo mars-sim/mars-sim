@@ -123,11 +123,6 @@ public class SettlementTableModel extends UnitTableModel {
 
 	private static UnitManager unitManager = Simulation.instance().getUnitManager();
 
-	// Data members
-	private UnitManagerListener unitManagerListener;
-
-	private Map<Unit, Map<Integer, Double>> resourceCache;
-
 	private static final DecimalFormat df = new DecimalFormat("#,###,##0.00");
 
 	private static final int WATER_ID = ResourceUtil.waterID;
@@ -151,6 +146,11 @@ public class SettlementTableModel extends UnitTableModel {
 		df.setMinimumIntegerDigits(1);
 	}
 
+	// Data members
+	private UnitManagerListener unitManagerListener;
+
+	private Map<Unit, Map<Integer, Double>> resourceCache;
+
 	/**
 	 * Constructs a SettlementTableModel model that displays all Settlements in the
 	 * simulation.
@@ -163,7 +163,7 @@ public class SettlementTableModel extends UnitTableModel {
 //			addUnit(unitManager.getCommanderSettlement());
 //		else
 			setSource(unitManager.getSettlements());
-
+			
 		unitManagerListener = new LocalUnitManagerListener();
 		unitManager.addUnitManagerListener(unitManagerListener);
 	}
@@ -466,7 +466,9 @@ public class SettlementTableModel extends UnitTableModel {
 	}
 
 	/**
-	 * Defines the source data from this table
+	 * Defines the source data from this table.
+	 * 
+	 * @param source
 	 */
 	private void setSource(Collection<Settlement> source) {
 		Iterator<Settlement> iter = source.iterator();
