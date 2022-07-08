@@ -451,16 +451,17 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 				https://www.nasa.gov/pdf/570243main_OxygenGen_CHEM_ST.pdf
 
-				We assume a power usage of 1kW system for splitting 18 kg water
-				into 2 kg H2 and 16 kg O2, still a very energy intensive process.
+				By synthesizing pyrochlore electrocatalyst, we assume a much lower power usage 
+				of .5kW system for splitting 18 kg water into 2 kg H2 and 16 kg O2, although 
+				it is still a very energy intensive process.
 				-->
-				<process name="Oxygen Generation System" power-required="4" default="on">
+				<process name="Oxygen Generation System" power-required="2" default="on">
 					<input resource="water" rate="72" ambient="false" />
 					<output resource="hydrogen" rate="8" ambient="false" />
 					<output resource="oxygen" rate="64" ambient="false" />
 				</process>
-
-				<process name="Low Temperature Plasma CO2 Decomposition" power-required="0.2" default="on">
+				
+				<process name="Low Temperature Plasma CO2 Decomposition" power-required="0.4" default="on">
 					<description> 
 						The atmosphere is mainly CO2, so there is no need to capture it and plasma can 
 						be ignited in ambient Martian atmosphere. The traces of Ar and N2 present can only
@@ -474,9 +475,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 						2. https://www.space.com/comet-tech-generate-breathable-air-mars.html
 						3. https://www.nature.com/articles/s41467-019-10342-6.pdf
 					</description>
-					<input resource="carbon dioxide" rate="176" ambient="true" />
-					<output resource="carbon monoxide" rate="56" ambient="false" />
-					<output resource="oxygen" rate="64" ambient="false" />
+					<input resource="carbon dioxide" rate="352" ambient="true" />
+					<output resource="carbon monoxide" rate="112" ambient="false" />
+					<output resource="oxygen" rate="128" ambient="false" />
 				</process>
 				
 				<process name="Carbon Dioxide Pump" power-required=".4" default="off">
@@ -1184,13 +1185,13 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="water" rate="86.4" ambient="false" />
 				</process>
 				
-				<process name="Oxygen Generation System" power-required="8" default="on">
-					<input resource="water" rate="144" ambient="true" />
-					<output resource="hydrogen" rate="16" ambient="false" />
-					<output resource="oxygen" rate="128" ambient="false" />
+				<process name="Oxygen Generation System" power-required="2" default="on">
+					<input resource="water" rate="72" ambient="false" />
+					<output resource="hydrogen" rate="8" ambient="false" />
+					<output resource="oxygen" rate="64" ambient="false" />
 				</process>
-				
-				<process name="Low Temperature Plasma CO2 Decomposition" power-required="0.2" default="on">
+								
+				<process name="Low Temperature Plasma CO2 Decomposition" power-required="0.4" default="on">
 					<description> 
 						The atmosphere is mainly CO2, so there is no need to capture it and plasma can 
 						be ignited in ambient Martian atmosphere. The traces of Ar and N2 present can only
@@ -1206,7 +1207,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="oxygen" rate="128" ambient="false" />
 				</process>
 				
-				<process name="melt and filter ice" power-required="7" default="on">
+				<process name="melt and filter ice" power-required="7" default="off">
 					<description> Melting permafrost ice and filtering the water. 
 						Requires 450kJ/kg extraction energy.
 						
@@ -1759,7 +1760,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<power-source type="Solar Power Source" power="5.0" />
 			</power-generation>
 			
-			<power-storage capacity="20.0"  discharge-rate="1.25"/>
+			<power-storage capacity="20.0" discharge-rate="1.25"/>
 			
 			<resource-processing power-down-level="0.0">
 			
@@ -1770,14 +1771,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="carbon monoxide" rate="16.8" ambient="false" />
 					<output resource="water" rate="21.6" ambient="false" />
 				</process>
-
-				<process name="Oxygen Generation System" power-required="8" default="on">
-					<input resource="water" rate="144" ambient="true" />
-					<output resource="hydrogen" rate="16" ambient="false" />
-					<output resource="oxygen" rate="128" ambient="false" />
-				</process>
 				
-				<process name="Low Temperature Plasma CO2 Decomposition" power-required="0.2" default="on">
+				<process name="Low Temperature Plasma CO2 Decomposition" power-required="3.2" default="on">
 					<description> 
 						The atmosphere is mainly CO2, so there is no need to capture it and plasma can 
 						be ignited in ambient Martian atmosphere. The traces of Ar and N2 present can only
@@ -1788,9 +1783,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 						to use vacuum pumps or compressors on the first steps of the process.
 						See https://www.europhysicsnews.org/articles/epn/pdf/2018/03/epn2018493p15.pdf
 					</description>
-					<input resource="carbon dioxide" rate="352" ambient="true" />
-					<output resource="carbon monoxide" rate="112" ambient="false" />
-					<output resource="oxygen" rate="128" ambient="false" />
+					<input resource="carbon dioxide" rate="2816" ambient="true" />
+					<output resource="carbon monoxide" rate="896" ambient="false" />
+					<output resource="oxygen" rate="1024" ambient="false" />
 				</process>
 				
 			</resource-processing>
@@ -3296,14 +3291,14 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="carbon monoxide" rate="16.8" ambient="false" />
 					<output resource="water" rate="21.6" ambient="false" />
 				</process>
-
-				<process name="Oxygen Generation System" power-required="4" default="on">
+				 
+				<process name="Oxygen Generation System" power-required="2" default="on">
 					<input resource="water" rate="72" ambient="false" />
 					<output resource="hydrogen" rate="8" ambient="false" />
 					<output resource="oxygen" rate="64" ambient="false" />
 				</process>
-
-				<process name="Low Temperature Plasma CO2 Decomposition" power-required="0.2" default="on">
+				
+				<process name="Low Temperature Plasma CO2 Decomposition" power-required="0.4" default="on">
 					<description> 
 						The atmosphere is mainly CO2, so there is no need to capture it and plasma can 
 						be ignited in ambient Martian atmosphere. The traces of Ar and N2 present can only
@@ -3314,9 +3309,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 						to use vacuum pumps or compressors on the first steps of the process.
 						See https://www.europhysicsnews.org/articles/epn/pdf/2018/03/epn2018493p15.pdf
 					</description>
-					<input resource="carbon dioxide" rate="176" ambient="true" />
-					<output resource="carbon monoxide" rate="56" ambient="false" />
-					<output resource="oxygen" rate="64" ambient="false" />
+					<input resource="carbon dioxide" rate="352" ambient="true" />
+					<output resource="carbon monoxide" rate="112" ambient="false" />
+					<output resource="oxygen" rate="128" ambient="false" />
 				</process>
 				
 				<process name="Carbon Dioxide Pump" power-required=".4" default="off">
