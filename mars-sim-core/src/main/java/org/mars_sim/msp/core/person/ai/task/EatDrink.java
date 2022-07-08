@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * EatDrink.java
- * @date 2021-10-21
+ * @date 2022-07-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;

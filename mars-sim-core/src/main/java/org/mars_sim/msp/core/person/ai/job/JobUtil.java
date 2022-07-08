@@ -159,18 +159,20 @@ public final class JobUtil {
 	 */
 	public static double getRemainingSettlementNeed(Settlement settlement, JobType job) {
 		Job jobSpec = getJobSpec(job);
-		double result = jobSpec.getSettlementNeed(settlement);
-
+		double need = jobSpec.getSettlementNeed(settlement);
+		double capability = 0;
+		int num = JobUtil.numJobs(job, settlement);
+		
 		// Check all people associated with the settlement.
 		Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
 		while (i.hasNext()) {
 			Person person = i.next();
 			if (person.getMind().getJob() == job) {
-				result -= jobSpec.getCapability(person);
+				capability += jobSpec.getCapability(person);
 			}
 		}
 
-		result = result / 2D;
+		double result = need - num - capability;
 
 		if (result < 0)
 			result = 0;
@@ -228,17 +230,17 @@ public final class JobUtil {
 		// Set limits on # of position available for a job, based on settlement's population
 		// e.g. rather not having 3 botanists when the settlement has only 8 people
 		int numberOfJobs = JobType.values().length;
-		while (selectedJob == originalJob) {			
+		while (selectedJob == originalJob) {
 			Iterator<Job> i = getJobs().iterator();
 			while (i.hasNext()) {
 				Job job = i.next();
 				if (job.getType() != JobType.POLITICIAN) {
+					// Exclude politician job which is reserved for Mayor only
 					double rand = RandomUtil.getRandomDouble(0.8);
 					double t = 1.0 * pop / numberOfJobs  + rand;
 					int maxPos = (int)(Math.ceil(t));
 					int numPositions = numJobs(job.getType(), settlement);
 					if (numPositions < maxPos) {
-					// Exclude politician job which is reserved for Mayor only
 						double jobProspect = getJobProspect(person, job.getType(), settlement, true);
 						if (jobProspect > selectedJobProspect) {
 							selectedJob = job.getType();
@@ -252,6 +254,13 @@ public final class JobUtil {
 		return selectedJob;
 	}
 
+	/**
+	 * Finds the best person who fit this job position.
+	 * 
+	 * @param settlement
+	 * @param job
+	 * @return
+	 */
 	public static Person findBestFit(Settlement settlement, JobType job) {
 		Person person = null;
 		double bestScore = 0;
@@ -270,7 +279,7 @@ public final class JobUtil {
 	
 
 	/**
-	 * Get the job prospect value for a person and a particular job at a settlement.
+	 * Gets the job prospect value for a person and a particular job at a settlement.
 	 * 
 	 * @param person           the person to check for
 	 * @param job              the job to check for

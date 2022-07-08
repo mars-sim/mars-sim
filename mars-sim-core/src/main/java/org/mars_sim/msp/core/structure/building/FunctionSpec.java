@@ -27,7 +27,12 @@ public class FunctionSpec {
 
 	public FunctionSpec(Map<String, Object> props, List<LocalPosition> spots) {
 		this.props = props;
-		this.spots = Collections.unmodifiableList(spots);
+    if (spots == null) {
+      this.spots = Collections.emptyList();
+    }
+    else {
+		  this.spots = Collections.unmodifiableList(spots);
+    }
 	}
 
 	public List<LocalPosition> getActivitySpots() {
@@ -72,7 +77,11 @@ public class FunctionSpec {
      * @return
      */
     public double getDoubleProperty(String propName) {
-		return Double.parseDouble((String) props.get(propName));
+      Object value = props.get(propName);
+      if (value instanceof Double) {
+        return (Double)value;
+      }
+		  return Double.parseDouble((String) value);
     }
 
     /**
@@ -81,6 +90,10 @@ public class FunctionSpec {
      * @return
      */
     public int getIntegerProperty(String propName) {
-		return Integer.parseInt((String) props.get(propName));
+      Object value = props.get(propName);
+      if (value instanceof Integer) {
+        return (Integer)value;
+      }
+		  return Integer.parseInt((String) value);
     }
 }

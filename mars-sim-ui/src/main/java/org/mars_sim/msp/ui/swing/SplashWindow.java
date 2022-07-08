@@ -73,10 +73,8 @@ public class SplashWindow extends JComponent {
 	@SuppressWarnings("serial")
 	public SplashWindow() {
 		window = new JFrame() {
-
 			@Override
 			public void paint(Graphics g) {
-
 				// Draw splash image and superimposed text
 				Graphics2D g2d = (Graphics2D) g;
 				g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
@@ -88,8 +86,7 @@ public class SplashWindow extends JComponent {
 				
 				g2d.setFont(versionStringFont);
 				g2d.drawString(VERSION_STRING, (splashImage.getWidth(this) - versionStringWidth)/2 , 90);
-//				g2d.drawString(VERSION_STRING, splashImage.getWidth(this) - versionStringWidth - 20, height - 35);
-				
+			
 				g2d.setColor(Color.white);
 				g2d.setFont(buildStringFont);
 				g2d.drawString(BUILD_STRING, splashImage.getWidth(this) - buildStringWidth - 10, height - 15);

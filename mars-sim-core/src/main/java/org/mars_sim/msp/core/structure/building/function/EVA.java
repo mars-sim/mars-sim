@@ -54,20 +54,6 @@ public class EVA extends Function {
 	}
 
 	/**
-	 * Constructor with airlock parameter for testing
-	 * 
-	 * @param building the building this function is for.
-	 * @param airlock the building airlock.
-	 */
-	public EVA(Building building, BuildingAirlock airlock) {
-		// Use Function constructor.
-		super(FunctionType.EVA, null, building);
-
-		// Add building airlock
-		this.airlock = airlock;
-	}
-
-	/**
 	 * Gets the value of the function for a named building.
 	 * @param type the building name.
 	 * @param newBuilding true if adding a new building.

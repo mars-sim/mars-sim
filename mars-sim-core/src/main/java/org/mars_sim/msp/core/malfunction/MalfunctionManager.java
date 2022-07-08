@@ -62,6 +62,8 @@ public class MalfunctionManager implements Serializable, Temporal {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(MalfunctionManager.class.getName());
 
+	/** Stress jump resulting from being in an accident. */
+	private static final double ACCIDENT_STRESS = 10D;
 	/** Modifier for number of parts needed for a trip. */
 	public static final double PARTS_NUMBER_MODIFIER = 7.5;
 	/** Estimate number of broken parts per malfunctions */
@@ -732,7 +734,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 			Iterator<Person> i = people.iterator();
 			while (i.hasNext()) {
 				PhysicalCondition condition = i.next().getPhysicalCondition();
-				condition.setStress(condition.getStress() + PhysicalCondition.ACCIDENT_STRESS);
+				condition.setStress(condition.getStress() + ACCIDENT_STRESS);
 			}
 		}
 	}

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * BuildingConfig.java
- * @date 2021-10-06
+ * @date 2022-07-07
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building;
@@ -22,7 +22,6 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.configuration.ConfigHelper;
-import org.mars_sim.msp.core.logging.Loggable;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
@@ -108,7 +107,7 @@ public class BuildingConfig implements Serializable {
 	private transient Map<String, BuildingSpec> buildSpecMap = new HashMap<>();
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 *
 	 * @param buildingDoc DOM document with building configuration
 	 */
@@ -128,11 +127,11 @@ public class BuildingConfig implements Serializable {
 	 * @return set of building types.
 	 */
 	public Set<String> getBuildingTypes() {
-		return  buildSpecMap.values().stream().map(BuildingSpec::getName).collect(Collectors.toSet());
+		return  buildSpecMap.values().stream().map(BuildingSpec::getBuildingType).collect(Collectors.toSet());
 	}
 
 	/**
-	 * Parse a building spec node
+	 * Parses a building spec node.
 	 *
 	 * @param buildingTypeName
 	 * @param buildingElement
@@ -264,7 +263,10 @@ public class BuildingConfig implements Serializable {
 	}
 
 	/**
-	 * Dervie the category from the types of Functions.
+	 * Derives the category from the types of Functions.
+	 * 
+	 * @param functions
+	 * @return
 	 */
 	private BuildingCategory deriveCategory(Set<FunctionType> functions) {
 
@@ -359,7 +361,7 @@ public class BuildingConfig implements Serializable {
 	}
 
 	/**
-	 * Parse the specific Resource processing function details.
+	 * Parses the specific Resource processing function details.
 	 * 
 	 * @param newSpec
 	 * @param resourceProcessingElement
@@ -424,7 +426,7 @@ public class BuildingConfig implements Serializable {
 	}
 
 	/**
-	 * Parse the specific Waste processing function details.
+	 * Parses the specific Waste processing function details.
 	 * 
 	 * @param newSpec
 	 * @param wasteProcessingElement
@@ -504,7 +506,8 @@ public class BuildingConfig implements Serializable {
 	}
 
 	/**
-	 * Parse a sources element
+	 * Parses a sources element.
+	 * 
 	 * @param list
 	 * @param capacityName
 	 * @return
@@ -532,7 +535,8 @@ public class BuildingConfig implements Serializable {
 	}
 
 	/**
-	 * Parse the specific Storage properties.
+	 * Parses the specific Storage properties.
+	 * 
 	 * @param newSpec
 	 * @param storageElement
 	 */
@@ -560,7 +564,7 @@ public class BuildingConfig implements Serializable {
 	}
 
 	/**
-	 * Parse an list of position for a building's function. These have a <xloc> & <yloc> structure.
+	 * Parses an list of position for a building's function. These have a <xloc> & <yloc> structure.
 	 *
 	 * @param functionElement Element holding locations
 	 * @param locations Name of the location elements
@@ -604,7 +608,8 @@ public class BuildingConfig implements Serializable {
 	}
 
 	/**
-	 * Find a Building spec according to the name.
+	 * Finds a Building spec according to the name.
+	 * 
 	 * @param buildingType
 	 * @return
 	 */
@@ -723,9 +728,16 @@ public class BuildingConfig implements Serializable {
 	}
 
 	/**
+<<<<<<< HEAD
 	 * Get the Function spec from a Building Type.
 	 * @param type Building type
 	 * @param functionType Type of function
+=======
+	 * Gets the number of people supported by an Administration function in a building.
+	 * 
+	 * @param buildingType
+	 * @return
+>>>>>>> master
 	 */
 	public FunctionSpec getFunctionSpec(String type, FunctionType functionType) {
 		return getBuildingSpec(type).getFunctionSpec(functionType);

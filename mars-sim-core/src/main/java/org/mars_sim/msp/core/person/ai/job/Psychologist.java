@@ -77,7 +77,7 @@ class Psychologist extends Job {
 			result += (double) infirmary.getTechLevel() / 7D;
 		}
 
-		result = (result + population / 12D) / 2.0;
+		result = (result + population / 12D) / 5.0;
 				
 		return result;
 	}

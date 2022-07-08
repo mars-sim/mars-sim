@@ -1,5 +1,11 @@
-package org.mars_sim.fxgl;
+/*
+ * Mars Simulation Project
+ * First.java
+ * @date 2022-07-07
+ * @author Manny Kung
+ */
 
+package org.mars_sim.fxgl;
 
 import static com.almasb.fxgl.dsl.FXGL.entityBuilder;
 import static com.almasb.fxgl.dsl.FXGL.getAssetLoader;
@@ -35,7 +41,7 @@ public class First {
 		settings.setHeight(768);
 //		 settings.setStageStyle(StageStyle.UNDECORATED);
 		settings.setTitle("  Mars Simulation Project  ");
-		settings.setVersion("3.3.1");
+		settings.setVersion("3.4.0");
 		settings.setProfilingEnabled(false); // turn off fps
 		settings.setCloseConfirmation(false); // turn off exit dialog
 		settings.setIntroEnabled(false); // turn off intro

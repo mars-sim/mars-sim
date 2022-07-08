@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * SaveCommand.java
- * @version 3.1.2 2020-12-30
+ * @date 2022-07-07
  * @author Barry Evans
  */
 
@@ -43,9 +43,15 @@ public class SaveCommand extends ChatCommand {
 			// Wait for the save to complete
 			try {
 				lock.get(20, TimeUnit.SECONDS);
-			} catch (InterruptedException | ExecutionException | TimeoutException e) {
-				System.err.println("Problem completing save wait" + e);
+			} catch (InterruptedException e) {
+				context.println("Problem completing the save wait: " + e);
+				Thread.currentThread().interrupt();
+				return false;
+			} catch (ExecutionException | TimeoutException e) {
+				context.println("Problem executing the save wait: " + e);
+				return false;
 			}
+			
         }
 
 		context.println("Done");

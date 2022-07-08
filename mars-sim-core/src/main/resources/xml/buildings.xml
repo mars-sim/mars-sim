@@ -301,7 +301,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<!-- power: the maximum power (kW) produced by the power source. -->
 				<power-source type="Solar Power Source" power="5.0" />
 				<power-source type="Fuel Power Source" toggle="false" power="5.0"
-				fuel-type="methane"	consumption-rate="95.758" />
+				fuel-type="methane"	consumption-rate="19.93" />
 			</power-generation>
 
 			<!-- power storage capacity in the energy unit of kW hr. -->
@@ -451,14 +451,33 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				https://www.nasa.gov/pdf/570243main_OxygenGen_CHEM_ST.pdf
 
 				We assume a power usage of 1kW system for splitting 18 kg water
-				into 2 kg H2 and 16 kg O2
+				into 2 kg H2 and 16 kg O2, still a very energy intensive process.
 				-->
-				<process name="Oxygen Generation System" power-required="3.0" default="on">
+				<process name="Oxygen Generation System" power-required="4" default="on">
 					<input resource="water" rate="72" ambient="false" />
 					<output resource="hydrogen" rate="8" ambient="false" />
 					<output resource="oxygen" rate="64" ambient="false" />
 				</process>
 
+				<process name="Low Temperature Plasma CO2 Decomposition" power-required="0.2" default="on">
+					<description> 
+						The atmosphere is mainly CO2, so there is no need to capture it and plasma can 
+						be ignited in ambient Martian atmosphere. The traces of Ar and N2 present can only
+						help: argon aids shaping the electron energy distribution to higher energies, contributing
+						to an increased efficiency of this decomposition process.
+						The pressure on Mars – of 600 Pa (4.5 Torr), about 150 times lower than on Earth 
+						– is close to the ideal for advantageous plasma operation, so there is no need 
+						to use vacuum pumps or compressors on the first steps of the process.
+						Reference :
+						1. https://www.europhysicsnews.org/articles/epn/pdf/2018/03/epn2018493p15.pdf
+						2. https://www.space.com/comet-tech-generate-breathable-air-mars.html
+						3. https://www.nature.com/articles/s41467-019-10342-6.pdf
+					</description>
+					<input resource="carbon dioxide" rate="176" ambient="true" />
+					<output resource="carbon monoxide" rate="56" ambient="false" />
+					<output resource="oxygen" rate="64" ambient="false" />
+				</process>
+				
 				<process name="Carbon Dioxide Pump" power-required=".4" default="off">
 					<input resource="carbon dioxide" rate="40.0" ambient="true" />
 					<output resource="carbon dioxide" rate="40.0" ambient="false" />
@@ -612,7 +631,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<!-- capacity: the maximum  power capacity kW produced by the heat source. -->
 				<heat-source type="Solar Heating" capacity="5.0" />
 				<heat-source type="Fuel Heating" toggle="true"
-					fuel-type="methane"	consumption-rate="31.919" capacity="20.0"/>
+					fuel-type="methane"	consumption-rate="79.72" capacity="20.0"/>
 				<heat-source type="Electric Heating" capacity="20.0" />
 			</thermal-generation>
 
@@ -810,7 +829,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<heat-source type="Solar Heating" capacity="2.0" />
 				<heat-source type="Electric Heating" capacity="10.0" />
 				<heat-source type="Fuel Heating" toggle="true"
-					fuel-type="methane"	consumption-rate="31.919" capacity="20.0"/>
+					fuel-type="methane"	consumption-rate="79.72" capacity="20.0"/>
 			</thermal-generation>
 
 		</functions>
@@ -902,7 +921,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<thermal-generation>
 				<heat-source type="Solar Heating" capacity="10.0" />
 				<heat-source type="Fuel Heating" toggle="true"
-					fuel-type="methane"	consumption-rate="31.919" capacity="20.0" />
+					fuel-type="methane"	consumption-rate="79.72" capacity="20.0" />
 				<!-- Note : every mole of methane (16 g) releases 810 KJ of energy if burning with 2 moles of oxygen (64 g)
 				 CH4(g) + 2O2(g) -> CO2(g) + 2 H2O(g), deltaH = -890 kJ
 
@@ -1015,7 +1034,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<thermal-generation>
 				<heat-source type="Solar Heating" capacity="10.0" />
 				<heat-source type="Fuel Heating" toggle="true"
-					fuel-type="methane"	consumption-rate="47.880" capacity="30.0" />
+					fuel-type="methane"	consumption-rate="119.58" capacity="30.0" />
 				<heat-source type="Electric Heating" capacity="50.0" />
 			</thermal-generation>
 		</functions>
@@ -1130,7 +1149,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<thermal-generation>
 				<heat-source type="Solar Heating" capacity="10.0" />
 				<heat-source type="Fuel Heating" toggle="true"
-					fuel-type="methane"	consumption-rate="47.880" capacity="30.0" />
+					fuel-type="methane"	consumption-rate="119.58" capacity="30.0" />
 				<heat-source type="Electric Heating" capacity="50.0" />
 			</thermal-generation>
 		</functions>
@@ -1164,9 +1183,25 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="water" rate="86.4" ambient="false" />
 				</process>
 				
-				<process name="Oxygen Generation System" power-required="2.5" default="on">
+				<process name="Oxygen Generation System" power-required="8" default="on">
 					<input resource="water" rate="144" ambient="true" />
 					<output resource="hydrogen" rate="16" ambient="false" />
+					<output resource="oxygen" rate="128" ambient="false" />
+				</process>
+				
+				<process name="Low Temperature Plasma CO2 Decomposition" power-required="0.2" default="on">
+					<description> 
+						The atmosphere is mainly CO2, so there is no need to capture it and plasma can 
+						be ignited in ambient Martian atmosphere. The traces of Ar and N2 present can only
+						help: argon aids shaping the electron energy distribution to higher energies, contributing
+						to an increased efficiency of this decomposition process.
+						The pressure on Mars – of 600 Pa (4.5 Torr), about 150 times lower than on Earth 
+						– is close to the ideal for advantageous plasma operation, so there is no need 
+						to use vacuum pumps or compressors on the first steps of the process.
+						See https://www.europhysicsnews.org/articles/epn/pdf/2018/03/epn2018493p15.pdf
+					</description>
+					<input resource="carbon dioxide" rate="352" ambient="true" />
+					<output resource="carbon monoxide" rate="112" ambient="false" />
 					<output resource="oxygen" rate="128" ambient="false" />
 				</process>
 				
@@ -1264,7 +1299,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
 			</power-generation>
-			<power-storage capacity="20"  discharge-rate="1.25"/>
+			<power-storage capacity="20" discharge-rate="1.25"/>
 			<resource-processing power-down-level="0.0">
 			
 				<process name="convert regolith to ores with sand" 
@@ -1295,8 +1330,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</process>
 				-->
 				
-				<process name="extract nitrogen compounds from regolith"
-					power-required="0.1" default="off">
+				<process name="extract nitrogen compounds from regolith" power-required="0.1" default="off">
 					<input resource="regolith" rate="5.0" ambient="false" />
 					
 					<output resource="nitrate" rate="1.0" ambient="false" />
@@ -1305,6 +1339,113 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="ammonia" rate="1.0" ambient="false" />
 					<output resource="argon" rate="0.1" ambient="false" />
 				</process>
+	
+				<process name="process regolith-B rich in poly-hydrated sulfate" power-required="0.1" default="off">
+					<description>
+						Gypsum is CaSO&lt;sub&gt;4&lt;/sub&gt; * 2H&lt;sub&gt;2&lt;/sub&gt;O.
+						This is Case B (Deposit Type : Poly-hydrated) in NASA Mars ISRU Water Study,
+								40% gypsum;
+								3% allophane;
+								3% akaganeite;
+								3% smectite;
+					</description>
+						<input resource="regolith-B" rate="50.0" ambient="false" />
+						<output resource="gypsum" rate="20.0" ambient="false" />
+						<output resource="allophane" rate="1.5" ambient="false" />
+						<output resource="akaganeite" rate="1.5" ambient="false" />
+						<output resource="smectite" rate="1.5" ambient="false" />
+						<output resource="sand" rate="20.0" ambient="false" />
+				</process>
+			
+				<process name="process regolith-C rich in phyllo-silicate" power-required="0.1" default="off">
+					<description>
+						Gypsum is CaSO&lt;sub&gt;4&lt;/sub&gt; * 2H&lt;sub&gt;2&lt;/sub&gt;O.
+						This is Case C (Deposit Type : Clay) in NASA Mars ISRU Water Study,
+								40% smectite;
+								3% allophane;
+								3% akaganeite;
+								3% bassanite;
+					</description>
+						<input resource="regolith-C" rate="50.0" ambient="false" />
+						<output resource="smectite" rate="20.0" ambient="false" />
+						<output resource="allophane" rate="1.5" ambient="false" />
+						<output resource="akaganeite" rate="1.5" ambient="false" />
+						<output resource="bassanite" rate="1.5" ambient="false" />
+						<output resource="sand" rate="20.0" ambient="false" />
+				</process>
+			
+				<process name="process regolith-D rich in basaltic" power-required="0.1" default="off">
+					<description>
+						Gypsum is CaSO&lt;sub&gt;4&lt;/sub&gt; * 2H&lt;sub&gt;2&lt;/sub&gt;O.
+						This is Case D (Deposit Type : typical regolith) in NASA Mars ISRU Water Study,
+								23.5% basaltic;
+								3% allophane;
+								3% akaganeite;
+								3% bassanite;
+								3% smectite;
+					</description>
+						<input resource="regolith-D" rate="50.0" ambient="false" />
+						<output resource="basaltic" rate="11.75" ambient="false" />
+						<output resource="smectite" rate="1.5" ambient="false" />
+						<output resource="allophane" rate="1.5" ambient="false" />
+						<output resource="akaganeite" rate="1.5" ambient="false" />
+						<output resource="bassanite" rate="1.5" ambient="false" />
+						<output resource="sand" rate="25.0" ambient="false" />
+						<!-- According to http://canada.marssociety.org/winnipeg/soil.html
+						regolith is estimated to contain 11.3% sodium bicarbonate (baking
+						soda) and 1.15% of sodium chloride (table salt) -->
+						<output resource="baking powder" rate="4.0" ambient="false" />
+						<output resource="table salt" rate="0.4" ambient="false" />
+				</process>
+			
+				<process name="extract minerals from basaltic deposits" power-required="0.2" default="off">
+						<input resource="basaltic" rate="50.0" ambient="false" />
+						<output resource="aluminum oxide" rate="9.0" ambient="false" />
+						<output resource="magnesium" rate="7.0" ambient="false" />
+						<output resource="sodium oxide" rate="5.0" ambient="false" />
+						<output resource="potassium" rate="3.0" ambient="false" />
+						<output resource="titanium" rate="3.0" ambient="false" />
+						<output resource="iron oxide" rate="3.0" ambient="false" />
+						<output resource="sand" rate="5.0" ambient="false" />
+						<output resource="grey water" rate="10.0" ambient="false" />
+				</process>
+			
+				<process name="extract minerals from smectite deposits" power-required="0.2" default="off">
+						<input resource="smectite" rate="50.0" ambient="false" />
+						<output resource="aluminum oxide" rate="9.0" ambient="false" />
+						<output resource="lithium" rate="0.5" ambient="false" />
+						<output resource="magnesium" rate="4.0" ambient="false" />
+						<output resource="sodium oxide" rate="2.0" ambient="false" />
+						<output resource="potassium" rate="2.0" ambient="false" />
+						<output resource="calcium" rate="4.0" ambient="false" />
+						<output resource="iron oxide" rate="2.0" ambient="false" />
+						<output resource="rock salt" rate="4.0" ambient="false" />
+						<output resource="sand" rate="10.0" ambient="false" />
+						<output resource="grey water" rate="2.0" ambient="false" />
+				</process>
+			
+				<process name="extract minerals from allophane deposits" power-required="0.2" default="off">
+						<input resource="allophane" rate="50.0" ambient="false" />
+						<output resource="aluminum oxide" rate="30.0" ambient="false" />
+						<output resource="silica" rate="1.0" ambient="false" />
+						<output resource="sand" rate="6.0" ambient="false" />
+						<output resource="grey water" rate="10.0" ambient="false" />
+				</process>
+			
+				<process name="extract minerals from akaganeite deposits" power-required="0.2" default="off">
+						<input resource="akaganeite" rate="50.0" ambient="false" />
+						<output resource="iron oxide" rate="20.0" ambient="false" />
+						<output resource="iron hydroxide" rate="10.0" ambient="false" />
+						<output resource="iron chloride" rate="10.0" ambient="false" />
+						<output resource="grey water" rate="6.0" ambient="false" />
+				</process>
+			
+				<process name="extract minerals from bassanite deposits" power-required="0.2" default="off">
+					<input resource="bassanite" rate="50.0" ambient="false" />
+					<output resource="calcium sulfate" rate="45.0" ambient="false" />
+					<output resource="grey water" rate="3.0" ambient="false" />
+				</process>
+
 				
 				<process name="extract minerals from sand" power-required="1.0" default="off">
 					<description>Typically, manufactured glass contains around 15% sodium oxide, 70% silica
@@ -1467,18 +1608,73 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="concrete" rate="71.0" ambient="false" />
 				</process>
 
+
+				<process name="produce ethylene" power-required="0.2" default="off">
+					<description>
+						2CO + 4H&lt;sub&gt;2&lt;/sub&gt; -> C&lt;sub&gt;2&lt;/sub&gt;H&lt;sub&gt;4&lt;/sub&gt; (ethylene) + 2H&lt;sub&gt;2&lt;/sub&gt;O
+						Requires iron catalyst.
+					</description>
+					<input resource="carbon dioxide" rate="100.0"  ambient="true" />
+					<input resource="hydrogen" rate="15.0"  ambient="false" />
+					<input resource="iron powder" rate="1.0"  ambient="false" />
+					<output resource="ethylene" rate="50.0"  ambient="false" />
+					<output resource="grey water" rate="64.2" ambient="false" />
+					<output resource="iron powder" rate="0.95" ambient="false" />
+				</process>
+						
+				<process name="produce polyethylene" power-required="0.1" default="off">
+					<description>
+						This reaction occurs when ethylene (aka ethene) is heated 
+						and put under pressure in the presence of a catalyst. 
+						Assuming 10% loss during production.
+					</description>
+					<input resource="ethylene" rate="50.0" ambient="false" />
+					<output resource="polyethylene" rate="45.0" ambient="false" />
+				</process>
+
+				<process name="produce styrene" power-required=".5" default="off">
+					<description>
+					 	Wrapping four processes into one as follows: 
+						3C + CaO -> CaC2 + CO
+						CaC2 + H2O -> C2H2 (acetylene) + CaO
+						3C2H2 (acetylene) -> (condensed) C6H6 (benzene)
+						C6H6 (benzene) + C2H4 (ethylene) -> C2H3C6H5 (styrene)
+					</description>	
+					<input resource="carbon" rate="321.2" ambient="false" />
+					<input resource="lime" rate="20.0" ambient="false" />
+					<input resource="water" rate="160.5" ambient="false" />
+					<input resource="ethylene" rate="83.4" ambient="false" />
+					<output resource="carbon monoxide" rate="249.7" ambient="false" />
+					<output resource="styrene" rate="309.5" ambient="false" />
+				</process>
 					
+				<process name="produce polystyrene" power-required=".1" default="off">
+					<input resource="styrene" rate="50" ambient="false" />
+					<output resource="polystyrene" rate="50" ambient="false" />
+				</process>
+
+				<process name="bake calcium carbonate to lime" power-required=".1"  default="off">
+					<description>
+					 	CaCO3 (calcium carbonate) -> CaO (lime) + CO2 
+					</description>	
+					<input resource="calcium carbonate" rate="50.0" ambient="false" />
+					<output resource="lime" rate="27.8" ambient="false" />
+					<output resource="carbon dioxide" rate="21.8" ambient="false" />
+				</process>
+										
 			</resource-processing>
 
 			<storage capacity="100000">
 
 				<resource-storage resource="glass" capacity="5000.0" />
 				<resource-storage resource="silica" capacity="5000.0" />
-				<resource-storage resource="aluminum oxide" capacity="5000.0" />
-				<resource-storage resource="aluminum" capacity="5000.0" />
+				<resource-storage resource="aluminum oxide" capacity="4000.0" />
+				<resource-storage resource="aluminum" capacity="4000.0" />
 				<resource-storage resource="calcium carbonate" capacity="2500.0" />	 			
 				<resource-storage resource="sulfur" capacity="2500.0" />
 				<resource-storage resource="lime" capacity="5000.0" />			
+				<resource-storage resource="ethylene" capacity="1000.0" />	
+				<resource-storage resource="polyethylene" capacity="1000.0" />	
 				
 				<resource-storage resource="gypsum" capacity="10000.0" />
 				<resource-storage resource="regolith" capacity="10000.0" />
@@ -1573,10 +1769,26 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="water" rate="21.6" ambient="false" />
 				</process>
 
-				<process name="Oxygen Generation System" power-required="3.0" default="on">
-					<input resource="water" rate="72" ambient="false" />
-					<output resource="hydrogen" rate="8" ambient="false" />
-					<output resource="oxygen" rate="64" ambient="false" />
+				<process name="Oxygen Generation System" power-required="8" default="on">
+					<input resource="water" rate="144" ambient="true" />
+					<output resource="hydrogen" rate="16" ambient="false" />
+					<output resource="oxygen" rate="128" ambient="false" />
+				</process>
+				
+				<process name="Low Temperature Plasma CO2 Decomposition" power-required="0.2" default="on">
+					<description> 
+						The atmosphere is mainly CO2, so there is no need to capture it and plasma can 
+						be ignited in ambient Martian atmosphere. The traces of Ar and N2 present can only
+						help: argon aids shaping the electron energy distribution to higher energies, contributing
+						to an increased efficiency of this decomposition process.
+						The pressure on Mars – of 600 Pa (4.5 Torr), about 150 times lower than on Earth 
+						– is close to the ideal for advantageous plasma operation, so there is no need 
+						to use vacuum pumps or compressors on the first steps of the process.
+						See https://www.europhysicsnews.org/articles/epn/pdf/2018/03/epn2018493p15.pdf
+					</description>
+					<input resource="carbon dioxide" rate="352" ambient="true" />
+					<output resource="carbon monoxide" rate="112" ambient="false" />
+					<output resource="oxygen" rate="128" ambient="false" />
 				</process>
 				
 			</resource-processing>
@@ -1667,7 +1879,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="22.5" base-mass="20">
 		<description> The Residential Quarters is the first full living accommodation building
 			that is configured to house as many as twelve beds. It also provides storage space
-			for critical amount resources. It is furnished with a solar panel rooftop.
+			for critical rate resources. It is furnished with a solar panel rooftop.
 		</description>
 		<power-required base-power="2.0" base-power-down-power="0.2" />
 
@@ -1692,7 +1904,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</living-accommodations>
 			<power-generation>
 				<power-source type="Fuel Power Source" toggle="false" power="5.0"
-				fuel-type="methane"	consumption-rate="95.758" />
+				fuel-type="methane"	consumption-rate="19.93" />
 			</power-generation>
 			<power-storage capacity="20"  discharge-rate="1.25"/>
 			<robotic-station capacity="4">
@@ -1732,7 +1944,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<heat-source type="Solar Heating" capacity="5.0" />
 				<heat-source type="Electric Heating" capacity="15.0" />
 				<heat-source type="Fuel Heating" toggle="true"
-					fuel-type="methane"	consumption-rate="31.919" capacity="20.0" />
+					fuel-type="methane"	consumption-rate="79.72" capacity="20.0" />
 			</thermal-generation>
 		</functions>
 	</building>
@@ -1828,7 +2040,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
 				<power-source type="Fuel Power Source" toggle="false" power="5.0"
-				fuel-type="methane"	consumption-rate="95.758" />
+				fuel-type="methane"	consumption-rate="19.93" />
 			</power-generation>
 
 			<power-storage capacity="20"  discharge-rate="1.25"/>
@@ -1949,7 +2161,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<heat-source type="Solar Heating" capacity="5.0" />
 				<heat-source type="Electric Heating" capacity="15.0" />
 				<heat-source type="Fuel Heating" toggle="true"
-					fuel-type="methane"	consumption-rate="31.919" capacity="20.0" />
+					fuel-type="methane"	consumption-rate="79.72" capacity="20.0" />
 			</thermal-generation>
 		</functions>
 	</building>
@@ -1981,7 +2193,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
 				<power-source type="Fuel Power Source" toggle="false" power="5.0"
-				fuel-type="methane"	consumption-rate="95.758" />
+				fuel-type="methane"	consumption-rate="19.93" />
 			</power-generation>
 			<power-storage capacity="20"  discharge-rate="1.25"/>
 			<research tech-level="2" capacity="2">
@@ -2004,7 +2216,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<heat-source type="Solar Heating" capacity="5.0" />
 				<heat-source type="Electric Heating" capacity="15.0" />
 				<heat-source type="Fuel Heating" toggle="true"
-					fuel-type="methane"	consumption-rate="31.919" capacity="20.0" />
+					fuel-type="methane"	consumption-rate="79.72" capacity="20.0" />
 			</thermal-generation>
 		</functions>
 	</building>
@@ -2068,7 +2280,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
 				<power-source type="Fuel Power Source" toggle="false" power="5.0"
-				fuel-type="methane"	consumption-rate="95.758" />
+				fuel-type="methane"	consumption-rate="19.93" />
 			</power-generation>
 			<power-storage capacity="40"  discharge-rate="1.25"/>
 			<robotic-station capacity="4">
@@ -2083,7 +2295,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<heat-source type="Solar Heating" capacity="5.0" />
 				<heat-source type="Electric Heating" capacity="15.0" />
 				<heat-source type="Fuel Heating" toggle="true"
-					fuel-type="methane"	consumption-rate="31.919" capacity="20.0" />
+					fuel-type="methane"	consumption-rate="79.72" capacity="20.0" />
 			</thermal-generation>
 		</functions>
 	</building>
@@ -2103,7 +2315,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
 				<power-source type="Fuel Power Source" toggle="false" power="5.0"
-				fuel-type="methane"	consumption-rate="95.758" />
+				fuel-type="methane"	consumption-rate="19.93" />
 			</power-generation>
 			<power-storage capacity="20"  discharge-rate="1.25"/>
 			<research tech-level="3" capacity="16">
@@ -2148,7 +2360,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<heat-source type="Solar Heating" capacity="5.0" />
 				<heat-source type="Electric Heating" capacity="15.0" />
 				<heat-source type="Fuel Heating" toggle="true"
-					fuel-type="methane"	consumption-rate="31.919" capacity="20.0" />
+					fuel-type="methane"	consumption-rate="79.72" capacity="20.0" />
 			</thermal-generation>
 		</functions>
 	</building>
@@ -2182,7 +2394,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
 				<power-source type="Fuel Power Source" toggle="false" power="5.0"
-				fuel-type="methane"	consumption-rate="95.758" />
+				fuel-type="methane"	consumption-rate="19.93" />
 			</power-generation>
 			<power-storage capacity="40" discharge-rate="1.25"/>
 			<robotic-station capacity="4">
@@ -2200,7 +2412,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<thermal-generation>
 				<heat-source type="Solar Heating" capacity="10.0" />
 				<heat-source type="Fuel Heating" toggle="true"
-					fuel-type="methane"	consumption-rate="31.919" capacity="20.0" />
+					fuel-type="methane"	consumption-rate="79.72" capacity="20.0" />
 				<heat-source type="Electric Heating" capacity="30.0" />
 			</thermal-generation>
 		</functions>
@@ -2231,7 +2443,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
 				<power-source type="Fuel Power Source" toggle="false" power="5.0"
-				fuel-type="methane"	consumption-rate="95.758" />
+				fuel-type="methane"	consumption-rate="19.93" />
 			</power-generation>
 			<power-storage capacity="40"  discharge-rate="1.25"/>
 			<robotic-station capacity="8">
@@ -2269,7 +2481,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<heat-source type="Solar Heating" capacity="5.0" />
 				<heat-source type="Electric Heating" capacity="15.0" />
 				<heat-source type="Fuel Heating" toggle="true"
-					fuel-type="methane"	consumption-rate="31.919" capacity="20.0" />
+					fuel-type="methane"	consumption-rate="79.72" capacity="20.0" />
 			</thermal-generation>
 		</functions>
 	</building>
@@ -2278,29 +2490,28 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 	<building type="Methane Power Generator" width="5.0" length="5.0" base-level="0"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature= "0" base-mass="15">
-		<description>  The Methane Power generator utilized methane gas for the
+		<description>The Methane Power generator utilized methane gas for the
 			generation of electricity. It makes use of the freely available carbon dioxide
 			in the Martian atmosphere and creates non-polluting by-products.
+			Note : every mole of methane (16 g) releases 810 KJ of energy if burning with 2 moles of oxygen (64 g)
+				 CH4(g) + 2O2(g) -> CO2(g) + 2 H2O(g), deltaH = -890 kJ
+
+				Thus, 890kW requires 16 g/s. 
+				
+				Assuming the efficiency at 40%,	it produces 356kW at the consumption rate of 16 g/s. 
+				 
+				So 1kW needs 0.0449 g/s. 60kW needs 2.6966 g/s.
+
+				Since each martian sol has 88775 earth seconds (=24*60*60 + 39*60 + 35.244),
+				
+				So 1kW needs 3.9860085 kg/sol. 5kW needs 19.93 kg/sol. 60kW needs 239.16 kg/sol.
 		</description>
 		<power-required base-power="0.5" base-power-down-power="0.05" />
 
 		<functions>
 			<power-generation>
-				<!-- Note : every mole of methane (16 g) releases 810 KJ of energy if burning with 2 moles of oxygen (64 g)
-				 CH4(g) + 2O2(g) -> CO2(g) + 2 H2O(g), deltaH = -890 kJ
-
-				 Assume electric efficiency at 40%,
-				 356kW needs 16 g/s
-				 60kW needs 2.6966 g/s or 239.3939 g/millisol or kg/sol
-				 1 kW_e for 3.9899 g/millisol
-
-	 			 Assume electric efficiency at 100%,
-				 1 kW_e for 9.5758 g/millisol
-				 -->
-
 				<power-source type="Fuel Power Source" toggle="true" power="60.0"
-				fuel-type="methane"	consumption-rate="95.758" />
-
+				fuel-type="methane"	consumption-rate="239.16" />
 			</power-generation>
 			<power-storage capacity="40" discharge-rate="1.25"/>
 		</functions>
@@ -2541,7 +2752,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<heat-source type="Solar Heating" capacity="5.0" />
 				<heat-source type="Electric Heating" capacity="15.0" />
 				<heat-source type="Fuel Heating" toggle="true"
-					fuel-type="methane"	consumption-rate="31.919" capacity="20.0" />
+					fuel-type="methane"	consumption-rate="79.72" capacity="20.0" />
 			</thermal-generation>
 		</functions>
 	</building>
@@ -2646,7 +2857,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<heat-source type="Solar Heating" capacity="5.0" />
 				<heat-source type="Electric Heating" capacity="15.0" />
 				<heat-source type="Fuel Heating" toggle="true"
-					fuel-type="methane"	consumption-rate="31.919" capacity="20.0" />
+					fuel-type="methane"	consumption-rate="79.72" capacity="20.0" />
 			</thermal-generation>
 		</functions>
 	</building>
@@ -2669,7 +2880,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
 				<power-source type="Fuel Power Source" toggle="false" power="5.0"
-				fuel-type="methane"	consumption-rate="95.758" />
+				fuel-type="methane"	consumption-rate="19.93" />
 			</power-generation>
 			<power-storage capacity="20"  discharge-rate="1.25"/>
 			<robotic-station capacity="2">
@@ -2690,7 +2901,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<heat-source type="Solar Heating" capacity="5.0" />
 				<heat-source type="Electric Heating" capacity="15.0" />
 				<heat-source type="Fuel Heating" toggle="true"
-					fuel-type="methane"	consumption-rate="31.919" capacity="20.0"/>
+					fuel-type="methane"	consumption-rate="79.72" capacity="20.0"/>
 			</thermal-generation>
 		</functions>
 	</building>
@@ -2705,13 +2916,13 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<power-required base-power="2.0" base-power-down-power="0.2" />
 
 		<functions>
-			<!--EVA airlock-capacity="4" xloc="4.0" yloc="0.0" interior-xloc="3.5" interior-yloc="0.0"
+			<!--EVA airlock-"19.93"="4" xloc="4.0" yloc="0.0" interior-xloc="3.5" interior-yloc="0.0"
 			exterior-xloc="5.5" exterior-yloc="0.0" /-->
 			<life-support capacity="12" power-required="0.6" />
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
 				<power-source type="Fuel Power Source" toggle="false" power="5.0"
-				fuel-type="methane"	consumption-rate="95.758" />
+				fuel-type="methane"	consumption-rate="19.93" />
 			</power-generation>
 			<power-storage capacity="20"  discharge-rate="1.25"/>
 			<research tech-level="4" capacity="8">
@@ -2748,7 +2959,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<heat-source type="Solar Heating" capacity="5.0" />
 				<heat-source type="Electric Heating" capacity="15.0" />
 				<heat-source type="Fuel Heating" toggle="true"
-					fuel-type="methane"	consumption-rate="31.919" capacity="20.0"/>
+					fuel-type="methane"	consumption-rate="79.72" capacity="20.0"/>
 			</thermal-generation>
 	</functions>
 	</building>
@@ -2778,7 +2989,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
 				<power-source type="Fuel Power Source" toggle="false" power="5.0"
-				fuel-type="methane"	consumption-rate="95.758" />
+				fuel-type="methane"	consumption-rate="19.93" />
 			</power-generation>
 			<power-storage capacity="20"  discharge-rate="1.25"/>
 			<robotic-station capacity="2">
@@ -2792,7 +3003,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<heat-source type="Solar Heating" capacity="5.0" />
 				<heat-source type="Electric Heating" capacity="15.0" />
 				<heat-source type="Fuel Heating" toggle="true"
-					fuel-type="methane"	consumption-rate="31.919" capacity="20.0"/>
+					fuel-type="methane"	consumption-rate="79.72" capacity="20.0"/>
 			</thermal-generation>
 		</functions>
 	</building>
@@ -2828,7 +3039,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
 				<power-source type="Fuel Power Source" toggle="false" power="5.0"
-				fuel-type="methane"	consumption-rate="95.758" />
+				fuel-type="methane"	consumption-rate="19.93" />
 			</power-generation>
 			<power-storage capacity="20" discharge-rate="1.25" />
 			<research tech-level="3" capacity="8">
@@ -2859,7 +3070,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<heat-source type="Solar Heating" capacity="5.0" />
 				<heat-source type="Electric Heating" capacity="15.0" />
 				<heat-source type="Fuel Heating" toggle="true"
-					fuel-type="methane"	consumption-rate="31.919" capacity="20.0"/>
+					fuel-type="methane"	consumption-rate="79.72" capacity="20.0"/>
 			</thermal-generation>
 		</functions>
 	</building>
@@ -2893,7 +3104,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
 				<power-source type="Fuel Power Source" toggle="false" power="5.0"
-				fuel-type="methane"	consumption-rate="95.758" />
+				fuel-type="methane"	consumption-rate="19.93" />
 			</power-generation>
 			<power-storage capacity="40"  discharge-rate="1.25"/>
 			<robotic-station capacity="2">
@@ -2923,7 +3134,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<heat-source type="Solar Heating" capacity="5.0" />
 				<heat-source type="Electric Heating" capacity="15.0" />
 				<heat-source type="Fuel Heating" toggle="true"
-					fuel-type="methane"	consumption-rate="31.919" capacity="20.0"/>
+					fuel-type="methane"	consumption-rate="79.72" capacity="20.0"/>
 
 			</thermal-generation>
 		</functions>
@@ -3035,7 +3246,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
 				<power-source type="Fuel Power Source" toggle="false" power="5.0"
-				fuel-type="methane"	consumption-rate="95.758" />
+				fuel-type="methane"	consumption-rate="19.93" />
 			</power-generation>
 
 			<power-storage capacity="40"  discharge-rate="1.25"/>
@@ -3084,12 +3295,28 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="water" rate="21.6" ambient="false" />
 				</process>
 
-				<process name="Oxygen Generation System" power-required="3.0" default="on">
+				<process name="Oxygen Generation System" power-required="4" default="on">
 					<input resource="water" rate="72" ambient="false" />
 					<output resource="hydrogen" rate="8" ambient="false" />
 					<output resource="oxygen" rate="64" ambient="false" />
 				</process>
 
+				<process name="Low Temperature Plasma CO2 Decomposition" power-required="0.2" default="on">
+					<description> 
+						The atmosphere is mainly CO2, so there is no need to capture it and plasma can 
+						be ignited in ambient Martian atmosphere. The traces of Ar and N2 present can only
+						help: argon aids shaping the electron energy distribution to higher energies, contributing
+						to an increased efficiency of this decomposition process.
+						The pressure on Mars – of 600 Pa (4.5 Torr), about 150 times lower than on Earth 
+						– is close to the ideal for advantageous plasma operation, so there is no need 
+						to use vacuum pumps or compressors on the first steps of the process.
+						See https://www.europhysicsnews.org/articles/epn/pdf/2018/03/epn2018493p15.pdf
+					</description>
+					<input resource="carbon dioxide" rate="176" ambient="true" />
+					<output resource="carbon monoxide" rate="56" ambient="false" />
+					<output resource="oxygen" rate="64" ambient="false" />
+				</process>
+				
 				<process name="Carbon Dioxide Pump" power-required=".4" default="off">
 					<input resource="carbon dioxide" rate="40.0" ambient="true" />
 					<output resource="carbon dioxide" rate="40.0" ambient="false" />
@@ -3192,7 +3419,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<thermal-generation>
 				<heat-source type="Solar Heating" capacity="5.0" />
 				<heat-source type="Fuel Heating" toggle="true"
-					fuel-type="methane"	consumption-rate="31.919" capacity="20.0" />
+					fuel-type="methane"	consumption-rate="79.72" capacity="20.0" />
 				<heat-source type="Electric Heating" capacity="20.0" />
 			</thermal-generation>
 
@@ -3274,7 +3501,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
 				<power-source type="Fuel Power Source" toggle="false" power="5.0"
-				fuel-type="methane"	consumption-rate="95.758" />
+				fuel-type="methane"	consumption-rate="19.93" />
 			</power-generation>
 			<power-storage capacity="20"  discharge-rate="1.25"/>
 			<robotic-station capacity="2">
@@ -3288,7 +3515,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<heat-source type="Solar Heating" capacity="5.0" />
 				<heat-source type="Electric Heating" capacity="20.0" />
 				<heat-source type="Fuel Heating" toggle="true"
-					fuel-type="methane"	consumption-rate="31.919" capacity="20.0" />
+					fuel-type="methane"	consumption-rate="79.72" capacity="20.0" />
 			</thermal-generation>
 		</functions>
 	</building>
@@ -3354,7 +3581,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
 				<power-source type="Fuel Power Source" toggle="false" power="5.0"
-				fuel-type="methane"	consumption-rate="95.758" />
+				fuel-type="methane"	consumption-rate="19.93" />
 			</power-generation>
 			<power-storage capacity="40"  discharge-rate="1.25"/>
 			<robotic-station capacity="4">
@@ -3372,7 +3599,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<thermal-generation>
 				<heat-source type="Solar Heating" capacity="5.0" />
 				<heat-source type="Fuel Heating" toggle="true"
-					fuel-type="methane"	consumption-rate="47.880" capacity="30.0" />
+					fuel-type="methane"	consumption-rate="119.58" capacity="30.0" />
 				<heat-source type="Electric Heating" capacity="60.0" />
 			</thermal-generation>
 		</functions>
@@ -3391,7 +3618,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
 				<power-source type="Fuel Power Source" toggle="false" power="5.0"
-				fuel-type="methane"	consumption-rate="95.758" />
+				fuel-type="methane"	consumption-rate="19.93" />
 			</power-generation>
 			<power-storage capacity="20"  discharge-rate="1.25"/>
 			<research tech-level="2" capacity="2">
@@ -3500,7 +3727,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<thermal-generation>
 				<heat-source type="Solar Heating" capacity="10.0" />
 				<heat-source type="Fuel Heating" toggle="true"
-					fuel-type="methane"	consumption-rate="31.919" capacity="20.0"/>
+					fuel-type="methane"	consumption-rate="79.72" capacity="20.0"/>
 				<heat-source type="Electric Heating" capacity="30.0" />
 			</thermal-generation>
 		</functions>

@@ -113,7 +113,8 @@ public enum JobType {
 	    		}
 	    	}
 		}
-		throw new IllegalArgumentException("Cannot find a Job with the name " + name);
+		return null;
+//		throw new IllegalArgumentException("Cannot find a Job with the name " + name);
 	}
 
 	/**
