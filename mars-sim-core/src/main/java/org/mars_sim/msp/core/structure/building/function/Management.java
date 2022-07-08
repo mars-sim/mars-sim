@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.structure.building.function;
 
-import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -18,15 +17,14 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.FunctionSpec;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * A management building function.  The building facilitates management
  * of a settlement population.
  */
-public class Management
-extends Function
-implements Serializable {
+public class Management extends Function {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
@@ -34,7 +32,6 @@ implements Serializable {
 	private static SimLogger logger = SimLogger.getLogger(Management.class.getName());
 
     // Data members
-//    private int populationSupport;
 	private int staff;
 	private int staffCapacity;
 
@@ -42,16 +39,11 @@ implements Serializable {
      * Constructor.
      * @param building the building this function is for.
      */
-    public Management(Building building) {
+    public Management(Building building, FunctionSpec spec) {
         // Use Function constructor.
-        super(FunctionType.MANAGEMENT, building);
+        super(FunctionType.MANAGEMENT, spec, building);
 
-		String buildingType = building.getBuildingType();
-
-		staffCapacity = buildingConfig.getFunctionCapacity(buildingType, FunctionType.MANAGEMENT);
-
-        // Populate data members.
-//        populationSupport = buildingConfig.getFunctionCapacity(buildingType, FunctionType.MANAGEMENT);
+		staffCapacity = spec.getCapacity();
     }
 
     /**
@@ -80,7 +72,7 @@ implements Serializable {
         }
 
         if (!newBuilding) {
-            supply -= buildingConfig.getFunctionCapacity(buildingName, FunctionType.MANAGEMENT);
+            supply -= buildingConfig.getFunctionSpec(buildingName, FunctionType.MANAGEMENT).getCapacity();
             if (supply < 0D) supply = 0D;
         }
 

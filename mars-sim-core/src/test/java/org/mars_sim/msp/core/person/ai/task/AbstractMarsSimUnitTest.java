@@ -17,10 +17,11 @@ import org.mars_sim.msp.core.structure.MockSettlement;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.FunctionSpec;
 import org.mars_sim.msp.core.structure.building.MockBuilding;
-import org.mars_sim.msp.core.structure.building.function.BuildingAirlock;
 import org.mars_sim.msp.core.structure.building.function.EVA;
 import org.mars_sim.msp.core.structure.building.function.Function;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.GroundVehicleMaintenance;
 import org.mars_sim.msp.core.vehicle.Rover;
 
@@ -36,6 +37,7 @@ public abstract class AbstractMarsSimUnitTest extends TestCase {
 	protected UnitManager unitManager;
 	protected MarsSurface surface;
 	protected Simulation sim;
+	private FunctionSpec evaFunction;
 
 	public AbstractMarsSimUnitTest() {
 		super();
@@ -67,6 +69,7 @@ public abstract class AbstractMarsSimUnitTest extends TestCase {
 	    							 mars.getWeather(), unitManager);
 	    
 	    surface = unitManager.getMarsSurface();
+		evaFunction = simConfig.getBuildingConfiguration().getFunctionSpec("EVA Airlock", FunctionType.EVA);
 	}
 
 	
@@ -80,13 +83,11 @@ public abstract class AbstractMarsSimUnitTest extends TestCase {
 	protected GroundVehicleMaintenance buildGarage(BuildingManager buildingManager, LocalPosition pos, double facing, int id) {
 	
 		MockBuilding building0 = buildBuilding(buildingManager, pos, facing, id);
-	    
-	    BuildingAirlock airlock0 = new BuildingAirlock(building0, 1,  LocalPosition.DEFAULT_POSITION,
-				   LocalPosition.DEFAULT_POSITION, LocalPosition.DEFAULT_POSITION);
-	    building0.addFunction(new EVA(building0, airlock0));
+
+	    building0.addFunction(new EVA(building0, evaFunction));
 	
 	    LocalPosition parkingLocation = LocalPosition.DEFAULT_POSITION;
-	    GroundVehicleMaintenance garage = new GroundVehicleMaintenance(building0, 1,
+	    GroundVehicleMaintenance garage = new GroundVehicleMaintenance(building0,
 	            new LocalPosition[] { parkingLocation });
 	    building0.addFunction(garage);
 	    
@@ -112,10 +113,8 @@ public abstract class AbstractMarsSimUnitTest extends TestCase {
 
 	protected Building buildEVA(BuildingManager buildingManager, LocalPosition pos, double facing, int id) {
 		MockBuilding building0 = buildBuilding(buildingManager, pos, facing, id);
-	
-	    BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, LocalPosition.DEFAULT_POSITION,
-				   LocalPosition.DEFAULT_POSITION, LocalPosition.DEFAULT_POSITION);
-	    building0.addFunction(new EVA(building0, airlock0));
+
+	    building0.addFunction(new EVA(building0,  evaFunction));
 	    return building0;
 	}
 

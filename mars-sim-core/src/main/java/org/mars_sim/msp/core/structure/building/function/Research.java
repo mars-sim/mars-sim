@@ -6,10 +6,8 @@
  */
 package org.mars_sim.msp.core.structure.building.function;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -20,6 +18,7 @@ import org.mars_sim.msp.core.structure.Lab;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
+import org.mars_sim.msp.core.structure.building.FunctionSpec;
 import org.mars_sim.msp.core.time.ClockPulse;
 
 /**
@@ -27,7 +26,7 @@ import org.mars_sim.msp.core.time.ClockPulse;
  */
 public class Research
 extends Function
-implements Lab, Serializable {
+implements Lab {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
@@ -45,51 +44,46 @@ implements Lab, Serializable {
 
     /** This map is the log book for tallying the # of daily inspections on the tissue cultures that this lab maintains */
     private Map<String, Integer> tissueCultureMap;
-    //private List<String> tissueCultureList;
     
 
     /**
      * Constructor.
      * @param building the building this function is for.
      */
-    public Research(Building building) {
+    public Research(Building building, FunctionSpec spec) {
         // Use Function constructor
-        super(FunctionType.RESEARCH, building);
+        super(FunctionType.RESEARCH, spec, building);
 
         setupTissueCultures();
         
-        String type = building.getBuildingType();
-        techLevel = buildingConfig.getFunctionTechLevel(type, FunctionType.RESEARCH);
-        researcherCapacity = buildingConfig.getFunctionCapacity(type, getFunctionType());
-        researchSpecialties = buildingConfig.getResearchSpecialties(type);
+        techLevel = spec.getTechLevel();
+        researcherCapacity = spec.getCapacity();
+        researchSpecialties = buildingConfig.getResearchSpecialties(building.getBuildingType());
     }
 
     /**
-     * Gets the value of the function for a named building.
-     * @param buildingName the building name.
+     * Gets the value of the function for a named building type.
+     * @param type the building type.
      * @param newBuilding true if adding a new building.
      * @param settlement the settlement.
      * @return value (VP) of building function.
      */
-    public static double getFunctionValue(String buildingName, boolean newBuilding,
+    public static double getFunctionValue(String type, boolean newBuilding,
             Settlement settlement) {
 
         double result = 0D;
 
-        List<ScienceType> specialties = buildingConfig.getResearchSpecialties(buildingName);
-
-        for (ScienceType specialty : specialties) {
+        for (ScienceType specialty : buildingConfig.getResearchSpecialties(type)) {
             double researchDemand = 0D;
-            Iterator<Person> j = settlement.getAllAssociatedPeople().iterator();
-            while (j.hasNext())
-                researchDemand += j.next().getSkillManager().getSkillLevel(specialty.getSkill());
+            for(Person p : settlement.getAllAssociatedPeople()) {
+                researchDemand += p.getSkillManager().getSkillLevel(specialty.getSkill());
+            }
 
             double researchSupply = 0D;
             boolean removedBuilding = false;
 
-            List<Building> b_list = settlement.getBuildingManager().getBuildings(FunctionType.RESEARCH);
-            for (Building building : b_list) {
-                if (!newBuilding && building.getBuildingType().equalsIgnoreCase(buildingName) && !removedBuilding) {
+            for (Building building : settlement.getBuildingManager().getBuildings(FunctionType.RESEARCH)) {
+                if (!newBuilding && building.getBuildingType().equalsIgnoreCase(type) && !removedBuilding) {
                     removedBuilding = true;
                 }
                 else {
@@ -108,8 +102,9 @@ implements Lab, Serializable {
 
             double existingResearchValue = researchDemand / (researchSupply + 1D);
 
-            int techLevel = buildingConfig.getFunctionTechLevel(buildingName, FunctionType.RESEARCH);
-            int labSize = buildingConfig.getFunctionCapacity(buildingName, FunctionType.RESEARCH);
+            FunctionSpec spec = buildingConfig.getFunctionSpec(type, FunctionType.RESEARCH);
+            int techLevel = spec.getTechLevel();
+            int labSize = spec.getCapacity();
             int buildingResearchSupply = techLevel * labSize;
 
             result += buildingResearchSupply * existingResearchValue;

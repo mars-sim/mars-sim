@@ -24,7 +24,6 @@ import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.configuration.ConfigHelper;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.science.ScienceType;
-import org.mars_sim.msp.core.structure.building.BuildingSpec.FunctionSpec;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 
 /**
@@ -56,18 +55,18 @@ public class BuildingConfig implements Serializable {
 	private static final String CAPACITY = "capacity";
 
 	private static final String RESEARCH = "research";
-	private static final String TECH_LEVEL = "tech-level";
 	private static final String RESEARCH_SPECIALTY = "research-specialty";
 
 	private static final String RESOURCE_PROCESSING = "resource-processing";
 
 	private static final String NUMBER_MODULES = "number-modules";
-	private static final String POWER_REQUIRED = "power-required";
+
+	// The common power required XML attribute
+	public static final String POWER_REQUIRED = "power-required";
+
 	private static final String BASE_POWER = "base-power";
 	private static final String BASE_POWER_DOWN_POWER = "base-power-down-power";
-	private static final String POWER_DOWN_LEVEL = "power-down-level";
 
-	private static final String CONCURRENT_PROCESSES = "concurrent-processes";
 	private static final String DEFAULT = "default";
 	
 	private static final String PROCESS = "process";
@@ -78,7 +77,6 @@ public class BuildingConfig implements Serializable {
 	private static final String RATE = "rate";
 	private static final String AMBIENT = "ambient";
 	private static final String STORAGE = "storage";
-	private static final String STOCK_CAPACITY = "stock-capacity";
 	private static final String RESOURCE_STORAGE = "resource-storage";
 	private static final String RESOURCE_INITIAL = "resource-initial";
 	private static final String RESOURCE = "resource";
@@ -86,16 +84,11 @@ public class BuildingConfig implements Serializable {
 	private static final String TYPE = "type";
 	private static final String MEDICAL_CARE = "medical-care";
 	private static final String BEDS = "beds";
-	private static final String CROPS = "crops";
-	private static final String POWER_GROWING_CROP = "power-growing-crop";
-	private static final String POWER_SUSTAINING_CROP = "power-sustaining-crop";
-	private static final String GROWING_AREA = "growing-area";
 	private static final String GROUND_VEHICLE_MAINTENANCE = "ground-vehicle-maintenance";
 	private static final String PARKING_LOCATION = "parking-location";
 
 	private static final String WASTE_PROCESSING = "waste-processing";
 
-	private static final String POPULATION_SUPPORT = "population-support";
 	private static final String ACTIVITY = "activity";
 	private static final String ACTIVITY_SPOT = "activity-spot";
 	private static final String BED_LOCATION = "bed-location";
@@ -108,12 +101,6 @@ public class BuildingConfig implements Serializable {
 	private static final String POWER_GENERATION = "power-generation";
 	private static final String POWER_SOURCE = "power-source";
 	private static final String POWER = "power";
-
-	// Computation
-	private static final String COMPUTATION = "computation";
-	private static final String COMPUTING_UNIT = "computing-unit";
-	private static final String POWER_DEMAND = "power-demand";
-	private static final String COOLING_DEMAND = "cooling-demand";
 
 	private static final String POSITION = "-position";
 
@@ -167,7 +154,7 @@ public class BuildingConfig implements Serializable {
 		double basePowerDownPowerRequirement = Double.parseDouble(powerElement.getAttributeValue(BASE_POWER_DOWN_POWER));
 
 		// Get functions
-		Map<FunctionType, BuildingSpec.FunctionSpec> supportedFunctions = new EnumMap<>(FunctionType.class);
+		Map<FunctionType, FunctionSpec> supportedFunctions = new EnumMap<>(FunctionType.class);
 		Element funcElement = buildingElement.getChild(FUNCTIONS);
 		for (Element element : funcElement.getChildren()) {
 			String name = element.getName().toUpperCase().trim().replace("-", "_");
@@ -192,7 +179,7 @@ public class BuildingConfig implements Serializable {
 			}
 
 			
-			BuildingSpec.FunctionSpec fspec = new BuildingSpec.FunctionSpec(props, spots);
+			FunctionSpec fspec = new FunctionSpec(props, spots);
 
 			supportedFunctions.put(function, fspec);
 		}
@@ -242,12 +229,6 @@ public class BuildingConfig implements Serializable {
 			List<SourceSpec> powerSourceList = parseSources(powerGenerationElement.getChildren(POWER_SOURCE),
 															POWER);
 			newSpec.setPowerSource(powerSourceList);
-		}
-
-		// Not needed. Done in the FunctionSpecs
-		Element computationElement = functionsElement.getChild(COMPUTATION);
-		if (computationElement != null) {
-			parseComputation(newSpec, computationElement);
 		}
 
 		Element researchElement = functionsElement.getChild(RESEARCH);
@@ -508,22 +489,7 @@ public class BuildingConfig implements Serializable {
 	}
 	
 	/**
-	 * Parses a specific computation details.
-	 * 
-	 * @param newSpec
-	 * @param computationElement
-	 */
-	private void parseComputation(BuildingSpec newSpec, Element computationElement) {
-		double computingPower = Double.parseDouble(computationElement.getAttributeValue(COMPUTING_UNIT));
-		double powerDemand = Double.parseDouble(computationElement.getAttributeValue(POWER_DEMAND));
-		double coolingDemand = Double.parseDouble(computationElement.getAttributeValue(COOLING_DEMAND));
-
-		newSpec.setComputation(computingPower, powerDemand, coolingDemand);
-	}
-
-	/**
-	 * Parses a specific research details.
-	 * 
+	 * Parse a specific research details
 	 * @param newSpec
 	 * @param researchElement
 	 */
@@ -577,7 +543,6 @@ public class BuildingConfig implements Serializable {
 	private void parseStorage(BuildingSpec newSpec, Element storageElement) {
 		Map<Integer, Double> storageMap = new HashMap<>();
 		Map<Integer, Double> initialMap = new HashMap<>();
-		double stockCapacity = Double.parseDouble(storageElement.getAttributeValue(STOCK_CAPACITY));
 
 		List<Element> resourceStorageNodes = storageElement.getChildren(RESOURCE_STORAGE);
 		for (Element resourceStorageElement : resourceStorageNodes) {
@@ -595,7 +560,7 @@ public class BuildingConfig implements Serializable {
 			initialMap.put(resource, amount);
 		}
 
-		newSpec.setStorage(stockCapacity, storageMap, initialMap);
+		newSpec.setStorage(storageMap, initialMap);
 	}
 
 	/**
@@ -669,162 +634,6 @@ public class BuildingConfig implements Serializable {
 	}
 
 	/**
-	 * Get the activity spots for a function.
-	 * 
-	 * @param buildingType
-	 * @param function
-	 * @return
-	 */
-	public List<LocalPosition> getActivitySpots(String buildingType, FunctionType function) {
-		FunctionSpec fs = getBuildingSpec(buildingType).getFunctionSpec(function);
-		List<LocalPosition> result = null;
-		if (fs != null) {
-			result = fs.getActivitySpots();
-		}
-
-		return result;
-	}
-
-	/**
-	 * Gets a property for a Function from a building type.
-	 * 
-	 * @param buildingType Building type name
-	 * @param function Function type
-	 * @param name Property name
-	 * @return
-	 */
-	private int getFunctionIntProperty(String buildingType, FunctionType function, String name) {
-		return Integer.parseInt((String) getBuildingSpec(buildingType).getFunctionSpec(function).getProperty(name));
-	}
-
-	/**
-	 * Gets a property for a Function from a building type.
-	 * 
-	 * @param buildingType Building type name
-	 * @param function Function type
-	 * @param name Property name
-	 * @return
-	 */
-	public double getFunctionDoubleProperty(String buildingType, FunctionType function, String name) {
-		return Double.parseDouble((String) getBuildingSpec(buildingType).getFunctionSpec(function).getProperty(name));
-	}
-
-	/**
-	 * Gets the capacity for a Function. This capacity usually reference to the number of Unit
-	 * supported by a function but it could be used differently.
-	 *
-	 * @param buildingType the type of the building
-	 * @param function Type of function
-	 * @return number of people
-	 * @throws Exception if building type cannot be found or XML parsing error.
-	 */
-	public int getFunctionCapacity(String buildingType, FunctionType function) {
-		return getFunctionIntProperty(buildingType, function, CAPACITY);
-	}
-
-	/**
-	 * Gets the capacity for a Function. This capacity usually reference an amount.
-	 *
-	 * @param buildingType the type of the building
-	 * @param function Type of function
-	 * @return number of people
-	 * @throws Exception if building type cannot be found or XML parsing error.
-	 */
-	public double getFunctionCapacityDouble(String buildingType, FunctionType function) {
-		return getFunctionDoubleProperty(buildingType, function, CAPACITY);
-	}
-
-	/**
-	 * Gets the tech level for a Function.
-	 *
-	 * @param buildingType the type of the building
-	 * @param function Type of function
-	 * @return number of people
-	 * @throws Exception if building type cannot be found or XML parsing error.
-	 */
-	public int getFunctionTechLevel(String buildingType, FunctionType function) {
-		return getFunctionIntProperty(buildingType, function, TECH_LEVEL);
-	}
-
-	/**
-	 * Gets the building width.
-	 *
-	 * @param buildingType the type of the building.
-	 * @return building width (meters).
-	 * @throws Exception if building type cannot be found.
-	 * @deprecated Use {@link #getBuildingSpec(String)}
-	 */
-	public double getWidth(String buildingType) {
-		return getBuildingSpec(buildingType).getWidth();
-	}
-
-	/**
-	 * Gets the building length.
-	 *
-	 * @param buildingType the type of the building.
-	 * @return building length (meters).
-	 * @throws Exception if building type cannot be found or XML parsing error.
-	 * @deprecated Use {@link #getBuildingSpec(String)}
-	 */
-	public double getLength(String buildingType) {
-		return getBuildingSpec(buildingType).getLength();
-	}
-
-	/**
-	 * Gets the base level of the building.
-	 *
-	 * @param buildingType the type of the building.
-	 * @return -1 for in-ground, 0 for above-ground.
-	 * @deprecated Use {@link #getBuildingSpec(String)}
-	 */
-	public int getBaseLevel(String buildingType) {
-		return getBuildingSpec(buildingType).getBaseLevel();
-	}
-
-	/**
-	 * Gets the power required for life support.
-	 *
-	 * @param buildingType the type of the building
-	 * @return power required (kW)
-	 * @throws Exception if building type cannot be found or XML parsing error.
-	 */
-	public double getLifeSupportPowerRequirement(String buildingType) {
-		return getFunctionDoubleProperty(buildingType, FunctionType.LIFE_SUPPORT, POWER_REQUIRED);
-	}
-
-	/**
-	 * Gets the heat required for life support.
-	 *
-	 * @param buildingType the type of the building
-	 * @return heat required (J)
-	 * @throws Exception if building type cannot be found or XML parsing error.
-	 */
-	public double getLifeSupportHeatRequirement(String buildingType) {
-		return getFunctionDoubleProperty(buildingType, FunctionType.LIFE_SUPPORT, HEAT_REQUIRED);
-	}
-
-	/**
-	 * @deprecated  For individual properties use {@link #getBuildingSpec(String)}
-	 */
-	public double getComputingUnit(String buildingType) {
-		return getBuildingSpec(buildingType).getComputingUnit();
-	}
-
-	/**
-	 * @deprecated For individual properties use {@link #getBuildingSpec(String)}
-	 */
-	public double getPowerDemand(String buildingType) {
-		return getBuildingSpec(buildingType).getPowerDemand();
-	}
-
-	/**
-	 * @deprecated For individual properties use {@link #getBuildingSpec(String)}
-	 */
-	public double getCoolingDemand(String buildingType) {
-		return getBuildingSpec(buildingType).getCoolingDemand();
-	}
-
-	/**
 	 * Gets a list of research specialties for the building's lab.
 	 *
 	 * @param buildingType the type of the building
@@ -834,29 +643,6 @@ public class BuildingConfig implements Serializable {
 	public List<ScienceType> getResearchSpecialties(String buildingType) {
 		return getBuildingSpec(buildingType).getScienceType();
 
-	}
-
-	/**
-	 * Gets the relative position of airlock position.
-	 *
-	 * @param buildingType the type of the building.
-	 * @param positionName The type of positions of the airlock
-	 * @return relative X location.
-	 */
-	public LocalPosition getAirlockPosition(String buildingType, String positionName) {
-		return (LocalPosition) getBuildingSpec(buildingType).getFunctionSpec(FunctionType.EVA).getProperty(positionName);
-	}
-
-	/**
-	 * Gets the level of resource processing when the building is in power down
-	 * mode.
-	 *
-	 * @param buildingType the type of the building
-	 * @return power down level
-	 * @throws Exception if building type cannot be found or XML parsing error.
-	 */
-	public double getResourceProcessingPowerDown(String buildingType) {
-		return getFunctionDoubleProperty(buildingType, FunctionType.RESOURCE_PROCESSING, POWER_DOWN_LEVEL);
 	}
 
 	/**
@@ -871,18 +657,6 @@ public class BuildingConfig implements Serializable {
 	}
 
 	/**
-	 * Gets the level of waste processing when the building is in power down
-	 * mode.
-	 *
-	 * @param buildingType the type of the building
-	 * @return power down level
-	 * @throws Exception if building type cannot be found or XML parsing error.
-	 */
-	public double getWasteProcessingPowerDown(String buildingType) {
-		return getFunctionDoubleProperty(buildingType, FunctionType.WASTE_PROCESSING, POWER_DOWN_LEVEL);
-	}
-
-	/**
 	 * Gets the building's waste processes.
 	 *
 	 * @param buildingType the type of the building.
@@ -893,7 +667,6 @@ public class BuildingConfig implements Serializable {
 		return getBuildingSpec(buildingType).getWasteProcess();
 	}
 
-	
 	/**
 	 * Gets a list of the building's resource capacities.
 	 *
@@ -903,10 +676,6 @@ public class BuildingConfig implements Serializable {
 	 */
 	public Map<Integer, Double> getStorageCapacities(String buildingType) {
 		return getBuildingSpec(buildingType).getStorage();
-	}
-
-	public double getStockCapacity(String buildingType) {
-		return getBuildingSpec(buildingType).getStockCapacity();
 	}
 
 	/**
@@ -944,60 +713,6 @@ public class BuildingConfig implements Serializable {
 	}
 
 	/**
-	 * Gets the number of crops in the building.
-	 *
-	 * @param buildingType the type of the building.
-	 * @return number of crops
-	 * @throws Exception if building type cannot be found or XML parsing error.
-	 */
-	public int getCropNum(String buildingType) {
-		return getFunctionIntProperty(buildingType, FunctionType.FARMING, CROPS);
-	}
-
-	/**
-	 * Gets the power required to grow a crop.
-	 *
-	 * @param buildingType the type of the building.
-	 * @return power (kW)
-	 * @throws Exception if building type cannot be found or XML parsing error.
-	 */
-	public double getPowerForGrowingCrop(String buildingType) {
-		return getFunctionDoubleProperty(buildingType, FunctionType.FARMING, POWER_GROWING_CROP);
-	}
-
-	/**
-	 * Gets the power required to sustain a crop.
-	 *
-	 * @param buildingType the type of the building.
-	 * @return power (kW)
-	 * @throws Exception if building type cannot be found or XML parsing error.
-	 */
-	public double getPowerForSustainingCrop(String buildingType) {
-		return getFunctionDoubleProperty(buildingType, FunctionType.FARMING, POWER_SUSTAINING_CROP);
-	}
-
-	/**
-	 * Gets the crop growing area in the building.
-	 *
-	 * @param buildingType the type of the building.
-	 * @return crop growing area (square meters)
-	 * @throws Exception if building type cannot be found or XML parsing error.
-	 */
-	public double getCropGrowingArea(String buildingType) {
-		return getFunctionDoubleProperty(buildingType, FunctionType.FARMING, GROWING_AREA);
-	}
-
-	/**
-	 * Gets the number of parking locations in the building.
-	 *
-	 * @param buildingType the type of the building.
-	 * @return number of parking locations.
-	 */
-	public int getParkingLocationNumber(String buildingType) {
-		return getBuildingSpec(buildingType).getParking().size();
-	}
-
-	/**
 	 * Gets the relative location in the building of a parking location.
 	 *
 	 * @param buildingType the type of the building.
@@ -1008,56 +723,23 @@ public class BuildingConfig implements Serializable {
 		return getBuildingSpec(buildingType).getParking();
 	}
 
-	/**
-	 * Gets the concurrent process limit of the Food Production facility in the
-	 * building.
-	 *
-	 * @param buildingType the type of the building.
-	 * @return concurrent process limit.
-	 * @throws Exception if building type cannot be found or XML parsing error.
-	 */
-	public int getFoodProductionConcurrentProcesses(String buildingType) {
-		return getFunctionIntProperty(buildingType, FunctionType.FOOD_PRODUCTION, CONCURRENT_PROCESSES);
-	}
-
-	/**
-	 * Gets the power required by the astronomical observation function.
-	 *
-	 * @param buildingType the type of the building.
-	 * @return power required (kW).
-	 * @throws Exception if building type cannot be found or XML parsing error.
-	 */
-	public double getAstronomicalObservationPowerRequirement(String buildingType) {
-		return getFunctionDoubleProperty(buildingType, FunctionType.ASTRONOMICAL_OBSERVATION, POWER_REQUIRED);
-	}
-
-	/**
-	 * Gets the concurrent process limit of the manufacture facility in the
-	 * building.
-	 *
-	 * @param buildingType the type of the building.
-	 * @return concurrent process limit.
-	 * @throws Exception if building type cannot be found or XML parsing error.
-	 */
-	public int getManufactureConcurrentProcesses(String buildingType) {
-		return getFunctionIntProperty(buildingType, FunctionType.MANUFACTURE, CONCURRENT_PROCESSES);
-	}
-
-	public int getFishTankSize(String buildingType) {
-		return getFunctionIntProperty(buildingType, FunctionType.FISHERY, "volume");
-	}
-
 	private static final String generateSpecKey(String buildingType) {
 		return buildingType.toLowerCase().replace(" ", "-");
 	}
 
 	/**
+<<<<<<< HEAD
+	 * Get the Function spec from a Building Type.
+	 * @param type Building type
+	 * @param functionType Type of function
+=======
 	 * Gets the number of people supported by an Administration function in a building.
 	 * 
 	 * @param buildingType
 	 * @return
+>>>>>>> master
 	 */
-	public int getAdministrationPopulationSupport(String buildingType) {
-		return getFunctionIntProperty(buildingType, FunctionType.ADMINISTRATION, POPULATION_SUPPORT);
+	public FunctionSpec getFunctionSpec(String type, FunctionType functionType) {
+		return getBuildingSpec(type).getFunctionSpec(functionType);
 	}
 }

@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.structure.building.function.farming;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -29,6 +28,7 @@ import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
+import org.mars_sim.msp.core.structure.building.FunctionSpec;
 import org.mars_sim.msp.core.structure.building.function.Function;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.HouseKeeping;
@@ -44,12 +44,17 @@ import org.mars_sim.msp.core.tool.RandomUtil;
  * The Farming class is a building function for greenhouse farming.
  */
 
-public class Farming extends Function implements Serializable {
+public class Farming extends Function {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(Farming.class.getName());
+
+	private static final String CROPS = "crops";
+	private static final String POWER_GROWING_CROP = "power-growing-crop";
+	private static final String POWER_SUSTAINING_CROP = "power-sustaining-crop";
+	private static final String GROWING_AREA = "growing-area";
 
 	private static final String [] INSPECTION_LIST = {"Environmental Control System",
 													  "HVAC System", "Waste Disposal System",
@@ -119,17 +124,15 @@ public class Farming extends Function implements Serializable {
 	 * Constructor.
 	 *
 	 * @param building the building the function is for.
+	 * @param spec Spec of the farming function
 	 * @throws BuildingException if error in constructing function.
 	 */
-	public Farming(Building building) {
+	public Farming(Building building, FunctionSpec spec) {
 		// Use Function constructor.
-		super(FunctionType.FARMING, building);
+		super(FunctionType.FARMING, spec, building);
 
 		// Initialize the attribute scores map
 		initAttributeScores();
-		
-		// LED_Item = ItemResource.findItemResource(LED_KIT);
-		// HPS_Item = ItemResource.findItemResource(HPS_LAMP);
 
 		identifer = 0;
 
@@ -141,11 +144,11 @@ public class Farming extends Function implements Serializable {
 		dailyWaterUsage = new SolSingleMetricDataLogger(MAX_NUM_SOLS);
 		cropUsage = new HashMap<>();
 
-		defaultCropNum = buildingConfig.getCropNum(building.getBuildingType());
+		defaultCropNum = spec.getIntegerProperty(CROPS);
 
-		powerGrowingCrop = buildingConfig.getPowerForGrowingCrop(building.getBuildingType());
-		powerSustainingCrop = buildingConfig.getPowerForSustainingCrop(building.getBuildingType());
-		maxGrowingArea = buildingConfig.getCropGrowingArea(building.getBuildingType());
+		powerGrowingCrop = spec.getDoubleProperty(POWER_GROWING_CROP);
+		powerSustainingCrop = spec.getDoubleProperty(POWER_SUSTAINING_CROP);
+		maxGrowingArea = spec.getDoubleProperty(GROWING_AREA);
 		remainingGrowingArea = maxGrowingArea;
 
 		Map<CropSpec,Integer> alreadyPlanted = new HashMap<>();
@@ -540,13 +543,13 @@ public class Farming extends Function implements Serializable {
 	/**
 	 * Gets the value of the function for a named building.
 	 *
-	 * @param buildingName the building name.
+	 * @param type the building type.
 	 * @param newBuilding  true if adding a new building.
 	 * @param settlement   the settlement.
 	 * @return value (VP) of building function. Called by BuildingManager.java
 	 *         getBuildingValue()
 	 */
-	public static double getFunctionValue(String buildingName, boolean newBuilding, Settlement settlement) {
+	public static double getFunctionValue(String type, boolean newBuilding, Settlement settlement) {
 
 		double result = 0D;
 
@@ -560,7 +563,7 @@ public class Farming extends Function implements Serializable {
 		boolean removedBuilding = false;
 		List<Building> buildings = settlement.getBuildingManager().getBuildings(FunctionType.FARMING);
 		for (Building building : buildings) {
-			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(buildingName) && !removedBuilding) {
+			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(type) && !removedBuilding) {
 				removedBuilding = true;
 			} else {
 				Farming farmingFunction = building.getFarming();

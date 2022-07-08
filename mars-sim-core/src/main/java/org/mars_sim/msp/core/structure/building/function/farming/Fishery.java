@@ -7,7 +7,6 @@
 
 package org.mars_sim.msp.core.structure.building.function.farming;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
@@ -19,6 +18,7 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
+import org.mars_sim.msp.core.structure.building.FunctionSpec;
 import org.mars_sim.msp.core.structure.building.function.Function;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.HouseKeeping;
@@ -28,7 +28,7 @@ import org.mars_sim.msp.core.tool.RandomUtil;
 /**
  * The Fishery function that is responsible for aquatic farming
  */
-public class Fishery extends Function implements Serializable {	
+public class Fishery extends Function {	
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -114,16 +114,17 @@ public class Fishery extends Function implements Serializable {
 	 * Constructor.
 	 * 
 	 * @param building the building the function is for.
+	 * @param spec Definition of the Fishery properties
 	 * @throws BuildingException if error in constructing function.
 	 */
-	public Fishery(Building building) {
+	public Fishery(Building building, FunctionSpec spec) {
 		// Use Function constructor.
-		super(FunctionType.FISHERY, building);
+		super(FunctionType.FISHERY, spec, building);
 		
 		houseKeeping = new HouseKeeping(CLEANING_LIST, INSPECTION_LIST);
 
 		// Calculate the tank size via config
-		tankSize = buildingConfig.getFishTankSize(building.getBuildingType());
+		tankSize = spec.getCapacity();
 		
 		// Calculate fish & weeds by tank size
 		maxFish = (int)((tankSize * FISHSIZE_LITRE)/FISH_LENGTH);
@@ -150,15 +151,15 @@ public class Fishery extends Function implements Serializable {
 
 
 	/**
-	 * Gets the value of the function for a named building.
+	 * Gets the value of the function for a named building type.
 	 * 
-	 * @param buildingName the building name.
+	 * @param type the building type.
 	 * @param newBuilding  true if adding a new building.
 	 * @param settlement   the settlement.
 	 * @return value (VP) of building function. Called by BuildingManager.java
 	 *         getBuildingValue()
 	 */
-	public static double getFunctionValue(String buildingName, boolean newBuilding, Settlement settlement) {
+	public static double getFunctionValue(String type, boolean newBuilding, Settlement settlement) {
 
 		// Demand is number of fish needed to produce food for settlement population.
 		// B ut it is not essential food
@@ -167,9 +168,8 @@ public class Fishery extends Function implements Serializable {
 		// Supply is total number of fish at settlement.
 		double supply = 0D;
 		boolean removedBuilding = false;
-		List<Building> buildings = settlement.getBuildingManager().getBuildings(FunctionType.FISHERY);
-		for (Building building : buildings) {
-			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(buildingName) && !removedBuilding) {
+		for (Building building : settlement.getBuildingManager().getBuildings(FunctionType.FISHERY)) {
+			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(type) && !removedBuilding) {
 				removedBuilding = true;
 			} else {
 				Fishery fishFarm = building.getFishery();

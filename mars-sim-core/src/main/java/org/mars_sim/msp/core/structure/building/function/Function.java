@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.structure.building.function;
 import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -26,6 +27,7 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
+import org.mars_sim.msp.core.structure.building.FunctionSpec;
 import org.mars_sim.msp.core.structure.building.function.farming.CropConfig;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -66,27 +68,23 @@ public abstract class Function implements Serializable, Temporal {
 	protected static MarsClock marsClock;
 
 	/**
-	 * Create a new Function.
-	 * @param type Type of service provides and configuration.
-	 * @param building Parent building
-	 */
-	protected Function(FunctionType type, Building building) {
-		this(type, type, building);
-	}
-
-	/**
 	 * Constructor.
 	 *
 	 * @param type Type of this function
-	 * @param confType Function type to use for configuration
+	 * @param spec Functionconfiguration
 	 * @param builind Parent building.
 	 */
-	protected Function(FunctionType type, FunctionType confType, Building building) {
+	protected Function(FunctionType type, FunctionSpec spec, Building building) {
 		this.type = type;
 		this.building = building;
 
 		// load any activity hotspots
-		activitySpots = buildingConfig.getActivitySpots(building.getBuildingType(), confType);
+		if (spec != null) {
+			activitySpots = spec.getActivitySpots();
+		}
+		else {
+			activitySpots = Collections.emptyList();
+		}
 	}
 
 

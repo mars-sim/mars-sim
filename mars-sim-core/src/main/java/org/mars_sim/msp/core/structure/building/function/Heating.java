@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.FunctionSpec;
 import org.mars_sim.msp.core.structure.building.function.farming.Crop;
 import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 import org.mars_sim.msp.core.time.ClockPulse;
@@ -27,8 +28,6 @@ extends Function {
 	private static final long serialVersionUID = 1L;
     /* default logger.*/
  	private static final Logger logger = Logger.getLogger(Heating.class.getName());
-
-	private static String sourceName = logger.getName();
     
 	private static final FunctionType FUNCTION = FunctionType.LIFE_SUPPORT;
 
@@ -174,22 +173,18 @@ extends Function {
 	private boolean hasHeatDumpViaAirlockOuterDoor = false;
 	
 	private Coordinates location;
-	private Farming farm;
-
-	/** THe emissivity of the greenhouse canopy per millisol */
-	// Map<Integer, Double> emissivityMap;
 	
 	private List<Building> adjacentBuildings;
+
+	private Farming farm;
 	
 	/**
 	 * Constructor.
 	 * @param building the building this function is for.
 	 */
-	public Heating(Building building) {
+	public Heating(Building building, FunctionSpec spec) {
 		// Call Function constructor.
-		super(FUNCTION, building);
-
-        sourceName = sourceName.substring(sourceName.lastIndexOf(".") + 1, sourceName.length());
+		super(FUNCTION, spec, building);
         
 		String buildingType = building.getBuildingType();
 		
@@ -804,12 +799,6 @@ extends Function {
 		double speed_factor = .01 * time * CFM;
 		
 		if (tooLow || tooHigh) { // this temperature range is arbitrary
-			// TODO : determine if someone opens a hatch ??
-			//LogConsolidated.log(logger, Level.WARNING, 2000, sourceName, 
-			//		"The temperature for " + building + " in " + settlement 
-			//	+ " is " + Math.round(t*100D)/100D + " C"
-			//	, null);
-			//LogConsolidated.log(logger, Level.WARNING, 5000, sourceName, "time : " + Math.round(time*1000D)/1000D, null);
 			// Note : time = .121 at x128
 			
 			if (adjacentBuildings == null) {
@@ -834,10 +823,6 @@ extends Function {
 			for (int i = 0; i < size; i++) {
 				double t_next = adjacentBuildings.get(i).getCurrentTemperature();
 				double t_i = adjacentBuildings.get(i).getInitialTemperature();
-				//LogConsolidated.log(logger, Level.WARNING, 2000, sourceName, 
-				//		"The temperature for the adj " + adjacentBuildings.get(i) + " in " + settlement 
-				//	+ " is " + Math.round(t*100D)/100D + " C"
-				//	, null);
 
 				boolean too_low_next = t_next < (t_i - 2.5 * T_LOWER_SENSITIVITY);
 				boolean too_high_next = t_next > (t_i + 2.5 * T_UPPER_SENSITIVITY);
@@ -923,16 +908,6 @@ extends Function {
 				total_gain += gain;
 
 			}
-		
-//			if (total_gain > 0)
-//				LogConsolidated.log(logger, Level.INFO, 20000, sourceName, 
-//						"Pumping in " + Math.round(total_gain*100D)/100D + " kW of heat by air vent to " 
-//				+ building + " in " + settlement + " from adjacent building(s).", null);
-//			else if (total_gain < 0)
-//				LogConsolidated.log(logger, Level.INFO, 20000, sourceName, 
-//						"Dumping off " + -Math.round(total_gain*100D)/100D + " kW of excess heat by air vent from " 
-//				+ building + " in " + settlement + " to adjacent building(s).", null);
-
 		}
 		
 		return total_gain;

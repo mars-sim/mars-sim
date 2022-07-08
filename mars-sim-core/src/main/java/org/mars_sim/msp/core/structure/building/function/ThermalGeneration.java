@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.structure.building.function;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -14,6 +13,7 @@ import java.util.List;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
+import org.mars_sim.msp.core.structure.building.FunctionSpec;
 import org.mars_sim.msp.core.structure.building.SourceSpec;
 import org.mars_sim.msp.core.time.ClockPulse;
 
@@ -21,11 +21,9 @@ import org.mars_sim.msp.core.time.ClockPulse;
  * The ThermalGeneration class handles how the buildings of a settlement
  * generate and control temperature by heating .
  */
-public class ThermalGeneration
-extends Function
-implements Serializable {
+public class ThermalGeneration extends Function {
 
-	/** default serial id. */
+	/** default serial  id. */
 	private static final long serialVersionUID = 1L;
 
 	// Data members.
@@ -40,19 +38,19 @@ implements Serializable {
 	/**
 	 * Constructor
 	 */
-	public ThermalGeneration(Building building) {
+	public ThermalGeneration(Building building, FunctionSpec spec) {
 		// Call Function constructor.
-		super(FunctionType.THERMAL_GENERATION, building);
+		super(FunctionType.THERMAL_GENERATION, spec, building);
 		
-		heating = new Heating(building);
+		heating = new Heating(building, spec);
 
 		// Determine heat sources.
 		heatSources = new ArrayList<>();
 		
-		for (SourceSpec spec : buildingConfig.getHeatSources(building.getBuildingType())) {
-			double heat = spec.getCapacity();
+		for (SourceSpec sourceSpec : buildingConfig.getHeatSources(building.getBuildingType())) {
+			double heat = sourceSpec.getCapacity();
 			HeatSource heatSource = null;
-			HeatSourceType sourceType = HeatSourceType.valueOf(spec.getType().toUpperCase().replace(" ", "_"));
+			HeatSourceType sourceType = HeatSourceType.valueOf(sourceSpec.getType().toUpperCase().replace(" ", "_"));
 			
 			switch (sourceType) {
 			case ELECTRIC_HEATING:
@@ -64,14 +62,14 @@ implements Serializable {
 				break;
 				
 			case FUEL_HEATING:
-				boolean toggleStafe = Boolean.parseBoolean(spec.getAttribute(SourceSpec.TOGGLE));
-				String fuelType = spec.getAttribute(SourceSpec.FUEL_TYPE);
-				double consumptionSpeed = Double.parseDouble(spec.getAttribute(SourceSpec.CONSUMPTION_RATE));
+				boolean toggleStafe = Boolean.parseBoolean(sourceSpec.getAttribute(SourceSpec.TOGGLE));
+				String fuelType = sourceSpec.getAttribute(SourceSpec.FUEL_TYPE);
+				double consumptionSpeed = Double.parseDouble(sourceSpec.getAttribute(SourceSpec.CONSUMPTION_RATE));
 				heatSource = new FuelHeatSource(building, heat, toggleStafe, fuelType, consumptionSpeed);
 				break;
 				
 			default:
-				throw new IllegalArgumentException("Do not know heat source type :" + spec.getType());
+				throw new IllegalArgumentException("Do not know heat source type :" + sourceSpec.getType());
 			}
 			heatSources.add(heatSource);
 		}

@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.structure.building.function;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -17,7 +16,9 @@ import org.mars_sim.msp.core.air.AirComposition;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.FunctionSpec;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
 
@@ -25,15 +26,13 @@ import org.mars_sim.msp.core.time.MarsClock;
  * The LifeSupport class is a building function for life support and managing
  * inhabitants.
  */
-public class LifeSupport extends Function implements Serializable {
+public class LifeSupport extends Function {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
 	private static final Logger logger = Logger.getLogger(LifeSupport.class.getName());
-
-	private static final FunctionType THE_FUNCTION = FunctionType.LIFE_SUPPORT;
 
 	// Data members
 	private int occupantCapacity;
@@ -51,29 +50,15 @@ public class LifeSupport extends Function implements Serializable {
 	 * Constructor.
 	 * 
 	 * @param building the building this function is for.
+	 * @param spec Defiens the Life support capability
 	 */
-	public LifeSupport(Building building) {
-		this(building,
-			buildingConfig.getFunctionCapacity(building.getBuildingType(), THE_FUNCTION),
-			buildingConfig.getLifeSupportPowerRequirement(building.getBuildingType()));
-	}
-
-	/**
-	 * Alternate constructor (for use by Mock Building in Unit testing) with given
-	 * occupant capacity and power required
-	 * 
-	 * @param building         the building this function is for.
-	 * @param occupantCapacity the number of occupants this building can hold.
-	 * @param powerRequired    the power required (kW)
-	 */
-	public LifeSupport(Building building, int occupantCapacity, double powerRequired) {
-		// Use Function constructor
-		super(THE_FUNCTION, building);
+	public LifeSupport(Building building, FunctionSpec spec) {
+		super(FunctionType.LIFE_SUPPORT, spec, building);
 
 		occupants = new HashSet<>();
 
-		this.occupantCapacity = occupantCapacity;
-		this.powerRequired = powerRequired;
+		this.occupantCapacity = spec.getCapacity();
+		this.powerRequired = spec.getDoubleProperty(BuildingConfig.POWER_REQUIRED);
 
 		length = building.getLength();
 		width = building.getWidth();
@@ -100,7 +85,7 @@ public class LifeSupport extends Function implements Serializable {
 
 		double supply = 0D;
 		boolean removedBuilding = false;
-		Iterator<Building> i = settlement.getBuildingManager().getBuildings(THE_FUNCTION).iterator();
+		Iterator<Building> i = settlement.getBuildingManager().getBuildings(FunctionType.LIFE_SUPPORT).iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
 			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(buildingType) && !removedBuilding) {
@@ -113,12 +98,13 @@ public class LifeSupport extends Function implements Serializable {
 
 		double occupantCapacityValue = demand / (supply + 1D);
 
-		int occupantCapacity = buildingConfig.getFunctionCapacity(buildingType, THE_FUNCTION);
+		FunctionSpec spec = buildingConfig.getFunctionSpec(buildingType, FunctionType.LIFE_SUPPORT);
+		int occupantCapacity = spec.getCapacity();
 
 		double result = occupantCapacity * occupantCapacityValue;
 
 		// Subtract power usage cost per sol.
-		double power = buildingConfig.getLifeSupportPowerRequirement(buildingType);
+		double power = spec.getDoubleProperty(BuildingConfig.POWER_REQUIRED);
 		double powerPerSol = power * MarsClock.HOURS_PER_MILLISOL * 1000D;
 		double powerValue = powerPerSol * settlement.getPowerGrid().getPowerValue() / 1000D;
 		result -= powerValue;
@@ -188,7 +174,7 @@ public class LifeSupport extends Function implements Serializable {
 			Iterator<Building> i = building.getBuildingManager().getBuildings().iterator(); 
 			while (i.hasNext()) {
 				Building building = i.next();
-				if (building.hasFunction(THE_FUNCTION)) {
+				if (building.hasFunction(FunctionType.LIFE_SUPPORT)) {
 					// remove this person from the old building first
 					BuildingManager.removePersonFromBuilding(person, building);
 				}

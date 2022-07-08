@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.structure.building.function;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -17,18 +16,19 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.FunctionSpec;
 import org.mars_sim.msp.core.time.ClockPulse;
 
 /**
  * The RoboticStation class is a building function for a Robotic Station.
  */
-public class RoboticStation extends Function implements Serializable {
+public class RoboticStation extends Function {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static final Logger logger = Logger.getLogger(LifeSupport.class.getName());
+	private static final Logger logger = Logger.getLogger(RoboticStation.class.getName());
 
 	public final static double POWER_USAGE_PER_ROBOT = 1D; // in kW
 
@@ -42,17 +42,20 @@ public class RoboticStation extends Function implements Serializable {
 	 * Constructor
 	 * 
 	 * @param building the building this function is for.
+	 * @param spec Spec of the Robot station
 	 * @throws BuildingException if error in constructing function.
 	 */
-	public RoboticStation(Building building) {
+	public RoboticStation(Building building, FunctionSpec spec) {
 		// Call Function constructor.
-		super(FunctionType.ROBOTIC_STATION, building);
+		super(FunctionType.ROBOTIC_STATION, spec, building);
 
 		robotOccupants = new HashSet<>();
 		// Set occupant capacity.
-		occupantCapacity = buildingConfig.getFunctionCapacity(building.getBuildingType(), FunctionType.LIFE_SUPPORT);
+		// TODO this doesn't make sense. Slots is the number of Robots the station can hold. Why is this looking at 
+		// LIFE_SUPPORT
+		occupantCapacity = buildingConfig.getFunctionSpec(building.getBuildingType(), FunctionType.LIFE_SUPPORT).getCapacity();
 
-		slots = buildingConfig.getFunctionCapacity(building.getBuildingType(), FunctionType.ROBOTIC_STATION);
+		slots = spec.getCapacity();
 	}
 
 	/**
@@ -84,7 +87,7 @@ public class RoboticStation extends Function implements Serializable {
 		}
 
 		double stationCapacityValue = demand / (supply + 1D);
-		int stationCapacity = buildingConfig.getFunctionCapacity(buildingName, FunctionType.ROBOTIC_STATION);
+		int stationCapacity = buildingConfig.getFunctionSpec(buildingName, FunctionType.ROBOTIC_STATION).getCapacity();
 		return stationCapacity * stationCapacityValue;
 	}
 

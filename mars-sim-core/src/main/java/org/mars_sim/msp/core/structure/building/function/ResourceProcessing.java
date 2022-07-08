@@ -6,15 +6,14 @@
  */
 package org.mars_sim.msp.core.structure.building.function;
 
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
+import org.mars_sim.msp.core.structure.building.FunctionSpec;
 import org.mars_sim.msp.core.structure.building.ResourceProcessSpec;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -23,13 +22,12 @@ import org.mars_sim.msp.core.time.MarsClock;
  * The ResourceProcessing class is a building function indicating that the
  * building has a set of resource processes.
  */
-public class ResourceProcessing extends Function implements Serializable {
+public class ResourceProcessing extends Function {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	/** default logger. */
-//	private static SimLogger logger = SimLogger.getLogger(ResourceProcessing.class.getName());
+	private static final String POWER_DOWN_LEVEL = "power-down-level";
 
 	public static final String SABATIER = "sabatier";
 	
@@ -43,54 +41,49 @@ public class ResourceProcessing extends Function implements Serializable {
 	 * Constructor.
 	 *
 	 * @param building the building the function is for.
+	 * @param spec Defintion of the Function
 	 * @throws BuildingException if function cannot be constructed.
 	 */
-	public ResourceProcessing(Building building) {
+	public ResourceProcessing(Building building, FunctionSpec spec) {
 		// Use Function constructor
-		super(FunctionType.RESOURCE_PROCESSING, building);
+		super(FunctionType.RESOURCE_PROCESSING, spec, building);
 
-		powerDownProcessingLevel = buildingConfig.getResourceProcessingPowerDown(building.getBuildingType());
+		powerDownProcessingLevel = spec.getDoubleProperty(POWER_DOWN_LEVEL);
 		resourceProcesses = new ArrayList<>();
-		for (ResourceProcessSpec spec : buildingConfig.getResourceProcesses(building.getBuildingType())) {
-			resourceProcesses.add(new ResourceProcess(spec));
+		for (ResourceProcessSpec pSpec : buildingConfig.getResourceProcesses(building.getBuildingType())) {
+			resourceProcesses.add(new ResourceProcess(pSpec));
 		}
 	}
 
 	/**
 	 * Gets the value of the function for a named building.
 	 *
-	 * @param buildingName the building name.
+	 * @param type the building name.
 	 * @param newBuilding  true if adding a new building.
 	 * @param settlement   the settlement.
 	 * @return value (VP) of building function.
 	 * @throws Exception if error getting function value.
 	 */
-	public static double getFunctionValue(String buildingName, boolean newBuilding, Settlement settlement) {
+	public static double getFunctionValue(String type, boolean newBuilding, Settlement settlement) {
 
 		double result = 0D;
-		Iterator<ResourceProcessSpec> i = buildingConfig.getResourceProcesses(buildingName).iterator();
-		while (i.hasNext()) {
-			ResourceProcessSpec process = i.next();
+		for(ResourceProcessSpec process :buildingConfig.getResourceProcesses(type)) {
 			double processValue = 0D;
-			Iterator<Integer> ii = process.getOutputResources().iterator();
-			while (ii.hasNext()) {
-				int resource = ii.next();
-				if (!process.isWasteOutputResource(resource)) {
-					double rate = process.getMaxOutputResourceRate(resource);
-					processValue += settlement.getGoodsManager().getGoodValuePerItem(resource) * rate;
+			for(int outResource : process.getOutputResources()) {
+				if (!process.isWasteOutputResource(outResource)) {
+					double rate = process.getMaxOutputResourceRate(outResource);
+					processValue += settlement.getGoodsManager().getGoodValuePerItem(outResource) * rate;
 				}
 			}
 
 			double inputInventoryLimit = 1D;
-			Iterator<Integer> iii = new HashSet<>(process.getInputResources()).iterator();
-		    while (iii.hasNext()) {
-		    	int resource = iii.next();
-				if (!process.isAmbientInputResource(resource)) {
-					double rate = process.getMaxInputResourceRate(resource);
-					processValue -= settlement.getGoodsManager().getGoodValuePerItem(resource) * rate;
+			for(int inResource : process.getInputResources()) {
+				if (!process.isAmbientInputResource(inResource)) {
+					double rate = process.getMaxInputResourceRate(inResource);
+					processValue -= settlement.getGoodsManager().getGoodValuePerItem(inResource) * rate;
 
 					// Check inventory limit.
-					double inputSupply = settlement.getAmountResourceStored(resource);
+					double inputSupply = settlement.getAmountResourceStored(inResource);
 					if (inputSupply < rate) {
 						double limit = inputSupply / rate;
 						if (limit < inputInventoryLimit) {
@@ -170,6 +163,7 @@ public class ResourceProcessing extends Function implements Serializable {
 	 *
 	 * @return power (kW)
 	 */
+	@Override
 	public double getFullPowerRequired() {
 		double result = 0D;
 		Iterator<ResourceProcess> i = resourceProcesses.iterator();
@@ -187,6 +181,7 @@ public class ResourceProcessing extends Function implements Serializable {
 	 *
 	 * @return power (kW)
 	 */
+	@Override
 	public double getPoweredDownPowerRequired() {
 		double result = 0D;
 		Iterator<ResourceProcess> i = resourceProcesses.iterator();

@@ -1151,20 +1151,6 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
-	 * Gets a list of uncrowded buildings from a given list of buildings with both life
-	 * support and robotic station.
-	 *
-	 * @param buildingList list of buildings with both life support and robotic station
-	 * @return list of buildings that are not at or above maximum occupant capacity.
-	 */
-	public static List<Building> getUncrowdedBuildings(List<Building> buildingList) {
-		return buildingList.stream()
-				.filter(b -> ((RoboticStation) b.getFunction(FunctionType.LIFE_SUPPORT))
-				.getAvailableOccupancy() > 0)
-				.collect(Collectors.toList());
-	}
-
-	/**
 	 * Gets a list of the least crowded buildings from a given list of buildings
 	 * with life support.
 	 *

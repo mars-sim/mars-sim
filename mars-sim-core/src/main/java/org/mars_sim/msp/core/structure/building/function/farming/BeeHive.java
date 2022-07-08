@@ -48,7 +48,7 @@ implements Serializable {
 
     public BeeHive(BeeGrowing beeGrowing, String beeSpecies) {
         // Use Function constructor.
-        super(FunctionType.FARMING, beeGrowing.getFarming().getBuilding());
+        super(FunctionType.FARMING, null, beeGrowing.getFarming().getBuilding());
 		
     	this.beeGrowing = beeGrowing;
     	this.beeSpecies = beeSpecies; 	

@@ -590,119 +590,120 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 		List<Function> buildingFunctions = new ArrayList<>();
 
 		for(FunctionType supported : spec.getFunctionSupported()) {
+			FunctionSpec fSpec = spec.getFunctionSpec(supported);
 			switch (supported) {
 
 			case ADMINISTRATION:
-				buildingFunctions.add(new Administration(this));
+				buildingFunctions.add(new Administration(this, fSpec));
 				break;
 
 			case ASTRONOMICAL_OBSERVATION:
-				buildingFunctions.add(new AstronomicalObservation(this));
+				buildingFunctions.add(new AstronomicalObservation(this, fSpec));
 				break;
 
 			case BUILDING_CONNECTION:
-				buildingFunctions.add(new BuildingConnection(this));
+				buildingFunctions.add(new BuildingConnection(this, fSpec));
 				break;
 
 			case COMMUNICATION:
-				buildingFunctions.add(new Communication(this));
+				buildingFunctions.add(new Communication(this, fSpec));
 				break;
 
 			case COMPUTATION:
-				buildingFunctions.add(new Computation(this));
+				buildingFunctions.add(new Computation(this, fSpec));
 				break;
 
 			case COOKING:
-				buildingFunctions.add(new Cooking(this));
-				buildingFunctions.add(new PreparingDessert(this));
+				buildingFunctions.add(new Cooking(this, fSpec));
+				buildingFunctions.add(new PreparingDessert(this, fSpec));
 				break;
 
 			case DINING:
-				buildingFunctions.add(new Dining(this));
+				buildingFunctions.add(new Dining(this, fSpec));
 				break;
 
 			case EARTH_RETURN:
-				buildingFunctions.add(new EarthReturn(this));
+				buildingFunctions.add(new EarthReturn(this, fSpec));
 				break;
 
 			case EVA:
-				buildingFunctions.add(new EVA(this));
+				buildingFunctions.add(new EVA(this, fSpec));
 				break;
 
 			case EXERCISE:
-				buildingFunctions.add(new Exercise(this));
+				buildingFunctions.add(new Exercise(this, fSpec));
 				break;
 
 			case FARMING:
-				buildingFunctions.add(new Farming(this));
+				buildingFunctions.add(new Farming(this, fSpec));
 				break;
 
 			case FISHERY:
-				buildingFunctions.add(new Fishery(this));
+				buildingFunctions.add(new Fishery(this, fSpec));
 				break;
 
 			case FOOD_PRODUCTION:
-				buildingFunctions.add(new FoodProduction(this));
+				buildingFunctions.add(new FoodProduction(this, fSpec));
 				break;
 
 			case GROUND_VEHICLE_MAINTENANCE:
-				buildingFunctions.add(new GroundVehicleMaintenance(this));
+				buildingFunctions.add(new GroundVehicleMaintenance(this, fSpec));
 				break;
 
 			case LIFE_SUPPORT:
-				buildingFunctions.add(new LifeSupport(this));
+				buildingFunctions.add(new LifeSupport(this, fSpec));
 				break;
 
 			case LIVING_ACCOMMODATIONS:
-				buildingFunctions.add(new LivingAccommodations(this));
+				buildingFunctions.add(new LivingAccommodations(this, fSpec));
 				break;
 
 			case MANAGEMENT:
-				buildingFunctions.add(new Management(this));
+				buildingFunctions.add(new Management(this, fSpec));
 				break;
 
 			case MANUFACTURE:
-				buildingFunctions.add(new Manufacture(this));
+				buildingFunctions.add(new Manufacture(this, fSpec));
 				break;
 
 			case MEDICAL_CARE:
-				buildingFunctions.add(new MedicalCare(this));
+				buildingFunctions.add(new MedicalCare(this, fSpec));
 				break;
 
 			case POWER_GENERATION:
-				buildingFunctions.add(new PowerGeneration(this));
+				buildingFunctions.add(new PowerGeneration(this, fSpec));
 				break;
 
 			case POWER_STORAGE:
-				buildingFunctions.add(new PowerStorage(this));
+				buildingFunctions.add(new PowerStorage(this, fSpec));
 				break;
 
 			case RECREATION:
-				buildingFunctions.add(new Recreation(this));
+				buildingFunctions.add(new Recreation(this, fSpec));
 				break;
 
 			case RESEARCH:
-				buildingFunctions.add(new Research(this));
+				buildingFunctions.add(new Research(this, fSpec));
 				break;
 
 			case RESOURCE_PROCESSING:
-				buildingFunctions.add(new ResourceProcessing(this));
+				buildingFunctions.add(new ResourceProcessing(this, fSpec));
 				break;
 
 			case ROBOTIC_STATION:
-				buildingFunctions.add(new RoboticStation(this));
+				buildingFunctions.add(new RoboticStation(this, fSpec));
 				break;
 
 			case STORAGE:
-				buildingFunctions.add(new Storage(this));
+				buildingFunctions.add(new Storage(this, fSpec));
 				break;
 
 			case THERMAL_GENERATION:
-				buildingFunctions.add(new ThermalGeneration(this));
+				buildingFunctions.add(new ThermalGeneration(this, fSpec));
 				break;
 
 			case WASTE_PROCESSING:
-				buildingFunctions.add(new WasteProcessing(this));
+				buildingFunctions.add(new WasteProcessing(this, fSpec));
 				break;
 
 			default:

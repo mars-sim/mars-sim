@@ -1,6 +1,7 @@
 package org.mars_sim.msp.core.structure.building;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
@@ -13,7 +14,18 @@ public class MockBuilding extends Building {
 
 	/* default logger. */
 //	private static final Logger logger = Logger.getLogger(Building.class.getName());
+	private static FunctionSpec lifeSupportSpec = null;
 	
+	private static FunctionSpec getLifeSupportSpec() {
+		if (lifeSupportSpec == null) {
+			
+			lifeSupportSpec = new FunctionSpec(Map.of(BuildingConfig.POWER_REQUIRED, 1D,
+													  FunctionSpec.CAPACITY, 10),
+														null);
+		}
+		return lifeSupportSpec;
+	}
+
     public MockBuilding() {
     	super();
     }
@@ -29,7 +41,7 @@ public class MockBuilding extends Building {
 
 		malfunctionManager = new MalfunctionManager(this, 0D, 0D);
 		functions = new ArrayList<>();
-		functions.add(new LifeSupport(this, 10, 1));
+		functions.add(new LifeSupport(this, getLifeSupportSpec()));
 	}
     
 	public MockBuilding(BuildingTemplate template, BuildingManager manager)  {
@@ -41,7 +53,7 @@ public class MockBuilding extends Building {
 
 		malfunctionManager = new MalfunctionManager(this, 0D, 0D);
 		functions = new ArrayList<>();
-		functions.add(new LifeSupport(this, 10, 1));
+		functions.add(new LifeSupport(this, getLifeSupportSpec()));
 	}
 
 	public void setTemplateID(int id) {

@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.structure.building.function;
 
-import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -18,19 +17,23 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.FunctionSpec;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * An administration building function. The building facilitates report writing
  * and other administrative paperwork.
  */
-public class Administration extends Function implements Serializable {
+public class Administration extends Function {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
 	private static SimLogger logger = SimLogger.getLogger(Administration.class.getName());
-	
+
+	private static final String POPULATION_SUPPORT = "population-support";
+
+
 	// Data members
 	private int populationSupport;
 	private int staff;
@@ -41,27 +44,26 @@ public class Administration extends Function implements Serializable {
 	 * Constructor.
 	 * 
 	 * @param building the building this function is for.
+	 * @param spec Spec of teh Administration Function
 	 */
-	public Administration(Building building) {
+	public Administration(Building building, FunctionSpec spec) {
 		// Use Function constructor.
-		super(FunctionType.ADMINISTRATION, building);
+		super(FunctionType.ADMINISTRATION, spec, building);
 
-		String buildingType = building.getBuildingType();
+		populationSupport = spec.getIntegerProperty(POPULATION_SUPPORT);
 
-		populationSupport = buildingConfig.getAdministrationPopulationSupport(buildingType);
-
-		staffCapacity = buildingConfig.getFunctionCapacity(buildingType, FunctionType.ADMINISTRATION);
+		staffCapacity = spec.getCapacity();
 	}
 
 	/**
 	 * Gets the value of the function for a named building.
 	 * 
-	 * @param buildingName the building name.
+	 * @param type the building type.
 	 * @param newBuilding  true if adding a new building.
 	 * @param settlement   the settlement.
 	 * @return value (VP) of building function.
 	 */
-	public static double getFunctionValue(String buildingName, boolean newBuilding, Settlement settlement) {
+	public static double getFunctionValue(String type, boolean newBuilding, Settlement settlement) {
 
 		// Settlements need enough administration buildings to support population.
 		double demand = settlement.getNumCitizens();
@@ -71,14 +73,14 @@ public class Administration extends Function implements Serializable {
 		Iterator<Building> i = settlement.getBuildingManager().getBuildings(FunctionType.ADMINISTRATION).iterator();
 		while (i.hasNext()) {
 			Building adminBuilding = i.next();
-			Administration admin = adminBuilding.getAdministration();// adminBuilding.getFunction(FUNCTION);
+			Administration admin = adminBuilding.getAdministration();
 			double populationSupport = admin.getPopulationSupport();
 			double wearFactor = ((adminBuilding.getMalfunctionManager().getWearCondition() / 100D) * .75D) + .25D;
 			supply += populationSupport * wearFactor;
 		}
 
 		if (!newBuilding) {
-			supply -= buildingConfig.getFunctionCapacity(buildingName, FunctionType.ADMINISTRATION);
+			supply -= buildingConfig.getFunctionSpec(type, FunctionType.ADMINISTRATION).getCapacity();
 			if (supply < 0D)
 				supply = 0D;
 		}
