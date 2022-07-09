@@ -765,27 +765,21 @@
 			<building type="Medium Battery Array" xloc="55.0"
 				yloc="-60.0" facing="0.0" />
 				
+			<building type="Atmospheric Processor" xloc="20.0"
+				yloc="-50.0" facing="90.0" />
+			<building type="Atmospheric Processor" xloc="20.0"
+				yloc="-60.0" facing="90.0" />
+				
 			<building type="Atmospheric Processor" xloc="-20.0"
 				yloc="-50.0" facing="90.0" />
 			<building type="Atmospheric Processor" xloc="-20.0"
-				yloc="-60.0" facing="90.0" />
+				yloc="-60.0" facing="90.0" />				
 			<building type="Atmospheric Processor" xloc="-20.0"
 				yloc="-70.0" facing="90.0" />
 			<building type="Atmospheric Processor" xloc="-20.0"
 				yloc="-80.0" facing="90.0" />
 			<building type="Atmospheric Processor" xloc="-20.0"
-				yloc="-90.0" facing="90.0" />
-				
-			<building type="Atmospheric Processor" xloc="-20.0"
-				yloc="-100.0" facing="90.0" />
-			<building type="Atmospheric Processor" xloc="-20.0"
-				yloc="-110.0" facing="90.0" />
-			<building type="Atmospheric Processor" xloc="-20.0"
-				yloc="-120.0" facing="90.0" />
-			<building type="Atmospheric Processor" xloc="-20.0"
-				yloc="-130.0" facing="90.0" />
-			<building type="Atmospheric Processor" xloc="-20.0"
-				yloc="-140.0" facing="90.0" />
+				yloc="-90.0" facing="90.0" />	
 																																								
 			<building type="Large Sabatier Processor" xloc="0.0"
 				yloc="-45.0" facing="90.0" />
@@ -802,7 +796,9 @@
 				yloc="-100.0" facing="0.0" />
 			<building type="Solar Photovoltaic Array" xloc="40.0"
 				yloc="-110.0" facing="0.0" />
-
+			<building type="Solar Photovoltaic Array" xloc="40.0"
+				yloc="-120.0" facing="0.0" />
+				
 			<building type="Solar Photovoltaic Array" xloc="55.0"
 				yloc="-70.0" facing="0.0" />
 			<building type="Solar Photovoltaic Array" xloc="55.0"
@@ -813,7 +809,12 @@
 				yloc="-100.0" facing="0.0" />
 			<building type="Solar Photovoltaic Array" xloc="55.0"
 				yloc="-110.0" facing="0.0" />
+			<building type="Solar Photovoltaic Array" xloc="55.0"
+				yloc="-120.0" facing="0.0" />
 				
+			<building type="Medium Battery Array" xloc="40.0"
+				yloc="-60.0" facing="0.0" />
+								
 			<building type="Regolith Storage Bin" xloc="35.0" yloc="0.0"
 				facing="90.0" />
 			<building type="Sand Storage Bin" xloc="35.0" yloc="5.0"
@@ -4780,39 +4781,7 @@
 			<building type="Atmospheric Processor" xloc="20.0"
 				yloc="-140.0" facing="90.0" />
 				
-			<building type="Atmospheric Processor" xloc="20.0"
-				yloc="-150.0" facing="90.0" />
-			<building type="Atmospheric Processor" xloc="20.0"
-				yloc="-160.0" facing="90.0" />
-			<building type="Atmospheric Processor" xloc="20.0"
-				yloc="-170.0" facing="90.0" />
-			<building type="Atmospheric Processor" xloc="20.0"
-				yloc="-180.0" facing="90.0" />
-			<building type="Atmospheric Processor" xloc="20.0"
-				yloc="-190.0" facing="90.0" />
-				
-			<building type="Atmospheric Processor" xloc="20.0"
-				yloc="-200.0" facing="90.0" />
-			<building type="Atmospheric Processor" xloc="20.0"
-				yloc="-210.0" facing="90.0" />
-			<building type="Atmospheric Processor" xloc="20.0"
-				yloc="-220.0" facing="90.0" />
-			<building type="Atmospheric Processor" xloc="20.0"
-				yloc="-230.0" facing="90.0" />
-			<building type="Atmospheric Processor" xloc="20.0"
-				yloc="-240.0" facing="90.0" />
-				
-			<building type="Atmospheric Processor" xloc="20.0"
-				yloc="-250.0" facing="90.0" />
-			<building type="Atmospheric Processor" xloc="20.0"
-				yloc="-260.0" facing="90.0" />
-			<building type="Atmospheric Processor" xloc="20.0"
-				yloc="-270.0" facing="90.0" />
-			<building type="Atmospheric Processor" xloc="20.0"
-				yloc="-280.0" facing="90.0" />
-			<building type="Atmospheric Processor" xloc="20.0"
-				yloc="-290.0" facing="90.0" />
-																																								
+																																					
 			<building type="Large Sabatier Processor" xloc="0.0"
 				yloc="-40.0" facing="90.0" />
 			<building type="Large Sabatier Processor" xloc="0.0"

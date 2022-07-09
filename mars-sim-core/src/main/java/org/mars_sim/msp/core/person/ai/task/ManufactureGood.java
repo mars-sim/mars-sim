@@ -157,8 +157,9 @@ public class ManufactureGood extends Task implements Serializable {
 						manufacturingFunction.getProcesses());
 				for (ManufactureProcess process : processes) {
 					int processSkillLevel = process.getInfo().getSkillLevelRequired();
-					// NOTE: allow a low material science skill person to have access to do the next level skill process
-					if (processSkillLevel - 1 > highestSkillLevel) {
+					// NOTE: allow a low material science skill person to have access to do the next 2 levels 
+					// of skill process or else difficult tasks are not learned.
+					if (processSkillLevel - 2 > highestSkillLevel) {
 						// Cancel manufacturing process.
 						manufacturingFunction.endManufacturingProcess(process, true);
 					}
@@ -179,7 +180,10 @@ public class ManufactureGood extends Task implements Serializable {
 		Building result = null;
 
 		SkillManager skillManager = person.getSkillManager();
-		int skill = skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
+		// Note: Allow a low material science skill person to have access to 
+		// do the next 2 levels of skill process or else difficult 
+		// tasks are not learned.
+		int skill = 2 + skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
 
 		if (person.isInSettlement()) {
 			List<Building> manufacturingBuildings = person.getSettlement().getBuildingManager().getBuildings(FunctionType.MANUFACTURE);

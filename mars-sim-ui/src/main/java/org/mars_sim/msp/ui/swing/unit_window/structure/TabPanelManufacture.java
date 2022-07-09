@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * TabPanelManufacture.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -20,7 +20,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListCellRenderer;
@@ -34,6 +33,7 @@ import javax.swing.JScrollPane;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.manufacture.ManufactureProcess;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessInfo;
 import org.mars_sim.msp.core.manufacture.ManufactureUtil;
@@ -60,7 +60,7 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 public class TabPanelManufacture extends TabPanel {
 
 	/** default logger. */
-	private static final Logger logger = Logger.getLogger(TabPanelManufacture.class.getName());
+	private static final SimLogger logger = SimLogger.getLogger(TabPanelManufacture.class.getName());
 
 	/** The Settlement instance. */
 	private Settlement settlement;
@@ -81,7 +81,10 @@ public class TabPanelManufacture extends TabPanel {
 	private Vector<SalvageProcessInfo> salvageSelectionCache;
 	/** Process selection button. */
 	private JButton newProcessButton;
-	private JCheckBox overrideCheckbox;
+	/** Checkbox for overriding manufacturing. */
+	private JCheckBox overrideManuCheckbox;
+	/** Checkbox for overriding salvaging. */	
+	private JCheckBox overrideSalvageCheckbox;
 
 	/**
 	 * Constructor.
@@ -133,13 +136,13 @@ public class TabPanelManufacture extends TabPanel {
 			manufactureListPane.add(new SalvagePanel(j.next(), true, 30));
 
 		// Create interaction panel.
-		JPanel interactionPanel = new JPanel(new GridLayout(4, 1, 0, 0));
+		JPanel interactionPanel = new JPanel(new GridLayout(5, 1, 0, 0));
 		content.add(interactionPanel, BorderLayout.NORTH);
 
 		// Create new building selection.
 		buildingComboBoxCache = getManufacturingBuildings();
 		buildingComboBox = new JComboBoxMW<Building>(buildingComboBoxCache);
-		buildingComboBox.setRenderer(new PromptComboBoxRenderer("(1). Select a Building"));
+		buildingComboBox.setRenderer(new PromptComboBoxRenderer(" (1). Select a Building"));
 		buildingComboBox.setSelectedIndex(-1);
 		buildingComboBox.setToolTipText(Msg.getString("TabPanelManufacture.tooltip.selectBuilding")); //$NON-NLS-1$
 		buildingComboBox.addItemListener(new ItemListener() {
@@ -155,7 +158,7 @@ public class TabPanelManufacture extends TabPanel {
 		processSelection = new JComboBoxMW<ManufactureProcessInfo>(processSelectionCache);
 
 		processSelection.setSelectedIndex(-1);
-		processSelection.setRenderer(new ManufactureSelectionListCellRenderer("(2). Select a Process"));
+		processSelection.setRenderer(new ManufactureSelectionListCellRenderer(" (2). Select a Process"));
 		processSelection.setToolTipText(Msg.getString("TabPanelManufacture.tooltip.selectAvailableProcess")); //$NON-NLS-1$
 		interactionPanel.add(processSelection);
 
@@ -187,6 +190,9 @@ public class TabPanelManufacture extends TabPanel {
 									workshop.addProcess(new ManufactureProcess(selectedProcess, workshop));
 									update();
 
+									logger.log(workshopBuilding, Level.CONFIG, 0L, "Player starts the '" 
+											+ selectedProcess.getName() + "'.");
+									
 									buildingComboBox.setRenderer(new PromptComboBoxRenderer(" (1). Select a Building"));
 									buildingComboBox.setSelectedIndex(-1);
 									processSelection.setSelectedIndex(-1);
@@ -202,6 +208,8 @@ public class TabPanelManufacture extends TabPanel {
 											new SalvageProcess(selectedSalvage, workshop, salvagedUnit));
 									update();
 
+									logger.log(workshopBuilding, Level.CONFIG, 0L, "Player starts salvaging '" 
+											+ salvagedUnit.getName() + "'.");
 								}
 							}
 						}
@@ -213,16 +221,28 @@ public class TabPanelManufacture extends TabPanel {
 		});
 		interactionPanel.add(newProcessButton);
 
-		// Create override check box.
-		overrideCheckbox = new JCheckBox(Msg.getString("TabPanelManufacture.checkbox.overrideManufacturing")); //$NON-NLS-1$
-		overrideCheckbox.setToolTipText(Msg.getString("TabPanelManufacture.tooltip.overrideManufacturing")); //$NON-NLS-1$
-		overrideCheckbox.addActionListener(new ActionListener() {
+		// Create manufacturing override check box.
+		overrideManuCheckbox = new JCheckBox(Msg.getString("TabPanelManufacture.checkbox.overrideManufacturing")); //$NON-NLS-1$
+		overrideManuCheckbox.setToolTipText(Msg.getString("TabPanelManufacture.tooltip.overrideManufacturing")); //$NON-NLS-1$
+		overrideManuCheckbox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				setManufactureOverride(overrideCheckbox.isSelected());
+				setOverride(OverrideType.MANUFACTURE, overrideManuCheckbox.isSelected());
 			}
 		});
-		overrideCheckbox.setSelected(settlement.getProcessOverride(OverrideType.MANUFACTURE));
-		interactionPanel.add(overrideCheckbox);
+		overrideManuCheckbox.setSelected(settlement.getProcessOverride(OverrideType.MANUFACTURE));
+		interactionPanel.add(overrideManuCheckbox);
+		
+		// Create salvaging override check box.
+		overrideSalvageCheckbox = new JCheckBox(Msg.getString("TabPanelManufacture.checkbox.overrideSalvaging")); //$NON-NLS-1$
+		overrideSalvageCheckbox.setToolTipText(Msg.getString("TabPanelManufacture.tooltip.overrideSalvaging")); //$NON-NLS-1$
+		overrideSalvageCheckbox.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				setOverride(OverrideType.SALVAGE, overrideSalvageCheckbox.isSelected());
+			}
+		});
+		overrideSalvageCheckbox.setSelected(settlement.getProcessOverride(OverrideType.SALVAGE));
+		interactionPanel.add(overrideSalvageCheckbox);
+		
 	}
 
 	class PromptComboBoxRenderer extends DefaultListCellRenderer {
@@ -389,8 +409,8 @@ public class TabPanelManufacture extends TabPanel {
 		newProcessButton.setEnabled(processSelection.getItemCount() > 0);
 
 		// Update ooverride check box.
-		if (settlement.getProcessOverride(OverrideType.MANUFACTURE) != overrideCheckbox.isSelected())
-			overrideCheckbox.setSelected(settlement.getProcessOverride(OverrideType.MANUFACTURE));
+		if (settlement.getProcessOverride(OverrideType.MANUFACTURE) != overrideManuCheckbox.isSelected())
+			overrideManuCheckbox.setSelected(settlement.getProcessOverride(OverrideType.MANUFACTURE));
 	}
 
 	/**
@@ -403,11 +423,8 @@ public class TabPanelManufacture extends TabPanel {
 
 		Iterator<Building> i = settlement.getBuildingManager().getBuildings(FunctionType.MANUFACTURE).iterator();
 		while (i.hasNext()) {
-			// try {
 			Manufacture workshop = i.next().getManufacture();
 			result.addAll(workshop.getProcesses());
-			// }
-			// catch (BuildingException e) {}
 		}
 
 		return result;
@@ -423,11 +440,8 @@ public class TabPanelManufacture extends TabPanel {
 
 		Iterator<Building> i = settlement.getBuildingManager().getBuildings(FunctionType.MANUFACTURE).iterator();
 		while (i.hasNext()) {
-			// try {
 			Manufacture workshop = i.next().getManufacture();
 			result.addAll(workshop.getSalvageProcesses());
-			// }
-			// catch (BuildingException e) {}
 		}
 
 		return result;
@@ -504,7 +518,12 @@ public class TabPanelManufacture extends TabPanel {
 						highestSkillLevel = skill;
 					}
 				}
-
+				
+				// Note: Allow a low material science skill person to have access to 
+				// do the next 2 levels of skill process or else difficult 
+				// tasks are not learned.
+				highestSkillLevel = highestSkillLevel + 2;
+				
 				Iterator<Robot> k = settlement.getAllAssociatedRobots().iterator();
 				while (k.hasNext()) {
 					Robot r = k.next();
@@ -545,15 +564,13 @@ public class TabPanelManufacture extends TabPanel {
 		try {
 			if (manufactureBuilding != null) {
 				Manufacture workshop = manufactureBuilding.getManufacture();
-				if (workshop.getProcesses().size() < workshop.getNumPrintersInUse()) {
-					Iterator<SalvageProcessInfo> i = Collections
-							.unmodifiableList(ManufactureUtil.getSalvageProcessesForTechLevel(workshop.getTechLevel()))
-							.iterator();
-					while (i.hasNext()) {
-						SalvageProcessInfo process = i.next();
-						if (ManufactureUtil.canSalvageProcessBeStarted(process, workshop))
-							result.add(process);
-					}
+				Iterator<SalvageProcessInfo> i = Collections
+						.unmodifiableList(ManufactureUtil.getSalvageProcessesForTechLevel(workshop.getTechLevel()))
+						.iterator();
+				while (i.hasNext()) {
+					SalvageProcessInfo process = i.next();
+					if (ManufactureUtil.canSalvageProcessBeStarted(process, workshop))
+						result.add(process);
 				}
 			}
 		} catch (Exception e) {
@@ -564,12 +581,12 @@ public class TabPanelManufacture extends TabPanel {
 	}
 
 	/**
-	 * Sets the settlement manufacture override flag.
+	 * Sets the settlement override flag.
 	 * 
-	 * @param override the manufacture override flag.
+	 * @param override the override flag.
 	 */
-	private void setManufactureOverride(boolean override) {
-		settlement.setProcessOverride(OverrideType.MANUFACTURE, override);
+	private void setOverride(OverrideType type, boolean override) {
+		settlement.setProcessOverride(type, override);
 	}
 
 	/**
@@ -647,6 +664,6 @@ public class TabPanelManufacture extends TabPanel {
 		processSelectionCache = null;
 		salvageSelectionCache = null;
 		newProcessButton = null;
-		overrideCheckbox = null;
+		overrideManuCheckbox = null;
 	}
 }

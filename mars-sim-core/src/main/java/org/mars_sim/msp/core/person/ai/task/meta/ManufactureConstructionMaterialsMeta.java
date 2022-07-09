@@ -51,21 +51,19 @@ public class ManufactureConstructionMaterialsMeta extends MetaTask {
 
     @Override
     public double getProbability(Person person) {
-
+        // Probability affected by the person's stress and fatigue.
+        if (!person.getPhysicalCondition().isFitByLevel(1000, 70, 1000))
+        	return 0;
+        
+        // Check for the override
+        if (person.getSettlement().getProcessOverride(OverrideType.MANUFACTURE)) {
+            return 0;
+        }
+        
         double result = 0D;
 
         if (person.isInSettlement()) {
-    	
-            // Probability affected by the person's stress and fatigue.
-            if (!person.getPhysicalCondition().isFitByLevel(1000, 70, 1000))
-            	return 0;
-            
-            // If settlement has manufacturing override, no new
-            // manufacturing processes can be created.
-            if (person.getSettlement().getProcessOverride(OverrideType.MANUFACTURE)) {
-                return 0;
-            }
-            
+
             try {
                 // See if there is an available manufacturing building.
                 Building manufacturingBuilding = ManufactureConstructionMaterials.getAvailableManufacturingBuilding(person);
@@ -123,11 +121,15 @@ public class ManufactureConstructionMaterialsMeta extends MetaTask {
 
 	@Override
 	public double getProbability(Robot robot) {
-
+		// Check for the override
+        if (robot.getSettlement().getProcessOverride(OverrideType.MANUFACTURE)) {
+            return 0;
+        }
+        
         double result = 0D;
 
         if (robot.isInSettlement()) {
-    	
+        	
             try {
                 // See if there is an available manufacturing building.
                 Building manufacturingBuilding = ManufactureConstructionMaterials.getAvailableManufacturingBuilding(robot);
@@ -154,13 +156,6 @@ public class ManufactureConstructionMaterialsMeta extends MetaTask {
                     
                     if (ManufactureConstructionMaterials.hasProcessRequiringWork(manufacturingBuilding, skill)) {
                         result += 10D;
-                    }
-
-                    // If settlement has manufacturing override, no new
-                    // manufacturing processes can be created.
-                    else if (robot.getSettlement().getProcessOverride(OverrideType.MANUFACTURE)) {
-                        result = 0;
-                        return 0;
                     }
                 }
                 

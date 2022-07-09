@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * SalvageGoodMeta.java
- * @date 2021-12-05
+ * @date 2022-07-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -44,12 +44,16 @@ public class SalvageGoodMeta extends MetaTask {
 
     @Override
     public double getProbability(Person person) {
-
+        // Check for the override
+        if (person.getSettlement().getProcessOverride(OverrideType.SALVAGE)) {
+            return 0;
+        }
+        
         double result = 0D;
 
         // If settlement has manufacturing override, no new
         // salvage processes can be created.
-        if (person.isInSettlement() && !person.getSettlement().getProcessOverride(OverrideType.MANUFACTURE)) {
+        if (person.isInSettlement()) {
 
             // Probability affected by the person's stress and fatigue.
             if (!person.getPhysicalCondition().isFitByLevel(1000, 70, 1000))

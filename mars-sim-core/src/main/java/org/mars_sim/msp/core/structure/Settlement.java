@@ -92,7 +92,7 @@ public class Settlement extends Structure implements Temporal,
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-	/* default logger. */
+	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(Settlement.class.getName());
 
 	// Static members
@@ -2453,9 +2453,11 @@ public class Settlement extends Structure implements Temporal,
 	 */
 	public void setProcessOverride(OverrideType type, boolean override) {
 		if (override) {
+			logger.log(this, Level.CONFIG, 0L, "Player enables the override on '" + type.toString() + "'.");
 			this.processOverrides.add(type);
 		}
 		else {
+			logger.log(this, Level.CONFIG, 0L, "Player disables the override on '" + type.toString() + "'.");
 			this.processOverrides.remove(type);
 		}
 	}
@@ -2467,7 +2469,7 @@ public class Settlement extends Structure implements Temporal,
 	 * @return Is this override flag set
 	 */
 	public boolean getProcessOverride(OverrideType type) {
-		return this.processOverrides .contains(type);
+		return this.processOverrides.contains(type);
 	}
 
 	/**

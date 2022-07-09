@@ -143,9 +143,13 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
 		Building result = null;
 
 		SkillManager skillManager = person.getSkillManager();
-		int skill = skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
+		
+		// Note: Allow a low material science skill person to have access to 
+		// do the next 2 levels of skill process or else difficult 
+		// tasks are not learned.		
+		int skill = 2 + skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
 
-		if (person.isInSettlement()) {// .getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+		if (person.isInSettlement()) {
 			BuildingManager manager = person.getSettlement().getBuildingManager();
 			List<Building> manufacturingBuildings = manager.getBuildings(FunctionType.MANUFACTURE);
 			manufacturingBuildings = BuildingManager.getNonMalfunctioningBuildings(manufacturingBuildings);
@@ -367,8 +371,8 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
 
 		int skillLevel = robot.getSkillManager().getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
 
-		Manufacture manufacturingFunction = manufacturingBuilding.getManufacture();// (Manufacture)
-																					// manufacturingBuilding.getFunction(FunctionType.MANUFACTURE);
+		Manufacture manufacturingFunction = manufacturingBuilding.getManufacture();
+		
 		int techLevel = manufacturingFunction.getTechLevel();
 
 		Iterator<ManufactureProcessInfo> i = ManufactureUtil
@@ -611,7 +615,7 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
 			int techLevel = workshop.getTechLevel();
 
 			// Determine all manufacturing processes that are possible and profitable.
-			Map<ManufactureProcessInfo, Double> processProbMap = new HashMap<ManufactureProcessInfo, Double>();
+			Map<ManufactureProcessInfo, Double> processProbMap = new HashMap<>();
 			Iterator<ManufactureProcessInfo> i = ManufactureUtil
 					.getManufactureProcessesForTechSkillLevel(techLevel, skillLevel).iterator();
 			while (i.hasNext()) {

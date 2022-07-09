@@ -455,7 +455,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				4. https://www.sciencedaily.com/releases/2021/03/210317141722.htm
 				5. https://www.researchgate.net/publication/265608781_Decoupled_catalytic_hydrogen_evolution_from_a_molecular_metal_oxide_redox_mediator_in_water_splitting
 				-->
-				<process name="Oxygen Generation System" power-required=".5" default="on">
+				<process name="Oxygen Generation System" number-modules="2" power-required=".5" default="on">
 					<input resource="water" rate="72" ambient="false" />
 					<output resource="hydrogen" rate="8" ambient="false" />
 					<output resource="oxygen" rate="64" ambient="false" />
@@ -1185,7 +1185,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="water" rate="86.4" ambient="false" />
 				</process>
 				
-				<process name="Oxygen Generation System" power-required=".5" default="on">
+				<process name="Oxygen Generation System" number-modules="2" power-required=".5" default="on">
 					<input resource="water" rate="72" ambient="false" />
 					<output resource="hydrogen" rate="8" ambient="false" />
 					<output resource="oxygen" rate="64" ambient="false" />
@@ -1771,7 +1771,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="water" rate="21.6" ambient="false" />
 				</process>
 				
-				<process name="Oxygen Generation System" number-modules="4" power-required="2" default="on">
+				<process name="Oxygen Generation System" number-modules="4" power-required="2" default="off">
 					<input resource="water" rate="288" ambient="false" />
 					<output resource="hydrogen" rate="32" ambient="false" />
 					<output resource="oxygen" rate="256" ambient="false" />
@@ -3279,7 +3279,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="1.8"  yloc="-2.6" />
 				</activity>
 			</research>
-			
+
 			<resource-processing power-down-level="0.0">
 				<process name="Sabatier RWGS Reactor" number-modules="4" power-required="0.47" default="on">
 					<input resource="carbon dioxide" rate="39.6" ambient="true" />
@@ -3288,13 +3288,13 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="carbon monoxide" rate="16.8" ambient="false" />
 					<output resource="water" rate="21.6" ambient="false" />
 				</process>
-				 
-				<process name="Oxygen Generation System" power-required=".5" default="on">
+
+				<process name="Oxygen Generation System" number-modules="2" power-required=".5" default="on">
 					<input resource="water" rate="72" ambient="false" />
 					<output resource="hydrogen" rate="8" ambient="false" />
 					<output resource="oxygen" rate="64" ambient="false" />
 				</process>
-				
+
 				<process name="Low Temperature Plasma CO2 Decomposition" power-required="0.4" default="on">
 					<description> 
 						The atmosphere is mainly CO2, so there is no need to capture it and plasma can 

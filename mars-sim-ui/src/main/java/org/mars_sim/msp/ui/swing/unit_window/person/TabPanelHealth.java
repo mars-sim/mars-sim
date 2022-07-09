@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * TabPanelHealth.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.person;
@@ -9,6 +9,7 @@ package org.mars_sim.msp.ui.swing.unit_window.person;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.event.MouseEvent;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Collection;
@@ -127,7 +128,7 @@ extends TabPanel {
         northPanel.setLayout(new BoxLayout(northPanel, BoxLayout.Y_AXIS));
 
 		// Prepare condition panel
-		WebPanel conditionPanel = new WebPanel(new SpringLayout());//GridLayout(5, 2, 0, 0));
+		WebPanel conditionPanel = new WebPanel(new SpringLayout());
 		northPanel.add(conditionPanel);
 
 		// Prepare fatigue name label
@@ -195,7 +196,7 @@ extends TabPanel {
 		// Prepare SpringLayout
 		SpringUtilities.makeCompactGrid(conditionPanel,
 		                                3, 4, //rows, cols
-		                                10, 4,        //initX, initY
+		                                5, 4,        //initX, initY
 		                                15, 3);       //xPad, yPad
 		
 
@@ -262,9 +263,35 @@ extends TabPanel {
 		radiationTableModel = new RadiationTableModel(person);
 
 		// Create radiation table
-		radiationTable = new ZebraJTable(radiationTableModel);
+		radiationTable = new ZebraJTable(radiationTableModel) {
 
-		
+            //Implement table cell tool tips.           
+            public String getToolTipText(MouseEvent e) {
+                String tip = null;
+                java.awt.Point p = e.getPoint();
+//              int rowIndex = rowAtPoint(p);
+                int colIndex = columnAtPoint(p);
+                try {
+                	if (colIndex == 0) {
+                    	tip = radiationToolTips[0];
+                    }
+                	else if (colIndex == 1) {
+                    	tip = radiationToolTips[1];
+                    }
+                    else if (colIndex == 2) {
+                    	tip = radiationToolTips[2];
+                    }
+                    else if (colIndex == 3) {
+                    	tip = radiationToolTips[3];
+                    }
+                } catch (RuntimeException e1) {
+                    //catch null pointer exception if mouse is over an empty line
+                }
+
+                return tip;
+            }
+        };
+	
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
 		renderer.setHorizontalAlignment(SwingConstants.CENTER);
 		radiationTable.getColumnModel().getColumn(0).setCellRenderer(renderer);
@@ -272,14 +299,14 @@ extends TabPanel {
 		radiationTable.getColumnModel().getColumn(2).setCellRenderer(renderer);
 		radiationTable.getColumnModel().getColumn(3).setCellRenderer(renderer);
 
-		radiationTable.setPreferredScrollableViewportSize(new Dimension(225, 70));
+		radiationTable.setPreferredScrollableViewportSize(new Dimension(225, 75));
 		radiationTable.getColumnModel().getColumn(0).setPreferredWidth(40);
 		radiationTable.getColumnModel().getColumn(1).setPreferredWidth(100);
 		radiationTable.getColumnModel().getColumn(2).setPreferredWidth(65);
 		radiationTable.getColumnModel().getColumn(3).setPreferredWidth(35);
 		radiationTable.setRowSelectionAllowed(true);
 		radiationScrollPanel.setViewportView(radiationTable);
-
+		
 		// Added sorting
 		radiationTable.setAutoCreateRowSorter(true);
 		TableStyle.setTableStyle(radiationTable);

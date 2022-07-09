@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TabPanelResourceProcesses.java
- * @date 2021-12-20
+ * @date 2022-07-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -15,6 +15,7 @@ import java.text.DecimalFormat;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -24,6 +25,7 @@ import javax.swing.JPanel;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.OverrideType;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -44,6 +46,9 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 @SuppressWarnings("serial")
 public class TabPanelResourceProcesses
 extends TabPanel {
+	
+	/** default logger. */
+	private static final SimLogger logger = SimLogger.getLogger(TabPanelResourceProcesses.class.getName());
 
 	/** The Settlement instance. */
 	private Settlement settlement;
@@ -154,6 +159,7 @@ extends TabPanel {
 
 	/**
 	 * Sets the settlement resource process override flag.
+	 * 
 	 * @param override the resource process override flag.
 	 */
 	private void setResourceProcessOverride(boolean override) {
@@ -179,6 +185,7 @@ extends TabPanel {
 
 		/**
 		 * Constructor.
+		 * 
 		 * @param process the resource process.
 		 * @param building the building the process is in.
 		 */
@@ -194,12 +201,18 @@ extends TabPanel {
 			toggleButton.setMargin(new Insets(0, 0, 0, 0));
 			toggleButton.addActionListener(e -> {
 					ResourceProcess p = getProcess();
-					p.setProcessRunning(!p.isProcessRunning());
+					boolean isRunning = p.isProcessRunning();
+					p.setProcessRunning(!isRunning);
 					update();
+					if (isRunning)
+						logger.log(building, Level.CONFIG, 0L, "Player stops the '" + p.getProcessName() + "'.");
+					else
+						logger.log(building, Level.CONFIG, 0L, "Player starts the '" + p.getProcessName() + "'.");
 			});
 			toggleButton.setToolTipText(Msg.getString("TabPanelResourceProcesses.tooltip.toggleButton")); //$NON-NLS-1$
 			add(toggleButton);
-			label = new JLabel(Msg.getString("TabPanelResourceProcesses.processLabel", building.getNickName(), process.getProcessName())); //$NON-NLS-1$
+			label = new JLabel(Msg.getString("TabPanelResourceProcesses.processLabel", //$NON-NLS-1$
+					building.getNickName(), Conversion.capitalize(process.getProcessName()))); 
 			add(label);
 
 			// Load green and red dots.
@@ -212,10 +225,16 @@ extends TabPanel {
 			setToolTipText(getToolTipString(building));
 		}
 
-		// NOTE: internationalize the resource processes' dynamic tooltip
-		// Align text to improved tooltip readability (for English Locale only)
+		/**
+		 * Assembles the text for a tool tip.
+		 * 
+		 * @param building
+		 * @return
+		 */
 		private String getToolTipString(Building building) {
+			// NOTE: internationalize the resource processes' dynamic tooltip.
 			StringBuilder result = new StringBuilder("<html>");
+			// Future: Use another tool tip manager to align text to improve tooltip readability			
 			result.append("&emsp;&nbsp;Process:&emsp;").append(process.getProcessName()).append("<br>");
 			result.append("&emsp;&nbsp;Building:&emsp;").append(building.getNickName()).append("<br>");
 			result.append("Power Req:&emsp;").append(decFormatter.format(process.getPowerRequired())).append(" kW<br>");
@@ -247,7 +266,7 @@ extends TabPanel {
 					.append(" @ ").append(rateString).append(" kg/sol<br>");
 				jj++;
 			}
-			// Added a note to denote an ambient input resource
+			// Add a note to denote an ambient input resource
 			if (ambientStr == "*")
 				result.append("&emsp;<i>Note:  * denotes an ambient resource</i>");
 			result.append("</html>");
@@ -255,7 +274,7 @@ extends TabPanel {
 		}
 
 		/**
-		 * Update the label.
+		 * Updates the label.
 		 */
 		void update() {
 			if (process.isProcessRunning()) toggleButton.setIcon(dotGreen);
@@ -268,7 +287,7 @@ extends TabPanel {
 	}
 	
 	/**
-	 * Prepare object for garbage collection.
+	 * Prepares object for garbage collection.
 	 */
 	@Override
 	public void destroy() {
