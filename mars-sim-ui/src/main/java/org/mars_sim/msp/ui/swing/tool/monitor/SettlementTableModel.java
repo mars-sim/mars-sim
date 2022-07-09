@@ -48,28 +48,30 @@ public class SettlementTableModel extends UnitTableModel {
 	private final static int POPULATION = 1;
 	private final static int PARKED = 2;
 	private final static int MISSION = 3;
-	private final static int POWER = 4;
-
-	private final static int MALFUNCTION = 5;
-
-	private final static int OXYGEN_COL = 6;
-	private final static int HYDROGEN_COL = 7;
-	private final static int METHANE_COL = 8;
-	private final static int METHANOL_COL = 9;
+	private final static int POWER_GEN = 4;
+	private final static int POWER_LOAD = 5;
+	private final static int ENERGY_STORED = 6;
 	
-	private final static int WATER_COL = 10;
-	private final static int ICE_COL = 11;
+	private final static int MALFUNCTION = 7;
 
-	private final static int CONCRETE_COL = 12;
-	private final static int CEMENT_COL = 13;
+	private final static int OXYGEN_COL = 8;
+	private final static int HYDROGEN_COL = 9;
+	private final static int METHANE_COL = 10;
+	private final static int METHANOL_COL = 11;
 	
-	private final static int REGOLITHS_COL = 14;
-	private final static int ROCKS_COL = 15;
-	private final static int ORES_COL = 16;
-	private final static int MINERALS_COL = 17;
+	private final static int WATER_COL = 12;
+	private final static int ICE_COL = 13;
+
+	private final static int CONCRETE_COL = 14;
+	private final static int CEMENT_COL = 15;
+	
+	private final static int REGOLITHS_COL = 16;
+	private final static int ROCKS_COL = 17;
+	private final static int ORES_COL = 18;
+	private final static int MINERALS_COL = 19;
 
 	/** The number of Columns. */
-	private final static int COLUMNCOUNT = 18;
+	private final static int COLUMNCOUNT = 20;
 	/** Names of Columns. */
 	private final static String columnNames[];
 	/** Types of columns. */
@@ -80,14 +82,21 @@ public class SettlementTableModel extends UnitTableModel {
 		columnTypes = new Class[COLUMNCOUNT];
 		columnNames[NAME] = "Name";
 		columnTypes[NAME] = String.class;
-		columnNames[POPULATION] = "Population";
+		columnNames[POPULATION] = "Pop";
 		columnTypes[POPULATION] = Integer.class;
-		columnNames[PARKED] = "Parked Vehicles";
+		columnNames[PARKED] = "Parked Veh";
 		columnTypes[PARKED] = Integer.class;
-		columnNames[MISSION] = "Mission Vehicles";
+		columnNames[MISSION] = "Mission Veh";
 		columnTypes[MISSION] = Integer.class;
-		columnNames[POWER] = "Power (kW)";
-		columnTypes[POWER] = Number.class;
+		
+		columnNames[POWER_GEN] = "kW Gen";
+		columnTypes[POWER_GEN] = Number.class;
+		columnNames[POWER_LOAD] = "kW Load";
+		columnTypes[POWER_LOAD] = Number.class;
+		columnNames[ENERGY_STORED] = "kWh Stored";
+		columnTypes[ENERGY_STORED] = Number.class;
+		
+		
 		columnNames[MALFUNCTION] = "Malfunction";
 		columnTypes[MALFUNCTION] = String.class;
 		
@@ -123,7 +132,7 @@ public class SettlementTableModel extends UnitTableModel {
 
 	private static UnitManager unitManager = Simulation.instance().getUnitManager();
 
-	private static final DecimalFormat df = new DecimalFormat("#,###,##0.00");
+	private static final DecimalFormat df = new DecimalFormat("#,###,##0");
 
 	private static final int WATER_ID = ResourceUtil.waterID;
 	private static final int ICE_ID = ResourceUtil.iceID;
@@ -142,7 +151,7 @@ public class SettlementTableModel extends UnitTableModel {
 	private static final int CEMENT_ID = ResourceUtil.cementID;
 	
 	static {
-		df.setMinimumFractionDigits(2);
+//		df.setMinimumFractionDigits(2);
 		df.setMinimumIntegerDigits(1);
 	}
 
@@ -215,7 +224,7 @@ public class SettlementTableModel extends UnitTableModel {
 				}
 					break;
 
-				case POWER: {
+				case POWER_GEN: {
 					double power = settle.getPowerGrid().getGeneratedPower();
 					if (power < 0D || Double.isNaN(power) || Double.isInfinite(power))
 						result = 0;
@@ -224,7 +233,24 @@ public class SettlementTableModel extends UnitTableModel {
 				}
 					break;
 
+				case POWER_LOAD: {
+					double power = settle.getPowerGrid().getRequiredPower();
+					if (power < 0D || Double.isNaN(power) || Double.isInfinite(power))
+						result = 0;
+					else
+						result = df.format(power);
+				}
+					break;
 
+				case ENERGY_STORED: {
+					double energy = settle.getPowerGrid().getStoredEnergy();
+					if (energy < 0D || Double.isNaN(energy) || Double.isInfinite(energy))
+						result = 0;
+					else
+						result = df.format(energy);
+				}
+					break;
+					
 				case POPULATION: {
 					result = settle.getNumCitizens();
 				}
@@ -355,7 +381,9 @@ public class SettlementTableModel extends UnitTableModel {
 			if (source instanceof Person) columnNum = POPULATION;
 			else if (source instanceof Vehicle) columnNum = PARKED;
 		}
-		else if (eventType == UnitEventType.GENERATED_POWER_EVENT) columnNum = POWER;
+		else if (eventType == UnitEventType.GENERATED_POWER_EVENT) columnNum = POWER_GEN;
+		else if (eventType == UnitEventType.REQUIRED_POWER_EVENT) columnNum = POWER_LOAD;
+		else if (eventType == UnitEventType.STORED_POWER_EVENT) columnNum = ENERGY_STORED;		
 		else if (eventType == UnitEventType.MALFUNCTION_EVENT) columnNum = MALFUNCTION;
 		else if (eventType == UnitEventType.INVENTORY_RESOURCE_EVENT) {
 			int target = -1;
