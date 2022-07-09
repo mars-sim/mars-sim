@@ -26,8 +26,6 @@ public class FuelHeatSource extends HeatSource implements Serializable {
 
 	public static final double THERMAL_EFFICIENCY = .9;
 
-	public static final double ELECTRIC_EFFICIENCY = FuelPowerSource.ELECTRICAL_EFFICIENCY;
-
 	private double rate;
 
 	private double toggleRunningWorkTime;
@@ -92,30 +90,8 @@ public class FuelHeatSource extends HeatSource implements Serializable {
 		// Note that 16 g of methane requires 64 g of oxygen, a 1 to 4 ratio
 		consumed = Math.min(maxFuel, Math.min(fuelStored, o2Stored / 4D));
 
-//		boolean a = (fuelStored >= maxFuel);
-//		boolean b = (o2Stored >= 4D * maxFuel);
-//		
-//		if (a && b) {
-//			consumed = maxFuel;
-//		}
-//		else if (a && !b) {
-//			consumed = o2Stored/4D;
-//		}
-//		else if (!a && b) {
-//			consumed = maxFuel;
-//		}	
-//		else if (!a && !b) {
-//			consumed = Math.min(fuelStored, o2Stored/4D);
-//		}				
-
 		settlement.retrieveAmountResource(METHANE_ID, consumed);
-		settlement.retrieveAmountResource(OXYGEN_ID, consumed * 4);
-
-//		inv.addAmountDemandTotalRequest(methaneID, consumed);
-//		inv.addAmountDemand(methaneID, consumed);
-//
-//		inv.addAmountDemandTotalRequest(oxygenID, consumed);
-//		inv.addAmountDemand(oxygenID, 4D * consumed);
+		settlement.retrieveAmountResource(OXYGEN_ID, 4 * consumed);
 
 		return consumed;
 	}
@@ -167,15 +143,14 @@ public class FuelHeatSource extends HeatSource implements Serializable {
 
 	@Override
 	public double getEfficiency() {
-		return 1;
+		return THERMAL_EFFICIENCY;
 	}
 
 	@Override
 	public double getCurrentPower(Building building) {
-
 		if (toggle) {
 			double spentFuel = consumeFuel(time, building.getSettlement());
-			return getMaxHeat() * spentFuel / maxFuel * ELECTRIC_EFFICIENCY;
+			return getMaxHeat() * spentFuel / maxFuel * getEfficiency();
 		}
 
 		return 0;

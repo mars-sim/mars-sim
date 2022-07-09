@@ -29,11 +29,7 @@ implements Serializable {
 	/** The work time (millisol) required to toggle this power source on or off. */
 	public static final double TOGGLE_RUNNING_WORK_TIME_REQUIRED = 2D;
 	
-	//public static final double kW_PER_FUEL_CELL_STACK = 5D;
-	
 	public static final double ELECTRICAL_EFFICIENCY = .7125;
-
-	//private int numFuelCellStackinUse;
 
 	private double rate;
 	
@@ -61,28 +57,25 @@ implements Serializable {
 		super(PowerSourceType.FUEL_POWER, _maxPower);
 		rate = _consumptionSpeed;
 		toggle = _toggle;
-		
-		// Added "fuel cell stack"
-		//cellStack = ItemResource.findItemResource("fuel cell stack");
-		//installed = false;
 	}
 	
 //	 Note : every mole of methane (16 g) releases 810 KJ of energy if burning with 2 moles of oxygen (64 g)
 //	 CH4(g) + 2O2(g) -> CO2(g) + 2 H2O(g), deltaH = -890 kJ 
 //	 
 //	 CnH2n+2 + (3n + 1)O2 -> nCO2 + (n + 1)H2O + (6n + 2)e- 
-//
-//	 Assume electric efficiency at 40%,
-//	 356kW needs 16 g/s 
-//	 60kW needs 2.6966 g/s or 239.3939 g/millisol or kg/sol
-//	 1 kW_e <- 3.9899 g/millisol
-//	 
-//	 Assume electric efficiency at 100%,
-//	 1 kW_e <- 1.5960 g/millisol
-//	 
+
+//	it produces 890kW at the consumption rate of 16 g/s
+//  or it produces 1kW at .018 g/s
+	
+//	Since each martian sol has 88775 earth seconds (=24*60*60 + 39*60 + 35.244),
+	
+//	1kW needs 1.59795 kg/sol. 
+//	5kW needs 7.9897 kg/sol. 
+//	60kW needs 95.877 kg/sol.
+	
 //	 SOFC uses methane with 1100 W-hr/kg, 
 //	 This translate to 71.25 % efficiency
-
+		
 	/**
 	 * Consumes the fuel.
 	 * 
@@ -106,41 +99,24 @@ implements Serializable {
 		consumed = Math.min(maxFuel, Math.min(fuelStored, o2Stored/4D));
 
 		settlement.retrieveAmountResource(methaneID, consumed);
-		settlement.retrieveAmountResource(oxygenID, 4D*consumed);
+		settlement.retrieveAmountResource(oxygenID, 4 * consumed);
 
 		return consumed;
 	}
 	
-	 public void setTime(double time) {
-		 this.time = time;
-	 }
+	public void setTime(double time) {
+		this.time = time;
+	}
 	 
-	 @Override
-	 public double getCurrentPower(Building building) {
-
-			// Retrieve of 3 fuel cell stacks
-//			if (!installed) {
-//				double numCellStack = building.getSettlementInventory().getItemResourceNum(cellStack);
-//				numFuelCellStackinUse = (int)Math.round(this._maxPower/kW_PER_FUEL_CELL_STACK); //
-//				if (numCellStack >= numFuelCellStackinUse) {
-//					building.getSettlementInventory().retrieveItemResources(cellStack, numFuelCellStackinUse);
-//					installed = true;
-//					logger.info("getCurrentPower() : just installed " + numFuelCellStackinUse + " fuel cell stack(s) on the Methane Power Generator Building");
-//				}
-//			}
+	@Override
+	public double getCurrentPower(Building building) {
+		if (toggle) {
+			double spentFuel = consumeFuel(time, building.getSettlement());	 
+			return getMaxPower() * spentFuel/maxFuel * ELECTRICAL_EFFICIENCY;
+		}
 		 
-		 if (toggle) {
-			 double spentFuel = consumeFuel(time, building.getSettlement());
-//			 logger.info("getCurrentPower(). spentFuel: " +  Math.round(spentFuel* 100.0)/100.0 + " kW"
-//					 + "   spentFuel: " +  Math.round(spentFuel* 100.0)/100.0 + " kW"
-//					 + "   getMaxPower(): " +  Math.round(getMaxPower()* 100.0)/100.0 + " kW"
-//					 + "   spentFuel/maxFuel * ELECTRICAL_EFFICIENCY: " +  Math.round(spentFuel/maxFuel * ELECTRICAL_EFFICIENCY * 100.0)/100.0 + " kW"
-//					 );		 
-			 return getMaxPower() * spentFuel/maxFuel * ELECTRICAL_EFFICIENCY;
-		 }
-		 
-		 return 0;
-	 }
+		return 0;
+	}
 	 
 
 	public void toggleON() {
@@ -157,6 +133,7 @@ implements Serializable {
 
 	/**
 	 * Gets the amount resource used as fuel.
+	 * 
 	 * @return amount resource.
 	 */
 	 public int getFuelResourceID() {
@@ -165,6 +142,7 @@ implements Serializable {
 		 
 	/**
 	 * Gets the rate the fuel is consumed.
+	 * 
 	 * @return rate (kg/Sol).
 	 */
 	 public double getFuelConsumptionRate() {
@@ -174,6 +152,7 @@ implements Serializable {
 	 /**
 	  * Adds work time to toggling the power source on or off.
 	  * Called by ToggleFuelPowerSource.
+	  * 
 	  * @param time the amount (millisols) of time to add.
 	  */
 	 public void addToggleWorkTime(double time) {
@@ -201,17 +180,9 @@ implements Serializable {
 	    return getMaxPower() * MAINTENANCE_FACTOR;
 	 }
 
+	
 	 // Return the fuel cell stacks to the inventory
 	 public void removeFromSettlement() {
-		 // FUTURE: one practical application is to upgrade the existing fuel cell stack 
-		 // by swapping out the old one for recycling with a new one.
-
-//		 if (installed) {
-//			//double numCellStack = building.getSettlementInventory().getItemResourceNum(cellStack);
-//			building.getSettlementInventory().storeItemResources(cellStack, numFuelCellStackinUse);
-//			installed = false;
-//			logger.info("getCurrentPower() : just returned the " + numFuelCellStackinUse + " fuel cell stack(s) used by the Methane Power Generator Building");
-//		//}
 	 }
 
 	 @Override
