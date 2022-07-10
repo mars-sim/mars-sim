@@ -57,7 +57,7 @@ public class RobotWindow extends UnitWindow {
 		// Add tab sorting
 //		sortTabPanels();
 		// Add to tab panels. 
-		addTabPanels();
+		addTabIconPanels();
 	}
 
 	/**

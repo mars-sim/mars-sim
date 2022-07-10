@@ -391,15 +391,23 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 	}
 	
 	/**
-	 * Adds tab panels.
+	 * Adds tab panels with icons.
 	 */
-	protected void addTabPanels() {
+	protected void addTabIconPanels() {
 		tabPanels.forEach(panel -> {
 			tabPane.addTab(null, panel.getTabIcon(), panel, panel.getTabToolTip());
 		});
 	}
 	
-
+	/**
+	 * Adds tab panels with titles.
+	 */
+	protected void addTabTitlePanels() {
+		tabPanels.forEach(panel -> {
+			tabPane.addTab(panel.getTabTitle(), null, panel, panel.getTabToolTip());
+		});
+	}
+	
 	/**
 	 * Gets the unit for this window.
 	 *

@@ -107,8 +107,8 @@ public class BuildingWindow extends UnitWindow {
 		// Need this to display the first panel
 //		sortTabPanels();
 		
-		// Add to tab panels. 
-		addTabPanels();
+		// Add to tab panels with titles. 
+        addTabTitlePanels();
     }
 
     @Override

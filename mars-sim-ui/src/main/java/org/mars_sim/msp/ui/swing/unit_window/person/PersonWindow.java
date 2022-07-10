@@ -74,7 +74,7 @@ public class PersonWindow extends UnitWindow {
 		addTabPanel(new TabPanelSponsor(person, desktop));
 
 		// Add to tab panels. 
-		addTabPanels();
+		addTabIconPanels();
 	}
 
 	/**

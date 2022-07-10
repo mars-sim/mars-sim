@@ -59,7 +59,7 @@ public class EquipmentWindow extends UnitWindow {
 
 //    	sortTabPanels();
 		// Add to tab panels. 
-		addTabPanels();
+		addTabIconPanels();
     }
 
     /**

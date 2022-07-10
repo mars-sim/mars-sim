@@ -88,7 +88,7 @@ public class SettlementUnitWindow extends UnitWindow {
 //		sortTabPanels();
 		
 		// Add to tab panels. 
-		addTabPanels();
+		addTabIconPanels();
 	}
 
 	/**

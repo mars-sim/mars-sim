@@ -81,7 +81,7 @@ public class VehicleWindow extends UnitWindow {
 
 //		sortTabPanels();
 		// Add to tab panels. 
-		addTabPanels();
+		addTabIconPanels();
 	}
 
 	/**
