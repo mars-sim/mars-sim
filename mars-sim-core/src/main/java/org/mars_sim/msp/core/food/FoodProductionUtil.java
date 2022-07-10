@@ -55,7 +55,7 @@ public final class FoodProductionUtil {
 	}
 
 	/**
-	 * gives back an alphabetically ordered map of all foodProduction processes.
+	 * Gives back an alphabetically ordered map of all foodProduction processes.
 	 *
 	 * @return {@link TreeMap}<{@link String},{@link FoodProductionProcessInfo}>
 	 */
@@ -87,7 +87,7 @@ public final class FoodProductionUtil {
 	}
 
 	/**
-	 * gets foodProduction processes with given output.
+	 * Gets foodProduction processes with given output.
 	 *
 	 * @param item {@link String} name of desired output
 	 * @return {@link List}<{@link FoodProductionProcessItem}> list of processes
@@ -106,7 +106,7 @@ public final class FoodProductionUtil {
 	}
 
 	/**
-	 * gets foodProduction processes with given input.
+	 * Gets foodProduction processes with given input.
 	 *
 	 * @param name {@link String} desired input
 	 * @return {@link List}<{@link FoodProductionProcessItem}> list of processes
@@ -222,7 +222,7 @@ public final class FoodProductionUtil {
 	public static boolean canProcessBeStarted(FoodProductionProcessInfo process, FoodProduction kitchen) {
 
 		// Check to see if this kitchen can accommodate another process.
-		if (kitchen.getTotalProcessNumber() <= kitchen.getConcurrentProcesses()) {
+		if (kitchen.getTotalProcessNumber() < kitchen.getConcurrentProcesses()) {
 			return false;
 		}
 
@@ -276,7 +276,7 @@ public final class FoodProductionUtil {
 		return result;
 	}
 
-	   /**
+	/**
      * Checks if enough storage room for process outputs in an inventory.
      *
      * @param process the manufacturing process.
@@ -334,7 +334,7 @@ public final class FoodProductionUtil {
 	}
 
 	/**
-	 * Gets the highest foodProduction tech level in a settlement.
+	 * Gets the highest food production tech level in a settlement.
 	 *
 	 * @param settlement the settlement.
 	 * @return highest foodProduction tech level.

@@ -5,10 +5,9 @@ Copyright (C) 2022 Scott Davis
 
 ------------------------------------------|---------------------
 
-## v3.4.0 (build ____) - 2022-06-__
+## v3.4.0 (build ____) - 2022-07-__
 
 ### ISSUES ADDRESSED :
-
 
 ### CORE ENGINE IMPROVEMENTS :
   <LI>Airlock :		Implement airlock reservation system for EVA egress. </LI>
@@ -27,11 +26,13 @@ Copyright (C) 2022 Scott Davis
   <LI>Waste :		Split grey/black water & solid waste management resource processes into a separate waste processing function.</LI>
   
 ### UI IMPROVEMENT :
-  <LI>Authority : 	Add editor that customize sponsors/authorities.</LI> 
-  <LI>Economic : 	Display the cost/profit/price of a good in each settlement for comparison.</LI>
-  <LI>Location : 	Show areocentric longitude of Mars (where Mars is at in the solar system) in Time Tool. </LI>  
-  <LI>Scenario : 	Edit and load basic scenarios.</LI>
-  <LI>Window : 		Add newly dedicated Building Unit Window which replaces the Building tab in the Settlement window.</LI>
+  <LI>  Authority : Add editor that customize sponsors/authorities.</LI> 
+  <LI>   Economic : Display the cost/profit/price of a good in each settlement for comparison.</LI>
+  <LI>      Icons : Replace word title of each tab with an icon in all Unit Windows.</LI>
+  <LI>   Location : Show areocentric longitude of Mars (where Mars is at in the solar system) in Time Tool. </LI>  
+  <LI>   Scenario : Edit and load basic scenarios.</LI>
+  <LI>      Power : Display generated power vs. power load vs. energy stored for each settlement in Monitor Tool.</LI>
+  <LI>     Window : Add newly dedicated Building Unit Window which replaces the Building tab in the Settlement window.</LI>
   
 ### FIXES :
   <LI>(Un)loading : 	Consider loading/unloading edge cases for Trading/Delivery. </LI>
