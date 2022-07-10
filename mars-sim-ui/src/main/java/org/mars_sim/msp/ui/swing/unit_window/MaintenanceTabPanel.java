@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MaintenanceTabPanel.java
- * @date 2021-12-20
+ * @date 2022-07-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window;
@@ -39,8 +39,8 @@ import org.mars_sim.msp.ui.swing.tool.Conversion;
 @SuppressWarnings("serial")
 public class MaintenanceTabPanel extends TabPanel {
 	
-	private static final String SCREWDRIVER_ICON = Msg.getString("icon.screwdriver"); //$NON-NLS-1$
-	
+	private static final String SPANNER_ICON = Msg.getString("icon.spanner"); //$NON-NLS-1$
+
     private int wearConditionCache; // The cached value for the wear condition.
     private int lastCompletedTime; // The time since last completed maintenance.
     
@@ -55,7 +55,7 @@ public class MaintenanceTabPanel extends TabPanel {
     private Collection<Malfunction> malfunctionCache; // List of malfunctions.
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param unit the unit to display.
      * @param desktop the main desktop.
@@ -65,7 +65,7 @@ public class MaintenanceTabPanel extends TabPanel {
         super(
         	Msg.getString("MaintenanceTabPanel.title"),
         	Msg.getString("MaintenanceTabPanel.title"), 
-        	ImageLoader.getNewIcon(SCREWDRIVER_ICON), 
+        	ImageLoader.getNewIcon(SPANNER_ICON), 
         	Msg.getString("MaintenanceTabPanel.title"),
         	unit, desktop
         );
@@ -142,7 +142,7 @@ public class MaintenanceTabPanel extends TabPanel {
 
         // Create malfunction panels
         malfunctionCache = malfunctionable.getMalfunctionManager().getMalfunctions();
-        malfunctionPanels = new ArrayList<MalfunctionPanel>();
+        malfunctionPanels = new ArrayList<>();
         Iterator<Malfunction> i = malfunctionCache.iterator();
         while (i.hasNext()) {
             MalfunctionPanel panel = new MalfunctionPanel(i.next());
@@ -152,7 +152,7 @@ public class MaintenanceTabPanel extends TabPanel {
     }
 
     /**
-     * Update this panel
+     * Updates this panel.
      */
     @Override
     public void update() {
@@ -228,9 +228,9 @@ public class MaintenanceTabPanel extends TabPanel {
 
     /**
      * Gets the parts string.
+     * 
      * @return string.
      */
-	// 2015-03-06 Reformatted part list and capitalized part.getName()
     private String getPartsString(boolean useHtml) {
     	Malfunctionable malfunctionable = (Malfunctionable) getUnit();
         StringBuilder buf = new StringBuilder("Needed Parts: ");
@@ -242,9 +242,11 @@ public class MaintenanceTabPanel extends TabPanel {
     			Integer id = i.next();
     			int number = parts.get(id);
     			Part p = ItemResourceUtil.findItemResource(id);
-				if (useHtml) buf.append("<br>");
+				if (useHtml) 
+					buf.append("<br>");
 				buf.append(number).append(" ").append(Conversion.capitalize(p.getName()));
-				if (i.hasNext()) buf.append(", ");
+				if (i.hasNext()) 
+					buf.append(", ");
 				else {
 					buf.append(".");
 					if (useHtml) buf.append("<br>");
@@ -261,8 +263,10 @@ public class MaintenanceTabPanel extends TabPanel {
 	 */
 	private String getToolTipString() {
 		StringBuilder result = new StringBuilder("<html>");
-		result.append("The Last Complete Maintenance Was Done ").append(lastCompletedTime).append(" Sols Ago<br>");
-		result.append("</html>");
+		result.append("The Last Complete Maintenance Was Done ")
+			.append(lastCompletedTime)
+			.append(" Sols Ago<br>")
+			.append("</html>");
 		return result.toString();
 	}
 
@@ -278,7 +282,8 @@ public class MaintenanceTabPanel extends TabPanel {
         Iterator<MalfunctionPanel> i = malfunctionPanels.iterator();
         while (i.hasNext()) {
             MalfunctionPanel panel = i.next();
-            if (panel.getMalfunction() == malfunction) result = panel;
+            if (panel.getMalfunction() == malfunction) 
+            	result = panel;
         }
 
         return result;

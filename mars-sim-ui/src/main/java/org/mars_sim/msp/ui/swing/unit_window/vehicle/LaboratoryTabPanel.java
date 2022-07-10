@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * LaboratoryTabPanel.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.vehicle;
@@ -16,10 +16,12 @@ import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 import javax.swing.border.TitledBorder;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Lab;
 import org.mars_sim.msp.core.vehicle.Rover;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
@@ -34,6 +36,8 @@ import com.alee.laf.text.WebTextArea;
 @SuppressWarnings("serial")
 public class LaboratoryTabPanel extends TabPanel {
 	
+	private static final String SCIENCE_ICON = Msg.getString("icon.science"); //$NON-NLS-1$
+
 	/** The Rover instance. */
 	private Rover rover;
 	
@@ -46,15 +50,21 @@ public class LaboratoryTabPanel extends TabPanel {
 
 	/**
 	 * Constructor.
+	 * 
 	 * @param unit the unit to display.
 	 * @param desktop the main desktop.
 	 */
 	public LaboratoryTabPanel(Unit unit, MainDesktopPane desktop) { 
 		// Use the TabPanel constructor
-		super("Lab", null, "Laboratory", unit, desktop);
+		super(
+			Msg.getString("LaboratoryTabPanel.title"),	
+			Msg.getString("LaboratoryTabPanel.title"),
+			ImageLoader.getNewIcon(SCIENCE_ICON),
+			Msg.getString("LaboratoryTabPanel.title"),
+			unit, desktop
+		);
 		
 		rover = (Rover) unit;
-
 	}
 
 	@Override
