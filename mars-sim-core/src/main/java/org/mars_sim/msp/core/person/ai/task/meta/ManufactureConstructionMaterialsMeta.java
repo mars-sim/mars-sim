@@ -54,15 +54,14 @@ public class ManufactureConstructionMaterialsMeta extends MetaTask {
         // Probability affected by the person's stress and fatigue.
         if (!person.getPhysicalCondition().isFitByLevel(1000, 70, 1000))
         	return 0;
-        
-        // Check for the override
-        if (person.getSettlement().getProcessOverride(OverrideType.MANUFACTURE)) {
-            return 0;
-        }
-        
+            
         double result = 0D;
 
         if (person.isInSettlement()) {
+            // Check for the override
+            if (person.getSettlement().getProcessOverride(OverrideType.MANUFACTURE)) {
+                return 0;
+            }
 
             try {
                 // See if there is an available manufacturing building.

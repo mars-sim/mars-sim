@@ -52,15 +52,15 @@ public class ManufactureGoodMeta extends MetaTask {
         if (!person.getPhysicalCondition().isFitByLevel(1000, 70, 1000))
         	return 0;
         
-        // Check for the override
-        if (person.getSettlement().getProcessOverride(OverrideType.MANUFACTURE)) {
-            return 0;
-        }
-        
+
         double result = 0D;
 
         if (person.isInSettlement()) {
-
+            // Check for the override
+            if (person.getSettlement().getProcessOverride(OverrideType.MANUFACTURE)) {
+                return 0;
+            }
+        
             // Probability affected by the person's stress and fatigue.
             PhysicalCondition condition = person.getPhysicalCondition();
             double fatigue = condition.getFatigue();
