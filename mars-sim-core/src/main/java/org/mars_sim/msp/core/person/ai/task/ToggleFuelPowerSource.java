@@ -56,8 +56,6 @@ implements Serializable {
     private static final TaskPhase TOGGLE_POWER_SOURCE = new TaskPhase(Msg.getString(
             "Task.phase.togglePowerSource")); //$NON-NLS-1$
 
-	private static final String C2 = "command and control";
-
     // Data members
 	/** True if the building with the fuel power source is inhabitable. */
     private boolean isInhabitable;
@@ -146,7 +144,7 @@ implements Serializable {
 			List<Building> notFull = new ArrayList<>();
 
 			for (Building b : mgtBuildings) {
-				if (b.getBuildingType().equalsIgnoreCase(C2)) {
+				if (b.hasFunction(FunctionType.ADMINISTRATION)) {
 					walkToMgtBldg(b);
 					done = true;
 					break;

@@ -1265,19 +1265,19 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	 * @param type
 	 * @return
 	 */
-	public boolean isAdjacentBuildingType(String type) {
-		Settlement s = getSettlement();
-		if (s != null) {
-			Building b = getBuildingLocation();
+	// public boolean isAdjacentBuildingType(String type) {
+	// 	Settlement s = getSettlement();
+	// 	if (s != null) {
+	// 		Building b = getBuildingLocation();
 
-			List<Building> list = s.createAdjacentBuildings(b);
-			for (Building bb : list) {
-				if (bb.getBuildingType().equalsIgnoreCase(type))
-					return true;
-			}
-		}
-		return false;
-	}
+	// 		List<Building> list = s.createAdjacentBuildings(b);
+	// 		for (Building bb : list) {
+	// 			if (bb.getBuildingType().equalsIgnoreCase(type))
+	// 				return true;
+	// 		}
+	// 	}
+	// 	return false;
+	// }
 
 	/**
 	 * Computes the building the person is currently located at Returns null if

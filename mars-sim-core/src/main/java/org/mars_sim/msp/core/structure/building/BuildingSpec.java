@@ -95,6 +95,7 @@ public class BuildingSpec {
 		return supportedFunctions.keySet();	
 	}
 
+	
 	/**
 	 * Get the function details for this building type.
 	 * @param function

@@ -15,6 +15,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
@@ -74,11 +75,11 @@ public class Resupply implements Serializable, Transportable {
 	public static final String POSITIONING = "Positioning ";
 	
 	// Default separation distance between the outer wall of buildings .
-	public static final int MAX_INHABITABLE_BUILDING_DISTANCE = 6;
-	public static final int MIN_INHABITABLE_BUILDING_DISTANCE = 2;
+	public static final int MAX_HABITABLE_BUILDING_DISTANCE = 6;
+	public static final int MIN_HABITABLE_BUILDING_DISTANCE = 2;
 
-	public static final int MAX_NONINHABITABLE_BUILDING_DISTANCE = 64;
-	public static final int MIN_NONINHABITABLE_BUILDING_DISTANCE = 48;
+	public static final int MAX_INHABITABLE_BUILDING_DISTANCE = 64;
+	public static final int MIN_INHABITABLE_BUILDING_DISTANCE = 48;
 
 	public static final int MAX_OBSERVATORY_BUILDING_DISTANCE = 48;
 	public static final int MIN_OBSERVATORY_BUILDING_DISTANCE = 36;
@@ -394,10 +395,11 @@ public class Resupply implements Serializable, Transportable {
 		boolean withinRadius = true;
 		int leastDistance = 0;
 		// TOD: also check if
-		boolean hasLifeSupport = buildingConfig.hasFunction(bt.getBuildingType(), FunctionType.LIFE_SUPPORT);
+		Set<FunctionType> supported = buildingConfig.getBuildingSpec(bt.getBuildingType()).getFunctionSupported();
+		boolean hasLifeSupport = supported.contains(FunctionType.LIFE_SUPPORT);
 		if (hasLifeSupport) {
 
-			if (bt.getBuildingType().equalsIgnoreCase(Building.ASTRONOMY_OBSERVATORY)) {
+			if (supported.contains(FunctionType.ASTRONOMICAL_OBSERVATION)) {
 				leastDistance = MIN_OBSERVATORY_BUILDING_DISTANCE;
 			} else {
 				leastDistance = MIN_INHABITABLE_BUILDING_DISTANCE;
@@ -405,7 +407,7 @@ public class Resupply implements Serializable, Transportable {
 		}
 
 		else {
-			leastDistance = MIN_NONINHABITABLE_BUILDING_DISTANCE;
+			leastDistance = MIN_INHABITABLE_BUILDING_DISTANCE;
 		}
 
 		List<Building> list = mgr.getBuildings(FunctionType.LIFE_SUPPORT);
@@ -611,8 +613,10 @@ public class Resupply implements Serializable, Transportable {
 		BuildingManager buildingManager = unitManager.getSettlementByID(settlementID).getBuildingManager();
 		
 		// Note : only hallway and tunnel has "building-connection" function
-		boolean isBuildingConnector = buildingConfig.hasFunction(buildingType, FunctionType.BUILDING_CONNECTION);
-		boolean hasLifeSupport = buildingConfig.hasFunction(buildingType, FunctionType.LIFE_SUPPORT);
+		BuildingSpec spec = buildingConfig.getBuildingSpec(buildingType);
+		Set<FunctionType> supported = spec.getFunctionSupported();
+		boolean isBuildingConnector = supported.contains(FunctionType.BUILDING_CONNECTION);
+		boolean hasLifeSupport = supported.contains(FunctionType.LIFE_SUPPORT);
 
 		
 		if (isBuildingConnector) {
@@ -645,7 +649,7 @@ public class Resupply implements Serializable, Transportable {
 					Building building = i.next();
 					// Note: Don't want to place any building next to the observatory
 					double dist1 = 0;
-					if (buildingType.equalsIgnoreCase(Building.ASTRONOMY_OBSERVATORY)) {
+					if (supported.contains(FunctionType.ASTRONOMICAL_OBSERVATION)) {
 						dist1 = RandomUtil.getRandomRegressionInteger(MIN_OBSERVATORY_BUILDING_DISTANCE * 2,
 								MAX_OBSERVATORY_BUILDING_DISTANCE * 2) / 2D;
 					} else {
@@ -693,7 +697,6 @@ public class Resupply implements Serializable, Transportable {
 			} else {
 				// Replace width and length defaults to deal with variable width and length
 				// buildings.
-				BuildingSpec spec = buildingConfig.getBuildingSpec(buildingType);
 				double width = spec.getWidth();
 				if (width <= 0D) {
 					width = DEFAULT_VARIABLE_BUILDING_WIDTH;
@@ -738,16 +741,12 @@ public class Resupply implements Serializable, Transportable {
 			// Note: Don't want to place any building next to the observatory
 			double dist2 = 0;
 			if (lifeSupport) {
-				if (buildingType.equalsIgnoreCase(Building.ASTRONOMY_OBSERVATORY)) {
-					dist2 = RandomUtil.getRandomRegressionInteger(MIN_OBSERVATORY_BUILDING_DISTANCE * 2,
-							MAX_OBSERVATORY_BUILDING_DISTANCE * 2) / 2D;
-				} else {
-					dist2 = RandomUtil.getRandomRegressionInteger(MIN_INHABITABLE_BUILDING_DISTANCE * 2,
-							MAX_INHABITABLE_BUILDING_DISTANCE * 2) / 2D;
-				}
-			} else
-				dist2 = RandomUtil.getRandomRegressionInteger(MIN_NONINHABITABLE_BUILDING_DISTANCE * 2,
-						MAX_NONINHABITABLE_BUILDING_DISTANCE * 2) / 2D;
+				dist2 = RandomUtil.getRandomRegressionInteger(MIN_HABITABLE_BUILDING_DISTANCE * 2,
+							MAX_HABITABLE_BUILDING_DISTANCE * 2) / 2D;
+			}
+			else
+				dist2 = RandomUtil.getRandomRegressionInteger(MIN_INHABITABLE_BUILDING_DISTANCE * 2,
+						MAX_INHABITABLE_BUILDING_DISTANCE * 2) / 2D;
 			newPosition = positionNextToBuilding(buildingType, building, Math.round(dist2), false);
 			if (newPosition != null) {
 				break;

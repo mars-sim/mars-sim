@@ -140,7 +140,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 			List<Building> notFull = new ArrayList<>();
 
 			for (Building b : mgtBuildings) {
-				if (b.getBuildingType().equalsIgnoreCase(C2)) {
+				if (b.hasFunction(FunctionType.ADMINISTRATION)) {
 					walkToMgtBldg(b);
 					done = true;
 					break;

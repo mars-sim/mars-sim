@@ -185,9 +185,7 @@ extends Function {
 	public Heating(Building building, FunctionSpec spec) {
 		// Call Function constructor.
 		super(FUNCTION, spec, building);
-        
-		String buildingType = building.getBuildingType();
-		
+        		
 		location = building.getLocation();
 
 		double length = building.getLength();

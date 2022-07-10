@@ -643,10 +643,7 @@ public class BuildingManager implements Serializable {
 	public static Building getAvailableBuilding(ScientificStudy study, Person person) {
 		Building b = person.getBuildingLocation();
 
-		// If this person is located in the observatory
-		if ((b != null) && b.getBuildingType().equalsIgnoreCase(Building.ASTRONOMY_OBSERVATORY))
-			return b;
-
+		// If this person is located in the settlement
 		if (person.isInSettlement()) {
 			List<Building> buildings = null;
 
@@ -889,7 +886,7 @@ public class BuildingManager implements Serializable {
 		
 		List<Building> list = manager.getBuildingsWithLifeSupport();
 		
-		list = list.stream().filter(b -> !b.getBuildingType().equalsIgnoreCase(Building.ASTRONOMY_OBSERVATORY))
+		list = list.stream().filter(b -> !b.hasFunction(FunctionType.ASTRONOMICAL_OBSERVATION))
 				.collect(Collectors.toList());
 
 		if (list.isEmpty()) {

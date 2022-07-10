@@ -1116,17 +1116,13 @@ public class EatDrink extends Task implements Serializable {
 	public static Building getAvailableDiningBuilding(Person person, boolean canChat) {
 		Building b = person.getBuildingLocation();
 
-		// If this person is located in the observatory
-		if (b != null && b.getBuildingType().equalsIgnoreCase(Building.ASTRONOMY_OBSERVATORY))
-			return b;
-
+		// If this person is located in the settlement
 		if (person.isInSettlement()) {
 			Settlement settlement = person.getSettlement();
 			BuildingManager manager = settlement.getBuildingManager();
 			List<Building> diningBuildings = manager.getBuildings(FunctionType.DINING);
 
 			diningBuildings = BuildingManager.getWalkableBuildings(person, diningBuildings);
-//			diningBuildings = BuildingManager.getNonMalfunctioningBuildings(diningBuildings);
 			if (canChat)
 				// Choose between the most crowded or the least crowded dining hall
 				diningBuildings = BuildingManager.getChattyBuildings(diningBuildings);

@@ -36,6 +36,7 @@ import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingCategory;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.BuildingSpec;
@@ -90,13 +91,11 @@ public class BuildingConstructionMission extends Mission implements Serializable
 	/** Time (millisols) required to prepare construction site for stage. */
 	private static final double SITE_PREPARE_TIME = 100D;
 	// Default distance between buildings for construction.
-	private static final double DEFAULT_INHABITABLE_BUILDING_DISTANCE = 5D;
+	private static final double DEFAULT_HABITABLE_BUILDING_DISTANCE = 5D;
 
-	private static final double DEFAULT_NONINHABITABLE_BUILDING_DISTANCE = 2D;
+	private static final double DEFAULT_INHABITABLE_BUILDING_DISTANCE = 2D;
 
-	private static final double DEFAULT_SMALL_GREENHOUSE_DISTANCE = 5D;
-
-	private static final double DEFAULT_LARGE_GREENHOUSE_DISTANCE = 5D;
+	private static final double DEFAULT_FARMING_DISTANCE = 5D;
 
 
 	// Default width and length for variable size buildings if not otherwise
@@ -965,26 +964,21 @@ public class BuildingConstructionMission extends Mission implements Serializable
 			
 			else if (hasLifeSupport) {
 
-				if (buildingType.equalsIgnoreCase(Building.INFLATABLE_GREENHOUSE)
-					|| buildingType.equalsIgnoreCase(Building.INGROUND_GREENHOUSE)) {
-					goodPosition = determineSite(buildingType, DEFAULT_SMALL_GREENHOUSE_DISTANCE, site);
-				}
-
-				else if (buildingType.equalsIgnoreCase(Building.LARGE_GREENHOUSE)) {
-					goodPosition = determineSite(buildingType, DEFAULT_LARGE_GREENHOUSE_DISTANCE, site);
-
+				// Put greenhouses together
+				if (spec.getCategory() == BuildingCategory.FARMING) {
+					goodPosition = determineSite(buildingType, DEFAULT_FARMING_DISTANCE, site);
 				} 
 				
 				else {
-					// Try to put building next to another inhabitable building.
-					List<Building> inhabitableBuildings = site.getSettlement().getBuildingManager()
+					// Try to put building next to another habitable building.
+					List<Building> habitableBuildings = site.getSettlement().getBuildingManager()
 							.getBuildings(FunctionType.LIFE_SUPPORT);
-					Collections.shuffle(inhabitableBuildings);
-					for (Building b : inhabitableBuildings) {
+					Collections.shuffle(habitableBuildings);
+					for (Building b : habitableBuildings) {
 						// Match the floor area (e.g look more organize to put all 7m x 9m next to one
 						// another)
 						if (b.getFloorArea() == site.getWidth() * site.getLength()) {
-							goodPosition = positionNextToBuilding(site, b, DEFAULT_INHABITABLE_BUILDING_DISTANCE,
+							goodPosition = positionNextToBuilding(site, b, DEFAULT_HABITABLE_BUILDING_DISTANCE,
 									false);
 							if (goodPosition) {
 								break;
@@ -992,9 +986,10 @@ public class BuildingConstructionMission extends Mission implements Serializable
 						}
 					}
 				}
-			} else {
+			}
+			else {
 				// Try to put building next to the same building type.
-				goodPosition = determineSite(buildingType, DEFAULT_NONINHABITABLE_BUILDING_DISTANCE, site);
+				goodPosition = determineSite(buildingType, DEFAULT_INHABITABLE_BUILDING_DISTANCE, site);
 			}
 		}
 
@@ -1003,7 +998,6 @@ public class BuildingConstructionMission extends Mission implements Serializable
 			// buildingType = determinePreferredConstructedBuildingType(foundationStageInfo,
 			// constructionSkill);
 
-			logger.fine("buildingType : " + buildingType);
 			// Try to put building next to another inhabitable building.
 			List<Building> inhabitableBuildings = s.getBuildingManager().getBuildings(FunctionType.LIFE_SUPPORT);
 			Collections.shuffle(inhabitableBuildings);

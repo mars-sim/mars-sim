@@ -267,12 +267,12 @@ public class ExitAirlock extends Task implements Serializable {
 		// if the person is in the airlock next to the observatory
 		// he will always be qualified to leave that place, or else
 		// he will get stranded
-        if (person.isAdjacentBuildingType(Building.ASTRONOMY_OBSERVATORY)) {
-			return true;
-		}
+        // if (person.isAdjacentBuildingType(Building.ASTRONOMY_OBSERVATORY)) {
+		// 	return true;
+		// }
 		// Checks if a person is tired, too stressful or hungry and need
 		// to take break, eat and/or sleep
-		else return person.getPhysicalCondition().computeFitnessLevel() >= 2;
+		return person.getPhysicalCondition().computeFitnessLevel() >= 2;
 	}
 
 	/**

@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.structure.building;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -93,18 +92,12 @@ import org.mars_sim.msp.core.tool.RandomUtil;
  * The Building class is a settlement's building.
  */
 public class Building extends Structure implements Malfunctionable, Indoor, 
-		LocalBoundedObject, InsidePathLocation, Temporal, Serializable, ResourceHolder, ItemHolder {
+		LocalBoundedObject, InsidePathLocation, Temporal, ResourceHolder, ItemHolder {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	// default logger.
 	private static final SimLogger logger = SimLogger.getLogger(Building.class.getName());
-
-	public static final String ASTRONOMY_OBSERVATORY = "Astronomy Observatory";
-	public static final String GREENHOUSE = "Greenhouse";
-	public static final String INFLATABLE_GREENHOUSE = "Inflatable " + GREENHOUSE;
-	public static final String INGROUND_GREENHOUSE = "Inground " + GREENHOUSE;
-	public static final String LARGE_GREENHOUSE = "Large " + GREENHOUSE;
 
 	public static final int TISSUE_CAPACITY = 20;
 
@@ -922,10 +915,6 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 			heating = furnace.getHeating();
 		heating.setPowerRequired(powerReq);
 	}
-
-//	 public void setPowerGenerated(double powerGenerated) {
-//		 powerGen.setPowerGenerated(powerGenerated);
-//	 }
 
 	/**
 	 * Gets the heat the building requires for power-down mode.
