@@ -89,7 +89,7 @@ public final class LocationFormat {
 			}
 		}
 		
-		outputMessage.append(location.getNickName());
+		outputMessage.append(location.getName());
 	}
 	
 	/**

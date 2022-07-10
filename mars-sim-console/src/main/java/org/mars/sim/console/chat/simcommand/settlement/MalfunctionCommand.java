@@ -37,7 +37,7 @@ public class MalfunctionCommand extends AbstractSettlementCommand {
 		for(Building building : settlement.getBuildingManager().getBuildings()) {
 			for(Malfunction m : building.getMalfunctionManager().getMalfunctions()) {
 				response.appendHeading(m.getName());
-				response.appendLabeledString("Building", building.getNickName());
+				response.appendLabeledString("Building", building.getName());
 				CommandHelper.outputMalfunction(response, m);
 				response.appendBlankLine();
 			}

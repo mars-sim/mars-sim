@@ -161,7 +161,7 @@ public class BuildingTableModel extends UnitTableModel {
 			switch (columnIndex) {
 
 			case NAME: 
-				result = building.getNickName();
+				result = building.getName();
 				break;
 
 			case TYPE: 
