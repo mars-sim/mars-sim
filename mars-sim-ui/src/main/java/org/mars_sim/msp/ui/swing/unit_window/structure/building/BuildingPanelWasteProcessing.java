@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * BuildingPanelWasteProcessing.java
- * @date 2022-06-15
+ * @date 2022-07-10
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
@@ -9,6 +9,7 @@ package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.structure.building.function.WasteProcess;
 import org.mars_sim.msp.core.structure.building.function.WasteProcessing;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
@@ -28,8 +29,9 @@ import javax.swing.JPanel;
  * the waste processes of a building.
  */
 @SuppressWarnings("serial")
-public class BuildingPanelWasteProcessing
-extends BuildingFunctionPanel {
+public class BuildingPanelWasteProcessing extends BuildingFunctionPanel {
+
+	private static final String RECYCLE_ICON = Msg.getString("icon.recycle"); //$NON-NLS-1$
 
 	// Data members
 	private WasteProcessing processor;
@@ -42,8 +44,12 @@ extends BuildingFunctionPanel {
 	public BuildingPanelWasteProcessing(WasteProcessing processor, MainDesktopPane desktop) {
 
 		// Use BuildingFunctionPanel constructor
-		super(Msg.getString("BuildingPanelWasteProcessing.tabTitle"), Msg.getString("BuildingPanelWasteProcessing.title"),
-			  processor.getBuilding(), desktop);
+		super(
+			Msg.getString("BuildingPanelWasteProcessing.title"),
+			ImageLoader.getNewIcon(RECYCLE_ICON),
+			processor.getBuilding(), 
+			desktop
+		);
 
 		// Initialize variables.
 		this.processor = processor;

@@ -34,7 +34,7 @@ import com.alee.laf.panel.WebPanel;
 @SuppressWarnings("serial")
 public class TabPanelEVA extends TabPanel {
 
-	private static final String EVA_ICON = Msg.getString("icon.eva"); //$NON-NLS-1$
+	private static final String SUIT_ICON = Msg.getString("icon.suit"); //$NON-NLS-1$
 
 	private int occupiedCache;
     private int emptyCache;
@@ -63,7 +63,7 @@ public class TabPanelEVA extends TabPanel {
         // Use the TabPanel constructor
         super(
         	null,
-			ImageLoader.getNewIcon(EVA_ICON),        	
+			ImageLoader.getNewIcon(SUIT_ICON),        	
         	Msg.getString("TabPanelEVA.title"), //$NON-NLS-1$
         	vehicle, desktop
         );

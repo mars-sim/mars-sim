@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * BuildingPanelComputation.java
- * @date 2021-09-30
+ * @date 2022-07-10
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
@@ -13,6 +13,7 @@ import javax.swing.JPanel;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.structure.building.function.Computation;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
 import com.alee.laf.panel.WebPanel;
@@ -22,8 +23,9 @@ import com.alee.laf.panel.WebPanel;
  * the computational capability of a building.
  */
 @SuppressWarnings("serial")
-public class BuildingPanelComputation
-extends BuildingFunctionPanel {
+public class BuildingPanelComputation extends BuildingFunctionPanel {
+
+	private static final String SERVER_ICON = Msg.getString("icon.server"); //$NON-NLS-1$
 
 	/**
 	 * Constructor.
@@ -33,7 +35,12 @@ extends BuildingFunctionPanel {
 	public BuildingPanelComputation(Computation computation, MainDesktopPane desktop) {
 
 		// Use BuildingFunctionPanel constructor
-		super(Msg.getString("BuildingPanelComputation.title"), computation.getBuilding(), desktop);
+		super(
+			Msg.getString("BuildingPanelComputation.title"), 
+			ImageLoader.getNewIcon(SERVER_ICON), 
+			computation.getBuilding(), 
+			desktop
+		);
 	}
 	
 	/**

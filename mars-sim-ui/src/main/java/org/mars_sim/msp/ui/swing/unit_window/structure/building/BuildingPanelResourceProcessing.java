@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * BuildingPanelResourceProcessing.java
- * @date 2022-06-15
+ * @date 2022-07-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
@@ -9,6 +9,7 @@ package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcessing;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
@@ -28,9 +29,10 @@ import javax.swing.JPanel;
  * the resource processes of a building.
  */
 @SuppressWarnings("serial")
-public class BuildingPanelResourceProcessing
-extends BuildingFunctionPanel {
+public class BuildingPanelResourceProcessing extends BuildingFunctionPanel {
 
+	private static final String CHEMICAL_ICON = Msg.getString("icon.chemical"); //$NON-NLS-1$
+	
 	// Data members
 	private ResourceProcessing processor;
 
@@ -42,8 +44,12 @@ extends BuildingFunctionPanel {
 	public BuildingPanelResourceProcessing(ResourceProcessing processor, MainDesktopPane desktop) {
 
 		// Use BuildingFunctionPanel constructor
-		super(Msg.getString("BuildingPanelResourceProcessing.tabTitle"), Msg.getString("BuildingPanelResourceProcessing.title"),
-			  processor.getBuilding(), desktop);
+		super(
+			Msg.getString("BuildingPanelResourceProcessing.title"),
+			ImageLoader.getNewIcon(CHEMICAL_ICON),
+			processor.getBuilding(), 
+			desktop
+		);
 
 		// Initialize variables.
 		this.processor = processor;

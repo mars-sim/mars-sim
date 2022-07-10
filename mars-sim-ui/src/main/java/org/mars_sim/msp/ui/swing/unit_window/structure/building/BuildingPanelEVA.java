@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * BuildingPanelEVA.java
- * @date 2021-12-17
+ * @date 2022-07-10
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.building.function.BuildingAirlock;
 import org.mars_sim.msp.core.structure.building.function.EVA;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.unit_window.UnitListPanel;
@@ -32,6 +33,9 @@ import com.alee.laf.panel.WebPanel;
  */
 @SuppressWarnings("serial")
 public class BuildingPanelEVA extends BuildingFunctionPanel {
+	
+	private static final String SUIT_ICON = Msg.getString("icon.suit"); //$NON-NLS-1$
+
 	private static final String UNLOCKED = "UNLOCKED";
 	private static final String LOCKED = "LOCKED";
 
@@ -70,7 +74,12 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 	public BuildingPanelEVA(EVA eva, MainDesktopPane desktop) {
 
 		// Use BuildingFunctionPanel constructor
-		super(Msg.getString("BuildingPanelEVA.title"), eva.getBuilding(), desktop);
+		super(
+			Msg.getString("BuildingPanelEVA.title"), 
+			ImageLoader.getNewIcon(SUIT_ICON), 
+			eva.getBuilding(), 
+			desktop
+		);
 
 		// Initialize data members
 		this.eva = eva;

@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * BuildingPanelMedicalCare.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
@@ -19,6 +19,7 @@ import javax.swing.table.AbstractTableModel;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.health.HealthProblem;
 import org.mars_sim.msp.core.structure.building.function.MedicalCare;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 
@@ -32,6 +33,8 @@ import com.alee.laf.scroll.WebScrollPane;
 @SuppressWarnings("serial")
 public class BuildingPanelMedicalCare
 extends BuildingFunctionPanel {
+
+	private static final String MEDICAL_ICON = Msg.getString("icon.medical"); //$NON-NLS-1$
 
 	// Data members
 	/** The medical care. */
@@ -53,7 +56,12 @@ extends BuildingFunctionPanel {
 	public BuildingPanelMedicalCare(MedicalCare medical, MainDesktopPane desktop) {
 
 		// Use BuildingFunctionPanel constructor
-		super(Msg.getString("BuildingPanelMedicalCare.title"), medical.getBuilding(), desktop);
+		super(
+			Msg.getString("BuildingPanelMedicalCare.title"), 
+			ImageLoader.getNewIcon(MEDICAL_ICON),
+			medical.getBuilding(), 
+			desktop
+		);
 
 		// Initialize data members
 		this.medical = medical;

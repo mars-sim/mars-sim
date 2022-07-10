@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * BuildingPanelInhabitable.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
@@ -18,6 +18,7 @@ import javax.swing.JTextField;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.unit_window.UnitListPanel;
 
@@ -28,8 +29,9 @@ import com.alee.laf.panel.WebPanel;
  * the inhabitants of a settlement building.
  */
 @SuppressWarnings("serial")
-public class BuildingPanelInhabitable
-	extends BuildingFunctionPanel {
+public class BuildingPanelInhabitable extends BuildingFunctionPanel {
+
+	private static final String PEOPLE_ICON = Msg.getString("icon.people"); //$NON-NLS-1$
 
 	/** The inhabitable building. */
 	private LifeSupport inhabitable;
@@ -38,13 +40,19 @@ public class BuildingPanelInhabitable
 
 	/**
 	 * Constructor.
+	 * 
 	 * @param inhabitable The inhabitable building this panel is for.
 	 * @param desktop The main desktop.
 	 */
 	public BuildingPanelInhabitable(LifeSupport inhabitable, MainDesktopPane desktop) {
 
 		// Use BuildingFunctionPanel constructor
-		super(Msg.getString("BuildingPanelInhabitable.title"), inhabitable.getBuilding(), desktop);
+		super(
+			Msg.getString("BuildingPanelInhabitable.title"), 
+			ImageLoader.getNewIcon(PEOPLE_ICON),
+			inhabitable.getBuilding(), 
+			desktop
+		);
 
 		// Initialize data members.
 		this.inhabitable = inhabitable;

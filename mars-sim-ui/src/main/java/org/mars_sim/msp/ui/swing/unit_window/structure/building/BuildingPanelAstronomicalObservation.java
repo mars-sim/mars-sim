@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * BuildingPanelAstronomicalObservation.java
- * @date 2021-10-06
+ * @date 2022-07-09
  * @author Sebastien Venot
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
@@ -18,6 +18,7 @@ import javax.swing.SpringLayout;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.structure.building.function.AstronomicalObservation;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 
@@ -32,6 +33,8 @@ import com.alee.managers.tooltip.TooltipWay;
 @SuppressWarnings("serial")
 public class BuildingPanelAstronomicalObservation
 extends BuildingFunctionPanel {
+	
+	private static final String TELESCOPE_ICON = Msg.getString("icon.telescope"); //$NON-NLS-1$
 
 	// Data members
 	private int currentObserversAmount;
@@ -42,13 +45,21 @@ extends BuildingFunctionPanel {
 
 	/**
 	 * Constructor.
+	 * 
 	 * @param observatory the astronomical observatory building function.
 	 * @param desktop the main desktop.
 	 */
-	public BuildingPanelAstronomicalObservation(AstronomicalObservation observatory, 
+	public BuildingPanelAstronomicalObservation(
+			AstronomicalObservation observatory, 
 			MainDesktopPane desktop) {
+		
 		// User BuildingFunctionPanel constructor.
-		super(Msg.getString("BuildingPanelAstronomicalObservation.title"), observatory.getBuilding(), desktop);
+		super(
+			Msg.getString("BuildingPanelAstronomicalObservation.title"), 
+			ImageLoader.getNewIcon(TELESCOPE_ICON), 
+			observatory.getBuilding(), 
+			desktop
+		);
 
 		function = observatory;
 		currentObserversAmount = function.getObserverNum();

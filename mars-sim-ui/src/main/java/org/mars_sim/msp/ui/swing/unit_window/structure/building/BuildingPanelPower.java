@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * BuildingPanelPower.java
- * @date 2021-09-20
+ * @date 2022-07-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.PowerGeneration;
 import org.mars_sim.msp.core.structure.building.function.PowerMode;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 
@@ -30,6 +31,8 @@ import com.alee.laf.panel.WebPanel;
 public class BuildingPanelPower
 extends BuildingFunctionPanel {
 
+	private static final String FUSE_ICON = Msg.getString("icon.fuse"); //$NON-NLS-1$
+	
 	private static final String kW = " kW";
 	
 	/** Is the building a power producer? */
@@ -51,13 +54,19 @@ extends BuildingFunctionPanel {
 
 	/**
 	 * Constructor.
+	 * 
 	 * @param building the building the panel is for.
 	 * @param desktop The main desktop.
 	 */
 	public BuildingPanelPower(Building building, MainDesktopPane desktop) {
 
 		// Use BuildingFunctionPanel constructor
-		super(Msg.getString("BuildingPanelPower.title"), building, desktop);
+		super(
+			Msg.getString("BuildingPanelPower.title"), 
+			ImageLoader.getNewIcon(FUSE_ICON),
+			building, 
+			desktop
+		);
 
 		// Check if the building is a power producer.
 		isProducer = building.hasFunction(FunctionType.POWER_GENERATION);

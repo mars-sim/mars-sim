@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * BuildingPanelPowerStorage.java
- * @date 2021-09-20
+ * @date 2022-07-10
  * @author Scott Davis
  */
 
@@ -15,6 +15,7 @@ import javax.swing.SpringLayout;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.structure.building.function.PowerStorage;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 
@@ -27,6 +28,8 @@ import com.alee.laf.panel.WebPanel;
 @SuppressWarnings("serial")
 public class BuildingPanelPowerStorage
 extends BuildingFunctionPanel {
+
+	private static final String ENERGY_ICON = Msg.getString("icon.energy"); //$NON-NLS-1$
 
 	private static final String kWh = " kWh";
 	
@@ -46,7 +49,12 @@ extends BuildingFunctionPanel {
 	public BuildingPanelPowerStorage(PowerStorage storage, MainDesktopPane desktop) {
 
 		// Use BuildingFunctionPanel constructor
-		super(Msg.getString("BuildingPanelPowerStorage.title"), storage.getBuilding(), desktop);
+		super(
+			Msg.getString("BuildingPanelPowerStorage.title"), 
+			ImageLoader.getNewIcon(ENERGY_ICON), 
+			storage.getBuilding(), 
+			desktop
+		);
 
 		this.storage = storage;
 	}

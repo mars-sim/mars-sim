@@ -1,7 +1,7 @@
-/**
-setPowerDemand * Mars Simulation Project
+/*
+ * Mars Simulation Project
  * BuildingPanelStorage.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
@@ -17,6 +17,7 @@ import javax.swing.JPanel;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.building.function.Storage;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 
@@ -29,20 +30,27 @@ import com.alee.laf.panel.WebPanel;
  * the storage capacity of a settlement building.
  */
 @SuppressWarnings("serial")
-public class BuildingPanelStorage
-extends BuildingFunctionPanel {
+public class BuildingPanelStorage extends BuildingFunctionPanel {
+
+	private static final String STORE_ICON = Msg.getString("icon.stock"); //$NON-NLS-1$
 
 	private Storage storage;
 
 	/**
 	 * Constructor.
+	 * 
 	 * @param storage the storage building function.
 	 * @param desktop the main desktop.
 	 */
 	public BuildingPanelStorage(Storage storage, MainDesktopPane desktop) {
 
 		// Use BuildingFunctionPanel constructor
-		super(Msg.getString("BuildingPanelStorage.tabTitle"), Msg.getString("BuildingPanelStorage.title"), storage.getBuilding(), desktop);
+		super(
+			Msg.getString("BuildingPanelStorage.tabTitle"), 
+			ImageLoader.getNewIcon(STORE_ICON),
+			storage.getBuilding(), 
+			desktop
+		);
 		
 		this.storage = storage;
 	}

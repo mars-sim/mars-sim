@@ -44,7 +44,7 @@ public class TabPanelVehicles extends TabPanel {
 	public TabPanelVehicles(Unit unit, MainDesktopPane desktop) { 
 		// Use the TabPanel constructor
 		super(
-			null,
+			Msg.getString("TabPanelVehicles.title"), //$NON-NLS-1$
 			ImageLoader.getNewIcon(SUV_ICON),
 			Msg.getString("TabPanelVehicles.title"), //$NON-NLS-1$
 			unit, desktop

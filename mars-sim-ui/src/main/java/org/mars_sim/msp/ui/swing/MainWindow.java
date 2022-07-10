@@ -846,9 +846,7 @@ extends JComponent implements ClockListener {
 			orbitViewer = new OrbitViewer(desktop);
 			return;
 		}
-
         orbitViewer.setVisible(!orbitViewer.isVisible());
-
 	}
 
 
@@ -859,6 +857,7 @@ extends JComponent implements ClockListener {
 	public Icon getTelescopeIcon() {
 		if (telescopeIcon == null) {
 			telescopeIcon = new LazyIcon("telescope").getIcon();
+			telescopeIcon = ImageLoader.getNewIcon(Msg.getString("icon.telescope"));
 		}
 		return telescopeIcon;
 	}

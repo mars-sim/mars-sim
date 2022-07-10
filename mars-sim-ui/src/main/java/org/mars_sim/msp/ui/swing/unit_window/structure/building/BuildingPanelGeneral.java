@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * BuildingPanelGeneral.java
- * @date 2022-07-05
+ * @date 2022-07-10
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
@@ -14,8 +14,10 @@ import java.awt.GridLayout;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementMapPanel;
 
@@ -24,17 +26,21 @@ import org.mars_sim.msp.ui.swing.tool.settlement.SettlementMapPanel;
  * the general status of a settlement building.
  */
 @SuppressWarnings("serial")
-public class BuildingPanelGeneral
-extends BuildingFunctionPanel {
+public class BuildingPanelGeneral extends BuildingFunctionPanel {
 
-
+	private static final String ID_ICON = Msg.getString("icon.id"); //$NON-NLS-1$
+	
 	/**
 	 * Constructor.
 	 * @param The panel for the Fishery
 	 * @param The main desktop
 	 */
 	public BuildingPanelGeneral(Building building, MainDesktopPane desktop) {
-		super("General", building, desktop);
+		super(
+			Msg.getString("BuildingPanelGeneral.title"),
+			ImageLoader.getNewIcon(ID_ICON), 
+			building, desktop
+		);
 	}
 
 	/**

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * DateDialog.java
- * @date 2021-09-20
+ * @date 2022-07-10
  * @author Manny Kung
  * Original work by Osamu Ajiki and Ron Baalke (NASA/JPL)
  * http://www.astroarts.com/products/orbitviewer/

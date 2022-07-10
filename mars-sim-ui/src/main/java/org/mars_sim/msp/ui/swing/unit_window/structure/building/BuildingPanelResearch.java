@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * BuildingPanelResearch.java
- * @date 2021-10-07
+ * @date 2022-07-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
@@ -17,6 +17,7 @@ import javax.swing.JTextField;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.building.function.Research;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
 import com.alee.laf.panel.WebPanel;
@@ -28,8 +29,9 @@ import com.alee.laf.text.WebTextArea;
  * the research info of a settlement building.
  */
 @SuppressWarnings("serial")
-public class BuildingPanelResearch
-extends BuildingFunctionPanel {
+public class BuildingPanelResearch extends BuildingFunctionPanel {
+
+	private static final String SCIENCE_ICON = Msg.getString("icon.science"); //$NON-NLS-1$
 
 	// Data members
 	/** The research building. */
@@ -49,7 +51,12 @@ extends BuildingFunctionPanel {
 	public BuildingPanelResearch(Research lab, MainDesktopPane desktop) {
 
 		// Use BuildingFunctionPanel constructor
-		super(Msg.getString("BuildingPanelResearch.title"), lab.getBuilding(), desktop);
+		super(
+			Msg.getString("BuildingPanelResearch.title"), 
+			ImageLoader.getNewIcon(SCIENCE_ICON), 
+			lab.getBuilding(), 
+			desktop
+		);
 
 		// Initialize data members
 		this.lab = lab;

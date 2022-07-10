@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * BuildingPanelMaintenance.java
- * @date 2021-10-21
+ * @date 2022-07-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
@@ -38,6 +38,7 @@ import org.mars_sim.msp.core.resource.MaintenanceScope;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.PartConfig;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
@@ -54,6 +55,8 @@ import com.alee.laf.scroll.WebScrollPane;
  */
 @SuppressWarnings("serial")
 public class BuildingPanelMaintenance extends BuildingFunctionPanel {
+
+	private static final String SPANNER_ICON = Msg.getString("icon.spanner"); //$NON-NLS-1$
 
 	/** Cached value for the wear condition. */
 	private int wearConditionCache;
@@ -91,7 +94,12 @@ public class BuildingPanelMaintenance extends BuildingFunctionPanel {
 	public BuildingPanelMaintenance(Building malfunctionable, MainDesktopPane desktop) {
 
 		// Use BuildingFunctionPanel constructor
-		super(Msg.getString("BuildingPanelMaintenance.title"), malfunctionable, desktop);
+		super(
+			Msg.getString("BuildingPanelMaintenance.title"), 
+			ImageLoader.getNewIcon(SPANNER_ICON), 
+			malfunctionable, 
+			desktop
+		);
 
 		// Initialize data members.
 		manager = malfunctionable.getMalfunctionManager();

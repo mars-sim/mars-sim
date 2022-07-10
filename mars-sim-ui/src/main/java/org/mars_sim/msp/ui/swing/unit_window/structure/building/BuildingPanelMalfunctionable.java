@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * BuildingPanelMalfunctionable.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.unit_window.MalfunctionPanel;
 
@@ -33,6 +34,8 @@ import com.alee.laf.scroll.WebScrollPane;
  */
 @SuppressWarnings("serial")
 public class BuildingPanelMalfunctionable extends BuildingFunctionPanel {
+
+	private static final String WARN_ICON = Msg.getString("icon.warn"); //$NON-NLS-1$
 
 	/** The malfunctionable building. */
 	private Malfunctionable malfunctionable;
@@ -52,7 +55,12 @@ public class BuildingPanelMalfunctionable extends BuildingFunctionPanel {
 	public BuildingPanelMalfunctionable(Malfunctionable malfunctionable, MainDesktopPane desktop) {
 
 		// Use BuildingFunctionPanel constructor
-		super(Msg.getString("BuildingPanelMalfunctionable.title"), (Building) malfunctionable, desktop);
+		super(
+			Msg.getString("BuildingPanelMalfunctionable.title"), 
+			ImageLoader.getNewIcon(WARN_ICON), 
+			(Building) malfunctionable, 
+			desktop
+		);
 
 		// Initialize data members.
 		this.malfunctionable = malfunctionable;

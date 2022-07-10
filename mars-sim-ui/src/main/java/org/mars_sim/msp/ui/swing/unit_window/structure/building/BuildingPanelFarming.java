@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * BuildingPanelFarming.java
- * @date 2021-10-07
+ * @date 2022-07-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
@@ -66,9 +66,10 @@ import com.alee.laf.table.WebTable;
  * the crop farm of a settlement building.
  */
 @SuppressWarnings("serial")
-public class BuildingPanelFarming
-extends BuildingFunctionPanel
+public class BuildingPanelFarming extends BuildingFunctionPanel
 implements MouseListener {
+
+	private static final String PLANT_ICON = Msg.getString("icon.plant"); //$NON-NLS-1$
 
 	// Data members
 	private JTextField radTF, farmersTF, cropsTF, waterUsageTF, o2TF, co2TF;
@@ -118,7 +119,12 @@ implements MouseListener {
 	public BuildingPanelFarming(final Farming farm, MainDesktopPane desktop) {
 
 		// Use BuildingFunctionPanel constructor
-		super(Msg.getString("BuildingPanelFarming.title"), farm.getBuilding(), desktop);
+		super(
+			Msg.getString("BuildingPanelFarming.title"), 
+			ImageLoader.getNewIcon(PLANT_ICON), 
+			farm.getBuilding(), 
+			desktop
+		);
 
 		// Initialize data members
 		this.farm = farm;

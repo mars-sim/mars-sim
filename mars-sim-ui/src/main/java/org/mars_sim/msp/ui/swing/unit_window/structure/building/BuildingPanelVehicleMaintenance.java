@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * BuildingPanelVehicleMaintenance.java
- * @date 2021-09-20
+ * @date 2022-07-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
@@ -18,6 +18,7 @@ import javax.swing.JTextField;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.unit_window.UnitListPanel;
 
@@ -28,9 +29,10 @@ import com.alee.laf.panel.WebPanel;
  * the vehicle maintenance capabilities of the building.
  */
 @SuppressWarnings("serial")
-public class BuildingPanelVehicleMaintenance
-extends BuildingFunctionPanel {
+public class BuildingPanelVehicleMaintenance extends BuildingFunctionPanel {
 
+	private static final String SUV_ICON = Msg.getString("icon.suv"); //$NON-NLS-1$
+	
 	private VehicleMaintenance garage;
 	private JTextField vehicleNumberLabel;
 	private UnitListPanel<Vehicle> vehicleList;
@@ -43,7 +45,12 @@ extends BuildingFunctionPanel {
 	public BuildingPanelVehicleMaintenance(VehicleMaintenance garage, MainDesktopPane desktop) {
 
 		// Use BuildingFunctionPanel constructor
-		super(Msg.getString("BuildingPanelVehicleMaintenance.title"), garage.getBuilding(), desktop);
+		super(
+			Msg.getString("BuildingPanelVehicleMaintenance.title"),
+			ImageLoader.getNewIcon(SUV_ICON),
+			garage.getBuilding(), 
+			desktop
+		);
 
 		// Initialize data members
 		this.garage = garage;

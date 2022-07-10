@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * BuildingPanelFishery.java
- * @date 2021-10-07
+ * @date 2022-07-10
  * @author Barry Evans
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
@@ -14,6 +14,7 @@ import javax.swing.SpringLayout;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.structure.building.function.farming.Fishery;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 
@@ -22,8 +23,9 @@ import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
  * the fish farm of a settlement building.
  */
 @SuppressWarnings("serial")
-public class BuildingPanelFishery
-extends BuildingFunctionPanel {
+public class BuildingPanelFishery extends BuildingFunctionPanel {
+
+	private static final String FISH_ICON = Msg.getString("icon.fish"); //$NON-NLS-1$
 
 	// Caches
 	private int numFish;
@@ -35,11 +37,17 @@ extends BuildingFunctionPanel {
 	
 	/**
 	 * Constructor.
+	 * 
 	 * @param The panel for the Fishery
 	 * @param The main desktop
 	 */
 	public BuildingPanelFishery(Fishery tank, MainDesktopPane desktop) {
-		super(Msg.getString("BuildingPanelFishery.title"), tank.getBuilding(), desktop);
+		super(
+			Msg.getString("BuildingPanelFishery.title"), 
+			ImageLoader.getNewIcon(FISH_ICON), 
+			tank.getBuilding(), 
+			desktop
+		);
 		
 		this.tank = tank;
 	}

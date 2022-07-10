@@ -42,8 +42,7 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
  * A tab panel for displaying all of the waste processes in a settlement.
  */
 @SuppressWarnings("serial")
-public class TabPanelWasteProcesses
-extends TabPanel {
+public class TabPanelWasteProcesses extends TabPanel {
 	
 	private static final String RECYCLE_ICON = Msg.getString("icon.recycle"); //$NON-NLS-1$
 
@@ -68,7 +67,7 @@ extends TabPanel {
 
 		// Use the TabPanel constructor
 		super(
-			null,
+			Msg.getString("TabPanelWasteProcesses.title"), //$NON-NLS-1$
 			ImageLoader.getNewIcon(RECYCLE_ICON),
 			Msg.getString("TabPanelWasteProcesses.title"), //$NON-NLS-1$
 			unit, desktop

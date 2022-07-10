@@ -105,9 +105,9 @@ extends TabPanel {
 	public TabPanelThermalSystem(Unit unit, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
-			null,
+			Msg.getString("TabPanelThermalSystem.title"), //$NON-NLS-1$
 			ImageLoader.getNewIcon(HEAT_ICON),
-			Msg.getString("TabPanelThermalSystem.tooltip"), //$NON-NLS-1$
+			Msg.getString("TabPanelThermalSystem.title"), //$NON-NLS-1$
 			unit, desktop
 		);
 

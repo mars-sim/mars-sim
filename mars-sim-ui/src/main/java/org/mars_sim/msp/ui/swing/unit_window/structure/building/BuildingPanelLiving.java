@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * BuildingPanelLiving.java
- * @Date 2021-12-18
+ * @date 2022-07-10
  * @author Manny Kung
  */
 
@@ -15,6 +15,7 @@ import javax.swing.JTextField;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
 import com.alee.laf.panel.WebPanel;
@@ -22,10 +23,12 @@ import com.alee.laf.panel.WebPanel;
 
 /**
  * The BuildingPanelLiving class is a building function panel representing
- * the living accommodation info of a settlement building.
+ * the living accommodation details of a settlement building.
  */
 @SuppressWarnings("serial")
 public class BuildingPanelLiving extends BuildingFunctionPanel {
+
+	private static final String BED_ICON = Msg.getString("icon.bed"); //$NON-NLS-1$
 
 	private int bedCapCache;
 	private int bedAssignedCache;
@@ -41,13 +44,19 @@ public class BuildingPanelLiving extends BuildingFunctionPanel {
 
 	/**
 	 * Constructor.
-	 * @param medical the medical care building this panel is for.
+	 * 
+	 * @param living the building this panel is for.
 	 * @param desktop The main desktop.
 	 */
 	public BuildingPanelLiving(LivingAccommodations living, MainDesktopPane desktop) {
 
 		// Use BuildingFunctionPanel constructor
-		super(Msg.getString("BuildingPanelLiving.title"), living.getBuilding(), desktop);
+		super(
+			Msg.getString("BuildingPanelLiving.title"), 
+			ImageLoader.getNewIcon(BED_ICON),
+			living.getBuilding(), 
+			desktop
+		);
 
 		// Initialize data members
 		this.living = living;
@@ -78,7 +87,6 @@ public class BuildingPanelLiving extends BuildingFunctionPanel {
 		// Create bedEmptyLabel
 		bedEmptyLabel = addTextField(labelPanel, Msg.getString("BuildingPanelLiving.beds.empty"),
 									 living.getNumEmptyActivitySpots(), null);
-
 	}
 
 	@Override

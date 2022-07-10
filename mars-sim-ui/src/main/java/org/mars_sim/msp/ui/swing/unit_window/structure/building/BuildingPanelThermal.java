@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * BuildingPanelThermal.java
- * @date 2021-10-08
+ * @date 2022-07-10
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
@@ -15,6 +15,7 @@ import javax.swing.SpringLayout;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.structure.building.function.HeatMode;
 import org.mars_sim.msp.core.structure.building.function.ThermalGeneration;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 
@@ -26,6 +27,7 @@ import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 public class BuildingPanelThermal
 extends BuildingFunctionPanel {
 
+	private static final String HEAT_ICON = Msg.getString("icon.heat"); //$NON-NLS-1$
 
 	/** The heat status textfield. */
 	private JTextField statusTF;
@@ -46,8 +48,12 @@ extends BuildingFunctionPanel {
 	 * @param The main desktop
 	 */
 	public BuildingPanelThermal(ThermalGeneration furnace, MainDesktopPane desktop) {
-		super(Msg.getString("BuildingPanelThermal.tabTitle"), Msg.getString("BuildingPanelThermal.title"),
-			  furnace.getBuilding(), desktop);
+		super(
+			Msg.getString("BuildingPanelThermal.title"),
+			ImageLoader.getNewIcon(HEAT_ICON), 
+			furnace.getBuilding(), 
+			desktop
+		);
 
 		this.furnace = furnace;
 		this.building = furnace.getBuilding();

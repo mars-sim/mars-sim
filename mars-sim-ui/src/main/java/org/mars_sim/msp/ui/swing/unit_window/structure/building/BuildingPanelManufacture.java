@@ -1,10 +1,9 @@
-/**
+/*
  * Mars Simulation Project
  * BuildingPanelManufacture.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-10
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
 import java.awt.BorderLayout;
@@ -31,6 +30,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.manufacture.ManufactureProcess;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessInfo;
@@ -43,6 +43,7 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.function.Manufacture;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
@@ -62,6 +63,8 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 	/** default logger. */
 	private static final Logger logger = Logger.getLogger(BuildingPanelManufacture.class.getName());
 
+	private static final String MANU_ICON = Msg.getString("icon.manu"); //$NON-NLS-1$
+	
 	private static int processStringWidth = 120;
 
 	/** The manufacture building. */
@@ -91,7 +94,12 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 	 */
 	public BuildingPanelManufacture(Manufacture workshop, MainDesktopPane desktop) {
 		// Use BuildingFunctionPanel constructor.
-		super("Manufacturing", workshop.getBuilding(), desktop);
+		super(
+			Msg.getString("BuildingPanelManufacture.title"),
+			ImageLoader.getNewIcon(MANU_ICON), 
+			workshop.getBuilding(), 
+			desktop
+		);
 
 		// Initialize data model.
 		this.workshop = workshop;
