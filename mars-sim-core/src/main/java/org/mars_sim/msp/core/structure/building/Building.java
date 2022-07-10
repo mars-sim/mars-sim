@@ -138,7 +138,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	protected double width;
 	protected double length;
 	protected double floorArea;
-	private double wallThickness;
+	private ConstructionType construction;
 	protected LocalPosition loc;
 	protected double zLoc;
 	protected double facing;
@@ -243,7 +243,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 
 		BuildingSpec spec = SimulationConfig.instance().getBuildingConfiguration().getBuildingSpec(buildingType);
 
-		wallThickness = spec.getWallThickness();
+		construction = spec.getConstruction();
 		powerModeCache = PowerMode.FULL_POWER;
 		heatModeCache = HeatMode.HALF_HEAT;
 		width = spec.getWidth();
@@ -1140,7 +1140,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 				// Find the length this meteorite can penetrate
 				double penetrated_length = getBuildingManager().getWallPenetration();
 
-				if (penetrated_length >= wallThickness) {
+				if (penetrated_length >= getWallThickness()) {
 					// Yes it's breached !
 					// Simulate the meteorite impact as a malfunction event for now
 					Malfunction mal = malfunctionManager.triggerMalfunction(MalfunctionFactory
@@ -1206,6 +1206,26 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 				}
 			}
 		}
+	}
+
+	/**
+	 * Get the wall thickness based on the construction type.
+	 */
+	private double getWallThickness() {
+		switch(construction) {
+			case SOLID:
+				return 0.0000254;
+			case INFLATABLE:
+				return 0.0000018;
+			case SEMI_SOLID:
+				return 0.0000100;
+			default:
+				return 0;
+		}
+	}
+
+	public ConstructionType getConstruction() {
+		return construction;
 	}
 
 	public Coordinates getLocation() {

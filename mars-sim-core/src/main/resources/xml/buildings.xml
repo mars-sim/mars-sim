@@ -6,7 +6,7 @@
 	<!ATTLIST building category CDATA #IMPLIED>
 	<!ATTLIST building width CDATA #REQUIRED>
 	<!ATTLIST building length CDATA #REQUIRED>
-	<!ATTLIST building thickness CDATA #IMPLIED>
+	<!ATTLIST building construction CDATA #IMPLIED>
 	<!ATTLIST building base-level CDATA #REQUIRED>
 	<!ATTLIST building wear-lifetime CDATA #REQUIRED>
 	<!ATTLIST building maintenance-time CDATA #REQUIRED>
@@ -838,7 +838,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 <!-- end of Storage Shed -->
 
-	<building type="Inflatable Greenhouse" width="6.0" length="9.0" thickness="0.0000018" base-level="0"
+	<building type="Inflatable Greenhouse" width="6.0" length="9.0" construction="INFLATABLE" base-level="0"
 		wear-lifetime="3340000" maintenance-time="50" room-temperature="24.0" base-mass="30">
 		<description> The Inflatable Greenhouse is essentially a flexible air bladder
 		made with interwoven layers of Polyurethane, Kevlar, polyester, Saran and Tedlar materials to retain an atmosphere adequate
@@ -940,7 +940,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 <!-- end for inflatable greenhouse -->
 
-	<building type="Large Greenhouse" width="12.0" length="18.0" thickness="0.0000018" base-level="0"
+	<building type="Large Greenhouse" width="12.0" length="18.0" construction="SEMI_SOLID" base-level="0"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="24.0" base-mass="50">
 		<description>
 			The Large Greenhouse is made of stronger structural and cladding material such as coextruded laminate of polyamide and polyolefin interwoven around
@@ -1100,7 +1100,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		</functions>
 	</building>
 	-->
-	<building type="Fish Farm" width="6.0" length="9.0" thickness="0.0000018" base-level="0"
+	<building type="Fish Farm" width="6.0" length="9.0" base-level="0"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="24.0" base-mass="30">
 		<description>
 			The Fish Farm is made of stronger structural and cladding material such as coextruded laminate of polyamide and polyolefin interwoven around
@@ -3136,7 +3136,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 <!-- end of Machinery Hab -->
 
 	<!-- A hallway's length is variable and determined in templates or during construction. -->
-	<building type="Hallway" width="2.0" length="-1.0" base-level="0"
+	<building type="Hallway" width="2.0" length="-1.0" construction="SEMI_SOLID" base-level="0"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="22.5" base-mass="5">
 		<description> The Hallway is a pressurized access tube connecting
 			two inhabitable buildings. It allows only one person to access it

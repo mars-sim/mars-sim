@@ -21,12 +21,6 @@ import org.mars_sim.msp.core.structure.building.function.FunctionType;
  *
  */
 public class BuildingSpec {
-
-	/**
-	 * The thickness of the Aluminum wall of a building in meter. Typically between
-	 * 10^-5 (.00001) and 10^-2 (.01) [in m]
-	 */
-	public static final double WALL_THICKNESS_ALUMINUM = 0.0000254;
 	
 	// Empty list constants
 	private static final List<SourceSpec> EMPTY_SOURCE = new ArrayList<>();
@@ -44,13 +38,14 @@ public class BuildingSpec {
 
 	private double length;
 	private double width;
-	private double thickness = WALL_THICKNESS_ALUMINUM;
 	
 	private double baseMass;
 	
 	private String buildingType;
 	private String description;
-	
+	private ConstructionType construction = ConstructionType.SOLID;
+
+
 	private Map<FunctionType, FunctionSpec> supportedFunctions;
 	
 	// Optional Function details
@@ -109,14 +104,6 @@ public class BuildingSpec {
 		return supportedFunctions.get(function);
 	}
 	
-	public double getWallThickness() {
-		return thickness;
-	}
-
-	public void setWallThickness(double thickness) {
-		this.thickness = thickness;
-	}
-	
 	public int getBaseLevel() {
 		return baseLevel;
 	}
@@ -169,6 +156,14 @@ public class BuildingSpec {
 		baseMass = value;
 	}
 	
+	public ConstructionType getConstruction() {
+		return construction;
+	}
+
+	public void setConstruction(ConstructionType construction) {
+		this.construction = construction;
+	}
+
 	public Map<Integer, Double> getStorage() {
 		return storageMap;
 	}

@@ -58,11 +58,12 @@ extends BuildingFunctionPanel {
 		topPanel.add(svgPanel, BorderLayout.NORTH);
 		
 		// Prepare spring layout info panel.
-		JPanel infoPanel = new JPanel(new GridLayout(5, 2, 3, 1));
+		JPanel infoPanel = new JPanel(new GridLayout(6, 2, 3, 1));
 		topPanel.add(infoPanel, BorderLayout.CENTER);
 
 		addTextField(infoPanel, "Building Type:", building.getBuildingType(), null);
 		addTextField(infoPanel, "Category:", building.getCategory().getName(), null);
+		addTextField(infoPanel, "Construction:", building.getConstruction().name(), null);
 
 		// Prepare dimension label
 		addTextField(infoPanel, "Position:", building.getPosition().getShortFormat(), "According to the Settlement x[m] x y[m]");

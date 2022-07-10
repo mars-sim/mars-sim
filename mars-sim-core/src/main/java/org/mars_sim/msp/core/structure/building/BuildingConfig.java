@@ -43,7 +43,7 @@ public class BuildingConfig implements Serializable {
 	private static final String BUILDING_TYPE = "type";
 	private static final String WIDTH = "width";
 	private static final String LENGTH = "length";
-	private static final String THICKNESS = "thickness";
+	private static final String CONSTRUCTION = "construction";
 	private static final String BASE_LEVEL = "base-level";
 	private static final String BASE_MASS = "base-mass";
 
@@ -200,9 +200,9 @@ public class BuildingConfig implements Serializable {
 			 	basePowerRequirement, basePowerDownPowerRequirement,
 			 	supportedFunctions);
 
-		String thickness = buildingElement.getAttributeValue(THICKNESS);
-		if (thickness != null) {
-			newSpec.setWallThickness(Double.parseDouble(thickness));
+		String construction = buildingElement.getAttributeValue(CONSTRUCTION);
+		if (construction != null) {
+			newSpec.setConstruction(ConstructionType.valueOf(construction));
 		}
 
 		String baseMass = buildingElement.getAttributeValue(BASE_MASS);

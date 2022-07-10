@@ -199,34 +199,30 @@ extends Function {
 		
 		// TODO OOhhhh not nice using string values
 		// Should be  part of BuildingSpec
-		if (buildingType.equalsIgnoreCase("hallway") || buildingType.equalsIgnoreCase("tunnel")) {
-			isHallway = true;
-			heatGainEqiupment = 0.0117;//40D;
-		}
-		else if (buildingType.toLowerCase().contains("greenhouse")) {
-			isGreenhouse = true;
-			heatGainEqiupment = 0.117;//400D;
-		}
-		else if (buildingType.toLowerCase().contains("lander")) {
-			heatGainEqiupment = 0.586;//2000D;
-		}
-		else if (buildingType.toLowerCase().contains("hab")) {
-			heatGainEqiupment = 0.2345;//800D;
-		}
-		else if (buildingType.toLowerCase().contains("command")) {
-			heatGainEqiupment = 0.4396;//1500D;
-		}
-		else if (buildingType.toLowerCase().contains("work")||buildingType.toLowerCase().contains("manu")) {
-			heatGainEqiupment = 0.4396;//1500D;
-		}
-		else if (buildingType.toLowerCase().contains("lounge")) {
-			heatGainEqiupment = 0.7034;//2400D;
-		}
-		else if (buildingType.toLowerCase().contains("outpost")) {
-			heatGainEqiupment = 0.4396;//1500D;
-		}
-		else {
-			heatGainEqiupment = 0.0879;//300D;			
+		switch(building.getCategory()) {
+			case HALLWAY:
+				isHallway = true;
+				heatGainEqiupment = 0.0117;
+				break;
+			case FARMING:
+				isGreenhouse = true;
+				heatGainEqiupment = 0.117;
+				break;
+			case ERV:
+				heatGainEqiupment = 0.586;
+				break;
+			case HABITAT:
+				heatGainEqiupment = 0.4396;
+				break;
+			case WORKSHOP:
+				heatGainEqiupment = 0.4396;
+				break;
+			case LIVING:
+				heatGainEqiupment = 0.7034;
+				break;
+			default:
+				heatGainEqiupment = 0.0879;
+				break;	
 		}
 		
 		if (isGreenhouse) { // Note that greenhouse has a semi-transparent rooftop
@@ -275,14 +271,6 @@ extends Function {
 			temperatureCache[i] = t_initial;
 		}
 	}
-
-	/**
-     * Is this building a large greenhouse.
-     * @return true or false
-     */
-    private boolean isLargeGreenhouse() {
-		return building.getBuildingType().equalsIgnoreCase("large greenhouse");
-    }
     
     /**
      * Gets the temperature of a building.
@@ -291,7 +279,6 @@ extends Function {
     public double getCurrentTemperature() {
     	return currentTemperature;
     }
-
 
 	/** Turn heat source off if reaching pre-setting temperature
 	 * @return none. set heatMode
@@ -424,21 +411,17 @@ extends Function {
 		double canopyHeatGain = 0;
 	
 		if (I < 25) {
-				
-			if (isLargeGreenhouse()) {
-				canopyHeatGain = LARGE_INSULATION_CANOPY;
-			}
+			switch(building.getConstruction()){
+				case INFLATABLE:
+					canopyHeatGain = LARGE_INSULATION_CANOPY;
+					break;
 			
-			else if (isGreenhouse) {
-				canopyHeatGain = INSULATION_CANOPY;
-			}
+				case SEMI_SOLID:
+					canopyHeatGain = HALLWAY_INSULATION;
+					break;
 			
-			else if (isHallway)  {
-				canopyHeatGain = HALLWAY_INSULATION;
-			}
-			
-			else {
-				canopyHeatGain = INSULATION_BLANKET;
+				default:
+					canopyHeatGain = INSULATION_BLANKET;
 			}
 		
 			// whenever the sun goes down, put on the canopy over the inflatable ceiling to prevent heat loss
