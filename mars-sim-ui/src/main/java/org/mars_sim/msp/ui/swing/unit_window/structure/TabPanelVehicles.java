@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TabPanelVehicles.java
- * @date 2021-12-20
+ * @date 2022-07-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.UnitListPanel;
@@ -26,7 +27,9 @@ import org.mars_sim.msp.ui.swing.unit_window.UnitListPanel;
  */
 @SuppressWarnings("serial")
 public class TabPanelVehicles extends TabPanel {
-
+	
+	private static final String SUV_ICON = Msg.getString("icon.suv"); //$NON-NLS-1$
+	
 	/** The Settlement instance. */
 	private Settlement settlement;
 	
@@ -41,9 +44,9 @@ public class TabPanelVehicles extends TabPanel {
 	public TabPanelVehicles(Unit unit, MainDesktopPane desktop) { 
 		// Use the TabPanel constructor
 		super(
-			Msg.getString("TabPanelVehicles.title"), //$NON-NLS-1$
 			null,
-			Msg.getString("TabPanelVehicles.tooltip"), //$NON-NLS-1$
+			ImageLoader.getNewIcon(SUV_ICON),
+			Msg.getString("TabPanelVehicles.title"), //$NON-NLS-1$
 			unit, desktop
 		);
 

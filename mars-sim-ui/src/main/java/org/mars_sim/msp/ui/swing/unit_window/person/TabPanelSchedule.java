@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * TabPanelFavorite.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-09
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.unit_window.person;
@@ -40,6 +40,7 @@ import org.mars_sim.msp.core.person.ai.task.utils.TaskManager.OneActivity;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskSchedule;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
@@ -60,6 +61,8 @@ import com.alee.managers.tooltip.TooltipWay;
  */
 @SuppressWarnings("serial")
 public class TabPanelSchedule extends TabPanel {
+
+	private static final String SCH_ICON = Msg.getString("icon.schedule"); //$NON-NLS-1$
 
 	private static final String SOL = "  Sol ";
 
@@ -109,10 +112,12 @@ public class TabPanelSchedule extends TabPanel {
 	 */
 	public TabPanelSchedule(Unit unit, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
-		super(Msg.getString("TabPanelSchedule.title"), //$NON-NLS-1$
-				Msg.getString("TabPanelSchedule.label"),
-				null, Msg.getString("TabPanelSchedule.tooltip"), //$NON-NLS-1$
-				unit, desktop);
+		super(
+			null,
+			ImageLoader.getNewIcon(SCH_ICON),
+			Msg.getString("TabPanelSchedule.title"), //$NON-NLS-1$
+			unit, desktop
+		);
 
 		// Prepare combo box
 		if (unit instanceof Person) {

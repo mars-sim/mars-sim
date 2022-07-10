@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * TabPanelCooking.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-09
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building.food;
@@ -38,6 +38,7 @@ import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
@@ -58,9 +59,10 @@ import com.google.common.collect.Multiset;
 public class TabPanelCooking extends TabPanel {
 
 	/** default logger. */
-	// private static final Logger logger =
-	// Logger.getLogger(TabPanelCooking.class.getName());
+	// private static final Logger logger = Logger.getLogger(TabPanelCooking.class.getName());
 
+	private static final String COOKING_ICON = Msg.getString("icon.cooking"); //$NON-NLS-1$
+	
 	private static final FunctionType COOKING = FunctionType.COOKING;
 	private static final FunctionType PREPARING_DESSERT = FunctionType.PREPARING_DESSERT;
 
@@ -114,9 +116,11 @@ public class TabPanelCooking extends TabPanel {
 	public TabPanelCooking(Unit unit, MainDesktopPane desktop) {
 
 		// Use the TabPanel constructor
-		super(Msg.getString("TabPanelCooking.title"), //$NON-NLS-1$
-				null, Msg.getString("TabPanelCooking.tooltip"), //$NON-NLS-1$
-				unit, desktop);
+		super(
+			null,
+			ImageLoader.getNewIcon(COOKING_ICON),
+			Msg.getString("TabPanelCooking.title"), //$NON-NLS-1$
+			unit, desktop);
 
 		settlement = (Settlement) unit;
 	}

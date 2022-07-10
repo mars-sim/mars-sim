@@ -48,7 +48,6 @@ public abstract class TabPanel extends JScrollPane {
 	protected static final DecimalFormat DECIMAL_PLACES1 = new DecimalFormat("0.0");
 	protected static final DecimalFormat DECIMAL_KG = new DecimalFormat("0.0 kg");
 	
-
 	// Default values for any top level Spring panel holding values
 	protected static final int INITY_DEFAULT = 5;
 	protected static final int INITX_DEFAULT = 75;
@@ -72,7 +71,7 @@ public abstract class TabPanel extends JScrollPane {
 
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 *
 	 * @param tabTitle   the title to be displayed in the tab (may be null).
 	 * @param tabIcon    the icon to be displayed in the tab (may be null).
@@ -81,11 +80,11 @@ public abstract class TabPanel extends JScrollPane {
 	 * @param desktop    the main desktop.
 	 */
 	protected TabPanel(String tabTitle, Icon tabIcon, String tabToolTip, Unit unit, MainDesktopPane desktop) {
-		this(tabTitle, null, tabIcon, tabToolTip, unit, desktop);
+		this((tabTitle != null) ? tabTitle : tabToolTip, tabTitle, tabIcon, tabToolTip, unit, desktop);
 	}
 	
 	/**
-	 * Constructor
+	 * Constructor.
 	 *
 	 * @param tabTitle   the title to be displayed in the tab (may be null).
 	 * @param description A longer descriptive title displayed at the top of the panel.
@@ -162,7 +161,8 @@ public abstract class TabPanel extends JScrollPane {
 	}
 	
 	/**
-	 * Build the UI element using the 3 components.
+	 * Builds the UI element using the 3 components.
+	 * 
 	 * @param centerContentPanel
 	 */
 	protected void buildUI(JPanel centerContentPanel) {
@@ -222,7 +222,7 @@ public abstract class TabPanel extends JScrollPane {
 	}
 	
 	/**
-	 * Get the simulation being monitored.
+	 * Gets the simulation being monitored.
 	 * 
 	 * @return
 	 */
@@ -276,7 +276,8 @@ public abstract class TabPanel extends JScrollPane {
 	}
 
 	/**
-	 * Add a text field and label to a Panel. The layout should be Spring layout.
+	 * Adds a text field and label to a Panel. The layout should be Spring layout.
+	 * 
 	 * @param parent Parent panel
 	 * @param label The fixed label
 	 * @param content Initial content of the text field as an integer
@@ -288,7 +289,8 @@ public abstract class TabPanel extends JScrollPane {
 	}
 
 	/**
-	 * Add a text field and label to a Panel. The layout should be Spring layout.
+	 * Adds a text field and label to a Panel. The layout should be Spring layout.
+	 * 
 	 * @param parent Parent panel
 	 * @param label The fixed label
 	 * @param content Initial content of the text field
@@ -312,7 +314,8 @@ public abstract class TabPanel extends JScrollPane {
 	}
 
 	/**
-	 * Add a standard titled border
+	 * Adds a standard titled border.
+	 * 
 	 * @param panel
 	 * @param title The title to display
 	 */

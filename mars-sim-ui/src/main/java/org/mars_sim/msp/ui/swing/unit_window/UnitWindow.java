@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * UnitWindow.java
- * @date 2021-12-20
+ * @date 2022-07-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window;
@@ -152,10 +152,6 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 
 		if (unit.getUnitType() == UnitType.PERSON) {
 			statusPanel.setPreferredSize(new Dimension(WIDTH / 8, 60));
-//		}
-
-
-//		if (unit instanceof Person) {
 
 			WebLabel nameLabel = new WebLabel(name, displayInfo.getButtonIcon(unit), SwingConstants.CENTER);
 			nameLabel.setMinimumSize(new Dimension(80, 60));
@@ -230,19 +226,14 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 				shiftPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
 				WebPanel rowPanel = new WebPanel(new GridLayout(2, 2, 0, 0));
-//				 rowPanel.setBorder(new MarsPanelBorder());
-
-				rowPanel.add(townPanel);// , FlowLayout.LEFT);
-				rowPanel.add(rolePanel);// , FlowLayout.LEFT);
-				rowPanel.add(shiftPanel);// , FlowLayout.LEFT);
-				rowPanel.add(jobPanel);// , FlowLayout.LEFT);
+				rowPanel.add(townPanel);
+				rowPanel.add(rolePanel);
+				rowPanel.add(shiftPanel);
+				rowPanel.add(jobPanel);
 
 				statusPanel.add(rowPanel);
 				rowPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
-
 			}
-
-			// factory.add(centerPanel, DETAILS, getImage(DETAILS_ICON), true);
 		}
 
 
@@ -272,8 +263,6 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 
 
 		WebPanel centerPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
-//		centerPanel.setOpaque(false);
-//		centerPanel.setBackground(new Color(0,0,0,128));
 		centerPanel.add(tabPane);
 
 		mainPane.add(centerPanel, BorderLayout.CENTER);
@@ -399,11 +388,17 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 		tabPanels = tabPanels.stream()
 				.sorted((t1, t2) -> t1.getTabTitle().compareTo(t2.getTabTitle()))
 				.collect(Collectors.toList());
-		tabPanels.forEach(panel -> {
-			tabPane.addTab(panel.getTabTitle(), panel.getTabIcon(), panel, null);// panel.getTabToolTip());
-		});
-
 	}
+	
+	/**
+	 * Adds tab panels.
+	 */
+	protected void addTabPanels() {
+		tabPanels.forEach(panel -> {
+			tabPane.addTab(null, panel.getTabIcon(), panel, panel.getTabToolTip());
+		});
+	}
+	
 
 	/**
 	 * Gets the unit for this window.

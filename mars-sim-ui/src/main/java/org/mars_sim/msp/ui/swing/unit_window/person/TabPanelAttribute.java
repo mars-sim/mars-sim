@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * TabPanelAttribute.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.person;
@@ -22,6 +22,7 @@ import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
@@ -36,7 +37,10 @@ import com.alee.laf.scroll.WebScrollPane;
 public class TabPanelAttribute
 extends TabPanel {
 	
+	private static final String ATTRIBUTE_ICON = Msg.getString("icon.attribute"); //$NON-NLS-1$
+	
 	private AttributeTableModel attributeTableModel;
+	
 	private JTable attributeTable;
 
 	/**
@@ -47,11 +51,10 @@ extends TabPanel {
 	public TabPanelAttribute(Person person, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
-			Msg.getString("TabPanelAttribute.title"), //$NON-NLS-1$
 			null,
-			Msg.getString("TabPanelAttribute.tooltip"), //$NON-NLS-1$
-			person,
-			desktop
+			ImageLoader.getNewIcon(ATTRIBUTE_ICON),	
+			Msg.getString("TabPanelAttribute.title"), //$NON-NLS-1$
+			person,	desktop
 		);
 	}
 

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TabPanelAssociatedPeople.java
- * @date 2021-12-06
+ * @date 2022-07-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
@@ -32,6 +33,8 @@ import com.alee.laf.panel.WebPanel;
 @SuppressWarnings("serial")
 public class TabPanelAssociatedPeople extends TabPanel{
 
+	private static final String CITIZEN_ICON = Msg.getString("icon.citizen"); //$NON-NLS-1$
+	
 	private int populationCitizensCache;
 	private int populationCapacityCache;
 	private int populationIndoorCache;
@@ -53,9 +56,12 @@ public class TabPanelAssociatedPeople extends TabPanel{
 	 */
 	public TabPanelAssociatedPeople(Unit unit, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
-		super(Msg.getString("TabPanelAssociatedPeople.title"), //$NON-NLS-1$
-				null, Msg.getString("TabPanelAssociatedPeople.tooltip"), //$NON-NLS-1$
-				unit, desktop);
+		super(
+			null,
+			ImageLoader.getNewIcon(CITIZEN_ICON),
+			Msg.getString("TabPanelAssociatedPeople.title"), //$NON-NLS-1$
+			unit, desktop
+		);
 
 		settlement = (Settlement) unit;
 	}

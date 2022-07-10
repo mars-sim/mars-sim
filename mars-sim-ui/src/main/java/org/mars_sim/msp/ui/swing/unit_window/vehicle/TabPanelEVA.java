@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TabPanelEVA.java
- * @date 2021-09-25
+ * @date 2022-07-09
  * @author Manny Kung
  */
 
@@ -20,6 +20,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Airlock;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.UnitListPanel;
@@ -32,6 +33,8 @@ import com.alee.laf.panel.WebPanel;
  */
 @SuppressWarnings("serial")
 public class TabPanelEVA extends TabPanel {
+
+	private static final String EVA_ICON = Msg.getString("icon.eva"); //$NON-NLS-1$
 
 	private int occupiedCache;
     private int emptyCache;
@@ -59,15 +62,14 @@ public class TabPanelEVA extends TabPanel {
     public TabPanelEVA(Vehicle vehicle, MainDesktopPane desktop) {
         // Use the TabPanel constructor
         super(
-                Msg.getString("TabPanelEVA.title"), //$NON-NLS-1$
-                null,
-                Msg.getString("TabPanelEVA.tooltip"), //$NON-NLS-1$
-                vehicle, desktop
+        	null,
+			ImageLoader.getNewIcon(EVA_ICON),        	
+        	Msg.getString("TabPanelEVA.title"), //$NON-NLS-1$
+        	vehicle, desktop
         );
 
         if (vehicle instanceof Rover)
         	airlock = ((Rover) vehicle).getAirlock();
-
     }
 
     @Override

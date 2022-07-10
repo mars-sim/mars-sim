@@ -45,6 +45,7 @@ import org.mars_sim.msp.core.structure.ChainOfCommand;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MarsClockFormat;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.tool.StarRater;
@@ -70,6 +71,8 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(TabPanelCareer.class.getName());
 
+	private static final String CAREER_ICON = Msg.getString("icon.career"); //$NON-NLS-1$
+	
 	private static final int RATING_DAYS = 7;
 
 	/** data cache */
@@ -119,9 +122,12 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 	 */
 	public TabPanelCareer(Unit unit, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
-		super(Msg.getString("TabPanelCareer.title"), //$NON-NLS-1$
-				null, Msg.getString("TabPanelCareer.tooltip"), //$NON-NLS-1$
-				unit, desktop);
+		super(
+			null,	
+			ImageLoader.getNewIcon(CAREER_ICON),
+			Msg.getString("TabPanelCareer.title"), //$NON-NLS-1$
+			unit, desktop
+		);
 
 		person = (Person) unit;
 
@@ -132,7 +138,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 			settlement = person.getAssociatedSettlement();
 		}
 
-		if (settlement == null) {
+		else {
 			if (person.isBuried()) {
 				settlement = person.getBuriedSettlement();
 			}

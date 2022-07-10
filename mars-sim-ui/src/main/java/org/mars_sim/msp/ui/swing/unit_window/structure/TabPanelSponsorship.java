@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TabPanelSponsorship.java
- * @date 2021-12-20
+ * @date 2022-07-09
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -20,6 +20,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.reportingAuthority.MissionSubAgenda;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
@@ -37,6 +38,8 @@ import com.alee.managers.tooltip.TooltipWay;
 @SuppressWarnings("serial")
 public class TabPanelSponsorship extends TabPanel {
 	
+	private static final String EARTH_ICON = Msg.getString("icon.earth"); //$NON-NLS-1$
+	
 	/** The Settlement instance. */
 	private Settlement settlement;
 	
@@ -48,9 +51,9 @@ public class TabPanelSponsorship extends TabPanel {
 	public TabPanelSponsorship(Settlement settlement, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
-			Msg.getString("TabPanelSponsorship.title"), //$NON-NLS-1$
 			null,
-			Msg.getString("TabPanelSponsorship.tooltip"), //$NON-NLS-1$
+			ImageLoader.getNewIcon(EARTH_ICON),
+			Msg.getString("TabPanelSponsorship.title"), //$NON-NLS-1$
 			settlement, desktop
 		);
 

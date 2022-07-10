@@ -31,10 +31,10 @@ import com.alee.laf.progressbar.WebProgressBar;
 public class MalfunctionPanel
 extends WebPanel {
 
-	private static final int EMERGENCY_MALFUNCTION = 80;
-
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
+
+	private static final int EMERGENCY_MALFUNCTION = 80;
 
 	// Data members
 	/** The malfunction. */

@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
- * TabPanelScience.java
- * @version 3.2.0 2021-06-20
+ * TabPanelScienceStudy.java
+ * @date 2022-07-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.person;
@@ -50,8 +50,10 @@ import com.alee.managers.tooltip.TooltipWay;
  * A tab panel displaying a person's scientific studies and achievements.
  */
 @SuppressWarnings("serial")
-public class TabPanelScience extends TabPanel {
+public class TabPanelScienceStudy extends TabPanel {
 
+	private static final String SCIENCE_ICON = Msg.getString("icon.science"); //$NON-NLS-1$
+	
 	/** The Person instance. */
 	private Person person = null;
 
@@ -69,12 +71,14 @@ public class TabPanelScience extends TabPanel {
 	 * @param person  the person.
 	 * @param desktop the main desktop.
 	 */
-	public TabPanelScience(Person person, MainDesktopPane desktop) {
+	public TabPanelScienceStudy(Person person, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
-		super(Msg.getString("TabPanelScience.title"), //$NON-NLS-1$
-				Msg.getString("TabPanelScience.label"),
-				null, Msg.getString("TabPanelScience.tooltip"), //$NON-NLS-1$
-				person, desktop);
+		super(
+			null, 
+			ImageLoader.getNewIcon(SCIENCE_ICON),
+			Msg.getString("TabPanelScience.title"), //$NON-NLS-1$
+			person, desktop
+		);
 
 		this.person = person;
 	}

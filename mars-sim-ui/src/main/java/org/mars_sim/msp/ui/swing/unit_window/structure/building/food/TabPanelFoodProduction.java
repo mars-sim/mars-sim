@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * TabPanelFoodProduction.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-09
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building.food;
@@ -46,6 +46,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FoodProduction;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
@@ -61,8 +62,9 @@ public class TabPanelFoodProduction extends TabPanel {
 	/** default logger. */
 	private static final Logger logger = Logger.getLogger(TabPanelFoodProduction.class.getName());
 
-	// Data members
+	private static final String FOOD_ICON = Msg.getString("icon.food"); //$NON-NLS-1$
 	
+	// Data members
 	/** The Settlement instance. */
 	private Settlement settlement;
 	
@@ -91,9 +93,12 @@ public class TabPanelFoodProduction extends TabPanel {
 	 */
 	public TabPanelFoodProduction(Unit unit, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
-		super(Msg.getString("TabPanelFoodProduction.title"), //$NON-NLS-1$
-				null, Msg.getString("TabPanelFoodProduction.tooltip"), //$NON-NLS-1$
-				unit, desktop);
+		super(
+			null, 
+			ImageLoader.getNewIcon(FOOD_ICON),
+			Msg.getString("TabPanelFoodProduction.tooltip"), //$NON-NLS-1$
+			unit, desktop
+		);
 
 		settlement = (Settlement) unit;
 

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TabPanelLog.java
- * @date 2021-12-20
+ * @date 2022-07-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.vehicle;
@@ -40,6 +40,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
@@ -52,6 +53,8 @@ import com.alee.laf.scroll.WebScrollPane;
 
 @SuppressWarnings("serial")
 public class TabPanelLog extends TabPanel {
+
+	private static final String NOTE_ICON = Msg.getString("icon.note"); //$NON-NLS-1$
 
 	private static final String SOL = "   Sol ";
 	
@@ -83,9 +86,9 @@ public class TabPanelLog extends TabPanel {
 	public TabPanelLog(Vehicle vehicle, MainDesktopPane desktop) {
 		// Use TabPanel constructor.
 		super(
+			Msg.getString("TabPanelLog.title"),
+			ImageLoader.getNewIcon(NOTE_ICON),
 			Msg.getString("TabPanelLog.title"), //$NON-NLS-1$
-			null,
-			Msg.getString("TabPanelLog.tooltip"), //$NON-NLS-1$
 			vehicle,
 			desktop
 		);

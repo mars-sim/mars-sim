@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TabPanelActivity.java
- * @date 2021-12-20
+ * @date 2022-07-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.person;
@@ -51,6 +51,8 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(TabPanelActivity.class.getName());
 
+	private static final String TASK_ICON = Msg.getString("icon.task"); //$NON-NLS-1$
+	
 	private static final int COL_WDITH = 16;
 
 	private static final String DEAD_PHRASE = " " + Msg.getString("TabPanelActivity.dead.phrase"); // " (at the Moment
@@ -101,9 +103,12 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 	 */
 	public TabPanelActivity(Unit unit, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
-		super(Msg.getString("TabPanelActivity.title"), //$NON-NLS-1$
-				null, Msg.getString("TabPanelActivity.tooltip"), //$NON-NLS-1$
-				unit, desktop);
+		super(
+			null, 
+			ImageLoader.getNewIcon(TASK_ICON),	
+			Msg.getString("TabPanelActivity.title"), //$NON-NLS-1$
+			unit, desktop
+		);
 
 		if (unit.getUnitType() == UnitType.PERSON) {
 			person = (Person) unit;

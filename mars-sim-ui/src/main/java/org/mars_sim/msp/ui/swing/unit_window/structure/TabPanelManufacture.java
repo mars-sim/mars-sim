@@ -48,6 +48,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.Manufacture;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
@@ -62,6 +63,8 @@ public class TabPanelManufacture extends TabPanel {
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(TabPanelManufacture.class.getName());
 
+	private static final String MANU_ICON = Msg.getString("icon.manu"); //$NON-NLS-1$
+	
 	/** The Settlement instance. */
 	private Settlement settlement;
 	
@@ -94,10 +97,12 @@ public class TabPanelManufacture extends TabPanel {
 	 */
 	public TabPanelManufacture(Unit unit, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
-		super(Msg.getString("TabPanelManufacture.title"), //$NON-NLS-1$
-				Msg.getString("TabPanelManufacture.label"),
-				null, Msg.getString("TabPanelManufacture.tooltip"), //$NON-NLS-1$
-				unit, desktop);
+		super(
+			null, 
+			ImageLoader.getNewIcon(MANU_ICON),
+			Msg.getString("TabPanelManufacture.title"), //$NON-NLS-1$
+			unit, desktop
+		);
 
 		settlement = (Settlement) unit;
 	}

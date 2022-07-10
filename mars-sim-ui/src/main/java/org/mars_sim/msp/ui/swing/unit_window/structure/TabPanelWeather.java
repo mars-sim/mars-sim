@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TabPanelWeather.java
- * @date 2021-12-20
+ * @date 2022-07-09
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -42,6 +42,8 @@ import com.alee.laf.text.WebTextField;
 public class TabPanelWeather
 extends TabPanel {
 
+	private static final String WEATHER_ICON = Msg.getString("icon.weather"); //$NON-NLS-1$
+	
 	private static final String DUSTY_SKY = Msg.getString("img.dust128"); //$NON-NLS-1$
 	private static final String SUNNY = Msg.getString("img.sunny128"); //$NON-NLS-1$
 	private static final String BALMY = Msg.getString("img.hot128"); //$NON-NLS-1$
@@ -102,11 +104,13 @@ extends TabPanel {
      * @param desktop the main desktop.
      */
     public TabPanelWeather(Unit unit, MainDesktopPane desktop) {
-        // Use the TabPanel constructo
-        super(Msg.getString("TabPanelWeather.title"), //$NON-NLS-1$
-    			null,
-    			Msg.getString("TabPanelWeather.tooltip"), //$NON-NLS-1$
-    			unit, desktop);
+        // Use the TabPanel constructor
+        super(
+    		null,
+    		ImageLoader.getNewIcon(WEATHER_ICON),
+    		Msg.getString("TabPanelWeather.title"), //$NON-NLS-1$
+    		unit, desktop
+    	);
 	}
 	
 	@Override

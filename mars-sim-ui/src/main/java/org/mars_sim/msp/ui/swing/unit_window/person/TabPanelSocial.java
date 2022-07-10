@@ -25,6 +25,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.social.RelationshipUtil;
 import org.mars_sim.msp.core.tool.Conversion;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
@@ -40,6 +41,8 @@ public class TabPanelSocial
 extends TabPanel
 implements ListSelectionListener {
 
+	private static final String SOCIAL_ICON = Msg.getString("icon.social"); //$NON-NLS-1$
+	
 	/** The Person instance. */
 	private Person person = null;
 	
@@ -56,9 +59,9 @@ implements ListSelectionListener {
 	public TabPanelSocial(Person person, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
-			Msg.getString("TabPanelSocial.title"), //$NON-NLS-1$
 			null,
-			Msg.getString("TabPanelSocial.tooltip"), //$NON-NLS-1$
+			ImageLoader.getNewIcon(SOCIAL_ICON),
+			Msg.getString("TabPanelSocial.title"), //$NON-NLS-1$
 			person, desktop
 		);
 		this.person = person;

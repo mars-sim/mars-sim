@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ConstructionSitesPanel.java
- * @date 2021-09-20
+ * @date 2022-07-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -60,20 +60,11 @@ public class ConstructionSitesPanel extends JPanel {
         this.manager = manager;
         
         setLayout(new BorderLayout());
-//        setBorder(new MarsPanelBorder());
-        
-//        JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-//        add(titlePanel, BorderLayout.NORTH);
-        
-//        JLabel titleLabel = new JLabel("Construction Sites");
-//		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
-//        titlePanel.add(titleLabel);
-        
+
         TitledBorder dessertBorder = BorderFactory.createTitledBorder(null, "Construction Sites",
 				javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION,
 				new Font("Serif", Font.BOLD, 14), java.awt.Color.darkGray);
         setBorder(dessertBorder);
-        
         		
         // Create scroll panel for sites list pane.
         sitesScrollPane = new JScrollPane();

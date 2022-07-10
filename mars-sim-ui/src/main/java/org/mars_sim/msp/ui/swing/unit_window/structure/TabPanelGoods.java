@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TabPanelGoods.java
- * @date 2021-08-28
+ * @date 2022-07-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.goods.Good;
 import org.mars_sim.msp.core.goods.GoodsManager;
 import org.mars_sim.msp.core.goods.GoodsUtil;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
@@ -33,10 +34,9 @@ import com.alee.laf.scroll.WebScrollPane;
 @SuppressWarnings("serial")
 public class TabPanelGoods extends TabPanel {
 
-	// Data members
-	/** The Settlement instance. */
-	private Settlement settlement;
+	private static final String CART_ICON = Msg.getString("icon.cart"); //$NON-NLS-1$
 	
+	// Data members
 	private JTable goodsTable;
 	private GoodsTableModel goodsTableModel;
 
@@ -48,15 +48,11 @@ public class TabPanelGoods extends TabPanel {
 	public TabPanelGoods(Unit unit, MainDesktopPane desktop) {
 		// Use TabPanel constructor.
 		super(
-			Msg.getString("TabPanelGoods.title"),
-			Msg.getString("TabPanelGoods.label"),
 			null,
-			Msg.getString("TabPanelGoods.tooltip"), //$NON-NLS-1$
+			ImageLoader.getNewIcon(CART_ICON),
+			Msg.getString("TabPanelGoods.title"), //$NON-NLS-1$
 			unit, desktop
 		);
-
-		settlement = (Settlement) unit;
-
 	}
 	
 	@Override

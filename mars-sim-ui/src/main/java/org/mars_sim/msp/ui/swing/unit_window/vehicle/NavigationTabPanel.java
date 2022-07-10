@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * NavigationTabPanel.java
- * @date 2021-08-28
+ * @date 2022-07-09
  * @author Scott Davis
  */
 
@@ -34,6 +34,7 @@ import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
@@ -53,6 +54,8 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
 
     private static final Logger logger = Logger.getLogger(NavigationTabPanel.class.getName());
     
+	private static final String WHEEL_ICON = Msg.getString("icon.wheel"); //$NON-NLS-1$
+
     private WebButton driverButton;
     private WebButton centerMapButton;
     private WebButton destinationButton;
@@ -101,7 +104,13 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
      */
     public NavigationTabPanel(Unit unit, MainDesktopPane desktop) {
         // Use the TabPanel constructor
-        super("Navigation", Msg.getString("NavigationTabPanel.title"), null, "Navigation", unit, desktop);
+        super(
+        	Msg.getString("NavigationTabPanel.title"), 
+        	Msg.getString("NavigationTabPanel.title"), 
+        	ImageLoader.getNewIcon(WHEEL_ICON),
+        	Msg.getString("NavigationTabPanel.title"), 
+        	unit, desktop
+        );
 	
         vehicle = (Vehicle) unit;
 

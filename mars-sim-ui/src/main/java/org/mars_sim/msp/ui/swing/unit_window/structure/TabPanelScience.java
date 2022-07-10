@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * TabPanelScience.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -49,8 +49,9 @@ import com.alee.laf.scroll.WebScrollPane;
 public class TabPanelScience
 extends TabPanel {
 
+	private static final String SCIENCE_ICON = Msg.getString("icon.science"); //$NON-NLS-1$
+
 	// Data members
-	
 	/** The Settlement instance. */
 	private Settlement settlement;
 	
@@ -71,8 +72,8 @@ extends TabPanel {
 	public TabPanelScience(Settlement settlement, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
-			Msg.getString("TabPanelScience.title"), //$NON-NLS-1$
 			null,
+			ImageLoader.getNewIcon(SCIENCE_ICON),
 			Msg.getString("TabPanelScience.tooltip"), //$NON-NLS-1$
 			settlement, desktop
 		);

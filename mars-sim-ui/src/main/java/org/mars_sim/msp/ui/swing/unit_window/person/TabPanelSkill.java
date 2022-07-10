@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * TabPanelSkill.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.person;
@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
@@ -35,11 +36,11 @@ import com.alee.laf.scroll.WebScrollPane;
 /**
  * The SkillTabPanel is a tab panel for the skills of a person.
  */
+@SuppressWarnings("serial")
 public class TabPanelSkill
 extends TabPanel {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
+	private static final String SKILL_ICON = Msg.getString("icon.running"); //$NON-NLS-1$
 	
 	private JTable skillTable ;
 	private SkillTableModel skillTableModel;
@@ -53,9 +54,9 @@ extends TabPanel {
 	public TabPanelSkill(Person person, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
-			Msg.getString("TabPanelSkill.title"), //$NON-NLS-1$
 			null,
-			Msg.getString("TabPanelSkill.tooltip"), //$NON-NLS-1$
+			ImageLoader.getNewIcon(SKILL_ICON),
+			Msg.getString("TabPanelSkill.title"), //$NON-NLS-1$
 			person, desktop
 		);
 

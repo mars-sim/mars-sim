@@ -53,12 +53,11 @@ public class RobotWindow extends UnitWindow {
 		addTabPanel(new NotesTabPanel(robot, desktop));
 		addTabPanel(new TabPanelSchedule(robot, desktop));
 		addTabPanel(new TabPanelSkill(robot, desktop));
-		// addTabPanel(new TabPanelHealth(robot, desktop));
-		// addTabPanel(new TabPanelGeneral(robot, desktop));
 
 		// Add tab sorting
-		sortTabPanels();
-
+//		sortTabPanels();
+		// Add to tab panels. 
+		addTabPanels();
 	}
 
 	/**

@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * PersonWindow.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.person;
@@ -25,20 +25,6 @@ public class PersonWindow extends UnitWindow {
 	private boolean deadCache = false;
 
 	private Person person;
-	
-//	private TabPanelActivity tabPanelActivity;
-//	private TabPanelAttribute tabPanelAttribute;
-//	private TabPanelCareer tabPanelCareer;
-//	private TabPanelFavorite tabPanelFavorite;
-//	private TabPanelGeneral tabPanelGeneral;
-//	private TabPanelHealth tabPanelHealth;
-//	private InventoryTabPanel inventoryTabPanel;
-//	private LocationTabPanel locationTabPanel;
-//	private TabPanelSchedule tabPanelSchedule;
-//	private TabPanelScience tabPanelScience;
-//	private TabPanelSkill tabPanelSkill;
-//	private TabPanelSocial tabPanelSocial;
-//	private TabPanelSponsorship tabPanelSponsorship;
 
 	/**
 	 * Constructor.
@@ -51,14 +37,9 @@ public class PersonWindow extends UnitWindow {
 		super(desktop, person, true);
 		this.person = person;
 	
-		// Add tab panels
-		
-//		tabPanelActivity = new TabPanelActivity(person, desktop);
-//		addTabPanel(tabPanelActivity);
-//
-//		tabPanelAttribute = new TabPanelAttribute(person, desktop);
-//		addTabPanel(tabPanelAttribute);
-		
+		// Add tab panels	
+		addTabPanel(new TabPanelGeneral(person, desktop));
+
 		addTabPanel(new TabPanelActivity(person, desktop));
 		
 		addTabPanel(new TabPanelAttribute(person, desktop));
@@ -74,21 +55,17 @@ public class PersonWindow extends UnitWindow {
 
 		addTabPanel(new TabPanelFavorite(person, desktop));
 
-		addTabPanel(new TabPanelGeneral(person, desktop));
-
 		addTabPanel(new TabPanelHealth(person, desktop));
 
-		addTabPanel(new NotesTabPanel(person, desktop));
-		
 		addTabPanel(new InventoryTabPanel(person, desktop));
 
 		addTopPanel(new LocationTabPanel(person, desktop));
 
-//		addTabPanel(new TabPanelPersonality(person, desktop));
-
+		addTabPanel(new NotesTabPanel(person, desktop));
+		
 		addTabPanel(new TabPanelSchedule(person, desktop));
 
-		addTabPanel(new TabPanelScience(person, desktop));
+		addTabPanel(new TabPanelScienceStudy(person, desktop));
 
 		addTabPanel(new TabPanelSkill(person, desktop));
 
@@ -96,13 +73,9 @@ public class PersonWindow extends UnitWindow {
 
 		addTabPanel(new TabPanelSponsor(person, desktop));
 
-		// Add tab sorting
-		sortTabPanels();
+		// Add to tab panels. 
+		addTabPanels();
 	}
-
-//	public void initializeUI(TabPanel tabPanel) {
-//		tabPanel.initializeUI();
-//	}
 
 	/**
 	 * Updates this window.
@@ -121,22 +94,6 @@ public class PersonWindow extends UnitWindow {
 
 	@Override
 	public void stateChanged(ChangeEvent e) {
-
-//		TabPanel newTab = (TabPanel)e.getSource();//getSelected();
-//		System.out.println("oldTab : " + oldTab + "    newTab : " + newTab);
-//		
-//		if (oldTab == null || newTab != oldTab) {
-//			oldTab = newTab;
-//			
-//			if (!newTab.isUIDone());
-//				newTab.initializeUI();
-//				
-////			if (newTab instanceof TabPanelActivity) {
-////				if (tabPanelActivity.isUIDone());
-////				 	tabPanelActivity.initializeUI();
-////			} else if (newTab instanceof TabPanelAttribute) {
-////				
-////			}
-//		}
+		// nothing
 	}
 }

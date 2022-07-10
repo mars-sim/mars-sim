@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * TabPanelBots.java
- * @date 2021-12-06
+ * @date 2022-07-09
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.unit_window.vehicle;
@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.UnitListPanel;
@@ -30,6 +31,8 @@ import com.alee.laf.panel.WebPanel;
  */
 @SuppressWarnings("serial")
 public class TabPanelBots extends TabPanel {
+
+	private static final String ROBOT_ICON = Msg.getString("icon.robot"); //$NON-NLS-1$
 
 	private JTextField crewNumLabel;
 	private JTextField crewCapLabel;
@@ -49,9 +52,9 @@ public class TabPanelBots extends TabPanel {
 	public TabPanelBots(Vehicle vehicle, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
-			Msg.getString("TabPanelBots.title"), //$NON-NLS-1$
 			null,
-			Msg.getString("TabPanelBots.tooltip"), //$NON-NLS-1$
+			ImageLoader.getNewIcon(ROBOT_ICON),
+			Msg.getString("TabPanelBots.title"), //$NON-NLS-1$
 			vehicle, desktop
 		);
 

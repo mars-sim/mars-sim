@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * TabPanelSponsor.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-09
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.unit_window.person;
@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
@@ -32,6 +33,8 @@ import com.alee.managers.tooltip.TooltipWay;
 public class TabPanelSponsor
 extends TabPanel {
 
+	private static final String EARTH_ICON = Msg.getString("icon.earth"); //$NON-NLS-1$
+
 	/** The Person instance. */
 	private Person person = null;
 	
@@ -43,9 +46,9 @@ extends TabPanel {
 	public TabPanelSponsor(Unit unit, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
-			Msg.getString("TabPanelSponsor.title"), //$NON-NLS-1$
 			null,
-			Msg.getString("TabPanelSponsor.tooltip"), //$NON-NLS-1$
+			ImageLoader.getNewIcon(EARTH_ICON),
+			Msg.getString("TabPanelSponsor.title"), //$NON-NLS-1$
 			unit, desktop
 		);
 

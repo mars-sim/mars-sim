@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * TabPanelThermalSystem.java
- * @date 2021-12-14
+ * @date 2022-07-09
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -57,6 +57,8 @@ extends TabPanel {
 	// default logger.
 	//private static final Logger logger = Logger.getLogger(TabPanelThermalSystem.class.getName());
 	
+	private static final String HEAT_ICON = Msg.getString("icon.heat"); //$NON-NLS-1$
+
 	private static final String kW = " kW";
 	private static final String PERCENT_PER_SOL = " % per sol";
 	private static final String PERCENT = " %";
@@ -101,11 +103,10 @@ extends TabPanel {
 	 * @param desktop the main desktop.
 	 */
 	public TabPanelThermalSystem(Unit unit, MainDesktopPane desktop) {
-
 		// Use the TabPanel constructor
 		super(
-			Msg.getString("TabPanelThermalSystem.title"), //$NON-NLS-1$
 			null,
+			ImageLoader.getNewIcon(HEAT_ICON),
 			Msg.getString("TabPanelThermalSystem.tooltip"), //$NON-NLS-1$
 			unit, desktop
 		);

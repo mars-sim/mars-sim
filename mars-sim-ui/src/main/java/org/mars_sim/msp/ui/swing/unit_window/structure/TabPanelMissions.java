@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TabPanelMissions.java
- * @date 2021-12-06
+ * @date 2022-07-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -52,8 +52,9 @@ extends TabPanel {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(TabPanelMissions.class.getName());
 
+	private static final String FLAG_ICON = Msg.getString("icon.flag"); //$NON-NLS-1$
+	
 	// Data members
-
 	/** The Settlement instance. */
 	private Settlement settlement;
 
@@ -73,9 +74,9 @@ extends TabPanel {
 	public TabPanelMissions(Settlement settlement, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
-			Msg.getString("TabPanelMissions.title"), //$NON-NLS-1$
 			null,
-			Msg.getString("TabPanelMissions.tooltip"), //$NON-NLS-1$
+			ImageLoader.getNewIcon(FLAG_ICON),
+			Msg.getString("TabPanelMissions.title"), //$NON-NLS-1$
 			settlement, desktop
 		);
 

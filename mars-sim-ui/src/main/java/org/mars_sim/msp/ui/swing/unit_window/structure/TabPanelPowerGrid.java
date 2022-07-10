@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * TabPanelPowerGrid.java
- * @date 2021-12-20
+ * @date 2022-07-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -54,6 +54,8 @@ import com.alee.laf.scroll.WebScrollPane;
 @SuppressWarnings("serial")
 public class TabPanelPowerGrid extends TabPanel {
 
+	private static final String FUSE_ICON = Msg.getString("icon.fuse"); //$NON-NLS-1$
+	
 	private static final String kW = " kW";
 	private static final String kWh = " kWh";
 	private static final String PERCENT_PER_SOL = " % per sol";
@@ -110,15 +112,15 @@ public class TabPanelPowerGrid extends TabPanel {
 	 * @param desktop the main desktop.
 	 */
 	public TabPanelPowerGrid(Unit unit, MainDesktopPane desktop) {
-
 		// Use the TabPanel constructor
-		super(Msg.getString("TabPanelPowerGrid.title"), //$NON-NLS-1$
-				Msg.getString("TabPanelPowerGrid.label"),
-				null, Msg.getString("TabPanelPowerGrid.tooltip"), //$NON-NLS-1$
-				unit, desktop);
+		super(
+			null,
+			ImageLoader.getNewIcon(FUSE_ICON),
+			Msg.getString("TabPanelPowerGrid.title"), //$NON-NLS-1$
+			unit, desktop
+		);
 
 		settlement = (Settlement) unit;
-
 	}
 	
 	@Override

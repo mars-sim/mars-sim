@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TabPanelAirComposition.java
- * @date 2021-12-20
+ * @date 2022-07-09
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -33,6 +33,7 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
@@ -51,6 +52,8 @@ import com.alee.laf.scroll.WebScrollPane;
 @SuppressWarnings("serial")
 public class TabPanelAirComposition extends TabPanel {
 
+	private static final String AIR_ICON = Msg.getString("icon.air"); //$NON-NLS-1$
+	
 	private static final String LABEL_PERCENT = "TabPanelAirComposition.label.percent";
 	
 	private int numBuildingsCache;
@@ -101,9 +104,9 @@ public class TabPanelAirComposition extends TabPanel {
 
 		// Use the TabPanel constructor
 		super(
-			Msg.getString("TabPanelAirComposition.title"), //$NON-NLS-1$
 			null,
-			Msg.getString("TabPanelAirComposition.tooltip"), //$NON-NLS-1$
+			ImageLoader.getNewIcon(AIR_ICON),
+			Msg.getString("TabPanelAirComposition.title"), //$NON-NLS-1$
 			unit, desktop
 		);
 

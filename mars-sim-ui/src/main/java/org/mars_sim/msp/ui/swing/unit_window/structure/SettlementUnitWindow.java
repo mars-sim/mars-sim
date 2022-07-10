@@ -85,7 +85,10 @@ public class SettlementUnitWindow extends UnitWindow {
 
 		addTabPanel(new TabPanelWasteProcesses(settlement, desktop));
 
-		sortTabPanels();
+//		sortTabPanels();
+		
+		// Add to tab panels. 
+		addTabPanels();
 	}
 
 	/**

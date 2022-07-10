@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * SalvageTabPanel.java
- * @date 2021-12-20
+ * @date 2022-07-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window;
@@ -25,10 +25,12 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.manufacture.Salvagable;
 import org.mars_sim.msp.core.manufacture.SalvageInfo;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
@@ -39,6 +41,8 @@ import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 @SuppressWarnings("serial")
 public class SalvageTabPanel extends TabPanel {
 
+	private static final String WARN_ICON = Msg.getString("icon.warn"); //$NON-NLS-1$
+	
     private String finishTimeString;
     private JLabel finishTimeLabel;
     private PartTableModel partTableModel;
@@ -50,7 +54,7 @@ public class SalvageTabPanel extends TabPanel {
      */
     public SalvageTabPanel(Unit unit, MainDesktopPane desktop) { 
         // Use the TabPanel constructor
-        super("Salvage", null, "Salvage Info", unit, desktop);
+        super(null, ImageLoader.getNewIcon(WARN_ICON), "Salvage Info", unit, desktop);
 	}
 
     @Override

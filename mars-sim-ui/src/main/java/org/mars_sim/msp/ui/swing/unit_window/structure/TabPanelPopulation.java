@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TabPanelPopulation.java
- * @date 2021-12-06
+ * @date 2022-07-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
@@ -31,6 +32,8 @@ import com.alee.laf.panel.WebPanel;
 @SuppressWarnings("serial")
 public class TabPanelPopulation extends TabPanel {
 
+	private static final String POP_ICON = Msg.getString("icon.pop"); //$NON-NLS-1$
+	
 	/** The Settlement instance. */
 	private Settlement settlement;
 
@@ -50,9 +53,9 @@ public class TabPanelPopulation extends TabPanel {
 	public TabPanelPopulation(Unit unit, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
-			Msg.getString("TabPanelPopulation.title"), //$NON-NLS-1$
 			null,
-			Msg.getString("TabPanelPopulation.tooltip"), //$NON-NLS-1$
+			ImageLoader.getNewIcon(POP_ICON),
+			Msg.getString("TabPanelPopulation.title"), //$NON-NLS-1$
 			unit, desktop
 		);
 

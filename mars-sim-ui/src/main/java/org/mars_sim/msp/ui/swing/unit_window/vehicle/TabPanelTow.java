@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * NavigationTabPanel.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.vehicle;
@@ -20,6 +20,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.vehicle.Towing;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
@@ -29,6 +30,8 @@ import com.alee.laf.panel.WebPanel;
 @SuppressWarnings("serial")
 public class TabPanelTow extends TabPanel {
 
+	private static final String TOW_ICON = Msg.getString("icon.tow"); //$NON-NLS-1$
+	
 	private static final Font f = new Font("Monospaced", Font.BOLD, 12);
 
 	// Data members
@@ -46,15 +49,14 @@ public class TabPanelTow extends TabPanel {
 	public TabPanelTow(Unit unit, MainDesktopPane desktop) {
 		// Use TabPanel constructor.
 		super(
-			Msg.getString("TabPanelTow.title"), //$NON-NLS-1$
 			null,
-			Msg.getString("TabPanelTow.tooltip"), //$NON-NLS-1$
+			ImageLoader.getNewIcon(TOW_ICON),
+			Msg.getString("TabPanelTow.title"), //$NON-NLS-1$
 			unit,
 			desktop
 		);
 
-      vehicle = (Vehicle) unit;
-
+		vehicle = (Vehicle) unit;
 	}
 
 	@Override

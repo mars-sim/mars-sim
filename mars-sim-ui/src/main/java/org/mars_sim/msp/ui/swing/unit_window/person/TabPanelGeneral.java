@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TabPanelGeneral.java
- * @date 2021-09-20
+ * @date 2022-07-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.person;
@@ -25,6 +25,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.MBTIPersonality;
 import org.mars_sim.msp.core.person.ai.PersonalityTraitManager;
 import org.mars_sim.msp.core.person.ai.PersonalityTraitType;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
@@ -42,6 +43,8 @@ import com.alee.managers.style.StyleId;
 @SuppressWarnings("serial")
 public class TabPanelGeneral extends TabPanel {
 
+	private static final String ID_ICON = Msg.getString("icon.id"); //$NON-NLS-1$
+	
 	private static final String TAB_BIRTH_DATE_AGE = "TabPanelGeneral.birthDateAndAge";
 	
 	private static final Font SERIF_PLAIN_14 = new Font("Serif", Font.PLAIN, 14);
@@ -57,15 +60,16 @@ public class TabPanelGeneral extends TabPanel {
 	
 	/**
 	 * Constructor.
+	 * 
 	 * @param unit the unit to display.
 	 * @param desktop the main desktop.
 	 */
 	public TabPanelGeneral(Unit unit, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
-			Msg.getString("TabPanelGeneral.title"), //$NON-NLS-1$
 			null,
-			Msg.getString("TabPanelGeneral.tooltip"), //$NON-NLS-1$
+			ImageLoader.getNewIcon(ID_ICON),		
+			Msg.getString("TabPanelGeneral.title"), //$NON-NLS-1$
 			unit, desktop
 		);
 

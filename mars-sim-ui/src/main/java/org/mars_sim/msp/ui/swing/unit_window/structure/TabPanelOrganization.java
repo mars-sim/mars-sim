@@ -45,6 +45,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.structure.ChainOfCommand;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
@@ -55,6 +56,8 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 @SuppressWarnings("serial")
 public class TabPanelOrganization extends TabPanel {
 
+	private static final String CHART_ICON = Msg.getString("icon.chart"); //$NON-NLS-1$
+	
 	/** The Settlement instance. */
 	private Settlement settlement;
 
@@ -120,9 +123,11 @@ public class TabPanelOrganization extends TabPanel {
 	 */
 	public TabPanelOrganization(Unit unit, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
-		super("Org", //$NON-NLS-1$
-				null, Msg.getString("TabPanelStructure.tooltip"), //$NON-NLS-1$
-				unit, desktop);
+		super(
+			null, 
+			ImageLoader.getNewIcon(CHART_ICON),
+			Msg.getString("TabPanelStructure.title"), //$NON-NLS-1$
+			unit, desktop);
 
 		settlement = (Settlement) unit;
 	}

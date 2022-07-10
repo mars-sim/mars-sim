@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * NotesTabPanel.java
- * @date 2021-12-20
+ * @date 2022-07-09
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.unit_window;
@@ -13,6 +13,7 @@ import javax.swing.border.EmptyBorder;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
@@ -27,6 +28,8 @@ import com.alee.managers.style.StyleId;
 @SuppressWarnings("serial")
 public class NotesTabPanel extends TabPanel{
 
+	private static final String NOTE_ICON = Msg.getString("icon.note"); //$NON-NLS-1$
+	
 	private static final String ENTER_HERE = "Enter Here";
 
 	/** The cache for notes. */
@@ -42,7 +45,8 @@ public class NotesTabPanel extends TabPanel{
 	 * @param desktop the main desktop.
 	 */
 	public NotesTabPanel(Unit unit, MainDesktopPane desktop) {
-		super(Msg.getString("NotesTabPanel.title"), null, Msg.getString("NotesTabPanel.tooltip"), unit, desktop);
+		super(null, ImageLoader.getNewIcon(NOTE_ICON),
+				Msg.getString("NotesTabPanel.title"), unit, desktop);
 	}
 
 	@Override

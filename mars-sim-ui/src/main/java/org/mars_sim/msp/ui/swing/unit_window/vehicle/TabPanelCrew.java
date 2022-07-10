@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TabPanelCrew.java
- * @date 2021-12-06
+ * @date 2022-07-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.vehicle;
@@ -66,6 +66,9 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(TabPanelCrew.class.getName());
 
+	private static final String SAILOR_ICON = Msg.getString("icon.sailor"); //$NON-NLS-1$
+
+	
 	private MemberTableModel memberTableModel;
 	private JTable memberTable;
 
@@ -81,14 +84,15 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 
 	/**
 	 * Constructor.
+	 * 
 	 * @param vehicle the vehicle.
 	 * @param desktop the main desktop.
 	 */
 	public TabPanelCrew(Vehicle vehicle, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
-			Msg.getString("TabPanelCrew.title"), //$NON-NLS-1$
 			null,
+			ImageLoader.getNewIcon(SAILOR_ICON),
 			Msg.getString("TabPanelCrew.tooltip"), //$NON-NLS-1$
 			vehicle, desktop
 		);

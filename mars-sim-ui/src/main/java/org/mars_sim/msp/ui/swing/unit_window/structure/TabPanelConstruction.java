@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * TabPanelConstruction.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -20,6 +20,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.structure.OverrideType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.construction.ConstructionManager;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
@@ -27,8 +28,9 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 public class TabPanelConstruction
 extends TabPanel {
 
+	private static final String HELMET_ICON = Msg.getString("icon.helmet"); //$NON-NLS-1$
+	
 	// Data members
-
 	/** The Settlement instance. */
 	private Settlement settlement;
 	private ConstructionSitesPanel sitesPanel;
@@ -43,9 +45,9 @@ extends TabPanel {
 	public TabPanelConstruction(Unit unit, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
-			Msg.getString("TabPanelConstruction.title"), //$NON-NLS-1$
 			null,
-			Msg.getString("TabPanelConstruction.tooltip"), //$NON-NLS-1$
+			ImageLoader.getNewIcon(HELMET_ICON),
+			Msg.getString("TabPanelConstruction.title"), //$NON-NLS-1$
 			unit, desktop
 		);
 

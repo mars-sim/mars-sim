@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * TabPanelFavorite.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-09
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.unit_window.person;
@@ -27,6 +27,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.Preference;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
@@ -49,6 +50,8 @@ import com.alee.laf.text.WebTextField;
 public class TabPanelFavorite
 extends TabPanel {
 
+	private static final String HEART_ICON = Msg.getString("icon.heart"); //$NON-NLS-1$
+	
 	/** The Preference Table. */	
 	private JTable table;
 	/** The Preference Table Model. */	
@@ -64,9 +67,9 @@ extends TabPanel {
 	public TabPanelFavorite(Unit unit, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
-			Msg.getString("TabPanelFavorite.title"), //$NON-NLS-1$
 			null,
-			Msg.getString("TabPanelFavorite.tooltip"), //$NON-NLS-1$
+			ImageLoader.getNewIcon(HEART_ICON),	
+			Msg.getString("TabPanelFavorite.title"), //$NON-NLS-1$
 			unit, desktop
 		);
 

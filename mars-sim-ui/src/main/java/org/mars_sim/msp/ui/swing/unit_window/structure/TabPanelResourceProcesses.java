@@ -50,6 +50,8 @@ extends TabPanel {
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(TabPanelResourceProcesses.class.getName());
 
+	private static final String CHEMICAL_ICON = Msg.getString("icon.chemical"); //$NON-NLS-1$
+	
 	/** The Settlement instance. */
 	private Settlement settlement;
 	
@@ -71,9 +73,9 @@ extends TabPanel {
 
 		// Use the TabPanel constructor
 		super(
-			Msg.getString("TabPanelResourceProcesses.title"), //$NON-NLS-1$
 			null,
-			Msg.getString("TabPanelResourceProcesses.tooltip"), //$NON-NLS-1$
+			ImageLoader.getNewIcon(CHEMICAL_ICON),
+			Msg.getString("TabPanelResourceProcesses.title"), //$NON-NLS-1$
 			unit, desktop
 		);
 

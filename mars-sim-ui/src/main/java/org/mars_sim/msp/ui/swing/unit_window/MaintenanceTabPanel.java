@@ -29,6 +29,7 @@ import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 
@@ -37,6 +38,8 @@ import org.mars_sim.msp.ui.swing.tool.Conversion;
  */
 @SuppressWarnings("serial")
 public class MaintenanceTabPanel extends TabPanel {
+	
+	private static final String SCREWDRIVER_ICON = Msg.getString("icon.screwdriver"); //$NON-NLS-1$
 	
     private int wearConditionCache; // The cached value for the wear condition.
     private int lastCompletedTime; // The time since last completed maintenance.
@@ -59,7 +62,13 @@ public class MaintenanceTabPanel extends TabPanel {
      */
     public MaintenanceTabPanel(Unit unit, MainDesktopPane desktop) {
         // Use the TabPanel constructor
-        super("Maint", Msg.getString("MaintenanceTabPanel.title"), null, "Maintenance", unit, desktop);
+        super(
+        	Msg.getString("MaintenanceTabPanel.title"),
+        	Msg.getString("MaintenanceTabPanel.title"), 
+        	ImageLoader.getNewIcon(SCREWDRIVER_ICON), 
+        	Msg.getString("MaintenanceTabPanel.title"),
+        	unit, desktop
+        );
 	}
 	
     @Override

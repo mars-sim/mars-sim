@@ -49,6 +49,7 @@ import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.Resource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.tool.AlphanumComparator;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
@@ -63,6 +64,8 @@ import com.alee.laf.scroll.WebScrollPane;
  */
 @SuppressWarnings("serial")
 public class InventoryTabPanel extends TabPanel implements ListSelectionListener {
+
+	private static final String INVENTORY_ICON = Msg.getString("icon.inventory"); //$NON-NLS-1$
 
 	private static final String WHITESPACE = "  ";
 
@@ -85,7 +88,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
      */
     public InventoryTabPanel(Unit unit, MainDesktopPane desktop) {
         // Use the TabPanel constructor
-        super("Inventory", null, "Inventory", unit, desktop);
+        super(null, ImageLoader.getNewIcon(INVENTORY_ICON), "Inventory", unit, desktop);
 	}
 
 	@Override

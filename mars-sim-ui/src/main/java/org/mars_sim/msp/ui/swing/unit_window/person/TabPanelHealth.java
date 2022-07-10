@@ -33,6 +33,7 @@ import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.health.HealthProblem;
 import org.mars_sim.msp.core.person.health.Medication;
 import org.mars_sim.msp.core.person.health.RadiationExposure;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
@@ -54,6 +55,8 @@ import com.alee.managers.tooltip.TooltipWay;
 public class TabPanelHealth
 extends TabPanel {
 
+	private static final String HEALTH_ICON = Msg.getString("icon.health"); //$NON-NLS-1$
+	
 	private static final String THIRTY_DAY = "30-Day";
 	private static final String ANNUAL = "Annual";
 	private static final String CAREER = "Career";
@@ -103,16 +106,16 @@ extends TabPanel {
 
 	/**
 	 * Constructor.
+	 * 
 	 * @param unit the unit to display.
 	 * @param desktop the main desktop.
 	 */
 	public TabPanelHealth(Unit unit, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
-			Msg.getString("TabPanelHealth.title"), //$NON-NLS-1$
-			Msg.getString("TabPanelHealth.label"),
 			null,
-			Msg.getString("TabPanelHealth.tooltip"), //$NON-NLS-1$
+			ImageLoader.getNewIcon(HEALTH_ICON),
+			Msg.getString("TabPanelHealth.title"), //$NON-NLS-1$
 			unit, desktop
 		);
 
@@ -224,7 +227,6 @@ extends TabPanel {
 		sleepTF = new WebTextField(text);
 		sleepTF.setEditable(false);
 		sleepTF.setColumns(8);
-		//activityTF.requestFocus();
 		sleepTF.setCaretPosition(0);
 		wrapper5.add(sleepTF);
 		springPanel.add(wrapper5);

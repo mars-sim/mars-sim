@@ -32,6 +32,7 @@ import org.mars_sim.msp.core.malfunction.MalfunctionRepairWork;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
@@ -46,6 +47,8 @@ import com.alee.managers.tooltip.TooltipWay;
 @SuppressWarnings("serial")
 public class TabPanelMaintenance extends TabPanel {
 
+	private static final String SPANNER_ICON = Msg.getString("icon.spanner"); //$NON-NLS-1$
+	
 	/** The Settlement instance. */
 	private Settlement settlement;
 	
@@ -69,7 +72,7 @@ public class TabPanelMaintenance extends TabPanel {
 	 */
 	public TabPanelMaintenance(Unit unit, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
-		super("Maint", null, "Maintenance", unit, desktop);
+		super(null, ImageLoader.getNewIcon(SPANNER_ICON), "Maintenance", unit, desktop);
 
 		settlement = (Settlement) unit;
 		malfunctionsList = new ArrayList<>();

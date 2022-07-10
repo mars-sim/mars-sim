@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TabPanelMission.java
- * @date 2021-12-20
+ * @date 2022-07-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.vehicle;
@@ -54,6 +54,8 @@ extends TabPanel {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(TabPanelMission.class.getName());
 
+	private static final String FLAG_ICON = Msg.getString("icon.flag"); //$NON-NLS-1$
+	
 	private WebTextArea missionTextArea;
 	private WebTextArea missionPhaseTextArea;
 	private DefaultListModel<MissionMember> memberListModel;
@@ -71,16 +73,16 @@ extends TabPanel {
 
 	/**
 	 * Constructor.
+	 * 
 	 * @param vehicle the vehicle.
 	 * @param desktop the main desktop.
 	 */
 	public TabPanelMission(Vehicle vehicle, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
-			Msg.getString("TabPanelMission.title"), //$NON-NLS-1$
-			Msg.getString("TabPanelMission.mission"),
 			null,
-			Msg.getString("TabPanelMission.tooltip"), //$NON-NLS-1$
+			ImageLoader.getNewIcon(FLAG_ICON),
+			Msg.getString("TabPanelMission.title"), //$NON-NLS-1$
 			vehicle, desktop
 		);
 

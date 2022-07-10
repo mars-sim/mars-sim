@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * TabPanelDeath.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-09
  * @author Scott Davis
  */
 
@@ -32,6 +32,7 @@ import org.mars_sim.msp.core.environment.MarsSurface;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.health.DeathInfo;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
@@ -52,7 +53,8 @@ public class TabPanelDeath
 extends TabPanel
 implements ActionListener {
 
-	
+	private static final String RIP_ICON = Msg.getString("icon.rip"); //$NON-NLS-1$
+
 	/** The Person instance. */
 	private Person person = null;
 	
@@ -66,9 +68,9 @@ implements ActionListener {
 	public TabPanelDeath(Unit unit, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
-			Msg.getString("TabPanelDeath.title"), //$NON-NLS-1$
 			null,
-			Msg.getString("TabPanelDeath.tooltip"), //$NON-NLS-1$
+			ImageLoader.getNewIcon(RIP_ICON),
+			Msg.getString("TabPanelDeath.title"), //$NON-NLS-1$
 			unit, desktop
 		);
 

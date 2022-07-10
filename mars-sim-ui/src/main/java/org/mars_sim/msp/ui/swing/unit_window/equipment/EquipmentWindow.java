@@ -44,9 +44,9 @@ public class EquipmentWindow extends UnitWindow {
         this.equipment = equipment;
 
         // Add tab panels
-        addTabPanel(new LocationTabPanel(equipment, desktop));
-
         addTabPanel(new InventoryTabPanel(equipment, desktop));
+
+        addTabPanel(new LocationTabPanel(equipment, desktop));
 
         if (equipment instanceof Malfunctionable)
         	addTabPanel(new MaintenanceTabPanel(equipment, desktop));
@@ -57,8 +57,9 @@ public class EquipmentWindow extends UnitWindow {
         if (salvaged)
         	addTabPanel(new SalvageTabPanel(equipment, desktop));
 
-    	sortTabPanels();
-
+//    	sortTabPanels();
+		// Add to tab panels. 
+		addTabPanels();
     }
 
     /**

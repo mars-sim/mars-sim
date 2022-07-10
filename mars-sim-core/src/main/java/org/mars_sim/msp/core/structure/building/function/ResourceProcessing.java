@@ -41,7 +41,7 @@ public class ResourceProcessing extends Function {
 	 * Constructor.
 	 *
 	 * @param building the building the function is for.
-	 * @param spec Defintion of the Function
+	 * @param spec Definition of the Function
 	 * @throws BuildingException if function cannot be constructed.
 	 */
 	public ResourceProcessing(Building building, FunctionSpec spec) {

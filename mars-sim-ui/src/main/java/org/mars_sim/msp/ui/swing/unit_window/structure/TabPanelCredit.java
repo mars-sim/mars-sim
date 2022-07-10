@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TabPanelCredit.java
- * @date 2021-12-20
+ * @date 2022-07-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -30,6 +30,7 @@ import org.mars_sim.msp.core.goods.CreditEvent;
 import org.mars_sim.msp.core.goods.CreditListener;
 import org.mars_sim.msp.core.goods.CreditManager;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
@@ -41,6 +42,8 @@ import com.alee.laf.scroll.WebScrollPane;
 @SuppressWarnings("serial")
 public class TabPanelCredit
 extends TabPanel {
+	
+	private static final String CREDIT_ICON = Msg.getString("icon.credit"); //$NON-NLS-1$
 
 	/** The Settlement instance. */
 	private Settlement settlement;
@@ -55,9 +58,9 @@ extends TabPanel {
 	public TabPanelCredit(Unit unit, MainDesktopPane desktop) {
 		// Use TabPanel constructor.
 		super(
-			Msg.getString("TabPanelCredit.title"), //$NON-NLS-1$
 			null,
-			Msg.getString("TabPanelCredit.tooltip"), //$NON-NLS-1$
+			ImageLoader.getNewIcon(CREDIT_ICON),
+			Msg.getString("TabPanelCredit.title"), //$NON-NLS-1$
 			unit, desktop
 		);
 

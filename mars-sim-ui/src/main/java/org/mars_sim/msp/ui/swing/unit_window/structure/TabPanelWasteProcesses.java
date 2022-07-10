@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TabPanelWasteProcesses.java
- * @date 2022-06-15
+ * @date 2022-07-09
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -44,6 +44,8 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 @SuppressWarnings("serial")
 public class TabPanelWasteProcesses
 extends TabPanel {
+	
+	private static final String RECYCLE_ICON = Msg.getString("icon.recycle"); //$NON-NLS-1$
 
 	/** The Settlement instance. */
 	private Settlement settlement;
@@ -66,9 +68,9 @@ extends TabPanel {
 
 		// Use the TabPanel constructor
 		super(
-			Msg.getString("TabPanelWasteProcesses.title"), //$NON-NLS-1$
 			null,
-			Msg.getString("TabPanelWasteProcesses.tooltip"), //$NON-NLS-1$
+			ImageLoader.getNewIcon(RECYCLE_ICON),
+			Msg.getString("TabPanelWasteProcesses.title"), //$NON-NLS-1$
 			unit, desktop
 		);
 

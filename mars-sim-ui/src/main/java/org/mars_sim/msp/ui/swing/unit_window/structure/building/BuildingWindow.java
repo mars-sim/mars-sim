@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * BuildingWindow.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-09
  * @author Manny Kung
  */
 
@@ -12,7 +12,6 @@ import javax.swing.event.ChangeEvent;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.Function;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.food.BuildingPanelCooking;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.food.BuildingPanelFoodProduction;
@@ -24,11 +23,7 @@ import org.mars_sim.msp.ui.swing.unit_window.structure.building.food.BuildingPan
  */
 @SuppressWarnings("serial")
 public class BuildingWindow extends UnitWindow {
-
-	// Data members
-	/** The cache for the currently selected TabPanel. */
-	private TabPanel oldTab;
-
+	
     /**
      * Constructor
      *
@@ -47,9 +42,7 @@ public class BuildingWindow extends UnitWindow {
         
         for (Function f : building.getFunctions()) {
         	switch (f.getFunctionType()) {
-        	case LIVING_ACCOMMODATIONS:
-            	addTabPanel( new BuildingPanelLiving(building.getLivingAccommodations(), desktop));
-            	break;
+
 			case ASTRONOMICAL_OBSERVATION:
 				addTabPanel( new BuildingPanelAstronomicalObservation(building.getAstronomicalObservation(), desktop));
 				break;
@@ -78,6 +71,9 @@ public class BuildingWindow extends UnitWindow {
 			case LIFE_SUPPORT:
 				addTabPanel( new BuildingPanelInhabitable(building.getLifeSupport(), desktop));
 				break;
+	       	case LIVING_ACCOMMODATIONS:
+            	addTabPanel( new BuildingPanelLiving(building.getLivingAccommodations(), desktop));
+            	break;
 			case MANUFACTURE:
 				addTabPanel( new BuildingPanelManufacture(building.getManufacture(), desktop));
 				break;
@@ -109,22 +105,14 @@ public class BuildingWindow extends UnitWindow {
         }
 
 		// Need this to display the first panel
-		sortTabPanels();
+//		sortTabPanels();
+		
+		// Add to tab panels. 
+		addTabPanels();
     }
 
     @Override
 	public void stateChanged(ChangeEvent e) {
-//		// SwingUtilities.updateComponentTreeUI(this);
-//		TabPanel newTab = getSelected();
-//
-//		if (newTab != oldTab) {
-//
-//			if (newTab instanceof TabPanelActivity) {
-////				if (tabPanelActivity.isUIDone());
-////				 	tabPanelActivity.initializeUI();
-//			} else if (newTab instanceof TabPanelAttribute) {
-//				
-//			}
-//		}
+    	// nothing
 	}
 }
