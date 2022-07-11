@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * MarsClock.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-10
  * @author Scott Davis
  */
 
@@ -236,7 +236,7 @@ public class MarsClock implements Serializable {
 	}
 
 	/**
-	 * Converts seconds to millisols
+	 * Converts seconds to millisols.
 	 *
 	 * @param seconds decimal number of seconds
 	 * @return equivalent number of millisols
@@ -246,7 +246,7 @@ public class MarsClock implements Serializable {
 	}
 
 	/**
-	 * Converts millisols to seconds
+	 * Converts millisols to seconds.
 	 *
 	 * @param millisols decimal number of millisols
 	 * @return equivalent number of seconds
@@ -268,7 +268,7 @@ public class MarsClock implements Serializable {
 
 
 	/**
-	 * Returns the mission sol. Note: the first day of the mission is Sol 1
+	 * Returns the mission sol. Note: the first day of the mission is Sol 1.
 	 *
 	 * @return sol
 	 */
@@ -321,7 +321,7 @@ public class MarsClock implements Serializable {
 	}
 
 	/**
-	 * Returns formatted time stamp string in the format of e.g. "03-Adir-05:056.349"
+	 * Returns formatted time stamp string in the format of e.g. "03-Adir-05:056.349".
 	 *
 	 * @return formatted time stamp string
 	 */
@@ -330,7 +330,7 @@ public class MarsClock implements Serializable {
 	}
 
 	/**
-	 * Returns formatted time stamp string in the format of e.g. "03-Adir-05:056"
+	 * Returns formatted time stamp string in the format of e.g. "03-Adir-05:056".
 	 *
 	 * @return formatted time stamp string
 	 */
@@ -339,7 +339,7 @@ public class MarsClock implements Serializable {
 	}
 
 	/**
-	 * Returns formatted time stamp string in the format of e.g. "00-Adir-01:056 Solisol"
+	 * Returns formatted time stamp string in the format of e.g. "00-Adir-01:056 Solisol".
 	 *
 	 * @return formatted time stamp string
 	 */
@@ -348,7 +348,7 @@ public class MarsClock implements Serializable {
 	}
 
 	/**
-	 * Returns formatted time stamp string in the format of e.g. "00-Adir-01:056 Solisol"
+	 * Returns formatted time stamp string in the format of e.g. "00-Adir-01:056 Solisol".
 	 *
 	 * @return formatted time stamp string
 	 */
@@ -357,7 +357,7 @@ public class MarsClock implements Serializable {
 	}
 
 	/**
-	 * Gets the current date string in the format of e.g. "03-Adir-05"
+	 * Gets the current date string in the format of e.g. "03-Adir-05".
 	 *
 	 * @return current date string
 	 */
@@ -403,6 +403,7 @@ public class MarsClock implements Serializable {
 
 	/**
 	 * Return the total millisols.
+	 * 
 	 * @return Total
 	 */
 	public double getTotalMillisols() {
@@ -446,7 +447,7 @@ public class MarsClock implements Serializable {
 	}
 
 	/**
-	 * Returns the millisols
+	 * Returns the millisols.
 	 *
 	 * @return the millisol as a double
 	 */
@@ -455,7 +456,7 @@ public class MarsClock implements Serializable {
 	}
 
 	/**
-	 * Returns the rounded millisols
+	 * Returns the rounded millisols.
 	 *
 	 * @return the millisol as an int
 	 */
@@ -464,11 +465,13 @@ public class MarsClock implements Serializable {
 	}
 
 	/**
-	 * Checks if the mars clock becomes stable enough at the start of the sim
+	 * Checks if the mars clock becomes stable enough at the start of the sim.
+	 * 
 	 * @return
 	 */
 	public boolean isStable() {
-        return msolInt > 15;
+		// Note: for now, after 10 millisols, the clock seems to become stable
+        return millisol > 15;
     }
 
 

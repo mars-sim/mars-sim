@@ -91,6 +91,8 @@ public class Weather implements Serializable, Temporal {
 
 	private List<DustStorm> dustStorms = new ArrayList<>();
 	
+	private SunData sunData;
+	
 	private SurfaceFeatures surfaceFeatures;
 	private TerrainElevation terrainElevation;
 
@@ -641,7 +643,10 @@ public class Weather implements Serializable, Temporal {
 
 		// check for the passing of each day
 		if (isNewSol) {
-	
+
+			// Empty the current sun data cache
+			emptySunRecord();
+			
 			dailyVariationAirPressure += RandomUtil.getRandomDouble(.01);
 			if (dailyVariationAirPressure > .05)
 				dailyVariationAirPressure = .05;
@@ -693,23 +698,31 @@ public class Weather implements Serializable, Temporal {
 		return true;
 	}
 
+	public SunData getSunRecord() {
+		return sunData;
+	}
+	
+	public void emptySunRecord() {
+		sunData = null;
+	}
+	
 	/**
-	 * Obtains the sunlight data of a settlement.
+	 * Calculates the sunlight data of a settlement location.
 	 * 
 	 * @param c
 	 * @return
 	 */
-	public SunData getSunRecord(Coordinates c) {	
+	public SunData calculateSunRecord(Coordinates c) {	
 		MSolDataLogger<DailyWeather> w = weatherDataMap.get(c);
 		if (w == null) {
-			logger.warning(10_000L, "Weather data at " + c + " is not available.");
-			return null;
+			logger.warning(60_000L, "Weather data at " + c + " is not available.");
+//			return null;
 		}
 		
 		List<MSolDataItem<DailyWeather>> dailyWeather = w.getYesterdayData();
-		if (dailyWeather == null) {
-			logger.warning(10_000L, "Weather data from yesterday is not available.");
-			return null;
+		if (dailyWeather == null || dailyWeather.isEmpty()) {
+			logger.warning(60_000L, "Weather data from yesterday is not available.");
+//			return null;
 		}
 		
 		int sunrise = 0;
@@ -779,7 +792,9 @@ public class Weather implements Serializable, Temporal {
 		if (sunset < 0)
 			zenith = zenith + 1000;
 		
-		return new SunData(sunrise, sunset, daylight, zenith, maxSun);
+		sunData = new SunData(sunrise, sunset, daylight, zenith, maxSun);
+		
+		return sunData;
 	}
 	
 

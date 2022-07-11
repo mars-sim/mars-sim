@@ -752,8 +752,7 @@ public class CrewEditor implements ActionListener {
 			// Load all known countries
 			model.addAll(pc.getKnownCountries());			
 		}
-		else 
-		{
+		else {
 			// Load the countries from RA
 			ReportingAuthority ra = raFactory.getItem(sponsorCode);
 			model.addAll(ra.getCountries());

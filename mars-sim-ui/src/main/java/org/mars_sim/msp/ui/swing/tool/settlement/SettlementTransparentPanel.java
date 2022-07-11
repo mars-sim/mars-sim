@@ -49,6 +49,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JSlider;
 import javax.swing.Painter;
 import javax.swing.UIDefaults;
+import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -217,13 +218,15 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	private static DecimalFormat fmt = new DecimalFormat("##0");
 	private static DecimalFormat fmt2 = new DecimalFormat("#0.00");
 
-	private Font sunFont = new Font(Font.MONOSPACED, Font.BOLD, 15);
+	private Font sunFont = new Font(Font.MONOSPACED, Font.PLAIN, 14);
 
+	private Simulation sim;
+	
     public SettlementTransparentPanel(MainDesktopPane desktop, SettlementMapPanel mapPanel) {
         this.mapPanel = mapPanel;
         this.desktop = desktop;
 
-        Simulation sim = desktop.getSimulation();
+        sim = desktop.getSimulation();
         this.unitManager = sim.getUnitManager();
         
 		MasterClock masterClock = sim.getMasterClock();
@@ -354,15 +357,16 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
      * @return
      */
     private WebPanel createSunPane() {
-	    WebPanel sunPane = new WebPanel(new BorderLayout(5, 5));
-	    sunPane.setBackground(new Color(0,0,0,128));
+	    WebPanel sunPane = new WebPanel(new BorderLayout(3, 3));
+	    sunPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+	    sunPane.setBackground(new Color(0, 0, 0, 128));
 	    sunPane.setOpaque(false);
 
 	    WebPanel roundPane = new WebPanel(new GridLayout(6, 1, 0, 0)) {
 	        @Override
 	        protected void paintComponent(Graphics g) {
 	           super.paintComponent(g);
-	           Dimension arcs = new Dimension(20,20); //Border corners arcs {width,height}, change this to whatever you want
+	           Dimension arcs = new Dimension(20, 20); //Border corners arcs {width,height}, change this to whatever you want
 	           int width = getWidth();
 	           int height = getHeight();
 	           Graphics2D graphics = (Graphics2D) g;
@@ -378,7 +382,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 
 	    roundPane.setBackground(new Color(0,0,0,128));
 	    roundPane.setOpaque(false);
-	    roundPane.setPreferredSize(240, 140);
+	    roundPane.setPreferredSize(240, 145);
 	    sunPane.add(roundPane, BorderLayout.EAST);
 
 	    sunriseLabel = new WebLabel(StyleId.labelShadow, SUNRISE + PENDING);
@@ -395,7 +399,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 		daylightLabel.setFont(sunFont);
 		currentSunLabel.setFont(sunFont);
 
-		Color color = Color.white;
+		Color color = Color.yellow.brighter().brighter();
 		sunriseLabel.setForeground(color);
 		sunsetLabel.setForeground(color);
 		zenithLabel.setForeground(color);
@@ -436,6 +440,9 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
     	return max;
     }
 
+    /**
+     * Builds the settlement name combo box.
+     */
 	@SuppressWarnings("unchecked")
 	public void buildSettlementNameComboBox() {
 
@@ -454,12 +461,16 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 			// unitUpdate will update combobox when a new building is added
 			public void itemStateChanged(ItemEvent event) {
 				Settlement s = (Settlement) event.getItem();
-				// Change to the selected settlement in SettlementMapPanel
-				changeSettlement(s);
-				// Update the sun data
-				displaySunData(s.getCoordinates());
-				// Update the display banner
-				displayBanner(s);
+				if (s != null) {
+					// Change to the selected settlement in SettlementMapPanel
+					changeSettlement(s);
+					// Dump the old sun data
+					weather.emptySunRecord();
+					// Update the sun data
+					displaySunData(s.getCoordinates());
+					// Update the display banner
+					displayBanner(s);
+				}
 			}
 		});
 
@@ -479,12 +490,13 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 			// Gets the settlement
 			Settlement s = (Settlement) settlementListBox.getSelectedItem();
 			// Change to the selected settlement in SettlementMapPanel
-			changeSettlement(s);
+			if (s != null)
+				changeSettlement(s);
 		}
 	}
 
 	/**
-	 * Change the map display to the selected settlement
+	 * Changes the map display to the selected settlement.
 	 *
 	 * @param s
 	 */
@@ -498,7 +510,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	}
 
 	/**
-	 * Builds the text banner bar
+	 * Builds the text banner bar.
 	 */
 	public void buildBanner() {
 		bannerBar = new DisplaySingle();
@@ -513,8 +525,9 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	}
 
 	/**
-	 * Updates the weather parameters
+	 * Updates the weather parameters.
 	 *
+	 * @param s
 	 * @return
 	 */
 	public boolean updateWeather(Settlement s) {
@@ -554,7 +567,9 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	}
 
 	/**
-	 * Put together the display string for the banner bar
+	 * Puts together the display string for the banner bar.
+	 * 
+	 * @param s
 	 */
 	public void displayBanner(Settlement s) {
        	if (updateWeather(s)) {
@@ -571,9 +586,10 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
     }
 
     public String getTemperatureString(double value) {
-    	// Use Msg.getString for the degree sign
-    	// Change from " °C" to " �C" for English Locale
-    	return fmt.format(value) + " deg C";// + Msg.getString("temperature.sign.degreeCelsius"); //$NON-NLS-1$
+    	// Note: Use of Msg.getString("temperature.sign.degreeCelsius") for the degree sign 
+    	// does not work on the digital banner.
+    	// May use of " °C", " �C", or " deg C" 
+    	return fmt.format(value) + " deg C";
     }
 
     public double getWindSpeed(Coordinates c) {
@@ -679,21 +695,19 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	        	else if (sIcon.equals(DUST_DEVIL_SVG)) {
 	        		icon = dustDevil;
 	        	}
-
 	        	else if (sIcon.equals(SAND_SVG)) {
 	        		icon = sand;
 	        	}
 	        	else if (sIcon.equals(HAZY_SVG)) {
 	        		icon = hazy;
 	        	}
-
 	        	else if (sIcon.equals(COLD_WIND_SVG)) {
 	        		icon = coldWind;
 	        	}
+	        	
 	        	if (sIcon.equals(FROST_WIND_SVG)) {
 	        		icon = frostWind;
 	        	}
-
 	        	else if (sIcon.equals(SUN_SVG)) {
 	        		icon = sun;
 	        	}
@@ -1220,14 +1234,8 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	/**
 	 * Inner class combo box model for settlements.
 	 */
-	public class SettlementComboBoxModel
-	extends DefaultComboBoxModel<Object>
-	implements
-	UnitManagerListener,
-	UnitListener {
-
-		/** default serial id. */
-		private static final long serialVersionUID = 1L;
+	public class SettlementComboBoxModel extends DefaultComboBoxModel<Object>
+		implements UnitManagerListener, UnitListener {
 
 		/**
 		 * Constructor.
@@ -1257,7 +1265,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 			// Clear all elements
 			removeAllElements();
 
-			List<Settlement> settlements = new ArrayList<Settlement>();
+			List<Settlement> settlements = new ArrayList<>();
 
 			// Add the command dashboard button
 			if (mode == GameMode.COMMAND) {
@@ -1332,56 +1340,73 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	 * Gets the sunlight data and display it on the top left panel of the settlement map.
 	 */
 	public void displaySunData(Coordinates location) {
+		// Recalculate the sun record
+		SunData data = weather.calculateSunRecord(location);
 
-		SunData list = weather.getSunRecord(location);
-
-		if (list == null) {
-			logger.warning(10_000L, "Sun data at " + location + " is not available.");
+		if (data == null) {
+			logger.warning(60_000L, "Sun data at " + location + " is not available.");
 			return;
 		}
 		
-		sunriseLabel.setText(   SUNRISE + list.getSunrise() + MSOL);
-		sunsetLabel.setText(    SUNSET + list.getSunset() + MSOL);
-		daylightLabel.setText(  DAYLIGHT + list.getDaylight() + MSOL);
-		zenithLabel.setText( 	ZENITH + list.getZenith() + MSOL);
-		maxSunLabel.setText(    MAX_LIGHT + list.getMaxSun() + WM);
+		sunriseLabel.setText(   SUNRISE + data.getSunrise() + MSOL);
+		sunsetLabel.setText(    SUNSET + data.getSunset() + MSOL);
+		daylightLabel.setText(  DAYLIGHT + data.getDaylight() + MSOL);
+		zenithLabel.setText( 	ZENITH + data.getZenith() + MSOL);
+		maxSunLabel.setText(    MAX_LIGHT + data.getMaxSun() + WM);
 	}
 
+	/**
+	 * Prepares the resource data string for the new sol.
+	 * 
+	 * @param pulse
+	 */
+	public void prepBannerResourceString(ClockPulse pulse) {
+
+		int sol = pulse.getMarsTime().getMissionSol();
+		if (sol > 1) {
+			Collection<Settlement> list = unitManager.getSettlements();
+			for (Settlement s0: list) {
+				prepareResourceStat(s0, sol);
+			}
+		}
+	}
 
 	@Override
 	public StyleId getDefaultStyleId() {
-		// TODO Auto-generated method stub
+		// Auto-generated method stub
 		return null;
 	}
 
 
 	@Override
 	public String getUIClassID() {
-		// TODO Auto-generated method stub
+		// Auto-generated method stub
 		return null;
 	}
 
 
 	@Override
 	public void updateUI() {
-		// TODO Auto-generated method stub
-
+		// Auto-generated method stub
 	}
 
 	@Override
 	public void clockPulse(ClockPulse pulse) {
-		if (isVisible() || isShowing()) {
-			// This can be removed once uiPulse is collapsed into timePulse
-			MarsClock marsClock = pulse.getMarsTime();
-			if (marsClock.isStable() && bannerBar != null && weatherButtons[0] != null) {
-				Settlement s = (Settlement) settlementListBox.getSelectedItem();
-				// When loading from a saved sim, s may be initially null
-				if (s == null) 
-					return;
-				displayBanner(s);
-				updateIcon();
-				updateSunData(pulse, s);
-			}
+//		if (!isVisible())
+//			return;
+//		if (!isShowing()) 
+//			return;
+			
+		// This can be removed once uiPulse is collapsed into timePulse
+		MarsClock marsClock = pulse.getMarsTime();
+		if (marsClock.isStable() && bannerBar != null && weatherButtons[0] != null) {
+			Settlement s = (Settlement) settlementListBox.getSelectedItem();
+			// When loading from a saved sim, s may be initially null
+			if (s == null) 
+				return;
+			displayBanner(s);
+			updateIcon();
+			updateSunData(pulse, s);
 		}
 	}
 
@@ -1392,22 +1417,20 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	 * @param s
 	 */
 	private void updateSunData(ClockPulse pulse, Settlement s) {
-		if (currentSunLabel != null) {
-			currentSunLabel.setText(CURRENT_LIGHT
-					+ (int)getSolarIrradiance(s.getCoordinates())
-					+ WM);
+		if (currentSunLabel == null)
+			return;
+		currentSunLabel.setText(
+			CURRENT_LIGHT
+			+ (int)getSolarIrradiance(s.getCoordinates()) 
+			+ WM
+		);
 
-			if (pulse.isNewSol()) {
-				displaySunData(s.getCoordinates());
-
-				int sol = pulse.getMarsTime().getMissionSol();
-				if (sol > 1) {
-					Collection<Settlement> list = unitManager.getSettlements();
-					for (Settlement s0: list) {
-						prepareResourceStat(s0, sol);
-					}
-				}
-			}
+		if (pulse.isNewSol()
+			|| weather.getSunRecord() == null) {
+			// Display the sun data once a sol
+			displaySunData(s.getCoordinates());
+			// Redo the resource string once a sol
+			prepBannerResourceString(pulse);
 		}
 	}
 	

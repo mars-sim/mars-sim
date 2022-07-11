@@ -8,6 +8,8 @@
 package org.mars_sim.msp.core.data;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -78,7 +80,8 @@ public abstract class DataLogger<T> implements Serializable {
 	}
 
 	/**
-	 * Return a Map if data entries per missionSol. Map is keyed on sol.
+	 * Returns a Map if data entries per missionSol. Map is keyed on sol.
+	 * 
 	 * @return Sol to daily data entries.
 	 */
 	public Map<Integer, T> getHistory() {
@@ -91,7 +94,8 @@ public abstract class DataLogger<T> implements Serializable {
 	}
 
 	/**
-	 * The current sol the Data Logger is recording
+	 * Gets the current sol the Data Logger is recording.
+	 * 
 	 * @return
 	 */
 	public int getCurrentSol() {
@@ -99,7 +103,8 @@ public abstract class DataLogger<T> implements Serializable {
 	}
 
 	/**
-	 * Get the data heled for a single sol
+	 * Gets the data heled for a single sol.
+	 * 
 	 * @param sol Sol
 	 * @return List of data items
 	 */
@@ -117,7 +122,8 @@ public abstract class DataLogger<T> implements Serializable {
 	}
 	
 	/**
-	 * Get the latest Sol data being captured
+	 * Gets the latest Sol data being captured.
+	 * 
 	 * @return
 	 */
 	public T getTodayData() {
@@ -125,15 +131,16 @@ public abstract class DataLogger<T> implements Serializable {
 	}
 	
 	/**
-	 * Get yesterdays data if it exists
+	 * Gets yesterdays data if it exists.
+	 * 
 	 * @return
 	 */
 	public T getYesterdayData() {
 		if (currentSol == 1) {
 			// No yesterday yet
-			return null;
+			return (T) new ArrayList<>();
 		}
-		// Use the current sol incase this logger has not recorded an data point for today.
+		// Use the current sol in case this logger has not recorded an data point for today.
 		int yesterdaySol = currentSol - 1;
 		return getSolData(yesterdaySol);
 	}
