@@ -136,12 +136,11 @@ public abstract class DataLogger<T> implements Serializable {
 	 * @return
 	 */
 	public T getYesterdayData() {
-		if (currentSol == 1) {
+		int yesterdaySol = currentSol - 1;
+		if (yesterdaySol <= 0) {
 			// No yesterday yet
 			return (T) new ArrayList<>();
 		}
-		// Use the current sol in case this logger has not recorded an data point for today.
-		int yesterdaySol = currentSol - 1;
 		return getSolData(yesterdaySol);
 	}
 

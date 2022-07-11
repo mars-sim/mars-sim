@@ -180,6 +180,7 @@ extends Function {
 	
 	/**
 	 * Constructor.
+	 * 
 	 * @param building the building this function is for.
 	 */
 	public Heating(Building building, FunctionSpec spec) {
@@ -272,6 +273,7 @@ extends Function {
     
     /**
      * Gets the temperature of a building.
+     * 
      * @return temperature (deg C)
     */
     public double getCurrentTemperature() {
@@ -320,7 +322,8 @@ extends Function {
 	}
 
 	/**
-	 * Determines the change in temperature 
+	 * Determines the change in temperature.
+	 * 
 	 * @param t_in_C
 	 * @param delta_time in millisols
 	 * @return delta temperature in C
@@ -644,7 +647,8 @@ extends Function {
 	}
 
 	/***
-	 * Computes the amount of heat absorbed or release by the heat sink 
+	 * Computes the amount of heat absorbed or release by the heat sink .
+	 * 
 	 * @param delta_heat
 	 * @param c_factor
 	 * @return heat
@@ -769,7 +773,9 @@ extends Function {
 	}
 
 	/**
-	 * Computes heat gain from adjacent room(s) due to air ventilation. This helps the temperature equilibrium
+	 * Computes heat gain from adjacent room(s) due to air ventilation. 
+	 * This helps the temperature equilibrium.
+	 * 
 	 * @param t temperature
 	 * @return temperature
 	 */
@@ -897,6 +903,7 @@ extends Function {
 
 	/**
 	 * Gets the value of the function for a named building.
+	 * 
 	 * @param buildingName the building name.
 	 * @param newBuilding true if adding a new building.
 	 * @param settlement the settlement.
@@ -911,6 +918,7 @@ extends Function {
 
 	/**
 	 * Time passing for the building.
+	 * 
 	 * @param deltaTime amount of time passing (in millisols)
 	 */
 	@Override
@@ -924,7 +932,8 @@ extends Function {
 
 	/**
 	 * Notifies thermal control subsystem for the temperature change and power up and power down
-	 * via 3 steps (this method houses the main thermal control codes)
+	 * via 3 steps (this method houses the main thermal control codes).
+	 * 
 	 * @param delta_time in millisols
 	 */
 	private void cycleThermalControl(double delta_time) {
@@ -987,6 +996,7 @@ extends Function {
 
 	/**
 	 * Gets the amount of power required when function is at full power.
+	 * 
 	 * @return power (kW)
 	 */
 	public double getFullPowerRequired() {
@@ -994,7 +1004,8 @@ extends Function {
 	}
 
 	/**
-	 * Sets the power required for heating
+	 * Sets the power required for heating.
+	 * 
 	 * @param power
 	 */
 	public void setPowerRequired(double power) {
@@ -1003,6 +1014,7 @@ extends Function {
 
 	/**
 	 * Gets the heat this building currently required.
+	 * 
 	 * @return heat in kW.
 	 */
 	public double getFullHeatRequired()  {
@@ -1026,8 +1038,9 @@ extends Function {
 	}
 
 	/**
-	 * Sets the amount of heat loss from ventilation for this building
-	 * Note : heat loss if negative. heat gain if positive
+	 * Sets the amount of heat loss from ventilation for this building.
+	 * Note : heat loss if negative. heat gain if positive.
+	 * 
 	 * @param heatLoss removed or added
 	 */
 	public void setHeatLoss(double heatLoss) {
@@ -1035,7 +1048,8 @@ extends Function {
 	}
 
 	/**
-	 * Flags the presence of the heat loss due to opening an airlock outer door
+	 * Flags the presence of the heat loss due to opening an airlock outer door.
+	 * 
 	 * @param value
 	 */
 	public void flagHeatLostViaAirlockOuterDoor(boolean value) {
