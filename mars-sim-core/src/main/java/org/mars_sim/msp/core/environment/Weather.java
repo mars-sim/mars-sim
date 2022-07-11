@@ -713,18 +713,19 @@ public class Weather implements Serializable, Temporal {
 	 * @return
 	 */
 	public SunData calculateSunRecord(Coordinates c) {	
+		List<MSolDataItem<DailyWeather>> dailyWeather = new ArrayList<>();
 		MSolDataLogger<DailyWeather> w = weatherDataMap.get(c);
 		if (w == null) {
 			logger.warning(60_000L, "Weather data at " + c + " is not available.");
-//			return null;
 		}
 		
-		List<MSolDataItem<DailyWeather>> dailyWeather = w.getYesterdayData();
-		if (dailyWeather == null || dailyWeather.isEmpty()) {
-			logger.warning(60_000L, "Weather data from yesterday is not available.");
-//			return null;
+		if (w != null) {
+			if (!w.isYestersolDataValid()) 
+				logger.warning(60_000L, "Weather data from yesterday is not available.");
+			else
+				dailyWeather = w.getYestersolData();
 		}
-		
+
 		int sunrise = 0;
 		int sunset = 0;
 		int maxIndex0 = 0;

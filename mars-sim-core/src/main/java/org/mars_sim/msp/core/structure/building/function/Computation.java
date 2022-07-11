@@ -187,7 +187,7 @@ public class Computation extends Function{
 		boolean valid = isValid(pulse);
 		if (valid) {
 
-			if (pulse.isNewSol()) {
+			if (pulse.isNewSol() || pulse.getMarsTime().getMissionSol() == 1) {
 				resetTodayDemand();
 			}
 			

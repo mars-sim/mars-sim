@@ -94,9 +94,9 @@ public class TabPanelFoodProduction extends TabPanel {
 	public TabPanelFoodProduction(Unit unit, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
-			null, 
+			Msg.getString("TabPanelFoodProduction.title"), //$NON-NLS-1$
 			ImageLoader.getNewIcon(FOOD_ICON),
-			Msg.getString("TabPanelFoodProduction.tooltip"), //$NON-NLS-1$
+			Msg.getString("TabPanelFoodProduction.title"), //$NON-NLS-1$
 			unit, desktop
 		);
 

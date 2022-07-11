@@ -103,7 +103,7 @@ public abstract class DataLogger<T> implements Serializable {
 	}
 
 	/**
-	 * Gets the data heled for a single sol.
+	 * Gets the data held for a single sol.
 	 * 
 	 * @param sol Sol
 	 * @return List of data items
@@ -130,18 +130,27 @@ public abstract class DataLogger<T> implements Serializable {
 		return currentData;
 	}
 	
+	
 	/**
-	 * Gets yesterdays data if it exists.
+	 * Checks if yestersol's data valid.
 	 * 
 	 * @return
 	 */
-	public T getYesterdayData() {
+	public boolean isYestersolDataValid() {
 		int yesterdaySol = currentSol - 1;
 		if (yesterdaySol <= 0) {
 			// No yesterday yet
-			return (T) new ArrayList<>();
+			return false;
 		}
-		return getSolData(yesterdaySol);
+		return true;
 	}
-
+	
+	/**
+	 * Gets yestersol's data if it exists.
+	 * 
+	 * @return
+	 */
+	public T getYestersolData() {
+		return getSolData(currentSol - 1);
+	}
 }

@@ -29,6 +29,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.food.FoodProductionProcess;
 import org.mars_sim.msp.core.food.FoodProductionProcessInfo;
 import org.mars_sim.msp.core.food.FoodProductionUtil;
@@ -37,6 +38,7 @@ import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.function.FoodProduction;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
@@ -52,11 +54,13 @@ import com.alee.laf.scroll.WebScrollPane;
 @SuppressWarnings("serial")
 public class BuildingPanelFoodProduction extends BuildingFunctionPanel {
 
-	private static int processStringWidth = 60;
-
 	/** default logger. */
 	private static final Logger logger = Logger.getLogger(BuildingPanelFoodProduction.class.getName());
 
+	private static final String FOOD_ICON = Msg.getString("icon.food"); //$NON-NLS-1$
+	
+	private static int processStringWidth = 60;
+	
 	/** The foodProduction building. */
 	private FoodProduction foodFactory;
 	/** Panel for displaying process panels. */
@@ -80,8 +84,13 @@ public class BuildingPanelFoodProduction extends BuildingFunctionPanel {
 	 */
 	public BuildingPanelFoodProduction(FoodProduction foodFactory, MainDesktopPane desktop) {
 		// Use BuildingFunctionPanel constructor.
-		super("Food Production", foodFactory.getBuilding(), desktop);
-
+		super(
+			Msg.getString("BuildingPanelFoodProduction.title"), //$NON-NLS-1$
+			ImageLoader.getNewIcon(FOOD_ICON),
+			foodFactory.getBuilding(),
+			desktop
+		);
+		
 		// Initialize data model.
 		this.foodFactory = foodFactory;
 	}

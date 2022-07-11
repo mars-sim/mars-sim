@@ -1,13 +1,14 @@
-/**
+/*
  * Mars Simulation Project
  * BuildingPanelCooking.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-11
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building.food;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.BuildingFunctionPanel;
 
@@ -19,12 +20,12 @@ import java.awt.*;
  * This class is a building function panel representing
  * the cooking and food prepation info of a settlement building.
  */
+@SuppressWarnings("serial")
 public class BuildingPanelCooking
 extends BuildingFunctionPanel {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
+	private static final String COOKING_ICON = Msg.getString("icon.cooking"); //$NON-NLS-1$
+	
 	// Domain members
 	private Cooking kitchen;
 	/** The number of cooks label. */
@@ -51,7 +52,12 @@ extends BuildingFunctionPanel {
 	public BuildingPanelCooking(Cooking kitchen, MainDesktopPane desktop) {
 
 		// Use BuildingFunctionPanel constructor
-		super(Msg.getString("BuildingPanelCooking.title"), kitchen.getBuilding(), desktop);
+		super(
+			Msg.getString("BuildingPanelCooking.title"), 
+			ImageLoader.getNewIcon(COOKING_ICON),
+			kitchen.getBuilding(), 
+			desktop
+		);
 
 		// Initialize data members
 		this.kitchen = kitchen;

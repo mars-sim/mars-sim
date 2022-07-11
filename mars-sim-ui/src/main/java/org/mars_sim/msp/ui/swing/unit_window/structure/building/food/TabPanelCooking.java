@@ -117,7 +117,7 @@ public class TabPanelCooking extends TabPanel {
 
 		// Use the TabPanel constructor
 		super(
-			null,
+			Msg.getString("TabPanelCooking.title"), //$NON-NLS-1$
 			ImageLoader.getNewIcon(COOKING_ICON),
 			Msg.getString("TabPanelCooking.title"), //$NON-NLS-1$
 			unit, desktop);

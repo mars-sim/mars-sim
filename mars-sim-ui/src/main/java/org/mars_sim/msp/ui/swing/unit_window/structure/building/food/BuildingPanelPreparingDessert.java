@@ -1,13 +1,14 @@
-/**
+/*
  * Mars Simulation Project
  * BuildingPanelPreparingDessert.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-11
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building.food;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.BuildingFunctionPanel;
 
@@ -23,6 +24,8 @@ import java.awt.*;
 public class BuildingPanelPreparingDessert
 extends BuildingFunctionPanel {
 
+	private static final String DESSERT_ICON = Msg.getString("icon.dessert"); //$NON-NLS-1$
+	
 	// Domain members
 	private PreparingDessert kitchen;
 	/** The number of cooks label. */
@@ -47,9 +50,14 @@ extends BuildingFunctionPanel {
 	 */
 	public BuildingPanelPreparingDessert(PreparingDessert kitchen, MainDesktopPane desktop) {
 
-		// Use BuildingFunctionPanel constructor. Have a shoter label
-		super("Desserts", Msg.getString("BuildingPanelPreparingDessert.title"), kitchen.getBuilding(), desktop);
-
+		// Use BuildingFunctionPanel constructor.
+		super(
+			Msg.getString("BuildingPanelPreparingDessert.title"), 
+			ImageLoader.getNewIcon(DESSERT_ICON),
+			kitchen.getBuilding(), 
+			desktop
+		);
+		
 		// Initialize data members
 		this.kitchen = kitchen;
 	}
