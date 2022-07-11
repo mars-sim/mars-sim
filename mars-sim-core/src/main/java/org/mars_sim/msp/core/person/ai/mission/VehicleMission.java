@@ -643,6 +643,9 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 		Map<Integer, Number> resources = getRequiredResourcesToLoad();
 		Map<Integer, Integer> equipment = getRequiredEquipmentToLoad();
 		Settlement settlement = vehicle.getSettlement();
+		if (settlement == null)
+			return false;
+		
 		double tripTime = getEstimatedRemainingMissionTime(true);
 		if (tripTime == 0) {
 			// Disapprove this mission

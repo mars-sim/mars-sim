@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ReviewMissionPlan.java
- * @date 2022-06-11
+ * @date 2022-07-11
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -38,6 +38,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.Administration;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
+import org.mars_sim.msp.core.structure.building.function.Management;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
@@ -103,8 +104,6 @@ public class ReviewMissionPlan extends Task implements Serializable {
 	public ReviewMissionPlan(Person person) {
 		// Use Task constructor.
 		super(NAME, person, true, false, STRESS_MODIFIER, 30D + RandomUtil.getRandomInt(-10, 10));
-
-//		logger.info(person + " was reviewing mission plan.");
 				
 		if (person.isInSettlement()) {
 
@@ -112,8 +111,6 @@ public class ReviewMissionPlan extends Task implements Serializable {
 	        
 			if (missions.size() == 0)
 				endTask();
-			
-//			int pop = person.getAssociatedSettlement().getNumCitizens();
 
 			// If person is in a settlement, try to find an office building.
 			Building officeBuilding = Administration.getAvailableOffice(person);
@@ -129,20 +126,20 @@ public class ReviewMissionPlan extends Task implements Serializable {
 			}
 
 			else {
-				Building dining = EatDrink.getAvailableDiningBuilding(person, false);
-				// Note: dining building is optional
-				if (dining != null) {
-					// Walk to the dining building.
-					walkToTaskSpecificActivitySpotInBuilding(dining, FunctionType.DINING, true);
+				Building managementBuilding = Management.getAvailableStation(person);
+				if (managementBuilding != null) {
+					// Walk to the management building.
+					walkToTaskSpecificActivitySpotInBuilding(managementBuilding, FunctionType.MANAGEMENT, true);
 				}
-//					else {
-//						// work anywhere
-//					}				
+				else {	
+					Building dining = EatDrink.getAvailableDiningBuilding(person, false);
+					// Note: dining building is optional
+					if (dining != null) {
+						// Walk to the dining building.
+						walkToTaskSpecificActivitySpotInBuilding(dining, FunctionType.DINING, true);
+					}
+				}
 			}
-		        
-			
-			// TODO: add other workplace if administration building is not available
-
 		}
 		else {
 			endTask();

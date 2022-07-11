@@ -22,6 +22,7 @@ import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.function.Computation;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Rover;
 
@@ -50,9 +51,12 @@ implements Serializable {
             "Task.phase.compilingPhase")); //$NON-NLS-1$
 
     // Data members
+    /** Computing Units requested. */
+    private double computingUnitSpent = RandomUtil.getRandomDouble(.5, 15D);
+    
     /** The scientific study to compile. */
     private ScientificStudy study;
-
+    
     /**
      * Constructor.
      * @param person the person performing the task.
@@ -63,11 +67,6 @@ implements Serializable {
         super(NAME, person, true, false,
                 STRESS_MODIFIER, null, 25D, RandomUtil.getRandomDouble(50D));
         setExperienceAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
-
-//		if (person.getPhysicalCondition().computeFitnessLevel() < 2) {
-//			logger.log(person, Level.FINE, 10_000, "Ended compiling scientific results. Not feeling well.");
-//			endTask();
-//		}
 
         // Determine study.
         study = determineStudy();
@@ -103,7 +102,7 @@ implements Serializable {
             }
         }
         else {
-            logger.severe(person, "Study could not be determined");
+            logger.severe(person, "This task is no longer needed.");
             endTask();
         }
 
@@ -111,31 +110,6 @@ implements Serializable {
         addPhase(COMPILING_PHASE);
         setPhase(COMPILING_PHASE);
     }
-
-//    /**
-//     * Gets an available administration building that the person can use.
-//     * @param person the person
-//     * @return available administration building or null if none.
-//     */
-//    public static Building getAvailableAdministrationBuilding(Person person) {
-//
-//        Building result = null;
-//
-//        if (person.isInSettlement()) {
-//            BuildingManager manager = person.getSettlement().getBuildingManager();
-//            List<Building> administrationBuildings = manager.getBuildings(FunctionType.ADMINISTRATION);
-//            administrationBuildings = BuildingManager.getNonMalfunctioningBuildings(administrationBuildings);
-//            administrationBuildings = BuildingManager.getLeastCrowdedBuildings(administrationBuildings);
-//
-//            if (administrationBuildings.size() > 0) {
-//                Map<Building, Double> administrationBuildingProbs = BuildingManager.getBestRelationshipBuildings(
-//                        person, administrationBuildings);
-//                result = RandomUtil.getWeightedRandomObject(administrationBuildingProbs);
-//            }
-//        }
-//
-//        return result;
-//    }
 
     /**
      * Determines the scientific study that will be compiled.
@@ -242,6 +216,39 @@ implements Serializable {
             return time;
         }
 
+        int msol = marsClock.getMillisolInt();
+        
+        boolean successful = false; 
+        
+        if (computingUnitSpent > 0) {
+        	double randWork = 0; 
+        	
+        	if (computingUnitSpent <= 1) {
+        		randWork = computingUnitSpent;
+        	}
+        	else
+        		randWork = RandomUtil.getRandomDouble(computingUnitSpent/5.0, computingUnitSpent);
+        	
+        	// Submit his request for computing resources
+        	Computation center = person.getAssociatedSettlement().getBuildingManager().getMostFreeComputingNode(randWork, msol, msol + 1);
+        	if (center != null)
+        		successful = center.scheduleTask(randWork, msol, msol + 1);
+        	if (successful) {
+        		computingUnitSpent = computingUnitSpent - randWork;
+        		 if (computingUnitSpent < 0) {
+        			 computingUnitSpent = 0; 
+        		 }
+        	}
+        }
+        else {
+        	// Computing not needed
+        	successful = true;
+        }
+        
+        if (!successful) {
+        	logger.warning(person, 10_000L, "No computing resources available for compiling a scientific study this time.");
+        }   
+        	
         // Check if data results compilation in study is completed.
         boolean isPrimary = study.getPrimaryResearcher().equals(person);
 
@@ -255,7 +262,7 @@ implements Serializable {
         }
 
         if (isPrimary) {
-            if (study.isPrimaryPaperCompleted()) {
+            if (study.isPrimaryPaperCompleted() && computingUnitSpent <= 0) {
     			logger.log(worker, Level.INFO, 0, "Spent "
     					+ Math.round(study.getPrimaryPaperWorkTimeCompleted() *10.0)/10.0
     					+ " millisols in compiling data for primary research study "
@@ -264,7 +271,7 @@ implements Serializable {
             }
         }
         else {
-            if (study.isCollaborativePaperCompleted(person)) {
+            if (study.isCollaborativePaperCompleted(person) && computingUnitSpent <= 0) {
     			logger.log(worker, Level.INFO, 0, "Spent "
     					+ Math.round(study.getCollaborativePaperWorkTimeCompleted(person) *10.0)/10.0
     					+ " millisols in performing lab experiments for collaborative research study "

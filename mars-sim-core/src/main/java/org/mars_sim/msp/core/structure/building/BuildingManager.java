@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -1844,6 +1845,38 @@ public class BuildingManager implements Serializable {
 		return buildingType + " " + getNextBuildingTypeID(buildingType);
 	}
 
+	/**
+	 * Gets a computing center for having the most free resources.
+	 * 
+	 * @param computingNeed
+	 * @param startTime
+	 * @param endTime
+	 * @return
+	 */
+	public Computation getMostFreeComputingNode(double computingNeed, int startTime, int endTime) {
+		Map<Computation, Double> scores = new HashMap<>();
+		List<Building> nodeBldgs = getBuildings(FunctionType.COMPUTATION);
+		if (nodeBldgs.isEmpty())
+			return null;
+		for (Building b: nodeBldgs) {
+			Computation node = b.getComputation();
+			double score = node.evaluateScheduleTask(computingNeed, startTime, endTime);
+			if (score > 0)
+				scores.put(node, score);
+		}
+		if (scores.isEmpty())
+			return null;
+		
+		Map.Entry<Computation, Double> maxEntry = null; 
+		for (Entry<Computation, Double> entry : scores.entrySet()) {
+			if (maxEntry == null || entry.getValue().compareTo(maxEntry.getValue()) > 0) {
+		        maxEntry = entry;
+		    }
+		}
+		
+		return (Computation)(maxEntry.getKey());
+	}
+	
 	/**
 	 * Gets a list of farm buildings needing work from a list of buildings with the
 	 * farming function.

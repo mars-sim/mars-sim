@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * SplashWindow.java
- * @date 2021-08-20
+ * @date 2022-07-11
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing;
@@ -66,8 +66,8 @@ public class SplashWindow extends JComponent {
 	private static String PIC_NAME = "splash/Mars_Canyon.jpg";
 
 	private Image splashImage;
-	private int width;
-	private int height;
+	private int w;
+	private int h;
 
 
 	@SuppressWarnings("serial")
@@ -89,22 +89,22 @@ public class SplashWindow extends JComponent {
 			
 				g2d.setColor(Color.white);
 				g2d.setFont(buildStringFont);
-				g2d.drawString(BUILD_STRING, splashImage.getWidth(this) - buildStringWidth - 10, height - 15);
+				g2d.drawString(BUILD_STRING, splashImage.getWidth(this) - buildStringWidth - 10, h - 15);
 				
 				g2d.setFont(authorStringFont);
-				g2d.drawString(AUTHOR_STRING, 15, height - 15);
+				g2d.drawString(AUTHOR_STRING, 15, h - 15);
 			}
 		};
 
 		splashImage = ImageLoader.getImage(PIC_NAME);
 		ImageIcon splashIcon = new ImageIcon(splashImage);
-		width = splashIcon.getIconWidth();
-		height = splashIcon.getIconHeight();
-		window.setSize(width, height);
+		w = splashIcon.getIconWidth();
+		h = splashIcon.getIconHeight();
+		window.setSize(w, h);
 
 		// Center the splash window on the screen.
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		Dimension windowSize = new Dimension(width, height);
+		Dimension windowSize = new Dimension(w, h);
 		window.setLocation(((screenSize.width - windowSize.width) / 2), ((screenSize.height - windowSize.height) / 2));
 
 		window.setBackground(Color.black);

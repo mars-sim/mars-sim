@@ -8,8 +8,6 @@
 package org.mars_sim.msp.core.data;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -137,12 +135,7 @@ public abstract class DataLogger<T> implements Serializable {
 	 * @return
 	 */
 	public boolean isYestersolDataValid() {
-		int yesterdaySol = currentSol - 1;
-		if (yesterdaySol <= 0) {
-			// No yesterday yet
-			return false;
-		}
-		return true;
+		return currentSol - 1 > 0;
 	}
 	
 	/**

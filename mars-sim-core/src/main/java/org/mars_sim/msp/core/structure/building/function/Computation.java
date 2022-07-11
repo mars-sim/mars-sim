@@ -139,7 +139,7 @@ public class Computation extends Function{
 	}
 	
 	/**
-	 * Schedules for a computing tasks.
+	 * Schedules for a computing task.
 	 * 
 	 * @param needed
 	 * @param beginningMSol
@@ -166,6 +166,54 @@ public class Computation extends Function{
 		}
 
 		return true;
+	}
+	
+	/**
+	 * Does this computing center have the resources to schedule for a computing task ?
+	 * 
+	 * @param needed
+	 * @param beginningMSol
+	 * @param endMSol
+	 * @return
+	 */
+	public boolean canScheduleTask(double needed, int beginningMSol, int endMSol) {
+		int duration = endMSol - beginningMSol;
+		// Test to see if the assigned duration has enough resources
+		for (int i = beginningMSol; i < duration; i++) {
+			if (maxComputingUnit < needed)
+				return false;
+			double existingDemand = todayDemand.get(beginningMSol);
+			double available = maxComputingUnit - existingDemand - needed;
+			if (available < 0)
+				return false;
+		}
+		
+		return true;
+	}
+	
+	/**
+	 * Returns the evaluation score if scheduling for a computing task for a prescribed period of time. 
+	 * 
+	 * @param needed
+	 * @param beginningMSol
+	 * @param endMSol
+	 * @return
+	 */
+	public double evaluateScheduleTask(double needed, int beginningMSol, int endMSol) {
+		int duration = endMSol - beginningMSol;
+		double score = 0;
+		// Test to see if the assigned duration has enough resources
+		for (int i = beginningMSol; i < duration; i++) {
+			if (maxComputingUnit < needed)
+				return 0;
+			double existingDemand = todayDemand.get(beginningMSol);
+			double available = maxComputingUnit - existingDemand - needed;
+			if (available < 0)
+				return 0;
+			score += available;
+		}
+		
+		return score;
 	}
 	
 	/**

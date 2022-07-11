@@ -496,7 +496,7 @@ public class Mind implements Serializable, Temporal {
 
 
 	/**
-	 * Calls the psi function
+	 * Calls the psi function.
 	 *
 	 * @param av
 	 * @param pv
