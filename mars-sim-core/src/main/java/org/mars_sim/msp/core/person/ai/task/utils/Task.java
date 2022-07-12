@@ -633,6 +633,11 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			} else {
 				timeLeft = performMappedPhase(timeLeft);
 			}
+
+			// Some Task return a percentage of the time which can produce a very small number
+			if (timeLeft < 0.000001) {
+				timeLeft = 0D;
+			}
 		}
 
 		return timeLeft;
