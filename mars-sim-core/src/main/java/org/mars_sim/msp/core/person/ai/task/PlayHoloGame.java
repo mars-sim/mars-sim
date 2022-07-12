@@ -168,7 +168,7 @@ public class PlayHoloGame extends Task implements Serializable {
         	
         	if (successful) {
         		logger.info(person, 10_000L, "Utilized " 
-        				+ Math.round(randWork * 100_000.0)/100_000.0 
+        				+ Math.round(randWork * 1_000.0)/1_000.0 
         				+ " CUs for playing holo game.");
         		computingNeeded = computingNeeded - randWork;
         		 if (computingNeeded < 0) {
@@ -237,7 +237,7 @@ public class PlayHoloGame extends Task implements Serializable {
 	    	}
 	    	if (successful) {
 	    		logger.info(person, 10_000L, "Utilized " 
-	    				+ Math.round(randWork * 100_000.0)/100_000.0 
+	    				+ Math.round(randWork * 1_000.0)/1_000.0 
 	    				+ " CUs for setting up a holo game.");
 	    		computingNeeded = computingNeeded - randWork;
 	    	}

@@ -156,8 +156,8 @@ public class Computation extends Function{
 		double existing = 0;
 		// Test to see if the assigned duration has enough resources
 		for (int i = 0; i < duration; i++) {
-			if (todayDemand.containsKey(i)) {
-				existing = todayDemand.get(i);
+			if (todayDemand.containsKey(i + beginningMSol)) {
+				existing = todayDemand.get(i + beginningMSol);
 			}
 			double available = maxComputingUnit - existing - needed;
 			if (available < 0)
@@ -166,10 +166,10 @@ public class Computation extends Function{
 
 		// Now the actual scheduling
 		for (int i = 0; i < duration; i++) {
-			if (todayDemand.containsKey(i)) {
-				existing = todayDemand.get(i);
+			if (todayDemand.containsKey(i + beginningMSol)) {
+				existing = todayDemand.get(i + beginningMSol);
 			}
-			todayDemand.put(i, existing + needed);
+			todayDemand.put(i + beginningMSol, existing + needed);
 		}
 
 		return true;
@@ -191,8 +191,8 @@ public class Computation extends Function{
 		double available = 0;
 		// Test to see if the assigned duration has enough resources
 		for (int i = 0; i < duration; i++) {
-			if (todayDemand.containsKey(i)) {
-				existing = todayDemand.get(i);
+			if (todayDemand.containsKey(i + beginningMSol)) {
+				existing = todayDemand.get(i + beginningMSol);
 			}
 			available = maxComputingUnit - existing - needed;
 		}
@@ -218,8 +218,8 @@ public class Computation extends Function{
 		double existing = 0;
 		// Test to see if the assigned duration has enough resources
 		for (int i = 0; i < duration; i++) {
-			if (todayDemand.containsKey(i)) {
-				existing = todayDemand.get(i);
+			if (todayDemand.containsKey(i + beginningMSol)) {
+				existing = todayDemand.get(i + beginningMSol);
 			}
 			double available = maxComputingUnit - existing - needed;
 			score += available;
