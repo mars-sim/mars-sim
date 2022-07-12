@@ -1846,6 +1846,24 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
+	 * Gets the sum of all computing resources in a settlement
+	 * 
+	 * @return
+	 */
+	public double getAllComputingResources() {
+		double units = 0;
+		List<Building> nodeBldgs = getBuildings(FunctionType.COMPUTATION);
+		if (nodeBldgs.isEmpty())
+			return 0;
+		for (Building b: nodeBldgs) {
+			Computation node = b.getComputation();
+			units += node.getComputingUnit();
+		}
+		return units;
+	}
+	
+	
+	/**
 	 * Gets a computing center for having the most free resources.
 	 * 
 	 * @param computingNeed
@@ -1866,7 +1884,7 @@ public class BuildingManager implements Serializable {
 		}
 		if (scores.isEmpty())
 			return null;
-		
+				
 		Map.Entry<Computation, Double> maxEntry = null; 
 		for (Entry<Computation, Double> entry : scores.entrySet()) {
 			if (maxEntry == null || entry.getValue().compareTo(maxEntry.getValue()) > 0) {

@@ -108,6 +108,14 @@ public class BuildingWindow extends UnitWindow {
         addTabIconPanels();
     }
 
+    /**
+     * Updates this window.
+     */
+	@Override
+    public void update() {
+        super.update();
+    }
+	
     @Override
 	public void stateChanged(ChangeEvent e) {
     	// nothing

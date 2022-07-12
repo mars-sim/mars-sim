@@ -962,6 +962,15 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 
 	/**
+	 * Gets the amount of time left.
+	 * 
+	 * @return
+	 */
+	protected double getTimeLeft() {
+		return duration - timeCompleted;
+	}
+	
+	/**
 	 * Walk to an available activity spot in a building.
 	 * 
 	 * @param building  the destination building.

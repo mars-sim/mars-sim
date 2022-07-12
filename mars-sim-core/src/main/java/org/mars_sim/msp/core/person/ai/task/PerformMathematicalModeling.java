@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * PerformMathematicalModeling.java
- * @Date 2021-12-20
+ * @date 2022-07-11
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -25,6 +25,7 @@ import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.structure.Lab;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.function.Computation;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.Research;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -57,6 +58,9 @@ implements ResearchScientificStudy, Serializable {
             "Task.phase.modeling")); //$NON-NLS-1$
 
     // Data members.
+    /** Computing Units requested. */
+    private double computingNeeded = RandomUtil.getRandomDouble(.5, 5);
+    
     /** The scientific study the person is modeling for. */
     private ScientificStudy study;
     /** The laboratory the person is working in. */
@@ -379,6 +383,46 @@ implements ResearchScientificStudy, Serializable {
             return time;
         }
 
+        int msol = marsClock.getMillisolInt();
+        
+        boolean successful = false; 
+        
+        if (computingNeeded > 0) {
+        	double randWork = 0; 
+        	
+        	if (computingNeeded <= .01) {
+        		randWork = computingNeeded;
+        	}
+        	else
+        		randWork = RandomUtil.getRandomDouble(computingNeeded/5.0, computingNeeded/2.0);
+        	
+        	// Submit his request for computing resources
+        	Computation center = person.getAssociatedSettlement().getBuildingManager().getMostFreeComputingNode(randWork/5.0, msol + 1, msol + 6);
+        	if (center != null) {
+        		if (computingNeeded <= .01)
+        			successful = center.scheduleTask(randWork, msol + 1, msol + 2);
+        		else
+        			successful = center.scheduleTask(randWork/5.0, msol + 1, msol + 6);
+        	}
+        	if (successful) {
+        		logger.info(person, 10_000L, "Utilized " 
+        				+ Math.round(randWork * 100_000.0)/100_000.0 
+        				+ " CUs for modeling " + study + ".");
+        		computingNeeded = computingNeeded - randWork;
+        		 if (computingNeeded < 0) {
+        			 computingNeeded = 0; 
+        		 }
+        	}
+        }
+        else if (computingNeeded <= 0) {
+        	// Computing not needed
+        	successful = true;
+        }
+        
+        if (!successful) {
+        	logger.warning(person, 10_000L, "No computing resources available for doing mathematical modeling at this point.");
+        }   
+        
         // Add modeling work time to study.
         double modelingTime = getEffectiveModelingTime(time);
         if (isPrimary) {
@@ -389,7 +433,7 @@ implements ResearchScientificStudy, Serializable {
         }
 
         if (isPrimary) {
-            if (study.isPrimaryResearchCompleted()) {
+            if (study.isPrimaryResearchCompleted() && computingNeeded <= 0) {
     			logger.log(person, Level.INFO, 0, "Just spent " 
     					+ Math.round(study.getPrimaryResearchWorkTimeCompleted() *10.0)/10.0
     					+ " millisols in completing mathematical modeling" 
@@ -398,7 +442,7 @@ implements ResearchScientificStudy, Serializable {
             }
         }
         else {
-            if (study.isCollaborativeResearchCompleted(person)) {
+            if (study.isCollaborativeResearchCompleted(person) && computingNeeded <= 0) {
     			logger.log(person, Level.INFO, 0, "Just spent " 
     					+ Math.round(study.getCollaborativeResearchWorkTimeCompleted(person) *10.0)/10.0
     					+ " millisols in performing collaborative study on mathematical modeling on " 

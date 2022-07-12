@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.function.Computation;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -43,6 +44,9 @@ public class PlayHoloGame extends Task implements Serializable {
 	private static final TaskPhase SETTING_UP_SCENES = new TaskPhase(Msg.getString("Task.phase.settingUpScenes")); //$NON-NLS-1$
 
 	// Static members
+    /** Computing Units requested. */		
+	private double computingNeeded = RandomUtil.getRandomDouble(0.05, 1.0);
+    
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = -.3D;
 
@@ -52,7 +56,7 @@ public class PlayHoloGame extends Task implements Serializable {
 	 * @param person the person to perform the task
 	 */
 	public PlayHoloGame(Person person) {
-		super(NAME, person, false, false, STRESS_MODIFIER, 10D + RandomUtil.getRandomDouble(10D));
+		super(NAME, person, false, false, STRESS_MODIFIER, RandomUtil.getRandomInt(10, 20));
 
 		// If during person's work shift, only relax for short period.
 		int millisols = marsClock.getMillisolInt();
@@ -113,8 +117,7 @@ public class PlayHoloGame extends Task implements Serializable {
 
 		setPhase(SETTING_UP_SCENES);
 
-		logger.fine(person, "Setting up hologames to play");
-		
+		logger.fine(person, "Setting up hologames to play.");
 	}
 
 
@@ -138,6 +141,48 @@ public class PlayHoloGame extends Task implements Serializable {
 	 * @return the amount of time (millisol) left after performing the phase.
 	 */
 	private double playingPhase(double time) {
+		
+		int msol = marsClock.getMillisolInt();       
+        boolean successful = false; 
+        
+        if (computingNeeded > 0) {
+        	double randWork = 0; 
+        	
+        	if (computingNeeded <= .01) {
+        		randWork = computingNeeded;
+        	}
+        	else {
+        		randWork = RandomUtil.getRandomDouble(computingNeeded / 6.0, computingNeeded / 3.0);
+        	}
+        		
+        	// Submit his request for computing resources
+        	Computation center = person.getAssociatedSettlement().getBuildingManager().getMostFreeComputingNode(randWork/5.0, msol + 1, msol + 6);
+        	if (center != null) {
+        		if (computingNeeded <= .01)
+        			successful = center.scheduleTask(randWork, msol + 1, msol + 2);
+        		else
+        			successful = center.scheduleTask(randWork/5.0, msol + 1, msol + 6);
+        	}
+	    	else
+	    		logger.info(person, 10_000L, "No computing centers available for setting up the holo game.");
+        	
+        	if (successful) {
+        		logger.info(person, 10_000L, "Utilized " 
+        				+ Math.round(randWork * 100_000.0)/100_000.0 
+        				+ " CUs for playing holo game.");
+        		computingNeeded = computingNeeded - randWork;
+        		 if (computingNeeded < 0) {
+        			 computingNeeded = 0; 
+        		 }
+          	}
+	    	else {
+	    		logger.info(person, 10_000L, "No computing resources available for scheduling a holo game setup.");
+	    	}
+        }
+        else if (computingNeeded <= 0) {
+        	// this task has ended
+        	endTask();
+        }     
 		
 		// Either +ve or -ve
 		double rand = RandomUtil.getRandomInt(1);
@@ -173,10 +218,40 @@ public class PlayHoloGame extends Task implements Serializable {
 	 * @return the amount of time (millisol) left after performing the phase.
 	 */
 	private double settingUpPhase(double time) {
-		// TODO: add codes for selecting a particular type of game
-	
-		setPhase(PLAYING_A_HOLO_GAME);
-		return time * .8D;
+		boolean successful = false; 
+		int msol = marsClock.getMillisolInt();
+		
+		if (computingNeeded > 0) {
+        	double randWork = 0; 
+        	
+        	if (computingNeeded <= .01) {
+        		randWork = computingNeeded;
+        	}
+        	else {
+        		randWork = RandomUtil.getRandomDouble(computingNeeded / 10.0, computingNeeded / 9.0);
+        	}
+			// Submit his request for computing resources
+	    	Computation center = person.getAssociatedSettlement().getBuildingManager().getMostFreeComputingNode(randWork, msol + 1, msol + 2);
+	    	if (center != null) {
+	    		successful = center.scheduleTask(randWork, msol + 1, msol + 2);
+	    	}
+	    	if (successful) {
+	    		logger.info(person, 10_000L, "Utilized " 
+	    				+ Math.round(randWork * 100_000.0)/100_000.0 
+	    				+ " CUs for setting up a holo game.");
+	    		computingNeeded = computingNeeded - randWork;
+	    	}
+	    	else {
+	    		logger.info(person, 10_000L, "No computing resources for setting up the holo game.");
+	    	}
+		}
+		
+		if (getTimeCompleted() * 20.0 > getDuration()) {
+			// If it has spent 1/20 of its time
+			setPhase(PLAYING_A_HOLO_GAME);
+		}
+		
+		return time * .95;
 	}
 
 	/**

@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.Communication;
+import org.mars_sim.msp.core.structure.building.function.Computation;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -44,8 +45,8 @@ public class ConnectWithEarth extends Task implements Serializable {
 
 	// Data members
 	private boolean proceed = false;
-	/** The Communication building the person is using. */
-	private Communication comm;
+    /** Computing Units requested. */		
+	private double computingNeeded = RandomUtil.getRandomDouble(0.05, 0.25);
 
 	/**
 	 * Constructor. This is an effort-driven task.
@@ -65,7 +66,6 @@ public class ConnectWithEarth extends Task implements Serializable {
 			if (bldg != null) {
 				// Walk to the facility.
 				walkToTaskSpecificActivitySpotInBuilding(bldg, FunctionType.COMMUNICATION, false);
-				comm = bldg.getComm();
 			} 
 			
 			else {
@@ -105,19 +105,19 @@ public class ConnectWithEarth extends Task implements Serializable {
 			String act = "";
 			double rand = RandomUtil.getRandomInt(5);
 			if (rand == 0)
-				act = " was checking personal v-messages";
+				act = " was checking personal v-messages.";
 			else if (rand == 1)
-				act = " was watching Earth news";
+				act = " was watching Earth news.";
 			else if (rand == 2)
-				act = " was browsing MarsNet";
+				act = " was browsing MarsNet.";
 			else if (rand == 3)
-				act = " was watching Earth TV";
+				act = " was watching Earth TV.";
 			else if (rand == 4)
-				act = " was watching Earth movies";
-			else if (rand == 5)
-				act = " was browsing Earth internet";
+				act = " was watching a movie.";
+			else
+				act = " was browsing Earth internet.";
 			
-			logger.log(person, Level.FINE, 30_000, act);
+			logger.log(person, Level.INFO, 30_000, act);
 			
 			// Initialize phase
 			addPhase(CONNECTING_EARTH);
@@ -143,6 +143,41 @@ public class ConnectWithEarth extends Task implements Serializable {
 	 * @return the amount of time (millisols) left over after performing the phase.
 	 */
 	private double connectingEarth(double time) {
+		int msol = marsClock.getMillisolInt();       
+        boolean successful = false; 
+        
+        if (computingNeeded > 0) {
+        	double randWork = 0; 
+        	
+        	if (computingNeeded <= .01) {
+        		randWork = computingNeeded;
+        	}
+        	else {
+        		randWork = RandomUtil.getRandomDouble(computingNeeded / 6.0, computingNeeded / 3.0);
+        	}
+        		
+        	// Submit his request for computing resources
+        	Computation center = person.getAssociatedSettlement().getBuildingManager().getMostFreeComputingNode(randWork/5.0, msol + 1, msol + 6);
+        	if (center != null)
+        		successful = center.scheduleTask(randWork/5.0, msol + 1, msol + 6);
+        	if (successful) {
+        		logger.info(person, 10_000L, "Utilized " 
+        				+ Math.round(randWork * 100_000.0)/100_000.0 
+        				+ " CUs for connecting with Earth.");
+        		computingNeeded = computingNeeded - randWork;
+        		 if (computingNeeded < 0) {
+        			 computingNeeded = 0; 
+        		 }
+          	}
+	    	else {
+	    		logger.info(person, 10_000L, "No computing resources for connecting with Earth.");
+	    	}
+        }
+        else if (computingNeeded <= 0) {
+        	// this task has ended
+        	endTask();
+        }
+		
 		return 0D;
 	}
 }

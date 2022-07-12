@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * CompileScientificStudyResults.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-11
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -52,7 +52,7 @@ implements Serializable {
 
     // Data members
     /** Computing Units requested. */
-    private double computingUnitSpent = RandomUtil.getRandomDouble(.5, 15D);
+    private double computingNeeded = RandomUtil.getRandomDouble(.5, 5);
     
     /** The scientific study to compile. */
     private ScientificStudy study;
@@ -220,27 +220,34 @@ implements Serializable {
         
         boolean successful = false; 
         
-        if (computingUnitSpent > 0) {
+        if (computingNeeded > 0) {
         	double randWork = 0; 
         	
-        	if (computingUnitSpent <= 1) {
-        		randWork = computingUnitSpent;
+        	if (computingNeeded <= .01) {
+        		randWork = computingNeeded;
         	}
         	else
-        		randWork = RandomUtil.getRandomDouble(computingUnitSpent/5.0, computingUnitSpent);
+        		randWork = RandomUtil.getRandomDouble(computingNeeded/5.0, computingNeeded/2.0);
         	
         	// Submit his request for computing resources
-        	Computation center = person.getAssociatedSettlement().getBuildingManager().getMostFreeComputingNode(randWork, msol, msol + 1);
-        	if (center != null)
-        		successful = center.scheduleTask(randWork, msol, msol + 1);
+        	Computation center = person.getAssociatedSettlement().getBuildingManager().getMostFreeComputingNode(randWork/5.0, msol + 1, msol + 6);
+        	if (center != null) {
+        		if (computingNeeded <= .01)
+        			successful = center.scheduleTask(randWork, msol + 1, msol + 2);
+        		else
+        			successful = center.scheduleTask(randWork/5.0, msol + 1, msol + 6);
+        	}
         	if (successful) {
-        		computingUnitSpent = computingUnitSpent - randWork;
-        		 if (computingUnitSpent < 0) {
-        			 computingUnitSpent = 0; 
+        		logger.info(person, 10_000L, "Utilized " 
+        				+ Math.round(randWork * 100_000.0)/100_000.0 
+        				+ " CUs for compiling " + study + ".");
+        		computingNeeded = computingNeeded - randWork;
+        		 if (computingNeeded < 0) {
+        			 computingNeeded = 0; 
         		 }
         	}
         }
-        else {
+        else if (computingNeeded <= 0) {
         	// Computing not needed
         	successful = true;
         }
@@ -262,7 +269,7 @@ implements Serializable {
         }
 
         if (isPrimary) {
-            if (study.isPrimaryPaperCompleted() && computingUnitSpent <= 0) {
+            if (study.isPrimaryPaperCompleted() && computingNeeded <= 0) {
     			logger.log(worker, Level.INFO, 0, "Spent "
     					+ Math.round(study.getPrimaryPaperWorkTimeCompleted() *10.0)/10.0
     					+ " millisols in compiling data for primary research study "
@@ -271,7 +278,7 @@ implements Serializable {
             }
         }
         else {
-            if (study.isCollaborativePaperCompleted(person) && computingUnitSpent <= 0) {
+            if (study.isCollaborativePaperCompleted(person) && computingNeeded <= 0) {
     			logger.log(worker, Level.INFO, 0, "Spent "
     					+ Math.round(study.getCollaborativePaperWorkTimeCompleted(person) *10.0)/10.0
     					+ " millisols in performing lab experiments for collaborative research study "

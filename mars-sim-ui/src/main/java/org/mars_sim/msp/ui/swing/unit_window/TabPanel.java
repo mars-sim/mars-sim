@@ -312,7 +312,7 @@ public abstract class TabPanel extends JScrollPane {
 		parent.add(wrapper3);
 		return typeTF;
 	}
-
+	
 	/**
 	 * Adds a standard titled border.
 	 * 

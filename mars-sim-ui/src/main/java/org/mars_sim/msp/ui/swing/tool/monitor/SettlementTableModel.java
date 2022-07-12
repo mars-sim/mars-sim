@@ -48,30 +48,31 @@ public class SettlementTableModel extends UnitTableModel {
 	private final static int POPULATION = 1;
 	private final static int PARKED = 2;
 	private final static int MISSION = 3;
-	private final static int POWER_GEN = 4;
-	private final static int POWER_LOAD = 5;
-	private final static int ENERGY_STORED = 6;
+	private final static int COMPUTING_UNIT = 4;
+	private final static int POWER_GEN = 5;
+	private final static int POWER_LOAD = 6;
+	private final static int ENERGY_STORED = 7;
 	
-	private final static int MALFUNCTION = 7;
+	private final static int MALFUNCTION = 8;
 
-	private final static int OXYGEN_COL = 8;
-	private final static int HYDROGEN_COL = 9;
-	private final static int METHANE_COL = 10;
-	private final static int METHANOL_COL = 11;
+	private final static int OXYGEN_COL = 9;
+	private final static int HYDROGEN_COL = 10;
+	private final static int METHANE_COL = 11;
+	private final static int METHANOL_COL = 12;
 	
-	private final static int WATER_COL = 12;
-	private final static int ICE_COL = 13;
+	private final static int WATER_COL = 13;
+	private final static int ICE_COL = 14;
 
-	private final static int CONCRETE_COL = 14;
-	private final static int CEMENT_COL = 15;
+	private final static int CONCRETE_COL = 15;
+	private final static int CEMENT_COL = 16;
 	
-	private final static int REGOLITHS_COL = 16;
-	private final static int ROCKS_COL = 17;
-	private final static int ORES_COL = 18;
-	private final static int MINERALS_COL = 19;
+	private final static int REGOLITHS_COL = 17;
+	private final static int ROCKS_COL = 18;
+	private final static int ORES_COL = 19;
+	private final static int MINERALS_COL = 20;
 
 	/** The number of Columns. */
-	private final static int COLUMNCOUNT = 20;
+	private final static int COLUMNCOUNT = 21;
 	/** Names of Columns. */
 	private final static String columnNames[];
 	/** Types of columns. */
@@ -84,11 +85,15 @@ public class SettlementTableModel extends UnitTableModel {
 		columnTypes[NAME] = String.class;
 		columnNames[POPULATION] = "Pop";
 		columnTypes[POPULATION] = Integer.class;
+	
 		columnNames[PARKED] = "Parked Veh";
 		columnTypes[PARKED] = Integer.class;
 		columnNames[MISSION] = "Mission Veh";
 		columnTypes[MISSION] = Integer.class;
 		
+		columnNames[COMPUTING_UNIT] = "CU(s)";
+		columnTypes[COMPUTING_UNIT] = Number.class;
+
 		columnNames[POWER_GEN] = "kW Gen";
 		columnTypes[POWER_GEN] = Number.class;
 		columnNames[POWER_LOAD] = "kW Load";
@@ -133,6 +138,8 @@ public class SettlementTableModel extends UnitTableModel {
 	private static UnitManager unitManager = Simulation.instance().getUnitManager();
 
 	private static final DecimalFormat df = new DecimalFormat("#,###,##0");
+	private static final DecimalFormat df3 = new DecimalFormat("#,###,##0.000");
+
 
 	private static final int WATER_ID = ResourceUtil.waterID;
 	private static final int ICE_ID = ResourceUtil.iceID;
@@ -151,8 +158,8 @@ public class SettlementTableModel extends UnitTableModel {
 	private static final int CEMENT_ID = ResourceUtil.cementID;
 	
 	static {
-//		df.setMinimumFractionDigits(2);
-		df.setMinimumIntegerDigits(1);
+		df3.setMinimumFractionDigits(3);
+		df.setMinimumIntegerDigits(1);	
 	}
 
 	// Data members
@@ -224,6 +231,12 @@ public class SettlementTableModel extends UnitTableModel {
 				}
 					break;
 
+				case COMPUTING_UNIT: {
+					double computing = settle.getBuildingManager().getAllComputingResources();
+					result = df3.format(computing);
+				}
+					break;
+					
 				case POWER_GEN: {
 					double power = settle.getPowerGrid().getGeneratedPower();
 					if (power < 0D || Double.isNaN(power) || Double.isInfinite(power))
@@ -381,6 +394,7 @@ public class SettlementTableModel extends UnitTableModel {
 			if (source instanceof Person) columnNum = POPULATION;
 			else if (source instanceof Vehicle) columnNum = PARKED;
 		}
+		else if (eventType == UnitEventType.CONSUMING_COMPUTING_EVENT) columnNum = COMPUTING_UNIT;
 		else if (eventType == UnitEventType.GENERATED_POWER_EVENT) columnNum = POWER_GEN;
 		else if (eventType == UnitEventType.REQUIRED_POWER_EVENT) columnNum = POWER_LOAD;
 		else if (eventType == UnitEventType.STORED_POWER_EVENT) columnNum = ENERGY_STORED;		

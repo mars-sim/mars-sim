@@ -111,6 +111,8 @@ public enum UnitEventType {
 	EMERGENCY_BEACON_EVENT			("vehicle emergency beacon event"),
 	RESERVED_EVENT					("vehicle reserved event"),
 
+	CONSUMING_COMPUTING_EVENT		("consuming computing units"),
+	
 	// For power grid
 	POWER_MODE_EVENT				("power mode"),
 	GENERATED_POWER_EVENT			("generated power"),
