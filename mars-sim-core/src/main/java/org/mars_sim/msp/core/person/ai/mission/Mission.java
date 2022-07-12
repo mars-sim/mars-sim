@@ -739,6 +739,7 @@ public abstract class Mission implements Serializable, Temporal {
 
 	/**
 	 * End all EVA Operations
+	 * @deprecated
 	 */
 	protected void endAllEVA() {
 		// End each member's EVA task.

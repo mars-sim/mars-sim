@@ -116,7 +116,7 @@ public class NavPoint implements Serializable {
 	 * @return hash code.
 	 */
 	public int hashCode() {
-		return getLocation().hashCode() * settlement.hashCode();
+		return location.hashCode();
 	}
 	
 	/**

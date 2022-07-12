@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.mission;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -29,7 +28,6 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.ExploreSite;
-import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -41,8 +39,8 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  * The Exploration class is a mission to travel in a rover to several random
  * locations around a settlement and collect rock samples.
  */
-public class Exploration extends RoverMission
-	implements Serializable, SiteMission {
+public class Exploration extends EVAMission
+	implements SiteMission {
 
 	private static final Set<JobType> PREFERRED_JOBS = Set.of(JobType.AREOLOGIST, JobType.ASTRONOMER, JobType.BIOLOGIST, JobType.BOTANIST, JobType.CHEMIST, JobType.METEOROLOGIST, JobType.PILOT);
 
@@ -86,8 +84,7 @@ public class Exploration extends RoverMission
 	private ExploredLocation currentSite;
 	/** List of sites explored by this mission. */
 	private List<ExploredLocation> exploredSites;
-	/** External flag for ending exploration at the current site. */
-	private boolean endExploringSite;
+
 
 	/**
 	 * Constructor.
@@ -98,44 +95,31 @@ public class Exploration extends RoverMission
 	public Exploration(Person startingPerson) {
 
 		// Use RoverMission constructor.
-		super(DEFAULT_DESCRIPTION, MISSION_TYPE, startingPerson);
+		super(DEFAULT_DESCRIPTION, MISSION_TYPE, startingPerson, null,
+				EXPLORE_SITE, EXPLORING_SITE_TIME);
 
 		Settlement s = getStartingSettlement();
 
 		if (s != null && !isDone()) {
-
-			// Initialize data members.
-			exploredSites = new ArrayList<>(NUM_SITES);
-			explorationSiteCompletion = new HashMap<>(NUM_SITES);
-
 			// Recruit additional members to mission.
 			if (!recruitMembersForMission(startingPerson, MIN_GOING_MEMBERS))
-				return;
+			return;
 
 			// Determine exploration sites
-			if (hasVehicle()) {
-				int skill = startingPerson.getSkillManager().getEffectiveSkillLevel(SkillType.AREOLOGY);
-				if (!determineExplorationSites(getVehicle().getRange(MISSION_TYPE),
-						getTotalTripTimeLimit(getRover(), getPeopleNumber(), true),
-						NUM_SITES, skill)) {
+			if (!hasVehicle()) {
+				return;
+			}
+
+			int skill = startingPerson.getSkillManager().getEffectiveSkillLevel(SkillType.AREOLOGY);
+			List<Coordinates> explorationSites = determineExplorationSites(getVehicle().getRange(MISSION_TYPE),
+					getTotalTripTimeLimit(getRover(), getPeopleNumber(), true),
+					NUM_SITES, skill);
+
+			if (explorationSites.isEmpty()) {
 					endMission(MissionStatus.NO_EXPLORATION_SITES);
-				}
 			}
 
-
-			// Create a list of sites to be explored during the stage of mission planning
-			// 1st one is the starting point
-			for(int i = 1; i < getNumberOfNavpoints(); i++) {
-				createAExploredSite(getNavpoint(i).getLocation());
-			}
-
-			// Add home settlement
-			addNavpoint(s);
-
-			// Check if vehicle can carry enough supplies for the mission.
-			if (hasVehicle() && !isVehicleLoadable()) {
-				endMission(MissionStatus.CANNOT_LOAD_RESOURCES);
-			}
+			initSites(explorationSites);
 
 			// Set initial mission phase.
 			setPhase(REVIEWING, null);
@@ -156,7 +140,25 @@ public class Exploration extends RoverMission
 			List<Coordinates> explorationSites, Rover rover, String description) {
 
 		// Use RoverMission constructor.
-		super(description, MISSION_TYPE, (MissionMember) members.toArray()[0], rover);
+		super(description, MISSION_TYPE,(MissionMember) members.toArray()[0], rover,
+				EXPLORE_SITE, EXPLORING_SITE_TIME);
+	
+
+		initSites(explorationSites);
+
+		// Add mission members.
+		if (!isDone()) {
+			addMembers(members, false);
+
+			// Set initial mission phase.
+			setPhase(EMBARKING, getStartingSettlement().getName());
+		}
+	}
+
+	/**
+	 * Setup the exploration sites
+	 */
+	private void initSites(List<Coordinates> explorationSites) {
 
 		// Initialize explored sites.
 		exploredSites = new ArrayList<>(NUM_SITES);
@@ -179,11 +181,6 @@ public class Exploration extends RoverMission
 			endMission(MissionStatus.CANNOT_LOAD_RESOURCES);
 		}
 
-		// Add mission members.
-		addMembers(members, false);
-
-		// Set initial mission phase.
-		setPhase(EMBARKING, s.getName());
 	}
 
 	/**
@@ -250,55 +247,6 @@ public class Exploration extends RoverMission
 		return tripTimeTravellingLimit * averageSpeedMillisol;
 	}
 
-	@Override
-	protected boolean determineNewPhase() {
-		boolean handled = true;
-		if (!super.determineNewPhase()) {
-			if (TRAVELLING.equals(getPhase())) {
-				if (getCurrentNavpoint().isSettlementAtNavpoint()) {
-					startDisembarkingPhase();
-				}
-				else if (canStartEVA()) {
-					setPhase(EXPLORE_SITE, getCurrentNavpointDescription());
-				}
-			}
-			else if (WAIT_SUNLIGHT.equals(getPhase())) {
-				setPhase(EXPLORE_SITE, getCurrentNavpointDescription());
-			}
-			else if (EXPLORE_SITE.equals(getPhase())) {
-				startTravellingPhase();
-			}
-			else {
-				handled = false;
-			}
-		}
-		return handled;
-	}
-
-	@Override
-	protected void performPhase(MissionMember member) {
-		super.performPhase(member);
-		if (EXPLORE_SITE.equals(getPhase())) {
-			exploringPhase(member);
-		}
-	}
-
-	/**
-	 * Ends the exploration at a site.
-	 */
-	@Override
-	public void abortPhase() {
-		if (EXPLORE_SITE.equals(getPhase())) {
-
-			logger.info(getStartingPerson(), "Exploration ended due to external trigger.");
-			endExploringSite = true;
-
-			endAllEVA();
-		}
-		else
-			super.abortPhase();
-	}
-
 	/**
 	 * Retrieves the current exploration site instance
 	 *
@@ -316,101 +264,48 @@ public class Exploration extends RoverMission
 	}
 
 	/**
-	 * Performs the explore site phase of the mission.
-	 *
-	 * @param member the mission member currently performing the mission
-	 * @throws MissionException if problem performing phase.
+	 * Update the explored site and start an ExploreSite Task
 	 */
-	private void exploringPhase(MissionMember member) {
+	@Override
+	protected boolean performEVA(Person person) {
+
+		// Update exploration site completion.
+		double timeDiff = getPhaseDuration();
+		double completion = timeDiff / EXPLORING_SITE_TIME;
+		if (completion > 1D) {
+			completion = 1D;
+		}
+		else if (completion < 0D) {
+			completion = 0D;
+		}
 
 		// Add new explored site if just starting exploring.
 		if (currentSite == null) {
 			currentSite = retrieveCurrentSite();
-		}
-
-		// Check if crew has been at site for more than one sol.
-		double timeDiff = getPhaseDuration();
-		boolean timeExpired = (timeDiff >= EXPLORING_SITE_TIME);
-
-		// Update exploration site completion.
-		double completion = timeDiff / EXPLORING_SITE_TIME;
-		if (completion > 1D) {
-			completion = 1D;
-		} else if (completion < 0D) {
-			completion = 0D;
+			fireMissionUpdate(MissionEventType.SITE_EXPLORATION_EVENT, getCurrentNavpointDescription());
 		}
 		explorationSiteCompletion.put(getCurrentNavpointDescription(), completion);
-		fireMissionUpdate(MissionEventType.SITE_EXPLORATION_EVENT, getCurrentNavpointDescription());
 
-		if (isEveryoneInRover()) {
-
-			// Check if end exploring flag is set.
-			if (endExploringSite) {
-				endExploringSite = false;
-				setPhaseEnded(true);
-			}
-
-			// Check if crew has been at site for more than one sol, then end this phase.
-			if (timeExpired)
-				setPhaseEnded(true);
-
-			// Determine if no one can start the explore site task.
-			boolean nobodyExplore = true;
-			Iterator<MissionMember> j = getMembers().iterator();
-			while (j.hasNext()) {
-				if (ExploreSite.canExploreSite(j.next(), getRover())) {
-					nobodyExplore = false;
-				}
-			}
-
-			// If no one can explore the site and this is not due to it just being
-			// night time, end the exploring phase.
-			if (nobodyExplore || !isEnoughSunlightForEVA()) {
-				setPhaseEnded(true);
-			}
-
-			// Anyone in the crew or a single person at the home settlement has a dangerous
-			// illness, end phase.
-			if (hasEmergency())
-				setPhaseEnded(true);
-
-			// Check if enough resources for remaining trip. false = not using margin.
-			if (!hasEnoughResourcesForRemainingMission(false)) {
-				// If not, determine an emergency destination.
-				determineEmergencyDestination(member);
-				setPhaseEnded(true);
-			}
-		} else {
-			// If exploration time has expired for the site, have everyone end their
-			// exploration tasks.
-			if (timeExpired) {
-				Iterator<MissionMember> i = getMembers().iterator();
-				while (i.hasNext()) {
-					MissionMember tempMember = i.next();
-					if (tempMember instanceof Person) {
-						Person tempPerson = (Person) tempMember;
-						Task task = tempPerson.getMind().getTaskManager().getTask();
-						if (task instanceof ExploreSite) {
-							((ExploreSite) task).endEVA();
-						}
-					}
-				}
-			}
+		// If person can explore the site, start that task.
+		if (ExploreSite.canExploreSite(person, getRover())) {
+			assignTask(person, new ExploreSite(person, currentSite, (Rover) getVehicle()));
 		}
 
-		if (!getPhaseEnded()) {
+		return true;
+	}
 
-			if (!endExploringSite && !timeExpired && member instanceof Person) {
-				Person person = (Person) member;
-				// If person can explore the site, start that task.
-				if (ExploreSite.canExploreSite(person, getRover())) {
-					assignTask(person, new ExploreSite(person, currentSite, (Rover) getVehicle()));
-				}
-			}
-		} else {
+	/**
+	 * End the current EVA operations, i.e. get everyone to return to vehicle
+	 */
+	@Override
+	protected void endEVATasks() {
+		super.endEVATasks();
+
+		// Speecifc to Exploration
+		if (currentSite != null) {
 			currentSite.setExplored(true);
-			currentSite = null;
 		}
+		currentSite = null;
 	}
 
 	/**
@@ -441,62 +336,14 @@ public class Exploration extends RoverMission
 			}
 
 			el = surfaceFeatures.addExploredLocation(siteLocation,
-					initialMineralEstimations, getAssociatedSettlement());
+					initialMineralEstimations, getStartingSettlement());
 		}
 
 		exploredSites.add(el);
 		return el;
 	}
 
-	@Override
-	protected double getEstimatedRemainingMissionTime(boolean useBuffer) {
-		double result = super.getEstimatedRemainingMissionTime(useBuffer);
-		result += getEstimatedRemainingExplorationSiteTime();
-		return result;
-	}
 
-	/**
-	 * Gets the estimated time remaining for exploration sites in the mission.
-	 *
-	 * @return time (millisols)
-	 * @throws MissionException if error estimating time.
-	 */
-	private double getEstimatedRemainingExplorationSiteTime() {
-		double result = 0D;
-
-		// Add estimated remaining exploration time at current site if still there.
-		if (EXPLORE_SITE.equals(getPhase())) {
-			double remainingTime = EXPLORING_SITE_TIME - getPhaseDuration();
-			if (remainingTime > 0D)
-				result += remainingTime;
-		}
-
-		// Add estimated exploration time at sites that haven't been visited yet.
-		int remainingExplorationSites = getNumExplorationSites() - getNumExplorationSitesVisited();
-		result += EXPLORING_SITE_TIME * remainingExplorationSites;
-
-		return result;
-	}
-
-	@Override
-	protected Map<Integer, Number> getResourcesNeededForRemainingMission(boolean useBuffer) {
-		Map<Integer, Number> result = super.getResourcesNeededForRemainingMission(useBuffer);
-
-		double explorationSitesTime = getEstimatedRemainingExplorationSiteTime();
-		double timeSols = explorationSitesTime / 1000D;
-
-		int crewNum = getPeopleNumber();
-
-		// Add the maount for the site visits
-		addLifeSupportResources(result, crewNum, timeSols, useBuffer);
-
-		return result;
-	}
-
-	@Override
-	public Settlement getAssociatedSettlement() {
-		return getStartingSettlement();
-	}
 
 	@Override
 	protected int compareVehicles(Vehicle firstVehicle, Vehicle secondVehicle) {
@@ -520,30 +367,8 @@ public class Exploration extends RoverMission
 	 *
 	 * @return time (millisols)
 	 */
-	protected double getEstimatedTimeAtExplorationSites() {
-		return EXPLORING_SITE_TIME * getNumExplorationSites();
-	}
-
-	/**
-	 * Gets the total number of exploration sites for this mission.
-	 *
-	 * @return number of sites.
-	 */
-	public final int getNumExplorationSites() {
-		return getNumberOfNavpoints() - 2;
-	}
-
-	/**
-	 * Gets the number of exploration sites that have been currently visited by the
-	 * mission.
-	 *
-	 * @return number of sites.
-	 */
-	public final int getNumExplorationSitesVisited() {
-		int result = getCurrentNavpointIndex();
-		if (result == (getNumberOfNavpoints() - 1))
-			result -= 1;
-		return result;
+	protected double getEstimatedTimeOfAllEVAs() {
+		return EXPLORING_SITE_TIME * getNumEVASites();
 	}
 
 	@Override
@@ -564,7 +389,7 @@ public class Exploration extends RoverMission
 	 *                      the mission.
 	 * @throws MissionException if exploration sites can not be determined.
 	 */
-	private boolean determineExplorationSites(double roverRange, double tripTimeLimit, int numSites, int areologySkill) {
+	private List<Coordinates> determineExplorationSites(double roverRange, double tripTimeLimit, int numSites, int areologySkill) {
 		int confidence = 3 + (int)RandomUtil.getRandomDouble(marsClock.getMissionSol());
 
 		List<Coordinates> unorderedSites = new ArrayList<>();
@@ -640,42 +465,9 @@ public class Exploration extends RoverMission
 			sites = unorderedSites;
 		}
 
-		addNavpoints(sites, (i -> "exploration site #" + (i + 1)));
-		return (!sites.isEmpty());
+		return sites;
 	}
 
-	/**
-	 * Order a list of Coordinates starting from a point to minimise
-	 * the travel time.
-	 * @param unorderedSites
-	 * @param startingLocation
-	 * @return
-	 */
-	public static List<Coordinates> getMinimalPath(Coordinates startingLocation, List<Coordinates> unorderedSites) {
-
-		List<Coordinates> unorderedSites2 = new ArrayList<>(unorderedSites);
-		List<Coordinates> orderedSites = new ArrayList<>(unorderedSites2.size());
-		Coordinates currentLocation = startingLocation;
-		while (!unorderedSites2.isEmpty()) {
-			Coordinates shortest = unorderedSites2.get(0);
-			double shortestDistance = Coordinates.computeDistance(currentLocation, shortest);
-			Iterator<Coordinates> i = unorderedSites2.iterator();
-			while (i.hasNext()) {
-				Coordinates site = i.next();
-				double distance = Coordinates.computeDistance(currentLocation, site);
-				if (distance < shortestDistance) {
-					shortest = site;
-					shortestDistance = distance;
-				}
-			}
-
-			unorderedSites2.remove(shortest);
-			orderedSites.add(shortest);
-			currentLocation = shortest;
-		}
-
-		return orderedSites;
-	}
 
 	/**
 	 * Get a list of explored location for this Settlement that needs further investigation
@@ -760,7 +552,7 @@ public class Exploration extends RoverMission
 	 * @return range (km) limit.
 	 */
 	private double getTripTimeRange(double tripTimeLimit) {
-		double timeAtSites = getEstimatedTimeAtExplorationSites();
+		double timeAtSites = getEstimatedTimeOfAllEVAs();
 		double tripTimeTravellingLimit = tripTimeLimit - timeAtSites;
 		double averageSpeed = getAverageVehicleSpeedForOperators();
 		double millisolsInHour = MarsClock.MILLISOLS_PER_HOUR;
@@ -806,23 +598,6 @@ public class Exploration extends RoverMission
 			double mineralAmount = (concentration / 100D) * Mining.MINERAL_BASE_AMOUNT;
 			result += mineralValue * mineralAmount;
 		}
-
-		return result;
-	}
-
-	@Override
-	protected Map<Integer, Number> getSparePartsForTrip(double distance) {
-		// Load the standard parts from VehicleMission.
-		Map<Integer, Number> result = super.getSparePartsForTrip(distance);
-
-		// Determine repair parts for EVA Suits.
-		double evaTime = getEstimatedRemainingExplorationSiteTime();
-		double numberAccidents = evaTime * getPeopleNumber() * EVAOperation.BASE_ACCIDENT_CHANCE;
-
-		// Assume the average number malfunctions per accident is 1.5.
-		double numberMalfunctions = numberAccidents * VehicleMission.AVERAGE_EVA_MALFUNCTION;
-
-		result.putAll(super.getEVASparePartsForTrip(numberMalfunctions));
 
 		return result;
 	}

@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.InventoryUtil;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalPosition;
@@ -67,7 +68,7 @@ public abstract class RoverMission extends VehicleMission {
 	public static final int MIN_STAYING_MEMBERS = 1;
 	public static final int MIN_GOING_MEMBERS = 2;
 	
-	public static final double FUEL_CELL_FACTOR = .5;
+	public static final double FUEL_CELL_FACTOR = 1D; //.5;
 
 	/** Comparison to indicate a small but non-zero amount of fuel (methane) in kg that can still work on the fuel cell to propel the engine. */
     public static final double LEAST_AMOUNT = GroundVehicle.LEAST_AMOUNT;
@@ -1151,9 +1152,10 @@ public abstract class RoverMission extends VehicleMission {
 	 * @return
 	 */
 	protected boolean isEnoughSunlightForEVA() {
-		//return false;
-		boolean inDarkPolarRegion = surfaceFeatures.inDarkPolarRegion(getCurrentMissionLocation());
-		double sunlight = surfaceFeatures.getSolarIrradiance(getCurrentMissionLocation());
+		//return true;
+		Coordinates locn = getCurrentMissionLocation();
+		boolean inDarkPolarRegion = surfaceFeatures.inDarkPolarRegion(locn);
+		double sunlight = surfaceFeatures.getSolarIrradiance(locn);
 		return (sunlight >= 20D && !inDarkPolarRegion);
 	}
 }

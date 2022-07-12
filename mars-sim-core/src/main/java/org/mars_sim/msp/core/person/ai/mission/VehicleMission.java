@@ -150,6 +150,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	 * @param missionName
 	 * @param startingMember
 	 * @param minPeople
+	 * @deprecated use {@link #VehicleMission(String, MissionType, MissionMember, Vehicle)}
 	 */
 	protected VehicleMission(String missionName, MissionType missionType, MissionMember startingMember) {
 		super(missionName, missionType, startingMember);
@@ -160,12 +161,12 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	}
 
 	/**
-	 * Constructor 2. Manually initiated by player.
+	 * Create a Vehicle mission
 	 *
 	 * @param missionName
 	 * @param startingMember
 	 * @param minPeople
-	 * @param vehicle
+	 * @param vehicle Optional, if null then reserve a Vehicle
 	 */
 	protected VehicleMission(String missionName, MissionType missionType, MissionMember startingMember, Vehicle vehicle) {
 		super(missionName, missionType, startingMember);
@@ -173,7 +174,12 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 		init(startingMember);
 
 		// Set the vehicle.
-		setVehicle(vehicle);
+		if (vehicle != null) {
+			setVehicle(vehicle);
+		}
+		else {
+			reserveVehicle();
+		}
 	}
 
 	/**
@@ -1043,19 +1049,22 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 		if (vehicle != null) {
 			double amount = 0;
 
-			if (getPhase() == null || getPhase().equals(VehicleMission.EMBARKING) 
-					|| getPhase().equals(VehicleMission.REVIEWING)
-					|| useMargin) {
-				amount = getFuelNeededForTrip(vehicle, distance, 
-							vehicle.getEstimatedFuelEconomy(), true);
-				// Use margin only when estimating how much fuel needed before starting the mission
-			}
-			else {
-				amount = getFuelNeededForTrip(vehicle, distance, 
-							(vehicle.getEstimatedFuelEconomy() + vehicle.getInitialFuelEconomy()) / FE_FACTOR, false);
-				// When the vehicle is already on the road, do NOT use margin
-				// or else it would constantly complain not having enough fuel
-			}
+			// Must use the same logic in all cases otherwise too few fuel will be loaded
+			amount = getFuelNeededForTrip(vehicle, distance, 
+							vehicle.getEstimatedFuelEconomy(), useMargin);
+			// if (getPhase() == null || getPhase().equals(VehicleMission.EMBARKING) 
+			// 		|| getPhase().equals(VehicleMission.REVIEWING)
+			// 		|| useMargin) {
+			// 	amount = getFuelNeededForTrip(vehicle, distance, 
+			// 				vehicle.getEstimatedFuelEconomy(), true);
+			// 	// Use margin only when estimating how much fuel needed before starting the mission
+			// }
+			// else {
+			// 	// If the Vehicle is already on the road then the margin should be false
+			// 	// Take an average of the initial fuel economy and  the
+			// 	amount = getFuelNeededForTrip(vehicle, distance, 
+			// 				(vehicle.getEstimatedFuelEconomy() + vehicle.getInitialFuelEconomy()) / 2, useMargin);
+			// }
 
 			result.put(vehicle.getFuelType(), amount);
 
@@ -1683,7 +1692,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	 */
 	@Override
 	public Settlement getAssociatedSettlement() {
-		return vehicle.getAssociatedSettlement();
+		return startingSettlement;
 	}
 
 
