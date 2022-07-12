@@ -1,20 +1,18 @@
 /*
  * Mars Simulation Project
  * Heating.java
- * @date 2022-06-25
+ * @date 2022-07-11
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.structure.building.function;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.FunctionSpec;
 import org.mars_sim.msp.core.structure.building.function.farming.Crop;
-import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
 
@@ -26,9 +24,7 @@ extends Function {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-    /* default logger.*/
- 	private static final Logger logger = Logger.getLogger(Heating.class.getName());
-    
+ 
 	private static final FunctionType FUNCTION = FunctionType.LIFE_SUPPORT;
 
 	// Heat gain and heat loss calculation
@@ -176,8 +172,6 @@ extends Function {
 	
 	private List<Building> adjacentBuildings;
 
-	private Farming farm;
-	
 	/**
 	 * Constructor.
 	 * 
@@ -354,8 +348,7 @@ extends Function {
 		// (1b) CALCULATE HEAT GAIN BY PEOPLE
 		double heatGainOccupants = HEAT_DISSIPATED_PER_PERSON * building.getNumPeople();
 		// the energy required to heat up the in-rush of the new martian air
-		//if (isGreenhouse) System.out.println(building.getNickName() + "'s heatGainOccupants : " + Math.round(heatGainOccupants*10_000D)/10_000D + " kBTU/Hr");
-		
+	
 		// (1c) CALCULATE HEAT GAIN BY EVA HEATER
 		int num = building.numOfPeopleInAirLock(); // if num > 0, this building has an airlock
 		
@@ -476,26 +469,16 @@ extends Function {
 				canopyHeatGain *= .95; 		
 
 			else if (t_in_C <= 7.25)
-				canopyHeatGain *= 1; 		
-
+				canopyHeatGain *= 1;
 		}
 			
-		//if (isGreenhouse && solarHeatGain > 0) 
-		//	System.out.println(building.getNickName() + "'s solarHeatGain : " 
-		//			+ Math.round(solarHeatGain*10_000D)/10_000D + " kW");
-		
-
 		// (1g) CALCULATE HEAT GAIN DUE TO ARTIFICIAL LIGHTING
 		double lightingGain = 0;
 		
-		if (isGreenhouse) {
-			if (farm == null) { // greenhouse has a semi-transparent rooftop
-				farm = building.getFarming();
-			}
-	
-	        lightingGain = farm.getTotalLightingPower() * gain_factor_HPS; 
+		if (isGreenhouse && building.getFarming() != null) {
+			// greenhouse has a semi-transparent rooftop
+			lightingGain = building.getFarming().getTotalLightingPower() * gain_factor_HPS; 
 	        // For high pressure sodium lamp, assuming 60% are nonvisible radiation (energy loss as heat)
-			//if (isGreenhouse) System.out.println(building.getNickName() + "'s lightingGain : " + Math.round(lightingGain*10_000D)/10_000D + " kW");
 		}	
 		
 		// (1f) ADD HEAT GAIN BY EQUIPMENT
@@ -508,10 +491,6 @@ extends Function {
 		double heatGain = heatPumpedIn + heatGainOccupants + heatGainFromEVAHeater + solarHeatGain 
 				+ canopyHeatGain + lightingGain + ventilationHeatGain + heatGainEqiupment; 		
 		
-//		if (isGreenhouse && heatGain > 0) 
-//			System.out.println(building.getNickName() + "'s heatGain : " 
-//					+ Math.round(heatGain*10_000D)/10_000D + " kW");
-	
 		// (2) CALCULATE HEAT LOSS
 		
 		// (2a) CALCULATE HEAT NEEDED FOR REHEATING AIRLOCK
@@ -524,11 +503,6 @@ extends Function {
 			// flag that this calculation is done till the next time when the airlock is depressurized.
 			hasHeatDumpViaAirlockOuterDoor = false;
 		}
-		
-//		if (isGreenhouse) 
-//			System.out.println(building.getNickName() + "'s heatAirlock : " 
-//					+ Math.round(heatAirlock/1000D*10_000D)/10_000D + " kW");
-
 
 		// (2b) CALCULATE HEAT LOSS DUE TO STRUCTURE		
 		double structuralLoss = 0;
@@ -556,21 +530,13 @@ extends Function {
 		}	
 		
 		// Note : U_value in kW/K/m2, not [Btu/°F/ft2/hr]
-		
-//		if (isGreenhouse) 
-//			System.out.println(building.getNickName() + "'s structuralLoss : " 
-//					+ Math.round(structuralLoss*10_000D)/10_000D + " kW");
 
 		// (2c) CALCULATE HEAT LOSS DUE TO VENTILATION
 		// heatLossFromVent can be smaller than zero
 		double ventilationHeatLoss = heatLossFromVent;
 		// reset heatExtracted to zero
 		heatLossFromVent = 0;
-		
-//		if (isGreenhouse) 
-//			System.out.println(building.getNickName() + "'s ventilationHeatLoss : " 
-//					+ Math.round(ventilationHeatLoss*10_000D)/10_000D + " kW");
-		
+
 		// (2d) CALCULATE HEAT LOSS DUE TO HEAT RADIATED BACK TO OUTSIDE
 		double solarHeatLoss =  0;
 		
@@ -595,21 +561,12 @@ extends Function {
 			solarHeatLoss = 0;
 		}		
 		
-		
-//		if (isGreenhouse) 
-//			System.out.println(building.getNickName() + "'s solarHeatLoss : " 
-//				+ Math.round(solarHeatLoss*100D)/100D + " kW");
-
 		// (2e) At high RH, the air has close to the maximum water vapor that it can hold, 
 		// so evaporation, and therefore heat loss, is decreased.
 		
 		// (2f) CALCULATE TOTAL HEAT LOSS	
 		double heatLoss = heatAirlock + structuralLoss + ventilationHeatLoss + solarHeatLoss;
 		
-//		if (isGreenhouse) 
-//			System.out.println(building.getNickName() + "'s heatLoss : " 
-//					+ Math.round(heatLoss*10_000D)/10_000D + " kW");
-
 		// (3) CALCULATE THE INSTANTANEOUS CHANGE OF TEMPERATURE (DELTA T)
 		// delta t = (heatGain - heatLoss) / (time_interval * C_s * mass) ;
 		
@@ -618,9 +575,6 @@ extends Function {
 			
 		// (3b) FIND the CONVERSION FACTOR
 		double c_factor = 1 / (conversion_factor * delta_time); 
-		//if (isGreenhouse) 
-		//	System.out.println(building.getNickName() + "'s c_factor : " 
-		//			+ Math.round(c_factor*10000D)/10000D);
 
 		// (3c) USE HEAT SINK to reduce the value of d_heat
 		double d_heat2 = 0;//d_heat1;
@@ -631,18 +585,12 @@ extends Function {
 		else
 			d_heat2 = d_heat1;
 
-		//if (isGreenhouse) 
-		//	System.out.println(building.getNickName() + "'s d_heat : " 
-		//			+ Math.round(d_heat1*100D)/100D + " --> " + Math.round(d_heat2*100D)/100D);
-	
 		// (3d) FIND THE CHANGE OF TEMPERATURE (in degress celsius)  
 		// Using the equation : heat = mass * specific heat capacity * delta temperature
 		// d_t = d_heat / mass / C_s
 		double d_t_C = c_factor * d_heat2 ; 
 		//applyHeatBuffer(changeOfTinC);
-		//if (isGreenhouse) 
-		//	System.out.println(building.getNickName() + "'s d_t_C : " 
-		//			+ Math.round(d_t_C*100D)/100D);
+
 		return d_t_C;
 	}
 
@@ -985,13 +933,10 @@ extends Function {
 			temperatureCache[i] = temperatureCache[i-1];
 		}
 		temperatureCache[0] = old_t;
-		
 
-		
 		// STEP 3 : CHANGE THE HEAT MODE
 		// Turn heat source off if reaching certain temperature thresholds
 		adjustHeatMode();
-		
 	}
 
 	/**
@@ -1061,7 +1006,6 @@ extends Function {
 	public void destroy() {
 		super.destroy();
 		location = null;
-		farm = null;
 		adjacentBuildings = null;
 	}
 
