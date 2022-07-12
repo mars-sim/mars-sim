@@ -410,6 +410,50 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="water" rate="21.6" ambient="false" />
 				</process>
 
+				<!-- 
+				Under the SpaceCraft Oxygen Recovery (SCOR), NASA seeks to increase oxygen recovery 
+				beyond the state of the art (42%) to at least 75% and approaching 100%.
+						
+				Space oxygen recovery technologies implemented include carbon formation reactors (CFR) 
+				and methane pyrolysis assembly (PPA) reactors. 
+						
+				1. The Continuous Bosch Reactor - aims to produce water and elemental carbon from hydrogen 
+				and carbon dioxide. Highly efficient for utilization of hydrogen, it would replace the 
+				current state-of-the-art Sabatier reactor.
+				
+				2. Hydrogen Recovery by Carbon Vapor Deposition - aims to do what Sabatier lacks: recover 
+				hydrogen. The Sabatier is limited in its ability to recover oxygen from carbon dioxide 
+				due to an insufficient amount of hydrogen. The Sabatier requires additional hydrogen 
+				due to the production of the byproduct methane. If hydrogen can be recovered from this 
+				byproduct, it can be sent back to the Sabatier to react with carbon dioxide and produce 
+				additional oxygen.
+				
+				- a high-temperature solid oxide co-electrolyzer (SOCE) to be combined with a carbon
+				formation reactor.
+				
+				-->
+				
+				<!-- 
+	  			Based on Bosch System : 
+	  			     2CO -> CO2 + C(s)
+				 CO + H2 -> H2O + C(s)
+				
+				3CO + H2 -> CO2 + H2O + 2C(s)
+				
+				Challenges : 
+				1. power consumption - high temperature endothermic reactions, catalyst resupply, volume/mass.
+				 -->
+				 
+				<process name="Carbon Formation Reactor" number-modules="2" power-required="0.1" default="on">
+					<description> C-Bosch reduces CO2 to C(s) and H20 using H2. 
+					</description> 
+					<input resource="carbon monoxide" rate="84.0" ambient="false" />
+					<input resource="hydrogen" rate="2.0" ambient="false" />
+					<output resource="carbon dioxide" rate="44.0" ambient="true" />
+					<output resource="water" rate="18.0" ambient="false" />
+					<output resource="carbon" rate="24.0" ambient="false" />
+				</process>
+				
 				<!-- Oxygen Generation System can split water into H2 and O2.
 
 				NASA's Oxygen Generation System is designed to generate
@@ -1185,6 +1229,16 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="water" rate="86.4" ambient="false" />
 				</process>
 				
+				<process name="Carbon Formation Reactor" number-modules="2" power-required="0.1" default="on">
+					<description> C-Bosch reduces CO2 to C(s) and H20 using H2. 
+					</description> 
+					<input resource="carbon monoxide" rate="84.0" ambient="false" />
+					<input resource="hydrogen" rate="2.0" ambient="false" />
+					<output resource="carbon dioxide" rate="44.0" ambient="true" />
+					<output resource="water" rate="18.0" ambient="false" />
+					<output resource="carbon" rate="24.0" ambient="false" />
+				</process>
+				
 				<process name="Oxygen Generation System" number-modules="2" power-required=".5" default="on">
 					<input resource="water" rate="72" ambient="false" />
 					<output resource="hydrogen" rate="8" ambient="false" />
@@ -1769,6 +1823,16 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="methane" rate="4.8" ambient="false" />
 					<output resource="carbon monoxide" rate="16.8" ambient="false" />
 					<output resource="water" rate="21.6" ambient="false" />
+				</process>
+				
+				<process name="Carbon Formation Reactor" number-modules="2" power-required="0.1" default="on">
+					<description> C-Bosch reduces CO2 to C(s) and H20 using H2. 
+					</description> 
+					<input resource="carbon monoxide" rate="84.0" ambient="false" />
+					<input resource="hydrogen" rate="2.0" ambient="false" />
+					<output resource="carbon dioxide" rate="44.0" ambient="true" />
+					<output resource="water" rate="18.0" ambient="false" />
+					<output resource="carbon" rate="24.0" ambient="false" />
 				</process>
 				
 				<process name="Oxygen Generation System" number-modules="4" power-required="2" default="off">
@@ -3289,6 +3353,16 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="water" rate="21.6" ambient="false" />
 				</process>
 
+				<process name="Carbon Formation Reactor" number-modules="2" power-required="0.1" default="on">
+					<description> C-Bosch reduces CO2 to C(s) and H20 using H2. 
+					</description> 
+					<input resource="carbon monoxide" rate="84.0" ambient="false" />
+					<input resource="hydrogen" rate="2.0" ambient="false" />
+					<output resource="carbon dioxide" rate="44.0" ambient="true" />
+					<output resource="water" rate="18.0" ambient="false" />
+					<output resource="carbon" rate="24.0" ambient="false" />
+				</process>
+				
 				<process name="Oxygen Generation System" number-modules="2" power-required=".5" default="on">
 					<input resource="water" rate="72" ambient="false" />
 					<output resource="hydrogen" rate="8" ambient="false" />

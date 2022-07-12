@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ItemResourceUtil.java
- * @date 2022-07-05
+ * @date 2022-07-12
  * @author Manny Kung
  */
 
@@ -17,7 +17,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
-//import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
@@ -29,36 +28,37 @@ public class ItemResourceUtil implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	public static final String PRESSURE_SUIT = "pressure suit";
-	public static final String PETRI_DISH = "petri dish";
-	public static final String GARMENT = "garment";
+	private static final String PRESSURE_SUIT = "pressure suit";
+	private static final String PETRI_DISH = "petri dish";
+	private static final String GARMENT = "garment";
 	
 	// Light utility vehicle attachment parts for mining or construction.
-	public static final String BACKHOE = "backhoe";
-	public static final String BULLDOZER_BLADE = "bulldozer blade";
-	public static final String CRANE_BOOM = "crane boom";
-	public static final String DRILLING_RIG = "drilling rig";
-	public static final String PNEUMATIC_DRILL = "pneumatic drill";
-	public static final String SOCKET_WRENCH = "socket wrench";
-	public static final String SOIL_COMPACTOR = "soil compactor";
+	private static final String BACKHOE = "backhoe";
+	private static final String BULLDOZER_BLADE = "bulldozer blade";
+	private static final String CRANE_BOOM = "crane boom";
+	private static final String DRILLING_RIG = "drilling rig";
+	private static final String PNEUMATIC_DRILL = "pneumatic drill";
+	private static final String SOCKET_WRENCH = "socket wrench";
+	private static final String SOIL_COMPACTOR = "soil compactor";
 
 	// Tools
-	public static final String PIPE_WRENCH = "pipe wrench";
-	public static final String DECONTAMINATION_KIT = "decontamination kit";
-	public static final String AIRLEAK_PATCH = "airleak patch";
-	public static final String FIRE_EXTINGUSHER = "fire extinguisher";
-	public static final String WORK_GLOVES = "work gloves";
-	public static final String CONTAINMENT_KIT = "mushroom containment kit";
-	public static final String SMALL_HAMMER = "small hammer";
 	public static final String LASER_SINTERING_3D_PRINTER = "laser sintering 3d printer";
 
-	public static final String IRON_INGOT = "iron ingot";
-	public static final String STEEL_INGOT = "steel ingot";
-	public static final String IRON_SHEET = "iron sheet";
-	public static final String STEEL_SHEET = "steel sheet";
+	private static final String PIPE_WRENCH = "pipe wrench";
+	private static final String DECONTAMINATION_KIT = "decontamination kit";
+	private static final String AIRLEAK_PATCH = "airleak patch";
+	private static final String FIRE_EXTINGUSHER = "fire extinguisher";
+	private static final String WORK_GLOVES = "work gloves";
+	private static final String CONTAINMENT_KIT = "mushroom containment kit";
+	private static final String SMALL_HAMMER = "small hammer";
 
-	public static final String ROVER_WHEEL = "rover wheel";
-	public static final String CHEMICAL_BATTERY = "chemical battery";
+	private static final String IRON_INGOT = "iron ingot";
+	private static final String STEEL_INGOT = "steel ingot";
+	private static final String IRON_SHEET = "iron sheet";
+	private static final String STEEL_SHEET = "steel sheet";
+
+	private static final String ROVER_WHEEL = "rover wheel";
+	private static final String CHEMICAL_BATTERY = "chemical battery";
 		
 	private static final String LASER = "laser";
 	private static final String STEPPER_MOTOR = "stepper motor";
@@ -73,6 +73,51 @@ public class ItemResourceUtil implements Serializable {
 	private static final String FIBERGLASS = "fiberglass";
 	private static final String SHEET = "sheet";
 	private static final String PRISM = "prism";
+	
+	/** 
+	 * Parts for creating an EVA Suit. 
+	 */
+	private static final String[] EVASUIT_PARTS = {
+			"eva helmet",			"helmet visor",
+			PRESSURE_SUIT,			"coveralls",
+			"suit heating unit",	"eva gloves",
+			"eva boots",			"eva pads",
+			"eva backpack",			"eva antenna",
+			"eva battery",			"eva radio",
+	};
+
+	/** 
+	 * Light utility vehicle attachment parts for mining or construction. 
+	 */
+	private static final String[] ATTACHMENTS = {
+			BACKHOE,
+			BULLDOZER_BLADE,
+			CRANE_BOOM,
+			DRILLING_RIG,
+			PNEUMATIC_DRILL,
+			SOIL_COMPACTOR
+	};
+
+	/**
+	 * Parts that are not needed to be fetched as repair parts for vehicle missions.
+	 */
+	public static final String[] UNNEEDED_PARTS = { 
+			LASER,					STEPPER_MOTOR,
+			OVEN,					BLENDER,
+			AUTOCLAVE,				REFRIGERATOR,
+			STOVE,					MICROWAVE,
+			POLY_ROOFING,			LENS,
+			FIBERGLASS,				SHEET,
+			PRISM 
+	};
+
+	/**
+	 * Parts for cooking and food production.
+	 */
+	private static final String[] KITCHEN_WARE = {
+			AUTOCLAVE,			BLENDER,
+			MICROWAVE,			OVEN,
+			REFRIGERATOR,		STOVE};
 	
 	public static Part pneumaticDrill;
 	public static Part backhoe;
@@ -117,48 +162,9 @@ public class ItemResourceUtil implements Serializable {
 	private static List<Part> sortedParts;
 
 	private static PartConfig partConfig = SimulationConfig.instance().getPartConfiguration();
-
-	private static final String[] EVASUIT_PARTS = new String[] {
-			"eva helmet",			"helmet visor",
-			PRESSURE_SUIT,			"coveralls",
-			"suit heating unit",	"eva gloves",
-			"eva boots",			"eva pads",
-			"eva backpack",			"eva antenna",
-			"eva battery",			"eva radio",
-	};
-	
-	// Light utility vehicle attachment parts for mining or construction.
-	private static final String[] ATTACHMENTS = new String[] {
-			BACKHOE,
-			BULLDOZER_BLADE,
-			CRANE_BOOM,
-			DRILLING_RIG,
-			PNEUMATIC_DRILL,
-			SOIL_COMPACTOR
-	};
-
-	/**
-	 * Parts that are not needed to be fetched as repair parts for vehicle missions.
-	 */
-	public static final String[] UNNEEDED_PARTS = { 
-			LASER,					STEPPER_MOTOR,
-			OVEN,					BLENDER,
-			AUTOCLAVE,				REFRIGERATOR,
-			STOVE,					MICROWAVE,
-			POLY_ROOFING,			LENS,
-			FIBERGLASS,				SHEET,
-			PRISM 
-	};
 	
 	public static final List<Integer> ATTACHMENTS_ID = new ArrayList<>();
-
 	public static final List<Integer> EVASUIT_PARTS_ID = new ArrayList<>();
-
-	private static final String[] KITCHEN_WARE = new String[] {
-			AUTOCLAVE,			BLENDER,
-			MICROWAVE,			OVEN,
-			REFRIGERATOR,		STOVE};
-
 	public static final List<Integer> KITCHEN_WARE_ID = new ArrayList<>();
 
 	/**
@@ -316,7 +322,7 @@ public class ItemResourceUtil implements Serializable {
 	}
 
 //	/**
-//	 * Gets a ummutable collection of all the item resources.
+//	 * Gets an immutable collection of all the item resources.
 //	 * @return collection of item resources.
 //	 */
 //	public static Set<ItemResource> getItemResources() {
@@ -357,7 +363,7 @@ public class ItemResourceUtil implements Serializable {
 	}
 
 	/**
-	 * gets a sorted map of all amount resource names by calling
+	 * Gets a sorted map of all amount resource names by calling.
 	 * {@link AmountResourceConfig#getAmountResourcesMap()}.
 	 *
 	 * @return {@link Map}<{@link Integer}, {@link String}>

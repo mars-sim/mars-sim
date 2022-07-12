@@ -227,7 +227,6 @@
 	<resource name="bisphenol-a" type="chemical" phase="solid"> The chemical used for reinforcing
 		plastic and for making polycarbonate</resource>
 
-
 <!-- Regolith and its directly derived ore deposits
      https://en.wikipedia.org/wiki/Martian_soil
      https://www.pnas.org/content/117/50/31685
@@ -291,6 +290,19 @@
 	<resource name="pulp" type="utility" phase="solid">Pulp is a mixture of cellulose fibers.</resource>
 	<resource name="toilet tissue" type="utility" phase="solid" />
 
+<!-- Utility items derived from compound -->
+	<resource name="mylar" type="utility" phase="solid"> Mylar is paper that is coated with or made
+	 from a polyester film BoPET material. BoPET (biaxially-oriented polyethylene terephthalate) is 
+	 a polyester film made from stretched polyethylene terephthalate (PET). Mylar has a high tensile 
+	 strength and is very durable yet flexible, making it perfect for packing materials, electrical 
+	 insulation, solar technology and countless other practical uses.</resource>
+	 
+	<resource name="aluminized mylar" type="utility" phase="solid"> Aluminized Mylar is a reflective, 
+	 electrical insulating material. It contains a coat of aluminum, resulting in a silver-colored radiant 
+	 barrier that reflects radiant heat and thermal radiation. It shields Space Stations against the 
+	 thermal radiation of the sun and the bitter cold of space. See 'Efficiency of aluminized mylar 
+	 insulation at cryogenic temperatures' by James B. Heaney </resource>
+		 
 <!-- Mineral concentrations.
 
     Using instruments on the Mars Reconnaissance Orbiter they found the minerals

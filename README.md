@@ -58,8 +58,11 @@ the composition of oxygen at 58.8%.
 
 However, [EVA suit](https://github.com/mars-sim/mars-sim/wiki/EVA-Suit) or rovers (inside a vehicle) 
 adopt an even lower pressurized environment of **17 kPa** (2.47 psi) for more optimal use of resources 
-and design specifications. In comparison, National Aeronautics and Space Administration (NASA)'s 
-Extravehicular Mobility Units (EMU) has the operating pressure of 4.3 psi.
+and design specifications. In comparison, Apollo Lunar Module (LM) atmosphere of 100% oxygen at 4.8 psi 
+(or 33 kPa). The National Aeronautics and Space Administration (NASA)'s Shuttle airlock has an oxygen 
+concentration of 30% at 10.2 psi (70.3 kPa). NASA's Extravehicular Mobility Units (EMU) has the 
+operating pressure of 4.3 psi. The upcoming Artemis program's lunar lander will have an atmosphere 
+of 342% oxygen at a pressure of 8.2 psi (or 56.5 kPa).
 
 See [Atmosphere](https://github.com/mars-sim/mars-sim/wiki/Atmosphere) wiki for more design details.
 
