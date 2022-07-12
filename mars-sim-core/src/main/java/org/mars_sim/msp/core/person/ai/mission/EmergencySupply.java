@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.mission;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -47,7 +46,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  * A mission for delivering emergency supplies from one settlement to another.
  * TODO externalize strings
  */
-public class EmergencySupply extends RoverMission implements Serializable {
+public class EmergencySupply extends RoverMission {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -57,9 +56,6 @@ public class EmergencySupply extends RoverMission implements Serializable {
 
 	/** Default description. */
 	private static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.emergencySupply"); //$NON-NLS-1$
-
-	/** Mission Type enum. */
-	private static final MissionType MISSION_TYPE = MissionType.EMERGENCY_SUPPLY;
 
 	// Static members
 	private static final int MAX_MEMBERS = 2;
@@ -97,7 +93,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 	 */
 	public EmergencySupply(Person startingPerson) {
 		// Use RoverMission constructor.
-		super(DEFAULT_DESCRIPTION, MISSION_TYPE, startingPerson);
+		super(DEFAULT_DESCRIPTION, MissionType.EMERGENCY_SUPPLY, startingPerson, null);
 
 		if (isDone()) {
 			return;
@@ -156,7 +152,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 	public EmergencySupply(Collection<MissionMember> members, Settlement emergencySettlement,
 			Map<Good, Integer> emergencyGoods, Rover rover, String description) {
 		// Use RoverMission constructor.
-		super(description, MISSION_TYPE, (Person) members.toArray()[0], rover);
+		super(description, MissionType.EMERGENCY_SUPPLY, (Person) members.toArray()[0], rover);
 
 		outbound = true;
 
@@ -534,7 +530,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 
 					// Check if settlement is within rover range.
 					double settlementRange = Coordinates.computeDistance(settlement.getCoordinates(), startingSettlement.getCoordinates());
-					if (settlementRange <= (rover.getRange(MISSION_TYPE) * .8D)) {
+					if (settlementRange <= (rover.getRange(MissionType.EMERGENCY_SUPPLY) * .8D)) {
 
 						// Find what emergency supplies are needed at settlement.
 						Map<Integer, Double> emergencyResourcesNeeded = getEmergencyAmountResourcesNeeded(settlement);
@@ -905,9 +901,9 @@ public class EmergencySupply extends RoverMission implements Serializable {
 
 			// Vehicle with superior range should be ranked higher.
 			if (result == 0) {
-				if (firstVehicle.getRange(MISSION_TYPE) > secondVehicle.getRange(MISSION_TYPE)) {
+				if (firstVehicle.getRange(MissionType.EMERGENCY_SUPPLY) > secondVehicle.getRange(MissionType.EMERGENCY_SUPPLY)) {
 					result = 1;
-				} else if (firstVehicle.getRange(MISSION_TYPE) < secondVehicle.getRange(MISSION_TYPE)) {
+				} else if (firstVehicle.getRange(MissionType.EMERGENCY_SUPPLY) < secondVehicle.getRange(MissionType.EMERGENCY_SUPPLY)) {
 					result = -1;
 				}
 			}

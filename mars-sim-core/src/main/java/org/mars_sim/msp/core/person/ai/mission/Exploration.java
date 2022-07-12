@@ -96,7 +96,7 @@ public class Exploration extends EVAMission
 
 		// Use RoverMission constructor.
 		super(DEFAULT_DESCRIPTION, MISSION_TYPE, startingPerson, null,
-				EXPLORE_SITE, EXPLORING_SITE_TIME);
+				EXPLORE_SITE);
 
 		Settlement s = getStartingSettlement();
 
@@ -141,7 +141,7 @@ public class Exploration extends EVAMission
 
 		// Use RoverMission constructor.
 		super(description, MISSION_TYPE,(MissionMember) members.toArray()[0], rover,
-				EXPLORE_SITE, EXPLORING_SITE_TIME);
+				EXPLORE_SITE);
 	
 
 		initSites(explorationSites);
@@ -163,6 +163,7 @@ public class Exploration extends EVAMission
 		// Initialize explored sites.
 		exploredSites = new ArrayList<>(NUM_SITES);
 		explorationSiteCompletion = new HashMap<>(NUM_SITES);
+		setEVAEquipment(EquipmentType.SPECIMEN_BOX, REQUIRED_SPECIMEN_CONTAINERS);
 
 		// Configure the sites to be explored with mineral concentration during the stage of mission planning
 		for(Coordinates c : explorationSites) {
@@ -180,7 +181,6 @@ public class Exploration extends EVAMission
 		if (!isVehicleLoadable()) {
 			endMission(MissionStatus.CANNOT_LOAD_RESOURCES);
 		}
-
 	}
 
 	/**
@@ -371,15 +371,6 @@ public class Exploration extends EVAMission
 		return EXPLORING_SITE_TIME * getNumEVASites();
 	}
 
-	@Override
-	protected Map<Integer, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer) {
-		Map<Integer, Integer> result = new HashMap<>();
-
-		// Include required number of specimen containers.
-		result.put(EquipmentType.getResourceID(EquipmentType.SPECIMEN_BOX), REQUIRED_SPECIMEN_CONTAINERS);
-		return result;
-	}
-
 	/**
 	 * Determine the locations of the exploration sites.
 	 *
@@ -397,7 +388,7 @@ public class Exploration extends EVAMission
 		// Determining the actual traveling range.
 		double limit = 0;
 		double range = roverRange;
-		double timeRange = getTripTimeRange(tripTimeLimit);
+		double timeRange = getTripTimeRange(tripTimeLimit, getAverageVehicleSpeedForOperators());
 		if (timeRange < range) {
 			range = timeRange;
 		}
@@ -468,6 +459,14 @@ public class Exploration extends EVAMission
 		return sites;
 	}
 
+	/**
+	 * Estimate the time needed at an EVA site.
+	 * @param buffer Add a buffer allowance
+	 * @return Estimated time per EVA site
+	 */
+	protected double getEstimatedTimeAtEVASite(boolean buffer) {
+		return EXPLORING_SITE_TIME;
+	}
 
 	/**
 	 * Get a list of explored location for this Settlement that needs further investigation
@@ -543,21 +542,6 @@ public class Exploration extends EVAMission
 		}
 
 		return result;
-	}
-
-	/**
-	 * Gets the range of a trip based on its time limit and exploration sites.
-	 *
-	 * @param tripTimeLimit time (millisols) limit of trip.
-	 * @return range (km) limit.
-	 */
-	private double getTripTimeRange(double tripTimeLimit) {
-		double timeAtSites = getEstimatedTimeOfAllEVAs();
-		double tripTimeTravellingLimit = tripTimeLimit - timeAtSites;
-		double averageSpeed = getAverageVehicleSpeedForOperators();
-		double millisolsInHour = MarsClock.MILLISOLS_PER_HOUR;
-		double averageSpeedMillisol = averageSpeed / millisolsInHour;
-		return tripTimeTravellingLimit * averageSpeedMillisol;
 	}
 
 	/**

@@ -240,7 +240,7 @@ public class InfoPanel extends JPanel {
 		// Check if continue action can be added.
 		if (phase.equals(CollectResourcesMission.COLLECT_RESOURCES)) {
 			CollectResourcesMission collectResourcesMission = (CollectResourcesMission) mission;
-			if (collectResourcesMission.getNumCollectionSites() > collectResourcesMission.getNumCollectionSitesVisited())
+			if (collectResourcesMission.getNumEVASites() > collectResourcesMission.getNumEVASitesVisited())
 				actions.add(ACTION_CONTINUE);
 		}
 		

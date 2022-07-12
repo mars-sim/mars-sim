@@ -40,17 +40,6 @@ public abstract class DroneMission extends VehicleMission {
 	private static final SimLogger logger = SimLogger.getLogger(DroneMission.class.getName());
 
 	/**
-	 * Constructor.
-	 *
-	 * @param name           the name of the mission.
-	 * @param startingMember the mission member starting the mission.
-	 */
-	protected DroneMission(String name, MissionType missionType, MissionMember startingMember) {
-		// Use VehicleMission constructor.
-		super(name, missionType, startingMember);
-	}
-
-	/**
 	 * Constructor with min people and drone. Initiated by MissionDataBean.
 	 *
 	 * @param missionName    the name of the mission.

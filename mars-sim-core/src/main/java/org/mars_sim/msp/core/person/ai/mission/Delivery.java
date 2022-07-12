@@ -83,7 +83,7 @@ public class Delivery extends DroneMission implements Serializable {
 	 */
 	public Delivery(MissionMember startingMember) {
 		// Use DroneMission constructor.
-		super(DEFAULT_DESCRIPTION, MissionType.DELIVERY, startingMember);
+		super(DEFAULT_DESCRIPTION, MissionType.DELIVERY, startingMember, null);
 
 		// Problem starting Mission
 		if (isDone()) {

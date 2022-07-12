@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.mission;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -32,7 +31,7 @@ import org.mars_sim.msp.core.vehicle.Rover;
  * This is an abstract Field Study mission to a remote field location for a scientific
  * study. The concrete classes determine the science that is required.
  */
-public abstract class FieldStudyMission extends RoverMission implements Serializable {
+public abstract class FieldStudyMission extends RoverMission {
 
 	private static final Set<JobType> PREFERRED_JOBS = Set.of(JobType.AREOLOGIST, JobType.ASTRONOMER, JobType.BIOLOGIST, JobType.BOTANIST, JobType.CHEMIST, JobType.METEOROLOGIST, JobType.PILOT);
 
@@ -69,7 +68,7 @@ public abstract class FieldStudyMission extends RoverMission implements Serializ
 								ScienceType science, double fieldSiteTime) {
 
 		// Use RoverMission constructor.
-		super(description, missionType, startingPerson);
+		super(description, missionType, startingPerson, null);
 
 		this.science = science;
 		this.fieldSiteTime = fieldSiteTime;

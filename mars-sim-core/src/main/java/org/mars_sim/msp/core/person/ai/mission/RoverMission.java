@@ -88,20 +88,6 @@ public abstract class RoverMission extends VehicleMission {
 	private static final double EXTRA_EVA_SUIT_FACTOR = .2;
 
 	/**
-	 * Constructor 1.
-	 *
-	 * @param name           the name of the mission.
-	 * @param startingMember the mission member starting the mission.
-	 */
-	protected RoverMission(String name, MissionType missionType, MissionMember startingMember) {
-		// Use VehicleMission constructor.
-		super(name, missionType, startingMember);
-		if (!isDone()) {
-			calculateMissionCapacity(getRover().getCrewCapacity());
-		}
-	}
-
-	/**
 	 * Constructor with min people and rover. Initiated by MissionDataBean.
 	 *
 	 * @param missionName    the name of the mission.

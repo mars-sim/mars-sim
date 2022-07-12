@@ -7,7 +7,6 @@
 
 package org.mars_sim.msp.core.person.ai.mission;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -51,7 +50,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  * the vehicle back if the crew is disable or dead and (4) salvaging the vehicle
  * if it's beyond repair.
  */
-public class RescueSalvageVehicle extends RoverMission implements Serializable {
+public class RescueSalvageVehicle extends RoverMission {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -62,9 +61,6 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 	/** Default description. */
 	private static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.rescueSalvageVehicle"); //$NON-NLS-1$
 
-	/** Mission Type enum. */
-	public static final MissionType MISSION_TYPE = MissionType.RESCUE_SALVAGE_VEHICLE;
-	
 	// Static members
 	public static final int MIN_STAYING_MEMBERS = 1;
 	private static final int MIN_GOING_MEMBERS = 2;
@@ -88,11 +84,11 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 	 */
 	public RescueSalvageVehicle(Person startingPerson) {
 		// Use RoverMission constructor
-		super(DEFAULT_DESCRIPTION, MISSION_TYPE, startingPerson);
+		super(DEFAULT_DESCRIPTION, MissionType.RESCUE_SALVAGE_VEHICLE, startingPerson, null);
 
 		if (!isDone()) {			
 			if (vehicleTarget == null)
-				vehicleTarget = findBeaconVehicle(getStartingSettlement(), getVehicle().getRange(MISSION_TYPE));
+				vehicleTarget = findBeaconVehicle(getStartingSettlement(), getVehicle().getRange(MissionType.RESCUE_SALVAGE_VEHICLE));
 
 			if (vehicleTarget != null) {
 //					if (getRescuePeopleNum(vehicleTarget) > 0) {
@@ -140,7 +136,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 			Rover rover, String description) {
 
 		// Use RoverMission constructor.
-		super(description, MISSION_TYPE, (MissionMember) members.toArray()[0], rover);
+		super(description, MissionType.RESCUE_SALVAGE_VEHICLE, (MissionMember) members.toArray()[0], rover);
 
 		this.vehicleTarget = vehicleTarget;
 
@@ -664,7 +660,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 						while (iV.hasNext() && result) {
 							Vehicle vehicle = iV.next();
 							if (vehicle instanceof Rover) {
-								if (vehicle.getRange(MISSION_TYPE) >= (settlementDistance * 2D)) {
+								if (vehicle.getRange(MissionType.RESCUE_SALVAGE_VEHICLE) >= (settlementDistance * 2D)) {
 									result = false;
 								}
 							}

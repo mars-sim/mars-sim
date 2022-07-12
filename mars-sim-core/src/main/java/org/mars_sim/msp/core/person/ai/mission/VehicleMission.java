@@ -145,22 +145,6 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	private List<NavPoint> navPoints = new ArrayList<>();
 		
 	/**
-	 * Constructor 1. Started by RoverMission or DroneMission constructor 1.
-	 *
-	 * @param missionName
-	 * @param startingMember
-	 * @param minPeople
-	 * @deprecated use {@link #VehicleMission(String, MissionType, MissionMember, Vehicle)}
-	 */
-	protected VehicleMission(String missionName, MissionType missionType, MissionMember startingMember) {
-		super(missionName, missionType, startingMember);
-
-		init(startingMember);
-
-		reserveVehicle();
-	}
-
-	/**
 	 * Create a Vehicle mission
 	 *
 	 * @param missionName
@@ -1052,19 +1036,6 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 			// Must use the same logic in all cases otherwise too few fuel will be loaded
 			amount = getFuelNeededForTrip(vehicle, distance, 
 							vehicle.getEstimatedFuelEconomy(), useMargin);
-			// if (getPhase() == null || getPhase().equals(VehicleMission.EMBARKING) 
-			// 		|| getPhase().equals(VehicleMission.REVIEWING)
-			// 		|| useMargin) {
-			// 	amount = getFuelNeededForTrip(vehicle, distance, 
-			// 				vehicle.getEstimatedFuelEconomy(), true);
-			// 	// Use margin only when estimating how much fuel needed before starting the mission
-			// }
-			// else {
-			// 	// If the Vehicle is already on the road then the margin should be false
-			// 	// Take an average of the initial fuel economy and  the
-			// 	amount = getFuelNeededForTrip(vehicle, distance, 
-			// 				(vehicle.getEstimatedFuelEconomy() + vehicle.getInitialFuelEconomy()) / 2, useMargin);
-			// }
 
 			result.put(vehicle.getFuelType(), amount);
 

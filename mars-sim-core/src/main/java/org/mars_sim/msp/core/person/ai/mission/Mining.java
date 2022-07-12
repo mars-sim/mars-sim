@@ -94,7 +94,7 @@ public class Mining extends RoverMission
 	public Mining(Person startingPerson) {
 
 		// Use RoverMission constructor.
-		super(DEFAULT_DESCRIPTION, MissionType.MINING, startingPerson);
+		super(DEFAULT_DESCRIPTION, MissionType.MINING, startingPerson, null);
 		
 		if (!isDone()) {
 			// Initialize data members.

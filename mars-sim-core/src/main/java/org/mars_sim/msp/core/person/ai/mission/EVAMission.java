@@ -5,10 +5,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Rover;
 
 public abstract class EVAMission extends RoverMission {
@@ -19,15 +21,16 @@ public abstract class EVAMission extends RoverMission {
     private MissionPhase evaPhase;
     private boolean activeEVA = true;
 
-    private double evaSiteTime;
+	private int containerID;
+
+	private int containerNum;
 
     protected EVAMission(String description, MissionType missionType, 
             MissionMember startingPerson, Rover rover,
-            MissionPhase evaPhase, double evaSiteTime) {
+            MissionPhase evaPhase) {
         super(description, missionType, startingPerson, rover);
         
         this.evaPhase = evaPhase;
-        this.evaSiteTime = evaSiteTime;
     }
 
     
@@ -108,7 +111,7 @@ public abstract class EVAMission extends RoverMission {
 		if (activeEVA) {
 			// Check if crew has been at site for more than one sol.
 			double timeDiff = getPhaseDuration();
-			activeEVA = (timeDiff < evaSiteTime);
+			activeEVA = (timeDiff < getEstimatedTimeAtEVASite(false));
 
 			// If no one can explore the site and this is not due to it just being
 			// night time, end the exploring phase.
@@ -160,7 +163,7 @@ public abstract class EVAMission extends RoverMission {
 		Map<Integer, Number> result = super.getSparePartsForTrip(distance);
 
 		// Determine repair parts for EVA Suits.
-		double evaTime = getEstimatedRemainingEVATime();
+		double evaTime = getEstimatedRemainingEVATime(true);
 		double numberAccidents = evaTime * getPeopleNumber() * EVAOperation.BASE_ACCIDENT_CHANCE;
 
 		// Assume the average number malfunctions per accident is 1.5.
@@ -178,7 +181,7 @@ public abstract class EVAMission extends RoverMission {
     @Override
 	protected double getEstimatedRemainingMissionTime(boolean useBuffer) {
 		double result = super.getEstimatedRemainingMissionTime(useBuffer);
-		result += getEstimatedRemainingEVATime();
+		result += getEstimatedRemainingEVATime(useBuffer);
 		return result;
 	}
 
@@ -211,8 +214,9 @@ public abstract class EVAMission extends RoverMission {
 	 * @return time (millisols)
 	 * @throws MissionException if error estimating time.
 	 */
-	private double getEstimatedRemainingEVATime() {
+	private double getEstimatedRemainingEVATime(boolean buffer) {
 		double result = 0D;
+		double evaSiteTime = getEstimatedTimeAtEVASite(buffer);
 
 		// Add estimated remaining exploration time at current site if still there.
 		if (evaPhase.equals(getPhase())) {
@@ -228,11 +232,39 @@ public abstract class EVAMission extends RoverMission {
 		return result;
 	}
 
+	/**
+	 * Define equipment needed for the EVAs
+	 * @param eqmType Equipment needed
+	 * @param eqmNum Number of equipment
+	 */
+	protected void setEVAEquipment(EquipmentType eqmType, int eqmNum) {
+		this.containerID = EquipmentType.getResourceID(eqmType);
+		this.containerNum = eqmNum;
+	}
+
+	@Override
+	protected Map<Integer, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer) {
+		Map<Integer, Integer> result = super.getEquipmentNeededForRemainingMission(useBuffer);
+
+		// Include required number of containers.
+		if (containerID > 0) {
+			result.put(containerID, containerNum);
+		}
+		return result;
+	}
+
+	/**
+	 * Estimate the time needed at an EVA site.
+	 * @param buffer Add a buffer allowance
+	 * @return Estimated time per EVA site
+	 */
+	protected abstract double getEstimatedTimeAtEVASite(boolean buffer);
+
 	@Override
 	protected Map<Integer, Number> getResourcesNeededForRemainingMission(boolean useBuffer) {
 		Map<Integer, Number> result = super.getResourcesNeededForRemainingMission(useBuffer);
 
-		double explorationSitesTime = getEstimatedRemainingEVATime();
+		double explorationSitesTime = getEstimatedRemainingEVATime(useBuffer);
 		double timeSols = explorationSitesTime / 1000D;
 
 		int crewNum = getPeopleNumber();
