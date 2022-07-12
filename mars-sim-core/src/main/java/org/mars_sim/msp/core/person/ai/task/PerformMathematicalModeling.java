@@ -406,7 +406,7 @@ implements ResearchScientificStudy, Serializable {
         	}
         	if (successful) {
         		logger.info(person, 10_000L, "Utilized " 
-        				+ Math.round(randWork * 100_000.0)/100_000.0 
+        				+ Math.round(randWork * 1_000.0)/1_000.0 
         				+ " CUs for modeling " + study + ".");
         		computingNeeded = computingNeeded - randWork;
         		 if (computingNeeded < 0) {

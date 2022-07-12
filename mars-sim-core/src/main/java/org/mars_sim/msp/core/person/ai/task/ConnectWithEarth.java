@@ -162,7 +162,7 @@ public class ConnectWithEarth extends Task implements Serializable {
         		successful = center.scheduleTask(randWork/5.0, msol + 1, msol + 6);
         	if (successful) {
         		logger.info(person, 10_000L, "Utilized " 
-        				+ Math.round(randWork * 100_000.0)/100_000.0 
+        				+ Math.round(randWork * 1_000.0)/1_000.0 
         				+ " CUs for connecting with Earth.");
         		computingNeeded = computingNeeded - randWork;
         		 if (computingNeeded < 0) {
