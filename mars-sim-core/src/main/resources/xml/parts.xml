@@ -340,7 +340,7 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="vehicle battery" type="vehicle" mass="225.0">
+	<part name="chemical battery" type="vehicle" mass="225.0">
 		<description>Assuming the achievement of 15 kg/kWh 
 		for a full battery with supportive structures, 
 		this 15kWh rechargeable battery provides 'auxiliary' 

@@ -238,7 +238,7 @@ implements Serializable {
         			successful = center.scheduleTask(randWork/5.0, msol + 1, msol + 6);
         	}
         	if (successful) {
-        		logger.info(person, 10_000L, "Utilized " 
+        		logger.info(person, 30_000L, "Utilized " 
         				+ Math.round(randWork * 1_000.0)/1_000.0 
         				+ " CUs for compiling " + study + ".");
         		computingNeeded = computingNeeded - randWork;
@@ -253,7 +253,7 @@ implements Serializable {
         }
         
         if (!successful) {
-        	logger.warning(person, 10_000L, "No computing resources available for compiling a scientific study this time.");
+        	logger.warning(person, 30_000L, "No computing resources available for compiling a scientific study this time.");
         }   
         	
         // Check if data results compilation in study is completed.

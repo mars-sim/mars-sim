@@ -164,10 +164,10 @@ public class PlayHoloGame extends Task implements Serializable {
         			successful = center.scheduleTask(randWork/5.0, msol + 1, msol + 6);
         	}
 	    	else
-	    		logger.info(person, 10_000L, "No computing centers available for setting up the holo game.");
+	    		logger.info(person, 30_000L, "No computing centers available for setting up the holo game.");
         	
         	if (successful) {
-        		logger.info(person, 10_000L, "Utilized " 
+        		logger.info(person, 30_000L, "Utilized " 
         				+ Math.round(randWork * 1_000.0)/1_000.0 
         				+ " CUs for playing holo game.");
         		computingNeeded = computingNeeded - randWork;
@@ -176,7 +176,7 @@ public class PlayHoloGame extends Task implements Serializable {
         		 }
           	}
 	    	else {
-	    		logger.info(person, 10_000L, "No computing resources available for scheduling a holo game setup.");
+	    		logger.info(person, 30_000L, "No computing resources available for scheduling a holo game setup.");
 	    	}
         }
         else if (computingNeeded <= 0) {
@@ -236,13 +236,13 @@ public class PlayHoloGame extends Task implements Serializable {
 	    		successful = center.scheduleTask(randWork, msol + 1, msol + 2);
 	    	}
 	    	if (successful) {
-	    		logger.info(person, 10_000L, "Utilized " 
+	    		logger.info(person, 30_000L, "Utilized " 
 	    				+ Math.round(randWork * 1_000.0)/1_000.0 
 	    				+ " CUs for setting up a holo game.");
 	    		computingNeeded = computingNeeded - randWork;
 	    	}
 	    	else {
-	    		logger.info(person, 10_000L, "No computing resources for setting up the holo game.");
+	    		logger.info(person, 30_000L, "No computing resources for setting up the holo game.");
 	    	}
 		}
 		

@@ -58,8 +58,8 @@ public class ItemResourceUtil implements Serializable {
 	public static final String STEEL_SHEET = "steel sheet";
 
 	public static final String ROVER_WHEEL = "rover wheel";
-	public static final String VEHICLE_BATTERY = "vehicle battery";
-
+	public static final String CHEMICAL_BATTERY = "chemical battery";
+		
 	private static final String LASER = "laser";
 	private static final String STEPPER_MOTOR = "stepper motor";
 	private static final String OVEN = "oven";
@@ -84,8 +84,8 @@ public class ItemResourceUtil implements Serializable {
 	public static Part mushroomBox;
 	public static Part smallHammer;
 
-	public static Part roverWheel;
-	public static Part roverBattery;
+	public static Part wheel;
+	public static Part battery;
 	
 	public static int garmentID;
 	public static int pressureSuitID;
@@ -118,6 +118,15 @@ public class ItemResourceUtil implements Serializable {
 
 	private static PartConfig partConfig = SimulationConfig.instance().getPartConfiguration();
 
+	private static final String[] EVASUIT_PARTS = new String[] {
+			"eva helmet",			"helmet visor",
+			PRESSURE_SUIT,			"coveralls",
+			"suit heating unit",	"eva gloves",
+			"eva boots",			"eva pads",
+			"eva backpack",			"eva antenna",
+			"eva battery",			"eva radio",
+	};
+	
 	// Light utility vehicle attachment parts for mining or construction.
 	private static final String[] ATTACHMENTS = new String[] {
 			BACKHOE,
@@ -132,48 +141,23 @@ public class ItemResourceUtil implements Serializable {
 	 * Parts that are not needed to be fetched as repair parts for vehicle missions.
 	 */
 	public static final String[] UNNEEDED_PARTS = { 
-									LASER,
-									STEPPER_MOTOR,
-									OVEN,
-									BLENDER,
-									AUTOCLAVE,
-									REFRIGERATOR,
-									STOVE,
-									MICROWAVE,
-									POLY_ROOFING,
-									LENS,
-									FIBERGLASS,
-									SHEET,
-									PRISM };
+			LASER,					STEPPER_MOTOR,
+			OVEN,					BLENDER,
+			AUTOCLAVE,				REFRIGERATOR,
+			STOVE,					MICROWAVE,
+			POLY_ROOFING,			LENS,
+			FIBERGLASS,				SHEET,
+			PRISM 
+	};
 	
 	public static final List<Integer> ATTACHMENTS_ID = new ArrayList<>();
-
-	private static final String[] EVASUIT_PARTS = new String[] {
-			"eva helmet",
-			"helmet visor",
-			PRESSURE_SUIT,
-			"coveralls",
-			"suit heating unit",
-
-			"eva gloves",
-			"eva boots",
-			"eva pads",
-			"eva backpack",
-			"eva antenna",
-
-			"eva battery",
-			"eva radio",
-	};
 
 	public static final List<Integer> EVASUIT_PARTS_ID = new ArrayList<>();
 
 	private static final String[] KITCHEN_WARE = new String[] {
-			"autoclave",
-			"blender",
-			"microwave",
-			"oven",
-			"refrigerator",
-			"stove" };
+			AUTOCLAVE,			BLENDER,
+			MICROWAVE,			OVEN,
+			REFRIGERATOR,		STOVE};
 
 	public static final List<Integer> KITCHEN_WARE_ID = new ArrayList<>();
 
@@ -217,11 +201,11 @@ public class ItemResourceUtil implements Serializable {
 		mushroomBox = (Part) findItemResource(CONTAINMENT_KIT);
 		smallHammer = (Part) findItemResource(SMALL_HAMMER);
 
-		roverWheel = (Part) findItemResource(ROVER_WHEEL);
-		roverBattery = (Part) findItemResource(VEHICLE_BATTERY);
+		wheel = (Part) findItemResource(ROVER_WHEEL);
+		battery = (Part) findItemResource(CHEMICAL_BATTERY);
 		
-		PETRI_DISH_ID = findIDbyItemResourceName("petri dish");
-		garmentID = findIDbyItemResourceName("garment");
+		PETRI_DISH_ID = findIDbyItemResourceName(PETRI_DISH);
+		garmentID = findIDbyItemResourceName(GARMENT);
 		pressureSuitID = findIDbyItemResourceName(PRESSURE_SUIT);
 
 		pneumaticDrillID = findIDbyItemResourceName(PNEUMATIC_DRILL);

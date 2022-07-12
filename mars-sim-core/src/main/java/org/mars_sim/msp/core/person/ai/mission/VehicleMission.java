@@ -1104,8 +1104,8 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 		// Manually override the number of wheels and battery needed for each mission
 		// since the automated process is not reliable
 		if (VehicleType.isRover(vehicle.getVehicleType())) {
-			Integer wheel = ItemResourceUtil.roverWheel.getID();
-			Integer battery = ItemResourceUtil.roverBattery.getID();
+			Integer wheel = ItemResourceUtil.wheel.getID();
+			Integer battery = ItemResourceUtil.battery.getID();
 			
 			if (vehicle.getVehicleType() == VehicleType.EXPLORER_ROVER) 
 				result.computeIfAbsent(wheel, k -> 2);

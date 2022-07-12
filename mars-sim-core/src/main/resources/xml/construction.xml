@@ -460,7 +460,7 @@
 
 		<building name="methane power generator" width="5.0" length="5.0" base-level="0" constructable="true"
 		 salvagable="true" work-time="1.0" skill-required="3" frame="small steel frame" >
-			<part name="fuel cell stack" number="12" />
+			<part name="methane fuel cell stack" number="4" />
 			<part name="valve" number="6" />
 			<part name="gasket" number="6" />
 			<part name="plastic tubing" number="6" />
@@ -569,7 +569,7 @@
 
 		<building name="medium battery array" width="5.0" length="10.0" base-level="0" constructable="true"
 		 salvagable="true" work-time="1.0" skill-required="2" frame="array frame" >
-			<part name="rover battery" number="10" />
+			<part name="chemical battery" number="20" />
 			<part name="fiberglass cloth" number="10" />
 			<part name="power cable" number="2" />
 			<part name="electrical wire" number="20" />

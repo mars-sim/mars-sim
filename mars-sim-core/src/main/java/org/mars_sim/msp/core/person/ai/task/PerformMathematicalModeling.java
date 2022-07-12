@@ -405,7 +405,7 @@ implements ResearchScientificStudy, Serializable {
         			successful = center.scheduleTask(randWork/5.0, msol + 1, msol + 6);
         	}
         	if (successful) {
-        		logger.info(person, 10_000L, "Utilized " 
+        		logger.info(person, 30_000L, "Utilized " 
         				+ Math.round(randWork * 1_000.0)/1_000.0 
         				+ " CUs for modeling " + study + ".");
         		computingNeeded = computingNeeded - randWork;
@@ -420,7 +420,7 @@ implements ResearchScientificStudy, Serializable {
         }
         
         if (!successful) {
-        	logger.warning(person, 10_000L, "No computing resources available for doing mathematical modeling at this point.");
+        	logger.warning(person, 30_000L, "No computing resources available for doing mathematical modeling at this point.");
         }   
         
         // Add modeling work time to study.
