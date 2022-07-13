@@ -189,12 +189,12 @@ public class MissionWindow extends ToolWindow {
 						if (mission != null) mission.abortMission();
 					}
 				});
-//		missionList.addListSelectionListener(
-//				new ListSelectionListener() {
-//					public void valueChanged(ListSelectionEvent e) {
-//						abortButton.setEnabled(missionList.getSelectedValue() != null);
-//					}
-//				});
+		missionList.addListSelectionListener(
+				new ListSelectionListener() {
+					public void valueChanged(ListSelectionEvent e) {
+						abortButton.setEnabled(missionList.getSelectedValue() != null);
+					}
+				});
 
 		buttonPane.add(abortButton);
 

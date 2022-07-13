@@ -40,7 +40,6 @@ import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.social.RelationshipUtil;
-import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.RobotJob;
@@ -735,24 +734,6 @@ public abstract class Mission implements Serializable, Temporal {
 	 */
 	public void abortMission() {
 		// Normal mission can not be aborted
-	}
-
-	/**
-	 * End all EVA Operations
-	 */
-	protected void endAllEVA() {
-		// End each member's EVA task.
-		Iterator<MissionMember> i = getMembers().iterator();
-		while (i.hasNext()) {
-			MissionMember member = i.next();
-			if (member instanceof Person) {
-				Person person = (Person) member;
-				Task task = person.getMind().getTaskManager().getTask();
-				if (task instanceof EVAOperation) {
-					((EVAOperation) task).endEVA();
-				}
-			}
-		}
 	}
 
 	/**

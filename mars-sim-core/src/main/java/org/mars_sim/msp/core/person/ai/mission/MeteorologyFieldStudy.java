@@ -6,9 +6,7 @@
  */
 package org.mars_sim.msp.core.person.ai.mission;
 
-import java.io.Serializable;
 import java.util.Collection;
-import java.util.Map;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
@@ -24,7 +22,7 @@ import org.mars_sim.msp.core.vehicle.Rover;
  * A mission to do meteorology research at a remote field location for a scientific
  * study.
  */
-public class MeteorologyFieldStudy extends FieldStudyMission implements Serializable {
+public class MeteorologyFieldStudy extends FieldStudyMission {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -47,6 +45,9 @@ public class MeteorologyFieldStudy extends FieldStudyMission implements Serializ
 	public MeteorologyFieldStudy(Person startingPerson) {
 		super(DEFAULT_DESCRIPTION, MissionType.METEOROLOGY, startingPerson,
 			  ScienceType.METEOROLOGY, FIELD_SITE_TIME);
+		
+		setEVAEquipment(EquipmentType.SPECIMEN_BOX,
+			  getMembersNumber() * SPECIMEN_BOX_MEMBER);
 	}
 
 	/**
@@ -64,23 +65,13 @@ public class MeteorologyFieldStudy extends FieldStudyMission implements Serializ
 
 		super(description, MissionType.METEOROLOGY, leadResearcher, rover,
 				  study, FIELD_SITE_TIME, members, fieldSite);
+
+		setEVAEquipment(EquipmentType.SPECIMEN_BOX,
+						getMembersNumber() * SPECIMEN_BOX_MEMBER);
 	}
 	
 	@Override
 	protected Task createFieldStudyTask(Person person, Person leadResearcher, ScientificStudy study, Rover vehicle) {
 		return new MeteorologyStudyFieldWork(person, leadResearcher, study, vehicle);
-	}
-
-	/**
-	 * Need some Specimen boxes
-	 */
-	@Override
-	public Map<Integer, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer) {
-		Map<Integer, Integer> required = super.getEquipmentNeededForRemainingMission(useBuffer);
-		
-		required.put(EquipmentType.getResourceID(EquipmentType.SPECIMEN_BOX),
-												 getMembersNumber() * SPECIMEN_BOX_MEMBER);
-		
-		return required;
 	}
 }

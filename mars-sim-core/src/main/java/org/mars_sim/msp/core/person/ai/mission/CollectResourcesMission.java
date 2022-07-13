@@ -6,11 +6,9 @@
  */
 package org.mars_sim.msp.core.person.ai.mission;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -36,8 +34,8 @@ import org.mars_sim.msp.core.vehicle.Rover;
  * several random locations around a settlement and collect resources of a given
  * type.
  */
-public abstract class CollectResourcesMission extends RoverMission
-	implements Serializable, SiteMission {
+public abstract class CollectResourcesMission extends EVAMission
+	implements  SiteMission {
 
 
 	/** default serial id. */
@@ -66,10 +64,6 @@ public abstract class CollectResourcesMission extends RoverMission
 	private static final int MAX_PEOPLE = 6;
 
 	// Data members
-	/** External flag for ending collection at the current site. */
-	private boolean endCollectingSite;
-	/** The number of containers needed for the mission. */
-	private int containerNum;
 	/** The type of resource to collect. */
 	protected int resourceID;
 	/** The total site score of this prospective resource collection mission. */
@@ -109,7 +103,7 @@ public abstract class CollectResourcesMission extends RoverMission
 			double resourceCollectionRate, EquipmentType containerID, int containerNum, int numSites) {
 
 		// Use RoverMission constructor
-		super(missionName, missionType, startingPerson);
+		super(missionName, missionType, startingPerson, null, COLLECT_RESOURCES);
 
 		// Problem starting mission
 		if (isDone()) {
@@ -126,9 +120,9 @@ public abstract class CollectResourcesMission extends RoverMission
 		if (s != null) {
 			setResourceID(resourceID);
 			this.resourceCollectionRate = resourceCollectionRate;
-			this.containerID = containerID;
-			this.containerNum = containerNum;
 			this.collected = new HashMap<>();
+
+			setEVAEquipment(containerID, containerNum);
 
 			// Recruit additional members to mission.
 			if (!recruitMembersForMission(startingPerson, MIN_PEOPLE))
@@ -175,7 +169,7 @@ public abstract class CollectResourcesMission extends RoverMission
 				}
 
 				// Reorder sites for shortest distance and load
-				List<Coordinates> orderSites = Exploration.getMinimalPath(startingLocation, unorderedSites);
+				List<Coordinates> orderSites = getMinimalPath(startingLocation, unorderedSites);
 				addNavpoints(orderSites, (i -> PROPSPECTING_SITE + (i+1)));
 
 				double containerCap = ContainerUtil.getContainerCapacity(containerID);
@@ -200,7 +194,6 @@ public abstract class CollectResourcesMission extends RoverMission
 		}
 	}
 
-
 	/**
 	 * Constructor with explicit data
 	 *
@@ -222,15 +215,15 @@ public abstract class CollectResourcesMission extends RoverMission
 			int containerNum, Rover rover, List<Coordinates> collectionSites) {
 
 		// Use RoverMission constructor
-		super(missionName, missionType, (MissionMember) members.toArray()[0], rover);
+		super(missionName, missionType, (MissionMember) members.toArray()[0], rover, COLLECT_RESOURCES);
 
 		this.resourceID = resourceID;
 
 		double containerCap = ContainerUtil.getContainerCapacity(containerID);
 		this.siteResourceGoal = 2 * containerCap * containerNum / collectionSites.size();
 		this.resourceCollectionRate = resourceCollectionRate;
-		this.containerID = containerID;
-		this.containerNum = containerNum;
+
+		setEVAEquipment(containerID, containerNum);
 
 		// Set collection navpoints.
 		addNavpoints(collectionSites, (i -> PROPSPECTING_SITE + (i+1)));
@@ -273,67 +266,6 @@ public abstract class CollectResourcesMission extends RoverMission
 		return collected;
 	}
 
-	/**
-	 * Determines a new phase for the mission when the current phase has ended.
-	 *
-	 * @throws MissionException if problem setting a new phase.
-	 */
-	@Override
-	protected boolean determineNewPhase() {
-		boolean handled = true;
-		if (!super.determineNewPhase()) {
-			if (TRAVELLING.equals(getPhase())) {
-
-				if (getCurrentNavpoint() == null)
-					// go back home
-					returnHome();
-				else if (isCurrentNavpointSettlement()) {
-					startDisembarkingPhase();
-				}
-
-				else if (canStartEVA()) {
-					setPhase(COLLECT_RESOURCES,
-							getCurrentNavpointDescription());
-				}
-			}
-			else if (WAIT_SUNLIGHT.equals(getPhase())) {
-				setPhase(COLLECT_RESOURCES,
-						getCurrentNavpointDescription());
-			}
-			else if (COLLECT_RESOURCES.equals(getPhase())) {
-				// Update the resource collected
-				updateResources(getVehicle());
-				startTravellingPhase();
-			}
-			else {
-				handled  = false;
-			}
-		}
-		return handled;
-	}
-
-	@Override
-	protected void performPhase(MissionMember member) {
-		super.performPhase(member);
-		if (COLLECT_RESOURCES.equals(getPhase())) {
-			collectingPhase(member);
-		}
-	}
-
-	/**
-	 * If collecting phase then stop all EVA
-	 */
-	@Override
-	public void abortPhase() {
-		if (COLLECT_RESOURCES.equals(getPhase())) {
-
-			endCollectingSite = true;
-
-			endAllEVA();
-		}
-		else 
-			super.abortPhase();
-	}
 
 	/**
 	 * Updates the resources collected
@@ -373,112 +305,62 @@ public abstract class CollectResourcesMission extends RoverMission
 	 */
 	public abstract int [] getCollectibleResources();
 
-	/**
-	 * Performs the collecting phase of the mission.
-	 *
-	 * @param member the mission member currently performing the mission
-	 */
-	private void collectingPhase(MissionMember member) {
+	@Override
+	protected boolean performEVA(Person person) {
 
 		Rover rover = getRover();
 		double roverRemainingCap = rover.getCargoCapacity() - rover.getStoredMass();
 
-		double weight = ((Person)member).getMass();
-
+		double weight = person.getMass();
 		if (roverRemainingCap < weight + 5) {
-			endCollectingSite = false;
-			setPhaseEnded(true);
-		}
-
-		double resourcesCapacity = updateResources(rover);
-
-		// Check if end collecting flag is set.
-		if (endCollectingSite) {
-			endCollectingSite = false;
-			setPhaseEnded(true);
+			return false;
 		}
 
 		// If collected resources are sufficient for this site, end the collecting
 		// phase.
 		if (siteCollectedResources >= siteResourceGoal) {
-			setPhaseEnded(true);
+			return false;
 		}
 
-		if (isEveryoneInRover()) {
+			// // Determine if no one can start the collect resources task.
+			// boolean nobodyCollect = true;
+			// Iterator<MissionMember> j = getMembers().iterator();
+			// while (j.hasNext() && nobodyCollect) {
+			// 	MissionMember m = j.next();
+			// 	for (Integer type : getCollectibleResources()) {
+			// 		if (CollectResources.canCollectResources(m, getRover(), containerID, type)) {
+			// 			nobodyCollect = false;
+			// 		}
+			// 	}
+			// }
 
-			// Determine if no one can start the collect resources task.
-			boolean nobodyCollect = true;
-			Iterator<MissionMember> j = getMembers().iterator();
-			while (j.hasNext() && nobodyCollect) {
-				MissionMember m = j.next();
-				for (Integer type : getCollectibleResources()) {
-					if (CollectResources.canCollectResources(m, getRover(), containerID, type)) {
-						nobodyCollect = false;
-					}
-				}
-			}
+		// Do the EVA task
+		double rate = calculateRate(person);
 
-			if (nobodyCollect || !isEnoughSunlightForEVA()) {
-				logger.info(member, "Too dark for " + getPhaseDescription() + " of " + getTypeID()
-									+ ", moving to next site");
-				setPhaseEnded(true);
-			}
+		// Randomize the rate of collection upon arrival
+		rate = rate
+				* (1 + RandomUtil.getRandomDouble(-.2, .2));
 
-			// Anyone in the crew or a single person at the home settlement has a dangerous
-			// illness, end phase.
-			if (hasEmergency()) {
-				setPhaseEnded(true);
-			}
+		// Note: Add how areologists and some scientific study may come up with better technique
+		// to obtain better estimation of the collection rate. Go to a prospective site, rather
+		// than going to a site coordinate in the blind.
 
-			// Check if enough resources for remaining trip. false = not using margin.
-			if (!hasEnoughResourcesForRemainingMission(false)) {
-				// If not, determine an emergency destination.
-				determineEmergencyDestination(member);
-				setPhaseEnded(true);
-			}
+		if (rate > 20)
+			resourceCollectionRate = rate;
+
+		// If person can collect resources, start him/her on that task.
+		if (CollectResources.canCollectResources(person, getRover(), containerID, resourceID)) {
+			EVAOperation collectResources = new CollectResources("Collecting Resources", person,
+					getRover(), resourceID, resourceCollectionRate,
+					siteResourceGoal - siteCollectedResources, rover.getAmountResourceStored(resourceID),
+					containerID);
+			assignTask(person, collectResources);
 		}
-
-		if (!getPhaseEnded()
-				&& (siteCollectedResources < siteResourceGoal)
-				&& !endCollectingSite
-				&& member instanceof Person) {
-
-			Person person = (Person) member;
-
-			double rate = calculateRate(person);
-
-			// Randomize the rate of collection upon arrival
-			rate = rate
-					* (1 + RandomUtil.getRandomDouble(-.2, .2));
-
-			// Note: Add how areologists and some scientific study may come up with better technique
-			// to obtain better estimation of the collection rate. Go to a prospective site, rather
-			// than going to a site coordinate in the blind.
-
-			if (rate > 20)
-				resourceCollectionRate = rate;
-
-			// If person can collect resources, start him/her on that task.
-			if (CollectResources.canCollectResources(person, getRover(), containerID, resourceID)) {
-				EVAOperation collectResources = new CollectResources("Collecting Resources", person,
-						getRover(), resourceID, resourceCollectionRate,
-						siteResourceGoal - siteCollectedResources, rover.getAmountResourceStored(resourceID),
-						containerID);
-				assignTask(person, collectResources);
-			}
-		}
-
-		else {
-			// If the rover is full of resources, head home.
-			if (siteCollectedResources >= resourcesCapacity) {
-				setNextNavpointIndex(getNumberOfNavpoints() - 2);
-				updateTravelDestination();
-				siteCollectedResources = 0D;
-			}
-		}
-
+	
 		// This will update the siteCollectedResources and totalResourceCollected after the last on-site collection activity
 		updateResources(rover);
+
+		return true;
 	}
 
 	/**
@@ -582,146 +464,17 @@ public abstract class CollectResourcesMission extends RoverMission
 	protected abstract double scoreLocation(Coordinates newLocation);
 
 	/**
-	 * Gets the range of a trip based on its time limit and collection sites.
-	 *
-	 * @param tripTimeLimit time (millisols) limit of trip.
-	 * @param numSites      the number of collection sites.
-	 * @param useBuffer     Use time buffer in estimations if true.
-	 * @return range (km) limit.
-	 */
-	protected double getTripTimeRange(double tripTimeLimit, int numSites, boolean useBuffer) {
-		double timeAtSites = getEstimatedTimeAtCollectionSite(useBuffer) * numSites;
-		double tripTimeTravellingLimit = tripTimeLimit - timeAtSites;
-		double averageSpeed = getAverageVehicleSpeedForOperators();
-		double averageSpeedMillisol = averageSpeed / MarsClock.MILLISOLS_PER_HOUR;
-		return tripTimeTravellingLimit * averageSpeedMillisol;
-	}
-
-	/**
-	 * Gets the settlement associated with the mission.
-	 *
-	 * @return settlement or null if none.
-	 */
-	@Override
-	public Settlement getAssociatedSettlement() {
-		return getStartingSettlement();
-	}
-
-	/**
-	 * Gets the estimated time remaining for the mission.
-	 *
-	 * @param useBuffer use time buffer in estimations if true.
-	 * @return time (millisols)
-	 * @throws MissionException
-	 */
-	@Override
-	protected double getEstimatedRemainingMissionTime(boolean useBuffer) {
-		double result = super.getEstimatedRemainingMissionTime(useBuffer);
-
-		result += getEstimatedRemainingCollectionSiteTime(useBuffer);
-
-		return result;
-	}
-
-	/**
-	 * Gets the estimated time remaining for collection sites in the mission.
-	 *
-	 * @param useBuffer use time buffer in estimations if true.
-	 * @return time (millisols)
-	 * @throws MissionException if error estimating time.
-	 */
-	private double getEstimatedRemainingCollectionSiteTime(boolean useBuffer) {
-		double result = 0D;
-
-		// Add estimated remaining collection time at current site if still there.
-		if (COLLECT_RESOURCES.equals(getPhase())) {
-			double remainingTime = getEstimatedTimeAtCollectionSite(useBuffer) - getPhaseDuration();
-			if (remainingTime > 0D)
-				result += remainingTime;
-		}
-
-		// Add estimated collection time at sites that haven't been visited yet.
-		int remainingCollectionSites = getNumCollectionSites() - getNumCollectionSitesVisited();
-		result += getEstimatedTimeAtCollectionSite(useBuffer) * remainingCollectionSites;
-
-		return result;
-	}
-
-	@Override
-	protected Map<Integer, Number> getResourcesNeededForRemainingMission(boolean useBuffer) {
-		// Note: currently, it has methane resource only
-		Map<Integer, Number> result = super.getResourcesNeededForRemainingMission(useBuffer);
-
-		double collectionSitesTime = getEstimatedRemainingCollectionSiteTime(useBuffer);
-		double timeSols = collectionSitesTime / 1000D;
-
-		int crewNum = getPeopleNumber();
-
-		// Determine life support supplies needed for collection.
-		addLifeSupportResources(result, crewNum, timeSols, useBuffer);
-
-		return result;
-	}
-
-	@Override
-	protected Map<Integer, Number> getSparePartsForTrip(double distance) {
-		// Load the standard parts from VehicleMission.
-		Map<Integer, Number> result = super.getSparePartsForTrip(distance);
-
-		// Determine repair parts for EVA Suits.
-		double evaTime = getEstimatedRemainingCollectionSiteTime(false);
-		double numberAccidents = evaTime * getPeopleNumber() * EVAOperation.BASE_ACCIDENT_CHANCE;
-
-		// Assume the average number malfunctions per accident is 1.5.
-		double numberMalfunctions = numberAccidents * VehicleMission.AVERAGE_EVA_MALFUNCTION;
-
-		result.putAll(super.getEVASparePartsForTrip(numberMalfunctions));
-
-		return result;
-	}
-
-	/**
-	 * Gets the total number of collection sites for this mission.
-	 *
-	 * @return number of sites.
-	 */
-	public final int getNumCollectionSites() {
-		return getNumberOfNavpoints() - 2;
-	}
-
-	/**
-	 * Gets the number of collection sites that have been currently visited by the
-	 * mission.
-	 *
-	 * @return number of sites.
-	 */
-	public final int getNumCollectionSitesVisited() {
-		int result = getCurrentNavpointIndex();
-		if (result == (getNumberOfNavpoints() - 1))
-			result -= 1;
-		return result;
-	}
-
-	/**
 	 * Gets the estimated time spent at a collection site.
 	 *
 	 * @param useBuffer Use time buffer in estimation if true.
 	 * @return time (millisols)
 	 */
-	protected double getEstimatedTimeAtCollectionSite(boolean useBuffer) {
+	@Override
+	protected double getEstimatedTimeAtEVASite(boolean useBuffer) {
 		double timePerPerson = 2 * siteResourceGoal / resourceCollectionRate;
 		if (useBuffer)
 			timePerPerson *= EVA_COLLECTION_OVERHEAD;
 		return timePerPerson / getPeopleNumber();
-	}
-
-	@Override
-	protected Map<Integer, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer) {
-		Map<Integer, Integer> result = new HashMap<>();
-
-		// Include required number of containers.
-		result.put(EquipmentType.getResourceID(containerID), containerNum);
-		return result;
 	}
 
 	/**

@@ -83,7 +83,7 @@ public class Delivery extends DroneMission implements Serializable {
 	 */
 	public Delivery(MissionMember startingMember) {
 		// Use DroneMission constructor.
-		super(DEFAULT_DESCRIPTION, MissionType.DELIVERY, startingMember);
+		super(DEFAULT_DESCRIPTION, MissionType.DELIVERY, startingMember, null);
 
 		// Problem starting Mission
 		if (isDone()) {
@@ -350,13 +350,8 @@ public class Delivery extends DroneMission implements Serializable {
 		if (getPhaseEnded()) {
 			outbound = false;
 			resetToReturnTrip(
-					new NavPoint(tradingSettlement.getCoordinates(),
-							tradingSettlement,
-							tradingSettlement.getName()),
-
-					new NavPoint(getStartingSettlement().getCoordinates(),
-								getStartingSettlement(),
-								getStartingSettlement().getName()));
+					new NavPoint(tradingSettlement),
+					new NavPoint(getStartingSettlement()));
 			TRADE_PROFIT_CACHE.remove(getStartingSettlement());
 		}
 	}

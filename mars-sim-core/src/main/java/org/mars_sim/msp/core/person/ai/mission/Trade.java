@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.mission;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -39,7 +38,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * A mission for trading between two settlements. TODO externalize strings
  */
-public class Trade extends RoverMission implements Serializable {
+public class Trade extends RoverMission {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -49,9 +48,6 @@ public class Trade extends RoverMission implements Serializable {
 
 	/** Default description. */
 	private static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.trade"); //$NON-NLS-1$
-
-	/** Mission Type enum. */
-	private static final MissionType MISSION_TYPE = MissionType.TRADE;
 
 	/** Mission phases. */
 	private static final MissionPhase TRADE_DISEMBARKING = new MissionPhase("Mission.phase.tradeDisembarking");
@@ -90,7 +86,7 @@ public class Trade extends RoverMission implements Serializable {
 	 */
 	public Trade(MissionMember startingMember) {
 		// Use RoverMission constructor.
-		super(DEFAULT_DESCRIPTION, MISSION_TYPE, startingMember);
+		super(DEFAULT_DESCRIPTION, MissionType.TRADE, startingMember, null);
 
 		// Problem setting up the mission
 		if (isDone()) {
@@ -174,7 +170,7 @@ public class Trade extends RoverMission implements Serializable {
 	public Trade(Collection<MissionMember> members, Settlement tradingSettlement,
 			Rover rover, String description, Map<Good, Integer> sellGoods, Map<Good, Integer> buyGoods) {
 		// Use RoverMission constructor.
-		super(description, MISSION_TYPE, (MissionMember) members.toArray()[0], rover);
+		super(description, MissionType.TRADE, (MissionMember) members.toArray()[0], rover);
 
 		outbound = true;
 		doNegotiation = false;
@@ -377,13 +373,8 @@ public class Trade extends RoverMission implements Serializable {
 		if (getPhaseEnded()) {
 			outbound = false;
 			resetToReturnTrip(
-					new NavPoint(tradingSettlement.getCoordinates(),
-							tradingSettlement,
-							tradingSettlement.getName()),
-
-					new NavPoint(getStartingSettlement().getCoordinates(),
-								getStartingSettlement(),
-								getStartingSettlement().getName()));
+					new NavPoint(tradingSettlement),
+					new NavPoint(getStartingSettlement()));
 
 			TRADE_PROFIT_CACHE.remove(getStartingSettlement());
 		}
@@ -735,9 +726,9 @@ public class Trade extends RoverMission implements Serializable {
 
 			// Vehicle with superior range should be ranked higher.
 			if (result == 0) {
-				if (firstVehicle.getRange(MISSION_TYPE) > secondVehicle.getRange(MISSION_TYPE)) {
+				if (firstVehicle.getRange(MissionType.TRADE) > secondVehicle.getRange(MissionType.TRADE)) {
 					result = 1;
-				} else if (firstVehicle.getRange(MISSION_TYPE) < secondVehicle.getRange(MISSION_TYPE)) {
+				} else if (firstVehicle.getRange(MissionType.TRADE) < secondVehicle.getRange(MissionType.TRADE)) {
 					result = -1;
 				}
 			}

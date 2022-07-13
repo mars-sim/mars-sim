@@ -17,8 +17,8 @@ public class SpeedCommand extends ChatCommand {
 	private static final int MAX_RATE = 2048;
 
 	public SpeedCommand() {
-		super(TopLevel.SIMULATION_GROUP, "sp", "speed", "Change the simulation speed");
-		setInteractive(true);
+		super(TopLevel.SIMULATION_GROUP, "sp", "speed",
+					"Simulation speed; optional argument of new speed");
 		addRequiredRole(ConversationRole.ADMIN);
 	}
 
@@ -32,18 +32,26 @@ public class SpeedCommand extends ChatCommand {
         context.println("The target simulation ratio is x" + desiredRatio);
         context.println("The actual simualtion ratio achieved is x" + currentRatio);
         
-		String change = context.getInput("Change (Y/N)?");
-
-        if ("Y".equalsIgnoreCase(change)) {
-            int newRate = context.getIntInput("Enter the new simulation rate 1.." + MAX_RATE);
-            if ((1 <= newRate) && (newRate <= MAX_RATE)) {
-            	clock.setDesiredTR(newRate);
-            	context.println("New desired ratio is x" + newRate);
-            }
-        }
-        else {
-        	context.println("Invalid input. Try again.");
-        	return false;
+		if (input != null) {
+			boolean failed = false;
+			try {
+				int newRate = Integer.parseInt(input);
+				if ((1 <= newRate) && (newRate <= MAX_RATE)) {
+					clock.setDesiredTR(newRate);
+					context.println("New desired ratio is x" + newRate);
+				}
+				else {
+					failed = true;
+				}
+			}
+			catch (NumberFormatException nfe) {
+				failed = true;
+			}
+			
+			if (failed) {
+        		context.println("Invalid input. Must be an integer between 1 & " + MAX_RATE);
+        		return false;
+			}
         }
 
         return true;

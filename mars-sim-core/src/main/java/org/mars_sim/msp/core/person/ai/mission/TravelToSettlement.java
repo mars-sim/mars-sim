@@ -7,7 +7,6 @@
 
 package org.mars_sim.msp.core.person.ai.mission;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -31,7 +30,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  * another randomly selected one within range of an available rover. TODO
  * externalize strings
  */
-public class TravelToSettlement extends RoverMission implements Serializable {
+public class TravelToSettlement extends RoverMission {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -41,9 +40,6 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 
 	/** Default description. */
 	private static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.travelToSettlement"); //$NON-NLS-1$
-
-	/** Mission Type enum. */
-	private static final MissionType MISSION_TYPE = MissionType.TRAVEL_TO_SETTLEMENT;
 	
 	// Static members
 	public static final double BASE_MISSION_WEIGHT = 1D;
@@ -68,7 +64,7 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 	 */
 	public TravelToSettlement(MissionMember startingMember) {
 		// Use RoverMission constructor
-		super(DEFAULT_DESCRIPTION, MISSION_TYPE, startingMember);
+		super(DEFAULT_DESCRIPTION, MissionType.TRAVEL_TO_SETTLEMENT, startingMember, null);
 
 		Settlement s = getStartingSettlement();
 
@@ -114,7 +110,7 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 	public TravelToSettlement(Collection<MissionMember> members, 
 			Settlement destinationSettlement, Rover rover, String description) {
 		// Use RoverMission constructor.
-		super(description, MISSION_TYPE, (MissionMember) members.toArray()[0], rover);
+		super(description, MissionType.TRAVEL_TO_SETTLEMENT, (MissionMember) members.toArray()[0], rover);
 
 		// Set mission destination.
 		setDestinationSettlement(destinationSettlement);
@@ -182,7 +178,7 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 	 */
 	private Settlement getRandomDestinationSettlement(MissionMember member, Settlement startingSettlement) {
 
-		double range = getVehicle().getRange(MISSION_TYPE);
+		double range = getVehicle().getRange(MissionType.TRAVEL_TO_SETTLEMENT);
 		Settlement result = null;
 
 		// Find all desirable destination settlements.
@@ -412,9 +408,9 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 
 			// Vehicle with superior range should be ranked higher.
 			if (result == 0) {
-				if (firstVehicle.getRange(MISSION_TYPE) > secondVehicle.getRange(MISSION_TYPE)) {
+				if (firstVehicle.getRange(MissionType.TRAVEL_TO_SETTLEMENT) > secondVehicle.getRange(MissionType.TRAVEL_TO_SETTLEMENT)) {
 					result = 1;
-				} else if (firstVehicle.getRange(MISSION_TYPE) < secondVehicle.getRange(MISSION_TYPE)) {
+				} else if (firstVehicle.getRange(MissionType.TRAVEL_TO_SETTLEMENT) < secondVehicle.getRange(MissionType.TRAVEL_TO_SETTLEMENT)) {
 					result = -1;
 				}
 			}

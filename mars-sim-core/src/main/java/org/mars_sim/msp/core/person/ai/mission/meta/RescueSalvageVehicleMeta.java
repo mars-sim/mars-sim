@@ -49,10 +49,10 @@ public class RescueSalvageVehicleMeta extends AbstractMetaMission {
 
             // Check if there are any beacon vehicles within range that need help.
             try {
-                Vehicle vehicle = RoverMission.getVehicleWithGreatestRange(RescueSalvageVehicle.MISSION_TYPE, settlement, true);
+                Vehicle vehicle = RoverMission.getVehicleWithGreatestRange(MissionType.RESCUE_SALVAGE_VEHICLE, settlement, true);
                 if (vehicle != null) {
                     vehicleTarget = RescueSalvageVehicle.findBeaconVehicle(settlement,
-                            vehicle.getRange(RescueSalvageVehicle.MISSION_TYPE));
+                            vehicle.getRange(MissionType.RESCUE_SALVAGE_VEHICLE));
                     if (vehicle == vehicleTarget)
                         return 0;
                     else if (vehicleTarget == null)

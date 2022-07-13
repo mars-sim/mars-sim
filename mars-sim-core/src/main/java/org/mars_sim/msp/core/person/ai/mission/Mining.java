@@ -15,22 +15,18 @@ import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.environment.ExploredLocation;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.task.CollectMinedMinerals;
-import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.MineSite;
-import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -41,7 +37,7 @@ import org.mars_sim.msp.core.vehicle.VehicleType;
 /**
  * Mission for mining mineral concentrations at an explored site.
  */
-public class Mining extends RoverMission
+public class Mining extends EVAMission
 	implements SiteMission {
 
 	private static final Set<JobType> PREFERRED_JOBS = Set.of(JobType.AREOLOGIST, JobType.ASTRONOMER, JobType.PILOT);
@@ -75,9 +71,6 @@ public class Mining extends RoverMission
 	 * exploration site for it to be considered mature enough to mine.
 	 */
 	public static final int MATURE_ESTIMATE_NUM = 10;
-
-	// Data members
-	private boolean endMiningSite;
 	
 	private ExploredLocation miningSite;
 	private LightUtilityVehicle luv;
@@ -94,12 +87,13 @@ public class Mining extends RoverMission
 	public Mining(Person startingPerson) {
 
 		// Use RoverMission constructor.
-		super(DEFAULT_DESCRIPTION, MissionType.MINING, startingPerson);
+		super(DEFAULT_DESCRIPTION, MissionType.MINING, startingPerson, null, MINING_SITE);
 		
 		if (!isDone()) {
 			// Initialize data members.
 			excavatedMinerals = new HashMap<>(1);
 			totalExcavatedMinerals = new HashMap<>(1);
+			setEVAEquipment(EquipmentType.LARGE_BAG, NUMBER_OF_LARGE_BAGS);
 
 			// Recruit additional members to mission.
 			if (!recruitMembersForMission(startingPerson, MIN_GOING_MEMBERS))
@@ -120,7 +114,7 @@ public class Mining extends RoverMission
 			}
 
 			// Add home settlement
-			addNavpoint(new NavPoint(s.getCoordinates(), s, s.getName()));
+			addNavpoint(s);
 
 			// Check if vehicle can carry enough supplies for the mission.
 			if (hasVehicle() && !isVehicleLoadable()) {
@@ -151,14 +145,15 @@ public class Mining extends RoverMission
 	public Mining(Collection<MissionMember> members, ExploredLocation miningSite,
 			Rover rover, LightUtilityVehicle luv, String description) {
 
-		// Use RoverMission constructor.
-		super(description, MissionType.MINING, (MissionMember) members.toArray()[0], rover);
+		// Use RoverMission constructor.,  
+		super(description, MissionType.MINING, (MissionMember) members.toArray()[0], rover, MINING_SITE);
 		
 		// Initialize data members.
 		this.miningSite = miningSite;
 		miningSite.setReserved(true);
 		excavatedMinerals = new HashMap<>(1);
 		totalExcavatedMinerals = new HashMap<>(1);
+		setEVAEquipment(EquipmentType.LARGE_BAG, NUMBER_OF_LARGE_BAGS);
 
 		addMembers(members, false);
 
@@ -238,37 +233,6 @@ public class Mining extends RoverMission
 		return result;
 	}
 
-	@Override
-	protected boolean determineNewPhase() {
-		boolean handled = true;
-		if (!super.determineNewPhase()) {
-			if (TRAVELLING.equals(getPhase())) {
-				if (isCurrentNavpointSettlement()) {
-					startDisembarkingPhase();
-				}
-				else {
-					setPhase(MINING_SITE, getCurrentNavpointDescription());
-				}
-			} 
-			
-			else if (MINING_SITE.equals(getPhase())) {
-				startTravellingPhase();
-			} 
-			else {
-				handled = false;
-			}
-		}
-		return handled;
-	}
-
-	@Override
-	protected void performPhase(MissionMember member) {
-		super.performPhase(member);
-		if (MINING_SITE.equals(getPhase())) {
-			miningPhase(member);
-		}
-	}
-
 
 	@Override
 	protected void performEmbarkFromSettlementPhase(MissionMember member) {
@@ -340,113 +304,61 @@ public class Mining extends RoverMission
 	}
 
 	/**
-	 * Perform the mining phase.
-	 * 
-	 * @param member the mission member performing the mining phase.
-	 * @throws MissionException if error performing the mining phase.
+	 * Perform the EVA
 	 */
-	private void miningPhase(MissionMember member) {
-
+	@Override
+	protected boolean performEVA(Person person) {
 		// Detach towed light utility vehicle if necessary.
 		if (getRover().getTowedVehicle() != null) {
 			getRover().setTowedVehicle(null);
 			luv.setTowingVehicle(null);
 		}
 
-		// Check if crew has been at site for more than three sols.
-		boolean timeExpired = getPhaseDuration() >= MINING_SITE_TIME;
-
-        if (isEveryoneInRover()) {
-
-			// Check if end mining flag is set.
-			if (endMiningSite) {
-				endMiningSite = false;
-				setPhaseEnded(true);
+		// Determine if no one can start the mine site or collect resources tasks.
+		boolean nobodyMineOrCollect = true;
+		for(MissionMember tempMember : getMembers()) {
+			if (MineSite.canMineSite(tempMember, getRover())) {
+				nobodyMineOrCollect = false;
 			}
-
-			// Check if crew has been at site for more than three sols, then end this phase.
-			if (timeExpired) {
-				setPhaseEnded(true);
-			}
-
-			// Determine if no one can start the mine site or collect resources tasks.
-			boolean nobodyMineOrCollect = true;
-			Iterator<MissionMember> j = getMembers().iterator();
-			while (j.hasNext()) {
-				MissionMember tempMember = j.next();
-				if (MineSite.canMineSite(tempMember, getRover())) {
-					nobodyMineOrCollect = false;
-				}
-				if (canCollectExcavatedMinerals(tempMember)) {
-					nobodyMineOrCollect = false;
-				}
-			}
-
-			// If no one can mine minerals at the site or is low light level (except in dark polar region)
-			// night time, end the mining phase.
-			boolean inDarkPolarRegion = surfaceFeatures.inDarkPolarRegion(getCurrentMissionLocation());
-			double sunlight = surfaceFeatures.getSolarIrradiance(getCurrentMissionLocation());
-			if (nobodyMineOrCollect 
-					|| ((sunlight < 12) && !inDarkPolarRegion)) {
-				setPhaseEnded(true);
-			}
-
-			// Anyone in the crew or a single person at the home settlement has a dangerous
-			// illness, end phase.
-			if (hasEmergency()) {
-				setPhaseEnded(true);
-			}
-
-			// Check if enough resources for remaining trip. false = not using margin.
-			if (!hasEnoughResourcesForRemainingMission(false)) {
-				// If not, determine an emergency destination.
-				determineEmergencyDestination(member);
-				setPhaseEnded(true);
-			}
-		} else {
-			// If mining time has expired for the site, have everyone end their
-			// mining and collection tasks.
-			if (timeExpired) {
-				Iterator<MissionMember> i = getMembers().iterator();
-				while (i.hasNext()) {
-					MissionMember tempMember = i.next();
-					if (member.getUnitType() == UnitType.PERSON) {
-						Person tempPerson = (Person) tempMember;
-
-						Task task = tempPerson.getMind().getTaskManager().getTask();
-						if (task instanceof MineSite) {
-							((MineSite) task).endEVA();
-						}
-						if (task instanceof CollectMinedMinerals) {
-							((CollectMinedMinerals) task).endEVA();
-						}
-					}
-				}
+			if (canCollectExcavatedMinerals(tempMember)) {
+				nobodyMineOrCollect = false;
 			}
 		}
 
-		if (!getPhaseEnded()) {
-			// 75% chance of assigning task, otherwise allow break.
-			if (RandomUtil.lessThanRandPercent(75D)
-				// If mining is still needed at site, assign tasks.
-				&& !endMiningSite && !timeExpired
-				// If person can collect minerals the site, start that task.
-				&& canCollectExcavatedMinerals(member)
-				&& member.getUnitType() == UnitType.PERSON) {
-					Person person = (Person) member;
-					AmountResource mineralToCollect = getMineralToCollect(person);
-					assignTask(person, new CollectMinedMinerals(person, getRover(), mineralToCollect));
-			}
-		} else {
-			// Mark site as mined.
-			miningSite.setMined(true);
-
-			// Attach light utility vehicle for towing.
-			getRover().setTowedVehicle(luv);
-			luv.setTowingVehicle(getRover());
+		// Nobody can do anything so stop
+		if (nobodyMineOrCollect) {
+			return false;
 		}
+
+		// 75% chance of assigning task, otherwise allow break.
+		if (canCollectExcavatedMinerals(person)) {
+			AmountResource mineralToCollect = getMineralToCollect(person);
+			assignTask(person, new CollectMinedMinerals(person, getRover(), mineralToCollect));
+		}
+		else {
+			assignTask(person, new MineSite(person, miningSite.getLocation(), getRover(), luv));
+		}
+
+		return true;
 	}
 
+
+	/**
+	 * Close down the mining activities
+	 */
+	protected void endEVATasks() {
+		super.endEVATasks();
+
+		// Mark site as mined.
+		miningSite.setMined(true);
+
+		// Attach light utility vehicle for towing.
+		Rover rover = getRover();
+		if (!luv.equals(rover.getTowedVehicle())) {
+			rover.setTowedVehicle(luv);
+			luv.setTowingVehicle(rover);
+		}
+	}
 
 	/**
 	 * Checks if a person can collect minerals from the excavation pile.
@@ -493,22 +405,6 @@ public class Mining extends RoverMission
 		}
 
 		return result;
-	}
-
-	/**
-	 * Ends mining at a site.
-	 */
-	@Override
-	public void abortPhase() {
-		if (MINING_SITE.equals(getPhase())) {
-
-			logger.log(Level.INFO, "Mining site phase ended due to external trigger.");
-			endMiningSite = true;
-
-			endAllEVA();
-		}
-		else
-			super.abortPhase();
 	}
 
 	/**
@@ -585,64 +481,6 @@ public class Mining extends RoverMission
 		}
 			
 		result = Math.min(100, result);
-		return result;
-	}
-
-	@Override
-	protected Map<Integer, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer) {
-		Map<Integer, Integer> result = new HashMap<>();
-
-		// Include required number of bags.
-		result.put(EquipmentType.getResourceID(EquipmentType.LARGE_BAG), NUMBER_OF_LARGE_BAGS);
-
-		return result;
-	}
-
-	@Override
-	public Settlement getAssociatedSettlement() {
-		return getStartingSettlement();
-	}
-
-	@Override
-	protected double getEstimatedRemainingMissionTime(boolean useBuffer) {
-		double result = super.getEstimatedRemainingMissionTime(useBuffer);
-		result += getEstimatedRemainingMiningSiteTime();
-		return result;
-	}
-
-	/**
-	 * Gets the estimated time remaining at mining site in the mission.
-	 * 
-	 * @return time (millisols)
-	 */
-	private double getEstimatedRemainingMiningSiteTime() {
-		double result = 0D;
-
-		// Use estimated remaining mining time at site if still there.
-		if (MINING_SITE.equals(getPhase())) {
-			double remainingTime = MINING_SITE_TIME - getPhaseDuration();
-			if (remainingTime > 0D) {
-				result = remainingTime;
-			}
-		} else {
-			// If mission hasn't reached mining site yet, use estimated mining site time.
-			result = MINING_SITE_TIME;
-		}
-
-		return result;
-	}
-
-	@Override
-	protected Map<Integer, Number> getResourcesNeededForRemainingMission(boolean useBuffer) {
-		Map<Integer, Number> result = super.getResourcesNeededForRemainingMission(useBuffer);
-
-		double miningSiteTime = getEstimatedRemainingMiningSiteTime();
-		double timeSols = miningSiteTime / 1000D;
-
-		int crewNum = getPeopleNumber();
-
-		// Determine life support supplies needed for mining activity.
-		addLifeSupportResources(result, crewNum, timeSols, useBuffer);
 		return result;
 	}
 
@@ -777,23 +615,6 @@ public class Mining extends RoverMission
 	}
 
 	@Override
-	protected Map<Integer, Number> getSparePartsForTrip(double distance) {
-		// Load the standard parts from VehicleMission.
-		Map<Integer, Number> result = super.getSparePartsForTrip(distance);
-
-		// Determine repair parts for EVA Suits.
-		double evaTime = getEstimatedRemainingMiningSiteTime();
-		double numberAccidents = evaTime * getPeopleNumber() * EVAOperation.BASE_ACCIDENT_CHANCE;
-
-		// Assume the average number malfunctions per accident is 1.5.
-		double numberMalfunctions = numberAccidents * VehicleMission.AVERAGE_EVA_MALFUNCTION;
-
-		result.putAll(super.getEVASparePartsForTrip(numberMalfunctions));
-
-		return result;
-	}
-	
-	@Override
 	protected Set<JobType> getPreferredPersonJobs() {
 		return PREFERRED_JOBS;
 	}
@@ -817,5 +638,10 @@ public class Mining extends RoverMission
 	@Override
 	public double getTotalSiteScore(Settlement reviewerSettlement) {
 		return getMiningSiteValue(miningSite, reviewerSettlement);
+	}
+
+	@Override
+	protected double getEstimatedTimeAtEVASite(boolean buffer) {
+		return MINING_SITE_TIME;
 	}
 }
