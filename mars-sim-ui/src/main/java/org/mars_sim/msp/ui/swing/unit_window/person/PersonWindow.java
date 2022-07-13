@@ -63,6 +63,8 @@ public class PersonWindow extends UnitWindow {
 
 		addTabPanel(new NotesTabPanel(person, desktop));
 		
+		addTabPanel(new TabPanelPersonality(person, desktop));
+		
 		addTabPanel(new TabPanelSchedule(person, desktop));
 
 		addTabPanel(new TabPanelScienceStudy(person, desktop));

@@ -251,7 +251,7 @@ public class PlayHoloGame extends Task implements Serializable {
 			setPhase(PLAYING_A_HOLO_GAME);
 		}
 		
-		return time * .95;
+		return 0;
 	}
 
 	/**

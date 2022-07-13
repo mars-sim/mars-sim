@@ -57,7 +57,9 @@ class AmountResourceGood extends Good {
 	private static final double INITIAL_AMOUNT_DEMAND = 0;
 	private static final double INITIAL_AMOUNT_SUPPLY = 0;
 
-    private static final double CO2_VALUE = 0.0001;
+	private static final double H2_VALUE = 0.01;
+	private static final double CO_VALUE = 0.001;
+    private static final double CO2_VALUE = 0.00001;
 	private static final double CL_VALUE = 0.01;
 	private static final double ICE_VALUE = 1.5;
 	private static final double FOOD_VALUE = 0.1;
@@ -77,7 +79,7 @@ class AmountResourceGood extends Good {
 	private static final double MINERAL_VALUE = 0.1;
 	private static final double STANDARD_AMOUNT_VALUE = 0.3;
 	private static final double ELEMENT_VALUE = 0.5;
-	private static final double LIFE_SUPPORT_VALUE = 1;
+	private static final double LIFE_SUPPORT_VALUE = .5;
 
     private static final double ICE_VALUE_MODIFIER = 5D;
 	private static final double WATER_VALUE_MODIFIER = 1D;
@@ -179,14 +181,6 @@ class AmountResourceGood extends Good {
         
         else if (type == GoodType.WASTE)
             result += WASTE_VALUE ;
-        
-        else if (ar.getName().equalsIgnoreCase("chlorine"))
-            result += CL_VALUE;
-        else if (ar.getName().equalsIgnoreCase("carbon dioxide"))
-            result += CO2_VALUE;
-        else if (ar.getName().equalsIgnoreCase("ice"))
-            result += ICE_VALUE;
-
 
 		// TODO Should be a Map GoodType -> double VALUE
         else if (type == GoodType.MEDICAL)
@@ -207,8 +201,19 @@ class AmountResourceGood extends Good {
             result += ELEMENT_VALUE;
         else if (type == GoodType.CHEMICAL)
             result += CHEMICAL_VALUE;
-        else
-            result += STANDARD_AMOUNT_VALUE ;
+//        else
+//            result += STANDARD_AMOUNT_VALUE ;
+  
+        else if (ar.getName().equalsIgnoreCase("hydrogen"))
+            result += H2_VALUE;
+        else if (ar.getName().equalsIgnoreCase("chlorine"))
+            result += CL_VALUE;
+        else if (ar.getName().equalsIgnoreCase("carbon dioxide"))
+            result += CO2_VALUE;
+        else if (ar.getName().equalsIgnoreCase("carbon monoxide"))
+            result += CO_VALUE;
+        else if (ar.getName().equalsIgnoreCase("ice"))
+            result += ICE_VALUE;
 
         return result;
     }
