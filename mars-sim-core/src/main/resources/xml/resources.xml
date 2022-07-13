@@ -225,7 +225,18 @@
 		raw materials such as soybean or vegetable oil. Polyurethanes are used
 		in the manufacturing of foot wears, solid plastic items, foams for
 		bedding and upholstery. </resource>
-	<resource name="polyester resin" type="chemical" phase="liquid" />
+	<resource name="polyester resin" type="chemical" phase="liquid"> Polyester resins are 
+	 thermoplastic polymers. It's the most widely used resin systems in the marine industry. 
+	 By far the majority of dinghies, yachts and workboats built in composites make use of this 
+	 resin system. Polyesters are produced commercially both as saturated and unsaturated resins. 
+	 The most common, highest volume produced polyester is Polyethylene terephthalate (PET), a 
+	 saturated polyester that finds utilization in such applications as fibers for clothing and 
+	 carpet, food and liquid containers (such as a water/soda bottles), as well as films. 
+	 PET’s non-reactance with many foods makes it an ideal packaging material. Because 
+	 of its easy application and durability, polyester resin is also applied to patch cracks 
+	 and holes that need to remain watertight. See comparison between polyester resin and 
+	 epoxy resin at https://www.pcepoxy.com/what-is-the-difference-between-epoxy-and-polyester-resin/
+	</resource>
 	<resource name="polyethylene" type="chemical" phase="solid">Polyethylene pellets or flakes.</resource>
 	<resource name="styrene" type="chemical" phase="liquid">Synthetic styrene, which is chemically
 		identical to naturally occurring styrene, is manufactured as a chemical building block for
