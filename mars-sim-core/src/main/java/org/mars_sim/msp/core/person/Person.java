@@ -769,7 +769,8 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 			return ((Vehicle)c).getSettlement();
 		}
 
-		if (c.getUnitType() == UnitType.PERSON || c.getUnitType() == UnitType.ROBOT) {
+		if (c.getUnitType() == UnitType.BUILDING || c.getUnitType() == UnitType.PERSON
+				|| c.getUnitType() == UnitType.ROBOT) {
 			return c.getSettlement();
 		}
 
