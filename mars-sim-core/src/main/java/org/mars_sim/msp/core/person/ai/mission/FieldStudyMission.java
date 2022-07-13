@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.mars_sim.msp.core.Coordinates;
@@ -23,15 +22,15 @@ import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Rover;
+
 
 /**
  * This is an abstract Field Study mission to a remote field location for a scientific
  * study. The concrete classes determine the science that is required.
  */
-public abstract class FieldStudyMission extends RoverMission {
+public abstract class FieldStudyMission extends EVAMission {
 
 	private static final Set<JobType> PREFERRED_JOBS = Set.of(JobType.AREOLOGIST, JobType.ASTRONOMER, JobType.BIOLOGIST, JobType.BOTANIST, JobType.CHEMIST, JobType.METEOROLOGIST, JobType.PILOT);
 
@@ -47,8 +46,6 @@ public abstract class FieldStudyMission extends RoverMission {
 	private static final int MIN_MEMEBRS = 2;
 	
 	// Data members
-	/** External flag for ending research at the field site. */
-	private boolean endFieldSite;
 	/** The field site location. */
 	private Coordinates fieldSite;
 	/** Scientific study to research. */
@@ -68,7 +65,7 @@ public abstract class FieldStudyMission extends RoverMission {
 								ScienceType science, double fieldSiteTime) {
 
 		// Use RoverMission constructor.
-		super(description, missionType, startingPerson, null);
+		super(description, missionType, startingPerson, null, RESEARCH_SITE);
 
 		this.science = science;
 		this.fieldSiteTime = fieldSiteTime;
@@ -124,7 +121,7 @@ public abstract class FieldStudyMission extends RoverMission {
 			Coordinates fieldSite) {
 
 		// Use RoverMission constructor.
-		super(description, missionType, leadResearcher, rover);
+		super(description, missionType, leadResearcher, rover, RESEARCH_SITE);
 
 		this.study = study;
 		this.science = study.getScience();
@@ -223,7 +220,7 @@ public abstract class FieldStudyMission extends RoverMission {
 
 		// Determining the actual traveling range.
 		double range = roverRange;
-		double timeRange = getTripTimeRange(tripTimeLimit, true);
+		double timeRange = getTripTimeRange(tripTimeLimit, 1, true);
 		if (timeRange < range) {
 			range = timeRange;
 		}
@@ -237,21 +234,6 @@ public abstract class FieldStudyMission extends RoverMission {
 		double siteDistance = RandomUtil.getRandomDouble(limit);
 		fieldSite = startingLocation.getNewLocation(direction, siteDistance);
 		addNavpoint(fieldSite, "field research site");
-	}
-
-	/**
-	 * Gets the range of a trip based on its time limit.
-	 * 
-	 * @param tripTimeLimit time (millisols) limit of trip.
-	 * @param useBuffer     Use time buffer in estimations if true.
-	 * @return range (km) limit.
-	 */
-	private double getTripTimeRange(double tripTimeLimit, boolean useBuffer) {
-		double tripTimeTravelingLimit = tripTimeLimit - fieldSiteTime;
-		double averageSpeed = getAverageVehicleSpeedForOperators();
-		double millisolsInHour = MarsClock.convertSecondsToMillisols(60D * 60D);
-		double averageSpeedMillisol = averageSpeed / millisolsInHour;
-		return tripTimeTravelingLimit * averageSpeedMillisol;
 	}
 
 	@Override
@@ -286,133 +268,21 @@ public abstract class FieldStudyMission extends RoverMission {
 		return result;
 	}
 
-	@Override
-	public Settlement getAssociatedSettlement() {
-		return getStartingSettlement();
-	}
-
-	@Override
-	protected boolean determineNewPhase() {
-		boolean handled = true;
-		if (!super.determineNewPhase()) {
-			if (TRAVELLING.equals(getPhase())) {
-				if (isCurrentNavpointSettlement()) {
-					startDisembarkingPhase();
-				}
-				else if (canStartEVA()) {
-					setPhase(RESEARCH_SITE, getCurrentNavpointDescription());
-				}
-			}
-			else if (WAIT_SUNLIGHT.equals(getPhase())) {
-				setPhase(RESEARCH_SITE, getCurrentNavpointDescription());
-			}
-			else if (RESEARCH_SITE.equals(getPhase())) {
-				startTravellingPhase();
-			} 
-	
-			else {
-				handled = false;
-			}
-		}
-		return handled;
-	}
-
-	@Override
-	protected void performPhase(MissionMember member) {
-		super.performPhase(member);
-		if (RESEARCH_SITE.equals(getPhase())) {
-			researchFieldSitePhase(member);
-		}
-	}
-
-	/**
-	 * Ends the research at a field site if correct phase.
-	 */
-	@Override
-	public void abortPhase() {
-		if (RESEARCH_SITE.equals(getPhase())) {
-			endFieldSite = true;
-
-			endAllEVA();
-		}
-		else 
-			super.abortPhase();
-	}
-
 	/**
 	 * Performs the research field site phase of the mission.
 	 * 
 	 * @param member the mission member currently performing the mission
 	 */
-	private void researchFieldSitePhase(MissionMember member) {
+	protected boolean performEVA(Person member) {
 
-		// Check if crew has been at site for more than required length of time.
-		boolean timeExpired = getPhaseDuration() >= fieldSiteTime;
-
-		if (isEveryoneInRover()) {
-
-			// Check if end field site flag is set.
-			if (endFieldSite) {
-				endFieldSite = false;
-				setPhaseEnded(true);
-			}
-
-			// Check if crew has been at site for more than required length of time, then
-			// end this phase.
-			if (timeExpired) {
-				setPhaseEnded(true);
-			}
-
-			// Determine if no one can start the field work task.
-			boolean nobodyFieldWork = true;
-			Iterator<MissionMember> j = getMembers().iterator();
-			while (j.hasNext()) {
-				if (canResearchSite(j.next())) {
-					nobodyFieldWork = false;
-				}
-			}
-
-			// If no one can research the site and this is not due to it just being
-			// night time, end the field work phase.
-			if (nobodyFieldWork || !isEnoughSunlightForEVA()) {
-				setPhaseEnded(true);
-			}
-
-			// Anyone in the crew or a single person at the home settlement has a dangerous
-			// illness, end phase.
-			if (hasEmergency()) {
-				setPhaseEnded(true);
-			}
-
-			// Check if enough resources for remaining trip. false = not using margin.
-			if (!hasEnoughResourcesForRemainingMission(false)) {
-				// If not, determine an emergency destination.
-				determineEmergencyDestination(member);
-				setPhaseEnded(true);
-			}
-		} 
-		// If research time has expired for the site, have everyone end their field work
-		// tasks.
-		else if (timeExpired) {
-			logger.info(member, "Triggers end of field study for " + getName());
-			abortPhase();
+		// If person can research the site, start that task.
+		if (canResearchSite(member)) {
+			assignTask(member, createFieldStudyTask(member,
+											getStartingPerson(),
+											study, (Rover) getVehicle()));
 		}
 
-		if (!getPhaseEnded()) {
-
-			if (!endFieldSite && !timeExpired) {
-				// If person can research the site, start that task.
-				if (canResearchSite(member)) {
-
-					if (member instanceof Person) {
-						Person person = (Person) member;
-						assignTask(person, createFieldStudyTask(person,
-													getStartingPerson(),
-													study, (Rover) getVehicle()));
-					}
-				}
-			}
-		}
+		return true;
 	}
 
 	/**
@@ -436,49 +306,6 @@ public abstract class FieldStudyMission extends RoverMission {
 		return ScientificStudyFieldWork.canResearchSite(researcher, getRover()); 
 	}
 	
-	@Override
-	protected double getEstimatedRemainingMissionTime(boolean useBuffer) {
-		double result = super.getEstimatedRemainingMissionTime(useBuffer);
-		result += getEstimatedRemainingFieldSiteTime();
-		return result;
-	}
-
-	/**
-	 * Gets the estimated time remaining for the field site in the mission.
-	 * 
-	 * @return time (millisols)
-	 * @throws MissionException if error estimating time.
-	 */
-	private double getEstimatedRemainingFieldSiteTime() {
-		double result = 0D;
-
-		// Add estimated remaining field work time at field site if still there.
-		if (RESEARCH_SITE.equals(getPhase())) {
-
-			double remainingTime = fieldSiteTime - getPhaseDuration();
-			if (remainingTime > 0D) {
-				result += remainingTime;
-			}
-		}
-
-		return result;
-	}
-
-	@Override
-	protected Map<Integer, Number> getResourcesNeededForRemainingMission(boolean useBuffer) {
-
-		Map<Integer, Number> result = super.getResourcesNeededForRemainingMission(useBuffer);
-
-		double fieldSiteTime = getEstimatedRemainingFieldSiteTime();
-		double timeSols = fieldSiteTime / 1000D;
-
-		int crewNum = getPeopleNumber();
-
-		// Determine life support supplies needed for site visits
-		addLifeSupportResources(result, crewNum, timeSols, useBuffer);
-
-		return result;
-	}
 
 	@Override
 	protected Set<JobType> getPreferredPersonJobs() {
@@ -490,5 +317,10 @@ public abstract class FieldStudyMission extends RoverMission {
 		super.destroy();
 		fieldSite = null;
 		study = null;
+	}
+
+	@Override
+	protected double getEstimatedTimeAtEVASite(boolean buffer) {
+		return fieldSiteTime;
 	}
 }

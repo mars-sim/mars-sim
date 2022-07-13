@@ -363,22 +363,6 @@ public abstract class CollectResourcesMission extends EVAMission
 		return true;
 	}
 
-		/**
-	 * Gets the range of a trip based on its time limit and collection sites.
-	 *
-	 * @param tripTimeLimit time (millisols) limit of trip.
-	 * @param numSites      the number of collection sites.
-	 * @param useBuffer     Use time buffer in estimations if true.
-	 * @return range (km) limit.
-	 */
-	protected double getTripTimeRange(double tripTimeLimit, int numSites, boolean useBuffer) {
-		double timeAtSites = getEstimatedTimeAtEVASite(useBuffer) * numSites;
-		double tripTimeTravellingLimit = tripTimeLimit - timeAtSites;
-		double averageSpeed = getAverageVehicleSpeedForOperators();
-		double averageSpeedMillisol = averageSpeed / MarsClock.MILLISOLS_PER_HOUR;
-		return tripTimeTravellingLimit * averageSpeedMillisol;
-	}
-
 	/**
 	 * Calculate the collection for for a worker.
 	 * @param worker

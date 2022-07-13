@@ -36,7 +36,7 @@ public class NavPoint implements Serializable {
 	public NavPoint(Coordinates location, String description) {
 		if (location == null)
 			throw new IllegalArgumentException("location is null");
-		this.location = new Coordinates(location);
+		this.location = location;
 		this.description = description;
 	}
 
@@ -47,10 +47,12 @@ public class NavPoint implements Serializable {
 	 * @param settlement  the settlement at the navpoint.
 	 * @param description the navpoint description.
 	 */
-	public NavPoint(Coordinates location, Settlement settlement, String description) {
-		this(location, description);
+	public NavPoint(Settlement settlement) {
 		if (settlement == null)
 			throw new IllegalArgumentException("settlement is null");
+
+		this.location = settlement.getCoordinates();
+		this.description = settlement.getName();
 		this.settlement = settlement;
 	}
 
@@ -60,7 +62,7 @@ public class NavPoint implements Serializable {
 	 * @return the coordinate location.
 	 */
 	public Coordinates getLocation() {
-		return new Coordinates(location);
+		return location;
 	}
 
 	/**
@@ -119,6 +121,11 @@ public class NavPoint implements Serializable {
 		return location.hashCode();
 	}
 	
+	@Override
+	public String toString() {
+		return description + " @ " + location.getCoordinateString();
+	}
+
 	/**
 	 * Prepare object for garbage collection.
 	 */

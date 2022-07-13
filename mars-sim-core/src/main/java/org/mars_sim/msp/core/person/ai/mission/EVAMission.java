@@ -17,12 +17,15 @@ public abstract class EVAMission extends RoverMission {
 
     /** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(EVAMission.class.getName());
+	
+	private static final MissionPhase WAIT_SUNLIGHT = new MissionPhase("Mission.phase.waitSunlight");
+
+	// Maximum time t wait for sunrise
+	private static final double MAX_WAITING = 200D;
 
     private MissionPhase evaPhase;
     private boolean activeEVA = true;
-
 	private int containerID;
-
 	private int containerNum;
 
     protected EVAMission(String description, MissionType missionType, 
@@ -61,11 +64,73 @@ public abstract class EVAMission extends RoverMission {
 		return handled;
 	}
 
+	/**
+	 *
+	 * @return Can the EVA phase be started
+	 */
+	private boolean canStartEVA() {
+		boolean result = false;
+		if (isEnoughSunlightForEVA()) {
+			result = true;
+		}
+		else {
+			// Decide what to do
+			MarsClock sunrise = surfaceFeatures.getSunRise(getCurrentMissionLocation());
+			if (surfaceFeatures.inDarkPolarRegion(getCurrentMissionLocation())
+					|| (MarsClock.getTimeDiff(sunrise, marsClock) > MAX_WAITING)) {
+				// No point waiting, move to next site
+				logger.info(getVehicle(), "Continue travel, sunrise too late " + sunrise.getTrucatedDateTimeStamp());
+				startTravellingPhase();
+			}
+			else {
+				// Wait for sunrise
+				logger.info(getVehicle(), "Waiting for sunrise @ " + sunrise.getTrucatedDateTimeStamp());
+				setPhase(WAIT_SUNLIGHT, sunrise.getTrucatedDateTimeStamp());
+			}
+		}
+		return result;
+	}
+
+		/**
+	 * Check that if the sunlight is suitable to continue
+	 * @param member
+	 */
+	private void performWaitForSunlight(MissionMember member) {
+		if (isEnoughSunlightForEVA()) {
+			logger.info(getRover(), "Stop wait as enough sunlight");
+			setPhaseEnded(true);
+		}
+		else if (getPhaseDuration() > MAX_WAITING) {
+			logger.info(getRover(), "Waited long enough");
+			setPhaseEnded(true);
+			startTravellingPhase();
+		}
+	}
+
+
+	/**
+	 * Is there enough sunlight to leave the vehicle for an EVA
+	 * @return
+	 */
+	protected boolean isEnoughSunlightForEVA() {
+		//return true;
+		Coordinates locn = getCurrentMissionLocation();
+		boolean inDarkPolarRegion = surfaceFeatures.inDarkPolarRegion(locn);
+		double sunlight = surfaceFeatures.getSolarIrradiance(locn);
+		return (sunlight >= 20D && !inDarkPolarRegion);
+	}
+
+	/**
+	 * Perform the current phase
+	 */
 	@Override
 	protected void performPhase(MissionMember member) {
 		super.performPhase(member);
 		if (evaPhase.equals(getPhase())) {
 			evaPhase(member);
+		}
+		else if (WAIT_SUNLIGHT.equals(getPhase())) {
+			performWaitForSunlight(member);
 		}
 	}
 
@@ -111,26 +176,39 @@ public abstract class EVAMission extends RoverMission {
 		if (activeEVA) {
 			// Check if crew has been at site for more than one sol.
 			double timeDiff = getPhaseDuration();
-			activeEVA = (timeDiff < getEstimatedTimeAtEVASite(false));
+			if (timeDiff > getEstimatedTimeAtEVASite(false)) {
+				logger.info(getVehicle(), "EVA out of time");
+				activeEVA = false;
+			}
 
 			// If no one can explore the site and this is not due to it just being
 			// night time, end the exploring phase.
-			activeEVA = activeEVA && isEnoughSunlightForEVA();
+			if (activeEVA && !isEnoughSunlightForEVA()) {
+				logger.info(getVehicle(), "Not enough sunlight");
+				activeEVA = false;
+			}
 
 			// Anyone in the crew or a single person at the home settlement has a dangerous
 			// illness, end phase.
-			activeEVA = activeEVA && !hasEmergency();
+			if (activeEVA && hasEmergency()) {
+				logger.info(getVehicle(), "Has emergency");
+				activeEVA = false;
+			}
 
 			// Check if enough resources for remaining trip. false = not using margin.
-			if (!hasEnoughResourcesForRemainingMission(false)) {
+			if (activeEVA && !hasEnoughResourcesForRemainingMission(false)) {
 				// If not, determine an emergency destination.
 				determineEmergencyDestination(member);
+				logger.info(getVehicle(), "Not enough resources");
 				activeEVA = false;
 			}
 
 			// All good so do the EVA
 			if (activeEVA) {
 				activeEVA = performEVA((Person) member);
+				if (!activeEVA) {
+					logger.info(getVehicle(), "EVA operation halted");
+				}
 			}
 		} 
 
@@ -185,7 +263,22 @@ public abstract class EVAMission extends RoverMission {
 		return result;
 	}
 
-    
+    /**
+	 * Gets the range of a trip based on its time limit and collection sites.
+	 *
+	 * @param tripTimeLimit time (millisols) limit of trip.
+	 * @param numSites      the number of collection sites.
+	 * @param useBuffer     Use time buffer in estimations if true.
+	 * @return range (km) limit.
+	 */
+	protected double getTripTimeRange(double tripTimeLimit, int numSites, boolean useBuffer) {
+		double timeAtSites = getEstimatedTimeAtEVASite(useBuffer) * numSites;
+		double tripTimeTravellingLimit = tripTimeLimit - timeAtSites;
+		double averageSpeed = getAverageVehicleSpeedForOperators();
+		double averageSpeedMillisol = averageSpeed / MarsClock.MILLISOLS_PER_HOUR;
+		return tripTimeTravellingLimit * averageSpeedMillisol;
+	}
+
 	/**
 	 * Gets the total number of EVA sites for this mission.
 	 *

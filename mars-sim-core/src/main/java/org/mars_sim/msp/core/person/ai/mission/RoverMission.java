@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.InventoryUtil;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalPosition;
@@ -42,7 +41,6 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
@@ -62,8 +60,6 @@ public abstract class RoverMission extends VehicleMission {
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(RoverMission.class.getName());
 
-	protected static final MissionPhase WAIT_SUNLIGHT = new MissionPhase("Mission.phase.waitSunlight");
-
 	// Static members
 	public static final int MIN_STAYING_MEMBERS = 1;
 	public static final int MIN_GOING_MEMBERS = 2;
@@ -78,8 +74,6 @@ public abstract class RoverMission extends VehicleMission {
 	public static final String PHASE_1 = "phase 1";
 	public static final String MINING = "mining";
 	public static final String TRADING = "trading";
-
-	private static final double MAX_WAITING = 200D;
 
 	// What is the lowest fullness of an EVASuit to be usable
 	private static final double EVA_LOWEST_FILL = 0.5D;
@@ -871,6 +865,7 @@ public abstract class RoverMission extends VehicleMission {
 	 *
 	 * @return true if emergency.
 	 */
+	@Override
 	protected final boolean hasEmergency() {
 		boolean result = super.hasEmergency();
 		if (hasDangerousMedicalProblemAtAssociatedSettlement())
@@ -1079,69 +1074,5 @@ public abstract class RoverMission extends VehicleMission {
 		}
 
 		return true;
-	}
-
-	@Override
-	protected void performPhase(MissionMember member) {
-		super.performPhase(member);
-
-		if (WAIT_SUNLIGHT.equals(getPhase())) {
-			performWaitForSunlight(member);
-		}
-	}
-
-	/**
-	 * Check that if the sunlight is suitable to continue
-	 * @param member
-	 */
-	private void performWaitForSunlight(MissionMember member) {
-		if (isEnoughSunlightForEVA()) {
-			logger.info(getRover(), "Stop wait as enough sunlight");
-			setPhaseEnded(true);
-		}
-		else if (getPhaseDuration() > MAX_WAITING) {
-			logger.info(getRover(), "Waited long enough");
-			setPhaseEnded(true);
-			startTravellingPhase();
-		}
-	}
-
-	/**
-	 *
-	 * @return Can the EVA phase be started
-	 */
-	protected boolean canStartEVA() {
-		boolean result = false;
-		if (isEnoughSunlightForEVA()) {
-			result = true;
-		}
-		else {
-			// Decide what to do
-			MarsClock sunrise = surfaceFeatures.getSunRise(getCurrentMissionLocation());
-			if (surfaceFeatures.inDarkPolarRegion(getCurrentMissionLocation())
-					|| (MarsClock.getTimeDiff(sunrise, marsClock) > MAX_WAITING)) {
-				// No point waiting, move to next site
-				logger.info(getVehicle(), "Continue travel, sunrise too late " + sunrise.getTrucatedDateTimeStamp());
-				startTravellingPhase();
-			}
-			else {
-				// Wait for sunrise
-				logger.info(getVehicle(), "Waiting for sunrise @ " + sunrise.getTrucatedDateTimeStamp());
-				setPhase(WAIT_SUNLIGHT, sunrise.getTrucatedDateTimeStamp());
-			}
-		}
-		return result;
-	}
-
-	/**
-	 * Is there enough sunlight to leave the vehicle for an EVA
-	 * @return
-	 */
-	protected boolean isEnoughSunlightForEVA() {
-		//return true;
-		Coordinates locn = getCurrentMissionLocation();
-		boolean inDarkPolarRegion = surfaceFeatures.inDarkPolarRegion(locn);
-		double sunlight = surfaceFeatures.getSolarIrradiance(locn);
-		return (sunlight >= 20D && !inDarkPolarRegion);
 	}
 }

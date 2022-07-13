@@ -172,15 +172,12 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	private void init(MissionMember startingMember) {
 
 		NavPoint startingNavPoint = null;
-		Coordinates c = getCurrentMissionLocation();
 
-		if (c != null) {
-			if (startingMember.getSettlement() != null) {
-				startingNavPoint = new NavPoint(c, startingMember.getSettlement(),
-						startingMember.getSettlement().getName());
-			} else {
-				startingNavPoint = new NavPoint(c, "starting location");
-			}
+		if (startingMember.getSettlement() != null) {
+			startingNavPoint = new NavPoint(startingMember.getSettlement());
+		}
+		else {
+			startingNavPoint = new NavPoint(getCurrentMissionLocation(), "starting location");
 		}
 
 		if (startingNavPoint != null) {
@@ -780,13 +777,13 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 		boolean allCrewHasMedical = hasDangerousMedicalProblemsAllCrew();
 		boolean hasEmergency = hasEmergency();
 
-		if (destination != null
-				&& vehicle != null
-				&& vehicle.getCoordinates() != null
-				&& destination.getLocation() != null) {
+		if (destination != null && vehicle != null) {
 
-			reachedDestination = vehicle.getCoordinates().equals(destination.getLocation())
-					|| Coordinates.computeDistance(vehicle.getCoordinates(), destination.getLocation()) < SMALL_DISTANCE;
+			Coordinates current = vehicle.getCoordinates();
+			Coordinates target =  destination.getLocation();
+
+			reachedDestination = current.equals(target)
+					|| Coordinates.computeDistance(current, target) < SMALL_DISTANCE;
 
 			malfunction = vehicle.getMalfunctionManager().hasMalfunction();
 		}
@@ -1700,6 +1697,8 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 
 		setTravelStatus(AT_NAVPOINT);
 
+		logger.info(vehicle, "Set return to " + destNavPoint);
+
 		// Need to recalculate what is left to travel to get resoruces loaded
 		// for return
 		computeEstimatedTotalDistance();
@@ -1726,7 +1725,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	 * @param s
 	 */
 	protected void addNavpoint(Settlement s) {
-		addNavpoint(new NavPoint(s.getCoordinates(), s, s.getName()));
+		addNavpoint(new NavPoint(s));
 	}
 	
 
@@ -1774,12 +1773,15 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	 */
 	public final void clearRemainingNavpoints() {
 		int index = getNextNavpointIndex();
-		int numNavpoints = getNumberOfNavpoints();
-		for (int x = index; x < numNavpoints; x++) {
-			navPoints.remove(index);
-			// Note: how to compensate the shifted index upon removal of this navPoint
-			fireMissionUpdate(MissionEventType.NAVPOINTS_EVENT);
+
+		// REmove all points that are after the current point
+		for (int x = navPoints.size()-1; x > index; x--) {
+			navPoints.remove(x);
 		}
+		
+		// Note: how to compensate the shifted index upon removal of this navPoint
+		fireMissionUpdate(MissionEventType.NAVPOINTS_EVENT);
+
 	}
 
 	/**
