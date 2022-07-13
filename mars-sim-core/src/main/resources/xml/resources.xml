@@ -43,6 +43,16 @@
 	<resource name="chlorine" type="element" phase="gas"/>
 	<resource name="ethylene" type="compound" phase="gas" />
 
+	<resource name="acetylene" type="compound" phase="gas">Acetylene is a colorless gas that has a strong 
+	 garlic-like odor. When combined with oxygen, it becomes very hot and is classified as the hottest fuel gas. 
+	 It is also the only fuel gas that can weld and cut steel, making it the preferred choice for welders.
+	 The welding process that uses acetylene is known as oxy-fuel cutting or gas cutting. Acetylene is 
+	 probably the hottest burning fuel gas available to us. Acetylene releases almost 40% of its heat in 
+	 the inner flame cone. Acetylene is also commonly used for the production of other chemicals used 
+	 in perfumes, vitamins, polymers, solvents and other materials due to its versatility and ease of
+	 reactive control in comparison to other gases. It combines nicely with a variety of elements and
+	 compounds, making it the most important of starting materials for organic synthesis.</resource>
+	 
 <!-- Elements -->
 	<resource name="iron powder" type="element" phase="solid" />
 
@@ -281,7 +291,6 @@
 	 organisms. In many parts of the world, silica is the major constituent
 	 of sand. </resource>
 	<resource name="sodium oxide" type="compound" phase="solid">extracted from regolith.</resource>
-
 
 <!-- Utility items derived from crop harvest -->
 	<resource name="fiber cloth" type="utility" phase="solid" edible="false">Cloth made from Soy Fiber and cane fiber.</resource>

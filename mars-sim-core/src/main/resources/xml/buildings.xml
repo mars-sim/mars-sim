@@ -411,7 +411,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</process>
 
 				<!-- 
-				Under the SpaceCraft Oxygen Recovery (SCOR), NASA seeks to increase oxygen recovery 
+				In recent years, under the SpaceCraft Oxygen Recovery (SCOR) program, NASA seeks to increase oxygen recovery 
 				beyond the state of the art (42%) to at least 75% and approaching 100%.
 						
 				Space oxygen recovery technologies implemented include carbon formation reactors (CFR) 
@@ -428,7 +428,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				byproduct, it can be sent back to the Sabatier to react with carbon dioxide and produce 
 				additional oxygen.
 				
-				- a high-temperature solid oxide co-electrolyzer (SOCE) to be combined with a carbon
+				- A high-temperature solid oxide co-electrolyzer (SOCE) is to be combined with a carbon
 				formation reactor.
 				
 				-->
@@ -445,13 +445,33 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				 -->
 				 
 				<process name="Carbon Formation Reactor" number-modules="2" power-required="0.1" default="on">
-					<description> C-Bosch reduces CO2 to C(s) and H20 using H2. 
+					<description> The Continuous Bosch (C-Bosch) Reactor reduces CO2 to C(s) and H20 using H2. 
+					 It aims to produce water and elemental carbon from hydrogen and carbon dioxide. 
 					</description> 
 					<input resource="carbon monoxide" rate="84.0" ambient="false" />
 					<input resource="hydrogen" rate="2.0" ambient="false" />
 					<output resource="carbon dioxide" rate="44.0" ambient="true" />
 					<output resource="water" rate="18.0" ambient="false" />
 					<output resource="carbon" rate="24.0" ambient="false" />
+				</process>
+				
+				<process name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="2" power-required="0.1" default="off">
+					<description>
+					  By partial pyrolysis in microwave generated plasma, methane is converted to 
+					  hydrogen and acetylene:					  
+					                2CH4 -> 3H2 + C2H2
+					                
+					  Hydrogen separation carried out with electrochemical cell stack. 
+					  
+					  H2 recovered from CH4 and sent to Sabatier to recover additional O2 from CO2
+					   - ~50% O2 recovery with Sabatier
+					   - Potentially >85% total O2 recovery with PPA
+					   - Acetylene must be removed from PPA outlet stream before hydrogen 
+					     can be sent to Sabatier
+					</description> 
+					<input resource="methane" rate="32.0" ambient="false" />
+					<output resource="acetylene" rate="6.0" ambient="false" />
+					<output resource="hydrogen" rate="26.0" ambient="false" />
 				</process>
 				
 				<!-- Oxygen Generation System can split water into H2 and O2.
@@ -1230,13 +1250,33 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</process>
 				
 				<process name="Carbon Formation Reactor" number-modules="2" power-required="0.1" default="on">
-					<description> C-Bosch reduces CO2 to C(s) and H20 using H2. 
+					<description> The Continuous Bosch (C-Bosch) Reactor reduces CO2 to C(s) and H20 using H2. 
+					 It aims to produce water and elemental carbon from hydrogen and carbon dioxide. 
 					</description> 
 					<input resource="carbon monoxide" rate="84.0" ambient="false" />
 					<input resource="hydrogen" rate="2.0" ambient="false" />
 					<output resource="carbon dioxide" rate="44.0" ambient="true" />
 					<output resource="water" rate="18.0" ambient="false" />
 					<output resource="carbon" rate="24.0" ambient="false" />
+				</process>
+				
+				<process name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="2" power-required="0.1" default="off">
+					<description>
+					  By partial pyrolysis in microwave generated plasma, methane is converted to 
+					  hydrogen and acetylene:					  
+					                2CH4 -> 3H2 + C2H2
+					                
+					  Hydrogen separation carried out with electrochemical cell stack. 
+					  
+					  H2 recovered from CH4 and sent to Sabatier to recover additional O2 from CO2
+					   - ~50% O2 recovery with Sabatier
+					   - Potentially >85% total O2 recovery with PPA
+					   - Acetylene must be removed from PPA outlet stream before hydrogen 
+					     can be sent to Sabatier
+					</description> 
+					<input resource="methane" rate="32.0" ambient="false" />
+					<output resource="acetylene" rate="6.0" ambient="false" />
+					<output resource="hydrogen" rate="26.0" ambient="false" />
 				</process>
 				
 				<process name="Oxygen Generation System" number-modules="2" power-required=".5" default="on">
@@ -1302,12 +1342,16 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<storage capacity="100000">
 				<resource-storage resource="hydrogen" capacity="20000.0" />
 				<resource-storage resource="methane" capacity="20000.0" />
-				<resource-storage resource="methanol" capacity="20000.0" />
+				<resource-storage resource="methanol" capacity="15000.0" />
 				<resource-storage resource="oxygen" capacity="20000.0" />
+				
+				<resource-storage resource="acetylene" capacity="5000.0" />
+				<resource-storage resource="carbon monoxide" capacity="2500.0" />
+								
 				<resource-storage resource="water" capacity="10000.0" />
-				<resource-storage resource="grey water" capacity="2500.0" />				
-				<resource-storage resource="rock salt" capacity="2500.0" />
 				<resource-storage resource="ice" capacity="5000.0" />
+				<resource-storage resource="grey water" capacity="2000.0" />				
+				<resource-storage resource="rock salt" capacity="500.0" />
 				<!-- Payload imported from Earth
 				resource-initial resource="hydrogen" amount="6300.0" /-->
 
@@ -1344,7 +1388,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	<building type="ERV-B" width="10.0" length="10.0" base-level="0"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="0" base-mass="20">
 		<description> The Earth Return Vehicle Type B (ERV-B) is a flight-ready space
-		vehicle and arrives on Mars with a Lander Hab. It furnishes a regolith processing
+		vehicle and arrives on Mars with a Lander Hab. It furnishes a regolith related processing
 		equipment package not available in ERV-A. It may in principle be
 		reconfigured to provide for habitation space.
 		</description>
@@ -1440,7 +1484,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 								3% bassanite;
 								3% smectite;
 					</description>
-						<input resource="regolith-D" rate="50.0" ambient="false" />
+						<input resource="regolith-D" rate ="50.0" ambient="false" />
 						<output resource="basaltic" rate="11.75" ambient="false" />
 						<output resource="smectite" rate="1.5" ambient="false" />
 						<output resource="allophane" rate="1.5" ambient="false" />
@@ -1452,6 +1496,71 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 						soda) and 1.15% of sodium chloride (table salt) -->
 						<output resource="baking powder" rate="4.0" ambient="false" />
 						<output resource="table salt" rate="0.4" ambient="false" />
+				</process>
+	
+				<process name="do hematite smelting" power-required="5.0" default="off">
+					<input resource="hematite" rate="50.0" ambient="false" />
+					<input resource="carbon monoxide" rate=".5" ambient="false" />
+					<output resource="iron powder" rate="25.0" ambient="false" />
+					<output resource="carbon dioxide" rate="1.0" ambient="false" />
+				</process>
+			
+				<process name="do magnetite smelting" power-required="5.0" default="off">
+						<input resource="magnetite" rate="50.0" ambient="false" />
+						<input resource="carbon monoxide" rate=".5" ambient="false" />
+						<output resource="iron powder" rate="30.0" ambient="false" />
+						<output resource="carbon dioxide" rate="1.0" ambient="false" />
+				</process>
+			
+				<process name="do goethite smelting" power-required="5.0" default="off">
+						<input resource="goethite" rate="50.0" ambient="false" />
+						<input resource="carbon monoxide" rate=".5" ambient="false" />
+						<output resource="iron powder" rate="27.0" ambient="false" />
+						<output resource="carbon dioxide" rate="1.0" ambient="false" />
+				</process>
+			
+				<process name="do olivine smelting" power-required="5.0" default="off">
+						<input resource="olivine" rate="50.0" ambient="false" />
+						<input resource="carbon monoxide" rate="32.5" ambient="false" />
+						<output resource="magnesium" rate="11.6" ambient="false" />
+						<output resource="iron powder" rate="11.6" ambient="false" />
+						<output resource="silicon" rate="8.1" ambient="false" />
+						<output resource="carbon dioxide" rate="51.2" ambient="false" />
+				</process>
+			
+				<process name="do magnesite smelting" power-required="5.0" default="off">
+						<input resource="magnesite" rate="50.0" ambient="false" />
+						<input resource="carbon monoxide" rate="16.6" ambient="false" />
+						<output resource="magnesium" rate="14.4" ambient="false" />
+						<output resource="carbon dioxide" rate="52.2" ambient="false" />
+						<output resource="silica" rate="5" ambient="false" />
+				</process>
+			
+				<process name="do kamacite smelting" power-required="5.0" default="off">
+						<input resource="kamacite" rate="50.0" ambient="false" />
+						<output resource="iron powder" rate="45.0" ambient="false" />
+						<output resource="nickel" rate="5.0" ambient="false" />
+				</process>
+			
+				<process name="do taenite smelting" power-required="5.0" default="off">
+						<input resource="taenite" rate="50.0" ambient="false" />
+						<output resource="iron powder" rate="20.0" ambient="false" />
+						<output resource="nickel" rate="30.0" ambient="false" />
+				</process>
+			
+				<process name="do chalcopyrite smelting" power-required="5.0" default="off">
+						<input resource="chalcopyrite" rate="50.0" ambient="false" />
+						<output resource="copper" rate="17.3" ambient="false"/>
+						<output resource="iron powder" rate="15.2" ambient="false"  />
+						<output resource="sulfur" rate="17.5" ambient="false" />
+				</process>
+			
+				<process name="do malachite smelting" power-required="5.0" default="off">
+						<input resource="malachite" rate="50.0" ambient="false" />
+						<input resource="carbon" rate="2.7" ambient="false" />
+						<output resource="copper" rate="28.7" ambient="false" />
+						<output resource="carbon dioxide" rate="19.9" ambient="false" />
+						<output resource="grey water" rate="4.1" ambient="false" />
 				</process>
 			
 				<process name="extract minerals from basaltic deposits" power-required="0.2" default="off">
@@ -1594,7 +1703,6 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					
 					<output resource="sodium carbonate" rate="5.0" ambient="false" />
 				</process>
-
 
 				<process name="make cement" power-required="1.0" default="off">
 					<input resource="regolith" rate="70.0" ambient="false" />
@@ -1826,13 +1934,33 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</process>
 				
 				<process name="Carbon Formation Reactor" number-modules="2" power-required="0.1" default="on">
-					<description> C-Bosch reduces CO2 to C(s) and H20 using H2. 
+					<description> The Continuous Bosch (C-Bosch) Reactor reduces CO2 to C(s) and H20 using H2. 
+					 It aims to produce water and elemental carbon from hydrogen and carbon dioxide. 
 					</description> 
 					<input resource="carbon monoxide" rate="84.0" ambient="false" />
 					<input resource="hydrogen" rate="2.0" ambient="false" />
 					<output resource="carbon dioxide" rate="44.0" ambient="true" />
 					<output resource="water" rate="18.0" ambient="false" />
 					<output resource="carbon" rate="24.0" ambient="false" />
+				</process>
+				
+				<process name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="2" power-required="0.1" default="off">
+					<description>
+					  By partial pyrolysis in microwave generated plasma, methane is converted to 
+					  hydrogen and acetylene:					  
+					                2CH4 -> 3H2 + C2H2
+					                
+					  Hydrogen separation carried out with electrochemical cell stack. 
+					  
+					  H2 recovered from CH4 and sent to Sabatier to recover additional O2 from CO2
+					   - ~50% O2 recovery with Sabatier
+					   - Potentially >85% total O2 recovery with PPA
+					   - Acetylene must be removed from PPA outlet stream before hydrogen 
+					     can be sent to Sabatier
+					</description> 
+					<input resource="methane" rate="32.0" ambient="false" />
+					<output resource="acetylene" rate="6.0" ambient="false" />
+					<output resource="hydrogen" rate="26.0" ambient="false" />
 				</process>
 				
 				<process name="Oxygen Generation System" number-modules="4" power-required="2" default="off">
@@ -1860,21 +1988,18 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</resource-processing>
 
 			<storage capacity="100000">
-				<resource-storage resource="methane" capacity="10000.0" />
-				<resource-storage resource="methanol" capacity="10000.0" />				
-				<resource-storage resource="water" capacity="10000.0" />
-				<resource-storage resource="hydrogen" capacity="10000.0" />
-				<resource-storage resource="oxygen" capacity="10000.0" />
-				<resource-storage resource="carbon monoxide" capacity="5000.0" />
+				<resource-storage resource="hydrogen" capacity="20000.0" />
+				<resource-storage resource="methane" capacity="20000.0" />
+				<resource-storage resource="methanol" capacity="15000.0" />
+				<resource-storage resource="oxygen" capacity="20000.0" />
 				
-				<resource-storage resource="solid waste" capacity="1000.0" />
-				<resource-storage resource="toxic waste" capacity="1000.0" />
-				<resource-storage resource="fertilizer" capacity="1000.0" />
-				<resource-storage resource="chlorine" capacity="1000.0" />
-
-				<resource-storage resource="grey water" capacity="10000.0" />
-				<resource-storage resource="black water" capacity="10000.0" />
-
+				<resource-storage resource="acetylene" capacity="5000.0" />
+				<resource-storage resource="carbon monoxide" capacity="2500.0" />
+								
+				<resource-storage resource="water" capacity="10000.0" />
+				<resource-storage resource="ice" capacity="5000.0" />
+				<resource-storage resource="grey water" capacity="2000.0" />				
+				<resource-storage resource="rock salt" capacity="500.0" />
 			</storage>
 			
 			<waste-processing power-down-level="0.0">
@@ -3354,13 +3479,33 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</process>
 
 				<process name="Carbon Formation Reactor" number-modules="2" power-required="0.1" default="on">
-					<description> C-Bosch reduces CO2 to C(s) and H20 using H2. 
+					<description> The Continuous Bosch (C-Bosch) Reactor reduces CO2 to C(s) and H20 using H2. 
+					 It aims to produce water and elemental carbon from hydrogen and carbon dioxide. 
 					</description> 
 					<input resource="carbon monoxide" rate="84.0" ambient="false" />
 					<input resource="hydrogen" rate="2.0" ambient="false" />
 					<output resource="carbon dioxide" rate="44.0" ambient="true" />
 					<output resource="water" rate="18.0" ambient="false" />
 					<output resource="carbon" rate="24.0" ambient="false" />
+				</process>
+				
+				<process name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="2" power-required="0.1" default="off">
+					<description>
+					  By partial pyrolysis in microwave generated plasma, methane is converted to 
+					  hydrogen and acetylene:					  
+					                2CH4 -> 3H2 + C2H2
+					                
+					  Hydrogen separation carried out with electrochemical cell stack. 
+					  
+					  H2 recovered from CH4 and sent to Sabatier to recover additional O2 from CO2
+					   - ~50% O2 recovery with Sabatier
+					   - Potentially >85% total O2 recovery with PPA
+					   - Acetylene must be removed from PPA outlet stream before hydrogen 
+					     can be sent to Sabatier
+					</description> 
+					<input resource="methane" rate="32.0" ambient="false" />
+					<output resource="acetylene" rate="6.0" ambient="false" />
+					<output resource="hydrogen" rate="26.0" ambient="false" />
 				</process>
 				
 				<process name="Oxygen Generation System" number-modules="2" power-required=".5" default="on">

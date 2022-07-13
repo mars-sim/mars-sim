@@ -79,7 +79,7 @@
 		<part type="wire connector" number="216" />
 		<part type="plastic tubing" number="60" />
 		<part type="lubricant bottle" number="22" />
-		<part type="vehicle battery" number="4" />
+		<part type="chemical battery" number="4" />
 		<part type="radio antenna" number="8" />
 		<part type="satellite dish" number="4" />
 		<part type="communications circuit board" number="6" />
@@ -194,7 +194,7 @@
 		<part type="wire connector" number="331" />
 		<part type="plastic tubing" number="104" />
 		<part type="lubricant bottle" number="24" />
-		<part type="vehicle battery" number="4" />
+		<part type="chemical battery" number="4" />
 		<part type="radio antenna" number="10" />
 		<part type="satellite dish" number="6" />
 		<part type="communications circuit board" number="4" />
@@ -311,7 +311,7 @@
 		<part type="wire connector" number="511" />
 		<part type="plastic tubing" number="160" />
 		<part type="lubricant bottle" number="46" />
-		<part type="vehicle battery" number="10" />
+		<part type="chemical battery" number="10" />
 		<part type="radio antenna" number="20" />
 		<part type="satellite dish" number="10" />
 		<part type="communications circuit board" number="8" />
@@ -428,7 +428,7 @@
 		<part type="wire connector" number="716" />
 		<part type="plastic tubing" number="220" />
 		<part type="lubricant bottle" number="74" />
-		<part type="vehicle battery" number="16" />
+		<part type="chemical battery" number="16" />
 		<part type="radio antenna" number="30" />
 		<part type="satellite dish" number="16" />
 		<part type="communications circuit board" number="12" />

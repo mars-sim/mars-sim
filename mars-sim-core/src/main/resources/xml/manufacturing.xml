@@ -1217,6 +1217,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="create small vehicle frame" tech="2" skill="3" work-time="550" process-time="550"
 			power-required="3.0">
 		<inputs>
+			<resource name="acetylene" amount="0.5" />		
 			<part name="steel ingot" number="15" />
 		</inputs>
 		<outputs>
@@ -1227,6 +1228,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="create large vehicle frame" tech="2" skill="3" work-time="700" process-time="700"
 			power-required="5.0">
 		<inputs>
+			<resource name="acetylene" amount="1.0" />	
 			<part name="steel ingot" number="50" />
 		</inputs>
 		<outputs>
@@ -1522,6 +1524,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="assemble delivery drone" tech="3" skill="3" work-time="750" process-time="750"
 			power-required="2.0">
 		<inputs>
+			<resource name="acetylene" amount="0.25" />
 			<part name="navigation circuit board" number="1" />
 			<part name="communications circuit board" number="1" />
 			<part name="optical lens" number="2" />
@@ -1551,6 +1554,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="assemble light utility vehicle" tech="3" skill="3" work-time="1000" process-time="500"
 			power-required="2.0">
 		<inputs>
+			<resource name="acetylene" amount="0.5" />
 			<part name="navigation circuit board" number="1" />
 			<part name="communications circuit board" number="1" />
 			<part name="vehicle frame - small" number="2" />
@@ -1579,6 +1583,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="assemble explorer rover" tech="3" skill="4" work-time="2000" process-time="1000"
 			power-required="4.0">
 		<inputs>
+			<resource name="acetylene" amount="1.0" />		
 			<part name="navigation circuit board" number="1" />
 			<part name="communications circuit board" number="1" />
 
@@ -1617,6 +1622,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="assemble transport rover" tech="3" skill="4" work-time="2500" process-time="1000"
 			power-required="5.0">
 		<inputs>
+			<resource name="acetylene" amount="1.5" />		
 			<part name="navigation circuit board" number="1" />
 			<part name="communications circuit board" number="1" />
 
@@ -1655,6 +1661,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="assemble cargo rover" tech="3" skill="4" work-time="2500" process-time="1000"
 			power-required="6.0">
 		<inputs>
+			<resource name="acetylene" amount="1.5" />
 			<part name="navigation circuit board" number="1" />
 			<part name="communications circuit board" number="1" />
 
@@ -1690,115 +1697,6 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="do hematite smelting" tech="1" skill="1" work-time="100" process-time="100"
-			power-required="5.0">
-		<inputs>
-			<resource name="hematite" amount="50.0" />
-			<resource name="carbon monoxide" amount=".5" />
-		</inputs>
-		<outputs>
-			<resource name="iron powder" amount="25.0" />
-			<resource name="carbon dioxide" amount="1.0" />
-		</outputs>
-	</process>
-
-	<process name="do magnetite smelting" tech="1" skill="1" work-time="150" process-time="150"
-			power-required="5.0">
-		<inputs>
-			<resource name="magnetite" amount="50.0" />
-			<resource name="carbon monoxide" amount=".5" />
-		</inputs>
-		<outputs>
-			<resource name="iron powder" amount="30.0" />
-			<resource name="carbon dioxide" amount="1.0" />
-		</outputs>
-	</process>
-
-	<process name="do goethite smelting" tech="1" skill="1" work-time="150" process-time="150"
-			power-required="5.0">
-		<inputs>
-			<resource name="goethite" amount="50.0" />
-			<resource name="carbon monoxide" amount=".5" />
-		</inputs>
-		<outputs>
-			<resource name="iron powder" amount="27.0" />
-			<resource name="carbon dioxide" amount="1.0" />
-		</outputs>
-	</process>
-
-	<process name="do olivine smelting" tech="1" skill="1" work-time="150" process-time="150"
-			power-required="5.0">
-		<inputs>
-			<resource name="olivine" amount="50.0" />
-			<resource name="carbon monoxide" amount="32.5" />
-		</inputs>
-		<outputs>
-			<resource name="magnesium" amount="11.6" />
-			<resource name="iron powder" amount="11.6" />
-			<resource name="silicon" amount="8.1" />
-			<resource name="carbon dioxide" amount="51.2" />
-		</outputs>
-	</process>
-
-	<process name="do magnesite smelting" tech="1" skill="1" work-time="200" process-time="200"
-			power-required="5.0">
-		<inputs>
-			<resource name="magnesite" amount="50.0" />
-			<resource name="carbon monoxide" amount="16.6" />
-		</inputs>
-		<outputs>
-			<resource name="magnesium" amount="14.4" />
-			<resource name="carbon dioxide" amount="52.2" />
-			<resource name="silica" amount="5" />
-		</outputs>
-	</process>
-
-	<process name="do kamacite smelting" tech="1" skill="1" work-time="100" process-time="100"
-			power-required="5.0">
-		<inputs>
-			<resource name="kamacite" amount="50.0" />
-		</inputs>
-		<outputs>
-			<resource name="iron powder" amount="45.0" />
-			<resource name="nickel" amount="5.0" />
-		</outputs>
-	</process>
-
-	<process name="do taenite smelting" tech="1" skill="1" work-time="100" process-time="100"
-			power-required="5.0">
-		<inputs>
-			<resource name="taenite" amount="50.0" />
-		</inputs>
-		<outputs>
-			<resource name="iron powder" amount="20.0" />
-			<resource name="nickel" amount="30.0" />
-		</outputs>
-	</process>
-
-	<process name="do chalcopyrite smelting" tech="1" skill="1" work-time="200" process-time="200"
-			power-required="5.0">
-		<inputs>
-			<resource name="chalcopyrite" amount="50.0" />
-		</inputs>
-		<outputs>
-			<resource name="copper" amount="17.3" />
-			<resource name="iron powder" amount="15.2" />
-			<resource name="sulfur" amount="17.5" />
-		</outputs>
-	</process>
-
-	<process name="do malachite smelting" tech="1" skill="1" work-time="150" process-time="200"
-			power-required="5.0">
-		<inputs>
-			<resource name="malachite" amount="50.0" />
-			<resource name="carbon" amount="2.7" />
-		</inputs>
-		<outputs>
-			<resource name="copper" amount="28.7" />
-			<resource name="carbon dioxide" amount="19.9" />
-			<resource name="grey water" amount="4.1" />
-		</outputs>
-	</process>
 
 	<!-- Produces 5 5kg ingots of steel. -->
 	<process name="do steel ingot nickel alloying" tech="1" skill="1" work-time="100" process-time="50"
