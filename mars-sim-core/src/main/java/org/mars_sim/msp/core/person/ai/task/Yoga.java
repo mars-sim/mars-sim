@@ -52,7 +52,6 @@ public class Yoga extends Task implements Serializable {
 				walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), true);
 				// set the boolean to true so that it won't be done again today
 				person.getPreference().setTaskDue(this, true);
-
 			}
 		} 
 		
@@ -65,7 +64,6 @@ public class Yoga extends Task implements Serializable {
 				gym = gymBuilding.getExercise();
 				// set the boolean to true so that it won't be done again today
 				person.getPreference().setTaskDue(this, true);
-
 			}
 
 			else

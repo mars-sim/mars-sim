@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * ConnectWithEarth.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-13
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -11,12 +11,12 @@ import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.logging.SimLogger;
+import org.mars_sim.msp.core.person.Connection;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.function.Communication;
 import org.mars_sim.msp.core.structure.building.function.Computation;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -48,6 +48,10 @@ public class ConnectWithEarth extends Task implements Serializable {
     /** Computing Units requested. */		
 	private double computingNeeded = RandomUtil.getRandomDouble(0.05, 0.25);
 
+	private Connection connection;
+	
+	private final double TOTAL_COMPUTING_NEEDED = computingNeeded;
+	
 	/**
 	 * Constructor. This is an effort-driven task.
 	 * 
@@ -90,35 +94,19 @@ public class ConnectWithEarth extends Task implements Serializable {
 		} 
 		
 		else if (person.isInVehicle()) {
-
 			if (person.getVehicle() instanceof Rover) {
 				walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), true);
 
 				// set the boolean to true so that it won't be done again today
-				person.getPreference().setTaskDue(this, true);
+//				person.getPreference().setTaskDue(this, true);
 			}
 			
 			proceed = true;
 		} 
 
 		if (proceed) {
-			String act = "";
-			double rand = RandomUtil.getRandomInt(5);
-			if (rand == 0)
-				act = " was checking personal v-messages.";
-			else if (rand == 1)
-				act = " was watching Earth news.";
-			else if (rand == 2)
-				act = " was browsing MarsNet.";
-			else if (rand == 3)
-				act = " was watching Earth TV.";
-			else if (rand == 4)
-				act = " was watching a movie.";
-			else
-				act = " was browsing Earth internet.";
-			
-			logger.log(person, Level.INFO, 30_000, act);
-			
+			connection = person.getPreference().getRandomConnection();
+			setDescription(connection.getName());
 			// Initialize phase
 			addPhase(CONNECTING_EARTH);
 			setPhase(CONNECTING_EARTH);
@@ -161,20 +149,20 @@ public class ConnectWithEarth extends Task implements Serializable {
         	if (center != null)
         		successful = center.scheduleTask(randWork/5.0, msol + 1, msol + 6);
         	if (successful) {
-        		logger.info(person, 30_000L, "Utilized " 
-        				+ Math.round(randWork * 1_000.0)/1_000.0 
-        				+ " CUs for connecting with Earth.");
         		computingNeeded = computingNeeded - randWork;
         		 if (computingNeeded < 0) {
         			 computingNeeded = 0; 
         		 }
           	}
 	    	else {
-	    		logger.info(person, 30_000L, "No computing resources for connecting with Earth.");
+	    		logger.info(person, 30_000L, "No computing resources for " + connection.getName() + ".");
 	    	}
         }
         else if (computingNeeded <= 0) {
         	// this task has ended
+    		logger.info(person, 30_000L, connection.getName() + " - "
+    				+ Math.round(TOTAL_COMPUTING_NEEDED * 1_000.0)/1_000.0 
+    				+ " CUs Used.");
         	endTask();
         }
 		

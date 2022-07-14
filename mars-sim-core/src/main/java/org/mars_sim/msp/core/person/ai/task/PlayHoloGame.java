@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * PlayHoloGame.java
- * @date 2022-06-30
+ * @date 2022-07-13
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.person.ai.task;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -47,6 +48,8 @@ public class PlayHoloGame extends Task implements Serializable {
     /** Computing Units requested. */		
 	private double computingNeeded = RandomUtil.getRandomDouble(0.05, 1.0);
     
+	private final double TOTAL_COMPUTING_NEEDED = computingNeeded;
+			
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = -.3D;
 
@@ -164,23 +167,26 @@ public class PlayHoloGame extends Task implements Serializable {
         			successful = center.scheduleTask(randWork/5.0, msol + 1, msol + 6);
         	}
 	    	else
-	    		logger.info(person, 30_000L, "No computing centers available for setting up the holo game.");
+	    		logger.info(person, 30_000L, "No computing centers available for playing holo games.");
         	
         	if (successful) {
-        		logger.info(person, 30_000L, "Utilized " 
-        				+ Math.round(randWork * 1_000.0)/1_000.0 
-        				+ " CUs for playing holo game.");
+//        		logger.info(person, 30_000L, "Utilized " 
+//        				+ Math.round(randWork * 1_000.0)/1_000.0 
+//        				+ " CUs for playing holo games.");
         		computingNeeded = computingNeeded - randWork;
         		 if (computingNeeded < 0) {
         			 computingNeeded = 0; 
         		 }
           	}
 	    	else {
-	    		logger.info(person, 30_000L, "No computing resources available for scheduling a holo game setup.");
+	    		logger.info(person, 30_000L, "No computing resources available for playing holo games.");
 	    	}
         }
         else if (computingNeeded <= 0) {
         	// this task has ended
+    		logger.log(person, Level.FINE, 30_000L, "Used a total of " 
+    				+ Math.round(TOTAL_COMPUTING_NEEDED * 1_000.0)/1_000.0 
+    				+ " CUs for playing holo games.");
         	endTask();
         }     
 		
@@ -195,6 +201,9 @@ public class PlayHoloGame extends Task implements Serializable {
         double hunger = condition.getHunger();
         
         if (hunger > 1000) {
+        	logger.log(person, Level.FINE, 30_000L, "Used a total of " 
+    				+ Math.round(TOTAL_COMPUTING_NEEDED * 1_000.0)/1_000.0 
+    				+ " CUs for playing holo games.");
         	endTask();
         }
         
@@ -236,9 +245,9 @@ public class PlayHoloGame extends Task implements Serializable {
 	    		successful = center.scheduleTask(randWork, msol + 1, msol + 2);
 	    	}
 	    	if (successful) {
-	    		logger.info(person, 30_000L, "Utilized " 
-	    				+ Math.round(randWork * 1_000.0)/1_000.0 
-	    				+ " CUs for setting up a holo game.");
+//	    		logger.info(person, 30_000L, "Utilized " 
+//	    				+ Math.round(randWork * 1_000.0)/1_000.0 
+//	    				+ " CUs for setting up a holo game.");
 	    		computingNeeded = computingNeeded - randWork;
 	    	}
 	    	else {

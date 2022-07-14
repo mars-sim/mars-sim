@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Preference.java
- * @Date 2021-09-20
+ * @date 2022-07-13
  * @author Manny Kung
  */
 
@@ -27,7 +27,7 @@ import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
- * The Preference class determines the task preferences of a person
+ * The Preference class determines the task preferences of a person.
  */
 public class Preference implements Serializable {
 
@@ -48,6 +48,8 @@ public class Preference implements Serializable {
 	private Map<String, Integer> scoreStringMap;
 	/**  A string map of future MetaTasks. */
 	private Map<MarsClock, MetaTask> futureTaskMap;
+	/**  A connection preference map. */
+	private Map<Connection, Integer> connectionMap;
 
 	/** The Person instance. */
 	private Person person;
@@ -55,6 +57,11 @@ public class Preference implements Serializable {
 	private static MarsClock marsClock;
 	
 	
+	/**
+	 * Constructor.
+	 * 
+	 * @param person
+	 */
 	public Preference(Person person) {
 
 		this.person = person;
@@ -62,18 +69,24 @@ public class Preference implements Serializable {
 		// These lookups are all static in terms of the Person so they do not
 		// need to use the concurent list/maps
 		taskList = new ArrayList<>();
-
 		scoreStringMap = new HashMap<>();
-
 		futureTaskMap = new HashMap<>();
 		taskAccomplishedMap = new HashMap<>();
 		priorityMap = new HashMap<>();
 		onceADayMap = new HashMap<>();
+		
+		connectionMap = new HashMap<>();
+		Connection[] connections = Connection.values();
+		int size = connections.length;
+		for (int i = 0; i < size; i++) {
+			int p = RandomUtil.getRandomInt(0, 100);
+			connectionMap.put(connections[i], p);
+		}
 	}
 
 	/*
-	 * Initialize the preference score on each particular task. 
-	 * TODO Ideally would be good to mive this into the Person.initialise method
+	 * Initializes the preference score on each particular task. 
+	 * TODO Ideally would be good to move this into the Person.initialise method
 	 * but the Favorite.activity has to be defined. Maybe loading of the Favorite
 	 * could be move to Person.initialise.
 	 */
@@ -202,7 +215,7 @@ public class Preference implements Serializable {
 
 
 	/**
-	 * Obtains the preference score modified by its priority for a meta task
+	 * Obtains the preference score modified by its priority for a meta task.
 	 * 
 	 * @param metaTask
 	 * @return the score
@@ -226,8 +239,8 @@ public class Preference implements Serializable {
 		return result;
 	}
 
-	/***
-	 * Obtains the prioritized score of a meta task from its priority map
+	/**
+	 * Obtains the prioritized score of a meta task from its priority map.
 	 * 
 	 * @param metaTask
 	 * @return the prioritized score
@@ -245,7 +258,6 @@ public class Preference implements Serializable {
 				int sch = (int) sch_clock.getTotalMillisols();
 				if (now - sch > 0 && now - sch <= 5) {
 					// examine its timestamp down to within 5 millisols
-					// System.out.println("now - sch = " + (now-sch));
 					result += priorityMap.get(task);
 				}
 			}
@@ -254,15 +266,14 @@ public class Preference implements Serializable {
 		return result;
 	}
 
-	/***
-	 * Obtains the proper string name of a meta task
+	/**
+	 * Obtains the proper string name of a meta task.
 	 * 
 	 * @param metaTask {@link MetaTask}
 	 * @return string name of a meta task
 	 */
 	public static String getStringName(MetaTask metaTask) {
 		String s = metaTask.getClass().getSimpleName();
-
 		String ss = s.replaceAll("(?!^)([A-Z])", " $1")
 				.replace("Meta", "")
 				.replace("E V A ", "EVA ")
@@ -271,8 +282,8 @@ public class Preference implements Serializable {
 		return ss.trim();
 	}
 
-	/***
-	 * Obtains the proper string name of a task
+	/**
+	 * Obtains the proper string name of a task.
 	 * 
 	 * @param task {@link Task}
 	 * @return string name of a task
@@ -287,12 +298,12 @@ public class Preference implements Serializable {
 	}
 
 	/**
-	 * Checks if this task is due
+	 * Checks if this task is due.
 	 * 
 	 * @param MetaTask
 	 * @return true if it does
 	 */
-	public boolean isTaskDue(MetaTask mt) { // Task task) {
+	public boolean isTaskDue(MetaTask mt) {
 		// MetaTask mt = convertTask2MetaTask(task);
 		if (taskAccomplishedMap.isEmpty()) {
 			// if it does not exist (either it is not scheduled or it have been
@@ -306,7 +317,7 @@ public class Preference implements Serializable {
 	}
 
 	/**
-	 * Flag this task as being due or not due
+	 * Flags this task as being due or not due.
 	 * 
 	 * @param MetaTask
 	 * @param          true if it is due
@@ -330,7 +341,7 @@ public class Preference implements Serializable {
 	}
 
 	/**
-	 * Converts a task to its corresponding meta task
+	 * Converts a task to its corresponding meta task.
 	 * 
 	 * @param a task
 	 */
@@ -350,8 +361,16 @@ public class Preference implements Serializable {
 		return taskList;
 	}
 
+	public int getConnectionProbability(Connection connection) {
+		return connectionMap.get(connection);
+	}
+	
+	public Connection getRandomConnection() {
+		return RandomUtil.getWeightedIntegerRandomObject(connectionMap);
+	}
+	
 	/**
-	 * Prepare object for garbage collection.
+	 * Prepares object for garbage collection.
 	 */
 	public void destroy() {
 		person = null;
