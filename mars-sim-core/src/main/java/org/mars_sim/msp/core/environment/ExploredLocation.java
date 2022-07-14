@@ -1,4 +1,4 @@
-/**
+/*
  * Mars Simulation Project
  * ExploredLocation.java
  * @date 2021-12-09
@@ -34,7 +34,7 @@ public class ExploredLocation implements Serializable {
 	private int numEstimationImprovement;
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 *
 	 * @param location                       the location coordinates.
 	 * @param estimatedMineralConcentrations a map of all mineral types and their
@@ -72,7 +72,7 @@ public class ExploredLocation implements Serializable {
 	}
 
 	/**
-	 * Get the number of times the mineral concentration estimation has been
+	 * Gets the number of times the mineral concentration estimation has been
 	 * improved.
 	 *
 	 * @return number of times.
@@ -82,7 +82,7 @@ public class ExploredLocation implements Serializable {
 	}
 
 	/**
-	 * Add an mineral concentration estimation improvement.
+	 * Adds an mineral concentration estimation improvement.
 	 */
 	public void addEstimationImprovement() {
 		numEstimationImprovement++;
@@ -153,7 +153,7 @@ public class ExploredLocation implements Serializable {
 
 
 	/**
-	 * Prepare object for garbage collection.
+	 * Prepares object for garbage collection.
 	 */
 	public void destroy() {
 		location = null;

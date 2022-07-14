@@ -253,7 +253,7 @@ public class ExploreSite extends EVAOperation implements Serializable {
 		MineralMap mineralMap = surfaceFeatures.getMineralMap();
 		Map<String, Double> estimatedMineralConcentrations = site.getEstimatedMineralConcentrations();
 
-		for(String mineralType : estimatedMineralConcentrations.keySet()) {
+		for (String mineralType : estimatedMineralConcentrations.keySet()) {
 			double actualConcentration = mineralMap.getMineralConcentration(mineralType, site.getLocation());
 			double estimatedConcentration = estimatedMineralConcentrations.get(mineralType);
 			double estimationDiff = Math.abs(actualConcentration - estimatedConcentration);

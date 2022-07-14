@@ -139,7 +139,8 @@ public class HelpGenerator {
 	private static int filesNotGenerated = 0;
 
 	/**
-	 * insert html header with given page title into given string buffer.
+	 * Inserts html header with given page title into given string buffer.
+	 * 
 	 * @param s {@link StringBuffer}
 	 * @param title {@link String}
 	 */
@@ -192,6 +193,7 @@ public class HelpGenerator {
 
 	/**
 	 * Generates a html file.
+	 * 
 	 * @param path the path of the html file.
 	 * @param content the String content of the html file.
 	 */
@@ -200,7 +202,6 @@ public class HelpGenerator {
 		try {
 			String absPath = getAbsPath(dir);
 			
-//			System.out.println("Path -> " + absPath);
 			File file = new File(absPath + '/' + path.toString());
 			
 		      // if the autosave/default save directory does not exist, create one now
@@ -211,7 +212,6 @@ public class HelpGenerator {
 	        pw = new PrintWriter(file);
 			pw.write(content.toString());
 			pw.close();
-//			logger.log(Level.INFO,"generated file " + file.getName());
 			filesGenerated++;
 		} catch (Exception e) {
 			logger.log(Level.WARNING,"failed to generate file " + path.toString());
@@ -307,8 +307,9 @@ public class HelpGenerator {
 	}
 
 	/**
-	 * produces a link <code> a href = getPathResource(name) </code>
+	 * Produces a link <code> a href = getPathResource(name) </code>
 	 * with the name as caption.
+	 * 
 	 * @param resourceName {@link String}
 	 * @return {@link String}
 	 */
@@ -317,7 +318,8 @@ public class HelpGenerator {
 	}
 
 	/**
-	 * produces a link to the resources page with the given caption.
+	 * Produces a link to the resources page with the given caption.
+	 * 
 	 * @param caption {@link String}
 	 * @return {@link String}
 	 */
@@ -326,8 +328,9 @@ public class HelpGenerator {
 	}
 
 	/**
-	 * produces a link <code> a href = getPathVehicle(name) </code>
+	 * Produces a link <code> a href = getPathVehicle(name) </code>
 	 * with the name as caption.
+	 * 
 	 * @param vehicleName {@link String}
 	 * @return {@link String}
 	 */
@@ -336,7 +339,8 @@ public class HelpGenerator {
 	}
 
 	/**
-	 * produces a link to the vehicles page with the given caption.
+	 * Produces a link to the vehicles page with the given caption.
+	 * 
 	 * @param caption {@link String}
 	 * @return {@link String}
 	 */
@@ -345,8 +349,9 @@ public class HelpGenerator {
 	}
 
 	/**
-	 * produces a link <code> a href = getPathProcess(name) </code>
+	 * Produces a link <code> a href = getPathProcess(name) </code>
 	 * with the name as caption.
+	 * 
 	 * @param processName {@link String}
 	 * @return {@link String}
 	 */
@@ -355,7 +360,8 @@ public class HelpGenerator {
 	}
 
 	/**
-	 * produces a link to the processes page with the given caption.
+	 * Produces a link to the processes page with the given caption.
+	 * 
 	 * @param caption {@link String}
 	 * @return {@link String}
 	 */
@@ -364,8 +370,9 @@ public class HelpGenerator {
 	}
 
 	/**
-	 * produces a link <code> a href = getPathFoodProductionProcess(name) </code>
+	 * Produces a link <code> a href = getPathFoodProductionProcess(name) </code>
 	 * with the name as caption.
+	 * 
 	 * @param processName {@link String}
 	 * @return {@link String}
 	 */
@@ -374,7 +381,8 @@ public class HelpGenerator {
 	}
 
 	/**
-	 * produces a link to the Food Production processes page with the given caption.
+	 * Produces a link to the Food Production processes page with the given caption.
+	 * 
 	 * @param caption {@link String}
 	 * @return {@link String}
 	 */
@@ -391,8 +399,9 @@ public class HelpGenerator {
 	}
 
 	/**
-	 * produces a link <code> a href = getPathPart(name) </code>
+	 * Produces a link <code> a href = getPathPart(name) </code>
 	 * with the name as caption.
+	 * 
 	 * @param partName {@link String}
 	 * @return {@link String}
 	 */
@@ -401,7 +410,8 @@ public class HelpGenerator {
 	}
 
 	/**
-	 * produces a link to the parts page with the given caption.
+	 * Produces a link to the parts page with the given caption.
+	 * 
 	 * @param caption {@link String}
 	 * @return {@link String}
 	 */
@@ -428,7 +438,7 @@ public class HelpGenerator {
 	}
 
 	/**
-	 * generate help files with vehicle descriptions.
+	 * Generates help files with vehicle descriptions.
 	 */
 	private static final void generateVehicleDescriptions() {
 		List<String> vehicles = SupplyTableModel.getSortedVehicleTypes();
@@ -537,14 +547,9 @@ public class HelpGenerator {
 	}
 
 	/**
-	 * generate help files with resources descriptions.
+	 * Generates help files with resources descriptions.
 	 */
-	//2016-04-17 Added checking for edible
 	private static final void generateResourceDescriptions() {
-		//System.out.println("Calling generateResourceDescriptions()");
-		//Map<String,AmountResource> resources = ResourceUtil.getAmountResourcesMap();
-		//Map<Integer, AmountResource> resources = AmountResource.getAmountResourcesIDMap();
-		
 		ResourceUtil.createMaps();
 		List<AmountResource> resources = ResourceUtil.getSortedAmountResources();
 		
@@ -554,15 +559,8 @@ public class HelpGenerator {
 		.append("<p>Available Types of Resources :</p>")
 		.append("<table>\n");
 
-		//System.out.println("Done with making content");
-
-		//for (Map.Entry<String,AmountResource> entry : resources.entrySet()) {
-		//for (Entry<Integer, AmountResource> entry : resources.entrySet()) {
-			//AmountResource resource = entry.getValue();
-			//String name = entry.getKey();
 		for (AmountResource resource : resources) {
 			String name = resource.getName();	
-			//int id = entry.getKey();
 			String life = resource.isLifeSupport() ? "   (Life Support)" : "";
 			String edible = resource.isEdible() ? "   (Edible)" : "";
 
@@ -578,15 +576,11 @@ public class HelpGenerator {
 			);
 		}
 
-		//System.out.println("Done with making all rows");
-
 		content.append("</table>\n");
 
 		helpFileHeader(content,"resources");
 		helpFileFooter(content);
 		generateFile(RESOURCE_DIR, getPathResources(),content);
-
-		//System.out.println("generateResourceDescriptions(): done with part 1");
 
 		// STEP 2 :
 	
@@ -696,7 +690,7 @@ public class HelpGenerator {
 	}
 
 	/**
-	 * generate help files with parts descriptions.
+	 * Generates help files with parts descriptions.
 	 */
 	private static final void generatePartsDescriptions() {
 		//Map<String, ItemResource> parts = ItemResource.getItemResourcesMap();
@@ -826,7 +820,7 @@ public class HelpGenerator {
 	}
 
 	/**
-	 * generate help files with manufacturing process descriptions.
+	 * Generates help files with manufacturing process descriptions.
 	 */
 	private static final void generateProcessDescriptions() {
 		TreeMap<String,ManufactureProcessInfo> processes = ManufactureUtil.getAllManufactureProcessesMap();
@@ -938,7 +932,7 @@ public class HelpGenerator {
 
 
 	/**
-	 * generate help files with food production process descriptions.
+	 * Generates help files with food production process descriptions.
 	 */
 	private static final void generateFoodProductionDescriptions() {
 		TreeMap<String,FoodProductionProcessInfo> processes = FoodProductionUtil.getAllFoodProductionProcessesMap();
@@ -1117,24 +1111,24 @@ public class HelpGenerator {
 	
 	
 	/**
-	 * generate html help files for use in the in-game help and tutorial browser.
+	 * Generates html help files for use in the in-game help and tutorial browser.
 	 */
 	public static final void generateHtmlHelpFiles() {
 		logger.log(Level.INFO,"Starting to generate help files");
 
-		logger.log(Level.INFO,"vehicles htmls are at " + getAbsPath(VEHICLE_DIR));
+		logger.log(Level.INFO,"Vehicles htmls are at " + getAbsPath(VEHICLE_DIR));
 		HelpGenerator.generateVehicleDescriptions();
-		logger.log(Level.INFO,"resources htmls are at " + getAbsPath(RESOURCE_DIR));
+		logger.log(Level.INFO,"Resources htmls are at " + getAbsPath(RESOURCE_DIR));
 		HelpGenerator.generateResourceDescriptions();
-		logger.log(Level.INFO,"parts htmls are at " + getAbsPath(PART_DIR));
+		logger.log(Level.INFO,"Parts htmls are at " + getAbsPath(PART_DIR));
 		HelpGenerator.generatePartsDescriptions();
-		logger.log(Level.INFO,"processes htmls are at " + getAbsPath(PROCESS_DIR));
+		logger.log(Level.INFO,"Processes htmls are at " + getAbsPath(PROCESS_DIR));
 		HelpGenerator.generateProcessDescriptions();
-		logger.log(Level.INFO,"food htmls are at " + getAbsPath(FOOD_DIR));
+		logger.log(Level.INFO,"Food htmls are at " + getAbsPath(FOOD_DIR));
 		HelpGenerator.generateFoodProductionDescriptions();
 		logger.log(Level.INFO,"All done !");
 
-		//TODO: will create HelpGenerator.generateMealsDescriptions();
+		//FUTURE: will create HelpGenerator.generateMealsDescriptions();
 
 		logger.log(
 			Level.INFO,
@@ -1156,10 +1150,32 @@ public class HelpGenerator {
 		logger.log(
 				Level.INFO,
 				new StringBuffer()
-					.append("All of the newly generated html files are located at /git/mars-sim/mars-sim-ui/target/classes/docs/help/")
+					.append("1. All of the newly generated html files are located at /git/mars-sim/mars-sim-ui/target/classes/docs/help/")
 				.toString()
 			);
 		
+		logger.log(
+				Level.INFO,
+				new StringBuffer()
+					.append("2. Now go to /docs/help/ in mars-sim-ui's submodule")
+					.toString()
+			);
+
+		logger.log(
+				Level.INFO,
+				new StringBuffer()
+					.append("3. Manually delete those 5 folders (food, parts, processes, resources, and vehicles) "
+							+ ", thus removing all old generated html files within")
+					.toString()
+			);
+		
+		logger.log(
+				Level.INFO,
+				new StringBuffer()
+					.append("4. Manually copy all of the newly generated html files by dragging those "
+							+ "5 folders over /docs/help/")
+					.toString()
+			);
 		System.exit(0);
 	}
 }
