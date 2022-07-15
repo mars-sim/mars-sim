@@ -321,6 +321,17 @@ public class TerrainElevation implements Serializable {
 	}
 
 	/**
+	 * Returns the ground elevation of a location.
+	 * 
+	 * @param location
+	 * @return
+	 */
+	public static double getGroundElevation(Coordinates location) {
+		return mapDataUtil.getElevationInt(location.getPhi(), location.getTheta())/ 1000.0;
+	}
+
+	
+	/**
 	 * Returns the elevation in km at the given location, based on MOLA's dataset
 	 *
 	 * @param location the location in question

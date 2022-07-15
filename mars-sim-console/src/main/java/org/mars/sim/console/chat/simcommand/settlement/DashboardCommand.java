@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * DashboardCommand.java
- * @version 3.1.2 2020-12-30
+ * @date 2022-07-15
  * @author Barry Evans
  */
 
@@ -9,6 +9,8 @@ package org.mars.sim.console.chat.simcommand.settlement;
 
 import org.mars.sim.console.chat.Conversation;
 import org.mars.sim.console.chat.simcommand.StructuredResponse;
+import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.environment.TerrainElevation;
 import org.mars_sim.msp.core.goods.GoodsManager;
 import org.mars_sim.msp.core.structure.Settlement;
 
@@ -25,7 +27,7 @@ public class DashboardCommand extends AbstractSettlementCommand {
 	}
 
 	/** 
-	 * Output the current immediate location of the Unit
+	 * Outputs the current immediate location of the Unit.
 	 */
 	@Override
 	protected boolean execute(Conversation context, String input, Settlement settlement) {
@@ -39,17 +41,21 @@ public class DashboardCommand extends AbstractSettlementCommand {
 	}
 
 	/**
-	 * Generate a dashboard for a Settlement.
+	 * Generates a dashboard for a Settlement.
+	 * 
 	 * @param settlement
 	 * @return
 	 */
 	void generatedDashboard(Settlement settlement, StructuredResponse response) {
+		Coordinates location = settlement.getCoordinates();
+		double elevation = Math.round(TerrainElevation.getGroundElevation(location) * 1000.0)/1000.0;
 
 		response.appendLabeledString("Sponsor", settlement.getSponsor().getDescription());
 		response.appendLabeledString("Objective", settlement.getObjective().getName());
-		response.appendLabeledString("Location", settlement.getCoordinates().getCoordinateString());
+		response.appendLabeledString("Location", location.getCoordinateString());
+		response.appendLabeledString("Elevation", elevation + " km");
 		response.appendLabelledDigit("Population", settlement.getNumCitizens());	
-				
+
 		String[] cats = new String[] { "Repair", "Maintenance", "EVA Suit Production" };
 
 		GoodsManager goodsManager = settlement.getGoodsManager();

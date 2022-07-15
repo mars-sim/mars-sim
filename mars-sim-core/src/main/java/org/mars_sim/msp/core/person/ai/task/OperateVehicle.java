@@ -963,13 +963,16 @@ public abstract class OperateVehicle extends Task implements Serializable {
 	
     /**
      * Gets the distance to the destination.
+     * 
      * @return distance (km)
      */
     protected double getDistanceToDestination() {
     	return vehicle.getCoordinates().getDistance(destination);
     }
     
-    /** Returns the elevation at the ground elevation.
+    /** 
+     * Returns the elevation of the vehicle on the ground.
+     * 
      *  @return elevation in km.
      */
     protected double getGroundElevation() {
@@ -979,7 +982,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
     }
     
     /**
-     * Stops the vehicle and removes operator
+     * Stops the vehicle and removes operator.
      */
     protected void clearDown() {
     	if (vehicle != null) {

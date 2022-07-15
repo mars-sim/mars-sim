@@ -131,7 +131,7 @@ public abstract class GroundVehicle extends Vehicle {
 			terrainElevation = surfaceFeatures.getTerrainElevation();
 		return terrainElevation.determineTerrainSteepness(getCoordinates(), direction);
 	}
-
+    
 	/**
 	 * Returns true if ground vehicle is stuck
 	 * 

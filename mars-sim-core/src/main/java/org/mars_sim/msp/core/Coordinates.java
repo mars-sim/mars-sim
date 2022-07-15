@@ -827,7 +827,6 @@ public class Coordinates implements Serializable {
 		return null;
 	}
 
-
 	/**
 	 * Returns true if coordinates have equal phi and theta values
 	 *

@@ -1,8 +1,8 @@
 /*
  * Mars Simulation Project
- * DistanceCommand.java
+ * ElevationCommand.java
  * @date 2022-07-15
- * @author Barry Evans
+ * @author Manny Kung
  */
 
 package org.mars.sim.console.chat.simcommand;
@@ -11,47 +11,44 @@ import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.environment.TerrainElevation;
 
 /**
- * Get the distance to a specific location. The starting point is the location of the calling
+ * Get the elevation of a specific location. 
  * Unit.
  */
-public class DistanceCommand extends ChatCommand {
+public class ElevationCommand extends ChatCommand {
 
-	public static final ChatCommand DISTANCE = new DistanceCommand();
+	public static final ChatCommand ELEVATION = new ElevationCommand();
 
-	private DistanceCommand() {
-		super(TopLevel.SIMULATION_GROUP, "di", "distance", "Distance to a destination");
+	private ElevationCommand() {
+		super(TopLevel.SIMULATION_GROUP, "el", "elevation", "Elevation of a Location");
 		setInteractive(true);
 	}
 
 	@Override
 	public boolean execute(Conversation context, String input) {
-		Coordinates start = null;
+		Coordinates location = null;
+		double elevation = 0;
+		boolean result = false;
 		
 		// If a Unit then that is the start location
 		ChatCommand parent = context.getCurrentCommand();
 		if (parent instanceof ConnectedUnitCommand) {
 			Unit source = ((ConnectedUnitCommand)context.getCurrentCommand()).getUnit();
-			start = source.getCoordinates();
-			context.println("Start location is " + start);
+			location = source.getCoordinates();
+			result = true;
+			elevation = source.getGroundElevation();
+			context.println("Start location is " + location 
+					+ " at " + Math.round(elevation * 1000.0)/1000.0 + " km.");
 		}
 		else {
 			// Ask user
-			start = getCoordinates("Start", context);			
-		}
-		
-		boolean result = false;
-		// If a start then continue
-		if (start != null) {
-			Coordinates end = getCoordinates("Destination", context);
-			if (end != null) {
-				double distance = start.getDistance(end);
-				result  = true;
-				
-				context.println("The distance between (" + start.getCoordinateString() + ") and ("
-						+ end.getCoordinateString() + ") is " + Math.round(distance *1_000.0)/1_000.0 + " km");
-			}
+			location = getCoordinates("Start", context);	
+			result = true;
+			elevation = TerrainElevation.getGroundElevation(location);
+			context.println("The elevation of this location is " 
+					+ Math.round(elevation * 1000.0)/1000.0 + " km.");
 		}
 		
 		return result;

@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * ConnectCommand.java
- * @version 3.1.2 2020-12-30
+ * @date 2022-07-15
  * @author Barry Evans
  */
 
@@ -47,7 +47,7 @@ public class ConnectCommand extends ChatCommand {
 	public boolean execute(Conversation context, String input) {
 		boolean result = false;
 		if ((input == null) || input.isBlank()) {
-			context.println("Sorry! You have to tell me clearly what you would like to connect with");
+			context.println("Sorry! You have to tell me clearly what you would like to connect with.");
 			context.println("");
 		}
 		else {

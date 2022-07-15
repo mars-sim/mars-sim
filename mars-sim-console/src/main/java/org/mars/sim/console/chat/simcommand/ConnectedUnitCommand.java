@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * ConnectedUnitCommand.java
- * @version 3.1.2 2020-12-30
+ * @date 2022-07-15
  * @author Barry Evans
  */
 
