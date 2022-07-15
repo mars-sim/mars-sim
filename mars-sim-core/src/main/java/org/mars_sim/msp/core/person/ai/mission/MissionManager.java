@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.meta.MetaMission;
 import org.mars_sim.msp.core.person.ai.mission.meta.MetaMissionUtil;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
+import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.Temporal;
@@ -258,22 +259,29 @@ public class MissionManager implements Serializable, Temporal {
 		// Get a random number from 0 to the total weight
 		double totalProbCache = 0D;
 
+		ReportingAuthority sponsor = person.getAssociatedSettlement().getSponsor();
+
 		// Determine probabilities.
 		for (MetaMission metaMission : MetaMissionUtil.getMetaMissions()) {
-			double probability = metaMission.getProbability(person);
-			if (Double.isNaN(probability) || Double.isInfinite(probability)) {
+			double baseProb = metaMission.getProbability(person);
+			if (Double.isNaN(baseProb) || Double.isInfinite(baseProb)) {
 					logger.severe(person, "Bad mission probability on " + metaMission.getName() + " probability: "
-							+ probability);
+							+ baseProb);
 			}
-			else if (probability > 0D) {
+			else if (baseProb > 0D) {
 				// Get any overriding ratio
 				int boost = missionBoost.getOrDefault(metaMission.getType(), 0);
+				double probability = baseProb + boost;
 
-				probability += boost;
-				logger.info(person, "Mission " + metaMission.getName() + " with probability=" + probability
-								+ " boost=" + boost);
+				double sponsorRatio = sponsor.getMissionRatio(metaMission.getType());
+				probability *= sponsorRatio;
 
-								missionProbCache.put(metaMission, probability);
+				logger.info(person, "Mission " + metaMission.getType() + " probability=" + probability
+								+ " base prob=" + baseProb
+								+ " boost=" + boost
+								+ " sponsor=" + sponsorRatio);
+
+				missionProbCache.put(metaMission, probability);
 				totalProbCache += probability;
 			}
 		}

@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import org.mars_sim.msp.core.configuration.UserConfigurable;
+import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
@@ -21,6 +22,11 @@ implements UserConfigurable, Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
+
+	// Maximum points for a top priority subaganda
+	private static final double MAX_RATIO_PER_SUBAGENDA = 0.5D;
+	// Maximum priority value
+	private static final int MAX_PRIORITY_PER_SUBAGENDA = 10;
 
 	private MissionAgenda missionAgenda;
 
@@ -74,15 +80,6 @@ implements UserConfigurable, Serializable {
 		return name;
 	}
 
-	/**
-	 * Get the associated short code.
-	 * @return
-	 * @deprecated Use the {@link #getName()} method
-	 */
-	public String getCode() {
-		return name;
-	}
-	
 	/**
 	 * Get the full name of the authority
 	 * @return
@@ -163,5 +160,24 @@ implements UserConfigurable, Serializable {
 			return false;
 		return true;
 	}
+
+	/**
+	 * Get a favourite ratio for a particular mission. Value of 1.0 is neutral.
+	 * @param type
+	 * @return Ration to apply to the mission score
+	 */
+    public double getMissionRatio(MissionType type) {
+        double result = 1D;
+		for(MissionSubAgenda subAgenda : missionAgenda.getAgendas()) {
+			int modifier = subAgenda.getModifiers().getOrDefault(type, 0);
+
+			// The modifier ia a value of 0..10 that represents a priority.
+			// Fr each priority point add a vaue to the ratio. 
+			modifier = Math.min(modifier, MAX_PRIORITY_PER_SUBAGENDA);
+			result += (modifier * MAX_RATIO_PER_SUBAGENDA)/MAX_PRIORITY_PER_SUBAGENDA;
+		}
+
+		return result;
+    }
 
 }

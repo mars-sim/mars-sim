@@ -85,7 +85,7 @@ public final class ReportingAuthorityFactory extends UserConfigurableConfig<Repo
 				
 				// Get modifiers
 				Map<MissionType, Integer> modifiers = new HashMap<>();
-				List<Element> modNodes = agendaNode.getChildren(MODIFIER_EL);
+				List<Element> modNodes = subNode.getChildren(MODIFIER_EL);
 				for (Element modNode : modNodes) {
 					MissionType mission = MissionType.valueOf(modNode.getAttributeValue(MISSION_ATTR));
 					int value = Integer.parseInt(modNode.getAttributeValue(VALUE_ATTR));
