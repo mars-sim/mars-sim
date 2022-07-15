@@ -755,7 +755,10 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 			performTravelPhase(member);
 		}
 		else if (DISEMBARKING.equals(getPhase())) {
-			performDisembarkToSettlementPhase(member, getCurrentNavpointSettlement());
+			if (isCurrentNavpointSettlement())
+				performDisembarkToSettlementPhase(member, getCurrentNavpointSettlement());
+			else
+				logger.severe(getTypeID() + ": Current navpoint is not a settlement.");
 		}
 		else if (COMPLETED.equals(getPhase())) {
 			setPhaseEnded(true);
@@ -1035,6 +1038,8 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 							vehicle.getEstimatedFuelEconomy(), useMargin);
 
 			result.put(vehicle.getFuelType(), amount);
+			// Add the same amount of oxygen as fuel oxidizer
+			result.put(ResourceUtil.oxygenID, amount);
 
 		}
 		return result;
@@ -2213,7 +2218,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	}
 
 	/**
-	 * Can the mission vehicle be unloaded at this Settlement
+	 * Can the mission vehicle be unloaded at this Settlement ?
 	 *
 	 * @param settlement
 	 * @return
@@ -2237,7 +2242,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	}
 
 	/**
-	 * Start the TRAVELLING phase of the mission. This will advanced to the
+	 * Starts the TRAVELLING phase of the mission. This will advanced to the
 	 * next navigation point.
 	 */
 	protected void startTravellingPhase() {
@@ -2249,7 +2254,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	}
 
 	/**
-	 * Start the disembarking phase
+	 * Starts the disembarking phase.
 	 */
 	protected void startDisembarkingPhase() {
 		NavPoint np = getCurrentNavpoint();

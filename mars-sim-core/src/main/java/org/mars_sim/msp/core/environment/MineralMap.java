@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * MineralMap.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-14
  * @author Scott Davis
  */
 
@@ -52,7 +52,7 @@ public interface MineralMap {
 	public Coordinates findRandomMineralLocation(Coordinates startingLocation, double range);
 
 	/**
-	 * Prepare object for garbage collection.
+	 * Prepares object for garbage collection.
 	 */
 	public void destroy();
 }

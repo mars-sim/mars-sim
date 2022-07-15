@@ -1,3 +1,9 @@
+/*
+ * Mars Simulation Project
+ * EVAMission.java
+ * @date 2022-07-14
+ * @author Barry Evans
+ */
 package org.mars_sim.msp.core.person.ai.mission;
 
 import java.util.ArrayList;
@@ -15,7 +21,9 @@ import org.mars_sim.msp.core.vehicle.Rover;
 
 public abstract class EVAMission extends RoverMission {
 
-    /** default logger. */
+	private static final long serialVersionUID = 1L;
+
+	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(EVAMission.class.getName());
 	
 	private static final MissionPhase WAIT_SUNLIGHT = new MissionPhase("Mission.phase.waitSunlight");

@@ -70,7 +70,7 @@ public class RandomMineralMap implements Serializable, MineralMap {
 	 * Constructor
 	 */
 	RandomMineralMap() {
-		mineralConcentrations = new ArrayList<MineralConcentration>(2000);
+		mineralConcentrations = new ArrayList<>(2000);
 
 		// Determine mineral concentrations.
 		determineMineralConcentrations();
@@ -99,7 +99,7 @@ public class RandomMineralMap implements Serializable, MineralMap {
 				MineralType mineralType = i.next();
 
 				// Create super set of topographical regions.
-				Set<Coordinates> regionSet = new HashSet<Coordinates>(4000);
+				Set<Coordinates> regionSet = new HashSet<>(4000);
 				Iterator<String> j = mineralType.getLocales().iterator();
 				while (j.hasNext()) {
 					String locale = j.next().trim();
@@ -169,7 +169,7 @@ public class RandomMineralMap implements Serializable, MineralMap {
 	 * @return set of location coordinates.
 	 */
 	private Set<Coordinates> getTopoRegionSet(String imageMapName) {
-		Set<Coordinates> result = new HashSet<Coordinates>(3000);
+		Set<Coordinates> result = new HashSet<>(3000);
 //		[landrus, 26.11.09]: don't use the system classloader in a webstart env.
 		URL imageMapURL = getClass().getResource("/images/" + imageMapName);
 		ImageIcon mapIcon = new ImageIcon(imageMapURL);
@@ -221,7 +221,7 @@ public class RandomMineralMap implements Serializable, MineralMap {
 			double effect = getMineralConcentrationEffect(mineralConcentration, location);
 			if (effect > 0D) {
 				if (emptyMap) {
-					result = new HashMap<String, Double>();
+					result = new HashMap<>();
 					emptyMap = false;
 				}
 				double totalConcentration = 0D;
@@ -321,7 +321,7 @@ public class RandomMineralMap implements Serializable, MineralMap {
 	public Coordinates findRandomMineralLocation(Coordinates startingLocation, double range) {
 		Coordinates result = null;
 
-		List<MineralConcentration> locales = new ArrayList<MineralConcentration>(0);
+		List<MineralConcentration> locales = new ArrayList<>(0);
 
 		Iterator<MineralConcentration> i = mineralConcentrations.iterator();
 		while (i.hasNext()) {

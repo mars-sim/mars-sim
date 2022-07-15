@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * MineralMapConfig.java
- * @date 2021-12-25
+ * @date 2022-07-14
  * @author Scott Davis
  */
 
@@ -30,7 +30,7 @@ public class MineralMapConfig implements Serializable {
 	private transient List<MineralType> mineralTypes;
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 * 
 	 * @param mineralDoc DOM document containing mineral configuration.
 	 */
@@ -39,7 +39,7 @@ public class MineralMapConfig implements Serializable {
 	}
 
 	/**
-	 * Gets a list of mineralTypes
+	 * Gets a list of mineralTypes.
 	 * 
 	 * @return list of mineralTypes
 	 * @throws Exception when mineralTypes can not be resolved.
@@ -49,7 +49,7 @@ public class MineralMapConfig implements Serializable {
 	}
 	
 	/**
-	 * Build the mineralTypes list
+	 * Builds the mineralTypes list.
 	 * 
 	 * @param configDoc
 	 */
@@ -89,7 +89,7 @@ public class MineralMapConfig implements Serializable {
 	}
 
 	/**
-	 * Prepare object for garbage collection.
+	 * Prepares object for garbage collection.
 	 */
 	public void destroy() {
 		if (mineralTypes != null) {

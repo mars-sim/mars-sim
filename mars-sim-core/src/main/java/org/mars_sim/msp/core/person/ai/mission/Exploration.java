@@ -182,28 +182,28 @@ public class Exploration extends EVAMission
 		}
 	}
 
-	/**
-	 * Checks if there are any mineral locations within rover/mission range.
-	 *
-	 * @param rover          the rover to use.
-	 * @param homeSettlement the starting settlement.
-	 * @return true if mineral locations.
-	 * @throws Exception if error determining mineral locations.
-	 */
-	public static boolean hasNearbyMineralLocations(Rover rover, Settlement homeSettlement) {
-
-		double roverRange = rover.getRange(MISSION_TYPE);
-		double tripTimeLimit = getTotalTripTimeLimit(rover, rover.getCrewCapacity(), true);
-		double tripRange = getTripTimeRange(tripTimeLimit, rover.getBaseSpeed() / 1.25D);
-		double range = roverRange;
-		if (tripRange < range)
-			range = tripRange;
-
-		MineralMap map = surfaceFeatures.getMineralMap();
-		Coordinates mineralLocation = map.findRandomMineralLocation(homeSettlement.getCoordinates(), range / 2D);
-
-		return (mineralLocation != null);
-	}
+//	/**
+//	 * Checks if there are any mineral locations within rover/mission range.
+//	 *
+//	 * @param rover          the rover to use.
+//	 * @param homeSettlement the starting settlement.
+//	 * @return true if mineral locations.
+//	 * @throws Exception if error determining mineral locations.
+//	 */
+//	public static boolean hasNearbyMineralLocations(Rover rover, Settlement homeSettlement) {
+//
+//		double roverRange = rover.getRange(MISSION_TYPE);
+//		double tripTimeLimit = getTotalTripTimeLimit(rover, rover.getCrewCapacity(), true);
+//		double tripRange = getTripTimeRange(tripTimeLimit, rover.getBaseSpeed() / 1.25D);
+//		double range = roverRange;
+//		if (tripRange < range)
+//			range = tripRange;
+//
+//		MineralMap map = surfaceFeatures.getMineralMap();
+//		Coordinates mineralLocation = map.findRandomMineralLocation(homeSettlement.getCoordinates(), range / 2D);
+//
+//		return (mineralLocation != null);
+//	}
 
 	/**
 	 * Checks if there are any mineral locations within rover/mission range.

@@ -428,7 +428,7 @@ public abstract class RoverMission extends VehicleMission {
 	}
 
 	/**
-	 * Disembarks the vehicle and unload cargo
+	 * Disembarks the vehicle and unload cargo.
 	 *
 	 * @param member
 	 * @param v

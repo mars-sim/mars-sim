@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * MineralConcentration.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-14
  * @author Manny Kung
  */
 
@@ -14,7 +14,6 @@ import org.mars_sim.msp.core.Coordinates;
 /**
  * Internal class representing a mineral concentration.
  */
-//@JsonTypeInfo(use = JsonTypeInfo.Id.MINIMAL_CLASS, include = As.PROPERTY, property = "@class")
 public class MineralConcentration implements Serializable {
 
 	private static final long serialVersionUID = 1L;
