@@ -504,7 +504,8 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy, 
 			if ((site.getNumEstimationImprovement() == 0) || (RandomUtil.getRandomDouble(1.0D) <= probability)) {
 				ExploreSite.improveSiteEstimates(site, getEffectiveSkillLevel());
 
-				logger.log(worker, Level.FINE, 5_000, "Studying field samples at " + site.getLocation().getFormattedString() 
+				logger.log(worker, Level.INFO, 5_000, "Studying field samples at " 
+						+ site.getLocation().getFormattedString() 
 						+ ". Estimation Improvement: "
 						+ site.getNumEstimationImprovement());
 			}

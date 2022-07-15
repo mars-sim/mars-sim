@@ -58,7 +58,7 @@ public class CollectRegolithMeta extends AbstractMetaMission {
 					|| RoleType.SUB_COMMANDER == roleType
 					) {
 
-				if (settlement.getMissionBaseProbability(MissionType.COLLECT_REGOLITH))
+				if (settlement.isMissionEnable(MissionType.COLLECT_REGOLITH))
 	            	missionProbability = 1;
 	            else
 	    			return 0;

@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
- * EmergencySupplyMissionMeta.java
- * @version 3.2.0 2021-06-20
+ * EmergencySupplyMeta.java
+ * @date 2022-07-14
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission.meta;
@@ -17,13 +17,13 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Rover;
 
 /**
- * A meta mission for the EmergencySupplyMission mission.
+ * A meta mission for the EmergencySupply mission.
  */
-public class EmergencySupplyMissionMeta extends AbstractMetaMission {
+public class EmergencySupplyMeta extends AbstractMetaMission {
 
     private double jobModifier;
 
-	EmergencySupplyMissionMeta() {
+	EmergencySupplyMeta() {
     	super(MissionType.EMERGENCY_SUPPLY, "emergencySupply", null);
     }
 
@@ -41,7 +41,7 @@ public class EmergencySupplyMissionMeta extends AbstractMetaMission {
         		
             Settlement settlement = person.getSettlement();
         	
-            if (settlement.getMissionBaseProbability(MissionType.EMERGENCY_SUPPLY))
+            if (settlement.isMissionEnable(MissionType.EMERGENCY_SUPPLY))
             	missionProbability = 1;
             else
     			return 0;
@@ -95,8 +95,8 @@ public class EmergencySupplyMissionMeta extends AbstractMetaMission {
 	    		if (missionProbability <= 0)
 	    			return 0;
 	    		
-	    		int f1 = 2*numEmbarked + 1;
-	    		int f2 = 2*numThisMission + 1;
+	    		int f1 = 2 * numEmbarked + 1;
+	    		int f2 = 2 * numThisMission + 1;
 	    		
 	    		missionProbability *= settlement.getNumCitizens() / f1 / f2 / 2D;
 	    		

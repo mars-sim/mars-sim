@@ -81,7 +81,7 @@ public class TravelToSettlementMeta extends AbstractMetaMission {
     private double getMissionProbability(Settlement settlement, MissionMember member) {
         double missionProbability = 0;
         
-        if (!settlement.getMissionBaseProbability(MissionType.TRAVEL_TO_SETTLEMENT)) {
+        if (!settlement.isMissionEnable(MissionType.TRAVEL_TO_SETTLEMENT)) {
 			return 0;
         }
         

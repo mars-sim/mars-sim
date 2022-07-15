@@ -695,7 +695,7 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 	 * @return selectedVehicle
 	 */
 	public Vehicle selectVehicleAt(int xPixel, int yPixel) {
-		Point.Double settlementPosition = convertToSettlementLocation(xPixel, yPixel);
+		Point.Double pos = convertToSettlementLocation(xPixel, yPixel);
 
 		Vehicle selectedVehicle = null;
 
@@ -715,14 +715,13 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 			double x = vehicle.getPosition().getX();
 			double y = vehicle.getPosition().getY();
 
-			double distanceX = x - settlementPosition.getX();
-			double distanceY = y - settlementPosition.getY();
+			double distanceX = x - pos.getX();
+			double distanceY = y - pos.getY();
+			
 			double distance = Math.hypot(distanceX, distanceY);
 			if (distance <= newRange) {
 				selectedVehicle = vehicle;
-
-				//// paintDoubleBuffer();
-				// repaint();
+				break;
 			}
 		}
 		return selectedVehicle;
@@ -771,6 +770,12 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 		return selectedVehicle;
 	}
 
+	/**
+	 * Gets a list of Parked vehicles.
+	 * 
+	 * @param settlement
+	 * @return
+	 */
 	public static List<Vehicle> returnVehicleList(Settlement settlement) {
 
 		List<Vehicle> result = new ArrayList<>();

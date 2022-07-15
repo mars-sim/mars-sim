@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ExplorationMeta.java
- * @date 2021-10-20
+ * @date 2022-07-14
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission.meta;
@@ -30,7 +30,7 @@ public class ExplorationMeta extends AbstractMetaMission {
 	/** Mission name */
 	private static final double VALUE = 1.25D;
 
-	private static final int MAX = 200;
+	private static final int MAX = 100;
 
 	/** default logger. */
 	private static final Logger logger = Logger.getLogger(ExplorationMeta.class.getName());
@@ -72,7 +72,7 @@ public class ExplorationMeta extends AbstractMetaMission {
 					return 0;
 				}
 
-				if (!settlement.getMissionBaseProbability(MissionType.EXPLORATION)) {
+				if (!settlement.isMissionEnable(MissionType.EXPLORATION)) {
 	    			return 0;
 				}
 
@@ -107,9 +107,10 @@ public class ExplorationMeta extends AbstractMetaMission {
 				}
 
 				int f1 = numEmbarked + 1;
-				int f2 = 2*numThisMission + 1;
+				int f2 = 3 * numThisMission + 1;
 
-				missionProbability *= (double)settlement.getNumCitizens() / f1 / f2 * ( 1 + settlement.getMissionDirectiveModifier(MissionType.EXPLORATION));
+				missionProbability *= (double)settlement.getNumCitizens() / f1 / f2
+						* ( 1 + settlement.getMissionDirectiveModifier(MissionType.EXPLORATION));
 
 				// Job modifier.
 				missionProbability *= getLeaderSuitability(person)

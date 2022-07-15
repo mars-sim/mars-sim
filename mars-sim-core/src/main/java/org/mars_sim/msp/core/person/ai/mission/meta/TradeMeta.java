@@ -99,7 +99,7 @@ public class TradeMeta extends AbstractMetaMission {
 
 		double missionProbability = 0;
 
-		if (settlement.getMissionBaseProbability(MissionType.TRADE))
+		if (settlement.isMissionEnable(MissionType.TRADE))
         	missionProbability = 1;
         else
 			return 0;

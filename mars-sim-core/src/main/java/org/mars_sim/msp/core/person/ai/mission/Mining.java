@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Mining.java
- * @date 2021-12-21
+ * @date 2022-07-14
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -54,6 +54,8 @@ public class Mining extends EVAMission
 	/** Mission phases */
 	private static final MissionPhase MINING_SITE = new MissionPhase("Mission.phase.miningSite");
 
+	private static final int MAX = 200;
+	
 	/** Number of large bags needed for mission. */
 	public static final int NUMBER_OF_LARGE_BAGS = 20;
 
@@ -480,7 +482,7 @@ public class Mining extends EVAMission
 			result += mineralValue * mineralAmount;
 		}
 			
-		result = Math.min(100, result);
+		result = Math.min(MAX, result);
 		return result;
 	}
 

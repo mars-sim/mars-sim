@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MiningMeta.java
- * @date 2021-10-20
+ * @date 2022-07-14
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission.meta;
@@ -62,7 +62,7 @@ public class MiningMeta extends AbstractMetaMission {
  					|| RoleType.SUB_COMMANDER == roleType
  					) {
 
-	            if (settlement.getMissionBaseProbability(MissionType.MINING))
+	            if (settlement.isMissionEnable(MissionType.MINING))
 	            	missionProbability = 1;
 	            else
 	    			return 0;
@@ -104,7 +104,7 @@ public class MiningMeta extends AbstractMetaMission {
 	                    ExploredLocation miningSite = Mining.determineBestMiningSite(
 	                            rover, settlement);
 	                    if (miningSite != null) {
-	                        missionProbability = Mining.getMiningSiteValue(miningSite, settlement);
+	                        missionProbability = 1.5 * Mining.getMiningSiteValue(miningSite, settlement);
 	    					if (missionProbability < 0)
 	    						missionProbability = 0;
 	                    }
@@ -124,9 +124,10 @@ public class MiningMeta extends AbstractMetaMission {
 	            }
 
 				int f1 = numEmbarked + 1;
-				int f2 = 2*numThisMission + 1;
+				int f2 = 2 * numThisMission + 1;
 
-				missionProbability *= (double)settlement.getNumCitizens() / f1 / f2 * ( 1 + settlement.getMissionDirectiveModifier(MissionType.MINING));
+				missionProbability *= (double)settlement.getNumCitizens() / f1 / f2 
+						* (1 + settlement.getMissionDirectiveModifier(MissionType.MINING));
 
 	            // Job modifier.
 				missionProbability *= getLeaderSuitability(person)

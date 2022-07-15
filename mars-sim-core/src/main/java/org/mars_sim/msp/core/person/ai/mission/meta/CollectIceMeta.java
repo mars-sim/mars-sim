@@ -55,7 +55,7 @@ public class CollectIceMeta extends AbstractMetaMission {
 					|| RoleType.SUB_COMMANDER == roleType
 					) {
 
-				if (settlement.getMissionBaseProbability(MissionType.COLLECT_ICE))
+				if (settlement.isMissionEnable(MissionType.COLLECT_ICE))
 	            	missionProbability = 1;
 	            else
 	    			return 0;

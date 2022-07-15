@@ -156,7 +156,7 @@ public class ExploreSite extends EVAOperation implements Serializable {
 	}
 
 	/**
-	 * Perform the exploring phase of the task.
+	 * Performs the exploring phase of the task.
 	 *
 	 * @param time the time available (millisols).
 	 * @return remaining time after performing phase (millisols).
@@ -202,7 +202,7 @@ public class ExploreSite extends EVAOperation implements Serializable {
 	}
 
 	/**
-	 * Collect rock samples if chosen.
+	 * Collects rock samples if chosen.
 	 *
 	 * @param time the amount of time available (millisols).
 	 * @throws Exception if error collecting rock samples.
@@ -226,7 +226,7 @@ public class ExploreSite extends EVAOperation implements Serializable {
 	}
 
 	/**
-	 * Improve the mineral concentration estimates of an explored site.
+	 * Improves the mineral concentration estimates of an explored site.
 	 *
 	 * @param time the amount of time available (millisols).
 	 */
@@ -244,8 +244,9 @@ public class ExploreSite extends EVAOperation implements Serializable {
 	}
 
 	/**
-	 * Improve the mineral estimates for a particular site. Reviewer has a certain
+	 * Improves the mineral estimates for a particular site. Reviewer has a certain
 	 * skill rating.
+	 * 
 	 * @param site
 	 * @param skill
 	 */
@@ -297,7 +298,7 @@ public class ExploreSite extends EVAOperation implements Serializable {
 	}
 
 	/**
-	 * Transfer the Specimen box to the Vehicle
+	 * Transfers the Specimen box to the Vehicle.
 	 */
 	@Override
 	protected void clearDown() {

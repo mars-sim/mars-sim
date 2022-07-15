@@ -595,8 +595,10 @@ public class CommanderWindow extends ToolWindow {
 	        JRadioButton button = (JRadioButton) event.getSource();
 
 	        if (button == r0) {
+				System.out.println("r0 selected");
 	        	settlement.setMissionDisable(MissionType.TRADE, false);
 	        } else if (button == r1) {
+				System.out.println("r1 selected");
 	        	settlement.setMissionDisable(MissionType.TRADE, true);
 	        } else if (button == r2) {
 //	        	SwingUtilities.invokeLater(() -> {

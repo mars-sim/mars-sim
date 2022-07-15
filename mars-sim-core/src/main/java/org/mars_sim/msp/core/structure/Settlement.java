@@ -3499,12 +3499,12 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Calculate the base mission probability used by all missions
+	 * Checks if the mission is enabled.
 	 *
 	 * @param mission the type of the mission calling this method
 	 * @return probability value
 	 */
-	public boolean getMissionBaseProbability(MissionType mission) {
+	public boolean isMissionEnable(MissionType mission) {
 		return !disabledMissions.contains(mission);
 	}
 

@@ -41,7 +41,7 @@ public class MetaMissionUtil {
 		metaMissions.add(new CollectIceMeta());
 		metaMissions.add(new CollectRegolithMeta());
 		metaMissions.add(new DeliveryMeta());
-		metaMissions.add(new EmergencySupplyMissionMeta());
+		metaMissions.add(new EmergencySupplyMeta());
 		metaMissions.add(new ExplorationMeta());
 		metaMissions.add(new MeteorologyFieldStudyMeta());
 		metaMissions.add(new MiningMeta());

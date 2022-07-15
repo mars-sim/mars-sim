@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Exploration.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-14
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -26,7 +26,6 @@ import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.JobType;
-import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.ExploreSite;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -248,7 +247,7 @@ public class Exploration extends EVAMission
 	}
 
 	/**
-	 * Retrieves the current exploration site instance
+	 * Retrieves the current exploration site instance.
 	 *
 	 * @return
 	 */
@@ -264,7 +263,9 @@ public class Exploration extends EVAMission
 	}
 
 	/**
-	 * Update the explored site and start an ExploreSite Task
+	 * Updates the explored site and start an ExploreSite Task.
+	 * 
+	 * @param person
 	 */
 	@Override
 	protected boolean performEVA(Person person) {
@@ -295,13 +296,13 @@ public class Exploration extends EVAMission
 	}
 
 	/**
-	 * End the current EVA operations, i.e. get everyone to return to vehicle
+	 * Ends the current EVA operations, i.e. getting everyone back to vehicle.
 	 */
 	@Override
 	protected void endEVATasks() {
 		super.endEVATasks();
 
-		// Speecifc to Exploration
+		// Set the site to have been explored
 		if (currentSite != null) {
 			currentSite.setExplored(true);
 		}
@@ -310,7 +311,7 @@ public class Exploration extends EVAMission
 
 	/**
 	 * Creates a brand new site at the current location and
-	 * estimate its mineral concentrations
+	 * estimate its mineral concentrations.
 	 *
 	 * @throws MissionException if error creating explored site.
 	 * @return ExploredLocation
@@ -322,7 +323,6 @@ public class Exploration extends EVAMission
 		// Make sure site is not known already
 		ExploredLocation el = surfaceFeatures.getExploredLocation(siteLocation);
 		if (el == null) {
-			// bUILD A NEW SITE
 			Map<String, Double> initialMineralEstimations = new HashMap<>(mineralTypes.length);
 			for (String mineralType : mineralTypes) {
 				// Estimations are zero for initial site.

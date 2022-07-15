@@ -1,3 +1,9 @@
+/*
+ * Mars Simulation Project
+ * FieldStudyMeta.java
+ * @date 2022-07-14
+ * @author Barry Evans
+ */
 package org.mars_sim.msp.core.person.ai.mission.meta;
 
 import java.util.Iterator;
@@ -56,7 +62,7 @@ public class FieldStudyMeta extends AbstractMetaMission {
 					|| RoleType.SUB_COMMANDER == roleType
 					) {
 
-				if (settlement.getMissionBaseProbability(mType)) {
+				if (settlement.isMissionEnable(mType)) {
 	            	missionProbability = 1;
 				}
 	            else {
@@ -75,7 +81,6 @@ public class FieldStudyMeta extends AbstractMetaMission {
 	                // Get available rover.
 	                Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(mType, settlement, false);
 	                if (rover != null) {
-
 
 	                    // Add probability for researcher's primary study (if any).
 	                    ScientificStudy primaryStudy = person.getStudy();
@@ -103,9 +108,9 @@ public class FieldStudyMeta extends AbstractMetaMission {
 	            }
 
 				int f1 = numEmbarked + 1;
-				int f2 = 2*numThisMission + 1;
+				int f2 = numThisMission + 1;
 
-				missionProbability *= 1.0 * settlement.getNumCitizens() / f1 / f2
+				missionProbability *= 2.0 * settlement.getNumCitizens() / f1 / f2
 						* ( 1 + settlement.getMissionDirectiveModifier(mType));
 
 	            // Crowding modifier

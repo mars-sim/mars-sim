@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
- * EmergencySupplyMission.java
- * @date 2021-10-20
+ * EmergencySupply.java
+ * @date 2022-07-14
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -523,29 +523,28 @@ public class EmergencySupply extends RoverMission {
 		while (i.hasNext()) {
 			Settlement settlement = i.next();
 
-			if (settlement != startingSettlement) {
-
+			if (settlement != startingSettlement 
+				&& !settlement.equals(startingSettlement)
 				// Check if an emergency supply mission is currently ongoing to settlement.
-				if (!hasCurrentEmergencySupplyMission(settlement)) {
+				&& !hasCurrentEmergencySupplyMission(settlement)) {
 
-					// Check if settlement is within rover range.
-					double settlementRange = Coordinates.computeDistance(settlement.getCoordinates(), startingSettlement.getCoordinates());
-					if (settlementRange <= (rover.getRange(MissionType.EMERGENCY_SUPPLY) * .8D)) {
+				// Check if settlement is within rover range.
+				double settlementRange = Coordinates.computeDistance(settlement.getCoordinates(), startingSettlement.getCoordinates());
+				if (settlementRange <= (rover.getRange(MissionType.EMERGENCY_SUPPLY) * .8D)) {
 
-						// Find what emergency supplies are needed at settlement.
-						Map<Integer, Double> emergencyResourcesNeeded = getEmergencyAmountResourcesNeeded(settlement);
-						Map<Integer, Integer> emergencyContainersNeeded = getContainersRequired(
-								emergencyResourcesNeeded);
+					// Find what emergency supplies are needed at settlement.
+					Map<Integer, Double> emergencyResourcesNeeded = getEmergencyAmountResourcesNeeded(settlement);
+					Map<Integer, Integer> emergencyContainersNeeded = getContainersRequired(
+							emergencyResourcesNeeded);
 
-						if (!emergencyResourcesNeeded.isEmpty()) {
+					if (!emergencyResourcesNeeded.isEmpty()) {
 
-							// Check if starting settlement has enough supplies itself to send emergency
-							// supplies.
-							if (hasEnoughSupplies(startingSettlement, emergencyResourcesNeeded,
-									emergencyContainersNeeded)) {
-								result = settlement;
-								break;
-							}
+						// Check if starting settlement has enough supplies itself to send emergency
+						// supplies.
+						if (hasEnoughSupplies(startingSettlement, emergencyResourcesNeeded,
+								emergencyContainersNeeded)) {
+							result = settlement;
+							break;
 						}
 					}
 				}
