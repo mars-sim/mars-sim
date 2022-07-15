@@ -1099,7 +1099,7 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 				if (column == 0)
 					return entries.get(row).getTime();
 				else
-					return entries.get(row).getPhase().getName();
+					return entries.get(row).getEntry();
 			} else
 				return Msg.getString("unknown"); //$NON-NLS-1$
 		}

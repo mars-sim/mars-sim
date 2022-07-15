@@ -120,7 +120,7 @@ public abstract class CollectResourcesMission extends EVAMission
 			setResourceID(resourceID);
 			this.resourceCollectionRate = resourceCollectionRate;
 			this.collected = new HashMap<>();
-
+			this.containerID = containerID;
 			setEVAEquipment(containerID, containerNum);
 
 			// Recruit additional members to mission.
@@ -289,11 +289,6 @@ public abstract class CollectResourcesMission extends EVAMission
 		// Calculate resources collected at the site so far.
 		siteCollectedResources = resourceCollected - collectingStart;
 
-		// Check if rover capacity for resources is met, then end this phase.
-		if (resourceCollected >= resourcesCapacity) {
-			setPhaseEnded(true);
-		}
-
 		return resourcesCapacity;
 	}
 
@@ -312,8 +307,12 @@ public abstract class CollectResourcesMission extends EVAMission
 
 		double weight = person.getMass();
 		if (roverRemainingCap < weight + 5) {
+			addMissionLog("Rover capacity full");
 			return false;
 		}
+
+		// This will update the siteCollectedResources and totalResourceCollected after the last on-site collection activity
+		updateResources(rover);
 
 		// If collected resources are sufficient for this site, end the collecting
 		// phase.
@@ -321,17 +320,17 @@ public abstract class CollectResourcesMission extends EVAMission
 			return false;
 		}
 
-			// // Determine if no one can start the collect resources task.
-			// boolean nobodyCollect = true;
-			// Iterator<MissionMember> j = getMembers().iterator();
-			// while (j.hasNext() && nobodyCollect) {
-			// 	MissionMember m = j.next();
-			// 	for (Integer type : getCollectibleResources()) {
-			// 		if (CollectResources.canCollectResources(m, getRover(), containerID, type)) {
-			// 			nobodyCollect = false;
-			// 		}
-			// 	}
-			// }
+		// // Determine if no one can start the collect resources task.
+		// boolean nobodyCollect = true;
+		// Iterator<MissionMember> j = getMembers().iterator();
+		// while (j.hasNext() && nobodyCollect) {
+		// 	MissionMember m = j.next();
+		// 	for (Integer type : getCollectibleResources()) {
+		// 		if (CollectResources.canCollectResources(m, getRover(), containerID, type)) {
+		// 			nobodyCollect = false;
+		// 		}
+		// 	}
+		// }
 
 		// Do the EVA task
 		double rate = calculateRate(person);
@@ -355,11 +354,19 @@ public abstract class CollectResourcesMission extends EVAMission
 					containerID);
 			assignTask(person, collectResources);
 		}
-	
-		// This will update the siteCollectedResources and totalResourceCollected after the last on-site collection activity
-		updateResources(rover);
+		else {
+			logger.info(person, "Can not collect resources");
+		}
 
 		return true;
+	}
+
+	/**
+	 * EVA ended so update the mission resources.
+	 */
+	@Override
+	protected void phaseEVAEnded() {
+		updateResources(getRover());
 	}
 
 	/**
@@ -473,7 +480,7 @@ public abstract class CollectResourcesMission extends EVAMission
 		double timePerPerson = 2 * siteResourceGoal / resourceCollectionRate;
 		if (useBuffer)
 			timePerPerson *= EVA_COLLECTION_OVERHEAD;
-		return timePerPerson / getPeopleNumber();
+		return timePerPerson;
 	}
 
 	/**

@@ -18,24 +18,24 @@ public class MissionLogEntry implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	private String time;
-	private MissionPhase phase;
+	private String entry;
 	
-	public MissionLogEntry(String time, MissionPhase phase) {
+	public MissionLogEntry(String time, String entry) {
 		super();
 		this.time = time;
-		this.phase = phase;
+		this.entry = entry;
 	}
 
 	public String getTime() {
 		return time;
 	}
 
-	public MissionPhase getPhase() {
-		return phase;
+	public String getEntry() {
+		return entry;
 	}
 
 	@Override
 	public String toString() {
-		return "MissionLogEntry [time=" + time + ", phase=" + phase + "]";
+		return "MissionLogEntry [time=" + time + ", entry=" + entry + "]";
 	}		
 }

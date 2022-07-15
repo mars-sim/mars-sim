@@ -336,7 +336,7 @@ public class CommandHelper {
 		response.appendText("Log:");
 		response.appendTableHeading("Time", TIMESTAMP_TRUNCATED_WIDTH, "Phase");
 		for (MissionLogEntry entry : mission.getLog()) {
-			response.appendTableRow(entry.getTime(), entry.getPhase().getName());
+			response.appendTableRow(entry.getTime(), entry.getEntry());
 		}
 	}
 

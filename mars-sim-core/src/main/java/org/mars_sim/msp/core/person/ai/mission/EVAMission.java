@@ -21,6 +21,11 @@ import org.mars_sim.msp.core.vehicle.Rover;
 
 public abstract class EVAMission extends RoverMission {
 
+	/**
+	 *
+	 */
+	private static final String NOT_ENOUGH_SUNLIGHT = "EVA - Not enough sunlight";
+
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
@@ -88,6 +93,7 @@ public abstract class EVAMission extends RoverMission {
 					|| (MarsClock.getTimeDiff(sunrise, marsClock) > MAX_WAITING)) {
 				// No point waiting, move to next site
 				logger.info(getVehicle(), "Continue travel, sunrise too late " + sunrise.getTrucatedDateTimeStamp());
+				addMissionLog(NOT_ENOUGH_SUNLIGHT);
 				startTravellingPhase();
 			}
 			else {
@@ -193,6 +199,7 @@ public abstract class EVAMission extends RoverMission {
 			// night time, end the exploring phase.
 			if (activeEVA && !isEnoughSunlightForEVA()) {
 				logger.info(getVehicle(), "Not enough sunlight");
+				addMissionLog(NOT_ENOUGH_SUNLIGHT);
 				activeEVA = false;
 			}
 
@@ -224,6 +231,7 @@ public abstract class EVAMission extends RoverMission {
 		if (!activeEVA) {
 			if (isEveryoneInRover()) {
 				// End phase
+				phaseEVAEnded();
 				setPhaseEnded(true);
 			} 
 			else {
@@ -239,6 +247,12 @@ public abstract class EVAMission extends RoverMission {
      * @return
      */
 	protected abstract boolean performEVA(Person person);
+
+	/**
+	 * Notifies the sub-classes that the current EVA has ended. Trigger any housekeeping.
+	 */
+	protected void phaseEVAEnded() {
+	}
 
     /**
      * Calculate the spare parts needed for the trip

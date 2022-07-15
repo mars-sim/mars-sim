@@ -598,10 +598,14 @@ public abstract class Mission implements Serializable, Temporal {
 		}
 
 		// Add entry to the log
-		String time = MarsClockFormat.getTruncatedDateTimeStamp(phaseStartTime);
-		log.add(new MissionLogEntry(time, newPhase));
+		addMissionLog(newPhase.getName());
 
 		fireMissionUpdate(MissionEventType.PHASE_EVENT, newPhase);
+	}
+
+	protected void addMissionLog(String entry) {
+		String time = marsClock.getTrucatedDateTimeStamp();
+		log.add(new MissionLogEntry(time, entry));
 	}
 
 	/**
