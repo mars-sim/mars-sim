@@ -167,6 +167,16 @@ public class BuildingTemplate implements Serializable, Comparable<BuildingTempla
 			}
 			return result;
 		}
+		
+		/**
+		 * Gets the hash code for this object.
+		 *
+		 * @return hash code.
+		 */
+		@Override
+		public int hashCode() {
+			return super.hashCode();
+		}
 	}
 
 	public int compareTo(BuildingTemplate o) {

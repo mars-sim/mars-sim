@@ -11,7 +11,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 
 /**
- * A singleton that controls where the simulation files reside on the file system
+ * A singleton that controls where the simulation files reside on the file system.
  */
 public class SimulationFiles {
 	private static final String USERCONFIG_DIR = "conf";
@@ -25,7 +25,7 @@ public class SimulationFiles {
 	private static String dataDir = System.getProperty("user.home") + //$NON-NLS-1$
 					File.separator + HOME_DIR;
 	/**
-	 * Private constructor prevents instantiation
+	 * Private constructor prevents instantiation.
 	 */
 	private SimulationFiles() {
 	}
@@ -64,15 +64,16 @@ public class SimulationFiles {
 	}
 
 	/**
-	 * Purge any old samed simulation files fromt eh auto save dir
+	 * Purges any old same simulation files from auto save dir.
 	 */
     public static void purgeAutoSave(int retainedCount, String saveFileExtension) {
 		File[] files = (new File(getAutoSaveDir())).listFiles((d, name) -> name.endsWith(saveFileExtension));
 		Arrays.sort(files, Comparator.comparingLong(File::lastModified).reversed());
 
-		for(int i = retainedCount; i < files.length; i++) {
+		for (int i = retainedCount; i < files.length; i++) {
 			try {
-				files[i].delete();
+				if (!files[i].delete())
+					System.err.println("Failed to delete old sim file " + files[i]);
 			}
 			catch(Exception e) {
 				// Pretty fatal

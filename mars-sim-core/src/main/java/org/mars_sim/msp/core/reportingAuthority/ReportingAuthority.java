@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * ReportingAuthority.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-15
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.reportingAuthority;
@@ -15,7 +15,7 @@ import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
- * Represents a Reporting Authority that "owns" Units
+ * Represents a Reporting Authority that "owns" units.
  */
 public class ReportingAuthority
 implements UserConfigurable, Serializable {
@@ -55,7 +55,8 @@ implements UserConfigurable, Serializable {
 	}
 
 	/**
-	 * Work on the mission objectives conducted
+	 * Works on the mission objectives conducted.
+	 * 
 	 * @param unit
 	 */
 	public void conductMissionObjective(Worker unit) {
@@ -64,7 +65,8 @@ implements UserConfigurable, Serializable {
 	}
 
 	/**
-	 * Get the Mission Agenda for this authority
+	 * Gets the Mission Agenda for this authority.
+	 * 
 	 * @return
 	 */
 	public MissionAgenda getMissionAgenda() {
@@ -72,7 +74,8 @@ implements UserConfigurable, Serializable {
 	}
 
 	/**
-	 * Get the unique name of this authority which is the short code.
+	 * Gets the unique name of this authority which is the short code.
+	 * 
 	 * @return
 	 */
 	@Override
@@ -81,7 +84,8 @@ implements UserConfigurable, Serializable {
 	}
 
 	/**
-	 * Get the full name of the authority
+	 * Gets the full name of the authority.
+	 * 
 	 * @return
 	 */
 	public String getDescription() {
@@ -94,7 +98,8 @@ implements UserConfigurable, Serializable {
 	}
 	
 	/**
-	 * Get the countries associated to this Authority.
+	 * Gets the countries associated to this Authority.
+	 * 
 	 * @return
 	 */
 	public List<String> getCountries() {
@@ -102,8 +107,9 @@ implements UserConfigurable, Serializable {
 	}
 
 	/**
-	 * Get the default Country for Authority. If there are multiples
-	 * then one is choosen.
+	 * Gets the default Country for Authority. If there are multiples
+	 * then one is chosen.
+	 * 
 	 * @return
 	 */
 	public String getDefaultCountry() {
@@ -116,7 +122,8 @@ implements UserConfigurable, Serializable {
 	}
 	
 	/**
-	 * Get the name of Settlement for this Authority
+	 * Gets the name of Settlement for this Authority.
+	 * 
 	 * @return
 	 */
 	public List<String> getSettlementNames() {
@@ -124,7 +131,8 @@ implements UserConfigurable, Serializable {
 	}
 
 	/**
-	 * Get the potential names of Vehicles
+	 * Gets the potential names of Vehicles.
+	 * 
 	 * @return
 	 */
 	public List<String> getVehicleNames() {
@@ -162,17 +170,18 @@ implements UserConfigurable, Serializable {
 	}
 
 	/**
-	 * Get a favourite ratio for a particular mission. Value of 1.0 is neutral.
+	 * Gets a favourite ratio for a particular mission. Value of 1.0 is neutral.
+	 * 
 	 * @param type
 	 * @return Ration to apply to the mission score
 	 */
     public double getMissionRatio(MissionType type) {
         double result = 1D;
-		for(MissionSubAgenda subAgenda : missionAgenda.getAgendas()) {
+		for (MissionSubAgenda subAgenda : missionAgenda.getAgendas()) {
 			int modifier = subAgenda.getModifiers().getOrDefault(type, 0);
 
-			// The modifier ia a value of 0..10 that represents a priority.
-			// Fr each priority point add a vaue to the ratio. 
+			// The modifier is a value of 0..10 that represents a priority.
+			// For each priority point add a value to the ratio. 
 			modifier = Math.min(modifier, MAX_PRIORITY_PER_SUBAGENDA);
 			result += (modifier * MAX_RATIO_PER_SUBAGENDA)/MAX_PRIORITY_PER_SUBAGENDA;
 		}

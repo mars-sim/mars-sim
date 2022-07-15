@@ -15,6 +15,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -181,7 +182,7 @@ public class BuildingManager implements Serializable {
 			}
 		}
 
-		buildings.stream().sorted(new AlphanumComparator()).collect(Collectors.toList());
+		buildings = buildings.stream().sorted(new AlphanumComparator()).collect(Collectors.toList());
 
 		garages = getBuildings(FunctionType.GROUND_VEHICLE_MAINTENANCE);
 		for (Building b: garages) {
@@ -762,9 +763,14 @@ public class BuildingManager implements Serializable {
 	 * @return a building.
 	 */
 	public Building getABuilding(FunctionType f1, FunctionType f2) {
-		return buildings.stream()
-				.filter(b -> b.hasFunction(f1) && b.hasFunction(f2))
-				.findFirst().get();
+		Optional<Building> value = buildings.stream()
+				.filter(b -> b.hasFunction(f1) && b.hasFunction(f2)).findFirst();
+		
+		if (value.isPresent()) {
+			return value.get();
+		}
+		
+		return null;
 	}
 
 	/**
@@ -1745,13 +1751,11 @@ public class BuildingManager implements Serializable {
 
 		// Check if any existing buildings have this frame.
 		for (Building building : buildings) {
-			// TODO: determine if getName() needed to be changed to getNickName()
 			ConstructionStageInfo buildingStageInfo = ConstructionUtil
 					.getConstructionStageInfo(building.getBuildingType());
 			if (buildingStageInfo != null) {
 				ConstructionStageInfo frameStageInfo = ConstructionUtil.getPrerequisiteStage(buildingStageInfo);
 				if (frameStageInfo != null) {
-					// TODO: determine if getName() needed to be changed to getNickName()
 					if (frameStageInfo.getName().equals(frameName)) {
 						result = true;
 						break;
@@ -1892,7 +1896,10 @@ public class BuildingManager implements Serializable {
 		    }
 		}
 		
-		return (Computation)(maxEntry.getKey());
+		if (maxEntry != null)
+			return maxEntry.getKey();
+				
+		return null;
 	}
 	
 	/**

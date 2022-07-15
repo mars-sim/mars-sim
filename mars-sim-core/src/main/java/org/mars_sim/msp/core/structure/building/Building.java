@@ -1155,7 +1155,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 									.getAttribute(NaturalAttributeType.STRESS_RESILIENCE);
 							int courage = person.getNaturalAttributeManager()
 									.getAttribute(NaturalAttributeType.COURAGE);
-							double factor = 1 + RandomUtil.getRandomDouble(1) - resilience / 100 - courage / 100D;
+							double factor = 1 + RandomUtil.getRandomDouble(1) - resilience / 100D - courage / 100D;
 							PhysicalCondition pc = person.getPhysicalCondition();
 							if (factor > 1)
 								pc.setStress(pc.getStress() * factor);

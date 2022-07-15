@@ -900,7 +900,7 @@ public abstract class RoverMission extends VehicleMission {
 	 */
 	@Override
 	public Map<Integer, Number> getResourcesNeededForTrip(boolean useBuffer, double distance) {
-		// Note: currently, it has methane resource only
+		// Note: currently, it uses methane as fuel. May switch to methanol in near future
 		Map<Integer, Number> result = super.getResourcesNeededForTrip(useBuffer, distance);
 
 		// Determine estimate time for trip.

@@ -777,7 +777,7 @@ class AmountResourceGood extends Good {
 			if (hasDessert) {
 				double amountNeededSol = personConfig.getDessertConsumptionRate() / dessert.length;
 				int numPeople = settlement.getNumCitizens();
-				demand = 5 * Math.log(1 + numPeople) * amountNeededSol * DESSERT_FACTOR;
+				demand = 5 * Math.log(1.0 + numPeople) * amountNeededSol * DESSERT_FACTOR;
 			}
 		}
 
@@ -988,10 +988,11 @@ class AmountResourceGood extends Good {
 			mainMeal = getHotMeal(MealConfig.getMainDishList(), mainDish);
 			sideMeal = getHotMeal(MealConfig.getSideDishList(), sideDish);
 		}
-
-		demand +=  getIngredientDemand(owner, getID(), mainMeal.getIngredientList());
-
-		demand +=  getIngredientDemand(owner, getID(), sideMeal.getIngredientList());
+		
+		if (mainMeal != null)
+			demand +=  getIngredientDemand(owner, getID(), mainMeal.getIngredientList());
+		if (sideMeal != null)
+			demand +=  getIngredientDemand(owner, getID(), sideMeal.getIngredientList());
 
 		return demand;
 	}
@@ -1028,7 +1029,7 @@ class AmountResourceGood extends Good {
 	 */
 	private static HotMeal getHotMeal(List<HotMeal> dishList, String dish) {
 		for(HotMeal hm : dishList) {
-			if (hm.getMealName().equals(dish))
+			if (hm.getMealName().equalsIgnoreCase(dish))
 				return hm;
 		}
 		return null;
