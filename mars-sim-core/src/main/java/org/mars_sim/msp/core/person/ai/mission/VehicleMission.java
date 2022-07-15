@@ -1038,8 +1038,8 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 							vehicle.getEstimatedFuelEconomy(), useMargin);
 
 			result.put(vehicle.getFuelType(), amount);
-			// Add the same amount of oxygen as fuel oxidizer
-			result.put(ResourceUtil.oxygenID, amount);
+			// Assume double amount of oxygen as fuel oxidizer
+			result.put(ResourceUtil.oxygenID, 2 * amount);
 
 		}
 		return result;

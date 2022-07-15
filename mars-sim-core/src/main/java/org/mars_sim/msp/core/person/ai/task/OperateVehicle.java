@@ -536,12 +536,12 @@ public abstract class OperateVehicle extends Task implements Serializable {
 		}
         
         if (fuelUsed > 0) {
-	    	// Retrieve the fuel needed for the distance traveled.
+	    	// Retrieve the fuel needed for the distance traveled
 		    vehicle.retrieveAmountResource(fuelType, fuelUsed);
-		    // Retrieve the same amount of oxygen as fuel oxidizer.
+		    // Assume double amount of oxygen as fuel oxidizer
 		    vehicle.retrieveAmountResource(OXYGEN_ID, 2 * fuelUsed);
-		    // Generate 2.25 times amount of the water from the fuel cells
-		    vehicle.storeAmountResource(WATER_ID, 2.25 * fuelUsed);
+		    // Generate 1.75 times amount of the water from the fuel cells
+		    vehicle.storeAmountResource(WATER_ID, 1.75 * fuelUsed);
         }
         
         return result;   
