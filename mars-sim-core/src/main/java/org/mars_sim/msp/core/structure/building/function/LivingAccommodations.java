@@ -39,7 +39,7 @@ public class LivingAccommodations extends Function {
 	public static final double TOILET_WASTE_PERSON_SOL = .02D;
 	public static final double WASH_AND_WASTE_WATER_RATIO = .85D;
 	/** The minimal amount of resource to be retrieved. */
-	private static final double MIN = 0.001;
+	private static final double MIN = 0.0001;
 	/** 1/5 of chance of going to a restroom per frame */
 	public static final int TOILET_CHANCE = 20;
 
@@ -59,7 +59,9 @@ public class LivingAccommodations extends Function {
 
 	/** The daily water usage in this facility [kg/sol]. */
 	private SolSingleMetricDataLogger dailyWaterUsage;
-
+	
+	/** The daily grey water generated in this facility [kg/sol]. */
+	private SolSingleMetricDataLogger greyWaterGen;
 
 	/**
 	 * Constructor
@@ -73,6 +75,8 @@ public class LivingAccommodations extends Function {
 		super(FunctionType.LIVING_ACCOMMODATIONS, spec, building);
 
 		dailyWaterUsage = new SolSingleMetricDataLogger(MAX_NUM_SOLS);
+		
+		greyWaterGen = new SolSingleMetricDataLogger(MAX_NUM_SOLS);
 		// Loads the max # of beds available
 		maxNumBeds = spec.getCapacity();
 		// Loads the wash water usage kg/sol
@@ -283,10 +287,10 @@ public class LivingAccommodations extends Function {
 	/**
 	 * Adds to the daily water usage
 	 *
-	 * @param waterUssed
+	 * @param amount
 	 */
-	public void addDailyWaterUsage(double waterUssed) {
-		dailyWaterUsage.increaseDataPoint(waterUssed);
+	public void addDailyWaterUsage(double amount) {
+		dailyWaterUsage.increaseDataPoint(amount);
 	}
 
 	/**
@@ -299,6 +303,25 @@ public class LivingAccommodations extends Function {
 		return dailyWaterUsage.getDailyAverage();
 	}
 
+	/**
+	 * Adds to the daily grey water generated
+	 *
+	 * @param amount
+	 */
+	public void addDailyGreyWaterGen(double amount) {
+		greyWaterGen.increaseDataPoint(amount);
+	}
+
+	/**
+	 * Gets the daily average grey water generated of the last 5 sols
+	 * Not: most weight on yesterday's usage. Least weight on usage from 5 sols ago
+	 *
+	 * @return
+	 */
+	public double getDailyAverageGreyWaterGen() {
+		return greyWaterGen.getDailyAverage();
+	}
+	
 	/**
 	 * Utilizes water for bathing, washing, etc based on population.
 	 *
@@ -337,8 +360,11 @@ public class LivingAccommodations extends Function {
 		// Black water is only produced by waste water.
 		double blackWaterProduced = wasteWaterProduced * (1 - greyWaterFraction);
 		String wasteName = "LivingAccomodation::generateWaste";
-		if (greyWaterProduced > MIN)
+		if (greyWaterProduced > MIN) {
 			store(greyWaterProduced, GREY_WATER_ID, wasteName);
+			// Track daily average
+			addDailyGreyWaterGen(greyWaterProduced);
+		}
 		if (blackWaterProduced > MIN)
 			store(blackWaterProduced, BLACK_WATER_ID, wasteName);
 

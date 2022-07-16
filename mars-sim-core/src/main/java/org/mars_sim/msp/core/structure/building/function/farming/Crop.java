@@ -119,10 +119,10 @@ public class Crop implements Comparable<Crop>, Serializable {
 	private static final String MUSHROOM = "mushroom";
 
 	// Data members
-	/** The crop identifier (unique only within a greenhouse). */
-	private int identifier;
 	/** True if this crop is generated at the start of the sim . */
 	private boolean isStartup;
+	/** The crop identifier (unique only within a greenhouse). */
+	private int identifier;
 	/** The total amount of light received by this crop. */
 	private double effectivePAR;
 	/** The ratio between inedible and edible biomass */
@@ -165,19 +165,17 @@ public class Crop implements Comparable<Crop>, Serializable {
 	 * in crops.xml [in umol /m^2 /millisols /(Wm^-2)].
 	 */
 	private double conversion_factor;
-	/** The disease index of a crop */
+	/** The disease index of a crop. */
 	private double diseaseIndex = 0;
-
-	private double cumulativeWaterUsed = 0;
-	private double cumulativeO2Generated = 0;
-	private double cumulativeCO2Consumed = 0;
-
+	/** The cache for co2. */
 	private double co2Cache = 0;
+	/** The cache for o2. */	
 	private double o2Cache = 0;
 	/** The time accumulated [in millisols] for each crop update call. */
 	private double accumulatedTime = RandomUtil.getRandomDouble(0, 1.0);
 
 	private final double co2Threshold;
+	
 	private final double o2Threshold;
 
 	/** The cache values of the past environment factors influencing the crop */
@@ -689,48 +687,8 @@ public class Crop implements Comparable<Crop>, Serializable {
 	}
 
 	/**
-	 * Updates the usage of all three major farming resources.
-	 *
-	 * @param currentSol
-	 */
-	private synchronized void updateUsage(int currentSol) {
-
-//		if (cumulative_water_usage > 0) {
-			// Records the water usage per crop in the farm
-			farm.addCropUsage(name, cumulativeWaterUsed, currentSol, 0);
-			// Reset the water usage
-			cumulativeWaterUsed = 0;
-//		}
-
-//		if (cumulative_o2 > 0) {
-			// Records the CO2 consumption/generation in the farm
-			farm.addCropUsage(name, cumulativeO2Generated, currentSol, 1);
-			// Reset the consumption/generation
-			cumulativeO2Generated = 0;
-//		}
-
-//		if (cumulative_co2 > 0) {
-			// Records the oxygen consumption/generation in the farm
-			farm.addCropUsage(name, cumulativeCO2Consumed, currentSol, 2);
-			// Reset the consumption/generation
-			cumulativeCO2Consumed = 0;
-//		}
-	}
-
-	public double getCumWaterUsage() {
-		return cumulativeWaterUsed;
-	}
-
-	public double getCumOxygenUsage() {
-		return cumulativeO2Generated;
-	}
-
-	public double getCumCO2Usage() {
-		return cumulativeCO2Consumed;
-	}
-
-	/**
 	 * Time passing for crop.
+	 * 
 	 * @param pulse
 	 * @param productionLevel
 	 * @param solarIrradiance
@@ -742,6 +700,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 	public boolean timePassing(ClockPulse pulse, double productionLevel,
 							   double solarIrradiance, double greyFilterRate,
 							   double temperatureModifier) {
+			
 		PhaseType phaseType = currentPhase.getPhaseType();
 		if (phaseType == PhaseType.FINISHED) {
 			return false;
@@ -808,12 +767,9 @@ public class Crop implements Comparable<Crop>, Serializable {
 	 */
 	public boolean resetEndOfSol(ClockPulse pulse) {
 		if (pulse.isNewSol()) {
-
+		
 			// Resets the daily harvest back to zero
 			dailyHarvest = 0;
-
-			// Update the resource usage
-			updateUsage(pulse.getMarsTime().getMissionSol());
 
 			if (dailyHarvest < 0) {
 				updatePhase(PhaseType.FINISHED);
@@ -977,27 +933,38 @@ public class Crop implements Comparable<Crop>, Serializable {
 		if (greyWaterAvailable >= waterRequired) {
 			greyWaterUsed = waterRequired;
 
-			if (greyWaterUsed > MIN)
+			if (greyWaterUsed > 0) {
 				retrieve(greyWaterUsed, GREY_WATER_ID, true);
-			// TODO: track grey water as well ?
+				//  Records the daily water usage in the farm
+				farm.addDailyWaterUsage(greyWaterUsed);
+				// Record the amount of grey water taken up by the crop
+				addGreyWaterUsed(greyWaterUsed);		
+			}
 			waterModifier = 1D;
 		}
 
 		else {
 			// If not enough grey water, use water
 			greyWaterUsed = greyWaterAvailable;
-			if (greyWaterUsed > MIN)
+			if (greyWaterUsed > 0) {
 				retrieve(greyWaterUsed, GREY_WATER_ID, true);
-			// TODO: track grey water as well ?
+				//  Records the daily water usage in the farm
+				farm.addDailyWaterUsage(greyWaterUsed);
+				// Record the amount of grey water taken up by the crop
+				addGreyWaterUsed(greyWaterUsed);	
+			}
+
 			waterRequired = waterRequired - greyWaterUsed;
 			double waterAvailable = building.getSettlement().getAmountResourceStored(WATER_ID);
 
 			if (waterAvailable >= waterRequired) {
 				waterUsed = waterRequired;
-				if (waterUsed > MIN) {
+				if (waterUsed > 0) {
 					retrieve(waterUsed, WATER_ID, true);
 					//  Records the daily water usage in the farm
 					farm.addDailyWaterUsage(waterUsed);
+					// Record the amount of water taken up by the crop
+					addWaterUsed(waterUsed);
 				}
 
 				waterModifier = 1D;
@@ -1005,10 +972,12 @@ public class Crop implements Comparable<Crop>, Serializable {
 			else {
 				// not enough water
 				waterUsed = waterAvailable;
-				if (waterUsed > MIN) {
+				if (waterUsed > 0) {
 					retrieve(waterUsed, WATER_ID, true);
 					//  Records the daily water usage in the farm
 					farm.addDailyWaterUsage(waterUsed);
+					// Record the amount of water taken up by the crop
+					addWaterUsed(waterUsed);
 				}
 				// Incur penalty if water is NOT available
 				// need to add .0001 in case waterRequired becomes zero
@@ -1030,7 +999,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 				fertilizerModifier = 1D;
 			}
 
-			if (fertilizerUsed > MIN) {
+			if (fertilizerUsed > 0) {
 				retrieve(fertilizerUsed, FERTILIZER_ID, true);
 			}
 
@@ -1053,17 +1022,29 @@ public class Crop implements Comparable<Crop>, Serializable {
 		// farm.addMoisture(totalWaterUsed*.05);
 
 		// Record the amount of water taken up by the crop
-		if (waterUsed > MIN)
-			addWaterUsed(waterUsed);
+//		if (waterUsed > MIN)
+//			addWaterUsed(waterUsed);
 
 		adjustEnvironmentFactor(waterModifier, WATER_FACTOR);
 
 	}
 
-	private synchronized void addWaterUsed(double amount) {
-		cumulativeWaterUsed += amount;
+	private void addWaterUsed(double amount) {
+		farm.addCropUsage(name, amount, 0);
 	}
 
+	private void addGreyWaterUsed(double amount) {
+		farm.addCropUsage(name, amount, 3);
+	}
+	
+	private void addO2Used(double amount) {
+		farm.addCropUsage(name, amount, 1);
+	}
+	
+	private void addCO2Used(double amount) {
+		farm.addCropUsage(name, amount, 2);
+	}
+	
 	/***
 	 * Computes the effects of the concentration of O2 and CO2
 	 *
@@ -1087,18 +1068,18 @@ public class Crop implements Comparable<Crop>, Serializable {
 
 			if (o2Used > o2Available)
 				o2Used = o2Available;
-			if (o2Used > MIN) {
+			if (o2Used > 0) {
 				retrieveO2(o2Used);
-				cumulativeO2Generated = cumulativeO2Generated - o2Used;
+				addO2Used(o2Used);
 			}
 
 			adjustEnvironmentFactor(o2Modifier, O2_FACTOR);
 
 			// Determine the amount of co2 generated via gas exchange.
 			double cO2Gen = o2Used * CO2_TO_O2_RATIO;
-			if (cO2Gen > MIN) {
+			if (cO2Gen > 0) {
 				storeCO2(cO2Gen);
-				cumulativeCO2Consumed = cumulativeCO2Consumed - cO2Gen;
+				addCO2Used(-cO2Gen);
 			}
 		}
 
@@ -1117,9 +1098,9 @@ public class Crop implements Comparable<Crop>, Serializable {
 
 			if (cO2Used > cO2Available)
 				cO2Used = cO2Available;
-			if (cO2Used > MIN) {
+			if (cO2Used > 0) {
 				retrieveCO2(cO2Used);
-				cumulativeCO2Consumed = cumulativeCO2Consumed + cO2Used;
+				addCO2Used(cO2Used);
 			}
 			// Note: research how much high amount of CO2 may facilitate the crop growth and
 			// reverse past bad health
@@ -1133,7 +1114,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 			double o2Gen = cO2Used * O2_TO_CO2_RATIO;
 			if (o2Gen > 0) {
 				storeO2(o2Gen);
-				cumulativeO2Generated = cumulativeO2Generated + o2Gen;
+				addO2Used(-o2Gen);
 			}
 		}
 	}
@@ -1362,18 +1343,6 @@ public class Crop implements Comparable<Crop>, Serializable {
 		PhaseType phaseType = currentPhase.getPhaseType();
 		return (phaseType != PhaseType.INCUBATION) && (phaseType != PhaseType.FINISHED);
 	}
-
-//	/**
-//	 * Sets the process interval
-//	 *
-//	 * @param value
-//	 */
-//	public void setInterval(double value) {
-//		double v = value/5.0;
-//		// Randomize the process interval so that each crop update may
-//		// run at a different time
-//		processInterval = value + RandomUtil.getRandomDouble(0, v);
-//	}
 
 	/**
 	 * Compares if the object is the same as this crop

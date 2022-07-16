@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Farming.java
- * @date 2022-06-25
+ * @date 2022-07-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function.farming;
@@ -81,6 +81,8 @@ public class Farming extends Function {
 	private static final double STANDARD_AMOUNT_TISSUE_CULTURE = 0.05;
 	private static final double MIN  = .00001D;// 0.0000000001;
 
+	/** The mission sol. */
+	private int currentSol = 1;
 	/** The default number of crops allowed by the building type. */
 	private int defaultCropNum;
 	/** The id of a crop in this greenhouse. */
@@ -181,7 +183,7 @@ public class Farming extends Function {
 	}
 
 	/**
-	 * Updates an attribute score
+	 * Updates an attribute score.
 	 * 
 	 * @param aspect
 	 * @param amount
@@ -207,7 +209,7 @@ public class Farming extends Function {
 	}
 	
 	/**
-	 * Picks a crop type
+	 * Picks a crop type.
 	 *
 	 * @param isStartup - true if it is called at the start of the sim
 	 * @return {@link CropSpec}
@@ -230,7 +232,7 @@ public class Farming extends Function {
 	}
 
 	/**
-	 * Selects a crop currently having the highest value point (VP)
+	 * Selects a crop currently having the highest value point (VP).
 	 *
 	 * @return CropType
 	 */
@@ -335,7 +337,7 @@ public class Farming extends Function {
 	}
 
 	/**
-	 * Checks if the greenhouse has too many crops of this type
+	 * Checks if the greenhouse has too many crops of this type.
 	 *
 	 * @param name
 	 * @return
@@ -355,7 +357,7 @@ public class Farming extends Function {
 	}
 
 	/**
-	 * Plants a new crop
+	 * Plants a new crop.
 	 *
 	 * @param cropType
 	 * @param isStartup             - true if it's at the start of the sim
@@ -427,6 +429,8 @@ public class Farming extends Function {
 
 	/**
 	 * Retrieves the fertilizer and add to the soil when planting the crop.
+	 * 
+	 * @param cropArea
 	 */
 	private void provideFertilizer(double cropArea) {
 		double rand = RandomUtil.getRandomDouble(2);
@@ -437,7 +441,7 @@ public class Farming extends Function {
 
 	/**
 	 * Uses available tissue culture to shorten Germinating Phase when planting the
-	 * crop
+	 * crop.
 	 *
 	 * @parama cropType
 	 * @param cropArea
@@ -456,7 +460,6 @@ public class Farming extends Function {
 
 		try {
 			double amountStored = building.getSettlement().getAmountResourceStored(tissueID);
-//			building.getSettlement().addAmountDemandTotalRequest(tissueID, amountStored);
 
 			if (amountStored < MIN) {
 				logger.log(building, Level.INFO, 1000, "Running out of " + tissueName + ".");
@@ -481,7 +484,6 @@ public class Farming extends Function {
 
 			if (available) {
 				building.getSettlement().retrieveAmountResource(tissueID, requestedAmount);
-//				inv.addAmountDemand(tissueID, requestedAmount);
 			}
 
 		} catch (Exception e) {
@@ -719,6 +721,8 @@ public class Farming extends Function {
 			// check for the passing of each day
 			if (pulse.isNewSol()) {
 
+				currentSol = pulse.getMarsTime().getMissionSol();
+				
 				// Gradually reduce aspect score by default
 				for (Aspect aspect: attributes.keySet()) {
 					updateAttribute(aspect, -0.01);
@@ -787,7 +791,7 @@ public class Farming extends Function {
 
 	/**
 	 * Transfers the seedling.
-	 * Note: Enable this task to take time to complete the work
+	 * Note: Enable this task to take time to complete the work.
 	 *
 	 * @param time
 	 * @param worker
@@ -910,7 +914,7 @@ public class Farming extends Function {
 
 	/**
 	 * Checks to see if a botany lab with an open research slot is available and
-	 * performs cell tissue extraction
+	 * performs cell tissue extraction.
 	 *
 	 * @param type
 	 * @return true if work has been done
@@ -991,7 +995,7 @@ public class Farming extends Function {
 	}
 
 	/**
-	 * Grows crop tissue cultures
+	 * Grows crop tissue cultures.
 	 *
 	 * @param lab
 	 * @param croptype
@@ -1105,12 +1109,13 @@ public class Farming extends Function {
 	}
 
 	/**
-	 * Records the average water usage on a particular crop
+	 * Records the average water usage on a particular crop.
 	 *
 	 * @param cropName
 	 * @param usage    average water consumption in kg/sol
+	 * @param type resource (0 for water, 1 for o2, 2 for co2, 3 for grey water)
 	 */
-	public void addCropUsage(String cropName, double usage, int sol, int type) {
+	public void addCropUsage(String cropName, double usage, int type) {
 		SolMetricDataLogger<Integer> crop = cropUsage.get(cropName);
 		if (crop == null) {
 			crop = new SolMetricDataLogger<>(MAX_NUM_SOLS);
@@ -1121,7 +1126,7 @@ public class Farming extends Function {
 	}
 
 	/**
-	 * Computes the average water usage on a particular crop
+	 * Computes the average water usage on a particular crop.
 	 *
 	 * @return average water consumption in kg/sol
 	 */
@@ -1135,7 +1140,7 @@ public class Farming extends Function {
 	}
 
 	/**
-	 * Computes the resource usage on all crops
+	 * Computes the resource usage on all crops.
 	 *
 	 * @type resource type (0 for water, 1 for o2, 2 for co2)
 	 * @return water consumption in kg/sol
@@ -1143,33 +1148,17 @@ public class Farming extends Function {
 	public double computeUsage(int type) {
 		// Note: the value is kg per square meter per sol
 		double sum = 0;
-//		for (Crop c : crops) {
-//			sum += computeUsage(type, c.getCropName());
-//		}
-//		if (sum == 0) {
-			if (type == 0) {
-				for (Crop c : crops) {
-					sum += c.getCumWaterUsage();
-				}
-			}
-			else if (type == 1) {
-				for (Crop c : crops) {
-					sum += c.getCumOxygenUsage();
-				}
-			}
-			else if (type == 2) {
-				for (Crop c : crops) {
-					sum += c.getCumCO2Usage();
-				}
-			}
-//		}
 
-		return Math.round(sum * 10.0) / 10.0;
+		for (Crop c : crops) {
+			sum += computeUsage(type, c.getCropName());
+		}
+		
+		return Math.round(sum * 100.0) / 100.0;
 	}
 
 	/**
-	 * Gets the daily average water usage of the last 5 sols
-	 * Not: most weight on yesterday's usage. Least weight on usage from 5 sols ago
+	 * Gets the daily average water usage of the last 5 sols.
+	 * Not: most weight on yesterday's usage. Least weight on usage from 5 sols ago.
 	 *
 	 * @return
 	 */
@@ -1178,7 +1167,7 @@ public class Farming extends Function {
 	}
 
 	/**
-	 * Adds to the daily water usage
+	 * Adds to the daily water usage.
 	 *
 	 * @param waterUssed
 	 * @param solElapsed
@@ -1201,7 +1190,8 @@ public class Farming extends Function {
 	}
 
 	/**
-	 * How many things need tending in this Farm
+	 * Get the number of crops that needs tending in this Farm.
+	 * 
 	 * @return
 	 */
 	public int getNumNeedTending() {
