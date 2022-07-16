@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MEGDRMapReader.java
- * @date 2021-08-28
+ * @date 2022-07-15
  * @author Manny Kung
  */
 
@@ -89,7 +89,7 @@ public class MEGDRMapReader {
 	}
 	
 	/**
-	 * Converts btye array to int array.
+	 * Converts byte array to int array.
 	 * 
 	 * @param data
 	 * @return
@@ -106,14 +106,32 @@ public class MEGDRMapReader {
         return ints;
     }
 	
+	/**
+	 * Loads the elevation data into int array.
+	 * 
+	 * @return
+	 */
 	public int[] loadElevation() {	 
-		InputStream inputStream = MEGDRMapReader.class.getResourceAsStream(FILE); //new BufferedInputStream(new FileInputStream(inputFile));
-
+		InputStream inputStream = null; //MEGDRMapReader.class.getResourceAsStream(FILE); //new BufferedInputStream(new FileInputStream(inputFile));
+//		BufferedInputStream bis = null;
+		
 	    try {
-	    		
+	    	// open input stream test.txt for reading purpose.
+	    	inputStream = MEGDRMapReader.class.getResourceAsStream(FILE);
+			// input stream is converted to buffered input stream
+//			bis = new BufferedInputStream(inputStream);
+			// read number of bytes available
+//			int numByte = bis.available();
+			// byte array declared
+//			byte[] bytes = new byte[numByte];
+			// Use ByteStreams to convert to byte array
 			byte[] bytes = ByteStreams.toByteArray(inputStream);
 			
+//			System.out.println("# of bytes: " + bytes.length);
+			// It has a total of 2073600 bytes.
+			
 			elevation = convertByteArrayToIntArray(bytes);
+
 //			int size = elevation.length;
 //			for (int j=0; j<size; j++) {
 //				if (j % WIDTH == 0) System.out.println();
@@ -129,13 +147,18 @@ public class MEGDRMapReader {
 //				System.out.print(elevation[i] + " ");// + buffer[0] + " " + buffer[1]);
 //				i++;
 //			}
-//        
+			
+        if (inputStream != null)
 	        inputStream.close();
 	        
-		} catch (IOException e) {
+//        if (bis != null)
+//        	bis.close();
+        
+		} catch (Exception e) {
 			 System.out.println("Problems in inputStream: " + e.getMessage());
-		}
 
+		}
+	    
         return elevation;
         
 //        try {

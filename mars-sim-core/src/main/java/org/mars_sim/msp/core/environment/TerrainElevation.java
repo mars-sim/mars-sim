@@ -310,40 +310,23 @@ public class TerrainElevation implements Serializable {
 	/**
 	 * Returns the elevation in km at the given location, based on MOLA's dataset
 	 *
+	 * @param location the location in question
+	 * @return the elevation at the location (in km)
+	 */
+	public static double getMOLAElevation(Coordinates location) {
+		return getMOLAElevation(location.getPhi(), location.getTheta());
+	}
+
+	/**
+	 * Returns the elevation in km at the given location, based on MOLA's dataset
+	 *
 	 * @param phi
 	 * @param theta
 	 * @return the elevation at the location (in km)
 	 */
-	public double getMOLAElevation(double phi, double theta) {
-//		if (mapdata == null)
-//			mapdata = mapDataUtil.getTopoMapData();
-		return mapDataUtil.getElevationInt(phi, theta)/ 1000.0;
+	public static double getMOLAElevation(double phi, double theta) {
+		return mapDataUtil.getElevationInt(phi, theta)/1000.0;
 	}
-
-	/**
-	 * Returns the ground elevation of a location.
-	 * 
-	 * @param location
-	 * @return
-	 */
-	public static double getGroundElevation(Coordinates location) {
-		return mapDataUtil.getElevationInt(location.getPhi(), location.getTheta())/ 1000.0;
-	}
-
-	
-	/**
-	 * Returns the elevation in km at the given location, based on MOLA's dataset
-	 *
-	 * @param location the location in question
-	 * @return the elevation at the location (in km)
-	 */
-	public double getMOLAElevation(Coordinates location) {
-//		if (mapdata == null)
-//			mapdata = mapDataUtil.getTopoMapData();
-//		logger.config("Calling getMOLAElevation().  mapdata : " + mapdata);
-		return mapDataUtil.getElevationInt(location.getPhi(), location.getTheta())/ 1000.0;
-	}
-
 	/**
 	 * Returns the patched elevation in km at the given location
 	 *

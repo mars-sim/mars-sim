@@ -48,7 +48,7 @@ public class DashboardCommand extends AbstractSettlementCommand {
 	 */
 	void generatedDashboard(Settlement settlement, StructuredResponse response) {
 		Coordinates location = settlement.getCoordinates();
-		double elevation = Math.round(TerrainElevation.getGroundElevation(location) * 1000.0)/1000.0;
+		double elevation = Math.round(TerrainElevation.getMOLAElevation(location) * 1000.0)/1000.0;
 
 		response.appendLabeledString("Sponsor", settlement.getSponsor().getDescription());
 		response.appendLabeledString("Objective", settlement.getObjective().getName());

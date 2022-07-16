@@ -97,9 +97,10 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 
 	public static final double RAD_PER_DEGREE = Math.PI / 180D;
 	
+	public static final String WHITESPACE = "   ";
 	public static final String COMMA = ", ";
-	public static final String THETA = "Theta: ";
-	public static final String PHI = "Phi: ";
+	public static final String THETA = "\u03B8: "; //"Theta: ";
+	public static final String PHI = "\u03C6: "; //"Phi: ";
 	public static final String CLOSE_P = ")";
 	
 	private static final String RGB = "RGB (";
@@ -433,39 +434,40 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		hsbLabel = new WebStyledLabel(StyleId.styledlabelShadow);
 		hsbLabel.setFont(font2);
 		hsbLabel.setForeground(Color.DARK_GRAY);
-        
-	    WebPanel w0 = new WebPanel();
-	    w0.setPreferredSize(new Dimension(91, 18));
-	    w0.add(heightLabel);
+         
+	    WebPanel c = new WebPanel();
+	    c.setPreferredSize(new Dimension(130, 18));
+	    c.add(coordLabel);
 	    
-	    WebPanel w1 = new WebPanel();
-	    w1.setPreferredSize(new Dimension(106, 18));
-	    w1.add(coordLabel);
-	    
-	    WebPanel w1a = new WebPanel();
-	    w1a.setPreferredSize(new Dimension(54, 18));
-	    w1a.add(phiLabel);
+	    WebPanel p = new WebPanel();
+	    p.setPreferredSize(new Dimension(45, 18));
+	    p.add(phiLabel);
 	
-	    WebPanel w1b = new WebPanel();
-	    w1b.setPreferredSize(new Dimension(74, 18));
-	    w1b.add(thetaLabel);
+	    WebPanel t = new WebPanel();
+	    t.setPreferredSize(new Dimension(45, 18));
+	    t.add(thetaLabel);
 	    
-	    WebPanel w2 = new WebPanel();
-	    w2.setPreferredSize(new Dimension(114, 18));
-	    w2.add(rgbLabel);
+	    WebPanel e = new WebPanel();
+	    e.setPreferredSize(new Dimension(100, 18));
+	    e.add(heightLabel);
 	    
-	    WebPanel w3 = new WebPanel();
-	    w3.setPreferredSize(new Dimension(135, 18));
-	    w3.add(hsbLabel);
+	    WebPanel r = new WebPanel();
+	    r.setPreferredSize(new Dimension(114, 18));
+	    r.add(rgbLabel);
 	    
-		statusBar.addLeftComponent(w0, false);
-		statusBar.addLeftComponent(w2, false);
+	    WebPanel hs = new WebPanel();
+	    hs.setPreferredSize(new Dimension(135, 18));
+	    hs.add(hsbLabel);
+	    
+		statusBar.addLeftComponent(c, false);
+		statusBar.addLeftComponent(p, false);
+		statusBar.addLeftComponent(t, false);
 		
-		statusBar.addCenterComponent(w3, false);
+//		statusBar.addCenterComponent(w3, false);
 
-		statusBar.addRightComponent(w1, false);
-		statusBar.addRightComponent(w1a, false);
-		statusBar.addRightComponent(w1b, false);
+		statusBar.addRightComponent(e, false);
+		statusBar.addRightComponent(r, false);
+		statusBar.addRightComponent(hs, false);
 		
 //		statusBar.addRightCorner();
 		
@@ -482,9 +484,19 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		pack();
 	}
 
-	public void createStatusBarLabels(String height, String coord, double phi, double theta, String rgb, String hsb) {
+	/**
+	 * Updates the labels on the status bar.
+	 * 
+	 * @param height
+	 * @param coord
+	 * @param phi
+	 * @param theta
+	 * @param rgb
+	 * @param hsb
+	 */
+	public void updateStatusBarLabels(String height, String coord, double phi, double theta, String rgb, String hsb) {
 		heightLabel.setText(height);
-		coordLabel.setText(coord);
+		coordLabel.setText(WHITESPACE + coord);
 		phiLabel.setText(PHI + phi);
 		thetaLabel.setText(THETA + theta);
 		rgbLabel.setText(rgb);
@@ -881,41 +893,39 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 			double x = (double) (event.getX() - (Map.DISPLAY_WIDTH / 2D) - 1);
 			double y = (double) (event.getY() - (Map.DISPLAY_HEIGHT / 2D) - 1);
 			
-			Coordinates clickedPosition = mapLayerPanel.getCenterLocation().convertRectToSpherical(x, y, rho);
+			Coordinates pos = mapLayerPanel.getCenterLocation().convertRectToSpherical(x, y, rho);
+			
+			StringBuilder coordSB = new StringBuilder();			
+			StringBuilder rgbSB = new StringBuilder();
+			StringBuilder hsbSB = new StringBuilder();
+			StringBuilder elevSB = new StringBuilder();
+			
+			double phi = pos.getPhi();
+			double theta = pos.getTheta();			
+			double h = TerrainElevation.getMOLAElevation(phi, theta);
 
-			double e = terrainElevation.getMOLAElevation(clickedPosition);
-					
-			StringBuilder s0 = new StringBuilder();
-			s0.append(ELEVATION).append(Math.round(e*1000.0)/1000.0).append(KM);
+			phi = Math.round(phi*1000.0)/1000.0;
+			theta = Math.round(theta*1000.0)/1000.0;
+
+			elevSB.append(ELEVATION).append(Math.round(h*1000.0)/1000.0).append(KM);
 			
-			StringBuilder s1 = new StringBuilder();
-			s1.append(clickedPosition.getFormattedString());
-			
-			StringBuilder s2 = new StringBuilder();
-			
-			StringBuilder s3 = new StringBuilder();
-			
-			double phi = Math.round(clickedPosition.getPhi()*100.0)/100.0;
-			double theta = Math.round(clickedPosition.getTheta()*100.0)/100.0;
-					
 			if (topoItem.isSelected()) {
-				int[] rgb = terrainElevation.getRGB(clickedPosition);
+				int[] rgb = terrainElevation.getRGB(pos);
 				float[] hsb = terrainElevation.getHSB(rgb);
 				
-				s2.append(RGB).append(rgb[0]).append(COMMA)
+				rgbSB.append(RGB).append(rgb[0]).append(COMMA)
 				.append(rgb[1]).append(COMMA)
 				.append(rgb[2]).append(CLOSE_P);
 				
-				s3.append(HSB).append(Math.round(hsb[0]*100.0)/100.0).append(COMMA)
+				hsbSB.append(HSB).append(Math.round(hsb[0]*100.0)/100.0).append(COMMA)
 					.append(Math.round(hsb[1]*100.0)/100.0).append(COMMA)
 					.append(Math.round(hsb[2]*100.0)/100.0).append(CLOSE_P);
 			}
 			
-			createStatusBarLabels(s0.toString(), s1.toString(), phi, theta , s2.toString(), s3.toString());
+			coordSB.append(pos.getCoordinateString());
 			
-			// System.out.println("x is " + x + " y is " + y);
-			
-			Coordinates mousePos = mapLayerPanel.getCenterLocation().convertRectToSpherical(x, y, rho);
+			updateStatusBarLabels(elevSB.toString(), coordSB.toString(), phi, theta, rgbSB.toString(), hsbSB.toString());
+
 			boolean onTarget = false;
 
 			Iterator<Unit> i = unitManager.getDisplayUnits().iterator();
@@ -935,7 +945,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 				UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
 				if (displayInfo != null && displayInfo.isMapDisplayed(unit)) {
 					Coordinates unitCoords = unit.getCoordinates();
-					double clickRange = Coordinates.computeDistance(unitCoords, mousePos);
+					double clickRange = Coordinates.computeDistance(unitCoords, pos);
 					double unitClickRange = displayInfo.getMapClickRange();
 					if (clickRange < unitClickRange) {
 						// System.out.println("you're on a settlement or vehicle");
@@ -953,7 +963,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 				Landmark landmark = (Landmark) j.next();
 
 				Coordinates unitCoords = landmark.getLandmarkCoord();
-				double clickRange = Coordinates.computeDistance(unitCoords, mousePos);
+				double clickRange = Coordinates.computeDistance(unitCoords, pos);
 				double unitClickRange = 40D;
 
 				if (clickRange < unitClickRange) {

@@ -46,7 +46,7 @@ public class ElevationCommand extends ChatCommand {
 			// Ask user
 			location = getCoordinates("Start", context);	
 			result = true;
-			elevation = TerrainElevation.getGroundElevation(location);
+			elevation = TerrainElevation.getMOLAElevation(location);
 			context.println("The elevation of this location is " 
 					+ Math.round(elevation * 1000.0)/1000.0 + " km.");
 		}

@@ -82,9 +82,11 @@
  		int index = row * WIDTH + column;
  		
  		if (index > HEIGHT * WIDTH)
- 			index = 0;
+ 			index = HEIGHT * WIDTH - 1;
  		
- 		return getElevationArray()[index];
+ 		int h = getElevationArray()[index];
+// 		System.out.println("r:" + row + "  c:" + column + "  i:" + index + "  h:" + h);
+ 		return h;
  	}
  	
      /**
