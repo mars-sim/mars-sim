@@ -280,7 +280,7 @@ public class TerrainElevation implements Serializable {
 		return site.getRegolithCollectionRate();
 	}
 
-	public int[] getRGB(Coordinates location) {
+	public static int[] getRGB(Coordinates location) {
 		// Find hue and saturation color components at location.
 		if (mapdata == null)
 			mapdata = mapDataUtil.getTopoMapData();
@@ -292,7 +292,7 @@ public class TerrainElevation implements Serializable {
 		return new int[] {red, green, blue};
 	}
 
-	public float[] getHSB(int[] rgb) {
+	public static float[] getHSB(int[] rgb) {
 		float[] hsb = Color.RGBtoHSB(rgb[0], rgb[1], rgb[2], null);
 		float hue = hsb[0];
 		float saturation = hsb[1];
@@ -333,37 +333,18 @@ public class TerrainElevation implements Serializable {
 	 * @param location the location in question
 	 * @return the elevation at the location (in km)
 	 */
-	public double getPatchedElevation(Coordinates location) {
+	public static double getPatchedElevation(Coordinates location) {
 
-//		int elevationMOLA = mapdata.getElevationInt(location.getPhi(), location.getTheta());
-
-//		if (surfaceFeatures == null)
-//			surfaceFeatures = Simulation.instance().getMars().getSurfaceFeatures();
-//		if (surfaceFeatures.getSites().containsKey(location)) {
-//			CollectionSite site = (CollectionSite) surfaceFeatures.getSites().get(location);
-//			return site.getElevation();
-//		}
-//
-//		else {
-//			// Create a new site
-//			CollectionSite site = new CollectionSite(location);
-
-			// Patch elevation problems at certain locations.
-			double elevation = patchElevation(getRawElevation(location), location);
+		// Patch elevation problems at certain locations.
+		double elevation = patchElevation(getRawElevation(location), location);
 
 //			String s3 = String.format("RGB Elevation : %7.3f km   MOLA Elevation : %6d m",
 //					Math.round(elevation*1_000.0)/1_000.0,
 //					elevationMOLA);
 //			System.out.println(s3);
 
-//			// Save the elevation
-//			site.setElevation(elevation);
-//
-//			// Save this site
-//			surfaceFeatures.setSites(location, site);
+		return elevation;
 
-			return elevation;
-//		}
 	}
 
 	/**
@@ -372,7 +353,7 @@ public class TerrainElevation implements Serializable {
 	 * @param location the location in question
 	 * @return the elevation at the location (in km)
 	 */
-	public double getRawElevation(Coordinates location) {
+	public static double getRawElevation(Coordinates location) {
 
 		// Find hue and saturation color components at location.
 		int rgb[] = getRGB(location);

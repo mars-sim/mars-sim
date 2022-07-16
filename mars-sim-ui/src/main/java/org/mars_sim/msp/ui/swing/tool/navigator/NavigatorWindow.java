@@ -92,6 +92,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 	public static final int HORIZONTAL_LEFT_HALF = HORIZONTAL_SURFACE_MAP; 
 	public static final int HEIGHT_BUTTON_PANE = 26;
 	public static final int HEIGHT = 400; //(int)(HORIZONTAL_SURFACE_MAP + 3.5 * HEIGHT_BUTTON_PANE);
+	public static final int HEIGHT_STATUS_BAR = 20;
 	
 	public static final int CB_WIDTH = 120;
 
@@ -106,7 +107,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 	private static final String RGB = "RGB (";
 	private static final String HSB = "HSB (";
 	
-	private static final String ELEVATION = "Elev: ";
+	private static final String ELEVATION = " h: ";
 	private static final String KM = " km";
 	
 	// Data member
@@ -181,7 +182,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 	private MapLayer exploredSiteLayer;
 
 	private List<Landmark> landmarks;
-	private TerrainElevation terrainElevation;
 	private UnitManager unitManager;
 
 	/**
@@ -195,7 +195,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 
 		Simulation sim = desktop.getSimulation();
 		Environment mars = sim.getMars();
-		this.terrainElevation =  mars.getSurfaceFeatures().getTerrainElevation();
 		this.landmarks = mars.getSurfaceFeatures().getLandmarks();
 		this.unitManager = sim.getUnitManager();
 
@@ -436,36 +435,36 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		hsbLabel.setForeground(Color.DARK_GRAY);
          
 	    WebPanel c = new WebPanel();
-	    c.setPreferredSize(new Dimension(130, 18));
+	    c.setPreferredSize(new Dimension(125, HEIGHT_STATUS_BAR));
 	    c.add(coordLabel);
 	    
 	    WebPanel p = new WebPanel();
-	    p.setPreferredSize(new Dimension(45, 18));
+	    p.setPreferredSize(new Dimension(50, HEIGHT_STATUS_BAR));
 	    p.add(phiLabel);
 	
 	    WebPanel t = new WebPanel();
-	    t.setPreferredSize(new Dimension(45, 18));
+	    t.setPreferredSize(new Dimension(50, HEIGHT_STATUS_BAR));
 	    t.add(thetaLabel);
 	    
 	    WebPanel e = new WebPanel();
-	    e.setPreferredSize(new Dimension(100, 18));
+	    e.setPreferredSize(new Dimension(140, HEIGHT_STATUS_BAR));
 	    e.add(heightLabel);
 	    
 	    WebPanel r = new WebPanel();
-	    r.setPreferredSize(new Dimension(114, 18));
+	    r.setPreferredSize(new Dimension(114, HEIGHT_STATUS_BAR));
 	    r.add(rgbLabel);
 	    
 	    WebPanel hs = new WebPanel();
-	    hs.setPreferredSize(new Dimension(135, 18));
+	    hs.setPreferredSize(new Dimension(135, HEIGHT_STATUS_BAR));
 	    hs.add(hsbLabel);
 	    
 		statusBar.addLeftComponent(c, false);
 		statusBar.addLeftComponent(p, false);
 		statusBar.addLeftComponent(t, false);
 		
-//		statusBar.addCenterComponent(w3, false);
+		statusBar.addCenterComponent(e, false);
 
-		statusBar.addRightComponent(e, false);
+//		statusBar.addRightComponent(e, false);
 		statusBar.addRightComponent(r, false);
 		statusBar.addRightComponent(hs, false);
 		
@@ -495,7 +494,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 	 * @param hsb
 	 */
 	public void updateStatusBarLabels(String height, String coord, double phi, double theta, String rgb, String hsb) {
-		heightLabel.setText(height);
+		heightLabel.setText(ELEVATION + height);
 		coordLabel.setText(WHITESPACE + coord);
 		phiLabel.setText(PHI + phi);
 		thetaLabel.setText(THETA + theta);
@@ -846,10 +845,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 
 			Coordinates clickedPosition = mapLayerPanel.getCenterLocation().convertRectToSpherical(x, y, rho);
 
-//			System.out.println(clickedPosition.getFormattedString() 
-//			+ " " + terrainElevation.getElevation(clickedPosition) + " km"
-//			);
-			
 			Iterator<Unit> i = unitManager.getDisplayUnits().iterator();
 
 			// Open window if unit is clicked on the map
@@ -902,16 +897,20 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 			
 			double phi = pos.getPhi();
 			double theta = pos.getTheta();			
-			double h = TerrainElevation.getMOLAElevation(phi, theta);
-
+			double h0 = TerrainElevation.getMOLAElevation(phi, theta);
+			double h1 = TerrainElevation.getPatchedElevation(pos);
+			
 			phi = Math.round(phi*1000.0)/1000.0;
 			theta = Math.round(theta*1000.0)/1000.0;
 
-			elevSB.append(ELEVATION).append(Math.round(h*1000.0)/1000.0).append(KM);
+			elevSB.append(ELEVATION)
+				.append(Math.round(h0*1000.0)/1000.0)
+				.append(" / " + Math.round(h1*1000.0)/1000.0)
+				.append(KM);
 			
 			if (topoItem.isSelected()) {
-				int[] rgb = terrainElevation.getRGB(pos);
-				float[] hsb = terrainElevation.getHSB(rgb);
+				int[] rgb = TerrainElevation.getRGB(pos);
+				float[] hsb = TerrainElevation.getHSB(rgb);
 				
 				rgbSB.append(RGB).append(rgb[0]).append(COMMA)
 				.append(rgb[1]).append(COMMA)

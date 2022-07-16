@@ -546,17 +546,6 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	public double getBaseMass() {
 		return baseMass;
 	}
-
-    /** 
-     * Returns the elevation of the unit on the ground.
-     * 
-     *  @return elevation in km.
-     */
-    public double getGroundElevation() {
-		if (terrainElevation == null)
-			terrainElevation = surfaceFeatures.getTerrainElevation();
-        return terrainElevation.getMOLAElevation(getCoordinates());
-    }
     
 	public synchronized boolean hasUnitListener(UnitListener listener) {
 		if (listeners == null)
