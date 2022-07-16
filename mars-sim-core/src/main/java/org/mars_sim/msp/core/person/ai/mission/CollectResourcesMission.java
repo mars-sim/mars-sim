@@ -67,8 +67,6 @@ public abstract class CollectResourcesMission extends EVAMission
 	protected int resourceID;
 	/** The total site score of this prospective resource collection mission. */
 	private double totalSiteScore;
-	/** The amount of resources (kg) collected at a collection site. */
-	private double siteCollectedResources;
 	/** The starting amount of resources in a rover at a collection site. */
 	private double collectingStart;
 	/** The goal amount of resources to collect at a site (kg). */
@@ -221,7 +219,7 @@ public abstract class CollectResourcesMission extends EVAMission
 		double containerCap = ContainerUtil.getContainerCapacity(containerID);
 		this.siteResourceGoal = 2 * containerCap * containerNum / collectionSites.size();
 		this.resourceCollectionRate = resourceCollectionRate;
-
+		this.containerID = containerID;
 		setEVAEquipment(containerID, containerNum);
 
 		// Set collection navpoints.
@@ -274,22 +272,17 @@ public abstract class CollectResourcesMission extends EVAMission
 	 */
 	private double updateResources(ResourceHolder inv) {
 		double resourceCollected = 0;
-		double resourcesCapacity = 0;
 
 		// Get capacity for all collectible resources. The collectible
 		// resource at a site may be more than the single one specified.
 		for(int resourceId : getCollectibleResources()) {
 			double amount = inv.getAmountResourceStored(resourceId);
 			resourceCollected += amount;
-			resourcesCapacity += inv.getAmountResourceCapacity(resourceId);
-
 			collected.put(resourceId, amount);
 		}
 
 		// Calculate resources collected at the site so far.
-		siteCollectedResources = resourceCollected - collectingStart;
-
-		return resourcesCapacity;
+		return resourceCollected - collectingStart;
 	}
 
 	/**
@@ -312,11 +305,12 @@ public abstract class CollectResourcesMission extends EVAMission
 		}
 
 		// This will update the siteCollectedResources and totalResourceCollected after the last on-site collection activity
-		updateResources(rover);
+		double siteCollectedSoFar = updateResources(rover);
 
 		// If collected resources are sufficient for this site, end the collecting
 		// phase.
-		if (siteCollectedResources >= siteResourceGoal) {
+		if (siteCollectedSoFar >= siteResourceGoal) {
+			logger.info(getRover(), "Full resources collected at site");
 			return false;
 		}
 
@@ -349,8 +343,8 @@ public abstract class CollectResourcesMission extends EVAMission
 		// If person can collect resources, start him/her on that task.
 		if (CollectResources.canCollectResources(person, getRover(), containerID, resourceID)) {
 			EVAOperation collectResources = new CollectResources("Collecting Resources", person,
-					getRover(), resourceID, resourceCollectionRate,
-					siteResourceGoal - siteCollectedResources, rover.getAmountResourceStored(resourceID),
+					getRover(), resourceID, rate,
+					siteResourceGoal - siteCollectedSoFar, rover.getAmountResourceStored(resourceID),
 					containerID);
 			assignTask(person, collectResources);
 		}
@@ -367,6 +361,15 @@ public abstract class CollectResourcesMission extends EVAMission
 	@Override
 	protected void phaseEVAEnded() {
 		updateResources(getRover());
+	}
+
+	/**
+	 * Signak the start of an EVA phase to do any housekeeping
+	 */
+	@Override
+	protected void phaseEVAStarted() {
+		super.phaseEVAStarted();
+		collectingStart = 0D;
 	}
 
 	/**
@@ -477,10 +480,11 @@ public abstract class CollectResourcesMission extends EVAMission
 	 */
 	@Override
 	protected double getEstimatedTimeAtEVASite(boolean useBuffer) {
-		double timePerPerson = 2 * siteResourceGoal / resourceCollectionRate;
-		if (useBuffer)
-			timePerPerson *= EVA_COLLECTION_OVERHEAD;
-		return timePerPerson;
+		// double timePerPerson = 2 * siteResourceGoal / resourceCollectionRate;
+		// if (useBuffer)
+		// 	timePerPerson *= EVA_COLLECTION_OVERHEAD;
+		// return timePerPerson;
+		return 500D; // Half a sol
 	}
 
 	/**

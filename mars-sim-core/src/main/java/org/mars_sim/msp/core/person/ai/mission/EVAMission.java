@@ -59,13 +59,13 @@ public abstract class EVAMission extends RoverMission {
 					startDisembarkingPhase();
 				}
 				else if (canStartEVA()) {
-					activeEVA = true;
 					setPhase(evaPhase, getCurrentNavpointDescription());
+					phaseEVAStarted();
 				}
 			}
 			else if (WAIT_SUNLIGHT.equals(getPhase())) {
-				activeEVA = true;
 				setPhase(evaPhase, getCurrentNavpointDescription());
+				phaseEVAStarted();
 			}
 			else if (evaPhase.equals(getPhase())) {
 				startTravellingPhase();
@@ -247,6 +247,13 @@ public abstract class EVAMission extends RoverMission {
      * @return
      */
 	protected abstract boolean performEVA(Person person);
+
+	/**
+	 * Signak the start of an EVA phase to do any housekeeping
+	 */
+	protected void phaseEVAStarted() {
+		activeEVA = true;
+	}
 
 	/**
 	 * Notifies the sub-classes that the current EVA has ended. Trigger any housekeeping.
