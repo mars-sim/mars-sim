@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * MissionSubAgenda.java
- * @version 3.2.1 2021-07-19
+ * @date 2022-07-15
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.reportingAuthority;
@@ -13,16 +13,11 @@ import java.util.Map;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 
 /**
- * This class represents a sub-agenda of s Reporting 
- *
+ * This class represents a sub-agenda of reporting.
  */
 public class MissionSubAgenda implements Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
-	
 	
 	private String description;
 	private Map<MissionType, Integer> modifiers;

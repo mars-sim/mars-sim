@@ -84,8 +84,6 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 	private DisplaySingle lcdLong, lcdLat, lcdText; 
 	private DisplayCircular gauge;
 
-	private TerrainElevation terrainElevation = getMars().getSurfaceFeatures().getTerrainElevation();
-	
 	/**
 	 * Constructor.
 	 *
@@ -161,7 +159,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 
 		northPanel.add(lcdLat);
 
-		elevationCache = Math.round(terrainElevation.getMOLAElevation(unit.getCoordinates()) * 1000.0) / 1000.0;
+		elevationCache = Math.round(TerrainElevation.getMOLAElevation(unit.getCoordinates()) * 1000.0) / 1000.0;
 
 		logger.info(unit.getName()
 				+ "'s coordinates: " + unit.getCoordinates()
@@ -617,7 +615,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 			lcdLat.setLcdValueAnimated(Math.abs(locationCache.getLatitudeDouble()));
 			lcdLong.setLcdValueAnimated(Math.abs(locationCache.getLongitudeDouble()));
 
-			double elevationCache = Math.round(terrainElevation.getMOLAElevation(location)
+			double elevationCache = Math.round(TerrainElevation.getMOLAElevation(location)
 					* 1000.0) / 1000.0;
 
 			setGauge(gauge, elevationCache);
@@ -660,7 +658,6 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 		
 		containerCache = null;
 		topContainerCache = null;
-		terrainElevation = null;
 		locationCache = null;
 		locatorButton = null;
 		lcdLong = null;

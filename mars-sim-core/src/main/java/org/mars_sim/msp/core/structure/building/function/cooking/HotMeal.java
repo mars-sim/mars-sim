@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * HotMeal.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-15
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.structure.building.function.cooking;
@@ -15,7 +15,7 @@ public class HotMeal implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private boolean isItAvailable;
+	private boolean isAvailable;
 
 	private int mealID;
 
@@ -25,8 +25,7 @@ public class HotMeal implements Serializable {
 	private String mealName;
 	private String mealCategory;
 
-	private List<Ingredient> ingredientList = new CopyOnWriteArrayList<>(); // <Ingredient>();
-
+	private List<Ingredient> ingredientList = new CopyOnWriteArrayList<>();
 
 	public HotMeal(int mealID, String nameOfMeal, double oil, double salt, String mealCategory) {
 
@@ -39,7 +38,7 @@ public class HotMeal implements Serializable {
 
 
 	/**
-	 * Adds an ingredient
+	 * Adds an ingredient.
 	 * 
 	 * @param ingredientID
 	 * @param resource
@@ -61,19 +60,18 @@ public class HotMeal implements Serializable {
 	}
 
 	public void addMeal(int mealID, String nameOfMeal, double oil, double salt,
-			String mealCategory, boolean isItAvailable) {
+			String mealCategory, boolean isAvailable) {
 
 		this.mealID = mealID;
 		this.mealName = nameOfMeal;
 		this.oil = oil;
 		this.salt = salt;
 		this.mealCategory = mealCategory;
-		this.isItAvailable = isItAvailable;
+		this.isAvailable = isAvailable;
 	}
 
-	//2014-12-11 Added isItAvailable
-    public boolean getIsItAvailable() {
-    	return isItAvailable;
+    public boolean isAvailable() {
+    	return isAvailable;
     }
 
 	public void setIngredientDryMass(int id, double ingredientDryMass) {
@@ -82,8 +80,8 @@ public class HotMeal implements Serializable {
 		ingredientList.set(id, ingredient);
 	}
 
-    public void setIsItAvailable(boolean value) {
-    	isItAvailable = value;
+    public void setAvailable(boolean value) {
+    	isAvailable = value;
     }
 
 	public String getMealName() {

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ResourceCommand.java
- * @date 2021-10-21
+ * @date 2022-07-15
  * @author Barry Evans
  */
 
@@ -58,13 +58,14 @@ public class ResourceCommand extends AbstractSettlementCommand {
 	private static final String OXYGEN = "o2";
 	private static final String CO2 = "co2";
 	private static final String WATER = "water";
+	private static final String GREY_WATER = "grey water";
 
 
 	private ResourceCommand() {
-		super("rs", "resource", "Settlement resources; either oxygen, co2 or water");
+		super("rs", "resource", "Settlement resources: either oxygen, co2, water, or grey water");
 		
 		// Setup the fixed arguments
-		setArguments(Arrays.asList(OXYGEN, CO2, WATER));
+		setArguments(Arrays.asList(OXYGEN, CO2, WATER, GREY_WATER));
 	}
 	
 	@Override
@@ -84,7 +85,12 @@ public class ResourceCommand extends AbstractSettlementCommand {
 				break;
 			
 			case WATER:
-				displayWater(settlement, response);
+				displayWater(settlement, response, ResourceUtil.waterID);
+				result = true;
+				break;
+				
+			case GREY_WATER:
+				displayWater(settlement, response, ResourceUtil.greyWaterID);
 				result = true;
 				break;
 				
@@ -126,19 +132,25 @@ public class ResourceCommand extends AbstractSettlementCommand {
 		response.appendLabeledString("Total generated daily", String.format(KG_SOL_FORMAT, usage));		
 	}
 
-	private void displayWater(Settlement settlement, StructuredResponse response) {
-		double reserve = settlement.getAmountResourceStored(ResourceUtil.waterID);
+	private void displayWater(Settlement settlement, StructuredResponse response, int id) {
+		double reserve = settlement.getAmountResourceStored(id);
 		response.appendLabeledString(CURRENT_RESERVE, String.format(CommandHelper.KG_FORMAT, reserve));
 		response.appendBlankLine();
 			
 		double usage = 0;
 		double totalArea = 0;
-
+		int type = 0;
+		double sign = -1.0;
+		if (id == ResourceUtil.greyWaterID) {
+			type = 3;
+			
+		}
+		
 		// Prints greenhouse usage
 		List<Building> farms = settlement.getBuildingManager().getBuildings(FunctionType.FARMING);
 		for (Building b : farms) {
 			Farming f = b.getFarming();
-			usage += f.computeUsage(0);
+			usage += f.computeUsage(type);
 			totalArea += f.getGrowingArea();
 		}
 
@@ -169,16 +181,16 @@ public class ResourceCommand extends AbstractSettlementCommand {
 		double consumption = 0;
 		List<Person> ppl = new ArrayList<>(settlement.getAllAssociatedPeople());
 		for (Person p : ppl) {
-			consumption += p.getDailyUsage(ResourceUtil.waterID);
+			consumption += p.getDailyUsage(id);
 		}
-		response.appendTableRow("People", Math.round(-consumption * 100.0) / 100.0);
-		net = net - consumption;
+		response.appendTableRow("People", Math.round(- sign * consumption * 100.0) / 100.0);
+		net = net - sign * consumption;
 
 		// Add water usage from making meal and dessert
 		double cooking = settlement.getDailyWaterUsage(WaterUseType.PREP_MEAL)
 					+ settlement.getDailyWaterUsage(WaterUseType.PREP_DESSERT);
-		response.appendTableRow("Cooking", Math.round(-cooking * 100.0) / 100.0);
-		net = net - cooking;
+		response.appendTableRow("Cooking", Math.round(- sign * cooking * 100.0) / 100.0);
+		net = net - sign * cooking;
 
 		// Prints living usage
 		List<Building> quarters = settlement.getBuildingManager()
@@ -188,14 +200,14 @@ public class ResourceCommand extends AbstractSettlementCommand {
 			LivingAccommodations la = b.getLivingAccommodations();
 			livingUsage += la.getDailyAverageWaterUsage();
 		}		
-		response.appendTableRow("Accommodation", Math.round(-livingUsage * 100.0) / 100.0);
-		net = net - livingUsage;
+		response.appendTableRow("Accommodation", Math.round(- sign * livingUsage * 100.0) / 100.0);
+		net = net - sign * livingUsage;
 
 		// Prints cleaning usage
 		double cleaning = settlement.getDailyWaterUsage(WaterUseType.CLEAN_MEAL)
 					+ settlement.getDailyWaterUsage(WaterUseType.CLEAN_DESSERT);
-		response.appendTableRow("Cleaning", Math.round(-cleaning * 100.0) / 100.0);
-		net = net - cleaning;
+		response.appendTableRow("Cleaning", Math.round(- sign * cleaning * 100.0) / 100.0);
+		net = net - sign * cleaning;
 
 		// Prints output from resource processing
 		double output = 0;
@@ -205,7 +217,7 @@ public class ResourceCommand extends AbstractSettlementCommand {
 			List<ResourceProcess> processes = rp.getProcesses();
 			for (ResourceProcess p : processes) {
 				if (p.isProcessRunning())
-					output += p.getMaxOutputResourceRate(ResourceUtil.waterID);
+					output += p.getMaxOutputResourceRate(id);
 			}
 		}
 		response.appendTableRow(PROCESSES, Math.round(output * 1_000 * 100.0) / 100.0);
@@ -216,7 +228,7 @@ public class ResourceCommand extends AbstractSettlementCommand {
 		for (Building b : settlement.getBuildingManager().getBuildings(FunctionType.WASTE_PROCESSING)) {
 			for (WasteProcess p : b.getWasteProcessing().getProcesses()) {
 				if (p.isProcessRunning())
-					output2 += p.getMaxOutputRate(ResourceUtil.waterID);
+					output2 += p.getMaxOutputRate(id);
 			}
 		}
 		response.appendTableRow(WASTES, Math.round(output2 * 1_000 * 100.0) / 100.0);

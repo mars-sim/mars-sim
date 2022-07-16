@@ -405,7 +405,8 @@ public class TendGreenhouse extends Task implements Serializable {
 			}
 		}
 
-		printDescription(Msg.getString("Task.description.tendGreenhouse.inspect.detail", goal.toLowerCase()));
+		if (goal != null)
+			printDescription(Msg.getString("Task.description.tendGreenhouse.inspect.detail", goal.toLowerCase()));
 
 		double mod = 0;
 		// Determine amount of effective work time based on "Botany" skill
@@ -446,8 +447,9 @@ public class TendGreenhouse extends Task implements Serializable {
 				goal = uncleaned.get(rand);
 			}
 		}
-
-		printDescription(Msg.getString("Task.description.tendGreenhouse.clean.detail", goal.toLowerCase()));
+		
+		if (goal != null)
+			printDescription(Msg.getString("Task.description.tendGreenhouse.clean.detail", goal.toLowerCase()));
 				
 		double mod = 0;
 		// Determine amount of effective work time based on "Botany" skill

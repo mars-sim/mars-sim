@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * BackgroundTileMapLayer.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;
@@ -49,7 +49,7 @@ implements SettlementMapLayer {
 	 */
 	public BackgroundTileMapLayer(SettlementMapPanel mapPanel) {
 		this.mapPanel = mapPanel;
-		settlementBackgroundMap = new HashMap<Settlement, String>(MAX_BACKGROUND_IMAGE_NUM);
+		settlementBackgroundMap = new HashMap<>(MAX_BACKGROUND_IMAGE_NUM);
 	}
 
 	@Override
@@ -152,6 +152,7 @@ implements SettlementMapLayer {
 
 	/**
 	 * Creates a resized instance of a background image.
+	 * 
 	 * @param image the original background image.
 	 * @param width the resized image width.
 	 * @param height the resized image height.
@@ -212,6 +213,7 @@ implements SettlementMapLayer {
 
 	/**
 	 * Gets the background tile image icon for a settlement.
+	 * 
 	 * @param settlement the settlement to display.
 	 * @return the background tile image icon or null if none found.
 	 */

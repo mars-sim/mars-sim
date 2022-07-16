@@ -16,6 +16,7 @@ import org.mars_sim.msp.core.Direction;
 import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.environment.TerrainElevation;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.person.Person;
@@ -963,23 +964,24 @@ public abstract class OperateVehicle extends Task implements Serializable {
 	
     /**
      * Gets the distance to the destination.
+     * 
      * @return distance (km)
      */
     protected double getDistanceToDestination() {
     	return vehicle.getCoordinates().getDistance(destination);
     }
     
-    /** Returns the elevation at the ground elevation.
+    /** 
+     * Returns the elevation of the vehicle on the ground.
+     * 
      *  @return elevation in km.
      */
     protected double getGroundElevation() {
-		if (terrainElevation == null)
-			terrainElevation = surfaceFeatures.getTerrainElevation();
-        return terrainElevation.getMOLAElevation(vehicle.getCoordinates());
+        return TerrainElevation.getMOLAElevation(vehicle.getCoordinates());
     }
     
     /**
-     * Stops the vehicle and removes operator
+     * Stops the vehicle and removes operator.
      */
     protected void clearDown() {
     	if (vehicle != null) {

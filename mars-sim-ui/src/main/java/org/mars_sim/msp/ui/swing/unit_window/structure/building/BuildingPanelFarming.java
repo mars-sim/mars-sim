@@ -72,7 +72,7 @@ implements MouseListener {
 	private static final String PLANT_ICON = Msg.getString("icon.plant"); //$NON-NLS-1$
 
 	// Data members
-	private JTextField radTF, farmersTF, cropsTF, waterUsageTF, o2TF, co2TF;
+	private JTextField radTF, farmersTF, cropsTF, waterUsageTF, greyWaterUsageTF, o2TF, co2TF;
 
 	// Data cache
 	/** The number of farmers cache. */
@@ -85,6 +85,8 @@ implements MouseListener {
 	private double radCache;
 	/** The cache value for the average water usage per sol per square meters. */
 	private double waterUsageCache;
+	/** The cache value for the average grey water usage per sol per square meters. */
+	private double greyWaterUsageCache;
 	/** The cache value for the average O2 generated per sol per square meters. */
 	private double o2Cache;
 	/** The cache value for the average CO2 consumed per sol per square meters. */
@@ -163,6 +165,11 @@ implements MouseListener {
 									Msg.getString("BuildingPanelFarming.waterUsage", waterUsageCache + ""),
 									Msg.getString("BuildingPanelFarming.waterUsage.tooltip"));
 
+		greyWaterUsageCache = farm.computeUsage(3);
+		greyWaterUsageTF = addTextField(springPanel, Msg.getString("BuildingPanelFarming.greyWaterUsage.title"),
+									Msg.getString("BuildingPanelFarming.greyWaterUsage", greyWaterUsageCache + ""),
+									Msg.getString("BuildingPanelFarming.greyWaterUsage.tooltip"));
+		
 		o2Cache = farm.computeUsage(1);
 		o2TF = addTextField(springPanel, Msg.getString("BuildingPanelFarming.o2.title"),
 							Msg.getString("BuildingPanelFarming.o2", o2Cache + ""),
@@ -175,7 +182,7 @@ implements MouseListener {
 
 		// Lay out the spring panel.
 		SpringUtilities.makeCompactGrid(springPanel,
-		                                6, 2, //rows, cols
+		                                7, 2, //rows, cols
 		                                INITX_DEFAULT, INITY_DEFAULT,        //initX, initY
 		                                XPAD_DEFAULT, YPAD_DEFAULT);       //xPad, yPad
 

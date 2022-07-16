@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
- * MapDataUtility.java
- * @version 3.2.0 2021-06-20
+ * MapDataUtil.java
+ * @date 2022-07-15
  * @author Scott Davis
  */
 
@@ -27,25 +27,18 @@
 
  	private static int[] elevationArray;
  	
-// 	static {
-// 		reader = new MEGDRMapReader();
-// 		elevationArray = reader.getElevationArray();
-// 	}
- 	
      /**
       * Private constructor for static utility class.
       */
      private MapDataUtil() {
          mapDataFactory = new MapDataFactory();
- 		reader = new MEGDRMapReader();
+         reader = new MEGDRMapReader();
      }
      
      public int[] getElevationArray() {
-     	
-     	if (elevationArray == null) {		
+     	if (elevationArray == null)	
      		elevationArray = reader.loadElevation();
-     	}
-     		
+  
  		return elevationArray;
  	}
  	
@@ -77,24 +70,26 @@
  			theta += TWO_PI;
 
  		int row = (int) Math.round(phi * HEIGHT / PI);
+ 		
  		if (row == HEIGHT) 
  			row--;
  		
  		int column = WIDTH /2 + (int) Math.round(theta * WIDTH / TWO_PI);
-// 		if (column < 0)
-// 			column = 0;		
+
  		if (column == WIDTH)
  			column--;
 
  		int index = row * WIDTH + column;
- 		if (index >= HEIGHT * WIDTH)
+ 		
+ 		if (index > HEIGHT * WIDTH)
  			index = HEIGHT * WIDTH - 1;
  		
  		return getElevationArray()[index];
  	}
  	
      /**
-      * Get the singleton instance of MapData.
+      * Gets the singleton instance of MapData.
+      * 
       * @return instance.
       */
      public static MapDataUtil instance() {
@@ -105,7 +100,8 @@
      }
      
      /**
-      * Get the surface map data.
+      * Gets the surface map data.
+      * 
       * @return surface map data.
       */
      public MapData getSurfaceMapData() {
@@ -113,7 +109,8 @@
      }
      
      /**
-      * Get the topographical map data.
+      * Gets the topographical map data.
+      * 
       * @return topographical map data.
       */
      public MapData getTopoMapData() {
@@ -121,7 +118,8 @@
      }
      
      /**
-      * Get the geology map data.
+      * Gets the geology map data.
+      * 
       * @return geology map data.
       */
      public MapData getGeologyMapData() {

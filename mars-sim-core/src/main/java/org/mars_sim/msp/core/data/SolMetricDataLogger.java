@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * SolMetricDataLogger.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-15
  * @author Barry Evans
  */
 
@@ -31,8 +31,9 @@ public class SolMetricDataLogger<K> extends DataLogger<Map<K,Double>> {
 	}
 
 	/**
-	 * Increase the metric on one of the data points. It adds the increment to any existing value.
+	 * Increases the metric on one of the data points. It adds the increment to any existing value.
 	 * If no value for this metric is present; it created one.
+	 * 
 	 * @param increment Value to add to the existing metric.
 	 */
 	public void increaseDataPoint(K metric, Double increment) {
@@ -46,7 +47,8 @@ public class SolMetricDataLogger<K> extends DataLogger<Map<K,Double>> {
 	}
 
 	/**
-	 * Get a metric from the current day's figures.
+	 * Gets a metric from the current day's figures.
+	 * 
 	 * @param type
 	 * @return
 	 */
@@ -55,8 +57,9 @@ public class SolMetricDataLogger<K> extends DataLogger<Map<K,Double>> {
 	}
 	
 	/**
-	 * Calculate the daily average for a specific metric.
+	 * Calculates the daily average for a specific metric.
 	 * For the current day the current msol is taken into account to produce an estimate. 
+	 * 
 	 * @param metric Metric requested
 	 * @return Daily average
 	 */

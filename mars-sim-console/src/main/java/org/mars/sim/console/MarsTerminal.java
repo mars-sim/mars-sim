@@ -125,25 +125,32 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
         }
     }
 
+	/**
+	 * Converts from icon to image.
+	 *
+	 * @param icon
+	 * @return
+	 */
+	public static Image iconToImage(Icon icon) {
+		// Note: Use frame.setIconImage(image) afterward to set the image of a frame
+		if (icon instanceof ImageIcon) {
+			return ((ImageIcon)icon).getImage();
+		}
 
-	static Image iconToImage(Icon icon) {
-	   if (icon instanceof ImageIcon) {
-	      return ((ImageIcon)icon).getImage();
-	   }
-	   else {
-	      int w = icon.getIconWidth();
-	      int h = icon.getIconHeight();
-	      GraphicsEnvironment ge =
-	        GraphicsEnvironment.getLocalGraphicsEnvironment();
-	      GraphicsDevice gd = ge.getDefaultScreenDevice();
-	      GraphicsConfiguration gc = gd.getDefaultConfiguration();
-	      BufferedImage image = gc.createCompatibleImage(w, h);
-	      Graphics2D g = image.createGraphics();
-	      icon.paintIcon(null, g, 0, 0);
-	      g.dispose();
-	      return image;
-	   }
-	 }
+		else {
+			int w = icon.getIconWidth();
+			int h = icon.getIconHeight();
+			GraphicsEnvironment ge =
+					GraphicsEnvironment.getLocalGraphicsEnvironment();
+			GraphicsDevice gd = ge.getDefaultScreenDevice();
+			GraphicsConfiguration gc = gd.getDefaultConfiguration();
+			BufferedImage image = gc.createCompatibleImage(w, h);
+			Graphics2D g = image.createGraphics();
+			icon.paintIcon(null, g, 0, 0);
+			g.dispose();
+			return image;
+		}
+	}
 
 	private void setSize(int w, int h) {
 		width = w;

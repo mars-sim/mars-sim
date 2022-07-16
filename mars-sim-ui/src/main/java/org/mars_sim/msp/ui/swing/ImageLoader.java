@@ -20,6 +20,8 @@ import java.util.logging.Logger;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
+import org.mars.sim.console.MarsTerminal;
+
 /**
  * This is a static class that acts as a helper to load Images for use in the
  * UI. It is based on loading the resource form the class path via the
@@ -36,13 +38,15 @@ public class ImageLoader {
 	private static Toolkit usedToolkit = null;
 
 	/**
-	 * Sub-directory/package for the images
+	 * Sub-directory/package for the images.
 	 */
 	// Use classloader compatible paths
 	public final static String IMAGE_DIR = "/images/";
 	public final static String ICON_DIR = "/icons/";
 	public final static String VEHICLE_ICON_DIR = "/icons/vehicle/";
-
+	public final static String PNG = "png";
+	public final static String SLASH = "/";
+	
 	/**
 	 * Static singleton
 	 */
@@ -50,7 +54,7 @@ public class ImageLoader {
 	}
 
 	/**
-	 * Load the image icon with the specified name and a "png" image extension from
+	 * Loads the image icon with the specified name and a "png" image extension from
 	 * IMAGE_DIR. This operation may either create a new Image Icon of returned
 	 * a previously created one.
 	 *
@@ -59,11 +63,11 @@ public class ImageLoader {
 	 * @return ImageIcon containing image of specified name.
 	 */
 	public static ImageIcon getIcon(String imagename) {
-		return getIcon(imagename, "png", IMAGE_DIR);
+		return getIcon(imagename, PNG, IMAGE_DIR);
 	}
 
 	/**
-	 * Load the image icon with the specified name and a "png" image extension. This
+	 * Loads the image icon with the specified name and a "png" image extension. This
 	 * operation may either create a new Image Icon of returned a previously created
 	 * one.
 	 *
@@ -72,22 +76,20 @@ public class ImageLoader {
 	 * @return ImageIcon containing image of specified name.
 	 */
 	public static ImageIcon getIcon(String imagename, String dir) {
-		return getIcon(imagename, "png", dir);
+		return getIcon(imagename, PNG, dir);
 	}
 
 	public static ImageIcon getNewIcon(String imagename) {
-		ImageIcon found = null;
-
 		if (imagename == null || imagename.equals("")) {
-			return found;
+			return null;
 		}
-
-		String ext = "png";
+		
+		ImageIcon found = null;
+		String ext = PNG;
 		String fullImageName = imagename.endsWith(ext) ? imagename : imagename + "." + ext;
 		found = iconCache.get(fullImageName);
 		if (found == null) {
-			String fileName = fullImageName.startsWith("/") ? fullImageName : "/" + fullImageName;
-
+			String fileName = fullImageName.startsWith(SLASH) ? fullImageName : SLASH + fullImageName;
 			// Don't use the system classloader in a webstart env
 			URL resource = ImageLoader.class.getResource(fileName);
 			// e.g. ClassLoader.getSystemResource(fileName)
@@ -112,14 +114,14 @@ public class ImageLoader {
 	 * @param ext
 	 *            the file extension (ex. "png", "jpg").
 	 * @param idr
-	 *            the direcotyr of the file .
+	 *            the directory of the file .
 	 * @return ImageIcon containing image of specified name.
 	 */
 	public static ImageIcon getIcon(String imagename, String ext, String dir) {
 		String fullImageName = imagename.endsWith(ext) ? imagename : imagename + "." + ext;
 		ImageIcon found = iconCache.get(fullImageName);
 		if (found == null) {
-			String fileName = fullImageName.startsWith("/") ? fullImageName : dir + fullImageName;
+			String fileName = fullImageName.startsWith(SLASH) ? fullImageName : dir + fullImageName;
 //			logger.config("Filename : " + fileName + "   imagename : " + imagename + "    ext : "+ ext + "    dir : " + dir);
 			found = new ImageIcon(ImageLoader.class.getResource(fileName));
 			iconCache.put(fullImageName, found);
@@ -160,29 +162,12 @@ public class ImageLoader {
 
 
 	/**
-	 * Convert from icon to image
+	 * Converts from icon to image.
 	 *
 	 * @param icon
 	 * @return
 	 */
 	public static Image iconToImage(Icon icon) {
-		// Note : use frame.setIconImage(iconToImage(icon));
-		if (icon instanceof ImageIcon) {
-			return ((ImageIcon)icon).getImage();
-		}
-
-		else {
-			int w = icon.getIconWidth();
-			int h = icon.getIconHeight();
-			GraphicsEnvironment ge =
-					GraphicsEnvironment.getLocalGraphicsEnvironment();
-			GraphicsDevice gd = ge.getDefaultScreenDevice();
-			GraphicsConfiguration gc = gd.getDefaultConfiguration();
-			BufferedImage image = gc.createCompatibleImage(w, h);
-			Graphics2D g = image.createGraphics();
-			icon.paintIcon(null, g, 0, 0);
-			g.dispose();
-			return image;
-	   }
+		return MarsTerminal.iconToImage(icon);
 	}
 }

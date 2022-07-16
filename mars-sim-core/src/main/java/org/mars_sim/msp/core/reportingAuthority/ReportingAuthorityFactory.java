@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ReportingAuthorityFactory.java
- * @date 2021-09-04
+ * @date 2022-07-15
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.reportingAuthority;
@@ -59,7 +59,8 @@ public final class ReportingAuthorityFactory extends UserConfigurableConfig<Repo
 	}
 
 	/**
-	 * Load the Reporting authorities from an external XML
+	 * Loads the Reporting authorities from an external XML.
+	 * 
 	 * @param config 
 	 * @return
 	 */
@@ -108,7 +109,8 @@ public final class ReportingAuthorityFactory extends UserConfigurableConfig<Repo
 	}
 	
 	/**
-	 * Parse an Authority XML Element and create a Reporting Authority object.
+	 * Parses an Authority XML Element and create a Reporting Authority object.
+	 * 
 	 * @param authorityNode
 	 * @param predefined Is this a repdefined RA
 	 * @return
@@ -143,9 +145,10 @@ public final class ReportingAuthorityFactory extends UserConfigurableConfig<Repo
 	}
 	
 	/**
-	 * Scan the known Settlement and get the load Reporting Authorities. This
-	 * makes sure new units will get the same shared Reporting Authority
+	 * Scans the known Settlement and get the load Reporting Authorities. This
+	 * makes sure new units will get the same shared Reporting Authority.
 	 * What about pending arrivals of new Settlement with new RA ?
+	 * 
 	 * @param mgr
 	 */
 	public void discoverReportingAuthorities(UnitManager mgr) {
@@ -157,7 +160,7 @@ public final class ReportingAuthorityFactory extends UserConfigurableConfig<Repo
 	}
 
 	/**
-	 * Convert a Reporting Authority to an XML representation.
+	 * Converts a Reporting Authority to an XML representation.
 	 */
 	@Override
 	protected Document createItemDoc(ReportingAuthority item) {
@@ -180,11 +183,10 @@ public final class ReportingAuthorityFactory extends UserConfigurableConfig<Repo
 			el.setAttribute(NAME_ATTR, s);
 			authorityNode.addContent(el);
 		}
-		
 	}
 
 	/**
-	 * Parse a user created XML
+	 * Parses a user created XML.
 	 */
 	@Override
 	protected ReportingAuthority parseItemXML(Document doc, boolean predefined) {
@@ -193,7 +195,8 @@ public final class ReportingAuthorityFactory extends UserConfigurableConfig<Repo
 	}
 
 	/**
-	 * Get the names of the known Mission Agendas
+	 * Gets the names of the known Mission Agendas.
+	 * 
 	 * @return
 	 */
 	public List<String> getAgendaNames() {
@@ -203,7 +206,8 @@ public final class ReportingAuthorityFactory extends UserConfigurableConfig<Repo
 	}
 
 	/**
-	 * Find a defined Mission Agenda by name
+	 * Finds a defined Mission Agenda by name.
+	 * 
 	 * @param name
 	 * @return
 	 */

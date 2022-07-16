@@ -23,7 +23,6 @@ import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.environment.OrbitInfo;
 import org.mars_sim.msp.core.environment.SurfaceFeatures;
-import org.mars_sim.msp.core.environment.TerrainElevation;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -149,9 +148,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	protected static PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
 	/** The static instance of the personConfig */
 	protected static CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
-	/** The static instance of the TerrainElevation */
-	protected static TerrainElevation terrainElevation;
-
 	
 	/**
 	 * Constructs a Task object that has a fixed duration.

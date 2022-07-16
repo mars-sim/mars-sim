@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * MissionAgenda.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-15
  * @author Manny Kung
  */
 
@@ -16,7 +16,7 @@ import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 
 /**
  * Mission agenda for a ReportingAuthority to follow. It defines a set
- * of SubAgendas that specific actual targets for the RA.
+ * of subagendas that specific actual targets for the RA.
  */
 public class MissionAgenda implements Serializable {
 	/** default serial id. */
@@ -40,7 +40,8 @@ public class MissionAgenda implements Serializable {
 	}
 
 	/**
-	 * Get the agendas for this mission.
+	 * Gets the agendas for this mission.
+	 * 
 	 * @return
 	 */
 	public List<MissionSubAgenda> getAgendas() {
@@ -48,14 +49,15 @@ public class MissionAgenda implements Serializable {
 	}
 
 	/**
-	 * Get unique name
+	 * Gets unique name.
 	 */
 	public String getName() {
 		return name;
 	}
 	
 	/**
-	 * Get the overall objective.
+	 * Gets the overall objective.
+	 * 
 	 * @return
 	 */
 	public String getObjectiveName() {
@@ -63,7 +65,8 @@ public class MissionAgenda implements Serializable {
 	}
 
 	/**
-	 * Reporting some findings by a Worker. This may adjust charactirtics of the RA.
+	 * Reports some findings by a Worker. This may adjust characteristics of the RA.
+	 * 
 	 * @param unit
 	 */
 	public void reportFindings(Worker unit) {
@@ -71,7 +74,8 @@ public class MissionAgenda implements Serializable {
 	}
 
 	/**
-	 * Gather some samples as part of this agenda.
+	 * Gathers some samples as part of this agenda.
+	 * 
 	 * @param unit
 	 */
 	public void gatherSamples(Worker unit) {
