@@ -19,6 +19,7 @@ import org.mars.sim.console.chat.simcommand.unit.InventoryCommand;
 import org.mars.sim.console.chat.simcommand.unit.MalfunctionCreateCommand;
 import org.mars.sim.console.chat.simcommand.unit.ResourceHolderRefillCommand;
 import org.mars.sim.console.chat.simcommand.unit.UnitLocationCommand;
+import org.mars.sim.console.chat.simcommand.unit.UnitSunlightCommand;
 import org.mars_sim.msp.core.structure.Settlement;
 
 /**
@@ -46,6 +47,7 @@ public class SettlementChat extends ConnectedUnitCommand {
 																	new EquipmentCommand(SETTLEMENT_GROUP),
 																	new InventoryCommand(SETTLEMENT_GROUP),
 																	new UnitLocationCommand(SETTLEMENT_GROUP),
+																	new UnitSunlightCommand(SETTLEMENT_GROUP),
 																	MalfunctionCommand.MALFUNCTION,
 																	new MalfunctionCreateCommand(SETTLEMENT_GROUP),
 																	ResourceProcessCommand.PROCESS,

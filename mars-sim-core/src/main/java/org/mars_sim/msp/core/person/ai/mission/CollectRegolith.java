@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * CollectRegolith.java
- * @date 2021-11-30
+ * @date 2022-07-16
  * @author Sebastien Venot
  */
 
@@ -31,14 +31,8 @@ public class CollectRegolith extends CollectResourcesMission {
 	/** Default description. */
 	private static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.collectRegolith"); //$NON-NLS-1$
 
-	/** Mission Type enum. */
-	public static final MissionType missionType = MissionType.COLLECT_REGOLITH;
-
 	/** Number of large bags required for the mission. */
 	public static final int REQUIRED_LARGE_BAGS = 20;
-
-	/** Collection rate of regolith during EVA (kg/millisol). */
-	private static final double BASE_COLLECTION_RATE = 20D;
 
 	/** Number of collection sites. */
 	private static final int NUM_SITES = 3;
@@ -52,7 +46,7 @@ public class CollectRegolith extends CollectResourcesMission {
 	 */
 	public CollectRegolith(Person startingPerson) {
 		// Use CollectResourcesMission constructor.
-		super(DEFAULT_DESCRIPTION, missionType, startingPerson, ResourceUtil.regolithID, BASE_COLLECTION_RATE,
+		super(DEFAULT_DESCRIPTION, MissionType.COLLECT_REGOLITH, startingPerson, ResourceUtil.regolithID,
 				EquipmentType.LARGE_BAG, REQUIRED_LARGE_BAGS, NUM_SITES);
 	}
 
@@ -69,7 +63,7 @@ public class CollectRegolith extends CollectResourcesMission {
 			List<Coordinates> regolithCollectionSites, Rover rover, String description) {
 
 		// Use CollectResourcesMission constructor.
-		super(description, missionType, members, ResourceUtil.regolithID, BASE_COLLECTION_RATE,
+		super(description, MissionType.COLLECT_REGOLITH, members, ResourceUtil.regolithID,
 				EquipmentType.LARGE_BAG, REQUIRED_LARGE_BAGS,
 				rover, regolithCollectionSites);
 	}

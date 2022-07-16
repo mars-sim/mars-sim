@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * EVAMission.java
- * @date 2022-07-14
+ * @date 2022-07-16
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -34,7 +34,7 @@ public abstract class EVAMission extends RoverMission {
 	private static final MissionPhase WAIT_SUNLIGHT = new MissionPhase("Mission.phase.waitSunlight");
 
 	// Maximum time t wait for sunrise
-	private static final double MAX_WAITING = 200D;
+	protected static final double MAX_WAIT_SUBLIGHT = 200D;
 
     private MissionPhase evaPhase;
     private boolean activeEVA = true;
@@ -90,7 +90,7 @@ public abstract class EVAMission extends RoverMission {
 			// Decide what to do
 			MarsClock sunrise = surfaceFeatures.getSunRise(getCurrentMissionLocation());
 			if (surfaceFeatures.inDarkPolarRegion(getCurrentMissionLocation())
-					|| (MarsClock.getTimeDiff(sunrise, marsClock) > MAX_WAITING)) {
+					|| (MarsClock.getTimeDiff(sunrise, marsClock) > MAX_WAIT_SUBLIGHT)) {
 				// No point waiting, move to next site
 				logger.info(getVehicle(), "Continue travel, sunrise too late " + sunrise.getTrucatedDateTimeStamp());
 				addMissionLog(NOT_ENOUGH_SUNLIGHT);
@@ -114,7 +114,7 @@ public abstract class EVAMission extends RoverMission {
 			logger.info(getRover(), "Stop wait as enough sunlight");
 			setPhaseEnded(true);
 		}
-		else if (getPhaseDuration() > MAX_WAITING) {
+		else if (getPhaseDuration() > MAX_WAIT_SUBLIGHT) {
 			logger.info(getRover(), "Waited long enough");
 			setPhaseEnded(true);
 			startTravellingPhase();
@@ -127,11 +127,7 @@ public abstract class EVAMission extends RoverMission {
 	 * @return
 	 */
 	protected boolean isEnoughSunlightForEVA() {
-		//return true;
-		Coordinates locn = getCurrentMissionLocation();
-		boolean inDarkPolarRegion = surfaceFeatures.inDarkPolarRegion(locn);
-		double sunlight = surfaceFeatures.getSolarIrradiance(locn);
-		return (sunlight >= 20D && !inDarkPolarRegion);
+		return EVAOperation.isEnoughSunlightForEVA(getCurrentMissionLocation());
 	}
 
 	/**
@@ -192,6 +188,7 @@ public abstract class EVAMission extends RoverMission {
 			double timeDiff = getPhaseDuration();
 			if (timeDiff > getEstimatedTimeAtEVASite(false)) {
 				logger.info(getVehicle(), "EVA out of time");
+
 				activeEVA = false;
 			}
 
@@ -207,6 +204,7 @@ public abstract class EVAMission extends RoverMission {
 			// illness, end phase.
 			if (activeEVA && hasEmergency()) {
 				logger.info(getVehicle(), "Has emergency");
+				addMissionLog("Has emergency");
 				activeEVA = false;
 			}
 
@@ -215,6 +213,8 @@ public abstract class EVAMission extends RoverMission {
 				// If not, determine an emergency destination.
 				determineEmergencyDestination(member);
 				logger.info(getVehicle(), "Not enough resources");
+				addMissionLog("Not enough resources");
+
 				activeEVA = false;
 			}
 
@@ -223,6 +223,8 @@ public abstract class EVAMission extends RoverMission {
 				activeEVA = performEVA((Person) member);
 				if (!activeEVA) {
 					logger.info(getVehicle(), "EVA operation halted");
+					addMissionLog("EVA operation halted");
+
 				}
 			}
 		} 

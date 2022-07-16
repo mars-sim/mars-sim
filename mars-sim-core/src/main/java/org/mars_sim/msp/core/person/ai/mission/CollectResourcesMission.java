@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * CollectResourcesMission.java
- * @date 2021-11-30
+ * @date 2022-07-16
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -48,9 +48,6 @@ public abstract class CollectResourcesMission extends EVAMission
 
 	private static final String PROPSPECTING_SITE = "Prospecting Site #";
 
-	/** Estimated collection time multiplier for EVA. */
-	private static final double EVA_COLLECTION_OVERHEAD = 50D;
-
 	/** THe maximum number of sites under consideration. */
 	private static final int MAX_NUM_PRIMARY_SITES = 30;
 	/** THe maximum number of sites under consideration. */
@@ -71,9 +68,6 @@ public abstract class CollectResourcesMission extends EVAMission
 	private double collectingStart;
 	/** The goal amount of resources to collect at a site (kg). */
 	private double siteResourceGoal;
-	/** The resource collection rate for a person (kg/millisol). */
-	protected double resourceCollectionRate;
-
 
 	/** The total amount (kg) of resources collected. */
 	private Map<Integer, Double> collected;
@@ -86,8 +80,6 @@ public abstract class CollectResourcesMission extends EVAMission
 	 * @param missionName            The name of the mission.
 	 * @param startingPerson         The person starting the mission.
 	 * @param resourceID           The type of resource.
-	 * @param resourceCollectionRate The resource collection rate for a person
-	 *                               (kg/millisol).
 	 * @param containerID          The type of container needed for the mission or
 	 *                               null if none.
 	 * @param containerNum           The number of containers needed for the
@@ -97,7 +89,7 @@ public abstract class CollectResourcesMission extends EVAMission
 	 * @throws MissionException if problem constructing mission.
 	 */
 	protected CollectResourcesMission(String missionName, MissionType missionType, Person startingPerson, int resourceID,
-			double resourceCollectionRate, EquipmentType containerID, int containerNum, int numSites) {
+			EquipmentType containerID, int containerNum, int numSites) {
 
 		// Use RoverMission constructor
 		super(missionName, missionType, startingPerson, null, COLLECT_RESOURCES);
@@ -116,7 +108,6 @@ public abstract class CollectResourcesMission extends EVAMission
 
 		if (s != null) {
 			setResourceID(resourceID);
-			this.resourceCollectionRate = resourceCollectionRate;
 			this.collected = new HashMap<>();
 			this.containerID = containerID;
 			setEVAEquipment(containerID, containerNum);
@@ -197,8 +188,6 @@ public abstract class CollectResourcesMission extends EVAMission
 	 * @param missionName            The name of the mission.
 	 * @param members                collection of mission members
 	 * @param resourceID           The type of resource.
-	 * @param resourceCollectionRate The resource collection rate for a person
-	 *                               (kg/millisol).
 	 * @param containerID          The type of container needed for the mission or
 	 *                               null if none.
 	 * @param containerNum           The number of containers needed for the
@@ -208,17 +197,16 @@ public abstract class CollectResourcesMission extends EVAMission
 	 * @param collectionSites     the sites to collect ice.
 	 */
 	protected CollectResourcesMission(String missionName, MissionType missionType, Collection<MissionMember> members,
-			Integer resourceID, double resourceCollectionRate, EquipmentType containerID,
+			Integer resourceID, EquipmentType containerID,
 			int containerNum, Rover rover, List<Coordinates> collectionSites) {
 
 		// Use RoverMission constructor
 		super(missionName, missionType, (MissionMember) members.toArray()[0], rover, COLLECT_RESOURCES);
 
 		this.resourceID = resourceID;
-
 		double containerCap = ContainerUtil.getContainerCapacity(containerID);
 		this.siteResourceGoal = 2 * containerCap * containerNum / collectionSites.size();
-		this.resourceCollectionRate = resourceCollectionRate;
+		this.collected = new HashMap<>();
 		this.containerID = containerID;
 		setEVAEquipment(containerID, containerNum);
 
@@ -314,18 +302,6 @@ public abstract class CollectResourcesMission extends EVAMission
 			return false;
 		}
 
-		// // Determine if no one can start the collect resources task.
-		// boolean nobodyCollect = true;
-		// Iterator<MissionMember> j = getMembers().iterator();
-		// while (j.hasNext() && nobodyCollect) {
-		// 	MissionMember m = j.next();
-		// 	for (Integer type : getCollectibleResources()) {
-		// 		if (CollectResources.canCollectResources(m, getRover(), containerID, type)) {
-		// 			nobodyCollect = false;
-		// 		}
-		// 	}
-		// }
-
 		// Do the EVA task
 		double rate = calculateRate(person);
 
@@ -337,9 +313,6 @@ public abstract class CollectResourcesMission extends EVAMission
 		// to obtain better estimation of the collection rate. Go to a prospective site, rather
 		// than going to a site coordinate in the blind.
 
-		if (rate > 20)
-			resourceCollectionRate = rate;
-
 		// If person can collect resources, start him/her on that task.
 		if (CollectResources.canCollectResources(person, getRover(), containerID, resourceID)) {
 			EVAOperation collectResources = new CollectResources("Collecting Resources", person,
@@ -347,9 +320,6 @@ public abstract class CollectResourcesMission extends EVAMission
 					siteResourceGoal - siteCollectedSoFar, rover.getAmountResourceStored(resourceID),
 					containerID);
 			assignTask(person, collectResources);
-		}
-		else {
-			logger.info(person, "Can not collect resources");
 		}
 
 		return true;
@@ -401,8 +371,6 @@ public abstract class CollectResourcesMission extends EVAMission
 		Coordinates currentLocation = null;
 		int siteDistance = 0;
 
-		/////////////////////////////////////////
-
 		// Determine the first collection site.
 		double bestScore = 0;
 		Coordinates bestLocation = null;
@@ -430,8 +398,6 @@ public abstract class CollectResourcesMission extends EVAMission
 
 		// Determine remaining collection sites.
 		double remainingRange = RandomUtil.getRandomDouble(range/2 - siteDistance);
-
-		/////////////////////////////////////////
 
 		for (int x = 1; x < numSites; x++) {
 			double currentDistanceToSettlement = Coordinates.computeDistance(currentLocation, startingLocation);
@@ -480,11 +446,11 @@ public abstract class CollectResourcesMission extends EVAMission
 	 */
 	@Override
 	protected double getEstimatedTimeAtEVASite(boolean useBuffer) {
-		// double timePerPerson = 2 * siteResourceGoal / resourceCollectionRate;
-		// if (useBuffer)
-		// 	timePerPerson *= EVA_COLLECTION_OVERHEAD;
-		// return timePerPerson;
-		return 500D; // Half a sol
+		double result = 500D;
+		if (useBuffer) {
+			result += MAX_WAIT_SUBLIGHT;
+		}
+ 		return result;
 	}
 
 	/**

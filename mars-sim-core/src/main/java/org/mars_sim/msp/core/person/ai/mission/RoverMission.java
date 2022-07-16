@@ -198,14 +198,20 @@ public abstract class RoverMission extends VehicleMission {
 	}
 
 	/**
-	 * Checks that everyone in the mission is aboard the rover.
+	 * Checks that everyone in the mission is aboard the rover and not 
+	 * doing an EVAOperation leaving the Vehicle
 	 *
 	 * @return true if everyone is aboard
 	 */
 	protected final boolean isEveryoneInRover() {
-		Iterator<MissionMember> i = getMembers().iterator();
-		while (i.hasNext()) {
-			if (!getRover().isCrewmember((Person) i.next())) {
+		Rover r = getRover();
+		for(MissionMember m : getMembers()) {
+			Person p = (Person) m;
+			if (!r.isCrewmember(p)) {
+				return false;
+			}
+
+			if (p.getTaskManager().getTask() instanceof EVAOperation) {
 				return false;
 			}
 		}

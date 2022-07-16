@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * CollectIce.java
- * @date 2021-11-30
+ * @date 2022-07-16
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -30,14 +30,8 @@ public class CollectIce extends CollectResourcesMission {
 	/** Default description. */
 	private static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.collectIce"); //$NON-NLS-1$
 
-	/** Mission Type enum. */
-	public static final MissionType missionType = MissionType.COLLECT_ICE;
-
 	/** Number of barrels required for the mission. */
 	public static final int REQUIRED_BARRELS = 20;
-
-	/** Collection rate of ice during EVA (kg/millisol). */
-	private static final double BASE_COLLECTION_RATE = 20D;
 
 	/** Number of collection sites. */
 	private static final int NUM_SITES = 3;
@@ -52,7 +46,7 @@ public class CollectIce extends CollectResourcesMission {
 	 */
 	public CollectIce(Person startingPerson) {
 		// Use CollectResourcesMission constructor.
-		super(DEFAULT_DESCRIPTION, missionType, startingPerson, ResourceUtil.iceID, BASE_COLLECTION_RATE,
+		super(DEFAULT_DESCRIPTION, MissionType.COLLECT_ICE, startingPerson, ResourceUtil.iceID,
 				EquipmentType.BARREL, REQUIRED_BARRELS, NUM_SITES);
 	}
 
@@ -68,8 +62,7 @@ public class CollectIce extends CollectResourcesMission {
 			List<Coordinates> iceCollectionSites, Rover rover, String description) {
 
 		// Use CollectResourcesMission constructor.
-		super(description, missionType, members, ResourceUtil.iceID,
-				computeAverageCollectionRate(iceCollectionSites),
+		super(description, MissionType.COLLECT_ICE, members, ResourceUtil.iceID,
 				EquipmentType.BARREL, REQUIRED_BARRELS,
 				rover, iceCollectionSites);
 	}

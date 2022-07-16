@@ -12,10 +12,12 @@ import java.util.List;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.CollectionUtils;
+import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.environment.SurfaceFeatures;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.events.HistoricalEvent;
@@ -70,6 +72,9 @@ public abstract class EVAOperation extends Task {
 	private static final double STRESS_MODIFIER = .1D;
 	/** The base chance of an accident per millisol. */
 	public static final double BASE_ACCIDENT_CHANCE = .01;
+
+	/** Minmum sunlight for EVA is 1% of max sunlight */
+	private static final double MIN_SUNLIGHT = SurfaceFeatures.MAX_SOLAR_IRRADIANCE * 0.01D;
 
 	// Data members
 	/** Flag for ending EVA operation externally. */
@@ -438,19 +443,35 @@ public abstract class EVAOperation extends Task {
 	 * @return
 	 */
 	public static boolean isGettingDark(Person person) {
-		if (surfaceFeatures.inDarkPolarRegion(person.getCoordinates())) {
-			return false;
-		}
-
-		// if it's at night
-		// Note: sunlight ratio cannot be smaller than zero.
-		if (surfaceFeatures.getSunlightRatio(person.getCoordinates()) < .01) {
-			return false;
-		}
-
-		// if the sunlight is getting less
-        return surfaceFeatures.getTrend(person.getCoordinates()) < 0;
+		return !isEnoughSunlightForEVA(person.getCoordinates());
     }
+
+	/**
+	 * Is there enough sunlight for an EVA
+	 * @return
+	 */
+	public static boolean isEnoughSunlightForEVA(Coordinates locn ) {
+		// This logic comes from EVAMission originally
+		boolean inDarkPolarRegion = surfaceFeatures.inDarkPolarRegion(locn);
+		double sunlight = surfaceFeatures.getSolarIrradiance(locn);
+
+		// This is equivalent of a 1% sun ratio as below
+		return (sunlight >= MIN_SUNLIGHT && !inDarkPolarRegion);
+
+		// This is the old logic used originally in EVAOperation
+		// if (surfaceFeatures.inDarkPolarRegion(person.getCoordinates())) {
+		// 	return false;
+		// }
+
+		// // if it's at night
+		// // Note: sunlight ratio cannot be smaller than zero.
+		// if (surfaceFeatures.getSunlightRatio(person.getCoordinates()) < .01) {
+		// 	return false;
+		// }
+
+		// // if the sunlight is getting less
+        // return surfaceFeatures.getTrend(person.getCoordinates()) < 0;
+	}
 
 	/**
 	 * Checks if this EVA operation is ready for prime time.
