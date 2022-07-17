@@ -372,7 +372,7 @@ public final class SettlementBuilder {
 			// Set up preference
 			person.getPreference().initializePreference();
 			// Assign a job
-			person.getMind().getInitialJob(JobUtil.MISSION_CONTROL);
+			person.getMind().getAJob(true, JobUtil.MISSION_CONTROL);
 		}
 
 		// Set up work shift

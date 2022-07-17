@@ -416,7 +416,7 @@ public abstract class EVAOperation extends Task {
 		// Check for sunlight
 		if (isGettingDark(person)) {
 			// Added to show issue #509
-			logger.warning(worker, "Ending " + getName() + " too dark");
+			logger.warning(worker, 10_000L, "Ending '" + getName() + "': too dark.");
 			return true;
 		}
 

@@ -513,7 +513,7 @@ public class Resupply implements Serializable, Transportable {
 			immigrant.initialize();
 
 			// Assign a job 
-			immigrant.getMind().getInitialJob(JobUtil.MISSION_CONTROL);
+			immigrant.getMind().getAJob(true, JobUtil.MISSION_CONTROL);
 
 			// Set up work shift 
 			immigrant.getTaskSchedule().setShiftType(ShiftType.ON_CALL);

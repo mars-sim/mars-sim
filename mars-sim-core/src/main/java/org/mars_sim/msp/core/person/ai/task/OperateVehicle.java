@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * OperateVehicle.java
- * @date 2022-06-17
+ * @date 2022-07-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -79,13 +79,13 @@ public abstract class OperateVehicle extends Task implements Serializable {
     /** The base percentage chance of an accident while operating vehicle per millisol. */
     public static final double BASE_ACCIDENT_CHANCE = .01D;
 
-	private static final String KG = " kg   ";
-	private static final String N = " N   ";
-	private static final String KM_KG = " km/kg   ";
-	private static final String WH_KM = " Wh/km   ";
-	private static final String KM = " km   ";
-	private static final String KW = " kW   ";
-	private static final String KPH = " kph   ";
+//	private static final String KG = " kg   ";
+//	private static final String N = " N   ";
+//	private static final String KM_KG = " km/kg   ";
+//	private static final String WH_KM = " Wh/km   ";
+//	private static final String KM = " km   ";
+//	private static final String KW = " kW   ";
+//	private static final String KPH = " kph   ";
 			
 	// Data members
 	/** The fuel type of this vehicle. */
@@ -591,7 +591,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
     	
         double mass = vehicle.getMass(); // [in kg]
         
-        double initFE = vehicle.getInitialFuelEconomy(); // [in km/kg]
+//        double initFE = vehicle.getInitialFuelEconomy(); // [in km/kg]
         // Calculate force against Mars surface gravity
         double fGravity = 0; 
         
@@ -698,8 +698,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
         
         // Set the instantaneous fuel economy [in km/kg]
         vehicle.setIFuelEconomy(iFE);
-        
-        
+              
         // Derive the instantaneous fuel consumption [Wh/km]
         double iFC = 1000 * energyUsed / d_km;
         // Set the instantaneous fuel consumption [Wh/km]
@@ -709,45 +708,45 @@ public abstract class OperateVehicle extends Task implements Serializable {
 		 * May comment off the block of codes below 
 		 */
         
-        double bFC = vehicle.getBaseFuelConsumption();
-        
-        double bFE = vehicle.getBaseFuelEconomy();
-        
-        double estFE = vehicle.getEstimatedFuelEconomy();
-        	
-        // Calculate the average power for this time period [in kW]
-        double aveP = energyUsed / hr;
-        
-        logger.log(vehicle, Level.INFO, 10_000, 
-        			"type: " 				+ vehicle.getVehicleTypeString() + "   "
-        		 	+ "mass: " 				+ Math.round(mass * 100.0)/100.0 + KG
-        		 	+ "odometer: " 			+ Math.round(vehicle.getOdometerMileage()* 1_000.0)/1_000.0 + KM
-        		 	+ "d_km: " 				+ Math.round(d_km * 1_000.0)/1_000.0 + KM
-        	        + "hr: "				+ Math.round(hr * 10_000.0)/10_000.0 + " hrs   "
-        	        + "u_kph: "				+ Math.round(u_kph * 10_000.0)/10_000.0 + KPH
-                	+ "v_kph: " 			+ Math.round(v_kph * 10_000.0)/10_000.0 + KPH
-        	        + "a_ms: "				+ Math.round(a_ms * 10_000.0)/10_000.0 + " m/s2   "
-        	        + "fAccel: " 			+ Math.round(fAccel * 10_000.0)/10_000.0 + N
-        	        + "angle: "				+ Math.round(angle / Math.PI * 180.0 * 10.0)/10.0 + " deg   "
-        			+ "fInitialFriction: " + Math.round(fInitialFriction * 10_000.0)/10_000.0 + N
-        			+ "fGravity: " 	+ Math.round(fGravity * 10_000.0)/10_000.0 + N
-        			+ "fAeroDrag: " 	+ Math.round(fAeroDrag * 10_000.0)/10_000.0 + N
-    	    		+ "fRolling: " 		+ Math.round(fRolling * 10_000.0)/10_000.0 + N
-    	    		+ "fGradingRes: "		+ Math.round(fGradingResistance * 10_000.0)/10_000.0 + N
-    	    		+ "fTot: " 			+ Math.round(fTot * 10_000.0)/10_000.0 + N
-    	    		+ "Power: " 			+ Math.round(power)/1_000.0 + KW
-    				+ "Energy Used: " 		+ Math.round(energyUsed * 100_000.0)/100_000.0 + " kWh   "
-            		+ "fuelUsed: " 			+ Math.round(fuelUsed * 100_000.0)/100_000.0 + KG 
-    	    		+ "baseFE: " 			+ Math.round(bFE * 1_000.0)/1_000.0 + KM_KG  
-                   	+ "estFE: " 			+ Math.round(estFE * 1_000.0)/1_000.0 + KM_KG
-                   	+ "initFE: " 			+ Math.round(initFE * 1_000.0)/1_000.0 + KM_KG
-    	    		+ "instantFE: " 		+ Math.round(iFE * 1_000.0)/1_000.0 + KM_KG  
-       	    		+ "cumFE: " 			+ Math.round(vehicle.getCumFuelEconomy() * 1_000.0)/1_000.0 + KM_KG  
-    	    		+ "baseFC: " 			+ Math.round(bFC * 1_000.0)/1_000.0 + WH_KM 
-    	    		+ "instantFC: " 		+ Math.round(iFC * 1_000.0)/1_000.0 + WH_KM    
- 	      	   		+ "cumFC: " 			+ Math.round(vehicle.getCumFuelConsumption() * 1_000.0)/1_000.0 + WH_KM  
-    	    		+ "ave Power: " 		+ Math.round(aveP * 1_000.0)/1_000.0 + KW
-    				);
+//        double bFC = vehicle.getBaseFuelConsumption();
+//        
+//        double bFE = vehicle.getBaseFuelEconomy();
+//        
+//        double estFE = vehicle.getEstimatedFuelEconomy();
+//        	
+//        // Calculate the average power for this time period [in kW]
+//        double aveP = energyUsed / hr;
+//        
+//        logger.log(vehicle, Level.INFO, 10_000, 
+//        			"type: " 				+ vehicle.getVehicleTypeString() + "   "
+//        		 	+ "mass: " 				+ Math.round(mass * 100.0)/100.0 + KG
+//        		 	+ "odometer: " 			+ Math.round(vehicle.getOdometerMileage()* 1_000.0)/1_000.0 + KM
+//        		 	+ "d_km: " 				+ Math.round(d_km * 1_000.0)/1_000.0 + KM
+//        	        + "hr: "				+ Math.round(hr * 10_000.0)/10_000.0 + " hrs   "
+//        	        + "u_kph: "				+ Math.round(u_kph * 10_000.0)/10_000.0 + KPH
+//                	+ "v_kph: " 			+ Math.round(v_kph * 10_000.0)/10_000.0 + KPH
+//        	        + "a_ms: "				+ Math.round(a_ms * 10_000.0)/10_000.0 + " m/s2   "
+//        	        + "fAccel: " 			+ Math.round(fAccel * 10_000.0)/10_000.0 + N
+//        	        + "angle: "				+ Math.round(angle / Math.PI * 180.0 * 10.0)/10.0 + " deg   "
+//        			+ "fInitialFriction: " + Math.round(fInitialFriction * 10_000.0)/10_000.0 + N
+//        			+ "fGravity: " 	+ Math.round(fGravity * 10_000.0)/10_000.0 + N
+//        			+ "fAeroDrag: " 	+ Math.round(fAeroDrag * 10_000.0)/10_000.0 + N
+//    	    		+ "fRolling: " 		+ Math.round(fRolling * 10_000.0)/10_000.0 + N
+//    	    		+ "fGradingRes: "		+ Math.round(fGradingResistance * 10_000.0)/10_000.0 + N
+//    	    		+ "fTot: " 			+ Math.round(fTot * 10_000.0)/10_000.0 + N
+//    	    		+ "Power: " 			+ Math.round(power)/1_000.0 + KW
+//    				+ "Energy Used: " 		+ Math.round(energyUsed * 100_000.0)/100_000.0 + " kWh   "
+//            		+ "fuelUsed: " 			+ Math.round(fuelUsed * 100_000.0)/100_000.0 + KG 
+//    	    		+ "baseFE: " 			+ Math.round(bFE * 1_000.0)/1_000.0 + KM_KG  
+//                   	+ "estFE: " 			+ Math.round(estFE * 1_000.0)/1_000.0 + KM_KG
+//                   	+ "initFE: " 			+ Math.round(initFE * 1_000.0)/1_000.0 + KM_KG
+//    	    		+ "instantFE: " 		+ Math.round(iFE * 1_000.0)/1_000.0 + KM_KG  
+//       	    		+ "cumFE: " 			+ Math.round(vehicle.getCumFuelEconomy() * 1_000.0)/1_000.0 + KM_KG  
+//    	    		+ "baseFC: " 			+ Math.round(bFC * 1_000.0)/1_000.0 + WH_KM 
+//    	    		+ "instantFC: " 		+ Math.round(iFC * 1_000.0)/1_000.0 + WH_KM    
+// 	      	   		+ "cumFC: " 			+ Math.round(vehicle.getCumFuelConsumption() * 1_000.0)/1_000.0 + WH_KM  
+//    	    		+ "ave Power: " 		+ Math.round(aveP * 1_000.0)/1_000.0 + KW
+//    				);
         
         return fuelUsed;
     }

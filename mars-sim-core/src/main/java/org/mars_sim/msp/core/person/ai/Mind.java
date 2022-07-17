@@ -137,50 +137,35 @@ public class Mind implements Serializable, Temporal {
 		}
 
 		// Note : for now a Mayor/Manager cannot switch job
-		if (job == JobType.POLITICIAN)
+		if (job == JobType.POLITICIAN) {
 			jobLock = true;
-
-		else {
-			if (jobLock) {
-				// Note: for non-manager, the new job will be locked in until the beginning of
-				// the next day
-				// check for the passing of each day
-				if (pulse.isNewSol()) {
-					jobLock = false;
-				}
-			} else
-				checkJob();
+			return true;
+		}
+		
+		if (jobLock) {
+			// check for the passing of each day
+			if (pulse.isNewSol()) {
+				// Note: for non-manager, the new job needs to be locked in until 
+				// the beginning of the next sol
+				jobLock = false;
+			}
+		} else if (job == null) {
+			 getAJob(false, JobUtil.SETTLEMENT);
 		}
 
 		return true;
 	}
 
-	/*
-	 * Checks if a person has a job. If not, get a new one.
-	 */
-	private void checkJob() {
-		// Check if this person needs to get a new job or change jobs.
-		if (job == null) { // removing !jobLock
-			// Note: getNewJob() is checking if existing job is "good enough"/ or has good
-			// prospect
-			JobType newJob = JobUtil.getNewJob(person);
-			if (newJob != null) {
-				if (newJob != job) {
-					assignJob(newJob, false, JobUtil.SETTLEMENT, JobAssignmentType.APPROVED, JobUtil.SETTLEMENT);
-				}
-			}
-		}
-	}
-
 	/**
-	 * Assigns the first job at the start of the sim
+	 * Assigns a job, either at the start of the sim or later.
 	 *
 	 * @param assignedBy the authority that assigns the job
 	 */
-	public void getInitialJob(String assignedBy) {
+	public void getAJob(boolean bypassingJobLock, String assignedBy) {
+		// Note: getNewJob() also checks if existing job is "good enough"/ or has good prospect
 		JobType newJob = JobUtil.getNewJob(person);
 		if (newJob != null)
-			assignJob(newJob, true, assignedBy, JobAssignmentType.APPROVED, assignedBy);
+			assignJob(newJob, bypassingJobLock, assignedBy, JobAssignmentType.APPROVED, assignedBy);
 	}
 
 	/**
@@ -387,29 +372,32 @@ public class Mind implements Serializable, Temporal {
 			JobAssignmentType status, String approvedBy) {
 		JobHistory jh = person.getJobHistory();
 
-		// TODO : check if the initiator's role allows the job to be changed
+		// Future: check if the initiator's role allows the job to be changed
 		if (newJob != job) {
 
 			if (bypassingJobLock || !jobLock) {
+				// Set to the new job
 				job = newJob;
 				// Set up 4 approvedBy conditions
-				if (approvedBy.equals(JobUtil.SETTLEMENT)) { // automatically approved if pop <= 4
+				if (approvedBy.equals(JobUtil.SETTLEMENT)) { 
+					// Automatically approved if pop <= 4
 					jh.saveJob(newJob, assignedBy, status, approvedBy, true);
 				} else if (approvedBy.equals(JobUtil.USER)) {
 					jh.saveJob(newJob, assignedBy, status, approvedBy, true);
-				} else if (approvedBy.equals(JobUtil.MISSION_CONTROL)) { // at the start of sim
+				} else if (approvedBy.equals(JobUtil.MISSION_CONTROL)) { 
+					// At the start of sim
 					jh.saveJob(newJob, assignedBy, status, approvedBy, false);
-				} else { // Call JobHistory's saveJob(),
-						// approved by a Senior Official");
+				} else { 
+					// Approved by a senior official, etc.
 					jh.saveJob(newJob, assignedBy, status, approvedBy, false);
 				}
 
-				logger.log(person, Level.CONFIG, 0, "Becomes " + newJob.getName()
-								+ ", approved by " + approvedBy + ".");
+				logger.log(person, Level.CONFIG, 0, "Assigned as " + newJob.getName()
+								+ " by " + approvedBy + ".");
 
 				person.fireUnitUpdate(UnitEventType.JOB_EVENT, newJob);
 
-				// the new job will be Locked in until the beginning of the next day
+				// Note: the new job will be Locked in until the beginning of the next day
 				jobLock = true;
 			}
 		}
@@ -438,7 +426,7 @@ public class Mind implements Serializable, Temporal {
     }
 
 	/**
-	 * Set this mind as inactive. Needs move work on this; has to abort the Task can
+	 * Sets this mind as inactive. Needs move work on this; has to abort the Task can
 	 * not just close it. This abort action would then allow the Mission to be also
 	 * aborted.
 	 */
@@ -582,10 +570,14 @@ public class Mind implements Serializable, Temporal {
 		emotion.checkStimulus();
 
 //		int dim = emotion.getDimension();
-
-		List<double[]> wVector = emotion.getOmegaVector(); // prior history
-		double[] pVector = trait.getPersonalityVector(); // personality
-		double[] aVector = emotion.getEmotionInfoVector(); // new stimulus
+		
+		// Get the prior history vector
+		List<double[]> wVector = emotion.getOmegaVector(); 
+		// Get the personality vector
+		double[] pVector = trait.getPersonalityVector(); 
+		// Get the new emotional stimulus/Influence vector
+		double[] aVector = emotion.getEmotionInfoVector(); 
+		// Get the existing emotional State vector
 		double[] eVector = emotion.getEmotionVector();
 
 		// Call Psi Function - with desire changes aVector
@@ -622,7 +614,6 @@ public class Mind implements Serializable, Temporal {
 
 		// Update the emotional states
 		emotion.updateEmotion(newE);
-
 	}
 
 	public EmotionManager getEmotion() {
@@ -648,7 +639,7 @@ public class Mind implements Serializable, Temporal {
 	}
 
 	/**
-	 * Returns the person's task manager
+	 * Returns the person's task manager.
 	 *
 	 * @return task manager
 	 */
@@ -667,7 +658,7 @@ public class Mind implements Serializable, Temporal {
 	}
 
 	/**
-	 * Gets the person's job
+	 * Gets the person's job.
 	 *
 	 * @return job or null if none.
 	 */
@@ -685,14 +676,16 @@ public class Mind implements Serializable, Temporal {
 	}
 
 	/*
-	 * Set the value of jobLock so that the job can or cannot be changed
+	 * Sets the value of jobLock so that the job can or cannot be changed.
+	 * 
+	 * @param value
 	 */
 	public void setJobLock(boolean value) {
 		jobLock = value;
 	}
 
 	/**
-	 * Gets the PersonalityTraitManager instance 
+	 * Gets the PersonalityTraitManager instance.
 	 * 
 	 * @return the PersonalityTraitManager instance 
 	 */
@@ -701,7 +694,7 @@ public class Mind implements Serializable, Temporal {
 	}
 
 	/**
-	 * Gets the relation instance 
+	 * Gets the relation instance.
 	 * 
 	 * @return the relation instance 
 	 */
@@ -710,9 +703,9 @@ public class Mind implements Serializable, Temporal {
 	}
 
 	/**
-	 * Reloads instances after loading from a saved sim
+	 * Reloads instances after loading from a saved sim.
 	 *
-	 * @param clock
+	 * @param m missionManager instance
 	 */
 	public static void initializeInstances(MissionManager m) {
 		missionManager = m;
@@ -723,7 +716,7 @@ public class Mind implements Serializable, Temporal {
 	}
 
 	/**
-	 * Prepare object for garbage collection.
+	 * Prepares object for garbage collection.
 	 */
 	public void destroy() {
 		person = null;

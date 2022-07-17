@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ToggleFuelPowerSource.java
- * @date 2021-10-21
+ * @date 2022-07-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -68,7 +68,8 @@ implements Serializable {
     private Building building;
 
     /**
-     * Constructor
+     * Constructor.
+     * 
      * @param person the person performing the task.
      * @throws Exception if error constructing the task.
      */
@@ -130,7 +131,7 @@ implements Serializable {
     }
 
 	/**
-	 * Check if any management function is available
+	 * Checks if any management function is available.
 	 */
 	private void checkManagement() {
 
@@ -170,7 +171,7 @@ implements Serializable {
 	}
 
     /**
-     * Walks to the building with management function
+     * Walks to the building with management function.
      *
      * @param b the building
      */
@@ -181,7 +182,7 @@ implements Serializable {
 	}
 
 	/**
-	 * Ends the task
+	 * Ends the task.
 	 *
 	 * @param s
 	 */
@@ -191,7 +192,8 @@ implements Serializable {
 	}
 
     /**
-     * Walk to power source building.
+     * Walks to power source building.
+     * 
      * @param powerBuilding the power source building.
      */
     private void walkToPowerSourceBuilding(Building powerBuilding) {
@@ -215,6 +217,7 @@ implements Serializable {
 
     /**
      * Gets the building at a person's settlement with the fuel power source that needs toggling.
+     * 
      * @param person the person.
      * @return building with fuel power source to toggle, or null if none.
      */
@@ -244,6 +247,7 @@ implements Serializable {
 
     /**
      * Gets the fuel power source to toggle at a building.
+     * 
      * @param building the building
      * @return the fuel power source to toggle or null if none.
      */
@@ -273,6 +277,7 @@ implements Serializable {
 
     /**
      * Gets the value diff between inputs and outputs for a fuel power source.
+     * 
      * @param settlement the settlement the resource process is at.
      * @param fuelSource the fuel power source.
      * @return the value diff (value points)
@@ -300,6 +305,7 @@ implements Serializable {
 
     /**
      * Gets the total value of a fuel power sources input resources.
+     * 
      * @param settlement the settlement.
      * @param fuel source the fuel power source.
      * @return the total value for the input resources per Sol.
@@ -329,6 +335,7 @@ implements Serializable {
 
     /**
      * Checks if a fuel power source has no input resources.
+     * 
      * @param settlement the settlement the resource is at.
      * @param fuelSource the fuel power source.
      * @return true if any input resources are empty.
@@ -418,13 +425,16 @@ implements Serializable {
 
     /**
      * Performs the toggle power source phase.
+     * 
      * @param time the amount of time (millisols) to perform the phase.
      * @return the amount of time (millisols) left over after performing the phase.
      */
     private double togglePowerSourcePhase(double time) {
     	
-		if (checkReadiness(time) > 0)
+		if (!person.isFit()) {
+			checkLocation();
 			return time;
+		}
 		
         // If person is incapacitated, end task.
         if (person.getPerformanceRating() == 0D) {
@@ -472,7 +482,7 @@ implements Serializable {
 
 
     /**
-     * Check for accident with entity during toggle resource phase.
+     * Checks for accident with entity during toggle resource phase.
      *
      * @param time the amount of time (in millisols)
      */

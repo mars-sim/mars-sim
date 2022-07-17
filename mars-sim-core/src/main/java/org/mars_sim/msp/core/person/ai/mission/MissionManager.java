@@ -278,8 +278,8 @@ public class MissionManager implements Serializable, Temporal {
 					double sponsorRatio = sponsor.getMissionRatio(metaMission.getType());
 					probability *= sponsorRatio;
 
-					logger.info(person, "Mission " + metaMission.getType() + " probability=" + probability
-									+ " base prob=" + baseProb
+					logger.info(person, "Mission '" + metaMission.getType().getName() + "' probability=" + probability
+									+ " base prob=" + Math.round(baseProb * 100.0)/100.0
 									+ " boost=" + boost
 									+ " sponsor=" + sponsorRatio);
 

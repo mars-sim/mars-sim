@@ -672,7 +672,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 			result *= factor;
 		}
 
-		logger.info(vehicle, 20_000, "Total remaining distance: " + Math.round(tripDistance * 1000.0)/1000.0 + " km   "
+		logger.info(vehicle, 20_000L, "Total est remaining distance: " + Math.round(tripDistance * 1000.0)/1000.0 + " km   "
 				+ "Projected fuel economy: " + Math.round(fuelEconomy * 10.0)/10.0 + " km/kg   "
 				+ "Margin for fuel: " + Math.round(factor * 10.0)/10.0 + "   "
 				+ "Fuel needed: " + Math.round(result * 1000.0)/1000.0 + " kg   "
