@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Read.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-16
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -41,9 +41,10 @@ public class Read extends Task implements Serializable {
 	// Static members
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = -.1D;
-
-	// private int randomTime;
-
+	
+	/** The selected skill type for this reading session. */
+	private SkillType selectedSkill;
+	
 	/**
 	 * Constructor. This is an effort-driven task.
 	 *
@@ -51,16 +52,17 @@ public class Read extends Task implements Serializable {
 	 */
 	public Read(Person person) {
 		// Use Task constructor. Skill is set later
-		super(NAME, person, true, false, STRESS_MODIFIER, 5D);
+		super(NAME, person, true, false, STRESS_MODIFIER, RandomUtil.getRandomInt(5, 20));
 
 		if (person.isInSettlement() || person.isInVehicle()) {
 
 			int score = person.getPreference().getPreferenceScore(new ReadMeta());
-			super.setDuration(5.0 + score);
+			// Modify the duration based on the preference score
+			setDuration(getDuration() + score);
 			// Factor in a person's preference for the new stress modifier
-			super.setStressModifier(score / 10D + STRESS_MODIFIER);
+			setStressModifier(- score / 10D + STRESS_MODIFIER);
 
-			// set the boolean to true so that it won't be done again today
+			// Set the boolean to true so that it won't be done again today
 			// person.getPreference().setTaskStatus(this, false);
 
 			if (person.isInSettlement()) {
@@ -127,18 +129,6 @@ public class Read extends Task implements Serializable {
 	}
 
 	/**
-	 * Performs reading phase.
-	 *
-	 * @param time the amount of time (millisols) to perform the phase.
-	 * @return the amount of time (millisols) left over after performing the phase.
-	 */
-	private double reading(double time) {
-		setDescription(Msg.getString("Task.description.read"));//$NON-NLS-1$
-		addExperience(time);
-		return 0D;
-	}
-
-	/**
 	 * Gets an available recreation building that the person can use. Returns null
 	 * if no recreation building is currently available.
 	 *
@@ -176,25 +166,36 @@ public class Read extends Task implements Serializable {
 		}
 	}
 
+	/**
+	 * Performs reading phase.
+	 *
+	 * @param time the amount of time (millisols) to perform the phase.
+	 * @return the amount of time (millisols) left over after performing the phase.
+	 */
+	private double reading(double time) {
+
+		// Reading serves to improve skill
+		addExperience(time);
+		
+		return 0D;
+	}
+	
 	@Override
 	protected void addExperience(double time) {
         // Experience points adjusted by person's "Experience Aptitude" attribute.
         NaturalAttributeManager nManager = person.getNaturalAttributeManager();
         int aptitude = nManager.getAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
 
-    	// Pick one skill to improve upon
-    	SkillType taskSkill = person.getSkillManager().getARandomSkillType();
-//		int points = person.getSkillManager().getSkillLevel(taskSkill);
-//		double exp = person.getSkillManager().getCumuativeExperience(taskSkill);
-		double learned = 2  * time * (aptitude / 100D) * RandomUtil.getRandomDouble(1);
+    	// Pick one skill randomly to improve upon
+        if (selectedSkill == null)
+        	selectedSkill = person.getSkillManager().getARandomSkillType();
+        
+    	// Display reading on a particular subject (skill type)
+		setDescription(Msg.getString("Task.description.read.detail", selectedSkill.getName()));//$NON-NLS-1$
+		
+		double learned = 2 * time * (aptitude / 100D) * RandomUtil.getRandomDouble(1);
 
-//				logger.info(taskSkill.getName()
-//					+ " - diff: " + diff + "   "
-//					+ "  mod: " + mod + "   "
-//					+ person + " [Lvl : " + teacherSkill + "]'s teaching reward: " + Math.round(reward*1000.0)/1000.0
-//					+ "   " + student + " [Lvl : " + studentSkill + "]'s learned: " + Math.round(learned*1000.0)/1000.0 + ".");
-
-		person.getSkillManager().addExperience(taskSkill, learned, time);
+		person.getSkillManager().addExperience(selectedSkill, learned, time);
 
 	}
 }
