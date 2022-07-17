@@ -210,38 +210,6 @@ public class PowerGeneration extends Function implements Serializable {
 		return result;
 	}
 
-//	/**
-//	 * Gets the amount of electrical power generated.
-//	 * @return power generated in kW
-//	 
-//	public double getGeneratedPower() {
-//	double result = 0D;
-//		// Building should only produce power if it has no current malfunctions.
-//		if (!getBuilding().getMalfunctionManager().hasMalfunction()) {
-//			
-//			Iterator<PowerSource> i = powerSources.iterator();
-//			while (i.hasNext()) {
-//					PowerSource powerSource = i.next();
-//				    if (powerSource.getType().equals(PowerSourceType.FUEL_POWER)) {
-//				    	//System.out.println(heatSource.toString() + " at building "+ building.getNickName() + " is HEAT_OFF");
-//				    	powerSource.setTime(time);
-//				    	result += powerSource.getCurrentPower(getBuilding());
-//				    }
-//				    else
-//						result += powerSource.getCurrentPower(getBuilding());
-//			}			
-//			
-//			//Iterator<PowerSource> i = powerSources.iterator();
-//			//while (i.hasNext()) {
-//			//	result += i.next().getCurrentPower(getBuilding());
-//			//}
-//		}
-//
-//
-//		return powerGeneratedCache;
-//
-//	}
-
 	/**
 	 * Time passing for the building.
 	 * 
@@ -255,29 +223,8 @@ public class PowerGeneration extends Function implements Serializable {
 			powerGeneratedCache = calculateGeneratedPower(pulse.getElapsed());
 		}
 		return valid;
-//		for (PowerSource source : powerSources) {
-//			if (source instanceof SolarPowerSource) {
-//				SolarPowerSource solarPowerSource = (SolarPowerSource) source;
-//				//System.out.println("solarPowerSource.getMaxPower() is "+ solarPowerSource.getMaxPower());
-//				double factor = solarPowerSource.getCurrentPower(getBuilding()) / solarPowerSource.getMaxPower();
-//				// TODO : use PowerMode.FULL_POWER ?
-//				double d_factor = SolarPowerSource.DEGRADATION_RATE_PER_SOL * time/1000D;
-//				double eff = solarPowerSource.getEfficiency() ;
-//				double new_eff = eff - eff * d_factor * factor;
-//				solarPowerSource.setEfficiency(new_eff);
-//				//System.out.println("new_eff is " + new_eff);
-//			}
-//			
-//			else if (source instanceof FuelPowerSource) {
-//				FuelPowerSource fuelSource = (FuelPowerSource) source;
-//				if (fuelSource.isToggleON()) {
-//					//fuelSource.consumeFuel(time, getBuilding().getSettlementInventory());
-//				}
-//			}
-//
-//		}
 	}
-
+	
 	@Override
 	public String[] getMalfunctionScopeStrings() {
 		String[] result = new String[powerSources.size() + 1];
@@ -331,15 +278,15 @@ public class PowerGeneration extends Function implements Serializable {
 	public void destroy() {
 		super.destroy();
 
-		powerSources = null;
 		thermalGeneration = null;
 
-//		Iterator<PowerSource> i = powerSources.iterator();
-//		while (i.hasNext()) {
-//			i.next().destroy();
-//		}
-//		powerSources.clear();
+		Iterator<PowerSource> i = powerSources.iterator();
+		while (i.hasNext()) {
+			i.next().destroy();
+		}
+		powerSources.clear();
 
+		powerSources = null;
 	}
 
 }

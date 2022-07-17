@@ -132,17 +132,17 @@ public class ConnectWithEarth extends Task implements Serializable {
 	private double connectingEarth(double time) {
 		int msol = marsClock.getMillisolInt();       
         boolean successful = false; 
-        
+
         if (computingNeeded > 0) {
         	double randWork = 0; 
-        	
+ 
         	if (computingNeeded <= .01) {
         		randWork = computingNeeded;
         	}
         	else {
         		randWork = RandomUtil.getRandomDouble(computingNeeded / 6.0, computingNeeded / 3.0);
         	}
-        		
+
         	// Submit his request for computing resources
         	Computation center = person.getAssociatedSettlement().getBuildingManager().getMostFreeComputingNode(randWork/5.0, msol + 1, msol + 6);
         	if (center != null)

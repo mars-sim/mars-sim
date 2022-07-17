@@ -9,7 +9,6 @@ package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
@@ -58,35 +57,36 @@ public class BuildingPanelComputation extends BuildingFunctionPanel {
 		center.add(springPanel, BorderLayout.NORTH);
 
 		// Power Demand
-		double powerDemand = building.getComputation().getPowerDemand();
+		double powerDemand = Math.round(10.0*building.getComputation().getFullPowerRequired())/10.0;
 		textField0 = addTextField(springPanel, Msg.getString("BuildingPanelComputation.powerDemand"),
-				     Math.round(10.0*powerDemand)/10.0 + " kW", Msg.getString("BuildingPanelComputation.powerDemand.tooltip"));
+				     powerDemand + " kW", Msg.getString("BuildingPanelComputation.powerDemand.tooltip"));
 
-		// Cooling Demand
-		double coolingDemand = building.getComputation().getCoolingDemand();
-		textField1 = addTextField(springPanel, Msg.getString("BuildingPanelComputation.coolingDemand"),
-					 Math.round(10.0*coolingDemand)/10.0 + " kW", Msg.getString("BuildingPanelComputation.coolingDemand.tooltip"));
+		// Usage
+		double usage = Math.round(100.0*building.getComputation().getUsagePercent())/100.0;
+		textField1 = addTextField(springPanel, Msg.getString("BuildingPanelComputation.usage"),
+					 usage + " %", Msg.getString("BuildingPanelComputation.usage.tooltip"));
 
 		// Capability
-		double computingUnit = building.getComputation().getComputingUnit();
+		double computingUnit = Math.round(building.getComputation().getComputingUnit()* 1_000.0)/1_000.0;
 		textField2 = addTextField(springPanel, Msg.getString("BuildingPanelComputation.computingUnit"),
-					 Math.round(computingUnit* 100_000.0)/100_000.0 + " CUs", Msg.getString("BuildingPanelComputation.computingUnit.tooltip"));
+					 computingUnit + " CUs", Msg.getString("BuildingPanelComputation.computingUnit.tooltip"));
 	}
 	
 	@Override
 	public void update() {
 
-		double power = Math.round(10.0*building.getComputation().getPowerDemand())/10.0;
+		double power = Math.round(10.0*building.getComputation().getFullPowerRequired())/10.0;
+
 		if (!textField0.getText().equalsIgnoreCase(power + " kW"))
 			textField0.setText(power + " kW");
 		
-		double cooling = Math.round(10.0*building.getComputation().getCoolingDemand())/10.0;
-		if (!textField1.getText().equalsIgnoreCase(cooling + " kW"))
-			textField1.setText(cooling + " kW");
+		double util = Math.round(100.0*building.getComputation().getUsagePercent())/100.0;
+		if (!textField1.getText().equalsIgnoreCase(util + " %"))
+			textField1.setText(util + " %");
 		
-		double u = Math.round(building.getComputation().getComputingUnit()* 100_000.0)/100_000.0;
-		if (!textField1.getText().equalsIgnoreCase(u + " CUs"))
-			textField1.setText(u + " CUs");
+		double u = Math.round(building.getComputation().getComputingUnit()* 1_000.0)/1_000.0;
+		if (!textField2.getText().equalsIgnoreCase(u + " CUs"))
+			textField2.setText(u + " CUs");
 		
 	}
 }

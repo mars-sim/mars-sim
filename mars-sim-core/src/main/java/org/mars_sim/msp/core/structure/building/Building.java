@@ -137,7 +137,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	protected double facing;
 	protected double basePowerRequirement;
 	protected double basePowerDownPowerRequirement;
-	protected double powerNeededForEvaheater;
+	protected double powerNeededForEVAHeater;
 
 
 	/** Type of building. */
@@ -839,14 +839,15 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 		// Determine power required for each function.
 		for (Function function : functions) {
 			double power = function.getFullPowerRequired();
-			if (power > 0)
+			if (power > 0) {
 //				System.out.println(nickName + " : "
 //					+ function.getFunctionType().toString() + " : "
 //					+ Math.round(power * 10.0)/10.0 + " kW");
-			result += power;
+				result += power;
+			}
 		}
 
-		return result + powerNeededForEvaheater;
+		return result + powerNeededForEVAHeater;
 	}
 
 	/**
@@ -957,7 +958,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	 * @return power (kW)
 	 */
 	public double getTotalPowerForEVA() {
-		return powerNeededForEvaheater;
+		return powerNeededForEVAHeater;
 	}
 
 	/**
@@ -972,7 +973,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 		if (eva != null) {
 			num = eva.getAirlock().getOccupants().size();
 			// Note: Assuming (.5) half of people are doing EVA ingress statistically
-			powerNeededForEvaheater = num * kWEvaHeater * .5D; 
+			powerNeededForEVAHeater = num * kWEvaHeater * .5D; 
 		}
 		return num;
 	}

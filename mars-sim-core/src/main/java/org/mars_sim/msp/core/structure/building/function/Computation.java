@@ -21,7 +21,7 @@ import org.mars_sim.msp.core.time.ClockPulse;
 /**
  * The Computation class is a building function for generating computational power.
  */
-public class Computation extends Function{
+public class Computation extends Function {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -30,13 +30,22 @@ public class Computation extends Function{
 	private static final String COMPUTING_UNIT = "computing-unit";
 	private static final String POWER_DEMAND = "power-demand";
 	private static final String COOLING_DEMAND = "cooling-demand";
-
-	private double maxComputingUnit;
-	private double computingUnit;
-	private double powerDemand;
-	private double coolingDemand;
 	
+	/** The peak amount of computing resources [in CUs]. */
+	private double peakCU;
+	/** The amount of computing resources currently available [in CUs]. */
+	private double computingUnit;
+	/** The power load in kW for each running CU [in kW/CU]. */
+	private double powerDemand;
+	/** The power load in kW needed for cooling each running CU [in kW/CU]. */
+	private double coolingDemand;
+	/** The combined power demand for each running CU [in kW/CU]. */
+	private double combinedkW;
+	/** The combined power demand for each non-load CU [in kW/CU] - Assume 10% of full load. */
+	private double NON_LOAD_KW = 0.1;
+	/** The schedule demand [in CUs] for the current mission sol. */
 	private Map<Integer, Double> todayDemand;
+	
 	
 	private Building building;
 	
@@ -53,11 +62,12 @@ public class Computation extends Function{
 		
 		this.building = building;
 		
-		maxComputingUnit = spec.getDoubleProperty(COMPUTING_UNIT);
-		computingUnit = maxComputingUnit; 
+		peakCU = spec.getDoubleProperty(COMPUTING_UNIT);
+		computingUnit = peakCU; 
 		powerDemand = spec.getDoubleProperty(POWER_DEMAND);
 		coolingDemand = spec.getDoubleProperty(COOLING_DEMAND);	
 		
+		combinedkW = coolingDemand + powerDemand;
 		todayDemand = new HashMap<>();
 	}
 
@@ -158,7 +168,7 @@ public class Computation extends Function{
 			if (todayDemand.containsKey(i + beginningMSol)) {
 				existing = todayDemand.get(i + beginningMSol);
 			}
-			double available = maxComputingUnit - existing - needed;
+			double available = peakCU - existing - needed;
 			if (available < 0)
 				return false;
 		}
@@ -193,7 +203,7 @@ public class Computation extends Function{
 			if (todayDemand.containsKey(i + beginningMSol)) {
 				existing = todayDemand.get(i + beginningMSol);
 			}
-			available = maxComputingUnit - existing - needed;
+			available = peakCU - existing - needed;
 		}
 		if (available < 0)
 			return false;
@@ -220,7 +230,7 @@ public class Computation extends Function{
 			if (todayDemand.containsKey(i + beginningMSol)) {
 				existing = todayDemand.get(i + beginningMSol);
 			}
-			double available = maxComputingUnit - existing - needed;
+			double available = peakCU - existing - needed;
 			score += available;
 		}
 		return score;
@@ -266,10 +276,10 @@ public class Computation extends Function{
 			}
 			if (newDemand > 0) {
 				// Updates the CUs
-				setComputingResource(maxComputingUnit - newDemand); 
+				setComputingResource(peakCU - newDemand); 
 			}
 			else {
-				setComputingResource(maxComputingUnit);
+				setComputingResource(peakCU);
 			}
 
 			// Notes: 
@@ -277,6 +287,27 @@ public class Computation extends Function{
 			// if it falls below 0%, flash red
 		}
 		return valid;
+	}
+	
+	/**
+	 * Returns the percent of usage of computing resources.
+	 * 
+	 * @return
+	 */
+	public double getUsagePercent() {
+		return (peakCU - computingUnit)/peakCU * 100.0;
+	}
+	
+	/**
+	 * Gets the amount of power required, based on the current load.
+	 *
+	 * @return power (kW) default zero
+	 */
+	@Override
+	public double getFullPowerRequired() {
+		double load = peakCU - computingUnit;
+		double nonLoad = computingUnit;
+		return (load + NON_LOAD_KW * nonLoad) * combinedkW;
 	}
 	
 	@Override
