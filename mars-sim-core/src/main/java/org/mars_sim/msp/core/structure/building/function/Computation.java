@@ -119,6 +119,16 @@ public class Computation extends Function {
 	}
 
 	/**
+	 * Gets the peak computing units [in CU].
+	 * 
+	 * @return
+	 */
+	public double getPeakComputingUnit() {
+		return peakCU;
+	}
+	
+	
+	/**
 	 * Gets the power demand [in kW].
 	 * 
 	 * @return

@@ -66,10 +66,13 @@ public class BuildingPanelComputation extends BuildingFunctionPanel {
 		textField1 = addTextField(springPanel, Msg.getString("BuildingPanelComputation.usage"),
 					 usage + " %", Msg.getString("BuildingPanelComputation.usage.tooltip"));
 
-		// Capability
+		// Peak
+		double peak = Math.round(building.getComputation().getPeakComputingUnit()* 1_000.0)/1_000.0;
+		// Current
 		double computingUnit = Math.round(building.getComputation().getComputingUnit()* 1_000.0)/1_000.0;
+		String text = computingUnit + " / " + peak + " CUs";
 		textField2 = addTextField(springPanel, Msg.getString("BuildingPanelComputation.computingUnit"),
-					 computingUnit + " CUs", Msg.getString("BuildingPanelComputation.computingUnit.tooltip"));
+				text, Msg.getString("BuildingPanelComputation.computingUnit.tooltip"));
 	}
 	
 	@Override
@@ -84,9 +87,12 @@ public class BuildingPanelComputation extends BuildingFunctionPanel {
 		if (!textField1.getText().equalsIgnoreCase(util + " %"))
 			textField1.setText(util + " %");
 		
-		double u = Math.round(building.getComputation().getComputingUnit()* 1_000.0)/1_000.0;
-		if (!textField2.getText().equalsIgnoreCase(u + " CUs"))
-			textField2.setText(u + " CUs");
+		double peak = Math.round(building.getComputation().getPeakComputingUnit()* 1_000.0)/1_000.0;
+
+		double computingUnit = Math.round(building.getComputation().getComputingUnit()* 1_000.0)/1_000.0;
+		String text = computingUnit + " / " + peak + " CUs";
+		if (!textField2.getText().equalsIgnoreCase(text))
+			textField2.setText(text);
 		
 	}
 }
