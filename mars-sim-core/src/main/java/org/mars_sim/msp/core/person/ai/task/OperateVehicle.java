@@ -646,8 +646,8 @@ public abstract class OperateVehicle extends Task implements Serializable {
 			// Recompute the new distance it could travel
 			d_km = vehicle.getEstimatedFuelEconomy() * fuelUsed;
 			
-			logger.log(vehicle, Level.WARNING,  20_000L, "fuelUsed: " + fuelUsed + " kg" 
-					+ "new d_km: " + d_km + " km.");
+			logger.log(vehicle, Level.WARNING,  20_000L, "fuelUsed: " +  Math.round(fuelUsed * 1000.0)/1000.0  + " kg" 
+					+ "new d_km: " +  Math.round(d_km * 1000.0)/1000.0  + " km.");
 			// Find the new speed Slow down the vehicle            
 			v_kph = d_km / hr; // [in kph]
 			
@@ -668,7 +668,8 @@ public abstract class OperateVehicle extends Task implements Serializable {
      	}      
 		else if (fuelUsed < 0) {
 			// Future: will consider how to apply regenerative braking to absorb the momentum and store energy into the vehicle's "battery" system
-			logger.log(vehicle, Level.INFO, 20_000, "Decelerating.   a_ms: " + a_ms + " m/s2   fTot: " + fTot + " N.");
+			logger.log(vehicle, Level.INFO, 20_000, "Decelerating at " + Math.round(a_ms * 1000.0)/1000.0 
+					+ " m/s2   Force: " + Math.round(fTot * 1000.0)/1000.0  + " N.");
 		}
 		
 		else {
@@ -679,7 +680,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
 		}
 
     	if (v_kph < LOW_SPEED) {
-    		logger.log(vehicle, Level.INFO, 20_000, " v_kph was negative (" + v_kph + ") and reset to zero.");
+    		logger.log(vehicle, Level.INFO, 20_000, " v_kph was negative (" + v_kph + ") and was reset to zero.");
     		v_kph = LOW_SPEED;
     		v_ms = v_kph / KPH_CONV;
     	}

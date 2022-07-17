@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * PerformLaboratoryResearch.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -43,7 +43,6 @@ public class PerformLaboratoryResearch extends Task implements ResearchScientifi
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(PerformLaboratoryResearch.class.getName());
 
-	
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.performLaboratoryResearch"); //$NON-NLS-1$
 
@@ -396,8 +395,6 @@ public class PerformLaboratoryResearch extends Task implements ResearchScientifi
 		if (malfunctions.getMalfunctionManager().hasMalfunction())
 			endTask();
 
-		// Check if research in study is completed.
-		boolean isPrimary = study.getPrimaryResearcher().equals(person);
 		
 		// Check if person is in a moving rover.
 		if (Vehicle.inMovingRover(person)) {
@@ -411,6 +408,7 @@ public class PerformLaboratoryResearch extends Task implements ResearchScientifi
 
 		// Add research work time to study.
 		double researchTime = getEffectiveResearchTime(time);
+		boolean isPrimary = study.getPrimaryResearcher().equals(person);
 		if (isPrimary) {
 			study.addPrimaryResearchWorkTime(researchTime);
 		} else {

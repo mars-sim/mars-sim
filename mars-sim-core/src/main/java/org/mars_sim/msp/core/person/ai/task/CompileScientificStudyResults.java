@@ -54,6 +54,8 @@ implements Serializable {
     /** Computing Units requested. */
     private double computingNeeded = RandomUtil.getRandomDouble(.5, 5);
     
+	private final double TOTAL_COMPUTING_NEEDED = computingNeeded;
+	
     /** The scientific study to compile. */
     private ScientificStudy study;
     
@@ -238,9 +240,9 @@ implements Serializable {
         			successful = center.scheduleTask(randWork/5.0, msol + 1, msol + 6);
         	}
         	if (successful) {
-        		logger.info(person, 30_000L, "Utilized " 
-        				+ Math.round(randWork * 1_000.0)/1_000.0 
-        				+ " CUs for compiling " + study + ".");
+//        		logger.info(person, 30_000L, "Utilized " 
+//        				+ Math.round(randWork * 1_000.0)/1_000.0 
+//        				+ " CUs for compiling " + study + ".");
         		computingNeeded = computingNeeded - randWork;
         		 if (computingNeeded < 0) {
         			 computingNeeded = 0; 
@@ -248,7 +250,11 @@ implements Serializable {
         	}
         }
         else if (computingNeeded <= 0) {
-        	// Computing not needed
+        	// this task has ended
+    		logger.info(person, 0, Msg.getString("Task.description.compileScientificStudyResults.detail",
+                    study.toString()) + " - "
+    				+ Math.round(TOTAL_COMPUTING_NEEDED * 1_000.0)/1_000.0 
+    				+ " CUs Used.");
         	successful = true;
         }
         

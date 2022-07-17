@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.structure.building.function.Computation;
 import org.mars_sim.msp.core.time.ClockUtils;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -48,15 +49,19 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 	/** The speed at which the obstacle / winching phase commence. */
 	private static final double LOW_SPEED = .5;
 	
+	/** The computing resources [in CUs] needed per km. */
+	private static final double CU_PER_KM = .1;
+	
 	// Side directions.
 	private final static int NONE = 0;
 	private final static int LEFT = 1;
 	private final static int RIGHT = 2;
 
-	
 	// Data members
 	private int sideDirection = NONE;
-	
+    /** Computing Units used. */		
+	private double computingUsed = 0; 
+			
 	/**
 	 * Default Constructor.
 	 * 
@@ -179,16 +184,9 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 	 */
 	protected double mobilizeVehicle(double time) {
 
-		// If vehicle is stuck, try winching.
-//		if ((Drone) getDrone().isStalled()) {// && (!WINCH_VEHICLE.equals(getPhase()))) {
-////			setPhase(WINCH_VEHICLE);
-//			return (time);
-//		}
-
 		// If speed is less than or equal to the .5 kph, change to avoiding obstacle phase.
 		if ((getVehicle().getSpeed() <= LOW_SPEED) 
 				&& !AVOID_COLLISION.equals(getPhase())) {
-//				&& (!WINCH_VEHICLE.equals(getPhase()))) {
 			setPhase(AVOID_COLLISION);
 			return (time);
 		} else
@@ -243,7 +241,25 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 
 		// Drive in the direction
 		timeUsed = time - mobilizeVehicle(time);
-
+		
+		int msol = marsClock.getMillisolInt();       
+        boolean successful = false; 
+        
+        double lastDistance = flyer.getLastDistanceTravelled();
+        double cUs = lastDistance * CU_PER_KM;
+        
+    	// Submit his request for computing resources
+    	Computation center = person.getAssociatedSettlement().getBuildingManager().getMostFreeComputingNode(cUs, msol + 1, msol + 3);
+    	if (center != null)
+    		successful = center.scheduleTask(cUs, msol + 1, msol + 3);
+    	if (successful) {
+    		computingUsed += timeUsed;
+      	}
+    	else {
+    		logger.info(person, 30_000L, "No computing resources available for " 
+    			+ Msg.getString("Task.description.pilotDrone.detail", flyer.getName())+ "."); // $NON-NLS-1$
+    	}
+		
 		// Add experience points
 		addExperience(time);
 

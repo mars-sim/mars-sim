@@ -158,6 +158,8 @@ public abstract class Vehicle extends Unit
 	private double baseRange = 0;
 	/** Total cumulative distance traveled by vehicle (km). */
 	private double odometerMileage; //
+	/** The last distance travelled by vehicle (km). */
+	private double lastDistance;
 	/** Distance traveled by vehicle since last maintenance (km) . */
 	private double distanceMaint; //
 	/** The efficiency of the vehicle's drivetrain. [dimension-less] */
@@ -1289,9 +1291,14 @@ public abstract class Vehicle extends Unit
 	 */
 	public void addOdometerMileage(double distance, double fuelUsed) {
 		odometerMileage += distance;
+		lastDistance = distance;
 		fuelCumUsed += fuelUsed;
 	}
 
+	public double getLastDistanceTravelled() {
+		return lastDistance;
+	}
+	
 	/**
 	 * Returns distance traveled by vehicle since last maintenance [km].
 	 *

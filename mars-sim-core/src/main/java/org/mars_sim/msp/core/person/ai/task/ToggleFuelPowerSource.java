@@ -470,7 +470,7 @@ implements Serializable {
         String toggle = "off";
         if (toggleOn) toggle = "on";
 
-        logger.log(person, Level.INFO, 3_000,
+        logger.log(person, Level.FINE, 30_000L,
 				"Turning " + toggle + " " + powerSource.getType()
                 + " in " + building.getNickName() + ".");
 

@@ -400,7 +400,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 
 								StringBuilder msg = new StringBuilder();
 								msg.append("Grading ").append(requestedBy).append("'s ").append(m.getDescription());
-								msg.append(" plan : ");
+								msg.append(" plan - ");
 								msg.append(" Rating: ").append(rating); 
 								msg.append(", Rels: ").append(relation); 
 								msg.append(", Quals: ").append(qual); 
@@ -477,7 +477,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 		
 	    if (missions.size() > 0 && is90Completed()) {
 	    	
-			logger.log(worker, Level.INFO, 5_000, "Was going over the approval of some mission plans.");
+			logger.log(worker, Level.INFO, 5_000, "Going over the approval of some mission plans.");
 			
         	// Use up to 90% of the time
 			return 0; 
@@ -512,7 +512,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 							logger.log(worker, Level.INFO, 0, "Approved " + requestedBy
 									+ "'s " + m.getDescription() + " mission plan. Total Score: " 
 									+ Math.round(score*10.0)/10.0 
-									+ " (Min: " + Math.round(settlement.getMinimumPassingScore()*10.0)/10.0 + ").");
+									+ " [Min: " + Math.round(settlement.getMinimumPassingScore()*10.0)/10.0 + "].");
 						} else {
 							// Not Approved
 							// Updates the mission plan status
@@ -521,7 +521,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 							logger.log(worker, Level.INFO, 0, "Did NOT approve " + requestedBy
 									+ "'s " + m.getDescription() + " mission plan. Total Score: " 
 									+ Math.round(score*10.0)/10.0 
-									+ " (Min: " + Math.round(settlement.getMinimumPassingScore()*10.0)/10.0 + ").");
+									+ " [Min: " + Math.round(settlement.getMinimumPassingScore()*10.0)/10.0 + "].");
 						}
 											
 						settlement.saveMissionScore(score);

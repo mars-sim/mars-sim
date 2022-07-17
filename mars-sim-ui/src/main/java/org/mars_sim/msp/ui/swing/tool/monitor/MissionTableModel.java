@@ -392,7 +392,7 @@ public class MissionTableModel extends AbstractTableModel
 							percent = 100;
 						int score = (int)mission.getPlan().getScore();
 						int min = (int)mission.getStartingPerson().getAssociatedSettlement().getMinimumPassingScore();
-						result = percent + "% under review - Score: " + score + " [Min: " + min + "]";
+						result = percent + "% Reviewed - Score: " + score + " [Min: " + min + "]";
 					}
 					else
 						result = Conversion.capitalize(mission.getPhaseDescription());

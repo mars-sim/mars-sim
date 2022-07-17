@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * VersionTag.java
- * @date 2021-08-28
+ * @date 2022-07-17
  * @author Manny Kung
  */
 
@@ -20,14 +20,17 @@ import java.util.List;
 import java.util.stream.Stream;
 
 /*
- * Automatically generate or update a predefined header with proper version 
- * tag and date of publication for all files included in the TOP_DIR path
+ * This class automatically generates or updates the header of your files 
+ * with a proper date tag. 
  */
 public class VersionTag {
-
+	
+	// CAUTION: Please test the setting on a set of demo files first and never
+	// run it the first time on files without a proper backup.
+		
 	private static String versionTagID = "* @version";
 	// Please update the following to the next official release date
-	private static String versionTagString = " * @version 3.2.0 2021-06-20"; 
+	private static String dateTagString = " * @date 2022-07-17"; 
 	// The affected path for the git clone repo on your machine 
 	private static String TOP_DIR = "D:/eclipse/java-2021-03/git/mars-sim/mars-sim";
 			
@@ -47,10 +50,8 @@ public class VersionTag {
 	private static List<String> unChangedVersionTagList = new ArrayList<>();
 	private static List<String> noVersionTagList = new ArrayList<>();
 	
-	
 	// ref : https://www.codevscolor.com/java-replace-string-in-file/
 	// ref : http://zetcode.com/java/fileswalk/
-	
 	
 	public static StringBuffer insertVersionTag(String pathName) {
 		StringBuffer inputBuffer = new StringBuffer();
@@ -67,7 +68,7 @@ public class VersionTag {
 		inputBuffer.append(LINE2);
         inputBuffer.append(fileName.toString());
         inputBuffer.append(System.lineSeparator());
-    	inputBuffer.append(versionTagString);
+    	inputBuffer.append(dateTagString);
         inputBuffer.append(System.lineSeparator());	
 		inputBuffer.append(LINE4);
         inputBuffer.append(System.lineSeparator());	
@@ -117,7 +118,7 @@ public class VersionTag {
         if (changedVersionTagList.size() > 0)
         	changedVersionTagList.forEach(System.out::println);
 
-        System.out.println("The new VersionTag is " + versionTagString);
+        System.out.println("The new VersionTag is " + dateTagString);
 
         System.out.println("> # of java files already having the correct version tag : " + unChangedVersionTagList.size());
         
@@ -171,11 +172,11 @@ public class VersionTag {
             	
             		hasVersionTag = true;
             		// Check if this line equals the versionTagString
-            		if (line.equals(versionTagString)) {
+            		if (line.equals(dateTagString)) {
             			hasCorrectVersionTag = true;
             		}
             		else
-            			line = versionTagString;        			
+            			line = dateTagString;        			
             		
             	}
             	            	

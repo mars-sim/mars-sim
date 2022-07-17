@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * PerformLaboratoryExperiment.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -76,12 +76,7 @@ implements ResearchScientificStudy, Serializable {
         super(NAME, person, true, false, STRESS_MODIFIER,
                 null, 15D, 10D + RandomUtil.getRandomDouble(400D));
         setExperienceAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
-        
-//		if (person.getPhysicalCondition().computeFitnessLevel() < 2) {
-//			logger.log(person, Level.FINE, 10_000, "Ended performing lab experiments. Not feeling well.");
-//			endTask();
-//		}
-		
+
         // Determine study.
         study = determineStudy(person);
         if (study != null) {

@@ -1,9 +1,10 @@
-/**
+/*
  * Mars Simulation Project
  * ObserveAstronomicalObjects.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-17
  * @author Sebastien Venot
  */
+
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.io.Serializable;
@@ -26,6 +27,7 @@ import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.AstronomicalObservation;
+import org.mars_sim.msp.core.structure.building.function.Computation;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
@@ -50,15 +52,20 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 	private static final TaskPhase OBSERVING = new TaskPhase(Msg.getString("Task.phase.observing")); //$NON-NLS-1$
 
 	// Data members.
+	/** True if person is active observer. */
+	private boolean isActiveObserver = false;
+	   /** Computing Units requested. */
+    private double computingNeeded = RandomUtil.getRandomDouble(.5, 5);
+    
+	private final double TOTAL_COMPUTING_NEEDED = computingNeeded;
+	
 	/** The scientific study the person is researching for. */
 	private ScientificStudy study;
 	/** The observatory the person is using. */
 	private AstronomicalObservation observatory;
 	/** The research assistant. */
 	private Person researchAssistant;
-	/** True if person is active observer. */
-	private boolean isActiveObserver = false;
-
+	
 	/**
 	 * Constructor.
 	 * 
@@ -239,7 +246,7 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 		}
 		
 		// If person is incapacitated, end task.
-		if (person.getPerformanceRating() < 0.1D) {
+		if (person.getPerformanceRating() < 0.1) {
 			endTask();
 		}
 
@@ -259,11 +266,50 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 			endTask();
 		}
 
-		boolean isPrimary = study.getPrimaryResearcher().equals(person);
-
+        int msol = marsClock.getMillisolInt();
+        
+        boolean successful = false; 
+        
+        if (computingNeeded > 0) {
+        	double randWork = 0; 
+        	
+        	if (computingNeeded <= .01) {
+        		randWork = computingNeeded;
+        	}
+        	else
+        		randWork = RandomUtil.getRandomDouble(computingNeeded/5.0, computingNeeded/2.0);
+        	
+        	// Submit his request for computing resources
+        	Computation center = person.getAssociatedSettlement().getBuildingManager().getMostFreeComputingNode(randWork/5.0, msol + 1, msol + 6);
+        	if (center != null) {
+        		if (computingNeeded <= .01)
+        			successful = center.scheduleTask(randWork, msol + 1, msol + 2);
+        		else
+        			successful = center.scheduleTask(randWork/5.0, msol + 1, msol + 6);
+        	}
+        	if (successful) {
+        		computingNeeded = computingNeeded - randWork;
+        		 if (computingNeeded < 0) {
+        			 computingNeeded = 0; 
+        		 }
+        	}
+        }
+        else if (computingNeeded <= 0) {
+        	// this task has ended
+    		logger.info(person, 0, "Observing/analyzing astronomical objects - "
+    				+ Math.round(TOTAL_COMPUTING_NEEDED * 1_000.0)/1_000.0 
+    				+ " CUs Used.");
+        	successful = true;
+        }
+        
+        if (!successful) {
+        	logger.warning(person, 30_000L, "No computing resources available for observing/analyzing astronomical objects this time.");
+        }   
+        
 		// Add research work time to study.
 		double observingTime = getEffectiveObservingTime(time);
 		
+		boolean isPrimary = study.getPrimaryResearcher().equals(person);
 		if (isPrimary) {
 			study.addPrimaryResearchWorkTime(observingTime);
 		} else {

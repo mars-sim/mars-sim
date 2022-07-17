@@ -143,10 +143,9 @@ public class Computation extends Function{
 	/**
 	 * Schedules for a computing task.
 	 * 
-	 * @param needed
-	 * @param beginningMSol
-	 * @param endMSol
-	 * @param duration
+	 * @param needed the CUs needed per msol
+	 * @param beginningMSol the start msol
+	 * @param endMSol the end msol
 	 * @return
 	 */
 	public boolean scheduleTask(double needed, int beginningMSol, int endMSol) {

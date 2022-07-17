@@ -61,6 +61,8 @@ implements ResearchScientificStudy, Serializable {
     /** Computing Units requested. */
     private double computingNeeded = RandomUtil.getRandomDouble(.5, 5);
     
+	private final double TOTAL_COMPUTING_NEEDED = computingNeeded;
+	
     /** The scientific study the person is modeling for. */
     private ScientificStudy study;
     /** The laboratory the person is working in. */
@@ -415,6 +417,11 @@ implements ResearchScientificStudy, Serializable {
         	}
         }
         else if (computingNeeded <= 0) {
+    		logger.info(person, 0, Msg.getString(
+    	            "Task.description.performMathematicalModeling") + " on " 
+    				+ study.getName() + " - "
+    				+ Math.round(TOTAL_COMPUTING_NEEDED * 1_000.0)/1_000.0 
+    				+ " CUs Used.");
         	// Computing not needed
         	successful = true;
         }

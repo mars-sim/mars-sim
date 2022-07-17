@@ -47,9 +47,9 @@ public class ConnectWithEarth extends Task implements Serializable {
     /** Computing Units requested. */		
 	private double computingNeeded = RandomUtil.getRandomDouble(0.05, 0.25);
 
-	private Connection connection;
-	
 	private final double TOTAL_COMPUTING_NEEDED = computingNeeded;
+
+	private Connection connection;
 	
 	/**
 	 * Constructor. This is an effort-driven task.
@@ -159,7 +159,7 @@ public class ConnectWithEarth extends Task implements Serializable {
         }
         else if (computingNeeded <= 0) {
         	// this task has ended
-    		logger.info(person, 30_000L, connection.getName() + " - "
+    		logger.info(person, 0, connection.getName() + " - "
     				+ Math.round(TOTAL_COMPUTING_NEEDED * 1_000.0)/1_000.0 
     				+ " CUs Used.");
         	endTask();

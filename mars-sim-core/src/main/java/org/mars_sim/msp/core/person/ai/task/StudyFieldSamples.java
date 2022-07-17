@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * StudyFieldSamples.java
- * @date 2021-10-21
+ * @date 2022-07-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -61,7 +61,7 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy, 
 	private static final TaskPhase STUDYING_SAMPLES = new TaskPhase(Msg.getString("Task.phase.studyingSamples")); //$NON-NLS-1$
 
 	/** Mass (kg) of field sample to study. */
-	public static final double SAMPLE_MASS = 1D;
+	public static final double SAMPLE_MASS = .5;
 
 	private static final double ESTIMATE_IMPROVEMENT_FACTOR = 5D;
 
@@ -120,8 +120,8 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy, 
 			Unit container = person.getContainerUnit();
 			if (container.getUnitType() != UnitType.PLANET) {
 				double totalRockSampleMass = ((ResourceHolder)container).getAmountResourceStored(ResourceUtil.rockSamplesID);
-				if (totalRockSampleMass >= SAMPLE_MASS) {
-					double fieldSampleMass = RandomUtil.getRandomDouble(SAMPLE_MASS * 2D);
+				double fieldSampleMass = RandomUtil.getRandomDouble(.05, SAMPLE_MASS);
+				if (totalRockSampleMass >= fieldSampleMass) {
 					if (fieldSampleMass > totalRockSampleMass) {
 						fieldSampleMass = totalRockSampleMass;
 					}
