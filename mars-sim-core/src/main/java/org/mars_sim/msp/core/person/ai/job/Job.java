@@ -34,8 +34,6 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  */
 public abstract class Job {
 
-
-
 	private static final String JOB_STR = "job.";
 	private static final String MALE_STR = "male.";
 	private static final String FEMALE_STR = "female.";
@@ -50,8 +48,8 @@ public abstract class Job {
 	
 	/**
 	 * Constructor.
-	 * @param jobProspects 
 	 * 
+	 * @param jobProspects 
 	 * @param name the name of the job.
 	 */
 	protected Job(JobType jobType, Map<RoleType, Double> jobProspects) {
@@ -106,7 +104,7 @@ public abstract class Job {
 	public abstract double getSettlementNeed(Settlement settlement);
 
 	/**
-	 * Reloads instances after loading from a saved sim
+	 * Reloads instances after loading from a saved sim.
 	 * 
 	 * @param u {@link UnitManager}
 	 * @param m {@link MissionManager}
@@ -117,7 +115,8 @@ public abstract class Job {
 	}
 
 	/**
-	 * Build a Map to cover the Specialist RoleTypes.
+	 * Builds a Map to cover the Specialist RoleTypes.
+	 * 
 	 * @return
 	 */
 	protected static final Map<RoleType, Double> buildRoleMap(
@@ -128,6 +127,7 @@ public abstract class Job {
 		m.put(RoleType.COMPUTING_SPECIALIST, com);
 		m.put(RoleType.ENGINEERING_SPECIALIST, eng);
 		m.put(RoleType.MISSION_SPECIALIST, mis);
+		
 		m.put(RoleType.LOGISTIC_SPECIALIST, log);
 		m.put(RoleType.RESOURCE_SPECIALIST, res);
 		m.put(RoleType.SAFETY_SPECIALIST, saf);
@@ -140,10 +140,18 @@ public abstract class Job {
 		return jobProspects;
 	}
 
+	/**
+	 * Gets the science demand from buildings.
+	 * 
+	 * @param settlement
+	 * @param type
+	 * @param scale
+	 * @return
+	 */
 	protected double getBuildingScienceDemand(Settlement settlement, ScienceType type, double scale) {
 		double result = 0D;
 		
-		for(Building building : settlement.getBuildingManager().getBuildings(FunctionType.RESEARCH)) {
+		for (Building building : settlement.getBuildingManager().getBuildings(FunctionType.RESEARCH)) {
 			Research lab = building.getResearch();
 			if (lab.hasSpecialty(type)) {
 				result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / scale);
@@ -153,7 +161,8 @@ public abstract class Job {
 	}
 
 	/**
-	 * Calculate the Science demand for Mission on the road. 
+	 * Calculates the Science demand for Mission on the road. 
+	 * 
 	 * @param settlement
 	 * @param type
 	 * @param scale
@@ -163,7 +172,7 @@ public abstract class Job {
 		double result = 0D;
 		Collection<Vehicle> parked = settlement.getParkedVehicles();
 		
-		for(Mission mission : missionManager.getMissionsForSettlement(settlement)) {
+		for (Mission mission : missionManager.getMissionsForSettlement(settlement)) {
 			if (mission instanceof RoverMission) {
 				Rover rover = ((RoverMission) mission).getRover();
 				if ((rover != null) && !parked.contains(rover)) {
@@ -176,7 +185,8 @@ public abstract class Job {
 	}
 
 	/**
-	 * Calculate the science demand for all the Parked vehciles at a settlement. 
+	 * Calculates the science demand for all the Parked vehicles at a settlement. 
+	 * 
 	 * @param settlement
 	 * @param type
 	 * @param scale
@@ -185,7 +195,7 @@ public abstract class Job {
 	protected double getParkedVehicleScienceDemand(Settlement settlement, ScienceType type, double scale) {
 		double result = 0D;
 		
-		for(Vehicle vehicle : settlement.getParkedVehicles()) {
+		for (Vehicle vehicle : settlement.getParkedVehicles()) {
 			if (vehicle instanceof Rover) {
 				result += getRoverScienceScore((Rover) vehicle, type, scale);
 			}
@@ -195,7 +205,8 @@ public abstract class Job {
 	}
 
 	/**
-	 * Extract the science score from a rover.
+	 * Extracts the science score from a rover.
+	 * 
 	 * @param rover
 	 * @param type
 	 * @param scale
@@ -210,5 +221,4 @@ public abstract class Job {
 		}
 		return 0D;
 	}
-
 }

@@ -43,8 +43,8 @@ public class BuildingSpec {
 	
 	private String buildingType;
 	private String description;
+	
 	private ConstructionType construction = ConstructionType.SOLID;
-
 
 	private Map<FunctionType, FunctionSpec> supportedFunctions;
 	
@@ -64,7 +64,6 @@ public class BuildingSpec {
 	private List<LocalPosition> parking;
 
 	private BuildingCategory category;
-
 	
 	BuildingSpec(String buildingType, String description, BuildingCategory category, double width, double length, int baseLevel,
 			double roomTemperature, int maintenanceTime,

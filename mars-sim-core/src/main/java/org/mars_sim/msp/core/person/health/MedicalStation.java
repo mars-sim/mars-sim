@@ -18,8 +18,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * This class represents a medical station. It provides a number of treatments
@@ -46,9 +44,7 @@ public class MedicalStation implements MedicalAid, Serializable {
 	/** Treatments supported by the medical station. */
 	private List<Treatment> supportedTreatments;
 
-	private Building building;
-
-	private Vehicle vehicle;
+	private String name;
 	
 	private static MedicalManager medManager;
 
@@ -59,7 +55,8 @@ public class MedicalStation implements MedicalAid, Serializable {
 	 * @param level    The treatment level of the medical station.
 	 * @param sickBeds Number of sickbeds.
 	 */
-	public MedicalStation(int level, int sickBeds) {
+	public MedicalStation(String name, int level, int sickBeds) {
+		this.name = name;
 		this.level = level;
 		this.sickBeds = sickBeds;
 		problemsBeingTreated = new CopyOnWriteArrayList<>();
@@ -73,18 +70,6 @@ public class MedicalStation implements MedicalAid, Serializable {
 		
 		// Get all supported treatments at this medical station
 		supportedTreatments = medManager.getSupportedTreatments(level);
-	}
-
-	public void setVehicle(Vehicle v) {
-		vehicle = v;
-	}
-
-	public Vehicle getVehicle() {
-		return vehicle;
-	}
-	
-	public void setBuilding(Building b) {
-		building = b;
 	}
 
 	@Override
@@ -193,11 +178,10 @@ public class MedicalStation implements MedicalAid, Serializable {
 
 		// Check if treatment is supported here.
 		if (canTreatProblem(problem)) {
-
 			// Add the problem to the waiting queue.
 			problemsAwaitingTreatment.add(problem);
 		} else {
-			logger.info(building, problem.getIllness() + " cannot be treated in medical station.");
+			logger.info("[" + name + "] " + problem.getIllness() + " cannot be treated in medical station.");
 		}
 	}
 
@@ -212,7 +196,7 @@ public class MedicalStation implements MedicalAid, Serializable {
 		if (problemsAwaitingTreatment.contains(problem)) {
 			problemsAwaitingTreatment.remove(problem);
 		} else {
-			logger.severe("Health problem " + problem.getIllness()
+			logger.severe("[" + name + "] " + "Health problem " + problem.getIllness()
 					+ " request cannot be canceled as it is not awaiting response.");
 		}
 	}
@@ -229,7 +213,7 @@ public class MedicalStation implements MedicalAid, Serializable {
 			problemsBeingTreated.add(problem);
 			problemsAwaitingTreatment.remove(problem);
 		} else {
-			logger.warning(building, problem.getIllness()
+			logger.warning("[" + name + "] " + problem.getIllness()
 					+ " cannot be treated in medical station is not equipped to handle.");
 		}
 	}
@@ -247,7 +231,7 @@ public class MedicalStation implements MedicalAid, Serializable {
 				problemsAwaitingTreatment.add(problem);
 			}
 		} else {
-			logger.severe("Health problem " + problem.getIllness() + " not currently being treated.");
+			logger.severe("[" + name + "] " + "Health problem " + problem.getIllness() + " not currently being treated.");
 		}
 	}
 

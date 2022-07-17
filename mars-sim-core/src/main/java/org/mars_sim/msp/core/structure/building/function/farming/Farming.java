@@ -23,6 +23,7 @@ import org.mars_sim.msp.core.person.ai.task.TendGreenhouse;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -1009,7 +1010,7 @@ public class Farming extends Function {
 		boolean isDone = false;
 		int cropID = type.getCropID();
 		int tissueID = ResourceUtil.findIDbyAmountResourceName(tissueName);
-		double amountAvailable = building.getSettlement().getAmountResourceStored(tissueID);
+		double amountTissue = building.getSettlement().getAmountResourceStored(tissueID);
 		double amountExtracted = 0;
 
 		// Add the chosen tissue culture entry to the lab if it hasn't done it today.
@@ -1017,30 +1018,39 @@ public class Farming extends Function {
 		if (!hasIt) {
 			lab.markChecked(tissueName);
 
-			if (amountAvailable == 0) {
+			if (amountTissue == 0) {
 				// if no tissue culture is available, go extract some tissues from the crop
 				// Note: Should check for the health condition of a crop
 				amountExtracted = STANDARD_AMOUNT_TISSUE_CULTURE;
 				// Assume extracting an arbitrary 5 to 15% of the mass of a healthy crop (not a fixed amount)
 				// and make it into tissue culture
-				double lacking = building.getSettlement().retrieveAmountResource(cropID, amountExtracted);
-				if (lacking != amountExtracted) {
+				double lackingCrop = building.getSettlement().retrieveAmountResource(cropID, amountExtracted);
+				
+				double lackingDish = building.getSettlement().retrieveItemResource(ItemResourceUtil.PETRI_DISH_ID, 1);
+				
+				if (lackingDish > 0) {
+					logger.log(building, worker, Level.INFO, 10_000,
+							"Had no petri dish in stock.");
+					// Future: Use petri dish as a container for tissues
+				}
+		
+				if (lackingCrop > 0) {
 					// Store the tissues
-					building.getSettlement().storeAmountResource(tissueID, amountExtracted - lacking);
+					building.getSettlement().storeAmountResource(tissueID, amountExtracted - lackingCrop);
 					logger.log(building, worker, Level.INFO, 10_000,
 								"Found no " + Conversion.capitalize(cropName) + TISSUE
-								+ " in stock. Extracted " + (amountExtracted - lacking)
+								+ " in stock. Extracted " + (amountExtracted - lackingCrop)
 								+ " kg from its adult crop samples.");
 					isDone = true;
 				}
 				else {
 					logger.log(building, worker, Level.INFO, 10_000,
-							"Found no " + Conversion.capitalize(cropName) + TISSUE
+							"Found enough " + Conversion.capitalize(cropName) + TISSUE
 							+ " in stock. Cloned it from cryofreeze samples.");
 					
 					// For now, allow the tissue culture to be grown from backup samples
 					// In future, need to barter trade from neighboring settlement to obtain it.
-					building.getSettlement().storeAmountResource(tissueID, amountExtracted - lacking);
+					building.getSettlement().storeAmountResource(tissueID, amountExtracted - lackingCrop);
 					isDone = true;
 				}
 			}
@@ -1056,9 +1066,9 @@ public class Farming extends Function {
 				lab.markChecked(s);
 
 				// if there is less than 1 kg of tissue culture
-				if (amountAvailable > 0 && amountAvailable < 1) {
+				if (amountTissue > 0 && amountTissue < 1) {
 					// increase the amount of tissue culture by 20%
-					amountExtracted = amountAvailable * 0.2;
+					amountExtracted = amountTissue * 0.2;
 					// store the tissues
 					if (amountExtracted > 0) {
 						store(amountExtracted, tissueID, "Farming::growCropTissue");

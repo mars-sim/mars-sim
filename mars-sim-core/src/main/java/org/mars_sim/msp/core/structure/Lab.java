@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Lab.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-16
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure;
@@ -25,32 +25,35 @@ public interface Lab extends Serializable {
 
 	/** 
 	 * Gets the technology level of laboratory.
-	 * (units defined later) 
+	 * 
 	 * @return the technology level of the laboratory 
-	 * (units defined later)
 	 */
 	public int getTechnologyLevel();
 
     /** 
-     * Gets the lab's science specialties .
+     * Gets the lab's science specialties.
+     * 
      * @return the lab's science specialties
      */
     public ScienceType[] getTechSpecialties();
 
     /**
      * Checks to see if the laboratory has a given tech specialty.
+     * 
      * @return true if lab has tech specialty
      */
     public boolean hasSpecialty(ScienceType specialty);
     
     /**
      * Gets the number of people currently researching in the laboratory.
+     * 
      * @return number of researchers
      */
     public int getResearcherNum(); 
 
 	/**
 	 * Adds a researcher to the laboratory.
+	 * 
 	 * @return 
 	 * @throws Exception if person cannot be added.
 	 */
@@ -58,12 +61,13 @@ public interface Lab extends Serializable {
 
 	/**
 	 * Removes a researcher from the laboratory.
+	 * 
 	 * @throws Exception if person cannot be removed.
 	 */
 	public void removeResearcher();
 
 	/**
-	 * Prepare object for garbage collection.
+	 * Prepares object for garbage collection.
 	 */
 	public void destroy();
 }

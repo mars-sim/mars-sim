@@ -71,8 +71,8 @@ public abstract class Function implements Serializable, Temporal {
 	 * Constructor.
 	 *
 	 * @param type Type of this function
-	 * @param spec Functionconfiguration
-	 * @param builind Parent building.
+	 * @param spec Functional configuration
+	 * @param building Parent building.
 	 */
 	protected Function(FunctionType type, FunctionSpec spec, Building building) {
 		this.type = type;

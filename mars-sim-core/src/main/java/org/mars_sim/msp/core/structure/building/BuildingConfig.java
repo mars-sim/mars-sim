@@ -165,7 +165,7 @@ public class BuildingConfig implements Serializable {
 													width, length);
 
 			// Get attributes as basic properties
-			Map<String,Object> props = new HashMap<>();
+			Map<String, Object> props = new HashMap<>();
 			for(Attribute attr : element.getAttributes()) {
 				props.put(attr.getName(), attr.getValue());
 			}
@@ -489,7 +489,8 @@ public class BuildingConfig implements Serializable {
 	}
 	
 	/**
-	 * Parse a specific research details
+	 * Parses a specific research details.
+	 * 
 	 * @param newSpec
 	 * @param researchElement
 	 */

@@ -80,7 +80,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 
 		// Use EVAOperation parent constructor.
 		super(taskName, person, true, LABOR_TIME + RandomUtil.getRandomDouble(-10D, 10D),
-				SkillType.AREOLOGY);
+				SkillType.PROSPECTING);
 
 		if (!person.isFit()) {
 			checkLocation();
@@ -113,9 +113,12 @@ public class CollectResources extends EVAOperation implements Serializable {
 		NaturalAttributeManager nManager = person.getNaturalAttributeManager();
 		int strength = nManager.getAttribute(NaturalAttributeType.STRENGTH);
 		int agility = nManager.getAttribute(NaturalAttributeType.AGILITY);
+		
 		int eva = person.getSkillManager().getSkillLevel(SkillType.EVA_OPERATIONS);
-
-		compositeRate  = collectionRate * ((.5 * agility + strength) / 150D) * (eva + .1) ;
+		int prospecting = person.getSkillManager().getSkillLevel(SkillType.PROSPECTING);
+		
+		compositeRate  = collectionRate * ((.5 * agility + strength) / 150D) 
+				* (.5 * (eva + prospecting) + .2) ;
 
 		// Add task phases
 		addPhase(COLLECT_RESOURCES);
@@ -199,13 +202,15 @@ public class CollectResources extends EVAOperation implements Serializable {
 
 		double samplesCollected = time * compositeRate;
 
-		// Modify collection rate by "Areology" skill.
+		// Modify collection rate by areology and prospecting skill.
 		int areologySkill = person.getSkillManager().getEffectiveSkillLevel(SkillType.AREOLOGY);
-		if (areologySkill == 0) {
+		int prospecting = person.getSkillManager().getEffectiveSkillLevel(SkillType.PROSPECTING);
+		
+		if (areologySkill + prospecting == 0) {
 			samplesCollected /= 2D;
 		}
-		if (areologySkill > 1) {
-			samplesCollected += samplesCollected * (.2D * areologySkill);
+		if (areologySkill + prospecting > 1) {
+			samplesCollected += samplesCollected * .25D * (areologySkill + prospecting);
 		}
 
 		// Modify collection rate by polar region if ice collecting.

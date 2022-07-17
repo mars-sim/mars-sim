@@ -38,7 +38,7 @@ public class SkillManager implements Serializable {
 	private Robot robot;
 //	private CoreMind coreMind;
 	
-	/** A list of the person's skills keyed by name. */
+	/** A list of skills keyed by skill type enum. */
 	private Map<SkillType, Skill> skills;
 
 	/** Constructor. */
@@ -54,7 +54,9 @@ public class SkillManager implements Serializable {
 	}
 
 	/**
-	 * Sets some random bot skills
+	 * Sets some random skills for a bot.
+	 * 
+	 * @param t
 	 */
 	public void setRandomBotSkills(RobotType t) {
 		// Add starting skills randomly for a bot.
@@ -97,7 +99,7 @@ public class SkillManager implements Serializable {
 	}
 	
 	/**
-	 * Sets some random skills
+	 * Sets some random skills for a person.
 	 */
 	public void setRandomSkills() {
 		int ageFactor = getPerson().getAge();
@@ -160,7 +162,7 @@ public class SkillManager implements Serializable {
 	}
 	
 	/**
-	 * Adds a new skill at the prescribed level
+	 * Adds a new skill at the prescribed level.
 	 * 
 	 * @param startingSkill
 	 * @param skillLevel
@@ -198,9 +200,9 @@ public class SkillManager implements Serializable {
 	}
 
 	/**
-	 * Returns the number of skills.
+	 * Returns a random skill type.
 	 * 
-	 * @return the number of skills
+	 * @return a skill type
 	 */
 	public SkillType getARandomSkillType() {
 		int rand = RandomUtil.getRandomInt(getSkillNum() - 1);
@@ -208,9 +210,9 @@ public class SkillManager implements Serializable {
 	}
 	
 	/**
-	 * Returns an array of the skills.
+	 * Returns an array of skill types.
 	 * 
-	 * @return an array of the skills
+	 * @return an array of skill types
 	 */
 	public SkillType[] getKeys() {
 		return skills.keySet().toArray(new SkillType[] {});
@@ -253,7 +255,7 @@ public class SkillManager implements Serializable {
 	}
 
 	/**
-	 * Returns the  skill level if it exists in the
+	 * Returns the skill instance if it exists in the
 	 * SkillManager. Returns null otherwise.
 	 * 
 	 * @param skillType {@link SkillType}
@@ -290,7 +292,7 @@ public class SkillManager implements Serializable {
 	}
 	
 	/**
-	 * Returns the integer skill experiences at the current level
+	 * Returns the integer skill experiences at the current level.
 	 * 
 	 * @param skill {@link SkillType}
 	 * @return {@link Integer} >= 0
@@ -334,7 +336,7 @@ public class SkillManager implements Serializable {
 	
 	/**
 	 * Returns the effective integer skill level from a named skill based on
-	 * additional modifiers such as performance
+	 * additional modifiers such as performance.
 	 * 
 	 * @param skillType the skill's type
 	 * @return the skill's effective level
@@ -385,7 +387,6 @@ public class SkillManager implements Serializable {
 	 * @param experiencePoints the experience points to be added
 	 */
 	public void addExperience(SkillType skillType, double experiencePoints, double time) {
-
 		if (hasSkill(skillType)) {
 			skills.get(skillType).addExperience(experiencePoints);
 			skills.get(skillType).addTime(time);
@@ -394,11 +395,6 @@ public class SkillManager implements Serializable {
 			addNewSkill(new Skill(skillType));
 			addExperience(skillType, experiencePoints, time);
 		}
-
-//		 int finalSkill = getSkillLevel(skillType);
-//		 if (finalSkill > initialSkill) 
-//			 logger.info(person.getName() + " improved " +
-//					 skillName + " skill to " + finalSkill);
 	}
 
 	public Map<String, Integer> getSkillLevelMap() {
@@ -441,7 +437,6 @@ public class SkillManager implements Serializable {
 		return skillTimeMap;
 	}
 	
-	
 	/**
 	 * Gets the person's reference.
 	 * 
@@ -461,17 +456,18 @@ public class SkillManager implements Serializable {
 	}
 	
 	/**
-	 * Loads instances
+	 * Loads instances.
 	 */
 	public static void initializeInstances() {
 	}
 			
 	/**
-	 * Prepare object for garbage collection.
+	 * Prepares object for garbage collection.
 	 */
 	public void destroy() {
-//		unitManager = null;
 		skills.clear();
 		skills = null;
+		person = null;
+		robot = null;
 	}
 }

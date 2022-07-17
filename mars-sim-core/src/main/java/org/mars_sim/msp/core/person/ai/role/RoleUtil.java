@@ -32,21 +32,17 @@ public class RoleUtil implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private static Map<JobType, Map<RoleType,Double>> roleWeights
+	private static Map<JobType, Map<RoleType, Double>> roleWeights
 							= new EnumMap<>(JobType.class);
 
 	private static List<RoleType> specalistsRoles;
 
-	public static Map<JobType, Map<RoleType, Double>> getRoleWeights() {
-		return roleWeights;
-	}
-
-
 	public RoleUtil() {
+		// nothing
 	}
 
 	/**
-	 * Initialize the role prospect array
+	 * Initializes the role prospect array.
 	 */
 	public static void initialize() {
 		if (roleWeights.isEmpty()) {
@@ -68,7 +64,8 @@ public class RoleUtil implements Serializable {
 	}
 
 	/**
-	 * Return the specialist roles.
+	 * Returns a list of specialist roles.
+	 * 
 	 * @return
 	 */
 	public static List<RoleType> getSpecialists() {
@@ -76,7 +73,7 @@ public class RoleUtil implements Serializable {
 	}
 
 	/**
-	 * Find the best role for a given person in a settlement
+	 * Finds the best role for a given person in a settlement.
 	 *
 	 * @param settlement
 	 * @param p
@@ -131,7 +128,7 @@ public class RoleUtil implements Serializable {
 
 
 	/**
-	 * Find the person who is the best fit for a given role from a pool of candidates
+	 * Finds the person who is the best fit for a given role from a pool of candidates.
 	 *
 	 * @param role
 	 * @param candidates
@@ -158,7 +155,7 @@ public class RoleUtil implements Serializable {
 	}
 
 	/**
-	 * Gets the role prospect score of a person on a particular role
+	 * Gets the role prospect score of a person on a particular role.
 	 *
 	 * @param person
 	 * @param role
@@ -175,7 +172,7 @@ public class RoleUtil implements Serializable {
 	}
 
 	/**
-	 * Gets the training score of a person on a particular role
+	 * Gets the training score of a person on a particular role.
 	 *
 	 * @param person
 	 * @param role
@@ -195,7 +192,7 @@ public class RoleUtil implements Serializable {
 	}
 
 	/**
-	 * Records the role change and fire the unit update
+	 * Records the role change and fire the unit update.
 	 *
 	 * @param person
 	 * @param roleType
@@ -210,8 +207,9 @@ public class RoleUtil implements Serializable {
 	}
 
 	/**
-	 * Take a Chief roletype and return the associated speciality role.
-	 * If the input role is not a Chief a null is returned
+	 * Takes a Chief role type and return the associated specialty role.
+	 * If the input role is not a Chief a null is returned.
+	 * 
 	 * @param roleType
 	 * @return
 	 */
@@ -256,7 +254,7 @@ public class RoleUtil implements Serializable {
 	}
 
 	/**
-	 * Gets a list of role type name strings
+	 * Gets a list of role type name strings.
 	 *
 	 * @return
 	 */
@@ -302,4 +300,9 @@ public class RoleUtil implements Serializable {
 		Collections.sort(roleNames);
 		return roleNames;
 	}
+	
+	public static Map<JobType, Map<RoleType, Double>> getRoleWeights() {
+		return roleWeights;
+	}
+
 }

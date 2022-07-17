@@ -48,7 +48,7 @@ public class ExploreSite extends EVAOperation implements Serializable {
 	public static final double LABOR_TIME = 50D;
 
 	private static final double AVERAGE_ROCK_SAMPLES_COLLECTED_SITE = 40 + RandomUtil.getRandomDouble(20);
-	public static final double AVERAGE_ROCK_SAMPLE_MASS = .5D + RandomUtil.getRandomDouble(.5);
+	public static final double AVERAGE_ROCK_SAMPLE_MASS = 1.5D + RandomUtil.getRandomDouble(.5);
 	private static final double ESTIMATE_IMPROVEMENT_FACTOR = 5 + RandomUtil.getRandomDouble(5);
 
 	private static final int ROCK_SAMPLES_ID = ResourceUtil.rockSamplesID;
@@ -72,7 +72,7 @@ public class ExploreSite extends EVAOperation implements Serializable {
 	public ExploreSite(Person person, ExploredLocation site, Rover rover) {
 
 		// Use EVAOperation parent constructor.
-		super(NAME, person, true, LABOR_TIME + RandomUtil.getRandomDouble(-10D, 10D), SkillType.AREOLOGY);
+		super(NAME, person, true, LABOR_TIME + RandomUtil.getRandomDouble(-5D, 5D), SkillType.AREOLOGY);
 
 		// Initialize data members.
 		this.site = site;
@@ -215,7 +215,7 @@ public class ExploreSite extends EVAOperation implements Serializable {
 
 			if (RandomUtil.getRandomDouble(1.0D) <= chance * time) {
 		        Container box = person.findContainer(EquipmentType.SPECIMEN_BOX, false, ROCK_SAMPLES_ID);
-				double mass = RandomUtil.getRandomDouble(AVERAGE_ROCK_SAMPLE_MASS * 2D);
+				double mass = RandomUtil.getRandomDouble(AVERAGE_ROCK_SAMPLE_MASS * 3D);
 				double cap = box.getAmountResourceRemainingCapacity(ROCK_SAMPLES_ID);
 				if (mass < cap) {
 					double excess = box.storeAmountResource(ROCK_SAMPLES_ID, mass);

@@ -73,12 +73,7 @@ public class PerformLaboratoryResearch extends Task implements ResearchScientifi
 		super(NAME, person, true, false, STRESS_MODIFIER, null, 25D, 10D + RandomUtil.getRandomDouble(50D));
 		setExperienceAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
 		researchAssistant = null;
-
-//		if (person.getPhysicalCondition().computeFitnessLevel() < 2) {
-//			logger.log(person, Level.FINE, 10_000, "Ended performing lab research. Not feeling well.");
-//			endTask();
-//		}
-		
+	
 		// Determine study.
 		study = determineStudy();
 		if (study != null) {
@@ -140,7 +135,7 @@ public class PerformLaboratoryResearch extends Task implements ResearchScientifi
 	private ScientificStudy determineStudy() {
 		ScientificStudy result = null;
 
-		List<ScientificStudy> possibleStudies = new ArrayList<ScientificStudy>();
+		List<ScientificStudy> possibleStudies = new ArrayList<>();
 
 		// Add primary study if in research phase.
 		ScientificStudy primaryStudy = person.getStudy();

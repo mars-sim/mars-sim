@@ -47,8 +47,7 @@ public class MedicalCare extends Function implements MedicalAid {
 
 		int techLevel = spec.getTechLevel();
 		int beds = spec.getCapacity();
-		medicalStation = new MedicalStation(techLevel, beds);
-		medicalStation.setBuilding(building);
+		medicalStation = new MedicalStation(building.getName(), techLevel, beds);
 
 		// NOTE: will need to distinguish between activity spots and bed locations
 		// Load bed locations by loadBedLocations(buildingConfig.getMedicalCareBedLocations(building.getBuildingType()))

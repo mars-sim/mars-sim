@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Research.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-16
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -13,6 +13,7 @@ import java.util.Map;
 
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Lab;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -33,21 +34,32 @@ implements Lab {
     
 	private static final SimLogger logger = SimLogger.getLogger(Research.class.getName());
 
-
 	private static final int NUM_INSPECTIONS = 2;
 	
     private int techLevel;
     private int researcherCapacity = 0;
     private int researcherNum = 0;
+
+    private double quality = 100;
+    
+    private String owner;
+    
+    private Map<Part, Integer> partsMap; 
     
     private List<ScienceType> researchSpecialties;
-
+    
+    /** 
+     * This map records the quality of the research on a science subject in the form of a score. 
+     * It can go up and down over time. 
+     */
+    private Map<ScienceType, Double> researchQualityMap;
+    
     /** This map is the log book for tallying the # of daily inspections on the tissue cultures that this lab maintains */
     private Map<String, Integer> tissueCultureMap;
     
-
     /**
      * Constructor.
+     * 
      * @param building the building this function is for.
      */
     public Research(Building building, FunctionSpec spec) {
@@ -59,10 +71,17 @@ implements Lab {
         techLevel = spec.getTechLevel();
         researcherCapacity = spec.getCapacity();
         researchSpecialties = buildingConfig.getResearchSpecialties(building.getBuildingType());
+        researchQualityMap = new HashMap<>();
+        
+        // Initialize the research quality map
+        for (ScienceType scienceType : researchSpecialties) {
+        	researchQualityMap.put(scienceType, techLevel * 1.0);
+        }
     }
 
     /**
      * Gets the value of the function for a named building type.
+     * 
      * @param type the building type.
      * @param newBuilding true if adding a new building.
      * @param settlement the settlement.
@@ -115,6 +134,7 @@ implements Lab {
 
     /**
      * Gets the research tech level of this building.
+     * 
      * @return tech level
      */
     public int getTechnologyLevel() {
@@ -123,6 +143,7 @@ implements Lab {
 
     /**
      * Gets the number of researchers who can use the laboratory at once.
+     * 
      * @return capacity
      */
     public int getLaboratorySize() {
@@ -131,6 +152,7 @@ implements Lab {
 
     /**
      * Gets an array of the building's research tech specialties.
+     * 
      * @return array of specialties.
      */
     public ScienceType[] getTechSpecialties() {
@@ -139,6 +161,7 @@ implements Lab {
 
     /**
      * Checks to see if the laboratory has a given tech specialty.
+     * 
      * @return true if lab has tech specialty
      */
     public boolean hasSpecialty(ScienceType specialty) {
@@ -147,6 +170,7 @@ implements Lab {
 
     /**
      * Gets the number of people currently researching in the laboratory.
+     * 
      * @return number of researchers
      */
     public int getResearcherNum() {
@@ -155,6 +179,7 @@ implements Lab {
 
     /**
      * Adds a researcher to the laboratory.
+     * 
      * @return true if the person can be added. 
      */
     public boolean addResearcher() {
@@ -172,6 +197,7 @@ implements Lab {
 
     /**
      * Checks if there is an available slot in the laboratory.
+     * 
      * @throws Exception if person cannot be added.
      */
     public Boolean checkAvailability() {
@@ -182,6 +208,7 @@ implements Lab {
 
     /**
      * Removes a researcher from the laboratory.
+     * 
      * @throws Exception if person cannot be removed.
      */
     public void removeResearcher() {
@@ -194,6 +221,7 @@ implements Lab {
 	
     /**
      * Time passing for the building.
+     * 
      * @param time amount of time passing (in millisols)
      * @throws BuildingException if error occurs.
      */
@@ -210,13 +238,6 @@ implements Lab {
 
     private void setupTissueCultures() {
        	tissueCultureMap = new HashMap<>();
-
-//        Set<AmountResource> tissues = SimulationConfig.instance().getResourceConfiguration().getTissueCultures();
-//        for (AmountResource ar : tissues) {
-//        	String s = ar.getName();
-//        	tissueCultureMap.put(s, 0);
-//        }	
-        
     }
     
 	public List<String> getUncheckedTissues() {
@@ -251,21 +272,18 @@ implements Lab {
     public double getMaintenanceTime() {
 
         double result = 0D;
-
         // Add maintenance for tech level.
         result += techLevel * 10D;
-
         // Add maintenance for researcher capacity.
         result += researcherCapacity * 10D;
 
         return result;
     }
 
-
-	   @Override
-	    public void destroy() {
-	        super.destroy();
-	        researchSpecialties.clear();
-	        researchSpecialties = null;
-	    }
+	@Override
+	public void destroy() {
+		super.destroy();
+		researchSpecialties.clear();
+		researchSpecialties = null;
+	}
 }

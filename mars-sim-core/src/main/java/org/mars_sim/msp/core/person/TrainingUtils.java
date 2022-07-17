@@ -18,7 +18,7 @@ import org.mars_sim.msp.core.person.ai.role.RoleType;
 public class TrainingUtils {
 
 	/**
-	 * Composite key for the lookups
+	 * Composite key for the lookups.
 	 */
 	private final static class KeyClass {
 		TrainingType training;
@@ -56,9 +56,21 @@ public class TrainingUtils {
 	/**
 	 * Helper method to define set of modifiers to a set of predefined
 	 * specialist RoleTypes.
+	 * 
+	 * @param m
+	 * @param t
+	 * @param agr
+	 * @param com
+	 * @param eng
+	 * @param mis
+	 * @param log
+	 * @param res
+	 * @param saf
+	 * @param sci
 	 */
 	private final static void addTraining(Map<KeyClass,Integer> m, TrainingType t,
-										  int agr, int com, int eng, int mis, int log, int res, int saf, int sci) {
+										  int agr, int com, int eng, int mis, 
+										  int log, int res, int saf, int sci) {
 		m.put(new KeyClass(t, RoleType.AGRICULTURE_SPECIALIST), agr);
 		m.put(new KeyClass(t, RoleType.COMPUTING_SPECIALIST), com);
 		m.put(new KeyClass(t, RoleType.ENGINEERING_SPECIALIST), eng);
@@ -99,7 +111,8 @@ public class TrainingUtils {
 	}
 
 	/**
-	 * Find the modifiers for a combination ot training and role.
+	 * Finds the modifiers for a combination of training and role.
+	 * 
 	 * @param role
 	 * @param tt
 	 * @return

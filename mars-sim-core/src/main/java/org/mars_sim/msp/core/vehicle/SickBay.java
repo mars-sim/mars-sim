@@ -33,9 +33,8 @@ implements Serializable {
 	 */
 	public SickBay(Vehicle vehicle, int treatmentLevel, int sickBedNum) {
 		// Use MedicalStation constructor
-		super(treatmentLevel, sickBedNum);
+		super(vehicle.getName(), treatmentLevel, sickBedNum);
 
-		setVehicle(vehicle);
 		this.vehicle = vehicle;
 	}
 
@@ -44,7 +43,6 @@ implements Serializable {
 	 * 
 	 * @return vehicle
 	 */
-	@Override
 	public Vehicle getVehicle() {
 		return vehicle;
 	}

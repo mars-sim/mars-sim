@@ -68,7 +68,7 @@ public class MineSite extends EVAOperation implements Serializable {
 	public MineSite(Person person, Coordinates site, Rover rover, LightUtilityVehicle luv) {
 
 		// Use EVAOperation parent constructor.
-		super(NAME, person, true, RandomUtil.getRandomDouble(50D) + 10D, SkillType.AREOLOGY);
+		super(NAME, person, true, RandomUtil.getRandomDouble(50D) + 10D, SkillType.PROSPECTING);
 
 		// Initialize data members.
 		this.site = site;
