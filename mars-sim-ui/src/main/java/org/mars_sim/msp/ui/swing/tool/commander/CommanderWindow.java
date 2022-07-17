@@ -513,13 +513,13 @@ public class CommanderWindow extends ToolWindow {
 		r1 = new JRadioButton(CANNOT_INITIATE);
 
 		// Set up initial conditions
-		if (settlement.isMissionDisable(MissionType.TRADE)) {
-			r0.setSelected(false);
-			r1.setSelected(true);
-		}
-		else {
+		if (settlement.isMissionEnable(MissionType.TRADE)) {
 			r0.setSelected(true);
 			r1.setSelected(false);
+		}
+		else {
+			r0.setSelected(false);
+			r1.setSelected(true);
 		}
 
 		// Set up initial conditions

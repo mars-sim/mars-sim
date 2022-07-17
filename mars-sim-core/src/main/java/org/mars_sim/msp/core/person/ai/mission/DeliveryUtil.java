@@ -89,7 +89,7 @@ public final class DeliveryUtil {
 		Settlement bestSettlement = null;
 
 		for (Settlement tradingSettlement : unitManager.getSettlements()) {
-			if (tradingSettlement != startingSettlement && !tradingSettlement.isMissionDisable(MissionType.DELIVERY)) {
+			if (tradingSettlement != startingSettlement && tradingSettlement.isMissionEnable(MissionType.DELIVERY)) {
 
 				boolean hasCurrentDeliveryMission = hasCurrentDeliveryMission(startingSettlement, tradingSettlement);
 

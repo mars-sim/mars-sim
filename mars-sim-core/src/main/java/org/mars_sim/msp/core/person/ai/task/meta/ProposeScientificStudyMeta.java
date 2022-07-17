@@ -16,7 +16,10 @@ import org.mars_sim.msp.core.person.ai.task.ProposeScientificStudy;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
+import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
+import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -49,21 +52,23 @@ public class ProposeScientificStudyMeta extends MetaTask {
 
         double result = 0D;
 
-        int pop = person.getAssociatedSettlement().getInitialPopulation();
+		Settlement settlement = person.getAssociatedSettlement();
+        int pop = settlement.getInitialPopulation();
+		JobType job = person.getMind().getJob();
 
         if (pop <= 6) {
-	        if (!JobType.isAcademicType(person.getMind().getJob())) {
+	        if (!JobType.isAcademicType(job)) {
 	        	return 0;
 	        }
         }
         else if (pop <= 12) {
-        	if (!JobType.isMedical(person.getMind().getJob())
-        			&& !JobType.isScienceType(person.getMind().getJob())) {
+        	if (!JobType.isMedical(job)
+        			&& !JobType.isScienceType(job)) {
 	        	return 0;
 	        }
         }
         else {
-        	if (!JobType.isScienceType(person.getMind().getJob())) {
+        	if (!JobType.isScienceType(job)) {
 	        	return 0;
 	        }
         }
@@ -88,23 +93,31 @@ public class ProposeScientificStudyMeta extends MetaTask {
 	            Role role = person.getRole();
 	            // Check person has a science role
 	            if (role != null) {
-	            	if (role.getType() == RoleType.CHIEF_OF_SCIENCE
-	            		|| role.getType() == RoleType.SCIENCE_SPECIALIST) {
+					switch(role.getType()) {
+	            		case CHIEF_OF_SCIENCE:
+	            		case SCIENCE_SPECIALIST:
 	            			result += 50D;
-	            	}
-	            	else if (role.getType() == RoleType.CHIEF_OF_COMPUTING
-		            		|| role.getType() == RoleType.COMPUTING_SPECIALIST
-		            		) {
-            			result += 20D;
-            		}
-	            	else if (role.getType() == RoleType.CHIEF_OF_AGRICULTURE
-		            		|| role.getType() == RoleType.AGRICULTURE_SPECIALIST
-		            		) {
-            			result += 10D;
+							break;
+	            		case CHIEF_OF_COMPUTING:
+		            	case COMPUTING_SPECIALIST:
+            				result += 20D;
+							break;
+            			case CHIEF_OF_AGRICULTURE:
+		            	case AGRICULTURE_SPECIALIST:
+            				result += 10D;
+							break;
+						default:
+							result += 5D;
+							break;
             		}
 	            }
-	            else
-	            	result += 5D;
+	            else {
+					result += 5D;
+				}
+
+				// Check the favourited research of the Reporting Authority
+				ScienceType science = ScienceType.getJobScience(job);
+				result *= settlement.getSponsor().getStudyRatio(science);
 	        }
 
 	        // Crowding modifier

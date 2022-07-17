@@ -81,10 +81,6 @@ public class TravelToSettlementMeta extends AbstractMetaMission {
     private double getMissionProbability(Settlement settlement, MissionMember member) {
         double missionProbability = 0;
         
-        if (!settlement.isMissionEnable(MissionType.TRAVEL_TO_SETTLEMENT)) {
-			return 0;
-        }
-        
         // Check if there are any desirable settlements within range.
         double topSettlementDesirability = 0D;
         Vehicle vehicle = RoverMission.getVehicleWithGreatestRange(MissionType.TRAVEL_TO_SETTLEMENT, settlement, false);
@@ -126,7 +122,7 @@ public class TravelToSettlementMeta extends AbstractMetaMission {
 		int f1 = 2*numEmbarked + 1;
 		int f2 = 2*numThisMission + 1;
 		
-		missionProbability *= settlement.getNumCitizens() / f1 / f2 / 2D * ( 1 + settlement.getMissionDirectiveModifier(MissionType.TRAVEL_TO_SETTLEMENT));
+		missionProbability *= settlement.getNumCitizens() / f1 / f2 / 2D;
 		
         // Crowding modifier.
         int crowding = settlement.getIndoorPeopleCount()

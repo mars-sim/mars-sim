@@ -72,10 +72,7 @@ public class ExplorationMeta extends AbstractMetaMission {
 					return 0;
 				}
 
-				if (!settlement.isMissionEnable(MissionType.EXPLORATION)) {
-	    			return 0;
-				}
-
+				missionProbability = 1D;
 				int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
 				int numThisMission = missionManager.numParticularMissions(MissionType.EXPLORATION, settlement);
 
@@ -109,8 +106,7 @@ public class ExplorationMeta extends AbstractMetaMission {
 				int f1 = numEmbarked + 1;
 				int f2 = 3 * numThisMission + 1;
 
-				missionProbability *= (double)settlement.getNumCitizens() / f1 / f2
-						* ( 1 + settlement.getMissionDirectiveModifier(MissionType.EXPLORATION));
+				missionProbability *= (double)settlement.getNumCitizens() / f1 / f2;
 
 				// Job modifier.
 				missionProbability *= getLeaderSuitability(person)

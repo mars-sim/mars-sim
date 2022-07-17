@@ -97,14 +97,7 @@ public class TradeMeta extends AbstractMetaMission {
 
 	private double getSettlementProbability(Settlement settlement) {
 
-		double missionProbability = 0;
-
-		if (settlement.isMissionEnable(MissionType.TRADE))
-        	missionProbability = 1;
-        else
-			return 0;
-
-		missionProbability = 0;
+		double missionProbability;
 		
 		// Check for the best trade settlement within range.
 		double tradeProfit = 0D;

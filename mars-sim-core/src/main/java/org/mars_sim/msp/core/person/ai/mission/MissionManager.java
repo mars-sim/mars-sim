@@ -259,30 +259,33 @@ public class MissionManager implements Serializable, Temporal {
 		// Get a random number from 0 to the total weight
 		double totalProbCache = 0D;
 
-		ReportingAuthority sponsor = person.getAssociatedSettlement().getSponsor();
+		Settlement startingSettlement = person.getAssociatedSettlement();
+		ReportingAuthority sponsor = startingSettlement.getSponsor();
 
 		// Determine probabilities.
 		for (MetaMission metaMission : MetaMissionUtil.getMetaMissions()) {
-			double baseProb = metaMission.getProbability(person);
-			if (Double.isNaN(baseProb) || Double.isInfinite(baseProb)) {
-					logger.severe(person, "Bad mission probability on " + metaMission.getName() + " probability: "
-							+ baseProb);
-			}
-			else if (baseProb > 0D) {
-				// Get any overriding ratio
-				int boost = missionBoost.getOrDefault(metaMission.getType(), 0);
-				double probability = baseProb + boost;
+			if (startingSettlement.isMissionEnable(metaMission.getType())) {
+				double baseProb = metaMission.getProbability(person);
+				if (Double.isNaN(baseProb) || Double.isInfinite(baseProb)) {
+						logger.severe(person, "Bad mission probability on " + metaMission.getName() + " probability: "
+								+ baseProb);
+				}
+				else if (baseProb > 0D) {
+					// Get any overriding ratio
+					int boost = missionBoost.getOrDefault(metaMission.getType(), 0);
+					double probability = baseProb + boost;
 
-				double sponsorRatio = sponsor.getMissionRatio(metaMission.getType());
-				probability *= sponsorRatio;
+					double sponsorRatio = sponsor.getMissionRatio(metaMission.getType());
+					probability *= sponsorRatio;
 
-				logger.info(person, "Mission " + metaMission.getType() + " probability=" + probability
-								+ " base prob=" + baseProb
-								+ " boost=" + boost
-								+ " sponsor=" + sponsorRatio);
+					logger.info(person, "Mission " + metaMission.getType() + " probability=" + probability
+									+ " base prob=" + baseProb
+									+ " boost=" + boost
+									+ " sponsor=" + sponsorRatio);
 
-				missionProbCache.put(metaMission, probability);
-				totalProbCache += probability;
+					missionProbCache.put(metaMission, probability);
+					totalProbCache += probability;
+				}
 			}
 		}
 

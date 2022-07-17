@@ -304,8 +304,6 @@ public class Settlement extends Structure implements Temporal,
 	private EnumMap<ScienceType, Double> scientificAchievement;
 	/** The map of settlements allowed to trade. */
 	private Map<Integer, Boolean> allowTradeMissionSettlements;
-	/** The map of mission modifiers. */
-	private Map<MissionType, Integer> missionModifiers;
 	/** The mission radius [in km] for the rovers of this settlement for each type of mission . */
 	private Map<MissionType, Integer> missionRange = new EnumMap<>(MissionType.class);
 	/** The settlement's map of adjacent buildings. */
@@ -433,10 +431,6 @@ public class Settlement extends Structure implements Temporal,
 		parkedVehicles = new UnitSet<>();
 		peopleWithin = new UnitSet<>();
 		robotsWithin = new UnitSet<>();
-
-		// Determine the mission directive modifiers
-		determineMissionAgenda();
-
 		allowTradeMissionSettlements = new HashMap<>();
 	}
 
@@ -546,26 +540,6 @@ public class Settlement extends Structure implements Temporal,
 		mineralConcentrationMap = checkNearbyMineral();
 		if (!mineralConcentrationMap.isEmpty())
 			logger.log(this, Level.INFO, 0L, mineralConcentrationMap.toString());
-	}
-
-	/**
-	 * Sets the mission agenda based on the sponsors' mission objectives
-	 */
-	private void determineMissionAgenda() {
-		missionModifiers = new EnumMap<>(MissionType.class);
-
-		// Default all modifiers to zero to start with
-		for (MissionType mt : MissionType.values()) {
-			missionModifiers.put(mt, 0);
-		}
-
-		Map<MissionType, Integer> agendaModifers =
-				ra.getMissionAgenda().getAgendas().stream()
-				  .flatMap(e -> e.getModifiers().entrySet().stream())
-				  .collect(Collectors.groupingBy(Map.Entry::getKey,
-						  Collectors.summingInt(Map.Entry::getValue)));
-
-		missionModifiers.putAll(agendaModifers);
 	}
 
 	/*
@@ -3492,10 +3466,6 @@ public class Settlement extends Structure implements Temporal,
 		}
 	}
 
-	public boolean isMissionDisable(MissionType mission) {
-		return disabledMissions.contains(mission);
-	}
-
 	public void setAllowTradeMissionFromASettlement(Settlement settlement, boolean allowed) {
 		allowTradeMissionSettlements.put(settlement.getIdentifier(), allowed);
 	}
@@ -3555,10 +3525,6 @@ public class Settlement extends Structure implements Temporal,
     public double getRegolithCollectionRate() {
     	return regolithCollectionRate;
     }
-
-	public int getMissionDirectiveModifier(MissionType mission) {
-		return missionModifiers.get(mission);
-	}
 
 	/**
 	 * Remove the record of the deceased person from airlock

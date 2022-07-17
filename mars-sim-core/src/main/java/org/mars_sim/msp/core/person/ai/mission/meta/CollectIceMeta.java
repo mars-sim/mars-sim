@@ -55,12 +55,7 @@ public class CollectIceMeta extends AbstractMetaMission {
 					|| RoleType.SUB_COMMANDER == roleType
 					) {
 
-				if (settlement.isMissionEnable(MissionType.COLLECT_ICE))
-	            	missionProbability = 1;
-	            else
-	    			return 0;
-
-	//			missionProbability = getSettlementProbability(settlement);
+				missionProbability = 1D;
 	    		int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
 	    		int numThisMission = missionManager.numParticularMissions(MissionType.COLLECT_ICE, settlement);
 
@@ -75,7 +70,7 @@ public class CollectIceMeta extends AbstractMetaMission {
 	    		int f1 = numEmbarked + 1;
 	    		int f2 = 2*numThisMission + 1;
 
-	    		missionProbability *= settlement.getNumCitizens() / VALUE / f1 / f2 * ( 1 + settlement.getMissionDirectiveModifier(MissionType.COLLECT_ICE));
+	    		missionProbability *= settlement.getNumCitizens() / VALUE / f1 / f2;
 
 				// Job modifier.
 	    		missionProbability *= getLeaderSuitability(person);

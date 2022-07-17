@@ -62,16 +62,11 @@ public class FieldStudyMeta extends AbstractMetaMission {
 					|| RoleType.SUB_COMMANDER == roleType
 					) {
 
-				if (settlement.isMissionEnable(mType)) {
-	            	missionProbability = 1;
-				}
-	            else {
-	    			return 0;
-	            }
-
+				missionProbability = 1D;
+				
 				int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
 				int numThisMission = missionManager.numParticularMissions(mType, settlement);
-
+				
 		   		// Check for # of embarking missions.
 	    		if (Math.max(1, settlement.getNumCitizens() / 4.0) < numEmbarked + numThisMission) {
 	    			return 0;
@@ -110,8 +105,7 @@ public class FieldStudyMeta extends AbstractMetaMission {
 				int f1 = numEmbarked + 1;
 				int f2 = numThisMission + 1;
 
-				missionProbability *= 2.0 * settlement.getNumCitizens() / f1 / f2
-						* ( 1 + settlement.getMissionDirectiveModifier(mType));
+				missionProbability *= 2.0 * settlement.getNumCitizens() / f1 / f2;
 
 	            // Crowding modifier
 	            int crowding = settlement.getIndoorPeopleCount() - settlement.getPopulationCapacity();

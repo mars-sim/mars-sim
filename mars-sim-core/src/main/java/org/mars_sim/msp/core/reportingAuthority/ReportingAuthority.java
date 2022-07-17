@@ -10,8 +10,10 @@ import java.io.Serializable;
 import java.util.List;
 
 import org.mars_sim.msp.core.configuration.UserConfigurable;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.task.utils.Worker;
+import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
@@ -22,6 +24,8 @@ implements UserConfigurable, Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
+
+	private static SimLogger logger = SimLogger.getLogger(ReportingAuthority.class.getName());
 
 	// Maximum points for a top priority subaganda
 	private static final double MAX_RATIO_PER_SUBAGENDA = 0.5D;
@@ -173,12 +177,12 @@ implements UserConfigurable, Serializable {
 	 * Gets a favourite ratio for a particular mission. Value of 1.0 is neutral.
 	 * 
 	 * @param type
-	 * @return Ration to apply to the mission score
+	 * @return Ratio to apply to the mission score
 	 */
     public double getMissionRatio(MissionType type) {
         double result = 1D;
 		for (MissionSubAgenda subAgenda : missionAgenda.getAgendas()) {
-			int modifier = subAgenda.getModifiers().getOrDefault(type, 0);
+			int modifier = subAgenda.getMissionModifiers().getOrDefault(type, 0);
 
 			// The modifier is a value of 0..10 that represents a priority.
 			// For each priority point add a value to the ratio. 
@@ -186,7 +190,29 @@ implements UserConfigurable, Serializable {
 			result += (modifier * MAX_RATIO_PER_SUBAGENDA)/MAX_PRIORITY_PER_SUBAGENDA;
 		}
 
+		if (result != 1D) {
+			logger.info(name + " has returned a boost " + result + " for Mission " + type);
+		}
 		return result;
+    }
+
+	/**
+	 * Gets a favourite ratio for a particular science. Value of 1.0 is neutral.
+	 * 
+	 * @param science
+	 * @return Ratio to apply to the Study score
+	 */
+    public double getStudyRatio(ScienceType science) {
+        double result = 1D;
+		for (MissionSubAgenda subAgenda : missionAgenda.getAgendas()) {
+			int modifier = subAgenda.getScienceModifiers().getOrDefault(science, 0);
+
+			// The modifier is a value of 0..10 that represents a priority.
+			// For each priority point add a value to the ratio. 
+			modifier = Math.min(modifier, MAX_PRIORITY_PER_SUBAGENDA);
+			result += (modifier * MAX_RATIO_PER_SUBAGENDA)/MAX_PRIORITY_PER_SUBAGENDA;
+		}
+ 		return result;
     }
 
 }

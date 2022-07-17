@@ -41,10 +41,7 @@ public class EmergencySupplyMeta extends AbstractMetaMission {
         		
             Settlement settlement = person.getSettlement();
         	
-            if (settlement.isMissionEnable(MissionType.EMERGENCY_SUPPLY))
-            	missionProbability = 1;
-            else
-    			return 0;
+            missionProbability = 1;
     		
 	        // Determine job modifier.
             jobModifier = getLeaderSuitability(person);

@@ -11,7 +11,8 @@
 	<!ELEMENT sub-agenda (modifier*)>
 	<!ATTLIST sub-agenda description CDATA #REQUIRED>
 	<!ELEMENT modifier EMPTY>
-	<!ATTLIST modifier mission CDATA #REQUIRED>
+	<!ATTLIST modifier mission CDATA #IMPLIED>
+	<!ATTLIST modifier science CDATA #IMPLIED>
 	<!ATTLIST modifier value CDATA #REQUIRED>
 
 	<!ELEMENT authorities (authority+)>
@@ -42,16 +43,20 @@
 				<modifier mission="RESCUE_SALVAGE_VEHICLE" value="6"/>
 				<modifier mission="TRADE" value="3"/>
 				<modifier mission="TRAVEL_TO_SETTLEMENT" value="3"/>
+				<modifier science="ENGINEERING" value="2"/>
+				<modifier science="PHYSICS" value="6"/>
 			</sub-agenda>
 			<sub-agenda description="Prototype new building material">
 				<modifier mission="COLLECT_REGOLITH" value="4"/>
 				<modifier mission="MINING" value="4"/>
 				<modifier mission="TRADE" value="2"/>
+				<modifier science="ENGINEERING" value="10"/>
 			</sub-agenda>
 			<sub-agenda description="Test out new propulsion systems">
 				<modifier mission="DELIVERY" value="1"/>
 				<modifier mission="TRADE" value="1"/>
 				<modifier mission="TRAVEL_TO_SETTLEMENT" value="1"/>
+				<modifier science="ENGINEERING" value="9"/>
 			</sub-agenda>
 		</agenda>
 		<agenda name="Building Colonies"
@@ -61,14 +66,19 @@
 			<sub-agenda description="Study meteorological environmental factors">
 				<modifier mission="AREOLOGY" value="3"/>
 				<modifier mission="METEOROLOGY" value="9"/>
+				<modifier science="AREOLOGY" value="2"/>
+				<modifier science="METEOROLOGY" value="9"/>
 			</sub-agenda>
 			<sub-agenda description="Fortify building structural integrity">
 				<modifier mission="COLLECT_REGOLITH" value="3"/>
 				<modifier mission="MINING" value="3"/>
+				<modifier science="AREOLOGY" value="2"/>
+
 			</sub-agenda>
 			<sub-agenda description="Refine techniques for ISRU polymer synthesis">
 				<modifier mission="COLLECT_REGOLITH" value="9"/>
 				<modifier mission="MINING" value="3"/>
+				<modifier science="AREOLOGY" value="2"/>
 			</sub-agenda>
 		</agenda>
 		<agenda name="Finding Life"
@@ -95,6 +105,7 @@
 				<modifier mission="BIOLOGY" value="6"/>
 				<modifier mission="COLLECT_ICE" value="2"/>
 				<modifier mission="METEOROLOGY" value="1"/>
+				<modifier science="BIOLOGY" value="10"/>
 			</sub-agenda>
 			<sub-agenda description="Study underground water reserve">
 				<modifier mission="AREOLOGY" value="1"/>
@@ -111,6 +122,7 @@
 				<modifier mission="COLLECT_REGOLITH" value="1"/>
 				<modifier mission="TRADE" value="1"/>
 				<modifier mission="TRAVEL_TO_SETTLEMENT" value="1"/>
+				<modifier science="MEDICINE" value="10"/>
 			</sub-agenda>
 		</agenda>
 		<agenda name="Human Habitation"
@@ -120,6 +132,7 @@
 			<sub-agenda description="Predict meteorological changes">
 				<modifier mission="AREOLOGY" value="3"/>
 				<modifier mission="METEOROLOGY" value="9"/>
+				<modifier science="METEOROLOGY" value="1"/>
 			</sub-agenda>
 			<sub-agenda description="Study underground water reserve">
 				<modifier mission="COLLECT_ICE" value="9"/>
@@ -127,6 +140,7 @@
 			<sub-agenda description="Characterize radiation countermeasures">
 				<modifier mission="BIOLOGY" value="3"/>
 				<modifier mission="METEOROLOGY" value="3"/>
+				<modifier science="MEDICINE" value="5"/>
 			</sub-agenda>
 		</agenda>
 		<agenda name="Planet Life"
@@ -145,6 +159,7 @@
 				<modifier mission="AREOLOGY" value="3"/>
 				<modifier mission="BIOLOGY" value="3"/>
 				<modifier mission="EXPLORATION" value="3"/>
+				<modifier science="AREOLOGY" value="3"/>
 			</sub-agenda>
 			<sub-agenda description="Investigate environmentally sustainable energy solutions">
 				<modifier mission="AREOLOGY" value="2"/>
@@ -168,6 +183,7 @@
 				<modifier mission="EXPLORATION" value="3"/>
 				<modifier mission="METEOROLOGY" value="3"/>
 				<modifier mission="MINING" value="3"/>
+				<modifier science="CHEMISTRY" value="8"/>
 			</sub-agenda>
 			<sub-agenda description="Corroborate surface geological data with on-orbit scans">
 				<modifier mission="AREOLOGY" value="3"/>
@@ -218,6 +234,7 @@
 				<modifier mission="MINING" value="1"/>
 				<modifier mission="TRADE" value="1"/>
 				<modifier mission="TRAVEL_TO_SETTLEMENT" value="1"/>
+				<modifier science="PSYCHOLOGY" value="10"/>
 			</sub-agenda>
 		</agenda>
 		<agenda name="Space Applications"
@@ -249,6 +266,7 @@
 				<modifier mission="EMERGENCY_SUPPLY" value="3"/>
 				<modifier mission="EXPLORATION" value="3"/>
 				<modifier mission="TRAVEL_TO_SETTLEMENT" value="2"/>
+				<modifier science="PSYCHOLOGY" value="2"/>
 			</sub-agenda>
 			<sub-agenda description="Test return vehicle capability">
 				<modifier mission="DELIVERY" value="3"/>
@@ -266,6 +284,7 @@
 				<modifier mission="MINING" value="1"/>
 				<modifier mission="TRADE" value="1"/>
 				<modifier mission="TRAVEL_TO_SETTLEMENT" value="1"/>
+				<modifier science="PSYCHOLOGY" value="8"/>
 			</sub-agenda>
 			<sub-agenda description="Extend EVA operations to climbing caves">
 				<modifier mission="AREOLOGY" value="1"/>

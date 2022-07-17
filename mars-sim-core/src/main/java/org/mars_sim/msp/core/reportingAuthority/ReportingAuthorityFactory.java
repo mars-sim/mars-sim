@@ -8,6 +8,7 @@ package org.mars_sim.msp.core.reportingAuthority;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +20,7 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.configuration.UserConfigurableConfig;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
+import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 
 /**
@@ -32,6 +34,7 @@ public final class ReportingAuthorityFactory extends UserConfigurableConfig<Repo
 	private static final String AUTHORITIES_EL = "authorities";
 	private static final String CODE_ATTR = "code";
 	private static final String MISSION_ATTR = "mission";
+	private static final String SCIENCE_ATTR = "science";
 	private static final String MODIFIER_EL = "modifier";
 	private static final String VALUE_ATTR = "value";
 	private static final String DESCRIPTION_ATTR = "description";
@@ -85,15 +88,25 @@ public final class ReportingAuthorityFactory extends UserConfigurableConfig<Repo
 				String description = subNode.getAttributeValue(DESCRIPTION_ATTR);
 				
 				// Get modifiers
-				Map<MissionType, Integer> modifiers = new HashMap<>();
+				Map<MissionType, Integer> missionModifiers = new EnumMap<>(MissionType.class);
+				Map<ScienceType, Integer> scienceModifiers = new EnumMap<>(ScienceType.class);
+
 				List<Element> modNodes = subNode.getChildren(MODIFIER_EL);
 				for (Element modNode : modNodes) {
-					MissionType mission = MissionType.valueOf(modNode.getAttributeValue(MISSION_ATTR));
 					int value = Integer.parseInt(modNode.getAttributeValue(VALUE_ATTR));
-					modifiers.put(mission, value);
+					String misText = modNode.getAttributeValue(MISSION_ATTR);
+					if (misText != null) {
+						MissionType mission = MissionType.valueOf(misText);
+						missionModifiers.put(mission, value);
+					}
+					else {
+						// Assume it's science
+						ScienceType science = ScienceType.valueOf(modNode.getAttributeValue(SCIENCE_ATTR));
+						scienceModifiers.put(science, value);
+					}
 				}
-			
-				subs.add(new MissionSubAgenda(description, modifiers));
+	
+				subs.add(new MissionSubAgenda(description, missionModifiers, scienceModifiers));
 			}	
 				
 			// Add the agenda

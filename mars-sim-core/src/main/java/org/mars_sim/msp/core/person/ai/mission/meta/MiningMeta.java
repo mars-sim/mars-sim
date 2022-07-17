@@ -62,11 +62,6 @@ public class MiningMeta extends AbstractMetaMission {
  					|| RoleType.SUB_COMMANDER == roleType
  					) {
 
-	            if (settlement.isMissionEnable(MissionType.MINING))
-	            	missionProbability = 1;
-	            else
-	    			return 0;
-
 	            // Check if there are enough bags at the settlement for collecting minerals.
 	            if (settlement.findNumContainersOfType(EquipmentType.LARGE_BAG) < Mining.NUMBER_OF_LARGE_BAGS)
 	            	return 0;
@@ -126,8 +121,7 @@ public class MiningMeta extends AbstractMetaMission {
 				int f1 = numEmbarked + 1;
 				int f2 = 2 * numThisMission + 1;
 
-				missionProbability *= (double)settlement.getNumCitizens() / f1 / f2 
-						* (1 + settlement.getMissionDirectiveModifier(MissionType.MINING));
+				missionProbability *= (double)settlement.getNumCitizens() / f1 / f2;
 
 	            // Job modifier.
 				missionProbability *= getLeaderSuitability(person)
