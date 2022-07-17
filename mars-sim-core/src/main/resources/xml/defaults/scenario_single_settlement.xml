@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scenario-configuration name="Single Settlement" description="Single Settlement">
   <initial-settlement-list>
-    <settlement name="Schiaparelli Point" template="Alpha Base" persons="30" robots="12" sponsor="MS" crew="Founders">
+    <settlement name="Schiaparelli Point" template="Alpha Base" persons="28" robots="12" sponsor="MS" crew="Founders">
       <location longitude="10.00 W" latitude="10.00 N" />
     </settlement>
   </initial-settlement-list>

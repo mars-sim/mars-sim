@@ -49,7 +49,11 @@
 		<settlement name="Kyocera" template="Phase 2-J" persons="8" robots="4" sponsor="JAXA">
 			<location longitude="150.0 W" latitude="35.0 N" />
 		</settlement>
-			
+
+		<settlement name="New Seoul" template="Phase 2-K" persons="8" robots="4" sponsor="KARI">
+			<location longitude="100.0 W" latitude="40.0 N" />
+		</settlement>
+					
 		<settlement name="Starcity" template="Phase 3-X" persons="12" robots="8" sponsor="SPACEX">
 			<location longitude="165.32 E" latitude="41.01 N" />
 		</settlement>

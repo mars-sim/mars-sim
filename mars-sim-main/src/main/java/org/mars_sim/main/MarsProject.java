@@ -237,7 +237,7 @@ public class MarsProject {
 				AudioPlayer.disableVolume();
 			}
 			if (line.hasOption(DISPLAY_HELP)) {
-				usage("Available options", options);
+				usage("See available options below", options);
 			}
 			if (line.hasOption(NOGUI)) {
 				useGUI = false;
@@ -290,16 +290,15 @@ public class MarsProject {
 
 
 	/**
-	 * Prints the help options
+	 * Prints the help options.
 	 * 
 	 * @param message
 	 * @param options
 	 */
 	private void usage(String message, Options options) {
 		HelpFormatter format = new HelpFormatter();
-		System.out.println();
-		System.out.println(message);
-		format.printHelp(" [for mars-sim Swing Edition]", options);
+		logger.config(message);
+		format.printHelp("", options);
 		System.exit(1);
 	}
 
@@ -308,7 +307,7 @@ public class MarsProject {
 	 *
 	 * @param autosave
 	 */
-	private String selectSimFile(boolean autosave) {
+	protected static String selectSimFile(boolean autosave) {
 
 		String dir = null;
 		String title = null;

@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * CommanderWindow.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-16
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.tool.commander;
@@ -77,6 +77,7 @@ public class CommanderWindow extends ToolWindow {
 	public static final String LEADERSHIP_TAB = "Leadership";
 
 	public static final String AGRICULTURE_TAB = "Agriculture";
+	public static final String COMPUTING_TAB = "Computing";
 	public static final String ENGINEERING_TAB = "Engineering";
 	public static final String LOGISTIC_TAB = "Logistic";
 	public static final String MISSION_TAB = " Mission";
@@ -180,6 +181,8 @@ public class CommanderWindow extends ToolWindow {
 
 		createAgriculturePanel();
 
+		createComputingPanel();
+		
 		createEngineeringPanel();
 
 		createLeadershipPanel();
@@ -225,6 +228,14 @@ public class CommanderWindow extends ToolWindow {
 		panel.add(topPanel, BorderLayout.NORTH);
 	}
 
+	public void createComputingPanel() {
+		JPanel panel = new JPanel(new BorderLayout());
+		tabPane.add(COMPUTING_TAB, panel);
+
+		JPanel topPanel = new JPanel(new BorderLayout(20, 20));
+		panel.add(topPanel, BorderLayout.NORTH);
+	}
+	
 	public void createEngineeringPanel() {
 		JPanel panel = new JPanel(new BorderLayout());
 		tabPane.add(ENGINEERING_TAB, panel);

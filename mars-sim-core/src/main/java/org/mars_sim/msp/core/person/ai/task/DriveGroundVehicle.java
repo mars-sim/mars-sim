@@ -415,7 +415,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 		int experienceAptitude = worker.getNaturalAttributeManager()
 					.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
 
-		newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
+		newPoints += newPoints * (1.0 * experienceAptitude - 50D) / 100D;
 		newPoints *= getTeachingExperienceModifier();
 		double phaseModifier = 1D;
 		if (AVOID_OBSTACLE.equals(getPhase()))
@@ -425,7 +425,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 	}
 
 	/**
-	 * Stop the vehicle
+	 * Stops the vehicle.
 	 */
 	protected void clearDown() {
 		if (getVehicle() != null) {

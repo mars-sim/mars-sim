@@ -129,7 +129,7 @@ public class PersonConfig implements Serializable {
 	private transient Map<String, String> personAttributes = new HashMap<>();
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 * 
 	 * @param personDoc the person config DOM document.
 	 */
@@ -154,7 +154,8 @@ public class PersonConfig implements Serializable {
 
 
 	/**
-	 * Parse the names element of the document.
+	 * Parses the names element of the document.
+	 * 
 	 * @param doc XML document
 	 */
 	private void parseNames(Document doc) {
@@ -719,8 +720,9 @@ public class PersonConfig implements Serializable {
 	}
 
 	/**
-	 * Get the naming rules for a particular Country. If there are
+	 * Gets the naming rules for a particular Country. If there are
 	 * no names defined for the Country then the DEFAULT_COUNTRY is used.
+	 * 
 	 * @param country
 	 * @return
 	 */
@@ -734,7 +736,8 @@ public class PersonConfig implements Serializable {
 	}
 
 	/**
-	 * Get the list of known Countries
+	 * Gets the list of known Countries.
+	 * 
 	 * @return
 	 */
 	public Set<String> getKnownCountries() {

@@ -439,7 +439,7 @@
 		</authority>
 
 		<authority code="JAXA" name="Japan Aerospace Exploration Agency"
-					agenda="Space Applications">
+					agenda="Human Habitation">
 			<country name="Japan"/>
 			<settlement-name name="New Tokyo" />
 			<settlement-name name="New Seto" />
@@ -472,6 +472,44 @@
 			<rover-name name="Chi-To" />
 			<rover-name name="Chi-Ri" />
 			<rover-name name="Shi-Ki" />
+		</authority>
+
+		<authority code="KARI" name="Korea Aerospace Research Institute"
+					agenda="Space Applications">
+			<country name="South Korea"/>
+			<settlement-name name="New Sacheon" />
+			<settlement-name name="New Gimhae" />
+			<settlement-name name="New Kunsan" />
+			<settlement-name name="New Incheon" />
+			<settlement-name name="New Daegu" />
+			<settlement-name name="New Busan" />
+			<settlement-name name="New Seoul" />
+			<settlement-name name="New Goyang" />
+			<settlement-name name="New Yongin" />
+			<settlement-name name="New Suwon" />
+			<settlement-name name="Samsung Town" />
+			<settlement-name name="New Ansan" />		
+			<rover-name name="Osan" />
+			<rover-name name="Nuri" />		
+			<rover-name name="Naro" />					
+			<rover-name name="Guri" />
+			<rover-name name="Naju" />
+			<rover-name name="Kia" />
+			<rover-name name="Proto" />
+			<rover-name name="Zyle" />
+			<rover-name name="Daewoo" />
+			<rover-name name="Hyundai" />
+			<rover-name name="Renault" />
+			<rover-name name="Zyle" />
+			<rover-name name="Sungri" />
+			<rover-name name="Chongjin" />
+			<rover-name name="Pyeonghwa" />
+			<rover-name name="Koryo" />
+			<rover-name name="Teeway" />
+			<rover-name name="Gimpo" />			
+			<rover-name name="Kai" />
+			<rover-name name="Surion" />
+			<rover-name name="Songgolmae" />
 		</authority>
 
 		<authority code="MS" name="Mars Society"

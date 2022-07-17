@@ -216,7 +216,7 @@ public class MarsProjectFXGL extends GameApplication {
 				AudioPlayer.disableVolume();
 			}
 			if (line.hasOption(DISPLAYHELP)) {
-				usage("Available options", options);
+				usage("See available options below", options);
 			}
 			if (line.hasOption(NOGUI)) {
 				useGUI = false;
@@ -231,11 +231,16 @@ public class MarsProjectFXGL extends GameApplication {
 		}
 	}
 
+	/**
+	 * Prints the help options.
+	 * 
+	 * @param message
+	 * @param options
+	 */
 	private void usage(String message, Options options) {
 		HelpFormatter format = new HelpFormatter();
-		System.out.println();
-		System.out.println(message);
-		format.printHelp(" [for mars-sim Swing dition]", options);
+		logger.config(message);
+		format.printHelp("", options);
 		System.exit(1);
 	}
 
