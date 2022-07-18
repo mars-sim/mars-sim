@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.mars.sim.console.chat.Conversation;
+import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.Malfunction.Repairer;
@@ -59,7 +60,7 @@ public class CommandHelper {
 	// Width of a truncated timestamp 
 	private static final int TIMESTAMP_TRUNCATED_WIDTH = 15;
 	// Width of a Coordinate
-	private static final int COORDINATE_WIDTH = 19;
+	public static final int COORDINATE_WIDTH = 19;
 	
 	// Base value formats for use with String.format
 	public static final String KG_FORMAT = "%.2f kg";
@@ -429,5 +430,53 @@ public class CommandHelper {
 				}
 			}
 		}
+	}
+
+	/**
+	 * Get the a Coordinates from user input. 
+	 * @param desc A prompt for the user explaining the purpose
+	 * @param context COntext of the conversation
+	 */
+	public static Coordinates getCoordinates(String desc, Conversation context) {
+		double lat1 = 0;
+		double lon1 = 0;
+		boolean good = false;
+		
+		//Get lat
+		do {
+			try {
+				String latitudeStr1 = context.getInput("What is the latitude (e.g. 10.03 N, 5.01 S) of the " 
+						+ desc.toLowerCase() + " coordinate ?");
+				if (latitudeStr1.equalsIgnoreCase("quit") || latitudeStr1.equalsIgnoreCase("/q")
+						|| latitudeStr1.isBlank())
+					return null;
+				else {
+					lat1 = Coordinates.parseLatitude2Phi(latitudeStr1);
+					good = true;
+				}
+			} catch(IllegalStateException e) {
+				context.println("Not a valid format");
+				good = false;
+			}
+		} while (!good);
+		
+		do {
+			try {
+				String longitudeStr = context.getInput("What is the longitude (e.g. 5.09 E, 18.04 W) of the "
+						+ desc.toLowerCase() + " coordinate ?");
+				if (longitudeStr.equalsIgnoreCase("quit") || longitudeStr.equalsIgnoreCase("/q")
+						|| longitudeStr.isBlank())
+					return null;
+				else {
+					lon1 = Coordinates.parseLongitude2Theta(longitudeStr);
+					good = true;
+				}
+			} catch(IllegalStateException e) {
+				context.println("Not a valid format");
+				good = false;
+			}
+		} while (!good);
+		
+		return new Coordinates(lat1, lon1);
 	}
 }

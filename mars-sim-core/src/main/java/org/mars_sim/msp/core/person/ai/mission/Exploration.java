@@ -70,12 +70,6 @@ public class Exploration extends EVAMission
 	/** Amount of time to explore a site. */
 	public static final double EXPLORING_SITE_TIME = 500D;
 
-	/** Maximum mineral concentration estimation diff from actual. */
-	private static final double MINERAL_ESTIMATION_VARIANCE = 20D;
-
-	/** Maximum mineral estimation */
-	private static final double MINERAL_ESTIMATION_MAX = 100D;
-
 	// Data members
 	/** Map of exploration sites and their completion. */
 	private Map<String, Double> explorationSiteCompletion;
@@ -317,26 +311,12 @@ public class Exploration extends EVAMission
 	 * @return ExploredLocation
 	 */
 	private ExploredLocation createAExploredSite(Coordinates siteLocation) {
-		MineralMap mineralMap = surfaceFeatures.getMineralMap();
-		String[] mineralTypes = mineralMap.getMineralTypeNames();
 
 		// Make sure site is not known already
 		ExploredLocation el = surfaceFeatures.getExploredLocation(siteLocation);
 		if (el == null) {
-			Map<String, Double> initialMineralEstimations = new HashMap<>(mineralTypes.length);
-			for (String mineralType : mineralTypes) {
-				// Estimations are zero for initial site.
-				double estimation = RandomUtil.getRandomDouble(MINERAL_ESTIMATION_VARIANCE);
-				estimation += mineralMap.getMineralConcentration(mineralType, siteLocation);
-				if (estimation < 0D)
-					estimation = 0D - estimation;
-				else if (estimation > MINERAL_ESTIMATION_MAX)
-					estimation = MINERAL_ESTIMATION_MAX - estimation;
-				initialMineralEstimations.put(mineralType, estimation);
-			}
-
 			el = surfaceFeatures.addExploredLocation(siteLocation,
-					initialMineralEstimations, getStartingSettlement());
+					0, getStartingSettlement());
 		}
 
 		exploredSites.add(el);
@@ -480,7 +460,7 @@ public class Exploration extends EVAMission
 		// exploration before mining
 		List<Coordinates> candiateLocations = surfaceFeatures.getExploredLocations().stream()
 				.filter(e -> e.getNumEstimationImprovement() < Mining.MATURE_ESTIMATE_NUM)
-				.filter(s -> s.getSettlement().equals(home))
+				.filter(s -> home.equals(s.getSettlement()))
 				.map(ExploredLocation::getLocation)
 				.collect(Collectors.toList());
 		if (!candiateLocations.isEmpty()) {

@@ -32,12 +32,13 @@ public class SettlementsCommand extends ChatCommand {
 		
 		StructuredResponse response = new StructuredResponse();
 		response.appendTableHeading("Name",  CommandHelper.PERSON_WIDTH, "Sponsor", 
-									"Template", 12, "Population");
+									"Template", 12, "Pop", "Location");
 		for(Settlement s : settlements) {
 			response.appendTableRow(s.getName(),
 					                s.getSponsor().getName(),
 					                s.getTemplate(),
-									s.getNumCitizens());
+									s.getNumCitizens(),
+									s.getCoordinates().getFormattedString());
 		}
 
 		context.println(response.getOutput());

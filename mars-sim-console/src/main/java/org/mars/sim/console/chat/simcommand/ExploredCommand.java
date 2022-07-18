@@ -9,15 +9,18 @@ package org.mars.sim.console.chat.simcommand;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
+import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.environment.ExploredLocation;
 import org.mars_sim.msp.core.environment.SurfaceFeatures;
+import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.core.structure.Settlement;
 
 /**
@@ -39,8 +42,53 @@ public class ExploredCommand extends ChatCommand {
 	@Override
 	public boolean execute(Conversation context, String input) {
 		SurfaceFeatures surface = context.getSim().getMars().getSurfaceFeatures();
+
+		displayExploredLocations(context, surface);
+
+		// Add a new one
+		if ("add".equals(input)) {
+			boolean addSite = true;
+			while(addSite) {
+				// Get location and check concentration
+				Coordinates siteLocation = CommandHelper.getCoordinates("Site Location", context);
+
+				// Check the locaiton has minerals
+				boolean hasMinerals = false;
+				Map<String,Double> minerals = surface.getMineralMap().getAllMineralConcentrations(siteLocation);
+				for(Double conc : minerals.values()) {
+					hasMinerals = conc > 0D;
+					if (hasMinerals) {
+						break;
+					}
+ 				}
+
+				if (hasMinerals) {
+					// Add new site but at maximum estimation improvement
+					ExploredLocation newSite = surface.addExploredLocation(siteLocation, Mining.MATURE_ESTIMATE_NUM, null);
+					newSite.setExplored(true);
+				}
+				else {
+					context.println("No minerals @ " + siteLocation.getFormattedString());
+				}
+
+				addSite = "Y".equalsIgnoreCase(context.getInput("Add Another site (Y/N)"));
+			}
+
+			// Display new locations
+			displayExploredLocations(context, surface);
+		}
+		return true;
+	}
+
+	/**
+	 * Display a table of the explored location for this Unit
+	 * @param context Context of conersation
+	 * @param surface Mars Surface features
+	 */
+	private void displayExploredLocations(Conversation context, SurfaceFeatures surface) {
+
 		List<ExploredLocation> locations = surface.getExploredLocations();
-		
+			
 		// Filter the list if in a Settlement
 		if (context.getCurrentCommand() instanceof ConnectedUnitCommand) {
 			Settlement filter = null;
@@ -55,12 +103,12 @@ public class ExploredCommand extends ChatCommand {
 			// Filter to settlement
 			final Settlement sFilter = filter;
 			locations = locations.stream()
-								 .filter(s -> s.getSettlement().equals(sFilter))
-								 .collect(Collectors.toList());
+								.filter(s -> (s.getSettlement() == null) || sFilter.equals(s.getSettlement()))
+								.collect(Collectors.toList());
 		}
 		
 		StructuredResponse response = new StructuredResponse();
-		response.appendTableHeading("Location", 18,
+		response.appendTableHeading("Location", CommandHelper.COORDINATE_WIDTH,
 									"Settlement", 20, 
 									"Status", 8 , "Reviews", "Highest");
 		for(ExploredLocation s : locations) {
@@ -68,24 +116,23 @@ public class ExploredCommand extends ChatCommand {
 			if (!s.getEstimatedMineralConcentrations().isEmpty()) {
 				// Create summary of minerals
 				Optional<Entry<String, Double>> highest = s.getEstimatedMineralConcentrations().entrySet().stream()
-					      		   .max(Comparator.comparing(v -> v.getValue()));
+									.max(Comparator.comparing(v -> v.getValue()));
 				if (highest.isPresent())
 					mineral = String.format("%s - %.2f", highest.get().getKey(), highest.get().getValue());
-		        else {
-		        	context.println("Invalid mineral concentrations. Try again later.");
-		        	return false;
-		        }
+				else {
+					context.println("Invalid mineral concentrations. Try again later.");
+				}
 			}
 			
 			String status = (s.isMined() ? "Mined" : (s.isReserved() ? "Reserved" : (s.isExplored() ? "Explored" : "")));
+			Settlement owner = s.getSettlement();
 			response.appendTableRow(s.getLocation().getFormattedString(),
-					                s.getSettlement().getName(),
-					                status,
+									(owner != null ? owner.getName() : ""),
+									status,
 									s.getNumEstimationImprovement(),
 									mineral);
 		}
 
 		context.println(response.getOutput());
-		return true;
 	}
 }

@@ -37,6 +37,12 @@ public class SurfaceFeatures implements Serializable, Temporal {
 
 	public static final int MEAN_SOLAR_IRRADIANCE = 586; // in flux or [W/m2] = 1371 / (1.52*1.52)
 
+	/** Maximum mineral concentration estimation diff from actual. */
+	private static final int MINERAL_ESTIMATION_VARIANCE = 2;
+
+	/** Maximum mineral estimation */
+	private static final double MINERAL_ESTIMATION_MAX = 100D;
+
 	// This is the so-called "solar constant" of Mars (not really a constant per
 	// se), which is the flux of solar radiation at the top of the atmosphere (TOA)
 	// at the mean distance a between Mars and the sun.
@@ -591,6 +597,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	 * Adds an explored location.
 	 *
 	 * @param location                       the location coordinates.
+	 * @param estimationImprovement			 The number times the estimates have been improved
 	 * @param estimatedMineralConcentrations a map of all mineral types and their
 	 *                                       estimated concentrations (0% -100%)
 	 * @param settlement                     the settlement the exploring mission is
@@ -598,9 +605,28 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	 * @return the explored location
 	 */
 	public ExploredLocation addExploredLocation(Coordinates location,
-			Map<String, Double> estimatedMineralConcentrations, Settlement settlement) {
+			int estimationImprovement, Settlement settlement) {
+		String [] mineralTypes = mineralMap.getMineralTypeNames();
+		Map<String, Double> initialMineralEstimations = new HashMap<>(mineralTypes.length);
+		for (String mineralType : mineralTypes) {
+			double estimation = mineralMap.getMineralConcentration(mineralType, location);
 
-		ExploredLocation result = new ExploredLocation(location, estimatedMineralConcentrations, settlement);
+			// Estimations are zero for initial site.
+			int varianceMax = (10 - estimationImprovement) * MINERAL_ESTIMATION_VARIANCE;
+			if (varianceMax > 0) {
+ 				estimation += RandomUtil.getRandomDouble(varianceMax);
+			}
+
+			// With no improvements the estimates are capped
+			if (estimation < 0D)
+				estimation = 0D - estimation;
+			else if (estimation > MINERAL_ESTIMATION_MAX) {
+				estimation = MINERAL_ESTIMATION_MAX - estimation;
+			}
+			initialMineralEstimations.put(mineralType, estimation);
+		}
+
+		ExploredLocation result = new ExploredLocation(location, estimationImprovement, initialMineralEstimations, settlement);
 		synchronized (exploredLocations) {
 			exploredLocations.add(result);
 		}
@@ -669,6 +695,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 				// If not, mark as unreserved.
 				boolean goodMission = false;
 
+				// TODO The Mission should unreserve the site automatically
 				for (Mission mission : missionManager.getMissions()) {
 					if (mission.getMissionType() == MissionType.MINING) {
 						if (site.equals(((Mining) mission).getMiningSite())) {
@@ -681,14 +708,6 @@ public class SurfaceFeatures implements Serializable, Temporal {
 				}
 			}
 		}
-
-//		if ((pulse.getId() % 10) == 0) {
-//			final Coordinates COORD = new Coordinates("10.0N", "10.0E");
-//			logger.log(Level.INFO, "Sun @ " + COORD.getFormattedString()
-//						+ " = " + getSolarIrradiance(COORD)
-//						+ ", sun direction " + orbitInfo.getSunDirection().getFormattedString()
-//						+ ", sunrise " + getSunRise(COORD).getTrucatedDateTimeStamp());
-//		}
 		return true;
 	}
 

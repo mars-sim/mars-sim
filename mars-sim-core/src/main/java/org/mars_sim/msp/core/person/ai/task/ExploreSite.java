@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
 import java.util.Map;
 import java.util.logging.Level;
 
@@ -29,7 +28,7 @@ import org.mars_sim.msp.core.vehicle.Rover;
 /**
  * A task for the EVA operation of exploring a site.
  */
-public class ExploreSite extends EVAOperation implements Serializable {
+public class ExploreSite extends EVAOperation {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;

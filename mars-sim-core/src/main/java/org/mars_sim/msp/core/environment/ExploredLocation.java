@@ -37,19 +37,20 @@ public class ExploredLocation implements Serializable {
 	 * Constructor.
 	 *
 	 * @param location                       the location coordinates.
+	 * @param estimationImprovement			 The number times the estimates have been improved
 	 * @param estimatedMineralConcentrations a map of all mineral types and their
 	 *                                       estimated concentrations (0% -100%)
 	 * @param the                            settlement the exploring mission is
 	 *                                       from.
 	 */
-	ExploredLocation(Coordinates location, Map<String, Double> estimatedMineralConcentrations, Settlement settlement) {
+	ExploredLocation(Coordinates location, int estimationImprovement, Map<String, Double> estimatedMineralConcentrations, Settlement settlement) {
 		this.location = new Coordinates(location);
 		this.estimatedMineralConcentrations = estimatedMineralConcentrations;
 		this.settlement = settlement;
 		mined = false;
 		explored = false;
 		reserved = false;
-		numEstimationImprovement = 0;
+		this.numEstimationImprovement = estimationImprovement;
 	}
 
 	/**
@@ -143,7 +144,8 @@ public class ExploredLocation implements Serializable {
 	}
 
 	/**
-	 * The settlement that explored this site.
+	 * The settlement that explored this site. This may be null if it is 
+	 * an unclaimed location.
 	 *
 	 * @return settlement
 	 */

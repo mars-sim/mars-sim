@@ -42,11 +42,10 @@ public class MissionRadiusCommand extends AbstractSettlementCommand {
 		context.println(status.getOutput());
 		 
 		int selected = context.getIntInput("Which one would you like to change ?");
-		if ((selected < 1) || (selected > MissionType.values().length)) {
+		if ((selected < 0) || (selected >= MissionType.values().length)) {
 			context.println("Value not valid.");
 		}
 		else {
-			selected--; // Index is zero based
 			String rangeText = context.getInput("Enter the new mission radius in exact km");
 			try {
 				int newRange = Integer.parseInt(rangeText);
@@ -55,11 +54,12 @@ public class MissionRadiusCommand extends AbstractSettlementCommand {
 				int oldRange = settlement.getMissionRadius(choosen);
 				settlement.setMissionRadius(choosen, newRange);
 				
-				context.println("Old Mission Radius :  " + oldRange + " km");
-				context.println("New Mission Radius :  " + newRange + " km");
+				context.println("Mission choosen    : " +  choosen.getName());
+				context.println("Old Mission Radius : " + oldRange + " km");
+				context.println("New Mission Radius : " + newRange + " km");
 			}
 			catch (NumberFormatException e) {
-				context.println("The radies is not a valid number");
+				context.println("The radius is not a valid number");
 			}	
 		}
 		

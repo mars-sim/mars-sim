@@ -348,6 +348,7 @@ public class Mining extends EVAMission
 	/**
 	 * Close down the mining activities
 	 */
+	@Override
 	protected void endEVATasks() {
 		super.endEVATasks();
 
@@ -430,19 +431,16 @@ public class Mining extends EVAMission
 				range = tripRange;
 			}
 
-			Iterator<ExploredLocation> i = surfaceFeatures.getExploredLocations()
-					.iterator();
-			while (i.hasNext()) {
-				ExploredLocation site = i.next();
-
+			for(ExploredLocation site : surfaceFeatures.getExploredLocations()) {
 				boolean isMature = (site.getNumEstimationImprovement() >= MATURE_ESTIMATE_NUM);
 
 				if (!site.isMined() && !site.isReserved() && site.isExplored() && isMature) {
 					// Only mine from sites explored from home settlement.
-					if (homeSettlement.equals(site.getSettlement())) {
+					Settlement owner = site.getSettlement();
+					if ((owner == null) || homeSettlement.equals(site.getSettlement())) {
 						Coordinates siteLocation = site.getLocation();
 						Coordinates homeLocation = homeSettlement.getCoordinates();
-						if (Coordinates.computeDistance(homeLocation, siteLocation) <= (range / 2D)) {
+						if (Coordinates.computeDistance(homeLocation, siteLocation) <= range) {
 							double value = getMiningSiteValue(site, homeSettlement);
 							if (value > bestValue) {
 								result = site;
@@ -471,14 +469,10 @@ public class Mining extends EVAMission
 
 		double result = 0D;
 
-		Map<String, Double> concentrations = site.getEstimatedMineralConcentrations();
-		Iterator<String> i = concentrations.keySet().iterator();
-		while (i.hasNext()) {
-			String mineralType = i.next();
-			int mineralResource = ResourceUtil.findIDbyAmountResourceName(mineralType);
+		for( Map.Entry<String,Double> conc : site.getEstimatedMineralConcentrations().entrySet()) {
+			int mineralResource = ResourceUtil.findIDbyAmountResourceName(conc.getKey());
 			double mineralValue = settlement.getGoodsManager().getGoodValuePerItem(mineralResource);
-			double concentration = concentrations.get(mineralType);
-			double mineralAmount = (concentration / 100D) * MINERAL_BASE_AMOUNT;
+			double mineralAmount = (conc.getValue() / 100D) * MINERAL_BASE_AMOUNT;
 			result += mineralValue * mineralAmount;
 		}
 			
