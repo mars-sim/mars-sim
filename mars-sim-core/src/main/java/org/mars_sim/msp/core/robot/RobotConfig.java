@@ -38,9 +38,9 @@ public class RobotConfig implements Serializable {
 	private static final String SETTLEMENT = "settlement";
 	private static final String JOB = "job";
 	
-	private static final String POWER_CONSUMPTION_RATE = "power-consumption-rate";
+	private static final String STANDBY_POWER_CONSUMPTION = "standby-power-consumption";
 	private static final String FUEL_CONSUMPTION_RATE = "fuel-consumption-rate";
-	private static final String LOW_POWER_MODE_START_TIME = "low-power-mode-start-time";
+	private static final String LOW_POWER_MODE = "low-power-mode";
 	private static final String MIN_AIR_PRESSURE = "min-air-pressure";
 	private static final String MIN_TEMPERATURE = "min-temperature";
 	private static final String MAX_TEMPERATURE = "max-temperature";
@@ -58,11 +58,11 @@ public class RobotConfig implements Serializable {
 	// number of robot in the xml's ROBOT_LIST
 	private static int size;
 	// power-consumption-rate
-	private static double pcr;
+	private static double standbyPower;
 	// fuel-consumption-rate
 	private static double fcr ;
 	// low-power-mode-start-time
-	private static double lpmst;
+	private static double lowPower;
 	// min-air-pressure
 	private static double minap;
 	// min-temperature
@@ -99,14 +99,14 @@ public class RobotConfig implements Serializable {
 		
 		Element root = robotDoc.getRootElement();
 	
-		Element pcrElement = root.getChild(POWER_CONSUMPTION_RATE);
-		pcr = Double.parseDouble(pcrElement.getAttributeValue(VALUE));
+		Element pcrElement = root.getChild(STANDBY_POWER_CONSUMPTION);
+		standbyPower = Double.parseDouble(pcrElement.getAttributeValue(VALUE));
 		
 		Element fcrElement = root.getChild(FUEL_CONSUMPTION_RATE);
 		fcr = Double.parseDouble(fcrElement.getAttributeValue(VALUE));
 		
-		Element lpmstElement = root.getChild(LOW_POWER_MODE_START_TIME);
-		lpmst = Double.parseDouble(lpmstElement.getAttributeValue(VALUE));
+		Element lpmstElement = root.getChild(LOW_POWER_MODE);
+		lowPower = Double.parseDouble(lpmstElement.getAttributeValue(VALUE));
 		
 		Element minapElement = root.getChild(MIN_AIR_PRESSURE);
 		minap = Double.parseDouble(minapElement.getAttributeValue(VALUE));
@@ -184,13 +184,13 @@ public class RobotConfig implements Serializable {
 	}
 	
 	/**
-	 * Gets the Power consumption rate.
+	 * Gets the standby power consumption.
 	 * 
-	 * @return Power rate (kg/sol)
+	 * @return power consumption (kW)
 	 * @throws Exception if consumption rate could not be found.
 	 */
-	public double getPowerConsumptionRate() {
-		return pcr;
+	public double getStandbyPowerConsumption() {
+		return standbyPower;
 	}
 
 	/**
@@ -204,13 +204,13 @@ public class RobotConfig implements Serializable {
 	}
 
 	/**
-	 * Gets the low power mode start time.
+	 * Gets the percentage that sets in the low power mode.
 	 * 
-	 * @return low power mode start time in sols.
+	 * @return low power mode.
 	 * @throws Exception if low power mode start time could not be found.
 	 */
-	public double getLowPowerModeStartTime() {
-		return lpmst;
+	public double getLowPowerModePercent() {
+		return lowPower;
 	}
 
 	/**

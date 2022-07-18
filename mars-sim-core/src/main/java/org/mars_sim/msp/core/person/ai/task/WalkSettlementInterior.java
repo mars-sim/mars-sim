@@ -13,6 +13,7 @@ import java.util.logging.Level;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
@@ -256,9 +257,10 @@ public class WalkSettlementInterior extends Task implements Serializable {
 				
 				if (!changeBuildings(location)) {
 					logger.severe(worker, "Unable to change building.");
-//					endTask();
-//					return 0;
-					person.getMind().getTaskManager().clearAllTasks("Unable to change building");
+					if (worker.getUnitType() == UnitType.PERSON)
+						((Person)worker).getMind().getTaskManager().clearAllTasks("Unable to change building");
+					else
+						((Robot)worker).getBotMind().getBotTaskManager().clearAllTasks("Unable to change building");
 				}
 				
 				if (!walkingPath.isEndOfPath()) {
@@ -371,7 +373,7 @@ public class WalkSettlementInterior extends Task implements Serializable {
 	}
 
 	/**
-	 * Change the person's current building to a new one if necessary.
+	 * Changes the current building to a new one if necessary.
 	 * 
 	 * @param location the path location the person has reached.
 	 */
@@ -385,7 +387,7 @@ public class WalkSettlementInterior extends Task implements Serializable {
 				Building currentBuilding = BuildingManager.getBuilding(person);
 				if (!hatch.getBuilding().equals(currentBuilding)) {
 					BuildingManager.removePersonFromBuilding(person, currentBuilding);
-					BuildingManager.addPersonOrRobotToBuilding(worker, hatch.getBuilding());
+					BuildingManager.addPersonOrRobotToBuilding(person, hatch.getBuilding());
 				}
 			} 
 			
@@ -444,7 +446,8 @@ public class WalkSettlementInterior extends Task implements Serializable {
 	}
 	
 	/**
-	 * Does a change of Phase for this Task generate an entry in the Task Schedule 
+	 * Does a change of Phase for this Task generate an entry in the Task Schedule ?
+	 * 
 	 * @return false
 	 */
 	@Override

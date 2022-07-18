@@ -15,8 +15,8 @@ import org.mars_sim.msp.core.person.ai.task.utils.MetaTaskUtil;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskManager;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.robot.SystemCondition;
 import org.mars_sim.msp.core.robot.ai.BotMind;
+import org.mars_sim.msp.core.time.MarsClock;
 
 /**
  * The TaskManager class keeps track of a person's current task and can randomly
@@ -34,6 +34,8 @@ implements Serializable {
 	// Data members
 	/** The mind of the robot. */
 	private BotMind botMind;
+	/** The work power demand of the robot. Will move to xml once stable. */
+	private double workPower = .2;
 	
 	/** The robot instance. */
 	private transient Robot robot = null;
@@ -57,12 +59,12 @@ implements Serializable {
 	
 
 	/**
-	 * Reduce the person's caloric energy over time.
+	 * Reduce the robot's energy for executing a task.
+	 * 
 	 * @param time the passing time (
 	 */
     private void reduceEnergy(double time) {
-    	SystemCondition sys = robot.getSystemCondition();
-		sys.reduceEnergy(time);
+    	robot.consumeEnergy(time * MarsClock.HOURS_PER_MILLISOL * workPower);
     }
 
 	/**
@@ -85,25 +87,28 @@ implements Serializable {
 				time *= efficiency;
 			}
 
-			//checkForEmergency();
+			// checkForEmergency();
 			
 			remainingTime = currentTask.performTask(time);
 		
-			// Expend energy based on activity.
+			// Calculate the energy time
 		    double energyTime = time - remainingTime;
 		    // Double energy expenditure if performing effort-driven task.
 		    if (currentTask.isEffortDriven()) {
-		        energyTime *= 2D;
+		        energyTime *= 1.5D;
 		    }
 
-		    if (energyTime > 0D) {
-		        reduceEnergy(energyTime);
+		    // Checks if the robot is charging
+		    if (energyTime > 0D && !robot.getSystemCondition().isCharging()) {
+		    	// Expend energy based on activity.
+		    	reduceEnergy(energyTime);
 		    }
 		}
 
 		return remainingTime;
 
 	}
+
 	
 	/**
 	 * Calculates and caches the probabilities.

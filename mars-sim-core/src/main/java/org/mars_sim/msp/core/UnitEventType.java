@@ -35,6 +35,8 @@ public enum UnitEventType {
 	ADD_ASSOCIATED_EQUIPMENT_EVENT		("add associated equipment"),
 	REMOVE_ASSOCIATED_EQUIPMENT_EVENT	("remove associated equipment"),
 	
+	ROBOT_POWER_EVENT					("robot power event"),
+	
 //	ASSOCIATED_SETTLEMENT_EVENT		("associated settlement"),
 
 	// For PhysicalCondition

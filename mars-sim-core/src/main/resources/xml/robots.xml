@@ -1,13 +1,13 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <!DOCTYPE robot-configuration [
-	<!ELEMENT robot-configuration (power-consumption-rate, fuel-consumption-rate, low-power-mode-start-time, min-air-pressure, 
+	<!ELEMENT robot-configuration (standby-power-consumption, fuel-consumption-rate, low-power-mode, min-air-pressure, 
 	min-temperature, max-temperature, freezing-time, robot-list)>
-	<!ELEMENT power-consumption-rate EMPTY>
-	<!ATTLIST power-consumption-rate value CDATA #REQUIRED>
+	<!ELEMENT standby-power-consumption EMPTY>
+	<!ATTLIST standby-power-consumption value CDATA #REQUIRED>
 	<!ELEMENT fuel-consumption-rate EMPTY>
 	<!ATTLIST fuel-consumption-rate value CDATA #REQUIRED>
-	<!ELEMENT low-power-mode-start-time EMPTY>
-	<!ATTLIST low-power-mode-start-time value CDATA #REQUIRED>
+	<!ELEMENT low-power-mode EMPTY>
+	<!ATTLIST low-power-mode value CDATA #REQUIRED>
 	<!ELEMENT min-air-pressure EMPTY>
 	<!ATTLIST min-air-pressure value CDATA #REQUIRED>
 	<!ELEMENT min-temperature EMPTY>
@@ -34,15 +34,15 @@
 
 <robot-configuration>
 
-	<!-- The average amount of electrical power in kW needed each Martian Sol -->
-	<power-consumption-rate value="3.0" />
+	<!-- The average standby power consumption in kW -->
+	<standby-power-consumption value="0.05" />
 
 	<!-- The average amount of fuel in kg (e.g. methane) needed each Martian Sol -->
 	<fuel-consumption-rate value="1.0" />
 
-	<!-- Number of sols a robot can go without power before low power mode sets in -->
-	<!-- Default: 2.0 -->
-	<low-power-mode-start-time value="2.0" />
+	<!-- The percentage of the total capacity that would trigger the low power mode -->
+	<!-- Default: 10 percent -->
+	<low-power-mode value="10.0" />
 	
 	<!-- Minimum air pressure (Pa) a robt can withstand without harm -->
 	<min-air-pressure value="500" />
