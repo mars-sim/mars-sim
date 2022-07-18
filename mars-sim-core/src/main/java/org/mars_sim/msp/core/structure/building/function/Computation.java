@@ -11,6 +11,7 @@ import java.util.Map;
 
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.computing.ComputingTask;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
@@ -25,7 +26,9 @@ public class Computation extends Function {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
+	/** default logger. */
+	private static final SimLogger logger = SimLogger.getLogger(Computation.class.getName());
+	
 	// Configuration properties
 	private static final String COMPUTING_UNIT = "computing-unit";
 	private static final String POWER_DEMAND = "power-demand";
@@ -45,8 +48,7 @@ public class Computation extends Function {
 	private double NON_LOAD_KW = 0.1;
 	/** The schedule demand [in CUs] for the current mission sol. */
 	private Map<Integer, Double> todayDemand;
-	
-	
+
 	private Building building;
 	
 	/**
@@ -171,24 +173,35 @@ public class Computation extends Function {
 	public boolean scheduleTask(double needed, int beginningMSol, int endMSol) {
 		int duration = endMSol - beginningMSol;
 		if (duration < 0)
-			duration = - duration;
+			duration = endMSol + 1000 - beginningMSol;
 		double existing = 0;
 		// Test to see if the assigned duration has enough resources
 		for (int i = 0; i < duration; i++) {
-			if (todayDemand.containsKey(i + beginningMSol)) {
-				existing = todayDemand.get(i + beginningMSol);
+			int sol = i + beginningMSol;
+			if (sol > 999) {
+				sol = sol - 1000;
+			}
+			if (todayDemand.containsKey(sol)) {
+				existing = todayDemand.get(sol);
 			}
 			double available = peakCU - existing - needed;
-			if (available < 0)
+			if (available < 0) {
+				logger.info(getBuilding(), 30_000L, "scheduleTask::available: " + available);
+				// Need to make sure each msol has enough resources
 				return false;
+			}
 		}
 
 		// Now the actual scheduling
 		for (int i = 0; i < duration; i++) {
-			if (todayDemand.containsKey(i + beginningMSol)) {
-				existing = todayDemand.get(i + beginningMSol);
+			int sol = i + beginningMSol;
+			if (sol > 999) {
+				sol = sol - 1000;
 			}
-			todayDemand.put(i + beginningMSol, existing + needed);
+			if (todayDemand.containsKey(sol)) {
+				existing = todayDemand.get(sol);
+			}
+			todayDemand.put(sol, existing + needed);
 		}
 
 		return true;
@@ -205,18 +218,24 @@ public class Computation extends Function {
 	public boolean canScheduleTask(double needed, int beginningMSol, int endMSol) {
 		int duration = endMSol - beginningMSol;
 		if (duration < 0)
-			duration = - duration;
+			duration = endMSol + 1000 - beginningMSol;
 		double existing = 0;
 		double available = 0;
 		// Test to see if the assigned duration has enough resources
 		for (int i = 0; i < duration; i++) {
-			if (todayDemand.containsKey(i + beginningMSol)) {
-				existing = todayDemand.get(i + beginningMSol);
+			int sol = i + beginningMSol;
+			if (sol > 999) {
+				sol = sol - 1000;
+			}
+			if (todayDemand.containsKey(sol)) {
+				existing = todayDemand.get(sol);
 			}
 			available = peakCU - existing - needed;
 		}
-		if (available < 0)
+		if (available < 0) {
+			logger.info(getBuilding(), 30_000L, "canScheduleTask::available: " + available);
 			return false;
+		}
 		
 		return true;
 	}
@@ -224,7 +243,7 @@ public class Computation extends Function {
 	/**
 	 * Returns the evaluation score if scheduling for a computing task for a prescribed period of time. 
 	 * 
-	 * @param needed
+	 * @param needed CU(s) per millisol
 	 * @param beginningMSol
 	 * @param endMSol
 	 * @return
@@ -232,25 +251,27 @@ public class Computation extends Function {
 	public double evaluateScheduleTask(double needed, int beginningMSol, int endMSol) {
 		int duration = endMSol - beginningMSol;
 		if (duration < 0)
-			duration = - duration;
+			duration = endMSol + 1000 - beginningMSol;
 		double score = 0;
 		double existing = 0;
 		// Test to see if the assigned duration has enough resources
 		for (int i = 0; i < duration; i++) {
-			if (todayDemand.containsKey(i + beginningMSol)) {
-				existing = todayDemand.get(i + beginningMSol);
+			int sol = i + beginningMSol;
+			if (sol > 999) {
+				sol = sol - 1000;
+			}
+			if (todayDemand.containsKey(sol)) {
+				existing = todayDemand.get(sol);
 			}
 			double available = peakCU - existing - needed;
+			if (available < 0) {
+				logger.info(getBuilding(), 30_000L, "evaluateScheduleTask::available: " + available);
+				return 0;
+			}
+			
 			score += available;
 		}
 		return score;
-	}
-	
-	/**
-	 * Resets the today demand map back to zero at each msol.
-	 */
-	public void resetTodayDemand() {
-		todayDemand.clear();
 	}
 	
 	/**
@@ -265,7 +286,7 @@ public class Computation extends Function {
 			building.getSettlement().fireUnitUpdate(UnitEventType.CONSUMING_COMPUTING_EVENT);
 		}
 	}
-	
+
 	/**
 	 * Time passing for the building.
 	 * 
@@ -275,12 +296,19 @@ public class Computation extends Function {
 	public boolean timePassing(ClockPulse pulse) {
 		boolean valid = isValid(pulse);
 		if (valid) {
-			if (pulse.isNewSol()) {
-				resetTodayDemand();
-			}
-			
+	
 			int msol = pulse.getMarsTime().getMillisolInt();
 			double newDemand = 0;
+			
+			// Delete past demand on previous sol
+			if (msol - 1 > 0 && todayDemand.containsKey(msol - 1)) {
+				todayDemand.remove(msol - 1);
+			}
+			// Delete past demand on the sol before yestersol 
+			if (msol - 2 > 0 && todayDemand.containsKey(msol - 2)) {
+				todayDemand.remove(msol - 2);
+			}
+			
 			if (todayDemand.containsKey(msol)) {
 				newDemand = todayDemand.get(msol);
 			}

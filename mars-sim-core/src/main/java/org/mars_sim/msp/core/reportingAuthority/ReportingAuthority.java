@@ -191,7 +191,8 @@ implements UserConfigurable, Serializable {
 		}
 
 		if (result != 1D) {
-			logger.info(name + " has returned a boost " + result + " for Mission " + type);
+			logger.info(name + " has returned a boost of " + Math.round(result * 100.0)/100.0
+					+ " for Mission " + type);
 		}
 		return result;
     }

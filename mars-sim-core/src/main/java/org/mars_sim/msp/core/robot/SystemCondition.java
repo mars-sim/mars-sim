@@ -96,7 +96,7 @@ public class SystemCondition implements Serializable {
         // 3. If a robot needs to be recharged, go and dock to a robotic station
         positionToRecharge();
 
-        return (operable);
+        return operable;
     }
 
     /**
@@ -139,8 +139,8 @@ public class SystemCondition implements Serializable {
     		isLowPower = false;
     	
     	if (isCharging) {
-    		if (currentEnergy >= MAX_CAPACITY) {
-		    	currentEnergy = MAX_CAPACITY;
+    		if (currentEnergy >= .95 * MAX_CAPACITY) {
+		    	currentEnergy = .95 * MAX_CAPACITY;
 		    	isLowPower = false;
 		    	isCharging = false;
 		    	robot.getBotMind().lookForATask();

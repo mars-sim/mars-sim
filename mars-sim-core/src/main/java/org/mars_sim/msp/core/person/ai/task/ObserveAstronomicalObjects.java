@@ -54,10 +54,12 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 	// Data members.
 	/** True if person is active observer. */
 	private boolean isActiveObserver = false;
-	   /** Computing Units requested. */
-    private double computingNeeded = RandomUtil.getRandomDouble(.5, 5);
+	/** Computing Units needed per millisol. */		
+	private double computingNeeded;
+	/** The seed value. */
+    private double seed = RandomUtil.getRandomDouble(.05, 0.25);
     
-	private final double TOTAL_COMPUTING_NEEDED = computingNeeded;
+	private final double TOTAL_COMPUTING_NEEDED;
 	
 	/** The scientific study the person is researching for. */
 	private ScientificStudy study;
@@ -75,6 +77,10 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 		// Use task constructor.
 		super(NAME, person, true, false, STRESS_MODIFIER, SkillType.ASTRONOMY, 25D,
 			  100D + RandomUtil.getRandomDouble(100D));
+		
+		TOTAL_COMPUTING_NEEDED = getDuration() * seed;
+		computingNeeded = TOTAL_COMPUTING_NEEDED;
+		
 		setExperienceAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
 		
 		// Determine study.
@@ -251,6 +257,10 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 		}
 
 		if (isDone()) {
+    		logger.info(person, 30_000L, NAME + " - " 
+    				+ Math.round((TOTAL_COMPUTING_NEEDED - computingNeeded) * 100.0)/100.0 
+    				+ " CUs Used.");
+			endTask();
 			endTask();
 			return time;
 		}
@@ -271,40 +281,47 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
         boolean successful = false; 
         
         if (computingNeeded > 0) {
-        	double randWork = 0; 
-        	
-        	if (computingNeeded <= .01) {
-        		randWork = computingNeeded;
+        	double workPerMillisol = 0; 
+ 
+        	if (computingNeeded <= seed) {
+        		workPerMillisol = time * computingNeeded;
         	}
-        	else
-        		randWork = RandomUtil.getRandomDouble(computingNeeded/5.0, computingNeeded/2.0);
-        	
-        	// Submit his request for computing resources
-        	Computation center = person.getAssociatedSettlement().getBuildingManager().getMostFreeComputingNode(randWork/5.0, msol + 1, msol + 6);
+        	else {
+        		workPerMillisol = time * seed * RandomUtil.getRandomDouble(.9, 1.1);
+        	}
+
+        	// Submit request for computing resources
+        	Computation center = person.getAssociatedSettlement().getBuildingManager()
+        			.getMostFreeComputingNode(workPerMillisol, msol + 1, (int)(msol + getDuration()));
         	if (center != null) {
-        		if (computingNeeded <= .01)
-        			successful = center.scheduleTask(randWork, msol + 1, msol + 2);
+        		if (computingNeeded <= seed)
+        			successful = center.scheduleTask(workPerMillisol, msol + 1, msol + 2);
         		else
-        			successful = center.scheduleTask(randWork/5.0, msol + 1, msol + 6);
+        			successful = center.scheduleTask(workPerMillisol, msol + 1, (int)(msol + getDuration()));
         	}
+	    	else
+	    		logger.info(person, 30_000L, "No computing centers available for " + NAME + ".");
+        	
         	if (successful) {
-        		computingNeeded = computingNeeded - randWork;
-        		 if (computingNeeded < 0) {
-        			 computingNeeded = 0; 
-        		 }
-        	}
+        		if (computingNeeded <= seed)
+        			computingNeeded = computingNeeded - workPerMillisol;
+        		else
+        			computingNeeded = computingNeeded - workPerMillisol * getDuration();
+        		if (computingNeeded < 0) {
+        			computingNeeded = 0; 
+        		}
+          	}
+	    	else {
+	    		logger.info(person, 30_000L, "No computing resources for " + NAME + ".");
+	    	}
         }
         else if (computingNeeded <= 0) {
         	// this task has ended
-    		logger.info(person, 0, "Observing/analyzing astronomical objects - "
-    				+ Math.round(TOTAL_COMPUTING_NEEDED * 1_000.0)/1_000.0 
+    		logger.log(person, Level.INFO, 30_000L, NAME + " - " 
+    				+ Math.round(TOTAL_COMPUTING_NEEDED * 100.0)/100.0 
     				+ " CUs Used.");
-        	successful = true;
+        	endTask();
         }
-        
-        if (!successful) {
-        	logger.warning(person, 30_000L, "No computing resources available for observing/analyzing astronomical objects this time.");
-        }   
         
 		// Add research work time to study.
 		double observingTime = getEffectiveObservingTime(time);

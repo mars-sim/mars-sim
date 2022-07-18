@@ -58,10 +58,12 @@ implements ResearchScientificStudy, Serializable {
             "Task.phase.modeling")); //$NON-NLS-1$
 
     // Data members.
-    /** Computing Units requested. */
-    private double computingNeeded = RandomUtil.getRandomDouble(.5, 5);
-    
-	private final double TOTAL_COMPUTING_NEEDED = computingNeeded;
+    /** Computing Units needed per millisol. */		
+	private double computingNeeded;
+	/** The seed value. */
+    private double seed = RandomUtil.getRandomDouble(.05, 0.15);
+	
+	private final double TOTAL_COMPUTING_NEEDED;
 	
     /** The scientific study the person is modeling for. */
     private ScientificStudy study;
@@ -81,6 +83,10 @@ implements ResearchScientificStudy, Serializable {
         // Use task constructor.
         super(NAME, person, true, false, STRESS_MODIFIER,
         		SkillType.MATHEMATICS, 20D, 10D + RandomUtil.getRandomDouble(10D));
+        
+		TOTAL_COMPUTING_NEEDED = getDuration() * seed;
+		computingNeeded = TOTAL_COMPUTING_NEEDED;
+        
         setExperienceAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
 
         // Determine study.
@@ -363,7 +369,17 @@ implements ResearchScientificStudy, Serializable {
      * @return the amount of time (millisols) left over after performing the phase.
      */
     private double modelingPhase(double time) {
-        // If person is incapacitated, end task.
+        
+		if (isDone()) {
+        	// this task has ended
+    		logger.info(person, 30_000L, NAME + " - " 
+    				+ Math.round((TOTAL_COMPUTING_NEEDED - computingNeeded) * 100.0)/100.0 
+    				+ " CUs Used.");
+			endTask();
+			return time;
+		}
+		
+    	// If person is incapacitated, end task.
         if (person.getPerformanceRating() <= .2) {
             endTask();
         }
@@ -386,49 +402,50 @@ implements ResearchScientificStudy, Serializable {
         }
 
         int msol = marsClock.getMillisolInt();
-        
         boolean successful = false; 
         
         if (computingNeeded > 0) {
-        	double randWork = 0; 
-        	
-        	if (computingNeeded <= .01) {
-        		randWork = computingNeeded;
+        	double workPerMillisol = 0; 
+ 
+        	if (computingNeeded <= seed) {
+        		workPerMillisol = time * computingNeeded;
         	}
-        	else
-        		randWork = RandomUtil.getRandomDouble(computingNeeded/5.0, computingNeeded/2.0);
-        	
-        	// Submit his request for computing resources
-        	Computation center = person.getAssociatedSettlement().getBuildingManager().getMostFreeComputingNode(randWork/5.0, msol + 1, msol + 6);
+        	else {
+        		workPerMillisol = time * seed * RandomUtil.getRandomDouble(.9, 1.1);
+        	}
+
+        	// Submit request for computing resources
+        	Computation center = person.getAssociatedSettlement().getBuildingManager()
+        			.getMostFreeComputingNode(workPerMillisol, msol + 1, (int)(msol + getDuration()));
         	if (center != null) {
-        		if (computingNeeded <= .01)
-        			successful = center.scheduleTask(randWork, msol + 1, msol + 2);
+        		if (computingNeeded <= seed)
+        			successful = center.scheduleTask(workPerMillisol, msol + 1, msol + 2);
         		else
-        			successful = center.scheduleTask(randWork/5.0, msol + 1, msol + 6);
+        			successful = center.scheduleTask(workPerMillisol, msol + 1, (int)(msol + getDuration()));
         	}
+	    	else
+	    		logger.info(person, 30_000L, "No computing centers available for " + NAME + ".");
+        	
         	if (successful) {
-        		logger.info(person, 30_000L, "Utilized " 
-        				+ Math.round(randWork * 1_000.0)/1_000.0 
-        				+ " CUs for modeling " + study + ".");
-        		computingNeeded = computingNeeded - randWork;
-        		 if (computingNeeded < 0) {
-        			 computingNeeded = 0; 
-        		 }
-        	}
+        		if (computingNeeded <= seed)
+        			computingNeeded = computingNeeded - workPerMillisol;
+        		else
+        			computingNeeded = computingNeeded - workPerMillisol * getDuration();
+        		if (computingNeeded < 0) {
+        			computingNeeded = 0; 
+        		}
+          	}
+	    	else {
+	    		logger.info(person, 30_000L, "No computing resources for " + NAME + ".");
+	    	}
         }
         else if (computingNeeded <= 0) {
-    		logger.info(person, 0, Msg.getString(
-    	            "Task.description.performMathematicalModeling") + " on " 
-    				+ study.getName() + " - "
-    				+ Math.round(TOTAL_COMPUTING_NEEDED * 1_000.0)/1_000.0 
+        	// this task has ended
+    		logger.log(person, Level.INFO, 30_000L, NAME + " - " 
+    				+ Math.round(TOTAL_COMPUTING_NEEDED * 100.0)/100.0 
     				+ " CUs Used.");
-        	// Computing not needed
-        	successful = true;
+        	endTask();
         }
-        
-        if (!successful) {
-        	logger.warning(person, 30_000L, "No computing resources available for doing mathematical modeling at this point.");
-        }   
         
         // Add modeling work time to study.
         double modelingTime = getEffectiveModelingTime(time);

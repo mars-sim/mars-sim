@@ -50,7 +50,7 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 	private static final double LOW_SPEED = .5;
 	
 	/** The computing resources [in CUs] needed per km. */
-	private static final double CU_PER_KM = .1;
+	private static final double CU_PER_KM = .05;
 	
 	// Side directions.
 	private final static int NONE = 0;
@@ -59,7 +59,7 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 
 	// Data members
 	private int sideDirection = NONE;
-    /** Computing Units used. */		
+    /** Computing Units used per millisol. */		
 	private double computingUsed = 0; 
 			
 	/**
@@ -246,18 +246,18 @@ public class PilotDrone extends OperateVehicle implements Serializable {
         boolean successful = false; 
         
         double lastDistance = flyer.getLastDistanceTravelled();
-        double cUs = lastDistance * CU_PER_KM;
+        double workPerMillisol = lastDistance * CU_PER_KM * time;
         
     	// Submit his request for computing resources
-    	Computation center = person.getAssociatedSettlement().getBuildingManager().getMostFreeComputingNode(cUs, msol + 1, msol + 3);
+    	Computation center = person.getAssociatedSettlement().getBuildingManager().getMostFreeComputingNode(workPerMillisol, msol + 1, msol + 2);
     	if (center != null)
-    		successful = center.scheduleTask(cUs, msol + 1, msol + 3);
+    		successful = center.scheduleTask(workPerMillisol, msol + 1, msol + 2);
     	if (successful) {
     		computingUsed += timeUsed;
       	}
     	else {
     		logger.info(person, 30_000L, "No computing resources available for " 
-    			+ Msg.getString("Task.description.pilotDrone.detail", flyer.getName())+ "."); // $NON-NLS-1$
+    			+ Msg.getString("Task.description.pilotDrone.detail", flyer.getName()) + "."); // $NON-NLS-1$
     	}
 		
 		// Add experience points

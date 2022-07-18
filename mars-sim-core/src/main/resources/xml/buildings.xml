@@ -209,7 +209,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!-- The building has computation capabilities. -->
 			<!-- power-demand [kW/CU] : the power load in kW for each running CU -->
 			<!-- cooling-demand [kW/CU] : the power load in kW needed for cooling each running CU -->
-			<computation computing-unit="10.0" power-demand="0.1" cooling-demand=".05">
+			<computation computing-unit="10.0" power-demand="0.2" cooling-demand=".05">
 				<activity>
 					<activity-spot xloc="0" yloc="0" />
 				</activity>
