@@ -41,8 +41,8 @@
 	<fuel-consumption-rate value="1.0" />
 
 	<!-- The percentage of the total capacity that would trigger the low power mode -->
-	<!-- Default: 10 percent -->
-	<low-power-mode value="10.0" />
+	<!-- Default: 20 percent -->
+	<low-power-mode value="20.0" />
 	
 	<!-- Minimum air pressure (Pa) a robt can withstand without harm -->
 	<min-air-pressure value="500" />

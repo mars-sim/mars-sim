@@ -277,15 +277,18 @@ public class SleepMeta extends MetaTask {
         // Crowding modifier.
         else if (robot.isInSettlement()) {
         	result += 1D;
-        	// TODO: stay at the work location
-        	// TODO: go to that building to recharge if battery is low
+     
+        	// Checks if the battery is low
+        	if (robot.getSystemCondition().isLowPower())
+        		result += 3;
+        	else
+        		result += 3 * (1.0 - robot.getSystemCondition().getBatteryState());
+        	
             Building building = Sleep.getAvailableRoboticStationBuilding(robot);
             if (building != null) {
             	result += 1D;
-
             }
         }
-
 
         return result;
 	}

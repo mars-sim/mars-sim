@@ -33,7 +33,7 @@ public class RoboticStation extends Function {
 	private static final SimLogger logger = SimLogger.getLogger(RoboticStation.class.getName());
 	
 	/** The charge rate of the bot in kW. */
-	public final static double CHARGE_RATE = 100D;
+	public final static double CHARGE_RATE = 15D;
 
 	private int slots;
 	private int sleepers;
@@ -151,7 +151,7 @@ public class RoboticStation extends Function {
 			double load = 0;
 			double hrs = pulse.getElapsed() * MarsClock.HOURS_PER_MILLISOL;
 			for (Robot robot: robotOccupants) {
-				if (robot.getSystemCondition().isLowPower()
+				if (!robot.getSystemCondition().isBatteryAbove80()
 						|| robot.getSystemCondition().isCharging()) {
 					double energy = robot.getSystemCondition().deliverEnergy(CHARGE_RATE * hrs);
 					load += energy;

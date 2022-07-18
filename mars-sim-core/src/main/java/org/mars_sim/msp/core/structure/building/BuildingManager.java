@@ -897,19 +897,21 @@ public class BuildingManager implements Serializable {
 				.collect(Collectors.toList());
 
 		if (list.isEmpty()) {
-			logger.warning(person, "No inhabitable buildings available (except the astronomy observator if available.");
+			logger.warning(person, "No inhabitable buildings available (except the astronomy observatory if available.");
 			return;
 		}
-
-		Building building = list.get(RandomUtil.getRandomInt(list.size()-1));
-
-		if (building != null) {
-			// Add the person to a building loc
-			addPersonToActivitySpot(person, building);
+		
+		boolean found = false;
+		
+		for (Building building: list) {
+			if (!found && building != null) {
+				// Add the person to a building loc
+				found = addPersonToActivitySpot(person, building);
+			}
 		}
 
-		else {
-			logger.warning(person, "No inhabitable buildings available.");
+		if (!found) {
+			logger.warning(person, "No inhabitable buildings with empty activity spot available.");
 		}
 	}
 
@@ -1438,27 +1440,40 @@ public class BuildingManager implements Serializable {
 	 * @param person   the person to add.
 	 * @param building the building to add the person to.
 	 */
-	public static void addPersonToActivitySpot(Person person, Building building) {
+	public static boolean addPersonToActivitySpot(Person person, Building building) {
+		boolean result = false;
 		try {
 			LifeSupport lifeSupport = building.getLifeSupport();
 
 			if (!lifeSupport.containsOccupant(person)) {
 				// Add the person to a life support spot
 				lifeSupport.addPerson(person);
-				// Find an empty spot
+				// Find an empty spot in life support
 				LocalPosition loc = lifeSupport.getAvailableActivitySpot(person);
-				
+			
 				if (loc == null) {
-					loc = building.getEmptyActivitySpotFunction().getAvailableActivitySpot(person);
+					// Find a function that have an empty spot
+					Function fct = building.getEmptyActivitySpotFunction();
 					
+					if (fct != null) {
+						loc = fct.getAvailableActivitySpot(person);
+					}
+					
+					if (loc != null) {
+						// Put the person there
+						person.setPosition(loc);
+						result = true;
+					}
 					if (loc == null) {
 						loc = LocalAreaUtil.getRandomLocalRelativePosition(building);
 					}
-				}
-				
-				if (loc != null) {
 					// Put the person there
 					person.setPosition(loc);
+				}
+				else {
+					// Put the person there
+					person.setPosition(loc);
+					result = true;
 				}
 			}
 			
@@ -1467,6 +1482,8 @@ public class BuildingManager implements Serializable {
 		} catch (Exception e) {
 			logger.log(building, person, Level.SEVERE, 2000, "Could not be added.", e);
 		}
+		
+		return result;
 	}
 
 	/**
@@ -1485,9 +1502,14 @@ public class BuildingManager implements Serializable {
 				// Find an empty spot
 				LocalPosition loc = LocalAreaUtil.getRandomLocalRelativePosition(building); //roboticStation.getAvailableActivitySpot(robot);
 				
+				
 				if (loc == null) {
-					loc = building.getEmptyActivitySpotFunction().getAvailableActivitySpot(robot);
+					Function fct = building.getEmptyActivitySpotFunction();
 					
+					if (fct != null) {
+						loc = fct.getAvailableActivitySpot(robot);
+					}
+	
 					if (loc == null) {
 						loc = LocalAreaUtil.getRandomLocalRelativePosition(building);
 					}

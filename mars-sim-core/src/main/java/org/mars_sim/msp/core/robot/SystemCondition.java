@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.person.ai.task.Sleep;
 import org.mars_sim.msp.core.person.health.HealthProblem;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * This class represents the System Condition of a robot.
@@ -48,10 +49,10 @@ public class SystemCondition implements Serializable {
 
     private double LowPowerMode;
 
-	/** The current energy of the robot in kWh. */
-	private double currentEnergy = 20D;
 	/** The max energy capacity of the robot in kWh. */
-	private double maxEnergyCapacity = 20D;
+	private final double MAX_CAPACITY = 10D;
+	/** The current energy of the robot in kWh. */
+	private double currentEnergy = RandomUtil.getRandomDouble(1, MAX_CAPACITY);
 	
     private Robot robot;
 
@@ -122,7 +123,7 @@ public class SystemCondition implements Serializable {
      */
     private boolean positionToRecharge() {
 
-    	if (currentEnergy < LowPowerMode / 100D * maxEnergyCapacity) {
+    	if (currentEnergy < LowPowerMode / 100D * MAX_CAPACITY) {
     		isLowPower = true;
     		// Time to recharge
     		if (!robot.isAtStation()) {
@@ -138,8 +139,8 @@ public class SystemCondition implements Serializable {
     		isLowPower = false;
     	
     	if (isCharging) {
-    		if (currentEnergy >= maxEnergyCapacity) {
-		    	currentEnergy = maxEnergyCapacity;
+    		if (currentEnergy >= MAX_CAPACITY) {
+		    	currentEnergy = MAX_CAPACITY;
 		    	isLowPower = false;
 		    	isCharging = false;
 		    	robot.getBotMind().lookForATask();
@@ -155,6 +156,18 @@ public class SystemCondition implements Serializable {
     	return false;
     }
 
+    /**
+     * Is the battery at above 80% capacity ?
+     * 
+     * @return
+     */
+    public boolean isBatteryAbove80() {
+    	if (getBatteryState() > .8) {
+    		return true;
+    	}
+    	return false;
+    }
+    
     /**
      * Sets the robot to sleep mode.
      */
@@ -249,7 +262,16 @@ public class SystemCondition implements Serializable {
         return !operable;
     }
 
-      /**
+    /**
+     * Returns a fraction (between 0 and 1) of the battery energy level.
+     * 
+     * @return
+     */
+    public double getBatteryState() {
+    	return currentEnergy / MAX_CAPACITY;
+    }
+    
+    /**
      * Is the robot on low power mode ?
      * 
      * @return
@@ -257,7 +279,7 @@ public class SystemCondition implements Serializable {
     public boolean isLowPower() {
     	return isLowPower;
     }
-
+    
     /**
      * Delivers the energy to robot's battery.
      * 
@@ -266,8 +288,8 @@ public class SystemCondition implements Serializable {
      */
     public double deliverEnergy(double kWh) {
     	double newEnergy = currentEnergy + kWh;
-    	if (newEnergy > maxEnergyCapacity) {
-    		newEnergy = maxEnergyCapacity;
+    	if (newEnergy > MAX_CAPACITY) {
+    		newEnergy = MAX_CAPACITY;
     	}
     	currentEnergy = newEnergy;
     	return newEnergy;

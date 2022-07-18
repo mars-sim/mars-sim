@@ -354,36 +354,6 @@ public class RobotTableModel extends UnitTableModel {
 		return status;
 	}
 
-//	/**
-//	 * Give the status of a robot's fatigue level
-//	 * @param fatigue
-//	 * @return status
-//
-//	public String getFatigueStatus(double value) {
-//		String status= "N/A";
-//		if (value < 100) status = Msg.getString("RobotTableModel.column.fatigue.level1");
-//		else if (value < 400) status = Msg.getString("RobotTableModel.column.fatigue.level2");
-//		else if (value < 800) status = Msg.getString("RobotTableModel.column.fatigue.level3");
-//		else if (value < 1200) status = Msg.getString("RobotTableModel.column.fatigue.level4");
-//		else status = Msg.getString("RobotTableModel.column.fatigue.level5");
-//		return status;
-//	}
-
-//	/**
-//	 * Give the status of a robot's stress level
-//	 * @param hunger
-//	 * @return status
-//
-//	public String getStressStatus(double value) {
-//		String status= "N/A";
-//		if (value < 15) status = Msg.getString("RobotTableModel.column.stress.level1");
-//		else if (value < 40) status = Msg.getString("RobotTableModel.column.stress.level2");
-//		else if (value < 75) status = Msg.getString("RobotTableModel.column.stress.level3");
-//		else if (value < 95) status = Msg.getString("RobotTableModel.column.stress.level4");
-//		else status = Msg.getString("RobotTableModel.column.stress.level5");
-//		return status;
-//	}
-
 	/**
 	 * Give the status of a robot's hunger level
 	 *
