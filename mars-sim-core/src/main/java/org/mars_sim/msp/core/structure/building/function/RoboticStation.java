@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * RoboticStation.java
- * @date 2021-10-21
+ * @date 2022-07-17
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -9,8 +9,9 @@ package org.mars_sim.msp.core.structure.building.function;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -18,6 +19,7 @@ import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.FunctionSpec;
 import org.mars_sim.msp.core.time.ClockPulse;
+import org.mars_sim.msp.core.time.MarsClock;
 
 /**
  * The RoboticStation class is a building function for a Robotic Station.
@@ -28,18 +30,21 @@ public class RoboticStation extends Function {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static final Logger logger = Logger.getLogger(RoboticStation.class.getName());
-
-	public final static double POWER_USAGE_PER_ROBOT = 1D; // in kW
+	private static final SimLogger logger = SimLogger.getLogger(RoboticStation.class.getName());
+	
+	/** The charge rate of the bot in kW. */
+	public final static double CHARGE_RATE = 15D;
 
 	private int slots;
 	private int sleepers;
 	private int occupantCapacity;
+	
+	private double powerToDraw;
 
 	private Collection<Robot> robotOccupants;
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 * 
 	 * @param building the building this function is for.
 	 * @param spec Spec of the Robot station
@@ -51,9 +56,7 @@ public class RoboticStation extends Function {
 
 		robotOccupants = new HashSet<>();
 		// Set occupant capacity.
-		// TODO this doesn't make sense. Slots is the number of Robots the station can hold. Why is this looking at 
-		// LIFE_SUPPORT
-		occupantCapacity = buildingConfig.getFunctionSpec(building.getBuildingType(), FunctionType.LIFE_SUPPORT).getCapacity();
+		occupantCapacity = buildingConfig.getFunctionSpec(building.getBuildingType(), FunctionType.ROBOTIC_STATION).getCapacity();
 
 		slots = spec.getCapacity();
 	}
@@ -145,15 +148,18 @@ public class RoboticStation extends Function {
 	public boolean timePassing(ClockPulse pulse) {
 		boolean valid = isValid(pulse);
 		if (valid) {
-//			// Make sure all occupants are actually in settlement inventory.
-//			// If not, remove them as occupants.
-//			if (robotOccupants != null && robotOccupants.size() > 0) {
-//				Iterator<Robot> ii = robotOccupants.iterator();
-//				while (ii.hasNext()) {
-//					if (!building.getInventory().containsUnit(ii.next()))
-//						ii.remove();
-//				}
-//			}
+			double load = 0;
+			double hrs = pulse.getElapsed() * MarsClock.HOURS_PER_MILLISOL;
+			for (Robot robot: robotOccupants) {
+				if (!robot.getSystemCondition().isBatteryAbove80()
+						|| robot.getSystemCondition().isCharging()) {
+					double energy = robot.getSystemCondition().deliverEnergy(CHARGE_RATE * hrs);
+					load += energy;
+		    		robot.fireUnitUpdate(UnitEventType.ROBOT_POWER_EVENT);
+				}
+			}
+			if (hrs > 0)
+				powerToDraw = load/hrs;
 		}
 		return valid;
 	}
@@ -219,12 +225,11 @@ public class RoboticStation extends Function {
 				Building building = i.next();
 				if (building.hasFunction(FunctionType.ROBOTIC_STATION)) {
 					BuildingManager.removeRobotFromBuilding(robot, building);
-//					building.getRoboticStation().removeRobot(robot);
 				}
 			}
 
 			// Add robot to this building.
-			logger.finest("Adding " + robot + " to " + getBuilding() + " robotic station.");
+			logger.fine(robot, "Added to " + getBuilding() + "'s robotic station.");
 			robotOccupants.add(robot);
 		} else {
 			throw new IllegalStateException("This robot is already in this building.");
@@ -240,14 +245,31 @@ public class RoboticStation extends Function {
 	public void removeRobot(Robot robot) {
 		if (robotOccupants.contains(robot)) {
 			robotOccupants.remove(robot);
-			logger.finest("Removing " + robot + " from " + getBuilding() + " robotic station.");
+			logger.fine(robot, "Removed from " + getBuilding() + "'s robotic station.");
 		} else {
 			throw new IllegalStateException("The robot is not in this building.");
 		}
 	}
 
 	/**
-	 * Prepare object for garbage collection.
+	 * Gets the amount of power required, based on the current load.
+	 *
+	 * @return power (kW) default zero
+	 */
+	@Override
+	public double getFullPowerRequired() {
+		double power = 0;
+		if (powerToDraw > 0) {
+			// Set the power load this time to the power load to draw
+			power = powerToDraw;
+			// Reset it back to zero
+			powerToDraw = 0;
+		}
+		return power;
+	}
+	
+	/**
+	 * Prepares object for garbage collection.
 	 */
 	public void destroy() {
 		super.destroy();

@@ -118,7 +118,8 @@ public class BotMind implements Serializable, Temporal {
 		
 		else {
 			lookForATask();
-			if (!taskManager.hasActiveTask()) {
+			if (!taskManager.hasActiveTask()
+				&& !robot.getSystemCondition().isCharging()) {
 				taskManager.startNewTask();
 			}
 		}
@@ -127,7 +128,7 @@ public class BotMind implements Serializable, Temporal {
 	/**
 	 * Looks for a new task
 	 */
-	private void lookForATask() {
+	public void lookForATask() {
 
 		boolean hasActiveMission = false;
 		if (mission != null) {
@@ -163,7 +164,8 @@ public class BotMind implements Serializable, Temporal {
 //			}
 		}
 		
-		if (!taskManager.hasActiveTask()) { 
+		if (!taskManager.hasActiveTask()
+				&& !robot.getSystemCondition().isCharging()) { 
 			// don't have an active mission
 			taskManager.startNewTask();
 		}

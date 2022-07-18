@@ -49,6 +49,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
+import org.mars_sim.msp.core.structure.building.function.RoboticStation;
 import org.mars_sim.msp.core.structure.building.function.SystemType;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.EarthClock;
@@ -88,7 +89,6 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	/** The string tag of inoperable. */
 	private static final String INOPERABLE = "Inoperable";
 
-
 	// Data members
 	/** Is the robot is inoperable. */
 	private boolean isInoperable;
@@ -112,9 +112,6 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	/** The carrying capacity of the robot. */
 	private int carryingCapacity;
 
-	/** Settlement position (meters) from settlement center. */
-	private LocalPosition position;
-
 	/** The birthplace of the robot. */
 	private String birthplace;
 	/** The birth time of the robot. */
@@ -126,9 +123,10 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	/** The sponsor of the robot. */
 	private String sponsor;
 
+	/** Settlement position (meters) from settlement center. */
+	private LocalPosition position;
 	/** The Robot Type. */
 	private RobotType robotType;
-
 	/** The robot's skill manager. */
 	private SkillManager skillManager;
 	/** Manager for robot's natural attributes. */
@@ -141,10 +139,17 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	private SalvageInfo salvageInfo;
 	/** The equipment's malfunction manager. */
 	protected MalfunctionManager malfunctionManager;
-	/** The person's EquipmentInventory instance. */
+	/** The EquipmentInventory instance. */
 	private EquipmentInventory eqmInventory;
 
 
+	/**
+	 * Constructor 1.
+	 * 
+	 * @param name
+	 * @param settlement
+	 * @param robotType
+	 */
 	protected Robot(String name, Settlement settlement, RobotType robotType) {
 		super(name, settlement.getCoordinates());
 
@@ -167,12 +172,20 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	}
 
 	/*
-	 * Uses static factory method to create an instance of RobotBuilder
+	 * Uses static factory method to create an instance of RobotBuilder.
+	 * 
+	 * @param name
+	 * @param settlement
+	 * @param robotType
+	 * @return
 	 */
 	public static RobotBuilder<?> create(String name, Settlement settlement, RobotType robotType) {
 		return new RobotBuilderImpl(name, settlement, robotType);
 	}
 
+	/**
+	 * Initializes the robot object.
+	 */
 	public void initialize() {
 
 		unitManager = sim.getUnitManager();
@@ -266,21 +279,6 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 
 		return s.toString();
 	}
-
-//	/**
-//	 * Is the robot in a vehicle inside a garage
-//	 *
-//	 * @return true if the robot is in a vehicle inside a garage
-//	 */
-//	public boolean isInVehicleInGarage() {
-//	if (getContainerUnit() instanceof Vehicle) {
-//			Building b = BuildingManager.getBuilding((Vehicle) getContainerUnit());
-//			if (b != null)
-//				// still inside the garage
-//				return true;
-//		}
-//		return false;
-//	}
 
 	/**
 	 * Is the robot outside of a settlement but within its vicinity
@@ -507,18 +505,14 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		return s.toString();
 	}
 
-
-//    /**
-//     * robot consumes given amount of power.
-//     * @param amount the amount of power to consume (in kg)
-//     * @param takeFromInv is power taken from local inventory?
-//
-//    public void consumePower(double amount, boolean takeFromInv) {
-//        if (takeFromInv) {
-//            //System.out.println(this.getName() + " is calling consumeFood() in Robot.java");
-//        	health.consumePower(amount, getContainerUnit());
-//        }
-//    }
+    /**
+     * Consumes a given amount of energy.
+     * 
+     * @param amount the amount of energy to consume (in kWh)
+	 */
+    public void consumeEnergy(double amount) {
+        health.consumeEnergy(amount);
+    }
 
 	/**
 	 * Gets the type of the robot.
@@ -708,7 +702,6 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	 * @return building
 	 */
 	public void setCurrentBuilding(Building building) {
-//		currentBuilding = building;
 		if (building == null)
 			currentBuildingInt = -1;
 		else
@@ -1500,6 +1493,21 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	}
 
 	/**
+	 * Is the robot already at a robotic station ?
+	 * 
+	 * @return
+	 */
+	public boolean isAtStation() {
+		Building building = getBuildingLocation();
+		if (building != null) {
+			RoboticStation roboticStation = building.getRoboticStation();
+			if (roboticStation.containsRobotOccupant(this))
+				return true;
+		}
+		return false;
+	}
+	
+	/**
 	 * Transfer the unit from one owner to another owner
 	 *
 	 * @param origin {@link Unit} the original container unit
@@ -1619,7 +1627,14 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 			}
 		}
 	}
-
+	
+	/** 
+	 * Returns the current amount of energy in kWh. 
+	 */
+	public double getcurrentEnergy() {
+		return health.getcurrentEnergy();
+	}
+	
 	/**
 	 * Compares if an object is the same as this robot
 	 *

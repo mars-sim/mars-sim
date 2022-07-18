@@ -278,12 +278,12 @@ public class RobotTableModel extends UnitTableModel {
 				break;
 
 			case BATTERY: {
-				double hunger = robot.getSystemCondition().getPowerDischarge();
+				double kWh = robot.getSystemCondition().getcurrentEnergy();
 				// result = new Float(hunger).intValue();
 				if (robot.getSystemCondition().isInoperable())
 					result = "";
 				else
-					result = getHungerStatus(hunger);
+					result = Math.round(kWh * 100.0)/100.0;
 			}
 				break;
 
@@ -354,36 +354,6 @@ public class RobotTableModel extends UnitTableModel {
 		return status;
 	}
 
-//	/**
-//	 * Give the status of a robot's fatigue level
-//	 * @param fatigue
-//	 * @return status
-//
-//	public String getFatigueStatus(double value) {
-//		String status= "N/A";
-//		if (value < 100) status = Msg.getString("RobotTableModel.column.fatigue.level1");
-//		else if (value < 400) status = Msg.getString("RobotTableModel.column.fatigue.level2");
-//		else if (value < 800) status = Msg.getString("RobotTableModel.column.fatigue.level3");
-//		else if (value < 1200) status = Msg.getString("RobotTableModel.column.fatigue.level4");
-//		else status = Msg.getString("RobotTableModel.column.fatigue.level5");
-//		return status;
-//	}
-
-//	/**
-//	 * Give the status of a robot's stress level
-//	 * @param hunger
-//	 * @return status
-//
-//	public String getStressStatus(double value) {
-//		String status= "N/A";
-//		if (value < 15) status = Msg.getString("RobotTableModel.column.stress.level1");
-//		else if (value < 40) status = Msg.getString("RobotTableModel.column.stress.level2");
-//		else if (value < 75) status = Msg.getString("RobotTableModel.column.stress.level3");
-//		else if (value < 95) status = Msg.getString("RobotTableModel.column.stress.level4");
-//		else status = Msg.getString("RobotTableModel.column.stress.level5");
-//		return status;
-//	}
-
 	/**
 	 * Give the status of a robot's hunger level
 	 *
@@ -453,14 +423,12 @@ public class RobotTableModel extends UnitTableModel {
 		static final Map<UnitEventType, Integer> EVENT_COLUMN_MAPPING;// = new HashMap<String, Integer>(12);
 
 		static {
-			HashMap<UnitEventType, Integer> m = new HashMap<UnitEventType, Integer>();
+			HashMap<UnitEventType, Integer> m = new HashMap<>();
 			m.put(UnitEventType.NAME_EVENT, NAME);
 			m.put(UnitEventType.LOCATION_EVENT, LOCATION);
 			m.put(UnitEventType.ADD_ASSOCIATED_ROBOT_EVENT, SETTLEMENT_COL);
 			m.put(UnitEventType.REMOVE_ASSOCIATED_ROBOT_EVENT, SETTLEMENT_COL);
-			m.put(UnitEventType.HUNGER_EVENT, BATTERY);
-			// m.put(UnitEventType.FATIGUE_EVENT, FATIGUE);
-			// m.put(UnitEventType.STRESS_EVENT, STRESS);
+			m.put(UnitEventType.ROBOT_POWER_EVENT, BATTERY);
 			m.put(UnitEventType.PERFORMANCE_EVENT, PERFORMANCE);
 			m.put(UnitEventType.JOB_EVENT, JOB);
 			m.put(UnitEventType.TASK_EVENT, TASK);
@@ -468,7 +436,6 @@ public class RobotTableModel extends UnitTableModel {
 			m.put(UnitEventType.TASK_ENDED_EVENT, TASK);
 			m.put(UnitEventType.TASK_SUBTASK_EVENT, TASK);
 			m.put(UnitEventType.MISSION_EVENT, MISSION_COL);
-			// m.put(UnitEventType.ILLNESS_EVENT, HEALTH);
 			m.put(UnitEventType.DEATH_EVENT, HEALTH);
 			EVENT_COLUMN_MAPPING = Collections.unmodifiableMap(m);
 		}
@@ -487,39 +454,6 @@ public class RobotTableModel extends UnitTableModel {
 			UnitEventType eventType = event.getType();
 
 			Integer column = EVENT_COLUMN_MAPPING.get(eventType);
-
-//			int columnNum = -1;
-//			if (eventType.equals(Unit.NAME_EVENT)) columnNum = NAME;
-//			else if (eventType.equals(Unit.LOCATION_EVENT)) columnNum = LOCATION;
-//			else if (eventType.equals(SystemCondition.HUNGER_EVENT)) columnNum = HUNGER;
-//			else if (eventType.equals(SystemCondition.FATIGUE_EVENT)) columnNum = FATIGUE;
-//			else if (eventType.equals(SystemCondition.STRESS_EVENT)) columnNum = STRESS;
-//			else if (eventType.equals(SystemCondition.PERFORMANCE_EVENT)) columnNum = PERFORMANCE;
-//			else if (eventType.equals(Mind.JOB_EVENT)) columnNum = JOB;
-//			else if (eventType.equals(TaskManager.TASK_EVENT)) columnNum = TASK;
-//			else if (eventType.equals(Mind.MISSION_EVENT)) columnNum = MISSION;
-//			else if (eventType.equals(SystemCondition.ILLNESS_EVENT) ||
-
-//			if (eventType == UnitEventType.DEATH_EVENT) {
-//				if (event.getTarget() instanceof Robot) {
-//					Unit unit = (Unit) event.getTarget();
-//					String personName  = unit.getName();
-//					String announcement = personName + " has just passed away. ";
-//					//desktop.openMarqueeBanner(announcement);
-//					System.out.println(announcement);
-//				}
-//			}
-
-//			else if (eventType == UnitEventType.ILLNESS_EVENT) {
-//				if (event.getTarget() instanceof Robot) {
-//					Unit unit = (Unit) event.getTarget();
-//					String personName  = unit.getName();
-//					String announcement = personName + " got sick. ";
-//					//desktop.disposeMarqueeBanner();
-//					//desktop.openMarqueeBanner(announcement);
-//					System.out.println(announcement);
-//				}
-//			}
 
 			if (column != null && column > -1) {
 				Unit unit = (Unit) event.getSource();

@@ -226,11 +226,7 @@ public class Sleep extends Task implements Serializable {
 		else if (robot != null) {
 
 			// If robot is in a settlement, try to find a living accommodations building.
-			if (robot.isInSettlement()) {
-
-				// NOTE: if power is below a certain threshold, go to robotic station for
-				// recharge, else stay at the same place
-
+			if (robot.isInSettlement() && !robot.isAtStation()) {
 				// If currently in a building with a robotic station, 
 				// go to a station activity spot.
 				Building currentBuilding = BuildingManager.getBuilding(robot);
@@ -263,15 +259,18 @@ public class Sleep extends Task implements Serializable {
 					}
 				}
 			}
-			else {
-				// For future scenario
+
+			// if power is below a certain threshold, stay to get a recharge
+			if (robot.getSystemCondition().isLowPower()) {
+				// Lengthen the duration for charging the battery
+				setDuration(getDuration() + 5);
 			}
 		}
 
 		return 0D;
 	}
 
-
+    
 	/**
 	 * Walk to a destination
 	 */

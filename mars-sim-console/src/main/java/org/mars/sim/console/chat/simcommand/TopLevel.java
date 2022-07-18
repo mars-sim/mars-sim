@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * TopLevel.java
- * @version 3.1.2 2020-12-30
+ * @date 2022-07-17
  * @author Barry Evans
  */
 package org.mars.sim.console.chat.simcommand;
@@ -17,7 +17,7 @@ import org.mars.sim.console.chat.command.InteractiveChatCommand;
 
 public class TopLevel extends InteractiveChatCommand {
 
-	private static final String PREAMBLE = "Welcome to MarsNet!\n\nFor help, enter '"
+	private static final String PREAMBLE = "Welcome to MarsLink !\n\nFor help, enter '"
 									+ HelpCommand.HELP_LONG + "' at the prompt\n";
 	private static final List<ChatCommand> COMMON_COMMANDS = Arrays.asList(ConnectCommand.CONNECT,
 																	SettlementsCommand.SETTLEMENTS,
@@ -39,7 +39,7 @@ public class TopLevel extends InteractiveChatCommand {
 																	new SpeedCommand());
 	// The command group for Simulation commands
 	public static final String SIMULATION_GROUP = "Simulation";
-	private static final String PROMPT_SEED = "MarsNet";
+	private static final String PROMPT_SEED = "MarsLink";
 
 	public TopLevel() {
 		// Toplevel does not need a keyword or short command

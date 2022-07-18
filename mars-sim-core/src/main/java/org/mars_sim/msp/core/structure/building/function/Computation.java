@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Computation.java
- * @date 2022-07-11
+ * @date 2022-07-17
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -118,6 +118,16 @@ public class Computation extends Function {
 		return computingUnit;
 	}
 
+	/**
+	 * Gets the peak computing units [in CU].
+	 * 
+	 * @return
+	 */
+	public double getPeakComputingUnit() {
+		return peakCU;
+	}
+	
+	
 	/**
 	 * Gets the power demand [in kW].
 	 * 

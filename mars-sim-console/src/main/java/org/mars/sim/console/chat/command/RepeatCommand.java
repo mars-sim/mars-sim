@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * RepeatCommand.java
- * @date 2022-06-20
+ * @date 2022-07-17
  * @author Barry Evans
  */
 
@@ -78,7 +78,6 @@ public class RepeatCommand extends ChatCommand implements CancellableCommand {
 		context.println("Going to execute '" + commandStr + "' every " + delaySec + " secs for " + repeatCount + " times");
 		context.println("To stop, press '" + Conversation.CANCEL_KEY + "'");
 		
-		
 		boolean result = parsedCommand.command.execute(context, parsedCommand.parameter);
 		int count = 1;
 		context.setActiveCommand(this);
@@ -86,12 +85,7 @@ public class RepeatCommand extends ChatCommand implements CancellableCommand {
 		
 		while (result && !stopRun && (count != repeatCount)) {
 			context.println("Waiting..........");
-			try {
-				Thread.sleep(delaySec * 1000L);
-			} catch (InterruptedException e) {
-				context.println("Abort repeat");
-				Thread.currentThread().interrupt();
-			}
+			sleep(context, delaySec);
 			
 			if (!stopRun) {
 				result = parsedCommand.command.execute(context, parsedCommand.parameter);
@@ -103,6 +97,15 @@ public class RepeatCommand extends ChatCommand implements CancellableCommand {
 		return result;
 	}
 
+	public void sleep(Conversation context, int delaySec) {
+		try {
+			Thread.sleep(delaySec * 1000L);
+		} catch (InterruptedException e) {
+			context.println("Abort repeat");
+			Thread.currentThread().interrupt();
+		}
+	}
+	
 	/**
 	 * This delegates to the parent Interactive Command
 	 */
