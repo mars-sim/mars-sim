@@ -224,7 +224,6 @@ public class SimulationConfig implements Serializable {
 	 */
 	public void loadConfig() {
 		if (loaded) {
-			logger.warning("Loadconfig called more than once. Ignored");
 			return;
 		}
 		loaded = true;
