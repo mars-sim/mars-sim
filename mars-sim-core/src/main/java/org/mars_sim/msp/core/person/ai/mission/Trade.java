@@ -38,7 +38,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * A mission for trading between two settlements. TODO externalize strings
  */
-public class Trade extends RoverMission {
+public class Trade extends RoverMission implements CommerceMission {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -58,10 +58,6 @@ public class Trade extends RoverMission {
 
 	// Static members
 	public static final double MAX_STARTING_PROBABILITY = 100D;
-
-	// Static cache for holding trade profit info.
-	public static final Map<Settlement, TradeProfitInfo> TRADE_PROFIT_CACHE = new HashMap<>();
-	public static final Map<Settlement, Settlement> TRADE_SETTLEMENT_CACHE = new HashMap<>();
 
 	static final int MAX_MEMBERS = 2;
 
@@ -104,45 +100,41 @@ public class Trade extends RoverMission {
 
 		if (!isDone() && s != null) {
 			// Get trading settlement
-			tradingSettlement = TRADE_SETTLEMENT_CACHE.get(s);
-			if (tradingSettlement != null && !tradingSettlement.equals(s)) {
-				addNavpoint(tradingSettlement);
-				TRADE_PROFIT_CACHE.remove(getStartingSettlement());
-				TRADE_PROFIT_CACHE.remove(tradingSettlement);
-				TRADE_SETTLEMENT_CACHE.remove(getStartingSettlement());
-				TRADE_SETTLEMENT_CACHE.remove(tradingSettlement);
-			} else {
+			tradingSettlement = CommerceUtil.getBestSettlement(s, MissionType.TRADE, getVehicle());
+			if (tradingSettlement == null) {
 				endMission(MissionStatus.NO_TRADING_SETTLEMENT);
+				return;
 			}
 
-			if (!isDone()) {
-				// Get the credit that the starting settlement has with the destination
-				// settlement.
-				double credit = CreditManager.getCredit(s, tradingSettlement);
+			addNavpoint(tradingSettlement);
 
-				if (credit > (TradeUtil.SELL_CREDIT_LIMIT * -1D)) {
-					// Determine desired buy load,
-					desiredBuyLoad = TradeUtil.getDesiredBuyLoad(s, getRover(), tradingSettlement);
-				} else {
-					// Cannot buy from settlement due to credit limit.
-					desiredBuyLoad = new HashMap<Good, Integer>(0);
-				}
+			// Get the credit that the starting settlement has with the destination
+			// settlement.
+			double credit = CreditManager.getCredit(s, tradingSettlement);
 
-				if (credit < TradeUtil.SELL_CREDIT_LIMIT) {
-					// Determine sell load.
-					sellLoad = TradeUtil.determineBestSellLoad(s, getRover(), tradingSettlement);
-				} else {
-					// Will not sell to settlement due to credit limit.
-					sellLoad = new HashMap<Good, Integer>(0);
-				}
-
-				// Determine desired trade profit.
-				desiredProfit = estimateTradeProfit(desiredBuyLoad);
+			if (credit > (CommerceUtil.SELL_CREDIT_LIMIT * -1D)) {
+				// Determine desired buy load,
+				desiredBuyLoad = CommerceUtil.getDesiredBuyLoad(s, getRover(), tradingSettlement);
+			} else {
+				// Cannot buy from settlement due to credit limit.
+				desiredBuyLoad = new HashMap<>(0);
 			}
+
+			if (credit < CommerceUtil.SELL_CREDIT_LIMIT) {
+				// Determine sell load.
+				sellLoad = CommerceUtil.determineBestSellLoad(s, getRover(), tradingSettlement);
+			} else {
+				// Will not sell to settlement due to credit limit.
+				sellLoad = new HashMap<>(0);
+			}
+
+			// Determine desired trade profit.
+			desiredProfit = estimateTradeProfit(desiredBuyLoad);
+
 
 			// Recruit additional members to mission.
 			if (!isDone()) {
-				if (!recruitMembersForMission(startingMember, MAX_MEMBERS))
+				if (!recruitMembersForMission(startingMember, MAX_MEMBERS)) 
 					return;
 			}
 		}
@@ -376,7 +368,10 @@ public class Trade extends RoverMission {
 					new NavPoint(tradingSettlement),
 					new NavPoint(getStartingSettlement()));
 
-			TRADE_PROFIT_CACHE.remove(getStartingSettlement());
+			CommerceUtil.clearBestSettlement(getStartingSettlement(), MissionType.TRADE);
+
+			// Start the loading
+			prepareLoadingPlan(tradingSettlement);
 		}
 	}
 
@@ -862,19 +857,19 @@ public class Trade extends RoverMission {
 		double result = 0D;
 
 		try {
-			double sellingValueHome = TradeUtil.determineLoadCredit(sellLoad, getStartingSettlement(), false);
-			double sellingValueRemote = TradeUtil.determineLoadCredit(sellLoad, tradingSettlement, true);
+			double sellingValueHome = CommerceUtil.determineLoadCredit(sellLoad, getStartingSettlement(), false);
+			double sellingValueRemote = CommerceUtil.determineLoadCredit(sellLoad, tradingSettlement, true);
 			double sellingProfit = sellingValueRemote - sellingValueHome;
 
-			double buyingValueHome = TradeUtil.determineLoadCredit(buyingLoad, getStartingSettlement(), true);
-			double buyingValueRemote = TradeUtil.determineLoadCredit(buyingLoad, tradingSettlement, false);
+			double buyingValueHome = CommerceUtil.determineLoadCredit(buyingLoad, getStartingSettlement(), true);
+			double buyingValueRemote = CommerceUtil.determineLoadCredit(buyingLoad, tradingSettlement, false);
 			double buyingProfit = buyingValueHome - buyingValueRemote;
 
 			double totalProfit = sellingProfit + buyingProfit;
 
 			double estimatedDistance = Coordinates.computeDistance(getStartingSettlement().getCoordinates(),
 					tradingSettlement.getCoordinates()) * 2D;
-			double missionCost = TradeUtil.getEstimatedMissionCost(getStartingSettlement(), getRover(),
+			double missionCost = CommerceUtil.getEstimatedMissionCost(getStartingSettlement(), getRover(),
 					estimatedDistance);
 
 			result = totalProfit - missionCost;
