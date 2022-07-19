@@ -43,6 +43,7 @@ import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.SettlementConfig;
+import org.mars_sim.msp.core.structure.SettlementTemplate;
 import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
 import org.mars_sim.msp.core.structure.building.connection.InsideBuildingPath;
 import org.mars_sim.msp.core.structure.building.function.Administration;
@@ -890,7 +891,7 @@ public class BuildingManager implements Serializable {
 		else {
 			manager = s.getBuildingManager();
 		}
-		
+
 		List<Building> list = manager.getBuildingsWithLifeSupport();
 		
 		list = list.stream().filter(b -> !b.hasFunction(FunctionType.ASTRONOMICAL_OBSERVATION))
@@ -2101,6 +2102,56 @@ public class BuildingManager implements Serializable {
 		return result;
 	}
 
+	
+	/**
+	 * Gets the building that owns (is attached to) the EVA Airlock.
+	 * 
+	 * @param evaBuilding
+	 * @return
+	 */
+	public Building getEVAAttachedBuilding(Building evaBuilding) {
+		SettlementTemplate settlementTemplate = SimulationConfig.instance()
+				.getSettlementConfiguration().getSettlementTemplate(getSettlement().getTemplate());
+		List<BuildingTemplate> templates = settlementTemplate.getBuildingTemplates();
+		
+		int idEVAAttachedBuilding = -1;
+		String nickName = null;
+		Building eVAAttachedBuilding = null;
+		
+		for (BuildingTemplate bt: templates) {
+			if (bt.getNickName().equalsIgnoreCase(evaBuilding.getNickName())) {
+				idEVAAttachedBuilding = bt.getEVAAttachedBuildingID();
+			}
+		}
+		
+		for (BuildingTemplate bt: templates) {
+			if (bt.getID() == idEVAAttachedBuilding) {
+				nickName = bt.getNickName();
+			}
+		}
+		
+		for (Building b: buildings) {
+			if (b.getNickName().equalsIgnoreCase(nickName)) {
+				eVAAttachedBuilding = b;
+			}
+		}
+		
+		return eVAAttachedBuilding;
+	}
+	
+	/**
+	 * Is the astronomy observatory the owner of this EVA Airlock ?
+	 * 
+	 * @param airlockBuilding
+	 * @return
+	 */
+	public boolean isObservatoryAttached(Building airlockBuilding) {
+		if (getEVAAttachedBuilding(airlockBuilding).hasFunction(FunctionType.ASTRONOMICAL_OBSERVATION))
+			return true;
+		
+		return false;
+	}
+	
 	// This method is called by MeteoriteImpactImpl
 	public void setProbabilityOfImpactPerSQMPerSol(double value) {
 		probabilityOfImpactPerSQMPerSol = value;

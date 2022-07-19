@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * RecordActivity.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-18
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -103,7 +103,6 @@ public class RecordActivity extends Task implements Serializable {
 		newPoints += newPoints * (exp + art - 100D) / 100D;
 		newPoints *= getTeachingExperienceModifier();
 		worker.getSkillManager().addExperience(SkillType.REPORTING, newPoints, time);
-
 	}
 
 }

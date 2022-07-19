@@ -88,6 +88,7 @@ public class BuildingSpec {
 
 	/**
 	 * What functions are supported by this building type.
+	 * 
 	 * @return
 	 */
 	public Set<FunctionType> getFunctionSupported() {
@@ -96,7 +97,8 @@ public class BuildingSpec {
 
 	
 	/**
-	 * Get the function details for this building type.
+	 * Gets the function details for this building type.
+	 * 
 	 * @param function
 	 * @return
 	 */

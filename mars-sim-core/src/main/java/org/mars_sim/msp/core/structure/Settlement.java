@@ -3250,11 +3250,12 @@ public class Settlement extends Structure implements Temporal,
 
 		// Prompt the collect ice mission to proceed more easily if water resource is
 		// dangerously low,
-		if (water_available > MIN_WATER_RESERVE * pop) {
+		if (water_available + ice_available > (MIN_ICE_RESERVE + MIN_WATER_RESERVE) * pop) {
 			// no change to missionProbability
 		}
 		else {
-			result = .1 * (MIN_WATER_RESERVE * pop - water_available);
+			result = .075 * ((MIN_ICE_RESERVE + MIN_WATER_RESERVE) * pop 
+						- water_available - ice_available);
 		}
 
 		return result;

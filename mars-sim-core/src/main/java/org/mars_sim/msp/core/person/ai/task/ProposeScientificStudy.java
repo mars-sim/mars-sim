@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * ProposeScientificStudy.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-18
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -56,11 +56,6 @@ public class ProposeScientificStudy extends Task implements Serializable {
 		// Skill set set later on based on Study
 		super(NAME, person, false, true, STRESS_MODIFIER, null, 25D, 10D + RandomUtil.getRandomDouble(50D));
 		setExperienceAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
-		
-//		if (person.getPhysicalCondition().computeFitnessLevel() < 2) {
-//			logger.log(person, Level.FINE, 10_000, "Ended proposing scientific study. Not feeling well.");
-//			endTask();
-//		}
 		
 		study = person.getStudy();
 		if (study == null) {		

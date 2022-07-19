@@ -510,7 +510,7 @@ public abstract class Airlock implements Serializable {
 			activated = false;
 			transitioning = false;
 			innerDoorLocked = true;
-			outerDoorLocked = false;
+			outerDoorLocked = true;
 			return true;
 		}
 		
@@ -527,7 +527,7 @@ public abstract class Airlock implements Serializable {
 			setState(AirlockState.PRESSURIZING);
 			activated = false;
 			transitioning = false;
-			innerDoorLocked = false;
+			innerDoorLocked = true;
 			outerDoorLocked = true;
 			return true;
 		}
@@ -806,7 +806,7 @@ public abstract class Airlock implements Serializable {
 	 * @param id the id of the person
 	 * @return true if the person can be added or is already in the queue
 	 */
-	public boolean addAwaitingInnerDoor(Person p, Integer id) {
+	public boolean addAwaitingInnerDoor(Integer id) {
 		return addToZone(awaitingInnerDoor, id);
 	}
 
@@ -817,7 +817,7 @@ public abstract class Airlock implements Serializable {
 	 * @param id the id of the person
 	 * @return true if the person can be added or is already in the queue
 	 */
-	public boolean addAwaitingOuterDoor(Person p, Integer id) {
+	public boolean addAwaitingOuterDoor(Integer id) {
 		return addToZone(awaitingOuterDoor, id);
 	}
 
@@ -830,6 +830,7 @@ public abstract class Airlock implements Serializable {
 	 */
 	private boolean addToZone(Set<Integer> set, Integer id) {
 		if (set.contains(id)) {
+			// this unit is already in the zone
 			return true;
 		}
 		else {
@@ -905,20 +906,25 @@ public abstract class Airlock implements Serializable {
 		Iterator<Integer> i = occupantIDs.iterator();
 		while (i.hasNext()) {
 			int id = i.next();
-			Building b = unitManager.getPersonByID(id).getBuildingLocation();
-			if (b != null) {
-				if (!b.hasFunction(FunctionType.EVA)) {
-					occupantIDs.remove(id);
-				}
-				else if (b.getEVA().getAirlock() != this) {
-					occupantIDs.remove(id);
-				}
-			}
 			
 			// Being in zone 0 or 4 is not considered an airlock occupant.
 			if (getZoneOccupants(0).contains(id)
 				|| getZoneOccupants(4).contains(id)) {
 				occupantIDs.remove(id);
+			}
+			else {
+				Building b = unitManager.getPersonByID(id).getBuildingLocation();
+				if (b != null) {
+					if (!b.hasFunction(FunctionType.EVA)) {
+						occupantIDs.remove(id);
+					}
+					else if (b.getEVA().getAirlock() != this) {
+						occupantIDs.remove(id);
+					}
+				}
+				else
+					// the occupant is not in the building/settlement
+					occupantIDs.remove(id);
 			}
 		}
 	}

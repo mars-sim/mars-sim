@@ -1261,7 +1261,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
-	 * Checks if the adjacent building is the type of interest
+	 * Checks if one of the adjacent buildings has a certain function type.
 	 *
 	 * @param type
 	 * @return

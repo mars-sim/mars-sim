@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * EVA.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-18
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -34,7 +34,7 @@ public class EVA extends Function {
 	private Airlock airlock;
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 * 
 	 * @param building the building this function is for.
 	 * @param spec Specification of this Function
@@ -55,6 +55,7 @@ public class EVA extends Function {
 
 	/**
 	 * Gets the value of the function for a named building.
+	 * 
 	 * @param type the building name.
 	 * @param newBuilding true if adding a new building.
 	 * @param settlement the settlement.
@@ -93,6 +94,7 @@ public class EVA extends Function {
 	
 	/**
 	 * Gets the building's airlock.
+	 * 
 	 * @return airlock
 	 */
 	public Airlock getAirlock() {
@@ -121,6 +123,7 @@ public class EVA extends Function {
 	
 	/**
 	 * Time passing for the building.
+	 * 
 	 * @param pulse the amount of clock pulse passing (in millisols)
 	 * @throws BuildingException if error occurs.
 	 */
@@ -135,6 +138,7 @@ public class EVA extends Function {
 
 	/**
 	 * Gets the amount of power required when function is at full power.
+	 * 
 	 * @return power (kW)
 	 */
 	@Override
@@ -144,6 +148,7 @@ public class EVA extends Function {
 
 	/**
 	 * Gets the amount of power required when function is at power down level.
+	 * 
 	 * @return power (kW)
 	 */
 	@Override

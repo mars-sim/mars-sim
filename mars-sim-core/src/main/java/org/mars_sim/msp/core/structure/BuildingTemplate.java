@@ -24,6 +24,7 @@ public class BuildingTemplate implements Serializable, Comparable<BuildingTempla
 	private static final long serialVersionUID = 1L;
 
 	private int bid;
+	private int eVAAttachedBuildingID;
 	private BoundedObject bounds;
 
 	private String buildingType;
@@ -113,6 +114,14 @@ public class BuildingTemplate implements Serializable, Comparable<BuildingTempla
 		}
 	}
 
+	public void addEVAAttachedBuildingID(int id) {
+		eVAAttachedBuildingID = id;
+	}
+	
+	public int getEVAAttachedBuildingID() {
+		return eVAAttachedBuildingID;
+	}
+	
 	/**
 	 * Get a list of all building connection templates.
 	 * 

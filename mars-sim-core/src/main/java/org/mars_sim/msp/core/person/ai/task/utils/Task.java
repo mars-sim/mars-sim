@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
@@ -1287,6 +1288,10 @@ public abstract class Task implements Serializable, Comparable<Task> {
 				
 				List<Building> buildingList = s.getBuildingManager()
 						.getBuildingsWithoutFunctionType(FunctionType.EVA);
+				
+				buildingList = buildingList.stream().filter(b -> !b.hasFunction(FunctionType.ASTRONOMICAL_OBSERVATION))
+						.collect(Collectors.toList());
+				
 				// Randomize its order
 				Collections.shuffle(buildingList);	
 

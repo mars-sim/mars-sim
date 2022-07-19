@@ -28,6 +28,7 @@ import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.PartPackageConfig;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.BuildingTemplate.BuildingConnectionTemplate;
+import org.mars_sim.msp.core.structure.building.ConstructionType;
 
 /**
  * Provides configuration information about settlements templates. Uses a DOM document to
@@ -79,6 +80,8 @@ public class SettlementConfig implements Serializable {
 	private static final String PART = "part";
 	private static final String PART_PACKAGE = "part-package";
 
+	private static final String EVA_AIRLOCK = "EVA Airlock";
+	
 	// Random value indicator.
 	public static final String RANDOM = "random";
 
@@ -275,7 +278,7 @@ public class SettlementConfig implements Serializable {
 					existingIDs.add(bid);
 
 				String buildingType = buildingElement.getAttributeValue(TYPE);
-
+				
 				if (buildingTypeIDMap.containsKey(buildingType)) {
 					int last = buildingTypeIDMap.get(buildingType);
 					buildingTypeIDMap.put(buildingType, last + 1);
@@ -303,6 +306,10 @@ public class SettlementConfig implements Serializable {
 					for (Element connectionElement : connectionNodes) {
 						int connectionID = Integer.parseInt(connectionElement.getAttributeValue(ID));
 
+						if (buildingType.equalsIgnoreCase(EVA_AIRLOCK)) {
+							buildingTemplate.addEVAAttachedBuildingID(connectionID);
+						}
+						
 						// Check that connection ID is not the same as the building ID.
 						if (connectionID == bid) {
 							throw new IllegalStateException(

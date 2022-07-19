@@ -177,7 +177,6 @@ public class BuildingConfig implements Serializable {
 					props.put(complexProperty.getName(), pos);
 				}
 			}
-
 			
 			FunctionSpec fspec = new FunctionSpec(props, spots);
 
@@ -199,7 +198,7 @@ public class BuildingConfig implements Serializable {
 			 	roomTemp, maintenanceTime, wearLifeTime,
 			 	basePowerRequirement, basePowerDownPowerRequirement,
 			 	supportedFunctions);
-
+		
 		String construction = buildingElement.getAttributeValue(CONSTRUCTION);
 		if (construction != null) {
 			newSpec.setConstruction(ConstructionType.valueOf(construction));

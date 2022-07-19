@@ -31,6 +31,7 @@ import org.mars_sim.msp.core.structure.Airlock;
 import org.mars_sim.msp.core.structure.AirlockType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -77,7 +78,6 @@ public class ExitAirlock extends Task implements Serializable {
 	private static final double STRESS_MODIFIER = .1D;
 	/** The standard EVA suit donning time. */
 	private static final double SUIT_DONNING_TIME = 15;
-
 
 	// Data members
 	/** Is this a building airlock in a settlement? */
@@ -275,6 +275,14 @@ public class ExitAirlock extends Task implements Serializable {
 		if (person.isAdjacentBuilding(FunctionType.ASTRONOMICAL_OBSERVATION)) {
 		 	return true;
 		}
+		
+		if (airlock.getEntity() instanceof Building) {
+			Building airlockBuilding = (Building)(airlock.getEntity());
+			if (person.getSettlement().getBuildingManager().isObservatoryAttached(airlockBuilding)) {
+				return true;
+			}
+		}
+		
 		// Checks if a person is tired, too stressful or hungry and need
 		// to take break, eat and/or sleep
 		return person.getPhysicalCondition().computeFitnessLevel() >= 2;
@@ -346,45 +354,34 @@ public class ExitAirlock extends Task implements Serializable {
 			// Load up the EVA activity spots
 			airlock.loadEVAActivitySpots();
 
-			if (airlock.addAwaitingInnerDoor(person, id)) {
-
-				if (!airlock.isChamberFull() && airlock.hasSpace()) {
-
-					if (transitionTo(0)) {
-
-						if (!airlock.isInnerDoorLocked()) {
-							// The inner door will stay locked if the chamber is NOT pressurized
-							canProceed = true;
-
-	//						// if the inner door is locked, checks if anyone wearing EVA suit is inside
-	//						List<Integer> list = new ArrayList<>(airlock.getOccupants());
-	//						for (int id : list) {
-	//							Person p = unitManager.getPersonByID(id);
-	//							if (p.getSuit() != null) {
-	//								canEnter = false;
-	//								break;
-	//							}
-	//						}
-						}
-
-						else if (airlock.isEmpty()) {
-							// Will allow the person come in if empty
-							canProceed = true;
-						}
-					}
-					else {
-						walkAway(person, "Cannot transition to zone 0.");
-						return 0;
-					}
-				}
-				else {
-					walkAway(person, "Chamber full.");
-					return 0;
-				}
-			}
-			else {
-				walkAway(person, "Cannot wait at " + airlock.getEntity().toString() + " inner door.");
+			if (!airlock.addAwaitingInnerDoor(id)) {
+				walkAway(person, "Cannot get a spot at the inner door of " + airlock.getEntity().toString() + ".");
 				return 0;
+			}
+
+			if (airlock.isChamberFull() || !airlock.hasSpace()) {
+				walkAway(person, "Chamber full.");
+				return 0;
+			}
+			
+			if (!transitionTo(0)) {
+				walkAway(person, "Cannot transition to zone 0.");
+				return 0;
+			}
+				
+			if (!airlock.isInnerDoorLocked() || airlock.isEmpty()) {
+				// The inner door will stay locked if the chamber is NOT pressurized
+				canProceed = true;
+
+//				// if the inner door is locked, checks if anyone wearing EVA suit is inside
+//				List<Integer> list = new ArrayList<>(airlock.getOccupants());
+//				for (int id : list) {
+//					Person p = unitManager.getPersonByID(id);
+//					if (p.getSuit() != null) {
+//						canEnter = false;
+//						break;
+//					}
+//				}
 			}
 		}
 
@@ -395,7 +392,7 @@ public class ExitAirlock extends Task implements Serializable {
 			}
 
 //			if (LocalAreaUtil.areLocationsClose(new LocalPosition.Double(person.getXLocation(), person.getYLocation()), interiorDoorPos)) {
-				if (airlock.addAwaitingInnerDoor(person, id)) {
+				if (airlock.addAwaitingInnerDoor(id)) {
 					canProceed = true;
 				}
 				else {
@@ -519,28 +516,31 @@ public class ExitAirlock extends Task implements Serializable {
 
 		if (inSettlement) {
 
-			if (!airlock.isInnerDoorLocked()) {
+			if (airlock.isInnerDoorLocked()) {
+				walkAway(person, "Inner door locked.");
+				return remainingTime;
+			}
 
-				if (!airlock.isChamberFull() && airlock.hasSpace()) {
-
-					if (!airlock.inAirlock(person)) {
-						canProceed = airlock.enterAirlock(person, id, true);
-					}
-					else // the person is already inside the airlock from previous cycle
-						canProceed = true;
-
-                    // true if the person is already inside the chamber from previous cycle
-                    if (canProceed && transitionTo(1)) {
+			if (airlock.isChamberFull() || !airlock.hasSpace()) {
+				walkAway(person, "Chamber full.");
+				return remainingTime;
+			}
+			
+			if (!airlock.inAirlock(person)) {
+				canProceed = airlock.enterAirlock(person, id, true);
+			}
+			else {// the person is already inside the airlock from previous cycle
+				canProceed = true;
+			}
+			
+            // true if the person is already inside the chamber from previous cycle
+            if (canProceed && transitionTo(1)) {
 //						logger.log((Unit)airlock.getEntity(), person, Level.INFO, 20_000,
 //								"called transitionTo(1) in " + airlock.getEntity().toString() + ".");
-						canProceed = true;
-					}
-					else canProceed = isInZone(2);
-				}
-				else {
-					walkAway(person, "Chamber full.");
-					return remainingTime;
-				}
+				canProceed = true;
+			}
+			else {
+				canProceed = isInZone(2);
 			}
 		}
 
