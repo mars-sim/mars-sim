@@ -20,7 +20,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.mission.TradeUtil;
+import org.mars_sim.msp.core.person.ai.mission.CommerceUtil;
 import org.mars_sim.msp.core.person.ai.social.RelationshipUtil;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
@@ -109,7 +109,7 @@ public class NegotiateTrade extends Task implements Serializable {
 			double tradeModifier = determineTradeModifier();
 
 			// Get the value of the load that is being sold to the destination settlement.
-			double baseSoldLoadValue = TradeUtil.determineLoadCredit(soldLoad, sellingSettlement, true);
+			double baseSoldLoadValue = CommerceUtil.determineLoadCredit(soldLoad, sellingSettlement, true);
 			double soldLoadValue = baseSoldLoadValue * tradeModifier;
 
 			// Get the credit that the starting settlement has with the destination
@@ -128,12 +128,12 @@ public class NegotiateTrade extends Task implements Serializable {
 
 			// Check if buying settlement owes the selling settlement too much for them to
 			// sell.
-			if (credit > (-1D * TradeUtil.SELL_CREDIT_LIMIT)) {
+			if (credit > (-1D * CommerceUtil.SELL_CREDIT_LIMIT)) {
 
 				// Determine the initial buy load based on goods that are profitable for the
 				// destination settlement to sell.
-				buyLoad = TradeUtil.determineLoad(buyingSettlement, sellingSettlement, rover, Double.POSITIVE_INFINITY);
-				double baseBuyLoadValue = TradeUtil.determineLoadCredit(buyLoad, buyingSettlement, true);
+				buyLoad = CommerceUtil.determineLoad(buyingSettlement, sellingSettlement, rover, Double.POSITIVE_INFINITY);
+				double baseBuyLoadValue = CommerceUtil.determineLoadCredit(buyLoad, buyingSettlement, true);
 				double buyLoadValue = baseBuyLoadValue / tradeModifier;
 
 				// Update the credit value between the starting and destination settlements.

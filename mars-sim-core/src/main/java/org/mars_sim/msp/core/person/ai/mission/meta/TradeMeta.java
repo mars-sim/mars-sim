@@ -13,16 +13,14 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.JobType;
+import org.mars_sim.msp.core.person.ai.mission.CommerceUtil;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.person.ai.mission.Trade;
-import org.mars_sim.msp.core.person.ai.mission.Trade.TradeProfitInfo;
-import org.mars_sim.msp.core.person.ai.mission.TradeUtil;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Rover;
 
 /**
@@ -33,7 +31,6 @@ public class TradeMeta extends AbstractMetaMission {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(TradeMeta.class.getName());
 
-    private static final int FREQUENCY = 1000;
 
 	TradeMeta() {
 		super(MissionType.TRADE, "trade",
@@ -106,34 +103,7 @@ public class TradeMeta extends AbstractMetaMission {
 
 		try {
 			if (rover != null) {
-				// Only check every couple of Sols, else use cache.
-				// Note: this method is very CPU intensive.
-				boolean useCache = false;
-
-				if (Trade.TRADE_PROFIT_CACHE.containsKey(settlement)) {
-					TradeProfitInfo profitInfo = Trade.TRADE_PROFIT_CACHE.get(settlement);
-					double timeDiff = MarsClock.getTimeDiff(marsClock, profitInfo.time);
-					if (timeDiff < FREQUENCY) {
-						tradeProfit = profitInfo.profit;
-//						useCache = true;
-					}
-				} else {
-					Trade.TRADE_PROFIT_CACHE.put(settlement,
-							new TradeProfitInfo(tradeProfit, (MarsClock) marsClock.clone()));
-					useCache = true;
-				}
-
-				if (!useCache) {
-//					double startTime = System.currentTimeMillis();
-					tradeProfit = TradeUtil.getBestTradeProfit(settlement, rover);
-//					double endTime = System.currentTimeMillis();
-					logger.info(settlement, 30_000, // getBestTradeProfit: " + (endTime - startTime)
-//					// + " milliseconds "
-							"Best Trade Profit: " + Math.round(tradeProfit*10.0)/10. + " VP");
-					Trade.TRADE_PROFIT_CACHE.put(settlement,
-							new TradeProfitInfo(tradeProfit, (MarsClock) marsClock.clone()));
-					Trade.TRADE_SETTLEMENT_CACHE.put(settlement, TradeUtil.bestTradeSettlementCache);
-				}
+				tradeProfit = CommerceUtil.getBestProfit(settlement, MissionType.TRADE, rover);
 			}
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, "Issues with TradeUtil.", e);

@@ -39,7 +39,7 @@ import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.goods.Good;
 import org.mars_sim.msp.core.goods.GoodCategory;
 import org.mars_sim.msp.core.goods.GoodsUtil;
-import org.mars_sim.msp.core.person.ai.mission.TradeUtil;
+import org.mars_sim.msp.core.person.ai.mission.CommerceUtil;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.PhaseType;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -422,7 +422,7 @@ public class EmergencySupplyPanel extends WizardPanel {
 			while (i.hasNext()) {
 				Good good = i.next();
 				try {
-					int amount = (int) TradeUtil.getNumInInventory(good, settlement);
+					int amount = (int) CommerceUtil.getNumInInventory(good, settlement);
 					if (checkForVehicle(good))
 						amount--;
 					goodsMap.put(good, amount);
