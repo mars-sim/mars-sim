@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * ToolToolBar.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-19
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing;
@@ -17,6 +17,7 @@ import java.awt.event.ActionListener;
 import java.util.Vector;
 
 import javax.swing.Icon;
+import javax.swing.JPanel;
 import javax.swing.JToolBar;
 import javax.swing.border.BevelBorder;
 
@@ -77,6 +78,10 @@ public class ToolToolBar extends WebToolBar implements ActionListener {
 	/** Main window that contains this toolbar. */
 	private MainWindow parentMainWindow;
 
+	private MarsCalendarDisplay calendarDisplay; 
+	
+	private WebStyledLabel monthLabel;
+	
 	/** Sans serif font. */
 	private Font SANS_SERIF_FONT = new Font(Font.SANS_SERIF, Font.PLAIN, 14);
 
@@ -215,85 +220,28 @@ public class ToolToolBar extends WebToolBar implements ActionListener {
 			toolButtons.addElement(dashboardButton);
 		}
 
-//		addSeparator();
-
+		
 		addToEnd(parentMainWindow.getEarthDate());
 
 		addToEnd(parentMainWindow.getSolLabel());
 
 		addToEnd(parentMainWindow.getMarsTime());
-
-		Icon calendarIcon = new LazyIcon("calendar_mars").getIcon();
-
-		WebPanel innerPane = new WebPanel(StyleId.panelTransparent, new FlowLayout(FlowLayout.CENTER, 2, 2));
-
+		
 		MarsClock marsClock = Simulation.instance().getMasterClock().getMarsClock();
-		MarsCalendarDisplay calendarDisplay = new MarsCalendarDisplay(marsClock, parentMainWindow.getDesktop());
-		innerPane.add(calendarDisplay);
-
-		final WebPanel midPane = new WebPanel(StyleId.panelTransparent, new BorderLayout(0, 0));
-//		calendarPane.setPreferredSize(new Dimension(140, 80));
-
-		midPane.add(innerPane, BorderLayout.CENTER);
-		midPane.setBorder(new BevelBorder(BevelBorder.LOWERED, Color.ORANGE, new Color(210,105,30)));
-
-		final WebPanel outerPane = new WebPanel(StyleId.panelTransparent, new BorderLayout(10, 10));
-		outerPane.add(midPane, BorderLayout.CENTER);
-
-		// Create martian month label
-//		WebLabel monthLabel = new WebLabel("Month of " + marsClock.getMonthName(), WebLabel.CENTER);
-    	String mn = "Month of {" + marsClock.getMonthName() + ":u}";
-    	WebStyledLabel monthLabel = new WebStyledLabel(StyleId.styledlabelShadow, mn, WebLabel.CENTER);
-//		monthLabel.setFont(SANS_SERIF_FONT);
-//    	monthLabel.setAlignmentY(1f);
-		WebPanel monthPane = new WebPanel(StyleId.panelTransparent, new FlowLayout(FlowLayout.CENTER, 2, 2));
-		monthPane.add(monthLabel);
-		midPane.add(monthPane, BorderLayout.NORTH);
-
-		WebLink link = new WebLink(StyleId.linkShadow, new UrlLinkAction(WIKI_URL));
-//		link = new WebLink(StyleId.linkShadow, WIKI_TEXT, new UrlLinkAction(WIKI_URL));
-//		link.setAlignmentY(1f);
-		link.setAlignmentX(.5f);
-		link.setText(WIKI_TEXT);
-//		link.setIcon(new SvgIcon("github.svg")); // github19
-		TooltipManager.setTooltip(link, "Open the Timekeeping wiki in mars-sim GitHub site", TooltipWay.down);
-		WebPanel linkPane = new WebPanel(StyleId.panelTransparent, new FlowLayout(FlowLayout.RIGHT, 2, 2));
-		linkPane.add(link);
-		outerPane.add(linkPane, BorderLayout.SOUTH);
-
-    	WebStyledLabel headerLabel = new WebStyledLabel(StyleId.styledlabelShadow, "Mars Calendar", WebLabel.CENTER);
-    	headerLabel.setFont(SANS_SERIF_FONT);
-
-    	outerPane.add(headerLabel, BorderLayout.NORTH);
-
-		WebButton calendarButton = new WebButton(StyleId.buttonIconHover, calendarIcon);
-		calendarButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(final ActionEvent e){
-            	calendarDisplay.update();
-
-            	String mn = "Month of {" + marsClock.getMonthName() + ":u}";
-            	monthLabel.setText(mn);
-
-            	final Window parent = CoreSwingUtils.getNonNullWindowAncestor(calendarButton);
-                final WebPopOver popOver = new WebPopOver(StyleId.popover, parent);
-                popOver.setIconImages(WebLookAndFeel.getImages());
-                popOver.setCloseOnFocusLoss(true);
-                popOver.setPadding(5);
-                popOver.add(outerPane);
-                popOver.show(calendarButton, PopOverDirection.down);
-            }
-        } );
-
+		
+		JPanel outerPane = setupPane(marsClock);
+	
+		WebButton calendarButton = setUpCalenders(outerPane, marsClock);
+	
 		addToEnd(calendarButton);
 
+		WebButton starMap = createStarMapButton();
+
+		addToEnd(starMap);
+		
 		addSeparatorToEnd();
 
 //		addSeparatorToMiddle();
-
-//		addSeparator(new Dimension(20, 20));
-
-//		addSeparator();
 
 		// Add guide button
 		ToolButton guideButton = new ToolButton(GuideWindow.NAME, Msg.getString("img.guide")); //$NON-NLS-1$
@@ -357,6 +305,87 @@ public class ToolToolBar extends WebToolBar implements ActionListener {
 //		addToEnd(new MagnifierToggleTool(parentMainWindow.getFrame()) );
 	}
 
+	
+	public WebButton setUpCalenders(JPanel outerPane, MarsClock marsClock) {
+		Icon calendarIcon = new LazyIcon("calendar_mars").getIcon();
+
+		WebButton calendarButton = new WebButton(StyleId.buttonIconHover, calendarIcon);
+
+		calendarButton.addActionListener(new ActionListener() {
+		    @Override
+		    public void actionPerformed(final ActionEvent e){
+		    	calendarDisplay.update();
+		
+		    	String mn = "Month of {" + marsClock.getMonthName() + ":u}";
+		    	monthLabel.setText(mn);
+		
+		    	final Window parent = CoreSwingUtils.getNonNullWindowAncestor(calendarButton);
+		        final WebPopOver popOver = new WebPopOver(StyleId.popover, parent);
+		        popOver.setIconImages(WebLookAndFeel.getImages());
+		        popOver.setCloseOnFocusLoss(true);
+		        popOver.setPadding(5);
+		        popOver.add(outerPane);
+		        popOver.show(calendarButton, PopOverDirection.down);
+		    }
+		} );
+
+		return calendarButton;
+	}
+	
+	public WebPanel setupPane(MarsClock marsClock) {
+		WebPanel innerPane = new WebPanel(StyleId.panelTransparent, new FlowLayout(FlowLayout.CENTER, 2, 2));
+
+		calendarDisplay = new MarsCalendarDisplay(marsClock, parentMainWindow.getDesktop());
+		innerPane.add(calendarDisplay);
+
+		final WebPanel midPane = new WebPanel(StyleId.panelTransparent, new BorderLayout(0, 0));
+
+		midPane.add(innerPane, BorderLayout.CENTER);
+		midPane.setBorder(new BevelBorder(BevelBorder.LOWERED, Color.ORANGE, new Color(210,105,30)));
+
+		final WebPanel outerPane = new WebPanel(StyleId.panelTransparent, new BorderLayout(10, 10));
+		outerPane.add(midPane, BorderLayout.CENTER);
+
+		// Create martian month label
+    	String mn = "Month of {" + marsClock.getMonthName() + ":u}";
+    	monthLabel = new WebStyledLabel(StyleId.styledlabelShadow, mn, WebLabel.CENTER);
+		WebPanel monthPane = new WebPanel(StyleId.panelTransparent, new FlowLayout(FlowLayout.CENTER, 2, 2));
+		monthPane.add(monthLabel);
+		midPane.add(monthPane, BorderLayout.NORTH);
+
+		WebLink link = new WebLink(StyleId.linkShadow, new UrlLinkAction(WIKI_URL));
+//		link = new WebLink(StyleId.linkShadow, WIKI_TEXT, new UrlLinkAction(WIKI_URL));
+//		link.setAlignmentY(1f);
+		link.setAlignmentX(.5f);
+		link.setText(WIKI_TEXT);
+//		link.setIcon(new SvgIcon("github.svg")); // github19
+		TooltipManager.setTooltip(link, "Open the Timekeeping wiki in mars-sim GitHub site", TooltipWay.down);
+		WebPanel linkPane = new WebPanel(StyleId.panelTransparent, new FlowLayout(FlowLayout.RIGHT, 2, 2));
+		linkPane.add(link);
+		outerPane.add(linkPane, BorderLayout.SOUTH);
+
+    	WebStyledLabel headerLabel = new WebStyledLabel(StyleId.styledlabelShadow, "Mars Calendar", WebLabel.CENTER);
+    	headerLabel.setFont(SANS_SERIF_FONT);
+
+    	outerPane.add(headerLabel, BorderLayout.NORTH);
+    	
+    	return outerPane;
+	}
+	
+	public WebButton createStarMapButton() {
+		WebButton starMap = new WebButton();
+		starMap.setIcon(parentMainWindow.getTelescopeIcon());
+		TooltipManager.setTooltip(starMap, "Open the Orbit Viewer", TooltipWay.up);
+
+		starMap.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				parentMainWindow.openOrbitViewer();
+			};
+		});
+		
+		return starMap;
+	}
+	
 	/** ActionListener method overridden */
 	@Override
 	public void actionPerformed(ActionEvent event) {

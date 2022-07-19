@@ -38,7 +38,8 @@ public class MarsCalendarDisplay extends JComponent {
 	private int solsInMonth;
 	private int solCache;
 
-	private char[] weekLetters = { 'S', 'P', 'D', 'T', 'H', 'V', 'J' };
+	// Note: be sure to be in sync with https://github.com/mars-sim/mars-sim/wiki/Timekeeping
+	private char[] weekdayLetters = { 'H', 'N', 'L', 'T', 'V', 'M', 'J' };
 	
 	private FontMetrics solMetrics;
 	private FontMetrics weekMetrics;
@@ -159,8 +160,8 @@ public class MarsCalendarDisplay extends JComponent {
 		// Draw week letters
 		g.setFont(weekFont);
 		for (int x = 0; x < 7; x++) {
-			int letterWidth = weekMetrics.charWidth(weekLetters[x]);
-			g.drawString("" + weekLetters[x], (20 * x) + 11 - (letterWidth / 2), weekHeight + 1);
+			int letterWidth = weekMetrics.charWidth(weekdayLetters[x]);
+			g.drawString("" + weekdayLetters[x], (20 * x) + 11 - (letterWidth / 2), weekHeight + 1);
 		}
 
 		// Draw sol letters

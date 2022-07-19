@@ -644,7 +644,7 @@ extends JComponent implements ClockListener {
 		iconSet.addIcon(new SvgIconSource (
 			      "telescope",
 			      new ClassResource(MainWindow.class, TELESCOPE_SVG),
-			      new Dimension(18, 18)));
+			      new Dimension(16, 16)));
 
 		// Add the icon set to the icon manager
 		IconManager.addIconSet(iconSet);
@@ -772,8 +772,8 @@ extends JComponent implements ClockListener {
 		createOverlayCheckBox();
 		statusBar.addLeftComponent(overlayCheckBox, false);
 
-		createStarMapButton();
-		statusBar.addRightComponent(starMap, true);
+//		createStarMapButton();
+//		statusBar.addRightComponent(starMap, true);
 
 		// Create memory bar
 		createMemoryBar();
@@ -860,18 +860,6 @@ extends JComponent implements ClockListener {
 			telescopeIcon = ImageLoader.getNewIcon(Msg.getString("icon.telescope"));
 		}
 		return telescopeIcon;
-	}
-
-	public void createStarMapButton() {
-		starMap = new WebButton();
-		starMap.setIcon(telescopeIcon);
-		TooltipManager.setTooltip(starMap, "Open the Orbit Viewer", TooltipWay.up);
-
-		starMap.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				openOrbitViewer();
-			};
-		});
 	}
 
 	public void createSpeedButtons() {

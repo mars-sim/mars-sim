@@ -60,7 +60,7 @@ public class CommandHelper {
 	// Width of a truncated timestamp 
 	private static final int TIMESTAMP_TRUNCATED_WIDTH = 15;
 	// Width of a Coordinate
-	public static final int COORDINATE_WIDTH = 19;
+	public static final int COORDINATE_WIDTH = 24;
 	
 	// Base value formats for use with String.format
 	public static final String KG_FORMAT = "%.2f kg";
