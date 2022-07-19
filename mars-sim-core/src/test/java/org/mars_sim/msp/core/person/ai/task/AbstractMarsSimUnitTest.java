@@ -140,7 +140,8 @@ public abstract class AbstractMarsSimUnitTest extends TestCase {
 	}
 
 	/**
-	 * Execute a Task for a number of steps or until it completes.
+	 * Executes a Task for a number of steps or until it completes.
+	 * 
 	 * @param person
 	 * @param task
 	 * @param maxSteps

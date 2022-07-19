@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * SystemCondition.java
- * @date 2021-08-28
+ * @date 2022-07-19
  * @author Manny Kung
  */
 
@@ -13,7 +13,6 @@ import java.util.logging.Level;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.logging.SimLogger;
-import org.mars_sim.msp.core.person.ai.task.Sleep;
 import org.mars_sim.msp.core.person.health.HealthProblem;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -282,7 +281,7 @@ public class SystemCondition implements Serializable {
     	currentEnergy = newEnergy;
     	return newEnergy;
     }
-    
+
     /**
      * Gets the standby power consumption rate.
      * 

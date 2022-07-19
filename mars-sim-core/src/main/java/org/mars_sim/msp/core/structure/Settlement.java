@@ -323,8 +323,6 @@ public class Settlement extends Structure implements Temporal,
 	private Set<OverrideType> processOverrides = new HashSet<>();
 	/** The set of disabled missions. */
 	private Set<MissionType> disabledMissions = new HashSet<>();
-//	/** The set of available airlocks. */
-//	private Set<Integer> availableAirlocks = new HashSet<>();
 	/** The set of available pressurized/pressurizing airlocks. */
 	private Set<Integer> availablePAirlocks = new HashSet<>();
 	/** The set of available depressurized/depressurizing airlocks. */
@@ -540,7 +538,7 @@ public class Settlement extends Structure implements Temporal,
 		// Check nearby mineral concentration
 		mineralConcentrationMap = checkNearbyMineral();
 		if (!mineralConcentrationMap.isEmpty())
-			logger.log(this, Level.INFO, 0L, mineralConcentrationMap.toString());
+			logger.log(this, Level.INFO, 0L, "Initial mineral concentration map: " + mineralConcentrationMap.toString());
 	}
 
 	/*
@@ -574,8 +572,13 @@ public class Settlement extends Structure implements Temporal,
 	 * @return
 	 */
 	public List<Building> getBuildingConnectors(Building building) {
-		if (!adjacentBuildingMap.containsKey(building))
+		if (adjacentBuildingMap == null) {
 			adjacentBuildingMap = createAdjacentBuildingMap();
+		}
+		
+		if (!adjacentBuildingMap.containsKey(building)) {
+			return new ArrayList<>();
+		}
 
 		return adjacentBuildingMap.get(building);
 	}

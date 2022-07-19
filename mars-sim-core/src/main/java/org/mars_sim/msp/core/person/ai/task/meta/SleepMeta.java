@@ -280,9 +280,9 @@ public class SleepMeta extends MetaTask {
      
         	// Checks if the battery is low
         	if (robot.getSystemCondition().isLowPower())
-        		result += 3;
+        		result += 10;
         	else
-        		result += 3 * (1.0 - robot.getSystemCondition().getBatteryState());
+        		result += 10 * (1.0 - robot.getSystemCondition().getBatteryState());
         	
             Building building = Sleep.getAvailableRoboticStationBuilding(robot);
             if (building != null) {

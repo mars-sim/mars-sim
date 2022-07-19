@@ -237,10 +237,11 @@ public class WalkSettlementInterior extends Task implements Serializable {
 
 		// Determine time left after walking.
 		double timeLeft = 0D;
+		
 		if (coveredMeters > remainingPathDistance) {
 			coveredMeters = remainingPathDistance;
 
-			timeLeft = time - MarsClock.convertSecondsToMillisols((coveredMeters / 1000D) / speed * 60D * 60D);	
+			timeLeft = time - MarsClock.convertSecondsToMillisols(coveredMeters / 1000D / speed * 60D * 60D);	
 		}
 
 		while (coveredMeters > VERY_SMALL_DISTANCE) {
@@ -278,10 +279,10 @@ public class WalkSettlementInterior extends Task implements Serializable {
 				walkInDirection(direction, coveredMeters);
 
 				// Set person at next path location, changing buildings if necessary.
-				// TODO Is this right becausw the walk in direiiton also updates 
+				// TODO Is this right because the walk in direction also updates 
 				worker.setPosition(location.getPosition());
-
-				coveredMeters = 0D;
+				
+				coveredMeters = 0;
 			}
 		}
 

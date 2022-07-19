@@ -66,9 +66,10 @@ public class TerrainElevation implements Serializable {
 	private static Set<CollectionSite> sites = new HashSet<>();
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 */
 	public TerrainElevation() {
+		// none
 	}
 
 	/**
@@ -107,7 +108,7 @@ public class TerrainElevation implements Serializable {
 
 	/**
 	 * Determines the terrain steepness angle from location by sampling a random coordinate set and 11.1 km in given
-	 * direction and elevation
+	 * direction and elevation.
 	 *
 	 * @param currentLocation
 	 * @param elevation
@@ -123,8 +124,8 @@ public class TerrainElevation implements Serializable {
 	}
 
 	/**
-	 * Compute the terrain profile of a site at a coordinate
-	 * direction and elevation
+	 * Computes the terrain profile of a site at a coordinate
+	 * direction and elevation.
 	 *
 	 * @param {@link CollectionSite} site
 	 * @param {@link Coordinates} currentLocation
@@ -148,7 +149,7 @@ public class TerrainElevation implements Serializable {
 	}
 
 	/**
-	 * Gets the terrain profile of a location
+	 * Gets the terrain profile of a location.
 	 *
 	 * @param {@link Coordinates}
 	 * @return an array of two doubles, namely elevation and steepness
@@ -159,7 +160,7 @@ public class TerrainElevation implements Serializable {
 
 
 	/**
-	 * Compute the regolith collection rate of a location
+	 * Computes the regolith collection rate of a location.
 	 *
 	 * @param site
 	 * @param currentLocation
@@ -207,7 +208,7 @@ public class TerrainElevation implements Serializable {
 	}
 
 	/**
-	 * Compute the ice collection rate of a location
+	 * Computes the ice collection rate of a location.
 	 *
 	 * @param site
 	 * @param currentLocation
@@ -255,7 +256,7 @@ public class TerrainElevation implements Serializable {
 	}
 
 	/**
-	 * Obtains the ice collection rate of a location
+	 * Obtains the ice collection rate of a location.
 	 *
 	 * @param loc
 	 * @return the collection rate
@@ -268,7 +269,7 @@ public class TerrainElevation implements Serializable {
 	}
 
 	/**
-	 * Obtains the regolith collection rate of a location
+	 * Obtains the regolith collection rate of a location.
 	 *
 	 * @param loc
 	 * @return the collection rate
@@ -308,7 +309,7 @@ public class TerrainElevation implements Serializable {
 	}
 
 	/**
-	 * Returns the elevation in km at the given location, based on MOLA's dataset
+	 * Returns the elevation in km at the given location, based on MOLA's dataset.
 	 *
 	 * @param location the location in question
 	 * @return the elevation at the location (in km)
@@ -318,7 +319,7 @@ public class TerrainElevation implements Serializable {
 	}
 
 	/**
-	 * Returns the elevation in km at the given location, based on MOLA's dataset
+	 * Returns the elevation in km at the given location, based on MOLA's dataset.
 	 *
 	 * @param phi
 	 * @param theta
@@ -328,7 +329,7 @@ public class TerrainElevation implements Serializable {
 		return mapDataUtil.getElevationInt(phi, theta)/1000.0;
 	}
 	/**
-	 * Returns the patched elevation in km at the given location
+	 * Returns the patched elevation in km at the given location.
 	 *
 	 * @param location the location in question
 	 * @return the elevation at the location (in km)
@@ -348,7 +349,7 @@ public class TerrainElevation implements Serializable {
 	}
 
 	/**
-	 * Returns the raw elevation in km at the given location
+	 * Returns the raw elevation in km at the given location.
 	 *
 	 * @param location the location in question
 	 * @return the elevation at the location (in km)
@@ -369,7 +370,6 @@ public class TerrainElevation implements Serializable {
 		// Determine elevation in meters.
 		// NOTE: This code (calculate terrain elevation) needs updating.
 		double elevation = 0;
-
 
 		// The minimum and maximum topography observations for the entire data set are -8068 and 21134 meters.
 
@@ -526,7 +526,7 @@ public class TerrainElevation implements Serializable {
 	}
 
 	/**
-	 * Prepare object for garbage collection.
+	 * Prepares object for garbage collection.
 	 */
 	public void destroy() {
 		mapdata = null;

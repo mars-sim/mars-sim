@@ -1,14 +1,16 @@
-/**
+/*
  * Mars Simulation Project
  * BotMind.java
- * @date 2021-12-22
+ * @date 2022-07-19
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.robot.ai;
 
 import java.io.Serializable;
+import java.util.logging.Level;
 
 import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.RobotJob;
@@ -26,7 +28,7 @@ public class BotMind implements Serializable, Temporal {
 	private static final long serialVersionUID = 1L;
 	
 	/** default logger. */
-//	private static SimLogger logger = SimLogger.getLogger(BotMind.class.getName());
+	private static SimLogger logger = SimLogger.getLogger(BotMind.class.getName());
 	
 	// Data members
 	/** Is the job locked so another can't be chosen? */
@@ -35,20 +37,11 @@ public class BotMind implements Serializable, Temporal {
 	/** The robot owning this mind. */
 	private Robot robot = null;
 	/** The robot's task manager. */
-	private BotTaskManager taskManager;
+	private BotTaskManager botTaskManager;
 	/** The robot's job. */
 	private RobotJob robotJob;
 	/** The robot's current mission (if any). */
 	private Mission mission;
-	
-//	private static MissionManager missionManager;
-
-
-//	static {
-//		Simulation sim = Simulation.instance();
-//		// Load the mission manager
-//		missionManager = sim.getMissionManager();
-//	}
 	
 	/**
 	 * Constructor 1.
@@ -80,7 +73,7 @@ public class BotMind implements Serializable, Temporal {
 //		skillManager = new SkillManager(robot);
 		
 		// Construct a task manager
-		taskManager = new BotTaskManager(this);
+		botTaskManager = new BotTaskManager(this);
 	}
 
 	/**
@@ -92,8 +85,8 @@ public class BotMind implements Serializable, Temporal {
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
 
-		if (taskManager != null) {
-			taskManager.timePassing(pulse);
+		if (botTaskManager != null) {
+			botTaskManager.timePassing(pulse);
 			// Take action as necessary.
 			takeAction(pulse.getElapsed());
 		}
@@ -107,10 +100,18 @@ public class BotMind implements Serializable, Temporal {
 	 * @throws Exception if error during action.
 	 */
 	private void takeAction(double time) {
-		boolean hasActiveTask = taskManager.hasActiveTask();
+
 		// Perform a task if the robot has one, or determine a new task/mission.
-		if (hasActiveTask) {
-			double remainingTime = taskManager.executeTask(time, robot.getPerformanceRating());
+		if (botTaskManager.hasActiveTask()
+				&& !robot.getSystemCondition().isCharging()) {
+			// Call executeTask
+			// Note: calling executeTask can cause stackoverflow from time to time
+			double remainingTime = botTaskManager.executeTask(time, robot.getPerformanceRating());
+			if (remainingTime == time) {
+				logger.log(robot, Level.SEVERE, 30_000L, "current Task: " + botTaskManager.getTaskName() 
+					+ " - remainingTime = time = " + remainingTime + ".");
+				return;
+			}
 			if (remainingTime > 0D) {
 				takeAction(remainingTime);
 			}
@@ -118,10 +119,6 @@ public class BotMind implements Serializable, Temporal {
 		
 		else {
 			lookForATask();
-			if (!taskManager.hasActiveTask()
-				&& !robot.getSystemCondition().isCharging()) {
-				taskManager.startNewTask();
-			}
 		}
 	}
 
@@ -131,6 +128,8 @@ public class BotMind implements Serializable, Temporal {
 	public void lookForATask() {
 
 		boolean hasActiveMission = false;
+		boolean hasTask = false;
+		
 		if (mission != null) {
 			if (mission.isDone()) {
 				// Set the mission to null since it is done
@@ -141,16 +140,13 @@ public class BotMind implements Serializable, Temporal {
 			}
 		}
 		
-		if (hasActiveMission) {
-			if (mission.getPhase() != null) {
-				resumeMission();
-			}
+		if (hasActiveMission && mission.getPhase() != null) {
+			hasTask = resumeMission();
 		}
 		
-		if (!taskManager.hasActiveTask()
-				&& !robot.getSystemCondition().isCharging()) { 
+		if (!hasTask && !robot.getSystemCondition().isCharging()) { 
 			// don't have an active mission
-			taskManager.startNewTask();
+			botTaskManager.startNewTask();
 		}
 	}
 	
@@ -159,10 +155,13 @@ public class BotMind implements Serializable, Temporal {
 	 * 
 	 * @param modifier
 	 */
-	private void resumeMission() {
+	private boolean resumeMission() {
 		if (mission.canParticipate(robot) && robot.isFit()) {
 			mission.performMission(robot);
+			return true;
 		}
+		
+		return false;
 	}
 
 	public Robot getRobot() {
@@ -175,7 +174,7 @@ public class BotMind implements Serializable, Temporal {
 	 * @return botTaskManager
 	 */
 	public BotTaskManager getBotTaskManager() {
-		return taskManager;
+		return botTaskManager;
 	}
 
 	/**
@@ -252,7 +251,7 @@ public class BotMind implements Serializable, Temporal {
 	 * aborted.
 	 */
 	public void setInactive() {
-		taskManager.clearAllTasks("Inactive");
+		botTaskManager.clearAllTasks("Inactive");
 		if (hasActiveMission()) {
 			mission.removeMember(robot);
 			mission = null;
@@ -288,7 +287,7 @@ public class BotMind implements Serializable, Temporal {
 	}
 
 	public void reinit() {
-		taskManager.reinit();
+		botTaskManager.reinit();
 	}
 	
 	/**
@@ -296,8 +295,8 @@ public class BotMind implements Serializable, Temporal {
 	 */
 	public void destroy() {
 		robot = null;
-		taskManager.destroy();
-		taskManager = null;
+		botTaskManager.destroy();
+		botTaskManager = null;
 		robotJob = null;
 	}
 }

@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * BotTaskManager.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-19
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.robot.ai.task;
@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTaskUtil;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
@@ -19,17 +20,17 @@ import org.mars_sim.msp.core.robot.ai.BotMind;
 import org.mars_sim.msp.core.time.MarsClock;
 
 /**
- * The TaskManager class keeps track of a person's current task and can randomly
- * assign a new task to a person based on a list of possible tasks and that person's
- * current situation.
- *
- * There is one instance of TaskManager per person.
+ * The BotTaskManager class keeps track of a robot's current task and can randomly
+ * assign a new task to a robot.
  */
 public class BotTaskManager extends TaskManager
 implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
+
+	/** default logger. */
+	private static SimLogger logger = SimLogger.getLogger(BotTaskManager.class.getName());
 
 	// Data members
 	/** The mind of the robot. */
@@ -78,24 +79,31 @@ implements Serializable {
 		double remainingTime = 0D;
 		
 		if (currentTask != null) {
-			// For effort driven task, reduce the effective time based on efficiency.
-			if (efficiency < .1D) {
-				efficiency = .1D;
+
+			if (efficiency < 0D) {
+				efficiency = 0D;
 			}
 
 			if (currentTask.isEffortDriven()) {
+				// For effort driven task, reduce the effective time based on efficiency.
 				time *= efficiency;
 			}
 
-			// checkForEmergency();
+			try {
+				remainingTime = currentTask.performTask(time);
+
+			} catch (Exception e) {
+				logger.severe(robot, "currentTask: " + currentTask.getDescription()
+						+ " - Trouble calling performTask(): ", e);
+				return remainingTime;
+			}
 			
-			remainingTime = currentTask.performTask(time);
-		
 			// Calculate the energy time
 		    double energyTime = time - remainingTime;
+		    
 		    // Double energy expenditure if performing effort-driven task.
-		    if (currentTask.isEffortDriven()) {
-		        energyTime *= 1.5D;
+		    if (currentTask != null && currentTask.isEffortDriven()) {
+		        energyTime *= 2D;
 		    }
 
 		    // Checks if the robot is charging

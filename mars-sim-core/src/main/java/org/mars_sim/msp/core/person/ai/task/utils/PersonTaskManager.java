@@ -76,7 +76,7 @@ public class PersonTaskManager extends TaskManager implements Serializable {
 	}
 
 	/**
-	 * Perform the current task for a given amount of time.
+	 * Performs the current task for a given amount of time.
 	 *
 	 * @param time       amount of time to perform the action
 	 * @param efficiency The performance rating of person performance task.
@@ -87,12 +87,13 @@ public class PersonTaskManager extends TaskManager implements Serializable {
 		double remainingTime = 0D;
 
 		if (currentTask != null) {
-			// For effort driven task, reduce the effective time based on efficiency.
+
 			if (efficiency <= 0D) {
 				efficiency = 0D;
 			}
 
 			if (currentTask.isEffortDriven()) {
+				// For effort driven task, reduce the effective time based on efficiency.
 				time *= efficiency;
 			}
 
@@ -104,7 +105,7 @@ public class PersonTaskManager extends TaskManager implements Serializable {
 				return remainingTime;
 			}
 
-			// Expend energy based on activity.
+			// Calculate the energy time
 			double energyTime = time - remainingTime;
 
 			// Double energy expenditure if performing effort-driven task.
@@ -115,15 +116,18 @@ public class PersonTaskManager extends TaskManager implements Serializable {
 
 			if (energyTime > 0D) {
 				if (person.isOutside()) {
+					// Take more energy to be in EVA doing work
+					reduceEnergy(energyTime * 1.1);
 
 					if (circadian == null)
 						circadian = person.getCircadianClock();
-
-					// it takes more energy to be in EVA doing work
-					reduceEnergy(energyTime*1.1);
+					// Regulate hormones
 					circadian.exercise(time);
-				} else
+					
+				} else {
+					// Expend energy based on activity.
 					reduceEnergy(energyTime);
+				}
 			}
 		}
 

@@ -116,40 +116,28 @@ public class Sleep extends Task implements Serializable {
 		setPhase(SLEEPING_MODE);
 	}
 
-
-//	/**
-//	 * Refers the person to sleep in a bed inside the EVA airlock
-//	 *
-//	 * @return
-//	 */
-//	public boolean sleepInEVABed() {
-//		Building currentBuilding = BuildingManager.getBuilding(person);
-//		if (currentBuilding != null && currentBuilding.getBuildingType().equalsIgnoreCase(Building.EVA_AIRLOCK)) {
+	/**
+	 * Refers the person to sleep in a bed inside the EVA airlock
+	 *
+	 * @return
+	 */
+	public boolean sleepInEVABed() {
+		Building currentBuilding = BuildingManager.getBuilding(person);
+		if (currentBuilding != null && currentBuilding.hasFunction(FunctionType.EVA)) {
 //			return walkToEVABed(currentBuilding, person, true);
-//		}
-//		return false;
-//	}
+			// Future: need to rework this method to find the two emergency beds in EVA Airlock
+		}
+		return false;
+	}
 
 	@Override
 	protected double performMappedPhase(double time) {
-		if (person != null) {
-			if (getPhase() == null)
-				throw new IllegalArgumentException("Task phase is null");
-			else if (SLEEPING.equals(getPhase()))
-				return sleepingPhase(time);
-			else
-				return time;
-		}
-
-		else if (robot != null) {
-			if (getPhase() == null)
-				throw new IllegalArgumentException("Task phase is null");
-			else if (SLEEPING_MODE.equals(getPhase()))
-				return sleepingPhase(time);
-			else
-				return time;
-		}
-		return time;
+		if (getPhase() == null)
+			throw new IllegalArgumentException("Task phase is null");
+		else if (SLEEPING.equals(getPhase()))
+			return sleepingPhase(time);
+		else
+			return time;
 	}
 
 
@@ -250,10 +238,7 @@ public class Sleep extends Task implements Serializable {
 							// Question: why would the method below cause RepairBot to walk outside the
 							// settlement to a vehicle ?
 							walkToActivitySpotInBuilding(building, FunctionType.ROBOTIC_STATION, true);
-//							walkToTaskFunctionActivitySpot(building, true);
-							// NOTE: need to add activity spots in every building or
-							// walkToActivitySpotInBuilding(building, false) will fail
-							// and create java.lang.NullPointerException
+
 							station.addSleeper();
 						}
 					}

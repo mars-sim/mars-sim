@@ -169,7 +169,7 @@ public class Mind implements Serializable, Temporal {
 	}
 
 	/**
-	 * Take appropriate action for a given amount of time.
+	 * Takes appropriate action for a given amount of time.
 	 *
 	 * @param time time in millisols
 	 * @throws Exception if error during action.
