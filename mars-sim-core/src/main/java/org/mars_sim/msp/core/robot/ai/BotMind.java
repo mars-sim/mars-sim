@@ -132,7 +132,6 @@ public class BotMind implements Serializable, Temporal {
 
 		boolean hasActiveMission = false;
 		if (mission != null) {
-//			System.out.println(robot + " mission: " + mission.getName());
 			if (mission.isDone()) {
 				// Set the mission to null since it is done
 				mission = null;
@@ -143,25 +142,9 @@ public class BotMind implements Serializable, Temporal {
 		}
 		
 		if (hasActiveMission) {
-
-			// In case of a delivery mission, the bot doesn't need to be onboard
-//			if (mission instanceof Delivery) {
-//				resumeMission();
-//			}
-//				
-//			else {
-				// If the mission vehicle has embarked but the robot is not on board, 
-				// then release the robot from the mission
-//				if (!(mission.getCurrentMissionLocation().equals(robot.getCoordinates()))) {
-//					mission.removeMember(robot);
-//					logger.info(robot, "Not boarded and taken out of " + mission + " mission.");
-//					mission = null;
-//				}
-				
-				if (mission.getPhase() != null) {
-					resumeMission();
-				}
-//			}
+			if (mission.getPhase() != null) {
+				resumeMission();
+			}
 		}
 		
 		if (!taskManager.hasActiveTask()

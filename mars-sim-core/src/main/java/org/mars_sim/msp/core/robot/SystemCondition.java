@@ -119,7 +119,7 @@ public class SystemCondition implements Serializable {
     }
 
     /**
-     * Does the robot needs to be recharged ?
+     * Checks if the robot needs to be recharged.
      */
     private boolean positionToRecharge() {
 
@@ -127,9 +127,7 @@ public class SystemCondition implements Serializable {
     		isLowPower = true;
     		// Time to recharge
     		if (!robot.isAtStation()) {
-    			robot.getBotMind().getBotTaskManager().clearAllTasks("Need to recharge");
     			BuildingManager.addRobotToRoboticStation(robot);		
-    			setToSleep();
     			isCharging = true;
     		}
     		return true;
@@ -143,10 +141,8 @@ public class SystemCondition implements Serializable {
 		    	currentEnergy = .95 * MAX_CAPACITY;
 		    	isLowPower = false;
 		    	isCharging = false;
-		    	robot.getBotMind().lookForATask();
     		}
     		else {
-    			setToSleep();
     			isCharging = true;
     		}
     	}
@@ -167,14 +163,6 @@ public class SystemCondition implements Serializable {
     	}
     	return false;
     }
-    
-    /**
-     * Sets the robot to sleep mode.
-     */
-    private void setToSleep() {
-    	robot.getBotMind().getBotTaskManager().addTask(new Sleep(robot));
-    }
-    
 
 	/** 
 	 * Returns the current amount of energy in kWh. 
