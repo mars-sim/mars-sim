@@ -39,6 +39,7 @@ import org.mars_sim.msp.core.equipment.EquipmentInventory;
 import org.mars_sim.msp.core.equipment.EquipmentOwner;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.equipment.ItemHolder;
+import org.mars_sim.msp.core.equipment.ResourceHolder;
 import org.mars_sim.msp.core.goods.CreditManager;
 import org.mars_sim.msp.core.goods.Good;
 import org.mars_sim.msp.core.goods.GoodsManager;
@@ -3764,6 +3765,23 @@ public class Settlement extends Structure implements Temporal,
 		return eqmInventory.getAmountResourceStored(resource);
 	}
 
+	/**
+	 * Gets the amount resource owned by all resource holders.
+	 *
+	 * @param resource
+	 * @return quantity
+	 */
+	public double getAllAmountResourceOwned(int resource) {
+		double sum = 0;
+		for (ResourceHolder rh: citizens) {
+			sum += rh.getAmountResourceStored(resource);
+		}
+		for (ResourceHolder rh: ownedVehicles) {
+			sum += rh.getAmountResourceStored(resource);
+		}		
+		return sum + getAmountResourceStored(resource);
+	}
+	
 	/**
 	 * Gets all stored amount resources.
 	 *

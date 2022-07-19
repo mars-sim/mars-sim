@@ -505,6 +505,15 @@ public abstract class Airlock implements Serializable {
 			return true;
 		}
 
+		else if (AirlockState.PRESSURIZED == airlockState) {
+			setState(AirlockState.DEPRESSURIZING);
+			activated = false;
+			transitioning = false;
+			innerDoorLocked = true;
+			outerDoorLocked = false;
+			return true;
+		}
+		
 		else if (AirlockState.DEPRESSURIZING == airlockState) {
 			setState(AirlockState.DEPRESSURIZED);
 			activated = false;
@@ -514,6 +523,15 @@ public abstract class Airlock implements Serializable {
 			return true;
 		}
 
+		else if (AirlockState.DEPRESSURIZED == airlockState) {
+			setState(AirlockState.PRESSURIZING);
+			activated = false;
+			transitioning = false;
+			innerDoorLocked = false;
+			outerDoorLocked = true;
+			return true;
+		}
+		
 		return false;
 	}
 

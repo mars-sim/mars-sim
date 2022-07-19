@@ -275,8 +275,8 @@ public class Sleep extends Task implements Serializable {
 	 * Walk to a destination
 	 */
 	private void walkToDestination() {
+		
 		if (!arrived) {
-
 			// If person is in rover, walk to passenger activity spot.
 			if (person.getVehicle() instanceof Rover) {
 //				walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), true);
@@ -305,6 +305,13 @@ public class Sleep extends Task implements Serializable {
 
 	//				logger.info(person + " (from " + person.getAssociatedSettlement() + ") is in " + person.getSettlement());
 
+					//////////////////// Case 0 /////////////////////////
+					// Case 0 : if a person is in the astronomy observatory, no need of looking for a bed
+					if (person.getBuildingLocation().hasFunction(FunctionType.ASTRONOMICAL_OBSERVATION)
+						|| person.isAdjacentBuilding(FunctionType.ASTRONOMICAL_OBSERVATION)) {
+						return;
+					}
+					
 					//////////////////// Case 1 - 3 /////////////////////////
 
 					Building q0 = getBestAvailableQuarters(person, true);

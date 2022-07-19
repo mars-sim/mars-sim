@@ -31,6 +31,7 @@ import org.mars_sim.msp.core.structure.Airlock;
 import org.mars_sim.msp.core.structure.AirlockType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -268,12 +269,12 @@ public class ExitAirlock extends Task implements Serializable {
 	 * @return true if a person is fit
 	 */
 	private boolean isFit() {
-		// if the person is in the airlock next to the observatory
+		// Note: if the person is in the airlock next to the observatory
 		// he will always be qualified to leave that place, or else
 		// he will get stranded
-        // if (person.isAdjacentBuildingType(Building.ASTRONOMY_OBSERVATORY)) {
-		// 	return true;
-		// }
+		if (person.isAdjacentBuilding(FunctionType.ASTRONOMICAL_OBSERVATION)) {
+		 	return true;
+		}
 		// Checks if a person is tired, too stressful or hungry and need
 		// to take break, eat and/or sleep
 		return person.getPhysicalCondition().computeFitnessLevel() >= 2;
@@ -334,6 +335,11 @@ public class ExitAirlock extends Task implements Serializable {
 			airlock.setActivated(true);
 		}
 
+		if (airlock.isOperator(id)) {
+			// Command the airlock state to be transitioning
+			airlock.setTransitioning(true);
+		}
+		
 		boolean canProceed = false;
 
 		if (inSettlement) {

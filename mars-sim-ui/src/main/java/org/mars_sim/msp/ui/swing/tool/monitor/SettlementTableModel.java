@@ -579,7 +579,7 @@ public class SettlementTableModel extends UnitTableModel {
 	private double getResourceStored(Settlement settlement, int resource) {
 		// This is the quickest way but it may or may not work if the object reference
 		// of ARs have changed during (de)serialization.
-		return Math.round(settlement.getAmountResourceStored(resource) * 100.0) / 100.0;
+		return Math.round(settlement.getAllAmountResourceOwned(resource) * 100.0) / 100.0;
 	}
 	
 	/**

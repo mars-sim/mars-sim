@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ResourceUtil.java
- * @date 2021-11-16
+ * @date 2022-07-18
  * @author Manny Kung
  */
 
@@ -30,13 +30,9 @@ public class ResourceUtil implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	public static final int FIRST_AMOUNT_RESOURCE_ID = 200;
-
 	public static final int FIRST_ITEM_RESOURCE_ID = 500;
-
 	public static final int FIRST_VEHICLE_RESOURCE_ID = 1000;
-
 	public static final int FIRST_EQUIPMENT_RESOURCE_ID = 1010;
-
 	public static final int FIRST_ROBOT_RESOURCE_ID = 1020;
 	
 	public static final String OXYGEN = "oxygen";
@@ -99,7 +95,7 @@ public class ResourceUtil implements Serializable {
 
 	protected static Set<Integer> essentialResources;
 	
-	protected static final String[] ROCKS  = new String[] {
+	public static final String[] ROCKS  = new String[] {
 			ROCK_SAMPLES,
 			"columnar basalt",
 			"granite",

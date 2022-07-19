@@ -95,23 +95,22 @@ public class MeteorologyStudyFieldWork extends ScientificStudyFieldWork implemen
 	private void collectRocks(double time) {
 		if (hasSpecimenContainer()) {
 			double probability = chance * time;
-			logger.info(person, 10_000, "collectRockSamples::probability: " + probability);
+			logger.info(person, 10_000, "collectRock::probability: " + probability);
 			
 			if (RandomUtil.getRandomDouble(1.0D) <= chance * time) {
 				Container box = person.findContainer(EquipmentType.SPECIMEN_BOX, false, -1);
-				int rockSampleId = box.getResource();
-				if (rockSampleId == -1) {
+				int rockId = box.getResource();
+				if (rockId == -1) {
 					// Box is empty so choose at random
 					int randomNum = RandomUtil.getRandomInt(((ResourceUtil.rockIDs).length) - 1);
-					rockSampleId = ResourceUtil.rockIDs[randomNum];
-				}
-				logger.info(person, 10_000, "collectRockSamples::randomRock: " + rockSampleId);
+					rockId = ResourceUtil.rockIDs[randomNum];
+					logger.info(person, 10_000, "collectRocks - Type of Rock collected: " + ResourceUtil.ROCKS[randomNum]);
+				}	
 				
-		        
-				double mass = RandomUtil.getRandomDouble(AVERAGE_ROCKS_MASS * 2D);
-				double cap = box.getAmountResourceRemainingCapacity(rockSampleId);
+				double mass = RandomUtil.getRandomDouble(AVERAGE_ROCKS_MASS / 2D, AVERAGE_ROCKS_MASS * 2D);
+				double cap = box.getAmountResourceRemainingCapacity(rockId);
 				if (mass < cap) {
-					double excess = box.storeAmountResource(rockSampleId, mass);
+					double excess = box.storeAmountResource(rockId, mass);
 					totalCollected += mass - excess;
 				}
 			}

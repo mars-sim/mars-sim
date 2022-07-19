@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ExploreSite.java
- * @date 2021-12-09
+ * @date 2022-07-18
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -47,7 +47,7 @@ public class ExploreSite extends EVAOperation {
 	public static final double LABOR_TIME = 50D;
 
 	private static final double AVERAGE_ROCK_SAMPLES_COLLECTED_SITE = 40 + RandomUtil.getRandomDouble(20);
-	public static final double AVERAGE_ROCK_SAMPLE_MASS = 1.5D + RandomUtil.getRandomDouble(.5);
+	public static final double AVERAGE_ROCK_SAMPLE_MASS = 5 + RandomUtil.getRandomDouble(5);
 	private static final double ESTIMATE_IMPROVEMENT_FACTOR = 5 + RandomUtil.getRandomDouble(5);
 
 	private static final int ROCK_SAMPLES_ID = ResourceUtil.rockSamplesID;
@@ -55,7 +55,10 @@ public class ExploreSite extends EVAOperation {
 	// Data members
 	private double totalCollected = 0;
 	private double numSamplesCollected = AVERAGE_ROCK_SAMPLES_COLLECTED_SITE / AVERAGE_ROCK_SAMPLE_MASS;
-	private double chance = numSamplesCollected / Exploration.EXPLORING_SITE_TIME;
+	
+	// Future: should keep track of the actual total exploring site time and use it below.
+	// The longer it stays, the more samples are collected and better the mining estimation
+	private double chance = numSamplesCollected * Exploration.EXPLORING_SITE_TIME / 8000.0;
 
 	private ExploredLocation site;
 	private Rover rover;
@@ -178,10 +181,10 @@ public class ExploreSite extends EVAOperation {
 			improveMineralConcentrationEstimates(time);
 		}
 		else {
-			// Collect rock samples.
-			collectRockSamples(time);
+			// Collect rocks.
+			collectRocks(time);
 		}
-
+		
 		// FUTURE: Add other site exploration activities later.
 
 		// Add experience points
@@ -206,18 +209,28 @@ public class ExploreSite extends EVAOperation {
 	 * @param time the amount of time available (millisols).
 	 * @throws Exception if error collecting rock samples.
 	 */
-	private void collectRockSamples(double time) {
+	private void collectRocks(double time) {
 		if (hasSpecimenContainer()) {
-			double probability = Math.round((1 + site.getNumEstimationImprovement()) * chance * time *100.0)/100.0;
-			if (probability > .8)
-				probability = .8;
+			double probability = (1 + site.getNumEstimationImprovement()) * chance * time 
+					* (getEffectiveSkillLevel() + person.getSkillManager().getSkillLevel(SkillType.PROSPECTING)) / 2D;
+			if (probability > .9)
+				probability = .9;
 
-			if (RandomUtil.getRandomDouble(1.0D) <= chance * time) {
-		        Container box = person.findContainer(EquipmentType.SPECIMEN_BOX, false, ROCK_SAMPLES_ID);
-				double mass = RandomUtil.getRandomDouble(AVERAGE_ROCK_SAMPLE_MASS * 3D);
-				double cap = box.getAmountResourceRemainingCapacity(ROCK_SAMPLES_ID);
+			if (RandomUtil.getRandomDouble(1.0D) <= probability) {
+				
+				Container box = person.findContainer(EquipmentType.SPECIMEN_BOX, false, -1);
+				int rockId = box.getResource();
+				if (rockId == -1) {
+					// Box is empty so choose at random
+					int randomNum = RandomUtil.getRandomInt(((ResourceUtil.rockIDs).length) - 1);
+					rockId = ResourceUtil.rockIDs[randomNum];
+					logger.info(person, 10_000, "collectRocks - Type of Rock collected: " + ResourceUtil.ROCKS[randomNum]);
+				}
+
+				double mass = RandomUtil.getRandomDouble(AVERAGE_ROCK_SAMPLE_MASS / 2D, AVERAGE_ROCK_SAMPLE_MASS * 2D);
+				double cap = box.getAmountResourceRemainingCapacity(rockId);
 				if (mass < cap) {
-					double excess = box.storeAmountResource(ROCK_SAMPLES_ID, mass);
+					double excess = box.storeAmountResource(rockId, mass);
 					totalCollected += mass - excess;
 				}
 			}
@@ -230,8 +243,11 @@ public class ExploreSite extends EVAOperation {
 	 * @param time the amount of time available (millisols).
 	 */
 	private void improveMineralConcentrationEstimates(double time) {
-		double probability = (time / Exploration.EXPLORING_SITE_TIME) * getEffectiveSkillLevel()
+		double probability = (time * Exploration.EXPLORING_SITE_TIME / 1000.0) 
+				* (getEffectiveSkillLevel() + person.getSkillManager().getSkillLevel(SkillType.PROSPECTING)) / 2D
 				* ESTIMATE_IMPROVEMENT_FACTOR;
+		if (probability > .9)
+			probability = .9;
 		if ((site.getNumEstimationImprovement() == 0) || (RandomUtil.getRandomDouble(1.0D) <= probability)) {
 			improveSiteEstimates(site, getEffectiveSkillLevel());
 

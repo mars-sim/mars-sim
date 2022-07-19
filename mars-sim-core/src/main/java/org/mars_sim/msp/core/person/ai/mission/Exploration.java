@@ -323,8 +323,6 @@ public class Exploration extends EVAMission
 		return el;
 	}
 
-
-
 	@Override
 	protected int compareVehicles(Vehicle firstVehicle, Vehicle secondVehicle) {
 		int result = super.compareVehicles(firstVehicle, secondVehicle);
@@ -441,6 +439,7 @@ public class Exploration extends EVAMission
 
 	/**
 	 * Estimate the time needed at an EVA site.
+	 * 
 	 * @param buffer Add a buffer allowance
 	 * @return Estimated time per EVA site
 	 */

@@ -253,6 +253,11 @@ public class EnterAirlock extends Task implements Serializable {
 			airlock.setActivated(true);
 		}
 
+		if (airlock.isOperator(id)) {
+			// Command the airlock state to be transitioning
+			airlock.setTransitioning(true);
+		}
+		
 		boolean canProceed = false;
 
 		if (inSettlement) {

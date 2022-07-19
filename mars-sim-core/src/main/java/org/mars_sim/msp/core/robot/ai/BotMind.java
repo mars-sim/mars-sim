@@ -101,7 +101,7 @@ public class BotMind implements Serializable, Temporal {
 	}
 
 	/**
-	 * Take appropriate action for a given amount of time.
+	 * Takes appropriate action for a given amount of time.
 	 * 
 	 * @param time time in millisols
 	 * @throws Exception if error during action.
@@ -126,7 +126,7 @@ public class BotMind implements Serializable, Temporal {
 	}
 
 	/**
-	 * Looks for a new task
+	 * Looks for a new task.
 	 */
 	public void lookForATask() {
 
@@ -172,7 +172,7 @@ public class BotMind implements Serializable, Temporal {
 	}
 	
 	/**
-	 * Resumes a mission
+	 * Resumes a mission.
 	 * 
 	 * @param modifier
 	 */
@@ -187,7 +187,7 @@ public class BotMind implements Serializable, Temporal {
 	}
 
 	/**
-	 * Returns the robot's task manager
+	 * Returns the robot's task manager.
 	 * 
 	 * @return botTaskManager
 	 */
@@ -206,7 +206,7 @@ public class BotMind implements Serializable, Temporal {
 	}
 
 	/**
-	 * Gets the robot's job
+	 * Gets the robot's job.
 	 * 
 	 * @return job or null if none.
 	 */
@@ -263,7 +263,8 @@ public class BotMind implements Serializable, Temporal {
     }
 	
 	/**
-	 * Set this mind as inactive. Needs move work on this; has to abort the Task can
+	 * Sets this bot mind as inactive. 
+	 * Note: Needs to work on this. Has to abort the Task. Can 
 	 * not just close it. This abort action would then allow the Mission to be also
 	 * aborted.
 	 */
@@ -303,16 +304,12 @@ public class BotMind implements Serializable, Temporal {
 		mission = null;
 	}
 
-
-
-
-
 	public void reinit() {
 		taskManager.reinit();
 	}
 	
 	/**
-	 * Prepare object for garbage collection.
+	 * Prepares object for garbage collection.
 	 */
 	public void destroy() {
 		robot = null;
