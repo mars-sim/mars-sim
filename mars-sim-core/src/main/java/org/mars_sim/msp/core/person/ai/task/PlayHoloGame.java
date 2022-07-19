@@ -51,7 +51,7 @@ public class PlayHoloGame extends Task implements Serializable {
     /** Computing Units needed per millisol. */		
 	private double computingNeeded;
 	/** The seed value. */
-    private double seed = RandomUtil.getRandomDouble(.025, 0.15);
+    private double seed = RandomUtil.getRandomDouble(.005, 0.05);
 	
 	private final double TOTAL_COMPUTING_NEEDED;
 	

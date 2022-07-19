@@ -712,7 +712,7 @@ public class BuildingAirlock extends Airlock {
 	 */
 	@Override
 	public boolean isChamberFull() {
-		return getInsideChamberNum() >= MAX_SLOTS;
+		return getNumOccupants() >= MAX_SLOTS;
 	}
 
 	/**

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * EVAOperation.java
- * @date 2021-09-25
+ * @date 2022-07-18
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -69,12 +69,12 @@ public abstract class EVAOperation extends Task {
 
 	// Static members
 	/** The stress modified per millisol. */
-	private static final double STRESS_MODIFIER = .1D;
+	private static final double STRESS_MODIFIER = .05;
 	/** The base chance of an accident per millisol. */
 	public static final double BASE_ACCIDENT_CHANCE = .01;
 
-	/** Minmum sunlight for EVA is 1% of max sunlight */
-	private static final double MIN_SUNLIGHT = SurfaceFeatures.MAX_SOLAR_IRRADIANCE * 0.01D;
+	/** Minimum sunlight for EVA is 1% of max sunlight */
+	private static final double MIN_SUNLIGHT = SurfaceFeatures.MAX_SOLAR_IRRADIANCE * 0.01;
 
 	// Data members
 	/** Flag for ending EVA operation externally. */

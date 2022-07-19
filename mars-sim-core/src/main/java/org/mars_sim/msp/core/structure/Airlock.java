@@ -29,6 +29,7 @@ import org.mars_sim.msp.core.structure.building.function.BuildingAirlock;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -910,18 +911,24 @@ public abstract class Airlock implements Serializable {
 	public void checkOperator() {
 		// If no one is being assigned as an operator
 		if (operatorID.equals(Integer.valueOf(-1))) { 
-			// Choose a pool of candidates from a particular zone and elect an operator
+			// Choose a pool of candidates from a particular zone
 			electAnOperator(getOperatorPool());
 		}
 		// If the airlock already has an existing operator,
 		else {
-			
 			// Check to see if he's still inside or has left the airlock
 			if (!isInAnyZone(operatorID)) {
+				// Remove this operator
 				operatorID = Integer.valueOf(-1);
+				
+				int rand = RandomUtil.getRandomInt(1);
+				// Note: Provide some randomness in case the existing operator is stuck
+				// And require someone elsewhere as operator to help out.
+				if (rand == 0) {
+					// Choose a pool of candidates from a particular zone
+					electAnOperator(getOperatorPool());
+				}
 			}
-			
-			electAnOperator(getOperatorPool());
 		}
 	}
 	

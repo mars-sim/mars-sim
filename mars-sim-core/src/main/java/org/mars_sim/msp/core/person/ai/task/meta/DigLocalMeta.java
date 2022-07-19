@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * DigLocalMeta.java
- * @date 2021-10-21
+ * @date 2022-07-18
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -20,7 +20,9 @@ import org.mars_sim.msp.core.structure.Settlement;
  */
 public abstract class DigLocalMeta extends MetaTask {
 
-	private static final double VALUE = 2.0;
+	private static final double VALUE = 10.0;
+	private static final double MAX = 10000;
+	
 	private EquipmentType containerType;
 
     public DigLocalMeta(String name, EquipmentType containerType) {
@@ -83,20 +85,19 @@ public abstract class DigLocalMeta extends MetaTask {
         double fatigue = condition.getFatigue();
         double hunger = condition.getHunger();
 
-            if (!condition.isFitByLevel(300, 30, 300))
-            	return 0;
+        if (!condition.isFitByLevel(500, 30, 500))
+        	return 0;
 
-	        result = collectionProbability * VALUE;
+        result = collectionProbability * VALUE;
 
-	        if (result > 5000)
-	        	result = 5000;
+        if (result > MAX)
+        	result = MAX;
 
-            result = result - stress * 3 - fatigue/2 - hunger/2;
+        result = result - stress * 3 - fatigue/2 - hunger/2;
 
-	        if (result < 0)
-	        	return 0;
+        if (result < 0)
+        	return 0;
 
-	    
 	    int indoor = settlement.getIndoorPeopleCount(); 
 	    int citizen = settlement.getNumCitizens();
 	    
@@ -104,19 +105,23 @@ public abstract class DigLocalMeta extends MetaTask {
         if (indoor > settlement.getPopulationCapacity())
             result = result * (indoor - settlement.getPopulationCapacity());
 
-        // Due to the ratio of # indoor people vs. those outside already doing EVA 
-        result *= 2.0 / (1 + citizen) * (1 + indoor) / (1 + settlement.getNumOutsideEVA()) ;
+        if (citizen <= 8 && citizen >= 4)
+            // Adds effect of the # of citizen 
+        	result *= citizen / 2.0;
+        
+        // Adds effect of the ratio of # indoor people vs. those outside already doing EVA 
+        result *= (1 + indoor) / (1 + settlement.getNumOutsideEVA()) ;
         
         result = applyPersonModifier(result, person);
 
     	if (exposed[0]) {
     		// Baseline can give a fair amount dose of radiation
-			result = result/5D;
+			result = result/10D;
 		}
 
     	if (exposed[1]) {
     		// GCR can give nearly lethal dose of radiation
-			result = result/10D;
+			result = result/20D;
 		}
 
         if (result <= 0)

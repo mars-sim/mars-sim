@@ -38,9 +38,6 @@ public class DigLocalRegolithMeta extends DigLocalMeta {
     	if ((settlement == null) || (settlement.getRegolithCollectionRate() <= 0D)) {
     		return 0D;
     	}
-//    	double p = getProbability(settlement, person, settlement.getRegolithProbabilityValue());
-//    	System.out.println(person + ": " + p);
-//    	return p;
     	return getProbability(settlement, person, settlement.getRegolithProbabilityValue());
     }
 }
