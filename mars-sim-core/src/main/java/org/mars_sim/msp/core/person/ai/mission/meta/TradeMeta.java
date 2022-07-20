@@ -10,10 +10,10 @@ import java.util.Set;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.goods.CommerceUtil;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.JobType;
-import org.mars_sim.msp.core.person.ai.mission.CommerceUtil;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;

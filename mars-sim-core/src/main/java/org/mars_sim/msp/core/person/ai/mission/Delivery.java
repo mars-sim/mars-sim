@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.mission;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -17,6 +16,7 @@ import java.util.logging.Level;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.goods.CommerceUtil;
 import org.mars_sim.msp.core.goods.CreditManager;
 import org.mars_sim.msp.core.goods.Good;
 import org.mars_sim.msp.core.goods.GoodCategory;
@@ -35,7 +35,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * A mission for delivery between two settlements. TODO externalize strings
  */
-public class Delivery extends DroneMission implements Serializable {
+public class Delivery extends DroneMission {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -55,11 +55,6 @@ public class Delivery extends DroneMission implements Serializable {
 
 	// Static members
 	public static final double MAX_STARTING_PROBABILITY = 100D;
-
-	// Static cache for holding trade profit info.
-	public static final Map<Settlement, DeliveryProfitInfo> TRADE_PROFIT_CACHE = new HashMap<>();
-	public static final Map<Settlement, Settlement> TRADE_SETTLEMENT_CACHE = new HashMap<>();
-
 	private static final int MAX_MEMBERS = 1;
 
 	// Data members.
@@ -99,33 +94,30 @@ public class Delivery extends DroneMission implements Serializable {
 
 		if (!isDone() && s != null) {
 			// Get trading settlement
-			tradingSettlement = TRADE_SETTLEMENT_CACHE.get(s);
-			if (tradingSettlement != null && !tradingSettlement.equals(s)) {
-				addNavpoint(tradingSettlement);
-				TRADE_PROFIT_CACHE.remove(getStartingSettlement());
-				TRADE_PROFIT_CACHE.remove(tradingSettlement);
-				TRADE_SETTLEMENT_CACHE.remove(getStartingSettlement());
-				TRADE_SETTLEMENT_CACHE.remove(tradingSettlement);
-			} else {
+			tradingSettlement = CommerceUtil.getBestSettlement(s, MissionType.DELIVERY, getVehicle());
+			if (tradingSettlement == null) {
 				endMission(MissionStatus.NO_TRADING_SETTLEMENT);
+				return;
 			}
+
+			addNavpoint(tradingSettlement);
 
 			if (!isDone()) {
 				// Get the credit that the starting settlement has with the destination
 				// settlement.
 				double credit = CreditManager.getCredit(s, tradingSettlement);
 
-				if (credit > (DeliveryUtil.SELL_CREDIT_LIMIT * -1D)) {
+				if (credit > (CommerceUtil.SELL_CREDIT_LIMIT * -1D)) {
 					// Determine desired buy load,
-					desiredBuyLoad = DeliveryUtil.getDesiredBuyLoad(s, getDrone(), tradingSettlement);
+					desiredBuyLoad = CommerceUtil.getDesiredBuyLoad(s, getDrone(), tradingSettlement);
 				} else {
 					// Cannot buy from settlement due to credit limit.
 					desiredBuyLoad = new HashMap<>();
 				}
 
-				if (credit < DeliveryUtil.SELL_CREDIT_LIMIT) {
+				if (credit < CommerceUtil.SELL_CREDIT_LIMIT) {
 					// Determine sell load.
-					sellLoad = DeliveryUtil.determineBestSellLoad(s, getDrone(), tradingSettlement);
+					sellLoad = CommerceUtil.determineBestSellLoad(s, getDrone(), tradingSettlement);
 				} else {
 					// Will not sell to settlement due to credit limit.
 					sellLoad = new HashMap<>();
@@ -352,7 +344,7 @@ public class Delivery extends DroneMission implements Serializable {
 			resetToReturnTrip(
 					new NavPoint(tradingSettlement),
 					new NavPoint(getStartingSettlement()));
-			TRADE_PROFIT_CACHE.remove(getStartingSettlement());
+			CommerceUtil.clearBestSettlement(getStartingSettlement(), MissionType.DELIVERY);
 		}
 	}
 
@@ -637,19 +629,19 @@ public class Delivery extends DroneMission implements Serializable {
 		double result = 0D;
 
 		try {
-			double sellingCreditHome = DeliveryUtil.determineLoadCredit(sellLoad, getStartingSettlement(), false);
-			double sellingCreditRemote = DeliveryUtil.determineLoadCredit(sellLoad, tradingSettlement, true);
+			double sellingCreditHome = CommerceUtil.determineLoadCredit(sellLoad, getStartingSettlement(), false);
+			double sellingCreditRemote = CommerceUtil.determineLoadCredit(sellLoad, tradingSettlement, true);
 			double sellingProfit = sellingCreditRemote - sellingCreditHome;
 
-			double buyingCreditHome = DeliveryUtil.determineLoadCredit(buyingLoad, getStartingSettlement(), true);
-			double buyingCreditRemote = DeliveryUtil.determineLoadCredit(buyingLoad, tradingSettlement, false);
+			double buyingCreditHome = CommerceUtil.determineLoadCredit(buyingLoad, getStartingSettlement(), true);
+			double buyingCreditRemote = CommerceUtil.determineLoadCredit(buyingLoad, tradingSettlement, false);
 			double buyingProfit = buyingCreditHome - buyingCreditRemote;
 
 			double totalProfit = sellingProfit + buyingProfit;
 
 			double estimatedDistance = Coordinates.computeDistance(getStartingSettlement().getCoordinates(),
 					tradingSettlement.getCoordinates()) * 2D;
-			double missionCost = DeliveryUtil.getEstimatedMissionCost(getStartingSettlement(), getDrone(),
+			double missionCost = CommerceUtil.getEstimatedMissionCost(getStartingSettlement(), getDrone(),
 					estimatedDistance);
 
 			result = totalProfit - missionCost;

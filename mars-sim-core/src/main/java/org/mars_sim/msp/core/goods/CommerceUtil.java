@@ -4,14 +4,13 @@
  * @date 2022-07-19
  * @author Barry Evans
  */
-package org.mars_sim.msp.core.person.ai.mission;
+package org.mars_sim.msp.core.goods;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
@@ -21,12 +20,13 @@ import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.ContainerUtil;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.equipment.EquipmentType;
-import org.mars_sim.msp.core.goods.CreditManager;
-import org.mars_sim.msp.core.goods.Good;
-import org.mars_sim.msp.core.goods.GoodCategory;
-import org.mars_sim.msp.core.goods.GoodsManager;
-import org.mars_sim.msp.core.goods.GoodsUtil;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.PhysicalCondition;
+import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.MissionManager;
+import org.mars_sim.msp.core.person.ai.mission.MissionType;
+import org.mars_sim.msp.core.person.ai.mission.Trade;
+import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
@@ -34,6 +34,7 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Crewable;
+import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleType;
 
@@ -43,7 +44,7 @@ import org.mars_sim.msp.core.vehicle.VehicleType;
 public final class CommerceUtil {
 
 	/** default logger. */
-	private static final Logger logger = Logger.getLogger(CommerceUtil.class.getName());
+	private static final SimLogger logger = SimLogger.getLogger(CommerceUtil.class.getName());
 
 	/**
 	 * Credit limit under which a seller is willing to sell goods to a buyer. Buyer
@@ -113,6 +114,8 @@ public final class CommerceUtil {
 			}
 		}
 
+		logger.info(startingSettlement, "New best deal for " + commerceType.name() + " to " + bestSettlement.getName()
+										+ " profit " + bestProfit);
 		return new Deal(bestSettlement, bestProfit, (MarsClock) marsClock.clone());
 	}
 
@@ -134,7 +137,8 @@ public final class CommerceUtil {
 				if (startingSettlement.equals(settlement1) && tradingSettlement.equals(settlement2)) {
 					result = true;
 					break;
-				} else if (startingSettlement.equals(settlement2) && tradingSettlement.equals(settlement1)) {
+				}
+				else if (startingSettlement.equals(settlement2) && tradingSettlement.equals(settlement1)) {
 					result = true;
 					break;
 				}
@@ -223,12 +227,9 @@ public final class CommerceUtil {
 	 */
 	public static Map<Good, Integer> getDesiredBuyLoad(Settlement startingSettlement, Vehicle delivery,
 			Settlement tradingSettlement) {
-
 		// Determine best buy load.
-		Map<Good, Integer> buyLoad = determineLoad(startingSettlement, tradingSettlement, delivery,
+		return determineLoad(startingSettlement, tradingSettlement, delivery,
 				Double.POSITIVE_INFINITY);
-
-		return buyLoad;
 	}
 
 	/**
@@ -240,14 +241,12 @@ public final class CommerceUtil {
 	 * @return a map of goods and numbers in the load.
 	 * @throws Exception if error determining best sell load.
 	 */
-	static Map<Good, Integer> determineBestSellLoad(Settlement startingSettlement, Vehicle delivery,
+	public static Map<Good, Integer> determineBestSellLoad(Settlement startingSettlement, Vehicle delivery,
 			Settlement tradingSettlement) {
 
 		// Determine best sell load.
-		Map<Good, Integer> sellLoad = determineLoad(tradingSettlement, startingSettlement, delivery,
+		return determineLoad(tradingSettlement, startingSettlement, delivery,
 				Double.POSITIVE_INFINITY);
-
-		return sellLoad;
 	}
 
 	/**
@@ -274,13 +273,20 @@ public final class CommerceUtil {
 		double massCapacity = delivery.getCargoCapacity();
 
 		// Subtract mission base mass (estimated).
-		double missionPartsMass = MISSION_BASE_MASS;
-		if (massCapacity < missionPartsMass)
-			missionPartsMass = massCapacity;
-		massCapacity -= missionPartsMass;
+		// Not sure if we need this ?
+		// double missionPartsMass = MISSION_BASE_MASS;
+		// if (massCapacity < missionPartsMass)
+		// 	missionPartsMass = massCapacity;
+		// massCapacity -= missionPartsMass;
 
 		// Determine repair parts for trip.
-		Set<Integer> repairParts = delivery.getMalfunctionManager().getRepairPartProbabilities().keySet();
+		Set<Integer> repairParts = null;
+		if (delivery instanceof Rover) {
+			repairParts = delivery.getMalfunctionManager().getRepairPartProbabilities().keySet();
+		}
+		else {
+			repairParts = Collections.emptySet();
+		}	
 
 		// Determine the load.
 		boolean done = false;
@@ -313,7 +319,7 @@ public final class CommerceUtil {
 							buyerLoadValue += buyerGoodsManager.determineGoodValueWithSupply(containerGood, totalContainerNum);
 							tradeList.put(containerGood, (containerNum + 1));
 						} else
-							logger.warning("container for " + resource.getName() + " not available.");
+							logger.warning(sellingSettlement, "Container for " + resource.getName() + " not available.");
 					}
 
 					int itemResourceNum = 0;
@@ -383,11 +389,10 @@ public final class CommerceUtil {
 
 		GoodsManager manager = settlement.getGoodsManager();
 
-		Iterator<Good> i = load.keySet().iterator();
-		while (i.hasNext()) {
-			Good good = i.next();
+		for(Map.Entry<Good,Integer> goodItem : load.entrySet()) {
+			Good good = goodItem.getKey();
 			double cost = good.getCostOutput();
-			int goodNumber = load.get(good);
+			int goodNumber = goodItem.getValue();
 			double supply = good.getNumberForSettlement(settlement);
 			double multiplier = 1D;
 			if (good.getCategory() == GoodCategory.AMOUNT_RESOURCE) {	
@@ -462,9 +467,7 @@ public final class CommerceUtil {
 			double bestValue = 0D;
 			if (allowNegValue)
 				bestValue = Double.NEGATIVE_INFINITY;
-			Iterator<Good> i = buyingSettlement.getBuyList().iterator(); 
-			while (i.hasNext()) {
-			Good good = i.next();
+			for(Good good : buyingSettlement.getBuyList()) {
 				if (!nonTradeGoods.contains(good)) {
 					double tradeValue = getGoodValue(good, sellingSettlement, buyingSettlement, tradedGoods,
 							remainingCapacity, hasVehicle, delivery, allowNegValue, repairParts);
@@ -619,14 +622,14 @@ public final class CommerceUtil {
 					|| good.getCategory() == GoodCategory.CONTAINER) {	
 				if (good.getEquipmentType() == EquipmentType.EVA_SUIT) {
 					double remainingSuits = sellingInventory - amountTraded;
-					int requiredSuits = Trade.MAX_MEMBERS + 2;
+					// Make sure keep enough number of EVA suits for each citizen with margin 
+					int requiredSuits = (int)(sellingSettlement.getNumCitizens() * 1.2);
 					enoughEVASuits = remainingSuits > requiredSuits;
 				}
 				else {
 					double remaining = sellingInventory - amountTraded;
 					enoughEquipment = remaining > MIN_NUM_EQUIPMENT;
 				}
-
 			}
 
 			boolean enoughRepairParts = true;
@@ -762,22 +765,22 @@ public final class CommerceUtil {
 			double averageSpeedMillisol = averageSpeed / MarsClock.convertSecondsToMillisols(60D * 60D);
 			double tripTimeSols = ((distance / averageSpeedMillisol) + 1000D) / 1000D;
 
-			double life_support_margin = Vehicle.getLifeSupportRangeErrorMargin();
+			double lifeSupportMargin = Vehicle.getLifeSupportRangeErrorMargin();
 			// Get oxygen amount.
 			double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * tripTimeSols * Trade.MAX_MEMBERS
-					* Mission.OXYGEN_MARGIN * life_support_margin;
+					* Mission.OXYGEN_MARGIN * lifeSupportMargin;
 			Good oxygenGood = GoodsUtil.getGood(OXYGEN_ID);
 			neededResources.put(oxygenGood, (int) oxygenAmount);
 
 			// Get water amount.
 			double waterAmount = PhysicalCondition.getWaterConsumptionRate() * tripTimeSols * Trade.MAX_MEMBERS
-					* Mission.WATER_MARGIN * life_support_margin;
+					* Mission.WATER_MARGIN * lifeSupportMargin;
 			Good waterGood = GoodsUtil.getGood(WATER_ID);
 			neededResources.put(waterGood, (int) waterAmount);
 
 			// Get food amount.
 			double foodAmount = PhysicalCondition.getFoodConsumptionRate() * tripTimeSols * Trade.MAX_MEMBERS
-					* Mission.FOOD_MARGIN * life_support_margin;
+					* Mission.FOOD_MARGIN * lifeSupportMargin;
 			Good foodGood = GoodsUtil.getGood(FOOD_ID);
 			neededResources.put(foodGood, (int) foodAmount);
 		}

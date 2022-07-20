@@ -4,7 +4,7 @@
  * @date 2022-07-19
  * @author Barry Evans
  */
-package org.mars_sim.msp.core.person.ai.mission;
+package org.mars_sim.msp.core.goods;
 
 import org.mars_sim.msp.core.structure.Settlement;
 

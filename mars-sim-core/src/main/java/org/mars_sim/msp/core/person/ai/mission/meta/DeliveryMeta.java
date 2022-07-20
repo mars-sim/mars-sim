@@ -9,17 +9,15 @@ package org.mars_sim.msp.core.person.ai.mission.meta;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.goods.CommerceUtil;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Delivery;
-import org.mars_sim.msp.core.person.ai.mission.Delivery.DeliveryProfitInfo;
-import org.mars_sim.msp.core.person.ai.mission.DeliveryUtil;
 import org.mars_sim.msp.core.person.ai.mission.DroneMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Drone;
 
 /**
@@ -29,8 +27,6 @@ public class DeliveryMeta extends AbstractMetaMission {
 
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(DeliveryMeta.class.getName());
-	
-    private static final int FREQUENCY = 100;
     
     private static final int VALUE = 1;
     
@@ -120,32 +116,9 @@ public class DeliveryMeta extends AbstractMetaMission {
 		try {
 			// Only check every couple of Sols, else use cache.
 			// Note: this method is very CPU intensive.
-			boolean useCache = false;
-
-			if (Delivery.TRADE_PROFIT_CACHE.containsKey(settlement)) {
-				DeliveryProfitInfo profitInfo = Delivery.TRADE_PROFIT_CACHE.get(settlement);
-				double timeDiff = MarsClock.getTimeDiff(marsClock, profitInfo.time);
-				if (timeDiff < FREQUENCY) {
-					deliveryProfit = profitInfo.profit;
-					useCache = true;
-				}
-			} else {
-				Delivery.TRADE_PROFIT_CACHE.put(settlement,
-						new DeliveryProfitInfo(deliveryProfit, (MarsClock) marsClock.clone()));
-			}
-
-			if (!useCache) {
-
-				deliveryProfit = DeliveryUtil.getBestDeliveryProfit(settlement, drone) * VALUE;
-
-				Delivery.TRADE_PROFIT_CACHE.put(settlement,
-						new DeliveryProfitInfo(deliveryProfit, (MarsClock) marsClock.clone()));
-				Delivery.TRADE_SETTLEMENT_CACHE.put(settlement, DeliveryUtil.bestDeliverySettlementCache);
-			}
-			
-	
+			deliveryProfit = CommerceUtil.getBestProfit(settlement, MissionType.DELIVERY, drone) * VALUE;
 		} catch (Exception e) {
-			logger.log(Level.SEVERE, "Issues with DeliveryUtil: ", e);
+			logger.log(Level.SEVERE, "Issues with CommerceUtil: ", e);
 			return 0;
 		}
 
