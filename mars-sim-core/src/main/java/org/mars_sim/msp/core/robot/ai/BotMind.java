@@ -108,8 +108,9 @@ public class BotMind implements Serializable, Temporal {
 			// Note: calling executeTask can cause stackoverflow from time to time
 			double remainingTime = botTaskManager.executeTask(time, robot.getPerformanceRating());
 			if (remainingTime == time) {
-				logger.log(robot, Level.SEVERE, 30_000L, "current Task: " + botTaskManager.getTaskName() 
-					+ " - remainingTime = time = " + remainingTime + ".");
+				logger.log(robot, Level.SEVERE, 30_000L, "Current Task: " + botTaskManager.getTaskName() 
+					+ " - remainingTime / time = " + remainingTime + ".");
+				// Do not call takeAction
 				return;
 			}
 			if (remainingTime > 0D) {

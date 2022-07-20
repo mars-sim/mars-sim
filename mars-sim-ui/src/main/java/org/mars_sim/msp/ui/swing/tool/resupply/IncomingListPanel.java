@@ -59,7 +59,7 @@ implements ListSelectionListener {
 
 		// Create incoming list.
 		listModel = new IncomingListModel();
-		incomingList = new JList<Object>(listModel);
+		incomingList = new JList<>(listModel);
 		incomingList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		WebScrollPane scrollPane = new WebScrollPane(incomingList);
 		scrollPane.setHorizontalScrollBarPolicy(WebScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -68,6 +68,7 @@ implements ListSelectionListener {
 
 	/**
 	 * Gets the incoming resupply list.
+	 * 
 	 * @return the incoming resupply list.
 	 */
 	JList<?> getIncomingList() {
@@ -173,6 +174,5 @@ implements ListSelectionListener {
 			  transportList = null;
 			  Simulation.instance().getEventManager().removeListener(this);
 		  }
-
 	 }
 }

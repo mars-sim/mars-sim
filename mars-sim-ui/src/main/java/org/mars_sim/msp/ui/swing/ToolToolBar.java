@@ -360,7 +360,8 @@ public class ToolToolBar extends WebToolBar implements ActionListener {
 	
 	public WebButton createStarMapButton() {
 		WebButton starMap = new WebButton();
-		starMap.setIcon(parentMainWindow.getTelescopeIcon());
+		String TELESCOPE_ICON = Msg.getString("icon.telescope"); //$NON-NLS-1$
+		starMap.setIcon(ImageLoader.getNewIcon(TELESCOPE_ICON));//parentMainWindow.getTelescopeIcon());
 		TooltipManager.setTooltip(starMap, "Open the Orbit Viewer", TooltipWay.up);
 
 		starMap.addActionListener(e -> parentMainWindow.openOrbitViewer());

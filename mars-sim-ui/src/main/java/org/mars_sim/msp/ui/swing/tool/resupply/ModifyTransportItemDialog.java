@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * ModifyTransportItemDialog.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.resupply;
@@ -39,6 +39,7 @@ public class ModifyTransportItemDialog extends ModalInternalFrame {
 	
 	/**
 	 * Constructor.
+	 * 
 	 * @param owner the owner of this dialog.
 	 * @param title title of dialog.
 	 * @param transportItem the transport item to modify.
@@ -52,7 +53,7 @@ public class ModifyTransportItemDialog extends ModalInternalFrame {
 		this.transportItem = transportItem;
 		this.resupplyWindow = resupplyWindow;
 
-		this.setSize(560,500);
+		this.setSize(560, 500);
 
 		 // Create main panel
         WebPanel mainPane = new WebPanel(new BorderLayout());
@@ -68,7 +69,6 @@ public class ModifyTransportItemDialog extends ModalInternalFrame {
 		mainPane.add(buttonPane, BorderLayout.SOUTH);
 
 		// Create commit button.
-		// Change button text from "Modify" to "Commit Changes"
 		commitButton = new WebButton("Commit Changes");
 		commitButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -91,11 +91,7 @@ public class ModifyTransportItemDialog extends ModalInternalFrame {
 		buttonPane.add(cancelButton);
 
         // Add to its own tab pane
-//        if (desktop.getMainScene() != null)
-//        	desktop.add(this);
-//        	//desktop.getMainScene().getDesktops().get(2).add(this);
-//        else 
-        	desktop.add(this);    
+		desktop.add(this);    
 
 		Dimension desktopSize = desktop.getParent().getSize();
 	    Dimension jInternalFrameSize = this.getSize();
@@ -120,7 +116,6 @@ public class ModifyTransportItemDialog extends ModalInternalFrame {
 		else {
 			throw new IllegalStateException("Transport item: " + transportItem + " is not valid.");
 		}
-
 	}
 
 
@@ -129,17 +124,12 @@ public class ModifyTransportItemDialog extends ModalInternalFrame {
 	 */
 	private void modifyTransportItem() {
 		if ((editingPanel != null) && editingPanel.modifyTransportItem()) {
-			//if ( d != null ) d.dispose();
-			//if ( s != null ) s.close();
 			dispose();
-			//resupplyWindow.setRunning(false);
 		}
 	}
 	
 	public void setCommitButton(boolean value) {
-		System.out.println("set commit button to " + value);
 		SwingUtilities.invokeLater(() -> commitButton.setEnabled(value));
-	    //setVisible(true);
 	}
 	
 }

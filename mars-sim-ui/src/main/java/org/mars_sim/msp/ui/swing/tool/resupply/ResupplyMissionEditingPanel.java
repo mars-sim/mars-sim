@@ -19,6 +19,7 @@ import java.awt.event.FocusListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,10 +33,9 @@ import java.util.Vector;
 
 import javax.swing.AbstractCellEditor;
 import javax.swing.ButtonGroup;
-import javax.swing.JList;
 import javax.swing.JTable;
-//import javax.swing.JTextField;
-import javax.swing.ListModel;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
@@ -55,10 +55,9 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.interplanetary.transport.TransitState;
-import org.mars_sim.msp.core.interplanetary.transport.Transportable;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyUtil;
-import org.mars_sim.msp.core.interplanetary.transport.settlement.ArrivingSettlement;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
@@ -87,12 +86,13 @@ import com.alee.laf.scroll.WebScrollPane;
 public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 
 	/** default logger. */
-//	private static SimLogger logger = SimLogger.getLogger(ResupplyMissionEditingPanel.class.getName());
+	private static SimLogger logger = SimLogger.getLogger(ResupplyMissionEditingPanel.class.getName());
 			
 	private static final Integer[] EMPTY_STRING_ARRAY = new Integer[0];
 	private static final int MAX_FUTURE_ORBITS = 20;
 	private static final int MAX_IMMIGRANTS = 48;
-	private static final int MILLISOLS_DELAY = 20;
+	private static final int MAX_BOTS = 48;
+	private static final int MILLISOLS_DELAY = 10;
 
 	// Data members
 	private String errorString = new String();
@@ -100,19 +100,20 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 	private Integer[] sols = new Integer[ResupplyUtil.MAX_NUM_SOLS_PLANNED];
 	private Number[] quantity = new Number[100000];
 	private Integer[] immigrants = new Integer[MAX_IMMIGRANTS];
-
+	private Integer[] bots = new Integer[MAX_BOTS];
+	
 	private JComboBoxMW<Settlement> destinationCB;
 	private WebRadioButton arrivalDateRB;
-	private WebRadioButton timeUntilArrivalRB;
+	private WebRadioButton solsUntilArrivalRB;
 	private MartianSolComboBoxModel martianSolCBModel;
 	private WebLabel arrivalDateTitleLabel;
-	private WebLabel timeUntilArrivalLabel;
+	private WebLabel solsUntilArrivalLabel;
 	private WebLabel solLabel;
 	private WebLabel monthLabel;
 	private WebLabel orbitLabel;
 	private WebLabel solInfoLabel;
 	private WebLabel errorLabel;
-	private JComboBoxMW<?> solCB, solsFromCB, immigrantsCB, monthCB, orbitCB;
+	private JComboBoxMW<?> solCB, solsFromCB, immigrantsCB, botsCB, monthCB, orbitCB;
 	private SupplyTableModel supplyTableModel;
 	private JTable supplyTable;
 	private WebButton removeSupplyButton;
@@ -155,10 +156,10 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		destinationPane.add(destinationTitleLabel);
 
 		// Create destination combo box.
-		Vector<Settlement> settlements = new Vector<Settlement>(
+		Vector<Settlement> settlements = new Vector<>(
 				unitManager.getSettlements());
 		Collections.sort(settlements);
-		destinationCB = new JComboBoxMW<Settlement>(settlements);
+		destinationCB = new JComboBoxMW<>(settlements);
 		if (resupply != null) {
 			destinationCB.setSelectedItem(resupply.getSettlement());
 		} else {
@@ -194,7 +195,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		// Create arrival date title label.
 		arrivalDateTitleLabel = new WebLabel("Arrival Date : ");
 		arrivalDateSelectionPane.add(arrivalDateTitleLabel);
-
+		
 		// Get default resupply Martian time.
 		MarsClock resupplyTime = null;
 		if (resupply != null) {
@@ -206,12 +207,12 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 
 		martianSolCBModel = new MartianSolComboBoxModel(resupplyTime.getMonth(), resupplyTime.getOrbit());
 
-		WebPanel comboBoxPane = new WebPanel(new GridLayout(1, 6));
-		comboBoxPane.setAlignmentX(Component.CENTER_ALIGNMENT);
+		WebPanel comboBoxPane = new WebPanel(new GridLayout(1, 6, 1, 1));
+		comboBoxPane.setSize(200, 25);
 		arrivalDateSelectionPane.add(comboBoxPane);
 		
 		// Create orbit label.
-		orbitLabel = new WebLabel("Orbit");
+		orbitLabel = new WebLabel("Orbit :", SwingConstants.CENTER);
 		comboBoxPane.add(orbitLabel);
 
 		// Create orbit combo box.
@@ -222,35 +223,29 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		for (int x = 0; x < MAX_FUTURE_ORBITS; x++) {
 			orbitValues[x] = formatter.format(startOrbit + x);
 		}
-		orbitCB = new JComboBoxMW<Object>(orbitValues);
+		orbitCB = new JComboBoxMW<>(orbitValues);
 		orbitCB.setSelectedItem(formatter.format(startOrbit));
-		orbitCB.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				// Update sol combo box values.
+		orbitCB.addActionListener(e -> 
 				martianSolCBModel.updateSolNumber(monthCB.getSelectedIndex() + 1,
-						Integer.parseInt((String) orbitCB.getSelectedItem()));
-			}
-		});
+						Integer.parseInt((String) orbitCB.getSelectedItem()))
+		);
 		comboBoxPane.add(orbitCB);
 
 		// Create month label.
-		monthLabel = new WebLabel("Month");
+		monthLabel = new WebLabel("Month :", SwingConstants.CENTER);
 		comboBoxPane.add(monthLabel);
 
 		// Create month combo box.
 		monthCB = new JComboBoxMW<Object>(MarsClockFormat.getMonthNames());
 		monthCB.setSelectedItem(resupplyTime.getMonthName());
-		monthCB.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				// Update sol combo box values.
+		monthCB.addActionListener(e -> 
 				martianSolCBModel.updateSolNumber(monthCB.getSelectedIndex() + 1,
-						Integer.parseInt((String) orbitCB.getSelectedItem()));
-			}
-		});
+						Integer.parseInt((String) orbitCB.getSelectedItem()))
+		);
 		comboBoxPane.add(monthCB);
 
 		// Create sol label.
-		solLabel = new WebLabel("Sol");
+		solLabel = new WebLabel("Sol :", SwingConstants.CENTER);
 		comboBoxPane.add(solLabel);
 
 		// Create sol combo box.
@@ -258,27 +253,27 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		solCB.setSelectedItem(resupplyTime.getSolOfMonth());
 		comboBoxPane.add(solCB);
 
-		// Create time until arrival pane.
-		WebPanel timeUntilArrivalPane = new WebPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
-		arrivalDatePane.add(timeUntilArrivalPane);
+		// Create sol until arrival pane.
+		WebPanel solsUntilArrivalPane = new WebPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+		arrivalDatePane.add(solsUntilArrivalPane);
 
-		// Create time until arrival radio button.
-		timeUntilArrivalRB = new WebRadioButton();
-		timeUntilArrivalRB.setSelected(false);
-		dateTypeRBGroup.add(timeUntilArrivalRB);
-		timeUntilArrivalRB.addActionListener(new ActionListener() {
+		// Create sol until arrival radio button.
+		solsUntilArrivalRB = new WebRadioButton();
+		solsUntilArrivalRB.setSelected(false);
+		dateTypeRBGroup.add(solsUntilArrivalRB);
+		solsUntilArrivalRB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				WebRadioButton rb = (WebRadioButton) evt.getSource();
 				setEnableTimeUntilArrivalPane(rb.isSelected());
 				setEnableArrivalDatePane(!rb.isSelected());
 			}
 		});
-		timeUntilArrivalPane.add(timeUntilArrivalRB);
+		solsUntilArrivalPane.add(solsUntilArrivalRB);
 
-		// create time until arrival label.
-		timeUntilArrivalLabel = new WebLabel("Sols Until Arrival : ");
-		timeUntilArrivalLabel.setEnabled(false);
-		timeUntilArrivalPane.add(timeUntilArrivalLabel);
+		// create the sols until arrival label.
+		solsUntilArrivalLabel = new WebLabel("Sols Until Arrival : ");
+		solsUntilArrivalLabel.setEnabled(false);
+		solsUntilArrivalPane.add(solsUntilArrivalLabel);
 
 		// Create sols text field.
 		int solsDiff = (int) Math.round((MarsClock.getTimeDiff(resupplyTime, marsClock) / 1000D));
@@ -295,31 +290,38 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		updateSolsCB();
 		solsFromCB.setSelectedItem(solsDiff);
 		solsFromCB.requestFocus(false);
-		timeUntilArrivalPane.add(solsFromCB);
+		solsUntilArrivalPane.add(solsFromCB);
 
 		// Create sol information label.
 		solInfoLabel = new WebLabel("(668 Sols = 1 Martian Orbit for a non-leap year)");
 		solInfoLabel.setEnabled(false);
-		timeUntilArrivalPane.add(solInfoLabel);
+		solsUntilArrivalPane.add(solInfoLabel);
 
 		// Create sol information label.
-		WebLabel limitLabel = new WebLabel("  Note : cannot have more than one resupply per sol.");
+		WebLabel limitLabel = new WebLabel("  Note : there is a minimum 10-msol delay for a resupply mission to be executed.");
 		limitLabel.setEnabled(true);
-		limitLabel.setForeground(Color.ORANGE.darker());
+		limitLabel.setForeground(new Color(139, 69, 19));
 		arrivalDatePane.add(limitLabel);
 
 		// Create error pane.
 		WebPanel errorPane = new WebPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
-		arrivalDatePane.add(errorPane);// , BorderLayout.SOUTH);
+		arrivalDatePane.add(errorPane);
 
 		// Create error label
 		errorLabel = new WebLabel(new String());
 		errorLabel.setForeground(Color.RED);
 		errorPane.add(errorLabel);
 
+		////////////////////////////////////////////
+		
+		WebPanel immigrantsBotsPane = new WebPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+		topEditPane.add(immigrantsBotsPane, BorderLayout.SOUTH);
+		
+		////////////////////////////////////////////
+		
 		// Create immigrants panel.
 		WebPanel immigrantsPane = new WebPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
-		topEditPane.add(immigrantsPane, BorderLayout.SOUTH);
+		immigrantsBotsPane.add(immigrantsPane);
 
 		// Create immigrants label.
 		WebLabel immigrantsLabel = new WebLabel("Number of Immigrants : ");
@@ -336,10 +338,35 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		for (int i = 0; i < size1; i++) {
 			immigrants[i] = i;
 		}
-		immigrantsCB = new JComboBoxMW<Integer>(immigrants);
+		immigrantsCB = new JComboBoxMW<>(immigrants);
 		immigrantsCB.setSelectedItem(immigrantsNum);
 		immigrantsPane.add(immigrantsCB);
 
+		// Create bots panel.
+		WebPanel botsPane = new WebPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+		immigrantsBotsPane.add(botsPane);
+		
+		// Create bots label.
+		WebLabel botsLabel = new WebLabel("Number of Bots : ");
+		botsPane.add(botsLabel);
+
+		// Create bots text field.
+		int botsNum = 0;
+		if (resupply != null) {
+			botsNum = resupply.getNewBotNum();
+		}
+
+		// Switch to using ComboBoxMW for bots
+		int size2 = bots.length;
+		for (int i = 0; i < size2; i++) {
+			bots[i] = i;
+		}
+		botsCB = new JComboBoxMW<>(bots);
+		botsCB.setSelectedItem(botsNum);
+		botsPane.add(botsCB);
+		
+		////////////////////////////////////////////
+		
 		// Create bottom edit pane.
 		WebPanel bottomEditPane = new WebPanel(new BorderLayout(0, 0));
 		bottomEditPane.setBorder(new TitledBorder("Supplies"));
@@ -381,22 +408,18 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 
 		// Create add supply button.
 		WebButton addSupplyButton = new WebButton("Add");
-		addSupplyButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
+		addSupplyButton.addActionListener(e ->
 				// Add new supply row.
-				addNewSupplyRow();
-			}
-		});
+				addNewSupplyRow()
+		);
 		supplyButtonPane.add(addSupplyButton);
 
 		// Create remove supply button.
 		removeSupplyButton = new WebButton("Remove");
-		removeSupplyButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
+		removeSupplyButton.addActionListener(e ->
 				// Remove selected supply rows.
-				removeSelectedSupplyRows();
-			}
-		});
+				removeSelectedSupplyRows()
+		);
 		removeSupplyButton.setEnabled(false);
 		supplyButtonPane.add(removeSupplyButton);
 	}
@@ -418,16 +441,12 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 	}
 
 	/**
-	 * Set the components of the time until arrival pane to be enabled or disabled.
+	 * Sets the components of the time until arrival pane to be enabled or disabled.
 	 *
 	 * @param enable true if enable components, false if disable components.
 	 */
 	private void setEnableTimeUntilArrivalPane(boolean enable) {
-		timeUntilArrivalLabel.setEnabled(enable);
-		// solsTF.setEnabled(enable);
-		// solsTF.setEditable(true);
-		// solsFromCB.setEnabled(enable);
-//		MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+		solsUntilArrivalLabel.setEnabled(enable);
 		MarsClock resupplyTime = null;
 		int solsDiff = 0;
 		if (resupply != null) {
@@ -456,7 +475,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 	}
 
 	/**
-	 * Remove the selected supply rows.
+	 * Removes the selected supply rows.
 	 */
 	private void removeSelectedSupplyRows() {
 
@@ -482,7 +501,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		 */
 		private CategoryCellEditor() {
 			super();
-			categoryCB = new JComboBoxMW<String>();
+			categoryCB = new JComboBoxMW<>();
 			Iterator<String> i = SupplyTableModel.getCategoryList().iterator();
 			while (i.hasNext()) {
 				categoryCB.addItem(i.next());
@@ -535,11 +554,11 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		private TypeCellEditor() {
 
 			Map<String, List<String>> categoryTypeMap = SupplyTableModel.getCategoryTypeMap();
-			typeCBMap = new HashMap<String, JComboBoxMW<String>>(categoryTypeMap.keySet().size());
+			typeCBMap = new HashMap<>(categoryTypeMap.keySet().size());
 			Iterator<String> i = categoryTypeMap.keySet().iterator();
 			while (i.hasNext()) {
 				String category = i.next();
-				JComboBoxMW<String> categoryCB = new JComboBoxMW<String>();
+				JComboBoxMW<String> categoryCB = new JComboBoxMW<>();
 				List<String> types = categoryTypeMap.get(category);
 				Iterator<String> j = types.iterator();
 				while (j.hasNext()) {
@@ -590,7 +609,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 				quantity[i] = i + 1;
 			}
 
-			quantityCB = new JComboBoxMW<Number>(quantity);
+			quantityCB = new JComboBoxMW<>(quantity);
 
 		}
 
@@ -626,7 +645,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		List<Integer> solList = new ArrayList<>();
 		Collections.addAll(solList, sols);
 		// Remove dates that have been chosen for other resupply missions.
-		solList.removeAll(getMissionSols());
+//		solList.removeAll(getMissionSols());
 
 		int t = ResupplyUtil.getAverageTransitTime();
 		int missionSol = marsClock.getMissionSol();
@@ -646,7 +665,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		solsFromCB.addFocusListener(new FocusListener() {
 			@Override
 			public void focusGained(FocusEvent arg0) {
-				timeUntilArrivalRB.requestFocus(true);
+				solsUntilArrivalRB.requestFocus(true);
 			}
 
 			@Override
@@ -660,7 +679,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 			@Override
 			public void itemStateChanged(java.awt.event.ItemEvent evt) {
 				if (evt.getStateChange() == ItemEvent.SELECTED) {
-					timeUntilArrivalRB.requestFocus(true);
+					solsUntilArrivalRB.requestFocus(true);
 				} else if (evt.getStateChange() == ItemEvent.DESELECTED) {
 					arrivalDateRB.requestFocus(true);
 				}
@@ -739,16 +758,19 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		resupplyMission.setTransitState(state);
 
 		// Set immigrant num.
-		int immigrantNum = 0;
-		try {
-			immigrantNum = (Integer) immigrantsCB.getSelectedItem();
-			if (immigrantNum < 0)
-				immigrantNum = 0;
-			resupplyMission.setNewImmigrantNum(immigrantNum);
-		} catch (NumberFormatException e) {
-			e.printStackTrace(System.err);
-		}
+		int immigrantNum = (Integer) immigrantsCB.getSelectedItem();
+		if (immigrantNum < 0)
+			immigrantNum = 0;
+		resupplyMission.setNewImmigrantNum(immigrantNum);
 
+
+		// Set bot num.
+		int botNum = (Integer) botsCB.getSelectedItem();
+		if (botNum < 0)
+			botNum = 0;
+		resupplyMission.setNewBotNum(botNum);
+
+		
 		// Commit any active editing cell in the supply table.
 		if (supplyTable.isEditing()) {
 			supplyTable.getCellEditor().stopCellEditing();
@@ -762,7 +784,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 			modifyNewBuildings(resupplyMission, supplyItems);
 		} else {
 			// Create new buildings from table in resupply mission.
-			List<BuildingTemplate> newBuildings = new ArrayList<BuildingTemplate>();
+			List<BuildingTemplate> newBuildings = new ArrayList<>();
 			Iterator<SupplyItem> i = supplyItems.iterator();
 			while (i.hasNext()) {
 				SupplyItem item = i.next();
@@ -770,19 +792,6 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 					int num = item.number.intValue();
 					for (int x = 0; x < num; x++) {
 						String type = item.type.trim();
-
-						// int scenarioID = destination.getID();
-						// String scenario = getCharForNumber(scenarioID + 1);
-						// System.out.println("ResupplyMissionEditingPanel.java Line 548: scenario is "
-						// + scenario);
-						// System.out.println("ResupplyMissionEditingPanel.java Line 549:
-						// buildingNickName is " + buildingNickName);
-
-						// BuildingTemplate template = new BuildingTemplate(0, scenario, type, type,
-						// -1D, -1D, 0D, 0D, 0D);
-						// BuildingTemplate template = new BuildingTemplate(scenarioID, scenario, type,
-						// type, 7D, 9D, 0D, 38D, 270D);
-
 						// NOTE: The parameters does NOT mater right now. When a building arrive,
 						// the parameters for each building's template will be re-assembled
 						newBuildings.add(new BuildingTemplate(null, 0, null, type, type, new BoundedObject(0D, 0D, -1D, -1D, 0D)));
@@ -793,7 +802,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		}
 
 		// Set new vehicles.
-		List<String> newVehicles = new ArrayList<String>();
+		List<String> newVehicles = new ArrayList<>();
 		Iterator<SupplyItem> j = supplyItems.iterator();
 		while (j.hasNext()) {
 			SupplyItem item = j.next();
@@ -807,7 +816,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		resupplyMission.setNewVehicles(newVehicles);
 
 		// Set new equipment.
-		Map<String, Integer> newEquipment = new HashMap<String, Integer>();
+		Map<String, Integer> newEquipment = new HashMap<>();
 		Iterator<SupplyItem> k = supplyItems.iterator();
 		while (k.hasNext()) {
 			SupplyItem item = k.next();
@@ -823,7 +832,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		resupplyMission.setNewEquipment(newEquipment);
 
 		// Set new resources.
-		Map<AmountResource, Double> newResources = new HashMap<AmountResource, Double>();
+		Map<AmountResource, Double> newResources = new HashMap<>();
 		Iterator<SupplyItem> l = supplyItems.iterator();
 		while (l.hasNext()) {
 			SupplyItem item = l.next();
@@ -840,7 +849,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		resupplyMission.setNewResources(newResources);
 
 		// Set new parts.
-		Map<Part, Integer> newParts = new HashMap<Part, Integer>();
+		Map<Part, Integer> newParts = new HashMap<>();
 		Iterator<SupplyItem> m = supplyItems.iterator();
 		while (m.hasNext()) {
 			SupplyItem item = m.next();
@@ -860,7 +869,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 	}
 
 	/**
-	 * Maps a number to an alphabet
+	 * Maps a number to an alphabet.
 	 *
 	 * @param a number
 	 * @return a String
@@ -872,7 +881,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 	}
 
 	/**
-	 * Modify existing resupply mission new buildings based on supply table.
+	 * Modifies existing resupply mission new buildings based on supply table.
 	 *
 	 * @param resupplyMission resupply mission.
 	 * @param supplyItems     the supply items from the supply table.
@@ -913,14 +922,12 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 					int diff = num - existingNum;
 					for (int x = 0; x < diff; x++) {
 						// Added a dummy type parameter
-						// TODO: currently building id = 0
+
+						// NOTE: currently building id = 0
 						// May need to assemble the buildingNickName
 						// by obtaining the next building id and settlement id
 
-						// newBuildings.add(new BuildingTemplate(0, null, type, type, -1D, -1D, -0D, 0D,
-						// 0D));
-
-						// TODO: determine why specifying the coordinate below is needed for
+						// NOTE: determine why specifying the coordinate below is needed for
 						// the Command and Control building to be placed properly
 
 						// NOTE: The parameters does NOT mater right now. When a building arrive,
@@ -928,8 +935,8 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 
 						newBuildings.add(new BuildingTemplate(null, 0, null, type, type,
 											new BoundedObject(0D, 38D, 7D, 9D, 270D)));
-
 					}
+					
 				} else if (num < existingNum) {
 					// Remove old building templates.
 					int diff = existingNum - num;
@@ -1007,69 +1014,29 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 			}
 		}
 
-		else if (timeUntilArrivalRB.isSelected()) {
+		else if (solsUntilArrivalRB.isSelected()) {
 			marsCurrentTime = validateSolsFrom();
 		}
 		
 		return marsCurrentTime;
 	}
 
-	/*** Implemented validation of textfield. */
-	public MarsClock validateSolsFrom() { // String timeArrivalString) {
-		// System.out.println("running validateSolsTF()");
+	/**
+	 * Validates the input entry. 
+	 */
+	public MarsClock validateSolsFrom() {
 		errorString = null;
 		solsFromCB.setEditable(true);
 		solsFromCB.setSelectedIndex(0);
-//		String timeArrivalString = (String) solsFromCB.getSelectedItem();//solsTF.getText().trim();
-//		if (timeArrivalString.isEmpty()) {
-//			validation_result = false;
-//			errorString = Msg.getString("ArrivingSettlementEditingPanel.error.noSols"); //$NON-NLS-1$
-//			errorLabel.setText(errorString);
-//			//marsCurrentTime = null;
-//			enableButton(false);
-//			System.out.println("Invalid entry in Sols. It cannot be empty.");
-//		}
-//		else {
 
-		// Determine arrival date from time until arrival text field.
-		// if (timeArrivalString.equals("-"))
-		// timeArrivalString = "-1";
-		// int timeArrival = (Integer) solsFromCB.getSelectedItem();
 		int inputSol = (Integer) solsFromCB.getSelectedItem();
 		if (inputSol == 0) {
 			solsFromCB.remove(0);
 			solsFromCB.setSelectedIndex(0);
 		}
-		// int inputSols = Integer.parseInt(solsTF.getText());
-//			if (inputSol < 0D) {
-//			//if (inputSols < 0D) {
-//				errorString = Msg.getString("ArrivingSettlementEditingPanel.error.negativeSols"); //$NON-NLS-1$
-//				errorLabel.setText(errorString);
-//				//marsCurrentTime = null;
-//				validation_result = false;
-//				enableButton(false);
-//				System.out.println("Invalid entry in Sols. It cannot be less than zero.");
-//			}
-//			else {
+
 		try {
 			boolean good = true;
-
-			List<Integer> solsList = getMissionSols();
-
-			Iterator<Integer> i = solsList.iterator();
-			while (i.hasNext()) {
-				int sol = i.next();
-				if (sol == inputSol) {
-					System.out.println("Invalid entry in 'Sols Until Arrival' since sol " + sol
-							+ " has already been chosen in another resupply mission.");
-					enableButton(false);
-					errorString = Msg.getString("ResupplyMissionEditingPanel.error.duplicatedSol", sol); //$NON-NLS-1$
-					errorLabel.setText(errorString);
-					validation_result = false;
-					good = false;
-					break;
-				}
-			}
 
 			if (good) {
 				errorString = null;
@@ -1087,51 +1054,45 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		} catch (NumberFormatException e) {
 			errorString = Msg.getString("ArrivingSettlementEditingPanel.error.invalidSols"); //$NON-NLS-1$
 			errorLabel.setText(errorString);
-			e.printStackTrace(System.err);
-			// marsCurrentTime = null;
 			validation_result = false;
 			enableButton(false);
-			System.out.println("ResupplyMissionEditingPanel : Invalid entry for Sols ");
+			logger.warning("Invalid entry for Sols ");
 		}
 
 		return marsCurrentTime;
 	}
 
-	public List<Integer> getMissionSols() {
-		List<Integer> solsList = new ArrayList<>();
-		// Added checking if this particular sol has already been chosen for a resupply
-		// mission
-		// Note: it makes sense to impose the limitation of having one resupply mission
-		// per sol
-		JList<?> jList = resupplyWindow.getIncomingListPane().getIncomingList();
-		ListModel<?> model = jList.getModel();
-
-		for (int i = 0; i < model.getSize(); i++) {
-			Transportable transportItem = (Transportable) model.getElementAt(i);
-
-			if ((transportItem != null)) {
-				if (transportItem instanceof Resupply) {
-					// Create modify resupply mission dialog.
-					Resupply newR = (Resupply) transportItem;
-					if (!newR.equals(resupply)) {
-						MarsClock arrivingTime = newR.getArrivalDate();
-//						MarsClock nowTime = Simulation.instance().getMasterClock().getMarsClock();
-						int solsDiff = (int) Math.round((MarsClock.getTimeDiff(arrivingTime, marsClock) / 1000D));
-						solsList.add(solsDiff);
-					}
-				} else if (transportItem instanceof ArrivingSettlement) {
-					// Create modify arriving settlement dialog.
-					ArrivingSettlement settlement = (ArrivingSettlement) transportItem;
-					MarsClock arrivingTime = settlement.getArrivalDate();
-//					MarsClock nowTime = Simulation.instance().getMasterClock().getMarsClock();
-					int solsDiff = (int) Math.round((MarsClock.getTimeDiff(arrivingTime, marsClock) / 1000D));
-					solsList.add(solsDiff);
-				}
-			}
-		}
-
-		return solsList;
-	}
+//	public List<Integer> getMissionSols() {
+//		List<Integer> solsList = new ArrayList<>();
+//		// Check if this particular sol has already been chosen for a resupply
+//		// mission
+//		JList<?> jList = resupplyWindow.getIncomingListPane().getIncomingList();
+//		ListModel<?> model = jList.getModel();
+//
+//		for (int i = 0; i < model.getSize(); i++) {
+//			Transportable transportItem = (Transportable) model.getElementAt(i);
+//
+//			if ((transportItem != null)) {
+//				if (transportItem instanceof Resupply) {
+//					// Create modify resupply mission dialog.
+//					Resupply newR = (Resupply) transportItem;
+//					if (!newR.equals(resupply)) {
+//						MarsClock arrivingTime = newR.getArrivalDate();
+//						int solsDiff = (int) Math.round((MarsClock.getTimeDiff(arrivingTime, marsClock) / 1000D));
+//						solsList.add(solsDiff);
+//					}
+//				} else if (transportItem instanceof ArrivingSettlement) {
+//					// Create modify arriving settlement dialog.
+//					ArrivingSettlement settlement = (ArrivingSettlement) transportItem;
+//					MarsClock arrivingTime = settlement.getArrivalDate();
+//					int solsDiff = (int) Math.round((MarsClock.getTimeDiff(arrivingTime, marsClock) / 1000D));
+//					solsList.add(solsDiff);
+//				}
+//			}
+//		}
+//
+//		return solsList;
+//	}
 
 	public void enableButton(boolean value) {
 		if (modifyTransportItemDialog != null)
@@ -1140,23 +1101,22 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 			newTransportItemDialog.setCreateButton(value);
 	}
 
-//	/**
-//	 * Installs a listener to receive notification when the text of any
-//	 * {@code JTextComponent} is changed. Internally, it installs a
-//	 * {@link DocumentListener} on the text component's {@link Document},
-//	 * and a {@link PropertyChangeListener} on the text component to detect
-//	 * if the {@code Document} itself is replaced.
-//	 *
-//	 * @param text any text component, such as a {@link JTextField}
-//	 *        or {@link JTextArea}
-//	 * @param changeListener a listener to receieve {@link ChangeEvent}s
-//	 *        when the text is changed; the source object for the events
-//	 *        will be the text component
-//	 * @throws NullPointerException if either parameter is null
-//	 */
-	// see
-	// http://stackoverflow.com/questions/3953208/value-change-listener-to-jtextfield
+	/**
+	 * Installs a listener to receive notification when the text of any
+	 * {@code JTextComponent} is changed. Internally, it installs a
+	 * {@link DocumentListener} on the text component's {@link Document},
+	 * and a {@link PropertyChangeListener} on the text component to detect
+	 * if the {@code Document} itself is replaced.
+	 *
+	 * @param text any text component, such as a {@link JTextField}
+	 *        or {@link JTextArea}
+	 * @param changeListener a listener to receieve {@link ChangeEvent}s
+	 *        when the text is changed; the source object for the events
+	 *        will be the text component
+	 * @throws NullPointerException if either parameter is null
+	 */
 	public static void addChangeListener(JTextComponent text, ChangeListener changeListener) {
+		// http://stackoverflow.com/questions/3953208/value-change-listener-to-jtextfield
 		Objects.requireNonNull(text);
 		Objects.requireNonNull(changeListener);
 		DocumentListener dl = new DocumentListener() {
@@ -1173,7 +1133,6 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 			}
 
 			public void changedUpdate(DocumentEvent e) {
-				// System.out.println("calling addChangeListener()'s changedUpdate()");
 				lastChange++;
 				SwingUtilities.invokeLater(() -> {
 					if (lastNotifiedChange != lastChange) {
@@ -1198,7 +1157,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 	}
 
 	/**
-	 * Prepare this window for deletion.
+	 * Prepares this window for deletion.
 	 */
 	public void destroy() {
 
@@ -1211,8 +1170,8 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		destinationCB = null;
 		arrivalDateRB = null;
 		arrivalDateTitleLabel = null;
-		timeUntilArrivalRB = null;
-		timeUntilArrivalLabel = null;
+		solsUntilArrivalRB = null;
+		solsUntilArrivalLabel = null;
 		martianSolCBModel = null;
 		solLabel = null;
 		solCB = null;
