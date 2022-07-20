@@ -228,7 +228,7 @@ public class BuildingManager implements Serializable {
 
 
 	/**
-	 * Sets up the map for the building functions
+	 * Sets up the map for the building functions.
 	 */
 	public void setupBuildingFunctionsMap() {
 		for (FunctionType f : FunctionType.values()) {
@@ -270,7 +270,7 @@ public class BuildingManager implements Serializable {
 
 	/**
 	 * Removes all references of this building in all functions in
-	 * buildingFunctionsMap
+	 * buildingFunctionsMap.
 	 *
 	 * @param oldBuilding
 	 */
@@ -299,7 +299,7 @@ public class BuildingManager implements Serializable {
 
 	/**
 	 * Removes the reference of this building for a functions in
-	 * buildingFunctionsMap
+	 * buildingFunctionsMap.
 	 *
 	 * @param a building
 	 * @param a function
@@ -326,7 +326,7 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
-	 * Computes the population capacity of the settlement
+	 * Computes the population capacity of the settlement.
 	 *
 	 * @return the population capacity
 	 */
@@ -340,7 +340,7 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
-	 * Gets the population capacity of the settlement
+	 * Gets the population capacity of the settlement.
 	 *
 	 * @return the population capacity
 	 */
@@ -349,7 +349,7 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
-	 * Add references of this building in all functions in buildingFunctionsMap
+	 * Adds references of this building in all functions in buildingFunctionsMap.
 	 *
 	 * @param oldBuilding
 	 */
@@ -392,6 +392,27 @@ public class BuildingManager implements Serializable {
 	 * Adds a new building to the settlement.
 	 *
 	 * @param newBuilding               the building to add.
+	 * @param buildingTemplate          the building template to add.
+	 * @param createBuildingConnections true if automatically create building
+	 *                                  connections.
+	 */
+	public void addBuilding(Building newBuilding, BuildingTemplate buildingTemplate, boolean createBuildingConnections) {
+		addBuilding(newBuilding, createBuildingConnections);
+		
+		addToBuildingTypeIDMap(newBuilding);
+		
+		if (!buildings.contains(newBuilding)
+			&& createBuildingConnections) {
+			List<BuildingTemplate> buildingTemplates = new ArrayList<>();
+			buildingTemplates.add(buildingTemplate);
+			settlement.getBuildingConnectorManager().initialize(settlement, buildingTemplates);
+		}
+	}
+
+	/**
+	 * Adds a new building to the settlement.
+	 *
+	 * @param newBuilding               the building to add.
 	 * @param createBuildingConnections true if automatically create building
 	 *                                  connections.
 	 */
@@ -406,13 +427,26 @@ public class BuildingManager implements Serializable {
 			addNewBuildingtoBFMap(newBuilding);
 
 			settlement.fireUnitUpdate(UnitEventType.ADD_BUILDING_EVENT, newBuilding);
-			// Create new building connections if needed.
+			
 			if (createBuildingConnections) {
 				settlement.getBuildingConnectorManager().createBuildingConnections(newBuilding);
 			}
 		}
 	}
+	
+	public void addToBuildingTypeIDMap(Building b) {
+		String buildingType = b.getBuildingType();
+		String n = b.getNickName();
+		int new_id = Integer.parseInt(b.getNickName().substring(n.lastIndexOf(" ") + 1, n.length()));
 
+		if (buildingTypeIDMap.containsKey(buildingType)) {
+			int old_id = buildingTypeIDMap.get(buildingType);
+			if (old_id < new_id)
+				buildingTypeIDMap.put(buildingType, new_id);
+		} else
+			buildingTypeIDMap.put(buildingType, new_id);
+	}
+	
 	/**
 	 * Adds a new mock building to the settlement.
 	 *
@@ -442,25 +476,25 @@ public class BuildingManager implements Serializable {
 	 *                                  connections.
 	 */
 	public void addBuilding(BuildingTemplate template, boolean createBuildingConnections) {
-		addBuilding(new Building(template, this), createBuildingConnections);
+		addBuilding(new Building(template, this), template, createBuildingConnections);
 	}
 
-	/**
-	 * Adds a building with a template to the settlement.
-	 *
-	 * @param template                  the building template.
-	 * @param createBuildingConnections true if automatically create building
-	 *                                  connections.
-	 * @return newBuilding
-	 */
-	public Building prepareToAddBuilding(BuildingTemplate template, Resupply resupply,
-			boolean createBuildingConnections) {
-		// Add prepareToAddBuilding-- called by confirmBuildingLocation() in
-		// Resupply.java
-		Building newBuilding = new Building(template, this);
-		addBuilding(newBuilding, createBuildingConnections);
-		return newBuilding;
-	}
+//	/**
+//	 * Adds a building with a template to the settlement.
+//	 *
+//	 * @param template                  the building template.
+//	 * @param createBuildingConnections true if automatically create building
+//	 *                                  connections.
+//	 * @return newBuilding
+//	 */
+//	public Building prepareToAddBuilding(BuildingTemplate template, Resupply resupply,
+//			boolean createBuildingConnections) {
+//		// Add prepareToAddBuilding-- called by confirmBuildingLocation() in
+//		// Resupply.java
+//		Building newBuilding = new Building(template, this);
+//		addBuilding(newBuilding, createBuildingConnections);
+//		return newBuilding;
+//	}
 
 	/**
 	 * Gets a copy of settlement's collection of buildings.

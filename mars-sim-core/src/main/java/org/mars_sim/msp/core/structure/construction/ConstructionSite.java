@@ -331,6 +331,7 @@ implements Serializable, LocalBoundedObject {
 
     /**
      * Creates a new building from the construction site.
+     * 
      * @param manager the settlement's building manager.
      * @return newly constructed building.
      * @throws Exception if error constructing building.

@@ -478,6 +478,7 @@ public class Settlement extends Structure implements Temporal,
 
 		// Initialize building manager
 		buildingManager = new BuildingManager(this);
+		
 		// Initialize building connector manager.
 		buildingConnectorManager = new BuildingConnectorManager(this);
 

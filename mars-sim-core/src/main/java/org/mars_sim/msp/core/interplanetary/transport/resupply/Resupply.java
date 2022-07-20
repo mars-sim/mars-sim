@@ -263,27 +263,27 @@ public class Resupply implements Serializable, Transportable {
 		boolean noConflictResupply = true;
 		boolean inZone = true;
 		if (count < 1) {
-			logger.config("clearCollision() : count is down to 0. Quit building placement.");
+//			logger.config("clearCollision() : count is down to 0. Quit building placement.");
 			return null;
 		} else {
 			// check if a vehicle is the obstacle and move it
 			noVehicle = isCollisionFreeVehicle(bt);
-			logger.config("noVehicle is " + noVehicle);
+//			logger.config("noVehicle is " + noVehicle);
 
 			if (noVehicle) {
 				noImmovable = isCollisionFreeImmovable(bt);
 			}
-			logger.config("noImmovable is " + noImmovable);
+//			logger.config("noImmovable is " + noImmovable);
 
 			if (noImmovable) {
 				noConflictResupply = isCollisionFreeResupplyBuildings(bt, buildingManager);
 			}
-			logger.config("noConflictResupply is " + noConflictResupply);
+//			logger.config("noConflictResupply is " + noConflictResupply);
 
 			if (noConflictResupply) {
 				inZone = isWithinZone(bt, buildingManager);
 			}
-			logger.config("inZone : " + inZone);
+//			logger.config("inZone : " + inZone);
 
 			if (!noImmovable || !noConflictResupply || !inZone) {// if there are obstacles
 				// get a new template
@@ -582,7 +582,7 @@ public class Resupply implements Serializable, Transportable {
 	 * @return the repositioned building template.
 	 */
 	public BuildingTemplate positionNewResupplyBuilding(String buildingType) {
-		// logger.config("calling positionNewResupplyBuilding()");
+
 		BuildingTemplate newPosition = null;
 		BuildingManager buildingManager = unitManager.getSettlementByID(settlementID).getBuildingManager();
 		
@@ -729,6 +729,15 @@ public class Resupply implements Serializable, Transportable {
 				.getBuildingsOfSameCategory(buildingCategory);
 		
 		sameTypeBuildings.addAll(sameCategoryBuildings);
+		   
+		sameTypeBuildings = sameTypeBuildings.stream()
+				// Do not look for EVA Airlock building type since putting 
+			    // any new building next to it will block ingress/egress.
+				.filter(b -> b.getCategory() != BuildingCategory.EVA_AIRLOCK
+				// Do not look for Garage building type as it may block the entry
+				// and placement of vehicle
+				&& b.getCategory() != BuildingCategory.VEHICLE)
+				.collect(Collectors.toList());
 		
 		Collections.shuffle(sameTypeBuildings);
 		Iterator<Building> j = sameTypeBuildings.iterator();
@@ -743,6 +752,7 @@ public class Resupply implements Serializable, Transportable {
 			else
 				dist2 = RandomUtil.getRandomRegressionInteger(MIN_INHABITABLE_BUILDING_DISTANCE * 2,
 						MAX_INHABITABLE_BUILDING_DISTANCE * 2) / 2D;
+			
 			newPosition = positionNextToBuilding(buildingType, building, Math.round(dist2), false);
 			if (newPosition != null) {
 				break;

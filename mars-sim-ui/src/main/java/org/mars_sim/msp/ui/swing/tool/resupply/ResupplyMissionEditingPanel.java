@@ -59,15 +59,14 @@ import org.mars_sim.msp.core.interplanetary.transport.Transportable;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyUtil;
 import org.mars_sim.msp.core.interplanetary.transport.settlement.ArrivingSettlement;
-import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.time.MarsClockFormat;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsClockFormat;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
@@ -207,9 +206,13 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 
 		martianSolCBModel = new MartianSolComboBoxModel(resupplyTime.getMonth(), resupplyTime.getOrbit());
 
+		WebPanel comboBoxPane = new WebPanel(new GridLayout(1, 6));
+		comboBoxPane.setAlignmentX(Component.CENTER_ALIGNMENT);
+		arrivalDateSelectionPane.add(comboBoxPane);
+		
 		// Create orbit label.
 		orbitLabel = new WebLabel("Orbit");
-		arrivalDateSelectionPane.add(orbitLabel);
+		comboBoxPane.add(orbitLabel);
 
 		// Create orbit combo box.
 		NumberFormat formatter = NumberFormat.getInstance();
@@ -228,11 +231,11 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 						Integer.parseInt((String) orbitCB.getSelectedItem()));
 			}
 		});
-		arrivalDateSelectionPane.add(orbitCB);
+		comboBoxPane.add(orbitCB);
 
 		// Create month label.
 		monthLabel = new WebLabel("Month");
-		arrivalDateSelectionPane.add(monthLabel);
+		comboBoxPane.add(monthLabel);
 
 		// Create month combo box.
 		monthCB = new JComboBoxMW<Object>(MarsClockFormat.getMonthNames());
@@ -244,16 +247,16 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 						Integer.parseInt((String) orbitCB.getSelectedItem()));
 			}
 		});
-		arrivalDateSelectionPane.add(monthCB);
+		comboBoxPane.add(monthCB);
 
 		// Create sol label.
 		solLabel = new WebLabel("Sol");
-		arrivalDateSelectionPane.add(solLabel);
+		comboBoxPane.add(solLabel);
 
 		// Create sol combo box.
-		solCB = new JComboBoxMW<Integer>(martianSolCBModel);
+		solCB = new JComboBoxMW<>(martianSolCBModel);
 		solCB.setSelectedItem(resupplyTime.getSolOfMonth());
-		arrivalDateSelectionPane.add(solCB);
+		comboBoxPane.add(solCB);
 
 		// Create time until arrival pane.
 		WebPanel timeUntilArrivalPane = new WebPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
@@ -278,19 +281,8 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		timeUntilArrivalPane.add(timeUntilArrivalLabel);
 
 		// Create sols text field.
-//		MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
 		int solsDiff = (int) Math.round((MarsClock.getTimeDiff(resupplyTime, marsClock) / 1000D));
-
-//		solsTF = new JTextField(6);
-//		solsTF.setText(Integer.toString(solsDiff));
-//		solsTF.setHorizontalAlignment(JTextField.RIGHT);
-//		solsTF.setEnabled(false);
-//		solsTF.setEditable(true);
-//
-//		timeUntilArrivalPane.add(solsTF);
-//		// Implemented addChangeListener() to validate solsTF.
-//		addChangeListener(solsTF, e -> validateSolsTF());
-
+		
 		// Switch to using ComboBoxMW for sols
 		int size = sols.length;
 		// int max = ResupplyUtil.MAX_NUM_SOLS_PLANNED;

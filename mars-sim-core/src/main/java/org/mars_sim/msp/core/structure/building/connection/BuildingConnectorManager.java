@@ -89,6 +89,12 @@ public class BuildingConnectorManager implements Serializable {
 		}
 
 		this.settlement = settlement;
+		
+		initialize(settlement, buildingTemplates);
+	}
+	
+	public void initialize(Settlement settlement, List<BuildingTemplate> buildingTemplates) {
+		
 		buildingConnections = ConcurrentHashMap.newKeySet();
 
 		BuildingManager buildingManager = settlement.getBuildingManager();
