@@ -19,6 +19,8 @@ import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.EquipmentType;
+import org.mars_sim.msp.core.goods.CommerceMission;
+import org.mars_sim.msp.core.goods.CommerceUtil;
 import org.mars_sim.msp.core.goods.CreditManager;
 import org.mars_sim.msp.core.goods.Good;
 import org.mars_sim.msp.core.goods.GoodCategory;
@@ -59,7 +61,7 @@ public class Trade extends RoverMission implements CommerceMission {
 	// Static members
 	public static final double MAX_STARTING_PROBABILITY = 100D;
 
-	static final int MAX_MEMBERS = 2;
+	public static final int MAX_MEMBERS = 2;
 
 	// Data members.
 	private double profit;

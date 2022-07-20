@@ -13,6 +13,7 @@ import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.UnitType;
+import org.mars_sim.msp.core.goods.CommerceUtil;
 import org.mars_sim.msp.core.goods.CreditManager;
 import org.mars_sim.msp.core.goods.Good;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -20,7 +21,6 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.mission.DeliveryUtil;
 import org.mars_sim.msp.core.person.ai.social.RelationshipUtil;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
@@ -110,7 +110,7 @@ public class NegotiateDelivery extends Task implements Serializable {
 			double tradeModifier = determineTradeModifier();
 
 			// Get the credit of the load that is being sold to the destination settlement.
-			double baseSoldCredit = DeliveryUtil.determineLoadCredit(soldLoad, sellingSettlement, true);
+			double baseSoldCredit = CommerceUtil.determineLoadCredit(soldLoad, sellingSettlement, true);
 			double soldCredit = baseSoldCredit * tradeModifier;
 
 			// Get the credit that the starting settlement has with the destination
@@ -129,12 +129,12 @@ public class NegotiateDelivery extends Task implements Serializable {
 
 			// Check if buying settlement owes the selling settlement too much for them to
 			// sell.
-			if (credit > (-1D * DeliveryUtil.SELL_CREDIT_LIMIT)) {
+			if (credit > (-1D * CommerceUtil.SELL_CREDIT_LIMIT)) {
 
 				// Determine the initial buy load based on goods that are profitable for the
 				// destination settlement to sell.
-				buyLoad = DeliveryUtil.determineLoad(buyingSettlement, sellingSettlement, drone, Double.POSITIVE_INFINITY);
-				double baseBuyLoadValue = DeliveryUtil.determineLoadCredit(buyLoad, buyingSettlement, true);
+				buyLoad = CommerceUtil.determineLoad(buyingSettlement, sellingSettlement, drone, Double.POSITIVE_INFINITY);
+				double baseBuyLoadValue = CommerceUtil.determineLoadCredit(buyLoad, buyingSettlement, true);
 				double buyLoadValue = baseBuyLoadValue / tradeModifier;
 
 				// Update the credit value between the starting and destination settlements.
