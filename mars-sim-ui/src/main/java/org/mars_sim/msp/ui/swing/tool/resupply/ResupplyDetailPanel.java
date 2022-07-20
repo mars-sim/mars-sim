@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ResupplyDetailPanel.java
- * @date 2021-12-18
+ * @date 2022-07-19
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.resupply;
@@ -21,7 +21,6 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JTable;
 import javax.swing.SpringLayout;
-import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 
@@ -237,7 +236,7 @@ implements ClockListener, HistoricalEventListener {
 	}
 
 	/**
-	 * Update the resupply info with the current resupply mission.
+	 * Updates the resupply info with the current resupply mission.
 	 */
 	private void updateResupplyInfo() {
 
@@ -259,7 +258,7 @@ implements ClockListener, HistoricalEventListener {
 	}
 
 	/**
-	 * Update the supply panel with the current resupply mission.
+	 * Updates the supply panel with the current resupply mission.
 	 */
 	private void updateSupplyPanel() {
 
@@ -304,7 +303,7 @@ implements ClockListener, HistoricalEventListener {
 	}
 
 	/**
-	 * Create the building display panel.
+	 * Creates the building display panel.
 	 * 
 	 * @return panel.
 	 */
@@ -379,7 +378,7 @@ implements ClockListener, HistoricalEventListener {
 	}
 
 	/**
-	 * Create the vehicle display panel.
+	 * Creates the vehicle display panel.
 	 * 
 	 * @return panel.
 	 */
@@ -454,7 +453,7 @@ implements ClockListener, HistoricalEventListener {
 	}
 
 	/**
-	 * Create the equipment display panel.
+	 * Creates the equipment display panel.
 	 * 
 	 * @return panel.
 	 */
@@ -515,7 +514,7 @@ implements ClockListener, HistoricalEventListener {
 	}
 
 	/**
-	 * Create the resources display panel.
+	 * Creates the resources display panel.
 	 * 
 	 * @return panel.
 	 */
@@ -579,7 +578,7 @@ implements ClockListener, HistoricalEventListener {
 	}
 
 	/**
-	 * Create the parts display panel.
+	 * Creates the parts display panel.
 	 * 
 	 * @return panel.
 	 */
@@ -644,7 +643,7 @@ implements ClockListener, HistoricalEventListener {
 	}
 
 	/**
-	 * Update the time to arrival label.
+	 * Updates the time to arrival label.
 	 */
 	private void updateTimeToArrival() {
 		String timeArrival = "---";
@@ -662,15 +661,15 @@ implements ClockListener, HistoricalEventListener {
 		if (HistoricalEventCategory.TRANSPORT == he.getCategory() &&
 				EventType.TRANSPORT_ITEM_MODIFIED.equals(he.getType())) {
 			if ((resupply != null) && he.getSource().equals(resupply)) {
-				SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
+//				SwingUtilities.invokeLater(new Runnable() {
+//					@Override
+//					public void run() {
 						// Update resupply info.
 						if (resupply != null) {
 							updateResupplyInfo();
 						}
-					}
-				});
+//					}
+//				});
 			}
 		}
 	}
@@ -686,24 +685,21 @@ implements ClockListener, HistoricalEventListener {
 			double timeDiff = MarsClock.getTimeDiff(resupply.getArrivalDate(), currentTime);
 			double newSolsToArrival = (int) Math.abs(timeDiff / 1000D);
 			if (newSolsToArrival != solsToArrival) {
-				SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						// Update time to arrival label.
-						if (resupply != null) {
-							updateTimeToArrival();
-						}
+//				SwingUtilities.invokeLater(() -> {
+					// Update time to arrival label.
+					if (resupply != null) {
+						updateTimeToArrival();
 					}
-				});
+//				});
 			}
 		}
 	}
 
 	@Override
 	public void clockPulse(ClockPulse pulse) {
-		if (desktop.isToolWindowOpen(ResupplyWindow.NAME)) {
+//		if (desktop.isToolWindowOpen(ResupplyWindow.NAME)) {
 			updateArrival();
-		}	
+//		}	
 	}
 	
 	@Override

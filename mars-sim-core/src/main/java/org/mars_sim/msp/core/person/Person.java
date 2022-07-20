@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Person.java
- * @date 2021-10-21
+ * @date 2022-07-19
  * @author Scott Davis
  */
 
@@ -197,11 +197,11 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	private EquipmentInventory eqmInventory;
 
 	/** The person's achievement in scientific fields. */
-	private Map<ScienceType, Double> scientificAchievement = new ConcurrentHashMap<ScienceType, Double>();
+	private Map<ScienceType, Double> scientificAchievement = new ConcurrentHashMap<>();
 	/** The person's paternal chromosome. */
-	private Map<Integer, Gene> paternal_chromosome;
+	private Map<Integer, Gene> paternalChromosome;
 	/** The person's maternal chromosome. */
-	private Map<Integer, Gene> maternal_chromosome;
+	private Map<Integer, Gene> maternalChromosome;
 	/** The person's mission experiences. */
 	private Map<MissionType, Integer> missionExperiences;
 	/** The person's list of prior trainings */
@@ -229,7 +229,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
-	 * Constructor 0 : used by LoadVehicleTest and other maven test suites
+	 * Constructor 0 : used by LoadVehicleTest and other maven test suites.
 	 *
 	 * @param settlement
 	 */
@@ -266,7 +266,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 		this.position = LocalPosition.DEFAULT_POSITION;
 		this.associatedSettlementID = settlement.getIdentifier();
 
-		// create a prior training profile
+		// Create a prior training profile
 		generatePriorTraining();
 		// Construct the PersonAttributeManager instance
 		attributes = new PersonAttributeManager();
@@ -285,7 +285,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/*
-	 * Uses static factory method to create an instance of PersonBuilder
+	 * Uses static factory method to create an instance of PersonBuilder.
 	 *
 	 * @param name
 	 * @param settlement
@@ -296,7 +296,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
-	 * Initialize field data and class
+	 * Initializes field data and class.
 	 */
 	public void initialize() {
 		// WARNING: setAssociatedSettlement(settlement) may cause suffocation 
@@ -327,9 +327,9 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 		// Create the mission experiences map
 		missionExperiences = new EnumMap<>(MissionType.class);
 		// Create the EVA hours map
-		eVATaskTime = new SolMetricDataLogger<String>(MAX_NUM_SOLS);
+		eVATaskTime = new SolMetricDataLogger<>(MAX_NUM_SOLS);
 		// Create the consumption map
-		consumption = new SolMetricDataLogger<Integer>(MAX_NUM_SOLS);
+		consumption = new SolMetricDataLogger<>(MAX_NUM_SOLS);
 		// Create a set of collaborative studies
 		collabStudies = new HashSet<>();
 		// Construct the EquipmentInventory instance.
@@ -337,11 +337,11 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
-	 * Compute a person's chromosome map
+	 * Computes a person's chromosome map.
 	 */
 	private void setupChromosomeMap() {
-		paternal_chromosome = new ConcurrentHashMap<>();
-		maternal_chromosome = new ConcurrentHashMap<>();
+		paternalChromosome = new ConcurrentHashMap<>();
+		maternalChromosome = new ConcurrentHashMap<>();
 
 		if (bornOnMars) {
 			// Note: figure out how to account for growing characteristics
@@ -361,12 +361,12 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
-	 * Compute a person's attributes and its chromosome
+	 * Computes a person's attributes and its chromosome.
 	 */
 	private void setupAttributeTrait() {
 		// Note: set up a set of genes that was passed onto this person
 		// from two hypothetical parents
-		int ID = 40;
+		int id = 40;
 		boolean dominant = false;
 
 		int strength = attributes.getAttribute(NaturalAttributeType.STRENGTH);
@@ -385,7 +385,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 		else if (age > 7 && age <= 12)
 			load = age * 2;
 		else if (age > 11 && age <= 14)
-			load = (int)(baseCap/3 + age * 2);
+			load = (baseCap/3 + age * 2);
 		else if (age > 14 && age <= 18)
 			load = (int)(baseCap/2.5 + age * 1.5);
 		else if (age > 18 && age <= 25)
@@ -393,7 +393,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 		else if (age > 25 && age <= 35)
 			load = (int)(baseCap + 30 - age / 12.5);
 		else if (age > 35 && age <= 45)
-			load = (int)(baseCap + 25 - age / 10);
+			load = (baseCap + 25 - age / 10);
 		else if (age > 45 && age <= 55)
 			load = (int)(baseCap + 20 - age / 7.5);
 		else if (age > 55 && age <= 65)
@@ -411,83 +411,76 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 		carryingCapacity = Math.max(2, (int)(gym + load + Math.max(20, weight/6.0) + (strength - 50)/1.5 + (endurance - 50)/2.0
 				+ RandomUtil.getRandomRegressionInteger(10)));
 
-//		logger.info(name + " (" + weight + " kg) with strength " + strength
-//				+ " & endurance " + endurance
-//				+ " can carry " + carryCap + " kg");
-//		System.out.println(getName() + " age: " + age);
-//		System.out.println(getName() + " load: " + load + " kg.");
-//		System.out.println(getName() + " can carry " + carryCap + " kg.");
-
 		int score = mind.getMBTI().getIntrovertExtrovertScore();
 
-		Gene trait1_G = new Gene(this, ID, "Trait 1", true, dominant, "Introvert", score);
-		paternal_chromosome.put(ID, trait1_G);
-
+		Gene trait1G = new Gene(this, id, "Trait 1", true, dominant, "Introvert", score);
+		
+		paternalChromosome.put(id, trait1G);
 	}
 
 	/**
-	 * Compute a person's blood type and its chromosome
+	 * Computes a person's blood type and its chromosome.
 	 */
 	private void setupBloodType() {
-		int ID = 1;
+		int id = 1;
 		boolean dominant = false;
 
-		String dad_bloodType = null;
+		String dadBloodType = null;
 		int rand = RandomUtil.getRandomInt(2);
 		if (rand == 0) {
-			dad_bloodType = "A";
+			dadBloodType = "A";
 			dominant = true;
 		} else if (rand == 1) {
-			dad_bloodType = "B";
+			dadBloodType = "B";
 			dominant = true;
 		} else if (rand == 2) {
-			dad_bloodType = "O";
+			dadBloodType = "O";
 			dominant = false;
 		}
 
 		// Biochemistry 0 - 19
-		Gene dad_bloodType_G = new Gene(this, ID, "Blood Type", true, dominant, dad_bloodType, 0);
-		paternal_chromosome.put(ID, dad_bloodType_G);
+		Gene dadBloodTypeG = new Gene(this, id, "Blood Type", true, dominant, dadBloodType, 0);
+		paternalChromosome.put(id, dadBloodTypeG);
 
-		String mom_bloodType = null;
+		String momBloodType = null;
 		rand = RandomUtil.getRandomInt(2);
 		if (rand == 0) {
-			mom_bloodType = "A";
+			momBloodType = "A";
 			dominant = true;
 		} else if (rand == 1) {
-			mom_bloodType = "B";
+			momBloodType = "B";
 			dominant = true;
 		} else if (rand == 2) {
-			mom_bloodType = "O";
+			momBloodType = "O";
 			dominant = false;
 		}
 
-		Gene mom_bloodType_G = new Gene(this, 0, "Blood Type", false, dominant, mom_bloodType, 0);
-		maternal_chromosome.put(0, mom_bloodType_G);
+		Gene momBloodTypeG = new Gene(this, 0, "Blood Type", false, dominant, momBloodType, 0);
+		maternalChromosome.put(0, momBloodTypeG);
 
-		if (dad_bloodType.equals("A") && mom_bloodType.equals("A"))
+		if (dadBloodType.equals("A") && momBloodType.equals("A"))
 			bloodType = "A";
-		else if (dad_bloodType.equals("A") && mom_bloodType.equals("B"))
+		else if (dadBloodType.equals("A") && momBloodType.equals("B"))
 			bloodType = "AB";
-		else if (dad_bloodType.equals("A") && mom_bloodType.equals("O"))
+		else if (dadBloodType.equals("A") && momBloodType.equals("O"))
 			bloodType = "A";
-		else if (dad_bloodType.equals("B") && mom_bloodType.equals("A"))
+		else if (dadBloodType.equals("B") && momBloodType.equals("A"))
 			bloodType = "AB";
-		else if (dad_bloodType.equals("B") && mom_bloodType.equals("B"))
+		else if (dadBloodType.equals("B") && momBloodType.equals("B"))
 			bloodType = "B";
-		else if (dad_bloodType.equals("B") && mom_bloodType.equals("O"))
+		else if (dadBloodType.equals("B") && momBloodType.equals("O"))
 			bloodType = "B";
-		else if (dad_bloodType.equals("O") && mom_bloodType.equals("A"))
+		else if (dadBloodType.equals("O") && momBloodType.equals("A"))
 			bloodType = "A";
-		else if (dad_bloodType.equals("O") && mom_bloodType.equals("B"))
+		else if (dadBloodType.equals("O") && momBloodType.equals("B"))
 			bloodType = "B";
-		else if (dad_bloodType.equals("O") && mom_bloodType.equals("O"))
+		else if (dadBloodType.equals("O") && momBloodType.equals("O"))
 			bloodType = "O";
 
 	}
 
 	/**
-	 * Gets the blood type
+	 * Gets the blood type.
 	 *
 	 * @return
 	 */
@@ -496,10 +489,10 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
-	 * Compute a person's height and its chromosome
+	 * Computes a person's height and its chromosome.
 	 */
 	private void setupHeight() {
-		int ID = 20;
+		int id = 20;
 		boolean dominant = false;
 
 		// For a 20-year-old in the US:
@@ -512,32 +505,32 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 		// Note: p = mean + RandomUtil.getGaussianDouble() * standardDeviation
 		// Attempt to compute height with gaussian curve
 
-		double dad_height = tall + RandomUtil.getGaussianDouble() * tall / 7D;// RandomUtil.getRandomInt(22);
-		double mom_height = shortH + RandomUtil.getGaussianDouble() * shortH / 10D;// RandomUtil.getRandomInt(15);
+		double dadHeight = tall + RandomUtil.getGaussianDouble() * tall / 7D;// RandomUtil.getRandomInt(22);
+		double momHeight = shortH + RandomUtil.getGaussianDouble() * shortH / 10D;// RandomUtil.getRandomInt(15);
 
-		Gene dad_height_G = new Gene(this, ID, HEIGHT_GENE, true, dominant, null, dad_height);
-		paternal_chromosome.put(ID, dad_height_G);
+		Gene dadHeightG = new Gene(this, id, HEIGHT_GENE, true, dominant, null, dadHeight);
+		paternalChromosome.put(id, dadHeightG);
 
-		Gene mom_height_G = new Gene(this, ID, HEIGHT_GENE, false, dominant, null, mom_height);
-		maternal_chromosome.put(ID, mom_height_G);
+		Gene momHeightG = new Gene(this, id, HEIGHT_GENE, false, dominant, null, momHeight);
+		maternalChromosome.put(id, momHeightG);
 
-		double genetic_factor = .65;
-		double sex_factor = (tall - averageHeight) / averageHeight;
+		double geneticFactor = .65;
+		double sexFactor = (tall - averageHeight) / averageHeight;
 		// Add arbitrary (US-based) sex and genetic factor
 		if (gender == GenderType.MALE)
 			height = Math.round(
-					(genetic_factor * dad_height + (1 - genetic_factor) * mom_height * (1 + sex_factor)) * 100D) / 100D;
+					(geneticFactor * dadHeight + (1 - geneticFactor) * momHeight * (1 + sexFactor)) * 100D) / 100D;
 		else
 			height = Math.round(
-					((1 - genetic_factor) * dad_height + genetic_factor * mom_height * (1 - sex_factor)) * 100D) / 100D;
+					((1 - geneticFactor) * dadHeight + geneticFactor * momHeight * (1 - sexFactor)) * 100D) / 100D;
 
 	}
 
 	/**
-	 * Compute a person's weight and its chromosome
+	 * Computes a person's weight and its chromosome.
 	 */
 	private void setupWeight() {
-		int ID = 21;
+		int id = 21;
 		boolean dominant = false;
 
 		// For a 20-year-old in the US:
@@ -549,49 +542,48 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 
 		// Note: p = mean + RandomUtil.getGaussianDouble() * standardDeviation
 		// Attempt to compute height with gaussian curve
-		double dad_weight = highW + RandomUtil.getGaussianDouble() * highW / 13.5;// RandomUtil.getRandomInt(10);
-		double mom_weight = lowW + RandomUtil.getGaussianDouble() * lowW / 10.5;// RandomUtil.getRandomInt(15);
+		double dadWeight = highW + RandomUtil.getGaussianDouble() * highW / 13.5;// RandomUtil.getRandomInt(10);
+		double momWeight = lowW + RandomUtil.getGaussianDouble() * lowW / 10.5;// RandomUtil.getRandomInt(15);
 
-		Gene dad_weight_G = new Gene(this, ID, WEIGHT_GENE, true, dominant, null, dad_weight);
-		paternal_chromosome.put(ID, dad_weight_G);
+		Gene dadWeightG = new Gene(this, id, WEIGHT_GENE, true, dominant, null, dadWeight);
+		paternalChromosome.put(id, dadWeightG);
 
-		Gene mom_weight_G = new Gene(this, ID, WEIGHT_GENE, false, dominant, null, mom_weight);
-		maternal_chromosome.put(ID, mom_weight_G);
+		Gene momWeightG = new Gene(this, id, WEIGHT_GENE, false, dominant, null, momWeight);
+		maternalChromosome.put(id, momWeightG);
 
-		double genetic_factor = .65;
-		double sex_factor = (highW - averageWeight) / averageWeight; // for male
-		double height_factor = height / averageHeight;
+		double geneticFactor = .65;
+		double sexFactor = (highW - averageWeight) / averageWeight; // for male
+		double heightFactor = height / averageHeight;
 
 		// Add arbitrary (US-based) sex and genetic factor
 		if (gender == GenderType.MALE)
-			weight = Math.round(height_factor
-					* (genetic_factor * dad_weight + (1 - genetic_factor) * mom_weight * (1 + sex_factor)) * 100D)
+			weight = Math.round(heightFactor
+					* (geneticFactor * dadWeight + (1 - geneticFactor) * momWeight * (1 + sexFactor)) * 100D)
 					/ 100D;
 		else
-			weight = Math.round(height_factor
-					* ((1 - genetic_factor) * dad_weight + genetic_factor * mom_weight * (1 - sex_factor)) * 100D)
+			weight = Math.round(heightFactor
+					* ((1 - geneticFactor) * dadWeight + geneticFactor * momWeight * (1 - sexFactor)) * 100D)
 					/ 100D;
 
 		setBaseMass(weight);
-
 	}
 
 	/*
-	 * Sets sponsoring agency for the person
+	 * Sets sponsoring agency for the person.
 	 */
 	public void setSponsor(ReportingAuthority sponsor) {
 		ra = sponsor;
 	}
 
 	/*
-	 * Gets sponsoring agency for the person
+	 * Gets sponsoring agency for the person.
 	 */
 	public ReportingAuthority getReportingAuthority() {
 		return ra;
 	}
 
 	/*
-	 * Gets task preference for the person
+	 * Gets task preference for the person.
 	 */
 	public Preference getPreference() {
 		return preference;
@@ -613,7 +605,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
-	 * Sets the job of a person
+	 * Sets the job of a person.
 	 *
 	 * @param job JobType
 	 * @param authority
@@ -651,7 +643,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
-	 * Create a string representing the birth time of the person.
+	 * Creates a string representing the birth time of the person.
 	 * @param clock
 	 *
 	 */
@@ -692,7 +684,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
-	 * Is the person outside of a settlement but within its vicinity
+	 * Is the person outside of a settlement but within its vicinity ?
 	 *
 	 * @return true if the person is just right outside of a settlement
 	 */
@@ -748,7 +740,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 	
 	/**
-	 * Get the settlement the person is at.
+	 * Gets the settlement the person is at.
 	 * Returns null if person is not at a settlement.
 	 *
 	 * @return the person's settlement
@@ -778,7 +770,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
-	 * Bury the Person at the current location. This happens only if the person can
+	 * Buries the Person at the current location. This happens only if the person can
 	 * be retrieved from any containing Settlements or Vehicles found. The body is
 	 * fixed at the last location of the containing unit.
 	 */
@@ -800,7 +792,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
-	 * Declares the person dead
+	 * Declares the person dead.
 	 */
 	void setDeclaredDead() {
 		declaredDead = true;
@@ -808,7 +800,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
-	 * Deregisters the person's quarters
+	 * Deregisters the person's quarters.
 	 */
 	void deregisterBed() {
 		// Set quarters to null
@@ -822,7 +814,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
-	 * Person can take action with time passing
+	 * Person can take action with time passing.
 	 *
 	 * @param pulse amount of time passing (in millisols).
 	 */
@@ -934,27 +926,26 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
-	 *
+	 * Checks if the person has deceased.
+	 * 
 	 * @return
 	 */
 	public boolean checkDecease() {
 		if (!isBuried && condition.getDeathDetails() != null
-				&& condition.getDeathDetails().getBodyRetrieved()) {
-
-			if (!declaredDead) {
-				// Declares the person dead
-				setDeclaredDead();
-				// Deregisters the person's quarters
-				deregisterBed();
-				// Deactivates the person's mind
-				mind.setInactive();
-			}
+			&& condition.getDeathDetails().getBodyRetrieved()
+			&& !declaredDead) {
+			// Declares the person dead
+			setDeclaredDead();
+			// Deregisters the person's quarters
+			deregisterBed();
+			// Deactivates the person's mind
+			mind.setInactive();
 		}
 		return true;
 	}
 
 	/**
-	 * Returns a reference to the Person's natural attribute manager
+	 * Returns a reference to the Person's natural attribute manager.
 	 *
 	 * @return the person's natural attribute manager
 	 */
@@ -964,7 +955,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
-	 * Get the performance factor that effect Person with health complaint.
+	 * Gets the performance factor that effect Person with health complaint.
 	 *
 	 * @return The value is between 0 -> 1.
 	 */
@@ -973,7 +964,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
-	 * Returns a reference to the Person's physical condition
+	 * Returns a reference to the Person's physical condition.
 	 *
 	 * @return the person's physical condition
 	 */
@@ -982,7 +973,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
-	 * Returns the person's mind
+	 * Returns the person's mind.
 	 *
 	 * @return the person's mind
 	 */
@@ -996,7 +987,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
-	 * Updates and returns the person's age
+	 * Updates and returns the person's age.
 	 *
 	 * @return the person's age
 	 */
@@ -1010,7 +1001,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
-	 * Set a person's age and update one's year of birth
+	 * Sets a person's age and update one's year of birth.
 	 *
 	 * @param newAge
 	 */
@@ -1023,7 +1014,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
-	 * Returns the person's birth date in the format of "2055-05-06"
+	 * Returns the person's birth date in the format of "2055-05-06".
 	 *
 	 * @return the person's birth date
 	 */
@@ -1043,7 +1034,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
-	 * Get the LifeSupport system supporting this Person. This may be from the
+	 * Gets the LifeSupport system supporting this Person. This may be from the
 	 * Settlement, Vehicle or Equipment.
 	 *
 	 * @return Life support system.
@@ -1100,7 +1091,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
-	 * Gets the birthplace of the person
+	 * Gets the birthplace of the person.
 	 *
 	 * @return the birthplace
 	 * @deprecated TODO internationalize the place of birth for display in user
@@ -1111,7 +1102,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
-	 * Gets the person's local group of people (in building or rover)
+	 * Gets the person's local group of people (in building or rover).
 	 *
 	 * @return collection of people in person's location. The collectino incldues the Person
 	 */
@@ -1145,7 +1136,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
-	 * Sets the person's name
+	 * Sets the person's name.
 	 *
 	 * @param newName the new name
 	 */
@@ -1196,6 +1187,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 
 	/**
 	 * Set the study that this Person is the lead on.
+	 * 
 	 * @param scientificStudy
 	 */
 	public void setStudy(ScientificStudy scientificStudy) {
@@ -1248,7 +1240,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
-	 * Add achievement credit to the person in a scientific field.
+	 * Adds achievement credit to the person in a scientific field.
 	 *
 	 * @param achievementCredit the achievement credit.
 	 * @param science           the scientific field.
@@ -1281,27 +1273,21 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	 }
 
 	/**
-	 * Computes the building the person is currently located at Returns null if
-	 * outside of a settlement
+	 * Computes the building the person is currently located at.
+	 * Returns null if outside of a settlement.
 	 *
 	 * @return building
 	 */
 	@Override
 	public Building getBuildingLocation() {
-//		if (currentBuilding != null) {
-//			return currentBuilding;
-//		} else if (getLocationStateType() == LocationStateType.INSIDE_SETTLEMENT) {//isInSettlement()) {
-//			currentBuilding = getSettlement().getBuildingManager().getBuildingAtPosition(getXLocation(),
-//					getYLocation());
-//		}
 		if (currentBuildingInt == -1)
 			return null;
 		return unitManager.getBuildingByID(currentBuildingInt);
 	}
 
 	/**
-	 * Computes the building the person is currently located at Returns null if
-	 * outside of a settlement
+	 * Computes the building the person is currently located at.
+	 * Returns null if outside of a settlement.
 	 *
 	 * @return building
 	 */
@@ -1356,13 +1342,11 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 		return getMind().getMission();
 	}
 
-
 	@Override
 	public void setMission(Mission newMission) {
 		getMind().setMission(newMission);
 	}
 
-	//@Override
 	public void setShiftType(ShiftType shiftType) {
 		taskSchedule.setShiftType(shiftType);
 	}
@@ -1566,7 +1550,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
-	 * Randomly generate a list of training the person may have attended
+	 * Randomly generates a list of training the person may have attended.
 	 */
 	private void generatePriorTraining() {
 		if (trainings == null) {
@@ -1587,7 +1571,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
-	 * Gets a list of prior training
+	 * Gets a list of prior training.
 	 *
 	 * @return {@link List<TrainingType>}
 	 */
@@ -1596,7 +1580,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
-	 * Registers a particular EVA suit to the person
+	 * Registers a particular EVA suit to the person.
 	 *
 	 * @param suit the EVA suit
 	 */
@@ -1605,7 +1589,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
-	 * Gets the EVA suit the person has donned on
+	 * Gets the EVA suit the person has donned on.
 	 *
 	 * @return
 	 */
@@ -1614,7 +1598,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
-	 * Gets the EVA suit the person has in inventory
+	 * Gets the EVA suit the person has in inventory.
 	 *
 	 * @return
 	 */
@@ -1639,7 +1623,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
-	 * Calculate the modifier for walking speed based on how much this unit is carrying
+	 * Calculates the modifier for walking speed based on how much this unit is carrying.
 	 */
 	public double calculateWalkSpeed() {
 		double mass = getMass();
@@ -1649,7 +1633,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
-	 * Generate a unique name for a person based on a country
+	 * Generates a unique name for a person based on a country.
 	 *
 	 * @param country
 	 * @param gender
@@ -1713,7 +1697,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
-	 * Get the capacity a person can carry
+	 * Gets the capacity a person can carry.
 	 *
 	 * @return capacity (kg)
 	 */
@@ -1722,7 +1706,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
-	 * Mass of Equipment is the base mass plus what every it is storing
+	 * Returns the mass as the base mass plus whatever being stored in him.
 	 */
 	@Override
 	public double getMass() {
@@ -1733,7 +1717,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
-	 * Get the equipment list
+	 * Gets the equipment list.
 	 *
 	 * @return the equipment list
 	 */
@@ -1765,7 +1749,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
-	 * Does this person possess an equipment of this equipment type
+	 * Does this person possess an equipment of this equipment type ?
 	 *
 	 * @param typeID
 	 * @return true if this person possess this equipment type
@@ -1776,7 +1760,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
-	 * Adds an equipment to this person
+	 * Adds an equipment to this person.
 	 *
 	 * @param equipment
 	 * @return true if this person can carry it
@@ -1793,7 +1777,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
-	 * Remove an equipment
+	 * Removes an equipment.
 	 *
 	 * @param equipment
 	 */
@@ -1803,7 +1787,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
-	 * Stores the item resource
+	 * Stores the item resource.
 	 *
 	 * @param resource the item resource
 	 * @param quantity
@@ -1815,7 +1799,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
-	 * Retrieves the item resource
+	 * Retrieves the item resource.
 	 *
 	 * @param resource
 	 * @param quantity
@@ -1827,7 +1811,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
-	 * Gets the item resource stored
+	 * Gets the item resource stored.
 	 *
 	 * @param resource
 	 * @return quantity
@@ -1838,7 +1822,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
-	 * Stores the amount resource
+	 * Stores the amount resource.
 	 *
 	 * @param resource the amount resource
 	 * @param quantity
@@ -1850,7 +1834,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
-	 * Retrieves the resource
+	 * Retrieves the resource.
 	 *
 	 * @param resource
 	 * @param quantity
@@ -1862,7 +1846,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
-	 * Gets the capacity of a particular amount resource
+	 * Gets the capacity of a particular amount resource.
 	 *
 	 * @param resource
 	 * @return capacity
@@ -1873,7 +1857,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
-	 * Obtains the remaining storage space of a particular amount resource
+	 * Obtains the remaining storage space of a particular amount resource.
 	 *
 	 * @param resource
 	 * @return quantity
@@ -1894,7 +1878,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
-	 * Gets the amount resource stored
+	 * Gets the amount resource stored.
 	 *
 	 * @param resource
 	 * @return quantity
@@ -1905,7 +1889,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
-	 * Gets all stored amount resources
+	 * Gets all stored amount resources.
 	 *
 	 * @return all stored amount resources.
 	 */
@@ -1915,7 +1899,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
-	 * Gets all stored item resources
+	 * Gets all stored item resources.
 	 *
 	 * @return all stored item resources.
 	 */
@@ -1939,7 +1923,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
-	 * Finds the number of containers of a particular type
+	 * Finds the number of containers of a particular type.
 	 *
 	 * @param containerType the equipment type.
 	 * @return number of empty containers.
@@ -1973,7 +1957,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 
 
 	/**
-	 * Gets the stored mass
+	 * Gets the stored mass.
 	 */
 	@Override
 	public double getStoredMass() {
@@ -1981,7 +1965,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
-	 * Obtains the remaining general storage space
+	 * Obtains the remaining general storage space.
 	 *
 	 * @return quantity
 	 */
@@ -2025,7 +2009,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
-	 * Updates the location state type of a person
+	 * Updates the location state type of a person.
 	 *
 	 * @param newContainer
 	 */
@@ -2039,7 +2023,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
-	 * Gets the location state type based on the type of the new container unit
+	 * Gets the location state type based on the type of the new container unit.
 	 *
 	 * @param newContainer
 	 * @return {@link LocationStateType}
@@ -2069,7 +2053,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
-	 * Is this unit inside a settlement
+	 * Is this unit inside a settlement ?
 	 *
 	 * @return true if the unit is inside a settlement
 	 */
@@ -2086,7 +2070,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
-	 * Transfer the unit from one owner to another owner
+	 * Transfer the unit from one owner to another owner.
 	 *
 	 * @param origin {@link Unit} the original container unit
 	 * @param destination {@link Unit} the destination container unit
@@ -2173,7 +2157,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
-	 * Gets the holder's unit instance
+	 * Gets the holder's unit instance.
 	 *
 	 * @return the holder's unit instance
 	 */
@@ -2183,7 +2167,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
-	 * Sets unit's location coordinates
+	 * Sets unit's location coordinates.
 	 *
 	 * @param newLocation the new location of the unit
 	 */
@@ -2198,21 +2182,21 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
-	 * Does this person have a set of clothing
+	 * Does this person have a set of clothing ?
 	 */
 	public boolean hasGarment() {
 		return getItemResourceStored(ItemResourceUtil.garmentID) > 0;
 	}
 
 	/**
-	 * Does this person have a pressure suit
+	 * Does this person have a pressure suit ?
 	 */
 	public boolean hasPressureSuit() {
 		return getItemResourceStored(ItemResourceUtil.pressureSuitID) > 0;
 	}
 
 	/**
-	 * Puts on a garment
+	 * Puts on a garment.
 	 *
 	 * @param holder the previous holder of the clothing
 	 */
@@ -2223,7 +2207,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
-	 * Puts on a pressure suit set
+	 * Puts on a pressure suit set.
 	 *
 	 * @param suit
 	 */
@@ -2235,7 +2219,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 
 
 	/**
-	 * Puts off the garment
+	 * Puts off the garment.
 	 *
 	 * @param holder the new holder of the clothing
 	 * @return true if successful
@@ -2250,7 +2234,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
-	 * Puts off the pressure suit set
+	 * Puts off the pressure suit set.
 	 *
 	 * @param suit
 	 * @return true if successful
@@ -2289,7 +2273,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 	
 	/**
-	 * Gets the relation instance 
+	 * Gets the relation instance.
 	 * 
 	 * @return
 	 */
@@ -2298,7 +2282,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 	
 	/**
-	 * Reinitialize references after loading from a saved sim
+	 * Reinitialize references after loading from a saved sim.
 	 */
 	public void reinit() {
 		mind.reinit();
@@ -2306,7 +2290,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
-	 * Compares if an object is the same as this person
+	 * Compares if an object is the same as this person.
 	 *
 	 * @param obj
 	 */

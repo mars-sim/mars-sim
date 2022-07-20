@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * ResupplyMissionEditingPanel.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-19
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.resupply;
@@ -59,6 +59,7 @@ import org.mars_sim.msp.core.interplanetary.transport.Transportable;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyUtil;
 import org.mars_sim.msp.core.interplanetary.transport.settlement.ArrivingSettlement;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
@@ -79,16 +80,20 @@ import com.alee.laf.panel.WebPanel;
 import com.alee.laf.radiobutton.WebRadioButton;
 import com.alee.laf.scroll.WebScrollPane;
 
-//import eu.hansolo.enzo.radialmenu.RadialMenu.ItemEvent;
 
 /**
- * A panel for creating or editing a resupply mission. TODO externalize strings
+ * A panel for creating or editing a resupply mission.
  */
+@SuppressWarnings("serial")
 public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 
+	/** default logger. */
+//	private static SimLogger logger = SimLogger.getLogger(ResupplyMissionEditingPanel.class.getName());
+			
 	private static final Integer[] EMPTY_STRING_ARRAY = new Integer[0];
 	private static final int MAX_FUTURE_ORBITS = 20;
 	private static final int MAX_IMMIGRANTS = 48;
+	private static final int MILLISOLS_DELAY = 20;
 
 	// Data members
 	private String errorString = new String();
@@ -308,7 +313,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		// Create sol information label.
 		WebLabel limitLabel = new WebLabel("  Note : cannot have more than one resupply per sol.");
 		limitLabel.setEnabled(true);
-		limitLabel.setForeground(Color.ORANGE);
+		limitLabel.setForeground(Color.ORANGE.darker());
 		arrivalDatePane.add(limitLabel);
 
 		// Create error pane.
@@ -333,11 +338,6 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		if (resupply != null) {
 			immigrantsNum = resupply.getNewImmigrantNum();
 		}
-
-//		immigrantsTF = new JTextField(6);
-//		immigrantsTF.setText(Integer.toString(immigrantsNum));
-//		immigrantsTF.setHorizontalAlignment(JTextField.RIGHT);
-//		immigrantsPane.add(immigrantsTF);
 
 		// Switch to using ComboBoxMW for immigrants
 		int size1 = immigrants.length;
@@ -524,16 +524,6 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 				supplyTable.setValueAt(defaultType, editingRow, 1);
 			}
 		}
-
-//		public void updateSolsCB() {
-//			List<Integer> list = new ArrayList<Integer>();
-//			Collections.addAll(list, sols);
-//			// Remove dates that have been chosen for other resupply missions.
-//			list.removeAll(Arrays.asList(getMissionSols()));
-//			sols = list.toArray(EMPTY_STRING_ARRAY);
-//			solsFromCB = new JComboBoxMW<Integer>(sols);
-//		}
-
 	}
 
 	/**
@@ -637,13 +627,28 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		return true;
 	}
 
+	/**
+	 * Updates the sol combo box.
+	 */
 	public void updateSolsCB() {
-		List<Integer> list = new ArrayList<Integer>();
-		Collections.addAll(list, sols);
+		List<Integer> solList = new ArrayList<>();
+		Collections.addAll(solList, sols);
 		// Remove dates that have been chosen for other resupply missions.
-		list.removeAll(getMissionSols());
-		sols = list.toArray(EMPTY_STRING_ARRAY);
-		solsFromCB = new JComboBoxMW<Integer>(sols);
+		solList.removeAll(getMissionSols());
+
+		int t = ResupplyUtil.getAverageTransitTime();
+		int missionSol = marsClock.getMissionSol();
+		int date = missionSol + t;
+		// Gets a list of sols that are to be excluded from solList
+		List<Integer> cancelSols = new ArrayList<>();
+	    for (int i = 0; i < date; i++) {
+	    	cancelSols.add(i);
+	    }
+	    // Exclude these sols
+	    solList.removeAll(cancelSols);
+		
+		sols = solList.toArray(EMPTY_STRING_ARRAY);
+		solsFromCB = new JComboBoxMW<>(sols);
 		solsFromCB.requestFocus(false);
 		solsFromCB.putClientProperty("JComboBox.isTableCellEditor", Boolean.FALSE);
 		solsFromCB.addFocusListener(new FocusListener() {
@@ -662,8 +667,6 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		solsFromCB.addItemListener(new ItemListener() {
 			@Override
 			public void itemStateChanged(java.awt.event.ItemEvent evt) {
-				// JComboBoxMW<Integer> cb = (JComboBoxMW<Integer>) evt.getSource();
-				// Object item = evt.getItem();
 				if (evt.getStateChange() == ItemEvent.SELECTED) {
 					timeUntilArrivalRB.requestFocus(true);
 				} else if (evt.getStateChange() == ItemEvent.DESELECTED) {
@@ -671,14 +674,6 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 				}
 			}
 		});
-
-		// solsFromCB.addActionListener(new ActionListener() {
-		// public void actionPerformed(ActionEvent evt) {
-		// if (solsFromCB.isfo
-		// timeUntilArrivalRB.requestFocusInWindow(true);
-		// }
-		// });
-
 	}
 
 	@Override
@@ -697,13 +692,8 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		else {
 			Resupply newResupply = new Resupply(arrivalDate, destination);
 			modifyResupplyMission(newResupply, arrivalDate);
-			// boolean good = populateResupplyMission(newResupply);
-			// if (!good)
-			// return false;
-			// else {
 			Simulation.instance().getTransportManager().addNewTransportItem(newResupply);
 			return true;
-			// }
 		}
 	}
 
@@ -731,6 +721,12 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		}
 	}
 
+	/**
+	 * Modifies a resupply mission.
+	 * 
+	 * @param resupplyMission
+	 * @param arrivalDate
+	 */
 	private void modifyResupplyMission(Resupply resupplyMission, MarsClock arrivalDate) {
 
 		resupplyMission.setArrivalDate(arrivalDate);
@@ -741,7 +737,6 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		resupplyMission.setLaunchDate(launchDate);
 
 		// Set resupply state based on launch and arrival time.
-//		MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
 		TransitState state = TransitState.PLANNED;
 		if (MarsClock.getTimeDiff(marsClock, launchDate) > 0D) {
 			state = TransitState.IN_TRANSIT;
@@ -995,15 +990,9 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 	 * @return {@link MarsClock} arrival date.
 	 */
 	private MarsClock getArrivalDate() {
-		// String errorString = new String();
 		errorString = null;
 
-		// MarsClock currentTime =
-		// Simulation.instance().getMasterClock().getMarsClock();
-		// marsCurrentTime = (MarsClock) currentTime.clone();
-
 		if (arrivalDateRB.isSelected()) {
-//			MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
 			marsCurrentTime = (MarsClock) marsClock.clone();
 
 			// Determine arrival date from arrival date combo boxes.
@@ -1012,15 +1001,15 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 				int month = monthCB.getSelectedIndex() + 1;
 				int orbit = Integer.parseInt((String) orbitCB.getSelectedItem());
 
-				// Set millisols to current time if resupply is current date, otherwise 0.
+				// Set millisols to current time plus the delay if resupply is current date, otherwise 0.
 				double millisols = 0D;
 				if ((sol == marsClock.getSolOfMonth()) && (month == marsClock.getMonth())
 						&& (orbit == marsClock.getOrbit())) {
-					millisols = marsClock.getMillisol();
+					millisols = marsClock.getMillisol() + MILLISOLS_DELAY;
 				}
-				// validation_result = true;
 
-				marsCurrentTime = new MarsClock(orbit, month, sol, millisols, -1);
+				marsCurrentTime = new MarsClock(orbit, month, sol, millisols, marsClock.getMissionSol());
+				
 			} catch (NumberFormatException e) {
 				e.printStackTrace(System.err);
 			}
@@ -1028,22 +1017,8 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 
 		else if (timeUntilArrivalRB.isSelected()) {
 			marsCurrentTime = validateSolsFrom();
-
-			// Implemented addChangeListener() to validate solsTF.
-//			String timeArrivalString = solsTF.getText().trim();
-//			if (timeArrivalString.isEmpty()) {
-//				validation_result = false;
-//				errorString = Msg.getString("ArrivingSettlementEditingPanel.error.noSols"); //$NON-NLS-1$
-//				errorLabel.setText(errorString);
-//				enableButton(false);
-//				System.out.println("Invalid Sols. It cannot be empty.");
-//			}
-//			else {
-//				//System.out.println("calling validateSolsTF()");
-//				marsCurrentTime = validateSolsTF();
-//			}
-
 		}
+		
 		return marsCurrentTime;
 	}
 
@@ -1109,8 +1084,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 				errorLabel.setText(errorString);
 				// enableButton(true);
 				validation_result = true;
-				// System.out.println("inputSols is " + inputSols);
-//				MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+
 				marsCurrentTime = (MarsClock) marsClock.clone();
 				if (inputSol == 0)
 					marsCurrentTime.addTime(marsCurrentTime.getMillisol());
@@ -1127,8 +1101,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 			enableButton(false);
 			System.out.println("ResupplyMissionEditingPanel : Invalid entry for Sols ");
 		}
-		// }
-		// }
+
 		return marsCurrentTime;
 	}
 
@@ -1164,7 +1137,6 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 				}
 			}
 		}
-		// System.out.println("sols.size() : " + sols.size() );
 
 		return solsList;
 	}

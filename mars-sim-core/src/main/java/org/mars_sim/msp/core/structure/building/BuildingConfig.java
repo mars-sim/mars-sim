@@ -32,7 +32,6 @@ import org.mars_sim.msp.core.structure.building.function.FunctionType;
  */
 public class BuildingConfig implements Serializable {
 
-
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
@@ -127,7 +126,7 @@ public class BuildingConfig implements Serializable {
 	 * @return set of building types.
 	 */
 	public Set<String> getBuildingTypes() {
-		return  buildSpecMap.values().stream().map(BuildingSpec::getBuildingType).collect(Collectors.toSet());
+		return buildSpecMap.values().stream().map(BuildingSpec::getBuildingType).collect(Collectors.toSet());
 	}
 
 	/**
@@ -191,7 +190,6 @@ public class BuildingConfig implements Serializable {
 		else {
 			// Derive category from Functions
 			category = deriveCategory(supportedFunctions.keySet());
-
 		}
 
 		BuildingSpec newSpec = new BuildingSpec(buildingTypeName, desc, category, width, length, baseLevel,
@@ -260,14 +258,14 @@ public class BuildingConfig implements Serializable {
 		}
 		return newSpec;
 	}
-
+	
 	/**
 	 * Derives the category from the types of Functions.
 	 * 
 	 * @param functions
 	 * @return
 	 */
-	private BuildingCategory deriveCategory(Set<FunctionType> functions) {
+	public BuildingCategory deriveCategory(Set<FunctionType> functions) {
 
 		// Get a set of categories
 		Set<BuildingCategory> cats = new HashSet<>();

@@ -192,7 +192,6 @@ extends JComponent implements ClockListener {
 	private WebSwitch pauseSwitch;
 	private WebButton increaseSpeed;
 	private WebButton decreaseSpeed;
-	private WebButton starMap;
 
 	private JCheckBox overlayCheckBox;
 
@@ -644,7 +643,7 @@ extends JComponent implements ClockListener {
 		iconSet.addIcon(new SvgIconSource (
 			      "telescope",
 			      new ClassResource(MainWindow.class, TELESCOPE_SVG),
-			      new Dimension(16, 16)));
+			      new Dimension(14, 14)));
 
 		// Add the icon set to the icon manager
 		IconManager.addIconSet(iconSet);
@@ -771,9 +770,6 @@ extends JComponent implements ClockListener {
 		// Create overlay button
 		createOverlayCheckBox();
 		statusBar.addLeftComponent(overlayCheckBox, false);
-
-//		createStarMapButton();
-//		statusBar.addRightComponent(starMap, true);
 
 		// Create memory bar
 		createMemoryBar();

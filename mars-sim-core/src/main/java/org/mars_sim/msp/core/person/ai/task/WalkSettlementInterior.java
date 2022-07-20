@@ -221,6 +221,7 @@ public class WalkSettlementInterior extends Task implements Serializable {
 		else {
 			throw new IllegalStateException("Do not know who is walking");
 		}
+//		logger.info(worker, "Speed: " + speed);
 		
 		// Check that remaining path locations are valid.
 		if (!checkRemainingPathLocations()) {
@@ -297,7 +298,7 @@ public class WalkSettlementInterior extends Task implements Serializable {
 
 			endTask();
 		}
-		
+//		logger.info(worker, "timeLeft: " + timeLeft);
 		return timeLeft;
 	}
 

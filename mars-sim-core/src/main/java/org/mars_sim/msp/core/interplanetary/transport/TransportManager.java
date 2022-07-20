@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TransportManager.java
- * @date 2021-09-04
+ * @date 2022-07-19
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.interplanetary.transport;
@@ -97,7 +97,7 @@ public class TransportManager implements Serializable, Temporal {
 		HistoricalEvent newEvent = new TransportEvent(transportItem, EventType.TRANSPORT_ITEM_CREATED,
 				"Mission Control", transportItem.getSettlementName());
 		eventManager.registerNewEvent(newEvent);
-		logger.info("A new transport item was created ");
+		logger.info("A new transport item was created.");
 	}
 
 	/**

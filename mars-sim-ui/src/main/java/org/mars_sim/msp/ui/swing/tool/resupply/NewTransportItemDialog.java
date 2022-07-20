@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * NewTransportItemDialog.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-19
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.resupply;
@@ -16,6 +16,7 @@ import java.awt.event.ActionListener;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
@@ -26,10 +27,12 @@ import com.alee.laf.panel.WebPanel;
 
 /**
  * A dialog for creating a new transport item.
- * TODO externalize strings
  */
 @SuppressWarnings("serial")
 public class NewTransportItemDialog extends ModalInternalFrame {
+
+	/** default logger. */
+	private static SimLogger logger = SimLogger.getLogger(NewTransportItemDialog.class.getName());
 
 	// Transport item types.
 	private static final String DEFAULT_MESSAGE = "Select Transport Item Type";
@@ -149,7 +152,7 @@ public class NewTransportItemDialog extends ModalInternalFrame {
 	}
 
 	/**
-	 * Set the editing panel.
+	 * Sets the editing panel.
 	 * 
 	 * @param panelKey the panel key string.
 	 */
@@ -178,7 +181,7 @@ public class NewTransportItemDialog extends ModalInternalFrame {
 	}
 
 	/**
-	 * Create the new transport item and close the dialog.
+	 * Creates the new transport item and close the dialog.
 	 */
 	private void createTransportItem() {
 		if ((editingPanel != null) && editingPanel.createTransportItem()) {
@@ -187,7 +190,7 @@ public class NewTransportItemDialog extends ModalInternalFrame {
 	}
 
 	/**
-	 * Prepare this window for deletion.
+	 * Prepares this window for deletion.
 	 */
 	public void destroy() {
 

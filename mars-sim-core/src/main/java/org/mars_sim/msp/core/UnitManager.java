@@ -81,19 +81,19 @@ public class UnitManager implements Serializable, Temporal {
 	/** A map of all map display units (settlements and vehicles). */
 	private Set<Unit> displayUnits;
 	/** A map of settlements with its unit identifier. */
-	private volatile Map<Integer, Settlement> lookupSettlement;
+	private Map<Integer, Settlement> lookupSettlement;
 	/** A map of sites with its unit identifier. */
-	private volatile Map<Integer, ConstructionSite> lookupSite;
+	private Map<Integer, ConstructionSite> lookupSite;
 	/** A map of persons with its unit identifier. */
-	private volatile Map<Integer, Person> lookupPerson;
+	private Map<Integer, Person> lookupPerson;
 	/** A map of robots with its unit identifier. */
-	private volatile Map<Integer, Robot> lookupRobot;
+	private Map<Integer, Robot> lookupRobot;
 	/** A map of vehicle with its unit identifier. */
-	private volatile Map<Integer, Vehicle> lookupVehicle;
+	private Map<Integer, Vehicle> lookupVehicle;
 	/** A map of equipment (excluding robots and vehicles) with its unit identifier. */
-	private volatile Map<Integer, Equipment> lookupEquipment;
+	private Map<Integer, Equipment> lookupEquipment;
 	/** A map of building with its unit identifier. */
-	private volatile Map<Integer, Building> lookupBuilding;
+	private Map<Integer, Building> lookupBuilding;
 
 	private static SimulationConfig simulationConfig = SimulationConfig.instance();
 	private static Simulation sim = Simulation.instance();

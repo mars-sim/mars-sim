@@ -353,7 +353,6 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 		return admin;
 	}
 
-
 	public AstronomicalObservation getAstronomicalObservation() {
 		if (astro == null)
 			astro = (AstronomicalObservation) getFunction(FunctionType.ASTRONOMICAL_OBSERVATION);

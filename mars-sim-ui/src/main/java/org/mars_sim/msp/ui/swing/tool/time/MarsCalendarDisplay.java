@@ -46,11 +46,10 @@ public class MarsCalendarDisplay extends JComponent {
 	
 	private Color baseColor = Color.white;
 	private Color headerColor = new Color(218, 165, 32); 
-//	private Color darkColor = new Color(112, 95, 76);
 	private Color lightColor = new Color(255, 222, 173);
 	private Color numberColor = new Color(139, 69, 19);
 
-	private Color numberHighlightColor = Color.orange.darker();//new Color(218, 165, 32);
+	private Color numberHighlightColor = Color.orange.darker();
 	
 	// Pick color at https://www.html.am/html-codes/color/color-scheme.cfm?rgbColor=112,128,144
 	// 99,  125, 150 // dull blue
@@ -100,7 +99,7 @@ public class MarsCalendarDisplay extends JComponent {
 	}
 
 	/**
-	 * Updates the calendar display
+	 * Updates the calendar display.
 	 */
 	public void update() {
 
@@ -184,10 +183,6 @@ public class MarsCalendarDisplay extends JComponent {
 				}
 			}
 		}
-	}
-
-	@Override
-	public void updateUI() {
 	}
 
 	@Override

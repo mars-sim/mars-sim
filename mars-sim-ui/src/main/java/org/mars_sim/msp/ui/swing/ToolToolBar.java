@@ -19,6 +19,7 @@ import java.util.Vector;
 import javax.swing.Icon;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
+import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
 
 import org.mars_sim.msp.core.GameManager;
@@ -138,27 +139,15 @@ public class ToolToolBar extends WebToolBar implements ActionListener {
 //		add(openAutosaveButton);
 
 		ToolButton saveButton = new ToolButton(Msg.getString("mainMenu.save"), Msg.getString("img.save")); //$NON-NLS-1$ //$NON-NLS-2$
-		saveButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				parentMainWindow.saveSimulation(true);
-			};
-		});
+		saveButton.addActionListener(e -> parentMainWindow.saveSimulation(true));
 		add(saveButton);
 
 		ToolButton saveAsButton = new ToolButton(Msg.getString("mainMenu.saveAs"), Msg.getString("img.saveAs")); //$NON-NLS-1$ //$NON-NLS-2$
-		saveAsButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				parentMainWindow.saveSimulation(false);
-			};
-		});
+		saveAsButton.addActionListener(e -> parentMainWindow.saveSimulation(false));
 		add(saveAsButton);
 
 		ToolButton exitButton = new ToolButton(Msg.getString("mainMenu.exit"), Msg.getString("img.exit")); //$NON-NLS-1$ //$NON-NLS-2$
-		exitButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				parentMainWindow.exitSimulation();
-			};
-		});
+		exitButton.addActionListener(e -> parentMainWindow.exitSimulation());
 		add(exitButton);
 
 		addSeparator(new Dimension(20, 20));
@@ -311,9 +300,7 @@ public class ToolToolBar extends WebToolBar implements ActionListener {
 
 		WebButton calendarButton = new WebButton(StyleId.buttonIconHover, calendarIcon);
 
-		calendarButton.addActionListener(new ActionListener() {
-		    @Override
-		    public void actionPerformed(final ActionEvent e){
+		calendarButton.addActionListener(e -> {
 		    	calendarDisplay.update();
 		
 		    	String mn = "Month of {" + marsClock.getMonthName() + ":u}";
@@ -326,8 +313,7 @@ public class ToolToolBar extends WebToolBar implements ActionListener {
 		        popOver.setPadding(5);
 		        popOver.add(outerPane);
 		        popOver.show(calendarButton, PopOverDirection.down);
-		    }
-		} );
+		});
 
 		return calendarButton;
 	}
@@ -348,7 +334,7 @@ public class ToolToolBar extends WebToolBar implements ActionListener {
 
 		// Create martian month label
     	String mn = "Month of {" + marsClock.getMonthName() + ":u}";
-    	monthLabel = new WebStyledLabel(StyleId.styledlabelShadow, mn, WebLabel.CENTER);
+    	monthLabel = new WebStyledLabel(StyleId.styledlabelShadow, mn, SwingConstants.CENTER);
 		WebPanel monthPane = new WebPanel(StyleId.panelTransparent, new FlowLayout(FlowLayout.CENTER, 2, 2));
 		monthPane.add(monthLabel);
 		midPane.add(monthPane, BorderLayout.NORTH);
@@ -377,11 +363,7 @@ public class ToolToolBar extends WebToolBar implements ActionListener {
 		starMap.setIcon(parentMainWindow.getTelescopeIcon());
 		TooltipManager.setTooltip(starMap, "Open the Orbit Viewer", TooltipWay.up);
 
-		starMap.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				parentMainWindow.openOrbitViewer();
-			};
-		});
+		starMap.addActionListener(e -> parentMainWindow.openOrbitViewer());
 		
 		return starMap;
 	}

@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * BuildingTemplate.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-19
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure;
@@ -47,7 +47,7 @@ public class BuildingTemplate implements Serializable, Comparable<BuildingTempla
 		this.buildingType = buildingType;
 		this.nickName = nickName;
 		this.bounds = bounds;
-		connectionList = new ArrayList<BuildingConnectionTemplate>(0);
+		connectionList = new ArrayList<>(0);
 	}
 
 	public String getMissionName() {
@@ -100,7 +100,7 @@ public class BuildingTemplate implements Serializable, Comparable<BuildingTempla
 	}
 
 	/**
-	 * Add a new building connection.
+	 * Adds a new building connection.
 	 * 
 	 * @param id        the unique id of the building being connected to.
 	 * @param location the location (local to the building) (meters).
@@ -123,7 +123,7 @@ public class BuildingTemplate implements Serializable, Comparable<BuildingTempla
 	}
 	
 	/**
-	 * Get a list of all building connection templates.
+	 * Gets a list of all building connection templates.
 	 * 
 	 * @return list of all building connection templates.
 	 */

@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -461,14 +462,6 @@ public class BuildingManager implements Serializable {
 		return newBuilding;
 	}
 
-//	public Resupply getResupply() {
-//		return resupply;
-//	}
-
-//	public void addResupply(Resupply resupply) {
-//		this.resupply = resupply;
-//	}
-
 	/**
 	 * Gets a copy of settlement's collection of buildings.
 	 *
@@ -720,6 +713,7 @@ public class BuildingManager implements Serializable {
 				.filter(b -> b.getCategory() == category)
 				.collect(Collectors.toList());
 	}
+
 	/**
 	 * Gets the buildings in the settlement with a given building type.
 	 *
