@@ -44,6 +44,7 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 	private int occupiedCache;
 	private int emptyCache;
 	private double cycleTimeCache;
+	private boolean activationCache;
 
 	private String operatorCache = "";
 	private String airlockStateCache = "";
@@ -56,6 +57,7 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 	private JTextField emptyLabel;
 	private JTextField operatorLabel;
 	private JTextField airlockStateLabel;
+	private JTextField activationLabel;
 	private JTextField cycleTimeLabel;
 	private JTextField innerDoorStateLabel;
 	private JTextField outerDoorStateLabel;
@@ -96,14 +98,10 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 		WebPanel labelPanel = new WebPanel(new SpringLayout());
 		center.add(labelPanel, BorderLayout.NORTH);
 
-		// Create outerDoorLabel
-		outerDoorLabel = addTextField(labelPanel, Msg.getString("BuildingPanelEVA.outerDoor.number"),
-									  eva.getNumAwaitingOuterDoor(), null);
 
 		// Create innerDoorLabel
 		innerDoorLabel = addTextField(labelPanel, Msg.getString("BuildingPanelEVA.innerDoor.number"),
-									  eva.getNumAwaitingInnerDoor(), null);
-
+									  eva.getNumAwaitingInnerDoor(), 4, null);
 
 		if (eva.getAirlock().isInnerDoorLocked())
 			innerDoorStateCache = LOCKED;
@@ -112,8 +110,13 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 		}
 		// Create innerDoorStateLabel
 		innerDoorStateLabel = addTextField(labelPanel, Msg.getString("BuildingPanelEVA.innerDoor.state"),
-										   innerDoorStateCache, null);
+										   innerDoorStateCache, 8, null);
 
+		// Create outerDoorLabel
+		outerDoorLabel = addTextField(labelPanel, Msg.getString("BuildingPanelEVA.outerDoor.number"),
+									  eva.getNumAwaitingOuterDoor(), 4, null);
+
+		
 		if (eva.getAirlock().isOuterDoorLocked())
 			outerDoorStateCache = LOCKED;
 		else {
@@ -121,32 +124,38 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 		}
 		// Create outerDoorStateLabel
 		outerDoorStateLabel = addTextField(labelPanel, Msg.getString("BuildingPanelEVA.outerDoor.state"),
-										   outerDoorStateCache, null);
+										   outerDoorStateCache, 8, null);
 
+		
 		// Create occupiedLabel
 		occupiedLabel = addTextField(labelPanel, Msg.getString("BuildingPanelEVA.occupied"),
-									 eva.getNumInChamber(), null);
+									 eva.getNumInChamber(), 4, null);
+
+
+		// Create activationLabel
+		activationLabel = addTextField(labelPanel, Msg.getString("BuildingPanelEVA.airlock.activation"),
+										 buildingAirlock.isActivated() + "", 8, null);
 
 		// Create emptyLabel
 		emptyLabel = addTextField(labelPanel, Msg.getString("BuildingPanelEVA.empty"),
-								  eva.getNumEmptied(), null);
-
-		// Create OperatorLabel
-		operatorLabel = addTextField(labelPanel, Msg.getString("BuildingPanelEVA.operator"),
-									 eva.getOperatorName(), null);
+								  eva.getNumEmptied(), 4, null);
 
 		// Create airlockStateLabel
 		airlockStateLabel = addTextField(labelPanel, Msg.getString("BuildingPanelEVA.airlock.state"),
-										 buildingAirlock.getState().toString(), null);
+										 buildingAirlock.getState().toString(), 8, null);
 
 		// Create cycleTimeLabel
 		cycleTimeLabel = addTextField(labelPanel, Msg.getString("BuildingPanelEVA.airlock.cycleTime"),
-									  DECIMAL_PLACES1.format(buildingAirlock.getRemainingCycleTime()), null);
-		SpringUtilities.makeCompactGrid(labelPanel,
-                9, 2, //rows, cols
-                INITX_DEFAULT, INITY_DEFAULT,        //initX, initY
-                XPAD_DEFAULT, YPAD_DEFAULT);       //xPad, yPad
+									  DECIMAL_PLACES1.format(buildingAirlock.getRemainingCycleTime()), 4, null);
 		
+		// Create OperatorLabel
+		operatorLabel = addTextField(labelPanel, Msg.getString("BuildingPanelEVA.operator"),
+									 eva.getOperatorName(), 10, null);
+		
+		SpringUtilities.makeCompactGrid(labelPanel,
+                5, 4, //rows, cols
+                10, INITY_DEFAULT,        //initX, initY
+                XPAD_DEFAULT, YPAD_DEFAULT);       //xPad, yPad	
 		
 		// Create occupant panel
 		WebPanel occupantPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
@@ -215,6 +224,13 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 		if (!airlockStateCache.equalsIgnoreCase(state)) {
 			airlockStateCache = state;
 			airlockStateLabel.setText(state);
+		}
+		
+		// Update activationLabel
+		boolean activated = buildingAirlock.isActivated();
+		if (activationCache != activated) {
+			activationCache = activated;
+			activationLabel.setText(activated + "");
 		}
 
 		// Update cycleTimeLabel

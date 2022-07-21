@@ -665,7 +665,7 @@ public class BuildingAirlock extends Airlock {
      */
     public int getNumInChamber() {
     	loadEVAActivitySpots();
-    	return activitySpotMap.size();
+    	return getInsideChamberNum();
     }
     
     @Override

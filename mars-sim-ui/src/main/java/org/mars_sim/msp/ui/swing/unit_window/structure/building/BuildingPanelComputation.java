@@ -53,7 +53,7 @@ public class BuildingPanelComputation extends BuildingFunctionPanel {
 	@Override
 	protected void buildUI(JPanel center) {
 
-		WebPanel springPanel = new WebPanel(new GridLayout(3, 2, 3, 1));
+		JPanel springPanel = new JPanel(new GridLayout(3, 2, 3, 1));
 		center.add(springPanel, BorderLayout.NORTH);
 
 		// Power Demand

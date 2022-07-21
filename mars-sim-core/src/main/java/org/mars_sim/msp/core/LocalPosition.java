@@ -19,7 +19,7 @@ public class LocalPosition implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Default position of the center
+	 * Default position of the center.
 	 */
     public static final LocalPosition DEFAULT_POSITION = new LocalPosition(0D, 0D);
 
@@ -37,7 +37,8 @@ public class LocalPosition implements Serializable {
 	}
 
 	/**
-	 * Constructor provides a temporary bridge between the 2 approaches
+	 * Constructor provides a temporary bridge between the 2 approaches.
+	 * 
 	 * @param point
 	 */
 	@Deprecated
@@ -55,7 +56,7 @@ public class LocalPosition implements Serializable {
 	}
 
     /**
-     * Returns the distance to another point
+     * Returns the distance to another point.
      *
      * @param other Other location
      * @return the distance between the two sets of specified
@@ -70,7 +71,8 @@ public class LocalPosition implements Serializable {
     }
 
     /**
-     * Get the position that is the mid point between two Positions.
+     * Gets the position that is the mid point between two Positions.
+     * 
      * @param other Other end of the line
      * @return
      */
@@ -79,7 +81,8 @@ public class LocalPosition implements Serializable {
         						 (y + other.y) / 2D);
 	}
 	/**
-	 * Get the rotation direction to another Position.
+	 * Gets the rotation direction to another Position.
+	 * 
 	 * @param other
 	 * @return
 	 */
@@ -98,7 +101,8 @@ public class LocalPosition implements Serializable {
 	}
 	
 	/**
-	 * Get the Position a distacne and rotatino direction from this one.
+	 * Gets the Position a distance and rotation direction from this one.
+	 * 
 	 * @param distance
 	 * @param direction
 	 * @return New position
@@ -111,7 +115,8 @@ public class LocalPosition implements Serializable {
 	
 
 	/**
-	 * Get this relative position as an absolute position relative to a basepoint.
+	 * Gets this relative position as an absolute position relative to a basepoint.
+	 * 
 	 * @param bsaepoint Position as the base
 	 * @return
 	 */
@@ -121,6 +126,7 @@ public class LocalPosition implements Serializable {
 	
 	/**
 	 * Is another position close to this one?
+	 * 
 	 * @param other
 	 * @return
 	 */
@@ -129,7 +135,8 @@ public class LocalPosition implements Serializable {
 	}
 
 	/**
-	 * Is this position within the boundaries of an X & Y
+	 * Is this position within the boundaries of an X & Y ?
+	 * 
 	 * @param maxX
 	 * @param maxY
 	 * @return
@@ -167,7 +174,8 @@ public class LocalPosition implements Serializable {
 	}
 
 	/**
-	 * Get the position as a shortened string.
+	 * Gets the position as a shortened string.
+	 * 
 	 * @return
 	 */
 	public String getShortFormat() {
@@ -180,7 +188,8 @@ public class LocalPosition implements Serializable {
 	}
 
 	/**
-	 * Bridging method for transition
+	 * Bridging method for transition.
+	 * 
 	 * @deprecated
 	 * @return
 	 */

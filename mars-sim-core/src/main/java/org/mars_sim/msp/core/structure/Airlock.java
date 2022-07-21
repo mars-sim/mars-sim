@@ -73,7 +73,25 @@ public abstract class Airlock implements Serializable {
 	 * Available Airlock States
 	 */
 	public enum AirlockState {
-		OFF, PRESSURIZED, DEPRESSURIZING, DEPRESSURIZED, PRESSURIZING
+		OFF 			("Off"),
+		PRESSURIZED 	("Pressurized"), 
+		DEPRESSURIZING 	("Depressurizing"),
+		DEPRESSURIZED 	("Depressurized"),
+		PRESSURIZING 	("Pressurizing");
+		
+		private String name;
+
+		private AirlockState(String name) {
+			this.name = name;
+		}
+
+		public String getName() {
+			return this.name;
+		}
+		
+		public String toString() {
+			return this.name;
+		}
 	}
 
 	public AirlockState airlockState;
@@ -439,37 +457,37 @@ public abstract class Airlock implements Serializable {
 		return AirlockState.DEPRESSURIZING == airlockState;
 	}
 
-	/**
-	 * Sets to the pressurizing state.
-	 *
-	 * @return
-	 */
-	public boolean setPressurizing() {
-		if (AirlockState.DEPRESSURIZED == airlockState) {
-			setState(AirlockState.PRESSURIZING);
-			innerDoorLocked = true;
-			outerDoorLocked = true;
-			return true;
-		}
+//	/**
+//	 * Sets to the pressurizing state.
+//	 *
+//	 * @return
+//	 */
+//	public boolean setPressurizing() {
+//		if (AirlockState.DEPRESSURIZED == airlockState) {
+//			setState(AirlockState.PRESSURIZING);
+//			innerDoorLocked = true;
+//			outerDoorLocked = true;
+//			return true;
+//		}
+//
+//		return false;
+//	}
 
-		return false;
-	}
-
-	/**
-	 * Sets to the depressurizing state.
-	 *
-	 * @return
-	 */
-	public boolean setDepressurizing() {
-		if (AirlockState.PRESSURIZED == airlockState) {
-			setState(AirlockState.DEPRESSURIZING);
-			innerDoorLocked = true;
-			outerDoorLocked = true;
-			return true;
-		}
-
-		return false;
-	}
+//	/**
+//	 * Sets to the depressurizing state.
+//	 *
+//	 * @return
+//	 */
+//	public boolean setDepressurizing() {
+//		if (AirlockState.PRESSURIZED == airlockState) {	
+//			setState(AirlockState.DEPRESSURIZING);
+//			innerDoorLocked = true;
+//			outerDoorLocked = true;
+//			return true;
+//		}
+//
+//		return false;
+//	}
 
 	/**
 	 * Checks if the airlock has been depressurized.
@@ -489,85 +507,13 @@ public abstract class Airlock implements Serializable {
 		return AirlockState.PRESSURIZED == airlockState;
 	}
 
-
-	/**
-	 * Goes to the next steady state.
-	 *
-	 * @return true if the switch is successful
-	 */
-	public boolean goToNextSteadyState() {
-		if (AirlockState.PRESSURIZING == airlockState) {
-			setState(AirlockState.PRESSURIZED);
-			activated = false;
-			transitioning = false;
-			innerDoorLocked = false;
-			outerDoorLocked = true;
-			return true;
-		}
-
-		else if (AirlockState.PRESSURIZED == airlockState) {
-			setState(AirlockState.DEPRESSURIZING);
-			activated = false;
-			transitioning = false;
-			innerDoorLocked = true;
-			outerDoorLocked = true;
-			return true;
-		}
-		
-		else if (AirlockState.DEPRESSURIZING == airlockState) {
-			setState(AirlockState.DEPRESSURIZED);
-			activated = false;
-			transitioning = false;
-			innerDoorLocked = true;
-			outerDoorLocked = false;
-			return true;
-		}
-
-		else if (AirlockState.DEPRESSURIZED == airlockState) {
-			setState(AirlockState.PRESSURIZING);
-			activated = false;
-			transitioning = false;
-			innerDoorLocked = true;
-			outerDoorLocked = true;
-			return true;
-		}
-		
-		return false;
-	}
-
-	/**
-	 * Adds airlock cycle time.
-	 *
-	 * @param time cycle time (millisols)
-	 * @return The the time consumed
-	 */
-	public double addTime(double time) {
-		double consumed = 0D;
-
-		if (activated) {
-			// Cannot consume more than is needed
-			consumed = Math.min(remainingCycleTime, time);
-
-			remainingCycleTime -= consumed;
-			// if the air cycling has been completed
-			if (remainingCycleTime <= 0D) {
-				// Reset remainingCycleTime back to max
-				remainingCycleTime = CYCLE_TIME;
-				// Go to the next steady state
-				goToNextSteadyState();
-			}
-		}
-
-		return consumed;
-	}
-
 	/**
 	 * Activates the airlock.
 	 * 
 	 * @param value
 	 */
 	public void setActivated(boolean value) {
-		if (!value) {
+		if (value) {
 			// Reset the cycle count down timer back to the default
 			remainingCycleTime = CYCLE_TIME;
 		}
@@ -941,10 +887,13 @@ public abstract class Airlock implements Serializable {
 		// If the airlock already has an existing operator,
 		else {
 			// Check to see if he's still inside or has left the airlock
-			if (!isInAnyZone(operatorID)) {
+			if (!isInAnyZones(operatorID)) {
 				// Remove this operator
 				operatorID = Integer.valueOf(-1);
-				
+				// Choose a pool of candidates from a particular zone
+				electAnOperator(getOperatorPool());
+			}
+			else {
 				int rand = RandomUtil.getRandomInt(1);
 				// Note: Provide some randomness in case the existing operator is stuck
 				// And require someone elsewhere as operator to help out.
@@ -969,6 +918,7 @@ public abstract class Airlock implements Serializable {
 			double time = pulse.getElapsed();
 			
 			if (transitioning) {
+				// Starts the air exchange and state transition
 				addTime(time);
 			}
 
@@ -981,6 +931,78 @@ public abstract class Airlock implements Serializable {
 		}
 	}
 
+	/**
+	 * Adds airlock cycle time.
+	 *
+	 * @param time cycle time (millisols)
+	 * @return The the time consumed
+	 */
+	public void addTime(double time) {
+		
+		if (AirlockState.PRESSURIZED == airlockState
+				|| AirlockState.DEPRESSURIZING == airlockState) {
+			setState(AirlockState.DEPRESSURIZING);
+			
+			innerDoorLocked = true;
+			outerDoorLocked = true;
+			
+			cycleAir(time);
+		}
+		
+		else if (AirlockState.DEPRESSURIZED == airlockState
+				|| AirlockState.PRESSURIZING == airlockState) {
+			setState(AirlockState.PRESSURIZING);
+			
+			innerDoorLocked = true;
+			outerDoorLocked = true;
+			
+			cycleAir(time);
+		}
+	}
+	
+	
+	/**
+	 * Cycles the air and consumes the time
+	 * 
+	 * @param time
+	 */
+	private void cycleAir(double time) {
+		// Ensure not to consume more than is needed
+		double consumed = Math.min(remainingCycleTime, time);
+
+		remainingCycleTime -= consumed;
+		// if the air cycling has been completed
+		if (remainingCycleTime <= 0D) {
+			// Reset remainingCycleTime back to max
+			remainingCycleTime = CYCLE_TIME;
+			// Go to the next steady state
+			goToNextSteadyState();			
+		}
+	}
+	
+	/**
+	 * Goes to the next steady state.
+	 *
+	 * @return true if the switch is successful
+	 */
+	public void goToNextSteadyState() {
+		
+		if (AirlockState.PRESSURIZING == airlockState) {
+			setState(AirlockState.PRESSURIZED);
+			innerDoorLocked = false;
+			outerDoorLocked = true;
+		}
+		
+		else if (AirlockState.DEPRESSURIZING == airlockState) {
+			setState(AirlockState.DEPRESSURIZED);
+			innerDoorLocked = true;
+			outerDoorLocked = false;
+		}
+		
+		activated = false;
+		transitioning = false;
+	}
+			
 	/**
 	 * Removes the record of the deceased person from the map and sets.
 	 *
@@ -1105,7 +1127,7 @@ public abstract class Airlock implements Serializable {
 	 * @param id
 	 * @return
 	 */
-	public boolean isInAnyZone(int id) {
+	public boolean isInAnyZones(int id) {
 		return (occupantIDs.contains(id)
 			|| awaitingInnerDoor.contains(id)
 			|| awaitingOuterDoor.contains(id));
