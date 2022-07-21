@@ -190,28 +190,49 @@ extends Airlock {
 	}
 
 	@Override
-	public LocalPosition getAvailableInteriorPosition(boolean value) {
+	public LocalPosition getAvailableInteriorPosition(boolean pos) {
+		// Note: the param pos is not needed
 		return getAvailableInteriorPosition();
 	}
 
 	@Override
-	public LocalPosition getAvailableExteriorPosition(boolean value) {
+	public LocalPosition getAvailableExteriorPosition(boolean pos) {
+		// Note: the param pos is not needed
 		return getAvailableExteriorPosition();
 	}
 
 	@Override
 	public LocalPosition getAvailableInteriorPosition() {
-		return airlockInteriorPos;
+		for (Entry<LocalPosition, Integer> i : airlockInteriorPosMap.entrySet()) {
+			if (i.getValue() == -1) {
+				return i.getKey();
+			}
+		}
+		
+		return null;
 	}
 
 	@Override
 	public LocalPosition getAvailableExteriorPosition() {
-		return airlockExteriorPos;
+		for (Entry<LocalPosition, Integer> i : airlockExteriorPosMap.entrySet()) {
+			if (i.getValue() == -1) {
+				return i.getKey();
+			}
+		}
+		
+		return null;
 	}
 
 	@Override
 	public LocalPosition getAvailableAirlockPosition() {
-		return airlockInsidePos;
+    	for (Entry<LocalPosition, Integer> i : airlockInsidePosMap.entrySet()) {
+			if (i.getValue() == -1) {
+				return i.getKey();
+			}
+		}
+    	
+    	return null;
+//		return airlockInsidePos;
 	}
 
 	/**

@@ -474,6 +474,41 @@ public class RobotTableModel extends UnitTableModel {
 
 			Integer column = EVENT_COLUMN_MAPPING.get(eventType);
 
+//			if (eventType == UnitEventType.NAME_EVENT) {
+//				
+//			}
+//			
+//			else if (eventType == UnitEventType.LOCATION_EVENT) {
+//				
+//			}
+//			else if (eventType == UnitEventType.ROBOT_POWER_EVENT) {
+//				
+//			}
+//			else if (eventType == UnitEventType.PERFORMANCE_EVENT) {
+//				
+//			}
+//			else if (eventType == UnitEventType.JOB_EVENT) {
+//				
+//			}
+//			else if (eventType == UnitEventType.TASK_EVENT) {
+//				
+//			}
+//			else if (eventType == UnitEventType.TASK_NAME_EVENT) {
+//				
+//			}
+//			else if (eventType == UnitEventType.TASK_ENDED_EVENT) {
+//				
+//			}
+//			else if (eventType == UnitEventType.TASK_SUBTASK_EVENT) {
+//				
+//			}
+//			else if (eventType == UnitEventType.MISSION_EVENT) {
+//				
+//			}
+//			else if (eventType == UnitEventType.DEATH_EVENT) {
+//				
+//			}
+			
 			if (column != null && column > -1) {
 				if (event.getSource() instanceof Unit) {
 					Unit source = (Unit) event.getSource();

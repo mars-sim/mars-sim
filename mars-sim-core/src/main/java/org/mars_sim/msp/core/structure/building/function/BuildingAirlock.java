@@ -231,7 +231,7 @@ public class BuildingAirlock extends Airlock {
     @Override
     public LocalPosition getAvailableInteriorPosition(boolean inside) {
     	if (inside) {
-    		for(Entry<LocalPosition, Integer> i : insideInteriorDoorMap.entrySet()) {
+    		for (Entry<LocalPosition, Integer> i : insideInteriorDoorMap.entrySet()) {
     			if (i.getValue() == -1) {
     				return i.getKey();
     			}
@@ -239,7 +239,7 @@ public class BuildingAirlock extends Airlock {
     	}
 
     	else {
-    		for( Entry<LocalPosition, Integer> i : outsideInteriorDoorMap.entrySet()) {
+    		for (Entry<LocalPosition, Integer> i : outsideInteriorDoorMap.entrySet()) {
     			if (i.getValue() == -1) {
     				return i.getKey();
     			}
@@ -681,7 +681,14 @@ public class BuildingAirlock extends Airlock {
     
     @Override
     public LocalPosition getAvailableAirlockPosition() {
-        return airlockInsidePos;
+    	for (Entry<LocalPosition, Integer> i : activitySpotMap.entrySet()) {
+			if (i.getValue() == -1) {
+				return i.getKey();
+			}
+		}
+    	
+    	return null;
+//        return airlockInsidePos;
     }
 
 	public boolean removePosition(int zone, LocalPosition p, int id) {
