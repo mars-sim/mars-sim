@@ -6,6 +6,8 @@
  */
 package org.mars_sim.msp.core.goods;
 
+import java.util.Map;
+
 import org.mars_sim.msp.core.structure.Settlement;
 
 /**
@@ -22,5 +24,11 @@ public interface CommerceMission {
      * Settlement trading with
      */
     Settlement getTradingSettlement();
+
+    Map<Good, Integer> getDesiredBuyLoad();
+
+    Map<Good, Integer> getBuyLoad();
+
+    Map<Good, Integer> getSellLoad();
 
 }

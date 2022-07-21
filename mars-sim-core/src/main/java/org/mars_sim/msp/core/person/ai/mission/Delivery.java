@@ -16,6 +16,7 @@ import java.util.logging.Level;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.goods.CommerceMission;
 import org.mars_sim.msp.core.goods.CommerceUtil;
 import org.mars_sim.msp.core.goods.CreditManager;
 import org.mars_sim.msp.core.goods.Good;
@@ -35,7 +36,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * A mission for delivery between two settlements. TODO externalize strings
  */
-public class Delivery extends DroneMission {
+public class Delivery extends DroneMission implements CommerceMission {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -560,7 +561,7 @@ public class Delivery extends DroneMission {
 	 */
 	public Map<Good, Integer> getSellLoad() {
 		if (sellLoad != null) {
-			return new HashMap<>(sellLoad);
+			return Collections.unmodifiableMap(sellLoad);
 		} else {
 			return Collections.emptyMap();
 		}
@@ -573,7 +574,7 @@ public class Delivery extends DroneMission {
 	 */
 	public Map<Good, Integer> getBuyLoad() {
 		if (buyLoad != null) {
-			return new HashMap<>(buyLoad);
+			return Collections.unmodifiableMap(buyLoad);
 		} else {
 			return Collections.emptyMap();
 		}
@@ -595,7 +596,7 @@ public class Delivery extends DroneMission {
 	 */
 	public Map<Good, Integer> getDesiredBuyLoad() {
 		if (desiredBuyLoad != null) {
-			return new HashMap<>(desiredBuyLoad);
+			return Collections.unmodifiableMap(desiredBuyLoad);
 		} else {
 			return Collections.emptyMap();
 		}

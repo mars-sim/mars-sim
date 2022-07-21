@@ -9,14 +9,9 @@ package org.mars_sim.msp.ui.swing.tool.mission;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import javax.swing.table.AbstractTableModel;
-
+import org.mars_sim.msp.core.goods.CommerceMission;
 import org.mars_sim.msp.core.goods.Good;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
@@ -70,8 +65,8 @@ public class TradeMissionCustomInfoPanel extends MissionCustomInfoPanel {
 		// Create the selling goods table and model.
 		sellingGoodsTableModel = new GoodsTableModel() {
 			@Override
-			protected Map<Good, Integer> getLoad() {
-				return mission.getSellLoad();
+			protected Map<Good, Integer> getLoad(CommerceMission commerce) {
+				return commerce.getSellLoad();
 			}
 		};
 		WebTable sellingGoodsTable = new WebTable(sellingGoodsTableModel);
@@ -101,8 +96,8 @@ public class TradeMissionCustomInfoPanel extends MissionCustomInfoPanel {
 		// Create the desired goods table and model.
 		desiredGoodsTableModel = new GoodsTableModel() {
 			@Override
-			protected Map<Good, Integer> getLoad() {
-				return mission.getDesiredBuyLoad();
+			protected Map<Good, Integer> getLoad(CommerceMission commerce) {
+				return commerce.getDesiredBuyLoad();
 			}
 		};
 		WebTable desiredGoodsTable = new WebTable(desiredGoodsTableModel);
@@ -132,8 +127,8 @@ public class TradeMissionCustomInfoPanel extends MissionCustomInfoPanel {
 		// Create the bought goods table and model.
 		boughtGoodsTableModel = new GoodsTableModel() {
 			@Override
-			protected Map<Good, Integer> getLoad() {
-				return mission.getBuyLoad();
+			protected Map<Good, Integer> getLoad(CommerceMission commerce) {
+				return commerce.getBuyLoad();
 			}
 		};
 		WebTable boughtGoodsTable = new WebTable(boughtGoodsTableModel);
@@ -143,18 +138,18 @@ public class TradeMissionCustomInfoPanel extends MissionCustomInfoPanel {
 	@Override
 	public void updateMissionEvent(MissionEvent e) {
 		if (e.getType() == MissionEventType.BUY_LOAD_EVENT) {
-			boughtGoodsTableModel.updateTable();
+			boughtGoodsTableModel.updateTable(mission);
 			updateBoughtGoodsProfit();
 		}
 	}
 
 	@Override
-	public void updateMission(Mission mission) {
-		if (mission instanceof Trade) {
-			this.mission = (Trade) mission;
-			sellingGoodsTableModel.updateTable();
-			desiredGoodsTableModel.updateTable();
-			boughtGoodsTableModel.updateTable();
+	public void updateMission(Mission newMission) {
+		if (newMission instanceof Trade) {
+			this.mission = (Trade) newMission;
+			sellingGoodsTableModel.updateTable(mission);
+			desiredGoodsTableModel.updateTable(mission);
+			boughtGoodsTableModel.updateTable(mission);
 			updateDesiredGoodsProfit();
 			updateBoughtGoodsProfit();
 		}
@@ -174,97 +169,5 @@ public class TradeMissionCustomInfoPanel extends MissionCustomInfoPanel {
 	private void updateBoughtGoodsProfit() {
 		int profit = (int) mission.getProfit();
 		boughtGoodsProfitLabel.setText("Profit: " + profit + " VP");
-	}
-
-	/**
-	 * Abstract model for a goods table.
-	 */
-	private abstract static class GoodsTableModel
-		extends AbstractTableModel {
-
-		/** default serial id. */
-		private static final long serialVersionUID = 1L;
-
-		// Data members.
-		private Map<Good, Integer> goodsMap;
-		private List<Good> goodsList;
-
-		/**
-		 * Constructor.
-		 */
-		private GoodsTableModel() {
-			// Use AbstractTableModel constructor.
-			super();
-
-			// Initialize goods map and list.
-			goodsList = new ArrayList<>();
-			goodsMap = new HashMap<>();
-		}
-
-		/**
-		 * Returns the number of rows in the model.
-		 * @return number of rows.
-		 */
-		public int getRowCount() {
-			return goodsList.size();
-		}
-
-		/**
-		 * Returns the number of columns in the model.
-		 * @return number of columns.
-		 */
-		public int getColumnCount() {
-			return 2;
-		}
-
-		/**
-		 * Returns the name of the column at columnIndex.
-		 * @param columnIndex the column index.
-		 * @return column name.
-		 */
-		public String getColumnName(int columnIndex) {
-			if (columnIndex == 0) return "Good";
-			else return "Amount";
-		}
-
-		/**
-		 * Returns the value for the cell at columnIndex and rowIndex.
-		 * @param row the row whose value is to be queried.
-		 * @param column the column whose value is to be queried.
-		 * @return the value Object at the specified cell.
-		 */
-		public Object getValueAt(int row, int column) {
-			Object result = "unknown";
-
-			if (row < goodsList.size()) {
-				Good good = goodsList.get(row); 
-				if (column == 0) result = good.getName();
-				else result = goodsMap.get(good);
-			}
-
-			return result;
-		}
-
-		/**
-		 * Get the load data
-		 */
-		protected abstract Map<Good,Integer> getLoad();
-
-		/**
-		 * Updates the table data.
-		 */
-		protected void updateTable() {
-			Map<Good,Integer> load = getLoad();
-			if (load != null) {
-				goodsMap = load;
-				goodsList = new ArrayList<>(goodsMap.keySet());
-				Collections.sort(goodsList);
-			}
-			else {
-				goodsMap.clear();
-				goodsList.clear();
-			}
-			fireTableDataChanged();
-		}
 	}
 }

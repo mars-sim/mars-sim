@@ -92,6 +92,7 @@ public final class CommerceUtil {
 	public static Deal getBestDeal(Settlement startingSettlement, MissionType commerceType, Vehicle delivery) {
 		double bestProfit = 0D;
 		Settlement bestSettlement = null;
+		double possibleRange = delivery.getRange(commerceType) * .8D;
 
 		for (Settlement tradingSettlement : unitManager.getSettlements()) {
 			if (tradingSettlement != startingSettlement && tradingSettlement.isMissionEnable(commerceType)) {
@@ -99,7 +100,7 @@ public final class CommerceUtil {
 				boolean hasCurrentCommerce = hasCurrentCommerceMission(startingSettlement, tradingSettlement);
 
 				double settlementRange = Coordinates.computeDistance(tradingSettlement.getCoordinates(), startingSettlement.getCoordinates());
-				boolean withinRange = (settlementRange <= (delivery.getRange(commerceType) * .8D));
+				boolean withinRange = (settlementRange <= possibleRange);
 
 				if (!hasCurrentCommerce && withinRange) {
 					double profit = getEstimatedProfit(startingSettlement, delivery, tradingSettlement);
