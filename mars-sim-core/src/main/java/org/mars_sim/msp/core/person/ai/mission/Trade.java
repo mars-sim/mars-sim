@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core.person.ai.mission;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -33,7 +34,6 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -102,7 +102,7 @@ public class Trade extends RoverMission implements CommerceMission {
 
 		if (!isDone() && s != null) {
 			// Get trading settlement
-			tradingSettlement = CommerceUtil.getBestSettlement(s, MissionType.TRADE, getVehicle());
+			tradingSettlement = s.getGoodsManager().getBestDeal(MissionType.TRADE, getVehicle()).getBuyer();
 			if (tradingSettlement == null) {
 				endMission(MissionStatus.NO_TRADING_SETTLEMENT);
 				return;
@@ -370,7 +370,7 @@ public class Trade extends RoverMission implements CommerceMission {
 					new NavPoint(tradingSettlement),
 					new NavPoint(getStartingSettlement()));
 
-			CommerceUtil.clearBestSettlement(getStartingSettlement(), MissionType.TRADE);
+			getStartingSettlement().getGoodsManager().clearDeal(MissionType.TRADE);
 
 			// Start the loading
 			prepareLoadingPlan(tradingSettlement);
@@ -790,7 +790,7 @@ public class Trade extends RoverMission implements CommerceMission {
 	 */
 	public Map<Good, Integer> getSellLoad() {
 		if (sellLoad != null) {
-			return new HashMap<Good, Integer>(sellLoad);
+			return Collections.unmodifiableMap(sellLoad);
 		} else {
 			return null;
 		}
@@ -803,7 +803,7 @@ public class Trade extends RoverMission implements CommerceMission {
 	 */
 	public Map<Good, Integer> getBuyLoad() {
 		if (buyLoad != null) {
-			return new HashMap<Good, Integer>(buyLoad);
+			return Collections.unmodifiableMap(buyLoad);
 		} else {
 			return null;
 		}
@@ -825,7 +825,7 @@ public class Trade extends RoverMission implements CommerceMission {
 	 */
 	public Map<Good, Integer> getDesiredBuyLoad() {
 		if (desiredBuyLoad != null) {
-			return new HashMap<Good, Integer>(desiredBuyLoad);
+			return Collections.unmodifiableMap(desiredBuyLoad);
 		} else {
 			return null;
 		}
@@ -898,20 +898,6 @@ public class Trade extends RoverMission implements CommerceMission {
 			desiredBuyLoad.clear();
 		desiredBuyLoad = null;
 		negotiationTask = null;
-	}
-
-	/**
-	 * Inner class for storing trade profit info.
-	 */
-	public static class TradeProfitInfo {
-
-		public double profit;
-		public MarsClock time;
-
-		public TradeProfitInfo(double profit, MarsClock time) {
-			this.profit = profit;
-			this.time = time;
-		}
 	}
 
 	/**

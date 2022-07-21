@@ -52,8 +52,6 @@ public final class CommerceUtil {
 	 */
 	public static final double SELL_CREDIT_LIMIT = 10_000_000D;
 
-    private static final int FREQUENCY = 1000;
-
 	/** Estimated mission parts mass. */
 	private static final double MISSION_BASE_MASS = 2_000D;
 
@@ -75,8 +73,6 @@ public final class CommerceUtil {
 	private static MissionManager missionManager = sim.getMissionManager();
 	private static UnitManager unitManager = sim.getUnitManager();
 	private static MarsClock marsClock = sim.getMasterClock().getMarsClock();
-
-	private static Map<CommerceKey, Deal> deals = new HashMap<>();
 			
 	/**
 	 * Private constructor for utility class.
@@ -93,7 +89,7 @@ public final class CommerceUtil {
 	 * @return the deal(value points) for trade.
 	 * @throws Exception if error while getting best trade profit.
 	 */
-	private static Deal getBestDeal(Settlement startingSettlement, MissionType commerceType, Vehicle delivery) {
+	public static Deal getBestDeal(Settlement startingSettlement, MissionType commerceType, Vehicle delivery) {
 		double bestProfit = 0D;
 		Settlement bestSettlement = null;
 
@@ -800,99 +796,5 @@ public final class CommerceUtil {
 	private static double getResourceAmount(AmountResource resource) {
 		EquipmentType containerType = ContainerUtil.getContainerTypeNeeded(resource.getPhase());
 		return ContainerUtil.getContainerCapacity(containerType);
-	}
-
-	/**
-	 * Get the best settlement to do a Commerce with
-	 * @param seller Selling settlement
-	 * @param commerce Type of commerce mission
-	 */
-	public static Settlement getBestSettlement(Settlement seller, MissionType commerce, Vehicle delivery) {
-		return getDeal(seller, commerce, delivery).buyer;
-	}
-
-	/**
-	 * Get the best profit a settlement can achieve via commerce
-	 * @param seller Selling settlement
-	 * @param commerce Type of commerce mission
-	 */
-	public static double getBestProfit(Settlement seller, MissionType commerce, Vehicle delivery) {
-		return getDeal(seller, commerce, delivery).profit;
-	}
-
-	private static Deal getDeal(Settlement seller, MissionType commerce, Vehicle delivery) {
-		CommerceKey key = new CommerceKey(seller, commerce);
-		Deal deal = deals.get(key);
-
-		if ((deal != null) 
-				&& (MarsClock.getTimeDiff(marsClock, deal.created) > FREQUENCY)) {
-			return deal;
-		}
-
-		// Recalculate
-		Deal best = getBestDeal(seller, commerce, delivery);
-		deals.put(key, best);
-
-		return best;
-	}
-
-	public static void clearBestSettlement(Settlement seller, MissionType commerce) {
-		deals.remove(new CommerceKey(seller, commerce));
-	}
-	
-	/**
-	 * Represents a potential deal with another Settlement.
-	 */
-	private static class Deal {
-		Settlement buyer;
-		double profit;
-		MarsClock created;
-
-		Deal(Settlement buyer, double profit, MarsClock created) {
-			this.buyer = buyer;
-			this.profit = profit;
-			this.created = created;
-		}
-	}
-
-	/**
-	 * Composite key class.
-	 */
-	private static class CommerceKey {
-		Settlement seller;
-		MissionType commerceType;
-		
-		public CommerceKey(Settlement seller, MissionType commerceType) {
-			this.seller = seller;
-			this.commerceType = commerceType;
-		}
-
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + ((commerceType == null) ? 0 : commerceType.hashCode());
-			result = prime * result + ((seller == null) ? 0 : seller.hashCode());
-			return result;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			CommerceKey other = (CommerceKey) obj;
-			if (commerceType != other.commerceType)
-				return false;
-			if (seller == null) {
-				if (other.seller != null)
-					return false;
-			} else if (!seller.equals(other.seller))
-				return false;
-			return true;
-		}
 	}
 }

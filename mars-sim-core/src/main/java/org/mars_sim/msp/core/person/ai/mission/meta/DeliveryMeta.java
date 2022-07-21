@@ -10,6 +10,7 @@ import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.goods.CommerceUtil;
+import org.mars_sim.msp.core.goods.GoodsManager;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Delivery;
@@ -111,19 +112,20 @@ public class DeliveryMeta extends AbstractMetaMission {
 			return 0;
 		}
 		
-		logger.info(settlement, 10_000L, drone.getNickName() + " available for delivery mission.");
-		
+		logger.info(drone, 10_000L, "Available for delivery mission.");
+		GoodsManager gManager = settlement.getGoodsManager();
+
 		try {
 			// Only check every couple of Sols, else use cache.
 			// Note: this method is very CPU intensive.
-			deliveryProfit = CommerceUtil.getBestProfit(settlement, MissionType.DELIVERY, drone) * VALUE;
+			deliveryProfit = gManager.getBestDeal(MissionType.DELIVERY, drone).getProfit() * VALUE;
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, "Issues with CommerceUtil: ", e);
 			return 0;
 		}
 
 		// Delivery value modifier.
-		missionProbability = deliveryProfit / DIVISOR * settlement.getGoodsManager().getTradeFactor();
+		missionProbability = deliveryProfit / DIVISOR * gManager.getTradeFactor();
 		if (missionProbability > Delivery.MAX_STARTING_PROBABILITY) {
 			missionProbability = Delivery.MAX_STARTING_PROBABILITY;
 		}

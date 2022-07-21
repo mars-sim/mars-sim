@@ -94,7 +94,7 @@ public class Delivery extends DroneMission {
 
 		if (!isDone() && s != null) {
 			// Get trading settlement
-			tradingSettlement = CommerceUtil.getBestSettlement(s, MissionType.DELIVERY, getVehicle());
+			tradingSettlement = s.getGoodsManager().getBestDeal(MissionType.DELIVERY, getVehicle()).getBuyer();
 			if (tradingSettlement == null) {
 				endMission(MissionStatus.NO_TRADING_SETTLEMENT);
 				return;
@@ -344,7 +344,7 @@ public class Delivery extends DroneMission {
 			resetToReturnTrip(
 					new NavPoint(tradingSettlement),
 					new NavPoint(getStartingSettlement()));
-			CommerceUtil.clearBestSettlement(getStartingSettlement(), MissionType.DELIVERY);
+			getStartingSettlement().getGoodsManager().clearDeal(MissionType.DELIVERY);
 		}
 	}
 
