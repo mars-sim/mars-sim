@@ -812,16 +812,18 @@ public class ExitAirlock extends Task implements Serializable {
 			return time;
 		}
 		
-		boolean canProceed = true;
+		boolean canProceed = false;
 
 		PhysicalCondition pc = person.getPhysicalCondition();
 
 		pc.reduceRemainingPrebreathingTime(time);
 
-		if (pc.isThreeQuarterDonePrebreathing() || pc.isDonePrebreathing()) {
+		if (pc.isAtLeastThreeQuarterDonePrebreathing()) {
 			logger.log((Unit)airlock.getEntity(), person, Level.FINER, 4_000,
 					"Done pre-breathing.");
-
+			
+			canProceed = true;
+			
 			List<Integer> list = new ArrayList<>(airlock.getOccupants());
 			for (int id : list) {
 				Person p = airlock.getPersonByID(id);
@@ -991,9 +993,26 @@ public class ExitAirlock extends Task implements Serializable {
 		}
 
 		if (canExit) {
-
-			// Remove the position at zone 4 before calling endTask()
-			if (airlock.vacate(4, id)) {
+			
+			if (inSettlement) {
+				// Remove the position at zone 4 before calling endTask()
+				if (airlock.vacate(4, id)) {
+					// Add experience
+			 		addExperience(time);
+		
+					logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4_000,
+							"Leaving " + airlock.getEntity().toString() + ".");
+		
+					// This completes EVA egress from the airlock
+					// End ExitAirlock task
+					completeAirlockTask();
+				}
+				else {
+					logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4_000,
+							"Can't vacate zone 4 at" + airlock.getEntity().toString() + ".");
+				}
+			}
+			else {
 				// Add experience
 		 		addExperience(time);
 	

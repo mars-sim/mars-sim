@@ -25,8 +25,6 @@ import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.function.BuildingAirlock;
-import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -121,7 +119,7 @@ public abstract class Airlock implements Serializable {
     private Set<Integer> occupantIDs;
 
 	/** People waiting for the airlock by the inner door. */
-    private Set<Integer> awaitingInnerDoor;
+    protected Set<Integer> awaitingInnerDoor;
 
 	/** People waiting for the airlock by the outer door. */
     private Set<Integer> awaitingOuterDoor;
@@ -457,38 +455,6 @@ public abstract class Airlock implements Serializable {
 		return AirlockState.DEPRESSURIZING == airlockState;
 	}
 
-//	/**
-//	 * Sets to the pressurizing state.
-//	 *
-//	 * @return
-//	 */
-//	public boolean setPressurizing() {
-//		if (AirlockState.DEPRESSURIZED == airlockState) {
-//			setState(AirlockState.PRESSURIZING);
-//			innerDoorLocked = true;
-//			outerDoorLocked = true;
-//			return true;
-//		}
-//
-//		return false;
-//	}
-
-//	/**
-//	 * Sets to the depressurizing state.
-//	 *
-//	 * @return
-//	 */
-//	public boolean setDepressurizing() {
-//		if (AirlockState.PRESSURIZED == airlockState) {	
-//			setState(AirlockState.DEPRESSURIZING);
-//			innerDoorLocked = true;
-//			outerDoorLocked = true;
-//			return true;
-//		}
-//
-//		return false;
-//	}
-
 	/**
 	 * Checks if the airlock has been depressurized.
 	 *
@@ -565,7 +531,7 @@ public abstract class Airlock implements Serializable {
     public abstract int getNumInChamber();
     
 	/**
-	 * Obtains a prioritized pool of candidates from a particular zone.
+	 * Selects a prioritized pool of candidates from a particular zone.
 	 *
 	 * return a pool of candidates
 	 */
@@ -583,18 +549,21 @@ public abstract class Airlock implements Serializable {
 			}
 			
 			// Priority 3 : zone 1 - on the inside of the inner door
-			if (pool.isEmpty()) {
-				pool = getZoneOccupants(1);
+			pool = getZoneOccupants(1);
+			if (!pool.isEmpty()) {
+				return pool;
 			}
 
 			// Priority 4 : zone 4 - on the outside of the outer door, thus at awaitingOuterDoor
-			if (pool.isEmpty() && !awaitingOuterDoor.isEmpty()) {
-				return awaitingOuterDoor;
+			pool = awaitingOuterDoor;
+			if (!pool.isEmpty()) {
+				return pool;
 			}
 
 			// Priority 3 : zone 0 - on the outside of the inner door, thus at awaitingInnerDoor
-			if (pool.isEmpty() && !awaitingInnerDoor.isEmpty()) {
-				return awaitingInnerDoor;
+			pool = awaitingInnerDoor;
+			if (!pool.isEmpty()) {
+				return pool;
 			}
 			
 			return pool;
@@ -845,36 +814,25 @@ public abstract class Airlock implements Serializable {
 	}
 
 	/**
-	 * Checks the occupants'id.
+	 * Checks the occupants'id in zone 1, 2, or 3. Removes id if not there.
 	 */
 	public void checkOccupantIDs() {
-		// If this person is not physically in this airlock, remove his id
+
 		Iterator<Integer> i = occupantIDs.iterator();
 		while (i.hasNext()) {
 			int id = i.next();
-			
-			// Being in zone 0 or 4 is not considered an airlock occupant.
-			if (getZoneOccupants(0).contains(id)
-				|| getZoneOccupants(4).contains(id)) {
+
+			if (getZoneOccupants(1).contains(id)
+				|| getZoneOccupants(2).contains(id)
+				|| getZoneOccupants(3).contains(id)) {
+				// If this person is not physically in zone 1, 2, or 3, remove his id
+				continue;
+			}
+			else
 				occupantIDs.remove(id);
-			}
-			else {
-				Building b = unitManager.getPersonByID(id).getBuildingLocation();
-				if (b != null) {
-					if (!b.hasFunction(FunctionType.EVA)) {
-						occupantIDs.remove(id);
-					}
-					else if (b.getEVA().getAirlock() != this) {
-						occupantIDs.remove(id);
-					}
-				}
-				else
-					// the occupant is not in the building/settlement
-					occupantIDs.remove(id);
-			}
 		}
 	}
-	
+
 	/**
 	 * Checks the airlock operator.
 	 */
@@ -1097,21 +1055,13 @@ public abstract class Airlock implements Serializable {
 	 */
 	public abstract LocalPosition getAvailableAirlockPosition();
 
-    public boolean occupy(int zone, LocalPosition p, Integer id) {
-    	return ((BuildingAirlock)this).occupy(zone, p, id);
-    }
+    public abstract boolean occupy(int zone, LocalPosition p, Integer id);
 
-	public boolean vacate(int zone, Integer id) {
-		return ((BuildingAirlock)this).vacate(zone, id);
-	}
+	public abstract boolean vacate(int zone, Integer id);
 
-	public boolean isInZone(Person p, int zone) {
-		return ((BuildingAirlock)this).isInZone(p, zone);
-	}
+	public abstract boolean isInZone(Person p, int zone);
 
-	public void loadEVAActivitySpots() {
-		((BuildingAirlock)this).loadEVAActivitySpots();
-	}
+	public abstract void loadEVAActivitySpots();
 
 	/**
 	 * Gets a collection of occupants' ids.

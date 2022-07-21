@@ -91,6 +91,7 @@ public class BuildingAirlock extends Airlock {
 
     /**
      * Builds a map for the door positions. Creates four positioned around the center offset by the x and y values.
+     * 
      * @param center Position of the center of the positions.
      * @param building Building hosting the door
      * @param x1 First x value
@@ -273,7 +274,15 @@ public class BuildingAirlock extends Airlock {
         return null;
     }
 
-//    @Override
+
+    /**
+     * Occupies a position in a zone.
+     * 
+     * @param zone
+     * @param p
+     * @param id
+     */
+    @Override
     public boolean occupy(int zone, LocalPosition p, Integer id) {
     	if (zone == 0) {
     		// Do not allow the same person who has already occupied a position to take another position
@@ -352,6 +361,7 @@ public class BuildingAirlock extends Airlock {
      * @param id the person's id
 	 * @return true if the person has been successfully vacated
      */
+	@Override
     public boolean vacate(int zone, Integer id) {
     	if (zone == 0) {
     		LocalPosition oldPos = getOldPos(outsideInteriorDoorMap, id);
@@ -425,6 +435,7 @@ public class BuildingAirlock extends Airlock {
      * @param zone the zone of interest
 	 * @return a list of occupants inside the chamber
      */
+	@Override
 	public boolean isInZone(Person p, int zone) {
     	if (zone == 0) {
     		LocalPosition p0 = getOldPos(outsideInteriorDoorMap, p.getIdentifier());
@@ -486,9 +497,9 @@ public class BuildingAirlock extends Airlock {
 	}
 
 	/**
-	 * Gets the total number of people occupying the chamber
+	 * Gets the total number of people occupying the chamber in zone 2
 	 *
-	 * @return a list of occupants inside the chamber
+	 * @return a list of occupants inside zone 2
 	 */
 	public int getInsideChamberNum() {
 		int result = 0;
@@ -501,8 +512,8 @@ public class BuildingAirlock extends Airlock {
 	}
 
 	/**
-	 * Gets the total number of people occupying the area between the inner and outer door (namely, zone 1, 2, and 3)
-	 * Excluding zone 0 and zone 4
+	 * Gets the total number of people occupying zone 1, 2, and 3,
+	 * excluding zone 0 and 4.
 	 * 
 	 * @return number of occupants
 	 */
@@ -525,7 +536,7 @@ public class BuildingAirlock extends Airlock {
 	}
 
 	/**
-	 * Gets a set of ids of the occupants inside
+	 * Gets a set of ids of the occupants inside zone 1, 2, 3
 	 *
 	 * @return a set of ids
 	 */
@@ -609,7 +620,6 @@ public class BuildingAirlock extends Airlock {
 		Collection<Integer> occupants = null;
     	if (zone == 0) {
     		occupants = outsideInteriorDoorMap.values();
-
 		}
 
     	else if (zone == 1) {
@@ -645,6 +655,7 @@ public class BuildingAirlock extends Airlock {
 	/**
 	 * Loads up and converts the native EVA activity spots into the settlement coordinates
 	 */
+	@Override
 	public void loadEVAActivitySpots() {
 		if (EVASpots == null) {
 			EVASpots = new ArrayList<>();
