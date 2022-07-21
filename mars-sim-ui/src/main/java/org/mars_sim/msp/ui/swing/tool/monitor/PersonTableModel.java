@@ -176,7 +176,7 @@ public class PersonTableModel extends UnitTableModel {
 
 		sourceType = ValidSourceType.ALL_PEOPLE;
 
-		if (GameManager.getGameMode() == GameMode.COMMAND)
+		if (mode == GameMode.COMMAND)
 			setSource(unitManager.getCommanderSettlement().getAllAssociatedPeople());
 		else
 			setSource(unitManager.getPeople());
@@ -217,13 +217,12 @@ public class PersonTableModel extends UnitTableModel {
 	 */
 	public PersonTableModel(Settlement settlement, boolean allAssociated) throws Exception {
 		super ((allAssociated ? Msg.getString("PersonTableModel.nameAllCitizens") //$NON-NLS-1$
-//						settlement.getName())
-							 : Msg.getString("PersonTableModel.nameIndoor", //$NON-NLS-1$
-						settlement.getName())
-							 ),
+				 : Msg.getString("PersonTableModel.nameIndoor", //$NON-NLS-1$
+					settlement.getName())
+				),
 				(allAssociated ? "PersonTableModel.countingCitizens" : //$NON-NLS-1$
-								 "PersonTableModel.countingIndoor"), //$NON-NLS-1$
-									columnNames, columnTypes);
+								 "PersonTableModel.countingIndoor" //$NON-NLS-1$
+				), columnNames, columnTypes);
 
 		this.settlement = settlement;
 		if (allAssociated) {
@@ -332,7 +331,7 @@ public class PersonTableModel extends UnitTableModel {
 	}
 
 	/**
-	 * Catch unit update event.
+	 * Catches unit update event.
 	 *
 	 * @param event the unit event.
 	 */
@@ -341,7 +340,7 @@ public class PersonTableModel extends UnitTableModel {
 	}
 
 	/**
-	 * Return the value of a Cell
+	 * Returns the value of a Cell.
 	 *
 	 * @param rowIndex    Row index of the cell.
 	 * @param columnIndex Column index of the cell.
@@ -349,7 +348,7 @@ public class PersonTableModel extends UnitTableModel {
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		Object result = null;
 
-		if (rowIndex < getUnitNumber() && getUnit(rowIndex) instanceof Person) {
+		if (rowIndex < getUnitNumber()) {
 			Person person = (Person) getUnit(rowIndex);
 
 			switch (columnIndex) {
@@ -388,22 +387,6 @@ public class PersonTableModel extends UnitTableModel {
 				result = person.getName();
 			}
 				break;
-
-//			case GENDER: {
-//				String genderStr = person.getGender().getName();
-//				String letter;
-//				if (genderStr.equals(MALE))
-//					letter = M;
-//				else
-//					letter = F;
-//				result = letter;
-//			}
-//				break;
-//
-//			case PERSONALITY: {
-//				result = person.getMind().getMBTI().getTypeString();
-//			}
-//				break;
 
 			case ENERGY: {
 				PhysicalCondition pc = person.getPhysicalCondition();
@@ -746,7 +729,6 @@ public class PersonTableModel extends UnitTableModel {
 						performanceItemMap.put(EMOTION, emotionString);
 					}
 				}
-
 			}
 
 			if (column != null && column > -1) {
@@ -769,12 +751,16 @@ public class PersonTableModel extends UnitTableModel {
 			UnitEventType eventType = event.getType();
 			if (eventType == UnitEventType.INVENTORY_STORING_UNIT_EVENT) {
 				Unit unit = (Unit)event.getTarget();
-				if (unit.getUnitType() == UnitType.PERSON)
-					addUnit(unit);
+				if (unit.getUnitType() == UnitType.PERSON) {
+					if (!containsUnit(unit))
+						addUnit(unit);
+				}
 			} else if (eventType == UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT) {
 				Unit unit = (Unit)event.getTarget();
-				if (unit.getUnitType() == UnitType.PERSON)
-					removeUnit(unit);
+				if (unit.getUnitType() == UnitType.PERSON) {
+					if (containsUnit(unit))
+						removeUnit(unit);
+				}
 			}
 		}
 	}
@@ -790,10 +776,17 @@ public class PersonTableModel extends UnitTableModel {
 		 */
 		public void missionUpdate(MissionEvent event) {
 			MissionEventType eventType = event.getType();
-			if (eventType == MissionEventType.ADD_MEMBER_EVENT)
-				addUnit((Unit) event.getTarget());
-			else if (eventType == MissionEventType.REMOVE_MEMBER_EVENT)
-				removeUnit((Unit) event.getTarget());
+			Unit unit = (Unit)event.getTarget();
+			if (unit != null && unit.getUnitType() == UnitType.PERSON) {
+				if (eventType == MissionEventType.ADD_MEMBER_EVENT) {
+					if (!containsUnit(unit))
+						addUnit(unit);
+				}
+				else if (eventType == MissionEventType.REMOVE_MEMBER_EVENT) {
+					if (containsUnit(unit))
+						removeUnit(unit);
+				}
+			}
 		}
 	}
 
@@ -809,7 +802,7 @@ public class PersonTableModel extends UnitTableModel {
 		public void unitManagerUpdate(UnitManagerEvent event) {
 			Unit unit = event.getUnit();
 			UnitManagerEventType eventType = event.getEventType();
-			if (unit.getUnitType() == UnitType.PERSON) {
+			if (unit != null && unit.getUnitType() == UnitType.PERSON) {
 				if (eventType == UnitManagerEventType.ADD_UNIT) {
 					if (!containsUnit(unit))
 						addUnit(unit);
@@ -832,14 +825,18 @@ public class PersonTableModel extends UnitTableModel {
 		 */
 		public void unitUpdate(UnitEvent event) {
 			UnitEventType eventType = event.getType();
+			
 			if (eventType == UnitEventType.INVENTORY_STORING_UNIT_EVENT) {
 				Unit unit = (Unit)event.getTarget();
-				if (unit.getUnitType() == UnitType.PERSON)
-					addUnit(unit);
+				if (unit.getUnitType() == UnitType.PERSON) {
+					if (!containsUnit(unit))
+						addUnit(unit);
+				}
 			} else if (eventType == UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT) {
 				Unit unit = (Unit)event.getTarget();
 				if (unit.getUnitType() == UnitType.PERSON)
-					removeUnit(unit);
+					if (containsUnit(unit))
+						removeUnit(unit);
 			}
 		}
 	}
@@ -855,10 +852,20 @@ public class PersonTableModel extends UnitTableModel {
 		 */
 		public void unitUpdate(UnitEvent event) {
 			UnitEventType eventType = event.getType();
-			if (eventType == UnitEventType.ADD_ASSOCIATED_PERSON_EVENT)
-				addUnit((Unit) event.getTarget());
-			else if (eventType == UnitEventType.REMOVE_ASSOCIATED_PERSON_EVENT)
-				removeUnit((Unit) event.getTarget());
+			if (eventType == UnitEventType.ADD_ASSOCIATED_PERSON_EVENT) {
+				Unit unit = (Unit)event.getTarget();
+				if (unit.getUnitType() == UnitType.PERSON) {
+					if (!containsUnit(unit))
+						addUnit(unit);
+				}
+			}
+			else if (eventType == UnitEventType.REMOVE_ASSOCIATED_PERSON_EVENT) {
+				Unit unit = (Unit)event.getTarget();
+				if (unit.getUnitType() == UnitType.PERSON) {
+					if (containsUnit(unit))
+						removeUnit(unit);
+				}
+			}
 		}
 	}
 }

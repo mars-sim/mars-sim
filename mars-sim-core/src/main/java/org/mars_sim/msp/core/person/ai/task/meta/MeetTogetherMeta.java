@@ -43,13 +43,6 @@ public class MeetTogetherMeta extends MetaTask {
         
         RoleType roleType = person.getRole().getType();
         
-        // Probability affected by the person's stress and fatigue.
-        PhysicalCondition condition = person.getPhysicalCondition();
-        double fatigue = condition.getFatigue();
-        
-        if (fatigue > 1000)
-        	return 0;
-        
         if (person.isInSettlement() && roleType != null) {
 	
 	        if (roleType.isCouncil())
@@ -58,21 +51,29 @@ public class MeetTogetherMeta extends MetaTask {
 	        else if (roleType.isChief())
 	        	result += 30D;
 	 
-	
 	        // TODO: Probability affected by the person's stress and fatigue.
-	
-	        // Effort-driven task modifier.
-	        result *= person.getPerformanceRating();
 	
 	    	int now = marsClock.getMillisolInt();
 	        boolean isOnShiftNow = person.getTaskSchedule().isShiftHour(now);
 	        
+	        int size = person.getAssociatedSettlement().getIndoorPeopleCount();
+	        result *= Math.sqrt(size)/2.0;
+	        
 	        if (isOnShiftNow)
-	        	result = result*1.5D;
+	        	result = result*3D;
 	        
 	        if (result > 0)
 	        	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
 	
+	        // Probability affected by the person's stress and fatigue.
+	        PhysicalCondition condition = person.getPhysicalCondition();
+	        double fatigue = condition.getFatigue();
+	        
+	        result -= fatigue/75;
+	        
+	        // Effort-driven task modifier.
+	        result *= person.getPerformanceRating();
+	        
 	        if (result < 0) 
 	        	result = 0;
         }

@@ -84,7 +84,8 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy, 
 	 */
 	public StudyFieldSamples(Person person) {
 		// Use Task constructor. Skill determined on the science
-		super(NAME, person, true, false, STRESS_MODIFIER, null, 10D, 10D + RandomUtil.getRandomDouble(40D));
+		super(NAME, person, true, false, STRESS_MODIFIER, null, 10D, 20D + RandomUtil.getRandomDouble(20D));
+		
 		setExperienceAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
 		
 		// Determine study.
@@ -115,23 +116,6 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy, 
 			endTask();
 		}
 
-		// Take field samples from inventory.
-		if (!isDone()) {
-			Unit container = person.getContainerUnit();
-			if (container.getUnitType() != UnitType.PLANET) {
-				double totalRockSampleMass = ((ResourceHolder)container).getAmountResourceStored(ResourceUtil.rockSamplesID);
-				double fieldSampleMass = RandomUtil.getRandomDouble(.05, SAMPLE_MASS);
-				if (totalRockSampleMass >= fieldSampleMass) {
-					if (fieldSampleMass > totalRockSampleMass) {
-						fieldSampleMass = totalRockSampleMass;
-					}
-					((ResourceHolder)container).retrieveAmountResource(ResourceUtil.rockSamplesID, fieldSampleMass);
-					// Record the amount of rock samples being studied
-					person.getAssociatedSettlement().addResourceCollected(ResourceUtil.rockSamplesID, fieldSampleMass);
-				}
-			}
-		}
-
 		// Initialize phase
 		addPhase(STUDYING_SAMPLES);
 		setPhase(STUDYING_SAMPLES);
@@ -145,7 +129,7 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy, 
 	public static List<ScienceType> getFieldSciences() {
 
 		// Create list of possible sciences for studying field samples.
-		List<ScienceType> fieldSciences = new ArrayList<ScienceType>(3);
+		List<ScienceType> fieldSciences = new ArrayList<>();
 		fieldSciences.add(ScienceType.AREOLOGY);
 		fieldSciences.add(ScienceType.ASTRONOMY);
 		fieldSciences.add(ScienceType.BIOLOGY);
@@ -447,9 +431,39 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy, 
 		if (Vehicle.inMovingRover(person)) {
 			endTask();
 			return time;
-
 		}
 
+		// Take field samples from inventory.
+		if (!isDone()) {
+			Unit container = person.getContainerUnit();
+			if (container.getUnitType() != UnitType.PLANET) {
+				double mostStored = 0D;
+	            int bestID = 0;
+	            if (container instanceof ResourceHolder) {
+	            	for (int i: ResourceUtil.rockIDs) {
+		            	double stored = ((ResourceHolder)container).getAmountResourceStored(i);
+		            	if (mostStored < stored) {
+		            		mostStored = stored;
+		            		bestID = i;
+		            	}
+		            }
+		            if (mostStored < SAMPLE_MASS) {
+		            	endTask();
+	                }
+	            }
+				
+				double fieldSampleMass = RandomUtil.getRandomDouble(.05, SAMPLE_MASS/20.0);
+				if (mostStored >= fieldSampleMass) {
+					if (fieldSampleMass > mostStored) {
+						fieldSampleMass = mostStored;
+					}
+					((ResourceHolder)container).retrieveAmountResource(bestID, fieldSampleMass);
+					// Record the amount of rock samples being studied
+					person.getAssociatedSettlement().addResourceCollected(bestID, fieldSampleMass);
+				}
+			}
+		}
+		
 		// Add research work time to study.
 		double researchTime = getEffectiveResearchTime(time);
 		boolean isPrimary = study.getPrimaryResearcher().equals(person);

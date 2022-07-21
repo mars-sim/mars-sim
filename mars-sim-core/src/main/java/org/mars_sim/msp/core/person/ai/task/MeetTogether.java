@@ -62,6 +62,7 @@ implements Serializable {
     
     /**
      * Constructor. This is an effort-driven task.
+     * 
      * @param person the person performing the task.
      */
     public MeetTogether(Person person) {
@@ -69,7 +70,7 @@ implements Serializable {
         super(NAME, person, true, false, 
         		STRESS_MODIFIER - RandomUtil.getRandomDouble(.2), 
         		null, 100D, 
-        		5D + RandomUtil.getRandomDouble(10));
+        		10D + RandomUtil.getRandomDouble(20));
 
         this.person = person;
 
@@ -79,7 +80,7 @@ implements Serializable {
         
         if (settlement != null) {
         	
-            Set<Person> pool = new HashSet<Person>();
+            Set<Person> pool = new HashSet<>();
 
             Collection<Person> ppl = settlement.getAllAssociatedPeople(); 
             RoleType roleType = person.getRole().getType();
@@ -173,6 +174,7 @@ implements Serializable {
 
     /**
      * Performs reading phase.
+     * 
      * @param time the amount of time (millisols) to perform the phase.
      * @return the amount of time (millisols) left over after performing the phase.
      */

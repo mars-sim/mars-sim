@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * PlayHoloGameMeta.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-20
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -32,7 +32,7 @@ public class PlayHoloGameMeta extends MetaTask {
             "Task.description.playHoloGame"); //$NON-NLS-1$
 
     /** Modifier if during person's work shift. */
-    private static final double WORK_SHIFT_MODIFIER = .1D;
+    private static final double WORK_SHIFT_MODIFIER = .05D;
 
     /** default logger. */
     private static final Logger logger = Logger.getLogger(PlayHoloGameMeta.class.getName());
@@ -68,21 +68,12 @@ public class PlayHoloGameMeta extends MetaTask {
             	return 0;
             
         	double pref = person.getPreference().getPreferenceScore(this);
-            
-        	result = pref * 3D;
+        	result += pref * 1.2D;
             
             if (pref > 0) {
-             	if (stress > 45D)
-             		result*=1.5;
-             	else if (stress > 65D)
-             		result*=2D;
-             	else if (stress > 85D)
-             		result*=3D;
-             	else
-             		result*=4D;
+            	result *= (1 + stress/20.0);
             }
-
-            
+  
             if (person.isInVehicle()) {	
     	        // Check if person is in a moving rover.
     	        if (Vehicle.inMovingRover(person)) {
@@ -105,7 +96,7 @@ public class PlayHoloGameMeta extends MetaTask {
 	            	if (recBuilding != null) {
 	                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, recBuilding);
 	                    result *= TaskProbabilityUtil.getRelationshipModifier(person, recBuilding);
-	                    result *= RandomUtil.getRandomDouble(3);
+	                    result *= RandomUtil.getRandomDouble(1);
 	            	}
 	            	else {
 		            	// Check if a person has a designated bed
@@ -114,7 +105,7 @@ public class PlayHoloGameMeta extends MetaTask {
 		                	quarters = Sleep.getBestAvailableQuarters(person, true);
 		
 			            	if (quarters == null) {
-			            		result *= RandomUtil.getRandomDouble(2);
+			            		result *= RandomUtil.getRandomDouble(0.8);
 			            	}
 			            	else
 			            		result *= RandomUtil.getRandomDouble(1.2);

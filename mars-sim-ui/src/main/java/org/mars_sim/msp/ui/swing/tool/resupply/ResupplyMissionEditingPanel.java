@@ -97,7 +97,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 	// Data members
 	private String errorString = new String();
 	private boolean validation_result = true;
-	private Integer[] sols = new Integer[ResupplyUtil.MAX_NUM_SOLS_PLANNED];
+	private Integer[] solsUntil = new Integer[ResupplyUtil.MAX_NUM_SOLS_PLANNED];
 	private Number[] quantity = new Number[100000];
 	private Integer[] immigrants = new Integer[MAX_IMMIGRANTS];
 	private Integer[] bots = new Integer[MAX_BOTS];
@@ -113,7 +113,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 	private WebLabel orbitLabel;
 	private WebLabel solInfoLabel;
 	private WebLabel errorLabel;
-	private JComboBoxMW<?> solCB, solsFromCB, immigrantsCB, botsCB, monthCB, orbitCB;
+	private JComboBoxMW<?> solsUntilCB, immigrantsCB, botsCB, monthCB, orbitCB, solCB;
 	private SupplyTableModel supplyTableModel;
 	private JTable supplyTable;
 	private WebButton removeSupplyButton;
@@ -208,7 +208,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		martianSolCBModel = new MartianSolComboBoxModel(resupplyTime.getMonth(), resupplyTime.getOrbit());
 
 		WebPanel comboBoxPane = new WebPanel(new GridLayout(1, 6, 1, 1));
-		comboBoxPane.setSize(200, 25);
+		comboBoxPane.setSize(150, 20);
 		arrivalDateSelectionPane.add(comboBoxPane);
 		
 		// Create orbit label.
@@ -225,10 +225,16 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		}
 		orbitCB = new JComboBoxMW<>(orbitValues);
 		orbitCB.setSelectedItem(formatter.format(startOrbit));
-		orbitCB.addActionListener(e -> 
-				martianSolCBModel.updateSolNumber(monthCB.getSelectedIndex() + 1,
-						Integer.parseInt((String) orbitCB.getSelectedItem()))
-		);
+		orbitCB.addActionListener(e -> {
+			// Update the solCB based on orbit and month			
+			martianSolCBModel.updateSolNumber(monthCB.getSelectedIndex() + 1,
+					Integer.parseInt((String) orbitCB.getSelectedItem()));
+			// Remove error string
+			errorString = null;
+			errorLabel.setText(errorString);
+			// Reenable Commit/Create button
+			enableButton(true);
+		});
 		comboBoxPane.add(orbitCB);
 
 		// Create month label.
@@ -238,10 +244,16 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		// Create month combo box.
 		monthCB = new JComboBoxMW<Object>(MarsClockFormat.getMonthNames());
 		monthCB.setSelectedItem(resupplyTime.getMonthName());
-		monthCB.addActionListener(e -> 
-				martianSolCBModel.updateSolNumber(monthCB.getSelectedIndex() + 1,
-						Integer.parseInt((String) orbitCB.getSelectedItem()))
-		);
+		monthCB.addActionListener(e -> {
+			// Update the solCB based on orbit and month
+			martianSolCBModel.updateSolNumber(monthCB.getSelectedIndex() + 1,
+						Integer.parseInt((String) orbitCB.getSelectedItem()));
+			// Remove error string
+			errorString = null;
+			errorLabel.setText(errorString);
+			// Reenable Commit/Create button
+			enableButton(true);
+		});
 		comboBoxPane.add(monthCB);
 
 		// Create sol label.
@@ -266,6 +278,11 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 				WebRadioButton rb = (WebRadioButton) evt.getSource();
 				setEnableTimeUntilArrivalPane(rb.isSelected());
 				setEnableArrivalDatePane(!rb.isSelected());
+				// Remove error string
+				errorString = null;
+				errorLabel.setText(errorString);
+				// Reenable Commit/Create button
+				enableButton(true);
 			}
 		});
 		solsUntilArrivalPane.add(solsUntilArrivalRB);
@@ -279,18 +296,18 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		int solsDiff = (int) Math.round((MarsClock.getTimeDiff(resupplyTime, marsClock) / 1000D));
 		
 		// Switch to using ComboBoxMW for sols
-		int size = sols.length;
+		int size = solsUntil.length;
 		// int max = ResupplyUtil.MAX_NUM_SOLS_PLANNED;
 		int t = ResupplyUtil.getAverageTransitTime();
 		for (int i = t + 1; i < size + t + 1; i++) {
 			if (i > t)
-				sols[i - t - 1] = i;
+				solsUntil[i - t - 1] = i;
 		}
 
-		updateSolsCB();
-		solsFromCB.setSelectedItem(solsDiff);
-		solsFromCB.requestFocus(false);
-		solsUntilArrivalPane.add(solsFromCB);
+		updateSolsUntilCB();
+		solsUntilCB.setSelectedItem(solsDiff);
+		solsUntilCB.requestFocus(false);
+		solsUntilArrivalPane.add(solsUntilCB);
 
 		// Create sol information label.
 		solInfoLabel = new WebLabel("(668 Sols = 1 Martian Orbit for a non-leap year)");
@@ -455,7 +472,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		} else {
 			getArrivalDate();
 		}
-		solsFromCB.setSelectedItem(solsDiff);
+		solsUntilCB.setSelectedItem(solsDiff);
 		solInfoLabel.setEnabled(enable);
 	}
 
@@ -634,16 +651,16 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		// Modify resupply mission.
 		populateResupplyMission(resupply);
 		resupply.commitModification();
-		updateSolsCB();
+		updateSolsUntilCB();
 		return true;
 	}
 
 	/**
-	 * Updates the sol combo box.
+	 * Updates the 'sols until' combo box.
 	 */
-	public void updateSolsCB() {
+	public void updateSolsUntilCB() {
 		List<Integer> solList = new ArrayList<>();
-		Collections.addAll(solList, sols);
+		Collections.addAll(solList, solsUntil);
 		// Remove dates that have been chosen for other resupply missions.
 //		solList.removeAll(getMissionSols());
 
@@ -658,11 +675,11 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 	    // Exclude these sols
 	    solList.removeAll(cancelSols);
 		
-		sols = solList.toArray(EMPTY_STRING_ARRAY);
-		solsFromCB = new JComboBoxMW<>(sols);
-		solsFromCB.requestFocus(false);
-		solsFromCB.putClientProperty("JComboBox.isTableCellEditor", Boolean.FALSE);
-		solsFromCB.addFocusListener(new FocusListener() {
+		solsUntil = solList.toArray(EMPTY_STRING_ARRAY);
+		solsUntilCB = new JComboBoxMW<>(solsUntil);
+		solsUntilCB.requestFocus(false);
+		solsUntilCB.putClientProperty("JComboBox.isTableCellEditor", Boolean.FALSE);
+		solsUntilCB.addFocusListener(new FocusListener() {
 			@Override
 			public void focusGained(FocusEvent arg0) {
 				solsUntilArrivalRB.requestFocus(true);
@@ -675,7 +692,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 
 		});
 
-		solsFromCB.addItemListener(new ItemListener() {
+		solsUntilCB.addItemListener(new ItemListener() {
 			@Override
 			public void itemStateChanged(java.awt.event.ItemEvent evt) {
 				if (evt.getStateChange() == ItemEvent.SELECTED) {
@@ -1002,7 +1019,19 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 
 				// Set millisols to current time plus the delay if resupply is current date, otherwise 0.
 				double millisols = 0D;
-				if ((sol == marsClock.getSolOfMonth()) && (month == marsClock.getMonth())
+				
+				if (sol < marsClock.getMissionSol()) {
+					// if the player selects a sol before today
+					marsCurrentTime = null;
+					// Remove error string
+					errorString = "Cannot pick a sol that's in the past. Try again !";
+					errorLabel.setText(errorString);
+					logger.severe(errorString);
+					enableButton(false);
+					validation_result = false;
+				}
+				else if ((sol == marsClock.getMissionSol()) 
+						&& (month == marsClock.getMonth())
 						&& (orbit == marsClock.getOrbit())) {
 					millisols = marsClock.getMillisol() + MILLISOLS_DELAY;
 				}
@@ -1010,38 +1039,42 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 				marsCurrentTime = new MarsClock(orbit, month, sol, millisols, marsClock.getMissionSol());
 				
 			} catch (NumberFormatException e) {
-				e.printStackTrace(System.err);
+				logger.severe("Can't create marsCurrentTime: " + e.getMessage());
 			}
 		}
 
 		else if (solsUntilArrivalRB.isSelected()) {
-			marsCurrentTime = validateSolsFrom();
+			marsCurrentTime = validateSolsUntilArrival();
 		}
-		
+
 		return marsCurrentTime;
 	}
 
 	/**
-	 * Validates the input entry. 
+	 * Validates the sols until arrival
 	 */
-	public MarsClock validateSolsFrom() {
+	public MarsClock validateSolsUntilArrival() {
 		errorString = null;
-		solsFromCB.setEditable(true);
-		solsFromCB.setSelectedIndex(0);
+		solsUntilCB.setEditable(true);
+		solsUntilCB.setSelectedIndex(0);
 
-		int inputSol = (Integer) solsFromCB.getSelectedItem();
+		int inputSol = (Integer) solsUntilCB.getSelectedItem();
 		if (inputSol == 0) {
-			solsFromCB.remove(0);
-			solsFromCB.setSelectedIndex(0);
+			solsUntilCB.remove(0);
+			solsUntilCB.setSelectedIndex(0);
 		}
 
 		try {
 			boolean good = true;
 
 			if (good) {
+				
+				// Remove error string
 				errorString = null;
 				errorLabel.setText(errorString);
-				// enableButton(true);
+				// Reenable Commit/Create button
+				enableButton(true);
+				
 				validation_result = true;
 
 				marsCurrentTime = (MarsClock) marsClock.clone();
@@ -1056,7 +1089,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 			errorLabel.setText(errorString);
 			validation_result = false;
 			enableButton(false);
-			logger.warning("Invalid entry for Sols ");
+			logger.severe("Invalid entry for Sols: " + e.getMessage());
 		}
 
 		return marsCurrentTime;
@@ -1161,8 +1194,8 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 	 */
 	public void destroy() {
 
-		Arrays.fill(sols, null);
-		sols = null;
+		Arrays.fill(solsUntil, null);
+		solsUntil = null;
 		Arrays.fill(quantity, null);
 		quantity = null;
 		Arrays.fill(immigrants, null);
@@ -1175,7 +1208,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		martianSolCBModel = null;
 		solLabel = null;
 		solCB = null;
-		solsFromCB = null;
+		solsUntilCB = null;
 		immigrantsCB = null;
 		monthLabel = null;
 		monthCB = null;

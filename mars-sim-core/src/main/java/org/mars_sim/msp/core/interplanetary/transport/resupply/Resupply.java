@@ -496,7 +496,7 @@ public class Resupply implements Serializable, Transportable {
 
 			bots.add(robot);
 
-			logger.config(newName + " arrived on Mars at " + settlementName);
+			logger.config(newName + " arrived on Mars at " + settlementName + ".");
 
 			settlement.fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_ROBOT_EVENT, robot);
 		}
@@ -523,13 +523,10 @@ public class Resupply implements Serializable, Transportable {
 					.setAttribute(null)
 					.build();
 			immigrant.initialize();
-
 			// Assign a job 
 			immigrant.getMind().getAJob(true, JobUtil.MISSION_CONTROL);
-
 			// Set up work shift 
 			immigrant.getTaskSchedule().setShiftType(ShiftType.ON_CALL);
-
 			// Add preference
 			immigrant.getPreference().initializePreference();
 
@@ -541,7 +538,7 @@ public class Resupply implements Serializable, Transportable {
 			
 			immigrants.add(immigrant);
 
-			logger.config(immigrantName + " arrived on Mars at " + settlementName);
+			logger.config(immigrantName + " arrived on Mars at " + settlementName + ".");
 			// Add fireUnitUpdate()
 			settlement.fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_PERSON_EVENT, immigrant);
 		}

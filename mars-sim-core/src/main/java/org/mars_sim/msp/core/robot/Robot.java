@@ -1541,7 +1541,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		else {
 			// Question: should we remove this unit from settlement's robotWithin list
 			// especially if it is still inside the garage of a settlement
-			transferred = ((Settlement)cu).removeRobot(this);
+			transferred = ((Settlement)cu).removeRobotsWithin(this);
 			BuildingManager.removeRobotFromBuilding(this, getBuildingLocation());
 		}
 
@@ -1559,11 +1559,11 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 				transferred = ((MarsSurface)destination).addRobot(this);
 			}
 			else if (destination.getUnitType() == UnitType.SETTLEMENT) {
-				transferred = ((Settlement)destination).addRobot(this);
+				transferred = ((Settlement)destination).addRobotsWithin(this);
 			}
 			else if (destination.getUnitType() == UnitType.BUILDING) {
 				BuildingManager.addPersonOrRobotToBuilding(this, (Building)destination);
-				transferred = ((Building)destination).getSettlement().addRobot(this);
+				transferred = ((Building)destination).getSettlement().addRobotsWithin(this);
 			}
 
 			if (!transferred) {
