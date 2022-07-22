@@ -263,15 +263,17 @@ extends TabPanel {
 		Arrays.sort(bestSleepTime);
 		
 		// Prepare sleep time TF
-		String text = "";
+		StringBuilder text = new StringBuilder();
 		int size = bestSleepTime.length;
 		for (int i=0; i<size; i++) {
-			text += bestSleepTime[i] + " (" 
-					+ person.getSleepWeight(bestSleepTime[i]) + ")";
+			text.append(bestSleepTime[i])
+			.append(" (") 
+			.append(person.getSleepWeight(bestSleepTime[i]))
+			.append(")");
 			if (i != size - 1)
-				text += ",  ";
+				text.append(",  ");
 		}
-		sleepTF = new WebTextField(text);
+		sleepTF = new WebTextField(text.toString());
 		sleepTF.setEditable(false);
 		sleepTF.setColumns(20);
 		sleepTF.setCaretPosition(0);
@@ -595,17 +597,19 @@ extends TabPanel {
 		Arrays.sort(bestSleepTime);
 		
 		// Prepare sleep time TF
-		String text = "";
+		StringBuilder text = new StringBuilder();
 		int size = bestSleepTime.length;
 		for (int i=0; i<size; i++) {
-			text += bestSleepTime[i] + " (" 
-					+ person.getSleepWeight(bestSleepTime[i]) + ")";
+			text.append(bestSleepTime[i])
+			.append(" (") 
+			.append(person.getSleepWeight(bestSleepTime[i]))
+			.append(")");
 			if (i != size - 1)
-				text += ", ";
+				text.append(",  ");
 		}
-		
-		if (!sleepTF.getText().equalsIgnoreCase(text))
-			sleepTF.setText(text);
+	
+		if (!sleepTF.getText().equalsIgnoreCase(text.toString()))
+			sleepTF.setText(text.toString());
 		
 		// Update medication table model.
 		medicationTableModel.update();

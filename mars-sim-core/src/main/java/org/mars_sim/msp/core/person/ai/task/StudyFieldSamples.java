@@ -452,7 +452,7 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy, 
 	                }
 	            }
 				
-				double fieldSampleMass = RandomUtil.getRandomDouble(.05, SAMPLE_MASS/20.0);
+				double fieldSampleMass = RandomUtil.getRandomDouble(SAMPLE_MASS/20.0, SAMPLE_MASS/10.0);
 				if (mostStored >= fieldSampleMass) {
 					if (fieldSampleMass > mostStored) {
 						fieldSampleMass = mostStored;

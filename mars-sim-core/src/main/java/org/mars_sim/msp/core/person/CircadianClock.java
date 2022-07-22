@@ -79,6 +79,8 @@ public class CircadianClock implements Serializable {
 	 */
 	private double ghrelinThreshold = 400;
 
+	private Person person;
+	
 	/** Sleep habit map keeps track of the sleep cycle */
 	private Map<Integer, Integer> sleepCycleMap;
 
@@ -95,18 +97,25 @@ public class CircadianClock implements Serializable {
 	 * @param person
 	 */
 	public CircadianClock(Person person) {
-
-		calculateInitialLevels(person);
-
+		this.person = person;
+		sleepCycleMap = new ConcurrentHashMap<>();		
+	}
+	
+	/**
+	 * Initializes field data.
+	 */
+	public void initialize() {
+		// Modify thresholds
+		modifyThresholds(person);
+		
 		double hunger = person.getPhysicalCondition().getHunger();
 		double ghrelin = Math.max(hunger * .5, ghrelinThreshold);
 		ghrelinLevel = RandomUtil.getRandomDouble(ghrelin * .5 , ghrelin * .75);
 		
 		double leptin = Math.max(hunger * .5, leptinThreshold);
 		leptinLevel = RandomUtil.getRandomDouble(leptin * .5 , leptin * .75);
-		
-		sleepCycleMap = new ConcurrentHashMap<>();		
 	}
+	
 	
 	/**
 	 * Time passing.
@@ -131,7 +140,12 @@ public class CircadianClock implements Serializable {
 		}
 	}
 
-	private void calculateInitialLevels(Person person) {
+	/**
+	 * Calculates the initial thresholds.
+	 * 
+	 * @param person
+	 */
+	private void modifyThresholds(Person person) {
 		double dev = Math.sqrt(
 				person.getBaseMass() / Person.getAverageWeight() * person.getHeight() / Person.getAverageHeight()); 
 		// condition.getBodyMassDeviation();
@@ -167,10 +181,11 @@ public class CircadianClock implements Serializable {
 	 * @return int[] the 3 best sleep time in integer
 	 */
 	public int[] getPreferredSleepHours() {
-		int largestKey[] = {0, 0, 0};
-		int largestValue[] = {0, 0, 0};
-		for (int key : sleepCycleMap.keySet()) {
-			int value = sleepCycleMap.get(key);
+		int[] largestKey = {0, 0, 0};
+		int[] largestValue = {0, 0, 0};
+		for (Map.Entry<Integer, Integer> entry : sleepCycleMap.entrySet()) {
+			int key = entry.getKey();
+			int value = entry.getValue();
 			if (value > largestValue[2]) {
 				largestValue[0] = largestValue[1];
 				largestValue[1] = largestValue[2];
@@ -178,7 +193,7 @@ public class CircadianClock implements Serializable {
 				largestKey[0] = largestKey[1];
 				largestKey[1] = largestKey[2];
 				largestKey[2] = key;
-			} if (value > largestValue[1]) {
+			} else if (value > largestValue[1]) {
 				largestValue[0] = largestValue[1];
 				largestValue[1] = value;
 				largestKey[0] = largestKey[1];

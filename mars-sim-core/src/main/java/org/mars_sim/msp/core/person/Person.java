@@ -316,6 +316,8 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 		circadian = new CircadianClock(this);
 		// Create physical condition
 		condition = new PhysicalCondition(this);
+		// Initialize field data in circadian clock
+		circadian.initialize();
 		// Create job history
 		jobHistory = new JobHistory();
 		// Create the role
