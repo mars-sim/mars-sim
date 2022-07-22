@@ -119,10 +119,10 @@ public class PersonTaskManager extends TaskManager implements Serializable {
 					// Take more energy to be in EVA doing work
 					reduceEnergy(energyTime * 1.1);
 
-					if (circadian == null)
-						circadian = person.getCircadianClock();
-					// Regulate hormones
-					circadian.exercise(time);
+//					if (circadian == null)
+//						circadian = person.getCircadianClock();
+//					// Regulate hormones
+//					circadian.exercise(time);
 					
 				} else {
 					// Expend energy based on activity.

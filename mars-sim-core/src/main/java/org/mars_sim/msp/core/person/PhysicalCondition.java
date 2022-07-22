@@ -378,10 +378,13 @@ public class PhysicalCondition implements Serializable {
 			if (pulse.isNewSol()) {
 				// reduce the muscle soreness
 				recoverFromSoreness(1);
+				// Update the entropy in muscles
+				entropy(time * -20);
 			}
 			
 			// Check once per msol (millisol integer)
 			if (pulse.isNewMSol()) {
+
 				// Calculate performance and most serious illness.
 				recalculatePerformance();
 				// Update radiation counter
@@ -421,7 +424,6 @@ public class PhysicalCondition implements Serializable {
 
 			// Check life support system
 			checkLifeSupport(time, currentO2Consumption, support);
-
 			// Update the existing health problems
 			checkHealth(pulse);
 			// Update thirst
@@ -613,7 +615,7 @@ public class PhysicalCondition implements Serializable {
 		// Note: changing this to a more linear addition of energy.
 		// We may want to change it back to exponential. - Scott
 
-		double xdelta = foodAmount * FOOD_COMPOSITION_ENERGY_RATIO / appetite;
+		double xdelta = foodAmount * FOOD_COMPOSITION_ENERGY_RATIO / appetite / 10D;
 		// kJoules += foodAmount * xdelta * Math.log(FOOD_COMPOSITION_ENERGY_RATIO /
 		// kJoules) / ENERGY_FACTOR;
 
@@ -630,7 +632,7 @@ public class PhysicalCondition implements Serializable {
 		} else
 			kJoules += xdelta * .35;
 
-		circadian.eatFood(kJoules / 50D);
+		circadian.eatFood(xdelta / 1000D);
 
 		if (kJoules > personalMaxEnergy * 1.5) {
 			kJoules = personalMaxEnergy * 1.5;
@@ -1813,11 +1815,22 @@ public class PhysicalCondition implements Serializable {
 		musculoskeletal = value;
 	}
 
-	public void workOut() {
-		musculoskeletal[0] = musculoskeletal[0] + .01; // pain tolerance
-		musculoskeletal[2] = musculoskeletal[0] + .1; // muscle soreness
+	/**
+	 * Improves musculoskeletal systems.
+	 */
+	public void workOut(double time) {
+		musculoskeletal[0] = musculoskeletal[0] + .01 * time; // pain tolerance
+		musculoskeletal[2] = musculoskeletal[2] + .01 * time; // muscle soreness
 	}
 
+	/**
+	 * Entropy in musculoskeletal systems.
+	 */
+	public void entropy(double time) {
+		musculoskeletal[0] = musculoskeletal[0] - .01 * time; // pain tolerance
+		musculoskeletal[2] = musculoskeletal[2] - .01 * time; // muscle soreness
+	}
+	
 	public double getStarvationStartTime() {
 		return starvationStartTime;
 	}

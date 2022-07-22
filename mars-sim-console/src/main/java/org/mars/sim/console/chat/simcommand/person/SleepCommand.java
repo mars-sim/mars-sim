@@ -29,14 +29,14 @@ public class SleepCommand extends AbstractPersonCommand {
 	@Override
 	public boolean execute(Conversation context, String input, Person person) {
 		CircadianClock cc = person.getCircadianClock();
-		int[] twos = cc.getPreferredSleepHours();
-		int small = Math.min(twos[0], twos[1]);
-		int large = Math.max(twos[0], twos[1]);
+		int[] threes = cc.getPreferredSleepHours();
+		int small = Math.min(threes[0], Math.min(threes[1], threes[2]));
+		int large = Math.max(threes[0], Math.min(threes[1], threes[3]));
 
 		var response = new StructuredResponse();
 		response.appendLabeledString("Preferred Sleep hours", small + " or " + large + " millisols.");
 		
-		Map<Integer, Double> history = cc.getSleepTime();
+		Map<Integer, Double> history = cc.getSleepHistory();
 		response.appendTableHeading("Sol", 3, "Sleep duration");
 		for(Entry<Integer, Double> i : history.entrySet()) {
 			response.appendTableRow(i.getKey().toString(), i.getValue());
