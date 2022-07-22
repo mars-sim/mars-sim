@@ -883,6 +883,8 @@ public class ExitAirlock extends Task implements Serializable {
 			}
 			
 			if (airlock.isOperator(id)) {
+				// Command the airlock state to be transitioned to "depressurized"
+				airlock.setTransitioning(true);
 				// Get ready for depressurization
 				setPhase(DEPRESSURIZE_CHAMBER);
 			}
