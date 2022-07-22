@@ -340,19 +340,8 @@ public class EnterAirlock extends Task implements Serializable {
 			}
 
 			else {
-
-				if (!airlock.isActivated()) {
-					// Only the airlock operator may activate the airlock
-					airlock.setActivated(true);
-				}
 				
 				if (airlock.isOperator(id)) {
-					
-//					// since it's not depressurized, will need to depressurize the chamber first
-//					if (!airlock.isActivated()) {
-//						// Only the airlock operator may activate the airlock
-//						airlock.setActivated(true);
-//					}
 
 					logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4_000, "Ready to depressurize the chamber.");
 
@@ -546,24 +535,21 @@ public class EnterAirlock extends Task implements Serializable {
 
 		boolean canProceed = false;
 
-		if (inSettlement) {
-
-			if (transitionTo(2)) {
-				canProceed = true;
-			}
-			else {
-				setPhase(ENTER_AIRLOCK);
-				return 0;
-			}
+		if (transitionTo(2)) {
+			canProceed = true;
 		}
-
 		else {
+			setPhase(ENTER_AIRLOCK);
+			return 0;
+		}
+		
+		if (!inSettlement) {
 
 			if (insideAirlockPos == null) {
 				insideAirlockPos = airlock.getAvailableAirlockPosition();
 			}
 
-			if (insideAirlockPos.isClose(person.getPosition())) {
+			if (insideAirlockPos != null && insideAirlockPos.isClose(person.getPosition())) {
 				canProceed = true;
 			}
 

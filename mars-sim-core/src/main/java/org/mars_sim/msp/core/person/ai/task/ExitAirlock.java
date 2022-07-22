@@ -51,7 +51,7 @@ public class ExitAirlock extends Task implements Serializable {
 
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.exitAirlock"); //$NON-NLS-1$
-	private static final String PREBREATH_HALF_DONE = "Can't Egress. Other occupant(s) have at least half of pre-breathed.";
+	private static final String PREBREATH_HALF_DONE = "Can't Egress. Other occupant(s) have half pre-breathed.";
 	private static final String RESERVATION_NOT_MADE = "Reservation not made.";
 	private static final String NOT_FIT = "Not fit";
 	private static final String INNER_DOOR_LOCKED = "Inner door was locked.";
@@ -330,11 +330,13 @@ public class ExitAirlock extends Task implements Serializable {
 	 * @return
 	 */
 	public boolean isOccupantHalfPrebreathed() {
-	
+		// Verify occupant's whereabout first
+		airlock.checkOccupantIDs();
+		
 		List<Integer> list = new ArrayList<>(airlock.getOccupants());
 		for (int id : list) {
 			Person p = airlock.getPersonByID(id);
-			if (p.getSuit() != null
+			if (p != person && p.getSuit() != null
 				&& p.getPhysicalCondition().isAtLeastHalfDonePrebreathing()) {
 				return true;
 			}
@@ -355,6 +357,13 @@ public class ExitAirlock extends Task implements Serializable {
 		
 		double remainingTime = 0;
 		
+		// Activates airlock first to check for occupant ids and operator
+		// before calling other checks
+		if (!airlock.isActivated()) {
+			// Only the airlock operator may activate the airlock
+			airlock.setActivated(true);
+		}
+		
 		// If a person is in a vehicle, not needed of checking for reservation
 		if (inSettlement && !airlock.addReservation(person.getIdentifier())) {
 			walkAway(person, RESERVATION_NOT_MADE);
@@ -374,12 +383,9 @@ public class ExitAirlock extends Task implements Serializable {
 			walkAway(person, PREBREATH_HALF_DONE);
 			return remainingTime;
 		}
-		
-		if (!airlock.isActivated()) {
-			// Only the airlock operator may activate the airlock
-			airlock.setActivated(true);
-		}
 
+		// NOTE: don't need to allow the airlock to transition its state yet.
+		
 		boolean canProceed = false;
 
 		if (inSettlement) {
@@ -449,11 +455,6 @@ public class ExitAirlock extends Task implements Serializable {
 			else {
 				// since it's not pressurized, will need to pressurize the chamber first
 
-				if (!airlock.isActivated()) {
-					// Only the airlock operator may activate the airlock
-					airlock.setActivated(true);
-				}
-
 				if (airlock.isOperator(id)) {
 
 					logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4_000, "Ready to pressurize the chamber.");
@@ -479,6 +480,13 @@ public class ExitAirlock extends Task implements Serializable {
 
 		double remainingTime = 0;
 
+		// Activates airlock first to check for occupant ids and operator
+		// before calling other checks
+		if (!airlock.isActivated()) {
+			// Only the airlock operator may activate the airlock
+			airlock.setActivated(true);
+		}
+		
 		if (!isFit()) {
 			walkAway(person, NOT_FIT + " to pressurize chamber.");
 			return remainingTime;
@@ -506,11 +514,6 @@ public class ExitAirlock extends Task implements Serializable {
 		}
 
 		else {
-
-			if (!airlock.isActivated()) {
-				// Only the airlock operator may activate the airlock
-				airlock.setActivated(true);
-			}
 			
 			if (airlock.isOperator(id)) {
 				// Command the airlock state to be transitioned to "pressurized"
@@ -635,6 +638,13 @@ public class ExitAirlock extends Task implements Serializable {
 
 		double remainingTime = 0;
 
+		// Activates airlock first to check for occupant ids and operator
+		// before calling other checks
+		if (!airlock.isActivated()) {
+			// Only the airlock operator may activate the airlock
+			airlock.setActivated(true);
+		}
+		
 		if (!isFit()) {
 			walkAway(person, NOT_FIT + " to walk to a chamber.");
 			return remainingTime;
@@ -702,11 +712,6 @@ public class ExitAirlock extends Task implements Serializable {
 
 
 		if (canProceed) {
-
-			if (!airlock.isActivated()) {
-				// Only the airlock operator may activate the airlock
-				airlock.setActivated(true);
-			}
 			
 			if (airlock.isOperator(id)) {
 				// Elect an operator to handle this task
@@ -862,21 +867,6 @@ public class ExitAirlock extends Task implements Serializable {
 		PhysicalCondition pc = person.getPhysicalCondition();
 
 		pc.reduceRemainingPrebreathingTime(time);
-
-//		if (pc.isAtLeastThreeQuarterDonePrebreathing()) {
-//	
-//			List<Integer> list = new ArrayList<>(airlock.getOccupants());
-//			for (int id : list) {
-//				Person p = airlock.getPersonByID(id);
-//				if (p.getSuit() == null) {
-//					// Two groups of people having no EVA suits.
-//					// (1) Those who egress but just come in to the airlock and haven't donned the suit yet
-//					// (2) Those who ingress and have taken off the EVA suits. They are ready to leave.
-//					canProceed = false;
-//					break;
-//				}
-//			}
-//		}
 
 		if (pc.isDonePrebreathing()) {
 			logger.log((Unit)airlock.getEntity(), person, Level.FINER, 4_000,
@@ -1078,6 +1068,9 @@ public class ExitAirlock extends Task implements Serializable {
 			airlock.removeID(id);
 		}
 
+		// Resets the pre-breath time
+		person.getPhysicalCondition().resetRemainingPrebreathingTime();
+		
 		// Ends the sub task 2 within the EnterAirlock task
 		endSubTask2();
 
@@ -1222,27 +1215,28 @@ public class ExitAirlock extends Task implements Serializable {
 
 
 	/**
-	 * Release person from the associated Airlock
+	 * Releases person from the associated Airlock.
 	 */
 	@Override
 	protected void clearDown() {
 		// Clear the person as the airlock operator if task ended prematurely.
 		if (airlock != null && person.getName().equals(airlock.getOperatorName())) {
 			if (inSettlement) {
-				logger.log(((Building) (airlock.getEntity())).getSettlement(), person, Level.FINE, 1_000,
+				logger.log(((Building) (airlock.getEntity())), person, Level.FINE, 1_000,
 						"Concluded the airlock operator task.");
 			}
 			else {
 				logger.log(person.getVehicle(), person, Level.FINE, 4_000,
 						"Concluded the vehicle airlock operator task.");
 			}
-
-			airlock.removeID(id);
 		}
+		
+		airlock.removeID(id);
 	}
 
 	/**
-	 * Can these Task be recorded
+	 * Can these Task be recorded ?
+	 * 
 	 * @return false
 	 */
 	@Override

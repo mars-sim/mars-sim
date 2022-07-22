@@ -419,6 +419,7 @@ public abstract class Airlock implements Serializable {
 	public void removeID(Integer id) {
 		if (getAirlockType() == AirlockType.BUILDING_AIRLOCK) {
 			for (int i=0; i<5; i++) {
+				// Remove this person from all zone maps
 				vacate(i, id);
 			}
 		}
@@ -679,12 +680,21 @@ public abstract class Airlock implements Serializable {
 	}
 
 	/**
-	 * Sets the inTransition to true if changing the airlock's state.
+	 * Allows or disallows the airlock to be transitioning its state.
 	 *
 	 * @param value
 	 */
 	public void setTransitioning(boolean value) {
 		transitioning = value;
+	}
+
+	/**
+	 * Checks if the airlock is allowed to be transitioning its state.
+	 *
+	 * @param value
+	 */
+	public boolean isTransitioning() {
+		return transitioning;
 	}
 
 	/**
@@ -870,7 +880,7 @@ public abstract class Airlock implements Serializable {
 	 * @param pulse
 	 */
 	public void timePassing(ClockPulse pulse) {
-
+		
 		if (activated) {
 
 			double time = pulse.getElapsed();
@@ -1074,6 +1084,7 @@ public abstract class Airlock implements Serializable {
 
 	/**
 	 * Is this person's id in any zones (0 to 4) ?
+	 * 
 	 * @param id
 	 * @return
 	 */

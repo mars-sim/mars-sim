@@ -446,6 +446,10 @@ extends Airlock {
     		if (airlockInteriorPosMap.values().contains(id))
     			return false;
 
+    		// If someone is at that position, do not allow to occupy it
+    		if (airlockInteriorPosMap.get(p) != -1)
+    			return false;
+    		
     		airlockInteriorPosMap.put(p, id);
     		return true;
     	}
@@ -459,6 +463,10 @@ extends Airlock {
     		if (airlockInsidePosMap.values().contains(id))
     			return false;
 
+    		// If someone is at that position, do not allow to occupy it
+    		if (airlockInsidePosMap.get(p) != -1)
+    			return false;
+    		
     		airlockInsidePosMap.put(p, id);
     		return true;
     	}
@@ -468,6 +476,10 @@ extends Airlock {
     		if (airlockExteriorPosMap.values().contains(id))
     			return false;
 
+    		// If someone is at that position, do not allow to occupy it
+    		if (airlockExteriorPosMap.get(p) != -1)
+    			return false;
+    		
     		airlockExteriorPosMap.put(p, id);
     		return true;
     	}

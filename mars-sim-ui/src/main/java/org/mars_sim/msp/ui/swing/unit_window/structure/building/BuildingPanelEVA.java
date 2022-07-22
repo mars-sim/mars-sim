@@ -45,7 +45,8 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 	private int emptyCache;
 	private double cycleTimeCache;
 	private boolean activationCache;
-
+	private boolean transitionCache;
+	
 	private String operatorCache = "";
 	private String airlockStateCache = "";
 	private String innerDoorStateCache = "";
@@ -58,6 +59,7 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 	private JTextField operatorLabel;
 	private JTextField airlockStateLabel;
 	private JTextField activationLabel;
+	private JTextField transitionLabel;
 	private JTextField cycleTimeLabel;
 	private JTextField innerDoorStateLabel;
 	private JTextField outerDoorStateLabel;
@@ -95,9 +97,11 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 	protected void buildUI(JPanel center) {
 
 		// Create label panel
+		WebPanel topPanel = new WebPanel(new BorderLayout(0, 0));
+		center.add(topPanel, BorderLayout.NORTH);
+		
 		WebPanel labelPanel = new WebPanel(new SpringLayout());
-		center.add(labelPanel, BorderLayout.NORTH);
-
+		topPanel.add(labelPanel, BorderLayout.NORTH);
 
 		// Create innerDoorLabel
 		innerDoorLabel = addTextField(labelPanel, Msg.getString("BuildingPanelEVA.innerDoor.number"),
@@ -148,15 +152,21 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 		cycleTimeLabel = addTextField(labelPanel, Msg.getString("BuildingPanelEVA.airlock.cycleTime"),
 									  DECIMAL_PLACES1.format(buildingAirlock.getRemainingCycleTime()), 4, null);
 		
-		// Create OperatorLabel
-		operatorLabel = addTextField(labelPanel, Msg.getString("BuildingPanelEVA.operator"),
-									 eva.getOperatorName(), 10, null);
-		
+		transitionLabel = addTextField(labelPanel, Msg.getString("BuildingPanelEVA.airlock.transition"),
+				 buildingAirlock.isTransitioning() + "", 8, null);
+
 		SpringUtilities.makeCompactGrid(labelPanel,
                 5, 4, //rows, cols
                 10, INITY_DEFAULT,        //initX, initY
                 XPAD_DEFAULT, YPAD_DEFAULT);       //xPad, yPad	
 		
+		WebPanel operatorPanel = new WebPanel(new FlowLayout());
+		topPanel.add(operatorPanel, BorderLayout.CENTER);
+		
+		// Create OperatorLabel
+		operatorLabel = addTextField(operatorPanel, Msg.getString("BuildingPanelEVA.operator"),
+									 eva.getOperatorName(), 10, null);
+				
 		// Create occupant panel
 		WebPanel occupantPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 		addBorder(occupantPanel, Msg.getString("BuildingPanelEVA.titledB.occupants"));
@@ -190,33 +200,38 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 	public void update() {
 
 		// Update innerDoorLabel
-		if (innerDoorCache != eva.getNumAwaitingInnerDoor()) {
-			innerDoorCache = eva.getNumAwaitingInnerDoor();
-			innerDoorLabel.setText(Integer.toString(innerDoorCache));
+		int inner = eva.getNumAwaitingInnerDoor();
+		if (innerDoorCache != inner) {
+			innerDoorCache = inner;
+			innerDoorLabel.setText(Integer.toString(inner));
 		}
 
 		// Update outerDoorLabel
-		if (outerDoorCache != eva.getNumAwaitingOuterDoor()) {
-			outerDoorCache = eva.getNumAwaitingOuterDoor();
-			outerDoorLabel.setText(Integer.toString(outerDoorCache));
+		int outer = eva.getNumAwaitingOuterDoor();
+		if (outerDoorCache != outer) {
+			outerDoorCache = outer;
+			outerDoorLabel.setText(Integer.toString(outer));
 		}
 
 		// Update occupiedLabel
-		if (occupiedCache != eva.getNumInChamber()) {
-			occupiedCache = eva.getNumInChamber();
-			occupiedLabel.setText(Integer.toString(occupiedCache));
+		int num0 = eva.getNumInChamber();
+		if (occupiedCache != num0) {
+			occupiedCache = num0;
+			occupiedLabel.setText(Integer.toString(num0));
 		}
 
 		// Update emptyLabel
-		if (emptyCache != eva.getNumEmptied()) {
-			emptyCache = eva.getNumEmptied();
-			emptyLabel.setText(Integer.toString(emptyCache));
+		int num = eva.getNumEmptied();
+		if (emptyCache != num) {
+			emptyCache = num;
+			emptyLabel.setText(Integer.toString(num));
 		}
 
 		// Update operatorLabel
-		if (!operatorCache.equalsIgnoreCase(eva.getOperatorName())) {
-			operatorCache = eva.getOperatorName();
-			operatorLabel.setText(operatorCache);
+		String name = eva.getOperatorName();
+		if (!operatorCache.equalsIgnoreCase(name)) {
+			operatorCache = name;
+			operatorLabel.setText(name);
 		}
 
 		// Update airlockStateLabel
@@ -230,9 +245,16 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 		boolean activated = buildingAirlock.isActivated();
 		if (activationCache != activated) {
 			activationCache = activated;
-			activationLabel.setText(activated + "");
+			activationLabel.setText(Boolean.toString(activated));
 		}
 
+		// Update activationLabel
+		boolean transition = buildingAirlock.isTransitioning();
+		if (transitionCache != transition) {
+			transitionCache = transition;
+			transitionLabel.setText(Boolean.toString(transition));
+		}
+		
 		// Update cycleTimeLabel
 		double time = buildingAirlock.getRemainingCycleTime();
 		if (cycleTimeCache != time) {

@@ -222,9 +222,9 @@ implements Serializable {
 
             if (!LocalAreaUtil.isPositionWithinLocalBoundedObject(robot.getPosition(), building)) {
             	logger.log(robot, Level.SEVERE, 5000,
-            			"Invalid walk start location at (" +
+            			"Invalid walk start location at " +
                         robot.getPosition()
-                        + ") and not within " + building + ".");
+                        + ", not within " + building + ".");
             }
         }
 
