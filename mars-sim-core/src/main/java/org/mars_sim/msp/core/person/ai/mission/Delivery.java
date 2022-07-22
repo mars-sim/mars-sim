@@ -13,12 +13,11 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Level;
 
-import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.goods.CommerceMission;
 import org.mars_sim.msp.core.goods.CommerceUtil;
-import org.mars_sim.msp.core.goods.CreditManager;
+import org.mars_sim.msp.core.goods.Deal;
 import org.mars_sim.msp.core.goods.Good;
 import org.mars_sim.msp.core.goods.GoodCategory;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -29,7 +28,6 @@ import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Drone;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -95,37 +93,25 @@ public class Delivery extends DroneMission implements CommerceMission {
 
 		if (!isDone() && s != null) {
 			// Get trading settlement
-			tradingSettlement = s.getGoodsManager().getBestDeal(MissionType.DELIVERY, getVehicle()).getBuyer();
-			if (tradingSettlement == null) {
+			Deal deal = s.getGoodsManager().getBestDeal(MissionType.DELIVERY, getVehicle());
+			if (deal == null) {
 				endMission(MissionStatus.NO_TRADING_SETTLEMENT);
 				return;
 			}
 
+			tradingSettlement = deal.getBuyer();
 			addNavpoint(tradingSettlement);
 
 			if (!isDone()) {
-				// Get the credit that the starting settlement has with the destination
-				// settlement.
-				double credit = CreditManager.getCredit(s, tradingSettlement);
-
-				if (credit > (CommerceUtil.SELL_CREDIT_LIMIT * -1D)) {
-					// Determine desired buy load,
-					desiredBuyLoad = CommerceUtil.getDesiredBuyLoad(s, getDrone(), tradingSettlement);
-				} else {
-					// Cannot buy from settlement due to credit limit.
-					desiredBuyLoad = new HashMap<>();
-				}
-
-				if (credit < CommerceUtil.SELL_CREDIT_LIMIT) {
-					// Determine sell load.
-					sellLoad = CommerceUtil.determineBestSellLoad(s, getDrone(), tradingSettlement);
-				} else {
-					// Will not sell to settlement due to credit limit.
-					sellLoad = new HashMap<>();
-				}
-
+				// Determine desired buy load,
+				desiredBuyLoad = CommerceUtil.getDesiredBuyLoad(s, getDrone(), tradingSettlement);
+				
+				// Determine sell load.
+				sellLoad = CommerceUtil.determineBestSellLoad(s, getDrone(), tradingSettlement);
+				
 				// Determine desired trade profit.
-				desiredProfit = estimateDeliveryProfit(desiredBuyLoad);
+				desiredProfit = CommerceUtil.getEstimatedProfit(s, getDrone(), tradingSettlement,
+											buyLoad, sellLoad);
 			}
 
 			// Recruit additional members to mission.
@@ -175,7 +161,8 @@ public class Delivery extends DroneMission implements CommerceMission {
 		sellLoad = sellGoods;
 		buyLoad = buyGoods;
 		desiredBuyLoad = new HashMap<>(buyGoods);
-		profit = estimateDeliveryProfit(buyLoad);
+		profit = CommerceUtil.getEstimatedProfit(getStartingSettlement(), getDrone(), tradingSettlement,
+											buyLoad, sellLoad);
 		desiredProfit = profit;
 
 		// Set initial phase
@@ -288,7 +275,8 @@ public class Delivery extends DroneMission implements CommerceMission {
 				if (negotiationTask != null) {
 					if (negotiationTask.isDone()) {
 						buyLoad = negotiationTask.getBuyLoad();
-						profit = estimateDeliveryProfit(buyLoad);
+						profit = CommerceUtil.getEstimatedProfit(getStartingSettlement(), getDrone(), tradingSettlement,
+											buyLoad, sellLoad);
 						fireMissionUpdate(MissionEventType.BUY_LOAD_EVENT);
 						setPhaseEnded(true);
 					}
@@ -620,39 +608,7 @@ public class Delivery extends DroneMission implements CommerceMission {
 		return tradingSettlement;
 	}
 
-	/**
-	 * Estimates the profit for the starting settlement for a given buy load.
-	 *
-	 * @param buyingLoad the load to buy.
-	 * @return profit (VP).
-	 */
-	private double estimateDeliveryProfit(Map<Good, Integer> buyingLoad) {
-		double result = 0D;
 
-		try {
-			double sellingCreditHome = CommerceUtil.determineLoadCredit(sellLoad, getStartingSettlement(), false);
-			double sellingCreditRemote = CommerceUtil.determineLoadCredit(sellLoad, tradingSettlement, true);
-			double sellingProfit = sellingCreditRemote - sellingCreditHome;
-
-			double buyingCreditHome = CommerceUtil.determineLoadCredit(buyingLoad, getStartingSettlement(), true);
-			double buyingCreditRemote = CommerceUtil.determineLoadCredit(buyingLoad, tradingSettlement, false);
-			double buyingProfit = buyingCreditHome - buyingCreditRemote;
-
-			double totalProfit = sellingProfit + buyingProfit;
-
-			double estimatedDistance = Coordinates.computeDistance(getStartingSettlement().getCoordinates(),
-					tradingSettlement.getCoordinates()) * 2D;
-			double missionCost = CommerceUtil.getEstimatedMissionCost(getStartingSettlement(), getDrone(),
-					estimatedDistance);
-
-			result = totalProfit - missionCost;
-		} catch (Exception e) {
-          	logger.log(Level.SEVERE, "Cannot estimate delivery profit: "+ e.getMessage());
-          	endMission(MissionStatus.COULD_NOT_ESTIMATE_TRADE_PROFIT);
-		}
-
-		return result;
-	}
 
 	@Override
 	public void destroy() {
@@ -669,47 +625,5 @@ public class Delivery extends DroneMission implements CommerceMission {
 			desiredBuyLoad.clear();
 		desiredBuyLoad = null;
 		negotiationTask = null;
-	}
-
-	/**
-	 * Inner class for storing trade profit info.
-	 */
-	public static class DeliveryProfitInfo {
-
-		public double profit;
-		public MarsClock time;
-
-		public DeliveryProfitInfo(double profit, MarsClock time) {
-			this.profit = profit;
-			this.time = time;
-		}
-	}
-
-	/**
-	 * If the mission is in the UNLOAD_GOODS phase at the trading settlement
-	 * then it can be unloaded.
-	 */
-	@Override
-	public boolean isVehicleUnloadableHere(Settlement settlement) {
-		if (UNLOAD_GOODS.equals(getPhase())
-					&& settlement.equals(tradingSettlement)) {
-			return true;
-		}
-		return super.isVehicleUnloadableHere(settlement);
-	}
-
-	/**
-	 * Can the mission vehicle be loaded at a Settlement. Must be in
-	 * the LOAD_GOODS phase at the mission trading settlement.
-	 * @param settlement
-	 * @return
-	 */
-	@Override
-	public boolean isVehicleLoadableHere(Settlement settlement) {
-		if (LOAD_GOODS.equals(getPhase())
-					&& settlement.equals(tradingSettlement)) {
-			return true;
-		}
-		return super.isVehicleLoadableHere(settlement);
 	}
 }

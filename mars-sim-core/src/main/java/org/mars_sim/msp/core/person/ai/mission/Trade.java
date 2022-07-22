@@ -13,7 +13,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Level;
 
-import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.InventoryUtil;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalPosition;
@@ -22,7 +21,7 @@ import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.goods.CommerceMission;
 import org.mars_sim.msp.core.goods.CommerceUtil;
-import org.mars_sim.msp.core.goods.CreditManager;
+import org.mars_sim.msp.core.goods.Deal;
 import org.mars_sim.msp.core.goods.Good;
 import org.mars_sim.msp.core.goods.GoodCategory;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -102,37 +101,22 @@ public class Trade extends RoverMission implements CommerceMission {
 
 		if (!isDone() && s != null) {
 			// Get trading settlement
-			tradingSettlement = s.getGoodsManager().getBestDeal(MissionType.TRADE, getVehicle()).getBuyer();
-			if (tradingSettlement == null) {
+			Deal deal = s.getGoodsManager().getBestDeal(MissionType.TRADE, getVehicle());
+			if (deal == null) {
 				endMission(MissionStatus.NO_TRADING_SETTLEMENT);
 				return;
 			}
-
+			tradingSettlement = deal.getBuyer();
 			addNavpoint(tradingSettlement);
 
-			// Get the credit that the starting settlement has with the destination
-			// settlement.
-			double credit = CreditManager.getCredit(s, tradingSettlement);
-
-			if (credit > (CommerceUtil.SELL_CREDIT_LIMIT * -1D)) {
-				// Determine desired buy load,
-				desiredBuyLoad = CommerceUtil.getDesiredBuyLoad(s, getRover(), tradingSettlement);
-			} else {
-				// Cannot buy from settlement due to credit limit.
-				desiredBuyLoad = new HashMap<>(0);
-			}
-
-			if (credit < CommerceUtil.SELL_CREDIT_LIMIT) {
-				// Determine sell load.
-				sellLoad = CommerceUtil.determineBestSellLoad(s, getRover(), tradingSettlement);
-			} else {
-				// Will not sell to settlement due to credit limit.
-				sellLoad = new HashMap<>(0);
-			}
+			// Determine desired buy load,
+			desiredBuyLoad = CommerceUtil.getDesiredBuyLoad(s, getRover(), tradingSettlement);
+			
+			// Determine sell load.
+			sellLoad = CommerceUtil.determineBestSellLoad(s, getRover(), tradingSettlement);
 
 			// Determine desired trade profit.
-			desiredProfit = estimateTradeProfit(desiredBuyLoad);
-
+			desiredProfit = CommerceUtil.getEstimatedProfit(s, getRover(), tradingSettlement, desiredBuyLoad, sellLoad);
 
 			// Recruit additional members to mission.
 			if (!isDone()) {
@@ -184,7 +168,8 @@ public class Trade extends RoverMission implements CommerceMission {
 		sellLoad = sellGoods;
 		buyLoad = buyGoods;
 		desiredBuyLoad = new HashMap<>(buyGoods);
-		profit = estimateTradeProfit(buyLoad);
+		profit = CommerceUtil.getEstimatedProfit(getStartingSettlement(), getRover(), tradingSettlement, buyLoad, sellLoad);
+
 		desiredProfit = profit;
 
 		// Set initial phase
@@ -335,7 +320,7 @@ public class Trade extends RoverMission implements CommerceMission {
 				if (negotiationTask != null) {
 					if (negotiationTask.isDone()) {
 						buyLoad = negotiationTask.getBuyLoad();
-						profit = estimateTradeProfit(buyLoad);
+						profit = CommerceUtil.getEstimatedProfit(getStartingSettlement(), getRover(), tradingSettlement, buyLoad, sellLoad);
 						fireMissionUpdate(MissionEventType.BUY_LOAD_EVENT);
 						setPhaseEnded(true);
 					}
@@ -847,40 +832,6 @@ public class Trade extends RoverMission implements CommerceMission {
 	 */
 	public Settlement getTradingSettlement() {
 		return tradingSettlement;
-	}
-
-	/**
-	 * Estimates the profit for the starting settlement for a given buy load.
-	 *
-	 * @param buyingLoad the load to buy.
-	 * @return profit (VP).
-	 */
-	private double estimateTradeProfit(Map<Good, Integer> buyingLoad) {
-		double result = 0D;
-
-		try {
-			double sellingValueHome = CommerceUtil.determineLoadCredit(sellLoad, getStartingSettlement(), false);
-			double sellingValueRemote = CommerceUtil.determineLoadCredit(sellLoad, tradingSettlement, true);
-			double sellingProfit = sellingValueRemote - sellingValueHome;
-
-			double buyingValueHome = CommerceUtil.determineLoadCredit(buyingLoad, getStartingSettlement(), true);
-			double buyingValueRemote = CommerceUtil.determineLoadCredit(buyingLoad, tradingSettlement, false);
-			double buyingProfit = buyingValueHome - buyingValueRemote;
-
-			double totalProfit = sellingProfit + buyingProfit;
-
-			double estimatedDistance = Coordinates.computeDistance(getStartingSettlement().getCoordinates(),
-					tradingSettlement.getCoordinates()) * 2D;
-			double missionCost = CommerceUtil.getEstimatedMissionCost(getStartingSettlement(), getRover(),
-					estimatedDistance);
-
-			result = totalProfit - missionCost;
-		} catch (Exception e) {
-			logger.severe(getVehicle(), "Cannot estimate trade profit: ", e);
-			endMission(MissionStatus.COULD_NOT_ESTIMATE_TRADE_PROFIT);
-		}
-
-		return result;
 	}
 
 	@Override

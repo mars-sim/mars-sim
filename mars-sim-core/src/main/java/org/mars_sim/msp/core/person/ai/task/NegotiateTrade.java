@@ -7,14 +7,11 @@
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.goods.CommerceUtil;
-import org.mars_sim.msp.core.goods.CreditManager;
 import org.mars_sim.msp.core.goods.Good;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
@@ -107,50 +104,15 @@ public class NegotiateTrade extends Task implements Serializable {
 		if (getDuration() <= (getTimeCompleted() + time)) {
 
 			double tradeModifier = determineTradeModifier();
+			logger.info(person, "Negotiation completed -  Buyer: " + buyingSettlement.getName() 
+						+ "  Seller: " + sellingSettlement.getName()
+						+ "  Trade Mod: " + Math.round(tradeModifier * 10.0)/10.0);
 
-			// Get the value of the load that is being sold to the destination settlement.
-			double baseSoldLoadValue = CommerceUtil.determineLoadCredit(soldLoad, sellingSettlement, true);
-			double soldLoadValue = baseSoldLoadValue * tradeModifier;
+			buyLoad = CommerceUtil.negotiateDeal(sellingSettlement, buyingSettlement, rover, tradeModifier, soldLoad);
 
-			// Get the credit that the starting settlement has with the destination
-			// settlement.
-			double credit = CreditManager.getCredit(buyingSettlement, sellingSettlement);
-			credit += soldLoadValue;
-			CreditManager.setCredit(buyingSettlement, sellingSettlement, credit);
-
-			logger.log(person, Level.INFO, 0, 
-					"Completed a trade negotiation as follows: "
-					+ "  Buyer: " + buyingSettlement.getName() 
-					+ "  Seller: " + sellingSettlement.getName()
-					+ "  Credit: " + Math.round(credit* 10.0)/10.0 
-					+ "  Mod: " + Math.round(tradeModifier * 10.0)/10.0
-					);
-
-			// Check if buying settlement owes the selling settlement too much for them to
-			// sell.
-			if (credit > (-1D * CommerceUtil.SELL_CREDIT_LIMIT)) {
-
-				// Determine the initial buy load based on goods that are profitable for the
-				// destination settlement to sell.
-				buyLoad = CommerceUtil.determineLoad(buyingSettlement, sellingSettlement, rover, Double.POSITIVE_INFINITY);
-				double baseBuyLoadValue = CommerceUtil.determineLoadCredit(buyLoad, buyingSettlement, true);
-				double buyLoadValue = baseBuyLoadValue / tradeModifier;
-
-				// Update the credit value between the starting and destination settlements.
-				credit -= buyLoadValue;
-				CreditManager.setCredit(buyingSettlement, sellingSettlement, credit);
-				
-				logger.log(person, Level.INFO, 0,
-						"Updated the account ledger as follows: "
-						+ "  Credit: " + Math.round(credit * 10.0)/10.0
-						+ "  Mod: " + Math.round(tradeModifier * 10.0)/10.0
-						);
-			} else {
-				buyLoad = new HashMap<>();
-			}
 		}
 
-		return getTimeCompleted() + time - getDuration();
+		return 0;
 	}
 
 	/**

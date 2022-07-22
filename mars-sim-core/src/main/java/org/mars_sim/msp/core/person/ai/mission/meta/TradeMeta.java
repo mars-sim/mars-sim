@@ -11,6 +11,7 @@ import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.goods.CommerceUtil;
+import org.mars_sim.msp.core.goods.Deal;
 import org.mars_sim.msp.core.goods.GoodsManager;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
@@ -97,19 +98,15 @@ public class TradeMeta extends AbstractMetaMission {
 
 		double missionProbability;
 		
-		// Check for the best trade settlement within range.
-		double tradeProfit = 0D;
-			
+		// Check for the best trade settlement within range.			
 		Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(MissionType.TRADE, settlement, false);
 		GoodsManager gManager = settlement.getGoodsManager();
-		try {
-			if (rover != null) {
-				tradeProfit = gManager.getBestDeal(MissionType.TRADE, rover).getProfit();
-			}
-		} catch (Exception e) {
-			logger.log(Level.SEVERE, "Issues with TradeUtil.", e);
+
+		Deal deal = gManager.getBestDeal(MissionType.TRADE, rover);
+		if (deal == null) {
 			return 0;
-		}
+		}	
+		double tradeProfit = deal.getProfit();
 
 		// Trade value modifier.
 		missionProbability = tradeProfit / 1000D * gManager.getTradeFactor();
@@ -141,6 +138,5 @@ public class TradeMeta extends AbstractMetaMission {
 		}
 
 		return missionProbability;
-	}
-	
+	}	
 }

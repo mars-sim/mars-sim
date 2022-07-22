@@ -12,7 +12,7 @@ import org.mars_sim.msp.core.time.MarsClock;
 /**
  * Represents a potential deal with another Settlement.
  */
-public class Deal {
+public class Deal implements Comparable<Deal> {
 	private Settlement buyer;
 	private double profit;
 	private MarsClock created;
@@ -33,5 +33,13 @@ public class Deal {
 
     public MarsClock getCreated() {
         return created;
+    }
+
+    /**
+     * Order Deal according to increasing profit
+     */
+    @Override
+    public int compareTo(Deal other) {
+        return Double.compare(profit, other.profit);
     }
 }

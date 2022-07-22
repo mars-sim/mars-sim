@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.structure.Settlement;
 
 /**
@@ -25,6 +26,7 @@ public class CreditManager implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
+	private static SimLogger logger = SimLogger.getLogger(CreditManager.class.getName());
 
 	// Domain members
 	private int settlementID;
@@ -104,6 +106,10 @@ public class CreditManager implements Serializable {
 		if (settlement1.getCreditManager().getCreditMap().containsKey(id))
 			settlement1.getCreditManager().getCreditMap().put(id, amount);
 		
+						
+		logger.info(settlement1, "Account ledger updated for " + settlement2.getName()
+				+ "  Credit: " + Math.round(amount * 10.0)/10.0);
+
 		// Update listeners.
 		synchronized (settlement1.getCreditManager().getListeners()) {
 			Iterator<CreditListener> i = settlement1.getCreditManager().getListeners().iterator();

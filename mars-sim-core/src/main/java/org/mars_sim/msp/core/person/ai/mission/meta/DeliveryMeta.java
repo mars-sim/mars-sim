@@ -10,6 +10,7 @@ import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.goods.CommerceUtil;
+import org.mars_sim.msp.core.goods.Deal;
 import org.mars_sim.msp.core.goods.GoodsManager;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
@@ -104,10 +105,7 @@ public class DeliveryMeta extends AbstractMetaMission {
 		double missionProbability = 0;
 
 		// Check for the best delivery settlement within range.
-		double deliveryProfit = 0D;
-		
 		Drone drone = (Drone) DroneMission.getDroneWithGreatestRange(MissionType.DELIVERY, settlement, false);
-		
 		if (drone == null) {
 			return 0;
 		}
@@ -115,14 +113,11 @@ public class DeliveryMeta extends AbstractMetaMission {
 		logger.info(drone, 10_000L, "Available for delivery mission.");
 		GoodsManager gManager = settlement.getGoodsManager();
 
-		try {
-			// Only check every couple of Sols, else use cache.
-			// Note: this method is very CPU intensive.
-			deliveryProfit = gManager.getBestDeal(MissionType.DELIVERY, drone).getProfit() * VALUE;
-		} catch (Exception e) {
-			logger.log(Level.SEVERE, "Issues with CommerceUtil: ", e);
+		Deal deal = gManager.getBestDeal(MissionType.DELIVERY, drone);
+		if (deal == null) {
 			return 0;
-		}
+		}	
+		double deliveryProfit = deal.getProfit() * VALUE;
 
 		// Delivery value modifier.
 		missionProbability = deliveryProfit / DIVISOR * gManager.getTradeFactor();

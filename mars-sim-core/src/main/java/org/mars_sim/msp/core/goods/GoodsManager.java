@@ -24,7 +24,6 @@ import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.vehicle.Drone;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleType;
 
@@ -655,6 +654,7 @@ public class GoodsManager implements Serializable {
 		unitManager = u;
 		marsClock = c;
 		Good.initializeInstances(sc, c, m);
+		CommerceUtil.initializeInstances(c, m, u);
 	}
 
 	/**
@@ -705,8 +705,9 @@ public class GoodsManager implements Serializable {
 
 		// Recalculate
 		Deal best = CommerceUtil.getBestDeal(settlement, commerce, delivery);
-		deals.put(commerce, best);
-
+		if (best != null) {
+			deals.put(commerce, best);
+		}
 		return best;
 	}
 

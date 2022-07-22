@@ -43,6 +43,7 @@ public class SettlementChat extends ConnectedUnitCommand {
 																	MissionRadiusCommand.RADIUS,
 																	PeopleCommand.PEOPLE,
 																	LevelCommand.LEVEL,
+																	TradeCommand.TRADE,
 																	new ResourceHolderRefillCommand(SETTLEMENT_GROUP),
 																	new EquipmentCommand(SETTLEMENT_GROUP),
 																	new InventoryCommand(SETTLEMENT_GROUP),
