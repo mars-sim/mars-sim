@@ -57,10 +57,11 @@ class AmountResourceGood extends Good {
 	private static final double INITIAL_AMOUNT_DEMAND = 0;
 	private static final double INITIAL_AMOUNT_SUPPLY = 0;
 
+	private static final double CH4_VALUE = 0.001;
 	private static final double H2_VALUE = 0.01;
-	private static final double CO_VALUE = 0.001;
+	private static final double CO_VALUE = 0.000005;
     private static final double CO2_VALUE = 0.00001;
-	private static final double CL_VALUE = 0.01;
+	private static final double CL_VALUE = 0.1;
 	private static final double ICE_VALUE = 1.5;
 	private static final double FOOD_VALUE = 0.1;
 	private static final double DERIVED_VALUE = .07;
@@ -91,7 +92,7 @@ class AmountResourceGood extends Good {
 	private static final double METEORITE_MODIFIER = 1.05;
 	private static final double SALT_VALUE_MODIFIER = .2;
 	private static final double OXYGEN_VALUE_MODIFIER = .02D;
-	private static final double METHANE_VALUE_MODIFIER = 5D;
+	private static final double METHANE_VALUE_MODIFIER = 1;
 	private static final double LIFE_SUPPORT_FACTOR = .005;
 	private static final double FOOD_VALUE_MODIFIER = .1;
 
@@ -126,7 +127,7 @@ class AmountResourceGood extends Good {
     AmountResourceGood(AmountResource ar) {
         super(ar.getName(), ar.getID());
 
-		// Calcualted fixed values
+		// Calculate fixed values
 		flattenDemand = calculateFlattenAmountDemand(ar);
 		costModifier = calculateCostModifier(ar);
     }
@@ -204,6 +205,8 @@ class AmountResourceGood extends Good {
 //        else
 //            result += STANDARD_AMOUNT_VALUE ;
   
+        else if (ar.getName().equalsIgnoreCase("methane"))
+            result += CH4_VALUE;
         else if (ar.getName().equalsIgnoreCase("hydrogen"))
             result += H2_VALUE;
         else if (ar.getName().equalsIgnoreCase("chlorine"))
@@ -262,7 +265,6 @@ class AmountResourceGood extends Good {
 		amount += getPersonOnEVA(settlement)
                     .map(p -> p.getAmountResourceStored(getID()))
                     .collect(Collectors.summingDouble(f -> f));
-
 
 		// Get the amount of the resource that will be produced by ongoing manufacturing
 		// processes.
