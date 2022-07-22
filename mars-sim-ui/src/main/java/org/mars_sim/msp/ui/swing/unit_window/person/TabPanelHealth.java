@@ -211,33 +211,34 @@ extends TabPanel {
 		WebLabel sleepHrLabel = new WebLabel(Msg.getString("TabPanelFavorite.sleepHour"), WebLabel.RIGHT); //$NON-NLS-1$
 		springPanel.add(sleepHrLabel);
 
-		// Checks the two best sleep hours
+		// Checks the 3 best sleep time
     	int bestSleepTime[] = person.getPreferredSleepHours();		
 		WebPanel wrapper5 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		Arrays.sort(bestSleepTime);
 		
-		// Prepare sleep hour TF
+		// Prepare sleep time TF
 		String text = "";
 		int size = bestSleepTime.length;
 		for (int i=0; i<size; i++) {
-			text += bestSleepTime[i] + "";
+			text += bestSleepTime[i] + " (" 
+					+ person.getSleepWeight(bestSleepTime[i]) + ")";
 			if (i != size - 1)
-				text += " and ";
+				text += ",  ";
 		}
 		sleepTF = new WebTextField(text);
 		sleepTF.setEditable(false);
-		sleepTF.setColumns(8);
+		sleepTF.setColumns(20);
 		sleepTF.setCaretPosition(0);
 		wrapper5.add(sleepTF);
 		springPanel.add(wrapper5);
 
-		TooltipManager.setTooltip (sleepTF, "Time in msols", TooltipWay.down); //$NON-NLS-1$
+		TooltipManager.setTooltip (sleepTF, "3 best times to go to bed [msol (weight)]", TooltipWay.down); //$NON-NLS-1$
 				
 		// Prepare SpringLayout
 		SpringUtilities.makeCompactGrid(springPanel,
 		                                1, 2, //rows, cols
-		                                120, 10,        //initX, initY
-		                                7, 3);       //xPad, yPad
+		                                50, 10,        //initX, initY
+		                                5, 3);       //xPad, yPad
 	
 		content.add(northPanel, BorderLayout.NORTH);
 		
@@ -473,19 +474,22 @@ extends TabPanel {
 					String.format(S4, newP)));
 		}
 		
-		// Checks the two best sleep hours
+		// Checks the 3 best sleep times
     	int bestSleepTime[] = person.getPreferredSleepHours();		
 		Arrays.sort(bestSleepTime);
 		
-		// Prepare sleep hour TF
+		// Prepare sleep time TF
 		String text = "";
 		int size = bestSleepTime.length;
 		for (int i=0; i<size; i++) {
-			text += bestSleepTime[i] + "";
+			text += bestSleepTime[i] + " (" 
+					+ person.getSleepWeight(bestSleepTime[i]) + ")";
 			if (i != size - 1)
-				text += " and ";
+				text += ", ";
 		}
-		sleepTF.setText(text);
+		
+		if (!sleepTF.getText().equalsIgnoreCase(text))
+			sleepTF.setText(text);
 		
 		// Update medication table model.
 		medicationTableModel.update();

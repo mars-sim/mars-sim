@@ -51,7 +51,7 @@ public class ExitAirlock extends Task implements Serializable {
 
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.exitAirlock"); //$NON-NLS-1$
-	private static final String PREBREATH_HALF_DONE = "Can't Egress. Other occupant(s) have half pre-breathed.";
+	private static final String PREBREATH_HALF_DONE = "Other occupant(s) have half pre-breathed.";
 	private static final String RESERVATION_NOT_MADE = "Reservation not made.";
 	private static final String NOT_FIT = "Not fit";
 	private static final String INNER_DOOR_LOCKED = "Inner door was locked.";
@@ -398,7 +398,7 @@ public class ExitAirlock extends Task implements Serializable {
 			}
 
 			if (airlock.isChamberFull() || !airlock.hasSpace()) {
-				walkAway(person, "Chamber full.");
+				walkAway(person, CHAMBER_FULL);
 				return 0;
 			}
 			
@@ -493,7 +493,7 @@ public class ExitAirlock extends Task implements Serializable {
 		}
 
 		if (isOccupantHalfPrebreathed()) {
-			walkAway(person, PREBREATH_HALF_DONE);
+			walkAway(person, "Can't pressurize chamber - " + PREBREATH_HALF_DONE);
 			return remainingTime;
 		}
 		
@@ -537,12 +537,12 @@ public class ExitAirlock extends Task implements Serializable {
 		boolean canProceed = false;
 
 		if (!isFit()) {
-			walkAway(person, NOT_FIT + " to enter airlock.");
+			walkAway(person, NOT_FIT + " to enter an airlock.");
 			return remainingTime;
 		}
 
 		if (isOccupantHalfPrebreathed()) {
-			walkAway(person, PREBREATH_HALF_DONE);
+			walkAway(person, "Can't enter an airlock - " + PREBREATH_HALF_DONE);
 			return remainingTime;
 		}
 		
@@ -755,7 +755,7 @@ public class ExitAirlock extends Task implements Serializable {
 		}
 
 		if (isOccupantHalfPrebreathed()) {
-			walkAway(person, PREBREATH_HALF_DONE);
+			walkAway(person, "Can't don an EVA suit - " + PREBREATH_HALF_DONE);
 			return remainingTime;
 		}
 		

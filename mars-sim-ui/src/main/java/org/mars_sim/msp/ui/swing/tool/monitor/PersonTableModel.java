@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * PersonTableModel.java
- * @date 2021-12-07
+ * @date 2022-07-21
  * @author Barry Evans
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
@@ -16,7 +16,6 @@ import java.util.logging.Logger;
 
 import javax.swing.SwingUtilities;
 
-import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;

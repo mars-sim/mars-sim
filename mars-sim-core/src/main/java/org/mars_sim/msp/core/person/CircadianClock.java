@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * CircadianClock.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-21
  * @author Manny Kung
  */
 
@@ -24,12 +24,6 @@ public class CircadianClock implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
-	/** default logger. */
-//	private static final Logger logger = Logger.getLogger(CircadianClock.class.getName());
-
-//	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-//			logger.getName().length());
 
 	/** Sleep Habit Map resolution. */
 	private static double SLEEP_INFLATION = 1.15;
@@ -147,25 +141,47 @@ public class CircadianClock implements Serializable {
 	/**
 	 * Gets the key of the Sleep Cycle Map with the highest weight
 	 * 
-	 * @return int[] the two best times in integer
+	 * @return int[] the 3 best sleep time in integer
 	 */
 	public int[] getPreferredSleepHours() {
-		int largest[] = { 0, 0 };
-		// Iterator<Integer> i = sleepCycleMap.keySet().iterator();
-		// while (i.hasNext()) {
-		for (int key : sleepCycleMap.keySet()) {// int key = i.next();
+		int largestKey[] = {0, 0, 0};
+		int largestValue[] = {0, 0, 0};
+		for (int key : sleepCycleMap.keySet()) {
 			int value = sleepCycleMap.get(key);
-			if (value > largest[0]) {
-				largest[1] = largest[0];
-				largest[0] = key;
-			} else if (value > largest[1])
-				largest[1] = key;
-
+			if (value > largestValue[2]) {
+				largestValue[0] = largestValue[1];
+				largestValue[1] = largestValue[2];
+				largestValue[2] = value;
+				largestKey[0] = largestKey[1];
+				largestKey[1] = largestKey[2];
+				largestKey[2] = key;
+			} if (value > largestValue[1]) {
+				largestValue[0] = largestValue[1];
+				largestValue[1] = value;
+				largestKey[0] = largestKey[1];
+				largestKey[1] = key;
+			} else if (value > largestValue[0]) {
+				largestValue[0] = value;
+				largestKey[0] = key;
+			}
 		}
 
-		return largest;
+		return largestKey;
 	}
 
+	/**
+	 * Returns the weight/desire for sleep at a msol.
+	 * 
+	 * @param index
+	 * @return
+	 */
+	public int getSleepWeight(int msol) {
+		if (sleepCycleMap.containsKey(msol)) {
+			return sleepCycleMap.get(msol);
+		}
+		return 0;
+	}
+	
 	/**
 	 * Updates the weight of the Sleep Cycle Map
 	 * 

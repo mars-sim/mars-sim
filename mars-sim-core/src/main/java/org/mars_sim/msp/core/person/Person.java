@@ -1359,6 +1359,16 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 		return circadian.getPreferredSleepHours();
 	}
 
+	/**
+	 * Returns the weight/desire for sleep at a msol.
+	 * 
+	 * @param index
+	 * @return
+	 */
+	public int getSleepWeight(int msol) {
+		return circadian.getSleepWeight(msol);
+	}
+	
 	public void updateSleepCycle(int millisols, boolean updateType) {
 		circadian.updateSleepCycle(millisols, updateType);
 	}

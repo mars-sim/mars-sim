@@ -535,31 +535,34 @@ public class EnterAirlock extends Task implements Serializable {
 
 		boolean canProceed = false;
 
-		if (transitionTo(2)) {
-			canProceed = true;
-		}
-		else {
-			setPhase(ENTER_AIRLOCK);
-			return 0;
-		}
-		
-		if (!inSettlement) {
-
-			if (insideAirlockPos == null) {
-				insideAirlockPos = airlock.getAvailableAirlockPosition();
-			}
-
-			if (insideAirlockPos != null && insideAirlockPos.isClose(person.getPosition())) {
+		if (inSettlement) {
+			
+			if (transitionTo(2)) {
 				canProceed = true;
 			}
-
 			else {
-				Rover airlockRover = (Rover) airlock.getEntity();
-				logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4_000, "Walked to the reference position.");
- 
-				// Walk to interior airlock position.
-				addSubTask(new WalkRoverInterior(person, airlockRover, insideAirlockPos));
+				setPhase(ENTER_AIRLOCK);
+				return 0;
 			}
+		}
+		
+		else {
+
+//			if (insideAirlockPos == null) {
+//				insideAirlockPos = airlock.getAvailableAirlockPosition();
+//			}
+//
+//			if (insideAirlockPos != null && insideAirlockPos.isClose(person.getPosition())) {
+				canProceed = true;
+//			}
+
+//			else {
+//				Rover airlockRover = (Rover) airlock.getEntity();
+//				logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4_000, "Walked to the reference position.");
+// 
+//				// Walk to interior airlock position.
+//				addSubTask(new WalkRoverInterior(person, airlockRover, insideAirlockPos));
+//			}
 		}
 
 		if (canProceed) {
