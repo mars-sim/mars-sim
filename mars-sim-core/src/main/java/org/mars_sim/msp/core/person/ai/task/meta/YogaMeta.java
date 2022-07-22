@@ -41,14 +41,7 @@ public class YogaMeta extends MetaTask {
         double result = 0D;
 
         if (!person.getPreference().isTaskDue(this) && person.isInSettlement()) {
-	
-            double pref = person.getPreference().getPreferenceScore(this);
-            if (pref < 0D) {
-                return 0;
-            }
-            
-         	result = pref * 5D;
-         	
+
             // Probability affected by the person's stress and fatigue.
             PhysicalCondition condition = person.getPhysicalCondition();
             double stress = condition.getStress();
@@ -58,19 +51,20 @@ public class YogaMeta extends MetaTask {
             if (fatigue > 1000 || hunger > 750)
             	return 0;
             
+        	// Doing yoga is less popular than doing regular workout
+            result += fatigue / 20D;
+            if (result < 0D) {
+                result = 0D;
+            }
+            
+            double pref = person.getPreference().getPreferenceScore(this);
+         	result += pref * 1.5D;
+         	
             if (pref > 0) {
-             	if (stress > 45D)
-             		result*=1.5;
-             	else if (stress > 65D)
-             		result*=2D;
-             	else if (stress > 85D)
-             		result*=3D;
-             	else
-             		result*=4D;
+            	result *= (1 + stress/20.0);
             }
-            else {
-            	return 0;
-            }
+            else
+            	result = 0;
 
             // Get an available gym.
             Building building = Workout.getAvailableGym(person);
@@ -78,12 +72,6 @@ public class YogaMeta extends MetaTask {
                 result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
                 result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
             } // a person can still have workout on his own without a gym in MDP Phase 1-3
-
-        	// doing yoga is less popular than doing regular workout
-            result += condition.getFatigue() / 20D;
-            if (result < 0D) {
-                result = 0D;
-            }
         }
         
         return result;

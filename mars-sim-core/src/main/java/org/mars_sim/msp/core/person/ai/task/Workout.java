@@ -80,7 +80,6 @@ public class Workout extends Task implements Serializable {
 		} else {
 			endTask();
 		}
-
 	}
 
 	@Override
@@ -101,13 +100,17 @@ public class Workout extends Task implements Serializable {
 	 * @return the amount of time (millisols) left over after performing the phase.
 	 */
 	private double exercisingPhase(double time) {
+		// Regulates hormones
 		person.getCircadianClock().exercise(time);
-		person.getPhysicalCondition().workOut();
+		//Improves musculoskeletal systems
+		person.getPhysicalCondition().workOut(time);
+		// Record the sleep time [in millisols]
+		person.getCircadianClock().recordExercise(time);
 		return 0D;
 	}
 
 	/**
-	 * Remove the person from the associated gym
+	 * Removes the person from the associated gym.
 	 */
 	@Override
 	protected void clearDown() {

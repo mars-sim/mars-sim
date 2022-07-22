@@ -446,7 +446,7 @@ public class SimulationConfigEditor {
 		});
 
 		// Set a check box for enabling/disable the alpha crew button
-		JCheckBox cb = new JCheckBox(Msg.getString("SimulationConfigEditor.button.useCrews"));
+		JCheckBox cb = new JCheckBox(Msg.getString("SimulationConfigEditor.button.useCrews")); //$NON-NLS-1$
 		cb.setSelected(useCrew);
 		cb.addItemListener(new ItemListener() {
 
@@ -592,7 +592,7 @@ public class SimulationConfigEditor {
 		// Create combo box for editing crew column in settlement table.
 		// Use a custom model to inherit new Crews
 		TableColumn crewColumn = settlementTable.getColumnModel().getColumn(InitialSettlementModel.CREW_COL);
-		JComboBoxMW<String> crewCB = new JComboBoxMW<String>();
+		JComboBoxMW<String> crewCB = new JComboBoxMW<>();
 		crewCB.setModel(new UserConfigurableComboModel(crewConfig, true));
 		crewColumn.setCellEditor(new DefaultCellEditor(crewCB));
 
@@ -611,7 +611,7 @@ public class SimulationConfigEditor {
 
 	private void setTemplateEditor(JTable table, int column) {
 		TableColumn templateColumn = table.getColumnModel().getColumn(column);
-		JComboBoxMW<String> templateCB = new JComboBoxMW<String>();
+		JComboBoxMW<String> templateCB = new JComboBoxMW<>();
 		for (SettlementTemplate st : settlementConfig.getSettlementTemplates()) {
 			templateCB.addItem(st.getTemplateName());
 		}

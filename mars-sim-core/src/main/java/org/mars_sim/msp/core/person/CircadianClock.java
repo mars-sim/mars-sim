@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * CircadianClock.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-21
  * @author Manny Kung
  */
 
@@ -15,6 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.data.SolSingleMetricDataLogger;
 import org.mars_sim.msp.core.time.ClockPulse;
+import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * The CircadianClock class simulates the circadian rhythm of a person. It
@@ -24,12 +25,6 @@ public class CircadianClock implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
-	/** default logger. */
-//	private static final Logger logger = Logger.getLogger(CircadianClock.class.getName());
-
-//	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-//			logger.getName().length());
 
 	/** Sleep Habit Map resolution. */
 	private static double SLEEP_INFLATION = 1.15;
@@ -47,11 +42,6 @@ public class CircadianClock implements Serializable {
 	private int spaceOut;
 
 	// From http://www.webmd.com/diet/features/your-hunger-hormones#1,
-	// Leptin, aka the safety hormone, is a hormone, made by fat cells, that
-	// decreases our appetite.
-
-	// Ghrelin is a hormone that increases appetite, and makes us wanting to eat. It
-	// also plays a role in body weight.
 
 	// From http://www.webmd.com/diet/obesity/features/the-facts-on-leptin-faq#1 :
 	// When your leptin level is above that threshold, your brain senses that you
@@ -60,46 +50,82 @@ public class CircadianClock implements Serializable {
 	// (2) you eat food at a normal amount,
 	// (3) you engage in exercise at a normal rate.
 
-	// Leptin sends signals to our brains that we are satisfied with our sleep and
-	// we lose interest in food and sleep.
+	/** 
+	 * The current leptin level. 
+	 * Leptin sends signals to our brains that we are satisfied with our sleep 
+	 * and we lose interest in food and sleep.
+	 */
+	private double leptinLevel;
+	
+	/** 
+	 * The leptin threshold of each person is tuned by genetics. 
+	 * Leptin, aka the safety hormone, is a hormone, made by fat cells, that 
+	 * decreases our appetite.
+	 */
+	private double leptinThreshold = 400;
 
-	/** The current leptin level */
-	private double leptin_level = 400;
-	/** The leptin threshold of each person is tuned by genetics. */
-	private double leptin_threshold = 400;
+	/** 
+	 * The current ghrelin level. 
+	 * Ghrelin, the appetite/sleep increaser, is released primarily in the stomach 
+	 * and is thought to signal hunger to the brain. Expect the body to increase 
+	 * ghrelin if a person is under-eating and decrease it if one is over-eating.
+	 */
+	private double ghrelinLevel;
+	
+	/** 
+	 * The ghrelin threshold of each person is tuned by genetics. 
+	 * Ghrelin is a hormone that increases appetite, and makes us wanting to eat. 
+	 * It also plays a role in body weight.
+	 */
+	private double ghrelinThreshold = 400;
 
-	// Ghrelin, the appetite/sleep increaser, is released primarily in the stomach
-	// and is thought to signal hunger to
-	// the brain.
-
-	// You'd expect the body to increase ghrelin if a person is under-eating and
-	// decrease it if one is over-eating.
-
-	/** The current ghrelin level */
-	private double ghrelin_level = 400;
-	/** The ghrelin threshold of each person is tuned by genetics. */
-	private double ghrelin_threshold = 400;
-
-	//private Person person;
-
+	private Person person;
+	
 	/** Sleep habit map keeps track of the sleep cycle */
 	private Map<Integer, Integer> sleepCycleMap;
 
-	/** The amount of Sleep [millisols] a person on each mission sol */
-	private SolSingleMetricDataLogger sleepTime = new SolSingleMetricDataLogger(5);
+	/** The amount of sleep [millisols] a person on each sol */
+	private SolSingleMetricDataLogger sleepHistory = new SolSingleMetricDataLogger(5);
+
+	/** The amount of exercise [millisols] a person on each sol */
+	private SolSingleMetricDataLogger exerciseHistory = new SolSingleMetricDataLogger(5);
 
 
+	/**
+	 * Constructors.
+	 * 
+	 * @param person
+	 */
 	public CircadianClock(Person person) {
-		//this.person = person;
-		calculateInitialLevels(person);
-
+		this.person = person;
 		sleepCycleMap = new ConcurrentHashMap<>();		
 	}
 	
+	/**
+	 * Initializes field data.
+	 */
+	public void initialize() {
+		// Modify thresholds
+		modifyThresholds(person);
+		
+		double hunger = person.getPhysicalCondition().getHunger();
+		double ghrelin = Math.max(hunger * .5, ghrelinThreshold);
+		ghrelinLevel = RandomUtil.getRandomDouble(ghrelin * .5 , ghrelin * .75);
+		
+		double leptin = Math.max(hunger * .5, leptinThreshold);
+		leptinLevel = RandomUtil.getRandomDouble(leptin * .5 , leptin * .75);
+	}
+	
+	
+	/**
+	 * Time passing.
+	 * 
+	 * @param pulse
+	 * @param support
+	 */
 	public void timePassing(ClockPulse pulse, LifeSupportInterface support) {
 
 		if (pulse.isNewSol()) {
-
 			// Reset numSleep back to zero at the beginning of each sol
 			numSleep = 0;
 			suppressHabit = 0;
@@ -114,7 +140,12 @@ public class CircadianClock implements Serializable {
 		}
 	}
 
-	private void calculateInitialLevels(Person person) {
+	/**
+	 * Calculates the initial thresholds.
+	 * 
+	 * @param person
+	 */
+	private void modifyThresholds(Person person) {
 		double dev = Math.sqrt(
 				person.getBaseMass() / Person.getAverageWeight() * person.getHeight() / Person.getAverageHeight()); 
 		// condition.getBodyMassDeviation();
@@ -124,7 +155,7 @@ public class CircadianClock implements Serializable {
 
 		// Leptin threshold, the appetite/sleep suppressor, are lower when you're thin
 		// and higher when you're fat.
-		leptin_threshold *= dev;
+		leptinThreshold *= dev;
 
 		// But many obese people have built up a resistance to the appetite-suppressing
 		// effects of leptin.
@@ -133,7 +164,7 @@ public class CircadianClock implements Serializable {
 		// Ghrelin levels have been found to increase in children with anorexia nervosa
 		// and decrease in children who are obese.
 		if (age <= 21)
-			ghrelin_threshold /= dev;
+			ghrelinThreshold /= dev;
 
 		// LogConsolidated.log(logger, Level.INFO, 2000, sourceName, person
 		// + " LL " + Math.round(leptin_level*10.0)/10.0
@@ -147,25 +178,48 @@ public class CircadianClock implements Serializable {
 	/**
 	 * Gets the key of the Sleep Cycle Map with the highest weight
 	 * 
-	 * @return int[] the two best times in integer
+	 * @return int[] the 3 best sleep time in integer
 	 */
 	public int[] getPreferredSleepHours() {
-		int largest[] = { 0, 0 };
-		// Iterator<Integer> i = sleepCycleMap.keySet().iterator();
-		// while (i.hasNext()) {
-		for (int key : sleepCycleMap.keySet()) {// int key = i.next();
-			int value = sleepCycleMap.get(key);
-			if (value > largest[0]) {
-				largest[1] = largest[0];
-				largest[0] = key;
-			} else if (value > largest[1])
-				largest[1] = key;
-
+		int[] largestKey = {0, 0, 0};
+		int[] largestValue = {0, 0, 0};
+		for (Map.Entry<Integer, Integer> entry : sleepCycleMap.entrySet()) {
+			int key = entry.getKey();
+			int value = entry.getValue();
+			if (value > largestValue[2]) {
+				largestValue[0] = largestValue[1];
+				largestValue[1] = largestValue[2];
+				largestValue[2] = value;
+				largestKey[0] = largestKey[1];
+				largestKey[1] = largestKey[2];
+				largestKey[2] = key;
+			} else if (value > largestValue[1]) {
+				largestValue[0] = largestValue[1];
+				largestValue[1] = value;
+				largestKey[0] = largestKey[1];
+				largestKey[1] = key;
+			} else if (value > largestValue[0]) {
+				largestValue[0] = value;
+				largestKey[0] = key;
+			}
 		}
 
-		return largest;
+		return largestKey;
 	}
 
+	/**
+	 * Returns the weight/desire for sleep at a msol.
+	 * 
+	 * @param index
+	 * @return
+	 */
+	public int getSleepWeight(int msol) {
+		if (sleepCycleMap.containsKey(msol)) {
+			return sleepCycleMap.get(msol);
+		}
+		return 0;
+	}
+	
 	/**
 	 * Updates the weight of the Sleep Cycle Map
 	 * 
@@ -295,96 +349,65 @@ public class CircadianClock implements Serializable {
 		spaceOut = value;
 	}
 
-	// During sleep, leptin levels increase, telling your brain you have plenty of
-	// energy for the time being and
-	// there's no need to trigger the feeling of hunger or the burning of calories.
-	// When you don't get enough sleep,
-	// you end up with too little leptin in your body, which, through a series of
-	// steps, makes your brain think
-	// you don't have enough energy for your needs.
-
+	/**
+	 * Increases the leptin to its threshold.
+	 * 
+	 * @param time
+	 */
 	private void increaseLeptinToThreshold(double time) {
-		// if (leptin_level >= 1000)
-		// leptin_level = 1000;
-		// else
-		if (leptin_level + time >= leptin_threshold)
-			leptin_level = leptin_threshold;
+		if (leptinLevel + time * leptinThreshold / 500.0 >= leptinThreshold)
+			leptinLevel = leptinThreshold;
 		else
-			leptin_level += time;
-
-		// LogConsolidated.log(logger, Level.INFO, 1000, sourceName, person
-		// + " LL " + Math.round(leptin_level*10.0)/10.0
-		// //+ " G " + Math.round(ghrelin_level*10.0)/10.0
-		// , null);
-	}
-
-	private void increaseLeptinBounded(double time) {
-		// if (leptin_level >= 1000)
-		// leptin_level = 1000;
-		// else
-		if (leptin_level + time >= 1000D)
-			leptin_level = 1000D;
-		else
-			leptin_level += time;
-
-		// LogConsolidated.log(logger, Level.INFO, 1000, sourceName, person
-		// + " LL " + Math.round(leptin_level*10.0)/10.0
-		// //+ " G " + Math.round(ghrelin_level*10.0)/10.0
-		// , null);
+			leptinLevel += time * leptinThreshold / 500.0;
 	}
 
 	private void increaseGhrelinToThreshold(double time) {
-		// if (ghrelin_level >= 1000)
-		// ghrelin_level = 1000;
-		// else
-		if (ghrelin_level + time >= ghrelin_threshold)
-			ghrelin_level = ghrelin_threshold;
+		if (ghrelinLevel + time * ghrelinThreshold / 500.0 >= ghrelinThreshold)
+			ghrelinLevel = ghrelinThreshold;
 		else
-			ghrelin_level += time;
-
-		// LogConsolidated.log(logger, Level.INFO, 1000, sourceName, person
-		// //+ " L " + Math.round(leptin_level*10.0)/10.0
-		// + " GL " + Math.round(ghrelin_level*10.0)/10.0
-		// , null);
+			ghrelinLevel += time * ghrelinThreshold / 500.0;
+	}
+	
+	private void increaseLeptinBounded(double time) {
+		if (leptinThreshold + .01 * time >= 1000D)
+			leptinThreshold = 1000D;
+		else
+			leptinThreshold += .01 * time;
+	}
+	
+	private void decreaseLeptinBounded(double time) {
+		if (leptinThreshold > .01 * time)
+			leptinThreshold -= .01 * time;
+		else
+			leptinThreshold = .01 * time;
 	}
 
 	private void increaseGhrelinBounded(double time) {
-		// if (ghrelin_level >= 1000)
-		// ghrelin_level = 1000;
-		// else
-		if (ghrelin_level + time >= 1000D)
-			ghrelin_level = 1000D;
+		if (ghrelinThreshold + .01 * time >= 1000D)
+			ghrelinThreshold = 1000D;
 		else
-			ghrelin_level += time;
-
-		// LogConsolidated.log(logger, Level.INFO, 1000, sourceName, person
-		// //+ " L " + Math.round(leptin_level*10.0)/10.0
-		// + " GL " + Math.round(ghrelin_level*10.0)/10.0
-		// , null);
+			ghrelinThreshold += .01 *  time;
 	}
 
+	private void decreaseGhrelinBounded(double time) {
+		if (ghrelinThreshold > .01 * time)
+			ghrelinThreshold -= .01 * time;
+		else
+			ghrelinThreshold = .01 * time;
+	}
+	
 	private void decreaseLeptin(double time) {
-		if (leptin_level >= time)
-			leptin_level -= time;
-
-		// LogConsolidated.log(logger, Level.INFO, 1000, sourceName, person
-		// + " LL " + Math.round(leptin_level*10.0)/10.0
-		// //+ " G " + Math.round(ghrelin_level*10.0)/10.0
-		// , null);
+		if (leptinLevel >= time * leptinThreshold / 500.0)
+			leptinLevel -= time * leptinThreshold / 500.0;
 	}
 
 	private void decreaseGhrelin(double time) {
-		if (ghrelin_level >= time)
-			ghrelin_level -= time;
-
-		// LogConsolidated.log(logger, Level.INFO, 1000, sourceName, person
-		// //+ " L " + Math.round(leptin_level*10.0)/10.0
-		// + " GL " + Math.round(ghrelin_level*10.0)/10.0
-		// , null);
+		if (ghrelinLevel >= time * ghrelinThreshold / 500.0)
+			ghrelinLevel -= time * ghrelinThreshold / 500.0;
 	}
 
 	public double getSurplusLeptin() {
-		double value = leptin_level - leptin_threshold;
+		double value = leptinLevel - leptinThreshold;
 		if (value > 0)
 			return value;
 		else
@@ -392,7 +415,7 @@ public class CircadianClock implements Serializable {
 	}
 
 	public double getSurplusGhrelin() {
-		double value = ghrelin_level - ghrelin_threshold;
+		double value = ghrelinLevel - ghrelinThreshold;
 		if (value > 0)
 			return value;
 		else
@@ -413,54 +436,91 @@ public class CircadianClock implements Serializable {
 	 * @param time
 	 */
 	public void eatFood(double time) {
+		// When eating food, the level of leptin increases in order to 
+		// keep you from over-eating
 		increaseLeptinToThreshold(time);
+		// When one is hungry, stomach is (g)rowling because ghrelin is released.
+		// Ghrelin is released from the stomach when the stomach is empty
+		// When eating food, the level of ghrelin decreases.
 		decreaseGhrelin(time);
 	}
 
-	/***
+	/**
 	 * Exercises to regulate hormones
 	 * 
 	 * @param time
 	 */
 	public void exercise(double time) {
-		increaseLeptinToThreshold(time);
-		decreaseGhrelin(time);
+		
+		increaseLeptinToThreshold(time * .5);
+		
+		// Ghrelin levels rise significantly before eating or when fasting
+		// In general, exercise increases the production of ghrelin as 
+		// workouts naturally make you hungry, in order to replace lost fuel stores. 
+		increaseGhrelinToThreshold(time * 2.0);
+		
+		// Acute exercise significantly lowers plasma ghrelin levels, with higher 
+		// intensity exercise associated with greater ghrelin suppression. 
+		decreaseGhrelinBounded(time);
+		
+		// Physically fit people have less adipose tissues and thus having lower 
+		// level leptin to be released.
+		decreaseLeptinBounded(time);
 	}
 
-	/***
-	 * Sleeps to regulate hormones
+	/**
+	 * Sleeps to regulate hormones.
 	 * 
 	 * @param time
 	 */
-	// During sleep, levels of ghrelin decrease, because sleep requires far less
-	// energy than being awake does.
-	// Level of leptin increases
 	private void setRested(double time) {
-		increaseLeptinToThreshold(time);
+		// During sleep, levels of ghrelin decrease, 
+		// because sleep requires far less energy than being awake does.
 		decreaseGhrelin(time);
+		
+		// During sleep, leptin levels increase, telling your brain you have plenty of
+		// energy for the time being and there's no need to trigger the feeling of 
+		// hunger or the burning of calories.
+		
+		// Increase leptin to threshold
+		increaseLeptinToThreshold(time);
 	}
 
-	/***
-	 * Stays awake and change hormones
+	/**
+	 * Stays awake and change hormones.
 	 * 
 	 * @param time
 	 */
-	// The decrease in leptin brought on by sleep deprivation can result in a
-	// constant feeling of hunger and
-	// a general slow-down of your metabolism.
 	private void stayAwake(double time) {
+		// The decrease in leptin brought on by sleep deprivation can result 
+		// in a constant feeling of hunger and
+		// a general slow-down of your metabolism.
+		
+		// When you don't get enough sleep, you end up with too little leptin
+		// in your body, which, through a series of steps, makes your brain think
+		// you don't have enough energy for your needs.
 		decreaseLeptin(time);
-		increaseGhrelinBounded(time);
+		
+		// Level of ghrelin bound increase
+		increaseGhrelinBounded(time * .5);
 	}
-
+	
 	public double getGhrelin() {
-		return ghrelin_level;
+		return ghrelinLevel;
 	}
 
 	public double getLeptin() {
-		return leptin_level;
+		return leptinLevel;
 	}
 
+	public double getGhrelinT() {
+		return ghrelinThreshold;
+	}
+
+	public double getLeptinT() {
+		return leptinThreshold;
+	}
+	
 	/**
 	 * Records the sleep time
 	 * 
@@ -468,14 +528,37 @@ public class CircadianClock implements Serializable {
 	 */
 	public void recordSleep(double time) {
 		setRested(time);
-		sleepTime.increaseDataPoint(time);
+		sleepHistory.increaseDataPoint(time);
 	}
 	
-	public Map<Integer, Double> getSleepTime() {
-		return sleepTime.getHistory();
+	/**
+	 * Returns the sleep history.
+	 * 
+	 * @return
+	 */
+	public Map<Integer, Double> getSleepHistory() {
+		return sleepHistory.getHistory();
 	}
 	
-
+	/**
+	 * Records the exercise time
+	 * 
+	 * @param time in millisols
+	 */
+	public void recordExercise(double time) {
+		stayAwake(time);
+		exerciseHistory.increaseDataPoint(time);
+	}
+	
+	/**
+	 * Returns the exercise history.
+	 * 
+	 * @return
+	 */
+	public Map<Integer, Double> getExerciseHistory() {
+		return exerciseHistory.getHistory();
+	}
+	
 	/**
 	 * Prepares object for garbage collection.
 	 */

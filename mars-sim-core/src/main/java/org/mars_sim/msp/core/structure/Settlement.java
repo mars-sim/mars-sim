@@ -2065,7 +2065,7 @@ public class Settlement extends Structure implements Temporal,
 		if (ownedRobots.contains(r))
 			return true;
 		if (ownedRobots.add(r)) {
-			addRobot(r);
+			addRobotsWithin(r);
 			r.setCoordinates(getCoordinates());
 			r.setContainerUnit(this);
 			fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_ROBOT_EVENT, this);
@@ -2092,11 +2092,11 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Assigns a robot to be owned by the settlement.
+	 * Assigns a robot to being within this settlement.
 	 *
 	 * @param r
 	 */
-	public boolean addRobot(Robot r) {
+	public boolean addRobotsWithin(Robot r) {
 		if (robotsWithin.contains(r)) {
 			return true;
 		}
@@ -2107,11 +2107,11 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Removes a robot from being owned by the settlement.
+	 * Removes a robot from being within this settlement.
 	 *
 	 * @param r
 	 */
-	public boolean removeRobot(Robot r) {
+	public boolean removeRobotsWithin(Robot r) {
 		if (!robotsWithin.contains(r)) {
 			return true;
 		}

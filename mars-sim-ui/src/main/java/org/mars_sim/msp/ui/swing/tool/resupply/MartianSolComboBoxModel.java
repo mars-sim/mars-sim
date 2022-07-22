@@ -20,6 +20,11 @@ extends DefaultComboBoxModel<Integer> {
 	/** Data members. */
 	private int maxSolNum;
 
+	// A standard month has 28 sols.
+	// If the month number is divisible by 6, that month has 27 sols.
+	// If that year is leap orbit and the month number is 24, that month has 28 sols.
+	// An orbit has 24 months that can have either 27 or 28 Sols.
+
 	/**
 	 * Constructor.
 	 * @param month {@link Integer} the Martian month number.
@@ -27,14 +32,14 @@ extends DefaultComboBoxModel<Integer> {
 	 */
 	public MartianSolComboBoxModel(int month, int orbit) {
 		maxSolNum = MarsClockFormat.getSolsInMonth(month, orbit);
-
 		for (int x = 1; x <= maxSolNum; x++) {
 			addElement(x);
 		}
 	}
 
 	/**
-	 * Update the items based on the number of sols in the month.
+	 * Updates the items based on the number of sols in the month.
+	 * 
 	 * @param month the Martian month number.
 	 * @param orbit the Martian orbit number.
 	 */

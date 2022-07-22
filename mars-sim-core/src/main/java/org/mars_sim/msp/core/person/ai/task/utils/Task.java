@@ -329,6 +329,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 
 	/**
 	 * Helper method for Event subclasses to register historical events.
+	 * 
 	 * @param newEvent the new event
 	 */
 	protected static void registerNewEvent(HistoricalEvent newEvent) {
@@ -336,7 +337,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 	
 	/**
-	 * Return the value of the effort driven flag.
+	 * Returns the value of the effort driven flag.
 	 * 
 	 * @return Effort driven.
 	 */
@@ -368,7 +369,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 
 	/**
-	 * Gets the task name
+	 * Gets the task name.
 	 * 
 	 * @return the task's name in String.
 	 */
@@ -479,7 +480,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 
 	/**
-	 * Does a change of Phase for this Task generate an entry in the Task Schedule 
+	 * Does a change of Phase for this Task generate an entry in the Task Schedule ?
+	 * 
 	 * @return true by default
 	 */
 	protected boolean canRecord() {
@@ -530,7 +532,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 
 	/**
-	 * Create a new sub-task.
+	 * Creates a new sub-task.
 	 * 
 	 * @param newSubTask the new sub-task to be added
 	 */
@@ -541,7 +543,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 
 	/**
-	 * Gets the task's subtask. Returns null if none
+	 * Gets the task's subtask. Returns null if none.
 	 * 
 	 * @return subtask
 	 */
@@ -550,7 +552,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 
 	/**
-	 * Perform the task for the given number of seconds. Children should override
+	 * Performs the task for the given number of seconds. Children should override
 	 * and implement this.
 	 * 
 	 * @param time amount of time (millisol) given to perform the task (in
@@ -602,7 +604,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 
 	/**
-	 * Execute the mapped phase repeatedly
+	 * Executes the mapped phase repeatedly.
 	 * 
 	 * @param timeLeft the time left previously
 	 * @param time the time pulse
@@ -649,7 +651,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	protected abstract double performMappedPhase(double time);
 
 	/**
-	 * Should the start of this task create an historical event.
+	 * Should the start of this task create an historical event ?
 	 * 
 	 * @param create New flag value.
 	 */
@@ -658,7 +660,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 
 	/**
-	 * Get a string representation of this Task. It's content will consist of the
+	 * Gets a string representation of this Task. It's content will consist of the
 	 * description.
 	 *
 	 * @return Description of the task.
@@ -668,7 +670,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 
 	/**
-	 * Compare this object to another for an ordering. THe ordering is based on the
+	 * Compares this object to another for an ordering. THe ordering is based on the
 	 * alphabetic ordering of the Name attribute.
 	 *
 	 * @param other Object to compare against.
@@ -680,7 +682,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 
 	/**
-	 * Modify stress from performing task for given time.
+	 * Modifies stress from performing task for given time.
 	 * 
 	 * @param time the time performing the task.
 	 */
@@ -701,7 +703,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 
 	/**
-	 * Set the task's stress modifier. Stress modifier can be positive (increase in
+	 * Sets the task's stress modifier. Stress modifier can be positive (increase in
 	 * stress) or negative (decrease in stress).
 	 * 
 	 * @param newStressModifier stress modification per millisol.
@@ -895,7 +897,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 
 	/**
-	 * Check for a simple accident in entity. This will use the
+	 * Checks for a simple accident in entity. This will use the
 	 * {@link #getEffectiveSkillLevel()} method in the risk calculation.
 	 * 
 	 * @param entity Entity that can malfunction
@@ -908,7 +910,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 
 	/**
-	 * Check for a complex accident in an Entity. This can cover inside & outside
+	 * Checks for a complex accident in an Entity. This can cover inside & outside
 	 * accidents
 	 * 
 	 * @param entity   Entity that can malfunction
@@ -943,7 +945,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 
 	/**
-	 * Sets the duration of the task
+	 * Sets the duration of the task.
 	 * 
 	 * @param newDuration the new duration (millisol)
 	 */
@@ -973,7 +975,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 	
 	/**
-	 * Walk to an available activity spot in a building.
+	 * Walks to an available activity spot in a building.
 	 * 
 	 * @param building  the destination building.
 	 * @param function  Particular area within the building
@@ -990,7 +992,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 
 	/**
-	 * Walk to an available research activity spot in a building.
+	 * Walks to an available research activity spot in a building.
 	 * 
 	 * @param building  the destination building.
 	 * @param allowFail true if walking is allowed to fail.
@@ -1016,7 +1018,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 
 	/**
-	 * Walks to the bed assigned for this person
+	 * Walks to the bed assigned for this person.
 	 * 
 	 * @param building the building the bed is at
 	 * @param person the person who walks to the bed
@@ -1037,7 +1039,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 
 	/**
-	 * Walk to an available activity spot of a particular function type in a
+	 * Walks to an available activity spot of a particular function type in a
 	 * building.
 	 * 
 	 * @param building     the destination building.
@@ -1086,7 +1088,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 
 	/**
-	 * Walk to an empty activity spot in a building.
+	 * Walks to an empty activity spot in a building.
 	 * 
 	 * @param building     the destination building.
 	 * @param allowFail    true if walking is allowed to fail.
@@ -1123,7 +1125,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 
 	/**
-	 * Walk to a random interior location in a building.
+	 * Walks to a random interior location in a building.
 	 * 
 	 * @param building  the destination building.
 	 * @param allowFail true if walking is allowed to fail.
@@ -1137,7 +1139,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 
 	/**
-	 * Walk to an available passenger activity spot in a rover.
+	 * Walks to an available passenger activity spot in a rover.
 	 * 
 	 * @param rover     the rover.
 	 * @param allowFail true if walking is allowed to fail.
@@ -1147,7 +1149,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 
 	/**
-	 * Walk to an available lab activity spot in a rover.
+	 * Walks to an available lab activity spot in a rover.
 	 * 
 	 * @param rover     the rover.
 	 * @param allowFail true if walking is allowed to fail.
@@ -1157,7 +1159,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 
 	/**
-	 * Walk to an available sick bay activity spot in a rover.
+	 * Walks to an available sick bay activity spot in a rover.
 	 * 
 	 * @param rover     the rover.
 	 * @param allowFail true if walking is allowed to fail.
@@ -1167,7 +1169,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 
 	/**
-	 * Walk to an available activity spot in a rover from a list of activity spots.
+	 * Walks to an available activity spot in a rover from a list of activity spots.
 	 * 
 	 * @param rover         the rover.
 	 * @param activitySpots list of activity spots.
@@ -1241,7 +1243,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 
 	/**
-	 * Walk to an available activity spot in a rover.
+	 * Walks to an available activity spot in a rover.
 	 * 
 	 * @param rover        the destination rover.
 	 * @param activitySpot the activity spot as a Point2D object.
@@ -1261,7 +1263,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 
 	/**
-	 * Walk to a random interior location in a rover.
+	 * Walks to a random interior location in a rover.
 	 * 
 	 * @param rover     the destination rover.
 	 * @param allowFail true if walking is allowed to fail.
@@ -1275,7 +1277,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 
 	/**
-	 * Walk to a random location.
+	 * Walks to a random location.
 	 * 
 	 * @param allowFail true if walking is allowed to fail.
 	 */
@@ -1356,7 +1358,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 
 	/**
-	 * Create a walk to an interior position in a building or vehicle.
+	 * Creates a walk to an interior position in a building or vehicle.
 	 * 
 	 * @param interiorObject the destination interior object.
 	 * @param settlementLoc  the settlement local position destination.
@@ -1387,7 +1389,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 	
 
-
 	public void reinit() {
 		person = unitManager.getPersonByID(id);
 		robot = unitManager.getRobotByID(id);
@@ -1409,7 +1410,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 
 
 	/**
-	 * Reloads instances after loading from a saved sim
+	 * Reloads instances after loading from a saved sim.
 	 * 
 	 * @param c  {@link MarsClock}
 	 * @param e  {@link HistoricalEventManager}

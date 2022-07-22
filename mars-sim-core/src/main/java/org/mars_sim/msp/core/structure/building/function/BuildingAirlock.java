@@ -91,6 +91,7 @@ public class BuildingAirlock extends Airlock {
 
     /**
      * Builds a map for the door positions. Creates four positioned around the center offset by the x and y values.
+     * 
      * @param center Position of the center of the positions.
      * @param building Building hosting the door
      * @param x1 First x value
@@ -230,7 +231,7 @@ public class BuildingAirlock extends Airlock {
     @Override
     public LocalPosition getAvailableInteriorPosition(boolean inside) {
     	if (inside) {
-    		for(Entry<LocalPosition, Integer> i : insideInteriorDoorMap.entrySet()) {
+    		for (Entry<LocalPosition, Integer> i : insideInteriorDoorMap.entrySet()) {
     			if (i.getValue() == -1) {
     				return i.getKey();
     			}
@@ -238,7 +239,7 @@ public class BuildingAirlock extends Airlock {
     	}
 
     	else {
-    		for( Entry<LocalPosition, Integer> i : outsideInteriorDoorMap.entrySet()) {
+    		for (Entry<LocalPosition, Integer> i : outsideInteriorDoorMap.entrySet()) {
     			if (i.getValue() == -1) {
     				return i.getKey();
     			}
@@ -273,37 +274,50 @@ public class BuildingAirlock extends Airlock {
         return null;
     }
 
-//    @Override
+
+    /**
+     * Occupies a position in a zone.
+     * 
+     * @param zone
+     * @param p
+     * @param id
+     */
+    @Override
     public boolean occupy(int zone, LocalPosition p, Integer id) {
     	if (zone == 0) {
     		// Do not allow the same person who has already occupied a position to take another position
     		if (outsideInteriorDoorMap.values().contains(id))
     			return false;
-//    		for (int i=0; i<4; i++) {
-//    			LocalPosition pp = outsideInteriorList.get(i);
-//    			if (pp == p) {
-    				outsideInteriorDoorMap.put(p, id);
-    				return true;
-//    			}
-//    		}
+    		
+    		// If someone is at that position, do not allow to occupy it
+    		if (outsideInteriorDoorMap.get(p) != -1)
+    			return false;
+
+    		outsideInteriorDoorMap.put(p, id);
+    		return true;
     	}
 
     	else if (zone == 1) {
     		// Do not allow the same person who has already occupied a position to take another position
     		if (insideInteriorDoorMap.values().contains(id))
     			return false;
-//    		for (int i=0; i<4; i++) {
-//    			LocalPosition pp = insideInteriorList.get(i);
-//    			if (pp == p) {
-    				insideInteriorDoorMap.put(p, id);
-    				return true;
-//    			}
-//    		}
 
+    		// If someone is at that position, do not allow to occupy it
+    		if (insideInteriorDoorMap.get(p) != -1)
+    			return false;
+    		
+    		insideInteriorDoorMap.put(p, id);
+    		return true;
     	}
+    	
     	else if (zone == 2) {
     		if (activitySpotMap.values().contains(id))
     			return false;
+    		
+    		// If someone is at that position, do not allow to occupy it
+    		if (activitySpotMap.get(p) != -1)
+    			return false;
+    		
     		activitySpotMap.put(p, id);
     			return true;
     	}
@@ -312,26 +326,28 @@ public class BuildingAirlock extends Airlock {
     		// Do not allow the same person who has already occupied a position to take another position
     		if (insideExteriorDoorMap.values().contains(id))
     			return false;
-//    		for (int i=0; i<4; i++) {
-//    			LocalPosition pp = insideExteriorList.get(i);
-//    			if (pp == p) {
-    				insideExteriorDoorMap.put(p, id);
-    				return true;
-//    			}
-//    		}
+
+    		// If someone is at that position, do not allow to occupy it
+    		if (insideExteriorDoorMap.get(p) != -1)
+    			return false;
+    		
+    		insideExteriorDoorMap.put(p, id);
+    		return true;
+
     	}
 
     	else if (zone == 4) {
     		// Do not allow the same person who has already occupied a position to take another position
     		if (outsideExteriorDoorMap.values().contains(id))
     			return false;
-//    		for (int i=0; i<4; i++) {
-//    			LocalPosition pp = outsideExteriorList.get(i);
-//    			if (pp == p) {
-    				outsideExteriorDoorMap.put(p, id);
-    				return true;
-//    			}
-//    		}
+
+    		// If someone is at that position, do not allow to occupy it
+    		if (outsideExteriorDoorMap.get(p) != -1)
+    			return false;
+    		
+    		outsideExteriorDoorMap.put(p, id);
+    		return true;
+
     	}
     	return false;
     }
@@ -346,12 +362,13 @@ public class BuildingAirlock extends Airlock {
 	}
 
     /**
-     * Vacate the person from a particular zone
+     * Vacates the person from a particular zone.
      *
      * @param zone the zone of interest
      * @param id the person's id
 	 * @return true if the person has been successfully vacated
      */
+	@Override
     public boolean vacate(int zone, Integer id) {
     	if (zone == 0) {
     		LocalPosition oldPos = getOldPos(outsideInteriorDoorMap, id);
@@ -425,6 +442,7 @@ public class BuildingAirlock extends Airlock {
      * @param zone the zone of interest
 	 * @return a list of occupants inside the chamber
      */
+	@Override
 	public boolean isInZone(Person p, int zone) {
     	if (zone == 0) {
     		LocalPosition p0 = getOldPos(outsideInteriorDoorMap, p.getIdentifier());
@@ -486,9 +504,9 @@ public class BuildingAirlock extends Airlock {
 	}
 
 	/**
-	 * Gets the total number of people occupying the chamber
+	 * Gets the total number of people occupying the chamber in zone 2
 	 *
-	 * @return a list of occupants inside the chamber
+	 * @return a list of occupants inside zone 2
 	 */
 	public int getInsideChamberNum() {
 		int result = 0;
@@ -501,8 +519,8 @@ public class BuildingAirlock extends Airlock {
 	}
 
 	/**
-	 * Gets the total number of people occupying the area between the inner and outer door (namely, zone 1, 2, and 3)
-	 * Excluding zone 0 and zone 4
+	 * Gets the total number of people occupying zone 1, 2, and 3,
+	 * excluding zone 0 and 4.
 	 * 
 	 * @return number of occupants
 	 */
@@ -525,7 +543,7 @@ public class BuildingAirlock extends Airlock {
 	}
 
 	/**
-	 * Gets a set of ids of the occupants inside
+	 * Gets a set of ids of the occupants inside zone 1, 2, 3
 	 *
 	 * @return a set of ids
 	 */
@@ -609,7 +627,6 @@ public class BuildingAirlock extends Airlock {
 		Collection<Integer> occupants = null;
     	if (zone == 0) {
     		occupants = outsideInteriorDoorMap.values();
-
 		}
 
     	else if (zone == 1) {
@@ -645,6 +662,7 @@ public class BuildingAirlock extends Airlock {
 	/**
 	 * Loads up and converts the native EVA activity spots into the settlement coordinates
 	 */
+	@Override
 	public void loadEVAActivitySpots() {
 		if (EVASpots == null) {
 			EVASpots = new ArrayList<>();
@@ -665,12 +683,19 @@ public class BuildingAirlock extends Airlock {
      */
     public int getNumInChamber() {
     	loadEVAActivitySpots();
-    	return activitySpotMap.size();
+    	return getInsideChamberNum();
     }
     
     @Override
     public LocalPosition getAvailableAirlockPosition() {
-        return airlockInsidePos;
+    	for (Entry<LocalPosition, Integer> i : activitySpotMap.entrySet()) {
+			if (i.getValue() == -1) {
+				return i.getKey();
+			}
+		}
+    	
+    	return null;
+//        return airlockInsidePos;
     }
 
 	public boolean removePosition(int zone, LocalPosition p, int id) {
@@ -688,10 +713,6 @@ public class BuildingAirlock extends Airlock {
 			activitySpotMap.put(p, -1);
 			return true;
 		}
-
-//		if (zone == 2) {
-//			return true;
-//		}
 
 		if (zone == 3 && insideExteriorDoorMap.containsKey(p)) {
 			insideExteriorDoorMap.put(p, -1);

@@ -1022,7 +1022,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * Get the percentage representing the malfunctionable's condition from wear &
+	 * Gets the percentage representing the malfunctionable's condition from wear &
 	 * tear. 100% = new condition 0% = worn out condition.
 	 *
 	 * @return wear condition.
@@ -1042,7 +1042,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * initializes instances after loading from a saved sim
+	 * Initializes instances after loading from a saved sim
 	 *
 	 * @param c0 {@link MasterClock}
 	 * @param c1 {@link MarsClock}
@@ -1061,7 +1061,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * Prepare object for garbage collection.
+	 * Prepares object for garbage collection.
 	 */
 	public void destroy() {
 		entity = null;

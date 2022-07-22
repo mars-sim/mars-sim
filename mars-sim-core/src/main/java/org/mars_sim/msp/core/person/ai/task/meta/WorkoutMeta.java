@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * WorkoutMeta.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -57,26 +57,18 @@ public class WorkoutMeta extends MetaTask {
             if (kJ < 500 || fatigue > 1000 || hunger > 750)
             	return 0;
  
-            result = stress - (muscle[2] - muscle[0])/5D - fatigue/100D ;
+            result = kJ/1000 - (muscle[2] - muscle[0])/5D - fatigue/50 ;
             if (result < 0) 
             	return 0;
             
             double pref = person.getPreference().getPreferenceScore(this);
-            
-         	result += pref * 5D;
-            
-            if (pref > 0) {
-             	if (stress > 45D)
-             		result*=1.5;
-             	else if (stress > 65D)
-             		result*=2D;
-             	else if (stress > 85D)
-             		result*=3D;
-             	else
-             		result*=4D;
-            }
+         	result += pref * 1.5D;
 
             if (result <= 0) result = 0;
+
+            if (pref > 0) {
+            	result *= (1 + stress/20.0);
+            }
             
             // Get an available gym.
             Building building = Workout.getAvailableGym(person);

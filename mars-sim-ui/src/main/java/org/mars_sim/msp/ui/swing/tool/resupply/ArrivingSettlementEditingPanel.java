@@ -299,12 +299,15 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 		// Create month combo box.
 		monthCB = new JComboBoxMW<Object>(MarsClockFormat.getMonthNames());
 		monthCB.setSelectedItem(arrivingTime.getMonthName());
-		monthCB.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				// Update sol combo box values.
-				martianSolCBModel.updateSolNumber((monthCB.getSelectedIndex() + 1),
-						Integer.parseInt((String) orbitCB.getSelectedItem()));
-			}
+		monthCB.addActionListener(e -> {
+			// Update the solCB based on orbit and month
+			martianSolCBModel.updateSolNumber(monthCB.getSelectedIndex() + 1,
+					Integer.parseInt((String) orbitCB.getSelectedItem()));
+			// Remove error string
+			errorString = null;
+			errorLabel.setText(errorString);
+			// Reenable Commit/Create button
+			enableButton(true);
 		});
 		arrivalDateSelectionPane.add(monthCB);
 
@@ -322,12 +325,15 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 		}
 		orbitCB = new JComboBoxMW<Object>(orbitValues);
 		orbitCB.setSelectedItem(formatter.format(startOrbit));
-		orbitCB.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				// Update sol combo box values.
-				martianSolCBModel.updateSolNumber((monthCB.getSelectedIndex() + 1),
-						Integer.parseInt((String) orbitCB.getSelectedItem()));
-			}
+		orbitCB.addActionListener(e -> {
+			// Update the solCB based on orbit and month
+			martianSolCBModel.updateSolNumber(monthCB.getSelectedIndex() + 1,
+					Integer.parseInt((String) orbitCB.getSelectedItem()));
+			// Remove error string
+			errorString = null;
+			errorLabel.setText(errorString);
+			// Reenable Commit/Create button
+			enableButton(true);
 		});
 		arrivalDateSelectionPane.add(orbitCB);
 

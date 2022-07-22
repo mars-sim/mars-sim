@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -32,7 +31,6 @@ import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.environment.Meteorite;
 import org.mars_sim.msp.core.environment.MeteoriteModule;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
-import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.social.RelationshipUtil;
@@ -479,22 +477,21 @@ public class BuildingManager implements Serializable {
 		addBuilding(new Building(template, this), template, createBuildingConnections);
 	}
 
-//	/**
-//	 * Adds a building with a template to the settlement.
-//	 *
-//	 * @param template                  the building template.
-//	 * @param createBuildingConnections true if automatically create building
-//	 *                                  connections.
-//	 * @return newBuilding
-//	 */
-//	public Building prepareToAddBuilding(BuildingTemplate template, Resupply resupply,
-//			boolean createBuildingConnections) {
-//		// Add prepareToAddBuilding-- called by confirmBuildingLocation() in
-//		// Resupply.java
-//		Building newBuilding = new Building(template, this);
-//		addBuilding(newBuilding, createBuildingConnections);
-//		return newBuilding;
-//	}
+	/**
+	 * Adds a building with a template to the settlement.
+	 *
+	 * @param template                  the building template.
+	 * @param createBuildingConnections true if automatically create building
+	 *                                  connections.
+	 * @return newBuilding
+	 */
+	public Building prepareToAddBuilding(BuildingTemplate template, boolean createBuildingConnections) {
+		// Add prepareToAddBuilding-- called by confirmBuildingLocation() in
+		// Resupply.java
+		Building newBuilding = new Building(template, this);
+		addBuilding(newBuilding, createBuildingConnections);
+		return newBuilding;
+	}
 
 	/**
 	 * Gets a copy of settlement's collection of buildings.
@@ -1926,14 +1923,14 @@ public class BuildingManager implements Serializable {
 		for (Building b : buildings) {
 			String buildingType = b.getBuildingType();
 			String n = b.getNickName();
-			int new_id = Integer.parseInt(b.getNickName().substring(n.lastIndexOf(" ") + 1, n.length()));
+			int newID = Integer.parseInt(b.getNickName().substring(n.lastIndexOf(" ") + 1, n.length()));
 
 			if (buildingTypeIDMap.containsKey(buildingType)) {
-				int old_id = buildingTypeIDMap.get(buildingType);
-				if (old_id < new_id)
-					buildingTypeIDMap.put(buildingType, new_id);
+				int oldID = buildingTypeIDMap.get(buildingType);
+				if (oldID < newID)
+					buildingTypeIDMap.put(buildingType, newID);
 			} else
-				buildingTypeIDMap.put(buildingType, new_id);
+				buildingTypeIDMap.put(buildingType, newID);
 		}
 	}
 

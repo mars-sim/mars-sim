@@ -65,15 +65,23 @@ public class StudyFieldSamplesMeta extends MetaTask {
 	
 	        // Check that there are available field samples to study.
 	        try {
-	        	double samplesStored = 0D;
+	        	double mostStored = 0D;
 	            Unit container = person.getContainerUnit();
+	            int bestID = 0;
 	            if (container instanceof ResourceHolder) {
-	            	samplesStored = ((ResourceHolder)container).getAmountResourceStored(ResourceUtil.rockSamplesID);
+	            	for (int i: ResourceUtil.rockIDs) {
+		            	double stored = ((ResourceHolder)container).getAmountResourceStored(i);
+		            	if (mostStored < stored) {
+		            		mostStored = stored;
+		            		bestID = i;
+		            	}
+		            }
+		            if (mostStored < StudyFieldSamples.SAMPLE_MASS) {
+	                    return 0;
+	                }
+		            else
+		            	result = mostStored/10.0;
 	            }
-	            
-	            if (samplesStored < StudyFieldSamples.SAMPLE_MASS) {
-                    return 0;
-                }
 	        }
 	        catch (Exception e) {
 	            logger.severe("getProbability(): " + e.getMessage());

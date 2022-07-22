@@ -218,7 +218,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 
 			addTab(new UnitTab(this, new SettlementTableModel(selectedSettlement), true, COLONY_ICON));
 			addTab(new UnitTab(this, new PersonTableModel(selectedSettlement, true), true, PEOPLE_ICON));
-			addTab(new UnitTab(this, new RobotTableModel(selectedSettlement), true, BOT_ICON));
+			addTab(new UnitTab(this, new RobotTableModel(selectedSettlement, true), true, BOT_ICON));
 			addTab(new UnitTab(this, new BuildingTableModel(selectedSettlement), true, BUILDING_ICON));
 			addTab(new UnitTab(this, new CropTableModel(selectedSettlement), true, CROP_ICON));
 			
@@ -596,7 +596,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 				UnitTableModel unitTableModel = (UnitTableModel)model;
 
 				if (model instanceof RobotTableModel) {
-					unitTableModel = new RobotTableModel(selectedSettlement);
+					unitTableModel = new RobotTableModel(selectedSettlement, true);
 					newTab = new UnitTab(this, unitTableModel, true, BOT_ICON);
 				}
 				else if (model instanceof CropTableModel) {

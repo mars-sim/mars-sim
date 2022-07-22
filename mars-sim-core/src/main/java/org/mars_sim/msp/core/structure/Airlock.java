@@ -25,8 +25,6 @@ import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.function.BuildingAirlock;
-import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -73,7 +71,25 @@ public abstract class Airlock implements Serializable {
 	 * Available Airlock States
 	 */
 	public enum AirlockState {
-		OFF, PRESSURIZED, DEPRESSURIZING, DEPRESSURIZED, PRESSURIZING
+		OFF 			("Off"),
+		PRESSURIZED 	("Pressurized"), 
+		DEPRESSURIZING 	("Depressurizing"),
+		DEPRESSURIZED 	("Depressurized"),
+		PRESSURIZING 	("Pressurizing");
+		
+		private String name;
+
+		private AirlockState(String name) {
+			this.name = name;
+		}
+
+		public String getName() {
+			return this.name;
+		}
+		
+		public String toString() {
+			return this.name;
+		}
 	}
 
 	public AirlockState airlockState;
@@ -103,7 +119,7 @@ public abstract class Airlock implements Serializable {
     private Set<Integer> occupantIDs;
 
 	/** People waiting for the airlock by the inner door. */
-    private Set<Integer> awaitingInnerDoor;
+    protected Set<Integer> awaitingInnerDoor;
 
 	/** People waiting for the airlock by the outer door. */
     private Set<Integer> awaitingOuterDoor;
@@ -403,6 +419,7 @@ public abstract class Airlock implements Serializable {
 	public void removeID(Integer id) {
 		if (getAirlockType() == AirlockType.BUILDING_AIRLOCK) {
 			for (int i=0; i<5; i++) {
+				// Remove this person from all zone maps
 				vacate(i, id);
 			}
 		}
@@ -440,38 +457,6 @@ public abstract class Airlock implements Serializable {
 	}
 
 	/**
-	 * Sets to the pressurizing state.
-	 *
-	 * @return
-	 */
-	public boolean setPressurizing() {
-		if (AirlockState.DEPRESSURIZED == airlockState) {
-			setState(AirlockState.PRESSURIZING);
-			innerDoorLocked = true;
-			outerDoorLocked = true;
-			return true;
-		}
-
-		return false;
-	}
-
-	/**
-	 * Sets to the depressurizing state.
-	 *
-	 * @return
-	 */
-	public boolean setDepressurizing() {
-		if (AirlockState.PRESSURIZED == airlockState) {
-			setState(AirlockState.DEPRESSURIZING);
-			innerDoorLocked = true;
-			outerDoorLocked = true;
-			return true;
-		}
-
-		return false;
-	}
-
-	/**
 	 * Checks if the airlock has been depressurized.
 	 *
 	 * @return
@@ -489,85 +474,13 @@ public abstract class Airlock implements Serializable {
 		return AirlockState.PRESSURIZED == airlockState;
 	}
 
-
-	/**
-	 * Goes to the next steady state.
-	 *
-	 * @return true if the switch is successful
-	 */
-	public boolean goToNextSteadyState() {
-		if (AirlockState.PRESSURIZING == airlockState) {
-			setState(AirlockState.PRESSURIZED);
-			activated = false;
-			transitioning = false;
-			innerDoorLocked = false;
-			outerDoorLocked = true;
-			return true;
-		}
-
-		else if (AirlockState.PRESSURIZED == airlockState) {
-			setState(AirlockState.DEPRESSURIZING);
-			activated = false;
-			transitioning = false;
-			innerDoorLocked = true;
-			outerDoorLocked = true;
-			return true;
-		}
-		
-		else if (AirlockState.DEPRESSURIZING == airlockState) {
-			setState(AirlockState.DEPRESSURIZED);
-			activated = false;
-			transitioning = false;
-			innerDoorLocked = true;
-			outerDoorLocked = false;
-			return true;
-		}
-
-		else if (AirlockState.DEPRESSURIZED == airlockState) {
-			setState(AirlockState.PRESSURIZING);
-			activated = false;
-			transitioning = false;
-			innerDoorLocked = true;
-			outerDoorLocked = true;
-			return true;
-		}
-		
-		return false;
-	}
-
-	/**
-	 * Adds airlock cycle time.
-	 *
-	 * @param time cycle time (millisols)
-	 * @return The the time consumed
-	 */
-	public double addTime(double time) {
-		double consumed = 0D;
-
-		if (activated) {
-			// Cannot consume more than is needed
-			consumed = Math.min(remainingCycleTime, time);
-
-			remainingCycleTime -= consumed;
-			// if the air cycling has been completed
-			if (remainingCycleTime <= 0D) {
-				// Reset remainingCycleTime back to max
-				remainingCycleTime = CYCLE_TIME;
-				// Go to the next steady state
-				goToNextSteadyState();
-			}
-		}
-
-		return consumed;
-	}
-
 	/**
 	 * Activates the airlock.
 	 * 
 	 * @param value
 	 */
 	public void setActivated(boolean value) {
-		if (!value) {
+		if (value) {
 			// Reset the cycle count down timer back to the default
 			remainingCycleTime = CYCLE_TIME;
 		}
@@ -619,7 +532,7 @@ public abstract class Airlock implements Serializable {
     public abstract int getNumInChamber();
     
 	/**
-	 * Obtains a prioritized pool of candidates from a particular zone.
+	 * Selects a prioritized pool of candidates from a particular zone.
 	 *
 	 * return a pool of candidates
 	 */
@@ -637,18 +550,21 @@ public abstract class Airlock implements Serializable {
 			}
 			
 			// Priority 3 : zone 1 - on the inside of the inner door
-			if (pool.isEmpty()) {
-				pool = getZoneOccupants(1);
+			pool = getZoneOccupants(1);
+			if (!pool.isEmpty()) {
+				return pool;
 			}
 
 			// Priority 4 : zone 4 - on the outside of the outer door, thus at awaitingOuterDoor
-			if (pool.isEmpty() && !awaitingOuterDoor.isEmpty()) {
-				return awaitingOuterDoor;
+			pool = awaitingOuterDoor;
+			if (!pool.isEmpty()) {
+				return pool;
 			}
 
 			// Priority 3 : zone 0 - on the outside of the inner door, thus at awaitingInnerDoor
-			if (pool.isEmpty() && !awaitingInnerDoor.isEmpty()) {
-				return awaitingInnerDoor;
+			pool = awaitingInnerDoor;
+			if (!pool.isEmpty()) {
+				return pool;
 			}
 			
 			return pool;
@@ -764,12 +680,21 @@ public abstract class Airlock implements Serializable {
 	}
 
 	/**
-	 * Sets the inTransition to true if changing the airlock's state.
+	 * Allows or disallows the airlock to be transitioning its state.
 	 *
 	 * @param value
 	 */
 	public void setTransitioning(boolean value) {
 		transitioning = value;
+	}
+
+	/**
+	 * Checks if the airlock is allowed to be transitioning its state.
+	 *
+	 * @param value
+	 */
+	public boolean isTransitioning() {
+		return transitioning;
 	}
 
 	/**
@@ -899,36 +824,25 @@ public abstract class Airlock implements Serializable {
 	}
 
 	/**
-	 * Checks the occupants'id.
+	 * Checks the occupants'id in zone 1, 2, or 3. Removes id if not there.
 	 */
 	public void checkOccupantIDs() {
-		// If this person is not physically in this airlock, remove his id
+
 		Iterator<Integer> i = occupantIDs.iterator();
 		while (i.hasNext()) {
 			int id = i.next();
-			
-			// Being in zone 0 or 4 is not considered an airlock occupant.
-			if (getZoneOccupants(0).contains(id)
-				|| getZoneOccupants(4).contains(id)) {
+
+			if (getZoneOccupants(1).contains(id)
+				|| getZoneOccupants(2).contains(id)
+				|| getZoneOccupants(3).contains(id)) {
+				// If this person is not physically in zone 1, 2, or 3, remove his id
+				continue;
+			}
+			else
 				occupantIDs.remove(id);
-			}
-			else {
-				Building b = unitManager.getPersonByID(id).getBuildingLocation();
-				if (b != null) {
-					if (!b.hasFunction(FunctionType.EVA)) {
-						occupantIDs.remove(id);
-					}
-					else if (b.getEVA().getAirlock() != this) {
-						occupantIDs.remove(id);
-					}
-				}
-				else
-					// the occupant is not in the building/settlement
-					occupantIDs.remove(id);
-			}
 		}
 	}
-	
+
 	/**
 	 * Checks the airlock operator.
 	 */
@@ -941,10 +855,13 @@ public abstract class Airlock implements Serializable {
 		// If the airlock already has an existing operator,
 		else {
 			// Check to see if he's still inside or has left the airlock
-			if (!isInAnyZone(operatorID)) {
+			if (!isInAnyZones(operatorID)) {
 				// Remove this operator
 				operatorID = Integer.valueOf(-1);
-				
+				// Choose a pool of candidates from a particular zone
+				electAnOperator(getOperatorPool());
+			}
+			else {
 				int rand = RandomUtil.getRandomInt(1);
 				// Note: Provide some randomness in case the existing operator is stuck
 				// And require someone elsewhere as operator to help out.
@@ -963,12 +880,13 @@ public abstract class Airlock implements Serializable {
 	 * @param pulse
 	 */
 	public void timePassing(ClockPulse pulse) {
-
+		
 		if (activated) {
 
 			double time = pulse.getElapsed();
 			
 			if (transitioning) {
+				// Starts the air exchange and state transition
 				addTime(time);
 			}
 
@@ -981,6 +899,78 @@ public abstract class Airlock implements Serializable {
 		}
 	}
 
+	/**
+	 * Adds airlock cycle time.
+	 *
+	 * @param time cycle time (millisols)
+	 * @return The the time consumed
+	 */
+	public void addTime(double time) {
+		
+		if (AirlockState.PRESSURIZED == airlockState
+				|| AirlockState.DEPRESSURIZING == airlockState) {
+			setState(AirlockState.DEPRESSURIZING);
+			
+			innerDoorLocked = true;
+			outerDoorLocked = true;
+			
+			cycleAir(time);
+		}
+		
+		else if (AirlockState.DEPRESSURIZED == airlockState
+				|| AirlockState.PRESSURIZING == airlockState) {
+			setState(AirlockState.PRESSURIZING);
+			
+			innerDoorLocked = true;
+			outerDoorLocked = true;
+			
+			cycleAir(time);
+		}
+	}
+	
+	
+	/**
+	 * Cycles the air and consumes the time
+	 * 
+	 * @param time
+	 */
+	private void cycleAir(double time) {
+		// Ensure not to consume more than is needed
+		double consumed = Math.min(remainingCycleTime, time);
+
+		remainingCycleTime -= consumed;
+		// if the air cycling has been completed
+		if (remainingCycleTime <= 0D) {
+			// Reset remainingCycleTime back to max
+			remainingCycleTime = CYCLE_TIME;
+			// Go to the next steady state
+			goToNextSteadyState();			
+		}
+	}
+	
+	/**
+	 * Goes to the next steady state.
+	 *
+	 * @return true if the switch is successful
+	 */
+	public void goToNextSteadyState() {
+		
+		if (AirlockState.PRESSURIZING == airlockState) {
+			setState(AirlockState.PRESSURIZED);
+			innerDoorLocked = false;
+			outerDoorLocked = true;
+		}
+		
+		else if (AirlockState.DEPRESSURIZING == airlockState) {
+			setState(AirlockState.DEPRESSURIZED);
+			innerDoorLocked = true;
+			outerDoorLocked = false;
+		}
+		
+		activated = false;
+		transitioning = false;
+	}
+			
 	/**
 	 * Removes the record of the deceased person from the map and sets.
 	 *
@@ -1075,21 +1065,13 @@ public abstract class Airlock implements Serializable {
 	 */
 	public abstract LocalPosition getAvailableAirlockPosition();
 
-    public boolean occupy(int zone, LocalPosition p, Integer id) {
-    	return ((BuildingAirlock)this).occupy(zone, p, id);
-    }
+    public abstract boolean occupy(int zone, LocalPosition p, Integer id);
 
-	public boolean vacate(int zone, Integer id) {
-		return ((BuildingAirlock)this).vacate(zone, id);
-	}
+	public abstract boolean vacate(int zone, Integer id);
 
-	public boolean isInZone(Person p, int zone) {
-		return ((BuildingAirlock)this).isInZone(p, zone);
-	}
+	public abstract boolean isInZone(Person p, int zone);
 
-	public void loadEVAActivitySpots() {
-		((BuildingAirlock)this).loadEVAActivitySpots();
-	}
+	public abstract void loadEVAActivitySpots();
 
 	/**
 	 * Gets a collection of occupants' ids.
@@ -1102,10 +1084,11 @@ public abstract class Airlock implements Serializable {
 
 	/**
 	 * Is this person's id in any zones (0 to 4) ?
+	 * 
 	 * @param id
 	 * @return
 	 */
-	public boolean isInAnyZone(int id) {
+	public boolean isInAnyZones(int id) {
 		return (occupantIDs.contains(id)
 			|| awaitingInnerDoor.contains(id)
 			|| awaitingOuterDoor.contains(id));

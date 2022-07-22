@@ -43,6 +43,9 @@ import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
+import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.robot.RobotType;
+import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -99,6 +102,7 @@ public class Resupply implements Serializable, Transportable {
 
 	// Data members
 	private int newImmigrantNum;
+	private int newBotNum;
 	private int settlementID;
 	private int scenarioID;
 	
@@ -164,7 +168,7 @@ public class Resupply implements Serializable, Transportable {
 	}
 
 	/**
-	 * Delivers new buildings to the settlement
+	 * Delivers new buildings to the settlement.
 	 */
 	public void deliverBuildings() {
 		List<BuildingTemplate> orderedBuildings = orderNewBuildings();
@@ -183,7 +187,6 @@ public class Resupply implements Serializable, Transportable {
 				BuildingTemplate template = buildingI.next();
 
 				// Correct length and width in building template.
-
 				// Replace width and length defaults to deal with variable width and length
 				// buildings.
 				BuildingSpec spec = buildingConfig.getBuildingSpec(template.getBuildingType());
@@ -193,8 +196,7 @@ public class Resupply implements Serializable, Transportable {
 				
 				int buildingTypeID = buildingManager.getNextBuildingTypeID(template.getBuildingType());
 				String scenario = getCharForNumber(scenarioID + 1);
-				// String scenario = template.getScenario(); // Note: scenario is null since
-				// template does NOT have a scenario string yet
+				// Note: scenario is null since template does NOT have a scenario string yet
 				String buildingNickName = template.getBuildingType() + " " + buildingTypeID;
 
 				BuildingTemplate correctedTemplate = new BuildingTemplate(template.getMissionName(), buildingID,
@@ -246,7 +248,7 @@ public class Resupply implements Serializable, Transportable {
 
 	/**
 	 * Identifies the type of collision and gets new template if the collision is
-	 * immovable
+	 * immovable.
 	 * 
 	 * @param bt    a building template
 	 * @param count number of counts
@@ -263,27 +265,27 @@ public class Resupply implements Serializable, Transportable {
 		boolean noConflictResupply = true;
 		boolean inZone = true;
 		if (count < 1) {
-//			logger.config("clearCollision() : count is down to 0. Quit building placement.");
+//			log to show logger.config("clearCollision() : count is down to 0. Quit building placement.");
 			return null;
 		} else {
 			// check if a vehicle is the obstacle and move it
 			noVehicle = isCollisionFreeVehicle(bt);
-//			logger.config("noVehicle is " + noVehicle);
+//			log to show logger.config("noVehicle is " + noVehicle);
 
 			if (noVehicle) {
 				noImmovable = isCollisionFreeImmovable(bt);
 			}
-//			logger.config("noImmovable is " + noImmovable);
+//			log to show logger.config("noImmovable is " + noImmovable);
 
 			if (noImmovable) {
 				noConflictResupply = isCollisionFreeResupplyBuildings(bt, buildingManager);
 			}
-//			logger.config("noConflictResupply is " + noConflictResupply);
+//			log to show logger.config("noConflictResupply is " + noConflictResupply);
 
 			if (noConflictResupply) {
 				inZone = isWithinZone(bt, buildingManager);
 			}
-//			logger.config("inZone : " + inZone);
+//			log to show logger.config("inZone : " + inZone);
 
 			if (!noImmovable || !noConflictResupply || !inZone) {// if there are obstacles
 				// get a new template
@@ -299,7 +301,7 @@ public class Resupply implements Serializable, Transportable {
 	}
 
 	/**
-	 * Checks if the building template collides with any planned resupply buildings
+	 * Checks if the building template collides with any planned resupply buildings.
 	 * 
 	 * @param bt  a building template
 	 * @param mgr BuildingManager
@@ -333,7 +335,7 @@ public class Resupply implements Serializable, Transportable {
 	}
 
 	/**
-	 * Checks for collision and relocate any vehicles if found
+	 * Checks for collision and relocate any vehicles if found.
 	 * 
 	 * @param xLoc
 	 * @param yLoc
@@ -347,7 +349,7 @@ public class Resupply implements Serializable, Transportable {
 	}
 
 	/**
-	 * Check for collision for an immovable object
+	 * Checks for collision for an immovable object.
 	 * 
 	 * @param t a building template
 	 * @return true if no collision.
@@ -359,7 +361,7 @@ public class Resupply implements Serializable, Transportable {
 	}
 
 	/**
-	 * Check if the building template is outside min radius and within max radius
+	 * Checks if the building template is outside min radius and within max radius.
 	 * 
 	 * @param bt the building template
 	 * @return true if it's within the prescribed zone
@@ -402,8 +404,8 @@ public class Resupply implements Serializable, Transportable {
 	}
 
 	/**
-	 * Delivers vehicles, resources and immigrants to a settlement on a resupply
-	 * mission
+	 * Delivers vehicles, resources, bots and immigrants to a settlement on a resupply
+	 * mission.
 	 */
 	public void deliverOthers() {
 		Settlement settlement = unitManager.getSettlementByID(settlementID);
@@ -462,11 +464,47 @@ public class Resupply implements Serializable, Transportable {
 		}
 
 		// Deliver Robots.
-		// TODO : add a combobox for selecting what bots to send
+		Collection<Robot> bots = new ConcurrentLinkedQueue<>();
+		
+		for (int x = 0; x < getNewBotNum(); x++) {
+			// Get a robotType randomly
+			RobotType robotType = Robot.selectNewRobotType(settlement);
+			// Adopt Static Factory Method and Factory Builder Pattern
+			String newName = Robot.generateName(robotType);
+			Robot robot = Robot.create(newName, settlement, robotType)
+					.setCountry(EARTH)
+					.setSkill(null, robotType)
+					.setAttribute(null)
+					.build();
+			robot.initialize();
+			// Set name at its parent class "Unit"
+			robot.setName(newName);
 
+			String jobName = RobotJob.getName(robotType);
+			if (jobName != null) {
+				RobotJob robotJob = JobUtil.getRobotJob(robotType.getName());
+				if (robotJob != null) {
+					robot.getBotMind().setRobotJob(robotJob, true);
+				}
+			}
+
+			unitManager.addUnit(robot);
+
+			settlement.addOwnedRobot(robot);
+			// Set the container unit
+			robot.setContainerUnit(settlement);
+
+			bots.add(robot);
+
+			logger.config(newName + " arrived on Mars at " + settlementName + ".");
+
+			settlement.fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_ROBOT_EVENT, robot);
+		}
+
+		
 		// Deliver immigrants.
 		// TODO : add a crew editor for user to define what team and who to send
-		Collection<Person> immigrants = new ConcurrentLinkedQueue<Person>();
+		Collection<Person> immigrants = new ConcurrentLinkedQueue<>();
 		for (int x = 0; x < getNewImmigrantNum(); x++) {
 			GenderType gender = GenderType.FEMALE;
 			if (RandomUtil.getRandomDouble(1.0D) <= personConfig.getGenderRatio()) {
@@ -485,13 +523,10 @@ public class Resupply implements Serializable, Transportable {
 					.setAttribute(null)
 					.build();
 			immigrant.initialize();
-
 			// Assign a job 
 			immigrant.getMind().getAJob(true, JobUtil.MISSION_CONTROL);
-
 			// Set up work shift 
 			immigrant.getTaskSchedule().setShiftType(ShiftType.ON_CALL);
-
 			// Add preference
 			immigrant.getPreference().initializePreference();
 
@@ -503,7 +538,7 @@ public class Resupply implements Serializable, Transportable {
 			
 			immigrants.add(immigrant);
 
-			logger.config(immigrantName + " arrived on Mars at " + settlementName);
+			logger.config(immigrantName + " arrived on Mars at " + settlementName + ".");
 			// Add fireUnitUpdate()
 			settlement.fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_PERSON_EVENT, immigrant);
 		}
@@ -1347,6 +1382,25 @@ public class Resupply implements Serializable, Transportable {
 		this.newImmigrantNum = newImmigrantNum;
 	}
 
+	/**
+	 * Gets the number of bots in the resupply mission.
+	 * 
+	 * @return the number of bots.
+	 */
+	public int getNewBotNum() {
+		return newBotNum;
+	}
+	
+	/**
+	 * Sets the number of bots in the resupply mission.
+	 * 
+	 * @param newBotNum the number of bots.
+	 */
+	public void setNewBotNum(int newBotNum) {
+		this.newBotNum = newBotNum;
+	}
+	
+	
 	/**
 	 * Gets a map of the resupply resources.
 	 * 

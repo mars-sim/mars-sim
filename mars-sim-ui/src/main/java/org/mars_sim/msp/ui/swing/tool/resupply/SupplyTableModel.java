@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * SupplyTableModel.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.resupply;
@@ -25,6 +25,8 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
+import org.mars_sim.msp.core.structure.building.BuildingConfig;
+import org.mars_sim.msp.core.vehicle.VehicleConfig;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 
 /** TODO externalize strings */
@@ -44,9 +46,13 @@ extends AbstractTableModel {
 
 	// Data members
 	private List<SupplyItem> supplyList;
+	
+	private static BuildingConfig buildingConfig = SimulationConfig.instance().getBuildingConfiguration(); 
+	private static VehicleConfig vehicleConfig = SimulationConfig.instance().getVehicleConfiguration();
 
 	/**
 	 * Constructor.
+	 * 
 	 * @param resupply the resupply mission or null if none.
 	 */
 	public SupplyTableModel(Resupply resupply) {
@@ -61,7 +67,8 @@ extends AbstractTableModel {
 	}
 
 	/**
-	 * Populate supply list from resupply mission.
+	 * Populates supply list from resupply mission.
+	 * 
 	 * @param resupply the resupply mission.
 	 */
 	private void populateSupplies(Resupply resupply) {
@@ -97,7 +104,6 @@ extends AbstractTableModel {
 		while (j.hasNext()) {
 			AmountResource resource = j.next();
 			double amount = resupply.getNewResources().get(resource);
-			// 2014-12-01 Added Conversion.capitalize()
 			SupplyItem supplyItem = new SupplyItem(RESOURCE, Conversion.capitalize(resource.getName()), amount);
 			supplyList.add(supplyItem);
 		}
@@ -110,14 +116,14 @@ extends AbstractTableModel {
 		while (k.hasNext()) {
 			Part part = k.next();
 			int num = resupply.getNewParts().get(part);
-			// 2014-12-01 Added WordUtils.capitalize()
 			SupplyItem supplyItem = new SupplyItem(PART, Conversion.capitalize(part.getName()), num);
 			supplyList.add(supplyItem);
 		}
 	}
 
 	/**
-	 * Populate supplies that are in a list of strings.
+	 * Populates supplies that are in a list of strings.
+	 * 
 	 * @param category the supply category.
 	 * @param supplies the list of supplies as strings.
 	 */
@@ -145,7 +151,6 @@ extends AbstractTableModel {
 		while (j.hasNext()) {
 			String supplyType = j.next();
 			int num = supplyMap.get(supplyType);
-			// 2014-12-01 Added Conversion.capitalize()
 			SupplyItem supplyItem = new SupplyItem(category, Conversion.capitalize(supplyType), num);
 			supplyList.add(supplyItem);
 		}
@@ -184,7 +189,6 @@ extends AbstractTableModel {
 		if (rowIndex < supplyList.size()) {
 			SupplyItem item = supplyList.get(rowIndex);
 			if (colIndex == 0) result = item.category;
-			// 2014-12-01 Added Conversion.capitalize()
 			else if (colIndex == 1) result = Conversion.capitalize(item.type);
 			else if (colIndex == 2) result = item.number.intValue();
 		}
@@ -205,7 +209,6 @@ extends AbstractTableModel {
 				item.category = (String) value;
 			}
 			else if (col == 1) {
-				// 2014-12-01 Added Conversion.capitalize()
 				item.type = Conversion.capitalize((String) value);
 			}
 			else if (col == 2) {
@@ -221,7 +224,7 @@ extends AbstractTableModel {
 	}
 
 	/**
-	 * Add a new supply item with default values.
+	 * Adds a new supply item with default values.
 	 */
 	 public void addNewSupplyItem() {
 		String category = getCategoryList().get(0);
@@ -232,7 +235,8 @@ extends AbstractTableModel {
 	 }
 
 	 /**
-	  * Remove items from the given rows.
+	  * Removes items from the given rows.
+	  * 
 	  * @param rows an array of row indexes to remove.
 	  */
 	 public void removeSupplyItems(int[] rows) {
@@ -249,6 +253,7 @@ extends AbstractTableModel {
 
 	 /**
 	  * Gets the list of supply items.
+	  * 
 	  * @return list of supply items.
 	  */
 	 public List<SupplyItem> getSupplyItems() {
@@ -257,6 +262,7 @@ extends AbstractTableModel {
 
 	 /**
 	  * Gets a list of all categories.
+	  * 
 	  * @return list of category strings.
 	  */
 	 public static List<String> getCategoryList() {
@@ -274,14 +280,14 @@ extends AbstractTableModel {
 	 }
 
 	 public static List<String> getSortedBuildingTypes() {
-		 Set<String> buildingTypes = SimulationConfig.instance().getBuildingConfiguration().getBuildingTypes();
+		 Set<String> buildingTypes = buildingConfig.getBuildingTypes();
 		 List<String> sortedBuildingTypes = new ArrayList<>(buildingTypes);
 		 Collections.sort(sortedBuildingTypes);
 		 return sortedBuildingTypes;
 	 }
 
 	 public static List<String> getSortedVehicleTypes() {
-		 Set<String> vehicleTypes = SimulationConfig.instance().getVehicleConfiguration().getVehicleTypes();
+		 Set<String> vehicleTypes = vehicleConfig.getVehicleTypes();
 		 List<String> sortedVehicleTypes = new ArrayList<>(vehicleTypes);
 		 Collections.sort(sortedVehicleTypes);
 		 return sortedVehicleTypes;
@@ -289,6 +295,7 @@ extends AbstractTableModel {
 
 	 /**
 	  * Gets a map of categories and a list of their types.
+	  * 
 	  * @return map of categories to lists of types.
 	  */
 	 public static Map<String, List<String>> getCategoryTypeMap() {
@@ -338,6 +345,7 @@ extends AbstractTableModel {
 
 		 /**
 		  * Constructor.
+		  * 
 		  * @param category the supply category.
 		  * @param type the supply type.
 		  * @param number the supply number.
