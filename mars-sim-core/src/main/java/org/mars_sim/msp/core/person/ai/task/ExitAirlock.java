@@ -981,12 +981,13 @@ public class ExitAirlock extends Task implements Serializable {
 
 		if (inSettlement) {
 
-			if (!transitionTo(3)) {
-				// Wait here
+			if (!transitionTo(3) || airlock.isOuterDoorLocked()) {
+				// Go back to previous task phase
+				setPhase(DEPRESSURIZE_CHAMBER);
 			}
 			
-			if (airlock.inAirlock(person)
-				&& !airlock.isOuterDoorLocked()) {
+
+			if (airlock.inAirlock(person)) {
 		
 				if (airlock.exitAirlock(person, id, true)) {
 					// Move to zone 4
@@ -1003,9 +1004,9 @@ public class ExitAirlock extends Task implements Serializable {
 
 		else {
 
-			if (exteriorDoorPos == null) {
-				exteriorDoorPos = airlock.getAvailableExteriorPosition();
-			}
+//			if (exteriorDoorPos == null) {
+//				exteriorDoorPos = airlock.getAvailableExteriorPosition();
+//			}
 
 			if (airlock.inAirlock(person)) {
 				canExit = airlock.exitAirlock(person, id, true);

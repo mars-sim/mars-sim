@@ -6,12 +6,11 @@
  */
 package org.mars_sim.msp.core.vehicle;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.LifeSupportInterface;
@@ -22,7 +21,7 @@ import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Airlock;
 import org.mars_sim.msp.core.structure.AirlockType;
-import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.time.ClockPulse;
 
 /**
  * This class represents an airlock for a vehicle.
@@ -36,7 +35,19 @@ extends Airlock {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(VehicleAirlock.class.getName());
 
+	/** Pressurize/depressurize time (millisols). */
+	public static final double CYCLE_TIME = 5D; 
+	/** The maximum number of space in the chamber. */
+	public static final int MAX_SLOTS = 2;
+	
 	// Data members.
+	/** True if airlock's state is in transition of change. */
+	private boolean transitioning;
+	/** True if airlock is activated (may elect an operator or may change the airlock state). */
+	private boolean activated;
+	/** Amount of remaining time for the airlock cycle. (in millisols) */
+	private double remainingCycleTime;
+	
 	/** The vehicle this airlock is for. */
 	private Vehicle vehicle;
 	
@@ -48,7 +59,6 @@ extends Airlock {
     private Map<LocalPosition, Integer> airlockInteriorPosMap;
     private Map<LocalPosition, Integer> airlockExteriorPosMap;
 
-    
 	/**
 	 * Constructor.
 	 * @param vehicle the vehicle this airlock of for.
@@ -73,6 +83,9 @@ extends Airlock {
 			this.vehicle = vehicle;
 		}
 
+		activated = false;
+		remainingCycleTime = CYCLE_TIME;
+		
 		// Determine airlock interior position.
 		airlockInteriorPos = LocalAreaUtil.getLocalRelativePosition(interiorLoc, vehicle);
 		airlockInteriorPosMap = buildDoorMap(interiorLoc, vehicle, 0.3, 0.6, 0.5);
@@ -495,12 +508,132 @@ extends Airlock {
 		// nothing
 	}
 	
+	/**
+	 * Activates the airlock.
+	 * 
+	 * @param value
+	 */
+	@Override
+	public void setActivated(boolean value) {
+		if (value) {
+			// Reset the cycle count down timer back to the default
+			remainingCycleTime = CYCLE_TIME;
+		}
+		activated = value;
+	}
+	
+	/**
+	 * Cycles the air and consumes the time
+	 * 
+	 * @param time
+	 */
+	@Override
+	protected void cycleAir(double time) {
+		// Ensure not to consume more than is needed
+		double consumed = Math.min(remainingCycleTime, time);
+
+		remainingCycleTime -= consumed;
+		// if the air cycling has been completed
+		if (remainingCycleTime <= 0D) {
+			// Reset remainingCycleTime back to max
+			remainingCycleTime = CYCLE_TIME;
+			// Go to the next steady state
+			goToNextSteadyState();			
+		}
+	}
+	
+	/**
+	 * Checks if the airlock is currently activated.
+	 *
+	 * @return true if activated.
+	 */
+	@Override
+	public boolean isActivated() {
+		return activated;
+	}
+
+	/**
+	 * Allows or disallows the airlock to be transitioning its state.
+	 *
+	 * @param value
+	 */
+	public void setTransitioning(boolean value) {
+		transitioning = value;
+	}
+
+	/**
+	 * Checks if the airlock is allowed to be transitioning its state.
+	 *
+	 * @param value
+	 */
+	public boolean isTransitioning() {
+		return transitioning;
+	}
+	
+	/**
+	 * Gets the remaining airlock cycle time.
+	 *
+	 * @return time (millisols)
+	 */
+	public double getRemainingCycleTime() {
+		return remainingCycleTime;
+	}
+	
+	/**
+	 * Time passing for airlock. Checks for unusual situations and deal with them.
+	 * Called from the unit owning the airlock.
+	 *
+	 * @param pulse
+	 */
+	@Override
+	public void timePassing(ClockPulse pulse) {
+		
+		if (activated) {
+
+			double time = pulse.getElapsed();
+			
+			if (transitioning) {
+				// Starts the air exchange and state transition
+				addTime(time);
+			}
+
+			if (pulse.isNewMSol()) {
+				// Check occupants
+				checkOccupantIDs();
+				// Check the airlock operator
+				checkOperator();
+			}
+		}
+	}
+	
+	/**
+	 * Adds this unit to the set or zone (for zone 0 and zone 4 only).
+	 *
+	 * @param set
+	 * @param id
+	 * @return true if the unit is already inside the set or if the unit can be added into the set
+	 */
+	@Override
+	protected boolean addToZone(Set<Integer> set, Integer id) {
+		if (set.contains(id)) {
+			// this unit is already in the zone
+			return true;
+		}
+		else {
+			// MAX_SLOTS - 1 because it needs to have one vacant spot
+			// for the flow of traffic
+			if (set.size() < MAX_SLOTS - 1) {
+				set.add(id);
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	public void destroy() {
 	    vehicle = null;
 	    airlockInsidePos = null;
 	    airlockInteriorPos = null;
 	    airlockExteriorPos = null;
 	}
-
-
 }

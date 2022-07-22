@@ -6,10 +6,7 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.util.Map;
-
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.person.CircadianClock;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;

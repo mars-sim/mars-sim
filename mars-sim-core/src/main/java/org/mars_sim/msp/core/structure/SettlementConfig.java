@@ -28,7 +28,6 @@ import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.PartPackageConfig;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.BuildingTemplate.BuildingConnectionTemplate;
-import org.mars_sim.msp.core.structure.building.ConstructionType;
 
 /**
  * Provides configuration information about settlements templates. Uses a DOM document to
