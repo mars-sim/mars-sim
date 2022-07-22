@@ -66,8 +66,8 @@ public class SleepMeta extends MetaTask {
         
         double fatigue = pc.getFatigue();
     	double stress = pc.getStress();
-    	double ghrelin = circadian.getSurplusGhrelin();
-    	double leptin = circadian.getSurplusLeptin();
+    	double ghrelinS = circadian.getSurplusGhrelin();
+    	double leptinS = circadian.getSurplusLeptin();
     	double hunger = pc.getHunger();
     	double energy = pc.getEnergy();
     	
@@ -80,21 +80,29 @@ public class SleepMeta extends MetaTask {
     	
     	// 1000 millisols is 24 hours, if a person hasn't slept for 24 hours,
         // he is supposed to want to sleep right away.
-    	if (fatigue > 400 || stress > 75 || ghrelin-leptin > 700) {
+    	// Note:  sleep deprivation increases ghrelin levels, while at the same time 
+    	// lowers leptin levels in the blood.
+    	if (fatigue > 300 || stress > 50 || ghrelinS > 0 || leptinS == 0) {
     		
         	int rand = RandomUtil.getRandomInt(1);
-        	// Take a break from sleep if it's too hungry
+        	// Take a break from sleep if it's too hungry and too low energy
             proceed = rand != 1 || (!(hunger > 667) && !(energy < 1000));
 //    		logger.info(person + "  ghrelin: " + ghrelin + "  leptin:" + leptin);
     	}
     	
         if (proceed) {
-        	// the desire to go to bed increase linearly after 12 hours of wake time
-            result = (fatigue - 333) * 10 + stress * 10 
-            		+ (ghrelin-leptin - 600)/2.5D
-            		// high hunger makes it harder to fall asleep
-            		- hunger/20;
+			double ghrelin = person.getCircadianClock().getGhrelin();
+			double leptin = person.getCircadianClock().getLeptin();
+		    double sleepMillisols = person.getCircadianClock().getTodaySleepTime();
             
+        	// the desire to go to bed increase linearly after 12 hours of wake time
+            result = Math.max((fatigue - 500), 0) * 10 + stress * 10 
+            		+ (ghrelin - leptin)
+            		// High hunger makes it harder to fall asleep
+            		// Therefore, limit the hunger contribution to a max of 300
+            		+ Math.min(hunger, 300)
+            		- sleepMillisols / 2;
+                   
             double pref = person.getPreference().getPreferenceScore(this);
             
          	result = result + result * pref/12D;                            	

@@ -6,7 +6,10 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
+import java.util.Map;
+
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.person.CircadianClock;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -47,28 +50,33 @@ public class WorkoutMeta extends MetaTask {
 
             // Probability affected by the person's stress and fatigue.
             PhysicalCondition condition = person.getPhysicalCondition();
-
             double stress = condition.getStress();
             double fatigue = condition.getFatigue();
             double kJ = condition.getEnergy();
             double hunger = condition.getHunger();
             double[] muscle = condition.getMusculoskeletal();
 
-            if (kJ < 500 || fatigue > 1000 || hunger > 750)
+            double exerciseMillisols = person.getCircadianClock().getTodayExerciseTime();
+            
+            if (kJ < 500 || fatigue > 750 || hunger > 750)
             	return 0;
  
-            result = kJ/1000 - (muscle[2] - muscle[0])/5D - fatigue/50 ;
+            result = kJ/2000 
+            		// Note: The desire to exercise increases linearly right after waking up
+            		// from bed up to the first 333 msols
+            		// After the first 333 msols, it decreases linearly for the rest of the day
+            		+ Math.max(333 - fatigue, -666)
+            		// Note: muscle condition affects the desire to exercise
+            		- (muscle[2] - muscle[0])/5D 
+            		+ stress / 10
+            		- exerciseMillisols;
             if (result < 0) 
             	return 0;
             
             double pref = person.getPreference().getPreferenceScore(this);
-         	result += pref * 1.5D;
+         	result += result * pref / 2D;
 
             if (result <= 0) result = 0;
-
-            if (pref > 0) {
-            	result *= (1 + stress/20.0);
-            }
             
             // Get an available gym.
             Building building = Workout.getAvailableGym(person);

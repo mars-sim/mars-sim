@@ -169,7 +169,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 
 		// Create arrival date pane.
 		WebPanel arrivalDatePane = new WebPanel(new GridLayout(4, 1, 10, 10));
-		arrivalDatePane.setBorder(new TitledBorder("Arrival Date"));
+		arrivalDatePane.setBorder(new TitledBorder("Arrival"));
 		topEditPane.add(arrivalDatePane, BorderLayout.CENTER);
 
 		// Create data type radio button group.

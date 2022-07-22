@@ -37,6 +37,7 @@ public class CircadianClock implements Serializable {
 
 	private boolean awake = true;
 
+	private int solCache;
 	private int numSleep;
 	private int suppressHabit;
 	private int spaceOut;
@@ -52,8 +53,13 @@ public class CircadianClock implements Serializable {
 
 	/** 
 	 * The current leptin level. 
-	 * Leptin sends signals to our brains that we are satisfied with our sleep 
-	 * and we lose interest in food and sleep.
+	 * Leptin sends signals to our brains that We have enough fuel and we are 
+	 * satisfied with our sleep and we lose interest in both food and sleep.
+	 * Most humans have a “diurnal” rhythm to their day. That means they are 
+	 * active during the day and sleep at night. Leptin levels tend to peak 
+	 * between midnight and dawn, making you less hungry. It's because there’s 
+	 * not much one can do about being hungry when being asleep in the middle 
+	 * of the night.
 	 */
 	private double leptinLevel;
 	
@@ -129,14 +135,20 @@ public class CircadianClock implements Serializable {
 			// Reset numSleep back to zero at the beginning of each sol
 			numSleep = 0;
 			suppressHabit = 0;
+			solCache = pulse.getMarsTime().getMissionSol();
 		}
 
-		// People who don't sleep enough end up with too much ghrelin in their system,
-		// so the body thinks it's hungry
-		// and it needs more calories, and it stops burning those calories because it
-		// thinks there's a shortage.
-		if (awake) {
-			stayAwake(pulse.getElapsed());
+
+		if (pulse.isNewMSol()) {
+			
+			// Bring leptin and ghrelin back to equilibrium
+			leptinLevel = leptinLevel + .005 * (leptinThreshold/2 - leptinLevel);
+			ghrelinLevel = ghrelinLevel + .005 * (ghrelinThreshold/2 - ghrelinLevel);
+			
+			// Adjust hormones if not having sleep for 12 hours 
+			if (awake && person.getPhysicalCondition().getFatigue() > 500) {
+				depriveSleep(pulse.getElapsed());
+			}
 		}
 	}
 
@@ -406,16 +418,26 @@ public class CircadianClock implements Serializable {
 			ghrelinLevel -= time * ghrelinThreshold / 500.0;
 	}
 
+	/**
+	 * Returns the surplus amount of leptin (more than half of its threshold).
+	 * 
+	 * @return
+	 */
 	public double getSurplusLeptin() {
-		double value = leptinLevel - leptinThreshold;
+		double value = leptinLevel - leptinThreshold/2;
 		if (value > 0)
 			return value;
 		else
 			return 0;
 	}
 
+	/**
+	 * Returns the surplus amount of ghrelin (more than half of its threshold).
+	 * 
+	 * @return
+	 */
 	public double getSurplusGhrelin() {
-		double value = ghrelinLevel - ghrelinThreshold;
+		double value = ghrelinLevel - ghrelinThreshold/2;
 		if (value > 0)
 			return value;
 		else
@@ -451,21 +473,36 @@ public class CircadianClock implements Serializable {
 	 * @param time
 	 */
 	public void exercise(double time) {
-		
-		increaseLeptinToThreshold(time * .5);
-		
-		// Ghrelin levels rise significantly before eating or when fasting
+		// It's been demonstrated that concentrations of ghrelin increase following 
+		// exercise, boosting endurance and influencing food intake.
 		// In general, exercise increases the production of ghrelin as 
 		// workouts naturally make you hungry, in order to replace lost fuel stores. 
-		increaseGhrelinToThreshold(time * 2.0);
+		increaseGhrelinToThreshold(time * 0.5);
 		
 		// Acute exercise significantly lowers plasma ghrelin levels, with higher 
 		// intensity exercise associated with greater ghrelin suppression. 
 		decreaseGhrelinBounded(time);
 		
+		// When leptin levels are low we become hungry and when leptin levels are 
+		// high we should be satisfied.
+		// In a study done on rats, leptin levels decreased following four weeks of 
+		// voluntary wheel running
+		decreaseLeptin(time * .5);
+		
 		// Physically fit people have less adipose tissues and thus having lower 
 		// level leptin to be released.
 		decreaseLeptinBounded(time);
+	
+		// In future, model leptin and insulin sensivity as follows: 
+		// One way leptin sensitivity can be regained is through proper exercise. 
+		// Leptin and insulin communicate with one another and work collectively 
+		// with other hormones to control our energy balance. As insulin levels rise 
+		// so do leptin levels. Exercise has been proven to increase insulin sensitivity. 
+		// Exercise increases the need for the muscle cells to replenish lost fuel. 
+		// Eating a diet that is too high in sugar can lead to excessive amounts of 
+		// insulin being secreted. This can lead to insulin resistance, which means 
+		// we will need even more insulin. Remember, that as insulin levels rise so do 
+		// leptin levels. This is how insulin resistance induces leptin resistance.
 	}
 
 	/**
@@ -473,7 +510,7 @@ public class CircadianClock implements Serializable {
 	 * 
 	 * @param time
 	 */
-	private void setRested(double time) {
+	public void setRested(double time) {
 		// During sleep, levels of ghrelin decrease, 
 		// because sleep requires far less energy than being awake does.
 		decreaseGhrelin(time);
@@ -487,11 +524,11 @@ public class CircadianClock implements Serializable {
 	}
 
 	/**
-	 * Stays awake and change hormones.
+	 * When there is not enough sleep, it changes the hormones.
 	 * 
 	 * @param time
 	 */
-	private void stayAwake(double time) {
+	private void depriveSleep(double time) {
 		// The decrease in leptin brought on by sleep deprivation can result 
 		// in a constant feeling of hunger and
 		// a general slow-down of your metabolism.
@@ -499,7 +536,11 @@ public class CircadianClock implements Serializable {
 		// When you don't get enough sleep, you end up with too little leptin
 		// in your body, which, through a series of steps, makes your brain think
 		// you don't have enough energy for your needs.
-		decreaseLeptin(time);
+		decreaseLeptin(time *.5);
+		
+		// A single night of sleep deprivation increases ghrelin levels and 
+		// feelings of hunger in normal-weight healthy men
+		increaseGhrelinToThreshold(time *.5);
 		
 		// Level of ghrelin bound increase
 		increaseGhrelinBounded(time * .5);
@@ -527,7 +568,6 @@ public class CircadianClock implements Serializable {
 	 * @param time in millisols
 	 */
 	public void recordSleep(double time) {
-		setRested(time);
 		sleepHistory.increaseDataPoint(time);
 	}
 	
@@ -541,12 +581,24 @@ public class CircadianClock implements Serializable {
 	}
 	
 	/**
+	 * Gets today's sleep time.
+	 * 
+	 * @return
+	 */
+	public double getTodaySleepTime() {
+		double time = 0;
+		if (getSleepHistory().containsKey(solCache)) {
+			time = getSleepHistory().get(solCache);
+		}
+		return time;
+	}
+	
+	/**
 	 * Records the exercise time
 	 * 
 	 * @param time in millisols
 	 */
 	public void recordExercise(double time) {
-		stayAwake(time);
 		exerciseHistory.increaseDataPoint(time);
 	}
 	
@@ -557,6 +609,19 @@ public class CircadianClock implements Serializable {
 	 */
 	public Map<Integer, Double> getExerciseHistory() {
 		return exerciseHistory.getHistory();
+	}
+	
+	/**
+	 * Gets today's exercise time.
+	 * 
+	 * @return
+	 */
+	public double getTodayExerciseTime() {
+		double time = 0;
+		if (getExerciseHistory().containsKey(solCache)) {
+			time = getExerciseHistory().get(solCache);
+		}
+		return time;
 	}
 	
 	/**
