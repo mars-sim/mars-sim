@@ -25,9 +25,9 @@ import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -54,16 +54,12 @@ public abstract class Airlock implements Serializable {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(Airlock.class.getName());
 
-	/** Pressurize/depressurize time (millisols). */
-	public static final double CYCLE_TIME = 10D; 
-	// Note: should we add pre-breathing time into CYCLE_TIME ?
-
-	/** The maximum number of space in the chamber. */
-	public static final int MAX_SLOTS = 4;
-
+//	/** Pressurize/depressurize time (millisols). */
+//	public static final double CYCLE_TIME = 5D; 
+//	/** The maximum number of space in the chamber. */
+//	public static final int MAX_SLOTS = 2;
 	/** The maximum number of reservations that can be made for an airlock. */
 	public static final int MAX_RESERVED = 4;
-
 	/** The effective reservation period [in millisols]. */
 	public static final int RESERVATION_PERIOD = 40;
 	
@@ -95,10 +91,6 @@ public abstract class Airlock implements Serializable {
 	public AirlockState airlockState;
 
 	// Data members
-	/** True if airlock's state is in transition of change. */
-	private boolean transitioning;
-	/** True if airlock is activated (may elect an operator or may change the airlock state). */
-	private boolean activated;
 	/** True if inner door is locked. */
 	private boolean innerDoorLocked;
 	/** True if outer door is locked. */
@@ -108,9 +100,6 @@ public abstract class Airlock implements Serializable {
 	private int capacity;
 	/** Number of times no eva suit is found available. */
 	private int numEVASuitChecks;
-
-	/** Amount of remaining time for the airlock cycle. (in millisols) */
-	private double remainingCycleTime;
 
 	/** The person currently operating the airlock. */
     private Integer operatorID;
@@ -145,17 +134,15 @@ public abstract class Airlock implements Serializable {
 		else
 			this.capacity = capacity;
 
-		activated = false;
 		airlockState = AirlockState.PRESSURIZED;
 		innerDoorLocked = false;
 		outerDoorLocked = true;
-		remainingCycleTime = CYCLE_TIME;
 
 		operatorID = Integer.valueOf(-1);
 
 		occupantIDs = new CopyOnWriteArraySet<>();
-		awaitingInnerDoor = new HashSet<>(MAX_SLOTS);
-		awaitingOuterDoor = new HashSet<>(MAX_SLOTS);
+		awaitingInnerDoor = new HashSet<>();
+		awaitingOuterDoor = new HashSet<>();
 
 		reservationMap = new HashMap<>();
 	}
@@ -479,15 +466,15 @@ public abstract class Airlock implements Serializable {
 	 * 
 	 * @param value
 	 */
-	public void setActivated(boolean value) {
-		if (value) {
-			// Reset the cycle count down timer back to the default
-			remainingCycleTime = CYCLE_TIME;
-		}
-		activated = value;
-	}
+	public abstract void setActivated(boolean value);
 
-
+	/**
+	 * Allows or disallows the airlock to be transitioning its state.
+	 *
+	 * @param value
+	 */
+	public abstract void setTransitioning(boolean value);
+	
 	/**
 	 * Is this person the airlock operator ?
 	 *
@@ -668,35 +655,7 @@ public abstract class Airlock implements Serializable {
 	public void setOuterDoorLocked(boolean lock) {
 		outerDoorLocked = lock;
 	}
-
-
-	/**
-	 * Checks if the airlock is currently activated.
-	 *
-	 * @return true if activated.
-	 */
-	public boolean isActivated() {
-		return activated;
-	}
-
-	/**
-	 * Allows or disallows the airlock to be transitioning its state.
-	 *
-	 * @param value
-	 */
-	public void setTransitioning(boolean value) {
-		transitioning = value;
-	}
-
-	/**
-	 * Checks if the airlock is allowed to be transitioning its state.
-	 *
-	 * @param value
-	 */
-	public boolean isTransitioning() {
-		return transitioning;
-	}
-
+	
 	/**
 	 * Gets the current state of the airlock.
 	 *
@@ -713,15 +672,6 @@ public abstract class Airlock implements Serializable {
 	 */
 	private void setState(AirlockState state) {
 		airlockState = state;
-	}
-
-	/**
-	 * Gets the remaining airlock cycle time.
-	 *
-	 * @return time (millisols)
-	 */
-	public double getRemainingCycleTime() {
-		return remainingCycleTime;
 	}
 
 	/**
@@ -753,21 +703,7 @@ public abstract class Airlock implements Serializable {
 	 * @param id
 	 * @return true if the unit is already inside the set or if the unit can be added into the set
 	 */
-	private boolean addToZone(Set<Integer> set, Integer id) {
-		if (set.contains(id)) {
-			// this unit is already in the zone
-			return true;
-		}
-		else {
-			// MAX_SLOTS - 1 because it needs to have one vacant spot
-			// for the flow of traffic
-			if (set.size() < MAX_SLOTS - 1) {
-				set.add(id);
-				return true;
-			}
-		}
-		return false;
-	}
+	protected abstract boolean addToZone(Set<Integer> set, Integer id);
 
 	/**
 	 * Gets the number of people waiting at the inner door.
@@ -861,41 +797,15 @@ public abstract class Airlock implements Serializable {
 				// Choose a pool of candidates from a particular zone
 				electAnOperator(getOperatorPool());
 			}
-			else {
-				int rand = RandomUtil.getRandomInt(1);
-				// Note: Provide some randomness in case the existing operator is stuck
-				// And require someone elsewhere as operator to help out.
-				if (rand == 0) {
-					// Choose a pool of candidates from a particular zone
-					electAnOperator(getOperatorPool());
-				}
-			}
-		}
-	}
-	
-	/**
-	 * Time passing for airlock. Checks for unusual situations and deal with them.
-	 * Called from the unit owning the airlock.
-	 *
-	 * @param pulse
-	 */
-	public void timePassing(ClockPulse pulse) {
-		
-		if (activated) {
-
-			double time = pulse.getElapsed();
-			
-			if (transitioning) {
-				// Starts the air exchange and state transition
-				addTime(time);
-			}
-
-			if (pulse.isNewMSol()) {
-				// Check occupants
-				checkOccupantIDs();
-				// Check the airlock operator
-				checkOperator();
-			}
+//			else {
+//				int rand = RandomUtil.getRandomInt(1);
+//				// Note: Provide some randomness in case the existing operator is stuck
+//				// And require someone elsewhere as operator to help out.
+//				if (rand == 0) {
+//					// Choose a pool of candidates from a particular zone
+//					electAnOperator(getOperatorPool());
+//				}
+//			}
 		}
 	}
 
@@ -934,19 +844,21 @@ public abstract class Airlock implements Serializable {
 	 * 
 	 * @param time
 	 */
-	private void cycleAir(double time) {
-		// Ensure not to consume more than is needed
-		double consumed = Math.min(remainingCycleTime, time);
-
-		remainingCycleTime -= consumed;
-		// if the air cycling has been completed
-		if (remainingCycleTime <= 0D) {
-			// Reset remainingCycleTime back to max
-			remainingCycleTime = CYCLE_TIME;
-			// Go to the next steady state
-			goToNextSteadyState();			
-		}
-	}
+	protected abstract void cycleAir(double time);
+	
+	/**
+	 * Checks if the airlock is currently activated.
+	 *
+	 * @return true if activated.
+	 */
+	public abstract boolean isActivated();
+	
+	/**
+	 * Gets the remaining airlock cycle time.
+	 *
+	 * @return time (millisols)
+	 */
+	public abstract double getRemainingCycleTime();
 	
 	/**
 	 * Goes to the next steady state.
@@ -967,8 +879,8 @@ public abstract class Airlock implements Serializable {
 			outerDoorLocked = false;
 		}
 		
-		activated = false;
-		transitioning = false;
+		setActivated(false);
+		setTransitioning(false);
 	}
 			
 	/**
@@ -1202,6 +1114,14 @@ public abstract class Airlock implements Serializable {
 	 */
 	public abstract AirlockType getAirlockType();
 
+	/**
+	 * Time passing for the building.
+	 * 
+	 * @param pulse the amount of clock pulse passing (in millisols)
+	 * @throws BuildingException if error occurs.
+	 */
+	public abstract void timePassing(ClockPulse pulse);
+	
 	/**
 	 * Initializes instances.
 	 *

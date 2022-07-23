@@ -249,8 +249,7 @@ public class MissionTableModel extends AbstractTableModel
 	 * Gets the model count string.
 	 */
 	public String getCountString() {
-		return " " + Msg.getString("MissionTableModel.numberOfMissions", //$NON-NLS-2$
-//			Integer.toString(missionCache.size())
+		return "  " + Msg.getString("MissionTableModel.numberOfMissions", //$NON-NLS-2$
 				missionCache.size());
 	}
 

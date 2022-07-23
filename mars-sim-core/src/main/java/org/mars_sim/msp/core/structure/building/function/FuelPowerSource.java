@@ -168,7 +168,7 @@ implements Serializable {
 	 @Override
 	 public double getAveragePower(Settlement settlement) {
 		double fuelPower = getMaxPower();
-		double fuelValue = settlement.getGoodsManager().getGoodValuePerItem(methaneID);
+		double fuelValue = settlement.getGoodsManager().getGoodValuePoint(methaneID);
 		fuelValue *= getFuelConsumptionRate() / 1000D * time;
 		fuelPower -= fuelValue;
 		if (fuelPower < 0D) fuelPower = 0D;

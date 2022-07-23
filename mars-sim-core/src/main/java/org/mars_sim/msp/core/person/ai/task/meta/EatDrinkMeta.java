@@ -92,15 +92,15 @@ public class EatDrinkMeta extends MetaTask {
 		boolean hungry = pc.isHungry();
 		boolean thirsty = pc.isThirsty();
 
-
-		// CircadianClock cc = person.getCircadianClock();
-		// double ghrelin = cc.getSurplusGhrelin();
-		// double leptin = cc.getSurplusLeptin();
+		double ghrelinS = person.getCircadianClock().getSurplusGhrelin();
+		double leptinS = person.getCircadianClock().getSurplusLeptin();
+		 
 		// Each meal (.155 kg = .62/4) has an average of 2525 kJ. Thus ~10,000 kJ
 		// person per sol
 
 		if (person.isInSettlement()) {
-			if (hungry && (foodAmount > 0 || meals > 0 || desserts > 0)) {
+			if (hungry && (foodAmount > 0 || meals > 0 || desserts > 0 
+					|| leptinS == 0 || ghrelinS > 0)) {
 				food = true;
 			}
 
@@ -127,13 +127,17 @@ public class EatDrinkMeta extends MetaTask {
 
 
 		if (food || water) {
-			// Calculate ...
 			// Only eat a meal if person is sufficiently hungry or low on caloric energy.
 			double h0 = 0;
-			if (hungry) {// || ghrelin-leptin > 300) {
-				h0 += hunger / 2D;
+			if (hungry) {
+				
+				double ghrelin = person.getCircadianClock().getGhrelin();
+				double leptin = person.getCircadianClock().getLeptin();
+				
+				h0 += hunger / 2D + ghrelin - leptin;
+
 				if (energy < 2525)
-					h0 += (2525 - energy) / 30D; // (ghrelin-leptin - 300);
+					h0 += (2525 - energy) / 30D + ghrelin - leptin;
 
 				if (person.isInSettlement()) {
 

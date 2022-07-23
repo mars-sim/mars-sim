@@ -17,8 +17,6 @@ import org.mars_sim.msp.core.structure.building.function.Computation;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
-import com.alee.laf.panel.WebPanel;
-
 /**
  * The BuildingPanelComputation class is a building function panel representing
  * the computational capability of a building.

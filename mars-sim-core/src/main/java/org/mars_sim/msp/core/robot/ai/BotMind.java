@@ -13,6 +13,7 @@ import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 import org.mars_sim.msp.core.robot.ai.task.BotTaskManager;
 import org.mars_sim.msp.core.time.ClockPulse;
@@ -57,20 +58,20 @@ public class BotMind implements Serializable, Temporal {
 		robotJob = null;
 		jobLock = false;
 
-		// Define the boundary in Sense-Act-Plan (Robot control methodology
-		// 1. Sense - gather information using the sensors
-		// 2. Plan - create a world model using all the information, and plan the next
-		// move
-		// 3. Act
-		// SPA is used in iterations: After the acting phase, the sensing phase, and the
-		// entire cycle, is repeated.
-		// https://en.wikipedia.org/wiki/Sense_Plan_Act
+		// Define the boundary in Sense-Act-Plan, a Robot control methodology as follows :
+		//
+		// 1. Sense - 	Gather information using the sensors.
+		// 2.  Plan - 	Create a world model using all the information, 
+		//				and plan the next move.
+		// 3.   Act -		
+		//
+		// Note: SPA is used in iterations. After the acting phase, the sensing phase, 
+		// 		 and the entire cycle, is repeated.
+		//
+		// Reference : https://en.wikipedia.org/wiki/Sense_Plan_Act
 
 //		// Create CoreMind
 //		coreMind = new CoreMind();
-		// Construct a skill manager.
-//		skillManager = new SkillManager(robot, coreMind);
-//		skillManager = new SkillManager(robot);
 		
 		// Construct a task manager
 		botTaskManager = new BotTaskManager(this);
@@ -102,17 +103,13 @@ public class BotMind implements Serializable, Temporal {
 	private void takeAction(double time) {
 
 		// Perform a task if the robot has one, or determine a new task/mission.
-		if (botTaskManager.hasActiveTask()
-				&& !robot.getSystemCondition().isCharging()) {
+		if (robot.getSystemCondition().isCharging()) {
+			return;
+		}
+			
+		if (botTaskManager.hasActiveTask()) {
 			// Call executeTask
-			// Note: calling executeTask can cause stackoverflow from time to time
 			double remainingTime = botTaskManager.executeTask(time, robot.getPerformanceRating());
-			if (remainingTime == time) {
-				logger.log(robot, Level.SEVERE, 30_000L, "Current Task: " + botTaskManager.getTaskName() 
-					+ " - remainingTime / time = " + remainingTime + ".");
-				// Do not call takeAction
-				return;
-			}
 			if (remainingTime > 0D) {
 				takeAction(remainingTime);
 			}

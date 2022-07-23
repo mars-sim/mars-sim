@@ -72,7 +72,7 @@ public class ResourceProcessing extends Function {
 			for(int outResource : process.getOutputResources()) {
 				if (!process.isWasteOutputResource(outResource)) {
 					double rate = process.getMaxOutputResourceRate(outResource);
-					processValue += settlement.getGoodsManager().getGoodValuePerItem(outResource) * rate;
+					processValue += settlement.getGoodsManager().getGoodValuePoint(outResource) * rate;
 				}
 			}
 
@@ -80,7 +80,7 @@ public class ResourceProcessing extends Function {
 			for(int inResource : process.getInputResources()) {
 				if (!process.isAmbientInputResource(inResource)) {
 					double rate = process.getMaxInputResourceRate(inResource);
-					processValue -= settlement.getGoodsManager().getGoodValuePerItem(inResource) * rate;
+					processValue -= settlement.getGoodsManager().getGoodValuePoint(inResource) * rate;
 
 					// Check inventory limit.
 					double inputSupply = settlement.getAmountResourceStored(inResource);

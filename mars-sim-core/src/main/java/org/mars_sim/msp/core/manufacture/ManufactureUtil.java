@@ -234,7 +234,7 @@ public final class ManufactureUtil {
 			}
 
 			if (salvagedGood != null)
-				salvagedGoodValue = goodsManager.getGoodValuePerItem(salvagedGood.getID());
+				salvagedGoodValue = goodsManager.getGoodValuePoint(salvagedGood.getID());
 			else
 				throw new IllegalStateException("Salvaged good is null");
 
@@ -246,7 +246,7 @@ public final class ManufactureUtil {
 			while (i.hasNext()) {
 				PartSalvage partSalvage = i.next();
 				Good partGood = GoodsUtil.getGood(ItemResourceUtil.findItemResource(partSalvage.getName()).getID());
-				double partValue = goodsManager.getGoodValuePerItem(partGood.getID()) * partSalvage.getNumber();
+				double partValue = goodsManager.getGoodValuePoint(partGood.getID()) * partSalvage.getNumber();
 				totalPartsGoodValue += partValue;
 			}
 
@@ -288,22 +288,22 @@ public final class ManufactureUtil {
 				}
 			}
 
-			result = manager.getGoodValuePerItem(id) * amount;
+			result = manager.getGoodValuePoint(id) * amount;
 		}
 
 		else if (item.getType() == ItemType.PART) {
             int id = ItemResourceUtil.findIDbyItemResourceName(item.getName());
-			result = manager.getGoodValuePerItem(id) * item.getAmount();
+			result = manager.getGoodValuePoint(id) * item.getAmount();
 		}
 
 		else if (item.getType() == ItemType.EQUIPMENT) {
 			int id = EquipmentType.convertName2ID(item.getName());
-			result = manager.getGoodValuePerItem(id) * item.getAmount();
+			result = manager.getGoodValuePoint(id) * item.getAmount();
 		}
 
 		else if (item.getType() == ItemType.VEHICLE) {
 			Good good = GoodsUtil.getVehicleGood(item.getName());
-			result = manager.getGoodValuePerItem(good.getID()) * item.getAmount();
+			result = manager.getGoodValuePoint(good.getID()) * item.getAmount();
 		}
 
 		else

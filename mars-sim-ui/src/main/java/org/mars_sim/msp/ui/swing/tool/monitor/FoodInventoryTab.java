@@ -22,8 +22,10 @@ import org.mars_sim.msp.ui.swing.tool.NumberRenderer;
 @SuppressWarnings("serial")
 public class FoodInventoryTab extends TableTab implements UnitManagerListener {
 	
-	/** The minimum number of decimal places to be displayed. */
-	private static final int NUM_DIGITS = 2;
+	/** The minimum 2 of decimal places to be displayed. */
+	private static final int TWO_DIGITS = 2;
+	/** The minimum 3 decimal places to be displayed. */
+	private static final int THREE_DIGITS = 3;
 	
 	/**
 	 * constructor.
@@ -39,17 +41,19 @@ public class FoodInventoryTab extends TableTab implements UnitManagerListener {
 //		table.setDefaultRenderer(Double.class, new NumberCellRenderer(2));
 
 		TableColumnModel m = table.getColumnModel();
-		int num = FoodInventoryTableModel.NUM_INITIAL_COLUMNS;
-		int cols = FoodInventoryTableModel.NUM_DATA_COL;
+		int init = FoodInventoryTableModel.NUM_INITIAL_COLUMNS;
+		int numCols = FoodInventoryTableModel.NUM_DATA_COL;
 		for (int i= 0; i < m.getColumnCount(); i++) {
-			if (i >= num) {
-				int col = i - num;
-				if (col % cols == 0)
-					m.getColumn(i).setCellRenderer(NumberRenderer.getIntegerRenderer());
-				else if (col % cols == 1)
-					m.getColumn(i).setCellRenderer(new NumberCellRenderer(NUM_DIGITS, true));
-				else if (col % cols == 2)
+			if (i >= init) {
+				int col = i - init;
+				int c = col % numCols;
+				if (c == 2)
+					m.getColumn(i).setCellRenderer(new NumberCellRenderer(TWO_DIGITS, true));				
+				else if (c == 5 || c == 6)
 					m.getColumn(i).setCellRenderer(NumberRenderer.getCurrencyRenderer());
+				else 
+					m.getColumn(i).setCellRenderer(new NumberCellRenderer(THREE_DIGITS, true));
+
 			}
 		}
 		

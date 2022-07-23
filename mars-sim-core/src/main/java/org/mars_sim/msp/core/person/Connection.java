@@ -10,10 +10,10 @@ public enum Connection {
 
 	CHECKING_MESSAGES 		("Checking personal messages"),
 	WATCHING_EARTH_NEWS		("Watching Earth news"),
-	BROWSING_MARSNET		("Browsing MarsNet"),
+	BROWSING_MARSLINK		("Browsing MarsLink"),
 	WATCHING_EARTH_TV		("Watching Earth TV"),
 	WATCHING_A_MOVIE		("Watching a movie"),
-	BROWSING_EARTH_INTERNET ("Browsing Earth internet"),
+	BROWSING_EARTHLINK 		("Browsing EarthLink"),
 	;
 		
 	private String name;

@@ -26,6 +26,7 @@ import org.mars_sim.msp.core.structure.AirlockType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.time.ClockPulse;
 
 /**
  * The BuildingAirlock class represents an airlock for a building.
@@ -37,13 +38,25 @@ public class BuildingAirlock extends Airlock {
 
     private static SimLogger logger = SimLogger.getLogger(BuildingAirlock.class.getName());
 
-	public static final double HEIGHT = 2; // assume an uniform height of 2 meters in all airlocks
-
-	/** The volume of an airlock in cubic meters. */
-	public static final double AIRLOCK_VOLUME_IN_CM = 12D; //3 * 2 * 2; //in m^3
-	private static final double AIRLOCK_VOLUME_IN_LITER = AIRLOCK_VOLUME_IN_CM * 1000D; // [in liters] // 12 m^3
+	/** Pressurize/depressurize time (millisols). */
+	public static final double CYCLE_TIME = 10D; 
+	/** The maximum number of space in the chamber. */
+	public static final int MAX_SLOTS = 4;
+	/** Assume an uniform height of 2 meters in all airlocks. */
+	public static final double HEIGHT = 2; 
+	/** The volume of an airlock [in cubic meters]. */
+	public static final double AIRLOCK_VOLUME_IN_CM = 12D; //3 * 2 * 2;
+	/** The volume of an airlock [in liter]. */	
+	private static final double AIRLOCK_VOLUME_IN_LITER = AIRLOCK_VOLUME_IN_CM * 1000D; // 12 m^3
 
     // Data members.
+	/** True if airlock's state is in transition of change. */
+	private boolean transitioning;
+	/** True if airlock is activated (may elect an operator or may change the airlock state). */
+	private boolean activated;
+	/** Amount of remaining time for the airlock cycle. (in millisols) */
+	private double remainingCycleTime;
+	
 	/** The building this airlock is for. */
     private Building building;
 
@@ -72,7 +85,10 @@ public class BuildingAirlock extends Airlock {
         super(capacity);
 
         this.building = building;
-
+        
+		activated = false;
+		remainingCycleTime = CYCLE_TIME;
+		
         activitySpotMap  = new HashMap<>();
 
         // Determine airlock inner/interior door position.
@@ -746,6 +762,129 @@ public class BuildingAirlock extends Airlock {
 		return AirlockType.BUILDING_AIRLOCK;
 	}
 
+	/**
+	 * Activates the airlock.
+	 * 
+	 * @param value
+	 */
+	@Override
+	public void setActivated(boolean value) {
+		if (value) {
+			// Reset the cycle count down timer back to the default
+			remainingCycleTime = CYCLE_TIME;
+		}
+		activated = value;
+	}
+	
+	/**
+	 * Cycles the air and consumes the time
+	 * 
+	 * @param time
+	 */
+	@Override
+	protected void cycleAir(double time) {
+		// Ensure not to consume more than is needed
+		double consumed = Math.min(remainingCycleTime, time);
+
+		remainingCycleTime -= consumed;
+		// if the air cycling has been completed
+		if (remainingCycleTime <= 0D) {
+			// Reset remainingCycleTime back to max
+			remainingCycleTime = CYCLE_TIME;
+			// Go to the next steady state
+			goToNextSteadyState();			
+		}
+	}
+	
+	/**
+	 * Checks if the airlock is currently activated.
+	 *
+	 * @return true if activated.
+	 */
+	@Override
+	public boolean isActivated() {
+		return activated;
+	}
+
+	/**
+	 * Allows or disallows the airlock to be transitioning its state.
+	 *
+	 * @param value
+	 */
+	public void setTransitioning(boolean value) {
+		transitioning = value;
+	}
+
+	/**
+	 * Checks if the airlock is allowed to be transitioning its state.
+	 *
+	 * @param value
+	 */
+	public boolean isTransitioning() {
+		return transitioning;
+	}
+	
+	/**
+	 * Gets the remaining airlock cycle time.
+	 *
+	 * @return time (millisols)
+	 */
+	@Override
+	public double getRemainingCycleTime() {
+		return remainingCycleTime;
+	}
+	
+	/**
+	 * Time passing for airlock. Checks for unusual situations and deal with them.
+	 * Called from the unit owning the airlock.
+	 *
+	 * @param pulse
+	 */
+	@Override
+	public void timePassing(ClockPulse pulse) {
+		
+		if (activated) {
+
+			double time = pulse.getElapsed();
+			
+			if (transitioning) {
+				// Starts the air exchange and state transition
+				addTime(time);
+			}
+
+			if (pulse.isNewMSol()) {
+				// Check occupants
+				checkOccupantIDs();
+				// Check the airlock operator
+				checkOperator();
+			}
+		}
+	}
+	
+	/**
+	 * Adds this unit to the set or zone (for zone 0 and zone 4 only).
+	 *
+	 * @param set
+	 * @param id
+	 * @return true if the unit is already inside the set or if the unit can be added into the set
+	 */
+	@Override
+	protected boolean addToZone(Set<Integer> set, Integer id) {
+		if (set.contains(id)) {
+			// this unit is already in the zone
+			return true;
+		}
+		else {
+			// MAX_SLOTS - 1 because it needs to have one vacant spot
+			// for the flow of traffic
+			if (set.size() < MAX_SLOTS - 1) {
+				set.add(id);
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	public void destroy() {
 	    building = null;
 	    airlockInsidePos = null;

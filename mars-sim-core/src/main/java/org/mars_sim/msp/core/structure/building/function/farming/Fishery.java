@@ -179,7 +179,7 @@ public class Fishery extends Function {
 		}
 
 		// Modify result by value (VP) of food meat at the settlement.
-		double foodValue = settlement.getGoodsManager().getGoodValuePerItem(ResourceUtil.fishMeatID);
+		double foodValue = settlement.getGoodsManager().getGoodValuePoint(ResourceUtil.fishMeatID);
 
 		return (demand / (supply + 1D)) * foodValue;
 	}

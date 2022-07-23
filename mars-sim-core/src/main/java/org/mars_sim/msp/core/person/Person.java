@@ -1398,7 +1398,7 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	public void setCountry(String c) {
 		this.country = c;
 		if (c != null)
-			birthplace = EARTH_BIRTHPLACE;
+			birthplace = c + ", " + EARTH_BIRTHPLACE;
 		else
 			birthplace = MARS_BIRTHPLACE;
 	}

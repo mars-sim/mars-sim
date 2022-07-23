@@ -129,17 +129,4 @@ public class FoodUtil {
 			}
 		}
 	}
-
-	/**
-	 * Gets the mass per item for a food.
-	 * 
-	 * @param food the food to check.
-	 * @return mass (kg) per item (or 1kg for amount resources).
-	 * @throws Exception if error getting mass per item.
-	 */
-	public static double getFoodMassPerItem(Food food) {
-//		if (FoodType.AMOUNT_RESOURCE == food.getCategory())
-			return 1D;
-	}
-
 }

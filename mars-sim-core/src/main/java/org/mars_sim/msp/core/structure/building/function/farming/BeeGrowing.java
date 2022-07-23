@@ -7,8 +7,6 @@
 
 package org.mars_sim.msp.core.structure.building.function.farming;
 
-import java.io.Serializable;
-
 import org.mars_sim.msp.core.structure.building.FunctionSpec;
 import org.mars_sim.msp.core.structure.building.function.Function;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;

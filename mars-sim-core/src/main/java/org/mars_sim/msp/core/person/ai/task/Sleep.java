@@ -196,6 +196,8 @@ public class Sleep extends Task implements Serializable {
 			pc.setFatigue(newFatigue);
 
 			circadian.setAwake(false);
+			// Change hormones
+			circadian.setRested(time);
 			// Record the sleep time [in millisols]
 			circadian.recordSleep(time);
 

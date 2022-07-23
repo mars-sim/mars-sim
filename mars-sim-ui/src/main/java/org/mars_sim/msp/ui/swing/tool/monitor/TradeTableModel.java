@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TradeTableModel.java
- * @date 2022-06-16
+ * @date 2022-07-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
@@ -18,8 +18,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
 import org.mars_sim.msp.core.CollectionUtils;
-import org.mars_sim.msp.core.GameManager;
-import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
@@ -57,17 +55,20 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 	private static final String SUPPLY_COL = "Supply";
 	private static final String QUANTITY_COL = "Quantity";
 	private static final String MASS_COL = "Tot Mass [kg]";
-	private static final String VALUE_COL = "Value";
-	private static final String PRICE_COL = "Price [$]";
-	private static final String COST_COL = "Cost [$]";
 	
+	private static final String NATIONAL_VP_COL = "National VP";
+	private static final String LOCAL_VP_COL = "Local VP";
+
+	private static final String COST_COL = "Cost [$]";
+	private static final String PRICE_COL = "Price [$]";
+
 	private static final String ONE_SPACE = " ";
+	private static final String TWO_SPACES = "  ";
 
 	protected static final int NUM_INITIAL_COLUMNS = 3;
-	protected static final int NUM_DATA_COL = 7;
+	protected static final int NUM_DATA_COL = 8;
 
 	// Data members
-	private GameMode mode = GameManager.getGameMode();
 
 	private List<Good> goodsList;
 	private List<Settlement> settlements = new ArrayList<>();
@@ -157,9 +158,9 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 	/**
 	 * Gets the model count string.
 	 */
-	@Override
+//	@Override
 	public String getCountString() {
-		return new StringBuilder(ONE_SPACE + goodsList.size() + ONE_SPACE + TRADE_GOODS).toString();
+		return new StringBuilder(TWO_SPACES + goodsList.size() + ONE_SPACE + TRADE_GOODS).toString();
 	}
 
 	/**
@@ -184,7 +185,7 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 	}
 
 	/**
-	 * Has this model got a natural order that the model conforms to.
+	 * Has this model got a natural order that the model conforms to ?
 	 *
 	 * @return If true, it implies that the user should not be allowed to order.
 	 */
@@ -214,8 +215,10 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 			else if (r == 3)
 				return MASS_COL;
 			else if (r == 4)
-				return VALUE_COL;
+				return NATIONAL_VP_COL;
 			else if (r == 5)
+				return LOCAL_VP_COL;
+			else if (r == 6)				
 				return COST_COL;
 			else
 				return PRICE_COL;
@@ -269,8 +272,10 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 			else if (r == 3)
 				return getTotalMass(selectedSettlement, goodsList.get(rowIndex));
 			else if (r == 4)
-				return selectedSettlement.getGoodsManager().getGoodValuePerItem(goodsList.get(rowIndex).getID());
+				return Math.round(goodsList.get(rowIndex).getAverageMarketGoodValue()*100.0)/100.0;
 			else if (r == 5)
+				return selectedSettlement.getGoodsManager().getGoodValuePoint(goodsList.get(rowIndex).getID());
+			else if (r == 6)
 				return Math.round(goodsList.get(rowIndex).getCostOutput()*100.0)/100.0;
 			else
 				return Math.round(selectedSettlement.getGoodsManager().getPrice(goodsList.get(rowIndex))*100.0)/100.0; 
@@ -381,7 +386,6 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 		settlements = null;
 		unitManager.removeUnitManagerListener(this);
 		unitManager = null;		
-		mode = null;
 		goodsList.clear();
 		goodsList = null;
 		lastRowMap = null;

@@ -103,6 +103,7 @@ public class Settlement extends Structure implements Temporal,
 	private static final String MINING_OUTPOST = "Mining Outpost";
 	private static final String ASTRONOMY_OBSERVATORY = "Astronomy Observatory";
 
+	public static final int MULTIPLIER = 2;
 	public static final int CHECK_MISSION = 20; // once every 10 millisols
 	public static final int MAX_NUM_SOLS = 3;
 	public static final int MAX_SOLS_DAILY_OUTPUT = 14;
@@ -1050,12 +1051,17 @@ public class Settlement extends Structure implements Temporal,
 			// Check for available airlocks
 			checkAvailableAirlocks();
 
-			// May update the goods manager updateGoodsManager(pulse);
-			int cycles = settlementConfig.getTemplateID();
+			// For a single settlement, if MULTIPLIER is 1, then it calls updateGoodValues once every 23 msols
+			// For a single settlement, If MULTIPLIER is 2, then it calls updateGoodValues once every 46 msols
+			// For a 9-settlement simulation, if MULTIPLIER is 1, then it calls updateGoodValues once every 23 msols
+			// For a 9-settlement simulation, If MULTIPLIER is 2, then it calls updateGoodValues once every 46 msols
+			int cycles = settlementConfig.getTemplateID() * MULTIPLIER;
+
 			int remainder = msol % cycles;
 			if (remainder == templateID) {
 				// Update the goods value gradually with the use of buffers
 				goodsManager.updateGoodValues();
+//				logger.info(this, "Adjusted the values of goods at " + msol + " msol.");
 			}
 
 			remainder = msol % CHECK_MISSION;
@@ -3179,13 +3185,13 @@ public class Settlement extends Structure implements Temporal,
 	private double computeRegolithProbability() {
 		double result = 0;
 
-		double regolith_value = goodsManager.getGoodValuePerItem(REGOLITH_ID) * GoodsManager.REGOLITH_VALUE_MODIFIER;
+		double regolith_value = goodsManager.getGoodValuePoint(REGOLITH_ID) * GoodsManager.REGOLITH_VALUE_MODIFIER;
 		if (regolith_value > REGOLITH_MAX)
 			regolith_value = REGOLITH_MAX;
 		else if (regolith_value < 0)
 			return 0;
 
-		double sand_value = goodsManager.getGoodValuePerItem(SAND_ID) * GoodsManager.SAND_VALUE_MODIFIER;
+		double sand_value = goodsManager.getGoodValuePoint(SAND_ID) * GoodsManager.SAND_VALUE_MODIFIER;
 		if (sand_value > REGOLITH_MAX)
 			sand_value = REGOLITH_MAX;
 		else if (sand_value < 0)
@@ -3223,14 +3229,14 @@ public class Settlement extends Structure implements Temporal,
 	private double computeIceProbability() {
 		double result = 0;
 
-		double ice_value = goodsManager.getGoodValuePerItem(ICE_ID);
+		double ice_value = goodsManager.getGoodValuePoint(ICE_ID);
 
 		if (ice_value > ICE_MAX)
 			ice_value = ICE_MAX;
 		if (ice_value < 1)
 			ice_value = 1;
 
-		double water_value = goodsManager.getGoodValuePerItem(WATER_ID);
+		double water_value = goodsManager.getGoodValuePoint(WATER_ID);
 		water_value = water_value * waterRationLevel;
 		if (water_value > WATER_MAX)
 			water_value = WATER_MAX;

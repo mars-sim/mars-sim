@@ -357,7 +357,7 @@ implements Serializable {
         while (j.hasNext()) {
         	Integer resource = j.next();
             double amount = resources.get(resource);
-            double value = manager.getGoodValuePerItem(resource) * amount;
+            double value = manager.getGoodValuePoint(resource) * amount;
             cost += value;
         }
 
@@ -367,7 +367,7 @@ implements Serializable {
         while (k.hasNext()) {
         	Integer part = k.next();
             int number = parts.get(part);
-            double value = manager.getGoodValuePerItem(part) * number;
+            double value = manager.getGoodValuePoint(part) * number;
             cost += value;
         }
 

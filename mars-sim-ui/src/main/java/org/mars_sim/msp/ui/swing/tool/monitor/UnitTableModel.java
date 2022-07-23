@@ -165,12 +165,13 @@ abstract public class UnitTableModel extends AbstractTableModel implements Monit
 	 */
 	protected int getUnitNumber() {
 		if (refreshSize) {
-			this.size = units == null ? 0 : units.size();
+			size = units == null ? 0 : units.size();
 			refreshSize = false;
 		}
-		// if (units != null) return units.size();
-		// else return 0;
-		return this.size;
+//		 if (units != null) 
+//			 return units.size();
+
+		return size;
 	}
 
 	protected boolean getRefreshSize() {
@@ -303,9 +304,7 @@ abstract public class UnitTableModel extends AbstractTableModel implements Monit
 	 * Gets the model count string.
 	 */
 	public String getCountString() {
-		return " " + Msg.getString(countingMsgKey,
-//				Integer.toString(getUnitNumber())
-				getUnitNumber());
+		return "  " + Msg.getString(countingMsgKey, getUnitNumber());
 	}
 
 	/**
