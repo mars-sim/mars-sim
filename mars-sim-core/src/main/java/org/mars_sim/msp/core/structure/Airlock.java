@@ -854,6 +854,13 @@ public abstract class Airlock implements Serializable {
 	public abstract boolean isActivated();
 	
 	/**
+	 * Gets the remaining airlock cycle time.
+	 *
+	 * @return time (millisols)
+	 */
+	public abstract double getRemainingCycleTime();
+	
+	/**
 	 * Goes to the next steady state.
 	 *
 	 * @return true if the switch is successful

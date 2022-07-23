@@ -56,8 +56,11 @@ public class EnterAirlock extends Task implements Serializable {
 	// Static members
 	/** The standard time for doffing the EVA suit. */
 	private static final double SUIT_DOFFING_TIME = 15;
-	/** The standard time for cleaning oneself and the EVA suit. */
+	/** The standard time for cleaning oneself and the EVA suit in a settlement . */
 	private static final double STANDARD_CLEANINNG_TIME = 15;
+	/** The shortened time for cleaning oneself and the EVA suit in a vehicle. */
+	private static final double SHORTENED_CLEANINNG_TIME = 5;
+	
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = .1D;
 
@@ -714,8 +717,12 @@ public class EnterAirlock extends Task implements Serializable {
 					// Add experience
 					addExperience(time);
 
-					remainingCleaningTime = STANDARD_CLEANINNG_TIME + RandomUtil.getRandomInt(-2, 2);
-
+					if (inSettlement) {
+						remainingCleaningTime = STANDARD_CLEANINNG_TIME + RandomUtil.getRandomInt(-3, 3);
+					}
+					else
+						remainingCleaningTime = SHORTENED_CLEANINNG_TIME + RandomUtil.getRandomInt(-1, 1);
+					
 					setPhase(CLEAN_UP);
 				}
 			}
@@ -725,8 +732,12 @@ public class EnterAirlock extends Task implements Serializable {
 //						"did not possess an EVA suit in " + airlock.getEntity().toString()
 //						+ ".");
 
-				remainingCleaningTime = STANDARD_CLEANINNG_TIME + RandomUtil.getRandomInt(-2, 2);
-
+				if (inSettlement) {
+					remainingCleaningTime = STANDARD_CLEANINNG_TIME + RandomUtil.getRandomInt(-3, 3);
+				}
+				else
+					remainingCleaningTime = SHORTENED_CLEANINNG_TIME + RandomUtil.getRandomInt(-1, 1);
+			
 				setPhase(CLEAN_UP);
 			}
 		}

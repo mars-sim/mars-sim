@@ -575,6 +575,7 @@ extends Airlock {
 	 *
 	 * @return time (millisols)
 	 */
+	@Override
 	public double getRemainingCycleTime() {
 		return remainingCycleTime;
 	}
