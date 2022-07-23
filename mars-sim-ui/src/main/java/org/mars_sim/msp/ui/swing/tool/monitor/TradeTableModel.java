@@ -62,8 +62,8 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 	private static final String COST_COL = "Cost [$]";
 	private static final String PRICE_COL = "Price [$]";
 
-	
 	private static final String ONE_SPACE = " ";
+	private static final String TWO_SPACES = "  ";
 
 	protected static final int NUM_INITIAL_COLUMNS = 3;
 	protected static final int NUM_DATA_COL = 8;
@@ -158,9 +158,9 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 	/**
 	 * Gets the model count string.
 	 */
-	@Override
+//	@Override
 	public String getCountString() {
-		return new StringBuilder(ONE_SPACE + goodsList.size() + ONE_SPACE + TRADE_GOODS).toString();
+		return new StringBuilder(TWO_SPACES + goodsList.size() + ONE_SPACE + TRADE_GOODS).toString();
 	}
 
 	/**

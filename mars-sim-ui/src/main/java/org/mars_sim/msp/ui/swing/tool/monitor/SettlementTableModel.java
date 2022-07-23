@@ -378,7 +378,8 @@ public class SettlementTableModel extends UnitTableModel {
 	}
 	
 	/**
-	 * Catch unit update event.
+	 * Catches unit update event.
+	 * 
 	 * @param event the unit event.
 	 */
 	public void unitUpdate(UnitEvent event) {
@@ -516,6 +517,8 @@ public class SettlementTableModel extends UnitTableModel {
 		Iterator<Settlement> iter = source.iterator();
 		while (iter.hasNext())
 			addUnit(iter.next());
+		
+		setSize(source.size());
 	}
 
 	@Override

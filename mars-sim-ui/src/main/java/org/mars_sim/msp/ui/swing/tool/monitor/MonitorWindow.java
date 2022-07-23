@@ -176,7 +176,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		// Use lambda to add a listener for the tab changes
 		// Invoked when player clicks on another tab
 		tabsSection.addChangeListener(e -> updateTab());
-					
+		
 		mainPane.add(tabsSection, BorderLayout.CENTER);
 		
 		// Open the Events tab at the start of the sim
@@ -204,6 +204,9 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		int width = (desktopSize.width - windowSize.width) / 2;
 		int height = (desktopSize.height - windowSize.height - 100) / 2;
 		setLocation(width, height);
+		
+		// Update the row count label with new numbers
+		rowCount.setText(getSelectedTab().getCountString());
 	}
 
 	/**
@@ -479,7 +482,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	 * Creates a bar chart and adds it as a new separate tab.
 	 */
 	private void createBarChart() {
-		MonitorModel model = getSelected().getModel();
+		MonitorModel model = getSelectedTab().getModel();
 		int columns[] = ColumnSelector.createBarSelector(desktop, model);
 
 		if (columns != null && columns.length > 0) {
@@ -491,7 +494,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	 * Creates a pie chart and adds it as a new separate tab.
 	 */
 	private void createPieChart() {
-		MonitorModel model = getSelected().getModel();
+		MonitorModel model = getSelectedTab().getModel();
 		if (model != null) {
 			int column = ColumnSelector.createPieSelector(desktop, model);
 			if (column >= 0) {
@@ -505,7 +508,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	 *
 	 * @return Monitor tab being displayed.
 	 */
-	public MonitorTab getSelected() {
+	public MonitorTab getSelectedTab() {
 		Component c = tabsSection.getSelectedComponent();
 		if (c != null) {
 			return (MonitorTab)c;
@@ -521,7 +524,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	 * 
 	 * @return
 	 */
-	public int getSelectedTab() {
+	public int getSelectedTabIndex() {
 		return tabsSection.getSelectedIndex();
 	}
 
@@ -530,13 +533,14 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	 */
 	public void updateTab() {
 		
-		MonitorTab selectedTab = getSelected();
+		MonitorTab selectedTab = getSelectedTab();
 		if (selectedTab == null)
 			return;
 		
 		int index = tabsSection.indexOfComponent(selectedTab);
 		
 		if (settlementList.size() == 1) {
+			
 			if (selectedTab instanceof TradeTab) {
 				// Enable these buttons
 				buttonBar.setEnabled(true);
@@ -546,8 +550,12 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 
 				int rowIndex = ((TradeTableModel)tradeTab.getModel()).returnLastRowIndex(selectedSettlement);
 
+				
 				scrollToVisible(tradeTab.getTable(), rowIndex, 0);
 			}
+			
+			// Update the row count label with new numbers
+			rowCount.setText(selectedTab.getCountString());
 			
 			return;
 		}
@@ -556,9 +564,13 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		else if (index == 0) {
 			// Hide the settlement box
 			setSettlementBox(true);
+			// Update the row count label with new numbers
+			rowCount.setText(selectedTab.getCountString());
+			
 			return;
 		}
 		
+		// Continue and recreate a new tab
 		selectNewTab(selectedTab);
 	}
 	
@@ -680,25 +692,14 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 
 			// Update the row count label with new numbers
 			rowCount.setText(newTab.getCountString());
-
+			
 			// Set the opaqueness of the settlement box
 			setSettlementBox(isOpaque);
 			
 		} catch (Exception e) {
 			logger.severe("Problems in re-creating tabs in MonitorWindow: " + e.getMessage());
 		}
-
-//		if (table != null) {
-//			// Note: for pie and bar chart, skip the codes below
-//			TableStyle.setTableStyle(table);
-//			rowTable = new RowNumberTable(table);
-//			// Note: needed for periodic refreshing in ToolWindow
-//			TableStyle.setTableStyle(rowTable);
-//
-//			// May reactivate statusPanel.remove(_tableSearchableBar) later
-//			// May reactivate this: if (reloadSearch) createSearchableBar(table) later
-//		}
-		// SwingUtilities.updateComponentTreeUI(this);
+		
 	}
 
 	/**
@@ -865,34 +866,36 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	 */
 	private void removeTab(MonitorTab oldTab) {
 		retireTab(oldTab);
-		if (getSelected() == oldTab) {
+		if (getSelectedTab() == oldTab) {
 			tabsSection.setSelectedIndex(0);
+			// Update the row count label
+			rowCount.setText("");
 		}
 	}
 
 	private void centerMap() {
-		MonitorTab selected = getSelected();
+		MonitorTab selected = getSelectedTab();
 		if (selected != null) {
 			selected.centerMap(desktop);
 		}
 	}
 
 	public void displayDetails() {
-		MonitorTab selected = getSelected();
+		MonitorTab selected = getSelectedTab();
 		if (selected != null) {
 			selected.displayDetails(desktop);
 		}
 	}
 
 	private void displayMission() {
-		MonitorTab selected = getSelected();
+		MonitorTab selected = getSelectedTab();
 		if ((selected instanceof MissionTab) && (selected != null)) {
 			((MissionTab) selected).displayMission(desktop);
 		}
 	}
 
 	private void displayProps() {
-		MonitorTab selected = getSelected();
+		MonitorTab selected = getSelectedTab();
 		if (selected != null) {
 			selected.displayProps(desktop);
 		}
@@ -913,9 +916,10 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 			TableStyle.setTableStyle(table);
 			rowTable = new RowNumberTable(table);
 			TableStyle.setTableStyle(rowTable);
-			MonitorTab selected = getSelected();
+			MonitorTab selected = getSelectedTab();
 			if (selected == eventsTab) {
-				rowCount.setText(eventsTab.getCountString());
+				// Update the row count label with new numbers
+				rowCount.setText(selected.getCountString());
 			}
 		}
 	}
@@ -937,9 +941,9 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		} else if (source == this.buttonBar) {
 			createBarChart();
 		} else if (source == this.buttonRemoveTab) {
-			MonitorTab selected = getSelected();
+			MonitorTab selected = getSelectedTab();
 			if (selected != null && !selected.getMandatory()) {
-				removeTab(getSelected());
+				removeTab(getSelectedTab());
 			}
 		} else if (source == this.buttonDetails) {
 			displayDetails();

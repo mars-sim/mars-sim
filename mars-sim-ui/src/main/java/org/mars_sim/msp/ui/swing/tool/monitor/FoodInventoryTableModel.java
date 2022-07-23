@@ -42,7 +42,7 @@ import org.mars_sim.msp.ui.swing.tool.Conversion;
 public class FoodInventoryTableModel extends AbstractTableModel
 implements UnitListener, MonitorModel, UnitManagerListener {
 
-	private static final String FOOD_ITEMS = " Food Items";
+	private static final String FOOD_RESOURCES = " Food Resources";
 	
 	private static final String FOOD_COL = "Food - ";
 	private static final String TYPE = "Type";
@@ -114,9 +114,9 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 	/**
 	 * Gets the model count string.
 	 */
-	@Override
+//	@Override
 	public String getCountString() {
-		return " " + foodList.size() + FOOD_ITEMS;
+		return "  " + foodList.size() + FOOD_RESOURCES;
 	}
 
 	/**
