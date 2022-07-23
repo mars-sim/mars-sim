@@ -63,6 +63,7 @@ public class CommandHelper {
 	public static final int COORDINATE_WIDTH = 24;
 	
 	// Base value formats for use with String.format
+	public static final String DOUBLE_FORMAT = "%.2f";
 	public static final String KG_FORMAT = "%.2f kg";
 	public static final String KM_FORMAT = "%.2f km";
 	public static final String PERC_FORMAT = "%.1f%%";

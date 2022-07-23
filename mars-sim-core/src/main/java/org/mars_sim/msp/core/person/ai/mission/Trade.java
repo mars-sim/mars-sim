@@ -7,19 +7,21 @@
 package org.mars_sim.msp.core.person.ai.mission;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Level;
 
-import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.InventoryUtil;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.EquipmentType;
-import org.mars_sim.msp.core.goods.CreditManager;
+import org.mars_sim.msp.core.goods.CommerceMission;
+import org.mars_sim.msp.core.goods.CommerceUtil;
+import org.mars_sim.msp.core.goods.Deal;
 import org.mars_sim.msp.core.goods.Good;
 import org.mars_sim.msp.core.goods.GoodCategory;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -31,14 +33,13 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * A mission for trading between two settlements. TODO externalize strings
  */
-public class Trade extends RoverMission {
+public class Trade extends RoverMission implements CommerceMission {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -59,11 +60,7 @@ public class Trade extends RoverMission {
 	// Static members
 	public static final double MAX_STARTING_PROBABILITY = 100D;
 
-	// Static cache for holding trade profit info.
-	public static final Map<Settlement, TradeProfitInfo> TRADE_PROFIT_CACHE = new HashMap<>();
-	public static final Map<Settlement, Settlement> TRADE_SETTLEMENT_CACHE = new HashMap<>();
-
-	static final int MAX_MEMBERS = 2;
+	public static final int MAX_MEMBERS = 2;
 
 	// Data members.
 	private double profit;
@@ -104,45 +101,26 @@ public class Trade extends RoverMission {
 
 		if (!isDone() && s != null) {
 			// Get trading settlement
-			tradingSettlement = TRADE_SETTLEMENT_CACHE.get(s);
-			if (tradingSettlement != null && !tradingSettlement.equals(s)) {
-				addNavpoint(tradingSettlement);
-				TRADE_PROFIT_CACHE.remove(getStartingSettlement());
-				TRADE_PROFIT_CACHE.remove(tradingSettlement);
-				TRADE_SETTLEMENT_CACHE.remove(getStartingSettlement());
-				TRADE_SETTLEMENT_CACHE.remove(tradingSettlement);
-			} else {
+			Deal deal = s.getGoodsManager().getBestDeal(MissionType.TRADE, getVehicle());
+			if (deal == null) {
 				endMission(MissionStatus.NO_TRADING_SETTLEMENT);
+				return;
 			}
+			tradingSettlement = deal.getBuyer();
+			addNavpoint(tradingSettlement);
 
-			if (!isDone()) {
-				// Get the credit that the starting settlement has with the destination
-				// settlement.
-				double credit = CreditManager.getCredit(s, tradingSettlement);
+			// Determine desired buy load,
+			desiredBuyLoad = CommerceUtil.getDesiredBuyLoad(s, getRover(), tradingSettlement);
+			
+			// Determine sell load.
+			sellLoad = CommerceUtil.determineBestSellLoad(s, getRover(), tradingSettlement);
 
-				if (credit > (TradeUtil.SELL_CREDIT_LIMIT * -1D)) {
-					// Determine desired buy load,
-					desiredBuyLoad = TradeUtil.getDesiredBuyLoad(s, getRover(), tradingSettlement);
-				} else {
-					// Cannot buy from settlement due to credit limit.
-					desiredBuyLoad = new HashMap<Good, Integer>(0);
-				}
-
-				if (credit < TradeUtil.SELL_CREDIT_LIMIT) {
-					// Determine sell load.
-					sellLoad = TradeUtil.determineBestSellLoad(s, getRover(), tradingSettlement);
-				} else {
-					// Will not sell to settlement due to credit limit.
-					sellLoad = new HashMap<Good, Integer>(0);
-				}
-
-				// Determine desired trade profit.
-				desiredProfit = estimateTradeProfit(desiredBuyLoad);
-			}
+			// Determine desired trade profit.
+			desiredProfit = CommerceUtil.getEstimatedProfit(s, getRover(), tradingSettlement, desiredBuyLoad, sellLoad);
 
 			// Recruit additional members to mission.
 			if (!isDone()) {
-				if (!recruitMembersForMission(startingMember, MAX_MEMBERS))
+				if (!recruitMembersForMission(startingMember, MAX_MEMBERS)) 
 					return;
 			}
 		}
@@ -190,7 +168,8 @@ public class Trade extends RoverMission {
 		sellLoad = sellGoods;
 		buyLoad = buyGoods;
 		desiredBuyLoad = new HashMap<>(buyGoods);
-		profit = estimateTradeProfit(buyLoad);
+		profit = CommerceUtil.getEstimatedProfit(getStartingSettlement(), getRover(), tradingSettlement, buyLoad, sellLoad);
+
 		desiredProfit = profit;
 
 		// Set initial phase
@@ -341,7 +320,7 @@ public class Trade extends RoverMission {
 				if (negotiationTask != null) {
 					if (negotiationTask.isDone()) {
 						buyLoad = negotiationTask.getBuyLoad();
-						profit = estimateTradeProfit(buyLoad);
+						profit = CommerceUtil.getEstimatedProfit(getStartingSettlement(), getRover(), tradingSettlement, buyLoad, sellLoad);
 						fireMissionUpdate(MissionEventType.BUY_LOAD_EVENT);
 						setPhaseEnded(true);
 					}
@@ -376,7 +355,10 @@ public class Trade extends RoverMission {
 					new NavPoint(tradingSettlement),
 					new NavPoint(getStartingSettlement()));
 
-			TRADE_PROFIT_CACHE.remove(getStartingSettlement());
+			getStartingSettlement().getGoodsManager().clearDeal(MissionType.TRADE);
+
+			// Start the loading
+			prepareLoadingPlan(tradingSettlement);
 		}
 	}
 
@@ -793,7 +775,7 @@ public class Trade extends RoverMission {
 	 */
 	public Map<Good, Integer> getSellLoad() {
 		if (sellLoad != null) {
-			return new HashMap<Good, Integer>(sellLoad);
+			return Collections.unmodifiableMap(sellLoad);
 		} else {
 			return null;
 		}
@@ -806,7 +788,7 @@ public class Trade extends RoverMission {
 	 */
 	public Map<Good, Integer> getBuyLoad() {
 		if (buyLoad != null) {
-			return new HashMap<Good, Integer>(buyLoad);
+			return Collections.unmodifiableMap(buyLoad);
 		} else {
 			return null;
 		}
@@ -828,7 +810,7 @@ public class Trade extends RoverMission {
 	 */
 	public Map<Good, Integer> getDesiredBuyLoad() {
 		if (desiredBuyLoad != null) {
-			return new HashMap<Good, Integer>(desiredBuyLoad);
+			return Collections.unmodifiableMap(desiredBuyLoad);
 		} else {
 			return null;
 		}
@@ -852,40 +834,6 @@ public class Trade extends RoverMission {
 		return tradingSettlement;
 	}
 
-	/**
-	 * Estimates the profit for the starting settlement for a given buy load.
-	 *
-	 * @param buyingLoad the load to buy.
-	 * @return profit (VP).
-	 */
-	private double estimateTradeProfit(Map<Good, Integer> buyingLoad) {
-		double result = 0D;
-
-		try {
-			double sellingValueHome = TradeUtil.determineLoadCredit(sellLoad, getStartingSettlement(), false);
-			double sellingValueRemote = TradeUtil.determineLoadCredit(sellLoad, tradingSettlement, true);
-			double sellingProfit = sellingValueRemote - sellingValueHome;
-
-			double buyingValueHome = TradeUtil.determineLoadCredit(buyingLoad, getStartingSettlement(), true);
-			double buyingValueRemote = TradeUtil.determineLoadCredit(buyingLoad, tradingSettlement, false);
-			double buyingProfit = buyingValueHome - buyingValueRemote;
-
-			double totalProfit = sellingProfit + buyingProfit;
-
-			double estimatedDistance = Coordinates.computeDistance(getStartingSettlement().getCoordinates(),
-					tradingSettlement.getCoordinates()) * 2D;
-			double missionCost = TradeUtil.getEstimatedMissionCost(getStartingSettlement(), getRover(),
-					estimatedDistance);
-
-			result = totalProfit - missionCost;
-		} catch (Exception e) {
-			logger.severe(getVehicle(), "Cannot estimate trade profit: ", e);
-			endMission(MissionStatus.COULD_NOT_ESTIMATE_TRADE_PROFIT);
-		}
-
-		return result;
-	}
-
 	@Override
 	public void destroy() {
 		super.destroy();
@@ -901,20 +849,6 @@ public class Trade extends RoverMission {
 			desiredBuyLoad.clear();
 		desiredBuyLoad = null;
 		negotiationTask = null;
-	}
-
-	/**
-	 * Inner class for storing trade profit info.
-	 */
-	public static class TradeProfitInfo {
-
-		public double profit;
-		public MarsClock time;
-
-		public TradeProfitInfo(double profit, MarsClock time) {
-			this.profit = profit;
-			this.time = time;
-		}
 	}
 
 	/**

@@ -7,20 +7,18 @@
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.UnitType;
-import org.mars_sim.msp.core.goods.CreditManager;
+import org.mars_sim.msp.core.goods.CommerceUtil;
 import org.mars_sim.msp.core.goods.Good;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.mission.DeliveryUtil;
 import org.mars_sim.msp.core.person.ai.social.RelationshipUtil;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
@@ -108,48 +106,14 @@ public class NegotiateDelivery extends Task implements Serializable {
 		if (getDuration() <= (getTimeCompleted() + time)) {
 
 			double tradeModifier = determineTradeModifier();
-
-			// Get the credit of the load that is being sold to the destination settlement.
-			double baseSoldCredit = DeliveryUtil.determineLoadCredit(soldLoad, sellingSettlement, true);
-			double soldCredit = baseSoldCredit * tradeModifier;
-
-			// Get the credit that the starting settlement has with the destination
-			// settlement.
-			double credit = CreditManager.getCredit(buyingSettlement, sellingSettlement);
-			credit += soldCredit;
-			CreditManager.setCredit(buyingSettlement, sellingSettlement, credit);
-			
 			logger.log(person, Level.INFO, 0, 
-					"Delivery negotiation completed - "
-					+ "  Buyer: " + buyingSettlement.getName() 
-					+ "  Seller: " + sellingSettlement.getName()
-					+ "  Credit: " + Math.round(credit* 10.0)/10.0 
-					+ "  Trade Mod: " + Math.round(tradeModifier * 10.0)/10.0
-					);
+			"Negotiation completed - "
+			+ "  Buyer: " + buyingSettlement.getName() 
+			+ "  Seller: " + sellingSettlement.getName()
+			+ "  Trade Mod: " + Math.round(tradeModifier * 10.0)/10.0
+			);
 
-			// Check if buying settlement owes the selling settlement too much for them to
-			// sell.
-			if (credit > (-1D * DeliveryUtil.SELL_CREDIT_LIMIT)) {
-
-				// Determine the initial buy load based on goods that are profitable for the
-				// destination settlement to sell.
-				buyLoad = DeliveryUtil.determineLoad(buyingSettlement, sellingSettlement, drone, Double.POSITIVE_INFINITY);
-				double baseBuyLoadValue = DeliveryUtil.determineLoadCredit(buyLoad, buyingSettlement, true);
-				double buyLoadValue = baseBuyLoadValue / tradeModifier;
-
-				// Update the credit value between the starting and destination settlements.
-				credit -= buyLoadValue;
-				CreditManager.setCredit(buyingSettlement, sellingSettlement, credit);
-				
-				logger.log(person, Level.INFO, 0,
-						"Account ledger updated - "
-						+ "  Base Buy Load: " + Math.round(baseBuyLoadValue * 10.0)/10.0
-						+ "  Credit: " + Math.round(credit * 10.0)/10.0
-						+ "  Trade Mod: " + Math.round(tradeModifier * 10.0)/10.0
-						);
-			} else {
-				buyLoad = new HashMap<>();
-			}
+			buyLoad = CommerceUtil.negotiateDeal(sellingSettlement, buyingSettlement, drone, tradeModifier, soldLoad);
 		}
 
 		// Will use all the time

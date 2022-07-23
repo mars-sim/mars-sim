@@ -67,7 +67,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	protected static final int FOOD_ID = ResourceUtil.foodID;
 	
 	/** The factor for estimating the adjusted fuel economy. */
-	protected static final double FE_FACTOR = 3.0;
+	public static final double FE_FACTOR = 3.0;
 	
 	/** Mission phases. */
 	public static final MissionPhase REVIEWING = new MissionPhase("Mission.phase.reviewing");

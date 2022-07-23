@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.mission;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -14,10 +13,11 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Level;
 
-import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.EVASuit;
-import org.mars_sim.msp.core.goods.CreditManager;
+import org.mars_sim.msp.core.goods.CommerceMission;
+import org.mars_sim.msp.core.goods.CommerceUtil;
+import org.mars_sim.msp.core.goods.Deal;
 import org.mars_sim.msp.core.goods.Good;
 import org.mars_sim.msp.core.goods.GoodCategory;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -28,14 +28,13 @@ import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Drone;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * A mission for delivery between two settlements. TODO externalize strings
  */
-public class Delivery extends DroneMission implements Serializable {
+public class Delivery extends DroneMission implements CommerceMission {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -55,11 +54,6 @@ public class Delivery extends DroneMission implements Serializable {
 
 	// Static members
 	public static final double MAX_STARTING_PROBABILITY = 100D;
-
-	// Static cache for holding trade profit info.
-	public static final Map<Settlement, DeliveryProfitInfo> TRADE_PROFIT_CACHE = new HashMap<>();
-	public static final Map<Settlement, Settlement> TRADE_SETTLEMENT_CACHE = new HashMap<>();
-
 	private static final int MAX_MEMBERS = 1;
 
 	// Data members.
@@ -99,40 +93,25 @@ public class Delivery extends DroneMission implements Serializable {
 
 		if (!isDone() && s != null) {
 			// Get trading settlement
-			tradingSettlement = TRADE_SETTLEMENT_CACHE.get(s);
-			if (tradingSettlement != null && !tradingSettlement.equals(s)) {
-				addNavpoint(tradingSettlement);
-				TRADE_PROFIT_CACHE.remove(getStartingSettlement());
-				TRADE_PROFIT_CACHE.remove(tradingSettlement);
-				TRADE_SETTLEMENT_CACHE.remove(getStartingSettlement());
-				TRADE_SETTLEMENT_CACHE.remove(tradingSettlement);
-			} else {
+			Deal deal = s.getGoodsManager().getBestDeal(MissionType.DELIVERY, getVehicle());
+			if (deal == null) {
 				endMission(MissionStatus.NO_TRADING_SETTLEMENT);
+				return;
 			}
 
+			tradingSettlement = deal.getBuyer();
+			addNavpoint(tradingSettlement);
+
 			if (!isDone()) {
-				// Get the credit that the starting settlement has with the destination
-				// settlement.
-				double credit = CreditManager.getCredit(s, tradingSettlement);
-
-				if (credit > (DeliveryUtil.SELL_CREDIT_LIMIT * -1D)) {
-					// Determine desired buy load,
-					desiredBuyLoad = DeliveryUtil.getDesiredBuyLoad(s, getDrone(), tradingSettlement);
-				} else {
-					// Cannot buy from settlement due to credit limit.
-					desiredBuyLoad = new HashMap<>();
-				}
-
-				if (credit < DeliveryUtil.SELL_CREDIT_LIMIT) {
-					// Determine sell load.
-					sellLoad = DeliveryUtil.determineBestSellLoad(s, getDrone(), tradingSettlement);
-				} else {
-					// Will not sell to settlement due to credit limit.
-					sellLoad = new HashMap<>();
-				}
-
+				// Determine desired buy load,
+				desiredBuyLoad = CommerceUtil.getDesiredBuyLoad(s, getDrone(), tradingSettlement);
+				
+				// Determine sell load.
+				sellLoad = CommerceUtil.determineBestSellLoad(s, getDrone(), tradingSettlement);
+				
 				// Determine desired trade profit.
-				desiredProfit = estimateDeliveryProfit(desiredBuyLoad);
+				desiredProfit = CommerceUtil.getEstimatedProfit(s, getDrone(), tradingSettlement,
+																desiredBuyLoad, sellLoad);
 			}
 
 			// Recruit additional members to mission.
@@ -182,7 +161,8 @@ public class Delivery extends DroneMission implements Serializable {
 		sellLoad = sellGoods;
 		buyLoad = buyGoods;
 		desiredBuyLoad = new HashMap<>(buyGoods);
-		profit = estimateDeliveryProfit(buyLoad);
+		profit = CommerceUtil.getEstimatedProfit(getStartingSettlement(), getDrone(), tradingSettlement,
+											buyLoad, sellLoad);
 		desiredProfit = profit;
 
 		// Set initial phase
@@ -295,7 +275,8 @@ public class Delivery extends DroneMission implements Serializable {
 				if (negotiationTask != null) {
 					if (negotiationTask.isDone()) {
 						buyLoad = negotiationTask.getBuyLoad();
-						profit = estimateDeliveryProfit(buyLoad);
+						profit = CommerceUtil.getEstimatedProfit(getStartingSettlement(), getDrone(), tradingSettlement,
+											buyLoad, sellLoad);
 						fireMissionUpdate(MissionEventType.BUY_LOAD_EVENT);
 						setPhaseEnded(true);
 					}
@@ -352,7 +333,7 @@ public class Delivery extends DroneMission implements Serializable {
 			resetToReturnTrip(
 					new NavPoint(tradingSettlement),
 					new NavPoint(getStartingSettlement()));
-			TRADE_PROFIT_CACHE.remove(getStartingSettlement());
+			getStartingSettlement().getGoodsManager().clearDeal(MissionType.DELIVERY);
 		}
 	}
 
@@ -568,7 +549,7 @@ public class Delivery extends DroneMission implements Serializable {
 	 */
 	public Map<Good, Integer> getSellLoad() {
 		if (sellLoad != null) {
-			return new HashMap<>(sellLoad);
+			return Collections.unmodifiableMap(sellLoad);
 		} else {
 			return Collections.emptyMap();
 		}
@@ -581,7 +562,7 @@ public class Delivery extends DroneMission implements Serializable {
 	 */
 	public Map<Good, Integer> getBuyLoad() {
 		if (buyLoad != null) {
-			return new HashMap<>(buyLoad);
+			return Collections.unmodifiableMap(buyLoad);
 		} else {
 			return Collections.emptyMap();
 		}
@@ -603,7 +584,7 @@ public class Delivery extends DroneMission implements Serializable {
 	 */
 	public Map<Good, Integer> getDesiredBuyLoad() {
 		if (desiredBuyLoad != null) {
-			return new HashMap<>(desiredBuyLoad);
+			return Collections.unmodifiableMap(desiredBuyLoad);
 		} else {
 			return Collections.emptyMap();
 		}
@@ -627,39 +608,7 @@ public class Delivery extends DroneMission implements Serializable {
 		return tradingSettlement;
 	}
 
-	/**
-	 * Estimates the profit for the starting settlement for a given buy load.
-	 *
-	 * @param buyingLoad the load to buy.
-	 * @return profit (VP).
-	 */
-	private double estimateDeliveryProfit(Map<Good, Integer> buyingLoad) {
-		double result = 0D;
 
-		try {
-			double sellingCreditHome = DeliveryUtil.determineLoadCredit(sellLoad, getStartingSettlement(), false);
-			double sellingCreditRemote = DeliveryUtil.determineLoadCredit(sellLoad, tradingSettlement, true);
-			double sellingProfit = sellingCreditRemote - sellingCreditHome;
-
-			double buyingCreditHome = DeliveryUtil.determineLoadCredit(buyingLoad, getStartingSettlement(), true);
-			double buyingCreditRemote = DeliveryUtil.determineLoadCredit(buyingLoad, tradingSettlement, false);
-			double buyingProfit = buyingCreditHome - buyingCreditRemote;
-
-			double totalProfit = sellingProfit + buyingProfit;
-
-			double estimatedDistance = Coordinates.computeDistance(getStartingSettlement().getCoordinates(),
-					tradingSettlement.getCoordinates()) * 2D;
-			double missionCost = DeliveryUtil.getEstimatedMissionCost(getStartingSettlement(), getDrone(),
-					estimatedDistance);
-
-			result = totalProfit - missionCost;
-		} catch (Exception e) {
-          	logger.log(Level.SEVERE, "Cannot estimate delivery profit: "+ e.getMessage());
-          	endMission(MissionStatus.COULD_NOT_ESTIMATE_TRADE_PROFIT);
-		}
-
-		return result;
-	}
 
 	@Override
 	public void destroy() {
@@ -676,47 +625,5 @@ public class Delivery extends DroneMission implements Serializable {
 			desiredBuyLoad.clear();
 		desiredBuyLoad = null;
 		negotiationTask = null;
-	}
-
-	/**
-	 * Inner class for storing trade profit info.
-	 */
-	public static class DeliveryProfitInfo {
-
-		public double profit;
-		public MarsClock time;
-
-		public DeliveryProfitInfo(double profit, MarsClock time) {
-			this.profit = profit;
-			this.time = time;
-		}
-	}
-
-	/**
-	 * If the mission is in the UNLOAD_GOODS phase at the trading settlement
-	 * then it can be unloaded.
-	 */
-	@Override
-	public boolean isVehicleUnloadableHere(Settlement settlement) {
-		if (UNLOAD_GOODS.equals(getPhase())
-					&& settlement.equals(tradingSettlement)) {
-			return true;
-		}
-		return super.isVehicleUnloadableHere(settlement);
-	}
-
-	/**
-	 * Can the mission vehicle be loaded at a Settlement. Must be in
-	 * the LOAD_GOODS phase at the mission trading settlement.
-	 * @param settlement
-	 * @return
-	 */
-	@Override
-	public boolean isVehicleLoadableHere(Settlement settlement) {
-		if (LOAD_GOODS.equals(getPhase())
-					&& settlement.equals(tradingSettlement)) {
-			return true;
-		}
-		return super.isVehicleLoadableHere(settlement);
 	}
 }

@@ -9,17 +9,17 @@ package org.mars_sim.msp.core.person.ai.mission.meta;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.goods.CommerceUtil;
+import org.mars_sim.msp.core.goods.Deal;
+import org.mars_sim.msp.core.goods.GoodsManager;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Delivery;
-import org.mars_sim.msp.core.person.ai.mission.Delivery.DeliveryProfitInfo;
-import org.mars_sim.msp.core.person.ai.mission.DeliveryUtil;
 import org.mars_sim.msp.core.person.ai.mission.DroneMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Drone;
 
 /**
@@ -29,8 +29,6 @@ public class DeliveryMeta extends AbstractMetaMission {
 
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(DeliveryMeta.class.getName());
-	
-    private static final int FREQUENCY = 100;
     
     private static final int VALUE = 1;
     
@@ -107,50 +105,22 @@ public class DeliveryMeta extends AbstractMetaMission {
 		double missionProbability = 0;
 
 		// Check for the best delivery settlement within range.
-		double deliveryProfit = 0D;
-		
 		Drone drone = (Drone) DroneMission.getDroneWithGreatestRange(MissionType.DELIVERY, settlement, false);
-		
 		if (drone == null) {
 			return 0;
 		}
 		
-		logger.info(settlement, 10_000L, drone.getNickName() + " available for delivery mission.");
-		
-		try {
-			// Only check every couple of Sols, else use cache.
-			// Note: this method is very CPU intensive.
-			boolean useCache = false;
+		logger.info(drone, 10_000L, "Available for delivery mission.");
+		GoodsManager gManager = settlement.getGoodsManager();
 
-			if (Delivery.TRADE_PROFIT_CACHE.containsKey(settlement)) {
-				DeliveryProfitInfo profitInfo = Delivery.TRADE_PROFIT_CACHE.get(settlement);
-				double timeDiff = MarsClock.getTimeDiff(marsClock, profitInfo.time);
-				if (timeDiff < FREQUENCY) {
-					deliveryProfit = profitInfo.profit;
-					useCache = true;
-				}
-			} else {
-				Delivery.TRADE_PROFIT_CACHE.put(settlement,
-						new DeliveryProfitInfo(deliveryProfit, (MarsClock) marsClock.clone()));
-			}
-
-			if (!useCache) {
-
-				deliveryProfit = DeliveryUtil.getBestDeliveryProfit(settlement, drone) * VALUE;
-
-				Delivery.TRADE_PROFIT_CACHE.put(settlement,
-						new DeliveryProfitInfo(deliveryProfit, (MarsClock) marsClock.clone()));
-				Delivery.TRADE_SETTLEMENT_CACHE.put(settlement, DeliveryUtil.bestDeliverySettlementCache);
-			}
-			
-	
-		} catch (Exception e) {
-			logger.log(Level.SEVERE, "Issues with DeliveryUtil: ", e);
+		Deal deal = gManager.getBestDeal(MissionType.DELIVERY, drone);
+		if (deal == null) {
 			return 0;
-		}
+		}	
+		double deliveryProfit = deal.getProfit() * VALUE;
 
 		// Delivery value modifier.
-		missionProbability = deliveryProfit / DIVISOR * settlement.getGoodsManager().getTradeFactor();
+		missionProbability = deliveryProfit / DIVISOR * gManager.getTradeFactor();
 		if (missionProbability > Delivery.MAX_STARTING_PROBABILITY) {
 			missionProbability = Delivery.MAX_STARTING_PROBABILITY;
 		}

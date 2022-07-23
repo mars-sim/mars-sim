@@ -336,16 +336,8 @@ public class EquipmentInventory
 	 */
 	@Override
 	public int findNumEmptyContainersOfType(EquipmentType containerType, boolean brandNew) {
-		int result = 0;
-		Set<Equipment> set = new HashSet<>(equipmentSet);
-		for (Equipment e : set) {
-			// The contained unit has to be an Equipment that is empty and of the correct type
-			if (e.isEmpty(brandNew) && (e.getEquipmentType() == containerType)) {
-				result++;
-			}
-		}
-
-		return result;
+		return (int) equipmentSet.stream().filter(e -> e.isEmpty(brandNew) && (e.getEquipmentType() == containerType))
+								.count();
 	}
 
 	/**
@@ -356,15 +348,7 @@ public class EquipmentInventory
 	 */
 	@Override
 	public int findNumContainersOfType(EquipmentType containerType) {
-		int result = 0;
-		for (Equipment e : equipmentSet) {
-			// The contained unit has to be an Equipment that is empty and of the correct type
-			if ((e.getEquipmentType() == containerType)) {
-				result++;
-			}
-		}
-
-		return result;
+		return (int) equipmentSet.stream().filter(e -> e.getEquipmentType() == containerType).count();
 	}
 
 	/**
