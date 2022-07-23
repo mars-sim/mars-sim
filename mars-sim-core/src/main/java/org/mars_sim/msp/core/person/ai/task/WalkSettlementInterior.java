@@ -1,7 +1,7 @@
-/**
-` * Mars Simulation Project
+/*
+`* Mars Simulation Project
  * WalkSettlementInterior.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-23
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -76,10 +76,10 @@ public class WalkSettlementInterior extends Task implements Serializable {
 								  double destinationZLocation) {
 		super(NAME, person, false, false, STRESS_MODIFIER, null, 100D);
 
-		// Check that the person is currently inside the settlement.
+		// Check if the person is currently inside the settlement.
 		if (!person.isInSettlement()) {
-			logger.warning(person, "Started WalkSettlementInterior task when not in a settlement.");
-			person.getMind().getTaskManager().clearAllTasks("Not in a settlement");
+			logger.warning(person, "Not in a settlement.");
+			person.getMind().getTaskManager().clearAllTasks("Not in a settlement.");
 			return;
 		}
 
@@ -91,16 +91,17 @@ public class WalkSettlementInterior extends Task implements Serializable {
 		
 		// Check if (destXLoc, destYLoc) is within destination building.
 		if (!LocalAreaUtil.isPositionWithinLocalBoundedObject(destPosition, destBuilding)) {
-			logger.warning(person, "Was unable to walk to the destination in " + destBuilding);
-			person.getMind().getTaskManager().clearAllTasks("Destination not reachable");
+			logger.warning(person, "Unable to walk from " + robot.getBuildingLocation() 
+					+ " to " + destPosition + " in " + destBuilding );
+			endTask();
 			return;
 		}
-
-		// Check that the person is currently inside a building.
+		
+		// Check if the person is currently inside a building.
 		Building startBuilding = BuildingManager.getBuilding(person);
 		if (startBuilding == null) {
-			logger.warning(person, "Was not currently in a building.");
-			person.getMind().getTaskManager().clearAllTasks("Not in start building");
+			logger.warning(person, "Not in a building.");
+			person.getMind().getTaskManager().clearAllTasks("Not in a building.");
 			return;
 		}
 
@@ -112,23 +113,20 @@ public class WalkSettlementInterior extends Task implements Serializable {
 	
 			// If no valid walking path is found, end task.
 			if (walkingPath == null) {
-				logger.warning(person, "Unable to walk. No valid interior path.");
-				person.getMind().getTaskManager().clearAllTasks("No walking routes.");
+				logger.warning(person, "Unable to walk from " + startBuilding.getNickName() + " to "
+						+ destinationBuilding.getNickName());
+//				person.getMind().getTaskManager().clearAllTasks("No valid interior path.");
+				endTask();
 				return;
-				// TODO: if it's the astronomy observatory building, it will call it thousands of time
-				// e.g (Warning) [x23507] WalkSettlementInterior : Jani Patokallio unable to walk from Lander Hab 2 to Astronomy Observatory 1.  Unable to find valid interior path.
-	//			person.getMind().getTaskManager().getNewTask();
 			}
-			
-			logger.log(person, Level.FINER, 20_000, "Proceeded to the walking phase in WalkSettlementInterior.");
-			
+					
 			// Initialize task phase.
 			addPhase(WALKING);
 			setPhase(WALKING);
 		
 		} catch (StackOverflowError ex) {
-			logger.severe(person, "Was unable to walk. No valid interior path.", ex);
-			person.getMind().getTaskManager().clearAllTasks("Can not get path");
+			logger.severe(person, "Unable to walk. No valid interior path.", ex);
+			person.getMind().getTaskManager().clearAllTasks("No valid interior path");
 		}
 	}
 
@@ -141,11 +139,13 @@ public class WalkSettlementInterior extends Task implements Serializable {
 	 * @param destinationYLocation
 	 */
 	public WalkSettlementInterior(Robot robot, Building destinationBuilding, LocalPosition destinationPosition) {
-		super("Walking Settlement Interior", robot, false, false, STRESS_MODIFIER, null, 100D);
+		super(NAME, robot, false, false, STRESS_MODIFIER, null, 100D);
 
 		// Check that the robot is currently inside the settlement.
 		if (!robot.isInSettlement()) {
-			throw new IllegalStateException("WalkSettlementInterior task started when robot is not in settlement.");
+			logger.warning(robot, "Not in a settlement.");
+			robot.getBotMind().getBotTaskManager().clearAllTasks("Not in a settlement.");
+			return;
 		}
 
 		// Initialize data members.
@@ -155,35 +155,43 @@ public class WalkSettlementInterior extends Task implements Serializable {
 		
 		// Check that destination location is within destination building.
 		if (!LocalAreaUtil.isPositionWithinLocalBoundedObject(destPosition, destBuilding)) {
-			logger.warning(robot, "Was unable to walk to the destination in " + robot.getBuildingLocation());
-			// "Given destination walking location not within destination building.");
+			logger.warning(robot, "Unable to walk from " + robot.getBuildingLocation() 
+					+ " to " + destPosition + " in " + destBuilding );
 			endTask();
 			return;
 		}
 
-		// Check that the robot is currently inside a building.
+		// Check if  the robot is currently inside a building.
 		Building startBuilding = BuildingManager.getBuilding(robot);
 		if (startBuilding == null) {
-			// logger.severe(robot.getName() + " is not currently in a building.");
-			// endTask();
+			logger.warning(robot, "Not in a building.");
+			robot.getBotMind().getBotTaskManager().clearAllTasks("Not in a building.");
 			return;
 		}
-
-		// Determine the walking path to the destination.
-		walkingPath = settlement.getBuildingConnectorManager().determineShortestPath(startBuilding,
-				robot.getPosition(), destinationBuilding, destPosition);
-
-		// If no valid walking path is found, end task.
-		if (walkingPath == null) {
-			logger.warning(robot, "Was unable to walk from " + startBuilding.getNickName() + " to "
-									+ destinationBuilding.getNickName() + ". No valid interior path.");
-			endTask();
-			return;
-		}
-
-		// Initialize task phase.
-		addPhase(WALKING);
-		setPhase(WALKING);
+		
+		try {
+			// Determine the walking path to the destination.
+			if (settlement != null)
+				walkingPath = settlement.getBuildingConnectorManager().determineShortestPath(startBuilding,
+						robot.getPosition(), destinationBuilding, destPosition);
+	
+			// If no valid walking path is found, end task.
+			if (walkingPath == null) {
+				logger.warning(robot, "Unable to walk from " + startBuilding.getNickName() + " to "
+						+ destinationBuilding.getNickName());
+	//			robot.getBotMind().getBotTaskManager().clearAllTasks("No valid interior path.");
+				endTask();
+				return;
+			}
+	
+			// Initialize task phase.
+			addPhase(WALKING);
+			setPhase(WALKING);
+			
+		} catch (StackOverflowError ex) {
+			logger.severe(robot, "Unable to walk. No valid interior path.", ex);
+			robot.getBotMind().getBotTaskManager().clearAllTasks("No valid interior path");
+		}			
 	}
 
 	@Override
@@ -215,18 +223,14 @@ public class WalkSettlementInterior extends Task implements Serializable {
 			speed = person.calculateWalkSpeed();
 
 		}
-		else if (robot != null) {
+		else {
 			speed = robot.calculateWalkSpeed();
 		}
-		else {
-			throw new IllegalStateException("Do not know who is walking");
-		}
-//		logger.info(worker, "Speed: " + speed);
 		
 		// Check that remaining path locations are valid.
 		if (!checkRemainingPathLocations()) {
 			// Flooding with the following statement in stacktrace
-			logger.severe(worker, "Unable to continue walking due to missing path objects.");
+			logger.severe(worker, 30_000L, "Unable to continue walking due to missing path objects.");
 			endTask();
 			return 0;
 		}
@@ -298,7 +302,7 @@ public class WalkSettlementInterior extends Task implements Serializable {
 
 			endTask();
 		}
-//		logger.info(worker, "timeLeft: " + timeLeft);
+
 		return timeLeft;
 	}
 

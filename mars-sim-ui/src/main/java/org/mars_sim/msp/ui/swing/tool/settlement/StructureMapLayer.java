@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import org.apache.batik.gvt.GraphicsNode;
 import org.mars_sim.msp.core.LocalAreaUtil;
@@ -37,7 +36,7 @@ import org.mars_sim.msp.ui.swing.tool.svg.SVGMapUtil;
  */
 public class StructureMapLayer implements SettlementMapLayer {
 	// default logger.
-	private static final Logger logger = Logger.getLogger(StructureMapLayer.class.getName());
+//	private static final Logger logger = Logger.getLogger(StructureMapLayer.class.getName());
 
     // Static members
     private static final Color BUILDING_COLOR = Color.GREEN;
