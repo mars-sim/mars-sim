@@ -111,7 +111,7 @@ public class Delivery extends DroneMission implements CommerceMission {
 				
 				// Determine desired trade profit.
 				desiredProfit = CommerceUtil.getEstimatedProfit(s, getDrone(), tradingSettlement,
-											buyLoad, sellLoad);
+																desiredBuyLoad, sellLoad);
 			}
 
 			// Recruit additional members to mission.

@@ -91,7 +91,10 @@ public final class CommerceUtil {
 	public static Deal getBestDeal(Settlement startingSettlement, MissionType commerceType, Vehicle delivery) {
 		List<Deal> deals = new ArrayList<>();
 		for (Settlement tradingSettlement : unitManager.getSettlements()) {
-			deals.add(getPotentialDeal(startingSettlement, commerceType, tradingSettlement, delivery));
+			Deal deal = getPotentialDeal(startingSettlement, commerceType, tradingSettlement, delivery);
+			if (deal != null) {
+				deals.add(deal);
+			}
 		}
 
 		if (deals.isEmpty()) {
@@ -399,36 +402,21 @@ public final class CommerceUtil {
 			double cost = good.getCostOutput();
 			int goodNumber = goodItem.getValue();
 			double supply = good.getNumberForSettlement(settlement);
-			double multiplier = 1D;
-			if (good.getCategory() == GoodCategory.AMOUNT_RESOURCE) {	
-				double amount = getResourceAmount(ResourceUtil.findAmountResource(good.getID()));
-				if (amount < 1) {
-					multiplier = 1;
-				}
-				else {
-					goodNumber /= (int) amount;
-					multiplier = amount;
-				}
-			}
-			else {	
-				multiplier = 1D;
-			}
 			
-			for (int x = 0; x < goodNumber; x++) {
-
-				double supplyAmount = 0D;
-				if (buy)
-					supplyAmount = supply + x;
-				else {
-					supplyAmount = supply - x;
-					if (supplyAmount < 0D)
-						supplyAmount = 0D;
-				}
-
-				double value = (manager.determineGoodValueWithSupply(good, supplyAmount) * multiplier);
-
-				result += value * cost;
+			// Calculate the new goods in the Settlment if the deal was done
+			double newSupply = 0D;
+			if (buy)
+				newSupply = supply + goodNumber;
+			else {
+				newSupply = supply - goodNumber;
+				if (newSupply < 0D)
+					newSupply = 0D;
 			}
+
+			// Credit of the new total
+			double value = manager.getDemandValue(good);
+			result += value * cost * newSupply;
+
 		}
 
 		return result;
