@@ -166,7 +166,7 @@ public class TabPanelGoods extends TabPanel {
 					try {
 						// Note: twoDecimal format is in conflict with Table column number sorting
 						//return twoDecimal.format(manager.getGoodValuePerItem(good));
-						return manager.getGoodValuePerItem(good.getID());
+						return manager.getGoodValuePoint(good.getID());
 					}
 					catch (Exception e) {
 					}

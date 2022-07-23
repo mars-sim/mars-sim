@@ -95,7 +95,7 @@ public class CollectRegolith extends CollectResourcesMission {
 			// Pick the one that has the highest vp
 			double highest = 0;
 			for (int type: getCollectibleResources()) {
-				double vp = worker.getAssociatedSettlement().getGoodsManager().getGoodValuePerItem(type);
+				double vp = worker.getAssociatedSettlement().getGoodsManager().getGoodValuePoint(type);
 				if (highest < vp) {
 					highest = vp;
 					setResourceID(type);

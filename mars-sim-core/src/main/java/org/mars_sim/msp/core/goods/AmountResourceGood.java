@@ -1098,40 +1098,40 @@ class AmountResourceGood extends Good {
 		else if (resource == ResourceUtil.soilID)
 			return demand * settlement.getCropsNeedingTending() * SAND_VALUE_MODIFIER;
 		else if (resource == ResourceUtil.concreteID) {
-			double regolithVP = 1 + owner.getGoodValuePerItem(ResourceUtil.regolithID);
-			double sandVP = 1 + owner.getGoodValuePerItem(ResourceUtil.sandID);
+			double regolithVP = 1 + owner.getGoodValuePoint(ResourceUtil.regolithID);
+			double sandVP = 1 + owner.getGoodValuePoint(ResourceUtil.sandID);
 			// the demand for sand is dragged up or down by that of regolith
 			// loses 5% by default
 			return demand * (.75 * regolithVP + .2 * sandVP) / sandVP * CONCRETE_VALUE_MODIFIER;
 		}
 		else if (resource == ResourceUtil.sandID) {
-			double regolithVP = 1 + owner.getGoodValuePerItem(ResourceUtil.regolithID);
-			double sandVP = 1 + owner.getGoodValuePerItem(ResourceUtil.sandID);
+			double regolithVP = 1 + owner.getGoodValuePoint(ResourceUtil.regolithID);
+			double sandVP = 1 + owner.getGoodValuePoint(ResourceUtil.sandID);
 			// the demand for sand is dragged up or down by that of regolith
 			// loses 10% by default
 			return demand * (.2 * regolithVP + .7 * sandVP) / sandVP * SAND_VALUE_MODIFIER;
 		}
         else {
-			double regolithVP = owner.getGoodValuePerItem(ResourceUtil.regolithID);
-			double sandVP = 1 + owner.getGoodValuePerItem(ResourceUtil.sandID);
+			double regolithVP = owner.getGoodValuePoint(ResourceUtil.regolithID);
+			double sandVP = 1 + owner.getGoodValuePoint(ResourceUtil.sandID);
 
 			for (int id : ResourceUtil.rockIDs) {
 				if (resource == id) {
-					double vp = owner.getGoodValuePerItem(id);
+					double vp = owner.getGoodValuePoint(id);
 					return demand * (.2 * regolithVP + .9 * vp) / vp * ROCK_VALUE;
 				}
 			}
 
 			for (int id : ResourceUtil.mineralConcIDs) {
 				if (resource == id) {
-					double vp = owner.getGoodValuePerItem(id);
+					double vp = owner.getGoodValuePoint(id);
 					return demand * (.2 * regolithVP + .9 * vp) / vp * MINERAL_VALUE;
 				}
 			}
 
 			for (int id : ResourceUtil.oreDepositIDs) {
 				if (resource == id) {
-					double vp = owner.getGoodValuePerItem(id);
+					double vp = owner.getGoodValuePoint(id);
 					// loses 10% by default
 					return demand * (.3 * regolithVP + .6 * vp) / vp * ORE_VALUE;
 				}
@@ -1139,14 +1139,14 @@ class AmountResourceGood extends Good {
 
 			if (resource == ResourceUtil.regolithBID || resource == ResourceUtil.regolithCID
 					|| resource == ResourceUtil.regolithDID) {
-				double vp = owner.getGoodValuePerItem(resource);
+				double vp = owner.getGoodValuePoint(resource);
 				return demand * (.3 * regolithVP + .6 * vp) / vp;
 			}
 
 			// Checks if this resource is a ROCK type
 			GoodType type = getGoodType();
 			if (type != null && type == GoodType.ROCK) {
-				double vp = owner.getGoodValuePerItem(resource);
+				double vp = owner.getGoodValuePoint(resource);
 
 				if (resource == METEORITE_ID)
 					return demand * (.4 * regolithVP + .5 * vp) / vp * METEORITE_MODIFIER;
@@ -1238,8 +1238,8 @@ class AmountResourceGood extends Good {
 	private double computeIceProjectedDemand(GoodsManager owner, Settlement settlement) {
         int resource = getID();
 		if (resource == ResourceUtil.iceID) {
-			double ice = 1 + owner.getGoodValuePerItem(resource);
-			double water = 1 + owner.getGoodValuePerItem(ResourceUtil.waterID);
+			double ice = 1 + owner.getGoodValuePoint(resource);
+			double water = 1 + owner.getGoodValuePoint(ResourceUtil.waterID);
 			// Use the water's VP and existing iceSupply to compute the ice demand
 			return Math.max(1, settlement.getNumCitizens()) * (.8 * water + .2 * ice) / ice
 					* ICE_VALUE_MODIFIER * settlement.getWaterRationLevel();
@@ -1260,10 +1260,10 @@ class AmountResourceGood extends Good {
 			|| (resource == ResourceUtil.regolithBID)
 			|| (resource ==  ResourceUtil.regolithCID)
 			|| (resource ==  ResourceUtil.regolithDID)) {
-			double sand = 1 + owner.getGoodValuePerItem(ResourceUtil.sandID);
-			double concrete = 1 + owner.getGoodValuePerItem(ResourceUtil.concreteID);
-			double cement = 1 + owner.getGoodValuePerItem(ResourceUtil.cementID);
-			double regolith = 1 + owner.getGoodValuePerItem(getID());
+			double sand = 1 + owner.getGoodValuePoint(ResourceUtil.sandID);
+			double concrete = 1 + owner.getGoodValuePoint(ResourceUtil.concreteID);
+			double cement = 1 + owner.getGoodValuePoint(ResourceUtil.cementID);
+			double regolith = 1 + owner.getGoodValuePoint(getID());
 			// Limit the minimum value of regolith projected demand
 			demand = 1 + Math.min(48, settlement.getNumCitizens()) *
 					(.1 * cement + .2 * concrete + .5 * regolith + .2 * sand) / regolith

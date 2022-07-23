@@ -117,7 +117,7 @@ public class Storage extends Function {
 			}
 
 //			Good resourceGood = GoodsUtil.getResourceGood(ResourceUtil.findIDbyAmountResourceName(resource.getName()));
-			double resourceValue = settlement.getGoodsManager().getGoodValuePerItem(resource);
+			double resourceValue = settlement.getGoodsManager().getGoodValuePoint(resource);
 			double resourceStored = settlement.getAmountResourceStored(resource);
 			double resourceDemand = resourceValue * (resourceStored + 1D);
 

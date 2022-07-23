@@ -22,9 +22,11 @@ import org.mars_sim.msp.ui.swing.tool.NumberRenderer;
 @SuppressWarnings("serial")
 public class TradeTab extends TableTab implements UnitManagerListener {
 
-	/** The minimum number of decimal places to be displayed. */
+	/** The minimum 2 of decimal places to be displayed. */
 	private static final int TWO_DIGITS = 2;
-
+	/** The minimum 3 decimal places to be displayed. */
+	private static final int THREE_DIGITS = 3;
+	
 	/**
 	 * constructor.
 	 * 
@@ -45,11 +47,13 @@ public class TradeTab extends TableTab implements UnitManagerListener {
 			if (i >= init) {
 				int col = i - init;
 				int c = col % numCols;
-				if (c == 2) // 2
+				if (c == 2)
 					m.getColumn(i).setCellRenderer(NumberRenderer.getIntegerRenderer());
-//				else if (c > 4) // 5, 6
-//					m.getColumn(i).setCellRenderer(new NumberCellRenderer(THREE_DIGITS, true));
-				else // 0, 1, 3, 4
+				else if (c == 3)
+					m.getColumn(i).setCellRenderer(new NumberCellRenderer(THREE_DIGITS, true));				
+				else if (c == 6 || c == 7)
+					m.getColumn(i).setCellRenderer(NumberRenderer.getCurrencyRenderer());
+				else 
 					m.getColumn(i).setCellRenderer(new NumberCellRenderer(TWO_DIGITS, true));
 			}
 		}

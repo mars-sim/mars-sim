@@ -345,7 +345,7 @@ implements Serializable {
 		while (i.hasNext()) {
 			Integer part = i.next();
 			int number = stageInfo.getParts().get(part);
-			double partValue = goodsManager.getGoodValuePerItem(part);
+			double partValue = goodsManager.getGoodValuePoint(part);
 			result += number * partValue;
 		}
 

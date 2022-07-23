@@ -197,13 +197,13 @@ public final class FoodProductionUtil {
 					amount = remainingCapacity;
 				}
 			}
-			result = manager.getGoodValuePerItem(id) * amount;
+			result = manager.getGoodValuePoint(id) * amount;
 		} else if (item.getType() == ItemType.PART) {
 			int id = ItemResourceUtil.findIDbyItemResourceName(item.getName());
-			result = manager.getGoodValuePerItem(id) * item.getAmount();
+			result = manager.getGoodValuePoint(id) * item.getAmount();
 		} else if (item.getType() == ItemType.EQUIPMENT) {
 			int id = EquipmentType.convertName2ID(item.getName());
-			result = manager.getGoodValuePerItem(id) * item.getAmount();
+			result = manager.getGoodValuePoint(id) * item.getAmount();
 		} else
 			throw new IllegalStateException("Item type: " + item.getType() + " not valid.");
 

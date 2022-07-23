@@ -216,7 +216,7 @@ class VehicleGood extends Good {
 			for (ManufactureProcessItem pi : itemList) {
 				String iName = pi.getName();
 				int id = GoodsUtil.getGoodID(iName);
-				double value = owner.getGoodValuePerItem(id);
+				double value = owner.getGoodValuePoint(id);
 				result += value;
 			}
 		}

@@ -471,7 +471,7 @@ public class Mining extends EVAMission
 
 		for( Map.Entry<String,Double> conc : site.getEstimatedMineralConcentrations().entrySet()) {
 			int mineralResource = ResourceUtil.findIDbyAmountResourceName(conc.getKey());
-			double mineralValue = settlement.getGoodsManager().getGoodValuePerItem(mineralResource);
+			double mineralValue = settlement.getGoodsManager().getGoodValuePoint(mineralResource);
 			double mineralAmount = (conc.getValue() / 100D) * MINERAL_BASE_AMOUNT;
 			result += mineralValue * mineralAmount;
 		}

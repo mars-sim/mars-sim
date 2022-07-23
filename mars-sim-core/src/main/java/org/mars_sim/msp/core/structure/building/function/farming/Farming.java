@@ -354,7 +354,7 @@ public class Farming extends Function {
     }
 
 	private double getCropValue(AmountResource resource) {
-		return building.getSettlement().getGoodsManager().getGoodValuePerItem(resource.getID());
+		return building.getSettlement().getGoodsManager().getGoodValuePoint(resource.getID());
 	}
 
 	/**
@@ -576,7 +576,7 @@ public class Farming extends Function {
 		}
 
 		// Modify result by value (VP) of food at the settlement.
-		double foodValue = settlement.getGoodsManager().getGoodValuePerItem(ResourceUtil.foodID);
+		double foodValue = settlement.getGoodsManager().getGoodValuePoint(ResourceUtil.foodID);
 
 		result = (demand / (supply + 1D)) * foodValue;
 

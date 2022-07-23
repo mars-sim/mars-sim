@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Good.java
- * @date 2022-06-16
+ * @date 2022-07-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.goods;
@@ -47,17 +47,20 @@ public abstract class Good implements Serializable, Comparable<Good> {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	
+	private static final int LOWEST_VALUE_TO_DEFLATE = 1000;
+	private static final int HIGHEST_VALUE_TO_INFLATE = 1;
+	
 	private static final double LABOR_FACTOR = 150D ;
 	private static final double PROCESS_TIME_FACTOR = 500D;
 	private static final double POWER_FACTOR = 1D;
 	private static final double SKILL_FACTOR = 1D;
 	private static final double TECH_FACTOR = 2D;
 
-	//TODO Initialise explicitly
+	// TODO Initialise explicitly
 	protected static MissionManager missionManager;
 	protected static MarsClock marsClock;
 
-    // TODO, should load of an instance and not a static
+    // TODO should load of an instance and not a static
     protected static VehicleConfig vehicleConfig = SimulationConfig.instance().getVehicleConfiguration();
 	protected static PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
 	protected static CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
@@ -77,9 +80,10 @@ public abstract class Good implements Serializable, Comparable<Good> {
 	private double tech;
 
 	private double costModifier = -1;
-	//  The inter-market average value among the settlements
-	private double averageGoodValue;
-	private double costOutput = -1;
+	/** The national/market average good value of this good. */
+	private double averageMarketGoodValue;
+	/** The adjusted cost output for this good. */
+	private double adjustedCostOutput = -1;
 
 	private List<ManufactureProcessInfo> manufactureProcessInfos;
 	private List<FoodProductionProcessInfo> foodProductionProcessInfos;
@@ -96,16 +100,16 @@ public abstract class Good implements Serializable, Comparable<Good> {
 	}
 
 	/**
-	 * Calculate the base cost of each good
+	 * Calculate the cost of each good
 	 */
 	public void computeCost() {
 		manufactureProcessInfos = ManufactureUtil.getManufactureProcessesWithGivenOutput(name);
 		foodProductionProcessInfos = FoodProductionUtil.getFoodProductionProcessesWithGivenOutput(name);
 
-		// Compute the base cost
-		computeBaseCost();
-		// Compute the cost of output
-		computeOutputCost();
+		// Compute the base output cost
+		computeBaseOutputCost();
+		// Compute the adjusted output cost
+		computeAdjustedOutputCost();
 	}
 
 
@@ -180,20 +184,20 @@ public abstract class Good implements Serializable, Comparable<Good> {
 	 * Gets the cost of output.
 	 */
 	public double getCostOutput() {
-		if (costOutput == -1)
-			computeOutputCost();
-		return costOutput;
+		if (adjustedCostOutput == -1)
+			computeAdjustedOutputCost();
+		return adjustedCostOutput;
 	}
 
 	/**
 	 * Calculates the modified cost of output.
 	 */
-	public void computeOutputCost() {
+	public void computeAdjustedOutputCost() {
 		// First compute the modifier
 		if (costModifier == -1) {
 			costModifier = computeCostModifier();
 			// Then compute the total cost
-			costOutput = (0.01 + costModifier) * (
+			adjustedCostOutput = (0.01 + costModifier) * (
 					1 + getlaborTime() / LABOR_FACTOR
 					+ getProcessTime() / PROCESS_TIME_FACTOR
 					+ getPower() / POWER_FACTOR
@@ -209,24 +213,32 @@ public abstract class Good implements Serializable, Comparable<Good> {
 	 */
 	protected abstract double computeCostModifier();
 
-	public double getAverageGoodValue() {
-		return averageGoodValue;
-	}
-
-	public void adjustGoodValue() {
-		// deflate the value by 5%
-		if (averageGoodValue > 10)
-			averageGoodValue = .95 * averageGoodValue;
-
-		// Inflate the value by 5%
-		else if (averageGoodValue < 1)
-			averageGoodValue = 1.05 * averageGoodValue;
+	/**
+	 * Gets the average market good value of this good.
+	 * 
+	 * @return
+	 */
+	public double getAverageMarketGoodValue() {
+		return averageMarketGoodValue;
 	}
 
 	/**
-	 * Computes the base cost of each good
+	 * Adjusts the average market good value of this good.
 	 */
-	public void computeBaseCost() {
+	public void adjustAverageMarketGoodValue() {
+		// Deflate the value by 5%
+		if (averageMarketGoodValue > LOWEST_VALUE_TO_DEFLATE)
+			averageMarketGoodValue = .95 * averageMarketGoodValue;
+
+		// Inflate the value by 5%
+		else if (averageMarketGoodValue < HIGHEST_VALUE_TO_INFLATE)
+			averageMarketGoodValue = 1.05 * averageMarketGoodValue;
+	}
+
+	/**
+	 * Computes the base cost of each good from manufacturing and food production
+	 */
+	public void computeBaseOutputCost() {
 		double labor0_out = 0;
 		double power0_out = 0;
 		double process0_out = 0;
@@ -401,8 +413,8 @@ public abstract class Good implements Serializable, Comparable<Good> {
 	 * 
 	 * @param value
 	 */
-	public void setAverageGoodValue(double value) {
-		averageGoodValue = value;
+	public void setAverageMarketGoodValue(double value) {
+		averageMarketGoodValue = value;
 	}
 
 	/**

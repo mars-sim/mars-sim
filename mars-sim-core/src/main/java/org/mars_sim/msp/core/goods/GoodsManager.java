@@ -169,7 +169,7 @@ public class GoodsManager implements Serializable {
 	}
 
 	/**
-	 * Update the Good values of all good.
+	 * Updates the good values for all good.
 	 */
 	public void updateGoodValues() {
  		// Update the goods value gradually with the use of buffers
@@ -177,7 +177,7 @@ public class GoodsManager implements Serializable {
 			determineGoodValue(g);
 			
 			if (initialized) {
-				g.adjustGoodValue();
+				g.adjustAverageMarketGoodValue();
 			}
 		}
 				
@@ -217,7 +217,7 @@ public class GoodsManager implements Serializable {
 			// Check for inflation and deflation adjustment due to other resources
 			value = checkDeflation(id, value);
 			// Adjust the value to the average value
-			value = tuneToAverageValue(good, value);
+			value = tuneToMarketAverageValue(good, value);
 
 			// Save the value point if it has changed
 			double oldValue = goodsValues.get(id);
@@ -235,15 +235,15 @@ public class GoodsManager implements Serializable {
 	}
 
 	/**
-	 * Tunes the value of a good to be closer to the national average.
+	 * Tunes the value of a good to be closer to the national/market average.
 	 * 
 	 * @param good
 	 * @param value
 	 * @return
 	 */
-	private double tuneToAverageValue(Good good, double value) {
+	private double tuneToMarketAverageValue(Good good, double value) {
 		// Gets the inter-market value among the settlements
-		double average = good.getAverageGoodValue();
+		double average = good.getAverageMarketGoodValue();
 		double newAve0 = 0;
 
 		if (average == 0) {
@@ -253,12 +253,12 @@ public class GoodsManager implements Serializable {
 		else {
 			newAve0 = .1 * average + .9 * value;
 
-			double newAve1 = 0;
+			double newAve1 = average;
 
 			if (average > value)
-				newAve1 = 1.1 * value;
-			else
-				newAve1 = 1.1 * average;
+				newAve1 = 1.05 * value;
+			else if (average < value)
+				newAve1 = 1.05 * average;
 
 			newAve0 = Math.min(newAve0, newAve1);
 
@@ -268,9 +268,9 @@ public class GoodsManager implements Serializable {
 			if (newAve0 < MIN_VP)
 				newAve0 = MIN_VP;
 		}
-
-		good.setAverageGoodValue(newAve0);
-
+		
+		good.setAverageMarketGoodValue(newAve0);
+		
 		return newAve0;
 	}
 
@@ -562,7 +562,7 @@ public class GoodsManager implements Serializable {
 
 		for (Settlement tempSettlement : unitManager.getSettlements()) {
 			if (tempSettlement != settlement) {
-				double baseValue = tempSettlement.getGoodsManager().getGoodValuePerItem(good);
+				double baseValue = tempSettlement.getGoodsManager().getGoodValuePoint(good);
 				double distance = Coordinates.computeDistance(settlement.getCoordinates(),
 						tempSettlement.getCoordinates());
 				double tradeValue = baseValue / (1D + (distance / 1000D));
@@ -684,29 +684,29 @@ public class GoodsManager implements Serializable {
 	 * @return
 	 */
 	public double getPrice(Good good) {
-		double value = getGoodValuePerItem(good);
+		double value = getGoodValuePoint(good);
 
 		return good.getPrice(settlement, value);
 	}
 	
 	/**
-	 * Gets the value per item of a good.
+	 * Gets the value point of a good.
 	 *
 	 * @param good the good to check.
 	 * @return value (VP)
 	 */
-	public double getGoodValuePerItem(Good good) {
-		return getGoodValuePerItem(good.getID());
+	public double getGoodValuePoint(Good good) {
+		return getGoodValuePoint(good.getID());
 	}
 
 
 	/**
-	 * Gets the value per item of a good.
+	 * Gets the value point of a good.
 	 *
 	 * @param id the good id to check.
 	 * @return value (VP)
 	 */
-	public double getGoodValuePerItem(int id) {
+	public double getGoodValuePoint(int id) {
 		if (goodsValues.containsKey(id))
 			return goodsValues.get(id);
 		else
@@ -715,7 +715,7 @@ public class GoodsManager implements Serializable {
 	}
 
 	/**
-	 * Gets the demand value of a resource.
+	 * Gets the demand value of an amount resource.
 	 *
 	 * @param good's id.
 	 * @return demand value
@@ -729,22 +729,56 @@ public class GoodsManager implements Serializable {
 		return 1;
 	}
 
+	/**
+	 * Gets the demand value of a good.
+	 * 
+	 * @param good
+	 * @return
+	 */
 	public double getDemandValue(Good good) {
 		return demandCache.get(good.getID());
 	}
 
+	/**
+	 * Sets the demand value of a good.
+	 * 
+	 * @param good
+	 * @param newValue
+	 */
 	void setDemandValue(Good good, double newValue) {
 		double clippedValue = limitMaxMin(newValue, MIN_DEMAND, MAX_DEMAND);
 		demandCache.put(good.getID(), clippedValue);
 	}
 
+	/**
+	 * Sets the supply value of a good.
+	 * 
+	 * @param good
+	 * @param newValue
+	 */
 	void setSupplyValue(Good good, double newValue) {
 		double clippedValue = limitMaxMin(newValue, MIN_SUPPLY, MAX_SUPPLY);
 		supplyCache.put(good.getID(), clippedValue);
 	}
 
+	/**
+	 * Gets the supply value of a good.
+	 * 
+	 * @param good
+	 * @return
+	 */
 	public double getSupplyValue(Good good) {
-		return supplyCache.get(good.getID());
+		return getSupplyValue(good.getID());
+	}
+	
+	/**
+	 * Gets the supply value of a good.
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public double getSupplyValue(int id) {
+		return supplyCache.get(id);
 	}
 	
 	/**
