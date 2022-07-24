@@ -49,9 +49,6 @@ public class WalkSettlementInterior extends Task implements Serializable {
 	private static final TaskPhase WALKING = new TaskPhase(Msg.getString("Task.phase.walking")); //$NON-NLS-1$
 
 	// Static members
-//	private static final double PERSON_WALKING_SPEED = Walk.PERSON_WALKING_SPEED; // [km per hr].
-//	private static final double ROBOT_WALKING_SPEED = Walk.ROBOT_WALKING_SPEED; // [km per hr].
-
 	private static final double VERY_SMALL_DISTANCE = .00001D;
 	private static final double STRESS_MODIFIER = -.2D;
 
