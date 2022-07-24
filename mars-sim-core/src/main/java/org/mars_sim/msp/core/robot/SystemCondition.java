@@ -14,7 +14,6 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.health.HealthProblem;
-import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
@@ -46,7 +45,7 @@ public class SystemCondition implements Serializable {
     /** Performance factor. */
     private double performance;
 
-    private double LowPowerMode;
+    private double lowPowerPercent;
 
 	/** The max energy capacity of the robot in kWh. */
 	private final double MAX_CAPACITY = 10D;
@@ -67,7 +66,7 @@ public class SystemCondition implements Serializable {
         RobotConfig robotConfig = SimulationConfig.instance().getRobotConfiguration();
 
         try {
-        	LowPowerMode = robotConfig.getLowPowerModePercent();
+        	lowPowerPercent = robotConfig.getLowPowerModePercent();
         	standbyPower = robotConfig.getStandbyPowerConsumption();
         }
         catch (Exception e) {
@@ -85,15 +84,16 @@ public class SystemCondition implements Serializable {
      */
     public boolean timePassing(double time) {
 
-    	// 1. Check malfunction
+    	// 1. Perform self-diagnostic
         // performSystemCheck();
 
-        // 2. Consume a minute amount of energy even if a robot does not perform any tasks
+        // 2. If a robot needs to be recharged, go and dock to a robotic station
+        if (checkEnergyLevel())
+        	logger.log(robot, Level.INFO, 20_000L, "Positioned to be recharged.");
+        
+        // 3. Consume a minute amount of energy even if a robot does not perform any tasks
         if (!isCharging)
         	consumeEnergy(time * MarsClock.HOURS_PER_MILLISOL * standbyPower);
-
-        // 3. If a robot needs to be recharged, go and dock to a robotic station
-        positionToRecharge();
 
         return operable;
     }
@@ -118,50 +118,38 @@ public class SystemCondition implements Serializable {
     }
 
     /**
-     * Checks if the robot needs to be recharged.
+     * Checks the energy level of the robot and see if it has been position for a recharge.
      */
-    private boolean positionToRecharge() {
-
-    	if (currentEnergy < LowPowerMode / 100D * MAX_CAPACITY) {
+    private boolean checkEnergyLevel() {
+    	boolean result = false;
+    	if (currentEnergy < lowPowerPercent / 100D * MAX_CAPACITY) {
     		// Turn on the low power indicator
     		isLowPower = true;
+    		
     		// Time to recharge
     		if (robot.isAtStation()) {
-    			// Switch to charging only after the current task is done and the bot goes to sleep
-    			if (robot.getBotMind().getBotTaskManager().getTaskClassName().equalsIgnoreCase("Sleep"))
-    				isCharging = true;
+    			result = true;
     		}
-//    		else {
-//    			BuildingManager.addRobotToRoboticStation(robot);
-//    		}
-
-    		return true;
     	}
-    	
     	else
     		isLowPower = false;
-    	
-    	if (isCharging) {
-    		if (currentEnergy >= .95 * MAX_CAPACITY) {
-		    	currentEnergy = .95 * MAX_CAPACITY;
-		    	isLowPower = false;
-		    	isCharging = false;
-    		}
-    		else {
-    			isCharging = true;
-    		}
+    		
+    	if (isCharging && currentEnergy >= .95 * MAX_CAPACITY) {
+    		// Stop at 95% and don't need to continue charging. 
+		    isCharging = false;
     	}
     	
-    	return false;
+    	return result;
     }
 
     /**
-     * Is the battery at above 80% capacity ?
+     * Is the battery level at above this prescribed percentage ?
      * 
+     * @percent 
      * @return
      */
-    public boolean isBatteryAbove80() {
-    	if (getBatteryState() > .8) {
+    public boolean isBatteryAbove(double percent) {
+    	if (getBatteryState() > percent/100.0) {
     		return true;
     	}
     	return false;
@@ -172,6 +160,10 @@ public class SystemCondition implements Serializable {
 	 */
 	public double getcurrentEnergy() {
 		return currentEnergy;
+	}
+	
+	public double getLowPowerPercent() {
+		return lowPowerPercent;
 	}
 	
 	public boolean isCharging() {
@@ -275,15 +267,18 @@ public class SystemCondition implements Serializable {
      * Delivers the energy to robot's battery.
      * 
      * @param kWh
-     * @return
+     * @return the energy accepted
      */
     public double deliverEnergy(double kWh) {
     	double newEnergy = currentEnergy + kWh;
-    	if (newEnergy > MAX_CAPACITY) {
-    		newEnergy = MAX_CAPACITY;
+    	if (newEnergy > .95 * MAX_CAPACITY) {
+    		newEnergy = .95 * MAX_CAPACITY;
+    		isCharging = false;
     	}
+    	double diff = newEnergy - currentEnergy;
     	currentEnergy = newEnergy;
-    	return newEnergy;
+		robot.fireUnitUpdate(UnitEventType.ROBOT_POWER_EVENT);
+    	return diff;
     }
 
     /**
@@ -295,7 +290,7 @@ public class SystemCondition implements Serializable {
     public double getStandbyPowerConsumption() {
         return standbyPower;
     }
-
+    
 //    /**
 //     * Gets the fuel consumption rate per Sol.
 //     * 

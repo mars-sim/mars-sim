@@ -30,6 +30,7 @@ import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
 import org.mars_sim.msp.core.structure.building.function.RoboticStation;
+import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Rover;
 
@@ -51,12 +52,11 @@ public class Sleep extends Task implements Serializable {
 
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.sleep"); //$NON-NLS-1$
-
-	/** Task phases. */
-	private static final TaskPhase SLEEPING = new TaskPhase(Msg.getString("Task.phase.sleeping")); //$NON-NLS-1$
-
 	/** Task name for robot */
 	private static final String SLEEP_MODE = Msg.getString("Task.description.sleepMode"); //$NON-NLS-1$
+
+	/** Task phases for person. */
+	private static final TaskPhase SLEEPING = new TaskPhase(Msg.getString("Task.phase.sleeping")); //$NON-NLS-1$
 
 	/** Task phases for robot. */
 	private static final TaskPhase SLEEPING_MODE = new TaskPhase(Msg.getString("Task.phase.sleepMode")); //$NON-NLS-1$
@@ -134,7 +134,8 @@ public class Sleep extends Task implements Serializable {
 	protected double performMappedPhase(double time) {
 		if (getPhase() == null)
 			throw new IllegalArgumentException("Task phase is null");
-		else if (SLEEPING.equals(getPhase()))
+		else if (SLEEPING.equals(getPhase())
+				|| SLEEPING_MODE.equals(getPhase()))
 			return sleepingPhase(time);
 		else
 			return time;
@@ -149,6 +150,12 @@ public class Sleep extends Task implements Serializable {
 	 */
 	private double sleepingPhase(double time) {
 
+		if (isDone() || getTimeLeft() <= 0) {
+        	// this task has ended
+			clearTask();
+			return time;
+		}
+		
 		if (person != null) {
 
 			if (person.isInSettlement()) {
@@ -213,59 +220,114 @@ public class Sleep extends Task implements Serializable {
 			}
 		}
 
-		else if (robot != null) {
+		else {
+			RoboticStation station = null;
+			
+//			// If robot is in a settlement, try to find a living accommodations building.
+//			if (robot.isInSettlement() && !robot.isAtStation()) {
+//				// If currently in a building with a robotic station, 
+//				// go to a station activity spot.
+//				Building currentBuilding = BuildingManager.getBuilding(robot);
+//				if (currentBuilding != null) {
+//					station = currentBuilding.getRoboticStation();
+//					if (station != null && station.getSleepers() < station.getSlots()) {
+//						station.addSleeper();
+//
+//						// Check if robot is currently at an activity spot for the robotic station.
+//						if (station.hasActivitySpots() && !station.isAtActivitySpot(robot)) {
+//							// Walk to an available activity spot.
+//							walkToActivitySpotInBuilding(currentBuilding, FunctionType.ROBOTIC_STATION, true);
+//						}
+//					}
+//				} else {
+//					Building building = getAvailableRoboticStationBuilding(robot);
+//					if (building != null) {
+//						station = building.getRoboticStation();
+//						if (station != null) {
+//							// NOTE: see https://github.com/mars-sim/mars-sim/issues/22
+//							// Question: why would the method below cause RepairBot to walk outside the
+//							// settlement to a vehicle ?
+//							walkToActivitySpotInBuilding(building, FunctionType.ROBOTIC_STATION, true);
+//
+//							station.addSleeper();
+//						}
+//					}
+//				}
+//			}
+			
+//			logger.info(robot, 10_000L, "Done walking to " + station + ".");
 
-			// If robot is in a settlement, try to find a living accommodations building.
-			if (robot.isInSettlement() && !robot.isAtStation()) {
-				// If currently in a building with a robotic station, 
-				// go to a station activity spot.
-				Building currentBuilding = BuildingManager.getBuilding(robot);
-				if (currentBuilding != null) {
-					RoboticStation station = currentBuilding.getRoboticStation();
-					if (station != null && station.getSleepers() < station.getSlots()) {
-						station.addSleeper();
-
-						// Check if robot is currently at an activity spot for the robotic station.
-						if (station.hasActivitySpots() && !station.isAtActivitySpot(robot)) {
-							// Walk to an available activity spot.
-							walkToActivitySpotInBuilding(currentBuilding, FunctionType.ROBOTIC_STATION, true);
-						}
-					}
-				} else {
-					Building building = getAvailableRoboticStationBuilding(robot);
-					if (building != null) {
-						RoboticStation station = building.getRoboticStation();
-						if (station != null) {
-							// NOTE: see https://github.com/mars-sim/mars-sim/issues/22
-							// Question: why would the method below cause RepairBot to walk outside the
-							// settlement to a vehicle ?
-							walkToActivitySpotInBuilding(building, FunctionType.ROBOTIC_STATION, true);
-
-							station.addSleeper();
-						}
-					}
-				}
-			}
-
+			boolean toCharge = false;
+			double level = robot.getSystemCondition().getBatteryState();
+			
 			// if power is below a certain threshold, stay to get a recharge
 			if (robot.getSystemCondition().isLowPower()) {
-				
-				if (!robot.isAtStation()) {
-					BuildingManager.addRobotToRoboticStation(robot);
-				}
-				
-				// Switch to charging only after the current task is done and the bot goes to sleep
+				toCharge = true;
+			}
+			
+			else if (!robot.getSystemCondition().isBatteryAbove(70)) {
+				double rand = RandomUtil.getRandomDouble(level);
+				if (rand < robot.getSystemCondition().getLowPowerPercent()/100.0)
+					toCharge = true;
+			}
+			
+			boolean canWalk = false;
+			if (toCharge) {
+				// Switch to charging
     			robot.getSystemCondition().setCharging(true);
     			
-				// Lengthen the duration for charging the battery
-				setDuration(getDuration() + 5);
+				station = robot.getStation();
+				if (station == null) {
+//					BuildingManager.addRobotToRoboticStation(robot);
+					canWalk = walkToRoboticStation(robot, false);
+					logger.info(robot, 10_000L, "canWalk: " + canWalk + ".");
+				}
+				
+				if (canWalk) {	
+					logger.info(robot, 10_000L, "Walking to " + station + ".");
+					station = robot.getStation();
+				}
+
+				if (station != null) {
+					if (station.getSleepers() < station.getSlots()) {
+						station.addSleeper();
+					}
+					
+	    			double hrs = time * MarsClock.HOURS_PER_MILLISOL;
+	
+	    			double energy = robot.getSystemCondition().deliverEnergy(RoboticStation.CHARGE_RATE * hrs);
+	    			
+	    			// Record the power spent at the robotic station
+	    			station.setPowerLoad(energy/hrs);
+	
+					// Lengthen the duration for charging the battery
+					setDuration(getDuration() + 1.5 * (1 - level));
+					
+//					logger.info(robot, 10_000L, "Dumping " + Math.round(energy * 1000.0)/1000.0 + " kWh to the battery. "
+//							+ "New Duration: " + getDuration());
+				}
 			}
+			else
+				// Disable charging
+    			robot.getSystemCondition().setCharging(false);
 		}
 
 		return 0D;
 	}
 
-    
+	/**
+	 * Clears the current task. Disables charging. 
+	 */
+	public void clearTask() {
+		
+		// Disable charging so that it can potentially 
+		// be doing other tasks while consuming energy
+		robot.getSystemCondition().setCharging(false);
+		
+		super.endTask();
+	}
+	
+	
 	/**
 	 * Walk to a destination
 	 */

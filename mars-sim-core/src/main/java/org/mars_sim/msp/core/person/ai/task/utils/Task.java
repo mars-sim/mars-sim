@@ -1045,15 +1045,17 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @param building     the destination building.
 	 * @param functionType the building function type for the activity.
 	 * @param allowFail    true if walking is allowed to fail.
+	 * @return
 	 */
-	protected void walkToActivitySpotInBuilding(Building building, FunctionType functionType, boolean allowFail) {
-
+	protected boolean walkToActivitySpotInBuilding(Building building, FunctionType functionType, boolean allowFail) {
+		boolean canWalk = false;
+		
 		Function f = building.getFunction(functionType);
 		if (f == null) {
 			// If the functionType does not exist in this building, go to random location in
 			// building.
 //			walkToRandomLocInBuilding(building, allowFail);
-			return;
+			return canWalk;
 		}
 
 		LocalPosition settlementLoc = null;
@@ -1067,12 +1069,14 @@ public abstract class Task implements Serializable, Comparable<Task> {
 
 		if (settlementLoc != null) {
 			// Create subtask for walking to destination.
-			createWalkingSubtask(building, settlementLoc, allowFail);
+			canWalk = createWalkingSubtask(building, settlementLoc, allowFail);
 		}
 //		else {
 //			// If no available activity spot, go to random location in building.
 //			walkToRandomLocInBuilding(building, allowFail);
 //		}
+		
+		return canWalk;
 	}
 
 	protected LocalPosition walkToEVASpot(Building building) {
@@ -1333,15 +1337,25 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		}
 	}
 
+	/**
+	 * Walks to the assigned duty location.
+	 * 
+	 * @param robot
+	 * @param allowFail
+	 */
 	protected void walkToAssignedDutyLocation(Robot robot, boolean allowFail) {
 		if (robot.isInSettlement()) {
 			Building currentBuilding = BuildingManager.getBuilding(robot);
-
-			if (currentBuilding != null) {
-				RobotType type = robot.getRobotType();
-				FunctionType fct = FunctionType.getDefaultFunction(type);
-
-				List<Building> buildingList = currentBuilding.getBuildingManager().getBuildingsNoHallwayTunnelObs(fct);
+			
+			RobotType type = robot.getRobotType();
+			FunctionType fct = FunctionType.getDefaultFunction(type);
+			
+			if (currentBuilding != null && currentBuilding.hasFunction(fct)) {
+				walkToActivitySpotInBuilding(currentBuilding, fct, allowFail);
+			}
+			else {
+				List<Building> buildingList = robot.getSettlement().getBuildingManager()
+						.getBuildingsNoHallwayTunnelObservatory(fct);
 
 				if (buildingList.size() > 0) {
 					int buildingIndex = RandomUtil.getRandomInt(buildingList.size() - 1);
@@ -1349,7 +1363,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 					Building building = buildingList.get(buildingIndex);
 
 					if (robot.getSettlement().getBuildingConnectors(building).size() > 0) {
-						logger.log(robot, Level.FINER, 5000, "Is walking toward " + building.getNickName());
+						logger.log(robot, Level.FINER, 5000, "Walking toward " + building.getNickName());
 						walkToActivitySpotInBuilding(building, fct, allowFail);
 					}
 				}
@@ -1358,15 +1372,63 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 
 	/**
+	 * Walks to a robotic station.
+	 * 
+	 * @param robot
+	 * @param allowFail
+	 * @return
+	 */
+	protected boolean walkToRoboticStation(Robot robot, boolean allowFail) {
+		boolean canWalk = false;
+		Building destination = null;
+		
+		if (robot.isInSettlement()) {
+			Building currentBuilding = BuildingManager.getBuilding(robot);
+
+			FunctionType fct = FunctionType.ROBOTIC_STATION;
+			
+			if (currentBuilding != null && currentBuilding.hasFunction(fct)) {
+				canWalk = walkToActivitySpotInBuilding(currentBuilding, fct, allowFail);
+				if(canWalk)
+					destination = currentBuilding;
+			}
+			else {
+				List<Building> buildingList = robot.getSettlement().getBuildingManager()
+						.getBuildingsNoHallwayTunnelObservatory(fct);
+
+				if (buildingList.size() > 0) {
+					int buildingIndex = RandomUtil.getRandomInt(buildingList.size() - 1);
+
+					Building building = buildingList.get(buildingIndex);
+
+					if (robot.getSettlement().getBuildingConnectors(building).size() > 0) {
+						logger.log(robot, Level.FINER, 5000, "Walking toward " + building.getNickName());
+						canWalk = walkToActivitySpotInBuilding(building, fct, allowFail);
+						if(canWalk)
+							destination = building;
+					}
+				}
+			}
+		}
+		
+		if (canWalk) {
+		   BuildingManager.addRobotToRoboticStation(robot, destination);
+		}
+		
+		return canWalk;
+	}
+	
+	/**
 	 * Creates a walk to an interior position in a building or vehicle.
 	 * 
 	 * @param interiorObject the destination interior object.
 	 * @param settlementLoc  the settlement local position destination.
 	 * @param allowFail      true if walking is allowed to fail.
 	 */
-	private void createWalkingSubtask(LocalBoundedObject interiorObject, LocalPosition settlementLoc, boolean allowFail) {
+	private boolean createWalkingSubtask(LocalBoundedObject interiorObject, LocalPosition settlementLoc, boolean allowFail) {
 
 		Walk walkingTask = null;
+		
 		if (person != null) {
 			walkingTask = Walk.createWalkingTask(person, settlementLoc, 0, interiorObject);
 		}
@@ -1377,15 +1439,20 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		if (walkingTask != null) {
 			// Add subtask for walking to destination.
 			addSubTask(walkingTask);
+			return true;
 		}
 		else {
 			if (!allowFail) {
 				logger.log(worker, Level.INFO, 4_000, "Ended the task of walking to " + interiorObject + ".");
+				// Does it still need to call endTask() ?
 				endTask();
 			} else {
 				logger.log(worker, Level.INFO, 4_000, "Unable to walk to " + interiorObject + ".");
 			}
 		}
+		
+		
+		return false;
 	}
 	
 

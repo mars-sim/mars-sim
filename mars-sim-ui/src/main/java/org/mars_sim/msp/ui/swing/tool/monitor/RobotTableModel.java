@@ -90,19 +90,10 @@ public class RobotTableModel extends UnitTableModel {
 		columnTypes[NAME] = String.class;
 		columnNames[TYPE] = Msg.getString("RobotTableModel.column.type"); //$NON-NLS-1$
 		columnTypes[TYPE] = String.class;
-		// columnNames[PERSONALITY] =
-		// Msg.getString("RobotTableModel.column.personality"); //$NON-NLS-1$
-		// columnTypes[PERSONALITY] = String.class;
 		columnNames[HEALTH] = Msg.getString("RobotTableModel.column.health"); //$NON-NLS-1$
 		columnTypes[HEALTH] = String.class;
 		columnNames[BATTERY] = Msg.getString("RobotTableModel.column.battery"); //$NON-NLS-1$
 		columnTypes[BATTERY] = String.class;
-		// columnNames[FATIGUE] = Msg.getString("RobotTableModel.column.fatigue");
-		// //$NON-NLS-1$
-		// columnTypes[FATIGUE] = String.class;
-		// columnNames[STRESS] = Msg.getString("RobotTableModel.column.stress");
-		// //$NON-NLS-1$
-		// columnTypes[STRESS] = String.class;
 		columnNames[PERFORMANCE] = Msg.getString("RobotTableModel.column.performance"); //$NON-NLS-1$
 		columnTypes[PERFORMANCE] = String.class;
 		columnNames[LOCATION] = Msg.getString("RobotTableModel.column.location"); //$NON-NLS-1$
@@ -115,7 +106,6 @@ public class RobotTableModel extends UnitTableModel {
 		columnTypes[MISSION_COL] = String.class;
 		columnNames[TASK] = Msg.getString("RobotTableModel.column.task"); //$NON-NLS-1$
 		columnTypes[TASK] = String.class;
-
 	}
 
 	/** inner enum with valid source types. */
@@ -516,6 +506,7 @@ public class RobotTableModel extends UnitTableModel {
 						tableModel.fireTableCellUpdated(tableModel.getUnitIndex(source), column);
 					}
 				}
+				
 				if (event.getTarget() instanceof Unit) {
 					Unit target = (Unit) event.getTarget();
 					if (target instanceof Robot) {

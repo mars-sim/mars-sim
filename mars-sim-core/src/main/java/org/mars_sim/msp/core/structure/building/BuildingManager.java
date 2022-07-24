@@ -563,7 +563,7 @@ public class BuildingManager implements Serializable {
 	 * @param functionType
 	 * @return list of buildings
 	 */
-	public List<Building> getBuildingsNoHallwayTunnelObs(FunctionType functionType) {
+	public List<Building> getBuildingsNoHallwayTunnelObservatory(FunctionType functionType) {
 		// Filter off hallways and tunnels
 		return getBuildings(functionType).stream().filter(b ->
 				b.getCategory() != BuildingCategory.HALLWAY
@@ -1028,7 +1028,7 @@ public class BuildingManager implements Serializable {
 	public static void addToRandomBuilding(Robot robot, BuildingManager manager) {
 		Building destination = null;
 		List<Building> validBuildings1 = new ArrayList<>();
-		List<Building> stations = manager.getBuildingsNoHallwayTunnelObs(FunctionType.ROBOTIC_STATION);
+		List<Building> stations = manager.getBuildingsNoHallwayTunnelObservatory(FunctionType.ROBOTIC_STATION);
 		for (Building bldg : stations) {
 			validBuildings1.add(bldg);
 		}
@@ -1527,8 +1527,7 @@ public class BuildingManager implements Serializable {
 				roboticStation.addRobot(robot);
 				// Find an empty spot
 				LocalPosition loc = LocalAreaUtil.getRandomLocalRelativePosition(building); //roboticStation.getAvailableActivitySpot(robot);
-				
-				
+							
 				if (loc == null) {
 					Function fct = building.getEmptyActivitySpotFunction();
 					

@@ -148,22 +148,15 @@ public class RoboticStation extends Function {
 	public boolean timePassing(ClockPulse pulse) {
 		boolean valid = isValid(pulse);
 		if (valid) {
-			double load = 0;
-			double hrs = pulse.getElapsed() * MarsClock.HOURS_PER_MILLISOL;
-			for (Robot robot: robotOccupants) {
-				if (!robot.getSystemCondition().isBatteryAbove80()
-						|| robot.getSystemCondition().isCharging()) {
-					double energy = robot.getSystemCondition().deliverEnergy(CHARGE_RATE * hrs);
-					load += energy;
-		    		robot.fireUnitUpdate(UnitEventType.ROBOT_POWER_EVENT);
-				}
-			}
-			if (hrs > 0)
-				powerToDraw = load/hrs;
+			// nothing
 		}
 		return valid;
 	}
 
+    public void setPowerLoad(double value) {
+    	powerToDraw += value;
+    }
+	
 	@Override
 	public double getMaintenanceTime() {
 		return slots * 7D;

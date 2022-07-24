@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core.person.ai.task.meta;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.CircadianClock;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -25,9 +26,15 @@ import org.mars_sim.msp.core.tool.RandomUtil;
  */
 public class SleepMeta extends MetaTask {
 
+	/** default logger. */
+	private static SimLogger logger = SimLogger.getLogger(SleepMeta.class.getName());
+
+	private static final double MAX = 1000;
+	
     /** Task name */
     private static final String NAME = Msg.getString("Task.description.sleep"); //$NON-NLS-1$
 		
+    
     public SleepMeta() {
 		super(NAME, WorkerType.BOTH, TaskScope.ANY_HOUR);
 	}
@@ -185,22 +192,30 @@ public class SleepMeta extends MetaTask {
             return 0;
 
         else if (robot.isInVehicle())
+        	// Future: will re-enable robot serving in a vehicle
             return result;
         
         // Crowding modifier.
         else if (robot.isInSettlement()) {
         	result += 1D;
      
-        	// Checks if the battery is low
-        	if (robot.getSystemCondition().isLowPower())
-        		result += 10;
-        	else
-        		result += 10 * (1.0 - robot.getSystemCondition().getBatteryState());
+        	double level = robot.getSystemCondition().getBatteryState();
         	
+        	// Checks if the battery is low
+        	if (robot.getSystemCondition().isLowPower()) {
+        		result += (1.0 - level) * MAX;
+        	}
+        	else
+        		result += (1.0 - level) * 5.0;
+        		
             Building building = Sleep.getAvailableRoboticStationBuilding(robot);
             if (building != null) {
-            	result += 1D;
+//            	logger.info(robot, building + " has empty slot.");
             }
+            else
+            	result = 0;
+            
+//    		logger.info(robot, "level: " + level + "  prob: " + result);
         }
 
         return result;

@@ -1508,6 +1508,21 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	}
 	
 	/**
+	 * Returns the robotic station the robot is at ?
+	 * 
+	 * @return
+	 */
+	public RoboticStation getStation() {
+		Building building = getBuildingLocation();
+		if (building != null) {
+			RoboticStation roboticStation = building.getRoboticStation();
+			if (roboticStation.containsRobotOccupant(this))
+				return roboticStation;
+		}
+		return null;
+	}
+	
+	/**
 	 * Transfer the unit from one owner to another owner
 	 *
 	 * @param origin {@link Unit} the original container unit
