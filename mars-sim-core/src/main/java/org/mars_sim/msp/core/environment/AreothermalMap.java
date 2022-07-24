@@ -119,7 +119,7 @@ public class AreothermalMap implements Serializable {
 			while (i.hasNext()) {
 				Coordinates hotspot = i.next();
 				double distance = location.getDistance(hotspot);
-				double pixelRadius = (Environment.MARS_CIRCUMFERENCE / W) / 2D;
+				double pixelRadius = (Coordinates.MARS_CIRCUMFERENCE / W) / 2D;
 
 				double a = 25D; // value at pixel radius.
 				double b = 15D; // ratio max / ratio mid.

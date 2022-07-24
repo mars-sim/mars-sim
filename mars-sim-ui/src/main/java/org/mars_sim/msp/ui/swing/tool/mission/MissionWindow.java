@@ -53,8 +53,8 @@ public class MissionWindow extends ToolWindow {
 	private SettlementListModel settlementListModel;
 	private MissionListModel missionListModel;
 
-	private Settlement settlement;
-	private Mission mission;
+	private Settlement settlementCache;
+	private Mission missionCache;
 
 	private NavpointPanel navpointPane;
 
@@ -136,7 +136,7 @@ public class MissionWindow extends ToolWindow {
 		tabPane.add("Main", mainPanel);
 
 		// Create the navpoint panel.
-		navpointPane = new NavpointPanel(desktop);
+		navpointPane = new NavpointPanel(desktop, this);
 		missionList.addListSelectionListener(navpointPane);
 		tabPane.add("Navigation", navpointPane);
 
@@ -162,8 +162,8 @@ public class MissionWindow extends ToolWindow {
 				new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						// Edit the mission.
-						mission = (Mission) missionList.getSelectedValue();
-						if (mission != null) editMission(mission);
+						missionCache = (Mission) missionList.getSelectedValue();
+						if (missionCache != null) editMission(missionCache);
 					}
 				});
 		missionList.addListSelectionListener(
@@ -185,8 +185,8 @@ public class MissionWindow extends ToolWindow {
 				new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						// End the mission.
-						mission = missionList.getSelectedValue();
-						if (mission != null) mission.abortMission();
+						missionCache = missionList.getSelectedValue();
+						if (missionCache != null) missionCache.abortMission();
 					}
 				});
 		missionList.addListSelectionListener(
@@ -199,7 +199,7 @@ public class MissionWindow extends ToolWindow {
 		buttonPane.add(abortButton);
 
 		setSize(new Dimension(WIDTH, HEIGHT));
-		setMaximizable(true);
+//		setMaximizable(true);
 		setResizable(false);
 
 		setVisible(true);
@@ -224,50 +224,61 @@ public class MissionWindow extends ToolWindow {
 			return;
 		}
 
-		// when clicking elsewhere to open up the Mission Tool
-		Settlement s = newMission.getAssociatedSettlement();
-		if (s == null) {
-			// Since the mission is completed, use the recorded settlement name
-			// to get back the settlement instance
-			s = CollectionUtils.findSettlement(newMission.getSettlmentName());
-		}
-
-		// Select the settlement to populate missions
-		selectSettlement(s);
-
-		Mission selected = missionList.getSelectedValue();
-
-		if (selected != null) {
-			if (this.mission == null) {
-				this.mission = newMission;
-				// Highlight the selected mission
-				mainPanel.setMission(newMission);
-			}
-
-			else if (!selected.equals(newMission)) {
-				this.mission = newMission;
-				// Highlight the selected mission
-				mainPanel.setMission(newMission);
-			}
-
-			else { // selected is the same as newMission
-				this.mission = newMission;
-				// Highlight the selected mission
-				mainPanel.setMission(newMission);
-			}
-		}
-
-		else {
-			this.mission = newMission;
-			// Highlight the selected mission
+		if (missionCache != newMission) {
+			this.missionCache = newMission;
+			// Highlight the selected mission in Main tab
 			mainPanel.setMission(newMission);
+			// Highlight the selected mission in Nav tab
+			navpointPane.setMission(newMission);
 		}
+		
+		
+//		// when clicking elsewhere to open up the Mission Tool
+//		Settlement s = newMission.getAssociatedSettlement();
+//		if (s == null) {
+//			// Since the mission is completed, use the recorded settlement name
+//			// to get back the settlement instance
+//			s = CollectionUtils.findSettlement(newMission.getSettlmentName());
+//		}
+//
+//		// Select the settlement to populate missions
+//		selectSettlement(s);
+//
+//		Mission selected = missionList.getSelectedValue();
+//
+//		if (selected != null) {
+//			if (this.missionCache == null) {
+//				this.missionCache = newMission;
+//				// Highlight the selected mission
+//				mainPanel.setMission(newMission);
+//			}
+//
+//			else if (!selected.equals(newMission)) {
+//				this.missionCache = newMission;
+//				// Highlight the selected mission
+//				mainPanel.setMission(newMission);
+//			}
+//
+//			else { // selected is the same as newMission
+//				this.missionCache = newMission;
+//				// Highlight the selected mission
+//				mainPanel.setMission(newMission);
+//			}
+//		}
+//
+//		else {
+//			this.missionCache = newMission;
+//			// Highlight the selected mission
+//			mainPanel.setMission(newMission);
+//		}
+//		
+//		navpointPane.setMission(newMission);
 	}
 
 	/**
 	 * Selects a mission for display.
 	 *
-	 * @param mission the mission to select.
+	 * @param missionCache the mission to select.
 	 */
 	public void selectSettlement(Settlement settlement) {
 		if (settlement == null) {
@@ -275,46 +286,82 @@ public class MissionWindow extends ToolWindow {
 			return;
 		}
 
-		Settlement selected = settlementList.getSelectedValue();
-
-		if (selected != null) {
-			if (this.settlement == null) {
-				this.settlement = settlement;
-				mainPanel.clearInfo();
-				// Highlight the selected mission
-				settlementList.setSelectedValue(settlement, true);
-			}
-
-			else if (!selected.equals(settlement)) {
-				this.settlement = settlement;
-				missionList.clearSelection();
-				mainPanel.clearInfo();
-				// Highlight the selected settlement
-				settlementList.setSelectedValue(settlement, true);
-			}
-			else { // selected is the same as settlement
-				this.settlement = settlement;
-				// Highlight the selected settlement
-				settlementList.setSelectedValue(settlement, true);
-			}
-		}
-		else {
-			this.settlement = settlement;
+		if (settlementCache != settlement) {
+			// Update the settlement cache
+			this.settlementCache = settlement;
+			// Clear info on Main tab
 			mainPanel.clearInfo();
-			// Highlight the selected settlement
+			// Clear info on Nav tab
+			navpointPane.clearInfo();
+			// Highlight the selected mission
 			settlementList.setSelectedValue(settlement, true);
+			
+			
+			// Highlight the first listed mission
+			missionList.setSelectedIndex(0);
+			// Get the reference to the first listed mission
+			missionCache = missionList.getSelectedValue();
+			// Automatically select the first mission in the mission list
+			selectMission(missionCache);
 		}
+		
+//		Settlement selected = settlementList.getSelectedValue();
+//
+//		if (selected != null) {
+//			if (this.settlementCache == null) {
+//				// Update the settlement cache
+//				this.settlementCache = settlement;
+//				// Clear info on Main tab
+//				mainPanel.clearInfo();
+//				// Clear info on Nav tab
+//				navpointPane.clearInfo();
+//				// Highlight the selected mission
+//				settlementList.setSelectedValue(settlement, true);
+//			}
+//
+//			else if (!selected.equals(settlement)) {
+//				// Update the settlement cache
+//				this.settlementCache = settlement;
+//				// Clear the mission selection
+//				missionList.clearSelection();
+//				// Clear info on Main tab
+//				mainPanel.clearInfo();
+//				// Clear info on Nav tab
+//				navpointPane.clearInfo();
+//				// Highlight the selected settlement
+//				settlementList.setSelectedValue(settlement, true);
+//			}
+//			else { // selected is the same as settlement
+//				this.settlementCache = settlement;
+//				// Highlight the selected settlement
+//				settlementList.setSelectedValue(settlement, true);
+//			}
+//		}
+//		else {
+//			this.settlementCache = settlement;
+//			// Clear info on Main tab
+//			mainPanel.clearInfo();
+//			// Clear info on Nav tab
+//			navpointPane.clearInfo();
+//			// Highlight the selected settlement
+//			settlementList.setSelectedValue(settlement, true);
+//		}
 
-		// Update Nav tab's map
-		navpointPane.updateCoords(settlement.getCoordinates());
+//		// Update Nav tab's map
+//		navpointPane.updateCoords(settlement.getCoordinates());
 
 		// Populate the missions in this settlement
 		missionListModel.populateMissions();
 
-		if (missionListModel.getSize() == 0 || mission == null) {
-			mainPanel.clearInfo();
-			return;
-		}
+//		if (missionListModel.getSize() == 0 || mission == null) {
+//			// Clear the info on main tab and navigation tab to avoid confusion
+//			mainPanel.clearInfo();
+//			
+//			navpointPane.clearInfo();
+//			
+//			return;
+//		}
+			
 	}
 
 	/**
@@ -341,11 +388,11 @@ public class MissionWindow extends ToolWindow {
 	}
 
 	public Settlement getSettlement() {
-		return settlement;
+		return settlementCache;
 	}
 
 	public Mission getMission() {
-		return mission;
+		return missionCache;
 	}
 
 	public void selectFirstIndex() {

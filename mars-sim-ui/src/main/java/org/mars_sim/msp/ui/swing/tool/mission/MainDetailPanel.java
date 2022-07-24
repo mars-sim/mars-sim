@@ -601,6 +601,10 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 			currentMission = mission;
 		}
 	}
+	
+	public Mission getCurrentMission() {
+		return currentMission;
+	}
 
 	/**
 	 * Installs a listener to receive notification when the text of any
@@ -664,7 +668,7 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 		if (selected != null) {
 			if (currentMission == null) {
 				setCurrentMission(selected);
-				// Update info on this panel
+				// Update info on Main tab
 				updateInfo(selected);
 				// Update custom mission panel.
 				updateCustomPanel(selected);
@@ -672,7 +676,7 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 
 			else if (!selected.equals(currentMission)) {
 				setCurrentMission(selected);
-				// Update info on this panel
+				// Update info on Main tab
 				updateInfo(selected);
 				// Update custom mission panel.
 				updateCustomPanel(selected);
@@ -854,7 +858,7 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 
 
 	/**
-	 * Clears the mission content on the info tab
+	 * Clears the mission content on the Main tab
 	 */
 	public void clearInfo() {
 		// NOTE: do NOT clear the mission info. Leave the info there for future viewing

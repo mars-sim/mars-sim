@@ -339,16 +339,6 @@ public abstract class TabPanel extends JScrollPane {
 		return desktop.getSimulation();
 	}
 	
-	
-	/**
-	 * Gets the environment instance.
-	 * 
-	 * @return
-	 */
-	protected Environment getMars() {
-		return getSimulation().getMars();
-	}
-	
 	/**
 	 * Gets the master clock instance.
 	 * 

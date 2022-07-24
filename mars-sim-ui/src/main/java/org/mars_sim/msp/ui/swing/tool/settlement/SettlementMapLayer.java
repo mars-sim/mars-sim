@@ -23,7 +23,7 @@ public interface SettlementMapLayer {
 	static Simulation sim = Simulation.instance();
 	static UnitManager unitManager = sim.getUnitManager();
 	static MissionManager missionManager = sim.getMissionManager();
-	static SurfaceFeatures surfaceFeatures = sim.getMars().getSurfaceFeatures();
+	static SurfaceFeatures surfaceFeatures = sim.getSurfaceFeatures();
 
 	/**
 	 * Displays the settlement map layer.

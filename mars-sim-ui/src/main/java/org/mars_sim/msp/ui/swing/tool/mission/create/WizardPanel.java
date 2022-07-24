@@ -24,7 +24,7 @@ abstract class WizardPanel extends WebPanel {
 	protected static Simulation sim = Simulation.instance();
 	protected static UnitManager unitManager = sim.getUnitManager();
 	protected static MissionManager missionManager = sim.getMissionManager();
-	protected static SurfaceFeatures surfaceFeatures = sim.getMars().getSurfaceFeatures();
+	protected static SurfaceFeatures surfaceFeatures = sim.getSurfaceFeatures();
 
 
 	// Data members.

@@ -93,7 +93,7 @@ implements Serializable {
             boolean isOn = powerSource.isToggleON();
 
             if (orbitInfo == null)
-            	orbitInfo = Simulation.instance().getMars().getOrbitInfo();
+            	orbitInfo = Simulation.instance().getOrbitInfo();
 
             boolean isSunRising = orbitInfo.isSunRising(person.getSettlement().getCoordinates());
 

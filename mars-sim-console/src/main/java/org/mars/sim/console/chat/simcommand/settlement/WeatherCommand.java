@@ -33,9 +33,9 @@ public class WeatherCommand extends AbstractSettlementCommand {
 	protected boolean execute(Conversation context, String input, Settlement settlement) {
 		StructuredResponse response = new StructuredResponse();
 		Simulation sim = context.getSim();
-		SurfaceFeatures surfaceFeatures = sim.getMars().getSurfaceFeatures();
-		Weather weather = sim.getMars().getWeather();
-		OrbitInfo orbitInfo = sim.getMars().getOrbitInfo();
+		SurfaceFeatures surfaceFeatures = sim.getSurfaceFeatures();
+		Weather weather = sim.getWeather();
+		OrbitInfo orbitInfo = sim.getOrbitInfo();
 
 		Coordinates location = settlement.getCoordinates();
 		response.appendLabeledString("Location", location.toString());

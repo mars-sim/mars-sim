@@ -131,7 +131,7 @@ implements MouseListener {
 		// Initialize data members
 		this.farm = farm;
 		location = farm.getBuilding().getCoordinates();
-		surface = desktop.getSimulation().getMars().getSurfaceFeatures();
+		surface = desktop.getSimulation().getSurfaceFeatures();
 		cropConfig = SimulationConfig.instance().getCropConfiguration();
 	}
 	

@@ -80,7 +80,7 @@ public class Mind implements Serializable, Temporal {
 		// Load the mission manager
 		missionManager = sim.getMissionManager();
 		// Load SurfaceFeatures
-		surfaceFeatures = sim.getMars().getSurfaceFeatures();
+		surfaceFeatures = sim.getSurfaceFeatures();
 	}
 
 	/**

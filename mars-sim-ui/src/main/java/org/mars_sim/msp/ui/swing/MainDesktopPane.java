@@ -169,7 +169,7 @@ public class MainDesktopPane extends JDesktopPane
 			// Prep tool windows
 			prepareToolWindows();
 		} catch (Exception e) {
-          	logger.log(Level.SEVERE, "Cannot prepare tool windows: " + e.getMessage());
+          	logger.log(Level.SEVERE, "Cannot prepare tool windows: " + e);
 		}
 
 		// Setup announcement window

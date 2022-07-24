@@ -32,7 +32,7 @@ public class UnitSunlightCommand extends AbstractUnitCommand {
 
 		StructuredResponse response = new StructuredResponse();
 
-		SurfaceFeatures surfaceFeatures = context.getSim().getMars().getSurfaceFeatures();
+		SurfaceFeatures surfaceFeatures = context.getSim().getSurfaceFeatures();
 
 		response.appendLabeledString("Sunlight Irradiance", String.format("%.2f Wm-2",
 														surfaceFeatures.getSolarIrradiance(locn)));

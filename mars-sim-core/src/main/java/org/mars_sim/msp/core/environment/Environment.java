@@ -22,11 +22,6 @@ public class Environment implements Serializable, Temporal {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	/** Mars average radius in km. */
-	public static final double MARS_RADIUS_KM = 3393D;
-
-	public static final double MARS_CIRCUMFERENCE = MARS_RADIUS_KM * 2D * Math.PI;
-
 	// Data members
 	/** Martian weather. */
 	private Weather weather;
@@ -90,20 +85,9 @@ public class Environment implements Serializable, Temporal {
 		orbitInfo.timePassing(pulse);
 		surfaceFeatures.timePassing(pulse);
 		weather.timePassing(pulse);
-		
 		return true;
 	}
 
-	/**
-	 * Returns Mars surface instance
-	 * 
-	 * @return {@Link MarsSurface}
-	 */
-//	public MarsSurface getMarsSurface() {
-//		return marsSurface;
-//	}
-
-	
 	/**
 	 * Prepare object for garbage collection.
 	 */
@@ -112,7 +96,7 @@ public class Environment implements Serializable, Temporal {
 		orbitInfo.destroy();
 		weather.destroy();
 		surfaceFeatures = null;
-		orbitInfo = null;// .destroy();
-		weather = null;// .destroy();
+		orbitInfo = null;
+		weather = null;
 	}
 }

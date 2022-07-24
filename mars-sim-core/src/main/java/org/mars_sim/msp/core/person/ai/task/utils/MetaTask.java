@@ -56,9 +56,10 @@ public abstract class MetaTask {
 	/** Probability penalty for starting a non-job-related task. */
 	private static final double NON_JOB_PENALTY = .25D;
 	
+	private static Simulation sim = Simulation.instance();
 	/** The static instance of the mars clock */
-	protected static MarsClock marsClock = Simulation.instance().getMasterClock().getMarsClock();
-	protected static SurfaceFeatures surfaceFeatures = Simulation.instance().getMars().getSurfaceFeatures();
+	protected static MarsClock marsClock = sim.getMasterClock().getMarsClock();
+	protected static SurfaceFeatures surfaceFeatures = sim.getSurfaceFeatures();
 	
 	private String name;
 	private WorkerType workerType;

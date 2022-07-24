@@ -26,7 +26,6 @@ import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Crewable;
@@ -292,7 +291,7 @@ public class RepairInsideMalfunction extends Task implements Repair, Serializabl
 		if (entity instanceof Vehicle) {
 			// Requires EVA repair on outside vehicles that the person isn't inside.
 			Vehicle vehicle = (Vehicle) entity;
-			boolean outsideVehicle = BuildingManager.getBuilding(vehicle) == null;
+			boolean outsideVehicle = vehicle.getGarage() == null;
 			boolean personNotInVehicle = !((Crewable)vehicle).isCrewmember(person);
 			if (outsideVehicle && personNotInVehicle) {
 				result = true;

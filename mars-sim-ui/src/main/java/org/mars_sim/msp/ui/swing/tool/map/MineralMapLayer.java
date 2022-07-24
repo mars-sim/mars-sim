@@ -49,7 +49,7 @@ public class MineralMapLayer implements MapLayer {
 	 * @param displayComponent the display component.
 	 */
 	public MineralMapLayer(Component displayComponent) {
-		mineralMap = Simulation.instance().getMars().getSurfaceFeatures().getMineralMap();
+		mineralMap = Simulation.instance().getSurfaceFeatures().getMineralMap();
 		this.displayComponent = displayComponent;
 		mineralConcentrationArray = new int[Map.MAP_VIS_WIDTH * Map.MAP_VIS_HEIGHT];
 		updateMineralsDisplayed();

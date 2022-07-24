@@ -167,7 +167,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		masterClock = sim.getMasterClock();
 		marsTime = masterClock.getMarsClock();
 		earthTime = masterClock.getEarthClock();
-		orbitInfo = sim.getMars().getOrbitInfo();
+		orbitInfo = sim.getOrbitInfo();
 		
 		uptimer = masterClock.getUpTimer();
 

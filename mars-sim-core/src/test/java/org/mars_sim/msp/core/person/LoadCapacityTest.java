@@ -10,7 +10,6 @@ package org.mars_sim.msp.core.person;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
-import org.mars_sim.msp.core.environment.Environment;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.structure.MockSettlement;
@@ -27,7 +26,7 @@ public class LoadCapacityTest
 extends TestCase {
 
 	// Extra amount to add to resource to handle double arithmetic mismatch
-	private static final double EXTRA_RESOURCE = 0.01D;
+//	private static final double EXTRA_RESOURCE = 0.01D;
 	
 	private Settlement settlement = null;
 	private UnitManager unitManager;
@@ -44,11 +43,10 @@ extends TestCase {
         sim.testRun();
 
         unitManager = sim.getUnitManager();
-        
-        Environment mars = sim.getMars();
+
         Function.initializeInstances(simConfig.getBuildingConfiguration(), sim.getMasterClock().getMarsClock(),
-        							 simConfig.getPersonConfig(), simConfig.getCropConfiguration(), mars.getSurfaceFeatures(),
-        							 mars.getWeather(), sim.getUnitManager());
+        							 simConfig.getPersonConfig(), simConfig.getCropConfiguration(), sim.getSurfaceFeatures(),
+        							 sim.getWeather(), sim.getUnitManager());
         
 		// Create test settlement.
 		settlement = new MockSettlement();	

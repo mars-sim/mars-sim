@@ -116,7 +116,7 @@ public class BotMind implements Serializable, Temporal {
 			
 			if (remainingTime == time) {
 				
-				logger.log(robot, Level.SEVERE, 30_000L, 
+				logger.log(robot, Level.SEVERE, 40_000L, 
 						"Previous Task: " + previousTask
 					+ "    Current Task: " + botTaskManager.getTaskName() 
 					+ "    remainingTime & time: " + remainingTime + ".");

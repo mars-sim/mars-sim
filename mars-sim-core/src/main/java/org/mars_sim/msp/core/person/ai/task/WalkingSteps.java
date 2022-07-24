@@ -22,7 +22,6 @@ import org.mars_sim.msp.core.structure.Airlock;
 import org.mars_sim.msp.core.structure.AirlockType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -568,7 +567,7 @@ implements Serializable {
         Settlement settlement = initialBuilding.getSettlement();
 
         // Check if rover is parked in garage or outside.
-        Building garageBuilding = BuildingManager.getBuilding(destinationRover);
+        Building garageBuilding = destinationRover.getGarage();
         if (garageBuilding != null) {
 
             // Create walking steps to garage building.
@@ -701,7 +700,7 @@ implements Serializable {
         Rover initialRover = initialWalkState.rover;
 
         // Check if rover is parked in garage or outside.
-        Building garageBuilding = BuildingManager.getBuilding(initialRover);
+        Building garageBuilding = initialRover.getGarage();
         if (garageBuilding != null) {
 
             // Add exit rover walk step.
@@ -755,7 +754,7 @@ implements Serializable {
         }
         else {
             // Check if initial rover is in a garage.
-            Building garageBuilding = BuildingManager.getBuilding(initialRover);
+            Building garageBuilding = initialRover.getGarage();
             if (garageBuilding != null) {
 
                 // Add exit rover walk step.
@@ -804,7 +803,7 @@ implements Serializable {
         Rover initialRover = initialWalkState.rover;
 
         // Check if rover is parked in garage or outside.
-        Building garageBuilding = BuildingManager.getBuilding(initialRover);
+        Building garageBuilding = initialRover.getGarage();
         if (garageBuilding != null) {
 
             // Add exit rover walk step.
@@ -937,7 +936,7 @@ implements Serializable {
             Building airlockBuilding = (Building) airlock.getEntity();
 
             // Check if rover is in a garage or outside.
-            Building garageBuilding = BuildingManager.getBuilding(destinationRover);
+            Building garageBuilding = destinationRover.getGarage();;
             if (garageBuilding != null) {
 
                 // Check if garage building has a walkable interior path from airlock building.
@@ -1175,7 +1174,7 @@ implements Serializable {
         Rover destinationRover = destinationWalkState.rover;
 
         // Check if rover is in a garage or outside.
-        Building garageBuilding = BuildingManager.getBuilding(destinationRover);
+        Building garageBuilding = destinationRover.getGarage();
         if (garageBuilding != null) {
 
             Settlement settlement = garageBuilding.getSettlement();
@@ -1352,7 +1351,7 @@ implements Serializable {
         Rover destinationRover = destinationWalkState.rover;
 
         // Check if rover is in a garage or outside.
-        Building garageBuilding = BuildingManager.getBuilding(destinationRover);
+        Building garageBuilding = destinationRover.getGarage();
         if (garageBuilding != null) {
 
             Settlement settlement = garageBuilding.getSettlement();

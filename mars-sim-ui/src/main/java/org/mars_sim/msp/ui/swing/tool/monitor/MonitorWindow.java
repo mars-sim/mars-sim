@@ -341,6 +341,8 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 
 			Collections.sort(settlements);
 			settlementList = settlements;
+			// Pre-select the first settlement to avoid NPE when creating SettlementTableModel
+			selectedSettlement = settlements.get(0);
 		}
 	}
 
@@ -369,25 +371,25 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		settlementComboBox.setToolTipText(Msg.getString("SettlementWindow.tooltip.selectSettlement")); //$NON-NLS-1$
 		settlementComboBox.setRenderer(new PromptComboBoxRenderer());
 
-		int size = settlementComboBox.getModel().getSize();
-		if (size > 1) {
-			// Gets the selected settlement from SettlementMapPanel
-			Settlement s = desktop.getSettlementMapPanel().getSettlement();
-			// Selects the settlement in the combo box
-			settlementComboBox.setSelectedItem(s);
-			// Change to the selected settlement in SettlementMapPanel
-			if (s != null)
-				setSettlement(s);
-		}
-
-		else if (size == 1) {
-			// Selects the first settlement
-			settlementComboBox.setSelectedIndex(0);
-			// Gets the settlement
-			Settlement s = (Settlement) settlementComboBox.getSelectedItem();
-			// Change to the selected settlement in SettlementMapPanel
-			setSettlement(s);
-		}
+//		int size = settlementComboBox.getModel().getSize();
+//		if (size > 1) {
+//			// Gets the selected settlement from SettlementMapPanel
+//			Settlement s = desktop.getSettlementMapPanel().getSettlement();
+//			// Selects the settlement in the combo box
+//			settlementComboBox.setSelectedItem(s);
+//			// Change to the selected settlement in SettlementMapPanel
+//			if (s != null)
+//				setSettlement(s);
+//		}
+//
+//		else if (size == 1) {
+//			// Selects the first settlement
+//			settlementComboBox.setSelectedIndex(0);
+//			// Gets the settlement
+//			Settlement s = (Settlement) settlementComboBox.getSelectedItem();
+//			// Change to the selected settlement in SettlementMapPanel
+//			setSettlement(s);
+//		}
 
 		// Set the item listener only after the setup is done
 		settlementComboBox.addItemListener(new ItemListener() {
@@ -549,8 +551,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 				buttonFilter.setEnabled(true);
 
 				int rowIndex = ((TradeTableModel)tradeTab.getModel()).returnLastRowIndex(selectedSettlement);
-
-				
+	
 				scrollToVisible(tradeTab.getTable(), rowIndex, 0);
 			}
 			

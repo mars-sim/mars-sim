@@ -33,7 +33,6 @@ implements Serializable {
 	private PowerSourceType type;
 
 	protected static SurfaceFeatures surface ;
-	protected static Environment mars;
 	protected static OrbitInfo orbitInfo;
 	protected static Weather weather;
 	
@@ -46,16 +45,6 @@ implements Serializable {
 	public PowerSource(PowerSourceType type, double maxPower) {
 		this.type = type;
 		this.maxPower = maxPower;
-
-        if (mars == null)
-        	mars = Simulation.instance().getMars();
-		if (surface == null)
-			surface = mars.getSurfaceFeatures();
-        if (orbitInfo == null)
-            orbitInfo = mars.getOrbitInfo();
-        if (weather == null)
-        	weather = mars.getWeather();
-
 	}
 
 	/**
@@ -114,8 +103,7 @@ implements Serializable {
 	 * @param {@link OrbitInfo}
 	 * @param {@link Weather}
 	 */
-	public static void initializeInstances(Environment m, SurfaceFeatures s, OrbitInfo o, Weather w) {
-		mars = m;
+	public static void initializeInstances(SurfaceFeatures s, OrbitInfo o, Weather w) {
 		surface = s;
 		orbitInfo = o;
 		weather = w;

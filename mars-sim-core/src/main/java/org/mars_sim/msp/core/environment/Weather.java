@@ -873,7 +873,7 @@ public class Weather implements Serializable, Temporal {
 	 * 
 	 * @param s {@link SurfaceFeatures}
 	 */
-	void initializeInstances(SurfaceFeatures s) {
+	public void initializeInstances(SurfaceFeatures s) {
 		surfaceFeatures = s;
 	}
 	

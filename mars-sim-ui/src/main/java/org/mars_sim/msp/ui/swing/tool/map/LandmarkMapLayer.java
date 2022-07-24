@@ -52,7 +52,7 @@ public class LandmarkMapLayer implements MapLayer {
 	/** Horizontal offset for artificial objects. */
 	private int AO_LABEL_HORIZONTAL_OFFSET = 1;
 	
-	private static final List<Landmark> landmarks = Simulation.instance().getMars().getSurfaceFeatures().getLandmarks();
+	private static final List<Landmark> landmarks = Simulation.instance().getSurfaceFeatures().getLandmarks();
 
 	private static final double angle = CannedMarsMap.HALF_MAP_ANGLE;
 	

@@ -111,8 +111,7 @@ public class Walk extends Task implements Serializable {
 				Settlement settlement = vehicle.getSettlement();
 
 				// Check if vehicle is in garage.
-				// person.isInVehicleInGarage()
-				Building garageBuilding = BuildingManager.getBuilding(vehicle);
+				Building garageBuilding = vehicle.getGarage();
 				if (garageBuilding != null) {
 					targetObject = garageBuilding;
 					walkToSettlement = true;
@@ -1060,7 +1059,7 @@ public class Walk extends Task implements Serializable {
 	protected boolean canRecord() {
 		return false;
 	}
-
+	
 	public void destroy() {
 		walkingSteps = null;
 		walkingStepPhaseMap = null;

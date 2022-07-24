@@ -88,7 +88,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 
 	private static List<Landmark> landmarks = null;
 
-	private static MissionManager missionManager;
+//	private static MissionManager missionManager;
 
 	/**
 	 * Constructor
@@ -119,10 +119,8 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	 *
 	 * @throws Exception if transient data could not be constructed.
 	 */
-	public static void initializeInstances(MissionManager mm, LandmarkConfig landmarkConfig) {
+	public static void initializeInstances(LandmarkConfig landmarkConfig) {
 		landmarks = landmarkConfig.getLandmarkList();
-
-		missionManager = mm;
 	}
 
 	/**
@@ -687,27 +685,27 @@ public class SurfaceFeatures implements Serializable, Temporal {
 		// Is this needed ? Mining Mission unreserves the site when it completes
 		// so this is just to caught problems (bugs) within the simulation logic.
 		// Update any reserved explored locations.
-		Iterator<ExploredLocation> i = exploredLocations.iterator();
-		while (i.hasNext()) {
-			ExploredLocation site = i.next();
-			if (site.isReserved()) {
-				// Check if site is reserved by a current mining mission.
-				// If not, mark as unreserved.
-				boolean goodMission = false;
-
-				// TODO The Mission should unreserve the site automatically
-				for (Mission mission : missionManager.getMissions()) {
-					if (mission.getMissionType() == MissionType.MINING) {
-						if (site.equals(((Mining) mission).getMiningSite())) {
-							goodMission = true;
-						}
-					}
-				}
-				if (!goodMission) {
-					site.setReserved(false);
-				}
-			}
-		}
+//		Iterator<ExploredLocation> i = exploredLocations.iterator();
+//		while (i.hasNext()) {
+//			ExploredLocation site = i.next();
+//			if (site.isReserved()) {
+//				// Check if site is reserved by a current mining mission.
+//				// If not, mark as unreserved.
+//				boolean goodMission = false;
+//
+//				// TODO The Mission should unreserve the site automatically
+//				for (Mission mission : missionManager.getMissions()) {
+//					if (mission.getMissionType() == MissionType.MINING) {
+//						if (site.equals(((Mining) mission).getMiningSite())) {
+//							goodMission = true;
+//						}
+//					}
+//				}
+//				if (!goodMission) {
+//					site.setReserved(false);
+//				}
+//			}
+//		}
 		return true;
 	}
 

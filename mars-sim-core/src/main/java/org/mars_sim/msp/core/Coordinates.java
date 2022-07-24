@@ -31,6 +31,10 @@ public class Coordinates implements Serializable {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(Coordinates.class.getName());
 
+	/** Mars average radius in km. */
+	public static final double MARS_RADIUS_KM = 3393D;
+	public static final double MARS_CIRCUMFERENCE = MARS_RADIUS_KM * 2D * Math.PI;
+	
 	private static final double DEG_TO_RADIAN  = Math.PI / 180;
 	private static final double RADIAN_TO_DEG  = 180 / Math.PI;
 	private static final double PI_HALF = Math.PI / 2.0;
@@ -236,7 +240,7 @@ public class Coordinates implements Serializable {
 			return 0;
 		}
 
-		double rho = Environment.MARS_RADIUS_KM;
+		double rho = MARS_RADIUS_KM;
 		double angle = getAngle(otherCoords);
 		double result = rho * angle;
 		return result;
@@ -473,7 +477,7 @@ public class Coordinates implements Serializable {
 	 * @return new spherical location
 	 */
 	public Coordinates convertRectToSpherical(double x, double y) {
-		return convertRectToSpherical(x, y, Environment.MARS_RADIUS_KM);
+		return convertRectToSpherical(x, y, MARS_RADIUS_KM);
 	}
 
 

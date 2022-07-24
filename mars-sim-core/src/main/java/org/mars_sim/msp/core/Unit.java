@@ -91,7 +91,6 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	protected static UnitManager unitManager = sim.getUnitManager();
 	protected static MissionManager missionManager;
 
-	protected static Environment mars;
 	protected static Weather weather;
 	protected static SurfaceFeatures surfaceFeatures;
 	protected static TerrainElevation terrainElevation;
@@ -758,13 +757,12 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	 * @param u  {@link UnitManager}
 	 * @param mm {@link MissionManager}
 	 */
-	public static void initializeInstances(MasterClock c0, MarsClock c1, EarthClock e, Simulation s, Environment m,
+	public static void initializeInstances(MasterClock c0, MarsClock c1, EarthClock e, Simulation s, 
 			Weather w, SurfaceFeatures sf, MissionManager mm) {
 		masterClock = c0;
 		marsClock = c1;
 		earthClock = e;
 		sim = s;
-		mars = m;
 		weather = w;
 		surfaceFeatures = sf;
 		missionManager = mm;

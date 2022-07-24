@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * NavpointPanel.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-23
  * @author Scott Davis
  */
 
@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.swing.JList;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
@@ -36,7 +35,6 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitType;
-import org.mars_sim.msp.core.environment.Environment;
 import org.mars_sim.msp.core.environment.Landmark;
 import org.mars_sim.msp.core.environment.TerrainElevation;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
@@ -93,25 +91,23 @@ implements ListSelectionListener, MissionListener {
 	private MainDesktopPane desktop;
 	
 	private Coordinates coordCache = new Coordinates(0, 0);
+	private MissionWindow missionWindow;
 	
 	private static Simulation sim = Simulation.instance();
 	private static TerrainElevation terrainElevation;
-	private static Environment mars;
-	
+
 	private static UnitManager unitManager = sim.getUnitManager();
-	private static List<Landmark> landmarks = sim.getMars().getSurfaceFeatures().getLandmarks();
-	
+	private static List<Landmark> landmarks = sim.getSurfaceFeatures().getLandmarks();
 
 	/**
 	 * Constructor.
 	 */
-	protected NavpointPanel(MainDesktopPane desktop) {
+	protected NavpointPanel(MainDesktopPane desktop, MissionWindow missionWindow) {
 		this.desktop = desktop;
+		this.missionWindow = missionWindow;
 		
-		if (mars == null)
-			mars = sim.getMars();
 		if (terrainElevation == null)
-			terrainElevation =  mars.getSurfaceFeatures().getTerrainElevation();
+			terrainElevation =  sim.getSurfaceFeatures().getTerrainElevation();
 		
 		// Set the layout.
 		setLayout(new BorderLayout());
@@ -273,8 +269,8 @@ implements ListSelectionListener, MissionListener {
 	}
 	
 	/**
-	 * Update coordinates in map, buttons, and globe Redraw map and globe if
-	 * necessary
+	 * Updates coordinates in map, buttons, and globe Redraw map and globe if
+	 * necessary.
 	 * 
 	 * @param newCoords the new center location
 	 */
@@ -282,7 +278,6 @@ implements ListSelectionListener, MissionListener {
 		if (newCoords != null) {
 			if (coordCache == null || !coordCache.equals(newCoords)) {
 				coordCache = newCoords;
-	//			System.out.println(newCoords);
 				mapPanel.showMap(newCoords);
 			}
 		}
@@ -412,54 +407,88 @@ implements ListSelectionListener, MissionListener {
 	
 	/**
 	 * Implemented from ListSelectionListener.
+	 * 
 	 * Note: this is called when a mission is selected on MissionWindow's mission list.
 	 */
-	public void valueChanged(ListSelectionEvent e) {
-		Mission mission = (Mission) ((JList<?>) e.getSource()).getSelectedValue();
-		
+	public void valueChanged(ListSelectionEvent e) {		
 		// Remove this as previous mission listener.
-		if ((currentMission != null) && (currentMission != mission)) 
-			currentMission.removeMissionListener(this);
-		
-		if (mission != null) {
-			if (mission != currentMission) {
-				// Add this as listener for new mission.
-				mission.addMissionListener(this);
-				
-				// Update map and info for new mission.
-				currentMission = mission;
-				if (mission.getMembersNumber() > 0) {
-					if (mission instanceof VehicleMission) {
-						trailLayer.setSingleVehicle(((VehicleMission) mission).getVehicle());
-                    }
-                    
-					navpointLayer.setSingleMission(mission);
-					navpointLayer.setSelectedNavpoint(null);
-					navpointTableModel.updateNavpoints();
-                    
-                    if ((mission instanceof Exploration) || (mission instanceof Mining)) {
-                        if (!mapPanel.hasMapLayer(mineralLayer)) mapPanel.addMapLayer(mineralLayer, 1);
-                    }
-                    else {
-                        if (mapPanel.hasMapLayer(mineralLayer)) mapPanel.removeMapLayer(mineralLayer);
-                    }
-                    
-                    mapPanel.showMap(currentMission.getCurrentMissionLocation());
-				}
-			}
+		if (currentMission != null) {
+			// Updates the mission content on the Nav tab
+			updateInfo();
 		}
 		else {
 			// Clear map and info.
-			currentMission = null;
-			trailLayer.setSingleVehicle(null);
-			navpointLayer.setSingleMission(null);
-			navpointLayer.setSelectedNavpoint(null);
-			navpointTableModel.updateNavpoints();
-            if (mapPanel.hasMapLayer(mineralLayer)) mapPanel.removeMapLayer(mineralLayer);
-			mapPanel.showMap(null);
+			clearInfo();
 		}
 	}
+	
+	public void setMission(Mission mission) {
+		if (mission == null) {
+			// Remove this as previous mission listener.
+			currentMission.removeMissionListener(this);
+				
+			currentMission = mission;
+			// Clear map and info.
+			clearInfo();
+		}
+		
+		else if (currentMission != mission) {
+			// Remove this as previous mission listener.
+			currentMission.removeMissionListener(this);
+	
+			currentMission = mission;
+			// Add this as listener for new mission.
+			mission.addMissionListener(this);
+			// Update the mission content on the Nav tab
+			updateInfo();
+		}
+	}
+	
 
+	/**
+	 * Updates the mission content on the Nav tab
+	 */
+	public void updateInfo() {
+		// Updates coordinates in map
+		updateCoords(currentMission.getAssociatedSettlement().getCoordinates());
+		
+		if (currentMission.getMembersNumber() > 0) {
+			if (currentMission instanceof VehicleMission) {
+				trailLayer.setSingleVehicle(((VehicleMission) currentMission).getVehicle());
+            }
+            
+			navpointLayer.setSingleMission(currentMission);
+			navpointLayer.setSelectedNavpoint(null);
+			navpointTableModel.updateNavpoints();
+            
+            if ((currentMission instanceof Exploration) || (currentMission instanceof Mining)) {
+                if (!mapPanel.hasMapLayer(mineralLayer)) mapPanel.addMapLayer(mineralLayer, 1);
+            }
+            else {
+                if (mapPanel.hasMapLayer(mineralLayer)) mapPanel.removeMapLayer(mineralLayer);
+            }
+            
+            mapPanel.showMap(currentMission.getCurrentMissionLocation());
+		}
+		
+	}
+	
+	/**
+	 * Clears the mission content on the Nav tab
+	 */
+	public void clearInfo() {
+		// NOTE: do NOT clear info when the mission is finish. 
+		// Leave the info there for future viewing.
+				
+		// Clear map and info.
+		trailLayer.setSingleVehicle(null);
+		navpointLayer.setSingleMission(null);
+		navpointLayer.setSelectedNavpoint(null);
+		navpointTableModel.updateNavpoints();
+        if (mapPanel.hasMapLayer(mineralLayer)) mapPanel.removeMapLayer(mineralLayer);
+		mapPanel.showMap(null);
+	}
+	
 	/**
 	 * Catch mission update event.
 	 * @param event the mission event.
@@ -471,12 +500,6 @@ implements ListSelectionListener, MissionListener {
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
 					navpointTableModel.updateNavpoints();
-//					int t = MainScene.getTheme();		
-//					if (theme != t) {
-//						theme = t;
-//						TableStyle.setTableStyle(navpointTable);
-//					}
-
 				}
 			});
 		}
