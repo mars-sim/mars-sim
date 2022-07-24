@@ -97,6 +97,9 @@ public class TradeMeta extends AbstractMetaMission {
 		
 		// Check for the best trade settlement within range.			
 		Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(MissionType.TRADE, settlement, false);
+		if (rover == null) {
+			return 0;
+		}
 		GoodsManager gManager = settlement.getGoodsManager();
 
 		Deal deal = gManager.getBestDeal(MissionType.TRADE, rover);
