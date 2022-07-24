@@ -8,8 +8,6 @@ package org.mars_sim.msp.core.structure.building.function;
 
 import java.io.Serializable;
 
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.environment.Environment;
 import org.mars_sim.msp.core.environment.OrbitInfo;
 import org.mars_sim.msp.core.environment.SurfaceFeatures;
 import org.mars_sim.msp.core.environment.Weather;

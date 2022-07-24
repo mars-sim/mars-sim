@@ -11,7 +11,6 @@ import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 
-import org.mars_sim.msp.core.environment.Environment;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.tool.RandomUtil;
 

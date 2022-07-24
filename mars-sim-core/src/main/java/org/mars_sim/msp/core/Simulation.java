@@ -33,7 +33,6 @@ import java.util.zip.GZIPOutputStream;
 import org.mars_sim.msp.core.air.AirComposition;
 import org.mars_sim.msp.core.data.DataLogger;
 import org.mars_sim.msp.core.data.UnitSet;
-import org.mars_sim.msp.core.environment.Environment;
 import org.mars_sim.msp.core.environment.MarsSurface;
 import org.mars_sim.msp.core.environment.OrbitInfo;
 import org.mars_sim.msp.core.environment.SurfaceFeatures;
