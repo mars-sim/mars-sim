@@ -6,6 +6,7 @@
  */
 package org.mars_sim.msp.core.goods;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -747,5 +748,14 @@ public class GoodsManager implements Serializable {
 
 	public void clearDeal(MissionType commerce) {
 		deals.remove(commerce);
+	}
+
+	/**
+	 * Custom read to re-init deals variable
+	 */
+	private void readObject(java.io.ObjectInputStream in)
+    	throws IOException, ClassNotFoundException {
+		in.defaultReadObject();
+		deals = new EnumMap<>(MissionType.class);
 	}
 }
