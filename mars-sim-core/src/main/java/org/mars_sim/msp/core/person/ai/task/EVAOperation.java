@@ -74,7 +74,7 @@ public abstract class EVAOperation extends Task {
 	public static final double BASE_ACCIDENT_CHANCE = .01;
 
 	/** Minimum sunlight for EVA is 1% of max sunlight */
-	private static final double MIN_SUNLIGHT = SurfaceFeatures.MAX_SOLAR_IRRADIANCE * 0.01;
+	private static double minEVASunlight = SurfaceFeatures.MAX_SOLAR_IRRADIANCE * 0.01;
 
 	// Data members
 	/** Flag for ending EVA operation externally. */
@@ -451,12 +451,17 @@ public abstract class EVAOperation extends Task {
 	 * @return
 	 */
 	public static boolean isEnoughSunlightForEVA(Coordinates locn ) {
+		if (minEVASunlight == 0D) {
+			// Don't bother calculating sunlight; EVA valid in whatever conditions
+			return true;
+		}
+
 		// This logic comes from EVAMission originally
 		boolean inDarkPolarRegion = surfaceFeatures.inDarkPolarRegion(locn);
 		double sunlight = surfaceFeatures.getSolarIrradiance(locn);
 
 		// This is equivalent of a 1% sun ratio as below
-		return (sunlight >= MIN_SUNLIGHT && !inDarkPolarRegion);
+		return (sunlight >= minEVASunlight && !inDarkPolarRegion);
 
 		// This is the old logic used originally in EVAOperation
 		// if (surfaceFeatures.inDarkPolarRegion(person.getCoordinates())) {
@@ -818,5 +823,13 @@ public abstract class EVAOperation extends Task {
 		// Register the historical event
 		HistoricalEvent rescueEvent = new MedicalEvent(p, problem, EventType.MEDICAL_RESCUE);
 		registerNewEvent(rescueEvent);
+	}
+
+	/**
+	 * Set the minimum sunlight for any EVA operations.
+	 */
+	public static void setMinSunlight(double minimum) {
+		logger.config("Minimum sublight for EVA = " + minimum);
+		minEVASunlight = minimum;
 	}
 }

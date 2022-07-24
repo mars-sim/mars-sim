@@ -124,6 +124,7 @@ public class SimulationConfig implements Serializable {
 	private static final String MISSION_TYPE = "mission-type";
 	private static final String BOOST = "boost";
 	private static final String NAME = "name";
+	private static final String EVA_LIGHT = "min-eva-light";
 
 	private transient String marsStartDate = null;
 	private transient String earthStartDate = null;
@@ -175,6 +176,8 @@ public class SimulationConfig implements Serializable {
 	private transient ReportingAuthorityFactory raFactory;
 
 	private transient Map<MissionType, Integer> missionBoosts = new EnumMap<>(MissionType.class);
+
+	private double minEVALight;
 
 	/*
 	 * -----------------------------------------------------------------------------
@@ -255,7 +258,7 @@ public class SimulationConfig implements Serializable {
 			int boost = Integer.parseInt(mission.getAttributeValue(BOOST));
 			missionBoosts.put(mt, boost);
 		}
-
+		minEVALight = loadDoubleValue(missionConfig, EVA_LIGHT, 0D, 1000D);
 		checkXMLFileVersion();
 
 		try {
@@ -440,15 +443,6 @@ public class SimulationConfig implements Serializable {
 			} catch (IOException e) {
 	          	logger.log(Level.SEVERE, "Cannot write lines when creating version.txt" + e.getMessage());
 			}
-
-			lines = new ArrayList<>();
-			try {
-				// Create the exception.txt file
-				Files.write(exceptionPath, lines, StandardCharsets.UTF_8);
-				logger.config("A new exception.txt file was just created.");
-			} catch (IOException e) {
-	          	logger.log(Level.SEVERE, "Cannot write lines when creating exception.txt" + e.getMessage());
-			}
 		}
 
 		if (!versionLoc.exists()) {
@@ -621,6 +615,15 @@ public class SimulationConfig implements Serializable {
 	 */
 	public int getUnusedCores() {
 		return unusedCores;
+	}
+
+	/**
+	 * The the minimum light needed for EVAs.
+	 * 
+	 * @return Light value.
+	 */
+	public double getMinEVALight() {
+		return minEVALight;
 	}
 
 	/**
