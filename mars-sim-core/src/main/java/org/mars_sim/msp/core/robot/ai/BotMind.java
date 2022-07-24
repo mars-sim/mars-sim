@@ -13,7 +13,6 @@ import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 import org.mars_sim.msp.core.robot.ai.task.BotTaskManager;
 import org.mars_sim.msp.core.time.ClockPulse;
@@ -108,8 +107,19 @@ public class BotMind implements Serializable, Temporal {
 		}
 			
 		if (botTaskManager.hasActiveTask()) {
+			
 			// Call executeTask
 			double remainingTime = botTaskManager.executeTask(time, robot.getPerformanceRating());
+			
+			if (remainingTime == time) {
+				
+				logger.log(robot, Level.SEVERE, 30_000L, "Current Task: " + botTaskManager.getTaskName() 
+					+ " - remainingTime / time = " + remainingTime + ".");
+				
+				// Do not call takeAction
+				return;
+			}
+			
 			if (remainingTime > 0D) {
 				takeAction(remainingTime);
 			}

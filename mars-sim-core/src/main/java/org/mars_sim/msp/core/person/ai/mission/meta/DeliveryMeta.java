@@ -6,10 +6,7 @@
  */
 package org.mars_sim.msp.core.person.ai.mission.meta;
 
-import java.util.logging.Level;
-
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.goods.CommerceUtil;
 import org.mars_sim.msp.core.goods.Deal;
 import org.mars_sim.msp.core.goods.GoodsManager;
 import org.mars_sim.msp.core.logging.SimLogger;

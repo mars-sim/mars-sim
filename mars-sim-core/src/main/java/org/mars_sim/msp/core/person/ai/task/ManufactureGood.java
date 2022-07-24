@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.manufacture.ManufactureProcess;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessInfo;
 import org.mars_sim.msp.core.manufacture.ManufactureUtil;
@@ -42,8 +43,9 @@ public class ManufactureGood extends Task implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-//	private static final Logger logger = Logger.getLogger(ManufactureGood.class.getName());
+	private static SimLogger logger = SimLogger.getLogger(ManufactureGood.class.getName());
 
+	
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.manufactureGood"); //$NON-NLS-1$
 
@@ -91,6 +93,11 @@ public class ManufactureGood extends Task implements Serializable {
 		}
 	}
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param robot the robot to perform the task
+	 */
 	public ManufactureGood(Robot robot) {
 		super(NAME, robot, true, false, STRESS_MODIFIER, SkillType.MATERIALS_SCIENCE, 100D,
 				10D + RandomUtil.getRandomDouble(50D));
@@ -121,7 +128,7 @@ public class ManufactureGood extends Task implements Serializable {
 	}
 
 	/**
-	 * Cancel any manufacturing processes that's beyond the skill of any people
+	 * Cancels any manufacturing processes that's beyond the skill of any people
 	 * associated with the settlement.
 	 * 
 	 * @param settlement
@@ -203,6 +210,13 @@ public class ManufactureGood extends Task implements Serializable {
 		return result;
 	}
 
+	/**
+	 * Gets an available manufacturing building that the robot can use. Returns
+	 * null if no manufacturing building is currently available.
+	 * 
+	 * @param robot the robot
+	 * @return available manufacturing building
+	 */
 	public static Building getAvailableManufacturingBuilding(Robot robot) {
 
 		Building result = null;
@@ -421,6 +435,7 @@ public class ManufactureGood extends Task implements Serializable {
 		// Check if workshop has malfunction.
 		Building entity = workshop.getBuilding();
 		if (entity.getMalfunctionManager().hasMalfunction()) {
+			logger.info(worker, 30_000L, "Halting manufacturing due to malfunction.");
 			endTask();
 			return 0;
 		}

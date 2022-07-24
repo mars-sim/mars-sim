@@ -20,7 +20,7 @@ import org.mars_sim.msp.core.structure.Settlement;
  */
 public abstract class DigLocalMeta extends MetaTask {
 
-	private static final double VALUE = 5.0;
+	private static final double VALUE = 1.0;
 	private static final double MAX = 5000;
 	
 	private EquipmentType containerType;

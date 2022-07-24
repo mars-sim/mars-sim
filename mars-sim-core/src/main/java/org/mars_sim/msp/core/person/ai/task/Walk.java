@@ -466,8 +466,7 @@ public class Walk extends Task implements Serializable {
 //		setDescription(Msg.getString("Task.description.walk")); //$NON-NLS-1$
 
 		if (person != null) {
-			logger.log(person, Level.FINE, 0,
-					"At walkingSettlementInteriorPhase.");
+			logger.log(person, Level.FINE, 4000, "Walking inside a settlement.");
 
 			// Check if person has reached destination location.
 			WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
@@ -497,10 +496,8 @@ public class Walk extends Task implements Serializable {
 					}
 				} else if (person.isOutside()) {
 					logger.log(person, Level.SEVERE, 5_000, "Not in a building.");
-					// do this for now so as to debug why this happen and how often
-					setPhase(WALKING_EXTERIOR); // TODO: this certainly violate the logic and is
-					// considered "cheating"
-					// logger.severe(person + " set phase to WALKING_EXTERIOR.");
+					
+					endTask();
 				}
 			}
 		}
@@ -523,20 +520,20 @@ public class Walk extends Task implements Serializable {
 				}
 			}
 			else {
-				if (building != null) { // && step.building != null) {
-					// Going from building to step.building
-					// setDescription("Walking inside from " + building.getNickName() + " to " +
-					// step.building.getNickName());
-					addSubTask(new WalkSettlementInterior(robot, step.building, step.loc));
-				}
-				else {
-					logger.log(robot , Level.SEVERE, 5_000, "Not in a building.");
+				if (building != null) {
+					
+					if (step.building != null) {
+						addSubTask(new WalkSettlementInterior(robot, step.building, step.loc));
+					}
+					else {
+						logger.log(robot, Level.SEVERE, 5_000,
+			      				"Could not find a destination building to go.");
+						endTask();
+					}				
+				} else if (robot.isOutside()) {
+					logger.log(robot, Level.SEVERE, 5_000, "Not in a building.");
+					
 					endTask();
-
-					// do this for now so as to debug why this happen and how often
-					// setPhase(WALKING_EXTERIOR); // TODO: this certainly violate the logic and is
-					// considered "cheating"
-					// logger.severe(robot + "set phase to WALKING_EXTERIOR.");
 				}
 			}
 		}

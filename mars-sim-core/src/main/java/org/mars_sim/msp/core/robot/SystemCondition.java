@@ -123,12 +123,18 @@ public class SystemCondition implements Serializable {
     private boolean positionToRecharge() {
 
     	if (currentEnergy < LowPowerMode / 100D * MAX_CAPACITY) {
+    		// Turn on the low power indicator
     		isLowPower = true;
     		// Time to recharge
-    		if (!robot.isAtStation()) {
-    			BuildingManager.addRobotToRoboticStation(robot);		
-    			isCharging = true;
+    		if (robot.isAtStation()) {
+    			// Switch to charging only after the current task is done and the bot goes to sleep
+    			if (robot.getBotMind().getBotTaskManager().getTaskClassName().equalsIgnoreCase("Sleep"))
+    				isCharging = true;
     		}
+//    		else {
+//    			BuildingManager.addRobotToRoboticStation(robot);
+//    		}
+
     		return true;
     	}
     	
@@ -145,8 +151,6 @@ public class SystemCondition implements Serializable {
     			isCharging = true;
     		}
     	}
-    	else
-    		isLowPower = false;
     	
     	return false;
     }

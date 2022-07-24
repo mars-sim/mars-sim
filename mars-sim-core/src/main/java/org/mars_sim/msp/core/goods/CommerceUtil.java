@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.equipment.Container;
@@ -111,10 +110,10 @@ public final class CommerceUtil {
 	}
 
 	/**
-	 * Gets the available trade deal for combineation of settlements.
+	 * Gets the available trade deal for combination of settlements.
 	 * 
 	 * @param startingSettlement the settlement to trade from.
-	 * @param commenceType The type of Commerce mission being evaulated
+	 * @param commenceType The type of Commerce mission being evaluated
 	 * @param delivery              the Vehicle to carry the trade.
 	 * @return the deal(value points) for trade.
 	 */

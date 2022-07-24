@@ -249,6 +249,14 @@ public class Sleep extends Task implements Serializable {
 
 			// if power is below a certain threshold, stay to get a recharge
 			if (robot.getSystemCondition().isLowPower()) {
+				
+				if (!robot.isAtStation()) {
+					BuildingManager.addRobotToRoboticStation(robot);
+				}
+				
+				// Switch to charging only after the current task is done and the bot goes to sleep
+    			robot.getSystemCondition().setCharging(true);
+    			
 				// Lengthen the duration for charging the battery
 				setDuration(getDuration() + 5);
 			}

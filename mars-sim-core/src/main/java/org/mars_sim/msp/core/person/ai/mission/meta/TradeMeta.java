@@ -7,13 +7,10 @@
 package org.mars_sim.msp.core.person.ai.mission.meta;
 
 import java.util.Set;
-import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.goods.CommerceUtil;
 import org.mars_sim.msp.core.goods.Deal;
 import org.mars_sim.msp.core.goods.GoodsManager;
-import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -31,7 +28,7 @@ import org.mars_sim.msp.core.vehicle.Rover;
 public class TradeMeta extends AbstractMetaMission {
 
 	/** default logger. */
-	private static SimLogger logger = SimLogger.getLogger(TradeMeta.class.getName());
+//	private static SimLogger logger = SimLogger.getLogger(TradeMeta.class.getName());
 
 
 	TradeMeta() {
