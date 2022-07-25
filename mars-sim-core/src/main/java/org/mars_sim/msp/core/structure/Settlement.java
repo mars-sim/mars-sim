@@ -3756,7 +3756,7 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-     * Gets the total capacity that this robot can hold.
+     * Gets the total capacity that this inventory can hold.
      *
      * @return total capacity (kg).
      */

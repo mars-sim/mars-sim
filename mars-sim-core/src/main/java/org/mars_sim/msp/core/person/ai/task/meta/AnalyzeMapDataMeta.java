@@ -13,15 +13,14 @@ import java.util.stream.Collectors;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.environment.ExploredLocation;
-import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.JobType;
+import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.person.ai.task.AnalyzeMapData;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
-import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
@@ -36,7 +35,6 @@ public class AnalyzeMapDataMeta extends MetaTask {
     private static final String NAME = Msg.getString(
             "Task.description.analyzeMapData"); //$NON-NLS-1$
 
-    
     /** default logger. */
 //	private static SimLogger logger = SimLogger.getLogger(AnalyzeMapDataMeta.class.getName());
 
@@ -83,7 +81,13 @@ public class AnalyzeMapDataMeta extends MetaTask {
             }
             
             if (JobType.COMPUTER_SCIENTIST == person.getMind().getJob())
-            	result *= 2.0;
+            	result *= 1.5;
+            
+            if (RoleType.COMPUTING_SPECIALIST == person.getRole().getType())
+            	result *= 1.5;
+            else if (RoleType.CHIEF_OF_COMPUTING == person.getRole().getType())
+            	result *= 1.25;       
+            
         }
 
         if (result == 0) return 0;

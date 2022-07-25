@@ -18,8 +18,11 @@ public class MineralConcentration implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
+	/** The center coordinate of this site. */
 	private Coordinates location;
+	/** The mineral concentration in percentage (0% - 100%). */
 	private double concentration;
+	/** The string name of this mineral. */
 	private String mineralType;
 
 	public MineralConcentration(Coordinates location, double concentration, String mineralType) {

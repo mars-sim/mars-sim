@@ -29,14 +29,6 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<version>${project.version}</version>
 		</dependency>
 
-		<!-- https://github.com/Dansoftowner/jSystemThemeDetector -->
-		<dependency>
-			<groupId>com.github.Dansoftowner</groupId>
-			<artifactId>jSystemThemeDetector</artifactId>
-			<version>3.8</version>
-		</dependency>
-
-
  		<!-- https://mvnrepository.com/artifact/org.jfree/jfreechart : 1.5MB -->
 		<dependency>
 			<groupId>org.jfree</groupId>
@@ -57,7 +49,6 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		    <artifactId>SteelSeries</artifactId>
 		    <version>3.9.31.2</version>
 		</dependency>
-
 
 		<!-- trident animation library is required by steelseries.extras in mars-sim-ui
 		     https://search.maven.org/artifact/org.pushing-pixels/radiance-trident
@@ -110,7 +101,8 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
             <version>1.2.13</version>
 		</dependency>
 
-		<!-- See https://github.com/jidesoft/jide-oss/issues/48 for user's build info -->
+		<!-- https://github.com/jidesoft/jide-oss/issues/48 for user's build info 
+		     https://search.maven.org/artifact/com.formdev/jide-oss -->
 		<dependency>
 			<groupId>com.formdev</groupId>
 			<artifactId>jide-oss</artifactId>

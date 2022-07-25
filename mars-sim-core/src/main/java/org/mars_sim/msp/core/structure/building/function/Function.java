@@ -447,7 +447,7 @@ public abstract class Function implements Serializable, Temporal {
 		surface = sf;
 		unitManager = u;
 	}
-
+	
 	/**
 	 * Prepare object for garbage collection.
 	 */

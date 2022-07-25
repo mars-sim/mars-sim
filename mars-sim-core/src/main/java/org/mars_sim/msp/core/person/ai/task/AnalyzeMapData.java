@@ -44,6 +44,8 @@ public class AnalyzeMapData extends Task implements Serializable {
 	private static final TaskPhase ANALYZING = new TaskPhase(Msg.getString("Task.phase.analyzing")); //$NON-NLS-1$
 
     // Data members.
+	/** The number of estimation improvement made for a site. */	
+	private int numImprovement;
     /** Computing Units needed per millisol. */		
 	private double computingNeeded;
 	/** The seed value. */
@@ -82,11 +84,6 @@ public class AnalyzeMapData extends Task implements Serializable {
 		else {
 			compositeSkill = .5 * (1 + computingSkill + prospectingSkill/2.0);
 		}
-		
-		seed = Math.min(.3, RandomUtil.getRandomDouble(compositeSkill/5.0, compositeSkill));
-		
-		TOTAL_COMPUTING_NEEDED = getDuration() * seed;
-		computingNeeded = TOTAL_COMPUTING_NEEDED;
 	
 		List<ExploredLocation> siteList0 = Simulation.instance().getSurfaceFeatures()
     			.getExploredLocations().stream()
@@ -116,12 +113,24 @@ public class AnalyzeMapData extends Task implements Serializable {
 				int rand = RandomUtil.getRandomInt(num - 1);
 				site = siteList1.get(rand);
 			}
-			
-			logger.info(person, 10_000, "Total computing needs: " 
-					+  Math.round(TOTAL_COMPUTING_NEEDED * 100.0)/100.0 
-					+ ". "	+ num + " candidate sites were identified. Final site selection: " 
-					+ site.getLocation().getCoordinateString() + ".");
 		}
+		
+		numImprovement = site.getNumEstimationImprovement();
+		
+		// The higher the numImprovement, the more difficult the numerical solution, and 
+		// the more the computing resources needed to do the refinement.
+		// The higher the composite skill, the less the computing resource.  
+		seed = Math.min(1, RandomUtil.getRandomDouble(
+				numImprovement/compositeSkill/50.0, numImprovement/compositeSkill/20.0));
+			
+		TOTAL_COMPUTING_NEEDED = getDuration() * seed;
+		computingNeeded = TOTAL_COMPUTING_NEEDED;
+		
+		logger.info(person, 10_000, "Total computing needs: " 
+				+  Math.round(TOTAL_COMPUTING_NEEDED * 1000.0)/1000.0 
+				+ " CUs. seed: " +  Math.round(seed * 1000.0)/1000.0 
+				+ ". "	+ num + " candidate sites were identified. Final site selection: " 
+				+ site.getLocation().getCoordinateString() + ".");
 		
        	// Add task phases
     	addPhase(ANALYZING);
@@ -210,7 +219,7 @@ public class AnalyzeMapData extends Task implements Serializable {
           
         if (effort > getDuration() / 2D) {
         	totalWork += effort;
-        	// Limits # of improvement done at a site at most 4 times for each AnalyzeMapData
+        	// Limits # of improvement done at a site at most 2 times for each AnalyzeMapData
         	improveMineralConcentrationEstimates(time, effort);
         	effort = 0;
         }
