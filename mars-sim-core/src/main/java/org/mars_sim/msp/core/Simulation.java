@@ -539,7 +539,6 @@ public class Simulation implements ClockListener, Serializable {
 			UnitSet.reinit(unitManager);
 			
 		} catch (Exception e) {
-			e.printStackTrace();
 			logger.log(Level.SEVERE, "Cannot deserialize : " + e.getMessage());
 		} finally {
 

@@ -1,10 +1,10 @@
 /*
  * Mars Simulation Project
  * ToolWindow.java
- * @date 2022-03-17
+ * @date 2022-07-23
  * @author Scott Davis
  */
-package org.mars_sim.msp.ui.swing.toolWindow;
+package org.mars_sim.msp.ui.swing.toolwindow;
 
 import javax.swing.JInternalFrame;
 import javax.swing.WindowConstants;
@@ -37,7 +37,7 @@ public abstract class ToolWindow extends JInternalFrame {
 	 * @param name    the name of the tool
 	 * @param desktop the main desktop.
 	 */
-	public ToolWindow(String name, MainDesktopPane desktop) {
+	protected ToolWindow(String name, MainDesktopPane desktop) {
 
 		// use JInternalFrame constructor
 		super(SPACE + name, true, // resizable
@@ -53,7 +53,6 @@ public abstract class ToolWindow extends JInternalFrame {
 		opened = false;
 
 		setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
-		// setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 
 		// Set internal frame listener
 		addInternalFrameListener(new ToolFrameListener());
@@ -114,7 +113,7 @@ public abstract class ToolWindow extends JInternalFrame {
 	}
 	
 	/**
-	 * Update window. This is overriden by subclasses
+	 * Update window. This is overridden by subclasses
 	 */
 	public void update() {
 		// Nothing to do in the base class
