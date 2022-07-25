@@ -223,7 +223,7 @@ public class CookMeal extends Task implements Serializable {
 			addExperience(time);
 
 			// Check for accident in kitchen.
-			checkForAccident(kitchenBuilding, time, 0.005D);
+			checkForAccident(kitchenBuilding, time, 0.005);
 
 		}
 

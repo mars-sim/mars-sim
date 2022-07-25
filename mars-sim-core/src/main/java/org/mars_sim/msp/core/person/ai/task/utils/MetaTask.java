@@ -46,9 +46,10 @@ public abstract class MetaTask {
 	
 	// Traits used to identify non-effort tasks
 	private static final Set<TaskTrait> PASSIVE_TRAITS
-		= Set.of(TaskTrait.RELAXATION, TaskTrait.TREATMENT,
-						  TaskTrait.LEADERSHIP,
-						  TaskTrait.MEDICAL);
+		= Set.of(TaskTrait.RELAXATION, 
+				TaskTrait.TREATMENT,
+				TaskTrait.LEADERSHIP,
+				TaskTrait.MEDICAL);
 
 	// If a person Job is not the preferred old
 	private static final double JOB_BOOST = 1.25D;

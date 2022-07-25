@@ -92,7 +92,7 @@ public class PhysicalCondition implements Serializable {
 	public static final double FOOD_COMPOSITION_ENERGY_RATIO = 16290.323;
 	// public static int MAX_KJ = 16290; // 1kg of food has ~16290 kJ (see notes on
 	// people.xml under <food-consumption-rate value="0.62" />)
-	public static final double ENERGY_FACTOR = 0.8D;
+	public static final double ENERGY_FACTOR = 15D;
 	/** The maximum air pressure a person can live without harm in kPa. (somewhat arbitrary). */
 	public static final double MAXIMUM_AIR_PRESSURE = 68D; // Assume 68 kPa time dependent
 	/** Period of time (millisols) over which random ailments may happen. */
@@ -604,33 +604,42 @@ public class PhysicalCondition implements Serializable {
 	 * @param person's energy level in kilojoules
 	 */
 	public void addEnergy(double foodAmount) {
+		
 		// 1 calorie = 4.1858 kJ
-		// Note: vary MAX_KJ according to the individual's physical profile strength,
+		// Should vary MAX_KJ according to the individual's physical profile strength,
 		// endurance, etc..
-		// double FOOD_COMPOSITION_ENERGY_RATIO = 16290; 1kg of food has ~16290 kJ (see
-		// notes on people.xml under <food-consumption-rate value="0.62" />)
-		// double FACTOR = 0.8D;
+		// FOOD_COMPOSITION_ENERGY_RATIO = 16290
+		
+		// Note: 1kg of food has ~16290 kJ 
+		// See notes on people.xml under <food-consumption-rate value="0.62" />
+		
 		// Each meal (.155 kg = .62/4) has an average of 2525 kJ
 
 		// Note: changing this to a more linear addition of energy.
 		// We may want to change it back to exponential. - Scott
 
-		double xdelta = foodAmount * FOOD_COMPOSITION_ENERGY_RATIO / appetite / 10D;
+		double xdelta = foodAmount * FOOD_COMPOSITION_ENERGY_RATIO / appetite / ENERGY_FACTOR;
 		// kJoules += foodAmount * xdelta * Math.log(FOOD_COMPOSITION_ENERGY_RATIO /
 		// kJoules) / ENERGY_FACTOR;
 
-		if (kJoules > 10_000D) {
+		if (kJoules > 19_000D) {
+			kJoules += xdelta * .025;
+		} else if (kJoules > 17_000D) {
+			kJoules += xdelta * .05;
+		} else if (kJoules > 15_000D) {
 			kJoules += xdelta * .1;
-		} else if (kJoules > 9_000D) {
+		} else if (kJoules > 13_000D) {
 			kJoules += xdelta * .15;
-		} else if (kJoules > 8_000D) {
+		} else if (kJoules > 11_000D) {
 			kJoules += xdelta * .2;
-		} else if (kJoules > 7_000D) {
+		} else if (kJoules > 9_000D) {
 			kJoules += xdelta * .25;
-		} else if (kJoules > 6_000D) {
+		} else if (kJoules > 7_000D) {
 			kJoules += xdelta * .3;
-		} else
+		} else if (kJoules > 5_000D) {
 			kJoules += xdelta * .35;
+		} else
+			kJoules += xdelta * .4;
 
 		circadian.eatFood(xdelta / 1000D);
 
@@ -1711,7 +1720,7 @@ public class PhysicalCondition implements Serializable {
 	 * @return list of medication.
 	 */
 	public List<Medication> getMedicationList() {
-		return new CopyOnWriteArrayList<Medication>(medicationList);
+		return new CopyOnWriteArrayList<>(medicationList);
 	}
 
 	/**

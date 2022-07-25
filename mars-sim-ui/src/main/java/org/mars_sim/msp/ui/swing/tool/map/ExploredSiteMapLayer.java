@@ -90,8 +90,6 @@ public class ExploredSiteMapLayer implements MapLayer {
 	 * @param g         graphics context of the map display.
 	 */
 	public void displayLayer(Coordinates mapCenter, String mapType, Graphics g) {
-		// SurfaceFeatures surfaceFeatures =
-		// Simulation.instance().getMars().getSurfaceFeatures();
 		for (ExploredLocation site : surfaceFeatures.getExploredLocations()) {
 			boolean displaySite = !site.isReserved() || displayReserved;
             if (site.isMined() && !displayMined)

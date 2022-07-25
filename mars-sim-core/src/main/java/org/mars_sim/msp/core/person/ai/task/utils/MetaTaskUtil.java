@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.mars_sim.msp.core.person.ai.task.meta.AnalyzeMapDataMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.AssistScientificStudyResearcherMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.CompileScientificStudyResultsMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.ConnectWithEarthMeta;
@@ -110,6 +111,7 @@ public class MetaTaskUtil {
 		
 		// Would be nice to dynamically load based on what is in the package
 		allMetaTasks = new ArrayList<>();
+		allMetaTasks.add(new AnalyzeMapDataMeta());
 		allMetaTasks.add(new AssistScientificStudyResearcherMeta());
 		allMetaTasks.add(new CompileScientificStudyResultsMeta());
 		allMetaTasks.add(new ConnectWithEarthMeta());
