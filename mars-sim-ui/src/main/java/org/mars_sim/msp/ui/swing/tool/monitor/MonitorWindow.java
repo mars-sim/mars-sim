@@ -215,11 +215,12 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	public void addAllTabs() {
 		// Add tabs into the table
 		try {
+			if (!settlementList.isEmpty())
+				this.selectedSettlement = settlementList.get(0);
+			
 			if (getSettlements().size() > 1) {
 				addTab(new UnitTab(this, new SettlementTableModel(), true, MARS_ICON));
 			}
-
-			this.selectedSettlement = settlementList.get(0);
 			
 			addTab(new UnitTab(this, new SettlementTableModel(selectedSettlement), true, COLONY_ICON));
 			addTab(new UnitTab(this, new PersonTableModel(selectedSettlement, true), true, PEOPLE_ICON));

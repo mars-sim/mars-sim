@@ -210,9 +210,9 @@
 			<building type="ERV-B" xloc="80.0" yloc="-15.0" facing="0.0" />
 
 			<building type="Large Sabatier Processor" xloc="0.0"
-				yloc="-40.0" facing="90.0" />
+				yloc="-70.0" facing="90.0" />
 			<building type="Large Sabatier Processor" xloc="0.0"
-				yloc="-65.0" facing="90.0" />
+				yloc="-80.0" facing="90.0" />
 
 			<building type="Regolith Storage Bin" xloc="35.0" yloc="0.0"
 				facing="90.0" />
@@ -339,9 +339,9 @@
 			<building type="ERV-B" xloc="80.0" yloc="-15.0" facing="0.0" />
 
 			<building type="Large Sabatier Processor" xloc="0.0"
-				yloc="-40.0" facing="90.0" />
+				yloc="-70.0" facing="90.0" />
 			<building type="Large Sabatier Processor" xloc="0.0"
-				yloc="-65.0" facing="90.0" />
+				yloc="-80.0" facing="90.0" />
 
 			<building type="Regolith Storage Bin" xloc="35.0" yloc="0.0"
 				facing="90.0" />
@@ -446,9 +446,9 @@
 			<building type="ERV-B" xloc="80.0" yloc="-15.0" facing="0.0" />
 
 			<building type="Large Sabatier Processor" xloc="0.0"
-				yloc="-40.0" facing="90.0" />
+				yloc="-70.0" facing="90.0" />
 			<building type="Large Sabatier Processor" xloc="0.0"
-				yloc="-65.0" facing="90.0" />
+				yloc="-80.0" facing="90.0" />
 
 			<building type="Regolith Storage Bin" xloc="35.0" yloc="0.0"
 				facing="90.0" />
@@ -553,9 +553,9 @@
 			<building type="ERV-B" xloc="80.0" yloc="-15.0" facing="0.0" />
 
 			<building type="Large Sabatier Processor" xloc="0.0"
-				yloc="-40.0" facing="90.0" />
+				yloc="-70.0" facing="90.0" />
 			<building type="Large Sabatier Processor" xloc="0.0"
-				yloc="-65.0" facing="90.0" />
+				yloc="-80.0" facing="90.0" />
 
 			<building type="Regolith Storage Bin" xloc="35.0" yloc="0.0"
 				facing="90.0" />
@@ -660,9 +660,9 @@
 			<building type="ERV-B" xloc="80.0" yloc="-15.0" facing="0.0" />
 
 			<building type="Large Sabatier Processor" xloc="0.0"
-				yloc="-40.0" facing="90.0" />
+				yloc="-70.0" facing="90.0" />
 			<building type="Large Sabatier Processor" xloc="0.0"
-				yloc="-65.0" facing="90.0" />
+				yloc="-80.0" facing="90.0" />
 
 			<building type="Regolith Storage Bin" xloc="35.0" yloc="0.0"
 				facing="90.0" />
@@ -762,8 +762,12 @@
 			<building type="Methane Power Generator" xloc="40.0"
 				yloc="-60.0" facing="0.0" />
 
+
+			<building type="Medium Battery Array" xloc="40.0"
+				yloc="-60.0" facing="0.0" />
 			<building type="Medium Battery Array" xloc="55.0"
 				yloc="-60.0" facing="0.0" />
+				
 				
 			<building type="Atmospheric Processor" xloc="20.0"
 				yloc="-50.0" facing="90.0" />
@@ -782,9 +786,9 @@
 				yloc="-90.0" facing="90.0" />	
 																																								
 			<building type="Large Sabatier Processor" xloc="0.0"
-				yloc="-45.0" facing="90.0" />
+				yloc="-70.0" facing="90.0" />
 			<building type="Large Sabatier Processor" xloc="0.0"
-				yloc="-50.0" facing="90.0" />
+				yloc="-80.0" facing="90.0" />
 
 			<building type="Solar Photovoltaic Array" xloc="40.0"
 				yloc="-70.0" facing="0.0" />
@@ -811,9 +815,7 @@
 				yloc="-110.0" facing="0.0" />
 			<building type="Solar Photovoltaic Array" xloc="55.0"
 				yloc="-120.0" facing="0.0" />
-				
-			<building type="Medium Battery Array" xloc="40.0"
-				yloc="-60.0" facing="0.0" />
+
 								
 			<building type="Regolith Storage Bin" xloc="35.0" yloc="0.0"
 				facing="90.0" />
@@ -934,9 +936,9 @@
 				facing="0.0" />
 
 			<building type="Large Sabatier Processor" xloc="0.0"
-				yloc="-40.0" facing="90.0" />
+				yloc="-70.0" facing="90.0" />
 			<building type="Large Sabatier Processor" xloc="0.0"
-				yloc="-45.0" facing="90.0" />
+				yloc="-80.0" facing="90.0" />
 
 			<building type="Regolith Storage Bin" xloc="35.0" yloc="0.0"
 				facing="90.0" />
@@ -1213,9 +1215,9 @@
 				facing="0.0" />
 
 			<building type="Large Sabatier Processor" xloc="0.0"
-				yloc="-40.0" facing="90.0" />
+				yloc="-70.0" facing="90.0" />
 			<building type="Large Sabatier Processor" xloc="0.0"
-				yloc="-45.0" facing="90.0" />
+				yloc="-80.0" facing="90.0" />
 
 			<building type="Regolith Storage Bin" xloc="35.0" yloc="0.0"
 				facing="90.0" />
@@ -1491,9 +1493,9 @@
 				facing="0.0" />
 
 			<building type="Large Sabatier Processor" xloc="0.0"
-				yloc="-40.0" facing="90.0" />
+				yloc="-70.0" facing="90.0" />
 			<building type="Large Sabatier Processor" xloc="0.0"
-				yloc="-45.0" facing="90.0" />
+				yloc="-80.0" facing="90.0" />
 
 			<building type="Regolith Storage Bin" xloc="35.0" yloc="0.0"
 				facing="90.0" />
@@ -1770,9 +1772,9 @@
 				facing="0.0" />
 
 			<building type="Large Sabatier Processor" xloc="0.0"
-				yloc="-40.0" facing="90.0" />
+				yloc="-70.0" facing="90.0" />
 			<building type="Large Sabatier Processor" xloc="0.0"
-				yloc="-45.0" facing="90.0" />
+				yloc="-80.0" facing="90.0" />
 
 			<building type="Regolith Storage Bin" xloc="35.0" yloc="0.0"
 				facing="90.0" />
@@ -2088,9 +2090,9 @@
 				facing="0.0" />
 
 			<building type="Large Sabatier Processor" xloc="0.0"
-				yloc="-40.0" facing="90.0" />
+				yloc="-70.0" facing="90.0" />
 			<building type="Large Sabatier Processor" xloc="0.0"
-				yloc="-45.0" facing="90.0" />
+				yloc="-80.0" facing="90.0" />
 
 			<building type="Regolith Storage Bin" xloc="35.0" yloc="0.0"
 				facing="90.0" />
@@ -2405,9 +2407,9 @@
 				facing="0.0" />
 
 			<building type="Large Sabatier Processor" xloc="0.0"
-				yloc="-40.0" facing="90.0" />
+				yloc="-70.0" facing="90.0" />
 			<building type="Large Sabatier Processor" xloc="0.0"
-				yloc="-45.0" facing="90.0" />
+				yloc="-80.0" facing="90.0" />
 
 			<building type="Regolith Storage Bin" xloc="35.0" yloc="0.0"
 				facing="90.0" />
@@ -2722,9 +2724,9 @@
 				facing="0.0" />
 
 			<building type="Large Sabatier Processor" xloc="0.0"
-				yloc="-40.0" facing="90.0" />
+				yloc="-70.0" facing="90.0" />
 			<building type="Large Sabatier Processor" xloc="0.0"
-				yloc="-45.0" facing="90.0" />
+				yloc="-80.0" facing="90.0" />
 
 			<building type="Regolith Storage Bin" xloc="35.0" yloc="0.0"
 				facing="90.0" />
@@ -3021,9 +3023,9 @@
 				facing="0.0" />
 
 			<building type="Large Sabatier Processor" xloc="0.0"
-				yloc="-40.0" facing="90.0" />
+				yloc="-70.0" facing="90.0" />
 			<building type="Large Sabatier Processor" xloc="0.0"
-				yloc="-45.0" facing="90.0" />
+				yloc="-80.0" facing="90.0" />
 
 			<building type="Regolith Storage Bin" xloc="35.0" yloc="0.0"
 				facing="90.0" />
@@ -3282,18 +3284,22 @@
 			<building type="ERV-B" xloc="160.0" yloc="-15.0"
 				facing="0.0" />
 
+
 			<building type="Atmospheric Processor" xloc="20"
 				yloc="-50.0" facing="90.0" />
 
+
 			<building type="Large Sabatier Processor" xloc="0.0"
-				yloc="-40.0" facing="90.0" />
+				yloc="-70.0" facing="90.0" />
 			<building type="Large Sabatier Processor" xloc="0.0"
-				yloc="-45.0" facing="90.0" />
+				yloc="-80.0" facing="90.0" />
 			<building type="Large Sabatier Processor" xloc="0.0"
-				yloc="-50.0" facing="90.0" />
+				yloc="-90.0" facing="90.0" />
+
 
 			<building type="Solar Photovoltaic Array" xloc="50.0"
 				yloc="-50.0" facing="0.0" />
+
 
 			<building type="Regolith Storage Bin" xloc="35.0" yloc="0.0"
 				facing="90.0" />
@@ -3642,18 +3648,22 @@
 			<building type="ERV-B" xloc="160.0" yloc="-15.0"
 				facing="0.0" />
 
+
 			<building type="Atmospheric Processor" xloc="20"
 				yloc="-50.0" facing="90.0" />
 
+
 			<building type="Large Sabatier Processor" xloc="0.0"
-				yloc="-40.0" facing="90.0" />
+				yloc="-70.0" facing="90.0" />
 			<building type="Large Sabatier Processor" xloc="0.0"
-				yloc="-45.0" facing="90.0" />
+				yloc="-80.0" facing="90.0" />
 			<building type="Large Sabatier Processor" xloc="0.0"
-				yloc="-50.0" facing="90.0" />
+				yloc="-90.0" facing="90.0" />
+
 
 			<building type="Solar Photovoltaic Array" xloc="50.0"
 				yloc="-50.0" facing="0.0" />
+
 
 			<building type="Regolith Storage Bin" xloc="35.0" yloc="0.0"
 				facing="90.0" />
@@ -4011,11 +4021,11 @@
 				yloc="-50.0" facing="90.0" />
 
 			<building type="Large Sabatier Processor" xloc="0.0"
-				yloc="-40.0" facing="90.0" />
+				yloc="-70.0" facing="90.0" />
 			<building type="Large Sabatier Processor" xloc="0.0"
-				yloc="-45.0" facing="90.0" />
+				yloc="-80.0" facing="90.0" />
 			<building type="Large Sabatier Processor" xloc="0.0"
-				yloc="-50.0" facing="90.0" />
+				yloc="-90.0" facing="90.0" />
 
 			<building type="Regolith Storage Bin" xloc="35.0" yloc="0.0"
 				facing="90.0" />
@@ -4368,11 +4378,11 @@
 				yloc="-50.0" facing="90.0" />
 				
 			<building type="Large Sabatier Processor" xloc="0.0"
-				yloc="-40.0" facing="90.0" />
+				yloc="-70.0" facing="90.0" />
 			<building type="Large Sabatier Processor" xloc="0.0"
-				yloc="-45.0" facing="90.0" />
+				yloc="-80.0" facing="90.0" />
 			<building type="Large Sabatier Processor" xloc="0.0"
-				yloc="-50.0" facing="90.0" />
+				yloc="-90.0" facing="90.0" />
 
 			<building type="Regolith Storage Bin" xloc="35.0" yloc="0.0"
 				facing="90.0" />
@@ -4729,11 +4739,11 @@
 				yloc="-50.0" facing="90.0" />
 				
 			<building type="Large Sabatier Processor" xloc="0.0"
-				yloc="-40.0" facing="90.0" />
+				yloc="-70.0" facing="90.0" />
 			<building type="Large Sabatier Processor" xloc="0.0"
-				yloc="-45.0" facing="90.0" />
+				yloc="-80.0" facing="90.0" />
 			<building type="Large Sabatier Processor" xloc="0.0"
-				yloc="-50.0" facing="90.0" />
+				yloc="-90.0" facing="90.0" />
 
 			<building type="Regolith Storage Bin" xloc="35.0" yloc="0.0"
 				facing="90.0" />
@@ -5070,11 +5080,7 @@
 				facing="0.0" />
 			<building type="ERV-B" xloc="160.0" yloc="-15.0"
 				facing="0.0" />
-
-			<building type="Atmospheric Processor" xloc="-20.0"
-				yloc="-50.0" facing="90.0" />
-			<building type="Atmospheric Processor" xloc="-20.0"
-				yloc="-60.0" facing="90.0" />
+				
 
 			<building type="Atmospheric Processor" xloc="20.0"
 				yloc="-50.0" facing="90.0" />
@@ -5093,21 +5099,18 @@
 				yloc="-110.0" facing="90.0" />
 			<building type="Atmospheric Processor" xloc="20.0"
 				yloc="-120.0" facing="90.0" />		
-			<building type="Atmospheric Processor" xloc="20.0"
-				yloc="-130.0" facing="90.0" />
-			<building type="Atmospheric Processor" xloc="20.0"
-				yloc="-140.0" facing="90.0" />
+
+																																								
+			<building type="Large Sabatier Processor" xloc="0.0"
+				yloc="-70.0" facing="90.0" />
+			<building type="Large Sabatier Processor" xloc="0.0"
+				yloc="-80.0" facing="90.0" />
+			<building type="Large Sabatier Processor" xloc="0.0"
+				yloc="-90.0" facing="90.0" />
+			<building type="Large Sabatier Processor" xloc="0.0"
+				yloc="-100.0" facing="90.0" />
+
 				
-																																					
-			<building type="Large Sabatier Processor" xloc="0.0"
-				yloc="-40.0" facing="90.0" />
-			<building type="Large Sabatier Processor" xloc="0.0"
-				yloc="-45.0" facing="90.0" />
-			<building type="Large Sabatier Processor" xloc="0.0"
-				yloc="-50.0" facing="90.0" />
-			<building type="Large Sabatier Processor" xloc="0.0"
-				yloc="-55.0" facing="90.0" />
-
 			<building type="Solar Photovoltaic Array" xloc="40.0"
 				yloc="-70.0" facing="0.0" />
 			<building type="Solar Photovoltaic Array" xloc="40.0"
@@ -5174,14 +5177,16 @@
 			<building type="Solar Photovoltaic Array" xloc="70.0"
 				yloc="-160.0" facing="0.0" />
 
+
+			<building type="MD4 Nuclear Reactor" xloc="100.0"
+				yloc="-100" facing="0.0" />
+
+			
 			<building type="Methane Power Generator" xloc="85.0"
 				yloc="-67.5" facing="0.0" />
 			<building type="Methane Power Generator" xloc="85.0"
 				yloc="-72.5" facing="0.0" />
-			<building type="Methane Power Generator" xloc="85.0"
-				yloc="-77.5" facing="0.0" />
-			<building type="Methane Power Generator" xloc="85.0"
-				yloc="-82.5" facing="0.0" />
+
 
 			<building type="Medium Battery Array" xloc="40.0"
 				yloc="-60.0" facing="0.0" />
@@ -5191,6 +5196,7 @@
 				yloc="-60.0" facing="0.0" />
 			<building type="Medium Battery Array" xloc="85.0"
 				yloc="-60.0" facing="0.0" />
+
 
 			<building type="Regolith Storage Bin" xloc="35.0" yloc="0.0"
 				facing="90.0" />
@@ -5602,17 +5608,17 @@
 				yloc="-100.0" facing="90.0" />
 												
 			<building type="Large Sabatier Processor" xloc="0.0"
-				yloc="-40.0" facing="90.0" />
+				yloc="-70.0" facing="90.0" />
 			<building type="Large Sabatier Processor" xloc="0.0"
-				yloc="-45.0" facing="90.0" />
+				yloc="-80.0" facing="90.0" />
 			<building type="Large Sabatier Processor" xloc="0.0"
-				yloc="-50.0" facing="90.0" />
+				yloc="-90.0" facing="90.0" />
 			<building type="Large Sabatier Processor" xloc="0.0"
-				yloc="-55.0" facing="90.0" />
+				yloc="-100.0" facing="90.0" />
 			<building type="Large Sabatier Processor" xloc="0.0"
-				yloc="-60.0" facing="90.0" />
+				yloc="-110.0" facing="90.0" />
 			<building type="Large Sabatier Processor" xloc="0.0"
-				yloc="-65.0" facing="90.0" />
+				yloc="-120.0" facing="90.0" />
 
 			<building type="Regolith Storage Bin" xloc="35.0" yloc="0.0"
 				facing="90.0" />
@@ -5930,9 +5936,9 @@
 				yloc="-60.0" facing="90.0" />
 				
 			<building type="Large Sabatier Processor" xloc="0.0"
-				yloc="-40.0" facing="90.0" />
+				yloc="-70.0" facing="90.0" />
 			<building type="Large Sabatier Processor" xloc="0.0"
-				yloc="-45.0" facing="90.0" />
+				yloc="-80.0" facing="90.0" />
 
 			<vehicle type="Cargo Rover" number="2" />
 			<vehicle type="Light Utility Vehicle" number="1" />
@@ -6148,9 +6154,9 @@
 				yloc="-60.0" facing="90.0" />
 				
 			<building type="Large Sabatier Processor" xloc="0.0"
-				yloc="-40.0" facing="90.0" />
+				yloc="-70.0" facing="90.0" />
 			<building type="Large Sabatier Processor" xloc="0.0"
-				yloc="-45.0" facing="90.0" />
+				yloc="-80.0" facing="90.0" />
 
 			<vehicle type="Explorer Rover" number="2" />
 			<vehicle type="Light Utility Vehicle" number="2" />
