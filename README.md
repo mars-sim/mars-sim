@@ -52,17 +52,17 @@ that are based on present-day technologies.
 
 ### Indoor Atmospheric Modeling
 
-While at the Earth's sea level, the atmospheric pressure is **101 kPa** (14.7 psi) and has 20.9% oxygen,
+While at the Earth's sea level, the atmospheric pressure is **101.35 kPa** (14.7 psi) and has 20.9% oxygen,
 in mars-sim, a low pressure atmosphere of **34 kPa** (4.93 psi) is chosen for the settlement living with
 the composition of oxygen at 58.8%. 
 
 However, [EVA suit](https://github.com/mars-sim/mars-sim/wiki/EVA-Suit) or rovers (inside a vehicle) 
-adopt an even lower pressurized environment of **17 kPa** (2.47 psi) for more optimal use of resources 
-and design specifications. In comparison, Apollo Lunar Module (LM) atmosphere of 100% oxygen at 4.8 psi 
-(or 33 kPa). The National Aeronautics and Space Administration (NASA)'s Shuttle airlock has an oxygen 
-concentration of 30% at 10.2 psi (70.3 kPa). NASA's Extravehicular Mobility Units (EMU) has the 
-operating pressure of 4.3 psi. The upcoming Artemis program's lunar lander will have an atmosphere 
-of 342% oxygen at a pressure of 8.2 psi (or 56.5 kPa).
+adopt an even lower pressurized environment of 17 kPa (2.47 psi) for more optimal use of resources 
+and design specifications. In comparison, Apollo Lunar Module (LM) atmosphere of 100% oxygen at 33 kPa
+(4.8 psi). The National Aeronautics and Space Administration (NASA)'s Shuttle airlock has an oxygen 
+concentration of 30% at 70.3 kPa (10.2 psi). NASA's Extravehicular Mobility Units (EMU) has the 
+operating pressure of 29.6 kPa (4.3 psi). The upcoming Artemis program's lunar lander will have an atmosphere 
+of 342% oxygen at a pressure of 56.5 kPa (8.2 psi).
 
 See [Atmosphere](https://github.com/mars-sim/mars-sim/wiki/Atmosphere) wiki for more design details.
 
@@ -256,7 +256,6 @@ variable to look for a valid JDK folder. If it's not found, java cannot start ma
 
 - c. Add `%JAVA_HOME%;` to `PATH`. Type "path" in a command prompt to double check
 the order of precedence when it comes to searching for the JDK.
-
 
 > Note 3 : The BEST approach is to enable only one Java build (such as Java 11.0.12)
 inside `PATH` and remove all other folders referencing other java versions/builds.
