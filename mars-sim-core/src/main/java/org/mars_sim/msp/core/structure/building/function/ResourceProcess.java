@@ -40,8 +40,8 @@ public class ResourceProcess implements Serializable {
 	private boolean flag;
 	/** is this process running ? */
 	private boolean runningProcess;
-	/** The time accumulated [in millisols] for each crop update call. */
-	private double accumulatedTime = RandomUtil.getRandomDouble(0, 1.0);
+	/** The time accumulated [in millisols]. */
+	private double accumulatedTime;
 
 	private double currentProductionLevel;
 	private double toggleRunningWorkTime;
@@ -228,10 +228,8 @@ public class ResourceProcess implements Serializable {
 //						+ "  accumulatedTime: " + Math.round(accumulatedTime * 100.0)/100.0 
 //						+ "  processInterval: " + processInterval);
 
-				accumulatedTime = accumulatedTime - PROCESS_CHECK_FREQUENCY;
-
 				// Get resource bottleneck
-				double bottleneck = getInputBottleneck(time, settlement);
+				double bottleneck = getInputBottleneck(accumulatedTime, settlement);
 				if (level > bottleneck)
 					level = bottleneck;
 
@@ -241,7 +239,7 @@ public class ResourceProcess implements Serializable {
 					Integer resource = input.getKey();
 					double maxRate = input.getValue();
 					double resourceRate = maxRate * level;
-					double resourceAmount = resourceRate * time;
+					double resourceAmount = resourceRate * accumulatedTime;
 					double stored = settlement.getAmountResourceStored(resource);
 					if (stored > SMALL_AMOUNT) {
 						if (resourceAmount > stored) {
@@ -272,7 +270,7 @@ public class ResourceProcess implements Serializable {
 					Integer resource = output.getKey();
 					double maxRate = output.getValue();
 					double resourceRate = maxRate * level;
-					double resourceAmount = resourceRate * time;
+					double resourceAmount = resourceRate * accumulatedTime;
 					double remainingCapacity = settlement.getAmountResourceRemainingCapacity(resource);
 					
 					if (remainingCapacity > SMALL_AMOUNT) {
@@ -301,6 +299,10 @@ public class ResourceProcess implements Serializable {
 						break;
 					}
 				}
+				
+				// Compute the remaining accumulatedTime
+				accumulatedTime = accumulatedTime - PROCESS_CHECK_FREQUENCY;
+				
 			} else
 				level = 0D;
 

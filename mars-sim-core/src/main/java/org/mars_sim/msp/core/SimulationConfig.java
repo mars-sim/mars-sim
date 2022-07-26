@@ -355,9 +355,9 @@ public class SimulationConfig implements Serializable {
 		}
 
 		if (xmlDirExist) {
-			if (!versionFileExist || buildText.equals("") || !sameBuild) {
+			if (!versionFileExist || buildText == null || buildText.equals("") || !sameBuild) {
 				try {
-					if (versionFileExist && !buildText.equals("") && !invalid) {
+					if (versionFileExist && buildText != null && !buildText.equals("") && !invalid) {
 						String s0 = backupDir + File.separator + buildText;
 				        File dir = new File(s0.trim());
 				        if (!dir.exists()) {
@@ -453,7 +453,7 @@ public class SimulationConfig implements Serializable {
 	}
 
 	/*
-	* Delete a non empty directory
+	* Deletes a non empty directory.
 	*/
 	public static boolean deleteDirectory(File dir) {
 		if (dir.isDirectory()) {
@@ -469,7 +469,8 @@ public class SimulationConfig implements Serializable {
 	}
 
 	/**
-	 * Find a string value.
+	 * Finds a string value.
+	 * 
 	 * @param parent Parent element
 	 * @param child Value element
 	 * @return String value found

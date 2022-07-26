@@ -40,8 +40,8 @@ public class WasteProcess implements Serializable {
 	private boolean flag;
 	/** is this process running ? */
 	private boolean runningProcess;
-	/** The time accumulated [in millisols] for each crop update call. */
-	private double accumulatedTime = RandomUtil.getRandomDouble(0, 1.0);
+	/** The time accumulated [in millisols]. */
+	private double accumulatedTime;
 
 	private double currentProductionLevel;
 	private double toggleRunningWorkTime;
@@ -228,10 +228,8 @@ public class WasteProcess implements Serializable {
 //						+ "  accumulatedTime: " + Math.round(accumulatedTime * 100.0)/100.0 
 //						+ "  processInterval: " + processInterval);
 
-				accumulatedTime = accumulatedTime - PROCESS_CHECK_FREQUENCY;
-
 				// Get resource bottleneck
-				double bottleneck = getInputBottleneck(time, settlement);
+				double bottleneck = getInputBottleneck(accumulatedTime, settlement);
 				if (level > bottleneck)
 					level = bottleneck;
 
@@ -241,13 +239,14 @@ public class WasteProcess implements Serializable {
 					Integer resource = input.getKey();
 					double maxRate = input.getValue();
 					double resourceRate = maxRate * level;
-					double resourceAmount = resourceRate * time;
+					double resourceAmount = resourceRate * accumulatedTime;
 					double stored = settlement.getAmountResourceStored(resource);
 					if (stored > SMALL_AMOUNT) {	
 						if (resourceAmount > stored) {
-							logger.warning(settlement, 30_000, "Case A. Not enough '" + ResourceUtil.findAmountResourceName(resource)
-								+ "' input to start '" + name + "'. Still missing " + Math.round(resourceAmount * 1000.0)/1000.0 + " kg. "
-								+ Math.round(stored * 1000.0)/1000.0 + " kg in storage.");
+							logger.warning(settlement, 30_000, "Case A. Just used up all '" + ResourceUtil.findAmountResourceName(resource)
+							+ "' input to start '" + name + "'. Still missing " + Math.round(resourceAmount * 1000.0)/1000.0 + " kg. "
+							+ Math.round(stored * 1000.0)/1000.0 + " kg in storage.");
+							resourceAmount = stored;
 							setProcessRunning(false);
 							break;
 							// Note: turn on a yellow flag and indicate which the input resource is missing
@@ -271,15 +270,16 @@ public class WasteProcess implements Serializable {
 					Integer resource = output.getKey();
 					double maxRate = output.getValue();
 					double resourceRate = maxRate * level;
-					double resourceAmount = resourceRate * time;
+					double resourceAmount = resourceRate * accumulatedTime;
 					double remainingCapacity = settlement.getAmountResourceRemainingCapacity(resource);
 					
 					if (remainingCapacity > SMALL_AMOUNT) {
 						if (resourceAmount > remainingCapacity) {
-							logger.warning(settlement, 30_000, "Case C. Not enough space for storing '" 
+							logger.warning(settlement, 30_000, "Case C. Just used up all remaining space for storing '" 
 									+ ResourceUtil.findAmountResourceName(resource)
-									+ "' output to continue '" + name + "'. Requiring " + Math.round(resourceAmount * 1000.0)/1000.0 
-									+ " kg of storage. Remaining cap: " + Math.round(remainingCapacity * 1000.0)/1000.0 + " kg.");
+									+ "' output in '" + name + "'. Requiring " + Math.round((resourceAmount - remainingCapacity) * 1000.0)/1000.0 
+									+ " kg of storage. Remaining cap: 0 kg.");
+							resourceAmount = remainingCapacity;
 							setProcessRunning(false);
 							break;
 							// Note: turn on a yellow flag and indicate which the output resource is missing
@@ -298,6 +298,10 @@ public class WasteProcess implements Serializable {
 						break;
 					}
 				}
+				
+				// Compute the remaining accumulatedTime
+				accumulatedTime = accumulatedTime - PROCESS_CHECK_FREQUENCY;
+
 			} else
 				level = 0D;
 
