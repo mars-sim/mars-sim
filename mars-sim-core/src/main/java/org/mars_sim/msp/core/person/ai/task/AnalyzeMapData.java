@@ -118,18 +118,22 @@ public class AnalyzeMapData extends Task implements Serializable {
 		numImprovement = site.getNumEstimationImprovement();
 		
 		// The higher the numImprovement, the more difficult the numerical solution, and 
-		// the more the computing resources needed to do the refinement.
+		// the more the computing resources needed to do the refinement.		
 		// The higher the composite skill, the less the computing resource.  
-		seed = Math.min(1, RandomUtil.getRandomDouble(
-				numImprovement/compositeSkill/50.0, numImprovement/compositeSkill/20.0));
+		double score = (1 + numImprovement)/compositeSkill;
+		double rand = RandomUtil.getRandomDouble(score/20.0, score/10.0);
+		seed = Math.min(1, rand);
 			
 		TOTAL_COMPUTING_NEEDED = getDuration() * seed;
 		computingNeeded = TOTAL_COMPUTING_NEEDED;
 		
 		logger.info(person, 10_000, "Total computing needs: " 
-				+  Math.round(TOTAL_COMPUTING_NEEDED * 1000.0)/1000.0 
-				+ " CUs. seed: " +  Math.round(seed * 1000.0)/1000.0 
-				+ ". "	+ num + " candidate sites were identified. Final site selection: " 
+				+ Math.round(TOTAL_COMPUTING_NEEDED * 1000.0)/1000.0 
+				+ " CUs. score: " 
+				+ Math.round(score * 1000.0)/1000.0 + ". rand: "
+				+ Math.round(rand * 1000.0)/1000.0 + ". seed: "
+				+ Math.round(seed * 1000.0)/1000.0 + ". "
+				+ num + " candidate sites were identified. Final site selection: " 
 				+ site.getLocation().getCoordinateString() + ".");
 		
        	// Add task phases

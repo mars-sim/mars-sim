@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.data.SolMetricDataLogger;
@@ -50,13 +51,31 @@ public class Farming extends Function {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
+	
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(Farming.class.getName());
 
+	private static final int MAX_NUM_SOLS = 14;
+	private static final int MAX_SAME_CROPTYPE = 3;
+
+	private static final int CROP_WASTE_ID = ResourceUtil.cropWasteID;
+	private static final int SOIL_ID = ResourceUtil.soilID;
+	private static final int FERTILIZER_ID = ResourceUtil.fertilizerID;
+	
+	private static final double LOW_AMOUNT_TISSUE_CULTURE = 0.5;
+	/** The average temperature tolerance of a crop [in C]. */
+	private static final double T_TOLERANCE = 3D;
+	/** The amount of crop tissue culture needed for each square meter of growing area. */
+	private static final double TISSUE_PER_SQM = .0005; // 1/2 gram (arbitrary)
+	public static final double STANDARD_AMOUNT_TISSUE_CULTURE = 0.05;
+	private static final double MIN  = .00001D;// 0.0000000001;
+	
 	private static final String CROPS = "crops";
 	private static final String POWER_GROWING_CROP = "power-growing-crop";
 	private static final String POWER_SUSTAINING_CROP = "power-sustaining-crop";
 	private static final String GROWING_AREA = "growing-area";
+
+	public static final String TISSUE = " " + FoodType.TISSUE.getName();
 
 	private static final String [] INSPECTION_LIST = {"Environmental Control System",
 													  "HVAC System", "Waste Disposal System",
@@ -65,23 +84,6 @@ public class Farming extends Function {
 													  "Water and Irrigation System"};
 	private static final String [] CLEANING_LIST = {"Floor", "Curtains", "Canopy", "Equipment",
 													"Pipings", "Trays", "Valves"};
- 
-	private static final int MAX_NUM_SOLS = 14;
-	private static final int MAX_SAME_CROPTYPE = 3;
-
-	private static final int CROP_WASTE_ID = ResourceUtil.cropWasteID;
-	private static final int SOIL_ID = ResourceUtil.soilID;
-	private static final int FERTILIZER_ID = ResourceUtil.fertilizerID;
-
-	public static final String TISSUE = " " + FoodType.TISSUE.getName();
-
-	/** The average temperature tolerance of a crop [in C]. */
-	private static final double T_TOLERANCE = 3D;
-
-	/** The amount of crop tissue culture needed for each square meter of growing area. */
-	private static final double TISSUE_PER_SQM = .0005; // 1/2 gram (arbitrary)
-	private static final double STANDARD_AMOUNT_TISSUE_CULTURE = 0.05;
-	private static final double MIN  = .00001D;// 0.0000000001;
 
 	/** The mission sol. */
 	private int currentSol = 1;
@@ -115,6 +117,8 @@ public class Farming extends Function {
 	private Map<Aspect, Double> attributes;
 	/** The crop usage on each crop in this facility [kg/sol]. */
 	private Map<String, SolMetricDataLogger<Integer>> cropUsage;
+	
+
 	/** The daily water usage in this facility [kg/sol]. */
 	private SolSingleMetricDataLogger dailyWaterUsage;
 
@@ -147,7 +151,7 @@ public class Farming extends Function {
 		cropHistory = new HashMap<>();
 		dailyWaterUsage = new SolSingleMetricDataLogger(MAX_NUM_SOLS);
 		cropUsage = new HashMap<>();
-
+		
 		defaultCropNum = spec.getIntegerProperty(CROPS);
 
 		powerGrowingCrop = spec.getDoubleProperty(POWER_GROWING_CROP);
@@ -234,19 +238,54 @@ public class Farming extends Function {
 	}
 
 	/**
-	 * Chooses a crop for tissue extraction.
+	 * Chooses a matured crop and extract samples for growing tissues.
 	 * 
 	 * @return
 	 */
-	public CropSpec chooseCrop2Extract(double amount) {
-		List<CropSpec> crops = cropConfig.getCropTypes();
+	public String chooseCrop2Extract(double amount) {
+		List<CropSpec> crops = new ArrayList<>(cropConfig.getCropTypes());
 		Collections.shuffle(crops);
-		return crops.stream()
+		// May simply pick a crop randomly that has certain amount
+//		CropSpec cs = crops.stream()
+//				.filter(c -> building.getSettlement()
+//				.getAllAmountResourceOwned(c.getID()) > amount)
+//				.findFirst().orElse(null);
+		
+		crops = crops.stream()
 				.filter(c -> building.getSettlement()
-						.getAllAmountResourceOwned(c.getID()) > amount)
-				.findFirst().orElse(null);
+				.getAllAmountResourceOwned(c.getCropID()) > amount)
+				.collect(Collectors.toList());
+		
+		logger.info(crops.toString());
+		
+		List<AmountResource> tissues = new ArrayList<>();
+		
+		for (CropSpec c: crops) {
+			String cropName = c.getName();
+			String tissueName = cropName + Farming.TISSUE;
+			AmountResource tissue = ResourceUtil.findAmountResource(tissueName);	
+			double amountTissue = building.getSettlement().getAmountResourceStored(tissue.getID());
+			if (amountTissue < LOW_AMOUNT_TISSUE_CULTURE)
+				tissues.add(tissue);
+		}
+		
+		logger.info(tissues.toString());
+		
+		String tissueName = null;
+		double amountTissue = 0;
+		
+		for (AmountResource ar: tissues) {
+			double amountT = building.getSettlement().getAmountResourceStored(ar.getID());
+			if (amountTissue == 0 || amountT < amountTissue) {
+				amountTissue = amountT;
+			}
+		}
+		
+		if (tissueName != null)
+			tissueName = tissueName.replace(Farming.TISSUE, "");
+		
+		return tissueName;
 	}
-
 	
 	/**
 	 * Selects a crop currently having the highest value point (VP).
@@ -993,84 +1032,6 @@ public class Farming extends Function {
 		return name;
 	}
 		
-	/**
-	 * Grows one crop tissue culture.
-	 *
-	 * @param lab
-	 * @param worker
-	 * @return CropSpec
-	 */
-	public String growCropTissue(Research lab, Worker worker) {
-		double amountExtracted = STANDARD_AMOUNT_TISSUE_CULTURE;
-		String name = null;
-		CropSpec c = chooseCrop2Extract(amountExtracted);
-		String cropName = c.getName();
-		String tissueName = cropName + TISSUE;
-		
-		// NOTE: re-tune the amount of tissue culture not just based on the edible
-		// biomass (actualHarvest)
-		// but also the inedible biomass and the crop category
-
-		int cropID = c.getCropID();
-		int tissueID = ResourceUtil.findIDbyAmountResourceName(tissueName);
-		
-		double amountTissue = building.getSettlement().getAmountResourceStored(tissueID);
-	
-		boolean hasIt = lab.hasTissueCulture(tissueName);
-		
-		if (hasIt) {
-			// Clone tissues - Increase the amount of tissue culture by 20%
-			amountExtracted = amountTissue * 0.2;
-			// Store the tissues
-			if (amountExtracted > 0) {
-				store(amountExtracted, tissueID, "Farming::growCropTissue");
-				logger.log(building, worker, Level.FINE, 3_000,  "Cloned "
-					+ Math.round(amountExtracted*1000.0)/1000.0D + " kg "
-					+ cropName + TISSUE
-					+ " in Botany lab.");
-
-				name = cropName;
-			}
-		}
-		
-		else {
-			// if no tissue culture is available, go extract some tissues from the crop
-			// Note: Should check for the health condition of a crop
-			// Future: extract an arbitrary 5 to 15% of the mass of a healthy crop (not a fixed amount)
-			// and make it into tissue culture
-			double lackingCrop = building.getSettlement().retrieveAmountResource(cropID, amountExtracted);
-			
-			double lackingDish = building.getSettlement().retrieveItemResource(ItemResourceUtil.PETRI_DISH_ID, 1);
-			
-			if (lackingDish > 0) {
-				logger.log(building, worker, Level.INFO, 10_000,
-						"Had no petri dish in stock.");
-				// Future: Use petri dish as a container for tissues
-			}
-
-			if (lackingCrop > 0) {
-				// Store the tissues
-				building.getSettlement().storeAmountResource(tissueID, amountExtracted - lackingCrop);
-				logger.log(building, worker, Level.INFO, 10_000,
-							"Found no " + Conversion.capitalize(cropName) + TISSUE
-							+ " in stock. Extracted " + (amountExtracted - lackingCrop)
-							+ " kg from adult crop.");
-				name = cropName;
-			}
-			else { // if lackingCrop = 0
-				logger.log(building, worker, Level.INFO, 10_000,
-						"Found enough " + Conversion.capitalize(cropName) + TISSUE
-						+ " in stock. Cloned it from cryofreeze samples.");
-				
-				// For now, allow the tissue culture to be grown from backup samples
-				// In future, need to barter trade from neighboring settlement to obtain it.
-				building.getSettlement().storeAmountResource(tissueID, amountExtracted - lackingCrop);
-				name = cropName;
-			}
-		}
-		
-		return name;
-	}
 
 	@Override
 	public double getMaintenanceTime() {

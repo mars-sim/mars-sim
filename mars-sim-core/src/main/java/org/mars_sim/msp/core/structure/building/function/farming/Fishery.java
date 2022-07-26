@@ -37,13 +37,18 @@ public class Fishery extends Function {
 
 	
 	private static final String [] INSPECTION_LIST = {"Environmental Control System",
-													  "Any Traces of Contamination", "Tank Integrity",
-													  "Foundation",	"Structural Element", "Thermal Budget",
+													  "Any Traces of Contamination", 
+													  "Tank Integrity",
+													  "Foundation",	
+													  "Structural Element", 
+													  "Thermal Budget",
 													  "Water and Irrigation System"};
-	private static final String [] CLEANING_LIST = {"Equipment", "Tank Glass", "Water Heater",
-													"Pipings", "Valves"};
+	private static final String [] CLEANING_LIST = {"Equipment", 
+													"Tank Glass", 
+													"Water Heater",
+													"Pipings", 
+													"Valves"};
 	
-
 	// Convert from kg to ounce
 	public static final double KG_PER_OUNCE = 0.02834952;
 	// Convert from ounce to kg

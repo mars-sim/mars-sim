@@ -61,7 +61,9 @@ public class TendFishTank extends Task implements Serializable {
 	private double fishingTime = 0D;
 	private double tendTime = 0D;
 	/** The goal of the task at hand. */
-	private String goal;
+	private String cleanGoal;
+	/** The goal of the task at hand. */
+	private String inspectGoal;
 	/** The fish tank the person is tending. */
 	private Fishery fishTank;
 	/** The building where the fish tank is. */	
@@ -270,7 +272,7 @@ public class TendFishTank extends Task implements Serializable {
 		checkForAccident(building, time, 0.005D);
 
 		if (remainingTime > 0) {
-			setPhase(INSPECTING);
+//			setPhase(INSPECTING);
 
 			// Scale it back to the. Calculate used time 
 			double usedTime = workTime - remainingTime;
@@ -292,38 +294,40 @@ public class TendFishTank extends Task implements Serializable {
 	 * @return the amount of time (millisols) left over after performing the phase.
 	 */
 	private double inspectingPhase(double time) {
-		if (goal == null) {
+		if (inspectGoal == null) {
 			List<String> uninspected = fishTank.getUninspected();
 			int size = uninspected.size();
 	
 			if (size > 0) {
 				int rand = RandomUtil.getRandomInt(size - 1);
 	
-				goal = uninspected.get(rand);
+				inspectGoal = uninspected.get(rand);
 			}
 		}
 
-		if (goal != null)
-			printDescription(Msg.getString("Task.description.tendFishTank.inspect.detail", goal.toLowerCase()));
+		if (inspectGoal != null) {
+			printDescription(Msg.getString("Task.description.tendFishTank.inspect.detail", 
+					inspectGoal.toLowerCase()));
 
-		double mod = 0;
-		// Determine amount of effective work time based on "Botany" skill
-		int greenhouseSkill = getEffectiveSkillLevel();
-		if (greenhouseSkill <= 0) {
-			mod *= RandomUtil.getRandomDouble(.5, 1.0);
-		} else {
-			mod *= RandomUtil.getRandomDouble(.5, 1.0) * greenhouseSkill * 1.2;
+			double mod = 0;
+			// Determine amount of effective work time based on "Botany" skill
+			int greenhouseSkill = getEffectiveSkillLevel();
+			if (greenhouseSkill <= 0) {
+				mod *= RandomUtil.getRandomDouble(.5, 1.0);
+			} else {
+				mod *= RandomUtil.getRandomDouble(.5, 1.0) * greenhouseSkill * 1.2;
+			}
+	
+			double workTime = time * mod;
+			
+			addExperience(workTime);
+			
+			if (getDuration() <= (getTimeCompleted() + time)) {
+				fishTank.markInspected(inspectGoal);
+				endTask();
+			}
 		}
-
-		double workTime = time * mod;
-		
-		addExperience(workTime);
-		
-		if (getDuration() <= (getTimeCompleted() + time)) {
-			fishTank.markInspected(goal);
-			endTask();
-		}
-
+			
 		return 0;
 	}
 
@@ -346,38 +350,42 @@ public class TendFishTank extends Task implements Serializable {
 	 */
 	private double cleaningPhase(double time) {
 
-		if (goal == null) {
+		if (cleanGoal == null) {
 			List<String> uncleaned = fishTank.getUncleaned();
 			int size = uncleaned.size();
 	
 			if (size > 0) {
 				int rand = RandomUtil.getRandomInt(size - 1);
 	
-				goal = uncleaned.get(rand);
+				cleanGoal = uncleaned.get(rand);
 			}
 		}
 		
-		if (goal != null)
-			printDescription(Msg.getString("Task.description.tendFishTank.clean.detail", goal.toLowerCase()));
+		if (cleanGoal != null) {
+			printDescription(Msg.getString("Task.description.tendFishTank.clean.detail", 
+					cleanGoal.toLowerCase()));
 				
-		double mod = 0;
-		// Determine amount of effective work time based on "Botany" skill
-		int greenhouseSkill = getEffectiveSkillLevel();
-		if (greenhouseSkill <= 0) {
-			mod *= RandomUtil.getRandomDouble(.5, 1.0);
-		} else {
-			mod *= RandomUtil.getRandomDouble(.5, 1.0) * greenhouseSkill * 1.2;
+			double mod = 0;
+			// Determine amount of effective work time based on "Botany" skill
+			int greenhouseSkill = getEffectiveSkillLevel();
+			if (greenhouseSkill <= 0) {
+				mod *= RandomUtil.getRandomDouble(.5, 1.0);
+			} else {
+				mod *= RandomUtil.getRandomDouble(.5, 1.0) * greenhouseSkill * 1.2;
+			}
+	
+			double workTime = time * mod;
+			
+			addExperience(workTime);
+			
+			if (getDuration() <= (getTimeCompleted() + time)) {
+				fishTank.markCleaned(cleanGoal);
+				endTask();
+			}
 		}
-
-		double workTime = time * mod;
-		
-		addExperience(workTime);
-		
-		if (getDuration() <= (getTimeCompleted() + time)) {
-			fishTank.markCleaned(goal);
+		else
 			endTask();
-		}
-
+		
 		return 0;
 	}
 

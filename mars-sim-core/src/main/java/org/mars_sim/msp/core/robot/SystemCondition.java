@@ -89,7 +89,7 @@ public class SystemCondition implements Serializable {
 
         // 2. If a robot needs to be recharged, go and dock to a robotic station
         if (checkEnergyLevel())
-        	logger.log(robot, Level.INFO, 20_000L, "Positioned to be recharged.");
+        	logger.log(robot, Level.INFO, 20_000L, "Positioned to get recharged.");
         
         // 3. Consume a minute amount of energy even if a robot does not perform any tasks
         if (!isCharging)
@@ -118,7 +118,7 @@ public class SystemCondition implements Serializable {
     }
 
     /**
-     * Checks the energy level of the robot and see if it has been position for a recharge.
+     * Checks the energy level of the robot and see if it has been position for recharge.
      */
     private boolean checkEnergyLevel() {
     	boolean result = false;
