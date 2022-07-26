@@ -272,7 +272,7 @@ public class TendFishTank extends Task implements Serializable {
 		checkForAccident(building, time, 0.005D);
 
 		if (remainingTime > 0) {
-//			setPhase(INSPECTING);
+			setPhase(INSPECTING);
 
 			// Scale it back to the. Calculate used time 
 			double usedTime = workTime - remainingTime;

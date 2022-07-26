@@ -25,7 +25,6 @@ import org.mars_sim.msp.core.person.ai.task.TendGreenhouse;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -40,7 +39,6 @@ import org.mars_sim.msp.core.structure.building.function.PowerMode;
 import org.mars_sim.msp.core.structure.building.function.Research;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
@@ -243,24 +241,19 @@ public class Farming extends Function {
 	 * @return
 	 */
 	public String chooseCrop2Extract(double amount) {
-		List<CropSpec> crops = new ArrayList<>(cropConfig.getCropTypes());
-		Collections.shuffle(crops);
-		// May simply pick a crop randomly that has certain amount
-//		CropSpec cs = crops.stream()
-//				.filter(c -> building.getSettlement()
-//				.getAllAmountResourceOwned(c.getID()) > amount)
-//				.findFirst().orElse(null);
-		
-		crops = crops.stream()
+		List<CropSpec> cropList = new ArrayList<>(cropConfig.getCropTypes());
+		Collections.shuffle(cropList);
+
+		cropList = cropList.stream()
 				.filter(c -> building.getSettlement()
 				.getAllAmountResourceOwned(c.getCropID()) > amount)
 				.collect(Collectors.toList());
 		
-		logger.info(crops.toString());
+		logger.info(cropList.toString());
 		
 		List<AmountResource> tissues = new ArrayList<>();
 		
-		for (CropSpec c: crops) {
+		for (CropSpec c: cropList) {
 			String cropName = c.getName();
 			String tissueName = cropName + Farming.TISSUE;
 			AmountResource tissue = ResourceUtil.findAmountResource(tissueName);	
@@ -278,6 +271,7 @@ public class Farming extends Function {
 			double amountT = building.getSettlement().getAmountResourceStored(ar.getID());
 			if (amountTissue == 0 || amountT < amountTissue) {
 				amountTissue = amountT;
+				tissueName = ar.getName();
 			}
 		}
 		

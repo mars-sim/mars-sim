@@ -16,7 +16,6 @@ import java.util.logging.Level;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.utils.Worker;
-import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Lab;
@@ -238,44 +237,59 @@ implements Lab {
     @Override
     public boolean timePassing(ClockPulse pulse) {
 		boolean valid = isValid(pulse);
-		if (valid) {
-			if (pulse.isNewSol()) {
-                tissueCultureInspection.replaceAll((s, v) -> 0);
-			}
-			
-			if (pulse.isNewMSol()) {
-
-				Map<String, Double> newMap = new HashMap<>();
-				Iterator<Map.Entry<String, Double>> i = tissueIncubator.entrySet().iterator();
-				while (i.hasNext()) {
-					Map.Entry<String, Double> entry = i.next();
-					String c = entry.getKey();
-					double amount = entry.getValue();
-					if (amount > 0) {
-						i.remove();
-						
-						// Grow the tissue a little bit in each millisol
-						double time = pulse.getMarsTime().getMillisol();
-						double delta = 0;
-						
-						// Check if the tissue culture has been well taken care of
-						if (tissueCultureInspection.containsKey(c)) {
-							int num = tissueCultureInspection.get(c);
-							// Incur penalty if having less than NUM_INSPECTIONS
-							delta = (num - NUM_INSPECTIONS) * time;
-							delta = Math.min(0, delta);
-						}
-						
-						// Increase the amount by millisols / 1000.0 
-						newMap.put(c, amount * (1 + delta)/1000.0);
-					}
-				}
-				tissueIncubator.putAll(newMap);
-			}
+		if (!valid) {
+			return false;
 		}
+		
+		if (pulse.isNewSol()) {
+            tissueCultureInspection.replaceAll((s, v) -> 0);
+		}
+		
+		if (pulse.isNewMSol()) {
+			Map<String, Double> newMap = new HashMap<>();
+			Iterator<Map.Entry<String, Double>> i = tissueIncubator.entrySet().iterator();
+			while (i.hasNext()) {
+				Map.Entry<String, Double> entry = i.next();
+				String key = entry.getKey();
+				double amount = entry.getValue();
+				if (amount > 0) {
+					i.remove();
+					
+					double time = pulse.getMarsTime().getMillisol();
+					double delta = obtainGrow(time, key);
+					
+					// Increase the amount by millisols / 1000.0 
+					newMap.put(key, amount * (1 + delta)/1000.0);
+				}
+			}
+			tissueIncubator.putAll(newMap);
+		}
+		
 		return valid;
     }
 
+    /**
+     * Obtains the grow factor.
+     * 
+     * @param time
+     * @param key
+     * @return
+     */
+    private double obtainGrow(double time, String key) {
+		// Grow the tissue a little bit in each millisol
+		double delta = 0;
+		
+		// Check if the tissue culture has been well taken care of
+		if (tissueCultureInspection.containsKey(key)) {
+			int num = tissueCultureInspection.get(key);
+			// Incur penalty if having less than NUM_INSPECTIONS
+			delta = (num - NUM_INSPECTIONS) * time;
+			delta = Math.min(0, delta);
+		}
+		
+		return delta;
+    }
+    
     /**
      * Harvests and extract a crop tissue.
      * 

@@ -31,9 +31,6 @@ public class PlayHoloGameMeta extends MetaTask {
     private static final String NAME = Msg.getString(
             "Task.description.playHoloGame"); //$NON-NLS-1$
 
-    /** Modifier if during person's work shift. */
-    private static final double WORK_SHIFT_MODIFIER = .05D;
-
     /** default logger. */
     private static final Logger logger = Logger.getLogger(PlayHoloGameMeta.class.getName());
 
