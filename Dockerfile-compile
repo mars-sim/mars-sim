@@ -15,7 +15,7 @@ COPY mars-sim-ui mars-sim-ui/
 RUN mvn -DskipTests=true package
 
 # Package stage
-FROM openjdk:11.0.15-jre
+FROM openjdk:11.0.16-jre
 WORKDIR /app
 # Override when building
 COPY --from=build /app/src/mars-sim-headless/target/mars-sim-headless.jar mars-sim-headless.jar
