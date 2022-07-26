@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Unit;
@@ -88,22 +89,19 @@ public final class CommerceUtil {
 	 * @return the deal(value points) for trade.
 	 */
 	public static Deal getBestDeal(Settlement startingSettlement, MissionType commerceType, Vehicle delivery) {
-		List<Deal> deals = new ArrayList<>();
+		Deal bestDeal = null;
 		for (Settlement tradingSettlement : unitManager.getSettlements()) {
 			Deal deal = getPotentialDeal(startingSettlement, commerceType, tradingSettlement, delivery);
-			if (deal != null) {
-				deals.add(deal);
+			if ((deal != null) 
+				&& ((bestDeal == null) || (bestDeal.getProfit() > deal.getProfit()))) {
+					bestDeal = deal;
 			}
 		}
 
-		if (deals.isEmpty()) {
+		if (bestDeal == null) {
 			logger.info(startingSettlement, "No trading deal for " + commerceType.name());
 			return null;
 		}
-
-		// Sort in reverse order (biggest profit first)
-		Collections.sort(deals, Collections.reverseOrder());
-		Deal bestDeal = deals.get(0);
 		logger.info(startingSettlement, "New best deal for " + commerceType.name() + " to " + bestDeal.getBuyer().getName()
 									+ " profit " + bestDeal.getProfit());
 		return bestDeal;
@@ -197,19 +195,15 @@ public final class CommerceUtil {
 	 */
 	private static Deal createDeal(Settlement startingSettlement, Vehicle delivery,
 			Settlement tradingSettlement, Map<Good, Integer> buyLoad, Map<Good, Integer> sellLoad) {
-		double sellingCreditHome = determineLoadCredit(sellLoad, startingSettlement, false);
-		double sellingCreditRemote = determineLoadCredit(sellLoad, tradingSettlement, true);
-		double sellingRevenue = sellingCreditRemote - sellingCreditHome;
 
-		double buyingCreditHome = determineLoadCredit(buyLoad, startingSettlement, true);
-		double buyingCreditRemote = determineLoadCredit(buyLoad, tradingSettlement, false);
-		double buyingRevenue = buyingCreditHome - buyingCreditRemote;
+		double sellingRevenue = determineLoadCredit(sellLoad, tradingSettlement);
+		double buyingRevenue = determineLoadCredit(buyLoad, startingSettlement);
 
 		// Determine estimated mission cost.
 		double distance = startingSettlement.getCoordinates().getDistance(tradingSettlement.getCoordinates()) * 2D;
 		double cost = getEstimatedMissionCost(startingSettlement, delivery, distance);
 
-		return new Deal(tradingSettlement, sellingRevenue, buyingRevenue, cost, (MarsClock) marsClock.clone());
+		return new Deal(tradingSettlement, sellingRevenue, sellLoad, buyingRevenue, buyLoad, cost, (MarsClock) marsClock.clone());
 	}
 
 
@@ -378,34 +372,26 @@ public final class CommerceUtil {
 	 * 
 	 * @param load       a map of the goods and their number.
 	 * @param settlement the settlement valuing the load.
-	 * @param buy        true if settlement is buying the load, false if selling.
-	 * @return credit of the load (value points * production cost).
+	 * @return credit of the load (items  * production cost).
 	 * @throws Exception if error determining the load credit.
 	 */
-	private static double determineLoadCredit(Map<Good, Integer> load, Settlement settlement, boolean buy) {
-		double result = 0D;
+	private static double determineLoadCredit(Map<Good, Integer> load, Settlement settlement) {
+		return load.entrySet().stream()
+					.map(e -> (e.getKey().getCostOutput() * e.getValue()))
+					.collect(Collectors.summingDouble(Double::doubleValue));
+		
+		// double result = 0D;
 
-		for(Map.Entry<Good,Integer> goodItem : load.entrySet()) {
-			Good good = goodItem.getKey();
-			double cost = good.getCostOutput();
-			int goodNumber = goodItem.getValue();
-			double supply = good.getNumberForSettlement(settlement);
-			
-			// Calculate the new goods in the Settlment if the deal was done
-			double newSupply = 0D;
-			if (buy)
-				newSupply = supply + goodNumber;
-			else {
-				newSupply = supply - goodNumber;
-				if (newSupply < 0D)
-					newSupply = 0D;
-			}
+		// for(Map.Entry<Good,Integer> goodItem : load.entrySet()) {
+		// 	Good good = goodItem.getKey();
+		// 	double cost = good.getCostOutput();
+		// 	int goodNumber = goodItem.getValue();
 
-			// Credit of the new total
-			result += cost * newSupply;
-		}
+		// 	// Credit of the new total
+		// 	result += cost * goodNumber;
+		// }
 
-		return result;
+		// return result;
 	}
 
 	/**
@@ -725,32 +711,32 @@ public final class CommerceUtil {
 		if (delivery instanceof Crewable) {
 			// Needs a crew
 			// Get estimated trip time.
-			double averageSpeed = delivery.getBaseSpeed() / 2D;
+			double averageSpeed = delivery.getBaseSpeed(); // Life support supplies are reloaded on the return trip
 			double averageSpeedMillisol = averageSpeed / MarsClock.convertSecondsToMillisols(60D * 60D);
 			double tripTimeSols = ((distance / averageSpeedMillisol) + 1000D) / 1000D;
 
 			double lifeSupportMargin = Vehicle.getLifeSupportRangeErrorMargin();
 			// Get oxygen amount.
 			double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * tripTimeSols * Trade.MAX_MEMBERS
-					* Mission.OXYGEN_MARGIN * lifeSupportMargin;
+					* lifeSupportMargin;
 			Good oxygenGood = GoodsUtil.getGood(OXYGEN_ID);
 			neededResources.put(oxygenGood, (int) oxygenAmount);
 
 			// Get water amount.
 			double waterAmount = PhysicalCondition.getWaterConsumptionRate() * tripTimeSols * Trade.MAX_MEMBERS
-					* Mission.WATER_MARGIN * lifeSupportMargin;
+					* lifeSupportMargin;
 			Good waterGood = GoodsUtil.getGood(WATER_ID);
 			neededResources.put(waterGood, (int) waterAmount);
 
 			// Get food amount.
 			double foodAmount = PhysicalCondition.getFoodConsumptionRate() * tripTimeSols * Trade.MAX_MEMBERS
-					* Mission.FOOD_MARGIN * lifeSupportMargin;
+					* lifeSupportMargin;
 			Good foodGood = GoodsUtil.getGood(FOOD_ID);
 			neededResources.put(foodGood, (int) foodAmount);
 		}
 
 		// Get cost of resources.
-		return determineLoadCredit(neededResources, startingSettlement, false);
+		return determineLoadCredit(neededResources, startingSettlement);
 	}
 	
 	/**
@@ -779,7 +765,7 @@ public final class CommerceUtil {
             double tradeModifier, Map<Good, Integer> load) {
 				
 		// Get the credit of the load that is being sold to the destination settlement.
-		double baseSoldCredit = determineLoadCredit(load, sellingSettlement, true);
+		double baseSoldCredit = determineLoadCredit(load, sellingSettlement);
 		double soldCredit = baseSoldCredit * tradeModifier;
 
 		// Get the credit that the starting settlement has with the destination
@@ -796,7 +782,7 @@ public final class CommerceUtil {
 			// Determine the initial buy load based on goods that are profitable for the
 			// destination settlement to sell.
 			buyLoad = determineLoad(buyingSettlement, sellingSettlement, delivery, Double.POSITIVE_INFINITY);
-			double baseBuyLoadValue = determineLoadCredit(buyLoad, buyingSettlement, true);
+			double baseBuyLoadValue = determineLoadCredit(buyLoad, buyingSettlement);
 			double buyLoadValue = baseBuyLoadValue / tradeModifier;
 
 			// Update the credit value between the starting and destination settlements.

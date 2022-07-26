@@ -109,19 +109,13 @@ public class Trade extends RoverMission implements CommerceMission {
 			tradingSettlement = deal.getBuyer();
 			addNavpoint(tradingSettlement);
 
-			// Determine desired buy load,
-			desiredBuyLoad = CommerceUtil.getDesiredBuyLoad(s, getRover(), tradingSettlement);
-			
-			// Determine sell load.
-			sellLoad = CommerceUtil.determineBestSellLoad(s, getRover(), tradingSettlement);
-
-			// Determine desired trade profit.
-			desiredProfit = CommerceUtil.getEstimatedProfit(s, getRover(), tradingSettlement, desiredBuyLoad, sellLoad);
+			desiredBuyLoad = deal.getBuyingLoad();
+			sellLoad = deal.getSellingLoad();
+			desiredProfit = deal.getProfit();
 
 			// Recruit additional members to mission.
-			if (!isDone()) {
-				if (!recruitMembersForMission(startingMember, MAX_MEMBERS)) 
-					return;
+			if (!isDone() && !recruitMembersForMission(startingMember, MAX_MEMBERS)) {
+				return;
 			}
 		}
 

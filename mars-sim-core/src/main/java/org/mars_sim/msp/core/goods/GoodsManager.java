@@ -45,7 +45,7 @@ public class GoodsManager implements Serializable {
 	private static final int BASE_EVA_SUIT = 1;
 
 	// Duration that deals are valid
-    private static final int DEAL_VALIDITY = 1000;
+    private static final int DEAL_VALIDITY = 500;
 
 	static final double MANUFACTURING_INPUT_FACTOR = 2D;
 	static final double CONSTRUCTING_INPUT_FACTOR = 2D;

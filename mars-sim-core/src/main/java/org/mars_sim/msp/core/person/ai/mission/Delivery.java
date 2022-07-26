@@ -103,15 +103,9 @@ public class Delivery extends DroneMission implements CommerceMission {
 			addNavpoint(tradingSettlement);
 
 			if (!isDone()) {
-				// Determine desired buy load,
-				desiredBuyLoad = CommerceUtil.getDesiredBuyLoad(s, getDrone(), tradingSettlement);
-				
-				// Determine sell load.
-				sellLoad = CommerceUtil.determineBestSellLoad(s, getDrone(), tradingSettlement);
-				
-				// Determine desired trade profit.
-				desiredProfit = CommerceUtil.getEstimatedProfit(s, getDrone(), tradingSettlement,
-																desiredBuyLoad, sellLoad);
+				desiredBuyLoad = deal.getBuyingLoad();
+				sellLoad = deal.getSellingLoad();
+				desiredProfit = deal.getProfit();
 			}
 
 			// Recruit additional members to mission.

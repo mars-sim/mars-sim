@@ -67,7 +67,7 @@ public class TradeCommand extends AbstractSettlementCommand {
 		// Get deals for all other settlements
 		response.appendBlankLine();
 		response.appendTableHeading("Buyer", CommandHelper.PERSON_WIDTH, "Distance", 9,
-									"Mission", 8, "Buy", COST_WIDTH, "Sell", COST_WIDTH,
+									"Mission", 8, "Sell", COST_WIDTH, "Buy", COST_WIDTH,
 									"Cost", COST_WIDTH, "Profit", COST_WIDTH);
 		for (Settlement tradingSettlement : context.getSim().getUnitManager().getSettlements()) {
 			if (settlement.equals(tradingSettlement)) {
@@ -97,8 +97,8 @@ public class TradeCommand extends AbstractSettlementCommand {
 		if (deal != null) {
 			response.appendTableRow(buyer.getName(), String.format(CommandHelper.KM_FORMAT, distanceTo),
 									commerce.getName(),
-									String.format(CommandHelper.MONEY_FORMAT, deal.getBuyingRevenue()),
 									String.format(CommandHelper.MONEY_FORMAT, deal.getSellingRevenue()),
+									String.format(CommandHelper.MONEY_FORMAT, deal.getBuyingRevenue()),
 									String.format(CommandHelper.MONEY_FORMAT, deal.getTradeCost()),
 									String.format(CommandHelper.MONEY_FORMAT, deal.getProfit()));
 		}

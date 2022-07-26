@@ -329,6 +329,7 @@ public class Mining extends EVAMission
 
 		// Nobody can do anything so stop
 		if (nobodyMineOrCollect) {
+			logger.warning(getRover(), "No one can do mining Task in mission " + getName());
 			return false;
 		}
 
