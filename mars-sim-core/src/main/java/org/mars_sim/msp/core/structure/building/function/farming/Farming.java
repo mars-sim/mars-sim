@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core.structure.building.function.farming;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -133,7 +134,7 @@ public class Farming extends Function {
 	public Farming(Building building, FunctionSpec spec) {
 		// Use Function constructor.
 		super(FunctionType.FARMING, spec, building);
-
+		
 		// Initialize the attribute scores map
 		initAttributeScores();
 
@@ -210,12 +211,12 @@ public class Farming extends Function {
 	}
 	
 	/**
-	 * Picks a crop type.
+	 * Picks a crop. Ensure this crop is not being grown more than MAX_SAME_CROPTYPE.
 	 *
 	 * @param isStartup - true if it is called at the start of the sim
 	 * @return {@link CropSpec}
 	 */
-	private CropSpec pickACrop(Map<CropSpec,Integer> cropsPlanted) {
+	private CropSpec pickACrop(Map<CropSpec, Integer> cropsPlanted) {
 		CropSpec ct = null;
 		boolean cropAlreadyPlanted = true;
 		// TODO: at the start of the sim, choose only from a list of staple food crop
@@ -232,6 +233,21 @@ public class Farming extends Function {
 		return ct;
 	}
 
+	/**
+	 * Chooses a crop for tissue extraction.
+	 * 
+	 * @return
+	 */
+	public CropSpec chooseCrop2Extract(double amount) {
+		List<CropSpec> crops = cropConfig.getCropTypes();
+		Collections.shuffle(crops);
+		return crops.stream()
+				.filter(c -> building.getSettlement()
+						.getAllAmountResourceOwned(c.getID()) > amount)
+				.findFirst().orElse(null);
+	}
+
+	
 	/**
 	 * Selects a crop currently having the highest value point (VP).
 	 *
@@ -916,15 +932,13 @@ public class Farming extends Function {
 	/**
 	 * Checks to see if a botany lab with an open research slot is available and
 	 * performs cell tissue extraction.
-	 *
-	 * @param type
+	 * 
 	 * @return true if work has been done
 	 */
-	public boolean checkBotanyLab(CropSpec type, Worker worker) {
+	public boolean checkBotanyLab() {
 		// Check to see if a botany lab is available
 		boolean hasEmptySpace = false;
-		boolean done = false;
-
+		
 		// Check to see if the local greenhouse has a research slot
 		if (lab == null)
 			lab = building.getResearch();
@@ -935,12 +949,6 @@ public class Farming extends Function {
 		if (hasEmptySpace) {
 			// check to see if it can accommodate another researcher
 			hasEmptySpace = lab.addResearcher();
-
-			if (hasEmptySpace) {
-				boolean workDone = growCropTissue(lab, type, worker);// , true);
-				lab.removeResearcher();
-				return workDone;
-			}
 		}
 
 		else {
@@ -954,12 +962,6 @@ public class Farming extends Function {
 					hasEmptySpace = lab1.checkAvailability();
 					if (hasEmptySpace) {
 						hasEmptySpace = lab1.addResearcher();
-						if (hasEmptySpace) {
-							boolean workDone = growCropTissue(lab1, type, worker);
-							lab.removeResearcher();
-							return workDone;
-						}
-
 						// Note: compute research points to determine if it can be carried out.
 						// int points += (double) (lab.getResearcherNum() * lab.getTechnologyLevel()) /
 						// 2D;
@@ -967,125 +969,107 @@ public class Farming extends Function {
 				}
 			}
 		}
-
-		// Check to see if a person can still "squeeze into" this busy lab to get lab
-		// time
-		if (!hasEmptySpace && (lab.getLaboratorySize() == lab.getResearcherNum())) {
-			return growCropTissue(lab, type, worker);
-		}
-
-		else {
-
-			// Check available research slot in another lab located in another greenhouse
-			List<Building> laboratoryBuildings = building.getSettlement().getBuildingManager().getBuildings(FunctionType.RESEARCH);
-			Iterator<Building> i = laboratoryBuildings.iterator();
-			while (i.hasNext() && !hasEmptySpace) {
-				Building building = i.next();
-				Research lab2 = building.getResearch();
-				if (lab2.hasSpecialty(ScienceType.BOTANY)) {
-					hasEmptySpace = lab2.checkAvailability();
-					if (lab2.getLaboratorySize() == lab2.getResearcherNum()) {
-						boolean workDone = growCropTissue(lab2, type, worker);
-						return workDone;
-					}
-				}
-			}
-		}
-
-		return done;
+		
+		return hasEmptySpace;
 	}
 
+	
 	/**
-	 * Grows crop tissue cultures.
+	 * Checks on a crop tissue.
+	 * 
+	 * @return
+	 */
+	public String checkOnCropTissue() {
+		String name = null;
+		List<String> unchecked = lab.getUncheckedTissues();
+		int size = unchecked.size();
+		if (size > 0) {
+			int rand = RandomUtil.getRandomInt(size - 1);
+			name = unchecked.get(rand);
+			// mark this tissue culture. At max of 3 marks for each culture per sol
+			lab.markChecked(name);
+		}
+		
+		return name;
+	}
+		
+	/**
+	 * Grows one crop tissue culture.
 	 *
 	 * @param lab
-	 * @param croptype
+	 * @param worker
+	 * @return CropSpec
 	 */
-	private boolean growCropTissue(Research lab, CropSpec type, Worker worker) {
-		String cropName = type.getName();
+	public String growCropTissue(Research lab, Worker worker) {
+		double amountExtracted = STANDARD_AMOUNT_TISSUE_CULTURE;
+		String name = null;
+		CropSpec c = chooseCrop2Extract(amountExtracted);
+		String cropName = c.getName();
 		String tissueName = cropName + TISSUE;
+		
 		// NOTE: re-tune the amount of tissue culture not just based on the edible
 		// biomass (actualHarvest)
 		// but also the inedible biomass and the crop category
-		boolean isDone = false;
-		int cropID = type.getCropID();
+
+		int cropID = c.getCropID();
 		int tissueID = ResourceUtil.findIDbyAmountResourceName(tissueName);
-		double amountTissue = building.getSettlement().getAmountResourceStored(tissueID);
-		double amountExtracted = 0;
-
-		// Add the chosen tissue culture entry to the lab if it hasn't done it today.
-		boolean hasIt = lab.hasTissueCulture(tissueName);
-		if (!hasIt) {
-			lab.markChecked(tissueName);
-
-			if (amountTissue == 0) {
-				// if no tissue culture is available, go extract some tissues from the crop
-				// Note: Should check for the health condition of a crop
-				amountExtracted = STANDARD_AMOUNT_TISSUE_CULTURE;
-				// Assume extracting an arbitrary 5 to 15% of the mass of a healthy crop (not a fixed amount)
-				// and make it into tissue culture
-				double lackingCrop = building.getSettlement().retrieveAmountResource(cropID, amountExtracted);
-				
-				double lackingDish = building.getSettlement().retrieveItemResource(ItemResourceUtil.PETRI_DISH_ID, 1);
-				
-				if (lackingDish > 0) {
-					logger.log(building, worker, Level.INFO, 10_000,
-							"Had no petri dish in stock.");
-					// Future: Use petri dish as a container for tissues
-				}
 		
-				if (lackingCrop > 0) {
-					// Store the tissues
-					building.getSettlement().storeAmountResource(tissueID, amountExtracted - lackingCrop);
-					logger.log(building, worker, Level.INFO, 10_000,
-								"Found no " + Conversion.capitalize(cropName) + TISSUE
-								+ " in stock. Extracted " + (amountExtracted - lackingCrop)
-								+ " kg from its adult crop samples.");
-					isDone = true;
-				}
-				else {
-					logger.log(building, worker, Level.INFO, 10_000,
-							"Found enough " + Conversion.capitalize(cropName) + TISSUE
-							+ " in stock. Cloned it from cryofreeze samples.");
-					
-					// For now, allow the tissue culture to be grown from backup samples
-					// In future, need to barter trade from neighboring settlement to obtain it.
-					building.getSettlement().storeAmountResource(tissueID, amountExtracted - lackingCrop);
-					isDone = true;
-				}
+		double amountTissue = building.getSettlement().getAmountResourceStored(tissueID);
+	
+		boolean hasIt = lab.hasTissueCulture(tissueName);
+		
+		if (hasIt) {
+			// Clone tissues - Increase the amount of tissue culture by 20%
+			amountExtracted = amountTissue * 0.2;
+			// Store the tissues
+			if (amountExtracted > 0) {
+				store(amountExtracted, tissueID, "Farming::growCropTissue");
+				logger.log(building, worker, Level.FINE, 3_000,  "Cloned "
+					+ Math.round(amountExtracted*1000.0)/1000.0D + " kg "
+					+ cropName + TISSUE
+					+ " in Botany lab.");
+
+				name = cropName;
 			}
 		}
-
+		
 		else {
-			List<String> unchecked = lab.getUncheckedTissues();
-			int size = unchecked.size();
-			if (size > 0) {
-				int rand = RandomUtil.getRandomInt(size - 1);
-				String s = unchecked.get(rand);
-				// mark this tissue culture. At max of 3 marks for each culture per sol
-				lab.markChecked(s);
+			// if no tissue culture is available, go extract some tissues from the crop
+			// Note: Should check for the health condition of a crop
+			// Future: extract an arbitrary 5 to 15% of the mass of a healthy crop (not a fixed amount)
+			// and make it into tissue culture
+			double lackingCrop = building.getSettlement().retrieveAmountResource(cropID, amountExtracted);
+			
+			double lackingDish = building.getSettlement().retrieveItemResource(ItemResourceUtil.PETRI_DISH_ID, 1);
+			
+			if (lackingDish > 0) {
+				logger.log(building, worker, Level.INFO, 10_000,
+						"Had no petri dish in stock.");
+				// Future: Use petri dish as a container for tissues
+			}
 
-				// if there is less than 1 kg of tissue culture
-				if (amountTissue > 0 && amountTissue < 1) {
-					// increase the amount of tissue culture by 20%
-					amountExtracted = amountTissue * 0.2;
-					// store the tissues
-					if (amountExtracted > 0) {
-						store(amountExtracted, tissueID, "Farming::growCropTissue");
-						logger.log(building, worker, Level.FINE, 3_000,  "Cloned "
-							+ Math.round(amountExtracted*1000.0)/1000.0D + " kg "
-							+ cropName + TISSUE
-							+ " in Botany lab.");
-
-						isDone = true;
-					}
-				}
-
-			} else
-				return false;
+			if (lackingCrop > 0) {
+				// Store the tissues
+				building.getSettlement().storeAmountResource(tissueID, amountExtracted - lackingCrop);
+				logger.log(building, worker, Level.INFO, 10_000,
+							"Found no " + Conversion.capitalize(cropName) + TISSUE
+							+ " in stock. Extracted " + (amountExtracted - lackingCrop)
+							+ " kg from adult crop.");
+				name = cropName;
+			}
+			else { // if lackingCrop = 0
+				logger.log(building, worker, Level.INFO, 10_000,
+						"Found enough " + Conversion.capitalize(cropName) + TISSUE
+						+ " in stock. Cloned it from cryofreeze samples.");
+				
+				// For now, allow the tissue culture to be grown from backup samples
+				// In future, need to barter trade from neighboring settlement to obtain it.
+				building.getSettlement().storeAmountResource(tissueID, amountExtracted - lackingCrop);
+				name = cropName;
+			}
 		}
-
-		return isDone;
+		
+		return name;
 	}
 
 	@Override
@@ -1189,14 +1173,11 @@ public class Farming extends Function {
 	public int getNumCrops2Plant() {
 		return numCrops2Plant;
 	}
-
-	@Override
-	public void destroy() {
-		super.destroy();
-
-		lab = null;
-		cropListInQueue = null;
-		crops = null;
+	
+	public Research getResearch() {
+		if (lab == null)
+			lab = building.getResearch();
+		return lab;
 	}
 
 	/**
@@ -1219,5 +1200,14 @@ public class Farming extends Function {
 		cropsNeedingTending += numCrops2Plant;
 
 		return cropsNeedingTending;
+	}
+	
+	@Override
+	public void destroy() {
+		super.destroy();
+	
+		lab = null;
+		cropListInQueue = null;
+		crops = null;
 	}
 }

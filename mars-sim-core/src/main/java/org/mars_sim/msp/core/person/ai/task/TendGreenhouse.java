@@ -62,10 +62,8 @@ public class TendGreenhouse extends Task implements Serializable {
 	private static final double STRESS_MODIFIER = -1.1D;
 
 	// Data members
-	
 	/** The goal of the task at hand. */
 	private String goal;
-	
 	/** The greenhouse the person is tending. */
 	private Farming greenhouse;
 	/** The task accepted for the duration. */
@@ -206,7 +204,7 @@ public class TendGreenhouse extends Task implements Serializable {
 	}
 
 	/**
-	 * Sets the description and print. the log.
+	 * Sets the description and print the log.
 	 * 
 	 * @param text
 	 */
@@ -350,34 +348,36 @@ public class TendGreenhouse extends Task implements Serializable {
 	 * @return
 	 */
 	private double growingTissue(double time) {
-		// Obtain the crop with the highest VP to work on in the lab
-		CropSpec type = greenhouse.selectVPCrop();
-		
+
 		printDescription(Msg.getString("Task.description.tendGreenhouse.grow"));
 		
-		if (greenhouse.checkBotanyLab(type, worker))  {
+		// Check if the lab is available
+		if (greenhouse.checkBotanyLab())  {
 			
-			printDescription(Msg.getString("Task.description.tendGreenhouse.grow.detail", type.getName().toLowerCase()));
+			String name = greenhouse.growCropTissue(greenhouse.getResearch(), worker);
 			
-			logger.log(greenhouse.getBuilding(), worker, Level.INFO, 30_000, "Growing "
-					+ type.getName() + Farming.TISSUE
-					+ " in botany lab.");
-			
-			double mod = 0;
-			// Determine amount of effective work time based on "Botany" skill
-			int greenhouseSkill = getEffectiveSkillLevel();
-			if (greenhouseSkill <= 0) {
-				mod *= RandomUtil.getRandomDouble(.5, 1.0);
-			} else {
-				mod *= RandomUtil.getRandomDouble(.5, 1.0) * greenhouseSkill * 1.2;
-			}
-
-			double workTime = time * mod;
-			
-			addExperience(workTime);
+			if (name != null) {
+							
+				printDescription(Msg.getString("Task.description.tendGreenhouse.grow.detail", name));
+				
+				logger.log(greenhouse.getBuilding(), worker, Level.INFO, 30_000, "Growing " + name + " in botany lab.");
+				
+				double mod = 0;
+				// Determine amount of effective work time based on "Botany" skill
+				int greenhouseSkill = getEffectiveSkillLevel();
+				if (greenhouseSkill <= 0) {
+					mod *= RandomUtil.getRandomDouble(.5, 1.0);
+				} else {
+					mod *= RandomUtil.getRandomDouble(.5, 1.0) * greenhouseSkill * 1.2;
+				}
 	
-			if (getDuration() <= (getTimeCompleted() + time)) {
-				endTask();
+				double workTime = time * mod;
+				
+				addExperience(workTime);
+		
+				if (getDuration() <= (getTimeCompleted() + time)) {
+					endTask();
+				}
 			}
 			
 			return 0;
@@ -497,29 +497,34 @@ public class TendGreenhouse extends Task implements Serializable {
 		}
 
 		if (type != null) {
-			boolean hasWork = greenhouse.checkBotanyLab(type, worker);
+			// Note the lab may or may not have any of this crop left
+			boolean hasEmptySpace = greenhouse.checkBotanyLab();
 
-			if (hasWork) {
+			if (hasEmptySpace) {
+				// Inspect a tissue culture
+				String name = greenhouse.checkOnCropTissue();
 				
-				setDescription(Msg.getString("Task.description.tendGreenhouse.sample.detail",
-					type.getName()) + Farming.TISSUE);
-
-				logger.log(greenhouse.getBuilding(), worker, Level.INFO, 30_000,
-						"Sampling " + type.getName() + Farming.TISSUE
-						+ " in botany lab.");
-				
-				double mod = 0;
-				// Determine amount of effective work time based on "Botany" skill
-				int greenhouseSkill = getEffectiveSkillLevel();
-				if (greenhouseSkill <= 0) {
-					mod *= RandomUtil.getRandomDouble(.5, 1.0);
-				} else {
-					mod *= RandomUtil.getRandomDouble(.5, 1.0) * greenhouseSkill * 1.2;
+				if (name != null) {
+					setDescription(Msg.getString("Task.description.tendGreenhouse.sample.detail",
+							name) + Farming.TISSUE);
+	
+					logger.log(greenhouse.getBuilding(), worker, Level.INFO, 30_000,
+							"Sampling " + name
+							+ " in botany lab.");
+					
+					double mod = 0;
+					// Determine amount of effective work time based on "Botany" skill
+					int greenhouseSkill = getEffectiveSkillLevel();
+					if (greenhouseSkill <= 0) {
+						mod *= RandomUtil.getRandomDouble(.5, 1.0);
+					} else {
+						mod *= RandomUtil.getRandomDouble(.5, 1.0) * greenhouseSkill * 1.2;
+					}
+	
+					double workTime = time * mod;
+					
+					addExperience(workTime);
 				}
-
-				double workTime = time * mod;
-				
-				addExperience(workTime);
 			}
 			
 			if (getDuration() <= (getTimeCompleted() + time)) {

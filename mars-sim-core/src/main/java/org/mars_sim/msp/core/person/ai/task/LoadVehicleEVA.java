@@ -127,11 +127,6 @@ public class LoadVehicleEVA extends EVAOperation {
 		super(NAME, person, true, 20D + RandomUtil.getRandomInt(5) - RandomUtil.getRandomInt(5), null);
 
 		this.vehicleMission = mission;
-
-		if (settlement.getBuildingManager().isInGarage(vehicle)) {
-			checkLocation();
-        	return;
-		}
 		
 		if (!person.isFit()) {
 			checkLocation();
@@ -144,6 +139,11 @@ public class LoadVehicleEVA extends EVAOperation {
 			return;
 		}
 
+		if (settlement.getBuildingManager().isInGarage(vehicle)) {
+			checkLocation();
+        	return;
+		}
+		
 		initLoad(person);
 	}
 

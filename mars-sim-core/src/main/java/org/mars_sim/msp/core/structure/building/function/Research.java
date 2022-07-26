@@ -49,13 +49,22 @@ implements Lab {
     private List<ScienceType> researchSpecialties;
     
     /** 
-     * This map records the quality of the research on a science subject in the form of a score. 
+     * This map records the quality of the research on
+     * a science subject in the form of a score. 
      * It can go up and down over time. 
      */
     private Map<ScienceType, Double> researchQualityMap;
     
-    /** This map is the log book for tallying the # of daily inspections on the tissue cultures that this lab maintains */
-    private Map<String, Integer> tissueCultureMap;
+    /** 
+     * This map is the log book for tallying the # of daily 
+     * inspections on the tissue cultures that this lab maintains.
+     */
+    private Map<String, Integer> tissueCultureInspection;
+    
+    /** 
+     * The amount of tissue cultures that this lab maintains.
+     */
+    private Map<String, Double> tissueCultureAmount;
     
     /**
      * Constructor.
@@ -183,11 +192,9 @@ implements Lab {
      * @return true if the person can be added. 
      */
     public boolean addResearcher() {
-
         if (researcherNum > researcherCapacity) {
             researcherNum = researcherCapacity;
             return false;
-            //throw new IllegalStateException("Lab already full of researchers.");
         }
         else {
             researcherNum ++;
@@ -201,7 +208,6 @@ implements Lab {
      * @throws Exception if person cannot be added.
      */
     public Boolean checkAvailability() {
-    	//System.out.println("lab : " + researcherNum + " of " + researcherCapacity);
         return researcherNum < researcherCapacity;
     }
 
@@ -230,27 +236,28 @@ implements Lab {
 		boolean valid = isValid(pulse);
 		if (valid) {
 			if (pulse.isNewSol()) {
-                tissueCultureMap.replaceAll((s, v) -> 0);
+                tissueCultureInspection.replaceAll((s, v) -> 0);
 			}
 		}
 		return valid;
     }
 
     private void setupTissueCultures() {
-       	tissueCultureMap = new HashMap<>();
+       	tissueCultureInspection = new HashMap<>();
+       	tissueCultureAmount = new HashMap<>();
     }
     
 	public List<String> getUncheckedTissues() {
 		List<String> batch = new ArrayList<>();
-		for (String s : tissueCultureMap.keySet()) {
-			if (tissueCultureMap.get(s) < NUM_INSPECTIONS)
+		for (String s : tissueCultureInspection.keySet()) {
+			if (tissueCultureInspection.get(s) < NUM_INSPECTIONS)
 				batch.add(s);
 		}
 		return batch;
 	}
-	
+
     public void markChecked(String s) {
-    	tissueCultureMap.put(s, tissueCultureMap.get(s) + 1);
+    	tissueCultureInspection.put(s, tissueCultureInspection.get(s) + 1);
     }
     
     
@@ -261,11 +268,12 @@ implements Lab {
      * @return true if the lab has it
      */
     public boolean hasTissueCulture(String tissueName) {
-    	if (!tissueCultureMap.containsKey(tissueName)) {
-    		tissueCultureMap.put(tissueName, 0);
-    		return false;
+    	if (tissueCultureAmount.containsKey(tissueName)
+    		&& tissueCultureAmount.get(tissueName) > 0) {
+    			return true;
     	}
-    	return true;
+
+    	return false;
     }
     
     @Override

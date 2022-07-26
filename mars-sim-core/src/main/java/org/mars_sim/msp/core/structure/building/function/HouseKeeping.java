@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.structure.building.function;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -45,7 +46,16 @@ public class HouseKeeping implements Serializable {
 	 * Resets all the cleaning tasks to back zero.
 	 */
 	public void resetCleaning() {
-		cleaningMap.replaceAll((s, v) -> 0);
+		Map<String, Integer> newMap = new HashMap<>();
+		Iterator<Map.Entry<String, Integer>> i = cleaningMap.entrySet().iterator();
+		while (i.hasNext()) {
+			Map.Entry<String, Integer> entry = i.next();
+			String s = entry.getKey();
+			i.remove();
+			newMap.put(s, 0);
+		}
+		cleaningMap.putAll(newMap);
+//		cleaningMap.replaceAll((s, v) -> 0);
 	}
 
 	/**
@@ -98,7 +108,7 @@ public class HouseKeeping implements Serializable {
 	 * @param s
 	 */
 	public void cleaned(String s) {
-		cleaningMap.put(s, cleaningMap.get(s) + 1);		
+		cleaningMap.put(s, cleaningMap.get(s) + 1);
 	}
 
 }

@@ -239,33 +239,6 @@ extends JComponent implements ClockListener {
 		} else {
 			logger.log(Level.CONFIG, "Running mars-sim in Sandbox Mode.");
 		}
-		
-//		logger.log(Level.CONFIG, "Checking OS color scheme.");
-//		
-//    	// Detect if OS dark theme is in use
-//		final OsThemeDetector detector = OsThemeDetector.getDetector();
-//		
-//		boolean supported = OsThemeDetector.isSupported();
-//		if (supported)
-//			logger.log(Level.CONFIG, "OsThemeDetector is supported.");
-//		
-//		boolean dark = detector.isDark();
-//		if (dark)
-//			logger.log(Level.CONFIG, "OS is using a dark theme.");
-//		else
-//			logger.log(Level.CONFIG, "OS is using a light theme.");
-//		
-//		detector.registerListener(isDark -> {
-//		    SwingUtilities.invokeLater(() -> {
-//		        if (isDark) {
-//		            // Switch to a dark theme
-//		        	logger.log(Level.CONFIG, "Switch to a dark theme since OS is now using a dark theme.");
-//		        } else {
-//		            // Switch to a light theme
-//		        	logger.log(Level.CONFIG, "Switch to a light theme since OS is now using a light theme.");
-//		        }
-//		    });
-//		});
 
 		// Start the wait layer
 		layerUI.start();
