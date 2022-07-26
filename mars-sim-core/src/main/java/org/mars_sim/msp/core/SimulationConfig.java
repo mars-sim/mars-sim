@@ -340,17 +340,6 @@ public class SimulationConfig implements Serializable {
 		          	logger.log(Level.SEVERE, "Cannot access version.txt : " + e.getMessage());
 				}
 			}
-
-			if (exceptionFileExist) {
-				try (BufferedReader buffer = new BufferedReader(new FileReader(exceptionLoc))) {
-					// Need to figure out how to make use of
-					// exception.txt for tracking user's made changes in xml
-				} catch (FileNotFoundException e) {
-		          	logger.log(Level.SEVERE, "Cannot find exception.txt : " + e.getMessage());
-				} catch (IOException e) {
-		          	logger.log(Level.SEVERE, "Cannot access exception.txt : " + e.getMessage());
-				}
-			}
 		}
 
 		if (!xmlDirExist)
@@ -391,7 +380,7 @@ public class SimulationConfig implements Serializable {
 							logger.config("Case A2 : The build folder " +
 									s0 + " already exists. Back up to " + s1);
 							// Make a copy everything in the /xml to the /{$version}
-							FileUtils.moveDirectoryToDirectory(xmlLoc, dir, true);
+							FileUtils.copyDirectory(xmlLoc, dir, true);
 				        }
 					}
 					else {
@@ -400,7 +389,7 @@ public class SimulationConfig implements Serializable {
 							logger.config("Case B1 : The backup folder doesn't exist. " +
 									"Back up to " + backupDir);
 							// Make a copy everything in the /xml to the /backup/xml
-							FileUtils.moveDirectoryToDirectory(xmlLoc, backupLoc, true);
+							FileUtils.copyDirectory(xmlLoc, backupLoc, true);
 				        }
 						else {
 							// Case B2 : Copy it to /.mars-sim/backup/{$timestamp}/
@@ -414,13 +403,9 @@ public class SimulationConfig implements Serializable {
 				            logger.config("Case B2 : The backup folder " +
 									backupDir + " already exists. Back up to " + s2);
 							// Make a copy everything in the /xml to the /backup/xml
-							FileUtils.moveDirectoryToDirectory(xmlLoc, backupLoc, true);
+							FileUtils.copyDirectory(xmlLoc, backupLoc, true);
 						}
 					}
-
-					// delete everything in the xml folder
-					xmlDirDeleted = deleteDirectory(xmlLoc);
-
 				} catch (IOException e) {
 		          	logger.log(Level.SEVERE, "Issues with build folder or backup folder: " + e.getMessage());
 				}
