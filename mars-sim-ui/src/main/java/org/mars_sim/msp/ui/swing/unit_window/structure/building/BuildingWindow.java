@@ -32,7 +32,7 @@ public class BuildingWindow extends UnitWindow {
      */
     public BuildingWindow(MainDesktopPane desktop, Building building) {
         // Use UnitWindow constructor
-        super(desktop, building, false);
+        super(desktop, building, building.getSettlement().getName() + " - " + building.getNickName(), false);
 
         // Add tab panels
         addTopPanel(new BuildingPanelGeneral(building, desktop));

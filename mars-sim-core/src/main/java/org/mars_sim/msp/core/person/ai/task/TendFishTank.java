@@ -58,11 +58,16 @@ public class TendFishTank extends Task implements Serializable {
 	private static final double STRESS_MODIFIER = -1.1D;
 
 	// Data members
-	/** The fish tank the person is tending. */
-	private Fishery fishTank;
-	private Building building;
 	private double fishingTime = 0D;
 	private double tendTime = 0D;
+	/** The goal of the task at hand. */
+	private String cleanGoal;
+	/** The goal of the task at hand. */
+	private String inspectGoal;
+	/** The fish tank the person is tending. */
+	private Fishery fishTank;
+	/** The building where the fish tank is. */	
+	private Building building;
 	
 	/**
 	 * Constructor.
@@ -289,23 +294,54 @@ public class TendFishTank extends Task implements Serializable {
 	 * @return the amount of time (millisols) left over after performing the phase.
 	 */
 	private double inspectingPhase(double time) {
-
-		List<String> uninspected = fishTank.getUninspected();
-		int size = uninspected.size();
-
-		if (size > 0) {
-			int rand = RandomUtil.getRandomInt(size - 1);
-
-			String goal = uninspected.get(rand);
-
-			fishTank.markInspected(goal);
-
-			setDescription(Msg.getString("Task.description.tendFishTank.inspect", goal));
+		if (inspectGoal == null) {
+			List<String> uninspected = fishTank.getUninspected();
+			int size = uninspected.size();
+	
+			if (size > 0) {
+				int rand = RandomUtil.getRandomInt(size - 1);
+	
+				inspectGoal = uninspected.get(rand);
+			}
 		}
-		setPhase(CLEANING);
+
+		if (inspectGoal != null) {
+			printDescription(Msg.getString("Task.description.tendFishTank.inspect.detail", 
+					inspectGoal.toLowerCase()));
+
+			double mod = 0;
+			// Determine amount of effective work time based on "Botany" skill
+			int greenhouseSkill = getEffectiveSkillLevel();
+			if (greenhouseSkill <= 0) {
+				mod *= RandomUtil.getRandomDouble(.5, 1.0);
+			} else {
+				mod *= RandomUtil.getRandomDouble(.5, 1.0) * greenhouseSkill * 1.2;
+			}
+	
+			double workTime = time * mod;
+			
+			addExperience(workTime);
+			
+			if (getDuration() <= (getTimeCompleted() + time)) {
+				fishTank.markInspected(inspectGoal);
+				endTask();
+			}
+		}
+			
 		return 0;
 	}
 
+
+	/**
+	 * Sets the description and print the log.
+	 * 
+	 * @param text
+	 */
+	private void printDescription(String text) {
+		setDescription(text);
+		logger.log(fishTank.getBuilding(), worker, Level.FINE, 30_000L, text + ".");
+	}
+	
 	/**
 	 * Performs the cleaning phase.
 	 * 
@@ -314,20 +350,42 @@ public class TendFishTank extends Task implements Serializable {
 	 */
 	private double cleaningPhase(double time) {
 
-		List<String> uncleaned = fishTank.getUncleaned();
-		int size = uncleaned.size();
-
-		if (size > 0) {
-			int rand = RandomUtil.getRandomInt(size - 1);
-
-			String goal = uncleaned.get(rand);
-
-			fishTank.markCleaned(goal);
-
-			setDescription(Msg.getString("Task.description.tendFishTank.clean", goal));
+		if (cleanGoal == null) {
+			List<String> uncleaned = fishTank.getUncleaned();
+			int size = uncleaned.size();
+	
+			if (size > 0) {
+				int rand = RandomUtil.getRandomInt(size - 1);
+	
+				cleanGoal = uncleaned.get(rand);
+			}
 		}
-
-		endTask();
+		
+		if (cleanGoal != null) {
+			printDescription(Msg.getString("Task.description.tendFishTank.clean.detail", 
+					cleanGoal.toLowerCase()));
+				
+			double mod = 0;
+			// Determine amount of effective work time based on "Botany" skill
+			int greenhouseSkill = getEffectiveSkillLevel();
+			if (greenhouseSkill <= 0) {
+				mod *= RandomUtil.getRandomDouble(.5, 1.0);
+			} else {
+				mod *= RandomUtil.getRandomDouble(.5, 1.0) * greenhouseSkill * 1.2;
+			}
+	
+			double workTime = time * mod;
+			
+			addExperience(workTime);
+			
+			if (getDuration() <= (getTimeCompleted() + time)) {
+				fishTank.markCleaned(cleanGoal);
+				endTask();
+			}
+		}
+		else
+			endTask();
+		
 		return 0;
 	}
 

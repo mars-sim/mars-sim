@@ -25,13 +25,17 @@ public class ExploredLocation implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	// Private members.
-	private Coordinates location;
-	private Map<String, Double> estimatedMineralConcentrations;
 	private boolean mined;
 	private boolean explored;
 	private boolean reserved;
-	private Settlement settlement;
 	private int numEstimationImprovement;
+	private double totalMass;
+	private double averageDensity;
+
+	private Settlement settlement;
+	private Coordinates location;
+
+	private Map<String, Double> estimatedMineralConcentrations;
 
 	/**
 	 * Constructor.

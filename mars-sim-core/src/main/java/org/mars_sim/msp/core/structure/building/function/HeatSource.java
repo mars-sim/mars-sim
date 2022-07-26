@@ -46,7 +46,7 @@ public abstract class HeatSource implements Serializable {
 		this.percent = 0;
 		
 		if (surface == null)
-			surface = Simulation.instance().getMars().getSurfaceFeatures();
+			surface = Simulation.instance().getSurfaceFeatures();
 	}
 
 	/**

@@ -65,7 +65,6 @@ import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitManagerEvent;
 import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.UnitType;
-import org.mars_sim.msp.core.environment.Environment;
 import org.mars_sim.msp.core.environment.OrbitInfo;
 import org.mars_sim.msp.core.environment.SunData;
 import org.mars_sim.msp.core.environment.SurfaceFeatures;
@@ -231,11 +230,10 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
         
 		MasterClock masterClock = sim.getMasterClock();
 		masterClock.addClockListener(this, 1000L);
-
-        Environment mars = sim.getMars();
-        this.weather = mars.getWeather();
-        this.surfaceFeatures = mars.getSurfaceFeatures();
-        this.orbitInfo = mars.getOrbitInfo();
+		
+        this.weather = sim.getWeather();
+        this.surfaceFeatures = sim.getSurfaceFeatures();
+        this.orbitInfo = sim.getOrbitInfo();
 
 		if (GameManager.getGameMode() == GameMode.COMMAND) {
 			mode = GameMode.COMMAND;

@@ -17,7 +17,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
+import org.mars_sim.msp.ui.swing.toolwindow.ToolWindow;
 
 import com.alee.laf.panel.WebPanel;
 

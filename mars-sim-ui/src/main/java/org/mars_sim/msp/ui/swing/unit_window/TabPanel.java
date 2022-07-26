@@ -27,7 +27,6 @@ import javax.swing.border.TitledBorder;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitType;
-import org.mars_sim.msp.core.environment.Environment;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -337,16 +336,6 @@ public abstract class TabPanel extends JScrollPane {
 	 */
 	protected Simulation getSimulation() {
 		return desktop.getSimulation();
-	}
-	
-	
-	/**
-	 * Gets the environment instance.
-	 * 
-	 * @return
-	 */
-	protected Environment getMars() {
-		return getSimulation().getMars();
 	}
 	
 	/**

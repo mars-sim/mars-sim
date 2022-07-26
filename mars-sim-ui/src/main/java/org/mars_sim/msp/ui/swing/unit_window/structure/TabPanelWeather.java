@@ -19,6 +19,7 @@ import javax.swing.border.EmptyBorder;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.environment.OrbitInfo;
 import org.mars_sim.msp.core.environment.SurfaceFeatures;
@@ -91,9 +92,10 @@ extends TabPanel {
 
 	private Coordinates locationCache;
 
-	private Weather weather = getMars().getWeather();
-	private SurfaceFeatures surfaceFeatures = getMars().getSurfaceFeatures();
-	private OrbitInfo orbitInfo = getMars().getOrbitInfo();
+	private Simulation sim = Simulation.instance();
+	private Weather weather = sim.getWeather();
+	private SurfaceFeatures surfaceFeatures = sim.getSurfaceFeatures();
+	private OrbitInfo orbitInfo = sim.getOrbitInfo();
 	private MasterClock masterClock = getSimulation().getMasterClock();
 	
 	private static DecimalFormat fmt = new DecimalFormat("##0");

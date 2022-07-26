@@ -53,14 +53,7 @@ public class MetaMissionUtil {
 	}
 
 	private static void initializeRobotMetaMissions() {
-
 		robotMetaMissions = new ArrayList<>();
-
-		// Populate robotMetaMissions list with all meta missions.
-		// robotMetaMissions.add(new TradeMeta());
-		// robotMetaMissions.add(new TravelToSettlementMeta());
-		// robotMetaMissions.add(new BuildingConstructionMissionMeta());
-		// robotMetaMissions.add(new BuildingSalvageMissionMeta());
 	}
 
 	public static int getNumMetaMissions() {
@@ -84,7 +77,6 @@ public class MetaMissionUtil {
 		}
 
 		// Return copy of meta mission list.
-		// return new CopyOnWriteArrayList<MetaMission>(metaMissions);
 		return metaMissions;
 	}
 
@@ -96,7 +88,6 @@ public class MetaMissionUtil {
 		}
 
 		// Return copy of meta mission list.
-		// return new CopyOnWriteArrayList<MetaMission>(robotMetaMissions);
 		return robotMetaMissions;
 	}
 }

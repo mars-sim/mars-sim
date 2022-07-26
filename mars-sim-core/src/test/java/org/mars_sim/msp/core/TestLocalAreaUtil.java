@@ -3,7 +3,6 @@ package org.mars_sim.msp.core;
 import java.util.Iterator;
 
 import org.junit.Before;
-import org.mars_sim.msp.core.environment.Environment;
 import org.mars_sim.msp.core.structure.MockSettlement;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.MockBuilding;
@@ -17,7 +16,7 @@ import junit.framework.TestCase;
 public class TestLocalAreaUtil extends TestCase {
     
     // Comparison to indicate a small but non-zero amount.
-    private static final double SMALL_AMOUNT_COMPARISON = .0000001D;
+//    private static final double SMALL_AMOUNT_COMPARISON = .0000001D;
 	private UnitManager unitManager;
     
 //    /**
@@ -222,10 +221,9 @@ public class TestLocalAreaUtil extends TestCase {
             unitManager.removeUnit(i.next());
         }
 		
-        Environment mars = sim.getMars();
         Function.initializeInstances(simConfig.getBuildingConfiguration(), sim.getMasterClock().getMarsClock(),
-        							 simConfig.getPersonConfig(), simConfig.getCropConfiguration(), mars.getSurfaceFeatures(),
-        							 mars.getWeather(), unitManager);
+        							 simConfig.getPersonConfig(), simConfig.getCropConfiguration(), sim.getSurfaceFeatures(),
+        							 sim.getWeather(), unitManager);
 	}
 	
     /**

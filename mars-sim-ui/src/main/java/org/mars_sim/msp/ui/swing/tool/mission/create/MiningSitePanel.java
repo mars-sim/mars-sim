@@ -22,8 +22,10 @@ import java.util.List;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
@@ -184,11 +186,15 @@ public class MiningSitePanel extends WizardPanel {
 		concentrationTableModel.addColumn("Concentration %");
 		String[] mineralTypes = surfaceFeatures.getMineralMap().getMineralTypeNames();
 		for (String mineralType : mineralTypes)
-			concentrationTableModel.addRow(new Object[] { mineralType, 0D });
+			concentrationTableModel.addRow(new Object[] { Conversion.capitalize(mineralType), 0D });
 		WebTable mineralConcentrationTable = new WebTable(concentrationTableModel);
 		mineralConcentrationTable.setBorder(new MarsPanelBorder());
 		mineralConcentrationTable.setRowSelectionAllowed(true);
 		mineralConcentrationTable.getColumnModel().getColumn(1).setCellRenderer(new NumberCellRenderer(2));
+		
+		DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+		centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+		mineralConcentrationTable.getColumnModel().getColumn(1).setCellRenderer(centerRenderer);
 		
 		TableStyle.setTableStyle(mineralConcentrationTable);
 		

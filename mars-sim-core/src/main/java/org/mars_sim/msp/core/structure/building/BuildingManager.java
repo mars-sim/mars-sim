@@ -1101,7 +1101,7 @@ public class BuildingManager implements Serializable {
 	 */
 	public static boolean removeFromGarage(Vehicle vehicle) {
 		// If the vehicle is in a garage, put the vehicle outside.
-		Building garage = getBuilding(vehicle);
+		Building garage = vehicle.getGarage();
 		if (garage != null && garage.getVehicleMaintenance().removeVehicle(vehicle)) {
 			return true;
 		}
@@ -1162,29 +1162,6 @@ public class BuildingManager implements Serializable {
 			return settlement.getBuildingManager().isInGarage(vehicle);
 		}
 		return false;
-	}
-
-	/**
-	 * Gets the vehicle maintenance building a given vehicle is in.
-	 *
-	 * @return building or null if none.
-	 * @deprecated Should use {@link Vehicle#getGarage()}
-	 */
-	public static Building getBuilding(Vehicle vehicle) {
-		if (vehicle == null)
-			throw new IllegalArgumentException("vehicle is null");
-
-		Settlement settlement = vehicle.getSettlement();
-		if (settlement != null) {
-			List<Building> list = settlement.getBuildingManager().getGarages();
-			for (Building garageBuilding : list) {
-				VehicleMaintenance garage = garageBuilding.getVehicleMaintenance();
-				if (garage != null && garage.containsVehicle(vehicle)) {
-					return garageBuilding;
-				}
-			}
-		}
-		return null;
 	}
 
 	/**

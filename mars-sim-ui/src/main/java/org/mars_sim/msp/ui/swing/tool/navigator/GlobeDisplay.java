@@ -149,7 +149,7 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 
 		this.starfield = ImageLoader.getImage(Msg.getString("img.mars.starfield300")); //$NON-NLS-1$
 
-		this.surfaceFeatures = desktop.getSimulation().getMars().getSurfaceFeatures();
+		this.surfaceFeatures = desktop.getSimulation().getSurfaceFeatures();
 
 
 		// Set component size

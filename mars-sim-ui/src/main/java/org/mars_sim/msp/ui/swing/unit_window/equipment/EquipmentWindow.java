@@ -40,7 +40,7 @@ public class EquipmentWindow extends UnitWindow {
      */
     public EquipmentWindow(MainDesktopPane desktop, Equipment equipment) {
         // Use UnitWindow constructor
-        super(desktop, equipment, false);
+        super(desktop, equipment, equipment.getSettlement().getName() + " - " + equipment.getNickName(), false);
         this.equipment = equipment;
 
         // Add tab panels

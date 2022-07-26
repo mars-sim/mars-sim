@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TerrainElevation.java
- * @date 2021-09-05
+ * @date 2022-07-25
  * @author Scott Davis
  */
 
@@ -80,7 +80,7 @@ public class TerrainElevation implements Serializable {
 	 * @param currentDirection the current direction (in radians)
 	 * @return terrain steepness angle (in radians)
 	 */
-	public double determineTerrainSteepness(Coordinates currentLocation, Direction currentDirection) {
+	public static double determineTerrainSteepness(Coordinates currentLocation, Direction currentDirection) {
 		double newY = -1.5D * currentDirection.getCosDirection();
 		double newX = 1.5D * currentDirection.getSinDirection();
 		Coordinates sampleLocation = currentLocation.convertRectToSpherical(newX, newY);
@@ -98,7 +98,7 @@ public class TerrainElevation implements Serializable {
 	 * @param currentDirection
 	 * @return
 	 */
-	public double determineTerrainSteepness(Coordinates currentLocation, double elevation, Direction currentDirection) {
+	public static double determineTerrainSteepness(Coordinates currentLocation, double elevation, Direction currentDirection) {
 		double newY = - 1.5 * currentDirection.getCosDirection();
 		double newX = 1.5 * currentDirection.getSinDirection();
 		Coordinates sampleLocation = currentLocation.convertRectToSpherical(newX, newY);
@@ -115,7 +115,7 @@ public class TerrainElevation implements Serializable {
 	 * @param currentDirection
 	 * @return
 	 */
-	public double determineTerrainSteepnessRandom(Coordinates currentLocation, double elevation, Direction currentDirection) {
+	public static double determineTerrainSteepnessRandom(Coordinates currentLocation, double elevation, Direction currentDirection) {
 		double newY = - RandomUtil.getRandomDouble(1.5) * currentDirection.getCosDirection();
 		double newX = RandomUtil.getRandomDouble(1.5) * currentDirection.getSinDirection();
 		Coordinates sampleLocation = currentLocation.convertRectToSpherical(newX, newY);
@@ -131,7 +131,7 @@ public class TerrainElevation implements Serializable {
 	 * @param {@link Coordinates} currentLocation
 	 * @return an array of two doubles, namely elevation and steepness
 	 */
-	public double[] computeTerrainProfile(CollectionSite site, Coordinates currentLocation) {
+	public static double[] computeTerrainProfile(CollectionSite site, Coordinates currentLocation) {
 		double steepness = 0;
 		double elevation = getMOLAElevation(currentLocation);
 		for (int i=0 ; i <= 360 ; i++) {
@@ -154,7 +154,7 @@ public class TerrainElevation implements Serializable {
 	 * @param {@link Coordinates}
 	 * @return an array of two doubles, namely elevation and steepness
 	 */
-	public double[] getTerrainProfile(Coordinates currentLocation) {
+	public static double[] getTerrainProfile(Coordinates currentLocation) {
 		return computeTerrainProfile(null, currentLocation);
 	}
 
@@ -166,7 +166,7 @@ public class TerrainElevation implements Serializable {
 	 * @param currentLocation
 	 * @return regolith collection rate
 	 */
-	public void computeRegolithCollectionRate(CollectionSite site, Coordinates currentLocation) {
+	public static void computeRegolithCollectionRate(CollectionSite site, Coordinates currentLocation) {
 
 		// Get the elevation and terrain gradient factor
 		double[] terrainProfile = getTerrainProfile(currentLocation);
@@ -214,7 +214,7 @@ public class TerrainElevation implements Serializable {
 	 * @param currentLocation
 	 * @return ice collection rate
 	 */
-	public void computeIceCollectionRate(CollectionSite site, Coordinates currentLocation) {
+	public static void computeIceCollectionRate(CollectionSite site, Coordinates currentLocation) {
 
 		// Get the elevation and terrain gradient factor
 		double[] terrainProfile = getTerrainProfile(currentLocation);
@@ -261,7 +261,7 @@ public class TerrainElevation implements Serializable {
 	 * @param loc
 	 * @return the collection rate
 	 */
-	public double obtainIceCollectionRate(Coordinates loc) {
+	public static double obtainIceCollectionRate(Coordinates loc) {
 		CollectionSite site = getCollectionSite(loc);
 		if (site.getIceCollectionRate() == -1)
 			computeIceCollectionRate(site, loc);
@@ -274,7 +274,7 @@ public class TerrainElevation implements Serializable {
 	 * @param loc
 	 * @return the collection rate
 	 */
-	public double obtainRegolithCollectionRate(Coordinates loc) {
+	public static double obtainRegolithCollectionRate(Coordinates loc) {
 		CollectionSite site = getCollectionSite(loc);
 		if (site.getRegolithCollectionRate() == -1)
 			computeRegolithCollectionRate(site, loc);
@@ -510,11 +510,11 @@ public class TerrainElevation implements Serializable {
 		return sites;
 	}
 
-	public void addCollectionSite(CollectionSite site) {
+	public static void addCollectionSite(CollectionSite site) {
 		sites.add(site);
 	}
 
-	public CollectionSite getCollectionSite(Coordinates newLocation) {
+	public static CollectionSite getCollectionSite(Coordinates newLocation) {
 		for (CollectionSite s: sites) {
 			if (s.getLocation().equals(newLocation)) {
 				return s;

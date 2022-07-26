@@ -8,18 +8,22 @@ package org.mars_sim.msp.core.structure.building.function;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.resource.Part;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Lab;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.FunctionSpec;
+import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 import org.mars_sim.msp.core.time.ClockPulse;
 
 /**
@@ -34,29 +38,37 @@ implements Lab {
     
 	private static final SimLogger logger = SimLogger.getLogger(Research.class.getName());
 
-	private static final int NUM_INSPECTIONS = 2;
+	private static final int NUM_INSPECTIONS = 3;
 	
     private int techLevel;
     private int researcherCapacity = 0;
     private int researcherNum = 0;
-
-    private double quality = 100;
-    
-    private String owner;
-    
-    private Map<Part, Integer> partsMap; 
     
     private List<ScienceType> researchSpecialties;
     
     /** 
-     * This map records the quality of the research on a science subject in the form of a score. 
+     * This map records the quality of the research on
+     * a science subject in the form of a score. 
      * It can go up and down over time. 
      */
     private Map<ScienceType, Double> researchQualityMap;
     
-    /** This map is the log book for tallying the # of daily inspections on the tissue cultures that this lab maintains */
-    private Map<String, Integer> tissueCultureMap;
+    /** 
+     * This map is the log book for tallying the # of daily 
+     * inspections on the tissue cultures that this lab maintains.
+     */
+    private Map<String, Integer> tissueCultureInspection;
     
+    /** 
+     * The amount of tissue cultures that this lab maintains.
+     */
+    private Map<String, Double> tissueCultureAmount;
+    
+    /** 
+     * The incubator in which crop tissue grows
+     */
+	private Map<String, Double> tissueIncubator;
+	
     /**
      * Constructor.
      * 
@@ -72,7 +84,7 @@ implements Lab {
         researcherCapacity = spec.getCapacity();
         researchSpecialties = buildingConfig.getResearchSpecialties(building.getBuildingType());
         researchQualityMap = new HashMap<>();
-        
+		
         // Initialize the research quality map
         for (ScienceType scienceType : researchSpecialties) {
         	researchQualityMap.put(scienceType, techLevel * 1.0);
@@ -183,11 +195,9 @@ implements Lab {
      * @return true if the person can be added. 
      */
     public boolean addResearcher() {
-
         if (researcherNum > researcherCapacity) {
             researcherNum = researcherCapacity;
             return false;
-            //throw new IllegalStateException("Lab already full of researchers.");
         }
         else {
             researcherNum ++;
@@ -201,7 +211,6 @@ implements Lab {
      * @throws Exception if person cannot be added.
      */
     public Boolean checkAvailability() {
-    	//System.out.println("lab : " + researcherNum + " of " + researcherCapacity);
         return researcherNum < researcherCapacity;
     }
 
@@ -228,29 +237,108 @@ implements Lab {
     @Override
     public boolean timePassing(ClockPulse pulse) {
 		boolean valid = isValid(pulse);
-		if (valid) {
-			if (pulse.isNewSol()) {
-                tissueCultureMap.replaceAll((s, v) -> 0);
-			}
+		if (!valid) {
+			return false;
 		}
+		
+		if (pulse.isNewSol()) {
+            tissueCultureInspection.replaceAll((s, v) -> 0);
+		}
+		
+		if (pulse.isNewMSol()) {
+			Map<String, Double> newMap = new HashMap<>();
+			Iterator<Map.Entry<String, Double>> i = tissueIncubator.entrySet().iterator();
+			while (i.hasNext()) {
+				Map.Entry<String, Double> entry = i.next();
+				String key = entry.getKey();
+				double amount = entry.getValue();
+				if (amount > 0) {
+					i.remove();
+					
+					double time = pulse.getMarsTime().getMillisol();
+					double delta = obtainGrow(time, key);
+					
+					// Increase the amount by millisols / 1000.0 
+					newMap.put(key, amount * (1 + delta)/1000.0);
+				}
+			}
+			tissueIncubator.putAll(newMap);
+		}
+		
 		return valid;
     }
 
+    /**
+     * Obtains the grow factor.
+     * 
+     * @param time
+     * @param key
+     * @return
+     */
+    private double obtainGrow(double time, String key) {
+		// Grow the tissue a little bit in each millisol
+		double delta = 0;
+		
+		// Check if the tissue culture has been well taken care of
+		if (tissueCultureInspection.containsKey(key)) {
+			int num = tissueCultureInspection.get(key);
+			// Incur penalty if having less than NUM_INSPECTIONS
+			delta = (num - NUM_INSPECTIONS) * time;
+			delta = Math.min(0, delta);
+		}
+		
+		return delta;
+    }
+    
+    /**
+     * Harvests and extract a crop tissue.
+     * 
+     * @param worker
+     */
+    public boolean harvestTissue(Worker worker) {
+    	Iterator<Map.Entry<String, Double>> i = tissueIncubator.entrySet().iterator();
+		while (i.hasNext()) {
+			Map.Entry<String, Double> entry = i.next();
+			String cropName = entry.getKey();
+			double amount = entry.getValue();
+			if (amount > 0.5) {
+				String tissueName = cropName + Farming.TISSUE;
+				int tissueID = ResourceUtil.findIDbyAmountResourceName(tissueName);
+				building.getFarming().store(0.5, tissueID, "Farming::growCropTissue");
+				logger.log(building, worker, Level.INFO, 10_000,  
+						"Extracted 0.5 kg " + tissueName + " in Botany lab.");
+				return true;
+			}
+		}
+		logger.log(building, worker, Level.INFO, 10_000,  
+				"Not ready to harvest/extract any crop tissues yet in Botany lab.");
+		return false;
+    }
+    
+	public void addToIncubator(String c, double amountToAdd) {
+		if (tissueIncubator.containsKey(c)) {
+			double amount = tissueIncubator.get(c);
+			tissueIncubator.put(c, amount + amountToAdd);
+		}
+	}
+    
     private void setupTissueCultures() {
-       	tissueCultureMap = new HashMap<>();
+       	tissueCultureInspection = new HashMap<>();
+       	tissueCultureAmount = new HashMap<>();
+       	tissueIncubator = new HashMap<>();
     }
     
 	public List<String> getUncheckedTissues() {
 		List<String> batch = new ArrayList<>();
-		for (String s : tissueCultureMap.keySet()) {
-			if (tissueCultureMap.get(s) < NUM_INSPECTIONS)
+		for (String s : tissueCultureInspection.keySet()) {
+			if (tissueCultureInspection.get(s) < NUM_INSPECTIONS)
 				batch.add(s);
 		}
 		return batch;
 	}
-	
+
     public void markChecked(String s) {
-    	tissueCultureMap.put(s, tissueCultureMap.get(s) + 1);
+    	tissueCultureInspection.put(s, tissueCultureInspection.get(s) + 1);
     }
     
     
@@ -261,11 +349,12 @@ implements Lab {
      * @return true if the lab has it
      */
     public boolean hasTissueCulture(String tissueName) {
-    	if (!tissueCultureMap.containsKey(tissueName)) {
-    		tissueCultureMap.put(tissueName, 0);
-    		return false;
+    	if (tissueCultureAmount.containsKey(tissueName)
+    		&& tissueCultureAmount.get(tissueName) > 0) {
+    			return true;
     	}
-    	return true;
+
+    	return false;
     }
     
     @Override

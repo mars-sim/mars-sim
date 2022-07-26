@@ -120,7 +120,7 @@ public class RandomMineralMap implements Serializable, MineralMap {
 						int regionLocationIndex = RandomUtil.getRandomInt(regionArray.length - 1);
 						Coordinates regionLocation = regionArray[regionLocationIndex];
 						Direction direction = new Direction(RandomUtil.getRandomDouble(Math.PI * 2D));
-						double pixelRadius = (Environment.MARS_CIRCUMFERENCE / W) / 2D;
+						double pixelRadius = (Coordinates.MARS_CIRCUMFERENCE / W) / 2D;
 						double distance = RandomUtil.getRandomDouble(pixelRadius);
 						Coordinates location = regionLocation.getNewLocation(direction, distance);
 						double concentration = RandomUtil.getRandomDouble(100D);

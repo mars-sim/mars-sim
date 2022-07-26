@@ -60,7 +60,7 @@ import org.mars_sim.msp.ui.swing.tool.search.SearchWindow;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementMapPanel;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
 import org.mars_sim.msp.ui.swing.tool.time.TimeWindow;
-import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
+import org.mars_sim.msp.ui.swing.toolwindow.ToolWindow;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindowFactory;
@@ -169,7 +169,7 @@ public class MainDesktopPane extends JDesktopPane
 			// Prep tool windows
 			prepareToolWindows();
 		} catch (Exception e) {
-          	logger.log(Level.SEVERE, "Cannot prepare tool windows: " + e.getMessage());
+          	logger.log(Level.SEVERE, "Cannot prepare tool windows: " + e);
 		}
 
 		// Setup announcement window
@@ -503,6 +503,12 @@ public class MainDesktopPane extends JDesktopPane
 		return false;
 	}
 
+	/**
+	 * Opens a tool window if necessary.
+	 *
+	 * @param toolName the name of the tool window
+	 * @param mission
+	 */
 	public void openToolWindow(String toolName, Mission mission) {
 		ToolWindow window = getToolWindow(toolName);
 		if (window != null) {
@@ -803,7 +809,7 @@ public class MainDesktopPane extends JDesktopPane
 			try {
 				prepareToolWindows();
 			} catch (Exception e) {
-				logger.severe("Cannot prepare tool windows: " + e.getMessage());
+				logger.severe("Reseting desktop. Cannot prepare tool windows: " + e);
 			}
 		});
 

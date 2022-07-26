@@ -43,7 +43,7 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementMapPanel;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
-import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
+import org.mars_sim.msp.ui.swing.toolwindow.ToolWindow;
 
 import com.alee.laf.button.WebButton;
 import com.alee.laf.checkbox.WebCheckBox;

@@ -58,9 +58,14 @@ public class LoadVehicleEVA extends EVAOperation {
 			checkLocation();
         	return;
 		}
-
+		
 		settlement = CollectionUtils.findSettlement(person.getCoordinates());
 		if (settlement == null) {
+			checkLocation();
+        	return;
+		}
+		
+		if (settlement.getBuildingManager().isInGarage(vehicle)) {
 			checkLocation();
         	return;
 		}
@@ -122,7 +127,7 @@ public class LoadVehicleEVA extends EVAOperation {
 		super(NAME, person, true, 20D + RandomUtil.getRandomInt(5) - RandomUtil.getRandomInt(5), null);
 
 		this.vehicleMission = mission;
-
+		
 		if (!person.isFit()) {
 			checkLocation();
         	return;
@@ -134,6 +139,11 @@ public class LoadVehicleEVA extends EVAOperation {
 			return;
 		}
 
+		if (settlement.getBuildingManager().isInGarage(vehicle)) {
+			checkLocation();
+        	return;
+		}
+		
 		initLoad(person);
 	}
 

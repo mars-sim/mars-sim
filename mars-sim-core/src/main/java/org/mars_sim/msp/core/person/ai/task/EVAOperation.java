@@ -599,7 +599,6 @@ public abstract class EVAOperation extends Task {
 	 * @return
 	 */
 	public static boolean isExhausted(Person person) {
-
         return person.getPhysicalCondition().isHungry() || person.getPhysicalCondition().isThirsty()
                 || person.getPhysicalCondition().isSleepy() || person.getPhysicalCondition().isStressed();
     }

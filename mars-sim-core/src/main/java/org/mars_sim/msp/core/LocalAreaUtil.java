@@ -137,7 +137,7 @@ public class LocalAreaUtil {
 	}
 
 	/**
-	 * Gets a random position inside relative to the bounded Object
+	 * Gets a random position inside relative to the bounded Object.
 	 *
 	 * @param boundedObject the local bounded object.
 	 * @return random X/Y location relative to the center of the bounded object.
@@ -312,7 +312,7 @@ public class LocalAreaUtil {
 	}
 
 	/**
-	 * Checks for collisions with any immovable objects
+	 * Checks for collisions with any immovable objects.
 	 *
 	 * @return true if location collides with something.
 	 * @param LocalBoundedObject object
@@ -486,6 +486,13 @@ public class LocalAreaUtil {
 		return result;
 	}
 
+	/**
+	 * Gets the line path collision points.
+	 * 
+	 * @param line
+	 * @param object
+	 * @return
+	 */
 	public static Set<Point2D> getLinePathCollisionPoints(Line2D line, LocalBoundedObject object) {
 
 		Set<Point2D> result = ConcurrentHashMap.newKeySet();
@@ -503,6 +510,13 @@ public class LocalAreaUtil {
 		return result;
 	}
 
+	/**
+	 * Gets the line intersection point.
+	 * 
+	 * @param line1
+	 * @param line2
+	 * @return
+	 */
 	private static Point2D getLineIntersectionPoint(Line2D line1, Line2D line2) {
 
 		double x1 = line1.getX1();
@@ -522,6 +536,12 @@ public class LocalAreaUtil {
 		return new Point2D.Double(x, y);
 	}
 
+	/**
+	 * Gets the bounded object area.
+	 * 
+	 * @param object
+	 * @return
+	 */
 	private static Area getBoundedObjectArea(LocalBoundedObject object) {
 
 		Rectangle2D rect = new Rectangle2D.Double(object.getXLocation() - (object.getWidth() / 2D),
@@ -533,7 +553,7 @@ public class LocalAreaUtil {
 	}
 
 	/**
-	 * Checks if two bound objects collide
+	 * Checks if two bound objects collide.
 	 *
 	 * @param o1 the first bound object
 	 * @param o2 the second bound object
@@ -691,7 +711,7 @@ public class LocalAreaUtil {
 	}
 
 	/**
-	 * Clear the obstacle area cache and time stamps.
+	 * Clears the obstacle area cache and time stamps.
 	 */
 	public static void clearObstacleCache() {
 		if (obstacleAreaCache != null) {

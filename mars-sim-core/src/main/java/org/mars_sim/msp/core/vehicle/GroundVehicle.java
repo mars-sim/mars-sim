@@ -12,6 +12,7 @@ import java.util.List;
 import org.mars_sim.msp.core.Direction;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalPosition;
+import org.mars_sim.msp.core.environment.TerrainElevation;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -127,9 +128,7 @@ public abstract class GroundVehicle extends Vehicle {
 	 */
 	public double getTerrainGrade(Direction direction) {
 		// Determine the terrain grade in a given direction from the vehicle.
-		if (terrainElevation == null)
-			terrainElevation = surfaceFeatures.getTerrainElevation();
-		return terrainElevation.determineTerrainSteepness(getCoordinates(), direction);
+		return TerrainElevation.determineTerrainSteepness(getCoordinates(), direction);
 	}
     
 	/**

@@ -590,7 +590,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 						updatePhase(PhaseType.FINISHED);
 
 						//  Check to see if a botany lab is available
-						if (worker instanceof Person && !farm.checkBotanyLab(cropSpec, worker))
+						if (worker instanceof Person && !farm.checkBotanyLab())
 							logger.log(building, worker, Level.INFO, 0,
 									"Can't find an available lab bench to work on the tissue culture for "
 											+ name + ".", null);

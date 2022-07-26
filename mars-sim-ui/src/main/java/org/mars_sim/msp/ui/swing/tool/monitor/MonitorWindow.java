@@ -45,7 +45,7 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.RowNumberTable;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
-import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
+import org.mars_sim.msp.ui.swing.toolwindow.ToolWindow;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 
 import com.alee.laf.button.WebButton;
@@ -215,10 +215,13 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	public void addAllTabs() {
 		// Add tabs into the table
 		try {
+			if (!settlementList.isEmpty())
+				this.selectedSettlement = settlementList.get(0);
+			
 			if (getSettlements().size() > 1) {
 				addTab(new UnitTab(this, new SettlementTableModel(), true, MARS_ICON));
 			}
-
+			
 			addTab(new UnitTab(this, new SettlementTableModel(selectedSettlement), true, COLONY_ICON));
 			addTab(new UnitTab(this, new PersonTableModel(selectedSettlement, true), true, PEOPLE_ICON));
 			addTab(new UnitTab(this, new RobotTableModel(selectedSettlement, true), true, BOT_ICON));
@@ -342,6 +345,9 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 			Collections.sort(settlements);
 			settlementList = settlements;
 		}
+		
+		if (!settlementList.isEmpty())
+			this.selectedSettlement = settlementList.get(0);
 	}
 
 	/**
@@ -369,25 +375,25 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		settlementComboBox.setToolTipText(Msg.getString("SettlementWindow.tooltip.selectSettlement")); //$NON-NLS-1$
 		settlementComboBox.setRenderer(new PromptComboBoxRenderer());
 
-		int size = settlementComboBox.getModel().getSize();
-		if (size > 1) {
-			// Gets the selected settlement from SettlementMapPanel
-			Settlement s = desktop.getSettlementMapPanel().getSettlement();
-			// Selects the settlement in the combo box
-			settlementComboBox.setSelectedItem(s);
-			// Change to the selected settlement in SettlementMapPanel
-			if (s != null)
-				setSettlement(s);
-		}
-
-		else if (size == 1) {
-			// Selects the first settlement
-			settlementComboBox.setSelectedIndex(0);
-			// Gets the settlement
-			Settlement s = (Settlement) settlementComboBox.getSelectedItem();
-			// Change to the selected settlement in SettlementMapPanel
-			setSettlement(s);
-		}
+//		int size = settlementComboBox.getModel().getSize();
+//		if (size > 1) {
+//			// Gets the selected settlement from SettlementMapPanel
+//			Settlement s = desktop.getSettlementMapPanel().getSettlement();
+//			// Selects the settlement in the combo box
+//			settlementComboBox.setSelectedItem(s);
+//			// Change to the selected settlement in SettlementMapPanel
+//			if (s != null)
+//				setSettlement(s);
+//		}
+//
+//		else if (size == 1) {
+//			// Selects the first settlement
+//			settlementComboBox.setSelectedIndex(0);
+//			// Gets the settlement
+//			Settlement s = (Settlement) settlementComboBox.getSelectedItem();
+//			// Change to the selected settlement in SettlementMapPanel
+//			setSettlement(s);
+//		}
 
 		// Set the item listener only after the setup is done
 		settlementComboBox.addItemListener(new ItemListener() {
@@ -540,6 +546,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		int index = tabsSection.indexOfComponent(selectedTab);
 		
 		if (settlementList.size() == 1) {
+			this.selectedSettlement = settlementList.get(0);
 			
 			if (selectedTab instanceof TradeTab) {
 				// Enable these buttons
@@ -549,8 +556,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 				buttonFilter.setEnabled(true);
 
 				int rowIndex = ((TradeTableModel)tradeTab.getModel()).returnLastRowIndex(selectedSettlement);
-
-				
+	
 				scrollToVisible(tradeTab.getTable(), rowIndex, 0);
 			}
 			

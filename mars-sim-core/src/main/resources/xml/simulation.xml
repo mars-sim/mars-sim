@@ -56,21 +56,21 @@
 		<!-- The time span covered by each simulation pulse is defined below. These are defined in terms of
 		     milliSols. The lower the value, the more accurate the simulation but the more pulses & more expensive
 		     to calculate. Note both values can be adjusted if the processing becomes too excessive.
-		 -->
-		 <!-- Default: 0.0112644016 millisols ~ 1 earth seconds -->
-		 <min-simulated-pulse value="0.0112644016"/>
+		-->
+		<!-- Default: 0.0112644016 millisols ~ 1 earth seconds -->
+		<min-simulated-pulse value="0.0112644016"/>
 
-		 <!-- Default: 3.37932048 millisols ~ 5 earth minutes or 300 earth seconds -->
-		 <max-simulated-pulse value="3.37932048"/>
+		<!-- Default: 3.37932048 millisols ~ 5 earth minutes or 300 earth seconds -->
+		<max-simulated-pulse value="3.37932048"/>
 
-		 <!-- The simulation creates a pulse periodically to execution the simulation. This integer value defines the
-		  maximum wait between pulses in terms of millisecs. The simulation will attempt to generate pulses more
-		  frequently depending on the time ratio and the accuracy as well as the machine power. -->
-		 <!-- Default is 1000 (must be an integer. 1000 milisecs equals to 1 sec) -->
-		 <default-time-pulse value="1000"/>
+		<!-- The simulation creates a pulse periodically to execution the simulation. This integer value defines the
+		maximum wait between pulses in terms of millisecs. The simulation will attempt to generate pulses more
+		frequently depending on the time ratio and the accuracy as well as the machine power. -->
+		<!-- Default is 1000 (must be an integer. 1000 milisecs equals to 1 sec) -->
+		<default-time-pulse value="1000"/>
 
-		 <!-- The accuracy bias influences whether the simulation goes for smaller timespans to give an accurate
-		 simulation but more costly or larger timespans to reduce the processing load. This values chooses the actual
+		<!-- The accuracy bias influences whether the simulation goes for smaller timespans to give an accurate
+		simulation but more costly or larger timespans to reduce the processing load. This values chooses the actual
 		pulse rate between the calculated min & max pulse durations.
 		This value must be between 0 & 1 with 1 being most accurate. -->
 		<!-- Default is 0.5 -->

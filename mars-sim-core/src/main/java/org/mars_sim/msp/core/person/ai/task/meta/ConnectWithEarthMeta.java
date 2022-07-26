@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * ConnectWithEarthMeta.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-25
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -47,11 +47,7 @@ public class ConnectWithEarthMeta extends MetaTask {
     public double getProbability(Person person) {
 
         double result = 0D;
-
-        // Check if a person has done this once today
-//      if (person.getPreference().isTaskDue(this))
-//      	return 0;	
-        
+ 
         if (person.isInside()) {
         		
             // Probability affected by the person's stress and fatigue.
@@ -63,7 +59,7 @@ public class ConnectWithEarthMeta extends MetaTask {
             if (fatigue > 1000 || hunger > 500)
             	return 0;
             
-            result -= fatigue/15;
+            result -= fatigue/20;
             
             double pref = person.getPreference().getPreferenceScore(this);
             
@@ -75,7 +71,7 @@ public class ConnectWithEarthMeta extends MetaTask {
              		result*=1.5;
              	else if (stress < 50)
              		result*=2D;
-             	else if (stress > 75)
+             	else if (stress < 75)
              		result*=3D;
              	else if (stress < 90)
              		result*=4D;
@@ -85,7 +81,7 @@ public class ConnectWithEarthMeta extends MetaTask {
             Building building = BuildingManager.getAvailableCommBuilding(person);
 
             if (building != null) {
-            	result += 5;
+            	result += 2;
             	// A comm facility has terminal equipment that provides communication access with Earth
             	// It is necessary
                 result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);

@@ -133,9 +133,6 @@ public abstract class CollectResourcesMission extends EVAMission
 					return;
 				}
 
-				if (terrainElevation == null)
-					terrainElevation = surfaceFeatures.getTerrainElevation();
-
 				// Find some sites
 				List<Coordinates> unorderedSites = null;
 				while (unorderedSites == null) {

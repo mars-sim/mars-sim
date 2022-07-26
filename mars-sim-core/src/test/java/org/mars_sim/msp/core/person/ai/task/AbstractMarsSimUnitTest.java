@@ -7,7 +7,6 @@ import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
-import org.mars_sim.msp.core.environment.Environment;
 import org.mars_sim.msp.core.environment.MarsSurface;
 import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.Person;
@@ -63,10 +62,9 @@ public abstract class AbstractMarsSimUnitTest extends TestCase {
 	        unitManager.removeUnit(i.next());
 	    }
 		
-	    Environment mars = sim.getMars();
 	    Function.initializeInstances(simConfig.getBuildingConfiguration(), sim.getMasterClock().getMarsClock(),
-	    							 simConfig.getPersonConfig(), simConfig.getCropConfiguration(), mars.getSurfaceFeatures(),
-	    							 mars.getWeather(), unitManager);
+	    							 simConfig.getPersonConfig(), simConfig.getCropConfiguration(), sim.getSurfaceFeatures(),
+	    							 sim.getWeather(), unitManager);
 	    
 	    surface = unitManager.getMarsSurface();
 		evaFunction = simConfig.getBuildingConfiguration().getFunctionSpec("EVA Airlock", FunctionType.EVA);

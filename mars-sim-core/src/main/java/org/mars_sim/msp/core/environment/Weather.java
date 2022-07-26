@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Weather.java
- * @date 2021-12-17
+ * @date 2022-07-25
  * @author Scott Davis
  * @author Hartmut Prochaska
  */
@@ -40,7 +40,7 @@ public class Weather implements Serializable, Temporal {
 	private static final double LIGHT_EFFECT = 1.2;
 	/** Extreme cold surface temperatures on Mars at deg Kelvin [or at -153.17 C] */
 	private static final double EXTREME_COLD = 120D; 
-	
+
 	/** Viking 1's latitude */
 	private static final double VIKING_LATITUDE = 22.48D; // At 22.48E
 	private final static double VIKING_DT = Math.round((28D - 15D *
@@ -93,12 +93,9 @@ public class Weather implements Serializable, Temporal {
 	
 	private SunData sunData;
 	
-	private SurfaceFeatures surfaceFeatures;
-	private OrbitInfo orbitInfo;
-	
-	private MarsClock marsClock;
-	
 	private Simulation sim;
+	private OrbitInfo orbitInfo;
+	private MarsClock marsClock;
 
 	public Weather(Simulation sim, MarsClock clock, OrbitInfo orbitInfo) {
 		this.sim = sim; 
@@ -108,7 +105,7 @@ public class Weather implements Serializable, Temporal {
 
 	/**
 	 * Checks if a location with certain coordinates already exists and add any new
-	 * location
+	 * location.
 	 * 
 	 * @param location
 	 */
@@ -309,7 +306,7 @@ public class Weather implements Serializable, Temporal {
 	}
 
 	/**
-	 * Calculates the air pressure at a given location and/or height
+	 * Calculates the air pressure at a given location and/or height.
 	 * 
 	 * @param location
 	 * @param height   [in km]
@@ -381,8 +378,8 @@ public class Weather implements Serializable, Temporal {
 		return t;
 	}
 
-	/***
-	 * Calculates the mid-air temperature
+	/**
+	 * Calculates the mid-air temperature.
 	 * 
 	 * @param h is elevation in km
 	 * @return temperature at elevation h
@@ -417,7 +414,7 @@ public class Weather implements Serializable, Temporal {
 
 		double t = 0;
 
-		if (surfaceFeatures.inDarkPolarRegion(location)) {
+		if (sim.getSurfaceFeatures().inDarkPolarRegion(location)) {
 
 			// vs. just in inPolarRegion()
 			// see http://www.alpo-astronomy.org/jbeish/Observing_Mars_3.html
@@ -435,7 +432,7 @@ public class Weather implements Serializable, Temporal {
 
 		}
 
-		else if (surfaceFeatures.inPolarRegion(location)) {
+		else if (sim.getSurfaceFeatures().inPolarRegion(location)) {
 
 			// Based on Surface brightness temperatures at 32 µm retrieved from the MCS data
 			// for
@@ -479,7 +476,7 @@ public class Weather implements Serializable, Temporal {
 //	        double x_offset = time + theta - VIKING_LONGITUDE_OFFSET_IN_MILLISOLS ;
 //	        double equatorial_temperature = 27.5D * Math.sin  ( Math.PI * x_offset / 500D) - 58.5D ;
 			
-			double lightFactor = surfaceFeatures.getSunlightRatio(location) * LIGHT_EFFECT;
+			double lightFactor = sim.getSurfaceFeatures().getSunlightRatio(location) * LIGHT_EFFECT;
 
 			// Equation below is modeled after Viking's data.
 			double equatorialTemperature = 27.5D * lightFactor - 58.5D;
@@ -562,7 +559,7 @@ public class Weather implements Serializable, Temporal {
 
 	/**
 	 * Clears weather-related parameter cache map to prevent excessive build-up of
-	 * key-value sets
+	 * key-value sets.
 	 */
 	public synchronized void clearMap() {
 		if (temperatureCacheMap != null) {
@@ -572,12 +569,20 @@ public class Weather implements Serializable, Temporal {
 		if (airPressureCacheMap != null) {
 			airPressureCacheMap.clear();
 		}
+		
+		if (windSpeedCacheMap != null) {
+			windSpeedCacheMap.clear();
+		}
+		
+		if (windDirCacheMap != null) {
+			windDirCacheMap.clear();
+		}
 	}
 
 	/**
 	 * Provides the surface temperature or air pressure at a given location from the
 	 * temperatureCacheMap. If calling the given location for the first time from
-	 * the cache map, call update temperature/air pressure instead
+	 * the cache map, call update temperature/air pressure instead.
 	 * 
 	 * @return temperature or pressure
 	 */
@@ -618,7 +623,7 @@ public class Weather implements Serializable, Temporal {
 		int remainder = msol % MSOL_PER_SAMPLE;
 		if (isNewSol || remainder == 0) {
 			coordinateList.forEach(location -> {
-				
+
 				MSolDataLogger<DailyWeather> dailyRecordMap = null;				
 				if (weatherDataMap.containsKey(location)) {
 					dailyRecordMap = weatherDataMap.get(location);
@@ -633,8 +638,8 @@ public class Weather implements Serializable, Temporal {
 						getAirPressure(location),
 						getAirDensity(location), 
 						getWindSpeed(location), 
-						surfaceFeatures.getSolarIrradiance(location),
-						surfaceFeatures.getOpticalDepth(location));
+						sim.getSurfaceFeatures().getSolarIrradiance(location),
+						sim.getSurfaceFeatures().getOpticalDepth(location));
 				dailyRecordMap.addDataPoint(weather);
 			});
 		}
@@ -798,9 +803,8 @@ public class Weather implements Serializable, Temporal {
 	
 
 	
-	/***
-	 * Checks if a dust devil is formed for each settlement
-	 * @param sim 
+	/**
+	 * Checks if a dust devil is formed for each settlement.
 	 * 
 	 * @param probability
 	 * @param L_s_int
@@ -838,8 +842,8 @@ public class Weather implements Serializable, Temporal {
 	}
 
 
-	/***
-	 * Checks to DustStorms
+	/**
+	 * Checks to DustStorms.
 	 */
 	private void checkOnDustStorms() {
 		boolean allowPlantStorms = (dustStorms.stream()
@@ -869,19 +873,25 @@ public class Weather implements Serializable, Temporal {
 	}
 
 	/**
-	 * Reloads instances after loading from a saved sim
+	 * Reloads instances after loading from a saved sim.
 	 * 
-	 * @param s {@link SurfaceFeatures}
+	 * @param sim
+	 * @param clock
+	 * @param orbitInfo
 	 */
-	void initializeInstances(SurfaceFeatures s) {
-		surfaceFeatures = s;
+	public void initializeInstances(Simulation sim, MarsClock clock, OrbitInfo orbitInfo) {
+		this.sim = sim; 
+		this.marsClock = clock;
+		this.orbitInfo = orbitInfo;
 	}
 	
 	/**
-	 * Prepare object for garbage collection.
+	 * Prepares object for garbage collection.
 	 */
 	public void destroy() {
+		weatherDataMap.clear();
 		weatherDataMap = null;
+		coordinateList.clear();
 		coordinateList = null;
 		
 		if (temperatureCacheMap != null) {
@@ -892,6 +902,22 @@ public class Weather implements Serializable, Temporal {
 			airPressureCacheMap.clear();
 			airPressureCacheMap = null;
 		}
-		surfaceFeatures = null;
+		if (windSpeedCacheMap != null) {
+			windSpeedCacheMap.clear();
+			windSpeedCacheMap = null;
+		}
+		if (windDirCacheMap != null) {
+			windDirCacheMap.clear();
+			windDirCacheMap = null;
+		}
+		if (dustStorms != null) {
+			dustStorms.clear();
+			dustStorms = null;
+		}
+
+		sunData = null;
+		sim = null;
+		orbitInfo = null;
+		marsClock = null;				
 	}
 }

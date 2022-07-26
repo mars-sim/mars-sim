@@ -243,11 +243,12 @@ public class ResourceProcess implements Serializable {
 					double resourceRate = maxRate * level;
 					double resourceAmount = resourceRate * time;
 					double stored = settlement.getAmountResourceStored(resource);
-					if (stored > SMALL_AMOUNT) {	
+					if (stored > SMALL_AMOUNT) {
 						if (resourceAmount > stored) {
-							logger.warning(settlement, 30_000, "Case A. Not enough '" + ResourceUtil.findAmountResourceName(resource)
+							logger.warning(settlement, 30_000, "Case A. Just used up all '" + ResourceUtil.findAmountResourceName(resource)
 								+ "' input to start '" + name + "'. Still missing " + Math.round(resourceAmount * 1000.0)/1000.0 + " kg. "
 								+ Math.round(stored * 1000.0)/1000.0 + " kg in storage.");
+							resourceAmount = stored;
 							setProcessRunning(false);
 							break;
 							// Note: turn on a yellow flag and indicate which the input resource is missing
@@ -276,10 +277,12 @@ public class ResourceProcess implements Serializable {
 					
 					if (remainingCapacity > SMALL_AMOUNT) {
 						if (resourceAmount > remainingCapacity) {
-							logger.warning(settlement, 30_000, "Case C. Not enough space for storing '" 
+							logger.warning(settlement, 30_000, "Case C. Just used up all remaining space for storing '" 
 									+ ResourceUtil.findAmountResourceName(resource)
-									+ "' output to continue '" + name + "'. Requiring " + Math.round(resourceAmount * 1000.0)/1000.0 
-									+ " kg of storage. Remaining cap: " + Math.round(remainingCapacity * 1000.0)/1000.0 + " kg.");
+									+ "' output in '" + name + "'. Requiring " + Math.round((resourceAmount - remainingCapacity) * 1000.0)/1000.0 
+									+ " kg of storage. Remaining cap: 0 kg.");
+							resourceAmount = remainingCapacity;
+							settlement.storeAmountResource(resource, resourceAmount);
 							setProcessRunning(false);
 							break;
 							// Note: turn on a yellow flag and indicate which the output resource is missing

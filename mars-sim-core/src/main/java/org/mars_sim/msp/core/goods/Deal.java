@@ -8,8 +8,6 @@ package org.mars_sim.msp.core.goods;
 
 import java.util.Map;
 
-import javax.swing.plaf.basic.BasicTreeUI.SelectionModelPropertyChangeHandler;
-
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 
@@ -26,7 +24,9 @@ public class Deal implements Comparable<Deal> {
 	private double profit;
 	private MarsClock created;
 
-    Deal(Settlement buyer, double sellingRevenue, Map<Good, Integer> sellLoad, double buyingRevenue, Map<Good, Integer> buyLoad, double cost, MarsClock created) {
+    Deal(Settlement buyer, double sellingRevenue, Map<Good, Integer> sellLoad,
+        double buyingRevenue, Map<Good, Integer> buyLoad, double cost, MarsClock created) {
+
 		this.buyer = buyer;
 		this.sellingRevenue = sellingRevenue;
         this.sellingLoad = sellLoad;
@@ -61,7 +61,7 @@ public class Deal implements Comparable<Deal> {
     public double getSellingRevenue() {
         return sellingRevenue;
     }
-    
+
     public Map<Good, Integer> getSellingLoad() {
         return sellingLoad;
     }

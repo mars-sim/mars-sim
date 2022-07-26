@@ -20,7 +20,7 @@ import javax.swing.plaf.LayerUI;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.SpotlightLayerUI;
-import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
+import org.mars_sim.msp.ui.swing.toolwindow.ToolWindow;
 
 import com.alee.extended.label.WebStyledLabel;
 import com.alee.extended.statusbar.WebStatusBar;

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * SurfaceFeatures.java
- * @date 2022-06-24
+ * @date 2022-07-25
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.environment;
@@ -9,15 +9,10 @@ package org.mars_sim.msp.core.environment;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.person.ai.mission.Mining;
-import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.MissionManager;
-import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -88,10 +83,8 @@ public class SurfaceFeatures implements Serializable, Temporal {
 
 	private static List<Landmark> landmarks = null;
 
-	private static MissionManager missionManager;
-
 	/**
-	 * Constructor
+	 * Constructor.
 	 *
 	 * @throws Exception when error in creating surface features.
 	 */
@@ -115,14 +108,12 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	}
 
 	/**
-	 * Initialize transient data in the simulation.
+	 * Initializes transient data in the simulation.
 	 *
 	 * @throws Exception if transient data could not be constructed.
 	 */
-	public static void initializeInstances(MissionManager mm, LandmarkConfig landmarkConfig) {
+	public static void initializeInstances(LandmarkConfig landmarkConfig) {
 		landmarks = landmarkConfig.getLandmarkList();
-
-		missionManager = mm;
 	}
 
 	/**
@@ -188,7 +179,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	}
 
 	/**
-	 * Gets the optical depth due to the martian dust
+	 * Gets the optical depth due to the martian dust.
 	 *
 	 * @param location
 	 * @return
@@ -634,7 +625,8 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	}
 
 	/**
-	 * Check if an explored location already exists
+	 * Check if an explored location already exists.
+	 * 
 	 * @param c
 	 * @return
 	 */
@@ -687,32 +679,32 @@ public class SurfaceFeatures implements Serializable, Temporal {
 		// Is this needed ? Mining Mission unreserves the site when it completes
 		// so this is just to caught problems (bugs) within the simulation logic.
 		// Update any reserved explored locations.
-		Iterator<ExploredLocation> i = exploredLocations.iterator();
-		while (i.hasNext()) {
-			ExploredLocation site = i.next();
-			if (site.isReserved()) {
-				// Check if site is reserved by a current mining mission.
-				// If not, mark as unreserved.
-				boolean goodMission = false;
-
-				// TODO The Mission should unreserve the site automatically
-				for (Mission mission : missionManager.getMissions()) {
-					if (mission.getMissionType() == MissionType.MINING) {
-						if (site.equals(((Mining) mission).getMiningSite())) {
-							goodMission = true;
-						}
-					}
-				}
-				if (!goodMission) {
-					site.setReserved(false);
-				}
-			}
-		}
+//		Iterator<ExploredLocation> i = exploredLocations.iterator();
+//		while (i.hasNext()) {
+//			ExploredLocation site = i.next();
+//			if (site.isReserved()) {
+//				// Check if site is reserved by a current mining mission.
+//				// If not, mark as unreserved.
+//				boolean goodMission = false;
+//
+//				// TODO The Mission should unreserve the site automatically
+//				for (Mission mission : missionManager.getMissions()) {
+//					if (mission.getMissionType() == MissionType.MINING) {
+//						if (site.equals(((Mining) mission).getMiningSite())) {
+//							goodMission = true;
+//						}
+//					}
+//				}
+//				if (!goodMission) {
+//					site.setReserved(false);
+//				}
+//			}
+//		}
 		return true;
 	}
 
 	/**
-	 * Prepare object for garbage collection.
+	 * Prepares object for garbage collection.
 	 */
 	public void destroy() {
 

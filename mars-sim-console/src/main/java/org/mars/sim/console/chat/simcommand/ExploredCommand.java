@@ -41,7 +41,7 @@ public class ExploredCommand extends ChatCommand {
 
 	@Override
 	public boolean execute(Conversation context, String input) {
-		SurfaceFeatures surface = context.getSim().getMars().getSurfaceFeatures();
+		SurfaceFeatures surface = context.getSim().getSurfaceFeatures();
 
 		displayExploredLocations(context, surface);
 

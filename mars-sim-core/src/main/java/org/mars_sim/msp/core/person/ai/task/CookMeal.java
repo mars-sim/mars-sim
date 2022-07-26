@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * CookMeal.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-24
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -177,7 +177,6 @@ public class CookMeal extends Task implements Serializable {
 			return time;
 		}
 
-		String nameOfMeal = null;//kitchen.getlastCookedMeal();
 		double workTime = time;
 
 		// If meal time is over, end task.
@@ -206,7 +205,7 @@ public class CookMeal extends Task implements Serializable {
 		}
 		
 		// Add this work to the kitchen.
-		nameOfMeal = kitchen.addWork(workTime, worker);
+		String nameOfMeal = kitchen.addWork(workTime, worker);
 
 		if (nameOfMeal != null) {
 			lastCookedMeal = nameOfMeal;
@@ -224,7 +223,7 @@ public class CookMeal extends Task implements Serializable {
 			addExperience(time);
 
 			// Check for accident in kitchen.
-			checkForAccident(kitchenBuilding, time, 0.005D);
+			checkForAccident(kitchenBuilding, time, 0.005);
 
 		}
 
@@ -243,7 +242,7 @@ public class CookMeal extends Task implements Serializable {
 	/**
 	 * Checks if it is currently a meal time at the location. Need to estimate the prepTime 
 	 * e.g. the cook needs to be in the chow hall to begin cooking 20 millisols prior to 
-	 * 'starting' the meal time 
+	 * 'starting' the meal time.
 	 * 
 	 * @param location the coordinate location to check for.
 	 * @param prepTime the number of millisols prior to meal time that needs to be accounted for.
@@ -259,7 +258,7 @@ public class CookMeal extends Task implements Serializable {
 	}
 
 	/**
-	 * Checks if it's the meal time
+	 * Checks if it's the meal time.
 	 * 
 	 * @param timeDiff
 	 * @return
@@ -346,6 +345,12 @@ public class CookMeal extends Task implements Serializable {
 		return result;
 	}
 
+	/**
+	 * Gets available kitchen building.
+	 * 
+	 * @param robot
+	 * @return
+	 */
 	public static Building getAvailableKitchen(Robot robot) {
 		Building result = null;
 
@@ -385,5 +390,10 @@ public class CookMeal extends Task implements Serializable {
 		}
 
 		return result;
+	}
+	
+	public void destroy() {
+		kitchen = null;
+		kitchenBuilding = null;
 	}
 }

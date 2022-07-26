@@ -39,7 +39,7 @@ public class VehicleWindow extends UnitWindow {
 	 */
 	public VehicleWindow(MainDesktopPane desktop, Vehicle vehicle) {
 		// Use UnitWindow constructor
-		super(desktop, vehicle, true);
+		super(desktop, vehicle, vehicle.getSettlement().getName() + " - " + vehicle.getNickName(), true);
 		this.vehicle = vehicle;
 
 		// Add tab panels

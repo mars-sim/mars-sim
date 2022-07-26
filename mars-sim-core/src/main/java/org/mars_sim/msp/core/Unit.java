@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.environment.Environment;
 import org.mars_sim.msp.core.environment.SurfaceFeatures;
 import org.mars_sim.msp.core.environment.TerrainElevation;
 import org.mars_sim.msp.core.environment.Weather;
@@ -91,10 +90,8 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	protected static UnitManager unitManager = sim.getUnitManager();
 	protected static MissionManager missionManager;
 
-	protected static Environment mars;
 	protected static Weather weather;
 	protected static SurfaceFeatures surfaceFeatures;
-	protected static TerrainElevation terrainElevation;
 
 	// File for diagnostics output
 	private static PrintWriter diagnosticFile = null;
@@ -758,13 +755,12 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	 * @param u  {@link UnitManager}
 	 * @param mm {@link MissionManager}
 	 */
-	public static void initializeInstances(MasterClock c0, MarsClock c1, EarthClock e, Simulation s, Environment m,
+	public static void initializeInstances(MasterClock c0, MarsClock c1, EarthClock e, Simulation s, 
 			Weather w, SurfaceFeatures sf, MissionManager mm) {
 		masterClock = c0;
 		marsClock = c1;
 		earthClock = e;
 		sim = s;
-		mars = m;
 		weather = w;
 		surfaceFeatures = sf;
 		missionManager = mm;

@@ -29,7 +29,7 @@ import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 import org.mars_sim.msp.core.SimulationFiles;
 import org.mars_sim.msp.ui.swing.sound.AudioPlayer;
-import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
+import org.mars_sim.msp.ui.swing.toolwindow.ToolWindow;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 
 import com.google.common.base.Charsets;

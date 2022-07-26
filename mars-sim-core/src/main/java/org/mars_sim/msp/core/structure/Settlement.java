@@ -33,6 +33,7 @@ import org.mars_sim.msp.core.data.SolMetricDataLogger;
 import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.environment.DustStorm;
 import org.mars_sim.msp.core.environment.MineralMap;
+import org.mars_sim.msp.core.environment.TerrainElevation;
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentInventory;
@@ -458,16 +459,13 @@ public class Settlement extends Structure implements Temporal,
 	 * Initialize field data, class and maps
 	 */
 	public void initialize() {
-		if (terrainElevation == null)
-			terrainElevation = surfaceFeatures.getTerrainElevation();
-
 //		// Get the elevation and terrain gradient factor
-		terrainProfile = terrainElevation.getTerrainProfile(location);
+		terrainProfile = TerrainElevation.getTerrainProfile(location);
 
 //		Note: to check elevation, do this -> double elevation = terrainProfile[0];
 //		Note: to check gradient, do this ->double gradient = terrainProfile[1];
 
-		iceCollectionRate = iceCollectionRate + terrainElevation.obtainIceCollectionRate(location);
+		iceCollectionRate = iceCollectionRate + TerrainElevation.obtainIceCollectionRate(location);
 
 		final double GEN_MAX = 1_000_000;
 		// Create EquipmentInventory instance
@@ -3756,7 +3754,7 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-     * Gets the total capacity that this robot can hold.
+     * Gets the total capacity that this inventory can hold.
      *
      * @return total capacity (kg).
      */

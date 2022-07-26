@@ -11,7 +11,6 @@ import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 
-import org.mars_sim.msp.core.environment.Environment;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
@@ -19,11 +18,10 @@ import org.mars_sim.msp.core.tool.RandomUtil;
  * Spherical Coordinates. Represents a location on virtual Mars in spherical
  * coordinates. It provides some useful methods involving those coordinates, as
  * well as some static methods for general coordinate calculations.<br/>
- * {@link #theta} is longitute in (0 - 2 PI) radians. <br/>
- * {@link #phi} is latitude in (0 - PI) radians. <br/>
+ * {@link #theta} is longitude in (0 - 2 PI) radians or (0 - 360) degrees. <br/>
+ * {@link #phi} is latitude in (0 - PI) radians or (0 - 180) degrees. <br/>
  */
 public class Coordinates implements Serializable {
-	// Note: in future, may add rho as the diameter of planet (in km) or 2* MARS_RADIUS_KM = 3393.0
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -31,6 +29,10 @@ public class Coordinates implements Serializable {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(Coordinates.class.getName());
 
+	/** Mars average radius in km. */
+	public static final double MARS_RADIUS_KM = 3393D;
+	public static final double MARS_CIRCUMFERENCE = MARS_RADIUS_KM * 2D * Math.PI;
+	
 	private static final double DEG_TO_RADIAN  = Math.PI / 180;
 	private static final double RADIAN_TO_DEG  = 180 / Math.PI;
 	private static final double PI_HALF = Math.PI / 2.0;
@@ -84,7 +86,7 @@ public class Coordinates implements Serializable {
 	}
 
 	/**
-	 * Clone constructor
+	 * Clone constructor.
 	 *
 	 * @param originalCoordinates the Coordinates object to be cloned
 	 */
@@ -105,7 +107,7 @@ public class Coordinates implements Serializable {
 	}
 
 	/**
-	 * Generate a string representation of this object. It will be the same format
+	 * Generates a string representation of this object. It will be the same format
 	 * as the formattedString method.
 	 *
 	 * @return String description of Coordinate.
@@ -116,7 +118,7 @@ public class Coordinates implements Serializable {
 	}
 
 	/**
-	 * phi accessor (related to latitude)
+	 * phi accessor (related to latitude).
 	 *
 	 * @return the phi angle value of the coordinate
 	 */
@@ -125,7 +127,7 @@ public class Coordinates implements Serializable {
 	}
 
 	/**
-	 * theta accessor (related to longitude)
+	 * theta accessor (related to longitude).
 	 *
 	 * @return the theta angle value of the coordinate
 	 */
@@ -221,8 +223,8 @@ public class Coordinates implements Serializable {
 	}
 
 	/**
-	 * Returns the distance in kilometers between this location and the given
-	 * coordinates.
+	 * Returns the distance in kilometers between this location and a given
+	 * coordinate.
 	 *
 	 * @param otherCoords remote Coordinates object
 	 * @return distance (in km) to the remote Coordinates object
@@ -236,14 +238,14 @@ public class Coordinates implements Serializable {
 			return 0;
 		}
 
-		double rho = Environment.MARS_RADIUS_KM;
+		double rho = MARS_RADIUS_KM;
 		double angle = getAngle(otherCoords);
 		double result = rho * angle;
 		return result;
 	}
 
 	/**
-	 * Computes the distance between the two given coordinates
+	 * Computes the distance between the two given coordinates.
 	 *
 	 * @param c0
 	 * @param c1
@@ -258,6 +260,7 @@ public class Coordinates implements Serializable {
 
 	/**
 	 * Gets a common formatted string to represent this location.
+	 * e.g. "3.1244 E 34.4352 S"
 	 *
 	 * @return formatted longitude & latitude string for this Coordinates object
 	 * @see #getFormattedLongitudeString()
@@ -273,6 +276,7 @@ public class Coordinates implements Serializable {
 
 	/**
 	 * Gets a coordinate string (with parenthesis and comma) to represent this location.
+	 * e.g. "(3.1244 E, 34.4352 S")
 	 *
 	 * @return formatted longitude & latitude string for this coordinate
 	 * @see #getFormattedLongitudeString()
@@ -289,8 +293,8 @@ public class Coordinates implements Serializable {
 	}
 
 	/**
-	 * Gets a common formatted string to represent longitude for this location. ex.
-	 * "35.60 E"
+	 * Gets a common formatted string to represent longitude for this location.
+	 * e.g. "35.6054 E"
 	 *
 	 * @return formatted longitude string for this Coordinates object
 	 */
@@ -302,7 +306,8 @@ public class Coordinates implements Serializable {
 	}
 
 	/**
-	 * Gets a double to represent longitude for this location. e.g. "-35.60"
+	 * Gets a double to represent longitude for this location. 
+	 * e.g. "-35.60"
 	 *
 	 * @return double longitude
 	 */
@@ -320,8 +325,8 @@ public class Coordinates implements Serializable {
 	}
 
 	/**
-	 * Gets a common formatted string to represent longitude for this location. 
-	 * e.g. "35.60 E"
+	 * Gets a common formatted string to represent longitude for a given theta. 
+	 * e.g. "35.6670 E"
 	 *
 	 * @param theta the radian theta value for the location.
 	 * @return formatted longitude string for this Coordinates object
@@ -344,7 +349,7 @@ public class Coordinates implements Serializable {
 
 	/**
 	 * Gets a common formatted string to represent latitude for this location. ex.
-	 * "35.60 S"
+	 * "35.6780 S"
 	 *
 	 * @return formatted latitude string for this Coordinates object
 	 */
@@ -376,8 +381,8 @@ public class Coordinates implements Serializable {
 	}
 
 	/**
-	 * Gets a common formatted string to represent latitude for this location. ex.
-	 * "35.60 S"
+	 * Gets a common formatted string to represent latitude for a given phi.
+	 * e.g. "35.6230 S"
 	 *
 	 * @param phi the radian phi value for the location.
 	 * @return formatted latitude string for this Coordinates object
@@ -473,7 +478,7 @@ public class Coordinates implements Serializable {
 	 * @return new spherical location
 	 */
 	public Coordinates convertRectToSpherical(double x, double y) {
-		return convertRectToSpherical(x, y, Environment.MARS_RADIUS_KM);
+		return convertRectToSpherical(x, y, MARS_RADIUS_KM);
 	}
 
 

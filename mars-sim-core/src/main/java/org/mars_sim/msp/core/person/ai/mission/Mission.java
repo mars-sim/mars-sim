@@ -171,7 +171,6 @@ public abstract class Mission implements Serializable, Temporal {
 	protected static SurfaceFeatures surfaceFeatures;
 	protected static PersonConfig personConfig;
 	protected static MarsClock marsClock;
-	protected static TerrainElevation terrainElevation;
 
 	/**
 	 * Must be synchronised to prevent duplicate ids being assigned via different
@@ -1425,14 +1424,13 @@ public abstract class Mission implements Serializable, Temporal {
 	 * @param m {@link MissionManager}
 	 */
 	public static void initializeInstances(Simulation si, MarsClock c, HistoricalEventManager e,
-			UnitManager u, SurfaceFeatures sf, TerrainElevation te,
+			UnitManager u, SurfaceFeatures sf, 
 			MissionManager m, PersonConfig pc) {
 		sim = si;
 		marsClock = c;
 		eventManager = e;
 		unitManager = u;
 		surfaceFeatures = sf;
-		terrainElevation = te;
 		missionManager = m;
 		personConfig = pc;
 	}

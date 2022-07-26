@@ -38,7 +38,7 @@ import org.mars_sim.msp.core.time.UpTimer;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
-import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
+import org.mars_sim.msp.ui.swing.toolwindow.ToolWindow;
 
 import com.alee.extended.label.WebStyledLabel;
 import com.alee.laf.label.WebLabel;
@@ -167,7 +167,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		masterClock = sim.getMasterClock();
 		marsTime = masterClock.getMarsClock();
 		earthTime = masterClock.getEarthClock();
-		orbitInfo = sim.getMars().getOrbitInfo();
+		orbitInfo = sim.getOrbitInfo();
 		
 		uptimer = masterClock.getUpTimer();
 

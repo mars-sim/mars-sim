@@ -36,7 +36,7 @@ public class ShadingMapLayer implements MapLayer {
 	 * @param displayComponent the display component.
 	 */
 	public ShadingMapLayer(Component displayComponent) {
-		surfaceFeatures = Simulation.instance().getMars().getSurfaceFeatures();
+		surfaceFeatures = Simulation.instance().getSurfaceFeatures();
 	}
 
 	/**

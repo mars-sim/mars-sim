@@ -40,7 +40,6 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitType;
-import org.mars_sim.msp.core.environment.Environment;
 import org.mars_sim.msp.core.environment.Landmark;
 import org.mars_sim.msp.core.environment.TerrainElevation;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -62,7 +61,7 @@ import org.mars_sim.msp.ui.swing.tool.map.TopoMarsMap;
 import org.mars_sim.msp.ui.swing.tool.map.UnitIconMapLayer;
 import org.mars_sim.msp.ui.swing.tool.map.UnitLabelMapLayer;
 import org.mars_sim.msp.ui.swing.tool.map.VehicleTrailMapLayer;
-import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
+import org.mars_sim.msp.ui.swing.toolwindow.ToolWindow;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfo;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 
@@ -194,8 +193,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		super(NAME, desktop);
 
 		Simulation sim = desktop.getSimulation();
-		Environment mars = sim.getMars();
-		this.landmarks = mars.getSurfaceFeatures().getLandmarks();
+		this.landmarks = sim.getSurfaceFeatures().getLandmarks();
 		this.unitManager = sim.getUnitManager();
 
 //		setPreferredSize(new Dimension(HORIZONTAL_FULL, HEIGHT));

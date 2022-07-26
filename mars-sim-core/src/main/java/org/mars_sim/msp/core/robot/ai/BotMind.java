@@ -110,16 +110,17 @@ public class BotMind implements Serializable, Temporal {
 			
 		if (botTaskManager.hasActiveTask()) {
 			
-			String previousTask = botTaskManager.getTaskName();
+//			String previousTask = botTaskManager.getTaskName();
+			
 			// Call executeTask
 			double remainingTime = botTaskManager.executeTask(time, robot.getPerformanceRating());
 			
 			if (remainingTime == time) {
 				
-				logger.log(robot, Level.SEVERE, 30_000L, 
-						"Previous Task: " + previousTask
-					+ "    Current Task: " + botTaskManager.getTaskName() 
-					+ "    remainingTime & time: " + remainingTime + ".");
+//				logger.log(robot, Level.SEVERE, 40_000L, 
+//						"Previous Task: " + previousTask
+//					+ "    Current Task: " + botTaskManager.getTaskName() 
+//					+ "    remainingTime & time: " + remainingTime + ".");
 				
 				// Do not call takeAction
 				return;

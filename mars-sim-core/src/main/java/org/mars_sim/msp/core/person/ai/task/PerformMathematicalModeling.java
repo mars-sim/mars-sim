@@ -62,7 +62,7 @@ implements ResearchScientificStudy, Serializable {
 	private double computingNeeded;
 	/** The seed value. */
     private double seed = RandomUtil.getRandomDouble(.05, 0.15);
-	
+	/** The total computing resources needed for this task. */
 	private final double TOTAL_COMPUTING_NEEDED;
 	
     /** The scientific study the person is modeling for. */
@@ -382,24 +382,23 @@ implements ResearchScientificStudy, Serializable {
     	// If person is incapacitated, end task.
         if (person.getPerformanceRating() <= .2) {
             endTask();
+            return time;
         }
 
 		if (person.getPhysicalCondition().computeFitnessLevel() < 2) {
 			logger.log(person, Level.FINE, 10_000, "Ended performing math modeling. Not feeling well.");
 			endTask();
+			return time;
 		}
 		
         // Check for laboratory malfunction.
         if (malfunctions.getMalfunctionManager().hasMalfunction()) {
             endTask();
+            return time;
         }
 
         // Check if research in study is completed.
         boolean isPrimary = study.getPrimaryResearcher().equals(person);
-
-        if (isDone()) {
-            return time;
-        }
 
         int msol = marsClock.getMillisolInt();
         boolean successful = false; 

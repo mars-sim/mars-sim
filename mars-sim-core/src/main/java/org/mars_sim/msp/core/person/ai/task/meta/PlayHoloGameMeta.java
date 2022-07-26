@@ -31,9 +31,6 @@ public class PlayHoloGameMeta extends MetaTask {
     private static final String NAME = Msg.getString(
             "Task.description.playHoloGame"); //$NON-NLS-1$
 
-    /** Modifier if during person's work shift. */
-    private static final double WORK_SHIFT_MODIFIER = .05D;
-
     /** default logger. */
     private static final Logger logger = Logger.getLogger(PlayHoloGameMeta.class.getName());
 
@@ -55,23 +52,30 @@ public class PlayHoloGameMeta extends MetaTask {
 
         if (person.isInside()) {
 
+            // Modify probability if during person's work shift.
+            int now = marsClock.getMillisolInt();
+            boolean isShiftHour = person.getTaskSchedule().isShiftHour(now);
+            if (isShiftHour) {
+                return 0;
+            }
+        	
             // Probability affected by the person's stress and fatigue.
             PhysicalCondition condition = person.getPhysicalCondition();
             double fatigue = condition.getFatigue();
             double hunger = condition.getHunger();
             double stress = condition.getStress();
             
-            if (fatigue > 1000)
+            if (fatigue > 500)
             	return 0;
             
-            if (hunger > 1000)
+            if (hunger > 500)
             	return 0;
             
         	double pref = person.getPreference().getPreferenceScore(this);
         	result += pref * 1.2D;
             
             if (pref > 0) {
-            	result *= (1 + stress/20.0);
+            	result *= (1 + stress/30.0);
             }
   
             if (person.isInVehicle()) {	
@@ -115,14 +119,6 @@ public class PlayHoloGameMeta extends MetaTask {
                 } catch (Exception e) {
                     logger.log(Level.SEVERE, e.getMessage());
                 }
-            	
-            }
-            
-            // Modify probability if during person's work shift.
-            int now = marsClock.getMillisolInt();
-            boolean isShiftHour = person.getTaskSchedule().isShiftHour(now);
-            if (isShiftHour) {
-                result*= WORK_SHIFT_MODIFIER;
             }
 
             if (result <= 0) return 0;
