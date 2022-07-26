@@ -503,6 +503,12 @@ public class MainDesktopPane extends JDesktopPane
 		return false;
 	}
 
+	/**
+	 * Opens a tool window if necessary.
+	 *
+	 * @param toolName the name of the tool window
+	 * @param mission
+	 */
 	public void openToolWindow(String toolName, Mission mission) {
 		ToolWindow window = getToolWindow(toolName);
 		if (window != null) {
@@ -803,7 +809,7 @@ public class MainDesktopPane extends JDesktopPane
 			try {
 				prepareToolWindows();
 			} catch (Exception e) {
-				logger.severe("Cannot prepare tool windows: " + e.getMessage());
+				logger.severe("Reseting desktop. Cannot prepare tool windows: " + e);
 			}
 		});
 

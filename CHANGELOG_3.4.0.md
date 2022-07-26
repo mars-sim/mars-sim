@@ -10,40 +10,40 @@ Copyright (C) 2022 Scott Davis
 ### ISSUES ADDRESSED :
 
 ### CORE ENGINE IMPROVEMENTS :
- <LI>Airlock :		Implement airlock reservation system for EVA egress. </LI>
-  <LI>Base Mass :	Add base mass to all buildings, in preparation for calculating overall rocket payload mass. </LI>
-  <LI>Building :	Add building general info such as dimensions and mass. </LI>
-  <LI>Computing :	Add computing function and skill. Track computing resource. </LI>
-  <LI>Filter :		New Settlement filter and Building tab to the Monitor Tool. </LI>
-  <LI>Inventory :	Replace with lightweight inventory for all units. Revamp the storage of resources/equipment and transfer of person/vehicle between locales.</LI>
-  <LI>Mission :		Restructure and simplify handling of Mission.</LI>
-  <LI>Parts :		Add wearing garment. </LI>
-  <LI>Person :		Make a person's carrying capacity to be age-dependent.</LI>
-  <LI>Robot :		Track battery capacity and charging.</LI>
-  <LI>Trading :		Compute and relate the cost, profit, and price of a good.</LI>
-  <LI>Scenario :	Arriving future Settlements are configured from a scenario. Scenarios can be exported and shared. </LI>
-  <LI>Site :		Explore, claim and track mining sites.</LI>
-  <LI>Social :		Remove global relationship graph and simplify codes.</LI>
-  <LI>Vehicle :		Rework vehicle specifications. Refine fuel economy calculation.</LI>
-  <LI>Waste :		Split grey/black water & solid waste management resource processes into a separate waste processing function.</LI>
+  <LI>  Airlock : Implement airlock reservation system for EVA egress. </LI>
+  <LI>Base Mass : Add base mass to all buildings, in preparation for calculating overall rocket payload mass. </LI>
+  <LI> Building : Add building general info such as dimensions and mass. </LI>
+  <LI>Computing : Add computing function and skill. Track computing resource. </LI>
+  <LI>   Filter : New Settlement filter and Building tab to the Monitor Tool. </LI>
+  <LI>Inventory : Replace with lightweight inventory for all units. Revamp the storage of resources/equipment and transfer of person/vehicle between locales.</LI>
+  <LI>  Mission : Restructure and simplify handling of Mission.</LI>
+  <LI>    Parts : Add wearing garment. </LI>
+  <LI>   Person : Track exercise. Make a person's carrying capacity to be age-dependent.</LI>
+  <LI>    Robot : Track battery capacity and charging.</LI>
+  <LI>  Trading : Compute and relate the cost, profit, and price of trade goods.</LI>
+  <LI> Scenario : Arriving future Settlements are configured from a scenario. Scenarios can be exported and shared. </LI>
+  <LI>     Site : Explore, claim and track mining sites.</LI>
+  <LI>   Social : Remove global relationship graph and simplify codes.</LI>
+  <LI>  Vehicle : Rework vehicle specifications. Refine fuel economy calculation.</LI>
+  <LI>    Waste : Split grey/black water & solid waste management resource processes into a separate waste processing function.</LI>
 
   
 ### UI IMPROVEMENT :
   <LI>  Authority : Add editor that customize sponsors/authorities.</LI> 
   <LI>   Economic : Display the cost/profit/price of a good in each settlement for comparison.</LI>
   <LI>      Icons : Replace word title of each tab with an icon in all Unit Windows.</LI>
-  <LI>   Location : Show areocentric longitude of Mars (where Mars is at in the solar system) in Time Tool. </LI>  
+  <LI>   Location : Show areocentric longitude of Mars in the solar system in Time Tool. </LI>  
   <LI>   Scenario : Edit and load basic scenarios.</LI>
-  <LI>      Power : Display generated power vs. power load vs. energy stored for each settlement in Monitor Tool.</LI>
-  <LI>     Window : Add newly dedicated Building Unit Window which replaces the Building tab in the Settlement window.</LI>
+  <LI>      Power : Display generated/load power & stored energy for settlements in Monitor Tool.</LI>
+  <LI>     Window : Add new Building Window with tab, replacing old Building tab.</LI>
   
 ### FIXES :
-  <LI>(Un)loading : 	Consider loading/unloading edge cases for Trading/Delivery. </LI>
-  <LI>Delivery : 		Resolve stalled negotiation. </LI>
-  <LI>Exploration : 	revisits existing sites until they reach an evaluation ready for Mining. </LI>
-  <LI>Maintenance :		Ground vehicle maintenance no longer stalls when EVA is aborted. </LI>
-  <LI>Mission UI : 		Fix the mission selection that stop Navigation Tab from displaying sites and navpoints.</LI>
-  <LI>Vehicle : 		Correct vehicle fuel calculation.</LI>
+  <LI>    Trading : Consider loading/unloading edge cases for Trading/Delivery. </LI>
+  <LI>   Delivery : Resolve stalled negotiation. </LI>
+  <LI>Exploration : Revisit existing sites until they reach an evaluation ready for Mining. </LI>
+  <LI>Maintenance :	Ground vehicle maintenance no longer stalls when EVA is aborted. </LI>
+  <LI>    Mission : Fix the mission selection. Correct Navigation tab.</LI>
+  <LI>    Vehicle : Correct vehicle fuel calculation.</LI>
 
 
 ------------------------------------------|---------------------

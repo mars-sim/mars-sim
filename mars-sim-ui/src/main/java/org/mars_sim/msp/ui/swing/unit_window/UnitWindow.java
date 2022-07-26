@@ -103,9 +103,9 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 	 * @param unit           the unit for this window.
 	 * @param hasDescription true if unit description is to be displayed.
 	 */
-	public UnitWindow(MainDesktopPane desktop, Unit unit, boolean hasDescription) {
+	public UnitWindow(MainDesktopPane desktop, Unit unit, String title, boolean hasDescription) {
 		// Use JInternalFrame constructor
-		super(unit.getName(), false, true, false, true);
+		super(title, false, true, false, true);
 
 		// Initialize data members
 		this.desktop = desktop;

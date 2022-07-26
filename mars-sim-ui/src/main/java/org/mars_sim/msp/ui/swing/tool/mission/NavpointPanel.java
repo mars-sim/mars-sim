@@ -287,7 +287,6 @@ implements ListSelectionListener, MissionListener {
 	public void checkClick(MouseEvent event) {
 
 		if (mapPanel.getCenterLocation() != null) {
-
 			displayUnits(event);
 		}
 	}
@@ -310,10 +309,10 @@ implements ListSelectionListener, MissionListener {
 			Unit unit = i.next();
 			
 			if (unit.getUnitType() == UnitType.VEHICLE
-				 && !((Vehicle)unit).isOutsideOnMarsMission()) {
-					// Display the cursor for this vehicle only when
-					// it's outside on a mission
-					continue;	
+				&& !((Vehicle)unit).isOutsideOnMarsMission()) {
+				// Display the cursor for this vehicle only when
+				// it's outside on a mission
+				return;
 			}
 			
 			UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
@@ -353,10 +352,10 @@ implements ListSelectionListener, MissionListener {
 				Unit unit = i.next();
 				
 				if (unit.getUnitType() == UnitType.VEHICLE
-						 && !((Vehicle)unit).isOutsideOnMarsMission()) {
-							// Display the cursor for this vehicle only when
-							// it's outside on a mission
-							continue;	
+					&& !((Vehicle)unit).isOutsideOnMarsMission()) {
+					// Display the cursor for this vehicle only when
+					// it's outside on a mission
+					return;	
 				}
 				
 				UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
@@ -412,6 +411,11 @@ implements ListSelectionListener, MissionListener {
 		}
 	}
 	
+	/**
+	 * Sets the mission object.
+	 * 
+	 * @param mission
+	 */
 	public void setMission(Mission mission) {
 		if (mission == null) {
 			// Remove this as previous mission listener.
@@ -428,7 +432,7 @@ implements ListSelectionListener, MissionListener {
 	
 			currentMission = mission;
 			// Add this as listener for new mission.
-			mission.addMissionListener(this);
+			currentMission.addMissionListener(this);
 			// Update the mission content on the Nav tab
 			updateInfo();
 		}
@@ -436,7 +440,7 @@ implements ListSelectionListener, MissionListener {
 	
 
 	/**
-	 * Updates the mission content on the Nav tab
+	 * Updates the mission content on the Nav tab.
 	 */
 	public void updateInfo() {
 		// Updates coordinates in map
@@ -475,12 +479,14 @@ implements ListSelectionListener, MissionListener {
 		navpointLayer.setSingleMission(null);
 		navpointLayer.setSelectedNavpoint(null);
 		navpointTableModel.updateNavpoints();
-        if (mapPanel.hasMapLayer(mineralLayer)) mapPanel.removeMapLayer(mineralLayer);
+        if (mapPanel.hasMapLayer(mineralLayer)) 
+        	mapPanel.removeMapLayer(mineralLayer);
 		mapPanel.showMap(null);
 	}
 	
 	/**
 	 * Catch mission update event.
+	 * 
 	 * @param event the mission event.
 	 */
 	public void missionUpdate(MissionEvent event) {

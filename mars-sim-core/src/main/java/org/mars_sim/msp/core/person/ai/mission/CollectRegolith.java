@@ -12,6 +12,7 @@ import java.util.List;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.environment.TerrainElevation;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.utils.Worker;
@@ -70,7 +71,7 @@ public class CollectRegolith extends CollectResourcesMission {
 
 	@Override
 	protected double scoreLocation(Coordinates newLocation) {
-		return terrainElevation.obtainRegolithCollectionRate(newLocation);
+		return TerrainElevation.obtainRegolithCollectionRate(newLocation);
 	}
 
 	/**

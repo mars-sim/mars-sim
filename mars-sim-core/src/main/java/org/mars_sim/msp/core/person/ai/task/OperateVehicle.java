@@ -668,8 +668,9 @@ public abstract class OperateVehicle extends Task implements Serializable {
      	}      
 		else if (fuelUsed < 0) {
 			// Future: will consider how to apply regenerative braking to absorb the momentum and store energy into the vehicle's "battery" system
-			logger.log(vehicle, Level.INFO, 20_000, "Decelerating at " + Math.round(a_ms * 1000.0)/1000.0 
-					+ " m/s2   Force: " + Math.round(fTot * 1000.0)/1000.0  + " N.");
+			logger.log(vehicle, Level.INFO, 20_000, "Reducing speed to " + Math.round(v_kph * 1000.0)/1000.0
+					+ " kph, decelerating: " + Math.round(a_ms * 1000.0)/1000.0 
+					+ " m/s2. Force: " + Math.round(fTot * 1000.0)/1000.0  + " N.");
 		}
 		
 		else {
@@ -679,10 +680,11 @@ public abstract class OperateVehicle extends Task implements Serializable {
 			distanceCache = 0;
 		}
 
-    	if (v_kph < LOW_SPEED) {
-    		logger.log(vehicle, Level.INFO, 20_000, " v_kph was negative (" + v_kph + ") and was reset to zero.");
-    		v_kph = LOW_SPEED;
-    		v_ms = v_kph / KPH_CONV;
+    	if (v_kph < 0) {
+    		logger.log(vehicle, Level.INFO, 20_000, "v_kph was negative (" 
+    				+  Math.round(v_kph * 1000.0)/1000.0 + " kph) and was reset to zero.");
+    		v_kph = 0;
+    		v_ms = 0; //v_kph / KPH_CONV;
     	}
 
 		// Adjust the speed
@@ -702,6 +704,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
               
         // Derive the instantaneous fuel consumption [Wh/km]
         double iFC = 1000 * energyUsed / d_km;
+        
         // Set the instantaneous fuel consumption [Wh/km]
         vehicle.setIFuelConsumption(iFC);
         

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * SurfaceFeatures.java
- * @date 2022-06-24
+ * @date 2022-07-25
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.environment;
@@ -83,10 +83,8 @@ public class SurfaceFeatures implements Serializable, Temporal {
 
 	private static List<Landmark> landmarks = null;
 
-//	private static MissionManager missionManager;
-
 	/**
-	 * Constructor
+	 * Constructor.
 	 *
 	 * @throws Exception when error in creating surface features.
 	 */
@@ -110,7 +108,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	}
 
 	/**
-	 * Initialize transient data in the simulation.
+	 * Initializes transient data in the simulation.
 	 *
 	 * @throws Exception if transient data could not be constructed.
 	 */
@@ -181,7 +179,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	}
 
 	/**
-	 * Gets the optical depth due to the martian dust
+	 * Gets the optical depth due to the martian dust.
 	 *
 	 * @param location
 	 * @return
@@ -627,7 +625,8 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	}
 
 	/**
-	 * Check if an explored location already exists
+	 * Check if an explored location already exists.
+	 * 
 	 * @param c
 	 * @return
 	 */
@@ -705,7 +704,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	}
 
 	/**
-	 * Prepare object for garbage collection.
+	 * Prepares object for garbage collection.
 	 */
 	public void destroy() {
 

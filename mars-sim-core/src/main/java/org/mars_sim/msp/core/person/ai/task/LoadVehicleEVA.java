@@ -59,13 +59,13 @@ public class LoadVehicleEVA extends EVAOperation {
         	return;
 		}
 		
-		if (settlement.getBuildingManager().isInGarage(vehicle)) {
+		settlement = CollectionUtils.findSettlement(person.getCoordinates());
+		if (settlement == null) {
 			checkLocation();
         	return;
 		}
-
-		settlement = CollectionUtils.findSettlement(person.getCoordinates());
-		if (settlement == null) {
+		
+		if (settlement.getBuildingManager().isInGarage(vehicle)) {
 			checkLocation();
         	return;
 		}

@@ -249,7 +249,7 @@ public class Farming extends Function {
 				.getAllAmountResourceOwned(c.getCropID()) > amount)
 				.collect(Collectors.toList());
 		
-		logger.info(cropList.toString());
+//		logger.info(cropList.toString());
 		
 		List<AmountResource> tissues = new ArrayList<>();
 		
@@ -262,7 +262,7 @@ public class Farming extends Function {
 				tissues.add(tissue);
 		}
 		
-		logger.info(tissues.toString());
+//		logger.info(tissues.toString());
 		
 		String tissueName = null;
 		double amountTissue = 0;

@@ -33,7 +33,7 @@ public class SettlementUnitWindow extends UnitWindow {
 	 */
 	public SettlementUnitWindow(MainDesktopPane desktop, Unit unit) {
 		// Use UnitWindow constructor
-		super(desktop, unit, false);
+		super(desktop, unit, unit.getName(), false);
 
 		Settlement settlement = (Settlement) unit;
 

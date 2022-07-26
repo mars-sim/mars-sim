@@ -341,8 +341,6 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 
 			Collections.sort(settlements);
 			settlementList = settlements;
-			// Pre-select the first settlement to avoid NPE when creating SettlementTableModel
-			selectedSettlement = settlements.get(0);
 		}
 	}
 

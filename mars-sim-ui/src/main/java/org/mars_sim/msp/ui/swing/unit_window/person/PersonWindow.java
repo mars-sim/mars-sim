@@ -34,7 +34,7 @@ public class PersonWindow extends UnitWindow {
 	 */
 	public PersonWindow(MainDesktopPane desktop, Person person) {
 		// Use UnitWindow constructor
-		super(desktop, person, true);
+		super(desktop, person, person.getSettlement().getName() + " - " + person.getNickName(), true);
 		this.person = person;
 	
 		// Add tab panels	

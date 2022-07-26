@@ -92,7 +92,6 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 
 	protected static Weather weather;
 	protected static SurfaceFeatures surfaceFeatures;
-	protected static TerrainElevation terrainElevation;
 
 	// File for diagnostics output
 	private static PrintWriter diagnosticFile = null;
