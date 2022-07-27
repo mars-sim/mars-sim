@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * ManufactureProcessInfo.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-26
  * @author Scott Davis
  */
 
@@ -176,7 +176,7 @@ public class ManufactureProcessInfo implements Serializable, Comparable<Manufact
 	 */
 	public List<ManufactureProcessItem> getOutputList() {
 		if (outputList == null)
-			return new ArrayList<ManufactureProcessItem>();
+			return new ArrayList<>();
 		return outputList;
 	}
 
@@ -188,7 +188,7 @@ public class ManufactureProcessInfo implements Serializable, Comparable<Manufact
 	 */
 	public List<ManufactureProcessItem> getManufactureProcessItem(String name) {
 		if (outputList == null)
-			return new ArrayList<ManufactureProcessItem>();
+			return new ArrayList<>();
 		List<ManufactureProcessItem> list = new ArrayList<>();
 		for (ManufactureProcessItem item : outputList) {
 			if (name.equalsIgnoreCase(item.getName()))
@@ -204,8 +204,8 @@ public class ManufactureProcessInfo implements Serializable, Comparable<Manufact
 	 */
 	public List<String> getOutputNames() {
 		if (outputList == null)
-			return new ArrayList<String>();
-		List<String> list = new ArrayList<String>();
+			return new ArrayList<>();
+		List<String> list = new ArrayList<>();
 		for (ManufactureProcessItem item : outputList) {
 			list.add(item.getName());
 		}
@@ -219,8 +219,8 @@ public class ManufactureProcessInfo implements Serializable, Comparable<Manufact
 	 */
 	public List<String> getInputNames() {
 		if (inputList == null)
-			return new ArrayList<String>();
-		List<String> list = new ArrayList<String>();
+			return new ArrayList<>();
+		List<String> list = new ArrayList<>();
 		for (ManufactureProcessItem item : inputList) {
 			list.add(item.getName());
 		}
@@ -263,5 +263,4 @@ public class ManufactureProcessInfo implements Serializable, Comparable<Manufact
 			outputList.clear();
 		outputList = null;
 	}
-
 }

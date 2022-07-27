@@ -1,12 +1,13 @@
-/**
+/*
  * Mars Simulation Project
- * FoodProductionGood.java
- * @version 3.2.0 2021-06-20
+ * ProduceFood.java
+ * @date 2022-07-26
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -67,6 +68,7 @@ implements Serializable {
 
 	/**
 	 * Constructor.
+	 * 
 	 * @param person the person to perform the task
 	 */
 	public ProduceFood(Person person) {
@@ -131,8 +133,9 @@ implements Serializable {
 	}
 
 	/**
-	 * Cancel any foodProduction processes that's beyond the skill of any people
+	 * Cancels any foodProduction processes that's beyond the skill of any people
 	 * associated with the settlement.
+	 * 
 	 * @param person the person
 	 */
 	public static void cancelDifficultFoodProductionProcesses(Settlement settlement) {
@@ -187,6 +190,7 @@ implements Serializable {
 
 	/**
 	 * Gets the highest skill level for food production at a settlement.
+	 * 
 	 * @param settlement the settlement.
 	 * @return the highest person or robot skill level.
 	 */
@@ -229,6 +233,7 @@ implements Serializable {
 	/**
 	 * Gets an available foodProduction building that the person can use. Returns
 	 * null if no foodProduction building is currently available.
+	 * 
 	 * @param person the person
 	 * @return available foodProduction building
 	 */
@@ -276,9 +281,7 @@ implements Serializable {
 				foodProductionBuildings = BuildingManager.getLeastCrowded4BotBuildings(foodProductionBuildings);
 
 			if (foodProductionBuildings.size() > 0) {
-				//Map<Building, Double> foodProductionBuildingProbs = BuildingManager.getBestRelationshipBuildings(
-						//robot, foodProductionBuildings);
-				//result = RandomUtil.getWeightedRandomObject(foodProductionBuildingProbs);
+
               	int selected = RandomUtil.getRandomInt(foodProductionBuildings.size()-1);
             	result = foodProductionBuildings.get(selected);
 			}
@@ -289,6 +292,7 @@ implements Serializable {
 	/**
 	 * Gets a list of foodProduction buildings needing work from a list of
 	 * buildings with the foodProduction function.
+	 * 
 	 * @param buildingList list of buildings with the foodProduction function.
 	 * @param skill the materials science skill level of the person.
 	 * @return list of foodProduction buildings needing work.
@@ -296,12 +300,13 @@ implements Serializable {
 	private static List<Building> getFoodProductionBuildingsNeedingWork(
 		List<Building> buildingList, int skill) {
 
-		List<Building> result = new CopyOnWriteArrayList<Building>();
+		List<Building> result = new ArrayList<>();
+		
 		Iterator<Building> i = buildingList.iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
 			FoodProduction foodProductionFunction = building.getFoodProduction();
-			if (foodProductionFunction.requiresFoodProductionWork(skill)) {
+			if (foodProductionFunction.requiresWork(skill)) {
 				result.add(building);
 			}
 		}
@@ -312,6 +317,7 @@ implements Serializable {
 	/**
 	 * Gets a subset list of foodProduction buildings with processes requiring
 	 * work.
+	 * 
 	 * @param buildingList the original building list.
 	 * @param skill the materials science skill level of the person.
 	 * @return subset list of buildings with processes requiring work, or
@@ -341,6 +347,7 @@ implements Serializable {
 
 	/**
 	 * Checks if foodProduction building has any processes requiring work.
+	 * 
 	 * @param foodProductionBuilding the foodProduction building.
 	 * @param skill the materials science skill level of the person.
 	 * @return true if processes requiring work.
@@ -351,9 +358,6 @@ implements Serializable {
 
 		FoodProduction foodProductionFunction = foodProductionBuilding.getFoodProduction();
 		for (FoodProductionProcess process : foodProductionFunction.getProcesses()) {
-		//Iterator<FoodProductionProcess> i = foodProductionFunction.getProcesses().iterator();
-		//while (i.hasNext()) {
-		//	FoodProductionProcess process = i.next();
 			boolean workRequired = (process.getWorkTimeRemaining() > 0D);
 			boolean skillRequired = (process.getInfo().getSkillLevelRequired() <= skill);
 			if (workRequired && skillRequired) result = true;
@@ -365,6 +369,7 @@ implements Serializable {
 	/**
 	 * Gets a subset list of foodProduction buildings with the highest tech level
 	 * from a list of buildings with the foodProduction function.
+	 * 
 	 * @param buildingList list of buildings with the foodProduction function.
 	 * @return subset list of highest tech level buildings.
 	 */
@@ -375,9 +380,6 @@ implements Serializable {
 
 		int highestTechLevel = 0;
 		for (Building building : buildingList) {
-		//Iterator<Building> i = buildingList.iterator();
-		//while (i.hasNext()) {
-		//	Building building = i.next();
 			FoodProduction foodProductionFunction = building.getFoodProduction();
 			if (foodProductionFunction.getTechLevel() > highestTechLevel) {
 				highestTechLevel = foodProductionFunction.getTechLevel();
@@ -385,9 +387,6 @@ implements Serializable {
 		}
 
 		for (Building building : buildingList) {
-		//Iterator<Building> j = buildingList.iterator();
-		//while (j.hasNext()) {
-		//	Building building = j.next();
 			FoodProduction foodProductionFunction = building.getFoodProduction();
 			if (foodProductionFunction.getTechLevel() == highestTechLevel) {
 				result.add(building);
@@ -400,6 +399,7 @@ implements Serializable {
 	/**
 	 * Gets the highest foodProduction process goods value for the person and the
 	 * foodProduction building.
+	 * 
 	 * @param person the person to perform foodProduction.
 	 * @param foodProductionBuilding the foodProduction building.
 	 * @return highest process good value.
@@ -434,10 +434,6 @@ implements Serializable {
 
 		for (FoodProductionProcessInfo process : FoodProductionUtil.getFoodProductionProcessesForTechSkillLevel(
 				techLevel, skillLevel)) {
-		//Iterator<FoodProductionProcessInfo> i = FoodProductionUtil.getFoodProductionProcessesForTechSkillLevel(
-		//		techLevel, skillLevel).iterator();
-		//while (i.hasNext()) {
-		//	FoodProductionProcessInfo process = i.next();
 			if (FoodProductionUtil.canProcessBeStarted(process, foodProductionFunction) ||
 					isProcessRunning(process, foodProductionFunction)) {
 				Settlement settlement = foodProductionBuilding.getSettlement();
@@ -492,7 +488,8 @@ implements Serializable {
 	}
 
 	/**
-	 * Perform the foodProduction phase.
+	 * Performs the foodProduction phase.
+	 * 
 	 * @param time the time to perform (millisols)
 	 * @return remaining time after performing (millisols)
 	 */
@@ -579,6 +576,7 @@ implements Serializable {
 
 	/**
 	 * Gets an available running foodProduction process.
+	 * 
 	 * @return process or null if none.
 	 */
 	private FoodProductionProcess getRunningFoodProductionProcess() {
@@ -586,9 +584,6 @@ implements Serializable {
 
 		int skillLevel = getEffectiveSkillLevel();
 		for (FoodProductionProcess process : foodFactory.getProcesses()) {
-		//Iterator<FoodProductionProcess> i = foodFactory.getProcesses().iterator();
-		//while (i.hasNext() && (result == null)) {
-		//	FoodProductionProcess process = i.next();
 			if ((process.getInfo().getSkillLevelRequired() <= skillLevel) &&
 					(process.getWorkTimeRemaining() > 0D)) {
 				result = process;
@@ -601,6 +596,7 @@ implements Serializable {
 	/**
 	 * Checks if a process type is currently running at a foodProduction
 	 * building.
+	 * 
 	 * @param processInfo the process type.
 	 * @param foodProductionBuilding the foodProduction building.
 	 * @return true if process is running.
@@ -610,9 +606,6 @@ implements Serializable {
 		boolean result = false;
 
 		for (FoodProductionProcess process : foodProductionBuilding.getProcesses()) {
-		//Iterator<FoodProductionProcess> i = foodProductionBuilding.getProcesses().iterator();
-		//while (i.hasNext()) {
-		//	FoodProductionProcess process = i.next();
 			if (process.getInfo().getName().equals(processInfo.getName())) {
 				result = true;
 			}
@@ -628,36 +621,37 @@ implements Serializable {
 	private FoodProductionProcess createNewFoodProductionProcess() {
 		FoodProductionProcess result = null;
 
-		if (foodFactory.getTotalProcessNumber() < foodFactory.getConcurrentProcesses()) {
+		if (foodFactory.getMaxProcesses() < foodFactory.getCurrentTotalProcesses()) {
+			return result;
+		}
 
-			int skillLevel = getEffectiveSkillLevel();
-			int techLevel = foodFactory.getTechLevel();
+		int skillLevel = getEffectiveSkillLevel();
+		int techLevel = foodFactory.getTechLevel();
 
-			// Determine all foodProduction processes that are possible and profitable.
-			Map<FoodProductionProcessInfo, Double> processProbMap = new ConcurrentHashMap<FoodProductionProcessInfo, Double>();
-			for (FoodProductionProcessInfo processInfo : FoodProductionUtil.getFoodProductionProcessesForTechSkillLevel(
-					techLevel, skillLevel)) {
-				if (FoodProductionUtil.canProcessBeStarted(processInfo, foodFactory)) {
-					double processValue = FoodProductionUtil.getFoodProductionProcessValue(processInfo,
-								worker.getSettlement());
+		// Determine all foodProduction processes that are possible and profitable.
+		Map<FoodProductionProcessInfo, Double> processProbMap = new ConcurrentHashMap<>();
+		for (FoodProductionProcessInfo processInfo : FoodProductionUtil.getFoodProductionProcessesForTechSkillLevel(
+				techLevel, skillLevel)) {
+			if (FoodProductionUtil.canProcessBeStarted(processInfo, foodFactory)) {
+				double processValue = FoodProductionUtil.getFoodProductionProcessValue(processInfo,
+							worker.getSettlement());
 
-					if (processValue > 0D) {
-						processProbMap.put(processInfo, processValue);
-					}
+				if (processValue > 0D) {
+					processProbMap.put(processInfo, processValue);
 				}
 			}
+		}
 
-			// Randomly choose among possible foodProduction processes based on their relative profitability.
-			FoodProductionProcessInfo chosenProcess = null;
-			if (!processProbMap.isEmpty()) {
-				chosenProcess = RandomUtil.getWeightedRandomObject(processProbMap);
-			}
+		// Randomly choose among possible foodProduction processes based on their relative profitability.
+		FoodProductionProcessInfo chosenProcess = null;
+		if (!processProbMap.isEmpty()) {
+			chosenProcess = RandomUtil.getWeightedRandomObject(processProbMap);
+		}
 
-			// Create chosen foodProduction process.
-			if (chosenProcess != null) {
-				result = new FoodProductionProcess(chosenProcess, foodFactory);
-				foodFactory.addProcess(result);
-			}
+		// Create chosen foodProduction process.
+		if (chosenProcess != null) {
+			result = new FoodProductionProcess(chosenProcess, foodFactory);
+			foodFactory.addProcess(result);
 		}
 
 		return result;

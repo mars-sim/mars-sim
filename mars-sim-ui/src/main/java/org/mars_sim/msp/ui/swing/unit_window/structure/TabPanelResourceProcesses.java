@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TabPanelResourceProcesses.java
- * @date 2022-07-09
+ * @date 2022-07-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -44,8 +44,7 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
  * A tab panel for displaying all of the resource processes in a settlement.
  */
 @SuppressWarnings("serial")
-public class TabPanelResourceProcesses
-extends TabPanel {
+public class TabPanelResourceProcesses extends TabPanel {
 	
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(TabPanelResourceProcesses.class.getName());
@@ -92,7 +91,7 @@ extends TabPanel {
 		processListPanel = new JPanel(new GridLayout(0, 1, 5, 2));
 		processListPanel.setAlignmentY(TOP_ALIGNMENT);
 		processListPanel.setBorder(new MarsPanelBorder());
-		content.add(processListPanel, BorderLayout.CENTER);
+		content.add(processListPanel, BorderLayout.NORTH);
 		populateProcessList();
 
 		// Create override check box panel.

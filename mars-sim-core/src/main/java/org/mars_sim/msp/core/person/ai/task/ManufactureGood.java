@@ -256,7 +256,7 @@ public class ManufactureGood extends Task implements Serializable {
 		Iterator<Building> i = buildingList.iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
-			if (building.getManufacture().requiresManufacturingWork(skill)) {
+			if (building.getManufacture().requiresWork(skill)) {
 				result.add(building);
 			}
 		}
@@ -549,7 +549,7 @@ public class ManufactureGood extends Task implements Serializable {
 	private ManufactureProcess createNewManufactureProcess() {
 		ManufactureProcess result = null;
 
-		if (workshop.getCurrentProcesses() < workshop.getNumPrintersInUse()) {
+		if (workshop.getCurrentTotalProcesses() < workshop.getNumPrintersInUse()) {
 
 			int skillLevel = getEffectiveSkillLevel();
 			int techLevel = workshop.getTechLevel();

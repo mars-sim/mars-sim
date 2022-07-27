@@ -1,18 +1,18 @@
-/**
+/*
  * Mars Simulation Project
  * FoodProductionProcess.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-26
  * @author Manny Kung
  */
 
 package org.mars_sim.msp.core.food;
 
-import org.mars_sim.msp.core.structure.building.function.FoodProduction;
-
 import java.io.Serializable;
 
+import org.mars_sim.msp.core.structure.building.function.FoodProduction;
+
 /**
- * A manufacturing process.
+ * A food production process.
  */
 public class FoodProductionProcess implements Serializable {
 
@@ -31,7 +31,7 @@ public class FoodProductionProcess implements Serializable {
 	 * Constructor
 	 * 
 	 * @param info    information about the process.
-	 * @param kitchen the manufacturing kitchen where the process is taking place.
+	 * @param kitchen the kitchen where the process is taking place.
 	 */
 	public FoodProductionProcess(FoodProductionProcessInfo info, FoodProduction kitchen) {
 		this.info = info;
@@ -115,7 +115,18 @@ public class FoodProductionProcess implements Serializable {
 	}
 	
 	/**
-	 * Prepare object for garbage collection.
+	 * Compares this object with the specified object for order.
+	 * 
+	 * @param o the Object to be compared.
+	 * @return a negative integer, zero, or a positive integer as this object is
+	 *         less than, equal to, or greater than the specified object.
+	 */
+	public int compareTo(FoodProductionProcess p) {
+		return info.getName().compareToIgnoreCase(p.info.getName());
+	}
+	
+	/**
+	 * Prepares object for garbage collection.
 	 */
 	public void destroy() {
 		kitchen = null;

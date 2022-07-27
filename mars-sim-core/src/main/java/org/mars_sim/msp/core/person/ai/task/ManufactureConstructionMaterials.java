@@ -175,7 +175,7 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
 		SkillManager skillManager = robot.getSkillManager();
 		int skill = skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
 
-		if (robot.isInSettlement()) {// .getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+		if (robot.isInSettlement()) {
 			BuildingManager manager = robot.getSettlement().getBuildingManager();
 			List<Building> manufacturingBuildings = manager.getBuildings(FunctionType.MANUFACTURE);
 			manufacturingBuildings = BuildingManager.getNonMalfunctioningBuildings(manufacturingBuildings);
@@ -185,8 +185,6 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
 			manufacturingBuildings = BuildingManager.getLeastCrowdedBuildings(manufacturingBuildings);
 
 			if (manufacturingBuildings.size() > 0) {
-//                Map<Building, Double> manufacturingBuildingProbs = BuildingManager.
-//                        getBestRelationshipBuildings(robot, manufacturingBuildings);
 				result = manufacturingBuildings.get(RandomUtil.getRandomInt(manufacturingBuildings.size() - 1));
 			}
 		}
@@ -202,16 +200,16 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
 	 * @param skill        the materials science skill level of the person.
 	 * @return list of manufacture buildings needing work.
 	 */
-	private static List<Building> getManufacturingBuildingsNeedingWork(List<Building> buildingList, int skill) {
+	private static List<Building> getManufacturingBuildingsNeedingWork(
+			List<Building> buildingList, int skill) {
 
-		List<Building> result = new ArrayList<Building>();
+		List<Building> result = new ArrayList<>();
 
 		Iterator<Building> i = buildingList.iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
-			Manufacture manufacturingFunction = building.getManufacture(); // (Manufacture)
-																			// building.getFunction(FunctionType.MANUFACTURE);
-			if (manufacturingFunction.requiresManufacturingWork(skill)) {
+			Manufacture manufacturingFunction = building.getManufacture(); 
+			if (manufacturingFunction.requiresWork(skill)) {
 				result.add(building);
 			}
 		}
@@ -227,9 +225,10 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
 	 * @return subset list of buildings with processes requiring work, or original
 	 *         list if none found.
 	 */
-	private static List<Building> getBuildingsWithProcessesRequiringWork(List<Building> buildingList, int skill) {
+	private static List<Building> getBuildingsWithProcessesRequiringWork(
+			List<Building> buildingList, int skill) {
 
-		List<Building> result = new ArrayList<Building>();
+		List<Building> result = new ArrayList<>();
 
 		// Add all buildings with processes requiring work.
 		Iterator<Building> i = buildingList.iterator();
@@ -259,8 +258,7 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
 
 		boolean result = false;
 
-		Manufacture manufacturingFunction = manufacturingBuilding.getManufacture();// (Manufacture)
-																					// manufacturingBuilding.getFunction(FunctionType.MANUFACTURE);
+		Manufacture manufacturingFunction = manufacturingBuilding.getManufacture();
 		Iterator<ManufactureProcess> i = manufacturingFunction.getProcesses().iterator();
 		while (i.hasNext()) {
 			ManufactureProcess process = i.next();
@@ -609,7 +607,7 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
 	private ManufactureProcess createNewManufactureProcess() {
 		ManufactureProcess result = null;
 
-		if (workshop.getCurrentProcesses() < workshop.getNumPrintersInUse()) {
+		if (workshop.getCurrentTotalProcesses() < workshop.getNumPrintersInUse()) {
 
 			int skillLevel = getEffectiveSkillLevel();
 			int techLevel = workshop.getTechLevel();

@@ -45,7 +45,7 @@ extends TabPanel {
 	public TabPanelConstruction(Unit unit, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
-			null,
+			Msg.getString("TabPanelConstruction.title"), //$NON-NLS-1$
 			ImageLoader.getNewIcon(HELMET_ICON),
 			Msg.getString("TabPanelConstruction.title"), //$NON-NLS-1$
 			unit, desktop

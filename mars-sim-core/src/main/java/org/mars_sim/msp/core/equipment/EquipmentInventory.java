@@ -154,6 +154,23 @@ public class EquipmentInventory
 		return equipmentSet.remove(equipment);
 	}
 
+// Future: Will add the following
+//	/**
+//	 * Remove an equipment
+//	 *
+//	 * @param name
+//	 */
+//	@Override
+//	public boolean removeEquipment(String name) {
+//		for (Equipment e: equipmentSet) {
+//			if (e.getName().equalsIgnoreCase(name)) {
+//				equipmentSet.remove(e);
+//				return true;
+//			}
+//		}
+//		return false;
+//	}
+	
 	/**
 	 * Stores the item resource
 	 *

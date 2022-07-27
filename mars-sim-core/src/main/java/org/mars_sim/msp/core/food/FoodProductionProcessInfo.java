@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * FoodProductionProcessInfo.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-26
  * @author Manny Kung
  */
 
@@ -32,6 +32,7 @@ public class FoodProductionProcessInfo implements Serializable , Comparable<Food
 	
 	/**
 	 * Gets the process name.
+	 * 
 	 * @return name.
 	 */
 	public String getName() {
@@ -44,6 +45,7 @@ public class FoodProductionProcessInfo implements Serializable , Comparable<Food
 
 	/**
 	 * Sets the process name.
+	 * 
 	 * @param name the name.
 	 */
 	public void setName(String name) {
@@ -52,6 +54,7 @@ public class FoodProductionProcessInfo implements Serializable , Comparable<Food
 
 	/**
 	 * Sets the process description.
+	 * 
 	 * @param description {@link String}
 	 */
 	public void setDescription(String description) {
@@ -60,6 +63,7 @@ public class FoodProductionProcessInfo implements Serializable , Comparable<Food
 	
 	/**
 	 * Gets the manufacturing tech level required for the process.
+	 * 
 	 * @return tech level.
 	 */
 	public int getTechLevelRequired() {
@@ -68,6 +72,7 @@ public class FoodProductionProcessInfo implements Serializable , Comparable<Food
 	
 	/**
 	 * Sets the manufacturing tech level required for the process.
+	 * 
 	 * @param techLevelRequired the required tech level.
 	 */
 	public void setTechLevelRequired(int techLevelRequired) {
@@ -76,6 +81,7 @@ public class FoodProductionProcessInfo implements Serializable , Comparable<Food
 	
 	/**
 	 * Gets the material science skill level required to work on the process.
+	 * 
 	 * @return skill level.
 	 */
 	public int getSkillLevelRequired() {
@@ -84,6 +90,7 @@ public class FoodProductionProcessInfo implements Serializable , Comparable<Food
 	
 	/**
 	 * Sets the material science skill level required to work on the process.
+	 * 
 	 * @param skillLevelRequired skill level.
 	 */
 	public void setSkillLevelRequired(int skillLevelRequired) {
@@ -92,6 +99,7 @@ public class FoodProductionProcessInfo implements Serializable , Comparable<Food
 	
 	/**
 	 * Gets the work time required to complete the process.
+	 * 
 	 * @return work time (millisols).
 	 */
 	public double getWorkTimeRequired() {
@@ -100,6 +108,7 @@ public class FoodProductionProcessInfo implements Serializable , Comparable<Food
 	
 	/**
 	 * Sets the work time required to complete the process.
+	 * 
 	 * @param workTimeRequired work time (millisols).
 	 */
 	public void setWorkTimeRequired(double workTimeRequired) {
@@ -108,6 +117,7 @@ public class FoodProductionProcessInfo implements Serializable , Comparable<Food
 	
 	/**
 	 * Gets the process time required to complete the process.
+	 * 
 	 * @return process time (millisols).
 	 */
 	public double getProcessTimeRequired() {
@@ -116,6 +126,7 @@ public class FoodProductionProcessInfo implements Serializable , Comparable<Food
 	
 	/**
 	 * Sets the process time required to complete the process.
+	 * 
 	 * @param processTimeRequired process time (millisols).
 	 */
 	public void setProcessTimeRequired(double processTimeRequired) {
@@ -124,6 +135,7 @@ public class FoodProductionProcessInfo implements Serializable , Comparable<Food
     
 	/**
 	 * Gets the power required for the process.
+	 * 
 	 * @return power (kW hr).
 	 */
     public double getPowerRequired() {
@@ -132,6 +144,7 @@ public class FoodProductionProcessInfo implements Serializable , Comparable<Food
     
     /**
      * Sets the power required for the process.
+     * 
      * @param powerRequired power (kW hr).
      */
     public void setPowerRequired(double powerRequired) {
@@ -140,6 +153,7 @@ public class FoodProductionProcessInfo implements Serializable , Comparable<Food
 	
     /**
      * Gets a list of the input items required for the process.
+     * 
      * @return input items.
      */
 	public List<FoodProductionProcessItem> getInputList() {
@@ -148,6 +162,7 @@ public class FoodProductionProcessInfo implements Serializable , Comparable<Food
 	
 	/**
 	 * Sets the list of the input items required for the process.
+	 * 
 	 * @param inputList the input items.
 	 */
 	public void setInputList(List<FoodProductionProcessItem> inputList) {
@@ -156,32 +171,24 @@ public class FoodProductionProcessInfo implements Serializable , Comparable<Food
 	
 	/**
 	 * Gets a list of the output items produced by the process.
+	 * 
 	 * @return output items.
 	 */
 	public List<FoodProductionProcessItem> getOutputList() {
+		if (outputList == null)
+			return new ArrayList<>();
 		return outputList;
 	}
 
 	/**
-	 * convenience method that gives back a list of
-	 * strings of the output items' names.
-	 * @return {@link List}<{@link String}>
-	 */
-	public List<String> getOutputNames() {
-		List<String> list = new ArrayList<String>();
-		for (FoodProductionProcessItem item : outputList) {
-			list.add(item.getName());
-		}
-		return list;
-	}
-
-	/**
-	 * Gets a list of FoodProductionProcessItem having the given output resource name
+	 * Gets a list of FoodProductionProcessItem having the given output resource name.
 	 * 
 	 * @param name
 	 * @return
 	 */
 	public List<FoodProductionProcessItem> getFoodProductionProcessItem(String name) {
+		if (outputList == null)
+			return new ArrayList<>();
 		List<FoodProductionProcessItem> list = new ArrayList<>();
 		for (FoodProductionProcessItem item : outputList) {
 			if (name.equalsIgnoreCase(item.getName()))
@@ -191,12 +198,31 @@ public class FoodProductionProcessInfo implements Serializable , Comparable<Food
 	}
 	
 	/**
-	 * convenience method that gives back a list of
+	 * Convenience method that gives back a list of
+	 * strings of the output items' names.
+	 * 
+	 * @return {@link List}<{@link String}>
+	 */
+	public List<String> getOutputNames() {
+		if (outputList == null)
+			return new ArrayList<>();
+		List<String> list = new ArrayList<>();
+		for (FoodProductionProcessItem item : outputList) {
+			list.add(item.getName());
+		}
+		return list;
+	}
+	
+	/**
+	 * Convenience method that gives back a list of
 	 * strings of the input items' names.
+	 * 
 	 * @return {@link List}<{@link String}>
 	 */
 	public List<String> getInputNames() {
-		List<String> list = new ArrayList<String>();
+		if (inputList == null)
+			return new ArrayList<>();
+		List<String> list = new ArrayList<>();
 		for (FoodProductionProcessItem item : inputList) {
 			list.add(item.getName());
 		}
@@ -205,14 +231,22 @@ public class FoodProductionProcessInfo implements Serializable , Comparable<Food
 
 	/**
 	 * Sets the list of the output items produced by the process.
+	 * 
 	 * @param outputList the output items.
 	 */
 	public void setOutputList(List<FoodProductionProcessItem> outputList) {
 		this.outputList = outputList;
 	}
 
+
+	@Override
+	public String toString() {
+		return name;
+	}
+	
 	/**
 	 * Compares this object with the specified object for order.
+	 * 
 	 * @param o the Object to be compared.
 	 * @return a negative integer, zero, or a positive integer as this object is less than,
 	 * equal to, or greater than the specified object.
@@ -229,10 +263,5 @@ public class FoodProductionProcessInfo implements Serializable , Comparable<Food
 	    inputList = null;
 	    if (outputList != null) outputList.clear();
 	    outputList = null;
-	}
-
-	@Override
-	public String toString() {
-		return name;
 	}
 }

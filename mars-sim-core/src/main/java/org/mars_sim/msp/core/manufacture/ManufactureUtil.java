@@ -289,19 +289,14 @@ public final class ManufactureUtil {
 			}
 
 			result = manager.getGoodValuePoint(id) * amount;
-		}
-
-		else if (item.getType() == ItemType.PART) {
+		
+		} else if (item.getType() == ItemType.PART) {
             int id = ItemResourceUtil.findIDbyItemResourceName(item.getName());
 			result = manager.getGoodValuePoint(id) * item.getAmount();
-		}
-
-		else if (item.getType() == ItemType.EQUIPMENT) {
+		} else if (item.getType() == ItemType.EQUIPMENT) {
 			int id = EquipmentType.convertName2ID(item.getName());
 			result = manager.getGoodValuePoint(id) * item.getAmount();
-		}
-
-		else if (item.getType() == ItemType.VEHICLE) {
+		} else if (item.getType() == ItemType.VEHICLE) {
 			Good good = GoodsUtil.getVehicleGood(item.getName());
 			result = manager.getGoodValuePoint(good.getID()) * item.getAmount();
 		}
@@ -323,7 +318,7 @@ public final class ManufactureUtil {
 	 */
 	public static boolean canProcessBeStarted(ManufactureProcessInfo process, Manufacture workshop) {
 		// Check to see if this workshop can accommodate another process.
-		if (workshop.getMaxProcesses() < workshop.getCurrentProcesses()) {
+		if (workshop.getMaxProcesses() < workshop.getCurrentTotalProcesses()) {
 			// NOTE: create a map to show which process has a 3D printer in use and which doesn't
 			return false;
 		}
@@ -394,11 +389,9 @@ public final class ManufactureUtil {
 			if (ItemType.AMOUNT_RESOURCE.equals(item.getType())) {
 				int id = ResourceUtil.findIDbyAmountResourceName(item.getName());
 				result = (settlement.getAmountResourceStored(id) >= item.getAmount());
-				// Add demand tracking
 			} else if (ItemType.PART.equals(item.getType())) {
 				int id = ItemResourceUtil.findIDbyItemResourceName(item.getName());
 				result = (settlement.getItemResourceStored(id) >= (int) item.getAmount());
-				// Add tracking demand
 			} else
 				throw new IllegalStateException("Manufacture process input: " + item.getType() + " not a valid type.");
 		}

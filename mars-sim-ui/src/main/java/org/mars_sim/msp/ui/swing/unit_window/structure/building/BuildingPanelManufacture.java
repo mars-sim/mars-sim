@@ -377,7 +377,7 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 	 * @return vector of processes.
 	 */
 	private List<ManufactureProcessInfo> getAvailableProcesses() {
-		List<ManufactureProcessInfo> result = new ArrayList<ManufactureProcessInfo>();
+		List<ManufactureProcessInfo> result = new ArrayList<>();
 
 		if (workshop.getProcesses().size() < workshop.getNumPrintersInUse()) {
 

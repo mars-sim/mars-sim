@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * ProduceFoodMeta.java
- * @date 2021-12-22
+ * @date 2022-07-26
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -63,9 +63,8 @@ public class ProduceFoodMeta extends MetaTask {
             PhysicalCondition condition = person.getPhysicalCondition();
             double fatigue = condition.getFatigue();
             double stress = condition.getStress();
-            double hunger = condition.getHunger();
             
-            if (fatigue > 1000 || stress > 50 || hunger > 500)
+            if (fatigue > 1000 || stress > 50)
             	return 0;
             
             // See if there is an available foodProduction building.

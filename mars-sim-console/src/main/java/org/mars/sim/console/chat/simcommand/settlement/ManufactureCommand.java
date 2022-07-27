@@ -43,7 +43,7 @@ public class ManufactureCommand extends AbstractSettlementCommand {
 			Manufacture workshop = building.getManufacture();
 			response.appendHeading(building.getName());
 			response.appendLabelledDigit("Printers In Use", workshop.getNumPrintersInUse());
-			response.appendLabeledString("Processes Active", workshop.getCurrentProcesses() + "/" + workshop.getMaxProcesses());
+			response.appendLabeledString("Processes Active", workshop.getCurrentTotalProcesses() + "/" + workshop.getMaxProcesses());
 			List<ManufactureProcess> processes = workshop.getProcesses();
 			if (!processes.isEmpty()) {
 				response.appendTableHeading("Process", 42, "Work Left", "Process Left");

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Manufacture.java
- * @date 2021-10-21
+ * @date 2022-07-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -61,13 +61,16 @@ public class Manufacture extends Function {
 
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(Manufacture.class.getName());
-	private static final String CONCURRENT_PROCESSES = "concurrent-processes";
+	
+	private static final int SKILL_GAP = 1;
+
+	private static final int printerID = ItemResourceUtil.printerID;
 
 	private static final double PROCESS_MAX_VALUE = 100D;
 
-	public static final String LASER_SINTERING_3D_PRINTER = ItemResourceUtil.LASER_SINTERING_3D_PRINTER;
+	private static final String CONCURRENT_PROCESSES = "concurrent-processes";
 
-	private static int printerID = ItemResourceUtil.printerID;
+	public static final String LASER_SINTERING_3D_PRINTER = ItemResourceUtil.LASER_SINTERING_3D_PRINTER;
 
 	// Data members.
 	private int techLevel;
@@ -224,7 +227,7 @@ public class Manufacture extends Function {
 	 *
 	 * @return current total.
 	 */
-	public int getCurrentProcesses() {
+	public int getCurrentTotalProcesses() {
 		return processes.size() + salvages.size();
 	}
 
@@ -248,10 +251,10 @@ public class Manufacture extends Function {
 			throw new IllegalArgumentException("process is null");
 		}
 
-		if (getCurrentProcesses() >= numPrintersInUse) {
+		if (getCurrentTotalProcesses() >= numPrintersInUse) {
 			logger.info(getBuilding().getSettlement(), 20_000,
 					getBuilding()
-					+ ": " + getCurrentProcesses() + " concurrent processes.");
+					+ ": " + getCurrentTotalProcesses() + " concurrent processes.");
 			logger.info(getBuilding().getSettlement(), 20_000,
 					getBuilding()
 					+ ": " + numPrintersInUse + " 3D-printer(s) installed for use."
@@ -276,14 +279,15 @@ public class Manufacture extends Function {
 				int id = ItemResourceUtil.findIDbyItemResourceName(item.getName());
 				building.getSettlement().retrieveItemResource(id, (int) item.getAmount());
 				// Add tracking demand
-			} else
+//			} else if (ItemType.EQUIPMENT.equals(item.getType())) {
+//				String equipmentType = item.getName();
+//				int number = (int) item.getAmount();
+//				building.getSettlement().getEquipmentInventory().removeEquipment(equipmentType);
+			} else 
 				// Future: add equipment here as the requirement for this process
 				logger.log(getBuilding().getSettlement(), Level.SEVERE, 20_000,
 						getBuilding()
 						+ " Manufacture process input: " + item.getType() + " not a valid type.");
-
-			// Recalculate settlement good value for input item.
-//			building.getSettlement().getGoodsManager().determineGoodValueWithSupply(ManufactureUtil.getGood(item), false);
 		}
 
 		// Log manufacturing process starting.
@@ -311,7 +315,7 @@ public class Manufacture extends Function {
 		if (process == null)
 			throw new IllegalArgumentException("process is null");
 
-		if (getCurrentProcesses() >= numPrintersInUse)
+		if (getCurrentTotalProcesses() >= numPrintersInUse)
 			throw new IllegalStateException("No more space left to add new salvage process.");
 
 		salvages.add(process);
@@ -413,10 +417,10 @@ public class Manufacture extends Function {
 	 * @param skill the person's materials science skill level.
 	 * @return true if manufacturing work.
 	 */
-	public boolean requiresManufacturingWork(int skill) {
+	public boolean requiresWork(int skill) {
 		boolean result = false;
 
-		if (numPrintersInUse > getCurrentProcesses())
+		if (numPrintersInUse > getCurrentTotalProcesses())
 			result = true;
 		else {
 			Iterator<ManufactureProcess> i = processes.iterator();
@@ -424,7 +428,7 @@ public class Manufacture extends Function {
 				ManufactureProcess process = i.next();
 				boolean workRequired = (process.getWorkTimeRemaining() > 0D);
 				// Allow a low material science skill person to have access to do the next level skill process
-				boolean skillRequired = (process.getInfo().getSkillLevelRequired() <= skill + 1);
+				boolean skillRequired = (process.getInfo().getSkillLevelRequired() <= skill + SKILL_GAP);
 				if (workRequired && skillRequired)
 					result = true;
 			}
@@ -442,7 +446,7 @@ public class Manufacture extends Function {
 	public boolean requiresSalvagingWork(int skill) {
 		boolean result = false;
 
-		if (numPrintersInUse > getCurrentProcesses())
+		if (numPrintersInUse > getCurrentTotalProcesses())
 			result = true;
 		else {
 			Iterator<SalvageProcess> i = salvages.iterator();
@@ -519,7 +523,6 @@ public class Manufacture extends Function {
 							settlement.addEquipment(equipment);
 							// Set the container unit
 							equipment.setContainerUnit(settlement);
-							// Note: Add tracking supply for equipment
 							// Add to the daily output
 							settlement.addOutput(equipment.getIdentifier(), number, process.getTotalWorkTime());
 						}
@@ -560,7 +563,6 @@ public class Manufacture extends Function {
 
 			// Premature end of process. Return all input materials.
 			// Note: should some resources be consumed and irreversible ?
-
 			Iterator<ManufactureProcessItem> j = process.getInfo().getInputList().iterator();
 			while (j.hasNext()) {
 				ManufactureProcessItem item = j.next();
@@ -584,7 +586,7 @@ public class Manufacture extends Function {
 						// Produce parts.
 						Part part = (Part) ItemResourceUtil.findItemResource(item.getName());
 						int num = (int) item.getAmount();
-						int id = part.getID();//ItemResourceUtil.findIDbyItemResourceName(item.getName());
+						int id = part.getID();
 						double mass = num * part.getMassPerItem();
 						double capacity = settlement.getCargoCapacity();
 						if (mass <= capacity) {
@@ -706,11 +708,9 @@ public class Manufacture extends Function {
 	@Override
 	public double getMaintenanceTime() {
 		double result = 0D;
-
 		// Add maintenance for tech level.
 		result += techLevel * 10D;
-
-		// Add maintenance for concurrent process capacity.
+		// Add maintenance for num of printers in use.
 		result += numPrintersInUse * 10D;
 
 		return result;

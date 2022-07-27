@@ -7,10 +7,12 @@
 
 package org.mars_sim.msp.core.food;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
@@ -31,7 +33,7 @@ import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.time.MarsClock;
 
 /**
- * Utility class for getting foodProduction processes.
+ * Utility class for getting food production processes.
  */
 public final class FoodProductionUtil {
 
@@ -45,7 +47,7 @@ public final class FoodProductionUtil {
 	}
 
 	/**
-	 * Gets all foodProduction processes.
+	 * Gets all food production processes.
 	 *
 	 * @return list of processes.
 	 * @throws Exception if error getting processes.
@@ -55,7 +57,7 @@ public final class FoodProductionUtil {
 	}
 
 	/**
-	 * Gives back an alphabetically ordered map of all foodProduction processes.
+	 * Gives back an alphabetically ordered map of all food production processes.
 	 *
 	 * @return {@link TreeMap}<{@link String},{@link FoodProductionProcessInfo}>
 	 */
@@ -68,33 +70,27 @@ public final class FoodProductionUtil {
 	}
 
 	/**
-	 * Gets foodProduction processes within the capability of a tech level.
+	 * Gets food production processes within the capability of a tech level.
 	 *
 	 * @param techLevel the tech level.
 	 * @return list of processes.
 	 * @throws Exception if error getting processes.
 	 */
 	public static List<FoodProductionProcessInfo> getFoodProductionProcessesForTechLevel(int techLevel) {
-		List<FoodProductionProcessInfo> result = new CopyOnWriteArrayList<>();
-		Iterator<FoodProductionProcessInfo> i = config.getFoodProductionProcessList().iterator();
-		while (i.hasNext()) {
-			FoodProductionProcessInfo process = i.next();
-			if (process.getTechLevelRequired() <= techLevel)
-				result.add(process);
-		}
-
-		return result;
+		return getAllFoodProductionProcesses().stream()
+				.filter(s -> s.getTechLevelRequired() <= techLevel)
+    	        .collect(Collectors.toList());
 	}
 
 	/**
-	 * Gets foodProduction processes with given output.
+	 * Gets food production processes with given output.
 	 *
 	 * @param item {@link String} name of desired output
 	 * @return {@link List}<{@link FoodProductionProcessItem}> list of processes
 	 */
 	public static List<FoodProductionProcessInfo> getFoodProductionProcessesWithGivenOutput(String name) {
-		List<FoodProductionProcessInfo> result = new CopyOnWriteArrayList<>();
-		Iterator<FoodProductionProcessInfo> i = config.getFoodProductionProcessList().iterator();
+		List<FoodProductionProcessInfo> result = new ArrayList<>();
+		Iterator<FoodProductionProcessInfo> i = getAllFoodProductionProcesses().iterator();
 		while (i.hasNext()) {
 			FoodProductionProcessInfo process = i.next();
 			for (String n : process.getOutputNames()) {
@@ -106,14 +102,14 @@ public final class FoodProductionUtil {
 	}
 
 	/**
-	 * Gets foodProduction processes with given input.
+	 * Gets food production processes with given input.
 	 *
 	 * @param name {@link String} desired input
 	 * @return {@link List}<{@link FoodProductionProcessItem}> list of processes
 	 */
 	public static List<FoodProductionProcessInfo> getFoodProductionProcessesWithGivenInput(String name) {
-		List<FoodProductionProcessInfo> result = new CopyOnWriteArrayList<>();
-		Iterator<FoodProductionProcessInfo> i = config.getFoodProductionProcessList().iterator();
+		List<FoodProductionProcessInfo> result = new ArrayList<>();
+		Iterator<FoodProductionProcessInfo> i = getAllFoodProductionProcesses().iterator();
 		while (i.hasNext()) {
 			FoodProductionProcessInfo process = i.next();
 			for (String n : process.getInputNames()) {
@@ -125,7 +121,7 @@ public final class FoodProductionUtil {
 	}
 
 	/**
-	 * Gets foodProduction processes within the capability of a tech level and a
+	 * Gets food production processes within the capability of a tech level and a
 	 * skill level.
 	 *
 	 * @param techLevel  the tech level.
@@ -135,21 +131,15 @@ public final class FoodProductionUtil {
 	 */
 	public static List<FoodProductionProcessInfo> getFoodProductionProcessesForTechSkillLevel(int techLevel,
 			int skillLevel) {
-		List<FoodProductionProcessInfo> result = new CopyOnWriteArrayList<>();
-		Iterator<FoodProductionProcessInfo> i = config.getFoodProductionProcessList().iterator();
-		while (i.hasNext()) {
-			FoodProductionProcessInfo process = i.next();
-			if ((process.getTechLevelRequired() <= techLevel) && (process.getSkillLevelRequired() <= skillLevel))
-				result.add(process);
-		}
-
-		return result;
+		return getAllFoodProductionProcesses().stream()
+				.filter(s -> (s.getTechLevelRequired() <= techLevel) && (s.getSkillLevelRequired() <= skillLevel))
+    	        .collect(Collectors.toList());
 	}
 
 	/**
-	 * Gets the goods value of a foodProduction process at a settlement.
+	 * Gets the goods value of a food production process at a settlement.
 	 *
-	 * @param process    the foodProduction process.
+	 * @param process    the food production process.
 	 * @param settlement the settlement.
 	 * @return goods value of output goods minus input goods.
 	 * @throws Exception if error determining good values.
@@ -174,9 +164,9 @@ public final class FoodProductionUtil {
 	}
 
 	/**
-	 * Gets the good value of a foodProduction process item for a settlement.
+	 * Gets the good value of a food production process item for a settlement.
 	 *
-	 * @param item       the foodProduction process item.
+	 * @param item       the food production process item.
 	 * @param settlement the settlement.
 	 * @param isOutput   is item an output of process?
 	 * @return good value.
@@ -197,7 +187,9 @@ public final class FoodProductionUtil {
 					amount = remainingCapacity;
 				}
 			}
+			
 			result = manager.getGoodValuePoint(id) * amount;
+			
 		} else if (item.getType() == ItemType.PART) {
 			int id = ItemResourceUtil.findIDbyItemResourceName(item.getName());
 			result = manager.getGoodValuePoint(id) * item.getAmount();
@@ -211,21 +203,22 @@ public final class FoodProductionUtil {
 	}
 
 	/**
-	 * Checks to see if a foodProduction process can be started at a given
-	 * foodProduction building.
+	 * Checks to see if a food production process can be started at a given
+	 * food production building.
 	 *
-	 * @param process the foodProduction process to start.
-	 * @param kitchen the foodProduction building.
+	 * @param process the food production process to start.
+	 * @param kitchen the food production building.
 	 * @return true if process can be started.
 	 * @throws Exception if error determining if process can be started.
 	 */
 	public static boolean canProcessBeStarted(FoodProductionProcessInfo process, FoodProduction kitchen) {
 
-		// Check to see if this kitchen can accommodate another process.
-		if (kitchen.getTotalProcessNumber() < kitchen.getConcurrentProcesses()) {
+		// Check to see if this workshop can accommodate another process.
+		if (kitchen.getMaxProcesses() < kitchen.getCurrentTotalProcesses()) {
+			// NOTE: create a map to show which process has a 3D printer in use and which doesn't
 			return false;
 		}
-
+		
         // Check to see if process tech level is above kitchen tech level.
 		if (kitchen.getTechLevel() < process.getTechLevelRequired()) {
 			return false;
@@ -249,7 +242,7 @@ public final class FoodProductionUtil {
 	/**
 	 * Checks if process inputs are available in an inventory.
 	 *
-	 * @param process the foodProduction process.
+	 * @param process the food production process.
 	 * @param inv     the inventory.
 	 * @return true if process inputs are available.
 	 * @throws Exception if error determining if process inputs are available.
@@ -263,11 +256,9 @@ public final class FoodProductionUtil {
 			if (ItemType.AMOUNT_RESOURCE == item.getType()) {
 				int id = ResourceUtil.findIDbyAmountResourceName(item.getName());
 				result = (settlement.getAmountResourceStored(id) >= item.getAmount());
-				// Add demand tracking
 			} else if (ItemType.PART == item.getType()) {
 				int id = ItemResourceUtil.findIDbyItemResourceName(item.getName());
 				result = (settlement.getItemResourceStored(id) >= (int) item.getAmount());
-				// Add tracking demand
 			} else
 				throw new IllegalStateException(
 						"FoodProduction process input: " + item.getType() + " not a valid type.");
@@ -310,10 +301,6 @@ public final class FoodProductionUtil {
 					return false;
 			}
 
-			else if (ItemType.VEHICLE == item.getType()) {
-				// Vehicles are stored outside a settlement.
-			}
-
 			else
 				logger.severe(settlement, "FoodProductionUtil.addProcess(): output: " +
 					item.getType() + " not a valid type.");
@@ -327,7 +314,7 @@ public final class FoodProductionUtil {
 	 *
 	 * @param settlement the settlement.
 	 * @return true if buildings with food production function.
-	 * @throws BuildingException if error checking for foodProduction buildings.
+	 * @throws BuildingException if error checking for food production buildings.
 	 */
 	public static boolean doesSettlementHaveFoodProduction(Settlement settlement) {
 		return (settlement.getBuildingManager().getBuildings(FunctionType.FOOD_PRODUCTION).size() > 0);
@@ -337,7 +324,7 @@ public final class FoodProductionUtil {
 	 * Gets the highest food production tech level in a settlement.
 	 *
 	 * @param settlement the settlement.
-	 * @return highest foodProduction tech level.
+	 * @return highest food production tech level.
 	 * @throws BuildingException if error determining highest tech level.
 	 */
 	public static int getHighestFoodProductionTechLevel(Settlement settlement) {
@@ -373,9 +360,9 @@ public final class FoodProductionUtil {
 	}
 
 	/**
-	 * Gets the mass for a foodProduction process item.
+	 * Gets the mass for a food production process item.
 	 *
-	 * @param item the foodProduction process item.
+	 * @param item the food production process item.
 	 * @return mass (kg).
 	 * @throws Exception if error determining the mass.
 	 */

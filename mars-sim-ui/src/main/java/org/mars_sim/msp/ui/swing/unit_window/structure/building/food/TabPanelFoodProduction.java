@@ -7,7 +7,6 @@
 package org.mars_sim.msp.ui.swing.unit_window.structure.building.food;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridLayout;
@@ -21,7 +20,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListCellRenderer;
@@ -38,9 +36,11 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.food.FoodProductionProcess;
 import org.mars_sim.msp.core.food.FoodProductionProcessInfo;
 import org.mars_sim.msp.core.food.FoodProductionUtil;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.OverrideType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -60,8 +60,9 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 public class TabPanelFoodProduction extends TabPanel {
 
 	/** default logger. */
-	private static final Logger logger = Logger.getLogger(TabPanelFoodProduction.class.getName());
+	private static final SimLogger logger = SimLogger.getLogger(TabPanelFoodProduction.class.getName());
 
+	private static final int WORD_WIDTH = 50;
 	private static final String FOOD_ICON = Msg.getString("icon.food"); //$NON-NLS-1$
 	
 	// Data members
@@ -83,6 +84,7 @@ public class TabPanelFoodProduction extends TabPanel {
 
 	/** Process selection button. */
 	private JButton newProcessButton;
+	/** Checkbox for overriding food production. */
 	private JCheckBox overrideCheckbox;
 
 	/**
@@ -101,13 +103,12 @@ public class TabPanelFoodProduction extends TabPanel {
 		);
 
 		settlement = (Settlement) unit;
-
 	}
 	
+	@Override
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	protected void buildUI(JPanel content) {
-		
-		setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+//		setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
 		// Create scroll panel for foodProduction list pane.
 		foodProductionScrollPane = new JScrollPane();
@@ -131,7 +132,7 @@ public class TabPanelFoodProduction extends TabPanel {
 		processCache = getFoodProductionProcesses();
 		Iterator<FoodProductionProcess> i = processCache.iterator();
 		while (i.hasNext())
-			foodProductionListPane.add(new FoodProductionPanel(i.next(), true, 30));
+			foodProductionListPane.add(new FoodProductionPanel(i.next(), true, WORD_WIDTH));
 
 		// Create interaction panel.
 		JPanel interactionPanel = new JPanel(new GridLayout(4, 1, 0, 0));
@@ -140,9 +141,9 @@ public class TabPanelFoodProduction extends TabPanel {
 		// Create new building selection.
 		buildingComboBoxCache = getFoodProductionBuildings();
 		Collections.sort(buildingComboBoxCache);
-		buildingComboBox = new JComboBoxMW<Building>(buildingComboBoxCache);
+		buildingComboBox = new JComboBoxMW<>(buildingComboBoxCache);
 		// AddePromptComboBoxRenderer() & setSelectedIndex(-1)
-		buildingComboBox.setRenderer(new PromptComboBoxRenderer("(1). Select a Building"));
+		buildingComboBox.setRenderer(new PromptComboBoxRenderer(" (1). Select a Building"));
 		buildingComboBox.setSelectedIndex(-1);
 		buildingComboBox.setToolTipText(Msg.getString("TabPanelFoodProduction.tooltip.selectBuilding")); //$NON-NLS-1$
 		buildingComboBox.addItemListener(new ItemListener() {
@@ -156,9 +157,8 @@ public class TabPanelFoodProduction extends TabPanel {
 		Building foodFactoryBuilding = (Building) buildingComboBox.getSelectedItem();
 		processSelectionCache = getAvailableProcesses(foodFactoryBuilding);
 		processSelection = new JComboBoxMW(processSelectionCache);
-		// Modify FoodProductionSelectionListCellRenderer() & Added setSelectedIndex(-1)
-		processSelection.setRenderer(new FoodProductionSelectionListCellRenderer("(2). Select a Process"));
 		processSelection.setSelectedIndex(-1);
+		processSelection.setRenderer(new FoodProductionSelectionListCellRenderer(" (2). Select a Process"));
 		processSelection.setToolTipText(Msg.getString("TabPanelFoodProduction.tooltip.selectAvailableProcess")); //$NON-NLS-1$
 		interactionPanel.add(processSelection);
 
@@ -171,8 +171,7 @@ public class TabPanelFoodProduction extends TabPanel {
 				try {
 					Building foodFactoryBuilding = (Building) buildingComboBox.getSelectedItem();
 					if (foodFactoryBuilding != null) {
-						FoodProduction foodFactory = (FoodProduction) foodFactoryBuilding
-								.getFunction(FunctionType.FOOD_PRODUCTION);
+						FoodProduction foodFactory = foodFactoryBuilding.getFoodProduction();
 						Object selectedItem = processSelection.getSelectedItem();
 						if (selectedItem != null) {
 							if (selectedItem instanceof FoodProductionProcessInfo) {
@@ -180,16 +179,17 @@ public class TabPanelFoodProduction extends TabPanel {
 								if (FoodProductionUtil.canProcessBeStarted(selectedProcess, foodFactory)) {
 									foodFactory.addProcess(new FoodProductionProcess(selectedProcess, foodFactory));
 									update();
-									// Add PromptComboBoxRenderer() & setSelectedIndex(-1)
+									
+									logger.log(foodFactoryBuilding, Level.CONFIG, 0L, "Player starts the '" 
+											+ selectedProcess.getName() + "'.");
+									
 									buildingComboBox.setRenderer(new PromptComboBoxRenderer(" (1). Select a Building"));
 									buildingComboBox.setSelectedIndex(-1);
 									processSelection.setRenderer(
-											new FoodProductionSelectionListCellRenderer("(2). Select a Process"));
+											new FoodProductionSelectionListCellRenderer(" (2). Select a Process"));
 									processSelection.setSelectedIndex(-1);
 								}
-
 							}
-
 						}
 					}
 				} catch (Exception e) {
@@ -204,7 +204,7 @@ public class TabPanelFoodProduction extends TabPanel {
 		overrideCheckbox.setToolTipText(Msg.getString("TabPanelFoodProduction.tooltip.overrideProduction")); //$NON-NLS-1$
 		overrideCheckbox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				setFoodProductionOverride(overrideCheckbox.isSelected());
+				setOverride(OverrideType.FOOD_PRODUCTION, overrideCheckbox.isSelected());
 			}
 		});
 		overrideCheckbox.setSelected(settlement.getProcessOverride(OverrideType.FOOD_PRODUCTION));
@@ -214,9 +214,6 @@ public class TabPanelFoodProduction extends TabPanel {
 	class PromptComboBoxRenderer extends DefaultListCellRenderer {
 
 		private String prompt;
-
-		@SuppressWarnings("unused")
-		private DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
 
 		/*
 		 * Set the text to display when no item has been selected.
@@ -231,7 +228,6 @@ public class TabPanelFoodProduction extends TabPanel {
 		// Add color rendering
 		public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
 				boolean cellHasFocus) {
-//			super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 
 			Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 
@@ -239,16 +235,16 @@ public class TabPanelFoodProduction extends TabPanel {
 				setText(prompt);
 				return this;
 			}
-			if (c instanceof JLabel) {
-				if (isSelected) {
-					c.setBackground(Color.orange);
-				} else {
-					c.setBackground(Color.white);
-				}
-			} else {
-				c.setBackground(Color.white);
-				c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-			}
+//			if (c instanceof JLabel) {
+//				if (isSelected) {
+//					c.setBackground(Color.orange);
+//				} else {
+//					c.setBackground(Color.white);
+//				}
+//			} else {
+//				c.setBackground(Color.white);
+//				c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+//			}
 			return c;
 		}
 	}
@@ -259,8 +255,6 @@ public class TabPanelFoodProduction extends TabPanel {
 		
 		// Update processes if necessary.
 		List<FoodProductionProcess> processes = getFoodProductionProcesses();
-		// List<SalvageProcess> salvages = getSalvageProcesses();
-		// if (!processCache.equals(processes) || !salvageCache.equals(salvages)) {
 		if (!processCache.equals(processes)) {
 
 			// Add foodProduction panels for new processes.
@@ -268,7 +262,7 @@ public class TabPanelFoodProduction extends TabPanel {
 			while (i.hasNext()) {
 				FoodProductionProcess process = i.next();
 				if (!processCache.contains(process))
-					foodProductionListPane.add(new FoodProductionPanel(process, true, 30));
+					foodProductionListPane.add(new FoodProductionPanel(process, true, WORD_WIDTH));
 			}
 
 			// Remove foodProduction panels for old processes.
@@ -317,6 +311,7 @@ public class TabPanelFoodProduction extends TabPanel {
 		// Update process selection list.
 		Building selectedBuilding = (Building) buildingComboBox.getSelectedItem();
 		Vector<FoodProductionProcessInfo> newProcesses = getAvailableProcesses(selectedBuilding);
+		
 		if (!newProcesses.equals(processSelectionCache)) {
 
 			processSelectionCache = newProcesses;
@@ -347,15 +342,12 @@ public class TabPanelFoodProduction extends TabPanel {
 	 * @return list of foodProduction processes.
 	 */
 	private List<FoodProductionProcess> getFoodProductionProcesses() {
-		List<FoodProductionProcess> result = new ArrayList<FoodProductionProcess>();
+		List<FoodProductionProcess> result = new ArrayList<>();
 
 		Iterator<Building> i = settlement.getBuildingManager().getBuildings(FunctionType.FOOD_PRODUCTION).iterator();
 		while (i.hasNext()) {
-			// try {
-			FoodProduction foodFactory = (FoodProduction) i.next().getFunction(FunctionType.FOOD_PRODUCTION);
+			FoodProduction foodFactory = i.next().getFoodProduction();
 			result.addAll(foodFactory.getProcesses());
-			// }
-			// catch (BuildingException e) {}
 		}
 
 		return result;
@@ -386,7 +378,7 @@ public class TabPanelFoodProduction extends TabPanel {
 	 * @return vector of buildings.
 	 */
 	private Vector<Building> getFoodProductionBuildings() {
-		return new Vector<Building>(settlement.getBuildingManager().getBuildings(FunctionType.FOOD_PRODUCTION));
+		return new Vector<>(settlement.getBuildingManager().getBuildings(FunctionType.FOOD_PRODUCTION));
 	}
 
 	/**
@@ -396,7 +388,7 @@ public class TabPanelFoodProduction extends TabPanel {
 	 * @return vector of processes.
 	 */
 	private Vector<FoodProductionProcessInfo> getAvailableProcesses(Building foodProductionBuilding) {
-		Vector<FoodProductionProcessInfo> result = new Vector<FoodProductionProcessInfo>();
+		Vector<FoodProductionProcessInfo> result = new Vector<>();
 
 		try {
 			if (foodProductionBuilding != null) {
@@ -414,9 +406,24 @@ public class TabPanelFoodProduction extends TabPanel {
 					}
 				}
 
-				FoodProduction foodFactory = (FoodProduction) foodProductionBuilding
-						.getFunction(FunctionType.FOOD_PRODUCTION);
-				if (foodFactory.getProcesses().size() < foodFactory.getConcurrentProcesses()) {
+				// Note: Allow a low material science skill person to have access to 
+				// do the next 2 levels of skill process or else difficult 
+				// tasks are not learned.
+				highestSkillLevel = highestSkillLevel + 2;
+				
+				// Determine highest materials science skill level at settlement.
+				Iterator<Robot> k = settlement.getAllAssociatedRobots().iterator();
+				while (k.hasNext()) {
+					Robot r = k.next();
+					SkillManager skillManager = r.getSkillManager();
+					int skill = skillManager.getSkillLevel(SkillType.COOKING);
+					if (skill > highestSkillLevel) {
+						highestSkillLevel = skill;
+					}
+				}
+
+				FoodProduction foodFactory = foodProductionBuilding.getFoodProduction();
+				if (foodFactory.getCurrentTotalProcesses() < foodFactory.getNumPrintersInUse()) {
 					Iterator<FoodProductionProcessInfo> j = FoodProductionUtil
 							.getFoodProductionProcessesForTechSkillLevel(foodFactory.getTechLevel(), highestSkillLevel)
 							.iterator();
@@ -429,27 +436,26 @@ public class TabPanelFoodProduction extends TabPanel {
 			}
 		} catch (Exception e) {
 		}
+		// Enable Collections.sorts by implementing Comparable<>
+		Collections.sort(result);
 		return result;
 	}
 
 	/**
-	 * Sets the settlement foodProduction override flag.
+	 * Sets the settlement food production override flag.
 	 * 
-	 * @param override the foodProduction override flag.
+	 * @param override the food production override flag.
 	 */
-	private void setFoodProductionOverride(boolean override) {
+	private void setOverride(OverrideType type, boolean override) {
 		settlement.setProcessOverride(OverrideType.FOOD_PRODUCTION, override);
 	}
 
 	/**
-	 * Inner class for the foodProduction selection list cell renderer.
+	 * Inner class for the food production selection list cell renderer.
 	 */
 	private static class FoodProductionSelectionListCellRenderer extends DefaultListCellRenderer {
 
-		/** default serial id. */
-		private static final long serialVersionUID = 1L;
-
-		private static final int PROCESS_NAME_LENGTH = 40;
+		private static final int PROCESS_NAME_LENGTH = 50;
 		private String prompt;
 
 		/*
@@ -487,7 +493,7 @@ public class TabPanelFoodProduction extends TabPanel {
 	}
 
 	/**
-	 * Prepare object for garbage collection.
+	 * Prepares object for garbage collection.
 	 */
 	@Override
 	public void destroy() {

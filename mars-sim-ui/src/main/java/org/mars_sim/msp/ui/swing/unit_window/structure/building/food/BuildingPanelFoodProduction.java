@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * BuildingPanelFoodProduction.java
- * @date 2021-09-20
+ * @date 2022-07-26
  * @author Manny Kung
  */
 
@@ -36,6 +36,7 @@ import org.mars_sim.msp.core.food.FoodProductionUtil;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.function.FoodProduction;
 import org.mars_sim.msp.ui.swing.ImageLoader;
@@ -111,7 +112,7 @@ public class BuildingPanelFoodProduction extends BuildingFunctionPanel {
 		addTextField(labelPanel, "Tech Level:", foodFactory.getTechLevel(), null);
 
 		// Prepare processCapacity label
-		addTextField(labelPanel, "Process Capacity:", foodFactory.getConcurrentProcesses(), null);
+		addTextField(labelPanel, "Process Capacity:", foodFactory.getMaxProcesses(), null);
 
 
 		// Create scroll pane for food production processes
@@ -144,7 +145,7 @@ public class BuildingPanelFoodProduction extends BuildingFunctionPanel {
 
 		// Create new foodProduction process selection.
 		processComboBoxCache = getAvailableProcesses();
-		processComboBox = new JComboBoxMW<FoodProductionProcessInfo>(processComboBoxCache);
+		processComboBox = new JComboBoxMW<>(processComboBoxCache);
 
 		processComboBox.setRenderer(new FoodProductionSelectionListCellRenderer());
 		processComboBox.setToolTipText("Select An Available Food Production Process");
@@ -164,16 +165,14 @@ public class BuildingPanelFoodProduction extends BuildingFunctionPanel {
 			public void actionPerformed(ActionEvent event) {
 				try {
 					Object selectedItem = processComboBox.getSelectedItem();
-					if (selectedItem != null) {
-						if (selectedItem instanceof FoodProductionProcessInfo) {
-							FoodProductionProcessInfo selectedProcess = (FoodProductionProcessInfo) selectedItem;
-							if (FoodProductionUtil.canProcessBeStarted(selectedProcess, getFoodFactory())) {
-								getFoodFactory()
-										.addProcess(new FoodProductionProcess(selectedProcess, getFoodFactory()));
-								update();
-							}
+					if (selectedItem != null
+						&& selectedItem instanceof FoodProductionProcessInfo) {
+						FoodProductionProcessInfo selectedProcess = (FoodProductionProcessInfo) selectedItem;
+						if (FoodProductionUtil.canProcessBeStarted(selectedProcess, getFoodFactory())) {
+							getFoodFactory()
+									.addProcess(new FoodProductionProcess(selectedProcess, getFoodFactory()));
+							update();
 						}
-
 					}
 				} catch (Exception e) {
 					logger.log(Level.SEVERE, "new process button", e);
@@ -278,9 +277,9 @@ public class BuildingPanelFoodProduction extends BuildingFunctionPanel {
 	 * @return vector of processes.
 	 */
 	private Vector<FoodProductionProcessInfo> getAvailableProcesses() {
-		Vector<FoodProductionProcessInfo> result = new Vector<FoodProductionProcessInfo>();
+		Vector<FoodProductionProcessInfo> result = new Vector<>();
 
-		if (foodFactory.getProcesses().size() < foodFactory.getConcurrentProcesses()) {
+		if (foodFactory.getProcesses().size() < foodFactory.getNumPrintersInUse()) {
 
 			// Determine highest materials science skill level at settlement.
 			Settlement settlement = foodFactory.getBuilding().getSettlement();
@@ -295,6 +294,16 @@ public class BuildingPanelFoodProduction extends BuildingFunctionPanel {
 				}
 			}
 
+			Iterator<Robot> k = settlement.getAllAssociatedRobots().iterator();
+			while (k.hasNext()) {
+				Robot r = k.next();
+				SkillManager skillManager = r.getSkillManager();
+				int skill = skillManager.getSkillLevel(SkillType.COOKING);
+				if (skill > highestSkillLevel) {
+					highestSkillLevel = skill;
+				}
+			}
+			
 			try {
 				Iterator<FoodProductionProcessInfo> j = Collections.unmodifiableList(FoodProductionUtil
 						.getFoodProductionProcessesForTechSkillLevel(foodFactory.getTechLevel(), highestSkillLevel))

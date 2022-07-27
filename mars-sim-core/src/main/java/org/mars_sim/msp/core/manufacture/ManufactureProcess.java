@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * ManufactureProcess.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-26
  * @author Scott Davis
  */
 
@@ -105,17 +105,6 @@ public class ManufactureProcess implements Serializable {
 	}
 
 	/**
-	 * Compares this object with the specified object for order.
-	 * 
-	 * @param o the Object to be compared.
-	 * @return a negative integer, zero, or a positive integer as this object is
-	 *         less than, equal to, or greater than the specified object.
-	 */
-	public int compareTo(ManufactureProcess p) {
-		return info.getName().compareToIgnoreCase(p.info.getName());
-	}
-
-	/**
 	 * Gets the total work time required
 	 * 
 	 * @return
@@ -125,11 +114,22 @@ public class ManufactureProcess implements Serializable {
 	}
 	
 	/**
-	 * Prepare object for garbage collection.
+	 * Compares this object with the specified object for order.
+	 * 
+	 * @param o the Object to be compared.
+	 * @return a negative integer, zero, or a positive integer as this object is
+	 *         less than, equal to, or greater than the specified object.
+	 */
+	public int compareTo(ManufactureProcess p) {
+		return info.getName().compareToIgnoreCase(p.info.getName());
+	}
+	
+	/**
+	 * Prepares object for garbage collection.
 	 */
 	public void destroy() {
 		workshop = null;
+		info.destroy();
 		info = null;
 	}
-
 }

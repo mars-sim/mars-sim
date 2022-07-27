@@ -62,7 +62,8 @@ public class TabPanelManufacture extends TabPanel {
 
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(TabPanelManufacture.class.getName());
-
+	
+	private static final int WORD_WIDTH = 50;
 	private static final String MANU_ICON = Msg.getString("icon.manu"); //$NON-NLS-1$
 	
 	/** The Settlement instance. */
@@ -72,6 +73,7 @@ public class TabPanelManufacture extends TabPanel {
 	private JScrollPane manufactureScrollPane;
 	private List<ManufactureProcess> processCache;
 	private List<SalvageProcess> salvageCache;
+	
 	/** building selector. */
 	private JComboBoxMW<Building> buildingComboBox;
 	/** List of available manufacture buildings. */
@@ -82,6 +84,7 @@ public class TabPanelManufacture extends TabPanel {
 	private Vector<ManufactureProcessInfo> processSelectionCache;
 	/** List of available salvage processes. */
 	private Vector<SalvageProcessInfo> salvageSelectionCache;
+	
 	/** Process selection button. */
 	private JButton newProcessButton;
 	/** Checkbox for overriding manufacturing. */
@@ -98,7 +101,7 @@ public class TabPanelManufacture extends TabPanel {
 	public TabPanelManufacture(Unit unit, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
-			null, 
+			Msg.getString("TabPanelManufacture.title"), //$NON-NLS-1$
 			ImageLoader.getNewIcon(MANU_ICON),
 			Msg.getString("TabPanelManufacture.title"), //$NON-NLS-1$
 			unit, desktop
@@ -108,6 +111,7 @@ public class TabPanelManufacture extends TabPanel {
 	}
 
 	@Override
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	protected void buildUI(JPanel content) {
 
 		// Create scroll panel for manufacture list pane.
@@ -132,13 +136,13 @@ public class TabPanelManufacture extends TabPanel {
 		processCache = getManufactureProcesses();
 		Iterator<ManufactureProcess> i = processCache.iterator();
 		while (i.hasNext())
-			manufactureListPane.add(new ManufacturePanel(i.next(), true, 30));
+			manufactureListPane.add(new ManufacturePanel(i.next(), true, WORD_WIDTH));
 
 		// Create salvage panels.
-		salvageCache = new ArrayList<SalvageProcess>(getSalvageProcesses());
+		salvageCache = new ArrayList<>(getSalvageProcesses());
 		Iterator<SalvageProcess> j = salvageCache.iterator();
 		while (j.hasNext())
-			manufactureListPane.add(new SalvagePanel(j.next(), true, 30));
+			manufactureListPane.add(new SalvagePanel(j.next(), true, WORD_WIDTH));
 
 		// Create interaction panel.
 		JPanel interactionPanel = new JPanel(new GridLayout(5, 1, 0, 0));
@@ -160,8 +164,7 @@ public class TabPanelManufacture extends TabPanel {
 		// Create new manufacture process selection.
 		Building workshopBuilding = (Building) buildingComboBox.getSelectedItem();
 		processSelectionCache = getAvailableProcesses(workshopBuilding);
-		processSelection = new JComboBoxMW<ManufactureProcessInfo>(processSelectionCache);
-
+		processSelection = new JComboBoxMW<>(processSelectionCache);
 		processSelection.setSelectedIndex(-1);
 		processSelection.setRenderer(new ManufactureSelectionListCellRenderer(" (2). Select a Process"));
 		processSelection.setToolTipText(Msg.getString("TabPanelManufacture.tooltip.selectAvailableProcess")); //$NON-NLS-1$
@@ -175,9 +178,6 @@ public class TabPanelManufacture extends TabPanel {
 
 		// Create new process button.
 		newProcessButton = new JButton(Msg.getString("TabPanelManufacture.button.createNewProcess")); //$NON-NLS-1$
-		// newProcessButton.setOpaque(false);
-		// newProcessButton.setBackground(new Color(51,25,0,128));
-		// newProcessButton.setForeground(Color.ORANGE);
 		newProcessButton.setEnabled(processSelection.getItemCount() > 0);
 		newProcessButton.setToolTipText(Msg.getString("TabPanelManufacture.tooltip.createNewProcess")); //$NON-NLS-1$
 		newProcessButton.addActionListener(new ActionListener() {
@@ -200,10 +200,9 @@ public class TabPanelManufacture extends TabPanel {
 									
 									buildingComboBox.setRenderer(new PromptComboBoxRenderer(" (1). Select a Building"));
 									buildingComboBox.setSelectedIndex(-1);
-									processSelection.setSelectedIndex(-1);
 									processSelection.setRenderer(
-											new ManufactureSelectionListCellRenderer("(2). Select a Process"));
-
+											new ManufactureSelectionListCellRenderer(" (2). Select a Process"));
+									processSelection.setSelectedIndex(-1);
 								}
 							} else if (selectedItem instanceof SalvageProcessInfo) {
 								SalvageProcessInfo selectedSalvage = (SalvageProcessInfo) selectedItem;
@@ -252,11 +251,7 @@ public class TabPanelManufacture extends TabPanel {
 
 	class PromptComboBoxRenderer extends DefaultListCellRenderer {
 
-		private static final long serialVersionUID = 1L;
 		private String prompt;
-//		private DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
-		// Width doesn't matter as the combo box will size
-		// private Dimension preferredSize = new Dimension(0, 20);
 
 		/*
 		 * Set the text to display when no item has been selected.
@@ -271,8 +266,6 @@ public class TabPanelManufacture extends TabPanel {
 		// Add color rendering
 		public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
 				boolean cellHasFocus) {
-//			super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-//			Component c = defaultRenderer.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 
 			Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 			
@@ -280,7 +273,6 @@ public class TabPanelManufacture extends TabPanel {
 				setText(prompt);
 				return this;
 			}
-
 //			if (c instanceof JLabel) {
 //	            if (isSelected) {
 //	                c.setBackground(Color.orange);
@@ -292,11 +284,11 @@ public class TabPanelManufacture extends TabPanel {
 //	            c = super.getListCellRendererComponent(
 //	                    list, value, index, isSelected, cellHasFocus);
 //	        }
-
 			return c;
 		}
 	}
-
+	
+	@SuppressWarnings("unchecked")
 	@Override
 	public void update() {
 
@@ -310,7 +302,7 @@ public class TabPanelManufacture extends TabPanel {
 			while (i.hasNext()) {
 				ManufactureProcess process = i.next();
 				if (!processCache.contains(process))
-					manufactureListPane.add(new ManufacturePanel(process, true, 30));
+					manufactureListPane.add(new ManufacturePanel(process, true, WORD_WIDTH));
 			}
 
 			// Add salvage panels for new salvage processes.
@@ -318,7 +310,7 @@ public class TabPanelManufacture extends TabPanel {
 			while (k.hasNext()) {
 				SalvageProcess salvage = k.next();
 				if (!salvageCache.contains(salvage))
-					manufactureListPane.add(new SalvagePanel(salvage, true, 23));
+					manufactureListPane.add(new SalvagePanel(salvage, true, WORD_WIDTH));
 			}
 
 			// Remove manufacture panels for old processes.
@@ -390,7 +382,9 @@ public class TabPanelManufacture extends TabPanel {
 		Building selectedBuilding = (Building) buildingComboBox.getSelectedItem();
 		Vector<ManufactureProcessInfo> newProcesses = getAvailableProcesses(selectedBuilding);
 		Vector<SalvageProcessInfo> newSalvages = getAvailableSalvageProcesses(selectedBuilding);
+		
 		if (!newProcesses.equals(processSelectionCache) || !newSalvages.equals(salvageSelectionCache)) {
+			
 			processSelectionCache = newProcesses;
 			salvageSelectionCache = newSalvages;
 			Object currentSelection = processSelection.getSelectedItem();
@@ -424,7 +418,7 @@ public class TabPanelManufacture extends TabPanel {
 	 * @return list of manufacture processes.
 	 */
 	private List<ManufactureProcess> getManufactureProcesses() {
-		List<ManufactureProcess> result = new ArrayList<ManufactureProcess>();
+		List<ManufactureProcess> result = new ArrayList<>();
 
 		Iterator<Building> i = settlement.getBuildingManager().getBuildings(FunctionType.MANUFACTURE).iterator();
 		while (i.hasNext()) {
@@ -496,7 +490,7 @@ public class TabPanelManufacture extends TabPanel {
 	 * @return vector of buildings.
 	 */
 	private Vector<Building> getManufacturingBuildings() {
-		return new Vector<Building>(settlement.getBuildingManager().getBuildings(FunctionType.MANUFACTURE));
+		return new Vector<>(settlement.getBuildingManager().getBuildings(FunctionType.MANUFACTURE));
 	}
 
 	/**
@@ -506,7 +500,7 @@ public class TabPanelManufacture extends TabPanel {
 	 * @return vector of processes.
 	 */
 	private Vector<ManufactureProcessInfo> getAvailableProcesses(Building manufactureBuilding) {
-		Vector<ManufactureProcessInfo> result = new Vector<ManufactureProcessInfo>();
+		Vector<ManufactureProcessInfo> result = new Vector<>();
 
 		try {
 			if (manufactureBuilding != null) {
@@ -540,7 +534,7 @@ public class TabPanelManufacture extends TabPanel {
 				}
 						
 				Manufacture workshop = manufactureBuilding.getManufacture();
-				if (workshop.getProcesses().size() < workshop.getNumPrintersInUse()) {
+				if (workshop.getCurrentTotalProcesses() < workshop.getNumPrintersInUse()) {
 					Iterator<ManufactureProcessInfo> j = ManufactureUtil
 							.getManufactureProcessesForTechSkillLevel(workshop.getTechLevel(), highestSkillLevel)
 							.iterator();
@@ -599,10 +593,7 @@ public class TabPanelManufacture extends TabPanel {
 	 */
 	private static class ManufactureSelectionListCellRenderer extends DefaultListCellRenderer {
 
-		/** default serial id. */
-		private static final long serialVersionUID = 1L;
-
-		private static final int PROCESS_NAME_LENGTH = 40;
+		private static final int PROCESS_NAME_LENGTH = 50;
 		private String prompt;
 
 		/*
@@ -626,7 +617,7 @@ public class TabPanelManufacture extends TabPanel {
 					if (processName.length() > PROCESS_NAME_LENGTH)
 						processName = processName.substring(0, PROCESS_NAME_LENGTH)
 								+ Msg.getString("TabPanelManufacture.cutOff"); //$NON-NLS-1$
-					// 2014-11-19 Capitalized process names
+
 					((JLabel) result).setText(Conversion.capitalize(processName));
 					((JComponent) result).setToolTipText(ManufacturePanel.getToolTipString(info, null));
 				}
@@ -643,7 +634,6 @@ public class TabPanelManufacture extends TabPanel {
 				}
 			}
 
-			// 2014-12-01 Added setText()
 			if (value == null)
 				setText(prompt);
 
@@ -652,7 +642,7 @@ public class TabPanelManufacture extends TabPanel {
 	}
 
 	/**
-	 * Prepare object for garbage collection.
+	 * Prepares object for garbage collection.
 	 */
 	@Override
 	public void destroy() {
@@ -663,6 +653,7 @@ public class TabPanelManufacture extends TabPanel {
 		manufactureScrollPane = null;
 		processCache = null;
 		salvageCache = null;
+		
 		buildingComboBox = null;
 		buildingComboBoxCache = null;
 		processSelection = null;
