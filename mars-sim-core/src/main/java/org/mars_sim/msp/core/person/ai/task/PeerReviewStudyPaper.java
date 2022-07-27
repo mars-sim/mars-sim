@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * PeerReviewStudyPaper.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -16,6 +16,7 @@ import java.util.logging.Level;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
@@ -62,13 +63,9 @@ implements Serializable {
 	public PeerReviewStudyPaper(Person person) {
         // Use task constructor. Skill determined later by Study
         super(NAME, person, true, false, STRESS_MODIFIER, null, 25D,
-                10D + RandomUtil.getRandomDouble(300D));
+                50D + RandomUtil.getRandomDouble(20D));
+        
         setExperienceAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
-
-//		if (person.getPhysicalCondition().computeFitnessLevel() < 2) {
-//			logger.log(person, Level.FINE, 10_000, "Ended peer reviewing study paper. Not feeling well.");
-//			endTask();
-//		}
 
         // Determine study to review.
         study = determineStudy(person);
@@ -145,7 +142,7 @@ implements Serializable {
     private ScientificStudy determineStudy(Person person) {
         ScientificStudy result = null;
 
-        List<ScientificStudy> possibleStudies = new ArrayList<ScientificStudy>();
+        List<ScientificStudy> possibleStudies = new ArrayList<>();
 
         // Get all studies in the peer review phase.
 //        ScientificStudyManager studyManager = Simulation.instance().getScientificStudyManager();
@@ -194,6 +191,7 @@ implements Serializable {
 
     /**
      * Performs the study peer reviewing phase.
+     * 
      * @param time the amount of time (millisols) to perform the phase.
      * @return the amount of time (millisols) left over after performing the phase.
      */
@@ -210,24 +208,32 @@ implements Serializable {
 		}
 
         // Check if peer review phase in study is completed.
-        if (study.isCompleted()) {
+        if (study.isCompleted() || isDone()) {
 			logger.log(worker, Level.INFO, 0, "Just spent "
-					+ Math.round(study.getPeerReviewTimeCompleted() *10.0)/10.0
-					+ " millisols to finish peer reviewing a paper "
+					+ (int)study.getPeerReviewTimeCompleted()
+					+ " msols to finish peer reviewing a paper "
 					+ " for " + study.getName() + ".");
             endTask();
         }
-
-        if (isDone()) {
-			endTask();
-            return time;
-        }
-
-        // Peer review study. (No operation required for this)
+        
+        // Peer review study. No operation required for this.
 
         // Add experience
         addExperience(time);
 
         return 0D;
     }
+    
+	@Override
+	protected void addExperience(double time) {
+        // Experience points adjusted by person's "Experience Aptitude" attribute.
+        NaturalAttributeManager nManager = person.getNaturalAttributeManager();
+        int aptitude = nManager.getAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
+
+		double learned = time * (aptitude / 100D) * RandomUtil.getRandomDouble(1);
+
+		person.getSkillManager().addExperience(study.getScience().getSkill(), learned, time);
+
+		super.addExperience(time);
+	}
 }

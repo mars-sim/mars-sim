@@ -21,7 +21,8 @@ import org.mars_sim.msp.core.structure.Settlement;
 public abstract class DigLocalMeta extends MetaTask {
 
 	private static final double VALUE = 1.0;
-	private static final double MAX = 5000;
+	private static final int MAX = 5000;
+	private static final int LIMIT = 10000;
 	
 	private EquipmentType containerType;
 
@@ -32,7 +33,6 @@ public abstract class DigLocalMeta extends MetaTask {
 
 		this.containerType = containerType;
 	}
-
 
     protected double getProbability(Settlement settlement, Person person, double collectionProbability) {
 
@@ -81,12 +81,13 @@ public abstract class DigLocalMeta extends MetaTask {
 
         // Probability affected by the person's stress and fatigue.
         PhysicalCondition condition = person.getPhysicalCondition();
+        
+        if (!condition.isFitByLevel(300, 30, 300))
+        	return 0;
+        
         double stress = condition.getStress();
         double fatigue = condition.getFatigue();
         double hunger = condition.getHunger();
-
-        if (!condition.isFitByLevel(500, 30, 500))
-        	return 0;
 
         result = collectionProbability * VALUE;
 
@@ -100,7 +101,7 @@ public abstract class DigLocalMeta extends MetaTask {
 
 	    int indoor = settlement.getIndoorPeopleCount(); 
 	    int citizen = settlement.getNumCitizens();
-	    
+
 	    // Crowded settlement modifier
         if (indoor > settlement.getPopulationCapacity())
             result = result * (indoor - settlement.getPopulationCapacity());
@@ -108,10 +109,10 @@ public abstract class DigLocalMeta extends MetaTask {
         if (citizen <= 8 && citizen >= 4)
             // Adds effect of the # of citizen 
         	result *= citizen / 2.0;
-        
+
         // Adds effect of the ratio of # indoor people vs. those outside already doing EVA 
         result *= (1 + indoor) / (1 + settlement.getNumOutsideEVA()) ;
-        
+
         result = applyPersonModifier(result, person);
 
     	if (exposed[0]) {
@@ -127,6 +128,9 @@ public abstract class DigLocalMeta extends MetaTask {
         if (result <= 0)
             return 0;
 
+        if (result > LIMIT)
+        	result = LIMIT;
+        
         return result;
     }
 }

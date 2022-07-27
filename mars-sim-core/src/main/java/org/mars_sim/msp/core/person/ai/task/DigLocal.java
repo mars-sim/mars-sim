@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
- * DigLocalRegolith.java
- * @date 2022-06-28
+ * DigLocal.java
+ * @date 2022-07-26
  * @author Scott Davis
  */
 

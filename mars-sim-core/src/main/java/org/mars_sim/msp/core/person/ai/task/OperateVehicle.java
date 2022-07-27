@@ -512,7 +512,8 @@ public abstract class OperateVehicle extends Task implements Serializable {
             	hrsTime = hrsTimeCache;
             	d_km = distanceCache;
             	
-				logger.log(vehicle, Level.WARNING,  20_000L, "Case 2: Used up the last drop of fuel. Reaching "
+				logger.log(vehicle, Level.WARNING,  20_000L, 
+						"Case 2: Used up the last drop of fuel to drive toward "
 						+ destination + " - " 
 	        			+ Math.round(d_km * 1_000)/1_000 + " km away.");
 				
@@ -520,8 +521,8 @@ public abstract class OperateVehicle extends Task implements Serializable {
             }
             else {
             	// Case 3 : the rover may use all the prescribed time to drive 
-				logger.log(vehicle, Level.WARNING,  20_000L, "Case 3: Reaching "
-						+ destination + " - still " 
+				logger.log(vehicle, Level.WARNING,  20_000L, "Case 3: Driving toward "
+						+ destination + " - " 
 	        			+ Math.round(startingDistanceToDestination * 1_000)/1_000 + " km away.");
 				
             	result = 0;

@@ -70,33 +70,6 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	public static final String FAILED_COMPLETION = "Failed Completion";
 	public static final String CANCELED = "Canceled";
 
-	/** The average amount of base work time (millisols) required for proposal phase. */
-	private double baseProposalTime;
-
-	/** The average amount of base work time (millisols) required for primary research. */
-	private double basePrimaryResearchTime;
-
-	/** The average amount of base work time (millisols) required for collaborative research. */
-	private double baseCollaborativeResearchTime;
-
-	/** The average amount of base work time (millisols) required for primary researcher writing study paper. */
-	private double basePrimaryWritingPaperTime;
-
-	/** The average amount of base work time (millisols) required for collaborative researcher writing study paper. */
-	private double baseCollaborativePaperWritingTime;
-
-	/** The average amount of base time (millisols) for peer review. */
-	private double basePeerReviewTime;
-
-	/** The average amount of downtime (millisols) allowed for primary work. */
-	private double primaryWorkDownTimeAllowed;
-
-	/** The average amount of downtime (millisols) allowed for collaborative work. */
-	private double collaborativeWorkDownTimeAllowed;
-	
-	/** A list of listeners for this scientific study. */
-	private transient List<ScientificStudyListener> listeners; 
-	
 	// Data members
 	/** The assigned study number. */
 	private int id;	
@@ -104,25 +77,46 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	private int maxCollaborators;
 	/** The difficulty level of this scientific study. */
 	private int difficultyLevel;
-	/** The primary researcher */
-	private Person primaryResearcher;
-
+	
+	/** The average amount of base work time (millisols) required for proposal phase. */
+	private double baseProposalTime;
+	/** The average amount of base work time (millisols) required for primary research. */
+	private double basePrimaryResearchTime;
+	/** The average amount of base work time (millisols) required for collaborative research. */
+	private double baseCollaborativeResearchTime;
+	/** The average amount of base work time (millisols) required for primary researcher writing study paper. */
+	private double basePrimaryWritingPaperTime;
+	/** The average amount of base work time (millisols) required for collaborative researcher writing study paper. */
+	private double baseCollaborativePaperWritingTime;
+	/** The average amount of base time (millisols) for peer review. */
+	private double basePeerReviewTime;
+	/** The average amount of downtime (millisols) allowed for primary work. */
+	private double primaryWorkDownTimeAllowed;
+	/** The average amount of downtime (millisols) allowed for collaborative work. */
+	private double collaborativeWorkDownTimeAllowed;
+	
 	/** The amount of proposal time done so far. */
 	private double proposalWorkTime;
+
+	/** The primary researcher */
+	private Person primaryResearcher;
 	
 	private String phase;
 	private String completionState;
-	
 	private String name;
 	private ScienceType science;
 
 	private MarsClock peerReviewStartTime;
 
 	private CollaboratorStats primaryStats;
-	// Having these keyed on Person seems to create a problem deserializing a saved sim.
-	private Map<Integer, CollaboratorStats> collaborators;
-	private Map<Integer, Boolean> invitedResearchers;
+	
 
+	/** Having these keyed on Person seems to create a problem deserializing a saved sim. */
+	private Map<Integer, CollaboratorStats> collaborators;
+	/** A map of invited researchers.  */
+	private Map<Integer, Boolean> invitedResearchers;
+	/** A list of listeners for this scientific study. */
+	private transient List<ScientificStudyListener> listeners; 
 	/** A major topics this scientific study is aiming at. */
 	private List<String> topics;
 
@@ -190,7 +184,7 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	}
 
 	/**
-	 * Computes the time of interest for this scientific study
+	 * Computes the time of interest for this scientific study.
 	 * 
 	 * @param index
 	 * @return
@@ -198,10 +192,11 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	private double computeTime(int index) {
 		// Gets the average time from scientific_study.json
 		int mean = ScienceConfig.getAverageTime(index);
-		// Modify it with random gaussian (and limit it to not less than 1/4 of the mean) for this particular scientific study
+		// Modify it with random gaussian for this particular scientific study
 		double mod = RandomUtil.getGaussianDouble();
 		if (mod > 10)
 			mod = 10;
+		// Limit it to not less than 1/4 of the mean 
 		return Math.max(mean / 4D, mean + mean * mod / 5D);	
 	}
 	
@@ -214,7 +209,7 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	}
 	
 	/**
-	 * Get a list of topics
+	 * Gets a list of topics.
 	 *
 	 * @return {@link List<String>} a list of topics
 	 */
@@ -223,7 +218,7 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	}
 	
 	/**
-	 * Gets the assigned id of this study
+	 * Gets the assigned id of this study.
 	 * 
 	 * @return
 	 */
@@ -298,7 +293,8 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	}
 
 	/**
-	 * Has the proposal been completed
+	 * Has the proposal been completed ?
+	 * 
 	 * @return
 	 */
 	public boolean isProposalCompleted() {
@@ -330,6 +326,7 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 
 	/**
 	 * Converts a set of Person IDs into a Set of Person objects.
+	 * 
 	 * @param ids
 	 * @return
 	 */
@@ -339,7 +336,8 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	}
 	
 	/**
-	 * Get the contribution of a researcher to this study. Maybe primary researcher or a collaborator
+	 * Gets the contribution of a researcher to this study. Maybe primary researcher or a collaborator.
+	 * 
 	 * @param researcher
 	 * @return
 	 */
@@ -391,6 +389,7 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	 * Removes a collaborative researcher from a study.
 	 * Must be synchronised as Collaborators come from Settlements outside the primary Settlement and hence
 	 * different Threads.
+	 * 
 	 * @param researcher the collaborative researcher.
 	 */
 	private void removeCollaborativeResearcher(Person researcher) {
@@ -419,7 +418,7 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	}
 
 	/**
-	 * Get number of research invitations that have not been responded to yet.
+	 * Gets number of research invitations that have not been responded to yet.
 	 * 
 	 * @return num invitations.
 	 */
@@ -440,6 +439,7 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 
 	/** 
 	 * Who has been invited?
+	 * 
 	 * @return
 	 */
 	public Set<Person> getInvitedResearchers() {
@@ -447,7 +447,7 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	}
 	
 	/**
-	 * Cleans out any dead collaboration invitees.
+	 * Cleans out any dead invitees.
 	 */
 	private void cleanDeadInvitations() {
 		List<Person> dead = findDeadPeople(invitedResearchers.keySet());
@@ -458,6 +458,9 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 		}
 	}
 	
+	/**
+	 * Cleans out any dead collaborators.
+	 */
 	private void cleanDeadCollaborators() {
 		List<Person> dead = findDeadPeople(collaborators.keySet());
 		for(Person d : dead) {
@@ -468,7 +471,8 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	}
 	
     /**
-     * Find all dead people in a list of IDs. Probably should be a generic helper method
+     * Finds all dead people in a list of IDs. Probably should be a generic helper method.
+     * 
      * @param ids
      * @return 
      */
@@ -864,7 +868,8 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 
 
 	/**
-     * Determine the results of a study's peer review process.
+     * Determines the results of a study's peer review process.
+     * 
      * @return true if study passes peer review, false if it fails to pass.
      */
     private boolean determinePeerReviewResults() {
@@ -904,7 +909,7 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
     }
     
     /**
-     * Provide achievements for the completion of a study.
+     * Provides achievements for the completion of a study.
      */
     private void provideCompletionAchievements() {
         
@@ -938,7 +943,7 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
     }
     
 	/**
-	 * Adds a listener
+	 * Adds a listener.
 	 * 
 	 * @param newListener the listener to add.
 	 */
@@ -950,7 +955,7 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	}
 
 	/**
-	 * Removes a listener
+	 * Removes a listener.
 	 * 
 	 * @param oldListener the listener to remove.
 	 */
@@ -962,7 +967,7 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	}
 
 	/**
-	 * Fire a scientific study update event.
+	 * Fires a scientific study update event.
 	 * 
 	 * @param type the update type.
 	 */
@@ -971,7 +976,7 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	}
 
 	/**
-	 * Fire a scientific study update event.
+	 * Fires a scientific study update event.
 	 * 
 	 * @param updateType the update type.
 	 * @param researcher   the researcher related to the event or null if none.
@@ -1007,7 +1012,7 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	}
 	
 	/**
-	 * initializes instances after loading from a saved sim
+	 * Initializes instances after loading from a saved sim.
 	 * 
 	 * @param {{@link MarsClock}
 	 */
@@ -1016,7 +1021,7 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	}
 	
 	/**
-	 * Prepare object for garbage collection.
+	 * Prepares object for garbage collection.
 	 */
 	public void destroy() {
 		phase = null;
@@ -1033,7 +1038,7 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	}
 
 	/**
-	 * Time passes for the study
+	 * Time passes for the study.
 	 */
 	@Override
 	public boolean timePassing(ClockPulse pulse) {

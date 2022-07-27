@@ -31,7 +31,7 @@ public class HaveConversationMeta extends MetaTask {
     private static final String NAME = Msg.getString(
             "Task.description.haveConversation"); //$NON-NLS-1$
     
-    private static final double VALUE = 0.1;
+    private static final double VALUE = 1.2;
     
     public HaveConversationMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.ANY_HOUR);
@@ -48,7 +48,6 @@ public class HaveConversationMeta extends MetaTask {
     public double getProbability(Person person) {
 
         double result = 0;
-        // TODO: Probability affected by the person's stress and fatigue.
 
         if (person.isInSettlement()) {
        
@@ -69,7 +68,7 @@ public class HaveConversationMeta extends MetaTask {
             if (num > 0) {      
             	// Note: having people who are already chatting will increase the probability of having this person to join
                 double rand = RandomUtil.getRandomDouble(num) + 1;
-                result = rand * VALUE * 2;
+                result = rand * VALUE;
             }
             else {
             	result = 0; // if there is no one else in the settlement, set result to 0

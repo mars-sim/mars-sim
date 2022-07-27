@@ -29,7 +29,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 public class AnalyzeMapDataMeta extends MetaTask {
     
 	/** Task name */
-	private static final int VALUE = 2;
+	private static final int VALUE = 1;
 	
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -56,7 +56,7 @@ public class AnalyzeMapDataMeta extends MetaTask {
         double result = 0D;
 
         // Probability affected by the person's stress and fatigue.
-        if (!person.getPhysicalCondition().isFitByLevel(1000, 70, 1000))
+        if (!person.getPhysicalCondition().isFitByLevel(500, 50, 500))
         	return 0;
         
         if (person.isInside()) {

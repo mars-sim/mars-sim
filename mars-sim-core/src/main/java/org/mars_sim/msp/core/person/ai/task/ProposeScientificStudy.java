@@ -127,6 +127,7 @@ public class ProposeScientificStudy extends Task implements Serializable {
 		}
 
 		if (isDone()) {
+			logger.log(person, Level.INFO, 10_000, "Proposed " + study + ".");
 			endTask();
 			return time;
 		}

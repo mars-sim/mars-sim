@@ -13,11 +13,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.food.FoodProductionProcess;
 import org.mars_sim.msp.core.food.FoodProductionProcessInfo;
 import org.mars_sim.msp.core.food.FoodProductionUtil;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillManager;
@@ -35,7 +37,7 @@ import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
- * A task for working on a foodProduction process.
+ * A task for working on a food production process.
  */
 public class ProduceFood
 extends Task
@@ -43,6 +45,9 @@ implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
+
+	/** default logger. */
+	private static SimLogger logger = SimLogger.getLogger(ProduceFood.class.getName());
 
 	/** Task name */
     private static final String TASK_DESCRIPTION_PRODUCE_FOOD = "Task.description.produceFood";
@@ -63,7 +68,7 @@ implements Serializable {
 	private static final double STRESS_MODIFIER = .2D;
 
 	// Data members
-	/** The foodProduction foodFactory the person is using. */
+	/** The food production foodFactory the person is using. */
 	private FoodProduction foodFactory;
 
 	/**
@@ -80,12 +85,12 @@ implements Serializable {
 		    setDescription(Msg.getString(DETAIL_DESCRIPTION, //$NON-NLS-1$
                     person.getSettlement().getName())); 
 	
-			// Get available foodProduction foodFactory if any.
+			// Get available food production foodFactory if any.
 			Building foodProductionBuilding = getAvailableFoodProductionBuilding(person);
 			if (foodProductionBuilding != null) {
 				foodFactory = foodProductionBuilding.getFoodProduction();
 	
-				// Walk to foodProduction building.
+				// Walk to food production building.
 				walkToTaskSpecificActivitySpotInBuilding(foodProductionBuilding,
 														 FunctionType.FOOD_PRODUCTION, false);
 		
@@ -114,11 +119,11 @@ implements Serializable {
 		    setDescription(Msg.getString(DETAIL_DESCRIPTION, //$NON-NLS-1$
                     robot.getSettlement().getName()));
 	
-			// Get available foodProduction foodFactory if any.
+			// Get available food production foodFactory if any.
 			Building foodProductionBuilding = getAvailableFoodProductionBuilding(robot);
 			if (foodProductionBuilding != null) {
 				foodFactory = foodProductionBuilding.getFoodProduction();
-				// Walk to foodProduction building.
+				// Walk to food production building.
 				walkToTaskSpecificActivitySpotInBuilding(foodProductionBuilding,
 														FunctionType.FOOD_PRODUCTION, false);
 		
@@ -133,7 +138,7 @@ implements Serializable {
 	}
 
 	/**
-	 * Cancels any foodProduction processes that's beyond the skill of any people
+	 * Cancels any food production processes that's beyond the skill of any people
 	 * associated with the settlement.
 	 * 
 	 * @param person the person
@@ -154,39 +159,13 @@ implements Serializable {
 					FoodProductionProcess process = k.next();
 					int processSkillLevel = process.getInfo().getSkillLevelRequired();
 					if (processSkillLevel > highestSkillLevel) {
-						// Cancel foodProduction process.
+						// Cancel food production process.
 						foodProductionFunction.endFoodProductionProcess(process, true);
 					}
 				}
 			}
 		}
 	}
-
-//	public static void cancelDifficultFoodProductionProcesses(Robot robot) {
-//
-//		Settlement settlement = robot.getSettlement();
-//		if (settlement != null) {
-//			int highestSkillLevel = getHighestSkillAtSettlement(settlement);
-//
-//			BuildingManager buildingManager = robot.getSettlement().getBuildingManager();
-//			Iterator<Building> j = buildingManager.getBuildings(FunctionType.FOOD_PRODUCTION).iterator();
-//			while (j.hasNext()) {
-//				Building building = (Building) j.next();
-//				FoodProduction foodProductionFunction = building.getFoodProduction();
-//				List<FoodProductionProcess> processes = new CopyOnWriteArrayList<FoodProductionProcess>(
-//						foodProductionFunction.getProcesses());
-//				Iterator<FoodProductionProcess> k = processes.iterator();
-//				while (k.hasNext()) {
-//					FoodProductionProcess process = k.next();
-//					int processSkillLevel = process.getInfo().getSkillLevelRequired();
-//					if (processSkillLevel > highestSkillLevel) {
-//						// Cancel foodProduction process.
-//						foodProductionFunction.endFoodProductionProcess(process, true);
-//					}
-//				}
-//			}
-//		}
-//	}
 
 	/**
 	 * Gets the highest skill level for food production at a settlement.
@@ -231,11 +210,11 @@ implements Serializable {
 	}
 
 	/**
-	 * Gets an available foodProduction building that the person can use. Returns
-	 * null if no foodProduction building is currently available.
+	 * Gets an available food production building that the person can use. Returns
+	 * null if no food production building is currently available.
 	 * 
 	 * @param person the person
-	 * @return available foodProduction building
+	 * @return available food production building
 	 */
 	public static Building getAvailableFoodProductionBuilding(Person person) {
 
@@ -290,12 +269,12 @@ implements Serializable {
 		return result;
 	}
 	/**
-	 * Gets a list of foodProduction buildings needing work from a list of
-	 * buildings with the foodProduction function.
+	 * Gets a list of food production buildings needing work from a list of
+	 * buildings with the food production function.
 	 * 
-	 * @param buildingList list of buildings with the foodProduction function.
+	 * @param buildingList list of buildings with the food production function.
 	 * @param skill the materials science skill level of the person.
-	 * @return list of foodProduction buildings needing work.
+	 * @return list of food production buildings needing work.
 	 */
 	private static List<Building> getFoodProductionBuildingsNeedingWork(
 		List<Building> buildingList, int skill) {
@@ -315,7 +294,7 @@ implements Serializable {
 	}
 
 	/**
-	 * Gets a subset list of foodProduction buildings with processes requiring
+	 * Gets a subset list of food production buildings with processes requiring
 	 * work.
 	 * 
 	 * @param buildingList the original building list.
@@ -346,9 +325,9 @@ implements Serializable {
 	}
 
 	/**
-	 * Checks if foodProduction building has any processes requiring work.
+	 * Checks if food production building has any processes requiring work.
 	 * 
-	 * @param foodProductionBuilding the foodProduction building.
+	 * @param foodProductionBuilding the food production building.
 	 * @param skill the materials science skill level of the person.
 	 * @return true if processes requiring work.
 	 */
@@ -367,10 +346,10 @@ implements Serializable {
 	}
 
 	/**
-	 * Gets a subset list of foodProduction buildings with the highest tech level
-	 * from a list of buildings with the foodProduction function.
+	 * Gets a subset list of food production buildings with the highest tech level
+	 * from a list of buildings with the food production function.
 	 * 
-	 * @param buildingList list of buildings with the foodProduction function.
+	 * @param buildingList list of buildings with the food production function.
 	 * @return subset list of highest tech level buildings.
 	 */
 	private static List<Building> getHighestFoodProductionTechLevelBuildings(
@@ -397,11 +376,11 @@ implements Serializable {
 	}
 
 	/**
-	 * Gets the highest foodProduction process goods value for the person and the
-	 * foodProduction building.
+	 * Gets the highest food production process goods value for the person and the
+	 * food production building.
 	 * 
-	 * @param person the person to perform foodProduction.
-	 * @param foodProductionBuilding the foodProduction building.
+	 * @param person the person to perform food production.
+	 * @param foodProductionBuilding the food production building.
 	 * @return highest process good value.
 	 */
 	public static double getHighestFoodProductionProcessValue(Person person,
@@ -488,13 +467,13 @@ implements Serializable {
 	}
 
 	/**
-	 * Performs the foodProduction phase.
+	 * Performs the food production phase.
 	 * 
 	 * @param time the time to perform (millisols)
 	 * @return remaining time after performing (millisols)
 	 */
 	private double foodProductionPhase(double time) {
-
+		
 		if (worker.isOutside()) {
 			endTask();
 			return 0;
@@ -507,7 +486,7 @@ implements Serializable {
 		}
 
 		else {
-	        // Cancel any foodProduction processes that's beyond the skill of any people
+	        // Cancel any food production processes that's beyond the skill of any people
 	        // associated with the settlement.
 	        ProduceFood.cancelDifficultFoodProductionProcesses(foodFactory.getBuilding().getSettlement());
 	        
@@ -529,9 +508,11 @@ implements Serializable {
 				workTime += workTime * (.2D * (double) skill);
 			}
 			
-			// Apply work time to foodProduction processes.
+			FoodProductionProcess process = null;
+			
+			// Apply work time to food production processes.
 			while ((workTime > 0D) && !isDone()) {
-				FoodProductionProcess process = getRunningFoodProductionProcess();
+				process = getRunningFoodProductionProcess();
 				if (process != null) {
 					double remainingWorkTime = process.getWorkTimeRemaining();
 					double providedWorkTime = workTime;
@@ -568,14 +549,19 @@ implements Serializable {
 	
 			// Check for accident in foodFactory.
 			checkForAccident(foodFactory.getBuilding(), 0.005D, time);
-
+			
+			if (isDone()) {
+				logger.log(worker, Level.INFO, 10_000, "Worked on '" + process.getInfo().getName() + "'.");
+				endTask();
+				return 0;
+			}
 		}
 		
 		return 0D;
 	}
 
 	/**
-	 * Gets an available running foodProduction process.
+	 * Gets an available running food production process.
 	 * 
 	 * @return process or null if none.
 	 */
@@ -594,11 +580,11 @@ implements Serializable {
 	}
 
 	/**
-	 * Checks if a process type is currently running at a foodProduction
+	 * Checks if a process type is currently running at a food production
 	 * building.
 	 * 
 	 * @param processInfo the process type.
-	 * @param foodProductionBuilding the foodProduction building.
+	 * @param foodProductionBuilding the food production building.
 	 * @return true if process is running.
 	 */
 	private static boolean isProcessRunning(FoodProductionProcessInfo processInfo,
@@ -615,8 +601,8 @@ implements Serializable {
 	}
 
 	/**
-	 * Creates a new foodProduction process if possible.
-	 * @return the new foodProduction process or null if none.
+	 * Creates a new food production process if possible.
+	 * @return the new food production process or null if none.
 	 */
 	private FoodProductionProcess createNewFoodProductionProcess() {
 		FoodProductionProcess result = null;
@@ -628,7 +614,7 @@ implements Serializable {
 		int skillLevel = getEffectiveSkillLevel();
 		int techLevel = foodFactory.getTechLevel();
 
-		// Determine all foodProduction processes that are possible and profitable.
+		// Determine all food production processes that are possible and profitable.
 		Map<FoodProductionProcessInfo, Double> processProbMap = new ConcurrentHashMap<>();
 		for (FoodProductionProcessInfo processInfo : FoodProductionUtil.getFoodProductionProcessesForTechSkillLevel(
 				techLevel, skillLevel)) {
@@ -642,13 +628,13 @@ implements Serializable {
 			}
 		}
 
-		// Randomly choose among possible foodProduction processes based on their relative profitability.
+		// Randomly choose among possible food production processes based on their relative profitability.
 		FoodProductionProcessInfo chosenProcess = null;
 		if (!processProbMap.isEmpty()) {
 			chosenProcess = RandomUtil.getWeightedRandomObject(processProbMap);
 		}
 
-		// Create chosen foodProduction process.
+		// Create chosen food production process.
 		if (chosenProcess != null) {
 			result = new FoodProductionProcess(chosenProcess, foodFactory);
 			foodFactory.addProcess(result);

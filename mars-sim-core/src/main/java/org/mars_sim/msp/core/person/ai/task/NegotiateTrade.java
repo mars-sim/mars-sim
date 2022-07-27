@@ -104,9 +104,11 @@ public class NegotiateTrade extends Task implements Serializable {
 		if (getDuration() <= (getTimeCompleted() + time)) {
 
 			double tradeModifier = determineTradeModifier();
-			logger.info(person, "Negotiation completed -  Buyer: " + buyingSettlement.getName() 
-						+ "  Seller: " + sellingSettlement.getName()
-						+ "  Trade Mod: " + Math.round(tradeModifier * 10.0)/10.0);
+			logger.info(person, 
+					"Trade negotiation completed. "
+					+ "Buyer: " + buyingSettlement.getName() 
+					+ ". Seller: " + sellingSettlement.getName()
+					+ ". Trade Mod: " + Math.round(tradeModifier * 10.0)/10.0);
 
 			buyLoad = CommerceUtil.negotiateDeal(sellingSettlement, buyingSettlement, rover, tradeModifier, soldLoad);
 

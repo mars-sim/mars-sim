@@ -29,8 +29,6 @@ class Engineer extends Job {
 	public Engineer() {
 		// Use Job constructor
 		super(JobType.ENGINEER, Job.buildRoleMap(5.0, 20.0, 30.0, 10.0, 10.0, 15.0, 10.0, 20.0));
-
-
 	}
 
 	/**
@@ -71,18 +69,18 @@ class Engineer extends Job {
 		int population = settlement.getNumCitizens();
 		
 		// Add (tech level * process number / 2) for all manufacture buildings.
-		List<Building> manufactureBuildings = settlement.getBuildingManager().getBuildings(FunctionType.MANUFACTURE);
+		List<Building> manufactureBuildings = settlement.getBuildingManager()
+				.getBuildings(FunctionType.MANUFACTURE);
 
 		Iterator<Building> i = manufactureBuildings.iterator();
 		while (i.hasNext()) {
-			Building building = i.next();
-			Manufacture workshop = building.getManufacture();
+			Manufacture workshop = i.next().getManufacture();
 			result += (workshop.getTechLevel() + 1) * workshop.getMaxProcesses() / 10D;
 		}
 		
 		result += getBuildingScienceDemand(settlement, ScienceType.ENGINEERING, 12D);
 		
-		result = (result + population / 8D) / 2.0;
+		result = (result + population / 8D) / 2D;
 			
 		return result;
 	}

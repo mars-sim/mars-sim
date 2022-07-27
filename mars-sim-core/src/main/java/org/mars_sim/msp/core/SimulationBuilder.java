@@ -254,16 +254,17 @@ public class SimulationBuilder {
 	 */
 	public Simulation start() {
 		Version version = java.lang.Runtime.version();
-		logger.config("-----------------------------------------------------------");
-		logger.config("    Java Version Full String = "+version);
-		logger.config("Java Version Feature Element = "+version.feature());
-		logger.config("Java Version Interim Element = "+version.interim());
-		logger.config("  Java Patch Element Version = "+version.patch());
-		logger.config(" Java Update Element Version = "+version.update());
-		logger.config("          Java Version Build = "+version.build().orElse(0));
-		logger.config("  Java additional build Info = "+version.optional().orElse("None"));
-		logger.config("       Java Pre-Release Info = "+version.pre().orElse("NA"));
-		logger.config("-----------------------------------------------------------");
+		String WHITESPACES = "---------------------------------------------------";
+		logger.config(WHITESPACES);
+		logger.config("    Java Version Full String = " + version);
+		logger.config("Java Version Feature Element = " + version.feature());
+		logger.config("Java Version Interim Element = " + version.interim());
+		logger.config("  Java Patch Element Version = " + version.patch());
+		logger.config(" Java Update Element Version = " + version.update());
+		logger.config("          Java Version Build = " + version.build().orElse(0));
+		logger.config("  Java additional build Info = " + version.optional().orElse("None"));
+		logger.config("       Java Pre-Release Info = " + version.pre().orElse("NA"));
+		logger.config(WHITESPACES);
 		
 		// Load xml files but not until arguments parsed since it may change 
 		// the data directory

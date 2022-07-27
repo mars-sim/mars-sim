@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * EVASuit.java
- * @date 2021-10-21
+ * @date 2022-07-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.equipment;
@@ -116,7 +116,7 @@ public class EVASuit extends Equipment
 	/** Unloaded mass of EVA suit (kg.). The combined total of the mass of all parts. */
 	public static double emptyMass;
 
-	public static final String DASHES = " ---------------------------------------------------------";
+	public static final String DASHES = " -----------------------------------------------------------------------";
 	
 	// Data members
 	/** The equipment's malfunction manager. */
@@ -132,7 +132,6 @@ public class EVASuit extends Equipment
 			 emptyMass += ItemResourceUtil.findItemResource(id).getMassPerItem();
 		 }
 
-//		 PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
 		 double o2Consumed = personConfig.getHighO2ConsumptionRate();
 		 double co2Expelled = personConfig.getCO2ExpelledRate();
 		 GAS_RATIO = co2Expelled / o2Consumed;
@@ -146,14 +145,14 @@ public class EVASuit extends Equipment
 		 MASS_O2_NOMINAL_LIMIT = NORMAL_AIR_PRESSURE / MIN_O2_PRESSURE * MASS_O2_MINIMUM_LIMIT;
 
 		 logger.config(DASHES);
-		 logger.config(" EVA suit's unloaded weight : " + Math.round(emptyMass*1_000.0)/1_000.0 + " kg");
-		 logger.config("      Total gas tank volume : " + Math.round(TOTAL_VOLUME*100.0)/100.0 + "L");
-		 logger.config("               Full Tank O2 : " + Math.round(FULL_O2_PARTIAL_PRESSURE*100.0)/100.0 + " kPa -> "
-				 		+ OXYGEN_CAPACITY + "    kg - Maximum tank pressure");
-		 logger.config("                 Nomimal O2 : " + NORMAL_AIR_PRESSURE + "  kPa -> "
-				 		+ Math.round(MASS_O2_NOMINAL_LIMIT*10_000.0)/10_000.0  + " kg - Suit target pressure");
-		 logger.config("                 Minimum O2 : " + Math.round(MIN_O2_PRESSURE*100.0)/100.0 + " kPa -> "
-				 		+ Math.round(MASS_O2_MINIMUM_LIMIT*10_000.0)/10_000.0  + " kg - Safety limit");
+		 logger.config(" Suit's Unloaded Weight : " + Math.round(emptyMass * 1_000.0)/1_000.0 + " kg");
+		 logger.config("  Total Gas Tank Volume : " + Math.round(TOTAL_VOLUME * 100.0)/100.0 + "L");
+		 logger.config("           Full Tank O2 : " + Math.round(FULL_O2_PARTIAL_PRESSURE*100.0)/100.0 
+				 + " kPa -> " + OXYGEN_CAPACITY + "    kg - Maximum Tank Pressure");
+		 logger.config("             Nomimal O2 : " + NORMAL_AIR_PRESSURE + "  kPa -> "
+				 + Math.round(MASS_O2_NOMINAL_LIMIT * 100.0)/100.0  + " kg - Suit Target Pressure");
+		 logger.config("             Minimum O2 : " + Math.round(MIN_O2_PRESSURE * 100.0)/100.0 + " kPa -> "
+				 + Math.round(MASS_O2_MINIMUM_LIMIT * 100.0)/100.0  + " kg - Safety Limit");
 		 logger.config(DASHES);
 			
 			// 66.61 kPa -> 1      kg (full tank O2 pressure)

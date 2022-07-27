@@ -474,8 +474,9 @@ public class EatDrink extends Task implements Serializable {
 			if (eatingTime > 0D) {
 
 				if (cookedMeal != null) {
+					String s = Msg.getString("Task.description.eatDrink.cooked.eating.detail", cookedMeal.getName());
 					// Set descriptoin for eating cooked meal.
-					setDescription(Msg.getString("Task.description.eatDrink.cooked.eating.detail", cookedMeal.getName())); //$NON-NLS-1$
+					setDescription(s); //$NON-NLS-1$
 					// Eat cooked meal.
 					eatCookedMeal(eatingTime);
 
@@ -491,8 +492,10 @@ public class EatDrink extends Task implements Serializable {
 
 					totalEatingTime += eatingTime;
 
-					if (totalEatingTime > getDuration())
+					if (totalEatingTime > getDuration()) {
+						logger.info(person, 10_000, "Done " + s.toLowerCase() + ".");
 						endTask();
+					}
 
 					consumeWater(false);
 

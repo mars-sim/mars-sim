@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
@@ -31,6 +32,9 @@ public class Read extends Task implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
+	
+    /** default logger. */
+	private static SimLogger logger = SimLogger.getLogger(Read.class.getName());
 
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.read"); //$NON-NLS-1$
@@ -174,6 +178,23 @@ public class Read extends Task implements Serializable {
 	 */
 	private double reading(double time) {
 
+		if (isDone()) {
+	        String s = Msg.getString("Task.description.read.detail", selectedSkill.getName()); //$NON-NLS-1$
+	        logger.info(person, 10_000L, "Done " + s.toLowerCase() + ".");
+			endTask();
+			return time;
+		}
+		
+    	// Pick one skill randomly to improve upon
+        if (selectedSkill == null) {
+        	selectedSkill = person.getSkillManager().getARandomSkillType();
+        
+	        String s = Msg.getString("Task.description.read.detail", selectedSkill.getName()); //$NON-NLS-1$
+	    	// Display reading on a particular subject (skill type)
+			setDescription(s);		
+//	        logger.info(person, 10_000L, "Started " + s.toLowerCase() + ".");
+        }
+
 		// Reading serves to improve skill
 		addExperience(time);
 		
@@ -186,13 +207,6 @@ public class Read extends Task implements Serializable {
         NaturalAttributeManager nManager = person.getNaturalAttributeManager();
         int aptitude = nManager.getAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
 
-    	// Pick one skill randomly to improve upon
-        if (selectedSkill == null)
-        	selectedSkill = person.getSkillManager().getARandomSkillType();
-        
-    	// Display reading on a particular subject (skill type)
-		setDescription(Msg.getString("Task.description.read.detail", selectedSkill.getName()));//$NON-NLS-1$
-		
 		double learned = 2 * time * (aptitude / 100D) * RandomUtil.getRandomDouble(1);
 
 		person.getSkillManager().addExperience(selectedSkill, learned, time);

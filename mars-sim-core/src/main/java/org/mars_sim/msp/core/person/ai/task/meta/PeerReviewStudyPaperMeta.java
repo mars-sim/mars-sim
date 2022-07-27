@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * PeerReviewStudyPaperMeta.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -51,7 +51,7 @@ public class PeerReviewStudyPaperMeta extends MetaTask {
         if (person.isInside()) {
 
             // Probability affected by the person's stress and fatigue.
-            if (!person.getPhysicalCondition().isFitByLevel(1000, 70, 1000))
+            if (!person.getPhysicalCondition().isFitByLevel(800, 80, 800))
             	return 0;
 
 	        // Get all studies in the peer review phase.

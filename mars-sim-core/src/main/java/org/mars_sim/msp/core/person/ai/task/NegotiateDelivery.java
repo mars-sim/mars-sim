@@ -107,11 +107,11 @@ public class NegotiateDelivery extends Task implements Serializable {
 
 			double tradeModifier = determineTradeModifier();
 			logger.log(person, Level.INFO, 0, 
-			"Negotiation completed - "
-			+ "  Buyer: " + buyingSettlement.getName() 
-			+ "  Seller: " + sellingSettlement.getName()
-			+ "  Trade Mod: " + Math.round(tradeModifier * 10.0)/10.0
-			);
+				"Delivery negotiation completed. "
+				+ "Buyer: " + buyingSettlement.getName() 
+				+ ". Seller: " + sellingSettlement.getName()
+				+ ". Trade Mod: " + Math.round(tradeModifier * 10.0)/10.0
+				);
 
 			buyLoad = CommerceUtil.negotiateDeal(sellingSettlement, buyingSettlement, drone, tradeModifier, soldLoad);
 		}

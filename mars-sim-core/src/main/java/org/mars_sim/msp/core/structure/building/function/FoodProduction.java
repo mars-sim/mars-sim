@@ -291,8 +291,10 @@ public class FoodProduction extends Function {
 	public boolean timePassing(ClockPulse pulse) {
 		boolean valid = isValid(pulse);
 		if (valid) {
-			// Check once a sol only
-			checkPrinters(pulse);
+			if (pulse.isNewSol()) {
+				// Check once a sol only
+				checkPrinters(pulse);
+			}
 
 			List<FoodProductionProcess> finishedProcesses = new ArrayList<>();
 	
@@ -483,45 +485,44 @@ public class FoodProduction extends Function {
 	 * @param pulse
 	 */
 	public void checkPrinters(ClockPulse pulse) {
-		// Check only once a day for # of processes that are needed.
-		if (pulse.isNewSol()) {
-			// Gets the available number of printers in storage
-			int numAvailable = building.getSettlement().getItemResourceStored(printerID);
+		// Gets the available number of printers in storage
+		int numAvailable = building.getSettlement().getItemResourceStored(printerID);
 
-			// NOTE: it's reasonable to create a settler's task to install a 3-D printer manually over a period of time
-			if (numPrintersInUse < numMaxConcurrentProcesses) {
-				int deficit = numMaxConcurrentProcesses - numPrintersInUse;
-				logger.info(getBuilding().getSettlement(), 20_000,
-						getBuilding() + " - "
-						+ numAvailable
-						+ " 3D-printer(s) in storage.");
-				logger.info(getBuilding().getSettlement(), 20_000,
-						getBuilding() + " - "
-						+ numPrintersInUse
-						+ " 3D-printer(s) in use.");
+		// Malfunction of a 3D-printer should trigger this
+		// NOTE: it's reasonable to create a settler's task to install 
+		// a 3-D printer manually over a period of time
+		if (numPrintersInUse < numMaxConcurrentProcesses) {
+			int deficit = numMaxConcurrentProcesses - numPrintersInUse;
+			logger.info(getBuilding().getSettlement(), 20_000,
+					getBuilding() + " - "
+					+ numAvailable
+					+ " 3D-printer(s) in storage.");
+			logger.info(getBuilding().getSettlement(), 20_000,
+					getBuilding() + " - "
+					+ numPrintersInUse
+					+ " 3D-printer(s) in use.");
 
-				if (deficit > 0 && numAvailable > 0) {
-					int size = Math.min(numAvailable, deficit);
-					for (int i=0; i<size; i++) {
-						numPrintersInUse++;
-						numAvailable--;
-						int lacking = building.getSettlement().retrieveItemResource(printerID, 1);
-						if (lacking > 0) {
-							logger.info(getBuilding().getSettlement(), 20_000,
-									"No 3D-printer available for " + getBuilding() + ".");
-						}
+			if (deficit > 0 && numAvailable > 0) {
+				int size = Math.min(numAvailable, deficit);
+				for (int i=0; i<size; i++) {
+					numPrintersInUse++;
+					numAvailable--;
+					int lacking = building.getSettlement().retrieveItemResource(printerID, 1);
+					if (lacking > 0) {
+						logger.info(getBuilding().getSettlement(), 20_000,
+								"No 3D-printer available for " + getBuilding() + ".");
 					}
-
-					logger.info(getBuilding().getSettlement(), 20_000,
-							getBuilding() + " - "
-							+ size
-							+ " 3D-printer(s) just installed.");
 				}
-			}
 
-            // NOTE: if not having enough printers,
-			// determine how to use GoodsManager to push for making new 3D printers
+				logger.info(getBuilding().getSettlement(), 20_000,
+						getBuilding() + " - "
+						+ size
+						+ " 3D-printer(s) just installed.");
+			}
 		}
+
+        // NOTE: if not having enough printers,
+		// determine how to use GoodsManager to push for making new 3D printers
 	}
 
 

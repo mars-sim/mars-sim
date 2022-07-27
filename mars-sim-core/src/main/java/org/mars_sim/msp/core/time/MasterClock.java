@@ -139,8 +139,6 @@ public class MasterClock implements Serializable {
 		// Create a dedicated thread for the Clock
 		clockThreadTask = new ClockThreadTask();
 
-		logger.config("-----------------------------------------------------");
-
 		minMilliSolPerPulse = simulationConfig.getMinSimulatedPulse();
 		maxMilliSolPerPulse = simulationConfig.getMaxSimulatedPulse();
 		// Optimal rate is bais towards the minimum whihc is more accurate
@@ -153,13 +151,15 @@ public class MasterClock implements Serializable {
 			logger.severe("The min pulse millisol is higher than the max pule.");
 			throw new IllegalStateException("The min millisol per pulse cannot be higher than the max.");
 		}
-
-		logger.config("                 Base time-ratio     : " + desiredTR + "x");
-		logger.config("          Min millisol per pulse     : " + minMilliSolPerPulse);
-		logger.config("          Optimal millisol per pulse : " + optMilliSolPerPulse);
-		logger.config("          Max millisol per pulse     : " + maxMilliSolPerPulse);
-		logger.config(" Max elapsed time between pulses     : " + maxWaitTimeBetweenPulses + " ms");
-		logger.config("-----------------------------------------------------");
+		
+		String WHITESPACES = "-----------------------------------------------------";
+		logger.config(WHITESPACES);
+		logger.config("                 Base time-ratio : " + desiredTR + "x");
+		logger.config("          Min millisol per pulse : " + minMilliSolPerPulse);
+		logger.config("      Optimal millisol per pulse : " + optMilliSolPerPulse);
+		logger.config("          Max millisol per pulse : " + maxMilliSolPerPulse);
+		logger.config(" Max elapsed time between pulses : " + maxWaitTimeBetweenPulses + " ms");
+		logger.config(WHITESPACES);
 	}
 
 	/**
