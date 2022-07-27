@@ -73,7 +73,7 @@ extends TabPanel {
 
 		// Use the TabPanel constructor
 		super(
-			null,
+			Msg.getString("TabPanelResourceProcesses.title"), //$NON-NLS-1$
 			ImageLoader.getNewIcon(CHEMICAL_ICON),
 			Msg.getString("TabPanelResourceProcesses.title"), //$NON-NLS-1$
 			unit, desktop
@@ -247,7 +247,7 @@ extends TabPanel {
 			while (i.hasNext()) {
 				if (ii!=0)	result.append("&nbsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;");
 				Integer resource = i.next();
-				double rate = process.getMaxInputResourceRate(resource) * 1000D;
+				double rate = process.getMaxInputRate(resource) * 1000D;
 				String rateString = decFormatter.format(rate);
 				//result.append("&nbsp;&nbsp;&emsp;");
 				if (process.isAmbientInputResource(resource)) ambientStr = "*";
@@ -262,7 +262,7 @@ extends TabPanel {
 			while (j.hasNext()) {
 				if (jj!=0) result.append("&nbsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;");
 				Integer resource = j.next();
-				double rate = process.getMaxOutputResourceRate(resource) * 1000D;
+				double rate = process.getMaxOutputRate(resource) * 1000D;
 				String rateString = decFormatter.format(rate);
 				result.append(Conversion.capitalize(ResourceUtil.findAmountResource(resource).getName()))
 					.append(" @ ").append(rateString).append(" kg/sol<br>");

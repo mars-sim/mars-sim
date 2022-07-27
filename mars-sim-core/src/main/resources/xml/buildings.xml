@@ -458,7 +458,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="carbon" rate="24.0" ambient="false" />
 				</process>
 				
-				<process name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="3" power-required="0.1" default="off">
+				<process name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="3" power-required="0.1" default="on">
 					<description>
 					  By partial pyrolysis in microwave generated plasma, methane is converted to 
 					  hydrogen and acetylene:					  
@@ -3492,7 +3492,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="carbon" rate="24.0" ambient="false" />
 				</process>
 				
-				<process name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="3" power-required="0.1" default="off">
+				<process name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="3" power-required="0.1" default="on">
 					<description>
 					  By partial pyrolysis in microwave generated plasma, methane is converted to 
 					  hydrogen and acetylene:					  

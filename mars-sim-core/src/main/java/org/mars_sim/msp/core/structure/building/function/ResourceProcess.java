@@ -17,7 +17,6 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.ResourceProcessSpec;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * The ResourceProcess class represents a process of converting one set of
@@ -162,8 +161,8 @@ public class ResourceProcess implements Serializable {
 	 *
 	 * @return rate in kg/millisol.
 	 */
-	public double getMaxInputResourceRate(Integer resource) {
-		return definition.getMaxInputResourceRate(resource);
+	public double getMaxInputRate(Integer resource) {
+		return definition.getMaxInputRate(resource);
 	}
 
 	/**
@@ -190,8 +189,8 @@ public class ResourceProcess implements Serializable {
 	 *
 	 * @return rate in kg/millisol.
 	 */
-	public double getMaxOutputResourceRate(Integer resource) {
-		return definition.getMaxOutputResourceRate(resource);
+	public double getMaxOutputRate(Integer resource) {
+		return definition.getMaxOutputRate(resource);
 	}
 
 	/**

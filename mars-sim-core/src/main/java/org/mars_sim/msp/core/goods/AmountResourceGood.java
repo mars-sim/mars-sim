@@ -486,13 +486,13 @@ class AmountResourceGood extends Good {
 		if (inputResources.contains(resource) && !process.isAmbientInputResource(resource)) {
 			double outputValue = 0D;
 			for(Integer output : outputResources) {
-				double outputRate = process.getMaxOutputResourceRate(output);
+				double outputRate = process.getMaxOutputRate(output);
 				if (!process.isWasteOutputResource(resource)) {
 					outputValue += (owner.getDemandValue(GoodsUtil.getGood(output)) * outputRate);
 				}
 			}
 
-			double resourceInputRate = process.getMaxInputResourceRate(resource);
+			double resourceInputRate = process.getMaxInputRate(resource);
 
 			// Determine value of required process power.
 			double powerHrsRequiredPerMillisol = process.getPowerRequired() * MarsClock.HOURS_PER_MILLISOL;

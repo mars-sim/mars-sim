@@ -217,7 +217,7 @@ public class ResourceCommand extends AbstractSettlementCommand {
 			List<ResourceProcess> processes = rp.getProcesses();
 			for (ResourceProcess p : processes) {
 				if (p.isProcessRunning())
-					output += p.getMaxOutputResourceRate(id);
+					output += p.getMaxOutputRate(id);
 			}
 		}
 		response.appendTableRow(PROCESSES, Math.round(output * 1_000 * 100.0) / 100.0);

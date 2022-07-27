@@ -338,7 +338,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 				double remain = settlement.getAmountResourceRemainingCapacity(resource);
 
 				if (input) {
-					double rate = process.getMaxInputResourceRate(resource);
+					double rate = process.getMaxInputRate(resource);
 
 					// For input value, the higher the stored,
 					if (rate > remain) {
@@ -347,7 +347,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 					result += (rate / demand);
 
 				} else {
-					double rate = process.getMaxOutputResourceRate(resource);
+					double rate = process.getMaxOutputRate(resource);
 
 					// For output value, the
 					if (rate > remain) {

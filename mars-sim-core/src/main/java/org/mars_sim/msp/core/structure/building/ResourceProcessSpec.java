@@ -27,10 +27,10 @@ public class ResourceProcessSpec implements Serializable {
 	private String name;
 	private double powerRequired;
 	private boolean defaultOn;
-	private Map<Integer, Double> maxInputResourceRates;
+	private Map<Integer, Double> maxInputRates;
 	private Map<Integer, Double> maxAmbientInputResourceRates;
-	private Map<Integer, Double> maxOutputResourceRates;
-	private Map<Integer, Double> maxWasteOutputResourceRates;
+	private Map<Integer, Double> maxOutputRates;
+	private Map<Integer, Double> maxWasteOutputRates;
 
 	// Cache some aggregate values
 	private Set<Integer> inputResources;
@@ -47,10 +47,10 @@ public class ResourceProcessSpec implements Serializable {
 	public ResourceProcessSpec(String name, int modules, double powerRequired, boolean defaultOn) {
 		this.name = name;
 		this.modules = modules;
-		this.maxInputResourceRates = new HashMap<>();
+		this.maxInputRates = new HashMap<>();
 		this.maxAmbientInputResourceRates = new HashMap<>();
-		this.maxOutputResourceRates = new HashMap<>();
-		this.maxWasteOutputResourceRates = new HashMap<>();
+		this.maxOutputRates = new HashMap<>();
+		this.maxWasteOutputRates = new HashMap<>();
 		this.defaultOn = defaultOn;
 		this.powerRequired = powerRequired;
 	}
@@ -66,7 +66,7 @@ public class ResourceProcessSpec implements Serializable {
 		if (ambient) {
 			maxAmbientInputResourceRates.put(resource, modules * rate);
 		} else {
-			maxInputResourceRates.put(resource, modules * rate);
+			maxInputRates.put(resource, modules * rate);
 		}
 	}
 
@@ -79,9 +79,9 @@ public class ResourceProcessSpec implements Serializable {
 	 */
 	public void addMaxOutputResourceRate(Integer resource, double rate, boolean waste) {
 		if (waste) {
-			maxWasteOutputResourceRates.put(resource, modules * rate);
+			maxWasteOutputRates.put(resource, modules * rate);
 		} else {
-			maxOutputResourceRates.put(resource, modules * rate);
+			maxOutputRates.put(resource, modules * rate);
 		}
 	}
 
@@ -100,7 +100,7 @@ public class ResourceProcessSpec implements Serializable {
 	public Set<Integer> getInputResources() {
 		if (inputResources == null) {
 			inputResources = new HashSet<>();
-			inputResources.addAll(maxInputResourceRates.keySet());
+			inputResources.addAll(maxInputRates.keySet());
 			inputResources.addAll(maxAmbientInputResourceRates.keySet());
 		}
 		return inputResources;
@@ -111,7 +111,7 @@ public class ResourceProcessSpec implements Serializable {
 	 * @return
 	 */
 	public Map<Integer, Double> getMaxInputResourceRates() {
-		return maxInputResourceRates;
+		return maxInputRates;
 	}
 
 	/**
@@ -119,10 +119,10 @@ public class ResourceProcessSpec implements Serializable {
 	 *
 	 * @return rate in kg/millisol.
 	 */
-	public double getMaxInputResourceRate(Integer resource) {
+	public double getMaxInputRate(Integer resource) {
 		double result = 0D;
-		if (maxInputResourceRates.containsKey(resource))
-			result = maxInputResourceRates.get(resource);
+		if (maxInputRates.containsKey(resource))
+			result = maxInputRates.get(resource);
 		else if (maxAmbientInputResourceRates.containsKey(resource))
 			result = maxAmbientInputResourceRates.get(resource);
 		return result;
@@ -146,8 +146,8 @@ public class ResourceProcessSpec implements Serializable {
 	public Set<Integer> getOutputResources() {
 		if (outputResources == null) {
 			outputResources = ConcurrentHashMap.newKeySet();
-			outputResources.addAll(maxOutputResourceRates.keySet());
-			outputResources.addAll(maxWasteOutputResourceRates.keySet());
+			outputResources.addAll(maxOutputRates.keySet());
+			outputResources.addAll(maxWasteOutputRates.keySet());
 		}
 		return outputResources;
 	}
@@ -157,7 +157,7 @@ public class ResourceProcessSpec implements Serializable {
 	 * @return
 	 */
 	public Map<Integer, Double> getMaxOutputResourceRates() {
-		return maxOutputResourceRates;
+		return maxOutputRates;
 	}
 
 
@@ -166,12 +166,12 @@ public class ResourceProcessSpec implements Serializable {
 	 *
 	 * @return rate in kg/millisol.
 	 */
-	public double getMaxOutputResourceRate(Integer resource) {
+	public double getMaxOutputRate(Integer resource) {
 		double result = 0D;
-		if (maxOutputResourceRates.containsKey(resource))
-			result = maxOutputResourceRates.get(resource);
-		else if (maxWasteOutputResourceRates.containsKey(resource))
-			result = maxWasteOutputResourceRates.get(resource);
+		if (maxOutputRates.containsKey(resource))
+			result = maxOutputRates.get(resource);
+		else if (maxWasteOutputRates.containsKey(resource))
+			result = maxWasteOutputRates.get(resource);
 		return result;
 	}
 
@@ -182,7 +182,7 @@ public class ResourceProcessSpec implements Serializable {
 	 * @return true if waste output.
 	 */
 	public boolean isWasteOutputResource(Integer resource) {
-		return maxWasteOutputResourceRates.containsKey(resource);
+		return maxWasteOutputRates.containsKey(resource);
 	}
 
 	public double getPowerRequired() {
