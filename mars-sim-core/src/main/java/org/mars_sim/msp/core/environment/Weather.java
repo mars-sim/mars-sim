@@ -80,16 +80,16 @@ public class Weather implements Serializable, Temporal {
 	private double dailyVariationAirPressure = RandomUtil.getRandomDouble(.01); // tentatively only
 	
 	// Singleton only updated in one method
-	private Map<Coordinates, MSolDataLogger<DailyWeather>> weatherDataMap = new HashMap<>();
+	private Map<Coordinates, MSolDataLogger<DailyWeather>> weatherDataMap;
 	
-	private List<Coordinates> coordinateList = new ArrayList<>();
+	private List<Coordinates> coordinateList;
 
 	private transient Map<Coordinates, Double> temperatureCacheMap;
 	private transient Map<Coordinates, Double> airPressureCacheMap;
 	private transient Map<Coordinates, Double> windSpeedCacheMap;
 	private transient Map<Coordinates, Integer> windDirCacheMap;
 
-	private List<DustStorm> dustStorms = new ArrayList<>();
+	private List<DustStorm> dustStorms;
 	
 	private SunData sunData;
 	
@@ -101,6 +101,16 @@ public class Weather implements Serializable, Temporal {
 		this.sim = sim; 
 		this.marsClock = clock;
 		this.orbitInfo = orbitInfo;
+		
+		weatherDataMap = new HashMap<>();
+		coordinateList = new ArrayList<>();
+		dustStorms = new ArrayList<>();
+		
+		temperatureCacheMap = new HashMap<>();
+		airPressureCacheMap = new HashMap<>();
+		windSpeedCacheMap = new HashMap<>();
+		windDirCacheMap = new HashMap<>();
+		
 	}
 
 	/**

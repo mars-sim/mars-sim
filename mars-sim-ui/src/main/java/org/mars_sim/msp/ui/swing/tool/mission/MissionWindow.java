@@ -223,55 +223,13 @@ public class MissionWindow extends ToolWindow {
 			return;
 		}
 
-		if (missionCache != newMission) {
-			this.missionCache = newMission;
+		if (missionCache == null || missionCache != newMission) {
+			missionCache = newMission;
 			// Highlight the selected mission in Main tab
-			mainPanel.setMission(newMission);
+			mainPanel.setMission(missionCache);
 			// Highlight the selected mission in Nav tab
-			navpointPane.setMission(newMission);
+			navpointPane.setMission(missionCache);
 		}
-		
-		
-//		// when clicking elsewhere to open up the Mission Tool
-//		Settlement s = newMission.getAssociatedSettlement();
-//		if (s == null) {
-//			// Since the mission is completed, use the recorded settlement name
-//			// to get back the settlement instance
-//			s = CollectionUtils.findSettlement(newMission.getSettlmentName());
-//		}
-//
-//		// Select the settlement to populate missions
-//		selectSettlement(s);
-//
-//		Mission selected = missionList.getSelectedValue();
-//
-//		if (selected != null) {
-//			if (this.missionCache == null) {
-//				this.missionCache = newMission;
-//				// Highlight the selected mission
-//				mainPanel.setMission(newMission);
-//			}
-//
-//			else if (!selected.equals(newMission)) {
-//				this.missionCache = newMission;
-//				// Highlight the selected mission
-//				mainPanel.setMission(newMission);
-//			}
-//
-//			else { // selected is the same as newMission
-//				this.missionCache = newMission;
-//				// Highlight the selected mission
-//				mainPanel.setMission(newMission);
-//			}
-//		}
-//
-//		else {
-//			this.missionCache = newMission;
-//			// Highlight the selected mission
-//			mainPanel.setMission(newMission);
-//		}
-//		
-//		navpointPane.setMission(newMission);
 	}
 
 	/**

@@ -359,9 +359,9 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 		double elev = climbE + oldGroundE;
 		((Flyer) getVehicle()).setElevation(elev);
 		
-		logger.log(getVehicle(), person, Level.INFO, 20_000, 
-				"Old Elevation: " + Math.round(oldGroundE * 100.00)/100.00 + " km."
-				+ "   New Elevation: " + Math.round(elev * 100.00)/100.00 + " km.");
+//		logger.log(getVehicle(), person, Level.INFO, 20_000, 
+//				"Old Elevation: " + Math.round(oldGroundE * 100.00)/100.00 + " km."
+//				+ "   New Elevation: " + Math.round(elev * 100.00)/100.00 + " km.");
 	}
 
 	/**
