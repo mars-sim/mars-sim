@@ -249,7 +249,8 @@ public class SimulationBuilder {
 	}
 
 	/**
-	 * Uses the previously defines options and start the required Simulation
+	 * Uses the previously defines options and start the required Simulation.
+	 * 
 	 * @return The new simulation started
 	 */
 	public Simulation start() {
@@ -315,7 +316,7 @@ public class SimulationBuilder {
 		}
 
 		sim.startClock(false);
-		
+				
 		return sim;
 	}
 

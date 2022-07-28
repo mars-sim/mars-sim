@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Simulation.java
- * @date 2021-08-28
+ * @date 2022-07-28
  * @author Scott Davis
  */
 package org.mars_sim.msp.core;
@@ -36,7 +36,6 @@ import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.environment.MarsSurface;
 import org.mars_sim.msp.core.environment.OrbitInfo;
 import org.mars_sim.msp.core.environment.SurfaceFeatures;
-import org.mars_sim.msp.core.environment.TerrainElevation;
 import org.mars_sim.msp.core.environment.Weather;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
@@ -463,6 +462,8 @@ public class Simulation implements ClockListener, Serializable {
 				autoSaveDuration/60.0/1000.0 + " mins).");
 		masterClock.addClockListener(autoSaveHandler, autoSaveDuration);
 		masterClock.start();
+		
+		printLastSavedSol();
 	}
 
 	/**
@@ -588,7 +589,7 @@ public class Simulation implements ClockListener, Serializable {
 		if (loadBuild == null)
 			loadBuild = "unknown";
 
-		logger.config(DASHES);
+		logger.config(" ");
 		logger.config("                   Info on The Saved Simulation                      ");
 		logger.config(DASHES);
 		logger.config("                   Filename : " + filename);
@@ -606,14 +607,9 @@ public class Simulation implements ClockListener, Serializable {
 			logger.config(" Note : The core engine uses the same build as the saved sim.");
 		} else {
 			logger.config(" Note : The core engine does not use the same build as the saved sim.");
-			logger.warning("Attempting to load a simulation made in older build " + loadBuild
+			logger.warning("Will attempt to load a simulation made in older build " + loadBuild
 				+ " under a newer core engine build " + Simulation.BUILD + ".");
 		}
-
-		int lastSol = masterClock.getMarsClock().getMissionSol();
-
-		logger.config("  - - - - - - - - - Sol " + lastSol
-				+ " (Cont') - - - - - - - - - - - ");
 
 		initialSimulationCreated = true;
 
@@ -623,6 +619,16 @@ public class Simulation implements ClockListener, Serializable {
 		isUpdating = false;
 	}
 
+	/**
+	 * Prints the last saved sol if reloading from a saved sim.
+	 */
+	public void printLastSavedSol() {
+		int lastSol = masterClock.getMarsClock().getMissionSol();
+
+		logger.config("  - - - - - - - - - Sol " + lastSol
+				+ " (Cont') - - - - - - - - - - - ");
+	}
+	
 	/**
 	 *  Re-initialize instances after loading from a saved sim
 	 */
@@ -730,7 +736,6 @@ public class Simulation implements ClockListener, Serializable {
 		unitManager.reinit();
 
 		doneInitializing = true;
-
 	}
 
 	/**

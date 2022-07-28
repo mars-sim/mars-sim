@@ -148,7 +148,7 @@ public class EVASuit extends Equipment
 		 logger.config(" Suit's Unloaded Weight : " + Math.round(emptyMass * 1_000.0)/1_000.0 + " kg");
 		 logger.config("  Total Gas Tank Volume : " + Math.round(TOTAL_VOLUME * 100.0)/100.0 + "L");
 		 logger.config("           Full Tank O2 : " + Math.round(FULL_O2_PARTIAL_PRESSURE*100.0)/100.0 
-				 + " kPa -> " + OXYGEN_CAPACITY + "    kg - Maximum Tank Pressure");
+				 + " kPa -> " + OXYGEN_CAPACITY + "  kg - Maximum Tank Pressure");
 		 logger.config("             Nomimal O2 : " + NORMAL_AIR_PRESSURE + "  kPa -> "
 				 + Math.round(MASS_O2_NOMINAL_LIMIT * 100.0)/100.0  + " kg - Suit Target Pressure");
 		 logger.config("             Minimum O2 : " + Math.round(MIN_O2_PRESSURE * 100.0)/100.0 + " kPa -> "

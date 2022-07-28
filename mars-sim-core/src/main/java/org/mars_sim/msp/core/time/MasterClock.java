@@ -389,6 +389,9 @@ public class MasterClock implements Serializable {
 
 		} // end of run
 
+		/**
+		 * Determines the sleep time for this frame.
+		 */
 		private void calculateSleepTime() {
 			// Desired Millisols per seconds
 			double desiredMsolPerSecond = desiredTR / MarsClock.SECONDS_PER_MILLISOL;
@@ -565,6 +568,14 @@ public class MasterClock implements Serializable {
 	}
 
 	/**
+	 * Prints the new mission sol.
+	 */
+	private void printNewSol(int currentSol) {
+		logger.config("  - - - - - - - - - Sol " + currentSol
+				+ " - - - - - - - - - - - - - - ");
+	}
+	
+	/**
 	 * Fires the clock pulse to each clock listener.
 	 *
 	 * @param time
@@ -577,10 +588,15 @@ public class MasterClock implements Serializable {
 			lastMSol = currentMSol;
 			isNewMSol = true;
 		}
+		
 		// Identify if it's a new Sol
 		int currentSol = marsClock.getMissionSol();
 		boolean isNewSol = ((lastSol >= 0) && (lastSol != currentSol));
 		lastSol = currentSol;
+		
+		// Print the current sol banner
+		if (isNewSol)
+			printNewSol(currentSol);
 
 		// Log the pulse
 		long newPulseId = nextPulseId++;

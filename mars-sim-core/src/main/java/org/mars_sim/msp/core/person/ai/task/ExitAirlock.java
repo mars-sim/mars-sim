@@ -316,7 +316,7 @@ public class ExitAirlock extends Task implements Serializable {
 //		person.getTaskManager().getTask().walkToRandomLocation(false);
 //		endTask();
 
-		logger.log((Unit)airlock.getEntity(), person, Level.WARNING, 4_000, reason);
+		logger.log((Unit)airlock.getEntity(), person, Level.WARNING, 16_000, reason);
 		
 		// Note: For person in a vehicle with high fatigue or hunger,
 		// need to call clearAllTasks() to cause a person to quit the task
@@ -380,7 +380,7 @@ public class ExitAirlock extends Task implements Serializable {
 		}
 
 		if (isOccupantHalfPrebreathed()) {
-			walkAway(person, PREBREATH_HALF_DONE);
+			walkAway(person, "Can't request egress - " + PREBREATH_HALF_DONE);
 			return remainingTime;
 		}
 
@@ -651,7 +651,7 @@ public class ExitAirlock extends Task implements Serializable {
 		}
 
 		if (isOccupantHalfPrebreathed()) {
-			walkAway(person, PREBREATH_HALF_DONE);
+			walkAway(person, "Can't walk to chamber - " + PREBREATH_HALF_DONE);
 			return remainingTime;
 		}
 		
