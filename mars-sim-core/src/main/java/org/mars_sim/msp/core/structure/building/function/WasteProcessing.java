@@ -7,8 +7,10 @@
 package org.mars_sim.msp.core.structure.building.function;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -60,9 +62,9 @@ public class WasteProcessing extends Function {
 	public static double getFunctionValue(String type, boolean newBuilding, Settlement settlement) {
 
 		double result = 0D;
-		for(WasteProcessSpec process : buildingConfig.getWasteProcesses(type)) {
+		for (WasteProcessSpec process : buildingConfig.getWasteProcesses(type)) {
 			double processValue = 0D;
-			for(Integer outResource : process.getOutputResources()) {
+			for (Integer outResource : process.getOutputResources()) {
 				if (!process.isWasteOutputResource(outResource)) {
 					double rate = process.getMaxOutputRate(outResource);
 					processValue += settlement.getGoodsManager().getGoodValuePoint(outResource) * rate;
@@ -70,7 +72,8 @@ public class WasteProcessing extends Function {
 			}
 
 			double inputInventoryLimit = 1D;
-			for(int inResource : process.getInputResources()) {
+			Set<Integer> set = new HashSet<>(process.getInputResources());
+			for (int inResource : set) {
 				if (!process.isAmbientInputResource(inResource)) {
 					double rate = process.getMaxInputRate(inResource);
 					processValue -= settlement.getGoodsManager().getGoodValuePoint(inResource) * rate;

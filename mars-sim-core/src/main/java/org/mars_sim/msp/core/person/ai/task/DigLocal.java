@@ -17,7 +17,6 @@ import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.LocalPosition;
-import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -33,7 +32,6 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingCategory;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
-import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
@@ -61,11 +59,11 @@ implements Serializable {
 	private double compositeRate;
 
 	private double factor;
-	/** Total resource collected in kg. */
-	private double totalCollected;
-//	/** The amount of reource in this bag in kg. */
-//	private double bagAmount;
-
+	/** The amount of resource that can be collected by this person per trip [in kg]. */
+	private double collectionLimit;
+	/** The amount of resource that collected in one task session [in kg]. */
+	private double collectionTotal;
+	
 	private String resourceName;
 	
 	/** Airlock to be used for EVA. */
@@ -227,11 +225,6 @@ implements Serializable {
      		return time;
      	}
 
-     	if (person.getPosition().equals(binLoc)) {
-			setPhase(DROP_OFF_RESOURCE);
-			return time;
-		}
-     	
      	// Get a container
         Container aBag = person.findContainer(containerType, false, resourceID);
         if (aBag == null) {
@@ -240,9 +233,7 @@ implements Serializable {
         	checkLocation();
         	return time;
         }
-
-        setDescription("Digging Local " + Conversion.capitalize(resourceName));
-        
+     
         double collected = time * compositeRate;
 
 		// Modify collection rate by "Areology" skill.
@@ -257,19 +248,19 @@ implements Serializable {
         boolean finishedCollecting = false;
 
         if (collected > SMALL_AMOUNT) {
-            double bagCap = aBag.getAmountResourceRemainingCapacity(resourceID);
-            if (bagCap < collected) {
-            	collected = bagCap;
+        	double excess = aBag.storeAmountResource(resourceID, collected);
+        	if (excess > 0) {
     			finishedCollecting = true;
             }
-        	aBag.storeAmountResource(resourceID, collected);
-	     	totalCollected += collected;
+	     	collectionLimit += collected - excess;
+	     	collectionTotal += collectionLimit;
         }
 
         if (!finishedCollecting) {
         	double loadCap = person.getCarryingCapacity();
-            if (totalCollected >= loadCap) {
-            	totalCollected = loadCap;
+            if (collectionLimit >= loadCap) {
+            	collectionLimit = loadCap;
+            	collectionTotal += collectionLimit;
     			finishedCollecting = true;
     		}
         }
@@ -292,14 +283,16 @@ implements Serializable {
 
         if (finishedCollecting) {
             logger.log(person, Level.FINE, 4_000, "Collected a total of "
-            	+ Math.round(totalCollected*100D)/100D
+            	+ Math.round(collectionLimit*100D)/100D
         		+ " kg " + resourceName + ".");        
            
-    		if (!person.getPosition().equals(binLoc)) {
-        		setPhase(WALK_TO_BIN);
-    		}
-    		else {
+         	if (person.getPosition().equals(binLoc)) {
     			setPhase(DROP_OFF_RESOURCE);
+    		}
+         	
+         	else if (person.getPosition().equals(diggingLoc)) {  		 	
+    	    	// If not at the bin location, go to there first
+        		setPhase(WALK_TO_BIN);
     		}
     	}
 
@@ -308,27 +301,20 @@ implements Serializable {
 	    
 		if (isDone() || getTimeLeft() - time < 0) {
 			// Need to extend the duration so as to drop off the resources
-			setDuration(EXTENDED_TIME);
+			setDuration(getDuration() + EXTENDED_TIME);
 		}
 		
         return 0D;
     }
 
-    private double dropOffResource(double time) {
+    @Override
+	public double dropOffResource(double time) {
     	double remainingTime = time;
-    	
-    	// If not at the bin location, go to there first
-    	if (!person.getPosition().equals(binLoc)) {
-    		setPhase(WALK_TO_BIN);
-    		setDescription("Walking to " + Conversion.capitalize(resourceName) + " Storage Bin");
-    	}
-    	
-    	setDescription("Dropping off " + Conversion.capitalize(resourceName));
     	
     	Container bag = person.findContainer(containerType, false, resourceID);
     	if (bag == null)
     		return time;
-
+	   	
     	double bagAmount = bag.getAmountResourceStored(resourceID);	
     	
         if (bagAmount > 0) {
@@ -354,7 +340,7 @@ implements Serializable {
 
             else {
             	logger.info(person, 20_000L,
-            			"Checking in " + Math.round(portion*10.0)/10.0 + " kg " + resourceName + ".");
+            			"Checking in " + Math.round(portion*10.0)/10.0 + " kg " + resourceName + " at Storage bin.");
             }
             
             if (portion > 0) {
@@ -371,17 +357,17 @@ implements Serializable {
 	            
 	        	if (isDone() || getTimeLeft() - time < 0) {
 	    			// Need to extend the duration so as to drop off the resources
-	    			setDuration(EXTENDED_TIME);
-	    			
-	    			setPhase(DROP_OFF_RESOURCE);
+	    			setDuration(getDuration() + EXTENDED_TIME);
 	
 	    			return remainingTime;
 	    		}
             }
         }
         else {
-        	// Go back to the collection phase
-        	setPhase(collectionPhase);
+        	// Reset this holder
+        	collectionLimit = 0;
+        	// Go back to the digging site
+        	setPhase(WALK_TO_OUTSIDE_SITE);
         }
         
     	return remainingTime;
@@ -420,7 +406,6 @@ implements Serializable {
     protected TaskPhase getOutsideSitePhase() {
         return collectionPhase;
     }
-
     
     /**
      * Determines location for dropping off the resource.
@@ -527,10 +512,10 @@ implements Serializable {
 	            			+ Math.round(amount*10.0)/10.0 + " kg.");
 	            }
 
-	            else {
-	            	logger.fine(person,
-	            			"Checking in " + Math.round(amount*10.0)/10.0 + " kg " + resourceName + ".");
-	            }
+//	            else {
+//	            	logger.fine(person,
+//	            			"Checking in " + Math.round(amount*10.0)/10.0 + " kg " + resourceName + ".");
+//	            }
 	                	
 		    	// Transfer the bag back to the settlement
 		    	bag.transfer(settlement);
@@ -538,6 +523,10 @@ implements Serializable {
 				settlement.addOutput(resourceID, amount, getTimeCompleted());
 				// Store the amount in the settlement
 				settlement.storeAmountResource(resourceID, amount);
+				
+            	logger.fine(person,
+            			"Checking in " + Math.round(collectionTotal*10.0)/10.0 
+            			+ " kg " + resourceName + ".");
             }
     	}
     }

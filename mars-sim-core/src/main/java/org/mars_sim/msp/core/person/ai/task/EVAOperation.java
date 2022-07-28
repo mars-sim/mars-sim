@@ -84,7 +84,7 @@ public abstract class EVAOperation extends Task {
 	private double siteDuration;
 	private double timeOnSite;
 	private LocalPosition outsideSitePos;
-	private LocalPosition binPosition;
+	private LocalPosition binLoc;
 
 	private LocalBoundedObject interiorObject;
 	private LocalPosition returnInsideLoc;
@@ -228,7 +228,7 @@ public abstract class EVAOperation extends Task {
 	 * @param pos Position of the Bin
 	 */
 	protected void setBinLocation(LocalPosition pos) {
-		binPosition = pos;
+		binLoc = pos;
 	}
 
 	@Override
@@ -276,8 +276,15 @@ public abstract class EVAOperation extends Task {
             }
         }
         else {
-        	// In case of DigLocalRegolith, set to task phase COLLECT_REGOLITH
-            setPhase(getOutsideSitePhase());
+        	if (!person.getPosition().equals(outsideSitePos)) {
+        		addSubTask(new WalkOutside(person, person.getPosition(),
+        				outsideSitePos, true));
+        	}
+        	else {
+                // In case of DigLocalRegolith,
+                // set to getOutsideSitePhase() to COLLECT_REGOLITH
+        		setPhase(getOutsideSitePhase());
+        	}
         }
 
         return time;
@@ -292,18 +299,13 @@ public abstract class EVAOperation extends Task {
     protected double walkToBin(double time) {
     	// Go to the drop off location
         if (person.isOutside()) {
-        	
-        	addSubTask(new WalkOutside(person, person.getPosition(),
-        			binPosition, true));
-        	
-//            Walk walkingTask = Walk.createWalkingTask(person, binPosition, 0, null);
-//            if (walkingTask != null) {
-//            	addSubTask(walkingTask);
-//            }
-//            else {
-//				logger.severe(person, "Cannot walk to the storage bin location.");
-//                endTask();
-//            }
+        	if (!person.getPosition().equals(binLoc)) {
+        		addSubTask(new WalkOutside(person, person.getPosition(),
+        			binLoc, true));
+        	}
+        	else {
+        		setPhase(DROP_OFF_RESOURCE);
+        	}
         }
         else {
         	logger.severe(person, "Not outside. Can't walk to the storage bin.");
@@ -313,7 +315,8 @@ public abstract class EVAOperation extends Task {
         return time;
     }
 
-    private double dropOffResource(double time) {
+    
+    public double dropOffResource(double time) {
     	// Note: Do not delete. will use this to drop off resources at a shed
     	// Go to the drop off location
     	return time;

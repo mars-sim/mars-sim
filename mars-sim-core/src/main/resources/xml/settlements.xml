@@ -6089,6 +6089,17 @@
 				yloc="-12.5" facing="270.0" />
 			<building type="Sand Storage Bin" xloc="9.5" yloc="-15.0"
 				facing="270.0" />
+			<building type="Concrete Storage Bin" xloc="35.0"
+				yloc="10.0" facing="90.0" />
+			<building type="Cement Storage Bin" xloc="35.0" yloc="15.0"
+				facing="90.0" />
+			<building type="Mortar Storage Bin" xloc="35.0" yloc="20.0"
+				facing="90.0" />
+			<building type="Lime Storage Bin" xloc="35.0" yloc="25.0"
+				facing="90.0" />
+			<building type="Ice Storage Bin" xloc="35.0" yloc="-5.0"
+				facing="90.0" />
+
 
 			<building type="Solar Photovoltaic Array" xloc="40.0"
 				yloc="-70.0" facing="0.0" />

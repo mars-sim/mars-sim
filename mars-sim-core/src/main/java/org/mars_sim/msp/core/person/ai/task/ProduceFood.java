@@ -525,6 +525,16 @@ implements Serializable {
 						(process.getProcessTimeRemaining() <= 0D)) {
 					foodFactory.endFoodProductionProcess(process, false);
 				}
+				
+				// Insert process into setDescription()
+				setDescription(Msg.getString(DETAIL_DESCRIPTION, //$NON-NLS-1$
+                    Conversion.capitalize(process.toString())));
+				
+				if (person != null)
+					logger.log(person, Level.INFO, 100_000, "Worked on '" + process.getInfo().getName() + "'.");
+				else
+					logger.log(robot, Level.INFO, 100_000, "Worked on '" + process.getInfo().getName() + "'.");
+				
 			} else {
 				if (!worker.getAssociatedSettlement().getProcessOverride(OverrideType.FOOD_PRODUCTION)) {
 					process = createNewFoodProductionProcess();
@@ -532,27 +542,12 @@ implements Serializable {
 
 				if (process == null) {
 					endTask();
+					setDescription(Msg.getString(TASK_DESCRIPTION_PRODUCE_FOOD + ".checking")); //$NON-NLS-1$ 
+					return 0;
 				}
-			}
-
-			if (process != null)
-				// Insert process into setDescription()
-				setDescription(Msg.getString(DETAIL_DESCRIPTION, //$NON-NLS-1$
-                    Conversion.capitalize(process.toString())));
-			else
-				setDescription(Msg.getString(TASK_DESCRIPTION_PRODUCE_FOOD + ".checking")); //$NON-NLS-1$ 		
+			}		
 		}
 
-		if (process != null || isDone()) {
-			if (person != null)
-				logger.log(person, Level.INFO, 10_000, "Worked on '" + process.getInfo().getName() + "'.");
-			else
-				logger.log(robot, Level.INFO, 10_000, "Worked on '" + process.getInfo().getName() + "'.");
-			
-			endTask();
-			return 0;
-		}
-		
 		// Add experience
 		addExperience(time);
 
