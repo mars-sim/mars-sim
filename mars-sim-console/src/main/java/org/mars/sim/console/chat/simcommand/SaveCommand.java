@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * SaveCommand.java
- * @date 2022-07-07
+ * @date 2022-07-28
  * @author Barry Evans
  */
 
@@ -40,6 +40,16 @@ public class SaveCommand extends ChatCommand {
 					}
 				});
 
+			// Print the size of all serialized objects
+			context.println("");
+			context.println("Method 1 - Using Outputstream as a Counter");
+			context.println("");
+			context.println(context.getSim().printObjectSize(0).toString());
+			context.println("");
+			context.println("Method 2 - Using Byte Arrays");
+			context.println("");
+			context.println(context.getSim().printObjectSize(1).toString());
+			
 			// Wait for the save to complete
 			try {
 				lock.get(20, TimeUnit.SECONDS);
@@ -54,7 +64,9 @@ public class SaveCommand extends ChatCommand {
 			
         }
 
-		context.println("Done");
+		context.println("Done Saving.");
+		context.println("");
+		
 		return true;
 	}
 }

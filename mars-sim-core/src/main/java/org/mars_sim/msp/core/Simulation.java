@@ -1008,10 +1008,12 @@ public class Simulation implements ClockListener, Serializable {
 			double fileSize = 0;
 
 			if (type == 0) {
+				// Method 1 - Using Outputstream as a Counter
 				fileSize = CheckSerializedSize.getSerializedSize(o);
 
 			}
 			else if (type == 1) {
+				// Method 2 - Using Byte Arrays
 				fileSize = CheckSerializedSize.getSerializedSizeByteArray(o);
 			}
 
