@@ -34,15 +34,14 @@ public class MissionTab extends TableTab {
 	 *
 	 * @param desktop the main desktop.
 	 */
-	public void displayMission(MainDesktopPane desktop) {
-		List<?> selection = getSelection();
-		if (selection.size() > 0) {
-			Object selected = selection.get(0);
-			if (selected instanceof Mission) {
-//				((MissionWindow) desktop.getToolWindow(MissionWindow.NAME)).selectMission((Mission) selected);
-				desktop.openToolWindow(MissionWindow.NAME, (Mission) selected);
+	public void displayMission(MainDesktopPane desktop, Mission mission) {
+//		List<?> selection = getSelection();
+//		if (selection.size() > 0) {
+//			Object selected = selection.
+			if (mission instanceof Mission) {
+				desktop.openToolWindow(MissionWindow.NAME, mission);
 			}
-		}
+//		}
 	}
 
 	/**

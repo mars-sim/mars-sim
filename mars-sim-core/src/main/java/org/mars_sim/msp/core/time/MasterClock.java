@@ -571,7 +571,8 @@ public class MasterClock implements Serializable {
 	 * Prints the new mission sol.
 	 */
 	private void printNewSol(int currentSol) {
-		logger.config("  - - - - - - - - - Sol " + currentSol
+		logger.config(" - - - - - - - - - - - - - - Sol " 
+				+ currentSol
 				+ " - - - - - - - - - - - - - - ");
 	}
 	

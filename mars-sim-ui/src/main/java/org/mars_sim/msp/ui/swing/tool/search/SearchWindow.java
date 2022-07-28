@@ -380,7 +380,7 @@ extends ToolWindow {
 				mapPanel.displayPerson(p);
 		} 
 		
-		else if (u instanceof Robot) {
+		else { //if (u instanceof Robot) {
 			Robot r = (Robot) u;
 			
 			double xLoc = r.getPosition().getX();

@@ -201,13 +201,13 @@ public class ToolToolBar extends WebToolBar implements ActionListener {
 		toolButtons.addElement(resupplyButton);
 
 		// Add the command dashboard button
-		if (GameManager.getGameMode() == GameMode.COMMAND) {
+//		if (GameManager.getGameMode() == GameMode.COMMAND) {
 			// Add commander dashboard button
 			ToolButton dashboardButton = new ToolButton(CommanderWindow.NAME, Msg.getString("img.dashboard")); //$NON-NLS-1$
 			dashboardButton.addActionListener(this);
 			add(dashboardButton);
 			toolButtons.addElement(dashboardButton);
-		}
+//		}
 
 		
 		addToEnd(parentMainWindow.getEarthDate());

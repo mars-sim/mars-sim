@@ -21,6 +21,7 @@ import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -39,6 +40,7 @@ import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.logging.SimLogger;
+import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -893,10 +895,20 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		}
 	}
 
+	/**
+	 * Finds and highlights the mission in Mission Tool.
+	 */
 	private void displayMission() {
 		MonitorTab selected = getSelectedTab();
 		if ((selected instanceof MissionTab) && (selected != null)) {
-			((MissionTab) selected).displayMission(desktop);
+			List<?> rows = selected.getSelection();
+			Iterator<?> it = rows.iterator();
+			while (it.hasNext()) {
+				Object row = it.next();
+				if (row instanceof Mission) {
+					((MissionTab) selected).displayMission(desktop, (Mission) row);
+				}
+			}
 		}
 	}
 

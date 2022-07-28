@@ -609,7 +609,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-storage resource="grey water" capacity="500.0" />
 				<resource-storage resource="black water" capacity="500.0" />
 
-				<resource-storage resource="food" capacity="500.0" />
+				<resource-storage resource="food" capacity="3000.0" />
 				<resource-storage resource="water" capacity="500.0" />
 				<resource-storage resource="oxygen" capacity="500.0" />
 				<resource-storage resource="carbon dioxide" capacity="500.0" />
@@ -2122,7 +2122,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-storage resource="grey water" capacity="1000.0" />
 				<resource-storage resource="black water" capacity="500.0" />
 
-				<resource-storage resource="food" capacity="500.0" />
+				<resource-storage resource="food" capacity="1000.0" />
 
 				<resource-storage resource="toilet tissue" capacity="500.0" />
 				<resource-storage resource="paper" capacity="500.0" />
@@ -2276,7 +2276,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<storage capacity="10000">
 				<resource-storage resource="oxygen" capacity="500.0" />
 				<resource-storage resource="water" capacity="500.0" />
-				<resource-storage resource="food" capacity="500.0" />
+				<resource-storage resource="food" capacity="2000.0" />
 
 				<resource-storage resource="solid waste" capacity="500.0" />
 				<resource-storage resource="food waste" capacity="500.0" />
@@ -3568,7 +3568,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-storage resource="grey water" capacity="500.0" />
 				<resource-storage resource="black water" capacity="500.0" />
 
-				<resource-storage resource="food" capacity="500.0" />
+				<resource-storage resource="food" capacity="2000.0" />
 				<resource-storage resource="water" capacity="500.0" />
 				<resource-storage resource="oxygen" capacity="500.0" />
 				<resource-storage resource="carbon dioxide" capacity="500.0" />

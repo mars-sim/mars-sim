@@ -57,6 +57,7 @@ import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
+import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.person.ai.task.EatDrink;
 import org.mars_sim.msp.core.person.ai.task.HaveConversation;
 import org.mars_sim.msp.core.person.ai.task.Read;
@@ -2060,6 +2061,21 @@ public class Settlement extends Structure implements Temporal,
 		return false;
 	}
 
+	/**
+	 * Returns the person instance of the commander of this settlement.
+	 * 
+	 * @return
+	 */
+	public Person getCommander() {
+		for (Person p: citizens) {
+			if (RoleType.COMMANDER == p.getRole().getType())
+				return p;
+		}
+		
+		return null;
+	}
+	
+	
 	/**
 	 * Assigns a robot to be owned by the settlement.
 	 *

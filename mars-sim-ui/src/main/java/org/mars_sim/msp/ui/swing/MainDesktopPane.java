@@ -169,6 +169,7 @@ public class MainDesktopPane extends JDesktopPane
 			// Prep tool windows
 			prepareToolWindows();
 		} catch (Exception e) {
+			e.printStackTrace();
           	logger.log(Level.SEVERE, "Cannot prepare tool windows: " + e);
 		}
 
@@ -321,8 +322,8 @@ public class MainDesktopPane extends JDesktopPane
 		synchronized (toolWindows) {
 		
 		// Prepare Commander Window
-		if (GameManager.getGameMode() == GameMode.COMMAND) {
-			mode = GameMode.COMMAND;
+//		if (GameManager.getGameMode() == GameMode.COMMAND) {
+//			mode = GameMode.COMMAND;
 			commanderWindow = new CommanderWindow(this);
 			try {
 				commanderWindow.setClosed(true);
@@ -331,7 +332,7 @@ public class MainDesktopPane extends JDesktopPane
 			}
 			toolWindows.add(commanderWindow);
 //			logger.config("toolWindows.add(commanderWindow)");
-		}
+//		}
 
 		// Prepare navigator window
 		navWindow = new NavigatorWindow(this);
@@ -561,6 +562,7 @@ public class MainDesktopPane extends JDesktopPane
 		repaint();
 
 		if (toolName.equals(MissionWindow.NAME)) {
+			((MissionWindow)window).selectSettlement(mission.getAssociatedSettlement());
 			((MissionWindow)window).selectMission(mission);
 		}
 	}

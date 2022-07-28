@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * JComboBoxMW.java
- * @date 2021-12-07
+ * @date 2022-07-28
  * @author stpa
  */
 package org.mars_sim.msp.ui.swing;
@@ -64,6 +64,13 @@ public class JComboBoxMW<T> extends JComboBox implements MouseWheelListener {
 		this.addMouseWheelListener(this);
 	}
 
+	
+	@SuppressWarnings("unchecked")
+	public void replaceModel(ComboBoxModel<T> model) {
+		setModel(model);
+	}
+	
+	
 	/** Use mouse wheel to cycle through items if any. */
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {

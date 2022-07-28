@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * MissionTableModel.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-28
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
@@ -167,7 +167,8 @@ public class MissionTableModel extends AbstractTableModel
 
 		boolean goodToGo = false;
 		if (mode == GameMode.COMMAND) {
-			if (mission.getStartingPerson().getAssociatedSettlement().getName().equals(commanderSettlement.getName())) {
+			if (mission.getStartingPerson().getAssociatedSettlement().getName()
+					.equals(commanderSettlement.getName())) {
 				goodToGo = true;
 			}
 		}
@@ -469,6 +470,7 @@ public class MissionTableModel extends AbstractTableModel
 						try {
 							result = decFormatter.format(vehicleMission.getEstimatedTotalDistance());
 						} catch (Exception e) {
+							result = 0;
 						}
 					} else
 						result = 0;

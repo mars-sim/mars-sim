@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * CommanderWindow.java
- * @date 2022-07-16
+ * @date 2022-07-28
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.tool.commander;
@@ -15,6 +15,8 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -40,9 +42,20 @@ import javax.swing.event.ListSelectionListener;
 
 import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.UnitEvent;
+import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.UnitListener;
+import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.UnitManagerEvent;
+import org.mars_sim.msp.core.UnitManagerListener;
+import org.mars_sim.msp.core.UnitType;
+import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
@@ -56,6 +69,7 @@ import org.mars_sim.msp.ui.swing.toolwindow.ToolWindow;
 import com.alee.extended.list.CheckBoxCellData;
 import com.alee.extended.list.CheckBoxListModel;
 import com.alee.extended.list.WebCheckBoxList;
+import com.alee.laf.combobox.WebComboBox;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.list.ListDataAdapter;
 import com.alee.laf.panel.WebPanel;
@@ -125,37 +139,50 @@ public class CommanderWindow extends ToolWindow {
 	private Person cc;
 
 	private Settlement settlement;
+	private List<Settlement> settlementList;
 
+	/** Settlement Combo box */
+	private WebComboBox settlementListBox;
+	/** Settlement Combo box model. */
+	private SettlementComboBoxModel settlementCBModel;
+	
 	private List<String> taskCache;
 
 	/** The MarsClock instance. */
 	private MarsClock marsClock;
 	private MasterClock masterClock;
-
+	private Simulation sim = Simulation.instance();
+	private UnitManager unitManager = sim.getUnitManager();
 
 	/**
 	 * Constructor.
+	 * 
 	 * @param desktop {@link MainDesktopPane} the main desktop panel.
 	 */
 	public CommanderWindow(MainDesktopPane desktop) {
 		// Use ToolWindow constructor
 		super(NAME, desktop);
 
-		this.masterClock = desktop.getSimulation().getMasterClock();
+		this.masterClock = sim.getMasterClock();
 		this.marsClock = masterClock.getMarsClock();
 
-		cc = GameManager.commanderPerson;
-		settlement = cc.getAssociatedSettlement();
-
+		settlementList = new ArrayList<>(unitManager.getSettlements());
+		Collections.sort(settlementList);
+		settlement = settlementList.get(0);
+		cc = settlement.getCommander();
+		
 		// Create content panel.
 		mainPane = new WebPanel(new BorderLayout());
 		mainPane.setBorder(MainDesktopPane.newEmptyBorder());
 		setContentPane(mainPane);
 
-		// Create the mission list panel.
-//		JPanel listPane = new JPanel(new BorderLayout());
-//		listPane.setPreferredSize(new Dimension(200, 200));
-//		mainPane.add(listPane, BorderLayout.WEST);
+		JPanel topPane = new WebPanel(new GridLayout(1, 3));
+		mainPane.add(topPane, BorderLayout.NORTH);
+		
+		buildSettlementComboBox();
+		topPane.add(new WebPanel(new JLabel("            ")));
+		topPane.add(settlementListBox);
+		topPane.add(new WebPanel(new JLabel("            ")));
 
 		WebPanel bottomPane = new WebPanel(new GridLayout(1, 4));
 		bottomPane.setPreferredSize(new Dimension(-1, 50));
@@ -178,23 +205,15 @@ public class CommanderWindow extends ToolWindow {
 		// Create the info tab panel.
 		tabPane = new JTabbedPane();
 		mainPane.add(tabPane, BorderLayout.CENTER);
-
-		createAgriculturePanel();
-
-		createComputingPanel();
 		
+		createAgriculturePanel();
+		createComputingPanel();
 		createEngineeringPanel();
-
 		createLeadershipPanel();
-
 		createLogisticPanel();
-
 		createMissionPanel();
-
 		createResourcePanel();
-
 		createSafetyPanel();
-
 		createSciencePanel();
 
 		setSize(new Dimension(640, 640));
@@ -212,6 +231,107 @@ public class CommanderWindow extends ToolWindow {
 
 	}
 
+	/**
+     * Builds the settlement name combo box.
+     */
+	@SuppressWarnings("unchecked")
+	public void buildSettlementComboBox() {
+
+		settlementCBModel = new SettlementComboBoxModel();
+
+		settlementListBox = new WebComboBox(StyleId.comboboxHover, settlementCBModel);
+		settlementListBox.setWidePopup(true);
+		settlementListBox.setMaximumSize(getNameLength() * 8, 40);
+//		settlementListBox.setBackground(new Color(51,25,0,128)); // dull gold color
+//		settlementListBox.setOpaque(false);
+		settlementListBox.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 14));
+//		settlementListBox.setForeground(Color.pink.brighter());
+		settlementListBox.setToolTipText(Msg.getString("SettlementWindow.tooltip.selectSettlement")); //$NON-NLS-1$
+//		settlementListBox.setRenderer(new PromptComboBoxRenderer());
+		DefaultListCellRenderer listRenderer = new DefaultListCellRenderer();
+		listRenderer.setHorizontalAlignment(DefaultListCellRenderer.CENTER); // center-aligned items
+		settlementListBox.setRenderer(listRenderer);
+		
+		settlementListBox.addItemListener(new ItemListener() {
+			@Override
+			public void itemStateChanged(ItemEvent event) {
+				Settlement s = (Settlement) event.getItem();
+				if (s != null) {
+					// Change the person list in person combobox
+					if (settlement != s)
+						setUpPersonComboBox(s);
+				
+					// Update the selected settlement instance
+					changeSettlement(s);
+				}
+			}
+		});
+		
+		settlementListBox.setSelectedIndex(0);
+	}
+	
+	/**
+	 * Sets up the person combo box.
+	 * 
+	 * @param s
+	 */
+	public void setUpPersonComboBox(Settlement s) {
+		List<Person> people = new ArrayList<>(s.getAllAssociatedPeople());
+		Collections.sort(people);
+			
+		DefaultComboBoxModel<Person> comboBoxModel = new DefaultComboBoxModel<>();
+		
+		if (personComboBox == null) {
+			personComboBox = new JComboBoxMW<>(comboBoxModel);
+		}
+		else {
+			personComboBox.removeAll();
+			personComboBox.replaceModel(comboBoxModel);
+		}
+		
+		Iterator<Person> i = people.iterator();
+		while (i.hasNext()) {
+			Person n = i.next();
+	    	comboBoxModel.addElement(n);
+		}
+		personComboBox.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+//            	Nothing now; // selectedPerson = (Person) comboBox.getSelectedItem();
+            }
+        });
+		
+		personComboBox.setMaximumRowCount(8);
+		personComboBox.setSelectedItem(cc);
+	}
+	
+	/**
+	 * Changes the map display to the selected settlement.
+	 *
+	 * @param s
+	 */
+	public void changeSettlement(Settlement s) {
+		// Set the selected settlement
+		settlement = s;
+		// Set the box opaque
+		settlementListBox.setOpaque(false);
+	}
+	
+    /**
+     * Gets the length of the most lengthy settlement name
+     *
+     * @return
+     */
+    private int getNameLength() {
+    	Collection<Settlement> list = unitManager.getSettlements();
+    	int max = 12;
+    	for (Settlement s: list) {
+    		int size = s.getNickName().length();
+    		if (max < size)
+    			max = size;
+    	}
+    	return max;
+    }
+    
 	public void createLeadershipPanel() {
 		JPanel panel = new JPanel(new BorderLayout());
 		tabPane.add(LEADERSHIP_TAB, panel);
@@ -245,32 +365,13 @@ public class CommanderWindow extends ToolWindow {
 	}
 
 	/**
-	 * Creates the person combo box
+	 * Creates the person combo box.
 	 *
 	 * @param panel
 	 */
 	public void createPersonCombobox(JPanel panel) {
       	// Set up combo box model.
-		Collection<Person> col = GameManager.commanderPerson.getSettlement().getAllAssociatedPeople();
-		List<Person> people = new ArrayList<>(col);
-		Collections.sort(people);
-		DefaultComboBoxModel<Person> comboBoxModel = new DefaultComboBoxModel<Person>();
-
-		Iterator<Person> i = people.iterator();
-		while (i.hasNext()) {
-			Person n = i.next();
-	    	comboBoxModel.addElement(n);
-		}
-
-		// Create comboBox.
-		personComboBox = new JComboBoxMW<Person>(comboBoxModel);
-		personComboBox.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-//            	selectedPerson = (Person) comboBox.getSelectedItem();
-            }
-        });
-		personComboBox.setMaximumRowCount(8);
-		personComboBox.setSelectedItem(cc);
+		setUpPersonComboBox(settlement);
 
 		JPanel comboBoxPanel = new JPanel(new BorderLayout());
 		comboBoxPanel.add(personComboBox);//, BorderLayout.CENTER);
@@ -287,13 +388,13 @@ public class CommanderWindow extends ToolWindow {
 	}
 
 	/**
-	 * Creates the task combo box
+	 * Creates the task combo box.
 	 *
 	 * @param panel
 	 */
 	public void createTaskCombobox(JPanel panel) {
       	// Set up combo box model.
-		List<String> taskList = GameManager.commanderPerson.getPreference().getTaskStringList();
+		List<String> taskList = cc.getPreference().getTaskStringList();
 		taskCache = new ArrayList<>(taskList);
 		DefaultComboBoxModel<String> taskComboBoxModel = new DefaultComboBoxModel<String>();
 
@@ -367,7 +468,7 @@ public class CommanderWindow extends ToolWindow {
 	}
 
 	/**
-	 * Creates the task queue list
+	 * Creates the task queue list.
 	 *
 	 * @param panel
 	 */
@@ -411,7 +512,7 @@ public class CommanderWindow extends ToolWindow {
 
 
 	/**
-	 * Creates the log book panel for recording task orders
+	 * Creates the log book panel for recording task orders.
 	 *
 	 * @param panel
 	 */
@@ -449,7 +550,7 @@ public class CommanderWindow extends ToolWindow {
 
 
 	/**
-	 * Creates the logistic panel for operation of tasks
+	 * Creates the logistic panel for operation of tasks.
 	 */
 	public void createLogisticPanel() {
 		JPanel mainPanel = new JPanel(new BorderLayout());
@@ -487,7 +588,7 @@ public class CommanderWindow extends ToolWindow {
 	}
 
 	/**
-	 * Creates the mission tab panel
+	 * Creates the mission tab panel.
 	 */
 	public void createMissionPanel() {
 		WebPanel panel = new WebPanel(new BorderLayout());
@@ -737,7 +838,7 @@ public class CommanderWindow extends ToolWindow {
     }
 
 	/**
-	 * Picks a task and delete it
+	 * Picks a task and delete it.
 	 */
 	public void deleteATask() {
 		String n = (String) list.getSelectedValue();
@@ -801,7 +902,7 @@ public class CommanderWindow extends ToolWindow {
 	}
 
 	/**
-	 * List model for the tasks in queue.
+	 * Lists model for the tasks in queue.
 	 */
 	private class ListModel extends AbstractListModel<String> {
 
@@ -839,7 +940,7 @@ public class CommanderWindow extends ToolWindow {
         }
 
         /**
-         * Update the list model.
+         * Updates the list model.
          */
         public void update() {
 
@@ -874,7 +975,7 @@ public class CommanderWindow extends ToolWindow {
 		}
 
 		/*
-		 *  Custom rendering to display the prompt text when no item is selected
+		 *  Custom rendering to display the prompt text when no item is selected.
 		 */
 		// Add color rendering
 		public Component getListCellRendererComponent(
@@ -904,6 +1005,109 @@ public class CommanderWindow extends ToolWindow {
 	        return c;
 		}
 	}
+	
+	/**
+	 * Inner class combo box model for settlements.
+	 */
+	public class SettlementComboBoxModel extends DefaultComboBoxModel<Object>
+		implements UnitManagerListener, UnitListener {
+
+		/**
+		 * Constructor.
+		 */
+		public SettlementComboBoxModel() {
+			// User DefaultComboBoxModel constructor.
+			super();
+			// Initialize settlement list.
+			updateSettlements();
+			// Add this as a unit manager listener.
+			unitManager.addUnitManagerListener(this);
+
+			// Add addUnitListener
+			Collection<Settlement> settlements = unitManager.getSettlements();
+			List<Settlement> settlementList = new ArrayList<>(settlements);
+			Iterator<Settlement> i = settlementList.iterator();
+			while (i.hasNext()) {
+				i.next().addUnitListener(this);
+			}
+
+		}
+
+		/**
+		 * Update the list of settlements.
+		 */
+		private void updateSettlements() {
+			// Clear all elements
+			removeAllElements();
+
+			List<Settlement> settlements = new ArrayList<>();
+
+			// Add the command dashboard button
+			if (GameManager.getGameMode() == GameMode.COMMAND) {
+				settlements = unitManager.getCommanderSettlements();
+			}
+
+			else if (GameManager.getGameMode() == GameMode.SANDBOX) {
+				settlements.addAll(unitManager.getSettlements());
+			}
+
+			Collections.sort(settlements);
+
+			Iterator<Settlement> i = settlements.iterator();
+			while (i.hasNext()) {
+				addElement(i.next());
+			}
+		}
+
+		@Override
+		public void unitManagerUpdate(UnitManagerEvent event) {
+			if (event.getUnit().getUnitType() == UnitType.SETTLEMENT) {
+				updateSettlements();
+			}
+		}
+
+		@Override
+		public void unitUpdate(UnitEvent event) {
+			// Note: Easily 100+ UnitEvent calls every second
+			UnitEventType eventType = event.getType();
+			if (eventType == UnitEventType.ADD_BUILDING_EVENT) {
+				Object target = event.getTarget();
+				Building building = (Building) target; // overwrite the dummy building object made by the constructor
+				BuildingManager mgr = building.getBuildingManager();
+				Settlement s = mgr.getSettlement();
+				// Set the selected settlement
+				changeSettlement(s);
+				// Updated ComboBox
+				settlementListBox.setSelectedItem(s);
+			}
+
+			else if (eventType == UnitEventType.REMOVE_ASSOCIATED_PERSON_EVENT) {
+				// Update the number of citizens
+				Settlement s = (Settlement) settlementListBox.getSelectedItem();
+				// Set the selected settlement
+				changeSettlement(s);
+				
+				setUpPersonComboBox(s);
+		
+				// Set the box opaque
+				settlementListBox.setOpaque(false);
+			}
+		}
+
+		/**
+		 * Prepare class for deletion.
+		 */
+		public void destroy() {
+			unitManager.removeUnitManagerListener(this);
+			Collection<Settlement> settlements = unitManager.getSettlements();
+			List<Settlement> settlementList = new ArrayList<>(settlements);
+			Iterator<Settlement> i = settlementList.iterator();
+			while (i.hasNext()) {
+				i.next().removeUnitListener(this);
+			}
+		}
+	}
+	
 
 	/**
 	 * Prepares tool window for deletion.

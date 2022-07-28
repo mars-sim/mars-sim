@@ -624,9 +624,9 @@ public class Simulation implements ClockListener, Serializable {
 	 */
 	public void printLastSavedSol() {
 		int lastSol = masterClock.getMarsClock().getMissionSol();
-
-		logger.config("  - - - - - - - - - Sol " + lastSol
-				+ " (Cont') - - - - - - - - - - - ");
+		logger.config(" - - - - - - - - - - - - - - Sol " 
+				+ lastSol
+				+ " (Cont') - - - - - - - - - - - - - - ");
 	}
 	
 	/**

@@ -57,12 +57,6 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 	private MainWindow mainWindow;
 	/** The audio player instance. */
 	private AudioPlayer soundPlayer;
-	/** New menu item. */
-	// private JMenuItem newItem;
-//	/** Load menu item. */
-//	private JMenuItem loadItem;
-//	/** Load Autosave menu item. */
-//	private JMenuItem loadAutosaveItem;
 	/** Save menu item. */
 	private JMenuItem saveItem;
 	/** Save As menu item. */
@@ -87,9 +81,6 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 	private JCheckBoxMenuItem resupplyToolItem;
 	/** Commander Dashboard menu item. */
 	private JCheckBoxMenuItem commanderDashboardItem;
-	/** Mars Viewer menu item. */
-	// private JCheckBoxMenuItem marsViewerItem;
-
 	/** Unit Bar menu item. */
 	private JCheckBoxMenuItem showUnitBarItem;
 	/** Tool Bar menu item. */
@@ -236,7 +227,7 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		resupplyToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F8, 0, false));
 		toolsMenu.add(resupplyToolItem);
 
-		if (GameManager.getGameMode() == GameMode.COMMAND) {
+//		if (GameManager.getGameMode() == GameMode.COMMAND) {
 			// Create commander dashboard menu item
 			ImageIcon commandericon = new ImageIcon(getClass().getResource(Msg.getString("img.dashboard"))); //$NON-NLS-1$
 			commanderDashboardItem = new JCheckBoxMenuItem(CommanderWindow.NAME, commandericon);
@@ -244,7 +235,7 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 			commanderDashboardItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0, false));
 			commanderDashboardItem.setToolTipText(Msg.getString("mainMenu.tooltip.dashboard")); //$NON-NLS-1$
 			toolsMenu.add(commanderDashboardItem);
-		}
+//		}
 
 		// Create settings menu
 		JMenu settingsMenu = new JMenu(Msg.getString("mainMenu.settings")); //$NON-NLS-1$
@@ -508,8 +499,7 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 				desktop.closeToolWindow(ResupplyWindow.NAME);
 		}
 
-		else if (GameManager.getGameMode() == GameMode.COMMAND
-				&& selectedItem == commanderDashboardItem) {
+		else if (selectedItem == commanderDashboardItem) {
 			if (commanderDashboardItem.isSelected())
 				desktop.openToolWindow(CommanderWindow.NAME);
 			else
@@ -595,7 +585,7 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		scienceToolItem.setSelected(desktop.isToolWindowOpen(ScienceWindow.NAME));
 		resupplyToolItem.setSelected(desktop.isToolWindowOpen(ResupplyWindow.NAME));
 
-		if (GameManager.getGameMode() == GameMode.COMMAND)
+//		if (GameManager.getGameMode() == GameMode.COMMAND)
 			commanderDashboardItem.setSelected(desktop.isToolWindowOpen(CommanderWindow.NAME));
 
 		showUnitBarItem.setSelected(desktop.getMainWindow().getUnitToolBar().isVisible());

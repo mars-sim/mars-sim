@@ -428,7 +428,8 @@ implements ListSelectionListener, MissionListener {
 		
 		else if (currentMission != mission) {
 			// Remove this as previous mission listener.
-			currentMission.removeMissionListener(this);
+			if (currentMission != null)
+				currentMission.removeMissionListener(this);
 	
 			currentMission = mission;
 			// Add this as listener for new mission.
