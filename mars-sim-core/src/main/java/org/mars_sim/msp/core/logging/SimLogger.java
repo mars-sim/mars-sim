@@ -304,6 +304,17 @@ public class SimLogger {
 	}
 
 	/**
+	 * Helper method just to log a fine message.
+	 * 
+	 * @param actor
+	 * @param timeBetweenLogs Milliseconds to wait between similar log messages.
+	 * @param string
+	 */
+	public void fine(Loggable actor, long timeBetweenLogs, String string) {
+		log(null, actor, Level.FINE, timeBetweenLogs, string, null);
+	}
+	
+	/**
 	 * Logs directly without formatting.
 	 * 
 	 * @param message

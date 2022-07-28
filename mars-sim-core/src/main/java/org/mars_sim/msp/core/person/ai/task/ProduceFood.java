@@ -485,77 +485,79 @@ implements Serializable {
 			return 0;
 		}
 
-		else {
-	        // Cancel any food production processes that's beyond the skill of any people
-	        // associated with the settlement.
-	        ProduceFood.cancelDifficultFoodProductionProcesses(foodFactory.getBuilding().getSettlement());
-	        
-	        double workTime = 0;
-	
-			if (person != null) {
-		        workTime = time;
-			}
-			else if (robot != null) {
-			     // A robot moves slower than a person and incurs penalty on workTime
-		        workTime = time/2;
-			}
-	
-			int skill = getEffectiveSkillLevel();
-			if (skill == 0) {
-				workTime /= 2;
-			}
-			else {
-				workTime += workTime * (.2D * (double) skill);
-			}
-			
-			FoodProductionProcess process = null;
-			
-			// Apply work time to food production processes.
-			while ((workTime > 0D) && !isDone()) {
-				process = getRunningFoodProductionProcess();
-				if (process != null) {
-					double remainingWorkTime = process.getWorkTimeRemaining();
-					double providedWorkTime = workTime;
-					if (providedWorkTime > remainingWorkTime) {
-						providedWorkTime = remainingWorkTime;
-					}
-					process.addWorkTime(providedWorkTime);
-					workTime -= providedWorkTime;
-	
-					if ((process.getWorkTimeRemaining() <= 0D) &&
-							(process.getProcessTimeRemaining() <= 0D)) {
-						foodFactory.endFoodProductionProcess(process, false);
-					}
-				} else {
-					if (!worker.getAssociatedSettlement().getProcessOverride(OverrideType.FOOD_PRODUCTION)) {
-						process = createNewFoodProductionProcess();
-					}
-	
-					if (process == null) {
-						endTask();
-					}
-				}
-	
-				if (process != null)
-					// Insert process into setDescription()
-					setDescription(Msg.getString(DETAIL_DESCRIPTION, //$NON-NLS-1$
-	                    Conversion.capitalize(process.toString())));
-				else
-					setDescription(Msg.getString(TASK_DESCRIPTION_PRODUCE_FOOD + ".checking")); //$NON-NLS-1$ 		
-			}
-	
-			// Add experience
-			addExperience(time);
-	
-			// Check for accident in foodFactory.
-			checkForAccident(foodFactory.getBuilding(), 0.005D, time);
-			
-			if (isDone()) {
-				logger.log(worker, Level.INFO, 10_000, "Worked on '" + process.getInfo().getName() + "'.");
-				endTask();
-				return 0;
-			}
+        // Cancel any food production processes that's beyond the skill of anyone
+        // associated with the settlement.
+        ProduceFood.cancelDifficultFoodProductionProcesses(foodFactory.getBuilding().getSettlement());
+        
+        double workTime = 0;
+
+		if (person != null) {
+	        workTime = time;
 		}
+		else if (robot != null) {
+		     // A robot moves slower than a person and incurs penalty on workTime
+	        workTime = time/2;
+		}
+
+		int skill = getEffectiveSkillLevel();
+		if (skill == 0) {
+			workTime /= 2;
+		}
+		else {
+			workTime += workTime * (.2D * (double) skill);
+		}
+		
+		FoodProductionProcess process = null;
+		
+		// Apply work time to food production processes.
+		while ((workTime > 0D) && !isDone()) {
+			process = getRunningFoodProductionProcess();
+			if (process != null) {
+				double remainingWorkTime = process.getWorkTimeRemaining();
+				double providedWorkTime = workTime;
+				if (providedWorkTime > remainingWorkTime) {
+					providedWorkTime = remainingWorkTime;
+				}
+				process.addWorkTime(providedWorkTime);
+				workTime -= providedWorkTime;
+
+				if ((process.getWorkTimeRemaining() <= 0D) &&
+						(process.getProcessTimeRemaining() <= 0D)) {
+					foodFactory.endFoodProductionProcess(process, false);
+				}
+			} else {
+				if (!worker.getAssociatedSettlement().getProcessOverride(OverrideType.FOOD_PRODUCTION)) {
+					process = createNewFoodProductionProcess();
+				}
+
+				if (process == null) {
+					endTask();
+				}
+			}
+
+			if (process != null)
+				// Insert process into setDescription()
+				setDescription(Msg.getString(DETAIL_DESCRIPTION, //$NON-NLS-1$
+                    Conversion.capitalize(process.toString())));
+			else
+				setDescription(Msg.getString(TASK_DESCRIPTION_PRODUCE_FOOD + ".checking")); //$NON-NLS-1$ 		
+		}
+
+		if (process != null || isDone()) {
+			if (person != null)
+				logger.log(person, Level.INFO, 10_000, "Worked on '" + process.getInfo().getName() + "'.");
+			else
+				logger.log(robot, Level.INFO, 10_000, "Worked on '" + process.getInfo().getName() + "'.");
+			
+			endTask();
+			return 0;
+		}
+		
+		// Add experience
+		addExperience(time);
+
+		// Check for accident in foodFactory.
+		checkForAccident(foodFactory.getBuilding(), 0.005D, time);
 		
 		return 0D;
 	}

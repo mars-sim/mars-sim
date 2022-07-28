@@ -72,7 +72,7 @@ public abstract class DigLocalMeta extends MetaTask {
         if (numSuits == 0) {
             return 0;
         }
-
+	
         // Check if at least one empty bag at settlement.
         int numEmptyBags = settlement.findNumContainersOfType(containerType);
         if (numEmptyBags == 0) {
@@ -82,7 +82,7 @@ public abstract class DigLocalMeta extends MetaTask {
         // Probability affected by the person's stress and fatigue.
         PhysicalCondition condition = person.getPhysicalCondition();
         
-        if (!condition.isFitByLevel(300, 30, 300))
+        if (!condition.isFitByLevel(250, 25, 250))
         	return 0;
         
         double stress = condition.getStress();

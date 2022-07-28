@@ -12,6 +12,7 @@ import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.DigLocalRegolith;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 
 /**
@@ -19,6 +20,8 @@ import org.mars_sim.msp.core.structure.Settlement;
  */
 public class DigLocalRegolithMeta extends DigLocalMeta {
     
+	private static final int THRESHOLD_AMOUNT = 50;
+	
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.digLocalRegolith"); //$NON-NLS-1$
@@ -38,6 +41,12 @@ public class DigLocalRegolithMeta extends DigLocalMeta {
     	if ((settlement == null) || (settlement.getRegolithCollectionRate() <= 0D)) {
     		return 0D;
     	}
+    	
+        double settlementCap = settlement.getAmountResourceRemainingCapacity(ResourceUtil.regolithID);
+        if (settlementCap < THRESHOLD_AMOUNT) {
+        	return 0;
+        }
+        
     	return getProbability(settlement, person, settlement.getRegolithProbabilityValue());
     }
 }

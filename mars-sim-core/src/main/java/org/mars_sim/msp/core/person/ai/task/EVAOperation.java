@@ -283,20 +283,31 @@ public abstract class EVAOperation extends Task {
         return time;
     }
 
-    private double walkToBin(double time) {
+	/**
+	 * Walks to a storage bin by adding a walking sub task. 
+	 * 
+	 * @param time
+	 * @return
+	 */
+    protected double walkToBin(double time) {
     	// Go to the drop off location
-        if (!person.isOutside()) {
-            Walk walkingTask = Walk.createWalkingTask(person, binPosition, 0, null);
-            if (walkingTask != null) {
-            	addSubTask(walkingTask);
-            }
-            else {
-				logger.severe(person, "Cannot walk to the storage bin location.");
-                endTask();
-            }
+        if (person.isOutside()) {
+        	
+        	addSubTask(new WalkOutside(person, person.getPosition(),
+        			binPosition, true));
+        	
+//            Walk walkingTask = Walk.createWalkingTask(person, binPosition, 0, null);
+//            if (walkingTask != null) {
+//            	addSubTask(walkingTask);
+//            }
+//            else {
+//				logger.severe(person, "Cannot walk to the storage bin location.");
+//                endTask();
+//            }
         }
         else {
-            setPhase(WALK_TO_BIN);
+        	logger.severe(person, "Not outside. Can't walk to the storage bin.");
+            endTask();
         }
 
         return time;
@@ -305,7 +316,7 @@ public abstract class EVAOperation extends Task {
     private double dropOffResource(double time) {
     	// Note: Do not delete. will use this to drop off resources at a shed
     	// Go to the drop off location
-    	return 0;
+    	return time;
     }
 
 	/**

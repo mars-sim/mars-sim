@@ -12,6 +12,7 @@ import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.DigLocalIce;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 
 
@@ -20,6 +21,8 @@ import org.mars_sim.msp.core.structure.Settlement;
  */
 public class DigLocalIceMeta extends DigLocalMeta {
 
+	private static final int THRESHOLD_AMOUNT = 50;
+	
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.digLocalIce"); //$NON-NLS-1$
@@ -40,6 +43,11 @@ public class DigLocalIceMeta extends DigLocalMeta {
     	if ((settlement == null) || (settlement.getIceCollectionRate() <= 0D)) {
     		return 0D;
     	}
+    	
+        double settlementCap = settlement.getAmountResourceRemainingCapacity(ResourceUtil.iceID);
+        if (settlementCap < THRESHOLD_AMOUNT) {
+        	return 0;
+        }
     	
     	return getProbability(settlement, person, settlement.getIceProbabilityValue());
     }
