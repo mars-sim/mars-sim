@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * UnitSet.java
- * @date 2021-10-28
+ * @date 2022-07-29
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.data;
@@ -29,16 +29,13 @@ import org.mars_sim.msp.core.UnitManager;
  * This class holds a set of Unit classes. It has a customised serialization 
  * format that only stores the Unit identifiers. The Unit references are restored
  * after deserialisation via the reinit method.
+ * 
  * @param <T> Unit subclass.
  */
 public class UnitSet<T extends Unit> 
 	implements Set<T>, Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
-
 	 
     // The list of UnitSet that have been deserialised and need initialising
 	@SuppressWarnings("rawtypes")
@@ -144,9 +141,10 @@ public class UnitSet<T extends Unit>
 	}
 	
 	/**
-	 * Read the object which is represented as an array of ints of the Unit
+	 * Reads the object which is represented as an array of ints of the Unit
 	 * identifiers. This are held in a transient array until the reinit
 	 * method is called.
+	 * 
 	 * @param ois
 	 * @throws ClassNotFoundException
 	 * @throws IOException
@@ -159,8 +157,9 @@ public class UnitSet<T extends Unit>
     }
     
 	/**
-	 * Serialise this UnitSet as an array of ints which are the Unit Identifiers
-	 * of the set members
+	 * Serialises this UnitSet as an array of ints which are the Unit Identifiers
+	 * of the set members.
+	 * 
 	 * @param oos
 	 * @throws IOException
 	 */
@@ -177,7 +176,8 @@ public class UnitSet<T extends Unit>
 	}
 
 	/**
-	 * Register an instance to the global post-serialisation initialisation list.
+	 * Registers an instance to the global post-serialisation initialisation list.
+	 * 
 	 * @param i
 	 */
 	@SuppressWarnings("rawtypes")
@@ -186,8 +186,9 @@ public class UnitSet<T extends Unit>
 	}
 	
 	/**
-	 * Reinitialise any deserialised UnitSets; this turns the Unit ids into
-	 * Unit references
+	 * Reinitialises any deserialised UnitSets; this turns the Unit ids into
+	 * Unit references.
+	 * 
 	 * @param mgr
 	 */
 	@SuppressWarnings("rawtypes")
@@ -199,8 +200,9 @@ public class UnitSet<T extends Unit>
 	}
     	
     /**
-     * Convert the temp list of Unit identifiers into the Unit references
+     * Converts the temp list of Unit identifiers into the Unit references
      * into the internal set.
+     * 
      * @param mgr
      */
 	@SuppressWarnings("unchecked")

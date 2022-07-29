@@ -25,6 +25,7 @@ import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.environment.MarsSurface;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
@@ -70,7 +71,7 @@ public class UnitManager implements Serializable, Temporal {
 	/** The core engine's original build. */
 	private String originalBuild;
 
-		/** List of unit manager listeners. */
+	/** List of unit manager listeners. */
 	private transient Set<UnitManagerListener> listeners;
 
 	private transient ExecutorService executor;
@@ -160,7 +161,7 @@ public class UnitManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * Gets the unit with a particular identifier (unit id)
+	 * Gets the unit with a particular identifier (unit id).
 	 *
 	 * @param id identifier
 	 * @return
@@ -535,7 +536,7 @@ public class UnitManager implements Serializable, Temporal {
 	 */
 	private void addDisplayUnit(Unit unit) {
 		if (displayUnits == null)
-			displayUnits = new HashSet<>();
+			displayUnits = new UnitSet<>();
 
 		displayUnits.add(unit);
 	}

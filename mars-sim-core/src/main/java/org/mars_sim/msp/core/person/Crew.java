@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Crew.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-29
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person;
@@ -65,7 +65,8 @@ public class Crew implements UserConfigurable {
 	}
 
 	/**
-	 * Is this crew bundled with the code base
+//	 * Is this crew bundled with the code base 
+ * 
 	 * @return
 	 */
 	@Override

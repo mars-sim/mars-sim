@@ -817,10 +817,10 @@ public class Weather implements Serializable, Temporal {
 	private void createDustDevils(double probability, double ls) {
 		List<Settlement> settlements = new ArrayList<>(sim.getUnitManager().getSettlements());
 		for (Settlement s : settlements) {
+			
 			if (s.getDustStorm() == null) {
 				// if settlement doesn't have a dust storm formed near it yet
-				List<Settlement> list = new ArrayList<>();
-
+		
 				double chance = RandomUtil.getRandomDouble(100);
 				if (chance <= probability) {
 
@@ -829,18 +829,15 @@ public class Weather implements Serializable, Temporal {
 					// on each sol since it is usually created in Martian spring or summer day,
 					checkStorm++;
 
-					list.add(s);
-
 					// Assuming all storms start out as a dust devil
 					DustStorm ds = new DustStorm(DustStormType.DUST_DEVIL, newStormID,
-							 this, list);
+							 this, s.getIdentifier());
 					dustStorms.add(ds);
 					s.setDustStorm(ds);
 					newStormID++;
 
 					logger.info(s, "On L_s = " + Math.round(ls * 100.0) / 100.0
 									+ ", " + ds.getName()); 
-
 				}
 			}
 		}
@@ -862,10 +859,9 @@ public class Weather implements Serializable, Temporal {
 					dustStorms.remove(ds);
 				} 
 		
-				if (ds.getSize() != 0)
-				{
-					Settlement closet = ds.getSettlements().get(0);
-					logger.info(closet, "DustStorm " + ds.getName()
+				if (ds.getSize() != 0) {
+					Settlement closest = ds.getSettlement();
+					logger.info(closest, "DustStorm " + ds.getName()
 									+ " (size " + ds.getSize() + " with windspeed "
 									+ Math.round(ds.getSpeed() * 10.0) / 10.0 + " m/s) was sighted.");
 				}

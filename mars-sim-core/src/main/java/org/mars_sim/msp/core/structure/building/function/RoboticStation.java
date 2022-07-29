@@ -7,9 +7,9 @@
 package org.mars_sim.msp.core.structure.building.function;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Iterator;
 
+import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -52,7 +52,7 @@ public class RoboticStation extends Function {
 		// Call Function constructor.
 		super(FunctionType.ROBOTIC_STATION, spec, building);
 
-		robotOccupants = new HashSet<>();
+		robotOccupants = new UnitSet<>();
 		// Set occupant capacity.
 		occupantCapacity = buildingConfig.getFunctionSpec(building.getBuildingType(), FunctionType.ROBOTIC_STATION).getCapacity();
 

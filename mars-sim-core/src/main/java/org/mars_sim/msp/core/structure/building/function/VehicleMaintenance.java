@@ -12,11 +12,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalPosition;
+import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
@@ -55,7 +55,7 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 		// Use Function constructor.
 		super(function,spec, building);
 
-		vehicles = new ConcurrentLinkedQueue<>();
+		vehicles = new UnitSet<>();
 		parkingLocations = new ArrayList<>();
 	}
 

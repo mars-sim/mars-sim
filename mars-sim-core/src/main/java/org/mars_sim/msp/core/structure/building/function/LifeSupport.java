@@ -7,12 +7,12 @@
 package org.mars_sim.msp.core.structure.building.function;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.air.AirComposition;
+import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -55,7 +55,7 @@ public class LifeSupport extends Function {
 	public LifeSupport(Building building, FunctionSpec spec) {
 		super(FunctionType.LIFE_SUPPORT, spec, building);
 
-		occupants = new HashSet<>();
+		occupants = new UnitSet<>();
 
 		this.occupantCapacity = spec.getCapacity();
 		this.powerRequired = spec.getDoubleProperty(BuildingConfig.POWER_REQUIRED);

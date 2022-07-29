@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TerrainElevation.java
- * @date 2022-07-25
+ * @date 2022-07-29
  * @author Scott Davis
  */
 
@@ -63,13 +63,13 @@ public class TerrainElevation implements Serializable {
 
 	private static MapDataUtil mapDataUtil = MapDataUtil.instance();
 
-	private static Set<CollectionSite> sites = new HashSet<>();
+	private static Set<CollectionSite> sites;
 
 	/**
 	 * Constructor.
 	 */
 	public TerrainElevation() {
-		// none
+		sites = new HashSet<>();
 	}
 
 	/**

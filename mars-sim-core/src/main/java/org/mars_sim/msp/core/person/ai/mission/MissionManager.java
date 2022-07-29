@@ -60,7 +60,7 @@ public class MissionManager implements Serializable, Temporal {
 	private Map<String, Integer> settlementID;
 
 	/** Prob boost for Mission Types */
-	private transient Map<MissionType,Integer> missionBoost = new EnumMap<>(MissionType.class);
+	private transient Map<MissionType, Integer> missionBoost = new EnumMap<>(MissionType.class);
 
 	/**
 	 * Constructor.
@@ -104,7 +104,7 @@ public class MissionManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * Add a listener.
+	 * Adds a listener.
 	 *
 	 * @param newListener The listener to add.
 	 */
@@ -122,7 +122,7 @@ public class MissionManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * Remove a listener.
+	 * Removes a listener.
 	 *
 	 * @param oldListener the listener to remove.
 	 */
@@ -433,7 +433,7 @@ public class MissionManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * Adds a mission plan
+	 * Adds a mission plan.
 	 *
 	 * @param plan {@link MissionPlanning}
 	 */
@@ -449,7 +449,7 @@ public class MissionManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * Submit a request for approving a mission plan
+	 * Submits a request for approving a mission plan.
 	 *
 	 * @param mission
 	 */
@@ -458,7 +458,7 @@ public class MissionManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * Approves a mission plan
+	 * Approves a mission plan.
 	 *
 	 * @param missionPlan
 	 * @param person
@@ -484,7 +484,7 @@ public class MissionManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * Score a mission plan
+	 * Scores a mission plan.
 	 *
 	 * @param missionPlan
 	 * @param person
@@ -529,7 +529,20 @@ public class MissionManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * Prepare object for garbage collection.
+	 * Sets up any Mission configurations.
+	 */
+	public void initializeInstances(SimulationConfig simulationConfig) {
+		if (missionBoost == null) {
+			missionBoost = simulationConfig.getMissionBoosts();
+		}
+		else {
+			missionBoost.putAll(simulationConfig.getMissionBoosts());
+		}
+		EVAOperation.setMinSunlight(simulationConfig.getMinEVALight());
+	}
+	
+	/**
+	 * Prepares object for garbage collection.
 	 */
 	public void destroy() {
 		// take care to avoid null exceptions
@@ -543,16 +556,4 @@ public class MissionManager implements Serializable, Temporal {
 		}
 	}
 
-	/**
-	 * Set up any Mission configurations
-	 */
-	public void initializeInstances(SimulationConfig simulationConfig) {
-		if (missionBoost == null) {
-			missionBoost = simulationConfig.getMissionBoosts();
-		}
-		else {
-			missionBoost.putAll(simulationConfig.getMissionBoosts());
-		}
-		EVAOperation.setMinSunlight(simulationConfig.getMinEVALight());
-	}
 }

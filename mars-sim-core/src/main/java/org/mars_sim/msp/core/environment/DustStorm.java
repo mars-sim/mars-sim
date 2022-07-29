@@ -1,16 +1,16 @@
-/**
+/*
  * Mars Simulation Project
  * DustStorm.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-29
  * @author Manny Kung
  */
 
 package org.mars_sim.msp.core.environment;
 
 import java.io.Serializable;
-import java.util.List;
 
 import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.air.AirComposition;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -64,6 +64,8 @@ public class DustStorm implements Serializable {
 
 	private int id;
 
+	private int settlementId;
+	
 	private int hemisphere;
 
 	/***
@@ -84,22 +86,17 @@ public class DustStorm implements Serializable {
 
 	private DustStormType type;
 
-	private List<Settlement> settlements;
-
 	
 	public DustStorm(DustStormType type, int id, Weather weather,
-			List<Settlement> settlements) {
+			int settlementId) {
 		this.id = id;
-		this.settlements = settlements;
+		this.settlementId = settlementId;
 		setType(type);
 		
-		if (settlements.isEmpty()) {
-			throw new IllegalArgumentException("Settlements can not be empty");
-		}
 		
 		// Logic only assigns a meaningful size & speed for DUST_DEVIL
 		if (type == DustStormType.DUST_DEVIL) {
-			Settlement s = settlements.get(0);
+			Settlement s = getSettlement();
 			double meanPressure = (DEFAULT_MEAN_PRESSURE
 					+ weather.calculateAirPressure(s.getCoordinates(), HEIGHT)) / 2D;
 			double t = s.getOutsideTemperature() + AirComposition.C_TO_K;
@@ -122,9 +119,6 @@ public class DustStorm implements Serializable {
 		return speed;
 	}
 
-	public List<Settlement> getSettlements() {
-		return settlements;
-	}
 
 	// Almost all of the planet-encircling storms have been observed to start in one
 	// of two regions (a-d, e) on Mars:
@@ -236,10 +230,9 @@ public class DustStorm implements Serializable {
 		DustStormType newType = type;
 		if (newSize == 0) {
 			// Storm is done.
-			for (Settlement s : settlements) {
-				if (s.getDustStorm() == this) {
-					s.setDustStorm(null);
-				}
+			Settlement s = getSettlement();
+			if (s.getDustStorm() == this) {
+				s.setDustStorm(null);
 			}
 		}
 		else if (newSize < DUST_DEVIL_MAX) {
@@ -290,6 +283,10 @@ public class DustStorm implements Serializable {
 		this.location = location;
 	}
 
+	public Settlement getSettlement() {
+		return (Settlement) Simulation.instance().getUnitManager().getUnitByID(settlementId);
+	}
+	
 	public Coordinates getCoordinates() {
 		return location;
 	}
