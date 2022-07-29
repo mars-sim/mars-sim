@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Crop.java
- * @date 2021-10-21
+ * @date 2022-07-28
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function.farming;
@@ -55,7 +55,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 	/** How often are the crops checked in mSols */
 	private static final double CHECK_CROP_PERIOD = 4D;
 
-	private static final double TUNING_FACTOR = .18;
+	private static final double TUNING_FACTOR = 1.8;
 	/**
 	 * The limiting factor that determines how fast and how much PAR can be absorbed
 	 * in one frame.
@@ -179,7 +179,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 	private final double o2Threshold;
 
 	/** The cache values of the past environment factors influencing the crop */
-	private double[] environmentalFactor = new double[CO2_FACTOR+1];
+	private double[] environmentalFactor = new double[CO2_FACTOR + 1];
 
 	private String name;
 
@@ -787,7 +787,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 	}
 
 	/**
-	 * Turns on lighting
+	 * Turns on lighting.
 	 *
 	 * @param kW
 	 */
@@ -796,14 +796,14 @@ public class Crop implements Comparable<Crop>, Serializable {
 	}
 
 	/**
-	 * Turns off lighting
+	 * Turns off lighting.
 	 */
 	private void turnOffLighting() {
 		lightingPower = 0;
 	}
 
 	/**
-	 * Computes the effects of the available sunlight and artificial light
+	 * Computes the effects of the available sunlight and artificial light.
 	 *
 	 * @param time
 	 * @param solarIrradiance
@@ -910,7 +910,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 
 
 	/***
-	 * Computes the effect of water and fertilizer
+	 * Computes the effect of water and fertilizer.
 	 *
 	 * @param compositeFactor
 	 * @param time
@@ -1045,8 +1045,8 @@ public class Crop implements Comparable<Crop>, Serializable {
 		farm.addCropUsage(name, amount, 2);
 	}
 	
-	/***
-	 * Computes the effects of the concentration of O2 and CO2
+	/**
+	 * Computes the effects of the concentration of O2 and CO2.
 	 *
 	 * @param watt
 	 * @param compositeFactor
@@ -1120,7 +1120,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 	}
 
 	/**
-	 * Adjust the environmental factors
+	 * Adjusts the environmental factors.
 	 *
 	 * @param mod the modifier of interest
 	 * @param type the
@@ -1137,7 +1137,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 
 	/**
 	 * Computes each input and output constituent for a crop for the specified
-	 * period of time and return the overall harvest modifier
+	 * period of time and return the overall harvest modifier.
 	 *
 	 * @param solarIrradiance
 	 * @param greyFilterRate
@@ -1235,7 +1235,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 	}
 
 	/**
-	 * Retrieve the carbon dioxide
+	 * Retrieves the carbon dioxide.
 	 *
 	 * @param amount
 	 * @return
@@ -1253,7 +1253,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 	}
 
 	/**
-	 * Retrieve the oxygen
+	 * Retrieves the oxygen.
 	 *
 	 * @param amount
 	 * @return
@@ -1271,7 +1271,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 	}
 
 	/**
-	 * Retrieves the amount resource
+	 * Retrieves the amount resource.
 	 *
 	 * @param amount
 	 * @param resource
@@ -1285,7 +1285,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 	}
 
 	/**
-	 * Stores the carbon dioxide
+	 * Stores the carbon dioxide.
 	 *
 	 * @param amount
 	 * @return
@@ -1303,7 +1303,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 	}
 
 	/**
-	 * Stores the oxygen
+	 * Stores the oxygen.
 	 *
 	 * @param amount
 	 * @return
@@ -1321,7 +1321,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 	}
 
 	/**
-	 * Stores the amount resource
+	 * Stores the amount resource.
 	 *
 	 * @param amount
 	 * @param resource
@@ -1336,7 +1336,8 @@ public class Crop implements Comparable<Crop>, Serializable {
 
 
 	/**
-	 * Crop need power in any phase that is not the first or last
+	 * Does the Crop need power ? Checks the current phase to see if that is not the first or last.
+	 * 
 	 * @return
 	 */
 	public boolean needsPower() {
@@ -1345,7 +1346,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 	}
 
 	/**
-	 * Compares if the object is the same as this crop
+	 * Compares if the object is the same as this crop.
 	 */
 	@Override
 	public boolean equals(Object obj) {
@@ -1362,7 +1363,8 @@ public class Crop implements Comparable<Crop>, Serializable {
 	}
 
 	/**
-	 * Reloads instances after loading from a saved sim
+	 * Reloads instances after loading from a saved sim.
+	 * 
 	 * @param cropConfig2
 	 *
 	 * @param {@link MasterClock}

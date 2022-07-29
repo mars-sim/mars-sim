@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * MSolDataItem.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-28
  * @author Barry Evans
  */
 
@@ -11,6 +11,7 @@ import java.io.Serializable;
 
 /**
  * Timestamped Data item used for data logging.
+ * 
  * @param <T> The data component
  * @see MSolDataLogger
  */

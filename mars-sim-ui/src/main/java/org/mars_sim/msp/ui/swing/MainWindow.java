@@ -889,7 +889,7 @@ extends JComponent implements ClockListener {
 		earthDateField.setAllowUserInput(false);
 		earthDateField.setFont(ARIAL_FONT);
 		earthDateField.setForeground(new Color(0, 69, 165));
-		earthDateField.setPadding(0, 10, 0, 10);
+		earthDateField.setPadding(0, 5, 0, 5);
 		earthDateField.setMargin(0, 0, 0, 0);
 		// Note: May use "yyyy-MMM-dd EEE HH:mm a '['z']'"
 		DateFormat d = new SimpleDateFormat("yyyy-MMM-dd EEE HH:mm a  ", LanguageManager.getLocale());

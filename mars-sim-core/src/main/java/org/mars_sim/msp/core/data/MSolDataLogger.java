@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * MSolDataLogger.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-28
  * @author Barry Evans
  */
 
@@ -16,7 +16,8 @@ public class MSolDataLogger<T> extends SolListDataLogger<MSolDataItem<T>>
 	implements Serializable {
 
 	/**
-	 * Create a new logger
+	 * Creates a new logger.
+	 * 
 	 * @param maxSols
 	 */
 	public MSolDataLogger(int maxSols) {
@@ -26,7 +27,8 @@ public class MSolDataLogger<T> extends SolListDataLogger<MSolDataItem<T>>
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Add a datapoint at the current time & sol.
+	 * Adds a datapoint at the current time & sol.
+	 * 
 	 * @param data Item to add.
 	 */
 	public void addDataPoint(T data) {
