@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * DataLogger.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-28
  * @author Barry Evans
  */
 
@@ -17,9 +17,10 @@ import org.mars_sim.msp.core.time.MarsClock;
 
 
 /**
- * Logs data items according to the current Sol. Each sol s a single data item.
+ * Logs data items according to the current Sol. Each sol is a single data item.
  * Only a maximum number of sols is retained.
- * The timestamp of the logger is shifted autumatically via the Simulation.
+ * The timestamp of the logger is shifted automatically via the Simulation.
+ * 
  * @param <T> Data item being recorded
  */
 public abstract class DataLogger<T> implements Serializable {
@@ -41,7 +42,8 @@ public abstract class DataLogger<T> implements Serializable {
 	}
 	
 	/**
-	 * Move time onwards.
+	 * Moves time onwards.
+	 * 
 	 * @param pulse
 	 */
 	public static void changeTime(MarsClock time) {
@@ -51,6 +53,7 @@ public abstract class DataLogger<T> implements Serializable {
 	
 	/**
 	 * A new sol should be started in the logger.
+	 * 
 	 * @param newSol
 	 */
 	private void newSol(int newSol) {
@@ -63,13 +66,14 @@ public abstract class DataLogger<T> implements Serializable {
 	}
 	
 	/**
-	 * Create a new data item for a new sol;
+	 * Create a new data item for a new sol.
+	 * 
 	 * @return
 	 */
 	protected abstract T getNewDataItem();
 
 	/**
-	 * The logger is updating
+	 * The logger is updating.
 	 */
 	protected void updating() {
 		if (latestSol != currentSol) {
