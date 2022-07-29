@@ -75,11 +75,11 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	/** The trend value of lightness by Coordinate. */
 	private Map<Coordinates, Double> lightTrend;
 
-	private MarsClock currentTime;
+	private static MarsClock currentTime;
 
-	private TerrainElevation terrainElevation;
-	private Weather weather;
-	private OrbitInfo orbitInfo;
+	private static TerrainElevation terrainElevation;
+	private static Weather weather;
+	private static OrbitInfo orbitInfo;
 
 	private static List<Landmark> landmarks = null;
 
@@ -88,10 +88,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	 *
 	 * @throws Exception when error in creating surface features.
 	 */
-	public SurfaceFeatures(MarsClock marsClock, OrbitInfo orbitInfo, Weather weather) {
-		this.orbitInfo = orbitInfo;
-		this.weather = weather;
-		this.currentTime = marsClock;
+	public SurfaceFeatures() {
 
 		// Initialize instances.
 		terrainElevation = new TerrainElevation();
@@ -110,10 +107,17 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	/**
 	 * Initializes transient data in the simulation.
 	 *
-	 * @throws Exception if transient data could not be constructed.
+	 * @param landmarkConfig
+	 * @param mc
+	 * @param oi
+	 * @param w
 	 */
-	public static void initializeInstances(LandmarkConfig landmarkConfig) {
+	public static void initializeInstances(LandmarkConfig landmarkConfig, 
+			MarsClock mc, OrbitInfo oi, Weather w) {
 		landmarks = landmarkConfig.getLandmarkList();
+		orbitInfo = oi;
+		weather = w;
+		currentTime = mc;
 	}
 
 	/**

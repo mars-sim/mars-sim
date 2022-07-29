@@ -304,9 +304,13 @@ public class Simulation implements ClockListener, Serializable {
 		// Create orbit info
 		orbitInfo = new OrbitInfo(marsClock);
 		// Create weather
-		weather = new Weather(sim, marsClock, orbitInfo);
+		weather = new Weather();
+		weather.initializeInstances(sim, marsClock, orbitInfo);
+		
 		// Create surface features
-		surfaceFeatures = new SurfaceFeatures(marsClock, orbitInfo, weather);
+		surfaceFeatures = new SurfaceFeatures();
+		SurfaceFeatures.initializeInstances(simulationConfig.getLandmarkConfiguration(),
+				marsClock, orbitInfo, weather);
 		
 		unitManager = new UnitManager();
 		EquipmentFactory.initialise(unitManager);
@@ -369,10 +373,12 @@ public class Simulation implements ClockListener, Serializable {
 		// Create orbit info
 		orbitInfo = new OrbitInfo(marsClock);
 		// Create weather
-		weather = new Weather(this, marsClock, orbitInfo);
+		weather = new Weather();
+		weather.initializeInstances(this, marsClock, orbitInfo);
 		// Create surface features
-		surfaceFeatures = new SurfaceFeatures(marsClock, orbitInfo, weather);
-		SurfaceFeatures.initializeInstances(simulationConfig.getLandmarkConfiguration());
+		surfaceFeatures = new SurfaceFeatures();
+		SurfaceFeatures.initializeInstances(simulationConfig.getLandmarkConfiguration(),
+				marsClock, orbitInfo, weather);
 		
 		missionManager = new MissionManager();
 		missionManager.initializeInstances(simulationConfig);
@@ -661,9 +667,7 @@ public class Simulation implements ClockListener, Serializable {
 		EarthClock earthClock = masterClock.getEarthClock();
 		
 		weather.initializeInstances(this, marsClock, orbitInfo);
-
-		SurfaceFeatures.initializeInstances(simulationConfig.getLandmarkConfiguration());
-		
+	
 		// Initialize instances in Airlock
 		Airlock.initializeInstances(unitManager, marsSurface, marsClock);
 		// Initialize instances in TaskSchedule
@@ -671,8 +675,10 @@ public class Simulation implements ClockListener, Serializable {
 		
 		// Re-initialize the instances in LogConsolidated
 		DataLogger.changeTime(marsClock);
-		SurfaceFeatures.initializeInstances(simulationConfig.getLandmarkConfiguration());
+		SurfaceFeatures.initializeInstances(simulationConfig.getLandmarkConfiguration(),
+				marsClock, orbitInfo, weather);
 
+		
 		// Re-initialize units prior to starting the unit manager
 		Unit.initializeInstances(masterClock, marsClock, earthClock, this, weather, surfaceFeatures, missionManager);
 		Unit.setUnitManager(unitManager);
@@ -812,9 +818,6 @@ public class Simulation implements ClockListener, Serializable {
 			if (!file.getParentFile().exists()) {
 				file.getParentFile().mkdirs();
 			}
-	
-			// Call up garbage collector. But it's up to the gc what it will do.
-			System.gc();
 
 			// Get maximum size of heap in bytes. The heap cannot grow beyond this size.// Any attempt will result in an OutOfMemoryException.
 			long heapMaxSize = Runtime.getRuntime().maxMemory();

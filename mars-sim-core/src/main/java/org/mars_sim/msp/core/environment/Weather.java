@@ -93,15 +93,11 @@ public class Weather implements Serializable, Temporal {
 	
 	private SunData sunData;
 	
-	private Simulation sim;
-	private OrbitInfo orbitInfo;
-	private MarsClock marsClock;
+	private static Simulation sim;
+	private static OrbitInfo orbitInfo;
+	private static MarsClock marsClock;
 
-	public Weather(Simulation sim, MarsClock clock, OrbitInfo orbitInfo) {
-		this.sim = sim; 
-		this.marsClock = clock;
-		this.orbitInfo = orbitInfo;
-		
+	public Weather() {
 		weatherDataMap = new HashMap<>();
 		coordinateList = new ArrayList<>();
 		dustStorms = new ArrayList<>();
@@ -110,7 +106,6 @@ public class Weather implements Serializable, Temporal {
 		airPressureCacheMap = new HashMap<>();
 		windSpeedCacheMap = new HashMap<>();
 		windDirCacheMap = new HashMap<>();
-		
 	}
 
 	/**
