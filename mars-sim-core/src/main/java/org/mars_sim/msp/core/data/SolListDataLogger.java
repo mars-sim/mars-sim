@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * SolListDataLogger.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-30
  * @author Barry Evans
  */
 
@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This class logs a list of items for each Sol.
+ * This class logs a list of items for each sol.
  */
 public class SolListDataLogger<T> extends DataLogger<List<T>> {
 

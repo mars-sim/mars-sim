@@ -638,14 +638,14 @@ public class Weather implements Serializable, Temporal {
 					weatherDataMap.put(location, dailyRecordMap);
 				}	
 				
-				DailyWeather weather = new DailyWeather( 
+				DailyWeather dailyWeather = new DailyWeather( 
 						getTemperature(location), 
 						getAirPressure(location),
 						getAirDensity(location), 
 						getWindSpeed(location), 
 						sim.getSurfaceFeatures().getSolarIrradiance(location),
 						sim.getSurfaceFeatures().getOpticalDepth(location));
-				dailyRecordMap.addDataPoint(weather);
+				dailyRecordMap.addDataPoint(dailyWeather);
 			});
 		}
 

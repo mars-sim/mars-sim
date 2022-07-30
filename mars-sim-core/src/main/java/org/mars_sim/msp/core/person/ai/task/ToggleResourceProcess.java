@@ -331,20 +331,28 @@ public class ToggleResourceProcess extends Task implements Serializable {
 				double vp = settlement.getGoodsManager().getGoodValuePoint(resource);	
 				
 				if (input) {
-					// Gets the stored amount of this resource
-					double stored = settlement.getAmountResourceStored(resource);
+					// Gets the supply of this resource
+					// Note: use supply instead of stored amount.
+					// Stored amount is slower and more time consuming
+					double supply = settlement.getGoodsManager().getSupplyValue(resource);
+					
+					if (supply < 1.0)
+						return 0;
 					
 					double rate = process.getMaxInputRate(resource);
 					double score = rate;
 					
-					if (score > stored) {
-						score = stored;
+					if (score > supply) {
+						score = supply;
 					}
 					result += (score / vp);
 
 				} else {
 					// Gets the remaining amount of this resource
 					double remain = settlement.getAmountResourceRemainingCapacity(resource);
+					
+					if (remain == 0.0)
+						return 0;
 					
 					double rate = process.getMaxOutputRate(resource);
 					double score = rate;
