@@ -23,7 +23,6 @@
 		<!-- Set file encoding to UTF-8. See http://stackoverflow.com/questions/3017695/how-to-configure-encoding-in-maven#3018152 -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-
 		<libgdx.version>1.10.0</libgdx.version>
 		<lwjgl.version>3.2.3</lwjgl.version>
 		<kotlin.version>1.7.10</kotlin.version>
@@ -32,12 +31,19 @@
 		<commons-cli.version>1.5.0</commons-cli.version>
 		<commons-io.version>2.11.0</commons-io.version>
 		<commons-lang3.version>3.12.0</commons-lang3.version>
-		<commons-math3.version>3.6.1</commons-math3.version>
-		
+		<commons-math3.version>3.6.1</commons-math3.version>	
   		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
   		<sonar.java.source>11</sonar.java.source>
+  		<native.maven.plugin.version>0.9.13</native.maven.plugin.version>
 	</properties>
 	<dependencies>
+		<!-- Needed by graalvm -->
+		<dependency>
+			<groupId>org.junit.platform</groupId>
+			<artifactId>junit-platform-launcher</artifactId>
+			<version>1.8.2</version>
+			<scope>test</scope>
+		</dependency>		
 		<!-- https://stackoverflow.com/questions/41635164/is-junit5-backward-compatible-to-junit4 -->
         <!--JUnit Jupiter Engine to depend on the JUnit5 engine and JUnit 5 API -->
         <dependency>
@@ -115,52 +121,14 @@
 		<module>mars-sim-headless</module>
 		<module>mars-sim-base</module>
 	</modules>
+  
 	<!-- ************************************************************************************************* -->
 	<!-- * Build Section * -->
 	<!-- ************************************************************************************************* -->
 	<build>
 		<pluginManagement>
 			<plugins>
-				<plugin>
-					<!-- https://github.com/graalvm/native-build-tools -->
-					<!-- https://medium.com/graalvm/gradle-and-maven-plugins-for-native-image-with-initial-junit-testing-support-dde00a8caf0b -->
-					<groupId>org.graalvm.buildtools</groupId>
-					<artifactId>native-maven-plugin</artifactId>
-					<version>0.9.13</version>
-					<executions>
-						<execution>
-							<id>test-native</id>
-							<goals>
-								<goal>test</goal>
-							</goals>
-							<phase>test</phase>
-						</execution>
-						<execution>
-							<id>build-native</id>
-							<goals>
-								<goal>build</goal>
-	              			</goals>
-							<phase>package</phase>
-						</execution>
-					</executions>
-					<configuration>
-						<imageName>mars-sim-graal</imageName>
-							<mainClass>${domainNameMainClass}</mainClass>
-							<buildArgs>
-							--no-fallback
-							--verbose
-							</buildArgs>
-					</configuration>
-					<dependencies>
-					   <!-- ... -->
-					   <dependency>
-					        <groupId>org.graalvm.buildtools</groupId>
-					        <artifactId>junit-platform-native</artifactId>
-					        <version>${junit.version}</version>
-					        <scope>test</scope>
-					    </dependency>
-					</dependencies>
-				</plugin>
+				
 				<!-- https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-maven-plugin -->
 				<plugin>
 					<groupId>org.jetbrains.kotlin</groupId>
@@ -378,6 +346,7 @@
             </plugin>
 		</plugins>
 	</reporting>
+	
 	<!-- ************************************************************************************************* -->
 	<!-- * Repository Section * -->
 	<!-- ************************************************************************************************* -->
@@ -413,5 +382,16 @@
 			<name>Sonatype</name>
 			<url>https://oss.sonatype.org/content/repositories/releases</url>
 		</pluginRepository>
+		<pluginRepository>
+	        <id>graalvm-native-build-tools-snapshots</id>
+	        <name>GraalVM native-build-tools Snapshots</name>
+	        <url>https://raw.githubusercontent.com/graalvm/native-build-tools/snapshots</url>
+	        <releases>
+	            <enabled>false</enabled>
+	        </releases>
+	        <snapshots>
+	            <enabled>true</enabled>
+	        </snapshots>
+		</pluginRepository>		
 	</pluginRepositories>
 </project>

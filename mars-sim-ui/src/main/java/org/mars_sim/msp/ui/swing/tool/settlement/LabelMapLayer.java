@@ -46,14 +46,14 @@ implements SettlementMapLayer {
  
 	// Static members
 	private static final Color HALLWAY_LABEL_COLOR = Color.gray;; //Color.blue;//new Color (79, 108, 44); // dull sage green
-	private static final Color BUILDING_LABEL_COLOR = new Color(0, 0, 255);; //dark bright blue //Color.blue;//new Color (79, 108, 44); // dull sage green
+	private static final Color BUILDING_LABEL_COLOR = Color.gray.darker(); // Color(0, 0, 255);; //dark bright blue //Color.blue;//new Color (79, 108, 44); // dull sage green
 
 	private static final Color BLACK_LABEL_OUTLINE_COLOR = new Color(0, 0, 0, 190); //new Color(0, 0, 0, 150);
 	private static final Color WHITE_LABEL_OUTLINE_COLOR = new Color(255, 255, 255, 190);
 
 	private static final Color SHOP_LABEL_COLOR = new Color (195, 176, 145); // khaki ; 146, 112, 255); // pale purple
 	private static final Color LAB_LABEL_COLOR = new Color (207, 113, 175); // sky magenta; //40, 54, 95); // navy blue
-	private static final Color HAB_LABEL_COLOR = new Color (128, 0, 0).brighter(); // Maroon; 184, 134, 11);//147, 197, 114); // pistachio ; 48,	213, 200);// turquoise ; 244, 164, 96); // sandy brown // 92, 23, 0); // BURGUNDY
+	private static final Color HAB_LABEL_COLOR = new Color (199, 63, 74); // Maroon; 184, 134, 11);//147, 197, 114); // pistachio ; 48,	213, 200);// turquoise ; 244, 164, 96); // sandy brown // 92, 23, 0); // BURGUNDY
 	private static final Color REACTOR_LABEL_COLOR = new Color (174, 198, 207); // pastel blue; //100, 60, 60); // pale red ; Color.red.darker(); // red
 	private static final Color GARAGE_LABEL_COLOR = Color.yellow;//new Color (255, 222, 122); // pale yellow
 	private static final Color GREENHOUSE_LABEL_COLOR = new Color (133, 187, 101);// pale green; // 62, 180, 137); // mint; (153, 234, 37) is bright green; (79, 108, 44) is dull sage green //(69, 92, 0) is dark sage //  // new Color(0, 255, 64); //bright green;//

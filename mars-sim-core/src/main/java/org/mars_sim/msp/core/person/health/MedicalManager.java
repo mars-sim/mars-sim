@@ -174,7 +174,8 @@ public class MedicalManager implements Serializable {
 	 */
 	private static Complaint createEnvironmentComplaint(ComplaintType type, int seriousness, double degrade,
 			double recovery, double performance, boolean needBedRest) {
-		return new Complaint(type, seriousness, degrade, recovery, 0D, performance, needBedRest, null, null);
+		return new Complaint(type, seriousness, degrade, recovery, 
+				0D, performance, needBedRest, null, null);
 	}
 
 //	/**

@@ -34,9 +34,62 @@
 		</dependency>
 	</dependencies>
 
+<!-- https://medium.com/graalvm/gradle-and-maven-plugins-for-native-image-with-initial-junit-testing-support-dde00a8caf0b -->
+<!-- https://github.com/graalvm/native-build-tools -->
+<!-- https://graalvm.github.io/native-build-tools/latest/maven-plugin.html 
+	 https://docs.oracle.com/en/graalvm/enterprise/22/docs/reference-manual/native-image/guides/use-native-image-maven-plugin/
+-->
+  <profiles>
+    <profile>
+      <id>native</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.graalvm.buildtools</groupId>
+            <artifactId>native-maven-plugin</artifactId>
+            <version>${native.maven.plugin.version}</version>
+            <extensions>true</extensions>
+            <executions>
+              <execution>
+                <id>build-native</id>
+                <goals>
+                  <goal>build</goal>
+                </goals>
+                <phase>package</phase>
+              </execution>
+              <execution>
+                <id>test-native</id>
+                <goals>
+                  <goal>test</goal>
+                </goals>
+                <phase>test</phase>
+              </execution>
+            </executions>
+            <configuration>
+				<imageName>mars-sim-graal</imageName>
+				<mainClass>${domainNameMainClass}</mainClass>			  
+				<fallback>false</fallback>
+				<buildArgs>
+					<arg>-H:DashboardDump=fortune -H:+DashboardAll</arg>
+				</buildArgs>
+ 				<agent>
+ 					<enabled>true</enabled>
+ 					<options>
+ 					 	<option>experimental-class-loader-support</option>
+ 					</options>
+				</agent>			  
+				<verbose>true</verbose>    	            
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+  
 	<build>
 		<defaultGoal>clean package install</defaultGoal>
-		<plugins>				
+		<plugins>
+						
 			<!-- https://mvnrepository.com/artifact/org.codehaus.mojo/exec-maven-plugin -->
 			<!-- https://www.mojohaus.org/exec-maven-plugin/ -->
 			<!-- https://github.com/mojohaus/mojo-parent -->
@@ -47,14 +100,18 @@
 		        <version>3.1.0</version>
 		        <executions>
 		            <execution>
-		                <goals>
+			             <id>java-agent</id>
+			             <goals>
+			                 <goal>exec</goal>
+			             </goals>		            
+		                <!--goals>
 		                    <goal>java</goal>
-		                </goals>
+		                </goals-->
 		            </execution>
 		        </executions>
 		        <configuration>
 		            <executable>java</executable>
-		            <!--mainClass>org.mars_sim.headless.MarsProjectHeadless</mainClass-->
+		            <!--mainClass>org.mars_sim.main.MarsProject</mainClass-->
 		            <arguments>
                			<argument>-Djava.util.logging.config.file=logging.properties -cp .;*;jars\*</argument>
                			<argument>-classpath</argument>
@@ -92,6 +149,7 @@
 					</descriptorRefs>
 					<archive>
 						<manifest>
+							<addClasspath>true</addClasspath>						
 							<mainClass>${mainClass}</mainClass>
 						</manifest>
 						<manifestEntries>

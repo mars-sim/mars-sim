@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Gene.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-29
  * @author Manny Kung
  */
 
@@ -14,7 +14,6 @@ public class Gene implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	//Chromosome chromosome;
 	Person person;
 	int id;
 	String name;
@@ -30,9 +29,7 @@ public class Gene implements Serializable {
 		this.paternal = paternal;
 		this.dominant = dominant;
 		this.sValue = sValue;
-		this.dValue = dValue;		
-		
+		this.dValue = dValue;
 	}
 
-	
 }

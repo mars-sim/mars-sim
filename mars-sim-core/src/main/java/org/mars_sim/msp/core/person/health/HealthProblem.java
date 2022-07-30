@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * HealthProblem.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-29
  * @author Barry Evans
  */
 
@@ -397,7 +397,7 @@ public class HealthProblem implements Serializable {
 									+ type.toString() + "' too long and was dead.");
 						}
 						setState(DEAD);
-						condition.recordDead(this, false, "");
+						condition.recordDead(this, false, "My suffering is over. Good bye!");
 					} else {
 						logger.info(sufferer, " suffered from '" 
 								+ type.toString() + "', which was just degraded to " + nextPhase + ".");

@@ -52,6 +52,10 @@ public class PhysicalCondition implements Serializable {
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(PhysicalCondition.class.getName());
 
+	/** The maximum number of sols in hunger [millisols]. */
+	public static final int MAX_HUNGER = 40_000;
+	/** The maximum number of sols in thirst [millisols]. */
+	public static final int MAX_THIRST = 7_000;
 	/** The amount of thirst threshold [millisols]. */
 	public static final int THIRST_THRESHOLD = 150;// + RandomUtil.getRandomInt(20);
 	/** The amount of thirst threshold [millisols]. */
@@ -273,10 +277,10 @@ public class PhysicalCondition implements Serializable {
 
 		deathDetails = null;
 
-		problems = new CopyOnWriteArrayList<HealthProblem>();
-		healthLog = new ConcurrentHashMap<ComplaintType, Integer>();
-		healthHistory = new ConcurrentHashMap<ComplaintType, List<String>>();
-		medicationList = new CopyOnWriteArrayList<Medication>();
+		problems = new CopyOnWriteArrayList<>();
+		healthLog = new ConcurrentHashMap<>();
+		healthHistory = new ConcurrentHashMap<>();
+		medicationList = new CopyOnWriteArrayList<>();
 
 		endurance = naturalAttributeManager.getAttribute(NaturalAttributeType.ENDURANCE);
 		strength = naturalAttributeManager.getAttribute(NaturalAttributeType.STRENGTH);
@@ -448,7 +452,7 @@ public class PhysicalCondition implements Serializable {
 			// Throw illness event if any problems already exist.
 			illnessEvent = true;
 			// A list of complaints (Type of illnesses)
-			List<Complaint> newComplaints = new CopyOnWriteArrayList<Complaint>();
+			List<Complaint> newComplaints = new CopyOnWriteArrayList<>();
 
 			Iterator<HealthProblem> hp = problems.iterator();
 			while (hp.hasNext()) {
@@ -519,7 +523,7 @@ public class PhysicalCondition implements Serializable {
 	}
 
 	/**
-	 * Checks on the life support
+	 * Checks on the life support.
 	 *
 	 * @param time
 	 * @param currentO2Consumption
@@ -542,7 +546,7 @@ public class PhysicalCondition implements Serializable {
 	}
 
 	/**
-	 * Gets the person's fatigue level
+	 * Gets the person's fatigue level.
 	 *
 	 * @return the value from 0 to infinity.
 	 */
@@ -599,7 +603,7 @@ public class PhysicalCondition implements Serializable {
 	}
 
 	/**
-	 * Adds to the person's energy intake by eating
+	 * Adds to the person's energy intake by eating.
 	 *
 	 * @param person's energy level in kilojoules
 	 */
@@ -650,7 +654,7 @@ public class PhysicalCondition implements Serializable {
 	}
 
 	/**
-	 * Get the performance factor that effect Person with the complaint.
+	 * Gets the performance factor that effect Person with the complaint.
 	 *
 	 * @return The value is between 0 -> 1.
 	 */
@@ -698,8 +702,8 @@ public class PhysicalCondition implements Serializable {
 	 */
 	public void setThirst(double t) {
 		double tt = t;
-		if (tt > 10_000)
-			tt = 10_000;
+		if (tt > MAX_THIRST)
+			tt = MAX_THIRST;
 		else if (tt < 0)
 			tt = 0;
 
@@ -820,6 +824,12 @@ public class PhysicalCondition implements Serializable {
 						 + ";  isStarving: " + isStarving
 						 + ";  Status: " + status);
 			}
+			
+			else if (hunger >= MAX_HUNGER) {
+				starved.setState(HealthProblem.DEAD);
+				recordDead(starved, false, 
+						"Remember that no child should go empty stomach in the 21st century.");
+			}
 		}
 
 		else if (starved != null) {
@@ -905,6 +915,11 @@ public class PhysicalCondition implements Serializable {
 						 + ";  Complaint: " + dehydration
 						 + ";  isDehydrated: " + isDehydrated
 						 + ";  Status: " + status);
+			}
+			else if (thirst >= MAX_THIRST) {
+				dehydrated.setState(HealthProblem.DEAD);
+				recordDead(dehydrated, false, 
+						"Thousands have lived without love, not one without water. – W.H.Auden.");
 			}
 		}
 
@@ -1336,7 +1351,7 @@ public class PhysicalCondition implements Serializable {
 	}
 
 	/**
-	 * Get the details of this Person's death.
+	 * Gets the details of this Person's death.
 	 *
 	 * @return Detail of the death, will be null if person is still alive.
 	 */
@@ -1388,18 +1403,24 @@ public class PhysicalCondition implements Serializable {
 
 
 	/**
-	 * Define the hunger setting for this person
+	 * Defines the hunger setting for this person.
 	 *
 	 * @param newHunger New hunger.
 	 */
 	public void setHunger(double newHunger) {
-		if (hunger != newHunger) {
-			hunger = newHunger;
+		double h = newHunger;
+		if (h > MAX_HUNGER)
+			h = MAX_HUNGER;
+		else if (h < 0)
+			h = 0;
+		if (hunger != h) {
+			hunger = h;
 		}
+		person.fireUnitUpdate(UnitEventType.HUNGER_EVENT);
 	}
 
 	/**
-	 * Gets the person's stress level
+	 * Gets the person's stress level.
 	 *
 	 * @return stress (0.0 to 100.0)
 	 */

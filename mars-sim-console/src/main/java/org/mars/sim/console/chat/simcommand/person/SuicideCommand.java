@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * SuicideCommand.java
- * @version 3.1.2 2020-12-30
+ * @date 2022-07-29
  * @author Barry Evans
  */
 
@@ -32,7 +32,7 @@ public class SuicideCommand extends AbstractPersonCommand {
 		String toExit = context.getInput("Get the person to commit suicide (Y/N)?");
         if ("Y".equalsIgnoreCase(toExit)) {
         	HealthProblem problem = new HealthProblem(ComplaintType.DEPRESSION, person);
-			person.getPhysicalCondition().recordDead(problem, true, "I've had enough");
+			person.getPhysicalCondition().recordDead(problem, true, "I've had enough.");
         }
 		return true;
 	}
