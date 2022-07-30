@@ -662,8 +662,8 @@ public class Weather implements Serializable, Temporal {
 
 		if (isNewSol) {
 			// Calculate the new sun data for each location based on yestersol
-			coordinateList.forEach(location -> calculateSunRecord(location));
-			
+			coordinateList.forEach(this::calculateSunRecord);
+					
 			dailyVariationAirPressure += RandomUtil.getRandomDouble(.01);
 			if (dailyVariationAirPressure > .05)
 				dailyVariationAirPressure = .05;
@@ -824,7 +824,7 @@ public class Weather implements Serializable, Temporal {
 	 */
 	public SunData getSunRecord(Coordinates c) {
 		if (sunDataMap.containsKey(c))
-		return sunDataMap.get(c);
+			return sunDataMap.get(c);
 		
 		return null;
 	}
@@ -902,7 +902,7 @@ public class Weather implements Serializable, Temporal {
 	 * @param clock
 	 * @param orbitInfo
 	 */
-	public void initializeInstances(Simulation s, MarsClock c, OrbitInfo oi) {
+	public static void initializeInstances(Simulation s, MarsClock c, OrbitInfo oi) {
 		sim = s; 
 		marsClock = c;
 		orbitInfo = oi;

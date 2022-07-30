@@ -253,12 +253,13 @@ public class ResourceProcess implements Serializable {
 								+ "' input to start '" + name + "'. Still missing " + Math.round(resourceAmount * 1000.0)/1000.0 + " kg. "
 								+ Math.round(stored * 1000.0)/1000.0 + " kg in storage.");
 							resourceAmount = stored;
+							settlement.retrieveAmountResource(resource, resourceAmount);
 							setProcessRunning(false);
 							break;
 							// Note: turn on a yellow flag and indicate which the input resource is missing
 						}
-
-						settlement.retrieveAmountResource(resource, resourceAmount);
+						else
+							settlement.retrieveAmountResource(resource, resourceAmount);
 						
 					}
 					else {
@@ -291,12 +292,13 @@ public class ResourceProcess implements Serializable {
 									+ "' output in '" + name + "'. Requiring " + Math.round((resourceAmount - remainingCap) * 1000.0)/1000.0 
 									+ " kg of storage. Remaining cap: 0 kg.");
 							resourceAmount = remainingCap;
-							setProcessRunning(false);
+							settlement.storeAmountResource(resource, resourceAmount);
+							setProcessRunning(false);						
 							break;
 							// Note: turn on a yellow flag and indicate which the output resource is missing
 						}
-
-						settlement.storeAmountResource(resource, resourceAmount);
+						else
+							settlement.storeAmountResource(resource, resourceAmount);
 						
 					}
 					else {

@@ -462,8 +462,6 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 				if (s != null) {
 					// Change to the selected settlement in SettlementMapPanel
 					changeSettlement(s);
-					// Dump the old sun data
-//					weather.emptySunRecord();
 					// Update the sun data
 					displaySunData(s.getCoordinates());
 					// Update the display banner
@@ -1398,6 +1396,9 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 		if (pulse.isNewSol()) {
 			// Redo the resource string once a sol
 			prepBannerResourceString(pulse);
+			// Update the sun data
+			Settlement s = (Settlement)settlementListBox.getSelectedItem();
+			displaySunData(s.getCoordinates());
 		}
 		
 		// This can be removed once uiPulse is collapsed into timePulse
