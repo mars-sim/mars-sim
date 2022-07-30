@@ -6,11 +6,15 @@
  */
 package org.mars_sim.msp.core.goods;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.Coordinates;
@@ -126,12 +130,14 @@ public final class CommerceUtil {
 
 			if (!hasCurrentCommerce && withinRange) {					
 				// Determine desired buy load,
-				Map<Good, Integer> buyLoad = getDesiredBuyLoad(startingSettlement, delivery, tradingSettlement);
+				Shipment buyLoad = getDesiredBuyLoad(startingSettlement, delivery, tradingSettlement);
 				
 				// Determine sell load.
-				Map<Good, Integer> sellLoad = determineBestSellLoad(startingSettlement, delivery, tradingSettlement);
+				Shipment sellLoad = determineBestSellLoad(startingSettlement, delivery, tradingSettlement);
 
-				return createDeal(startingSettlement, delivery, tradingSettlement, buyLoad, sellLoad);
+				if (buyLoad != null && sellLoad != null) {
+					return createDeal(startingSettlement, delivery, tradingSettlement, buyLoad, sellLoad);
+				}
 			}
 		}
 
@@ -177,9 +183,13 @@ public final class CommerceUtil {
 	 * @param sellLoad Load being sold.
 	 * @return the trade profit (value points)
 	 */
-	public static double getEstimatedProfit(Settlement startingSettlement, Vehicle delivery,
-			Settlement tradingSettlement, Map<Good, Integer> buyLoad, Map<Good, Integer> sellLoad) {
-		return createDeal(startingSettlement, delivery, tradingSettlement, buyLoad, sellLoad).getProfit();
+	public static double getEstimatedProfit(Settlement sellingSettlement, Vehicle delivery,
+			Settlement buyingSettlement, Map<Good, Integer> buyLoad, Map<Good, Integer> sellLoad) {
+		double buyRevenue = determineLoadCredit(buyLoad, buyingSettlement, false);
+		double sellRevenue = determineLoadCredit(sellLoad, sellingSettlement, true);
+
+		return createDeal(sellingSettlement, delivery, buyingSettlement, new Shipment(buyLoad, buyRevenue),
+							new Shipment(sellLoad, sellRevenue)).getProfit();
 	}
 
 	/**
@@ -191,17 +201,14 @@ public final class CommerceUtil {
 	 * @param sellLoad Load being sold.
 	 * @return the trade profit (value points)
 	 */
-	private static Deal createDeal(Settlement startingSettlement, Vehicle delivery,
-			Settlement tradingSettlement, Map<Good, Integer> buyLoad, Map<Good, Integer> sellLoad) {
-
-		double sellingRevenue = determineLoadCredit(sellLoad, tradingSettlement);
-		double buyingRevenue = determineLoadCredit(buyLoad, startingSettlement);
+	private static Deal createDeal(Settlement sellingSettlement, Vehicle delivery,
+			Settlement buyingSettlement, Shipment buyLoad, Shipment sellLoad) {
 
 		// Determine estimated mission cost.
-		double distance = startingSettlement.getCoordinates().getDistance(tradingSettlement.getCoordinates()) * 2D;
-		double cost = getEstimatedMissionCost(startingSettlement, delivery, distance);
+		double distance = sellingSettlement.getCoordinates().getDistance(buyingSettlement.getCoordinates()) * 2D;
+		double cost = getEstimatedMissionCost(sellingSettlement, delivery, distance);
 
-		return new Deal(tradingSettlement, sellingRevenue, sellLoad, buyingRevenue, buyLoad, cost, (MarsClock) marsClock.clone());
+		return new Deal(buyingSettlement, sellLoad, buyLoad, cost, (MarsClock) marsClock.clone());
 	}
 
 
@@ -214,21 +221,17 @@ public final class CommerceUtil {
 	 * @return the desired buy load.
 	 * @throws Exception if error determining the buy load.
 	 */
-	public static Map<Good, Integer> getDesiredBuyLoad(Settlement buyingSettlement,
+	public static Shipment getDesiredBuyLoad(Settlement buyingSettlement,
 													Vehicle delivery, Settlement sellingSettlement) {
 		// Get the credit that the starting settlement has with the destination
 		// settlement.
 		double credit = CreditManager.getCredit(buyingSettlement, sellingSettlement);
 
-		Map<Good, Integer> desiredBuyLoad;
+		Shipment desiredBuyLoad = null;
 		if (credit > (SELL_CREDIT_LIMIT * -1D)) {
 			// Determine desired buy load,
 			desiredBuyLoad 	= determineLoad(buyingSettlement, sellingSettlement, delivery,
 					Double.POSITIVE_INFINITY);
-		}
-		else {
-			// Cannot buy from settlement due to credit limit.
-			desiredBuyLoad = new HashMap<>(0);
 		}
 
 		return desiredBuyLoad;
@@ -243,18 +246,15 @@ public final class CommerceUtil {
 	 * @return a map of goods and numbers in the load.
 	 * @throws Exception if error determining best sell load.
 	 */
-	public static Map<Good, Integer> determineBestSellLoad(Settlement sellingSettlement, Vehicle delivery,
+	public static Shipment determineBestSellLoad(Settlement sellingSettlement, Vehicle delivery,
 			Settlement buyingSettlement) {
 		double credit = CreditManager.getCredit(sellingSettlement, buyingSettlement);
 
-		Map<Good, Integer> sellLoad;
+		Shipment sellLoad = null;
 		if (credit < SELL_CREDIT_LIMIT) {
 			// Determine sell load.
 			sellLoad = determineLoad(buyingSettlement, sellingSettlement, delivery,
 									 Double.POSITIVE_INFINITY);
-		} else {
-			// Will not sell to settlement due to credit limit.
-			sellLoad = new HashMap<>(0);
 		}
 
 		return sellLoad;
@@ -271,33 +271,33 @@ public final class CommerceUtil {
 	 * @return map of goods and their number.
 	 * @throws Exception if error determining the load.
 	 */
-	public static Map<Good, Integer> determineLoad(Settlement buyingSettlement, Settlement sellingSettlement,
+	public static Shipment determineLoad(Settlement buyingSettlement, Settlement sellingSettlement,
 			Vehicle delivery, double maxBuyValue) {
 
 		Map<Good, Integer> tradeList = new HashMap<>();
-		boolean hasRover = false;
-		GoodsManager buyerGoodsManager = buyingSettlement.getGoodsManager();
-		GoodsManager sellerGoodsManager = sellingSettlement.getGoodsManager();
+		double costValue = 0;
+		Map<Good,ShoppingItem> buyList = buyingSettlement.getGoodsManager().getBuyList();
+		Map<Good,ShoppingItem> sellList = sellingSettlement.getGoodsManager().getSellList();
 
 		double massCapacity = delivery.getCargoCapacity() * 0.8D;
 
-
-		// Determine the load.
-		for(ShoppingItem item : buyerGoodsManager.getBuyList()) {
-			Good good = item.getGood();
-			double localCount = good.getNumberForSettlement(sellingSettlement);
-			int amountToTrade = (int) (localCount * 0.10D);
-
-			if (amountToTrade > item.getQuantity()) {
-				amountToTrade = item.getQuantity();
+		// Find the matchign Goods being sold and bought
+		Set<Good> unionGoods = new HashSet<>(buyList.keySet());
+		unionGoods.retainAll(sellList.keySet());
+		
+		for(Good good : unionGoods) {
+			ShoppingItem buy = buyList.get(good);
+			ShoppingItem sell = sellList.get(good);
+			if (buy.getPrice() <= sell.getPrice()) {
+				continue;
 			}
 
-			boolean isAmountResource = good.getCategory() == GoodCategory.AMOUNT_RESOURCE;
-			boolean isItemResource = good.getCategory() == GoodCategory.ITEM_RESOURCE;
+			int amountToTrade = Math.min(buy.getQuantity(), sell.getQuantity());
 
-			// Calcaulate the Value of this item to the seller
-			double sellValue = 0D;
+			boolean isAmountResource = good.getCategory() == GoodCategory.AMOUNT_RESOURCE;
+
 			double extraMass = 0D;
+			// Calcaulate the Value of this item to the seller
 			if (isAmountResource) {
 				AmountResource resource = ResourceUtil.findAmountResource(good.getID());
 				Container container = getAvailableContainerForResource(resource,
@@ -318,38 +318,33 @@ public final class CommerceUtil {
 				else
 					logger.warning(sellingSettlement, "Container for " + resource.getName() + " not available.");
 			}
-
-			extraMass += (good.getMassPerItem() * amountToTrade);
-			sellValue = sellerGoodsManager.getDemandValue(good);
-			
-
+		
 			// Add good. mass
 			if (good.getCategory() == GoodCategory.VEHICLE) {
 				// Lets skip vehicles for now
+				continue;
 			}
 
-			if (sellValue > 0) {
-				// How much are they paying ?
-				double totalProfit = (item.getBuyPrice() - good.getPrice(sellingSettlement, sellValue))
-										* amountToTrade;
-				// If it's worth selling then
-				if (totalProfit > 10D) {	
-					massCapacity -= extraMass;
-					maxBuyValue -= (sellValue * amountToTrade);
-					if (tradeList.containsKey(good)) {
-						amountToTrade += tradeList.get(good);
-					}
-					tradeList.put(good, amountToTrade);
-							
-					// CHeck capacity
-					if ((massCapacity <= 0) || (maxBuyValue <= 0)) {
-						return tradeList;
-					}
+			extraMass += (good.getMassPerItem() * amountToTrade);
+			if (extraMass < massCapacity) {
+				costValue += buy.getPrice() * amountToTrade;
+				massCapacity -= extraMass;
+				if (tradeList.containsKey(good)) {
+					amountToTrade += tradeList.get(good);
+				}
+				tradeList.put(good, amountToTrade);
+						
+				// CHeck capacity
+				if ((massCapacity <= 0) || (maxBuyValue <= 0)) {
+					break;
 				}
 			}
 		}
 
-		return tradeList;
+		if (tradeList.isEmpty()) {
+			return null;
+		}
+		return new Shipment(tradeList, costValue);
 	}
 
 	/**
@@ -357,67 +352,40 @@ public final class CommerceUtil {
 	 * 
 	 * @param load       a map of the goods and their number.
 	 * @param settlement the settlement valuing the load.
+	 * @param b
 	 * @return credit of the load (items  * production cost).
 	 * @throws Exception if error determining the load credit.
 	 */
-	private static double determineLoadCredit(Map<Good, Integer> load, Settlement settlement) {
-		return load.entrySet().stream()
-					.map(e -> (e.getKey().getCostOutput() * e.getValue()))
-					.collect(Collectors.summingDouble(Double::doubleValue));
+	private static double determineLoadCredit(Map<Good, Integer> load, Settlement settlement, boolean useSellingPrice) {
+		GoodsManager manager = settlement.getGoodsManager();
+		Map<Good,ShoppingItem> prices = null;
+		if (useSellingPrice) {
+			prices = manager.getSellList();
+		}
+		else {
+			prices = manager.getBuyList();
+		}
+		
+		double loadCost = 0D;
+
+		for(Entry<Good, Integer> item : load.entrySet()) {
+			double itemPrice = 0D;
+			if (prices != null) {
+				ShoppingItem sItem = prices.get(item.getKey());
+				if (sItem != null) {
+					itemPrice = sItem.getPrice();
+				}
+			}
+			if (itemPrice == 0) {
+				// USe base price
+				itemPrice = manager.getPrice(item.getKey());
+			}
+			
+			loadCost += itemPrice * item.getValue();
+		}
+		return loadCost;
 	}
 
-	/**
-	 * Finds the best trade good for a trade.
-	 * 
-	 * @param sellingSettlement the settlement selling the good.
-	 * @param buyingSettlement  the settlement buying the good.
-	 * @param tradedGoods       the map of goods traded so far.
-	 * @param nonTradeGoods     the set of goods not to trade.
-	 * @param remainingCapacity remaining general capacity (kg) in vehicle
-	 *                          inventory.
-	 * @param hasVehicle        true if a vehicle is in the trade goods.
-	 * @param delivery      the vehicle carrying the goods.
-	 * @param previousGood      the previous trade good used in the trade.
-	 * @param allowNegValue     allow negative value goods.
-	 * @param repairParts       set of repair parts possibly needed for the trip.
-	 * @param maxBuyValue       the maximum value the item can be.
-	 * @return best good to trade or null if none found.
-	 * @throws Exception if error determining best trade good.
-	 */
-	// private static Good findBestGood(Settlement sellingSettlement, Settlement buyingSettlement,
-	// 		Map<Good, Integer> tradedGoods, Set<Good> nonTradeGoods, double remainingCapacity, boolean hasVehicle,
-	// 		Vehicle delivery, Good previousGood, boolean allowNegValue, Set<Integer> repairParts,
-	// 		double maxBuyValue) {
-
-	// 	Good result = null;
-
-	// 	// Check previous good first.
-	// 	if (previousGood != null) {
-	// 		double previousGoodValue = getGoodValue(previousGood, sellingSettlement, buyingSettlement, tradedGoods,
-	// 				remainingCapacity, hasVehicle, delivery, allowNegValue, repairParts);
-	// 		if ((previousGoodValue > 0D) && (previousGoodValue < maxBuyValue))
-	// 			result = previousGood;
-	// 	}
-
-	// 	// Check all goods.
-	// 	if (result == null) {
-	// 		double bestValue = 0D;
-	// 		if (allowNegValue)
-	// 			bestValue = Double.NEGATIVE_INFINITY;
-	// 		for(Good good : buyingSettlement.getBuyList()) {
-	// 			if (!nonTradeGoods.contains(good)) {
-	// 				double tradeValue = getGoodValue(good, sellingSettlement, buyingSettlement, tradedGoods,
-	// 						remainingCapacity, hasVehicle, delivery, allowNegValue, repairParts);
-	// 				if ((tradeValue > bestValue) && (tradeValue < maxBuyValue)) {
-	// 					result = good;
-	// 					bestValue = tradeValue;
-	// 				}
-	// 			}
-	// 		}
-	// 	}
-
-	// 	return result;
-	// }
 
 	/**
 	 * Gets the number of an item resource good that should be traded.
@@ -711,7 +679,7 @@ public final class CommerceUtil {
 		}
 
 		// Get cost of resources.
-		return determineLoadCredit(neededResources, startingSettlement);
+		return determineLoadCredit(neededResources, startingSettlement, false);
 	}
 	
 	/**
@@ -740,7 +708,7 @@ public final class CommerceUtil {
             double tradeModifier, Map<Good, Integer> load) {
 				
 		// Get the credit of the load that is being sold to the destination settlement.
-		double baseSoldCredit = determineLoadCredit(load, sellingSettlement);
+		double baseSoldCredit = determineLoadCredit(load, sellingSettlement, true);
 		double soldCredit = baseSoldCredit * tradeModifier;
 
 		// Get the credit that the starting settlement has with the destination
@@ -749,23 +717,20 @@ public final class CommerceUtil {
 		credit += soldCredit;
 		CreditManager.setCredit(buyingSettlement, sellingSettlement, credit);
 
-		Map<Good, Integer> buyLoad;
+		Map<Good, Integer> buyLoad = null;
 		// Check if buying settlement owes the selling settlement too much for them to
 		// sell.
 		if (credit > (-1D * SELL_CREDIT_LIMIT)) {
 
 			// Determine the initial buy load based on goods that are profitable for the
 			// destination settlement to sell.
-			buyLoad = determineLoad(buyingSettlement, sellingSettlement, delivery, Double.POSITIVE_INFINITY);
-			double baseBuyLoadValue = determineLoadCredit(buyLoad, buyingSettlement);
+			Shipment returnLoad = determineLoad(buyingSettlement, sellingSettlement, delivery, Double.POSITIVE_INFINITY);
+			double baseBuyLoadValue = returnLoad.getCostValue();
 			double buyLoadValue = baseBuyLoadValue / tradeModifier;
 
 			// Update the credit value between the starting and destination settlements.
 			credit -= buyLoadValue;
 			CreditManager.setCredit(buyingSettlement, sellingSettlement, credit);
-		}
-		else {
-			buyLoad = new HashMap<>();
 		}
 
 		return buyLoad;

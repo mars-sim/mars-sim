@@ -1,27 +1,28 @@
+/*
+ * Mars Simulation Project
+ * ShoppingItem.java
+ * @date 2022-07-30
+ * @author Scott Davis
+ */
 package org.mars_sim.msp.core.goods;
 
-import java.io.Serializable;
-
-public class ShoppingItem implements Serializable {
-    private Good good;
+/**
+ * An item in the shopping list holding the value and quantity
+ */
+public class ShoppingItem {
     private int quantity;
-    private double buyPrice;
+    private double price;
 
-    ShoppingItem(Good good, int quantity, double buyPrice) {
-        this.good = good;
+    ShoppingItem(int quantity, double price) {
         this.quantity = quantity;
-        this.buyPrice = buyPrice;
-    }
-
-    public Good getGood() {
-        return good;
+        this.price = price;
     }
 
     public int getQuantity() {
         return quantity;
     }
 
-    public double getBuyPrice() {
-        return buyPrice;
+    public double getPrice() {
+        return price;
     }
 }

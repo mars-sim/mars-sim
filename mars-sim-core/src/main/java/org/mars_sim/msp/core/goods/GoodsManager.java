@@ -1,8 +1,8 @@
 /*
  * Mars Simulation Project
  * GoodsManager.java
- * @date 2021-10-21
- * @author Scott Davis
+ * @date 2022-07-30
+ * @author Barry Evans
  */
 package org.mars_sim.msp.core.goods;
 
@@ -21,7 +21,6 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.logging.SimLogger;
-import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -118,7 +117,8 @@ public class GoodsManager implements Serializable {
 	/** A standard list of resources to be excluded in buying negotiation. */
 	private static List<Good> exclusionBuyList = null;
 	/** A standard list of buying resources in buying negotiation. */
-	private transient List<ShoppingItem> buyList = null;
+	private transient Map<Good, ShoppingItem> buyList =  Collections.emptyMap();
+	private transient Map<Good, ShoppingItem> sellList = Collections.emptyMap();
 
 	private Settlement settlement;
 
@@ -160,7 +160,7 @@ public class GoodsManager implements Serializable {
 	 *
 	 * @return
 	 */
-	private static List<Good> getExclusionBuyList() {
+	static List<Good> getExclusionBuyList() {
 		if (exclusionBuyList == null) {
 			exclusionBuyList = new ArrayList<>();
 			for (VehicleType type : VehicleType.values()) {
@@ -519,11 +519,20 @@ public class GoodsManager implements Serializable {
 	}
 
 	/**
-	 * Get the current list of items on the shppoing list
+	 * Get the current list of items on this Settlement wants to buy
+	 * @return Mapping from Good to the item
 	 */
-	public List<ShoppingItem> getBuyList() {
+	public Map<Good, ShoppingItem> getBuyList() {
 		return buyList;
 	}
+
+	/**
+	 * Get the current list of items on this Settlement is willing to sell
+	 * @return Mapping from Good to the item
+	 */
+	public Map<Good, ShoppingItem> getSellList() {
+        return sellList;
+    }
 
 	/**
 	 * Gets the price per item for a good
@@ -694,8 +703,8 @@ public class GoodsManager implements Serializable {
 
 		supplyCache = null;
 
-		exclusionBuyList = null;
 		buyList = null;
+		sellList = null;
 		
 		GoodsUtil.destroyGoods();
 	}
@@ -740,7 +749,8 @@ public class GoodsManager implements Serializable {
     	throws IOException, ClassNotFoundException {
 		in.defaultReadObject();
 		deals = new EnumMap<>(MissionType.class);
-		buyList = Collections.emptyList();
+		buyList = Collections.emptyMap();
+		sellList = Collections.emptyMap();
 	}
 
 	public void timePassing(ClockPulse pulse) {
@@ -748,30 +758,72 @@ public class GoodsManager implements Serializable {
 			// Scan the demand cache and build the buy list
 			calculateBuyList();
 		}
+
+		if (pulse.isNewSol() || pulse.getId() <= 1) {
+			// Scan the demand cache and build the buy list
+			calculateSellList();
+		}
+	}
+	
+	public void calculateSellList() {
+		// This logic is a draft and need more refinement
+		Map<Good,ShoppingItem> newSell = new HashMap<>();
+		List<Good> excluded = GoodsManager.getExclusionBuyList();
+		for(Entry<Integer, Double> item : supplyCache.entrySet()) {
+			Good good = GoodsUtil.getGood(item.getKey());
+
+			if (excluded.contains(good)) {
+				continue;
+			}
+
+			// Sell good that I can produce
+			if (item.getValue() > good.getDefaultSupplyValue()) {
+				double buyPrice = getPrice(good);
+				if (buyPrice >= 1D) {
+					int quantity = (int)(good.getNumberForSettlement(settlement) * 0.1D);
+
+					// Take Goods where I have ample in store
+					if (quantity > 0) {
+						newSell.put(good, new ShoppingItem(quantity, buyPrice));
+					}
+				}
+			}
+		}
+
+		logger.info(settlement, "New sell list created with items=" + newSell.size());
+		sellList = newSell;
+
+		// Any deal are now invalid
+		deals.clear();
 	}
 
 	/**
 	 * Calaculate the current buying list for this Settlement.
 	 */
 	public void calculateBuyList() {
+
 		// This logic is a draft and need more refinement
-		List<ShoppingItem> newBuy = new ArrayList<>();
-		List<Good> excluded = getExclusionBuyList();
+		Map<Good,ShoppingItem> newBuy = new HashMap<>();
+		List<Good> excluded = GoodsManager.getExclusionBuyList();
 		for(Entry<Integer, Double> item : demandCache.entrySet()) {
 			Good good = GoodsUtil.getGood(item.getKey());
 
 			// Take Goods in demand and not excluded
 			if ((item.getValue() > good.getDefaultDemandValue()) && !excluded.contains(good)) {
-				double buyPrice = good.getPrice(settlement, item.getValue()) * 1.1D;
-				int quantity = (int)(good.getNumberForSettlement(settlement) * 0.1D);
-				if (quantity == 0) {
-					quantity = 10;
+				double buyPrice = getPrice(good) * 1.1D;
+				if (buyPrice >= 1D) {
+					int quantity = (int)(good.getNumberForSettlement(settlement) * 0.1D);
+					if (quantity > 0) {
+						newBuy.put(good, new ShoppingItem(quantity, buyPrice));
+					}
 				}
-				newBuy.add(new ShoppingItem(good, quantity, buyPrice));
 			}
 		}
 
 		logger.info(settlement, "New buy list created with items=" + newBuy.size());
 		buyList = newBuy;
+
+		// Any deal are now invalid
+		deals.clear();
 	}
 }
