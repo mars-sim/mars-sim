@@ -152,15 +152,10 @@ public class EquipmentGood extends Good {
 
 		double totalDemand = 0;
 		
-		// Needed for loading a saved sim
-		int solElapsed = marsClock.getMissionSol();
-		// Compact and/or clear supply and demand maps every x days
-		int numSol = solElapsed % Settlement.SUPPLY_DEMAND_REFRESH + 1;
-
 		// Determine average demand.
 		double average = determineEquipmentDemand(owner, settlement);
 
-		double totalSupply = getAverageEquipmentSupply(settlement.findNumContainersOfType(equipmentType), numSol);
+		double totalSupply = getAverageEquipmentSupply(settlement.findNumContainersOfType(equipmentType));
 				
 		owner.setSupplyValue(this, totalSupply);
 		
@@ -295,13 +290,8 @@ public class EquipmentGood extends Good {
 	 * @param solElapsed
 	 * @return
 	 */
-	private static double getAverageEquipmentSupply(double supplyStored, int solElapsed) {
-		double aveSupply = 0.25 + Math.log((1 + supplyStored) / solElapsed);
-
-		if (aveSupply < 0.5)
-			aveSupply = 0.5;
-
-		return aveSupply;
+	private static double getAverageEquipmentSupply(double supplyStored) {
+		return Math.sqrt(supplyStored);
 	}
 	
 }

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ToggleResourceProcess.java
- * @date 2021-12-18
+ * @date 2022-07-29
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -239,21 +239,15 @@ public class ToggleResourceProcess extends Task implements Serializable {
 	 */
 	public static ResourceProcess getResourceProcess(Building building) {
 		ResourceProcess result = null;
-
-		Settlement settlement = building.getSettlement();
-		if (building.hasFunction(FunctionType.RESOURCE_PROCESSING)) {
-			double bestDiff = 0D;
-			ResourceProcessing processing = building.getResourceProcessing();
-			Iterator<ResourceProcess> i = processing.getProcesses().iterator();
-			while (i.hasNext()) {
-				ResourceProcess process = i.next();
-				if (process.isToggleAvailable()) {
-					double diff = getResourcesValueDiff(settlement, process);
-					if (diff > bestDiff) {
-						bestDiff = diff;
-						result = process;
-//						logger.info(building, 20_000, process.getProcessName() + " diff: " + Math.round(diff * 1000.0)/1000.0);
-					}
+		double bestDiff = 0D;
+		Iterator<ResourceProcess> i = building.getResourceProcessing().getProcesses().iterator();
+		while (i.hasNext()) {
+			ResourceProcess process = i.next();
+			if (process.isToggleAvailable()) {
+				double diff = getResourcesValueDiff(building.getSettlement(), process);
+				if (diff > bestDiff) {
+					bestDiff = diff;
+					result = process;
 				}
 			}
 		}
@@ -333,27 +327,33 @@ public class ToggleResourceProcess extends Task implements Serializable {
 				useResource = false;
 			}
 			if (useResource) {
-				// Gets the demand for this resource
-				double demand = settlement.getGoodsManager().getAmountDemandValue(resource);
-				double remain = settlement.getAmountResourceRemainingCapacity(resource);
-
+				// Gets the vp for this resource
+				double vp = settlement.getGoodsManager().getGoodValuePoint(resource);	
+				
 				if (input) {
+					// Gets the stored amount of this resource
+					double stored = settlement.getAmountResourceStored(resource);
+					
 					double rate = process.getMaxInputRate(resource);
-
-					// For input value, the higher the stored,
-					if (rate > remain) {
-						rate = remain;
+					double score = rate;
+					
+					if (score > stored) {
+						score = stored;
 					}
-					result += (rate / demand);
+					result += (score / vp);
 
 				} else {
+					// Gets the remaining amount of this resource
+					double remain = settlement.getAmountResourceRemainingCapacity(resource);
+					
 					double rate = process.getMaxOutputRate(resource);
-
+					double score = rate;
+					
 					// For output value, the
-					if (rate > remain) {
-						rate = remain;
+					if (score > remain) {
+						score = remain;
 					}
-					result += (rate * demand);
+					result += (rate * vp);
 				}
 			}
 		}

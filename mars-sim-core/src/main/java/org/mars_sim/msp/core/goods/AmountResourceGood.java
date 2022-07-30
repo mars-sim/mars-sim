@@ -303,16 +303,10 @@ class AmountResourceGood extends Good {
 		double average = 0;
 		double trade = 0;
 		double totalDemand = 0;
-		
 		double totalSupply = 0;
 
-		// Needed for loading a saved sim
-		int solElapsed = marsClock.getMissionSol();
-		// Compact and/or clear supply and demand maps every x days
-		int numSol = solElapsed % Settlement.SUPPLY_DEMAND_REFRESH + 1;
-
 		// Calculate the average demand
-		average = capLifeSupportAmountDemand(getAverageAmountDemand(owner, numSol));		
+		average = capLifeSupportAmountDemand(getAverageAmountDemand(owner));		
 
 		// Calculate projected demand
 		double projected = 
@@ -372,13 +366,13 @@ class AmountResourceGood extends Good {
 		owner.setDemandValue(this, totalDemand);
 		
 		// Calculate total supply
-		totalSupply = getAverageAmountSupply(settlement.getAmountResourceStored(id), numSol);
+		totalSupply = getAverageAmountSupply(settlement.getAmountResourceStored(id));
 
 		// Store the average supply
 		owner.setSupplyValue(this, totalSupply);
     }
 
-		/**
+    /**
 	 * Gets the total supply for the amount resource.
 	 *
 	 * @param resource`
@@ -386,13 +380,8 @@ class AmountResourceGood extends Good {
 	 * @param solElapsed
 	 * @return
 	 */
-	private static double getAverageAmountSupply(double supplyStored, int solElapsed) {
-		double aveSupply = 0.5 + Math.log((1 + 5 * supplyStored) / solElapsed);
-
-		if (aveSupply < 0.5)
-			aveSupply = 0.5;
-
-		return aveSupply;
+	private static double getAverageAmountSupply(double supplyStored) {
+		return Math.sqrt(supplyStored);
 	}
 
 	/**
@@ -403,8 +392,8 @@ class AmountResourceGood extends Good {
 	 * @param solElapsed
 	 * @return
 	 */
-	private double getAverageAmountDemand(GoodsManager owner, int solElapsed) {
-		return Math.min(10, owner.getDemandValue(this) / solElapsed);
+	private double getAverageAmountDemand(GoodsManager owner) {
+		return Math.max(1, owner.getDemandValue(this));
 	}
 	
 

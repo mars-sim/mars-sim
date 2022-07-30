@@ -212,7 +212,7 @@ public class GoodsManager implements Serializable {
 			// Calculate the value point
 			double totalSupply = supplyCache.get(id);
 			double totalDemand = demandCache.get(id);
-			double value = totalDemand / totalSupply;
+			double value = totalDemand / (1 + totalSupply);
 
 			// Check if it surpasses MAX_VP
 			if (value > MAX_VP) {

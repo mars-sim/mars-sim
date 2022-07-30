@@ -1306,8 +1306,6 @@ public class Settlement extends Structure implements Temporal,
 
 		refreshSleepMap(solElapsed);
 
-		refreshSupplyDemandMap(solElapsed);
-
 		// clear estimated orbit repair parts cache value
 		goodsManager.clearOrbitRepairParts();
 
@@ -1497,38 +1495,6 @@ public class Settlement extends Structure implements Temporal,
 				}
 			}
 		} // end of if (isAstronomer)
-	}
-
-	/**
-	 * Refreshes and clears settlement's data on the supply/demand and weather
-	 *
-	 * @param solElapsed # of sols since the start of the sim
-	 */
-	private void refreshSupplyDemandMap(int solElapsed) {
-		// Clear maps once every x number of days
-		if (solElapsed % SUPPLY_DEMAND_REFRESH == 0) {
-			// True if solElapsed is an exact multiple of x
-
-			// Compact amount resource map
-			// Carry out the daily average of the previous x days
-//			getInventory().compactAmountSupplyMap(SUPPLY_DEMAND_REFRESH);
-//			getInventory().clearAmountSupplyRequestMap();
-//			// Carry out the daily average of the previous x days
-//			getInventory().compactAmountDemandMap(SUPPLY_DEMAND_REFRESH);
-//			getInventory().clearAmountDemandTotalRequestMap();
-//			getInventory().clearAmountDemandMetRequestMap();
-//
-//			// compact item resource map
-//			getInventory().compactItemSupplyMap(SUPPLY_DEMAND_REFRESH);
-//			getInventory().clearItemSupplyRequestMap();
-//			// Carry out the daily average of the previous x days
-//			getInventory().compactItemDemandMap(SUPPLY_DEMAND_REFRESH);
-//			getInventory().clearItemDemandTotalRequestMap();
-//			getInventory().clearItemDemandMetRequestMap();
-
-			// Added clearing of weather data map
-			weather.clearMap();
-		}
 	}
 
 	/**

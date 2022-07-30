@@ -213,14 +213,9 @@ class PartGood extends Good {
 		double average = 0;
 		double totalSupply = 0;
 
-		// Needed for loading a saved sim
-		int solElapsed = marsClock.getMissionSol();
-		// Compact and/or clear supply and demand maps every x days
-		int numSol = solElapsed % Settlement.SUPPLY_DEMAND_REFRESH + 1;
-
 		Part part = getPart();
 
-		average = getAverageItemDemand(owner, numSol);
+		average = getAverageItemDemand(owner);
 
 		// Get demand for a part.
 		// NOTE: the following estimates are for each orbit (Martian year) :
@@ -282,7 +277,7 @@ class PartGood extends Good {
 		owner.setDemandValue(this, totalDemand);
 		
 		// Calculate total supply
-		totalSupply = getAverageItemSupply(settlement.getItemResourceStored(id), numSol);
+		totalSupply = getAverageItemSupply(settlement.getItemResourceStored(id));
 
 		// Save the average supply
 		owner.setSupplyValue(this, totalSupply);
@@ -296,13 +291,8 @@ class PartGood extends Good {
 	 * @param solElapsed
 	 * @return
 	 */
-	private static double getAverageItemSupply(double supplyStored, int solElapsed) {
-		double aveSupply = 1.0 + Math.log((1 + 2 * supplyStored) / solElapsed);
-
-		if (aveSupply < 1.0)
-			aveSupply = 1.0;
-		
-		return aveSupply;
+	private static double getAverageItemSupply(double supplyStored) {
+		return Math.sqrt(supplyStored);
 	}
 
 	/**
@@ -419,9 +409,8 @@ class PartGood extends Good {
 	 * @param solElapsed
 	 * @return
 	 */
-	private double getAverageItemDemand(GoodsManager owner, int solElapsed) {
-		double aveDemand = owner.getDemandValue(this) / solElapsed;
-		return Math.min(500, aveDemand);
+	private double getAverageItemDemand(GoodsManager owner) {
+		return owner.getDemandValue(this);
 	}
 
 	/**

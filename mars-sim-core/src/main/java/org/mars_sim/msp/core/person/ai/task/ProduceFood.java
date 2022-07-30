@@ -152,7 +152,7 @@ implements Serializable {
 			while (j.hasNext()) {
 				Building building = (Building) j.next();
 				FoodProduction foodProductionFunction = building.getFoodProduction();
-				List<FoodProductionProcess> processes = new CopyOnWriteArrayList<FoodProductionProcess>(
+				List<FoodProductionProcess> processes = new CopyOnWriteArrayList<>(
 						foodProductionFunction.getProcesses());
 				Iterator<FoodProductionProcess> k = processes.iterator();
 				while (k.hasNext()) {
@@ -191,7 +191,6 @@ implements Serializable {
             }
         }
 
-//        skillManager = null;
         // Get highest robot skill level.
         Iterator<Robot> j = settlement.getAllAssociatedRobots().iterator();
 
@@ -510,7 +509,7 @@ implements Serializable {
 		FoodProductionProcess process = null;
 		
 		// Apply work time to food production processes.
-		while ((workTime > 0D) && !isDone()) {
+		while (workTime > 0D && !isDone() && getTimeLeft() > 0) {
 			process = getRunningFoodProductionProcess();
 			if (process != null) {
 				double remainingWorkTime = process.getWorkTimeRemaining();

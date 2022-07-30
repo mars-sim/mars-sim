@@ -156,13 +156,8 @@ class VehicleGood extends Good {
 		double previousDemand = owner.getDemandValue(this);
         Settlement settlement = owner.getSettlement();
 
-		// Needed for loading a saved sim
-		int solElapsed = marsClock.getMissionSol();
-		// Compact and/or clear supply and demand maps every x days
-		int numSol = solElapsed % Settlement.SUPPLY_DEMAND_REFRESH + 1;
-
 		// Calculate total supply
-		double totalSupply = getAverageVehicleSupply(getNumberForSettlement(settlement), numSol);
+		double totalSupply = getAverageVehicleSupply(getNumberForSettlement(settlement));
 		
 		owner.setSupplyValue(this, totalSupply);
 			
@@ -232,13 +227,8 @@ class VehicleGood extends Good {
 	 * @param solElapsed
 	 * @return
 	 */
-	private static double getAverageVehicleSupply(double supplyStored, int solElapsed) {
-		double aveSupply = 0.05 + Math.log((1 + 0.5 * supplyStored) / solElapsed);
-
-		if (aveSupply < 0.5)
-			aveSupply = 0.5;
-
-		return aveSupply;
+	private static double getAverageVehicleSupply(double supplyStored) {
+		return Math.sqrt(supplyStored);
 	}
 
 	/**
