@@ -150,4 +150,5 @@ public abstract class DataLogger<T> implements Serializable {
 	public T getYestersolData() {
 		return getSolData(currentSol - 1);
 	}
+	
 }

@@ -72,7 +72,7 @@ public class WasteProcessing extends Function {
 			}
 
 			double inputInventoryLimit = 1D;
-			Set<Integer> set = new HashSet<>(process.getInputResources());
+			Set<Integer> set = process.getInputResources();
 			for (int inResource : set) {
 				if (!process.isAmbientInputResource(inResource)) {
 					double rate = process.getMaxInputRate(inResource);

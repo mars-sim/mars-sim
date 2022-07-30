@@ -29,7 +29,7 @@ import org.mars_sim.msp.core.tool.RandomUtil;
 /** Weather represents the weather on Mars */
 public class Weather implements Serializable, Temporal {
 
-	private static final int MAX_RECORDED_DAYS = 3;
+	private static final int MAX_RECORDED_DAYS = 2;
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	/* default logger. */
@@ -91,7 +91,7 @@ public class Weather implements Serializable, Temporal {
 
 	private List<DustStorm> dustStorms;
 	
-	private SunData sunData;
+	private Map<Coordinates, SunData> sunDataMap;
 	
 	private static Simulation sim;
 	private static OrbitInfo orbitInfo;
@@ -99,6 +99,8 @@ public class Weather implements Serializable, Temporal {
 
 	public Weather() {
 		weatherDataMap = new HashMap<>();
+		sunDataMap = new HashMap<>();
+		
 		coordinateList = new ArrayList<>();
 		dustStorms = new ArrayList<>();
 		
@@ -613,6 +615,34 @@ public class Weather implements Serializable, Temporal {
 		return result;
 	}
 
+	
+	/**
+	 * Creates a weather record based on yestersol sun data.
+	 */
+	public void addWeatherDataPoint() {
+		coordinateList.forEach(location ->  {			
+			MSolDataLogger<DailyWeather> dailyRecordMap = null;				
+			if (weatherDataMap.containsKey(location)) {
+				dailyRecordMap = weatherDataMap.get(location);
+			}
+			else {
+				dailyRecordMap = new MSolDataLogger<>(MAX_RECORDED_DAYS);
+			}	
+			
+			DailyWeather dailyWeather = new DailyWeather( 
+					getTemperature(location), 
+					getAirPressure(location),
+					getAirDensity(location), 
+					getWindSpeed(location), 
+					sim.getSurfaceFeatures().getSolarIrradiance(location),
+					sim.getSurfaceFeatures().getOpticalDepth(location));
+			
+			dailyRecordMap.addDataPoint(dailyWeather);
+			
+			weatherDataMap.put(location, dailyRecordMap);
+		});
+	}
+	
 	/**
 	 * Time passing in the simulation.
 	 * 
@@ -620,40 +650,19 @@ public class Weather implements Serializable, Temporal {
 	 * @throws Exception if error during time.
 	 */
 	public boolean timePassing(ClockPulse pulse) {
-
 		isNewSol = pulse.isNewSol();
-		
+
 		// Sample a data point every RECORDING_FREQUENCY (in millisols)
 		int msol = marsClock.getMillisolInt();
 		int remainder = msol % MSOL_PER_SAMPLE;
-		if (isNewSol || remainder == 0) {
-			coordinateList.forEach(location -> {
-
-				MSolDataLogger<DailyWeather> dailyRecordMap = null;				
-				if (weatherDataMap.containsKey(location)) {
-					dailyRecordMap = weatherDataMap.get(location);
-				}
-				else {
-					dailyRecordMap = new MSolDataLogger<>(MAX_RECORDED_DAYS);
-					weatherDataMap.put(location, dailyRecordMap);
-				}	
-				
-				DailyWeather dailyWeather = new DailyWeather( 
-						getTemperature(location), 
-						getAirPressure(location),
-						getAirDensity(location), 
-						getWindSpeed(location), 
-						sim.getSurfaceFeatures().getSolarIrradiance(location),
-						sim.getSurfaceFeatures().getOpticalDepth(location));
-				dailyRecordMap.addDataPoint(dailyWeather);
-			});
+		if (isNewSol || remainder == 0) {		
+			// Add a data point
+			addWeatherDataPoint();
 		}
 
-		// check for the passing of each day
 		if (isNewSol) {
-
-			// Empty the current sun data cache
-			emptySunRecord();
+			// Calculate the new sun data for each location based on yestersol
+			coordinateList.forEach(location -> calculateSunRecord(location));
 			
 			dailyVariationAirPressure += RandomUtil.getRandomDouble(.01);
 			if (dailyVariationAirPressure > .05)
@@ -706,32 +715,29 @@ public class Weather implements Serializable, Temporal {
 		return true;
 	}
 
-	public SunData getSunRecord() {
-		return sunData;
-	}
-	
-	public void emptySunRecord() {
-		sunData = null;
-	}
-	
+
 	/**
 	 * Calculates the sunlight data of a settlement location.
 	 * 
 	 * @param c
 	 * @return
 	 */
-	public SunData calculateSunRecord(Coordinates c) {	
-		List<MSolDataItem<DailyWeather>> dailyWeather = new ArrayList<>();
-		MSolDataLogger<DailyWeather> w = weatherDataMap.get(c);
-		if (w == null) {
-			logger.warning(60_000L, "Weather data at " + c + " is not available.");
-		}
-		
-		if (w != null) {
-			if (!w.isYestersolDataValid()) 
-				logger.warning(60_000L, "Weather data from yesterday is not available.");
+	public void calculateSunRecord(Coordinates c) {			
+		List<MSolDataItem<DailyWeather>> dailyWeatherList = null;
+
+		if (weatherDataMap.containsKey(c)) {
+			MSolDataLogger<DailyWeather> w = weatherDataMap.get(c);
+			logger.warning("MSolDataLogger: " + w.toString());
+			
+			if (!w.isYestersolDataValid()) {
+				logger.warning(1_000L, "Weather data from yesterday is not available.");
+				return;
+			}
 			else
-				dailyWeather = w.getYestersolData();
+				dailyWeatherList = w.getYestersolData();
+		}
+		else {
+			logger.warning(1_000L, "Weather data at " + c + " is not available.");
 		}
 
 		int sunrise = 0;
@@ -742,7 +748,9 @@ public class Weather implements Serializable, Temporal {
 		int previous = 0;
 		int daylight = 0;
 		
-		for (MSolDataItem<DailyWeather> dataPoint : dailyWeather) {
+		logger.warning("list: " + dailyWeatherList.toString());
+				
+		for (MSolDataItem<DailyWeather> dataPoint : dailyWeatherList) {
 			// Gets the solar irradiance at this instant of time
 			int current = (int)(Math.round(dataPoint.getData().getSolarIrradiance()*10.0)/10.0);
 			// Gets this instant of time
@@ -801,13 +809,27 @@ public class Weather implements Serializable, Temporal {
 		if (sunset < 0)
 			zenith = zenith + 1000;
 		
-		sunData = new SunData(sunrise, sunset, daylight, zenith, maxSun);
-		
-		return sunData;
+		SunData sunData = new SunData(sunrise, sunset, daylight, zenith, maxSun);
+		// Overwrite the previous data
+		sunDataMap.put(c, sunData);
 	}
 	
 
 	
+	/**
+	 * Gets the sun data record.
+	 * 
+	 * @param c
+	 * @return
+	 */
+	public SunData getSunRecord(Coordinates c) {
+		if (sunDataMap.containsKey(c))
+		return sunDataMap.get(c);
+		
+		return null;
+	}
+	
+
 	/**
 	 * Checks if a dust devil is formed for each settlement.
 	 * 
@@ -880,10 +902,10 @@ public class Weather implements Serializable, Temporal {
 	 * @param clock
 	 * @param orbitInfo
 	 */
-	public void initializeInstances(Simulation sim, MarsClock clock, OrbitInfo orbitInfo) {
-		this.sim = sim; 
-		this.marsClock = clock;
-		this.orbitInfo = orbitInfo;
+	public void initializeInstances(Simulation s, MarsClock c, OrbitInfo oi) {
+		sim = s; 
+		marsClock = c;
+		orbitInfo = oi;
 	}
 	
 	/**
@@ -916,7 +938,8 @@ public class Weather implements Serializable, Temporal {
 			dustStorms = null;
 		}
 
-		sunData = null;
+		sunDataMap.clear();
+		sunDataMap = null;
 		sim = null;
 		orbitInfo = null;
 		marsClock = null;				

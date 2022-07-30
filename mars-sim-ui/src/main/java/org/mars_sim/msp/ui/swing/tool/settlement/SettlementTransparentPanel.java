@@ -463,7 +463,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 					// Change to the selected settlement in SettlementMapPanel
 					changeSettlement(s);
 					// Dump the old sun data
-					weather.emptySunRecord();
+//					weather.emptySunRecord();
 					// Update the sun data
 					displaySunData(s.getCoordinates());
 					// Update the display banner
@@ -1338,9 +1338,9 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	 * Gets the sunlight data and display it on the top left panel of the settlement map.
 	 */
 	public void displaySunData(Coordinates location) {
-		// Recalculate the sun record
-		SunData data = weather.calculateSunRecord(location);
-
+		// Retrieve the yestersol's sun record
+		SunData data = weather.getSunRecord(location);
+		
 		if (data == null) {
 			logger.warning(60_000L, "Sun data at " + location + " is not available.");
 			return;
@@ -1395,6 +1395,11 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 //		if (!isShowing()) 
 //			return;
 			
+		if (pulse.isNewSol()) {
+			// Redo the resource string once a sol
+			prepBannerResourceString(pulse);
+		}
+		
 		// This can be removed once uiPulse is collapsed into timePulse
 		MarsClock marsClock = pulse.getMarsTime();
 		if (marsClock.isStable() && bannerBar != null && weatherButtons[0] != null) {
@@ -1404,7 +1409,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 				return;
 			displayBanner(s);
 			updateIcon();
-			updateSunData(pulse, s);
+			updateSunlight(s);
 		}
 	}
 
@@ -1414,7 +1419,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	 * @param pulse
 	 * @param s
 	 */
-	private void updateSunData(ClockPulse pulse, Settlement s) {
+	private void updateSunlight(Settlement s) {
 		if (currentSunLabel == null)
 			return;
 		currentSunLabel.setText(
@@ -1422,14 +1427,6 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 			+ (int)getSolarIrradiance(s.getCoordinates()) 
 			+ WM
 		);
-
-		if (pulse.isNewSol()
-			|| weather.getSunRecord() == null) {
-			// Display the sun data once a sol
-			displaySunData(s.getCoordinates());
-			// Redo the resource string once a sol
-			prepBannerResourceString(pulse);
-		}
 	}
 	
 	

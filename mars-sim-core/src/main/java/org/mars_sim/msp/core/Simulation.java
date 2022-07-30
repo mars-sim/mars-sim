@@ -451,6 +451,8 @@ public class Simulation implements ClockListener, Serializable {
 				scientificStudyManager, surfaceFeatures, orbitInfo, missionManager, pc);
 		LocalAreaUtil.initializeInstances(unitManager, marsClock);
 		
+//		weather.createWeatherRecord();
+		
 		doneInitializing = true;
 	}
 

@@ -230,7 +230,7 @@ public class ResourceProcess implements Serializable {
 				double bottleneck = 1D;
 
 				// Input resources from inventory.
-				Map<Integer, Double> maxInputResourceRates = definition.getMaxInputResourceRates();
+				Map<Integer, Double> maxInputResourceRates = definition.getMaxInputRates();
 				for (Entry<Integer, Double> input : maxInputResourceRates.entrySet()) {
 					Integer resource = input.getKey();
 					double maxRate = input.getValue();
@@ -275,7 +275,7 @@ public class ResourceProcess implements Serializable {
 					level = bottleneck;
 				
 				// Output resources to inventory.
-				Map<Integer, Double> maxOutputResourceRates = definition.getMaxOutputResourceRates();
+				Map<Integer, Double> maxOutputResourceRates = definition.getMaxOutputRates();
 				for (Entry<Integer, Double> output : maxOutputResourceRates.entrySet()) {
 					Integer resource = output.getKey();
 					double maxRate = output.getValue();
@@ -335,7 +335,7 @@ public class ResourceProcess implements Serializable {
 			throw new IllegalArgumentException("time must be > 0D");
 
 		double bottleneck = 1D;
-		Map<Integer, Double> maxInputResourceRates = definition.getMaxInputResourceRates();
+		Map<Integer, Double> maxInputResourceRates = definition.getMaxInputRates();
 		for (Entry<Integer, Double> input : maxInputResourceRates.entrySet()) {
 			Integer resource = input.getKey();
 			double maxRate = input.getValue();
