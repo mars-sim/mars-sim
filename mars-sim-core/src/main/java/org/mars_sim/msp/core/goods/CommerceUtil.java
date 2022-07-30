@@ -277,89 +277,76 @@ public final class CommerceUtil {
 		Map<Good, Integer> tradeList = new HashMap<>();
 		boolean hasRover = false;
 		GoodsManager buyerGoodsManager = buyingSettlement.getGoodsManager();
-		buyerGoodsManager.prepareForLoadCalculation();
 		GoodsManager sellerGoodsManager = sellingSettlement.getGoodsManager();
-		sellerGoodsManager.prepareForLoadCalculation();
 
 		double massCapacity = delivery.getCargoCapacity() * 0.8D;
 
-		// Determine repair parts for trip.
-		Set<Integer> repairParts = null;
-		if (delivery instanceof Rover) {
-			repairParts = delivery.getMalfunctionManager().getRepairPartProbabilities().keySet();
-		}
-		else {
-			repairParts = Collections.emptySet();
-		}	
 
 		// Determine the load.
-		boolean done = false;
-		double buyerLoadValue = 0D;
-		Good previousGood = null;
-		Set<Good> nonTradeGoods = Collections.emptySet();
-		while (!done) {
-			double remainingBuyValue = maxBuyValue - buyerLoadValue;
-			Good good = findBestGood(sellingSettlement, buyingSettlement, tradeList, nonTradeGoods, massCapacity,
-					hasRover, delivery, previousGood, false, repairParts, remainingBuyValue);
-			if (good != null) {
-				boolean isAmountResource = good.getCategory() == GoodCategory.AMOUNT_RESOURCE;
-				boolean isItemResource = good.getCategory() == GoodCategory.ITEM_RESOURCE;
-				int amountToTrade = 1;
+		for(ShoppingItem item : buyerGoodsManager.getBuyList()) {
+			Good good = item.getGood();
+			double localCount = good.getNumberForSettlement(sellingSettlement);
+			int amountToTrade = (int) (localCount * 0.10D);
 
-				// Add resource container if needed.
-				if (isAmountResource) {
-					AmountResource resource = ResourceUtil.findAmountResource(good.getID());
-					Container container = getAvailableContainerForResource(resource,
-							sellingSettlement, tradeList);
-					if (container != null) {
-						Good containerGood = GoodsUtil.getEquipmentGood(container.getEquipmentType());
+			if (amountToTrade > item.getQuantity()) {
+				amountToTrade = item.getQuantity();
+			}
 
-						// Trade 1 containers worth
-						amountToTrade = (int)getContainerCapacity(resource);
-						massCapacity -= container.getBaseMass();
-						buyerLoadValue += buyerGoodsManager.getDemandValue(containerGood);
-						
-						// Add the new container to the load
-						int existingContainers = 0;
-						if (tradeList.containsKey(containerGood))
-							existingContainers = tradeList.get(containerGood);
-						tradeList.put(containerGood, (1 + existingContainers));
-					} else
-						logger.warning(sellingSettlement, "Container for " + resource.getName() + " not available.");
-				}
+			boolean isAmountResource = good.getCategory() == GoodCategory.AMOUNT_RESOURCE;
+			boolean isItemResource = good.getCategory() == GoodCategory.ITEM_RESOURCE;
 
-				if (isItemResource) {
-					amountToTrade = getNumItemResourcesToTrade(good, sellingSettlement, buyingSettlement,
-							tradeList, massCapacity, remainingBuyValue);
-				}
+			// Calcaulate the Value of this item to the seller
+			double sellValue = 0D;
+			double extraMass = 0D;
+			if (isAmountResource) {
+				AmountResource resource = ResourceUtil.findAmountResource(good.getID());
+				Container container = getAvailableContainerForResource(resource,
+						sellingSettlement, tradeList);
+				if (container != null) {
+					Good containerGood = GoodsUtil.getEquipmentGood(container.getEquipmentType());
 
-
-				// Add good. mass
-				if (good.getCategory() == GoodCategory.VEHICLE)
-					hasRover = true;
-				else {
-					massCapacity -= (good.getMassPerItem() * amountToTrade);
-				}
-	
-				// CHeck capacity
-				if (massCapacity < 0) {
-					done = true;
-				}
-				else {
-					// Add extra value
-					double buyGoodValue = buyerGoodsManager.getDemandValue(good) * amountToTrade;
+					// Trade 1 containers worth
+					amountToTrade = (int)getContainerCapacity(resource);
+					extraMass = container.getBaseMass() + (amountToTrade * good.getMassPerItem());
 					
-					buyerLoadValue += buyGoodValue;
+					// Add the new container to the load
+					int existingContainers = 0;
+					if (tradeList.containsKey(containerGood))
+						existingContainers = tradeList.get(containerGood);
+					tradeList.put(containerGood, (1 + existingContainers));
+				}
+				else
+					logger.warning(sellingSettlement, "Container for " + resource.getName() + " not available.");
+			}
+
+			extraMass += (good.getMassPerItem() * amountToTrade);
+			sellValue = sellerGoodsManager.getDemandValue(good);
+			
+
+			// Add good. mass
+			if (good.getCategory() == GoodCategory.VEHICLE) {
+				// Lets skip vehicles for now
+			}
+
+			if (sellValue > 0) {
+				// How much are they paying ?
+				double totalProfit = (item.getBuyPrice() - good.getPrice(sellingSettlement, sellValue))
+										* amountToTrade;
+				// If it's worth selling then
+				if (totalProfit > 10D) {	
+					massCapacity -= extraMass;
+					maxBuyValue -= (sellValue * amountToTrade);
 					if (tradeList.containsKey(good)) {
 						amountToTrade += tradeList.get(good);
 					}
 					tradeList.put(good, amountToTrade);
+							
+					// CHeck capacity
+					if ((massCapacity <= 0) || (maxBuyValue <= 0)) {
+						return tradeList;
+					}
 				}
 			}
-			else
-				done = true;
-
-			previousGood = good;
 		}
 
 		return tradeList;
@@ -377,19 +364,6 @@ public final class CommerceUtil {
 		return load.entrySet().stream()
 					.map(e -> (e.getKey().getCostOutput() * e.getValue()))
 					.collect(Collectors.summingDouble(Double::doubleValue));
-		
-		// double result = 0D;
-
-		// for(Map.Entry<Good,Integer> goodItem : load.entrySet()) {
-		// 	Good good = goodItem.getKey();
-		// 	double cost = good.getCostOutput();
-		// 	int goodNumber = goodItem.getValue();
-
-		// 	// Credit of the new total
-		// 	result += cost * goodNumber;
-		// }
-
-		// return result;
 	}
 
 	/**
@@ -410,40 +384,40 @@ public final class CommerceUtil {
 	 * @return best good to trade or null if none found.
 	 * @throws Exception if error determining best trade good.
 	 */
-	private static Good findBestGood(Settlement sellingSettlement, Settlement buyingSettlement,
-			Map<Good, Integer> tradedGoods, Set<Good> nonTradeGoods, double remainingCapacity, boolean hasVehicle,
-			Vehicle delivery, Good previousGood, boolean allowNegValue, Set<Integer> repairParts,
-			double maxBuyValue) {
+	// private static Good findBestGood(Settlement sellingSettlement, Settlement buyingSettlement,
+	// 		Map<Good, Integer> tradedGoods, Set<Good> nonTradeGoods, double remainingCapacity, boolean hasVehicle,
+	// 		Vehicle delivery, Good previousGood, boolean allowNegValue, Set<Integer> repairParts,
+	// 		double maxBuyValue) {
 
-		Good result = null;
+	// 	Good result = null;
 
-		// Check previous good first.
-		if (previousGood != null) {
-			double previousGoodValue = getGoodValue(previousGood, sellingSettlement, buyingSettlement, tradedGoods,
-					remainingCapacity, hasVehicle, delivery, allowNegValue, repairParts);
-			if ((previousGoodValue > 0D) && (previousGoodValue < maxBuyValue))
-				result = previousGood;
-		}
+	// 	// Check previous good first.
+	// 	if (previousGood != null) {
+	// 		double previousGoodValue = getGoodValue(previousGood, sellingSettlement, buyingSettlement, tradedGoods,
+	// 				remainingCapacity, hasVehicle, delivery, allowNegValue, repairParts);
+	// 		if ((previousGoodValue > 0D) && (previousGoodValue < maxBuyValue))
+	// 			result = previousGood;
+	// 	}
 
-		// Check all goods.
-		if (result == null) {
-			double bestValue = 0D;
-			if (allowNegValue)
-				bestValue = Double.NEGATIVE_INFINITY;
-			for(Good good : buyingSettlement.getBuyList()) {
-				if (!nonTradeGoods.contains(good)) {
-					double tradeValue = getGoodValue(good, sellingSettlement, buyingSettlement, tradedGoods,
-							remainingCapacity, hasVehicle, delivery, allowNegValue, repairParts);
-					if ((tradeValue > bestValue) && (tradeValue < maxBuyValue)) {
-						result = good;
-						bestValue = tradeValue;
-					}
-				}
-			}
-		}
+	// 	// Check all goods.
+	// 	if (result == null) {
+	// 		double bestValue = 0D;
+	// 		if (allowNegValue)
+	// 			bestValue = Double.NEGATIVE_INFINITY;
+	// 		for(Good good : buyingSettlement.getBuyList()) {
+	// 			if (!nonTradeGoods.contains(good)) {
+	// 				double tradeValue = getGoodValue(good, sellingSettlement, buyingSettlement, tradedGoods,
+	// 						remainingCapacity, hasVehicle, delivery, allowNegValue, repairParts);
+	// 				if ((tradeValue > bestValue) && (tradeValue < maxBuyValue)) {
+	// 					result = good;
+	// 					bestValue = tradeValue;
+	// 				}
+	// 			}
+	// 		}
+	// 	}
 
-		return result;
-	}
+	// 	return result;
+	// }
 
 	/**
 	 * Gets the number of an item resource good that should be traded.
@@ -528,13 +502,16 @@ public final class CommerceUtil {
 
 		double result = Double.NEGATIVE_INFINITY;
 		double amountTraded = 0D;
+
+		// Already traded some
 		if (tradedGoods.containsKey(good))
 			amountTraded += tradedGoods.get(good).doubleValue();
 
-		double sellingInventory = getNumInInventory(good, sellingSettlement);
+		double sellingInventory = good.getNumberForSettlement(sellingSettlement);
 		double sellingSupplyAmount = sellingInventory - amountTraded - 1D;
 		if (sellingSupplyAmount < 0D)
-			sellingSupplyAmount = 0D;
+			return 0D;
+
 		double sellingValue = sellingSupplyAmount * sellingSettlement.getGoodsManager().getDemandValue(good);
 		boolean allTraded = (sellingInventory <= amountTraded);
 

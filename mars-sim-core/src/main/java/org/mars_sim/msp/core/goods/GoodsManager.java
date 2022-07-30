@@ -9,10 +9,12 @@ package org.mars_sim.msp.core.goods;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.SimulationConfig;
@@ -24,6 +26,7 @@ import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleType;
@@ -112,12 +115,10 @@ public class GoodsManager implements Serializable {
 
 	private Map<Integer, Integer> deflationIndexMap = new HashMap<>();
 
-	private Map<Malfunctionable, Map<Integer, Number>> orbitRepairParts = new HashMap<>();
-
 	/** A standard list of resources to be excluded in buying negotiation. */
 	private static List<Good> exclusionBuyList = null;
 	/** A standard list of buying resources in buying negotiation. */
-	private static List<Good> buyList = null;
+	private transient List<ShoppingItem> buyList = null;
 
 	private Settlement settlement;
 
@@ -417,14 +418,6 @@ public class GoodsManager implements Serializable {
 		return tourismFactor;
 	}
 
-
-	/**
-	 * Clears the previous calculation on estimated orbit repair parts.
-	 */
-	public void clearOrbitRepairParts() {
-		orbitRepairParts.clear();
-	}
-
 	/**
 	 * Determines the trade demand for a good at a settlement.
 	 *
@@ -447,13 +440,6 @@ public class GoodsManager implements Serializable {
 		}
 		tradeCache.put(good.getID(), bestTradeValue);
 		return bestTradeValue;
-	}
-
-	/**
-	 * Prepare the goods manager for a vehicle load calculation.
-	 */
-	public void prepareForLoadCalculation() {
-
 	}
 
 	/**
@@ -532,11 +518,10 @@ public class GoodsManager implements Serializable {
 		return mod;
 	}
 
-	public static List<Good> getBuyList() {
-		if (buyList == null) {
-			buyList = new ArrayList<>(GoodsUtil.getGoodsList());
-			buyList.removeAll(getExclusionBuyList());
-		}
+	/**
+	 * Get the current list of items on the shppoing list
+	 */
+	public List<ShoppingItem> getBuyList() {
 		return buyList;
 	}
 
@@ -708,8 +693,6 @@ public class GoodsManager implements Serializable {
 		deflationIndexMap = null;
 
 		supplyCache = null;
-			
-		orbitRepairParts = null;
 
 		exclusionBuyList = null;
 		buyList = null;
@@ -757,5 +740,38 @@ public class GoodsManager implements Serializable {
     	throws IOException, ClassNotFoundException {
 		in.defaultReadObject();
 		deals = new EnumMap<>(MissionType.class);
+		buyList = Collections.emptyList();
+	}
+
+	public void timePassing(ClockPulse pulse) {
+		if (pulse.isNewSol() || pulse.getId() <= 1) {
+			// Scan the demand cache and build the buy list
+			calculateBuyList();
+		}
+	}
+
+	/**
+	 * Calaculate the current buying list for this Settlement.
+	 */
+	public void calculateBuyList() {
+		// This logic is a draft and need more refinement
+		List<ShoppingItem> newBuy = new ArrayList<>();
+		List<Good> excluded = getExclusionBuyList();
+		for(Entry<Integer, Double> item : demandCache.entrySet()) {
+			Good good = GoodsUtil.getGood(item.getKey());
+
+			// Take Goods in demand and not excluded
+			if ((item.getValue() > good.getDefaultDemandValue()) && !excluded.contains(good)) {
+				double buyPrice = good.getPrice(settlement, item.getValue()) * 1.1D;
+				int quantity = (int)(good.getNumberForSettlement(settlement) * 0.1D);
+				if (quantity == 0) {
+					quantity = 10;
+				}
+				newBuy.add(new ShoppingItem(good, quantity, buyPrice));
+			}
+		}
+
+		logger.info(settlement, "New buy list created with items=" + newBuy.size());
+		buyList = newBuy;
 	}
 }

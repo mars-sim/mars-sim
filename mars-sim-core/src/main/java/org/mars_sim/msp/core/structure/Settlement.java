@@ -955,6 +955,8 @@ public class Settlement extends Structure implements Temporal,
 			performEndOfDayTasks(pulse.getMarsTime());
 		}
 
+		goodsManager.timePassing(pulse);
+
 		// Keeps track of things based on msol
 		trackByMSol(pulse);
 
@@ -1305,9 +1307,6 @@ public class Settlement extends Structure implements Temporal,
 		refreshResourceStat();
 
 		refreshSleepMap(solElapsed);
-
-		// clear estimated orbit repair parts cache value
-		goodsManager.clearOrbitRepairParts();
 
 		// Decrease the Mission score.
 		minimumPassingScore *= 0.9D;
@@ -3553,16 +3552,6 @@ public class Settlement extends Structure implements Temporal,
 			resourcesCollected.put(id, value);
 		}
 	}
-
-	/**
-	 * Gets the buy list
-	 *
-	 * @return
-	 */
-	public List<Good> getBuyList() {
-		return GoodsManager.getBuyList();
-	}
-
 
 	public int getSolCache() {
 		return solCache;
