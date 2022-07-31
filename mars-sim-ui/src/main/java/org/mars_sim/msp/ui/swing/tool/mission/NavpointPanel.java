@@ -78,7 +78,7 @@ implements ListSelectionListener, MissionListener {
 	private static final int TABLE_HEIGHT = 190;
 	
 	// Private members.
-	private Mission currentMission;
+	private Mission missionCache;
 	private MapPanel mapPanel;
 	private transient VehicleTrailMapLayer trailLayer;
 	private transient NavpointMapLayer navpointLayer;
@@ -227,9 +227,9 @@ implements ListSelectionListener, MissionListener {
         navpointTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         navpointTable.getSelectionModel().addListSelectionListener(e -> {
 			// Recenter map on selected navpoint.
-			if (e.getValueIsAdjusting() && (currentMission != null) 
-					&& (currentMission instanceof VehicleMission)) {
-				VehicleMission travelMission = (VehicleMission) currentMission;
+			if (e.getValueIsAdjusting() && (missionCache != null) 
+					&& (missionCache instanceof VehicleMission)) {
+				VehicleMission travelMission = (VehicleMission) missionCache;
 				int index = navpointTable.getSelectedRow();
 				if (index > -1) {
 					NavPoint navpoint = travelMission.getNavpoint(index); 
@@ -404,40 +404,35 @@ implements ListSelectionListener, MissionListener {
 	 * Note: this is called when a mission is selected on MissionWindow's mission list.
 	 */
 	public void valueChanged(ListSelectionEvent e) {		
-		// Remove this as previous mission listener.
-		if (currentMission != null) {
-			// Updates the mission content on the Nav tab
-			updateInfo();
-		}
-		else {
-			// Clear map and info.
-			clearInfo();
-		}
+		Mission mission = (Mission) missionWindow.getMissionList().getSelectedValue();
+		setMission(mission);
 	}
 	
 	/**
 	 * Sets the mission object.
 	 * 
-	 * @param mission
+	 * @param newMission
 	 */
-	public void setMission(Mission mission) {
-		if (mission == null) {
-			// Remove this as previous mission listener.
-			currentMission.removeMissionListener(this);
-				
-			currentMission = mission;
+	public void setMission(Mission newMission) {
+		if (newMission == null) {
+			if (missionCache != null) {
+				// Remove this as previous mission listener.
+				missionCache.removeMissionListener(this);	
+				missionCache = null;
+			}
 			// Clear map and info.
-			clearInfo();
-		}
-		
-		else if (currentMission != mission) {
+			clearInfo();	
+			return;
+		}		
+
+		if (missionCache == null || missionCache != newMission) {
+			missionCache = newMission;
+			
 			// Remove this as previous mission listener.
-			if (currentMission != null)
-				currentMission.removeMissionListener(this);
-	
-			currentMission = mission;
+			if (missionCache != null)
+				missionCache.removeMissionListener(this);
 			// Add this as listener for new mission.
-			currentMission.addMissionListener(this);
+			missionCache.addMissionListener(this);
 			// Update the mission content on the Nav tab
 			updateInfo();
 		}
@@ -449,25 +444,25 @@ implements ListSelectionListener, MissionListener {
 	 */
 	public void updateInfo() {
 		// Updates coordinates in map
-		updateCoords(currentMission.getAssociatedSettlement().getCoordinates());
+		updateCoords(missionCache.getAssociatedSettlement().getCoordinates());
 		
-		if (currentMission.getMembersNumber() > 0) {
-			if (currentMission instanceof VehicleMission) {
-				trailLayer.setSingleVehicle(((VehicleMission) currentMission).getVehicle());
+		if (missionCache.getMembersNumber() > 0) {
+			if (missionCache instanceof VehicleMission) {
+				trailLayer.setSingleVehicle(((VehicleMission) missionCache).getVehicle());
             }
             
-			navpointLayer.setSingleMission(currentMission);
+			navpointLayer.setSingleMission(missionCache);
 			navpointLayer.setSelectedNavpoint(null);
 			navpointTableModel.updateNavpoints();
             
-            if ((currentMission instanceof Exploration) || (currentMission instanceof Mining)) {
+            if ((missionCache instanceof Exploration) || (missionCache instanceof Mining)) {
                 if (!mapPanel.hasMapLayer(mineralLayer)) mapPanel.addMapLayer(mineralLayer, 1);
             }
             else {
                 if (mapPanel.hasMapLayer(mineralLayer)) mapPanel.removeMapLayer(mineralLayer);
             }
             
-            mapPanel.showMap(currentMission.getCurrentMissionLocation());
+            mapPanel.showMap(missionCache.getCurrentMissionLocation());
 		}
 		
 	}
@@ -479,9 +474,9 @@ implements ListSelectionListener, MissionListener {
 		// NOTE: do NOT clear info when the mission is finish. 
 		// Leave the info there for future viewing.
 		// Remove this as previous mission listener.
-		if (currentMission != null) {
-			currentMission.removeMissionListener(this);
-			currentMission = null;
+		if (missionCache != null) {
+			missionCache.removeMissionListener(this);
+			missionCache = null;
 		}
 		
 		updateCoords(null);
@@ -587,9 +582,9 @@ implements ListSelectionListener, MissionListener {
 		 */
 		public void updateNavpoints() {
 		    
-			if (currentMission instanceof VehicleMission) {
+			if (missionCache instanceof VehicleMission) {
 				navpoints.clear();
-				VehicleMission travelMission = (VehicleMission) currentMission;
+				VehicleMission travelMission = (VehicleMission) missionCache;
 				for (int x=0; x < travelMission.getNumberOfNavpoints(); x++) 
 					navpoints.add(travelMission.getNavpoint(x));
 				fireTableDataChanged();
