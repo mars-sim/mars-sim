@@ -561,8 +561,7 @@ public class MainDesktopPane extends JDesktopPane
 		repaint();
 
 		if (toolName.equals(MissionWindow.NAME)) {
-			((MissionWindow)window).selectSettlement(mission.getAssociatedSettlement());
-			((MissionWindow)window).selectMission(mission);
+			((MissionWindow)window).selectSettlement(mission.getAssociatedSettlement(), mission);
 		}
 	}
 

@@ -541,7 +541,7 @@ public class OrbitInfo implements Serializable, Temporal {
 	}
 
 	/**
-	 * Gets the instantaneous areocentric longitude
+	 * Gets the instantaneous areocentric longitude.
 	 * 
 	 * @return angle in degrees (0 - 360).
 	 */

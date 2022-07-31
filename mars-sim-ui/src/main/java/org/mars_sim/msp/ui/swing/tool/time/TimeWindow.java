@@ -96,7 +96,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	/** label for Martian month. */
 	private WebLabel martianMonthHeaderLabel;
 	/** label for areocentric longitude. */
-	private WebLabel longLabel;
+	private WebLabel lonLabel;
 	/** label for Northern hemisphere season. */
 	private WebLabel northernSeasonLabel;
 	/** label for Southern hemisphere season. */
@@ -265,14 +265,14 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 //		&#8195; Em tab space
 			
 		// Create areocentric longitude header label
-		WebLabel longHeader = new WebLabel("Areocentric Longitude :",
+		WebLabel longHeader = new WebLabel("Areocentric Longitude (Ls):",
 				WebLabel.RIGHT); //$NON-NLS-1$
 		hemiPane.add(longHeader);
 
 		// Create areocentric longitude label
-		longLabel = new WebLabel(" ", 
+		lonLabel = new WebLabel(" ", 
 				WebLabel.LEFT);
-		hemiPane.add(longLabel);
+		hemiPane.add(lonLabel);
 		
 		// Create Northern season header label
 		WebLabel northernSeasonHeader = new WebLabel(Msg.getString("TimeWindow.northernHemisphere"),
@@ -543,7 +543,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		// Update the calender
 		calendarDisplay.update();
 		// Update areocentric longitude
-		longLabel.setText(Math.round(orbitInfo.getL_s() * 1000.0)/1000.0 + "");	
+		lonLabel.setText(Math.round(orbitInfo.getL_s() * 1000.0)/1000.0 + "");	
 		
 		// Update season
 		if (masterClock.getClockPulse().isNewSol()) {

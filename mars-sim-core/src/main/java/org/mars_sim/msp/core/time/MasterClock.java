@@ -616,7 +616,7 @@ public class MasterClock implements Serializable {
 		// Execute all listener concurrently and wait for all to complete before advancing
 		// Ensure that Settlements stay synch'ed and some don't get ahead of others as tasks queue
 		// May use parallelStream() after it's proven to be safe
-		new HashSet<>(clockListenerTasks).stream().forEach(this::executeClockListenerTask);
+		Collections.synchronizedSet(new HashSet<>(clockListenerTasks)).stream().forEach(this::executeClockListenerTask);
 	}
 
 	/**

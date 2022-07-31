@@ -254,6 +254,10 @@ implements ListSelectionListener, MissionListener {
 				coordCache = newCoords;
 				mapPanel.showMap(newCoords);
 		}
+		else {
+			coordCache = null;
+			mapPanel.showMap(null);
+		}
 	}
 
 	private class MapListener extends MouseAdapter {
@@ -474,7 +478,14 @@ implements ListSelectionListener, MissionListener {
 	public void clearInfo() {
 		// NOTE: do NOT clear info when the mission is finish. 
 		// Leave the info there for future viewing.
-				
+		// Remove this as previous mission listener.
+		if (currentMission != null) {
+			currentMission.removeMissionListener(this);
+			currentMission = null;
+		}
+		
+		updateCoords(null);
+		
 		// Clear map and info.
 		trailLayer.setSingleVehicle(null);
 		navpointLayer.setSingleMission(null);

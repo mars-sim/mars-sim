@@ -148,7 +148,7 @@ public final class RandomUtil {
 	 * Returns a random integer from 1 to the given integer. 1 has twice the chance
 	 * of being chosen than 2 and so forth to the given integer.
 	 *
-	 * @param ceiling the maximum integer result, ( ceiling > 0 )
+	 * @param ceiling the maximum integer result (ceiling > 0)
 	 * @return the random integer
 	 */
 	public static int getRandomRegressionInteger(int ceiling) {

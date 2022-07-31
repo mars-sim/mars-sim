@@ -9,8 +9,10 @@ package org.mars_sim.msp.core.environment;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -240,6 +242,36 @@ public class SurfaceFeatures implements Serializable, Temporal {
 		// (2) typical observable range is between .32 and .52 (average is 42%).
 		// (3) From Viking data, at no time did the optical depth fall below 0.18
 
+		// Based on https://www.researchgate.net/publication/343794062_The_Mars_Dust_Activity_Database_MDAD_A_comprehensive_statistical_study_of_dust_storm_sequences
+		
+		// 1. Period of major dust storms Between L_s = 215 to L_s = 305
+		// 2. At L_s = 250.87, which is the perihelion, dust storm occurrence is the highest
+		// 3. In northern hemisphere, organized dust storm sequences are most prevalent 
+		//    during fall and late winter between Ls (140 to 250) and Ls (300 to 360).
+		// 4. For southern hemisphere, it's between Ls (10 to 70) and Ls (120 to 180).
+		// 5. Dust storm sequences most often originate in Acidalia, the ASV region, Utopia, Hellas, Arcadia.
+		// 6. Dust storm sequences occur in three seasonal windows, with L=140—250 the primary season.
+		
+		// Get the instantaneous areocentric longitude
+		double areoLon = Math.round(orbitInfo.getL_s() * 1000.0)/1000.0;
+		
+		double phi = location.getPhi();
+		boolean isNorthern = false;
+
+		if (phi >= 0 && phi <= HALF_PI) {
+			isNorthern = true;
+		}
+		if (isNorthern && (areoLon > 140 && areoLon < 250)
+				|| (areoLon > 300 && areoLon < 360))
+			tau = tau + RandomUtil.getRandomDouble((tau - .1)/36.0);
+		else if (!isNorthern && (areoLon > 10 && areoLon < 70)
+				|| (areoLon > 120 && areoLon < 180)) {
+			tau = tau + RandomUtil.getRandomDouble((tau - .1)/36.0);
+		}
+		
+		// Save tau onto opticalDepthMap
+		opticalDepthMap.put(location, tau);
+		
 		return tau;
 	}
 
@@ -393,9 +425,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 			// RADIATION
 
 			double tau = getOpticalDepth(location);
-			// Save tau onto opticalDepthMap
-			opticalDepthMap.put(location, tau);
-			
+		
 			// For future,
 			// Part 4a : Reduce the opacity of the Martian atmosphere due to local dust
 			// storm
@@ -669,36 +699,14 @@ public class SurfaceFeatures implements Serializable, Temporal {
 		isNewMSol = pulse.isNewMSol();
 
 		if (isNewMSol) {
+			// Avoid ConcurrentModificationException with a new HashSet
+			Set<Coordinates> coords = new HashSet<>(opticalDepthMap.keySet());
 			// Recompute the optical depth for each msol
-			for (Coordinates location: opticalDepthMap.keySet()) {
+			for (Coordinates location: coords) {
 				computeOpticalDepth(location);
 			}
 		}
 		
-		// Is this needed ? Mining Mission unreserves the site when it completes
-		// so this is just to caught problems (bugs) within the simulation logic.
-		// Update any reserved explored locations.
-//		Iterator<ExploredLocation> i = exploredLocations.iterator();
-//		while (i.hasNext()) {
-//			ExploredLocation site = i.next();
-//			if (site.isReserved()) {
-//				// Check if site is reserved by a current mining mission.
-//				// If not, mark as unreserved.
-//				boolean goodMission = false;
-//
-//				// TODO The Mission should unreserve the site automatically
-//				for (Mission mission : missionManager.getMissions()) {
-//					if (mission.getMissionType() == MissionType.MINING) {
-//						if (site.equals(((Mining) mission).getMiningSite())) {
-//							goodMission = true;
-//						}
-//					}
-//				}
-//				if (!goodMission) {
-//					site.setReserved(false);
-//				}
-//			}
-//		}
 		return true;
 	}
 

@@ -653,12 +653,12 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 	 * @param newMission
 	 */
 	public void setMission(Mission selected) {
-
+		
 		if (selected != null) {
 			if (currentMission == null) {
 				setCurrentMission(selected);
 				// Update info on Main tab
-				updateInfo(selected);
+				updateMainTab(selected);
 				// Update custom mission panel.
 				updateCustomPanel(selected);
 			}
@@ -666,11 +666,12 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 			else if (!selected.equals(currentMission)) {
 				setCurrentMission(selected);
 				// Update info on Main tab
-				updateInfo(selected);
+				updateMainTab(selected);
 				// Update custom mission panel.
 				updateCustomPanel(selected);
 			}
-			else { // selected is the same as newMission
+			else { 
+				// selected is the same as newMission
 			}
 		}
 		else {
@@ -680,11 +681,11 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 
 
 	/**
-	 * Updates the mission content on the info tab
+	 * Updates the mission content on the Main tab
 	 *
 	 * @param mission
 	 */
-	public void updateInfo(Mission mission) {
+	public void updateMainTab(Mission mission) {
 		// Update mission info in UI.
 		String oldDes = mission.getDescription();
 		String newDes = descriptionTF.getText();
