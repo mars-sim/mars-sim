@@ -97,7 +97,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 
 	public static final double RAD_PER_DEGREE = Math.PI / 180D;
 	
-	public static final String WHITESPACE = "   ";
+	public static final String WHITESPACE = " ";
 	public static final String COMMA = ", ";
 	public static final String THETA = "\u03B8: "; //"Theta: ";
 	public static final String PHI = "\u03C6: "; //"Phi: ";
@@ -433,15 +433,15 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		hsbLabel.setForeground(Color.DARK_GRAY);
          
 	    WebPanel c = new WebPanel();
-	    c.setPreferredSize(new Dimension(125, HEIGHT_STATUS_BAR));
+	    c.setPreferredSize(new Dimension(135, HEIGHT_STATUS_BAR));
 	    c.add(coordLabel);
 	    
 	    WebPanel p = new WebPanel();
-	    p.setPreferredSize(new Dimension(50, HEIGHT_STATUS_BAR));
+	    p.setPreferredSize(new Dimension(45, HEIGHT_STATUS_BAR));
 	    p.add(phiLabel);
 	
 	    WebPanel t = new WebPanel();
-	    t.setPreferredSize(new Dimension(50, HEIGHT_STATUS_BAR));
+	    t.setPreferredSize(new Dimension(45, HEIGHT_STATUS_BAR));
 	    t.add(thetaLabel);
 	    
 	    WebPanel e = new WebPanel();
@@ -449,11 +449,11 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 	    e.add(heightLabel);
 	    
 	    WebPanel r = new WebPanel();
-	    r.setPreferredSize(new Dimension(114, HEIGHT_STATUS_BAR));
+	    r.setPreferredSize(new Dimension(115, HEIGHT_STATUS_BAR));
 	    r.add(rgbLabel);
 	    
 	    WebPanel hs = new WebPanel();
-	    hs.setPreferredSize(new Dimension(135, HEIGHT_STATUS_BAR));
+	    hs.setPreferredSize(new Dimension(130, HEIGHT_STATUS_BAR));
 	    hs.add(hsbLabel);
 	    
 		statusBar.addLeftComponent(c, false);

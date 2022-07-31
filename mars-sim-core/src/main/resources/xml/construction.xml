@@ -197,6 +197,7 @@
 
 		<frame name="steel frame tower" width="5.0" length="5.0" base-level="0" constructable="true"
 		 salvagable="true" work-time="1.0" skill-required="2" foundation="surface foundation 5m x 5m" >
+			<resource name="acetylene" amount="1.0" />
 			<resource name="concrete" amount="25.0" />
 			<part name="steel truss" number="20" />
 			<part name="steel cable" number="6" />
@@ -207,6 +208,7 @@
 
 		<frame name="small steel frame" width="5.0" length="5.0" base-level="0" constructable="true"
 		 salvagable="true" work-time="1.0" skill-required="1" foundation="surface foundation 5m x 5m" >
+			<resource name="acetylene" amount="1.0" />
 			<resource name="concrete" amount="25.0" />
 			<part name="steel truss" number="10" />
 			<part name="steel sheet" number="5" />
@@ -217,6 +219,7 @@
 
 		<frame name="array frame" width="5.0" length="10.0" base-level="0" constructable="true"
 		 salvagable="true" work-time="1.0" skill-required="2" foundation="surface foundation 10m x 5m" >
+			<resource name="acetylene" amount="1.5" />
 			<resource name="concrete" amount="50.0" />
 			<part name="steel truss" number="20" />
 			<vehicle type="light utility vehicle" >
@@ -246,15 +249,19 @@
 		<frame name="round hab frame" width="9.0" length="9.0" base-level="0" constructable="false"
 		 salvagable="true" work-time="1.0" skill-required="2" foundation="surface foundation 9m x 9m" >
 		 	<resource name="concrete" amount="81.0" />
-			<part name="steel ingot" number="90" />
-			<part name="aluminum ingot" number="90" />
+			<resource name="acetylene" amount="2.0" />		 	
+			<part name="aluminum sheet" number="10" />
+			<part name="steel truss" number="20" />
+			<part name="steel post" number="8" />			
+			<part name="steel sheet" number="10" />	
+			<part name="plastic sheet" number="20" />					
 			<part name="plastic pipe" number="50" />
-			<part name="valve" number="10" />
 			<part name="electrical wire" number="200" />
 			<part name="wire connector" number="200" />
 			<part name="power cable" number="20" />
 			<part name="steel pipe" number="40" />
 			<part name="gasket" number="40" />
+			<part name="valve" number="10" />
 			<part name="solar panel" number="4" />
 		</frame>
 
@@ -262,22 +269,31 @@
 		<frame name="inflatable frame" width="6.0" length="9.0" base-level="0" constructable="false"
 		 salvagable="true" work-time="1.0" skill-required="2" foundation="surface foundation 7m x 9m" >
 		 	<resource name="concrete" amount="54.0" />
-		 	<part name="aluminum ingot" number="60" />
-			<part name="plastic sheet" number="50" />
+			<resource name="acetylene" amount="1.25" />		 	
+			<part name="aluminum sheet" number="10" />
+			<part name="steel truss" number="20" />
+			<part name="steel post" number="5" />			
+			<part name="steel sheet" number="10" />	
+			<part name="plastic sheet" number="20" />
 			<part name="plastic pipe" number="50" />
-			<part name="valve" number="30" />
-			<part name="gasket" number="30" />
-			<part name="electrical wire" number="40" />
-			<part name="wire connector" number="40" />
+			<part name="electrical wire" number="80" />
+			<part name="wire connector" number="80" />
 			<part name="power cable" number="12" />
+			<part name="steel pipe" number="40" />
+			<part name="gasket" number="30" />
+			<part name="valve" number="30" />			
 		</frame>
 
 		<!-- Note: the atmospheric processor frame is just for salvaging and cannot be constructed insitu. -->
 		<frame name="atmospheric processor frame" width="8.0" length="11.0" base-level="0" constructable="false"
 		 salvagable="true" work-time="1.0" skill-required="3" foundation="surface foundation 8m x 11m" >
 		 	<resource name="concrete" amount="88.0" />
-			<part name="steel ingot" number="90" />
-			<part name="aluminum ingot" number="90" />
+			<resource name="acetylene" amount="1.0" />		 	
+			<part name="aluminum sheet" number="10" />
+			<part name="steel truss" number="20" />
+			<part name="steel post" number="6" />			
+			<part name="steel sheet" number="10" />
+			<part name="plastic sheet" number="20" />			
 			<part name="plastic pipe" number="50" />
 			<part name="valve" number="20" />
 			<part name="electrical wire" number="50" />
@@ -291,8 +307,12 @@
 		<frame name="medium modular frame" width="7.0" length="9.0" base-level="0" constructable="false"
 		 salvagable="true" work-time="1.0" skill-required="2" foundation="surface foundation 7m x 9m" >
 		 	<resource name="concrete" amount="63.0" />
-			<part name="steel ingot" number="60" />
-			<part name="aluminum ingot" number="60" />
+			<resource name="acetylene" amount="1.0" />		 	
+			<part name="aluminum sheet" number="8" />
+			<part name="steel truss" number="16" />
+			<part name="steel post" number="6" />			
+			<part name="steel sheet" number="8" />
+			<part name="plastic sheet" number="16" />
 			<part name="plastic pipe" number="40" />
 			<part name="valve" number="50" />
 			<part name="electrical wire" number="50" />
@@ -305,8 +325,12 @@
 		<frame name="large greenhouse frame" width="12.0" length="18.0" base-level="0" constructable="false"
 		 salvagable="true" work-time="1.5" skill-required="3" foundation="surface foundation 12m x 18m" >
 		 	<resource name="concrete" amount="216.0" />
-			<part name="steel ingot" number="200" />
-			<part name="aluminum ingot" number="200" />
+			<resource name="acetylene" amount="2.5" />		 	
+			<part name="aluminum sheet" number="20" />
+			<part name="steel truss" number="30" />
+			<part name="steel post" number="12" />			
+			<part name="steel sheet" number="20" />
+			<part name="plastic sheet" number="20" />	
 			<part name="glass sheet" number="50" />
 			<part name="plastic pipe" number="150" />
 			<part name="valve" number="90" />
@@ -320,8 +344,12 @@
 		<frame name="garage frame" width="12.0" length="16.0" base-level="0" constructable="false"
 		 salvagable="true" work-time="1.2" skill-required="2" foundation="surface foundation 12m x 18m" >
 		 	<resource name="concrete" amount="192.0" />
-			<part name="steel ingot" number="190" />
-			<part name="aluminum ingot" number="190" />
+			<resource name="acetylene" amount="2.5" />			 	
+			<part name="aluminum sheet" number="20" />
+			<part name="steel truss" number="30" />
+			<part name="steel post" number="12" />			
+			<part name="steel sheet" number="20" />
+			<part name="plastic sheet" number="20" />
 			<part name="plastic pipe" number="100" />
 			<part name="valve" number="50" />
 			<part name="electrical wire" number="50" />
@@ -333,6 +361,7 @@
 		<frame name="small areothermal well frame" width="5.0" length="10.0" base-level="0" constructable="true"
 		 salvagable="true" work-time="1.0" skill-required="2" foundation="shallow borehole drilling site" >
 			<resource name="concrete" amount="50.0" />
+			<resource name="acetylene" amount="0.5" />				
 			<part name="steel truss" number="10" />
 			<part name="steel sheet" number="15" />
 			<vehicle type="light utility vehicle" >
@@ -343,6 +372,7 @@
 		<frame name="large areothermal well frame" width="10.0" length="15.0" base-level="0" constructable="true"
 		 salvagable="true" work-time="1.3" skill-required="3" foundation="deep borehole drilling site" >
 			<resource name="concrete" amount="150.0" />
+			<resource name="acetylene" amount="1.0" />				
 			<part name="steel truss" number="20" />
 			<part name="steel sheet" number="30" />
 			<vehicle type="light utility vehicle" >
@@ -362,10 +392,13 @@
 		<frame name="large garage brick frame" width="15.0" length="18.0" base-level="-1" constructable="true"
 		 salvagable="true" work-time="1.5" skill-required="3" foundation="ramped subsurface foundation 15m x 18m x 5m" >
 			<resource name="concrete" amount="270.0" />
+			<resource name="acetylene" amount="2.5" />				
 			<part name="brick" number="3600" />
-			<part name="steel truss" number="30" />
-			<part name="steel sheet" number="50" />
 			<part name="aluminum sheet" number="50" />
+			<part name="steel truss" number="30" />
+			<part name="steel post" number="12" />			
+			<part name="steel sheet" number="50" />
+			<part name="plastic sheet" number="20" />
 			<part name="plastic pipe" number="100" />
 			<part name="valve" number="50" />
 			<part name="electrical wire" number="50" />
@@ -380,9 +413,11 @@
 		<frame name="vaulted glass brick frame" width="5.0" length="10.0" base-level="-1" constructable="true"
 		 salvagable="true" work-time="1.0" skill-required="3" foundation="subsurface foundation 5m x 10m x 3m" >
 			<resource name="concrete" amount="50.0" />
+			<resource name="acetylene" amount="0.5" />				
 			<part name="brick" number="700" />
-			<part name="steel truss" number="4" />
-			<part name="aluminum sheet" number="7" />
+			<part name="aluminum sheet" number="10" />
+			<part name="steel truss" number="8" />
+			<part name="steel post" number="4" />						
 			<part name="glass sheet" number="10" />
 			<part name="plastic pipe" number="7" />
 			<part name="valve" number="5" />
@@ -399,7 +434,8 @@
 		<frame name="hallway frame" width="2.0" length="-1.0" base-level="0" constructable="true"
 		 salvagable="true" work-time="0.1" skill-required="1" foundation="surface foundation variable size" >
 			<resource name="concrete" amount="2.0" />
-			<part name="steel post" number="5" />
+			<resource name="acetylene" amount="0.25" />				
+			<part name="steel post" number="3" />
 		</frame>
 
 		<!-- Note brick tunnel frame length is variable. -->

@@ -41,6 +41,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.mars_sim.msp.core.GameManager;
+import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEvent;
@@ -50,7 +51,7 @@ import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitManagerEvent;
 import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.UnitType;
-import org.mars_sim.msp.core.GameManager.GameMode;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -77,10 +78,13 @@ import com.alee.laf.scroll.WebScrollPane;
 import com.alee.managers.style.StyleId;
 
 /**
- * Window for the Commander Dashboard.
+ * Window for the Commanders Dashboard.
  */
 @SuppressWarnings("serial")
 public class CommanderWindow extends ToolWindow {
+
+	/** default logger. */
+	private static SimLogger logger = SimLogger.getLogger(CommanderWindow.class.getName());
 
 	/** Tool name. */
 	public static final int LIST_WIDTH = 300;
@@ -112,12 +116,13 @@ public class CommanderWindow extends ToolWindow {
 	private final Font DIALOG = new Font( "Dialog", Font.PLAIN, 14);
 
 	private JTabbedPane tabPane;
-
+	
 	private JComboBoxMW<String> taskComboBox;
 	private JComboBoxMW<Person> personComboBox;
-
+	/** Settlement Combo box */
+	private WebComboBox settlementListBox;
+	
 	private ListModel listModel;
-	private JScrollPane listScrollPanel;
 	private JList<String> list;
 	private JTextArea logBookTA;
 
@@ -126,6 +131,7 @@ public class CommanderWindow extends ToolWindow {
 	private WebPanel policyMainPanel;
 	private WebPanel innerPanel;
 
+	private JScrollPane listScrollPanel;
 	private WebScrollPane WebScrollPane;
 
 	private JRadioButton r0;
@@ -136,16 +142,15 @@ public class CommanderWindow extends ToolWindow {
 
 	private WebCheckBoxList<?> settlementMissionList;
 
-	private Person cc;
-
-	private Settlement settlement;
-	private List<Settlement> settlementList;
-
-	/** Settlement Combo box */
-	private WebComboBox settlementListBox;
 	/** Settlement Combo box model. */
 	private SettlementComboBoxModel settlementCBModel;
 	
+	private Person cc;
+
+	private Settlement settlement;
+	
+	private List<Settlement> settlementList;
+
 	private List<String> taskCache;
 
 	/** The MarsClock instance. */
@@ -707,14 +712,14 @@ public class CommanderWindow extends ToolWindow {
 	        JRadioButton button = (JRadioButton) event.getSource();
 
 	        if (button == r0) {
-				System.out.println("r0 selected");
+				logger.config("r0 selected");
 	        	settlement.setMissionDisable(MissionType.TRADE, false);
 	        } else if (button == r1) {
-				System.out.println("r1 selected");
+	        	logger.config("r1 selected");
 	        	settlement.setMissionDisable(MissionType.TRADE, true);
 	        } else if (button == r2) {
 //	        	SwingUtilities.invokeLater(() -> {
-					System.out.println("r2 selected");
+	        	logger.config("r2 selected");
 		        	disableAllCheckedSettlement();
 	//	        	settlementMissionList.setEnabled(false);
 					r3.setText(ACCEPT);
@@ -722,7 +727,7 @@ public class CommanderWindow extends ToolWindow {
 					policyMainPanel.add(emptyPanel, BorderLayout.EAST);
 //	        	});
 	        } else if (button == r3) {
-				System.out.println("r3 selected");
+	        	logger.config("r3 selected");
 //	        	changed = true;
 //	        	settlementMissionList.setEnabled(true);
 				r3.setText(ACCEPT + SEE_RIGHT);
@@ -890,11 +895,9 @@ public class CommanderWindow extends ToolWindow {
 	public void disableAllCheckedSettlement() {
 		List<?> allowedSettlements = settlementMissionList.getCheckedValues();
 		int size = allowedSettlements.size();
-//		System.out.println(allowedSettlements);
 		for (int i=0; i<size; i++) {
 			if (settlementMissionList.isCheckBoxSelected(i)) {
 				Settlement s = (Settlement) allowedSettlements.get(i);
-//				System.out.println("i : " + i + "  " + s);
 				settlementMissionList.setCheckBoxSelected(i, false);
 				settlement.setAllowTradeMissionFromASettlement(s, false);
 			}
@@ -967,17 +970,16 @@ public class CommanderWindow extends ToolWindow {
 		private static final long serialVersionUID = 1L;
 		private String prompt;
 
-		/*
+		/**
 		 *  Set the text to display when no item has been selected.
 		 */
 		public PromptComboBoxRenderer(String prompt) {
 			this.prompt = prompt;
 		}
 
-		/*
+		/**
 		 *  Custom rendering to display the prompt text when no item is selected.
 		 */
-		// Add color rendering
 		public Component getListCellRendererComponent(
 				JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
 			Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
@@ -1034,7 +1036,7 @@ public class CommanderWindow extends ToolWindow {
 		}
 
 		/**
-		 * Update the list of settlements.
+		 * Updates the list of settlements.
 		 */
 		private void updateSettlements() {
 			// Clear all elements
@@ -1095,7 +1097,7 @@ public class CommanderWindow extends ToolWindow {
 		}
 
 		/**
-		 * Prepare class for deletion.
+		 * Prepares class for deletion.
 		 */
 		public void destroy() {
 			unitManager.removeUnitManagerListener(this);
@@ -1120,8 +1122,6 @@ public class CommanderWindow extends ToolWindow {
 		listModel = null;
 		listScrollPanel = null;
 		list = null;
-//		leadershipPointsLabel = null;
-//		commander = null;
 		cc = null;
 		taskCache = null;
 	}

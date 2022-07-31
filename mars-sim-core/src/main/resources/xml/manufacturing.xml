@@ -1269,6 +1269,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="make winch" tech="2" skill="3" work-time="200" process-time="100"
 			power-required=".1">
 		<inputs>
+			<resource name="acetylene" amount="0.2" />			
 			<part name="steel sheet" number="2" />
 			<part name="steel cable" number="9" />
 		</inputs>
@@ -1280,6 +1281,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="assemble rover generator" tech="2" skill="3" work-time="600" process-time="600"
 			power-required="1.0">
 		<inputs>
+			<resource name="acetylene" amount="0.3" />
 			<part name="steel ingot" number="10" />
 			<part name="valve" number="6" />
 			<part name="gasket" number="6" />
@@ -1301,6 +1303,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="manufacture turbine generator" tech="3" skill="3" work-time="300" process-time="300"
 			power-required="1.0">
 		<inputs>
+			<resource name="acetylene" amount="0.3" />		
 			<part name="iron sheet" number="1" />
 			<part name="iron ingot" number="20" />
 			<part name="copper wire" number="15" />
@@ -1381,6 +1384,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="manufacture fuel tank" tech="2" skill="1" work-time="50" process-time="200"
 			power-required=".3">
 		<inputs>
+			<resource name="acetylene" amount="0.1" />	
 			<part name="steel sheet" number="4" />
 			<part name="valve" number="1" />
 			<part name="gasket" number="1" />
@@ -1395,6 +1399,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="manufacture gas tank" tech="2" skill="1" work-time="50" process-time="200"
 			power-required=".3">
 		<inputs>
+			<resource name="acetylene" amount="0.1" />		
 			<part name="steel sheet" number="2" />
 			<part name="valve" number="1" />
 			<part name="gasket" number="1" />
@@ -1410,6 +1415,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="manufacture water tank" tech="2" skill="1" work-time="50" process-time="200"
 			power-required=".3">
 		<inputs>
+			<resource name="acetylene" amount="0.1" />		
 			<part name="steel sheet" number="2" />
 			<part name="valve" number="1" />
 			<part name="gasket" number="1" />
@@ -1522,7 +1528,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="assemble delivery drone" tech="3" skill="3" work-time="750" process-time="750"
 			power-required="2.0">
 		<inputs>
-			<resource name="acetylene" amount="0.25" />
+			<resource name="acetylene" amount="0.5" />
 			<part name="navigation circuit board" number="1" />
 			<part name="communications circuit board" number="1" />
 			<part name="optical lens" number="2" />
@@ -1552,7 +1558,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="assemble light utility vehicle" tech="3" skill="3" work-time="1000" process-time="500"
 			power-required="2.0">
 		<inputs>
-			<resource name="acetylene" amount="0.5" />
+			<resource name="acetylene" amount="1.0" />
 			<part name="navigation circuit board" number="1" />
 			<part name="communications circuit board" number="1" />
 			<part name="vehicle frame - small" number="2" />
@@ -1581,7 +1587,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="assemble explorer rover" tech="3" skill="4" work-time="2000" process-time="1000"
 			power-required="4.0">
 		<inputs>
-			<resource name="acetylene" amount="1.0" />		
+			<resource name="acetylene" amount="2.0" />		
 			<part name="navigation circuit board" number="1" />
 			<part name="communications circuit board" number="1" />
 
@@ -1620,7 +1626,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="assemble transport rover" tech="3" skill="4" work-time="2500" process-time="1000"
 			power-required="5.0">
 		<inputs>
-			<resource name="acetylene" amount="1.5" />		
+			<resource name="acetylene" amount="3.0" />		
 			<part name="navigation circuit board" number="1" />
 			<part name="communications circuit board" number="1" />
 
@@ -1659,7 +1665,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="assemble cargo rover" tech="3" skill="4" work-time="2500" process-time="1000"
 			power-required="6.0">
 		<inputs>
-			<resource name="acetylene" amount="1.5" />
+			<resource name="acetylene" amount="3.0" />
 			<part name="navigation circuit board" number="1" />
 			<part name="communications circuit board" number="1" />
 

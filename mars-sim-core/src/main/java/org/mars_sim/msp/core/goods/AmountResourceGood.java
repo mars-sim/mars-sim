@@ -61,7 +61,7 @@ class AmountResourceGood extends Good {
 	private static final double H2_VALUE = 0.01;
 	private static final double CO_VALUE = 0.000005;
     private static final double CO2_VALUE = 0.00001;
-	private static final double CL_VALUE = 0.1;
+	private static final double CL_VALUE = 5.0;
 	private static final double ICE_VALUE = 1.5;
 	private static final double FOOD_VALUE = 0.1;
 	private static final double DERIVED_VALUE = .07;
