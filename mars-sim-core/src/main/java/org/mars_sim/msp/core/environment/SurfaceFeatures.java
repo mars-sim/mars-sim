@@ -300,11 +300,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 			}
 
 			// If location is not in cache, calculate the solar irradiance
-			double G_h = calculateSolarIrradiance(location);
-			// Save the value in the cache
-			currentIrradiance.put(location, G_h);
-
-			return G_h;
+			return calculateSolarIrradiance(location);
 		}
 
 		Double d = currentIrradiance.get(location);
@@ -313,11 +309,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 		}
 
 		// If location is not in cache, calculate the solar irradiance
-		double G_h = calculateSolarIrradiance(location);
-		// Save the value in the cache
-		currentIrradiance.put(location, G_h);
-
-		return G_h;
+		return calculateSolarIrradiance(location);
 	}
 
 	/**
@@ -497,6 +489,9 @@ public class SurfaceFeatures implements Serializable, Temporal {
 		if (G_h < 0)
 			G_h = 0;
 
+		// Save the value in the cache
+		currentIrradiance.put(location, G_h);
+		
 		return G_h;
 	}
 
