@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TabPanelThermalSystem.java
- * @date 2022-07-09
+ * @date 2022-07-31
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -421,6 +421,9 @@ extends TabPanel {
 					if (heatMode == HeatMode.HEAT_OFF) {
 						return dotYellow; 
 					}
+					else if (heatMode == HeatMode.ONE_EIGHTH_HEAT) {
+						return dotGreen_quarter;
+					}
 					else if (heatMode == HeatMode.QUARTER_HEAT) {
 						return dotGreen_quarter;
 					}
@@ -444,19 +447,21 @@ extends TabPanel {
 					// return temperature of the building;
 					return  Math.round(building.getCurrentTemperature()*10.0)/10.0;
 				else if (column == 3) {
-					if (heatMode == HeatMode.FULL_HEAT 
+					if (heatMode == HeatMode.HEAT_OFF) {
+						return 0.0;
+					}
+					if (heatMode != HeatMode.FULL_HEAT 
 							|| heatMode == HeatMode.THREE_QUARTER_HEAT
 							|| heatMode == HeatMode.HALF_HEAT
-							|| heatMode == HeatMode.QUARTER_HEAT) {
+							|| heatMode == HeatMode.QUARTER_HEAT
+							|| heatMode == HeatMode.ONE_EIGHTH_HEAT
+							) {
 							ThermalGeneration heater = building.getThermalGeneration();
 							if (heater != null) {
-								return  Math.round(heater.getGeneratedHeat()*1000.0)/1000.0;
+								return  Math.round(heater.getGeneratedHeat()*100.0)/100.0;
 							}
 							else
 								return 0;
-					}
-					else if (heatMode == HeatMode.HEAT_OFF) {
-						return 0.0;
 					}
 				}
 				else if (column == 4) {
@@ -465,7 +470,7 @@ extends TabPanel {
 						generatedCapacity = building.getThermalGeneration().getHeatGenerationCapacity();
 					}
 					catch (Exception e) {}
-					return Math.round(generatedCapacity*1000.0)/1000.0;
+					return Math.round(generatedCapacity*100.0)/100.0;
 				}
 			return null;
 		}

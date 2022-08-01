@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * FuelHeatSource.java
- * @date 2021-10-21
+ * @date 2022-07-31
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -24,7 +24,7 @@ public class FuelHeatSource extends HeatSource implements Serializable {
 	/** The work time (millisol) required to toggle this heat source on or off. */
 	public static final double TOGGLE_RUNNING_WORK_TIME_REQUIRED = 10D;
 
-	public static final double THERMAL_EFFICIENCY = .9;
+	public double thermalEfficiency = .9;
 
 	private double rate;
 
@@ -119,7 +119,7 @@ public class FuelHeatSource extends HeatSource implements Serializable {
 
 		if (toggle) {
 			double spentFuel = consumeFuel(time, building.getSettlement());
-			return getMaxHeat() * spentFuel / maxFuel * THERMAL_EFFICIENCY;
+			return getMaxHeat() * spentFuel / maxFuel * thermalEfficiency;
 		}
 
 		return 0;
@@ -143,17 +143,17 @@ public class FuelHeatSource extends HeatSource implements Serializable {
 
 	@Override
 	public double getEfficiency() {
-		return THERMAL_EFFICIENCY;
+		return thermalEfficiency;
+	}
+	
+	@Override
+	public void setEfficiency(double value) {
+		thermalEfficiency = value;
 	}
 
 	@Override
 	public double getCurrentPower(Building building) {
-		if (toggle) {
-			double spentFuel = consumeFuel(time, building.getSettlement());
-			return getMaxHeat() * spentFuel / maxFuel * getEfficiency();
-		}
-
-		return 0;
+		return getCurrentHeat(building);
 	}
 
 	/**
@@ -187,12 +187,12 @@ public class FuelHeatSource extends HeatSource implements Serializable {
 
 	@Override
 	public void setTime(double time) {
-		this.time = time; // default is 0.12255668934010477 or 0.12255668934010477
+		this.time = time;
 	}
 
 	@Override
-	public void setPercentagePower(int percentage) {
+	public void setPercentagePower(double percentage) {
 		super.setPercentagePower(percentage);
-		toggle = (percentage != 75) && (percentage != 0); // 75% does not need toggle ???
+		toggle = (percentage != 0.0);
 	}
 }

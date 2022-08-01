@@ -110,7 +110,7 @@ public class ResourceProcessSpec implements Serializable {
 	 * Get the max input rates of all non-ambient inputs
 	 * @return
 	 */
-	public Map<Integer, Double> getMaxInputResourceRates() {
+	public Map<Integer, Double> getMaxInputRates() {
 		return maxInputRates;
 	}
 
@@ -156,7 +156,7 @@ public class ResourceProcessSpec implements Serializable {
 	 * Get resource output rates of non-waste products
 	 * @return
 	 */
-	public Map<Integer, Double> getMaxOutputResourceRates() {
+	public Map<Integer, Double> getMaxOutputRates() {
 		return maxOutputRates;
 	}
 

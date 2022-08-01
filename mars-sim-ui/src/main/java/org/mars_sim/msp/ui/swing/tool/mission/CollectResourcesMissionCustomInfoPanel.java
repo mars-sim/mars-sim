@@ -69,7 +69,7 @@ implements UnitListener {
 			AmountResource ar = ResourceUtil.findAmountResource(resourceIds[i]);
 			resourcesCollected.add(ar);
 			
-			WebLabel label = new WebLabel(String.format("%12s:    ", Conversion.capitalize(ar.getName())),
+			WebLabel label = new WebLabel(String.format("%12s :   ", Conversion.capitalize(ar.getName())),
 					                                    JLabel.LEFT); //$NON-NLS-1$
 			label.setAlignmentX(Component.LEFT_ALIGNMENT);
 			collectionPanel.add(label);

@@ -556,10 +556,10 @@ public abstract class Mission implements Serializable, Temporal {
 	public final void setDescription(String description) {
 		if (!this.description.equals(description)) {
 			this.description = description;
-			fireMissionUpdate(MissionEventType.DESIGNATION_EVENT, description);
+			fireMissionUpdate(MissionEventType.DESCRIPTION_EVENT, description);
 		}
 	}
-
+//
 	/**
 	 * Gets the current phase of the mission.
 	 *
@@ -1327,8 +1327,11 @@ public abstract class Mission implements Serializable, Temporal {
 	 * @return
 	 */
 	private String createFullDesignation(Person person) {
-		return Conversion.getInitials(getDescription().replace("with", "").trim()) + " "
+		fullMissionDesignation = Conversion.getInitials(getDescription().replace("with", "").trim()) + " "
 				+ missionManager.getMissionDesignationString(person.getAssociatedSettlement().getName());
+		
+		fireMissionUpdate(MissionEventType.DESIGNATION_EVENT, fullMissionDesignation);
+		return fullMissionDesignation;
 	}
 
 	public void setReservedVehicle(String name) {

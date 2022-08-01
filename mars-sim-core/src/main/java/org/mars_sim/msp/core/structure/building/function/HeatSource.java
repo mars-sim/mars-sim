@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * HeatSource.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-31
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -27,11 +27,11 @@ public abstract class HeatSource implements Serializable {
 	// Data members
 	private double maxHeat;
 
-	private int percent;
+	private double percent;
 	
 	private HeatSourceType type;
 
-	protected static SurfaceFeatures surface ;
+	protected static SurfaceFeatures surface;
 	
 	
 	/**
@@ -72,7 +72,7 @@ public abstract class HeatSource implements Serializable {
 	 * 
 	 * @return
 	 */
-	public int getPercentagePower() {
+	public double getPercentagePower() {
 		return percent ;
 	}
 
@@ -81,7 +81,7 @@ public abstract class HeatSource implements Serializable {
 	 * 
 	 * @param percentage
 	 */
-	public void setPercentagePower(int percentage) {
+	public void setPercentagePower(double percentage) {
 		this.percent = percentage;
 	}
 
@@ -106,8 +106,18 @@ public abstract class HeatSource implements Serializable {
 	 * 
 	 * @return efficiency (max is 1)
 	 */
-	public abstract double getEfficiency();
+	public double getEfficiency() {
+		// To be overridden
+		return 1;
+	}
 
+	/**
+	 * Sets the thermal efficiency of the heat source.
+	 */
+	public void setEfficiency(double value) {
+		// To be overridden
+	}
+	
 	/**
 	 * Gets the maintenance time for this heat source.
 	 * 

@@ -86,7 +86,7 @@ public class TabPanelWasteProcesses extends TabPanel {
 		processListPanel = new JPanel(new GridLayout(0, 1, 5, 2));
 		processListPanel.setAlignmentY(TOP_ALIGNMENT);
 		processListPanel.setBorder(new MarsPanelBorder());
-		content.add(processListPanel, BorderLayout.NORTH);
+		content.add(processListPanel, BorderLayout.CENTER);
 		populateProcessList();
 
 		// Create override check box panel.

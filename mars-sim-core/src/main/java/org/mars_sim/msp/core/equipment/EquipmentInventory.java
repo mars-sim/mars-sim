@@ -57,7 +57,8 @@ public class EquipmentInventory
 	}
 
 	/**
-	 * Gets the total mass of this inventory including the total mass of any held equipment
+	 * Gets the total mass of this inventory including the total mass of any held equipment.
+	 * 
 	 * @return
 	 */
 	@Override
@@ -70,7 +71,7 @@ public class EquipmentInventory
 	}
 
 	/**
-	 * Get the equipment set
+	 * Gets the equipment set.
 	 *
 	 * @return
 	 */
@@ -113,7 +114,7 @@ public class EquipmentInventory
 	}
 
 	/**
-	 * Does this person possess an equipment of this equipment type
+	 * Does this person possess an equipment of this equipment type ?
 	 *
 	 * @param typeID
 	 * @return
@@ -129,7 +130,7 @@ public class EquipmentInventory
 	}
 
 	/**
-	 * Adds an equipment to this person
+	 * Adds an equipment to this person.
 	 *
 	 * @param equipment
 	 * @return true if this person can carry it
@@ -145,7 +146,7 @@ public class EquipmentInventory
 	}
 
 	/**
-	 * Remove an equipment
+	 * Removes an equipment.
 	 *
 	 * @param equipment
 	 */
@@ -172,7 +173,7 @@ public class EquipmentInventory
 //	}
 	
 	/**
-	 * Stores the item resource
+	 * Stores the item resource.
 	 *
 	 * @param resource the item resource
 	 * @param quantity
@@ -184,7 +185,7 @@ public class EquipmentInventory
 	}
 
 	/**
-	 * Retrieves the item resource
+	 * Retrieves the item resource.
 	 *
 	 * @param resource
 	 * @param quantity
@@ -196,7 +197,7 @@ public class EquipmentInventory
 	}
 
 	/**
-	 * Retrieves the resource
+	 * Retrieves the resource.
 	 *
 	 * @param resource
 	 * @param quantity
@@ -228,7 +229,7 @@ public class EquipmentInventory
 	}
 
 	/**
-	 * Stores the resource
+	 * Stores the resource.
 	 *
 	 * @param resource
 	 * @param quantity
@@ -247,7 +248,7 @@ public class EquipmentInventory
 	}
 
 	/**
-	 * Gets the item resource stored
+	 * Gets the item resource stored.
 	 *
 	 * @param resource
 	 * @return quantity
@@ -258,7 +259,7 @@ public class EquipmentInventory
 	}
 
 	/**
-	 * Gets the capacity of a particular amount resource
+	 * Gets the capacity of a particular amount resource.
 	 *
 	 * @param resource
 	 * @return capacity
@@ -277,7 +278,7 @@ public class EquipmentInventory
 	}
 
 	/**
-	 * Obtains the remaining storage space of a particular amount resource
+	 * Obtains the remaining storage space of a particular amount resource.
 	 *
 	 * @param resource
 	 * @return remaining capacity
@@ -303,7 +304,7 @@ public class EquipmentInventory
 	}
 
 	/**
-	 * Obtains the remaining cargo/general/shared capacity
+	 * Obtains the remaining cargo/general/shared capacity.
 	 *
 	 * @return remaining capacity
 	 */
@@ -313,7 +314,7 @@ public class EquipmentInventory
 	}
 
 	/**
-     * Gets the cargo/general/shared capacity
+     * Gets the cargo/general/shared capacity.
      *
      * @return capacity (kg).
      */
@@ -325,7 +326,7 @@ public class EquipmentInventory
 	}
 
 	/**
-	 * Gets the amount resource stored
+	 * Gets the amount resource stored.
 	 *
 	 * @param resource
 	 * @return quantity
@@ -345,7 +346,7 @@ public class EquipmentInventory
 
 
 	/**
-	 * Finds the number of empty containers of a particular equipment
+	 * Finds the number of empty containers of a particular equipment.
 	 *
 	 * @param containerType the equipment type.
 	 * @param brandNew  does it include brand new bag only
@@ -358,7 +359,7 @@ public class EquipmentInventory
 	}
 
 	/**
-	 * Finds the number of containers of a particular type
+	 * Finds the number of containers of a particular type.
 	 *
 	 * @param containerType the equipment type.
 	 * @return number of empty containers.
@@ -441,7 +442,7 @@ public class EquipmentInventory
 	}
 
 	/**
-	 * Add resource capacity
+	 * Adds resource capacity.
 	 *
 	 * @param resource
 	 * @param capacity
@@ -453,7 +454,7 @@ public class EquipmentInventory
 	}
 
 	/**
-	 * Set the resource capacity
+	 * Sets the resource capacity.
 	 *
 	 * @param resource
 	 * @param capacity
@@ -465,7 +466,7 @@ public class EquipmentInventory
 	}
 
 	/**
-	 * Set the resource capacities.
+	 * Sets the resource capacities.
 	 *
 	 * TODO should be keyed on resourceID not string.
 	 * @param capacities
@@ -480,7 +481,8 @@ public class EquipmentInventory
 	}
 
 	/**
-	 * Set the resource capacities.
+	 * Sets the resource capacities.
+	 * 
 	 * @param capacities
 	 * @param add Should these be added to the current values (or else it should be set to the current value)
 	 */
@@ -497,7 +499,7 @@ public class EquipmentInventory
 	}
 
 	/**
-	 * Adds to the cargo/general/shared capacity
+	 * Adds to the cargo/general/shared capacity.
 	 *
 	 * @param value
 	 */
@@ -507,7 +509,7 @@ public class EquipmentInventory
 	}
 
 	/**
-	 * Adds the capacity of a particular resource
+	 * Adds the capacity of a particular resource.
 	 *
 	 * @param resource
 	 * @param capacity
@@ -517,7 +519,7 @@ public class EquipmentInventory
 	}
 
 	/**
-	 * Removes the capacity of a particular resource
+	 * Removes the capacity of a particular resource.
 	 *
 	 * @param resource
 	 * @param capacity
@@ -527,7 +529,7 @@ public class EquipmentInventory
 	}
 
 	/**
-	 * Gets the holder's unit instance
+	 * Gets the holder's unit instance.
 	 *
 	 * @return the holder's unit instance
 	 */
@@ -548,7 +550,7 @@ public class EquipmentInventory
 	}
 
 	/**
-	 * Gets the remaining quantity of an item resource
+	 * Gets the remaining quantity of an item resource.
 	 *
 	 * @param resource
 	 * @return quantity

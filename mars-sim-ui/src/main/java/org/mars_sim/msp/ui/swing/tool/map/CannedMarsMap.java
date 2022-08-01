@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * CannedMarsMap.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-31
  * @author Greg Whelan
  */
 package org.mars_sim.msp.ui.swing.tool.map;

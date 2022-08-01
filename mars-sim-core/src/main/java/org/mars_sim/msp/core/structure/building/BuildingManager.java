@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * BuildingManager.java
- * @date 2021-11-24
+ * @date 2022-07-30
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building;
@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -28,6 +29,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitType;
+import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.environment.Meteorite;
 import org.mars_sim.msp.core.environment.MeteoriteModule;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
@@ -106,7 +108,6 @@ public class BuildingManager implements Serializable {
 
 	private transient MarsClock lastVPUpdateTime;
 
-	private transient List<Building> farmsNeedingWorkCache = new ArrayList<>();
 	private transient List<Building> buildings;
 	private transient List<Building> garages;
 
@@ -115,9 +116,10 @@ public class BuildingManager implements Serializable {
 	private transient Map<FunctionType, List<Building>> buildingFunctionsMap  = new EnumMap<>(FunctionType.class);
 	private transient Map<String, Integer> buildingTypeIDMap  = new HashMap<>();
 
+	private transient Settlement settlement;
+	private transient Meteorite meteorite;
+	
 	// Data members
-	/** The id of the settlement. */
-	private Integer settlementID;
 	/** The population capacity (determined by the # of beds) of the settlement. */
 	private int popCap = 0;
 
@@ -125,17 +127,17 @@ public class BuildingManager implements Serializable {
 	private double debrisMass;
 	private double probabilityOfImpactPerSQMPerSol;
 	private double wallPenetrationThicknessAL;
-
+	
+	/** The id of the settlement. */
+	private Integer settlementID;
+	
 	private List<Integer> buildingInts = new ArrayList<>();
 	private List<Integer> garageInts = new ArrayList<>();
 
-	private transient Settlement settlement;
-
-	private transient Meteorite meteorite;
-
+	private Set<Building> farmsNeedingWorkCache = new UnitSet<>();
+	
 	private static Simulation sim = Simulation.instance();
 	private static SimulationConfig simulationConfig = SimulationConfig.instance();
-
 	private static HistoricalEventManager eventManager;
 	private static MarsClock marsClock;
 	private static MasterClock masterClock;
@@ -145,7 +147,7 @@ public class BuildingManager implements Serializable {
 
 	/**
 	 * Constructor 1 : construct buildings from settlement config template. Called
-	 * by Settlement
+	 * by Settlement's initialize().
 	 *
 	 * @param settlement the manager's settlement.
 	 * @throws Exception if buildings cannot be constructed.
@@ -156,8 +158,7 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
-	 * Constructor 2 : construct buildings from name list. Called by constructor 1
-	 * and by constructor 1
+	 * Constructor 2 : construct buildings from name list. Called by constructor 1.
 	 *
 	 * @param settlement        the manager's settlement
 	 * @param buildingTemplates the settlement's building templates.
@@ -200,7 +201,7 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
-	 * Constructor 3 : Called by MockSettlement for maven test
+	 * Constructor 3 : Called by MockSettlement for maven test.
 	 *
 	 * @param settlement        the manager's settlement
 	 * @param buildingTemplates the settlement's building templates.
@@ -432,6 +433,11 @@ public class BuildingManager implements Serializable {
 		}
 	}
 	
+	/**
+	 * Adds a building to the building type id map.
+	 * 
+	 * @param b
+	 */
 	public void addToBuildingTypeIDMap(Building b) {
 		String buildingType = b.getBuildingType();
 		String n = b.getNickName();
@@ -521,7 +527,7 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
-	 * Gets a list of settlement's buildings with Robotic Station function
+	 * Gets a list of settlement's buildings with Robotic Station function.
 	 *
 	 * @return list of buildings
 	 */
@@ -539,7 +545,7 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
-	 * Gets a list of settlement's buildings with Life Supportfunction
+	 * Gets a list of settlement's buildings with Life Support function.
 	 *
 	 * @return list of buildings
 	 */
@@ -548,7 +554,7 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
-	 * Gets a list of settlement's buildings with power generation function
+	 * Gets a list of settlement's buildings with power generation function.
 	 *
 	 * @return list of buildings
 	 */
@@ -558,7 +564,7 @@ public class BuildingManager implements Serializable {
 
 	/**
 	 * Gets a list of settlement's buildings (not including hallway, tunnel or observatory)
-	 * having a particular function type
+	 * having a particular function type.
 	 *
 	 * @param functionType
 	 * @return list of buildings
@@ -572,7 +578,7 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
-	 * Gets a list of settlement's buildings with thermal function
+	 * Gets a list of settlement's buildings with thermal function.
 	 *
 	 * @return list of buildings
 	 */
@@ -704,7 +710,7 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
-	 * Gets a list of non-malfunctioned buildings with a particular function type
+	 * Gets a list of non-malfunctioned buildings with a particular function type.
 	 *
 	 * @param person
 	 * @param functionType
@@ -1094,7 +1100,7 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
-	 * Removes a vehicle from garage
+	 * Removes a vehicle from garage.
 	 *
 	 * @param vehicle
 	 * @return
@@ -1234,11 +1240,19 @@ public class BuildingManager implements Serializable {
 		return result;
 	}
 
+	/**
+	 * Gets a list of the least crowded buildings from a given list of buildings
+	 * with robotic stations.
+	 *
+	 * @param buildingList list of buildings with the robotic station function.
+	 * @return list of least crowded buildings.
+	 * @throws BuildingException if building in list does not have robotic stations.
+	 */
 	public static List<Building> getLeastCrowded4BotBuildings(List<Building> buildingList) {
 
 		List<Building> result = new ArrayList<>();
 
-		// Find least crowded population.
+		// Find least crowded bot population.
 		int leastCrowded = Integer.MAX_VALUE;
 		for (Building building : buildingList) {
 			RoboticStation roboticStation = building.getRoboticStation();
@@ -1275,7 +1289,7 @@ public class BuildingManager implements Serializable {
 				double buildingRelationships = 0D;
 				int numPeople = 0;
 				for (Person occupant : lifeSupport.getOccupants()) {
-					if (person != occupant) {
+					if (person.equals(occupant)) {
 						buildingRelationships += RelationshipUtil.getOpinionOfPerson(person, occupant);
 						numPeople++;
 					}
@@ -1294,7 +1308,7 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
-	 * Gets a map of buildings having on-going social conversations
+	 * Gets a map of buildings having on-going social conversations.
 	 *
 	 * @param buildingList the list of buildings to filter.
 	 * @return map of buildings and their probabilities.
@@ -1306,7 +1320,6 @@ public class BuildingManager implements Serializable {
 			LifeSupport lifeSupport = building.getLifeSupport();
 			int numPeople = 0;
 			for (Person occupant : lifeSupport.getOccupants()) {
-				// Task task = occupant.getMind().getTaskManager().getTask();
 				if (occupant.getMind().getTaskManager().getTask() instanceof HaveConversation) {
 					numPeople++;
 				}
@@ -1801,7 +1814,7 @@ public class BuildingManager implements Serializable {
 	 * Checks if a proposed building location is open or intersects with existing
 	 * buildings or construction sites.
 	 *
-	 * @param position The positino of the new building
+	 * @param position The position of the new building
 	 * @return true if new building location is open.
 	 */
 	public boolean isBuildingLocationOpen(BoundedObject position) {
@@ -1873,7 +1886,7 @@ public class BuildingManager implements Serializable {
 
 	/**
 	 * Gets the next template ID for a new building in a settlement (but not unique
-	 * in a simulation)
+	 * in a simulation).
 	 *
 	 * @return template ID (starting from 0).
 	 */
@@ -1891,7 +1904,7 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
-	 * Creates a map of building type id
+	 * Creates a map of building type id.
 	 *
 	 * @param b a given building
 	 */
@@ -1929,7 +1942,7 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
-	 * Gets a unique nick name for a new building
+	 * Gets a unique nick name for a new building.
 	 *
 	 * @return a unique nick name
 	 */
@@ -1938,7 +1951,7 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
-	 * Gets the sum of all computing resources in a settlement
+	 * Gets the sum of all computing resources in a settlement.
 	 * 
 	 * @return
 	 */
@@ -1998,10 +2011,10 @@ public class BuildingManager implements Serializable {
 	 * @return list of farming buildings needing work.
 	 */
 	public List<Building> getFarmsNeedingWork() {
-		List<Building> result = null;
+		Set<Building> result = null;
 
 		if (farmsNeedingWorkCache == null)
-			farmsNeedingWorkCache = new ArrayList<>();
+			farmsNeedingWorkCache = new UnitSet<>();
 
 		// Must use the absolute time otherwise it stalls after one sol day
 		double m = marsClock.getTotalMillisols();
@@ -2015,7 +2028,7 @@ public class BuildingManager implements Serializable {
 			farmTimeCache = m;
 			List<Building> farmBuildings = getLeastCrowdedBuildings(
 					getNonMalfunctioningBuildings(getBuildings(FunctionType.FARMING)));
-			result = new ArrayList<Building>();
+			result = new UnitSet<>();
 
 			for (Building b : farmBuildings) {
 				if (b.getFarming().requiresWork()) {
@@ -2025,7 +2038,8 @@ public class BuildingManager implements Serializable {
 
 			farmsNeedingWorkCache = result;
 		}
-		return result;
+		
+		return new ArrayList<>(result);
 	}
 
 	/**
@@ -2153,12 +2167,24 @@ public class BuildingManager implements Serializable {
 		return false;
 	}
 	
-	// This method is called by MeteoriteImpactImpl
+
+	/**
+	 * Sets the probability of impact per square meter per sol. 
+	 * Called by MeteoriteImpactImpl.
+	 *  
+	 * @param value
+	 */
 	public void setProbabilityOfImpactPerSQMPerSol(double value) {
 		probabilityOfImpactPerSQMPerSol = value;
 	}
 
-	// Called by each building once a sol to see if an impact is imminent
+
+	/**
+	 * Gets the probability of impact per square meter per sol. 
+	 * Called by each building once a sol to see if an impact is imminent.
+	 * 
+	 * @return
+	 */
 	public double getProbabilityOfImpactPerSQMPerSol() {
 		return probabilityOfImpactPerSQMPerSol;
 	}
@@ -2193,7 +2219,7 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
-	 * Gets an instance of the historical event manager
+	 * Gets an instance of the historical event manager.
 	 *
 	 * @return
 	 */
@@ -2202,7 +2228,7 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
-	 * Gets a list of garages for the settlement
+	 * Gets a list of garages for the settlement.
 	 *
 	 * @return
 	 */
@@ -2211,7 +2237,7 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
-	 * Reloads instances after loading from a saved sim
+	 * Reloads instances after loading from a saved sim.
 	 *
 	 * @param {@link MasterClock}
 	 * @param {{@link MarsClock}
@@ -2227,7 +2253,7 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
-	 * Reconstruct the building lists after loading from a saved sim
+	 * Reconstructs the building lists after loading from a saved sim.
 	 */
 	public void reinit() {
 		settlement = unitManager.getSettlementByID(settlementID);
@@ -2244,7 +2270,7 @@ public class BuildingManager implements Serializable {
 
 
 	/**
-	 * Prepare object for garbage collection.
+	 * Prepares object for garbage collection.
 	 */
 	public void destroy() {
 		Iterator<Building> i = buildings.iterator();

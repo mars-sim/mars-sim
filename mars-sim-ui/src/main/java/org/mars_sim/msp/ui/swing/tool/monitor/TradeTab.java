@@ -50,11 +50,11 @@ public class TradeTab extends TableTab implements UnitManagerListener {
 				if (c == 2)
 					m.getColumn(i).setCellRenderer(NumberRenderer.getIntegerRenderer());
 				else if (c == 3)
-					m.getColumn(i).setCellRenderer(new NumberCellRenderer(THREE_DIGITS, true));				
+					m.getColumn(i).setCellRenderer(new NumberCellRenderer(TWO_DIGITS, true));				
 				else if (c == 6 || c == 7)
 					m.getColumn(i).setCellRenderer(NumberRenderer.getCurrencyRenderer());
 				else 
-					m.getColumn(i).setCellRenderer(new NumberCellRenderer(TWO_DIGITS, true));
+					m.getColumn(i).setCellRenderer(new NumberCellRenderer(THREE_DIGITS, true));
 			}
 		}
 

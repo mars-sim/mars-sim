@@ -316,7 +316,7 @@
 	</process>
 
 
-	<process name="Package Roast Peanuts into Dry Food "
+	<process name="Package Roast Peanuts into Dry Food"
 		tech="0" skill="0" work-time="50" process-time="50"
 			power-required="1.0">
 
@@ -333,7 +333,7 @@
 	</process>
 
 
-	<process name="Bake White Bread from Soy Flour "
+	<process name="Bake White Bread from Soy Flour"
 		tech="1" skill="1" work-time="50" process-time="200"
 			power-required="1.0">
 
@@ -388,7 +388,7 @@
 	</process>
 
 
-	<process name= "Process White Rice into Rice Flour"
+	<process name="Process White Rice into Rice Flour"
 		tech="1" skill="2" work-time="25" process-time="300"
 			power-required="0.25">
 		<description> Cover Rice with cold water. Soak for hours. Finely grind the rice
@@ -509,7 +509,7 @@
 		</outputs>
 	</process>
 
-	<process name="Bake Wheat Bun from Wheat Flour "
+	<process name="Bake Wheat Bun from Wheat Flour"
 		tech="1" skill="2" work-time="50" process-time="250"
 			power-required="1.0">
 		<description>Bake Wheat Burger Bun from Wheat Flour </description>
@@ -526,7 +526,7 @@
 		</outputs>
 	</process>
 
-	<process name="Bake Wheat Bread from Wheat Flour "
+	<process name="Bake Wheat Bread from Wheat Flour"
 		tech="1" skill="2" work-time="50" process-time="250"
 			power-required="1.0">
 		<description>Bake Wheat Bread from Wheat Flour </description>
@@ -542,7 +542,7 @@
 		</outputs>
 	</process>
 
-	<process name="Make Wheat Noodles from Wheat Flour "
+	<process name="Make Wheat Noodles from Wheat Flour"
 		tech="1" skill="1" work-time="50" process-time="100"
 			power-required="0.5">
 		<description> mix flour with water and knead to form dough. Heat paste into flat sheet.
@@ -560,7 +560,7 @@
 	</process>
 
 
-	<process name="Make Rice Noodles from Rice Flour "
+	<process name="Make Rice Noodles from Rice Flour"
 		tech="1" skill="1" work-time="50" process-time="100"
 			power-required="0.5">
 		<description> Mix flour with water and knead to form dough. Heat paste into flat sheet.

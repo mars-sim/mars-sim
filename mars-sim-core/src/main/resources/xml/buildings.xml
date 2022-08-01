@@ -562,6 +562,42 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="methanol" rate="32.0" ambient="false" />
 				</process>
 
+				<process name="melt and filter ice" number-modules="3" power-required="7" default="off">
+					<description> Melting permafrost ice and filtering the water. 
+						Requires 450kJ/kg extraction energy.
+						
+						Specific heat capacity of ice is 2.09 J/g/C
+				
+						e.g. For 1 mol of ice, from -25 C to 0 C
+						= 18 g * 2.09 * (0 -(-25)) = 0.941 kJ
+				
+						To transition from ice to liquid, it takes a total of 6.02 kJ/mol
+				
+						Specific heat capacity of water is 4.18 J/g/C
+				
+						To warm liquid water to vapor, it takes a total of 7.52 kJ/mol
+				
+						It's (.941 + 6.02) kJ / 18 g = 386.7 kJ / kg
+				
+						For 1 kg, heating for 25 millisols,
+						Heat req = 386.7 kJ/(88.775244*25) = 0.1742 kW / kg
+				
+						or 1.3939 kW for 8 kg of ice
+										
+						See "Water and Brines on Mars: Current Evidence and Implications for MSL", 2013						
+						
+						Note: assume using vacuum chamber, microwaving, or field effects, electrocatalysis, 
+						or other techniques to reduce power usage of ice melting by ~10-fold.
+						
+					</description>
+					<input resource="ice" rate="40.0" ambient="false" />
+					
+					<output resource="water" rate="30.0" ambient="false" />
+					<output resource="regolith" rate="7.5" ambient="false" />
+					<!-- Amount of rock salt or Halite is arbitrary. Need more research -->
+					<output resource="rock salt" rate="2.5" ambient="false" />
+				</process>
+				
 				<!-- Future: allow scientific studies to "unlock" future tech 
 				     such as using electric field.
 				     
@@ -609,16 +645,16 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-storage resource="grey water" capacity="500.0" />
 				<resource-storage resource="black water" capacity="500.0" />
 
-				<resource-storage resource="food" capacity="3000.0" />
-				<resource-storage resource="water" capacity="500.0" />
+				<resource-storage resource="food" capacity="5000.0" />
+				<resource-storage resource="water" capacity="5000.0" />
 				<resource-storage resource="oxygen" capacity="500.0" />
 				<resource-storage resource="carbon dioxide" capacity="500.0" />
 				<resource-storage resource="carbon monoxide" capacity="500.0" />
 				<resource-storage resource="argon" capacity="500.0" />
 				<resource-storage resource="nitrogen" capacity="500.0" />
 
-				<resource-storage resource="ice" capacity="500.0" />
-				<resource-storage resource="regolith" capacity="500.0" />
+				<resource-storage resource="ice" capacity="2000.0" />
+				<resource-storage resource="regolith" capacity="1000.0" />
 
 				<resource-storage resource="chlorine" capacity="100.0" />
 				<resource-storage resource="sodium hypochlorite" capacity="100.0" />
@@ -1304,7 +1340,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="oxygen" rate="128" ambient="false" />
 				</process>
 				
-				<process name="melt and filter ice" power-required="7" default="off">
+				<process name="melt and filter ice" number-modules="4" power-required="7" default="off">
 					<description> Melting permafrost ice and filtering the water. 
 						Requires 450kJ/kg extraction energy.
 						
@@ -1332,12 +1368,12 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 						or other techniques to reduce power usage of ice melting by ~10-fold.
 						
 					</description>
-					<input resource="ice" rate="400.0" ambient="false" />
+					<input resource="ice" rate="40.0" ambient="false" />
 					
-					<output resource="grey water" rate="120.0" ambient="false" />
-					<output resource="regolith" rate="75" ambient="false" />
+					<output resource="water" rate="30.0" ambient="false" />
+					<output resource="regolith" rate="7.5" ambient="false" />
 					<!-- Amount of rock salt or Halite is arbitrary. Need more research -->
-					<output resource="rock salt" rate="25" ambient="false" />
+					<output resource="rock salt" rate="2.5" ambient="false" />
 				</process>
 					
 			</resource-processing>
@@ -2112,7 +2148,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			<storage capacity="10000">
 				<resource-storage resource="oxygen" capacity="1000.0" />
-				<resource-storage resource="water" capacity="1000.0" />
+				<resource-storage resource="water" capacity="2000.0" />
 
 				<resource-storage resource="electronic waste" capacity="500.0" />
 				<resource-storage resource="solid waste" capacity="500.0" />
@@ -2122,7 +2158,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-storage resource="grey water" capacity="1000.0" />
 				<resource-storage resource="black water" capacity="500.0" />
 
-				<resource-storage resource="food" capacity="1000.0" />
+				<resource-storage resource="food" capacity="2000.0" />
 
 				<resource-storage resource="toilet tissue" capacity="500.0" />
 				<resource-storage resource="paper" capacity="500.0" />
@@ -2275,7 +2311,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			<storage capacity="10000">
 				<resource-storage resource="oxygen" capacity="500.0" />
-				<resource-storage resource="water" capacity="500.0" />
+				<resource-storage resource="water" capacity="2000.0" />
 				<resource-storage resource="food" capacity="2000.0" />
 
 				<resource-storage resource="solid waste" capacity="500.0" />
@@ -2655,21 +2691,21 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</robotic-station>
 
 			<storage capacity="10000">
-				<resource-storage resource="Regolith" capacity="1000.0" />
-				<resource-storage resource="Carbon" capacity="500.0" />
-				<resource-storage resource="Iron Oxide" capacity="500.0" />
-				<resource-storage resource="Aluminum Oxide" capacity="50.0" />
+				<resource-storage resource="regolith" capacity="1000.0" />
+				<resource-storage resource="carbon" capacity="500.0" />
+				<resource-storage resource="iron oxide" capacity="500.0" />
+				<resource-storage resource="aluminum oxide" capacity="50.0" />
 				<resource-storage resource="Sand" capacity="1000.0" />
-				<resource-storage resource="Iron Powder" capacity="100.0" />
-				<resource-storage resource="Ethylene" capacity="100.0" />
-				<resource-storage resource="Polyethylene" capacity="100.0" />
-				<resource-storage resource="Gypsum" capacity="100.0" />
-				<resource-storage resource="Calcium Carbonate" capacity="100.0" />
-				<resource-storage resource="Lime" capacity="100.0" />
-				<resource-storage resource="Styrene" capacity="100.0" />
-				<resource-storage resource="Polyester Resin" capacity="100.0" />
-				<resource-storage resource="Cement" capacity="500.0" />
-				<resource-storage resource="Concrete" capacity="500.0" />
+				<resource-storage resource="iron powder" capacity="100.0" />
+				<resource-storage resource="ethylene" capacity="100.0" />
+				<resource-storage resource="polyethylene" capacity="100.0" />
+				<resource-storage resource="gypsum" capacity="100.0" />
+				<resource-storage resource="calcium Carbonate" capacity="100.0" />
+				<resource-storage resource="lime" capacity="100.0" />
+				<resource-storage resource="styrene" capacity="100.0" />
+				<resource-storage resource="polyester Resin" capacity="100.0" />
+				<resource-storage resource="cement" capacity="500.0" />
+				<resource-storage resource="concrete" capacity="500.0" />
 			</storage>
 			<thermal-generation>
 				<heat-source type="Solar Heating" capacity="5.0" />
@@ -2868,7 +2904,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 		<functions>
 			<storage capacity="10000">
-				<resource-storage resource="Regolith" capacity="10000.0" />
+				<resource-storage resource="regolith" capacity="10000.0" />
 			</storage>
 		</functions>
 	</building>
@@ -2882,7 +2918,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 		<functions>
 			<storage capacity="10000">
-				<resource-storage resource="Sand" capacity="10000.0" />
+				<resource-storage resource="sand" capacity="10000.0" />
 			</storage>
 		</functions>
 	</building>
@@ -2924,17 +2960,17 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</robotic-station>
 			<storage capacity="10000">
-				<resource-storage resource="Regolith" capacity="500.0" />
-				<resource-storage resource="Carbon" capacity="250.0" />
-				<resource-storage resource="Iron Oxide" capacity="250.0" />
-				<resource-storage resource="Aluminum Oxide" capacity="25.0" />
-				<resource-storage resource="Sand" capacity="500.0" />
-				<resource-storage resource="Iron Powder" capacity="50.0" />
-				<resource-storage resource="Gypsum" capacity="50.0" />
-				<resource-storage resource="Calcium Carbonate" capacity="50.0" />
-				<resource-storage resource="Lime" capacity="50.0" />
-				<resource-storage resource="Cement" capacity="500.0" />
-				<resource-storage resource="Concrete" capacity="500.0" />
+				<resource-storage resource="regolith" capacity="1000.0" />
+				<resource-storage resource="carbon" capacity="250.0" />
+				<resource-storage resource="iron oxide" capacity="250.0" />
+				<resource-storage resource="aluminum oxide" capacity="25.0" />
+				<resource-storage resource="sand" capacity="1000.0" />
+				<resource-storage resource="iron powder" capacity="50.0" />
+				<resource-storage resource="gypsum" capacity="50.0" />
+				<resource-storage resource="calcium Carbonate" capacity="50.0" />
+				<resource-storage resource="lime" capacity="50.0" />
+				<resource-storage resource="cement" capacity="500.0" />
+				<resource-storage resource="concrete" capacity="500.0" />
 			</storage>
 			<thermal-generation>
 				<heat-source type="Solar Heating" capacity="5.0" />
@@ -3299,12 +3335,12 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="0.5" yloc="-0.5" />
 				</activity>
 			</robotic-station>
-			<storage capacity="5000">
-				<resource-storage resource="Regolith" capacity="100.0" />
+			<storage capacity="50000">
+				<resource-storage resource="Regolith" capacity="2000.0" />
 				<resource-storage resource="Carbon" capacity="100.0" />
 				<resource-storage resource="Iron Oxide" capacity="100.0" />
 				<resource-storage resource="Aluminum Oxide" capacity="100.0" />
-				<resource-storage resource="Sand" capacity="100.0" />
+				<resource-storage resource="Sand" capacity="2000.0" />
 				<resource-storage resource="Iron Powder" capacity="100.0" />
 				<resource-storage resource="Ethylene" capacity="50.0" />
 				<resource-storage resource="Polyethylene" capacity="50.0" />
@@ -3547,7 +3583,43 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="water" rate="18.0" ambient="false" />
 					<output resource="methanol" rate="32.0" ambient="false" />
 				</process>
+		
+				<process name="melt and filter ice" number-modules="3" power-required="7" default="off">
+					<description> Melting permafrost ice and filtering the water. 
+						Requires 450kJ/kg extraction energy.
+						
+						Specific heat capacity of ice is 2.09 J/g/C
 				
+						e.g. For 1 mol of ice, from -25 C to 0 C
+						= 18 g * 2.09 * (0 -(-25)) = 0.941 kJ
+				
+						To transition from ice to liquid, it takes a total of 6.02 kJ/mol
+				
+						Specific heat capacity of water is 4.18 J/g/C
+				
+						To warm liquid water to vapor, it takes a total of 7.52 kJ/mol
+				
+						It's (.941 + 6.02) kJ / 18 g = 386.7 kJ / kg
+				
+						For 1 kg, heating for 25 millisols,
+						Heat req = 386.7 kJ/(88.775244*25) = 0.1742 kW / kg
+				
+						or 1.3939 kW for 8 kg of ice
+										
+						See "Water and Brines on Mars: Current Evidence and Implications for MSL", 2013						
+						
+						Note: assume using vacuum chamber, microwaving, or field effects, electrocatalysis, 
+						or other techniques to reduce power usage of ice melting by ~10-fold.
+						
+					</description>
+					<input resource="ice" rate="40.0" ambient="false" />
+					
+					<output resource="water" rate="30.0" ambient="false" />
+					<output resource="regolith" rate="7.5" ambient="false" />
+					<!-- Amount of rock salt or Halite is arbitrary. Need more research -->
+					<output resource="rock salt" rate="2.5" ambient="false" />
+				</process>
+								
 				<activity>
 					<activity-spot xloc="-2.6" yloc="-2.13" />
 				</activity>
@@ -3568,16 +3640,16 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-storage resource="grey water" capacity="500.0" />
 				<resource-storage resource="black water" capacity="500.0" />
 
-				<resource-storage resource="food" capacity="2000.0" />
-				<resource-storage resource="water" capacity="500.0" />
+				<resource-storage resource="food" capacity="5000.0" />
+				<resource-storage resource="water" capacity="5000.0" />
 				<resource-storage resource="oxygen" capacity="500.0" />
 				<resource-storage resource="carbon dioxide" capacity="500.0" />
 				<resource-storage resource="carbon monoxide" capacity="500.0" />
 				<resource-storage resource="argon" capacity="500.0" />
 				<resource-storage resource="nitrogen" capacity="500.0" />
 
-				<resource-storage resource="ice" capacity="500.0" />
-				<resource-storage resource="regolith" capacity="500.0" />
+				<resource-storage resource="ice" capacity="2000.0" />
+				<resource-storage resource="regolith" capacity="5000.0" />
 
 				<resource-storage resource="chlorine" capacity="100.0" />
 				<resource-storage resource="sodium hypochlorite" capacity="100.0" />

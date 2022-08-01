@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * VehicleTrailMapLayer.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-31
  * @author Scott Davis
  */
 
@@ -72,7 +72,7 @@ public class VehicleTrailMapLayer implements MapLayer {
 	private void displayTrail(Vehicle vehicle, Coordinates mapCenter, String mapType, Graphics g) {
 
 		// Get map angle.
-		double angle = CannedMarsMap.HALF_MAP_ANGLE;
+		double angle = Map.HALF_MAP_ANGLE;
 
 		// Draw trail.
 		IntPoint oldSpot = null;

@@ -149,7 +149,7 @@ public class ThermalGeneration extends Function {
 	 * @return heat generated in kW (heat flow rate)
 	 */
 	public double getGeneratedHeat() {
-		return heatGeneratedCache; // = 0.0 if heatMode == HeatMode.POWER_DOWN
+		return heatGeneratedCache;
 	}
 
 	/**
@@ -173,7 +173,7 @@ public class ThermalGeneration extends Function {
 		
 		double elecRequired = 0;
 		Building build = getBuilding();
-		int percentageHeat = building.getHeatMode().getPercentage();
+		double percentageHeat = building.getHeatMode().getPercentage();
 		for (HeatSource heatSource : heatSources) {
 			heatSource.setPercentagePower(percentageHeat);
 	    	heatSource.setTime(time);
@@ -207,7 +207,7 @@ public class ThermalGeneration extends Function {
 			boolean sufficientPower = building.getSettlement().getPowerGrid().isSufficientPower();
 			
 			// Calculate the unused
-			int sparePercentage = 100 - heatMode.getPercentage();
+			double sparePercentage = 100 - heatMode.getPercentage();
 			for (HeatSource heatSource : heatSources) {
 			    if (heatSource.getType().equals(HeatSourceType.SOLAR_HEATING)) {
 			    	heatSource.setPercentagePower(sparePercentage);
@@ -228,6 +228,7 @@ public class ThermalGeneration extends Function {
 
 	/**
 	 * Time passing for the building.
+	 * 
 	 * @param time amount of time passing (in millisols)
 	 * @throws BuildingException if error occurs.
 	 */

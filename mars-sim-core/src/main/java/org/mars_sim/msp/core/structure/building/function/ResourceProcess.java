@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ResourceProcess.java
- * @date 2021-12-18
+ * @date 2022-07-30
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -226,33 +226,41 @@ public class ResourceProcess implements Serializable {
 //				logger.info(settlement, 30_000, name + "  pulse width: " + Math.round(time * 10000.0)/10000.0 
 //						+ "  accumulatedTime: " + Math.round(accumulatedTime * 100.0)/100.0 
 //						+ "  processInterval: " + processInterval);
-
-				// Get resource bottleneck
-				double bottleneck = getInputBottleneck(accumulatedTime, settlement);
-				if (level > bottleneck)
-					level = bottleneck;
+	
+				double bottleneck = 1D;
 
 				// Input resources from inventory.
-				Map<Integer, Double> maxInputResourceRates = definition.getMaxInputResourceRates();
+				Map<Integer, Double> maxInputResourceRates = definition.getMaxInputRates();
 				for (Entry<Integer, Double> input : maxInputResourceRates.entrySet()) {
 					Integer resource = input.getKey();
 					double maxRate = input.getValue();
 					double resourceRate = maxRate * level;
 					double resourceAmount = resourceRate * accumulatedTime;
 					double stored = settlement.getAmountResourceStored(resource);
+					
+					// Get resource bottleneck
+					double desiredResourceAmount = maxRate * time;
+					double proportionAvailable = 1D;
+					if (desiredResourceAmount > 0D)
+						proportionAvailable = stored / desiredResourceAmount;
+					if (bottleneck > proportionAvailable)
+						bottleneck = proportionAvailable;
+					
+					// Retrieve the right amount
 					if (stored > SMALL_AMOUNT) {
 						if (resourceAmount > stored) {
 							logger.warning(settlement, 30_000, "Case A. Just used up all '" + ResourceUtil.findAmountResourceName(resource)
 								+ "' input to start '" + name + "'. Still missing " + Math.round(resourceAmount * 1000.0)/1000.0 + " kg. "
 								+ Math.round(stored * 1000.0)/1000.0 + " kg in storage.");
 							resourceAmount = stored;
+							settlement.retrieveAmountResource(resource, resourceAmount);
 							setProcessRunning(false);
 							break;
 							// Note: turn on a yellow flag and indicate which the input resource is missing
 						}
-						else {
+						else
 							settlement.retrieveAmountResource(resource, resourceAmount);
-						}
+						
 					}
 					else {
 						logger.warning(settlement, 30_000, "Case B. Not enough '" + ResourceUtil.findAmountResourceName(resource)
@@ -263,37 +271,41 @@ public class ResourceProcess implements Serializable {
 					}
 				}
 
+				// Set level
+				if (level > bottleneck)
+					level = bottleneck;
+				
 				// Output resources to inventory.
-				Map<Integer, Double> maxOutputResourceRates = definition.getMaxOutputResourceRates();
+				Map<Integer, Double> maxOutputResourceRates = definition.getMaxOutputRates();
 				for (Entry<Integer, Double> output : maxOutputResourceRates.entrySet()) {
 					Integer resource = output.getKey();
 					double maxRate = output.getValue();
 					double resourceRate = maxRate * level;
 					double resourceAmount = resourceRate * accumulatedTime;
-					double remainingCapacity = settlement.getAmountResourceRemainingCapacity(resource);
+					double remainingCap = settlement.getAmountResourceRemainingCapacity(resource);
 					
-					if (remainingCapacity > SMALL_AMOUNT) {
-						if (resourceAmount > remainingCapacity) {
+					// Store the right amount
+					if (remainingCap > SMALL_AMOUNT) {
+						if (resourceAmount > remainingCap) {
 							logger.warning(settlement, 30_000, "Case C. Just used up all remaining space for storing '" 
 									+ ResourceUtil.findAmountResourceName(resource)
-									+ "' output in '" + name + "'. Requiring " + Math.round((resourceAmount - remainingCapacity) * 1000.0)/1000.0 
+									+ "' output in '" + name + "'. Requiring " + Math.round((resourceAmount - remainingCap) * 1000.0)/1000.0 
 									+ " kg of storage. Remaining cap: 0 kg.");
-							resourceAmount = remainingCapacity;
+							resourceAmount = remainingCap;
 							settlement.storeAmountResource(resource, resourceAmount);
-							setProcessRunning(false);
+							setProcessRunning(false);						
 							break;
 							// Note: turn on a yellow flag and indicate which the output resource is missing
 						}
-						else {
+						else
 							settlement.storeAmountResource(resource, resourceAmount);
-						}
 						
 					}
 					else {
 						logger.warning(settlement, 30_000, "Case D. Not enough space for storing '" 
 								+ ResourceUtil.findAmountResourceName(resource)
 								+ "' output to continue '" + name + "'. Requiring " + Math.round(resourceAmount * 1000.0)/1000.0 
-								+ " kg of storage.. Remaining cap: " + Math.round(remainingCapacity * 1000.0)/1000.0 + " kg.");
+								+ " kg of storage.. Remaining cap: " + Math.round(remainingCap * 1000.0)/1000.0 + " kg.");
 						setProcessRunning(false);
 						break;
 					}
@@ -325,15 +337,15 @@ public class ResourceProcess implements Serializable {
 			throw new IllegalArgumentException("time must be > 0D");
 
 		double bottleneck = 1D;
-		Map<Integer,Double> maxInputResourceRates = definition.getMaxInputResourceRates();
+		Map<Integer, Double> maxInputResourceRates = definition.getMaxInputRates();
 		for (Entry<Integer, Double> input : maxInputResourceRates.entrySet()) {
 			Integer resource = input.getKey();
 			double maxRate = input.getValue();
 			double desiredResourceAmount = maxRate * time;
-			double inventoryResourceAmount = settlement.getAmountResourceStored(resource);
+			double stored = settlement.getAmountResourceStored(resource);
 			double proportionAvailable = 1D;
 			if (desiredResourceAmount > 0D)
-				proportionAvailable = inventoryResourceAmount / desiredResourceAmount;
+				proportionAvailable = stored / desiredResourceAmount;
 			if (bottleneck > proportionAvailable)
 				bottleneck = proportionAvailable;
 		}
@@ -360,7 +372,7 @@ public class ResourceProcess implements Serializable {
 	}
 
 	/**
-	 * Checks if it has exceeded the time limit
+	 * Checks if it has exceeded the time limit.
 	 *
 	 * @return
 	 */
@@ -377,7 +389,8 @@ public class ResourceProcess implements Serializable {
 
 
 	/**
-	 * Get the time permissions for the next toggle.
+	 * Gets the time permissions for the next toggle.
+	 * 
 	 * @return
 	 */
 	public int[] getTimeLimit() {
@@ -385,7 +398,7 @@ public class ResourceProcess implements Serializable {
 	}
 
 	/**
-	 * Reloads instances after loading from a saved sim
+	 * Reloads instances after loading from a saved sim.
 	 *
 	 * @param clock
 	 */
@@ -394,7 +407,8 @@ public class ResourceProcess implements Serializable {
 	}
 
 	/**
-	 * Reset the toggle time from teh current baseline time
+	 * Resets the toggle time from teh current baseline time.
+	 * 
 	 * @param sol Baseline mission sol
 	 * @param millisols
 	 */
@@ -413,6 +427,7 @@ public class ResourceProcess implements Serializable {
 
 	/**
 	 * Times of the toggle operation. First item is the toggle work executed, 2nd is the target.
+	 * 
 	 * @return
 	 */
 	public double[] getToggleSwitchDuration() {

@@ -66,7 +66,7 @@ public abstract class DataLogger<T> implements Serializable {
 	}
 	
 	/**
-	 * Create a new data item for a new sol.
+	 * Creates a new data item for a new sol.
 	 * 
 	 * @return
 	 */
@@ -150,4 +150,5 @@ public abstract class DataLogger<T> implements Serializable {
 	public T getYestersolData() {
 		return getSolData(currentSol - 1);
 	}
+	
 }

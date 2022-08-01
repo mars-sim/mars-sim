@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Storage.java
- * @date 2021-10-20
+ * @date 2022-07-30
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -31,7 +31,8 @@ public class Storage extends Function {
 
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(Storage.class.getName());
-
+	
+	/** The capacities of each resource. */
 	private Map<Integer, Double> resourceCapacities;
 
 
@@ -39,7 +40,7 @@ public class Storage extends Function {
 	 * Constructor.
 	 *
 	 * @param building the building the function is for.
-	 * @param spec Spec of teh Storage capability
+	 * @param spec Spec of the Storage capability
 	 * @throws BuildingException if function cannot be constructed.
 	 */
 	public Storage(Building building, FunctionSpec spec) {
@@ -49,17 +50,16 @@ public class Storage extends Function {
 		// Get capacity for each resource.
 		resourceCapacities = buildingConfig.getStorageCapacities(building.getBuildingType());
 
-		// Note: A capacity of a resource in a settlement is the sum of the capacity of
-		// the same resource in all buildings of that settlement
+		// Note: Storing a resource in a building is equivalent to storing it in a settlement.
 
-		// Set the capacities for each supported resource
+		// Get the owner of this building 
 		Settlement owner = building.getSettlement();
+		// Set up equipment inventory
 		EquipmentInventory inv = owner.getEquipmentInventory();
-		// Set capacity of resources for this building.
+		// Set the capacities of resources from this building.
 		inv.setResourceCapacityMap(resourceCapacities, true);
 
 		double stockCapacity = spec.getCapacity();
-
 		// Add stock or general or cargo capacity to this building.
 		inv.addCargoCapacity(stockCapacity);
 
@@ -116,7 +116,6 @@ public class Storage extends Function {
 					existingStorage = 0D;
 			}
 
-//			Good resourceGood = GoodsUtil.getResourceGood(ResourceUtil.findIDbyAmountResourceName(resource.getName()));
 			double resourceValue = settlement.getGoodsManager().getGoodValuePoint(resource);
 			double resourceStored = settlement.getAmountResourceStored(resource);
 			double resourceDemand = resourceValue * (resourceStored + 1D);
@@ -188,7 +187,7 @@ public class Storage extends Function {
 
 
 	/**
-	 * Stores a resource
+	 * Stores a resource.
 	 *
 	 * @param amount
 	 * @param ar
@@ -200,7 +199,7 @@ public class Storage extends Function {
 	}
 
 	/**
-	 * Stores a resource
+	 * Stores a resource.
 	 *
 	 * @param amount
 	 * @param ar     {@link AmountResource}
@@ -213,7 +212,7 @@ public class Storage extends Function {
 	}
 
 	/**
-	 * Stores a resource
+	 * Stores a resource.
 	 *
 	 * @param name
 	 * @param Amount
@@ -225,7 +224,7 @@ public class Storage extends Function {
 	}
 
 	/**
-	 * Stores a resource
+	 * Stores a resource.
 	 *
 	 * @param amount
 	 * @param ar     {@link AmountResource}
@@ -293,21 +292,8 @@ public class Storage extends Function {
 		return result;
 	}
 
-//	/**
-//	 * Retrieves a resource or test if a resource is available
-//	 *
-//	 * @param name
-//	 * @param requestedAmount
-//	 * @param inv
-//	 * @param isRetrieving
-//	 * @return true if the full amount can be retrieved.
-//	 */
-//	public static boolean retrieveAnResource(double requestedAmount, String name, ResourceHolder rh, boolean isRetrieving) {
-//		return retrieveAnResource(requestedAmount, ResourceUtil.findIDbyAmountResourceName(name), rh, isRetrieving);
-//	}
-
 	/**
-	 * Retrieves a resource or test if a resource is available
+	 * Retrieves a resource or test if a resource is available.
 	 *
 	 * @param requestedAmount
 	 * @param ar
@@ -320,7 +306,7 @@ public class Storage extends Function {
 	}
 
 	/**
-	 * Retrieves a resource or test if a resource is available
+	 * Retrieves a resource or test if a resource is available.
 	 *
 	 * @param requestedAmount
 	 * @param id
@@ -333,17 +319,14 @@ public class Storage extends Function {
 		if (amount > 0) {
 			try {
 				double amountStored = rh.getAmountResourceStored(id);
-//				inv.addAmountDemandTotalRequest(id);
 
 				if (amountStored < 0.00001) {
 					result = false;
-
 
 				} else if (amountStored < amount) {
 					amount = amountStored;
 					if (isRetrieving) {
 						rh.retrieveAmountResource(id, amount);
-//						inv.addAmountDemand(id, amount);
 					}
 					logger.log(rh.getHolder(), Level.WARNING, 30_000,
 							"Ran out of "
@@ -354,7 +337,6 @@ public class Storage extends Function {
 				} else {
 					if (isRetrieving) {
 						rh.retrieveAmountResource(id, amount);
-//						inv.addAmountDemand(id, amount);
 					}
 					result = true;
 				}

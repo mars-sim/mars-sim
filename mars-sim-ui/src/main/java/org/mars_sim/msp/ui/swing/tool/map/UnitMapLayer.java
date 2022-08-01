@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * UnitMapLayer.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-31
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.map;
@@ -76,7 +76,7 @@ abstract class UnitMapLayer implements MapLayer {
 			
 			UnitDisplayInfo i = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
 			if (i != null && i.isMapDisplayed(unit)) {
-				double angle = CannedMarsMap.HALF_MAP_ANGLE;
+				double angle = Map.HALF_MAP_ANGLE;
 
 				if (mapCenter != null && mapCenter.getAngle(unit.getCoordinates()) < angle) {
 					displayUnit(unit, mapCenter, mapType, g);

@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * MissionWindow.java
- * @date 2022-03-17
+ * @date 2022-07-31
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.mission;
@@ -9,8 +9,6 @@ package org.mars_sim.msp.ui.swing.tool.mission;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -103,8 +101,6 @@ public class MissionWindow extends ToolWindow {
 				if (index >= 0) {
 					Settlement settlement = (Settlement)target.getModel().getElementAt(index);
 					selectSettlement(settlement);
-					// Update Nav tab's map
-					navpointPane.updateCoords(settlement.getCoordinates());
 				}
 	         }
 		});
@@ -145,34 +141,20 @@ public class MissionWindow extends ToolWindow {
 
 		// Create the create mission button.
 		WebButton createButton = new WebButton("Create New Mission");
-		createButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		createButton.addActionListener(e -> 
 				// Create new mission.
-				createNewMission();
-			}
-		});
+				createNewMission()
+		);
 		buttonPane.add(createButton);
 
 		// Create the edit mission button.
 		final WebButton editButton = new WebButton("Modify Mission");
 		editButton.setEnabled(false);
 
-		editButton.addActionListener(
-				new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						// Edit the mission.
-						missionCache = (Mission) missionList.getSelectedValue();
-						if (missionCache != null) editMission(missionCache);
-					}
-				});
-		missionList.addListSelectionListener(
-			new ListSelectionListener() {
-				public void valueChanged(ListSelectionEvent e) {
-					// Enable button if mission is selected in list.
-					editButton.setEnabled(missionList.getSelectedValue() != null);
-				}
-			}
-		);
+		editButton.addActionListener(e -> {
+			missionCache = (Mission) missionList.getSelectedValue();
+			if (missionCache != null) editMission(missionCache);
+		});
 
 		buttonPane.add(editButton);
 
@@ -180,18 +162,19 @@ public class MissionWindow extends ToolWindow {
 		final WebButton abortButton = new WebButton("Abort Mission");
 		abortButton.setEnabled(false);
 
-		abortButton.addActionListener(
-				new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						// End the mission.
-						missionCache = missionList.getSelectedValue();
-						if (missionCache != null) missionCache.abortMission();
-					}
-				});
+		abortButton.addActionListener(e -> {
+			// End the mission.
+			missionCache = missionList.getSelectedValue();
+			if (missionCache != null) missionCache.abortMission();
+		});
+		
 		missionList.addListSelectionListener(
 				new ListSelectionListener() {
 					public void valueChanged(ListSelectionEvent e) {
-						abortButton.setEnabled(missionList.getSelectedValue() != null);
+						boolean value = missionList.getSelectedValue() != null;
+						abortButton.setEnabled(value);
+						// Enable button if mission is selected in list.
+						editButton.setEnabled(value);
 					}
 				});
 
@@ -212,26 +195,7 @@ public class MissionWindow extends ToolWindow {
 
 	}
 
-	/**
-	 * Selects a mission for display.
-	 *
-	 * @param newMission the mission to select.
-	 */
-	public void selectMission(Mission newMission) {
-		if (newMission == null) {
-			missionList.clearSelection();
-			return;
-		}
-
-		if (missionCache == null || missionCache != newMission) {
-			missionCache = newMission;
-			// Highlight the selected mission in Main tab
-			mainPanel.setMission(missionCache);
-			// Highlight the selected mission in Nav tab
-			navpointPane.setMission(missionCache);
-		}
-	}
-
+	
 	/**
 	 * Selects a mission for display.
 	 *
@@ -242,83 +206,70 @@ public class MissionWindow extends ToolWindow {
 			settlementList.clearSelection();
 			return;
 		}
-
-		if (settlementCache != settlement) {
+	
+		if (settlementCache == null || settlementCache != settlement) {
 			// Update the settlement cache
 			this.settlementCache = settlement;
-			// Clear info on Main tab
-			mainPanel.clearInfo();
-			// Clear info on Nav tab
-			navpointPane.clearInfo();
 			// Highlight the selected mission
 			settlementList.setSelectedValue(settlement, true);
-			
-			
-			// Highlight the first listed mission
-			missionList.setSelectedIndex(0);
-			// Get the reference to the first listed mission
-			missionCache = missionList.getSelectedValue();
-			// Automatically select the first mission in the mission list
-			selectMission(missionCache);
 		}
 		
-//		Settlement selected = settlementList.getSelectedValue();
-//
-//		if (selected != null) {
-//			if (this.settlementCache == null) {
-//				// Update the settlement cache
-//				this.settlementCache = settlement;
-//				// Clear info on Main tab
-//				mainPanel.clearInfo();
-//				// Clear info on Nav tab
-//				navpointPane.clearInfo();
-//				// Highlight the selected mission
-//				settlementList.setSelectedValue(settlement, true);
-//			}
-//
-//			else if (!selected.equals(settlement)) {
-//				// Update the settlement cache
-//				this.settlementCache = settlement;
-//				// Clear the mission selection
-//				missionList.clearSelection();
-//				// Clear info on Main tab
-//				mainPanel.clearInfo();
-//				// Clear info on Nav tab
-//				navpointPane.clearInfo();
-//				// Highlight the selected settlement
-//				settlementList.setSelectedValue(settlement, true);
-//			}
-//			else { // selected is the same as settlement
-//				this.settlementCache = settlement;
-//				// Highlight the selected settlement
-//				settlementList.setSelectedValue(settlement, true);
-//			}
-//		}
-//		else {
-//			this.settlementCache = settlement;
-//			// Clear info on Main tab
-//			mainPanel.clearInfo();
-//			// Clear info on Nav tab
-//			navpointPane.clearInfo();
-//			// Highlight the selected settlement
-//			settlementList.setSelectedValue(settlement, true);
-//		}
-
-//		// Update Nav tab's map
-//		navpointPane.updateCoords(settlement.getCoordinates());
-
 		// Populate the missions in this settlement
 		missionListModel.populateMissions();
-
-//		if (missionListModel.getSize() == 0 || mission == null) {
-//			// Clear the info on main tab and navigation tab to avoid confusion
-//			mainPanel.clearInfo();
-//			
-//			navpointPane.clearInfo();
-//			
-//			return;
-//		}
+		
+		missionCache = null;
+		// Clear the info on main tab and navigation tab to avoid confusion
+		mainPanel.clearInfo();
 			
+		navpointPane.clearInfo();
+	}
+
+	/**
+	 * Selects a mission for display.
+	 *
+	 * @param missionCache the mission to select.
+	 */
+	public void selectSettlement(Settlement settlement, Mission mission) {
+		if (settlement == null) {
+			settlementList.clearSelection();
+			return;
+		}
+	
+		if (settlementCache == null || settlementCache != settlement) {
+			// Update the settlement cache
+			this.settlementCache = settlement;
+			// Highlight the selected mission
+			settlementList.setSelectedValue(settlement, true);
+		}
+		
+		// Populate the missions in this settlement
+		missionListModel.populateMissions();
+		
+		// Automatically select the first mission in the mission list
+		selectMission(mission);
+	}
+	
+	
+	/**
+	 * Selects a mission for display.
+	 *
+	 * @param newMission the mission to select.
+	 */
+	public void selectMission(Mission newMission) {	
+		if (newMission == null) {	
+			missionList.clearSelection();
+			return;
+		}
+		
+		if (missionCache == null || missionCache != newMission) {
+			missionCache = newMission;
+			
+			missionList.setSelectedValue(newMission, true);
+			// Highlight the selected mission in Main tab
+			mainPanel.setMission(newMission);
+			// Highlight the selected mission in Nav tab
+			navpointPane.setMission(newMission);
+		}
 	}
 
 	/**

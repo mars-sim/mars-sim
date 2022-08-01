@@ -307,7 +307,7 @@ public class Simulation implements ClockListener, Serializable {
 		orbitInfo = new OrbitInfo(marsClock);
 		// Create weather
 		weather = new Weather();
-		weather.initializeInstances(sim, marsClock, orbitInfo);
+		Weather.initializeInstances(sim, marsClock, orbitInfo);
 		
 		// Create surface features
 		surfaceFeatures = new SurfaceFeatures();
@@ -375,7 +375,7 @@ public class Simulation implements ClockListener, Serializable {
 		orbitInfo = new OrbitInfo(marsClock);
 		// Create weather
 		weather = new Weather();
-		weather.initializeInstances(this, marsClock, orbitInfo);
+		Weather.initializeInstances(this, marsClock, orbitInfo);
 		// Create surface features
 		surfaceFeatures = new SurfaceFeatures();
 		SurfaceFeatures.initializeInstances(simulationConfig.getLandmarkConfiguration(),
@@ -450,7 +450,7 @@ public class Simulation implements ClockListener, Serializable {
 		Task.initializeInstances(marsClock, eventManager, unitManager,
 				scientificStudyManager, surfaceFeatures, orbitInfo, missionManager, pc);
 		LocalAreaUtil.initializeInstances(unitManager, marsClock);
-		
+
 		doneInitializing = true;
 	}
 
@@ -667,7 +667,7 @@ public class Simulation implements ClockListener, Serializable {
 		// Gets he MarsClock instance
 		EarthClock earthClock = masterClock.getEarthClock();
 		
-		weather.initializeInstances(this, marsClock, orbitInfo);
+		Weather.initializeInstances(this, marsClock, orbitInfo);
 	
 		// Initialize instances in Airlock
 		Airlock.initializeInstances(unitManager, marsSurface, marsClock);

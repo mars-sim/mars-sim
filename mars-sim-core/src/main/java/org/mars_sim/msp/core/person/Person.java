@@ -498,8 +498,8 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 		boolean dominant = false;
 
 		// For a 20-year-old in the US:
-		// male : height : 176.5 weight : 68.5
-		// female : height : 162.6 weight : 57.2
+		//   male - height: 176.5,  weight: 68.5
+		// female - height: 162.6,  weight: 57.2
 
 		// Note: factor in country of origin.
 		// Note: look for a gender-correlated curve

@@ -41,7 +41,6 @@ public class TendGreenhouse extends Task implements Serializable {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(TendGreenhouse.class.getName());
 
-
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.tendGreenhouse"); //$NON-NLS-1$
 	/** Task phases. */

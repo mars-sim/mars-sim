@@ -135,6 +135,24 @@ public class Settlement extends Structure implements Temporal,
 	private static final int BLACK_WATER_ID = ResourceUtil.blackWaterID;
 	private static final int ROCK_SAMPLES_ID = ResourceUtil.rockSamplesID;
 
+	/** The settlement sampling resources. */
+	public static final int[] samplingResources;
+	
+	/** The definition of static arrays */
+	static {
+		samplingResources = new int[] {
+				OXYGEN_ID,
+				HYDROGEN_ID,
+				CO2_ID,
+				METHANE_ID,
+				WATER_ID,
+				GREY_WATER_ID,
+				BLACK_WATER_ID,
+				ROCK_SAMPLES_ID,
+				ICE_ID,
+				REGOLITH_ID };
+	}
+	
 	// Threshold to adjust filtering rate
 	private static final double GREY_WATER_THRESHOLD = 0.00001;
 
@@ -155,31 +173,21 @@ public class Settlement extends Structure implements Temporal,
 	/** The settlement life support requirements. */
 	public static double[][] life_support_value = new double[2][7];
 
-	/** The Flag showing if the settlement has been exposed to the last radiation event. */
-	private boolean[] exposed = { false, false, false };
+	
 	/** The cache for the number of building connectors. */
 	private transient int numConnectorsCache = 0;
-
-	/** The settlement sampling resources. */
-	public static final int[] samplingResources;
-
-	/** The definition of static arrays */
-	static {
-		samplingResources = new int[] {
-				OXYGEN_ID,
-				HYDROGEN_ID,
-				CO2_ID,
-				METHANE_ID,
-				WATER_ID,
-				GREY_WATER_ID,
-				BLACK_WATER_ID,
-				ROCK_SAMPLES_ID,
-				ICE_ID,
-				REGOLITH_ID };
-	}
+	/** The settlement's map of adjacent buildings. */
+	private transient Map<Building, List<Building>> adjacentBuildingMap = new HashMap<>();
+	
 
 	/** The flag for checking if the simulation has just started. */
 	private boolean justLoaded = true;
+	/** The flag signifying this settlement as the destination of the user-defined commander. */
+	private boolean hasDesignatedCommander = false;
+	/** The Flag showing if the settlement has been exposed to the last radiation event. */
+	private boolean[] exposed = { false, false, false };
+	
+	
 	/** The water ration level of the settlement. */
 	private int waterRationLevel = 1;
 	/** The number of people at the start of the settlement. */
@@ -226,9 +234,6 @@ public class Settlement extends Structure implements Temporal,
 	private int minWater = 50;
 	/** Minimum amount of food to stay in this settlement when considering a mission. */
 	private int minFood = 50;
-
-	/** The flag signifying this settlement as the destination of the user-defined commander. */
-	private boolean hasDesignatedCommander = false;
 
 	/** The average regolith collection rate nearby. */
 	private double regolithCollectionRate = RandomUtil.getRandomDouble(4, 8);
@@ -310,8 +315,6 @@ public class Settlement extends Structure implements Temporal,
 	private Map<Integer, Boolean> allowTradeMissionSettlements;
 	/** The mission radius [in km] for the rovers of this settlement for each type of mission . */
 	private Map<MissionType, Integer> missionRange = new EnumMap<>(MissionType.class);
-	/** The settlement's map of adjacent buildings. */
-	private transient Map<Building, List<Building>> adjacentBuildingMap = new HashMap<>();
 	/** The total amount resource collected/studied. */
 	private Map<Integer, Double> resourcesCollected = new HashMap<>();
 	/** The settlement's resource statistics. */
@@ -1106,6 +1109,7 @@ public class Settlement extends Structure implements Temporal,
 	/**
 	 * Apply a clock pulse to a list of Temporal objects. This traps exceptions
 	 * to avoid the impact spreading to other units.
+	 * 
 	 * @param pulse
 	 * @param ownedUnits
 	 */

@@ -42,13 +42,12 @@ implements MissionManagerListener, MissionListener {
 	public MissionListModel(MissionWindow missionWindow) {
 		this.missionWindow = missionWindow;
 
-		missions = new CopyOnWriteArrayList<Mission>();
+		missions = new CopyOnWriteArrayList<>();
 
 		missionManager = Simulation.instance().getMissionManager();
 
 		// Add list as mission manager listener.
 		missionManager.addListener(this);
-
 	}
 
 

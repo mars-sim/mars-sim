@@ -42,6 +42,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 	private static final int LIGHT_FACTOR = 0;
 	private static final int FERTILIZER_FACTOR = 1;
 	private static final int TEMPERATURE_FACTOR = 2;
+	
 	private static final int WATER_FACTOR = 3;
 	private static final int O2_FACTOR = 4;
 	private static final int CO2_FACTOR = 5;
@@ -55,7 +56,12 @@ public class Crop implements Comparable<Crop>, Serializable {
 	/** How often are the crops checked in mSols */
 	private static final double CHECK_CROP_PERIOD = 4D;
 
-	private static final double TUNING_FACTOR = 1.8;
+	private static final double TUNING_FACTOR = 3.5;
+	
+	private static final double GAS_MODIFIER = 1.5;
+	
+	private static final double WATER_MODIFIER = 1.1;
+	
 	/**
 	 * The limiting factor that determines how fast and how much PAR can be absorbed
 	 * in one frame.
@@ -70,13 +76,12 @@ public class Crop implements Comparable<Crop>, Serializable {
 	 * The average amount of fertilizers needed when watering (but not needed if
 	 * supplied with grey water).
 	 */
-	public static final double FERTILIZER_NEEDED_WATERING = 0.00005D; // a very minute amount needed per unit time,
-																		// called if grey water is not available
+	public static final double FERTILIZER_NEEDED_WATERING = 0.001;
 	/**
 	 * The average amount of fertilizers needed per square meter when planting a new
 	 * crop.
 	 */
-	public static final double FERTILIZER_NEEDED_IN_SOIL_PER_SQM = 1D;
+	public static final double FERTILIZER_NEEDED_IN_SOIL_PER_SQM = 0.1;
 
 	/**
 	 * The ratio of oxygen to carbon during the day when photosynthesis is taking
@@ -985,8 +990,8 @@ public class Crop implements Comparable<Crop>, Serializable {
 			}
 
 			double fertilizerAvailable = building.getSettlement().getAmountResourceStored(FERTILIZER_ID);
-			// The amount of fertilizer to be used depends on the ratio of the grey water used
-			double fertilizerRequired = FERTILIZER_NEEDED_WATERING * time * greyWaterUsed / (greyWaterUsed + waterUsed + .0001);
+			// The amount of fertilizer to be used depends on the water used
+			double fertilizerRequired = FERTILIZER_NEEDED_WATERING * time * waterUsed;
 			double fertilizerUsed = fertilizerRequired;
 
 			if (fertilizerUsed > fertilizerAvailable) {
@@ -1180,11 +1185,11 @@ public class Crop implements Comparable<Crop>, Serializable {
 		double compositeFactor = TUNING_FACTOR * needFactor * time / 1000.0;
 
 		// STEP 4 : COMPUTE THE EFFECTS OF THE WATER AND FERTIZILER
-		computeWaterFertilizer(compositeFactor * .75, time, greyFilterRate);
+		computeWaterFertilizer(compositeFactor * WATER_MODIFIER, time, greyFilterRate);
 
 		// STEP 5 : COMPUTE THE EFFECTS OF GASES (O2 and CO2 USAGE)
 		// Note: computeGases takes up 25% of all cpu utilization
-		computeGases(watt, compositeFactor);
+		computeGases(watt, compositeFactor * GAS_MODIFIER);
 		// Note that mushrooms are fungi and consume O2 and release CO2
 
 		// STEP 6 : TUNE HARVEST MODIFIER
