@@ -9,7 +9,6 @@ package org.mars_sim.msp.core.goods;
 import java.util.Map;
 
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.time.MarsClock;
 
 /**
  * Represents a potential deal with another Settlement.
@@ -20,10 +19,9 @@ public class Deal implements Comparable<Deal> {
     private Shipment sellingLoad;
     private double tradeCost;
 	private double profit;
-	private MarsClock created;
 
 
-	Deal(Settlement buyer, Shipment sellLoad, Shipment buyLoad, double cost, MarsClock created) {
+	Deal(Settlement buyer, Shipment sellLoad, Shipment buyLoad, double cost) {
         this.buyer = buyer;
         this.sellingLoad = sellLoad;
         this.buyingLoad = buyLoad;
@@ -31,7 +29,6 @@ public class Deal implements Comparable<Deal> {
 
         // Profit is the money earn from the sell minus the money used in the return buy plus the delivery cost
         this.profit = sellLoad.getCostValue() - (buyLoad.getCostValue() + cost);
-		this.created = created;
     }
 
     public Settlement getBuyer() {
@@ -60,10 +57,6 @@ public class Deal implements Comparable<Deal> {
 
     public Map<Good, Integer> getSellingLoad() {
         return sellingLoad.getLoad();
-    }
-
-    public MarsClock getCreated() {
-        return created;
     }
 
     /**

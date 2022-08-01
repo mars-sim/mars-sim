@@ -46,8 +46,8 @@ public class GoodsManager implements Serializable {
 	private static final int BASE_MAINT_PART = 15;
 	private static final int BASE_EVA_SUIT = 1;
 
-	// Duration that deals are valid
-    private static final int DEAL_VALIDITY = 500;
+	// Duration that buying & selling list are valid
+    private static final int LIST_VALIDITY = 500;
 
 	static final double MANUFACTURING_INPUT_FACTOR = 2D;
 	static final double CONSTRUCTING_INPUT_FACTOR = 2D;
@@ -117,7 +117,9 @@ public class GoodsManager implements Serializable {
 	/** A standard list of resources to be excluded in buying negotiation. */
 	private static List<Good> exclusionBuyList = null;
 	/** A standard list of buying resources in buying negotiation. */
+	private transient double buyListTimeout = LIST_VALIDITY/10D; // Don't create list immediately
 	private transient Map<Good, ShoppingItem> buyList =  Collections.emptyMap();
+	private transient double sellListTimeout = LIST_VALIDITY/10D; // Don't create list immediately
 	private transient Map<Good, ShoppingItem> sellList = Collections.emptyMap();
 
 	private Settlement settlement;
@@ -125,8 +127,6 @@ public class GoodsManager implements Serializable {
 	private transient Map<MissionType, Deal> deals = new EnumMap<>(MissionType.class);
 
 	private static UnitManager unitManager;
-	private static MarsClock marsClock;
-
 
 	/**
 	 * Constructor.
@@ -681,9 +681,8 @@ public class GoodsManager implements Serializable {
 	 */
 	public static void initializeInstances(SimulationConfig sc, MarsClock c, MissionManager m, UnitManager u) {
 		unitManager = u;
-		marsClock = c;
 		Good.initializeInstances(sc, c, m);
-		CommerceUtil.initializeInstances(c, m, u);
+		CommerceUtil.initializeInstances(m, u);
 	}
 
 	/**
@@ -705,8 +704,6 @@ public class GoodsManager implements Serializable {
 
 		buyList = null;
 		sellList = null;
-		
-		GoodsUtil.destroyGoods();
 	}
 
 	/**
@@ -725,8 +722,7 @@ public class GoodsManager implements Serializable {
 	public Deal getBestDeal(MissionType commerce, Vehicle delivery) {
 		Deal deal = deals.get(commerce);
 
-		if ((deal != null) 
-				&& (MarsClock.getTimeDiff(marsClock, deal.getCreated()) > DEAL_VALIDITY)) {
+		if (deal != null) {
 			return deal;
 		}
 
@@ -754,18 +750,19 @@ public class GoodsManager implements Serializable {
 	}
 
 	public void timePassing(ClockPulse pulse) {
-		if (pulse.isNewSol() || pulse.getId() <= 1) {
+		MarsClock marsTime = pulse.getMarsTime();
+		if (marsTime.getTotalMillisols() > buyListTimeout) {
 			// Scan the demand cache and build the buy list
-			calculateBuyList();
+			calculateBuyList(marsTime);
 		}
 
-		if (pulse.isNewSol() || pulse.getId() <= 1) {
+		if (marsTime.getTotalMillisols() > sellListTimeout) {
 			// Scan the demand cache and build the buy list
-			calculateSellList();
+			calculateSellList(marsTime);
 		}
 	}
 	
-	public void calculateSellList() {
+	private void calculateSellList(MarsClock marsTime) {
 		// This logic is a draft and need more refinement
 		Map<Good,ShoppingItem> newSell = new HashMap<>();
 		List<Good> excluded = GoodsManager.getExclusionBuyList();
@@ -777,7 +774,7 @@ public class GoodsManager implements Serializable {
 			}
 
 			// Sell good that I can produce
-			if (item.getValue() > good.getDefaultSupplyValue()) {
+			if (item.getValue() > demandCache.get(good.getID())) {
 				double buyPrice = getPrice(good);
 				if (buyPrice >= 1D) {
 					int quantity = (int)(good.getNumberForSettlement(settlement) * 0.1D);
@@ -791,7 +788,8 @@ public class GoodsManager implements Serializable {
 		}
 
 		logger.info(settlement, "New sell list created with items=" + newSell.size());
-		sellList = newSell;
+		sellList = Collections.unmodifiableMap(newSell);
+		sellListTimeout = marsTime.getTotalMillisols() + 500D; // Lasts half a Mars day
 
 		// Any deal are now invalid
 		deals.clear();
@@ -800,28 +798,35 @@ public class GoodsManager implements Serializable {
 	/**
 	 * Calaculate the current buying list for this Settlement.
 	 */
-	public void calculateBuyList() {
+	private void calculateBuyList(MarsClock marsTime) {
 
 		// This logic is a draft and need more refinement
 		Map<Good,ShoppingItem> newBuy = new HashMap<>();
 		List<Good> excluded = GoodsManager.getExclusionBuyList();
 		for(Entry<Integer, Double> item : demandCache.entrySet()) {
 			Good good = GoodsUtil.getGood(item.getKey());
+			if (excluded.contains(good)) {
+				continue;
+			}
 
-			// Take Goods in demand and not excluded
-			if ((item.getValue() > good.getDefaultDemandValue()) && !excluded.contains(good)) {
+			// Take Goods in demand more than supply
+			if (item.getValue() > supplyCache.get(good.getID())) {
 				double buyPrice = getPrice(good) * 1.1D;
 				if (buyPrice >= 1D) {
 					int quantity = (int)(good.getNumberForSettlement(settlement) * 0.1D);
-					if (quantity > 0) {
-						newBuy.put(good, new ShoppingItem(quantity, buyPrice));
+					if (quantity == 0) {
+						// I don't  know what the default is? Some formula based on demand
+						// and good category ?
+						quantity = 10;
 					}
+					newBuy.put(good, new ShoppingItem(quantity, buyPrice));
 				}
 			}
 		}
 
 		logger.info(settlement, "New buy list created with items=" + newBuy.size());
-		buyList = newBuy;
+		buyList = Collections.unmodifiableMap(newBuy);
+		buyListTimeout = marsTime.getTotalMillisols() + 500D; // Lasts half a Mars day
 
 		// Any deal are now invalid
 		deals.clear();

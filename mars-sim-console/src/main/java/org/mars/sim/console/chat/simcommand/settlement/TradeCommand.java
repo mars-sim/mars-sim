@@ -6,6 +6,8 @@
  */
 package org.mars.sim.console.chat.simcommand.settlement;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -37,7 +39,6 @@ public class TradeCommand extends AbstractSettlementCommand {
 	private static final String DEALS = "deals";
 	private static final String BUYING = "buying";
 	private static final String SELLING = "selling";
-	private static final List<String> ARGS = List.of(DEALS, BUYING, SELLING);
 
 	private TradeCommand() {
 		super("tr", "trade", "Trade deals of a Settlement");
@@ -76,9 +77,13 @@ public class TradeCommand extends AbstractSettlementCommand {
 		
 		response.appendTableHeading("Good", CommandHelper.GOOD_WIDTH, "Quantity", 6,
 									"Price", COST_WIDTH);
-		for(Entry<Good, ShoppingItem> item : list.entrySet()) {
-			response.appendTableRow(item.getKey().getName(), item.getValue().getQuantity(),
-						String.format(CommandHelper.MONEY_FORMAT, item.getValue().getPrice()));
+
+		List<Good> ordered = new ArrayList<>(list.keySet());
+		Collections.sort(ordered);						
+		for(Good good : ordered) {
+			ShoppingItem item = list.get(good);
+			response.appendTableRow(good.getName(), item.getQuantity(),
+						String.format(CommandHelper.MONEY_FORMAT, item.getPrice()));
 		}
 	}
 
