@@ -484,7 +484,7 @@ public class Farming extends Function {
 	 */
 	private void provideFertilizer(double cropArea) {
 		double rand = RandomUtil.getRandomDouble(2);
-		double amount = Crop.FERTILIZER_NEEDED_IN_SOIL_PER_SQM * cropArea / 10D * rand;
+		double amount = Crop.FERTILIZER_NEEDED_IN_SOIL_PER_SQM * cropArea * rand;
 		if (amount > MIN)
 			retrieve(amount, FERTILIZER_ID, true);
 	}

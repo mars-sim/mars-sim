@@ -91,15 +91,11 @@ implements Serializable {
 		double available = getCollected(); // * efficiency_solar_to_heat;
 		double col = getMaxHeat() * getPercentagePower() / 100D;// * efficiency_solar_to_heat)/100D;
         return Math.min(available, col);
-
     }
 
 	@Override
 	public double getCurrentPower(Building building) {
-		double available = getCollected();// * efficiency_solar_to_electricity;
-		double col = getMaxHeat() * getPercentagePower() / 100D ; //* efficiency_solar_to_electricity)/100D;	
-        return Math.min(available, col);
-
+        return getCurrentHeat(building);
     }
 	
 	@Override
@@ -110,11 +106,6 @@ implements Serializable {
 	@Override
 	public double getMaintenanceTime() {
 	    return getMaxHeat();
-	}
-
-	@Override
-	public double getEfficiency() {
-		return getEfficiencySolarHeat();
 	}
 	
 	/**

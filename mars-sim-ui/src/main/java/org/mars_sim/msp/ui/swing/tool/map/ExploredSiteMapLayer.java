@@ -1,13 +1,14 @@
-/**
+/*
  * Mars Simulation Project
  * ExploredSiteMapLayer.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-07-31
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.map;
 
 import java.awt.Component;
 import java.awt.Graphics;
+
 import javax.swing.Icon;
 
 import org.mars_sim.msp.core.Coordinates;
@@ -34,7 +35,7 @@ public class ExploredSiteMapLayer implements MapLayer {
 	private boolean displayReserved;
 	private ExploredLocation selectedSite;
 
-	private double angle = CannedMarsMap.HALF_MAP_ANGLE;
+	private double angle = Map.HALF_MAP_ANGLE;
 
 	private SurfaceFeatures surfaceFeatures = Simulation.instance().getSurfaceFeatures();
 

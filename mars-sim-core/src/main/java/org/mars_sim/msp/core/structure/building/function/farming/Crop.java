@@ -76,13 +76,12 @@ public class Crop implements Comparable<Crop>, Serializable {
 	 * The average amount of fertilizers needed when watering (but not needed if
 	 * supplied with grey water).
 	 */
-	public static final double FERTILIZER_NEEDED_WATERING = 0.00005D; // a very minute amount needed per unit time,
-																		// called if grey water is not available
+	public static final double FERTILIZER_NEEDED_WATERING = 0.001;
 	/**
 	 * The average amount of fertilizers needed per square meter when planting a new
 	 * crop.
 	 */
-	public static final double FERTILIZER_NEEDED_IN_SOIL_PER_SQM = 1D;
+	public static final double FERTILIZER_NEEDED_IN_SOIL_PER_SQM = 0.1;
 
 	/**
 	 * The ratio of oxygen to carbon during the day when photosynthesis is taking
@@ -991,8 +990,8 @@ public class Crop implements Comparable<Crop>, Serializable {
 			}
 
 			double fertilizerAvailable = building.getSettlement().getAmountResourceStored(FERTILIZER_ID);
-			// The amount of fertilizer to be used depends on the ratio of the grey water used
-			double fertilizerRequired = FERTILIZER_NEEDED_WATERING * time * greyWaterUsed / (greyWaterUsed + waterUsed + .0001);
+			// The amount of fertilizer to be used depends on the water used
+			double fertilizerRequired = FERTILIZER_NEEDED_WATERING * time * waterUsed;
 			double fertilizerUsed = fertilizerRequired;
 
 			if (fertilizerUsed > fertilizerAvailable) {

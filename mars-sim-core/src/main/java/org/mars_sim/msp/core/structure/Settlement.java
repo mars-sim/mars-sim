@@ -1107,6 +1107,7 @@ public class Settlement extends Structure implements Temporal,
 	/**
 	 * Apply a clock pulse to a list of Temporal objects. This traps exceptions
 	 * to avoid the impact spreading to other units.
+	 * 
 	 * @param pulse
 	 * @param ownedUnits
 	 */

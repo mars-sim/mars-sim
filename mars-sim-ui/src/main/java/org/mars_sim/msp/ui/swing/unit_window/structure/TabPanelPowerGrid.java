@@ -346,21 +346,16 @@ public class TabPanelPowerGrid extends TabPanel {
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
 
-//		private Settlement settlement;
 		private ImageIcon dotRed;
 		private ImageIcon dotYellow;
 		private ImageIcon dotGreen;
 
-//		private int size;
-
 		private PowerTableModel(Settlement settlement) {
-//			this.settlement = settlement;
 
 			dotRed = ImageLoader.getIcon(Msg.getString("img.dotRed")); //$NON-NLS-1$
 			dotYellow = ImageLoader.getIcon(Msg.getString("img.dotYellow")); //$NON-NLS-1$
 			dotGreen = ImageLoader.getIcon(Msg.getString("img.dotGreen_full")); //$NON-NLS-1$
 
-			// size = getBuildings().size();
 		}
 
 		public int getRowCount() {
