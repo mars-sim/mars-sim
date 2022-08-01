@@ -37,6 +37,7 @@ public class AnalyzeMapData extends Task implements Serializable {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(AnalyzeMapData.class.getName());
 
+	private static final double MAX_SEED = 0.5;
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.analyzeMapData"); //$NON-NLS-1$
 
@@ -85,7 +86,7 @@ public class AnalyzeMapData extends Task implements Serializable {
 			compositeSkill = .5 * (1 + computingSkill + prospectingSkill/2.0);
 		}
 	
-		List<ExploredLocation> siteList0 = Simulation.instance().getSurfaceFeatures()
+		List<ExploredLocation> siteList0 = surfaceFeatures
     			.getExploredLocations().stream()
     			.filter(site -> !site.isMined())
     			.collect(Collectors.toList());
@@ -98,7 +99,7 @@ public class AnalyzeMapData extends Task implements Serializable {
 		}
 		else {
 			List<ExploredLocation> siteList1 = siteList0.stream()
-	    			.filter(site -> site.getNumEstimationImprovement() < 15)
+	    			.filter(site -> site.getNumEstimationImprovement() < 20)
 	    			.collect(Collectors.toList());
 			
 			num = siteList1.size();
@@ -122,7 +123,7 @@ public class AnalyzeMapData extends Task implements Serializable {
 		// The higher the composite skill, the less the computing resource.  
 		double score = (1 + numImprovement)/compositeSkill;
 		double rand = RandomUtil.getRandomDouble(score/20.0, score/10.0);
-		seed = Math.min(1, rand);
+		seed = Math.min(MAX_SEED, rand);
 			
 		TOTAL_COMPUTING_NEEDED = getDuration() * seed;
 		computingNeeded = TOTAL_COMPUTING_NEEDED;

@@ -747,8 +747,6 @@ public class Weather implements Serializable, Temporal {
 		int maxSun = 0;
 		int previous = 0;
 		int daylight = 0;
-		
-		logger.warning("list: " + dailyWeatherList.toString());
 				
 		for (MSolDataItem<DailyWeather> dataPoint : dailyWeatherList) {
 			// Gets the solar irradiance at this instant of time

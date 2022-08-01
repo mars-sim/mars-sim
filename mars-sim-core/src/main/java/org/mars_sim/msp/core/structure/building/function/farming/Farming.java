@@ -84,7 +84,7 @@ public class Farming extends Function {
 													"Pipings", "Trays", "Valves"};
 
 	/** The mission sol. */
-	private int currentSol = 1;
+//	private int currentSol = 1;
 	/** The default number of crops allowed by the building type. */
 	private int defaultCropNum;
 	/** The id of a crop in this greenhouse. */
@@ -771,7 +771,7 @@ public class Farming extends Function {
 			// check for the passing of each day
 			if (pulse.isNewSol()) {
 
-				currentSol = pulse.getMarsTime().getMissionSol();
+//				currentSol = pulse.getMarsTime().getMissionSol();
 				
 				// Gradually reduce aspect score by default
 				for (Aspect aspect: attributes.keySet()) {

@@ -202,7 +202,7 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 		designationLabel0.setAlignmentX(Component.RIGHT_ALIGNMENT);
 		missionPane.add(designationLabel0);
 
-		designationLabel = new WebLabel("[TBD]", SwingConstants.LEFT);
+		designationLabel = new WebLabel("", SwingConstants.LEFT);
 		WebPanel wrapper1a = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		wrapper1a.add(designationLabel);
 		missionPane.add(wrapper1a);
@@ -592,12 +592,13 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 			return;
 		}
 		
+		// Remove this as previous mission listener.
+		if (missionCache != null)
+			missionCache.removeMissionListener(this);
+					
 		if (missionCache == null || missionCache != newMission) {
 			missionCache = newMission;
 			
-			// Remove this as previous mission listener.
-			if (missionCache != null)
-				missionCache.removeMissionListener(this);
 			// Add this as listener for new mission.
 			missionCache.addMissionListener(this);
 			
@@ -646,7 +647,7 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 		else {
 			String d = mission.getFullMissionDesignation();
 			if (d == null || d.equals(""))
-				d = "[TBD]";
+				d = "";
 			designationLabel.setText(d);
 			typeLabel.setText(mission.getTypeID());
 			startingLabel.setText(mission.getStartingPerson().getName()); // $NON-NLS-1$
@@ -755,7 +756,7 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 	public void clearInfo() {
 		// NOTE: do NOT clear the mission info. Leave the info there for future viewing
 		// Clear mission info in UI.
-		designationLabel.setText("[TBD]");
+		designationLabel.setText("");
 		typeLabel.setText(" ");
 		phaseLabel.setText(" ");
 		settlementLabel.setText(" ");

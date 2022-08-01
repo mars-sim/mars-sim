@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * NavpointPanel.java
- * @date 2022-07-23
+ * @date 2022-07-31
  * @author Scott Davis
  */
 
@@ -49,7 +49,6 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
-import org.mars_sim.msp.ui.swing.tool.map.CannedMarsMap;
 import org.mars_sim.msp.ui.swing.tool.map.Map;
 import org.mars_sim.msp.ui.swing.tool.map.MapPanel;
 import org.mars_sim.msp.ui.swing.tool.map.MineralMapLayer;
@@ -135,9 +134,7 @@ implements ListSelectionListener, MissionListener {
 		navpointLayer = new NavpointMapLayer(this);
         mineralLayer = new MineralMapLayer(this);
         
-		// Note remove the ShadingMapLayer to improve clarity of map display 
-//		mapPanel.addMapLayer(new ShadingMapLayer(mapPanel), 0);
-		// Note: mineralLayer is 1; 
+		// Note remove the ShadingMapLayer to improve clarity of map display mapPanel.addMapLayer(new ShadingMapLayer(mapPanel), 0); 
         mapPanel.addMapLayer(mineralLayer, 1);
 		mapPanel.addMapLayer(new UnitIconMapLayer(mapPanel), 2);
 		mapPanel.addMapLayer(new UnitLabelMapLayer(), 3);
@@ -156,7 +153,7 @@ implements ListSelectionListener, MissionListener {
 			Coordinates centerCoords = mapPanel.getCenterLocation();
 			if (centerCoords != null) {
 				double phi = centerCoords.getPhi();
-				phi = phi - CannedMarsMap.HALF_MAP_ANGLE/4D;
+				phi = phi - Map.HALF_MAP_ANGLE/4D;
 				if (phi < 0D) phi = 0D;
 				mapPanel.showMap(new Coordinates(phi, centerCoords.getTheta()));
 			}
@@ -171,7 +168,7 @@ implements ListSelectionListener, MissionListener {
 			Coordinates centerCoords = mapPanel.getCenterLocation();
 			if (centerCoords != null) {
 				double theta = centerCoords.getTheta();
-				theta = theta - CannedMarsMap.HALF_MAP_ANGLE/4D;
+				theta = theta - Map.HALF_MAP_ANGLE/4D;
 				if (theta < 0D) theta += (Math.PI * 2D);
 				mapPanel.showMap(new Coordinates(centerCoords.getPhi(), theta));
 			}
@@ -186,7 +183,7 @@ implements ListSelectionListener, MissionListener {
 			Coordinates centerCoords = mapPanel.getCenterLocation();
 			if (centerCoords != null) {
 				double theta = centerCoords.getTheta();
-				theta = theta + CannedMarsMap.HALF_MAP_ANGLE/4D;
+				theta = theta + Map.HALF_MAP_ANGLE/4D;
 				if (theta < (Math.PI * 2D)) theta -= (Math.PI * 2D);
 				mapPanel.showMap(new Coordinates(centerCoords.getPhi(), theta));
 			}
@@ -200,7 +197,7 @@ implements ListSelectionListener, MissionListener {
 			Coordinates centerCoords = mapPanel.getCenterLocation();
 			if (centerCoords != null) {
 				double phi = centerCoords.getPhi();
-				phi = phi + CannedMarsMap.HALF_MAP_ANGLE/4D;
+				phi = phi + Map.HALF_MAP_ANGLE/4D;
 				if (phi > Math.PI) phi = Math.PI;
 				mapPanel.showMap(new Coordinates(phi, centerCoords.getTheta()));
 			}
@@ -263,9 +260,11 @@ implements ListSelectionListener, MissionListener {
 	private class MapListener extends MouseAdapter {
 		@Override
 		public void mouseEntered(MouseEvent event) {
+			// nothing
 		}
 		@Override
 		public void mouseExited(MouseEvent event) {
+			// nothing
 		}
 		@Override
 		public void mouseClicked(MouseEvent event) {
@@ -280,6 +279,7 @@ implements ListSelectionListener, MissionListener {
 		}
 		@Override
 		public void mouseDragged(MouseEvent event) {
+			// nothing
 		}
 	}
 	
@@ -304,7 +304,7 @@ implements ListSelectionListener, MissionListener {
 		double x = (event.getX() - (Map.DISPLAY_WIDTH / 2D) - 1);
 		double y = (event.getY() - (Map.DISPLAY_HEIGHT / 2D) - 1);
 
-		Coordinates clickedPosition = mapPanel.getCenterLocation().convertRectToSpherical(x, y, CannedMarsMap.PIXEL_RHO);
+		Coordinates clickedPosition = mapPanel.getCenterLocation().convertRectToSpherical(x, y, Map.PIXEL_RHO);
 
 		Iterator<Unit> i = unitManager.getDisplayUnits().iterator();
 
@@ -341,11 +341,11 @@ implements ListSelectionListener, MissionListener {
 
 		Coordinates mapCenter = mapPanel.getCenterLocation();
 		if (mapCenter != null) {
-			double rho = CannedMarsMap.PIXEL_RHO;
+			double rho = Map.PIXEL_RHO;
 
-			double x = (double) (event.getX() - (Map.DISPLAY_WIDTH / 2D) - 1);
-			double y = (double) (event.getY() - (Map.DISPLAY_HEIGHT / 2D) - 1);
-			// System.out.println("x is " + x + " y is " + y);
+			double x = (event.getX() - (Map.DISPLAY_WIDTH / 2D) - 1);
+			double y = (event.getY() - (Map.DISPLAY_HEIGHT / 2D) - 1);
+
 			Coordinates mousePos = mapPanel.getCenterLocation().convertRectToSpherical(x, y, rho);
 			boolean onTarget = false;
 
@@ -387,7 +387,7 @@ implements ListSelectionListener, MissionListener {
 				if (clickRange < unitClickRange) {
 					onTarget = true;
 					// Click on a landmark
-					// TODO: may open a panel showing any special items at that landmark
+					// Note: may open a panel showing any special items at that landmark
 					mapPanel.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
 				}
 			}
@@ -425,16 +425,17 @@ implements ListSelectionListener, MissionListener {
 			return;
 		}		
 
+		// Remove this as previous mission listener.
+		if (missionCache != null)
+			missionCache.removeMissionListener(this);
+		
 		if (missionCache == null || missionCache != newMission) {
 			missionCache = newMission;
 			
-			// Remove this as previous mission listener.
-			if (missionCache != null)
-				missionCache.removeMissionListener(this);
 			// Add this as listener for new mission.
 			missionCache.addMissionListener(this);
 			// Update the mission content on the Nav tab
-			updateInfo();
+			updateNavTab();
 		}
 	}
 	
@@ -442,7 +443,7 @@ implements ListSelectionListener, MissionListener {
 	/**
 	 * Updates the mission content on the Nav tab.
 	 */
-	public void updateInfo() {
+	public void updateNavTab() {
 		// Updates coordinates in map
 		updateCoords(missionCache.getAssociatedSettlement().getCoordinates());
 		

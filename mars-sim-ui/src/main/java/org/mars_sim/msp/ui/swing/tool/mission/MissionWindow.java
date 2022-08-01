@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * MissionWindow.java
- * @date 2022-03-17
+ * @date 2022-07-31
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.mission;
@@ -260,7 +260,7 @@ public class MissionWindow extends ToolWindow {
 			missionList.clearSelection();
 			return;
 		}
-	
+		
 		if (missionCache == null || missionCache != newMission) {
 			missionCache = newMission;
 			
