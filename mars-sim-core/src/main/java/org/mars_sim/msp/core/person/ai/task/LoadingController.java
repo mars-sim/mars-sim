@@ -525,8 +525,9 @@ public class LoadingController implements Serializable {
 	 */
 	public boolean isCompleted() {
 		// Manifest is empty so complete
-		return resourcesManifest.isEmpty() && equipmentManifest.isEmpty()
-				&& optionalResourcesManifest.isEmpty() && optionalEquipmentManifest.isEmpty();
+		return (resourcesManifest.isEmpty() && equipmentManifest.isEmpty()
+				&& optionalResourcesManifest.isEmpty() && optionalEquipmentManifest.isEmpty())
+				|| (vehicle.getRemainingCargoCapacity() < 10D);
 	}
 
 	/**

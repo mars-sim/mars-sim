@@ -773,16 +773,15 @@ public class GoodsManager implements Serializable {
 				continue;
 			}
 
-			// Sell good that I can produce
-			if (item.getValue() > demandCache.get(good.getID())) {
-				double buyPrice = getPrice(good);
-				if (buyPrice >= 1D) {
-					int quantity = (int)(good.getNumberForSettlement(settlement) * 0.1D);
+			// Sell goods where there is a good supply value
+			double buyPrice = getPrice(good);
+			if (buyPrice > 0D) {
+				/// Look up sell 10%
+				int quantity = (int)(good.getNumberForSettlement(settlement) * 0.1D);
 
-					// Take Goods where I have ample in store
-					if (quantity > 0) {
-						newSell.put(good, new ShoppingItem(quantity, buyPrice));
-					}
+				// Take Goods where I have ample in store
+				if (quantity > 0) {
+					newSell.put(good, new ShoppingItem(quantity, buyPrice));
 				}
 			}
 		}
@@ -812,15 +811,12 @@ public class GoodsManager implements Serializable {
 			// Take Goods in demand more than supply
 			if (item.getValue() > supplyCache.get(good.getID())) {
 				double buyPrice = getPrice(good) * 1.1D;
-				if (buyPrice >= 1D) {
-					int quantity = (int)(good.getNumberForSettlement(settlement) * 0.1D);
-					if (quantity == 0) {
-						// I don't  know what the default is? Some formula based on demand
-						// and good category ?
-						quantity = 10;
-					}
-					newBuy.put(good, new ShoppingItem(quantity, buyPrice));
+				int quantity = (int)(good.getNumberForSettlement(settlement) * 0.1D);
+				if (quantity == 0) {
+					// Don't have any so buy some
+					quantity = Math.max((int)(50D / buyPrice), 10);
 				}
+				newBuy.put(good, new ShoppingItem(quantity, buyPrice));
 			}
 		}
 

@@ -2309,26 +2309,6 @@ public class Settlement extends Structure implements Temporal,
 					|| v.getMission().getMissionType() == MissionType.BUILDING_CONSTRUCTION
 					|| v.getMission().getMissionType() == MissionType.BUILDING_SALVAGE))
 				.collect(Collectors.toList());
-
-//		Collection<Vehicle> result = new ArrayList<>();
-//		Iterator<Mission> i = missionManager.getMissionsForSettlement(this).iterator();
-//		while (i.hasNext()) {
-//			Mission mission = i.next();
-//			if (mission instanceof VehicleMission) {
-//				Vehicle vehicle = ((VehicleMission) mission).getVehicle();
-//				if ((vehicle != null)
-//						&& !result.contains(vehicle)
-//						&& this.equals(vehicle.getAssociatedSettlement()))
-//					result.add(vehicle);
-//			}
-//
-//			else if (mission.getMissionType() == MissionType.BUILDING_CONSTRUCTION) {
-//				result.addAll(((BuildingConstructionMission) mission).getConstructionVehicles());
-//
-//			}
-//		}
-//
-//		return result;
 	}
 
 	/**
@@ -2349,8 +2329,9 @@ public class Settlement extends Structure implements Temporal,
 	 * @return Collection of parked drones
 	 */
 	public Collection<Drone> getParkedDrones() {
-		return parkedVehicles.stream()
+		return ownedVehicles.stream()
 				.filter(v -> v.getVehicleType() == VehicleType.DELIVERY_DRONE)
+				.filter(v -> this.equals(v.getSettlement()))
 				.map(Drone.class::cast)
 				.collect(Collectors.toList());
 	}
@@ -2386,11 +2367,12 @@ public class Settlement extends Structure implements Temporal,
 	 * @return number of parked rovers.
 	 */
 	public int findNumParkedRovers() {
-		return Math.toIntExact(parkedVehicles
+		return Math.toIntExact(ownedVehicles
 					.stream()
 					.filter(v -> v.getVehicleType() == VehicleType.CARGO_ROVER
 					|| v.getVehicleType() == VehicleType.EXPLORER_ROVER
 					|| v.getVehicleType() == VehicleType.TRANSPORT_ROVER)
+					.filter(v -> this.equals(v.getSettlement()))
 					.collect(Collectors.counting()));
 	}
 
@@ -2400,7 +2382,10 @@ public class Settlement extends Structure implements Temporal,
 	 * @return Collection of parked vehicles
 	 */
 	public Collection<Vehicle> getParkedVehicles() {
-		return parkedVehicles;
+		// Get all Vehicles that are back home
+		return 	ownedVehicles.stream()
+					.filter(v -> this.equals(v.getSettlement()))
+					.collect(Collectors.toList());
 	}
 
 	/**
