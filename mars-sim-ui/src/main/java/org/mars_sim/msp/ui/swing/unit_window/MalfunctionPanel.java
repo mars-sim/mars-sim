@@ -9,6 +9,7 @@ package org.mars_sim.msp.ui.swing.unit_window;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.util.Iterator;
 import java.util.Map;
@@ -20,7 +21,7 @@ import javax.swing.SwingConstants;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionRepairWork;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
-import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 
 import com.alee.laf.label.WebLabel;
@@ -48,6 +49,8 @@ extends WebPanel {
 	private static final String MILLISOLS = " millisols";
 	private static final String HTML_END = "</html>";
 	
+	private static final Font FONT_BOLD_14 = new Font("Serif", Font.BOLD, 14);
+	
 	// Data members
 	public int progressCache = 0;
 	public String partsCache = "";
@@ -68,9 +71,11 @@ extends WebPanel {
 	
 	/**
 	 * Constructs a MalfunctionPanel object with a name prefix.
+	 * 
 	 * @param malfunction the malfunction to display
+	 * @param building    the building the malfunction is in.
 	 */
-	public MalfunctionPanel(Malfunction malfunction) {
+	public MalfunctionPanel(Malfunction malfunction, Building building) {
 
 		// Call JPanel constructor.
 		super();
@@ -78,11 +83,21 @@ extends WebPanel {
 		// Initialize data members.
 		this.malfunction = malfunction;
 
-		// Set layout
-		setLayout(new GridLayout(4, 1, 0, 0));
-
+		// Prepare the building label.
+		if (building != null) {
+			// Set layout and border.
+			setLayout(new GridLayout(5, 1, 0, 0));
+			WebLabel buildingLabel = new WebLabel(building.getName(), SwingConstants.LEFT);
+			buildingLabel.setFont(FONT_BOLD_14);
+			add(buildingLabel);
+		}
+		else {
+			// Set layout and border.
+			setLayout(new GridLayout(4, 1, 0, 0));
+		}	
+		
 		// Set border
-		setBorder(new MarsPanelBorder());
+//		setBorder(new MarsPanelBorder());
 		setOpaque(false);
 		setBackground(new Color(0,0,0,128));
 

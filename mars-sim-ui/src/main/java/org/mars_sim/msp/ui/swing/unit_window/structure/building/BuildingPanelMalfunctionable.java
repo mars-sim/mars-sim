@@ -89,6 +89,7 @@ public class BuildingPanelMalfunctionable extends BuildingFunctionPanel {
 
 		// Create malfunction list panel
 		malfunctionListPanel = new WebPanel();
+		malfunctionListPanel.setPadding(5);
 		malfunctionListPanel.setLayout(new BoxLayout(malfunctionListPanel, BoxLayout.Y_AXIS));
 		malfunctionListMainPanel.add(malfunctionListPanel, BorderLayout.NORTH);
 
@@ -97,7 +98,7 @@ public class BuildingPanelMalfunctionable extends BuildingFunctionPanel {
 		malfunctionPanels = new ArrayList<>();
 		Iterator<Malfunction> i = malfunctionCache.iterator();
 		while (i.hasNext()) {
-			MalfunctionPanel panel = new MalfunctionPanel(i.next());
+			MalfunctionPanel panel = new MalfunctionPanel(i.next(), null);
 			malfunctionListPanel.add(panel);
 			malfunctionPanels.add(panel);
 		}
@@ -115,7 +116,7 @@ public class BuildingPanelMalfunctionable extends BuildingFunctionPanel {
 			while (iter1.hasNext()) {
 				Malfunction malfunction = iter1.next();
 				if (!malfunctionCache.contains(malfunction)) {
-					MalfunctionPanel panel = new MalfunctionPanel(malfunction);
+					MalfunctionPanel panel = new MalfunctionPanel(malfunction, null);
 					malfunctionPanels.add(panel);
 					malfunctionListPanel.add(panel);
 				}

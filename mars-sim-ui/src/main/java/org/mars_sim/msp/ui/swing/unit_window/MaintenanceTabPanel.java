@@ -145,7 +145,7 @@ public class MaintenanceTabPanel extends TabPanel {
         malfunctionPanels = new ArrayList<>();
         Iterator<Malfunction> i = malfunctionCache.iterator();
         while (i.hasNext()) {
-            MalfunctionPanel panel = new MalfunctionPanel(i.next());
+            MalfunctionPanel panel = new MalfunctionPanel(i.next(), null);
             malfunctionListPanel.add(panel);
             malfunctionPanels.add(panel);
         }
@@ -198,7 +198,7 @@ public class MaintenanceTabPanel extends TabPanel {
             while (iter1.hasNext()) {
                 Malfunction malfunction = iter1.next();
                 if (!malfunctionCache.contains(malfunction)) {
-                    MalfunctionPanel panel = new MalfunctionPanel(malfunction);
+                    MalfunctionPanel panel = new MalfunctionPanel(malfunction, null);
                     malfunctionPanels.add(panel);
                     malfunctionListPanel.add(panel);
                 }
