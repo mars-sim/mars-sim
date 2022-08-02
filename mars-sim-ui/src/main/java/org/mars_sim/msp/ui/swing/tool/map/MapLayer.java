@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * MapLayer.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-08-02
  * @author Scott Davis
  */
 
@@ -12,6 +12,7 @@ import java.awt.Graphics;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.environment.SurfaceFeatures;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 
 /**
@@ -19,10 +20,11 @@ import org.mars_sim.msp.core.person.ai.mission.MissionManager;
  */
 public interface MapLayer {
 
-	static MissionManager missionManager = Simulation.instance().getMissionManager();
+	static Simulation sim = Simulation.instance();
+	static MissionManager missionManager = sim.getMissionManager();
+	static UnitManager unitManager = sim.getUnitManager();
+	static SurfaceFeatures surfaceFeatures = sim.getSurfaceFeatures();
 	
-	static UnitManager unitManager = Simulation.instance().getUnitManager();
-
 	/**
 	 * Displays the layer on the map image.
 	 * 

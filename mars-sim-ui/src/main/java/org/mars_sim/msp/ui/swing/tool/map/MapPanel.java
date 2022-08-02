@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * MapPanel.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-08-02
  * @author Scott Davis
  */
 

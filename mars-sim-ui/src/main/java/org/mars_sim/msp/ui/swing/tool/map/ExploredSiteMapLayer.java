@@ -14,9 +14,7 @@ import javax.swing.Icon;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.IntPoint;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.environment.ExploredLocation;
-import org.mars_sim.msp.core.environment.SurfaceFeatures;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 
 public class ExploredSiteMapLayer implements MapLayer {
@@ -36,8 +34,6 @@ public class ExploredSiteMapLayer implements MapLayer {
 	private ExploredLocation selectedSite;
 
 	private double angle = Map.HALF_MAP_ANGLE;
-
-	private SurfaceFeatures surfaceFeatures = Simulation.instance().getSurfaceFeatures();
 
 	/**
 	 * Constructor.

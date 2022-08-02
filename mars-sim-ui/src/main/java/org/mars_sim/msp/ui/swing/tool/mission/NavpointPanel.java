@@ -153,7 +153,7 @@ implements ListSelectionListener, MissionListener {
 			Coordinates centerCoords = mapPanel.getCenterLocation();
 			if (centerCoords != null) {
 				double phi = centerCoords.getPhi();
-				phi = phi - Map.HALF_MAP_ANGLE/4D;
+				phi = phi - Map.HALF_MAP_ANGLE/4;
 				if (phi < 0D) phi = 0D;
 				mapPanel.showMap(new Coordinates(phi, centerCoords.getTheta()));
 			}
@@ -168,7 +168,7 @@ implements ListSelectionListener, MissionListener {
 			Coordinates centerCoords = mapPanel.getCenterLocation();
 			if (centerCoords != null) {
 				double theta = centerCoords.getTheta();
-				theta = theta - Map.HALF_MAP_ANGLE/4D;
+				theta = theta - Map.HALF_MAP_ANGLE/4;
 				if (theta < 0D) theta += (Math.PI * 2D);
 				mapPanel.showMap(new Coordinates(centerCoords.getPhi(), theta));
 			}
@@ -183,7 +183,7 @@ implements ListSelectionListener, MissionListener {
 			Coordinates centerCoords = mapPanel.getCenterLocation();
 			if (centerCoords != null) {
 				double theta = centerCoords.getTheta();
-				theta = theta + Map.HALF_MAP_ANGLE/4D;
+				theta = theta + Map.HALF_MAP_ANGLE/4;
 				if (theta < (Math.PI * 2D)) theta -= (Math.PI * 2D);
 				mapPanel.showMap(new Coordinates(centerCoords.getPhi(), theta));
 			}
@@ -197,7 +197,7 @@ implements ListSelectionListener, MissionListener {
 			Coordinates centerCoords = mapPanel.getCenterLocation();
 			if (centerCoords != null) {
 				double phi = centerCoords.getPhi();
-				phi = phi + Map.HALF_MAP_ANGLE/4D;
+				phi = phi + Map.HALF_MAP_ANGLE/4;
 				if (phi > Math.PI) phi = Math.PI;
 				mapPanel.showMap(new Coordinates(phi, centerCoords.getTheta()));
 			}

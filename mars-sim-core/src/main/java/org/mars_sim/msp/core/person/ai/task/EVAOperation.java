@@ -85,6 +85,7 @@ public abstract class EVAOperation extends Task {
 	private double timeOnSite;
 	private LocalPosition outsideSitePos;
 	private LocalPosition binLoc;
+	private LocalPosition dropOffLoc;
 
 	private LocalBoundedObject interiorObject;
 	private LocalPosition returnInsideLoc;
@@ -231,6 +232,30 @@ public abstract class EVAOperation extends Task {
 		binLoc = pos;
 	}
 
+	/**
+	 * Sets the drop-off location next to a storage bin.
+	 * 
+	 * @param basePoint storage bin.
+	 */
+	protected void setBinDropOffLocation(LocalBoundedObject basePoint) {
+
+		LocalPosition newLocation = null;
+		boolean goodLocation = false;
+		for (int x = 0; (x < 50) && !goodLocation; x++) {
+			LocalPosition boundedLocalPoint = LocalAreaUtil.getRandomExteriorPosition(basePoint, 1D);
+			newLocation = LocalAreaUtil.getLocalRelativePosition(boundedLocalPoint,	basePoint);
+			goodLocation = LocalAreaUtil.isPositionCollisionFree(newLocation, worker.getCoordinates());
+		}
+
+		if (goodLocation) {
+			dropOffLoc = newLocation;
+		}
+		else {
+			endTask();
+			logger.warning(worker, "Can not find a suitable drop-off location near " + basePoint);
+		}
+	}
+	
 	@Override
 	protected double performMappedPhase(double time) {
 		if (person.isOutside()) {
@@ -299,9 +324,9 @@ public abstract class EVAOperation extends Task {
     protected double walkToBin(double time) {
     	// Go to the drop off location
         if (person.isOutside()) {
-        	if (!person.getPosition().equals(binLoc)) {
+        	if (!person.getPosition().equals(dropOffLoc)) {
         		addSubTask(new WalkOutside(person, person.getPosition(),
-        			binLoc, true));
+        			dropOffLoc, true));
         	}
         	else {
         		setPhase(DROP_OFF_RESOURCE);

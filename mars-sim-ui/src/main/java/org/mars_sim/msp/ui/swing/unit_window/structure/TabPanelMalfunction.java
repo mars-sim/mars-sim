@@ -109,13 +109,9 @@ public class TabPanelMalfunction extends TabPanel {
 	 */
 	@Override
 	public void update() {
-		
-		// Check if building list has changed.
-		List<Building> tempBuildings = settlement.getBuildingManager().getBuildings();
-
 		// Create temporary malfunctions list.
 		List<Malfunction> tempMalfunctions = new ArrayList<>();
-		Iterator<Building> i = tempBuildings.iterator();
+		Iterator<Building> i = settlement.getBuildingManager().getBuildings().iterator();
 		while (i.hasNext()) {
 			Iterator<Malfunction> j = i.next().getMalfunctionManager().getMalfunctions().iterator();
 			while (j.hasNext()) {
@@ -128,7 +124,7 @@ public class TabPanelMalfunction extends TabPanel {
 			// Populate malfunctions list.
 			populateMalfunctionsList();
 		} 
-		
+	
 		else {
 			// Update all building malfunction panels.
 			Component[] components = malfunctionsListPanel.getComponents();
@@ -138,10 +134,10 @@ public class TabPanelMalfunction extends TabPanel {
 		}
 	}
 
-
 	/**
 	 * Prepares object for garbage collection.
 	 */
+	@Override
 	public void destroy() {
 		settlement = null;
 		malfunctionsList = null;

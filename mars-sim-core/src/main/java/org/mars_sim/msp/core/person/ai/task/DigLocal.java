@@ -77,6 +77,8 @@ implements Serializable {
 	
 	private LocalPosition binLoc;
 	
+	private LocalPosition dropOffLoc;
+	
 	private List<Building> binList;
 	
 	private EquipmentType containerType;
@@ -286,7 +288,7 @@ implements Serializable {
             	+ Math.round(collectionLimit*100D)/100D
         		+ " kg " + resourceName + ".");        
            
-         	if (person.getPosition().equals(binLoc)) {
+         	if (person.getPosition().equals(dropOffLoc)) {
     			setPhase(DROP_OFF_RESOURCE);
     		}
          	
@@ -424,13 +426,23 @@ implements Serializable {
         }
 	
         int size = binList.size();
+        
         if (size == 0)
         	return p;
-        if (size == 1)
-        	return binList.get(0).getPosition();
+        
+        if (size == 1) {
+        	Building b = binList.get(0); 
+            // Set the bin drop off location (next to the bin)
+        	setBinDropOffLocation(b);
+        	return b.getPosition();
+        }
         
         int rand = RandomUtil.getRandomInt(size - 1);
-        	return binList.get(rand).getPosition();
+        Building b = binList.get(rand); 
+        // Set the bin drop off location (next to the bin)
+    	setBinDropOffLocation(b);
+    	
+    	return b.getPosition();
     }
     
     /** 

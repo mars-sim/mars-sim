@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MalfunctionPanel.java
- * @date 2022-08-01
+ * @date 2022-08-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window;
@@ -96,8 +96,7 @@ extends WebPanel {
 			setLayout(new GridLayout(4, 1, 0, 0));
 		}	
 		
-		// Set border
-//		setBorder(new MarsPanelBorder());
+		// Set border setBorder(new MarsPanelBorder());
 		setOpaque(false);
 		setBackground(new Color(0,0,0,128));
 

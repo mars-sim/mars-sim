@@ -54,12 +54,7 @@ public class LandmarkMapLayer implements MapLayer {
 	
 	private static final List<Landmark> landmarks = Simulation.instance().getSurfaceFeatures().getLandmarks();
 
-	private static final double angle = Map.HALF_MAP_ANGLE;
-	
-//	private double width = 50;
-//	
-//	private double height = 50;
-	
+	private double angle = Map.HALF_MAP_ANGLE;
 
 	/**
 	 * Displays the layer on the map image.

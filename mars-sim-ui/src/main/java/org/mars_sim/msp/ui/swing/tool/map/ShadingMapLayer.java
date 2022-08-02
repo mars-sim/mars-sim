@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * ShadingMapLayer.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-08-02
  * @author Scott Davis
  */
 
@@ -13,8 +13,6 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.environment.SurfaceFeatures;
 
 /**
  * The ShadingMapLayer is a graphics layer to display twilight and night time
@@ -24,19 +22,13 @@ public class ShadingMapLayer implements MapLayer {
 	
     private static final int LIGHT_THRESHOLD = 196;
  
-	private int width = Map.MAP_VIS_WIDTH;
-	
-	private int height = Map.MAP_VIS_HEIGHT;
-	
-	private static SurfaceFeatures surfaceFeatures;
-
 	/**
 	 * Constructor
 	 * 
 	 * @param displayComponent the display component.
 	 */
 	public ShadingMapLayer(Component displayComponent) {
-		surfaceFeatures = Simulation.instance().getSurfaceFeatures();
+		// nothing
 	}
 
 	/**
@@ -56,7 +48,7 @@ public class ShadingMapLayer implements MapLayer {
         if (sunlight < 0.85) {	        
         	int opacity = LIGHT_THRESHOLD - sunlightInt;
             g2d.setColor(new Color(5, 0, 0, opacity)); //(0, 0, 0, 196));
-            g2d.fillRect(0, 0, width, height);
+            g2d.fillRect(0, 0, Map.MAP_VIS_WIDTH, Map.MAP_VIS_HEIGHT);
 		}
 	}
 }

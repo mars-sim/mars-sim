@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MapDataUtil.java
- * @date 2022-07-15
+ * @date 2022-08-02
  * @author Scott Davis
  */
 
@@ -14,8 +14,8 @@
  	
  	public static final int IMAGE_WIDTH = 300;
  	public static final int IMAGE_HEIGHT = IMAGE_WIDTH;
- 	private static final int HEIGHT = MEGDRMapReader.HEIGHT;
- 	private static final int WIDTH = MEGDRMapReader.WIDTH;
+ 	private static final int ELEVATION_MAP_HEIGHT = MEGDRMapReader.HEIGHT;
+ 	private static final int ELEVATION_MAP_WIDTH = MEGDRMapReader.WIDTH;
  	
  	private static final double PI = Math.PI;
  	private static final double TWO_PI = Math.PI * 2D;
@@ -69,20 +69,20 @@
  		while (theta < 0)
  			theta += TWO_PI;
 
- 		int row = (int) Math.round(phi * HEIGHT / PI);
+ 		int row = (int) Math.round(phi * ELEVATION_MAP_HEIGHT / PI);
  		
- 		if (row == HEIGHT) 
+ 		if (row == ELEVATION_MAP_HEIGHT) 
  			row--;
  		
- 		int column = WIDTH /2 + (int) Math.round(theta * WIDTH / TWO_PI);
+ 		int column = ELEVATION_MAP_WIDTH /2 + (int) Math.round(theta * ELEVATION_MAP_WIDTH / TWO_PI);
 
- 		if (column == WIDTH)
+ 		if (column == ELEVATION_MAP_WIDTH)
  			column--;
 
- 		int index = row * WIDTH + column;
+ 		int index = row * ELEVATION_MAP_WIDTH + column;
  		
- 		if (index > HEIGHT * WIDTH)
- 			index = HEIGHT * WIDTH - 1;
+ 		if (index > ELEVATION_MAP_HEIGHT * ELEVATION_MAP_WIDTH)
+ 			index = ELEVATION_MAP_HEIGHT * ELEVATION_MAP_WIDTH - 1;
  		
  		return getElevationArray()[index];
  	}

@@ -25,7 +25,7 @@ public final class RepairHelper {
 	private static SimLogger logger = SimLogger.getLogger(RepairHelper.class.getName());
 
 	private RepairHelper() {
-
+		// nothing
 	}
 
 	/**

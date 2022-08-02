@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Coordinates.java
- * @date 2022-07-01
+ * @date 2022-08-02
  * @author Scott Davis
  */
 
@@ -218,8 +218,7 @@ public class Coordinates implements Serializable {
 		double temp7 = Math.cos(phi1) * Math.cos(phi2) * Math.cos(diffTheta);
 		double temp8 = temp6 + temp7;
 
-		double result = Math.atan2(temp5, temp8);
-		return result;
+		return Math.atan2(temp5, temp8);
 	}
 
 	/**
@@ -240,8 +239,7 @@ public class Coordinates implements Serializable {
 
 		double rho = MARS_RADIUS_KM;
 		double angle = getAngle(otherCoords);
-		double result = rho * angle;
-		return result;
+		return rho * angle;
 	}
 
 	/**
@@ -371,7 +369,7 @@ public class Coordinates implements Serializable {
 
 		if (phi <= PI_HALF) {
 			degrees = ((PI_HALF - phi) / PI_HALF) * 90D;
-		} else if (phi > PI_HALF) {
+		} else {
 			degrees = ((phi - PI_HALF) / PI_HALF) * 90D;
 			degrees = -degrees;
 		}
@@ -394,7 +392,7 @@ public class Coordinates implements Serializable {
 		if (phi <= PI_HALF) {
 			degrees = ((PI_HALF - phi) / PI_HALF) * 90D;
 			direction = NORTH_SHORT; //$NON-NLS-1$
-		} else if (phi > PI_HALF) {
+		} else {
 			degrees = ((phi - PI_HALF) / PI_HALF) * 90D;
 			direction = SOUTH_SHORT; //$NON-NLS-1$
 		}
@@ -419,13 +417,13 @@ public class Coordinates implements Serializable {
 	 */
 	public double getPhi2LatRadian() {
 		double phi = getPhi();
-		double lat_radian = 0;
+		double latRadian = 0;
 		if (phi < PI_HALF) {
-			lat_radian = PI_HALF - phi;
-		} else if (phi > PI_HALF) {
-			lat_radian = phi - PI_HALF;
+			latRadian = PI_HALF - phi;
+		} else {
+			latRadian = phi - PI_HALF;
 		}
-		return lat_radian;
+		return latRadian;
 	}
 
 	/**
@@ -435,14 +433,14 @@ public class Coordinates implements Serializable {
 	 * @param newCoords    the offset location
 	 * @param centerCoords location of the center of the map
 	 * @param rho          radius of planet (in km)
-	 * @param half_map     half the map's width (in pixels)
-	 * @param low_edge     lower edge of map (in pixels)
+	 * @param halfMap     half the map's width (in pixels)
+	 * @param lowEdge     lower edge of map (in pixels)
 	 * @return pixel offset value for map
 	 */
-	public static IntPoint findRectPosition(Coordinates newCoords, Coordinates centerCoords, double rho, int half_map,
-			int low_edge) {
+	public static IntPoint findRectPosition(Coordinates newCoords, Coordinates centerCoords, 
+			double rho, int halfMap, int lowEdge) {
 
-		return centerCoords.findRectPosition(newCoords.phi, newCoords.theta, rho, half_map, low_edge);
+		return centerCoords.findRectPosition(newCoords.phi, newCoords.theta, rho, halfMap, lowEdge);
 	}
 
 	/**

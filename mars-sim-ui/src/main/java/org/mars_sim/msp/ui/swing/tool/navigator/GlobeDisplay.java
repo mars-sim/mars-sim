@@ -74,8 +74,8 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 	private int[] shadingArray;
 	/** <code>true</code> if day/night shading is to be used. */
 	private boolean showDayNightShading;
-	/** <code>true</code> if globe should be updated. */
-	private boolean update;
+//	/** <code>true</code> if globe should be updated. */
+//	private boolean update;
 	/** <code>true</code> if refresh thread should continue. */
 //	private boolean keepRunning;
 	
@@ -141,16 +141,14 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 		this.desktop = navwin.getDesktop();
 
 		// Initialize data members
-		this.globalWidth = GLOBE_BOX_WIDTH;
-		this.globalHeight = GLOBE_BOX_HEIGHT;
+		globalWidth = GLOBE_BOX_WIDTH;
+		globalHeight = GLOBE_BOX_HEIGHT;
 
 		globeCircumference = globalHeight * 2;
 		rho = globeCircumference / (2D * Math.PI);
 
-		this.starfield = ImageLoader.getImage(Msg.getString("img.mars.starfield300")); //$NON-NLS-1$
-
-		this.surfaceFeatures = desktop.getSimulation().getSurfaceFeatures();
-
+		starfield = ImageLoader.getImage(Msg.getString("img.mars.starfield300")); //$NON-NLS-1$
+		surfaceFeatures = desktop.getSimulation().getSurfaceFeatures();
 
 		// Set component size
 		setPreferredSize(new Dimension(globalWidth, globalHeight));
@@ -163,7 +161,7 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 
 		// Initialize global variables
 		centerCoords = new Coordinates(HALF_PI, 0D);
-		update = true;
+//		update = true;
 		mapType = 0;
 		recreate = true;
 		useUSGSMap = false;
@@ -296,18 +294,14 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 	}
 
 	/**
-	 * the run method for the runnable interface
+	 * Draws the sphere.
 	 */
 	public void updateDisplay() {
-		if (recreate) {
-			// System.out.println("recreate is true");
+		if (recreate)
 			recreate = false;
-			// Regenerate globe if recreate is true, then display
-			drawSphere();
-
-		} else {
-			drawSphere();
-		}
+		
+		// Regenerate globe
+		drawSphere();
 	}
 
 	public void drawSphere() {
@@ -322,7 +316,6 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 		
 		paintDoubleBuffer();
 		repaint();
-
 	}
 
 	/*

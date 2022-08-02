@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * IntPoint.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-08-02
  * @author Greg Whelan
  */
 package org.mars_sim.msp.core;
@@ -17,16 +17,6 @@ import java.awt.Point;
 public final class IntPoint
 extends Point {
 
-//	protected
-//
-//	public static class Create
-//	{
-//		public static IntPoint point(int x, int y)
-//		{
-//			return null;
-//		}
-//	}
-
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
@@ -36,7 +26,8 @@ extends Point {
 	}
 
 	/**
-	 * Returns the X coordinate of the point as int. 
+	 * Returns the X coordinate of the point as int.
+	 * 
 	 * @return the X coordinate of the point as int
 	 */
 	public int getiX() {
@@ -45,6 +36,7 @@ extends Point {
 
 	/**
 	 * Returns the Y coordinate of the point as int. 
+	 * 
 	 * @return the Y coordinate of the point as int
 	 */
 	public int getiY() {

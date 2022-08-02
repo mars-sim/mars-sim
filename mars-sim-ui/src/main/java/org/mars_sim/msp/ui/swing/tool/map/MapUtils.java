@@ -1,12 +1,13 @@
-/**
+/*
  * Mars Simulation Project
  * MapUtils.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-08-02
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.swing.tool.map;
 
+import org.mars_sim.mapdata.MapDataUtil;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.IntPoint;
 
@@ -14,10 +15,6 @@ import org.mars_sim.msp.core.IntPoint;
  * Static class for map utilities.
  */
 public class MapUtils {
-//	private static final int MAP_OFFSET_X = 300;
-//	private static final int MAP_OFFSET_Y = 300; //map's actual size is 900x900, but 300x300 is shown on the screen, 
-	// upper left corner of view window starts at 301,301
-	// see CannedMarsMap.createMapImageLarge()
 
 	/**
 	 * Private constructor for utility class.
@@ -33,18 +30,20 @@ public class MapUtils {
 	 * @return display point on map
 	 */
 	public static IntPoint getRectPosition(Coordinates coords, Coordinates mapCenter, String mapType) {
-
 		int mapHeight = CannedMarsMap.MAP_HEIGHT;
-
-		double rho = mapHeight / Math.PI;
 		int halfMap = mapHeight / 2;
-		int low_edge = halfMap - 150;
-		// IntPoint p = Coordinates.findRectPosition(coords, mapCenter, rho, halfMap,
-		// low_edge);
-		// p.setLocation(p.getiX()+MAP_OFFSET_X, p.getiY()+MAP_OFFSET_Y);
-		return Coordinates.findRectPosition(coords, mapCenter, rho, halfMap, low_edge);
+		int lowEdge = halfMap - MapDataUtil.IMAGE_WIDTH / 2; 
+		double rho = mapHeight / Math.PI;
+		return Coordinates.findRectPosition(coords, mapCenter, rho, halfMap, lowEdge);
 	}
 
+	/**
+	 * Gets the distance in terms of the number of pixels.
+	 * 
+	 * @param distance
+	 * @param mapType
+	 * @return
+	 */
 	public static int getPixelDistance(double distance, String mapType) {
 		int mapWidth = CannedMarsMap.MAP_WIDTH;
 		double distancePerPixel = Coordinates.MARS_CIRCUMFERENCE / mapWidth;

@@ -27,10 +27,12 @@ public class NavpointMapLayer implements MapLayer {
 	private static final String BLUE_ICON_NAME = "FlagBlue";
 	private static final String WHITE_ICON_NAME = "FlagWhite";
 	private static final String GREEN_ICON_NAME = "FlagGreen";
-
+	
 	// Domain members
-	private double angle;
-
+	private double angle = Map.HALF_MAP_ANGLE;
+	private int MAP_X_OFFSET = 5;
+	private int MAP_Y_OFFSET = 5;
+	
 	private Component displayComponent;
 	
 	private Icon navpointIconColor;
@@ -49,8 +51,6 @@ public class NavpointMapLayer implements MapLayer {
 
 		// Initialize domain data.
 		this.displayComponent = displayComponent;
-
-		angle = Map.HALF_MAP_ANGLE;
 
 		navpointIconColor = ImageLoader.getIcon(BLUE_ICON_NAME);
 		navpointIconWhite = ImageLoader.getIcon(WHITE_ICON_NAME);
@@ -88,7 +88,6 @@ public class NavpointMapLayer implements MapLayer {
 			if (singleMission instanceof VehicleMission)
 				displayMission((VehicleMission) singleMission, mapCenter, mapType, g);
 		} else {
-			// MissionManager manager = Simulation.instance().getMissionManager();
 			for (Mission mission : missionManager.getMissions()) {
 				if (mission instanceof VehicleMission)
 					displayMission((VehicleMission) mission, mapCenter, mapType, g);
@@ -110,7 +109,6 @@ public class NavpointMapLayer implements MapLayer {
 	 */
 	private void displayMission(VehicleMission mission, Coordinates mapCenter, String mapType, Graphics g) {
 		for (int x = 0; x < mission.getNumberOfNavpoints(); x++) {
-			// NavPoint navpoint = mission.getNavpoint(x);
 			displayNavpoint(mission.getNavpoint(x), mapCenter, mapType, g);
 		}
 	}
@@ -139,9 +137,8 @@ public class NavpointMapLayer implements MapLayer {
 
 			// Determine the draw location for the icon.
 			IntPoint location = MapUtils.getRectPosition(navpoint.getLocation(), mapCenter, mapType);
-			IntPoint drawLocation = new IntPoint(location.getiX(), (location.getiY() - navIcon.getIconHeight()));
-//			IntPoint drawLocation = new IntPoint(location.getiX()+MAP_X_OFFSET, 
-//					(location.getiY() - navIcon.getIconHeight())+MAP_Y_OFFSET);
+			IntPoint drawLocation = new IntPoint(location.getiX()+MAP_X_OFFSET, 
+					(location.getiY()+MAP_Y_OFFSET - navIcon.getIconHeight()));
 
 			// Draw the navpoint icon.
 			navIcon.paintIcon(displayComponent, g, drawLocation.getiX(), drawLocation.getiY());

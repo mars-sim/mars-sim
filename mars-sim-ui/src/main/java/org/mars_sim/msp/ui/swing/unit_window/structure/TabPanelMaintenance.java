@@ -99,10 +99,8 @@ public class TabPanelMaintenance extends TabPanel {
 	 */
 	@Override
 	public void update() {
-
 		// Check if building list has changed.
-		List<Building> tempBuildings = settlement.getBuildingManager().getSortedBuildings();
-		if (!tempBuildings.equals(buildingsList)) {
+		if (!settlement.getBuildingManager().getSortedBuildings().equals(buildingsList)) {
 			// Populate maintenance list.
 			populateMaintenanceList();
 		} else {

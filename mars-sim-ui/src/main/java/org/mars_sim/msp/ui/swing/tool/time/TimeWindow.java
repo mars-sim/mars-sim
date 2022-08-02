@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * TimeWindow.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-08-02
  * @author Scott Davis
  */
 
@@ -297,7 +297,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		// Use spring panel layout.
 		SpringUtilities.makeCompactGrid(hemiPane,
 				3, 2, 		// rows, cols
-				25, 5,	// initX, initY
+				5, 5,	// initX, initY
 				7, 3);		// xPad, yPad
 
 		// Create Earth time panel

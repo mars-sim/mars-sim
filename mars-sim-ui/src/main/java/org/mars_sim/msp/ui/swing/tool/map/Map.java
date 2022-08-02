@@ -17,16 +17,16 @@ import org.mars_sim.msp.core.Coordinates;
  */
 public interface Map {
 
-	/** created map height (for scrolling) */
+	/** The display box map height (for scrolling) */
 	public static final int DISPLAY_HEIGHT = MapDataUtil.IMAGE_HEIGHT;
-	/** created map width (for scrolling) */
+	/** The display box map width (for scrolling) */
 	public static final int DISPLAY_WIDTH = MapDataUtil.IMAGE_WIDTH;
 	/** Map display width in pixels. */
 	public static final int MAP_VIS_WIDTH = DISPLAY_WIDTH;
 	/** Map display height in pixels. */
 	public static final int MAP_VIS_HEIGHT = DISPLAY_HEIGHT;
 	/** this is a mysterious variable. */
-	public static final double HALF_MAP_ANGLE = 0.48587D;
+	public static final double HALF_MAP_ANGLE = 0.48587;
 	/** Source map height in pixels. */
 	public static final int MAP_HEIGHT = 1440;
 	/** Source map width in pixels. */
