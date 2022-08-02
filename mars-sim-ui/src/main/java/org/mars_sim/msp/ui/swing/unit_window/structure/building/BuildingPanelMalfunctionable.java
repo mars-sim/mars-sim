@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * BuildingPanelMalfunctionable.java
- * @date 2022-07-10
+ * @date 2022-08-01
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
@@ -72,17 +72,16 @@ public class BuildingPanelMalfunctionable extends BuildingFunctionPanel {
 	@Override
 	protected void buildUI(JPanel center) {
 
-
 		// Create scroll panel for malfunction list
 		WebScrollPane scrollPanel = new WebScrollPane();
-		scrollPanel.setPreferredSize(new Dimension(170, 90));
+		scrollPanel.setPreferredSize(new Dimension(170, 120));
 		center.add(scrollPanel, BorderLayout.NORTH);
 		addBorder(center, "Active Malfunctions");
 		
 		scrollPanel.setOpaque(false);
 		scrollPanel.setBackground(new Color(0, 0, 0, 128));
 		scrollPanel.getViewport().setOpaque(false);
-		scrollPanel.getViewport().setBackground(new Color(0, 0, 0, 128));// 0, 0, 0, 0));
+		scrollPanel.getViewport().setBackground(new Color(0, 0, 0, 128));
 
 		// Create malfunction list main panel.
 		WebPanel malfunctionListMainPanel = new WebPanel(new BorderLayout(0, 0));
@@ -94,8 +93,8 @@ public class BuildingPanelMalfunctionable extends BuildingFunctionPanel {
 		malfunctionListMainPanel.add(malfunctionListPanel, BorderLayout.NORTH);
 
 		// Create malfunction panels
-		malfunctionCache = new ArrayList<Malfunction>(malfunctionable.getMalfunctionManager().getMalfunctions());
-		malfunctionPanels = new ArrayList<MalfunctionPanel>();
+		malfunctionCache = new ArrayList<>(malfunctionable.getMalfunctionManager().getMalfunctions());
+		malfunctionPanels = new ArrayList<>();
 		Iterator<Malfunction> i = malfunctionCache.iterator();
 		while (i.hasNext()) {
 			MalfunctionPanel panel = new MalfunctionPanel(i.next());
@@ -136,13 +135,13 @@ public class BuildingPanelMalfunctionable extends BuildingFunctionPanel {
 			}
 
 			// Update malfunction cache.
-			malfunctionCache = new ArrayList<Malfunction>(malfunctions);
+			malfunctionCache = new ArrayList<>(malfunctions);
 		}
 
 		// Have each malfunction panel update.
 		Iterator<MalfunctionPanel> i = malfunctionPanels.iterator();
 		while (i.hasNext())
-			i.next().update();
+			i.next().updateMalfunctionPanel();
 	}
 
 	/**

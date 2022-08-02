@@ -128,7 +128,7 @@ public class MaintenanceTabPanel extends TabPanel {
 
         // Create scroll panel for malfunction list
         JScrollPane malfunctionScrollPanel = new JScrollPane();
-        malfunctionScrollPanel.setPreferredSize(new Dimension(170, 90));
+        malfunctionScrollPanel.setPreferredSize(new Dimension(170, 120));
         malfunctionPanel.add(malfunctionScrollPanel, BorderLayout.CENTER);
 
         // Create malfunction list main panel.
@@ -223,7 +223,7 @@ public class MaintenanceTabPanel extends TabPanel {
 
         // Have each malfunction panel update.
         Iterator<MalfunctionPanel> i = malfunctionPanels.iterator();
-        while (i.hasNext()) i.next().update();
+        while (i.hasNext()) i.next().updateMalfunctionPanel();
     }
 
     /**

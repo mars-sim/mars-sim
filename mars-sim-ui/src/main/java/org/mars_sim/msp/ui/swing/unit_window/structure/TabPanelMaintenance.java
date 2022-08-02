@@ -22,6 +22,7 @@ import javax.swing.BoundedRangeModel;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.SwingConstants;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.mars_sim.msp.core.Msg;
@@ -29,12 +30,12 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.MalfunctionRepairWork;
-import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.tool.Conversion;
+import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.unit_window.MalfunctionPanel;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 import com.alee.laf.label.WebLabel;
@@ -48,7 +49,8 @@ import com.alee.managers.tooltip.TooltipWay;
 public class TabPanelMaintenance extends TabPanel {
 
 	private static final String SPANNER_ICON = Msg.getString("icon.spanner"); //$NON-NLS-1$
-	
+	private static final String REPAIR_WORK_REQUIRED = "Repair Work Required :";
+
 	/** The Settlement instance. */
 	private Settlement settlement;
 	
@@ -108,7 +110,7 @@ public class TabPanelMaintenance extends TabPanel {
 		topPanel.add(malfunctionsPanel);
 
 		// Create malfunctions label.
-		WebLabel malfunctionsLabel = new WebLabel("Building Malfunctions", WebLabel.CENTER);
+		WebLabel malfunctionsLabel = new WebLabel("Building Malfunctions", SwingConstants.CENTER);
 		malfunctionsLabel.setFont(FONT_16);
 		// malfunctionsLabel.setForeground(new Color(102, 51, 0)); // dark brown
 		malfunctionsPanel.add(malfunctionsLabel, BorderLayout.NORTH);
@@ -215,7 +217,7 @@ public class TabPanelMaintenance extends TabPanel {
 			// Update all building malfunction panels.
 			Component[] components = malfunctionsListPanel.getComponents();
 			for (Component component : components) {
-				((BuildingMalfunctionPanel) component).update();
+				((BuildingMalfunctionPanel) component).updateMalfunctionPanel();
 //					BuildingMalfunctionPanel panel = ((BuildingMalfunctionPanel) component);
 //					if (panel.isChanged)
 //						panel.update();
@@ -223,51 +225,6 @@ public class TabPanelMaintenance extends TabPanel {
 		}
 	}
 
-	/**
-	 * Gets the parts string.
-	 * 
-	 * @return string.
-	 */
-	private String getPartsString(Map<Integer, Integer> parts, boolean useHtml) {
-
-//		StringBuilder buf = new StringBuilder("Parts: ");
-//		if (parts.size() > 0) {
-//			Iterator<Part> i = parts.keySet().iterator();
-//			while (i.hasNext()) {
-//				Part part = i.next();
-//				int number = parts.get(part);
-//				buf.append(number).append(" ").append(Conversion.capitalize(part.getName()));
-//				if (i.hasNext()) buf.append(", ");
-//			}
-//		}
-//		else buf.append("None.");
-//		return buf.toString();
-
-		StringBuilder buf = new StringBuilder("Parts needed : ");
-		// Map<Part, Integer> parts =
-		// malfunctionable.getMalfunctionManager().getMaintenanceParts();
-		if (parts.size() > 0) {
-			Iterator<Integer> i = parts.keySet().iterator();
-			while (i.hasNext()) {
-				Integer part = i.next();
-				int number = parts.get(part);
-				if (useHtml)
-					buf.append("<br>");
-				buf.append(number).append(" ")
-						.append(Conversion.capitalize(ItemResourceUtil.findItemResource(part).getName()));
-				if (i.hasNext())
-					buf.append(", ");
-				else {
-					buf.append(".");
-					if (useHtml)
-						buf.append("<br>");
-				}
-			}
-		} else
-			buf.append("None.");
-
-		return buf.toString();
-	}
 
 	/**
 	 * Inner class for the building maintenance panel.
@@ -300,7 +257,7 @@ public class TabPanelMaintenance extends TabPanel {
 			setLayout(new GridLayout(4, 1, 0, 0));
 //			setBorder(new MarsPanelBorder());
 
-			WebLabel buildingLabel = new WebLabel(building.getNickName(), WebLabel.LEFT);
+			WebLabel buildingLabel = new WebLabel(building.getNickName(), SwingConstants.LEFT);
 			buildingLabel.setFont(FONT_14);
 			add(buildingLabel);
 
@@ -308,25 +265,21 @@ public class TabPanelMaintenance extends TabPanel {
 			wearConditionCache = (int) Math.round(manager.getWearCondition());
 			wearConditionLabel = new WebLabel(
 					Msg.getString("BuildingPanelMaintenance.wearCondition", wearConditionCache),
-					WebLabel.CENTER);
+					SwingConstants.RIGHT);
 			TooltipManager.setTooltip(wearConditionLabel, 
 					Msg.getString("BuildingPanelMaintenance.wear.toolTip"),
 					TooltipWay.down);
-			// wearConditionLabel.setMargin (4);
-//			add(wearConditionLabel);
 
 			WebPanel mainPanel = new WebPanel(new BorderLayout(0, 0));
 			add(mainPanel);
 
 			lastCompletedCache = (int) (manager.getTimeSinceLastMaintenance() / 1000D);
-			lastLabel = new WebLabel("Last completed : " + lastCompletedCache + " sols ago", WebLabel.LEFT);
-			mainPanel.add(lastLabel, BorderLayout.WEST);
-			// lastLabel.setToolTipText(getToolTipString());
+			lastLabel = new WebLabel("Last completed : " + lastCompletedCache + " sols ago", SwingConstants.LEFT);
+			mainPanel.add(lastLabel, BorderLayout.WEST);;
 			TooltipManager.setTooltip(lastLabel, getToolTipString(), TooltipWay.down);
 
 			// Prepare progress bar panel.
 			WebPanel progressBarPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
-//			mainPanel.add(progressBarPanel, BorderLayout.CENTER);
 			add(progressBarPanel);
 			
 			mainPanel.add(wearConditionLabel, BorderLayout.CENTER);
@@ -346,11 +299,11 @@ public class TabPanelMaintenance extends TabPanel {
 
 			// Prepare parts label.
 			Map<Integer, Integer> parts = manager.getMaintenanceParts();
-			partsLabel = new WebLabel(getPartsString(parts, false), WebLabel.CENTER);
+			partsLabel = new WebLabel(MalfunctionPanel.getPartsString(parts, false), SwingConstants.CENTER);
 			partsLabel.setPreferredSize(new Dimension(-1, -1));
 			add(partsLabel);
 
-			TooltipManager.setTooltip(partsLabel, getPartsString(parts, false), TooltipWay.down);
+			TooltipManager.setTooltip(partsLabel, MalfunctionPanel.getPartsString(parts, false), TooltipWay.down);
 		}
 
 		/**
@@ -380,32 +333,8 @@ public class TabPanelMaintenance extends TabPanel {
 			Map<Integer, Integer> parts = manager.getMaintenanceParts();
 
 			// Update parts label.
-			partsLabel.setText(getPartsString(parts, false));
-
-			// Update tool tip.
-			// lastLabel.setToolTipText(getToolTipString());
-			// TooltipManager.setTooltip (lastLabel, getToolTipString(), TooltipWay.down);
-
-			// Update tool tip.
-			// partsLabel.setToolTipText("<html>" + getPartsString(parts, true) +
-			// "</html>");
-			// TooltipManager.setTooltip (partsLabel, getPartsString(parts, false),
-			// TooltipWay.down);
-
+			partsLabel.setText(MalfunctionPanel.getPartsString(parts, false));
 		}
-
-//		/**
-//		 * Creates multi-line tool tip text.
-//
-//		private String getToolTipString() {
-//			StringBuilder result = new StringBuilder("<html>");
-//			int maintSols = (int) (manager.getTimeSinceLastMaintenance() / 1000D);
-//			result.append("Last completed maintenance: ").append(maintSols).append(" Sols<br>");
-//			result.append("Repair ").append(getPartsString(manager.getMaintenanceParts()).toLowerCase());
-//			result.append("</html>");
-//
-//			return result.toString();
-//		}
 
 		private String getToolTipString() {
 			StringBuilder result = new StringBuilder("<html>");
@@ -425,16 +354,22 @@ public class TabPanelMaintenance extends TabPanel {
 		private static final long serialVersionUID = 1L;
 
 		// Data members.
-		public boolean isChanged = false;
-		public int progressCache;
-		public String partsCache;
-		public String workCache;
+		public int progressCache = 0;
+		public String partsCache = "";
+		public String workCache = "";
 		
-		private Malfunction malfunction;
+		/** The malfunction label. */
 		private WebLabel malfunctionLabel;
+		/** The work label. */
 		private WebLabel workLabel;
+		/** The repair parts label. */
 		private WebLabel partsLabel;
-		private BoundedRangeModel progressBarModel;
+		
+		/** The repair bar model. */
+		private BoundedRangeModel repairBarModel;
+		
+		/** The malfunction. */
+		private Malfunction malfunction;
 
 		/**
 		 * Constructor.
@@ -451,106 +386,80 @@ public class TabPanelMaintenance extends TabPanel {
 
 			// Set layout and border.
 			setLayout(new GridLayout(5, 1, 0, 0));
-//			setBorder(new MarsPanelBorder());
-
+			setBorder(new MarsPanelBorder());
+			setOpaque(false);
+			setBackground(new Color(0,0,0,128));
+			
 			// Prepare the building label.
-			WebLabel buildingLabel = new WebLabel(building.getNickName(), WebLabel.LEFT);
+			WebLabel buildingLabel = new WebLabel(building.getNickName(), SwingConstants.LEFT);
 			buildingLabel.setFont(FONT_14);
 			add(buildingLabel);
 
 			// Prepare the malfunction label.
-			malfunctionLabel = new WebLabel(malfunction.getName(), WebLabel.LEFT);
+			malfunctionLabel = new WebLabel(malfunction.getName(), SwingConstants.CENTER);
 			malfunctionLabel.setForeground(Color.red);
 			add(malfunctionLabel);
 
-			workLabel = new WebLabel("", WebLabel.LEFT);
-
+			workLabel = new WebLabel("", SwingConstants.CENTER);
 			workLabel.setForeground(Color.blue);
 			add(workLabel);
 			
 			// Progress bar panel.
-			WebPanel progressBarPanel = new WebPanel(new BorderLayout(0, 0));
-			add(progressBarPanel, BorderLayout.CENTER);
+			WebPanel repairPane = new WebPanel(new BorderLayout(0, 0));
+			add(repairPane, BorderLayout.CENTER);
 
 			// Prepare progress bar.
-			JProgressBar progressBar = new JProgressBar();
-			progressBarModel = progressBar.getModel();
-			progressBar.setStringPainted(true);
-			progressBarPanel.add(progressBar, BorderLayout.CENTER);
+			JProgressBar repairBar = new JProgressBar();
+			repairBarModel = repairBar.getModel();
+			repairBar.setStringPainted(true);
+			repairPane.add(repairBar, BorderLayout.CENTER);
 
 			// Set initial value for repair progress bar.
-			progressBarModel.setValue(0);
+			repairBarModel.setValue((int)malfunction.getPercentageFixed());
 
 			// Prepare parts label.
-			partsLabel = new WebLabel(getPartsString(malfunction.getRepairParts(), false), WebLabel.CENTER);
+			partsLabel = new WebLabel(MalfunctionPanel.getPartsString(malfunction.getRepairParts(), false), SwingConstants.CENTER);
 			partsLabel.setPreferredSize(new Dimension(-1, -1));
 			add(partsLabel);
 
 			// Add tooltip.
-//			setToolTipText(getToolTipString());
-			TooltipManager.setTooltip(this, getToolTipString(), TooltipWay.up);
+			TooltipManager.setTooltip(this, MalfunctionPanel.getToolTipString(malfunction), TooltipWay.right);
 			
-			update();
+			updateMalfunctionPanel();
 		}
 
 		/**
-		 * Update the panel.
+		 * Updates the malfunction panel.
 		 */
-		void update() {
-			// Update name label.
+		void updateMalfunctionPanel() {
 
-			String work = "Repair Work Required :";
-
+			String work = REPAIR_WORK_REQUIRED;
+			String text = "";
+			
 			for (MalfunctionRepairWork workType : MalfunctionRepairWork.values()) {
 				if (malfunction.getWorkTime(workType) > 0) {
-					work += "  [" + workType + "]";
+					text += "  [" + workType + "]";
 				}
 			}
 			
-			if (workCache != work) {
-				workCache = work;
-				workLabel.setText(work);
+			if (!workCache.equalsIgnoreCase(text)) {
+				workCache = text;
+				workLabel.setText(work + text);
 			}
 			
 			// Update progress bar.
 			int percentComplete = (int)malfunction.getPercentageFixed();
 			if (progressCache != percentComplete) {
 				progressCache = percentComplete;
-				progressBarModel.setValue(percentComplete);
+				repairBarModel.setValue(percentComplete);
 			}
 			
 			// Update parts label.
-			String parts = getPartsString(malfunction.getRepairParts(), false);
-			if (partsCache != parts) {
+			String parts = MalfunctionPanel.getPartsString(malfunction.getRepairParts(), false);
+			if (partsCache.equalsIgnoreCase(parts)) {
 				partsCache = parts;
 				partsLabel.setText(parts);
 			}
-			
-			// Update tool tip.
-			// setToolTipText(getToolTipString());
-//			TooltipManager.setTooltip (this, getToolTipString(), TooltipWay.up);
-		}
-
-		/**
-		 * Creates multi-line tool tip text.
-		 */
-		private String getToolTipString() {
-			StringBuilder result = new StringBuilder("<html>");
-			result.append(malfunction.getName()).append("<br>");
-			for (MalfunctionRepairWork workType : MalfunctionRepairWork.values()) {
-				if (malfunction.getWorkTime(workType) > 0) {
-					result.append(workType.getName()).append(" Repair Time: ")
-						  .append((int) malfunction.getCompletedWorkTime(workType))
-						  .append(" / ")
-						  .append((int) malfunction.getWorkTime(workType))
-						  .append(" millisols<br>");
-				}
-			}
-
-			result.append("Repair ").append(getPartsString(malfunction.getRepairParts(), false).toLowerCase());
-			result.append("</html>");
-
-			return result.toString();
 		}
 	}
 

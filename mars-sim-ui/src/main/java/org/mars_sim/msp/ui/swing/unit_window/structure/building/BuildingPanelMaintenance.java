@@ -12,7 +12,6 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +32,6 @@ import javax.swing.table.DefaultTableCellRenderer;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
-import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.MaintenanceScope;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.PartConfig;
@@ -44,6 +42,7 @@ import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
+import org.mars_sim.msp.ui.swing.unit_window.MalfunctionPanel;
 
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
@@ -235,30 +234,7 @@ public class BuildingPanelMaintenance extends BuildingFunctionPanel {
 	 * @return string.
 	 */
 	private String getPartsString(boolean useHtml) {
-		StringBuilder buf = new StringBuilder("Needed Parts: ");
-
-		Map<Integer, Integer> parts = manager.getMaintenanceParts();
-		if (parts.size() > 0) {
-			Iterator<Integer> i = parts.keySet().iterator();
-			while (i.hasNext()) {
-				Integer part = i.next();
-				int number = parts.get(part);
-				if (useHtml)
-					buf.append("<br>");
-				buf.append(number).append(" ")
-						.append(Conversion.capitalize(ItemResourceUtil.findItemResource(part).getName()));
-				if (i.hasNext())
-					buf.append(", ");
-				else {
-					buf.append(".");
-					if (useHtml)
-						buf.append("<br>");
-				}
-			}
-		} else
-			buf.append("None.");
-
-		return buf.toString();
+		return MalfunctionPanel.getPartsString(manager.getMaintenanceParts(), useHtml).toString();
 	}
 
 	/**

@@ -1,51 +1,71 @@
 /*
  * Mars Simulation Project
  * MalfunctionPanel.java
- * @date 2021-12-20
+ * @date 2022-08-01
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.util.Iterator;
 import java.util.Map;
 
 import javax.swing.BoundedRangeModel;
+import javax.swing.JProgressBar;
+import javax.swing.SwingConstants;
 
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionRepairWork;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
-import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.tool.Conversion;
 
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
-import com.alee.laf.progressbar.WebProgressBar;
+import com.alee.managers.tooltip.TooltipManager;
+import com.alee.managers.tooltip.TooltipWay;
 
 /**
  * The MalfunctionPanel class displays info about a malfunction.
  */
+@SuppressWarnings("serial")
 public class MalfunctionPanel
 extends WebPanel {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
-	private static final int EMERGENCY_MALFUNCTION = 80;
-
+	private static final String REPAIR_WORK_REQUIRED = "Repair Work Required :";
+	private static final String REPAIR_PARTS_NEEDED = "Repair Parts Needed : ";
+	private static final String NONE = "None.";
+	private static final String ONE_SPACE = " ";
+	private static final String COMMA = ", ";
+	private static final String DOT = ".";
+	private static final String BR = "<br>";
+	private static final String HTML_START = "<html>";
+	private static final String REPAIR_TIME = " Repair Time: ";
+	private static final String SLASH = " / ";
+	private static final String MILLISOLS = " millisols";
+	private static final String HTML_END = "</html>";
+	
 	// Data members
-	/** The malfunction. */
-	private Malfunction malfunction;
-	/** The name label. */
-	private WebLabel nameLabel;
-	/** The repair bar model. */
-	private BoundedRangeModel repairBarModel;
+	public int progressCache = 0;
+	public String partsCache = "";
+	public String workCache = "";
+	
+	/** The work label. */
+	private WebLabel workLabel;
 	/** The repair parts label. */
 	private WebLabel partsLabel;
-
+	/** The malfunction label. */
+	private WebLabel malfunctionLabel;
+	
+	/** The repair bar model. */
+	private BoundedRangeModel repairBarModel;
+	
+	/** The malfunction. */
+	private Malfunction malfunction;
+	
 	/**
 	 * Constructs a MalfunctionPanel object with a name prefix.
 	 * @param malfunction the malfunction to display
@@ -59,115 +79,123 @@ extends WebPanel {
 		this.malfunction = malfunction;
 
 		// Set layout
-		setLayout(new GridLayout(3, 1, 0, 0));
+		setLayout(new GridLayout(4, 1, 0, 0));
 
 		// Set border
 		setBorder(new MarsPanelBorder());
 		setOpaque(false);
 		setBackground(new Color(0,0,0,128));
 
+		// Prepare the malfunction label.
+		malfunctionLabel = new WebLabel(malfunction.getName(), SwingConstants.CENTER);
+		malfunctionLabel.setForeground(Color.red);
+		add(malfunctionLabel);
+		
 		// Prepare name label.
-		nameLabel = new WebLabel(malfunction.getName(), WebLabel.CENTER);
-		add(nameLabel);
+		workLabel = new WebLabel("", SwingConstants.CENTER);
+		workLabel.setForeground(Color.blue);
+		add(workLabel);
 
 		// Prepare repair pane.
-		WebPanel repairPane = new WebPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
-		add(repairPane);
+		WebPanel repairPane = new WebPanel(new BorderLayout(0, 0));
+		add(repairPane, BorderLayout.CENTER);
 
 		// Prepare repair progress bar.
-		WebProgressBar repairBar = new WebProgressBar();
+		JProgressBar repairBar = new JProgressBar();
 		repairBarModel = repairBar.getModel();
 		repairBar.setStringPainted(true);
-		repairPane.add(repairBar);
+		repairPane.add(repairBar, BorderLayout.CENTER);
 
 		// Set initial value for repair progress bar.
-//		double totalRequiredWork = malfunction.getEmergencyWorkTime() + malfunction.getGeneralWorkTime()
-//				+ malfunction.getEVAWorkTime();
-//		double totalCompletedWork = malfunction.getCompletedEmergencyWorkTime() +
-//				malfunction.getCompletedGeneralWorkTime() + malfunction.getCompletedEVAWorkTime();
-//		int percentComplete = 0;
-//		if (totalRequiredWork > 0D) percentComplete = (int) (100D * (totalCompletedWork / totalRequiredWork));
 		repairBarModel.setValue((int)malfunction.getPercentageFixed());
 
 		// Prepare repair parts label.
-		partsLabel = new WebLabel(getPartsString(), WebLabel.CENTER);
+		partsLabel = new WebLabel(getPartsString(), SwingConstants.CENTER);
 		partsLabel.setPreferredSize(new Dimension(-1, -1));
 		add(partsLabel);
 
 		// Add tooltip.
-		setToolTipText(getToolTipString());
-		
-		// Apply the current malfunciton
-		update();
+		TooltipManager.setTooltip(this, MalfunctionPanel.getToolTipString(malfunction), TooltipWay.right);
+	
+		updateMalfunctionPanel();
 	}
 
 	/**
-	 * Updates the panel's information.
+	 * Updates the malfunction panel.
 	 */
-	public void update() {
-		// Update name label.
-		boolean eva = !malfunction.isWorkDone(MalfunctionRepairWork.EVA);
-		boolean emer = malfunction.getSeverity() >= EMERGENCY_MALFUNCTION;
-
-		if (eva && emer) {
-			nameLabel.setText(malfunction.getName() + "- Emergency & EVA");
-			nameLabel.setForeground(Color.red);
-		}
-		else if (eva) {
-			nameLabel.setText(malfunction.getName() + "- EVA");
-			nameLabel.setForeground(Color.blue);
-		}		
-		else if (emer) {
-			nameLabel.setText(malfunction.getName() + "- Emergency");	
-			nameLabel.setForeground(Color.red);
-		}
-		else {
-			nameLabel.setText(malfunction.getName());
-			nameLabel.setForeground(Color.black);
-		}
-
-		// Update progress bar.
-//		double totalRequiredWork = malfunction.getEmergencyWorkTime() + malfunction.getGeneralWorkTime()
-//				+ malfunction.getEVAWorkTime();
-//		double totalCompletedWork = malfunction.getCompletedEmergencyWorkTime() +
-//				malfunction.getCompletedGeneralWorkTime() + malfunction.getCompletedEVAWorkTime();
-//		int percentComplete = 0;
-//		
-//		if (totalRequiredWork > 0D) 
-//			percentComplete = (int) (100D * (totalCompletedWork / totalRequiredWork));
-//		
-//		if (percentComplete > 100)
-//			percentComplete = 100;
+	public void updateMalfunctionPanel() {
 		
-		repairBarModel.setValue((int)malfunction.getPercentageFixed());
-
+		String work = REPAIR_WORK_REQUIRED;
+		String text = "";
+		
+		for (MalfunctionRepairWork workType : MalfunctionRepairWork.values()) {
+			if (malfunction.getWorkTime(workType) > 0) {
+				text += "  [" + workType + "]";
+			}
+		}
+		
+		if (!workCache.equalsIgnoreCase(text)) {
+			workCache = text;
+			workLabel.setText(work + text);
+		}
+		
+		// Update progress bar.
+		int percentComplete = (int)malfunction.getPercentageFixed();
+		if (progressCache != percentComplete) {
+			progressCache = percentComplete;
+			repairBarModel.setValue(percentComplete);
+		}
+		
 		// Update parts label.
-		partsLabel.setText(getPartsString());
+		String parts = getPartsString(malfunction.getRepairParts(), false);
+		if (partsCache.equalsIgnoreCase(parts)) {
+			partsCache = parts;
+			partsLabel.setText(parts);
+		}
+		
 	}
 
 	/**
 	 * Gets the parts string.
+	 * 
 	 * @return string.
 	 */
 	private String getPartsString() {
-		StringBuilder buf = new StringBuilder("Parts: ");
-
 		Map<Integer, Integer> parts = malfunction.getRepairParts();
+		return getPartsString(parts, false).toString();
+	}
+
+	/**
+	 * Gets the parts string.
+	 * 
+	 * @return string.
+	 */
+	public static String getPartsString(Map<Integer, Integer> parts, boolean useHtml) {
+
+		StringBuilder buf = new StringBuilder(REPAIR_PARTS_NEEDED);
 		if (parts.size() > 0) {
 			Iterator<Integer> i = parts.keySet().iterator();
 			while (i.hasNext()) {
-				Integer id = i.next();
-    			Part p = ItemResourceUtil.findItemResource(id);
-				int number = parts.get(id);
-				buf.append(number).append(" ").append(p.getName());
-				if (i.hasNext()) buf.append(", ");
+				Integer part = i.next();
+				int number = parts.get(part);
+				if (useHtml)
+					buf.append(BR);
+				buf.append(number).append(ONE_SPACE)
+						.append(Conversion.capitalize(ItemResourceUtil.findItemResource(part).getName()));
+				if (i.hasNext())
+					buf.append(COMMA);
+				else {
+					buf.append(DOT);
+					if (useHtml)
+						buf.append(BR);
+				}
 			}
-		}
-		else buf.append("none");
+		} else
+			buf.append(NONE);
 
 		return buf.toString();
 	}
-
+	
 	/**
 	 * Gets the malfunction.
 	 *
@@ -180,17 +208,21 @@ extends WebPanel {
 	/**
 	 * Creates multi-line tool tip text.
 	 */
-	private String getToolTipString() {
-		StringBuilder result = new StringBuilder("<html>");
-		result.append(malfunction.getName()).append("<br>");
-		for (MalfunctionRepairWork mr : MalfunctionRepairWork.values()) {
-			result.append(mr.getName())
-				  .append(" repair time: ")
-			  .append((int)malfunction.getWorkTime(mr))
-			  .append(" milliols<br>");			
+	public static String getToolTipString(Malfunction malfunction) {
+		StringBuilder result = new StringBuilder(HTML_START);
+		result.append(malfunction.getName()).append(BR);
+		for (MalfunctionRepairWork workType : MalfunctionRepairWork.values()) {
+			if (malfunction.getWorkTime(workType) > 0) {
+				result.append(workType.getName()).append(REPAIR_TIME)
+					  .append((int) malfunction.getCompletedWorkTime(workType))
+					  .append(SLASH)
+					  .append((int) malfunction.getWorkTime(workType))
+					  .append(MILLISOLS + BR);
+			}
 		}
-		result.append("Repair ").append(getPartsString().toLowerCase());
-		result.append("</html>");
+
+		result.append(MalfunctionPanel.getPartsString(malfunction.getRepairParts(), false));
+		result.append(HTML_END);
 
 		return result.toString();
 	}
