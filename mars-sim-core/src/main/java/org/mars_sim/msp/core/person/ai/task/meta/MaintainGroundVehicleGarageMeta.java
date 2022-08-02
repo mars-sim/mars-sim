@@ -37,7 +37,7 @@ public class MaintainGroundVehicleGarageMeta extends MetaTask {
     public MaintainGroundVehicleGarageMeta() {
 		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
 		
-		setPreferredJob(JobType.MECHANIICS);
+		setPreferredJob(JobType.MECHANICS);
 	}
 
 	@Override

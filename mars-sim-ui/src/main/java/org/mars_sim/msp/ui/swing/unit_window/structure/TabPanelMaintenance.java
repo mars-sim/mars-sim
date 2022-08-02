@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * TabPanelMaintenance.java
- * @date 2021-12-20
+ * @date 2022-08-01
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -354,7 +354,7 @@ public class TabPanelMaintenance extends TabPanel {
 		}
 
 		/**
-		 * Update this panel.
+		 * Updates this panel.
 		 */
 		void update() {
 			// Update progress bar.
@@ -464,9 +464,8 @@ public class TabPanelMaintenance extends TabPanel {
 			add(malfunctionLabel);
 
 			workLabel = new WebLabel("", WebLabel.LEFT);
-//			workLabel.setFont(new Font("Serif", Font.ITALIC, 12));
-//			workLabel.setForeground(Color.LIGHT_GRAY);
-//			workLabel.setBackground(Color.DARK_GRAY);
+
+			workLabel.setForeground(Color.blue);
 			add(workLabel);
 			
 			// Progress bar panel.

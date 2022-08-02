@@ -36,7 +36,7 @@ public class MaintainGroundVehicleEVAMeta extends MetaTask {
     
     public MaintainGroundVehicleEVAMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
-		setPreferredJob(JobType.MECHANIICS);
+		setPreferredJob(JobType.MECHANICS);
 	}
 
     @Override

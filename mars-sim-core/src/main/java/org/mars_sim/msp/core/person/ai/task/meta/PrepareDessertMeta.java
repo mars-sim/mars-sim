@@ -33,7 +33,7 @@ public class PrepareDessertMeta extends MetaTask {
 		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
 		
 		setFavorite(FavoriteType.COOKING);
-		setTrait(TaskTrait.ARTISITC);
+		setTrait(TaskTrait.ARTISTIC);
 		setPreferredJob(JobType.CHEF);
 	}
 

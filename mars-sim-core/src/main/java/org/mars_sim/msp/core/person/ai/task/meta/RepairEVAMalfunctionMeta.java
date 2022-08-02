@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * RepairEVAMalfunctionMeta.java
- * @date 2022-01-14
+ * @date 2022-08-01
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -32,8 +32,8 @@ public class RepairEVAMalfunctionMeta extends MetaTask {
     public RepairEVAMalfunctionMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.ANY_HOUR);
 		setFavorite(FavoriteType.OPERATION, FavoriteType.TINKERING);
-		setTrait(TaskTrait.STRENGTH);
-		setPreferredJob(JobType.MECHANIICS);
+		setTrait(TaskTrait.AGILITY, TaskTrait.STRENGTH);
+		setPreferredJob(JobType.MECHANICS);
 	}
 
 	@Override

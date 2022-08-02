@@ -67,7 +67,7 @@ public class Preference implements Serializable {
 		this.person = person;
 
 		// These lookups are all static in terms of the Person so they do not
-		// need to use the concurent list/maps
+		// need to use the concurrent list/maps
 		taskList = new ArrayList<>();
 		scoreStringMap = new HashMap<>();
 		futureTaskMap = new HashMap<>();
@@ -139,7 +139,7 @@ public class Preference implements Serializable {
 				case GAMING:
 				case OPERATION:
 				case SPORT:
-				case TENDING_PLANTS:
+				case TENDING_GARDEN:
 				case TINKERING:
 					rand += 1 * RandomUtil.getRandomDouble(3);
 					break;
@@ -176,7 +176,7 @@ public class Preference implements Serializable {
 				case PEOPLE:
 					rand += ca;
 					break;
-				case ARTISITC:
+				case ARTISTIC:
 					rand += art;
 					break;
 				case AGILITY:

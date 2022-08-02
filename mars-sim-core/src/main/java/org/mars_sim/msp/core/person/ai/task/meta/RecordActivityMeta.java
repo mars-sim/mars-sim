@@ -28,7 +28,7 @@ public class RecordActivityMeta extends MetaTask {
 
     public RecordActivityMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
-		setTrait(TaskTrait.ARTISITC);
+		setTrait(TaskTrait.ARTISTIC);
 		setPreferredJob(JobType.REPORTER);
 	}
 

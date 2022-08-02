@@ -71,7 +71,7 @@ public enum JobType {
 	/**
 	 * That have an mechanics background
 	 */
-	public static final Set<JobType> MECHANIICS =
+	public static final Set<JobType> MECHANICS =
 				Set.of(JobType.ENGINEER,
 								JobType.PILOT,
 								JobType.TECHNICIAN);

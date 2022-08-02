@@ -41,12 +41,12 @@ public class SaveCommand extends ChatCommand {
 				});
 
 			// Print the size of all serialized objects
+//			context.println("");
+//			context.println("Method 1 - Using Outputstream as a Counter");
+//			context.println("");
+//			context.println(context.getSim().printObjectSize(0).toString());
 			context.println("");
-			context.println("Method 1 - Using Outputstream as a Counter");
-			context.println("");
-			context.println(context.getSim().printObjectSize(0).toString());
-			context.println("");
-			context.println("Method 2 - Using Byte Arrays");
+			context.println("Use byte arrays to show the heap size of serialized objects");
 			context.println("");
 			context.println(context.getSim().printObjectSize(1).toString());
 			

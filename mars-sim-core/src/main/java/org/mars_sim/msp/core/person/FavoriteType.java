@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * FavoriteType.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-08-01
  * @author Manny Kung
  */
 
@@ -22,7 +22,7 @@ public enum FavoriteType {
 	OPERATION		 			(Msg.getString("FavoriteType.operation")), //$NON-NLS-1$
 	RESEARCH 	 				(Msg.getString("FavoriteType.research")), //$NON-NLS-1$
 	SPORT 		 				(Msg.getString("FavoriteType.sport")), //$NON-NLS-1$
-	TENDING_PLANTS				(Msg.getString("FavoriteType.tendingPlants")), //$NON-NLS-1$
+	TENDING_GARDEN				(Msg.getString("FavoriteType.tendingPlants")), //$NON-NLS-1$
 	TINKERING	 				(Msg.getString("FavoriteType.tinkering")), //$NON-NLS-1$
 	;
 
@@ -35,7 +35,7 @@ public enum FavoriteType {
 			OPERATION,
 			RESEARCH,
 			SPORT,
-			TENDING_PLANTS,	
+			TENDING_GARDEN,	
 			TINKERING
 			};
 	

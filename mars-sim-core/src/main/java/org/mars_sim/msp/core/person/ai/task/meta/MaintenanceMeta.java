@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * MaintenanceMeta.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-08-01
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -44,8 +44,8 @@ public class MaintenanceMeta extends MetaTask {
     public MaintenanceMeta() {
 		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
 		setFavorite(FavoriteType.OPERATION, FavoriteType.TINKERING);
-		setTrait(TaskTrait.ACADEMIC, TaskTrait.STRENGTH);
-		setPreferredJob(JobType.ENGINEER, JobType.TECHNICIAN);
+		setTrait(TaskTrait.AGILITY, TaskTrait.STRENGTH);
+		setPreferredJob(JobType.MECHANICS);
     }
     
 	@Override

@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * TendFishTankMeta.java
- * @date 2021-12-22
+ * @date 2022-08-01
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -16,6 +16,7 @@ import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.task.TendFishTank;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -34,8 +35,9 @@ public class TendFishTankMeta extends MetaTask {
 
     public TendFishTankMeta() {
 		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
-		setFavorite(FavoriteType.TENDING_PLANTS);
+		setFavorite(FavoriteType.TENDING_GARDEN);
 		setPreferredJob(JobType.BOTANIST, JobType.BIOLOGIST);
+		setTrait(TaskTrait.ARTISTIC, TaskTrait.RELAXATION);
 	}
 
     @Override
@@ -49,11 +51,7 @@ public class TendFishTankMeta extends MetaTask {
         double result = 0D;
 
         if (person.isInSettlement()) {
-        	
-            // Probability affected by the person's stress and fatigue.
-            if (!person.getPhysicalCondition().isFitByLevel(1000, 80, 500))
-            	return 0;
-            
+
             try {
                 // See if there is an available greenhouse.
                 Building building = TendFishTank.getAvailableFishTank(person);
@@ -113,6 +111,7 @@ public class TendFishTankMeta extends MetaTask {
 
 	/**
 	 * Basic approach of counting up things that can be done.
+	 * 
 	 * @param building
 	 * @return
 	 */

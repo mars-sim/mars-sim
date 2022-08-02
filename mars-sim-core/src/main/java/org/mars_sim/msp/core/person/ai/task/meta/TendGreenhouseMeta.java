@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TendGreenhouseMeta.java
- * @date 2021-12-22
+ * @date 2022-08-01
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -37,9 +37,9 @@ public class TendGreenhouseMeta extends MetaTask {
 
     public TendGreenhouseMeta() {
 		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
-		setFavorite(FavoriteType.TENDING_PLANTS);
-		setTrait(TaskTrait.ARTISITC);
+		setFavorite(FavoriteType.TENDING_GARDEN);
 		setPreferredJob(JobType.BOTANIST, JobType.BIOLOGIST);
+		setTrait(TaskTrait.ARTISTIC, TaskTrait.RELAXATION);
 	}
 
     @Override
@@ -53,10 +53,6 @@ public class TendGreenhouseMeta extends MetaTask {
         double result = 0D;
 
         if (person.isInSettlement()) {
-        	
-            // Probability affected by the person's stress and fatigue.
-            if (!person.getPhysicalCondition().isFitByLevel(1000, 80, 500))
-            	return 0;
             
             try {
                 // See if there is an available greenhouse.

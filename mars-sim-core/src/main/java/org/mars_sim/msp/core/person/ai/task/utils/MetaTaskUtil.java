@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * MetaTaskUtil.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-08-01
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.utils;
@@ -37,6 +37,7 @@ import org.mars_sim.msp.core.person.ai.task.meta.ManufactureConstructionMaterial
 import org.mars_sim.msp.core.person.ai.task.meta.ManufactureGoodMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.MeetTogetherMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.ObserveAstronomicalObjectsMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.OptimizeSystemMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.PeerReviewStudyPaperMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.PerformLaboratoryExperimentMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.PerformLaboratoryResearchMeta;
@@ -85,12 +86,11 @@ public class MetaTaskUtil {
 
 	private static List<MetaTask> dutyHourTasks = null;
 	private static List<MetaTask> nonDutyHourTasks = null;
-	
-	private static List<MetaTask> robotMetaTasks = null;
-
 	private static List<MetaTask> nonWorkHourMetaTasks;
 
 	private static List<MetaTask> personMetaTasks;
+	private static List<MetaTask> robotMetaTasks = null;
+
 	private static List<MetaTask> allMetaTasks;
 
 	/**
@@ -136,6 +136,7 @@ public class MetaTaskUtil {
 		allMetaTasks.add(new ManufactureGoodMeta());
 		allMetaTasks.add(new MeetTogetherMeta());
 		allMetaTasks.add(new ObserveAstronomicalObjectsMeta());
+		allMetaTasks.add(new OptimizeSystemMeta());
 		allMetaTasks.add(new PeerReviewStudyPaperMeta());
 		allMetaTasks.add(new PerformLaboratoryExperimentMeta());
 		allMetaTasks.add(new PerformLaboratoryResearchMeta());

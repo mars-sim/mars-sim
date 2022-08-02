@@ -10,7 +10,7 @@ package org.mars_sim.msp.core.person.ai.task.utils;
 public enum TaskTrait {
 	ACADEMIC,
 	AGILITY,
-	ARTISITC,
+	ARTISTIC,
 	LEADERSHIP,
 	MEDICAL,
 	PEOPLE,

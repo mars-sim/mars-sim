@@ -77,8 +77,10 @@ implements Serializable {
      */
     public HaveConversation(Person person) {
         // Use Task constructor.
-        super(NAME, person, true, false, STRESS_MODIFIER - RandomUtil.getRandomDouble(.2),
-        		3 + RandomUtil.getRandomDouble(person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.CONVERSATION))/20);
+        super(NAME, person, true, false, 
+        		STRESS_MODIFIER - RandomUtil.getRandomDouble(.2),
+        		3 + RandomUtil.getRandomDouble(person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.CONVERSATION))/20
+        		);
 
     	// List 8 situations for having a conversation
         if (person.isInSettlement()) {

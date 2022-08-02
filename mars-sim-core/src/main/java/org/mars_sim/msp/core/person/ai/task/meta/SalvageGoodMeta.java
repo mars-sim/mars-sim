@@ -33,7 +33,7 @@ public class SalvageGoodMeta extends MetaTask {
     public SalvageGoodMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
 		setFavorite(FavoriteType.OPERATION, FavoriteType.TINKERING);
-		setTrait(TaskTrait.STRENGTH, TaskTrait.ARTISITC);
+		setTrait(TaskTrait.STRENGTH, TaskTrait.ARTISTIC);
 		setPreferredJob(JobType.ENGINEER, JobType.TECHNICIAN);
 	}
 

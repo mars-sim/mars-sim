@@ -311,11 +311,11 @@ extends Function {
 	/**
 	 * Determines the change in temperature.
 	 * 
-	 * @param tCelsius
-	 * @param deltaMillisols in millisols
-	 * @return delta temperature in C
+	 * @param tCelsius temperature in degree celsius
+	 * @param millisols time in millisols
+	 * @return delta temperature in degree celsius
 	 */
-	private double determineDeltaTemperature(double tCelsius, double deltaMillisols) {
+	private double determineDeltaTemperature(double tCelsius, double millisols) {
 
 		// THIS IS A THREE-PART CALCULATION
 		double tOutCelsius = building.getSettlement().getOutsideTemperature();
@@ -506,7 +506,7 @@ extends Function {
 		// see heatGainEqiupment below
 		
 		// (1g) CALCULATE HEAT GAIN DUE TO VENTILATION
-		double ventilationHeatGain = heatGainVentilation(tCelsius, deltaMillisols); 
+		double ventilationHeatGain = heatGainVentilation(tCelsius, millisols); 
 		
 //		if (isGreenhouse)
 //			logger.info(building, "ventilationHeatGain: " + ventilationHeatGain);
@@ -620,7 +620,7 @@ extends Function {
 		double diffHeatGainLoss = heatGain - heatLoss;
 			
 		// (3b) FIND the CONVERSION FACTOR
-		double convFactor = 1 / (conversionFactor * deltaMillisols); 
+		double convFactor = 1 / (conversionFactor * millisols); 
 
 		// (3c) USE HEAT SINK to buffer the difference in heat
 		double deltaHeat = 0;
