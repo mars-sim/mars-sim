@@ -20,6 +20,7 @@ public class MapUtils {
 	 * Private constructor for utility class.
 	 */
 	private MapUtils() {
+		// nothing
 	}
 
 	/**
@@ -30,9 +31,9 @@ public class MapUtils {
 	 * @return display point on map
 	 */
 	public static IntPoint getRectPosition(Coordinates coords, Coordinates mapCenter, String mapType) {
-		int mapHeight = CannedMarsMap.MAP_HEIGHT;
+		int mapHeight = MapDataUtil.MAP_HEIGHT;
 		int halfMap = mapHeight / 2;
-		int lowEdge = halfMap - MapDataUtil.IMAGE_WIDTH / 2; 
+		int lowEdge = halfMap - MapDataUtil.GLOBE_BOX_WIDTH / 2; 
 		double rho = mapHeight / Math.PI;
 		return Coordinates.findRectPosition(coords, mapCenter, rho, halfMap, lowEdge);
 	}
@@ -45,7 +46,7 @@ public class MapUtils {
 	 * @return
 	 */
 	public static int getPixelDistance(double distance, String mapType) {
-		int mapWidth = CannedMarsMap.MAP_WIDTH;
+		int mapWidth = MapDataUtil.MAP_WIDTH;
 		double distancePerPixel = Coordinates.MARS_CIRCUMFERENCE / mapWidth;
 		return (int) Math.round(distance / distancePerPixel);
 	}

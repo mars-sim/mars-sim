@@ -1,24 +1,23 @@
 /*
  * Mars Simulation Project
  * IntegerMapData.java
- * @date 2021-08-28
+ * @date 2022-08-02
  * @author Scott Davis
  */
-
  package org.mars_sim.mapdata;
 
- import java.awt.Color;
- import java.awt.Image;
- import java.awt.Point;
- import java.awt.image.BufferedImage;
- import java.awt.image.DataBufferByte;
- import java.io.File;
- import java.io.IOException;
- import java.net.URL;
- import java.util.logging.Level;
- import java.util.logging.Logger;
+import java.awt.Color;
+import java.awt.Image;
+import java.awt.Point;
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
- import javax.imageio.ImageIO;
+import javax.imageio.ImageIO;
 
  /**
   * A map that uses integer data stored in files to represent colors.
@@ -27,19 +26,35 @@
 
  	// Static members.
  	private static Logger logger = Logger.getLogger(IntegerMapData.class.getName());
+
+ 	public static final int MAP_BOX_WIDTH = MapDataUtil.GLOBE_BOX_WIDTH;
+ 	public static final int MAP_BOX_HEIGHT = MapDataUtil.GLOBE_BOX_HEIGHT;
  	
- 	public static int IMAGE_WIDTH = MapDataUtil.IMAGE_WIDTH;
- 	public static int IMAGE_HEIGHT = MapDataUtil.IMAGE_HEIGHT;
- 	
- 	public static final int MAP_HEIGHT = 1440;	// 2048; //1024; Source map height in pixels.
- 	public static final int MAP_WIDTH = 2880;	// 4096; //2048; Source map width in pixels.
+ 	public static final int MAP_WIDTH = MapDataUtil.MAP_WIDTH; 
+ 	public static final int MAP_HEIGHT = MapDataUtil.MAP_HEIGHT; 
  	
  	public static final double MAP_RATIO = 1;
  	
- 	public static final double HALF_MAP_ANGLE = .48587D;
- 	public static final double PIXEL_RHO = (double) MAP_HEIGHT / Math.PI;
+// 	public static final double HALF_MAP_ANGLE = .48587D;
+ 	public static final double PIXEL_RHO = MAP_HEIGHT / Math.PI;
  	private static final double TWO_PI = Math.PI * 2D;
+ 	
+ 	private static final double PHI_ITERATION_PADDING = 1.26 * MapDataUtil.RATIO; // Derived from testing.
+ 	private static final double PHI_PADDING = 1.46 * MapDataUtil.RATIO; // Derived from testing.	
+ 	private static final double PHI_ITERATION_ANGLE = Math.PI / (MAP_HEIGHT / MAP_RATIO * PHI_ITERATION_PADDING);
+ 	private static final double PHI_RANGE = Math.PI * PHI_PADDING * MAP_BOX_HEIGHT / MAP_HEIGHT * MAP_RATIO;
 
+ 	private static final double THETA_ITERATION_PADDING = 1.46 * MapDataUtil.RATIO; // Derived from testing.
+ 	private static final double MIN_THETA_PADDING = 1.02 * MapDataUtil.RATIO; // Theta padding, derived from testing.
+ 	
+ 	private static final double PI_RATIO = TWO_PI * MAP_BOX_WIDTH / MAP_WIDTH * MAP_RATIO;
+	// Note : Polar cap phi values must display 2 PI theta range. 
+ 	private static final double POLAR_CAP_RANGE_1 = Math.PI / 6.54D; // derived from testing
+ 	private static final double POLAR_CAP_RANGE_2 = Math.PI - POLAR_CAP_RANGE_1;
+ 	private static final double MIN_THETA_DISPLAY = PI_RATIO * MIN_THETA_PADDING;
+		
+ 	private static final double THETA_ITERATION_FACTOR = MAP_WIDTH / MAP_RATIO * THETA_ITERATION_PADDING;
+ 	
  	// Data members.
  	private int[][] pixels = null;
  	
@@ -204,7 +219,7 @@
  	public Image getMapImage(double centerPhi, double centerTheta) {
 
  		// Create a new buffered image to draw the map on.
- 		BufferedImage result = new BufferedImage(IMAGE_WIDTH, IMAGE_HEIGHT, BufferedImage.TYPE_4BYTE_ABGR);//BufferedImage.TYPE_INT_ARGB);
+ 		BufferedImage result = new BufferedImage(MAP_BOX_WIDTH, MAP_BOX_HEIGHT, BufferedImage.TYPE_4BYTE_ABGR);//BufferedImage.TYPE_INT_ARGB);
 
  		// The map data is PI offset from the center theta.
  		double correctedTheta = centerTheta - Math.PI;
@@ -214,50 +229,31 @@
  			correctedTheta -= TWO_PI;
 
  		// Create an array of int RGB color values to create the map image from.
- 		int[] mapArray = new int[IMAGE_WIDTH * IMAGE_HEIGHT];
-
- 		// Determine phi iteration angle.
- 		double phiIterationPadding = 1.26D; // Derived from testing.
- 		double phiIterationAngle = Math.PI / (MAP_HEIGHT / MAP_RATIO * phiIterationPadding);
-
- 		// Determine phi range.
- 		double phiPadding = 1.46D; // Derived from testing.
- 		double phiRange = Math.PI * phiPadding * IMAGE_HEIGHT / MAP_HEIGHT * MAP_RATIO;
+ 		int[] mapArray = new int[MAP_BOX_WIDTH * MAP_BOX_HEIGHT];
 
  		// Determine starting and ending phi values.
- 		double startPhi = centerPhi - (phiRange / 2D);
+ 		double startPhi = centerPhi - (PHI_RANGE / 2);
  		if (startPhi < 0D)
  			startPhi = 0D;
- 		double endPhi = centerPhi + (phiRange / 2D);
+ 		double endPhi = centerPhi + (PHI_RANGE / 2);
  		if (endPhi > Math.PI)
  			endPhi = Math.PI;
-
- 		double ratio = TWO_PI * IMAGE_WIDTH / MAP_WIDTH * MAP_RATIO;
- 		// Note : Polar cap phi values must display 2 PI theta range. 
- 		// (derived from testing)
- 		double polarCapRange = Math.PI / 6.54D; 
- 		// Determine theta iteration angle.
- 		double thetaIterationPadding = 1.46D; // Derived from testing.
- 		// Theta padding, derived from testing.
- 		double minThetaPadding = 1.02D; 
- 		// Determine theta range.
- 		double minThetaDisplay = ratio * minThetaPadding;
  		
  		// Loop through each phi value.
- 		for (double x = startPhi; x <= endPhi; x += phiIterationAngle) {
+ 		for (double x = startPhi; x <= endPhi; x += PHI_ITERATION_ANGLE) {
+ 			// Determine theta iteration angle.
+ 			double thetaIterationAngle = TWO_PI / (THETA_ITERATION_FACTOR * Math.sin(x) + 1);
 
- 			double thetaIterationAngle = TWO_PI / (((double) MAP_WIDTH / MAP_RATIO * Math.sin(x) * thetaIterationPadding) + 1D);
-
- 			double thetaRange = ((1D - Math.sin(x)) * TWO_PI) + minThetaDisplay;
+ 			double thetaRange = ((1 - Math.sin(x)) * TWO_PI) + MIN_THETA_DISPLAY;
  			
- 			if ((x < polarCapRange) || (x > (Math.PI - polarCapRange)))
+ 			if ((x < POLAR_CAP_RANGE_1) || (x > (POLAR_CAP_RANGE_2)))
  				thetaRange = TWO_PI;
  			if (thetaRange > TWO_PI)
  				thetaRange = TWO_PI;
 
  			// Determine the theta starting and ending values.
- 			double startTheta = centerTheta - (thetaRange / 2D);
- 			double endTheta = centerTheta + (thetaRange / 2D);
+ 			double startTheta = centerTheta - (thetaRange / 2);
+ 			double endTheta = centerTheta + (thetaRange / 2);
 
  			// Loop through each theta value.
  			for (double y = startTheta; y <= endTheta; y += thetaIterationAngle) {
@@ -268,24 +264,24 @@
  					yCorrected += TWO_PI;
  				while (yCorrected > TWO_PI)
  					yCorrected -= TWO_PI;
-
+ 				
  				// Determine the rectangular offset of the pixel in the image.
- 				Point location = findRectPosition(centerPhi, centerTheta, x, yCorrected, 1440D / Math.PI, 720,
+ 				Point location = findRectPosition(centerPhi, centerTheta, x, yCorrected, 1440 / Math.PI, 720,
  						720 - 150);
 
  				// Determine the display x and y coordinates for the pixel in the image.
- 				int displayX = IMAGE_WIDTH - location.x;
- 				int displayY = IMAGE_HEIGHT - location.y;
+ 				int displayX = MAP_BOX_WIDTH - location.x;
+ 				int displayY = MAP_BOX_HEIGHT - location.y;
 
  				// Check that the x and y coordinates are within the display area.
  				boolean leftBounds = displayX >= 0;
- 				boolean rightBounds = displayX < IMAGE_WIDTH;
+ 				boolean rightBounds = displayX < MAP_BOX_WIDTH;
  				boolean topBounds = displayY >= 0;
- 				boolean bottomBounds = displayY < IMAGE_HEIGHT;
+ 				boolean bottomBounds = displayY < MAP_BOX_HEIGHT;
  				if (leftBounds && rightBounds && topBounds && bottomBounds) {
 
  					// Determine array index for the display location.
- 					int index = (IMAGE_WIDTH - displayX) + ((IMAGE_HEIGHT - displayY) * IMAGE_WIDTH);
+ 					int index = (MAP_BOX_WIDTH - displayX) + ((MAP_BOX_HEIGHT - displayY) * MAP_BOX_WIDTH);
 
  					// Put color in array at index.
  					if ((index >= 0) && (index < mapArray.length))
@@ -295,7 +291,7 @@
  		}
 
  		// Create new map image.
- 		result.setRGB(0, 0, IMAGE_WIDTH, IMAGE_HEIGHT, mapArray, 0, IMAGE_WIDTH);
+ 		result.setRGB(0, 0, MAP_BOX_WIDTH, MAP_BOX_HEIGHT, mapArray, 0, MAP_BOX_WIDTH);
 
  		return result;
  	}
@@ -422,8 +418,7 @@
 // 				You could also make a final int pixel_offset = hasAlpha?1:0; and 
 // 				do ((int) pixels[pixel + pixel_offset + 1] & 0xff); // green; 
 // 				and merge the two loops into one. – Tomáš Zato Mar 23 '15 at 23:02
- 				
- 				
+ 						
  				result[row][col] = argb;
  				col++;
  				if (col == width) {
@@ -451,18 +446,15 @@
  		return result;
  	}
  	
- 	private static BufferedImage getCustomImage(int[][] pixels, final boolean withAlpha)
- 	{
+ 	private static BufferedImage getCustomImage(int[][] pixels, final boolean withAlpha) {
  	  // Assuming pixels was taken from convertTo2DWithoutUsingGetRGB
  	  // i.e. img.length == pixels.length and img.width == pixels[x].length
  	  BufferedImage img = new BufferedImage(pixels[0].length, pixels.length, withAlpha ? BufferedImage.TYPE_4BYTE_ABGR : BufferedImage.TYPE_3BYTE_BGR);
 // 	  BufferedImage img = new BufferedImage(pixels[0].length, pixels.length, withAlpha ? BufferedImage.TYPE_INT_ARGB : BufferedImage.TYPE_INT_BGR);
  		
  	  
- 	  for (int y = 0; y < pixels.length; y++)
- 	  {
- 	     for (int x = 0; x < pixels[y].length; x++)
- 	     {
+ 	  for (int y = 0; y < pixels.length; y++) {
+ 	     for (int x = 0; x < pixels[y].length; x++) {
  	        if (withAlpha)
  	           img.setRGB(x, y, pixels[y][x]);
  	        else {

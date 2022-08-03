@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TopoMapData.java
- * @date 2022-07-15
+ * @date 2022-08-02
  * @author Scott Davis
  */
 
@@ -13,7 +13,7 @@ package org.mars_sim.mapdata;
 public class TopoMapData extends IntegerMapData {
 
 	// Static members.
-    private static final String MAP_FILE = "/maps/topo2880x1440.jpg";
+    private static final String MAP_FILE = "/maps/topo2880x1440.jpg"; //5760x2880.jpg"
     
     /**
      * Constructor

@@ -33,16 +33,16 @@ public class MarsMap {
 
 	// Constant data members
 	/** Height of map source image (pixels). */
-	public final static int MAP_H = NavigatorWindow.HORIZONTAL_SURFACE_MAP;
+	public static final int MAP_H = NavigatorWindow.HORIZONTAL_SURFACE_MAP;
 	/** Width of map source image (pixels). */
-	public final static int MAP_W = MAP_H * 2;
+	public static final int MAP_W = MAP_H * 2;
 
-	private final double PI_half = Math.PI / 2D;
-	private final double PI_double = Math.PI * 2D;
+	private static final double PI_HALF = Math.PI / 2D;
+	private static final double PI_DOUBLE = Math.PI * 2D;
 
-	private double rho = MAP_H / Math.PI;
-	private double col_array_modifier = 1D / PI_double;
-	private int half_map_height = MAP_H / 2;
+	private static final double rho = MAP_H / Math.PI;
+	private static final double col_array_modifier = 1D / PI_DOUBLE;
+	private static final int HALF_MAP_HEIGHT = MAP_H / 2;
 
 	// Data members
 	/** Center position of globe. */
@@ -70,7 +70,7 @@ public class MarsMap {
 		// Initialize Variables
 		// this.globeType = globeType;
 		this.displayArea = displayArea;
-		centerCoords = new Coordinates(PI_half, PI_half);
+		centerCoords = new Coordinates(PI_HALF, PI_HALF);
 
 		// Load Surface Map Image, which is now part of the globe enum
 		String imageName = globeType.getPath();
@@ -109,26 +109,26 @@ public class MarsMap {
 
 		double phi = centerCoords.getPhi();
 		double theta = centerCoords.getTheta();
-		double end_row = phi - PI_half;
+		double end_row = phi - PI_HALF;
 		double start_row = end_row + Math.PI;
 		double row_iterate;
 		boolean north;
 
 		// Determine if sphere should be created from north-south, or from south-north
-		if (phi <= PI_half) {
+		if (phi <= PI_HALF) {
 			north = true;
-			end_row = phi - PI_half;
+			end_row = phi - PI_HALF;
 			start_row = end_row + Math.PI;
 			row_iterate = 0D - (Math.PI / (double) MAP_H);
 		} else {
 			north = false;
-			start_row = phi - PI_half;
+			start_row = phi - PI_HALF;
 			end_row = start_row + Math.PI;
 			row_iterate = (Math.PI / (double) MAP_H);
 		}
 
 		// More variable initializations
-		double col_correction = -PI_half - theta;
+		double col_correction = -PI_HALF - theta;
 		// double rho = map_height / Math.PI;
 		double sin_offset = MoreMath.sin(phi + Math.PI);
 		double cos_offset = MoreMath.cos(phi + Math.PI);
@@ -155,34 +155,34 @@ public class MarsMap {
 
 			// Determine visible boundary of row
 			double col_boundry = Math.PI;
-			if (phi <= PI_half) {
-				if ((row >= PI_half *  MoreMath.cos(phi)) && (row < PI_half)) {
-					col_boundry = PI_half * (1D + row_cos);
-				} else if (row >= PI_half) {
-					col_boundry = PI_half;
+			if (phi <= PI_HALF) {
+				if ((row >= PI_HALF *  MoreMath.cos(phi)) && (row < PI_HALF)) {
+					col_boundry = PI_HALF * (1D + row_cos);
+				} else if (row >= PI_HALF) {
+					col_boundry = PI_HALF;
 				}
 			} else {
-				if ((row <= PI_half *  MoreMath.cos(phi)) && (row > PI_half)) {
-					col_boundry = PI_half * (1D - row_cos);
-				} else if (row <= PI_half) {
-					col_boundry = PI_half;
+				if ((row <= PI_HALF *  MoreMath.cos(phi)) && (row > PI_HALF)) {
+					col_boundry = PI_HALF * (1D - row_cos);
+				} else if (row <= PI_HALF) {
+					col_boundry = PI_HALF;
 				}
 			}
-			if (phi == PI_half) {
-				col_boundry = PI_half;
+			if (phi == PI_HALF) {
+				col_boundry = PI_HALF;
 			}
 
 			double col_iterate = Math.PI / (double) circum;
 
 			// Error adjustment for theta center close to PI_half
-			double error_correction = phi - PI_half;
+			double error_correction = phi - PI_HALF;
 
 			if (error_correction > 0D) {
 				if (error_correction < row_iterate) {
-					col_boundry = PI_half;
+					col_boundry = PI_HALF;
 				}
 			} else if (error_correction > 0D - row_iterate) {
-				col_boundry = PI_half;
+				col_boundry = PI_HALF;
 			}
 
 			// Determine column starting and stopping points for row
@@ -210,8 +210,8 @@ public class MarsMap {
 				double temp_col = col + col_correction;
 
 				// Determine x and y position of point on image
-				int buff_x = (int) Math.round(temp_buff_x *  MoreMath.cos(temp_col)) + half_map_height;
-				int buff_y = (int) Math.round((temp_buff_y1 * MoreMath.sin(temp_col)) + temp_buff_y2) + half_map_height;
+				int buff_x = (int) Math.round(temp_buff_x *  MoreMath.cos(temp_col)) + HALF_MAP_HEIGHT;
+				int buff_y = (int) Math.round((temp_buff_y1 * MoreMath.sin(temp_col)) + temp_buff_y2) + HALF_MAP_HEIGHT;
 
 				// Put point in buffer array
 				buffer_array[buff_x + (MAP_H * buff_y)] = (int) sphereColor[array_y].elementAt(array_x);

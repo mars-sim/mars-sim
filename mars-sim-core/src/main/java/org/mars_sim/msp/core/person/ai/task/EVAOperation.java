@@ -84,7 +84,6 @@ public abstract class EVAOperation extends Task {
 	private double siteDuration;
 	private double timeOnSite;
 	private LocalPosition outsideSitePos;
-	private LocalPosition binLoc;
 	private LocalPosition dropOffLoc;
 
 	private LocalBoundedObject interiorObject;
@@ -221,15 +220,6 @@ public abstract class EVAOperation extends Task {
 	 */
 	protected void setOutsideSiteLocation(LocalPosition pos) {
 		outsideSitePos = pos;
-	}
-
-	/**
-	 * Sets the outside side local location.
-	 * 
-	 * @param pos Position of the Bin
-	 */
-	protected void setBinLocation(LocalPosition pos) {
-		binLoc = pos;
 	}
 
 	/**

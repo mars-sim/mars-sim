@@ -6,14 +6,18 @@
  */
 package org.mars_sim.msp.ui.swing.tool.map;
 
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.MediaTracker;
+import java.awt.RenderingHints;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.JComponent;
 
 import org.mars_sim.mapdata.MapData;
+import org.mars_sim.mapdata.MapDataUtil;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 
@@ -21,7 +25,8 @@ import org.mars_sim.msp.core.Msg;
  * The CannedMarsMap class reads in data from files in the map_data jar file in
  * order to generate a map image.
  */
-public abstract class CannedMarsMap implements Map {
+@SuppressWarnings("serial")
+public abstract class CannedMarsMap extends JComponent implements Map {
 
 	/** default logger. */
 	private static final Logger logger = Logger.getLogger(CannedMarsMap.class.getName());
@@ -33,7 +38,7 @@ public abstract class CannedMarsMap implements Map {
 	private JComponent displayArea = null;
 	private Coordinates currentCenter = null;
 	private Image mapImage = null;
-
+	private Graphics dbg;
 
 	/**
 	 * Constructor.
@@ -55,7 +60,7 @@ public abstract class CannedMarsMap implements Map {
 	private Image createMapImage(Coordinates center) {
 		return mapData.getMapImage(center.getPhi(), center.getTheta());
 	}
-
+	
 	/**
 	 * Creates a 2D map at a given center point.
 	 * 
@@ -74,9 +79,55 @@ public abstract class CannedMarsMap implements Map {
 			}
 			mapImageDone = true;
 			currentCenter = new Coordinates(newCenter);
+			
+			
+			drawMap();
+		}
+	}
+	
+	/**
+	 * Draws a 2D map form the buffer.
+	 * 
+	 */
+	public void drawMap() {
+		paintDoubleBuffer();
+		repaint();
+	}
+
+	/*
+	 * Uses double buffering to draws into its own graphics object dbg before
+	 * calling paintComponent()
+	 */
+	public void paintDoubleBuffer() {
+		if (mapImage == null) {
+			mapImage = createImage(MapDataUtil.MAP_BOX_WIDTH, MapDataUtil.MAP_BOX_HEIGHT);
+			if (mapImage == null) {
+				return;
+			} else {
+				dbg = mapImage.getGraphics();
+				Graphics2D g2d = (Graphics2D) dbg;
+				g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+				g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+				g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+				g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
+				
+				Image image = getMapImage();
+				if (image != null && mapImageDone)
+					g2d.drawImage(image, 0, 0, this);		
+			}
 		}
 	}
 
+	public void paint(Graphics g) {
+		Graphics2D g2d = (Graphics2D) g;
+		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+		g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+		g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
+		if (mapImage != null)
+			g2d.drawImage(mapImage, 0, 0, this);
+	}
+	
 	/**
 	 * Checks if a requested map is complete.
 	 * 

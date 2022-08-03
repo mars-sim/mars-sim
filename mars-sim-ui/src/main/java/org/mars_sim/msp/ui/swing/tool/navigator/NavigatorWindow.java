@@ -86,26 +86,26 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 	/** Tool name. */
 	public static final String NAME = Msg.getString("NavigatorWindow.title"); //$NON-NLS-1$
 
-	public static final int HORIZONTAL_SURFACE_MAP = MapDataUtil.IMAGE_WIDTH; 
-	public static final int HORIZONTAL_FULL = HORIZONTAL_SURFACE_MAP * 2;
-	public static final int HORIZONTAL_LEFT_HALF = HORIZONTAL_SURFACE_MAP; 
+	public static final int HORIZONTAL_SURFACE_MAP = MapDataUtil.GLOBE_BOX_HEIGHT; 
+	public static final int HORIZONTAL_FULL_WDITH = HORIZONTAL_SURFACE_MAP * 2;
+	public static final int GLOBAL_MAP_WIDTH = HORIZONTAL_SURFACE_MAP;
+
 	public static final int HEIGHT_BUTTON_PANE = 26;
-	public static final int HEIGHT = 400; //(int)(HORIZONTAL_SURFACE_MAP + 3.5 * HEIGHT_BUTTON_PANE);
 	public static final int HEIGHT_STATUS_BAR = 20;
-	
+
 	public static final int CB_WIDTH = 120;
 
 	public static final double RAD_PER_DEGREE = Math.PI / 180D;
-	
+
 	public static final String WHITESPACE = " ";
 	public static final String COMMA = ", ";
 	public static final String THETA = "\u03B8: "; //"Theta: ";
 	public static final String PHI = "\u03C6: "; //"Phi: ";
 	public static final String CLOSE_P = ")";
-	
+
 	private static final String RGB = "RGB (";
 	private static final String HSB = "HSB (";
-	
+
 	private static final String ELEVATION = " h: ";
 	private static final String KM = " km";
 	
@@ -210,13 +210,13 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		contentPane.add(wholePane, BorderLayout.CENTER);
 
 		JPanel leftPane = new JPanel(new BorderLayout(0, 0));
-		leftPane.setMaximumSize(new Dimension(HORIZONTAL_LEFT_HALF, HORIZONTAL_SURFACE_MAP));
+		leftPane.setMaximumSize(new Dimension(GLOBAL_MAP_WIDTH, HORIZONTAL_SURFACE_MAP));
 		wholePane.add(leftPane);
 		
 		// Prepare globe display
 		globeNav = new GlobeDisplay(this);
 		WebPanel globePane = new WebPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
-		globePane.setMaximumSize(new Dimension(HORIZONTAL_LEFT_HALF, HORIZONTAL_SURFACE_MAP));
+		globePane.setMaximumSize(new Dimension(GLOBAL_MAP_WIDTH, HORIZONTAL_SURFACE_MAP));
 		globePane.setBackground(Color.black);
 		globePane.setOpaque(true);
 //		globePane.setBorder(new CompoundBorder(new BevelBorder(BevelBorder.LOWERED), new LineBorder(Color.gray)));
@@ -285,7 +285,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		
 		// turn on day night layer
 		setMapLayer(false, 0, shadingLayer);
-		globeNav.setDayNightTracking(false);
+//		globeNav.setDayNightTracking(false);
 		
 		///////////////////////////////////////////////////////////////////////////
 		
@@ -609,7 +609,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 				globeNav.showTopo();
 				// turn off day night layer
 				setMapLayer(false, 0, shadingLayer);
-				globeNav.setDayNightTracking(false);
+//				globeNav.setDayNightTracking(false);
 				// turn off mineral layer
 				setMapLayer(false, 1, mineralLayer);
 				mineralItem.setSelected(false);
@@ -637,7 +637,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 			}
 		} else if (source == dayNightItem) {
 			setMapLayer(dayNightItem.isSelected(), 0, shadingLayer);
-			globeNav.setDayNightTracking(dayNightItem.isSelected());
+//			globeNav.setDayNightTracking(dayNightItem.isSelected());
 		} else if (source == unitLabelItem)
 			setMapLayer(unitLabelItem.isSelected(), 3, unitLabelLayer);
 		else if (source == trailItem)

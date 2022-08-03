@@ -364,8 +364,7 @@ public class Coordinates implements Serializable {
 	 * @return latitude double
 	 */
 	public double getLatitudeDouble() {
-		double degrees;
-		degrees = 0D;
+		double degrees = 0;
 
 		if (phi <= PI_HALF) {
 			degrees = ((PI_HALF - phi) / PI_HALF) * 90D;
@@ -375,7 +374,6 @@ public class Coordinates implements Serializable {
 		}
 
 		return degrees;
-
 	}
 
 	/**

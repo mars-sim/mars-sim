@@ -530,9 +530,9 @@ implements Serializable {
                     Conversion.capitalize(process.toString())));
 				
 				if (person != null)
-					logger.log(person, Level.INFO, 100_000, "Worked on '" + process.getInfo().getName() + "'.");
-				else
-					logger.log(robot, Level.INFO, 100_000, "Worked on '" + process.getInfo().getName() + "'.");
+					logger.log(person, Level.INFO, 20_000, "Worked on '" + process.getInfo().getName() + "'.");
+//				else
+//					logger.log(robot, Level.INFO, 100_000, "Worked on '" + process.getInfo().getName() + "'.");
 				
 			} else {
 				if (!worker.getAssociatedSettlement().getProcessOverride(OverrideType.FOOD_PRODUCTION)) {

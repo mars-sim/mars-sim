@@ -12,8 +12,18 @@
   */
  public final class MapDataUtil {
  	
- 	public static final int IMAGE_WIDTH = 300;
- 	public static final int IMAGE_HEIGHT = IMAGE_WIDTH;
+ 	public static final int GLOBE_BOX_HEIGHT = 300;
+ 	public static final int GLOBE_BOX_WIDTH = GLOBE_BOX_HEIGHT;
+ 	public static final int MAP_BOX_HEIGHT = GLOBE_BOX_HEIGHT;
+ 	public static final int MAP_BOX_WIDTH = GLOBE_BOX_WIDTH;
+ 	
+ 	public final static int RATIO = GLOBE_BOX_HEIGHT / 300;
+ 	
+	/** Source map height in pixels. */
+	public static final int MAP_HEIGHT = 1440; // 2880; //1440; 2048; 1024; Source map height in pixels.
+	/** Source map width in pixels. */
+	public static final int MAP_WIDTH = 2880; // 5760; //2880; 4096; 2048; Source map width in pixels.
+	
  	private static final int ELEVATION_MAP_HEIGHT = MEGDRMapReader.HEIGHT;
  	private static final int ELEVATION_MAP_WIDTH = MEGDRMapReader.WIDTH;
  	
@@ -50,24 +60,24 @@
  	 * @return the elevation as an integer.
  	 */
  	public int getElevationInt(double phi, double theta) {
- 		// Make sure phi is between 0 and PI.
- 		while (phi > PI)
- 			phi -= PI;
- 		while (phi < 0)
- 			phi += PI;
-
- 		// Adjust theta with PI for the map offset.
- 		// Note: the center of the map is when theta = 0
- 		if (theta > PI)
- 			theta -= PI;
- 		else
- 			theta += PI;
- 		
- 		// Make sure theta is between 0 and 2 PI.
- 		while (theta > TWO_PI)
- 			theta -= TWO_PI;
- 		while (theta < 0)
- 			theta += TWO_PI;
+// 		// Make sure phi is between 0 and PI.
+// 		while (phi > PI)
+// 			phi -= PI;
+// 		while (phi < 0)
+// 			phi += PI;
+//
+// 		// Adjust theta with PI for the map offset.
+// 		// Note: the center of the map is when theta = 0
+// 		if (theta > PI)
+// 			theta -= PI;
+// 		else
+// 			theta += PI;
+// 		
+// 		// Make sure theta is between 0 and 2 PI.
+// 		while (theta > TWO_PI)
+// 			theta -= TWO_PI;
+// 		while (theta < 0)
+// 			theta += TWO_PI;
 
  		int row = (int) Math.round(phi * ELEVATION_MAP_HEIGHT / PI);
  		

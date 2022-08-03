@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Map.java
- * @date 2022-07-31
+ * @date 2022-08-02
  * @author Greg Whelan
  */
 
@@ -18,23 +18,20 @@ import org.mars_sim.msp.core.Coordinates;
 public interface Map {
 
 	/** The display box map height (for scrolling) */
-	public static final int DISPLAY_HEIGHT = MapDataUtil.IMAGE_HEIGHT;
+	public static final int DISPLAY_HEIGHT = MapDataUtil.GLOBE_BOX_HEIGHT;
 	/** The display box map width (for scrolling) */
-	public static final int DISPLAY_WIDTH = MapDataUtil.IMAGE_WIDTH;
+	public static final int DISPLAY_WIDTH = MapDataUtil.GLOBE_BOX_WIDTH;
 	/** Map display width in pixels. */
 	public static final int MAP_VIS_WIDTH = DISPLAY_WIDTH;
 	/** Map display height in pixels. */
 	public static final int MAP_VIS_HEIGHT = DISPLAY_HEIGHT;
 	/** this is a mysterious variable. */
 	public static final double HALF_MAP_ANGLE = 0.48587;
-	/** Source map height in pixels. */
-	public static final int MAP_HEIGHT = 1440;
-	/** Source map width in pixels. */
-	public static final int MAP_WIDTH = 2880;
-	
-	public static final double PIXEL_RHO = MAP_HEIGHT / Math.PI;
+
+	public static final double PIXEL_RHO = MapDataUtil.MAP_HEIGHT / Math.PI;
 	
 	public static final double TWO_PI = Math.PI * 2D;
+	
 	/** how far off center in the surface map are things placed */
 //	public static final int SCREEN_OFFSET_X=300;
 	/** how far off center in the surface map are things placed */

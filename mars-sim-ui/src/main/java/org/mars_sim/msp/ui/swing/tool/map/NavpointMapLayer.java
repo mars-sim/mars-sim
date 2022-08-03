@@ -29,9 +29,8 @@ public class NavpointMapLayer implements MapLayer {
 	private static final String GREEN_ICON_NAME = "FlagGreen";
 	
 	// Domain members
-	private double angle = Map.HALF_MAP_ANGLE;
-	private int MAP_X_OFFSET = 5;
-	private int MAP_Y_OFFSET = 5;
+	private static final int MAP_X_OFFSET = 5;
+	private static final int MAP_Y_OFFSET = 5;
 	
 	private Component displayComponent;
 	
@@ -124,7 +123,7 @@ public class NavpointMapLayer implements MapLayer {
 	private void displayNavpoint(NavPoint navpoint, Coordinates mapCenter, String mapType, Graphics g) {
 		// double angle = CannedMarsMap.HALF_MAP_ANGLE;
 
-		if (mapCenter != null && mapCenter.getAngle(navpoint.getLocation()) < angle) {
+		if (mapCenter != null && mapCenter.getAngle(navpoint.getLocation()) < Map.HALF_MAP_ANGLE) {
 
 			// Chose a navpoint icon based on the map type.
 			Icon navIcon = null;

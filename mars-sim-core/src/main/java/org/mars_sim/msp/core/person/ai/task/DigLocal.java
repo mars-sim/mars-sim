@@ -147,7 +147,6 @@ implements Serializable {
         if (binLoc == null) {
         	binLoc = determineBinLocation();
 	        if (diggingLoc != null) {
-	        	setBinLocation(binLoc);
 //	           	logger.info(person, 4_000L, "Selected the drop-off bin at " + diggingLoc + ".");
 	        }
 	        else {

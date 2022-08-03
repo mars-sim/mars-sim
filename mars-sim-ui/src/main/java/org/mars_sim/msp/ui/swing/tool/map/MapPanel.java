@@ -107,6 +107,7 @@ public class MapPanel extends WebPanel implements ClockListener {
 	public void setNavWin(NavigatorWindow navwin) {
 		// showMap(centerCoords);
 		setMapType(getMapType());
+		
 		map.drawMap(centerCoords);
 
 		// Note: need navWin prior to calling addMouseMotionListener()
@@ -120,7 +121,7 @@ public class MapPanel extends WebPanel implements ClockListener {
 				dy = dragy - y;
 
 				if ((dx != 0 || dy != 0) 
-					 && x > 0 && x < MAP_BOX_HEIGHT && y > 0 && y < MAP_BOX_HEIGHT) {
+					 && x > 0 && x < MAP_BOX_WIDTH && y > 0 && y < MAP_BOX_HEIGHT) {
 					// setCursor(new Cursor(Cursor.MOVE_CURSOR));
 					// double rho = CannedMarsMap.PIXEL_RHO;
 					centerCoords = centerCoords.convertRectToSpherical((double) dx, (double) dy, rho);
@@ -159,6 +160,7 @@ public class MapPanel extends WebPanel implements ClockListener {
 	public void setNavpointPanel(NavpointPanel panel) {
 		// showMap(centerCoords);
 		setMapType(getMapType());
+		
 		map.drawMap(centerCoords);
 
 		// Note: need navWin prior to calling addMouseMotionListener()
@@ -173,7 +175,7 @@ public class MapPanel extends WebPanel implements ClockListener {
 				dy = dragy - y;
 
 				if (dx != 0 || dy != 0) {
-					if (x > 0 && x < MAP_BOX_HEIGHT && y > 0 && y < MAP_BOX_HEIGHT) {
+					if (x > 0 && x < MAP_BOX_WIDTH && y > 0 && y < MAP_BOX_HEIGHT) {
 
 						centerCoords = centerCoords.convertRectToSpherical((double) dx, (double) dy, rho);
 

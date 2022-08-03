@@ -37,6 +37,7 @@ public class ImageLoader {
 	 */
 	// Use classloader compatible paths
 	public final static String IMAGE_DIR = "/images/";
+	public final static String MAPS_DIR = "/maps/";
 	public final static String ICON_DIR = "/icons/";
 	public final static String VEHICLE_ICON_DIR = "/icons/vehicle/";
 	public final static String PNG = "png";
@@ -143,10 +144,13 @@ public class ImageLoader {
 
 			URL imageURL = ImageLoader.class.getResource(IMAGE_DIR + imageName);
 			if (imageURL == null) {
-//	   			logger.severe("'" + IMAGE_DIR + imagename + "' cannot be found");
 				imageURL = ImageLoader.class.getResource(ICON_DIR + imageName);
-				if (imageURL == null)
-					logger.severe("'" + imageName + "' cannot be found");
+				if (imageURL == null) {					
+					imageURL = ImageLoader.class.getResource(MAPS_DIR + imageName);
+					if (imageURL == null) {	
+						logger.severe("'" + imageName + "' cannot be found");
+					}
+				}		
     		}
 
 			newImage = usedToolkit.createImage(imageURL);
@@ -154,7 +158,6 @@ public class ImageLoader {
 		}
 		return newImage;
 	}
-
 
 	/**
 	 * Converts from icon to image.

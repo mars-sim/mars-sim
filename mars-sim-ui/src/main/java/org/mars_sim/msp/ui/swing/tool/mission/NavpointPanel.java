@@ -71,8 +71,8 @@ public class NavpointPanel
 extends WebPanel
 implements ListSelectionListener, MissionListener {
 
-	private static final int WIDTH = MapDataUtil.IMAGE_WIDTH;
-	private static final int HEIGHT = MapDataUtil.IMAGE_HEIGHT;
+	private static final int WIDTH = MapDataUtil.GLOBE_BOX_WIDTH / 2;
+	private static final int HEIGHT = MapDataUtil.GLOBE_BOX_HEIGHT / 2;
 	private static final int PADDING = 32;
 	private static final int TABLE_HEIGHT = 190;
 	
@@ -279,7 +279,7 @@ implements ListSelectionListener, MissionListener {
 		}
 		@Override
 		public void mouseDragged(MouseEvent event) {
-			// nothing
+			checkHover(event);
 		}
 	}
 	
