@@ -242,8 +242,8 @@ public class SimulationConfig implements Serializable {
 		marsStartDate = loadValue(timeConfig, MARS_START_DATE_TIME);
 		
 		accuracyBias =  loadDoubleValue(timeConfig, ACCURACY_BIAS, 0D, 1D);
-		minSimulatedPulse = loadDoubleValue(timeConfig, MIN_SIMULATED_PULSE, 0.01, 40.5518);
-		maxSimulatedPulse = loadDoubleValue(timeConfig, MAX_SIMULATED_PULSE, 0.01, 40.5518);
+		minSimulatedPulse = loadDoubleValue(timeConfig, MIN_SIMULATED_PULSE, 0.01, 10.1380);
+		maxSimulatedPulse = loadDoubleValue(timeConfig, MAX_SIMULATED_PULSE, 0.01, 10.1380);
 	
 		defaultTimePulse = loadIntValue(timeConfig, DEFAULT_TIME_PULSE, 1, 2048);
 		baseTimeRatio = loadIntValue(timeConfig, BASE_TIME_RATIO, 1, MasterClock.MAX_TIME_RATIO);

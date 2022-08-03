@@ -57,13 +57,13 @@
 		     milliSols. The lower the value, the more accurate the simulation but the more pulses & more expensive
 		     to calculate. Note both values can be adjusted if the processing becomes too excessive.
 		-->
-		<!-- Default: 0.0112644016 millisols ~ 1 earth seconds. Min is 0.01. Max is 40.5518. 
+		<!-- Default: 0.0112644016 millisols or 1 earth second. Min is 0.01. Max is 10.1380. 
 		     Must be smaller than max-simulated-pulse   -->
 		<min-simulated-pulse value="0.0112644016"/>
 
-		<!-- Default: 11.5347 millisols ~ 30 earth mins. Min is 0.01. Max is 40.5518 
+		<!-- Default: 10.1380 millisols or 15 earth mins. Min is 0.01. Max is 10.1380 
 		     Must be greater than min-simulated-pulse   -->
-		<max-simulated-pulse value="40.5518"/>
+		<max-simulated-pulse value="10.1380"/>
 
 		<!-- The simulation creates a pulse periodically to execution the simulation. This integer value defines the
 		maximum wait between pulses in terms of millisecs. The simulation will attempt to generate pulses more
