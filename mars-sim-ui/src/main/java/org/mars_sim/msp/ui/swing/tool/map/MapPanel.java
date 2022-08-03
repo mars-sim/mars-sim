@@ -26,6 +26,8 @@ import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.swing.SwingUtilities;
+
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.ClockPulse;
@@ -42,6 +44,7 @@ public class MapPanel extends WebPanel implements ClockListener {
 	private static final long serialVersionUID = 1L;
 
 	private static final Logger logger = Logger.getLogger(MapPanel.class.getName());
+	
 	private static final double HALF_PI = Math.PI / 2d;
 
 	public final static int MAP_BOX_HEIGHT = NavigatorWindow.HORIZONTAL_SURFACE_MAP;
@@ -84,12 +87,7 @@ public class MapPanel extends WebPanel implements ClockListener {
 
 		mapType = SurfMarsMap.TYPE;
 		oldMapType = mapType;
-
-		topoMap = new TopoMarsMap(this);
-		surfMap = new SurfMarsMap(this);
-		geoMap = new GeologyMarsMap(this);
 		
-		map = surfMap;
 		mapError = false;
 		wait = false;
 		mapLayers = new CopyOnWriteArrayList<>();
@@ -108,7 +106,7 @@ public class MapPanel extends WebPanel implements ClockListener {
 		// showMap(centerCoords);
 		setMapType(getMapType());
 		
-		map.drawMap(centerCoords);
+//		if (map != null) map.drawMap(centerCoords);
 
 		// Note: need navWin prior to calling addMouseMotionListener()
 		addMouseMotionListener(new MouseAdapter() {
@@ -122,12 +120,8 @@ public class MapPanel extends WebPanel implements ClockListener {
 
 				if ((dx != 0 || dy != 0) 
 					 && x > 0 && x < MAP_BOX_WIDTH && y > 0 && y < MAP_BOX_HEIGHT) {
-					// setCursor(new Cursor(Cursor.MOVE_CURSOR));
-					// double rho = CannedMarsMap.PIXEL_RHO;
 					centerCoords = centerCoords.convertRectToSpherical((double) dx, (double) dy, rho);
-
 					map.drawMap(centerCoords);
-
 					repaint();
 				}
 
@@ -161,7 +155,7 @@ public class MapPanel extends WebPanel implements ClockListener {
 		// showMap(centerCoords);
 		setMapType(getMapType());
 		
-		map.drawMap(centerCoords);
+//		if (map != null) map.drawMap(centerCoords);
 
 		// Note: need navWin prior to calling addMouseMotionListener()
 		addMouseMotionListener(new MouseAdapter() {
@@ -174,15 +168,12 @@ public class MapPanel extends WebPanel implements ClockListener {
 				dx = dragx - x;
 				dy = dragy - y;
 
-				if (dx != 0 || dy != 0) {
-					if (x > 0 && x < MAP_BOX_WIDTH && y > 0 && y < MAP_BOX_HEIGHT) {
+				if ((dx != 0 || dy != 0)
+					 && x > 0 && x < MAP_BOX_WIDTH && y > 0 && y < MAP_BOX_HEIGHT) {
 
-						centerCoords = centerCoords.convertRectToSpherical((double) dx, (double) dy, rho);
-
-						map.drawMap(centerCoords);
-
-						repaint();
-					}
+					centerCoords = centerCoords.convertRectToSpherical((double) dx, (double) dy, rho);
+					map.drawMap(centerCoords);
+					repaint();
 				}
 
 				dragx = x;
@@ -266,12 +257,19 @@ public class MapPanel extends WebPanel implements ClockListener {
 	 */
 	public void setMapType(String mapType) {
 		this.mapType = mapType;
-		if (SurfMarsMap.TYPE.equals(mapType))
+		
+		if (SurfMarsMap.TYPE.equals(mapType)) {
+			if (surfMap == null) surfMap = new SurfMarsMap(this);
 			map = surfMap;
-		else if (TopoMarsMap.TYPE.equals(mapType))
+		}
+		else if (TopoMarsMap.TYPE.equals(mapType)) {
+			if (topoMap == null) topoMap = new TopoMarsMap(this);
 			map = topoMap;
-		else if (GeologyMarsMap.TYPE.equals(mapType))
+		}
+		else if (GeologyMarsMap.TYPE.equals(mapType)) {
+			if (geoMap == null) geoMap = new GeologyMarsMap(this);
 			map = geoMap;
+		}
 		showMap(centerCoords);
 	}
 
@@ -302,11 +300,8 @@ public class MapPanel extends WebPanel implements ClockListener {
 
 		if (recreateMap) {
 			wait = true;
-			if (!executor.isTerminated() || !executor.isShutdown())
-				executor.execute(new MapTask());
+			updateDisplay();
 		}
-
-		updateDisplay();
 	}
 
 	class MapTask implements Runnable {
@@ -320,33 +315,21 @@ public class MapPanel extends WebPanel implements ClockListener {
 				mapError = false;
 				map.drawMap(centerCoords);
 			} catch (Exception e) {
-				e.printStackTrace(System.err);
 				mapError = true;
 				mapErrorMessage = e.getMessage();
+				logger.severe("Can't draw surface map: " + e);
 			}
 			wait = false;
 
-//			paintDoubleBuffer();
 			repaint();
 		}
 	}
 
-//	/**
-//	 * Updates the current display
-//
-//    private void updateDisplay() {
-//        if ((displayThread == null) || (!displayThread.isAlive())) {
-//        	displayThread = new Thread(this, "Navpoint Map");
-//        	displayThread.start();
-//        } else {
-//        	displayThread.interrupt();
-//        }
-//    }
-//	 
-
 	public void updateDisplay() {
-		if (update) {
-			if (!executor.isTerminated() || !executor.isShutdown())
+		if ((desktop.isToolWindowOpen(NavigatorWindow.NAME) 
+			|| desktop.isToolWindowOpen(MissionWindow.NAME))
+			&& update 
+			&& (!executor.isTerminated() || !executor.isShutdown())) {
 				executor.execute(new MapTask());
 		}
 	}
@@ -421,9 +404,7 @@ public class MapPanel extends WebPanel implements ClockListener {
 
 	@Override
 	public void clockPulse(ClockPulse pulse) {
-		if (desktop.isToolWindowOpen(NavigatorWindow.NAME) || desktop.isToolWindowOpen(MissionWindow.NAME)) {
-			updateDisplay();
-		}
+		updateDisplay();
 	}
 
 	@Override

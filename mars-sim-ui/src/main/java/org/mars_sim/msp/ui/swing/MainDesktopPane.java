@@ -164,12 +164,15 @@ public class MainDesktopPane extends JDesktopPane
 		// Prep listeners
 		prepareListeners();
 
-		try {
-			// Prep tool windows
-			prepareToolWindows();
-		} catch (Exception e) {
-          	logger.log(Level.SEVERE, "Cannot prepare tool windows: " + e);
-		}
+		// Prep tool windows
+		SwingUtilities.invokeLater(() -> {
+			try {
+				prepareToolWindows();
+			} catch (Exception e) {
+				e.printStackTrace();
+				logger.log(Level.SEVERE, "Cannot prepare tool windows: " + e);
+			}
+		});
 
 		// Setup announcement window
 		prepareAnnouncementWindow();

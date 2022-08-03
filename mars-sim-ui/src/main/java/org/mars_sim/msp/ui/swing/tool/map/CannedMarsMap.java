@@ -34,12 +34,13 @@ public abstract class CannedMarsMap extends JComponent implements Map {
 	// Data members
 	private boolean mapImageDone = false;
 	
-	private MapData mapData;
+	private transient Image mapImage = null;
+	private transient MapData mapData;
+	
 	private JComponent displayArea = null;
-	private Coordinates currentCenter = null;
-	private Image mapImage = null;
-	private Graphics dbg;
 
+	private Coordinates currentCenter = null;
+	
 	/**
 	 * Constructor.
 	 * 
@@ -80,8 +81,8 @@ public abstract class CannedMarsMap extends JComponent implements Map {
 			mapImageDone = true;
 			currentCenter = new Coordinates(newCenter);
 			
-			
-			drawMap();
+			// Prepare and buffer the map
+			bufferMap();
 		}
 	}
 	
@@ -89,7 +90,7 @@ public abstract class CannedMarsMap extends JComponent implements Map {
 	 * Draws a 2D map form the buffer.
 	 * 
 	 */
-	public void drawMap() {
+	public void bufferMap() {
 		paintDoubleBuffer();
 		repaint();
 	}
@@ -101,10 +102,8 @@ public abstract class CannedMarsMap extends JComponent implements Map {
 	public void paintDoubleBuffer() {
 		if (mapImage == null) {
 			mapImage = createImage(MapDataUtil.MAP_BOX_WIDTH, MapDataUtil.MAP_BOX_HEIGHT);
-			if (mapImage == null) {
-				return;
-			} else {
-				dbg = mapImage.getGraphics();
+			if (mapImage != null) {
+				Graphics dbg = mapImage.getGraphics();
 				Graphics2D g2d = (Graphics2D) dbg;
 				g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 				g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
@@ -118,6 +117,7 @@ public abstract class CannedMarsMap extends JComponent implements Map {
 		}
 	}
 
+	@Override
 	public void paint(Graphics g) {
 		Graphics2D g2d = (Graphics2D) g;
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);

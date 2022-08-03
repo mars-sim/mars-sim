@@ -16,6 +16,11 @@ import org.mars_sim.msp.core.IntPoint;
  */
 public class MapUtils {
 
+	private static final int MAP_HEIGHT = MapDataUtil.MAP_HEIGHT;
+	private static final int HALF_MAP = MAP_HEIGHT / 2;
+	private static final int LOW_EDGE = HALF_MAP - MapDataUtil.GLOBE_BOX_WIDTH / 2; 
+	private static final double RHO = MAP_HEIGHT / Math.PI;
+	
 	/**
 	 * Private constructor for utility class.
 	 */
@@ -31,11 +36,7 @@ public class MapUtils {
 	 * @return display point on map
 	 */
 	public static IntPoint getRectPosition(Coordinates coords, Coordinates mapCenter, String mapType) {
-		int mapHeight = MapDataUtil.MAP_HEIGHT;
-		int halfMap = mapHeight / 2;
-		int lowEdge = halfMap - MapDataUtil.GLOBE_BOX_WIDTH / 2; 
-		double rho = mapHeight / Math.PI;
-		return Coordinates.findRectPosition(coords, mapCenter, rho, halfMap, lowEdge);
+		return Coordinates.findRectPosition(coords, mapCenter, RHO, HALF_MAP, LOW_EDGE);
 	}
 
 	/**
@@ -46,8 +47,6 @@ public class MapUtils {
 	 * @return
 	 */
 	public static int getPixelDistance(double distance, String mapType) {
-		int mapWidth = MapDataUtil.MAP_WIDTH;
-		double distancePerPixel = Coordinates.MARS_CIRCUMFERENCE / mapWidth;
-		return (int) Math.round(distance / distancePerPixel);
+		return (int) Math.round(distance / Coordinates.MARS_CIRCUMFERENCE * MapDataUtil.MAP_WIDTH);
 	}
 }

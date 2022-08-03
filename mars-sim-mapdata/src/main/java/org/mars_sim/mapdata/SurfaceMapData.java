@@ -12,13 +12,10 @@ package org.mars_sim.mapdata;
  */
 public class SurfaceMapData extends IntegerMapData {
 
-	// Static members.
-	private static final String MAP_FILE = "/maps/surface2880x1440.jpg"; // 5760x2880.jpg"; // 
-
 	/**
 	 * Constructor
 	 */
 	public SurfaceMapData() {
-		super(MAP_FILE);
+		super(SURFACE_MAP_FILE);
 	}
 }

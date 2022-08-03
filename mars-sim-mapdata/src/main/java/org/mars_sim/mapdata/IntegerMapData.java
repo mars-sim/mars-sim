@@ -27,13 +27,17 @@ import javax.imageio.ImageIO;
  	// Static members.
  	private static Logger logger = Logger.getLogger(IntegerMapData.class.getName());
 
+	protected static final String SURFACE_MAP_FILE = "/maps/surface2880x1440.jpg"; // 2880x1440, 5760x2880
+	protected static final String TOPO_MAP_FILE = "/maps/topo2880x1440.jpg";
+	protected static final String GEO_MAP_FILE = "/maps/geologyMOLA2880x1440.jpg";
+
  	public static final int MAP_BOX_WIDTH = MapDataUtil.GLOBE_BOX_WIDTH;
  	public static final int MAP_BOX_HEIGHT = MapDataUtil.GLOBE_BOX_HEIGHT;
  	
  	public static final int MAP_WIDTH = MapDataUtil.MAP_WIDTH; 
  	public static final int MAP_HEIGHT = MapDataUtil.MAP_HEIGHT; 
  	
- 	public static final double MAP_RATIO = 1;
+ 	public static final double FACTOR = 1;
  	
 // 	public static final double HALF_MAP_ANGLE = .48587D;
  	public static final double PIXEL_RHO = MAP_HEIGHT / Math.PI;
@@ -41,19 +45,19 @@ import javax.imageio.ImageIO;
  	
  	private static final double PHI_ITERATION_PADDING = 1.26 * MapDataUtil.RATIO; // Derived from testing.
  	private static final double PHI_PADDING = 1.46 * MapDataUtil.RATIO; // Derived from testing.	
- 	private static final double PHI_ITERATION_ANGLE = Math.PI / (MAP_HEIGHT / MAP_RATIO * PHI_ITERATION_PADDING);
- 	private static final double PHI_RANGE = Math.PI * PHI_PADDING * MAP_BOX_HEIGHT / MAP_HEIGHT * MAP_RATIO;
+ 	private static final double PHI_ITERATION_ANGLE = Math.PI / (MAP_HEIGHT / FACTOR * PHI_ITERATION_PADDING);
+ 	private static final double PHI_RANGE = Math.PI * PHI_PADDING * MAP_BOX_HEIGHT / MAP_HEIGHT * FACTOR;
 
  	private static final double THETA_ITERATION_PADDING = 1.46 * MapDataUtil.RATIO; // Derived from testing.
  	private static final double MIN_THETA_PADDING = 1.02 * MapDataUtil.RATIO; // Theta padding, derived from testing.
  	
- 	private static final double PI_RATIO = TWO_PI * MAP_BOX_WIDTH / MAP_WIDTH * MAP_RATIO;
+ 	private static final double PI_RATIO = TWO_PI * MAP_BOX_WIDTH / MAP_WIDTH * FACTOR;
 	// Note : Polar cap phi values must display 2 PI theta range. 
  	private static final double POLAR_CAP_RANGE_1 = Math.PI / 6.54D; // derived from testing
  	private static final double POLAR_CAP_RANGE_2 = Math.PI - POLAR_CAP_RANGE_1;
  	private static final double MIN_THETA_DISPLAY = PI_RATIO * MIN_THETA_PADDING;
 		
- 	private static final double THETA_ITERATION_FACTOR = MAP_WIDTH / MAP_RATIO * THETA_ITERATION_PADDING;
+ 	private static final double THETA_ITERATION_FACTOR = MAP_WIDTH / FACTOR * THETA_ITERATION_PADDING;
  	
  	// Data members.
  	private int[][] pixels = null;

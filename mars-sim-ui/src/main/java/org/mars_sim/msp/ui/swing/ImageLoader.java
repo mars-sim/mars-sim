@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ImageLoader.java
- * @date 2021-12-07
+ * @date 2022-08-03
  * @author Barry Evans
  */
 package org.mars_sim.msp.ui.swing;
@@ -20,8 +20,8 @@ import org.mars.sim.console.MarsTerminal;
 /**
  * This is a static class that acts as a helper to load Images for use in the
  * UI. It is based on loading the resource form the class path via the
- * ClassLoader assuming all the Images to load a PNG. However other alternative
- * strategies can be easily implemented within this class.
+ * ClassLoader. However other alternative strategies can be easily 
+ * implemented within this class.
  */
 public class ImageLoader {
 
@@ -35,13 +35,13 @@ public class ImageLoader {
 	/**
 	 * Sub-directory/package for the images.
 	 */
-	// Use classloader compatible paths
-	public final static String IMAGE_DIR = "/images/";
-	public final static String MAPS_DIR = "/maps/";
-	public final static String ICON_DIR = "/icons/";
-	public final static String VEHICLE_ICON_DIR = "/icons/vehicle/";
-	public final static String PNG = "png";
-	public final static String SLASH = "/";
+	// Note: Switch to classloader compatible paths
+	public static final String IMAGE_DIR = "/images/";
+	public static final String MAPS_DIR = "/maps/";
+	public static final String ICON_DIR = "/icons/";
+	public static final String VEHICLE_ICON_DIR = "/icons/vehicle/";
+	public static final String PNG = "png";
+	public static final String SLASH = "/";
 	
 	/**
 	 * Static singleton
@@ -102,7 +102,7 @@ public class ImageLoader {
 	}
 
 	/**
-	 * Load the image icon with the specified name. This operation may either create
+	 * Loads the image icon with the specified name. This operation may either create
 	 * a new Image Icon of returned a previously created one.
 	 *
 	 * @param imagename
@@ -127,7 +127,7 @@ public class ImageLoader {
 	}
 
 	/**
-	 * Get an image with the specified name. The name should include the suffix
+	 * Gets an image with the specified name. The name should include the suffix
 	 * identifying the format of the image.
 	 *
 	 * @param imageName

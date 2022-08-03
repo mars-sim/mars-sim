@@ -32,6 +32,9 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.LineBorder;
 
 import org.mars_sim.mapdata.MapDataUtil;
 import org.mars_sim.msp.core.Coordinates;
@@ -195,18 +198,13 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		Simulation sim = desktop.getSimulation();
 		this.landmarks = sim.getSurfaceFeatures().getLandmarks();
 		this.unitManager = sim.getUnitManager();
-
-//		setPreferredSize(new Dimension(HORIZONTAL_FULL, HEIGHT));
-//		setMaximumSize(getPreferredSize());
-		
+	
 		// Prepare content pane		
 		JPanel contentPane = new JPanel(new BorderLayout(0, 0));
 		setContentPane(contentPane);
 		
 		// Prepare whole pane
 		JPanel wholePane = new JPanel(new GridLayout(1, 2));
-//		wholePane.setMaximumSize(new Dimension(HORIZONTAL_FULL, HEIGHT));
-//		wholePane.setLayout(new BoxLayout(wholePane, BoxLayout.Y_AXIS));
 		contentPane.add(wholePane, BorderLayout.CENTER);
 
 		JPanel leftPane = new JPanel(new BorderLayout(0, 0));
@@ -219,7 +217,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		globePane.setMaximumSize(new Dimension(GLOBAL_MAP_WIDTH, HORIZONTAL_SURFACE_MAP));
 		globePane.setBackground(Color.black);
 		globePane.setOpaque(true);
-//		globePane.setBorder(new CompoundBorder(new BevelBorder(BevelBorder.LOWERED), new LineBorder(Color.gray)));
+		globePane.setBorder(new CompoundBorder(new BevelBorder(BevelBorder.LOWERED), new LineBorder(Color.gray)));
 		globePane.add(globeNav);
 
 		globePane.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -231,31 +229,22 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 
 		
 		JPanel rightPane = new JPanel(new BorderLayout(0, 0));
-//		rightPane.setMaximumSize(new Dimension(HORIZONTAL_SURFACE_MAP, HORIZONTAL_SURFACE_MAP + HEIGHT_BUTTON_PANE));
 		wholePane.add(rightPane);
 	
 		WebPanel detailPane = new WebPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
 		rightPane.add(detailPane, BorderLayout.CENTER);
-		
-//		detailPane.setMaximumSize(new Dimension(HORIZONTAL_SURFACE_MAP, HORIZONTAL_SURFACE_MAP + HEIGHT_BUTTON_PANE));
-		// detailPane.setBorder( new CompoundBorder(new BevelBorder(BevelBorder.LOWERED), new LineBorder(Color.gray)));
-//		detailPane.setBackground(Color.black);
-//		detailPane.setOpaque(true);
-		
+	
 		mapPaneInner = new WebPanel(new BorderLayout(0, 0));
 		detailPane.add(mapPaneInner);
-		
-//		mapPaneInner.setBorder(new CompoundBorder(new BevelBorder(BevelBorder.LOWERED), new LineBorder(Color.gray)));
+	
 		mapPaneInner.setBackground(Color.black);
-//		mapPaneInner.setMaximumSize(new Dimension(HORIZONTAL_SURFACE_MAP, HORIZONTAL_SURFACE_MAP + HEIGHT_BUTTON_PANE));
 		mapPaneInner.setOpaque(true);
 		mapPaneInner.setAlignmentX(CENTER_ALIGNMENT);
 		mapPaneInner.setAlignmentY(TOP_ALIGNMENT);
-		// mapPaneInner.setCursor(new Cursor(java.awt.Cursor.DEFAULT_CURSOR));
 
 		mapLayerPanel = new MapPanel(desktop, 500L);
-//		mapLayerPanel.setMaximumSize(new Dimension(HORIZONTAL_SURFACE_MAP, HORIZONTAL_SURFACE_MAP + HEIGHT_BUTTON_PANE));
 		mapLayerPanel.setNavWin(this);
+		
 		mapLayerPanel.addMouseListener(new MouseListener());
 		mapLayerPanel.addMouseMotionListener(new MouseMotionListener());
 		// map.setCursor(new Cursor(java.awt.Cursor.DEFAULT_CURSOR));
@@ -467,6 +456,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		statusBar.addRightComponent(hs, false);
 		
 //		statusBar.addRightCorner();
+		
 		
 		// Create the option menu
 		if (optionsMenu == null)

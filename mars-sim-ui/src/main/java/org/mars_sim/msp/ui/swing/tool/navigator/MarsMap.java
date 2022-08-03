@@ -36,13 +36,13 @@ public class MarsMap {
 	public static final int MAP_H = NavigatorWindow.HORIZONTAL_SURFACE_MAP;
 	/** Width of map source image (pixels). */
 	public static final int MAP_W = MAP_H * 2;
-
-	private static final double PI_HALF = Math.PI / 2D;
-	private static final double PI_DOUBLE = Math.PI * 2D;
-
-	private static final double rho = MAP_H / Math.PI;
-	private static final double col_array_modifier = 1D / PI_DOUBLE;
 	private static final int HALF_MAP_HEIGHT = MAP_H / 2;
+	
+	private static final double PI_HALF = Math.PI / 2;
+	private static final double PI_DOUBLE = Math.PI * 2;
+	private static final double RHO = MAP_H / Math.PI;
+	private static final double COL_ARRAY_MODIFIER = 1 / PI_DOUBLE;
+
 
 	// Data members
 	/** Center position of globe. */
@@ -191,11 +191,11 @@ public class MarsMap {
 			if (col_boundry == Math.PI)
 				end_col -= col_iterate;
 
-			double temp_buff_x = rho * MoreMath.sin(row);
+			double temp_buff_x = RHO * MoreMath.sin(row);
 			double temp_buff_y1 = temp_buff_x * cos_offset;
-			double temp_buff_y2 = rho * row_cos * sin_offset;
+			double temp_buff_y2 = RHO * row_cos * sin_offset;
 
-			double col_array_modifier2 = col_array_modifier * circum;
+			double col_array_modifier2 = COL_ARRAY_MODIFIER * circum;
 
 			// Go through each column in row
 			for (double col = start_col; col <= end_col; col += col_iterate) {
@@ -282,7 +282,7 @@ public class MarsMap {
 		// Go through each row and create Sphere_Color vector with it
 		for (phi = offset; phi < Math.PI; phi += (Math.PI / ih_d)) {
 			row = MoreMath.floor((float) ((phi / Math.PI) * ih_d));//(int) Math.floor((phi / Math.PI) * ih_d);
-			circum = 2 * Math.PI * (rho * MoreMath.sin(phi));
+			circum = 2 * Math.PI * (RHO * MoreMath.sin(phi));
 			col_num = (int) Math.round(circum);
 			sphereColor[row] = new Vector<Integer>(col_num);
 

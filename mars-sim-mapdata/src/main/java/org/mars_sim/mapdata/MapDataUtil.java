@@ -12,18 +12,19 @@
   */
  public final class MapDataUtil {
  	
+	/** Note: Make sure GLOBE_BOX_HEIGHT matches the number of vertical pixels of the globe surface map. */ 
  	public static final int GLOBE_BOX_HEIGHT = 300;
  	public static final int GLOBE_BOX_WIDTH = GLOBE_BOX_HEIGHT;
  	public static final int MAP_BOX_HEIGHT = GLOBE_BOX_HEIGHT;
  	public static final int MAP_BOX_WIDTH = GLOBE_BOX_WIDTH;
  	
- 	public final static int RATIO = GLOBE_BOX_HEIGHT / 300;
- 	
-	/** Source map height in pixels. */
-	public static final int MAP_HEIGHT = 1440; // 2880; //1440; 2048; 1024; Source map height in pixels.
-	/** Source map width in pixels. */
-	public static final int MAP_WIDTH = 2880; // 5760; //2880; 4096; 2048; Source map width in pixels.
+	/** Note: Make sure MAP_HEIGHT matches the number of vertical pixels of the surface source map. */ 
+	public static final int MAP_HEIGHT = 1440; //1024; 1440; 2048; 2880 
+	/** Note: Make sure MAP_HEIGHT matches the number of horizontal pixels of the surface source map. */ 
+	public static final int MAP_WIDTH = 2880; //2048; 2880; 4096; 5760
 	
+ 	public static final double RATIO = GLOBE_BOX_HEIGHT / 300 * MAP_WIDTH / 2880;
+ 	
  	private static final int ELEVATION_MAP_HEIGHT = MEGDRMapReader.HEIGHT;
  	private static final int ELEVATION_MAP_WIDTH = MEGDRMapReader.WIDTH;
  	

@@ -7,7 +7,9 @@
 
  package org.mars_sim.mapdata;
 
- /**
+import javax.swing.SwingUtilities;
+
+/**
   * A factory for map data.
   */
  class MapDataFactory {
@@ -38,7 +40,6 @@
  	 * @return the map data.
  	 */
  	MapData getMapData(int mapType) {
- 		MapData result = null;
 
  		// Decompress the dat maps
 // 		if (!decompressed) {
@@ -46,7 +47,9 @@
 // 			// Only need to do it once
 // 			decompressed = true;
 // 		}
-
+ 		
+ 		MapData result = null;
+ 		
  		if (mapType == SURFACE_MAP_DATA) {
  			result = getSurfaceMapData();
  		} else if (mapType == TOPO_MAP_DATA) {
@@ -56,7 +59,7 @@
  		} else {
  			throw new IllegalArgumentException("mapType: " + mapType + " not a valid type.");
  		}
-
+ 		
  		return result;
  	}
 

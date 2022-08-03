@@ -44,17 +44,21 @@ import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 @SuppressWarnings("serial")
 public class GlobeDisplay extends JComponent implements ClockListener {
 
-	/** default logger. */
-//	private static final Logger logger = Logger.getLogger(GlobeDisplay.class.getName());
-
-	public final static int GLOBE_BOX_HEIGHT = NavigatorWindow.HORIZONTAL_SURFACE_MAP;
-	public final static int GLOBE_BOX_WIDTH = GLOBE_BOX_HEIGHT;
-	public final static int RATIO = GLOBE_BOX_HEIGHT / 300; 
+	public static final int GLOBE_BOX_HEIGHT = NavigatorWindow.HORIZONTAL_SURFACE_MAP;
+	public static final int GLOBE_BOX_WIDTH = GLOBE_BOX_HEIGHT;
+	public static final int RATIO = GLOBE_BOX_HEIGHT / 300; 
 	/** The max amount of pixels in each mouse drag that the globe will update itself. */
-	public final static int LIMIT = 60 * RATIO; 
+	public static final int LIMIT = 60 * RATIO; 
 
-	private static final double HALF_PI = Math.PI / 2d;
-	private static int dragx, dragy, dxCache = 0, dyCache = 0;
+	private static final double HALF_PI = Math.PI / 2;
+	private static final double TWO_PI = Math.PI * 2;
+	private static final int lowEdge = 0;
+	
+	private static int halfMap;
+	private static int dragx;
+	private static int dragy;
+	private static int dxCache = 0;
+	private static int dyCache = 0;
 
 	// Data members
 	/** The Map type. 0 = surface, 1 = topo, 2 = geology. */
@@ -121,7 +125,6 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 	private int rightWidth = positionMetrics.stringWidth(longitude);
 	
 	private MainDesktopPane desktop;
-	private SurfaceFeatures surfaceFeatures;
 
 	/**
 	 * Constructor.
@@ -137,17 +140,17 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 		globeBoxWidth = GLOBE_BOX_WIDTH;
 		globeBoxHeight = GLOBE_BOX_HEIGHT;
 
-		globeCircumference = globeBoxHeight * 2;
-		rho = globeCircumference / (2D * Math.PI);
+		globeCircumference = globeBoxHeight * 2D;
+		rho = globeCircumference / TWO_PI;
+		halfMap = globeBoxWidth / 2;
 
 		starfield = ImageLoader.getImage(Msg.getString("img.mars.starfield")); //$NON-NLS-1$
-		surfaceFeatures = desktop.getSimulation().getSurfaceFeatures();
-
+	
 		// Set component size
 		setPreferredSize(new Dimension(globeBoxWidth, globeBoxHeight));
 		setMaximumSize(getPreferredSize());
 
-		// Construct sphere objects for both real surface and topographical modes
+		// Construct sphere objects for surface, geo and topographical modes
 		marsSphere = new MarsMap(MarsMapType.SURFACE_MID, this);
 		topoSphere = new MarsMap(MarsMapType.TOPO_MID, this);
 		geoSphere = new MarsMap(MarsMapType.GEO_MID, this);
@@ -215,9 +218,7 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 				&& ((dyCache - dy) > -LIMIT) && ((dyCache - dy) < LIMIT)
 				&& x > 50 * RATIO && x < 245 * RATIO && y > 50 * RATIO && y < 245 * RATIO) {
 					setCursor(new Cursor(Cursor.MOVE_CURSOR));
-					// Globe circumference in pixels.
-					// double globeCircumference = height *2;
-					// double rho = globeCircumference / (2D * Math.PI);
+
 					centerCoords = centerCoords.convertRectToSpherical((double) dx, (double) dy, rho);
 					navwin.updateCoords(centerCoords);				
 					recreate = false;
@@ -529,9 +530,6 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 	 * @return x, y position on globe panel
 	 */
 	private IntPoint getUnitDrawLocation(Coordinates unitCoords) {
-		double rho = globeBoxWidth / Math.PI;
-		int halfMap = globeBoxWidth / 2;
-		int lowEdge = 0;
 		return Coordinates.findRectPosition(unitCoords, centerCoords, rho, halfMap, lowEdge);
 	}
 
@@ -593,7 +591,6 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 		masterClock.removeClockListener(this);
 		removeMouseListener(dragger);
 		dragger = null;
-		surfaceFeatures = null;
 		desktop  = null;
 
 		marsSphere = null;
