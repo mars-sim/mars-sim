@@ -86,7 +86,7 @@ public class InventoryCommand extends AbstractUnitCommand {
 
 
 		// Display all as a singel table
-		buffer.appendTableHeading("Item", 30, "Amount", 10);
+		buffer.appendTableHeading("Item", CommandHelper.GOOD_WIDTH, "Amount", 10);
 		for (Entry<String, String> row : entries.entrySet()) {
 			buffer.appendTableRow(row.getKey(), row.getValue());
 		}

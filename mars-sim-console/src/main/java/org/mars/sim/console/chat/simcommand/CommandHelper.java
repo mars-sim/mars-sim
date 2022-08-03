@@ -61,6 +61,7 @@ public class CommandHelper {
 	private static final int TIMESTAMP_TRUNCATED_WIDTH = 15;
 	// Width of a Coordinate
 	public static final int COORDINATE_WIDTH = 24;
+    public static final int GOOD_WIDTH = 30;
 	
 	// Base value formats for use with String.format
 	public static final String DOUBLE_FORMAT = "%.2f";
@@ -69,7 +70,7 @@ public class CommandHelper {
 	public static final String PERC_FORMAT = "%.1f%%";
 	public static final String MILLISOL_FORMAT = "%.1f millisol";
 	public static final String KMPH_FORMAT = "%.2f km/h";
-    public static final String MONEY_FORMAT = "%,.0f";
+    public static final String MONEY_FORMAT = "$%,.2f";
 	
 	private CommandHelper() {
 		// Do nothing

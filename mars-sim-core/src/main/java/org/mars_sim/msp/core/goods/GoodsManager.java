@@ -1,29 +1,31 @@
 /*
  * Mars Simulation Project
  * GoodsManager.java
- * @date 2021-10-21
- * @author Scott Davis
+ * @date 2022-07-30
+ * @author Barry Evans
  */
 package org.mars_sim.msp.core.goods;
 
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.logging.SimLogger;
-import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleType;
@@ -44,8 +46,8 @@ public class GoodsManager implements Serializable {
 	private static final int BASE_MAINT_PART = 15;
 	private static final int BASE_EVA_SUIT = 1;
 
-	// Duration that deals are valid
-    private static final int DEAL_VALIDITY = 500;
+	// Duration that buying & selling list are valid
+    private static final int LIST_VALIDITY = 500;
 
 	static final double MANUFACTURING_INPUT_FACTOR = 2D;
 	static final double CONSTRUCTING_INPUT_FACTOR = 2D;
@@ -112,20 +114,19 @@ public class GoodsManager implements Serializable {
 
 	private Map<Integer, Integer> deflationIndexMap = new HashMap<>();
 
-	private Map<Malfunctionable, Map<Integer, Number>> orbitRepairParts = new HashMap<>();
-
 	/** A standard list of resources to be excluded in buying negotiation. */
 	private static List<Good> exclusionBuyList = null;
 	/** A standard list of buying resources in buying negotiation. */
-	private static List<Good> buyList = null;
+	private transient double buyListTimeout = LIST_VALIDITY/10D; // Don't create list immediately
+	private transient Map<Good, ShoppingItem> buyList =  Collections.emptyMap();
+	private transient double sellListTimeout = LIST_VALIDITY/10D; // Don't create list immediately
+	private transient Map<Good, ShoppingItem> sellList = Collections.emptyMap();
 
 	private Settlement settlement;
 
 	private transient Map<MissionType, Deal> deals = new EnumMap<>(MissionType.class);
 
 	private static UnitManager unitManager;
-	private static MarsClock marsClock;
-
 
 	/**
 	 * Constructor.
@@ -159,7 +160,7 @@ public class GoodsManager implements Serializable {
 	 *
 	 * @return
 	 */
-	private static List<Good> getExclusionBuyList() {
+	static List<Good> getExclusionBuyList() {
 		if (exclusionBuyList == null) {
 			exclusionBuyList = new ArrayList<>();
 			for (VehicleType type : VehicleType.values()) {
@@ -417,14 +418,6 @@ public class GoodsManager implements Serializable {
 		return tourismFactor;
 	}
 
-
-	/**
-	 * Clears the previous calculation on estimated orbit repair parts.
-	 */
-	public void clearOrbitRepairParts() {
-		orbitRepairParts.clear();
-	}
-
 	/**
 	 * Determines the trade demand for a good at a settlement.
 	 *
@@ -447,13 +440,6 @@ public class GoodsManager implements Serializable {
 		}
 		tradeCache.put(good.getID(), bestTradeValue);
 		return bestTradeValue;
-	}
-
-	/**
-	 * Prepare the goods manager for a vehicle load calculation.
-	 */
-	public void prepareForLoadCalculation() {
-
 	}
 
 	/**
@@ -532,13 +518,21 @@ public class GoodsManager implements Serializable {
 		return mod;
 	}
 
-	public static List<Good> getBuyList() {
-		if (buyList == null) {
-			buyList = new ArrayList<>(GoodsUtil.getGoodsList());
-			buyList.removeAll(getExclusionBuyList());
-		}
+	/**
+	 * Get the current list of items on this Settlement wants to buy
+	 * @return Mapping from Good to the item
+	 */
+	public Map<Good, ShoppingItem> getBuyList() {
 		return buyList;
 	}
+
+	/**
+	 * Get the current list of items on this Settlement is willing to sell
+	 * @return Mapping from Good to the item
+	 */
+	public Map<Good, ShoppingItem> getSellList() {
+        return sellList;
+    }
 
 	/**
 	 * Gets the price per item for a good
@@ -687,9 +681,8 @@ public class GoodsManager implements Serializable {
 	 */
 	public static void initializeInstances(SimulationConfig sc, MarsClock c, MissionManager m, UnitManager u) {
 		unitManager = u;
-		marsClock = c;
 		Good.initializeInstances(sc, c, m);
-		CommerceUtil.initializeInstances(c, m, u);
+		CommerceUtil.initializeInstances(m, u);
 	}
 
 	/**
@@ -708,13 +701,9 @@ public class GoodsManager implements Serializable {
 		deflationIndexMap = null;
 
 		supplyCache = null;
-			
-		orbitRepairParts = null;
 
-		exclusionBuyList = null;
 		buyList = null;
-		
-		GoodsUtil.destroyGoods();
+		sellList = null;
 	}
 
 	/**
@@ -733,8 +722,7 @@ public class GoodsManager implements Serializable {
 	public Deal getBestDeal(MissionType commerce, Vehicle delivery) {
 		Deal deal = deals.get(commerce);
 
-		if ((deal != null) 
-				&& (MarsClock.getTimeDiff(marsClock, deal.getCreated()) > DEAL_VALIDITY)) {
+		if (deal != null) {
 			return deal;
 		}
 
@@ -757,5 +745,86 @@ public class GoodsManager implements Serializable {
     	throws IOException, ClassNotFoundException {
 		in.defaultReadObject();
 		deals = new EnumMap<>(MissionType.class);
+		buyList = Collections.emptyMap();
+		sellList = Collections.emptyMap();
+	}
+
+	public void timePassing(ClockPulse pulse) {
+		MarsClock marsTime = pulse.getMarsTime();
+		if (marsTime.getTotalMillisols() > buyListTimeout) {
+			// Scan the demand cache and build the buy list
+			calculateBuyList(marsTime);
+		}
+
+		if (marsTime.getTotalMillisols() > sellListTimeout) {
+			// Scan the demand cache and build the buy list
+			calculateSellList(marsTime);
+		}
+	}
+	
+	private void calculateSellList(MarsClock marsTime) {
+		// This logic is a draft and need more refinement
+		Map<Good,ShoppingItem> newSell = new HashMap<>();
+		List<Good> excluded = GoodsManager.getExclusionBuyList();
+		for(Entry<Integer, Double> item : supplyCache.entrySet()) {
+			Good good = GoodsUtil.getGood(item.getKey());
+
+			if (excluded.contains(good)) {
+				continue;
+			}
+
+			// Sell goods where there is a good supply value
+			double buyPrice = getPrice(good);
+			if (buyPrice > 0D) {
+				/// Look up sell 10%
+				int quantity = (int)(good.getNumberForSettlement(settlement) * 0.1D);
+
+				// Take Goods where I have ample in store
+				if (quantity > 0) {
+					newSell.put(good, new ShoppingItem(quantity, buyPrice));
+				}
+			}
+		}
+
+		logger.info(settlement, "New sell list created with items=" + newSell.size());
+		sellList = Collections.unmodifiableMap(newSell);
+		sellListTimeout = marsTime.getTotalMillisols() + 500D; // Lasts half a Mars day
+
+		// Any deal are now invalid
+		deals.clear();
+	}
+
+	/**
+	 * Calaculate the current buying list for this Settlement.
+	 */
+	private void calculateBuyList(MarsClock marsTime) {
+
+		// This logic is a draft and need more refinement
+		Map<Good,ShoppingItem> newBuy = new HashMap<>();
+		List<Good> excluded = GoodsManager.getExclusionBuyList();
+		for(Entry<Integer, Double> item : demandCache.entrySet()) {
+			Good good = GoodsUtil.getGood(item.getKey());
+			if (excluded.contains(good)) {
+				continue;
+			}
+
+			// Take Goods in demand more than supply
+			if (item.getValue() > supplyCache.get(good.getID())) {
+				double buyPrice = getPrice(good) * 1.1D;
+				int quantity = (int)(good.getNumberForSettlement(settlement) * 0.1D);
+				if (quantity == 0) {
+					// Don't have any so buy some
+					quantity = Math.max((int)(50D / buyPrice), 10);
+				}
+				newBuy.put(good, new ShoppingItem(quantity, buyPrice));
+			}
+		}
+
+		logger.info(settlement, "New buy list created with items=" + newBuy.size());
+		buyList = Collections.unmodifiableMap(newBuy);
+		buyListTimeout = marsTime.getTotalMillisols() + 500D; // Lasts half a Mars day
+
+		// Any deal are now invalid
+		deals.clear();
 	}
 }

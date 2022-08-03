@@ -6,12 +6,20 @@
  */
 package org.mars.sim.console.chat.simcommand.settlement;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
 import org.mars.sim.console.chat.simcommand.CommandHelper;
 import org.mars.sim.console.chat.simcommand.StructuredResponse;
 import org.mars_sim.msp.core.goods.CommerceUtil;
 import org.mars_sim.msp.core.goods.Deal;
+import org.mars_sim.msp.core.goods.Good;
+import org.mars_sim.msp.core.goods.ShoppingItem;
 import org.mars_sim.msp.core.person.ai.mission.DroneMission;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
@@ -28,9 +36,13 @@ public class TradeCommand extends AbstractSettlementCommand {
 
 	public static final ChatCommand TRADE = new TradeCommand();
 	private static final int COST_WIDTH = 10;
+	private static final String DEALS = "deals";
+	private static final String BUYING = "buying";
+	private static final String SELLING = "selling";
 
 	private TradeCommand() {
 		super("tr", "trade", "Trade deals of a Settlement");
+		setArguments(List.of(DEALS, BUYING, SELLING));
 	}
 
 	/** 
@@ -42,6 +54,40 @@ public class TradeCommand extends AbstractSettlementCommand {
 
 		// See what trade can be done
 		StructuredResponse response = new StructuredResponse();
+
+		if (BUYING.equals(input)) {
+			outputShoppingList(settlement.getGoodsManager().getBuyList(), "Items to Buy", response);
+		}
+		else if (SELLING.equals(input)) {
+			outputShoppingList(settlement.getGoodsManager().getSellList(), "Items for Sale", response);
+		}
+		else if (DEALS.equals(input) || (input == null)) {
+			outputDeals(context, settlement, response);
+		}
+		else {
+			response.append("The command " + input + " is unknown.");
+		}
+
+		context.println(response.getOutput());
+		return true;
+	}
+
+	private void outputShoppingList(Map<Good,ShoppingItem> list, String name, StructuredResponse response) {
+		response.appendHeading(name);
+		
+		response.appendTableHeading("Good", CommandHelper.GOOD_WIDTH, "Quantity", 6,
+									"Price", COST_WIDTH);
+
+		List<Good> ordered = new ArrayList<>(list.keySet());
+		Collections.sort(ordered);						
+		for(Good good : ordered) {
+			ShoppingItem item = list.get(good);
+			response.appendTableRow(good.getName(), item.getQuantity(),
+						String.format(CommandHelper.MONEY_FORMAT, item.getPrice()));
+		}
+	}
+
+	private void outputDeals(Conversation context, Settlement settlement, StructuredResponse response) {
 
 		// Find some example vehicles
 		response.appendLabeledString("Delivery Mission Range", String.format(CommandHelper.KM_FORMAT,
@@ -82,8 +128,6 @@ public class TradeCommand extends AbstractSettlementCommand {
 				outputDeal(settlement, MissionType.DELIVERY, tradingSettlement, distanceTo, drone, response);
 			}
 		}
-		context.println(response.getOutput());
-		return true;
 	}
 
 	private void outputDeal(Settlement seller, 

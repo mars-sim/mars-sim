@@ -9,37 +9,29 @@ package org.mars_sim.msp.core.goods;
 import java.util.Map;
 
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.time.MarsClock;
 
 /**
  * Represents a potential deal with another Settlement.
  */
 public class Deal implements Comparable<Deal> {
 	private Settlement buyer;
-    private double buyingRevenue;
-    private Map<Good, Integer> buyingLoad;
-    private double sellingRevenue;
-    private Map<Good, Integer> sellingLoad;
+    private Shipment buyingLoad;
+    private Shipment sellingLoad;
     private double tradeCost;
 	private double profit;
-	private MarsClock created;
 
-    Deal(Settlement buyer, double sellingRevenue, Map<Good, Integer> sellLoad,
-        double buyingRevenue, Map<Good, Integer> buyLoad, double cost, MarsClock created) {
 
-		this.buyer = buyer;
-		this.sellingRevenue = sellingRevenue;
+	Deal(Settlement buyer, Shipment sellLoad, Shipment buyLoad, double cost) {
+        this.buyer = buyer;
         this.sellingLoad = sellLoad;
-        this.buyingRevenue = buyingRevenue;
         this.buyingLoad = buyLoad;
         this.tradeCost = cost;
 
         // Profit is the money earn from the sell minus the money used in the return buy plus the delivery cost
-        this.profit = sellingRevenue - (buyingRevenue + cost);
-		this.created = created;
-	}
+        this.profit = sellLoad.getCostValue() - (buyLoad.getCostValue() + cost);
+    }
 
-	public Settlement getBuyer() {
+    public Settlement getBuyer() {
         return buyer;
     }
 
@@ -52,22 +44,19 @@ public class Deal implements Comparable<Deal> {
     }
 
     public double getBuyingRevenue() {
-        return buyingRevenue;
+        return buyingLoad.getCostValue();
     }
+
     public Map<Good, Integer> getBuyingLoad() {
-        return buyingLoad;
+        return buyingLoad.getLoad();
     }
 
     public double getSellingRevenue() {
-        return sellingRevenue;
+        return sellingLoad.getCostValue();
     }
 
     public Map<Good, Integer> getSellingLoad() {
-        return sellingLoad;
-    }
-
-    public MarsClock getCreated() {
-        return created;
+        return sellingLoad.getLoad();
     }
 
     /**

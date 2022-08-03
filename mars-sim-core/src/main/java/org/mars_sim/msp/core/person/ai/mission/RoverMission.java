@@ -117,22 +117,17 @@ public abstract class RoverMission extends VehicleMission {
 	public static Vehicle getVehicleWithGreatestRange(MissionType missionType, Settlement settlement, boolean allowMaintReserved) {
 		Vehicle result = null;
 
-		Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
-		while (i.hasNext()) {
-			Vehicle vehicle = i.next();
+		for(Vehicle vehicle : settlement.getAllAssociatedVehicles()) {
 
 			boolean usable = !vehicle.isReservedForMission();
 
-            if (!allowMaintReserved && vehicle.isReserved())
-				usable = false;
+            usable = usable && (allowMaintReserved || !vehicle.isReserved());
 
-			usable = vehicle.isVehicleReady();
+			usable = usable && vehicle.isVehicleReady();
 
-			if (vehicle.getStoredMass() > 0D)
-				usable = false;
+			usable = usable && (vehicle.getStoredMass() <= 0D);
 
-			if (!(vehicle instanceof Rover))
-				usable = false;
+			usable = usable && (vehicle instanceof Rover);
 
 			if (usable) {
 				if (result == null)
