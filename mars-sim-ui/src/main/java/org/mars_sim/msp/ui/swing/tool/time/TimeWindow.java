@@ -129,7 +129,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	private WebLabel timeCompressionLabel;
 
 	private final DecimalFormat formatter2 = new DecimalFormat(Msg.getString("TimeWindow.decimalFormat2")); //$NON-NLS-1$
-	private final DecimalFormat formatter3 = new DecimalFormat(Msg.getString("TimeWindow.decimalFormat3")); //$NON-NLS-1$
+	private final DecimalFormat formatter4 = new DecimalFormat(Msg.getString("TimeWindow.decimalFormat3")); //$NON-NLS-1$
 
 	/** Master Clock. */
 	private MasterClock masterClock;
@@ -358,7 +358,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		// Create pulse time label
 		marsPulseHeader = new WebLabel(MARS_PULSE_TIME, WebLabel.RIGHT);
 		double pulseTime = masterClock.getMarsPulseTime();
-		marsPulseLabel = new WebLabel(formatter3.format(Math.round(pulseTime * 1000.0)/1000.0) + MILLISOLS, WebLabel.LEFT);
+		marsPulseLabel = new WebLabel(formatter4.format(pulseTime) + MILLISOLS, WebLabel.LEFT);
 
 		// Create the target time ratio label
 		WebLabel prefTRHeader = new WebLabel(Msg.getString("TimeWindow.prefTRHeader"), WebLabel.RIGHT); //$NON-NLS-1$
@@ -474,7 +474,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 
 		// Update pulse width label
 		double pulseTime = masterClock.getMarsPulseTime();
-		marsPulseLabel.setText(formatter3.format(Math.round(pulseTime * 1000.0)/1000.0) + MILLISOLS);
+		marsPulseLabel.setText(formatter4.format(pulseTime) + MILLISOLS);
 
 		// Update Preferred TR label
 		int prefTR = masterClock.getDesiredTR();

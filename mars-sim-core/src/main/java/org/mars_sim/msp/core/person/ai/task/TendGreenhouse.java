@@ -333,7 +333,8 @@ public class TendGreenhouse extends Task implements Serializable {
 		
 		if (getDuration() <= (getTimeCompleted() + time)) {
 			Crop crop = greenhouse.transferSeedling(getTimeCompleted() + time, worker);
-			printDescription(Msg.getString("Task.description.tendGreenhouse.plant.detail", crop.getCropName()));
+			if (crop != null)
+				printDescription(Msg.getString("Task.description.tendGreenhouse.plant.detail", crop.getCropName()));
 			endTask();
 		}
 

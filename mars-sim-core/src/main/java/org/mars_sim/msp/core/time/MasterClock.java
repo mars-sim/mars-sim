@@ -37,8 +37,9 @@ public class MasterClock implements Serializable {
 	/** Initialized logger. */
 	private static final SimLogger logger = SimLogger.getLogger(MasterClock.class.getName());
 
-	public static final int MAX_SPEED = 11;
-
+	public static final int MAX_SPEED = 15;
+	public static final int MAX_TIME_RATIO = (int)Math.pow(2, MAX_SPEED);
+	
 	/** The number of milliseconds for each millisol.  */
 	private static final double MILLISECONDS_PER_MILLISOL = MarsClock.SECONDS_PER_MILLISOL * 1000.0;
 	// Maximum number of pulses in the log
@@ -48,7 +49,7 @@ public class MasterClock implements Serializable {
 	// Note if debugging this triggers but the next pulse will reactivate
 	private static final long MAX_ELAPSED = 30000;
 
-	// Data members
+	// Transient members
 	/** Runnable flag. */
 	private transient boolean keepRunning = false;
 	/** Pausing clock. */
@@ -57,30 +58,38 @@ public class MasterClock implements Serializable {
 	private transient boolean exitProgram;
 	/** The last uptime in terms of number of pulses. */
 	private transient long tLast;
-
-	/** The current simulation time ratio. */
-	private double actualTR = 0;
-	/** The time taken to execute one frame in the game loop */
-	private long executionTime;
-	/** The user's preferred simulation time ratio. */
-	private int desiredTR = 0;
-
 	/** The thread for running the clock listeners. */
 	private transient ExecutorService listenerExecutor;
 	/** Thread for main clock */
 	private transient ExecutorService clockExecutor;
-
 	/** A list of clock listener tasks. */
 	private transient Collection<ClockListenerTask> clockListenerTasks;
-
+	/** The clock pulse. */
+	private transient ClockPulse currentPulse;
+	
+	// Data members
 	/** Is pausing millisol in use. */
 	public boolean canPauseTime = false;
+	/** The user's preferred simulation time ratio. */
+	private int desiredTR = 0;
 	/** Sol day on the last fireEvent. */
 	private int lastSol = -1;
 	/** The last millisol integer on the last fireEvent. */
 	private int lastMSol = 0;
 	/** The maximum wait time between pulses in terms of milli-seconds. */
 	private int maxWaitTimeBetweenPulses;
+	
+	/** The time taken to execute one frame in the game loop [in ms] */
+	private long executionTime;
+	/** Next Clock Pulse ID. Start on 1 as all Unit are primed as 0 for the last **/
+	private long nextPulseId = 1;
+	// Duration of last sleep
+	public long sleepTime;
+	// Records the real milli time when a pulse is execited
+	private long[] pulseLog = new long[MAX_PULSE_LOG];
+	
+	/** The current simulation time ratio. */
+	private double actualTR = 0;
 	/** Number of millisols covered in the last pulse. */
 	private double lastPulseTime;
 	/** The minimum time span covered by each simulation pulse in millisols. */
@@ -89,14 +98,6 @@ public class MasterClock implements Serializable {
 	private double maxMilliSolPerPulse;
 	/** The optimal time span covered by each simulation pulse in millisols. */
 	private double optMilliSolPerPulse;
-
-	/** Next Clock Pulse ID. Start on 1 as all Unit are primed as 0 for the last **/
-	private long nextPulseId = 1;
-	// Duration of last sleep
-	public long sleepTime;
-
-	// Records the real milli time when a pulse is execited
-	private long[] pulseLog = new long[MAX_PULSE_LOG];
 
 	/** The Martian Clock. */
 	private MarsClock marsClock;
@@ -108,8 +109,6 @@ public class MasterClock implements Serializable {
 	private UpTimer uptimer;
 	/** The thread for running the game loop. */
 	private ClockThreadTask clockThreadTask;
-	/** The clock pulse. */
-	private transient ClockPulse currentPulse;
 
 	private SimulationConfig simulationConfig = SimulationConfig.instance();
 
@@ -138,18 +137,19 @@ public class MasterClock implements Serializable {
 
 		// Create a dedicated thread for the Clock
 		clockThreadTask = new ClockThreadTask();
+		desiredTR = (int)simulationConfig.getTimeRatio();
 
 		minMilliSolPerPulse = simulationConfig.getMinSimulatedPulse();
 		maxMilliSolPerPulse = simulationConfig.getMaxSimulatedPulse();
-		// Optimal rate is bais towards the minimum whihc is more accurate
-		optMilliSolPerPulse = minMilliSolPerPulse + ((maxMilliSolPerPulse - minMilliSolPerPulse) * 0.25);
+		
+		// Set the optimal width of a pulse
+		adjustOptimalPulseWidth();
+		
 		maxWaitTimeBetweenPulses = simulationConfig.getDefaultPulsePeriod();
-		desiredTR = (int)simulationConfig.getTimeRatio();
 
 		// Safety check
 		if (minMilliSolPerPulse > maxMilliSolPerPulse) {
 			logger.severe("The min pulse millisol is higher than the max pule.");
-			throw new IllegalStateException("The min millisol per pulse cannot be higher than the max.");
 		}
 		
 		String WHITESPACES = "-----------------------------------------------------";
@@ -162,6 +162,30 @@ public class MasterClock implements Serializable {
 		logger.config(WHITESPACES);
 	}
 
+	/**
+	 * Adjusts the optimal pulse time according to the desire TR.
+	 */
+	private void adjustOptimalPulseWidth() {
+		// Re-evaluate the optimal width of a pulse
+		optMilliSolPerPulse = minMilliSolPerPulse 
+				+ ((maxMilliSolPerPulse - minMilliSolPerPulse) * desiredTR / MAX_TIME_RATIO);
+	}
+	
+	/**
+	 * Adjust the pulse width by letting the current pulse time gradually 
+	 * catching up to the value of optimal millisols per pulse.
+	 */
+	private void adjustPulseWidth() {
+		if (lastPulseTime > optMilliSolPerPulse) {
+			double diff = lastPulseTime - optMilliSolPerPulse;
+			lastPulseTime = lastPulseTime - diff / 10;
+		}
+		else if (lastPulseTime < optMilliSolPerPulse) {
+			double diff = optMilliSolPerPulse - lastPulseTime;
+			lastPulseTime = lastPulseTime + diff / 10;
+		}
+	}
+	
 	/**
 	 * Returns the Martian clock.
 	 *
@@ -299,7 +323,7 @@ public class MasterClock implements Serializable {
 
 
 	/**
-	 * Sets the simulation target time ratio and adjust the value of time between update.
+	 * Sets the preferred time ratio.
 	 *
 	 * @param ratio
 	 */
@@ -311,7 +335,7 @@ public class MasterClock implements Serializable {
 	}
 
 	/**
-	 * Gets the target time ratio.
+	 * Gets the preferred time ratio. It stays at one value.
 	 *
 	 * @return ratio
 	 */
@@ -320,7 +344,7 @@ public class MasterClock implements Serializable {
 	}
 	
 	/**
-	 * Gets the actual time ratio.
+	 * Gets the actual time ratio. The value varies over time.
 	 *
 	 * @return
 	 */
@@ -350,10 +374,11 @@ public class MasterClock implements Serializable {
 
 					// Call addTime() to increment time in EarthClock and MarsClock
 					if (addTime()) {
-						// If a can was applied then potentially adjust the sleep
-						executionTime = System.currentTimeMillis() - startTime;
 
 						calculateSleepTime();
+						
+						// If a can was applied then potentially adjust the sleep
+						executionTime = System.currentTimeMillis() - startTime;
 					}
 					else {
 						// If on pause or acceptablePulse is false
@@ -396,7 +421,7 @@ public class MasterClock implements Serializable {
 			// Desired Millisols per seconds
 			double desiredMsolPerSecond = desiredTR / MarsClock.SECONDS_PER_MILLISOL;
 			
-			// How many pulses are needed to fufill this desire
+			// How many pulses are needed to fulfill this desire
 			double desiredPulses = desiredMsolPerSecond / optMilliSolPerPulse;
 			desiredPulses = Math.max(desiredPulses, 1D);
 			
@@ -440,7 +465,7 @@ public class MasterClock implements Serializable {
 
 			// Calculate the elapsed time in milli-seconds
 			long realElaspedMilliSec = tnow - tLast;
-
+			
 			// Make sure there is not a big jump; suggest power save so skip it
 			if (realElaspedMilliSec > MAX_ELAPSED) {
 				// Reset the elapsed clock to ignore this pulse
@@ -449,31 +474,34 @@ public class MasterClock implements Serializable {
 				timestampPulseStart();
 			}
 			else {
-				// Get the time pulse length in millisols.
-				lastPulseTime = (realElaspedMilliSec * desiredTR) / MILLISECONDS_PER_MILLISOL;
-
 				// Pulse must be less than the max and positive
 				if (lastPulseTime > 0) {
 
 					acceptablePulse = true;
 
 					if (lastPulseTime > maxMilliSolPerPulse) {
-						logger.config(20_000, "Pulse width " + Math.round(lastPulseTime*100_000.0)/100_000.0
+						logger.config(20_000, "Pulse width " + Math.round(lastPulseTime*1_000.0)/1_000.0
 								+ " clipped to a max of " + maxMilliSolPerPulse + ".");
 						lastPulseTime = maxMilliSolPerPulse;
 					
 					}
 					else if (lastPulseTime < minMilliSolPerPulse) {
-						logger.config(20_000, "Pulse width " + Math.round(lastPulseTime*100_000.0)/100_000.0
+						logger.config(20_000, "Pulse width " + Math.round(lastPulseTime*1_000.0)/1_000.0
 								+ " increased to a minimum of " + minMilliSolPerPulse + ".");
 						lastPulseTime = minMilliSolPerPulse;
 					}
 				}
 			}
-
-			// Can we do something ?
-			if (acceptablePulse && keepRunning) {
-				// Elapsed time is acceptable
+			
+			// Obtains the latest the time pulse length in millisols.
+			lastPulseTime = (realElaspedMilliSec * actualTR) / MILLISECONDS_PER_MILLISOL;
+			
+			// Adjust the time pulse
+			adjustPulseWidth();
+			
+			// Elapsed time is acceptable
+			if (acceptablePulse && keepRunning && realElaspedMilliSec > 0) {
+				
 				// The time elapsed for the EarthClock aligned to adjusted Mars time
 				long earthMillisec = (long)(lastPulseTime * MILLISECONDS_PER_MILLISOL);
 
@@ -689,7 +717,12 @@ public class MasterClock implements Serializable {
 	 * Increases the speed / time ratio.
 	 */
 	public void increaseSpeed() {
-		desiredTR *= 2;
+		int tr = desiredTR * 2;
+		if (tr > MAX_TIME_RATIO) {
+			return;
+		}
+		desiredTR = tr;
+		adjustOptimalPulseWidth();
 	}
 
 	/**
@@ -700,6 +733,7 @@ public class MasterClock implements Serializable {
 		if (desiredTR < 1) {
 			desiredTR = 1;
 		}
+		adjustOptimalPulseWidth();
 	}
 
 
@@ -786,7 +820,7 @@ public class MasterClock implements Serializable {
 	}
 
 	/**
-	 * Gets the millisols covered in the last pulse.
+	 * Gets the pulse width, namely, the millisols covered in the last pulse.
 	 *
 	 * @return
 	 */

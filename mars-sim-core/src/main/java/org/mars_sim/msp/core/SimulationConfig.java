@@ -58,6 +58,7 @@ import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.function.cooking.MealConfig;
 import org.mars_sim.msp.core.structure.building.function.farming.CropConfig;
 import org.mars_sim.msp.core.structure.construction.ConstructionConfig;
+import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.tool.Hash;
 import org.mars_sim.msp.core.vehicle.VehicleConfig;
 
@@ -241,11 +242,11 @@ public class SimulationConfig implements Serializable {
 		marsStartDate = loadValue(timeConfig, MARS_START_DATE_TIME);
 		
 		accuracyBias =  loadDoubleValue(timeConfig, ACCURACY_BIAS, 0D, 1D);
-		minSimulatedPulse = loadDoubleValue(timeConfig, MIN_SIMULATED_PULSE, 0.0001D, 5D);
-		maxSimulatedPulse = loadDoubleValue(timeConfig, MAX_SIMULATED_PULSE, 0.0001D, 5D);
+		minSimulatedPulse = loadDoubleValue(timeConfig, MIN_SIMULATED_PULSE, 0.01, 40.5518);
+		maxSimulatedPulse = loadDoubleValue(timeConfig, MAX_SIMULATED_PULSE, 0.01, 40.5518);
 	
 		defaultTimePulse = loadIntValue(timeConfig, DEFAULT_TIME_PULSE, 1, 2048);
-		baseTimeRatio = loadIntValue(timeConfig, BASE_TIME_RATIO, 16, 2048);
+		baseTimeRatio = loadIntValue(timeConfig, BASE_TIME_RATIO, 1, MasterClock.MAX_TIME_RATIO);
 		unusedCores = loadIntValue(timeConfig, DEFAULT_UNUSEDCORES, 1, 360);
 		averageTransitTime = loadIntValue(timeConfig, AVERAGE_TRANSIT_TIME, 0, 430);
 		autosaveInterval = loadIntValue(timeConfig, AUTOSAVE_INTERVAL, 1, 360);

@@ -7,8 +7,6 @@
 
  package org.mars_sim.mapdata;
 
-import javax.swing.SwingUtilities;
-
 /**
   * A factory for map data.
   */
@@ -19,7 +17,7 @@ import javax.swing.SwingUtilities;
  	static final int TOPO_MAP_DATA = 1; 		// "topographical map data";
  	static final int GEOLOGY_MAP_DATA = 2; 		// "geological ages map data"
 
-// 	private boolean decompressed = false;
+// 	private boolean decompressed = false;s
 
  	// Data members.
  	private MapData surfaceMapData;

@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * TradeCommand.java
- * @date 22-07-22
+ * @date 2022-07-22
  * @author Barry Evans
  */
 package org.mars.sim.console.chat.simcommand.settlement;
@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;

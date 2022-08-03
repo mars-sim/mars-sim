@@ -14,11 +14,11 @@ import org.mars_sim.msp.core.time.MasterClock;
 
 public class SpeedCommand extends ChatCommand {
 
-	private static final int MAX_RATE = 2048;
+	private static final int MAX_RATE = MasterClock.MAX_TIME_RATIO;
 
 	public SpeedCommand() {
 		super(TopLevel.SIMULATION_GROUP, "sp", "speed",
-					"Simulation speed; optional argument of new speed");
+					"Simulation speed in terms of the time ratio");
 		addRequiredRole(ConversationRole.ADMIN);
 	}
 
@@ -28,9 +28,9 @@ public class SpeedCommand extends ChatCommand {
         double desiredRatio = clock.getDesiredTR();
         double currentRatio = clock.getActualTR();
         
-
-        context.println("The target simulation ratio is x" + desiredRatio);
-        context.println("The actual simualtion ratio achieved is x" + currentRatio);
+        context.println("The current target time ratio is " + desiredRatio + "x");
+        context.println("The actual time ratio achieved is " + currentRatio + "x");
+        context.println("Input your desired time ratio : ");
         
 		if (input != null) {
 			boolean failed = false;
@@ -38,7 +38,7 @@ public class SpeedCommand extends ChatCommand {
 				int newRate = Integer.parseInt(input);
 				if ((1 <= newRate) && (newRate <= MAX_RATE)) {
 					clock.setDesiredTR(newRate);
-					context.println("New desired ratio is x" + newRate);
+					context.println("The new time ratio is " + newRate+ "x");
 				}
 				else {
 					failed = true;
@@ -49,7 +49,7 @@ public class SpeedCommand extends ChatCommand {
 			}
 			
 			if (failed) {
-        		context.println("Invalid input. Must be an integer between 1 & " + MAX_RATE);
+        		context.println("Invalid input. Must be an integer between 1 and " + MAX_RATE);
         		return false;
 			}
         }

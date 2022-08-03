@@ -17,6 +17,7 @@ import org.mars_sim.mapdata.MapDataUtil;
  * for the map display. Map data is retrieved from a data file and stored in
  * memory.
  */
+@SuppressWarnings("serial")
 public class GeologyMarsMap extends CannedMarsMap {
 
 	// The map type.

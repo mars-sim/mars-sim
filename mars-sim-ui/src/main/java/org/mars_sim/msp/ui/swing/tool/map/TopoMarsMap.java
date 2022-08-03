@@ -16,6 +16,7 @@ import org.mars_sim.mapdata.MapDataUtil;
  * The TopoMarsMap class is a map of the topography of Mars that can be
  * generated for the MapDisplay.
  */
+@SuppressWarnings("serial")
 public class TopoMarsMap extends CannedMarsMap {
 
 	// The map type.

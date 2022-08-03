@@ -17,9 +17,9 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.MBTIPersonality;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
@@ -36,9 +36,9 @@ public class RelationshipUtil implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	/** default serial id. */
-	private static final Logger logger = Logger.getLogger(RelationshipUtil.class.getName());
-	
+	/** default logger. */
+	private static SimLogger logger = SimLogger.getLogger(RelationshipUtil.class.getName());
+
 	/** The base % chance of a relationship change per millisol. */
 	private static final double BASE_RELATIONSHIP_CHANGE_PROBABILITY = .1D;
 	/** The base change amount per millisol. */
@@ -347,7 +347,7 @@ public class RelationshipUtil implements Serializable {
 				// Check if new relationship.
 				if (!hasRelationship(person, localPerson)) {
 					createRelationship(person, localPerson, RelationshipType.EXISTING_RELATIONSHIP);
-					logger.finest(person.getName() + " and " + localPerson.getName() + " meet for the first time.");
+					logger.info(person, "Met " + localPerson.getName() + " for the first time.");
 				}
 	
 				// Determine probability of relationship change per millisol.
@@ -410,7 +410,8 @@ public class RelationshipUtil implements Serializable {
 	
 					// Change the person's opinion of the other person.
 			        changeOpinion(person, localPerson, changeAmount);
-					logger.finest(person.getName() + " has changed opinion of " + localPerson.getName() + " by "
+			        
+					logger.fine(person, "Changed the opinion of " + localPerson.getName() + " by "
 								+ changeAmount);
 				}
 			}
@@ -613,9 +614,10 @@ public class RelationshipUtil implements Serializable {
 	}
 	
 	/**
-	 * Prepare object for garbage collection.
+	 * Prepares object for garbage collection.
 	 */
 	public void destroy() {
+		logger = null;
 	}
 
 }

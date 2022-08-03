@@ -45,28 +45,30 @@
 			     3 : The calculated TR is dependent upon the # of cpu threads available on user's machine.
 			     4 : The base TR value below will be overridden by the calculated TR at the start of the sim.
 		-->
-		<!-- Default: 128 -->
+		<!-- Default: 128. Min is 1. Max is 32768.  -->
 		<base-time-ratio value="128" />
 		<!-- 1. time ratio will be re-scaled according to available # of threads (not # of cpu cores).
 			 2. time ratio must be a multiple of 2.
 			 3. if time ratio is 512, then 1 real second equals 512 simulation seconds in mars-sim
-			 4. Minimum: 1, maximum: 8192
+			 4. Minimum: 1; maximum: 32768
 		-->
 
 		<!-- The time span covered by each simulation pulse is defined below. These are defined in terms of
 		     milliSols. The lower the value, the more accurate the simulation but the more pulses & more expensive
 		     to calculate. Note both values can be adjusted if the processing becomes too excessive.
 		-->
-		<!-- Default: 0.0112644016 millisols ~ 1 earth seconds -->
+		<!-- Default: 0.0112644016 millisols ~ 1 earth seconds. Min is 0.01. Max is 40.5518. 
+		     Must be smaller than max-simulated-pulse   -->
 		<min-simulated-pulse value="0.0112644016"/>
 
-		<!-- Default: 3.37932048 millisols ~ 5 earth minutes or 300 earth seconds -->
-		<max-simulated-pulse value="3.37932048"/>
+		<!-- Default: 11.5347 millisols ~ 30 earth mins. Min is 0.01. Max is 40.5518 
+		     Must be greater than min-simulated-pulse   -->
+		<max-simulated-pulse value="40.5518"/>
 
 		<!-- The simulation creates a pulse periodically to execution the simulation. This integer value defines the
 		maximum wait between pulses in terms of millisecs. The simulation will attempt to generate pulses more
 		frequently depending on the time ratio and the accuracy as well as the machine power. -->
-		<!-- Default is 1000 (must be an integer. 1000 milisecs equals to 1 sec) -->
+		<!-- Default is 1000 (must be an integer. 1000 milisecs equals to 1 sec). Min is 1. Max is 2048. -->
 		<default-time-pulse value="1000"/>
 
 		<!-- The accuracy bias influences whether the simulation goes for smaller timespans to give an accurate

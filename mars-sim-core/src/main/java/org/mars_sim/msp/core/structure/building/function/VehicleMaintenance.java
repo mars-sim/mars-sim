@@ -160,41 +160,40 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 		if (!containsVehicle(vehicle)) {
 			return false;
 		}
-		else {
-			if (vehicles.remove(vehicle)) {
 
-				if (vehicle instanceof Crewable) {
-					// Remove the human occupants from the settlement
-					// But is this needed ? These should already be in the Vehicle
-					// if there are in the crew
-					Crewable c = ((Crewable)vehicle);
-					for (Person p: new ArrayList<>(c.getCrew())) {
-						p.transfer(vehicle);
-						BuildingManager.removePersonFromBuilding(p, building);
-					}
-					// Remove the robot occupants from the settlement
-					for (Robot r: new ArrayList<>(c.getRobotCrew())) {
-						r.transfer(vehicle);
-						BuildingManager.removeRobotFromBuilding(r, building);
-					}
-				}
-				
-				ParkingLocation parkedLoc = getVehicleParkedLocation(vehicle);
-				if (parkedLoc != null) {
-					parkedLoc.clearParking();
-				}
-	
-				vehicle.setPrimaryStatus(StatusType.PARKED);
-				
-				// Update the vehicle's location state type
-				vehicle.updateLocationStateType(LocationStateType.WITHIN_SETTLEMENT_VICINITY);
+		if (vehicles.remove(vehicle)) {
 
-				vehicle.findNewParkingLoc();
-	
-				logger.fine(vehicle, "Removed from " + building.getNickName() + " in " + building.getSettlement());
-				
-				return true;
+			if (vehicle instanceof Crewable) {
+				// Remove the human occupants from the settlement
+				// But is this needed ? These should already be in the Vehicle
+				// if there are in the crew
+				Crewable c = ((Crewable)vehicle);
+				for (Person p: new ArrayList<>(c.getCrew())) {
+					p.transfer(vehicle);
+					BuildingManager.removePersonFromBuilding(p, building);
+				}
+				// Remove the robot occupants from the settlement
+				for (Robot r: new ArrayList<>(c.getRobotCrew())) {
+					r.transfer(vehicle);
+					BuildingManager.removeRobotFromBuilding(r, building);
+				}
 			}
+			
+			ParkingLocation parkedLoc = getVehicleParkedLocation(vehicle);
+			if (parkedLoc != null) {
+				parkedLoc.clearParking();
+			}
+
+			vehicle.setPrimaryStatus(StatusType.PARKED);
+			
+			// Update the vehicle's location state type
+			vehicle.updateLocationStateType(LocationStateType.WITHIN_SETTLEMENT_VICINITY);
+
+			vehicle.findNewParkingLoc();
+
+			logger.fine(vehicle, "Removed from " + building.getNickName() + " in " + building.getSettlement());
+			
+			return true;
 		}
 		
 		return false;

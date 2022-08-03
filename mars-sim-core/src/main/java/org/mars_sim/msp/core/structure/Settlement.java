@@ -42,7 +42,6 @@ import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.equipment.ItemHolder;
 import org.mars_sim.msp.core.equipment.ResourceHolder;
 import org.mars_sim.msp.core.goods.CreditManager;
-import org.mars_sim.msp.core.goods.Good;
 import org.mars_sim.msp.core.goods.GoodsManager;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -275,7 +274,7 @@ public class Settlement extends Structure implements Temporal,
 	private String template;
 
 	/** The settlement's ReportingAuthority instance. */
-	private ReportingAuthority ra;
+	private ReportingAuthority sponsor;
 	/** The settlement's building manager. */
 	protected BuildingManager buildingManager;
 	/** The settlement's building connector manager. */
@@ -428,7 +427,7 @@ public class Settlement extends Structure implements Temporal,
 		this.initialPopulation = populationNumber;
 
 		// Determine the reporting authority
-		this.ra = sponsor;
+		this.sponsor = sponsor;
 
 		citizens = new UnitSet<>();
 		ownedRobots = new UnitSet<>();
@@ -549,7 +548,7 @@ public class Settlement extends Structure implements Temporal,
 	 * Gets sponsoring agency for the person.
 	 */
 	public ReportingAuthority getSponsor() {
-		return ra;
+		return sponsor;
 	}
 
 	/**
