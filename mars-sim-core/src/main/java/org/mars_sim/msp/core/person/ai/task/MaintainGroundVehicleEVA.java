@@ -151,7 +151,7 @@ implements Serializable {
         }
 
         // Determine effective work time based on "Mechanic" and "EVA Operations" skills.
-        double workTime = time;
+        double workTime = standardPulseTime;
         int skill = getEffectiveSkillLevel();
         if (skill == 0) workTime /= 2;
         if (skill > 1) workTime += workTime * (.2D * skill);
@@ -173,15 +173,15 @@ implements Serializable {
         }
 
         // Add work to the maintenance
-        manager.addMaintenanceWorkTime(workTime);
+        manager.addMaintenanceWorkTime(standardPulseTime);
 
         // Add experience points
-        addExperience(workTime);
+        addExperience(standardPulseTime);
 
         // Check if an accident happens during maintenance.
-        checkForAccident(workTime);
+        checkForAccident(standardPulseTime);
 
-        return time - workTime;
+        return remainingTime;
     }
 
 

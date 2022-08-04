@@ -208,15 +208,18 @@ implements Serializable {
      * @throws Exception if error performing the phase.
      */
     public double compilingPhase(double time) {
-
+		double remainingTime = time - standardPulseTime;
+		
         // If person is incapacitated, end task.
         if (person.getPerformanceRating() <= .2) {
             endTask();
+            return time;
         }
 
 		if (person.getPhysicalCondition().computeFitnessLevel() < 2) {
 			logger.log(person, Level.FINE, 10_000, "Ended compiling scientific results. Not feeling well.");
 			endTask();
+			return time;
 		}
 
         if (isDone()) {
@@ -236,10 +239,10 @@ implements Serializable {
         	double workPerMillisol = 0; 
  
         	if (computingNeeded <= seed) {
-        		workPerMillisol = time * computingNeeded;
+        		workPerMillisol = standardPulseTime * computingNeeded;
         	}
         	else {
-        		workPerMillisol = time * seed * RandomUtil.getRandomDouble(.9, 1.1);
+        		workPerMillisol = standardPulseTime * seed * RandomUtil.getRandomDouble(.9, 1.1);
         	}
 
         	// Submit request for computing resources
@@ -279,7 +282,7 @@ implements Serializable {
         boolean isPrimary = study.getPrimaryResearcher().equals(person);
 
         // Add paper work time to study.
-        double compilingTime = getEffectiveCompilationTime(time);
+        double compilingTime = getEffectiveCompilationTime(standardPulseTime);
         if (isPrimary) {
             study.addPrimaryPaperWorkTime(compilingTime);
         }
@@ -307,8 +310,8 @@ implements Serializable {
         }
 
         // Add experience
-        addExperience(time);
+        addExperience(standardPulseTime);
 
-        return 0D;
+        return remainingTime;
     }
 }

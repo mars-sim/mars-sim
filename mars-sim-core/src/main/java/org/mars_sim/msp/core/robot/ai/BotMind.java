@@ -31,6 +31,8 @@ public class BotMind implements Serializable, Temporal {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(BotMind.class.getName());
 	
+	private static final double SMALL_AMOUNT_OF_TIME = 0.001;
+	
 	// Data members
 	/** Is the job locked so another can't be chosen? */
 	private boolean jobLock;
@@ -88,12 +90,29 @@ public class BotMind implements Serializable, Temporal {
 
 		if (botTaskManager != null) {
 			botTaskManager.timePassing(pulse);
-			// Take action as necessary.
-			takeAction(pulse.getElapsed());
+			// Decides what tasks to inject time
+			decideTask(pulse.getElapsed());
 		}
 		return true;
 	}
 
+	/**
+	 * Decides what tasks to take for a given amount of time.
+	 * 
+	 * @param time time in millisols
+	 * @throws Exception if error during action.
+	 */
+	private void decideTask(double time) {
+		double totalTime = time;
+		while (totalTime > 0) {
+			double pulseTime = Task.getStandardPulseTime();
+			// Call takeAction to perform a task and consume the pulse time.
+			takeAction(pulseTime);
+			// Reduce the total time by the pulse time
+			totalTime -= pulseTime;
+		}
+	}
+	
 	/**
 	 * Takes appropriate action for a given amount of time.
 	 * 
@@ -101,7 +120,7 @@ public class BotMind implements Serializable, Temporal {
 	 * @throws Exception if error during action.
 	 */
 	private void takeAction(double time) {
-
+		double pulseTime = time;
 		// Perform a task if the robot has one, or determine a new task/mission.
 		if (robot.getSystemCondition().getBatteryState() <= 0) {
 			logger.log(robot, Level.WARNING, 30_000L, "Battery depleted. Last task: " 
@@ -114,10 +133,12 @@ public class BotMind implements Serializable, Temporal {
 //			String previousTask = botTaskManager.getTaskName();
 			
 			// Call executeTask
-			double remainingTime = botTaskManager.executeTask(time, robot.getPerformanceRating());
+			double remainingTime = botTaskManager.executeTask(pulseTime, robot.getPerformanceRating());
 			
-			if (remainingTime == time) {
-				remainingTime = time - Task.standardPulseTime;
+			if (remainingTime == pulseTime) {
+				// Reduce the time by standardPulseTime
+				remainingTime = pulseTime - Task.standardPulseTime;
+				
 //				logger.log(robot, Level.SEVERE, 40_000L, 
 //						"Previous Task: " + previousTask
 //					+ "    Current Task: " + botTaskManager.getTaskName() 
@@ -127,7 +148,7 @@ public class BotMind implements Serializable, Temporal {
 				return;
 			}
 			
-			if (remainingTime > 0D) {
+			if (remainingTime > SMALL_AMOUNT_OF_TIME) {
 				takeAction(remainingTime);
 			}
 		} 

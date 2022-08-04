@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Yoga.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-08-04
  * @author Sebastien Venot
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -81,9 +81,34 @@ public class Yoga extends Task implements Serializable {
 
 	@Override
 	protected double performMappedPhase(double time) {
-		return 0;
+		if (getPhase() == null) {
+			throw new IllegalArgumentException("Task phase is null");
+		} else if (DOING_YOGA.equals(getPhase())) {
+			return yogaPhase(time);
+		} else {
+			return time;
+		}
 	}
 
+	/**
+	 * Does the yoga phase.
+	 *
+	 * @param time the amount of time (millisols) to perform the phase.
+	 * @return the amount of time (millisols) left over after performing the phase.
+	 */
+	private double yogaPhase(double time) {
+    	double remainingTime = time - standardPulseTime;
+    	
+		// Regulates hormones
+		person.getCircadianClock().exercise(standardPulseTime);
+		//Improves musculoskeletal systems
+		person.getPhysicalCondition().workOut(standardPulseTime);
+		// Record the sleep time [in millisols]
+		person.getCircadianClock().recordExercise(standardPulseTime);
+		
+		return remainingTime;
+	}
+	
 	/**
 	 * Release Person from associated Gym
 	 */

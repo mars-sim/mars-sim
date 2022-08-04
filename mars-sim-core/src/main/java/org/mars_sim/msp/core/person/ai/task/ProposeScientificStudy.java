@@ -112,7 +112,16 @@ public class ProposeScientificStudy extends Task implements Serializable {
 		setPhase(PROPOSAL_PHASE);
 	}
 
-
+	@Override
+	protected double performMappedPhase(double time) {
+		if (getPhase() == null) {
+			throw new IllegalArgumentException("Task phase is null");
+		} else if (PROPOSAL_PHASE.equals(getPhase())) {
+			return proposingPhase(time);
+		} else {
+			return time;
+		}
+	}
 
 	/**
 	 * Performs the writing study proposal phase.
@@ -121,9 +130,11 @@ public class ProposeScientificStudy extends Task implements Serializable {
 	 * @return the amount of time (millisols) left over after performing the phase.
 	 */
 	private double proposingPhase(double time) {
-
+		double remainingTime = time - standardPulseTime;
+		
 		if (!study.getPhase().equals(ScientificStudy.PROPOSAL_PHASE)) {
 			endTask();
+			return time;
 		}
 
 		if (isDone()) {
@@ -135,6 +146,7 @@ public class ProposeScientificStudy extends Task implements Serializable {
 		if (person.getPhysicalCondition().computeFitnessLevel() < 2) {
 			logger.log(person, Level.FINE, 10_000, "Ended proposing scientific study. Not feeling well.");
 			endTask();
+			return time;
 		}
 		
 		// Determine amount of effective work time based on science skill.
@@ -148,31 +160,17 @@ public class ProposeScientificStudy extends Task implements Serializable {
 
 		study.addProposalWorkTime(workTime);
 
-		checkDone();
-
 		// Add experience
-		addExperience(time);
-
-		return 0D;
-	}
-
-	private void checkDone() {
+		addExperience(standardPulseTime);
+		
 		if (study.isProposalCompleted()) {
 			logger.log(worker, Level.INFO, 0, "Finished writing a study proposal for " 
 					+ study.getName() + "."); 
 
 			endTask();
+			return remainingTime;
 		}
-	}
 
-	@Override
-	protected double performMappedPhase(double time) {
-		if (getPhase() == null) {
-			throw new IllegalArgumentException("Task phase is null");
-		} else if (PROPOSAL_PHASE.equals(getPhase())) {
-			return proposingPhase(time);
-		} else {
-			return time;
-		}
+		return remainingTime;
 	}
 }

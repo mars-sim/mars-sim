@@ -37,18 +37,24 @@ public class MasterClock implements Serializable {
 
 	/** Initialized logger. */
 	private static final SimLogger logger = SimLogger.getLogger(MasterClock.class.getName());
-
+	/** The maximum speed allowed .*/
 	public static final int MAX_SPEED = 15;
+	/** The maximum time ratio allowed .*/
 	public static final int MAX_TIME_RATIO = (int)Math.pow(2, MAX_SPEED);
+	/** The Maximum number of pulses in the log .*/
+	private static final int MAX_PULSE_LOG = 30;
 	
+	// Note: What is a reasonable jump in the observed real time to be allow for 
+	//       long simulation steps ? 15 seconds for debugging ? 
+	//       How should it trigger in the next pulse ? 
+	
+	/** The maximum allowable elapsed time [in ms] before action is taken. */
+	private static final long MAX_ELAPSED = 30000;
+
+	/** The maximum pulse time allowed in one frame for a task phase. */
+	private static final double MAX_PULSE_TIME = .25;
 	/** The number of milliseconds for each millisol.  */
 	private static final double MILLISECONDS_PER_MILLISOL = MarsClock.SECONDS_PER_MILLISOL * 1000.0;
-	// Maximum number of pulses in the log
-	private static final int MAX_PULSE_LOG = 30;
-	// What is a reasonable jump in the observed real time
-	// Allow for long simulation steps. 15 seconds
-	// Note if debugging this triggers but the next pulse will reactivate
-	private static final long MAX_ELAPSED = 30000;
 
 	// Transient members
 	/** Runnable flag. */
@@ -197,7 +203,13 @@ public class MasterClock implements Serializable {
 			double diff = optMilliSolPerPulse - lastPulseTime;
 			lastPulseTime = lastPulseTime + diff / 20;
 		}
-		Task.setStandardPulseTime(lastPulseTime/4.0);
+		
+		// Update the pulse time for use in tasks
+		double oldPulseTime = Task.getStandardPulseTime();
+		double newPulseTime = Math.min(lastPulseTime/4.0, MAX_PULSE_TIME);
+		if (newPulseTime != oldPulseTime) {
+			Task.setStandardPulseTime(newPulseTime);
+		}
 	}
 	
 	/**
@@ -488,13 +500,13 @@ public class MasterClock implements Serializable {
 				
 				// Reset lastPulseTime
 				lastPulseTime = optMilliSolPerPulse;
-				
-				realElaspedMilliSec = (long) (optMilliSolPerPulse * MILLISECONDS_PER_MILLISOL / actualTR);
+				// Reset realElaspedMilliSec
+				realElaspedMilliSec = (long) (optMilliSolPerPulse * MILLISECONDS_PER_MILLISOL / (int)simulationConfig.getTimeRatio());
 			}
 			
 			else if (realElaspedMilliSec == 0.0) {
-				
-				realElaspedMilliSec = (long) (optMilliSolPerPulse * MILLISECONDS_PER_MILLISOL / actualTR);
+				// Set realElaspedMilliSec
+				realElaspedMilliSec = (long) (optMilliSolPerPulse * MILLISECONDS_PER_MILLISOL / desiredTR);
 			}
 			
 			else {

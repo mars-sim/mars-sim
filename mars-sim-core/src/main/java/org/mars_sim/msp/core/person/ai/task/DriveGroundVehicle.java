@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.structure.building.function.Computation;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
@@ -44,6 +45,8 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = .2D;
+	/** The computing resources [in CUs] needed per km. */
+	private static final double CU_PER_KM = .05;
 	
 	// Side directions.
 	private final static int NONE = 0;
@@ -52,6 +55,8 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 
 	// Data members
 	private int sideDirection = NONE;
+    /** Computing Units used per millisol. */		
+	private double computingUsed = 0;
 	
 	/**
 	 * Default Constructor.
@@ -198,12 +203,10 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 	 * @return time remaining after performing phase (in millisols)
 	 */
 	private double obstaclePhase(double time) {
-
+		double remainingTime = time - standardPulseTime;
 		double timeUsed = 0D;
+		
 		GroundVehicle vehicle = (GroundVehicle) getVehicle();
-
-		// Update vehicle elevation.
-		updateVehicleElevationAltitude();
 
 		// Get the direction to the destination.
 		Direction destinationDirection = vehicle.getCoordinates().getDirectionToPoint(getDestination());
@@ -212,10 +215,14 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 		double destinationSpeed = testSpeed(destinationDirection);
 		
 		if (destinationSpeed > LOW_SPEED) {
+			// Set new direction
 			vehicle.setDirection(destinationDirection);
+			// Update vehicle elevation.
+			updateVehicleElevationAltitude();
+			
 			setPhase(OperateVehicle.MOBILIZE);
 			sideDirection = NONE;
-			return time;
+			return remainingTime;
 		}
 
 		// Determine the direction to avoid the obstacle.
@@ -225,7 +232,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 		if (travelDirection == null) {
 			setPhase(WINCH_VEHICLE);
 			sideDirection = NONE;
-			return time;
+			return remainingTime;
 		}
 
 		// Set the vehicle's direction.
@@ -237,13 +244,32 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 		// Drive in the direction
 		timeUsed = time - mobilizeVehicle(time);
 
-		// Add experience points
-		addExperience(time);
-
+		int msol = marsClock.getMillisolInt();       
+        boolean successful = false; 
+        
+        double lastDistance = vehicle.getLastDistanceTravelled();
+        double workPerMillisol = lastDistance * CU_PER_KM * time;
+        
+    	// Submit his request for computing resources
+    	Computation center = person.getAssociatedSettlement().getBuildingManager().getMostFreeComputingNode(workPerMillisol, msol + 1, msol + 2);
+    	if (center != null)
+    		successful = center.scheduleTask(workPerMillisol, msol + 1, msol + 2);
+    	if (successful) {
+    		computingUsed += timeUsed;
+      	}
+    	else {
+    		logger.info(person, 30_000L, "No computing resources available for " 
+    			+ Msg.getString("Task.description.driveGroundVehicle.detail", // $NON-NLS-1$
+    				vehicle.getName()) + ".");
+    	}
+    	
 		// Check for accident.
 		if (!isDone())
 			checkForAccident(timeUsed);
 
+		// Add experience points
+		addExperience(timeUsed);
+		
 		// If vehicle has malfunction, end task.
 		if (vehicle.getMalfunctionManager().hasMalfunction())
 			endTask();
@@ -258,8 +284,9 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 	 * @return time remaining after performing the phase.
 	 */
 	private double winchingPhase(double time) {
-
+		double remainingTime = time - standardPulseTime;
 		double timeUsed = 0D;
+		
 		GroundVehicle vehicle = (GroundVehicle) getVehicle();
 
 		// Find current direction and update vehicle.
@@ -274,7 +301,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 		if (testSpeed(vehicle.getDirection()) > LOW_SPEED) {
 			setPhase(OperateVehicle.MOBILIZE);
 			vehicle.setStuck(false);
-			return (time);
+			return remainingTime;
 		} else
 			vehicle.setSpeed(.2D);
 

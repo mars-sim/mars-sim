@@ -114,12 +114,11 @@ public class OptimizeSystem extends Task implements Serializable {
 	 * @return the amount of time (millisols) left over after performing the phase.
 	 */
 	private double optimizingPhase(double time) {
-		// Do nothing
-		return 0D;
+		return time - standardPulseTime;
 	}
 
 	/**
-	 * Release office space
+	 * Releases office space.
 	 */
 	@Override
 	protected void clearDown() {
@@ -135,7 +134,7 @@ public class OptimizeSystem extends Task implements Serializable {
 	public static Building getAvailableBuildingSpot(Person person, FunctionType functionType) {
 		Building result = null;
 
-		// If person is in a settlement, try to find a building with an .
+		// If person is in a settlement, try to find a building with a function type.
 		if (person.isInSettlement()) {
 			BuildingManager buildingManager = person.getSettlement().getBuildingManager();
 			List<Building> bldgs = buildingManager.getBuildings(functionType); 

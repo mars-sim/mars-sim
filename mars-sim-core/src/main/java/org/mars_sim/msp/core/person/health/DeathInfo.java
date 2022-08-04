@@ -54,9 +54,9 @@ public class DeathInfo implements Serializable {
 	/** Mission sol */	
 	private int missionSol;
 	/** Amount of time performed so far in postmortem exam [in Millisols]. */	
-	private double timeExam;
+	private double timeSpentExam;
 	/** Estimated time the postmortem exam should take [in Millisols]. */	
-	private double estTimeExam;
+	private double estTotExamTime;
 	/** Percent of illness*/	
 	private double healthCondition;	
 	/** Cause of death. */	
@@ -554,19 +554,19 @@ public class DeathInfo implements Serializable {
 	}
 	
 	public double getTimeExam() {
-		return timeExam;
+		return timeSpentExam;
 	}
 
 	public void addTimeExam(double time) {
-		timeExam += time;
+		timeSpentExam += time;
 	}
 	
 	public double getEstTimeExam() {
-		return estTimeExam;
+		return estTotExamTime;
 	}
 	
 	public void setEstTimeExam(double time) {
-		estTimeExam = time;
+		estTotExamTime = time;
 	}
 	
 	public double getHealth() {

@@ -40,38 +40,50 @@ public class YogaMeta extends MetaTask {
 
         double result = 0D;
 
-        if (!person.getPreference().isTaskDue(this) && person.isInSettlement()) {
+        if (person.isInVehicle()) {	
+        	return result;
+        }
+        
+        else if (!person.getPreference().isTaskDue(this) && person.isInSettlement()) {
 
-            // Probability affected by the person's stress and fatigue.
+        	 // Probability affected by the person's stress and fatigue.
             PhysicalCondition condition = person.getPhysicalCondition();
             double stress = condition.getStress();
             double fatigue = condition.getFatigue();
+            double kJ = condition.getEnergy();
             double hunger = condition.getHunger();
+            double[] muscle = condition.getMusculoskeletal();
+
+            double exerciseMillisols = person.getCircadianClock().getTodayExerciseTime();
             
-            if (fatigue > 1000 || hunger > 750)
+            if (kJ < 500 || fatigue > 750 || hunger > 750)
+            	return 0;
+ 
+            result = kJ/2000 
+            		// Note: The desire to exercise increases linearly right after waking up
+            		// from bed up to the first 333 msols
+            		// After the first 333 msols, it decreases linearly for the rest of the day
+            		+ Math.max(333 - fatigue, -666)
+            		// Note: muscle condition affects the desire to exercise
+            		- (muscle[2] - muscle[0])/5D 
+            		+ stress / 10
+            		- exerciseMillisols * 1.5;
+            
+            if (result < 0) 
             	return 0;
             
-        	// Doing yoga is less popular than doing regular workout
-            result += fatigue / 20D;
-            if (result < 0D) {
-                result = 0D;
-            }
-            
             double pref = person.getPreference().getPreferenceScore(this);
-         	result += pref * 1.5D;
-         	
-            if (pref > 0) {
-            	result *= (1 + stress/20.0);
-            }
-            else
-            	result = 0;
+         	result += result * pref / 2D;
 
+            if (result < 0) 
+            	return 0;
+            
             // Get an available gym.
             Building building = Workout.getAvailableGym(person);
             if (building != null) {
                 result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
                 result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
-            } // a person can still have workout on his own without a gym in MDP Phase 1-3
+            }
         }
         
         return result;

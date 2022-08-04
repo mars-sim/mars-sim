@@ -380,25 +380,31 @@ public class PerformLaboratoryResearch extends Task implements ResearchScientifi
 	 * @return the amount of time (millisols) left over after performing the phase.
 	 */
 	protected double researchingPhase(double time) {
-
+		double remainingTime = time - standardPulseTime;
+		
 		// If person is incapacitated, end task.
 		if (person.getPerformanceRating() < .2) {
 			endTask();
+            return time;
 		}
 		
 		if (person.getPhysicalCondition().computeFitnessLevel() < 2) {
 			logger.log(person, Level.FINE, 10_000, "Ended performing lab research. Not feeling well.");
 			endTask();
+            return time;
 		}
 
 		// Check for laboratory malfunction.
-		if (malfunctions.getMalfunctionManager().hasMalfunction())
+		if (malfunctions.getMalfunctionManager().hasMalfunction()) {
 			endTask();
+            return time;
+		}
 
 		
 		// Check if person is in a moving rover.
 		if (Vehicle.inMovingRover(person)) {
 			endTask();
+            return time;
 		}
 
 		if (isDone()) {
@@ -407,7 +413,7 @@ public class PerformLaboratoryResearch extends Task implements ResearchScientifi
 		}
 
 		// Add research work time to study.
-		double researchTime = getEffectiveResearchTime(time);
+		double researchTime = getEffectiveResearchTime(standardPulseTime);
 		boolean isPrimary = study.getPrimaryResearcher().equals(person);
 		if (isPrimary) {
 			study.addPrimaryResearchWorkTime(researchTime);
@@ -434,12 +440,12 @@ public class PerformLaboratoryResearch extends Task implements ResearchScientifi
 		}
 
 		// Add experience
-		addExperience(time);
+		addExperience(standardPulseTime);
 
 		// Check for lab accident.
-		checkForAccident(malfunctions, 0.005D, time);
+		checkForAccident(malfunctions, 0.005D, standardPulseTime);
 
-		return 0D;
+		return remainingTime;
 	}
 
 	/**

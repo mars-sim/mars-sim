@@ -386,13 +386,12 @@ public abstract class OperateVehicle extends Task implements Serializable {
 	 * @return the amount of time (ms) left over after driving (if any)
 	 */
 	protected double mobilizeVehicle(double time) {
-
+        double remainingTime = time - standardPulseTime;
+        
 		if (time < 0) {
 			logger.severe(vehicle, "Negative time: " + time);
         	return 0;
 		}
-
-        double result = 0;
  
     	// Case 0 : no fuel or oxidizer left     
         if (vehicle.isInSettlement()) 
@@ -407,7 +406,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
     		// Turn on emergency beacon
 	    	turnOnBeacon(fuelType);
         	endTask();
-        	return time;
+        	return remainingTime;
     	}
 
     	if (remainingOxidizer < LEAST_AMOUNT) {
@@ -416,7 +415,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
     		// Turn on emergency beacon
 	    	turnOnBeacon(OXYGEN_ID);
         	endTask();
-        	return time;
+        	return remainingTime;
         }
         
         // Find the starting distance here to destination.
@@ -442,7 +441,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
             if (isSettlementDestination())
                 determineInitialSettlementParkedLocation();
             
-        	return 0;
+        	return remainingTime;
         }
         
         // Determine the hours used.
@@ -472,7 +471,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
            
         if (Double.isNaN(d_km)) {
         	logger.severe("distancedtraveled is NaN.");
-        	return time;
+        	return remainingTime;
         }
         
         // Case 1 : overshot. Need to recalculate d, t and u
@@ -498,7 +497,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
             // Assume it won't run out of fuel there
             
             // Calculate the remaining time
-            result = time - hrsTime / MarsClock.MILLISOLS_PER_HOUR;
+            remainingTime = time - hrsTime / MarsClock.MILLISOLS_PER_HOUR;
         }
         
         else {
@@ -517,7 +516,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
 						+ destination + " - " 
 	        			+ Math.round(d_km * 1_000)/1_000 + " km away.");
 				
-            	result = time - hrsTime / MarsClock.MILLISOLS_PER_HOUR;
+            	remainingTime = time - hrsTime / MarsClock.MILLISOLS_PER_HOUR;
             }
             else {
             	// Case 3 : the rover may use all the prescribed time to drive 
@@ -525,7 +524,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
 						+ destination + " - " 
 	        			+ Math.round(startingDistanceToDestination * 1_000)/1_000 + " km away.");
 				
-            	result = 0;
+            	remainingTime = 0;
             }
             
 			// Update vehicle status
@@ -546,7 +545,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
 		    vehicle.storeAmountResource(WATER_ID, 1.75 * fuelUsed);
         }
         
-        return result;   
+        return remainingTime;   
 	}
         
 	/**

@@ -66,14 +66,16 @@ public class WorkoutMeta extends MetaTask {
             		// Note: muscle condition affects the desire to exercise
             		- (muscle[2] - muscle[0])/5D 
             		+ stress / 10
-            		- exerciseMillisols;
+            		- exerciseMillisols * 1.5;
+            
             if (result < 0) 
             	return 0;
             
             double pref = person.getPreference().getPreferenceScore(this);
          	result += result * pref / 2D;
 
-            if (result <= 0) result = 0;
+            if (result < 0) 
+            	return 0;
             
             // Get an available gym.
             Building building = Workout.getAvailableGym(person);
@@ -81,11 +83,6 @@ public class WorkoutMeta extends MetaTask {
             if (building != null) {
                 result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
                 result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
-            } 
-
-            else {
-                // a person can still have workout on his own without a gym in MDP Phase 1-3
-            	return 0;
             }
                  
             if (person.isInVehicle()) {	
@@ -99,7 +96,8 @@ public class WorkoutMeta extends MetaTask {
     	        	result += -30;
             }
 
-            if (result < 0) result = 0;
+            if (result < 0) 
+            	return 0;
 
         }
     

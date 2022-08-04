@@ -163,25 +163,30 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 	 * @return the amount of time (millisols) left after performing the phase.
 	 */
 	private double maintainVehiclePhase(double time) {
-		MalfunctionManager manager = vehicle.getMalfunctionManager();
-		
+    	double remainingTime = time - standardPulseTime;
+    	
 		if (vehicle.getSettlement() == null || !vehicle.getSettlement().getBuildingManager().isInGarage(vehicle)) {
         	endTask();
-			return 0;
+			return time;
 		}
 		
-		if (worker.getPerformanceRating() == 0D) {
+		if (worker.getPerformanceRating() <= .1) {
 			endTask();
+			return time;
 		}
 
+		MalfunctionManager manager = vehicle.getMalfunctionManager();
+		
 		// Check if maintenance has already been completed.
 		if (manager.getEffectiveTimeSinceLastMaintenance() == 0D) {
 			endTask();
+			return time;
 		}
 
 		// If vehicle has malfunction, end task.
 		if (manager.hasMalfunction()) {
 			endTask();
+			return time;
 		}
 
 		if (isDone()) {
@@ -204,7 +209,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 			}
 		} else {
 			endTask();
-			return time;
+			return remainingTime;
 		}
 
 		// Determine effective work time based on "Mechanic" skill.
@@ -222,7 +227,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 		manager.addMaintenanceWorkTime(workTime);
 
 		// Add experience points
-		addExperience(time);
+		addExperience(standardPulseTime);
 
 		// If maintenance is complete, task is done.
 		if (manager.getEffectiveTimeSinceLastMaintenance() == 0D) {
@@ -231,9 +236,9 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 		}
 
 		// Check if an accident happens during maintenance.
-		checkForAccident(vehicle, 0.001D, time);
+		checkForAccident(vehicle, 0.001D, standardPulseTime);
 
-		return 0D;
+		return remainingTime;
 	}
 
 	@Override

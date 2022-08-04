@@ -145,7 +145,7 @@ implements Serializable {
 		}
 
 		// Determine effective work time based on "Mechanic" skill.
-		double workTime = time;
+		double workTime = standardPulseTime;
 		int mechanicSkill = worker.getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
 	
 		if (mechanicSkill == 0) {
@@ -173,10 +173,10 @@ implements Serializable {
 			manager.addMaintenanceWorkTime(workTime);
 			
 	        // Add experience points
-	        addExperience(workTime);
+	        addExperience(standardPulseTime);
 
 			// Check if an accident happens during maintenance.
-			checkForAccident(workTime);
+			checkForAccident(standardPulseTime);
 			
         }
 		else {
@@ -184,7 +184,7 @@ implements Serializable {
 			return remainingTime;
 		}
 
-		return time - workTime;
+		return remainingTime;
 	}
 	
 
@@ -220,7 +220,7 @@ implements Serializable {
 	            }
 	        }
 		}
-		else if (robot != null) {
+		else {
 	        Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(robot).iterator();
 	        while (i.hasNext()) {
 	            Malfunctionable entity = i.next();

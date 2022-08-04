@@ -37,8 +37,6 @@ public class AnalyzeMapData extends Task implements Serializable {
 	private static SimLogger logger = SimLogger.getLogger(AnalyzeMapData.class.getName());
 
 	// Static members
-    /** The standard amount of millisols to be consumed in a phase. */
-	private static final double DELTA_TIME = 0.5;
     /** The maximum allowable amount for seed. */
 	private static final double MAX_SEED = 0.5;
 	/** Task name */
@@ -171,7 +169,7 @@ public class AnalyzeMapData extends Task implements Serializable {
      * @throws Exception
      */
     private double analyzingPhase(double time) {
-    	double remainingTime = time - DELTA_TIME;
+    	double remainingTime = time - standardPulseTime;
     	
 		if (person.getPhysicalCondition().computeFitnessLevel() < 2) {
 			logger.log(person, Level.INFO, 30_000, "Ended " + NAME + " Not feeling well.");
@@ -185,10 +183,10 @@ public class AnalyzeMapData extends Task implements Serializable {
         if (computingNeeded > 0) {
  
         	if (computingNeeded <= seed) {
-        		workPerMillisol = time * computingNeeded;
+        		workPerMillisol = standardPulseTime * computingNeeded;
         	}
         	else {
-        		workPerMillisol = time * seed * RandomUtil.getRandomDouble(.9, 1.1);
+        		workPerMillisol = standardPulseTime * seed * RandomUtil.getRandomDouble(.9, 1.1);
         	}
 
         	// Submit request for computing resources
@@ -224,12 +222,12 @@ public class AnalyzeMapData extends Task implements Serializable {
 //        	endTask();
         }
         
-        effort += time * workPerMillisol;
+        effort += standardPulseTime * workPerMillisol;
           
         if (effort > getDuration() / 2D) {
         	totalWork += effort;
         	// Limits # of improvement done at a site at most 2 times for each AnalyzeMapData
-        	improveMineralConcentrationEstimates(time, effort);
+        	improveMineralConcentrationEstimates(standardPulseTime, effort);
         	effort = 0;
         }
         	
@@ -239,11 +237,11 @@ public class AnalyzeMapData extends Task implements Serializable {
     				+ Math.round(TOTAL_COMPUTING_NEEDED * 100.0)/100.0 
     				+ " CUs Used.");
 			endTask();
-			return time;
+			return remainingTime;
 		}
 
         // Add experience points
-        addExperience(time);
+        addExperience(standardPulseTime);
 
         return remainingTime;
     }

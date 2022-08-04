@@ -308,7 +308,6 @@ public class EatDrink extends Task implements Serializable {
 	 */
 	protected double performMappedPhase(double time) {
 		if (getPhase() == null) {
-//			return time;
 			throw new IllegalArgumentException(person + "'s Task phase is null");
 		}
 
@@ -337,6 +336,8 @@ public class EatDrink extends Task implements Serializable {
 	 *         phase.
 	 */
 	private double drinkingWaterPhase(double time) {
+		double remainingTime = time - standardPulseTime;
+		
 		// Call to consume water
 		consumeWater(true);
 
@@ -348,7 +349,7 @@ public class EatDrink extends Task implements Serializable {
 			// Note: must call endTask here to end this task
 			super.endTask();
 
-		return time *.9;
+		return remainingTime;
 	}
 
 	/**
@@ -358,7 +359,8 @@ public class EatDrink extends Task implements Serializable {
 	 * @return the remaining time (millisol) after the phase has been performed.
 	 */
 	private double lookingforFoodPhase(double time) {
-
+		double remainingTime = time - standardPulseTime;
+		
 		// Determine preferred kitchen to get meal.
 		if (kitchen == null) {
 			kitchen = getKitchenWithMeal(person);
@@ -377,7 +379,6 @@ public class EatDrink extends Task implements Serializable {
 			// Pick up a meal at kitchen if one is available.
 			cookedMeal = kitchen.chooseAMeal(person);
 			if (cookedMeal != null) {
-
 				setPhase(EAT_MEAL);
 //				setDescription(Msg.getString("Task.description.eatDrink.cooked.pickingUp.detail", cookedMeal.getName())); //$NON-NLS-1$
 //				LogConsolidated.log(logger, Level.FINE, 0, sourceName,
@@ -392,7 +393,7 @@ public class EatDrink extends Task implements Serializable {
 			}
 		}
 
-		return time *.9;
+		return remainingTime;
 	}
 
 
@@ -403,53 +404,43 @@ public class EatDrink extends Task implements Serializable {
 	 * @return
 	 */
 	private double eatingPreservedFoodPhase(double time) {
-		double remainingTime = 0D;
+		double remainingTime = time - standardPulseTime;
 		double eatingTime = time;
 
-//		int rand = RandomUtil.getRandomInt(3);
-//
-//		if (rand == 3) {
-//			// try out dessert instead of eating preserved food
-//			setPhase(PICK_UP_DESSERT);
-//			remainingTime = time * .75;
-//		}
-//		else {
+		boolean enoughFood = eatPreservedFood(eatingTime);
 
-			boolean enoughFood = eatPreservedFood(eatingTime);
+		// If not enough preserved food available, change to dessert phase.
+		if (!enoughFood) {
+			endTask();
+			return remainingTime;
+		}
+		else {
+			// Report eating preserved food.
+			setDescription(Msg.getString("Task.description.eatDrink.preserved")); //$NON-NLS-1$
 
-			// If not enough preserved food available, change to dessert phase.
-			if (!enoughFood) {
-//				setPhase(PICK_UP_DESSERT);
-//				remainingTime = time * .5;
+			if ((totalEatingTime + eatingTime) >= eatingDuration) {
+				eatingTime = eatingDuration - totalEatingTime;
+			}
+
+			if (eatingTime < time) {
+				remainingTime = time - eatingTime;
+			}
+
+			if (cumulativeProportion >= foodConsumptionRate) {
 				endTask();
+				return remainingTime;
 			}
-			else {
-				// Report eating preserved food.
-				setDescription(Msg.getString("Task.description.eatDrink.preserved")); //$NON-NLS-1$
 
-				if ((totalEatingTime + eatingTime) >= eatingDuration) {
-					eatingTime = eatingDuration - totalEatingTime;
-				}
+			totalEatingTime += eatingTime;
 
-				if (eatingTime < time) {
-					remainingTime = time - eatingTime;
-				}
-
-				if (cumulativeProportion >= foodConsumptionRate) {
-					endTask();
-					return remainingTime;
-				}
-
-				totalEatingTime += eatingTime;
-
-				if (totalEatingTime > getDuration()) {
-					endTask();
-					return remainingTime;
-				}
-
-				consumeWater(false);
+			if (totalEatingTime > getDuration()) {
+				endTask();
+				return remainingTime;
 			}
-//		}
+
+			consumeWater(false);
+		}
+
 
 		return remainingTime;
 	}
@@ -462,7 +453,7 @@ public class EatDrink extends Task implements Serializable {
 	 *         phase.
 	 */
 	private double eatingMealPhase(double time) {
-		double remainingTime = 0D;
+		double remainingTime = time - standardPulseTime;
 		double eatingTime = time;
 
 		if ((totalEatingTime + eatingTime) >= eatingDuration) {
@@ -482,6 +473,7 @@ public class EatDrink extends Task implements Serializable {
 
 					if (cumulativeProportion >= cookedMeal.getDryMass()) {
 						endTask();
+						return remainingTime;
 					}
 
 					// If finished eating, change to dessert phase.
@@ -495,6 +487,7 @@ public class EatDrink extends Task implements Serializable {
 					if (totalEatingTime > getDuration()) {
 						logger.info(person, 10_000, "Done " + s.toLowerCase() + ".");
 						endTask();
+						return remainingTime;
 					}
 
 					consumeWater(false);
@@ -506,14 +499,11 @@ public class EatDrink extends Task implements Serializable {
 					// If not enough preserved food available, change to dessert phase.
 					if (!enoughFood) {
 						setPhase(PICK_UP_DESSERT);
-						remainingTime = time * .75;
 						return remainingTime;
 					}
 					else {
 						// Report eating preserved food.
 						setDescription(Msg.getString("Task.description.eatDrink.preserved")); //$NON-NLS-1$
-
-						remainingTime = time * .75;
 						return remainingTime;
 					}
 				}
@@ -524,12 +514,13 @@ public class EatDrink extends Task implements Serializable {
 	}
 
 	/**
-	 * Perform the pick up dessert phase.
+	 * Performs the pick up dessert phase.
 	 *
 	 * @param time the amount of time (millisol) to perform the phase.
 	 * @return the remaining time (millisol) after the phase has been performed.
 	 */
 	private double pickingUpDessertPhase(double time) {
+		double remainingTime = time - standardPulseTime;
 
 		// Determine preferred kitchen to get dessert.
 		if (dessertKitchen == null) {
@@ -543,28 +534,25 @@ public class EatDrink extends Task implements Serializable {
 				nameOfDessert = dessertKitchen.chooseADessert(person);
 
 				if (nameOfDessert != null) {
-					logger.log(worker, Level.FINE, 0, "Picked up prepared dessert '" + nameOfDessert.getName()
-									+ "' to eat/drink");
-
+					logger.log(worker, Level.FINE, 0, "Picked up prepared dessert '" 
+							+ nameOfDessert.getName() + "' to eat/drink");
 					setPhase(EAT_DESSERT);
-					return time *.85;
+					return remainingTime;
 				}
-
 			}
 
 			else {
 				endTask();
 				// If no dessert kitchen found, go eat preserved food
-//				setPhase(EAT_PRESERVED_FOOD);
-//				return time *.85;
+				return remainingTime;
 			}
 		}
 
-		return time *.75;
+		return remainingTime;
 	}
 
 	/**
-	 * Reduce the hunger level
+	 * Reduces the hunger level.
 	 *
 	 * @param hungerRelieved
 	 */
@@ -587,7 +575,7 @@ public class EatDrink extends Task implements Serializable {
 	}
 
 	/**
-	 * Eat a cooked meal.
+	 * Eats a cooked meal.
 	 *
 	 * @param eatingTime the amount of time (millisols) to eat.
 	 */
@@ -627,7 +615,7 @@ public class EatDrink extends Task implements Serializable {
 	}
 
 	/**
-	 * Eat a meal of preserved food.
+	 * Eats a meal of preserved food.
 	 *
 	 * @param eatingTime the amount of time (millisols) to eat.
 	 * @return true if enough preserved food available to eat.
@@ -684,8 +672,9 @@ public class EatDrink extends Task implements Serializable {
 	}
 
 	/**
-	 * Get a resource from a provider.
+	 * Gets a resource from a provider.
 	 * TODO eventually everything will be a ResourceHolder
+	 * 
 	 * @param quantity amount to retrieve
 	 * @param resourceID Resource to retrieve
 	 * @param provider The provider of resources.
@@ -697,23 +686,14 @@ public class EatDrink extends Task implements Serializable {
 			ResourceHolder rh = (ResourceHolder) provider;
 			return (rh.retrieveAmountResource(resourceID, quantity) == 0D);
 		}
-//		else {
-//			double stored = inv.getAmountResourceStored(resourceID, true);
-//			if (stored < quantity) {
-//				quantity = stored;
-//			}
-//			else {
-//				result = true;
-//			}
-//			inv.retrieveAmountResource(resourceID, quantity);
-//		}
 
 		return result;
 	}
 
 
 	/**
-	 * Get the amount of resource stored by a provider
+	 * Gets the amount of resource stored by a provider.
+	 * 
 	 * @param provider
 	 * @param resourceID
 	 * @return
@@ -723,10 +703,7 @@ public class EatDrink extends Task implements Serializable {
 			ResourceHolder rh = (ResourceHolder) provider;
 			return rh.getAmountResourceStored(resourceID);
 		}
-//		else {
-//			Inventory inv = provider.getInventory();
-//			return inv.getAmountResourceStored(resourceID, true);
-//		}
+
 		return 0;
 	}
 
@@ -808,7 +785,7 @@ public class EatDrink extends Task implements Serializable {
 	}
 
 	/**
-	 * Eat a prepared dessert.
+	 * Eats a prepared dessert.
 	 *
 	 * @param eatingTime the amount of time (millisols) to eat.
 	 */
@@ -1191,15 +1168,13 @@ public class EatDrink extends Task implements Serializable {
 	}
 
 	/**
-	 * Throw away any napkins
+	 * Throws away any napkins.
 	 */
 	@Override
 	protected void clearDown() {
 		// Throw away napkin waste if one was used.
-		if (hasNapkin) {
-			if (person.isInside()) {
-				((ResourceHolder)person.getContainerUnit()).storeAmountResource(ResourceUtil.solidWasteID, NAPKIN_MASS);
-			}
+		if (hasNapkin && person.isInside()) {
+			((ResourceHolder)person.getContainerUnit()).storeAmountResource(ResourceUtil.solidWasteID, NAPKIN_MASS);
 		}
 	}
 }

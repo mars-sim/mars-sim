@@ -592,7 +592,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 					timeLeft = executeMappedPhase(timeLeft, time);
 				}
 
-				if (time - timeLeft > time / 8D) // SMALL_AMOUNT_OF_TIME)
+				if (time - timeLeft > time / 8D) // or SMALL_AMOUNT_OF_TIME
 					// Modify stress performing task.
 					modifyStress(time - timeLeft);
 
@@ -1472,6 +1472,15 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		 standardPulseTime = value;
 	}
 
+	/**
+	 * Gets the standard pulse time.
+	 * 
+	 * @param value
+	 */
+	public static double getStandardPulseTime() {
+		 return standardPulseTime;
+	}
+	
 	public void reinit() {
 		person = unitManager.getPersonByID(id);
 		robot = unitManager.getRobotByID(id);

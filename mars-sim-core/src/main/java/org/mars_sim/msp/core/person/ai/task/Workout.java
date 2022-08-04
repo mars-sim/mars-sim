@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Workout.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-08-04
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -100,13 +100,16 @@ public class Workout extends Task implements Serializable {
 	 * @return the amount of time (millisols) left over after performing the phase.
 	 */
 	private double exercisingPhase(double time) {
+    	double remainingTime = time - standardPulseTime;
+    	
 		// Regulates hormones
-		person.getCircadianClock().exercise(time);
+		person.getCircadianClock().exercise(standardPulseTime);
 		//Improves musculoskeletal systems
-		person.getPhysicalCondition().workOut(time);
+		person.getPhysicalCondition().workOut(standardPulseTime);
 		// Record the sleep time [in millisols]
-		person.getCircadianClock().recordExercise(time);
-		return 0D;
+		person.getCircadianClock().recordExercise(standardPulseTime);
+		
+		return remainingTime;
 	}
 
 	/**

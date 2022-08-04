@@ -185,7 +185,7 @@ public class Read extends Task implements Serializable {
 			endTask();
 			return time;
 		}
-		
+
     	// Pick one skill randomly to improve upon
         if (selectedSkill == null) {
         	selectedSkill = person.getSkillManager().getARandomSkillType();

@@ -177,31 +177,27 @@ public class LoadVehicleEVA extends EVAOperation {
 			stopLoading = true;
 		}
 
-		stopLoading = stopLoading || (shouldEndEVAOperation() || addTimeOnSite(standardPulseTime));
+		stopLoading |= (shouldEndEVAOperation() || addTimeOnSite(standardPulseTime));
 		
 		// NOTE: if a person is not at a settlement or near its vicinity,  
-		stopLoading = stopLoading || (settlement == null || vehicle == null); 
-		stopLoading = stopLoading || settlement.getBuildingManager().isInGarage(vehicle);
-		stopLoading = stopLoading || !person.isFit();
+		stopLoading |= (settlement == null || vehicle == null); 
+		stopLoading |= settlement.getBuildingManager().isInGarage(vehicle);
+		stopLoading |= !person.isFit();
 		
 		// Do the load
 		if (!stopLoading) {
-			stopLoading = loadingPlan.load(worker, time);
-		
-	        // Add experience points
-	        addExperience(standardPulseTime);
-	
-			// Check for an accident during the EVA operation.
-			checkForAccident(standardPulseTime);
-			
-			// Used all time
-			return 0;
+			stopLoading = loadingPlan.load(worker, standardPulseTime);
 		}
 
-		if (stopLoading) {
+		else {
 			checkLocation();
-			return remainingTime;
 		}
+		
+        // Add experience points
+        addExperience(standardPulseTime);
+
+		// Check for an accident during the EVA operation.
+		checkForAccident(standardPulseTime);
 		
 		return remainingTime;
 	}

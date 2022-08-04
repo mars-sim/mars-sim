@@ -45,10 +45,8 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = .2D;
-
 	/** The speed at which the obstacle / winching phase commence. */
 	private static final double LOW_SPEED = .5;
-	
 	/** The computing resources [in CUs] needed per km. */
 	private static final double CU_PER_KM = .05;
 	
@@ -168,8 +166,6 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 			
 		} else if (AVOID_COLLISION.equals(getPhase())) {
 			return obstaclePhase(time);
-//		} else if (WINCH_VEHICLE.equals(getPhase())) {
-//			return winchingPhase(time);
 		} else {
 			return time;
 		}
@@ -183,14 +179,15 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 	 * @return the amount of time (ms) left over after driving (if any)
 	 */
 	protected double mobilizeVehicle(double time) {
-
+		double remainingTime = time - standardPulseTime;
+		
 		// If speed is less than or equal to the .5 kph, change to avoiding obstacle phase.
 		if ((getVehicle().getSpeed() <= LOW_SPEED) 
 				&& !AVOID_COLLISION.equals(getPhase())) {
 			setPhase(AVOID_COLLISION);
-			return (time);
+			return (remainingTime);
 		} else
-			return super.mobilizeVehicle(time);
+			return super.mobilizeVehicle(standardPulseTime);
 	}
 
 	/**
@@ -200,8 +197,9 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 	 * @return time remaining after performing phase (in millisols)
 	 */
 	private double obstaclePhase(double time) {
-
+		double remainingTime = time - standardPulseTime;
 		double timeUsed = 0D;
+		
 		Flyer flyer = (Flyer) getVehicle();
 
 		// Get the direction to the destination.
@@ -218,7 +216,7 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 			
 			setPhase(PilotDrone.MOBILIZE);
 			sideDirection = NONE;
-			return time;
+			return remainingTime;
 		}
 
 		// Determine the direction to avoid the obstacle.
@@ -230,7 +228,7 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 			updateVehicleElevationAltitude(false, time);
 			
 			sideDirection = NONE;
-			return time;
+			return remainingTime;
 		}
 
 		// Set the vehicle's direction.
@@ -257,11 +255,12 @@ public class PilotDrone extends OperateVehicle implements Serializable {
       	}
     	else {
     		logger.info(person, 30_000L, "No computing resources available for " 
-    			+ Msg.getString("Task.description.pilotDrone.detail", flyer.getName()) + "."); // $NON-NLS-1$
+    			+ Msg.getString("Task.description.pilotDrone.detail", // $NON-NLS-1$
+    					flyer.getName()) + "."); 
     	}
 		
 		// Add experience points
-		addExperience(time);
+		addExperience(timeUsed);
 
 		// If vehicle has malfunction, end task.
 		if (flyer.getMalfunctionManager().hasMalfunction())

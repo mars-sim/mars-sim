@@ -73,6 +73,7 @@ implements Serializable {
 
     /**
      * Constructor. This is an effort-driven task.
+     * 
      * @param person the person performing the task.
      */
     public HaveConversation(Person person) {
@@ -115,7 +116,7 @@ implements Serializable {
     }
 
     /**
-     * Gets a likable person
+     * Gets a likable person.
      *
      * @param list
      * @return
@@ -136,7 +137,7 @@ implements Serializable {
     }
 
     /**
-     * Talks to a person. Add conditional checking to append " via radio" in two cases
+     * Talks to a person. Add conditional checking to append " via radio" in two cases.
      *
      * @param invitee
      */
@@ -167,8 +168,7 @@ implements Serializable {
     }
 
     private void converseInSettlement() {
-
-        Set<Person> pool = new HashSet<Person>();
+        Set<Person> pool = new HashSet<>();
         Settlement s = person.getSettlement();
 
         // Gets a list of chatty people in the same building
@@ -271,7 +271,7 @@ implements Serializable {
         // set the boolean to true so that it won't be done again today
     	//person.getPreference().setTaskStatus(this, false);
 
-        Set<Person> pool = new HashSet<Person>();
+        Set<Person> pool = new HashSet<>();
     	Settlement s = person.getAssociatedSettlement();
         Collection<Person> p_talking_all = s.getChattingPeople(person, false, false, true);
 
@@ -291,7 +291,7 @@ implements Serializable {
         }
 
         int num = pool.size();
-        List<Person> list = new ArrayList<Person>();
+        List<Person> list = new ArrayList<>();
         list.addAll(pool);
         if (num == 1) {
             invitee = list.get(0);
@@ -322,12 +322,15 @@ implements Serializable {
 
     /**
      * Performs reading phase.
+     * 
      * @param time the amount of time (millisols) to perform the phase.
      * @return the amount of time (millisols) left over after performing the phase.
      */
     private double havingConversation(double time) {
+		double remainingTime = time - standardPulseTime;
+    	
     	if (person == null) {
-    		System.err.println("havingConversation(): person is null.");
+    		logger.severe("havingConversation(): person is null.");
     	}
     	
         if (isDone() || invitee == null) {
@@ -336,7 +339,7 @@ implements Serializable {
         }
 
         // If duration, send invitation.
-        if (getDuration() <= (getTimeCompleted() + time)) {
+        if (getDuration() <= (getTimeCompleted() + standardPulseTime)) {
 
         	if (invitee != null) {
 	        	// List situations for having a conversation
@@ -347,12 +350,12 @@ implements Serializable {
 	            	talkTo(invitee);
 	            }
 	            else
-	            	return 0D;
+	            	return remainingTime;
 
 	            RelationshipUtil.changeOpinion(invitee, person, RelationshipType.COMMUNICATION_MEETING, RandomUtil.getRandomDouble(1));
         	}
         }
 
-        return 0D;
+        return remainingTime;
     }
 }

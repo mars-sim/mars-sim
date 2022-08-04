@@ -69,6 +69,7 @@ implements ResearchScientificStudy, Serializable {
  
     /**
      * Constructor.
+     * 
      * @param person the person performing the task.
      */
     public PerformLaboratoryExperiment(Person person) {
@@ -118,6 +119,7 @@ implements ResearchScientificStudy, Serializable {
 
     /**
      * Gets all the sciences related to laboratory experimentation.
+     * 
      * @return list of sciences.
      */
     public static List<ScienceType> getExperimentalSciences() {
@@ -136,6 +138,7 @@ implements ResearchScientificStudy, Serializable {
 
     /**
      * Gets the crowding modifier for a researcher to use a given laboratory building.
+     * 
      * @param researcher the researcher.
      * @param lab the laboratory.
      * @return crowding modifier.
@@ -154,6 +157,7 @@ implements ResearchScientificStudy, Serializable {
 
     /**
      * Determines the scientific study that will be researched.
+     * 
      * @param person 
      * @return study or null if none available.
      */
@@ -214,6 +218,7 @@ implements ResearchScientificStudy, Serializable {
 
     /**
      * Gets a local lab for experimentation.
+     * 
      * @param person the person checking for the lab.
      * @param science the science to research.
      * @return laboratory found or null if none.
@@ -234,6 +239,7 @@ implements ResearchScientificStudy, Serializable {
 
     /**
      * Gets a settlement lab for experimentation.
+     * 
      * @param person the person looking for a lab.
      * @param science the science to research.
      * @return a valid research lab.
@@ -261,6 +267,7 @@ implements ResearchScientificStudy, Serializable {
     /**
      * Gets a list of research buildings with available research space from a list of buildings
      * with the research function.
+     * 
      * @param buildingList list of buildings with research function.
      * @return research buildings with available lab space.
      * @throws BuildingException if building list contains buildings without research function.
@@ -282,6 +289,7 @@ implements ResearchScientificStudy, Serializable {
     /**
      * Gets a list of research buildings with a given science specialty from a list of
      * buildings with the research function.
+     * 
      * @param science the science specialty.
      * @param buildingList list of buildings with research function.
      * @return research buildings with science specialty.
@@ -306,6 +314,7 @@ implements ResearchScientificStudy, Serializable {
     /**
      * Gets an available lab in a vehicle.
      * Returns null if no lab is currently available.
+     * 
      * @param vehicle the vehicle
      * @param science the science to research.
      * @return available lab
@@ -332,6 +341,7 @@ implements ResearchScientificStudy, Serializable {
 
     /**
      * Adds a person to a lab.
+     * 
      * @param person 
      */
     private void addPersonToLab(Person person) {
@@ -410,28 +420,35 @@ implements ResearchScientificStudy, Serializable {
 
     /**
      * Performs the experimenting phase.
+     * 
      * @param time the amount of time (millisols) to perform the phase.
      * @return the amount of time (millisols) left over after performing the phase.
      */
     private double experimentingPhase(double time) {
+		double remainingTime = time - standardPulseTime;
+		
         // If person is incapacitated, end task.
         if (person.getPerformanceRating() <= .2) {
             endTask();
+            return time;
         }
 
 		if (person.getPhysicalCondition().computeFitnessLevel() < 2) {
 			logger.log(person, Level.FINE, 10_000, "Ended performing lab experiments. Not feeling well.");
 			endTask();
+            return time;
 		}
 		
         // Check for laboratory malfunction.
         if (malfunctions.getMalfunctionManager().hasMalfunction()) {
             endTask();
+            return time;
         }
 
         // Check if person is in a moving rover.
         if (Vehicle.inMovingRover(person)) {
             endTask();
+            return time;
         }
 
         if (isDone()) {
@@ -440,7 +457,7 @@ implements ResearchScientificStudy, Serializable {
         }
 
         // Add research work time to study.
-        double researchTime = getEffectiveResearchTime(time);
+        double researchTime = getEffectiveResearchTime(standardPulseTime);
         boolean isPrimary = study.getPrimaryResearcher().equals(person);
         if (isPrimary) {
             study.addPrimaryResearchWorkTime(researchTime);
@@ -469,12 +486,12 @@ implements ResearchScientificStudy, Serializable {
             }
         }
         // Add experience
-        addExperience(researchTime);
+        addExperience(standardPulseTime);
 
         // Check for lab accident.
-        checkForAccident(malfunctions, 0.005D, time);
+        checkForAccident(malfunctions, 0.005D, standardPulseTime);
 
-        return 0D;
+        return remainingTime;
     }
 
  

@@ -135,6 +135,7 @@ public class ConnectWithEarth extends Task implements Serializable {
 	 * @return the amount of time (millisols) left over after performing the phase.
 	 */
 	private double connectingEarth(double time) {
+		double remainingTime = time - standardPulseTime;
 		
 		if (isDone()) {
         	// this task has ended
@@ -152,10 +153,10 @@ public class ConnectWithEarth extends Task implements Serializable {
         	double workPerMillisol = 0; 
  
         	if (computingNeeded <= seed) {
-        		workPerMillisol = time * computingNeeded;
+        		workPerMillisol = standardPulseTime * computingNeeded;
         	}
         	else {
-        		workPerMillisol = time * seed * RandomUtil.getRandomDouble(.9, 1.1);
+        		workPerMillisol = standardPulseTime * seed * RandomUtil.getRandomDouble(.9, 1.1);
         	}
 
         	// Submit request for computing resources
@@ -191,6 +192,6 @@ public class ConnectWithEarth extends Task implements Serializable {
         	endTask();
         }
         
-		return 0D;
+		return remainingTime;
 	}
 }

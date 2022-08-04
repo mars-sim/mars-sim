@@ -119,9 +119,8 @@ public class Mind implements Serializable, Temporal {
 	public boolean timePassing(ClockPulse pulse) {
 		if (taskManager != null) {
 			taskManager.timePassing(pulse);
-
-			// Take action as necessary.
-			takeAction(pulse.getElapsed());
+			// Decides what tasks to inject time
+			decideTask(pulse.getElapsed());
 		}
 
 		int msol = pulse.getMarsTime().getMillisolInt();
@@ -170,35 +169,54 @@ public class Mind implements Serializable, Temporal {
 	}
 
 	/**
+	 * Decides what tasks to take for a given amount of time.
+	 * 
+	 * @param time time in millisols
+	 * @throws Exception if error during action.
+	 */
+	private void decideTask(double time) {
+		double totalTime = time;
+		while (totalTime > 0) {
+			double pulseTime = Task.getStandardPulseTime();
+			// Call takeAction to perform a task and consume the pulse time.
+			takeAction(pulseTime);
+			// Reduce the total time by the pulse time
+			totalTime -= pulseTime;
+		}
+	}
+	
+	/**
 	 * Takes appropriate action for a given amount of time.
 	 *
 	 * @param time time in millisols
 	 * @throws Exception if error during action.
 	 */
 	private void takeAction(double time) {
-		double remainingTime = time;
+		double timePerFrame = time;
 		int zeroCount = 0;    // Count the number of conseq. zero executions
 		int callCount = 0;
 		// Loop around using up time; recursion can blow stack memory
 		do {
 			// Perform a task if the person has one, or determine a new task/mission.
 			if (taskManager.hasActiveTask()) {
-				double newRemain = taskManager.executeTask(remainingTime, person.getPerformanceRating());
+				// Call executeTask
+				double remainingTime = taskManager.executeTask(timePerFrame, person.getPerformanceRating());
 
 				// A task is return a bad remaining time.
 				// Cause of Issue#290
-				if (!Double.isFinite(newRemain) || (newRemain < 0)) {
+				if (!Double.isFinite(remainingTime) || (remainingTime < 0)) {
 					// Likely to be a defect in a Task
 					logger.warning(person, 20_000, "Calling '"
-							+ taskManager.getTaskName() + "' and return an invalid time " + newRemain);
+							+ taskManager.getTaskName() + "' and return an invalid time " + remainingTime);
 					return;
 				}
+				
 				// Can not return more time than originally available
-				else if (newRemain > remainingTime) {
+				if (remainingTime > timePerFrame) {
 					// Likely to be a defect in a Task or rounding problem
 					logger.warning(person, 20_000, "'"
-							+ taskManager.getTaskName() + "' and return a remaining time " + newRemain
-							+ " larger than the original " + remainingTime);
+							+ taskManager.getTaskName() + "' and return a remaining time " + remainingTime
+							+ " larger than the original " + timePerFrame);
 					return;
 				}
 
@@ -210,11 +228,12 @@ public class Mind implements Serializable, Temporal {
 					callCount++;
 					return;
 				}
-
-				// Consumed time then reset the idle counter
-				if (remainingTime == newRemain) {
-					newRemain = remainingTime - Task.standardPulseTime; 
-					
+				if (remainingTime == timePerFrame) {
+					// No time has been consumed previously
+					// This is not supposed to happen but still happens a lot.
+					// Reduce the time by standardPulseTime
+					remainingTime = timePerFrame - Task.standardPulseTime; 
+					// Reset the idle counter					
 					if (zeroCount++ >= MAX_ZERO_EXECUTE) {
 						return;
 					}
@@ -222,18 +241,20 @@ public class Mind implements Serializable, Temporal {
 				else {
 					zeroCount = 0;
 				}
-				remainingTime = newRemain;
+				timePerFrame = remainingTime;
 			}
 			else {
-				// don't have an active task
+				// Look for a new task
 				lookForATask();
+				
+				// Don't have an active task. Consume time
 				if (!taskManager.hasActiveTask()) {
 					// Didn't find a new Task so abort action
-					remainingTime = 0;
+					timePerFrame = 0;
 				}
 			}
-		}
-		while (remainingTime > SMALL_AMOUNT_OF_TIME);
+			
+		} while (timePerFrame > SMALL_AMOUNT_OF_TIME);
 	}
 
 	/**

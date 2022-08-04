@@ -59,8 +59,6 @@ public class ExamineBody extends Task implements Serializable {
 	private static final double STRESS_MODIFIER = 1D;
 
 	// Data members.
-	private double duration;
-
 	private DeathInfo deathInfo;
 	private MedicalAid medicalAid;
 	private Person patient;
@@ -78,96 +76,100 @@ public class ExamineBody extends Task implements Serializable {
 		super(NAME, person, true, true, STRESS_MODIFIER, SkillType.MEDICINE, 25D);
 
 		if (person.isInSettlement()) {
-			// Probability affected by the person's stress and fatigue.
-	        if (!person.getPhysicalCondition().isFitByLevel(1000, 50, 500))
-	        	endTask();
-	        
-			// Choose available medical aid for treatment.
-			medicalAid = determineMedicalAid();
-	
-			if (medicalAid != null) {
-	
-				// Determine patient and health problem to treat.
-				List<DeathInfo> list = medicalManager.getPostmortemExams(person.getSettlement());
-				int num = list.size();
-				boolean done = false;
-				
-				if (num > 0) {
-					
-					while (!done) {
-						for (int i=0; i < num; i++) {
-							if (list.get(i).getBodyRetrieved()) {
-								// Work on the body already retrieved
-								deathInfo = list.get(i);
-								done = true;
-							}
-						}
-						
-						// If no body has been examined yet, pick one
-						if (deathInfo == null) {
-							int rand = RandomUtil.getRandomInt(num-1);
-							deathInfo = list.get(rand);
-							retrieveBody();
-						}			
-					}
-								
-					patient = deathInfo.getPerson();
-	
-					// Get the person's medical skill.
-					double skill = person.getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
-					if (skill == 0)
-						skill = .5;
-					// Get the person's emotion stability
-					int stab = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.EMOTIONAL_STABILITY);
-					// Get the person's stress resilience						
-					int resilient = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.STRESS_RESILIENCE);
-					
-					// Note: how to determine how long it takes ? Cause of death ?
-					duration = 150 + STRESS_MODIFIER * (200 - stab - resilient) / 5D / skill + 2 * RandomUtil.getRandomInt(num+5);
-					
-					deathInfo.setEstTimeExam(duration);
-	
-				} else {
-					logger.severe(person, "Could not find any bodies to do autopsy at " + medicalAid);
-					endTask();
-				}
-	
-				// Walk to medical aid.
-				if (medicalAid instanceof MedicalCare) {
-					// Walk to medical care building.
-					MedicalCare medicalCare = (MedicalCare) medicalAid;
-					Building hospital = medicalCare.getBuilding();
-					malfunctionable = hospital;
-					
-					// Walk to medical care building.
-					walkToTaskSpecificActivitySpotInBuilding(hospital, FunctionType.MEDICAL_CARE, false);
-					
-				} else if (medicalAid instanceof SickBay) {
-					// Walk to medical activity spot in rover.
-					Vehicle vehicle = ((SickBay) medicalAid).getVehicle();
-					malfunctionable = vehicle;
-					if (vehicle instanceof Rover) {
-						// Walk to rover sick bay activity spot.
-						walkToSickBayActivitySpotInRover((Rover) vehicle, false);
-					}
-				}
-				else {
-					logger.severe(person, "Could not understand MedicalAid " + medicalAid);
-					endTask();
-				}
-			} else {
-				logger.severe(person, "Medical Aid could not be determined");
-				endTask();
-			}
-	
-			// Initialize phase.
-			addPhase(EXAMINING);
-			addPhase(RECORDING);
-			setPhase(EXAMINING);
-		}
-		else
 			endTask();
+			return;
+		}
 		
+		// Probability affected by the person's stress and fatigue.
+        if (!person.getPhysicalCondition().isFitByLevel(1000, 50, 500)) {
+        	endTask();
+        	return;
+        }
+		// Choose available medical aid for treatment.
+		medicalAid = determineMedicalAid();
+
+		if (medicalAid == null) {
+			logger.severe(person, "Medical Aid could not be determined.");
+			endTask();	
+			return;
+		}
+
+		// Determine patient and health problem to treat.
+		List<DeathInfo> list = medicalManager.getPostmortemExams(person.getSettlement());
+		int num = list.size();
+		boolean done = false;
+		
+		if (num > 0) {
+			while (!done) {
+				for (int i=0; i < num; i++) {
+					if (list.get(i).getBodyRetrieved()) {
+						// Work on the body already retrieved
+						deathInfo = list.get(i);
+						done = true;
+					}
+				}
+				
+				// If no body has been examined yet, pick one
+				if (deathInfo == null) {
+					int rand = RandomUtil.getRandomInt(num-1);
+					deathInfo = list.get(rand);
+					retrieveBody();
+				}			
+			}
+						
+			patient = deathInfo.getPerson();
+
+			// Get the person's medical skill.
+			double skill = person.getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
+			if (skill == 0)
+				skill = .5;
+			// Get the person's emotion stability
+			int stab = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.EMOTIONAL_STABILITY);
+			// Get the person's stress resilience						
+			int resilient = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.STRESS_RESILIENCE);
+			
+			// Note: Need to refine in determining how long the exam would take. 
+			// Depends on the cause of death ?
+			double durationExam = 150 + STRESS_MODIFIER * (200 - stab - resilient) / 5D / skill 
+					+ 2 * RandomUtil.getRandomInt(num + 5);
+			
+			deathInfo.setEstTimeExam(durationExam);
+
+		} else {
+			logger.severe(person, "Could not find any bodies to do autopsy at " + medicalAid);
+			endTask();
+			return;
+		}
+
+		// Walk to medical aid.
+		if (medicalAid instanceof MedicalCare) {
+			// Walk to medical care building.
+			MedicalCare medicalCare = (MedicalCare) medicalAid;
+			Building hospital = medicalCare.getBuilding();
+			malfunctionable = hospital;
+			
+			// Walk to medical care building.
+			walkToTaskSpecificActivitySpotInBuilding(hospital, FunctionType.MEDICAL_CARE, false);
+			
+		} else if (medicalAid instanceof SickBay) {
+			// Walk to medical activity spot in rover.
+			Vehicle vehicle = ((SickBay) medicalAid).getVehicle();
+			malfunctionable = vehicle;
+			if (vehicle instanceof Rover) {
+				// Walk to rover sick bay activity spot.
+				walkToSickBayActivitySpotInRover((Rover) vehicle, false);
+			}
+		}
+		else {
+			logger.severe(person, "Could not understand MedicalAid " + medicalAid);
+			endTask();
+			return;
+		}
+
+		// Initialize phase.
+		addPhase(EXAMINING);
+		addPhase(RECORDING);
+		setPhase(EXAMINING);
 	}
 
 	/**
@@ -262,22 +264,23 @@ public class ExamineBody extends Task implements Serializable {
 	 * @return the amount of time (millisol) left over after performing the phase.
 	 */
 	private double examiningPhase(double time) {
-
-		double timeLeft = 0D;
+		double remainingTime = time - standardPulseTime;
 
 		// If medical aid has malfunction, end task.
 		if (malfunctionable.getMalfunctionManager().hasMalfunction()) {
 			endTask();
 		}
 		
+		// Retrieves the time spent on examining the body
 		double timeExam = deathInfo.getTimeExam();
 		
 		if (timeExam == 0)
+			// Retrieve the body first before beginning the exam
 			deathInfo.getBodyRetrieved();
 		
-		if (timeExam > (deathInfo.getEstTimeExam() + duration)/2D) {
-			logger.log(worker, Level.WARNING, 20_000, "Was done with the postmortem exam on " 
-						+ patient.getName());
+		if (timeExam > deathInfo.getEstTimeExam()) {
+			logger.log(worker, Level.WARNING, 20_000, "Postmortem exam done on " 
+						+ patient.getName() + ".");
 			
 			deathInfo.setExamDone(true);
 			
@@ -298,16 +301,15 @@ public class ExamineBody extends Task implements Serializable {
 				skill = .5;
 			// Get the person's emotion stability
 			int stab = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.EMOTIONAL_STABILITY);
-					
-			deathInfo.addTimeExam(time + time * skill / 4D);
+			// Add exam time as modified by skill
+			deathInfo.addTimeExam(standardPulseTime * ( 1 + skill / 4D));
 			
 			double stress = STRESS_MODIFIER * (1-stab) / 5D / skill + RandomUtil.getRandomInt(3);
 		
 			setStressModifier(stress);
-
 		}
 		
-		return timeLeft;
+		return remainingTime;
 	}
 
 	/**

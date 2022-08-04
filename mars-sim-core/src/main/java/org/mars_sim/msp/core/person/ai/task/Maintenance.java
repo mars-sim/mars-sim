@@ -171,21 +171,25 @@ public class Maintenance extends Task implements Serializable {
 	 * @return the amount of time (millisols) left over after performing the phase.
 	 */
 	private double maintainPhase(double time) {
-		MalfunctionManager manager = entity.getMalfunctionManager();
-
+    	double remainingTime = time - standardPulseTime;
+    	
 		// If worker is incapacitated, end task.
-		if (worker.getPerformanceRating() == 0D) {
+		if (worker.getPerformanceRating() <= .1) {
 			endTask();
+			return time;
 		}
 
+		MalfunctionManager manager = entity.getMalfunctionManager();
 		// Check if maintenance has already been completed.
 		if (manager.getEffectiveTimeSinceLastMaintenance() < 1000D) {
 			endTask();
+			return time;
 		}
 
 		// If equipment has malfunction, end task.
 		if (manager.hasMalfunction()) {
 			endTask();
+			return time;
 		}
 
 		if (isDone()) {
@@ -207,52 +211,43 @@ public class Maintenance extends Task implements Serializable {
 		boolean repairParts = false;
 		Unit containerUnit = worker.getTopContainerUnit();
 
-		if (!(containerUnit instanceof MarsSurface)) {
-//			Inventory inv = containerUnit.getInventory();
-			if (Maintenance.hasMaintenanceParts(containerUnit, entity)) {
-				repairParts = true;
-				Map<Integer, Integer> parts = new HashMap<>(manager.getMaintenanceParts());
-				Iterator<Integer> j = parts.keySet().iterator();
+		if (containerUnit instanceof MarsSurface) {
+			return time;
+		}
+			
+		if (Maintenance.hasMaintenanceParts(containerUnit, entity)) {
+			repairParts = true;
+			Map<Integer, Integer> parts = new HashMap<>(manager.getMaintenanceParts());
+			Iterator<Integer> j = parts.keySet().iterator();
 
-				if (containerUnit.getUnitType() == UnitType.SETTLEMENT) {
-
-					while (j.hasNext()) {
-						Integer part = j.next();
-						int number = parts.get(part);
-						((Settlement)containerUnit).retrieveItemResource(part, number);
-						manager.maintainWithParts(part, number);
-
-						// Add tracking item demand
-//						containerUnit.getInventory().addItemDemandTotalRequest(part, number);
-//						containerUnit.getInventory().addItemDemand(part, number);
-					}
+			if (containerUnit.getUnitType() == UnitType.SETTLEMENT) {
+				while (j.hasNext()) {
+					Integer part = j.next();
+					int number = parts.get(part);
+					((Settlement)containerUnit).retrieveItemResource(part, number);
+					manager.maintainWithParts(part, number);
 				}
-				else {
-					while (j.hasNext()) {
-						Integer part = j.next();
-						int number = parts.get(part);
-						((Vehicle)containerUnit).retrieveItemResource(part, number);
-						manager.maintainWithParts(part, number);
-
-						// Add tracking item demand
-//						inv.addItemDemandTotalRequest(part, number);
-//						inv.addItemDemand(part, number);
-					}
+			}
+			else {
+				while (j.hasNext()) {
+					Integer part = j.next();
+					int number = parts.get(part);
+					((Vehicle)containerUnit).retrieveItemResource(part, number);
+					manager.maintainWithParts(part, number);
 				}
-
 			}
 		}
 
 		if (!repairParts) {
 			endTask();
-			return time;
+			return remainingTime;
 		}
 
 		// Add work to the maintenance
 		manager.addMaintenanceWorkTime(workTime);
 
 		// Add experience points
-		addExperience(time);
+		addExperience(standardPulseTime);
 
 		// If maintenance is complete, task is done.
 		if (manager.getEffectiveTimeSinceLastMaintenance() == 0D) {
@@ -260,9 +255,9 @@ public class Maintenance extends Task implements Serializable {
 		}
 
 		// Check if an accident happens during maintenance.
-		checkForAccident(entity, time, 0.005D);
+		checkForAccident(entity, standardPulseTime, 0.005D);
 
-		return 0D;
+		return remainingTime;
 	}
 
 	/**

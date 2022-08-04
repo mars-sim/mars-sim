@@ -166,23 +166,26 @@ implements Serializable {
 	 * @return the amount of time (millisol) left after performing the phase.
 	 */
 	private double listeningPhase(double time) {
+		double remainingTime = time - standardPulseTime;
+		
 		if (person.isOutside()) {
 			endTask();
 			return time;
 		}
         // Reduce person's fatigue
-        double fatigue = person.getPhysicalCondition().getFatigue() - (10D * time);
+        double fatigue = person.getPhysicalCondition().getFatigue() - (10D * standardPulseTime);
 		if (fatigue < 0D)
 			fatigue = 0D;
         person.getPhysicalCondition().setFatigue(fatigue);
         // Reduce person's stress
-        double stress = person.getPhysicalCondition().getStress() - (2.5 * time);
+        double stress = person.getPhysicalCondition().getStress() - (2.5 * standardPulseTime);
 		if (stress < 0D)
 			stress = 0D;
         person.getPhysicalCondition().setStress(stress);
 
-        setDescription(Msg.getString("Task.description.listenToMusic"));//$NON-NLS-1$
-		return 0D;
+        setDescription(Msg.getString("Task.description.listenToMusic")); //$NON-NLS-1$
+        
+		return remainingTime;
 	}
 
 	/**
@@ -192,6 +195,8 @@ implements Serializable {
 	 * @return the amount of time (millisol) left after performing the phase.
 	 */
 	private double findingPhase(double time) {
+		double remainingTime = time - standardPulseTime;
+		
 		if (person.isOutside()) {
 			endTask();
 			return time;
@@ -200,6 +205,6 @@ implements Serializable {
 		setDescription(Msg.getString("Task.description.listenToMusic.findingSong"));//$NON-NLS-1$
 		// Note: add codes for selecting a particular type of music		
 		setPhase(LISTENING_TO_MUSIC);
-		return time * .75D;
+		return remainingTime;
 	}
 }

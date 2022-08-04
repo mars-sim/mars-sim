@@ -284,6 +284,7 @@ implements ResearchScientificStudy, Serializable {
 
     /**
      * Adds a person to a lab.
+     * 
      * @param researcher
      */
     private void addPersonToLab(Person researcher) {
@@ -369,7 +370,8 @@ implements ResearchScientificStudy, Serializable {
      * @return the amount of time (millisols) left over after performing the phase.
      */
     private double modelingPhase(double time) {
-        
+		double remainingTime = time - standardPulseTime;
+		
 		if (isDone()) {
         	// this task has ended
     		logger.info(person, 30_000L, NAME + " - " 
@@ -407,10 +409,10 @@ implements ResearchScientificStudy, Serializable {
         	double workPerMillisol = 0; 
  
         	if (computingNeeded <= seed) {
-        		workPerMillisol = time * computingNeeded;
+        		workPerMillisol = standardPulseTime * computingNeeded;
         	}
         	else {
-        		workPerMillisol = time * seed * RandomUtil.getRandomDouble(.9, 1.1);
+        		workPerMillisol = standardPulseTime * seed * RandomUtil.getRandomDouble(.9, 1.1);
         	}
 
         	// Submit request for computing resources
@@ -447,7 +449,7 @@ implements ResearchScientificStudy, Serializable {
         }
         
         // Add modeling work time to study.
-        double modelingTime = getEffectiveModelingTime(time);
+        double modelingTime = getEffectiveModelingTime(standardPulseTime);
         if (isPrimary) {
             study.addPrimaryResearchWorkTime(modelingTime);
         }
@@ -475,12 +477,12 @@ implements ResearchScientificStudy, Serializable {
         }
         
         // Add experience
-        addExperience(modelingTime);
+        addExperience(standardPulseTime);
 
         // Check for lab accident.
-        checkForAccident(malfunctions, 0.001D, time);
+        checkForAccident(malfunctions, 0.001D, standardPulseTime);
 
-        return 0D;
+        return remainingTime;
     }
 
     @Override
