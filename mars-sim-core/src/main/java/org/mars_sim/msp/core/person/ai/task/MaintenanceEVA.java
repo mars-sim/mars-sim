@@ -130,6 +130,7 @@ implements Serializable {
 	 * @throws Exception if error during maintenance.
 	 */
 	private double maintenancePhase(double time) {
+		double remainingTime = time - standardPulseTime;
 		
 		if (checkReadiness(time) > 0)
 			return time;
@@ -140,7 +141,7 @@ implements Serializable {
 
 		if (finishedMaintenance || malfunction) {
 			checkLocation();
-			return 0;
+			return remainingTime;
 		}
 
 		// Determine effective work time based on "Mechanic" skill.
@@ -172,18 +173,18 @@ implements Serializable {
 			manager.addMaintenanceWorkTime(workTime);
 			
 	        // Add experience points
-	        addExperience(time);
+	        addExperience(workTime);
 
 			// Check if an accident happens during maintenance.
-			checkForAccident(time);
+			checkForAccident(workTime);
 			
         }
 		else {
-			setPhase(WALK_BACK_INSIDE);
-			return 0;
+			checkLocation();
+			return remainingTime;
 		}
 
-		return 0D;
+		return time - workTime;
 	}
 	
 

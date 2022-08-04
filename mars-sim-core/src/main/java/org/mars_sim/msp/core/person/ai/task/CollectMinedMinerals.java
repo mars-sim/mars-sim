@@ -145,24 +145,19 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 	 * @throws Exception if error collecting minerals.
 	 */
 	private double collectMineralsPhase(double time) {
-
+		double remainingTime = time - standardPulseTime;
+		
 		// Check for radiation exposure during the EVA operation.
-		if (isDone() || isRadiationDetected(time)) {
-			if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
-			return time;
+		if (isDone() || isRadiationDetected(standardPulseTime)) {
+			checkLocation();
+			return remainingTime;
 		}
 		
 		// Check if site duration has ended or there is reason to cut the collect
 		// minerals phase short and return to the rover.
-		if (shouldEndEVAOperation() || addTimeOnSite(time)) {
-			if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
-			return time;
+		if (shouldEndEVAOperation() || addTimeOnSite(standardPulseTime)) {
+			checkLocation();
+			return remainingTime;
 		}
 		
 		Mining mission = (Mining) worker.getMission();
@@ -179,13 +174,13 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 			weight = robot.getMass();
 		
 		if (roverRemainingCap < weight + 5) {
-			setPhase(WALK_BACK_INSIDE);
-			return .5 * time;
+			checkLocation();
+			return remainingTime;
 		}
 			
 		remainingPersonCapacity = worker.getAmountResourceRemainingCapacity(mineralType.getID());
 
-		double mineralsCollected = time * MINERAL_COLLECTION_RATE;
+		double mineralsCollected = standardPulseTime * MINERAL_COLLECTION_RATE;
 
 		// Modify collection rate by "Areology" skill.
 		int areologySkill = worker.getSkillManager().getEffectiveSkillLevel(SkillType.AREOLOGY);
@@ -200,7 +195,7 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 			mineralsCollected = mineralsExcavated;
 
 		// Add experience points
-		addExperience(time);
+		addExperience(standardPulseTime);
 
 		// Collect minerals.
 		worker.storeAmountResource(mineralType.getID(), mineralsCollected);
@@ -208,13 +203,13 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 		mission.collectMineral(mineralType, mineralsCollected);
 		
 		if (((mineralsExcavated - mineralsCollected) <= 0D) || (mineralsCollected >= remainingPersonCapacity)) {
-			setPhase(WALK_BACK_INSIDE);
+			checkLocation();
 		}
 
 		// Check for an accident during the EVA operation.
-		checkForAccident(time);
+		checkForAccident(standardPulseTime);
 
-		return 0D;
+		return remainingTime;
 	}
 
 	@Override

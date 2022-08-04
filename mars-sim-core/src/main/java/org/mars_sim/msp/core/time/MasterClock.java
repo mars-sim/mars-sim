@@ -22,6 +22,7 @@ import java.util.logging.Level;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.logging.SimLogger;
+import org.mars_sim.msp.core.person.ai.task.utils.Task;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
@@ -172,18 +173,31 @@ public class MasterClock implements Serializable {
 	}
 	
 	/**
-	 * Adjust the pulse width by letting the current pulse time gradually 
-	 * catching up to the value of optimal millisols per pulse.
+	 * Checks for the value of pulse width. Adjust the pulse width accordingly. Let 
+	 * it gradually catch up to the value of optMilliSolPerPulse.
 	 */
-	private void adjustPulseWidth() {
+	private void checkPulseWidth() {
+		if (lastPulseTime > maxMilliSolPerPulse) {
+			logger.config(20_000, "Pulse width " + Math.round(lastPulseTime*1_000.0)/1_000.0
+					+ " clipped to a max of " + maxMilliSolPerPulse + ".");
+			lastPulseTime = maxMilliSolPerPulse;
+		}
+		else if (lastPulseTime < minMilliSolPerPulse) {
+			logger.config(20_000, "Pulse width " + Math.round(lastPulseTime*1_000.0)/1_000.0
+					+ " increased to a minimum of " + minMilliSolPerPulse + ".");
+			lastPulseTime = minMilliSolPerPulse;
+		}
+		
 		if (lastPulseTime > optMilliSolPerPulse) {
 			double diff = lastPulseTime - optMilliSolPerPulse;
-			lastPulseTime = lastPulseTime - diff / 10;
+			lastPulseTime = lastPulseTime - diff / 20;
 		}
+		
 		else if (lastPulseTime < optMilliSolPerPulse) {
 			double diff = optMilliSolPerPulse - lastPulseTime;
-			lastPulseTime = lastPulseTime + diff / 10;
+			lastPulseTime = lastPulseTime + diff / 20;
 		}
+		Task.setStandardPulseTime(lastPulseTime/4.0);
 	}
 	
 	/**
@@ -471,36 +485,32 @@ public class MasterClock implements Serializable {
 				// Reset the elapsed clock to ignore this pulse
 				logger.warning("Elapsed real time is " + realElaspedMilliSec + " ms, longer than the max time "
 			                   + MAX_ELAPSED + " ms.");
-				timestampPulseStart();
+				
+				// Reset lastPulseTime
+				lastPulseTime = optMilliSolPerPulse;
+				
+				realElaspedMilliSec = (long) (optMilliSolPerPulse * MILLISECONDS_PER_MILLISOL / actualTR);
 			}
+			
+			else if (realElaspedMilliSec == 0.0) {
+				
+				realElaspedMilliSec = (long) (optMilliSolPerPulse * MILLISECONDS_PER_MILLISOL / actualTR);
+			}
+			
 			else {
-				// Pulse must be less than the max and positive
-				if (lastPulseTime > 0) {
-
-					acceptablePulse = true;
-
-					if (lastPulseTime > maxMilliSolPerPulse) {
-						logger.config(20_000, "Pulse width " + Math.round(lastPulseTime*1_000.0)/1_000.0
-								+ " clipped to a max of " + maxMilliSolPerPulse + ".");
-						lastPulseTime = maxMilliSolPerPulse;
-					
-					}
-					else if (lastPulseTime < minMilliSolPerPulse) {
-						logger.config(20_000, "Pulse width " + Math.round(lastPulseTime*1_000.0)/1_000.0
-								+ " increased to a minimum of " + minMilliSolPerPulse + ".");
-						lastPulseTime = minMilliSolPerPulse;
-					}
-				}
+				// Obtains the latest the time pulse length in millisols.
+				lastPulseTime = (realElaspedMilliSec * actualTR) / MILLISECONDS_PER_MILLISOL;
+				
+				// Adjust the time pulse
+				checkPulseWidth();
 			}
 			
-			// Obtains the latest the time pulse length in millisols.
-			lastPulseTime = (realElaspedMilliSec * actualTR) / MILLISECONDS_PER_MILLISOL;
-			
-			// Adjust the time pulse
-			adjustPulseWidth();
+			if (lastPulseTime > 0) {
+				acceptablePulse = true;
+			}
 			
 			// Elapsed time is acceptable
-			if (acceptablePulse && keepRunning && realElaspedMilliSec > 0) {
+			if (keepRunning && acceptablePulse) {
 				
 				// The time elapsed for the EarthClock aligned to adjusted Mars time
 				long earthMillisec = (long)(lastPulseTime * MILLISECONDS_PER_MILLISOL);
@@ -510,8 +520,6 @@ public class MasterClock implements Serializable {
 
 				if (!listenerExecutor.isTerminated()
 					&& !listenerExecutor.isShutdown()) {
-					// Do the pulse
-					timestampPulseStart();
 
 					// Update the uptimer
 					uptimer.updateTime(realElaspedMilliSec);
@@ -530,6 +538,9 @@ public class MasterClock implements Serializable {
 					logger.config("The clockListenerExecutor has died. Restarting...");
 					resetClockListeners();
 				}
+				
+				// Do the pulse
+				timestampPulseStart();
 			}
 		}
 		return acceptablePulse;

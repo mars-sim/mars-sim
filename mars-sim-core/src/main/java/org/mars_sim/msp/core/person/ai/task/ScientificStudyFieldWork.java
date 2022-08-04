@@ -28,7 +28,6 @@ public abstract class ScientificStudyFieldWork extends EVAOperation implements S
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(ScientificStudyFieldWork.class.getName());
 
-
 	// Data members
 	private Person leadResearcher;
 	private ScientificStudy study;
@@ -36,7 +35,7 @@ public abstract class ScientificStudyFieldWork extends EVAOperation implements S
 	private TaskPhase fieldWork;
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 * 
 	 * @param person         the person performing the task.
 	 * @param leadResearcher the researcher leading the field work.
@@ -113,38 +112,40 @@ public abstract class ScientificStudyFieldWork extends EVAOperation implements S
 	}
 
 	/**
-	 * Perform the field work phase of the task.
+	 * Performs the field work phase of the task.
 	 * 
 	 * @param time the time available (millisols).
 	 * @return remaining time after performing phase (millisols).
 	 */
 	private double fieldWorkPhase(double time) {
-
+		double remainingTime = time - standardPulseTime;
+		
 		// Check all condition to carry on
 		// 1. radiation exposure/detection
 		// 2. Site duration has ended or there is reason to stop the field work
 		// 3. The study activities are completed
-		if (isDone() || isRadiationDetected(time)
-				|| shouldEndEVAOperation() || addTimeOnSite(time)
-				|| performStudy(time)) {
+		if (isDone() || isRadiationDetected(standardPulseTime)
+				|| shouldEndEVAOperation() || addTimeOnSite(standardPulseTime)
+				|| performStudy(standardPulseTime)) {
 			checkLocation();
-			return time;
+			return remainingTime;
 		}
 
 		// Add research work to the scientific study for lead researcher.
-		addResearchWorkTime(time);
+		addResearchWorkTime(standardPulseTime);
 
 		// Add experience points
-		addExperience(time);
+		addExperience(standardPulseTime);
 
 		// Check for an accident during the EVA operation.
-		checkForAccident(time);
+		checkForAccident(standardPulseTime);
 
-		return 0D;
+		return remainingTime;
 	}
 
 	/**
-	 * Performs any specific study activities
+	 * Performs any specific study activities.
+	 * 
 	 * @param time Time to do the study; maybe used by overriding classes
 	 * @return Is the field work completed
 	 */
@@ -185,7 +186,7 @@ public abstract class ScientificStudyFieldWork extends EVAOperation implements S
 	}
 	
 	/**
-	 * Transfer the Specimen box to the Vehicle
+	 * Transfers the Specimen box to the Vehicle.
 	 */
 	@Override
 	protected void clearDown() {

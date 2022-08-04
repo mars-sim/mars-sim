@@ -430,7 +430,7 @@ implements Serializable {
      * @return the amount of time (millisols) left over after performing the phase.
      */
     private double togglePowerSourcePhase(double time) {
-    	
+  
 		if (!person.isFit()) {
 			checkLocation();
 			return time;
@@ -439,11 +439,13 @@ implements Serializable {
         // If person is incapacitated, end task.
         if (person.getPerformanceRating() == 0D) {
         	checkLocation();
+        	return time;
         }
 
         // Check if toggle has already been completed.
         if (powerSource.isToggleON() == toggleOn) {
             checkLocation();
+            return time;
         }
 
         if (isDone()) {
@@ -465,7 +467,7 @@ implements Serializable {
         powerSource.addToggleWorkTime(workTime);
 
         // Add experience points
-        addExperience(time);
+        addExperience(workTime);
 
         String toggle = "off";
         if (toggleOn) toggle = "on";
@@ -475,9 +477,9 @@ implements Serializable {
                 + " in " + building.getNickName() + ".");
 
         // Check if an accident happens during toggle power source.
-        checkForAccident(time);
+        checkForAccident(workTime);
 
-        return 0D;
+        return time - workTime;
     }
 
 
@@ -491,7 +493,7 @@ implements Serializable {
 
         // Use EVAOperation checkForAccident() method.
         if (isInhabitable) {
-            super.checkForAccident(time);
+            super.checkForAccident(standardPulseTime);
         }
 
         // Mechanic skill modification.

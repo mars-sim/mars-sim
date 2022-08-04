@@ -124,6 +124,8 @@ implements Serializable {
 	 * @return the amount of time (millisol) left after performing the phase.
 	 */
 	private double relaxingPhase(double time) {
+	
+		double remainingTime = time - standardPulseTime;
 		
 		if (person != null) {
 			
@@ -142,7 +144,7 @@ implements Serializable {
 	        pc.setFatigue(newFatigue);
 		}
 		
-		return 0D;
+		return remainingTime;
 	}
 
 

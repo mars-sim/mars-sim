@@ -124,19 +124,20 @@ implements Serializable {
      * @return the time remaining after performing this phase (in millisols)
      */
     private double maintainVehiclePhase(double time) {
-
-		if (checkReadiness(time) > 0)
-			return time;
+    	double remainingTime = time - standardPulseTime;
+    	
+		if (checkReadiness(standardPulseTime) > 0)
+			return remainingTime;
 				
 		// NOTE: if a person is not at a settlement or near its vicinity,  
 		if (settlement == null || vehicle == null) {
 			checkLocation();
-			return 0;
+			return time;
 		}
 		
 		if (settlement.getBuildingManager().isInGarage(vehicle)) {
 			checkLocation();
-			return 0;
+			return time;
 		}
 		
         MalfunctionManager manager = vehicle.getMalfunctionManager();
@@ -144,9 +145,9 @@ implements Serializable {
         boolean finishedMaintenance = (manager.getEffectiveTimeSinceLastMaintenance() == 0D);
         
         if (finishedMaintenance || malfunction || shouldEndEVAOperation() ||
-                addTimeOnSite(time)) {
+                addTimeOnSite(standardPulseTime)) {
         	checkLocation();
-			return 0;
+			return remainingTime;
         }
 
         // Determine effective work time based on "Mechanic" and "EVA Operations" skills.
@@ -168,19 +169,19 @@ implements Serializable {
         }
         else {
         	checkLocation();
-			return 0;
+			return remainingTime;
         }
 
         // Add work to the maintenance
         manager.addMaintenanceWorkTime(workTime);
 
         // Add experience points
-        addExperience(time);
+        addExperience(workTime);
 
         // Check if an accident happens during maintenance.
-        checkForAccident(time);
+        checkForAccident(workTime);
 
-        return 0D;
+        return time - workTime;
     }
 
 

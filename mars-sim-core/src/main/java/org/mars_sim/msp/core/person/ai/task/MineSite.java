@@ -146,13 +146,14 @@ public class MineSite extends EVAOperation implements Serializable {
 	 * @throws Exception if error performing phase.
 	 */
 	private double miningPhase(double time) {
+		double remainingTime = time - standardPulseTime;
 		
-		if (checkReadiness(time) > 0)
-			return time;
+		if (checkReadiness(standardPulseTime) > 0)
+			return remainingTime;
 
 		// Check if there is reason to cut the mining phase short and return
 		// to the rover.
-		if (addTimeOnSite(time)) {
+		if (addTimeOnSite(standardPulseTime)) {
 			// End operating light utility vehicle.
 			if (person != null && ((Crewable)luv).isCrewmember(person)) {
 				luv.removePerson(person);
@@ -184,19 +185,18 @@ public class MineSite extends EVAOperation implements Serializable {
 			} else {
 				logger.info(person, " could not operate " + luv.getName());
 			}
-
 		}
 
 		// Excavate minerals.
-		excavateMinerals(time);
+		excavateMinerals(standardPulseTime);
 
 		// Add experience points
-		addExperience(time);
+		addExperience(standardPulseTime);
 
 		// Check for an accident during the EVA operation.
-		checkForAccident(time);
+		checkForAccident(standardPulseTime);
 
-		return 0D;
+		return remainingTime;
 	}
 
 	/**

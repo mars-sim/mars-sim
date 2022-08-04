@@ -149,7 +149,8 @@ public class Sleep extends Task implements Serializable {
 	 * @return the amount of time (millisols) left over after performing the phase.
 	 */
 	private double sleepingPhase(double time) {
-
+		double remainingTime = time - standardPulseTime;
+		
 		if (isDone() || getTimeLeft() <= 0) {
         	// this task has ended
 			clearTask();
@@ -174,7 +175,7 @@ public class Sleep extends Task implements Serializable {
 
 			pc.recoverFromSoreness(.05);
 
-			double fractionOfRest = time * TIME_FACTOR;
+			double fractionOfRest = standardPulseTime * TIME_FACTOR;
 
 			double f = pc.getFatigue();
 
@@ -204,9 +205,9 @@ public class Sleep extends Task implements Serializable {
 
 			circadian.setAwake(false);
 			// Change hormones
-			circadian.setRested(time);
+			circadian.setRested(standardPulseTime);
 			// Record the sleep time [in millisols]
-			circadian.recordSleep(time);
+			circadian.recordSleep(standardPulseTime);
 
 			if (person.getTaskSchedule().isShiftHour(marsClock.getMillisolInt())) {
 				// Reduce the probability if it's not the right time to sleep
@@ -222,40 +223,6 @@ public class Sleep extends Task implements Serializable {
 
 		else {
 			RoboticStation station = null;
-			
-//			// If robot is in a settlement, try to find a living accommodations building.
-//			if (robot.isInSettlement() && !robot.isAtStation()) {
-//				// If currently in a building with a robotic station, 
-//				// go to a station activity spot.
-//				Building currentBuilding = BuildingManager.getBuilding(robot);
-//				if (currentBuilding != null) {
-//					station = currentBuilding.getRoboticStation();
-//					if (station != null && station.getSleepers() < station.getSlots()) {
-//						station.addSleeper();
-//
-//						// Check if robot is currently at an activity spot for the robotic station.
-//						if (station.hasActivitySpots() && !station.isAtActivitySpot(robot)) {
-//							// Walk to an available activity spot.
-//							walkToActivitySpotInBuilding(currentBuilding, FunctionType.ROBOTIC_STATION, true);
-//						}
-//					}
-//				} else {
-//					Building building = getAvailableRoboticStationBuilding(robot);
-//					if (building != null) {
-//						station = building.getRoboticStation();
-//						if (station != null) {
-//							// NOTE: see https://github.com/mars-sim/mars-sim/issues/22
-//							// Question: why would the method below cause RepairBot to walk outside the
-//							// settlement to a vehicle ?
-//							walkToActivitySpotInBuilding(building, FunctionType.ROBOTIC_STATION, true);
-//
-//							station.addSleeper();
-//						}
-//					}
-//				}
-//			}
-			
-//			logger.info(robot, 10_000L, "Done walking to " + station + ".");
 
 			boolean toCharge = false;
 			double level = robot.getSystemCondition().getBatteryState();
@@ -293,7 +260,7 @@ public class Sleep extends Task implements Serializable {
 						station.addSleeper();
 					}
 					
-	    			double hrs = time * MarsClock.HOURS_PER_MILLISOL;
+	    			double hrs = standardPulseTime * MarsClock.HOURS_PER_MILLISOL;
 	
 	    			double energy = robot.getSystemCondition().deliverEnergy(RoboticStation.CHARGE_RATE * hrs);
 	    			
@@ -312,7 +279,7 @@ public class Sleep extends Task implements Serializable {
     			robot.getSystemCondition().setCharging(false);
 		}
 
-		return 0D;
+		return remainingTime;
 	}
 
 	/**
@@ -339,12 +306,6 @@ public class Sleep extends Task implements Serializable {
 //				walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), true);
 	//			logger.info(person + " will sleep at " + person.getVehicle());
 			}
-
-//			else if (person.isOutside()) {
-//				// if a person is outside and is in high fatigue, he ought
-//				// to do an EVA ingress to come back in and sleep.
-//				walkBackInside();
-//			}
 
 			// If person is in a settlement, try to find a living accommodations building.
 			if (person.isInSettlement()) {
@@ -548,10 +509,11 @@ public class Sleep extends Task implements Serializable {
 
 		} else if (robot != null) {
 			// Remove robot from stations so other robots can use it.
-//			if (station != null && station.getSleepers() > 0) {
-//				station.removeSleeper();
+			RoboticStation station = robot.getStation();
+			if (station != null && station.getSleepers() > 0) {
+				station.removeSleeper();
 				// NOTE: assess how well this work
-//			}
+			}
 //    		logger.info(robot.getNickName() + " was done sleeping and waking up.");
 			walkToAssignedDutyLocation(robot, true);
 		}

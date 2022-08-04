@@ -57,8 +57,9 @@ public class ExitAirlock extends Task implements Serializable {
 	private static final String INNER_DOOR_LOCKED = "Inner door was locked.";
 	private static final String CHAMBER_FULL = "Chamber was full.";
 	
+    /** The minimum performance needed. */
 	private static final double MIN_PERFORMANCE = 0.05;
-
+	
 	/** Task phases. */
 	private static final TaskPhase REQUEST_EGRESS = new TaskPhase(
 		Msg.getString("Task.phase.requestEgress")); //$NON-NLS-1$
@@ -355,7 +356,7 @@ public class ExitAirlock extends Task implements Serializable {
 		logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4_000,
 				"Requesting EVA egress in " + airlock.getEntity().toString() + ".");
 		
-		double remainingTime = 0;
+		double remainingTime = time - standardPulseTime;
 		
 		// Activates airlock first to check for occupant ids and operator
 		// before calling other checks
@@ -394,17 +395,17 @@ public class ExitAirlock extends Task implements Serializable {
 
 			if (!airlock.addAwaitingInnerDoor(id)) {
 				walkAway(person, "Cannot get a spot at the inner door of " + airlock.getEntity().toString() + ".");
-				return 0;
+				return remainingTime;
 			}
 
 			if (airlock.isChamberFull() || !airlock.hasSpace()) {
 				walkAway(person, CHAMBER_FULL);
-				return 0;
+				return remainingTime;
 			}
 			
 			if (!transitionTo(0)) {
 				walkAway(person, "Cannot transition to zone 0.");
-				return 0;
+				return remainingTime;
 			}
 				
 			if (!airlock.isInnerDoorLocked() || airlock.isEmpty()) {
@@ -478,7 +479,7 @@ public class ExitAirlock extends Task implements Serializable {
 	 */
 	private double pressurizeChamber(double time) {
 
-		double remainingTime = 0;
+		double remainingTime = time - standardPulseTime;
 
 		// Activates airlock first to check for occupant ids and operator
 		// before calling other checks
@@ -504,7 +505,7 @@ public class ExitAirlock extends Task implements Serializable {
 				+ airlock.getEntity().toString() + ".");
 
 			// Add experience
-			addExperience(time);
+			addExperience(standardPulseTime);
 
 			setPhase(ENTER_AIRLOCK);
 		}
@@ -532,7 +533,7 @@ public class ExitAirlock extends Task implements Serializable {
 	 */
 	private double enterAirlock(double time) {
 
-		double remainingTime = 0;
+		double remainingTime = time - standardPulseTime;
 
 		boolean canProceed = false;
 
@@ -598,7 +599,7 @@ public class ExitAirlock extends Task implements Serializable {
 				}
 				else {
 					walkAway(person, airlock.getEntity().toString() + " inner door locked");
-					return 0;
+					return remainingTime;
 				}
 //			}
 
@@ -620,7 +621,7 @@ public class ExitAirlock extends Task implements Serializable {
 					+ airlock.getEntity().toString() + ".");
 
 			// Add experience
-			addExperience(time);
+			addExperience(standardPulseTime);
 
 			setPhase(WALK_TO_CHAMBER);
 		}
@@ -636,7 +637,7 @@ public class ExitAirlock extends Task implements Serializable {
 	 */
 	private double walkToChamber(double time) {
 
-		double remainingTime = 0;
+		double remainingTime = time - standardPulseTime;
 
 		// Activates airlock first to check for occupant ids and operator
 		// before calling other checks
@@ -679,7 +680,7 @@ public class ExitAirlock extends Task implements Serializable {
 
 			else {
 				setPhase(ENTER_AIRLOCK);
-				return 0;
+				return remainingTime;
 			}
 		}
 
@@ -695,7 +696,7 @@ public class ExitAirlock extends Task implements Serializable {
 				}
 	 			else {
 					setPhase(ENTER_AIRLOCK);
-					return 0;
+					return remainingTime;
 				}
 //			}
 
@@ -732,7 +733,7 @@ public class ExitAirlock extends Task implements Serializable {
 			}
 
 			// Add experience
-			addExperience(time);
+			addExperience(standardPulseTime);
 		}
 
 
@@ -747,11 +748,11 @@ public class ExitAirlock extends Task implements Serializable {
 	 */
 	private double donEVASuit(double time) {
 
-		double remainingTime = 0;
+		double remainingTime = time - standardPulseTime;
 
 		if (!isFit()) {
 			walkAway(person, NOT_FIT + " to don an EVA suit.");
-			return 0;
+			return remainingTime;
 		}
 
 		if (isOccupantHalfPrebreathed()) {
@@ -762,7 +763,7 @@ public class ExitAirlock extends Task implements Serializable {
 		if (!airlock.isPressurized()) {
 			// Go back to the previous phase
 			setPhase(PRESSURIZE_CHAMBER);
-			return 0;
+			return remainingTime;
 		}
 
 		EVASuit suit = null;
@@ -811,7 +812,7 @@ public class ExitAirlock extends Task implements Serializable {
 
 			if (remainingDonningTime <= 0) {
 				// Add experience
-				addExperience(time - remainingTime);
+				addExperience(standardPulseTime);
 
 				logger.log(person, Level.FINER, 4_000,
 						"Donned the EVA suit and got ready to do pre-breathing.");
@@ -853,7 +854,7 @@ public class ExitAirlock extends Task implements Serializable {
 	 */
 	private double prebreathe(double time) {
 
-		double remainingTime = 0;
+		double remainingTime = time - standardPulseTime;
 
 		if (!hasSuit || person.getSuit() == null) {
 
@@ -897,7 +898,7 @@ public class ExitAirlock extends Task implements Serializable {
 			}
 
 			// Add experience
-			addExperience(time);
+			addExperience(standardPulseTime);
 
 		}
 
@@ -912,7 +913,7 @@ public class ExitAirlock extends Task implements Serializable {
 	 */
 	private double depressurizeChamber(double time) {
 
-		double remainingTime = 0;
+		double remainingTime = time - standardPulseTime;
 
 		if (airlock.isDepressurizing()) {
 			// just wait for depressurization to finish
@@ -959,7 +960,7 @@ public class ExitAirlock extends Task implements Serializable {
 				+ airlock.getEntity().toString() + ".");
 	
 			// Add experience
-			addExperience(time);
+			addExperience(standardPulseTime);
 
 			setPhase(LEAVE_AIRLOCK);	
 		}
@@ -975,7 +976,7 @@ public class ExitAirlock extends Task implements Serializable {
 	 */
 	private double leaveAirlock(double time) {
 
-		double remainingTime = 0;
+		double remainingTime = time - standardPulseTime;
 
 		boolean canExit = false;
 
@@ -1023,7 +1024,7 @@ public class ExitAirlock extends Task implements Serializable {
 				// Remove the position at zone 4 before calling endTask()
 				if (airlock.vacate(4, id)) {
 					// Add experience
-			 		addExperience(time);
+			 		addExperience(standardPulseTime);
 		
 					logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4_000,
 							"Leaving " + airlock.getEntity().toString() + ".");
@@ -1039,7 +1040,7 @@ public class ExitAirlock extends Task implements Serializable {
 			}
 			else {
 				// Add experience
-		 		addExperience(time);
+		 		addExperience(standardPulseTime);
 	
 				logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4_000,
 						"Leaving " + airlock.getEntity().toString() + ".");

@@ -39,8 +39,11 @@ implements Serializable {
 
 	// Static members
 	/** km per hour. */
+	private static final double MIN_PULSE_TIME = 0.25;
 	private static final double STRESS_MODIFIER = -.1D;
 	private static final double VERY_SMALL_DISTANCE = .00001D;
+	/** The minimum pulse time for completing a task phase in this class.  */
+	private static double minPulseTime = Math.min(standardPulseTime, MIN_PULSE_TIME);
 
 	// Data members
 	private Rover rover;
@@ -120,7 +123,8 @@ implements Serializable {
      * @return the amount of time (millisol) left after performing the walking phase.
      */
     double walkingPhase(double time) {
-
+		double remainingTime = time - minPulseTime;
+		
         // Determine walking distance.
         double timeHours = MarsClock.HOURS_PER_MILLISOL * time;
 		double speed = person.calculateWalkSpeed();
@@ -129,13 +133,12 @@ implements Serializable {
         LocalPosition currentPosition = worker.getPosition(); 
         double remainingWalkingDistance = currentPosition.getDistanceTo(destLoc);
 
-        double timeLeft = 0D;
         if (remainingWalkingDistance > VERY_SMALL_DISTANCE) {
 
             // Determine time left after walking.
             if (distanceMeters >= remainingWalkingDistance) {
                 distanceMeters = remainingWalkingDistance;
-            	timeLeft = time - MarsClock.convertSecondsToMillisols(distanceMeters / 1000D / speed * 60D * 60D);
+                remainingTime = time - MarsClock.convertSecondsToMillisols(distanceMeters / 1000D / speed * 60D * 60D);
             }
 
             if (distanceMeters < remainingWalkingDistance) {
@@ -153,9 +156,6 @@ implements Serializable {
             }
         }
         else {
-
-            timeLeft = time;
-
             // Set person's location at destination.
             worker.setPosition(destLoc);
     		logger.log(worker, Level.FINER, 5000, "Walked to new location ("
@@ -164,7 +164,7 @@ implements Serializable {
             endTask();
         }
 
-        return timeLeft;
+        return remainingTime;
     }
 
 	/**

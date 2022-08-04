@@ -272,34 +272,28 @@ implements Serializable {
     }
 
     /**
-     * Perform the salvage phase of the task.
+     * Performs the salvage phase of the task.
+     * 
      * @param time amount (millisols) of time to perform the phase.
      * @return time (millisols) remaining after performing the phase.
      */
     private double salvage(double time) {
-
+    	double remainingTime = time - standardPulseTime;
+    	
 		// Check for radiation exposure during the EVA operation.
-		if (isRadiationDetected(time)) {
-			if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
-			return time;
+		if (isRadiationDetected(standardPulseTime)) {
+			checkLocation();
+			return remainingTime;
 		}
 
-		if (shouldEndEVAOperation() || addTimeOnSite(time)) {
-			if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
-			return time;
+		if (shouldEndEVAOperation() || addTimeOnSite(standardPulseTime)) {
+			checkLocation();
+			return remainingTime;
 		}
 
 		if (!person.isFit()) {
-			if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
+			checkLocation();
+			return remainingTime;
 		}
 
         if (stage.isComplete() || addTimeOnSite(time)) {
@@ -315,11 +309,8 @@ implements Serializable {
 				}
 			}
 
-			if (worker.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
-			return time;
+			checkLocation();
+			return remainingTime;
         }
 
         // Operate light utility vehicle if no one else is operating it.
@@ -341,12 +332,12 @@ implements Serializable {
         stage.addWorkTime(workTime);
 
         // Add experience points
-        addExperience(time);
+        addExperience(workTime);
 
         // Check if an accident happens during salvage.
-        checkForAccident(time);
+        checkForAccident(workTime);
 
-        return 0D;
+        return time - workTime;
     }
 
     /**

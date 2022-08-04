@@ -51,11 +51,14 @@ public class WalkSettlementInterior extends Task implements Serializable {
 	// Static members
 	private static final double VERY_SMALL_DISTANCE = .00001D;
 	private static final double STRESS_MODIFIER = -.2D;
-
-	// Data members
-	private LocalPosition destPosition;
-	private double destZLoc;
+	private static final double MIN_PULSE_TIME = 0.25;
+	/** The minimum pulse time for completing a task phase in this class.  */
+	private static double minPulseTime = Math.min(standardPulseTime, MIN_PULSE_TIME);
 	
+	// Data members
+	private double destZLoc;
+
+	private LocalPosition destPosition;
 	private Settlement settlement;
 	private Building destBuilding;
 	private InsideBuildingPath walkingPath;
@@ -213,6 +216,8 @@ public class WalkSettlementInterior extends Task implements Serializable {
 	 *         phase.
 	 */
 	private double walkingPhase(double time) {
+		double remainingTime = time - minPulseTime;
+		
 		double timeHours = MarsClock.HOURS_PER_MILLISOL * time;
 		double speed = 0;
 		
@@ -237,13 +242,11 @@ public class WalkSettlementInterior extends Task implements Serializable {
 		double coveredMeters = coveredKm * 1000D;
 		double remainingPathDistance = getRemainingPathDistance();
 
-		// Determine time left after walking.
-		double timeLeft = 0D;
 		
 		if (coveredMeters > remainingPathDistance) {
 			coveredMeters = remainingPathDistance;
 
-			timeLeft = time - MarsClock.convertSecondsToMillisols(coveredMeters / 1000D / speed * 60D * 60D);	
+			remainingTime = time - MarsClock.convertSecondsToMillisols(coveredMeters / 1000D / speed * 60D * 60D);	
 		}
 
 		while (coveredMeters > VERY_SMALL_DISTANCE) {
@@ -300,7 +303,7 @@ public class WalkSettlementInterior extends Task implements Serializable {
 			endTask();
 		}
 
-		return timeLeft;
+		return remainingTime;
 	}
 
 	/**

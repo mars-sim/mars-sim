@@ -12,6 +12,7 @@ import java.util.logging.Level;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 import org.mars_sim.msp.core.robot.ai.task.BotTaskManager;
@@ -116,7 +117,7 @@ public class BotMind implements Serializable, Temporal {
 			double remainingTime = botTaskManager.executeTask(time, robot.getPerformanceRating());
 			
 			if (remainingTime == time) {
-				
+				remainingTime = time - Task.standardPulseTime;
 //				logger.log(robot, Level.SEVERE, 40_000L, 
 //						"Previous Task: " + previousTask
 //					+ "    Current Task: " + botTaskManager.getTaskName() 

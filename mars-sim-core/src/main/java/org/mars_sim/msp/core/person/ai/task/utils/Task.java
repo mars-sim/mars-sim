@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.LocalPosition;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
@@ -66,13 +67,15 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(Task.class.getName());
 
-	// if that task is an a.i. task within a person's job, then the stress effect is
-	// 1/2
-	private static final double SKILL_STRESS_MODIFIER = .1D;
+	// Static members
 
 	/** Level of top level Task */
 	private static final int TOP_LEVEL = 1;
-	
+	/** The standard stress effect of a task within a person's job. */
+	private static final double SKILL_STRESS_MODIFIER = .1D;
+    /** The standard amount of millisols to be consumed in a phase. */
+	public static double standardPulseTime;
+
 	// Data members
 	/** True if task is finished. */
 	private boolean done;
@@ -145,10 +148,12 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	protected static OrbitInfo orbitInfo;
 	/** The static instance of the MissionManager */
 	protected static MissionManager missionManager;
+	/** The static instance of the SimulationConfig */
+	public static SimulationConfig simulationConfig = SimulationConfig.instance();
 	/** The static instance of the personConfig */
-	protected static PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
+	protected static PersonConfig personConfig = simulationConfig.getPersonConfig();
 	/** The static instance of the personConfig */
-	protected static CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
+	protected static CropConfig cropConfig = simulationConfig.getCropConfiguration();
 	
 	/**
 	 * Constructs a Task object that has a fixed duration.
@@ -232,6 +237,9 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			subTask.setPhase(null);
 			subTask = null;
 		}
+		
+		// Set standard pulse time to a quarter of the value of the current pulse width
+		standardPulseTime = Simulation.instance().getMasterClock().getMarsPulseTime() / 4.0;
 	}
 
 	/**
@@ -1455,6 +1463,14 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		return false;
 	}
 	
+	/**
+	 * Sets the standard pulse time.
+	 * 
+	 * @param value
+	 */
+	public static void setStandardPulseTime(double value) {
+		 standardPulseTime = value;
+	}
 
 	public void reinit() {
 		person = unitManager.getPersonByID(id);

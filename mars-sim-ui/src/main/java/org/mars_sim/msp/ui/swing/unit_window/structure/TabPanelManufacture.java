@@ -111,7 +111,7 @@ public class TabPanelManufacture extends TabPanel {
 	}
 
 	@Override
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ "unchecked" })
 	protected void buildUI(JPanel content) {
 
 		// Create scroll panel for manufacture list pane.
@@ -181,7 +181,6 @@ public class TabPanelManufacture extends TabPanel {
 		newProcessButton.setEnabled(processSelection.getItemCount() > 0);
 		newProcessButton.setToolTipText(Msg.getString("TabPanelManufacture.tooltip.createNewProcess")); //$NON-NLS-1$
 		newProcessButton.addActionListener(new ActionListener() {
-			@SuppressWarnings("unchecked")
 			public void actionPerformed(ActionEvent event) {
 				try {
 					Building workshopBuilding = (Building) buildingComboBox.getSelectedItem();

@@ -232,9 +232,10 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
 	 * @throws Exception
 	 */
 	private double constructionPhase(double time) {
-
-		if (checkReadiness(time) > 0)
-			return time;
+		double remainingTime = time - standardPulseTime;
+		
+		if (checkReadiness(standardPulseTime) > 0)
+			return remainingTime;
 		
 		// Operate light utility vehicle if no one else is operating it.
 		if (!operatingLUV) {
@@ -255,8 +256,11 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
 		stage.addWorkTime(workTime);
 
 		// Add experience points
-		addExperience(time);
+		addExperience(workTime);
 
+		// Check if an accident happens during construction.
+		checkForAccident(workTime);
+		
 		boolean availableWork = stage.getCompletableWorkTime() > stage.getCompletedWorkTime();
 
 		// Check if site duration has ended or there is reason to cut the construction
@@ -271,13 +275,10 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
 			}
 
 			checkLocation();
-			return time;
+			return workTime;
 		}
 
-		// Check if an accident happens during construction.
-		checkForAccident(time);
-
-		return 0D;
+		return time - workTime;
 	}
 
 	/**

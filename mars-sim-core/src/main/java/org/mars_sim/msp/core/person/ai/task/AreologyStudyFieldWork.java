@@ -25,7 +25,6 @@ public class AreologyStudyFieldWork extends ScientificStudyFieldWork implements 
 
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.areologyFieldWork"); //$NON-NLS-1$
-
 	/** Task phases. */
 	private static final TaskPhase FIELD_WORK = new TaskPhase(Msg.getString("Task.phase.fieldWork.areology")); //$NON-NLS-1$
 

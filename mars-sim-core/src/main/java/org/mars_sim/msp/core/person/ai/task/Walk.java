@@ -50,6 +50,7 @@ public class Walk extends Task implements Serializable {
 	private static SimLogger logger = SimLogger.getLogger(Walk.class.getName());
 
 	// Static members
+	private static final double MIN_PULSE_TIME = 0.25;
 	static final double PERSON_WALKING_SPEED = 1D; // [kph].
 	static final double ROBOT_WALKING_SPEED = 0.25; // [kph].
 	static final double PERSON_WALKING_SPEED_PER_MILLISOL = PERSON_WALKING_SPEED * MarsClock.MILLISOLS_PER_HOUR; // [km per millisol].
@@ -72,10 +73,13 @@ public class Walk extends Task implements Serializable {
 	private static final TaskPhase ENTERING_ROVER_GARAGE = new TaskPhase(Msg.getString("Task.phase.enteringRoverGarage")); //$NON-NLS-1$
 	private static final TaskPhase CLIMB_UP_LADDER = new TaskPhase(Msg.getString("Task.phase.climbUpLadder")); //$NON-NLS-1$
 	private static final TaskPhase CLIMB_DOWN_LADDER = new TaskPhase(Msg.getString("Task.phase.climbDownLadder")); //$NON-NLS-1$
+	
+	/** The minimum pulse time for completing a task phase in this class.  */
+	private static double minPulseTime = Math.min(standardPulseTime, MIN_PULSE_TIME);
 
 	// Data members
 	private int walkingStepIndex;
-
+	
 	/** The WalkingSteps instance. */
 	private WalkingSteps walkingSteps;
 
@@ -461,8 +465,7 @@ public class Walk extends Task implements Serializable {
 	 *         phase.
 	 */
 	private double walkingSettlementInteriorPhase(double time) {
-		double timeLeft = time;
-//		setDescription(Msg.getString("Task.description.walk")); //$NON-NLS-1$
+		double remainingTime = time - minPulseTime;
 
 		if (person != null) {
 			logger.log(person, Level.FINE, 4000, "Walking inside a settlement.");
@@ -537,7 +540,7 @@ public class Walk extends Task implements Serializable {
 			}
 		}
 
-		return timeLeft;
+		return remainingTime;
 	}
 
 	/**
@@ -548,7 +551,7 @@ public class Walk extends Task implements Serializable {
 	 *         phase.
 	 */
 	private double walkingRoverInteriorPhase(double time) {
-		double timeLeft = time;
+		double remainingTime = time - minPulseTime;
 		setDescription(Msg.getString("Task.description.walk")); //$NON-NLS-1$
 
 		if (person != null) {
@@ -634,10 +637,9 @@ public class Walk extends Task implements Serializable {
 					"Starting WalkRoverInterior.");
 				addSubTask(new WalkRoverInterior(robot, step.rover, step.loc));
 			}
-
 		}
 
-		return timeLeft;
+		return remainingTime;
 	}
 
 	/**
@@ -648,8 +650,8 @@ public class Walk extends Task implements Serializable {
 	 *         phase.
 	 */
 	private double walkingExteriorPhase(double time) {
-
-		double timeLeft = time;
+		double remainingTime = time - minPulseTime;
+		
 		setDescription(Msg.getString("Task.description.walk")); //$NON-NLS-1$
 
 		if (person != null) {
@@ -718,7 +720,7 @@ public class Walk extends Task implements Serializable {
 			}
 		}
 
-		return timeLeft;
+		return remainingTime;
 	}
 
 	/**
@@ -729,7 +731,8 @@ public class Walk extends Task implements Serializable {
 	 *         phase.
 	 */
 	private double egressingAirlockPhase(double time) {
-		double timeLeft = time;
+		double remainingTime = time - minPulseTime;
+		
 		setDescription(Msg.getString("Task.description.walk.egressingAirlock")); //$NON-NLS-1$
 
 		if (person != null) {
@@ -773,7 +776,7 @@ public class Walk extends Task implements Serializable {
 			endTask();
 		}
 
-		return timeLeft;
+		return remainingTime;
 	}
 
 	/**
@@ -784,7 +787,8 @@ public class Walk extends Task implements Serializable {
 	 *         phase.
 	 */
 	private double ingressingAirlockPhase(double time) {
-		double timeLeft = time;
+		double remainingTime = time - minPulseTime;
+		
 		setDescription(Msg.getString("Task.description.walk.ingressingAirlock")); //$NON-NLS-1$
 
 		logger.log(person, Level.FINER, 4_000,
@@ -803,7 +807,7 @@ public class Walk extends Task implements Serializable {
 								"Ended the walk task. Could not enter the airlock in "
 	      						+ airlock.getEntityName() + ".");
 				// Consume all of the time waiting to enter; prevents repeated tries
-				timeLeft = 0D;
+				remainingTime = 0D;
 				endTask();
 			}
 
@@ -820,7 +824,7 @@ public class Walk extends Task implements Serializable {
 			}
 		}
 
-		return timeLeft;
+		return remainingTime;
 	}
 
 	/**
@@ -832,7 +836,7 @@ public class Walk extends Task implements Serializable {
 	 */
 	private double exitingRoverGaragePhase(double time) {
 
-		double timeLeft = time;
+		double remainingTime = time - minPulseTime;
 
 		WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
 		Rover rover = step.rover;
@@ -849,7 +853,7 @@ public class Walk extends Task implements Serializable {
 							"Exited rover " + rover.getName()
 							+ " inside " + garageBuilding + ".");
 					endTask();
-					return timeLeft;
+					return remainingTime;
 				}
 			}
 		}
@@ -863,7 +867,7 @@ public class Walk extends Task implements Serializable {
 							"Exited rover " + rover.getName()
 							+ " inside " + garageBuilding + ".");
 					endTask();
-					return timeLeft;
+					return remainingTime;
 				}
 			}
 		}
@@ -875,7 +879,7 @@ public class Walk extends Task implements Serializable {
 			endTask();
 		}
 
-		return timeLeft;
+		return remainingTime;
 	}
 
 	/**
@@ -887,7 +891,7 @@ public class Walk extends Task implements Serializable {
 	 */
 	private double enteringRoverInsideGaragePhase(double time) {
 
-		double timeLeft = 0;
+		double remainingTime = time - minPulseTime;
 
 		WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
 		Rover rover = step.rover;
@@ -905,10 +909,10 @@ public class Walk extends Task implements Serializable {
 				endTask();
 				
 				timeTraveled = distance / PERSON_WALKING_SPEED_PER_MILLISOL;
-				timeLeft = time - timeTraveled;
-				if (timeLeft < 0)
-					timeLeft = 0;
-				return timeLeft ;
+				remainingTime = time - timeTraveled;
+				if (remainingTime < 0)
+					remainingTime = 0;
+				return remainingTime ;
 			}
 		}
 
@@ -921,10 +925,10 @@ public class Walk extends Task implements Serializable {
 				endTask();
 				
 				timeTraveled = distance / PERSON_WALKING_SPEED_PER_MILLISOL;
-				timeLeft = time - timeTraveled;
-				if (timeLeft < 0)
-					timeLeft = 0;
-				return timeLeft ;
+				remainingTime = time - timeTraveled;
+				if (remainingTime < 0)
+					remainingTime = 0;
+				return remainingTime ;
 			}
 		}
 
@@ -935,7 +939,7 @@ public class Walk extends Task implements Serializable {
 			endTask();
 		}
 
-		return timeLeft;
+		return remainingTime;
 	}
 
 	/**
@@ -946,7 +950,7 @@ public class Walk extends Task implements Serializable {
 	 */
 	public double climbingUpLadder(double time) {
 
-		double timeLeft = time;
+		double remainingTime = time - minPulseTime;
 
 		WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
 
@@ -970,7 +974,7 @@ public class Walk extends Task implements Serializable {
 			endTask();
 		}
 
-		return timeLeft;
+		return remainingTime;
 	}
 
 	/**
@@ -981,7 +985,7 @@ public class Walk extends Task implements Serializable {
 	 */
 	public double climbingDownLadder(double time) {
 
-		double timeLeft = time;
+		double remainingTime = time - minPulseTime;
 
 		WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
 
@@ -1005,7 +1009,7 @@ public class Walk extends Task implements Serializable {
 			endTask();
 		}
 
-		return timeLeft;
+		return remainingTime;
 	}
 
 	/**

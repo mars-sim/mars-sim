@@ -25,6 +25,7 @@ import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.social.Relation;
 import org.mars_sim.msp.core.person.ai.social.RelationshipUtil;
 import org.mars_sim.msp.core.person.ai.task.utils.PersonTaskManager;
+import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.structure.OverrideType;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.Temporal;
@@ -44,7 +45,7 @@ public class Mind implements Serializable, Temporal {
 	private static SimLogger logger = SimLogger.getLogger(Mind.class.getName());
 
 	private static final int MAX_EXECUTE = 100; // Maximum number of iterations of a Task per pulse
-	private static final int MAX_ZERO_EXECUTE = 10; // Maximum number of executeTask action that consume no time
+	private static final int MAX_ZERO_EXECUTE = 100; // Maximum number of executeTask action that consume no time
 	private static final int STRESS_UPDATE_CYCLE = 10;
 	private static final double MINIMUM_MISSION_PERFORMANCE = 0.3;
 	private static final double FACTOR = .05;
@@ -212,6 +213,8 @@ public class Mind implements Serializable, Temporal {
 
 				// Consumed time then reset the idle counter
 				if (remainingTime == newRemain) {
+					newRemain = remainingTime - Task.standardPulseTime; 
+					
 					if (zeroCount++ >= MAX_ZERO_EXECUTE) {
 						return;
 					}

@@ -217,10 +217,13 @@ implements Serializable {
      * @throws Exception
      */
     private double collectResource(double time) {
-		
-		if (checkReadiness(time) > 0)
+    	double remainingTime = time - standardPulseTime;
+    	
+		if (checkReadiness(time) > 0) {
+			endTask();
 			return time;
-		
+		}
+			
      	if (person.isInSettlement()) {
      		endTask();
      		return time;
@@ -235,7 +238,7 @@ implements Serializable {
         	return time;
         }
      
-        double collected = time * compositeRate;
+        double collected = standardPulseTime * compositeRate;
 
 		// Modify collection rate by "Areology" skill.
 		int areologySkill = person.getSkillManager().getEffectiveSkillLevel(SkillType.AREOLOGY);
@@ -277,10 +280,10 @@ implements Serializable {
         double skillMod = 1.0 + person.getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);		
         		
         // Add penalty to the fatigue
-        condition.setFatigue(fatigue + time * factor * (1.1D - strengthMod)/skillMod);
+        condition.setFatigue(fatigue + standardPulseTime * factor * (1.1D - strengthMod)/skillMod);
 
         // Add experience points
-        addExperience(time);
+        addExperience(standardPulseTime);
 
         if (finishedCollecting) {
             logger.log(person, Level.FINE, 4_000, "Collected a total of "
@@ -298,14 +301,14 @@ implements Serializable {
     	}
 
 	    // Check for an accident during the EVA operation.
-	    checkForAccident(time);
+	    checkForAccident(standardPulseTime);
 	    
-		if (isDone() || getTimeLeft() - time < 0) {
+		if (isDone() || getTimeLeft() - standardPulseTime < 0) {
 			// Need to extend the duration so as to drop off the resources
 			setDuration(getDuration() + EXTENDED_TIME);
 		}
 		
-        return 0D;
+        return remainingTime;
     }
 
     @Override

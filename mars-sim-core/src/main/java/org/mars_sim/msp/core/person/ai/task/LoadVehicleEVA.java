@@ -168,14 +168,16 @@ public class LoadVehicleEVA extends EVAOperation {
 	 * @return the amount of time (millisol) after performing the phase.
 	 */
 	private double loadingPhase(double time) {
+		double remainingTime = time - standardPulseTime;
+		
 		boolean stopLoading = false;
 		
 		// Check for radiation exposure during the EVA operation.
-		if (isDone() || isRadiationDetected(time)) {
+		if (isDone() || isRadiationDetected(standardPulseTime)) {
 			stopLoading = true;
 		}
 
-		stopLoading = stopLoading || (shouldEndEVAOperation() || addTimeOnSite(time));
+		stopLoading = stopLoading || (shouldEndEVAOperation() || addTimeOnSite(standardPulseTime));
 		
 		// NOTE: if a person is not at a settlement or near its vicinity,  
 		stopLoading = stopLoading || (settlement == null || vehicle == null); 
@@ -187,20 +189,21 @@ public class LoadVehicleEVA extends EVAOperation {
 			stopLoading = loadingPlan.load(worker, time);
 		
 	        // Add experience points
-	        addExperience(time);
+	        addExperience(standardPulseTime);
 	
 			// Check for an accident during the EVA operation.
-			checkForAccident(time);
+			checkForAccident(standardPulseTime);
 			
 			// Used all time
-			time = 0;
+			return 0;
 		}
 
 		if (stopLoading) {
 			checkLocation();
-			return time;
+			return remainingTime;
 		}
-		return 0;
+		
+		return remainingTime;
 	}
 
 	/**

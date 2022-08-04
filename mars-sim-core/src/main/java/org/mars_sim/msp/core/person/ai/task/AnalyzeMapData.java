@@ -36,6 +36,10 @@ public class AnalyzeMapData extends Task implements Serializable {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(AnalyzeMapData.class.getName());
 
+	// Static members
+    /** The standard amount of millisols to be consumed in a phase. */
+	private static final double DELTA_TIME = 0.5;
+    /** The maximum allowable amount for seed. */
 	private static final double MAX_SEED = 0.5;
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.analyzeMapData"); //$NON-NLS-1$
@@ -167,6 +171,7 @@ public class AnalyzeMapData extends Task implements Serializable {
      * @throws Exception
      */
     private double analyzingPhase(double time) {
+    	double remainingTime = time - DELTA_TIME;
     	
 		if (person.getPhysicalCondition().computeFitnessLevel() < 2) {
 			logger.log(person, Level.INFO, 30_000, "Ended " + NAME + " Not feeling well.");
@@ -240,7 +245,7 @@ public class AnalyzeMapData extends Task implements Serializable {
         // Add experience points
         addExperience(time);
 
-        return 0D;
+        return remainingTime;
     }
 
     /**

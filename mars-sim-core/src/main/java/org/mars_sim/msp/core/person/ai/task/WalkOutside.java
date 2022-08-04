@@ -47,6 +47,7 @@ public class WalkOutside extends Task implements Serializable {
 	private static final TaskPhase WALKING = new TaskPhase(Msg.getString("Task.phase.walking")); //$NON-NLS-1$
 
 	// Static members
+	private static final double MIN_PULSE_TIME = 0.25;
 	/** The speed factor due to walking in EVA suit. */
 	private static final double EVA_MOD = .3;
 	/** The base walking speed [km / hr] */
@@ -61,15 +62,19 @@ public class WalkOutside extends Task implements Serializable {
 	public static final double BASE_ACCIDENT_CHANCE = .001;
 	/** Obstacle avoidance path neighbor distance (meters). */
 	public static final double NEIGHBOR_DISTANCE = 7D;
+	/** The minimum pulse time for completing a task phase in this class.  */
+	private static double minPulseTime = Math.min(standardPulseTime, MIN_PULSE_TIME);
 
 	// Data members
-	private LocalPosition start;
-	private LocalPosition destination;
 	private boolean obstaclesInPath;
-	private List<LocalPosition> walkingPath;
+	private boolean ignoreEndEVA;
 	private int walkingPathIndex;
 	private double[] obstacleSearchLimits;
-	private boolean ignoreEndEVA;
+
+	private LocalPosition start;
+	private LocalPosition destination;
+	private List<LocalPosition> walkingPath;
+
 
 	/**
 	 * Constructor.
@@ -586,6 +591,7 @@ public class WalkOutside extends Task implements Serializable {
 	 *         phase.
 	 */
 	private double walkingPhase(double time) {
+		double remainingTime = time - minPulseTime;
 		double timeHours = MarsClock.HOURS_PER_MILLISOL * time;
 		double speed = 0;
 
@@ -620,11 +626,10 @@ public class WalkOutside extends Task implements Serializable {
 		double remainingPathDistance = getRemainingPathDistance();
 
 		// Determine time left after walking.
-		double timeLeft = 0D;
 		if (coveredMeters > remainingPathDistance) {
 			coveredMeters = remainingPathDistance;
 
-			timeLeft = time - MarsClock.convertSecondsToMillisols((coveredMeters / 1000D) / speed * 60D * 60D);
+			remainingTime = time - MarsClock.convertSecondsToMillisols((coveredMeters / 1000D) / speed * 60D * 60D);
 		}
 
 		while (coveredMeters > VERY_SMALL_DISTANCE) {
@@ -669,7 +674,7 @@ public class WalkOutside extends Task implements Serializable {
 			endTask();
 		}
 
-		return timeLeft;
+		return remainingTime;
 	}
 
 	/**

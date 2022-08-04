@@ -185,18 +185,19 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 	 * @return the amount of time (millisol) after performing the phase.
 	 */
 	protected double unloadingPhase(double time) {		
-	
+		double remainingTime = time - standardPulseTime;
+		
 		if (checkReadiness(time) > 0)
 			return time;
 		
 		if (settlement == null || vehicle == null) {
 			checkLocation();
-			return 0;
+			return time;
 		}
 
 		if (settlement.getBuildingManager().isInGarage(vehicle)) {
 			checkLocation();
-			return 0;
+			return time;
 		}
 		
 		// Determine unload rate.
@@ -246,8 +247,8 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 				amount = capacity;
 				amountUnloading = 0D;
 			}
-
 			
+			// Transfer the amount resource from vehicle to settlement
 			vehicle.retrieveAmountResource(id, amount);
 			settlement.storeAmountResource(id, amount);
 			
@@ -344,16 +345,16 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 			}
 			
 			checkLocation();
-	        return 0;
+	        return remainingTime;
 		}
 		
         // Add experience points
-        addExperience(time);
+        addExperience(standardPulseTime);
 
 		// Check for an accident during the EVA operation.
-		checkForAccident(time);
+		checkForAccident(standardPulseTime);
         
-		return 0D;
+		return remainingTime;
 	}
 	
 

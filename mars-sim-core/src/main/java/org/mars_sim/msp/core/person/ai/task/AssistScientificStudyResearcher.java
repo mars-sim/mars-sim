@@ -280,7 +280,8 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
 	 * @throws Exception
 	 */
 	private double assistingPhase(double time) {
-
+		double remainingTime = time - standardPulseTime;
+		
         // If person is incapacitated, end task.
         if (person.getPerformanceRating() <= .2) {
             endTask();
@@ -308,7 +309,7 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
 		// Add relationship modifier for opinion of assistant from the researcher.
 		addRelationshipModifier(time);
 
-		return 0D;
+		return remainingTime;
 	}
 
 	/**
