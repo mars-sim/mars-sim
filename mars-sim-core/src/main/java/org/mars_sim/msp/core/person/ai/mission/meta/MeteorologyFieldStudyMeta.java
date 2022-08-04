@@ -27,7 +27,7 @@ public class MeteorologyFieldStudyMeta extends FieldStudyMeta {
     }
     
     @Override
-    public Mission constructInstance(Person person) {
-        return new MeteorologyFieldStudy(person);
+    public Mission constructInstance(Person person, boolean needsReview) {
+        return new MeteorologyFieldStudy(person, needsReview);
     }
 }

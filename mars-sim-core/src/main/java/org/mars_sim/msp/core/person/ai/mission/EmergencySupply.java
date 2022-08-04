@@ -91,7 +91,7 @@ public class EmergencySupply extends RoverMission {
 	 *
 	 * @param startingPerson the person starting the settlement.
 	 */
-	public EmergencySupply(Person startingPerson) {
+	public EmergencySupply(Person startingPerson, boolean needsReview) {
 		// Use RoverMission constructor.
 		super(DEFAULT_DESCRIPTION, MissionType.EMERGENCY_SUPPLY, startingPerson, null);
 
@@ -127,17 +127,13 @@ public class EmergencySupply extends RoverMission {
 			} else {
 				endMission(MissionStatus.NO_SETTLEMENT_FOUND_TO_DELIVER_EMERGENCY_SUPPLIES);
 				logger.warning("No settlement could be found to deliver emergency supplies to.");
+				return;
 			}
 		}
 
 		if (s != null) {
 			// Set initial phase
-			setPhase(REVIEWING, null);
-
-			logger.info(s, startingPerson
-					+ "Reviewing an emergency supply mission to help out "
-					+ getEmergencySettlement() + " using "
-					+ getRover().getName());
+			setInitialPhase(needsReview);
 		}
 	}
 
@@ -209,14 +205,7 @@ public class EmergencySupply extends RoverMission {
 		addMembers(members, false);
 
 		// Set initial phase
-		setPhase(EMBARKING, getStartingSettlement().getName());
-		Person startingPerson = getStartingPerson();
-		if (startingPerson != null && getRover() != null) {
-			logger.info(startingPerson,
-					"Reviewing an emergency supply mission to help out "
-					+ getEmergencySettlement() + " using "
-					+ getRover().getName());
-		}
+		setInitialPhase(false);
 	}
 
 	@Override

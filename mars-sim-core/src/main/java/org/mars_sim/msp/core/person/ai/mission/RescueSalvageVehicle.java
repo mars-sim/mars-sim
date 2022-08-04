@@ -82,7 +82,7 @@ public class RescueSalvageVehicle extends RoverMission {
 	 * @param startingPerson the person starting the mission.
 	 * @throws MissionException if error constructing mission.
 	 */
-	public RescueSalvageVehicle(Person startingPerson) {
+	public RescueSalvageVehicle(Person startingPerson, boolean needsReview) {
 		// Use RoverMission constructor
 		super(DEFAULT_DESCRIPTION, MissionType.RESCUE_SALVAGE_VEHICLE, startingPerson, null);
 
@@ -110,13 +110,11 @@ public class RescueSalvageVehicle extends RoverMission {
 				// Check if vehicle can carry enough supplies for the mission.
 				if (hasVehicle() && !isVehicleLoadable()) {			
 					endMission(MissionStatus.CANNOT_LOAD_RESOURCES);
+					return;
 				}
 				
 				// Set initial phase
-				setPhase(VehicleMission.REVIEWING, null);
-				
-				logger.info(startingPerson, "Started a Rescue Vehicle Mission.");
-				
+				setInitialPhase(needsReview);
 			} else {
 				endMission(MissionStatus.TARGET_VEHICLE_NOT_FOUND);
 			}
@@ -152,15 +150,13 @@ public class RescueSalvageVehicle extends RoverMission {
 		// Add mission members.
 		addMembers(members, false);
 
-		// Set initial phase
-		setPhase(EMBARKING, s.getName());
-
 		// Check if vehicle can carry enough supplies for the mission.
 		if (hasVehicle() && !isVehicleLoadable()) {
 			endMission(MissionStatus.CANNOT_LOAD_RESOURCES);
 		}
-		
-		logger.info(getStartingPerson(), "Had started RescueSalvageVehicle");
+		else {
+			setInitialPhase(false);
+		}
 	}
 
 	@Override

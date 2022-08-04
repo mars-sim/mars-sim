@@ -27,7 +27,7 @@ public class AreologyFieldStudyMeta extends FieldStudyMeta {
 	}
 
     @Override
-    public Mission constructInstance(Person person) {
-        return new AreologyFieldStudy(person);
+    public Mission constructInstance(Person person, boolean needsReview) {
+        return new AreologyFieldStudy(person, needsReview);
     }
 }

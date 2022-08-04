@@ -37,10 +37,11 @@ public class AreologyFieldStudy extends FieldStudyMission implements Serializabl
 	 * Constructor.
 	 * 
 	 * @param startingPerson {@link Person} the person starting the mission.
+	 * @param needsReview
 	 * @throws MissionException if problem constructing mission.
 	 */
-	public AreologyFieldStudy(Person startingPerson) {
-		super(DEFAULT_DESCRIPTION, MissionType.AREOLOGY, startingPerson, ScienceType.AREOLOGY, FIELD_SITE_TIME);
+	public AreologyFieldStudy(Person startingPerson, boolean needsReview) {
+		super(DEFAULT_DESCRIPTION, MissionType.AREOLOGY, startingPerson, ScienceType.AREOLOGY, FIELD_SITE_TIME, needsReview);
 	}
 
 	/**

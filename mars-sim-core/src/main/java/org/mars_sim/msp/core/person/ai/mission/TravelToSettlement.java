@@ -62,7 +62,7 @@ public class TravelToSettlement extends RoverMission {
 	 * 
 	 * @param startingMember the mission member starting the mission.
 	 */
-	public TravelToSettlement(MissionMember startingMember) {
+	public TravelToSettlement(MissionMember startingMember, boolean needsReview) {
 		// Use RoverMission constructor
 		super(DEFAULT_DESCRIPTION, MissionType.TRAVEL_TO_SETTLEMENT, startingMember, null);
 
@@ -100,10 +100,11 @@ public class TravelToSettlement extends RoverMission {
 			// Check if vehicle can carry enough supplies for the mission.
 			if (hasVehicle() && !isVehicleLoadable()) {
 				endMission(MissionStatus.CANNOT_LOAD_RESOURCES);
+				return;
 			}
 
 			// Set initial phase
-			setPhase(VehicleMission.REVIEWING, null);
+			setInitialPhase(needsReview);
 		}
 	}
 
@@ -119,13 +120,13 @@ public class TravelToSettlement extends RoverMission {
 		// Add mission members.
 		addMembers(members, false);
 
-		// Set initial phase
-		setPhase(EMBARKING, getStartingPerson().getName());
-
 		// Check if vehicle can carry enough supplies for the mission.
 		if (hasVehicle() && !isVehicleLoadable()) {
 			endMission(MissionStatus.CANNOT_LOAD_RESOURCES);
+			return;
 		}
+
+		setInitialPhase(false);
 	}
 
 	/**

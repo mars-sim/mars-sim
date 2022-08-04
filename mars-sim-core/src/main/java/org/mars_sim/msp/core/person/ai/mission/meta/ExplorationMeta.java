@@ -41,8 +41,8 @@ public class ExplorationMeta extends AbstractMetaMission {
 	}
 
 	@Override
-	public Mission constructInstance(Person person) {
-		return new Exploration(person);
+	public Mission constructInstance(Person person, boolean needsReview) {
+		return new Exploration(person, needsReview);
 	}
 
 	@Override

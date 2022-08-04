@@ -85,7 +85,7 @@ public class Exploration extends EVAMission
 	 * @param startingPerson the person starting the mission.
 	 * @throws MissionException if problem constructing mission.
 	 */
-	public Exploration(Person startingPerson) {
+	public Exploration(Person startingPerson, boolean needsReview) {
 
 		// Use RoverMission constructor.
 		super(DEFAULT_DESCRIPTION, MISSION_TYPE, startingPerson, null,
@@ -109,16 +109,15 @@ public class Exploration extends EVAMission
 					NUM_SITES, skill);
 
 			if (explorationSites.isEmpty()) {
-					endMission(MissionStatus.NO_EXPLORATION_SITES);
+				endMission(MissionStatus.NO_EXPLORATION_SITES);
+				return;
 			}
 
 			initSites(explorationSites);
 
 			// Set initial mission phase.
-			setPhase(REVIEWING, null);
+			setInitialPhase(needsReview);
 		}
-
-		logger.fine(startingPerson, "Just finished creating an Exploration mission.");
 	}
 
 	/**
@@ -144,7 +143,7 @@ public class Exploration extends EVAMission
 			addMembers(members, false);
 
 			// Set initial mission phase.
-			setPhase(EMBARKING, getStartingSettlement().getName());
+			setInitialPhase(false);
 		}
 	}
 

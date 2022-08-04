@@ -85,11 +85,12 @@ public abstract class CollectResourcesMission extends EVAMission
 	 * @param containerNum           The number of containers needed for the
 	 *                               mission.
 	 * @param numSites               The number of collection sites.
+	 * @param needsReview
 	 * @param minPeople              The mimimum number of people for the mission.
 	 * @throws MissionException if problem constructing mission.
 	 */
 	protected CollectResourcesMission(String missionName, MissionType missionType, Person startingPerson, int resourceID,
-			EquipmentType containerID, int containerNum, int numSites) {
+			EquipmentType containerID, int containerNum, int numSites, boolean needsReview) {
 
 		// Use RoverMission constructor
 		super(missionName, missionType, startingPerson, null, COLLECT_RESOURCES);
@@ -174,8 +175,13 @@ public abstract class CollectResourcesMission extends EVAMission
 		}
 
 		if (!isDone()) {
-			// Set initial mission phase.
-			setPhase(REVIEWING, null);
+			if (needsReview) {
+				// Set initial mission phase.
+				setPhase(REVIEWING, null);
+			}
+			else {
+				setPhase(EMBARKING, s.getName());
+			}
 		}
 	}
 

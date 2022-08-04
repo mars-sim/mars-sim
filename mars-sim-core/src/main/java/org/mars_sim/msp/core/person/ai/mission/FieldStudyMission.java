@@ -58,11 +58,12 @@ public abstract class FieldStudyMission extends EVAMission {
 	 * Constructor.
 	 * 
 	 * @param startingPerson {@link Person} the person starting the mission.
+	 * @param needsReview
 	 * @throws MissionException if problem constructing mission.
 	 */
 	protected FieldStudyMission(String description, MissionType missionType,
 								Person startingPerson,
-								ScienceType science, double fieldSiteTime) {
+								ScienceType science, double fieldSiteTime, boolean needsReview) {
 
 		// Use RoverMission constructor.
 		super(description, missionType, startingPerson, null, RESEARCH_SITE);
@@ -95,12 +96,12 @@ public abstract class FieldStudyMission extends EVAMission {
 			// Check if vehicle can carry enough supplies for the mission.
 			if (hasVehicle() && !isVehicleLoadable()) {
 				endMission(MissionStatus.CANNOT_LOAD_RESOURCES);
+				return;
 			}
 		}
 
-		if (s != null) {
-			// Set initial mission phase.
-			setPhase(REVIEWING, null);
+		if (!isDone()) {
+			setInitialPhase(needsReview);
 		}
 	}
 
@@ -136,13 +137,15 @@ public abstract class FieldStudyMission extends EVAMission {
 		Settlement s = getStartingSettlement();
 		addNavpoint(s);
 
-		// Set initial mission phase.
-		setPhase(EMBARKING, s.getName());
-		
+			
 		// Check if vehicle can carry enough supplies for the mission.
 		if (hasVehicle() && !isVehicleLoadable()) {
 			endMission(MissionStatus.CANNOT_LOAD_RESOURCES);
+			return;
 		}
+
+		// Set initial mission phase.
+		setInitialPhase(false);
 	}
 
 	/**

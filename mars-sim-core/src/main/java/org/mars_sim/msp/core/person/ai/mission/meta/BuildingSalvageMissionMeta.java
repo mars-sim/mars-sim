@@ -36,7 +36,7 @@ public class BuildingSalvageMissionMeta extends AbstractMetaMission {
     }
     
     @Override
-    public Mission constructInstance(Person person) {
+    public Mission constructInstance(Person person, boolean needsReview) {
         return new BuildingSalvageMission(person);
     }
 

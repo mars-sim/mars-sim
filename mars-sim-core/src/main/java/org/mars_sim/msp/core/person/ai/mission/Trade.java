@@ -81,7 +81,7 @@ public class Trade extends RoverMission implements CommerceMission {
 	 *
 	 * @param startingMember the mission member starting the settlement.
 	 */
-	public Trade(MissionMember startingMember) {
+	public Trade(MissionMember startingMember, boolean needsReview) {
 		// Use RoverMission constructor.
 		super(DEFAULT_DESCRIPTION, MissionType.TRADE, startingMember, null);
 
@@ -120,12 +120,7 @@ public class Trade extends RoverMission implements CommerceMission {
 		}
 
 		// Set initial phase
-		setPhase(VehicleMission.REVIEWING, null);
-		if (logger.isLoggable(Level.INFO)) {
-			if (startingMember != null && getRover() != null) {
-				logger.info(startingMember, "Starting Trade mission on " + getRover().getName() + ".");
-			}
-		}
+		setInitialPhase(needsReview);
 	}
 
 	/**
@@ -167,13 +162,7 @@ public class Trade extends RoverMission implements CommerceMission {
 		desiredProfit = profit;
 
 		// Set initial phase
-		setPhase(EMBARKING, getStartingSettlement().getName());
-		if (logger.isLoggable(Level.INFO)) {
-			MissionMember startingMember = getStartingPerson();
-			if (startingMember != null && getRover() != null) {
-				logger.info(startingMember, "Starting Trade mission on " + getRover().getName() + ".");
-			}
-		}
+		setInitialPhase(false);
 	}
 
 	/**

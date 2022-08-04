@@ -37,8 +37,8 @@ public class MiningMeta extends AbstractMetaMission {
     }
 
     @Override
-    public Mission constructInstance(Person person) {
-        return new Mining(person);
+    public Mission constructInstance(Person person, boolean needsReview) {
+        return new Mining(person, needsReview);
     }
 
     @Override

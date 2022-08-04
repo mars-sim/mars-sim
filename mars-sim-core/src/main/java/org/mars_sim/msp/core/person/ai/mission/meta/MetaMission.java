@@ -41,12 +41,20 @@ public interface MetaMission {
 	public String getName();
 
 	/**
+	 * Check the suitability for this Person to be the leader. It currently checks their Job
+	 * @param person
+	 * @return
+	 */
+	public double getLeaderSuitability(Person person);
+
+	/**
 	 * Constructs an instance of the associated mission.
 	 * 
 	 * @param person the person to perform the mission.
+	 * @param needsReview Mission must be reviewed
 	 * @return mission instance.
 	 */
-	public Mission constructInstance(Person person);
+	public Mission constructInstance(Person person, boolean needsReview);
 
 	public Mission constructInstance(Robot robot);
 

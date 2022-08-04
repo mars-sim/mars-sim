@@ -42,9 +42,9 @@ public class MeteorologyFieldStudy extends FieldStudyMission {
 	 * @param startingPerson {@link Person} the person starting the mission.
 	 * @throws MissionException if problem constructing mission.
 	 */
-	public MeteorologyFieldStudy(Person startingPerson) {
+	public MeteorologyFieldStudy(Person startingPerson, boolean needsReview) {
 		super(DEFAULT_DESCRIPTION, MissionType.METEOROLOGY, startingPerson,
-			  ScienceType.METEOROLOGY, FIELD_SITE_TIME);
+			  ScienceType.METEOROLOGY, FIELD_SITE_TIME, needsReview);
 		
 		setEVAEquipment(EquipmentType.SPECIMEN_BOX,
 			  getMembersNumber() * SPECIMEN_BOX_MEMBER);

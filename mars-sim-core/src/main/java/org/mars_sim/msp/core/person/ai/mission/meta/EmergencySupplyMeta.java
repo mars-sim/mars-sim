@@ -28,8 +28,8 @@ public class EmergencySupplyMeta extends AbstractMetaMission {
     }
 
     @Override
-    public Mission constructInstance(Person person) {
-        return new EmergencySupply(person);
+    public Mission constructInstance(Person person, boolean needsReview) {
+        return new EmergencySupply(person, needsReview);
     }
 
     @Override

@@ -37,8 +37,8 @@ public class TradeMeta extends AbstractMetaMission {
 	}
 
 	@Override
-	public Mission constructInstance(Person person) {
-		return new Trade(person);
+	public Mission constructInstance(Person person, boolean needsReview) {
+		return new Trade(person, needsReview);
 	}
 
 	@Override

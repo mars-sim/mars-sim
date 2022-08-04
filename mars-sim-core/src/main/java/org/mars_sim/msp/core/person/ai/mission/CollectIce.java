@@ -43,12 +43,13 @@ public class CollectIce extends CollectResourcesMission {
 	 * Constructor
 	 *
 	 * @param startingPerson the person starting the mission.
+	 * @param needsReview
 	 * @throws MissionException if problem constructing mission.
 	 */
-	public CollectIce(Person startingPerson) {
+	public CollectIce(Person startingPerson, boolean needsReview) {
 		// Use CollectResourcesMission constructor.
 		super(DEFAULT_DESCRIPTION, MissionType.COLLECT_ICE, startingPerson, ResourceUtil.iceID,
-				EquipmentType.BARREL, REQUIRED_BARRELS, NUM_SITES);
+				EquipmentType.BARREL, REQUIRED_BARRELS, NUM_SITES, needsReview);
 	}
 
 	/**

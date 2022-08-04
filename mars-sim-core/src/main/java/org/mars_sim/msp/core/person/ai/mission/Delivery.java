@@ -75,7 +75,7 @@ public class Delivery extends DroneMission implements CommerceMission {
 	 *
 	 * @param startingMember the mission member starting the settlement.
 	 */
-	public Delivery(MissionMember startingMember) {
+	public Delivery(MissionMember startingMember, boolean needsReview) {
 		// Use DroneMission constructor.
 		super(DEFAULT_DESCRIPTION, MissionType.DELIVERY, startingMember, null);
 
@@ -115,12 +115,7 @@ public class Delivery extends DroneMission implements CommerceMission {
 		}
 
 		// Set initial phase
-		setPhase(VehicleMission.REVIEWING, null);
-		if (logger.isLoggable(Level.INFO)) {
-			if (startingMember != null && getDrone() != null) {
-				logger.info(startingMember, "Starting Delivery mission on " + getDrone().getName() + ".");
-			}
-		}
+		setInitialPhase(needsReview);
 	}
 
 	/**
@@ -160,12 +155,7 @@ public class Delivery extends DroneMission implements CommerceMission {
 		desiredProfit = profit;
 
 		// Set initial phase
-		setPhase(EMBARKING, getStartingSettlement().getName());
-		if (logger.isLoggable(Level.INFO)) {
-			if (startingMember != null && getDrone() != null) {
-				logger.info(startingMember, "Starting Delivery mission on " + getDrone().getName() + ".");
-			}
-		}
+		setInitialPhase(false);
 	}
 
 	/**

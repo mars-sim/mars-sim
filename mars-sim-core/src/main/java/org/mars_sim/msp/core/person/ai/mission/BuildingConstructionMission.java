@@ -151,10 +151,10 @@ public class BuildingConstructionMission extends Mission implements Serializable
 
 		if (!isDone()) {
 			// Set initial mission phase.
-//			if (sim.getUseGUI()) {
-//				setPhase(SELECT_SITE_PHASE, settlement.getName());
-//			}
-//			else {
+			if (site == null) {
+				endMission(MissionStatus.CONSTRUCTION_SITE_NOT_FOUND_OR_CREATED);
+			}
+			else {
 				// Reserve construction vehicles.
 				reserveConstructionVehicles();
 				// Retrieve construction LUV attachment parts.
@@ -234,6 +234,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 				else {
 					logger.warning(settlement, "New construction stage could not be determined.");
 					endMission(MissionStatus.NEW_CONSTRUCTION_STAGE_NOT_DETERMINED);
+					return;
 				}
 
 				initCase1Step2(site, info, skill, values);

@@ -40,9 +40,9 @@ public class BiologyFieldStudy extends FieldStudyMission implements Serializable
 	 * @param startingPerson {@link Person} the person starting the mission.
 	 * @throws MissionException if problem constructing mission.
 	 */
-	public BiologyFieldStudy(Person startingPerson) {
+	public BiologyFieldStudy(Person startingPerson, boolean needsReview) {
 		super(DEFAULT_DESCRIPTION, MissionType.BIOLOGY, startingPerson,
-			  ScienceType.BIOLOGY, FIELD_SITE_TIME);
+			  ScienceType.BIOLOGY, FIELD_SITE_TIME, needsReview);
 
 	}
 

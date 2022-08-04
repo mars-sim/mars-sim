@@ -38,8 +38,8 @@ public class DeliveryMeta extends AbstractMetaMission {
 	}
 
 	@Override
-	public Mission constructInstance(Person person) {
-		return new Delivery(person);
+	public Mission constructInstance(Person person, boolean needsReview) {
+		return new Delivery(person, needsReview);
 	}
 
 	@Override

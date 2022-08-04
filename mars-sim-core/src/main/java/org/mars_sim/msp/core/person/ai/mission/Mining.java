@@ -86,7 +86,7 @@ public class Mining extends EVAMission
 	 * @param startingPerson the person starting the mission.
 	 * @throws MissionException if error creating mission.
 	 */
-	public Mining(Person startingPerson) {
+	public Mining(Person startingPerson, boolean needsReview) {
 
 		// Use RoverMission constructor.
 		super(DEFAULT_DESCRIPTION, MissionType.MINING, startingPerson, null, MINING_SITE);
@@ -128,12 +128,12 @@ public class Mining extends EVAMission
 				luv = reserveLightUtilityVehicle();
 				if (luv == null) {
 					endMission(MissionStatus.LUV_NOT_AVAILABLE);
+					return;
 				}
 			}
 		}
 
-		// Set initial mission phase.
-		setPhase(REVIEWING, null);
+		setInitialPhase(needsReview);
 	}
 
 	/**
@@ -181,7 +181,8 @@ public class Mining extends EVAMission
 		}
 
 		// Set initial mission phase.
-		setPhase(EMBARKING, s.getName());
+		setInitialPhase(false);
+
 	}
 
 	/**

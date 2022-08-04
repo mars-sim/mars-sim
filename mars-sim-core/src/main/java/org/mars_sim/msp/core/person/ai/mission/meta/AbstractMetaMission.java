@@ -48,7 +48,7 @@ public class AbstractMetaMission implements MetaMission {
 	}
 
 	@Override
-	public Mission constructInstance(Person person) {
+	public Mission constructInstance(Person person, boolean needsReview) {
 		throw new UnsupportedOperationException("Mission Meta "+ name + " does not support mission for Person.");
 	}
 
@@ -72,7 +72,8 @@ public class AbstractMetaMission implements MetaMission {
 	 * @param person
 	 * @return
 	 */
-	protected double getLeaderSuitability(Person person) {
+	@Override
+	public double getLeaderSuitability(Person person) {
 		double result = 0.25D;
 		
 		JobType jt = person.getMind().getJob();

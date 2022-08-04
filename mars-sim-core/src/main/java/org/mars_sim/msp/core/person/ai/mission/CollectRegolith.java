@@ -43,12 +43,13 @@ public class CollectRegolith extends CollectResourcesMission {
 	 * Constructor.
 	 *
 	 * @param startingPerson the person starting the mission.
+	 * @param needsReview Needs to be reviewed
 	 * @throws MissionException if problem constructing mission.
 	 */
-	public CollectRegolith(Person startingPerson) {
+	public CollectRegolith(Person startingPerson, boolean needsReview) {
 		// Use CollectResourcesMission constructor.
 		super(DEFAULT_DESCRIPTION, MissionType.COLLECT_REGOLITH, startingPerson, ResourceUtil.regolithID,
-				EquipmentType.LARGE_BAG, REQUIRED_LARGE_BAGS, NUM_SITES);
+				EquipmentType.LARGE_BAG, REQUIRED_LARGE_BAGS, NUM_SITES, needsReview);
 	}
 
 	/**
