@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
@@ -25,6 +26,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.FunctionSpec;
+import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.StatusType;
@@ -228,7 +230,9 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 		boolean valid = isValid(pulse);
 		if (valid) {
 			// Check to see if any vehicles are in the garage that don't need to be.
-			for (Vehicle vehicle : vehicles) {
+			Iterator<Vehicle> i = vehicles.iterator();
+			while (i.hasNext()) {
+				Vehicle vehicle = i.next();
 				if (!vehicle.isReserved()) {
 					if (vehicle instanceof Crewable) {
 						Crewable crewableVehicle = (Crewable) vehicle;

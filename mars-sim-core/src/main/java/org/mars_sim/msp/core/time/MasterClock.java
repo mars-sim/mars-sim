@@ -178,42 +178,7 @@ public class MasterClock implements Serializable {
 				+ ((maxMilliSolPerPulse - minMilliSolPerPulse) * desiredTR / MAX_TIME_RATIO);
 	}
 	
-	/**
-	 * Checks for the value of pulse width. Adjust the pulse width accordingly. Let 
-	 * it gradually catch up to the value of optMilliSolPerPulse.
-	 */
-	private void checkPulseWidth() {
-		double time = lastPulseTime;
-		if (time > maxMilliSolPerPulse) {
-			logger.config(20_000, "Pulse width " + Math.round(time*1_000.0)/1_000.0
-					+ " clipped to a max of " + maxMilliSolPerPulse + ".");
-			time = maxMilliSolPerPulse;
-		}
-		else if (time < minMilliSolPerPulse) {
-			logger.config(20_000, "Pulse width " + Math.round(time*1_000.0)/1_000.0
-					+ " increased to a minimum of " + minMilliSolPerPulse + ".");
-			time = minMilliSolPerPulse;
-		}
-		
-		if (time > optMilliSolPerPulse) {
-			double diff = time - optMilliSolPerPulse;
-			time = time - diff / 20;
-		}
-		
-		else if (time < optMilliSolPerPulse) {
-			double diff = optMilliSolPerPulse - time;
-			time = time + diff / 20;
-		}	
-		
-		// Update the pulse time for use in tasks
-		double oldPulseTime = Task.getStandardPulseTime();
-		double newPulseTime = Math.min(time/4.0, MAX_PULSE_TIME);
-		if (newPulseTime != oldPulseTime) {
-			Task.setStandardPulseTime(newPulseTime);
-		}
-		
-		lastPulseTime = time;
-	}
+
 	
 	/**
 	 * Returns the Martian clock.
@@ -494,28 +459,31 @@ public class MasterClock implements Serializable {
 			long tnow = System.currentTimeMillis();
 
 			// Calculate the elapsed time in milli-seconds
-			long realElaspedMilliSec = tnow - tLast;
+			long realElapsedMillisec = tnow - tLast;
 			
 			// Make sure there is not a big jump; suggest power save so skip it
-			if (realElaspedMilliSec > MAX_ELAPSED) {
+			if (realElapsedMillisec > MAX_ELAPSED) {
 				// Reset the elapsed clock to ignore this pulse
-				logger.warning("Elapsed real time is " + realElaspedMilliSec + " ms, longer than the max time "
+				logger.warning("Elapsed real time is " + realElapsedMillisec + " ms, longer than the max time "
 			                   + MAX_ELAPSED + " ms.");
 				
 				// Reset lastPulseTime
 				lastPulseTime = optMilliSolPerPulse;
 				// Reset realElaspedMilliSec
-				realElaspedMilliSec = (long) (optMilliSolPerPulse * MILLISECONDS_PER_MILLISOL / (int)simulationConfig.getTimeRatio());
+				realElapsedMillisec = (long) (optMilliSolPerPulse * MILLISECONDS_PER_MILLISOL / (int)simulationConfig.getTimeRatio());
 			}
 			
-			else if (realElaspedMilliSec == 0.0) {
+			else if (realElapsedMillisec == 0.0) {
 				// Set realElaspedMilliSec
-				realElaspedMilliSec = (long) (optMilliSolPerPulse * MILLISECONDS_PER_MILLISOL / desiredTR);
+				realElapsedMillisec = (long) (optMilliSolPerPulse * MILLISECONDS_PER_MILLISOL / desiredTR);
 			}
 			
 			else {
+				// Adjust the actual TR
+				checkActualTR();
+				
 				// Obtains the latest the time pulse length in millisols.
-				lastPulseTime = (realElaspedMilliSec * actualTR) / MILLISECONDS_PER_MILLISOL;
+				lastPulseTime = (realElapsedMillisec * actualTR) / MILLISECONDS_PER_MILLISOL;
 				
 				// Adjust the time pulse
 				checkPulseWidth();
@@ -532,13 +500,13 @@ public class MasterClock implements Serializable {
 				long earthMillisec = (long)(lastPulseTime * MILLISECONDS_PER_MILLISOL);
 
 				// Calculate the actual rate for feedback
-				actualTR = earthMillisec / realElaspedMilliSec;
+				actualTR = earthMillisec / realElapsedMillisec;
 
 				if (!listenerExecutor.isTerminated()
 					&& !listenerExecutor.isShutdown()) {
 
 					// Update the uptimer
-					uptimer.updateTime(realElaspedMilliSec);
+					uptimer.updateTime(realElapsedMillisec);
 
 					// Add time to the Earth clock.
 					earthClock.addTime(earthMillisec);
@@ -562,6 +530,61 @@ public class MasterClock implements Serializable {
 		return acceptablePulse;
 	}
 
+	/**
+	 * Checks for the actual time ratio.
+	 */
+	private void checkActualTR() {
+		double tr = actualTR;
+		if (tr / desiredTR > 1.15) {
+			double diff = tr - desiredTR;
+			tr = tr - diff / 20;
+		}
+		
+		else if (tr / desiredTR < .85) {
+			double diff = desiredTR - tr;
+			tr = tr + diff / 20;
+		}
+		
+		actualTR = tr;
+	}
+	
+	/**
+	 * Checks for the value of pulse width. Adjust the pulse width accordingly. Let 
+	 * it gradually catch up to the value of optMilliSolPerPulse.
+	 */
+	private void checkPulseWidth() {
+		double time = lastPulseTime;
+		if (time / maxMilliSolPerPulse > 1.15) {
+			logger.config(20_000, "Pulse width " + Math.round(time*1_000.0)/1_000.0
+					+ " clipped to a max of " + maxMilliSolPerPulse + ".");
+			time = maxMilliSolPerPulse;
+		}
+		else if (time / minMilliSolPerPulse < .85) {
+			logger.config(20_000, "Pulse width " + Math.round(time*1_000.0)/1_000.0
+					+ " increased to a minimum of " + minMilliSolPerPulse + ".");
+			time = minMilliSolPerPulse;
+		}
+		
+		if (time / optMilliSolPerPulse > 1.15) {
+			double diff = time - optMilliSolPerPulse;
+			time = time - diff / 20;
+		}
+		
+		else if (time / optMilliSolPerPulse < .85) {
+			double diff = optMilliSolPerPulse - time;
+			time = time + diff / 20;
+		}	
+		
+		// Update the pulse time for use in tasks
+		double oldPulseTime = Task.getStandardPulseTime();
+		double newPulseTime = Math.min(time/4.0, MAX_PULSE_TIME);
+		if (newPulseTime != oldPulseTime) {
+			Task.setStandardPulseTime(newPulseTime);
+		}
+		
+		lastPulseTime = time;
+	}
+	
 	/**
 	 * Prepares clock listener tasks for setting up threads.
 	 */

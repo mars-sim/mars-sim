@@ -59,7 +59,7 @@ public class SplashWindow extends JComponent {
 	private final int versionStringWidth = versionMetrics.stringWidth(VERSION_STRING);
 	
 	/** The font for displaying {@link #VERSION_STRING}. */
-	private final Font versionStringFont1 = new Font("Bell MT", Font.BOLD, 16);
+	private final Font versionStringFont1 = new Font("Bell MT", Font.BOLD, 20);
 	/** Measures the pixels needed to display text. */
 	private final FontMetrics versionMetrics1 = getFontMetrics(versionStringFont1);
 	/** The displayed length of {@link #VERSION_STRING} in pixels. */
@@ -73,7 +73,7 @@ public class SplashWindow extends JComponent {
 	private final int buildStringWidth = buildMetrics.stringWidth(BUILD_STRING);
 	
 	/** The font for displaying {@link #AUTHOR_STRING}. */
-	private final Font authorStringFont = new Font("Bell MT", Font.PLAIN, 16);
+	private final Font authorStringFont = new Font("Bell MT", Font.ITALIC, 17);
 
 	private static String[] FILE_NAME = {
 			"splash/Mars_Canyon.jpg",
@@ -113,18 +113,18 @@ public class SplashWindow extends JComponent {
 				else
 					g2d.drawString(MSP_STRING, (x - titleWidth)/2, 40);
 				
-//				g2d.setColor(Color.black);
-				
-				g2d.setFont(versionStringFont);
-				
+			
 				if (rand == 0) {
+					g2d.setFont(versionStringFont);
 					g2d.drawString(VERSION_STRING, (x - versionStringWidth)/2 , 110);
 				}
 				else if (rand == 1) {
+					g2d.setFont(versionStringFont);
 					g2d.setColor(Color.ORANGE);
-					g2d.drawString(VERSION_STRING, (x - versionStringWidth)/2 , 70);
+					g2d.drawString(VERSION_STRING, (x - versionStringWidth)/2 , 80);
 				}
 				else {
+					g2d.setFont(versionStringFont1);
 					g2d.setColor(Color.WHITE);
 					g2d.drawString(VERSION_STRING, x - versionStringWidth1 - 10, h - 70);
 				}
