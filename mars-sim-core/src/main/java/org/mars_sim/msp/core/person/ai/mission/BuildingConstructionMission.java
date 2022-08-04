@@ -160,7 +160,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 				// Retrieve construction LUV attachment parts.
 				retrieveConstructionLUVParts();
 				setPhase(PREPARE_SITE_PHASE, settlement.getName());
-//			}
+			}
 		}
 
 	}
@@ -273,7 +273,8 @@ public class BuildingConstructionMission extends Mission implements Serializable
 			if (stage != null) {
 				site.setUndergoingConstruction(true);
 			}
-		} else {
+		}
+		else {
 			endMission(MissionStatus.CONSTRUCTION_SITE_NOT_FOUND_OR_CREATED);
 		}
 
