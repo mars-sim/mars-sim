@@ -120,7 +120,8 @@ public class Mind implements Serializable, Temporal {
 		if (taskManager != null) {
 			taskManager.timePassing(pulse);
 			// Decides what tasks to inject time
-			decideTask(pulse.getElapsed());
+			if (pulse.getElapsed() > 0)
+				decideTask(pulse.getElapsed());
 		}
 
 		int msol = pulse.getMarsTime().getMillisolInt();
@@ -175,13 +176,24 @@ public class Mind implements Serializable, Temporal {
 	 * @throws Exception if error during action.
 	 */
 	private void decideTask(double time) {
-		double totalTime = time;
-		while (totalTime > 0) {
-			double pulseTime = Task.getStandardPulseTime();
-			// Call takeAction to perform a task and consume the pulse time.
-			takeAction(pulseTime);
-			// Reduce the total time by the pulse time
-			totalTime -= pulseTime;
+		double remainingTime = time;
+		double pulseTime = Task.getStandardPulseTime();
+		while (remainingTime > 0 && pulseTime > 0) {
+			// Vary the amount of time to be injected
+			double rand = RandomUtil.getRandomDouble(1, 1.5);
+			double deltaTime = pulseTime * rand;
+			if (remainingTime > deltaTime) {
+				// Call takeAction to perform a task and consume the pulse time.
+				takeAction(deltaTime);
+				// Reduce the total time by the pulse time
+				remainingTime -= deltaTime;
+			}
+			else {
+				// Call takeAction to perform a task and consume the pulse time.
+				takeAction(remainingTime);
+				// Reduce the total time by the pulse time
+				remainingTime = 0;
+			}
 		}
 	}
 	

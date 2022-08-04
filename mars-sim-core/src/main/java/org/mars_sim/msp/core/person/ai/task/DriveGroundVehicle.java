@@ -172,7 +172,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 	}
 
 	/**
-	 * Move the vehicle in its direction at its speed for the amount of time given.
+	 * Moves the vehicle in its direction at its speed for the amount of time given.
 	 * Stop if reached destination.
 	 * 
 	 * @param time the amount of time (ms) to drive.
@@ -203,7 +203,6 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 	 * @return time remaining after performing phase (in millisols)
 	 */
 	private double obstaclePhase(double time) {
-		double remainingTime = time - standardPulseTime;
 		double timeUsed = 0D;
 		
 		GroundVehicle vehicle = (GroundVehicle) getVehicle();
@@ -222,7 +221,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 			
 			setPhase(OperateVehicle.MOBILIZE);
 			sideDirection = NONE;
-			return remainingTime;
+			return time;
 		}
 
 		// Determine the direction to avoid the obstacle.
@@ -232,7 +231,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 		if (travelDirection == null) {
 			setPhase(WINCH_VEHICLE);
 			sideDirection = NONE;
-			return remainingTime;
+			return time;
 		}
 
 		// Set the vehicle's direction.
@@ -309,7 +308,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 		timeUsed = time - mobilizeVehicle(time);
 
 		// Add experience points
-		addExperience(time);
+		addExperience(timeUsed);
 
 		// Check for accident.
 		if (!isDone())

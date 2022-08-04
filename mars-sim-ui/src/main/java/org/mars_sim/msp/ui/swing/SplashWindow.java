@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * SplashWindow.java
- * @date 2022-07-11
+ * @date 2022-08-05
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing;
@@ -22,6 +22,7 @@ import javax.swing.JFrame;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * The SplashWindow class is a splash screen shown when the project is loading.
@@ -37,21 +38,32 @@ public class SplashWindow extends JComponent {
 	private static final String VERSION_STRING = Simulation.VERSION;
 	private static final String BUILD_STRING = "Build " + Simulation.BUILD;
 	private static final String MSP_STRING = Msg.getString("SplashWindow.title"); //$NON-NLS-1$
-	private static final String AUTHOR_STRING = "Picture from NASA Ames Research Center, 2005";
+	private static final String[] AUTHOR_STRING = {
+			"Picture from NASA Ames Research Center, 2005", 
+			"Family Watching News on Terraforming Mars, Tiago da Silva",
+			"Underground Oasis in Martian Lava Tube, Shane Powers & Linjie Wang, Marstopia Design Contest"
+	};
 	
 	/** The font for displaying {@link #MSP_STRING}. */
-	private final Font titleFont = new Font("Bookman Old Style", Font.PLAIN, 36);
+	private final Font titleFont = new Font("Bookman Old Style", Font.PLAIN, 42);
 	/** Measures the pixels needed to display text. */
 	private final FontMetrics titleMetrics = getFontMetrics(titleFont);
 	/** The displayed length of {@link #MSP_STRING} in pixels. */
 	private final int titleWidth = titleMetrics.stringWidth(MSP_STRING);
 	
 	/** The font for displaying {@link #VERSION_STRING}. */
-	private final Font versionStringFont = new Font(Font.MONOSPACED, Font.BOLD, 24);
+	private final Font versionStringFont = new Font(Font.MONOSPACED, Font.BOLD, 30);
 	/** Measures the pixels needed to display text. */
 	private final FontMetrics versionMetrics = getFontMetrics(versionStringFont);
 	/** The displayed length of {@link #VERSION_STRING} in pixels. */
 	private final int versionStringWidth = versionMetrics.stringWidth(VERSION_STRING);
+	
+	/** The font for displaying {@link #VERSION_STRING}. */
+	private final Font versionStringFont1 = new Font("Bell MT", Font.BOLD, 16);
+	/** Measures the pixels needed to display text. */
+	private final FontMetrics versionMetrics1 = getFontMetrics(versionStringFont1);
+	/** The displayed length of {@link #VERSION_STRING} in pixels. */
+	private final int versionStringWidth1 = versionMetrics1.stringWidth(VERSION_STRING);
 	
 	/** The font for displaying {@link #BUILD_STRING}. */
 	private final Font buildStringFont = new Font("Bell MT", Font.BOLD, 16);
@@ -63,7 +75,11 @@ public class SplashWindow extends JComponent {
 	/** The font for displaying {@link #AUTHOR_STRING}. */
 	private final Font authorStringFont = new Font("Bell MT", Font.PLAIN, 16);
 
-	private static String PIC_NAME = "splash/Mars_Canyon.jpg";
+	private static String[] FILE_NAME = {
+			"splash/Mars_Canyon.jpg",
+			"splash/News_Terraforming_Mars.jpg",
+			"splash/Underground_Oasis_Martian_Lava_Tube.jpg"
+	};
 
 	private Image splashImage;
 	private int w;
@@ -72,6 +88,8 @@ public class SplashWindow extends JComponent {
 
 	@SuppressWarnings("serial")
 	public SplashWindow() {
+		int rand = RandomUtil.getRandomInt(FILE_NAME.length - 1);
+		
 		window = new JFrame() {
 			@Override
 			public void paint(Graphics g) {
@@ -80,23 +98,57 @@ public class SplashWindow extends JComponent {
 				g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 				g2d.drawImage(splashImage, 0, 0, this);
 				
-				g2d.setColor(Color.black);
+				int x = splashImage.getWidth(this);
+				
+				if (rand > 0)
+					g2d.setColor(Color.ORANGE);
+				else
+					g2d.setColor(Color.black);
+				
 				g2d.setFont(titleFont);
-				g2d.drawString(MSP_STRING, (splashImage.getWidth(this) - titleWidth)/2, 60);
+				
+				if (rand == 0) {
+					g2d.drawString(MSP_STRING, (x - titleWidth)/2, 70);
+				}
+				else
+					g2d.drawString(MSP_STRING, (x - titleWidth)/2, 40);
+				
+//				g2d.setColor(Color.black);
 				
 				g2d.setFont(versionStringFont);
-				g2d.drawString(VERSION_STRING, (splashImage.getWidth(this) - versionStringWidth)/2 , 90);
-			
-				g2d.setColor(Color.white);
-				g2d.setFont(buildStringFont);
-				g2d.drawString(BUILD_STRING, splashImage.getWidth(this) - buildStringWidth - 10, h - 15);
 				
+				if (rand == 0) {
+					g2d.drawString(VERSION_STRING, (x - versionStringWidth)/2 , 110);
+				}
+				else if (rand == 1) {
+					g2d.setColor(Color.ORANGE);
+					g2d.drawString(VERSION_STRING, (x - versionStringWidth)/2 , 70);
+				}
+				else {
+					g2d.setColor(Color.WHITE);
+					g2d.drawString(VERSION_STRING, x - versionStringWidth1 - 10, h - 70);
+				}
+				
+				g2d.setColor(Color.WHITE);
+
 				g2d.setFont(authorStringFont);
-				g2d.drawString(AUTHOR_STRING, 15, h - 15);
+				
+				if (rand == 2)
+					g2d.drawString(AUTHOR_STRING[rand], 15, h - 15);
+				else
+					g2d.drawString(AUTHOR_STRING[rand], 15, h - 15);
+				
+				g2d.setFont(buildStringFont);
+				
+				if (rand == 2)
+					g2d.drawString(BUILD_STRING, x - buildStringWidth - 10, h - 45);
+				else 
+					g2d.drawString(BUILD_STRING, x - buildStringWidth - 10, h - 15);
+
 			}
 		};
 
-		splashImage = ImageLoader.getImage(PIC_NAME);
+		splashImage = ImageLoader.getImage(FILE_NAME[rand]);
 		ImageIcon splashIcon = new ImageIcon(splashImage);
 		w = splashIcon.getIconWidth();
 		h = splashIcon.getIconHeight();

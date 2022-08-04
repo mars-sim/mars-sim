@@ -183,33 +183,36 @@ public class MasterClock implements Serializable {
 	 * it gradually catch up to the value of optMilliSolPerPulse.
 	 */
 	private void checkPulseWidth() {
-		if (lastPulseTime > maxMilliSolPerPulse) {
-			logger.config(20_000, "Pulse width " + Math.round(lastPulseTime*1_000.0)/1_000.0
+		double time = lastPulseTime;
+		if (time > maxMilliSolPerPulse) {
+			logger.config(20_000, "Pulse width " + Math.round(time*1_000.0)/1_000.0
 					+ " clipped to a max of " + maxMilliSolPerPulse + ".");
-			lastPulseTime = maxMilliSolPerPulse;
+			time = maxMilliSolPerPulse;
 		}
-		else if (lastPulseTime < minMilliSolPerPulse) {
-			logger.config(20_000, "Pulse width " + Math.round(lastPulseTime*1_000.0)/1_000.0
+		else if (time < minMilliSolPerPulse) {
+			logger.config(20_000, "Pulse width " + Math.round(time*1_000.0)/1_000.0
 					+ " increased to a minimum of " + minMilliSolPerPulse + ".");
-			lastPulseTime = minMilliSolPerPulse;
+			time = minMilliSolPerPulse;
 		}
 		
-		if (lastPulseTime > optMilliSolPerPulse) {
-			double diff = lastPulseTime - optMilliSolPerPulse;
-			lastPulseTime = lastPulseTime - diff / 20;
+		if (time > optMilliSolPerPulse) {
+			double diff = time - optMilliSolPerPulse;
+			time = time - diff / 20;
 		}
 		
-		else if (lastPulseTime < optMilliSolPerPulse) {
-			double diff = optMilliSolPerPulse - lastPulseTime;
-			lastPulseTime = lastPulseTime + diff / 20;
-		}
+		else if (time < optMilliSolPerPulse) {
+			double diff = optMilliSolPerPulse - time;
+			time = time + diff / 20;
+		}	
 		
 		// Update the pulse time for use in tasks
 		double oldPulseTime = Task.getStandardPulseTime();
-		double newPulseTime = Math.min(lastPulseTime/4.0, MAX_PULSE_TIME);
+		double newPulseTime = Math.min(time/4.0, MAX_PULSE_TIME);
 		if (newPulseTime != oldPulseTime) {
 			Task.setStandardPulseTime(newPulseTime);
 		}
+		
+		lastPulseTime = time;
 	}
 	
 	/**
@@ -401,11 +404,12 @@ public class MasterClock implements Serializable {
 					// Call addTime() to increment time in EarthClock and MarsClock
 					if (addTime()) {
 
-						calculateSleepTime();
-						
 						// If a can was applied then potentially adjust the sleep
 						executionTime = System.currentTimeMillis() - startTime;
+						// Get the sleep time
+						calculateSleepTime();	
 					}
+					
 					else {
 						// If on pause or acceptablePulse is false
 						sleepTime = maxWaitTimeBetweenPulses;
@@ -444,14 +448,14 @@ public class MasterClock implements Serializable {
 		 * Determines the sleep time for this frame.
 		 */
 		private void calculateSleepTime() {
-			// Desired Millisols per seconds
+			// Get the desired millisols per second
 			double desiredMsolPerSecond = desiredTR / MarsClock.SECONDS_PER_MILLISOL;
 			
-			// How many pulses are needed to fulfill this desire
+			// Get the desired number of pulses
 			double desiredPulses = desiredMsolPerSecond / optMilliSolPerPulse;
 			desiredPulses = Math.max(desiredPulses, 1D);
 			
-			// Pulse periodicy
+			// Get the milliseconds between each pulse
 			double milliSecondsPerPulse = 1000D / desiredPulses;
 
 			// Sleep time allows for the execution time

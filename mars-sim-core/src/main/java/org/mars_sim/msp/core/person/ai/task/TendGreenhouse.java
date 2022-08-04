@@ -220,7 +220,7 @@ public class TendGreenhouse extends Task implements Serializable {
 	public void setCropDescription(Crop needyCrop) {
 		logger.log(greenhouse.getBuilding(), worker, Level.FINE, 30_000L, "Tending " + needyCrop.getCropName() + ".");
 		setDescription(Msg.getString("Task.description.tendGreenhouse.tend.detail",
-				Conversion.capitalize(needyCrop.getCropName())));
+				Conversion.capitalize(needyCrop.getCropName())), false);
 	}
 
 	/**
@@ -228,7 +228,7 @@ public class TendGreenhouse extends Task implements Serializable {
 	 */
 	public void setDescriptionCropDone() {
 		logger.log(greenhouse.getBuilding(), worker, Level.FINE, 30_000L, "Done tending crops.");
-		setDescription(Msg.getString("Task.description.tendGreenhouse.tend.done"));
+		setDescription(Msg.getString("Task.description.tendGreenhouse.tend.done"), false);
 	}
 	
 	/**

@@ -444,6 +444,26 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 
 	/**
+	 * Sets the task's description.
+	 * 
+	 * @param des the task description.
+	 * @param record true if wanting to record
+	 */
+	protected void setDescription(String des, boolean record) {
+		description = des;
+		eventTarget.fireUnitUpdate(UnitEventType.TASK_DESCRIPTION_EVENT, des);
+		
+		if (phase != null) {
+			// Record the activity
+			if (record && canRecord()) {
+				Mission ms = worker.getMission();
+				worker.getTaskManager().recordTask(this,
+						(ms != null ? ms.getTypeID() : null));
+			}
+		}
+	}
+	
+	/**
 	 * Returns a boolean whether this task should generate events
 	 * 
 	 * @return boolean flag.

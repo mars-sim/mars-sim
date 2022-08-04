@@ -549,7 +549,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
 	}
         
 	/**
-	 * Stop the vehicle
+	 * Stops the vehicle.
 	 */
 	public void haltVehicle() {
 		// Note: instead of wasting the momentum/energy, 
@@ -765,7 +765,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
     }
 	
 	/**
-	 * Determine the vehicle's initial parked location while traveling to settlement.
+	 * Determines the vehicle's initial parked location while traveling to settlement.
 	 */
 	private void determineInitialSettlementParkedLocation() {
 	   
@@ -777,7 +777,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
 	}
 	
 	/**
-	 * Update vehicle with its current elevation or altitude.
+	 * Updates vehicle with its current elevation or altitude.
 	 */
 	protected abstract void updateVehicleElevationAltitude();
 	
@@ -819,7 +819,8 @@ public abstract class OperateVehicle extends Task implements Serializable {
     }
     
     /**
-     * Check if vehicle has had an accident.
+     * Checks if vehicle has had an accident.
+     * 
      * @param time the amount of time vehicle is driven (millisols)
      */
     protected abstract void checkForAccident(double time);
@@ -897,7 +898,8 @@ public abstract class OperateVehicle extends Task implements Serializable {
 	}
 	
     /**
-     * Tests the speed 
+     * Tests the speed.
+     * 
      * @param direction
      * @return
      */
@@ -912,7 +914,8 @@ public abstract class OperateVehicle extends Task implements Serializable {
     }
     
     /**
-     * Determine the speed modifier based on the driver's skill level.
+     * Determines the speed modifier based on the driver's skill level.
+     * 
      * @return speed modifier (km/hr)
      */
     protected double getSpeedSkillModifier() {
@@ -948,7 +951,8 @@ public abstract class OperateVehicle extends Task implements Serializable {
     }
     
 	/**
-	 * Calculate the piloting modifier for a Person based on their training
+	 * Calculates the piloting modifier for a Person based on their training.
+	 * 
 	 * @param operator
 	 * @return
 	 */

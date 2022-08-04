@@ -179,13 +179,11 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 	 * @return the amount of time (ms) left over after driving (if any)
 	 */
 	protected double mobilizeVehicle(double time) {
-		double remainingTime = time - standardPulseTime;
-		
 		// If speed is less than or equal to the .5 kph, change to avoiding obstacle phase.
 		if ((getVehicle().getSpeed() <= LOW_SPEED) 
 				&& !AVOID_COLLISION.equals(getPhase())) {
 			setPhase(AVOID_COLLISION);
-			return (remainingTime);
+			return (time);
 		} else
 			return super.mobilizeVehicle(standardPulseTime);
 	}
@@ -197,7 +195,6 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 	 * @return time remaining after performing phase (in millisols)
 	 */
 	private double obstaclePhase(double time) {
-		double remainingTime = time - standardPulseTime;
 		double timeUsed = 0D;
 		
 		Flyer flyer = (Flyer) getVehicle();
@@ -216,7 +213,7 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 			
 			setPhase(PilotDrone.MOBILIZE);
 			sideDirection = NONE;
-			return remainingTime;
+			return time;
 		}
 
 		// Determine the direction to avoid the obstacle.
@@ -228,7 +225,7 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 			updateVehicleElevationAltitude(false, time);
 			
 			sideDirection = NONE;
-			return remainingTime;
+			return time;
 		}
 
 		// Set the vehicle's direction.

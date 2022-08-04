@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 import org.mars_sim.msp.core.robot.ai.task.BotTaskManager;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.Temporal;
+import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * The BotMind class represents a robot's mind. It keeps track of missions and
@@ -87,12 +88,13 @@ public class BotMind implements Serializable, Temporal {
 	 */
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
-
 		if (botTaskManager != null) {
 			botTaskManager.timePassing(pulse);
 			// Decides what tasks to inject time
-			decideTask(pulse.getElapsed());
+			if (pulse.getElapsed() > 0)
+				decideTask(pulse.getElapsed());
 		}
+
 		return true;
 	}
 
@@ -103,13 +105,24 @@ public class BotMind implements Serializable, Temporal {
 	 * @throws Exception if error during action.
 	 */
 	private void decideTask(double time) {
-		double totalTime = time;
-		while (totalTime > 0) {
-			double pulseTime = Task.getStandardPulseTime();
-			// Call takeAction to perform a task and consume the pulse time.
-			takeAction(pulseTime);
-			// Reduce the total time by the pulse time
-			totalTime -= pulseTime;
+		double remainingTime = time;
+		double pulseTime = Task.getStandardPulseTime();
+		while (remainingTime > 0 && pulseTime > 0) {
+			// Vary the amount of time to be injected
+			double rand = RandomUtil.getRandomDouble(1, 1.5);
+			double deltaTime = pulseTime * rand;
+			if (remainingTime > deltaTime) {
+				// Call takeAction to perform a task and consume the pulse time.
+				takeAction(deltaTime);
+				// Reduce the total time by the pulse time
+				remainingTime -= deltaTime;
+			}
+			else {
+				// Call takeAction to perform a task and consume the pulse time.
+				takeAction(remainingTime);
+				// Reduce the total time by the pulse time
+				remainingTime = 0;
+			}
 		}
 	}
 	
