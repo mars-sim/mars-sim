@@ -59,12 +59,4 @@ public enum MissionType {
     	}
     	return true;
     }
-
-    public static boolean isTravelMission(MissionType missionType) {
-    	if (missionType == BUILDING_CONSTRUCTION
-    		|| missionType == BUILDING_SALVAGE) {
-    		return false;
-    	}
-    	return true;
-    }
 }

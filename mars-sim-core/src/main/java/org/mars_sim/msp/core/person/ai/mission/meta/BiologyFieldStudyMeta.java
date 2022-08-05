@@ -20,13 +20,13 @@ import org.mars_sim.msp.core.science.ScienceType;
  */
 public class BiologyFieldStudyMeta extends FieldStudyMeta {
     BiologyFieldStudyMeta() {
-		super(MissionType.BIOLOGY, "biologyFieldStudy",
+		super(MissionType.BIOLOGY, 
 				Set.of(JobType.BIOLOGIST, JobType.BOTANIST),
 				ScienceType.BIOLOGY);
 	}
 
     @Override
-    public Mission constructInstance(Person person) {
-        return new BiologyFieldStudy(person);
+    public Mission constructInstance(Person person, boolean needsReview) {
+        return new BiologyFieldStudy(person, needsReview);
     }
 }

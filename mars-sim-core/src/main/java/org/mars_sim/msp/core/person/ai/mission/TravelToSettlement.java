@@ -37,9 +37,6 @@ public class TravelToSettlement extends RoverMission {
 
 	/** default logger. */
 	private static final Logger logger = Logger.getLogger(TravelToSettlement.class.getName());
-
-	/** Default description. */
-	private static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.travelToSettlement"); //$NON-NLS-1$
 	
 	// Static members
 	public static final double BASE_MISSION_WEIGHT = 1D;
@@ -62,9 +59,9 @@ public class TravelToSettlement extends RoverMission {
 	 * 
 	 * @param startingMember the mission member starting the mission.
 	 */
-	public TravelToSettlement(MissionMember startingMember) {
+	public TravelToSettlement(MissionMember startingMember, boolean needsReview) {
 		// Use RoverMission constructor
-		super(DEFAULT_DESCRIPTION, MissionType.TRAVEL_TO_SETTLEMENT, startingMember, null);
+		super(MissionType.TRAVEL_TO_SETTLEMENT, startingMember, null);
 
 		Settlement s = getStartingSettlement();
 
@@ -100,17 +97,18 @@ public class TravelToSettlement extends RoverMission {
 			// Check if vehicle can carry enough supplies for the mission.
 			if (hasVehicle() && !isVehicleLoadable()) {
 				endMission(MissionStatus.CANNOT_LOAD_RESOURCES);
+				return;
 			}
 
 			// Set initial phase
-			setPhase(VehicleMission.REVIEWING, null);
+			setInitialPhase(needsReview);
 		}
 	}
 
 	public TravelToSettlement(Collection<MissionMember> members, 
-			Settlement destinationSettlement, Rover rover, String description) {
+			Settlement destinationSettlement, Rover rover) {
 		// Use RoverMission constructor.
-		super(description, MissionType.TRAVEL_TO_SETTLEMENT, (MissionMember) members.toArray()[0], rover);
+		super(MissionType.TRAVEL_TO_SETTLEMENT, (MissionMember) members.toArray()[0], rover);
 
 		// Set mission destination.
 		setDestinationSettlement(destinationSettlement);
@@ -119,13 +117,13 @@ public class TravelToSettlement extends RoverMission {
 		// Add mission members.
 		addMembers(members, false);
 
-		// Set initial phase
-		setPhase(EMBARKING, getStartingPerson().getName());
-
 		// Check if vehicle can carry enough supplies for the mission.
 		if (hasVehicle() && !isVehicleLoadable()) {
 			endMission(MissionStatus.CANNOT_LOAD_RESOURCES);
+			return;
 		}
+
+		setInitialPhase(false);
 	}
 
 	/**

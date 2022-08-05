@@ -32,13 +32,13 @@ public class TradeMeta extends AbstractMetaMission {
 
 
 	TradeMeta() {
-		super(MissionType.TRADE, "trade",
+		super(MissionType.TRADE, 
 				Set.of(JobType.POLITICIAN, JobType.TRADER, JobType.REPORTER));
 	}
 
 	@Override
-	public Mission constructInstance(Person person) {
-		return new Trade(person);
+	public Mission constructInstance(Person person, boolean needsReview) {
+		return new Trade(person, needsReview);
 	}
 
 	@Override

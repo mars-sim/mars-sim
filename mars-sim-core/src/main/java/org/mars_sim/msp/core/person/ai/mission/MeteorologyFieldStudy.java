@@ -9,7 +9,6 @@ package org.mars_sim.msp.core.person.ai.mission;
 import java.util.Collection;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.MeteorologyStudyFieldWork;
@@ -26,9 +25,6 @@ public class MeteorologyFieldStudy extends FieldStudyMission {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-	
-	/** Default description. */
-	private static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.meteorologyFieldStudy"); //$NON-NLS-1$
 
 	/** Amount of time to field a site. */
 	public static final double FIELD_SITE_TIME = 500D;
@@ -42,9 +38,9 @@ public class MeteorologyFieldStudy extends FieldStudyMission {
 	 * @param startingPerson {@link Person} the person starting the mission.
 	 * @throws MissionException if problem constructing mission.
 	 */
-	public MeteorologyFieldStudy(Person startingPerson) {
-		super(DEFAULT_DESCRIPTION, MissionType.METEOROLOGY, startingPerson,
-			  ScienceType.METEOROLOGY, FIELD_SITE_TIME);
+	public MeteorologyFieldStudy(Person startingPerson, boolean needsReview) {
+		super(MissionType.METEOROLOGY, startingPerson,
+			  ScienceType.METEOROLOGY, FIELD_SITE_TIME, needsReview);
 		
 		setEVAEquipment(EquipmentType.SPECIMEN_BOX,
 			  getMembersNumber() * SPECIMEN_BOX_MEMBER);
@@ -58,12 +54,11 @@ public class MeteorologyFieldStudy extends FieldStudyMission {
 	 * @param study              the scientific study.
 	 * @param rover              the rover used by the mission.
 	 * @param fieldSite          the field site to research.
-	 * @param description        the mission description.
 	 */
 	public MeteorologyFieldStudy(Collection<MissionMember> members, Person leadResearcher,
-			ScientificStudy study, Rover rover, Coordinates fieldSite, String description) {
+			ScientificStudy study, Rover rover, Coordinates fieldSite) {
 
-		super(description, MissionType.METEOROLOGY, leadResearcher, rover,
+		super(MissionType.METEOROLOGY, leadResearcher, rover,
 				  study, FIELD_SITE_TIME, members, fieldSite);
 
 		setEVAEquipment(EquipmentType.SPECIMEN_BOX,

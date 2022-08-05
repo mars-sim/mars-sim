@@ -32,13 +32,12 @@ public class MiningMeta extends AbstractMetaMission {
     private static final Logger logger = Logger.getLogger(MiningMeta.class.getName());
 
     MiningMeta() {
-    	super(MissionType.MINING, "mining",
-    			Set.of(JobType.AREOLOGIST));
+    	super(MissionType.MINING, Set.of(JobType.AREOLOGIST));
     }
 
     @Override
-    public Mission constructInstance(Person person) {
-        return new Mining(person);
+    public Mission constructInstance(Person person, boolean needsReview) {
+        return new Mining(person, needsReview);
     }
 
     @Override

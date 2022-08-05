@@ -316,8 +316,8 @@ public class MissionManager implements Serializable, Temporal {
 			throw new IllegalStateException(person + " could not determine a new mission.");
 		}
 
-		// Construct the mission
-		result = selectedMetaMission.constructInstance(person);
+		// Construct the mission and needs a review
+		result = selectedMetaMission.constructInstance(person, true);
 
 		return result;
 	}

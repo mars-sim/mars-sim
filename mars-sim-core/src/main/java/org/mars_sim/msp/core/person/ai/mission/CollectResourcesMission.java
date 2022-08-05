@@ -77,7 +77,6 @@ public abstract class CollectResourcesMission extends EVAMission
 	/**
 	 * Constructor
 	 *
-	 * @param missionName            The name of the mission.
 	 * @param startingPerson         The person starting the mission.
 	 * @param resourceID           The type of resource.
 	 * @param containerID          The type of container needed for the mission or
@@ -85,14 +84,15 @@ public abstract class CollectResourcesMission extends EVAMission
 	 * @param containerNum           The number of containers needed for the
 	 *                               mission.
 	 * @param numSites               The number of collection sites.
+	 * @param needsReview
 	 * @param minPeople              The mimimum number of people for the mission.
 	 * @throws MissionException if problem constructing mission.
 	 */
-	protected CollectResourcesMission(String missionName, MissionType missionType, Person startingPerson, int resourceID,
-			EquipmentType containerID, int containerNum, int numSites) {
+	protected CollectResourcesMission(MissionType missionType, Person startingPerson, int resourceID,
+			EquipmentType containerID, int containerNum, int numSites, boolean needsReview) {
 
 		// Use RoverMission constructor
-		super(missionName, missionType, startingPerson, null, COLLECT_RESOURCES);
+		super(missionType, startingPerson, null, COLLECT_RESOURCES);
 
 		// Problem starting mission
 		if (isDone()) {
@@ -128,7 +128,7 @@ public abstract class CollectResourcesMission extends EVAMission
 				if (timeRange < range)
 					range = timeRange;
 				if (range <= 0D) {
-					logger.warning(getVehicle(), "Has zero range for mission " + missionName);
+					logger.warning(getVehicle(), "Has zero range for mission " + getName());
 					endMission(MissionStatus.NO_AVAILABLE_VEHICLES);
 					return;
 				}
@@ -143,12 +143,12 @@ public abstract class CollectResourcesMission extends EVAMission
 					if (!isValidScore(totalSiteScore)) {
 						totalSiteScore = 0;
 						unorderedSites = null;
-						logger.warning(startingPerson, missionName + " attempt another collection site find");
+						logger.warning(startingPerson, getName() + " attempt another collection site find");
 					}
 
 					// Mission might be aborted at determine site step
 					if (isDone()) {
-						logger.warning(startingPerson, missionName + " site searched & mission aborted");
+						logger.warning(startingPerson, getName() + " site searched & mission aborted");
 						return;
 					}
 				}
@@ -174,15 +174,13 @@ public abstract class CollectResourcesMission extends EVAMission
 		}
 
 		if (!isDone()) {
-			// Set initial mission phase.
-			setPhase(REVIEWING, null);
+			setInitialPhase(needsReview);
 		}
 	}
 
 	/**
 	 * Constructor with explicit data
 	 *
-	 * @param missionName            The name of the mission.
 	 * @param members                collection of mission members
 	 * @param resourceID           The type of resource.
 	 * @param containerID          The type of container needed for the mission or
@@ -193,12 +191,12 @@ public abstract class CollectResourcesMission extends EVAMission
 	 * @param rover                  the rover to use.
 	 * @param collectionSites     the sites to collect ice.
 	 */
-	protected CollectResourcesMission(String missionName, MissionType missionType, Collection<MissionMember> members,
+	protected CollectResourcesMission(MissionType missionType, Collection<MissionMember> members,
 			Integer resourceID, EquipmentType containerID,
 			int containerNum, Rover rover, List<Coordinates> collectionSites) {
 
 		// Use RoverMission constructor
-		super(missionName, missionType, (MissionMember) members.toArray()[0], rover, COLLECT_RESOURCES);
+		super(missionType, (MissionMember) members.toArray()[0], rover, COLLECT_RESOURCES);
 
 		this.resourceID = resourceID;
 		double containerCap = ContainerUtil.getContainerCapacity(containerID);
@@ -217,12 +215,12 @@ public abstract class CollectResourcesMission extends EVAMission
 		// Add mission members.
 		addMembers(members, false);
 
-		// Set initial mission phase.
-		setPhase(EMBARKING, s.getName());
-
 		// Check if vehicle can carry enough supplies for the mission.
 		if (hasVehicle() && !isVehicleLoadable()) {
 			endMission(MissionStatus.CANNOT_LOAD_RESOURCES);
+		}
+		else {
+			setInitialPhase(false);
 		}
 	}
 

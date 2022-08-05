@@ -41,12 +41,18 @@ public abstract class EVAMission extends RoverMission {
 	private int containerID;
 	private int containerNum;
 
-    protected EVAMission(String description, MissionType missionType, 
+    protected EVAMission(MissionType missionType, 
             MissionMember startingPerson, Rover rover,
             MissionPhase evaPhase) {
-        super(description, missionType, startingPerson, rover);
+        super(missionType, startingPerson, rover);
         
         this.evaPhase = evaPhase;
+
+		// Check suit although these may be claimed before loading
+		int suits = getNumberAvailableEVASuitsAtSettlement(getStartingSettlement());
+		if (suits < getMembersNumber()) {
+			endMission(MissionStatus.EVA_SUIT_CANNOT_BE_LOADED);
+		}
     }
 
     

@@ -34,12 +34,12 @@ public class DeliveryMeta extends AbstractMetaMission {
 
 	DeliveryMeta() {
 		// Everyone can start Delivery ??
-		super(MissionType.DELIVERY, "delivery", null);
+		super(MissionType.DELIVERY, null);
 	}
 
 	@Override
-	public Mission constructInstance(Person person) {
-		return new Delivery(person);
+	public Mission constructInstance(Person person, boolean needsReview) {
+		return new Delivery(person, needsReview);
 	}
 
 	@Override

@@ -10,7 +10,6 @@ import java.util.Collection;
 import java.util.List;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.environment.TerrainElevation;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.person.Person;
@@ -28,9 +27,6 @@ public class CollectIce extends CollectResourcesMission {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	/** Default description. */
-	private static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.collectIce"); //$NON-NLS-1$
-
 	/** Number of barrels required for the mission. */
 	public static final int REQUIRED_BARRELS = 20;
 
@@ -43,12 +39,13 @@ public class CollectIce extends CollectResourcesMission {
 	 * Constructor
 	 *
 	 * @param startingPerson the person starting the mission.
+	 * @param needsReview
 	 * @throws MissionException if problem constructing mission.
 	 */
-	public CollectIce(Person startingPerson) {
+	public CollectIce(Person startingPerson, boolean needsReview) {
 		// Use CollectResourcesMission constructor.
-		super(DEFAULT_DESCRIPTION, MissionType.COLLECT_ICE, startingPerson, ResourceUtil.iceID,
-				EquipmentType.BARREL, REQUIRED_BARRELS, NUM_SITES);
+		super(MissionType.COLLECT_ICE, startingPerson, ResourceUtil.iceID,
+				EquipmentType.BARREL, REQUIRED_BARRELS, NUM_SITES, needsReview);
 	}
 
 	/**
@@ -57,13 +54,12 @@ public class CollectIce extends CollectResourcesMission {
 	 * @param members            collection of mission members.
 	 * @param iceCollectionSites the sites to collect ice.
 	 * @param rover              the rover to use.
-	 * @param description        the mission's description.
 	 */
 	public CollectIce(Collection<MissionMember> members,
-			List<Coordinates> iceCollectionSites, Rover rover, String description) {
+			List<Coordinates> iceCollectionSites, Rover rover) {
 
 		// Use CollectResourcesMission constructor.
-		super(description, MissionType.COLLECT_ICE, members, ResourceUtil.iceID,
+		super(MissionType.COLLECT_ICE, members, ResourceUtil.iceID,
 				EquipmentType.BARREL, REQUIRED_BARRELS,
 				rover, iceCollectionSites);
 	}

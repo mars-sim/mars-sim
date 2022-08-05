@@ -30,12 +30,12 @@ public class TravelToSettlementMeta extends AbstractMetaMission {
 
 	public TravelToSettlementMeta() {
 		// Anyone can start ??
-    	super(MissionType.TRAVEL_TO_SETTLEMENT, "travelToSettlement", null);
+    	super(MissionType.TRAVEL_TO_SETTLEMENT, null);
     }
     
     @Override
-    public Mission constructInstance(Person person) {
-        return new TravelToSettlement(person);
+    public Mission constructInstance(Person person, boolean needsReview) {
+        return new TravelToSettlement(person, needsReview);
     }
 
     @Override

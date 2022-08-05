@@ -112,8 +112,6 @@ public abstract class Mission implements Serializable, Temporal {
 
 
 	// Data members
-	/** Unique identifier */
-	private int identifier;
 	/** The number of people that can be in the mission. */
 	private int missionCapacity;
 	/** The mission priority (between 1 and 5, with 1 the lowest, 5 the highest) */
@@ -124,8 +122,6 @@ public abstract class Mission implements Serializable, Temporal {
 	/** True if mission is completed. */
 	private boolean done = false;
 
-	/** The name of the settlement. */
-	private String settlementName;
 	/** The name of the vehicle reserved. */
 	private String vehicleReserved;
 	/** The Name of this mission. */
@@ -182,15 +178,14 @@ public abstract class Mission implements Serializable, Temporal {
 	}
 
 	/**
-	 * Constructor 1
+	 * Constructor 
 	 *
-	 * @param missionName
+	 * @param missionType
 	 * @param startingMember
 	 */
-	protected Mission(String missionName, MissionType missionType, MissionMember startingMember) {
+	protected Mission(MissionType missionType, MissionMember startingMember) {
 		// Initialize data members
-		this.identifier = getNextIdentifier();
-		this.missionName = missionName;
+		this.missionName = missionType.getName() + " #" + getNextIdentifier();
 		this.missionType = missionType;
 		this.startingMember = startingMember;
 		this.description = missionName;
@@ -235,12 +230,9 @@ public abstract class Mission implements Serializable, Temporal {
 
 			// Add starting member to mission.
 			startingMember.setMission(this);
-			// Save the settlement name for posterity
-			settlementName = startingMember.getSettlement().getName();
 
 			// Note: do NOT set his shift to ON_CALL yet.
 			// let the mission lead have more sleep before departing
-
 		}
 
 	}
@@ -278,16 +270,6 @@ public abstract class Mission implements Serializable, Temporal {
 		}
 
 		return "";
-	}
-
-
-	/**
-	 * Return the unique identifier of the mission.
-	 *
-	 * @return
-	 */
-	public int getIdentifier() {
-		return identifier;
 	}
 
 	/**
@@ -348,7 +330,7 @@ public abstract class Mission implements Serializable, Temporal {
 	 * Gets the string representation of this mission.
 	 */
 	public String toString() {
-		return this.getTypeID();
+		return missionName;
 	}
 
 	public final void addMember(MissionMember member) {
@@ -362,7 +344,7 @@ public abstract class Mission implements Serializable, Temporal {
 
 			fireMissionUpdate(MissionEventType.ADD_MEMBER_EVENT, member);
 
-			logger.log(member, Level.FINER, 0, "Just got added to " + missionName + " #" + identifier + ".");
+			logger.log(member, Level.FINER, 0, "Just got added to " + missionName + ".");
 		}
 	}
 
@@ -509,23 +491,21 @@ public abstract class Mission implements Serializable, Temporal {
 	}
 
 	/**
+	 * Update the mission name.
+	 * @param newName
+	 */
+    public void setName(String newName) {
+		this.missionName = newName;
+    }
+
+	/**
 	 * Gets the type and identifier of the mission.
 	 *
 	 * @return type and identifier of the mission
+	 * @deprecated use {@link #getName()}
 	 */
 	public final String getTypeID() {
-		return missionName + " #" + identifier;
-	}
-
-
-	/**
-	 * Sets the name of the mission.
-	 *
-	 * @param name the new mission name
-	 */
-	protected final void setName(String name) {
-		this.missionName = name;
-		fireMissionUpdate(MissionEventType.NAME_EVENT, name);
+		return missionName;
 	}
 
 	/**
@@ -1269,7 +1249,7 @@ public abstract class Mission implements Serializable, Temporal {
 
 			else if (plan.getStatus() == PlanType.APPROVED) {
 
-				fullMissionDesignation = createFullDesignation(p);
+				createFullDesignation();
 
 				logger.log(p, Level.INFO, 0, "Getting ready to embark on " + getDescription() + ".");
 
@@ -1322,15 +1302,13 @@ public abstract class Mission implements Serializable, Temporal {
 	/**
 	 * Creates the mission designation string for this mission
 	 *
-	 * @param person the mission lead
 	 * @return
 	 */
-	private String createFullDesignation(Person person) {
+	protected void createFullDesignation() {
 		fullMissionDesignation = Conversion.getInitials(getDescription().replace("with", "").trim()) + " "
-				+ missionManager.getMissionDesignationString(person.getAssociatedSettlement().getName());
+				+ missionManager.getMissionDesignationString(getAssociatedSettlement().getName());
 		
 		fireMissionUpdate(MissionEventType.DESIGNATION_EVENT, fullMissionDesignation);
-		return fullMissionDesignation;
 	}
 
 	public void setReservedVehicle(String name) {
@@ -1382,10 +1360,6 @@ public abstract class Mission implements Serializable, Temporal {
 		return priority;
 	}
 
-	public String getSettlmentName() {
-		return settlementName;
-	}
-
 	/**
 	 * Be default a worker can always participate
 	 * @param worker This maybe used by overridding methods
@@ -1401,7 +1375,7 @@ public abstract class Mission implements Serializable, Temporal {
 		if (this.getClass() != obj.getClass()) return false;
 		Mission m = (Mission) obj;
 		return this.missionType == m.getMissionType()
-				&& this.identifier == m.getIdentifier();
+				&& this.missionName.equals(m.getName());
 	}
 
 	/**
@@ -1410,7 +1384,7 @@ public abstract class Mission implements Serializable, Temporal {
 	 * @return hash code.
 	 */
 	public int hashCode() {
-		int hashCode = (1 + identifier);
+		int hashCode = (1 + missionName.hashCode());
 		hashCode *= missionType.hashCode();
 		return hashCode;
 	}
@@ -1453,4 +1427,5 @@ public abstract class Mission implements Serializable, Temporal {
 		}
 		listeners = null;
 	}
+
 }

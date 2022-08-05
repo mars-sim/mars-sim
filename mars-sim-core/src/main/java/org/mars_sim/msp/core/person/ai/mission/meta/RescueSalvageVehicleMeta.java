@@ -28,12 +28,12 @@ public class RescueSalvageVehicleMeta extends AbstractMetaMission {
 	private static SimLogger logger = SimLogger.getLogger(RescueSalvageVehicleMeta.class.getName());
 
     RescueSalvageVehicleMeta() {
-    	super(MissionType.RESCUE_SALVAGE_VEHICLE, "rescueSalvageVehicle", null);
+    	super(MissionType.RESCUE_SALVAGE_VEHICLE, null);
     }
   
     @Override
-    public Mission constructInstance(Person person) {
-        return new RescueSalvageVehicle(person);
+    public Mission constructInstance(Person person, boolean needsReview) {
+        return new RescueSalvageVehicle(person, needsReview);
     }
 
     @Override

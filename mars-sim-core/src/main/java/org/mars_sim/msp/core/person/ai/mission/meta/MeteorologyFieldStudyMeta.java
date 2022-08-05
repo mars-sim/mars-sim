@@ -21,13 +21,13 @@ import org.mars_sim.msp.core.science.ScienceType;
 public class MeteorologyFieldStudyMeta extends FieldStudyMeta {
 
     MeteorologyFieldStudyMeta() {
-    	super(MissionType.METEOROLOGY, "meteorologyFieldStudy",
+    	super(MissionType.METEOROLOGY, 
     		 Set.of(JobType.METEOROLOGIST),
     		 ScienceType.METEOROLOGY);
     }
     
     @Override
-    public Mission constructInstance(Person person) {
-        return new MeteorologyFieldStudy(person);
+    public Mission constructInstance(Person person, boolean needsReview) {
+        return new MeteorologyFieldStudy(person, needsReview);
     }
 }

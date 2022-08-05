@@ -8,7 +8,6 @@ package org.mars_sim.msp.core.person.ai.mission.meta;
 
 import java.util.Set;
 
-import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -27,14 +26,13 @@ public class AbstractMetaMission implements MetaMission {
 	/**
 	 * Creates a new Mission meta instance
 	 * @param type 
-	 * @param nameKey This is used as a lookup in the Msg bundle to find the name.
 	 * @param preferredLeaderJob Jobs that a leader should have; null means no preference
 	 */
-	protected AbstractMetaMission(MissionType type, String nameKey, Set<JobType> preferredLeaderJob) {
+	protected AbstractMetaMission(MissionType type, Set<JobType> preferredLeaderJob) {
 		super();
 		this.type = type;
 		this.preferredLeaderJob = preferredLeaderJob;
-		this.name = Msg.getString("Mission.description." + nameKey);
+		this.name = type.getName();
 	}
 
 	@Override
@@ -48,7 +46,7 @@ public class AbstractMetaMission implements MetaMission {
 	}
 
 	@Override
-	public Mission constructInstance(Person person) {
+	public Mission constructInstance(Person person, boolean needsReview) {
 		throw new UnsupportedOperationException("Mission Meta "+ name + " does not support mission for Person.");
 	}
 
@@ -72,7 +70,8 @@ public class AbstractMetaMission implements MetaMission {
 	 * @param person
 	 * @return
 	 */
-	protected double getLeaderSuitability(Person person) {
+	@Override
+	public double getLeaderSuitability(Person person) {
 		double result = 0.25D;
 		
 		JobType jt = person.getMind().getJob();

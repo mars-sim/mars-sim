@@ -147,13 +147,13 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	/**
 	 * Create a Vehicle mission
 	 *
-	 * @param missionName
+	 * @param missionType
 	 * @param startingMember
 	 * @param minPeople
 	 * @param vehicle Optional, if null then reserve a Vehicle
 	 */
-	protected VehicleMission(String missionName, MissionType missionType, MissionMember startingMember, Vehicle vehicle) {
-		super(missionName, missionType, startingMember);
+	protected VehicleMission(MissionType missionType, MissionMember startingMember, Vehicle vehicle) {
+		super(missionType, startingMember);
 
 		init(startingMember);
 
@@ -191,16 +191,33 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	}
 
 	/**
+	 * Set the starting state of the mission
+	 * @return
+	 */
+	protected void setInitialPhase(boolean needsReview) {
+		if (needsReview) {
+			// Set initial mission phase.
+			setPhase(REVIEWING, null);
+		}
+		else {
+			// Set initial mission phase.
+			createFullDesignation();
+			setPhase(EMBARKING, getStartingSettlement().getName());
+		}
+
+		MissionMember startingMember = getStartingPerson();
+		logger.info(startingMember, "Started mission " + getName() + " using " + getVehicle().getName());
+	}
+
+	/**
 	 * Reserve a vehicle
 	 *
 	 * @return
 	 */
 	protected boolean reserveVehicle() {
-		MissionMember startingMember = getStartingPerson();
-		if (startingMember.getSettlement() == null)
-			return false;
 		// Reserve a vehicle.
-		if (!reserveVehicle(startingMember)) {
+		MissionMember startingMember = getStartingPerson();
+		if (startingMember.getSettlement() == null || !reserveVehicle(startingMember)) {
 			endMission(MissionStatus.NO_RESERVABLE_VEHICLES);
 			logger.warning(startingMember, "Could not reserve a vehicle for " + getTypeID() + ".");
 			return false;

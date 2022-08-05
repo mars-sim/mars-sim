@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.mission;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -46,16 +45,13 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**s
  * Mission for salvaging a construction stage at a building construction site.
  */
-public class BuildingSalvageMission extends Mission implements Serializable {
+public class BuildingSalvageMission extends Mission {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
 	private static final Logger logger = Logger.getLogger(BuildingSalvageMission.class.getName());
-	
-	/** Default description. */
-	private static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.buildingSalvageMission"); //$NON-NLS-1$
 
 	/** Mission Type enum. */
 	public static final MissionType missionType = MissionType.BUILDING_SALVAGE;
@@ -94,7 +90,7 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 	 */
 	public BuildingSalvageMission(MissionMember startingMember) {
 		// Use Mission constructor.
-		super(DEFAULT_DESCRIPTION, missionType, startingMember);
+		super(missionType, startingMember);
 
 		// Set wear condition to 100% by default.
 		wearCondition = 100D;
@@ -198,7 +194,7 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 			ConstructionSite site, List<GroundVehicle> vehicles) {
 
 		// Use Mission constructor.
-		super(DEFAULT_DESCRIPTION, missionType, (MissionMember) members.toArray()[0]);
+		super(missionType, (MissionMember) members.toArray()[0]);
 
 		this.settlement = settlement;
 

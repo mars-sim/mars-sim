@@ -48,9 +48,6 @@ public class Mining extends EVAMission
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(Mining.class.getName());
 	
-	/** Default description. */
-	private static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.mining");
-	
 	/** Mission phases */
 	private static final MissionPhase MINING_SITE = new MissionPhase("Mission.phase.miningSite");
 
@@ -86,10 +83,10 @@ public class Mining extends EVAMission
 	 * @param startingPerson the person starting the mission.
 	 * @throws MissionException if error creating mission.
 	 */
-	public Mining(Person startingPerson) {
+	public Mining(Person startingPerson, boolean needsReview) {
 
 		// Use RoverMission constructor.
-		super(DEFAULT_DESCRIPTION, MissionType.MINING, startingPerson, null, MINING_SITE);
+		super(MissionType.MINING, startingPerson, null, MINING_SITE);
 		
 		if (!isDone()) {
 			// Initialize data members.
@@ -128,12 +125,12 @@ public class Mining extends EVAMission
 				luv = reserveLightUtilityVehicle();
 				if (luv == null) {
 					endMission(MissionStatus.LUV_NOT_AVAILABLE);
+					return;
 				}
+				setInitialPhase(needsReview);
 			}
 		}
 
-		// Set initial mission phase.
-		setPhase(REVIEWING, null);
 	}
 
 	/**
@@ -145,10 +142,10 @@ public class Mining extends EVAMission
 	 * @param description        the mission's description.
 	 */
 	public Mining(Collection<MissionMember> members, ExploredLocation miningSite,
-			Rover rover, LightUtilityVehicle luv, String description) {
+			Rover rover, LightUtilityVehicle luv) {
 
 		// Use RoverMission constructor.,  
-		super(description, MissionType.MINING, (MissionMember) members.toArray()[0], rover, MINING_SITE);
+		super(MissionType.MINING, (MissionMember) members.toArray()[0], rover, MINING_SITE);
 		
 		// Initialize data members.
 		this.miningSite = miningSite;
@@ -181,7 +178,8 @@ public class Mining extends EVAMission
 		}
 
 		// Set initial mission phase.
-		setPhase(EMBARKING, s.getName());
+		setInitialPhase(false);
+
 	}
 
 	/**

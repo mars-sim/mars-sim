@@ -8,7 +8,6 @@ package org.mars_sim.msp.core.person.ai.mission;
 
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -59,17 +58,13 @@ import org.mars_sim.msp.core.vehicle.VehicleType;
  * Mission for construction a stage for a settlement building. TODO externalize
  * strings
  */
-public class BuildingConstructionMission extends Mission implements Serializable {
+public class BuildingConstructionMission extends Mission {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(BuildingConstructionMission.class.getName());
-
-		
-	/** Default description. */
-	private static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.buildingConstructionMission"); //$NON-NLS-1$
 
 	/** Mission Type enum. */
 	public static final MissionType missionType = MissionType.BUILDING_CONSTRUCTION;
@@ -123,7 +118,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 	 */
 	public BuildingConstructionMission(MissionMember startingMember) {
 		// Use Mission constructor.
-		super(DEFAULT_DESCRIPTION, missionType, startingMember);
+		super(missionType, startingMember);
 
 
 		if (!isDone()) {
@@ -151,16 +146,16 @@ public class BuildingConstructionMission extends Mission implements Serializable
 
 		if (!isDone()) {
 			// Set initial mission phase.
-//			if (sim.getUseGUI()) {
-//				setPhase(SELECT_SITE_PHASE, settlement.getName());
-//			}
-//			else {
+			if (site == null) {
+				endMission(MissionStatus.CONSTRUCTION_SITE_NOT_FOUND_OR_CREATED);
+			}
+			else {
 				// Reserve construction vehicles.
 				reserveConstructionVehicles();
 				// Retrieve construction LUV attachment parts.
 				retrieveConstructionLUVParts();
 				setPhase(PREPARE_SITE_PHASE, settlement.getName());
-//			}
+			}
 		}
 
 	}
@@ -234,6 +229,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 				else {
 					logger.warning(settlement, "New construction stage could not be determined.");
 					endMission(MissionStatus.NEW_CONSTRUCTION_STAGE_NOT_DETERMINED);
+					return;
 				}
 
 				initCase1Step2(site, info, skill, values);
@@ -272,7 +268,8 @@ public class BuildingConstructionMission extends Mission implements Serializable
 			if (stage != null) {
 				site.setUndergoingConstruction(true);
 			}
-		} else {
+		}
+		else {
 			endMission(MissionStatus.CONSTRUCTION_SITE_NOT_FOUND_OR_CREATED);
 		}
 
@@ -303,7 +300,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 			List<GroundVehicle> vehicles) {
 
 		// Use Mission constructor.
-		super(DEFAULT_DESCRIPTION, missionType, (MissionMember) members.toArray()[0]);
+		super(missionType, (MissionMember) members.toArray()[0]);
 
 		// this.site = no_site;
 		this.members = members;

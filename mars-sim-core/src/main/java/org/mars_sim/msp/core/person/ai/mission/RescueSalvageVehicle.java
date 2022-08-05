@@ -58,9 +58,6 @@ public class RescueSalvageVehicle extends RoverMission {
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(RescueSalvageVehicle.class.getName());
 
-	/** Default description. */
-	private static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.rescueSalvageVehicle"); //$NON-NLS-1$
-
 	// Static members
 	public static final int MIN_STAYING_MEMBERS = 1;
 	private static final int MIN_GOING_MEMBERS = 2;
@@ -82,9 +79,9 @@ public class RescueSalvageVehicle extends RoverMission {
 	 * @param startingPerson the person starting the mission.
 	 * @throws MissionException if error constructing mission.
 	 */
-	public RescueSalvageVehicle(Person startingPerson) {
+	public RescueSalvageVehicle(Person startingPerson, boolean needsReview) {
 		// Use RoverMission constructor
-		super(DEFAULT_DESCRIPTION, MissionType.RESCUE_SALVAGE_VEHICLE, startingPerson, null);
+		super(MissionType.RESCUE_SALVAGE_VEHICLE, startingPerson, null);
 
 		if (!isDone()) {			
 			if (vehicleTarget == null)
@@ -110,13 +107,11 @@ public class RescueSalvageVehicle extends RoverMission {
 				// Check if vehicle can carry enough supplies for the mission.
 				if (hasVehicle() && !isVehicleLoadable()) {			
 					endMission(MissionStatus.CANNOT_LOAD_RESOURCES);
+					return;
 				}
 				
 				// Set initial phase
-				setPhase(VehicleMission.REVIEWING, null);
-				
-				logger.info(startingPerson, "Started a Rescue Vehicle Mission.");
-				
+				setInitialPhase(needsReview);
 			} else {
 				endMission(MissionStatus.TARGET_VEHICLE_NOT_FOUND);
 			}
@@ -129,14 +124,13 @@ public class RescueSalvageVehicle extends RoverMission {
 	 * @param members            collection of mission members.
 	 * @param vehicleTarget      the vehicle to rescue/salvage.
 	 * @param rover              the rover to use.
-	 * @param description        the mission's description.
 	 * @throws MissionException if error constructing mission.
 	 */
 	public RescueSalvageVehicle(Collection<MissionMember> members, Vehicle vehicleTarget,
-			Rover rover, String description) {
+			Rover rover) {
 
 		// Use RoverMission constructor.
-		super(description, MissionType.RESCUE_SALVAGE_VEHICLE, (MissionMember) members.toArray()[0], rover);
+		super(MissionType.RESCUE_SALVAGE_VEHICLE, (MissionMember) members.toArray()[0], rover);
 
 		this.vehicleTarget = vehicleTarget;
 
@@ -152,15 +146,13 @@ public class RescueSalvageVehicle extends RoverMission {
 		// Add mission members.
 		addMembers(members, false);
 
-		// Set initial phase
-		setPhase(EMBARKING, s.getName());
-
 		// Check if vehicle can carry enough supplies for the mission.
 		if (hasVehicle() && !isVehicleLoadable()) {
 			endMission(MissionStatus.CANNOT_LOAD_RESOURCES);
 		}
-		
-		logger.info(getStartingPerson(), "Had started RescueSalvageVehicle");
+		else {
+			setInitialPhase(false);
+		}
 	}
 
 	@Override

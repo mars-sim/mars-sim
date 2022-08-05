@@ -35,7 +35,7 @@ public class MissionSummaryCommand extends ChatCommand {
 		
 		StructuredResponse response = new StructuredResponse();
 		response.appendTableHeading("Name",  24,
-									"Phase", 18,
+									"Phase", 20,
 									"Vehicle", CommandHelper.PERSON_WIDTH,
 									"Settlement", CommandHelper.PERSON_WIDTH);
 		for(Mission m : mgr.getMissions()) {
@@ -46,7 +46,7 @@ public class MissionSummaryCommand extends ChatCommand {
 				vName = (v != null ? v.getName() : "");
 			}
 			if (showAll || !m.isDone()) {
-				response.appendTableRow(m.getTypeID(),
+				response.appendTableRow(m.getName(),
 										m.getPhase().getName(),
 										vName,
 										m.getAssociatedSettlement());
