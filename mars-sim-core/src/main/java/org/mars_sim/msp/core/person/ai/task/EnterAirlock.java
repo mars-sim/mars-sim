@@ -455,91 +455,57 @@ public class EnterAirlock extends Task implements Serializable {
 
 		if (inSettlement) {
 
-//			if (exteriorDoorPos == null) {
-//				exteriorDoorPos = airlock.getAvailableExteriorPosition();
-//			}
+			if (airlock.isOuterDoorLocked()) {
+				logger.log((Unit)airlock.getEntity(), person, Level.WARNING, 4_000,
+						"Outer door locked in " + airlock.getEntity() + ".");
 
-//			if (LocalAreaUtil.areLocationsClose(new LocalPosition.Double(person.getXLocation(), person.getYLocation()),
-//					exteriorDoorPos)) {
-
-				if (airlock.isOuterDoorLocked()) {
-					logger.log((Unit)airlock.getEntity(), person, Level.WARNING, 4_000,
-							"Outer door locked in " + airlock.getEntity() + ".");
-					// Reset accumulatedTime back to zero
-					accumulatedTime = 0;
-					return 0;
-				}
+				// Reset accumulatedTime back to zero
+				accumulatedTime = 0;
+				return 0;
+			}
+			
+			if (airlock.isChamberFull() || !airlock.hasSpace())  {
+				logger.log((Unit)airlock.getEntity(), person, Level.WARNING, 4_000,
+						"Chamber full in " + airlock.getEntity().toString() + ".");
 				
-				if (airlock.isChamberFull() || !airlock.hasSpace())  {
-					logger.log((Unit)airlock.getEntity(), person, Level.WARNING, 4_000,
-							"Chamber full in " + airlock.getEntity().toString() + ".");
-					// Reset accumulatedTime back to zero
-					accumulatedTime = 0;
-					return 0;
-				}
+				// Reset accumulatedTime back to zero
+				accumulatedTime = 0;
+				return 0;
+			}
 				
-				if (!airlock.inAirlock(person)) {
-					canProceed = airlock.enterAirlock(person, id, false);
-				}
-				else // true if the person is already inside the airlock from previous cycle
-					canProceed = true;
-
-				if (canProceed && transitionTo(3)) {
-					canProceed = true;
-				}
-
-				else {
-                    // true if the person is already inside the chamber from previous cycle
-                    canProceed = isInZone(2);
-				}
-//			}
-//
-//			else {
-//
-//				// Walk to exterior door position.
-//				addSubTask(new WalkOutside(person, person.getXLocation(), person.getYLocation(), exteriorDoorPos.getX(),
-//						exteriorDoorPos.getY(), true));
-//				logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4_000,
-//						"Attempted to come closer to the airlock's exterior door in " + airlock.getEntity());
-//			}
+             if (!airlock.inAirlock(person)) {
+				canProceed = airlock.enterAirlock(person, id, false);
+			}
+            else if (transitionTo(3)) {
+				canProceed = true;
+			}
+            // true if the person is already inside the chamber from previous cycle
+            else if (isInZone(2)) {
+             	canProceed = true;
+             }	 
+			else {
+				// true if the person is already at the inside of the exterior door 
+	        	canProceed = isInZone(3);
+			}	
 		}
 
 		else {
 
-//			if (exteriorDoorPos == null) {
-//				exteriorDoorPos = airlock.getAvailableExteriorPosition();
-//			}
+			if (!airlock.isOuterDoorLocked()) {
 
-//			if (LocalAreaUtil.areLocationsClose(new LocalPosition.Double(person.getXLocation(), person.getYLocation()),
-//					exteriorDoorPos)) {
-
-				if (!airlock.isOuterDoorLocked()) {
-
-					if (!airlock.inAirlock(person)) {
-						canProceed = airlock.enterAirlock(person, id, false);
-					}
-					else // the person is already inside the airlock from previous cycle
-						canProceed = true;
+				if (!airlock.inAirlock(person)) {
+					canProceed = airlock.enterAirlock(person, id, false);
 				}
+				else // the person is already inside the airlock from previous cycle
+					canProceed = true;
+			}
 
-				else {
-					setPhase(REQUEST_INGRESS);
-					// Reset accumulatedTime back to zero
-					accumulatedTime = 0;
-					return 0;
-				}
-//			}
-//
-//			else {
-//				Rover airlockRover = (Rover) airlock.getEntity();
-//
-//				// Walk to exterior door position.
-//				addSubTask(new WalkOutside(person, person.getXLocation(), person.getYLocation(), exteriorDoorPos.getX(),
-//						exteriorDoorPos.getY(), true));
-//
-//				logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4_000,
-//						"Attempted to come closer to " + airlockRover.getNickName() + "'s exterior door.");
-//			}
+			else {
+				setPhase(REQUEST_INGRESS);
+				// Reset accumulatedTime back to zero
+				accumulatedTime = 0;
+				return 0;
+			}
 		}
 
 		if (canProceed && accumulatedTime > STANDARD_TIME) {
@@ -578,13 +544,13 @@ public class EnterAirlock extends Task implements Serializable {
 			if (transitionTo(2)) {
 				canProceed = true;
 			}
-			else {
-				// Go back
-				setPhase(ENTER_AIRLOCK);
-				// Reset accumulatedTime back to zero
-				accumulatedTime = 0;
-				return 0;
-			}
+//			else {
+//				// Don't go back. Problematic
+//				setPhase(ENTER_AIRLOCK);
+//				// Reset accumulatedTime back to zero
+//				accumulatedTime = 0;
+//				return 0;
+//			}
 		}
 		
 		else {

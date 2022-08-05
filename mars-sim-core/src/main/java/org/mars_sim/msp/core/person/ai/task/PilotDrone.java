@@ -79,7 +79,6 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 		// Set initial parameters
 		setDescription(Msg.getString("Task.description.pilotDrone.detail", flyer.getName())); // $NON-NLS-1$
 		addPhase(AVOID_COLLISION);
-//		addPhase(WINCH_VEHICLE);
 
 		logger.log(flyer, person, Level.INFO, 20_000, "Took control of the drone.");
 	}
@@ -94,7 +93,6 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 		// Set initial parameters
 		setDescription(Msg.getString("Task.description.pilotDrone.detail", flyer.getName())); // $NON-NLS-1$
 		addPhase(AVOID_COLLISION);
-//		addPhase(WINCH_VEHICLE);
 
 		logger.log(flyer, robot, Level.INFO, 20_000, "Took control of the drone.");
 	}

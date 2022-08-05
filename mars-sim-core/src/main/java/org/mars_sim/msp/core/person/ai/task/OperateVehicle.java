@@ -429,7 +429,8 @@ public abstract class OperateVehicle extends Task implements Serializable {
         // Case 0: arrived
         if (startingDistanceToDestination <= DESTINATION_BUFFER) {
         	logger.log(vehicle, Level.CONFIG,  20_000L, "Case 0: Arrived at " + destination 
-        			+ " (startingDistanceToDestination: " + Math.round(startingDistanceToDestination * 1_000)/1_000 + " km).");
+        			+ " (startingDistanceToDestination: " 
+        			+ Math.round(startingDistanceToDestination * 1_000.0)/1_000.0 + " km).");
 
         	// Note: Need to consider the case in which VehicleMission's determineEmergencyDestination() causes the 
         	// the vehicle to switch the destination to a settlement when this settlement is within a very short
@@ -514,7 +515,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
 				logger.log(vehicle, Level.WARNING,  20_000L, 
 						"Case 2: Used up the last drop of fuel to drive toward "
 						+ destination + " - " 
-	        			+ Math.round(d_km * 1_000)/1_000 + " km away.");
+	        			+ Math.round(d_km * 1_000.0)/1_000.0 + " km away.");
 				
             	remainingTime = time - hrsTime / MarsClock.MILLISOLS_PER_HOUR;
             }
@@ -522,8 +523,8 @@ public abstract class OperateVehicle extends Task implements Serializable {
             	// Case 3 : the rover may use all the prescribed time to drive 
 				logger.log(vehicle, Level.INFO,  20_000L, "Case 3: Driving toward "
 						+ destination + " - " 
-	        			+ Math.round(startingDistanceToDestination * 1_000)/1_000 + " km away.");
-				
+	        			+ Math.round(startingDistanceToDestination * 1_000.0)/1_000.0 + " km away.");
+				// Consume all time
             	remainingTime = 0;
             }
             
