@@ -183,9 +183,8 @@ public class CollectResources extends EVAOperation implements Serializable {
 	 * @throws Exception if error collecting resources.
 	 */
 	private double collectResources(double time) {
-		double remainingTime = time - standardPulseTime;
 		
-		if (checkReadiness(standardPulseTime) > 0)
+		if (checkReadiness(time) > 0)
 			return time;
 
 		// Collect resources.
@@ -200,7 +199,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 		double remainingSamplesNeeded = targettedAmount - currentSamplesCollected;
 		double sampleLimit = Math.min(remainingSamplesNeeded, remainingPersonCapacity);
 
-		double samplesCollected = standardPulseTime * compositeRate;
+		double samplesCollected = time * compositeRate;
 
 		// Modify collection rate by areology and prospecting skill.
 		int areologySkill = person.getSkillManager().getEffectiveSkillLevel(SkillType.AREOLOGY);
@@ -220,15 +219,15 @@ public class CollectResources extends EVAOperation implements Serializable {
 		}
 
 		// Add experience points
-		addExperience(standardPulseTime);
+		addExperience(time);
 
 		// Check for an accident during the EVA operation.
-		checkForAccident(standardPulseTime);
+		checkForAccident(time);
 
 		// Collect resources
 		if (samplesCollected <= sampleLimit) {
 			container.storeAmountResource(resourceType, samplesCollected);
-			return remainingTime;
+			return 0;
 		} else {
 			if (sampleLimit >= 0D) {
 				container.storeAmountResource(resourceType, sampleLimit);
@@ -240,7 +239,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 				return 0;
 		}
 
-		return remainingTime;
+		return 0;
 	}
 
 	/**

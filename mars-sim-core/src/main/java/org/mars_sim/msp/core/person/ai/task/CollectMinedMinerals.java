@@ -145,19 +145,18 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 	 * @throws Exception if error collecting minerals.
 	 */
 	private double collectMineralsPhase(double time) {
-		double remainingTime = time - standardPulseTime;
-		
+
 		// Check for radiation exposure during the EVA operation.
-		if (isDone() || isRadiationDetected(standardPulseTime)) {
+		if (isDone() || isRadiationDetected(time)) {
 			checkLocation();
-			return remainingTime;
+			return time;
 		}
 		
 		// Check if site duration has ended or there is reason to cut the collect
 		// minerals phase short and return to the rover.
-		if (shouldEndEVAOperation() || addTimeOnSite(standardPulseTime)) {
+		if (shouldEndEVAOperation() || addTimeOnSite(time)) {
 			checkLocation();
-			return remainingTime;
+			return time;
 		}
 		
 		Mining mission = (Mining) worker.getMission();
@@ -175,12 +174,12 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 		
 		if (roverRemainingCap < weight + 5) {
 			checkLocation();
-			return remainingTime;
+			return time;
 		}
 			
 		remainingPersonCapacity = worker.getAmountResourceRemainingCapacity(mineralType.getID());
 
-		double mineralsCollected = standardPulseTime * MINERAL_COLLECTION_RATE;
+		double mineralsCollected = time * MINERAL_COLLECTION_RATE;
 
 		// Modify collection rate by "Areology" skill.
 		int areologySkill = worker.getSkillManager().getEffectiveSkillLevel(SkillType.AREOLOGY);
@@ -195,7 +194,7 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 			mineralsCollected = mineralsExcavated;
 
 		// Add experience points
-		addExperience(standardPulseTime);
+		addExperience(time);
 
 		// Collect minerals.
 		worker.storeAmountResource(mineralType.getID(), mineralsCollected);
@@ -207,9 +206,9 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 		}
 
 		// Check for an accident during the EVA operation.
-		checkForAccident(standardPulseTime);
+		checkForAccident(time);
 
-		return remainingTime;
+		return 0;
 	}
 
 	@Override

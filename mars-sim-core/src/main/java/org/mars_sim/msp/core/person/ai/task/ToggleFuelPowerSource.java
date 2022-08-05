@@ -477,7 +477,7 @@ implements Serializable {
                 + " in " + building.getNickName() + ".");
 
         // Check if an accident happens during toggle power source.
-        checkForAccident(workTime);
+        checkForAccident(time);
 
         return time - workTime;
     }
@@ -493,7 +493,7 @@ implements Serializable {
 
         // Use EVAOperation checkForAccident() method.
         if (isInhabitable) {
-            super.checkForAccident(standardPulseTime);
+            super.checkForAccident(time);
         }
 
         // Mechanic skill modification.

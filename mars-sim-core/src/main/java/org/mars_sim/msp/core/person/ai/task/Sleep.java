@@ -149,7 +149,6 @@ public class Sleep extends Task implements Serializable {
 	 * @return the amount of time (millisols) left over after performing the phase.
 	 */
 	private double sleepingPhase(double time) {
-		double remainingTime = time - standardPulseTime;
 		
 		if (isDone() || getTimeLeft() <= 0) {
         	// this task has ended
@@ -175,7 +174,7 @@ public class Sleep extends Task implements Serializable {
 
 			pc.recoverFromSoreness(.05);
 
-			double fractionOfRest = standardPulseTime * TIME_FACTOR;
+			double fractionOfRest = time * TIME_FACTOR;
 
 			double f = pc.getFatigue();
 
@@ -205,9 +204,9 @@ public class Sleep extends Task implements Serializable {
 
 			circadian.setAwake(false);
 			// Change hormones
-			circadian.setRested(standardPulseTime);
+			circadian.setRested(time);
 			// Record the sleep time [in millisols]
-			circadian.recordSleep(standardPulseTime);
+			circadian.recordSleep(time);
 
 			if (person.getTaskSchedule().isShiftHour(marsClock.getMillisolInt())) {
 				// Reduce the probability if it's not the right time to sleep
@@ -260,7 +259,7 @@ public class Sleep extends Task implements Serializable {
 						station.addSleeper();
 					}
 					
-	    			double hrs = standardPulseTime * MarsClock.HOURS_PER_MILLISOL;
+	    			double hrs = time * MarsClock.HOURS_PER_MILLISOL;
 	
 	    			double energy = robot.getSystemCondition().deliverEnergy(RoboticStation.CHARGE_RATE * hrs);
 	    			
@@ -279,7 +278,7 @@ public class Sleep extends Task implements Serializable {
     			robot.getSystemCondition().setCharging(false);
 		}
 
-		return remainingTime;
+		return 0;
 	}
 
 	/**

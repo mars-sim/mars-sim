@@ -242,6 +242,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		}
 		
 		// Set standard pulse time to a quarter of the value of the current pulse width
+		if (masterClock == null)
+			masterClock = Simulation.instance().getMasterClock();
 		standardPulseTime = masterClock.getMarsPulseTime() / MasterClock.MULTIPLIER;
 	}
 

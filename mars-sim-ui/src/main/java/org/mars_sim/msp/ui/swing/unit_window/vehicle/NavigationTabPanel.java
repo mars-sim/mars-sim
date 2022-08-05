@@ -277,7 +277,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         
         // Prepare speed label
         speedCache = vehicle.getSpeed();
-        speedLabel = addTextField(destinationSpringPanel, "Speed :", DECIMAL_PLACES1.format(speedCache) + " km/h", null);
+        speedLabel = addTextField(destinationSpringPanel, "Speed :", DECIMAL_PLACES2.format(speedCache) + " km/h", null);
         
         // Prepare elevation label for vehicle       	     
         elevationCache = vehicle.getElevation();
@@ -346,7 +346,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         // Update speed label
         if (speedCache != vehicle.getSpeed()) {
             speedCache = vehicle.getSpeed();
-            speedLabel.setText(DECIMAL_PLACES1.format(speedCache) + " km/h");
+            speedLabel.setText(DECIMAL_PLACES2.format(speedCache) + " km/h");
         }
 
         // Update elevation label.

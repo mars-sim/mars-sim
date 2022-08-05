@@ -280,21 +280,23 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
 	 * @throws Exception
 	 */
 	private double assistingPhase(double time) {
-		double remainingTime = time - standardPulseTime;
-		
+	
         // If person is incapacitated, end task.
         if (person.getPerformanceRating() <= .2) {
             endTask();
+            return time;
         }
 
 		if (person.getPhysicalCondition().computeFitnessLevel() < 2) {
 			logger.log(person, Level.FINE, 10_000, "Ended assisting researcher. Not feeling well.");
 			endTask();
+			return time;
 		}
 
 	      // Check if task is finished.
         if (((Task) researchTask).isDone()) {
             endTask();
+            return 0;
         }
 
 		// Check if researcher is in a different location situation than the assistant.
@@ -309,7 +311,7 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
 		// Add relationship modifier for opinion of assistant from the researcher.
 		addRelationshipModifier(time);
 
-		return remainingTime;
+		return 0;
 	}
 
 	/**

@@ -114,7 +114,7 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 		}
 		// Create innerDoorStateLabel
 		innerDoorStateLabel = addTextField(labelPanel, Msg.getString("BuildingPanelEVA.innerDoor.state"),
-										   innerDoorStateCache, 8, null);
+										   innerDoorStateCache, 10, null);
 
 		// Create outerDoorLabel
 		outerDoorLabel = addTextField(labelPanel, Msg.getString("BuildingPanelEVA.outerDoor.number"),
@@ -128,7 +128,7 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 		}
 		// Create outerDoorStateLabel
 		outerDoorStateLabel = addTextField(labelPanel, Msg.getString("BuildingPanelEVA.outerDoor.state"),
-										   outerDoorStateCache, 8, null);
+										   outerDoorStateCache, 10, null);
 
 		
 		// Create occupiedLabel
@@ -138,7 +138,7 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 
 		// Create activationLabel
 		activationLabel = addTextField(labelPanel, Msg.getString("BuildingPanelEVA.airlock.activation"),
-										 buildingAirlock.isActivated() + "", 8, null);
+										 buildingAirlock.isActivated() + "", 10, null);
 
 		// Create emptyLabel
 		emptyLabel = addTextField(labelPanel, Msg.getString("BuildingPanelEVA.empty"),
@@ -146,14 +146,14 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 
 		// Create airlockStateLabel
 		airlockStateLabel = addTextField(labelPanel, Msg.getString("BuildingPanelEVA.airlock.state"),
-										 buildingAirlock.getState().toString(), 8, null);
+										 buildingAirlock.getState().toString(), 10, null);
 
 		// Create cycleTimeLabel
 		cycleTimeLabel = addTextField(labelPanel, Msg.getString("BuildingPanelEVA.airlock.cycleTime"),
 									  DECIMAL_PLACES1.format(buildingAirlock.getRemainingCycleTime()), 4, null);
 		
 		transitionLabel = addTextField(labelPanel, Msg.getString("BuildingPanelEVA.airlock.transition"),
-				 buildingAirlock.isTransitioning() + "", 8, null);
+				 buildingAirlock.isTransitioning() + "", 10, null);
 
 		SpringUtilities.makeCompactGrid(labelPanel,
                 5, 4, //rows, cols

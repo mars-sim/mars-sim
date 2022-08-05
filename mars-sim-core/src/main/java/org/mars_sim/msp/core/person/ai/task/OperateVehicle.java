@@ -458,10 +458,10 @@ public abstract class OperateVehicle extends Task implements Serializable {
         double v_kph = v_ms * KPH_CONV;
         
         // Assume vehicle's speed max out
-    	v_kph = Math.min(v_kph, getAverageVehicleSpeed(vehicle, person));
+    	v_kph = Math.min(v_kph, 2 * getAverageVehicleSpeed(vehicle, person));
     	v_ms = v_kph / KPH_CONV;
    
-    	logger.log(vehicle, Level.FINE, 20_000L, 
+    	logger.log(vehicle, Level.INFO, 20_000L, 
 				"max v_kph: " + Math.round(v_kph * 1000.0)/1000.0 + " kph");
     	
     	// Determine distance traveled in time given.
@@ -476,7 +476,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
         
         // Case 1 : overshot. Need to recalculate d, t and u
         if (startingDistanceToDestination <= (d_km + DESTINATION_BUFFER)) {
-        	logger.log(vehicle, Level.CONFIG,  20_000L, "Case 1: Arriving near "
+        	logger.log(vehicle, Level.INFO,  20_000L, "Case 1: Arriving near "
         			+ destination + " - " 
         			+ Math.round(startingDistanceToDestination * 1_000.0)/1_000.0 + " km away.");
         	
@@ -520,7 +520,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
             }
             else {
             	// Case 3 : the rover may use all the prescribed time to drive 
-				logger.log(vehicle, Level.WARNING,  20_000L, "Case 3: Driving toward "
+				logger.log(vehicle, Level.INFO,  20_000L, "Case 3: Driving toward "
 						+ destination + " - " 
 	        			+ Math.round(startingDistanceToDestination * 1_000)/1_000 + " km away.");
 				

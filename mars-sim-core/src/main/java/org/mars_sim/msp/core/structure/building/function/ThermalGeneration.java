@@ -169,9 +169,9 @@ public class ThermalGeneration extends Function {
 	 */
 	private double calculateGeneratedHeat(double time) {
 
-		double result = 0D;
+		double heatGen = 0D;
 		
-		double elecRequired = 0;
+		double powerRequired = 0;
 		Building build = getBuilding();
 		double percentageHeat = building.getHeatMode().getPercentage();
 		for (HeatSource heatSource : heatSources) {
@@ -182,15 +182,15 @@ public class ThermalGeneration extends Function {
 
 	    	if (heatSource.getType() == HeatSourceType.ELECTRIC_HEATING) {
 	    		// Electric heating needs electric
-	    		elecRequired += heatCreated;
+	    		powerRequired += heatCreated;
 	    	}
 	
-			result += heatCreated;
+			heatGen += heatCreated;
 		}
 			
-		building.setPowerRequiredForHeating(elecRequired);
+		building.setPowerRequiredForHeating(powerRequired);
 
-		return result;
+		return heatGen;
 	}
 
 

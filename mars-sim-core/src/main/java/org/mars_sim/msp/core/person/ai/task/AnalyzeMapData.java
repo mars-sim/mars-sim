@@ -169,8 +169,7 @@ public class AnalyzeMapData extends Task implements Serializable {
      * @throws Exception
      */
     private double analyzingPhase(double time) {
-    	double remainingTime = time - standardPulseTime;
-    	
+  
 		if (person.getPhysicalCondition().computeFitnessLevel() < 2) {
 			logger.log(person, Level.INFO, 30_000, "Ended " + NAME + " Not feeling well.");
 			endTask();
@@ -183,10 +182,10 @@ public class AnalyzeMapData extends Task implements Serializable {
         if (computingNeeded > 0) {
  
         	if (computingNeeded <= seed) {
-        		workPerMillisol = standardPulseTime * computingNeeded;
+        		workPerMillisol = time * computingNeeded;
         	}
         	else {
-        		workPerMillisol = standardPulseTime * seed * RandomUtil.getRandomDouble(.9, 1.1);
+        		workPerMillisol = time * seed * RandomUtil.getRandomDouble(.9, 1.1);
         	}
 
         	// Submit request for computing resources
@@ -222,12 +221,12 @@ public class AnalyzeMapData extends Task implements Serializable {
 //        	endTask();
         }
         
-        effort += standardPulseTime * workPerMillisol;
+        effort += time * workPerMillisol;
           
         if (effort > getDuration() / 2D) {
         	totalWork += effort;
         	// Limits # of improvement done at a site at most 2 times for each AnalyzeMapData
-        	improveMineralConcentrationEstimates(standardPulseTime, effort);
+        	improveMineralConcentrationEstimates(time, effort);
         	effort = 0;
         }
         	
@@ -237,13 +236,13 @@ public class AnalyzeMapData extends Task implements Serializable {
     				+ Math.round(TOTAL_COMPUTING_NEEDED * 100.0)/100.0 
     				+ " CUs Used.");
 			endTask();
-			return remainingTime;
+			return 0;
 		}
 
         // Add experience points
-        addExperience(standardPulseTime);
+        addExperience(time);
 
-        return remainingTime;
+        return 0;
     }
 
     /**
