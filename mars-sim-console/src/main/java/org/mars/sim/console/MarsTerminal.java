@@ -115,6 +115,8 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
     	frame.add(new JLayer<>(panel, layerUI));
 
     	frame.toBack();
+    	
+    	frame.setAlwaysOnTop(false);
     }
 
     public static void clearScreen(TextTerminal<?> terminal) {

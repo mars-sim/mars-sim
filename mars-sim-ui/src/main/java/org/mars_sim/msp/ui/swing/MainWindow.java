@@ -1279,6 +1279,9 @@ extends JComponent implements ClockListener {
 		splashWindow.setIconImage();
         splashWindow.display();
         splashWindow.getJFrame().setCursor(new Cursor(java.awt.Cursor.WAIT_CURSOR));
+        //SwingUtilities.windowForComponent(splashWindow);
+        
+//        splashWindow.getJFrame().setAlwaysOnTop(true);
 	}
 
 	/**

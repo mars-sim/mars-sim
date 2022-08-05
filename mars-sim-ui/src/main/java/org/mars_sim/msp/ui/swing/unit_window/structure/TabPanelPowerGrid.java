@@ -12,6 +12,7 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.Iterator;
 import java.util.List;
 
@@ -21,6 +22,7 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
@@ -105,6 +107,7 @@ public class TabPanelPowerGrid extends TabPanel {
 
 	private List<Building> buildings;
 
+	private MainDesktopPane desktop;
 	/**
 	 * Constructor.
 	 * 
@@ -119,7 +122,7 @@ public class TabPanelPowerGrid extends TabPanel {
 			Msg.getString("TabPanelPowerGrid.title"), //$NON-NLS-1$
 			unit, desktop
 		);
-
+		this.desktop = desktop;
 		settlement = (Settlement) unit;
 	}
 	
@@ -201,8 +204,34 @@ public class TabPanelPowerGrid extends TabPanel {
 
 		// Prepare power table.
 		powerTable = new ZebraJTable(powerTableModel);
-		// SwingUtilities.invokeLater(() ->
-		// ColumnResizer.adjustColumnPreferredWidths(powerTable));
+		// Call up the building window when clicking on a row on the table
+		powerTable.addMouseListener(new MouseListener() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() == 2 && !e.isConsumed()) {
+					// Get the mouse-selected row
+		            int r = powerTable.getSelectedRow();
+		            SwingUtilities.invokeLater(() -> 
+		            	desktop.openUnitWindow((Unit)powerTable.getValueAt(r, 1), false));
+				}
+			}
+			@Override
+			public void mousePressed(MouseEvent e) {
+				// nothing
+			}
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				// nothing
+			}
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				// nothing
+			}
+			@Override
+			public void mouseExited(MouseEvent e) {
+				// nothing
+			}
+		});
 
 		powerTable.setRowSelectionAllowed(true);
 		

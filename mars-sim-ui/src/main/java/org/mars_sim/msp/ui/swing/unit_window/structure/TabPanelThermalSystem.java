@@ -11,6 +11,8 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.Iterator;
 import java.util.List;
 
@@ -20,6 +22,7 @@ import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.SpringLayout;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
@@ -96,6 +99,8 @@ extends TabPanel {
 	private List<HeatSource> heatSources;
 	
 	private List<Building> buildings;
+	
+	private MainDesktopPane desktop;
 
 	/**
 	 * Constructor.
@@ -110,7 +115,7 @@ extends TabPanel {
 			Msg.getString("TabPanelThermalSystem.title"), //$NON-NLS-1$
 			unit, desktop
 		);
-
+		this.desktop = desktop;
 		settlement = (Settlement) unit;
 	}
 	
@@ -219,8 +224,35 @@ extends TabPanel {
 		
 		// Prepare thermal control table.
 		heatTable = new ZebraJTable(heatTableModel);
-	    //SwingUtilities.invokeLater(() -> ColumnResizer.adjustColumnPreferredWidths(heatTable));
-
+		// Call up the building window when clicking on a row on the table
+		heatTable.addMouseListener(new MouseListener() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() == 2 && !e.isConsumed()) {
+					// Get the mouse-selected row
+		            int r = heatTable.getSelectedRow();
+		            SwingUtilities.invokeLater(() -> 
+		            	desktop.openUnitWindow((Unit)heatTable.getValueAt(r, 1), false));
+				}
+			}
+			@Override
+			public void mousePressed(MouseEvent e) {
+				// nothing
+			}
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				// nothing
+			}
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				// nothing
+			}
+			@Override
+			public void mouseExited(MouseEvent e) {
+				// nothing
+			}
+		});
+		
 		heatTable.setRowSelectionAllowed(true);
 
 		heatTable.getColumnModel().getColumn(0).setPreferredWidth(10);
@@ -256,6 +288,7 @@ extends TabPanel {
 
 	/**
 	 * Sets if non-generating buildings should be shown.
+	 * 
 	 * @param value true or false.
 	 */
 	private void setNonGenerating(boolean value) {
@@ -392,10 +425,14 @@ extends TabPanel {
 			return 5;
 		}
 
+//		public Building getBuilding(int row) { 
+//			return buildings.get(row);
+//		}
+		
 		public Class<?> getColumnClass(int columnIndex) {
 			Class<?> dataType = super.getColumnClass(columnIndex);
 			if (columnIndex == 0) dataType = ImageIcon.class;
-			else if (columnIndex == 1) dataType = Object.class;
+			else if (columnIndex == 1) dataType = Building.class;
 			else if (columnIndex == 2) dataType = Double.class;
 			else if (columnIndex == 3) dataType = Double.class;
 			else if (columnIndex == 4) dataType = Double.class;
@@ -442,7 +479,7 @@ extends TabPanel {
 					else return null;
 				}
 				else if (column == 1)
-					return buildings.get(row) + " ";
+					return buildings.get(row);
 				else if (column == 2)
 					// return temperature of the building;
 					return  Math.round(building.getCurrentTemperature()*10.0)/10.0;
