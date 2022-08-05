@@ -163,7 +163,6 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 	 * @return the amount of time (millisols) left after performing the phase.
 	 */
 	private double maintainVehiclePhase(double time) {
-    	double remainingTime = time - standardPulseTime;
     	
 		if (vehicle.getSettlement() == null || !vehicle.getSettlement().getBuildingManager().isInGarage(vehicle)) {
         	endTask();
@@ -209,7 +208,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 			}
 		} else {
 			endTask();
-			return remainingTime;
+			return time;
 		}
 
 		// Determine effective work time based on "Mechanic" skill.
@@ -227,7 +226,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 		manager.addMaintenanceWorkTime(workTime);
 
 		// Add experience points
-		addExperience(standardPulseTime);
+		addExperience(time);
 
 		// If maintenance is complete, task is done.
 		if (manager.getEffectiveTimeSinceLastMaintenance() == 0D) {
@@ -236,9 +235,9 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 		}
 
 		// Check if an accident happens during maintenance.
-		checkForAccident(vehicle, 0.001D, standardPulseTime);
+		checkForAccident(vehicle, 0.001D, time);
 
-		return remainingTime;
+		return 0;
 	}
 
 	@Override

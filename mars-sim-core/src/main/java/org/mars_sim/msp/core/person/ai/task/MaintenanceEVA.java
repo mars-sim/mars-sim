@@ -130,7 +130,6 @@ implements Serializable {
 	 * @throws Exception if error during maintenance.
 	 */
 	private double maintenancePhase(double time) {
-		double remainingTime = time - standardPulseTime;
 		
 		if (checkReadiness(time) > 0)
 			return time;
@@ -141,11 +140,11 @@ implements Serializable {
 
 		if (finishedMaintenance || malfunction) {
 			checkLocation();
-			return remainingTime;
+			return time;
 		}
 
 		// Determine effective work time based on "Mechanic" skill.
-		double workTime = standardPulseTime;
+		double workTime = time;
 		int mechanicSkill = worker.getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
 	
 		if (mechanicSkill == 0) {
@@ -155,7 +154,7 @@ implements Serializable {
 		    workTime += workTime * (.4D * mechanicSkill);
 		}
 
-        // Add repair parts if necessary.
+		// Gets a malfunctionable
 		entity = getMaintenanceMalfunctionable();
 		
 		if (entity != null && Maintenance.hasMaintenanceParts(settlement, entity)) {
@@ -166,6 +165,7 @@ implements Serializable {
 				Integer part = j.next();
 				int number = parts.get(part);
 				settlement.retrieveItemResource(part, number);
+		        // Add repair parts if necessary.
 				manager.maintainWithParts(part, number);
 			}
 
@@ -173,18 +173,18 @@ implements Serializable {
 			manager.addMaintenanceWorkTime(workTime);
 			
 	        // Add experience points
-	        addExperience(standardPulseTime);
+	        addExperience(time);
 
 			// Check if an accident happens during maintenance.
-			checkForAccident(standardPulseTime);
+			checkForAccident(time);
 			
         }
 		else {
 			checkLocation();
-			return remainingTime;
+			return time;
 		}
 
-		return remainingTime;
+		return 0;
 	}
 	
 

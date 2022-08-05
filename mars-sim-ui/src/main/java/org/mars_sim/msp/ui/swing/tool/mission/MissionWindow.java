@@ -131,7 +131,7 @@ public class MissionWindow extends ToolWindow {
 		tabPane.add("Main", mainPanel);
 
 		// Create the navpoint panel.
-		navpointPane = new NavpointPanel(desktop, this);
+		navpointPane = new NavpointPanel(this);
 		missionList.addListSelectionListener(navpointPane);
 		tabPane.add("Navigation", navpointPane);
 
@@ -168,15 +168,14 @@ public class MissionWindow extends ToolWindow {
 			if (missionCache != null) missionCache.abortMission();
 		});
 		
-		missionList.addListSelectionListener(
-				new ListSelectionListener() {
-					public void valueChanged(ListSelectionEvent e) {
-						boolean value = missionList.getSelectedValue() != null;
-						abortButton.setEnabled(value);
-						// Enable button if mission is selected in list.
-						editButton.setEnabled(value);
-					}
-				});
+		missionList.addListSelectionListener(new ListSelectionListener() {
+			public void valueChanged(ListSelectionEvent e) {
+				boolean value = missionList.getSelectedValue() != null;
+				abortButton.setEnabled(value);
+				// Enable button if mission is selected in list.
+				editButton.setEnabled(value);
+			}
+		});
 
 		buttonPane.add(abortButton);
 
@@ -218,10 +217,10 @@ public class MissionWindow extends ToolWindow {
 		missionListModel.populateMissions();
 		
 		missionCache = null;
-		// Clear the info on main tab and navigation tab to avoid confusion
+		// Clear the info on main tab to avoid confusion
 		mainPanel.clearInfo();
-			
-		navpointPane.clearInfo();
+		// Clear the info on navigation tab to avoid confusion	
+		navpointPane.clearNavTab(settlementCache);
 	}
 
 	/**

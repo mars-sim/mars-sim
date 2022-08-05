@@ -42,6 +42,7 @@ import org.mars_sim.msp.core.person.ai.mission.MissionEventType;
 import org.mars_sim.msp.core.person.ai.mission.MissionListener;
 import org.mars_sim.msp.core.person.ai.mission.NavPoint;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -84,8 +85,7 @@ implements ListSelectionListener, MissionListener {
     private transient MineralMapLayer mineralLayer;
 	private transient NavpointTableModel navpointTableModel;
 	private JTable navpointTable;
-	private MainDesktopPane desktop;
-	
+
 	private Coordinates coordCache = new Coordinates(0, 0);
 	private MissionWindow missionWindow;
 	
@@ -97,8 +97,7 @@ implements ListSelectionListener, MissionListener {
 	/**
 	 * Constructor.
 	 */
-	protected NavpointPanel(MainDesktopPane desktop, MissionWindow missionWindow) {
-		this.desktop = desktop;
+	protected NavpointPanel(MissionWindow missionWindow) {
 		this.missionWindow = missionWindow;
 		
 		// Set the layout.
@@ -122,7 +121,7 @@ implements ListSelectionListener, MissionListener {
 		mainPane.add(right, BorderLayout.EAST);
 
 		// Create the map panel.
-		mapPanel = new MapPanel(desktop, 500L);
+		mapPanel = new MapPanel(missionWindow.getDesktop(), 500L);
 		// Set up mouse control
 		mapPanel.setNavpointPanel(this);
 		mapPanel.addMouseListener(new MapListener());
@@ -405,7 +404,8 @@ implements ListSelectionListener, MissionListener {
 	 */
 	public void valueChanged(ListSelectionEvent e) {		
 		Mission mission = (Mission) missionWindow.getMissionList().getSelectedValue();
-		setMission(mission);
+		if (mission != null)
+			setMission(mission);
 	}
 	
 	/**
@@ -414,16 +414,16 @@ implements ListSelectionListener, MissionListener {
 	 * @param newMission
 	 */
 	public void setMission(Mission newMission) {
-		if (newMission == null) {
-			if (missionCache != null) {
-				// Remove this as previous mission listener.
-				missionCache.removeMissionListener(this);	
-				missionCache = null;
-			}
-			// Clear map and info.
-			clearInfo();	
-			return;
-		}		
+//		if (newMission == null) {
+//			if (missionCache != null) {
+//				// Remove this as previous mission listener.
+//				missionCache.removeMissionListener(this);	
+//				missionCache = null;
+//			}
+//			// Clear map and site table.
+//			clearNavTab();	
+//			return;
+//		}		
 
 		// Remove this as previous mission listener.
 		if (missionCache != null)
@@ -471,16 +471,9 @@ implements ListSelectionListener, MissionListener {
 	/**
 	 * Clears the mission content on the Nav tab
 	 */
-	public void clearInfo() {
-		// NOTE: do NOT clear info when the mission is finish. 
-		// Leave the info there for future viewing.
-		// Remove this as previous mission listener.
-		if (missionCache != null) {
-			missionCache.removeMissionListener(this);
-			missionCache = null;
-		}
-		
-		updateCoords(null);
+	public void clearNavTab(Settlement settlement) {
+		// Center the map to this settlement's coordinate
+		updateCoords(settlement.getCoordinates());
 		
 		// Clear map and info.
 		trailLayer.setSingleVehicle(null);
@@ -490,10 +483,16 @@ implements ListSelectionListener, MissionListener {
         if (mapPanel.hasMapLayer(mineralLayer)) 
         	mapPanel.removeMapLayer(mineralLayer);
 		mapPanel.showMap(null);
+		
+		// Remove missionCache as previous mission listener.
+		if (missionCache != null) {
+			missionCache.removeMissionListener(this);
+			missionCache = null;
+		}
 	}
 	
 	/**
-	 * Catch mission update event.
+	 * Catches mission update event.
 	 * 
 	 * @param event the mission event.
 	 */

@@ -244,8 +244,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 	 * @return the amount of time (millisol) after performing the phase.
 	 */
 	private double loadingPhase(double time) {
-		double remainingTime = time - standardPulseTime;
-		
+	
 		// NOTE: if a person is not at a settlement or near its vicinity, 
 		// then the settlement instance is set to null. 
     	boolean abortLoad = (settlement == null);
@@ -260,11 +259,11 @@ public class LoadVehicleGarage extends Task implements Serializable {
         // Add experience points
         addExperience(time);
         
-		if (loadController.load(worker, standardPulseTime)) {
+		if (loadController.load(worker, time)) {
 			endTask();
 		}
 		
-		return remainingTime;
+		return 0;
 	}
 
 	/**

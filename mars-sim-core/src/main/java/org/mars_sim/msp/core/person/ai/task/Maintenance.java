@@ -431,8 +431,6 @@ public class Maintenance extends Task implements Serializable {
 			int number = parts.get(part);
 			if (settlement.getItemResourceStored(part) < number) {
 				result = false;
-				// Boosts the item demand
-//				unit.getInventory().addItemDemand(part, number);
 			}
 		}
 
