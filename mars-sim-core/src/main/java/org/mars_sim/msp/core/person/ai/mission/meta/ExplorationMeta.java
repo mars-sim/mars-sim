@@ -36,7 +36,7 @@ public class ExplorationMeta extends AbstractMetaMission {
 	private static final Logger logger = Logger.getLogger(ExplorationMeta.class.getName());
 
 	ExplorationMeta() {
-		super(MissionType.EXPLORATION, "exploration",
+		super(MissionType.EXPLORATION, 
 					Set.of(JobType.AREOLOGIST, JobType.ASTRONOMER, JobType.METEOROLOGIST));
 	}
 

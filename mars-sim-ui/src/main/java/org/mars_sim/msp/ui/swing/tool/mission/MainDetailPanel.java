@@ -649,7 +649,7 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 			if (d == null || d.equals(""))
 				d = "";
 			designationLabel.setText(d);
-			typeLabel.setText(mission.getTypeID());
+			typeLabel.setText(mission.getName());
 			startingLabel.setText(mission.getStartingPerson().getName()); // $NON-NLS-1$
 	
 			String phaseText = mission.getPhaseDescription();
@@ -658,8 +658,7 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 				phaseText = phaseText.substring(0, 48) + "...";
 			phaseLabel.setText(phaseText); // $NON-NLS-1$
 	
-			String settlementText = mission.getSettlmentName();
-			settlementLabel.setText(settlementText);
+			settlementLabel.setText(mission.getAssociatedSettlement().getName());
 	
 			logTableModel.setMission(mission);
 			memberTableModel.setMission(mission);

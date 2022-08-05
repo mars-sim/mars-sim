@@ -15,7 +15,6 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.InventoryUtil;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalPosition;
-import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.ContainerUtil;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.EquipmentType;
@@ -54,9 +53,6 @@ public class EmergencySupply extends RoverMission {
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(EmergencySupply.class.getName());
 
-	/** Default description. */
-	private static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.emergencySupply"); //$NON-NLS-1$
-
 	// Static members
 	private static final int MAX_MEMBERS = 2;
 
@@ -93,7 +89,7 @@ public class EmergencySupply extends RoverMission {
 	 */
 	public EmergencySupply(Person startingPerson, boolean needsReview) {
 		// Use RoverMission constructor.
-		super(DEFAULT_DESCRIPTION, MissionType.EMERGENCY_SUPPLY, startingPerson, null);
+		super(MissionType.EMERGENCY_SUPPLY, startingPerson, null);
 
 		if (isDone()) {
 			return;
@@ -143,12 +139,11 @@ public class EmergencySupply extends RoverMission {
 	 * @param members             collection of mission members.
 	 * @param emergencySettlement the starting settlement.
 	 * @param rover               the rover used on the mission.
-	 * @param description         the mission's description.
 	 */
 	public EmergencySupply(Collection<MissionMember> members, Settlement emergencySettlement,
-			Map<Good, Integer> emergencyGoods, Rover rover, String description) {
+			Map<Good, Integer> emergencyGoods, Rover rover) {
 		// Use RoverMission constructor.
-		super(description, MissionType.EMERGENCY_SUPPLY, (Person) members.toArray()[0], rover);
+		super(MissionType.EMERGENCY_SUPPLY, (Person) members.toArray()[0], rover);
 
 		outbound = true;
 

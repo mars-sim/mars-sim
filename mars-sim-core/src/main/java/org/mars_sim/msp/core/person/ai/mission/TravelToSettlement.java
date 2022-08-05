@@ -37,9 +37,6 @@ public class TravelToSettlement extends RoverMission {
 
 	/** default logger. */
 	private static final Logger logger = Logger.getLogger(TravelToSettlement.class.getName());
-
-	/** Default description. */
-	private static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.travelToSettlement"); //$NON-NLS-1$
 	
 	// Static members
 	public static final double BASE_MISSION_WEIGHT = 1D;
@@ -64,7 +61,7 @@ public class TravelToSettlement extends RoverMission {
 	 */
 	public TravelToSettlement(MissionMember startingMember, boolean needsReview) {
 		// Use RoverMission constructor
-		super(DEFAULT_DESCRIPTION, MissionType.TRAVEL_TO_SETTLEMENT, startingMember, null);
+		super(MissionType.TRAVEL_TO_SETTLEMENT, startingMember, null);
 
 		Settlement s = getStartingSettlement();
 
@@ -109,9 +106,9 @@ public class TravelToSettlement extends RoverMission {
 	}
 
 	public TravelToSettlement(Collection<MissionMember> members, 
-			Settlement destinationSettlement, Rover rover, String description) {
+			Settlement destinationSettlement, Rover rover) {
 		// Use RoverMission constructor.
-		super(description, MissionType.TRAVEL_TO_SETTLEMENT, (MissionMember) members.toArray()[0], rover);
+		super(MissionType.TRAVEL_TO_SETTLEMENT, (MissionMember) members.toArray()[0], rover);
 
 		// Set mission destination.
 		setDestinationSettlement(destinationSettlement);

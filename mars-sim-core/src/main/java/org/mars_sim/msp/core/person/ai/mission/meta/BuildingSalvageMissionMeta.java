@@ -31,8 +31,7 @@ public class BuildingSalvageMissionMeta extends AbstractMetaMission {
     private static final Logger logger = Logger.getLogger(BuildingSalvageMissionMeta.class.getName());
 
     BuildingSalvageMissionMeta() {
-    	super(MissionType.BUILDING_SALVAGE, "buildingSalvageMission",
-    			Set.of(JobType.ARCHITECT));
+    	super(MissionType.BUILDING_SALVAGE, Set.of(JobType.ARCHITECT));
     }
     
     @Override

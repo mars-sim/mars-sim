@@ -372,7 +372,7 @@ public class MissionTableModel extends AbstractTableModel
 					break;
 
 				case TYPE_ID: {
-					result = mission.getTypeID();//.getDescription();
+					result = mission.getName();
 				}
 					break;
 
@@ -382,11 +382,7 @@ public class MissionTableModel extends AbstractTableModel
 					break;
 
 				case PHASE: {
-					if (mission.getPlan() == null) {
-						result = "Submitting Plan";
-					}
-					else if (mission.getPhase() != null 
-							&& VehicleMission.REVIEWING.equals(mission.getPhase())) {
+					if (VehicleMission.REVIEWING.equals(mission.getPhase())) {
 						int percent = (int) mission.getPlan().getPercentComplete();
 						if (percent > 100)
 							percent = 100;

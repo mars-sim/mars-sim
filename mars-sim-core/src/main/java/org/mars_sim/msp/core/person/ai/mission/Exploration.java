@@ -49,9 +49,6 @@ public class Exploration extends EVAMission
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(Exploration.class.getName());
 
-	/** Default description. */
-	private static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.exploration"); //$NON-NLS-1$
-
 	/** Mission Type enum. */
 	public static final MissionType MISSION_TYPE = MissionType.EXPLORATION;
 
@@ -88,7 +85,7 @@ public class Exploration extends EVAMission
 	public Exploration(Person startingPerson, boolean needsReview) {
 
 		// Use RoverMission constructor.
-		super(DEFAULT_DESCRIPTION, MISSION_TYPE, startingPerson, null,
+		super(MISSION_TYPE, startingPerson, null,
 				EXPLORE_SITE);
 
 		Settlement s = getStartingSettlement();
@@ -126,15 +123,13 @@ public class Exploration extends EVAMission
 	 * @param members            collection of mission members.
 	 * @param explorationSites   the sites to explore.
 	 * @param rover              the rover to use.
-	 * @param description        the mission's description.
 	 */
 	public Exploration(Collection<MissionMember> members,
-			List<Coordinates> explorationSites, Rover rover, String description) {
+			List<Coordinates> explorationSites, Rover rover) {
 
 		// Use RoverMission constructor.
-		super(description, MISSION_TYPE,(MissionMember) members.toArray()[0], rover,
+		super(MISSION_TYPE,(MissionMember) members.toArray()[0], rover,
 				EXPLORE_SITE);
-	
 
 		initSites(explorationSites);
 

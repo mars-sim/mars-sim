@@ -11,12 +11,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.logging.Level;
 
 import org.mars_sim.msp.core.InventoryUtil;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalPosition;
-import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.goods.CommerceMission;
@@ -46,9 +44,6 @@ public class Trade extends RoverMission implements CommerceMission {
 
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(Trade.class.getName());
-
-	/** Default description. */
-	private static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.trade"); //$NON-NLS-1$
 
 	/** Mission phases. */
 	private static final MissionPhase TRADE_DISEMBARKING = new MissionPhase("Mission.phase.tradeDisembarking");
@@ -83,7 +78,7 @@ public class Trade extends RoverMission implements CommerceMission {
 	 */
 	public Trade(MissionMember startingMember, boolean needsReview) {
 		// Use RoverMission constructor.
-		super(DEFAULT_DESCRIPTION, MissionType.TRADE, startingMember, null);
+		super(MissionType.TRADE, startingMember, null);
 
 		// Problem setting up the mission
 		if (isDone()) {
@@ -135,9 +130,9 @@ public class Trade extends RoverMission implements CommerceMission {
 	 * @param buyGoods
 	 */
 	public Trade(Collection<MissionMember> members, Settlement tradingSettlement,
-			Rover rover, String description, Map<Good, Integer> sellGoods, Map<Good, Integer> buyGoods) {
+			Rover rover, Map<Good, Integer> sellGoods, Map<Good, Integer> buyGoods) {
 		// Use RoverMission constructor.
-		super(description, MissionType.TRADE, (MissionMember) members.toArray()[0], rover);
+		super(MissionType.TRADE, (MissionMember) members.toArray()[0], rover);
 
 		outbound = true;
 		doNegotiation = false;

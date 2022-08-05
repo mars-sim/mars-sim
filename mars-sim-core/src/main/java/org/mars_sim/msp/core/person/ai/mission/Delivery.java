@@ -11,9 +11,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.logging.Level;
 
-import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.goods.CommerceMission;
 import org.mars_sim.msp.core.goods.CommerceUtil;
@@ -41,9 +39,6 @@ public class Delivery extends DroneMission implements CommerceMission {
 
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(Delivery.class.getName());
-
-	/** Default description. */
-	private static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.delivery"); //$NON-NLS-1$
 
 	/** Mission phases. */
 	private static final MissionPhase TRADE_DISEMBARKING = new MissionPhase("Mission.phase.deliveryDisembarking");
@@ -77,7 +72,7 @@ public class Delivery extends DroneMission implements CommerceMission {
 	 */
 	public Delivery(MissionMember startingMember, boolean needsReview) {
 		// Use DroneMission constructor.
-		super(DEFAULT_DESCRIPTION, MissionType.DELIVERY, startingMember, null);
+		super(MissionType.DELIVERY, startingMember, null);
 
 		// Problem starting Mission
 		if (isDone()) {
@@ -106,16 +101,16 @@ public class Delivery extends DroneMission implements CommerceMission {
 				desiredBuyLoad = deal.getBuyingLoad();
 				sellLoad = deal.getSellingLoad();
 				desiredProfit = deal.getProfit();
+			
+				// Recruit additional members to mission.
+				recruitMembersForMission(startingMember, true, 2);
 			}
 
-			// Recruit additional members to mission.
-			if (!isDone() && !recruitMembersForMission(startingMember, true, 2)) {
-				return;
+			if (!isDone()) {
+				// Set initial phase
+				setInitialPhase(needsReview);
 			}
 		}
-
-		// Set initial phase
-		setInitialPhase(needsReview);
 	}
 
 	/**
@@ -129,9 +124,9 @@ public class Delivery extends DroneMission implements CommerceMission {
 	 * @param buyGoods
 	 */
 	public Delivery(MissionMember startingMember, Collection<MissionMember> members, Settlement tradingSettlement,
-			Drone drone, String description, Map<Good, Integer> sellGoods, Map<Good, Integer> buyGoods) {
+			Drone drone, Map<Good, Integer> sellGoods, Map<Good, Integer> buyGoods) {
 		// Use DroneMission constructor.
-		super(description, MissionType.DELIVERY, startingMember, drone);
+		super(MissionType.DELIVERY, startingMember, drone);
 
 		outbound = true;
 		doNegotiation = false;

@@ -11,7 +11,6 @@ import java.util.Collection;
 import java.util.List;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.environment.TerrainElevation;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.person.Person;
@@ -29,9 +28,6 @@ public class CollectRegolith extends CollectResourcesMission {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	/** Default description. */
-	private static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.collectRegolith"); //$NON-NLS-1$
-
 	/** Number of large bags required for the mission. */
 	public static final int REQUIRED_LARGE_BAGS = 20;
 
@@ -48,7 +44,7 @@ public class CollectRegolith extends CollectResourcesMission {
 	 */
 	public CollectRegolith(Person startingPerson, boolean needsReview) {
 		// Use CollectResourcesMission constructor.
-		super(DEFAULT_DESCRIPTION, MissionType.COLLECT_REGOLITH, startingPerson, ResourceUtil.regolithID,
+		super(MissionType.COLLECT_REGOLITH, startingPerson, ResourceUtil.regolithID,
 				EquipmentType.LARGE_BAG, REQUIRED_LARGE_BAGS, NUM_SITES, needsReview);
 	}
 
@@ -58,14 +54,13 @@ public class CollectRegolith extends CollectResourcesMission {
 	 * @param members                 collection of mission members.
 	 * @param regolithCollectionSites the sites to collect regolith.
 	 * @param rover                   the rover to use.
-	 * @param description             the mission's description.
 	 * @throws MissionException if error constructing mission.
 	 */
 	public CollectRegolith(Collection<MissionMember> members,
-			List<Coordinates> regolithCollectionSites, Rover rover, String description) {
+			List<Coordinates> regolithCollectionSites, Rover rover) {
 
 		// Use CollectResourcesMission constructor.
-		super(description, MissionType.COLLECT_REGOLITH, members, ResourceUtil.regolithID,
+		super(MissionType.COLLECT_REGOLITH, members, ResourceUtil.regolithID,
 				EquipmentType.LARGE_BAG, REQUIRED_LARGE_BAGS,
 				rover, regolithCollectionSites);
 	}

@@ -6,11 +6,9 @@
  */
 package org.mars_sim.msp.core.person.ai.mission;
 
-import java.io.Serializable;
 import java.util.Collection;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.BiologyStudyFieldWork;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
@@ -20,19 +18,15 @@ import org.mars_sim.msp.core.vehicle.Rover;
 
 /**
  * A mission to do biology research at a remote field location for a scientific
- * study. TODO externalize strings
+ * study. 
  */
-public class BiologyFieldStudy extends FieldStudyMission implements Serializable {
+public class BiologyFieldStudy extends FieldStudyMission {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	/** Default description. */
-	private static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.biologyFieldStudy"); //$NON-NLS-1$
-
 	/** Amount of time to field a site. */
 	public static final double FIELD_SITE_TIME = 1000D;
-
 
 	/**
 	 * Constructor.
@@ -41,7 +35,7 @@ public class BiologyFieldStudy extends FieldStudyMission implements Serializable
 	 * @throws MissionException if problem constructing mission.
 	 */
 	public BiologyFieldStudy(Person startingPerson, boolean needsReview) {
-		super(DEFAULT_DESCRIPTION, MissionType.BIOLOGY, startingPerson,
+		super(MissionType.BIOLOGY, startingPerson,
 			  ScienceType.BIOLOGY, FIELD_SITE_TIME, needsReview);
 
 	}
@@ -54,11 +48,10 @@ public class BiologyFieldStudy extends FieldStudyMission implements Serializable
 	 * @param study              the scientific study.
 	 * @param rover              the rover used by the mission.
 	 * @param fieldSite          the field site to research.
-	 * @param description        the mission description.
 	 */
 	public BiologyFieldStudy(Collection<MissionMember> members, Person leadResearcher,
-			ScientificStudy study, Rover rover, Coordinates fieldSite, String description) {
-		super(description, MissionType.BIOLOGY, leadResearcher, rover,
+			ScientificStudy study, Rover rover, Coordinates fieldSite) {
+		super(MissionType.BIOLOGY, leadResearcher, rover,
 				  study, FIELD_SITE_TIME, members, fieldSite);
 	}
 

@@ -24,7 +24,7 @@ public class EmergencySupplyMeta extends AbstractMetaMission {
     private double jobModifier;
 
 	EmergencySupplyMeta() {
-    	super(MissionType.EMERGENCY_SUPPLY, "emergencySupply", null);
+    	super(MissionType.EMERGENCY_SUPPLY,  null);
     }
 
     @Override

@@ -32,7 +32,7 @@ public class TradeMeta extends AbstractMetaMission {
 
 
 	TradeMeta() {
-		super(MissionType.TRADE, "trade",
+		super(MissionType.TRADE, 
 				Set.of(JobType.POLITICIAN, JobType.TRADER, JobType.REPORTER));
 	}
 

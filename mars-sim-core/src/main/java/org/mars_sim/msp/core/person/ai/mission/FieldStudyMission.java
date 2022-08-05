@@ -61,12 +61,12 @@ public abstract class FieldStudyMission extends EVAMission {
 	 * @param needsReview
 	 * @throws MissionException if problem constructing mission.
 	 */
-	protected FieldStudyMission(String description, MissionType missionType,
+	protected FieldStudyMission(MissionType missionType,
 								Person startingPerson,
 								ScienceType science, double fieldSiteTime, boolean needsReview) {
 
 		// Use RoverMission constructor.
-		super(description, missionType, startingPerson, null, RESEARCH_SITE);
+		super(missionType, startingPerson, null, RESEARCH_SITE);
 
 		this.science = science;
 		this.fieldSiteTime = fieldSiteTime;
@@ -115,14 +115,14 @@ public abstract class FieldStudyMission extends EVAMission {
 	 * @param fieldSite          the field site to research.
 	 * @param description        the mission description.
 	 */
-	protected FieldStudyMission(String description, MissionType missionType,
+	protected FieldStudyMission(MissionType missionType,
 			Person leadResearcher,
 			Rover rover, ScientificStudy study, double fieldSiteTime,
 			Collection<MissionMember> members,
 			Coordinates fieldSite) {
 
 		// Use RoverMission constructor.
-		super(description, missionType, leadResearcher, rover, RESEARCH_SITE);
+		super(missionType, leadResearcher, rover, RESEARCH_SITE);
 
 		this.study = study;
 		this.science = study.getScience();

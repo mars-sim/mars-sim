@@ -106,17 +106,17 @@ class MissionDataBean {
 	    Mission mission = null;
 	    if (MissionType.AREOLOGY == missionType) {
 	        mission = new AreologyFieldStudy(mixedMembers, leadResearcher, study,
-	                rover, fieldSite, description);
+	                rover, fieldSite);
 	    }
 	    
 	    else if (MissionType.BIOLOGY == missionType) {
 	        mission = new BiologyFieldStudy(mixedMembers, leadResearcher, study,
-	                rover, fieldSite, description);
+	                rover, fieldSite);
 	    }
 	    
 	    else if (MissionType.METEOROLOGY == missionType) {
 	        mission = new MeteorologyFieldStudy(mixedMembers, leadResearcher, study,
-	                rover, fieldSite, description);
+	                rover, fieldSite);
 	    }
 	    
 	    else if (MissionType.BUILDING_CONSTRUCTION == missionType) {
@@ -126,15 +126,15 @@ class MissionDataBean {
 	    }
 
 	    else if (MissionType.COLLECT_ICE == missionType) {
-	        List<Coordinates> collectionSites = new ArrayList<Coordinates>(1);
+	        List<Coordinates> collectionSites = new ArrayList<>(1);
 	        collectionSites.add(iceCollectionSite);
-	        mission = new CollectIce(mixedMembers, collectionSites, rover, description);
+	        mission = new CollectIce(mixedMembers, collectionSites, rover);
 	    }
 	    
 	    else if (MissionType.COLLECT_REGOLITH == missionType) {
-	        List<Coordinates> collectionSites = new ArrayList<Coordinates>(1);
+	        List<Coordinates> collectionSites = new ArrayList<>(1);
 	        collectionSites.add(regolithCollectionSite);
-	        mission = new CollectRegolith(mixedMembers, collectionSites, rover, description);
+	        mission = new CollectRegolith(mixedMembers, collectionSites, rover);
 	    }
 	    
 	    else if (MissionType.DELIVERY == missionType) {
@@ -144,27 +144,27 @@ class MissionDataBean {
 	    			startingMember = (Person)mm;
 	    	}
 		
-	        mission = new Delivery(startingMember, mixedMembers, destinationSettlement, drone, description,
+	        mission = new Delivery(startingMember, mixedMembers, destinationSettlement, drone,
 	                sellGoods, buyGoods);
 	    }	 
 	        
 	    else if (MissionType.EMERGENCY_SUPPLY == missionType) {
 	        mission = new EmergencySupply(mixedMembers, destinationSettlement,
-	                emergencyGoods, rover, description);
+	                emergencyGoods, rover);
 	    }
 	    
 	    else if (MissionType.EXPLORATION == missionType) {
 	        List<Coordinates> collectionSites = new ArrayList<>(explorationSites.length);
 	        collectionSites.addAll(Arrays.asList(explorationSites));
-	        mission = new Exploration(mixedMembers, collectionSites, rover, description);
+	        mission = new Exploration(mixedMembers, collectionSites, rover);
 	    }
 	    
 	    else if (MissionType.MINING == missionType) {
-	        mission = new Mining(mixedMembers, miningSite, rover, luv, description);
+	        mission = new Mining(mixedMembers, miningSite, rover, luv);
 	    }
 	    
 	    else if (MissionType.RESCUE_SALVAGE_VEHICLE == missionType) {
-	        mission = new RescueSalvageVehicle(mixedMembers, rescueRover, rover, description);
+	        mission = new RescueSalvageVehicle(mixedMembers, rescueRover, rover);
 	    }
 	    
 	    else if (MissionType.BUILDING_SALVAGE == missionType) {
@@ -173,17 +173,17 @@ class MissionDataBean {
 	    }
 	    
 	    else if (MissionType.TRADE == missionType) {
-	        mission = new Trade(mixedMembers, destinationSettlement, rover, description,
+	        mission = new Trade(mixedMembers, destinationSettlement, rover,
 	                sellGoods, buyGoods);
 	    }  
 	    
 	    else if (MissionType.TRAVEL_TO_SETTLEMENT == missionType) {
-	        mission = new TravelToSettlement(mixedMembers, destinationSettlement, rover,
-	                description);
+	        mission = new TravelToSettlement(mixedMembers, destinationSettlement, rover);
 	    }
 	    
 	    else throw new IllegalStateException("Mission type: " + type + " unknown");
 
+		mission.setName(description);
 	    missionManager.addMission(mission);
 	}
  

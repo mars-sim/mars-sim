@@ -30,7 +30,7 @@ public class TravelToSettlementMeta extends AbstractMetaMission {
 
 	public TravelToSettlementMeta() {
 		// Anyone can start ??
-    	super(MissionType.TRAVEL_TO_SETTLEMENT, "travelToSettlement", null);
+    	super(MissionType.TRAVEL_TO_SETTLEMENT, null);
     }
     
     @Override

@@ -147,13 +147,13 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	/**
 	 * Create a Vehicle mission
 	 *
-	 * @param missionName
+	 * @param missionType
 	 * @param startingMember
 	 * @param minPeople
 	 * @param vehicle Optional, if null then reserve a Vehicle
 	 */
-	protected VehicleMission(String missionName, MissionType missionType, MissionMember startingMember, Vehicle vehicle) {
-		super(missionName, missionType, startingMember);
+	protected VehicleMission(MissionType missionType, MissionMember startingMember, Vehicle vehicle) {
+		super(missionType, startingMember);
 
 		init(startingMember);
 
@@ -201,11 +201,12 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 		}
 		else {
 			// Set initial mission phase.
+			createFullDesignation();
 			setPhase(EMBARKING, getStartingSettlement().getName());
 		}
 
 		MissionMember startingMember = getStartingPerson();
-		logger.info(startingMember, "Started mission " + getTypeID() + " using " + getVehicle().getName());
+		logger.info(startingMember, "Started mission " + getName() + " using " + getVehicle().getName());
 	}
 
 	/**

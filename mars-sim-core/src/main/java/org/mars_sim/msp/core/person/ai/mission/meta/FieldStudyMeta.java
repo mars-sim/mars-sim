@@ -31,9 +31,9 @@ public class FieldStudyMeta extends AbstractMetaMission {
     private static final double WEIGHT = 10D;
 	private ScienceType science;
 
-	public FieldStudyMeta(MissionType type, String nameKey, Set<JobType> preferredLeaderJob,
+	public FieldStudyMeta(MissionType type, Set<JobType> preferredLeaderJob,
 			ScienceType science) {
-		super(type, nameKey, preferredLeaderJob);
+		super(type, preferredLeaderJob);
 		this.science = science;
 	}
 

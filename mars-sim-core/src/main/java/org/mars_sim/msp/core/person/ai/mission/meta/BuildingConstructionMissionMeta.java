@@ -34,8 +34,7 @@ public class BuildingConstructionMissionMeta extends AbstractMetaMission {
     private static final Logger logger = Logger.getLogger(MiningMeta.class.getName());
       
     BuildingConstructionMissionMeta() {
-    	super(MissionType.BUILDING_CONSTRUCTION, "buildingConstructionMission",
-    			Set.of(JobType.ARCHITECT));
+    	super(MissionType.BUILDING_CONSTRUCTION, Set.of(JobType.ARCHITECT));
     }
     
     @Override

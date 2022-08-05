@@ -34,7 +34,7 @@ public class DeliveryMeta extends AbstractMetaMission {
 
 	DeliveryMeta() {
 		// Everyone can start Delivery ??
-		super(MissionType.DELIVERY, "delivery", null);
+		super(MissionType.DELIVERY, null);
 	}
 
 	@Override

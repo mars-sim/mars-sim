@@ -21,7 +21,7 @@ import org.mars_sim.msp.core.science.ScienceType;
 public class AreologyFieldStudyMeta extends FieldStudyMeta {
 
     AreologyFieldStudyMeta() {
-		super(MissionType.AREOLOGY, "areologyFieldStudy",
+		super(MissionType.AREOLOGY, 
 				Set.of(JobType.AREOLOGIST, JobType.CHEMIST),
 				ScienceType.AREOLOGY);
 	}

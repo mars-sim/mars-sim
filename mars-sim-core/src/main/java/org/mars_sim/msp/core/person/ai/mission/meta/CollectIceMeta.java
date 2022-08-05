@@ -26,8 +26,7 @@ public class CollectIceMeta extends AbstractMetaMission {
 	private static final double VALUE = 30D;
 
 	CollectIceMeta() {
-		super(MissionType.COLLECT_ICE, "collectIce",
-				Set.of(JobType.AREOLOGIST, JobType.CHEMIST));
+		super(MissionType.COLLECT_ICE, Set.of(JobType.AREOLOGIST, JobType.CHEMIST));
 	}
 
 	@Override

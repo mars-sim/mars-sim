@@ -28,7 +28,7 @@ public class RescueSalvageVehicleMeta extends AbstractMetaMission {
 	private static SimLogger logger = SimLogger.getLogger(RescueSalvageVehicleMeta.class.getName());
 
     RescueSalvageVehicleMeta() {
-    	super(MissionType.RESCUE_SALVAGE_VEHICLE, "rescueSalvageVehicle", null);
+    	super(MissionType.RESCUE_SALVAGE_VEHICLE, null);
     }
   
     @Override

@@ -84,14 +84,14 @@ public abstract class RoverMission extends VehicleMission {
 	/**
 	 * Constructor with min people and rover. Initiated by MissionDataBean.
 	 *
-	 * @param missionName    the name of the mission.
+	 * @param missionType    the type of the mission.
 	 * @param startingMember the mission member starting the mission.
 	 * @param minPeople      the minimum number of people required for mission.
 	 * @param rover          the rover to use on the mission.
 	 */
-	protected RoverMission(String missionName, MissionType missionType, MissionMember startingMember, Rover rover) {
+	protected RoverMission(MissionType missionType, MissionMember startingMember, Rover rover) {
 		// Use VehicleMission constructor.
-		super(missionName, missionType, startingMember, rover);
+		super(missionType, startingMember, rover);
 		if (!isDone()) {
 			calculateMissionCapacity(getRover().getCrewCapacity());
 		}
