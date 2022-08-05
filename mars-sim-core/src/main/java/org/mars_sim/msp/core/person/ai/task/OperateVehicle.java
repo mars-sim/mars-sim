@@ -386,7 +386,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
 	 * @return the amount of time (ms) left over after driving (if any)
 	 */
 	protected double mobilizeVehicle(double time) {
-        double remainingTime = time - standardPulseTime;
+        double remainingTime = 0;
         
 		if (time < 0) {
 			logger.severe(vehicle, "Negative time: " + time);
@@ -406,7 +406,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
     		// Turn on emergency beacon
 	    	turnOnBeacon(fuelType);
         	endTask();
-        	return remainingTime;
+        	return time;
     	}
 
     	if (remainingOxidizer < LEAST_AMOUNT) {
@@ -415,7 +415,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
     		// Turn on emergency beacon
 	    	turnOnBeacon(OXYGEN_ID);
         	endTask();
-        	return remainingTime;
+        	return time;
         }
         
         // Find the starting distance here to destination.
@@ -471,7 +471,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
            
         if (Double.isNaN(d_km)) {
         	logger.severe("distancedtraveled is NaN.");
-        	return remainingTime;
+        	return time;
         }
         
         // Case 1 : overshot. Need to recalculate d, t and u
@@ -905,7 +905,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
      */
     protected double testSpeed(Direction direction) {
 
-    	double speed = getAverageVehicleSpeed(vehicle, person); //vehicle.getBaseSpeed() + getSpeedSkillModifier();
+    	double speed = getAverageVehicleSpeed(vehicle, person); 
         if (speed < 0D) {
         	speed = 0D;
         }

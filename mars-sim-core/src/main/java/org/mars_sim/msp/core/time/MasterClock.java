@@ -53,6 +53,9 @@ public class MasterClock implements Serializable {
 
 	/** The maximum pulse time allowed in one frame for a task phase. */
 	private static final double MAX_PULSE_TIME = .25;
+	
+	/** The multiplier for reducing the width of a pulse. */
+	public static final double MULTIPLIER = 3;
 	/** The number of milliseconds for each millisol.  */
 	private static final double MILLISECONDS_PER_MILLISOL = MarsClock.SECONDS_PER_MILLISOL * 1000.0;
 
@@ -409,29 +412,29 @@ public class MasterClock implements Serializable {
 
 		} // end of run
 
-		/**
-		 * Determines the sleep time for this frame.
-		 */
-		private void calculateSleepTime() {
-			// Get the desired millisols per second
-			double desiredMsolPerSecond = desiredTR / MarsClock.SECONDS_PER_MILLISOL;
-			
-			// Get the desired number of pulses
-			double desiredPulses = desiredMsolPerSecond / optMilliSolPerPulse;
-			desiredPulses = Math.max(desiredPulses, 1D);
-			
-			// Get the milliseconds between each pulse
-			double milliSecondsPerPulse = 1000D / desiredPulses;
+	/**
+	 * Determines the sleep time for this frame.
+	 */
+	private void calculateSleepTime() {
+		// Get the desired millisols per second
+		double desiredMsolPerSecond = (actualTR + desiredTR) / 2 / MarsClock.SECONDS_PER_MILLISOL;
 
-			// Sleep time allows for the execution time
-			sleepTime = (long)(milliSecondsPerPulse - executionTime);
+		// Get the desired number of pulses
+		double desiredPulses = desiredMsolPerSecond / (optMilliSolPerPulse + lastPulseTime) * 2;
+		desiredPulses = Math.max(desiredPulses, 1D);
+		
+		// Get the milliseconds between each pulse
+		double milliSecondsPerPulse = 1000D / desiredPulses;
 
-			// Very useful but generates a LOT of log
-//			String msg = String.format("Sleep calcs desiredTR=%d, actualTR=%.2f, msol/sec=%.2f, pulse/sec=%.2f, ms/Pulse=%.2f, exection=%d ms, sleep=%d ms",
-//					desiredTR, actualTR, desiredMsolPerSecond, desiredPulses, milliSecondsPerPulse, executionTime, sleepTime);
-//		    logger.info(msg);
-		}
+		// Sleep time allows for the execution time
+		sleepTime = (long)(milliSecondsPerPulse - executionTime);
+
+		// Very useful but generates a LOT of log
+//		String msg = String.format("Sleep calcs desiredTR=%d, actualTR=%.2f, msol/sec=%.2f, pulse/sec=%.2f, ms/Pulse=%.2f, exection=%d ms, sleep=%d ms",
+//				desiredTR, actualTR, desiredMsolPerSecond, desiredPulses, milliSecondsPerPulse, executionTime, sleepTime);
+//	    logger.info(msg);
 	}
+}
 
 	/**
 	 * Sets the pause time for the Command Mode.
@@ -577,7 +580,7 @@ public class MasterClock implements Serializable {
 		
 		// Update the pulse time for use in tasks
 		double oldPulseTime = Task.getStandardPulseTime();
-		double newPulseTime = Math.min(time/4.0, MAX_PULSE_TIME);
+		double newPulseTime = Math.min(time/MULTIPLIER, MAX_PULSE_TIME);
 		if (newPulseTime != oldPulseTime) {
 			Task.setStandardPulseTime(newPulseTime);
 		}

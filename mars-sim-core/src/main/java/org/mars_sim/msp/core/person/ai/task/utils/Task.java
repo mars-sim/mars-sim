@@ -51,6 +51,7 @@ import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.core.structure.building.function.farming.CropConfig;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Rover;
 
@@ -134,6 +135,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	/** What natural attribute influences experience points */
 	private NaturalAttributeType experienceAttribute = NaturalAttributeType.EXPERIENCE_APTITUDE;
 
+	/** The static instance of the master clock */
+	protected static MasterClock masterClock;
 	/** The static instance of the mars clock */
 	protected static MarsClock marsClock;
 	/** The static instance of the event manager */
@@ -239,7 +242,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		}
 		
 		// Set standard pulse time to a quarter of the value of the current pulse width
-		standardPulseTime = Simulation.instance().getMasterClock().getMarsPulseTime() / 4.0;
+		standardPulseTime = masterClock.getMarsPulseTime() / MasterClock.MULTIPLIER;
 	}
 
 	/**
@@ -1534,8 +1537,9 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @param m  {@link MissionManager}
 	 * @param pc  {@link PersonConfig}
 	 */
-	public static void initializeInstances(MarsClock c, HistoricalEventManager e, UnitManager u,
+	public static void initializeInstances(MasterClock ms, MarsClock c, HistoricalEventManager e, UnitManager u,
 			ScientificStudyManager s, SurfaceFeatures sf, OrbitInfo oi, MissionManager m, PersonConfig pc) {
+		masterClock = ms;
 		marsClock = c;
 		eventManager = e;
 		unitManager = u;

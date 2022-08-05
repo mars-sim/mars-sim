@@ -109,7 +109,7 @@ public class BotMind implements Serializable, Temporal {
 		double pulseTime = Task.getStandardPulseTime();
 		while (remainingTime > 0 && pulseTime > 0) {
 			// Vary the amount of time to be injected
-			double rand = RandomUtil.getRandomDouble(1, 1.5);
+			double rand = RandomUtil.getRandomDouble(.8, 1);
 			double deltaTime = pulseTime * rand;
 			if (remainingTime > deltaTime) {
 				// Call takeAction to perform a task and consume the pulse time.
