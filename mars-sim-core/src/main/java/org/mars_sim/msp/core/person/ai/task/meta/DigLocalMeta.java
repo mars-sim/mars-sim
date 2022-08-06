@@ -90,7 +90,7 @@ public abstract class DigLocalMeta extends MetaTask {
         double hunger = condition.getHunger();
 
         result = collectionProbability * VALUE;
-
+   
         if (result > MAX)
         	result = MAX;
 

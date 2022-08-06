@@ -472,13 +472,14 @@ public class MasterClock implements Serializable {
 				
 				// Reset lastPulseTime
 				lastPulseTime = optMilliSolPerPulse;
-				// Reset realElaspedMilliSec
+				// Reset realElaspedMilliSec back to its default time ratio
 				realElapsedMillisec = (long) (optMilliSolPerPulse * MILLISECONDS_PER_MILLISOL / (int)simulationConfig.getTimeRatio());
 			}
 			
 			else if (realElapsedMillisec == 0.0) {
-				// Set realElaspedMilliSec
+				// At the start of the sim 
 				realElapsedMillisec = (long) (optMilliSolPerPulse * MILLISECONDS_PER_MILLISOL / desiredTR);
+				logger.warning("Zero elapsed real time. Resetting it to " + realElapsedMillisec + " ms.");
 			}
 			
 			else {
@@ -509,7 +510,7 @@ public class MasterClock implements Serializable {
 					&& !listenerExecutor.isShutdown()) {
 
 					// Update the uptimer
-					uptimer.updateTime(realElapsedMillisec);
+					uptimer.updateTime(optMilliSolPerPulse * MILLISECONDS_PER_MILLISOL / desiredTR);
 
 					// Add time to the Earth clock.
 					earthClock.addTime(earthMillisec);

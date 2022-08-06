@@ -53,9 +53,12 @@ public class UpTimer implements Serializable {
     }
 
     /**
-     * TODO: Why have this method? Just use the System millisecodns but add a substtraction for the time it is paused.
+     * Updates the simulation uptime.
+     * TODO: May switch to using System.currentTimeMillis() to get the start time and end time and subtract the pause time.
+     * 
+     * @param elapsedMilli
      */
-    public void updateTime(long elapsedMilli) {
+    public void updateTime(double elapsedMilli) {
         uptime += elapsedMilli;
     }
 
