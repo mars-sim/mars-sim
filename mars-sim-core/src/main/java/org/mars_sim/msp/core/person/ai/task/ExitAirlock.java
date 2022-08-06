@@ -51,9 +51,12 @@ public class ExitAirlock extends Task implements Serializable {
 
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.exitAirlock"); //$NON-NLS-1$
+	
+	private static final String REQUESTING_EGRESS = "Requested egress"; 
+	private static final String TRIED_TO_STEP_THRU_INNER_DOOR = "Tried to step through inner door"; 
 	private static final String PREBREATH_HALF_DONE = "Other occupant(s) have half pre-breathed.";
 	private static final String RESERVATION_NOT_MADE = "Reservation not made.";
-	private static final String NOT_FIT = "Not fit";
+	private static final String NOT_FIT = "not fit";
 	private static final String INNER_DOOR_LOCKED = "Inner door was locked.";
 	private static final String CHAMBER_FULL = "Chamber was full.";
 	
@@ -65,8 +68,8 @@ public class ExitAirlock extends Task implements Serializable {
 		Msg.getString("Task.phase.requestEgress")); //$NON-NLS-1$
 	private static final TaskPhase PRESSURIZE_CHAMBER = new TaskPhase(
 		Msg.getString("Task.phase.pressurizeChamber")); //$NON-NLS-1$
-	private static final TaskPhase ENTER_AIRLOCK = new TaskPhase(
-		Msg.getString("Task.phase.enterAirlock")); //$NON-NLS-1$
+	private static final TaskPhase STEP_THRU_INNER_DOOR = new TaskPhase(
+		Msg.getString("Task.phase.stepThruInnerDoor")); //$NON-NLS-1$
 	private static final TaskPhase WALK_TO_CHAMBER = new TaskPhase(
 		Msg.getString("Task.phase.walkToChamber")); //$NON-NLS-1$
 	private static final TaskPhase DON_EVA_SUIT = new TaskPhase(
@@ -97,12 +100,6 @@ public class ExitAirlock extends Task implements Serializable {
 	
 	/** The airlock to be used. */
 	private Airlock airlock;
-	/** The inside airlock position. */
-	private LocalPosition insideAirlockPos = null;
-	/** The exterior airlock position. */
-	private LocalPosition exteriorDoorPos = null;
-	/** The interior airlock position. */
-	private LocalPosition interiorDoorPos = null;
 
 	/**
 	 * Constructor.
@@ -126,7 +123,7 @@ public class ExitAirlock extends Task implements Serializable {
 		// Initialize task phase
 		addPhase(REQUEST_EGRESS);
 		addPhase(PRESSURIZE_CHAMBER);
-		addPhase(ENTER_AIRLOCK);
+		addPhase(STEP_THRU_INNER_DOOR);
 		addPhase(WALK_TO_CHAMBER);
 		addPhase(DON_EVA_SUIT);
 		addPhase(PREBREATHE);
@@ -153,8 +150,8 @@ public class ExitAirlock extends Task implements Serializable {
 			return requestEgress(time);
 		} else if (PRESSURIZE_CHAMBER.equals(getPhase())) {
 			return pressurizeChamber(time);
-		} else if (ENTER_AIRLOCK.equals(getPhase())) {
-			return enterAirlock(time);
+		} else if (STEP_THRU_INNER_DOOR.equals(getPhase())) {
+			return stepThruInnerDoor(time);
 		} else if (WALK_TO_CHAMBER.equals(getPhase())) {
 			return walkToChamber(time);
 		} else if (DON_EVA_SUIT.equals(getPhase())) {
@@ -302,7 +299,7 @@ public class ExitAirlock extends Task implements Serializable {
 		
 		// Checks if a person is tired, too stressful or hungry and need
 		// to take break, eat and/or sleep
-		return person.getPhysicalCondition().computeFitnessLevel() >= 3;
+		return person.getPhysicalCondition().isEVAFitScreening();
 	}
 
 	/**
@@ -317,17 +314,13 @@ public class ExitAirlock extends Task implements Serializable {
 		
 		airlock.removeID(person.getIdentifier());
 
-		// This doesn't make sense. The endTask call will be for the current task
-		// and if 'person' is the same then the walk subTask will be immediately
-		// cancelled by the endTask
-//		person.getTaskManager().getTask().walkToRandomLocation(false);
-//		endTask();
 
 		logger.log((Unit)airlock.getEntity(), person, Level.WARNING, 16_000, reason);
 		
 		// Note: For person in a vehicle with high fatigue or hunger,
 		// need to call clearAllTasks() to cause a person to quit the task
 		// or else it gets stuck forever in the vehicle airlock
+		
 		person.getTaskManager().clearAllTasks(reason);
 	}
 	
@@ -381,19 +374,19 @@ public class ExitAirlock extends Task implements Serializable {
 		}
 
 		if (inSettlement && !isFit()) {
-			walkAway(person, NOT_FIT + " for egress.");
+			walkAway(person, REQUESTING_EGRESS + " but " + NOT_FIT + ".");
 			return time;
 		}
 
 		if (person.isOutside()) {
-			endTask();
+			walkAway(person, REQUESTING_EGRESS + " but already outside.");
 			// Reset accumulatedTime back to zero
 			accumulatedTime = 0;
 			return time;
 		}
 
 		if (isOccupantHalfPrebreathed()) {
-			walkAway(person, "Can't request egress - " + PREBREATH_HALF_DONE);
+			walkAway(person, REQUESTING_EGRESS + " but " + PREBREATH_HALF_DONE + ".");
 			return time;
 		}
 
@@ -404,7 +397,8 @@ public class ExitAirlock extends Task implements Serializable {
 			airlock.loadEVAActivitySpots();
 
 			if (!airlock.addAwaitingInnerDoor(id)) {
-				walkAway(person, "Cannot get a spot at the inner door of " + airlock.getEntity().toString() + ".");
+				walkAway(person, REQUESTING_EGRESS 
+						+ ". Cannot get a spot at the inner door of " + airlock.getEntity().toString() + ".");
 				return time;
 			}
 
@@ -430,18 +424,14 @@ public class ExitAirlock extends Task implements Serializable {
 
 		else {
 
-	 		if (interiorDoorPos == null) {
-	 			interiorDoorPos = airlock.getAvailableInteriorPosition();
+			if (airlock.addAwaitingInnerDoor(id)) {
+				canProceed = true;
 			}
-
-//			if (LocalAreaUtil.areLocationsClose(new LocalPosition.Double(person.getXLocation(), person.getYLocation()), interiorDoorPos)) {
-				if (airlock.addAwaitingInnerDoor(id)) {
-					canProceed = true;
-				}
-				else {
-					walkAway(person, "Cannot wait at " + airlock.getEntity().toString() + " inner door.");
-					return time;
-				}
+			else {
+				walkAway(person, REQUESTING_EGRESS 
+						+ ". Cannot wait at " + airlock.getEntity().toString() + " inner door.");
+				return time;
+			}
 		}
 
 		if (canProceed && accumulatedTime > STANDARD_TIME) {
@@ -457,7 +447,7 @@ public class ExitAirlock extends Task implements Serializable {
 					+ airlock.getEntity().toString() + ".");
 
 				// Skip PRESSURIZE_CHAMBER phase and go to the ENTER_AIRLOCK phase
-				setPhase(ENTER_AIRLOCK);
+				setPhase(STEP_THRU_INNER_DOOR);
 			}
 
 			else {
@@ -535,31 +525,31 @@ public class ExitAirlock extends Task implements Serializable {
 			// Add experience
 			addExperience(time);
 	
-			setPhase(ENTER_AIRLOCK);
+			setPhase(STEP_THRU_INNER_DOOR);
 		}
 		
 		return 0;
 	}
 
 	/**
-	 * Enters through the inner door into the chamber of the airlock.
+	 * Steps through the inner door to enter into the airlock.
 	 *
 	 * @param time
 	 * @return the remaining time
 	 */
-	private double enterAirlock(double time) {
+	private double stepThruInnerDoor(double time) {
 		// Accumulate work for this task phase
 		accumulatedTime += time;
 
 		boolean canProceed = false;
 
 		if (!isFit()) {
-			walkAway(person, NOT_FIT + " to enter an airlock.");
+			walkAway(person, TRIED_TO_STEP_THRU_INNER_DOOR + " but " + NOT_FIT + ".");
 			return time;
 		}
 
 		if (isOccupantHalfPrebreathed()) {
-			walkAway(person, "Can't enter an airlock - " + PREBREATH_HALF_DONE);
+			walkAway(person, TRIED_TO_STEP_THRU_INNER_DOOR + " but " + PREBREATH_HALF_DONE);
 			return time;
 		}
 		
@@ -574,12 +564,12 @@ public class ExitAirlock extends Task implements Serializable {
 		if (inSettlement) {
 
 			if (airlock.isInnerDoorLocked()) {
-				walkAway(person, INNER_DOOR_LOCKED);
+				walkAway(person, TRIED_TO_STEP_THRU_INNER_DOOR + " but " + INNER_DOOR_LOCKED);
 				return time;
 			}
 
 			if (airlock.isChamberFull() || !airlock.hasSpace()) {
-				walkAway(person, CHAMBER_FULL);
+				walkAway(person, TRIED_TO_STEP_THRU_INNER_DOOR + " but " + CHAMBER_FULL);
 				return time;
 			}
 			
@@ -594,31 +584,18 @@ public class ExitAirlock extends Task implements Serializable {
 		}
 
 		else {
+			if (!airlock.isInnerDoorLocked()) {
 
-	 		if (interiorDoorPos == null) {
-	 			interiorDoorPos = airlock.getAvailableInteriorPosition();
+				if (!airlock.inAirlock(person)) {
+					canProceed = airlock.enterAirlock(person, id, true);
+				} else // the person is already inside the airlock from previous cycle
+					canProceed = true;
 			}
-
-//			if (LocalAreaUtil.areLocationsClose(new LocalPosition.Double(person.getXLocation(), person.getYLocation()), interiorDoorPos)) {
-				if (!airlock.isInnerDoorLocked()) {
-
-					if (!airlock.inAirlock(person)) {
-						canProceed = airlock.enterAirlock(person, id, true);
-					} else // the person is already inside the airlock from previous cycle
-						canProceed = true;
-				}
-				else {
-					walkAway(person, airlock.getEntity().toString() + " inner door locked");
-					return time;
-				}
-//			}
-
-//			else {
-//				Rover airlockRover = (Rover) airlock.getEntity();
-//
-//				logger.log((Unit)airlock.getEntity(), person, Level.FINER, 4_000,
-//						"Walked close to the interior door in " + airlockRover);
-//			}
+			else {
+				walkAway(person, TRIED_TO_STEP_THRU_INNER_DOOR + " but " 
+						+ airlock.getEntity().toString() + " inner door locked");
+				return time;
+			}
 		}
 
 		if (canProceed && accumulatedTime > STANDARD_TIME) {
@@ -692,7 +669,7 @@ public class ExitAirlock extends Task implements Serializable {
 			}
 
 			else {
-				setPhase(ENTER_AIRLOCK);
+				setPhase(STEP_THRU_INNER_DOOR);
 				// Reset accumulatedTime back to zero
 				accumulatedTime = 0;
 				return 0;
@@ -705,7 +682,7 @@ public class ExitAirlock extends Task implements Serializable {
  				canProceed = true;
 			}
  			else {
-				setPhase(ENTER_AIRLOCK);
+				setPhase(STEP_THRU_INNER_DOOR);
 				// Reset accumulatedTime back to zero
 				accumulatedTime = 0;
 				return 0;
@@ -1081,7 +1058,7 @@ public class ExitAirlock extends Task implements Serializable {
 		person.getPhysicalCondition().resetRemainingPrebreathingTime();
 		
 		// Ends the sub task 2 within the EnterAirlock task
-		endSubTask2();
+//		endSubTask2();
 
 		// Remove all lingering tasks to avoid any unfinished walking tasks
 //		person.getMind().getTaskManager().endSubTask();
@@ -1235,5 +1212,18 @@ public class ExitAirlock extends Task implements Serializable {
 	@Override
 	protected boolean canRecord() {
 		return false;
+	}
+	
+	public void destroy() {
+//		REQUEST_EGRESS = null;
+//		PRESSURIZE_CHAMBER = null;
+//		STEP_THRU_INNER_DOOR = null;
+//		WALK_TO_CHAMBER = null;
+//		DON_EVA_SUIT = null;
+//		PREBREATHE = null;
+//		DEPRESSURIZE_CHAMBER = null;
+//		LEAVE_AIRLOCK = null;
+		airlock = null;
+		super.destroy();
 	}
 }

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * UnloadVehicleEVA.java
- * @date 2021-08-28
+ * @date 2022-08-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -53,7 +53,7 @@ public class UnloadVehicleEVAMeta extends MetaTask {
         if (settlement != null) {
 
             // Probability affected by the person's stress and fatigue.
-            if (!person.getPhysicalCondition().isFitByLevel(500, 50, 500))
+            if (!person.getPhysicalCondition().isEVAFitScreening())
             	return 0;
 
 	    	// Check for radiation events
@@ -78,12 +78,14 @@ public class UnloadVehicleEVAMeta extends MetaTask {
 			if (EVAOperation.isExhausted(person))
 				return 0;
 
+			double score = person.getPhysicalCondition().computeHealthScore();
+			
 	        // Check all vehicle missions occurring at the settlement.
 	        try {
 	            int numVehicles = 0;
 	            numVehicles += UnloadVehicleEVA.getAllMissionsNeedingUnloading(settlement).size();
 	            numVehicles += UnloadVehicleEVA.getNonMissionVehiclesNeedingUnloading(settlement).size();
-	            result = 100D * numVehicles;
+	            result = score * numVehicles;
 	        }
 	        catch (Exception e) {
 	            logger.log(Level.SEVERE,"Error finding unloading missions. " + e.getMessage());

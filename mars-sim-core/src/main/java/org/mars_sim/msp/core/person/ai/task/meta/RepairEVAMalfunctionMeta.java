@@ -47,7 +47,7 @@ public class RepairEVAMalfunctionMeta extends MetaTask {
 		double result = 0D;
 
         // Probability affected by the person's stress and fatigue.
-        if (!person.getPhysicalCondition().isFitByLevel(1000, 75, 1000))
+        if (!person.getPhysicalCondition().isEVAFitScreening())
         	return 0;
 
         if (person.isInside() && EVAOperation.getWalkableAvailableAirlock(person, false) == null)
@@ -85,7 +85,7 @@ public class RepairEVAMalfunctionMeta extends MetaTask {
 			// Even if it's night time, technicians/engineers are assigned to man that work shift
 			// to take care of the the repair.
 
-			result = getSettlementProbability(settlement);
+			result = getSettlementProbability(settlement, person);
 
 			if (exposed[0]) {
 				result = result / 3D;// Baseline can give a fair amount dose of radiation
@@ -107,17 +107,18 @@ public class RepairEVAMalfunctionMeta extends MetaTask {
 		return result;
 	}
 
-	private double getSettlementProbability(Settlement settlement) {
+	private double getSettlementProbability(Settlement settlement, Person person) {
 		double result = 0D;
 
+		double score = person.getPhysicalCondition().computeHealthScore();
+		
 		// Add probability for all malfunctionable entities in person's local.
 		for(Malfunctionable entity : MalfunctionFactory.getBuildingMalfunctionables(settlement)) {
 			// Check if entity has any EVA malfunctions.
 			for(Malfunction malfunction : entity.getMalfunctionManager().getAllEVAMalfunctions()) {
 				if (malfunction.numRepairerSlotsEmpty(MalfunctionRepairWork.EVA) > 0) {
-					double score = WEIGHT;
 					if (RepairHelper.hasRepairParts(settlement, malfunction)) {
-						score += WEIGHT;
+						result += score;
 					}
 					result += score;
 				}

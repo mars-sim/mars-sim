@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MaintainGroundVehicleEVA.java
- * @date 2021-10-21
+ * @date 2022-08-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -60,7 +60,7 @@ implements Serializable {
     public MaintainGroundVehicleEVA(Person person) {
         super(NAME, person, true, 25, SkillType.MECHANICS);
 
-		if (!person.isBarelyFit()) {
+		if (!person.isNominallyFit()) {
 			checkLocation();
         	return;
 		}

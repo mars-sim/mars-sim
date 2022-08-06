@@ -82,7 +82,7 @@ public abstract class DigLocalMeta extends MetaTask {
         // Probability affected by the person's stress and fatigue.
         PhysicalCondition condition = person.getPhysicalCondition();
         
-        if (!condition.isFitByLevel(250, 25, 250))
+        if (!condition.isEVAFitScreening())
         	return 0;
         
         double stress = condition.getStress();

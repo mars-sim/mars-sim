@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * MaintenanceEVAMeta.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-08-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -85,7 +85,7 @@ public class MaintenanceEVAMeta extends MetaTask {
 //            	return 0;	
             
             // Probability affected by the person's stress and fatigue.
-            if (!person.getPhysicalCondition().isFitByLevel(500, 50, 500))
+            if (!person.getPhysicalCondition().isEVAFitScreening())
             	return 0;
             	
         	// Check for radiation events
@@ -124,20 +124,21 @@ public class MaintenanceEVAMeta extends MetaTask {
 					double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();
 					boolean minTime = (effectiveTime >= 1000D);
 					
+					double score = person.getPhysicalCondition().computeHealthScore();
+					
 					if (minTime) {
 						double entityProb = effectiveTime / 1000D;
-						if (entityProb > 100D) {
-							entityProb = 100D;
+						if (entityProb > score) {
+							entityProb = score;
 						}
 						result += entityProb * FACTOR;
 					}         
                 }
             }
             catch (Exception e) {
-                logger.log(Level.SEVERE,"getProbability()",e);
+                logger.log(Level.SEVERE,"getProbability()", e);
             }
 
-            
             if (settlement.getIndoorPeopleCount() > settlement.getPopulationCapacity())
                 result *= 2D;
             

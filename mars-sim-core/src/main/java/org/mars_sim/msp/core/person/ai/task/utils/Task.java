@@ -316,6 +316,9 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			setPhase(null);
 			setDescription("");
 	
+			// End subtask2
+			endSubTask2();
+						
 			// End subtask
 			endSubTask();
 			
@@ -1550,6 +1553,21 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		orbitInfo = oi;
 		missionManager = m;
 		personConfig = pc;
+	}
+	
+	public void destroy() {
+		teacher = null;
+		person = null;
+		robot = null;
+		worker = null;
+		eventTarget = null;
+		subTask = null;
+		phase = null;
+		phases.clear();
+		phases = null;
+		neededSkills.clear();
+		neededSkills = null;
+		experienceAttribute = null;
 	}
 }
 

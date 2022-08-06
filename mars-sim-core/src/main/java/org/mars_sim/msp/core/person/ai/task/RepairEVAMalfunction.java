@@ -59,7 +59,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 	public RepairEVAMalfunction(Person person) {
 		super(NAME, person, true, 25, SkillType.MECHANICS);
 
-		if (!person.isBarelyFit()) {
+		if (!person.isNominallyFit()) {
 			checkLocation();
         	return;
 		}

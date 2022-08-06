@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * LoadVehicleEVAMeta.java
- * @date 2021-10-21
+ * @date 2022-08-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -81,14 +81,13 @@ public class LoadVehicleEVAMeta extends MetaTask {
 		if (EVAOperation.isExhausted(person))
 			return 0;
 
-
     	double result = 0D;
 
         Settlement settlement = person.getSettlement();
 
     	if (settlement != null) {
 
-            if (!person.getPhysicalCondition().isFitByLevel(500, 50, 500))
+            if (!person.getPhysicalCondition().isEVAFitScreening())
             	return 0;
 
         	boolean[] exposed = {false, false, false};
@@ -98,10 +97,12 @@ public class LoadVehicleEVAMeta extends MetaTask {
         		exposed = settlement.getExposed();
         	}
 
-			if (exposed[2]) {// SEP can give lethal dose of radiation
+			if (exposed[2]) { // SEP can give lethal dose of radiation
 	            return 0;
 			}
 
+   			double score = person.getPhysicalCondition().computeHealthScore();
+   			
 	        // Check all vehicle missions occurring at the settlement.
 	        try {
 	            List<Mission> missions = LoadVehicleGarage.getAllMissionsNeedingLoading(settlement, false);
@@ -109,7 +110,7 @@ public class LoadVehicleEVAMeta extends MetaTask {
                	if (num == 0)
                		return 0;
                	else
-               		result += 100D * num;
+               		result += score * num;
 	        }
 	        catch (Exception e) {
 	            logger.severe(person, "Error finding loading missions.", e);
@@ -125,9 +126,6 @@ public class LoadVehicleEVAMeta extends MetaTask {
 	            }
 	        }
 
-//	        // Crowded settlement modifier
-//	        if (settlement.getIndoorPeopleCount() > settlement.getPopulationCapacity())
-//	            result *= 2D;
 	        result *= settlement.getGoodsManager().getTransportationFactor();
 
 	        result = applyPersonModifier(result, person);

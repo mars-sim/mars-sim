@@ -46,7 +46,7 @@ public class EnterAirlock extends Task implements Serializable {
 	/** Task phases. */
 	private static final TaskPhase REQUEST_INGRESS = new TaskPhase(Msg.getString("Task.phase.requestIngress")); //$NON-NLS-1$
 	private static final TaskPhase DEPRESSURIZE_CHAMBER = new TaskPhase(Msg.getString("Task.phase.depressurizeChamber")); //$NON-NLS-1$
-	private static final TaskPhase ENTER_AIRLOCK = new TaskPhase(Msg.getString("Task.phase.enterAirlock")); //$NON-NLS-1$
+	private static final TaskPhase STEP_THRU_OUTER_DOOR = new TaskPhase(Msg.getString("Task.phase.stepThruOuterDoor")); //$NON-NLS-1$
 	private static final TaskPhase WALK_TO_CHAMBER = new TaskPhase(Msg.getString("Task.phase.walkToChamber")); //$NON-NLS-1$
 	private static final TaskPhase PRESSURIZE_CHAMBER = new TaskPhase(Msg.getString("Task.phase.pressurizeChamber")); //$NON-NLS-1$
 	private static final TaskPhase DOFF_EVA_SUIT = new TaskPhase(Msg.getString("Task.phase.doffEVASuit")); //$NON-NLS-1$
@@ -108,7 +108,7 @@ public class EnterAirlock extends Task implements Serializable {
 		// Initialize task phase
 		addPhase(REQUEST_INGRESS);
 		addPhase(DEPRESSURIZE_CHAMBER);
-		addPhase(ENTER_AIRLOCK);
+		addPhase(STEP_THRU_OUTER_DOOR);
 		addPhase(WALK_TO_CHAMBER);
 		addPhase(PRESSURIZE_CHAMBER);
 		addPhase(DOFF_EVA_SUIT);
@@ -133,8 +133,8 @@ public class EnterAirlock extends Task implements Serializable {
 			return requestIngress(time);
 		} else if (DEPRESSURIZE_CHAMBER.equals(getPhase())) {
 			return depressurizeChamber(time); 
-		} else if (ENTER_AIRLOCK.equals(getPhase())) {
-			return enterAirlock(time);
+		} else if (STEP_THRU_OUTER_DOOR.equals(getPhase())) {
+			return stepThruOuterDoor(time);
 		} else if (WALK_TO_CHAMBER.equals(getPhase())) {
 			return walkToChamber(time);
 		} else if (PRESSURIZE_CHAMBER.equals(getPhase())) {
@@ -343,7 +343,7 @@ public class EnterAirlock extends Task implements Serializable {
 						"Chamber already depressurized for entry in " + airlock.getEntity().toString() + ".");
 
 				// Skip DEPRESSURIZE_CHAMBER phase and go to the ENTER_AIRLOCK phase
-				setPhase(ENTER_AIRLOCK);
+				setPhase(STEP_THRU_OUTER_DOOR);
 			}
 
 			else {
@@ -420,7 +420,7 @@ public class EnterAirlock extends Task implements Serializable {
 			// Add experience
 			addExperience(time);
 
-			setPhase(ENTER_AIRLOCK);
+			setPhase(STEP_THRU_OUTER_DOOR);
 		}
 		
 		return 0;
@@ -432,7 +432,7 @@ public class EnterAirlock extends Task implements Serializable {
 	 * @param time
 	 * @return
 	 */
-	private double enterAirlock(double time) {
+	private double stepThruOuterDoor(double time) {
 		// Accumulate work for this task phase
 		accumulatedTime += time;
 
@@ -915,8 +915,8 @@ public class EnterAirlock extends Task implements Serializable {
 		// Remove all lingering tasks to avoid any unfinished walking tasks
 //		person.getMind().getTaskManager().endSubTask();
 
-		// Walk away from this airlock anywhere in the settlement
-		walkToRandomLocation(false);
+		// Walk away from this airlock anywhere
+//		walkToRandomLocation(false);
 
 		super.endTask();
 	}
@@ -929,5 +929,12 @@ public class EnterAirlock extends Task implements Serializable {
 	@Override
 	protected boolean canRecord() {
 		return false;
+	}
+	
+	public void destroy() {
+		airlock = null;
+		exteriorDoorPos = null;
+		interiorDoorPos = null;
+		super.destroy();
 	}
 }

@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * MaintainGroundVehicleEVAMeta.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-08-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -51,7 +51,7 @@ public class MaintainGroundVehicleEVAMeta extends MetaTask {
         // Determine if settlement has a garage.
        	if (person.isInSettlement() || person.isRightOutsideSettlement()) {
 
-            if (!person.getPhysicalCondition().isFitByLevel(500, 50, 500))
+            if (!person.getPhysicalCondition().isEVAFitScreening())
             	return 0;
             
         	Settlement settlement = person.getAssociatedSettlement();
@@ -107,17 +107,19 @@ public class MaintainGroundVehicleEVAMeta extends MetaTask {
 			
        		if (total - onMission - totalCap > 0) {
 				
+       			double score = person.getPhysicalCondition().computeHealthScore();
+       			
 	            // Get all vehicles needing maintenance.
                 Iterator<Vehicle> i = MaintainGroundVehicleGarage.getAllVehicleCandidates(person, true).iterator();
                 while (i.hasNext()) {
                     MalfunctionManager manager = i.next().getMalfunctionManager();
                     double entityProb = (manager.getEffectiveTimeSinceLastMaintenance() / 50D);
-                    if (entityProb > 100D) {
-                        entityProb = 100D;
+                    if (entityProb > score) {
+                        entityProb = score;
                     }
                     result += entityProb;
                 }
-                
+                		
 	            int num = settlement.getIndoorPeopleCount();
                 result = result 
                 		+ result * num / settlement.getPopulationCapacity() / 4D

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MaintenanceEVA.java
- * @date 2021-10-21
+ * @date 2022-08-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -62,7 +62,7 @@ implements Serializable {
 	public MaintenanceEVA(Person person) {
 		super(NAME, person, true, RandomUtil.getRandomDouble(50D) + 10D, SkillType.MECHANICS);
 
-		if (!person.isBarelyFit()) {
+		if (!person.isNominallyFit()) {
 			checkLocation();
         	return;
 		}

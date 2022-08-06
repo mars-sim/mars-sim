@@ -1696,6 +1696,16 @@ public class PhysicalCondition implements Serializable {
     }
 
 	/**
+	 * Checks if a person is nominally fit.
+	 *
+	 * @return true if a person is nominally fit
+	 */
+	public boolean isNominallyFit() {
+        return !(fatigue > 500) && !(stress > 50) && !(hunger > 500) && !(thirst > 500) && !(kJoules < 6000)
+                && !hasSeriousMedicalProblems();
+    }
+	
+	/**
 	 * Checks fitness against some maximum levels.
 	 * 
 	 * @param fatMax
@@ -1708,6 +1718,28 @@ public class PhysicalCondition implements Serializable {
         		&& (hunger < hunMax) && (thirst < hunMax/2));
 	}
 
+	/**
+	 * Screens if the person is fit for an EVA task
+	 * 
+	 * @return
+	 */
+	public boolean isEVAFitScreening() {
+        return isFitByLevel(200, 20, 200);
+	}
+	
+	/**
+	 * Returns the health score of a person. 0 being lowest. 100 being the highest.
+	 * 
+	 * @return
+	 */
+	public double computeHealthScore() {
+		return (Math.min(100 - fatigue/10, 0) 
+				+ Math.min(100 - stress/10, 0) 
+				+ Math.min(100 - hunger/10, 0) 
+				+ Math.min(100 - thirst/10, 0) 
+				+ Math.min(performance, 0)) / 5.0;
+	}
+	
 	/**
 	 * Computes the fitness level.
 	 *

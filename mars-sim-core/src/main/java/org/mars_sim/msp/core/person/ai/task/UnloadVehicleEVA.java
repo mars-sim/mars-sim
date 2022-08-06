@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * UnloadVehicleEVA.java
- * @date 2021-10-21
+ * @date 2022-08-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -81,7 +81,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 		// Use EVAOperation constructor.
 		super(NAME, person, true, 25, null);
 
-		if (!person.isBarelyFit()) {
+		if (!person.isNominallyFit()) {
 			checkLocation();
         	return;
 		}

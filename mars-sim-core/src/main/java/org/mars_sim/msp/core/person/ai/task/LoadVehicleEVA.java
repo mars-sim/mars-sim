@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * LoadVehicleEVA.java
- * @date 2021-08-29
+ * @date 2022-08-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -54,7 +54,7 @@ public class LoadVehicleEVA extends EVAOperation {
 		// Use Task constructor
 		super(NAME, person, true, 20D + RandomUtil.getRandomInt(5) - RandomUtil.getRandomInt(5), null);
 		
-		if (!person.isBarelyFit()) {
+		if (!person.isNominallyFit()) {
 			checkLocation();
         	return;
 		}

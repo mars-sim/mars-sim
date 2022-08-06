@@ -1138,6 +1138,15 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
+	 * Checks if a person is nominally fit.
+	 *
+	 * @return true if a person is nominally fit
+	 */
+	public boolean isNominallyFit() {
+        return condition.isBarelyFit();
+    }
+	
+	/**
 	 * Sets the person's name.
 	 *
 	 * @param newName the new name

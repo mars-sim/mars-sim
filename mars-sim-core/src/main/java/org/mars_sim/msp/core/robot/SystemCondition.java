@@ -87,9 +87,11 @@ public class SystemCondition implements Serializable {
     	// 1. Perform self-diagnostic
         // performSystemCheck();
 
-        // 2. If a robot needs to be recharged, go and dock to a robotic station
-        if (checkEnergyLevel())
-        	logger.log(robot, Level.INFO, 20_000L, "Positioned to get recharged.");
+        // 2. If a robot needs to be recharged
+        if (checkEnergyLevel()) {
+        	// Go and dock to a robotic station in Sleep Mode
+//        	logger.log(robot, Level.INFO, 20_000L, "Positioned to get recharged.");
+        }
         
         // 3. Consume a minute amount of energy even if a robot does not perform any tasks
         if (!isCharging)
