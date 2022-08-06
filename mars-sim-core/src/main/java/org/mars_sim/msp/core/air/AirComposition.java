@@ -90,7 +90,12 @@ public class AirComposition implements Serializable {
 	private double accumulatedTime;
 	public static final double C_TO_K = 273.15;
 
-
+	/**
+	 * Constructor.
+	 * 
+	 * @param t
+	 * @param vol
+	 */
 	public AirComposition(double t, double vol) {
 
 		// Part 1 : set up initial conditions at the start of sim
@@ -168,7 +173,8 @@ public class AirComposition implements Serializable {
 	}
 
 	/**
-	 * Update gasses for occupants
+	 * Update gasses for occupants.
+	 * 
 	 * @param t Current temperature
 	 * @param numPeople Number of people in using air
 	 * @param time The time span of the gas consumption
@@ -221,7 +227,8 @@ public class AirComposition implements Serializable {
 	}
 
 	/**
-	 * Monitor the gases exchanges to a Resource Holder. 
+	 * Monitor the gases exchanges to a Resource Holder.
+	 * 
 	 * @param rh Source or destination of excess gasses.
 	 * @param t Current temperature
 	 */
@@ -281,7 +288,7 @@ public class AirComposition implements Serializable {
 	}
 
 	/**
- 	 * Release or recapture numbers of moles of a certain gas to a given building
+ 	 * Release or recapture numbers of moles of a certain gas to a given building.
  	 *
  	 * @param volume   volume change in the building
  	 * @param isReleasing positive if releasing, negative if recapturing
@@ -363,6 +370,9 @@ public class AirComposition implements Serializable {
 
 	/**
 	 * Get the ideal pressure for a particular gas.
+	 * 
+	 * @param gasId
+	 * @return
 	 */
 	private static final double getIdealPressure(int gasId) {
 		// Can't use a switch because ResourceUtil ids are not constant, e.g. not final static.
@@ -382,6 +392,7 @@ public class AirComposition implements Serializable {
 
     /**
      * Calculate the O2 pressure for a quantity in a fixed volume.
+     * 
      * @param gasVol Amount of O2 present
      * @param totalVol Total volume of the container 
      */

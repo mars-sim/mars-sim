@@ -449,7 +449,7 @@ public class MasterClock implements Serializable {
 		logger.info("Auto pause time: " + value1);
 	}
 
-	/*
+	/**
 	 * Adds earth time and mars time.
 	 *
 	 * @return true if the pulse was accepted

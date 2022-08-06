@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Heating.java
- * @date 2022-07-11
+ * @date 2022-08-06
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -9,7 +9,8 @@ package org.mars_sim.msp.core.structure.building.function;
 import java.util.List;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.logging.SimLogger;
+import org.mars_sim.msp.core.air.AirComposition;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.FunctionSpec;
@@ -26,7 +27,7 @@ extends Function {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	/** default logger. */
-	private static SimLogger logger = SimLogger.getLogger(Heating.class.getName());
+//	private static SimLogger logger = SimLogger.getLogger(Heating.class.getName());
 	
 	private static final FunctionType FUNCTION = FunctionType.LIFE_SUPPORT;
 
@@ -161,20 +162,6 @@ extends Function {
 	private double areaFactor;
 	
 	private double timeSlice = MarsClock.SECONDS_PER_MILLISOL / PER_UPDATE;
-	
-	// C_s = 0.24 + 0.45H where 0.24 BTU/lb°F is the heat capacity of dry air, 0.45 BTU/lb°F is the heat capacity 
-	// of water vapor, and SH is the specific humidity, the ratio of the mass of water vapor to that of dry air 
-	// in the mixture.
-	
-	// In SI units, cs = 1.005 + 1.82 * SH where 
-	// 1.005 kJ/kg°C is the heat capacity of dry air, 
-	// 1.82 kJ/kg°C the heat capacity of water vapor, 
-	// and SH is the specific humidity in kg water vapor per kg dry air in the mixture.
-
-	/** The percent of the air is moisture. Assume 1%. */
-	private static final double SH = 0.01; 
-	/** The specific heat capacity (C_s) of the air with moisture. */	
-	private static final double HEAT_CAPACITY_AIR_MOISTURE = SPECIFIC_HEAT_CAP_AIR_300K + 1.82 * SH;
 	/** The total mass of the air and moisture in this building. */	
 	private double airMass;
 
@@ -255,7 +242,6 @@ extends Function {
 		// assuming four windows
 		uValueAreaCrackLengthAirlock = 0.244 * .075 * airChangePerHr * qHFactor * (2 * (2 + 6) + 4 * (.5 + .5) );
 		//assuming two EVA airlock
-		
 		
 		tInitial = building.getInitialTemperature();
 		
@@ -592,11 +578,33 @@ extends Function {
 
 //		if (isGreenhouse) logger.info(building, "diffHeatGainLoss kW: " + diffHeatGainLoss);
 		
-		// (3b) FIND CONVERSION FACTOR
+		// (3b) FIND AIR MOISTURE RELATED FACTORS
 		airMass = building.getLifeSupport().getAir().getTotalMass();
 		
-		double airHeatCap = HEAT_CAPACITY_AIR_MOISTURE * airMass;
+		// C_s = 0.24 + 0.45H where 0.24 BTU/lb°F is the heat capacity of dry air, 0.45 BTU/lb°F is the heat capacity 
+		// of water vapor, and SH is the specific humidity, the ratio of the mass of water vapor to that of dry air 
+		// in the mixture.
 		
+		// In SI units, cs = 1.005 + 1.82 * SH where 
+		// 1.005 kJ/kg°C is the heat capacity of dry air, 
+		// 1.82 kJ/kg°C the heat capacity of water vapor, 
+		// and SH is the specific humidity in kg water vapor per kg dry air in the mixture.
+
+		AirComposition.GasDetails gas = building.getLifeSupport().getAir().getGas(ResourceUtil.waterID);
+	
+		/** The percent of the air is moisture. Assume 1%. */
+		double percentAirMoisture = gas.getPercent();
+//		logger.info(building, "Air moisture percent: " + percentAirMoisture);
+		
+//		double mass = gas.getMass();
+//		logger.info(building, "Air moisture mass: " + mass);
+		
+		/** The specific heat capacity (C_s) of the air with moisture. */	
+		double heatCapAirMoisture = SPECIFIC_HEAT_CAP_AIR_300K + 1.82 * percentAirMoisture / 100;
+//		logger.info(building, "heatCapAirMoisture: " + heatCapAirMoisture);
+		
+		double airHeatCap = heatCapAirMoisture * airMass;
+
 		double convFactor = timeSlice / airHeatCap; 
 		
 		double airPower = airHeatCap * inTCelsius * millisols * timeSlice;
@@ -770,11 +778,6 @@ extends Function {
 							gain = .5 *speedFactor * dt * areaFactor;
 							gain = Math.min(gain, CFM / size);
 						}
-						//else if (t_next - T_LOWER_SENSITIVITY < t) {
-							// heat is leaving
-						//	gain = -speed_factor * d_t;
-						//	gain = Math.max(gain, -CFM/size*2D);
-						//}
 					}
 				}
 				
@@ -790,11 +793,6 @@ extends Function {
 							gain = -speedFactor * dt * areaFactor;
 							gain = Math.max(gain, -CFM / size * areaFactor);
 						}
-						//else if (t < t_next + T_LOWER_SENSITIVITY) {
-							// heat coming in
-						//	gain = 2D *speed_factor * d_t;
-						//	gain = Math.min(gain, CFM/size*2D);
-						//}
 					}
 					else if (!tooHighNext) {
 						if (t > tNext) {
@@ -807,13 +805,7 @@ extends Function {
 							gain = -.5 * speedFactor * dt * areaFactor;
 							gain = Math.max(gain, -CFM / size);
 						}
-						//else if (t < t_next + T_LOWER_SENSITIVITY) {
-							// heat coming in
-						//	gain = speed_factor * d_t;
-						//	gain = Math.min(gain, CFM/size*2D);
-						//}
 					}
-					
 				}
 				
 				adjacentBuildings.get(i).extractHeat(gain);
