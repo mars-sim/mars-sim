@@ -19,7 +19,7 @@ import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
 
 /**
- * The Heating class is a building function for regulating temperature in a settlement..
+ * The Heating class is a building function for regulating temperature in a settlement.
  */
 public class Heating
 extends Function {

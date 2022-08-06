@@ -592,17 +592,11 @@ public class ExitAirlock extends Task implements Serializable {
 			if (!airlock.inAirlock(person)) {
 				canProceed = airlock.enterAirlock(person, id, true);
 			}
-			else {// the person is already inside the airlock from previous cycle
-				canProceed = true;
-			}
-			
-            // true if the person is already inside the chamber from previous cycle
-            if (canProceed && transitionTo(1)) {
-//						logger.log((Unit)airlock.getEntity(), person, Level.INFO, 20_000,
-//								"called transitionTo(1) in " + airlock.getEntity().toString() + ".");
+			else if (transitionTo(1)) {
 				canProceed = true;
 			}
 			else {
+				// True if the person is already there from previous frame
 				canProceed = isInZone(2);
 			}
 		}
@@ -1029,7 +1023,7 @@ public class ExitAirlock extends Task implements Serializable {
 
 		if (inSettlement) {
 
-			if (!transitionTo(3) || airlock.isOuterDoorLocked()) {
+			if (airlock.isOuterDoorLocked()) {
 				// Go back to previous task phase
 				setPhase(DEPRESSURIZE_CHAMBER);
 				// Reset accumulatedTime back to zero
@@ -1037,35 +1031,27 @@ public class ExitAirlock extends Task implements Serializable {
 				return 0;
 			}
 			
-
 			if (airlock.inAirlock(person)) {
-		
-				if (airlock.exitAirlock(person, id, true)) {
-					// Move to zone 4
-					if (transitionTo(4)) {
-						
-						canProceed = true;
-					}
-				}
+				canProceed = airlock.exitAirlock(person, id, false);
+			}
+			else if (transitionTo(4)) {
+				canProceed = true;
 			}
 			else {
+				// True if the person is already there from previous frame
 				canProceed = true;
 			}
 		}
 
 		else {
 
-//			if (exteriorDoorPos == null) {
-//				exteriorDoorPos = airlock.getAvailableExteriorPosition();
-//			}
-
 			if (airlock.inAirlock(person)) {
 				canProceed = airlock.exitAirlock(person, id, true);
 			}
-
-//			Rover airlockRover = (Rover) airlock.getEntity();
-//			logger.log((Unit)airlock.getEntity(), person, Level.FINER, 4_000,
-//					"Tried walking close to the exterior door.");
+			else {
+				// True if the person has already exit the airlock
+				canProceed = true;
+			}
 		}
 
 		if (canProceed && accumulatedTime > STANDARD_TIME) {

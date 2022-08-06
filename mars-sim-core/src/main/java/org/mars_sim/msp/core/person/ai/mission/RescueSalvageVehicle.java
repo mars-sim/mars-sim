@@ -74,7 +74,7 @@ public class RescueSalvageVehicle extends RoverMission {
 	private Vehicle vehicleTarget;
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 * 
 	 * @param startingPerson the person starting the mission.
 	 * @throws MissionException if error constructing mission.
@@ -88,22 +88,24 @@ public class RescueSalvageVehicle extends RoverMission {
 				vehicleTarget = findBeaconVehicle(getStartingSettlement(), getVehicle().getRange(MissionType.RESCUE_SALVAGE_VEHICLE));
 
 			if (vehicleTarget != null) {
-//					if (getRescuePeopleNum(vehicleTarget) > 0) {
-					rescue = true;
+				rescue = true;
 				setDescription(
 							Msg.getString("Mission.description.rescueSalvageVehicle.rescue", vehicleTarget.getName())); // $NON-NLS-1$)
-//					} 
 						
 				// Add navpoints for target vehicle and back home again.
 				addNavpoint(vehicleTarget.getCoordinates(), vehicleTarget.getName());
 				addNavpoint(getStartingSettlement());
 
 				// Recruit additional members to mission.
-				if (!isDone()) {
-					if (!recruitMembersForMission(startingPerson, MIN_GOING_MEMBERS))
-						return;
+				if (!recruitMembersForMission(startingPerson, MIN_GOING_MEMBERS)) {
+					return;
 				}
 
+				if (!hasVehicle()) {
+					endMission(MissionStatus.NO_AVAILABLE_VEHICLES);
+					return;
+				}
+				
 				// Check if vehicle can carry enough supplies for the mission.
 				if (hasVehicle() && !isVehicleLoadable()) {			
 					endMission(MissionStatus.CANNOT_LOAD_RESOURCES);
@@ -112,6 +114,7 @@ public class RescueSalvageVehicle extends RoverMission {
 				
 				// Set initial phase
 				setInitialPhase(needsReview);
+				
 			} else {
 				endMission(MissionStatus.TARGET_VEHICLE_NOT_FOUND);
 			}
@@ -146,13 +149,18 @@ public class RescueSalvageVehicle extends RoverMission {
 		// Add mission members.
 		addMembers(members, false);
 
+		if (!hasVehicle()) {
+			endMission(MissionStatus.NO_AVAILABLE_VEHICLES);
+			return;
+		}
+		
 		// Check if vehicle can carry enough supplies for the mission.
 		if (hasVehicle() && !isVehicleLoadable()) {
 			endMission(MissionStatus.CANNOT_LOAD_RESOURCES);
+			return;
 		}
-		else {
-			setInitialPhase(false);
-		}
+	
+		setInitialPhase(false);
 	}
 
 	@Override

@@ -473,18 +473,18 @@ public class EnterAirlock extends Task implements Serializable {
 				return 0;
 			}
 				
-             if (!airlock.inAirlock(person)) {
+            if (!airlock.inAirlock(person)) {
 				canProceed = airlock.enterAirlock(person, id, false);
 			}
             else if (transitionTo(3)) {
 				canProceed = true;
 			}
-            // true if the person is already inside the chamber from previous cycle
+            // True if the person is already inside the chamber from previous frame
             else if (isInZone(2)) {
              	canProceed = true;
              }	 
 			else {
-				// true if the person is already at the inside of the exterior door 
+				// True if the person is already at the inside of the exterior door 
 	        	canProceed = isInZone(3);
 			}	
 		}
@@ -685,18 +685,32 @@ public class EnterAirlock extends Task implements Serializable {
 
 		boolean canProceed = false;
 
-		if (!airlock.isPressurized()) {
-			// Go back to the previous phase
-			setPhase(PRESSURIZE_CHAMBER);
-			// Reset accumulatedTime back to zero
-			accumulatedTime = 0;
-			return 0;
-		}
-
+		// 1. Gets the suit instance
+		EVASuit suit = person.getSuit();
+		
 		if (airlock.isPressurized()) {
-			canProceed = true;
-		}
+			
+			if (suit != null) {		
+				
+				remainingDoffingTime -= time;
 
+				if (remainingDoffingTime <= 0) {
+					canProceed = true;
+				}
+			}
+			
+			else {
+				logger.log((Unit)airlock.getEntity(), person, Level.WARNING, 4_000,
+						"did not possess an EVA suit in " + airlock.getEntity().toString()
+						+ ".");
+				// If a person is in the process of doffing off his EVA suit, one 
+				// must make sure the airlock will not change its state of being
+				// pressurized. 
+				// Or else right that after the person has taken off the suit,
+				// the person cannot go out.
+			}
+		}
+		
 		else {
 			logger.log((Unit)airlock.getEntity(), person, Level.WARNING, 4_000,
 				"Not pressurized. Walking back to the chamber and wait.");
@@ -709,73 +723,44 @@ public class EnterAirlock extends Task implements Serializable {
 		}
 
 		if (canProceed) {
-			
-			// 1. Gets the suit instance
-			EVASuit suit = person.getSuit();
 
-			if (suit != null) {
-				
-				canProceed = true;
+			EquipmentOwner housing = null;
 
-				remainingDoffingTime -= time;
-
-				if (remainingDoffingTime <= 0) {
-
-					EquipmentOwner housing = null;
-
-					if (inSettlement)
-						housing = ((Building)airlock.getEntity()).getSettlement();
-					else
-						housing = (Vehicle)airlock.getEntity();
-					// 2. Doff this suit
-					// 2a. Records the person as the owner (if it hasn't been done)
-					suit.setLastOwner(person);
-					// 2b. Doff this suit. Deregister the suit from the person
-					person.registerSuit(null);
-					// Print log
-					logger.log((Unit)housing, person, Level.FINE, 4_000, "Just doffed the " + suit.getName() + ".");
-					// 2c. Transfer the EVA suit from person to the new destination
-					suit.transfer((Unit)housing);
-					// 2d. Remove pressure suit and put on garment
-					if (inSettlement) {
-						if (person.unwearPressureSuit(housing)) {
-							person.wearGarment(housing);
-						}
-					}
-					// Note: vehicle may or may not have garment available
-					else if (((Rover)housing).hasGarment() && person.unwearPressureSuit(housing)) {
-						person.wearGarment(housing);
-					}
-					// 2e. Unload any waste
-					suit.unloadWaste(housing);
-					// Add experience
-					addExperience(time);
-
-					if (inSettlement) {
-						remainingCleaningTime = STANDARD_CLEANINNG_TIME + RandomUtil.getRandomInt(-3, 3);
-					}
-					else
-						remainingCleaningTime = SHORTENED_CLEANINNG_TIME + RandomUtil.getRandomInt(-1, 1);
-					
-					setPhase(CLEAN_UP);
+			if (inSettlement)
+				housing = ((Building)airlock.getEntity()).getSettlement();
+			else
+				housing = (Vehicle)airlock.getEntity();
+			// 2. Doff this suit
+			// 2a. Records the person as the owner (if it hasn't been done)
+			suit.setLastOwner(person);
+			// 2b. Doff this suit. Deregister the suit from the person
+			person.registerSuit(null);
+			// Print log
+			logger.log((Unit)housing, person, Level.FINE, 4_000, "Just doffed the " + suit.getName() + ".");
+			// 2c. Transfer the EVA suit from person to the new destination
+			suit.transfer((Unit)housing);
+			// 2d. Remove pressure suit and put on garment
+			if (inSettlement) {
+				if (person.unwearPressureSuit(housing)) {
+					person.wearGarment(housing);
 				}
 			}
+			// Note: vehicle may or may not have garment available
+			else if (((Rover)housing).hasGarment() && person.unwearPressureSuit(housing)) {
+				person.wearGarment(housing);
+			}
+			// 2e. Unload any waste
+			suit.unloadWaste(housing);
+			// Add experience
+			addExperience(time);
 
-			else {
-				logger.log((Unit)airlock.getEntity(), person, Level.WARNING, 4_000,
-						"did not possess an EVA suit in " + airlock.getEntity().toString()
-						+ ".");
-
-				canProceed = true;
-				
-//							if (inSettlement) {
-//								remainingCleaningTime = STANDARD_CLEANINNG_TIME + RandomUtil.getRandomInt(-3, 3);
-//							}
-//							else
-//								remainingCleaningTime = SHORTENED_CLEANINNG_TIME + RandomUtil.getRandomInt(-1, 1);
-//						
-//							setPhase(CLEAN_UP);
-			}	
+			if (inSettlement) {
+				remainingCleaningTime = STANDARD_CLEANINNG_TIME + RandomUtil.getRandomInt(-3, 3);
+			}
+			else
+				remainingCleaningTime = SHORTENED_CLEANINNG_TIME + RandomUtil.getRandomInt(-1, 1);
+			
+			setPhase(CLEAN_UP);
 		}
 		
 		return 0;
@@ -840,22 +825,18 @@ public class EnterAirlock extends Task implements Serializable {
 		boolean canProceed = false;
 
 		if (inSettlement) {
-
-			if (transitionTo(0)) {
-
-				if (airlock.inAirlock(person)) {
-
-					canProceed = airlock.exitAirlock(person, id, false);
-
-					if (canProceed)
-						// Remove the position at zone 0 before calling endTask
-						airlock.vacate(0, id);
-				}
-				else {
-					// Already exit the air lock
-					canProceed = true;
-				}
+			
+			if (airlock.inAirlock(person)) {
+				canProceed = airlock.exitAirlock(person, id, false);
 			}
+			else if (transitionTo(0)) {
+				canProceed = true;
+			}
+			else {
+				// True if the person is already there from previous frame
+				canProceed = true;
+			}
+			
 		}
 
 		else {
@@ -887,7 +868,9 @@ public class EnterAirlock extends Task implements Serializable {
 			// Reset accumulatedTime back to zero
 			accumulatedTime = 0;
 			
-
+			// Remove the position at zone 0 before calling endTask
+			airlock.vacate(0, id);
+			
 			// Add experience
 			addExperience(time);
 
