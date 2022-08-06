@@ -130,7 +130,7 @@ public class ProposeScientificStudy extends Task implements Serializable {
 	 * @return the amount of time (millisols) left over after performing the phase.
 	 */
 	private double proposingPhase(double time) {
-		double remainingTime = time - standardPulseTime;
+		double remainingTime = 0;
 		
 		if (!study.getPhase().equals(ScientificStudy.PROPOSAL_PHASE)) {
 			endTask();
@@ -161,7 +161,7 @@ public class ProposeScientificStudy extends Task implements Serializable {
 		study.addProposalWorkTime(workTime);
 
 		// Add experience
-		addExperience(standardPulseTime);
+		addExperience(time);
 		
 		if (study.isProposalCompleted()) {
 			logger.log(worker, Level.INFO, 0, "Finished writing a study proposal for " 

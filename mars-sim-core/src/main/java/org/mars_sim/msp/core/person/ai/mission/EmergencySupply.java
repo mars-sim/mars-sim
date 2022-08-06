@@ -384,7 +384,7 @@ public class EmergencySupply extends RoverMission {
 						assignTask(person, new UnloadVehicleGarage(person, getRover()));
 					} else {
 						// Check if it is day time.
-						if (!EVAOperation.isGettingDark(person) && person.isFit()) {
+						if (!EVAOperation.isGettingDark(person) && person.isBarelyFit()) {
 							assignTask(person, new UnloadVehicleEVA(person, getRover()));
 						}
 					}

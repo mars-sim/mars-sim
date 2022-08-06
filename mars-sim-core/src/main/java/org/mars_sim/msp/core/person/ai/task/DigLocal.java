@@ -98,7 +98,7 @@ implements Serializable {
         this.resourceName = ResourceUtil.findAmountResourceName(resourceID);
         this.collectionPhase = collectionPhase;
 
-        if (!person.isFit()) {
+        if (!person.getPhysicalCondition().isFitByLevel(250, 25, 250)) {
 			checkLocation();
 			return;
 		}

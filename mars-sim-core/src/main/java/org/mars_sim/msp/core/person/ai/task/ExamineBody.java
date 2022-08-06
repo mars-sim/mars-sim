@@ -264,7 +264,7 @@ public class ExamineBody extends Task implements Serializable {
 	 * @return the amount of time (millisol) left over after performing the phase.
 	 */
 	private double examiningPhase(double time) {
-		double remainingTime = time - standardPulseTime;
+		double remainingTime = 0;
 
 		// If medical aid has malfunction, end task.
 		if (malfunctionable.getMalfunctionManager().hasMalfunction()) {
@@ -302,7 +302,7 @@ public class ExamineBody extends Task implements Serializable {
 			// Get the person's emotion stability
 			int stab = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.EMOTIONAL_STABILITY);
 			// Add exam time as modified by skill
-			deathInfo.addTimeExam(standardPulseTime * ( 1 + skill / 4D));
+			deathInfo.addTimeExam(time * ( 1 + skill / 4D));
 			
 			double stress = STRESS_MODIFIER * (1-stab) / 5D / skill + RandomUtil.getRandomInt(3);
 		

@@ -76,7 +76,7 @@ implements Serializable {
         // Use EVAOperation parent constructor.
         super(NAME, person, true, RandomUtil.getRandomDouble(50D) + 10D, SkillType.CONSTRUCTION);
 
-		if (!person.isFit()) {
+		if (!person.isBarelyFit()) {
 			if (person.isOutside())
         		setPhase(WALK_BACK_INSIDE);
         	else
@@ -278,22 +278,22 @@ implements Serializable {
      * @return time (millisols) remaining after performing the phase.
      */
     private double salvage(double time) {
-    	double remainingTime = time - standardPulseTime;
+    	double remainingTime = 0;
     	
 		// Check for radiation exposure during the EVA operation.
-		if (isRadiationDetected(standardPulseTime)) {
+		if (isRadiationDetected(time)) {
 			checkLocation();
-			return remainingTime;
+			return time;
 		}
 
-		if (shouldEndEVAOperation() || addTimeOnSite(standardPulseTime)) {
+		if (shouldEndEVAOperation() || addTimeOnSite(time)) {
 			checkLocation();
-			return remainingTime;
+			return time;
 		}
 
-		if (!person.isFit()) {
+		if (!person.isBarelyFit()) {
 			checkLocation();
-			return remainingTime;
+			return time;
 		}
 
         if (stage.isComplete() || addTimeOnSite(time)) {
@@ -337,7 +337,7 @@ implements Serializable {
         // Check if an accident happens during salvage.
         checkForAccident(workTime);
 
-        return time - workTime;
+        return 0;
     }
 
     /**

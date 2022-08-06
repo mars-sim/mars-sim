@@ -171,7 +171,7 @@ public class Maintenance extends Task implements Serializable {
 	 * @return the amount of time (millisols) left over after performing the phase.
 	 */
 	private double maintainPhase(double time) {
-    	double remainingTime = time - standardPulseTime;
+    	double remainingTime = 0;
     	
 		// If worker is incapacitated, end task.
 		if (worker.getPerformanceRating() <= .1) {
@@ -247,7 +247,7 @@ public class Maintenance extends Task implements Serializable {
 		manager.addMaintenanceWorkTime(workTime);
 
 		// Add experience points
-		addExperience(standardPulseTime);
+		addExperience(time);
 
 		// If maintenance is complete, task is done.
 		if (manager.getEffectiveTimeSinceLastMaintenance() == 0D) {
@@ -255,7 +255,7 @@ public class Maintenance extends Task implements Serializable {
 		}
 
 		// Check if an accident happens during maintenance.
-		checkForAccident(entity, standardPulseTime, 0.005D);
+		checkForAccident(entity, time, 0.005D);
 
 		return remainingTime;
 	}

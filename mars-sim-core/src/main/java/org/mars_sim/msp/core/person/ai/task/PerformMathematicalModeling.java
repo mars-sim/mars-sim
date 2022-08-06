@@ -370,7 +370,7 @@ implements ResearchScientificStudy, Serializable {
      * @return the amount of time (millisols) left over after performing the phase.
      */
     private double modelingPhase(double time) {
-		double remainingTime = time - standardPulseTime;
+		double remainingTime = 0;
 		
 		if (isDone()) {
         	// this task has ended
@@ -409,10 +409,10 @@ implements ResearchScientificStudy, Serializable {
         	double workPerMillisol = 0; 
  
         	if (computingNeeded <= seed) {
-        		workPerMillisol = standardPulseTime * computingNeeded;
+        		workPerMillisol = time * computingNeeded;
         	}
         	else {
-        		workPerMillisol = standardPulseTime * seed * RandomUtil.getRandomDouble(.9, 1.1);
+        		workPerMillisol = time * seed * RandomUtil.getRandomDouble(.9, 1.1);
         	}
 
         	// Submit request for computing resources
@@ -449,7 +449,7 @@ implements ResearchScientificStudy, Serializable {
         }
         
         // Add modeling work time to study.
-        double modelingTime = getEffectiveModelingTime(standardPulseTime);
+        double modelingTime = getEffectiveModelingTime(time);
         if (isPrimary) {
             study.addPrimaryResearchWorkTime(modelingTime);
         }
@@ -477,10 +477,10 @@ implements ResearchScientificStudy, Serializable {
         }
         
         // Add experience
-        addExperience(standardPulseTime);
+        addExperience(time);
 
         // Check for lab accident.
-        checkForAccident(malfunctions, 0.001D, standardPulseTime);
+        checkForAccident(malfunctions, 0.001D, time);
 
         return remainingTime;
     }

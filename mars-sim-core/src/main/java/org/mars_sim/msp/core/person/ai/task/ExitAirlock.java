@@ -89,8 +89,7 @@ public class ExitAirlock extends Task implements Serializable {
 	// Data members
 	/** Is this a building airlock in a settlement? */
 	private boolean inSettlement;
-	/** True if person has an EVA suit. */
-	private boolean hasSuit = false;
+	
 	/** The remaining time in donning the EVA suit. */
 	private double remainingDonningTime;
 	/** The time accumulatedTime for a task phase. */
@@ -303,7 +302,7 @@ public class ExitAirlock extends Task implements Serializable {
 		
 		// Checks if a person is tired, too stressful or hungry and need
 		// to take break, eat and/or sleep
-		return person.getPhysicalCondition().computeFitnessLevel() >= 2;
+		return person.getPhysicalCondition().computeFitnessLevel() >= 3;
 	}
 
 	/**
@@ -413,13 +412,8 @@ public class ExitAirlock extends Task implements Serializable {
 				walkAway(person, CHAMBER_FULL);
 				return time;
 			}
-			
-			if (!transitionTo(0)) {
-				walkAway(person, "Cannot transition to zone 0.");
-				return time;
-			}
 				
-			if (!airlock.isInnerDoorLocked() || airlock.isEmpty()) {
+			if (transitionTo(0) && (!airlock.isInnerDoorLocked() || airlock.isEmpty())) {
 				// The inner door will stay locked if the chamber is NOT pressurized
 				canProceed = true;
 			}
@@ -590,14 +584,12 @@ public class ExitAirlock extends Task implements Serializable {
 			}
 			
 			if (!airlock.inAirlock(person)) {
-				canProceed = airlock.enterAirlock(person, id, true);
+				canProceed = airlock.enterAirlock(person, id, true)
+						&& transitionTo(1);
 			}
-			else if (transitionTo(1)) {
-				canProceed = true;
-			}
-			else {
+			else if (isInZone(1) || isInZone(2)) {
 				// True if the person is already there from previous frame
-				canProceed = isInZone(2);
+				canProceed = true;
 			}
 		}
 
@@ -709,33 +701,16 @@ public class ExitAirlock extends Task implements Serializable {
 
 		else {
 
-			if (insideAirlockPos == null) {
-	 			insideAirlockPos = airlock.getAvailableAirlockPosition();
+ 			if (!airlock.isInnerDoorLocked()) {
+ 				canProceed = true;
 			}
-
-//	 		if (LocalAreaUtil.areLocationsClose(new LocalPosition.Double(person.getXLocation(), person.getYLocation()), insideAirlockPos)) {
-	 			if (!airlock.isInnerDoorLocked()) {
-	 				canProceed = true;
-				}
-	 			else {
-					setPhase(ENTER_AIRLOCK);
-					// Reset accumulatedTime back to zero
-					accumulatedTime = 0;
-					return 0;
-				}
-//			}
-
-//			else {
-//				Rover airlockRover = (Rover) airlock.getEntity();
-//				logger.log((Unit)airlock.getEntity(), person, Level.FINER, 4_000,
-//						"Walked to the reference position.");
-//
-//		 		// Walk to interior airlock position.
-//		 		addSubTask(new WalkRoverInterior(person, airlockRover,
-//		 				insideAirlockPos.getX(), insideAirlockPos.getY()));
-//			}
+ 			else {
+				setPhase(ENTER_AIRLOCK);
+				// Reset accumulatedTime back to zero
+				accumulatedTime = 0;
+				return 0;
+			}
 		}
-
 
 		if (canProceed && accumulatedTime > STANDARD_TIME) {
 			// Reset accumulatedTime back to zero
@@ -790,29 +765,35 @@ public class ExitAirlock extends Task implements Serializable {
 		if (!airlock.isPressurized()) {
 			// Go back to the previous phase
 			setPhase(PRESSURIZE_CHAMBER);
-			return 0;
+			return time;
 		}
-
-		EVASuit suit = null;
-
-		// Check if person already has EVA suit.
-		if (alreadyHasEVASuit()) {
-			hasSuit = true;
-		}
-
-		// Get an EVA suit from entity inventory.
+		
+		// Gets the suit instance
+		EVASuit suit = person.getSuit();
 		EquipmentOwner housing = null;
-		if (!hasSuit) {
+		
+		if (suit == null) {
+			// Get an EVA suit from entity inventory.
+			
 			if (inSettlement)
 				housing = ((Building)airlock.getEntity()).getSettlement();
 			else
 				housing = (Vehicle)airlock.getEntity();
-
+	
 			suit = InventoryUtil.getGoodEVASuitNResource((EquipmentOwner)housing, person);
-		}
+	
+			if (suit == null) {
+				logger.log((Unit)airlock.getEntity(), person, Level.WARNING, 4_000,
+						"Could not find a working EVA suit. End this task.");
 
-		if (!hasSuit || suit != null) {
-
+				// Q: why would a person be allowed to initiate this task in the first place 
+				//    if there is no known working EVA suit ? Unless there is a sync issue 
+				// Q: how do we make an EVA suit pre-assigned to a person prior to starting 
+				//    the process of EVA. 
+				walkAway(person, "In donEVASuit(). No EVA suit available.");
+				return 0;
+			}
+			
 			// if a person hasn't donned the suit yet
 			// 0. Remove garment and put on pressure suit
 			if (person.unwearGarment(housing)) {
@@ -830,48 +811,30 @@ public class ExitAirlock extends Task implements Serializable {
 			if (suit.loadResources(housing) < 0.9D) {
 				logger.warning(suit, "Being used but not full loaded.");
 			}
-			// the person has a EVA suit
-			hasSuit = true;
-		}
-
-		if (hasSuit) {
 			
-			canProceed = true;
+			remainingDonningTime -= time;
 		}
 
 		else {
-
-			logger.log((Unit)airlock.getEntity(), person, Level.WARNING, 4_000,
-					"Could not find a working EVA suit. End this task.");
-
-			// TODO: what to do if person still doesn't have an EVA suit ?
-			// Q: why would a person be allowed to initiate this task in the first place 
-			//    if there is no known working EVA suit ? Unless there is a sync issue 
-			// Q: how do we make an EVA suit pre-assigned to a person prior to starting 
-			//    the process of EVA. 
-			endTask();
-
-			// Will need to clear the task that create the ExitAirlock sub task
-//			person.getMind().getTaskManager().clearAllTasks();
-
-			return 0;
-		}
-
-		if (canProceed) {
 			
 			remainingDonningTime -= time;
 
 			if (remainingDonningTime <= 0) {
-				// Add experience
-				addExperience(time);
-
-				logger.log(person, Level.FINER, 4_000,
-						"Donned the EVA suit and got ready to do pre-breathing.");
-				// Reset the prebreathing time counter to max
-				person.getPhysicalCondition().resetRemainingPrebreathingTime();
-
-				setPhase(PREBREATHE);
+				canProceed = true;
 			}
+		}
+
+		if (canProceed) {
+
+			// Add experience
+			addExperience(time);
+
+			logger.log(person, Level.FINER, 4_000,
+					"Donned the EVA suit and got ready to do pre-breathing.");
+			// Reset the prebreathing time counter to max
+			person.getPhysicalCondition().resetRemainingPrebreathingTime();
+
+			setPhase(PREBREATHE);
 		}
 		
 		return 0;
@@ -889,12 +852,16 @@ public class ExitAirlock extends Task implements Serializable {
 
 		boolean canProceed = false;
 		
-		if (!hasSuit || person.getSuit() == null) {
-
+		if (!isFit()) {
+			walkAway(person, NOT_FIT + " to prebreathe.");
+			return time;
+		}
+		
+		if (person.getSuit() == null) {
 			// Go back to previous task phase
 			setPhase(DON_EVA_SUIT);
 			
-			return 0;
+			return time;
 		}
 
 		PhysicalCondition pc = person.getPhysicalCondition();
@@ -993,7 +960,9 @@ public class ExitAirlock extends Task implements Serializable {
 					"Chamber already depressurized for exit in "
 				+ airlock.getEntity().toString() + ".");
 
-			canProceed = true;
+			if (transitionTo(3)) {
+				canProceed = true;
+			}
 		}
 		
 		if (canProceed && accumulatedTime > STANDARD_TIME) {
@@ -1032,12 +1001,10 @@ public class ExitAirlock extends Task implements Serializable {
 			}
 			
 			if (airlock.inAirlock(person)) {
-				canProceed = airlock.exitAirlock(person, id, false);
+				canProceed = airlock.exitAirlock(person, id, true);
 			}
-			else if (transitionTo(4)) {
-				canProceed = true;
-			}
-			else {
+			
+			if (transitionTo(4)) {
 				// True if the person is already there from previous frame
 				canProceed = true;
 			}
@@ -1239,22 +1206,6 @@ public class ExitAirlock extends Task implements Serializable {
 
 		return true;
 	}
-
-	/**
-	 * Checks if the person already has an EVA suit in their inventory.
-	 *
-	 * @return true if person already has an EVA suit.
-	 */
-	private boolean alreadyHasEVASuit() {
-		EVASuit suit = person.getSuit();
-		if (suit != null) {
-			return true;
-		}
-
-		return false;
-	}
-
-
 
 	/**
 	 * Releases person from the associated Airlock.

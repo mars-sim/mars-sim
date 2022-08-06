@@ -195,7 +195,7 @@ public class Teach extends Task implements Serializable {
 //        if (fatigue > 1000 || stress > 75 || hunger > 750 || energy < 500)
 //        	endTask(); 
     	
-		if (!person.isFit()) {
+		if (!person.isBarelyFit()) {
 			if (!person.isOutside())
         		endTask();
 		}

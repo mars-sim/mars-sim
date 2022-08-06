@@ -81,7 +81,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 		// Use EVAOperation constructor.
 		super(NAME, person, true, 25, null);
 
-		if (!person.isFit()) {
+		if (!person.isBarelyFit()) {
 			checkLocation();
         	return;
 		}
@@ -140,7 +140,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 		setDescription(Msg.getString("Task.description.unloadVehicleEVA.detail", vehicle.getName())); // $NON-NLS-1$
 		this.vehicle = vehicle;
 
-		if (!person.isFit()) {
+		if (!person.isBarelyFit()) {
 			checkLocation();
         	return;
 		}

@@ -177,7 +177,7 @@ public class Read extends Task implements Serializable {
 	 * @return the amount of time (millisols) left over after performing the phase.
 	 */
 	private double reading(double time) {
-		double remainingTime = time - standardPulseTime;
+		double remainingTime = 0;
 		
 		if (isDone()) {
 	        String s = Msg.getString("Task.description.read.detail", selectedSkill.getName()); //$NON-NLS-1$
@@ -197,7 +197,7 @@ public class Read extends Task implements Serializable {
         }
 
 		// Reading serves to improve skill
-		addExperience(standardPulseTime);
+		addExperience(time);
 		
 		return remainingTime;
 	}

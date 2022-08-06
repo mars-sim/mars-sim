@@ -62,7 +62,7 @@ implements Serializable {
 	public MaintenanceEVA(Person person) {
 		super(NAME, person, true, RandomUtil.getRandomDouble(50D) + 10D, SkillType.MECHANICS);
 
-		if (!person.isFit()) {
+		if (!person.isBarelyFit()) {
 			checkLocation();
         	return;
 		}

@@ -1686,11 +1686,11 @@ public class PhysicalCondition implements Serializable {
 	}
 
 	/**
-	 * Checks if a person is fit.
+	 * Checks if a person is barely fit.
 	 *
-	 * @return true if a person is fit
+	 * @return true if a person is barely fit
 	 */
-	public boolean isFit() {
+	public boolean isBarelyFit() {
         return !(fatigue > 750) && !(stress > 75) && !(hunger > 750) && !(thirst > 750) && !(kJoules < 3000)
                 && !hasSeriousMedicalProblems();
     }
@@ -1719,17 +1719,17 @@ public class PhysicalCondition implements Serializable {
 			return 0;
 		}
 
-		if (fatigue < 100 && stress < 10 && hunger < 100 && thirst < 50 && kJoules > 20000)
+		if (fatigue < 100 && stress < 10 && hunger < 100 && thirst < 50 && kJoules > 12000)
         	level = 5;
-		else if (fatigue < 250 && stress < 25 && hunger < 250 && thirst < 125 && kJoules > 15000)
+		else if (fatigue < 250 && stress < 25 && hunger < 250 && thirst < 125 && kJoules > 10000)
         	level = 4;
-        else if (fatigue < 500 && stress < 50 && hunger < 500 && thirst < 250 && kJoules > 10000)
+        else if (fatigue < 500 && stress < 50 && hunger < 500 && thirst < 250 && kJoules > 8000)
         	level = 3;
-        else if (fatigue < 800 && stress < 65 && hunger < 800 && thirst < 400 && kJoules > 5000)
+        else if (fatigue < 800 && stress < 65 && hunger < 800 && thirst < 400 && kJoules > 6000)
         	level = 2;
-        else if (fatigue < 1200 && stress < 80 && hunger < 1200 && thirst < 600 && kJoules > 2500)
+        else if (fatigue < 1200 && stress < 80 && hunger < 1200 && thirst < 600 && kJoules > 4000)
         	level = 1;
-        else if (fatigue < 1800 && stress < 95 && hunger < 1800 && thirst < 900 && kJoules > 500)
+        else if (fatigue < 1800 && stress < 95 && hunger < 1800 && thirst < 900 && kJoules > 2000)
         	level = 0;
 
         return level;

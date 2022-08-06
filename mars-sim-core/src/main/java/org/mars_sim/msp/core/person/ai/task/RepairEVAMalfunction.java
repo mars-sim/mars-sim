@@ -59,7 +59,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 	public RepairEVAMalfunction(Person person) {
 		super(NAME, person, true, 25, SkillType.MECHANICS);
 
-		if (!person.isFit()) {
+		if (!person.isBarelyFit()) {
 			checkLocation();
         	return;
 		}
@@ -198,16 +198,16 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 	 * @return the time remaining after performing this phase (in millisols)
 	 */
 	private double repairMalfunctionPhase(double time) {
-		double remainingTime = time;
+		double remainingTime = 0;
 		
 		boolean endTask = isDone();
 
 		// Check for radiation exposure during the EVA operation.
-		endTask |= (isRadiationDetected(standardPulseTime)
+		endTask |= (isRadiationDetected(time)
 					|| malfunction.isWorkDone(MalfunctionRepairWork.EVA));
 		endTask |= malfunction.isWorkDone(MalfunctionRepairWork.EVA);
-		endTask |= (shouldEndEVAOperation() || addTimeOnSite(standardPulseTime));
-		endTask |= (person != null && !person.isFit());
+		endTask |= (shouldEndEVAOperation() || addTimeOnSite(time));
+		endTask |= (person != null && !person.isBarelyFit());
 		
 		if (endTask) {
 			// Return all the time
@@ -244,10 +244,10 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 
 
 		// Add experience points
-		addExperience(standardPulseTime);
+		addExperience(time);
 
 		// Check if an accident happens during repair.
-		checkForAccident(standardPulseTime);
+		checkForAccident(time);
 
 		double workTimeLeft = 0D;
 		// Check if there are no more malfunctions.

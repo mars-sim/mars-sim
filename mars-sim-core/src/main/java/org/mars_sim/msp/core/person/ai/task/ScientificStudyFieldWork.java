@@ -118,27 +118,27 @@ public abstract class ScientificStudyFieldWork extends EVAOperation implements S
 	 * @return remaining time after performing phase (millisols).
 	 */
 	private double fieldWorkPhase(double time) {
-		double remainingTime = time - standardPulseTime;
+		double remainingTime = 0;
 		
 		// Check all condition to carry on
 		// 1. radiation exposure/detection
 		// 2. Site duration has ended or there is reason to stop the field work
 		// 3. The study activities are completed
-		if (isDone() || isRadiationDetected(standardPulseTime)
-				|| shouldEndEVAOperation() || addTimeOnSite(standardPulseTime)
-				|| performStudy(standardPulseTime)) {
+		if (isDone() || isRadiationDetected(time)
+				|| shouldEndEVAOperation() || addTimeOnSite(time)
+				|| performStudy(time)) {
 			checkLocation();
-			return remainingTime;
+			return time;
 		}
 
 		// Add research work to the scientific study for lead researcher.
-		addResearchWorkTime(standardPulseTime);
+		addResearchWorkTime(time);
 
 		// Add experience points
-		addExperience(standardPulseTime);
+		addExperience(time);
 
 		// Check for an accident during the EVA operation.
-		checkForAccident(standardPulseTime);
+		checkForAccident(time);
 
 		return remainingTime;
 	}

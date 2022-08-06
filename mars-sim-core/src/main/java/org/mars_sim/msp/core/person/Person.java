@@ -1129,12 +1129,12 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
-	 * Checks if the person is physically fit.
+	 * Checks if the person is barely fit.
 	 *
-	 * @return true if the person is fit.
+	 * @return true if the person is barely fit.
 	 */
-	public boolean isFit() {
-		return condition.isFit();
+	public boolean isBarelyFit() {
+		return condition.isBarelyFit();
 	}
 
 	/**

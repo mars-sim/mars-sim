@@ -283,7 +283,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 	 * @return time remaining after performing the phase.
 	 */
 	private double winchingPhase(double time) {
-		double remainingTime = time - standardPulseTime;
+		double remainingTime = 0;
 		double timeUsed = 0D;
 		
 		GroundVehicle vehicle = (GroundVehicle) getVehicle();

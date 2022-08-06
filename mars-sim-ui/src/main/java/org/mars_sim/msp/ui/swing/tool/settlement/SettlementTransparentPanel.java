@@ -1164,7 +1164,6 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 
 	/**
 	 * Open dialog box to take in the new settlement name
-	 *
 	 */
 	public void openRenameDialog() {
 
@@ -1186,7 +1185,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 		}
 	}
 
-	 /**
+	/**
 	 * <p>Checks if a String is whitespace, empty ("") or null.</p>
 	 *
 	 * <pre>
@@ -1247,11 +1246,11 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 			// Add addUnitListener
 			Collection<Settlement> settlements = unitManager.getSettlements();
 			List<Settlement> settlementList = new ArrayList<>(settlements);
+			Collections.sort(settlementList);
 			Iterator<Settlement> i = settlementList.iterator();
 			while (i.hasNext()) {
 				i.next().addUnitListener(this);
 			}
-
 		}
 
 		/**

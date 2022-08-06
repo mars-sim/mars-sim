@@ -166,19 +166,19 @@ implements Serializable {
 	 * @return the amount of time (millisol) left after performing the phase.
 	 */
 	private double listeningPhase(double time) {
-		double remainingTime = time - standardPulseTime;
+		double remainingTime = 0;
 		
 		if (person.isOutside()) {
 			endTask();
 			return time;
 		}
         // Reduce person's fatigue
-        double fatigue = person.getPhysicalCondition().getFatigue() - (10D * standardPulseTime);
+        double fatigue = person.getPhysicalCondition().getFatigue() - (10D * time);
 		if (fatigue < 0D)
 			fatigue = 0D;
         person.getPhysicalCondition().setFatigue(fatigue);
         // Reduce person's stress
-        double stress = person.getPhysicalCondition().getStress() - (2.5 * standardPulseTime);
+        double stress = person.getPhysicalCondition().getStress() - (2.5 * time);
 		if (stress < 0D)
 			stress = 0D;
         person.getPhysicalCondition().setStress(stress);
@@ -195,7 +195,7 @@ implements Serializable {
 	 * @return the amount of time (millisol) left after performing the phase.
 	 */
 	private double findingPhase(double time) {
-		double remainingTime = time - standardPulseTime;
+		double remainingTime = 0;
 		
 		if (person.isOutside()) {
 			endTask();

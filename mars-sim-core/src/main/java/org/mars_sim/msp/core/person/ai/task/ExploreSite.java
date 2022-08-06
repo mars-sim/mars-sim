@@ -165,9 +165,9 @@ public class ExploreSite extends EVAOperation {
 	 * @throws Exception if error performing phase.
 	 */
 	private double exploringPhase(double time) {
-		double remainingTime = time - standardPulseTime;
+		double remainingTime = 0;
 		
-		if (checkReadiness(standardPulseTime) > 0)
+		if (checkReadiness(time) > 0)
 			return time;
 
 		if (totalCollected >= AVERAGE_ROCK_SAMPLES_COLLECTED_SITE) {
@@ -179,24 +179,24 @@ public class ExploreSite extends EVAOperation {
 
 		if (rand == 0) {
 			// Improve mineral concentration estimates.
-			improveMineralConcentrationEstimates(standardPulseTime);
+			improveMineralConcentrationEstimates(time);
 		}
 		else {
 			// Collect rocks.
-			collectRocks(standardPulseTime);
+			collectRocks(time);
 		}
 		
 		// FUTURE: Add other site exploration activities later.
 
 		// Add experience points
-		addExperience(standardPulseTime);
+		addExperience(time);
 
 		// Check for an accident during the EVA operation.
-		checkForAccident(standardPulseTime);
+		checkForAccident(time);
 
 		// Check if site duration has ended or there is reason to cut the exploring
 		// phase short and return to the rover.
-		if (addTimeOnSite(standardPulseTime)) {
+		if (addTimeOnSite(time)) {
 			checkLocation();
 			return remainingTime;
 		}

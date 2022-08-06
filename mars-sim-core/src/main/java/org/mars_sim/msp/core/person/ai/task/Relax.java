@@ -125,7 +125,7 @@ implements Serializable {
 	 */
 	private double relaxingPhase(double time) {
 	
-		double remainingTime = time - standardPulseTime;
+		double remainingTime = 0;
 		
 		if (person != null) {
 			

@@ -19,6 +19,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -96,9 +97,14 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 		this.desktop = desktop;
 
 		UnitManager unitManager = desktop.getSimulation().getUnitManager();
-		if (!unitManager.getSettlements().isEmpty())
-			settlement = (Settlement) unitManager.getSettlements().toArray()[0];
-
+		
+		List<Settlement> settlements = new ArrayList<>(unitManager.getSettlements());
+		
+		if (!settlements.isEmpty()) {
+			Collections.sort(settlements);
+			settlement = settlements.get(0);
+		}
+		
 		setLayout(new BorderLayout());
 
 		setDoubleBuffered(true);

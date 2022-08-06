@@ -334,7 +334,7 @@ public abstract class DroneMission extends VehicleMission {
 				boolean result = false;
 				// Alert the people in the disembarked settlement to unload cargo
 				for (Person person: disembarkSettlement.getIndoorPeople()) {
-					if (person.isInSettlement() && person.isFit()) {
+					if (person.isInSettlement() && person.isBarelyFit()) {
 						// Note : Random chance of having person unload (this allows person to do other things
 						// sometimes)
 						if (RandomUtil.lessThanRandPercent(50)) {

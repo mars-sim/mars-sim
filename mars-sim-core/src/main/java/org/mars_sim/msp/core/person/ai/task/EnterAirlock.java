@@ -290,17 +290,8 @@ public class EnterAirlock extends Task implements Serializable {
 				accumulatedTime = 0;
 				return 0;
 			}
-				
-			// Go to zone 4
-			if (!transitionTo(4)) {
-				logger.log((Unit)airlock.getEntity(), person, Level.FINE, 60_000,
-						"Cannot transition to zone 4 in " + airlock.getEntity().toString() + ".");
-				// Reset accumulatedTime back to zero
-				accumulatedTime = 0;
-				return 0;
-			}
 						
-			if (!airlock.isOuterDoorLocked()) {
+			if (!airlock.isOuterDoorLocked() && transitionTo(4)) {
 				// The outer door will stay locked if the chamber is NOT depressurized
 				canProceed = true;
 			}
@@ -358,6 +349,8 @@ public class EnterAirlock extends Task implements Serializable {
 			else {
 				
 				if (airlock.isOperator(id)) {
+					// Command the airlock state to be transitioned to "depressurized"
+					airlock.setTransitioning(true);
 
 					logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4_000, "Ready to depressurize the chamber.");
 
@@ -474,19 +467,13 @@ public class EnterAirlock extends Task implements Serializable {
 			}
 				
             if (!airlock.inAirlock(person)) {
-				canProceed = airlock.enterAirlock(person, id, false);
-			}
-            else if (transitionTo(3)) {
-				canProceed = true;
+				canProceed = airlock.enterAirlock(person, id, false)
+						&& transitionTo(3);
 			}
             // True if the person is already inside the chamber from previous frame
-            else if (isInZone(2)) {
+            else if (isInZone(2) || isInZone(3)) {
              	canProceed = true;
-             }	 
-			else {
-				// True if the person is already at the inside of the exterior door 
-	        	canProceed = isInZone(3);
-			}	
+             }
 		}
 
 		else {
@@ -544,32 +531,10 @@ public class EnterAirlock extends Task implements Serializable {
 			if (transitionTo(2)) {
 				canProceed = true;
 			}
-//			else {
-//				// Don't go back. Problematic
-//				setPhase(ENTER_AIRLOCK);
-//				// Reset accumulatedTime back to zero
-//				accumulatedTime = 0;
-//				return 0;
-//			}
 		}
 		
 		else {
-
-//			if (insideAirlockPos == null) {
-//				insideAirlockPos = airlock.getAvailableAirlockPosition();
-//			}
-//
-//			if (insideAirlockPos != null && insideAirlockPos.isClose(person.getPosition())) {
-				canProceed = true;
-//			}
-
-//			else {
-//				Rover airlockRover = (Rover) airlock.getEntity();
-//				logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4_000, "Walked to the reference position.");
-// 
-//				// Walk to interior airlock position.
-//				addSubTask(new WalkRoverInterior(person, airlockRover, insideAirlockPos));
-//			}
+			canProceed = true;
 		}
 
 		if (canProceed && accumulatedTime > STANDARD_TIME) {
@@ -717,9 +682,7 @@ public class EnterAirlock extends Task implements Serializable {
 
 			// It's not pressurized yet, go back to the WALK_TO_CHAMBER phase and wait
 			setPhase(WALK_TO_CHAMBER);
-			// Reset accumulatedTime back to zero
-			accumulatedTime = 0;
-			return 0;
+			return time;
 		}
 
 		if (canProceed) {
@@ -795,7 +758,7 @@ public class EnterAirlock extends Task implements Serializable {
 		}
 
 		if (doneCleaning && transitionTo(1)) {
-				canProceed = true;
+			canProceed = true;
 		}
 		
 		if (canProceed) {
@@ -829,14 +792,11 @@ public class EnterAirlock extends Task implements Serializable {
 			if (airlock.inAirlock(person)) {
 				canProceed = airlock.exitAirlock(person, id, false);
 			}
-			else if (transitionTo(0)) {
-				canProceed = true;
-			}
-			else {
+			
+			if (transitionTo(0)) {
 				// True if the person is already there from previous frame
 				canProceed = true;
-			}
-			
+			}	
 		}
 
 		else {

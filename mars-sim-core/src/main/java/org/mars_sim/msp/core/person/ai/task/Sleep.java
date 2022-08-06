@@ -273,9 +273,11 @@ public class Sleep extends Task implements Serializable {
 //							+ "New Duration: " + getDuration());
 				}
 			}
-			else
+			else {
 				// Disable charging
     			robot.getSystemCondition().setCharging(false);
+    			endTask();
+			}
 		}
 
 		return 0;

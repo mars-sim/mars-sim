@@ -517,7 +517,7 @@ public abstract class RoverMission extends VehicleMission {
 			// Note : Set random chance of having person unloading resources,
 			// thus allowing person to do other urgent things
 			for (MissionMember mm : getMembers()) {
-				if (((Person)mm).isFit()) {
+				if (((Person)mm).isBarelyFit()) {
 					if (RandomUtil.lessThanRandPercent(70)) {
 						unloadCargo(((Person)mm), rover);
 					}
@@ -762,7 +762,7 @@ public abstract class RoverMission extends VehicleMission {
 		if (member.getUnitType() == UnitType.PERSON) {
 			Person person = (Person) member;
 			// Check for fitness
-			if (!person.isFit()) {
+			if (!person.isBarelyFit()) {
 				logger.warning(person, 10_000L, "Not fit to operate " + getRover());
 				return null;
 			}

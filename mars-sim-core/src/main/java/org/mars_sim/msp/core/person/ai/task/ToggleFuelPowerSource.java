@@ -76,7 +76,7 @@ implements Serializable {
     public ToggleFuelPowerSource(Person person) {
         super(NAME_ON, person, false, 0D, SkillType.MECHANICS);
 
-		if (!person.isFit()) {
+		if (!person.isBarelyFit()) {
 			checkLocation();
 		}
 
@@ -431,7 +431,7 @@ implements Serializable {
      */
     private double togglePowerSourcePhase(double time) {
   
-		if (!person.isFit()) {
+		if (!person.isBarelyFit()) {
 			checkLocation();
 			return time;
 		}

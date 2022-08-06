@@ -60,7 +60,7 @@ implements Serializable {
     public MaintainGroundVehicleEVA(Person person) {
         super(NAME, person, true, 25, SkillType.MECHANICS);
 
-		if (!person.isFit()) {
+		if (!person.isBarelyFit()) {
 			checkLocation();
         	return;
 		}
@@ -124,9 +124,9 @@ implements Serializable {
      * @return the time remaining after performing this phase (in millisols)
      */
     private double maintainVehiclePhase(double time) {
-    	double remainingTime = time - standardPulseTime;
+    	double remainingTime = 0;
     	
-		if (checkReadiness(standardPulseTime) > 0)
+		if (checkReadiness(time) > 0)
 			return remainingTime;
 				
 		// NOTE: if a person is not at a settlement or near its vicinity,  
@@ -145,13 +145,13 @@ implements Serializable {
         boolean finishedMaintenance = (manager.getEffectiveTimeSinceLastMaintenance() == 0D);
         
         if (finishedMaintenance || malfunction || shouldEndEVAOperation() ||
-                addTimeOnSite(standardPulseTime)) {
+                addTimeOnSite(time)) {
         	checkLocation();
 			return remainingTime;
         }
 
         // Determine effective work time based on "Mechanic" and "EVA Operations" skills.
-        double workTime = standardPulseTime;
+        double workTime = time;
         int skill = getEffectiveSkillLevel();
         if (skill == 0) workTime /= 2;
         if (skill > 1) workTime += workTime * (.2D * skill);
@@ -173,13 +173,13 @@ implements Serializable {
         }
 
         // Add work to the maintenance
-        manager.addMaintenanceWorkTime(standardPulseTime);
+        manager.addMaintenanceWorkTime(time);
 
         // Add experience points
-        addExperience(standardPulseTime);
+        addExperience(time);
 
         // Check if an accident happens during maintenance.
-        checkForAccident(standardPulseTime);
+        checkForAccident(time);
 
         return remainingTime;
     }

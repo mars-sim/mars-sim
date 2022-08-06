@@ -327,7 +327,7 @@ implements Serializable {
      * @return the amount of time (millisols) left over after performing the phase.
      */
     private double havingConversation(double time) {
-		double remainingTime = time - standardPulseTime;
+		double remainingTime = 0;
     	
     	if (person == null) {
     		logger.severe("havingConversation(): person is null.");
@@ -339,7 +339,7 @@ implements Serializable {
         }
 
         // If duration, send invitation.
-        if (getDuration() <= (getTimeCompleted() + standardPulseTime)) {
+        if (getDuration() <= (getTimeCompleted() + time)) {
 
         	if (invitee != null) {
 	        	// List situations for having a conversation

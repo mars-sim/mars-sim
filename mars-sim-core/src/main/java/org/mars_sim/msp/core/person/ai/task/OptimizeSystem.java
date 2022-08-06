@@ -114,7 +114,7 @@ public class OptimizeSystem extends Task implements Serializable {
 	 * @return the amount of time (millisols) left over after performing the phase.
 	 */
 	private double optimizingPhase(double time) {
-		return time - standardPulseTime;
+		return 0;
 	}
 
 	/**

@@ -380,7 +380,7 @@ public class PerformLaboratoryResearch extends Task implements ResearchScientifi
 	 * @return the amount of time (millisols) left over after performing the phase.
 	 */
 	protected double researchingPhase(double time) {
-		double remainingTime = time - standardPulseTime;
+		double remainingTime = 0;
 		
 		// If person is incapacitated, end task.
 		if (person.getPerformanceRating() < .2) {
@@ -413,7 +413,7 @@ public class PerformLaboratoryResearch extends Task implements ResearchScientifi
 		}
 
 		// Add research work time to study.
-		double researchTime = getEffectiveResearchTime(standardPulseTime);
+		double researchTime = getEffectiveResearchTime(time);
 		boolean isPrimary = study.getPrimaryResearcher().equals(person);
 		if (isPrimary) {
 			study.addPrimaryResearchWorkTime(researchTime);
@@ -440,10 +440,10 @@ public class PerformLaboratoryResearch extends Task implements ResearchScientifi
 		}
 
 		// Add experience
-		addExperience(standardPulseTime);
+		addExperience(time);
 
 		// Check for lab accident.
-		checkForAccident(malfunctions, 0.005D, standardPulseTime);
+		checkForAccident(malfunctions, 0.005D, time);
 
 		return remainingTime;
 	}

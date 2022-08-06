@@ -97,8 +97,6 @@ public class Yoga extends Task implements Serializable {
 	 * @return the amount of time (millisols) left over after performing the phase.
 	 */
 	private double yogaPhase(double time) {
-    	double remainingTime = time - standardPulseTime;
-    	
 		// Regulates hormones
 		person.getCircadianClock().exercise(standardPulseTime);
 		//Improves musculoskeletal systems
@@ -106,7 +104,7 @@ public class Yoga extends Task implements Serializable {
 		// Record the sleep time [in millisols]
 		person.getCircadianClock().recordExercise(standardPulseTime);
 		
-		return remainingTime;
+		return 0;
 	}
 	
 	/**

@@ -68,7 +68,7 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
 		// Use EVAOperation parent constructor.
 		super(NAME, person, true, RandomUtil.getRandomDouble(5D) + 100D, SkillType.CONSTRUCTION);
 
-		if (!person.isFit()) {
+		if (!person.isBarelyFit()) {
 			checkLocation();
         	return;
 		}
@@ -113,7 +113,7 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
 		this.site = site;
 		this.vehicles = vehicles;
 
-		if (!person.isFit()) {
+		if (!person.isBarelyFit()) {
 			checkLocation();
         	return;
 		}
@@ -232,9 +232,9 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
 	 * @throws Exception
 	 */
 	private double constructionPhase(double time) {
-		double remainingTime = time - standardPulseTime;
+		double remainingTime = 0;
 		
-		if (checkReadiness(standardPulseTime) > 0)
+		if (checkReadiness(time) > 0)
 			return remainingTime;
 		
 		// Operate light utility vehicle if no one else is operating it.
@@ -278,7 +278,7 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
 			return workTime;
 		}
 
-		return time - workTime;
+		return 0;
 	}
 
 	/**

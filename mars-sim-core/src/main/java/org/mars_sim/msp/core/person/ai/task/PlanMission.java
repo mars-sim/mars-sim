@@ -123,7 +123,7 @@ public class PlanMission extends Task implements Serializable {
 	 * @return the amount of time (millisols) left over after performing the phase.
 	 */
 	private double selectingPhase(double time) {
-		double remainingTime = time - standardPulseTime;
+		double remainingTime = 0;
 		
 		boolean canDo = person.getMind().canStartNewMission();
 		
@@ -153,7 +153,7 @@ public class PlanMission extends Task implements Serializable {
 	 * @return the amount of time (millisols) left over after performing the phase.
 	 */
 	private double submittingPhase(double time) {
-		double remainingTime = time - standardPulseTime;
+		double remainingTime = 0;
 		
 		Mission mission = person.getMind().getMission();
 		
@@ -169,7 +169,7 @@ public class PlanMission extends Task implements Serializable {
 		}
 		
 		// Add experience
-		addExperience(standardPulseTime); 
+		addExperience(time); 
 		
 		endTask();
 		

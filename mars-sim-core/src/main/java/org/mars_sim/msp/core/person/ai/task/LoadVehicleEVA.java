@@ -54,7 +54,7 @@ public class LoadVehicleEVA extends EVAOperation {
 		// Use Task constructor
 		super(NAME, person, true, 20D + RandomUtil.getRandomInt(5) - RandomUtil.getRandomInt(5), null);
 		
-		if (!person.isFit()) {
+		if (!person.isBarelyFit()) {
 			checkLocation();
         	return;
 		}
@@ -128,7 +128,7 @@ public class LoadVehicleEVA extends EVAOperation {
 
 		this.vehicleMission = mission;
 		
-		if (!person.isFit()) {
+		if (!person.isBarelyFit()) {
 			checkLocation();
         	return;
 		}
@@ -181,7 +181,7 @@ public class LoadVehicleEVA extends EVAOperation {
 		// NOTE: if a person is not at a settlement or near its vicinity,  
 		stopLoading |= (settlement == null || vehicle == null); 
 		stopLoading |= settlement.getBuildingManager().isInGarage(vehicle);
-		stopLoading |= !person.isFit();
+		stopLoading |= !person.isBarelyFit();
 		
 		// Do the load
 		if (!stopLoading) {
