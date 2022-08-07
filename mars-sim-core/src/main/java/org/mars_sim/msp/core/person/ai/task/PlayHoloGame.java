@@ -149,7 +149,7 @@ public class PlayHoloGame extends Task implements Serializable {
 	 * @return the amount of time (millisol) left after performing the phase.
 	 */
 	private double playingPhase(double time) {
-		double remainingTime = time - standardPulseTime;
+		double remainingTime = 0;
 		
 		if (isDone()) {
         	// this task has ended
@@ -167,10 +167,10 @@ public class PlayHoloGame extends Task implements Serializable {
         	double workPerMillisol = 0; 
  
         	if (computingNeeded <= seed) {
-        		workPerMillisol = standardPulseTime * computingNeeded;
+        		workPerMillisol = time * computingNeeded;
         	}
         	else {
-        		workPerMillisol = standardPulseTime * seed * RandomUtil.getRandomDouble(.9, 1.1);
+        		workPerMillisol = time * seed * RandomUtil.getRandomDouble(.9, 1.1);
         	}
 
         	// Submit request for computing resources
@@ -224,7 +224,7 @@ public class PlayHoloGame extends Task implements Serializable {
         }
         
 		// Reduce stress but may increase or reduce a person's fatigue level
-		double newFatigue = fatigue - (2D * standardPulseTime * rand);
+		double newFatigue = fatigue - (2D * time * rand);
 		if (newFatigue < 0D)
 			newFatigue = 0D;
 		condition.setFatigue(newFatigue);
@@ -237,7 +237,7 @@ public class PlayHoloGame extends Task implements Serializable {
 		}
 		
         // Reduce person's stress
-        double stress = condition.getStress() - (2.5 * standardPulseTime);
+        double stress = condition.getStress() - (2.5 * time);
         condition.setStress(stress);
         
 		return remainingTime;
@@ -250,13 +250,13 @@ public class PlayHoloGame extends Task implements Serializable {
 	 * @return the amount of time (millisol) left after performing the phase.
 	 */
 	private double settingUpPhase(double time) {
-		double remainingTime = time - standardPulseTime;
+		double remainingTime = 0;
 		
 		boolean successful = false; 
 		int msol = marsClock.getMillisolInt();
 		
 		if (computingNeeded > 0) {
-	      	double workPerMillisol = standardPulseTime * seed;
+	      	double workPerMillisol = time * seed;
 
         	// Submit request for computing resources
         	Computation center = person.getAssociatedSettlement().getBuildingManager()

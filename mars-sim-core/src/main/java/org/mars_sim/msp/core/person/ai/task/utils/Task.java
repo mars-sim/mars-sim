@@ -69,7 +69,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	private static SimLogger logger = SimLogger.getLogger(Task.class.getName());
 
 	// Static members
-
+	/** The maximum allowable width of a time pulse. */
+	private static final double MAX_PULSE_WIDTH = .8;
 	/** Level of top level Task */
 	private static final int TOP_LEVEL = 1;
 	/** The standard stress effect of a task within a person's job. */
@@ -244,7 +245,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		// Set standard pulse time to a quarter of the value of the current pulse width
 		if (masterClock == null)
 			masterClock = Simulation.instance().getMasterClock();
-		standardPulseTime = masterClock.getMarsPulseTime() / MasterClock.MULTIPLIER;
+		standardPulseTime = Math.min(MAX_PULSE_WIDTH, masterClock.getMarsPulseTime());
 	}
 
 	/**
@@ -446,7 +447,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			if (canRecord()) {
 				Mission ms = worker.getMission();
 				worker.getTaskManager().recordTask(this,
-						(ms != null ? ms.getTypeID() : null));
+						(ms != null ? ms.getName() : null));
 			}
 		}
 	}

@@ -98,11 +98,11 @@ public class Yoga extends Task implements Serializable {
 	 */
 	private double yogaPhase(double time) {
 		// Regulates hormones
-		person.getCircadianClock().exercise(standardPulseTime);
+		person.getCircadianClock().exercise(time);
 		//Improves musculoskeletal systems
-		person.getPhysicalCondition().workOut(standardPulseTime);
+		person.getPhysicalCondition().workOut(time);
 		// Record the sleep time [in millisols]
-		person.getCircadianClock().recordExercise(standardPulseTime);
+		person.getCircadianClock().recordExercise(time);
 		
 		return 0;
 	}

@@ -185,7 +185,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 	 * @return the amount of time (millisol) after performing the phase.
 	 */
 	protected double unloadingPhase(double time) {		
-		double remainingTime = time - standardPulseTime;
+		double remainingTime = 0;
 		
 		if (checkReadiness(time) > 0)
 			return time;
@@ -349,10 +349,10 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 		}
 		
         // Add experience points
-        addExperience(standardPulseTime);
+        addExperience(time);
 
 		// Check for an accident during the EVA operation.
-		checkForAccident(standardPulseTime);
+		checkForAccident(time);
         
 		return remainingTime;
 	}

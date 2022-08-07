@@ -479,19 +479,24 @@ public class MasterClock implements Serializable {
 			else if (realElapsedMillisec == 0.0) {
 				// At the start of the sim 
 				realElapsedMillisec = (long) (optMilliSolPerPulse * MILLISECONDS_PER_MILLISOL / desiredTR);
-				logger.warning("Zero elapsed real time. Resetting it to " + realElapsedMillisec + " ms.");
+				logger.warning("Zero elapsed real time. Resetting it back to " + realElapsedMillisec + " ms.");
 			}
 			
 			else {
 				// Adjust the actual TR
 				checkActualTR();
 				
-				// Obtains the latest the time pulse length in millisols.
+				// NOTE: actualTR is just the ratio of the simulation's pulse time to the real elapsed time 
+				
+				// Obtain the latest time pulse width in millisols.
 				lastPulseTime = (realElapsedMillisec * actualTR) / MILLISECONDS_PER_MILLISOL;
 				
 				// Adjust the time pulse
 				checkPulseWidth();
 			}
+
+			// Gets the timestamp for the pulse
+			timestampPulseStart();
 			
 			if (lastPulseTime > 0) {
 				acceptablePulse = true;
@@ -526,9 +531,6 @@ public class MasterClock implements Serializable {
 					logger.config("The clockListenerExecutor has died. Restarting...");
 					resetClockListeners();
 				}
-				
-				// Do the pulse
-				timestampPulseStart();
 			}
 		}
 		return acceptablePulse;

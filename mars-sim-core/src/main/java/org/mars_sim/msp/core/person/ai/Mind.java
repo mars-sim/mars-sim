@@ -196,7 +196,7 @@ public class Mind implements Serializable, Temporal {
 			}
 		}
 	}
-	
+
 	/**
 	 * Takes appropriate action for a given amount of time.
 	 *
@@ -204,7 +204,7 @@ public class Mind implements Serializable, Temporal {
 	 * @throws Exception if error during action.
 	 */
 	private void takeAction(double time) {
-		double timePerFrame = time;
+		double pulseTime = time;
 		int zeroCount = 0;    // Count the number of conseq. zero executions
 		int callCount = 0;
 		// Loop around using up time; recursion can blow stack memory
@@ -212,7 +212,7 @@ public class Mind implements Serializable, Temporal {
 			// Perform a task if the person has one, or determine a new task/mission.
 			if (taskManager.hasActiveTask()) {
 				// Call executeTask
-				double remainingTime = taskManager.executeTask(timePerFrame, person.getPerformanceRating());
+				double remainingTime = taskManager.executeTask(pulseTime, person.getPerformanceRating());
 
 				// A task is return a bad remaining time.
 				// Cause of Issue#290
@@ -224,11 +224,11 @@ public class Mind implements Serializable, Temporal {
 				}
 				
 				// Can not return more time than originally available
-				if (remainingTime > timePerFrame) {
+				if (remainingTime > pulseTime) {
 					// Likely to be a defect in a Task or rounding problem
 					logger.warning(person, 20_000, "'"
 							+ taskManager.getTaskName() + "' and return a remaining time " + remainingTime
-							+ " larger than the original " + timePerFrame);
+							+ " larger than the original " + pulseTime);
 					return;
 				}
 
@@ -240,11 +240,11 @@ public class Mind implements Serializable, Temporal {
 					callCount++;
 					return;
 				}
-				if (remainingTime == timePerFrame) {
+				if (remainingTime == pulseTime) {
 					// No time has been consumed previously
 					// This is not supposed to happen but still happens a lot.
 					// Reduce the time by standardPulseTime
-					remainingTime = timePerFrame - Task.standardPulseTime; 
+					remainingTime = pulseTime - Task.standardPulseTime; 
 					// Reset the idle counter					
 					if (zeroCount++ >= MAX_ZERO_EXECUTE) {
 						return;
@@ -253,7 +253,7 @@ public class Mind implements Serializable, Temporal {
 				else {
 					zeroCount = 0;
 				}
-				timePerFrame = remainingTime;
+				pulseTime = remainingTime;
 			}
 			else {
 				// Look for a new task
@@ -262,11 +262,11 @@ public class Mind implements Serializable, Temporal {
 				// Don't have an active task. Consume time
 				if (!taskManager.hasActiveTask()) {
 					// Didn't find a new Task so abort action
-					timePerFrame = 0;
+					pulseTime = 0;
 				}
 			}
 			
-		} while (timePerFrame > SMALL_AMOUNT_OF_TIME);
+		} while (pulseTime > SMALL_AMOUNT_OF_TIME);
 	}
 
 	/**

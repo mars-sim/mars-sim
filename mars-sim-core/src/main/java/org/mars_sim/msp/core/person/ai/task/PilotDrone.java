@@ -183,7 +183,7 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 			setPhase(AVOID_COLLISION);
 			return (time);
 		} else
-			return super.mobilizeVehicle(standardPulseTime);
+			return super.mobilizeVehicle(time);
 	}
 
 	/**
