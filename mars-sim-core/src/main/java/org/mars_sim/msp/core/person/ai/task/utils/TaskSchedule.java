@@ -404,7 +404,7 @@ public class TaskSchedule implements Serializable {
 		int now = marsClock.getMillisolInt();
 		
 		if (currentShiftType == ShiftType.ON_CALL) {
-			return 0;
+			return 10;
 		}
 
 		int diff = now - getShiftStart();

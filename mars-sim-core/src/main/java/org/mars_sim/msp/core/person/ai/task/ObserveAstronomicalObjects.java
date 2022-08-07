@@ -402,7 +402,6 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 	 * @return
 	 */
 	public static boolean isGettingDark(Person person) {
-
         return surfaceFeatures.getTrend(person.getCoordinates()) < 0 &&
                 hasLittleSunlight(person);
     }

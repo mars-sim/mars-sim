@@ -476,10 +476,11 @@ public abstract class EVAOperation extends Task {
     }
 
 	/**
-	 * Is there enough sunlight for an EVA
+	 * Is there enough sunlight for an EVA ?
+	 * 
 	 * @return
 	 */
-	public static boolean isEnoughSunlightForEVA(Coordinates locn ) {
+	public static boolean isEnoughSunlightForEVA(Coordinates locn) {
 		if (minEVASunlight == 0D) {
 			// Don't bother calculating sunlight; EVA valid in whatever conditions
 			return true;
@@ -617,8 +618,8 @@ public abstract class EVAOperation extends Task {
 	 * @return
 	 */
 	public static boolean isHungryAtMealTime(Person person) {
-
-        return CookMeal.isLocalMealTime(person.getCoordinates(), 15) && person.getPhysicalCondition().isHungry();
+        return CookMeal.isLocalMealTime(person.getCoordinates(), 15) 
+        		&& person.getPhysicalCondition().isHungry();
     }
 
 	/**
@@ -857,7 +858,7 @@ public abstract class EVAOperation extends Task {
 	 * Set the minimum sunlight for any EVA operations.
 	 */
 	public static void setMinSunlight(double minimum) {
-		logger.config("Minimum sublight for EVA = " + minimum);
+		logger.config("Minimum sunlight for EVA = " + minimum);
 		minEVASunlight = minimum;
 	}
 }

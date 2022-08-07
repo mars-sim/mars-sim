@@ -420,7 +420,7 @@ public class MarsClock implements Serializable {
 	}
 
 	/**
-	 * Returns the orbit
+	 * Returns the orbit.
 	 *
 	 * @return the orbit as an integer
 	 */
@@ -429,7 +429,7 @@ public class MarsClock implements Serializable {
 	}
 
 	/**
-	 * Returns the month (1 - 24)
+	 * Returns the month (1 - 24).
 	 *
 	 * @return the month as an integer
 	 */
@@ -438,7 +438,7 @@ public class MarsClock implements Serializable {
 	}
 
 	/**
-	 * Returns the sol of month (1 - 28)
+	 * Returns the sol of month (1 - 28).
 	 *
 	 * @return the sol of month as an integer
 	 */
