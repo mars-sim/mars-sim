@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Mind.java
- * @date 2021-12-14
+ * @date 2022-08-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai;

@@ -70,7 +70,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 
 	// Static members
 	/** The maximum allowable width of a time pulse. */
-	private static final double MAX_PULSE_WIDTH = .8;
+	private static final double MAX_PULSE_WIDTH = .855;
 	/** Level of top level Task */
 	private static final int TOP_LEVEL = 1;
 	/** The standard stress effect of a task within a person's job. */

@@ -292,7 +292,7 @@ public class BuildingConfig implements Serializable {
 				case COMMUNICATION:
 				case COMPUTATION:
 				case MANAGEMENT:
-					cats.add(BuildingCategory.HABITAT);
+					cats.add(BuildingCategory.COMMAND);
 					break;
 
 				case ASTRONOMICAL_OBSERVATION:

@@ -127,6 +127,11 @@ public class MaintainGroundVehicleEVAMeta extends MetaTask {
 
                 result *= settlement.getGoodsManager().getTransportationFactor();
 
+                double shiftBonus = person.getTaskSchedule().obtainScoreAtStartOfShift();
+                
+                // Encourage to get this task done early in a work shift
+                result *= shiftBonus / 10;
+                
 	            result = applyPersonModifier(result, person);
 	            
 	        	if (exposed[0]) {

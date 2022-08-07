@@ -44,7 +44,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 	private static final String NAME_ON = Msg.getString("Task.description.toggleResourceProcess.on"); //$NON-NLS-1$
 	private static final String NAME_OFF = Msg.getString("Task.description.toggleResourceProcess.off"); //$NON-NLS-1$
 
-	private static final String C2 = "command and control";
+//	private static final String C2 = "command and control";
 
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = .25D;
@@ -95,7 +95,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 	}
 
 	/**
-	 * Sets up the resource process
+	 * Sets up the resource process.
 	 */
 	private void setupResourceProcess() {
 		// Copy the current state of this process running
@@ -126,7 +126,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 	}
 	
 	/**
-	 * Check if any management function is available
+	 * Checks if any management function is available.
 	 */
 	private void checkManagement() {
 
@@ -166,7 +166,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 	}
 
 	/**
-	 * Ends the task
+	 * Ends the task.
 	 *
 	 * @param s
 	 */
@@ -176,7 +176,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 	}
 
 	/**
-     * Walks to the building with resource processing function
+     * Walks to the building with resource processing function.
      *
      * @param b the building
      */
@@ -187,7 +187,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 	}
 
 	/**
-     * Walks to the building with management function
+     * Walks to the building with management function.
      *
      * @param b the building
      */

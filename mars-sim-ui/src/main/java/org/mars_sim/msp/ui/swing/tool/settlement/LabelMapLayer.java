@@ -198,7 +198,7 @@ implements SettlementMapLayer {
 						frontColor = MEDICAL_LABEL_COLOR;
 						outlineColor = WHITE_LABEL_OUTLINE_COLOR;
 						break;
-					case HABITAT:
+					case COMMAND:
 						frontColor = HAB_LABEL_COLOR;
 						outlineColor = BLACK_LABEL_OUTLINE_COLOR;
 						break;

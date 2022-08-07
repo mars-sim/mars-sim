@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MasterClock.java
- * @date 2021-12-09
+ * @date 2022-08-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.time;
@@ -38,7 +38,7 @@ public class MasterClock implements Serializable {
 	/** Initialized logger. */
 	private static final SimLogger logger = SimLogger.getLogger(MasterClock.class.getName());
 	/** The maximum speed allowed .*/
-	public static final int MAX_SPEED = 15;
+	public static final int MAX_SPEED = 13;
 	/** The maximum time ratio allowed .*/
 	public static final int MAX_TIME_RATIO = (int)Math.pow(2, MAX_SPEED);
 	/** The Maximum number of pulses in the log .*/
@@ -220,7 +220,7 @@ public class MasterClock implements Serializable {
 	}
 
 	/**
-	 * Adds a clock listener. A minumum duratino can be specified which throttles how many
+	 * Adds a clock listener. A minimum duration can be specified which throttles how many
 	 * pulses the listener receives. If the duration is set to zero then all Pulses are distributed.
 	 *
 	 * If the duration is positive then pulses will be skipped to ensure a pulse is not delivered any

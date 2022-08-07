@@ -76,10 +76,6 @@ implements Serializable {
     public ToggleFuelPowerSource(Person person) {
         super(NAME_ON, person, false, 0D, SkillType.MECHANICS);
 
-		if (!person.isBarelyFit()) {
-			checkLocation();
-		}
-
         building = getFuelPowerSourceBuilding(person);
 
         if (building != null) {
@@ -112,16 +108,34 @@ implements Serializable {
 
             // If habitable building, send person there.
             if (!isInhabitable) {
-                // Walk to power source building.
-                walkToPowerSourceBuilding(building);
+            	
+            	int rand = RandomUtil.getRandomInt(5);
+            	
+            	if (rand == 0) {
+            		// Yes it requires EVA
+            		
+                	// Checks if a person is fit to perform this task
+                	if (!person.getPhysicalCondition().isEVAFitScreening()) {
+            			checkLocation();
+            			return;
+            		}
+                	
+                    // Walk to power source building.
+                    walkToPowerSourceBuilding(building);
+            		
+            	}
+            	else { // 5 out of 6 cases requires no EVA
+                    // Looks for management function for toggling power source.
+                	checkManagement();
+            	}
             }
 
             else {
                 // Looks for management function for toggling power source.
             	checkManagement();
             }
-
         }
+        
         else {
             endTask();
         }

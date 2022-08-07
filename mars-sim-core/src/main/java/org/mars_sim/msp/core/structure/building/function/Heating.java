@@ -208,7 +208,7 @@ extends Function {
 			case ERV:
 				heatGainEqiupment = 0.586;
 				break;
-			case HABITAT:
+			case COMMAND:
 				heatGainEqiupment = 0.4396;
 				break;
 			case WORKSHOP:

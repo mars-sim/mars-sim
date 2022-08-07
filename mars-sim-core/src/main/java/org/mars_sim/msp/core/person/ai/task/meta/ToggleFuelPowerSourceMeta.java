@@ -16,6 +16,7 @@ import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingCategory;
 import org.mars_sim.msp.core.structure.building.function.FuelPowerSource;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 
@@ -60,6 +61,13 @@ public class ToggleFuelPowerSourceMeta extends MetaTask {
 	            if (building != null) {
 	                FuelPowerSource powerSource = ToggleFuelPowerSource.getFuelPowerSource(building);
 	                
+	                // Checks if this is a standalone power building that requires EVA to reach
+	                if (BuildingCategory.POWER == building.getCategory() 
+	                		&& !person.getPhysicalCondition().isEVAFitScreening())
+		                // Probability affected by the person's stress, hunger, thirst and fatigue.
+	                	return 0;
+	                
+	                
 	                double diff = ToggleFuelPowerSource.getValueDiff(settlement, powerSource);
 	                double baseProb = diff * FACTOR;
 	                if (baseProb > 10000) {
@@ -78,7 +86,11 @@ public class ToggleFuelPowerSourceMeta extends MetaTask {
 				logger.severe(person, "Trouble with getting the difference for a fuel power source: ", e);
 	        }
 
-	
+	        double shiftBonus = person.getTaskSchedule().obtainScoreAtStartOfShift();
+
+	        // Encourage to get this task done early in a work shift
+	        result *= shiftBonus / 10;
+	        
 	        result = applyPersonModifier(result, person);
 	
 	        if (result < 0) result = 0;

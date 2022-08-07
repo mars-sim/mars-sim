@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TaskSchedule.java
- * @date 2021-12-17
+ * @date 2022-08-05
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.task.utils;
@@ -33,20 +33,21 @@ public class TaskSchedule implements Serializable {
 	 * size)
 	 */
 	public static final int NUM_SOLS = 10;
-	public static final int ON_CALL_START = 0;
-	public static final int ON_CALL_END = 1000;
+	
+	public static final int ON_CALL_START = 1;
+	public static final int ON_CALL_END = 0;
 
-	public static final int A_START = 250;
+	public static final int A_START = 251;
 	public static final int A_END = 750;
 	public static final int B_START = 751;
-	public static final int B_END = 249;
+	public static final int B_END = 250;
 
-	public static final int X_START = 0;
+	public static final int X_START = 1;
 	public static final int X_END = 333;
 	public static final int Y_START = 334;
 	public static final int Y_END = 666;
 	public static final int Z_START = 667;
-	public static final int Z_END = 1000;
+	public static final int Z_END = 0;
 
 	// Data members
 	private ShiftType currentShiftType;
@@ -60,7 +61,7 @@ public class TaskSchedule implements Serializable {
 	private static MarsClock marsClock;
 	
 	/**
-	 * Constructor for TaskSchedule
+	 * Constructor for TaskSchedule.
 	 *
 	 * @param person
 	 */
@@ -82,7 +83,7 @@ public class TaskSchedule implements Serializable {
 	}
 
 	/**
-	 * Normalize the score of the shift choice toward the center score of 50.
+	 * Normalizes the score of the shift choice toward the center score of 50.
 	 */
 	public void normalizeShiftChoice() {
 		for (ShiftType key : shiftChoice.keySet()) {
@@ -95,7 +96,7 @@ public class TaskSchedule implements Serializable {
 	}
 
 	/**
-	 * Increments the score of the shift choice .
+	 * Increments the score of the shift choice.
 	 */
 	public void incrementShiftChoice() {
 		for (ShiftType key : shiftChoice.keySet()) {
@@ -107,7 +108,7 @@ public class TaskSchedule implements Serializable {
 	}
 
 	/**
-	 * Adjusts the work shift choice
+	 * Adjusts the work shift choice.
 	 *
 	 * @param hours array
 	 */
@@ -172,17 +173,17 @@ public class TaskSchedule implements Serializable {
 	 */
 	public int getShiftStart() {
 		int start = -1;
-		if (currentShiftType.equals(ShiftType.A))
+		if (currentShiftType == ShiftType.A)
 			start = A_START;
-		else if (currentShiftType.equals(ShiftType.B))
+		else if (currentShiftType == ShiftType.B)
 			start = B_START;
-		else if (currentShiftType.equals(ShiftType.X))
+		else if (currentShiftType == ShiftType.X)
 			start = X_START;
-		else if (currentShiftType.equals(ShiftType.Y))
+		else if (currentShiftType == ShiftType.Y)
 			start = Y_START;
-		else if (currentShiftType.equals(ShiftType.Z))
+		else if (currentShiftType == ShiftType.Z)
 			start = Z_START;
-		else if (currentShiftType.equals(ShiftType.ON_CALL))
+		else if (currentShiftType == ShiftType.ON_CALL)
 			start = ON_CALL_START;
 		return start;
 	}
@@ -194,17 +195,17 @@ public class TaskSchedule implements Serializable {
 	 */
 	public int getShiftEnd() {
 		int end = -1;
-		if (currentShiftType.equals(ShiftType.A))
+		if (currentShiftType == ShiftType.A)
 			end = A_END;
-		else if (currentShiftType.equals(ShiftType.B))
+		else if (currentShiftType == ShiftType.B)
 			end = B_END;
-		else if (currentShiftType.equals(ShiftType.X))
+		else if (currentShiftType == ShiftType.X)
 			end = X_END;
-		else if (currentShiftType.equals(ShiftType.Y))
+		else if (currentShiftType == ShiftType.Y)
 			end = Y_END;
-		else if (currentShiftType.equals(ShiftType.Z))
+		else if (currentShiftType == ShiftType.Z)
 			end = Z_END;
-		else if (currentShiftType.equals(ShiftType.ON_CALL))
+		else if (currentShiftType == ShiftType.ON_CALL)
 			end = ON_CALL_END;
 		return end;
 	}
@@ -293,7 +294,7 @@ public class TaskSchedule implements Serializable {
 	}
 
 	/*
-	 * Checks if a person is on shift
+	 * Checks if a person is on a work shift
 	 *
 	 * @param time in millisols
 	 *
@@ -303,7 +304,7 @@ public class TaskSchedule implements Serializable {
 		boolean result = false;
 
 		if (currentShiftType == ShiftType.A) {
-			if (millisols == 1000 || (millisols >= A_START && millisols <= A_END))
+			if (millisols == 0 || (millisols >= A_START && millisols <= A_END))
 				result = true;
 		}
 
@@ -313,7 +314,7 @@ public class TaskSchedule implements Serializable {
 		}
 
 		else if (currentShiftType == ShiftType.X) {
-			if (millisols == 1000 || (millisols >= X_START && millisols <= X_END))
+			if (millisols == 0 || (millisols >= X_START && millisols <= X_END))
 				result = true;
 		}
 
@@ -378,13 +379,13 @@ public class TaskSchedule implements Serializable {
 	public boolean isTimeAtStartOfAShift(int missionWindow) {
 		int now = marsClock.getMillisolInt();
 		
-		if ((now == 1000 || now >= A_START) && now <= A_START + missionWindow)
+		if (now >= A_START && now <= A_START + missionWindow)
 			return true;
 
 		if (now >= B_START && now <= B_START + missionWindow)
 			return true;
 
-		if ((now == 1000 || now >= X_START) && now <= X_START + missionWindow)
+		if (now >= X_START && now <= X_START + missionWindow)
 			return true;
 
 		if (now >= Y_START && now <= Y_START + missionWindow)
@@ -393,6 +394,31 @@ public class TaskSchedule implements Serializable {
         return now >= Z_START && now <= Z_START + missionWindow;
     }
 
+	/**
+	 * Obtains a time score starting at the beginning of 
+	 * a work shift (within the first 100 msols).
+	 *
+	 * @return a score
+	 */
+	public double obtainScoreAtStartOfShift() {
+		int now = marsClock.getMillisolInt();
+		
+		if (currentShiftType == ShiftType.ON_CALL) {
+			return 0;
+		}
+
+		int diff = now - getShiftStart();
+		if (diff <= 0) {
+			return 0;
+		}
+		
+		double score = 100 - diff;
+		if (score <= 0) {
+			return 0;
+		}
+        return score;
+    }
+	
 	/**
 	 * Gets the score of a work shift
 	 *

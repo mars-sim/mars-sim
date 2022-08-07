@@ -194,8 +194,6 @@ public class ReturnLightUtilityVehicle extends Task implements Serializable {
 	 */
 	private void unloadLUVInventory(EquipmentOwner eo) {
 
-//		Inventory rcInv = returnContainer.getInventory();
-
 		// Unload all units.
 		Iterator<Equipment> j = luv.getEquipmentSet().iterator();
 		while (j.hasNext()) {

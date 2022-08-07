@@ -52,7 +52,7 @@ public class UnloadVehicleEVAMeta extends MetaTask {
 
         if (settlement != null) {
 
-            // Probability affected by the person's stress and fatigue.
+            // Probability affected by the person's stress, hunger, thirst and fatigue.
             if (!person.getPhysicalCondition().isEVAFitScreening())
             	return 0;
 
@@ -101,6 +101,11 @@ public class UnloadVehicleEVAMeta extends MetaTask {
 	        // Settlement factor
 	        result *= settlement.getGoodsManager().getTransportationFactor();
 
+	        double shiftBonus = person.getTaskSchedule().obtainScoreAtStartOfShift();
+	        
+	        // Encourage to get this task done early in a work shift
+	        result *= shiftBonus / 10;
+	        
 	        result = applyPersonModifier(result, person);
 
 	    	if (exposed[0]) {

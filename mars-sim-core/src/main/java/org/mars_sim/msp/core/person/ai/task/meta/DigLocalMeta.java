@@ -113,16 +113,22 @@ public abstract class DigLocalMeta extends MetaTask {
         // Adds effect of the ratio of # indoor people vs. those outside already doing EVA 
         result *= (1 + indoor) / (1 + settlement.getNumOutsideEVA()) ;
 
+        double shiftBonus = person.getTaskSchedule().obtainScoreAtStartOfShift();
+        
+        // Encourage to get this task done early in a work shift
+        result *= shiftBonus / 10;
+        
         result = applyPersonModifier(result, person);
 
+        
     	if (exposed[0]) {
     		// Baseline can give a fair amount dose of radiation
-			result = result/10D;
+			result = result/50D;
 		}
 
     	if (exposed[1]) {
     		// GCR can give nearly lethal dose of radiation
-			result = result/20D;
+			result = result/100D;
 		}
 
         if (result <= 0)
