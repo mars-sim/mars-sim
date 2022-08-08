@@ -396,27 +396,30 @@ public class TaskSchedule implements Serializable {
 
 	/**
 	 * Obtains a time score starting at the beginning of 
-	 * a work shift (within the first 100 msols).
+	 * a work shift (within the first 90 msols). 
+	 * Base is 10.
 	 *
 	 * @return a score
 	 */
 	public double obtainScoreAtStartOfShift() {
 		int now = marsClock.getMillisolInt();
+		double base = 10;
 		
 		if (currentShiftType == ShiftType.ON_CALL) {
-			return 10;
+			return base;
 		}
 
 		int diff = now - getShiftStart();
 		if (diff <= 0) {
-			return 0;
+			return base;
 		}
 		
-		double score = 100 - diff;
+		double score = 90 - diff;
 		if (score <= 0) {
-			return 0;
+			return base;
 		}
-        return score;
+		
+        return base + score;
     }
 	
 	/**

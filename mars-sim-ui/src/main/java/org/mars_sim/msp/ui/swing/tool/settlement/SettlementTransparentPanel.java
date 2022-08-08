@@ -128,15 +128,19 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	private static final String ZENITH_ANGLE 	= "   Zenith Angle: ";
 	private static final String OPTICAL_DEPTH 	= "   Optical Depth: ";
 
-	private static final String SUNRISE			= "       Sunrise: ";
-	private static final String SUNSET			= "        Sunset: ";
-	private static final String DAYLIGHT		= "      DayLight: ";
-	private static final String ZENITH			= "        Zenith: ";
-	private static final String MAX_LIGHT		= "     Max Light: ";
-	private static final String CURRENT_LIGHT	= " Current Light: ";
-	private static final String WM				= " W/m\u00B2 ";
-	private static final String MSOL			= " msol ";
-	private static final String PENDING			= " ...  ";
+	
+	private static final String PROJECTED_SUNRISE	= " Projected Sunrise: ";
+	private static final String PROJECTED_SUNSET	= "  Projected Sunset: ";
+	private static final String SUNRISE				= " Yestersol Sunrise: ";
+	private static final String SUNSET				= "  Yestersol Sunset: ";
+	private static final String PROJECTED_DAYLIGHT	= "Projected Daylight: ";	
+	private static final String DAYLIGHT			= "Yestersol Daylight: ";
+	private static final String ZENITH				= "       Zenith Time: ";
+	private static final String MAX_LIGHT			= "      Max Sunlight: ";
+	private static final String CURRENT_LIGHT		= "  Current Sunlight: ";
+	private static final String WM					= " W/m\u00B2 ";
+	private static final String MSOL				= " msol ";
+	private static final String PENDING				= " ...  ";
 
 	private static final String YESTERSOL_RESOURCE = "Yestersol's Resources (";
 
@@ -177,6 +181,12 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	
 	private ImageIcon emptyIcon = new ImageIcon();
     
+	/** label for projected sunrise time. */
+	private WebLabel projectSunriseLabel;
+	/** label for projected sunset time. */
+	private WebLabel projectSunsetLabel;
+	/** label for projected daylight. */
+	private WebLabel projectDaylightLabel;
 	/** label for sunrise time. */
 	private WebLabel sunriseLabel;
 	/** label for sunset time. */
@@ -360,7 +370,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	    sunPane.setBackground(new Color(0, 0, 0, 128));
 	    sunPane.setOpaque(false);
 
-	    WebPanel roundPane = new WebPanel(new GridLayout(6, 1, 0, 0)) {
+	    WebPanel roundPane = new WebPanel(new GridLayout(9, 1, 0, 0)) {
 	        @Override
 	        protected void paintComponent(Graphics g) {
 	           super.paintComponent(g);
@@ -380,40 +390,70 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 
 	    roundPane.setBackground(new Color(0,0,0,128));
 	    roundPane.setOpaque(false);
-	    roundPane.setPreferredSize(240, 145);
+	    roundPane.setPreferredSize(260, 185);
 	    sunPane.add(roundPane, BorderLayout.EAST);
+  		
+	    double time[] = orbitInfo.getSunriseSunsetTime(mapPanel.getSettlement().getCoordinates());
 
+	    projectSunriseLabel = new WebLabel(StyleId.labelShadow, PROJECTED_SUNRISE 
+	    		+ Math.round(time[0] *10.0)/10.0 + MSOL);
+	    
+	    projectSunsetLabel = new WebLabel(StyleId.labelShadow, PROJECTED_SUNSET 
+	    		+ Math.round(time[1] *10.0)/10.0 + MSOL);
+	    
 	    sunriseLabel = new WebLabel(StyleId.labelShadow, SUNRISE + PENDING);
 		sunsetLabel = new WebLabel(StyleId.labelShadow, SUNSET + PENDING);
 		zenithLabel = new WebLabel(StyleId.labelShadow, ZENITH + PENDING);
 		maxSunLabel = new WebLabel(StyleId.labelShadow, MAX_LIGHT + PENDING);
 		daylightLabel = new WebLabel(StyleId.labelShadow, DAYLIGHT + PENDING);
+		
+		projectDaylightLabel  = new WebLabel(StyleId.labelShadow, PROJECTED_DAYLIGHT 
+	    		+ Math.round(time[2] *10.0)/10.0 + MSOL);
+		
 		currentSunLabel = new WebLabel(StyleId.labelShadow, CURRENT_LIGHT + PENDING);
 
+		projectSunriseLabel.setFont(sunFont);
 		sunriseLabel.setFont(sunFont);
+		projectSunsetLabel.setFont(sunFont);
 		sunsetLabel.setFont(sunFont);
 		zenithLabel.setFont(sunFont);
 		maxSunLabel.setFont(sunFont);
 		daylightLabel.setFont(sunFont);
+		projectDaylightLabel.setFont(sunFont);
 		currentSunLabel.setFont(sunFont);
 
-		Color color = Color.yellow.brighter().brighter();
-		sunriseLabel.setForeground(color);
-		sunsetLabel.setForeground(color);
-		zenithLabel.setForeground(color);
-		maxSunLabel.setForeground(color);
-		daylightLabel.setForeground(color);
-		currentSunLabel.setForeground(color);
+		Color orange = Color.orange;
+		Color yellow = Color.yellow.brighter().brighter();
+		Color white = Color.white;
+		Color red = Color.red.brighter();
+		projectSunriseLabel.setForeground(red);
+		sunriseLabel.setForeground(red);
+		
+		projectSunsetLabel.setForeground(orange);
+		sunsetLabel.setForeground(orange);
+		
+		projectDaylightLabel.setForeground(yellow);
+		daylightLabel.setForeground(yellow);
+		zenithLabel.setForeground(yellow);
+		
+		maxSunLabel.setForeground(white);
+		currentSunLabel.setForeground(white);
 
+		projectSunriseLabel.setToolTip("The projected time of sunrise");
 		sunriseLabel.setToolTip("The time of sunrise");
+		projectSunsetLabel.setToolTip("The projected time of sunset");
 		sunsetLabel.setToolTip("The time of sunset");
+		projectDaylightLabel.setToolTip("The projected duration of time in a sol having sunlight");
+		daylightLabel.setToolTip("The duration of time in a sol having sunlight");
 		zenithLabel.setToolTip("The time at which the solar irradiance is at max");
 		maxSunLabel.setToolTip("The max solar irradiance of yester-sol as recorded");
-		daylightLabel.setToolTip("The period of time in a sol having sunlight");
 		currentSunLabel.setToolTip("The current solar irradiance as recorded");
 
+		roundPane.add(projectSunriseLabel);
 		roundPane.add(sunriseLabel);
+		roundPane.add(projectSunsetLabel);
 		roundPane.add(sunsetLabel);
+		roundPane.add(projectDaylightLabel);
 		roundPane.add(daylightLabel);
 		roundPane.add(zenithLabel);
 		roundPane.add(maxSunLabel);
@@ -1335,6 +1375,12 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	 * Gets the sunlight data and display it on the top left panel of the settlement map.
 	 */
 	public void displaySunData(Coordinates location) {
+	    double time[] = orbitInfo.getSunriseSunsetTime(mapPanel.getSettlement().getCoordinates());
+	    
+		projectSunriseLabel.setText (PROJECTED_SUNRISE + Math.round(time[0] *10.0)/10.0 + MSOL);
+		projectSunsetLabel.setText (PROJECTED_SUNSET + Math.round(time[1] *10.0)/10.0 + MSOL);
+		projectDaylightLabel.setText (PROJECTED_DAYLIGHT + Math.round(time[2] *10.0)/10.0 + MSOL);
+		
 		// Retrieve the yestersol's sun record
 		SunData data = weather.getSunRecord(location);
 		
@@ -1342,7 +1388,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 			logger.warning(60_000L, "Sun data at " + location + " is not available.");
 			return;
 		}
-		
+
 		sunriseLabel.setText(   SUNRISE + data.getSunrise() + MSOL);
 		sunsetLabel.setText(    SUNSET + data.getSunset() + MSOL);
 		daylightLabel.setText(  DAYLIGHT + data.getDaylight() + MSOL);
@@ -1414,7 +1460,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	}
 
 	/**
-	 * Updates the sun data
+	 * Updates the sun data.
 	 * 
 	 * @param pulse
 	 * @param s
@@ -1422,6 +1468,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	private void updateSunlight(Settlement s) {
 		if (currentSunLabel == null)
 			return;
+	
 		currentSunLabel.setText(
 			CURRENT_LIGHT
 			+ (int)getSolarIrradiance(s.getCoordinates()) 

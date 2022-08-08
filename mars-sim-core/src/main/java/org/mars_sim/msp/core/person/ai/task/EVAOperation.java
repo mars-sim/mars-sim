@@ -466,15 +466,27 @@ public abstract class EVAOperation extends Task {
 	}
 
 	/**
-	 * Checks if the sky is dimming and is at dusk.
+	 * Checks if the sky is dimming and is nearly at dusk.
 	 *
 	 * @param person
 	 * @return
 	 */
-	public static boolean isGettingDark(Person person) {
-		return !isEnoughSunlightForEVA(person.getCoordinates());
+	public static boolean isGettingDark(Person person) {	
+		return orbitInfo.isSunSetting(
+        		person.getCoordinates(), true)
+				|| getSolarIrradiance(person.getCoordinates()) <= minEVASunlight;
     }
 
+	/**
+	 * Gets the solar irradinace.
+	 * 
+	 * @param locn
+	 * @return
+	 */
+	public static double getSolarIrradiance(Coordinates locn) {
+		return  surfaceFeatures.getSolarIrradiance(locn);
+	}
+	
 	/**
 	 * Is there enough sunlight for an EVA ?
 	 * 

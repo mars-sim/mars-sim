@@ -10,6 +10,7 @@ import java.io.Serializable;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.ClockUtils;
 import org.mars_sim.msp.core.time.EarthClock;
@@ -23,7 +24,9 @@ public class OrbitInfo implements Serializable, Temporal {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
+	/** default logger. */
+	private static SimLogger logger = SimLogger.getLogger(OrbitInfo.class.getName());
+	
 	// Static data members.
 	// Reference from http://nssdc.gsfc.nasa.gov/planetary/factsheet/marsfact.html
 	/** Mars orbit semimajor axis in au. */
@@ -40,7 +43,9 @@ public class OrbitInfo implements Serializable, Temporal {
 	public static final double DEGREE_TO_RADIAN = Math.PI / 180D; // convert a number in degrees to radians
 
 	/** Mars tilt in radians. */
-	private static final double TILT = .4396D; // or 25.2 deg
+	private static final double TILT = 0.4398; // 25.2 deg // 25.2 / 180 *pi = 0.4398
+	/** Mars tilt in sine . */
+	private static final double SINE_TILT = 0.4258; // sin (25.2 / 180 *pi) = 0.4258
 	/** Mars solar day in seconds. */
 	public static final double SOLAR_DAY = 88775.244D;
 	/** The area of Mars' orbit in au squared. */
@@ -49,6 +54,35 @@ public class OrbitInfo implements Serializable, Temporal {
 	private static final double HALF_PI = Math.PI / 2;
 	/** Two PIs. */
 	private static final double TWO_PIs = Math.PI * 2;
+	// On earth, use 15; On Mars, use 14.6 instead.
+	private static final double ANGLE_TO_HOURS = 90 / HALF_PI  / 14.6;
+
+	private static final double HRS_TO_MILLISOLS = ClockUtils.MILLISOLS_PER_DAY / 24; //  1.0275 / 24 * ClockUtils.MILLISOLS_PER_DAY;
+	
+	
+	/** Astronomical Dawn is the point at which it becomes possible to detect light in the sky. */
+	private static final double ASTRONOMICAL_DAWN_ANGLE = 18; // in degree
+	/** Nautical Dawn occurs at 12° below the horizon, when it becomes possible to see the horizon properly and distinguish some objects.  */
+	private static final double NAUTICAL_DAWN_ANGLE = 12; // in degree
+	/** Civil Dawn occurs when the sun is 6° below the horizon and there is enough light for activities to take place without artificial lighting. */
+	private static final double CIVIL_DAWN_ANGLE = 6; // in degree
+
+	/** 
+	 * Adopts the nautical dawn as the angle of the sun below the horizon for calculating the zenith angle at dawn.
+	 * See http://wordpress.mrreid.org/2013/02/05/dawn-dusk-sunrise-sunset-and-twilight/
+	 */
+	private static final double ZENITH_ANGLE_AT_DAWN = (90 + NAUTICAL_DAWN_ANGLE) / DEGREE_TO_RADIAN; // in radian
+	/** The cosine of the dawn zenith angle. */
+	private static final double COSINE_ZENITH_ANGLE_AT_DAWN =  Math.cos(ZENITH_ANGLE_AT_DAWN);
+
+	/** 
+	 * Adopts the nautical dusk as the angle of the sun below the horizon for calculating the zenith angle at dawn.
+	 * See http://wordpress.mrreid.org/2013/02/05/dawn-dusk-sunrise-sunset-and-twilight/
+	 */
+	private static final double ZENITH_ANGLE_AT_DUSK = (90 + NAUTICAL_DAWN_ANGLE) / DEGREE_TO_RADIAN; // in radian
+	/** The cosine of the dusk zenith angle. */
+	private static final double COSINE_ZENITH_ANGLE_AT_DUSK =  Math.cos(ZENITH_ANGLE_AT_DAWN);
+	
 	
 	// from https://www.teuse.net/games/mars/mars_dates.html
 	// Demios only takes 30hrs, and Phobos 7.6hrs to rotate around mars
@@ -150,8 +184,8 @@ public class OrbitInfo implements Serializable, Temporal {
 
 	/** The Sine of the solar declination angle. */
 	private double sineSolarDeclinationAngle;
-	/** The cache value of the cos zenith angele. */
-	private double cos_zenith_cache = 0;
+	/** The cache value of the cos zenith angle. */
+	private double cosZenithAngleCache = 0;
 
 	/** The solar zenith angle z */
 	// private double solarZenithAngle;
@@ -379,22 +413,69 @@ public class OrbitInfo implements Serializable, Temporal {
 	 */
 	public double getSunAngleFromPhi(double phi) {
 		// double a = Math.abs(phi - sunDirection.getPhi());
-		// System.out.println("getSunAngleFromPhi() : " + a);
 		return Math.abs(phi - sunDirection.getPhi());
-		// return a;
-	}
-
-	public boolean isSunRising(Coordinates location) {
-		boolean result = true;
-		double cos_zenith = getCosineSolarZenithAngle(location);
-		if (cos_zenith_cache > cos_zenith)
-			result = false;
-		cos_zenith_cache = cos_zenith;
-		return result;
 	}
 
 	/**
-	 * Gets the solar zenith angle from a given coordinate
+	 * Is the sun rising (at dawn) at this location ?
+	 * 
+	 * @param location
+	 * @param extended true if extending the dawn further (doubling the dawn angle)
+	 * @return
+	 */
+	public boolean isSunRising(Coordinates location, boolean extended) {
+		double cosZenith = getCosineSolarZenithAngle(location);	
+		cosZenithAngleCache = cosZenith;
+		// cosZenith is increasing
+		if (cosZenithAngleCache < cosZenith) {
+			if (extended && cosZenith <= 0) {
+				return true;
+			}
+			else if
+			// See if the solar zenith angle is between 90 and (90 + the dawn angle) 
+			// Note: if the sun is below the horizon, the solar zenith angle should be negative
+			(cosZenith <= 0 && cosZenith > COSINE_ZENITH_ANGLE_AT_DAWN
+			// See if the solar zenith angle is between 90 and (90 - the dawn angle) 
+			// Note: if the sun is above the horizon, the solar zenith angle should be positive
+			|| cosZenith >= 0 && cosZenith < - COSINE_ZENITH_ANGLE_AT_DAWN
+			) {
+			return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Is the sun setting it (at dusk) at this location ? 
+	 * 
+	 * @param location
+	 * @param extended true if extending the dusk earlier (starting the dusk angle earlier)
+	 * @return
+	 */
+	public boolean isSunSetting(Coordinates location, boolean extended) {
+		double cosZenith = getCosineSolarZenithAngle(location);	
+		cosZenithAngleCache = cosZenith;
+		// cosZenith is decreasing
+		if (cosZenithAngleCache < cosZenith) {
+			if (extended && cosZenith <= 0) {
+				return true;
+			}
+			else if
+			// See if the solar zenith angle is between 90 and (90 + the dusk angle) 
+			// Note: if the sun is below the horizon, the solar zenith angle should be negative
+			(cosZenith <= 0 && cosZenith > COSINE_ZENITH_ANGLE_AT_DUSK
+			// See if the solar zenith angle is between 90 and (90 - the dusk angle) 
+			// Note: if the sun is above the horizon, the solar zenith angle should be positive
+			|| cosZenith >= 0 && cosZenith < - COSINE_ZENITH_ANGLE_AT_DUSK
+			) {
+			return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Gets the solar zenith angle from a given coordinate.
 	 * 
 	 * @param location {@link Coordinates}
 	 * @return angle in radians (0 - PI).
@@ -404,7 +485,7 @@ public class OrbitInfo implements Serializable, Temporal {
 	}
 
 	/**
-	 * Gets the cosine solar zenith angle from a given coordinate
+	 * Gets the cosine solar zenith angle from a given coordinate.
 	 * 
 	 * @param location
 	 * @return cosine of solar zenith angle (from -1 to 1).
@@ -446,7 +527,7 @@ public class OrbitInfo implements Serializable, Temporal {
 		// 4. http://www.planetary.org/blogs/emily-lakdawalla/2014/a-martian-analemma.html
 
 		computeSineSolarDeclinationAngle();
-		double d = getSolarDeclinationAngle();
+		double d = getCacheSolarDeclinationAngle();
 
 		double equation_of_time_offset = 0;
 
@@ -518,7 +599,7 @@ public class OrbitInfo implements Serializable, Temporal {
 	}
 
 	/**
-	 * Computes the instantaneous areocentric longitude
+	 * Computes the instantaneous areocentric longitude.
 	 * 
 	 * @param v the true anomaly in radians
 	 */
@@ -550,11 +631,12 @@ public class OrbitInfo implements Serializable, Temporal {
 	}
 
 	/**
-	 * Gets the solar declination angle of a given areocentric longitude.
+	 * Gets the cached solar declination angle of a given areocentric longitude.
 	 * 
 	 * @return angle in radians (0 - 2 PI).
 	 */
-	public double getSolarDeclinationAngle() {
+	public double getCacheSolarDeclinationAngle() {
+		// WRNING: must call computeSineSolarDeclinationAngle() elsewhere to update the value	
 		return Math.asin(sineSolarDeclinationAngle);
 	}
 
@@ -564,7 +646,7 @@ public class OrbitInfo implements Serializable, Temporal {
 	 * 
 	 * @return -1 to +1
 	 */
-	public double getSineSolarDeclinationAngle() {
+	public double getCacheSineSolarDeclinationAngle() {
 		return sineSolarDeclinationAngle;
 	}
 
@@ -573,7 +655,7 @@ public class OrbitInfo implements Serializable, Temporal {
 	 * longitude.
 	 */
 	public void computeSineSolarDeclinationAngle() {
-		sineSolarDeclinationAngle = Math.sin(TILT) * Math.sin(L_s * DEGREE_TO_RADIAN);
+		sineSolarDeclinationAngle = - SINE_TILT * Math.sin(L_s * DEGREE_TO_RADIAN);
 		// return sineSolarDeclinationAngle;
 	}
 
@@ -583,25 +665,111 @@ public class OrbitInfo implements Serializable, Temporal {
 	 * @return angle in radians (0 - 2 PI).
 	 */
 	public double getSolarDeclinationAngleDegree() {
-		return getSolarDeclinationAngle() / DEGREE_TO_RADIAN;
+		computeSineSolarDeclinationAngle();
+		return getCacheSolarDeclinationAngle() / DEGREE_TO_RADIAN;
 	}
 
 	/**
-	 * Gets the mars daylight hour angle in millisols from a given location's
-	 * latitude.
+	 * Gets the hour angle from a given location [in millisols]
+	 * Reference : Solar radiation on Mars: Stataionary Photovoltaic Array. 
+	 * NASA Technical Memo. 1993.
 	 * 
 	 * @param location.
 	 * @return millisols.
 	 */
-	public double getDaylightinMillisols(Coordinates location) {
-		// double delta = getSolarDeclinationAngle(getL_s());
-		// double lat = location.getPhi2Lat(location.getPhi());
-		return 318.3152 * Math.acos(-Math.tan(location.getPhi2LatRadian()) * Math.tan(getSolarDeclinationAngle()));
-		// Note: 318.3152 = 1000 millisols / 24 hours / DEGREE_TO_RADIAN * 2 / 360
-		// degrees * 24 hours
-		// TODO: should 24 hours be used ?
+	public double getHourAngle(Coordinates location) {
+		computeSineSolarDeclinationAngle();
+		double phi = location.getPhi();
+		logger.info(location + " phi(latitude): " + phi);
+		double geoLat = 0;
+
+		if (phi == 0.0) {
+			geoLat = HALF_PI; 
+		}
+		else if (phi < HALF_PI) {
+			logger.info(location + " case 1.");
+			geoLat = HALF_PI - phi; 
+		}
+		else if (phi == HALF_PI) {
+			logger.info(location + " case 2.");
+			geoLat = 0; 
+		}
+		else if (phi > HALF_PI) {
+			logger.info(location + " case 3.");
+			geoLat = - (phi - HALF_PI); 
+		}
+		
+		logger.info(location + " geoLat: " + geoLat);
+		double tanPhi = Math.tan(geoLat);
+		
+		double dec = getCacheSolarDeclinationAngle();
+		logger.info(location + " dec: " + dec);
+
+		logger.info(location + " tanPhi: " + tanPhi);
+		double tanSDA = Math.tan(dec);
+		logger.info(location + " tanSDA: " + tanSDA);
+		
+		if (- tanSDA * tanPhi > 1) {
+			logger.info(location + " The sun will not rise. No daylight. Polar night.");
+			return -10;
+		}
+		else if (tanSDA * tanPhi == 1 || tanSDA * tanPhi == -1) {
+			logger.info(location + " The sun will be on the horizon for an instant only.");
+		}
+		else if (- tanSDA * tanPhi < -1) {
+			logger.info(location + " The sun will not set. Daylight all day. Polar day.");
+			return 10;
+		}
+		return - Math.acos(-tanPhi * tanSDA);
 	}
 
+	/**
+	 * Gets the sunrise and sunset time [in millisols].
+	 * See https://www.omnicalculator.com/physics/sunrise-sunset
+	 * 
+	 * @param location
+	 * @return
+	 */
+	public double[] getSunriseSunsetTime(Coordinates location) {
+		double omegaSunrise = getHourAngle(location);
+		if (omegaSunrise == 10) {
+			return new double[] {-1, -1, 1000};
+		}
+		if (omegaSunrise == -10) {
+			return new double[] {-1, -1, 0};
+		}
+		logger.info(location.getCoordinateString() + " hour angle in radian: " + omegaSunrise);
+		double sunriseMillisol = 0;
+		double sunsetMillisol = 0;
+		
+		double sunriseHrs = 12 + omegaSunrise * ANGLE_TO_HOURS;
+		logger.info(location.getCoordinateString() + " sunriseHrs: " + sunriseHrs);
+		sunriseMillisol = sunriseHrs * HRS_TO_MILLISOLS;
+		logger.info(location.getCoordinateString() + " sunriseMillisol: " + sunriseMillisol);
+		if (sunriseMillisol < 0)
+			sunriseMillisol = 1000 - sunriseMillisol;
+		if (sunriseMillisol > 999)
+			sunriseMillisol = sunriseMillisol - 1000;
+
+		double sunsetHrs = 12 - omegaSunrise * ANGLE_TO_HOURS;
+		logger.info(location.getCoordinateString() + " sunsetHrs: " + sunsetHrs);
+		sunsetMillisol = sunsetHrs * HRS_TO_MILLISOLS;
+		logger.info(location.getCoordinateString() + " sunsetMillisol: " + sunsetMillisol);
+		if (sunsetMillisol < 0)
+			sunsetMillisol = 1000 - sunsetMillisol;
+		if (sunsetMillisol > 999)
+			sunsetMillisol = sunsetMillisol - 1000;
+		
+		double duration = 0;
+		if (sunsetMillisol > sunriseMillisol)
+			duration = sunsetMillisol - sunriseMillisol;
+		else {
+			duration = 1000 - (sunriseMillisol - sunsetMillisol);
+		}
+		
+		return new double[] {sunriseMillisol, sunsetMillisol, duration};
+	}
+	
 	/**
 	 * The point on the surface of Mars perpendicular to the Sun as Mars rotates.
 	 * 

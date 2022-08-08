@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core.person.ai.task.meta;
 
 import org.mars_sim.msp.core.equipment.EquipmentType;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -19,6 +20,8 @@ import org.mars_sim.msp.core.structure.Settlement;
  * Meta task for the DigLocal task.
  */
 public abstract class DigLocalMeta extends MetaTask {
+
+	private static SimLogger logger = SimLogger.getLogger(DigLocalMeta.class.getName());
 
 	private static final double VALUE = 1.0;
 	private static final int MAX = 5000;
@@ -113,13 +116,23 @@ public abstract class DigLocalMeta extends MetaTask {
         // Adds effect of the ratio of # indoor people vs. those outside already doing EVA 
         result *= (1 + indoor) / (1 + settlement.getNumOutsideEVA()) ;
 
+        // shiftBonus will have a minimum of 10
         double shiftBonus = person.getTaskSchedule().obtainScoreAtStartOfShift();
         
         // Encourage to get this task done early in a work shift
         result *= shiftBonus / 10;
         
+        // The amount of sunlight influences the probability of starting this task
+        double sunlight = surfaceFeatures.getSunlightRatio(settlement.getCoordinates());
+        
+        if (sunlight > 0.1) {
+        	result *= sunlight * 10;
+        }
+        
+        if (result <= 0)
+            return 0;
+        
         result = applyPersonModifier(result, person);
-
         
     	if (exposed[0]) {
     		// Baseline can give a fair amount dose of radiation
@@ -130,10 +143,7 @@ public abstract class DigLocalMeta extends MetaTask {
     		// GCR can give nearly lethal dose of radiation
 			result = result/100D;
 		}
-
-        if (result <= 0)
-            return 0;
-
+    	
         if (result > LIMIT)
         	result = LIMIT;
         

@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 
+import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.Msg;
@@ -91,12 +92,19 @@ implements Serializable {
             if (orbitInfo == null)
             	orbitInfo = Simulation.instance().getOrbitInfo();
 
-            boolean isSunRising = orbitInfo.isSunRising(person.getSettlement().getCoordinates());
+            boolean isSunSetting = orbitInfo.isSunSetting(
+            		person.getSettlement().getCoordinates(), true);
 
-            if (!isSunRising && isOn)
-                // if the sky is getting dark soon, should let it STAY ON since solar panel will no longer be supplying power soon.
-            	endTask();
-
+            double sunlight = getSolarIrradiance(person.getSettlement().getCoordinates());
+            
+            if ((isSunSetting && isOn)
+                // if it's sunsetting and sky is dark or getting dark, 
+            	// should let the fuel power source STAY ON 
+            	// throughout the night since solar panels are not supplying power.
+            	|| (sunlight <= 0 && isOn)) {
+            		endTask();
+            }
+            
             toggleOn = !isOn;
 
             if (!toggleOn) {

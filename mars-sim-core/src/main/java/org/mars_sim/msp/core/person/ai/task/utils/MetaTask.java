@@ -225,10 +225,11 @@ public abstract class MetaTask {
 	}
 
 	/**
-	 * This will apply a number of modifier to the current score based on the Person
+	 * This will apply a number of modifier to the current score based on the Person.
 	 * 1. If the task has a Trait that is performance related the Person's performance rating is applied as a modifier
 	 * 2. Apply the Job start modifier for this task
-	 * 3. Apply the Persons indiviudla preference to this Task
+	 * 3. Apply the Persons individual preference to this Task
+	 * 
 	 * @param score Current base score
 	 * @param person Person scoring Task
 	 * @return Modified score.
