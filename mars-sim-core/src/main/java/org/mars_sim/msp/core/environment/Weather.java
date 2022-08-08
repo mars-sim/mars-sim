@@ -68,8 +68,8 @@ public class Weather implements Serializable, Temporal {
 	// = 25 - 8;
 	private static final double TEMPERATURE_DELTA_PER_DEG_LAT = 17 / 12.62;
 	
-	// A day is 1000 MSol so take 20 samples
-	private static final int MSOL_PER_SAMPLE = 1000/20;
+	// A day has 1000 mSols. Take 500 samples
+	private static final int MSOL_PER_SAMPLE = 1000/250;
 
 	private boolean isNewSol = true;
 

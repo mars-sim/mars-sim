@@ -57,7 +57,7 @@ public class OrbitInfo implements Serializable, Temporal {
 	// On earth, use 15; On Mars, use 14.6 instead.
 	private static final double ANGLE_TO_HOURS = 90 / HALF_PI  / 14.6;
 
-	private static final double HRS_TO_MILLISOLS = ClockUtils.MILLISOLS_PER_DAY / 24; //  1.0275 / 24 * ClockUtils.MILLISOLS_PER_DAY;
+	private static final double HRS_TO_MILLISOLS = 1.0275 * ClockUtils.MILLISOLS_PER_DAY / 24; 
 	
 	
 	/** Astronomical Dawn is the point at which it becomes possible to detect light in the sky. */
@@ -426,22 +426,23 @@ public class OrbitInfo implements Serializable, Temporal {
 	public boolean isSunRising(Coordinates location, boolean extended) {
 		double cosZenith = getCosineSolarZenithAngle(location);	
 		cosZenithAngleCache = cosZenith;
+
 		// cosZenith is increasing
 		if (cosZenithAngleCache < cosZenith) {
-			if (extended && cosZenith <= 0) {
-				return true;
-			}
-			else if
+			
 			// See if the solar zenith angle is between 90 and (90 + the dawn angle) 
 			// Note: if the sun is below the horizon, the solar zenith angle should be negative
-			(cosZenith <= 0 && cosZenith > COSINE_ZENITH_ANGLE_AT_DAWN
+			if (cosZenith <= 0 && cosZenith > COSINE_ZENITH_ANGLE_AT_DAWN) {
+				return true;
+			}
+			
 			// See if the solar zenith angle is between 90 and (90 - the dawn angle) 
 			// Note: if the sun is above the horizon, the solar zenith angle should be positive
-			|| cosZenith >= 0 && cosZenith < - COSINE_ZENITH_ANGLE_AT_DAWN
-			) {
-			return true;
+			if (extended && cosZenith >= 0 && cosZenith < - COSINE_ZENITH_ANGLE_AT_DAWN) {
+				return true;
 			}
 		}
+		
 		return false;
 	}
 
@@ -455,22 +456,23 @@ public class OrbitInfo implements Serializable, Temporal {
 	public boolean isSunSetting(Coordinates location, boolean extended) {
 		double cosZenith = getCosineSolarZenithAngle(location);	
 		cosZenithAngleCache = cosZenith;
+		
 		// cosZenith is decreasing
 		if (cosZenithAngleCache < cosZenith) {
-			if (extended && cosZenith <= 0) {
-				return true;
-			}
-			else if
+				
 			// See if the solar zenith angle is between 90 and (90 + the dusk angle) 
 			// Note: if the sun is below the horizon, the solar zenith angle should be negative
-			(cosZenith <= 0 && cosZenith > COSINE_ZENITH_ANGLE_AT_DUSK
+			if (cosZenith >= 0 && cosZenith <= 0 && cosZenith > COSINE_ZENITH_ANGLE_AT_DUSK) {
+				return true;
+			}
+			
 			// See if the solar zenith angle is between 90 and (90 - the dusk angle) 
 			// Note: if the sun is above the horizon, the solar zenith angle should be positive
-			|| cosZenith >= 0 && cosZenith < - COSINE_ZENITH_ANGLE_AT_DUSK
-			) {
-			return true;
+			if (extended && cosZenith >= 0 && cosZenith < - COSINE_ZENITH_ANGLE_AT_DUSK) {
+				return true;
 			}
 		}
+
 		return false;
 	}
 	
@@ -671,6 +673,8 @@ public class OrbitInfo implements Serializable, Temporal {
 
 	/**
 	 * Gets the hour angle from a given location [in millisols]
+	 * Note: the hour angle has not been adjusted with longitude yet.
+	 * 
 	 * Reference : Solar radiation on Mars: Stataionary Photovoltaic Array. 
 	 * NASA Technical Memo. 1993.
 	 * 
@@ -680,47 +684,51 @@ public class OrbitInfo implements Serializable, Temporal {
 	public double getHourAngle(Coordinates location) {
 		computeSineSolarDeclinationAngle();
 		double phi = location.getPhi();
-		logger.info(location + " phi(latitude): " + phi);
+//		logger.info(location + " phi(latitude): " + phi);
 		double geoLat = 0;
+		// For the geographical latitude
+		// Northward is positive
+		// Southward is negative
 
 		if (phi == 0.0) {
 			geoLat = HALF_PI; 
 		}
 		else if (phi < HALF_PI) {
-			logger.info(location + " case 1.");
+//			logger.info(location + " case 1.");
 			geoLat = HALF_PI - phi; 
 		}
 		else if (phi == HALF_PI) {
-			logger.info(location + " case 2.");
+//			logger.info(location + " case 2.");
 			geoLat = 0; 
 		}
 		else if (phi > HALF_PI) {
-			logger.info(location + " case 3.");
+//			logger.info(location + " case 3.");
 			geoLat = - (phi - HALF_PI); 
 		}
 		
-		logger.info(location + " geoLat: " + geoLat);
+//		logger.info(location + " geoLat: " + geoLat);
 		double tanPhi = Math.tan(geoLat);
 		
 		double dec = getCacheSolarDeclinationAngle();
-		logger.info(location + " dec: " + dec);
+//		logger.info(location + " dec: " + dec);
 
-		logger.info(location + " tanPhi: " + tanPhi);
+//		logger.info(location + " tanPhi: " + tanPhi);
 		double tanSDA = Math.tan(dec);
-		logger.info(location + " tanSDA: " + tanSDA);
+//		logger.info(location + " tanSDA: " + tanSDA);
 		
-		if (- tanSDA * tanPhi > 1) {
+		double omega = tanSDA * tanPhi;
+		if (- omega > 1) {
 			logger.info(location + " The sun will not rise. No daylight. Polar night.");
 			return -10;
 		}
-		else if (tanSDA * tanPhi == 1 || tanSDA * tanPhi == -1) {
+		else if (omega == 1 || omega == -1) {
 			logger.info(location + " The sun will be on the horizon for an instant only.");
 		}
-		else if (- tanSDA * tanPhi < -1) {
+		else if (- omega < -1) {
 			logger.info(location + " The sun will not set. Daylight all day. Polar day.");
 			return 10;
 		}
-		return - Math.acos(-tanPhi * tanSDA);
+		return - Math.acos(-omega);
 	}
 
 	/**
@@ -731,6 +739,7 @@ public class OrbitInfo implements Serializable, Temporal {
 	 * @return
 	 */
 	public double[] getSunriseSunsetTime(Coordinates location) {
+		double lon = location.getTheta();
 		double omegaSunrise = getHourAngle(location);
 		if (omegaSunrise == 10) {
 			return new double[] {-1, -1, 1000};
@@ -738,25 +747,31 @@ public class OrbitInfo implements Serializable, Temporal {
 		if (omegaSunrise == -10) {
 			return new double[] {-1, -1, 0};
 		}
-		logger.info(location.getCoordinateString() + " hour angle in radian: " + omegaSunrise);
+//		logger.info(location.getCoordinateString() + " hour angle in radian: " + omegaSunrise);
 		double sunriseMillisol = 0;
 		double sunsetMillisol = 0;
 		
-		double sunriseHrs = 12 + omegaSunrise * ANGLE_TO_HOURS;
-		logger.info(location.getCoordinateString() + " sunriseHrs: " + sunriseHrs);
+		double sunriseHrs = 12 + (omegaSunrise - lon) * ANGLE_TO_HOURS;
+		if (sunriseHrs < 0)
+			sunriseHrs = 24 + sunriseHrs;
+//		logger.info(location.getCoordinateString() + " sunriseHrs: " + sunriseHrs);
+		
 		sunriseMillisol = sunriseHrs * HRS_TO_MILLISOLS;
-		logger.info(location.getCoordinateString() + " sunriseMillisol: " + sunriseMillisol);
+//		logger.info(location.getCoordinateString() + " sunriseMillisol: " + sunriseMillisol);
 		if (sunriseMillisol < 0)
-			sunriseMillisol = 1000 - sunriseMillisol;
+			sunriseMillisol = 1000 + sunriseMillisol;
 		if (sunriseMillisol > 999)
 			sunriseMillisol = sunriseMillisol - 1000;
 
-		double sunsetHrs = 12 - omegaSunrise * ANGLE_TO_HOURS;
-		logger.info(location.getCoordinateString() + " sunsetHrs: " + sunsetHrs);
+		double sunsetHrs = 12 - (omegaSunrise + lon) * ANGLE_TO_HOURS;
+		if (sunriseHrs > 24)
+			sunriseHrs = sunriseHrs - 24;
+//		logger.info(location.getCoordinateString() + " sunsetHrs: " + sunsetHrs);
+		
 		sunsetMillisol = sunsetHrs * HRS_TO_MILLISOLS;
-		logger.info(location.getCoordinateString() + " sunsetMillisol: " + sunsetMillisol);
+//		logger.info(location.getCoordinateString() + " sunsetMillisol: " + sunsetMillisol);
 		if (sunsetMillisol < 0)
-			sunsetMillisol = 1000 - sunsetMillisol;
+			sunsetMillisol = 1000 + sunsetMillisol;
 		if (sunsetMillisol > 999)
 			sunsetMillisol = sunsetMillisol - 1000;
 		
