@@ -13,6 +13,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.JobType;
+import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.ObserveAstronomicalObjects;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
@@ -61,7 +62,7 @@ public class ObserveAstronomicalObjectsMeta extends MetaTask {
             	return 0;
             
             // Check if it is getting dark outside.
-            if (ObserveAstronomicalObjects.isGettingDark(person)) {
+            if (EVAOperation.isGettingDark(person)) {
 
                 ScienceType astronomy = ScienceType.ASTRONOMY;
 

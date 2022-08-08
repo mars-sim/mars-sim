@@ -12,7 +12,7 @@
 	<name>mars-sim-main</name>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<domainNameMainClass>org.mars_sim.main.MarsProjectStarter</domainNameMainClass>
+		<starterClass>org.mars_sim.main.MarsProjectStarter</starterClass>
 		<mainClass>org.mars_sim.main.MarsProject</mainClass>
 	</properties>
 	
@@ -67,7 +67,7 @@
             </executions>
             <configuration>
 				<imageName>mars-sim-graal</imageName>
-				<mainClass>${domainNameMainClass}</mainClass>			  
+				<mainClass>${mainClass}</mainClass>			  
 				<fallback>false</fallback>
 				<buildArgs>
 					<arg>-H:DashboardDump=fortune -H:+DashboardAll</arg>
@@ -130,7 +130,7 @@
 					<archive>
 						<manifest>
 							<addClasspath>true</addClasspath>
-							<mainClass>${domainNameMainClass}</mainClass>
+							<mainClass>${mainClass}</mainClass>
 						</manifest>
 					</archive>
 				</configuration>

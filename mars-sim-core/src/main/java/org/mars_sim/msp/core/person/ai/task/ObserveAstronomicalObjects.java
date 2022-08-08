@@ -402,23 +402,9 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 	 * @return
 	 */
 	public static boolean isGettingDark(Person person) {
-        return surfaceFeatures.getTrend(person.getCoordinates()) < 0 &&
-                hasLittleSunlight(person);
+        return EVAOperation.isGettingDark(person);
     }
 	
-	
-	/**
-	 * Checks if there is any sunlight
-	 * 
-	 * @param person
-	 * @return
-	 */
-	public static boolean hasLittleSunlight(Person person) {
-
-		// Check if it is night time.
-        return !(surfaceFeatures.getSolarIrradiance(person.getCoordinates()) < 70D)
-                || surfaceFeatures.inDarkPolarRegion(person.getCoordinates());
-    }
 	
 	/**
 	 * Release Observatory

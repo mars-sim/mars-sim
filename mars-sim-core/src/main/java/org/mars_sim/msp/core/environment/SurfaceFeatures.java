@@ -9,7 +9,6 @@ package org.mars_sim.msp.core.environment;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -60,8 +59,6 @@ public class SurfaceFeatures implements Serializable, Temporal {
 
 	private static final double OPTICAL_DEPTH_STARTING = 0.2342;
 
-	private boolean isNewMSol;
-
 	// non static instances
 	private MineralMap mineralMap;
 	private AreothermalMap areothermalMap;
@@ -69,13 +66,9 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	/** The locations that have been explored and/or mined. */
 	private List<ExploredLocation> exploredLocations;
 	/** The most recent value of optical depth by Coordinate. */
-	private Map<Coordinates, Double> opticalDepthMap;
+	private transient Map<Coordinates, Double> opticalDepthMap;
 	/** The most recent value of solar irradiance by Coordinate. */
-	private Map<Coordinates, Double> currentIrradiance;
-	/** The cache value of solar irradiance by Coordinate. */
-	private Map<Coordinates, Double> irradianceCache;
-	/** The trend value of lightness by Coordinate. */
-	private Map<Coordinates, Double> lightTrend;
+	private transient Map<Coordinates, Double> currentIrradiance;
 
 	private static MarsClock currentTime;
 
@@ -97,10 +90,9 @@ public class SurfaceFeatures implements Serializable, Temporal {
 		mineralMap = new RandomMineralMap();
 		exploredLocations = new ArrayList<>(); // will need to make sure explored locations are serialized
 		areothermalMap = new AreothermalMap();
-		irradianceCache = new HashMap<>();
 		currentIrradiance = new HashMap<>();
 		opticalDepthMap = new HashMap<>();
-		lightTrend = new HashMap<>();
+
 
 //		double a = OrbitInfo.SEMI_MAJOR_AXIS;
 //		factor = MEAN_SOLAR_IRRADIANCE * a * a;
@@ -275,25 +267,6 @@ public class SurfaceFeatures implements Serializable, Temporal {
 		return tau;
 	}
 
-
-	/**
-	 * Gets the trend (positive if getting bright, negative if getting dark).
-	 *
-	 * @param location
-	 * @return a number
-	 */
-	public double getTrend(Coordinates location) {
-		// If the radiance is below 12 and is decreasing
-		// then it's getting dark
-
-		if (lightTrend.containsKey(location)) {
-			return lightTrend.get(location);
-		}
-
-		// If no trend then assume constant light
-		return 0;
-	}
-
 	/**
 	 * Calculates the solar irradiance ratio (between 0 and 1) at a particular location on Mars.
 	 *
@@ -312,36 +285,11 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	 * @return solar irradiance (W/m2)
 	 */
 	public double getSolarIrradiance(Coordinates location) {
-		if (location == null)
-			return 0;
-
-		if (isNewMSol) {
-			if (!currentIrradiance.isEmpty() && !irradianceCache.isEmpty()) {
-				double current = currentIrradiance.get(location);
-				double past = irradianceCache.get(location);
-				double pastTrend = 0;
-				if (!lightTrend.isEmpty()) {
-					pastTrend = lightTrend.get(location);
-				}
-				// Save the trend value
-				lightTrend.put(location, ((current - past) + pastTrend)/2.0);
-				// Update the irradiance
-				irradianceCache = currentIrradiance;
-				// Clear the current cache value of solar irradiance of all settlements
-				currentIrradiance.clear();
-			}
-
-			// If location is not in cache, calculate the solar irradiance
-			return calculateSolarIrradiance(location);
+		if (currentIrradiance.containsKey(location))
+			return currentIrradiance.get(location);
+		else {
+			return this.calculateSolarIrradiance(location);
 		}
-
-		Double d = currentIrradiance.get(location);
-		if (d != null) {
-			return d;
-		}
-
-		// If location is not in cache, calculate the solar irradiance
-		return calculateSolarIrradiance(location);
 	}
 
 	/**
@@ -696,15 +644,12 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
 
-		isNewMSol = pulse.isNewMSol();
-
-		if (isNewMSol) {
-			// Avoid ConcurrentModificationException with a new HashSet
-			Set<Coordinates> coords = new HashSet<>(opticalDepthMap.keySet());
-			// Recompute the optical depth for each msol
-			for (Coordinates location: coords) {
-				computeOpticalDepth(location);
-			}
+		if (pulse.isNewMSol()) {
+			Set<Coordinates> set1 = currentIrradiance.keySet();
+			// Recompute the solar irradiance for each msol
+			for (Coordinates location: set1) {
+				calculateSolarIrradiance(location);
+			}	
 		}
 		
 		return true;
@@ -717,11 +662,8 @@ public class SurfaceFeatures implements Serializable, Temporal {
 
 		opticalDepthMap.clear();
 		opticalDepthMap = null;
-		irradianceCache.clear();
-		irradianceCache = null;
 		currentIrradiance.clear();
 		currentIrradiance = null;
-
 		mineralMap.destroy();
 		mineralMap = null;
 		exploredLocations.clear();

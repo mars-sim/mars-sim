@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MarsProject.java
- * @date 2021-12-12
+ * @date 2022-08-08
  * @author Scott Davis
  */
 package org.mars_sim.main;

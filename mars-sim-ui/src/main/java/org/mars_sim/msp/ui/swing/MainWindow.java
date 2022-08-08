@@ -273,10 +273,10 @@ extends JComponent implements ClockListener {
 		int screenHeight = graphicsDevice.getDisplayMode().getHeight();
 
 		if (cleanUI) {
-			useDefaultScreenConfig(screenWidth, screenHeight);
+			askScreenConfig(screenWidth, screenHeight);
 		}
 		else {
-			askScreenConfig(screenWidth, screenHeight);
+			useDefaultScreenConfig(screenWidth, screenHeight);
 		}	
 
 		// Set up MainDesktopPane

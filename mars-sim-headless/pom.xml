@@ -12,7 +12,8 @@
 	<name>mars-sim-headless</name>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>	
-		<domainNameMainClass>org.mars_sim.headless.MarsProjectHeadlessStarter</domainNameMainClass>		
+		<starterClass>org.mars_sim.headless.MarsProjectHeadlessStarter</starterClass>	
+		<mainClass>org.mars_sim.headless.MarsProjectHeadless</mainClass>			
 	</properties>
 	<dependencies>
 		<dependency>
@@ -69,7 +70,7 @@
 					<archive>
 						<manifest>
 							<addClasspath>true</addClasspath>
-							<mainClass>${domainNameMainClass}</mainClass>
+							<mainClass>${mainClass}</mainClass>
 						</manifest>
 					</archive>
 				</configuration>
@@ -86,7 +87,7 @@
 					</descriptorRefs>
 					<archive>
 						<manifest>
-							<mainClass>${domainNameMainClass}</mainClass>
+							<mainClass>${mainClass}</mainClass>
 						</manifest>
 						<manifestEntries>
 						    <Multi-Release>true</Multi-Release>
