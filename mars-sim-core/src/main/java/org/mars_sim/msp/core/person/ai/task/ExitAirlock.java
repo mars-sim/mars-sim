@@ -52,11 +52,11 @@ public class ExitAirlock extends Task implements Serializable {
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.exitAirlock"); //$NON-NLS-1$
 	
-	private static final String REQUESTING_EGRESS = "Requested egress"; 
+	private static final String TO_REQUEST_EGRESS = " to request egress"; 
 	private static final String TRIED_TO_STEP_THRU_INNER_DOOR = "Tried to step through inner door"; 
-	private static final String PREBREATH_HALF_DONE = "Other occupant(s) have half pre-breathed.";
+	private static final String PREBREATH_HALF_DONE = "Other occupant(s) have already pre-breathed half-way";
 	private static final String RESERVATION_NOT_MADE = "Reservation not made.";
-	private static final String NOT_FIT = "not fit";
+	private static final String NOT_FIT = "Not fit enough";
 	private static final String INNER_DOOR_LOCKED = "Inner door was locked.";
 	private static final String CHAMBER_FULL = "Chamber was full.";
 	
@@ -315,7 +315,7 @@ public class ExitAirlock extends Task implements Serializable {
 		airlock.removeID(person.getIdentifier());
 
 
-		logger.log((Unit)airlock.getEntity(), person, Level.WARNING, 16_000, reason);
+		logger.log((Unit)airlock.getEntity(), person, Level.INFO, 16_000, reason);
 		
 		// Note: For person in a vehicle with high fatigue or hunger,
 		// need to call clearAllTasks() to cause a person to quit the task
@@ -374,19 +374,19 @@ public class ExitAirlock extends Task implements Serializable {
 		}
 
 		if (inSettlement && !isFit()) {
-			walkAway(person, REQUESTING_EGRESS + " but " + NOT_FIT + ".");
+			walkAway(person, NOT_FIT + TO_REQUEST_EGRESS + ".");
 			return time;
 		}
 
 		if (person.isOutside()) {
-			walkAway(person, REQUESTING_EGRESS + " but already outside.");
+			walkAway(person, "Already outside, not supposed " + TO_REQUEST_EGRESS + ".");
 			// Reset accumulatedTime back to zero
 			accumulatedTime = 0;
 			return time;
 		}
 
 		if (isOccupantHalfPrebreathed()) {
-			walkAway(person, REQUESTING_EGRESS + " but " + PREBREATH_HALF_DONE + ".");
+			walkAway(person, "Requesting egress but " + PREBREATH_HALF_DONE + ".");
 			return time;
 		}
 
@@ -397,7 +397,7 @@ public class ExitAirlock extends Task implements Serializable {
 			airlock.loadEVAActivitySpots();
 
 			if (!airlock.addAwaitingInnerDoor(id)) {
-				walkAway(person, REQUESTING_EGRESS 
+				walkAway(person, TO_REQUEST_EGRESS 
 						+ ". Cannot get a spot at the inner door of " + airlock.getEntity().toString() + ".");
 				return time;
 			}
@@ -428,7 +428,7 @@ public class ExitAirlock extends Task implements Serializable {
 				canProceed = true;
 			}
 			else {
-				walkAway(person, REQUESTING_EGRESS 
+				walkAway(person, TO_REQUEST_EGRESS 
 						+ ". Cannot wait at " + airlock.getEntity().toString() + " inner door.");
 				return time;
 			}
@@ -544,12 +544,12 @@ public class ExitAirlock extends Task implements Serializable {
 		boolean canProceed = false;
 
 		if (!isFit()) {
-			walkAway(person, TRIED_TO_STEP_THRU_INNER_DOOR + " but " + NOT_FIT + ".");
+			walkAway(person, TRIED_TO_STEP_THRU_INNER_DOOR + ". " + NOT_FIT + ".");
 			return time;
 		}
 
 		if (isOccupantHalfPrebreathed()) {
-			walkAway(person, TRIED_TO_STEP_THRU_INNER_DOOR + " but " + PREBREATH_HALF_DONE);
+			walkAway(person, TRIED_TO_STEP_THRU_INNER_DOOR + ". " + PREBREATH_HALF_DONE + ".");
 			return time;
 		}
 		

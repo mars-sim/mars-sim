@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * FuelHeatSource.java
- * @date 2022-07-31
+ * @date 2022-08-08
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -20,24 +20,33 @@ public class FuelHeatSource extends HeatSource implements Serializable {
 	private static final long serialVersionUID = 1L;
 	/** default logger. */
 	private static final Logger logger = Logger.getLogger(FuelHeatSource.class.getName());
-
+	
+	/** The ratio of fuel to oxidizer by mass. */
+	private static final int RATIO = 4;
+	/** The size of the fuel reserve tank. */
+	private static final int STANDARD_RESERVE = 30;
+	private static final int OXYGEN_ID = ResourceUtil.oxygenID;
+	private static final int METHANE_ID = ResourceUtil.methaneID;
+	
 	/** The work time (millisol) required to toggle this heat source on or off. */
-	public static final double TOGGLE_RUNNING_WORK_TIME_REQUIRED = 10D;
+	public static final double TOGGLE_RUNNING_WORK_TIME_REQUIRED = 5D;
 
+	private boolean toggle = false;
+	
 	public double thermalEfficiency = .9;
-
+	/** The fuel consumption rate [kg/sol]. */
 	private double rate;
 
 	private double toggleRunningWorkTime;
 
-	private double maxFuel;
+	/** The amount of reserved fuel. */
+	private double reserveFuel;
+	/** The amount of reserved oxidizer. */
+	private double reserveOxidizer;
 
 	private double time;
 
-	private boolean toggle = false;
-
-	private static final int OXYGEN_ID = ResourceUtil.oxygenID;
-	private static final int METHANE_ID = ResourceUtil.methaneID;
+	private double factor;
 	
 	private Building building;
 
@@ -54,6 +63,8 @@ public class FuelHeatSource extends HeatSource implements Serializable {
 		this.rate = consumptionSpeed;
 		this.toggle = toggle;
 		this.building = building;
+
+		factor = rate / 1000D / 100D;
 	}
 
 //     Note : every mole of methane (16 g) releases 810 KJ of energy if burning with 2 moles of oxygen (64 g)
@@ -77,21 +88,40 @@ public class FuelHeatSource extends HeatSource implements Serializable {
 //	 or 90% see https://phys.org/news/2017-07-hydrocarbon-fuel-cells-high-efficiency.html 
 
 	private double consumeFuel(double time, Settlement settlement) {
-
-		double rate_millisol = rate / 1000D;
-
-		maxFuel = (getPercentagePower() * time * rate_millisol)/100D;
-		// System.out.println("maxFuel : "+maxFuel);
 		double consumed = 0;
+		
+		double deltaFuel = getPercentagePower() * time * factor;
+		
+		if (deltaFuel <= reserveFuel && deltaFuel * RATIO <= reserveOxidizer) {
+			reserveFuel -= deltaFuel;
+			reserveOxidizer -= deltaFuel * RATIO;
+			
+			consumed = deltaFuel;
+		}
+		else {
+			double fuelStored = settlement.getAmountResourceStored(METHANE_ID);
+			double o2Stored = settlement.getAmountResourceStored(OXYGEN_ID);
+			
+			if (STANDARD_RESERVE <= fuelStored && STANDARD_RESERVE * RATIO <= o2Stored) {
+				reserveFuel += STANDARD_RESERVE;
+				reserveOxidizer += STANDARD_RESERVE * RATIO;
+				settlement.retrieveAmountResource(METHANE_ID, STANDARD_RESERVE);
+				settlement.retrieveAmountResource(OXYGEN_ID, STANDARD_RESERVE * RATIO);
+				
+				reserveFuel -= deltaFuel;
+				reserveOxidizer -= deltaFuel * RATIO;
+				
+				consumed = deltaFuel;
+			}
+			
+			else {
+				// Note that 16 g of methane requires 64 g of oxygen, a 1-to-4 ratio
+				consumed = Math.min(deltaFuel, Math.min(fuelStored, o2Stored / RATIO));
 
-		double fuelStored = settlement.getAmountResourceStored(METHANE_ID);
-		double o2Stored = settlement.getAmountResourceStored(OXYGEN_ID);
-
-		// Note that 16 g of methane requires 64 g of oxygen, a 1 to 4 ratio
-		consumed = Math.min(maxFuel, Math.min(fuelStored, o2Stored / 4D));
-
-		settlement.retrieveAmountResource(METHANE_ID, consumed);
-		settlement.retrieveAmountResource(OXYGEN_ID, 4 * consumed);
+				settlement.retrieveAmountResource(METHANE_ID, consumed);
+				settlement.retrieveAmountResource(OXYGEN_ID, RATIO * consumed);
+			}
+		}
 
 		return consumed;
 	}
@@ -119,7 +149,7 @@ public class FuelHeatSource extends HeatSource implements Serializable {
 
 		if (toggle) {
 			double spentFuel = consumeFuel(time, building.getSettlement());
-			return getMaxHeat() * spentFuel / maxFuel * thermalEfficiency;
+			return getMaxHeat() * spentFuel * thermalEfficiency;
 		}
 
 		return 0;
@@ -164,7 +194,7 @@ public class FuelHeatSource extends HeatSource implements Serializable {
 	public void addToggleWorkTime(double time) {
 		toggleRunningWorkTime += time;
 		if (toggleRunningWorkTime >= TOGGLE_RUNNING_WORK_TIME_REQUIRED) {
-			toggleRunningWorkTime = 0D;
+			toggleRunningWorkTime = toggleRunningWorkTime - TOGGLE_RUNNING_WORK_TIME_REQUIRED;
 			toggle = !toggle;
 			if (toggle)
 				logger.info(building.getNickName() + "- " + Msg.getString("FuelHeatSource.log.turnedOn", getType().getName())); //$NON-NLS-1$

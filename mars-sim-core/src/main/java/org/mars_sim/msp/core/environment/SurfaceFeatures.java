@@ -12,8 +12,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
@@ -199,7 +202,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	 * @param location
 	 * @return tau
 	 */
-	private double computeOpticalDepth(Coordinates location) {
+	private synchronized double computeOpticalDepth(Coordinates location) {
 
 		double tau = 0;
 		// Reference :
@@ -303,7 +306,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	 * @param location
 	 * @return
 	 */
-	private double calculateSolarIrradiance(Coordinates location) {
+	private synchronized double calculateSolarIrradiance(Coordinates location) {
 		// Approach 1
 //		double s1 = 0;
 //      double L_s = mars.getOrbitInfo().getL_s();
@@ -316,19 +319,19 @@ public class SurfaceFeatures implements Serializable, Temporal {
 		// Approach 2 consists of 5 parts
 		// PART 1 : COSINE SOLAR ZENITH ANGLE
 		
-		// G_0: direct solar irradiance at the top of the atmosphere
-		double G_0 = 0;
-		// G_h: global irradiance on a horizontal surface
-		double G_h = 0;
-		// G_bh: direct beam irradiance on a horizontal surface
-		double G_bh = 0;
-		// G_dh: diffuse irradiance on a horizontal surface
-		double G_dh = 0;
+		// g0: direct solar irradiance at the top of the atmosphere
+		double g0 = 0;
+		// gh: global irradiance on a horizontal surface
+		double gh = 0;
+		// gbh: direct beam irradiance on a horizontal surface
+		double gbh = 0;
+		// gdh: diffuse irradiance on a horizontal surface
+		double gdh = 0;
 
 		// Obtains the cosine solar zenith angle
-		double cos_z = orbitInfo.getCosineSolarZenithAngle(location);
+		double cosZ = orbitInfo.getCosineSolarZenithAngle(location);
 		// Find zenith
-		double z = Math.acos(cos_z);
+		double z = Math.acos(cosZ);
 
 		if (z >= HALF_PI) {
 			// if Mars is in the so-called twilight zone,
@@ -339,7 +342,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 			if (z <= HALF_PI + .1) {
 				// Note: twilight zone is defined as between 0.1 to -0.1 in radians above and below
 				// the horizon
-				G_h = Math.round((-200 * z + 100 * Math.PI + 20) * 100.00) / 100.00; 
+				gh = Math.round((-200 * z + 100 * Math.PI + 20) * 100.00) / 100.00; 
 				
 				// Note: need to keep a minimum of G_h at 20 W/m2 if the sun is within the twilight zone
 				// G_h = Math.round((0.2094 + z)*100D);
@@ -369,7 +372,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 			// Part 3: get the instantaneous radius and semi major axis
 			double r = orbitInfo.getDistanceToSun();
 
-			G_0 = cos_z * FACTOR / r / r;
+			g0 = cosZ * FACTOR / r / r;
 
 			// if (G_0 <= 0)
 			// G_0 = 0;
@@ -412,7 +415,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 			// G_bh = G_0 * cos_z * Math.exp(-tau/cos_z);
 
 			// Choice 2 : The pure scattering transmissivity = (1 + tau / 2 / cos_z)^ -1
-			G_bh = G_0 * cos_z / (1 + tau / 2.0 / cos_z);
+			gbh = g0 * cosZ / (1 + tau / 2.0 / cosZ);
 
 			// Assuming the reflection from the surface is negligible
 	
@@ -437,19 +440,19 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	    	// Set cos_z = .9, G_dh = G_bh / 6 = 0.167 * G_bh;
 	    	// Set cos_z = 0, G_dh = G_bh;	
 			
-			if (cos_z > 0)
-				G_dh = G_bh * (-0.822 * cos_z + 1);
+			if (cosZ > 0)
+				gdh = gbh * (-0.822 * cosZ + 1);
 			else
-				G_dh = G_bh;
+				gdh = gbh;
 			
 			// Finally,
-			G_h = G_bh + G_dh;
+			gh = gbh + gdh;
 
-			if (G_h > MAX_SOLAR_IRRADIANCE)
-				G_h = MAX_SOLAR_IRRADIANCE;
+			if (gh > MAX_SOLAR_IRRADIANCE)
+				gh = MAX_SOLAR_IRRADIANCE;
 
-			else if (G_h < 20.94)
-				G_h = 20.94;
+			else if (gh < 20.94)
+				gh = 20.94;
 
 			// System.out.println(" radiusAndAxis : " + fmt3.format(radiusAndAxis)
 			// + " cos_z : "+ fmt3.format(cos_z)
@@ -469,13 +472,18 @@ public class SurfaceFeatures implements Serializable, Temporal {
 			// as necessary for night time indication. - Scott
 		}
 
-		if (G_h < 0)
-			G_h = 0;
+		if (gh < 0)
+			gh = 0;
 
+		// Take the average of the last and current irradiance
+		Double lastGh = currentIrradiance.get(location);
+		if (lastGh != null)
+			gh = (gh + lastGh.doubleValue()) / 2;
+			
 		// Save the value in the cache
-		currentIrradiance.put(location, G_h);
+		currentIrradiance.put(location, gh);
 		
-		return G_h;
+		return gh;
 	}
 
 	/**
@@ -651,18 +659,39 @@ public class SurfaceFeatures implements Serializable, Temporal {
 
 		if (pulse.isNewMSol()) {
 			
-			double msol = pulse.getMarsTime().getMillisolInt();
-			
-			if (msol % 3 == 0) {
-				// the value of optical depth doesn't need to be refreshed too often
-				opticalDepthMap.clear();
+			Collection<Settlement> col = sim.getUnitManager().getSettlements();
+			Set<Coordinates> sSet = new HashSet<>();
+			for (Settlement s: col) {
+				sSet.add(s.getCoordinates());
 			}
 			
-			currentIrradiance.clear();
+			double msol = pulse.getMarsTime().getMillisolInt();
 			
-			Collection<Settlement> col = sim.getUnitManager().getSettlements();
-			for (Settlement s: col) {
-				calculateSolarIrradiance(s.getCoordinates());
+			// the value of optical depth doesn't need to be refreshed too often
+			if (msol % 3 == 0) {
+				Iterator<Coordinates> it = opticalDepthMap.keySet().iterator();
+				while (it.hasNext()) {
+					Coordinates coord = it.next();
+					if (sSet.contains(coord)) {
+						computeOpticalDepth(coord);
+					}
+					else {
+						// Clear only those values that are non-settlement
+						it.remove();
+					}
+				}
+			}
+			
+			Iterator<Coordinates> it = currentIrradiance.keySet().iterator();
+			while (it.hasNext()) {
+				Coordinates coord = it.next();
+				if (sSet.contains(coord)) {
+					calculateSolarIrradiance(coord);
+				}
+				else {
+					// Clear only those values that are non-settlement
+					it.remove();
+				}
 			}
 		}
 		

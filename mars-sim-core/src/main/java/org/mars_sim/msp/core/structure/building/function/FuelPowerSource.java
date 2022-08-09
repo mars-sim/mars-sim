@@ -26,23 +26,33 @@ implements Serializable {
 	/** default logger. */
 	private static final Logger logger = Logger.getLogger(FuelPowerSource.class.getName());
 
+	/** The ratio of fuel to oxidizer by mass. */
+	private static final int RATIO = 4;
+	/** The size of the fuel reserve tank. */
+	private static final int STANDARD_RESERVE = 30;
+	private static final int OXYGEN_ID = ResourceUtil.oxygenID;
+	private static final int METHANE_ID = ResourceUtil.methaneID;
+	
 	/** The work time (millisol) required to toggle this power source on or off. */
 	public static final double TOGGLE_RUNNING_WORK_TIME_REQUIRED = 2D;
-	
-	public static final double ELECTRICAL_EFFICIENCY = .7125;
 
-	private double rate;
-	
-	private double toggleRunningWorkTime;
-	
-	private double maxFuel;
-	
-	private double time;
-	
 	private boolean toggle = false;
 	
-	private static final int oxygenID = ResourceUtil.oxygenID;
-	private static final int methaneID = ResourceUtil.methaneID;
+	public static final double ELECTRICAL_EFFICIENCY = .7125;
+	/** The fuel consumption rate [kg/sol]. */
+	private double rate;
+
+	private double toggleRunningWorkTime;
+
+	/** The amount of reserved fuel. */
+	private double reserveFuel;
+	/** The amount of reserved oxidizer. */
+	private double reserveOxidizer;
+
+	private double time;
+
+	private double factor;
+
 
 	/**
 	 * Constructor.
@@ -84,22 +94,40 @@ implements Serializable {
 	 * @return the amount of fuel consumed
 	 */
 	public double consumeFuel(double time, Settlement settlement) {
-		this.time = time;
-		 
-		double rate_millisol = rate / 1000D;
-		
-		maxFuel = time * rate_millisol;
-		
 		double consumed = 0;
 		
-		double fuelStored = settlement.getAmountResourceStored(methaneID);
-		double o2Stored = settlement.getAmountResourceStored(oxygenID);
+		double deltaFuel = time * factor;
+		
+		if (deltaFuel <= reserveFuel && deltaFuel * RATIO <= reserveOxidizer) {
+			reserveFuel -= deltaFuel;
+			reserveOxidizer -= deltaFuel * RATIO;
+			
+			consumed = deltaFuel;
+		}
+		else {
+			double fuelStored = settlement.getAmountResourceStored(METHANE_ID);
+			double o2Stored = settlement.getAmountResourceStored(OXYGEN_ID);
+			
+			if (STANDARD_RESERVE <= fuelStored && STANDARD_RESERVE * RATIO <= o2Stored) {
+				reserveFuel += STANDARD_RESERVE;
+				reserveOxidizer += STANDARD_RESERVE * RATIO;
+				settlement.retrieveAmountResource(METHANE_ID, STANDARD_RESERVE);
+				settlement.retrieveAmountResource(OXYGEN_ID, STANDARD_RESERVE * RATIO);
+				
+				reserveFuel -= deltaFuel;
+				reserveOxidizer -= deltaFuel * RATIO;
+				
+				consumed = deltaFuel;
+			}
+			
+			else {
+				// Note that 16 g of methane requires 64 g of oxygen, a 1-to-4 ratio
+				consumed = Math.min(deltaFuel, Math.min(fuelStored, o2Stored / RATIO));
 
-		// Note that 16 g of methane requires 64 g of oxygen, a 1 to 4 ratio
-		consumed = Math.min(maxFuel, Math.min(fuelStored, o2Stored/4D));
-
-		settlement.retrieveAmountResource(methaneID, consumed);
-		settlement.retrieveAmountResource(oxygenID, 4 * consumed);
+				settlement.retrieveAmountResource(METHANE_ID, consumed);
+				settlement.retrieveAmountResource(OXYGEN_ID, RATIO * consumed);
+			}
+		}
 
 		return consumed;
 	}
@@ -112,7 +140,7 @@ implements Serializable {
 	public double getCurrentPower(Building building) {
 		if (toggle) {
 			double spentFuel = consumeFuel(time, building.getSettlement());	 
-			return getMaxPower() * spentFuel/maxFuel * ELECTRICAL_EFFICIENCY;
+			return getMaxPower() * spentFuel * ELECTRICAL_EFFICIENCY;
 		}
 		 
 		return 0;
@@ -137,7 +165,7 @@ implements Serializable {
 	 * @return amount resource.
 	 */
 	 public int getFuelResourceID() {
-		return methaneID;
+		return METHANE_ID;
 	}
 		 
 	/**
@@ -168,7 +196,7 @@ implements Serializable {
 	 @Override
 	 public double getAveragePower(Settlement settlement) {
 		double fuelPower = getMaxPower();
-		double fuelValue = settlement.getGoodsManager().getGoodValuePoint(methaneID);
+		double fuelValue = settlement.getGoodsManager().getGoodValuePoint(METHANE_ID);
 		fuelValue *= getFuelConsumptionRate() / 1000D * time;
 		fuelPower -= fuelValue;
 		if (fuelPower < 0D) fuelPower = 0D;
