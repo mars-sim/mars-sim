@@ -311,7 +311,7 @@ public class Simulation implements ClockListener, Serializable {
 		
 		// Create surface features
 		surfaceFeatures = new SurfaceFeatures();
-		SurfaceFeatures.initializeInstances(simulationConfig.getLandmarkConfiguration(),
+		SurfaceFeatures.initializeInstances(this, simulationConfig.getLandmarkConfiguration(),
 				marsClock, orbitInfo, weather);
 		
 		unitManager = new UnitManager();
@@ -378,7 +378,7 @@ public class Simulation implements ClockListener, Serializable {
 		Weather.initializeInstances(this, marsClock, orbitInfo);
 		// Create surface features
 		surfaceFeatures = new SurfaceFeatures();
-		SurfaceFeatures.initializeInstances(simulationConfig.getLandmarkConfiguration(),
+		SurfaceFeatures.initializeInstances(this, simulationConfig.getLandmarkConfiguration(),
 				marsClock, orbitInfo, weather);
 		
 		missionManager = new MissionManager();
@@ -676,7 +676,7 @@ public class Simulation implements ClockListener, Serializable {
 		
 		// Re-initialize the instances in LogConsolidated
 		DataLogger.changeTime(marsClock);
-		SurfaceFeatures.initializeInstances(simulationConfig.getLandmarkConfiguration(),
+		SurfaceFeatures.initializeInstances(this, simulationConfig.getLandmarkConfiguration(),
 				marsClock, orbitInfo, weather);
 
 		

@@ -54,6 +54,7 @@ public class MarsProject {
 	private static final String GENERATE_HELP = "html";
 	private static final String NEW = "new";
 	private static final String CLEANUI = "cleanui";
+	private static final String SANDBOX = "sandbox";
 	private static final String SITE_EDITOR = "site";
 	private static final String PROFILE = "profile";
 	
@@ -69,6 +70,8 @@ public class MarsProject {
 	private boolean useSiteEditor;
 	
 	private boolean useProfile = false;
+	
+	private boolean isSandbox = false;
 
 	private InteractiveTerm interactiveTerm = new InteractiveTerm(false);
 
@@ -86,7 +89,7 @@ public class MarsProject {
 	}
 
 	/**
-	 * Check for confirmation of bypassing the text console main menu via a dialog box
+	 * Checks for confirmation of bypassing the text console main menu via a dialog box.
 	 * 
 	 * @return
 	 */
@@ -152,7 +155,7 @@ public class MarsProject {
 			else if (!builder.isFullyDefined() && useNew) {
 		
 				// Ask if running in standard Sandbox mode or Go to Console Menu
-				if (!bypassConsoleMenuDialog()) {
+				if (!isSandbox && !bypassConsoleMenuDialog()) {
 					logger.config("Please go to the Console Main Menu to choose an option.");
 					int type = interactiveTerm.startConsoleMainMenu();
 					if (type == 1) {
@@ -172,9 +175,7 @@ public class MarsProject {
 						// Check out crew flag
 						builder.setUseCrews(interactiveTerm.getUseCrew());
 					}
-
 				}
-				
 			}
 
 			// Build and run the simulator
@@ -217,6 +218,8 @@ public class MarsProject {
 				.desc("Disable the main UI").build());
 		options.addOption(Option.builder(CLEANUI)
 				.desc("Disable loading stored UI configurations").build());
+		options.addOption(Option.builder(SANDBOX)
+				.desc("Start in Sandbox Mode").build());
 		options.addOption(Option.builder(NEW)
 				.desc("Enable quick start").build());
 		options.addOption(Option.builder(GENERATE_HELP)
@@ -257,6 +260,10 @@ public class MarsProject {
 			if (line.hasOption(PROFILE)) {
 				useProfile = true;
 			}
+			if (line.hasOption(SANDBOX)) {
+				isSandbox = true;
+			}
+			
 
 		}
 		catch (Exception e1) {

@@ -6,14 +6,17 @@
  */
 package org.mars_sim.msp.core.environment;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -66,16 +69,18 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	/** The locations that have been explored and/or mined. */
 	private List<ExploredLocation> exploredLocations;
 	/** The most recent value of optical depth by Coordinate. */
-	private transient Map<Coordinates, Double> opticalDepthMap;
+	private transient Map<Coordinates, Double> opticalDepthMap = new HashMap<>();
 	/** The most recent value of solar irradiance by Coordinate. */
-	private transient Map<Coordinates, Double> currentIrradiance;
+	private transient Map<Coordinates, Double> currentIrradiance = new HashMap<>();
 
 	private static MarsClock currentTime;
+	private static Simulation sim;
 
 	private static TerrainElevation terrainElevation;
 	private static Weather weather;
 	private static OrbitInfo orbitInfo;
-
+	
+	
 	private static List<Landmark> landmarks = null;
 
 	/**
@@ -84,18 +89,13 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	 * @throws Exception when error in creating surface features.
 	 */
 	public SurfaceFeatures() {
-
 		// Initialize instances.
+		sim = Simulation.instance();
 		terrainElevation = new TerrainElevation();
 		mineralMap = new RandomMineralMap();
-		exploredLocations = new ArrayList<>(); // will need to make sure explored locations are serialized
+		exploredLocations = new ArrayList<>(); 
+		// will need to make sure explored locations are serialized
 		areothermalMap = new AreothermalMap();
-		currentIrradiance = new HashMap<>();
-		opticalDepthMap = new HashMap<>();
-
-
-//		double a = OrbitInfo.SEMI_MAJOR_AXIS;
-//		factor = MEAN_SOLAR_IRRADIANCE * a * a;
 	}
 
 	/**
@@ -106,8 +106,9 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	 * @param oi
 	 * @param w
 	 */
-	public static void initializeInstances(LandmarkConfig landmarkConfig, 
+	public static void initializeInstances(Simulation s, LandmarkConfig landmarkConfig, 
 			MarsClock mc, OrbitInfo oi, Weather w) {
+		sim = s;
 		landmarks = landmarkConfig.getLandmarkList();
 		orbitInfo = oi;
 		weather = w;
@@ -115,7 +116,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	}
 
 	/**
-	 * Returns the terrain elevation
+	 * Returns the terrain elevation.
 	 *
 	 * @return terrain elevation
 	 */
@@ -183,11 +184,13 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	 * @return
 	 */
 	public double getOpticalDepth(Coordinates location) {
-		if (opticalDepthMap.containsKey(location))
-			return opticalDepthMap.get(location);
-		else {
-			return computeOpticalDepth(location);
+		if (!opticalDepthMap.isEmpty()) {
+			Double value = opticalDepthMap.get(location);
+			if (value != null)
+				return value.doubleValue();
 		}
+
+		return computeOpticalDepth(location);
 	}
 
 	/**
@@ -285,11 +288,13 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	 * @return solar irradiance (W/m2)
 	 */
 	public double getSolarIrradiance(Coordinates location) {
-		if (currentIrradiance.containsKey(location))
-			return currentIrradiance.get(location);
-		else {
-			return this.calculateSolarIrradiance(location);
+		if (!currentIrradiance.isEmpty()) {
+			Double value = currentIrradiance.get(location);
+			if (value != null)
+				return value.doubleValue();
 		}
+
+		return calculateSolarIrradiance(location);
 	}
 
 	/**
@@ -645,16 +650,40 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	public boolean timePassing(ClockPulse pulse) {
 
 		if (pulse.isNewMSol()) {
-			Set<Coordinates> set1 = currentIrradiance.keySet();
-			// Recompute the solar irradiance for each msol
-			for (Coordinates location: set1) {
-				calculateSolarIrradiance(location);
-			}	
+			
+			double msol = pulse.getMarsTime().getMillisolInt();
+			
+			if (msol % 3 == 0) {
+				// the value of optical depth doesn't need to be refreshed too often
+				opticalDepthMap.clear();
+			}
+			
+			currentIrradiance.clear();
+			
+			Collection<Settlement> col = sim.getUnitManager().getSettlements();
+			for (Settlement s: col) {
+				calculateSolarIrradiance(s.getCoordinates());
+			}
 		}
 		
 		return true;
 	}
 
+	/**
+	 * Executes the followings when deserializing this class. 
+	 * 
+	 * @param aInputStream
+	 * @throws ClassNotFoundException
+	 * @throws IOException
+	 */
+	private void readObject(ObjectInputStream aInputStream) throws ClassNotFoundException, IOException {   
+		// Perform the default de-serialization first
+	    aInputStream.defaultReadObject();
+	    
+		opticalDepthMap = new HashMap<>();
+		currentIrradiance = new HashMap<>();
+	}
+	 
 	/**
 	 * Prepares object for garbage collection.
 	 */

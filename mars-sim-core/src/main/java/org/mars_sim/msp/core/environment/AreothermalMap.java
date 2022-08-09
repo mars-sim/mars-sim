@@ -44,7 +44,6 @@ public class AreothermalMap implements Serializable {
 	private static final int H = 150;
 	
 	// Data members
-	
 	private Set<Coordinates> hotspots;
 	private Map<Coordinates, Double> areothermalPotentialCache;
 
@@ -108,7 +107,7 @@ public class AreothermalMap implements Serializable {
 
 		// Initialize areothermal potential cache.
 		if (areothermalPotentialCache == null)
-			areothermalPotentialCache = new HashMap<Coordinates, Double>();
+			areothermalPotentialCache = new HashMap<>();
 
 		// Check if location's areothermal potential has been cached.
 		if (areothermalPotentialCache.containsKey(location)) {
