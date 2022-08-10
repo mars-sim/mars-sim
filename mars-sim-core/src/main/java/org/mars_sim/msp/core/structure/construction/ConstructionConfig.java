@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ConstructionConfig.java
- * @date 2021-12-15
+ * @date 2022-08-09
  * @author Scott Davis
  */
 
@@ -59,8 +59,11 @@ public class ConstructionConfig implements Serializable {
     private transient List<ConstructionStageInfo> frameStageInfoList;
     private transient List<ConstructionStageInfo> buildingStageInfoList;
 
+    private transient List<ConstructionStageInfo> allConstructionStageInfoList;
+	
     /**
-     * Constructor
+     * Constructor.
+     * 
      * @param constructionDoc DOM document with construction configuration
      */
     public ConstructionConfig(Document constructionDoc) {
@@ -256,8 +259,36 @@ public class ConstructionConfig implements Serializable {
         return stageInfoList;
     }
 
+	/**
+	 * Gets a list of all construction stage info available.
+	 * 
+	 * @return list of construction stage info.
+	 * @throws Exception if error getting list.
+	 */
+	public List<ConstructionStageInfo> getAllConstructionStageInfoList() {
+
+		if (allConstructionStageInfoList == null) {
+			List<ConstructionStageInfo> result = new ArrayList<>();
+			
+			List<ConstructionStageInfo> foundations = getConstructionStageInfoList(
+					ConstructionStageInfo.FOUNDATION);
+			List<ConstructionStageInfo> frames = getConstructionStageInfoList(
+					ConstructionStageInfo.FRAME);
+			List<ConstructionStageInfo> buildings = getConstructionStageInfoList(
+					ConstructionStageInfo.BUILDING);
+
+			result.addAll(foundations);
+			result.addAll(frames);
+			result.addAll(buildings);
+
+			allConstructionStageInfoList = result;
+		}
+		
+		return allConstructionStageInfoList;
+	}
+	
     /**
-     * Prepare object for garbage collection.
+     * Prepares object for garbage collection.
      */
     public void destroy() {
 

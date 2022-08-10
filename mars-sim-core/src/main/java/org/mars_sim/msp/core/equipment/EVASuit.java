@@ -640,6 +640,17 @@ public class EVASuit extends Equipment
 		return microInventory.getStoredMass();
 	}
 
+	/**
+	 * Does it have unused space or capacity for a particular resource ?
+	 * 
+	 * @param resource
+	 * @return
+	 */
+	@Override
+	public boolean hasAmountResourceRemainingCapacity(int resource) {
+		return microInventory.hasAmountResourceRemainingCapacity(resource);
+	}
+	
 //	/**
 //	 * Does this unit have this resource ?
 //	 *

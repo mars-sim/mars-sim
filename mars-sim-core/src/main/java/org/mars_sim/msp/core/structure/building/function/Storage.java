@@ -186,17 +186,42 @@ public class Storage extends Function {
 	}
 
 
-	/**
-	 * Stores a resource.
-	 *
-	 * @param amount
-	 * @param ar
-	 * @param inv
-	 * @return true if all mounts is being stored properly
-	 */
-	public static boolean storeAnResource(double amount, AmountResource ar, ResourceHolder rh) {
-		return storeAnResource(amount, ar, rh, "");
-	}
+//	/**
+//	 * Stores a resource.
+//	 *
+//	 * @param amount
+//	 * @param ar
+//	 * @param inv
+//	 * @return true if all mounts is being stored properly
+//	 */
+//	public static boolean storeAnResource(double amount, AmountResource ar, ResourceHolder rh) {
+//		return storeAnResource(amount, ar, rh, "");
+//	}
+//
+//	/**
+//	 * Stores a resource.
+//	 *
+//	 * @param amount
+//	 * @param ar     {@link AmountResource}
+//	 * @param inv    {@link Inventory}
+//	 * @param method the name of the calling java method
+//	 * @return true if all amounts is being stored properly
+//	 */
+//	public static boolean storeAnResource(double amount, AmountResource ar, ResourceHolder rh, String method) {
+//		return storeAnResource(amount, ar.getID(), rh, method);
+//	}
+//
+//	/**
+//	 * Stores a resource.
+//	 *
+//	 * @param name
+//	 * @param Amount
+//	 * @param inv
+//	 * @return true if all amounts is being stored properly
+//	 */
+//	public static boolean storeAnResource(double amount, String name, ResourceHolder rh) {
+//		return storeAnResource(amount, ResourceUtil.findIDbyAmountResourceName(name), rh, "");
+//	}
 
 	/**
 	 * Stores a resource.
@@ -205,86 +230,69 @@ public class Storage extends Function {
 	 * @param ar     {@link AmountResource}
 	 * @param inv    {@link Inventory}
 	 * @param method the name of the calling java method
-	 * @return true if all mounts is being stored properly
-	 */
-	public static boolean storeAnResource(double amount, AmountResource ar, ResourceHolder rh, String method) {
-		return storeAnResource(amount, ar.getID(), rh, method);
-	}
-
-	/**
-	 * Stores a resource.
-	 *
-	 * @param name
-	 * @param Amount
-	 * @param inv
-	 * @return true if all mounts is being stored properly
-	 */
-	public static boolean storeAnResource(double amount, String name, ResourceHolder rh) {
-		return storeAnResource(amount, ResourceUtil.findIDbyAmountResourceName(name), rh, "");
-	}
-
-	/**
-	 * Stores a resource.
-	 *
-	 * @param amount
-	 * @param ar     {@link AmountResource}
-	 * @param inv    {@link Inventory}
-	 * @param method the name of the calling java method
-	 * @return true if all mounts is being stored properly
+	 * @return true if it is being stored properly
 	 */
 	public static boolean storeAnResource(double amount, int id, ResourceHolder rh, String method) {
 		boolean result = false;
 
 		if (amount > 0) {
-			try {
-				double remainingCapacity = rh.getAmountResourceRemainingCapacity(id);
-				// double stored = inv.getAmountResourceStored(ar, false);
-				if (remainingCapacity < 0.00001) {
-					result = false;
-					// Note: increase VP of barrel/bag/gas canister for storage to prompt for
-					// manufacturing them
-
-					// Vent or drain 1% of resource
-					double ventAmount = 0.01 * rh.getAmountResourceCapacity(id);
-					rh.retrieveAmountResource(id, ventAmount);
-				}
-
-				else if (remainingCapacity < amount) {
-					// double stored = inv.getAmountResourceStored(ar, false);
-					// if the remaining capacity is smaller than the harvested amount, set remaining
-					// capacity to full
-					if (!method.equals(""))
-						method = " at " + method;
-					logger.log(rh.getHolder(), Level.SEVERE, 30_000, method
-				    		+ "The storage capacity for "
-				    		+ ResourceUtil.findAmountResourceName(id) + " has been reached. Only "
-					    	+ Math.round(remainingCapacity*10000.0)/10000.0
-					    	+ " kg can be stored."
-					    	//+ " (Remaining capacity : " + Math.round(remainingCapacity*100.0)/100.0
-					    	//+ " (Stored : " + Math.round(stored*100.0)/100.0
-					    	//+ ")"
-				    	);
-					amount = remainingCapacity;
-					rh.storeAmountResource(id, amount);
-//					inv.addAmountSupply(id, amount);
-					result = false;
-				}
-
-				else {
-					rh.storeAmountResource(id, amount);
-//					inv.addAmountSupply(id, amount);
-					result = true;
-				}
-
-			} catch (Exception e) {
-				logger.log(rh.getHolder(), Level.SEVERE, 10_000,
-						"Issues with storeAmountResource on " + ResourceUtil.findAmountResourceName(id) + " : ", e);
+			
+			double excess = rh.storeAmountResource(id, amount);
+			
+			if (excess == 0.0) {
+				return true;
 			}
-		} else {
+			else if (excess > 0) {
+				logger.log(rh.getHolder(), Level.INFO, 60_000, method
+		    		+ "Storage full for "
+		    		+ ResourceUtil.findAmountResourceName(id) 
+		    		+ ". To store: "
+			    	+ Math.round(amount*10000.0)/10000.0
+			    	+ " kg"
+		    		+ ". Stored: "
+			    	+ Math.round((amount-excess)*10000.0)/10000.0
+			    	+ " kg"
+			    	);
+				
+				return false;
+			} 
+
+//			try {
+//				double remainingCapacity = rh.getAmountResourceRemainingCapacity(id);
+//
+//				if (remainingCapacity < amount) {
+////					// TODO: how to increase VP of barrel/bag/gas canister for storage to prompt for
+////					// manufacturing more of them
+//
+//					if (!method.equals(""))
+//						method = " at " + method;
+//					logger.log(rh.getHolder(), Level.SEVERE, 30_000, method
+//				    		+ "The storage capacity for "
+//				    		+ ResourceUtil.findAmountResourceName(id) + " has been reached. Only "
+//					    	+ Math.round(remainingCapacity*10000.0)/10000.0
+//					    	+ " kg can be stored."
+//				    	);
+//					rh.storeAmountResource(id, remainingCapacity);
+//
+//					result = false;
+//				}
+//
+//				else {
+//					rh.storeAmountResource(id, amount);
+//					result = true;
+//				}
+//
+//			} catch (Exception e) {
+//				logger.log(rh.getHolder(), Level.SEVERE, 10_000,
+//						"Issues with storeAmountResource on " + ResourceUtil.findAmountResourceName(id) + " : ", e);
+//			}
+		}
+		
+		else {
 			result = false;
 			if (!method.equals(""))
 				method = " at " + method;
-			logger.log(rh.getHolder(), Level.SEVERE, 10_000,
+				logger.log(rh.getHolder(), Level.SEVERE, 10_000,
 					"Attempting to store non-positive amount of "
 					+ ResourceUtil.findAmountResourceName(id) + method);
 		}

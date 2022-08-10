@@ -813,6 +813,7 @@ class AmountResourceGood extends Good {
 			ConstructionStageInfo stage = stageDetail.getKey();
 			double stageValue = stageDetail.getValue();
 			if (stageValue > 0D && ConstructionStageInfo.BUILDING.equals(stage.getType())
+					// TODO: reduce the utilization on this method using 5.7% of total cpu
 					&& isLocallyConstructable(settlement, stage)) {
 				double constructionDemand = getResourceConstructionStageDemand(stage, stageValue);
 				if (constructionDemand > 0D) {

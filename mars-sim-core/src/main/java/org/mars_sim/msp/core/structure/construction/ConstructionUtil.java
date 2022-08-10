@@ -34,6 +34,7 @@ public class ConstructionUtil {
 	 * @return construction stage info or null if none found.
 	 * @throws Exception if error finding construction stage info.
 	 */
+	// TODO: reduce the utilization on this method. 3.5% of total cpu
 	public static ConstructionStageInfo getConstructionStageInfo(String stageName) {
 		ConstructionStageInfo result = null;
 
@@ -140,25 +141,12 @@ public class ConstructionUtil {
 
 	/**
 	 * Gets a list of all construction stage info available.
+	 * 
 	 * @return list of construction stage info.
 	 * @throws Exception if error getting list.
 	 */
 	public static List<ConstructionStageInfo> getAllConstructionStageInfoList() {
-
-		List<ConstructionStageInfo> foundations = config.getConstructionStageInfoList(
-				ConstructionStageInfo.FOUNDATION);
-		List<ConstructionStageInfo> frames = config.getConstructionStageInfoList(
-				ConstructionStageInfo.FRAME);
-		List<ConstructionStageInfo> buildings = config.getConstructionStageInfoList(
-				ConstructionStageInfo.BUILDING);
-
-//		int resultSize = foundations.size() + frames.size() + buildings.size();
-		List<ConstructionStageInfo> result = new ArrayList<>();
-		result.addAll(foundations);
-		result.addAll(frames);
-		result.addAll(buildings);
-
-		return result;
+		return config.getAllConstructionStageInfoList();
 	}
 
 	/**

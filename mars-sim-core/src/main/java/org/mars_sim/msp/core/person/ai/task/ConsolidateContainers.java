@@ -126,7 +126,7 @@ extends Task {
     }
     
     /**
-     * Consolidate the container's resources
+     * Consolidate the container's resources.
      * 
      * @param inv
      * @return
@@ -136,18 +136,19 @@ extends Task {
         
         boolean useTopInventory = container.getUnitType() == UnitType.SETTLEMENT;
         
-        // In Vehciles do not use main store; keep in Containers
+        // In Vehicles do not use main store; keep in Containers
         for (Container e: ((EquipmentOwner)container).findAllContainers()) {
             if (e.getStoredMass() > 0D) {
                 // Only check one type of amount resource for container.
                 int resource = e.getResource();
                 // Check if this resource from this container could be loaded into the settlement/vehicle's inventory.
-                if (useTopInventory && (resource > 0) && ((EquipmentOwner)container).getAmountResourceRemainingCapacity(resource) > 0D) {
+                if (useTopInventory && (resource > 0) 
+                		&& ((EquipmentOwner)container).hasAmountResourceRemainingCapacity(resource)) {
                 	return true;
                 }
 
                 // Check if container is only partially full of resource.
-                if (e.getAmountResourceRemainingCapacity(resource) > 0D) {
+                if (e.hasAmountResourceRemainingCapacity(resource)) {
                     // If another container is also partially full of resource, they can be consolidated.
                 	partialContainers++;
                     if (partialContainers > 2) {
@@ -199,7 +200,7 @@ extends Task {
                 if (sourceAmount > 0D) {
 	                // Move resource in container to top inventory if possible.
 	                double topRemainingCapacity = parent.getAmountResourceRemainingCapacity(resourceID);
-	                if (useTopInventory && (topRemainingCapacity > 0D)) {
+	                if (useTopInventory && (topRemainingCapacity >= 0D)) {
                         double loadAmount = transferResource(source, sourceAmount, resourceID,
                                                              topRemainingCapacity,
                                                              parent, topRemainingCapacity);
@@ -221,7 +222,7 @@ extends Task {
 	                            double otherAmount = otherUnit.getAmountResourceStored(resourceID);
 	                            if (otherAmount > 0D) {
 	                                double otherRemainingCapacity = otherUnit.getAmountResourceRemainingCapacity(resourceID);
-	                                if (otherRemainingCapacity > 0D) {
+	                                if (otherRemainingCapacity >= 0D) {
                                         double loadAmount = transferResource(source, sourceAmount, resourceID,
                                                                              remainingAmountLoading,
                                                                              otherUnit, otherRemainingCapacity);

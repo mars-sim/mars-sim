@@ -3703,6 +3703,17 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
+	 * Does it have unused space or capacity for a particular resource ?
+	 * 
+	 * @param resource
+	 * @return
+	 */
+	@Override
+	public boolean hasAmountResourceRemainingCapacity(int resource) {
+		return eqmInventory. hasAmountResourceRemainingCapacity(resource);
+	}
+	
+	/**
 	 * Obtains the remaining general storage space.
 	 *
 	 * @return quantity

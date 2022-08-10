@@ -763,7 +763,7 @@ public abstract class RoverMission extends VehicleMission {
 			Person person = (Person) member;
 			// Check for fitness
 			if (!person.isBarelyFit()) {
-				logger.warning(person, 10_000L, "Not fit to operate " + getRover());
+				logger.warning(person, 10_000L, "Not fit to operate " + getRover() + ".");
 				return null;
 			}
 			

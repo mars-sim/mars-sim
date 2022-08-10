@@ -584,7 +584,8 @@ public abstract class Vehicle extends Unit
 		posParked = LocalPosition.DEFAULT_POSITION;
 		facingParked = 0D;
 
-		// Create microInventory instance
+		// Create microInventory instance for testing. 
+		// Set up a 2000 kg cargo cap
 		eqmInventory = new EquipmentInventory(this, 2_000D);
 
 		// Initialize malfunction manager.
@@ -2039,6 +2040,17 @@ public abstract class Vehicle extends Unit
 		return eqmInventory.getAmountResourceRemainingCapacity(resource);
 	}
 
+	/**
+	 * Does it have unused space or capacity for a particular resource ?
+	 * 
+	 * @param resource
+	 * @return
+	 */
+	@Override
+	public boolean hasAmountResourceRemainingCapacity(int resource) {
+		return eqmInventory. hasAmountResourceRemainingCapacity(resource);
+	}
+	
 	/**
      * Gets the total capacity that it can hold.
      *

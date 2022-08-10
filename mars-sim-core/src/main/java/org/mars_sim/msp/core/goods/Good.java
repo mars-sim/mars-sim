@@ -451,6 +451,7 @@ public abstract class Good implements Serializable, Comparable<Good> {
 	 * @param buildingStage the building construction stage info.
 	 * @return true if building can be constructed.
 	 */
+	// TODO: reduce the utilization on this method using 5.7% of total cpu
 	protected static boolean isLocallyConstructable(Settlement settlement, ConstructionStageInfo buildingStage) {
 
 		if (buildingStage.isConstructable()) {
@@ -467,6 +468,7 @@ public abstract class Good implements Serializable, Comparable<Good> {
 						Iterator<Building> i = settlement.getBuildingManager().getACopyOfBuildings().iterator();
 						while (i.hasNext()) {
 							ConstructionStageInfo tempBuildingStage = ConstructionUtil
+									// TODO: reduce the utilization on this method. 3.5% of total cpu
 									.getConstructionStageInfo(i.next().getBuildingType());
 							if (tempBuildingStage != null) {
 								ConstructionStageInfo tempFrameStage = ConstructionUtil

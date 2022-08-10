@@ -78,4 +78,12 @@ public interface ResourceHolder {
 	 * @return the holder's unit instance
 	 */
 	public Unit getHolder();
+	
+	/**
+	 * Does it have unused space or capacity for a particular resource ?
+	 * 
+	 * @param resource
+	 * @return
+	 */
+	public boolean hasAmountResourceRemainingCapacity(int resource);
 }

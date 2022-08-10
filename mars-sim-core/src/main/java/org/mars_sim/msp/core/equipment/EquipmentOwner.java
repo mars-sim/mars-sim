@@ -138,4 +138,11 @@ public interface EquipmentOwner extends ResourceHolder {
 	 */
 	public boolean hasItemResource(int resource);
 	
+	/**
+	 * Does it have unused space or capacity for a particular resource ?
+	 * 
+	 * @param resource
+	 * @return
+	 */
+	public boolean hasAmountResourceRemainingCapacity(int resource);
 }

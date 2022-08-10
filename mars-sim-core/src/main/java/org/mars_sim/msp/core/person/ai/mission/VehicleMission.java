@@ -607,10 +607,10 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 
 		// if the emergency beacon is off
 		// Question: could the emergency beacon itself be broken ?
-		message.append("Turned on emergency beacon. Request for towing with status flag(s) :");
+		message.append("Turned on emergency beacon to request for towing. Status flag(s): ");
 		message.append(getMissionStatus().stream().map(MissionStatus::getName).collect(Collectors.joining(", ")));
 
-		logger.info(vehicle, 20_000, message.toString());
+		logger.info(vehicle, 20_000, message.append(".").toString());
 
 		vehicle.setEmergencyBeacon(true);
 	}
@@ -628,7 +628,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 
 		if (loadingPlan != null) {
 			if (loadingPlan.isFailure()) {
-				logger.warning(vehicle, "Loading has failed");
+				logger.warning(vehicle, "Loading has failed.");
 				endMission(MissionStatus.CANNOT_LOAD_RESOURCES);
 			}
 			return loadingPlan.isCompleted();

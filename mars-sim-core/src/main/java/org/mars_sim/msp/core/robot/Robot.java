@@ -1286,6 +1286,17 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	}
 
 	/**
+	 * Does it have unused space or capacity for a particular resource ?
+	 * 
+	 * @param resource
+	 * @return
+	 */
+	@Override
+	public boolean hasAmountResourceRemainingCapacity(int resource) {
+		return eqmInventory. hasAmountResourceRemainingCapacity(resource);
+	}
+	
+	/**
      * Gets the total capacity that this robot can hold.
      *
      * @return total capacity (kg).

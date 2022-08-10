@@ -33,6 +33,7 @@ class GenericContainer extends Equipment implements Container {
 
 	/**
 	 * Constructor.
+	 * 
 	 * @param name
 	 * @param type Type of container
 	 * @param base the location of the bag.
@@ -196,6 +197,20 @@ class GenericContainer extends Equipment implements Container {
 	}
 
 	/**
+	 * Does it have unused space or capacity for a particular resource ?
+	 * 
+	 * @param resource
+	 * @return
+	 */
+	@Override
+	public boolean hasAmountResourceRemainingCapacity(int resource) {
+		if (resourceHeld == resource) {
+			return totalCapacity > amountStored;
+		}
+		return false;
+	}
+	
+	/**
 	 * Gets the capacity of a particular amount resource. Check if container
 	 * is unallocated
 	 *
@@ -255,7 +270,7 @@ class GenericContainer extends Equipment implements Container {
 	}
 
 	/**
-	 * Clean the container by resettingthe assigned resource.
+	 * Cleans the container by resetting the assigned resource.
 	 */
 	@Override
 	public void clean() {

@@ -1889,6 +1889,17 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 	}
 
 	/**
+	 * Does it have unused space or capacity for a particular resource ?
+	 * 
+	 * @param resource
+	 * @return
+	 */
+	@Override
+	public boolean hasAmountResourceRemainingCapacity(int resource) {
+		return eqmInventory. hasAmountResourceRemainingCapacity(resource);
+	}
+	
+	/**
      * Gets the total capacity that this person can hold.
      *
      * @return total capacity (kg).
@@ -2363,5 +2374,4 @@ public class Person extends Unit implements MissionMember, Serializable, Tempora
 		scientificAchievement.clear();
 		scientificAchievement = null;
 	}
-
 }

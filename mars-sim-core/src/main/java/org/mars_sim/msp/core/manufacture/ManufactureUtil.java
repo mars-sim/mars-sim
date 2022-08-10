@@ -413,6 +413,7 @@ public final class ManufactureUtil {
 		while (j.hasNext()) {
 			ManufactureProcessItem item = j.next();
 			if (ItemType.AMOUNT_RESOURCE == item.getType()) {
+				// TODO: is there a way to reduce excessive calling of getAmountResourceRemainingCapacity ?
 				double capacity = settlement.getAmountResourceRemainingCapacity(ResourceUtil.findIDbyAmountResourceName(item.getName()));
 				if (item.getAmount() > capacity)
 					return false;

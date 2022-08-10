@@ -1382,6 +1382,17 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	}
 
 	/**
+	 * Does it have unused space or capacity for a particular resource ?
+	 * 
+	 * @param resource
+	 * @return
+	 */
+	@Override
+	public boolean hasAmountResourceRemainingCapacity(int resource) {
+		return getSettlement().hasAmountResourceRemainingCapacity(resource);
+	}
+	
+	/**
 	 * Gets all stored amount resources
 	 *
 	 * @return all stored amount resources.

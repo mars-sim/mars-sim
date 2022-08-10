@@ -285,11 +285,9 @@ public class EquipmentInventory
 	 */
 	@Override
 	public double getAmountResourceRemainingCapacity(int resource) {
-		// Note: it does not include the general capacity (aka cargo capacity)
-//		return getAmountResourceCapacity(resource) - getAmountResourceStored(resource);
 
-		double cap = 0;
-		double stored = 0;
+		double cap = microInventory.getCapacity(resource);
+		double stored = microInventory.getAmountResourceStored(resource);
 
 		for (Equipment e: equipmentSet) {
 
@@ -299,10 +297,42 @@ public class EquipmentInventory
 			}
 		}
 
-		return cap + microInventory.getCapacity(resource)
-			- stored - microInventory.getAmountResourceStored(resource);
+		// Note: it should not include the general capacity,
+		// aka cargo capacity, getRemainingCargoCapacity(), 
+		// since cargo capacity can be shared and can be
+		// misleading.
+		
+		return cap - stored;
 	}
 
+	/**
+	 * Does it have unused space or capacity for a particular resource ?
+	 * 
+	 * @param resource
+	 * @return
+	 */
+	public boolean hasAmountResourceRemainingCapacity(int resource) {
+		
+		double cap = microInventory.getCapacity(resource);
+		double stored = microInventory.getAmountResourceStored(resource);
+		
+		if (cap > stored)
+			return true;
+		
+		for (Equipment e: equipmentSet) {
+
+			if (e instanceof ResourceHolder) {
+				cap = e.getAmountResourceCapacity(resource);
+				stored = e.getAmountResourceStored(resource);
+			}
+			
+			if (cap > stored)
+				return true;
+		}
+		
+		return false;
+	}
+	
 	/**
 	 * Obtains the remaining cargo/general/shared capacity.
 	 *

@@ -125,7 +125,7 @@ public final class ContainerUtil {
 			if (e.getEquipmentType() == containerType) {
 				Container container = (Container) e;
 				double remainingCapacity = container.getAmountResourceRemainingCapacity(resource);
-				if (remainingCapacity > mostCapacity) {
+				if (remainingCapacity >= mostCapacity) {
 					result = container;
 					mostCapacity = remainingCapacity;
 				}

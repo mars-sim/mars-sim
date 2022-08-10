@@ -97,7 +97,7 @@ public class MicroInventory implements Serializable {
 	}
 
 	/**
-	 * Gets the shared/general/stock capacity
+	 * Gets the shared/general/stock capacity.
 	 *
 	 * @return
 	 */
@@ -106,7 +106,7 @@ public class MicroInventory implements Serializable {
 	}
 
 	/**
-	 * Sets the shared/general/stock capacity
+	 * Sets the shared/general/stock capacity.
 	 *
 	 * @return
 	 */
@@ -128,7 +128,7 @@ public class MicroInventory implements Serializable {
     }
 
 	/**
-	 * Sets the capacity of an amount resource
+	 * Sets the capacity of an amount resource.
 	 *
 	 * @param resource
 	 * @param capacity
@@ -144,7 +144,7 @@ public class MicroInventory implements Serializable {
 	}
 
 	/**
-	 * Adds the capacity of an amount resource
+	 * Adds the capacity of an amount resource.
 	 *
 	 * @param resource
 	 * @param capacity
@@ -160,7 +160,7 @@ public class MicroInventory implements Serializable {
 	}
 
 	/**
-	 * Removes the capacity of an amount resource
+	 * Removes the capacity of an amount resource.
 	 *
 	 * @param resource
 	 * @param capacity
@@ -177,12 +177,13 @@ public class MicroInventory implements Serializable {
 	}
 
 	/**
-	 * Gets the total weight of the stored resources
+	 * Gets the total weight of the stored resources.
 	 *
 	 * @return mass [kg]
 	 */
 	public double getStoredMass() {
-		return amountTotalMass + itemTotalMass; // + generalTotalMass;
+		return amountTotalMass + itemTotalMass;
+		// TODO: should it also add generalTotalMass;
 	}
 
 	/**
@@ -206,7 +207,7 @@ public class MicroInventory implements Serializable {
 	}
 
 	/**
-	 * Stores the amount resource
+	 * Stores the amount resource.
 	 *
 	 * @param resource
 	 * @param quantity
@@ -239,7 +240,7 @@ public class MicroInventory implements Serializable {
 	}
 
 	/**
-	 * Stores the item resource
+	 * Stores the item resource.
 	 *
 	 * @param item resource
 	 * @param quantity
@@ -294,7 +295,7 @@ public class MicroInventory implements Serializable {
 	}
 
 	/**
-	 * Recalculate the amount resource total mass.
+	 * Recalculates the amount resource total mass.
 	 */
 	private void updateAmountResourceTotalMass() {
 		// Note: to avoid ConcurrentModificationException, use new ArrayList
@@ -302,7 +303,7 @@ public class MicroInventory implements Serializable {
 	}
 
 	/**
-	 * Recalculate the item resource total mass.
+	 * Recalculates the item resource total mass.
 	 */
 	private void updateItemResourceTotalMass() {
 		double result = 0;
@@ -319,7 +320,7 @@ public class MicroInventory implements Serializable {
 	}
 
 	/**
-	 * Retrieves the resource
+	 * Retrieves the resource.
 	 *
 	 * @param resource
 	 * @param quantity
@@ -362,7 +363,7 @@ public class MicroInventory implements Serializable {
 	}
 
 	/**
-	 * Retrieves the item resource
+	 * Retrieves the item resource.
 	 *
 	 * @param resource
 	 * @param quantity
@@ -428,7 +429,7 @@ public class MicroInventory implements Serializable {
 	}
 
 	/**
-	 * Obtains the remaining storage space of a particular amount resource
+	 * Obtains the remaining storage space of a particular amount resource.
 	 *
 	 * @param resource
 	 * @return quantity
@@ -442,7 +443,22 @@ public class MicroInventory implements Serializable {
 	}
 
 	/**
-	 * Obtains the remaining storage quantity of a particular item resource
+	 * Does it have unused space or capacity for a particular resource ?
+	 * 
+	 * @param resource
+	 * @return
+	 */
+	public boolean hasAmountResourceRemainingCapacity(int resource) {
+		ResourceStored s = amountStorage.get(resource);
+		if (s != null) {
+			return s.capacity > s.storedAmount;
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Obtains the remaining storage quantity of a particular item resource.
 	 *
 	 * @param resource
 	 * @return quantity
@@ -459,7 +475,7 @@ public class MicroInventory implements Serializable {
 	}
 
 	/**
-	 * Gets the quantity of the amount resource stored
+	 * Gets the quantity of the amount resource stored.
 	 *
 	 * @param resource
 	 * @return quantity
@@ -473,7 +489,7 @@ public class MicroInventory implements Serializable {
 	}
 
 	/**
-	 * Gets the quantity of the item resource stored
+	 * Gets the quantity of the item resource stored.
 	 *
 	 * @param resource
 	 * @return quantity
@@ -498,7 +514,7 @@ public class MicroInventory implements Serializable {
 
 
 	/**
-	 * Clean this container for future use
+	 * Cleans this container for future use.
 	 */
 	public void clean() {
 		amountStorage.clear();
