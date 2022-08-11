@@ -201,8 +201,8 @@ public class TerrainElevation implements Serializable {
 		if (rate > 100)
 			rate = 100;
 
-		if (rate < 10)
-			rate = 10;
+		if (rate < 20)
+			rate = 20;
 
 		site.setRegolithCollectionRate(rate);
 	}
@@ -249,8 +249,8 @@ public class TerrainElevation implements Serializable {
 		if (rate > 100)
 			rate = 100;
 
-		if (rate < 0)
-			rate = 0;
+		if (rate < 10)
+			rate = 10;
 
 		site.setIceCollectionRate(rate);
 	}

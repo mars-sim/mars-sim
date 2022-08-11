@@ -23,7 +23,6 @@ import org.mars_sim.msp.core.vehicle.Rover;
  */
 public class CollectIce extends CollectResourcesMission {
 
-
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 

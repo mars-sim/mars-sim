@@ -94,7 +94,8 @@ public class WasteProcessSpec implements Serializable {
 	}
 
 	/**
-	 * Get all inputs needed for this process
+	 * Get all inputs needed for this process.
+	 * 
 	 * @return
 	 */
 	public Set<Integer> getInputResources() {
@@ -107,7 +108,8 @@ public class WasteProcessSpec implements Serializable {
 	}
 
 	/**
-	 * Get the max input rates of all non-ambient inputs
+	 * Get the max input rates of all non-ambient inputs.
+	 * 
 	 * @return
 	 */
 	public Map<Integer, Double> getMaxInputRates() {

@@ -344,8 +344,8 @@ implements Serializable {
 //            }
 //
 //            else {
-            	logger.info(person, 4_000,
-            			"Checking in " + Math.round(portion*10.0)/10.0 + " kg " + resourceName + " at storage bin.");
+//            	logger.info(person, 4_000,
+//            			"Checking in " + Math.round(portion*10.0)/10.0 + " kg " + resourceName + " at storage bin.");
 //            }
             
             if (portion > 0) {
@@ -356,7 +356,7 @@ implements Serializable {
 	        	// Retrieve this amount from the bag
 	        	bag.retrieveAmountResource(resourceID, portion);
 				// Add to the daily output
-				settlement.addOutput(resourceID, portion, 0);
+				settlement.addOutput(resourceID, portion, time);
 				// Store the amount in the settlement
 				settlement.storeAmountResource(resourceID, portion);
 	            
@@ -517,15 +517,17 @@ implements Serializable {
 
             if (amount > 0) {
 
-	            double settlementCap = settlement.getAmountResourceRemainingCapacity(resourceID);
-
-	            if (amount > settlementCap) {
-	            	amount = settlementCap;
-
-	            	logger.warning(person,
-	            			resourceName + " storage full. Could only check in "
-	            			+ Math.round(amount*10.0)/10.0 + " kg.");
-	            }
+            	settlement = person.getSettlement();
+            	
+//	            double settlementCap = settlement.getAmountResourceRemainingCapacity(resourceID);
+//
+//	            if (amount > settlementCap) {
+//	            	amount = settlementCap;
+//
+//	            	logger.warning(person,
+//	            			resourceName + " storage full. Could only check in "
+//	            			+ Math.round(amount*10.0)/10.0 + " kg.");
+//	            }
 
 //	            else {
 //	            	logger.fine(person,
@@ -534,14 +536,14 @@ implements Serializable {
 	                	
 		    	// Transfer the bag back to the settlement
 		    	bag.transfer(settlement);
-				// Add to the daily output
+//				// Add to the daily output
 				settlement.addOutput(resourceID, amount, getTimeCompleted());
-				// Store the amount in the settlement
+//				// Store the amount in the settlement
 				settlement.storeAmountResource(resourceID, amount);
-				
-            	logger.fine(person,
-            			"Checking in " + Math.round(collectionTotal*10.0)/10.0 
-            			+ " kg " + resourceName + ".");
+//				
+//            	logger.info(person,
+//            			"Checking in " + Math.round(collectionTotal*10.0)/10.0 
+//            			+ " kg " + resourceName + ".");
             }
     	}
     }

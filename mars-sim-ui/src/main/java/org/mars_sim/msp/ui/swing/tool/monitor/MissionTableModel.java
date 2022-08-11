@@ -424,7 +424,7 @@ public class MissionTableModel extends AbstractTableModel
 					break;
 
 				case MEMBER_NUM: {
-					result = mission.getMembersNumber();
+					result = mission.getRecordMembersNum();
 				}
 					break;
 

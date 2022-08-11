@@ -141,7 +141,7 @@ public abstract class CollectResourcesMission extends EVAMission
 				// Find some sites
 				List<Coordinates> unorderedSites = null;
 				while (unorderedSites == null) {
-					unorderedSites= determineCollectionSites(startingLocation,
+					unorderedSites = determineCollectionSites(startingLocation,
 							range,
 							numSites);
 
@@ -334,7 +334,7 @@ public abstract class CollectResourcesMission extends EVAMission
 	}
 
 	/**
-	 * Signak the start of an EVA phase to do any housekeeping
+	 * Signals the start of an EVA phase to do any housekeeping.
 	 */
 	@Override
 	protected void phaseEVAStarted() {
@@ -343,14 +343,15 @@ public abstract class CollectResourcesMission extends EVAMission
 	}
 
 	/**
-	 * Calculate the collection for for a worker.
+	 * Calculates the collection for for a worker.
+	 * 
 	 * @param worker
 	 * @return
 	 */
 	protected abstract double calculateRate(Worker worker);
 
 	/**
-	 * Determine the locations of the sample collection sites.
+	 * Determines the locations of the sample collection sites.
 	 *
 	 * @parma startingLocation Where to start from
 	 * @param range the rover's driving range.
@@ -455,6 +456,7 @@ public abstract class CollectResourcesMission extends EVAMission
 
 	/**
 	 * Gets the computed site score of this prospective resource collection mission.
+	 * 
 	 * @return
 	 */
 	@Override

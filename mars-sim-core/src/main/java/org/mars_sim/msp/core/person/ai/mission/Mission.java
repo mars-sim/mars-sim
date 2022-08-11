@@ -84,7 +84,7 @@ public abstract class Mission implements Serializable, Temporal {
 	private static final SimLogger logger = SimLogger.getLogger(Mission.class.getName());
 
 	public static final MissionPhase COMPLETED = new MissionPhase("Mission.phase.completed");
-	private static final MissionPhase ABORTED = new MissionPhase("Mission.phase.aborted");
+	protected static final MissionPhase ABORTED = new MissionPhase("Mission.phase.aborted");
 
 	private static final String OUTSIDE = "Outside";
 
@@ -96,7 +96,7 @@ public abstract class Mission implements Serializable, Temporal {
 	/**
 	 * The marginal factor for the amount of water to be brought during a mission.
 	 */
-	public static final double WATER_MARGIN = 0.75;
+	public static final double WATER_MARGIN = 1.00;
 	/**
 	 * The marginal factor for the amount of oxygen to be brought during a mission.
 	 */
@@ -104,7 +104,7 @@ public abstract class Mission implements Serializable, Temporal {
 	/**
 	 * The marginal factor for the amount of food to be brought during a mission.
 	 */
-	public static final double FOOD_MARGIN = 1.75;
+	public static final double FOOD_MARGIN = 2.25;
 	/**
 	 * The marginal factor for the amount of dessert to be brought during a mission.
 	 */
@@ -115,7 +115,9 @@ public abstract class Mission implements Serializable, Temporal {
 	private int missionCapacity;
 	/** The mission priority (between 1 and 5, with 1 the lowest, 5 the highest) */
 	private int priority = 2;
-
+	/** The recorded number of team members. */
+	private int recordMembersNum;
+	
 	/** Has the current phase ended? */
 	private boolean phaseEnded;
 	/** True if mission is completed. */
@@ -342,7 +344,8 @@ public abstract class Mission implements Serializable, Temporal {
 	public final void addMember(MissionMember member) {
 		if (!members.contains(member)) {
 			members.add(member);
-
+			recordMembersNum = members.size();
+			
 			if (member.getUnitType() == UnitType.PERSON) {
 				registerHistoricalEvent((Person) member, EventType.MISSION_JOINING,
 									    "Adding a member");
@@ -438,7 +441,16 @@ public abstract class Mission implements Serializable, Temporal {
 	public final int getMembersNumber() {
 		return members.size();
 	}
-
+	
+	/**
+	 * Gets the recorded number of members in the mission.
+	 *
+	 * @return number of members.
+	 */
+	public final int getRecordMembersNum() {
+		return recordMembersNum;
+	}
+	
 	/**
 	 * Gets the number of people in the mission.
 	 *
@@ -810,10 +822,10 @@ public abstract class Mission implements Serializable, Temporal {
 					missionStatus.stream().map(MissionStatus::getName).collect(Collectors.joining(", ")));
 		}
 		
-		// Mission is completed if it has not been abort by user AND mission status is marked as accomplished
-		else if (endStatus == MissionStatus.MISSION_ACCOMPLISHED) {
-			setPhase(COMPLETED, null);
-		}
+//		// Mission is completed if it has not been abort by user AND mission status is marked as accomplished
+//		else if (endStatus == MissionStatus.MISSION_ACCOMPLISHED) {
+//			setPhase(COMPLETED, null);
+//		}
 
 		// Proactively call removeMission to update the list in MissionManager right away
 		// Note: Calling missionManager.removeMission(this) will crash the mission tab in monitor tool

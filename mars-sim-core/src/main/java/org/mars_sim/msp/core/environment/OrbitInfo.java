@@ -29,7 +29,7 @@ public class OrbitInfo implements Serializable, Temporal {
 	
 	// Static data members.
 	// See https://nssdc.gsfc.nasa.gov/planetary/factsheet/marsfact.html
-	/** Mars orbit semimajor axis in au. */
+	/** Mars orbit semi-major axis in au. */
 	public static final double SEMI_MAJOR_AXIS = 1.5236915D; // in AU
 
 	/** Mars orbit period in seconds. */

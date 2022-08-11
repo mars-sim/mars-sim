@@ -171,7 +171,7 @@ public class AnalyzeMapData extends Task implements Serializable {
     private double analyzingPhase(double time) {
   
 		if (person.getPhysicalCondition().computeFitnessLevel() < 2) {
-			logger.log(person, Level.INFO, 30_000, "Ended " + NAME + " Not feeling well.");
+			logger.log(person, Level.INFO, 30_000, "Ended " + NAME + ". Not feeling well.");
 			endTask();
 			return time;
 		}

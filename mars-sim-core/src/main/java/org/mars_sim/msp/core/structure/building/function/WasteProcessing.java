@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core.structure.building.function;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -72,7 +73,7 @@ public class WasteProcessing extends Function {
 
 			double inputInventoryLimit = 1D;
 			Set<Integer> set = process.getInputResources();
-			for (int inResource : set) {
+			for (int inResource : new HashSet<>(set)) {
 				if (!process.isAmbientInputResource(inResource)) {
 					double rate = process.getMaxInputRate(inResource);
 					processValue -= settlement.getGoodsManager().getGoodValuePoint(inResource) * rate;

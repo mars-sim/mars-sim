@@ -26,6 +26,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -72,6 +73,7 @@ import org.mars_sim.msp.core.person.ai.mission.MissionEventType;
 import org.mars_sim.msp.core.person.ai.mission.MissionListener;
 import org.mars_sim.msp.core.person.ai.mission.MissionLogEntry;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
+import org.mars_sim.msp.core.person.ai.mission.MissionStatus;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.Trade;
@@ -108,13 +110,17 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 	// Private members
 	private WebLabel designationLabel;
 	private WebLabel typeLabel;
-	private WebLabel startingLabel;
+	private WebLabel leaderLabel;
 	private WebLabel phaseLabel;
 	private WebLabel settlementLabel;
+	private WebLabel missionStatusLabel;
+	
+	
 	private WebLabel vehicleStatusLabel;
 	private WebLabel speedLabel;
 	private WebLabel distanceNextNavLabel;
 	private WebLabel traveledLabel;
+
 	private JLabel memberLabel = new JLabel("", SwingConstants.LEFT);
 	
 	private MemberTableModel memberTableModel;
@@ -190,6 +196,9 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 		centerBox.add(initTravelPane(), BorderLayout.CENTER);
 
 		memberOuterPane = new WebPanel(new BorderLayout(1, 1));
+		Border blackline = BorderFactory.createTitledBorder("Team Members");
+		memberOuterPane.setBorder(blackline);
+			
 		memberPane = initMemberPane();
 		memberOuterPane.add(memberPane, BorderLayout.CENTER);
 				
@@ -200,7 +209,7 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 	private WebPanel initMissionPane() {
 
 		// Create the mission pane spring layout.
-		WebPanel missionPane = new WebPanel(new GridLayout(5, 2));
+		WebPanel missionPane = new WebPanel(new GridLayout(6, 2));
 
 		// Create the type label.
 		WebLabel typeLabel0 = new WebLabel(Msg.getString("MainDetailPanel.type", SwingConstants.RIGHT)); //$NON-NLS-1$
@@ -233,12 +242,12 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 		missionPane.add(wrapper4);
 
 		// Create the type label.
-		WebLabel startingLabel0 = new WebLabel(Msg.getString("MainDetailPanel.startingMember", SwingConstants.RIGHT)); //$NON-NLS-1$
-		startingLabel0.setAlignmentX(Component.RIGHT_ALIGNMENT);
-		missionPane.add(startingLabel0);
-		startingLabel = new WebLabel(" ", SwingConstants.LEFT);
+		WebLabel leadLabel0 = new WebLabel(Msg.getString("MainDetailPanel.startingMember", SwingConstants.RIGHT)); //$NON-NLS-1$
+		leadLabel0.setAlignmentX(Component.RIGHT_ALIGNMENT);
+		missionPane.add(leadLabel0);
+		leaderLabel = new WebLabel(" ", SwingConstants.LEFT);
 		WebPanel wrapper1 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		wrapper1.add(startingLabel);
+		wrapper1.add(leaderLabel);
 		missionPane.add(wrapper1);
 
 		// Create the phase label.
@@ -251,15 +260,30 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 		wrapper3.add(phaseLabel);
 		missionPane.add(wrapper3);
 
+		// Create the mission status Label
+		WebLabel missionStatusLabel0 = new WebLabel(Msg.getString("MainDetailPanel.missionStatus", SwingConstants.RIGHT)); //$NON-NLS-1$
+		missionStatusLabel0.setAlignmentX(Component.RIGHT_ALIGNMENT);
+		missionPane.add(missionStatusLabel0);
+
+		missionStatusLabel = new WebLabel(" ", SwingConstants.LEFT);
+		WebPanel wrapper5 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+		wrapper5.add(missionStatusLabel);
+		missionPane.add(wrapper5);
+		
 		return missionPane;
 	}
 
 	private WebPanel initVehiclePane() {
 
+		WebPanel vehicleMainPane = new WebPanel(new FlowLayout());
+		Border blackline = BorderFactory.createTitledBorder("Mission Vehicle");
+		vehicleMainPane.setBorder(blackline);
+		
 		// Create the vehicle grid panel.
 		WebPanel vehicleLayout = new WebPanel(new GridLayout(1, 2));
-		vehicleLayout.setPreferredSize(new Dimension(-1, HEIGHT_0));
-
+//		vehicleLayout.setPreferredSize(new Dimension(-1, HEIGHT_0));
+		vehicleMainPane.add(vehicleLayout);
+		
 		// Create the vehicle pane.
 		WebPanel vehiclePane = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		vehiclePane.setAlignmentX(Component.BOTTOM_ALIGNMENT);
@@ -312,7 +336,7 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 		wrapper00.add(vehicleButton);
 		vehicleLayout.add(wrapper00);
 
-		return vehicleLayout;
+		return vehicleMainPane;
 	}
 
 	private WebPanel initTravelPane() {
@@ -363,7 +387,7 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 
 	private WebPanel initLogPane() {
 
-		Border blackline = BorderFactory.createTitledBorder("Log");
+		Border blackline = BorderFactory.createTitledBorder("Phase Log");
 		
 		// Create the member panel.
 		WebPanel logPane = new WebPanel(new BorderLayout());
@@ -390,12 +414,9 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 
 	private WebPanel initMemberPane() {
 		
-		if (memberPane == null) {
-			Border blackline = BorderFactory.createTitledBorder("Members");
-					
+		if (memberPane == null) {	
 			// Create the member panel.
-			memberPane = new WebPanel(new BorderLayout());
-			memberPane.setBorder(blackline);
+			memberPane = new WebPanel(new BorderLayout(1, 1));
 			memberPane.setAlignmentX(Component.RIGHT_ALIGNMENT);
 	
 			// Create member bottom panel.
@@ -449,6 +470,7 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 		customPanelLayout = new CardLayout(10, 10);
 		missionCustomPane = new WebPanel(customPanelLayout);
 		missionCustomPane.setAlignmentX(Component.RIGHT_ALIGNMENT);
+		missionCustomPane.setPreferredSize(new Dimension(-1, HEIGHT_0));
 
 		// Create custom empty panel.
 		WebPanel emptyCustomPanel = new WebPanel();
@@ -663,7 +685,8 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 				d = "";
 			designationLabel.setText(d);
 			typeLabel.setText(mission.getName());
-			startingLabel.setText(mission.getStartingPerson().getName());
+			
+			leaderLabel.setText(mission.getStartingPerson().getName());
 	
 			String phaseText = mission.getPhaseDescription();
 			phaseLabel.setToolTipText(phaseText);
@@ -671,6 +694,10 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 				phaseText = phaseText.substring(0, MAX_LENGTH) + "...";
 			phaseLabel.setText(phaseText);
 	
+			var missionStatusText = new StringBuilder();
+			missionStatusText.append( mission.getMissionStatus().stream().map(MissionStatus::getName).collect(Collectors.joining(", ")));
+			missionStatusLabel.setText(missionStatusText.toString());
+			
 			settlementLabel.setText(mission.getAssociatedSettlement().getName());
 
 			logTableModel.setMission(mission);
@@ -711,12 +738,14 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 				}
 			}
 			else {
-				vehicleButton.setText("");
-				vehicleStatusLabel.setText("");
-				speedLabel.setText("");
-				traveledLabel.setText("");
-				distanceNextNavLabel.setText("");
-				vehicleButton.setVisible(false);
+	
+				vehicleButton.setText(vehicleMission.getVehicleRecord());
+				
+				vehicleStatusLabel.setText(" ");
+				speedLabel.setText(Msg.getString("MainDetailPanel.kmhSpeed", "0")); //$NON-NLS-1$ //$NON-NLS-2$
+				distanceNextNavLabel.setText(Msg.getString("MainDetailPanel.kmNextNavPoint", "0")); //$NON-NLS-1$ //$NON-NLS-2$
+				traveledLabel.setText(Msg.getString("MainDetailPanel.kmTraveled", "0", "0")); //$NON-NLS-1$ //$NON-NLS-2$
+		
 				if (currentVehicle != null) {
 					currentVehicle.removeUnitListener(this);
 				}
@@ -768,17 +797,21 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 	public void clearInfo() {
 		// NOTE: do NOT clear the mission info. Leave the info there for future viewing
 		// Clear mission info in UI.
+		leaderLabel.setText(" ");
 		designationLabel.setText(" ");
 		typeLabel.setText(" ");
 		phaseLabel.setText(" ");
 		phaseLabel.setToolTipText(" ");
+		
+		missionStatusLabel.setText(" ");
 		settlementLabel.setText(" ");
 
 		memberTableModel.setMission(null);
 		logTableModel.setMission(null);
 		
 		centerMapButton.setEnabled(false);
-		vehicleButton.setVisible(false);
+//		vehicleButton.setVisible(false);
+		
 		vehicleStatusLabel.setText(" ");
 		speedLabel.setText(Msg.getString("MainDetailPanel.kmhSpeed", "0")); //$NON-NLS-1$ //$NON-NLS-2$
 		distanceNextNavLabel.setText(Msg.getString("MainDetailPanel.kmNextNavPoint", "0")); //$NON-NLS-1$ //$NON-NLS-2$
@@ -828,12 +861,7 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 	 */
 	private void updateCustomPanel(Mission mission) {
 		boolean hasMissionPanel = false;
-		if (mission != null) {
-			
-			memberRecord.clear();
-			memberRecord = mission.getMembers();
-			
-			
+		if (mission != null) {		
 			String missionClassName = mission.getClass().getName();
 			if (customInfoPanels.containsKey(missionClassName)) {
 				hasMissionPanel = true;
@@ -924,9 +952,13 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 				}
 			} else if (type == MissionEventType.PHASE_DESCRIPTION_EVENT) {
 				String phaseText = mission.getPhaseDescription();
-				if (phaseText.length() > 45)
-					phaseText = phaseText.substring(0, 45) + "...";
+				if (phaseText.length() > MAX_LENGTH)
+					phaseText = phaseText.substring(0, MAX_LENGTH) + "...";
 				phaseLabel.setText(phaseText);
+			} else if (type == MissionEventType.END_MISSION_EVENT) {
+				var missionStatusText = new StringBuilder();
+				missionStatusText.append( mission.getMissionStatus().stream().map(MissionStatus::getName).collect(Collectors.joining(", ")));
+				missionStatusLabel.setText(missionStatusText.toString());
 			} else if (type == MissionEventType.ADD_MEMBER_EVENT || type == MissionEventType.REMOVE_MEMBER_EVENT
 					|| type == MissionEventType.MIN_MEMBERS_EVENT || type == MissionEventType.CAPACITY_EVENT) {
 				memberTableModel.updateMembers();
@@ -1183,7 +1215,12 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 		 * Updates mission members.
 		 */
 		void updateMembers() {
+			
 			if (mission != null) {
+				
+				memberRecord.clear();
+				memberRecord = mission.getMembers();
+				
 				clearMembers();
 				members = new ArrayList<>(mission.getMembers());
 				Collections.sort(members, new Comparator<>() {
@@ -1270,8 +1307,9 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 	public void destroy() {
 		designationLabel = null;
 		typeLabel = null;
-		startingLabel = null;
+		leaderLabel = null;
 		phaseLabel = null;
+		missionStatusLabel = null;
 		settlementLabel = null;
 		vehicleStatusLabel = null;
 		speedLabel = null;

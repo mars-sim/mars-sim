@@ -123,7 +123,9 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	private String dateEmbarked;
 	/** The current traveling status of the mission. */
 	private String travelStatus;
-
+	/** The String record of the mission vehicle. */
+	private String vehicleRecord;
+	
 	/** The current navpoint index. */
 	private int navIndex = 0;
 	
@@ -293,6 +295,15 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	public Vehicle getVehicle() {
 		return vehicle;
 	}
+	
+	/**
+	 * Returns the String record of the mission vehicle.
+	 * 
+	 * @return
+	 */
+	public String getVehicleRecord() {
+		return vehicleRecord;
+	}
 
 	/**
 	 * Gets the current loading plan for this Mission phase.
@@ -339,6 +350,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 			usable = isUsableVehicle(newVehicle);
 			if (usable) {
 				vehicle = newVehicle;
+				vehicleRecord = newVehicle.getName();
 				startingTravelledDistance = vehicle.getOdometerMileage();
 				newVehicle.setReservedForMission(true);
 				vehicle.addUnitListener(this);
@@ -726,11 +738,18 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 		}
 
 		else if (DISEMBARKING.equals(getPhase())) {
-			setPhase(COMPLETED, null);
+			if (haveMissionStatus(MissionStatus.ABORTED_MISSION)) {
+				setPhase(ABORTED, getMissionStatus().stream().map(MissionStatus::getName).collect(Collectors.joining(", ")));
+			}
+			else
+				setPhase(COMPLETED, null);
 		}
 
 		else if (COMPLETED.equals(getPhase())) {
 			endMission(MissionStatus.MISSION_ACCOMPLISHED);
+		}
+		else if (ABORTED.equals(getPhase())) {
+			endMission(MissionStatus.ABORTED_MISSION);
 		}
 		else {
 			handled = false;
@@ -1222,6 +1241,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 					+ " km    Duration : "
 					+ Math.round(newTripTime * 100.0 / 1000.0) / 100.0 + " sols");
 			
+			addMissionStatus(MissionStatus.ABORTED_MISSION);
 			returnHome();
 		}
 
@@ -1234,6 +1254,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 					+ " km    Duration : "
 					+ Math.round(newTripTime * 100.0 / 1000.0) / 100.0 + " sols");
 			
+			addMissionStatus(MissionStatus.ABORTED_MISSION);
 			routeTo(reason, member, oldHome, newDestination);
 		}
 	}

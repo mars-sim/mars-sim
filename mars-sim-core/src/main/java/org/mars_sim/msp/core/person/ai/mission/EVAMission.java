@@ -33,8 +33,8 @@ public abstract class EVAMission extends RoverMission {
 	
 	private static final MissionPhase WAIT_SUNLIGHT = new MissionPhase("Mission.phase.waitSunlight");
 
-	// Maximum time t wait for sunrise
-	protected static final double MAX_WAIT_SUBLIGHT = 200D;
+	// Maximum time to wait for sunrise
+	protected static final double MAX_WAIT_SUBLIGHT = 400D;
 
     private MissionPhase evaPhase;
     private boolean activeEVA = true;
