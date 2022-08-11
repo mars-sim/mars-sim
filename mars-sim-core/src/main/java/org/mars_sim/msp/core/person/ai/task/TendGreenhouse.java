@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TendGreenhouse.java
- * @date 2022-06-25
+ * @date 2022-08-11
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -92,56 +92,55 @@ public class TendGreenhouse extends Task implements Serializable {
 			// Walk to greenhouse.
 			walkToTaskSpecificActivitySpotInBuilding(farmBuilding, FunctionType.FARMING, false);
 
-			// Checks quickly to see if a needy crop is available
-			Crop crop = greenhouse.getNeedyCrop(null);
-			
-			if (crop != null) {
+			int rand = RandomUtil.getRandomInt(4);
+
+			if (rand == 0)
+				acceptedTask = INSPECTING;
+
+			else if (rand == 1)
+				acceptedTask = CLEANING;
+
+			else if (rand == 2)
+				acceptedTask = SAMPLING;
+
+			else if (rand == 3)
+				acceptedTask = GROWING_TISSUE;
+
+			else {
 				
-				int rand = RandomUtil.getRandomInt(10);
+				// Checks quickly to see if a needy crop is available
+				Crop crop = greenhouse.getNeedyCrop();
 				
-				if (rand == 0)
-					acceptedTask = INSPECTING;
-	
-				else if (rand == 1)
-					acceptedTask = CLEANING;
-	
-				else if (rand == 2)
-					acceptedTask = SAMPLING;
-	
-				else  if (rand == 3)
-					acceptedTask = GROWING_TISSUE;
-				
-				else {
+				if (crop != null) {
 					// Plant a crop or tending a crop
 					if (greenhouse.getNumCrops2Plant() > 0)
 						acceptedTask = TRANSFERRING_SEEDLING;
 					else
 						acceptedTask = TENDING;
 				}
-								
-				addPhase(acceptedTask);
-				setPhase(acceptedTask);
+				
+				else {
+					rand = RandomUtil.getRandomInt(3);
+					
+					if (rand == 0)
+						acceptedTask = INSPECTING;
+		
+					else if (rand == 1)
+						acceptedTask = CLEANING;
+		
+					else if (rand == 2)
+						acceptedTask = GROWING_TISSUE;
+					
+					else {
+						acceptedTask = SAMPLING;
+					}
+				}
 			}
-			
-			else if (acceptedTask == null) {
-				int rand = RandomUtil.getRandomInt(3);
-	
-				if (rand == 0)
-					acceptedTask = INSPECTING;
-	
-				else if (rand == 1)
-					acceptedTask = CLEANING;
-	
-				else if (rand == 2)
-					acceptedTask = SAMPLING;
-	
-				else 
-					acceptedTask = GROWING_TISSUE;
-
-				addPhase(acceptedTask);
-				setPhase(acceptedTask);
-			}
+				
+			addPhase(acceptedTask);
+			setPhase(acceptedTask);
 		}
+		
 		else {
 			logger.log(person, Level.WARNING, 0, "Could not find a greenhouse to tend.");
 			endTask();
@@ -168,14 +167,27 @@ public class TendGreenhouse extends Task implements Serializable {
 		if (farmBuilding != null) {
 			greenhouse = farmBuilding.getFarming();
 
-			// Walk to greenhouse.
-			walkToTaskSpecificActivitySpotInBuilding(farmBuilding, FunctionType.FARMING, false);
+			// Checks quickly to see if a needy crop is available
+			Crop crop = greenhouse.getNeedyCrop();
+			
+			if (crop != null) {
+				// Walk to greenhouse.
+				walkToTaskSpecificActivitySpotInBuilding(farmBuilding, FunctionType.FARMING, false);
+				
+				acceptedTask = TENDING;
 
+				addPhase(TENDING);
+				setPhase(TENDING);
+			}
+			else {
+				acceptedTask = CLEANING;
+			}
+			
 			// Initialize phase
-			addPhase(TENDING);
-			setPhase(TENDING);
-
-		} else {
+			addPhase(acceptedTask);
+			setPhase(acceptedTask);
+		}
+		else {
 			endTask();
 			return;
 		}
@@ -239,8 +251,10 @@ public class TendGreenhouse extends Task implements Serializable {
 	 */
 	private double tendingPhase(double time) {
 
-		double workTime = 0;
-
+		double workTime = time;
+		
+		double remainingTime = 0;
+		
 		if (isDone()) {
 			return time;
 		}
@@ -256,42 +270,66 @@ public class TendGreenhouse extends Task implements Serializable {
 			return time;
 		}
 
-		double mod = 0;
-
-		if (worker.getUnitType() == UnitType.PERSON) {
-			mod = 2D;
+		Crop needyCrop = greenhouse.getNeedyCrop();
+		
+		if (needyCrop == null) {
+			setDescriptionCropDone();
 		}
-
+		
 		else {
-			mod = 1D;
-		}
-
-		// Determine amount of effective work time based on "Botany" skill
-		int greenhouseSkill = getEffectiveSkillLevel();
-		if (greenhouseSkill <= 0) {
-			mod *= RandomUtil.getRandomDouble(.5, 1.0);
-		} else {
-			mod *= RandomUtil.getRandomDouble(.5, 1.0) * greenhouseSkill * 1.2;
-		}
-
-		workTime = time * mod;
-
-		double modRemainingTime = greenhouse.addWork(workTime, this, worker);
-		
-		// Add experience
-		addExperience(time);
-
-		// Check for accident in greenhouse.
-		checkForAccident(farmBuilding, time, 0.005D);
-
-		// Calculate used time
-		double usedTime = workTime - modRemainingTime;
-		
-		double remainingTime = 0;
-		
-		if (modRemainingTime > 0) {
-			// Divided by mod to get back any leftover real time
-			remainingTime = time - (usedTime / mod);
+			boolean needTending = needyCrop.getCurrentWorkRequired() > Crop.CROP_TIME_OFFSET;
+			
+			if (needTending) {
+				double remain = greenhouse.addWork(workTime, worker, needyCrop);
+				
+				// Calculate used time
+				double usedTime = workTime - remain;
+				
+				if (usedTime > 0) {
+					setCropDescription(needyCrop);
+	
+					double mod = 0;
+	
+					if (worker.getUnitType() == UnitType.PERSON) {
+						mod = 1;
+					}
+	
+					else {
+						mod = .5;
+					}
+	
+					// Determine amount of effective work time based on "Botany" skill
+					int greenhouseSkill = getEffectiveSkillLevel();
+					if (greenhouseSkill <= 0) {
+						mod *= RandomUtil.getRandomDouble(.5, 1.0);
+					} else {
+						mod *= RandomUtil.getRandomDouble(.5, 1.0) * greenhouseSkill * 1.2;
+					}
+	
+					workTime = time * mod;
+	
+					if (remain > 0) {
+						// Divided by mod to get back any leftover real time
+						remainingTime = time - (usedTime / mod);
+					}
+					
+					// Add experience
+					addExperience(time);
+			
+					// Check for accident in greenhouse.
+					checkForAccident(farmBuilding, time, 0.005D);
+				}
+				else {
+					logger.log(greenhouse.getBuilding(), worker, Level.INFO, 30_000, 
+							"usedTime: " + usedTime + ".");
+					setDescriptionCropDone();
+				}
+			}
+			else {
+				logger.log(greenhouse.getBuilding(), worker, Level.INFO, 30_000, 
+						"Tending " + needyCrop.getCropName() + " not needed.");
+				setDescriptionCropDone();
+			}
 		}
 		
 //		logger.log(farmBuilding, worker, Level.INFO, 10_000,

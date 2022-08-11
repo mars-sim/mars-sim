@@ -26,7 +26,7 @@ import org.mars_sim.msp.core.structure.building.Building;
  */
 public class TendGreenhouseMeta extends MetaTask {
 
-    private static final double VALUE = 4D;
+    private static final double VALUE = 1;
     
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(TendGreenhouseMeta.class.getName());
@@ -59,9 +59,10 @@ public class TendGreenhouseMeta extends MetaTask {
                 Building farmingBuilding = TendGreenhouse.getAvailableGreenhouse(person);
                 if (farmingBuilding != null) {
 
-                    int needyCropsNum = person.getSettlement().getCropsNeedingTending();
-                    result = needyCropsNum * VALUE;
-
+//                    int needyCropsNum = person.getSettlement().getCropsNeedingTending();
+                    double tendingNeed = person.getSettlement().getCropsTendingNeed();
+                    result = tendingNeed;// + needyCropsNum * VALUE;
+                    
                     if (result <= 0) result = 0;
                     
                     // Crowding modifier.

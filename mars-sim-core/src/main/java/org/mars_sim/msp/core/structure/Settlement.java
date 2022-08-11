@@ -214,7 +214,9 @@ public class Settlement extends Structure implements Temporal,
 	/** number of people with work shift "Off" */
 	private int numOff;
 	/** The cache for the numbers of crops that need tending. */
-	private int cropsNeedingTendingCache = 5;
+	private int cropsNeedTendingNum = 5;
+	/** The tending need of of the crops. */
+	private int cropsTendingNeed = 0;
 	/** The cache for millisol. */
 	private int millisolCache = -5;
 	/** Numbers of citizens of this settlement. */
@@ -939,16 +941,12 @@ public class Settlement extends Structure implements Temporal,
 			return false;
 		}
 
-		doCropsNeedTending(pulse);
+		// Updates how much crops need tending
+		computeCropTendingNeed(pulse);
 
 		// what to take into consideration the presence of robots ?
 		// If no current population at settlement for one sol, power down the
 		// building and turn the heat off ?
-
-//		if (powerGrid.getPowerMode() != PowerMode.POWER_UP)
-//			powerGrid.setPowerMode(PowerMode.POWER_UP);
-		// check if POWER_UP is necessary
-		// Question: is POWER_UP a prerequisite of FULL_POWER ?
 
 		// Calls other time passings
 		otherTimePassings(pulse);
@@ -1728,7 +1726,7 @@ public class Settlement extends Structure implements Temporal,
 
 
 	/**
-	 * Check for available airlocks
+	 * Checks for available airlocks.
 	 */
 	public void checkAvailableAirlocks() {
 		List<Building> pressurizedBldgs = new ArrayList<>();
@@ -1753,7 +1751,7 @@ public class Settlement extends Structure implements Temporal,
 	}
 		
 	/**
-	 * Categorize the state of the airlocks
+	 * Categorizes the state of the airlocks.
 	 * 
 	 * @param bldgs
 	 * @param pressurized
@@ -3123,27 +3121,38 @@ public class Settlement extends Structure implements Temporal,
 	 * @return number of crops.
 	 */
 	public int getCropsNeedingTending() {
-		return cropsNeedingTendingCache;
+		return cropsNeedTendingNum;
 	}
 
 	/**
-	 * Calculate if the crops need tending. Add a buffer of 5 millisol.
+	 * Gets the tending need of the crops in greenhouses.
+	 *
+	 * @return tending need
+	 */
+	public double getCropsTendingNeed() {
+		return cropsTendingNeed;
+	}
+	
+	/**
+	 * Compute how much the crops need tending. Add a buffer of 5 millisol.
+	 * 
 	 * @param now Current time
 	 */
-	private void doCropsNeedTending(ClockPulse pulse) {
-
+	private void computeCropTendingNeed(ClockPulse pulse) {
 		int msol = pulse.getMarsTime().getMillisolInt();
 
 		// Check for the day rolling over
 		if (pulse.isNewSol() || (millisolCache + 5) < msol) {
 			millisolCache = msol;
-			cropsNeedingTendingCache = 0;
+			cropsTendingNeed = 0;
+			cropsNeedTendingNum = 0;
 			for (Building b : buildingManager.getBuildings(FunctionType.FARMING)) {
-				cropsNeedingTendingCache += b.getFarming().getNumNeedTending();
+				cropsNeedTendingNum += b.getFarming().getNumNeedTending();
+				cropsTendingNeed += b.getFarming().getTendingNeed();
 			}
 		}
 	}
-
+	
 	/**
 	 * Computes the probability of the presence of regolith
 	 *

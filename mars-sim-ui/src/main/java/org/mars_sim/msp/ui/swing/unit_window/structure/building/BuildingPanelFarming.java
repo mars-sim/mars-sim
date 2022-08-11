@@ -72,7 +72,7 @@ implements MouseListener {
 	private static final String PLANT_ICON = Msg.getString("icon.plant"); //$NON-NLS-1$
 
 	// Data members
-	private JTextField radTF, farmersTF, cropsTF, waterUsageTF, greyWaterUsageTF, o2TF, co2TF;
+	private JTextField radTF, farmersTF, cropsTF, waterUsageTF, greyWaterUsageTF, o2TF, co2TF, workTimeTF;
 
 	// Data cache
 	/** The number of farmers cache. */
@@ -91,6 +91,8 @@ implements MouseListener {
 	private double o2Cache;
 	/** The cache value for the average CO2 consumed per sol per square meters. */
 	private double co2Cache;
+	/** The cache value for the work time done in this greenhouse. */
+	private double workTimeCache;
 
 	private DefaultComboBoxModel<String> comboBoxModel;
 	private JComboBoxMW<String> comboBox;
@@ -180,9 +182,15 @@ implements MouseListener {
 							 Msg.getString("BuildingPanelFarming.co2", co2Cache + ""),
 							 Msg.getString("BuildingPanelFarming.co2.tooltip"));
 
+		// Update the cumulative work time
+		workTimeCache = Math.round(farm.getCumulativeWorkTime())/1000.0;
+		workTimeTF = addTextField(springPanel, Msg.getString("BuildingPanelFarming.workTime.title"),
+				 Msg.getString("BuildingPanelFarming.workTime", workTimeCache + ""),
+				 Msg.getString("BuildingPanelFarming.workTime.tooltip"));
+		
 		// Lay out the spring panel.
 		SpringUtilities.makeCompactGrid(springPanel,
-		                                7, 2, //rows, cols
+		                                8, 2, //rows, cols
 		                                INITX_DEFAULT, INITY_DEFAULT,        //initX, initY
 		                                XPAD_DEFAULT, YPAD_DEFAULT);       //xPad, yPad
 
@@ -497,26 +505,41 @@ implements MouseListener {
 		}
 
 		// Update the average water usage
-		double new_water = farm.computeUsage(0);
-		if (waterUsageCache != new_water) {
-			waterUsageCache = new_water;
-			waterUsageTF.setText(Msg.getString("BuildingPanelFarming.waterUsage", waterUsageCache));
+		double newWater = farm.computeUsage(0);
+		if (waterUsageCache != newWater) {
+			waterUsageCache = newWater;
+			waterUsageTF.setText(Msg.getString("BuildingPanelFarming.waterUsage", newWater));
 		}
 
 		// Update the average O2 generated
-		double new_o2 = farm.computeUsage(1);
-		if (o2Cache != new_o2) {
-			o2Cache = new_o2;
-			o2TF.setText(Msg.getString("BuildingPanelFarming.o2", o2Cache));
+		double newO2 = farm.computeUsage(1);
+		if (o2Cache != newO2) {
+			o2Cache = newO2;
+			o2TF.setText(Msg.getString("BuildingPanelFarming.o2", newO2));
 		}
 
 		// Update the average CO2 consumed
-		double new_co2 = farm.computeUsage(2);
-		if (co2Cache != new_co2) {
-			co2Cache = new_co2;
-			co2TF.setText(Msg.getString("BuildingPanelFarming.co2", co2Cache));
+		double newCo2 = farm.computeUsage(2);
+		if (co2Cache != newCo2) {
+			co2Cache = newCo2;
+			co2TF.setText(Msg.getString("BuildingPanelFarming.co2", newCo2));
 		}
 
+		// Update the average grey water usage
+		double newGreyWater = farm.computeUsage(3);
+		if (greyWaterUsageCache != newGreyWater) {
+			greyWaterUsageCache = newGreyWater;
+			greyWaterUsageTF.setText(Msg.getString("BuildingPanelFarming.greyWaterUsage", newGreyWater));
+		}
+		
+		// Update the cumulative work time
+		double workTime = Math.round(farm.getCumulativeWorkTime())/1000.0;
+		if (workTimeCache != workTime) {
+			workTimeCache = workTime;
+			workTimeTF.setText(Msg.getString("BuildingPanelFarming.workTime", workTime));
+		}
+		
+		
 		// Update crop table.
 		cropTableModel.update();
 

@@ -96,6 +96,8 @@ public class Farming extends Function {
 	private double powerSustainingCrop;
 	private double maxGrowingArea;
 	private double remainingGrowingArea;
+	/** The cumulative time spent in this greenhouse. */
+	private double cumulativeWorkTime;	
 	
 	public enum Aspect {
 	    ATTRACTIVENESS,
@@ -657,47 +659,23 @@ public class Farming extends Function {
 	 * @return workTime remaining after working on crop (millisols)
 	 * @throws Exception if error adding work.
 	 */
-	public double addWork(double workTime, TendGreenhouse h, Worker worker) {
-		double t = workTime;
-	
-		Crop needyCrop = getNeedyCrop(needyCropCache);
-		
-		if (needyCrop != null)
-			h.setCropDescription(needyCrop);
-		else
-			h.setDescriptionCropDone();
-		
-		// NOTE: Redesign addWork() to check on each food crop
-		while (needyCrop != null && t > MIN) {
-			// WARNING : ensure timeRemaining gets smaller
-			// or else creating an infinite loop
-			t = needyCrop.addWork(worker, t) * .9999;
-			// Save/Cache the needy crop
-			needyCropCache = needyCrop;
-			// Obtain a new needy crop
-			needyCrop = getNeedyCrop(needyCropCache);
-
-			if (needyCrop != null) {
-				if (!needyCropCache.equals(needyCrop)) {
-					// Update the name of the crop being worked on in the task
-					// description
-					h.setCropDescription(needyCrop);
-				}
-			}
-			else
-				h.setDescriptionCropDone();
-		}
-
-		return t;
+	public double addWork(double workTime, Worker worker, Crop needyCrop) {
+		return needyCrop.addWork(worker, workTime);
 	}
 
+	public Crop getNeedyCropCache() {
+		return needyCropCache;
+	}
+	
 	/**
 	 * Gets a crop that needs work time.
 	 *
 	 * @param currentCrop
 	 * @return crop or null if none found.
 	 */
-	public Crop getNeedyCrop(Crop currentCrop) {
+	public Crop getNeedyCrop() {
+		Crop currentCrop = needyCropCache;
+		
 		if (crops == null || crops.isEmpty())
 			return null;
 
@@ -730,6 +708,8 @@ public class Farming extends Function {
 								needyCrops.size() - 1));
 		}
 
+		needyCropCache = nextCrop;
+		
 		return nextCrop;
 	}
 
@@ -1155,6 +1135,37 @@ public class Farming extends Function {
 		cropsNeedingTending += numCrops2Plant;
 
 		return cropsNeedingTending;
+	}
+
+	/**
+	 * Gets the tending need of all growing crops.
+	 * 
+	 * @return
+	 */
+	public double getTendingNeed() {
+		double need = 0;
+		for (Crop c : crops) {
+			need += c.getTendingNeed();
+		}
+		return need;
+	}
+	
+	/**
+	 * Gets the cumulative work time.
+	 * 
+	 * @return
+	 */
+	public double getCumulativeWorkTime() {
+		return cumulativeWorkTime;
+	}
+	
+	/**
+	 * Gets the cumulative work time.
+	 * 
+	 * @return
+	 */
+	public void addCumulativeWorkTime(double value) {
+		cumulativeWorkTime += value;
 	}
 	
 	@Override

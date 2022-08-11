@@ -49,8 +49,14 @@ public class Crop implements Comparable<Crop>, Serializable {
 	/** How often to calculate the crop health */
 	private static final int CHECK_HEALTH_FREQUENCY = 20;
 	
+	/** The modifier for the work time on a crop. */
+	private static final double WORK_FACTOR = 1;
+	
+	/** The rate of taking care of the health of the crop. */
+	private static final double RECOVER_HEALTH_RATE = .05;
+	
 	/** The mininum time offset [in millisols] for a crop that requires work. */
-	private static final double CROP_TIME_OFFSET = 5;
+	public static final double CROP_TIME_OFFSET = 10;
 	
 	// Future: Move params into crops.xml and load from CropConfig
 	/** How often are the crops checked in mSols */
@@ -138,6 +144,8 @@ public class Crop implements Comparable<Crop>, Serializable {
 	private double remainingHarvest;
 	/** The completed work time in current phase [in millisols]. */
 	private double currentPhaseWorkCompleted = 0;
+	/** The current work time required [in millisols]. */
+	private double currentWorkRequired = RandomUtil.getRandomDouble(0, 10);
 	/** The daily harvest for crop [in kg/per sol]. */
 	private double dailyHarvest;
 	/** The total amount harvested [in kg]. */
@@ -254,8 +262,8 @@ public class Crop implements Comparable<Crop>, Serializable {
 
 			if (tissuePercent <= 0) {
 				// assume a max 2-day incubation period if no 0% tissue culture is available
-				currentPhaseWorkCompleted = 0;
 				phaseType = PhaseType.INCUBATION;
+				currentPhaseWorkCompleted = 0;
 				logger.log(building, Level.INFO, 0, " No " + name
 						+ " tissue-culture left. Restocking.");
 				// Need a petri dish
@@ -269,8 +277,8 @@ public class Crop implements Comparable<Crop>, Serializable {
 
 			else if (tissuePercent >= 100) {
 				// assume zero day incubation period if 100% tissue culture is available
-				currentPhaseWorkCompleted = 0;
 				phaseType = PhaseType.PLANTING;
+				currentPhaseWorkCompleted = 0;
 				logger.log(building, Level.INFO, 0, "Done growing " + name
 						+ "'s tissue-culture. Transferring plantflets to the field.");
 
@@ -287,17 +295,12 @@ public class Crop implements Comparable<Crop>, Serializable {
 								+ Math.round(currentPhaseWorkCompleted / 1000D * 10D) / 10D
 								+ " sols is needed to clone enough " + name + " tissues before planting.");
 			}
-
 		}
 
 		else {
 			// This is a grown crop at the start of the sim,
 			// Set the percentage of growth randomly
-			growingTimeCompleted = RandomUtil.getRandomDouble(growingTime * .95); // for testing only :
-																					// growingTimeCompleted =
-																					// growingTime - 3000 +
-																					// RandomUtil.getRandomDouble(3000D);
-																					// or = growingTime * .975;
+			growingTimeCompleted = RandomUtil.getRandomDouble(growingTime * .95);
 
 			percentageGrowth = (growingTimeCompleted * 100D) / growingTime;
 
@@ -307,6 +310,8 @@ public class Crop implements Comparable<Crop>, Serializable {
 				phaseType = cropSpec.getNextPhaseType(phaseType);
 			}
 
+			currentPhaseWorkCompleted = 1000D * cropSpec.getPhase(phaseType).getWorkRequired();
+					
 			// Set the daily harvest
 			dailyHarvest = dailyMaxHarvest;
 			// Set the remaining harvest based on percentageGrowth
@@ -399,18 +404,47 @@ public class Crop implements Comparable<Crop>, Serializable {
 	}
 
 	/**
+	 * Gets the amount of growing time completed.
+	 *
+	 * @return growing time (millisols)
+	 */
+	public double getCurrentPhaseWorkCompleted() {
+		return currentPhaseWorkCompleted;
+	}
+	
+	/**
+	 * Gets the current work required.
+	 * 
+	 * @return
+	 */
+	public double getCurrentWorkRequired() {
+		return currentWorkRequired;
+	}
+	
+	/**
 	 * Checks if crop needs additional work on current sol.
 	 *
 	 * @return true if more work needed.
 	 */
 	public boolean requiresWork() {
 		// Note that harvesting phase works differently
-		if (currentPhase.getPhaseType() == PhaseType.HARVESTING)
+		if (currentPhase.getPhaseType() == PhaseType.HARVESTING
+				|| currentPhase.getPhaseType() == PhaseType.PLANTING
+				|| currentPhase.getPhaseType() == PhaseType.INCUBATION
+				)
 			return true;
-
-		return currentPhase.getWorkRequired() * 1000D - CROP_TIME_OFFSET > currentPhaseWorkCompleted;
+		
+		return currentWorkRequired > CROP_TIME_OFFSET;
 	}
 
+	/**
+	 * Gets the tending need of this crop.
+	 * 
+	 * @return
+	 */
+	public double getTendingNeed() {
+		return currentWorkRequired;
+	}
 
 	/**
 	 * Tracks the overall health condition of the crop.
@@ -442,6 +476,9 @@ public class Crop implements Comparable<Crop>, Serializable {
 			break;
 		}
 
+//		logger.log(building, Level.INFO, 0, name
+//				+ " health: " + Math.round(health * 100D) / 1D + "%");
+		
 		if (health > 1D)
 			health = 1D;
 		else if (health < 0D)
@@ -451,7 +488,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 			// Check on the health of a >10% growing crop
 			if (health < .05) {
 				logger.log(building, Level.WARNING, 0, "Crop " + name
-						+ " died of very poor health (" + Math.round(health * 100D) / 100D + " %)");
+						+ " died of very poor health (" + Math.round(health * 100D) / 1D + " %)");
 				// Add Crop Waste
 				double amt = (percentageGrowth * remainingHarvest * RandomUtil.getRandomDouble(.5))/100D;
 				if (amt > 0) {
@@ -467,7 +504,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 				// factors
 			if (health < .2) {
 				logger.log(building, Level.WARNING, 0, "The seedlings of " + name + " had poor health ("
-						+ Math.round(health * 100D) / 100D + " %) and didn't survive.");
+						+ Math.round(health * 100D) / 1D + " %) and didn't survive.");
 				// Add Crop Waste
 				double amt = (percentageGrowth * remainingHarvest * RandomUtil.getRandomDouble(.5))/100D;
 				if (amt > 0) {
@@ -504,11 +541,17 @@ public class Crop implements Comparable<Crop>, Serializable {
 			}
 		}
 
+//		logger.log(building, Level.INFO, 0, name
+//				+ " - diseaseIndex: " + diseaseIndex
+//				+ "   currentWorkRequired: " + currentWorkRequired);
+		
 		// TODO: will need to model diseaseIndex
-		health = (1 - diseaseIndex) * total / size;
+		health = (1 - diseaseIndex) * total / size - currentWorkRequired/3000.0;
 
 		if (health > 1)
 			health = 1;
+		else if (health < 0)
+			health = 0;
 
 		return health;
 	}
@@ -521,17 +564,26 @@ public class Crop implements Comparable<Crop>, Serializable {
 	 * @throws Exception if error adding work.
 	 */
 	public double addWork(Worker worker, double workTime) {
-		// Called by Farming's addWork()
+		double time = workTime * WORK_FACTOR / growingArea;
 		// Note: it's important to set remainingTime initially to zero. If not, addWork will be in endless while loop
 		double remainingTime = 0;
+		// Record the work time in Farming
+		farm.addCumulativeWorkTime(time);
+		// Reduce the work required
+		currentWorkRequired -= time;
+		// Allow the plant to be over-tended so that it won't need to be taken care of for a while
+		if (currentWorkRequired < -10) {
+			currentWorkRequired = -10;
+			return workTime;
+		}
 
+		
 		// Improve the health of the crop each time it's being worked on
-		if (healthCondition < 1)
-			healthCondition += .001 * workTime;
+		healthCondition += RECOVER_HEALTH_RATE * time;
 		if (healthCondition > 1)
 			healthCondition = 1;
 
-		double w = currentPhase.getWorkRequired() * 1000D;
+		double phaseWorkReqMillisols = currentPhase.getWorkRequired() * 1000D;
 
 		if (dailyHarvest < 0D) {
 			dailyHarvest = 0;
@@ -543,29 +595,29 @@ public class Crop implements Comparable<Crop>, Serializable {
 		switch (phaseType) {
 		case INCUBATION:
 		case PLANTING:
-			// at a particular growing phase (NOT including the harvesting phase)
-			currentPhaseWorkCompleted += workTime;
-
-			if (currentPhaseWorkCompleted >= w * 1.01) {
-				remainingTime = currentPhaseWorkCompleted - w;
-				currentPhaseWorkCompleted = 0D;
+			// At a particular growing phase (NOT including the harvesting phase)
+			currentPhaseWorkCompleted += time;
+			
+			if (currentPhaseWorkCompleted >= phaseWorkReqMillisols * 1.01) {
+//				remainingTime = currentPhaseWorkCompleted - workMillisols;
+				currentPhaseWorkCompleted = 0;
 				advancePhase();
 				logger.log(building, Level.FINE, 0, name + " had entered a new phase " + currentPhase.getPhaseType()
-						+ "   Work Completed : " + Math.round(currentPhaseWorkCompleted * 10D) / 10D
-						+ "   Work Required : " + Math.round(w * 10D) / 10D);
+						+ "   Phase Work Completed : " + Math.round(currentPhaseWorkCompleted * 10D) / 10D
+						+ "   Phase Work Required : " + Math.round(phaseWorkReqMillisols * 10D) / 10D);
 			}
 			break;
 
 		case MATURATION:
 		case HARVESTING:
 			// at the maturation or harvesting phase
-			currentPhaseWorkCompleted += workTime;
+			currentPhaseWorkCompleted += time;
 			// Set the harvest multiplier
 			int multiplier = 5;
 
-			if (currentPhaseWorkCompleted >= w * 1.01) {
+			if (currentPhaseWorkCompleted >= phaseWorkReqMillisols * 1.01) {
 				// Modify parameter list to include crop name
-				double lastHarvest = multiplier * dailyHarvest * workTime / w;
+				double lastHarvest = multiplier * dailyHarvest * time/ phaseWorkReqMillisols;
 
 				if (remainingHarvest > 0) {
 					collectProduce(lastHarvest);
@@ -573,7 +625,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 					remainingHarvest -= lastHarvest;
 					totalHarvest += lastHarvest;
 
-					remainingTime = Math.min(workTime, currentPhaseWorkCompleted - w);
+//					remainingTime = Math.min(time, currentPhaseWorkCompleted - workMillisols);
 
 					// Don't end until there is nothing left ?
 					if (remainingHarvest <= 0) {
@@ -605,14 +657,14 @@ public class Crop implements Comparable<Crop>, Serializable {
 			else {
 				if (dailyHarvest > 0.00001) {
 					// Continue the harvesting process
-					double modifiedHarvest = multiplier * dailyHarvest * workTime / w;
+					double modifiedHarvest = multiplier * dailyHarvest * time / phaseWorkReqMillisols;
 					// Store the crop harvest
 					if (modifiedHarvest > 0 && remainingHarvest > 0) {
 						collectProduce(modifiedHarvest);
 						remainingHarvest -= modifiedHarvest;
 						totalHarvest += modifiedHarvest;
 					}
-					remainingTime = 0D;
+//					remainingTime = 0D;
 				}
 			}
 			break;
@@ -623,10 +675,10 @@ public class Crop implements Comparable<Crop>, Serializable {
 
 		default:
 			// at a particular growing phase (NOT including the harvesting phase)
-			currentPhaseWorkCompleted += workTime;
+			currentPhaseWorkCompleted += time;
 
-			if (currentPhaseWorkCompleted >= w * 1.01) {
-				remainingTime = Math.min(workTime, currentPhaseWorkCompleted - w);
+			if (currentPhaseWorkCompleted >= phaseWorkReqMillisols * 1.01) {
+//				remainingTime = Math.min(time, currentPhaseWorkCompleted - workMillisols);
 				currentPhaseWorkCompleted = 0D;
 			}
 			break;
@@ -634,7 +686,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 
 		// Safety check
 		if ((currentPhase.getPhaseType() == PhaseType.HARVESTING) && percentageGrowth > 115D)  {
-			logger.log(building, Level.FINE, 0, name + "'s percentageGrowth is " + percentageGrowth
+			logger.log(building, Level.INFO, 0, name + "'s percentageGrowth is " + percentageGrowth
 					   + "%  Setting the phase to FINISHED.");
 			updatePhase(PhaseType.FINISHED);
 		}
@@ -647,6 +699,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 	 */
 	private void advancePhase() {
 		currentPhase = cropSpec.getNextPhase(currentPhase);
+		currentPhaseWorkCompleted = 0;
 		logger.fine(building, name + " is now in " + currentPhase.getPhaseType());
 	}
 	
@@ -705,13 +758,16 @@ public class Crop implements Comparable<Crop>, Serializable {
 	public boolean timePassing(ClockPulse pulse, double productionLevel,
 							   double solarIrradiance, double greyFilterRate,
 							   double temperatureModifier) {
-			
+
 		PhaseType phaseType = currentPhase.getPhaseType();
 		if (phaseType == PhaseType.FINISHED) {
 			return false;
 		}
 
 		double elapsed = pulse.getElapsed();
+		
+		currentWorkRequired += elapsed;
+
 		accumulatedTime += elapsed;
 
 		if (accumulatedTime >= CHECK_CROP_PERIOD) {
@@ -754,11 +810,13 @@ public class Crop implements Comparable<Crop>, Serializable {
 
 		// Resets thing at the end of a sol.
 		if (resetEndOfSol(pulse)) {
-			int msol = pulse.getMarsTime().getMillisolInt();
-			if (msol % CHECK_HEALTH_FREQUENCY == 0) {
-				// Checks on crop health
-				trackHealth();
-			}
+			// Add tasks
+		}
+		
+		int msol = pulse.getMarsTime().getMillisolInt();
+		if (msol % CHECK_HEALTH_FREQUENCY == 0) {
+			// Checks on crop health
+			trackHealth();
 		}
 		
 		return true;
@@ -817,7 +875,6 @@ public class Crop implements Comparable<Crop>, Serializable {
 	private double computeLight(ClockPulse pulse, double time, double solarIrradiance) {
 		double lightModifier = 0;
 
-		int msols = pulse.getMarsTime().getMillisolInt();
 		// Note : The average PAR is estimated to be 20.8 mol/(m² day) (Gertner, 1999)
 		// Calculate instantaneous PAR from solar irradiance
 		double uPAR = wattToPhotonConversionRatio * solarIrradiance;
@@ -830,20 +887,23 @@ public class Crop implements Comparable<Crop>, Serializable {
 		// 1 u = 1 micro = 1/1_000_000
 		// Note : daily-PAR has the unit of [mol /m^2 /day]
 		// Gauge if there is enough sunlight
-		double progress = cumulativeDailyPAR / dailyPARRequired; // [max is 1]
+//		double progress = cumulativeDailyPAR / dailyPARRequired; // [max is 1]
+//		double clock = time / 1000D; // [max is 1]
 
-		double clock = msols / 1000D; // [max is 1]
-
-		// When enough PAR have been administered to the crop, the HPS_LAMP will turn
-		// off.
+		// When enough PAR have been administered to the crop, HPS_LAMP will turn off.
+		
 		// TODO: what if the time zone of a settlement causes sunlight to shine at near
 		// the tail end of the currentMillisols time ?
+		
 		// Compared cumulativeDailyPAR / dailyPARRequired vs. current time /
 		// 1000D
+		
 		// Reduce the frequent toggling on and off of lamp and to check on
 		// the time of day to anticipate the need of sunlight.
-		if (0.5 * progress < clock && msols <= 333 || 0.7 * progress < clock && msols > 333 && msols <= 666
-				|| progress < clock && msols > 666) {
+//		double millisols = pulse.getMarsTime().getMillisol();
+//		if (0.5 * progress < clock && millisols <= 333 || 0.7 * progress < clock 
+//				&& millisols > 333 && millisols <= 666
+//				|| progress < clock && millisols > 666) {
 			// TODO: also compare also how much more sunlight will still be available
 			if (uPAR > 40) { // if sunlight is available
 				turnOffLighting();
@@ -864,13 +924,17 @@ public class Crop implements Comparable<Crop>, Serializable {
 				double delta_kW = delta_PAR_outstanding / time / conversion_factor;
 				// [kW] = [mol] / [u mol /m^2 /s /(Wm^-2)] / [millisols] / [s /millisols] = [W
 				// /u] * u * k/10e-3 = [kW]; since 1 u = 10e-6
+				
 				// TODO: Typically, 5 lamps per square meter for a level of ~1000 mol/ m^2 /s
 				// Added PHYSIOLOGICAL_LIMIT sets a realistic limit for tuning how
 				// much PAR a food crop can absorb per frame.
+				
 				// Note 1 : PHYSIOLOGICAL_LIMIT minimize too many lights turned on and off too
 				// frequently
+				
 				// Note 2 : It serves to smooth out the instantaneous power demand over a period
 				// of time
+				
 				// each HPS_LAMP lamp supplies 400W has only 40% visible radiation efficiency
 				int numLamp = (int) (Math.ceil(
 						delta_kW / KW_PER_HPS / VISIBLE_RADIATION_HPS / (1 - BALLAST_LOSS_HPS) * PHYSIOLOGICAL_LIMIT));
@@ -890,16 +954,16 @@ public class Crop implements Comparable<Crop>, Serializable {
 				// Gets the effectivePAR
 				effectivePAR = delta_PAR_supplied + PAR_interval;
 			}
-		}
-
-		else {
-			turnOffLighting();
-		}
+//		}
+//
+//		else {
+//			turnOffLighting();
+//		}
 
 		// check for the passing of each day
 		int newSol = pulse.getMarsTime().getMissionSol();
 		// the crop has memory of the past lighting condition
-		lightModifier = cumulativeDailyPAR / (dailyPARRequired + .0001) * 1000D / ( msols  + .0001);
+		lightModifier = cumulativeDailyPAR / (dailyPARRequired + .0001) * 1000D / ( time  + .0001);
 		// TODO: If too much light, the crop's health may suffer unless a person comes
 		// to intervene
 		if (isStartup && newSol == 1) {

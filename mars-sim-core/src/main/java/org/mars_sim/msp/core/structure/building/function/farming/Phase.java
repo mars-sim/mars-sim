@@ -18,6 +18,7 @@ public class Phase implements Serializable {
     private static final long serialVersionUID = 1L;
 
 	private PhaseType phaseType;
+	 /** The work needed [in sols] at this phase. */
 	private double workRequired;
 	private double percentGrowth;
 
