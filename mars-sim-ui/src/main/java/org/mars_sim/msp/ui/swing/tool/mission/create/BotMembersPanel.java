@@ -337,7 +337,7 @@ implements ActionListener {
 						result = RobotJob.getName(robot.getRobotType());
 					else if (column == 2) {
 						Mission mission = robot.getBotMind().getMission();
-						if (mission != null) result = mission.getTypeID();
+						if (mission != null) result = mission.getName();
 						else result = "None";
 					}
 					else if (column == 3) 
@@ -463,7 +463,7 @@ implements ActionListener {
 						result = RobotJob.getName(robot.getRobotType());
 					else if (column == 2) {
 						Mission mission = robot.getBotMind().getMission();
-						if (mission != null) result = mission.getTypeID();
+						if (mission != null) result = mission.getName();
 						else 
 							result = "None";
 					}

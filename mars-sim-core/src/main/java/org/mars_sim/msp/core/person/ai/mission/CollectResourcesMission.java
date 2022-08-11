@@ -106,15 +106,19 @@ public abstract class CollectResourcesMission extends EVAMission
 		
 		Settlement s = startingPerson.getSettlement();
 
-		if (s != null) {
+		if (s != null && !isDone()) {
 			setResourceID(resourceID);
 			this.collected = new HashMap<>();
 			this.containerID = containerID;
 			setEVAEquipment(containerID, containerNum);
 
 			// Recruit additional members to mission.
-			if (!recruitMembersForMission(startingPerson, MIN_PEOPLE))
+			if (!recruitMembersForMission(startingPerson, MIN_PEOPLE)) {
+				logger.warning(getVehicle(), "Not enough members recruited for mission " 
+						+ getName() + ".");
+				endMission(MissionStatus.NO_MEMBERS_AVAILABLE);
 				return;
+			}
 
 			// Determine collection sites
 			if (hasVehicle()) {
@@ -128,7 +132,8 @@ public abstract class CollectResourcesMission extends EVAMission
 				if (timeRange < range)
 					range = timeRange;
 				if (range <= 0D) {
-					logger.warning(getVehicle(), "Has zero range for mission " + getName());
+					logger.warning(getVehicle(), "Zero range for mission " 
+							+ getName() + ".");
 					endMission(MissionStatus.NO_AVAILABLE_VEHICLES);
 					return;
 				}

@@ -12,8 +12,6 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Arrays;
@@ -24,6 +22,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 import org.mars_sim.msp.core.Msg;
@@ -80,7 +79,7 @@ extends TabPanel {
 	public TabPanelMission(Vehicle vehicle, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
-			null,
+			Msg.getString("TabPanelMission.title"), //$NON-NLS-1$
 			ImageLoader.getNewIcon(FLAG_ICON),
 			Msg.getString("TabPanelMission.title"), //$NON-NLS-1$
 			vehicle, desktop
@@ -104,6 +103,7 @@ extends TabPanel {
 
 		// Prepare mission panel
 		WebPanel missionPanel = new WebPanel(new BorderLayout(0, 0));
+		missionPanel.setBorder(new EmptyBorder(15, 15, 15, 15));
 		missionTopPanel.add(missionPanel);
 
 		// Prepare mission text area
@@ -120,7 +120,7 @@ extends TabPanel {
 		missionTopPanel.add(missionPhasePanel);
 
 		// Prepare mission phase label
-		WebLabel missionPhaseLabel = new WebLabel(Msg.getString("TabPanelMission.missionPhase"), WebLabel.CENTER); //$NON-NLS-1$
+		WebLabel missionPhaseLabel = new WebLabel(Msg.getString("TabPanelMission.missionPhase"), SwingConstants.CENTER); //$NON-NLS-1$
 		missionPhaseLabel.setFont(TITLE_FONT);
 		missionPhasePanel.add(missionPhaseLabel, BorderLayout.NORTH);
 		missionTopPanel.add(missionPhasePanel);
@@ -139,7 +139,7 @@ extends TabPanel {
 		topContentPanel.add(missionBottomPanel, BorderLayout.CENTER);
 
 		// Prepare member label
-		WebLabel memberLabel = new WebLabel(Msg.getString("TabPanelMission.members"), WebLabel.CENTER); //$NON-NLS-1$
+		WebLabel memberLabel = new WebLabel(Msg.getString("TabPanelMission.members"), SwingConstants.CENTER); //$NON-NLS-1$
 		memberLabel.setFont(new Font("Serif", Font.BOLD, 14));
 		missionBottomPanel.add(memberLabel, BorderLayout.NORTH);
 
@@ -171,7 +171,7 @@ extends TabPanel {
 		});
 		memberScrollPanel.setViewportView(memberList);
 
-		WebPanel buttonPanel = new WebPanel(new GridLayout(2, 1, 0, 2));
+		WebPanel buttonPanel = new WebPanel(new GridLayout(2, 1, 5, 5));
 //		buttonPanel.setBorder(new MarsPanelBorder());
 		memberListPanel.add(buttonPanel);
 
@@ -179,36 +179,32 @@ extends TabPanel {
 		
 		// Create mission tool button
 		missionButton = new WebButton(ImageLoader.getIcon(Msg.getString("img.mission"))); //$NON-NLS-1$
-		missionButton.setMargin(new Insets(1, 1, 1, 1));
+		missionButton.setMargin(new Insets(2, 2, 2, 2));
 		missionButton.setToolTipText(Msg.getString("TabPanelMission.tooltip.mission")); //$NON-NLS-1$
-		missionButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
+		missionButton.addActionListener(e -> {
 				Vehicle vehicle = (Vehicle) unit;
-				Mission mission = missionManager.getMissionForVehicle(vehicle);
-				if (mission != null) {
-					getDesktop().openToolWindow(MissionWindow.NAME, mission);
+				Mission m = missionManager.getMissionForVehicle(vehicle);
+				if (m != null) {
+					getDesktop().openToolWindow(MissionWindow.NAME, m);
 				}
-			}
 		});
 		missionButton.setEnabled(mission != null);
 		buttonPanel.add(missionButton);
 
 		// Create member monitor button
 		monitorButton = new WebButton(ImageLoader.getIcon(Msg.getString("img.monitor"))); //$NON-NLS-1$
-		monitorButton.setMargin(new Insets(1, 1, 1, 1));
+		monitorButton.setMargin(new Insets(2, 2, 2, 2));
 		monitorButton.setToolTipText(Msg.getString("TabPanelMission.tooltip.monitor")); //$NON-NLS-1$
-		monitorButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
+		monitorButton.addActionListener(e -> {
 				Vehicle vehicle = (Vehicle) unit;
-				Mission mission = missionManager.getMissionForVehicle(vehicle);
-				if (mission != null) {
+				Mission m = missionManager.getMissionForVehicle(vehicle);
+				if (m != null) {
 					try {
-						getDesktop().addModel(new PersonTableModel(mission));
-					} catch (Exception e) {
+						getDesktop().addModel(new PersonTableModel(m));
+					} catch (Exception ex) {
 						logger.severe("PersonTableModel cannot be added.");
 					}
 				}
-			}
 		});
 		monitorButton.setEnabled(mission != null);
 		buttonPanel.add(monitorButton);

@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
-import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.environment.ExploredLocation;
 import org.mars_sim.msp.core.environment.MineralMap;
 import org.mars_sim.msp.core.equipment.EquipmentType;
@@ -92,8 +91,12 @@ public class Exploration extends EVAMission
 
 		if (s != null && !isDone()) {
 			// Recruit additional members to mission.
-			if (!recruitMembersForMission(startingPerson, MIN_GOING_MEMBERS))
-			return;
+			if (!recruitMembersForMission(startingPerson, MIN_GOING_MEMBERS)) {
+				logger.warning(getVehicle(), "Not enough members recruited for mission " 
+						+ getName() + ".");
+				endMission(MissionStatus.NO_MEMBERS_AVAILABLE);
+				return;
+			}
 
 			// Determine exploration sites
 			if (!hasVehicle()) {

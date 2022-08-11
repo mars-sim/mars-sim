@@ -31,7 +31,7 @@ public class MissionCommand extends AbstractUnitCommand {
 		if (mission != null) {
 			StructuredResponse response = new StructuredResponse();
 			response.appendBlankLine();
-			response.appendHeading(mission.getTypeID());
+			response.appendHeading(mission.getName());
 			CommandHelper.outputMissionDetails(response, mission);
 			response.appendBlankLine();
 			context.println(response.getOutput());

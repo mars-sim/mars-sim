@@ -73,6 +73,7 @@ public class CollectRegolith extends CollectResourcesMission {
 	/**
 	 * The main resource is regolith but on site it can cover numerous
 	 * sub-resources.
+	 * 
 	 * @return
 	 */
 	@Override

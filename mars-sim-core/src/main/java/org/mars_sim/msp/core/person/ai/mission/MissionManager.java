@@ -216,7 +216,7 @@ public class MissionManager implements Serializable, Temporal {
 						}
 					}
 				}
-				logger.config("Added '" + newMission.getTypeID() + "' mission.");
+				logger.config("Added '" + newMission.getName() + "' mission.");
 			}
 		}
 	}
@@ -240,7 +240,7 @@ public class MissionManager implements Serializable, Temporal {
 					}
 				}
 
-				logger.config("Removing '" + oldMission.getTypeID() + "' mission.");
+				logger.config("Removing '" + oldMission.getName() + "' mission.");
 			}
 		}
 	}
@@ -442,7 +442,7 @@ public class MissionManager implements Serializable, Temporal {
 		Mission mission = plan.getMission();
 		Person p = mission.getStartingPerson();
 
-		logger.info(p, "Put together a mission plan for " + plan.getMission().getTypeID() + ".");
+		logger.info(p, "Put together a mission plan for " + plan.getMission().getName() + ".");
 
 		// Add this mission only after the mission plan has been submitted for review.
 		addMission(mission);

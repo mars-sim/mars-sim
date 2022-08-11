@@ -300,6 +300,8 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 				logger.log(worker, Level.INFO, 10_000, "Just unloaded a total of "
 						+ totalItems + " items from " + vehicle.getName() + ".");
 			}
+			
+			person.getPhysicalCondition().stressMuscle(time/2);
 		}
 
 		// Unload towed vehicles.
@@ -312,6 +314,8 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 				if (!settlement.containsParkedVehicle(towedVehicle)) {
 					settlement.addParkedVehicle(towedVehicle);
 					towedVehicle.findNewParkingLoc();
+					
+					person.getPhysicalCondition().stressMuscle(time/2);
 				}
 			}
 		}

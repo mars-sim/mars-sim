@@ -186,6 +186,8 @@ public class LoadVehicleEVA extends EVAOperation {
 		// Do the load
 		if (!stopLoading) {
 			stopLoading = loadingPlan.load(worker, time);
+			
+			person.getPhysicalCondition().stressMuscle(time);
 		}
 
 		else {

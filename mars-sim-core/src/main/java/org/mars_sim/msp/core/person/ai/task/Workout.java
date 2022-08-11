@@ -50,7 +50,7 @@ public class Workout extends Task implements Serializable {
 	public Workout(Person person) {
 		// Use Task constructor.
 		super(NAME, person, true, false, STRESS_MODIFIER,
-				30.0 + RandomUtil.getRandomInt(-10, 10));
+				10.0 + RandomUtil.getRandomInt(-7, 7));
 
 		if (person.isInside()) {
 
@@ -103,7 +103,7 @@ public class Workout extends Task implements Serializable {
 		// Regulates hormones
 		person.getCircadianClock().exercise(time);
 		//Improves musculoskeletal systems
-		person.getPhysicalCondition().workOut(time);
+		person.getPhysicalCondition().exerciseMuscle(time);
 		// Record the sleep time [in millisols]
 		person.getCircadianClock().recordExercise(time);
 		

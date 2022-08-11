@@ -1,13 +1,14 @@
 /*
  * Mars Simulation Project
  * EatDrinkMeta.java
- * @date 2021-10-21
+ * @date 2022-08-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.equipment.ResourceHolder;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
@@ -19,6 +20,7 @@ import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * Meta task for the EatNDrink task.
@@ -47,18 +49,21 @@ public class EatDrinkMeta extends MetaTask {
 		double waterAmount = 0;
 
 		Unit container = person.getContainerUnit();
+		// Do not allow a person to eat the food in the vehicle 
+		// until after the vehicle has departed the settlement
+		// or else it will affect the amount of food available 
+		// for the mission
+		if (UnitType.VEHICLE == container.getUnitType()) {
+			Vehicle vehicle = (Vehicle)container;
+			if (vehicle.isInSettlement())
+				return 0;
+		}
+		
 		if (container != null && container instanceof ResourceHolder) {
 			ResourceHolder rh = (ResourceHolder) container;
 			foodAmount = rh.getAmountResourceStored(FOOD_ID);
 			waterAmount = rh.getAmountResourceStored(WATER_ID);
 		}
-//		else {
-//			if (inv != null) {
-//				// Take preserved food from inventory if it is available.
-//				foodAmount = inv.getAmountResourceStored(FOOD_ID, false);
-//				waterAmount = inv.getAmountResourceStored(WATER_ID, false);
-//			}
-//		}
 
 		boolean food = false;
 		boolean water = false;
@@ -152,7 +157,6 @@ public class EatDrinkMeta extends MetaTask {
 						// Modify probability by social factors in dining building.
 						h0 *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, diningBuilding);
 						h0 *= TaskProbabilityUtil.getRelationshipModifier(person, diningBuilding);
-//						logger.info(person + "'s diningBuilding p : " +  Math.round(result*10D)/10D);
 					}
 				}
 			}
@@ -172,10 +176,6 @@ public class EatDrinkMeta extends MetaTask {
 		else
 			// Add Preference modifier
 			result += result * person.getPreference().getPreferenceScore(this) / 8D;
-
-//		 if (result > 100)
-//			 logger.warning(person + "'s EatMealMeta : "
-//				 +  Math.round(result * 10D)/10D);
 
 		return result;
 	}

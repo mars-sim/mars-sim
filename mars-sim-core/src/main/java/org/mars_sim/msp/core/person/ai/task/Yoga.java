@@ -100,7 +100,7 @@ public class Yoga extends Task implements Serializable {
 		// Regulates hormones
 		person.getCircadianClock().exercise(time);
 		//Improves musculoskeletal systems
-		person.getPhysicalCondition().workOut(time);
+		person.getPhysicalCondition().exerciseMuscle(time);
 		// Record the sleep time [in millisols]
 		person.getCircadianClock().recordExercise(time);
 		

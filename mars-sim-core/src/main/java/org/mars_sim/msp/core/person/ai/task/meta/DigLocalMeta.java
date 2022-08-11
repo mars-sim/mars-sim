@@ -111,7 +111,7 @@ public abstract class DigLocalMeta extends MetaTask {
 
         if (citizen <= 8 && citizen >= 4)
             // Adds effect of the # of citizen 
-        	result *= citizen / 2.0;
+        	result *= citizen * 10;
 
         // Adds effect of the ratio of # indoor people vs. those outside already doing EVA 
         result *= (1 + indoor) / (1 + settlement.getNumOutsideEVA()) ;

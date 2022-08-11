@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Mission.java
- * @date 2021-10-20
+ * @date 2022-08-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -96,7 +96,7 @@ public abstract class Mission implements Serializable, Temporal {
 	/**
 	 * The marginal factor for the amount of water to be brought during a mission.
 	 */
-	public static final double WATER_MARGIN = 1;
+	public static final double WATER_MARGIN = 0.75;
 	/**
 	 * The marginal factor for the amount of oxygen to be brought during a mission.
 	 */
@@ -104,12 +104,11 @@ public abstract class Mission implements Serializable, Temporal {
 	/**
 	 * The marginal factor for the amount of food to be brought during a mission.
 	 */
-	public static final double FOOD_MARGIN = 1.25;
+	public static final double FOOD_MARGIN = 1.75;
 	/**
 	 * The marginal factor for the amount of dessert to be brought during a mission.
 	 */
 	public static final double DESSERT_MARGIN = 1.25;
-
 
 	// Data members
 	/** The number of people that can be in the mission. */
@@ -130,7 +129,9 @@ public abstract class Mission implements Serializable, Temporal {
 	private String description;
 	/** The full mission designation. */
 	private String fullMissionDesignation = "";
-
+	/** A record of participating members. */
+	private String memberRecord = "";
+	
 	/** The mission type enum. */
 	private MissionType missionType;
 
@@ -178,7 +179,7 @@ public abstract class Mission implements Serializable, Temporal {
 	}
 
 	/**
-	 * Constructor 
+	 * Constructor.
 	 *
 	 * @param missionType
 	 * @param startingMember
@@ -255,7 +256,7 @@ public abstract class Mission implements Serializable, Temporal {
 	 * @return
 	 */
 	public String getDateEmbarked() {
-		// Basic Missions doesn't embark
+		// Will be overridden by sub-class
 		return "";
 	}
 
@@ -302,7 +303,7 @@ public abstract class Mission implements Serializable, Temporal {
 	}
 
 	/**
-	 * Fire a mission update event.
+	 * Fires a mission update event.
 	 *
 	 * @param updateType the update type.
 	 */
@@ -311,7 +312,7 @@ public abstract class Mission implements Serializable, Temporal {
 	}
 
 	/**
-	 * Fire a mission update event.
+	 * Fires a mission update event.
 	 *
 	 * @param addMemberEvent the update type.
 	 * @param target         the event target or null if none.
@@ -333,6 +334,11 @@ public abstract class Mission implements Serializable, Temporal {
 		return missionName;
 	}
 
+	/**
+	 * Adds a member.
+	 * 
+	 * @param member
+	 */
 	public final void addMember(MissionMember member) {
 		if (!members.contains(member)) {
 			members.add(member);
@@ -348,6 +354,13 @@ public abstract class Mission implements Serializable, Temporal {
 		}
 	}
 
+	/**
+	 * Registers this historical event.
+	 * 
+	 * @param person
+	 * @param type
+	 * @param message
+	 */
 	private void registerHistoricalEvent(Person person, EventType type, String message) {
 		String loc0 = null;
 		String loc1 = null;
@@ -445,7 +458,8 @@ public abstract class Mission implements Serializable, Temporal {
 	}
 
 	/**
-	 * Add a Robot directly
+	 * Adds a Robot directly.
+	 * 
 	 * @param member
 	 */
 	protected void addRobot(Robot member) {
@@ -453,7 +467,8 @@ public abstract class Mission implements Serializable, Temporal {
 	}
 
 	/**
-	 * Add these members to the mission.
+	 * Adds these members to the mission.
+	 * 
 	 * @param newMembers Members to add
 	 * @param allowRobots Are Robots allowed
 	 */
@@ -470,7 +485,6 @@ public abstract class Mission implements Serializable, Temporal {
 			}
 		}
 	}
-
 
 	/**
 	 * Determines if mission is completed.
@@ -491,7 +505,8 @@ public abstract class Mission implements Serializable, Temporal {
 	}
 
 	/**
-	 * Update the mission name.
+	 * Updates the mission name.
+	 * 
 	 * @param newName
 	 */
     public void setName(String newName) {
@@ -538,7 +553,7 @@ public abstract class Mission implements Serializable, Temporal {
 			fireMissionUpdate(MissionEventType.DESCRIPTION_EVENT, description);
 		}
 	}
-//
+
 	/**
 	 * Gets the current phase of the mission.
 	 *
@@ -549,7 +564,7 @@ public abstract class Mission implements Serializable, Temporal {
 	}
 
 	/**
-	 * Sets the mission phase and the current description
+	 * Sets the mission phase and the current description.
 	 *
 	 * @param newPhase the new mission phase.
 	 * @param subjectOfPhase This is the subject of the phase
@@ -586,7 +601,7 @@ public abstract class Mission implements Serializable, Temporal {
 	}
 
 	/**
-	 * Get the mission log
+	 * Gets the mission log.
 	 */
 	public List<MissionLogEntry> getLog() {
 		return log;
@@ -600,7 +615,7 @@ public abstract class Mission implements Serializable, Temporal {
 	}
 
 	/**
-	 * Get duration of current Phase.
+	 * Gets duration of current Phase.
 	 */
 	protected double getPhaseDuration() {
 		return MarsClock.getTimeDiff(marsClock, phaseStartTime);
@@ -689,7 +704,7 @@ public abstract class Mission implements Serializable, Temporal {
 
 
 	/**
-	 * Calculate the mission capacity the lower of desired capacity or number of EVASuits
+	 * Calculate the mission capacity the lower of desired capacity or number of EVASuits.
 	 */
 	protected void calculateMissionCapacity(int desiredCap) {
 		if (!isDone()) {
@@ -718,7 +733,7 @@ public abstract class Mission implements Serializable, Temporal {
 	}
 
 	/**
-	 * Computes the mission experience score
+	 * Computes the mission experience score.
 	 *
 	 * @param reason
 	 */
@@ -758,7 +773,7 @@ public abstract class Mission implements Serializable, Temporal {
 	 */
 	protected void endMission(MissionStatus endStatus) {
 		if (done) {
-			logger.warning(startingMember, "Mission " + getTypeID() + " is already ended.");
+			logger.warning(startingMember, "Mission " + getName() + " is already ended.");
 			return;
 		}
 
@@ -771,7 +786,7 @@ public abstract class Mission implements Serializable, Temporal {
 		done = true; // Note: done = true is very important to keep !
 
 		StringBuilder status = new StringBuilder();
-		status.append("Ended the ").append(getTypeID()).append(" with the status flag(s): ");
+		status.append("Ended the ").append(getName()).append(" with the status flag(s): ");
 		status.append(missionStatus.stream().map(MissionStatus::getName).collect(Collectors.joining(", ")));
 		logger.info(startingMember, status.toString());
 
@@ -779,7 +794,13 @@ public abstract class Mission implements Serializable, Temporal {
 		if (members != null && !members.isEmpty()) {
 			logger.info(startingMember, "Disbanded mission member(s) : " + members);
 			List<MissionMember> origMembers = new ArrayList<>(members);
+			int size = origMembers.size();
+			int i = 0;
 			for(MissionMember m : origMembers) {
+				i++;
+				memberRecord = memberRecord + m.getName();
+				if (i != size - 1) 
+					memberRecord += ", ";
 				removeMember(m);
 			}
 		}
@@ -799,7 +820,7 @@ public abstract class Mission implements Serializable, Temporal {
 	}
 
 	/**
-	 * Checks if a person has any issues in starting a new task
+	 * Checks if a person has any issues in starting a new task.
 	 *
 	 * @param person the person to assign to the task
 	 * @param task   the new task to be assigned
@@ -999,7 +1020,7 @@ public abstract class Mission implements Serializable, Temporal {
 	}
 
 	/**
-	 * Attempt to recruit a new person into the mission.
+	 * Attempts to recruit a new person into the mission.
 	 *
 	 * @param recruiter the mission member doing the recruiting.
 	 * @param recruitee the person being recruited.
@@ -1117,7 +1138,8 @@ public abstract class Mission implements Serializable, Temporal {
 	}
 
 	/**
-	 * Get the preferred Job types.
+	 * Gets the preferred Job types.
+	 * 
 	 * @return
 	 */
 	protected Set<JobType> getPreferredPersonJobs() {
@@ -1228,7 +1250,7 @@ public abstract class Mission implements Serializable, Temporal {
 	}
 
 	/**
-	 * Request review for the mission.
+	 * Requests review for the mission.
 	 *
 	 * @param member the mission lead.
 	 */
@@ -1251,7 +1273,7 @@ public abstract class Mission implements Serializable, Temporal {
 
 				createFullDesignation();
 
-				logger.log(p, Level.INFO, 0, "Getting ready to embark on " + getDescription() + ".");
+				logger.log(p, Level.INFO, 0, "Mission plan for " + getDescription() + " was approved.");
 
 				if (!(this instanceof VehicleMission)) {
 					// Set the members' work shift to on-call to get ready
@@ -1265,7 +1287,7 @@ public abstract class Mission implements Serializable, Temporal {
 	}
 
 	/**
-	 * Returns the mission plan
+	 * Returns the mission plan.
 	 *
 	 * @return {@link MissionPlanning}
 	 */
@@ -1274,7 +1296,7 @@ public abstract class Mission implements Serializable, Temporal {
 	}
 
 	/**
-	 * Returns the starting person
+	 * Returns the starting person.
 	 *
 	 * @return {@link Person}
 	 */
@@ -1300,7 +1322,7 @@ public abstract class Mission implements Serializable, Temporal {
 	}
 
 	/**
-	 * Creates the mission designation string for this mission
+	 * Creates the mission designation string for this mission.
 	 *
 	 * @return
 	 */
@@ -1324,7 +1346,7 @@ public abstract class Mission implements Serializable, Temporal {
 	}
 
 	/**
-	 * Checks if this mission has already been tagged with this mission status
+	 * Checks if this mission has already been tagged with this mission status.
 	 *
 	 * @param status
 	 * @return
@@ -1334,7 +1356,7 @@ public abstract class Mission implements Serializable, Temporal {
 	}
 
 	/**
-	 * Check if the rover has mission status that prompts to turn on the beacon to ask for help
+	 * Checks if the rover has mission status that prompts to turn on the beacon to ask for help.
 	 *
 	 * @return
 	 */
@@ -1348,7 +1370,7 @@ public abstract class Mission implements Serializable, Temporal {
 	}
 
 	/**
-	 * Add a new mission status
+	 * Adds a new mission status.
 	 *
 	 * @param status
 	 */
@@ -1361,7 +1383,8 @@ public abstract class Mission implements Serializable, Temporal {
 	}
 
 	/**
-	 * Be default a worker can always participate
+	 * Checks if this worker can participate.
+	 * 
 	 * @param worker This maybe used by overridding methods
 	 * @return
 	 */
@@ -1369,6 +1392,18 @@ public abstract class Mission implements Serializable, Temporal {
 		return true;
 	}
 
+	/**
+	 * Returns the member record.
+	 * 
+	 * @return
+	 */
+	public String getMemberRecord() {
+		return memberRecord;
+	}
+	
+	/**
+	 * Compares if this object equals this instance of mission.
+	 */
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
 		if (obj == null) return false;
@@ -1390,7 +1425,7 @@ public abstract class Mission implements Serializable, Temporal {
 	}
 
 	/**
-	 * Reloads instances after loading from a saved sim
+	 * Reloads instances after loading from a saved sim.
 	 *
 	 * @param si {@link Simulation}
 	 * @param c {@link MarsClock}
@@ -1412,7 +1447,7 @@ public abstract class Mission implements Serializable, Temporal {
 	}
 
 	/**
-	 * Prepare object for garbage collection.
+	 * Prepares object for garbage collection.
 	 */
 	public void destroy() {
 		if (members != null) {

@@ -50,7 +50,6 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * A mission that involves driving a rover vehicle along a series of navpoints.
- * TODO externalize life support strings
  */
 public abstract class RoverMission extends VehicleMission {
 
@@ -1059,6 +1058,7 @@ public abstract class RoverMission extends VehicleMission {
 				MissionMember member = i.next();
 				if (member instanceof Person) {
 					lastPerson = (Person) member;
+					removeMember(lastPerson);
 				}
 			}
 

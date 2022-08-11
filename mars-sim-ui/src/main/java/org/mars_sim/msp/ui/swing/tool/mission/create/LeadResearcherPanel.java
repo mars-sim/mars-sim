@@ -189,7 +189,7 @@ extends WizardPanel {
                     }
                     else if (column == 2) {
                         Mission mission = person.getMind().getMission();
-                        if (mission != null) result = mission.getTypeID();
+                        if (mission != null) result = mission.getName();
                         else result = "none";
                     }
                     else if (column == 3) {

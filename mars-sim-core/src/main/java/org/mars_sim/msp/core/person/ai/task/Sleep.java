@@ -172,7 +172,9 @@ public class Sleep extends Task implements Serializable {
 			
 			CircadianClock circadian = person.getCircadianClock();
 
-			pc.recoverFromSoreness(.05);
+			pc.recoverFromSoreness(time);
+			
+			pc.relaxMuscle(time);
 
 			double fractionOfRest = time * TIME_FACTOR;
 

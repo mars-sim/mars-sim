@@ -61,7 +61,8 @@ public abstract class EVAMission extends RoverMission {
 		boolean handled = true;
 		if (!super.determineNewPhase()) {
 			if (TRAVELLING.equals(getPhase())) {
-				if (getCurrentNavpoint().isSettlementAtNavpoint()) {
+//				if (getCurrentNavpoint().isSettlementAtNavpoint()) {
+				if (isCurrentNavpointSettlement()) {
 					startDisembarkingPhase();
 				}
 				else if (canStartEVA()) {

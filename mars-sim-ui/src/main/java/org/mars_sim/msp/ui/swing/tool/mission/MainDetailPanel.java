@@ -27,7 +27,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
+import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -35,6 +37,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
@@ -98,6 +101,7 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 	// Custom mission panel IDs.
 	private static final String EMPTY = Msg.getString("MainDetailPanel.empty"); //$NON-NLS-1$
 
+	private static final int MAX_LENGTH = 48;
 	private static final int HEIGHT_0 = 35;
 	private static final int HEIGHT_1 = 150;
 	
@@ -111,7 +115,8 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 	private WebLabel speedLabel;
 	private WebLabel distanceNextNavLabel;
 	private WebLabel traveledLabel;
-
+	private JLabel memberLabel = new JLabel("", SwingConstants.LEFT);
+	
 	private MemberTableModel memberTableModel;
 	private JTable memberTable;
 
@@ -122,7 +127,9 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 	private CardLayout customPanelLayout;
 
 	private WebPanel missionCustomPane;
-
+	private WebPanel memberPane;
+	private WebPanel memberOuterPane;
+	
 	private Mission missionCache;
 	private Vehicle currentVehicle;
 	private MissionWindow missionWindow;
@@ -131,6 +138,8 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 	private Map<String, MissionCustomInfoPanel> customInfoPanels;
 
 	private LogTableModel logTableModel;
+	
+	private Collection<MissionMember> memberRecord;
 
 	/**
 	 * Constructor.
@@ -143,7 +152,9 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 		// Initialize data members.
 		this.desktop = desktop;
 		this.missionWindow = missionWindow;
-
+		
+		memberRecord = new ArrayList<>();
+		
 		// Set the layout.
 		setLayout(new BorderLayout());
 
@@ -178,7 +189,11 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 		centerBox.add(initVehiclePane(), BorderLayout.NORTH);
 		centerBox.add(initTravelPane(), BorderLayout.CENTER);
 
-		bottomBox.add(initMemberPane(), BorderLayout.NORTH);
+		memberOuterPane = new WebPanel(new BorderLayout(1, 1));
+		memberPane = initMemberPane();
+		memberOuterPane.add(memberPane, BorderLayout.CENTER);
+				
+		bottomBox.add(memberOuterPane, BorderLayout.NORTH);
 		bottomBox.add(initCustomMissionPane(), BorderLayout.SOUTH);
 	}
 
@@ -348,8 +363,11 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 
 	private WebPanel initLogPane() {
 
+		Border blackline = BorderFactory.createTitledBorder("Log");
+		
 		// Create the member panel.
 		WebPanel logPane = new WebPanel(new BorderLayout());
+		logPane.setBorder(blackline);
 		logPane.setAlignmentX(Component.RIGHT_ALIGNMENT);
 		logPane.setPreferredSize(new Dimension(100, HEIGHT_1));
 
@@ -371,52 +389,57 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 	}
 
 	private WebPanel initMemberPane() {
-
-		// Create the member panel.
-		WebPanel memberPane = new WebPanel(new BorderLayout());
-		memberPane.setAlignmentX(Component.RIGHT_ALIGNMENT);
-
-		// Create member bottom panel.
-		WebPanel memberBottomPane = new WebPanel(new BorderLayout(5, 5));
-		memberBottomPane.setAlignmentX(Component.RIGHT_ALIGNMENT);
-		memberPane.add(memberBottomPane);
-
-		// Prepare member list panel
-		WebPanel memberListPane = new WebPanel(new BorderLayout(5, 5));
-		memberListPane.setPreferredSize(new Dimension(100, HEIGHT_1));
-		memberBottomPane.add(memberListPane, BorderLayout.CENTER);
-
-		// Create scroll panel for member list.
-		WebScrollPane memberScrollPane = new WebScrollPane();
-		memberListPane.add(memberScrollPane, BorderLayout.CENTER);
-
-		// Create member table model.
-		memberTableModel = new MemberTableModel();
-
-		// Create member table.
-		memberTable = new ZebraJTable(memberTableModel);
-		memberTable.getColumnModel().getColumn(0).setPreferredWidth(80);
-		memberTable.getColumnModel().getColumn(1).setPreferredWidth(150);
-		memberTable.setRowSelectionAllowed(true);
-		memberTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		memberTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-			public void valueChanged(ListSelectionEvent e) {
-				if (e.getValueIsAdjusting()) {
-					// Open window for selected person.
-					int index = memberTable.getSelectedRow();
-					if (index > -1) {
-						MissionMember member = memberTableModel.getMemberAtIndex(index);
-						if (member.getUnitType() == UnitType.PERSON) {
-							getDesktop().openUnitWindow((Person) member, false);
-						} else {
-							getDesktop().openUnitWindow((Robot) member, false);
+		
+		if (memberPane == null) {
+			Border blackline = BorderFactory.createTitledBorder("Members");
+					
+			// Create the member panel.
+			memberPane = new WebPanel(new BorderLayout());
+			memberPane.setBorder(blackline);
+			memberPane.setAlignmentX(Component.RIGHT_ALIGNMENT);
+	
+			// Create member bottom panel.
+			WebPanel memberBottomPane = new WebPanel(new BorderLayout(5, 5));
+			memberBottomPane.setAlignmentX(Component.RIGHT_ALIGNMENT);
+			memberPane.add(memberBottomPane);
+	
+			// Prepare member list panel
+			WebPanel memberListPane = new WebPanel(new BorderLayout(5, 5));
+			memberListPane.setPreferredSize(new Dimension(100, HEIGHT_1));
+			memberBottomPane.add(memberListPane, BorderLayout.CENTER);
+	
+			// Create scroll panel for member list.
+			WebScrollPane memberScrollPane = new WebScrollPane();
+			memberListPane.add(memberScrollPane, BorderLayout.CENTER);
+	
+			// Create member table model.
+			memberTableModel = new MemberTableModel();
+	
+			// Create member table.
+			memberTable = new ZebraJTable(memberTableModel);
+			memberTable.getColumnModel().getColumn(0).setPreferredWidth(80);
+			memberTable.getColumnModel().getColumn(1).setPreferredWidth(150);
+			memberTable.setRowSelectionAllowed(true);
+			memberTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+			memberTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+				public void valueChanged(ListSelectionEvent e) {
+					if (e.getValueIsAdjusting()) {
+						// Open window for selected person.
+						int index = memberTable.getSelectedRow();
+						if (index > -1) {
+							MissionMember member = memberTableModel.getMemberAtIndex(index);
+							if (member.getUnitType() == UnitType.PERSON) {
+								getDesktop().openUnitWindow((Person) member, false);
+							} else {
+								getDesktop().openUnitWindow((Robot) member, false);
+							}
 						}
 					}
 				}
-			}
-		});
-		memberScrollPane.setViewportView(memberTable);
-
+			});
+			memberScrollPane.setViewportView(memberTable);
+		}
+		
 		return memberPane;
 	}
 
@@ -582,7 +605,7 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 	}
 
 	/**
-	 * Sets to the given mission
+	 * Sets to the given mission.
 	 *
 	 * @param newMission
 	 */
@@ -612,56 +635,46 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 
 
 	/**
-	 * Updates the mission content on the Main tab
+	 * Updates the mission content on the Main tab.
 	 *
 	 * @param mission
 	 */
 	public void updateMainTab(Mission mission) {
 
-		if (mission == null || missionCache == null) {
-			designationLabel.setText("");
-			typeLabel.setText("");
-			startingLabel.setText("");
-			phaseLabel.setToolTipText("");
-			phaseLabel.setText("");
-			settlementLabel.setText("");
-			
-			logTableModel.setMission(null);
-			memberTableModel.setMission(null);
-			centerMapButton.setEnabled(false);
-			
-			vehicleButton.setText("");
-			vehicleStatusLabel.setText("");
-			speedLabel.setText("");
-			traveledLabel.setText("");
-			distanceNextNavLabel.setText("");
-			vehicleButton.setVisible(false);
-			if (currentVehicle != null) {
-				currentVehicle.removeUnitListener(this);
-			}
-			currentVehicle = null;
-			
-			return;
+		if (mission == null || missionCache == null) {	
+			clearInfo();
 		}
 
 		else {
+			
+			if (mission.getMembers().isEmpty()) {
+				memberOuterPane.removeAll();
+				memberOuterPane.add(memberLabel);
+				memberLabel.setText(" Disbanded Members: " + printMembers());
+			}
+			else {
+				memberOuterPane.removeAll();
+				memberOuterPane.add(initMemberPane());
+				memberTableModel.setMission(mission);
+			}
+			
 			String d = mission.getFullMissionDesignation();
 			if (d == null || d.equals(""))
 				d = "";
 			designationLabel.setText(d);
 			typeLabel.setText(mission.getName());
-			startingLabel.setText(mission.getStartingPerson().getName()); // $NON-NLS-1$
+			startingLabel.setText(mission.getStartingPerson().getName());
 	
 			String phaseText = mission.getPhaseDescription();
 			phaseLabel.setToolTipText(phaseText);
-			if (phaseText.length() > 48)
-				phaseText = phaseText.substring(0, 48) + "...";
-			phaseLabel.setText(phaseText); // $NON-NLS-1$
+			if (phaseText.length() > MAX_LENGTH)
+				phaseText = phaseText.substring(0, MAX_LENGTH) + "...";
+			phaseLabel.setText(phaseText);
 	
 			settlementLabel.setText(mission.getAssociatedSettlement().getName());
-	
+
 			logTableModel.setMission(mission);
-			memberTableModel.setMission(mission);
+			
 			centerMapButton.setEnabled(true);
 		}
 		
@@ -755,23 +768,59 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 	public void clearInfo() {
 		// NOTE: do NOT clear the mission info. Leave the info there for future viewing
 		// Clear mission info in UI.
-		designationLabel.setText("");
+		designationLabel.setText(" ");
 		typeLabel.setText(" ");
 		phaseLabel.setText(" ");
+		phaseLabel.setToolTipText(" ");
 		settlementLabel.setText(" ");
+
 		memberTableModel.setMission(null);
 		logTableModel.setMission(null);
+		
 		centerMapButton.setEnabled(false);
 		vehicleButton.setVisible(false);
 		vehicleStatusLabel.setText(" ");
 		speedLabel.setText(Msg.getString("MainDetailPanel.kmhSpeed", "0")); //$NON-NLS-1$ //$NON-NLS-2$
 		distanceNextNavLabel.setText(Msg.getString("MainDetailPanel.kmNextNavPoint", "0")); //$NON-NLS-1$ //$NON-NLS-2$
 		traveledLabel.setText(Msg.getString("MainDetailPanel.kmTraveled", "0", "0")); //$NON-NLS-1$ //$NON-NLS-2$
+		
+		if (missionCache != null) {
+			missionCache.removeMissionListener(this);
+		}
 		missionCache = null;
+		
+		if (currentVehicle != null)
+			currentVehicle.removeUnitListener(this);
 		currentVehicle = null;
+		
 		customPanelLayout.show(missionCustomPane, EMPTY);
 	}
 
+	/**
+	 * Prints the list of members.
+	 * 
+	 * @return
+	 */
+	private String printMembers() {
+		String result = null;
+		List<MissionMember> list = new ArrayList<>(memberRecord);
+		int size = memberRecord.size();
+		for (int i=0; i<size; i++) {
+			MissionMember mm = list.get(i);
+			if (mm.getUnitType() == UnitType.PERSON) {
+				result += ((Person)mm).getName();
+			}
+			else {
+				result += ((Robot)mm).getName();
+			}
+			
+			if (i != size - 1) {
+				result += ", ";
+			}
+		}
+		return result;
+	}
+	
 	/**
 	 * Update the custom mission panel with a mission.
 	 *
@@ -780,6 +829,11 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 	private void updateCustomPanel(Mission mission) {
 		boolean hasMissionPanel = false;
 		if (mission != null) {
+			
+			memberRecord.clear();
+			memberRecord = mission.getMembers();
+			
+			
 			String missionClassName = mission.getClass().getName();
 			if (customInfoPanels.containsKey(missionClassName)) {
 				hasMissionPanel = true;
@@ -854,7 +908,7 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 
 			// Update UI based on mission event type.
 			if (type == MissionEventType.TYPE_EVENT || type == MissionEventType.TYPE_ID_EVENT)
-				typeLabel.setText(mission.getTypeID());
+				typeLabel.setText(mission.getName());
 			else if (type == MissionEventType.DESCRIPTION_EVENT) {
 				// Implement the missing descriptionLabel
 			}
@@ -1027,7 +1081,7 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 		 */
 		private MemberTableModel() {
 			mission = null;
-			members = new ArrayList<MissionMember>();
+			members = new ArrayList<>();
 		}
 
 		/**
@@ -1093,7 +1147,7 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 		}
 
 		/**
-		 * Catch unit update event.
+		 * Catches unit update event.
 		 *
 		 * @param event the unit event.
 		 */
@@ -1126,14 +1180,13 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 		}
 
 		/**
-		 * Update mission members.
+		 * Updates mission members.
 		 */
 		void updateMembers() {
 			if (mission != null) {
 				clearMembers();
-				members = new ArrayList<MissionMember>(mission.getMembers());
-				Collections.sort(members, new Comparator<MissionMember>() {
-
+				members = new ArrayList<>(mission.getMembers());
+				Collections.sort(members, new Comparator<>() {
 					@Override
 					public int compare(MissionMember o1, MissionMember o2) {
 						return o1.getName().compareToIgnoreCase(o2.getName());
@@ -1154,7 +1207,7 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 		}
 
 		/**
-		 * Clear all members from the table.
+		 * Clears all members from the table.
 		 */
 		private void clearMembers() {
 			if (members != null) {

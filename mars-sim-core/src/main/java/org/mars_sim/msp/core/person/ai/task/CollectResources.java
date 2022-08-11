@@ -223,22 +223,29 @@ public class CollectResources extends EVAOperation implements Serializable {
 
 		// Check for an accident during the EVA operation.
 		checkForAccident(time);
-
+		
 		// Collect resources
 		if (samplesCollected <= sampleLimit) {
 			container.storeAmountResource(resourceType, samplesCollected);
-			return 0;
-		} else {
-			if (sampleLimit >= 0D) {
-				container.storeAmountResource(resourceType, sampleLimit);
-			}
-			// Exceed the sample limit
-			setPhase(WALK_BACK_INSIDE);
-			double result = time - (sampleLimit / collectionRate);
+			person.getPhysicalCondition().stressMuscle(time);
+			double result = time - (samplesCollected / collectionRate);
 			if (result < 0)
 				return 0;
-		}
+			return result;
 
+		} else {
+			if (sampleLimit > 0) {
+				container.storeAmountResource(resourceType, sampleLimit);
+				person.getPhysicalCondition().stressMuscle(time);
+				double result = time - (sampleLimit / collectionRate);
+				if (result < 0)
+					return 0;
+				return result;
+			}
+			
+			checkLocation();
+		}
+		
 		return 0;
 	}
 

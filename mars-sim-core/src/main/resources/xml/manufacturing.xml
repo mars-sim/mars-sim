@@ -976,7 +976,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Creating 10 bags sewn together with fiberglass cloth and plastic sheet liner. -->
-	<process name="maufacture bags" tech="2" skill="2" work-time="100" process-time="0"
+	<process name="maufacture bags" tech="1" skill="1" work-time="10" process-time="5"
 			power-required="0.0">
 		<inputs>
 			<part name="fiberglass cloth" number="5" />
@@ -988,14 +988,14 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Creating a large bag sewn together with a fiberglass cloth and a plastic sheet liner. -->
-	<process name="maufacture large bags" tech="2" skill="2" work-time="400" process-time="0"
+	<process name="maufacture large bags" tech="1" skill="1" work-time="20" process-time="5"
 			power-required="0.0">
 		<inputs>
 			<part name="fiberglass cloth" number="2" />
 			<part name="plastic sheet" number="2" />
 		</inputs>
 		<outputs>
-			<equipment name="large bag" number="1" />
+			<equipment name="large bag" number="2" />
 		</outputs>
 	</process>
 

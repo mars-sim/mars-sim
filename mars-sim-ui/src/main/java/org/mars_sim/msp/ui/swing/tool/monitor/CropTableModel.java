@@ -375,30 +375,51 @@ public class CropTableModel extends UnitTableModel {
 	}
 
 	/**
-	 * Recompute the total number of cropType having a particular cropCategory
+	 * Recomputes the total number of cropType having a particular cropCategory.
+	 * 
+	 * @param unit
+	 * @param cropCat
+	 * @return
 	 */
 	public int getNewValue(Unit unit, CropCategory cropCat) {
 		int result = 0;
-		List<Building> greenhouses = ((Settlement) unit).getBuildingManager().getBuildings(FunctionType.FARMING);
-		Iterator<Building> i = greenhouses.iterator();
-
-		while (i.hasNext()) {
-			try {
-				Farming farm = i.next().getFarming();
-				Iterator<Crop> j = farm.getCrops().iterator();
-				while (j.hasNext()) {
-					Crop crop = j.next();
-					CropCategory cat = crop.getCropSpec().getCropCategory();
-					// Match the crop name within the current list of crops having the same cropCategory
-					if (cat == cropCat) {
-						result++;
-						// Do not break here since other greenhouses may also have this crop category name
+		
+		if (unit.getUnitType() == UnitType.SETTLEMENT) {
+			List<Building> greenhouses = ((Settlement) unit).getBuildingManager().getBuildings(FunctionType.FARMING);
+			Iterator<Building> i = greenhouses.iterator();
+	
+			while (i.hasNext()) {
+				try {
+					Farming farm = i.next().getFarming();
+					Iterator<Crop> j = farm.getCrops().iterator();
+					while (j.hasNext()) {
+						Crop crop = j.next();
+						CropCategory cat = crop.getCropSpec().getCropCategory();
+						// Match the crop name within the current list of crops having the same cropCategory
+						if (cat == cropCat) {
+							result++;
+							// Do not break here since other greenhouses may also have this crop category name
+						}
 					}
+				} catch (Exception e) {
+					logger.severe("getNewValue not working: " + e.getMessage());
 				}
-			} catch (Exception e) {
-				logger.severe("getNewValue not working: " + e.getMessage());
 			}
 		}
+		else if (unit.getUnitType() == UnitType.BUILDING) {
+			Farming farm = ((Building)unit).getFarming();
+			Iterator<Crop> j = farm.getCrops().iterator();
+			while (j.hasNext()) {
+				Crop crop = j.next();
+				CropCategory cat = crop.getCropSpec().getCropCategory();
+				// Match the crop name within the current list of crops having the same cropCategory
+				if (cat == cropCat) {
+					result++;
+					// Do not break here since other greenhouses may also have this crop category name
+				}
+			}
+		}
+		
 		return result;
 	}
 

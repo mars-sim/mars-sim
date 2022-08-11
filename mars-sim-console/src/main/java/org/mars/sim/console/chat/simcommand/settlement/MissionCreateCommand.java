@@ -66,7 +66,7 @@ public class MissionCreateCommand extends AbstractSettlementCommand {
 				context.println("Mission failed to start " + newMission.getMissionStatus());
 			}
 			else {
-				context.println("Create Mission " + newMission.getTypeID());
+				context.println("Create Mission " + newMission.getName());
 				context.getSim().getMissionManager().addMission(newMission);
 			}
 		}

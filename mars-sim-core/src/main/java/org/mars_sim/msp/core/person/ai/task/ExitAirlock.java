@@ -299,7 +299,8 @@ public class ExitAirlock extends Task implements Serializable {
 		
 		// Checks if a person is tired, too stressful or hungry and need
 		// to take break, eat and/or sleep
-		return person.getPhysicalCondition().isEVAFitScreening();
+		return person.getPhysicalCondition().isEVAFitScreening() 
+				|| person.getPhysicalCondition().computeHealthScore() > 80;
 	}
 
 	/**
@@ -1152,7 +1153,7 @@ public class ExitAirlock extends Task implements Serializable {
 				Mission m = person.getMind().getMission();
 				String hasMission = "";
 				if (m != null)
-					hasMission = " for " + m.getTypeID();
+					hasMission = " for " + m.getName();
 				// Mission m = missionManager.getMission(person);
 				logger.log((Unit)airlock.getEntity(), person, Level.WARNING, 20_000,
 						v.getName() + hasMission

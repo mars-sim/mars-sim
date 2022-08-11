@@ -65,9 +65,9 @@ public class YogaMeta extends MetaTask {
             		// After the first 333 msols, it decreases linearly for the rest of the day
             		+ Math.max(333 - fatigue, -666)
             		// Note: muscle condition affects the desire to exercise
-            		- (muscle[2] - muscle[0])/5D 
+            		+ muscle[0]/2.5 - muscle[2]/2.5
             		+ stress / 10
-            		- exerciseMillisols * 1.5;
+            		- exerciseMillisols * 5;
             
             if (result < 0) 
             	return 0;

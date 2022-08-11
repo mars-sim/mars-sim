@@ -41,9 +41,8 @@ public class NavPoint implements Serializable {
 	}
 
 	/**
-	 * Constructor with location and settlement.
+	 * Constructor with settlement.
 	 * 
-	 * @param location    the location of the navpoint.
 	 * @param settlement  the settlement at the navpoint.
 	 * @param description the navpoint description.
 	 */

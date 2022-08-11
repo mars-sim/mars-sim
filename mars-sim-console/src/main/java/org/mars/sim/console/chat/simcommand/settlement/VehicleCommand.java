@@ -63,7 +63,7 @@ public class VehicleCommand extends AbstractSettlementCommand {
 			String missionName = "";
 			Mission mission = missionMgr.getMissionForVehicle(v);
 			if (mission != null) {
-				missionName = mission.getTypeID();
+				missionName = mission.getName();
 			}
 			
 			// Dropped Parked once fix problem

@@ -46,7 +46,9 @@ public class SleepMeta extends MetaTask {
 
     @Override
     public double getProbability(Person person) {
-    	
+  		
+        double result = 0;
+	
         // No sleeping outside.
     	// Should allow a person to walk back in to find a place to sleep
     	if (person.isOutside())
@@ -58,12 +60,10 @@ public class SleepMeta extends MetaTask {
 	        	return 0;
 	        }
     	}
-    		
+    	
    		CircadianClock circadian = person.getCircadianClock();
    		PhysicalCondition pc = person.getPhysicalCondition();
-   		
-        double result = 0;
-	
+ 
        	boolean proceed = false;
 
     	// Note : each millisol generates 1 fatigue point
@@ -101,18 +101,21 @@ public class SleepMeta extends MetaTask {
 			double ghrelin = person.getCircadianClock().getGhrelin();
 			double leptin = person.getCircadianClock().getLeptin();
 		    double sleepMillisols = person.getCircadianClock().getTodaySleepTime();
+            double[] muscle = person.getPhysicalCondition().getMusculoskeletal();
             
-        	// the desire to go to bed increase linearly after 12 hours of wake time
-            result = Math.max((fatigue - 500), 0) * 10 + stress * 10 
+        	// the desire to go to bed increase linearly after 6 hours of wake time
+            result += Math.max((fatigue - 250), 0) * 10 + stress * 10 
             		+ (ghrelin - leptin)
             		// High hunger makes it harder to fall asleep
             		// Therefore, limit the hunger contribution to a max of 300
             		+ Math.min(hunger, 300)
+            		// Note: muscle condition affects the desire to exercise
+            		- muscle[2]/2.5 
             		- sleepMillisols / 2;
                    
             double pref = person.getPreference().getPreferenceScore(this);
             
-         	result = result + result * pref/12D;                            	
+         	result += result * pref/12D;                            	
         	
     	    if (result <= 0) {
     	    	// Reduce the probability if it's not the right time to sleep
@@ -136,7 +139,7 @@ public class SleepMeta extends MetaTask {
             }
 
             if (person.getShiftType() == ShiftType.ON_CALL)
-            	result = result * 2;
+            	result = result * 10;
             
             else if (person.getTaskSchedule().isShiftHour(marsClock.getMillisolInt())) {
          	   // Reduce the probability of sleep

@@ -26,6 +26,8 @@ public class WorkoutMeta extends MetaTask {
     private static final String NAME = Msg.getString(
             "Task.description.workout"); //$NON-NLS-1$
 
+    private static final int FACTOR = 10;
+    
     public WorkoutMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.NONWORK_HOUR);
 		setFavorite(FavoriteType.SPORT);
@@ -55,21 +57,23 @@ public class WorkoutMeta extends MetaTask {
 
             double exerciseMillisols = person.getCircadianClock().getTodayExerciseTime();
             
-            if (kJ < 500 || fatigue > 750 || hunger > 750)
+            if (kJ < 1000 || fatigue > 750 || hunger > 750)
             	return 0;
  
-            result = kJ/2000 
+            result = kJ/3000 
             		// Note: The desire to exercise increases linearly right after waking up
             		// from bed up to the first 333 msols
             		// After the first 333 msols, it decreases linearly for the rest of the day
-            		+ Math.max(333 - fatigue, -666)
+            		+ Math.max(333 - fatigue, -666)/10
             		// Note: muscle condition affects the desire to exercise
-            		- (muscle[2] - muscle[0])/5D 
+            		+ muscle[0]/2.5 - muscle[2]/2.5 
             		+ stress / 10
-            		- exerciseMillisols * 1.5;
+            		- exerciseMillisols * 10;
             
             if (result < 0) 
             	return 0;
+            else
+            	result /= FACTOR;
             
             double pref = person.getPreference().getPreferenceScore(this);
          	result += result * pref / 2D;

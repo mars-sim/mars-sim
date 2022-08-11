@@ -354,15 +354,6 @@ public class PhysicalCondition implements Serializable {
 //				+ "  personalMaxEnergy: " + personalMaxEnergy + "  appetite: " + appetite);
 	}
 
-	public void recoverFromSoreness(double value) {
-		// Reduce the muscle soreness by 1 point at the end of the day
-		double soreness = musculoskeletal[2];
-		soreness = soreness - value;
-		if (soreness < 0)
-			soreness = 0;
-		musculoskeletal[2] = soreness;
-	}
-
 	/**
 	 * The Physical condition should be updated to reflect a passing of time. This
 	 * method has to check the recover or degradation of any current illness. The
@@ -1714,17 +1705,30 @@ public class PhysicalCondition implements Serializable {
 	 * @return
 	 */
 	public boolean isFitByLevel(int fatMax, int stressMax, int hunMax) {
-        return ((fatigue < fatMax) && (stress < stressMax)
-        		&& (hunger < hunMax) && (thirst < hunMax/2));
+        return isFitByLevel(fatMax, stressMax, hunMax, hunMax/2);
 	}
 
 	/**
-	 * Screens if the person is fit for an EVA task
+	 *  Checks fitness against some maximum levels.
+	 *  
+	 * @param fatMax
+	 * @param stressMax
+	 * @param hunMax
+	 * @param thirstMax
+	 * @return
+	 */
+	public boolean isFitByLevel(int fatMax, int stressMax, int hunMax, int thirstMax) {
+        return ((fatigue < fatMax) && (stress < stressMax)
+        		&& (hunger < hunMax) && (thirst < thirstMax));
+	}
+	
+	/**
+	 * Screens if the person is fit for an EVA task.
 	 * 
 	 * @return
 	 */
 	public boolean isEVAFitScreening() {
-        return isFitByLevel(250, 25, 250);
+        return isFitByLevel(300, 30, 300, 200);
 	}
 	
 	/**
@@ -1737,7 +1741,7 @@ public class PhysicalCondition implements Serializable {
 				+ Math.min(100 - stress/10, 0) 
 				+ Math.min(100 - hunger/10, 0) 
 				+ Math.min(100 - thirst/10, 0) 
-				+ Math.min(performance, 0)) / 5.0;
+				+ Math.min(performance * 100, 0)) / 5.0;
 	}
 	
 	/**
@@ -1878,19 +1882,80 @@ public class PhysicalCondition implements Serializable {
 	}
 
 	/**
-	 * Improves musculoskeletal systems.
+	 * Stress out the musculoskeletal systems.
+	 * 
+	 * @param time
 	 */
-	public void workOut(double time) {
-		musculoskeletal[0] = musculoskeletal[0] + .01 * time; // pain tolerance
-		musculoskeletal[2] = musculoskeletal[2] + .01 * time; // muscle soreness
+	public void stressMuscle(double time) {
+		musculoskeletal[1] -= .01 * time; // musculoskeletal health
+		if (musculoskeletal[1] < 0)
+			musculoskeletal[1] = 0;
+		musculoskeletal[2] += .005 * time; // musculoskeletal soreness
+		if (musculoskeletal[2] > 100)
+			musculoskeletal[2] = 100;
+	}
+	
+	/**
+	 * Works out the musculoskeletal systems.
+	 * 
+	 * @param time
+	 */
+	public void exerciseMuscle(double time) {
+		musculoskeletal[0] += .001 * time; // musculoskeletal pain tolerance
+		musculoskeletal[1] += .01 * time; // musculoskeletal health
+		musculoskeletal[2] -= .001 * time; // musculoskeletal soreness
+		if (musculoskeletal[0] > 100)
+			musculoskeletal[0] = 100;
+		if (musculoskeletal[1] > 100)
+			musculoskeletal[1] = 100;
+		if (musculoskeletal[2] < 0)
+			musculoskeletal[2] = 0;
 	}
 
 	/**
-	 * Entropy in musculoskeletal systems.
+	 * Puts the muscle to rest.
+	 * 
+	 * @param time
+	 */
+	public void relaxMuscle(double time) {
+		musculoskeletal[1] += .01 * time; // musculoskeletal health
+		musculoskeletal[2] -= .01 * time; // musculoskeletal soreness
+		if (musculoskeletal[1] > 100)
+			musculoskeletal[1] = 100;
+		if (musculoskeletal[2] < 0)
+			musculoskeletal[2] = 0;
+	}
+	
+	/**
+	 * Represent the deterioration of musculoskeletal systems.
 	 */
 	public void entropy(double time) {
-		musculoskeletal[0] = musculoskeletal[0] - .01 * time; // pain tolerance
-		musculoskeletal[2] = musculoskeletal[2] - .01 * time; // muscle soreness
+		musculoskeletal[0] -= .001 * time; // muscle health
+		musculoskeletal[1] -= .001 * time; // muscle health
+		musculoskeletal[2] += .001 * time; // muscle health
+		if (musculoskeletal[2] > 100)
+			musculoskeletal[2] = 100;
+		if (musculoskeletal[1] < 0)
+			musculoskeletal[1] = 0;
+		if (musculoskeletal[0] < 0)
+			musculoskeletal[0] = 0;
+	}
+	
+
+	/**
+	 * Reduces the muscle soreness.
+	 * 
+	 * @param value
+	 */
+	public void recoverFromSoreness(double value) {
+		// Reduce the muscle soreness by 1 point at the end of the day
+		double soreness = musculoskeletal[2];
+		soreness = soreness - value * 0.01;
+		if (soreness < 0)
+			soreness = 0;
+		else if (soreness > 100)
+			soreness = 100;
+		musculoskeletal[2] = soreness;
 	}
 	
 	public double getStarvationStartTime() {

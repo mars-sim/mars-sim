@@ -297,7 +297,7 @@ public class RescueSalvageVehicle extends RoverMission {
 		if (rescue) {
 			newEvent = new MissionHistoricalEvent(EventType.MISSION_RENDEZVOUS, this,
 					"Stranded Vehicle", // cause
-					this.getTypeID(), // during
+					this.getName(), // during
 					member.getName(), // member
 					getVehicle().getName(), // loc0
 					vehicleTarget.getLocationTag().getLocale(), // loc1
@@ -306,7 +306,7 @@ public class RescueSalvageVehicle extends RoverMission {
 		} else {
 			newEvent = new MissionHistoricalEvent(EventType.MISSION_RENDEZVOUS, this,
 					"Salvaged Vehicle", 
-					this.getTypeID(), 
+					this.getName(), 
 					member.getName(), 
 					getVehicle().getName(),
 					vehicleTarget.getLocationTag().getLocale(),
@@ -354,7 +354,7 @@ public class RescueSalvageVehicle extends RoverMission {
 						EventType.MISSION_SALVAGE_VEHICLE, 
 						this, 
 						serious.getName(),
-					this.getTypeID(), 
+					this.getName(), 
 					towedVehicle.getName(),
 					person.getLocationTag().getImmediateLocation(), 
 					person.getLocationTag().getLocale(),
@@ -417,7 +417,7 @@ public class RescueSalvageVehicle extends RoverMission {
 	 * @throws MissionException if error determining resources.
 	 */
 	private Map<Integer, Number> determineRescueResourcesNeeded(boolean useBuffer) {
-		Map<Integer, Number> result = new HashMap<Integer, Number>(3);
+		Map<Integer, Number> result = new HashMap<>(3);
 
 		// Determine estimate time for trip.
 		double distance = vehicleTarget.getCoordinates().getDistance(getStartingSettlement().getCoordinates());
@@ -444,8 +444,8 @@ public class RescueSalvageVehicle extends RoverMission {
 		Vehicle result = null;
 		double halfRange = range / 2D;
 
-		Collection<Vehicle> emergencyBeaconVehicles = new ConcurrentLinkedQueue<Vehicle>();
-		Collection<Vehicle> vehiclesNeedingRescue = new ConcurrentLinkedQueue<Vehicle>();
+		Collection<Vehicle> emergencyBeaconVehicles = new ConcurrentLinkedQueue<>();
+		Collection<Vehicle> vehiclesNeedingRescue = new ConcurrentLinkedQueue<>();
 
 		// Find all available vehicles.
 		for (Vehicle vehicle : unitManager.getVehicles()) {
@@ -681,7 +681,7 @@ public class RescueSalvageVehicle extends RoverMission {
 	 */
 	public Map<Integer, Number> getResourcesToLoad() {
 		// Override and full rover with fuel and life support resources.
-		Map<Integer, Number> result = new HashMap<Integer, Number>(4);
+		Map<Integer, Number> result = new HashMap<>(4);
 
 		result.put(getVehicle().getFuelType(), getVehicle().getAmountResourceCapacity(getVehicle().getFuelType()));
 		result.put(OXYGEN_ID, getVehicle().getAmountResourceCapacity(OXYGEN_ID));

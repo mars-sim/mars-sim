@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * VehicleMission.java
- * @date 2021-10-17
+ * @date 2022-08-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -145,7 +145,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	private List<NavPoint> navPoints = new ArrayList<>();
 		
 	/**
-	 * Create a Vehicle mission
+	 * Creates a Vehicle mission.
 	 *
 	 * @param missionType
 	 * @param startingMember
@@ -167,7 +167,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	}
 
 	/**
-	 * Setup starting NavPoints
+	 * Sets up starting NavPoints
 	 */
 	private void init(MissionMember startingMember) {
 
@@ -191,7 +191,8 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	}
 
 	/**
-	 * Set the starting state of the mission
+	 * Sets the starting state of the mission.
+	 * 
 	 * @return
 	 */
 	protected void setInitialPhase(boolean needsReview) {
@@ -210,7 +211,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	}
 
 	/**
-	 * Reserve a vehicle
+	 * Reserves a vehicle.
 	 *
 	 * @return
 	 */
@@ -219,7 +220,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 		MissionMember startingMember = getStartingPerson();
 		if (startingMember.getSettlement() == null || !reserveVehicle(startingMember)) {
 			endMission(MissionStatus.NO_RESERVABLE_VEHICLES);
-			logger.warning(startingMember, "Could not reserve a vehicle for " + getTypeID() + ".");
+			logger.warning(startingMember, "Could not reserve a vehicle for " + getName() + ".");
 			return false;
 		}
 		return true;
@@ -274,7 +275,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	 */
 	private boolean checkVehicleMaintenance() {
 		if (vehicle.haveStatusType(StatusType.MAINTENANCE)) {
-			logger.warning(vehicle, "Under maintenance and not ready for " + getTypeID() + ".");
+			logger.warning(vehicle, "Under maintenance and not ready for " + getName() + ".");
 
 			endMission(MissionStatus.VEHICLE_UNDER_MAINTENANCE);
 			return false;
@@ -294,7 +295,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	}
 
 	/**
-	 * Get the current loading plan for this Mission phase.
+	 * Gets the current loading plan for this Mission phase.
 	 * @return
 	 */
 	public LoadingController getLoadingPlan() {
@@ -302,8 +303,9 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	}
 
 	/**
-	 * Prepare a loading plan taking resources from a site. If a plan for the same
+	 * Prepares a loading plan taking resources from a site. If a plan for the same
 	 * site is already in place then it is re-used.
+	 * 
 	 * @param loadingSite
 	 */
 	public LoadingController prepareLoadingPlan(Settlement loadingSite) {
@@ -319,7 +321,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	}
 
 	/**
-	 * Clear the current loading plan
+	 * Clears the current loading plan.
 	 */
 	public void clearLoadingPlan() {
 		loadingPlan = null;
@@ -392,7 +394,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 				usable = false;
 
 			logger.log(vehicle, Level.FINER, 1000, "Availability : "
-						+ usable + " [ID: " + getTypeID() + "].");
+						+ usable + " [ID: " + getName() + "].");
 			return usable;
 
 		} else {
@@ -519,7 +521,8 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 
 			if (isDroneDone() || isRoverDone()) {
 				continueToEndMission = false;
-				startDisembarkingPhase();
+				if (isCurrentNavpointSettlement())
+					startDisembarkingPhase();
 			}
 		}
 
@@ -772,10 +775,11 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 			performTravelPhase(member);
 		}
 		else if (DISEMBARKING.equals(getPhase())) {
+			// if arriving at the settlement
 			if (isCurrentNavpointSettlement())
 				performDisembarkToSettlementPhase(member, getCurrentNavpointSettlement());
 			else
-				logger.severe(getTypeID() + ": Current navpoint is not a settlement.");
+				logger.severe(getName() + ": Current navpoint is not a settlement.");
 		}
 		else if (COMPLETED.equals(getPhase())) {
 			setPhaseEnded(true);
@@ -1159,7 +1163,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 				if (amountStored < amount) {
 					String newLog = "Not enough "
 							+ ResourceUtil.findAmountResourceName(id) + " to continue with "
-							+ getTypeID() + " - Required: " + Math.round(amount * 100D) / 100D + " kg - Vehicle stored: "
+							+ getName() + " - Required: " + Math.round(amount * 100D) / 100D + " kg - Vehicle stored: "
 							+ Math.round(amountStored * 100D) / 100D + " kg";
 					logger.log(vehicle, Level.WARNING, 10_000, newLog);
 					return false;
@@ -1173,7 +1177,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 				if (numStored < num) {
 					String newLog = "Not enough "
 							+ ItemResourceUtil.findItemResource(id).getName() + " to continue with "
-							+ getTypeID() + " - Required: " + num + " - Vehicle stored: " + numStored + ".";
+							+ getName() + " - Required: " + num + " - Vehicle stored: " + numStored + ".";
 					logger.log(vehicle, Level.WARNING, 10_000,  newLog);
 					return false;
 				}
@@ -1248,7 +1252,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 		HistoricalEvent newEvent = new MissionHistoricalEvent(EventType.MISSION_EMERGENCY_DESTINATION,
 				this,
 				reason,
-				this.getTypeID(),
+				this.getName(),
 				member.getName(),
 				vehicle.getName(),
 				vehicle.getCoordinates().getCoordinateString(),
@@ -1291,7 +1295,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 			HistoricalEvent newEvent = new MissionHistoricalEvent(EventType.MISSION_MEDICAL_EMERGENCY,
 					this,
 					person.getName() + " had " + person.getPhysicalCondition().getHealthSituation(),
-					this.getTypeID(),
+					this.getName(),
 					member.getName(),
 					vehicle.getName(),
 					vehicle.getCoordinates().getCoordinateString(),
@@ -1305,7 +1309,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 			HistoricalEvent newEvent = new MissionHistoricalEvent(EventType.MISSION_NOT_ENOUGH_RESOURCES,
 					this,
 					"Dwindling resource(s)",
-					this.getTypeID(),
+					this.getName(),
 					member.getName(),
 					vehicle.getName(),
 					vehicle.getCoordinates().getCoordinateString(),
@@ -1385,7 +1389,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 			HistoricalEvent newEvent = new MissionHistoricalEvent(EventType.MISSION_EMERGENCY_BEACON_ON,
 					this,
 					reason,
-					this.getTypeID(),
+					this.getName(),
 					member.getName(),
 					vehicle.getName(),
 					vehicle.getCoordinates().getCoordinateString(),
@@ -1738,7 +1742,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 			navPoints.add(navPoint);
 			fireMissionUpdate(MissionEventType.NAVPOINTS_EVENT);
 		} else {
-			logger.severe(getTypeID() + " navPoint is null");
+			logger.severe(getName() + " navPoint is null");
 		}
 	}
 
@@ -1786,7 +1790,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 			navPoints.set(index, navPoint);
 			fireMissionUpdate(MissionEventType.NAVPOINTS_EVENT);
 		} else {
-			logger.severe(getTypeID() + " navPoint is null");
+			logger.severe(getName() + " navPoint is null");
 		}
 	}
 
@@ -1876,7 +1880,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 		if ((index >= 0) && (index < getNumberOfNavpoints()))
 			return navPoints.get(index);
 		else {
-			logger.severe(getTypeID() + " navpoint " + index + " is null.");
+			logger.severe(getName() + " navpoint " + index + " is null.");
 			return null;
 		}
 	}
@@ -1889,7 +1893,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	 */
 	public final int getNavpointIndex(NavPoint navpoint) {
 		if (navpoint == null)
-			logger.severe(getTypeID() + " navpoint is null.");
+			logger.severe(getName() + " navpoint is null.");
 		if (navPoints.contains(navpoint))
 			return navPoints.indexOf(navpoint);
 		else
@@ -2110,7 +2114,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 				dist = Coordinates.computeDistance(getCurrentMissionLocation(), c1);
 			
 				if (Double.isNaN(dist)) {
-					logger.severe(getTypeID() + 
+					logger.severe(getName() + 
 							": current leg's remaining distance is NaN.");
 					dist = 0;
 				}
@@ -2195,7 +2199,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 		
 		// Note: check for Double.isInfinite() and Double.isNaN()
 		if (Double.isNaN(navDist)) {
-			logger.severe(getTypeID() + " has navDist is NaN.");
+			logger.severe(getName() + " has navDist is NaN.");
 			navDist = 0;
 		}
 		
@@ -2274,9 +2278,10 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	 * Starts the disembarking phase.
 	 */
 	protected void startDisembarkingPhase() {
-		NavPoint np = getCurrentNavpoint();
-
-		setPhase(DISEMBARKING, (np != null ? np.getDescription() : "Unknown"));
+//		NavPoint np = getCurrentNavpoint();
+//		setPhase(DISEMBARKING, (np != null ? np.getDescription() : "Unknown"));
+		Settlement settlement =	getCurrentNavpointSettlement();
+		setPhase(DISEMBARKING, (settlement != null ? settlement.getName() : "Unknown"));
 	}
 
 	/**

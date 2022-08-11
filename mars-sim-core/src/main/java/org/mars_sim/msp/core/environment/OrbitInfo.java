@@ -28,7 +28,7 @@ public class OrbitInfo implements Serializable, Temporal {
 	private static SimLogger logger = SimLogger.getLogger(OrbitInfo.class.getName());
 	
 	// Static data members.
-	// Reference from http://nssdc.gsfc.nasa.gov/planetary/factsheet/marsfact.html
+	// See https://nssdc.gsfc.nasa.gov/planetary/factsheet/marsfact.html
 	/** Mars orbit semimajor axis in au. */
 	public static final double SEMI_MAJOR_AXIS = 1.5236915D; // in AU
 
@@ -40,11 +40,11 @@ public class OrbitInfo implements Serializable, Temporal {
 	// INSTANTANEOUS_RADIUS_NUMERATOR = 1.510818924D
 	// public static final double INSTANTANEOUS_RADIUS_NUMERATOR = SEMI_MAJOR_AXIS
 	// *(1 - ECCENTRICITY * ECCENTRICITY);
-	public static final double DEGREE_TO_RADIAN = Math.PI / 180D; // convert a number in degrees to radians
+	public static final double DEGREE_TO_RADIAN = Math.PI / 180; // convert a number in degrees to radians
 
 	/** Mars tilt in radians. */
 	private static final double TILT = 0.4398; // 25.2 deg // 25.2 / 180 *pi = 0.4398
-	/** Mars tilt in sine . */
+	/** Mars tilt in sine. */
 	private static final double SINE_TILT = 0.4258; // sin (25.2 / 180 *pi) = 0.4258
 	/** Mars solar day in seconds. */
 	public static final double SOLAR_DAY = 88775.244D;

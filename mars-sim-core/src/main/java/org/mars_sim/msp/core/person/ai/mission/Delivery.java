@@ -270,7 +270,7 @@ public class Delivery extends DroneMission implements CommerceMission {
 						}
 						if (dealer.equals(member)) {
 							// It's the caller so restart and it will be a Person
-							logger.info(member, "Resuming negotiation for " + getTypeID());
+							logger.info(member, "Resuming negotiation for " + getName());
 							assignTask((Person)member, negotiationTask);
 						}
 					}

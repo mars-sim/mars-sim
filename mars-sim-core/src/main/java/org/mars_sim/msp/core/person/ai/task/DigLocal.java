@@ -257,6 +257,8 @@ implements Serializable {
             }
 	     	collectionLimit += collected - excess;
 	     	collectionTotal += collectionLimit;
+	     	
+	     	person.getPhysicalCondition().stressMuscle(time);
         }
 
         if (!finishedCollecting) {
@@ -331,20 +333,20 @@ implements Serializable {
            	// Check if the bin runs out of storage space for that resource
 //          Building bin = getBinWithMostSpace(portion);
         	
-            double settlementCap = settlement.getAmountResourceRemainingCapacity(resourceID);
+//            double settlementCap = settlement.getAmountResourceRemainingCapacity(resourceID);
 
-            if (portion > settlementCap) {
-            	portion = settlementCap;
-
-            	logger.warning(person, 20_000L,
-    	            	resourceName + " storage full in " + settlement + ". Could only check in "
-    	            	+ Math.round(portion*10.0)/10.0 + " kg.");
-            }
-
-            else {
-            	logger.info(person, 20_000L,
-            			"Checking in " + Math.round(portion*10.0)/10.0 + " kg " + resourceName + " at Storage bin.");
-            }
+//            if (portion > settlementCap) {
+//            	portion = settlementCap;
+//
+//            	logger.info(person, 20_000L,
+//    	            	resourceName + " storage full in " + settlement + ". Could only check in "
+//    	            	+ Math.round(portion*10.0)/10.0 + " kg.");
+//            }
+//
+//            else {
+            	logger.info(person, 4_000,
+            			"Checking in " + Math.round(portion*10.0)/10.0 + " kg " + resourceName + " at storage bin.");
+//            }
             
             if (portion > 0) {
 	        	double loadingTime = portion / LOADING_RATE;

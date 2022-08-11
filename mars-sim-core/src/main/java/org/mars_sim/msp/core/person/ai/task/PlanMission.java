@@ -158,7 +158,8 @@ public class PlanMission extends Task implements Serializable {
 		Mission mission = person.getMind().getMission();
 		
 		if (mission instanceof VehicleMission && !mission.isDone()) {
-			logger.log(worker, Level.INFO, 30_000, "Submitted a mission plan for " + mission.getTypeID() + ".");
+			logger.log(worker, Level.INFO, 30_000, "Submitted a mission plan for " 
+					+ mission.getName() + ".");
 			// Flag the mission plan ready for submission
 			((VehicleMission)mission).flag4Submission();
 				// Note: the plan will go up the chain of command

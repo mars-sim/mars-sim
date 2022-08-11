@@ -241,7 +241,7 @@
 			<equipment type="Gas Canister" number="40" />
 			<equipment type="Barrel" number="40" />
 			<equipment type="Bag" number="40" />
-			<equipment type="Large Bag" number="10" />
+			<equipment type="Large Bag" number="25" />
 			<equipment type="Specimen Box" number="50" />
 
 			<!-- Resources -->
@@ -368,7 +368,7 @@
 			<equipment type="Gas Canister" number="40" />
 			<equipment type="Barrel" number="40" />
 			<equipment type="Bag" number="40" />
-			<equipment type="Large Bag" number="10" />
+			<equipment type="Large Bag" number="25" />
 			<equipment type="Specimen Box" number="50" />
 
 			<part-package name="package 1" number="1" />
@@ -475,7 +475,7 @@
 			<equipment type="Gas Canister" number="40" />
 			<equipment type="Barrel" number="40" />
 			<equipment type="Bag" number="40" />
-			<equipment type="Large Bag" number="10" />
+			<equipment type="Large Bag" number="25" />
 			<equipment type="Specimen Box" number="50" />
 
 			<part-package name="package 1" number="1" />
@@ -582,7 +582,7 @@
 			<equipment type="Gas Canister" number="40" />
 			<equipment type="Barrel" number="40" />
 			<equipment type="Bag" number="40" />
-			<equipment type="Large Bag" number="10" />
+			<equipment type="Large Bag" number="25" />
 			<equipment type="Specimen Box" number="50" />
 
 			<part-package name="package 1" number="1" />
@@ -689,7 +689,7 @@
 			<equipment type="Gas Canister" number="40" />
 			<equipment type="Barrel" number="40" />
 			<equipment type="Bag" number="40" />
-			<equipment type="Large Bag" number="10" />
+			<equipment type="Large Bag" number="25" />
 			<equipment type="Specimen Box" number="50" />
 
 			<part-package name="package 1" number="1" />
@@ -835,7 +835,7 @@
 			<equipment type="Gas Canister" number="40" />
 			<equipment type="Barrel" number="40" />
 			<equipment type="Bag" number="40" />
-			<equipment type="Large Bag" number="10" />
+			<equipment type="Large Bag" number="25" />
 			<equipment type="Specimen Box" number="50" />
 
 			<part-package name="package 1" number="1" />
@@ -961,9 +961,8 @@
 			<equipment type="Gas Canister" number="80" />
 			<equipment type="Barrel" number="80" />
 			<equipment type="Bag" number="80" />
-			<equipment type="Large Bag" number="20" />
+			<equipment type="Large Bag" number="50" />
 			<equipment type="Specimen Box" number="50" />
-
 
 			<!-- Resources -->
 			<resource type="food" amount="4000.0" />
@@ -1240,7 +1239,7 @@
 			<equipment type="Gas Canister" number="80" />
 			<equipment type="Barrel" number="80" />
 			<equipment type="Bag" number="80" />
-			<equipment type="Large Bag" number="20" />
+			<equipment type="Large Bag" number="50" />
 			<equipment type="Specimen Box" number="50" />
 
 			<!-- Resources -->
@@ -1518,9 +1517,8 @@
 			<equipment type="Gas Canister" number="80" />
 			<equipment type="Barrel" number="80" />
 			<equipment type="Bag" number="80" />
-			<equipment type="Large Bag" number="20" />
+			<equipment type="Large Bag" number="50" />
 			<equipment type="Specimen Box" number="50" />
-
 
 			<!-- Resources -->
 			<resource type="food" amount="4000.0" />
@@ -1797,9 +1795,8 @@
 			<equipment type="Gas Canister" number="80" />
 			<equipment type="Barrel" number="80" />
 			<equipment type="Bag" number="80" />
-			<equipment type="Large Bag" number="20" />
+			<equipment type="Large Bag" number="50" />
 			<equipment type="Specimen Box" number="50" />
-
 
 			<!-- Resources -->
 			<resource type="food" amount="4000.0" />
@@ -2115,7 +2112,7 @@
 			<equipment type="Gas Canister" number="80" />
 			<equipment type="Barrel" number="80" />
 			<equipment type="Bag" number="80" />
-			<equipment type="Large Bag" number="20" />
+			<equipment type="Large Bag" number="50" />
 			<equipment type="Specimen Box" number="50" />
 
 			<!-- Resources -->
@@ -2432,7 +2429,7 @@
 			<equipment type="Gas Canister" number="80" />
 			<equipment type="Barrel" number="80" />
 			<equipment type="Bag" number="80" />
-			<equipment type="Large Bag" number="20" />
+			<equipment type="Large Bag" number="50" />
 			<equipment type="Specimen Box" number="50" />
 
 			<!-- Resources -->
@@ -2749,7 +2746,7 @@
 			<equipment type="Gas Canister" number="80" />
 			<equipment type="Barrel" number="80" />
 			<equipment type="Bag" number="80" />
-			<equipment type="Large Bag" number="20" />
+			<equipment type="Large Bag" number="50" />
 			<equipment type="Specimen Box" number="50" />
 
 			<!-- Resources -->
@@ -3324,7 +3321,7 @@
 			<equipment type="Gas Canister" number="120" />
 			<equipment type="Barrel" number="120" />
 			<equipment type="Bag" number="120" />
-			<equipment type="Large Bag" number="30" />
+			<equipment type="Large Bag" number="70" />
 			<equipment type="Specimen Box" number="70" />
 
 			<!-- Resources -->
@@ -3688,7 +3685,7 @@
 			<equipment type="Gas Canister" number="120" />
 			<equipment type="Barrel" number="120" />
 			<equipment type="Bag" number="120" />
-			<equipment type="Large Bag" number="30" />
+			<equipment type="Large Bag" number="70" />
 			<equipment type="Specimen Box" number="70" />
 
 			<!-- Resources -->
@@ -4050,7 +4047,7 @@
 			<equipment type="Gas Canister" number="120" />
 			<equipment type="Barrel" number="120" />
 			<equipment type="Bag" number="120" />
-			<equipment type="Large Bag" number="30" />
+			<equipment type="Large Bag" number="70" />
 			<equipment type="Specimen Box" number="70" />
 
 			<!-- Resources -->
@@ -4407,7 +4404,7 @@
 			<equipment type="Gas Canister" number="120" />
 			<equipment type="Barrel" number="120" />
 			<equipment type="Bag" number="120" />
-			<equipment type="Large Bag" number="30" />
+			<equipment type="Large Bag" number="70" />
 			<equipment type="Specimen Box" number="70" />
 
 			<!-- Resources -->
@@ -4768,7 +4765,7 @@
 			<equipment type="Gas Canister" number="120" />
 			<equipment type="Barrel" number="120" />
 			<equipment type="Bag" number="120" />
-			<equipment type="Large Bag" number="30" />
+			<equipment type="Large Bag" number="70" />
 			<equipment type="Specimen Box" number="70" />
 
 			<!-- Resources -->
@@ -5215,7 +5212,7 @@
 			<equipment type="Gas Canister" number="120" />
 			<equipment type="Barrel" number="120" />
 			<equipment type="Bag" number="120" />
-			<equipment type="Large Bag" number="30" />
+			<equipment type="Large Bag" number="70" />
 			<equipment type="Specimen Box" number="70" />
 
 			<!-- Resources -->
@@ -5654,7 +5651,7 @@
 			<equipment type="Gas Canister" number="160" />
 			<equipment type="Barrel" number="160" />
 			<equipment type="Bag" number="160" />
-			<equipment type="Large Bag" number="40" />
+			<equipment type="Large Bag" number="100" />
 			<equipment type="Specimen Box" number="100" />
 
 			<!-- Resources -->
@@ -5938,7 +5935,7 @@
 			<equipment type="Gas Canister" number="10" />
 			<equipment type="Barrel" number="10" />
 			<equipment type="Bag" number="10" />
-			<equipment type="Large Bag" number="10" />
+			<equipment type="Large Bag" number="25" />
 			<equipment type="Specimen Box" number="50" />
 
 			<resource type="oxygen" amount="4000.0" />
@@ -6167,7 +6164,7 @@
 			<equipment type="Gas Canister" number="10" />
 			<equipment type="Barrel" number="10" />
 			<equipment type="Bag" number="10" />
-			<equipment type="Large Bag" number="10" />
+			<equipment type="Large Bag" number="25" />
 			<equipment type="Specimen Box" number="50" />
 
 			<resource type="oxygen" amount="4000.0" />
