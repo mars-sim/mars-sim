@@ -10,6 +10,7 @@ package org.mars_sim.msp.core.structure.construction;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -61,6 +62,9 @@ public class ConstructionConfig implements Serializable {
 
     private transient List<ConstructionStageInfo> allConstructionStageInfoList;
 	
+    private transient List<Integer> constructionParts;
+    private transient List<Integer> constructionResources;
+    
     /**
      * Constructor.
      * 
@@ -268,6 +272,7 @@ public class ConstructionConfig implements Serializable {
 	public List<ConstructionStageInfo> getAllConstructionStageInfoList() {
 
 		if (allConstructionStageInfoList == null) {
+			
 			List<ConstructionStageInfo> result = new ArrayList<>();
 			
 			List<ConstructionStageInfo> foundations = getConstructionStageInfoList(
@@ -287,6 +292,67 @@ public class ConstructionConfig implements Serializable {
 		return allConstructionStageInfoList;
 	}
 	
+	/**
+	 * Determines all resources needed for construction projects.
+	 *
+	 * @return
+	 */
+	public List<Integer> determineConstructionResources() {
+		
+		if (constructionResources == null) {
+			List<Integer> resources = new ArrayList<>();
+	
+			Iterator<ConstructionStageInfo> i = ConstructionUtil.getAllConstructionStageInfoList().iterator();
+			while (i.hasNext()) {
+				ConstructionStageInfo info = i.next();
+				if (info.isConstructable()) {
+					Iterator<Integer> j = info.getResources().keySet().iterator();
+					while (j.hasNext()) {
+						Integer resource = j.next();
+						if (!resources.contains(resource)) {
+							resources.add(resource);
+						}
+					}
+				}
+			}
+			
+			constructionResources = resources;
+		}
+		
+		return constructionResources;
+	}
+
+	/**
+	 * Determines all parts needed for construction projects.
+	 * 
+	 * @return
+	 */
+	public List<Integer> determineConstructionParts() {
+		
+		if (constructionParts == null) {
+			
+			List<Integer> parts = new ArrayList<>();
+	
+			Iterator<ConstructionStageInfo> i = ConstructionUtil.getAllConstructionStageInfoList().iterator();
+			while (i.hasNext()) {
+				ConstructionStageInfo info = i.next();
+				if (info.isConstructable()) {
+					Iterator<Integer> j = info.getParts().keySet().iterator();
+					while (j.hasNext()) {
+						Integer part = j.next();
+						if (!parts.contains(part)) {
+							parts.add(part);
+						}
+					}
+				}
+			}
+			
+			constructionParts = parts;
+		}
+		
+		return constructionParts;
+	}
+
     /**
      * Prepares object for garbage collection.
      */

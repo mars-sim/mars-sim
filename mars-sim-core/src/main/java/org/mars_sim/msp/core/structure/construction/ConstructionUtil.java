@@ -30,6 +30,7 @@ public class ConstructionUtil {
 
 	/**
 	 * Gets a construction stage info matching a given name.
+	 * 
 	 * @param stageName the stage info name.
 	 * @return construction stage info or null if none found.
 	 * @throws Exception if error finding construction stage info.
@@ -52,6 +53,7 @@ public class ConstructionUtil {
 
 	/**
 	 * Gets a list of all construction stage info of a given type.
+	 * 
 	 * @param stageType the type of stage.
 	 * @return list of construction stage info.
 	 * @throws Exception if error getting list.
@@ -62,6 +64,7 @@ public class ConstructionUtil {
 
 	/**
 	 * Gets a list of all construction stage info of a given type.
+	 * 
 	 * @param stageType the type of stage.
 	 * @param constructionSkill the architect's construction skill.
 	 * @return list of construction stage info.
@@ -81,6 +84,7 @@ public class ConstructionUtil {
 
 	/**
 	 * Gets a list of all foundation construction stage info.
+	 * 
 	 * @return list of construction stage info.
 	 * @throws Exception if error getting list.
 	 */
@@ -90,6 +94,7 @@ public class ConstructionUtil {
 
 	/**
 	 * Gets a list of all foundation construction stage info.
+	 * 
 	 * @param constructionSkill the architect's construction skill.
 	 * @return list of construction stage info.
 	 * @throws Exception if error getting list.
@@ -101,6 +106,7 @@ public class ConstructionUtil {
 
 	/**
 	 * Gets a list of all frame construction stage info.
+	 * 
 	 * @return list of construction stage info.
 	 * @throws Exception if error getting list.
 	 */
@@ -110,6 +116,7 @@ public class ConstructionUtil {
 
 	/**
 	 * Gets a list of all frame construction stage info.
+	 * 
 	 * @param constructionSkill the architect's construction skill.
 	 * @return list of construction stage info.
 	 * @throws Exception if error getting list.
@@ -121,6 +128,7 @@ public class ConstructionUtil {
 
 	/**
 	 * Gets a list of all building construction stage info.
+	 * 
 	 * @return list of construction stage info.
 	 * @throws Exception if error getting list.
 	 */
@@ -130,6 +138,7 @@ public class ConstructionUtil {
 
 	/**
 	 * Gets a list of all building construction stage info.
+	 * 
 	 * @param constructionSkill the architect's construction skill.
 	 * @return list of construction stage info.
 	 * @throws Exception if error getting list.
@@ -151,6 +160,7 @@ public class ConstructionUtil {
 
 	/**
 	 * Gets a list of names of buildings that are constructable from a given construction stage info.
+	 * 
 	 * @param stageInfo the construction stage info.
 	 * @return list of building names.
 	 * @throws Exception if error getting list.
@@ -177,6 +187,7 @@ public class ConstructionUtil {
 
 	/**
 	 * Gets a list of the next possible construction stages from a given construction stage info.
+	 * 
 	 * @param stageInfo the construction stage info.
 	 * @return list of construction stage info.
 	 * @throws Exception if error getting list.
@@ -207,6 +218,7 @@ public class ConstructionUtil {
 
 	/**
 	 * Gets the prerequisite construction stage info for a given stage info.
+	 * 
 	 * @param stageInfo the construction stage info.
 	 * @return the prerequisite stage info or null if none.
 	 * @throws Exception if error finding prerequisite stage info.
@@ -231,6 +243,7 @@ public class ConstructionUtil {
 	
 	/**
 	 * Gets the highest construction skill of all people associated with a settlement.
+	 * 
 	 * @param settlement the settlement.
 	 * @return highest effective construction skill.
 	 */

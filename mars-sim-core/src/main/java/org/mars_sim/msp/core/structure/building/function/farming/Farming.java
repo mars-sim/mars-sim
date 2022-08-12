@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Farming.java
- * @date 2022-07-15
+ * @date 2022-08-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function.farming;
@@ -1145,7 +1145,7 @@ public class Farming extends Function {
 	public double getTendingNeed() {
 		double need = 0;
 		for (Crop c : crops) {
-			need += c.getTendingNeed();
+			need += c.getCurrentWorkRequired();
 		}
 		return need;
 	}

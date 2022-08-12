@@ -438,15 +438,6 @@ public class Crop implements Comparable<Crop>, Serializable {
 	}
 
 	/**
-	 * Gets the tending need of this crop.
-	 * 
-	 * @return
-	 */
-	public double getTendingNeed() {
-		return currentWorkRequired;
-	}
-
-	/**
 	 * Tracks the overall health condition of the crop.
 	 * 
 	 * @return condition as value from 0 (poor) to 1 (healthy)

@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * ManufactureConstructionMaterials.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-08-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -117,9 +117,8 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
 		// Get available manufacturing workshop if any.
 		Building manufactureBuilding = getAvailableManufacturingBuilding(robot);
 		if (manufactureBuilding != null) {
-			workshop = manufactureBuilding.getManufacture(); // (Manufacture)
-																// manufactureBuilding.getFunction(FunctionType.MANUFACTURE);
-
+			workshop = manufactureBuilding.getManufacture();
+			
 			// Walk to manufacturing building.
 			walkToTaskSpecificActivitySpotInBuilding(manufactureBuilding, FunctionType.MANUFACTURE, false);
 		} else {
@@ -406,9 +405,9 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
 //		if (constructionParts == null) {
 //			determineConstructionParts();
 //		}
-		List<Integer> constructionResources = determineConstructionResources();
+		List<Integer> constructionResources = constructionConfig.determineConstructionResources();
 		
-		List<Integer> constructionParts = determineConstructionParts();
+		List<Integer> constructionParts = constructionConfig.determineConstructionParts();
 		
 		Iterator<ManufactureProcessItem> i = info.getOutputList().iterator();
 		while (!result && i.hasNext()) {
@@ -427,52 +426,6 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
 		}
 
 		return result;
-	}
-
-	/**
-	 * Determines all resources needed for construction projects.
-	 */
-	private static List<Integer> determineConstructionResources() {
-		List<Integer> constructionResources = new ArrayList<>();
-
-		Iterator<ConstructionStageInfo> i = ConstructionUtil.getAllConstructionStageInfoList().iterator();
-		while (i.hasNext()) {
-			ConstructionStageInfo info = i.next();
-			if (info.isConstructable()) {
-				Iterator<Integer> j = info.getResources().keySet().iterator();
-				while (j.hasNext()) {
-					Integer resource = j.next();
-					if (!constructionResources.contains(resource)) {
-						constructionResources.add(resource);
-					}
-				}
-			}
-		}
-		
-		return constructionResources;
-	}
-
-	/**
-	 * Determines all parts needed for construction projects.
-	 */
-	private static List<Integer> determineConstructionParts() {
-		List<Integer> constructionParts = new ArrayList<>();
-
-		Iterator<ConstructionStageInfo> i = ConstructionUtil.getAllConstructionStageInfoList().iterator();
-		while (i.hasNext()) {
-			ConstructionStageInfo info = i.next();
-			if (info.isConstructable()) {
-				Iterator<Integer> j = info.getParts().keySet().iterator();
-				while (j.hasNext()) {
-					Integer part = j.next();
-					if (!constructionParts.contains(part)) {
-						constructionParts.add(part);
-					}
-				}
-			}
-		}
-		
-		return constructionParts;
 	}
 
 

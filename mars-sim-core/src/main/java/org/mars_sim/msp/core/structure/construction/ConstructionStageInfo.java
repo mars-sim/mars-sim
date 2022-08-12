@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ConstructionStageInfo.java
- * @date 2021-12-15
+ * @date 2022-08-10
  * @author Scott Davis
  */
 
@@ -39,7 +39,8 @@ public class ConstructionStageInfo implements Serializable {
     private List<ConstructionVehicleType> vehicles;
 
     /**
-     * Constructor
+     * Constructor.
+     * 
      * @param name the name of the stage.
      * @param type the stage type.
      * @param width the construction stage width (meters).
@@ -78,6 +79,7 @@ public class ConstructionStageInfo implements Serializable {
 
     /**
      * Gets the architect construction skill level.
+     * 
      * @return skill level.
      */
     public int getArchitectConstructionSkill() {
@@ -86,6 +88,7 @@ public class ConstructionStageInfo implements Serializable {
 
     /**
      * Gets the name of the stage.
+     * 
      * @return name.
      */
     public String getName() {
@@ -94,6 +97,7 @@ public class ConstructionStageInfo implements Serializable {
 
     /**
      * Gets the width of the stage.
+     * 
      * @return the stage width (meters).
      */
     public double getWidth() {
@@ -102,6 +106,7 @@ public class ConstructionStageInfo implements Serializable {
 
     /**
      * Gets the length of the stage.
+     * 
      * @return the stage length (meters).
      */
     public double getLength() {
@@ -110,6 +115,7 @@ public class ConstructionStageInfo implements Serializable {
 
     /**
      * Checks if the stage dimensions are initially unset.
+     * 
      * @return true if dimensions unset.
      */
     public boolean isUnsetDimensions() {
@@ -118,6 +124,7 @@ public class ConstructionStageInfo implements Serializable {
 
     /**
      * Gets the base level of the building.
+     * 
      * @return -1 for in-ground, 0 for above-ground.
      */
     public int getBaseLevel() {
@@ -125,7 +132,8 @@ public class ConstructionStageInfo implements Serializable {
     }
 
     /**
-     * Check if the stage can be constructed.
+     * Checks if the stage can be constructed.
+     * 
      * @return true if stage can be constructed.
      */
     public boolean isConstructable() {
@@ -134,6 +142,7 @@ public class ConstructionStageInfo implements Serializable {
 
     /**
      * Checks if the stage can be salvaged.
+     * 
      * @return true if stage can be salvaged.
      */
     public boolean isSalvagable() {
@@ -142,6 +151,7 @@ public class ConstructionStageInfo implements Serializable {
 
     /**
      * Gets the parts needed for the stage.
+     * 
      * @return map of parts and their number.
      */
     public Map<Integer, Integer> getParts() {
@@ -150,6 +160,7 @@ public class ConstructionStageInfo implements Serializable {
 
     /**
      * Gets the prerequisite stage name.
+     * 
      * @return name.
      */
     public String getPrerequisiteStage() {
@@ -158,6 +169,7 @@ public class ConstructionStageInfo implements Serializable {
 
     /**
      * Gets the resources needed for the stage.
+     * 
      * @return map of resources and their amounts (kg).
      */
     public Map<Integer, Double> getResources() {
@@ -166,6 +178,7 @@ public class ConstructionStageInfo implements Serializable {
 
     /**
      * Gets the stage type.
+     * 
      * @return type.
      */
     public String getType() {
@@ -174,6 +187,7 @@ public class ConstructionStageInfo implements Serializable {
 
     /**
      * Gets the vehicles needed for the stage.
+     * 
      * @return vehicle type.
      */
     public List<ConstructionVehicleType> getVehicles() {
@@ -182,6 +196,7 @@ public class ConstructionStageInfo implements Serializable {
 
     /**
      * Gets the construction work time.
+     * 
      * @return time (millisols).
      */
     public double getWorkTime() {
@@ -189,7 +204,7 @@ public class ConstructionStageInfo implements Serializable {
     }
 
     /**
-     * Prepare for garbage collection.
+     * Prepares for garbage collection.
      */
     public void destroy() {
        name = null;

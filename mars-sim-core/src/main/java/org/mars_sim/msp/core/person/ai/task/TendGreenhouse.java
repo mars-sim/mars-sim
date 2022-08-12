@@ -306,8 +306,6 @@ public class TendGreenhouse extends Task implements Serializable {
 						mod *= RandomUtil.getRandomDouble(.5, 1.0) * greenhouseSkill * 1.2;
 					}
 	
-					workTime = time * mod;
-	
 					if (remain > 0) {
 						// Divided by mod to get back any leftover real time
 						remainingTime = time - (usedTime / mod);
