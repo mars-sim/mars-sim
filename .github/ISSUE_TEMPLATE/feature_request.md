@@ -10,11 +10,17 @@ assignees: ''
 **Is your feature request related to a problem? Please describe.**
 A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
 
+**Describe the solution you desire to see**
+A clear and concise description of what you want to happen.
+
 **Describe the solution you'd like**
 A clear and concise description of what you want to happen.
 
 **Describe alternatives you've considered**
 A clear and concise description of any alternative solutions or features you've considered.
+
+**Screenshots**
+Provide pictures and screenshots. Use copy (Ctrl-C) and paste (Ctrl-V) to attach pictures here. Feel free to use screenshots from other games and applications to illustrate your points. Use markers to circle and highlight important portions in your pictures. 
 
 **Specifications  (please complete the following information):**
  - OS version : [e.g. Windows 10, macOS 10.13, Ubuntu 14.04, etc.]
