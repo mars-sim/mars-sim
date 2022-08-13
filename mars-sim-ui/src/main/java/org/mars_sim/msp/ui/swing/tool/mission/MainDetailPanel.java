@@ -144,8 +144,7 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 	private Map<String, MissionCustomInfoPanel> customInfoPanels;
 
 	private LogTableModel logTableModel;
-	
-	private Collection<MissionMember> memberRecord;
+
 
 	/**
 	 * Constructor.
@@ -159,13 +158,11 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 		this.desktop = desktop;
 		this.missionWindow = missionWindow;
 		
-		memberRecord = new ArrayList<>();
-		
 		// Set the layout.
 		setLayout(new BorderLayout());
 
 		WebScrollPane scrollPane = new WebScrollPane();
-		scrollPane.setBorder(new MarsPanelBorder());
+//		scrollPane.setBorder(new MarsPanelBorder());
 		scrollPane.getVerticalScrollBar().setUnitIncrement(10);
 		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		add(scrollPane, BorderLayout.CENTER);
@@ -275,14 +272,9 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 
 	private WebPanel initVehiclePane() {
 
-		WebPanel vehicleMainPane = new WebPanel(new FlowLayout());
-		Border blackline = BorderFactory.createTitledBorder("Mission Vehicle");
-		vehicleMainPane.setBorder(blackline);
-		
 		// Create the vehicle grid panel.
 		WebPanel vehicleLayout = new WebPanel(new GridLayout(1, 2));
-//		vehicleLayout.setPreferredSize(new Dimension(-1, HEIGHT_0));
-		vehicleMainPane.add(vehicleLayout);
+		vehicleLayout.setPreferredSize(new Dimension(-1, HEIGHT_0));
 		
 		// Create the vehicle pane.
 		WebPanel vehiclePane = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
@@ -336,12 +328,18 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 		wrapper00.add(vehicleButton);
 		vehicleLayout.add(wrapper00);
 
-		return vehicleMainPane;
+		return vehicleLayout;
 	}
 
 	private WebPanel initTravelPane() {
+		
+		WebPanel mainPane = new WebPanel(new FlowLayout());
+		Border blackline = BorderFactory.createTitledBorder("Mission Vehicle");
+		mainPane.setBorder(blackline);
+	
 		// Prepare travelPane Spring Layout.
 		WebPanel travelPane = new WebPanel(new GridLayout(4, 2));
+		mainPane.add(travelPane);
 
 		// Create the vehicle status label.
 		WebLabel vehicleStatusLabel0 = new WebLabel(Msg.getString("MainDetailPanel.vehicleStatus", SwingConstants.RIGHT)); //$NON-NLS-2$
@@ -382,7 +380,7 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 		wrapper04.add(traveledLabel);
 		travelPane.add(wrapper04);
 
-		return travelPane;
+		return mainPane;
 	}
 
 	private WebPanel initLogPane() {
@@ -669,10 +667,10 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 
 		else {
 			
-			if (mission.getMembers().isEmpty()) {
+			if (mission.getMembersNumber() == 0) {
 				memberOuterPane.removeAll();
 				memberOuterPane.add(memberLabel);
-				memberLabel.setText(" Disbanded Members: " + printMembers());
+				memberLabel.setText(" Disbanded Members: " + printMembers(mission));
 			}
 			else {
 				memberOuterPane.removeAll();
@@ -715,13 +713,13 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 				vehicleStatusLabel.setText(vehicle.printStatusTypes());
 				speedLabel.setText(Msg.getString("MainDetailPanel.kmhSpeed", formatter.format(vehicle.getSpeed()))); //$NON-NLS-1$
 				try {
-					int currentLegRemainingDist = (int) vehicleMission.getCurrentLegRemainingDistance();
+					int currentLegRemainingDist = (int) vehicleMission.getDistanceCurrentLegRemaining();
 					distanceNextNavLabel.setText(Msg.getString("MainDetailPanel.kmNextNavPoint", currentLegRemainingDist)); //$NON-NLS-1$
 				} catch (Exception e2) {
 				}
 
-				double travelledDistance = Math.round(vehicleMission.getActualTotalDistanceTravelled()*10.0)/10.0;
-				double estTotalDistance = Math.round(vehicleMission.getEstimatedTotalDistance()*10.0)/10.0;
+				double travelledDistance = Math.round(vehicleMission.computeTotalDistanceTravelled()*10.0)/10.0;
+				double estTotalDistance = Math.round(vehicleMission.getDistanceProposed()*10.0)/10.0;
 
 				traveledLabel.setText(Msg.getString("MainDetailPanel.kmTraveled", //$NON-NLS-1$
 						travelledDistance,
@@ -834,17 +832,17 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 	 * 
 	 * @return
 	 */
-	private String printMembers() {
+	private String printMembers(Mission mission) {
 		String result = null;
-		List<MissionMember> list = new ArrayList<>(memberRecord);
-		int size = memberRecord.size();
+		List<Unit> list = new ArrayList<>(mission.getSignup());
+		int size = list.size();
 		for (int i=0; i<size; i++) {
-			MissionMember mm = list.get(i);
-			if (mm.getUnitType() == UnitType.PERSON) {
-				result += ((Person)mm).getName();
+			Unit u = list.get(i);
+			if (u.getUnitType() == UnitType.PERSON) {
+				result += ((Person)u).getName();
 			}
 			else {
-				result += ((Robot)mm).getName();
+				result += ((Robot)u).getName();
 			}
 			
 			if (i != size - 1) {
@@ -982,12 +980,12 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 			} else if (type == MissionEventType.DISTANCE_EVENT) {
 				VehicleMission vehicleMission = (VehicleMission) mission;
 				try {
-					int distanceNextNav = (int) vehicleMission.getCurrentLegRemainingDistance();
+					int distanceNextNav = (int) vehicleMission.getDistanceCurrentLegRemaining();
 					distanceNextNavLabel.setText(Msg.getString("MainDetailPanel.kmNextNavPoint", distanceNextNav)); //$NON-NLS-1$
 				} catch (Exception e2) {
 				}
-				double travelledDistance = Math.round(vehicleMission.getActualTotalDistanceTravelled()*10.0)/10.0;
-				double estTotalDistance = Math.round(vehicleMission.getEstimatedTotalDistance()*10.0)/10.0;
+				double travelledDistance = Math.round(vehicleMission.computeTotalDistanceTravelled()*10.0)/10.0;
+				double estTotalDistance = Math.round(vehicleMission.getDistanceProposed()*10.0)/10.0;
 				traveledLabel.setText(Msg.getString("MainDetailPanel.kmTraveled", //$NON-NLS-1$
 						travelledDistance,
 						estTotalDistance
@@ -1217,9 +1215,6 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 		void updateMembers() {
 			
 			if (mission != null) {
-				
-				memberRecord.clear();
-				memberRecord = mission.getMembers();
 				
 				clearMembers();
 				members = new ArrayList<>(mission.getMembers());

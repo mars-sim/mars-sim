@@ -269,8 +269,8 @@ public class CommandHelper {
 		// Ohhh instanceof ???
 		if (mission instanceof VehicleMission) {
 			v = ((VehicleMission) mission).getVehicle();
-			dist = ((VehicleMission) mission).getEstimatedTotalDistance();
-			trav = ((VehicleMission) mission).getActualTotalDistanceTravelled();
+			dist = ((VehicleMission) mission).getDistanceProposed();
+			trav = ((VehicleMission) mission).getTotalDistanceTravelled();
 		}
 	
 		if (v != null) {

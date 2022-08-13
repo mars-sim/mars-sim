@@ -81,20 +81,19 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	public static final String AT_NAVPOINT = "At a navpoint";
 	public static final String TRAVEL_TO_NAVPOINT = "Traveling to navpoint";
 
+	/** How often are remaining resources checked. */
+	private static final int RESOURCE_CHECK_DURATION = 40;
 	/** The small insignificant amount of distance in km. */
 	private static final double SMALL_DISTANCE = .1;
-
 	/** Modifier for number of parts needed for a trip. */
 	private static final double PARTS_NUMBER_MODIFIER = MalfunctionManager.PARTS_NUMBER_MODIFIER;
 	/** Estimate number of broken parts per malfunctions */
 	private static final double AVERAGE_NUM_MALFUNCTION = MalfunctionManager.AVERAGE_NUM_MALFUNCTION;
 	/** Estimate number of broken parts per malfunctions for EVA suits. */
 	protected static final double AVERAGE_EVA_MALFUNCTION = MalfunctionManager.AVERAGE_EVA_MALFUNCTION;
-	/** Default speed if no operators have ever driven */
+	/** Default speed if no operators have ever driven. */
 	private static final double DEFAULT_SPEED = 10D;
 
-	// How often are remaning resources checked
-	private static final int RESOURCE_CHECK_DURATION = 40;
 
 	/** True if a person is submitting the mission plan request. */
 	private boolean isMissionPlanReady;
@@ -130,11 +129,11 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	private int navIndex = 0;
 	
 	/** The estimated total distance for this mission. */
-	private double estimatedTotalDistance = 0;
+	private double distanceProposed = 0;
 	/** The current leg remaining distance at this moment. */
-	private double currentLegRemainingDistance;
+	private double distanceCurrentLegRemaining;
 	/** The estimated total remaining distance at this moment. */
-	private double estimatedTotalRemainingDistance;
+	private double distanceTotalRemaining;
 	
 	/** The last navpoint the mission stopped at. */
 	private NavPoint lastStopNavpoint;
@@ -782,7 +781,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 		super.performPhase(member);
 		if (REVIEWING.equals(getPhase())) {
 			if (isMissionPlanReady) {
-				computeEstimatedTotalDistance();
+				computeTotalDistanceProposed();
 				requestReviewPhase(member);
 			}
 		}
@@ -966,7 +965,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	 * @throws MissionException
 	 */
 	protected double getEstimatedRemainingMissionTime(boolean useMargin) {
-		double distance = getEstimatedTotalRemainingDistance();
+		double distance = computeDistanceTotalRemaining();
 		if (distance > 0) {
 			double time = getEstimatedTripTime(useMargin, distance);
 			logger.log(vehicle, Level.FINE, 20_000L, this 
@@ -1050,7 +1049,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	 *         number.
 	 */
 	protected Map<Integer, Number> getResourcesNeededForRemainingMission(boolean useMargin) {
-		double distance = getEstimatedTotalRemainingDistance();
+		double distance = computeDistanceTotalRemaining();
 		if (distance > 0) {
 			return getResourcesNeededForTrip(useMargin, distance);
 		}
@@ -1482,7 +1481,16 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	 *
 	 * @return distance (km)
 	 */
-	public final double getActualTotalDistanceTravelled() {
+	public double getTotalDistanceTravelled() {
+		return distanceTravelled;
+	}
+	
+	/**
+	 * Computes the actual total distance travelled during the mission so far.
+	 *
+	 * @return distance (km)
+	 */
+	public double computeTotalDistanceTravelled() {
 		if (vehicle != null) {
 			double dist = vehicle.getOdometerMileage() - startingTravelledDistance;
 			if (dist > distanceTravelled) {
@@ -1547,7 +1555,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	 */
 	protected Map<Integer, Number> getOptionalResourcesToLoad() {
 		// Also load EVA suit related parts
-		return getSparePartsForTrip(getEstimatedTotalRemainingDistance());
+		return getSparePartsForTrip(computeDistanceTotalRemaining());
 	}
 
 
@@ -1712,7 +1720,8 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 
 
 	/**
-	 * For a Vehicle Mission used the vehicles position directly
+	 * Returns the current mission location. 
+	 * For a Vehicle Mission used the vehicles position directly.
 	 */
 	@Override
 	public Coordinates getCurrentMissionLocation() {
@@ -1722,15 +1731,15 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 		return super.getCurrentMissionLocation();
 	}
 
-		/**
-	 * sReset the trip statistics to return home
+	/**
+	 * Resets the trip statistics to return home.
 	 * 
 	 * @param currentNavPoint
 	 * @param destNavPoint
 	 */
 	protected void resetToReturnTrip(NavPoint currentNavPoint, NavPoint destNavPoint) {
 		
-		setEstimatedTotalDistance(0);
+		setDistanceProposed(0);
 		
 		navPoints.clear();
 		
@@ -1748,7 +1757,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 
 		// Need to recalculate what is left to travel to get resoruces loaded
 		// for return
-		computeEstimatedTotalDistance();
+		computeTotalDistanceProposed();
 
 	}
 	
@@ -1777,7 +1786,8 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	
 
 	/**
-	 * Add a Nav point for a Coordinate
+	 * Adds a Nav point for a Coordinate.
+	 * 
 	 * @param c Coordinate to visit
 	 * @param n Name
 	 */
@@ -1787,7 +1797,8 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	
 	
 	/**
-	 * Add a list of Coordinates as NavPoints. Use the function to give
+	 * Adds a list of Coordinates as NavPoints. Use the function to give.
+	 * 
 	 * a description to each new NavPoint
 	 * @param points Coordinates to add
 	 * @param nameFunc Function takes the index of the Coordinate
@@ -2098,14 +2109,14 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 		}
 		return 0D;
 	}
-
+	
 	/**
-	 * Gets the remaining distance for the current leg of the mission.
+	 * Computes the remaining distance for the current leg of the mission.
 	 * 
 	 * @return distance (km) or 0 if not in the travelling phase.
 	 * @throws MissionException if error determining distance.
 	 */
-	public final double getCurrentLegRemainingDistance() {
+	public final double computeDistanceCurrentLegRemaining() {
 		
 		if (travelStatus != null && TRAVEL_TO_NAVPOINT.equals(travelStatus)) {
 
@@ -2141,8 +2152,8 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 				}
 			}
 			
-			if (currentLegRemainingDistance != dist) {
-				currentLegRemainingDistance = dist;
+			if (distanceCurrentLegRemaining != dist) {
+				distanceCurrentLegRemaining = dist;
 				fireMissionUpdate(MissionEventType.DISTANCE_EVENT);
 			}
 			
@@ -2153,11 +2164,21 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	}
 
 	/**
+	 * Gets the remaining distance for the current leg of the mission.
+	 * 
+	 * @return distance (km) or 0 if not in the travelling phase.
+	 * @throws MissionException if error determining distance.
+	 */
+	public final double getDistanceCurrentLegRemaining() {
+		return distanceCurrentLegRemaining;
+	}
+	
+	/**
 	 * Computes the estimated total distance of the trip.
 	 * 
 	 * @return distance (km)
 	 */
-	public final void computeEstimatedTotalDistance() {
+	public final void computeTotalDistanceProposed() {
 		if (navPoints.size() > 1) {
 			double result = 0D;
 			
@@ -2168,9 +2189,9 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 				result += distance;
 			}
 			
-			if (estimatedTotalDistance != result) {
+			if (distanceProposed != result) {
 				// Record the distance
-				estimatedTotalDistance = result;
+				distanceProposed = result;
 				fireMissionUpdate(MissionEventType.DISTANCE_EVENT);	
 			}
 		}
@@ -2181,8 +2202,8 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	 * 
 	 * @return distance (km)
 	 */
-	public final double getEstimatedTotalDistance() {
-		return estimatedTotalDistance;
+	public final double getDistanceProposed() {
+		return distanceProposed;
 	}
 	
 	/**
@@ -2190,19 +2211,19 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	 * 
 	 * @param value (km)
 	 */
-	public void setEstimatedTotalDistance(double value) {
-		estimatedTotalDistance = value;
+	public void setDistanceProposed(double value) {
+		distanceProposed = value;
 	}
 	
 	/**
-	 * Gets the estimated total remaining distance to travel in the mission.
+	 * Computes the estimated total remaining distance to travel in the mission.
 	 * 
 	 * @return distance (km).
 	 * @throws MissionException if error determining distance.
 	 */
-	public final double getEstimatedTotalRemainingDistance() {
-		
-		double leg = getCurrentLegRemainingDistance();
+	public final double computeDistanceTotalRemaining() {
+
+		double leg = computeDistanceCurrentLegRemaining();
 		int index = 0;
 		double navDist = 0;
 		if (AT_NAVPOINT.equals(travelStatus))
@@ -2226,9 +2247,9 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 		
 		double total = leg + navDist;
 		
-		if (estimatedTotalRemainingDistance != total) {
+		if (distanceTotalRemaining != total) {
 			// Record the distance
-			estimatedTotalRemainingDistance = total;
+			distanceTotalRemaining = total;
 			
 			fireMissionUpdate(MissionEventType.DISTANCE_EVENT);	
 		}
@@ -2240,6 +2261,16 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 		return total;
 	}
 
+	/**
+	 * Gets the estimated total remaining distance to travel in the mission.
+	 * 
+	 * @return distance (km).
+	 * @throws MissionException if error determining distance.
+	 */
+	public final double getTotalDistanceRemaining() {
+		return distanceTotalRemaining;
+	}
+	
 	@Override
 	public void destroy() {
 		super.destroy();

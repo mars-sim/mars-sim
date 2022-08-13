@@ -25,8 +25,10 @@ import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitType;
+import org.mars_sim.msp.core.data.UnitSet;
 import org.mars_sim.msp.core.environment.SurfaceFeatures;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.events.HistoricalEvent;
@@ -153,9 +155,11 @@ public abstract class Mission implements Serializable, Temporal {
 	/** The mission plan. */
 	private MissionPlanning plan;
 
-	/** Mission members. */
+	/** Those who sign up for this mission. */
+	private Set<Unit> signUp;
+	/** Those who are actually on the mission. */
 	private Collection<MissionMember> members;
-
+	
 	// transient members
 	/** Mission listeners. */
 	private transient List<MissionListener> listeners;
@@ -200,6 +204,8 @@ public abstract class Mission implements Serializable, Temporal {
 		phaseDescription = "";
 		phaseEnded = false;
 		missionCapacity = MAX_CAP;
+		
+		signUp = new UnitSet<>();
 
 		Person person = (Person) startingMember;
 
@@ -344,9 +350,11 @@ public abstract class Mission implements Serializable, Temporal {
 	public final void addMember(MissionMember member) {
 		if (!members.contains(member)) {
 			members.add(member);
+			
 			recordMembersNum = members.size();
 			
 			if (member.getUnitType() == UnitType.PERSON) {
+				signUp.add((Person) member);
 				registerHistoricalEvent((Person) member, EventType.MISSION_JOINING,
 									    "Adding a member");
 			}
@@ -470,12 +478,22 @@ public abstract class Mission implements Serializable, Temporal {
 	}
 
 	/**
+	 * Returns a list of people and robots who have signed up for this mission.
+	 * 
+	 * @return
+	 */
+	public Set<Unit> getSignup() {
+		return signUp;
+	}
+	
+	/**
 	 * Adds a Robot directly.
 	 * 
 	 * @param member
 	 */
 	protected void addRobot(Robot member) {
 		members.add(member);
+		signUp.add(member);
 	}
 
 	/**

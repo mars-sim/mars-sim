@@ -223,7 +223,7 @@ public class Trade extends RoverMission implements CommerceMission {
 		} else if (LOAD_GOODS.equals(getPhase())) {
 			performLoadGoodsPhase(member);
 		} else if (TRADE_EMBARKING.equals(getPhase())) {
-			computeEstimatedTotalDistance();
+			computeTotalDistanceProposed();
 			performTradeEmbarkingPhase(member);
 		}
 	}

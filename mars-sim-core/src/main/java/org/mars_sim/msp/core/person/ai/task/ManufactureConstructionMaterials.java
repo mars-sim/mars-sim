@@ -34,8 +34,6 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.Manufacture;
-import org.mars_sim.msp.core.structure.construction.ConstructionStageInfo;
-import org.mars_sim.msp.core.structure.construction.ConstructionUtil;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
@@ -399,12 +397,7 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
 	 */
 	private static boolean producesConstructionMaterials(ManufactureProcessInfo info) {
 		boolean result = false;
-//		if (constructionResources == null) {
-//			determineConstructionResources();
-//		}
-//		if (constructionParts == null) {
-//			determineConstructionParts();
-//		}
+
 		List<Integer> constructionResources = constructionConfig.determineConstructionResources();
 		
 		List<Integer> constructionParts = constructionConfig.determineConstructionParts();
@@ -441,7 +434,7 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
 	}
 
 	/**
-	 * Perform the manufacturing phase.
+	 * Performs the manufacturing phase.
 	 * 
 	 * @param time the time to perform (millisols)
 	 * @return remaining time after performing (millisols)
@@ -450,14 +443,14 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
 
 		if (worker.isOutside()) {
 			endTask();
-			return 0;
+			return time;
 		}
 		
 		// Check if workshop has malfunction.
 		Malfunctionable entity = workshop.getBuilding();
 		if (entity.getMalfunctionManager().hasMalfunction()) {
 			endTask();
-			return 0;
+			return time;
 		}
 
 		// Determine amount of effective work time based on "Materials Science"

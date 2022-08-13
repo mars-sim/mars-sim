@@ -280,7 +280,7 @@ public class VehicleTableModel extends UnitTableModel {
 					if ((mission != null) && (mission instanceof VehicleMission)) {
 						VehicleMission vehicleMission = (VehicleMission) mission;
 						try {
-							result = Math.round(vehicleMission.getCurrentLegRemainingDistance()*10.0)/10.0;
+							result = Math.round(vehicleMission.getDistanceCurrentLegRemaining()*10.0)/10.0;
 						}
 						catch (Exception e) {
 							logger.log(Level.SEVERE,"Error getting current leg remaining distance.");

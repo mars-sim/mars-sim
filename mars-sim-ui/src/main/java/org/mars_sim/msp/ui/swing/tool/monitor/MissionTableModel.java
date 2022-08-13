@@ -440,7 +440,7 @@ public class MissionTableModel extends AbstractTableModel
 				case TRAVELLED_DISTANCE: {
 					if (MissionType.isVehicleMission(mission.getMissionType())) {
 						VehicleMission vehicleMission = (VehicleMission) mission;
-						result = decFormatter.format(vehicleMission.getActualTotalDistanceTravelled());
+						result = decFormatter.format(vehicleMission.getTotalDistanceTravelled());
 					} else
 						result = 0;
 				}
@@ -450,7 +450,7 @@ public class MissionTableModel extends AbstractTableModel
 					if (MissionType.isVehicleMission(mission.getMissionType())) {
 						VehicleMission vehicleMission = (VehicleMission) mission;
 						try {
-							result = decFormatter.format(vehicleMission.getEstimatedTotalRemainingDistance());
+							result = decFormatter.format(vehicleMission.getTotalDistanceRemaining());
 						} catch (Exception e) {
 							result = 0;
 						}
@@ -464,7 +464,7 @@ public class MissionTableModel extends AbstractTableModel
 					if (MissionType.isVehicleMission(mission.getMissionType())) {
 						VehicleMission vehicleMission = (VehicleMission) mission;
 						try {
-							result = decFormatter.format(vehicleMission.getEstimatedTotalDistance());
+							result = decFormatter.format(vehicleMission.getDistanceProposed());
 						} catch (Exception e) {
 							result = 0;
 						}

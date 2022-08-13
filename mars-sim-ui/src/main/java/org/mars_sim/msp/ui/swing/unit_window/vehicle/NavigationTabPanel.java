@@ -242,7 +242,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
 		if ((mission instanceof VehicleMission) &&
                 ((VehicleMission) mission).getTravelStatus().equals(VehicleMission.TRAVEL_TO_NAVPOINT)) {
         	try {
-        		remainingDistanceCache = ((VehicleMission) mission).getEstimatedTotalRemainingDistance();
+        		remainingDistanceCache = ((VehicleMission) mission).getTotalDistanceRemaining();
         	}
         	catch (Exception e) {
         		logger.log(Level.SEVERE,"Error getting estimated total remaining distance.");
@@ -422,8 +422,8 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         if ((mission != null) && (mission instanceof VehicleMission)) {
             VehicleMission vehicleMission = (VehicleMission) mission;
         	try {
-        		if (remainingDistanceCache != vehicleMission.getEstimatedTotalRemainingDistance()) {
-        			remainingDistanceCache = vehicleMission.getEstimatedTotalRemainingDistance();
+        		if (remainingDistanceCache != vehicleMission.getTotalDistanceRemaining()) {
+        			remainingDistanceCache = vehicleMission.getTotalDistanceRemaining();
         			remainingDistanceLabel.setText(DECIMAL_PLACES1.format(remainingDistanceCache) + " km");
         		}
         	}

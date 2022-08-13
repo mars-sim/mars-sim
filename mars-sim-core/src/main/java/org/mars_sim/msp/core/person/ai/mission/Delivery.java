@@ -217,7 +217,7 @@ public class Delivery extends DroneMission implements CommerceMission {
 		} else if (LOAD_GOODS.equals(getPhase())) {
 			performDestinationLoadGoodsPhase();
 		} else if (TRADE_EMBARKING.equals(getPhase())) {
-			computeEstimatedTotalDistance();
+			computeTotalDistanceProposed();
 			performDeliveryEmbarkingPhase(member);
 		}
 	}

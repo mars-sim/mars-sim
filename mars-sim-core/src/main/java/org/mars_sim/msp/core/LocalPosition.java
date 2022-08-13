@@ -40,6 +40,7 @@ public class LocalPosition implements Serializable {
 	 * Constructor provides a temporary bridge between the 2 approaches.
 	 * 
 	 * @param point
+	 * @deprecated
 	 */
 	@Deprecated
 	public LocalPosition(Point2D point) {
@@ -193,6 +194,7 @@ public class LocalPosition implements Serializable {
 	 * @deprecated
 	 * @return
 	 */
+	@Deprecated
 	public java.awt.geom.Point2D.Double toPoint() {
 		return new java.awt.geom.Point2D.Double(x, y);
 	}

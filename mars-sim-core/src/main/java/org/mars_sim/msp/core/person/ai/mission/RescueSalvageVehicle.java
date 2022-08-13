@@ -689,7 +689,7 @@ public class RescueSalvageVehicle extends RoverMission {
 		result.put(FOOD_ID, getVehicle().getAmountResourceCapacity(FOOD_ID));
 
 		// Get parts too.
-		result.putAll(getSparePartsForTrip(getEstimatedTotalRemainingDistance()));
+		result.putAll(getSparePartsForTrip(computeDistanceTotalRemaining()));
 
 		return result;
 	}
