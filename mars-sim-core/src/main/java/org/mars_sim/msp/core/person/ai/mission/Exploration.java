@@ -26,6 +26,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.task.ExploreSite;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -127,11 +128,11 @@ public class Exploration extends EVAMission
 	 * @param explorationSites   the sites to explore.
 	 * @param rover              the rover to use.
 	 */
-	public Exploration(Collection<MissionMember> members,
+	public Exploration(Collection<Worker> members,
 			List<Coordinates> explorationSites, Rover rover) {
 
 		// Use RoverMission constructor.
-		super(MISSION_TYPE,(MissionMember) members.toArray()[0], rover,
+		super(MISSION_TYPE,(Worker) members.toArray()[0], rover,
 				EXPLORE_SITE);
 
 		initSites(explorationSites);

@@ -29,8 +29,8 @@ import javax.swing.event.ListSelectionListener;
 
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.robot.ai.job.RobotJob;
@@ -271,9 +271,9 @@ implements ActionListener {
 	 * @return true if changes can be committed.
 	 */
 	boolean commitChanges() {
-		Collection<MissionMember> members = new ConcurrentLinkedQueue<MissionMember>();
+		Collection<Worker> members = new ConcurrentLinkedQueue<Worker>();
 		for (int x = 0; x < botMembersTableModel.getRowCount(); x++) {
-			members.add((MissionMember) botMembersTableModel.getUnit(x));
+			members.add((Worker) botMembersTableModel.getUnit(x));
 		}
 		getWizard().getMissionData().addMixedMembers(members);
 		return true;

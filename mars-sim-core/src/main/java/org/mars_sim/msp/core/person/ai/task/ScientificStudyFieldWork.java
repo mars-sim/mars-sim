@@ -6,13 +6,12 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -21,7 +20,7 @@ import org.mars_sim.msp.core.vehicle.Rover;
  * A task for the EVA operation of performing field work at a research
  * site for a scientific study.
  */
-public abstract class ScientificStudyFieldWork extends EVAOperation implements Serializable {
+public abstract class ScientificStudyFieldWork extends EVAOperation {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -69,7 +68,7 @@ public abstract class ScientificStudyFieldWork extends EVAOperation implements S
 	 * @param rover  the rover
 	 * @return true if person can research a site.
 	 */
-	public static boolean canResearchSite(MissionMember member, Rover rover) {
+	public static boolean canResearchSite(Worker member, Rover rover) {
 
 		if (member instanceof Person) {
 			Person person = (Person) member;

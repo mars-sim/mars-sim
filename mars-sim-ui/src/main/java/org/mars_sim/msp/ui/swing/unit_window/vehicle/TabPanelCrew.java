@@ -40,8 +40,8 @@ import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -245,7 +245,7 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 
 		// Private members.
 		private Mission mission;
-		private List<MissionMember> members;
+		private List<Worker> members;
 
 		/**
 		 * Constructor.
@@ -298,7 +298,7 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 		public Object getValueAt(int row, int column) {
 			if (row < members.size()) {
 				Object array[] = members.toArray();
-				MissionMember member = (MissionMember) array[row];
+				Worker member = (Worker) array[row];
 				if (column == 0)
 					return member.getName();
 				else if (column == 1)
@@ -319,7 +319,7 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 		 * @param member
 		 * @return
 		 */
-		boolean boarded(MissionMember member) {
+		boolean boarded(Worker member) {
 			if (mission instanceof VehicleMission) {			
 				if (member.getUnitType() == UnitType.PERSON) {
 					Rover r = (Rover)(((VehicleMission)mission).getVehicle());
@@ -348,7 +348,7 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 		 */
 		public void unitUpdate(UnitEvent event) {
 			UnitEventType type = event.getType();
-			MissionMember member = (MissionMember) event.getSource();
+			Worker member = (Worker) event.getSource();
 			int index = getIndex(members, member);
 			if (type == UnitEventType.NAME_EVENT) {
 				SwingUtilities.invokeLater(new MemberTableUpdater(index, 0));
@@ -380,10 +380,10 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 		void updateMembers() {
 			if (mission != null) {
 //				clearMembers();
-				List<MissionMember> newList = new ArrayList<MissionMember>(mission.getMembers());
-				Collections.sort(newList, new Comparator<MissionMember>() {
+				List<Worker> newList = new ArrayList<Worker>(mission.getMembers());
+				Collections.sort(newList, new Comparator<Worker>() {
 					@Override
-					public int compare(MissionMember o1, MissionMember o2) {
+					public int compare(Worker o1, Worker o2) {
 						return o1.getName().compareToIgnoreCase(o2.getName());
 					}
 				});
@@ -391,13 +391,13 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 				if (!members.equals(newList)) {
 					List<Integer> rows = new ArrayList<Integer>();
 
-					for (MissionMember mm: members) {
+					for (Worker mm: members) {
 						if (!newList.contains(mm)) {
 							mm.removeUnitListener(this);
 						}
 					}
 
-					for (MissionMember mm: newList) {
+					for (Worker mm: newList) {
 						if (!members.contains(mm)) {
 							mm.addUnitListener(this);
 							int index = newList.indexOf(mm);
@@ -426,9 +426,9 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 		 */
 		private void clearMembers() {
 			if (members != null) {
-				Iterator<MissionMember> i = members.iterator();
+				Iterator<Worker> i = members.iterator();
 				while (i.hasNext()) {
-					MissionMember member = i.next();
+					Worker member = i.next();
 					member.removeUnitListener(this);
 				}
 				members.clear();
@@ -441,9 +441,9 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 		 * @param index the index.
 		 * @return the mission member.
 		 */
-		MissionMember getMemberAtIndex(int index) {
+		Worker getMemberAtIndex(int index) {
 			if ((index >= 0) && (index < members.size())) {
-				return (MissionMember) members.toArray()[index];
+				return (Worker) members.toArray()[index];
 			} else {
 				return null;
 			}

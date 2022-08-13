@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.task.ScientificStudyFieldWork;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -118,7 +119,7 @@ public abstract class FieldStudyMission extends EVAMission {
 	protected FieldStudyMission(MissionType missionType,
 			Person leadResearcher,
 			Rover rover, ScientificStudy study, double fieldSiteTime,
-			Collection<MissionMember> members,
+			Collection<Worker> members,
 			Coordinates fieldSite) {
 
 		// Use RoverMission constructor.
@@ -240,7 +241,7 @@ public abstract class FieldStudyMission extends EVAMission {
 	}
 
 	@Override
-	public double getMissionQualification(MissionMember member) {
+	public double getMissionQualification(Worker member) {
 		double result = super.getMissionQualification(member);
 
 		if ((result > 0D) && (member instanceof Person)) {
@@ -305,7 +306,7 @@ public abstract class FieldStudyMission extends EVAMission {
 	 * @param researcher
 	 * @return
 	 */
-	protected boolean canResearchSite(MissionMember researcher) {
+	protected boolean canResearchSite(Worker researcher) {
 		return ScientificStudyFieldWork.canResearchSite(researcher, getRover()); 
 	}
 	

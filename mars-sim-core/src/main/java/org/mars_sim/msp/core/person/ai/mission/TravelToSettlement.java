@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.social.RelationshipUtil;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -59,7 +60,7 @@ public class TravelToSettlement extends RoverMission {
 	 * 
 	 * @param startingMember the mission member starting the mission.
 	 */
-	public TravelToSettlement(MissionMember startingMember, boolean needsReview) {
+	public TravelToSettlement(Worker startingMember, boolean needsReview) {
 		// Use RoverMission constructor
 		super(MissionType.TRAVEL_TO_SETTLEMENT, startingMember, null);
 
@@ -105,10 +106,10 @@ public class TravelToSettlement extends RoverMission {
 		}
 	}
 
-	public TravelToSettlement(Collection<MissionMember> members, 
+	public TravelToSettlement(Collection<Worker> members, 
 			Settlement destinationSettlement, Rover rover) {
 		// Use RoverMission constructor.
-		super(MissionType.TRAVEL_TO_SETTLEMENT, (MissionMember) members.toArray()[0], rover);
+		super(MissionType.TRAVEL_TO_SETTLEMENT, (Worker) members.toArray()[0], rover);
 
 		// Set mission destination.
 		setDestinationSettlement(destinationSettlement);
@@ -174,7 +175,7 @@ public class TravelToSettlement extends RoverMission {
 	 * @param startingSettlement the settlement the mission is starting at.
 	 * @return randomly determined settlement
 	 */
-	private Settlement getRandomDestinationSettlement(MissionMember member, Settlement startingSettlement) {
+	private Settlement getRandomDestinationSettlement(Worker member, Settlement startingSettlement) {
 
 		double range = getVehicle().getRange(MissionType.TRAVEL_TO_SETTLEMENT);
 		Settlement result = null;
@@ -199,7 +200,7 @@ public class TravelToSettlement extends RoverMission {
 	 * @param range              the range (km) that can be travelled.
 	 * @return map of destination settlements.
 	 */
-	public static Map<Settlement, Double> getDestinationSettlements(MissionMember member, Settlement startingSettlement,
+	public static Map<Settlement, Double> getDestinationSettlements(Worker member, Settlement startingSettlement,
 			double range) {
 		Map<Settlement, Double> result = new HashMap<>();
 
@@ -253,7 +254,7 @@ public class TravelToSettlement extends RoverMission {
 	 * @param destinationSettlement the new settlement.
 	 * @return negative or positive desirability weight value.
 	 */
-	private static double getDestinationSettlementDesirability(MissionMember member, Settlement startingSettlement,
+	private static double getDestinationSettlementDesirability(Worker member, Settlement startingSettlement,
 			Settlement destinationSettlement) {
 
 		// Determine relationship factor in destination settlement relative to
@@ -327,7 +328,7 @@ public class TravelToSettlement extends RoverMission {
 	}
 
 	@Override
-	public double getMissionQualification(MissionMember member) {
+	public double getMissionQualification(Worker member) {
 		double result = super.getMissionQualification(member);
 
 		if (member instanceof Person) {

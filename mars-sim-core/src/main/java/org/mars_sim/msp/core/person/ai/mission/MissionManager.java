@@ -25,6 +25,7 @@ import org.mars_sim.msp.core.person.ai.mission.meta.MetaMission;
 import org.mars_sim.msp.core.person.ai.mission.meta.MetaMissionUtil;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.ClockPulse;
@@ -165,7 +166,7 @@ public class MissionManager implements Serializable, Temporal {
 	 * @param member the member.
 	 * @return mission for that member
 	 */
-	public Mission getMission(MissionMember member) {
+	public Mission getMission(Worker member) {
 		Mission result = null;
 		for (Mission tempMission : onGoingMissions) {
 			if (tempMission.hasMember(member)) {
@@ -183,7 +184,7 @@ public class MissionManager implements Serializable, Temporal {
 	 * @param member the member.
 	 * @return mission for that member
 	 */
-	public boolean hasMission(MissionMember member) {
+	public boolean hasMission(Worker member) {
 		for (Mission tempMission : onGoingMissions) {
 			if (tempMission.hasMember(member)) {
 				return true;

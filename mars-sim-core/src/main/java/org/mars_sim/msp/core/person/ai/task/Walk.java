@@ -21,10 +21,10 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.task.WalkingSteps.WalkStep;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Airlock;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -286,9 +286,9 @@ public class Walk extends Task implements Serializable {
 
 		// Determine airlock from other members on mission.
 		if (person.getMind().getMission() != null) {
-			Iterator<MissionMember> i = person.getMind().getMission().getMembers().iterator();
+			Iterator<Worker> i = person.getMind().getMission().getMembers().iterator();
 			while (i.hasNext() && (result == null)) {
-				MissionMember member = i.next();
+				Worker member = i.next();
 				if (member != person) {
 					if (member.isInSettlement()) {
 						result = member.getSettlement().getClosestAvailableAirlock(person, true);

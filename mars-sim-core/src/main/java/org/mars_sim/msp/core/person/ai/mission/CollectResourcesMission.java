@@ -196,12 +196,12 @@ public abstract class CollectResourcesMission extends EVAMission
 	 * @param rover                  the rover to use.
 	 * @param collectionSites     the sites to collect ice.
 	 */
-	protected CollectResourcesMission(MissionType missionType, Collection<MissionMember> members,
+	protected CollectResourcesMission(MissionType missionType, Collection<Worker> members,
 			Integer resourceID, EquipmentType containerID,
 			int containerNum, Rover rover, List<Coordinates> collectionSites) {
 
 		// Use RoverMission constructor
-		super(missionType, (MissionMember) members.toArray()[0], rover, COLLECT_RESOURCES);
+		super(missionType, (Worker) members.toArray()[0], rover, COLLECT_RESOURCES);
 
 		this.resourceID = resourceID;
 		double containerCap = ContainerUtil.getContainerCapacity(containerID);

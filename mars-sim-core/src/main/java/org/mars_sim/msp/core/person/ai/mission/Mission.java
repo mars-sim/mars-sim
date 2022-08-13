@@ -42,6 +42,7 @@ import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.social.RelationshipUtil;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -151,14 +152,14 @@ public abstract class Mission implements Serializable, Temporal {
 	private List<MissionLogEntry> log = new ArrayList<>();
 
 	/** The name of the starting member */
-	private MissionMember startingMember;
+	private Worker startingMember;
 	/** The mission plan. */
 	private MissionPlanning plan;
 
 	/** Those who sign up for this mission. */
 	private Set<Unit> signUp;
 	/** Those who are actually on the mission. */
-	private Collection<MissionMember> members;
+	private Collection<Worker> members;
 	
 	// transient members
 	/** Mission listeners. */
@@ -190,7 +191,7 @@ public abstract class Mission implements Serializable, Temporal {
 	 * @param missionType
 	 * @param startingMember
 	 */
-	protected Mission(MissionType missionType, MissionMember startingMember) {
+	protected Mission(MissionType missionType, Worker startingMember) {
 		// Initialize data members
 		this.missionName = missionType.getName() + " #" + getNextIdentifier();
 		this.missionType = missionType;
@@ -347,7 +348,7 @@ public abstract class Mission implements Serializable, Temporal {
 	 * 
 	 * @param member
 	 */
-	public final void addMember(MissionMember member) {
+	public final void addMember(Worker member) {
 		if (!members.contains(member)) {
 			members.add(member);
 			
@@ -401,7 +402,7 @@ public abstract class Mission implements Serializable, Temporal {
 	 *
 	 * @param member to be removed
 	 */
-	public final void removeMember(MissionMember member) {
+	public final void removeMember(Worker member) {
 		if (members.contains(member)) {
 			members.remove(member);
 
@@ -437,7 +438,7 @@ public abstract class Mission implements Serializable, Temporal {
 	 * @param member member to be checked
 	 * @return true if member is a part of the mission.
 	 */
-	public final boolean hasMember(MissionMember member) {
+	public final boolean hasMember(Worker member) {
 		return members.contains(member);
 	}
 
@@ -473,7 +474,7 @@ public abstract class Mission implements Serializable, Temporal {
 	 *
 	 * @return collection of members
 	 */
-	public final Collection<MissionMember> getMembers() {
+	public final Collection<Worker> getMembers() {
 		return new ArrayList<>(members);
 	}
 
@@ -502,8 +503,8 @@ public abstract class Mission implements Serializable, Temporal {
 	 * @param newMembers Members to add
 	 * @param allowRobots Are Robots allowed
 	 */
-	protected void addMembers(Collection<MissionMember> newMembers, boolean allowRobots) {
-		for(MissionMember member : newMembers) {
+	protected void addMembers(Collection<Worker> newMembers, boolean allowRobots) {
+		for(Worker member : newMembers) {
 			if (member.getUnitType() == UnitType.PERSON) {
 				((Person) member).getMind().setMission(this);
 			}
@@ -680,7 +681,7 @@ public abstract class Mission implements Serializable, Temporal {
 	 *
 	 * @param member the member performing the mission.
 	 */
-	public void performMission(MissionMember member) {
+	public void performMission(Worker member) {
 
 		// If current phase is over, decide what to do next.
 		if (phaseEnded && !determineNewPhase()) {
@@ -707,7 +708,7 @@ public abstract class Mission implements Serializable, Temporal {
 	 *
 	 * @param member the member performing the phase.
 	 */
-	protected void performPhase(MissionMember member) {
+	protected void performPhase(Worker member) {
 		if (phase == null) {
 			endMission(MissionStatus.CURRENT_MISSION_PHASE_IS_NULL);
 		}
@@ -769,7 +770,7 @@ public abstract class Mission implements Serializable, Temporal {
 	 */
 	private void addMissionScore() {
 		if (haveMissionStatus(MissionStatus.MISSION_ACCOMPLISHED)) {
-			for (MissionMember member : members) {
+			for (Worker member : members) {
 				if (member.getUnitType() == UnitType.PERSON) {
 					Person person = (Person) member;
 
@@ -823,10 +824,10 @@ public abstract class Mission implements Serializable, Temporal {
 		// The members are leaving the mission
 		if (members != null && !members.isEmpty()) {
 			logger.info(startingMember, "Disbanded mission member(s) : " + members);
-			List<MissionMember> origMembers = new ArrayList<>(members);
+			List<Worker> origMembers = new ArrayList<>(members);
 			int size = origMembers.size();
 			int i = 0;
-			for(MissionMember m : origMembers) {
+			for(Worker m : origMembers) {
 				i++;
 				memberRecord = memberRecord + m.getName();
 				if (i != size - 1) 
@@ -900,7 +901,7 @@ public abstract class Mission implements Serializable, Temporal {
 	 * @return true if dangerous medical problems
 	 */
 	private final boolean hasDangerousMedicalProblems() {
-		for (MissionMember member : members) {
+		for (Worker member : members) {
 			if (member.getUnitType() == UnitType.PERSON) {
 				if (((Person) member).getPhysicalCondition().hasSeriousMedicalProblems()) {
 					return true;
@@ -918,7 +919,7 @@ public abstract class Mission implements Serializable, Temporal {
 	 * @return true if potential medical problems exist
 	 */
 	protected final boolean hasAnyPotentialMedicalProblems() {
-		for (MissionMember member : members) {
+		for (Worker member : members) {
 			if (member.getUnitType() == UnitType.PERSON) {
 				if (((Person) member).getPhysicalCondition().computeFitnessLevel() < 2) {
 					return true;
@@ -938,7 +939,7 @@ public abstract class Mission implements Serializable, Temporal {
 	 */
 	public final boolean hasDangerousMedicalProblemsAllCrew() {
 		boolean result = true;
-		for (MissionMember member : members) {
+		for (Worker member : members) {
 			if (member.getUnitType() == UnitType.PERSON) {
 				if (!((Person) member).getPhysicalCondition().hasSeriousMedicalProblems()) {
 					result = false;
@@ -973,7 +974,7 @@ public abstract class Mission implements Serializable, Temporal {
 	 * @param sameSettlement do members have to be at the same Settlement as the starting Member
 	 * @param minMembers Minimum number of members requried
 	 */
-	protected boolean recruitMembersForMission(MissionMember startingMember, boolean sameSettlement, int minMembers) {
+	protected boolean recruitMembersForMission(Worker startingMember, boolean sameSettlement, int minMembers) {
 
 		// Get all people qualified for the mission.
 		Collection<Person> possibles;
@@ -1055,7 +1056,7 @@ public abstract class Mission implements Serializable, Temporal {
 	 * @param recruiter the mission member doing the recruiting.
 	 * @param recruitee the person being recruited.
 	 */
-	private void recruitPerson(MissionMember recruiter, Person recruitee) {
+	private void recruitPerson(Worker recruiter, Person recruitee) {
 		if (isCapableOfMission(recruitee)) {
 			// Get mission qualification modifier.
 			double qualification = getMissionQualification(recruitee) * 100D;
@@ -1067,9 +1068,9 @@ public abstract class Mission implements Serializable, Temporal {
 
 			// Get the recruitee's average opinion of all the current mission members.
 			List<Person> people = new ArrayList<>();
-			Iterator<MissionMember> i = members.iterator();
+			Iterator<Worker> i = members.iterator();
 			while (i.hasNext()) {
-				MissionMember member = i.next();
+				Worker member = i.next();
 				if (member.getUnitType() == UnitType.PERSON) {
 					people.add((Person) member);
 				}
@@ -1097,7 +1098,7 @@ public abstract class Mission implements Serializable, Temporal {
 	 * @param member the member to check.
 	 * @return true if member could join mission.
 	 */
-	protected boolean isCapableOfMission(MissionMember member) {
+	protected boolean isCapableOfMission(Worker member) {
 		boolean result = false;
 
 		if (member == null) {
@@ -1133,7 +1134,7 @@ public abstract class Mission implements Serializable, Temporal {
 	 * @param member the member to check.
 	 * @return mission qualification value.
 	 */
-	public double getMissionQualification(MissionMember member) {
+	public double getMissionQualification(Worker member) {
 
 		double result = 0D;
 
@@ -1284,7 +1285,7 @@ public abstract class Mission implements Serializable, Temporal {
 	 *
 	 * @param member the mission lead.
 	 */
-	protected void requestReviewPhase(MissionMember member) {
+	protected void requestReviewPhase(Worker member) {
 		Person p = (Person)member;
 
 		if (plan == null) {
@@ -1307,7 +1308,7 @@ public abstract class Mission implements Serializable, Temporal {
 
 				if (!(this instanceof VehicleMission)) {
 					// Set the members' work shift to on-call to get ready
-					for (MissionMember m : members) {
+					for (Worker m : members) {
 						 ((Person) m).setShiftType(ShiftType.ON_CALL);
 					}
 				}
@@ -1342,7 +1343,7 @@ public abstract class Mission implements Serializable, Temporal {
 	 *
 	 * @param member the new starting member
 	 */
-	protected final void setStartingMember(MissionMember member) {
+	protected final void setStartingMember(Worker member) {
 		this.startingMember = member;
 		fireMissionUpdate(MissionEventType.STARTING_SETTLEMENT_EVENT);
 	}
@@ -1418,7 +1419,7 @@ public abstract class Mission implements Serializable, Temporal {
 	 * @param worker This maybe used by overridding methods
 	 * @return
 	 */
-	public boolean canParticipate(MissionMember worker) {
+	public boolean canParticipate(Worker worker) {
 		return true;
 	}
 

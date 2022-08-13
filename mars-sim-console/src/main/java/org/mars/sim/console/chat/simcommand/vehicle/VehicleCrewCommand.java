@@ -18,7 +18,7 @@ import org.mars.sim.console.chat.simcommand.CommandHelper;
 import org.mars.sim.console.chat.simcommand.StructuredResponse;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.MissionMember;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -50,7 +50,7 @@ public class VehicleCrewCommand extends ChatCommand {
 		// and outside the Settlement
 		Mission m = source.getMission();
 		if ((m != null) && !source.isInSettlement()) {
-			Collection<MissionMember> members = m.getMembers();
+			Collection<Worker> members = m.getMembers();
 			people = members.stream()
 							.filter(mp -> mp instanceof Person)
 							.map(p -> (Person) p)

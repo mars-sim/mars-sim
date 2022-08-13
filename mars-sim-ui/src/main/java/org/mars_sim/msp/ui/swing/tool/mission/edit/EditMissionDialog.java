@@ -17,8 +17,8 @@ import java.util.Iterator;
 import javax.swing.JComponent;
 
 import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.ModalInternalFrame;
@@ -122,7 +122,7 @@ public class EditMissionDialog extends ModalInternalFrame {
 		setAction((String) infoPane.actionDropDown.getSelectedItem());
 		
 		// Set mission members.
-		setMissionMembers();
+		setWorkers();
 	}
 	
 	/**
@@ -165,19 +165,19 @@ public class EditMissionDialog extends ModalInternalFrame {
 	/**
 	 * Sets the mission members.
 	 */
-	private void setMissionMembers() {
+	private void setWorkers() {
 		// Add new members.
 		for (int x = 0; x < infoPane.memberListModel.size(); x++) {
-		    MissionMember member = (MissionMember) infoPane.memberListModel.elementAt(x);
+		    Worker member = (Worker) infoPane.memberListModel.elementAt(x);
 			if (!mission.hasMember(member)) {
 			    member.setMission(mission);
 			}
 		}
 		
 		// Remove old members.
-		Iterator<MissionMember> i = mission.getMembers().iterator();
+		Iterator<Worker> i = mission.getMembers().iterator();
 		while (i.hasNext()) {
-			MissionMember member = i.next();
+			Worker member = i.next();
 			if (!infoPane.memberListModel.contains(member)) {
 			    member.setMission(null);
 			}

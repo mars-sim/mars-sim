@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.person.ai.task.PilotDrone;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -46,7 +47,7 @@ public abstract class DroneMission extends VehicleMission {
 	 * @param minPeople      the minimum number of people required for mission.
 	 * @param drone          the drone to use on the mission.
 	 */
-	protected DroneMission(MissionType missionType, MissionMember startingMember, Drone drone) {
+	protected DroneMission(MissionType missionType, Worker startingMember, Drone drone) {
 		// Use VehicleMission constructor.
 		super(missionType, startingMember, drone);
 	}
@@ -153,7 +154,7 @@ public abstract class DroneMission extends VehicleMission {
 	 * @return an OperateVehicle task for the person.
 	 */
 	@Override
-	protected OperateVehicle createOperateVehicleTask(MissionMember member, TaskPhase lastOperateVehicleTaskPhase) {
+	protected OperateVehicle createOperateVehicleTask(Worker member, TaskPhase lastOperateVehicleTaskPhase) {
 		OperateVehicle result = null;
 		if (member instanceof Person) {
 			Person person = (Person) member;
@@ -201,7 +202,7 @@ public abstract class DroneMission extends VehicleMission {
 	 * @param member the mission member currently performing the mission
 	 */
 	@Override
-	protected void performEmbarkFromSettlementPhase(MissionMember member) {
+	protected void performEmbarkFromSettlementPhase(Worker member) {
 		Vehicle v = getVehicle();
 
 		if (v == null) {
@@ -255,7 +256,7 @@ public abstract class DroneMission extends VehicleMission {
 			if (!isDone()) {
 
 				// Set the members' work shift to on-call to get ready
-				for (MissionMember m : getMembers()) {
+				for (Worker m : getMembers()) {
 					if (m instanceof Person) {
 						Person pp = (Person) m;
 						if (pp.getShiftType() != ShiftType.ON_CALL)
@@ -290,7 +291,7 @@ public abstract class DroneMission extends VehicleMission {
 	 * @param disembarkSettlement the settlement to be disembarked to.
 	 */
 	@Override
-	protected void performDisembarkToSettlementPhase(MissionMember member, Settlement disembarkSettlement) {
+	protected void performDisembarkToSettlementPhase(Worker member, Settlement disembarkSettlement) {
 
 		Vehicle v0 = getVehicle();
 		disembark(member, v0, disembarkSettlement);
@@ -303,7 +304,7 @@ public abstract class DroneMission extends VehicleMission {
 	 * @param v
 	 * @param disembarkSettlement
 	 */
-	public void disembark(MissionMember member, Vehicle v, Settlement disembarkSettlement) {
+	public void disembark(Worker member, Vehicle v, Settlement disembarkSettlement) {
 		logger.log(v, Level.INFO, 10_000,
 				"Disemabarked at " + disembarkSettlement.getName() + ".");
 
@@ -390,7 +391,7 @@ public abstract class DroneMission extends VehicleMission {
 	}
 
 	@Override
-	protected boolean recruitMembersForMission(MissionMember startingMember, boolean sameSettlement, int minMembers) {
+	protected boolean recruitMembersForMission(Worker startingMember, boolean sameSettlement, int minMembers) {
 		// Get all people qualified for the mission.
 		Iterator<Robot> r = getStartingSettlement().getRobots().iterator();
 		while (r.hasNext()) {

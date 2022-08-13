@@ -31,11 +31,11 @@ import org.mars_sim.msp.core.person.ai.mission.MeteorologyFieldStudy;
 import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
-import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.Trade;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -88,7 +88,7 @@ class MissionDataBean {
     private Person leadResearcher;
     private ScientificStudy study;
     
-	private Collection<MissionMember> mixedMembers = new HashSet<>();
+	private Collection<Worker> mixedMembers = new HashSet<>();
     private List<GroundVehicle> constructionVehicles;
     private List<GroundVehicle> salvageVehicles;
     private Map<Good, Integer> emergencyGoods;
@@ -139,7 +139,7 @@ class MissionDataBean {
 	    
 	    else if (MissionType.DELIVERY == missionType) {
 	    	Person startingMember = null;
-	    	for (MissionMember mm: mixedMembers) {
+	    	for (Worker mm: mixedMembers) {
 	    		if (mm instanceof Person)
 	    			startingMember = (Person)mm;
 	    	}
@@ -332,7 +332,7 @@ class MissionDataBean {
 	 * Gets the mission members.
 	 * @return the members.
 	 */
-    protected Collection<MissionMember> getMixedMembers() {
+    protected Collection<Worker> getMixedMembers() {
 		return mixedMembers;
 	}
     
@@ -340,7 +340,7 @@ class MissionDataBean {
 	 * Sets the mission members.
 	 * @param members the members.
 	 */
-    protected void addMixedMembers(Collection<MissionMember> mm) {
+    protected void addMixedMembers(Collection<Worker> mm) {
     	this.mixedMembers.addAll(mm);
 	}
 	/**

@@ -23,7 +23,6 @@ import org.mars_sim.msp.core.malfunction.MalfunctionRepairWork;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionLogEntry;
-import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.mission.MissionPlanning;
 import org.mars_sim.msp.core.person.ai.mission.MissionStatus;
 import org.mars_sim.msp.core.person.ai.mission.NavPoint;
@@ -31,6 +30,7 @@ import org.mars_sim.msp.core.person.ai.mission.PlanType;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.task.LoadingController;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -258,7 +258,7 @@ public class CommandHelper {
 	 * @param mission Mission in question
 	 */
 	public static void outputMissionDetails(StructuredResponse response, Mission mission) {
-		List<MissionMember> plist = new ArrayList<>(mission.getMembers());
+		List<Worker> plist = new ArrayList<>(mission.getMembers());
 		Person startingPerson = mission.getStartingPerson();
 		plist.remove(startingPerson);
 	

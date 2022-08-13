@@ -30,7 +30,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
-import org.mars_sim.msp.core.person.ai.mission.MissionMember;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -57,15 +57,15 @@ extends TabPanel {
 	
 	private WebTextArea missionTextArea;
 	private WebTextArea missionPhaseTextArea;
-	private DefaultListModel<MissionMember> memberListModel;
-	private JList<MissionMember> memberList;
+	private DefaultListModel<Worker> memberListModel;
+	private JList<Worker> memberList;
 	private WebButton missionButton;
 	private WebButton monitorButton;
 
 	// Cache
 	private String missionCache = null;
 	private String missionPhaseCache = null;
-	private Collection<MissionMember> memberCache;
+	private Collection<Worker> memberCache;
 
 	/** The Vehicle instance. */
 	private Vehicle vehicle;
@@ -156,7 +156,7 @@ extends TabPanel {
 		memberListModel = new DefaultListModel<>();
 		if (mission != null) memberCache = mission.getMembers();
 		else memberCache = new ConcurrentLinkedQueue<>();
-		Iterator<MissionMember> i = memberCache.iterator();
+		Iterator<Worker> i = memberCache.iterator();
 		while (i.hasNext()) memberListModel.addElement(i.next());
 
 		// Create member list
@@ -239,7 +239,7 @@ extends TabPanel {
 		}
 
 		// Update member list
-		Collection<MissionMember> tempCollection = null;
+		Collection<Worker> tempCollection = null;
 		if (mission != null) {
 		    tempCollection = mission.getMembers();
 		}
@@ -249,7 +249,7 @@ extends TabPanel {
 		if (!Arrays.equals(memberCache.toArray(), tempCollection.toArray())) {
 			memberCache = tempCollection;
 			memberListModel.clear();
-			Iterator<MissionMember> i = memberCache.iterator();
+			Iterator<Worker> i = memberCache.iterator();
 			while (i.hasNext()) {
 			    memberListModel.addElement(i.next());
 			}

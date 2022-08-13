@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -19,8 +18,8 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Mining;
-import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Crewable;
@@ -30,7 +29,7 @@ import org.mars_sim.msp.core.vehicle.Rover;
 /**
  * Task for mining minerals at a site.
  */
-public class MineSite extends EVAOperation implements Serializable {
+public class MineSite extends EVAOperation {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -99,7 +98,7 @@ public class MineSite extends EVAOperation implements Serializable {
 	 * @param rover  the rover
 	 * @return true if person can mine a site.
 	 */
-	public static boolean canMineSite(MissionMember member, Rover rover) {
+	public static boolean canMineSite(Worker member, Rover rover) {
 
 		if (member instanceof Person) {
 			Person person = (Person) member;

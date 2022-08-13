@@ -29,7 +29,7 @@ import javax.swing.table.AbstractTableModel;
 
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.mission.MissionMember;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -299,11 +299,11 @@ extends WizardPanel {
                 	
                     int memberNum = getWizard().getMissionData().getMixedMembers().size();
                     // Add mission members.
-                    Iterator<MissionMember> i = getWizard().getMissionData().getMixedMembers().iterator();
+                    Iterator<Worker> i = getWizard().getMissionData().getMixedMembers().iterator();
                     while (i.hasNext()) {
                      	
                         // TODO Refactor
-                        MissionMember member = i.next();
+                        Worker member = i.next();
             	        if (member instanceof Person) {
             	        	person = (Person) member;
             	        	int constructionSkill = person.getSkillManager().getSkillLevel(SkillType.CONSTRUCTION);

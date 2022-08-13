@@ -27,6 +27,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.NegotiateTrade;
 import org.mars_sim.msp.core.person.ai.task.Walk;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -76,7 +77,7 @@ public class Trade extends RoverMission implements CommerceMission {
 	 *
 	 * @param startingMember the mission member starting the settlement.
 	 */
-	public Trade(MissionMember startingMember, boolean needsReview) {
+	public Trade(Worker startingMember, boolean needsReview) {
 		// Use RoverMission constructor.
 		super(MissionType.TRADE, startingMember, null);
 
@@ -129,10 +130,10 @@ public class Trade extends RoverMission implements CommerceMission {
 	 * @param sellGoods
 	 * @param buyGoods
 	 */
-	public Trade(Collection<MissionMember> members, Settlement tradingSettlement,
+	public Trade(Collection<Worker> members, Settlement tradingSettlement,
 			Rover rover, Map<Good, Integer> sellGoods, Map<Good, Integer> buyGoods) {
 		// Use RoverMission constructor.
-		super(MissionType.TRADE, (MissionMember) members.toArray()[0], rover);
+		super(MissionType.TRADE, (Worker) members.toArray()[0], rover);
 
 		outbound = true;
 		doNegotiation = false;
@@ -212,7 +213,7 @@ public class Trade extends RoverMission implements CommerceMission {
 	}
 
 	@Override
-	protected void performPhase(MissionMember member) {
+	protected void performPhase(Worker member) {
 		super.performPhase(member);
 		if (TRADE_DISEMBARKING.equals(getPhase())) {
 			performTradeDisembarkingPhase(member);
@@ -233,7 +234,7 @@ public class Trade extends RoverMission implements CommerceMission {
 	 *
 	 * @param member the mission member performing the mission.
 	 */
-	private void performTradeDisembarkingPhase(MissionMember member) {
+	private void performTradeDisembarkingPhase(Worker member) {
 		Vehicle v = getVehicle();
 		// If rover is not parked at settlement, park it.
 		if ((v != null) && (v.getSettlement() == null)) {
@@ -292,7 +293,7 @@ public class Trade extends RoverMission implements CommerceMission {
 	 *
 	 * @param member the mission member performing the phase.
 	 */
-	private void performTradeNegotiatingPhase(MissionMember member) {
+	private void performTradeNegotiatingPhase(Worker member) {
 		if (doNegotiation) {
 			if (member == getMissionTrader()) {
 				if (negotiationTask != null) {
@@ -345,7 +346,7 @@ public class Trade extends RoverMission implements CommerceMission {
 	 *
 	 * @param member the mission member performing the phase.
 	 */
-	private void performUnloadGoodsPhase(MissionMember member) {
+	private void performUnloadGoodsPhase(Worker member) {
 
 		// Unload towed vehicle (if necessary).
 		unloadTowedVehicle();
@@ -362,7 +363,7 @@ public class Trade extends RoverMission implements CommerceMission {
 	 *
 	 * @param member the mission member performing the phase.
 	 */
-	private void performLoadGoodsPhase(MissionMember member) {
+	private void performLoadGoodsPhase(Worker member) {
 
 		if (!isDone()) {
 			// Load towed vehicle (if necessary).
@@ -414,7 +415,7 @@ public class Trade extends RoverMission implements CommerceMission {
 	 *
 	 * @param member the mission member performing the phase.
 	 */
-	private void performTradeEmbarkingPhase(MissionMember member) {
+	private void performTradeEmbarkingPhase(Worker member) {
 
 		// If person is not aboard the rover, board rover.
 		if (!isDone() && !member.isInVehicle()) {
@@ -428,7 +429,7 @@ public class Trade extends RoverMission implements CommerceMission {
 				if (lead.isDeclaredDead()) {
 					logger.info(lead, "No longer alive.");
 					int bestSkillLevel = 0;
-					for (MissionMember mm: getMembers()) {
+					for (Worker mm: getMembers()) {
 						if (mm instanceof Person) {
 							Person p = (Person) mm;
 							int level = lead.getSkillManager().getSkillExp(SkillType.TRADING);
@@ -445,7 +446,7 @@ public class Trade extends RoverMission implements CommerceMission {
 
 			// Question: is the trading settlement responsible
 			// for providing an EVA suit for each person
-			for (MissionMember mm: getMembers()) {
+			for (Worker mm: getMembers()) {
 				if (mm instanceof Person) {
 					Person person = (Person) mm;
 					if (!person.isDeclaredDead()) {
@@ -490,7 +491,7 @@ public class Trade extends RoverMission implements CommerceMission {
 	}
 
 	@Override
-	protected void performEmbarkFromSettlementPhase(MissionMember member) {
+	protected void performEmbarkFromSettlementPhase(Worker member) {
 		super.performEmbarkFromSettlementPhase(member);
 
 		if (!isDone() && (getRover().getTowedVehicle() == null)) {
@@ -511,7 +512,7 @@ public class Trade extends RoverMission implements CommerceMission {
 	}
 
 	@Override
-	protected void performDisembarkToSettlementPhase(MissionMember member, Settlement disembarkSettlement) {
+	protected void performDisembarkToSettlementPhase(Worker member, Settlement disembarkSettlement) {
 
 		// Unload towed vehicle if any.
 		if (!isDone() && (getRover().getTowedVehicle() != null)) {
@@ -706,9 +707,9 @@ public class Trade extends RoverMission implements CommerceMission {
 		Person bestTrader = null;
 		int bestTradeSkill = -1;
 
-		Iterator<MissionMember> i = getMembers().iterator();
+		Iterator<Worker> i = getMembers().iterator();
 		while (i.hasNext()) {
-			MissionMember member = i.next();
+			Worker member = i.next();
 			if (member instanceof Person) {
 				Person person = (Person) member;
 				int tradeSkill = person.getSkillManager().getEffectiveSkillLevel(SkillType.TRADING);

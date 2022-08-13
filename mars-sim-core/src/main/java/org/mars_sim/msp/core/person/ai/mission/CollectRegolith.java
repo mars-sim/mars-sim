@@ -56,7 +56,7 @@ public class CollectRegolith extends CollectResourcesMission {
 	 * @param rover                   the rover to use.
 	 * @throws MissionException if error constructing mission.
 	 */
-	public CollectRegolith(Collection<MissionMember> members,
+	public CollectRegolith(Collection<Worker> members,
 			List<Coordinates> regolithCollectionSites, Rover rover) {
 
 		// Use CollectResourcesMission constructor.

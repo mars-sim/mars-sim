@@ -27,10 +27,10 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.task.LoadingController;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -752,8 +752,8 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 			Mission mission = getMission();
 			if (mission != null) {
 				// This code feel wrong
-				Collection<MissionMember> members = mission.getMembers();
-				for (MissionMember m: members) {
+				Collection<Worker> members = mission.getMembers();
+				for (Worker m: members) {
 					if (m.getMission() == null) {
 						// Defensively set the mission in the case that the delivery bot is registered as a mission member
 						// but its mission is null

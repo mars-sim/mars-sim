@@ -6,20 +6,19 @@
  */
 package org.mars_sim.msp.core.vehicle;
 
-import java.io.Serializable;
 import java.util.Collection;
 
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.task.LoadingController;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.ClockPulse;
 
-public class Drone extends Flyer implements Serializable {
+public class Drone extends Flyer {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -68,8 +67,8 @@ public class Drone extends Flyer implements Serializable {
 			Mission mission = getMission();
 			if (mission != null) {
 				// This code feel wrong
-				Collection<MissionMember> members = mission.getMembers();
-				for (MissionMember m: members) {
+				Collection<Worker> members = mission.getMembers();
+				for (Worker m: members) {
 					if (m.getMission() == null) {
 						// Defensively set the mission in the case that the delivery bot is registered as a mission member
 						// but its mission is null

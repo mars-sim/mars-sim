@@ -34,10 +34,10 @@ import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.CollectResourcesMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.mission.MissionPhase;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -73,8 +73,8 @@ public class InfoPanel extends JPanel {
 	
 	protected WebTextField descriptionField;
 	protected JComboBoxMW<?> actionDropDown;
-	protected DefaultListModel<MissionMember> memberListModel;
-	protected JList<MissionMember> memberList;
+	protected DefaultListModel<Worker> memberListModel;
+	protected JList<Worker> memberList;
 	protected WebButton addMembersButton;
 	protected WebButton removeMembersButton;
 	
@@ -146,12 +146,12 @@ public class InfoPanel extends JPanel {
         memberListPane.add(memberScrollPane, BorderLayout.CENTER);
         
         // Create member list model
-        memberListModel = new DefaultListModel<MissionMember>();
-        Iterator<MissionMember> i = mission.getMembers().iterator();
+        memberListModel = new DefaultListModel<Worker>();
+        Iterator<Worker> i = mission.getMembers().iterator();
         while (i.hasNext()) memberListModel.addElement(i.next());
         
         // Create member list
-        memberList = new JList<MissionMember>(memberListModel);
+        memberList = new JList<Worker>(memberListModel);
         memberList.addListSelectionListener(
         		new ListSelectionListener() {
         			@Override
@@ -272,14 +272,14 @@ public class InfoPanel extends JPanel {
 	 * Gets a collection of people and robots available to be added to the mission.
 	 * @return collection of available members.
 	 */
-	private Collection<MissionMember> getAvailableMembers() {
-		Collection<MissionMember> result = new ConcurrentLinkedQueue<>();
+	private Collection<Worker> getAvailableMembers() {
+		Collection<Worker> result = new ConcurrentLinkedQueue<>();
 	
 		// Add people and robots in the settlement or rover.
 		if (mission instanceof RoverMission) {
 			Rover rover = ((RoverMission) mission).getRover();
 			MissionPhase phase = mission.getPhase();
-			Collection<MissionMember> membersAtLocation = new ArrayList<>();
+			Collection<Worker> membersAtLocation = new ArrayList<>();
 			if (rover != null) {
 				if (phase.equals(RoverMission.EMBARKING) || 
 						phase.equals(RoverMission.DISEMBARKING)) {
@@ -298,9 +298,9 @@ public class InfoPanel extends JPanel {
 			}
 			
 			// Add people.
-			Iterator<MissionMember> i = membersAtLocation.iterator();
+			Iterator<Worker> i = membersAtLocation.iterator();
 			while (i.hasNext()) {
-				MissionMember member = i.next();
+				Worker member = i.next();
 				if (!memberListModel.contains(member)) {
 				    result.add(member);
 				}

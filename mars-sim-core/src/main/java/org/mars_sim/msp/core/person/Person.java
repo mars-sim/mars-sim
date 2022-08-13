@@ -7,7 +7,6 @@
 
 package org.mars_sim.msp.core.person;
 
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -49,7 +48,6 @@ import org.mars_sim.msp.core.person.ai.job.JobHistory;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.role.Role;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
@@ -58,6 +56,7 @@ import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.meta.WorkoutMeta;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskManager;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskSchedule;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.science.ScienceType;
@@ -79,7 +78,7 @@ import org.mars_sim.msp.core.vehicle.VehicleType;
  * The Person class represents a person on Mars. It keeps track of everything
  * related to that person and provides information about him/her.
  */
-public class Person extends Unit implements MissionMember, Serializable, Temporal, EquipmentOwner {
+public class Person extends Unit implements Worker, Temporal, EquipmentOwner {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;

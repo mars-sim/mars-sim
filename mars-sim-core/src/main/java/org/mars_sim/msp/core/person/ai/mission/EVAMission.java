@@ -16,6 +16,7 @@ import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Rover;
 
@@ -42,7 +43,7 @@ public abstract class EVAMission extends RoverMission {
 	private int containerNum;
 
     protected EVAMission(MissionType missionType, 
-            MissionMember startingPerson, Rover rover,
+            Worker startingPerson, Rover rover,
             MissionPhase evaPhase) {
         super(missionType, startingPerson, rover);
         
@@ -116,7 +117,7 @@ public abstract class EVAMission extends RoverMission {
 	 * Check that if the sunlight is suitable to continue
 	 * @param member
 	 */
-	private void performWaitForSunlight(MissionMember member) {
+	private void performWaitForSunlight(Worker member) {
 		if (isEnoughSunlightForEVA()) {
 			logger.info(getRover(), "Stop wait as enough sunlight");
 			setPhaseEnded(true);
@@ -141,7 +142,7 @@ public abstract class EVAMission extends RoverMission {
 	 * Perform the current phase
 	 */
 	@Override
-	protected void performPhase(MissionMember member) {
+	protected void performPhase(Worker member) {
 		super.performPhase(member);
 		if (evaPhase.equals(getPhase())) {
 			evaPhase(member);
@@ -171,7 +172,7 @@ public abstract class EVAMission extends RoverMission {
 	 */
 	protected void endEVATasks() {
 		// End each member's EVA task.
-		for(MissionMember member : getMembers()) {
+		for(Worker member : getMembers()) {
 			if (member instanceof Person) {
 				Person person = (Person) member;
 				Task task = person.getMind().getTaskManager().getTask();
@@ -188,7 +189,7 @@ public abstract class EVAMission extends RoverMission {
 	 * @param member the mission member currently performing the mission
 	 * @throws MissionException if problem performing phase.
 	 */
-	private void evaPhase(MissionMember member) {
+	private void evaPhase(Worker member) {
 
 		if (activeEVA) {
 			// Check if crew has been at site for more than one sol.

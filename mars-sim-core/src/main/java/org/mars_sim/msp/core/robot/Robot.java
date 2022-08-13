@@ -40,8 +40,8 @@ import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskManager;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.person.health.MedicalAid;
 import org.mars_sim.msp.core.robot.ai.BotMind;
 import org.mars_sim.msp.core.science.ScienceType;
@@ -62,7 +62,7 @@ import org.mars_sim.msp.core.vehicle.VehicleType;
 /**
  * The robot class represents operating a robot on Mars.
  */
-public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable, MissionMember, Serializable, EquipmentOwner {
+public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable, Worker, Serializable, EquipmentOwner {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
