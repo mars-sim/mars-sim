@@ -199,7 +199,7 @@ public abstract class Mission implements Serializable, Temporal {
 		this.description = missionName;
 
 		missionStatus = new HashSet<>();
-		members = new ConcurrentLinkedQueue<>();
+		members = new UnitSet<>();
 		done = false;
 		phase = null;
 		phaseDescription = "";
@@ -475,7 +475,7 @@ public abstract class Mission implements Serializable, Temporal {
 	 * @return collection of members
 	 */
 	public final Collection<Worker> getMembers() {
-		return new ArrayList<>(members);
+		return Collections.unmodifiableCollection(members);
 	}
 
 	/**

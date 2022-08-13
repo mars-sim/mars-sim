@@ -12,6 +12,7 @@ import java.io.Serializable;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitIdentifer;
 import org.mars_sim.msp.core.UnitListener;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.equipment.EquipmentOwner;
@@ -23,7 +24,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
-public interface Worker extends Loggable, Serializable, EquipmentOwner {
+public interface Worker extends Loggable, Serializable, UnitIdentifer, EquipmentOwner {
 
 	/**
 	 * Returns a reference to the Worker natural attribute manager
