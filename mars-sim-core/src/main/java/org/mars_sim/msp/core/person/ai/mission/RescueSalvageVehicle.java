@@ -23,6 +23,7 @@ import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.JobType;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -129,11 +130,11 @@ public class RescueSalvageVehicle extends RoverMission {
 	 * @param rover              the rover to use.
 	 * @throws MissionException if error constructing mission.
 	 */
-	public RescueSalvageVehicle(Collection<MissionMember> members, Vehicle vehicleTarget,
+	public RescueSalvageVehicle(Collection<Worker> members, Vehicle vehicleTarget,
 			Rover rover) {
 
 		// Use RoverMission constructor.
-		super(MissionType.RESCUE_SALVAGE_VEHICLE, (MissionMember) members.toArray()[0], rover);
+		super(MissionType.RESCUE_SALVAGE_VEHICLE, (Worker) members.toArray()[0], rover);
 
 		this.vehicleTarget = vehicleTarget;
 
@@ -249,7 +250,7 @@ public class RescueSalvageVehicle extends RoverMission {
 	}
 
 	@Override
-	protected void performPhase(MissionMember member) {
+	protected void performPhase(Worker member) {
 		super.performPhase(member);
 		if (RENDEZVOUS.equals(getPhase())) {
 			rendezvousPhase(member);
@@ -261,7 +262,7 @@ public class RescueSalvageVehicle extends RoverMission {
 	 * 
 	 * @param member the mission member currently performing the mission.
 	 */
-	private void rendezvousPhase(MissionMember member) {
+	private void rendezvousPhase(Worker member) {
 
 		logger.log(getVehicle(), member, Level.INFO, 5000, "Has arrived to rendezvous with " + vehicleTarget.getName() + ".", null);
 
@@ -617,7 +618,7 @@ public class RescueSalvageVehicle extends RoverMission {
 	 * @return the score
 	 */
 	@Override
-	public double getMissionQualification(MissionMember member) {
+	public double getMissionQualification(Worker member) {
 		double result = 0D;
 
 		result = super.getMissionQualification(member);

@@ -19,8 +19,8 @@ import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
-import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -104,7 +104,7 @@ public class ExploreSite extends EVAOperation {
 	 * @param rover  the rover
 	 * @return true if person can explore a site.
 	 */
-	public static boolean canExploreSite(MissionMember member, Rover rover) {
+	public static boolean canExploreSite(Worker member, Rover rover) {
 
 		if (member instanceof Person) {
 			Person person = (Person) member;

@@ -21,7 +21,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.mission.MissionMember;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -258,7 +258,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 	 * @param resourceType  the resource to collect.
 	 * @return true if person can perform the task.
 	 */
-	public static boolean canCollectResources(MissionMember member, Rover rover, 
+	public static boolean canCollectResources(Worker member, Rover rover, 
 			EquipmentType containerType, Integer resourceType) {
 
 		boolean result = false;

@@ -31,8 +31,8 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
 import org.mars_sim.msp.core.person.ai.mission.MissionEventType;
 import org.mars_sim.msp.core.person.ai.mission.MissionListener;
-import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskManager;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -228,15 +228,15 @@ public class RobotTableModel extends UnitTableModel {
 	 */
 	public RobotTableModel(Mission mission) throws Exception {
 		super(Msg.getString("RobotTableModel.nameRobots", //$NON-NLS-1$
-				mission.getName()), "RobotTableModel.countingMissionMembers", //$NON-NLS-1$
+				mission.getName()), "RobotTableModel.countingWorkers", //$NON-NLS-1$
 				columnNames, columnTypes);
 
 		sourceType = ValidSourceType.MISSION_ROBOTS;
 		this.mission = mission;
 		Collection<Robot> missionRobots = new ArrayList<>();
-		Iterator<MissionMember> i = mission.getMembers().iterator();
+		Iterator<Worker> i = mission.getMembers().iterator();
 		while (i.hasNext()) {
-			MissionMember member = i.next();
+			Worker member = i.next();
 			if (member.getUnitType() == UnitType.ROBOT) {
 				missionRobots.add((Robot) member);
 			}

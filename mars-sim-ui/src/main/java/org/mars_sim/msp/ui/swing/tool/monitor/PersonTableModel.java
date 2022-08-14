@@ -35,9 +35,9 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
 import org.mars_sim.msp.core.person.ai.mission.MissionEventType;
 import org.mars_sim.msp.core.person.ai.mission.MissionListener;
-import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.role.Role;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskManager;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -251,9 +251,9 @@ public class PersonTableModel extends UnitTableModel {
 		sourceType = ValidSourceType.MISSION_PEOPLE;
 		this.mission = mission;
 		Collection<Person> missionPeople = new ArrayList<>();
-		Iterator<MissionMember> i = mission.getMembers().iterator();
+		Iterator<Worker> i = mission.getMembers().iterator();
 		while (i.hasNext()) {
-			MissionMember member = i.next();
+			Worker member = i.next();
 			if (member.getUnitType() == UnitType.PERSON) {
 				missionPeople.add((Person) member);
 			}

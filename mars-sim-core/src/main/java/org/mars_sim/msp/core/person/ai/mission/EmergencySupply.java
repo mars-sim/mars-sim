@@ -31,6 +31,7 @@ import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.Walk;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -140,7 +141,7 @@ public class EmergencySupply extends RoverMission {
 	 * @param emergencySettlement the starting settlement.
 	 * @param rover               the rover used on the mission.
 	 */
-	public EmergencySupply(Collection<MissionMember> members, Settlement emergencySettlement,
+	public EmergencySupply(Collection<Worker> members, Settlement emergencySettlement,
 			Map<Good, Integer> emergencyGoods, Rover rover) {
 		// Use RoverMission constructor.
 		super(MissionType.EMERGENCY_SUPPLY, (Person) members.toArray()[0], rover);
@@ -247,7 +248,7 @@ public class EmergencySupply extends RoverMission {
 	}
 
 	@Override
-	protected void performPhase(MissionMember member) {
+	protected void performPhase(Worker member) {
 		super.performPhase(member);
 		// NOTE: The following 4 phases are unique to this mission
 		if (SUPPLY_DELIVERY_DISEMBARKING.equals(getPhase())) {
@@ -262,7 +263,7 @@ public class EmergencySupply extends RoverMission {
 	}
 
 	@Override
-	protected void performEmbarkFromSettlementPhase(MissionMember member) {
+	protected void performEmbarkFromSettlementPhase(Worker member) {
 		super.performEmbarkFromSettlementPhase(member);
 
 		// Set emergency vehicle (if any) to be towed.
@@ -277,7 +278,7 @@ public class EmergencySupply extends RoverMission {
 	}
 
 	@Override
-	protected void performDisembarkToSettlementPhase(MissionMember member, Settlement disembarkSettlement) {
+	protected void performDisembarkToSettlementPhase(Worker member, Settlement disembarkSettlement) {
 
 		// Unload towed vehicle if any.
 		if (!isDone() && (getRover().getTowedVehicle() != null && emergencyVehicle != null)) {
@@ -300,7 +301,7 @@ public class EmergencySupply extends RoverMission {
 	 *
 	 * @param member the member performing the phase.
 	 */
-	private void performSupplyDeliveryDisembarkingPhase(MissionMember member) {
+	private void performSupplyDeliveryDisembarkingPhase(Worker member) {
 
 		// If rover is not parked at settlement, park it.
 		if ((getVehicle() != null) && (getVehicle().getSettlement() == null)) {
@@ -360,7 +361,7 @@ public class EmergencySupply extends RoverMission {
 	 *
 	 * @param member the mission member performing the phase.
 	 */
-	private void performSupplyDeliveryPhase(MissionMember member) {
+	private void performSupplyDeliveryPhase(Worker member) {
 
 		// Unload towed vehicle (if necessary).
 		if (getRover().getTowedVehicle() != null) {
@@ -404,7 +405,7 @@ public class EmergencySupply extends RoverMission {
 	 *
 	 * @param member the mission member performing the phase.
 	 */
-	private void performLoadReturnTripSuppliesPhase(MissionMember member) {
+	private void performLoadReturnTripSuppliesPhase(Worker member) {
 
 		if (!isDone() && !isVehicleLoaded()) {
 			// Random chance of having person load (this allows person to do other things
@@ -435,7 +436,7 @@ public class EmergencySupply extends RoverMission {
 	 *
 	 * @param member the mission member performing the phase.
 	 */
-	private void performReturnTripEmbarkingPhase(MissionMember member) {
+	private void performReturnTripEmbarkingPhase(Worker member) {
 
 		if (member.isInVehicle()) {
 

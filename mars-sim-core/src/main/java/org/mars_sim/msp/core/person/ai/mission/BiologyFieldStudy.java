@@ -12,6 +12,7 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.BiologyStudyFieldWork;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -49,7 +50,7 @@ public class BiologyFieldStudy extends FieldStudyMission {
 	 * @param rover              the rover used by the mission.
 	 * @param fieldSite          the field site to research.
 	 */
-	public BiologyFieldStudy(Collection<MissionMember> members, Person leadResearcher,
+	public BiologyFieldStudy(Collection<Worker> members, Person leadResearcher,
 			ScientificStudy study, Rover rover, Coordinates fieldSite) {
 		super(MissionType.BIOLOGY, leadResearcher, rover,
 				  study, FIELD_SITE_TIME, members, fieldSite);

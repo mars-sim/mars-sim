@@ -30,6 +30,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.ConstructBuilding;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -107,7 +108,7 @@ public class BuildingConstructionMission extends Mission {
 	private ConstructionStage stage;
 
 	private List<GroundVehicle> constructionVehicles;
-	private Collection<MissionMember> members;
+	private Collection<Worker> members;
 	private List<Integer> luvAttachmentParts;
 
 	/**
@@ -115,7 +116,7 @@ public class BuildingConstructionMission extends Mission {
 	 *
 	 * @param startingMember the mission member starting the mission.
 	 */
-	public BuildingConstructionMission(MissionMember startingMember) {
+	public BuildingConstructionMission(Worker startingMember) {
 		// Use Mission constructor.
 		super(missionType, startingMember);
 
@@ -294,12 +295,12 @@ public class BuildingConstructionMission extends Mission {
 	 * @param facing
 	 * @param vehicles
 	 */
-	public BuildingConstructionMission(Collection<MissionMember> members, Settlement settlement,
+	public BuildingConstructionMission(Collection<Worker> members, Settlement settlement,
 			ConstructionSite no_site, ConstructionStageInfo stageInfo, double xLoc, double yLoc, double facing,
 			List<GroundVehicle> vehicles) {
 
 		// Use Mission constructor.
-		super(missionType, (MissionMember) members.toArray()[0]);
+		super(missionType, (Worker) members.toArray()[0]);
 
 		// this.site = no_site;
 		this.members = members;
@@ -310,9 +311,9 @@ public class BuildingConstructionMission extends Mission {
 
 		calculateMissionCapacity(MAX_PEOPLE);
 
-//		Iterator<MissionMember> i = members.iterator();
+//		Iterator<Worker> i = members.iterator();
 //		while (i.hasNext()) {
-//			MissionMember member = i.next();
+//			Worker member = i.next();
 //			int constructionSkill = member.getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
 //
 //			if (constructionSkill > bestConstructionSkill) {
@@ -470,9 +471,9 @@ public class BuildingConstructionMission extends Mission {
 
 	public void setMembers() {
 		// Add mission members.
-		Iterator<MissionMember> i = members.iterator();
+		Iterator<Worker> i = members.iterator();
 		while (i.hasNext()) {
-			MissionMember member = i.next();
+			Worker member = i.next();
 			if (member.getUnitType() == UnitType.PERSON) {
 				Person person = (Person) member;
 				person.getMind().setMission(this);
@@ -617,7 +618,7 @@ public class BuildingConstructionMission extends Mission {
 	}
 
 	@Override
-	protected void performPhase(MissionMember member) {
+	protected void performPhase(Worker member) {
 		super.performPhase(member);
 		if (SELECT_SITE_PHASE.equals(getPhase())) {
 			selectSitePhase(member);
@@ -628,7 +629,7 @@ public class BuildingConstructionMission extends Mission {
 		}
 	}
 
-	private void selectSitePhase(MissionMember member) {
+	private void selectSitePhase(Worker member) {
 		selectSitePhase();
 	}
 
@@ -643,7 +644,7 @@ public class BuildingConstructionMission extends Mission {
 	 *
 	 * @param member the mission member performing the phase.
 	 */
-	private void prepareSitePhase(MissionMember member) {
+	private void prepareSitePhase(Worker member) {
 		logger.info(settlement, member, 20_000, "Preparing a construction site '" + site.getDescription() + ".");
 		// Load all available materials needed for construction.
 		if (!site.getStageInfo().getType().equals(ConstructionStageInfo.FOUNDATION))
@@ -708,7 +709,7 @@ public class BuildingConstructionMission extends Mission {
 	 *
 	 * @param member the mission member performing the phase.
 	 */
-	private void constructionPhase(MissionMember member) {
+	private void constructionPhase(Worker member) {
 
 		// Anyone in the crew or a single person at the home settlement has a
 		// dangerous illness, end phase.

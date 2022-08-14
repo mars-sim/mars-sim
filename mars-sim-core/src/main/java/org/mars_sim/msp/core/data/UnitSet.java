@@ -23,6 +23,7 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitIdentifer;
 import org.mars_sim.msp.core.UnitManager;
 
 /**
@@ -32,7 +33,7 @@ import org.mars_sim.msp.core.UnitManager;
  * 
  * @param <T> Unit subclass.
  */
-public class UnitSet<T extends Unit> 
+public class UnitSet<T extends UnitIdentifer> 
 	implements Set<T>, Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -167,7 +168,7 @@ public class UnitSet<T extends Unit>
 	      throws IOException {
         int [] heldIDs = new int[units.size()];
         int i = 0;
-        for(Unit u : units) {
+        for(UnitIdentifer u : units) {
         	heldIDs[i++] = u.getIdentifier();
         }
         

@@ -26,6 +26,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.swing.BorderFactory;
@@ -72,12 +73,12 @@ import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
 import org.mars_sim.msp.core.person.ai.mission.MissionEventType;
 import org.mars_sim.msp.core.person.ai.mission.MissionListener;
 import org.mars_sim.msp.core.person.ai.mission.MissionLogEntry;
-import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.mission.MissionStatus;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.Trade;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.tool.Conversion;
@@ -445,7 +446,7 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 						// Open window for selected person.
 						int index = memberTable.getSelectedRow();
 						if (index > -1) {
-							MissionMember member = memberTableModel.getMemberAtIndex(index);
+							Worker member = memberTableModel.getMemberAtIndex(index);
 							if (member.getUnitType() == UnitType.PERSON) {
 								getDesktop().openUnitWindow((Person) member, false);
 							} else {
@@ -841,27 +842,12 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 	 * @return
 	 */
 	private String printMembers(Mission mission) {
-		String result = "";
-		if (mission.getSignup().isEmpty()) {
+		Set<Worker> list = mission.getSignup();
+		if (list.isEmpty()) {
 			return "";
 		}
 		
-		List<Unit> list = new ArrayList<>(mission.getSignup());
-		int size = list.size();
-		for (int i=0; i<size; i++) {
-			Unit u = list.get(i);
-			if (u.getUnitType() == UnitType.PERSON) {
-				result += ((Person)u).getName();
-			}
-			else {
-				result += ((Robot)u).getName();
-			}
-			
-			if (i != size - 1) {
-				result += ", ";
-			}
-		}
-		return result;
+		return list.stream().map(Worker::getName).collect(Collectors.joining(","));
 	}
 	
 	/**
@@ -1116,7 +1102,7 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 
 		// Private members.
 		private Mission mission;
-		private List<MissionMember> members;
+		private List<Worker> members;
 
 		/**
 		 * Constructor.
@@ -1169,7 +1155,7 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 		public Object getValueAt(int row, int column) {
 			if (row < members.size()) {
 				Object array[] = members.toArray();
-				MissionMember member = (MissionMember) array[row];
+				Worker member = (Worker) array[row];
 				if (column == 0)
 					return member.getName();
 				else
@@ -1195,7 +1181,7 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 		 */
 		public void unitUpdate(UnitEvent event) {
 			UnitEventType type = event.getType();
-			MissionMember member = (MissionMember) event.getSource();
+			Worker member = (Worker) event.getSource();
 			int index = getIndex(members, member);
 			if (type == UnitEventType.NAME_EVENT) {
 				SwingUtilities.invokeLater(new MemberTableUpdater(index, 0));
@@ -1232,13 +1218,13 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 				members = new ArrayList<>(mission.getMembers());
 				Collections.sort(members, new Comparator<>() {
 					@Override
-					public int compare(MissionMember o1, MissionMember o2) {
+					public int compare(Worker o1, Worker o2) {
 						return o1.getName().compareToIgnoreCase(o2.getName());
 					}
 				});
-				Iterator<MissionMember> i = members.iterator();
+				Iterator<Worker> i = members.iterator();
 				while (i.hasNext()) {
-					MissionMember member = i.next();
+					Worker member = i.next();
 					member.addUnitListener(this);
 				}
 				SwingUtilities.invokeLater(new MemberTableUpdater());
@@ -1255,9 +1241,9 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 		 */
 		private void clearMembers() {
 			if (members != null) {
-				Iterator<MissionMember> i = members.iterator();
+				Iterator<Worker> i = members.iterator();
 				while (i.hasNext()) {
-					MissionMember member = i.next();
+					Worker member = i.next();
 					member.removeUnitListener(this);
 				}
 				members.clear();
@@ -1270,9 +1256,9 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 		 * @param index the index.
 		 * @return the mission member.
 		 */
-		MissionMember getMemberAtIndex(int index) {
+		Worker getMemberAtIndex(int index) {
 			if ((index >= 0) && (index < members.size())) {
-				return (MissionMember) members.toArray()[index];
+				return (Worker) members.toArray()[index];
 			} else {
 				return null;
 			}

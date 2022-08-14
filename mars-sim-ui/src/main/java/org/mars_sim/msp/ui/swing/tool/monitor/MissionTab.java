@@ -10,7 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.MissionMember;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
 
@@ -55,7 +55,7 @@ public class MissionTab extends TableTab {
 		if (it.hasNext()) {
 			Mission mission = (Mission) it.next();
 			if (mission.getMembersNumber() > 0) {
-				MissionMember member = (MissionMember) mission.getMembers().toArray()[0];
+				Worker member = (Worker) mission.getMembers().toArray()[0];
 				desktop.centerMapGlobe(member.getCoordinates());
 			}
 		}

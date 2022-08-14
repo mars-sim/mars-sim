@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.structure.construction;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -19,7 +18,7 @@ import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
-import org.mars_sim.msp.core.person.ai.mission.MissionMember;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.Structure;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -32,7 +31,7 @@ import org.mars_sim.msp.core.vehicle.GroundVehicle;
  */
 public class ConstructionSite
 extends Structure
-implements Serializable, LocalBoundedObject {
+implements  LocalBoundedObject {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
@@ -65,7 +64,7 @@ implements Serializable, LocalBoundedObject {
 
     private transient List<ConstructionListener> listeners;
 
-    private Collection<MissionMember> members;
+    private Collection<Worker> members;
     private List<GroundVehicle> vehicles;
 
     private ConstructionStage foundationStage;
@@ -475,7 +474,7 @@ implements Serializable, LocalBoundedObject {
     	return constructionSkill;
     }
 
-	public void setMembers(Collection<MissionMember> members) {
+	public void setMembers(Collection<Worker> members) {
 		this.members = members;
 	}
 
@@ -483,7 +482,7 @@ implements Serializable, LocalBoundedObject {
 		this.vehicles = vehicles;
 	}
 
-	public Collection<MissionMember> getMembers() {
+	public Collection<Worker> getMembers() {
 		return members;
 	}
 

@@ -37,6 +37,7 @@ import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.Walk;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -88,7 +89,7 @@ public abstract class RoverMission extends VehicleMission {
 	 * @param minPeople      the minimum number of people required for mission.
 	 * @param rover          the rover to use on the mission.
 	 */
-	protected RoverMission(MissionType missionType, MissionMember startingMember, Rover rover) {
+	protected RoverMission(MissionType missionType, Worker startingMember, Rover rover) {
 		// Use VehicleMission constructor.
 		super(missionType, startingMember, rover);
 		if (!isDone()) {
@@ -199,7 +200,7 @@ public abstract class RoverMission extends VehicleMission {
 	 */
 	protected final boolean isEveryoneInRover() {
 		Rover r = getRover();
-		for(MissionMember m : getMembers()) {
+		for(Worker m : getMembers()) {
 			Person p = (Person) m;
 			if (!r.isCrewmember(p)) {
 				return false;
@@ -265,7 +266,7 @@ public abstract class RoverMission extends VehicleMission {
 	 * @param member the mission member currently performing the mission
 	 */
 	@Override
-	protected void performEmbarkFromSettlementPhase(MissionMember member) {
+	protected void performEmbarkFromSettlementPhase(Worker member) {
 		Vehicle v = getVehicle();
 
 		if (v == null) {
@@ -376,7 +377,7 @@ public abstract class RoverMission extends VehicleMission {
 		if (!isDone()) {
 
 			// Set the members' work shift to on-call to get ready
-			for (MissionMember m : getMembers()) {
+			for (Worker m : getMembers()) {
 				Person pp = (Person) m;
 				if (pp.getShiftType() != ShiftType.ON_CALL)
 					pp.setShiftType(ShiftType.ON_CALL);
@@ -411,7 +412,7 @@ public abstract class RoverMission extends VehicleMission {
 	 * @param disembarkSettlement the settlement to be disembarked to.
 	 */
 	@Override
-	protected void performDisembarkToSettlementPhase(MissionMember member, Settlement disembarkSettlement) {
+	protected void performDisembarkToSettlementPhase(Worker member, Settlement disembarkSettlement) {
 
 		Vehicle v0 = getVehicle();
 		disembark(member, v0, disembarkSettlement);
@@ -434,7 +435,7 @@ public abstract class RoverMission extends VehicleMission {
 	 * @param v
 	 * @param disembarkSettlement
 	 */
-	public void disembark(MissionMember member, Vehicle v, Settlement disembarkSettlement) {
+	public void disembark(Worker member, Vehicle v, Settlement disembarkSettlement) {
 		logger.info(v, 10_000, "Disembarked at " + disembarkSettlement.getName()
 					+ " triggered by " + member.getName() +  ".");
 
@@ -515,7 +516,7 @@ public abstract class RoverMission extends VehicleMission {
 		if (!roverUnloaded) {
 			// Note : Set random chance of having person unloading resources,
 			// thus allowing person to do other urgent things
-			for (MissionMember mm : getMembers()) {
+			for (Worker mm : getMembers()) {
 				if (((Person)mm).isBarelyFit()) {
 					if (RandomUtil.lessThanRandPercent(70)) {
 						unloadCargo(((Person)mm), rover);
@@ -525,7 +526,7 @@ public abstract class RoverMission extends VehicleMission {
 		}
 		else if (rover.getCrewNum() > 0) {
 			// Check to see if no one is in the rover, unload the resources and end phase.
-			for (MissionMember mm  : getMembers()) {
+			for (Worker mm  : getMembers()) {
 				// Walk back to the airlock
 				if (((Person)mm).isInVehicle() || ((Person)mm).isOutside())
 					walkToAirlock(rover, ((Person)mm), disembarkSettlement);
@@ -756,7 +757,7 @@ public abstract class RoverMission extends VehicleMission {
 	 * @return an OperateVehicle task for the person.
 	 */
 	@Override
-	protected OperateVehicle createOperateVehicleTask(MissionMember member, TaskPhase lastOperateVehicleTaskPhase) {
+	protected OperateVehicle createOperateVehicleTask(Worker member, TaskPhase lastOperateVehicleTaskPhase) {
 		OperateVehicle result = null;
 		if (member.getUnitType() == UnitType.PERSON) {
 			Person person = (Person) member;
@@ -792,7 +793,7 @@ public abstract class RoverMission extends VehicleMission {
 	 * @param member     the mission member checking
 	 * @return true if at least one person left at settlement.
 	 */
-	protected static boolean atLeastOnePersonRemainingAtSettlement(Settlement settlement, MissionMember member) {
+	protected static boolean atLeastOnePersonRemainingAtSettlement(Settlement settlement, Worker member) {
 		boolean result = false;
 
 		if (settlement != null) {
@@ -1039,12 +1040,12 @@ public abstract class RoverMission extends VehicleMission {
 	 * @param startingMember
 	 * @return
 	 */
-	protected boolean recruitMembersForMission(MissionMember startingMember, int minMembers) {
+	protected boolean recruitMembersForMission(Worker startingMember, int minMembers) {
 		return recruitMembersForMission(startingMember, true, minMembers);
 	}
 
 	@Override
-	protected boolean recruitMembersForMission(MissionMember startingMember, boolean sameSettlement,
+	protected boolean recruitMembersForMission(Worker startingMember, boolean sameSettlement,
 										int minMembers) {
 		super.recruitMembersForMission(startingMember, sameSettlement, minMembers);
 
@@ -1053,9 +1054,9 @@ public abstract class RoverMission extends VehicleMission {
 		if (!atLeastOnePersonRemainingAtSettlement(getStartingSettlement(), startingMember)) {
 			// Remove last person added to the mission.
 			Person lastPerson = null;
-			Iterator<MissionMember> i = getMembers().iterator();
+			Iterator<Worker> i = getMembers().iterator();
 			while (i.hasNext()) {
-				MissionMember member = i.next();
+				Worker member = i.next();
 				if (member instanceof Person) {
 					lastPerson = (Person) member;
 					removeMember(lastPerson);

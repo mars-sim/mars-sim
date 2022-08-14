@@ -13,6 +13,7 @@ import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.MeteorologyStudyFieldWork;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -55,7 +56,7 @@ public class MeteorologyFieldStudy extends FieldStudyMission {
 	 * @param rover              the rover used by the mission.
 	 * @param fieldSite          the field site to research.
 	 */
-	public MeteorologyFieldStudy(Collection<MissionMember> members, Person leadResearcher,
+	public MeteorologyFieldStudy(Collection<Worker> members, Person leadResearcher,
 			ScientificStudy study, Rover rover, Coordinates fieldSite) {
 
 		super(MissionType.METEOROLOGY, leadResearcher, rover,

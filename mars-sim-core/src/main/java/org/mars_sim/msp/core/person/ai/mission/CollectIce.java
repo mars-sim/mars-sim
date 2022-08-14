@@ -54,7 +54,7 @@ public class CollectIce extends CollectResourcesMission {
 	 * @param iceCollectionSites the sites to collect ice.
 	 * @param rover              the rover to use.
 	 */
-	public CollectIce(Collection<MissionMember> members,
+	public CollectIce(Collection<Worker> members,
 			List<Coordinates> iceCollectionSites, Rover rover) {
 
 		// Use CollectResourcesMission constructor.

@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.SalvageBuilding;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.robot.Robot;
@@ -88,7 +89,7 @@ public class BuildingSalvageMission extends Mission {
 	 * 
 	 * @param startingMember the mission member starting the mission.
 	 */
-	public BuildingSalvageMission(MissionMember startingMember) {
+	public BuildingSalvageMission(Worker startingMember) {
 		// Use Mission constructor.
 		super(missionType, startingMember);
 
@@ -190,11 +191,11 @@ public class BuildingSalvageMission extends Mission {
 	 * @param site       the existing salvage construction site. (null if none)
 	 * @param vehicles   the construction vehicles.
 	 */
-	public BuildingSalvageMission(Collection<MissionMember> members, Settlement settlement, Building building,
+	public BuildingSalvageMission(Collection<Worker> members, Settlement settlement, Building building,
 			ConstructionSite site, List<GroundVehicle> vehicles) {
 
 		// Use Mission constructor.
-		super(missionType, (MissionMember) members.toArray()[0]);
+		super(missionType, (Worker) members.toArray()[0]);
 
 		this.settlement = settlement;
 
@@ -340,7 +341,7 @@ public class BuildingSalvageMission extends Mission {
 	}
 
 	@Override
-	protected void performPhase(MissionMember member) {
+	protected void performPhase(Worker member) {
 		super.performPhase(member);
 		if (PREPARE_SITE_PHASE.equals(getPhase())) {
 			prepareSitePhase(member);
@@ -371,7 +372,7 @@ public class BuildingSalvageMission extends Mission {
 	 * 
 	 * @param member the mission member performing the phase.
 	 */
-	private void prepareSitePhase(MissionMember member) {
+	private void prepareSitePhase(Worker member) {
 		prepareSitePhase();
 	}
 
@@ -392,7 +393,7 @@ public class BuildingSalvageMission extends Mission {
 	 * 
 	 * @param member the mission member performing the phase.
 	 */
-	private void salvagePhase(MissionMember member) {
+	private void salvagePhase(Worker member) {
 
 		// Anyone in the crew or a single person at the home settlement has a
 		// dangerous illness, end phase.
@@ -627,9 +628,9 @@ public class BuildingSalvageMission extends Mission {
 
 		// Get average construction skill of mission members.
 		double totalSkill = 0D;
-		Iterator<MissionMember> i = getMembers().iterator();
+		Iterator<Worker> i = getMembers().iterator();
 		while (i.hasNext()) {
-			MissionMember member = i.next();
+			Worker member = i.next();
 			totalSkill += member.getSkillManager()
 					.getEffectiveSkillLevel(SkillType.CONSTRUCTION);
 		}

@@ -12,11 +12,11 @@ import java.util.Map;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -78,7 +78,7 @@ public class TravelToSettlementMeta extends AbstractMetaMission {
         return missionProbability;
     }
 
-    private double getMissionProbability(Settlement settlement, MissionMember member) {
+    private double getMissionProbability(Settlement settlement, Worker member) {
         double missionProbability = 0;
         
         // Check if there are any desirable settlements within range.

@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.task.CollectMinedMinerals;
 import org.mars_sim.msp.core.person.ai.task.MineSite;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -140,11 +141,11 @@ public class Mining extends EVAMission
 	 * @param rover              the rover to use.
 	 * @param description        the mission's description.
 	 */
-	public Mining(Collection<MissionMember> members, ExploredLocation miningSite,
+	public Mining(Collection<Worker> members, ExploredLocation miningSite,
 			Rover rover, LightUtilityVehicle luv) {
 
 		// Use RoverMission constructor.,  
-		super(MissionType.MINING, (MissionMember) members.toArray()[0], rover, MINING_SITE);
+		super(MissionType.MINING, (Worker) members.toArray()[0], rover, MINING_SITE);
 		
 		// Initialize data members.
 		this.miningSite = miningSite;
@@ -234,7 +235,7 @@ public class Mining extends EVAMission
 
 
 	@Override
-	protected void performEmbarkFromSettlementPhase(MissionMember member) {
+	protected void performEmbarkFromSettlementPhase(Worker member) {
 		super.performEmbarkFromSettlementPhase(member);
 		performEmbarkFrom();
 	}
@@ -273,7 +274,7 @@ public class Mining extends EVAMission
 	}
 
 	@Override
-	protected void performDisembarkToSettlementPhase(MissionMember member, Settlement disembarkSettlement) {
+	protected void performDisembarkToSettlementPhase(Worker member, Settlement disembarkSettlement) {
 		performDisembarkTo();
 		super.performDisembarkToSettlementPhase(member, disembarkSettlement);
 	}
@@ -315,7 +316,7 @@ public class Mining extends EVAMission
 
 		// Determine if no one can start the mine site or collect resources tasks.
 		boolean nobodyMineOrCollect = true;
-		for(MissionMember tempMember : getMembers()) {
+		for(Worker tempMember : getMembers()) {
 			if (MineSite.canMineSite(tempMember, getRover())) {
 				nobodyMineOrCollect = false;
 			}
@@ -367,7 +368,7 @@ public class Mining extends EVAMission
 	 * @param member the member collecting.
 	 * @return true if can collect minerals.
 	 */
-	private boolean canCollectExcavatedMinerals(MissionMember member) {
+	private boolean canCollectExcavatedMinerals(Worker member) {
 		boolean result = false;
 
 		Iterator<AmountResource> i = excavatedMinerals.keySet().iterator();

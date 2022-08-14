@@ -153,7 +153,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	 * @param minPeople
 	 * @param vehicle Optional, if null then reserve a Vehicle
 	 */
-	protected VehicleMission(MissionType missionType, MissionMember startingMember, Vehicle vehicle) {
+	protected VehicleMission(MissionType missionType, Worker startingMember, Vehicle vehicle) {
 		super(missionType, startingMember);
 
 		init(startingMember);
@@ -170,7 +170,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	/**
 	 * Sets up starting NavPoints
 	 */
-	private void init(MissionMember startingMember) {
+	private void init(Worker startingMember) {
 
 		NavPoint startingNavPoint = null;
 
@@ -181,12 +181,10 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 			startingNavPoint = new NavPoint(getCurrentMissionLocation(), "starting location");
 		}
 
-		if (startingNavPoint != null) {
-			addNavpoint(startingNavPoint);
-			lastStopNavpoint = startingNavPoint;
+		addNavpoint(startingNavPoint);
+		lastStopNavpoint = startingNavPoint;
 
-			setTravelStatus(AT_NAVPOINT);
-		}
+		setTravelStatus(AT_NAVPOINT);
 		
 		setStartingSettlement(startingMember.getAssociatedSettlement());
 	}
@@ -207,7 +205,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 			setPhase(EMBARKING, getStartingSettlement().getName());
 		}
 
-		MissionMember startingMember = getStartingPerson();
+		Worker startingMember = getStartingPerson();
 		logger.info(startingMember, "Started mission " + getName() + " using " + getVehicle().getName());
 	}
 
@@ -218,7 +216,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	 */
 	protected boolean reserveVehicle() {
 		// Reserve a vehicle.
-		MissionMember startingMember = getStartingPerson();
+		Worker startingMember = getStartingPerson();
 		if (startingMember.getSettlement() == null || !reserveVehicle(startingMember)) {
 			endMission(MissionStatus.NO_RESERVABLE_VEHICLES);
 			logger.warning(startingMember, "Could not reserve a vehicle for " + getName() + ".");
@@ -234,7 +232,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	 * @return true if vehicle is reserved, false if unable to.
 	 * @throws MissionException if error reserving vehicle.
 	 */
-	protected final boolean reserveVehicle(MissionMember member) {
+	protected final boolean reserveVehicle(Worker member) {
 		Collection<Vehicle> vList = getAvailableVehicles(member.getSettlement());
 		if (vList.isEmpty())
 			return false;
@@ -777,7 +775,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	}
 
 	@Override
-	protected void performPhase(MissionMember member) {
+	protected void performPhase(Worker member) {
 		super.performPhase(member);
 		if (REVIEWING.equals(getPhase())) {
 			if (isMissionPlanReady) {
@@ -810,7 +808,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	 *
 	 * @param member the mission member currently performing the mission.
 	 */
-	protected final void performTravelPhase(MissionMember member) {
+	protected final void performTravelPhase(Worker member) {
 		NavPoint destination = getNextNavpoint();
 
 		// If vehicle has not reached destination and isn't broken down, travel to
@@ -923,7 +921,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	 * @param member the mission member operating the vehicle.
 	 * @return an OperateVehicle task for the person.
 	 */
-	protected abstract OperateVehicle createOperateVehicleTask(MissionMember member,
+	protected abstract OperateVehicle createOperateVehicleTask(Worker member,
 			TaskPhase lastOperateVehicleTaskPhase);
 
 	/**
@@ -931,7 +929,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	 *
 	 * @param member the mission member currently performing the mission.
 	 */
-	protected abstract void performEmbarkFromSettlementPhase(MissionMember member);
+	protected abstract void performEmbarkFromSettlementPhase(Worker member);
 
 	/**
 	 * Performs the disembark to settlement phase of the mission.
@@ -940,7 +938,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	 *                            mission.
 	 * @param disembarkSettlement the settlement to be disembarked to.
 	 */
-	protected abstract void performDisembarkToSettlementPhase(MissionMember member, Settlement disembarkSettlement);
+	protected abstract void performDisembarkToSettlementPhase(Worker member, Settlement disembarkSettlement);
 
 	/**
 	 * Gets the estimated time of arrival (ETA) for the current leg of the mission.
@@ -1015,7 +1013,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 
 		double totalSpeed = 0D;
 		int count = 0;
-		for (MissionMember member : getMembers()) {
+		for (Worker member : getMembers()) {
 			if (member.getUnitType() == UnitType.PERSON) {
 				totalSpeed += getAverageVehicleSpeedForOperator(member);
 				count++;
@@ -1231,7 +1229,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	 * @param oldDistance
 	 * @param newDistance
 	 */
-	protected void travel(String reason, MissionMember member, Settlement oldHome, Settlement newDestination, double oldDistance, double newDistance) {
+	protected void travel(String reason, Worker member, Settlement oldHome, Settlement newDestination, double oldDistance, double newDistance) {
 		double newTripTime = getEstimatedTripTime(false, newDistance);
 
 		if (newDestination == oldHome) {
@@ -1268,7 +1266,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	 * @param oldHome
 	 * @param newDestination
 	 */
-	public void routeTo(String reason, MissionMember member, Settlement oldHome, Settlement newDestination) {
+	public void routeTo(String reason, Worker member, Settlement oldHome, Settlement newDestination) {
 		// Creating emergency destination mission event for going to a new settlement.
 		HistoricalEvent newEvent = new MissionHistoricalEvent(EventType.MISSION_EMERGENCY_DESTINATION,
 				this,
@@ -1300,7 +1298,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	 *
 	 * @param member the mission member performing the mission.
 	 */
-	protected final void determineEmergencyDestination(MissionMember member) {
+	protected final void determineEmergencyDestination(Worker member) {
 
 		boolean hasMedicalEmergency = false;
 		Person person = (Person) member;
@@ -1394,7 +1392,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	 * @param vehicle  the vehicle on the mission.
 	 * @param beaconOn true if beacon is on, false if not.
 	 */
-	public void setEmergencyBeacon(MissionMember member, Vehicle vehicle, boolean beaconOn, String reason) {
+	public void setEmergencyBeacon(Worker member, Vehicle vehicle, boolean beaconOn, String reason) {
 
 		if (beaconOn) {
 			String settlement = null;
@@ -1610,7 +1608,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	 * @param worker Worker requesting to help
 	 */
 	@Override
-	public boolean canParticipate(MissionMember worker) {
+	public boolean canParticipate(Worker worker) {
 		boolean valid = true;
 
         if (REVIEWING.equals(getPhase())) {

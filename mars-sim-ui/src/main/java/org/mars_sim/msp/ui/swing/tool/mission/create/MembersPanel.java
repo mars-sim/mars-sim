@@ -31,8 +31,8 @@ import javax.swing.event.ListSelectionListener;
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
@@ -277,9 +277,9 @@ implements ActionListener {
 	 * @retun true if changes can be committed.
 	 */
 	boolean commitChanges() {
-		Collection<MissionMember> members = new ConcurrentLinkedQueue<MissionMember>();
+		Collection<Worker> members = new ConcurrentLinkedQueue<Worker>();
 		for (int x = 0; x < membersTableModel.getRowCount(); x++) {
-			members.add((MissionMember) membersTableModel.getUnit(x));
+			members.add((Worker) membersTableModel.getUnit(x));
 		}
 		getWizard().getMissionData().addMixedMembers(members);			
 		return true;

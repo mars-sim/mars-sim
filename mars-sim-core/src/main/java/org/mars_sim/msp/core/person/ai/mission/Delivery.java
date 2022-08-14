@@ -70,7 +70,7 @@ public class Delivery extends DroneMission implements CommerceMission {
 	 *
 	 * @param startingMember the mission member starting the settlement.
 	 */
-	public Delivery(MissionMember startingMember, boolean needsReview) {
+	public Delivery(Worker startingMember, boolean needsReview) {
 		// Use DroneMission constructor.
 		super(MissionType.DELIVERY, startingMember, null);
 
@@ -123,7 +123,7 @@ public class Delivery extends DroneMission implements CommerceMission {
 	 * @param sellGoods
 	 * @param buyGoods
 	 */
-	public Delivery(MissionMember startingMember, Collection<MissionMember> members, Settlement tradingSettlement,
+	public Delivery(Worker startingMember, Collection<Worker> members, Settlement tradingSettlement,
 			Drone drone, Map<Good, Integer> sellGoods, Map<Good, Integer> buyGoods) {
 		// Use DroneMission constructor.
 		super(MissionType.DELIVERY, startingMember, drone);
@@ -206,7 +206,7 @@ public class Delivery extends DroneMission implements CommerceMission {
 	}
 
 	@Override
-	protected void performPhase(MissionMember member) {
+	protected void performPhase(Worker member) {
 		super.performPhase(member);
 		if (TRADE_DISEMBARKING.equals(getPhase())) {
 			performDeliveryDisembarkingPhase();
@@ -249,7 +249,7 @@ public class Delivery extends DroneMission implements CommerceMission {
 	 *
 	 * @param member the mission member performing the phase.
 	 */
-	private void performDeliveryNegotiatingPhase(MissionMember member) {
+	private void performDeliveryNegotiatingPhase(Worker member) {
 		if (doNegotiation) {
 				if (negotiationTask != null) {
 					if (negotiationTask.isDone()) {
@@ -282,7 +282,7 @@ public class Delivery extends DroneMission implements CommerceMission {
 					if (settlementTrader != null) {
 						boolean assigned = false;
 
-						for (MissionMember mm: getMembers()) {
+						for (Worker mm: getMembers()) {
 
 							if (mm instanceof Person) {
 								Person person = (Person) mm;
@@ -346,7 +346,7 @@ public class Delivery extends DroneMission implements CommerceMission {
 	 *
 	 * @param member the mission member performing the phase.
 	 */
-	private void performDeliveryEmbarkingPhase(MissionMember member) {
+	private void performDeliveryEmbarkingPhase(Worker member) {
 
 		// If person is not aboard the drone, board drone.
 		if (!isDone()) {
@@ -357,7 +357,7 @@ public class Delivery extends DroneMission implements CommerceMission {
 					logger.info(pilot, "No longer alive. Switching to another pilot.");
 					int bestSkillLevel = 0;
 					// Pick another member to head the delivery
-					for (MissionMember mm: getMembers()) {
+					for (Worker mm: getMembers()) {
 						if (member instanceof Person) {
 							Person p = (Person) mm;
 							if (!p.isDeclaredDead()) {

@@ -24,7 +24,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.MissionMember;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.ModalInternalFrame;
@@ -45,20 +45,20 @@ class AddMembersDialog extends ModalInternalFrame {
 	private Mission mission;
 	protected MainDesktopPane desktop;
 	
-	private DefaultListModel<MissionMember> memberListModel;
-	private DefaultListModel<MissionMember> availableListModel;
-	private JList<MissionMember> availableList;
+	private DefaultListModel<Worker> memberListModel;
+	private DefaultListModel<Worker> availableListModel;
+	private JList<Worker> availableList;
 	private WebButton addButton;
 	
 	/**
 	 * Constructor.
 	 * @param owner {@link Dialog} the owner dialog.
 	 * @param mission {@link Mission} the mission to add to.
-	 * @param memberListModel {@link DefaultListModel}<{@link MissionMember}> the member list model in the edit mission dialog.
-	 * @param availableMembers {@link Collection}<{@link MissionMember}> the available members to add.
+	 * @param memberListModel {@link DefaultListModel}<{@link Worker}> the member list model in the edit mission dialog.
+	 * @param availableMembers {@link Collection}<{@link Worker}> the available members to add.
 	 */
 	public AddMembersDialog(JInternalFrame owner, MainDesktopPane desktop, Mission mission, 
-	        DefaultListModel<MissionMember> memberListModel, Collection<MissionMember> availableMembers) {
+	        DefaultListModel<Worker> memberListModel, Collection<Worker> availableMembers) {
 		// Use JDialog constructor
 		//super(owner, "Add Members", true);
 		// Use JInternalFrame constructor
@@ -89,12 +89,12 @@ class AddMembersDialog extends ModalInternalFrame {
         availablePeoplePane.add(availableScrollPane, BorderLayout.CENTER);
         
         // Create available list model
-        availableListModel = new DefaultListModel<MissionMember>();
-        Iterator<MissionMember> i = availableMembers.iterator();
+        availableListModel = new DefaultListModel<Worker>();
+        Iterator<Worker> i = availableMembers.iterator();
         while (i.hasNext()) availableListModel.addElement(i.next());
         
         // Create member list
-        availableList = new JList<MissionMember>(availableListModel);
+        availableList = new JList<Worker>(availableListModel);
         availableList.addListSelectionListener(
         		new ListSelectionListener() {
         			public void valueChanged(ListSelectionEvent e) {

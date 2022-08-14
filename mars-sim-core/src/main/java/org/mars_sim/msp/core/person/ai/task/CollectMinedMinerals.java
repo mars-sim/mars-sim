@@ -7,7 +7,6 @@
 
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.InventoryUtil;
@@ -20,8 +19,8 @@ import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Mining;
-import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -30,7 +29,7 @@ import org.mars_sim.msp.core.vehicle.Rover;
 /**
  * Task for collecting minerals that have been mined at a site.
  */
-public class CollectMinedMinerals extends EVAOperation implements Serializable {
+public class CollectMinedMinerals extends EVAOperation {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -227,7 +226,7 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 	 * @param mineralType the resource to collect.
 	 * @return true if person can perform the task.
 	 */
-	public static boolean canCollectMinerals(MissionMember member, Rover rover, AmountResource mineralType) {
+	public static boolean canCollectMinerals(Worker member, Rover rover, AmountResource mineralType) {
 
 		boolean result = false;
 
