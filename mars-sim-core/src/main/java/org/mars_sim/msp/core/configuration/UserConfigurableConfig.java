@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.xml.XMLConstants;
 
 import org.apache.commons.io.FileUtils;
 import org.jdom2.Attribute;
@@ -30,6 +29,7 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
+import org.jdom2.input.sax.XMLReaders;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 import org.mars_sim.msp.core.SimulationConfig;
@@ -63,6 +63,7 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 
 	private String itemPrefix;
 	private Map<String,T> knownItems = new HashMap<>();
+	private String xsdName;
 
 	/**
 	 * Constructs a config of a UserConfigurable subclass.
@@ -71,6 +72,13 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 	 */
 	protected UserConfigurableConfig(String itemPrefix) {
 		this.itemPrefix = itemPrefix;
+	}
+
+	protected void setXSDName(String xsd) {
+		this.xsdName = xsd;
+
+		// Have to pull it out of bundle
+		SimulationConfig.instance().getBundledXML(itemPrefix + "/" + xsdName);
 	}
 
 	/**
@@ -122,12 +130,12 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 
 		Document doc;
         try {
-    		SAXBuilder builder = new SAXBuilder();
+    		SAXBuilder builder = new SAXBuilder(xsdName != null ? XMLReaders.XSDVALIDATING : XMLReaders.NONVALIDATING);
     		// Note: Setting them to "" is to avoid sonar cloud from flagging
     		// them as a security hotspot
     		// For both bundled and user
-    		builder.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
-    		builder.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+    		//builder.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+    		//builder.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
 
 	        doc = builder.build(contents);
 	    }

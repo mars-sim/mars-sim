@@ -1,0 +1,198 @@
+<?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
+<template name="Trading Outpost" default-population="4" description="Base for a trading outpost"
+    number-of-robots="3" sponsor="MS">
+    <building id="0" type="Outpost Hub" xloc="0.0" yloc="0.0"
+        facing="0.0">
+        <connection-list>
+            <connection id="1" xloc="-5.0" yloc="2.5" />
+            <connection id="3" xloc="-5.0" yloc="-2.5" />
+            <connection id="5" xloc="5.0" yloc="2.5" />
+            <connection id="9" xloc="5.0" yloc="-2.5" />
+            <connection id="13" xloc="0.0" yloc="-5.0" />
+        </connection-list>
+    </building>
+    <building id="1" type="Tunnel" length="3.0" xloc="-6.5"
+        yloc="2.5" facing="270.0">
+        <connection-list>
+            <connection id="0" xloc="0.0" yloc="1.5" />
+            <connection id="2" xloc="0.0" yloc="-1.5" />
+        </connection-list>
+    </building>
+    <building id="2" type="Bunkhouse" xloc="-10.5" yloc="2.5"
+        facing="270.0">
+        <connection-list>
+            <connection id="1" xloc="0.0" yloc="2.5" />
+        </connection-list>
+    </building>
+    <building id="3" type="Tunnel" length="3.0" xloc="-6.5"
+        yloc="-2.5" facing="270.0">
+        <connection-list>
+            <connection id="0" xloc="0.0" yloc="1.5" />
+            <connection id="4" xloc="0.0" yloc="-1.5" />
+        </connection-list>
+    </building>
+    <building id="4" type="Bunkhouse" xloc="-10.5" yloc="-2.5"
+        facing="270.0">
+        <connection-list>
+            <connection id="3" xloc="0.0" yloc="2.5" />
+        </connection-list>
+    </building>
+    <building id="5" type="Tunnel" length="2.0" xloc="6.0"
+        yloc="2.5" facing="90.0">
+        <connection-list>
+            <connection id="0" xloc="0.0" yloc="1.0" />
+            <connection id="6" xloc="0.0" yloc="-1.0" />
+        </connection-list>
+    </building>
+    <building id="6" type="Storage Shed" xloc="9.5" yloc="2.5"
+        facing="90.0">
+        <connection-list>
+            <connection id="5" xloc="0.0" yloc="2.5" />
+            <connection id="7" xloc="0.0" yloc="-2.5" />
+            <connection id="10" xloc="-2.5" yloc="0.0" />
+        </connection-list>
+    </building>
+    <building id="7" type="Tunnel" length="2.0" xloc="13.0"
+        yloc="2.5" facing="90.0">
+        <connection-list>
+            <connection id="6" xloc="0.0" yloc="1.0" />
+            <connection id="8" xloc="0.0" yloc="-1.0" />
+        </connection-list>
+    </building>
+    <building id="8" type="Storage Shed" xloc="16.5" yloc="2.5"
+        facing="90.0">
+        <connection-list>
+            <connection id="7" xloc="0.0" yloc="2.5" />
+            <connection id="12" xloc="-2.5" yloc="0.0" />
+        </connection-list>
+    </building>
+    <building id="9" type="Tunnel" length="2.0" xloc="6.0"
+        yloc="-2.5" facing="90.0">
+        <connection-list>
+            <connection id="0" xloc="0.0" yloc="1.0" />
+            <connection id="10" xloc="0.0" yloc="-1.0" />
+        </connection-list>
+    </building>
+    <building id="10" type="Storage Shed" xloc="9.5" yloc="-2.5"
+        facing="90.0">
+        <connection-list>
+            <connection id="9" xloc="0.0" yloc="2.5" />
+            <connection id="11" xloc="0.0" yloc="-2.5" />
+            <connection id="6" xloc="2.5" yloc="0.0" />
+        </connection-list>
+    </building>
+    <building id="11" type="Tunnel" length="2.0" xloc="13.0"
+        yloc="-2.5" facing="90.0">
+        <connection-list>
+            <connection id="10" xloc="0.0" yloc="1.0" />
+            <connection id="12" xloc="0.0" yloc="-1.0" />
+        </connection-list>
+    </building>
+    <building id="12" type="Storage Shed" xloc="16.5"
+        yloc="-2.5" facing="90.0">
+        <connection-list>
+            <connection id="11" xloc="0.0" yloc="2.5" />
+            <connection id="8" xloc="2.5" yloc="0.0" />
+        </connection-list>
+    </building>
+    <building id="13" type="Tunnel" length="4.0" xloc="0.0"
+        yloc="-7.0" facing="0.0">
+        <connection-list>
+            <connection id="0" xloc="0.0" yloc="2.0" />
+            <connection id="14" xloc="0.0" yloc="-2.0" />
+        </connection-list>
+    </building>
+    <building id="14" type="Loading Dock Garage" xloc="0.0"
+        yloc="-18.0" facing="180.0">
+        <connection-list>
+            <connection id="13" xloc="0.0" yloc="-9.0" />
+        </connection-list>
+    </building>
+
+    <building type="Solar Photovoltaic Array" xloc="40.0"
+        yloc="-70.0" facing="0.0" />
+    <building type="Solar Photovoltaic Array" xloc="40.0"
+        yloc="-80.0" facing="0.0" />
+    <building type="Solar Photovoltaic Array" xloc="40.0"
+        yloc="-90.0" facing="0.0" />
+    <building type="Solar Photovoltaic Array" xloc="40.0"
+        yloc="-100.0" facing="0.0" />
+    <building type="Solar Photovoltaic Array" xloc="40.0"
+        yloc="-110.0" facing="0.0" />
+
+    <building type="Solar Photovoltaic Array" xloc="40.0"
+        yloc="-120.0" facing="0.0" />
+    <building type="Solar Photovoltaic Array" xloc="40.0"
+        yloc="-130.0" facing="0.0" />
+    <building type="Solar Photovoltaic Array" xloc="40.0"
+        yloc="-140.0" facing="0.0" />
+    <building type="Solar Photovoltaic Array" xloc="40.0"
+        yloc="-150.0" facing="0.0" />
+    <building type="Solar Photovoltaic Array" xloc="40.0"
+        yloc="-160.0" facing="0.0" />
+
+    <building type="Solar Thermal Array" xloc="-35.5"
+        yloc="28.0" facing="0.0" />
+    <building type="Solar Thermal Array" xloc="-41.5"
+        yloc="28.0" facing="0.0" />
+    <building type="Solar Thermal Array" xloc="-47.5"
+        yloc="28.0" facing="0.0" />
+    <building type="Solar Thermal Array" xloc="-53.5"
+        yloc="28.0" facing="0.0" />
+
+    <building type="Medium Battery Array" xloc="40.0"
+        yloc="-60.0" facing="0.0" />
+    <building type="Medium Battery Array" xloc="55.0"
+        yloc="-60.0" facing="0.0" />
+    <building type="Medium Battery Array" xloc="70.0"
+        yloc="-60.0" facing="0.0" />
+
+    <building type="Wind Turbine" xloc="-24.0" yloc="60.0"
+        facing="270.0" />
+    <building type="Wind Turbine" xloc="-24.0" yloc="30.0"
+        facing="270.0" />
+
+    <building type="Methane Power Generator" xloc="-44.5"
+        yloc="5.0" facing="270.0" />
+    <building type="Methane Power Generator" xloc="-44.5"
+        yloc="0.0" facing="270.0" />
+
+    <building type="Atmospheric Processor" xloc="20"
+        yloc="-50.0" facing="90.0" />
+    <building type="Atmospheric Processor" xloc="20"
+        yloc="-60.0" facing="90.0" />
+        
+    <building type="Large Sabatier Processor" xloc="0.0"
+        yloc="-70.0" facing="90.0" />
+    <building type="Large Sabatier Processor" xloc="0.0"
+        yloc="-80.0" facing="90.0" />
+
+    <vehicle type="Cargo Rover" number="2" />
+    <vehicle type="Light Utility Vehicle" number="1" />
+    <vehicle type="Delivery Drone" number="1" />
+
+    <equipment type="EVA Suit" number="8" />
+    <equipment type="Gas Canister" number="10" />
+    <equipment type="Barrel" number="10" />
+    <equipment type="Bag" number="10" />
+    <equipment type="Large Bag" number="25" />
+    <equipment type="Specimen Box" number="50" />
+
+    <resource type="oxygen" amount="4000.0" />
+    <resource type="water" amount="8000.0" />
+    <resource type="food" amount="4000.0" />
+
+    <resource type="argon" amount="160.0" />
+
+    <resource type="fertilizer" amount="50.0" />
+
+    <resource type="black water" amount="25.0" />
+    <resource type="grey water" amount="25.0" />
+    <resource type="food waste" amount="25.0" />
+    <resource type="solid waste" amount="25.0" />
+    <resource type="crop waste" amount="25.0" />
+    <!-- Food Resources -->
+    <!-- No starting food resources for this template. -->
+
+    <part-package name="package 1" number="1" />
+</template>

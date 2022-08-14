@@ -864,7 +864,8 @@ public class SimulationConfig implements Serializable {
 	 * Finds the requested XML file in the bundled JAR and extracts to the xml sub-directory.
 	 */
 	public File getBundledXML(String filename) {
-		if (!filename.endsWith(XML_EXTENSION)) {
+		if (filename.indexOf('.') == -1) {
+			// Ne extension; assume XML
 			filename = filename + XML_EXTENSION;
 		}
 		String fullPathName = "/" + XML_FOLDER + "/" + filename;
