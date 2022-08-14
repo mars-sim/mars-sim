@@ -26,6 +26,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.swing.BorderFactory;
@@ -114,7 +115,6 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 	private WebLabel phaseLabel;
 	private WebLabel settlementLabel;
 	private WebLabel missionStatusLabel;
-	
 	
 	private WebLabel vehicleStatusLabel;
 	private WebLabel speedLabel;
@@ -338,7 +338,7 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 		mainPane.setBorder(blackline);
 	
 		// Prepare travelPane Spring Layout.
-		WebPanel travelPane = new WebPanel(new GridLayout(4, 2));
+		WebPanel travelPane = new WebPanel(new GridLayout(4, 2, 10, 5));
 		mainPane.add(travelPane);
 
 		// Create the vehicle status label.
@@ -643,7 +643,7 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 			missionCache = newMission;
 			
 			// Add this as listener for new mission.
-			missionCache.addMissionListener(this);
+			newMission.addMissionListener(this);
 			
 			setCurrentMission(newMission);
 			// Update info on Main tab
@@ -667,7 +667,7 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 
 		else {
 			
-			if (mission.getMembersNumber() == 0) {
+			if (currentVehicle == null) {
 				memberOuterPane.removeAll();
 				memberOuterPane.add(memberLabel);
 				memberLabel.setText(" Disbanded Members: " + printMembers(mission));
@@ -718,7 +718,7 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 				} catch (Exception e2) {
 				}
 
-				double travelledDistance = Math.round(vehicleMission.computeTotalDistanceTravelled()*10.0)/10.0;
+				double travelledDistance = Math.round(vehicleMission.getTotalDistanceTravelled()*10.0)/10.0;
 				double estTotalDistance = Math.round(vehicleMission.getDistanceProposed()*10.0)/10.0;
 
 				traveledLabel.setText(Msg.getString("MainDetailPanel.kmTraveled", //$NON-NLS-1$
@@ -742,8 +742,17 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 				vehicleStatusLabel.setText(" ");
 				speedLabel.setText(Msg.getString("MainDetailPanel.kmhSpeed", "0")); //$NON-NLS-1$ //$NON-NLS-2$
 				distanceNextNavLabel.setText(Msg.getString("MainDetailPanel.kmNextNavPoint", "0")); //$NON-NLS-1$ //$NON-NLS-2$
-				traveledLabel.setText(Msg.getString("MainDetailPanel.kmTraveled", "0", "0")); //$NON-NLS-1$ //$NON-NLS-2$
+//				traveledLabel.setText(Msg.getString("MainDetailPanel.kmTraveled", "0", "0")); //$NON-NLS-1$ //$NON-NLS-2$
 		
+				double travelledDistance = Math.round(vehicleMission.getTotalDistanceTravelled()*10.0)/10.0;
+				double estTotalDistance = Math.round(vehicleMission.getDistanceProposed()*10.0)/10.0;
+
+				traveledLabel.setText(Msg.getString("MainDetailPanel.kmTraveled", //$NON-NLS-1$
+						travelledDistance,
+						estTotalDistance
+						));
+				
+				
 				if (currentVehicle != null) {
 					currentVehicle.removeUnitListener(this);
 				}
@@ -833,23 +842,12 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 	 * @return
 	 */
 	private String printMembers(Mission mission) {
-		String result = null;
-		List<Unit> list = new ArrayList<>(mission.getSignup());
-		int size = list.size();
-		for (int i=0; i<size; i++) {
-			Unit u = list.get(i);
-			if (u.getUnitType() == UnitType.PERSON) {
-				result += ((Person)u).getName();
-			}
-			else {
-				result += ((Robot)u).getName();
-			}
-			
-			if (i != size - 1) {
-				result += ", ";
-			}
+		Set<Worker> list = mission.getSignup();
+		if (list.isEmpty()) {
+			return "";
 		}
-		return result;
+		
+		return list.stream().map(Worker::getName).collect(Collectors.joining(","));
 	}
 	
 	/**
@@ -984,7 +982,7 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 					distanceNextNavLabel.setText(Msg.getString("MainDetailPanel.kmNextNavPoint", distanceNextNav)); //$NON-NLS-1$
 				} catch (Exception e2) {
 				}
-				double travelledDistance = Math.round(vehicleMission.computeTotalDistanceTravelled()*10.0)/10.0;
+				double travelledDistance = Math.round(vehicleMission.getTotalDistanceTravelled()*10.0)/10.0;
 				double estTotalDistance = Math.round(vehicleMission.getDistanceProposed()*10.0)/10.0;
 				traveledLabel.setText(Msg.getString("MainDetailPanel.kmTraveled", //$NON-NLS-1$
 						travelledDistance,

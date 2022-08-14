@@ -156,10 +156,18 @@ public abstract class Mission implements Serializable, Temporal {
 	/** The mission plan. */
 	private MissionPlanning plan;
 
-	/** Those who sign up for this mission. */
-	private Set<Unit> signUp;
-	/** Those who are actually on the mission. */
-	private Collection<Worker> members;
+	/** 
+	 * A set of those who sign up for this mission. 
+	 * After the mission is over. It will be retained and will not be deleted.
+	 */
+	private Set<Worker> signUp;
+
+	/** 
+	 * A collection of those who are actually went on the mission.
+	 * After the mission is over. All members will be removed 
+	 * and the collection will become empty.
+	 */
+	private Set<Worker> members;
 	
 	// transient members
 	/** Mission listeners. */
@@ -355,7 +363,7 @@ public abstract class Mission implements Serializable, Temporal {
 			recordMembersNum = members.size();
 			
 			if (member.getUnitType() == UnitType.PERSON) {
-				signUp.add((Person) member);
+				signUp.add(member);
 				registerHistoricalEvent((Person) member, EventType.MISSION_JOINING,
 									    "Adding a member");
 			}
@@ -483,7 +491,7 @@ public abstract class Mission implements Serializable, Temporal {
 	 * 
 	 * @return
 	 */
-	public Set<Unit> getSignup() {
+	public Set<Worker> getSignup() {
 		return signUp;
 	}
 	
@@ -825,13 +833,7 @@ public abstract class Mission implements Serializable, Temporal {
 		if (members != null && !members.isEmpty()) {
 			logger.info(startingMember, "Disbanded mission member(s) : " + members);
 			List<Worker> origMembers = new ArrayList<>(members);
-			int size = origMembers.size();
-			int i = 0;
 			for(Worker m : origMembers) {
-				i++;
-				memberRecord = memberRecord + m.getName();
-				if (i != size - 1) 
-					memberRecord += ", ";
 				removeMember(m);
 			}
 		}
@@ -1421,15 +1423,6 @@ public abstract class Mission implements Serializable, Temporal {
 	 */
 	public boolean canParticipate(Worker worker) {
 		return true;
-	}
-
-	/**
-	 * Returns the member record.
-	 * 
-	 * @return
-	 */
-	public String getMemberRecord() {
-		return memberRecord;
 	}
 	
 	/**

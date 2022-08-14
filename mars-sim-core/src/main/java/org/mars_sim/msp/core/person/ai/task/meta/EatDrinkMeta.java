@@ -139,10 +139,10 @@ public class EatDrinkMeta extends MetaTask {
 				double ghrelin = person.getCircadianClock().getGhrelin();
 				double leptin = person.getCircadianClock().getLeptin();
 				
-				h0 += hunger / 2D + ghrelin - leptin;
+				h0 += hunger / 2D + ghrelin / 2 - leptin / 2;
 
 				if (energy < 2525)
-					h0 += (2525 - energy) / 30D + ghrelin - leptin;
+					h0 += (2525 - energy) / 30D + ghrelin / 4 - leptin / 4;
 
 				if (person.isInSettlement()) {
 
