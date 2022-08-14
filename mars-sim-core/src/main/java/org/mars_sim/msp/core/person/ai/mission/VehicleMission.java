@@ -791,6 +791,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 		}
 		else if (TRAVELLING.equals(getPhase())) {
 			performTravelPhase(member);
+			computeTotalDistanceTravelled();
 		}
 		else if (DISEMBARKING.equals(getPhase())) {
 			// if arriving at the settlement
@@ -965,7 +966,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	 * @throws MissionException
 	 */
 	protected double getEstimatedRemainingMissionTime(boolean useMargin) {
-		double distance = computeDistanceTotalRemaining();
+		double distance = computeTotalDistanceRemaining();
 		if (distance > 0) {
 			double time = getEstimatedTripTime(useMargin, distance);
 			logger.log(vehicle, Level.FINE, 20_000L, this 
@@ -1049,7 +1050,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	 *         number.
 	 */
 	protected Map<Integer, Number> getResourcesNeededForRemainingMission(boolean useMargin) {
-		double distance = computeDistanceTotalRemaining();
+		double distance = computeTotalDistanceRemaining();
 		if (distance > 0) {
 			return getResourcesNeededForTrip(useMargin, distance);
 		}
@@ -1429,7 +1430,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	}
 
 	/**
-	 * Go to the nearest settlement and end collection phase if necessary.
+	 * Ges to the nearest settlement and end collection phase if necessary.
 	 */
 	public void goToNearestSettlement() {
 		Settlement nearestSettlement = findClosestSettlement();
@@ -1443,7 +1444,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	}
 
 	/**
-	 * Update mission to the next navpoint destination.
+	 * Updates mission to the next navpoint destination.
 	 */
 	public void updateTravelDestination() {
 		NavPoint nextPoint = getNextNavpoint();
@@ -1474,37 +1475,6 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 		}
 
 		return result;
-	}
-
-	/**
-	 * Gets the actual total distance travelled during the mission so far.
-	 *
-	 * @return distance (km)
-	 */
-	public double getTotalDistanceTravelled() {
-		return distanceTravelled;
-	}
-	
-	/**
-	 * Computes the actual total distance travelled during the mission so far.
-	 *
-	 * @return distance (km)
-	 */
-	public double computeTotalDistanceTravelled() {
-		if (vehicle != null) {
-			double dist = vehicle.getOdometerMileage() - startingTravelledDistance;
-			if (dist > distanceTravelled) {
-				// Update or record the distance
-				distanceTravelled = dist;
-				fireMissionUpdate(MissionEventType.DISTANCE_EVENT);
-				return dist;
-			}
-			else {
-				return distanceTravelled;
-			}
-		}
-
-		return distanceTravelled;
 	}
 
 	/**
@@ -1555,7 +1525,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	 */
 	protected Map<Integer, Number> getOptionalResourcesToLoad() {
 		// Also load EVA suit related parts
-		return getSparePartsForTrip(computeDistanceTotalRemaining());
+		return getSparePartsForTrip(computeTotalDistanceRemaining());
 	}
 
 
@@ -2109,7 +2079,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 		}
 		return 0D;
 	}
-	
+
 	/**
 	 * Computes the remaining distance for the current leg of the mission.
 	 * 
@@ -2221,9 +2191,9 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	 * @return distance (km).
 	 * @throws MissionException if error determining distance.
 	 */
-	public final double computeDistanceTotalRemaining() {
+	public final double computeTotalDistanceRemaining() {
 
-		double leg = computeDistanceCurrentLegRemaining();
+		double leg = computeDistanceCurrentLegRemaining(); // getCurrentLegDistance()
 		int index = 0;
 		double navDist = 0;
 		if (AT_NAVPOINT.equals(travelStatus))
@@ -2271,6 +2241,34 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 		return distanceTotalRemaining;
 	}
 	
+	/**
+	 * Gets the actual total distance travelled during the mission so far.
+	 *
+	 * @return distance (km)
+	 */
+	public double getTotalDistanceTravelled() {
+		return distanceTravelled;
+	}
+	
+	/**
+	 * Computes the actual total distance travelled during the mission so far.
+	 *
+	 * @return distance (km)
+	 */
+	public double computeTotalDistanceTravelled() {
+		if (vehicle != null) {
+			double dist = vehicle.getOdometerMileage() - startingTravelledDistance;
+			if (dist != distanceTravelled) {
+				// Update or record the distance
+				distanceTravelled = dist;
+				fireMissionUpdate(MissionEventType.DISTANCE_EVENT);
+				return dist;
+			}
+		}
+
+		return distanceTravelled;
+	}	
+	
 	@Override
 	public void destroy() {
 		super.destroy();
@@ -2290,6 +2288,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 		equipmentNeededCache = null;
 	}
 
+	
 	/**
 	 * Can the mission vehicle be unloaded at this Settlement ?
 	 *

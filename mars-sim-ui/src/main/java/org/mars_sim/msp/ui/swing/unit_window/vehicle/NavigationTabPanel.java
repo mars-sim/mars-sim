@@ -229,13 +229,13 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         if (destinationLocationCache != null) {
         	latitudeString = destinationLocationCache.getFormattedLatitudeString();
         }
-        destinationLatitudeLabel = addTextField(destinationSpringPanel, "Destination Latitude :", latitudeString, null);
+        destinationLatitudeLabel = addTextField(destinationSpringPanel, "Destination Latitude : ", latitudeString, null);
 
         // Prepare destination longitude label.
         String longitudeString = "";
         if (destinationLocationCache != null) longitudeString =
             destinationLocationCache.getFormattedLongitudeString();
-        destinationLongitudeLabel = addTextField(destinationSpringPanel, "Destination Longitude :", longitudeString, null);
+        destinationLongitudeLabel = addTextField(destinationSpringPanel, "Destination Longitude : ", longitudeString, null);
 
         // Prepare distance label.
         String distanceText;
@@ -253,7 +253,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         	remainingDistanceCache = 0D;
         	distanceText = "";
         }
-        remainingDistanceLabel = addTextField(destinationSpringPanel, "Remaining Distance :", distanceText, null);
+        remainingDistanceLabel = addTextField(destinationSpringPanel, "Remaining Distance : ", distanceText, null);
  
         // Prepare ETA label.
         if ((mission != null) && (mission instanceof VehicleMission) &&
@@ -262,26 +262,26 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         }
         else 
         	etaCache = "";
-        etaLabel = addTextField(destinationSpringPanel, "ETA :", etaCache, null);
+        etaLabel = addTextField(destinationSpringPanel, "ETA : ", etaCache, null);
         
         // Prepare status label
-        statusLabel = addTextField(destinationSpringPanel, "Status :", vehicle.printStatusTypes(), null);
+        statusLabel = addTextField(destinationSpringPanel, "Status : ", vehicle.printStatusTypes(), null);
            
         // Prepare beacon label
         beaconCache = vehicle.isBeaconOn();
         String beaconString;
         if (beaconCache) beaconString = "On";
         else beaconString = "Off";
-        beaconLabel = addTextField(destinationSpringPanel, "Emergency Beacon :", beaconString, null);
+        beaconLabel = addTextField(destinationSpringPanel, "Emergency Beacon : ", beaconString, null);
 
         
         // Prepare speed label
         speedCache = vehicle.getSpeed();
-        speedLabel = addTextField(destinationSpringPanel, "Speed :", DECIMAL_PLACES2.format(speedCache) + " km/h", null);
+        speedLabel = addTextField(destinationSpringPanel, "Speed : ", DECIMAL_PLACES2.format(speedCache) + " km/h", null);
         
         // Prepare elevation label for vehicle       	     
         elevationCache = vehicle.getElevation();
-        elevationLabel = addTextField(destinationSpringPanel, "Elevation :", DECIMAL_PLACES1.format(elevationCache) +
+        elevationLabel = addTextField(destinationSpringPanel, "Elevation : ", DECIMAL_PLACES1.format(elevationCache) +
             " km", null);
         
         // Prepare driver label

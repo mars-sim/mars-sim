@@ -155,9 +155,17 @@ public abstract class Mission implements Serializable, Temporal {
 	/** The mission plan. */
 	private MissionPlanning plan;
 
-	/** Those who sign up for this mission. */
+	/** 
+	 * A set of those who sign up for this mission. 
+	 * After the mission is over. It will be retained and will not be deleted.
+	 */
 	private Set<Unit> signUp;
-	/** Those who are actually on the mission. */
+	
+	/** 
+	 * A collection of those who are actually went on the mission.
+	 * After the mission is over. All members will be removed 
+	 * and the collection will become empty.
+	 */
 	private Collection<MissionMember> members;
 	
 	// transient members
@@ -824,13 +832,7 @@ public abstract class Mission implements Serializable, Temporal {
 		if (members != null && !members.isEmpty()) {
 			logger.info(startingMember, "Disbanded mission member(s) : " + members);
 			List<MissionMember> origMembers = new ArrayList<>(members);
-			int size = origMembers.size();
-			int i = 0;
 			for(MissionMember m : origMembers) {
-				i++;
-				memberRecord = memberRecord + m.getName();
-				if (i != size - 1) 
-					memberRecord += ", ";
 				removeMember(m);
 			}
 		}
@@ -1420,15 +1422,6 @@ public abstract class Mission implements Serializable, Temporal {
 	 */
 	public boolean canParticipate(MissionMember worker) {
 		return true;
-	}
-
-	/**
-	 * Returns the member record.
-	 * 
-	 * @return
-	 */
-	public String getMemberRecord() {
-		return memberRecord;
 	}
 	
 	/**
