@@ -73,7 +73,7 @@ public class BuildingConnectorManager implements Serializable {
 	 */
 	public BuildingConnectorManager(Settlement settlement) {
 		this(settlement, settlementConfig
-				.getSettlementTemplate(settlement.getTemplate()).getBuildingTemplates());
+				.getItem(settlement.getTemplate()).getBuildingTemplates());
 	}
 
 	/**

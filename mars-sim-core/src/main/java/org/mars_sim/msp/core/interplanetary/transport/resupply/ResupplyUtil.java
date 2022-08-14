@@ -76,7 +76,7 @@ public final class ResupplyUtil {
 	            String templateName = settlement.getTemplate();
 
 	            Iterator<ResupplyMissionTemplate> j =
-	                settlementConfig.getSettlementTemplate(templateName).getResupplyMissionTemplates().iterator();
+	                settlementConfig.getItem(templateName).getResupplyMissionTemplates().iterator();
 	            while (j.hasNext()) {
 	                ResupplyMissionTemplate template = j.next();
 	                MarsClock arrivalDate = (MarsClock) currentTime.clone();

@@ -74,7 +74,7 @@ public class TransportManager implements Serializable, Temporal {
 		// Create initial arriving settlements.
 		for (ArrivingSettlement a : scenario.getArrivals()) {
 			// Check the defines values are correct; these throw exception
-			settlementConfig.getSettlementTemplate(a.getTemplate());
+			settlementConfig.getItem(a.getTemplate());
 			
 			if (raFactory.getItem(a.getSponsorCode()) == null) {
 				throw new IllegalArgumentException("Arriving settlement has a incorrect RAcode " + a.getSponsorCode());

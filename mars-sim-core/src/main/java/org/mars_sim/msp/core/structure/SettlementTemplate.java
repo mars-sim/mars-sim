@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.mars_sim.msp.core.configuration.UserConfigurable;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyMissionTemplate;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
@@ -21,7 +22,7 @@ import org.mars_sim.msp.core.resource.Part;
  * This class defines a template for modeling the initial conditions and building configurations of a settlement. 
  * Called by ConstructionConfig and ResupplyConfig
  */
-public class SettlementTemplate implements Serializable {
+public class SettlementTemplate implements Serializable, UserConfigurable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -42,6 +43,10 @@ public class SettlementTemplate implements Serializable {
 	private Map<AmountResource, Double> resources;
 	private Map<Part, Integer> parts;
 
+	private String description;
+
+	private boolean bundled;
+
 
 	/**
 	 * Constructor. Called by SettlementConfig.java
@@ -51,10 +56,13 @@ public class SettlementTemplate implements Serializable {
 	 * @param defaultPopulation
 	 * @param defaultNumOfRobots
 	 */
-	public SettlementTemplate(int id, String name, String sponsor2, int defaultPopulation, int defaultNumOfRobots) {
+	public SettlementTemplate(int id, String name, String desription, boolean bundled,
+								String sponsor, int defaultPopulation, int defaultNumOfRobots) {
 		this.id = id;
 		this.name = name;
-		this.sponsor = sponsor2;
+		this.description = desription;
+		this.bundled = bundled;
+		this.sponsor = sponsor;
 		this.defaultPopulation = defaultPopulation;
 		this.defaultNumOfRobots = defaultNumOfRobots;
 
@@ -71,8 +79,22 @@ public class SettlementTemplate implements Serializable {
 	 * 
 	 * @return name.
 	 */
-	public String getTemplateName() {
+	@Override
+	public String getName() {
 		return name;
+	}
+
+	@Override
+	public String getDescription() {
+		return description;
+	}
+
+	/**
+	 * Is this template bundled with the simualtion build?
+	 */
+	@Override
+	public boolean isBundled() {
+		return bundled;
 	}
 
 	/**
