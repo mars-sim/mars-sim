@@ -154,7 +154,7 @@ public class BuildingManager implements Serializable {
 	 */
 	public BuildingManager(Settlement settlement) {
 		this(settlement, settlementConfig
-				.getSettlementTemplate(settlement.getTemplate()).getBuildingTemplates());
+				.getItem(settlement.getTemplate()).getBuildingTemplates());
 	}
 
 	/**
@@ -2126,7 +2126,7 @@ public class BuildingManager implements Serializable {
 	 */
 	public Building getEVAAttachedBuilding(Building evaBuilding) {
 		SettlementTemplate settlementTemplate = SimulationConfig.instance()
-				.getSettlementConfiguration().getSettlementTemplate(getSettlement().getTemplate());
+				.getSettlementConfiguration().getItem(getSettlement().getTemplate());
 		List<BuildingTemplate> templates = settlementTemplate.getBuildingTemplates();
 		
 		int idEVAAttachedBuilding = -1;

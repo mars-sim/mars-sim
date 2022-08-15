@@ -163,12 +163,9 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 		topSpring.add(templateTitleLabel);
 
 		// Create template combo box.
-		Vector<String> templateNames = new Vector<String>();
-		Iterator<SettlementTemplate> i = settlementConfig.getSettlementTemplates().iterator();
-		while (i.hasNext()) {
-			templateNames.add(i.next().getTemplateName());
-		}
-		templateCB = new JComboBoxMW<String>(templateNames);
+		Vector<String> templateNames = new Vector<>(settlementConfig.getItemNames());
+
+		templateCB = new JComboBoxMW<>(templateNames);
 		if (settlement != null) {
 			templateCB.setSelectedItem(settlement.getTemplate());
 		}
@@ -230,7 +227,7 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 			// Update the population number based on selected template.
 			String templateName = (String) templateCB.getSelectedItem();
 			if (templateName != null) {
-				SettlementTemplate template = settlementConfig.getSettlementTemplate(templateName);
+				SettlementTemplate template = settlementConfig.getItem(templateName);
 				if (template != null) {
 					populationNum = template.getDefaultPopulation();
 					numOfRobots = template.getDefaultNumOfRobots();
@@ -519,7 +516,7 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 	 */
 	private void updateTemplateDependentFields(String templateName) {
 		if (templateName != null) {
-			SettlementTemplate template = settlementConfig.getSettlementTemplate(templateName);
+			SettlementTemplate template = settlementConfig.getItem(templateName);
 			if (template != null) {
 				numOfRobotsTF.setText(Integer.toString(template.getDefaultNumOfRobots()));
 				populationTF.setText(Integer.toString(template.getDefaultPopulation()));

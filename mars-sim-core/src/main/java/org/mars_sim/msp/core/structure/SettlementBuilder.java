@@ -105,7 +105,7 @@ public final class SettlementBuilder {
 	 * @return
 	 */
 	public Settlement createFullSettlement(InitialSettlement spec) {
-		SettlementTemplate template = settlementConfig.getSettlementTemplate(spec.getSettlementTemplate());
+		SettlementTemplate template = settlementConfig.getItem(spec.getSettlementTemplate());
 		logger.config("Creating '" + spec.getName() + "' based on template '" + spec.getSettlementTemplate() + "'...");
 
 		StopWatch watch = new StopWatch();

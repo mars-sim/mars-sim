@@ -27,7 +27,7 @@ class ConfigModelHelper {
 
 		int result = 0; 
 		if (templateName != null) {
-			SettlementTemplate template = settlementConfig.getSettlementTemplate(templateName);
+			SettlementTemplate template = settlementConfig.getItem(templateName);
 			if (template != null) {
 				result = template.getDefaultPopulation();
 			}
@@ -48,7 +48,7 @@ class ConfigModelHelper {
 		int result = 0;
 
 		if (templateName != null) {
-			SettlementTemplate template = settlementConfig.getSettlementTemplate(templateName);
+			SettlementTemplate template = settlementConfig.getItem(templateName);
 			if (template != null) {
 				result = template.getDefaultNumOfRobots();
 			}

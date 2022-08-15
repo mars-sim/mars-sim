@@ -799,9 +799,8 @@ public class GoodsManager implements Serializable {
 			}
 		}
 
-		logger.info(settlement, "New sell list created with items=" + newSell.size());
 		sellList = Collections.unmodifiableMap(newSell);
-		sellListTimeout = marsTime.getTotalMillisols() + 500D; // Lasts half a Mars day
+		sellListTimeout = marsTime.getTotalMillisols() + LIST_VALIDITY; 
 
 		// Any deal are now invalid
 		deals.clear();
@@ -833,9 +832,8 @@ public class GoodsManager implements Serializable {
 			}
 		}
 
-		logger.info(settlement, "New buy list created with items=" + newBuy.size());
 		buyList = Collections.unmodifiableMap(newBuy);
-		buyListTimeout = marsTime.getTotalMillisols() + 500D; // Lasts half a Mars day
+		buyListTimeout = marsTime.getTotalMillisols() + LIST_VALIDITY;
 
 		// Any deal are now invalid
 		deals.clear();

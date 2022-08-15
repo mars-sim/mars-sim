@@ -1,0 +1,107 @@
+<?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
+<template xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="settlement.xsd"
+    name="Phase 1-R" default-population="4" description="Phase 1 base for RKA"
+    number-of-robots="3" sponsor="RKA">
+
+    <building id="0" type="Lander Hab" xloc="0.0" yloc="0.0"
+        facing="0.0">
+        <connection-list>
+            <connection id="1" xloc="4.5" yloc="0.0" />
+            <connection id="2" xloc="-4.5" yloc="0.0" />
+        </connection-list>
+    </building>
+
+    <!-- EVA Airlock is attached to the lander hab -->
+    <building id="1" type="EVA Airlock" xloc="7.5" yloc="0.0"
+        facing="0.0">
+        <connection-list>
+            <connection id="0" xloc="-3.0" yloc="0.0" />
+        </connection-list>
+    </building>
+
+    <building id="2" type="Hallway" length="3.0" xloc="-6.0"
+        yloc="0.0" facing="270.0">
+        <connection-list>
+            <connection id="0" xloc="0.0" yloc="1.5" />
+            <connection id="3" xloc="0.0" yloc="-1.5" />
+        </connection-list>
+    </building>
+
+    <building id="3" type="Infirmary" xloc="-12.0" yloc="0.0"
+        facing="270.0">
+        <connection-list>
+            <connection id="2" xloc="0.0" yloc="4.5" />
+            <connection id="4" xloc="0.0" yloc="-4.5" />
+        </connection-list>
+    </building>
+
+    <building id="4" type="Hallway" length="3.0" xloc="-18.0"
+        yloc="0.0" facing="270.0">
+        <connection-list>
+            <connection id="3" xloc="0.0" yloc="1.5" />
+            <connection id="5" xloc="0.0" yloc="-1.5" />
+        </connection-list>
+    </building>
+
+    <building id="5" type="Inflatable Greenhouse" xloc="-24.0"
+        yloc="0.0" facing="270.0">
+        <connection-list>
+            <connection id="4" xloc="0.0" yloc="4.5" />
+        </connection-list>
+    </building>
+
+    <building type="MD1 Nuclear Reactor" xloc="40.0"
+        yloc="-60.0" facing="0.0" />
+    <building type="MD1 Nuclear Reactor" xloc="40.0"
+        yloc="-80.0" facing="0.0" />
+    <building type="MD1 Nuclear Reactor" xloc="60.0"
+        yloc="-60.0" facing="0.0" />
+
+    <building type="ERV-A" xloc="80.0" yloc="45.0" facing="0.0" />
+
+    <building type="ERV-B" xloc="80.0" yloc="-15.0" facing="0.0" />
+
+    <building type="Large Sabatier Processor" xloc="0.0"
+        yloc="-70.0" facing="90.0" />
+    <building type="Large Sabatier Processor" xloc="0.0"
+        yloc="-80.0" facing="90.0" />
+
+    <building type="Regolith Storage Bin" xloc="35.0" yloc="0.0"
+        facing="90.0" />
+    <building type="Sand Storage Bin" xloc="35.0" yloc="5.0"
+        facing="90.0" />
+    <building type="Concrete Storage Bin" xloc="35.0"
+        yloc="10.0" facing="90.0" />
+    <building type="Cement Storage Bin" xloc="35.0" yloc="15.0"
+        facing="90.0" />
+    <building type="Mortar Storage Bin" xloc="35.0" yloc="20.0"
+        facing="90.0" />
+    <building type="Lime Storage Bin" xloc="35.0" yloc="25.0"
+        facing="90.0" />
+    <building type="Ice Storage Bin" xloc="35.0" yloc="-5.0"
+        facing="90.0" />
+    <building type="Carbon Storage Bin" xloc="35.0" yloc="-10.0"
+        facing="90.0" />
+
+    <vehicle type="Explorer Rover" number="2" />
+    <vehicle type="Light Utility Vehicle" number="1" />
+    <vehicle type="Delivery Drone" number="1" />
+
+    <equipment type="EVA Suit" number="8" />
+    <equipment type="Gas Canister" number="40" />
+    <equipment type="Barrel" number="40" />
+    <equipment type="Bag" number="40" />
+    <equipment type="Large Bag" number="25" />
+    <equipment type="Specimen Box" number="50" />
+
+    <part-package name="package 1" number="1" />
+
+    <resupply>
+        <resupply-mission name="Resupply for Phase 1"
+            arrival-time="668.0" />
+        <resupply-mission name="Resupply for Phase 2"
+            arrival-time="1336.0" />
+        <resupply-mission name="Resupply for Phase 3"
+            arrival-time="2004.0" />
+    </resupply>
+</template>

@@ -59,6 +59,8 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 	
 	public ScenarioConfig() {
 		super(PREFIX);
+
+		setXSDName("scenario.xsd");
 		
 		loadDefaults(PREDEFINED_SCENARIOS);
 		loadUserDefined();

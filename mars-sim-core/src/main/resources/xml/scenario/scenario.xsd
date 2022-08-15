@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <xs:element name="location">
+        <xs:complexType>
+            <xs:attribute name="longitude" type="xs:string"/>
+            <xs:attribute name="latitude" type="xs:string"/>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="settlement">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="location" minOccurs="0" maxOccurs="1"/>
+            </xs:sequence>
+            <xs:attribute name="name" type="xs:string"/>
+            <xs:attribute name="template" type="xs:string"/>
+            <xs:attribute name="crew" type="xs:string"/>
+            <xs:attribute name="sponsor" type="xs:string"/>
+            <xs:attribute name="persons" type="xs:integer"/>
+            <xs:attribute name="robots" type="xs:integer"/>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="arriving-settlement">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="location" minOccurs="0" maxOccurs="1"/>
+            </xs:sequence>
+            <xs:attribute name="name" type="xs:string"/>
+            <xs:attribute name="template" type="xs:string"/>
+            <xs:attribute name="arrival-in-sols" type="xs:integer"/>
+            <xs:attribute name="sponsor" type="xs:string"/>
+            <xs:attribute name="persons" type="xs:integer"/>
+            <xs:attribute name="robots" type="xs:integer"/>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="scenario-configuration">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="initial-settlement-list">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element ref="settlement"  maxOccurs="unbounded"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="arriving-settlement-list" minOccurs="0">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element ref="arriving-settlement" minOccurs="0" maxOccurs="unbounded"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+            <xs:attribute name="name" type="xs:string"/>
+            <xs:attribute name="description" type="xs:string"/>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

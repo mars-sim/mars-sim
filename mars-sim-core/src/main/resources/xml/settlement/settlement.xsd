@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <xs:element name="connection-list">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="connection" maxOccurs="unbounded">
+                    <xs:complexType>
+                        <xs:attribute name="xloc" type="xs:decimal"/>
+                        <xs:attribute name="yloc" type="xs:decimal"/>
+                        <xs:attribute name="id" type="xs:integer"/>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="building">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="connection-list" minOccurs="0"/>
+            </xs:sequence>
+            <xs:attribute name="type" type="xs:string"/>
+            <xs:attribute name="width" type="xs:decimal"/>
+            <xs:attribute name="length" type="xs:decimal"/>
+            <xs:attribute name="xloc" type="xs:decimal"/>
+            <xs:attribute name="yloc" type="xs:decimal"/>
+            <xs:attribute name="facing" type="xs:decimal"/>
+            <xs:attribute name="id" type="xs:integer"/>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="vehicle">
+        <xs:complexType>
+            <xs:attribute name="type" type="xs:string"/>
+            <xs:attribute name="number" type="xs:decimal"/>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:element name="equipment">
+        <xs:complexType>
+            <xs:attribute name="type" type="xs:string"/>
+            <xs:attribute name="number" type="xs:decimal"/>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:element name="resource">
+        <xs:complexType>
+            <xs:attribute name="type" type="xs:string"/>
+            <xs:attribute name="amount" type="xs:decimal"/>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="part">
+        <xs:complexType>
+            <xs:attribute name="type" type="xs:string"/>
+            <xs:attribute name="number" type="xs:decimal"/>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="part-package">
+        <xs:complexType>
+            <xs:attribute name="name" type="xs:string"/>
+            <xs:attribute name="number" type="xs:decimal"/>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="resupply-mission">
+        <xs:complexType>
+            <xs:attribute name="name" type="xs:string"/>
+            <xs:attribute name="arrival-time" type="xs:string"/>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="resupply">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="resupply-mission" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="template">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="building"  maxOccurs="unbounded"/>
+                <xs:element ref="vehicle"  minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element ref="equipment"  minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element ref="resource"  minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element ref="part"  minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element ref="part-package" minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element ref="resupply" minOccurs="0" maxOccurs="1"/>
+            </xs:sequence>
+            <xs:attribute name="name" type="xs:string"/>
+            <xs:attribute name="description" type="xs:string"/>
+            <xs:attribute name="sponsor" type="xs:string"/>
+            <xs:attribute name="default-population" type="xs:integer"/>
+            <xs:attribute name="number-of-robots" type="xs:integer"/>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

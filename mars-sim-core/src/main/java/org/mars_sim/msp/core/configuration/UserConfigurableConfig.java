@@ -23,18 +23,25 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.xml.XMLConstants;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
 
 import org.apache.commons.io.FileUtils;
 import org.jdom2.Attribute;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
+import org.jdom2.Namespace;
 import org.jdom2.input.SAXBuilder;
+import org.jdom2.input.sax.XMLReaderJDOMFactory;
+import org.jdom2.input.sax.XMLReaderSchemaFactory;
+import org.jdom2.input.sax.XMLReaders;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.SimulationFiles;
 import org.mars_sim.msp.core.tool.Conversion;
+import org.xml.sax.SAXException;
 
 /**
  * This is a manager class of a category of UserConfigurable class.
@@ -48,8 +55,7 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 
 	private static final String BACKUP = ".bak";
 
-	// Location in the bundles JAR of the default UserConfigurable items
-	private static final String DEFAULT_DIR = "defaults";
+	private static Namespace xsiNameSpace;
 
 	/**
 	 * Saves an attribute to a Element if it is defined.
@@ -66,6 +72,7 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 
 	private String itemPrefix;
 	private Map<String,T> knownItems = new HashMap<>();
+	private String xsdName;
 
 	/**
 	 * Constructs a config of a UserConfigurable subclass.
@@ -73,7 +80,14 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 	 * @param itemPrefix The prefix to add when saving to an item,
 	 */
 	protected UserConfigurableConfig(String itemPrefix) {
-		this.itemPrefix = itemPrefix + "_";
+		this.itemPrefix = itemPrefix;
+	}
+
+	protected void setXSDName(String xsd) {
+		this.xsdName = xsd;
+
+		// Have to pull it out of bundle
+		SimulationConfig.instance().getBundledXML(itemPrefix + "/" + xsdName);
 	}
 
 	/**
@@ -106,8 +120,8 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 	protected void loadDefaults(String [] predefined) {
 		// Load predefined
 		for (String name : predefined) {
-			String file = getItemFilename(name);
-			loadItem(file, true);
+			// Put a null entry to load on demand later
+			knownItems.put(name, null);
 		}
 	}
 
@@ -125,19 +139,24 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 
 		Document doc;
         try {
-    		SAXBuilder builder = new SAXBuilder();
-    		// Note: Setting them to "" is to avoid sonar cloud from flagging
-    		// them as a security hotspot
-    		// For both bundled and user
-    		builder.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
-    		builder.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
-
+			SAXBuilder builder = null;
+			if (xsdName != null) {
+				// Should we load the XSD schema just once and have the Schema a field.
+				SchemaFactory schemafac =
+					SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+				Schema schema = schemafac.newSchema(new File(SimulationFiles.getXMLDir() + File.separator
+															+ itemPrefix, xsdName));
+				XMLReaderJDOMFactory factory = new XMLReaderSchemaFactory(schema);
+    		 	builder = new SAXBuilder(factory);
+			}
+			else {
+				builder = new SAXBuilder(XMLReaders.NONVALIDATING);			
+			}
 	        doc = builder.build(contents);
 	    }
-	    catch (JDOMException | IOException e) {
+	    catch (JDOMException | SAXException | IOException e) {
           	logger.log(Level.SEVERE, "Cannot build document: " + e.getMessage());
-			throw new IllegalStateException("Problem parsing " + file);
-
+			throw new IllegalStateException("Problem parsing " + file, e);
 	    }
 
 		T result = parseItemXML(doc, predefined);
@@ -151,7 +170,16 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 	 * @return
 	 */
 	public T getItem(String name) {
-		return knownItems.get(name);
+		T found = knownItems.get(name);
+		if (found == null) {
+			// Then it's a load on dmand entry
+			String file = getItemFilename(name);
+			logger.info("Loading an item on demand " + itemPrefix + " " + name);
+			loadItem(file, true);
+
+			found = knownItems.get(name);
+		}
+		return found;
 	}
 
 	/**
@@ -187,7 +215,7 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 	 */
 	protected String getItemFilename(String name) {
 		// Replace spaces
-		return itemPrefix + name.toLowerCase().replace(' ', '_') + SimulationConfig.XML_EXTENSION;
+		return itemPrefix + '_' + name.toLowerCase().replace(' ', '_') + SimulationConfig.XML_EXTENSION;
 	}
 
 	/**
@@ -212,11 +240,11 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 		String path = "";
 
 		if (bundled) { // For bundled
-			path = SimulationFiles.getXMLDir() + File.separator + DEFAULT_DIR;
+			path = SimulationFiles.getXMLDir() + File.separator + itemPrefix;
 
 			// Bundled XML files need to be copied out of the CONF sub folder.
 			// Must use the '/' for paths in the classpath.
-			SimulationConfig.instance().getBundledXML(DEFAULT_DIR + "/" + filename );
+			SimulationConfig.instance().getBundledXML(itemPrefix + "/" + filename );
 		}
 		else { // for user
 			path = SimulationFiles.getUserConfigDir();
@@ -288,6 +316,16 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 
 		if (!itemFile.exists()) {
 			Document outputDoc = createItemDoc(item);
+
+			// If XSD then add attributes
+			if (xsdName != null) {
+				Element root = outputDoc.getRootElement();
+				Namespace nameSpace = getXSINameSpace();
+
+				root.addNamespaceDeclaration(nameSpace);
+				root.setAttribute("noNamespaceSchemaLocation", xsdName, nameSpace);
+			}
+
 			XMLOutputter fmt = new XMLOutputter();
 			fmt.setFormat(Format.getPrettyFormat());
 
@@ -303,6 +341,13 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 
 		// Update or register new crew
 		knownItems.put(item.getName(), item);
+	}
+
+	private static Namespace getXSINameSpace() {
+		if (xsiNameSpace == null) {
+			xsiNameSpace = Namespace.getNamespace("xsi", "http://www.w3.org/2001/XMLSchema-instance");
+		}
+		return xsiNameSpace;
 	}
 
 	/**

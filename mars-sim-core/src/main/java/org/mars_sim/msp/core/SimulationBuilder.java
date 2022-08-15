@@ -361,7 +361,7 @@ public class SimulationBuilder {
 		SettlementConfig settlementConfig = simulationConfig.getSettlementConfiguration();
 			
 		// Find the template
-		SettlementTemplate settlementTemplate = settlementConfig.getSettlementTemplate(template);	
+		SettlementTemplate settlementTemplate = settlementConfig.getItem(template);	
 		ReportingAuthority authority;
 		if (authorityName == null) {
 			// Use the default on the template

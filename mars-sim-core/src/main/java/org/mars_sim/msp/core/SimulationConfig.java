@@ -264,8 +264,9 @@ public class SimulationConfig implements Serializable {
 
 		try {
 			loadDefaultConfiguration();
-		} catch (Exception e) {
-          	logger.log(Level.SEVERE, "Cannot load default config : " + e.getMessage());
+		} catch (RuntimeException rte) {
+          	logger.log  (Level.SEVERE, "Cannot load default config : " + rte.getMessage(), rte);
+			throw rte;
 		}
 	}
 
@@ -863,7 +864,8 @@ public class SimulationConfig implements Serializable {
 	 * Finds the requested XML file in the bundled JAR and extracts to the xml sub-directory.
 	 */
 	public File getBundledXML(String filename) {
-		if (!filename.endsWith(XML_EXTENSION)) {
+		if (filename.indexOf('.') == -1) {
+			// Ne extension; assume XML
 			filename = filename + XML_EXTENSION;
 		}
 		String fullPathName = "/" + XML_FOLDER + "/" + filename;

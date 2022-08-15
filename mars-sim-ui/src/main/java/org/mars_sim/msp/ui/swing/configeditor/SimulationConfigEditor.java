@@ -612,8 +612,8 @@ public class SimulationConfigEditor {
 	private void setTemplateEditor(JTable table, int column) {
 		TableColumn templateColumn = table.getColumnModel().getColumn(column);
 		JComboBoxMW<String> templateCB = new JComboBoxMW<>();
-		for (SettlementTemplate st : settlementConfig.getSettlementTemplates()) {
-			templateCB.addItem(st.getTemplateName());
+		for (String st : settlementConfig.getItemNames()) {
+			templateCB.addItem(st);
 		}
 		templateColumn.setCellEditor(new DefaultCellEditor(templateCB));
 	}
@@ -794,10 +794,10 @@ public class SimulationConfigEditor {
 	private String determineNewSettlementTemplate() {
 		String result = null;
 
-		List<SettlementTemplate> templates = settlementConfig.getSettlementTemplates();
+		List<String> templates = settlementConfig.getItemNames();
 		if (templates.size() > 0) {
 			int index = RandomUtil.getRandomInt(templates.size() - 1);
-			result = templates.get(index).getTemplateName();
+			result = templates.get(index);
 		} else
 			logger.log(Level.WARNING, Msg.getString("SimulationConfigEditor.log.settlementTemplateNotFound")); //$NON-NLS-1$
 

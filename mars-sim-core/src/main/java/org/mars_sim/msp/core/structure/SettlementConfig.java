@@ -21,6 +21,7 @@ import org.jdom2.Element;
 import org.mars_sim.msp.core.BoundedObject;
 import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.configuration.ConfigHelper;
+import org.mars_sim.msp.core.configuration.UserConfigurableConfig;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyMissionTemplate;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
@@ -33,10 +34,8 @@ import org.mars_sim.msp.core.structure.BuildingTemplate.BuildingConnectionTempla
  * Provides configuration information about settlements templates. Uses a DOM document to
  * get the information.
  */
-public class SettlementConfig implements Serializable {
+public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate> {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 2L;
 
 	private static final Logger logger = Logger.getLogger(SettlementConfig.class.getName());
 
@@ -47,18 +46,19 @@ public class SettlementConfig implements Serializable {
 	private static final String ROVER_FUEL_RANGE_ERROR_MARGIN = "rover-fuel-range-error-margin";
 	private static final String MISSION_CONTROL = "mission-control";
 	private static final String LIFE_SUPPORT_REQUIREMENTS = "life-support-requirements";
-	private static final String TOTAL_PRESSURE = "total-pressure";// low="99.9" high="102.7" />
-	private static final String PARTIAL_PRESSURE_OF_O2 = "partial-pressure-of-oxygen"; // low="19.5" high="23.1" />
-	private static final String PARTIAL_PRESSURE_OF_N2 = "partial-pressure-of-nitrogen";// low="79" high="79"/>
-	private static final String PARTIAL_PRESSURE_OF_CO2 = "partial-pressure-of-carbon-dioxide"; // low=".4" high=".4" />
-	private static final String TEMPERATURE = "temperature";// low="18.3" high="23.9"/>
-	private static final String RELATIVE_HUMIDITY = "relative-humidity"; // low="30" high="70"/>
-	private static final String VENTILATION = "ventilation";//
+	private static final String TOTAL_PRESSURE = "total-pressure";
+	private static final String PARTIAL_PRESSURE_OF_O2 = "partial-pressure-of-oxygen"; 
+	private static final String PARTIAL_PRESSURE_OF_N2 = "partial-pressure-of-nitrogen";
+	private static final String PARTIAL_PRESSURE_OF_CO2 = "partial-pressure-of-carbon-dioxide"; 
+	private static final String TEMPERATURE = "temperature";
+	private static final String RELATIVE_HUMIDITY = "relative-humidity"; 
+	private static final String VENTILATION = "ventilation";
 	private static final String LOW = "low";
 	private static final String HIGH = "high";
 	private static final String SETTLEMENT_TEMPLATE_LIST = "settlement-template-list";
 	private static final String TEMPLATE = "template";
 	private static final String NAME = "name";
+	private static final String DESCRIPTION = "description";
 	private static final String DEFAULT_POPULATION = "default-population";
 	private static final String DEFAULT_NUM_ROBOTS = "number-of-robots";
 	private static final String BUILDING = "building";
@@ -89,8 +89,9 @@ public class SettlementConfig implements Serializable {
 	private double[][] life_support_values = new double[2][7];
 
 	// Data members
-	private List<SettlementTemplate> settlementTemplates;
 	private Map<Integer, String> templateMap = new HashMap<>();
+
+	private PartPackageConfig partPackageConfig;
 
 	/**
 	 * Constructor.
@@ -100,10 +101,18 @@ public class SettlementConfig implements Serializable {
 	 * @throws Exception if error reading XML document.
 	 */
 	public SettlementConfig(Document settlementDoc, PartPackageConfig partPackageConfig) {
-		settlementTemplates = new ArrayList<>();
+		super("settlement");
+		setXSDName("settlement.xsd");
+
+		this.partPackageConfig = partPackageConfig;
+
 		loadMissionControl(settlementDoc);
 		loadLifeSupportRequirements(settlementDoc);
-		loadSettlementTemplates(settlementDoc, partPackageConfig);
+		String [] defaults = loadSettlementTemplates(settlementDoc);
+
+		loadDefaults(defaults);
+
+		loadUserDefined();
 	}
 
 	/**
@@ -223,244 +232,216 @@ public class SettlementConfig implements Serializable {
 	 * @param partPackageConfig the part package configuration.
 	 * @throws Exception if error reading XML document.
 	 */
-	private void loadSettlementTemplates(Document settlementDoc, PartPackageConfig partPackageConfig) {
+	private String[] loadSettlementTemplates(Document settlementDoc) {
 
 		Element root = settlementDoc.getRootElement();
 		Element templateList = root.getChild(SETTLEMENT_TEMPLATE_LIST);
 
 		List<Element> templateNodes = templateList.getChildren(TEMPLATE);
 
+		List<String> names = new ArrayList<>();
 		for (Element templateElement : templateNodes) {
-			String settlementTemplateName = templateElement.getAttributeValue(NAME);
-			String sponsor = templateElement.getAttributeValue(SPONSOR);
-			if (templateMap.containsKey(templateID)) {
-				throw new IllegalStateException("Error in SettlementConfig.xml: template ID in settlement template "
-						+ settlementTemplateName + " is not unique.");
-			} else
-				templateMap.put(templateID, settlementTemplateName);
-
-			// Obtains the default population
-			int defaultPopulation = Integer.parseInt(templateElement.getAttributeValue(DEFAULT_POPULATION));
-			// Obtains the default numbers of robots
-			int defaultNumOfRobots = Integer.parseInt(templateElement.getAttributeValue(DEFAULT_NUM_ROBOTS));
-
-			// Add templateID
-			SettlementTemplate template = new SettlementTemplate(
-					templateID,
-					settlementTemplateName,
-					sponsor,
-					defaultPopulation,
-					defaultNumOfRobots);
-
-			settlementTemplates.add(template);
-
-			Set<Integer> existingIDs = new HashSet<>();//HashMap.newKeySet();
-			// Add buildingTypeIDMap
-			Map<String, Integer> buildingTypeIDMap = new HashMap<>();
-
-			List<Element> buildingNodes = templateElement.getChildren(BUILDING);
-			for (Element buildingElement : buildingNodes) {
-
-				BoundedObject bounds = ConfigHelper.parseBoundedObject(buildingElement);
-
-				int bid = -1;
-
-				if (buildingElement.getAttribute(ID) != null) {
-					bid = Integer.parseInt(buildingElement.getAttributeValue(ID));
-				}
-
-				if (existingIDs.contains(bid)) {
-					throw new IllegalStateException(
-							"Error in SettlementConfig : building ID " + bid + " in settlement template "
-									+ settlementTemplateName + " is not unique.");
-				} else if (bid != -1)
-					existingIDs.add(bid);
-
-				String buildingType = buildingElement.getAttributeValue(TYPE);
-				
-				if (buildingTypeIDMap.containsKey(buildingType)) {
-					int last = buildingTypeIDMap.get(buildingType);
-					buildingTypeIDMap.put(buildingType, last + 1);
-				} else
-					buildingTypeIDMap.put(buildingType, 1);
-
-				// Create a building nickname for every building
-				// by appending the settlement id and building id to that building's type.
-				String templateString = getCharForNumber(templateID + 1);
-				// NOTE: i = sid + 1 since i must be > 1, if i = 0, s = null
-
-				int buildingTypeID = buildingTypeIDMap.get(buildingType);
-
-				String buildingNickName = buildingType + " " + buildingTypeID;
-
-				BuildingTemplate buildingTemplate = new BuildingTemplate(settlementTemplateName, bid, templateString,
-						buildingType, buildingNickName, bounds);
-
-				template.addBuildingTemplate(buildingTemplate);
-
-				// Create building connection templates.
-				Element connectionListElement = buildingElement.getChild(CONNECTION_LIST);
-				if (connectionListElement != null) {
-					List<Element> connectionNodes = connectionListElement.getChildren(CONNECTION);
-					for (Element connectionElement : connectionNodes) {
-						int connectionID = Integer.parseInt(connectionElement.getAttributeValue(ID));
-
-						if (buildingType.equalsIgnoreCase(EVA_AIRLOCK)) {
-							buildingTemplate.addEVAAttachedBuildingID(connectionID);
-						}
-						
-						// Check that connection ID is not the same as the building ID.
-						if (connectionID == bid) {
-							throw new IllegalStateException(
-									"Connection ID cannot be the same as building ID for building: " + buildingType
-											+ " in settlement template: " + settlementTemplateName);
-						}
-
-						LocalPosition connectionLoc = ConfigHelper.parseLocalPosition(connectionElement);
-						buildingTemplate.addBuildingConnection(connectionID, connectionLoc);
-					}
-				}
-			}
-
-			// Check that building connections point to valid building ID's.
-			List<BuildingTemplate> buildingTemplates = template.getBuildingTemplates();
-			for (BuildingTemplate buildingTemplate : buildingTemplates) {
-				List<BuildingConnectionTemplate> connectionTemplates = buildingTemplate
-						.getBuildingConnectionTemplates();
-				for (BuildingConnectionTemplate connectionTemplate : connectionTemplates) {
-					if (!existingIDs.contains(connectionTemplate.getID())) {
-						throw new IllegalStateException("Connection ID: " + connectionTemplate.getID()
-								+ " invalid for building: " + buildingTemplate.getNickName()
-								+ " in settlement template: " + settlementTemplateName);
-					}
-				}
-			}
-
-			// Load vehicles
-			List<Element> vehicleNodes = templateElement.getChildren(VEHICLE);
-			for (Element vehicleElement : vehicleNodes) {
-				String vehicleType = vehicleElement.getAttributeValue(TYPE);
-				int vehicleNumber = Integer.parseInt(vehicleElement.getAttributeValue(NUMBER));
-				template.addVehicles(vehicleType, vehicleNumber);
-			}
-
-			// Load equipment
-			List<Element> equipmentNodes = templateElement.getChildren(EQUIPMENT);
-			for (Element equipmentElement : equipmentNodes) {
-				String equipmentType = equipmentElement.getAttributeValue(TYPE);
-				int equipmentNumber = Integer.parseInt(equipmentElement.getAttributeValue(NUMBER));
-				template.addEquipment(equipmentType, equipmentNumber);
-			}
-
-			// Load resources
-			List<Element> resourceNodes = templateElement.getChildren(RESOURCE);
-			for (Element resourceElement : resourceNodes) {
-				String resourceType = resourceElement.getAttributeValue(TYPE);
-				AmountResource resource = ResourceUtil.findAmountResource(resourceType);
-				if (resource == null)
-					logger.severe(resourceType + " shows up in settlements.xml but doesn't exist in resources.xml.");
-				else {
-					double resourceAmount = Double.parseDouble(resourceElement.getAttributeValue(AMOUNT));
-					template.addAmountResource(resource, resourceAmount);
-				}
-
-			}
-
-			// Load parts
-			List<Element> partNodes = templateElement.getChildren(PART);
-			for (Element partElement : partNodes) {
-				String partType = partElement.getAttributeValue(TYPE);
-				Part part = (Part) ItemResourceUtil.findItemResource(partType);
-				if (part == null)
-					logger.severe(partType + " shows up in settlements.xml but doesn't exist in parts.xml.");
-				else {
-					int partNumber = Integer.parseInt(partElement.getAttributeValue(NUMBER));
-					template.addPart(part, partNumber);
-				}
-			}
-
-			// Load part packages
-			List<Element> partPackageNodes = templateElement.getChildren(PART_PACKAGE);
-			for (Element partPackageElement : partPackageNodes) {
-				String packageName = partPackageElement.getAttributeValue(NAME);
-				int packageNumber = Integer.parseInt(partPackageElement.getAttributeValue(NUMBER));
-				if (packageNumber > 0) {
-					for (int z = 0; z < packageNumber; z++) {
-						Map<Part, Integer> partPackage = partPackageConfig.getPartsInPackage(packageName);
-						Iterator<Part> i = partPackage.keySet().iterator();
-						while (i.hasNext()) {
-							Part part = i.next();
-							int partNumber = partPackage.get(part);
-							template.addPart(part, partNumber);
-						}
-					}
-				}
-			}
-
-			// Load resupplies
-			Element resupplyList = templateElement.getChild(RESUPPLY);
-			if (resupplyList != null) {
-				List<Element> resupplyNodes = resupplyList.getChildren(RESUPPLY_MISSION);
-				for (Element resupplyMissionElement : resupplyNodes) {
-					String resupplyName = resupplyMissionElement.getAttributeValue(NAME);
-					double arrivalTime = Double.parseDouble(resupplyMissionElement.getAttributeValue(ARRIVAL_TIME));
-					ResupplyMissionTemplate resupplyMissionTemplate = new ResupplyMissionTemplate(resupplyName,
-							arrivalTime);
-					template.addResupplyMissionTemplate(resupplyMissionTemplate);
-				}
-			}
-			// Increments the templateID to be used for the next template
-			templateID++;
+			names.add(templateElement.getAttributeValue(NAME));
 		}
+		return names.toArray(new String[0]);
+
+	}
+		
+	@Override
+	protected SettlementTemplate parseItemXML(Document doc, boolean predefined) {
+		Element templateElement = doc.getRootElement();
+
+		String settlementTemplateName = templateElement.getAttributeValue(NAME);
+		String description = templateElement.getAttributeValue(DESCRIPTION);
+		String sponsor = templateElement.getAttributeValue(SPONSOR);
+		if (templateMap.containsKey(templateID)) {
+			throw new IllegalStateException("Error in SettlementConfig.xml: template ID in settlement template "
+					+ settlementTemplateName + " is not unique.");
+		} else
+			templateMap.put(templateID, settlementTemplateName);
+
+		// Obtains the default population
+		int defaultPopulation = Integer.parseInt(templateElement.getAttributeValue(DEFAULT_POPULATION));
+		// Obtains the default numbers of robots
+		int defaultNumOfRobots = Integer.parseInt(templateElement.getAttributeValue(DEFAULT_NUM_ROBOTS));
+
+		// Add templateID
+		SettlementTemplate template = new SettlementTemplate(
+				templateID,
+				settlementTemplateName,
+				description,
+				predefined,
+				sponsor,
+				defaultPopulation,
+				defaultNumOfRobots);
+
+		Set<Integer> existingIDs = new HashSet<>();
+		// Add buildingTypeIDMap
+		Map<String, Integer> buildingTypeIDMap = new HashMap<>();
+
+		List<Element> buildingNodes = templateElement.getChildren(BUILDING);
+		for (Element buildingElement : buildingNodes) {
+
+			BoundedObject bounds = ConfigHelper.parseBoundedObject(buildingElement);
+
+			int bid = -1;
+
+			if (buildingElement.getAttribute(ID) != null) {
+				bid = Integer.parseInt(buildingElement.getAttributeValue(ID));
+			}
+
+			if (existingIDs.contains(bid)) {
+				throw new IllegalStateException(
+						"Error in SettlementConfig : building ID " + bid + " in settlement template "
+								+ settlementTemplateName + " is not unique.");
+			} else if (bid != -1)
+				existingIDs.add(bid);
+
+			String buildingType = buildingElement.getAttributeValue(TYPE);
+			
+			if (buildingTypeIDMap.containsKey(buildingType)) {
+				int last = buildingTypeIDMap.get(buildingType);
+				buildingTypeIDMap.put(buildingType, last + 1);
+			} else
+				buildingTypeIDMap.put(buildingType, 1);
+
+			// Create a building nickname for every building
+			// by appending the settlement id and building id to that building's type.
+			String templateString = getCharForNumber(templateID + 1);
+			// NOTE: i = sid + 1 since i must be > 1, if i = 0, s = null
+
+			int buildingTypeID = buildingTypeIDMap.get(buildingType);
+
+			String buildingNickName = buildingType + " " + buildingTypeID;
+
+			BuildingTemplate buildingTemplate = new BuildingTemplate(settlementTemplateName, bid, templateString,
+					buildingType, buildingNickName, bounds);
+
+			template.addBuildingTemplate(buildingTemplate);
+
+			// Create building connection templates.
+			Element connectionListElement = buildingElement.getChild(CONNECTION_LIST);
+			if (connectionListElement != null) {
+				List<Element> connectionNodes = connectionListElement.getChildren(CONNECTION);
+				for (Element connectionElement : connectionNodes) {
+					int connectionID = Integer.parseInt(connectionElement.getAttributeValue(ID));
+
+					if (buildingType.equalsIgnoreCase(EVA_AIRLOCK)) {
+						buildingTemplate.addEVAAttachedBuildingID(connectionID);
+					}
+					
+					// Check that connection ID is not the same as the building ID.
+					if (connectionID == bid) {
+						throw new IllegalStateException(
+								"Connection ID cannot be the same as building ID for building: " + buildingType
+										+ " in settlement template: " + settlementTemplateName);
+					}
+
+					LocalPosition connectionLoc = ConfigHelper.parseLocalPosition(connectionElement);
+					buildingTemplate.addBuildingConnection(connectionID, connectionLoc);
+				}
+			}
+		}
+
+		// Check that building connections point to valid building ID's.
+		List<BuildingTemplate> buildingTemplates = template.getBuildingTemplates();
+		for (BuildingTemplate buildingTemplate : buildingTemplates) {
+			List<BuildingConnectionTemplate> connectionTemplates = buildingTemplate
+					.getBuildingConnectionTemplates();
+			for (BuildingConnectionTemplate connectionTemplate : connectionTemplates) {
+				if (!existingIDs.contains(connectionTemplate.getID())) {
+					throw new IllegalStateException("Connection ID: " + connectionTemplate.getID()
+							+ " invalid for building: " + buildingTemplate.getNickName()
+							+ " in settlement template: " + settlementTemplateName);
+				}
+			}
+		}
+
+		// Load vehicles
+		List<Element> vehicleNodes = templateElement.getChildren(VEHICLE);
+		for (Element vehicleElement : vehicleNodes) {
+			String vehicleType = vehicleElement.getAttributeValue(TYPE);
+			int vehicleNumber = Integer.parseInt(vehicleElement.getAttributeValue(NUMBER));
+			template.addVehicles(vehicleType, vehicleNumber);
+		}
+
+		// Load equipment
+		List<Element> equipmentNodes = templateElement.getChildren(EQUIPMENT);
+		for (Element equipmentElement : equipmentNodes) {
+			String equipmentType = equipmentElement.getAttributeValue(TYPE);
+			int equipmentNumber = Integer.parseInt(equipmentElement.getAttributeValue(NUMBER));
+			template.addEquipment(equipmentType, equipmentNumber);
+		}
+
+		// Load resources
+		List<Element> resourceNodes = templateElement.getChildren(RESOURCE);
+		for (Element resourceElement : resourceNodes) {
+			String resourceType = resourceElement.getAttributeValue(TYPE);
+			AmountResource resource = ResourceUtil.findAmountResource(resourceType);
+			if (resource == null)
+				logger.severe(resourceType + " shows up in settlements.xml but doesn't exist in resources.xml.");
+			else {
+				double resourceAmount = Double.parseDouble(resourceElement.getAttributeValue(AMOUNT));
+				template.addAmountResource(resource, resourceAmount);
+			}
+
+		}
+
+		// Load parts
+		List<Element> partNodes = templateElement.getChildren(PART);
+		for (Element partElement : partNodes) {
+			String partType = partElement.getAttributeValue(TYPE);
+			Part part = (Part) ItemResourceUtil.findItemResource(partType);
+			if (part == null)
+				logger.severe(partType + " shows up in settlements.xml but doesn't exist in parts.xml.");
+			else {
+				int partNumber = Integer.parseInt(partElement.getAttributeValue(NUMBER));
+				template.addPart(part, partNumber);
+			}
+		}
+
+		// Load part packages
+		List<Element> partPackageNodes = templateElement.getChildren(PART_PACKAGE);
+		for (Element partPackageElement : partPackageNodes) {
+			String packageName = partPackageElement.getAttributeValue(NAME);
+			int packageNumber = Integer.parseInt(partPackageElement.getAttributeValue(NUMBER));
+			if (packageNumber > 0) {
+				for (int z = 0; z < packageNumber; z++) {
+					Map<Part, Integer> partPackage = partPackageConfig.getPartsInPackage(packageName);
+					Iterator<Part> i = partPackage.keySet().iterator();
+					while (i.hasNext()) {
+						Part part = i.next();
+						int partNumber = partPackage.get(part);
+						template.addPart(part, partNumber);
+					}
+				}
+			}
+		}
+
+		// Load resupplies
+		Element resupplyList = templateElement.getChild(RESUPPLY);
+		if (resupplyList != null) {
+			List<Element> resupplyNodes = resupplyList.getChildren(RESUPPLY_MISSION);
+			for (Element resupplyMissionElement : resupplyNodes) {
+				String resupplyName = resupplyMissionElement.getAttributeValue(NAME);
+				double arrivalTime = Double.parseDouble(resupplyMissionElement.getAttributeValue(ARRIVAL_TIME));
+				ResupplyMissionTemplate resupplyMissionTemplate = new ResupplyMissionTemplate(resupplyName,
+						arrivalTime);
+				template.addResupplyMissionTemplate(resupplyMissionTemplate);
+			}
+		}
+		// Increments the templateID to be used for the next template
+		templateID++;
+
+		return template;
 	}
 
 	public int getTemplateID() {
 		return templateID;
 	}
 
-	/**
-	 * Gets the settlement template that matches a template name.
-	 *
-	 * @param templateName the template name.
-	 * @return settlement template
-	 */
-	public SettlementTemplate getSettlementTemplate(String templateName) {
-		SettlementTemplate result = null;
-
-		Iterator<SettlementTemplate> i = settlementTemplates.iterator();
-		while (i.hasNext()) {
-			SettlementTemplate template = i.next();
-			if (template.getTemplateName().equals(templateName))
-				result = template;
-		}
-
-		if (result == null) {
-			throw new IllegalArgumentException("Template named '" + templateName + "' not found.");
-		}
-
-		return result;
-	}
-
-	/**
-	 * Gets a list of settlement templates.
-	 *
-	 * @return list of settlement templates.
-	 */
-	public List<SettlementTemplate> getSettlementTemplates() {
-		return settlementTemplates;
-	}
-
-	/**
-	 * Prepare object for garbage collection.
-	 */
-	public void destroy() {
-		Iterator<SettlementTemplate> i = settlementTemplates.iterator();
-		while (i.hasNext()) {
-			i.next().destroy();
-		}
-		settlementTemplates.clear();
-		settlementTemplates = null;
-		templateMap.clear();
-		templateMap = null;
+	@Override
+	protected Document createItemDoc(SettlementTemplate item) {
+		throw new UnsupportedOperationException("Saving Settlement templates is not supported");
 	}
 }
