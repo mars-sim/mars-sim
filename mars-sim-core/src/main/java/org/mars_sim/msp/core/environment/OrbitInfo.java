@@ -424,26 +424,30 @@ public class OrbitInfo implements Serializable, Temporal {
 	 * @return
 	 */
 	public boolean isSunRising(Coordinates location, boolean extended) {
+		boolean result = false;
+		
 		double cosZenith = getCosineSolarZenithAngle(location);	
-		cosZenithAngleCache = cosZenith;
 
 		// cosZenith is increasing
 		if (cosZenithAngleCache < cosZenith) {
-			
+
 			// See if the solar zenith angle is between 90 and (90 + the dawn angle) 
 			// Note: if the sun is below the horizon, the solar zenith angle should be negative
 			if (cosZenith <= 0 && cosZenith > COSINE_ZENITH_ANGLE_AT_DAWN) {
-				return true;
+				result = true;
 			}
 			
 			// See if the solar zenith angle is between 90 and (90 - the dawn angle) 
 			// Note: if the sun is above the horizon, the solar zenith angle should be positive
 			if (extended && cosZenith >= 0 && cosZenith < - COSINE_ZENITH_ANGLE_AT_DAWN) {
-				return true;
+				result = true;
 			}
 		}
 		
-		return false;
+		// Update the cache value
+		cosZenithAngleCache = cosZenith;
+		
+		return result;
 	}
 
 	/**
@@ -454,6 +458,8 @@ public class OrbitInfo implements Serializable, Temporal {
 	 * @return
 	 */
 	public boolean isSunSetting(Coordinates location, boolean extended) {
+		boolean result = false;
+		
 		double cosZenith = getCosineSolarZenithAngle(location);	
 		cosZenithAngleCache = cosZenith;
 		
@@ -463,17 +469,20 @@ public class OrbitInfo implements Serializable, Temporal {
 			// See if the solar zenith angle is between 90 and (90 + the dusk angle) 
 			// Note: if the sun is below the horizon, the solar zenith angle should be negative
 			if (cosZenith >= 0 && cosZenith <= 0 && cosZenith > COSINE_ZENITH_ANGLE_AT_DUSK) {
-				return true;
+				result = true;
 			}
 			
 			// See if the solar zenith angle is between 90 and (90 - the dusk angle) 
 			// Note: if the sun is above the horizon, the solar zenith angle should be positive
 			if (extended && cosZenith >= 0 && cosZenith < - COSINE_ZENITH_ANGLE_AT_DUSK) {
-				return true;
+				result = true;
 			}
 		}
 
-		return false;
+		// Update the cache value
+		cosZenithAngleCache = cosZenith;
+					
+		return result;
 	}
 	
 	/**
