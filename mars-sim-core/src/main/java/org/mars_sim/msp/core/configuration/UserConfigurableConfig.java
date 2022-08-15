@@ -31,6 +31,7 @@ import org.jdom2.Attribute;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
+import org.jdom2.Namespace;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.input.sax.XMLReaderJDOMFactory;
 import org.jdom2.input.sax.XMLReaderSchemaFactory;
@@ -53,6 +54,8 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 	private static final Logger logger = Logger.getLogger(UserConfigurableConfig.class.getName());
 
 	private static final String BACKUP = ".bak";
+
+	private static Namespace xsiNameSpace;
 
 	/**
 	 * Saves an attribute to a Element if it is defined.
@@ -153,8 +156,7 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 	    }
 	    catch (JDOMException | SAXException | IOException e) {
           	logger.log(Level.SEVERE, "Cannot build document: " + e.getMessage());
-			throw new IllegalStateException("Problem parsing " + file);
-
+			throw new IllegalStateException("Problem parsing " + file, e);
 	    }
 
 		T result = parseItemXML(doc, predefined);
@@ -314,6 +316,16 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 
 		if (!itemFile.exists()) {
 			Document outputDoc = createItemDoc(item);
+
+			// If XSD then add attributes
+			if (xsdName != null) {
+				Element root = outputDoc.getRootElement();
+				Namespace nameSpace = getXSINameSpace();
+
+				root.addNamespaceDeclaration(nameSpace);
+				root.setAttribute("noNamespaceSchemaLocation", xsdName, nameSpace);
+			}
+
 			XMLOutputter fmt = new XMLOutputter();
 			fmt.setFormat(Format.getPrettyFormat());
 
@@ -329,6 +341,13 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 
 		// Update or register new crew
 		knownItems.put(item.getName(), item);
+	}
+
+	private static Namespace getXSINameSpace() {
+		if (xsiNameSpace == null) {
+			xsiNameSpace = Namespace.getNamespace("xsi", "http://www.w3.org/2001/XMLSchema-instance");
+		}
+		return xsiNameSpace;
 	}
 
 	/**

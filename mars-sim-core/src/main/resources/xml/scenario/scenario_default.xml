@@ -1,33 +1,7 @@
-<?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
-<!DOCTYPE scenario-configuration [
-	<!ELEMENT scenario-configuration (initial-settlement-list, arriving-settlement-list)>
-	<!ATTLIST scenario-configuration name CDATA #REQUIRED>
-	<!ATTLIST scenario-configuration description CDATA #REQUIRED>
+<?xml version = "1.0" encoding = "UTF-8"?>
 
-	<!ELEMENT initial-settlement-list (settlement*)>
-	<!ELEMENT settlement (location)>
-	<!ATTLIST settlement name CDATA #REQUIRED>
-	<!ATTLIST settlement template CDATA #REQUIRED>
-	<!ATTLIST settlement crew CDATA #IMPLIED>
-	<!ATTLIST settlement persons CDATA #REQUIRED>
-	<!ATTLIST settlement robots CDATA #REQUIRED>
-	<!ATTLIST settlement sponsor CDATA #REQUIRED>
-	<!ELEMENT location EMPTY>
-	<!ATTLIST location longitude CDATA #REQUIRED>
-	<!ATTLIST location latitude CDATA #REQUIRED>
-	
-
-	<!ELEMENT arriving-settlement-list (arriving-settlement*)>
-	<!ELEMENT arriving-settlement (location?)>
-	<!ATTLIST arriving-settlement name CDATA #REQUIRED>
-	<!ATTLIST arriving-settlement template CDATA #REQUIRED>
-	<!ATTLIST arriving-settlement arrival-in-sols CDATA #REQUIRED>
-	<!ATTLIST arriving-settlement persons CDATA #REQUIRED>
-	<!ATTLIST arriving-settlement robots CDATA #REQUIRED>
-	<!ATTLIST arriving-settlement sponsor CDATA #REQUIRED>
-]>
-
-<scenario-configuration name="Default" description="Default provided Scenario">
+<scenario-configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="scenario.xsd"
+	name="Default" description="Default provided Scenario">
 	<initial-settlement-list>
 	<!-- List of initial settlements in the simulation -->
 		<settlement name="New Plymouth" template="Phase 2-U" persons="8" robots="4" sponsor="NASA">
