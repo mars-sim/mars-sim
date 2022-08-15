@@ -72,6 +72,8 @@ public class CrewConfig extends UserConfigurableConfig<Crew> {
 	public CrewConfig() {
 		super(CREW_PREFIX);
 		
+		setXSDName("crew.xsd");
+		
 		loadDefaults(PREDEFINED_CREWS);
 		loadUserDefined();
 	}

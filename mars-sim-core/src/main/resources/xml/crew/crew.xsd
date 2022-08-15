@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <xs:element name="personality-trait">
+        <xs:complexType>
+            <xs:attribute name="name" type="xs:string"/>
+            <xs:attribute name="value" type="xs:integer"/>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="natural-attribute">
+        <xs:complexType>
+            <xs:attribute name="name" type="xs:string"/>
+            <xs:attribute name="value" type="xs:integer"/>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:element name="skill">
+        <xs:complexType>
+            <xs:attribute name="name" type="xs:string"/>
+            <xs:attribute name="level" type="xs:integer"/>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="relationship">
+        <xs:complexType>
+            <xs:attribute name="person-name" type="xs:string"/>
+            <xs:attribute name="opinion" type="xs:integer"/>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="person">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="personality-trait-list" minOccurs="0">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element ref="personality-trait" minOccurs="1" maxOccurs="unbounded"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="natural-attribute-list" minOccurs="0">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element ref="natural-attribute" minOccurs="1" maxOccurs="unbounded"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="skill-list" minOccurs="0">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element ref="skill" minOccurs="1" maxOccurs="unbounded"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="relationship-list" minOccurs="0">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element ref="relationship" minOccurs="1" maxOccurs="unbounded"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+            <xs:attribute name="name" type="xs:string"/>
+            <xs:attribute name="gender" type="xs:string"/>
+            <xs:attribute name="age" type="xs:integer"/>
+            <xs:attribute name="personality-type" type="xs:string"/>
+            <xs:attribute name="sponsor" type="xs:string"/>
+            <xs:attribute name="country" type="xs:string"/>
+            <xs:attribute name="job" type="xs:string"/>
+            <xs:attribute name="favorite-main-dish" type="xs:string"/>
+            <xs:attribute name="favorite-side-dish" type="xs:string"/>
+            <xs:attribute name="favorite-dessert" type="xs:string"/>
+            <xs:attribute name="favorite-activity" type="xs:string"/>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="crew-configuration">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="crew-list">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element ref="person" minOccurs="1" maxOccurs="unbounded"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+            <xs:attribute name="name" type="xs:string"/>
+            <xs:attribute name="description" type="xs:string"/>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>
