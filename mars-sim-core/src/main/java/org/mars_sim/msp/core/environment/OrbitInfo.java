@@ -461,7 +461,6 @@ public class OrbitInfo implements Serializable, Temporal {
 		boolean result = false;
 		
 		double cosZenith = getCosineSolarZenithAngle(location);	
-		cosZenithAngleCache = cosZenith;
 		
 		// cosZenith is decreasing
 		if (cosZenithAngleCache < cosZenith) {
