@@ -102,6 +102,8 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 	 */
 	public SettlementConfig(Document settlementDoc, PartPackageConfig partPackageConfig) {
 		super("settlement");
+		setXSDName("settlement.xsd");
+
 		this.partPackageConfig = partPackageConfig;
 
 		loadMissionControl(settlementDoc);

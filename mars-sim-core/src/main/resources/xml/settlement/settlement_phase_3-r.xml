@@ -1,7 +1,8 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
-<template name="Phase 3-R" default-population="12"
-			number-of-robots="7" sponsor="RKA"
-            description="Phase 3 Settlement for RKA">
+<template xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="settlement.xsd"
+    name="Phase 3-R" default-population="12"
+	number-of-robots="7" sponsor="RKA" description="Phase 3 Settlement for RKA">
+    
     <building id="0" type="Lander Hab" xloc="0.0" yloc="0.0"
         facing="0.0">
         <connection-list>

@@ -1,5 +1,6 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
-<template name="Mining Outpost" default-population="4" description="Base for Mining Outpost for Mars Society"
+<template xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="settlement.xsd"
+    name="Mining Outpost" default-population="4" description="Base for Mining Outpost for Mars Society"
     number-of-robots="3" sponsor="MS">
     <building id="0" type="Outpost Hub" xloc="0.0" yloc="0.0"
         facing="0.0">

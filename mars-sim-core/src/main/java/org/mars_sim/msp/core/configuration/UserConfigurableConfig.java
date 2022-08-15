@@ -22,6 +22,9 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.xml.XMLConstants;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
 
 import org.apache.commons.io.FileUtils;
 import org.jdom2.Attribute;
@@ -29,12 +32,15 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
+import org.jdom2.input.sax.XMLReaderJDOMFactory;
+import org.jdom2.input.sax.XMLReaderSchemaFactory;
 import org.jdom2.input.sax.XMLReaders;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.SimulationFiles;
 import org.mars_sim.msp.core.tool.Conversion;
+import org.xml.sax.SAXException;
 
 /**
  * This is a manager class of a category of UserConfigurable class.
@@ -130,16 +136,22 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 
 		Document doc;
         try {
-    		SAXBuilder builder = new SAXBuilder(xsdName != null ? XMLReaders.XSDVALIDATING : XMLReaders.NONVALIDATING);
-    		// Note: Setting them to "" is to avoid sonar cloud from flagging
-    		// them as a security hotspot
-    		// For both bundled and user
-    		//builder.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
-    		//builder.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
-
+			SAXBuilder builder = null;
+			if (xsdName != null) {
+				// Should we load the XSD schema just once and have the Schema a field.
+				SchemaFactory schemafac =
+					SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+				Schema schema = schemafac.newSchema(new File(SimulationFiles.getXMLDir() + File.separator
+															+ itemPrefix, xsdName));
+				XMLReaderJDOMFactory factory = new XMLReaderSchemaFactory(schema);
+    		 	builder = new SAXBuilder(factory);
+			}
+			else {
+				builder = new SAXBuilder(XMLReaders.NONVALIDATING);			
+			}
 	        doc = builder.build(contents);
 	    }
-	    catch (JDOMException | IOException e) {
+	    catch (JDOMException | SAXException | IOException e) {
           	logger.log(Level.SEVERE, "Cannot build document: " + e.getMessage());
 			throw new IllegalStateException("Problem parsing " + file);
 

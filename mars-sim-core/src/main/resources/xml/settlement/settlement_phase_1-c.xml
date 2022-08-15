@@ -1,6 +1,7 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
-<template name="Phase 1-C" default-population="4" description="Phase 1 base for CNSA"
-			number-of-robots="3" sponsor="CNSA">
+<template xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="settlement.xsd"
+    name="Phase 1-C" default-population="4" description="Phase 1 base for CNSA"
+	number-of-robots="3" sponsor="CNSA">
 
     <building id="0" type="Lander Hab" xloc="0.0" yloc="0.0"
         facing="0.0">
