@@ -31,7 +31,7 @@ public class HaveConversationMeta extends MetaTask {
     private static final String NAME = Msg.getString(
             "Task.description.haveConversation"); //$NON-NLS-1$
     
-    private static final double VALUE = 1.2;
+    private static final double VALUE = 0.9;
     
     public HaveConversationMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.ANY_HOUR);

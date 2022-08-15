@@ -80,8 +80,8 @@ public abstract class Good implements Serializable, Comparable<Good> {
 	private double tech;
 
 	private double costModifier = -1;
-	/** The national/market average good value of this good. */
-	private double averageMarketGoodValue;
+	/** The national/inter-market average value of this good. */
+	private double interMarketGoodValue = -1;
 	/** The adjusted cost output for this good. */
 	private double adjustedCostOutput = -1;
 
@@ -214,25 +214,34 @@ public abstract class Good implements Serializable, Comparable<Good> {
 	protected abstract double computeCostModifier();
 
 	/**
-	 * Gets the average market good value of this good.
+	 * Gets the inter-market value of this good.
 	 * 
 	 * @return
 	 */
-	public double getAverageMarketGoodValue() {
-		return averageMarketGoodValue;
+	public double getInterMarketGoodValue() {
+		return interMarketGoodValue;
 	}
 
 	/**
-	 * Adjusts the average market good value of this good.
+	 * Sets the inter-market value of this good.
+	 * 
+	 * @param value
 	 */
-	public void adjustAverageMarketGoodValue() {
+	public void setInterMarketGoodValue(double value) {
+		interMarketGoodValue = value;
+	}
+	
+	/**
+	 * Adjusts the inter-market value of this good.
+	 */
+	public void adjustInterMarketGoodValue() {
 		// Deflate the value by 5%
-		if (averageMarketGoodValue > LOWEST_VALUE_TO_DEFLATE)
-			averageMarketGoodValue = .95 * averageMarketGoodValue;
+		if (interMarketGoodValue > LOWEST_VALUE_TO_DEFLATE)
+			interMarketGoodValue = .95 * interMarketGoodValue;
 
 		// Inflate the value by 5%
-		else if (averageMarketGoodValue < HIGHEST_VALUE_TO_INFLATE)
-			averageMarketGoodValue = 1.05 * averageMarketGoodValue;
+		else if (interMarketGoodValue < HIGHEST_VALUE_TO_INFLATE)
+			interMarketGoodValue = 1.05 * interMarketGoodValue;
 	}
 
 	/**
@@ -407,15 +416,6 @@ public abstract class Good implements Serializable, Comparable<Good> {
 
 	}
 
-
-	/**
-	 * Sets the average good value.
-	 * 
-	 * @param value
-	 */
-	public void setAverageMarketGoodValue(double value) {
-		averageMarketGoodValue = value;
-	}
 
 	/**
 	 * Gets the amount of this good being produced at the settlement by ongoing

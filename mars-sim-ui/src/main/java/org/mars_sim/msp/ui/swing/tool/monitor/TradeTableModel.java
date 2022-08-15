@@ -272,7 +272,7 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 			else if (r == 3)
 				return getTotalMass(selectedSettlement, goodsList.get(rowIndex));
 			else if (r == 4)
-				return Math.round(goodsList.get(rowIndex).getAverageMarketGoodValue()*100.0)/100.0;
+				return Math.round(goodsList.get(rowIndex).getInterMarketGoodValue()*100.0)/100.0;
 			else if (r == 5)
 				return selectedSettlement.getGoodsManager().getGoodValuePoint(goodsList.get(rowIndex).getID());
 			else if (r == 6)

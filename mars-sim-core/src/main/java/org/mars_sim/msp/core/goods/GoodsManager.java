@@ -189,7 +189,7 @@ public class GoodsManager implements Serializable {
 			determineGoodValue(g);
 			
 			if (initialized) {
-				g.adjustAverageMarketGoodValue();
+				g.adjustInterMarketGoodValue();
 			}
 		}
 				
@@ -198,7 +198,7 @@ public class GoodsManager implements Serializable {
 
 	
 	/**
-	 * Determines the value of a good. This reclaculated the Supply & Demand in addition.
+	 * Determines the value of a good. This recalculates the supply & demand.
 	 *
 	 * @param good     the good to check.
 	 * @return value of good.
@@ -228,8 +228,10 @@ public class GoodsManager implements Serializable {
 
 			// Check for inflation and deflation adjustment due to other resources
 			value = checkDeflation(id, value);
-			// Adjust the value to the average value
-			value = tuneToMarketAverageValue(good, value);
+			// Adjust the value according to the inter-market value
+			double adjustment = adjustMarketValue(good, value) / 20.0;
+			if (value + adjustment > 0)
+				value += adjustment;
 
 			// Save the value point if it has changed
 			double oldValue = goodsValues.get(id);
@@ -247,43 +249,54 @@ public class GoodsManager implements Serializable {
 	}
 
 	/**
-	 * Tunes the value of a good to be closer to the national/market average.
+	 * Adjusts the inter-market value of a good based on the local value of a settlement.
 	 * 
 	 * @param good
 	 * @param value
-	 * @return
+	 * @return the market adjustment
 	 */
-	private double tuneToMarketAverageValue(Good good, double value) {
+	private double adjustMarketValue(Good good, double value) {
 		// Gets the inter-market value among the settlements
-		double average = good.getAverageMarketGoodValue();
-		double newAve0 = 0;
+		double currentMarket = good.getInterMarketGoodValue();
+		double futureMarket = 0;
 
-		if (average == 0) {
-			newAve0 = value;
+		if (currentMarket == -1) {
+			// At the startup of the sim
+			futureMarket = value;
+				
+			if (futureMarket > MAX_FINAL_VP)
+				futureMarket = MAX_FINAL_VP;			
+			else if (futureMarket < MIN_VP)
+				futureMarket = MIN_VP;
+			
+			good.setInterMarketGoodValue(futureMarket);
+			
+			return 0;
 		}
 
 		else {
-			newAve0 = .1 * average + .9 * value;
+			// Let the inter-market value affects the value of this good
+			// at this settlement 
+			futureMarket = .9 * currentMarket + .1 * value;
 
-			double newAve1 = average;
+//			double newValue = 0;
+//
+//			if (currentMarket > value)
+//				newValue = (currentMarket - value) / 10;
+//			else if (currentMarket < value)
+//				newValue = (value - currentMarket) / 10;
+//
+//			futureMarket = futureMarket + newValue;
 
-			if (average > value)
-				newAve1 = 1.05 * value;
-			else if (average < value)
-				newAve1 = 1.05 * average;
-
-			newAve0 = Math.min(newAve0, newAve1);
-
-			if (newAve0 > MAX_FINAL_VP)
-				newAve0 = MAX_FINAL_VP;
+			if (futureMarket > MAX_FINAL_VP)
+				futureMarket = MAX_FINAL_VP;
+			else if (futureMarket < MIN_VP)
+				futureMarket = MIN_VP;
 			
-			if (newAve0 < MIN_VP)
-				newAve0 = MIN_VP;
+			good.setInterMarketGoodValue(futureMarket);
+			
+			return futureMarket - currentMarket;
 		}
-		
-		good.setAverageMarketGoodValue(newAve0);
-		
-		return newAve0;
 	}
 
 

@@ -220,7 +220,7 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 			else if (r == 2)
 				return getTotalMass(selectedSettlement, foodList.get(rowIndex));
 			else if (r == 3)
-				return Math.round(convertFoodToGood(foodList.get(rowIndex)).getAverageMarketGoodValue()*100.0)/100.0;
+				return Math.round(convertFoodToGood(foodList.get(rowIndex)).getInterMarketGoodValue()*100.0)/100.0;
 			else if (r == 4)
 				return selectedSettlement.getGoodsManager().getGoodValuePoint(foodList.get(rowIndex).getID());
 			else if (r == 5)
