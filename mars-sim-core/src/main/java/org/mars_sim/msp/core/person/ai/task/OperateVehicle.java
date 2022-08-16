@@ -713,10 +713,8 @@ public abstract class OperateVehicle extends Task implements Serializable {
 		 * May comment off the block of codes below 
 		 */
         
-//        double bFC = vehicle.getBaseFuelConsumption();
-//        
-//        double bFE = vehicle.getBaseFuelEconomy();
-//        
+//        double bFC = vehicle.getBaseFuelConsumption();      
+//        double bFE = vehicle.getBaseFuelEconomy();   
 //        double estFE = vehicle.getEstimatedFuelEconomy();
 //        	
 //        // Calculate the average power for this time period [in kW]
@@ -784,6 +782,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
 	
     /** 
      * Determines the ETA (Estimated Time of Arrival) to the destination.
+     * 
      * @return MarsClock instance of date/time for ETA
      */
     public MarsClock getETA() {

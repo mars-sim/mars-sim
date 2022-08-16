@@ -94,16 +94,34 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	/** Default speed if no operators have ever driven. */
 	private static final double DEFAULT_SPEED = 10D;
 
-
 	/** True if a person is submitting the mission plan request. */
 	private boolean isMissionPlanReady;
+	
+	/** The msol cache. */
+	private int msolCache;
+	/** The current navpoint index. */
+	private int navIndex = 0;
 	// When was the last check on the remaining resources
 	private int lastResourceCheck = 0;
+	
 	/** Vehicle traveled distance at start of mission. */
 	private double startingTravelledDistance;
 	/** Total traveled distance. */
 	private double distanceTravelled;
-
+	/** The estimated total distance for this mission. */
+	private double distanceProposed = 0;
+	/** The current leg remaining distance at this moment. */
+	private double distanceCurrentLegRemaining;
+	/** The estimated total remaining distance at this moment. */
+	private double distanceTotalRemaining;
+	
+	private String dateEmbarked;
+	/** The current traveling status of the mission. */
+	private String travelStatus;
+	/** The String record of the mission vehicle. */
+	private String vehicleRecord;
+	
+	
 	// Data members
 	/** The vehicle currently used in the mission. */
 	private Vehicle vehicle;
@@ -119,21 +137,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 
 	private Settlement startingSettlement;
 
-	private String dateEmbarked;
-	/** The current traveling status of the mission. */
-	private String travelStatus;
-	/** The String record of the mission vehicle. */
-	private String vehicleRecord;
-	
-	/** The current navpoint index. */
-	private int navIndex = 0;
-	
-	/** The estimated total distance for this mission. */
-	private double distanceProposed = 0;
-	/** The current leg remaining distance at this moment. */
-	private double distanceCurrentLegRemaining;
-	/** The estimated total remaining distance at this moment. */
-	private double distanceTotalRemaining;
+
 	
 	/** The last navpoint the mission stopped at. */
 	private NavPoint lastStopNavpoint;
@@ -792,7 +796,14 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 		}
 		else if (TRAVELLING.equals(getPhase())) {
 			performTravelPhase(member);
-			computeTotalDistanceTravelled();
+			
+			int msol = marsClock.getMillisolInt();
+			if (msolCache != msol) {
+				msolCache = msol;
+				// Update the distances only once per msol
+				computeTotalDistanceRemaining();
+				computeTotalDistanceTravelled();
+			}
 		}
 		else if (DISEMBARKING.equals(getPhase())) {
 			// if arriving at the settlement
@@ -2194,41 +2205,48 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	 */
 	public final double computeTotalDistanceRemaining() {
 
-		double leg = getCurrentLegDistance(); // computeDistanceCurrentLegRemaining(); //
-		int index = 0;
-		double navDist = 0;
-		if (AT_NAVPOINT.equals(travelStatus))
-			index = getCurrentNavpointIndex();
-		else if (TRAVEL_TO_NAVPOINT.equals(travelStatus))
-			index = getNextNavpointIndex();
+		double leg = computeDistanceCurrentLegRemaining(); // getCurrentLegDistance();
+		double total = 0;
+		
+		if (isCurrentNavpointSettlement()) {
+			 total = leg;
+		}
+		else {
+			int index = 0;
+			double navDist = 0;
+			if (AT_NAVPOINT.equals(travelStatus))
+				index = getCurrentNavpointIndex();
+			else if (TRAVEL_TO_NAVPOINT.equals(travelStatus))
+				index = getNextNavpointIndex();
 
-		for (int x = index + 1; x < getNumberOfNavpoints(); x++) {
-			NavPoint prev = getNavpoint(x - 1);
-			NavPoint next = getNavpoint(x); 
-			if ((prev != null) && (next != null)) {
-				navDist += Coordinates.computeDistance(prev.getLocation(), next.getLocation());
+			for (int x = index + 1; x < getNumberOfNavpoints(); x++) {
+				NavPoint prev = getNavpoint(x - 1);
+				NavPoint next = getNavpoint(x); 
+				if ((prev != null) && (next != null)) {
+					navDist += Coordinates.computeDistance(prev.getLocation(), next.getLocation());
+				}
 			}
+			
+			// Note: check for Double.isInfinite() and Double.isNaN()
+			if (Double.isNaN(navDist)) {
+				logger.severe(getName() + " has navDist is NaN.");
+				navDist = 0;
+			}
+			
+			total = leg + navDist;
 		}
-		
-		// Note: check for Double.isInfinite() and Double.isNaN()
-		if (Double.isNaN(navDist)) {
-			logger.severe(getName() + " has navDist is NaN.");
-			navDist = 0;
-		}
-		
-		double total = leg + navDist;
-		
+			
 		if (distanceTotalRemaining != total) {
 			// Record the distance
 			distanceTotalRemaining = total;
 			
-			fireMissionUpdate(MissionEventType.DISTANCE_EVENT);	
+			fireMissionUpdate(MissionEventType.DISTANCE_EVENT);
 		}
-			
-		logger.log(vehicle, Level.FINE, 20_000, this 
-				+ " - Current waypoint remaining distance: "	+ Math.round(leg * 1000.0)/1000.0 + " km.   "
-				+ "Total remaining distance: "	+ Math.round(total * 1000.0)/1000.0 + " km.");
 		
+//		logger.log(vehicle, Level.FINE, 20_000, this 
+//				+ " - Current waypoint remaining distance: "	+ Math.round(leg * 1000.0)/1000.0 + " km.   "
+//				+ "Total remaining distance: "	+ Math.round(total * 1000.0)/1000.0 + " km.");
+
 		return total;
 	}
 

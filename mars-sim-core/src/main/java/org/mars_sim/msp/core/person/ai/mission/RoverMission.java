@@ -776,7 +776,7 @@ public abstract class RoverMission extends VehicleMission {
 							getCurrentLegStartingTime(), getCurrentLegDistance());
 				}
 			}
-			
+
 			else {
 				logger.warning(getRover(), 10_000L, "Out of fuel. Quit assigning the driving task.");
 				return null;

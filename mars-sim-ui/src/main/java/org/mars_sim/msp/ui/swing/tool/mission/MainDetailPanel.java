@@ -105,7 +105,7 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 	private static final String EMPTY = Msg.getString("MainDetailPanel.empty"); //$NON-NLS-1$
 
 	private static final int MAX_LENGTH = 48;
-	private static final int HEIGHT_0 = 35;
+//	private static final int HEIGHT_0 = 35;
 	private static final int HEIGHT_1 = 150;
 	
 	// Private members
@@ -206,8 +206,13 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 	private WebPanel initMissionPane() {
 
 		// Create the mission pane spring layout.
-		WebPanel missionPane = new WebPanel(new GridLayout(6, 2));
+		WebPanel missionLayout = new WebPanel(new GridLayout(6, 2));
 
+		// Create the vehicle pane.
+		WebPanel missionPane = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+		missionPane.setAlignmentX(Component.BOTTOM_ALIGNMENT);
+		missionLayout.add(missionPane);
+		
 		// Create the type label.
 		WebLabel typeLabel0 = new WebLabel(Msg.getString("MainDetailPanel.type", SwingConstants.RIGHT)); //$NON-NLS-1$
 		typeLabel0.setAlignmentX(Component.RIGHT_ALIGNMENT);
@@ -267,14 +272,14 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 		wrapper5.add(missionStatusLabel);
 		missionPane.add(wrapper5);
 		
-		return missionPane;
+		return missionLayout;
 	}
 
 	private WebPanel initVehiclePane() {
 
 		// Create the vehicle grid panel.
 		WebPanel vehicleLayout = new WebPanel(new GridLayout(1, 2));
-		vehicleLayout.setPreferredSize(new Dimension(-1, HEIGHT_0));
+//		vehicleLayout.setPreferredSize(new Dimension(-1, HEIGHT_0));
 		
 		// Create the vehicle pane.
 		WebPanel vehiclePane = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
@@ -468,7 +473,7 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 		customPanelLayout = new CardLayout(10, 10);
 		missionCustomPane = new WebPanel(customPanelLayout);
 		missionCustomPane.setAlignmentX(Component.RIGHT_ALIGNMENT);
-		missionCustomPane.setPreferredSize(new Dimension(-1, HEIGHT_0));
+//		missionCustomPane.setPreferredSize(new Dimension(-1, HEIGHT_0));
 
 		// Create custom empty panel.
 		WebPanel emptyCustomPanel = new WebPanel();

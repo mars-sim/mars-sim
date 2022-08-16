@@ -64,12 +64,12 @@ public class MissionTableModel extends AbstractTableModel
 	private final static int MEMBER_NUM = 9;
 	/** Navpoint number column. */
 	private final static int NAVPOINT_NUM = 10;
-	/** Travelled distance column. */
-	private final static int TRAVELLED_DISTANCE = 11;
+	/** Remaining distance to next navpoint column. */
+	private final static int REMAINING_DISTANCE_TO_NEXT_NAVPOINT = 11;
 	/** Remaining distance column. */
 	private final static int TOTAL_REMAINING_DISTANCE = 12;
-	/** Remaining distance to next navpoint column. */
-	private final static int REMAINING_DISTANCE_TO_NEXT_NAVPOINT = 13;
+	/** Travelled distance column. */
+	private final static int TRAVELLED_DISTANCE = 13;
 	/** Proposed route distance column. */
 	private final static int PROPOSED_ROUTE_DISTANCE = 14;
 	/** The number of Columns. */

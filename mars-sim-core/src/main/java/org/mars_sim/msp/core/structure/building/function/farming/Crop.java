@@ -264,7 +264,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 				// assume a max 2-day incubation period if no 0% tissue culture is available
 				phaseType = PhaseType.INCUBATION;
 				currentPhaseWorkCompleted = 0;
-				logger.log(building, Level.INFO, 0, " No " + name
+				logger.log(building, Level.INFO, 0, "No " + name
 						+ " tissue-culture left. Restocking.");
 				// Need a petri dish
 				if (building.getSettlement().hasItemResource(ItemResourceUtil.PETRI_DISH_ID)) {

@@ -41,25 +41,29 @@ public interface Worker extends Loggable, Serializable, UnitIdentifer, Equipment
 	public SkillManager getSkillManager();
 
 	/**
-	 * Get the workers name
+	 * Gets the workers name.
+	 * 
 	 * @return
 	 */
 	public String getName();
 
 	/**
-	 * What is the Worker doing
+	 * What the Worker is doing.
+	 * 
 	 * @return
 	 */
 	public String getTaskDescription();
 
 	/**
 	 * Where the the Worker positioned on the Mars Surface?
+	 * 
 	 * @return
 	 */
 	public Coordinates getCoordinates();
 
 	/**
-	 * How efficient is this Worker
+	 * How efficient is this Worker.
+	 * 
 	 * @return
 	 */
 	public double getPerformanceRating();
@@ -67,81 +71,84 @@ public interface Worker extends Loggable, Serializable, UnitIdentifer, Equipment
 	/**
 	 * What is the top level container of this worker; this will be a Unit that is on the MarsSurface,
 	 * e.g. Vehicle or Settlement.
+	 * 
 	 * @return
 	 */
 	public Unit getTopContainerUnit();
 
 
 	/**
-	 * Is the worker in a vehicle
+	 * Is the worker in a vehicle ?
 	 *
 	 * @return true if the worker in a vehicle
 	 */
 	public boolean isInVehicle();
 
 	/**
-	 * Get vehicle worker is in, null if member is not in vehicle
+	 * Gets vehicle worker is in, null if member is not in vehicle/
 	 *
 	 * @return the worker's vehicle
 	 */
 	public Vehicle getVehicle();
 
 	/**
-	 * Is the worker inside a vehicle in a garage
+	 * Is the worker inside a vehicle in a garage ?
 	 * 
 	 * @return
 	 */
 	public boolean isInVehicleInGarage();
 	
 	/**
-	 * Is the worker in a settlement
+	 * Is the worker in a settlement ?
 	 *
 	 * @return true if the worker in a settlement
 	 */
 	public boolean isInSettlement();
 
 	/**
-	 * Get the current Settlement of the worker; may be different from the associated Settlement.
+	 * Gets the current Settlement of the worker; may be different from the associated Settlement.
+	 * 
 	 * @return
 	 */
 	public Settlement getSettlement();
 	
 	/**
-	 * Get the Worker's building
+	 * Gets the Worker's building.
+	 * 
 	 * @return building
 	 */
 	public Building getBuildingLocation();
 	
 	/**
-	 * Is the Worker outside
+	 * Is the Worker outside ?
 	 *
 	 * @return true if the worker is on the MarsSurface
 	 */
 	public boolean isOutside();
 
 	/**
-	 * Is the worker outside of a settlement but within its vicinity
+	 * Is the worker outside of a settlement but within its vicinity ?
 	 *
 	 * @return true if the person is just right outside of a settlement
 	 */
 	public boolean isRightOutsideSettlement();
 
 	/**
-	 * Get the settlement in vicinity. This is used assume the person is not at a settlement
+	 * Gets the settlement in vicinity. This is used assume the person is not at a settlement.
 	 *
 	 * @return the worker's settlement
 	 */
 	public Settlement getNearbySettlement();
 
 	/**
-	 * Adds a unit listener
+	 * Adds a unit listener.
 	 *
 	 * @param newListener the listener to add.
 	 */
 	public void addUnitListener(UnitListener newListener);
 
 	/**
-	 * Removes a unit listener
+	 * Removes a unit listener.
 	 *
 	 * @param oldListener the listener to remove.
 	 */
@@ -150,6 +157,7 @@ public interface Worker extends Loggable, Serializable, UnitIdentifer, Equipment
 
 	/**
 	 * What is the Mission this Worker is performing.
+	 * 
 	 * @return
 	 */
 	public Mission getMission();
@@ -162,7 +170,8 @@ public interface Worker extends Loggable, Serializable, UnitIdentifer, Equipment
 	public void setMission(Mission newMission);
 
 	/**
-	 * Get the Worker's position within the Settlement/Vehicle
+	 * Gets the Worker's position within the Settlement/Vehicle.
+	 * 
 	 * @return
 	 */
 	public LocalPosition getPosition();
@@ -175,12 +184,12 @@ public interface Worker extends Loggable, Serializable, UnitIdentifer, Equipment
 	public void setPosition(LocalPosition position);
 
 	/**
-	 * Gets the manager of the Worker's Tasks
+	 * Gets the manager of the Worker's Tasks.
 	 */
 	public TaskManager getTaskManager();
 
 	/**
-	 * Gets the unit type
+	 * Gets the unit type.
 	 *
 	 * @return
 	 */

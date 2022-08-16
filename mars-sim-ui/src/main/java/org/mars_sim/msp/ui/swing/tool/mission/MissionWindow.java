@@ -128,6 +128,7 @@ public class MissionWindow extends ToolWindow {
 
 		// Create the main detail panel.
 		mainPanel = new MainDetailPanel(desktop, this);
+		mainPanel.setSize(new Dimension(WIDTH - 200, HEIGHT));
 		tabPane.add("Main", mainPanel);
 
 		// Create the navpoint panel.
