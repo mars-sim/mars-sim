@@ -757,9 +757,12 @@ public class EnterAirlock extends Task implements Serializable {
 			doneCleaning = true;
 		}
 
-		if (doneCleaning && transitionTo(1)) {
+		if (doneCleaning
+			 && (!inSettlement || transitionTo(1))) {
+			// If in vehicle, it doesn't need to transition to zone 1
 			canProceed = true;
 		}
+		
 		
 		if (canProceed) {
 			// Reset accumulatedTime back to zero

@@ -290,7 +290,7 @@ public class ExitAirlock extends Task implements Serializable {
 		 	return true;
 		}
 		
-		if (airlock.getEntity() instanceof Building) {
+		if (inSettlement) {
 			Building airlockBuilding = (Building)(airlock.getEntity());
 			if (person.getSettlement().getBuildingManager().isObservatoryAttached(airlockBuilding)) {
 				return true;
@@ -895,7 +895,7 @@ public class ExitAirlock extends Task implements Serializable {
 		boolean canProceed = false;
 
 		if (!isFit()) {
-			walkAway(person, NOT_FIT + " to prebreathe.");
+			walkAway(person, NOT_FIT + " to depressurize chamber.");
 			return time;
 		}
 		
@@ -943,13 +943,8 @@ public class ExitAirlock extends Task implements Serializable {
 					"Chamber already depressurized for exit in "
 				+ airlock.getEntity().toString() + ".");
 
-			if (inSettlement) {
-				if (transitionTo(3)) {
-					canProceed = true;
-				}
-				else
-					canProceed = false;
-			} else {
+			if (!inSettlement || transitionTo(3)) {
+				// If in vehicle, it doesn't need to transition to zone 3
 				canProceed = true;
 			}
 			
