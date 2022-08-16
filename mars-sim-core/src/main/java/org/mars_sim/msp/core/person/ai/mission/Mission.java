@@ -823,24 +823,31 @@ public abstract class Mission implements Serializable, Temporal {
 		addMissionScore();
 
 		done = true; // Note: done = true is very important to keep !
-
+		
+		String listOfStatuses = missionStatus.stream().map(MissionStatus::getName).collect(Collectors.joining(", "));
+		
 		StringBuilder status = new StringBuilder();
-		status.append("Ended the ").append(getName()).append(" with the status flag(s): ");
-		status.append(missionStatus.stream().map(MissionStatus::getName).collect(Collectors.joining(", ")));
+		status.append("Ended the ")
+			.append(getName())
+			.append(" with the status flag(s): ")
+			.append(listOfStatuses);
 		logger.info(startingMember, status.toString());
 
-		// The members are leaving the mission
+		// Disband the members
 		if (members != null && !members.isEmpty()) {
-			logger.info(startingMember, "Disbanded mission member(s) : " + members);
+			String listOfMembers = members.stream().map(Worker::getName).collect(Collectors.joining(", "));
+			logger.info(startingMember, "Disbanding mission member(s): " + listOfMembers);
 			List<Worker> origMembers = new ArrayList<>(members);
 			for(Worker m : origMembers) {
 				removeMember(m);
-			}
+			}	
 		}
 
+		
 		if (haveMissionStatus(MissionStatus.ABORTED_MISSION)) {
-			setPhase(ABORTED,
-					missionStatus.stream().map(MissionStatus::getName).collect(Collectors.joining(", ")));
+			// Note: set the aborted phase here for now
+			// Should look for another location to set the aborted phase 
+			setPhase(ABORTED, listOfStatuses);
 		}
 		
 //		// Mission is completed if it has not been abort by user AND mission status is marked as accomplished

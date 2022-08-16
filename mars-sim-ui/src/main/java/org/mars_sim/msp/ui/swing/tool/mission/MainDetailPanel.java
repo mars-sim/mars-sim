@@ -667,7 +667,8 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 
 		else {
 			
-			if (currentVehicle == null) {
+			if (currentVehicle == null && mission.getMembers().isEmpty() && mission.isDone()) {
+				// Check if the mission is done and the members have been disbanded
 				memberOuterPane.removeAll();
 				memberOuterPane.add(memberLabel);
 				memberLabel.setText(" Disbanded Members: " + printMembers(mission));
@@ -799,7 +800,7 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 
 
 	/**
-	 * Clears the mission content on the Main tab
+	 * Clears the mission content on the Main tab.
 	 */
 	public void clearInfo() {
 		// NOTE: do NOT clear the mission info. Leave the info there for future viewing
@@ -847,11 +848,11 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 			return "";
 		}
 		
-		return list.stream().map(Worker::getName).collect(Collectors.joining(","));
+		return list.stream().map(Worker::getName).collect(Collectors.joining(", "));
 	}
 	
 	/**
-	 * Update the custom mission panel with a mission.
+	 * Updates the custom mission panel with a mission.
 	 *
 	 * @param mission the mission.
 	 */
@@ -881,7 +882,7 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 	}
 
 	/**
-	 * Update the custom mission panels with a mission event.
+	 * Updates the custom mission panels with a mission event.
 	 *
 	 * @param e the mission event.
 	 */
@@ -896,7 +897,7 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 	}
 
 	/**
-	 * Catch unit update event.
+	 * Catches unit update event.
 	 *
 	 * @param event the unit event.
 	 */
