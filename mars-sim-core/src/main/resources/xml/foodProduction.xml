@@ -165,6 +165,111 @@
 		</outputs>
 	</process>
 
+	<process name="Package Quinoa into Granola Bar"
+			tech="1" skill="0"
+			work-time="50"
+			process-time="100"
+			power-required="0.1">
+		<description>Package puffed Quinoa, sugarcane juice, nuts and dried fruits into Granola Bar.</description>
+		<inputs>
+			<resource name="Quinoa" amount="4.0" />
+			<resource name="Strawberry" amount="0.5" />
+			<resource name="Sugarcane Juice" amount="0.5" />
+			<resource name="Peanut" amount="1.0" />
+		</inputs>
+		<outputs>
+			<resource name="Granola Bar" amount="5.0" />
+		</outputs>
+	</process>
+
+	<process name="Package Rice into Granola Bar"
+			tech="1" skill="0"
+			work-time="50"
+			process-time="100"
+			power-required="0.1">
+		<description>Package puffed rice, sugarcane juice, nuts and dried fruits into Granola Bar.</description>
+		<inputs>
+			<resource name="Rice" amount="4.0" />
+			<resource name="Strawberry" amount="0.5" />
+			<resource name="Sugarcane Juice" amount="0.5" />
+			<resource name="Peanut" amount="1.0" />
+		</inputs>
+		<outputs>
+			<resource name="Granola Bar" amount="5.0" />
+		</outputs>
+	</process>
+
+	<process name="Package Wheat into Granola Bar"
+			tech="1" skill="0"
+			work-time="50"
+			process-time="100"
+			power-required="0.1">
+		<description>Package puffed wheat, sugarcane juice, nuts and dried fruits into Granola Bar.</description>
+		<inputs>
+			<resource name="Wheat" amount="4.0" />
+			<resource name="Strawberry" amount="0.5" />
+			<resource name="Sugarcane Juice" amount="0.5" />
+			<resource name="Peanut" amount="1.0" />
+		</inputs>
+		<outputs>
+			<resource name="Granola Bar" amount="5.0" />
+		</outputs>
+	</process>
+
+	<process name="Package Okara and Wheat into Granola Bar"
+			tech="1" skill="0"
+			work-time="50"
+			process-time="100"
+			power-required="0.1">
+		<description>Package puffed wheat, sugarcane juice, nuts and dried fruits into Granola Bar.</description>
+		<inputs>
+			<resource name="Wheat" amount="2.0" />
+			<resource name="Okara" amount="9.11" />
+			<resource name="Strawberry" amount="0.5" />
+			<resource name="Sugarcane Juice" amount="0.5" />
+			<resource name="Peanut" amount="1.0" />
+		</inputs>
+		<outputs>
+			<resource name="Granola Bar" amount="5.0" />
+		</outputs>
+	</process>
+
+	<process name="Package Okara and Rice into Granola Bar"
+			tech="1" skill="0"
+			work-time="50"
+			process-time="100"
+			power-required="0.1">
+		<description>Package puffed wheat, sugarcane juice, nuts and dried fruits into Granola Bar.</description>
+		<inputs>
+			<resource name="Rice" amount="2.0" />
+			<resource name="Okara" amount="9.11" />
+			<resource name="Strawberry" amount="0.5" />
+			<resource name="Sugarcane Juice" amount="0.5" />
+			<resource name="Peanut" amount="1.0" />
+		</inputs>
+		<outputs>
+			<resource name="Granola Bar" amount="5.0" />
+		</outputs>
+	</process>
+
+	<process name="Package Okara and Quinoa into Granola Bar"
+			tech="1" skill="0"
+			work-time="50"
+			process-time="100"
+			power-required="0.1">
+		<description>Package puffed wheat, sugarcane juice, nuts and dried fruits into Granola Bar.</description>
+		<inputs>
+			<resource name="Quinoa" amount="2.0" />
+			<resource name="Okara" amount="9.11" />
+			<resource name="Strawberry" amount="0.5" />
+			<resource name="Sugarcane Juice" amount="0.5" />
+			<resource name="Peanut" amount="1.0" />
+		</inputs>
+		<outputs>
+			<resource name="Granola Bar" amount="5.0" />
+		</outputs>
+	</process>
+	
 	<process name="Make French Fries from potatoes"
 			tech="1" skill="1"
 			work-time="50"
@@ -174,6 +279,21 @@
 		<inputs>
 			<resource name="Potato" amount="10.0" />
 			<resource name="Peanut Oil" amount="1.0" />
+		</inputs>
+		<outputs>
+			<resource name="French Fries" amount="10.0" />
+		</outputs>
+	</process>
+	
+	<process name="Make French Fries from potatoes"
+			tech="1" skill="1"
+			work-time="50"
+			process-time="50"
+			power-required="0.7">
+		<description>Cut potatoes and make French Fries.</description>
+		<inputs>
+			<resource name="Potato" amount="10.0" />
+			<resource name="Soybean Oil" amount="1.0" />
 		</inputs>
 		<outputs>
 			<resource name="French Fries" amount="10.0" />
@@ -201,7 +321,7 @@
 		</outputs>
 	</process>
 
-		<process name="Make Quinoa Sprouts from Quinoa"
+	<process name="Make Quinoa Sprouts from Quinoa"
 			tech="1" skill="1"
 			work-time="50"
 			process-time="2000"
@@ -224,27 +344,31 @@
 		</outputs>
 	</process>
 
+	<!-- see http://dx.doi.org/10.2135/cropsci1999.0011183X0039000200017x and http://dx.doi.org/10.1016/B978-0-12-394437-5.00130-3 for soymilk/tofu yield (5.1 ml/g and 0.865 g/ml) and okara yield (1.1 per kg beans) and water:dry bean ratio (8:1 to 10:1); assumes density of soymilk is 1.03 kg/l and about 3/4 as much sugar as before; aiming for 13.6 g/l total sugar -->
 	<process name="Make Okara and Soymilk from Soybeans"
-		tech="1" skill="0" work-time="30" process-time="300"
+		tech="1" skill="0" work-time="30" process-time="70"
 			power-required="0.5">
 
 		<description> Make pulp (Okara) and Soymilk from Soybean after
 			Washing, Dehulling, Soaking, Milling, Paste
 			Heating, and Filtration. </description>
 		<inputs>
+			<part name="blender" number="1" />
 			<part name="stove" number="1" />
-			<resource name="Soybean" amount="1.0" />
-			<resource name="Water" amount="16.0" />
-			<resource name="Sugar" amount="0.1" />
+			<resource name="Soybean" amount="0.95" />
+			<resource name="Water" amount="10.5" />
+			<resource name="Sugar" amount="0.0465" />
 		</inputs>
 		<outputs>
+			<part name="blender" number="1" />
 			<part name="stove" number="1" />
-			<resource name="Okara" amount="0.8" />
-			<resource name="Soymilk" amount="12.0" />
+			<resource name="Grey Water" amount="1.9" />
+			<resource name="Okara" amount="1.045" />
+			<resource name="Soymilk" amount="5" />
 		</outputs>
 	</process>
 
-	<process name="make sesame milk from soymilk"
+	<process name="Make sesame milk from soymilk"
 		tech="1" skill="1" work-time="20" process-time="20"
 			power-required="1.0">
 
@@ -292,7 +416,7 @@
 		</outputs>
 	</process>
 
-		<process name="Make Peanut Butter from Peanuts"
+	<process name="Make Peanut Butter from Peanuts"
 		tech="1" skill="0" work-time="50" process-time="50"
 			power-required="0.2">
 
@@ -314,7 +438,29 @@
 			<resource name="Peanut Butter" amount="3.5" />
 		</outputs>
 	</process>
+	
+	<process name="Make Peanut Butter from Peanuts"
+		tech="1" skill="0" work-time="50" process-time="50"
+			power-required="0.2">
 
+		<description>Ground peanuts, mix with oil, pour the mixture into food processor.
+		Blend until smooth.</description>
+
+		<inputs>
+			<part name="blender" number="1" />
+			<!--
+			TODO: add cocoa powder, cinnamon or other spice
+			/>-->
+			<resource name="Peanut" amount="3.0" />
+			<resource name="Peanut Oil" amount="0.5" />
+			<resource name="Table Salt" amount="0.1" />
+			<resource name="Soy Protein" amount="0.1" />
+		</inputs>
+		<outputs>
+			<part name="blender" number="1" />
+			<resource name="Peanut Butter" amount="3.5" />
+		</outputs>
+	</process>
 
 	<process name="Package Roast Peanuts into Dry Food"
 		tech="0" skill="0" work-time="50" process-time="50"
@@ -351,25 +497,142 @@
 		</outputs>
 	</process>
 
-	<process name="Make Tofu from Okara and Soymilk"
-		tech="1" skill="1" work-time="25" process-time="500"
+	<process name="Make Tofu from Soymilk and Epsom Salt"
+		tech="1" skill="1" work-time="25" process-time="50"
 			power-required="1.0">
 
-		<description> Boil up Okara-Soymilk mixture, add Epsom Salt as Coagulants,
-			gently stir and heat, the curds will separate.</description>
+		<description> Boil up Soymilk, add Epsom Salt as Coagulant,
+			gently stir and heat, and the curds will separate.</description>
 
 		<inputs>
 			<part name="stove" number="1" />
-			<resource name="Soymilk" amount="3.0" />
-			<resource name="Okara" amount="0.5" />
-			<resource name="Epsom Salt" amount=".05" />
+			<resource name="Soymilk" amount="2.5" />
+			<resource name="Epsom Salt" amount="0.021" />
 		</inputs>
 		<outputs>
 			<part name="stove" number="1" />
-			<resource name="Tofu" amount="2.0" />
+			<resource name="Tofu" amount="2.1" />
+			<!-- Grey Water is (edible) tofu whey -->
+			<resource name="Grey Water" amount="0.4" />
 		</outputs>
 	</process>
 
+	<!-- 7.37 g/kg soymilk to 15.47 g/kg soymilk is ideal according to https://www.instructables.com/Homemade-Tofu/ ...TODO: add gypsum later? -->
+	<process name="Make Tofu from Soymilk and Vinegar"
+		tech="1" skill="1" work-time="25" process-time="50"
+			power-required="1.0">
+
+		<description> Boil up Soymilk, add Epsom Salt as Coagulant,
+			gently stir and heat, and the curds will separate.</description>
+
+		<inputs>
+			<part name="stove" number="1" />
+			<resource name="Soymilk" amount="2.5" />
+			<resource name="Rice Vinegar" amount="0.039" />
+		</inputs>
+		<outputs>
+			<part name="stove" number="1" />
+			<resource name="Tofu" amount="2.1" />
+			<!-- Grey Water is (edible) tofu whey -->
+			<resource name="Grey Water" amount="0.4" />
+		</outputs>
+	</process>
+
+	<process name="Make Tofu from Soybeans, Water, and Epsom Salt (large batch)"
+		tech="1" skill="2" work-time="70" process-time="400"
+			power-required="3.8">
+
+		<description> Boil up Soybeans, grind into soymilk, filter off okra, and add Epsom Salt as Coagulants.
+			gently stir and heat, the curds will separate.</description>
+
+		<inputs>
+			<part name="blender" number="1" />
+			<part name="stove" number="1" />
+			<resource name="Soybean" amount="1.7" />
+			<resource name="Water" amount="18.7" />
+			<resource name="Epsom Salt" amount="0.076" />
+		</inputs>
+		<outputs>
+			<part name="blender" number="1" />
+			<part name="stove" number="1" />
+			<resource name="Tofu" amount="7.5" />
+			<resource name="Okara" amount="1.87" />
+			<resource name="Grey Water" amount="3.4" />
+		</outputs>
+	</process>
+
+	<process name="Make Tofu from Soybeans, Water, and Vinegar (large batch)"
+		tech="1" skill="2" work-time="70" process-time="400"
+			power-required="3.8">
+
+		<description> Boil up Soybeans, grind into soymilk, filter off okra, and add vinegar as Coagulants.
+			gently stir and heat, the curds will separate.</description>
+
+		<inputs>
+			<part name="blender" number="1" />
+			<part name="stove" number="1" />
+			<resource name="Soybean" amount="1.7" />
+			<resource name="Water" amount="18.7" />
+			<resource name="Rice Vinegar" amount="0.0691" />
+		</inputs>
+		<outputs>
+			<part name="blender" number="1" />
+			<part name="stove" number="1" />
+			<resource name="Tofu" amount="7.5" />
+			<resource name="Okara" amount="1.87" />
+			<resource name="Grey Water" amount="3.4" />
+		</outputs>
+	</process>
+
+	<process name="Make Soymilk and Tofu from Soybeans, Water, and Epsom Salt"
+		tech="1" skill="2" work-time="53" process-time="400"
+			power-required="2.8">
+
+		<description> Boil up Soybeans, grind into soymilk, filter off okra, and add Epsom Salt as Coagulants.
+			gently stir and heat, the curds will separate. Save and sweeten some soymilk.</description>
+
+		<inputs>
+			<part name="blender" number="1" />
+			<part name="stove" number="1" />
+			<resource name="Soybean" amount="1.25" />
+			<resource name="Water" amount="13.75" />
+			<resource name="Epsom Salt" amount="0.556" />
+			<resource name="Sugar" amount="0.280" />
+		</inputs>
+		<outputs>
+			<part name="blender" number="1" />
+			<part name="stove" number="1" />
+			<resource name="Tofu" amount="3.0" />
+			<resource name="Soymilk" amount="3.0" />
+			<resource name="Okara" amount="1.375" />
+			<resource name="Grey Water" amount="6.07" />
+		</outputs>
+	</process>
+
+	<process name="Make Soymilk and Tofu from Soybeans, Water, and Vinegar"
+		tech="1" skill="2" work-time="53" process-time="400"
+			power-required="2.8">
+
+		<description> Boil up Soybeans, grind into soymilk, filter off okra, and add vinegar as coagulants.
+			gently stir and heat, the curds will separate. Save and sweeten some soymilk.</description>
+
+		<inputs>
+			<part name="blender" number="1" />
+			<part name="stove" number="1" />
+			<resource name="Soybean" amount="1.25" />
+			<resource name="Water" amount="13.75" />
+			<resource name="Rice Vinegar" amount="0.0508" />
+			<resource name="Sugar" amount="0.280" />
+		</inputs>
+		<outputs>
+			<part name="blender" number="1" />
+			<part name="stove" number="1" />
+			<resource name="Tofu" amount="3.0" />
+			<resource name="Soymilk" amount="3.0" />
+			<resource name="Okara" amount="1.375" />
+			<resource name="Grey Water" amount="6.07" />
+		</outputs>
+	</process>
 
 	<process name="Process Soybean into Soy Flour"
 		tech="1" skill="2" work-time="50" process-time="300"
@@ -387,25 +650,194 @@
 		</outputs>
 	</process>
 
+	<!-- https://www.youtube.com/watch?v=LGMVoL7nGSI says 30 g vinegar per 500 g cooked substrate... https://en.wikipedia.org/wiki/Tempeh#Dry_matter_losses_and_yield suggests 1.9 kg tempeh from 1 kg raw soybeans 1 kg dry ~2.3 kg cooked http://dx.doi.org/10.1016/B978-0-12-394437-5.00130-3 for moisture content, and https://www.youtube.com/watch?v=Zfkd6VXT9_0 for starter -->
+	<process name="Make Tempeh from Soybeans"
+		tech="1" skill="2" work-time="70" process-time="1000"
+			power-required="0.6">
 
+		<description> Boil Soybeans, add vinegar and Rhizopus oligosporus starter, and
+			allow to ferment.</description>
+
+		<inputs>
+			<part name="autoclave" number="1" />
+			<resource name="Soybeans" amount="1.0" />
+			<resource name="Water" amount="3.5" />
+			<resource name="Rice Vinegar" amount="0.138" />
+			<resource name="Rhizopus oligosporus" amount="0.0023" />
+		</inputs>
+		<outputs>
+			<part name="autoclave" number="1" />
+			<resource name="Tempeh" amount="1.9" />
+			<resource name="Grey Water" amount="2.0" />
+		</outputs>
+	</process>
+
+	<!-- Tempeh yield from okara is approximate/estimated, assuming excess water from okara evaporates away -->
+	<process name="Make Black Oncom from Okara"
+		tech="1" skill="2" work-time="71" process-time="10500"
+			power-required="0.1">
+
+		<description> Moisten Okara with vinegar, add Rhizopus oligosporus starter, and
+			allow to ferment.</description>
+
+		<inputs>
+			<part name="autoclave" number="1" />
+			<resource name="Rice Vinegar" amount="0.174" />
+			<resource name="Okara" amount="2.9" />
+			<resource name="Rhizopus oligosporus" amount="0.0029" />
+		</inputs>
+		<outputs>
+			<part name="autoclave" number="1" />
+			<resource name="Tempeh" amount="2.2" />
+		</outputs>
+	</process>
+	
+	<process name="Make Tempeh from half Soybeans and half Okara"
+		tech="1" skill="2" work-time="72" process-time="1000"
+			power-required="0.63">
+
+		<description> Boil Soybeans, add vinegar, Rhizopus oligosporus starter, and okara,
+			and allow to ferment.</description>
+
+		<inputs>
+			<part name="autoclave" number="1" />
+			<resource name="Soybeans" amount="1.0" />
+			<resource name="Water" amount="3.5" />
+			<resource name="Rice Vinegar" amount="0.198" />
+			<resource name="Okara" amount="1.0" />
+			<resource name="Rhizopus oligosporus" amount="0.0033" />
+		</inputs>
+		<outputs>
+			<part name="autoclave" number="1" />
+			<resource name="Tempeh" amount="2.66" />
+			<resource name="Grey Water" amount="1.0" />
+		</outputs>
+	</process>
+	
+	<process name="Make Tofu and Tempeh from Soybeans and Vinegar (large batch)"
+		tech="1" skill="2" work-time="125" process-time="1000"
+			power-required="3.85">
+
+		<description> Boil Soybeans, blend, separate okara and ferment with Rhizopus
+			oligosporus starter. Add vinegar to soymilk as coagulant. This uses
+			all the okara by-product of tofu.</description>
+
+		<inputs>
+			<part name="autoclave" number="1" />
+			<resource name="Soybeans" amount="1.7" />
+			<resource name="Water" amount="18.7" />
+			<resource name="Rice Vinegar" amount="0.181" />
+			<resource name="Rhizopus oligosporus" amount="0.0019" />
+		</inputs>
+		<outputs>
+			<part name="autoclave" number="1" />
+			<part name="blender" number="1" />
+			<part name="stove" number="1" />
+			<resource name="Tofu" amount="7.5" />
+			<resource name="Tempeh" amount="1.42" />
+			<resource name="Grey Water" amount="4.83" />
+		</outputs>
+	</process>
+	
+	<process name="Make Tofu and Tempeh from Soybeans and Epsom Salt (large batch)"
+		tech="1" skill="2" work-time="125" process-time="1000"
+			power-required="3.85">
+
+		<description> Boil Soybeans, blend, separate okara and ferment with Rhizopus
+			oligosporus starter. Add vinegar to soymilk as coagulant. This uses
+			all the okara by-product of tofu.</description>
+
+		<inputs>
+			<part name="autoclave" number="1" />
+			<resource name="Soybeans" amount="1.7" />
+			<resource name="Water" amount="18.7" />
+			<resource name="Rice Vinegar" amount="0.112" />
+			<resource name="Rhizopus oligosporus" amount="0.0019" />
+			<resource name="Epsom Salt" amount="0.0962" />
+		</inputs>
+		<outputs>
+			<part name="autoclave" number="1" />
+			<part name="blender" number="1" />
+			<part name="stove" number="1" />
+			<resource name="Tofu" amount="7.5" />
+			<resource name="Tempeh" amount="1.42" />
+			<resource name="Grey Water" amount="4.83" />
+		</outputs>
+	</process>
+	
+	<process name="Make Tofu, Soymilk, and Tempeh from Soybeans and Vinegar"
+		tech="1" skill="2" work-time="125" process-time="1000"
+			power-required="1.3">
+
+		<description> Boil Soybeans, blend, separate okara and ferment with Rhizopus
+			oligosporus starter. Add vinegar to some soymilk as coagulant,
+			sweetening the remainder.</description>
+
+		<inputs>
+			<part name="autoclave" number="1" />
+			<resource name="Soybeans" amount="1.25" />
+			<resource name="Water" amount="13.75" />
+			<resource name="Rice Vinegar" amount="0.133" />
+			<resource name="Rhizopus oligosporus" amount="0.0014" />
+			<resource name="Sugar" amount="0.028" />
+		</inputs>
+		<outputs>
+			<part name="autoclave" number="1" />
+			<part name="blender" number="1" />
+			<part name="stove" number="1" />
+			<resource name="Tofu" amount="3.0" />
+			<resource name="Soymilk" amount="3.0" />
+			<resource name="Tempeh" amount="1.04" />
+			<resource name="Grey Water" amount="6.07" />
+		</outputs>
+	</process>
+	
+	<process name="Make Tofu, Soymilk, and Tempeh from Soybeans and Epsom Salt"
+		tech="1" skill="2" work-time="125" process-time="1000"
+			power-required="1.3">
+
+		<description>Boil Soybeans, blend, separate okara and ferment with Rhizopus
+			oligosporus starter. Add vinegar to some soymilk as coagulant,
+			sweetening the remainder.</description>
+		
+		<inputs>
+			<part name="autoclave" number="1" />
+			<resource name="Soybeans" amount="1.25" />
+			<resource name="Water" amount="13.75" />
+			<resource name="Rice Vinegar" amount="0.0825" />
+			<resource name="Rhizopus oligosporus" amount="0.0014" />
+			<resource name="Epsom Salt" amount="0.0707" />
+			<resource name="Sugar" amount="0.028" />
+		</inputs>
+		<outputs>
+			<part name="autoclave" number="1" />
+			<part name="blender" number="1" />
+			<part name="stove" number="1" />
+			<resource name="Tofu" amount="3.0" />
+			<resource name="Soymilk" amount="3.0" />
+			<resource name="Tempeh" amount="1.04" />
+			<resource name="Grey Water" amount="6.07" />
+		</outputs>
+	</process>
+	
 	<process name="Process White Rice into Rice Flour"
 		tech="1" skill="2" work-time="25" process-time="300"
 			power-required="0.25">
-		<description> Cover Rice with cold water. Soak for hours. Finely grind the rice
-		Heat and stir. Cool and dry. </description>
+		<description> Rince rice, dry, and finely grind.</description>
 		<inputs>
 			<resource name="White Rice" amount="1.0" />
-			<resource name="Water" amount="0.5" />
+			<resource name="Water" amount="3.0" />
 
 		</inputs>
 		<outputs>
+			<resource name="Water" amount="2.9" />
 			<resource name="Rice Flour" amount="1.0" />
 		</outputs>
 
 	</process>
 
 	<process name="Process Rice into White Rice and rice bran oil"
-		tech="1" skill="0" work-time="5" process-time="50" power-required=".1">
+		tech="1" skill="1" work-time="50" process-time="100" power-required="0.5">
 		<description> Remove hulls, bran layers and germ from rice.
 		May enrich milled rice with vitamins and minerals </description>
 
@@ -414,12 +846,14 @@
 
 		</inputs>
 		<outputs>
-			<resource name="White Rice" amount="1.6" />
-			<resource name="rice bran oil" amount="0.4" />			
+			<resource name="White Rice" amount="1.33" />
+			<resource name="Crop Waste" amount="0.495" />
+			<resource name="rice bran oil" amount="0.175" />			
 		</outputs>
 	</process>
 
-		<process name="Process Rice into Brown Rice"
+	<-- http://www.knowledgebank.irri.org/step-by-step-production/postharvest/milling says rice is 20 % hull, 11 % bran, and 69 % other ideally, but ranges are 20 % hull, 8-12 % bran, and 68-72 % other; extrapolates waste from buckwheat -->
+	<process name="Process Rice into Brown Rice"
 		tech="1" skill="0" work-time="50" process-time="50" power-required=".1">
 		<description> Remove only hulls from rice. The light brown color is due to the presence of the bran layers
 		and the embryo or germ. Brown rice requires longer cooking time than either parboiled or regular-milled white rice </description>
@@ -429,11 +863,62 @@
 
 		</inputs>
 		<outputs>
-			<resource name="Brown Rice" amount="1.6" />
-			<resource name="rice bran oil" amount="0.4" />				
+			<resource name="Brown Rice" amount="1.55" />
+			<resource name="Crop Waste" amount="0.45" />				
 		</outputs>
 	</process>
 
+	<-- http://www.knowledgebank.irri.org/step-by-step-production/postharvest/milling says rice is 20 % hull, 11 % bran, and 69 % other ideally, but ranges are 20 % hull, 8-12 % bran, and 68-72 % other; extrapolates waste from buckwheat -->
+	<process name= "Process Brown Rice into Rice Flour"
+		tech="1" skill="2" work-time="38" process-time="330"
+			power-required="5.3">
+		<description> Rinse rice, dry, and finely grind </description>
+		<inputs>
+			<resource name="Brown Rice" amount="1.0" />
+			<resource name="Water" amount="3.0" />
+
+		</inputs>
+		<outputs>
+			<resource name="Grey Water" amount="2.9" />
+			<resource name="Rice Flour" amount="0.856" />
+			<resource name="rice bran oil" amount="0.112" />
+			<resource name="Food Waste" amount="0.032" />
+		</outputs>
+	</process>
+		
+	<process name="Process Brown Rice into White Rice"
+		tech="1" skill="2" work-time="15" process-time="30" power-required="0.3">
+		<description> Remove bran layers and germ from rice.
+		May enrich milled rice with vitamins and minerals </description>
+
+		<inputs>
+			<resource name="Brown Rice" amount="2.0" />
+
+		</inputs>
+		<outputs>
+			<resource name="White Rice" amount="1.71" />
+			<resource name="rice bran oil" amount="0.225" />
+			<resource name="Crop Waste" amount="0.064" />				
+		</outputs>
+	</process>
+	
+	<-- https://umanitoba.ca/faculties/engineering/departments/ce2p2e/alternative_village/media/19_Physical_Chemical_surface_properties_wheat_husk_rye_husk_soft_wood_Bledzki.pdf says 15-20 % husk for wheat; https://www.sciencedirect.com/topics/agricultural-and-biological-sciences/milling-fractions saysfor Buckwheat cultivar Siva, it is 55.4 % flour (from raw grain), 24.2 % bran, and 17.4 % husk according to Skrabanja et al., 2003a assumes waste is linear from grain to wholegrain to white   -->
+	<process name= "Process Wheat into Wheat Flour"
+		tech="1" skill="2" work-time="50" process-time="400"
+			power-required="5.0">
+		<description> Rinse wheat, dry, and finely grind </description>
+		<inputs>
+			<resource name="Wheat" amount="1.0" />
+			<resource name="Water" amount="3.0" />
+
+		</inputs>
+		<outputs>
+			<resource name="Grey Water" amount="2.9" />
+			<resource name="Wheat Flour" amount="0.792" />
+			<resource name="Crop Waste" amount="0.208" />
+		</outputs>
+	</process>
+		
 	<process name="Extract Soy Protein from Soy Flour"
 		tech="2" skill="2" work-time="50" process-time="400"
 			power-required="1.0">
@@ -447,7 +932,7 @@
 		</outputs>
 	</process>
 
-
+	<-- https://soybeanresearchinfo.com/research-highlight/increasing-soybean-oil-yield-through-targeted-gene-silencing-and-over-expression/ says 16-22 % oil once all water is removed; using 19 % -->
 	<process name="Expel Soybean Oil from Soybean"
 		tech="1" skill="0" work-time="50" process-time="100"
 			power-required=".5">
@@ -458,10 +943,13 @@
 		</inputs>
 		<outputs>
 			<part name="oven" number="1" />
-			<resource name="Soybean Oil" amount="2.5" />
+			<resource name="Soybean Oil" amount="0.437" />
+			<resource name="Food Waste" amount="2.063"
+			<-- It should be press cake (and maybe some grey water that is squeezed out too?), which can be used like okara if cooked? <resource name="Okara" amount="2.063"/> -->
 		</outputs>
 	</process>
 
+	<-- DOI 10.17485/ijst/2016/v9i30/89371 tells growth and oil yield; 50 % from crops.xml is well within the range -->
 	<process name="Press Sesame Oil from Sesame Seeds"
 		tech="1" skill="0" work-time="50" process-time="100"
 			power-required=".5">
@@ -470,20 +958,25 @@
 			<resource name="Sesame Seed" amount="2.5" />
 		</inputs>
 		<outputs>
-			<resource name="Sesame Oil" amount="2.5" />
+			<resource name="Sesame Oil" amount="1.25" />
+			<resource name="Food Waste" amount="1.25" />
 		</outputs>
 	</process>
 
-		<process name="Press Garlic Oil from Garlic"
+	<-- https://en.wikipedia.org/wiki/Garlic_oil#Preparation says 1 gram pure oil requres 500 grams garlic, and that it is 900 times as strong as fresh garlic and 200 times as strong as dry garlic -->
+	<process name="Press Garlic Oil from Garlic"
 		tech="1" skill="0" work-time="50" process-time="100"
 			power-required=".5">
 		<description> Continuous pressing by means of expellers is a widely applied
 						process for the extraction of oil from Garlic</description>
 		<inputs>
-			<resource name="Garlic" amount="2.5" />
+			<resource name="Garlic" amount="5.0" />
+			<!-- 0.99 oil means 2x as strong as dry garlic; 0.39 means 5x as strong -->
+			<resource name="Sesame Oil" amount="0.99" />
 		</inputs>
 		<outputs>
-			<resource name="Garlic Oil" amount="2.5" />
+			<resource name="Garlic Oil" amount="1.0" />
+			<resource name="Food Waste" amount="4.99" />
 		</outputs>
 	</process>
 
@@ -495,17 +988,89 @@
 			nuts, mushrooms, or grains or seeds, like wheat and flax. </description>
 		<inputs>
 			<resource name="Tofu" amount="0.5" />
-			<resource name="Lettuce" amount="0.5" />
-			<resource name="Cabbage" amount="0.5" />
+			<resource name="Wheat" amount="0.5" />
+			<resource name="Peas" amount="0.5" />
 			<resource name="Potato" amount="0.5" />
-			<resource name="Carrot" amount="0.5" />
+			<resource name="Carrot" amount="0.35" />
+			<resource name="Morel Mushroom" amount="0.15" />
 			<resource name="Table Salt" amount="0.01" />
 			<resource name="Soybean" amount="0.45" />
-			<resource name="Soybean Oil" amount="0.10" />
 			<resource name="Sugar" amount="0.05" />
 		</inputs>
 		<outputs>
 			<resource name="Veggie Patty" amount="3.0" />
+		</outputs>
+	</process>
+
+	<process name="Make Veggie Patty from Veg, Tempeh and Spice"
+		tech="2" skill="2" work-time="50" process-time="50"
+			power-required="1.0">
+		<description>A Veggie patty imitates a burger patty and is made of
+			textured vegetable protein (like soy), legumes (beans), tempeh,
+			nuts, mushrooms, or grains or seeds, like wheat and flax. </description>
+		<inputs>
+			<resource name="Tempeh" amount="0.5" />
+			<resource name="Wheat" amount="0.5" />
+			<resource name="Peas" amount="0.5" />
+			<resource name="Potato" amount="0.5" />
+			<resource name="Carrot" amount="0.35" />
+			<resource name="Morel Mushroom" amount="0.15" />
+			<resource name="Table Salt" amount="0.01" />
+			<resource name="Soybean" amount="0.45" />
+			<resource name="Sugar" amount="0.05" />
+		</inputs>
+		<outputs>
+			<resource name="Veggie Patty" amount="3.0" />
+		</outputs>
+	</process>
+
+	<process name="Make Veggie Patty from Veg, Okara and Spice"
+		tech="2" skill="2" work-time="50" process-time="50"
+			power-required="1.0">
+		<description>A Veggie patty imitates a burger patty and is made of
+			textured vegetable protein (like soy), legumes (beans), okara,
+			nuts, mushrooms, or grains or seeds, like wheat and flax. </description>
+		<inputs>
+			<resource name="Okara" amount="0.5" />
+			<resource name="Wheat" amount="0.5" />
+			<resource name="Peas" amount="0.5" />
+			<resource name="Potato" amount="0.5" />
+			<resource name="Carrot" amount="0.35" />
+			<resource name="Morel Mushroom" amount="0.15" />
+			<resource name="Table Salt" amount="0.01" />
+			<resource name="Soybean" amount="0.45" />
+			<resource name="Sugar" amount="0.05" />
+		</inputs>
+		<outputs>
+			<resource name="Veggie Patty" amount="3.0" />
+		</outputs>
+	</process>
+		
+	<-- https://solefoodkitchen.com/other/question-how-much-dry-quinoa-makes-100g-cooked.html suggests ~2.25 cooked = 1 uncooked... https://www.youtube.com/watch?v=Zfkd6VXT9_0 describes this -->
+	<process name="Make Veggie Patty from Quinoa Tempeh and Spice"
+		tech="2" skill="2" work-time="75" process-time="1000"
+			power-required="2.0">
+		<description>A Veggie patty imitates a burger patty and is made of
+			fermented quinoa seasoned with vinegar, soy sauce, garlic,
+			onion, syrup, and pepper. </description>
+		<inputs>
+			<part name="autoclave" number="1" />
+			<part name="oven" number="1" />
+			<resource name="Quinoa" amount="1.75" />
+			<resource name="Rhizopus oligosporus" amount="0.008" />
+			<resource name="Water" amount="6.125" />
+			<resource name="Rice Vinegar" amount="0.236" />
+			<resource name="Soy Sauce" amount="0.035" />
+			<resource name="Garlic" amount="0.025" />
+			<resource name="Sugarcane Juice" amount="0.035" />
+			<resource name="Bell Pepper" amount="0.03" />
+			<resource name="Onion" amount="0.025" />
+		</inputs>
+		<outputs>
+			<resource name="Grey Water" amount="3.5" />
+			<part name="autoclave" number="1" />
+			<part name="oven" number="1" />
+			<resource name="Veggie Patty" amount="3.33" />
 		</outputs>
 	</process>
 
@@ -545,7 +1110,7 @@
 	<process name="Make Wheat Noodles from Wheat Flour"
 		tech="1" skill="1" work-time="50" process-time="100"
 			power-required="0.5">
-		<description> mix flour with water and knead to form dough. Heat paste into flat sheet.
+		<description> Mix flour with water and knead to form dough. Heat paste into flat sheet.
 		 cut sheet into different thickness.  </description>
 		<inputs>
 			<!-- <equipment name="pasta machine" number="1" /> -->
@@ -577,43 +1142,71 @@
 		</outputs>
 	</process>
 
+	<-- TODO: research process better, beyond just rice+yeast=rice ethanol and ethanol+acetobacter=vinegar -->
 	<process name="Make Rice Vinegar by Fermentation"
 		tech="1" skill="2" work-time="50" process-time="30000"
 			power-required="1.0">
-		<description>Clean bottle with bleach. Add water to white rice and heat up mixture. Add bacteria and wait for fermentation to complete</description>
+		<description>Clean bottle with bleach. Add water to white rice and heat up mixture.
+			Add bacteria and wait for fermentation to complete</description>
 		<inputs>
 			<part name="bottle" number="5" />
 			<part name="autoclave" number="1" />
 			<resource name="White Rice" amount="5.0" />
 			<resource name="Acetic Acid Bacteria" amount="0.3" />
+			<resource name="Yeast" amount="0.3" />
 			<resource name="Sugar" amount=".5" />
-			<resource name="Water" amount="10" />
+			<resource name="Water" amount="13.25" />
 			<resource name="sodium hypochlorite" amount="0.003" />
 		</inputs>
 		<outputs>
+			<resource name="Grey Water" amount="1.25" />
 			<part name="bottle" number="5" />
 			<part name="autoclave" number="1" />
 			<resource name="Rice Vinegar" amount="15.0" />
 		</outputs>
 	</process>
 
+	<-- elsewhere it appears that a bottle is ~3l, so changed it here -->
 	<process name="Make Mustard"
 		tech="1" skill="1" work-time="50" process-time="100"
 			power-required="1.0">
-		<description>Soak seeds, crush and ground. Hulls and bran are sifted out. Liquids added to the seed flour</description>
+		<description>Soak seeds, crush and ground. Hulls and bran are sifted out. Liquids added to the seed flour.</description>
 		<inputs>
-			<part name="bottle" number="1" />
+			<part name="bottle" number="2" />
 			<resource name="Mustard Seed" amount="0.5" />
 			<resource name="Rice Vinegar" amount="0.1" />
 			<resource name="Sugar" amount=".4" />
 			<resource name="Water" amount="4" />
 		</inputs>
 		<outputs>
-			<part name="bottle" number="1" />
+			<part name="bottle" number="2" />
 			<resource name="Mustard" amount="5.0" />
 		</outputs>
 	</process>
 
+	<process name="Make Ketchup from Tomatoes"
+		tech="1" skill="1" work-time="50" process-time="100"
+			power-required="1.0">
+		<description>Cook tomatoes. Then grind them with galic, onions, vinegar, and spice.</description>
+		<inputs>
+			<part name="bottle" number="2" />
+			<part name="stove" number="1" />
+			<resource name="tomato" amount="5.0" />
+			<resource name="Garlic" amount="0.022" />
+			<resource name="Salt" amount="0.0105" />
+			<resource name="Onion" amount="0.267" />
+			<resource name="Mustard" amount="0.0092" />
+			<resource name="Rice Vinegar" amount="0.443" />
+			<resource name="Sugar" amount="0.367" />
+		</inputs>
+		<outputs>
+			<part name="bottle" number="2" />
+			<part name="stove" number="1" />
+			<resource name="Ketchup" amount="5.0" />
+		</outputs>
+	</process>
+		
+	<-- TODO: research process better; currently extrapolating aspergillus amount from miso -->
 	<process name="Make Soy Sauce by Fermentation"
 		tech="2" skill="2" work-time="100" process-time="30000"
 			power-required="1.0">
@@ -621,17 +1214,45 @@
 		Carbohydrates contained in wheat gives soy sauce its fine aroma and adds sweetness to the soy sauce.
 		Wheat is roasted at high temperatures, then crushed by rollers to facilitate fermentation.</description>
 		<inputs>
-			<part name="bottle" number="50" />
+			<part name="bottle" number="5" />
 			<part name="autoclave" number="1" />
-			<resource name="Soybean" amount="50.0" />
-			<resource name="Wheat" amount="10.0" />
-			<resource name="Table Salt" amount="1.0" />
-			<resource name="Water" amount="100.0" />
+			<resource name="Soybean" amount="5.0" />
+			<resource name="Wheat" amount="1.0" />
+			<resource name="Table Salt" amount="0.1" />
+			<resource name="Aspergillus Mix" amount="0.0057" />
+			<resource name="Water" amount="11.25" />
+			<resource name="sodium hypochlorite" amount="0.003" />
 		</inputs>
 		<outputs>
-			<part name="bottle" number="50" />
+			<resource name="Grey Water" amount="1.25" />
+			<part name="bottle" number="5" />
 			<part name="autoclave" number="1" />
-			<resource name="Soy Sauce" amount="150.0" />
+			<resource name="Soy Sauce" amount="15.0" />
+		</outputs>
+	</process>
+		
+	<-- https://www.youtube.com/watch?v=t8Wfcrhm-OI info extrapolated from chickpea miso -->
+	<process name="Make Miso by Fermentation"
+		tech="2" skill="2" work-time="150" process-time="62000"
+			power-required="1.0">
+		<description>Clean bottle with bleach. Soybeans are soaked and fermented with rice and brine to produce a thick paste.</description>
+		<inputs>
+			<part name="bottle" number="1" />
+			<part name="autoclave" number="1" />
+			<part name="blender" number="1" />
+			<resource name="Soybean" amount="0.7" />
+			<resource name="Rice" amount="0.4" />
+			<resource name="Aspergillus Mix" amount="0.001" />
+			<resource name="Table Salt" amount="0.3" />
+			<resource name="Water" amount="5.25" />
+			<resource name="sodium hypochlorite" amount="0.002"
+		</inputs>
+		<outputs>
+			<part name="bottle" number="1" />
+			<part name="autoclave" number="1" />
+			<part name="blender" number="1" />
+			<resource name="Miso" amount="2.81" />
+			<resource name="Grey Water" amount="3.54" />
 		</outputs>
 	</process>
 
@@ -671,7 +1292,8 @@
 	</process>
 
 
-	<process name="Extract Minerals from Soybean Ash" tech="0" skill="0" work-time="20" process-time="50"
+	<process name="Extract Minerals from Soybean Ash" tech="0" skill="0" 
+		 work-time="20" process-time="50"
 			power-required=".1">
 		<description>Extract minerals from Soybean Ash. </description>
 		<inputs>
@@ -689,7 +1311,8 @@
 	<process name="Make Blueberry Muffin"
 		tech="2" skill="2" work-time="50" process-time="100"
 			power-required="0.2">
-		<description>Mix flour, sugar, salt, baking powder, honey, and blueberry and bake in preheated oven at 200 deg C. </description>
+		<description>Mix flour, sugar, salt, baking powder, honey, and blueberry
+			and bake in preheated oven at 200 deg C. </description>
 		<inputs>
 			<resource name="Blueberry" amount="0.2" />
 			<resource name="Sugar" amount="0.2" />
@@ -704,6 +1327,65 @@
 		</outputs>
 	</process>
 
+	<process name="Make Okara Blueberry Muffin"
+		tech="2" skill="2" work-time="50" process-time="100"
+			power-required="0.2">
+		<description>Mix flour, sugar, salt, baking powder, honey, and blueberry
+			and bake in preheated oven at 200 deg C. </description>
+		<inputs>
+			<resource name="Blueberry" amount="0.2" />
+			<resource name="Sugar" amount="0.15" />
+			<resource name="Table Salt" amount="0.1" />
+			<resource name="Water" amount="2.0" />
+			<resource name="Honey" amount="0.1" />
+			<resource name="Baking Powder" amount="0.1" />
+			<resource name="Wheat Flour" amount="1.3" />
+			<resource name="Okara" amount="0.35" />
+		</inputs>
+		<outputs>
+			<resource name="Blueberry Muffin" amount="2.1" />
+		</outputs>
+	</process>
+		
+	<process name="Make Blueberry Muffin"
+		tech="2" skill="2" work-time="50" process-time="100"
+			power-required="0.2">
+		<description>Mix flour, sugar, salt, baking powder, sugarcane juice, and
+			blueberry and bake in preheated oven at 200 deg C. </description>
+		<inputs>
+			<resource name="Blueberry" amount="0.2" />
+			<resource name="Sugar" amount="0.2" />
+			<resource name="Table Salt" amount="0.1" />
+			<resource name="Water" amount="2.0" />
+			<resource name="Sugarcane Juice" amount="0.1" />
+			<resource name="Baking Powder" amount="0.1" />
+			<resource name="Wheat Flour" amount="1.5" />
+		</inputs>
+		<outputs>
+			<resource name="Blueberry Muffin" amount="2.0" />
+		</outputs>
+	</process>
+
+	<process name="Make Okara Blueberry Muffin"
+		tech="2" skill="2" work-time="50" process-time="100"
+			power-required="0.2">
+		<description>Mix flour, sugar, salt, baking powder, sugarcane juice, and
+			blueberry and bake in preheated oven at 200 deg C. </description>
+		<inputs>
+			<resource name="Blueberry" amount="0.2" />
+			<resource name="Sugar" amount="0.15" />
+			<resource name="Table Salt" amount="0.1" />
+			<resource name="Water" amount="2.0" />
+			<resource name="Sugarcane Juice" amount="0.1" />
+			<resource name="Baking Powder" amount="0.1" />
+			<resource name="Wheat Flour" amount="1.3" />
+			<resource name="Okara" amount="0.35" />
+		</inputs>
+		<outputs>
+			<resource name="Blueberry Muffin" amount="2.1" />
+		</outputs>
+	</process>
+		
 	<process name="Make Cranberry Juice from Cranberry"
 		tech="1" skill="2" work-time="50" process-time="100"
 			power-required="0.3">
