@@ -894,6 +894,11 @@ public class ExitAirlock extends Task implements Serializable {
 
 		boolean canProceed = false;
 
+		if (!isFit()) {
+			walkAway(person, NOT_FIT + " to prebreathe.");
+			return time;
+		}
+		
 		if (airlock.isDepressurizing()) {
 			// just wait for depressurization to finish
 		}
@@ -938,9 +943,16 @@ public class ExitAirlock extends Task implements Serializable {
 					"Chamber already depressurized for exit in "
 				+ airlock.getEntity().toString() + ".");
 
-			if (transitionTo(3)) {
+			if (inSettlement) {
+				if (transitionTo(3)) {
+					canProceed = true;
+				}
+				else
+					canProceed = false;
+			} else {
 				canProceed = true;
 			}
+			
 		}
 		
 		if (canProceed && accumulatedTime > STANDARD_TIME) {

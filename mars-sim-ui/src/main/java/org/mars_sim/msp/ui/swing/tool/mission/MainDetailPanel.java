@@ -671,7 +671,7 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 				// Check if the mission is done and the members have been disbanded
 				memberOuterPane.removeAll();
 				memberOuterPane.add(memberLabel);
-				memberLabel.setText(" Disbanded Members: " + printMembers(mission));
+				memberLabel.setText(" Disbanded: " + printMembers(mission));
 			}
 			else {
 				memberOuterPane.removeAll();

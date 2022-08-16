@@ -67,11 +67,13 @@ public class MissionTableModel extends AbstractTableModel
 	/** Travelled distance column. */
 	private final static int TRAVELLED_DISTANCE = 11;
 	/** Remaining distance column. */
-	private final static int REMAINING_DISTANCE = 12;
+	private final static int TOTAL_REMAINING_DISTANCE = 12;
+	/** Remaining distance to next navpoint column. */
+	private final static int REMAINING_DISTANCE_TO_NEXT_NAVPOINT = 13;
 	/** Proposed route distance column. */
-	private final static int PROPOSED_ROUTE_DISTANCE = 13;
+	private final static int PROPOSED_ROUTE_DISTANCE = 14;
 	/** The number of Columns. */
-	private final static int COLUMNCOUNT = 14;
+	private final static int COLUMNCOUNT = 15;
 	/** Names of Columns. */
 	private static String columnNames[];
 	/** Types of Columns. */
@@ -117,8 +119,10 @@ public class MissionTableModel extends AbstractTableModel
 		columnTypes[NAVPOINT_NUM] = Integer.class;
 		columnNames[TRAVELLED_DISTANCE] = Msg.getString("MissionTableModel.column.distanceTravelled"); //$NON-NLS-1$
 		columnTypes[TRAVELLED_DISTANCE] = Integer.class;
-		columnNames[REMAINING_DISTANCE] = Msg.getString("MissionTableModel.column.distanceRemaining"); //$NON-NLS-1$
-		columnTypes[REMAINING_DISTANCE] = Integer.class;
+		columnNames[TOTAL_REMAINING_DISTANCE] = Msg.getString("MissionTableModel.column.totalRemaining"); //$NON-NLS-1$
+		columnTypes[TOTAL_REMAINING_DISTANCE] = Integer.class;
+		columnNames[REMAINING_DISTANCE_TO_NEXT_NAVPOINT] = Msg.getString("MissionTableModel.column.legRemaining"); //$NON-NLS-1$
+		columnTypes[REMAINING_DISTANCE_TO_NEXT_NAVPOINT] = Integer.class;		
 		columnNames[PROPOSED_ROUTE_DISTANCE] = Msg.getString("MissionTableModel.column.proposedDistance"); //$NON-NLS-1$
 		columnTypes[PROPOSED_ROUTE_DISTANCE] = Integer.class;
 
@@ -294,31 +298,35 @@ public class MissionTableModel extends AbstractTableModel
 				int column3 = -1;
 				int column4 = -1;
 				int column5 = -1;
-
+				int column6 = -1;
+				
 				if (eventType == MissionEventType.DISTANCE_EVENT) {
 					column1 = TRAVELLED_DISTANCE;
-					column2 = REMAINING_DISTANCE;
-					column3 = PROPOSED_ROUTE_DISTANCE;
+					column2 = TOTAL_REMAINING_DISTANCE;
+					column3 = REMAINING_DISTANCE_TO_NEXT_NAVPOINT;
+					column4 = PROPOSED_ROUTE_DISTANCE;
 				}
 
 				if (eventType == MissionEventType.NAVPOINTS_EVENT)
-					column4 = NAVPOINT_NUM;
+					column5 = NAVPOINT_NUM;
 
 				if (eventType == MissionEventType.PHASE_EVENT
 						|| eventType == MissionEventType.PHASE_DESCRIPTION_EVENT)
 //							|| eventType == MissionEventType.END_MISSION_EVENT)
-					column5 = PHASE;
+					column6 = PHASE;
 
-				if (column1 > -1)
+				if (column0 > -1)
 					SwingUtilities.invokeLater(new MissionTableCellUpdater(index, column1));
-				if (column2 > -1)
+				if (column1 > -1)
 					SwingUtilities.invokeLater(new MissionTableCellUpdater(index, column2));
-				if (column3 > -1)
+				if (column2 > -1)
 					SwingUtilities.invokeLater(new MissionTableCellUpdater(index, column3));
-				if (column4 > -1)
+				if (column3 > -1)
 					SwingUtilities.invokeLater(new MissionTableCellUpdater(index, column4));
-				if (column5 > -1)
+				if (column4 > -1)
 					SwingUtilities.invokeLater(new MissionTableCellUpdater(index, column5));
+				if (column5 > -1)
+					SwingUtilities.invokeLater(new MissionTableCellUpdater(index, column6));
 			}
 		}
 	}
@@ -446,7 +454,7 @@ public class MissionTableModel extends AbstractTableModel
 				}
 					break;
 
-				case REMAINING_DISTANCE: {
+				case TOTAL_REMAINING_DISTANCE: {
 					if (MissionType.isVehicleMission(mission.getMissionType())) {
 						VehicleMission vehicleMission = (VehicleMission) mission;
 						try {
@@ -460,6 +468,20 @@ public class MissionTableModel extends AbstractTableModel
 
 				break;
 
+				case REMAINING_DISTANCE_TO_NEXT_NAVPOINT: {
+					if (MissionType.isVehicleMission(mission.getMissionType())) {
+						VehicleMission vehicleMission = (VehicleMission) mission;
+						try {
+							result = decFormatter.format(vehicleMission.getDistanceCurrentLegRemaining());
+						} catch (Exception e) {
+							result = 0;
+						}
+					} else
+						result = 0;
+				}
+
+				break;
+				
 				case PROPOSED_ROUTE_DISTANCE: {
 					if (MissionType.isVehicleMission(mission.getMissionType())) {
 						VehicleMission vehicleMission = (VehicleMission) mission;

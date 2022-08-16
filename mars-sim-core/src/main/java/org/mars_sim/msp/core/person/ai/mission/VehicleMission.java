@@ -525,13 +525,16 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 
 			// What if a vehicle is still at a settlement and Mission is not approved ?
 
-			// for ALL OTHER REASONS
-			setPhaseEnded(true);
-
-			if (isDroneDone() || isRoverDone()) {
+			if (!isDroneDone() && !isRoverDone()) {
+				// Either the drone is still unloading or the rover is still unloading
 				continueToEndMission = false;
-				if (isCurrentNavpointSettlement())
+				if (isCurrentNavpointSettlement()
+						&& getPhase() != DISEMBARKING) 
 					startDisembarkingPhase();
+			}
+			else {
+				// for ALL OTHER REASONS
+				setPhaseEnded(true);
 			}
 		}
 
@@ -549,7 +552,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	 */
 	public boolean isDroneDone() {
 		if ((vehicle.getVehicleType() == VehicleType.DELIVERY_DRONE
-				&& vehicle.getStoredMass() != 0D))
+				&& vehicle.getStoredMass() == 0D))
 			return true;
 		return false;
 	}
@@ -561,8 +564,8 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	 */
 	public boolean isRoverDone() {
 		if (VehicleType.isRover(vehicle.getVehicleType())
-				&& (((Rover)vehicle).getCrewNum() != 0
-				|| vehicle.getStoredMass() != 0D))
+				&& (((Rover)vehicle).getCrewNum() == 0
+				|| vehicle.getStoredMass() == 0D))
 			return true;
 		return false;
 	}
@@ -2191,7 +2194,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	 */
 	public final double computeTotalDistanceRemaining() {
 
-		double leg = computeDistanceCurrentLegRemaining(); // getCurrentLegDistance()
+		double leg = getCurrentLegDistance(); // computeDistanceCurrentLegRemaining(); //
 		int index = 0;
 		double navDist = 0;
 		if (AT_NAVPOINT.equals(travelStatus))

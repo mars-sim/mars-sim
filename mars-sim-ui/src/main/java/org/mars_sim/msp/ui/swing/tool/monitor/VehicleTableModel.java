@@ -284,7 +284,6 @@ public class VehicleTableModel extends UnitTableModel {
 						}
 						catch (Exception e) {
 							logger.log(Level.SEVERE,"Error getting current leg remaining distance.");
-							e.printStackTrace(System.err);
 						}
 					}
 					else result = null;
