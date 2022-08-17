@@ -125,6 +125,7 @@
 		sesame plant.</resource>
 
 <!-- Soybean-derived food resources -->
+	<resource name="miso" type="soy-based" phase="solid" edible="true">Paste made from fermented soybeans and rice</resource>
 	<resource name="okara" type="soy-based" phase="solid" edible="true">The Soy Pulp consisting of insoluble parts of the soybean which
 		 after pureed Soybean are filtered in the production of soymilk and tofu.</resource>
 	<resource name="soybean ash" type="soy-based" phase="solid" edible="true">Soybean extract composed of mainly Potassium, Phosphorus, Magnesium, and Calcium.</resource>
@@ -132,8 +133,10 @@
 	<resource name="soy fiber" type="soy-based" phase="solid" edible="true">Light yellow, silky protein Soybean fiber .</resource>
 	<resource name="soy flour" type="soy-based" phase="solid" edible="true">Flour made from ground Soybean.</resource>
 	<resource name="soy protein" type="soy-based" phase="solid">Protein extract derived from Soybean.</resource>
+	<resource name="soy sauce" type="soy-based" phase="liquid" edible="true">Made from fermented soybeans</resource>
 	<resource name="soy sprout" type="soy-based" phase="solid" edible="true">Sprouted Soybean.</resource>
-	<resource name="tofu" type="soy-based" phase="solid" edible="true">Tofu made of Okara from Soybean.</resource>
+	<resource name="tempeh" type="soy-based" phase="solid" edible="true">Tempeh made of Soybeans and/or waste okara.</resource>
+	<resource name="tofu" type="soy-based" phase="solid" edible="true">Tofu made of Coagulant and Soymilk from Soybean.</resource>
 
 <!-- food resources derived from crop produce -->
 	<resource name="cane fiber" type="derived" phase="solid" edible="true">Fiber processed from Sugarcane.</resource>
@@ -144,8 +147,11 @@
 	<resource name="cranberry juice" type="derived" phase="solid" edible="true">Juice made from Cranberries</resource>
 	<resource name="cranberry sauce" type="derived" phase="solid" edible="true">Sauce or relish made from Cranberries</resource>
 	<resource name="french fries" type="derived" phase="solid" edible="true">French fries made from potatoes.</resource>
+	<-- Since garlic oil is not a neutral flavour (just like fish oil), it should not be used in place of generic oil -->
+	<resource name="garlic oil" type="derived" phase="liquid" edible="true">Oil pressed from garlic.</resource>
 	<resource name="granola bar" type="derived" phase="solid" edible="true">A popular breakfast and snack consisting of puffed grain, rolled oats, nuts, honey, dried fruits</resource>
 	<resource name="honey" type="derived" phase="liquid" edible="true">Honey extracted from bee hives</resource>
+	<resource name="ketchup" type="derived" phase="liquid" edible="true">Jam made from tomatoes.</resource>
 	<resource name="mustard" type="derived" phase="liquid" edible="true">Mustard made from mustard seed</resource>
 	<resource name="peanut butter" type="derived" phase="solid" edible="true"></resource>
 	<resource name="pizza dough" type="derived" phase="solid" edible="true"></resource>
@@ -154,7 +160,6 @@
 	<resource name="rice flour" type="derived" phase="solid" edible="true">Flour made from White Rice. </resource>
 	<resource name="rice vinegar" type="derived" phase="liquid" edible="true">Rice vinegar is more popular in the cuisines of East and Southeast Asia. It is available in "white" (light yellow), red, and black varieties.</resource>
 	<resource name="roasted peanut" type="derived" phase="solid" edible="true"></resource>
-	<resource name="soy sauce" type="derived" phase="liquid" edible="true">Made from fermented soybeans</resource>
 	<resource name="sugarcane juice" type="derived" phase="liquid" edible="true">Juice made from Sugarcane</resource>
 	<resource name="sugar" type="derived" phase="solid" edible="true">Sugar processed from Sugarcane.</resource>
 	<resource name="veggie patty" type="derived" phase="solid" edible="true">Made of textured vegetable protein (like soy), legumes (beans), tofu, nuts, mushrooms, or grains or seeds, like wheat and flax. </resource>
@@ -170,11 +175,14 @@
 	<resource name="sesame oil" type="oil" phase="liquid" edible="true">Oil pressed from sesame seeds.</resource>
 	<resource name="rice bran oil" type="oil" phase="liquid" edible="true">Oil is extracted from the germ and inner husk of rice. </resource>
 	<resource name="peanut oil" type="oil" phase="liquid" edible="true">Oil is extracted from peanuts.</resource>
-	<resource name="garlic oil" type="oil" phase="liquid" edible="true">Oil pressed from garlic.</resource>
 	<resource name="soybean oil" type="oil" phase="liquid" edible="true">Oil derived from soybean.</resource>
-	<resource name="fish oil" type="oil" phase="liquid" edible="true">Oil derived from fish.</resource>
-
+	
 <!-- Food resources derived from Bio-organism -->
+	<resource name="Aspergillus mix" phase="solid">A mix of the fungi Aspergillus oryzae and 
+		Aspergillus sojae. Used in the fermentation of miso, soy sauce, and sake.</resource>
+	<resource name="Rhizopus oligosporus" phase="solid">This edible fungus is used to ferment 
+		tempeh. As the fungus grows, its mycelia grow throughout the edible medium, producing
+		an edible block.</resource>
 	<resource name="yeast" type="organism" phase="solid" edible="true">Yeasts are single-celled fungi. It is an essential Baking Ingredient for making bread.</resource>
 
 <!-- Chemical resources derived from insect -->
@@ -191,6 +199,8 @@
 
 <!-- Food resources derived from fish -->
 	<resource name="fish meat" type="animal" phase="solid" edible="true">meat from fish</resource>
+	<-- Since fish oil is not a neutral flavour (just like garlic oil), it should not be used in place of generic oil -->
+	<resource name="fish oil" type="animal" phase="liquid" edible="true">Oil derived from fish.</resource>
 	<resource name="fish patty" type="animal" phase="solid" edible="true">patty made of fish meat</resource>
 
 <!-- Chemical food resources -->
