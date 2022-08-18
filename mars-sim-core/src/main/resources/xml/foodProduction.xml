@@ -408,7 +408,7 @@
 		<inputs>
 			<part name="oven" number="1" />
 			<resource name="Peanut" amount="5.0" />
-			<resource name="Table Salt" amount="0.5" />
+			<resource name="table salt" amount="0.5" />
 		</inputs>
 		<outputs>
 			<part name="oven" number="1" />
@@ -430,7 +430,7 @@
 			/>-->
 			<resource name="Peanut" amount="3.0" />
 			<resource name="Soybean Oil" amount="0.5" />
-			<resource name="Table Salt" amount="0.1" />
+			<resource name="table salt" amount="0.1" />
 			<resource name="Soy Protein" amount="0.1" />
 		</inputs>
 		<outputs>
@@ -453,7 +453,7 @@
 			/>-->
 			<resource name="Peanut" amount="3.0" />
 			<resource name="Peanut Oil" amount="0.5" />
-			<resource name="Table Salt" amount="0.1" />
+			<resource name="table salt" amount="0.1" />
 			<resource name="Soy Protein" amount="0.1" />
 		</inputs>
 		<outputs>
@@ -993,7 +993,7 @@
 			<resource name="Potato" amount="0.5" />
 			<resource name="Carrot" amount="0.35" />
 			<resource name="Morel Mushroom" amount="0.15" />
-			<resource name="Table Salt" amount="0.01" />
+			<resource name="table salt" amount="0.01" />
 			<resource name="Soybean" amount="0.45" />
 			<resource name="Sugar" amount="0.05" />
 		</inputs>
@@ -1015,7 +1015,7 @@
 			<resource name="Potato" amount="0.5" />
 			<resource name="Carrot" amount="0.35" />
 			<resource name="Morel Mushroom" amount="0.15" />
-			<resource name="Table Salt" amount="0.01" />
+			<resource name="table salt" amount="0.01" />
 			<resource name="Soybean" amount="0.45" />
 			<resource name="Sugar" amount="0.05" />
 		</inputs>
@@ -1037,7 +1037,7 @@
 			<resource name="Potato" amount="0.5" />
 			<resource name="Carrot" amount="0.35" />
 			<resource name="Morel Mushroom" amount="0.15" />
-			<resource name="Table Salt" amount="0.01" />
+			<resource name="table salt" amount="0.01" />
 			<resource name="Soybean" amount="0.45" />
 			<resource name="Sugar" amount="0.05" />
 		</inputs>
@@ -1064,7 +1064,7 @@
 			<resource name="Garlic" amount="0.025" />
 			<resource name="Sugarcane Juice" amount="0.035" />
 			<resource name="Bell Pepper" amount="0.03" />
-			<resource name="Onion" amount="0.025" />
+			<resource name="spring onion" amount="0.025" />
 		</inputs>
 		<outputs>
 			<part name="autoclave" number="1" />
@@ -1187,14 +1187,14 @@
 	<process name="Make Ketchup from Tomatoes"
 		tech="1" skill="1" work-time="50" process-time="100"
 			power-required="1.0">
-		<description>Cook tomatoes. Then grind them with galic, onions, vinegar, and spice.</description>
+		<description>Cook tomatoes. Then grind them with garlic, onions, vinegar, and spice.</description>
 		<inputs>
 			<part name="bottle" number="2" />
 			<part name="stove" number="1" />
 			<resource name="tomato" amount="5.0" />
 			<resource name="Garlic" amount="0.022" />
-			<resource name="Salt" amount="0.0105" />
-			<resource name="Onion" amount="0.267" />
+			<resource name="table salt" amount="0.0105" />
+			<resource name="white onion" amount="0.267" />
 			<resource name="Mustard" amount="0.0092" />
 			<resource name="Rice Vinegar" amount="0.443" />
 			<resource name="Sugar" amount="0.367" />
@@ -1218,7 +1218,7 @@
 			<part name="autoclave" number="1" />
 			<resource name="Soybean" amount="5.0" />
 			<resource name="Wheat" amount="1.0" />
-			<resource name="Table Salt" amount="0.1" />
+			<resource name="table salt" amount="0.1" />
 			<resource name="Aspergillus Mix" amount="0.0057" />
 			<resource name="Water" amount="11.25" />
 			<resource name="sodium hypochlorite" amount="0.003" />
@@ -1243,7 +1243,7 @@
 			<resource name="Soybean" amount="0.7" />
 			<resource name="Rice" amount="0.4" />
 			<resource name="Aspergillus Mix" amount="0.001" />
-			<resource name="Table Salt" amount="0.3" />
+			<resource name="table salt" amount="0.3" />
 			<resource name="Water" amount="5.25" />
 			<resource name="sodium hypochlorite" amount="0.002" />
 		</inputs>
@@ -1316,7 +1316,7 @@
 		<inputs>
 			<resource name="Blueberry" amount="0.2" />
 			<resource name="Sugar" amount="0.2" />
-			<resource name="Table Salt" amount="0.1" />
+			<resource name="table salt" amount="0.1" />
 			<resource name="Water" amount="2.0" />
 			<resource name="Honey" amount="0.1" />
 			<resource name="Baking Powder" amount="0.1" />
@@ -1335,7 +1335,7 @@
 		<inputs>
 			<resource name="Blueberry" amount="0.2" />
 			<resource name="Sugar" amount="0.15" />
-			<resource name="Table Salt" amount="0.1" />
+			<resource name="table salt" amount="0.1" />
 			<resource name="Water" amount="2.0" />
 			<resource name="Honey" amount="0.1" />
 			<resource name="Baking Powder" amount="0.1" />
@@ -1355,7 +1355,7 @@
 		<inputs>
 			<resource name="Blueberry" amount="0.2" />
 			<resource name="Sugar" amount="0.2" />
-			<resource name="Table Salt" amount="0.1" />
+			<resource name="table salt" amount="0.1" />
 			<resource name="Water" amount="2.0" />
 			<resource name="Sugarcane Juice" amount="0.1" />
 			<resource name="Baking Powder" amount="0.1" />
@@ -1374,7 +1374,7 @@
 		<inputs>
 			<resource name="Blueberry" amount="0.2" />
 			<resource name="Sugar" amount="0.15" />
-			<resource name="Table Salt" amount="0.1" />
+			<resource name="table salt" amount="0.1" />
 			<resource name="Water" amount="2.0" />
 			<resource name="Sugarcane Juice" amount="0.1" />
 			<resource name="Baking Powder" amount="0.1" />
@@ -1415,7 +1415,7 @@
 			<resource name="Cranberry" amount="2.0" />
 			<resource name="Water" amount="1.0" />
 			<resource name="Sugar" amount=".5" />
-			<resource name="Table Salt" amount=".15" />
+			<resource name="table salt" amount=".15" />
 			<resource name="Ginger" amount=".2" />
 		</inputs>
 		<outputs>
@@ -1456,7 +1456,7 @@
 			<resource name="Water" amount="0.33" />
 			<resource name="Yeast" amount="0.01" />
 			<resource name="Soybean Oil" amount="0.01" />
-			<resource name="Table Salt" amount="0.01" />
+			<resource name="table salt" amount="0.01" />
 		</inputs>
 		<outputs>
 			<part name="oven" number="1" />
