@@ -70,7 +70,6 @@ import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
 import org.mars_sim.msp.core.structure.InitialSettlement;
 import org.mars_sim.msp.core.structure.SettlementConfig;
-import org.mars_sim.msp.core.structure.SettlementTemplate;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainWindow;

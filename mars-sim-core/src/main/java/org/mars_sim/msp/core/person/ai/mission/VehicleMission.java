@@ -2205,7 +2205,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	 */
 	public final double computeTotalDistanceRemaining() {
 
-		double leg = computeDistanceCurrentLegRemaining(); // getCurrentLegDistance();
+		double leg = computeDistanceCurrentLegRemaining();
 		double total = 0;
 		
 		if (isCurrentNavpointSettlement()) {
@@ -2243,10 +2243,6 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 			fireMissionUpdate(MissionEventType.DISTANCE_EVENT);
 		}
 		
-//		logger.log(vehicle, Level.FINE, 20_000, this 
-//				+ " - Current waypoint remaining distance: "	+ Math.round(leg * 1000.0)/1000.0 + " km.   "
-//				+ "Total remaining distance: "	+ Math.round(total * 1000.0)/1000.0 + " km.");
-
 		return total;
 	}
 

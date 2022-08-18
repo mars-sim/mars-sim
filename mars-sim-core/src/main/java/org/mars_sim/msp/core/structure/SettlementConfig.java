@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.structure;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -35,7 +34,6 @@ import org.mars_sim.msp.core.structure.BuildingTemplate.BuildingConnectionTempla
  * get the information.
  */
 public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate> {
-
 
 	private static final Logger logger = Logger.getLogger(SettlementConfig.class.getName());
 

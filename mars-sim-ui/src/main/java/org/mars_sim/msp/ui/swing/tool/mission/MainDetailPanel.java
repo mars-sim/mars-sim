@@ -105,7 +105,6 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 	private static final String EMPTY = Msg.getString("MainDetailPanel.empty"); //$NON-NLS-1$
 
 	private static final int MAX_LENGTH = 48;
-//	private static final int HEIGHT_0 = 35;
 	private static final int HEIGHT_1 = 150;
 	
 	// Private members
@@ -279,7 +278,6 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 
 		// Create the vehicle grid panel.
 		WebPanel vehicleLayout = new WebPanel(new GridLayout(1, 2));
-//		vehicleLayout.setPreferredSize(new Dimension(-1, HEIGHT_0));
 		
 		// Create the vehicle pane.
 		WebPanel vehiclePane = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
@@ -473,7 +471,6 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 		customPanelLayout = new CardLayout(10, 10);
 		missionCustomPane = new WebPanel(customPanelLayout);
 		missionCustomPane.setAlignmentX(Component.RIGHT_ALIGNMENT);
-//		missionCustomPane.setPreferredSize(new Dimension(-1, HEIGHT_0));
 
 		// Create custom empty panel.
 		WebPanel emptyCustomPanel = new WebPanel();

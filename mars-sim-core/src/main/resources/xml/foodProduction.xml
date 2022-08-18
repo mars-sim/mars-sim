@@ -852,7 +852,7 @@
 		</outputs>
 	</process>
 
-	<-- http://www.knowledgebank.irri.org/step-by-step-production/postharvest/milling says rice is 20 % hull, 11 % bran, and 69 % other ideally, but ranges are 20 % hull, 8-12 % bran, and 68-72 % other; extrapolates waste from buckwheat -->
+	<!-- http://www.knowledgebank.irri.org/step-by-step-production/postharvest/milling says rice is 20 % hull, 11 % bran, and 69 % other ideally, but ranges are 20 % hull, 8-12 % bran, and 68-72 % other; extrapolates waste from buckwheat -->
 	<process name="Process Rice into Brown Rice"
 		tech="1" skill="0" work-time="50" process-time="50" power-required=".1">
 		<description> Remove only hulls from rice. The light brown color is due to the presence of the bran layers
@@ -868,7 +868,7 @@
 		</outputs>
 	</process>
 
-	<-- http://www.knowledgebank.irri.org/step-by-step-production/postharvest/milling says rice is 20 % hull, 11 % bran, and 69 % other ideally, but ranges are 20 % hull, 8-12 % bran, and 68-72 % other; extrapolates waste from buckwheat -->
+	<!-- http://www.knowledgebank.irri.org/step-by-step-production/postharvest/milling says rice is 20 % hull, 11 % bran, and 69 % other ideally, but ranges are 20 % hull, 8-12 % bran, and 68-72 % other; extrapolates waste from buckwheat -->
 	<process name= "Process Brown Rice into Rice Flour"
 		tech="1" skill="2" work-time="38" process-time="330"
 			power-required="5.3">
@@ -902,7 +902,7 @@
 		</outputs>
 	</process>
 	
-	<-- https://umanitoba.ca/faculties/engineering/departments/ce2p2e/alternative_village/media/19_Physical_Chemical_surface_properties_wheat_husk_rye_husk_soft_wood_Bledzki.pdf says 15-20 % husk for wheat; https://www.sciencedirect.com/topics/agricultural-and-biological-sciences/milling-fractions saysfor Buckwheat cultivar Siva, it is 55.4 % flour (from raw grain), 24.2 % bran, and 17.4 % husk according to Skrabanja et al., 2003a assumes waste is linear from grain to wholegrain to white   -->
+	<!-- https://umanitoba.ca/faculties/engineering/departments/ce2p2e/alternative_village/media/19_Physical_Chemical_surface_properties_wheat_husk_rye_husk_soft_wood_Bledzki.pdf says 15-20 % husk for wheat; https://www.sciencedirect.com/topics/agricultural-and-biological-sciences/milling-fractions saysfor Buckwheat cultivar Siva, it is 55.4 % flour (from raw grain), 24.2 % bran, and 17.4 % husk according to Skrabanja et al., 2003a assumes waste is linear from grain to wholegrain to white   -->
 	<process name= "Process Wheat into Wheat Flour"
 		tech="1" skill="2" work-time="50" process-time="400"
 			power-required="5.0">
@@ -932,7 +932,7 @@
 		</outputs>
 	</process>
 
-	<-- https://soybeanresearchinfo.com/research-highlight/increasing-soybean-oil-yield-through-targeted-gene-silencing-and-over-expression/ says 16-22 % oil once all water is removed; using 19 % -->
+	<!-- https://soybeanresearchinfo.com/research-highlight/increasing-soybean-oil-yield-through-targeted-gene-silencing-and-over-expression/ says 16-22 % oil once all water is removed; using 19 % -->
 	<process name="Expel Soybean Oil from Soybean"
 		tech="1" skill="0" work-time="50" process-time="100"
 			power-required=".5">
@@ -944,12 +944,12 @@
 		<outputs>
 			<part name="oven" number="1" />
 			<resource name="Soybean Oil" amount="0.437" />
-			<resource name="Food Waste" amount="2.063"
-			<-- It should be press cake (and maybe some grey water that is squeezed out too?), which can be used like okara if cooked? <resource name="Okara" amount="2.063"/> -->
+			<resource name="Food Waste" amount="2.063" />
+			<!-- It should be press cake (and maybe some grey water that is squeezed out too?), which can be used like okara if cooked? <resource name="Okara" amount="2.063"/> -->
 		</outputs>
 	</process>
 
-	<-- DOI 10.17485/ijst/2016/v9i30/89371 tells growth and oil yield; 50 % from crops.xml is well within the range -->
+	<!-- DOI 10.17485/ijst/2016/v9i30/89371 tells growth and oil yield; 50 % from crops.xml is well within the range -->
 	<process name="Press Sesame Oil from Sesame Seeds"
 		tech="1" skill="0" work-time="50" process-time="100"
 			power-required=".5">
@@ -963,7 +963,7 @@
 		</outputs>
 	</process>
 
-	<-- https://en.wikipedia.org/wiki/Garlic_oil#Preparation says 1 gram pure oil requres 500 grams garlic, and that it is 900 times as strong as fresh garlic and 200 times as strong as dry garlic -->
+	<!-- https://en.wikipedia.org/wiki/Garlic_oil#Preparation says 1 gram pure oil requres 500 grams garlic, and that it is 900 times as strong as fresh garlic and 200 times as strong as dry garlic -->
 	<process name="Press Garlic Oil from Garlic"
 		tech="1" skill="0" work-time="50" process-time="100"
 			power-required=".5">
@@ -1046,7 +1046,7 @@
 		</outputs>
 	</process>
 		
-	<-- https://solefoodkitchen.com/other/question-how-much-dry-quinoa-makes-100g-cooked.html suggests ~2.25 cooked = 1 uncooked... https://www.youtube.com/watch?v=Zfkd6VXT9_0 describes this -->
+	<!-- https://solefoodkitchen.com/other/question-how-much-dry-quinoa-makes-100g-cooked.html suggests ~2.25 cooked = 1 uncooked... https://www.youtube.com/watch?v=Zfkd6VXT9_0 describes this -->
 	<process name="Make Veggie Patty from Quinoa Tempeh and Spice"
 		tech="2" skill="2" work-time="75" process-time="1000"
 			power-required="2.0">
@@ -1067,9 +1067,9 @@
 			<resource name="Onion" amount="0.025" />
 		</inputs>
 		<outputs>
-			<resource name="Grey Water" amount="3.5" />
 			<part name="autoclave" number="1" />
 			<part name="oven" number="1" />
+			<resource name="Grey Water" amount="3.5" />			
 			<resource name="Veggie Patty" amount="3.33" />
 		</outputs>
 	</process>
@@ -1142,7 +1142,7 @@
 		</outputs>
 	</process>
 
-	<-- TODO: research process better, beyond just rice+yeast=rice ethanol and ethanol+acetobacter=vinegar -->
+	<!-- TODO: research process better, beyond just rice+yeast=rice ethanol and ethanol+acetobacter=vinegar -->
 	<process name="Make Rice Vinegar by Fermentation"
 		tech="1" skill="2" work-time="50" process-time="30000"
 			power-required="1.0">
@@ -1159,14 +1159,14 @@
 			<resource name="sodium hypochlorite" amount="0.003" />
 		</inputs>
 		<outputs>
-			<resource name="Grey Water" amount="1.25" />
 			<part name="bottle" number="5" />
 			<part name="autoclave" number="1" />
+			<resource name="Grey Water" amount="1.25" />
 			<resource name="Rice Vinegar" amount="15.0" />
 		</outputs>
 	</process>
 
-	<-- elsewhere it appears that a bottle is ~3l, so changed it here -->
+	<!-- elsewhere it appears that a bottle is ~3l, so changed it here -->
 	<process name="Make Mustard"
 		tech="1" skill="1" work-time="50" process-time="100"
 			power-required="1.0">
@@ -1206,7 +1206,7 @@
 		</outputs>
 	</process>
 		
-	<-- TODO: research process better; currently extrapolating aspergillus amount from miso -->
+	<!-- TODO: research process better; currently extrapolating aspergillus amount from miso -->
 	<process name="Make Soy Sauce by Fermentation"
 		tech="2" skill="2" work-time="100" process-time="30000"
 			power-required="1.0">
@@ -1224,14 +1224,14 @@
 			<resource name="sodium hypochlorite" amount="0.003" />
 		</inputs>
 		<outputs>
-			<resource name="Grey Water" amount="1.25" />
 			<part name="bottle" number="5" />
 			<part name="autoclave" number="1" />
+			<resource name="Grey Water" amount="1.25" />			
 			<resource name="Soy Sauce" amount="15.0" />
 		</outputs>
 	</process>
 		
-	<-- https://www.youtube.com/watch?v=t8Wfcrhm-OI info extrapolated from chickpea miso -->
+	<!-- https://www.youtube.com/watch?v=t8Wfcrhm-OI info extrapolated from chickpea miso -->
 	<process name="Make Miso by Fermentation"
 		tech="2" skill="2" work-time="150" process-time="62000"
 			power-required="1.0">
@@ -1245,7 +1245,7 @@
 			<resource name="Aspergillus Mix" amount="0.001" />
 			<resource name="Table Salt" amount="0.3" />
 			<resource name="Water" amount="5.25" />
-			<resource name="sodium hypochlorite" amount="0.002"
+			<resource name="sodium hypochlorite" amount="0.002" />
 		</inputs>
 		<outputs>
 			<part name="bottle" number="1" />
