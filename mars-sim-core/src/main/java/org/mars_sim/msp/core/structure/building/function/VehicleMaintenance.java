@@ -109,19 +109,19 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 		// Add vehicle to building.
 		if (vehicles.add(vehicle)) {
 	
-			if (vehicle instanceof Crewable) {
-				// Transfer the human occupants to the settlement
-				Crewable c = (Crewable)vehicle;
-				for (Person p: new ArrayList<>(c.getCrew())) {
-					p.transfer(building.getSettlement());
-					BuildingManager.addPersonOrRobotToBuilding(p, building);
-				}
-				// Transfer the robot occupants to the settlement
-				for (Robot r: new ArrayList<>(c.getRobotCrew())) {
-					r.transfer(building.getSettlement());
-					BuildingManager.addPersonOrRobotToBuilding(r, building);
-				}
-			}		
+//			if (vehicle instanceof Crewable) {
+//				// Transfer the human occupants to the settlement
+//				Crewable c = (Crewable)vehicle;
+//				for (Person p: new ArrayList<>(c.getCrew())) {
+//					p.transfer(building.getSettlement());
+//					BuildingManager.addPersonOrRobotToBuilding(p, building);
+//				}
+//				// Transfer the robot occupants to the settlement
+//				for (Robot r: new ArrayList<>(c.getRobotCrew())) {
+//					r.transfer(building.getSettlement());
+//					BuildingManager.addPersonOrRobotToBuilding(r, building);
+//				}
+//			}		
 		
 			vehicle.setPrimaryStatus(StatusType.GARAGED);
 		
@@ -169,13 +169,28 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 				// if there are in the crew
 				Crewable c = ((Crewable)vehicle);
 				for (Person p: new ArrayList<>(c.getCrew())) {
-					p.transfer(vehicle);
-					BuildingManager.removePersonFromBuilding(p, building);
+					
+					// If person's origin is already in this vehicle
+					// and it's called by removeFromGarage()
+					if (p.getVehicle().equals(vehicle)) {
+						p.setContainerUnit(vehicle);
+						p.setLocationStateType(LocationStateType.INSIDE_VEHICLE);
+					}
+					else {
+						p.transfer(vehicle);
+						BuildingManager.removePersonFromBuilding(p, building);
+					}
 				}
 				// Remove the robot occupants from the settlement
 				for (Robot r: new ArrayList<>(c.getRobotCrew())) {
-					r.transfer(vehicle);
-					BuildingManager.removeRobotFromBuilding(r, building);
+					if (r.getVehicle().equals(vehicle)) {
+						r.setContainerUnit(vehicle);
+						r.setLocationStateType(LocationStateType.INSIDE_VEHICLE);
+					}
+					else {
+						r.transfer(vehicle);
+						BuildingManager.removeRobotFromBuilding(r, building);
+					}
 				}
 			}
 			

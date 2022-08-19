@@ -613,6 +613,10 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 		return currentStateType;
 	}
 
+	public void setLocationStateType(LocationStateType locationStateType) {
+		currentStateType = locationStateType;
+	}
+	
 	public LocationTag getLocationTag() {
 		return tag;
 	}
