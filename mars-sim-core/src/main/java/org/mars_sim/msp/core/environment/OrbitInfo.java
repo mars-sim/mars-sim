@@ -451,7 +451,7 @@ public class OrbitInfo implements Serializable, Temporal {
 	}
 
 	/**
-	 * Is the sun setting it (at dusk) at this location ? 
+	 * Is the sun setting (at dusk) at this location ? 
 	 * 
 	 * @param location
 	 * @param extended true if extending the dusk earlier (starting the dusk angle earlier)

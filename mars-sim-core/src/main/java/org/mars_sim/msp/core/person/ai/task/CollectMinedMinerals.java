@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.person.ai.task;
 
 import java.util.logging.Level;
 
+import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.InventoryUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.Container;
@@ -241,6 +242,10 @@ public class CollectMinedMinerals extends EVAOperation {
 				return false;
 			}
 
+			if (!isEnoughSunlightForEVA(person.getCoordinates())) {
+				return false;
+			}
+			
 			// Check if person's medical condition will not allow task.
 			if (person.getPerformanceRating() < .2D)
 				return false;

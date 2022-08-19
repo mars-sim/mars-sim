@@ -445,7 +445,12 @@ public abstract class EVAOperation extends Task {
 		// Check for sunlight
 		if (isGettingDark(person)) {
 			// Added to show issue #509
-			logger.warning(worker, 10_000L, "Ending '" + getName() + "': too dark.");
+			logger.warning(worker, 10_000L, "Ended '" + getName() + "': becoming too dark.");
+			return true;
+		}
+		
+		if (getSolarIrradiance(person.getCoordinates()) <= minEVASunlight) {
+			logger.warning(worker, 10_000L, "Ended '" + getName() + "': too dark already.");
 			return true;
 		}
 
@@ -466,25 +471,24 @@ public abstract class EVAOperation extends Task {
 	}
 
 	/**
-	 * Checks if the sky is dimming and is nearly at dusk.
+	 * Checks if the sky light is dimming.
 	 *
 	 * @param person
 	 * @return
 	 */
 	public static boolean isGettingDark(Person person) {	
 		return orbitInfo.isSunSetting(
-        		person.getCoordinates(), true)
-				|| getSolarIrradiance(person.getCoordinates()) <= minEVASunlight;
+        		person.getCoordinates(), false);
     }
 
 	/**
-	 * Gets the solar irradinace.
+	 * Gets the solar irradiance.
 	 * 
 	 * @param locn
 	 * @return
 	 */
 	public static double getSolarIrradiance(Coordinates locn) {
-		return  surfaceFeatures.getSolarIrradiance(locn);
+		return surfaceFeatures.getSolarIrradiance(locn);
 	}
 	
 	/**
