@@ -758,7 +758,8 @@ public class Person extends Unit implements Worker, Temporal, EquipmentOwner {
 			return (Settlement) c;
 		}
 
-		if (isInVehicleInGarage()) {
+		if (c.getUnitType() == UnitType.VEHICLE) {
+			// Inside the garage
 			return ((Vehicle)c).getSettlement();
 		}
 

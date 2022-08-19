@@ -292,7 +292,7 @@ public class ExitAirlock extends Task implements Serializable {
 		
 		if (inSettlement) {
 			Building airlockBuilding = (Building)(airlock.getEntity());
-			if (person.getSettlement().getBuildingManager().isObservatoryAttached(airlockBuilding)) {
+			if (airlockBuilding.getSettlement().getBuildingManager().isObservatoryAttached(airlockBuilding)) {
 				return true;
 			}
 		}
