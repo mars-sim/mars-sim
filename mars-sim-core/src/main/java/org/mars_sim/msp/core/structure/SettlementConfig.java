@@ -434,10 +434,9 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 		return template;
 	}
 
-	public int getTemplateID() {
-		return templateID;
-	}
-
+	/**
+	 * It is not possible to creae new SettlementTemplates via the application.
+	 */
 	@Override
 	protected Document createItemDoc(SettlementTemplate item) {
 		throw new UnsupportedOperationException("Saving Settlement templates is not supported");

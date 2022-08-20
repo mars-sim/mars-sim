@@ -104,7 +104,7 @@ public class Settlement extends Structure implements Temporal,
 	private static final String MINING_OUTPOST = "Mining Outpost";
 	private static final String ASTRONOMY_OBSERVATORY = "Astronomy Observatory";
 
-	public static final int MULTIPLIER = 2;
+	private static final int UPDATE_GOODS_PERIOD = (1000/20); // Update 20 times per day
 	public static final int CHECK_MISSION = 20; // once every 10 millisols
 	public static final int MAX_NUM_SOLS = 3;
 	public static final int MAX_SOLS_DAILY_OUTPUT = 14;
@@ -1052,17 +1052,11 @@ public class Settlement extends Structure implements Temporal,
 			// Check for available airlocks
 			checkAvailableAirlocks();
 
-			// For a single settlement, if MULTIPLIER is 1, then it calls updateGoodValues once every 23 msols
-			// For a single settlement, If MULTIPLIER is 2, then it calls updateGoodValues once every 46 msols
-			// For a 9-settlement simulation, if MULTIPLIER is 1, then it calls updateGoodValues once every 23 msols
-			// For a 9-settlement simulation, If MULTIPLIER is 2, then it calls updateGoodValues once every 46 msols
-			int cycles = settlementConfig.getTemplateID() * MULTIPLIER;
-
-			int remainder = msol % cycles;
+			// Check if good need updating
+			int remainder = msol % UPDATE_GOODS_PERIOD;
 			if (remainder == templateID) {
 				// Update the goods value gradually with the use of buffers
 				goodsManager.updateGoodValues();
-//				logger.info(this, "Adjusted the values of goods at " + msol + " msol.");
 			}
 
 			remainder = msol % CHECK_MISSION;
