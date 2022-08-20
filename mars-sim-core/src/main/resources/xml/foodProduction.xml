@@ -660,7 +660,7 @@
 
 		<inputs>
 			<part name="autoclave" number="1" />
-			<resource name="Soybeans" amount="1.0" />
+			<resource name="soybean" amount="1.0" />
 			<resource name="Water" amount="3.5" />
 			<resource name="Rice Vinegar" amount="0.138" />
 			<resource name="Rhizopus oligosporus" amount="0.0023" />
@@ -701,7 +701,7 @@
 
 		<inputs>
 			<part name="autoclave" number="1" />
-			<resource name="Soybeans" amount="1.0" />
+			<resource name="soybean" amount="1.0" />
 			<resource name="Water" amount="3.5" />
 			<resource name="Rice Vinegar" amount="0.198" />
 			<resource name="Okara" amount="1.0" />
@@ -724,7 +724,7 @@
 
 		<inputs>
 			<part name="autoclave" number="1" />
-			<resource name="Soybeans" amount="1.7" />
+			<resource name="soybean" amount="1.7" />
 			<resource name="Water" amount="18.7" />
 			<resource name="Rice Vinegar" amount="0.181" />
 			<resource name="Rhizopus oligosporus" amount="0.0019" />
@@ -749,7 +749,7 @@
 
 		<inputs>
 			<part name="autoclave" number="1" />
-			<resource name="Soybeans" amount="1.7" />
+			<resource name="soybean" amount="1.7" />
 			<resource name="Water" amount="18.7" />
 			<resource name="Rice Vinegar" amount="0.112" />
 			<resource name="Rhizopus oligosporus" amount="0.0019" />
@@ -775,7 +775,7 @@
 
 		<inputs>
 			<part name="autoclave" number="1" />
-			<resource name="Soybeans" amount="1.25" />
+			<resource name="soybean" amount="1.25" />
 			<resource name="Water" amount="13.75" />
 			<resource name="Rice Vinegar" amount="0.133" />
 			<resource name="Rhizopus oligosporus" amount="0.0014" />
@@ -802,7 +802,7 @@
 		
 		<inputs>
 			<part name="autoclave" number="1" />
-			<resource name="Soybeans" amount="1.25" />
+			<resource name="soybean" amount="1.25" />
 			<resource name="Water" amount="13.75" />
 			<resource name="Rice Vinegar" amount="0.0825" />
 			<resource name="Rhizopus oligosporus" amount="0.0014" />
