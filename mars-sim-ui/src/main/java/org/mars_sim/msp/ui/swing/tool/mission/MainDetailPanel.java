@@ -204,72 +204,77 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 
 	private WebPanel initMissionPane() {
 
-		// Create the mission pane spring layout.
-		WebPanel missionLayout = new WebPanel(new GridLayout(6, 2));
-
 		// Create the vehicle pane.
-		WebPanel missionPane = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		missionPane.setAlignmentX(Component.BOTTOM_ALIGNMENT);
-		missionLayout.add(missionPane);
+		WebPanel missionLayout = new WebPanel(new FlowLayout(10, 10, 10));
+		Border blackline = BorderFactory.createTitledBorder("Profile");
+		missionLayout.setBorder(blackline);
+	
+		// Create the mission pane spring layout.
+		WebPanel missionGridPane = new WebPanel(new GridLayout(6, 2, 10, 2));
+		missionLayout.add(missionGridPane);
 		
 		// Create the type label.
-		WebLabel typeLabel0 = new WebLabel(Msg.getString("MainDetailPanel.type", SwingConstants.RIGHT)); //$NON-NLS-1$
-		typeLabel0.setAlignmentX(Component.RIGHT_ALIGNMENT);
-		missionPane.add(typeLabel0);
+		WebLabel typeLabel0 = new WebLabel(Msg.getString("MainDetailPanel.type", SwingConstants.LEFT)); //$NON-NLS-1$
+//		typeLabel0.setAlignmentX(Component.RIGHT_ALIGNMENT);
+		missionGridPane.add(typeLabel0);
 
 		typeLabel = new WebLabel(" ", SwingConstants.LEFT);
 		WebPanel wrapper2 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		wrapper2.add(typeLabel);
-		missionPane.add(wrapper2);
+		missionGridPane.add(wrapper2);
 		
 		// Create the designation label.
-		WebLabel designationLabel0 = new WebLabel(Msg.getString("MainDetailPanel.designation", SwingConstants.RIGHT)); //$NON-NLS-1$
-		designationLabel0.setAlignmentX(Component.RIGHT_ALIGNMENT);
-		missionPane.add(designationLabel0);
+		WebLabel designationLabel0 = new WebLabel(Msg.getString("MainDetailPanel.designation", SwingConstants.LEFT)); //$NON-NLS-1$
+//		designationLabel0.setAlignmentX(Component.RIGHT_ALIGNMENT);
+		missionGridPane.add(designationLabel0);
 
 		designationLabel = new WebLabel("", SwingConstants.LEFT);
 		WebPanel wrapper1a = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		wrapper1a.add(designationLabel);
-		missionPane.add(wrapper1a);
+		missionGridPane.add(wrapper1a);
 
 		// Create the phase label.
-		WebLabel settlementLabel0 = new WebLabel(Msg.getString("MainDetailPanel.settlement", SwingConstants.RIGHT)); //$NON-NLS-1$
-		settlementLabel0.setAlignmentX(Component.RIGHT_ALIGNMENT);
-		missionPane.add(settlementLabel0);
+		WebLabel settlementLabel0 = new WebLabel(Msg.getString("MainDetailPanel.settlement", SwingConstants.LEFT)); //$NON-NLS-1$
+//		settlementLabel0.setAlignmentX(Component.RIGHT_ALIGNMENT);
+		missionGridPane.add(settlementLabel0);
 
-		settlementLabel = new WebLabel(" ", SwingConstants.LEFT);
+		String settlementName = "                ";
+		if (missionWindow.getSettlement() != null)
+			settlementName = missionWindow.getSettlement().getName();
+		
+		settlementLabel = new WebLabel(settlementName, SwingConstants.LEFT);
 		WebPanel wrapper4 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		wrapper4.add(settlementLabel);
-		missionPane.add(wrapper4);
+		missionGridPane.add(wrapper4);
 
 		// Create the type label.
-		WebLabel leadLabel0 = new WebLabel(Msg.getString("MainDetailPanel.startingMember", SwingConstants.RIGHT)); //$NON-NLS-1$
-		leadLabel0.setAlignmentX(Component.RIGHT_ALIGNMENT);
-		missionPane.add(leadLabel0);
+		WebLabel leadLabel0 = new WebLabel(Msg.getString("MainDetailPanel.startingMember", SwingConstants.LEFT)); //$NON-NLS-1$
+//		leadLabel0.setAlignmentX(Component.RIGHT_ALIGNMENT);
+		missionGridPane.add(leadLabel0);
 		leaderLabel = new WebLabel(" ", SwingConstants.LEFT);
 		WebPanel wrapper1 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		wrapper1.add(leaderLabel);
-		missionPane.add(wrapper1);
+		missionGridPane.add(wrapper1);
 
 		// Create the phase label.
-		WebLabel phaseLabel0 = new WebLabel(Msg.getString("MainDetailPanel.phase", SwingConstants.RIGHT)); //$NON-NLS-1$
-		phaseLabel0.setAlignmentX(Component.RIGHT_ALIGNMENT);
-		missionPane.add(phaseLabel0);
+		WebLabel phaseLabel0 = new WebLabel(Msg.getString("MainDetailPanel.phase", SwingConstants.LEFT)); //$NON-NLS-1$
+//		phaseLabel0.setAlignmentX(Component.RIGHT_ALIGNMENT);
+		missionGridPane.add(phaseLabel0);
 
 		phaseLabel = new WebLabel(" ", SwingConstants.LEFT);
 		WebPanel wrapper3 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		wrapper3.add(phaseLabel);
-		missionPane.add(wrapper3);
+		missionGridPane.add(wrapper3);
 
 		// Create the mission status Label
-		WebLabel missionStatusLabel0 = new WebLabel(Msg.getString("MainDetailPanel.missionStatus", SwingConstants.RIGHT)); //$NON-NLS-1$
-		missionStatusLabel0.setAlignmentX(Component.RIGHT_ALIGNMENT);
-		missionPane.add(missionStatusLabel0);
+		WebLabel missionStatusLabel0 = new WebLabel(Msg.getString("MainDetailPanel.missionStatus", SwingConstants.LEFT)); //$NON-NLS-1$
+//		missionStatusLabel0.setAlignmentX(Component.RIGHT_ALIGNMENT);
+		missionGridPane.add(missionStatusLabel0);
 
 		missionStatusLabel = new WebLabel(" ", SwingConstants.LEFT);
 		WebPanel wrapper5 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		wrapper5.add(missionStatusLabel);
-		missionPane.add(wrapper5);
+		missionGridPane.add(wrapper5);
 		
 		return missionLayout;
 	}
@@ -297,7 +302,7 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 		vehiclePane.add(centerMapButton);
 
 		// Create the vehicle label.
-		WebLabel vehicleLabel = new WebLabel(" " + Msg.getString("MainDetailPanel.vehicle"), SwingConstants.RIGHT); //$NON-NLS-1$
+		WebLabel vehicleLabel = new WebLabel(" " + Msg.getString("MainDetailPanel.vehicle"), SwingConstants.LEFT); //$NON-NLS-1$
 		vehiclePane.add(vehicleLabel);
 
 		// Create the vehicle panel.
@@ -336,54 +341,54 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 
 	private WebPanel initTravelPane() {
 		
-		WebPanel mainPane = new WebPanel(new FlowLayout());
-		Border blackline = BorderFactory.createTitledBorder("Mission Vehicle");
-		mainPane.setBorder(blackline);
+		WebPanel mainLayout = new WebPanel(new FlowLayout(10, 10, 10));
+		Border blackline = BorderFactory.createTitledBorder("Travel");
+		mainLayout.setBorder(blackline);
 	
-		// Prepare travelPane Spring Layout.
-		WebPanel travelPane = new WebPanel(new GridLayout(4, 2, 10, 5));
-		mainPane.add(travelPane);
+		// Prepare travel grid layout.
+		WebPanel travelGridPane = new WebPanel(new GridLayout(4, 2, 10, 2));
+		mainLayout.add(travelGridPane);
 
 		// Create the vehicle status label.
-		WebLabel vehicleStatusLabel0 = new WebLabel(Msg.getString("MainDetailPanel.vehicleStatus", SwingConstants.RIGHT)); //$NON-NLS-2$
-		travelPane.add(vehicleStatusLabel0);
+		WebLabel vehicleStatusLabel0 = new WebLabel(Msg.getString("MainDetailPanel.vehicleStatus",SwingConstants.LEFT)); //$NON-NLS-2$
+		travelGridPane.add(vehicleStatusLabel0);
 
 		vehicleStatusLabel = new WebLabel(" ", SwingConstants.LEFT);
 		WebPanel wrapper01 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		wrapper01.add(vehicleStatusLabel);
-		travelPane.add(wrapper01);
+		travelGridPane.add(wrapper01);
 
 		// Create the speed label.
-		WebLabel speedLabel0 = new WebLabel(Msg.getString("MainDetailPanel.vehicleSpeed", SwingConstants.RIGHT)); //$NON-NLS-1$
-		travelPane.add(speedLabel0);
+		WebLabel speedLabel0 = new WebLabel(Msg.getString("MainDetailPanel.vehicleSpeed", SwingConstants.LEFT)); //$NON-NLS-1$
+		travelGridPane.add(speedLabel0);
 
-		speedLabel = new WebLabel(" ", SwingConstants.RIGHT);
-		speedLabel.setAlignmentX(Component.RIGHT_ALIGNMENT);
+		speedLabel = new WebLabel(" ", SwingConstants.LEFT);
+//		speedLabel.setAlignmentX(Component.RIGHT_ALIGNMENT);
 		WebPanel wrapper02 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		wrapper02.add(speedLabel);
-		travelPane.add(wrapper02);
+		travelGridPane.add(wrapper02);
 
 		// Create the distance next navpoint label.
 		WebLabel distanceNextNavLabel0 = new WebLabel(
-				Msg.getString("MainDetailPanel.distanceNextNavPoint", SwingConstants.RIGHT)); //$NON-NLS-1$
-		distanceNextNavLabel0.setAlignmentX(Component.RIGHT_ALIGNMENT);
-		travelPane.add(distanceNextNavLabel0);
+				Msg.getString("MainDetailPanel.distanceNextNavPoint", SwingConstants.LEFT)); //$NON-NLS-1$
+//		distanceNextNavLabel0.setAlignmentX(Component.RIGHT_ALIGNMENT);
+		travelGridPane.add(distanceNextNavLabel0);
 
 		distanceNextNavLabel = new WebLabel(" ", SwingConstants.LEFT); //$NON-NLS-1$
 		WebPanel wrapper03 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		wrapper03.add(distanceNextNavLabel);
-		travelPane.add(wrapper03);
+		travelGridPane.add(wrapper03);
 
 		// Create the traveled distance label.
-		WebLabel traveledLabel0 = new WebLabel(Msg.getString("MainDetailPanel.distanceTraveled", SwingConstants.RIGHT)); //$NON-NLS-1$
-		travelPane.add(traveledLabel0);
+		WebLabel traveledLabel0 = new WebLabel(Msg.getString("MainDetailPanel.distanceTraveled", SwingConstants.LEFT)); //$NON-NLS-1$
+		travelGridPane.add(traveledLabel0);
 
 		traveledLabel = new WebLabel(" ", SwingConstants.LEFT); //$NON-NLS-1$
 		WebPanel wrapper04 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		wrapper04.add(traveledLabel);
-		travelPane.add(wrapper04);
+		travelGridPane.add(wrapper04);
 
-		return mainPane;
+		return mainLayout;
 	}
 
 	private WebPanel initLogPane() {
@@ -472,6 +477,9 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 		missionCustomPane = new WebPanel(customPanelLayout);
 		missionCustomPane.setAlignmentX(Component.RIGHT_ALIGNMENT);
 
+		Border blackline = BorderFactory.createTitledBorder("Mission Specific");
+		missionCustomPane.setBorder(blackline);
+		
 		// Create custom empty panel.
 		WebPanel emptyCustomPanel = new WebPanel();
 		missionCustomPane.add(emptyCustomPanel, EMPTY);
@@ -696,7 +704,7 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 			phaseLabel.setText(phaseText);
 	
 			var missionStatusText = new StringBuilder();
-			missionStatusText.append( mission.getMissionStatus().stream().map(MissionStatus::getName).collect(Collectors.joining(", ")));
+			missionStatusText.append(mission.getMissionStatus().stream().map(MissionStatus::getName).collect(Collectors.joining(", ")));
 			missionStatusLabel.setText(missionStatusText.toString());
 			
 			settlementLabel.setText(mission.getAssociatedSettlement().getName());
