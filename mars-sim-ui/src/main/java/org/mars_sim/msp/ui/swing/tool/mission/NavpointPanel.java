@@ -405,6 +405,10 @@ implements ListSelectionListener, MissionListener {
 		Mission mission = (Mission) missionWindow.getMissionList().getSelectedValue();
 		if (mission != null)
 			setMission(mission);
+		else {
+			Settlement settlement = (Settlement) missionWindow.getSettlementList().getSelectedValue();
+			clearNavTab(settlement);
+		}
 	}
 	
 	/**
@@ -413,24 +417,15 @@ implements ListSelectionListener, MissionListener {
 	 * @param newMission
 	 */
 	public void setMission(Mission newMission) {
-//		if (newMission == null) {
-//			if (missionCache != null) {
-//				// Remove this as previous mission listener.
-//				missionCache.removeMissionListener(this);	
-//				missionCache = null;
-//			}
-//			// Clear map and site table.
-//			clearNavTab();	
-//			return;
-//		}		
-
-		// Remove this as previous mission listener.
-		if (missionCache != null)
-			missionCache.removeMissionListener(this);
-		
-		if (missionCache == null || missionCache != newMission) {
+		boolean isDiff = missionCache != newMission;
+				
+		if (isDiff) {
+			// Remove this as previous mission listener.
+			if (missionCache != null) {
+				missionCache.removeMissionListener(this);
+			}
+			// Update the cache
 			missionCache = newMission;
-			
 			// Add this as listener for new mission.
 			missionCache.addMissionListener(this);
 			// Update the mission content on the Nav tab

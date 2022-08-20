@@ -192,10 +192,8 @@ public class MissionWindow extends ToolWindow {
 		int width = (desktopSize.width - jInternalFrameSize.width) / 2;
 		int height = (desktopSize.height - jInternalFrameSize.height) / 2;
 		setLocation(width, height);
-
 	}
 
-	
 	/**
 	 * Selects a mission for display.
 	 *
@@ -262,8 +260,9 @@ public class MissionWindow extends ToolWindow {
 		}
 		
 		if (missionCache == null || missionCache != newMission) {
+			// Update the cache
 			missionCache = newMission;
-			
+			// Select the new mission on the mission list
 			missionList.setSelectedValue(newMission, true);
 			// Highlight the selected mission in Main tab
 			mainPanel.setMission(newMission);
@@ -311,6 +310,10 @@ public class MissionWindow extends ToolWindow {
 		return missionList;
 	}
 
+	public JList<Settlement> getSettlementList() {
+		return settlementList;
+	}
+	
 	/**
 	 * Prepares tool window for deletion.
 	 */

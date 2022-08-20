@@ -5,7 +5,7 @@ Copyright (C) 2022 Scott Davis
 
 ------------------------------------------|---------------------
 
-## v3.4.0 (build ____) - 2022-07-__
+## v3.4.0 (build ____) - 2022-08-__
 
 ### ISSUES ADDRESSED :
 
@@ -24,6 +24,7 @@ Copyright (C) 2022 Scott Davis
   <LI> Scenario : Arriving future Settlements are configured from a scenario. Scenarios can be exported and shared. </LI>
   <LI>     Site : Explore, claim and track mining sites.</LI>
   <LI>   Social : Remove global relationship graph and simplify codes.</LI>
+  <LI> Sunlight : Predict sunrise and sunset at each settlement. Track actual sunrise and sunset time.</LI>
   <LI>  Vehicle : Rework vehicle specifications. Refine fuel economy calculation.</LI>
   <LI>    Waste : Split grey/black water & solid waste management resource processes into a separate waste processing function.</LI>
 
