@@ -311,14 +311,17 @@ public class CommandHelper {
 				int navPoints = tm.getNumberOfNavpoints();
 				if (navPoints > 0) {
 					response.appendText("Itinerary:");
-					response.appendTableHeading("Way Point", COORDINATE_WIDTH, "Description");
+					response.appendTableHeading("Way Point", COORDINATE_WIDTH, "Distance", 10,
+										"Description");
 					for(int i = tm.getNextNavpointIndex(); i < navPoints; i++) {
 						NavPoint nv = tm.getNavpoint(i);
+						String distance = String.format(KM_FORMAT, nv.getDistance());
 						if (nv.isSettlementAtNavpoint()) {
-							response.appendTableRow(nv.getSettlement().getName(), "");
+							response.appendTableRow(nv.getSettlement().getName(), distance, "");
 						}
 						else {
 							response.appendTableRow(nv.getLocation().getCoordinateString(),
+									distance,
 									nv.getDescription());
 						}
 					}

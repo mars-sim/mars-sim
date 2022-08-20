@@ -179,10 +179,10 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 		NavPoint startingNavPoint = null;
 
 		if (startingMember.getSettlement() != null) {
-			startingNavPoint = new NavPoint(startingMember.getSettlement());
+			startingNavPoint = new NavPoint(startingMember.getSettlement(), null);
 		}
 		else {
-			startingNavPoint = new NavPoint(getCurrentMissionLocation(), "starting location");
+			startingNavPoint = new NavPoint(getCurrentMissionLocation(), "starting location", null);
 		}
 
 		addNavpoint(startingNavPoint);
@@ -328,6 +328,8 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 												getOptionalResourcesToLoad(),
 												getRequiredEquipmentToLoad(),
 												getOptionalEquipmentToLoad());
+			
+			//logger.info(vehicle, "Needs " + loadingPlan.dumpContents());
 		}
 		return loadingPlan;
 	}
@@ -1720,9 +1722,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	 * @param destNavPoint
 	 */
 	protected void resetToReturnTrip(NavPoint currentNavPoint, NavPoint destNavPoint) {
-		
-		setDistanceProposed(0);
-		
+	
 		navPoints.clear();
 		
 		navIndex = 0;
@@ -1739,6 +1739,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 
 		// Need to recalculate what is left to travel to get resoruces loaded
 		// for return
+		distanceProposed = 0D;
 		computeTotalDistanceProposed();
 
 	}
@@ -1747,15 +1748,18 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	 * Adds a navpoint to the mission.
 	 * 
 	 * @param navPoint the new nav point location to be added.
-	 * @throws IllegalArgumentException if location is null.
 	 */
-	protected final void addNavpoint(NavPoint navPoint) {
-		if (navPoint != null) {
-			navPoints.add(navPoint);
-			fireMissionUpdate(MissionEventType.NAVPOINTS_EVENT);
-		} else {
-			logger.severe(getName() + " navPoint is null");
+	private final void addNavpoint(NavPoint navPoint) {
+		navPoints.add(navPoint);
+		fireMissionUpdate(MissionEventType.NAVPOINTS_EVENT);
+	}
+
+	private Coordinates getLastNavpoint() {
+		if (navPoints.isEmpty()) {
+			return null;
 		}
+
+		return navPoints.get(navPoints.size() - 1).getLocation();
 	}
 
 	/**
@@ -1763,7 +1767,8 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	 * @param s
 	 */
 	protected void addNavpoint(Settlement s) {
-		addNavpoint(new NavPoint(s));
+
+		addNavpoint(new NavPoint(s, getLastNavpoint()));
 	}
 	
 
@@ -1774,7 +1779,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	 * @param n Name
 	 */
 	protected void addNavpoint(Coordinates c, String n) {
-		addNavpoint(new NavPoint(c, n));
+		addNavpoint(new NavPoint(c, n, getLastNavpoint()));
 	}
 	
 	
@@ -1786,9 +1791,12 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	 * @param nameFunc Function takes the index of the Coordinate
 	 */
 	protected void addNavpoints(List<Coordinates> points, IntFunction<String> nameFunc) {
-		for (int x = 0; x < points.size(); x++)
-			navPoints.add(new NavPoint(points.get(x), nameFunc.apply(x)));
-	
+		Coordinates prev = getLastNavpoint();
+		for (int x = 0; x < points.size(); x++) {
+			Coordinates location = points.get(x);
+			navPoints.add(new NavPoint(location, nameFunc.apply(x), prev));
+			prev = location;
+		}
 		fireMissionUpdate(MissionEventType.NAVPOINTS_EVENT);
 	}
 	
@@ -1811,7 +1819,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	/**
 	 * Clears out any unreached nav points.
 	 */
-	public final void clearRemainingNavpoints() {
+	private final void clearRemainingNavpoints() {
 		int index = getNextNavpointIndex();
 
 		// REmove all points that are after the current point
@@ -1822,15 +1830,6 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 		// Note: how to compensate the shifted index upon removal of this navPoint
 		fireMissionUpdate(MissionEventType.NAVPOINTS_EVENT);
 
-	}
-
-	/**
-	 * Gets the last navpoint reached.
-	 * 
-	 * @return navpoint
-	 */
-	public final NavPoint getPreviousNavpoint() {
-		return lastStopNavpoint;
 	}
 
 	/**
@@ -1900,41 +1899,12 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	}
 
 	/**
-	 * Gets the index of a navpoint.
-	 * 
-	 * @param navpoint the navpoint
-	 * @return index or -1 if navpoint isn't in the trip.
-	 */
-	public final int getNavpointIndex(NavPoint navpoint) {
-		if (navpoint == null)
-			logger.severe(getName() + " navpoint is null.");
-		if (navPoints.contains(navpoint))
-			return navPoints.indexOf(navpoint);
-		else
-			return -1;
-	}
-
-	/**
 	 * Gets the number of navpoints on the trip.
 	 * 
 	 * @return number of navpoints
 	 */
 	public final int getNumberOfNavpoints() {
 		return navPoints.size();
-	}
-
-	/**
-	 * Gets a list of navpoint coordinates
-	 * 
-	 * @return
-	 */
-	public List<Coordinates> getNavCoordinates() {
-		List<Coordinates> list = new ArrayList<>();
-		int size = getNumberOfNavpoints();
-		for (int i=0; i< size; i++) {
-			list.add(navPoints.get(i).getLocation());
-		}
-		return list;
 	}
 	
 	/**
@@ -2165,10 +2135,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 			double result = 0D;
 			
 			for (int x = 1; x < navPoints.size(); x++) {
-				NavPoint prevNav = navPoints.get(x - 1);
-				NavPoint currNav = navPoints.get(x);
-				double distance = Coordinates.computeDistance(currNav.getLocation(), prevNav.getLocation());
-				result += distance;
+				result += navPoints.get(x).getDistance();
 			}
 			
 			if (distanceProposed != result) {
@@ -2189,15 +2156,6 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	}
 	
 	/**
-	 * Sets the estimated total distance of the trip.
-	 * 
-	 * @param value (km)
-	 */
-	public void setDistanceProposed(double value) {
-		distanceProposed = value;
-	}
-	
-	/**
 	 * Computes the estimated total remaining distance to travel in the mission.
 	 * 
 	 * @return distance (km).
@@ -2206,35 +2164,20 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	public final double computeTotalDistanceRemaining() {
 
 		double leg = computeDistanceCurrentLegRemaining();
-		double total = 0;
-		
-		if (isCurrentNavpointSettlement()) {
-			 total = leg;
-		}
-		else {
-			int index = 0;
-			double navDist = 0;
-			if (AT_NAVPOINT.equals(travelStatus))
-				index = getCurrentNavpointIndex();
-			else if (TRAVEL_TO_NAVPOINT.equals(travelStatus))
-				index = getNextNavpointIndex();
 
-			for (int x = index + 1; x < getNumberOfNavpoints(); x++) {
-				NavPoint prev = getNavpoint(x - 1);
-				NavPoint next = getNavpoint(x); 
-				if ((prev != null) && (next != null)) {
-					navDist += Coordinates.computeDistance(prev.getLocation(), next.getLocation());
-				}
-			}
-			
-			// Note: check for Double.isInfinite() and Double.isNaN()
-			if (Double.isNaN(navDist)) {
-				logger.severe(getName() + " has navDist is NaN.");
-				navDist = 0;
-			}
-			
-			total = leg + navDist;
+		int index = 0;
+		double navDist = 0;
+		if (AT_NAVPOINT.equals(travelStatus))
+			index = getCurrentNavpointIndex();
+		else if (TRAVEL_TO_NAVPOINT.equals(travelStatus))
+			index = getNextNavpointIndex();
+
+		for (int x = index + 1; x < getNumberOfNavpoints(); x++) {
+			NavPoint next = getNavpoint(x); 
+			navDist += next.getDistance();
 		}
+		
+		double total = leg + navDist;
 			
 		if (distanceTotalRemaining != total) {
 			// Record the distance

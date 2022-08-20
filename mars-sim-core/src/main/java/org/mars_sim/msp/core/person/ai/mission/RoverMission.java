@@ -385,6 +385,11 @@ public abstract class RoverMission extends VehicleMission {
 
 			if (isEveryoneInRover()) {
 
+				// Double check, this shoud never happen
+				if (!isVehicleLoaded()) {
+					logger.warning(v, "Not fully loaded when travelling");
+				}
+
 				// If the rover is in a garage, put the rover outside.
 				if (v.isInAGarage()) {
 					BuildingManager.removeFromGarage(v);

@@ -26,32 +26,37 @@ public class NavPoint implements Serializable {
 	private Settlement settlement;
 	/** The description of the navpoint. */
 	private String description;
+	private double distance;
 
 	/**
 	 * Constructor with location.
 	 * 
 	 * @param location    the location of the navpoint.
 	 * @param description the navpoint description.
+	 * @param start Starting point
 	 */
-	public NavPoint(Coordinates location, String description) {
+	public NavPoint(Coordinates location, String description, Coordinates start) {
 		if (location == null)
 			throw new IllegalArgumentException("location is null");
 		this.location = location;
 		this.description = description;
+
+		if (start != null) {
+			distance = location.getDistance(start);
+		}
+		else {
+			distance = 0;
+		}
 	}
 
 	/**
 	 * Constructor with settlement.
 	 * 
 	 * @param settlement  the settlement at the navpoint.
-	 * @param description the navpoint description.
+	 * @param start Starting point
 	 */
-	public NavPoint(Settlement settlement) {
-		if (settlement == null)
-			throw new IllegalArgumentException("settlement is null");
-
-		this.location = settlement.getCoordinates();
-		this.description = settlement.getName();
+	public NavPoint(Settlement settlement, Coordinates start) {
+		this(settlement.getCoordinates(), settlement.getName(), start);
 		this.settlement = settlement;
 	}
 
@@ -63,6 +68,13 @@ public class NavPoint implements Serializable {
 	public Coordinates getLocation() {
 		return location;
 	}
+
+	/**
+	 * Distance to travel to reach this point from the previous
+	 */
+    public double getDistance() {
+        return distance;
+    }
 
 	/**
 	 * Gets the description of the navpoint.

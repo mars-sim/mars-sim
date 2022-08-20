@@ -14,9 +14,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentType;
+import org.mars_sim.msp.core.goods.Good;
+import org.mars_sim.msp.core.goods.GoodsUtil;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.task.utils.Worker;
@@ -560,5 +563,27 @@ public class LoadingController implements Serializable {
 	 */
 	public Settlement getSettlement() {
 		return settlement;
+	}
+
+	/**
+	 * Dump a description of the contents into a String representation.
+	 * @return String description of contents.
+	 */
+	public String dumpContents() {
+		StringBuilder buffer = new StringBuilder();
+		buffer.append("Resources:");
+		outputResourceManifest(resourcesManifest, buffer);		
+		buffer.append("Optional Resources:");
+		outputResourceManifest(optionalResourcesManifest, buffer);	
+
+		return buffer.toString();
+	}
+
+	private static void outputResourceManifest(Map<Integer, Number> manifest, StringBuilder buffer) {
+		for (Entry<Integer, Number> i : manifest.entrySet()) {
+			Good g = GoodsUtil.getGood(i.getKey());
+			buffer.append(g.getName()).append("=").append(i.getValue().toString()).append(' ');
+		}
+		buffer.append("\n");
 	}
 }

@@ -331,8 +331,8 @@ public class Trade extends RoverMission implements CommerceMission {
 		if (getPhaseEnded()) {
 			outbound = false;
 			resetToReturnTrip(
-					new NavPoint(tradingSettlement),
-					new NavPoint(getStartingSettlement()));
+					new NavPoint(tradingSettlement, null),
+					new NavPoint(getStartingSettlement(), tradingSettlement.getCoordinates()));
 
 			getStartingSettlement().getGoodsManager().clearDeal(MissionType.TRADE);
 
