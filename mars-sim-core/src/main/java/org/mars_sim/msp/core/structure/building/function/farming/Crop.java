@@ -50,7 +50,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 	private static final int CHECK_HEALTH_FREQUENCY = 20;
 	
 	/** The modifier for the work time on a crop. */
-	private static final double WORK_FACTOR = 1;
+	private static final double WORK_FACTOR = 2;
 	
 	/** The rate of taking care of the health of the crop. */
 	private static final double RECOVER_HEALTH_RATE = .05;
@@ -481,10 +481,10 @@ public class Crop implements Comparable<Crop>, Serializable {
 				logger.log(building, Level.WARNING, 0, "Crop " + name
 						+ " died of very poor health (" + Math.round(health * 100D) / 1D + " %)");
 				// Add Crop Waste
-				double amt = (percentageGrowth * remainingHarvest * RandomUtil.getRandomDouble(.5))/100D;
+				double amt = (percentageGrowth * remainingHarvest)/100D;
 				if (amt > 0) {
 					store(amt, CROP_WASTE_ID, "Crop::trackHealth");
-					logger.log(building, Level.WARNING, 0, amt + " kg Crop Waste generated from the dead " + name);
+					logger.log(building, Level.WARNING, 0, amt + " kg Crop Waste generated from the dead " + name + ".");
 				}
 				updatePhase(PhaseType.FINISHED);
 			}
@@ -563,8 +563,8 @@ public class Crop implements Comparable<Crop>, Serializable {
 		// Reduce the work required
 		currentWorkRequired -= time;
 		// Allow the plant to be over-tended so that it won't need to be taken care of for a while
-		if (currentWorkRequired < -10) {
-			currentWorkRequired = -10;
+		if (currentWorkRequired < 0) {
+			currentWorkRequired = 0;
 			return workTime;
 		}
 

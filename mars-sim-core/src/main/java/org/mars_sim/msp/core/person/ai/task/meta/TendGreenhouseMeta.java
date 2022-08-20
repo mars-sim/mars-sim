@@ -26,7 +26,9 @@ import org.mars_sim.msp.core.structure.building.Building;
  */
 public class TendGreenhouseMeta extends MetaTask {
 
-    private static final double VALUE = 1;
+    private static final double VALUE = .2;
+    
+    private static final int LIMIT = 10_000;
     
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(TendGreenhouseMeta.class.getName());
@@ -61,7 +63,7 @@ public class TendGreenhouseMeta extends MetaTask {
 
 //                    int needyCropsNum = person.getSettlement().getCropsNeedingTending();
                     double tendingNeed = person.getSettlement().getCropsTendingNeed();
-                    result = tendingNeed;// + needyCropsNum * VALUE;
+                    result = tendingNeed * VALUE;
                     
                     if (result <= 0) result = 0;
                     
@@ -74,12 +76,14 @@ public class TendGreenhouseMeta extends MetaTask {
             				+ .5 * person.getAssociatedSettlement().getGoodsManager().getTourismFactor());
             		
                     result = applyPersonModifier(result, person);
+                    
+                    if (result > LIMIT)
+                    	result = LIMIT;
                 }
             }
             catch (Exception e) {
             	logger.log(Level.SEVERE, person + " cannot calculate probability : " + e.getMessage());
             }
-
         }
 
         return result;
