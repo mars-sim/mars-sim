@@ -527,9 +527,6 @@ public abstract class OperateVehicle extends Task implements Serializable {
 				// Consume all time
             	remainingTime = 0;
             }
-            
-			// Update vehicle status
- 			vehicle.setPrimaryStatus(StatusType.MOVING);
 
             // Determine new position
  			// ----- Calling this is PROBLEMATIC
@@ -562,9 +559,6 @@ public abstract class OperateVehicle extends Task implements Serializable {
 		vehicle.setCoordinates(destination);
 		// Remove the vehicle operator
 		vehicle.setOperator(null);
-	   
-		// Update vehicle status
-		vehicle.setPrimaryStatus(StatusType.PARKED);
 
 		updateVehicleElevationAltitude();
 	}	

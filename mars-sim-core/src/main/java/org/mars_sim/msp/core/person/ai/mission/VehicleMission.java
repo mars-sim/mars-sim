@@ -211,6 +211,8 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 
 		Worker startingMember = getStartingPerson();
 		logger.info(startingMember, "Started mission " + getName() + " using " + getVehicle().getName());
+
+		computeTotalDistanceProposed();
 	}
 
 	/**
@@ -788,7 +790,6 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 		super.performPhase(member);
 		if (REVIEWING.equals(getPhase())) {
 			if (isMissionPlanReady) {
-				computeTotalDistanceProposed();
 				requestReviewPhase(member);
 			}
 		}

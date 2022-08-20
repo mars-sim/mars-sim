@@ -150,8 +150,6 @@ public abstract class Vehicle extends Unit
 	private double baseWearLifetime;
 	/** Current speed of vehicle in kph. */
 	private double speed = 0; //
-	/** Previous speed of vehicle in kph. */
-	private double previousSpeed = 0;
 	/** Base speed of vehicle in kph (can be set in child class). */
 	private double baseSpeed = 0; //
 	/** The base range of the vehicle (with full tank of fuel and no cargo) (km). */
@@ -1033,15 +1031,6 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
-	 * Gets the previous speed of vehicle.
-	 *
-	 * @return the vehicle's previous speed (in km/hr)
-	 */
-	public double getPreviousSpeed() {
-		return previousSpeed;
-	}
-
-	/**
 	 * Sets the vehicle's current speed.
 	 *
 	 * @param speed the vehicle's speed (in km/hr)
@@ -1051,9 +1040,18 @@ public abstract class Vehicle extends Unit
 			throw new IllegalArgumentException("Vehicle speed cannot be less than 0 km/hr: " + speed);
 		if (Double.isNaN(speed))
 			throw new IllegalArgumentException("Vehicle speed is a NaN");
-		this.previousSpeed = this.speed;
-		this.speed = speed;
-		fireUnitUpdate(UnitEventType.SPEED_EVENT);
+
+		if (speed != this.speed) {
+			if (speed == 0D) {
+				setPrimaryStatus(StatusType.PARKED);
+			} 
+			else if (this.speed == 0D) {
+				// Was zero so now must be moving
+				setPrimaryStatus(StatusType.MOVING);
+			}
+			this.speed = speed;
+			fireUnitUpdate(UnitEventType.SPEED_EVENT);
+		}
 	}
 
 	/**
