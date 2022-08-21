@@ -691,7 +691,7 @@ public class Farming extends Function {
 			
 			// Pick the crop that requires most work
 			for (Crop c : crops) {
-				if (currentCrop.requiresWork() && c.getCurrentWorkRequired() > mostWork) {
+				if (c.requiresWork() && c.getCurrentWorkRequired() > mostWork) {
 					mostNeedyCrop = c;
 					mostWork = c.getCurrentWorkRequired();
 				}
