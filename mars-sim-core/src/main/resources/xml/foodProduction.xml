@@ -1063,7 +1063,7 @@
 			<resource name="Soy Sauce" amount="0.035" />
 			<resource name="Garlic" amount="0.025" />
 			<resource name="Sugarcane Juice" amount="0.035" />
-			<resource name="Bell Pepper" amount="0.03" />
+			<resource name="green bell pepper" amount="0.03" />
 			<resource name="spring onion" amount="0.025" />
 		</inputs>
 		<outputs>
