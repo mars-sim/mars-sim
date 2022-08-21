@@ -1198,8 +1198,11 @@ public class ExitAirlock extends Task implements Serializable {
 	 */
 	@Override
 	protected void clearDown() {
+		if (airlock == null)
+			return;
+		
 		// Clear the person as the airlock operator if task ended prematurely.
-		if (airlock != null && person.getName().equals(airlock.getOperatorName())) {
+		if (person.getName().equals(airlock.getOperatorName())) {
 			if (inSettlement) {
 				logger.log(((Building) (airlock.getEntity())), person, Level.FINE, 1_000,
 						"Concluded the airlock operator task.");
