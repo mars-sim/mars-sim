@@ -2175,7 +2175,8 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 
 		for (int x = index + 1; x < getNumberOfNavpoints(); x++) {
 			NavPoint next = getNavpoint(x); 
-			navDist += next.getDistance();
+			if (next != null)
+				navDist += next.getDistance();
 		}
 		
 		double total = leg + navDist;
