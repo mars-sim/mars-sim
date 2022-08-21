@@ -117,7 +117,7 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 		// Set initial parameters
 		setDescription(Msg.getString("Task.description.pilotDrone.detail", flyer.getName())); // $NON-NLS-1$
 		addPhase(AVOID_COLLISION);
-//		addPhase(WINCH_VEHICLE);
+
 		if (startingPhase != null)
 			setPhase(startingPhase);
 
@@ -136,7 +136,7 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 		// Set initial parameters
 		setDescription(Msg.getString("Task.description.pilotDrone.detail", flyer.getName())); // $NON-NLS-1$
 		addPhase(AVOID_COLLISION);
-//		addPhase(WINCH_VEHICLE);
+
 		if (startingPhase != null)
 			setPhase(startingPhase);
 
@@ -178,11 +178,11 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 	 */
 	protected double mobilizeVehicle(double time) {
 		// If speed is less than or equal to the .5 kph, change to avoiding obstacle phase.
-		if ((getVehicle().getSpeed() <= LOW_SPEED) 
-				&& !AVOID_COLLISION.equals(getPhase())) {
-			setPhase(AVOID_COLLISION);
-			return (time);
-		} else
+//		if ((getVehicle().getSpeed() <= LOW_SPEED) 
+//				&& !AVOID_COLLISION.equals(getPhase())) {
+//			setPhase(AVOID_COLLISION);
+//			return (time);
+//		} else
 			return super.mobilizeVehicle(time);
 	}
 

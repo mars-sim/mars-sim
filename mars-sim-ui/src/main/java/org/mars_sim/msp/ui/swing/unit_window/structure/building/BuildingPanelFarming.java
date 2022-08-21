@@ -183,7 +183,7 @@ implements MouseListener {
 							 Msg.getString("BuildingPanelFarming.co2.tooltip"));
 
 		// Update the cumulative work time
-		workTimeCache = Math.round(farm.getCumulativeWorkTime())/1000.0;
+		workTimeCache = Math.round(farm.getCumulativeWorkTime())/100.0;
 		workTimeTF = addTextField(springPanel, Msg.getString("BuildingPanelFarming.workTime.title"),
 				 Msg.getString("BuildingPanelFarming.workTime", workTimeCache + ""),
 				 Msg.getString("BuildingPanelFarming.workTime.tooltip"));
@@ -528,7 +528,7 @@ implements MouseListener {
 		}
 		
 		// Update the cumulative work time
-		double workTime = Math.round(farm.getCumulativeWorkTime())/1000.0;
+		double workTime = Math.round(farm.getCumulativeWorkTime())/100.0;
 		if (workTimeCache != workTime) {
 			workTimeCache = workTime;
 			workTimeTF.setText(Msg.getString("BuildingPanelFarming.workTime", workTime));
