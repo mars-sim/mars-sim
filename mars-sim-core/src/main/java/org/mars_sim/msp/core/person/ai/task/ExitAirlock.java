@@ -283,14 +283,15 @@ public class ExitAirlock extends Task implements Serializable {
 	 * @return true if a person is fit
 	 */
 	private boolean isFit() {
-		// Note: if the person is in the airlock next to the observatory
-		// he will always be qualified to leave that place, or else
-		// he will get stranded
-		if (person.isAdjacentBuilding(FunctionType.ASTRONOMICAL_OBSERVATION)) {
-		 	return true;
-		}
 		
 		if (inSettlement) {
+			// Note: if the person is in the airlock next to the observatory
+			// he will always be qualified to leave that place, or else
+			// he will get stranded
+			if (person.isAdjacentBuilding(FunctionType.ASTRONOMICAL_OBSERVATION)) {
+			 	return true;
+			}
+			
 			Building airlockBuilding = (Building)(airlock.getEntity());
 			if (airlockBuilding.getSettlement().getBuildingManager().isObservatoryAttached(airlockBuilding)) {
 				return true;
