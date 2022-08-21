@@ -756,6 +756,9 @@ public class PhysicalCondition implements Serializable {
 	private void checkStarvation(double hunger) {
 		starved = getStarvationProblem();
 
+		if (starved == null)
+			return;
+		
 		if (!isStarving && hunger > starvationStartTime) {
 
 			// if problems doesn't have starvation, execute the following
@@ -770,7 +773,7 @@ public class PhysicalCondition implements Serializable {
 				logger.log(person, Level.INFO, 20_000, "Starting starving.");
 			}
 
-			else if (starved != null) {
+			else {
 
 				starved.setCured();
 				// Set isStarving to false
@@ -786,27 +789,22 @@ public class PhysicalCondition implements Serializable {
 		else if (isStarving) {
 
 			if (hunger < HUNGER_THRESHOLD / 2 || kJoules > ENERGY_THRESHOLD) {
-				if (starved != null) {
-					starved.setCured();
-					// Set isStarving to false
-					isStarving = false;
 
-					logger.log(person, Level.INFO, 20_000, "Cured of starving (case 2).");
-				}
+				starved.setCured();
+				// Set isStarving to false
+				isStarving = false;
+
+				logger.log(person, Level.INFO, 20_000, "Cured of starving (case 2).");
 			}
 
 			// If this person's hunger has reached the buffer zone
 			else if (hunger < HUNGER_THRESHOLD * 2 || kJoules > ENERGY_THRESHOLD / 4) {
 				String status = "Unknown";
-				if (starved == null)
-					starved = getStarvationProblem();
 
-				if (starved != null) {
-					starved.startRecovery();
-					status = starved.getStateString();
-					// Set to not starving
-					isStarving = false;
-				}
+				starved.startRecovery();
+				status = starved.getStateString();
+				// Set to not starving
+				isStarving = false;
 
 				logger.log(person, Level.INFO, 20_000, "Recovering from hunger. "
 						 + "  Hunger: " + (int)hunger
@@ -819,11 +817,11 @@ public class PhysicalCondition implements Serializable {
 			else if (hunger >= MAX_HUNGER) {
 				starved.setState(HealthProblem.DEAD);
 				recordDead(starved, false, 
-						"Remember that no child should go empty stomach in the 21st century.");
+					"Remember that no child should go empty stomach in the 21st century.");
 			}
 		}
 
-		else if (starved != null) {
+		else {
 
 			starved.setCured();
 			// Set isStarving to false
@@ -855,6 +853,9 @@ public class PhysicalCondition implements Serializable {
 	private void checkDehydration(double thirst) {
 		dehydrated = getDehydrationProblem();
 
+		if (dehydrated == null)
+			return;
+		
 		// If the person's thirst is greater than dehydrationStartTime
 		if (!isDehydrated && thirst > dehydrationStartTime) {
 
@@ -864,7 +865,7 @@ public class PhysicalCondition implements Serializable {
 				person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
 			}
 
-			else if (dehydrated != null) {
+			else {
 				dehydrated.setCured();
 				// Set dehydrated to false
 				isDehydrated = false;
@@ -876,30 +877,22 @@ public class PhysicalCondition implements Serializable {
 		else if (isDehydrated) {
 
 			if (thirst < THIRST_THRESHOLD / 2) {
+				dehydrated.setCured();
+				// Set dehydrated to false
+				isDehydrated = false;
 
-				if (dehydrated != null) {
-
-					dehydrated.setCured();
-					// Set dehydrated to false
-					isDehydrated = false;
-
-					logger.log(person, Level.INFO, 0, "Cured of dehydrated (case 2).");
-				}
+				logger.log(person, Level.INFO, 0, "Cured of dehydrated (case 2).");
 			}
 
 			// If this person's thirst has reached the buffer zone
 			else if (thirst < THIRST_THRESHOLD * 2) {
 
-				if (dehydrated == null)
-					dehydrated = getDehydrationProblem();
-
 				String status = "Unknown";
-				if (dehydrated != null) {
-					dehydrated.startRecovery();
-					status  = dehydrated.getStateString();
-					// Set dehydrated to false
-					isDehydrated = false;
-				}
+
+				dehydrated.startRecovery();
+				status  = dehydrated.getStateString();
+				// Set dehydrated to false
+				isDehydrated = false;
 
 				logger.log(person, Level.INFO, 20_000, "Recovering from dehydration. "
 						 + "  Thirst: " + (int)thirst
@@ -914,7 +907,7 @@ public class PhysicalCondition implements Serializable {
 			}
 		}
 
-		else if (dehydrated != null) {
+		else {
 			dehydrated.setCured();
 			// Set dehydrated to false
 			isDehydrated = false;
