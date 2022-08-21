@@ -1,7 +1,7 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <template xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="settlement.xsd"
-    name="Phase 3-R" default-population="12"
-	number-of-robots="7" sponsor="RKA" description="Phase 3 Settlement for RKA">
+    name="Phase 3-IN" default-population="12" description="Phase 3 for ISRO"
+    number-of-robots="7" sponsor="ISRO">
     
     <building id="0" type="Lander Hab" xloc="0.0" yloc="0.0"
         facing="0.0">
@@ -18,7 +18,7 @@
             <connection id="2" xloc="0.0" yloc="2.0" />
         </connection-list>
     </building>
-    <building id="2" type="Medical Hab" xloc="0.0" yloc="13.0"
+    <building id="2" type="Research Hab" xloc="0.0" yloc="13.0"
         facing="0.0">
         <connection-list>
             <connection id="1" xloc="0.0" yloc="-4.5" />
@@ -33,7 +33,7 @@
             <connection id="4" xloc="0.0" yloc="2.0" />
         </connection-list>
     </building>
-    <building id="4" type="Research Hab" xloc="0.0" yloc="26.0"
+    <building id="4" type="Storage Hab" xloc="0.0" yloc="26.0"
         facing="0.0">
         <connection-list>
             <connection id="3" xloc="0.0" yloc="-4.5" />
@@ -49,14 +49,13 @@
             <connection id="6" xloc="0.0" yloc="-1.5" />
         </connection-list>
     </building>
-    <building id="6" type="Infirmary" xloc="-12.0" yloc="0.0"
+    <building id="6" type="Laboratory" xloc="-12.0" yloc="0.0"
         facing="270.0">
         <connection-list>
             <connection id="5" xloc="0.0" yloc="4.5" />
             <connection id="7" xloc="0.0" yloc="-4.5" />
         </connection-list>
     </building>
-
     <building id="7" type="Hallway" length="3.0" xloc="-18.0"
         yloc="0.0" facing="270.0">
         <connection-list>
@@ -81,7 +80,7 @@
             <connection id="10" xloc="0.0" yloc="-1.5" />
         </connection-list>
     </building>
-    <building id="10" type="Command and Control" xloc="-12.0"
+    <building id="10" type="Residential Quarters" xloc="-12.0"
         yloc="13.0" facing="270.0">
         <connection-list>
             <connection id="9" xloc="0.0" yloc="4.5" />
@@ -113,8 +112,8 @@
             <connection id="14" xloc="0.0" yloc="-1.5" />
         </connection-list>
     </building>
-    <building id="14" type="Residential Quarters" xloc="-12.0"
-        yloc="26.0" facing="270.0">
+    <building id="14" type="Lounge" xloc="-12.0" yloc="26.0"
+        facing="270.0">
         <connection-list>
             <connection id="13" xloc="0.0" yloc="4.5" />
             <connection id="15" xloc="0.0" yloc="-4.5" />
@@ -185,16 +184,14 @@
         yloc="-60.0" facing="0.0" />
     <building type="MD1 Nuclear Reactor" xloc="40.0"
         yloc="-80.0" facing="0.0" />
-    <building type="MD1 Nuclear Reactor" xloc="60.0"
+
+    <building type="Solar Thermal Array" xloc="60.0"
         yloc="-60.0" facing="0.0" />
-    <building type="MD1 Nuclear Reactor" xloc="60.0"
+    <building type="Solar Thermal Array" xloc="60.0"
         yloc="-80.0" facing="0.0" />
 
-    <building type="MD4 Nuclear Reactor" xloc="100.0"
+    <building type="Large Areothermal Well" xloc="100.0"
         yloc="-100" facing="0.0" />
-
-    <building type="Solar Photovoltaic Array" xloc="50.0"
-        yloc="-50.0" facing="0.0" />
 
     <building type="ERV-A" xloc="80.0" yloc="45.0"
         facing="0.0" />

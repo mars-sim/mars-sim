@@ -1,13 +1,13 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <template xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="settlement.xsd"
-    name="Phase 2-C" default-population="8" description="Phase 2 base for CNSA"
-	number-of-robots="5" sponsor="CNSA">
+    name="Phase 2-EU" default-population="8" description="Phase 2 base for European Space Agency"
+	number-of-robots="5" sponsor="ESA">
     
     <building id="0" type="Lander Hab" xloc="0.0" yloc="0.0"
         facing="0.0">
         <connection-list>
-            <connection id="2" xloc="-4.5" yloc="0.0" />
             <connection id="1" xloc="0.0" yloc="4.5" />
+            <connection id="2" xloc="-4.5" yloc="0.0" />
             <connection id="12" xloc="4.5" yloc="0.0" />
         </connection-list>
     </building>
@@ -30,7 +30,7 @@
         </connection-list>
     </building>
 
-    <building id="3" type="Workshop" xloc="-12.0" yloc="0.0"
+    <building id="3" type="Laboratory" xloc="-12.0" yloc="0.0"
         facing="270.0">
         <connection-list>
             <connection id="2" xloc="0.0" yloc="4.5" />
@@ -54,7 +54,7 @@
         </connection-list>
     </building>
 
-    <building id="6" type="Machinery Hab" xloc="0.0" yloc="13.0"
+    <building id="6" type="Research Hab" xloc="0.0" yloc="13.0"
         facing="0.0">
         <connection-list>
             <connection id="1" xloc="0.0" yloc="-4.5" />
@@ -70,8 +70,8 @@
         </connection-list>
     </building>
 
-    <building id="8" type="Laboratory" xloc="-12.0" yloc="13.0"
-        facing="270.0">
+    <building id="8" type="Residential Quarters" xloc="-12.0"
+        yloc="13.0" facing="270.0">
         <connection-list>
             <connection id="7" xloc="0.0" yloc="4.5" />
             <connection id="9" xloc="0.0" yloc="-4.5" />
@@ -173,7 +173,7 @@
     <resource type="food waste" amount="25.0" />
     <resource type="solid waste" amount="25.0" />
     <resource type="crop waste" amount="25.0" />
-    
+
     <resource type="argon" amount="60.0" />
 
     <resource type="fertilizer" amount="50.0" />

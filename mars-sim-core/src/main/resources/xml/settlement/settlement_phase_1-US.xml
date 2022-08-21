@@ -1,47 +1,55 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <template xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="settlement.xsd"
-        name="Phase 1-M" default-population="4" description="Phase 1 base for Mars Society"
-		number-of-robots="3" sponsor="MS">
+    name="Phase 1-US" default-population="4" description="Phase 1 base for NASA"
+	number-of-robots="3" sponsor="NASA">
 
-    <!-- Lander habitat building is the main habitation in the Mars Direct
-        mission plan. -->
     <building id="0" type="Lander Hab" xloc="0.0" yloc="0.0"
         facing="0.0">
-        <!-- List of all connections to other buildings (optional). -->
         <connection-list>
-            <!-- Connection to another building. "id" is other building's ID. -->
-            <!-- X & Y locations are relative to this building, not in the settlement
-                locale. -->
             <connection id="1" xloc="4.5" yloc="0.0" />
             <connection id="2" xloc="-4.5" yloc="0.0" />
         </connection-list>
     </building>
 
     <!-- EVA Airlock is attached to the lander hab -->
-    <building id="1" type="EVA Airlock" xloc="7.5" yloc="0.0" facing="0.0">
+    <building id="1" type="EVA Airlock" xloc="7.5" yloc="0.0"
+        facing="0.0">
         <connection-list>
             <connection id="0" xloc="-3.0" yloc="0.0" />
         </connection-list>
     </building>
 
-    <!-- Hallway connecting lander hab and inflatable greenhouse. -->
-    <!-- Note: Aa hallway has fixed width but variable length. Therefore,
-        the length argument must be provided below. -->
-    <building id="2" type="Hallway" length="3.0" xloc="-6.0" yloc="0.0" facing="270.0">
+    <building id="2" type="Hallway" length="3.0" xloc="-6.0"
+        yloc="0.0" facing="270.0">
         <connection-list>
             <connection id="0" xloc="0.0" yloc="1.5" />
             <connection id="3" xloc="0.0" yloc="-1.5" />
         </connection-list>
     </building>
 
-    <!-- Inflatable greenhouse can be used to grow crops. -->
-    <building id="3" type="Inflatable Greenhouse" xloc="-12.0" yloc="0.0" facing="270.0">
+    <building id="3" type="Laboratory" xloc="-12.0" yloc="0.0"
+        facing="270.0">
         <connection-list>
             <connection id="2" xloc="0.0" yloc="4.5" />
+            <connection id="4" xloc="0.0" yloc="-4.5" />
         </connection-list>
     </building>
 
-    <!-- Small nuclear reactor power generator. -->
+    <building id="4" type="Hallway" length="3.0" xloc="-18.0"
+        yloc="0.0" facing="270.0">
+        <connection-list>
+            <connection id="3" xloc="0.0" yloc="1.5" />
+            <connection id="5" xloc="0.0" yloc="-1.5" />
+        </connection-list>
+    </building>
+
+    <building id="5" type="Inflatable Greenhouse" xloc="-24.0"
+        yloc="0.0" facing="270.0">
+        <connection-list>
+            <connection id="4" xloc="0.0" yloc="4.5" />
+        </connection-list>
+    </building>
+
     <building type="MD1 Nuclear Reactor" xloc="40.0"
         yloc="-60.0" facing="0.0" />
     <building type="MD1 Nuclear Reactor" xloc="40.0"
@@ -49,13 +57,8 @@
     <building type="MD1 Nuclear Reactor" xloc="60.0"
         yloc="-60.0" facing="0.0" />
 
-    <!-- Earth Return Vehicle Type A building has a Sabatier reactor for converting
-        hydrogen and carbon dioxide into methane, water and oxygen. It has a full
-        load of hydrogen and has not reacted yet. -->
     <building type="ERV-A" xloc="80.0" yloc="45.0" facing="0.0" />
 
-    <!-- Earth Return Vehicle Type B building has numerous regolith processing
-            capabilities for making cement and concrete for construction purposes. -->
     <building type="ERV-B" xloc="80.0" yloc="-15.0" facing="0.0" />
 
     <building type="Large Sabatier Processor" xloc="0.0"
@@ -80,12 +83,10 @@
     <building type="Carbon Storage Bin" xloc="35.0" yloc="-10.0"
         facing="90.0" />
 
-    <!-- A rover for collecting rock samples from remote sites and ice prospecting. -->
     <vehicle type="Explorer Rover" number="2" />
     <vehicle type="Light Utility Vehicle" number="1" />
     <vehicle type="Delivery Drone" number="1" />
 
-    <!-- Equipment -->
     <equipment type="EVA Suit" number="8" />
     <equipment type="Gas Canister" number="40" />
     <equipment type="Barrel" number="40" />
@@ -93,29 +94,9 @@
     <equipment type="Large Bag" number="25" />
     <equipment type="Specimen Box" number="50" />
 
-    <!-- Resources -->
-    <!-- type: the type of resource (see resources.txt) -->
-    <!-- amount: the amount of the resource (kg) -->
-
-    <!-- Mars Direct Mission Plan : (1). ERV - (a). Payload imported from
-        Earth - Consumables : 3400 kg Hydrogen feedstock : 6300 kg (b). Produced
-        on Mars : water : 18900 kg Oxygen : 16080 kg Methane : 8400 kg (2). Hab -
-        (a). Payload imported from Earth - Consumables : 7000 kg -->
-
-    <!-- Crop -->
-    <!-- No starting crops for this template -->
-
-    <!-- Part packages (see part_packages.xml) -->
-    <!-- name: the part package name. -->
-    <!-- number: the number of packages. -->
     <part-package name="package 1" number="1" />
 
-    <!-- The resupply missions from Earth scheduled for this type of settlement. -->
     <resupply>
-        <!-- Resupply mission from Earth. -->
-        <!-- name: the resupply mission's name -->
-        <!-- arrival-time: arrival time (in Sols) since the settlement is founded. -->
-        <!-- (668 Sols = 1 Martian orbit) -->
         <resupply-mission name="Resupply for Phase 1"
             arrival-time="668.0" />
         <resupply-mission name="Resupply for Phase 2"

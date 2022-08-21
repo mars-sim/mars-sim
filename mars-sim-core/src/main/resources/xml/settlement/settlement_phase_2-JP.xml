@@ -1,14 +1,15 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <template xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="settlement.xsd"
-    name="Phase 2-U" default-population="8" description="Phase 2 base for NASA"
-    number-of-robots="5" sponsor="NASA">
+    name="Phase 2-JP" default-population="8" description="Phase 2 base for JAXA"
+	number-of-robots="5" sponsor="JAXA">
     
     <building id="0" type="Lander Hab" xloc="0.0" yloc="0.0"
         facing="0.0">
         <connection-list>
-            <connection id="1" xloc="0.0" yloc="4.5" />
             <connection id="2" xloc="-4.5" yloc="0.0" />
-            <connection id="12" xloc="4.5" yloc="0.0" />
+            <connection id="1" xloc="0.0" yloc="4.5" />
+            <connection id="14" xloc="4.5" yloc="0.0" />
+            <connection id="15" xloc="0.0" yloc="-4.4" />
         </connection-list>
     </building>
 
@@ -30,7 +31,7 @@
         </connection-list>
     </building>
 
-    <building id="3" type="Laboratory" xloc="-12.0" yloc="0.0"
+    <building id="3" type="Lounge" xloc="-12.0" yloc="0.0"
         facing="270.0">
         <connection-list>
             <connection id="2" xloc="0.0" yloc="4.5" />
@@ -46,15 +47,16 @@
         </connection-list>
     </building>
 
-    <building id="5" type="Inflatable Greenhouse" xloc="-24.0"
+    <building id="5" type="Residential Quarters" xloc="-24.0"
         yloc="0.0" facing="270.0">
         <connection-list>
             <connection id="4" xloc="0.0" yloc="4.5" />
             <connection id="11" xloc="-3.0" yloc="0.0" />
+            <connection id="12" xloc="3.0" yloc="0.0" />
         </connection-list>
     </building>
 
-    <building id="6" type="Research Hab" xloc="0.0" yloc="13.0"
+    <building id="6" type="Machinery Hab" xloc="0.0" yloc="13.0"
         facing="0.0">
         <connection-list>
             <connection id="1" xloc="0.0" yloc="-4.5" />
@@ -70,8 +72,8 @@
         </connection-list>
     </building>
 
-    <building id="8" type="Residential Quarters" xloc="-12.0"
-        yloc="13.0" facing="270.0">
+    <building id="8" type="Laboratory" xloc="-12.0" yloc="13.0"
+        facing="270.0">
         <connection-list>
             <connection id="7" xloc="0.0" yloc="4.5" />
             <connection id="9" xloc="0.0" yloc="-4.5" />
@@ -104,11 +106,44 @@
         </connection-list>
     </building>
 
+    <!-- This hallway connects the inflatable greenhouse to the garage -->
+    <building id="12" type="Hallway" length="4.0" xloc="-24.0"
+        yloc="-5.0" facing="0.0">
+        <connection-list>
+            <connection id="5" xloc="0.0" yloc="2.0" />
+            <connection id="13" xloc="0.0" yloc="-2.0" />
+        </connection-list>
+    </building>
+
+    <building id="13" type="Garage" xloc="-24.0" yloc="-15"
+        facing="180.0">
+        <connection-list>
+            <connection id="12" xloc="0.0" yloc="-8.0" />
+        </connection-list>
+    </building>
+
     <!-- EVA Airlock is attached to the lander hab -->
-    <building id="12" type="EVA Airlock" xloc="7.5" yloc="0.0"
+    <building id="14" type="EVA Airlock" xloc="7.5" yloc="0.0"
         facing="0.0">
         <connection-list>
             <connection id="0" xloc="-3.0" yloc="0.0" />
+        </connection-list>
+    </building>
+
+    <!-- This hallway connects the inflatable greenhouse to the fish farm -->
+    <building id="15" type="Hallway" length="4.0" xloc="0"
+        yloc="-6.5" facing="0.0">
+        <connection-list>
+            <connection id="0" xloc="0.0" yloc="2.4" />
+            <connection id="16" xloc="0.0" yloc="-2.0" />
+        </connection-list>
+    </building>
+
+    <!-- This fish farm connects to the inflatable greenhouse -->
+    <building id="16" type="Fish Farm" xloc="0.0" yloc="-13"
+        facing="180.0">
+        <connection-list>
+            <connection id="15" xloc="0.0" yloc="-4.4" />
         </connection-list>
     </building>
 
@@ -120,6 +155,10 @@
         yloc="-60.0" facing="0.0" />
     <building type="MD1 Nuclear Reactor" xloc="60.0"
         yloc="-80.0" facing="0.0" />
+    <building type="MD1 Nuclear Reactor" xloc="40.0"
+        yloc="-100.0" facing="0.0" />
+    <building type="MD1 Nuclear Reactor" xloc="60.0"
+        yloc="-100.0" facing="0.0" />
 
     <building type="ERV-A" xloc="80.0" yloc="45.0"
         facing="0.0" />
@@ -153,9 +192,9 @@
     <building type="Carbon Storage Bin" xloc="35.0" yloc="-10.0"
         facing="90.0" />
 
-    <vehicle type="Explorer Rover" number="2" />
-    <vehicle type="Light Utility Vehicle" number="1" />
-    <vehicle type="Delivery Drone" number="1" />
+    <vehicle type="Explorer Rover" number="3" />
+    <vehicle type="Light Utility Vehicle" number="3" />
+    <vehicle type="Delivery Drone" number="3" />
 
     <equipment type="EVA Suit" number="16" />
     <equipment type="Gas Canister" number="80" />

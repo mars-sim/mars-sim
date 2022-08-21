@@ -513,6 +513,7 @@ public class SimulationConfig implements Serializable {
 
 	/**
 	 * Load an double value that is held as a 'value' attribute.
+	 * 
 	 * @param parent Parent XML node
 	 * @param child XML Node containing the 'value'
 	 * @param minValue Minimum allowable value

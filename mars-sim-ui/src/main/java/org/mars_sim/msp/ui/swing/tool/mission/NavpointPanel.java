@@ -467,7 +467,8 @@ implements ListSelectionListener, MissionListener {
 	 */
 	public void clearNavTab(Settlement settlement) {
 		// Center the map to this settlement's coordinate
-		updateCoords(settlement.getCoordinates());
+		if (settlement != null)
+			updateCoords(settlement.getCoordinates());
 		
 		// Clear map and info.
 		trailLayer.setSingleVehicle(null);

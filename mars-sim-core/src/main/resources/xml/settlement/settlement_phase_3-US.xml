@@ -1,7 +1,7 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <template xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="settlement.xsd"
-    name="Phase 3-I" default-population="12" description="Phase 3 for ISRO"
-    number-of-robots="7" sponsor="ISRO">
+    name="Phase 3-US" default-population="12" description="Phase 3 base for NASA"
+	number-of-robots="7" sponsor="NASA">
     
     <building id="0" type="Lander Hab" xloc="0.0" yloc="0.0"
         facing="0.0">
@@ -56,6 +56,7 @@
             <connection id="7" xloc="0.0" yloc="-4.5" />
         </connection-list>
     </building>
+
     <building id="7" type="Hallway" length="3.0" xloc="-18.0"
         yloc="0.0" facing="270.0">
         <connection-list>
@@ -184,14 +185,14 @@
         yloc="-60.0" facing="0.0" />
     <building type="MD1 Nuclear Reactor" xloc="40.0"
         yloc="-80.0" facing="0.0" />
-
-    <building type="Solar Thermal Array" xloc="60.0"
+    <building type="MD1 Nuclear Reactor" xloc="60.0"
         yloc="-60.0" facing="0.0" />
-    <building type="Solar Thermal Array" xloc="60.0"
+    <building type="MD1 Nuclear Reactor" xloc="60.0"
         yloc="-80.0" facing="0.0" />
-
-    <building type="Large Areothermal Well" xloc="100.0"
-        yloc="-100" facing="0.0" />
+    <building type="MD1 Nuclear Reactor" xloc="40.0"
+        yloc="-100.0" facing="0.0" />
+    <building type="MD1 Nuclear Reactor" xloc="60.0"
+        yloc="-100.0" facing="0.0" />
 
     <building type="ERV-A" xloc="80.0" yloc="45.0"
         facing="0.0" />
@@ -207,15 +208,22 @@
     <building type="ERV-B" xloc="160.0" yloc="-15.0"
         facing="0.0" />
 
+
     <building type="Atmospheric Processor" xloc="20"
         yloc="-50.0" facing="90.0" />
-        
+
+
     <building type="Large Sabatier Processor" xloc="0.0"
         yloc="-70.0" facing="90.0" />
     <building type="Large Sabatier Processor" xloc="0.0"
         yloc="-80.0" facing="90.0" />
     <building type="Large Sabatier Processor" xloc="0.0"
         yloc="-90.0" facing="90.0" />
+
+
+    <building type="Solar Photovoltaic Array" xloc="50.0"
+        yloc="-50.0" facing="0.0" />
+
 
     <building type="Regolith Storage Bin" xloc="35.0" yloc="0.0"
         facing="90.0" />
@@ -256,11 +264,8 @@
     <resource type="food waste" amount="25.0" />
     <resource type="solid waste" amount="25.0" />
     <resource type="crop waste" amount="25.0" />
-    <!-- <resource type="nitrogen" amount="2000.0" /> <resource type="hydrogen"
-        amount="9000.0" /> <resource type="methane" amount="9000.0" /> <resource
-        type="carbon dioxide" amount="10.0" /> -->
-    <resource type="argon" amount="90.0" />
 
+    <resource type="argon" amount="90.0" />
     <resource type="fertilizer" amount="50.0" />
 
     <!-- Crop -->

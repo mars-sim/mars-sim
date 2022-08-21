@@ -92,26 +92,26 @@
 		<!-- default-population: the default population capacity for the template. -->
 		<!-- number-of-robots: the default number of robots for the template. -->
 		<!-- sponsor: the name of the sponsoring organization for the template. -->
-		<template name="Phase 1-M"/>
-		<template name="Phase 1-U"/>
-		<template name="Phase 1-C"/>
-		<template name="Phase 1-I"/>
-		<template name="Phase 1-R"/>
-		<template name="Phase 1-X"/>			
-		<template name="Phase 2-M"/>
-		<template name="Phase 2-U"/>		
-		<template name="Phase 2-E"/>
-		<template name="Phase 2-C"/>
-		<template name="Phase 2-I"/>	
-		<template name="Phase 2-J"/>
-		<template name="Phase 2-K"/>
-		<template name="Phase 2-R"/>
-		<template name="Phase 3-M"/>	
-		<template name="Phase 3-U"/>
-		<template name="Phase 3-C"/>
-		<template name="Phase 3-I"/>
-		<template name="Phase 3-R"/>
-		<template name="Phase 3-X"/>
+		<template name="Phase 1-MS"/>
+		<template name="Phase 1-US"/>
+		<template name="Phase 1-CN"/>
+		<template name="Phase 1-IN"/>
+		<template name="Phase 1-RU"/>
+		<template name="Phase 1-SX"/>			
+		<template name="Phase 2-MS"/>
+		<template name="Phase 2-US"/>		
+		<template name="Phase 2-EU"/>
+		<template name="Phase 2-CN"/>
+		<template name="Phase 2-IN"/>	
+		<template name="Phase 2-JP"/>
+		<template name="Phase 2-KR"/>
+		<template name="Phase 2-RU"/>
+		<template name="Phase 3-MS"/>	
+		<template name="Phase 3-US"/>
+		<template name="Phase 3-CN"/>
+		<template name="Phase 3-IN"/>
+		<template name="Phase 3-RU"/>
+		<template name="Phase 3-SX"/>
 		<template name="Alpha Base"/>
 		<template name="Trading Outpost"/>
 		<template name="Mining Outpost"/>																			
