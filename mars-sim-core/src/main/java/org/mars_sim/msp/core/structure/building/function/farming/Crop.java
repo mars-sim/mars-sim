@@ -50,10 +50,13 @@ public class Crop implements Comparable<Crop>, Serializable {
 	private static final int CHECK_HEALTH_FREQUENCY = 20;
 	
 	/** The modifier for the work time on a crop. */
-	private static final double WORK_FACTOR = 2;
+	private static final double WORK_TIME_FACTOR = 10000.0;
+	
+	/** The modifier for the work time on a crop. */
+	private static final int WORK_FACTOR = 15;
 	
 	/** The rate of taking care of the health of the crop. */
-	private static final double RECOVER_HEALTH_RATE = .05;
+	private static final double RECOVER_HEALTH_RATE = .5;
 	
 	/** The mininum time offset [in millisols] for a crop that requires work. */
 	public static final double CROP_TIME_OFFSET = 10;
@@ -443,7 +446,6 @@ public class Crop implements Comparable<Crop>, Serializable {
 	 * @return condition as value from 0 (poor) to 1 (healthy)
 	 */
 	private double trackHealth() {
-		// 0:bad, 1:good
 		double health = 0D;
 
 		switch(currentPhase.getPhaseType()) {
@@ -466,9 +468,6 @@ public class Crop implements Comparable<Crop>, Serializable {
 			health = calculateHealth();
 			break;
 		}
-
-//		logger.log(building, Level.INFO, 0, name
-//				+ " health: " + Math.round(health * 100D) / 1D + "%");
 		
 		if (health > 1D)
 			health = 1D;
@@ -478,13 +477,15 @@ public class Crop implements Comparable<Crop>, Serializable {
 		if (percentageGrowth > 10D) {
 			// Check on the health of a >10% growing crop
 			if (health < .05) {
-				logger.log(building, Level.WARNING, 0, "Crop " + name
-						+ " died of very poor health (" + Math.round(health * 100D) / 1D + " %)");
+				logger.log(building, Level.WARNING, 10_000, "Crop " + name
+						+ "(percent: " + Math.round(percentageGrowth * 10D)/10D 
+						+ ") died of very poor health (" + Math.round(health * 100D) / 1D + " %).");
 				// Add Crop Waste
-				double amt = (percentageGrowth * remainingHarvest)/100D;
+				double amt = percentageGrowth * remainingHarvest / 100D;
 				if (amt > 0) {
 					store(amt, CROP_WASTE_ID, "Crop::trackHealth");
-					logger.log(building, Level.WARNING, 0, amt + " kg Crop Waste generated from the dead " + name + ".");
+					logger.log(building, Level.WARNING, 10_000, amt 
+							+ " kg crop waste generated from dead " + name + ".");
 				}
 				updatePhase(PhaseType.FINISHED);
 			}
@@ -493,14 +494,17 @@ public class Crop implements Comparable<Crop>, Serializable {
 		else { // fractionalGrowthCompleted < .1 && fractionalGrowthCompleted > 0D
 				// Seedling (<10% grown crop) is less resilient and more prone to environmental
 				// factors
-			if (health < .2) {
-				logger.log(building, Level.WARNING, 0, "The seedlings of " + name + " had poor health ("
+			if (health < .1) {
+				logger.log(building, Level.WARNING, 10_000, "The seedlings of " + name 
+						+ "(percent: " + Math.round(percentageGrowth * 10D)/10D 
+						+ ") had very poor health ("
 						+ Math.round(health * 100D) / 1D + " %) and didn't survive.");
 				// Add Crop Waste
-				double amt = (percentageGrowth * remainingHarvest * RandomUtil.getRandomDouble(.5))/100D;
+				double amt = percentageGrowth * remainingHarvest / 100D;
 				if (amt > 0) {
 					store(amt, CROP_WASTE_ID, "Crop::trackHealth");
-					logger.log(building, Level.WARNING, 0, amt + " kg Crop Waste generated from the dead " + name);
+					logger.log(building, Level.WARNING, 10_000, amt 
+							+ " kg crop waste generated from dead " + name + ".");
 				}
 				updatePhase(PhaseType.FINISHED);
 			}
@@ -537,7 +541,17 @@ public class Crop implements Comparable<Crop>, Serializable {
 //				+ "   currentWorkRequired: " + currentWorkRequired);
 		
 		// TODO: will need to model diseaseIndex
-		health = (1 - diseaseIndex) * total / size - currentWorkRequired/3000.0;
+		
+		
+		double workTimeFactor = 0;
+		if (currentWorkRequired < 100)
+			// Within 100 is still considered well taken care of
+			workTimeFactor = - (100 - currentWorkRequired) / WORK_TIME_FACTOR;
+		else
+			// Beyond 100 will incur penalty
+			workTimeFactor = (currentWorkRequired - 100) / WORK_TIME_FACTOR;
+		
+		health = (1 - diseaseIndex) * total / size - workTimeFactor;
 
 		if (health > 1)
 			health = 1;
@@ -555,21 +569,20 @@ public class Crop implements Comparable<Crop>, Serializable {
 	 * @throws Exception if error adding work.
 	 */
 	public double addWork(Worker worker, double workTime) {
-		double time = workTime * WORK_FACTOR / growingArea;
+		double time = workTime * WORK_FACTOR;
 		// Note: it's important to set remainingTime initially to zero. If not, addWork will be in endless while loop
 		double remainingTime = 0;
 		// Record the work time in Farming
-		farm.addCumulativeWorkTime(time);
+		farm.addCumulativeWorkTime(workTime);
 		// Reduce the work required
 		currentWorkRequired -= time;
 		// Allow the plant to be over-tended so that it won't need to be taken care of for a while
-		if (currentWorkRequired < 0) {
-			currentWorkRequired = 0;
-			return workTime;
-		}
-
+//		if (currentWorkRequired < 0) {
+//			currentWorkRequired = 0;
+//			return workTime;
+//		}
 		
-		// Improve the health of the crop each time it's being worked on
+//		// Improve the health of the crop each time it's being worked on
 		healthCondition += RECOVER_HEALTH_RATE * time;
 		if (healthCondition > 1)
 			healthCondition = 1;
@@ -757,7 +770,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 
 		double elapsed = pulse.getElapsed();
 		
-		currentWorkRequired += elapsed;
+		currentWorkRequired += elapsed * growingArea / WORK_FACTOR;
 
 		accumulatedTime += elapsed;
 

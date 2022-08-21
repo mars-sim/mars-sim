@@ -67,6 +67,8 @@ public class TendGreenhouse extends Task implements Serializable {
 	private Farming greenhouse;
 	/** The task accepted for the duration. */
 	private TaskPhase acceptedTask;
+	/** The crop to be worked on. */
+	private Crop needyCrop;
 	
 	/**
 	 * Constructor.
@@ -75,7 +77,7 @@ public class TendGreenhouse extends Task implements Serializable {
 	 */
 	public TendGreenhouse(Person person) {
 		// Use Task constructor
-		super(NAME, person, false, false, STRESS_MODIFIER, SkillType.BOTANY, 100D, 20D);
+		super(NAME, person, false, false, STRESS_MODIFIER, SkillType.BOTANY, 100D, 10D);
 
 		if (person.isOutside()) {
 			endTask();
@@ -92,7 +94,30 @@ public class TendGreenhouse extends Task implements Serializable {
 			// Walk to greenhouse.
 			walkToTaskSpecificActivitySpotInBuilding(farmBuilding, FunctionType.FARMING, false);
 
-			int rand = RandomUtil.getRandomInt(4);
+			double tendingNeed = person.getSettlement().getCropsTendingNeed();
+			
+			if (tendingNeed > 100) {
+
+				// Checks quickly to see if a needy crop is available
+				needyCrop = greenhouse.getNeedyCrop();
+				
+				if (needyCrop != null) {
+					acceptedTask = TENDING;
+					
+					addPhase(acceptedTask);
+					setPhase(acceptedTask);
+					
+					return;
+				}
+			}
+			
+			int probability = (int)(tendingNeed/10.0 + RandomUtil.getRandomInt(-10, 10));
+			if (probability > 15)
+				probability = 15;
+			else if (probability < 0)
+				probability = 4;
+			
+			int rand = RandomUtil.getRandomInt(probability);
 
 			if (rand == 0)
 				acceptedTask = INSPECTING;
@@ -109,9 +134,9 @@ public class TendGreenhouse extends Task implements Serializable {
 			else {
 				
 				// Checks quickly to see if a needy crop is available
-				Crop crop = greenhouse.getNeedyCrop();
+				needyCrop = greenhouse.getNeedyCrop();
 				
-				if (crop != null) {
+				if (needyCrop != null) {
 					// Plant a crop or tending a crop
 					if (greenhouse.getNumCrops2Plant() > 0)
 						acceptedTask = TRANSFERRING_SEEDLING;
@@ -168,9 +193,9 @@ public class TendGreenhouse extends Task implements Serializable {
 			greenhouse = farmBuilding.getFarming();
 
 			// Checks quickly to see if a needy crop is available
-			Crop crop = greenhouse.getNeedyCrop();
+			needyCrop = greenhouse.getNeedyCrop();
 			
-			if (crop != null) {
+			if (needyCrop != null) {
 				// Walk to greenhouse.
 				walkToTaskSpecificActivitySpotInBuilding(farmBuilding, FunctionType.FARMING, false);
 				
@@ -270,41 +295,36 @@ public class TendGreenhouse extends Task implements Serializable {
 			return time;
 		}
 
-		Crop needyCrop = greenhouse.getNeedyCrop();
+		if (needyCrop == null)
+			needyCrop = greenhouse.getNeedyCrop();
 		
 		if (needyCrop == null) {
 			setDescriptionCropDone();
 		}
-		
+
 		else {
 			boolean needTending = needyCrop.getCurrentWorkRequired() > Crop.CROP_TIME_OFFSET;
 			
 			if (needTending) {
-				double remain = greenhouse.addWork(workTime, worker, needyCrop);
+				double mod = 1.0;
+				
+				if (worker.getUnitType() == UnitType.PERSON)
+					mod = 1.5;
+
+				// Determine amount of effective work time based on "Botany" skill
+				int greenhouseSkill = getEffectiveSkillLevel();
+				if (greenhouseSkill == 0)
+					mod *= RandomUtil.getRandomDouble(.85, 1.15);
+				else
+					mod *= RandomUtil.getRandomDouble(.85, 1.15) * greenhouseSkill * 1.25;
+				
+				double remain = greenhouse.addWork(workTime * mod, worker, needyCrop);
 				
 				// Calculate used time
 				double usedTime = workTime - remain;
 				
 				if (usedTime > 0) {
 					setCropDescription(needyCrop);
-	
-					double mod = 0;
-	
-					if (worker.getUnitType() == UnitType.PERSON) {
-						mod = 1;
-					}
-	
-					else {
-						mod = .5;
-					}
-	
-					// Determine amount of effective work time based on "Botany" skill
-					int greenhouseSkill = getEffectiveSkillLevel();
-					if (greenhouseSkill <= 0) {
-						mod *= RandomUtil.getRandomDouble(.5, 1.0);
-					} else {
-						mod *= RandomUtil.getRandomDouble(.5, 1.0) * greenhouseSkill * 1.2;
-					}
 	
 					if (remain > 0) {
 						// Divided by mod to get back any leftover real time
@@ -322,6 +342,9 @@ public class TendGreenhouse extends Task implements Serializable {
 							"usedTime: " + usedTime + ".");
 					setDescriptionCropDone();
 				}
+				
+				if (!greenhouse.requiresWork(needyCrop))
+					needyCrop = null;
 			}
 			else {
 				logger.log(greenhouse.getBuilding(), worker, Level.INFO, 30_000, 

@@ -662,6 +662,10 @@ public class Farming extends Function {
 	public double addWork(double workTime, Worker worker, Crop needyCrop) {
 		return needyCrop.addWork(worker, workTime);
 	}
+	
+	public boolean requiresWork(Crop needyCrop) {
+		return needyCrop.requiresWork();
+	}
 
 	public Crop getNeedyCropCache() {
 		return needyCropCache;
@@ -679,38 +683,48 @@ public class Farming extends Function {
 		if (crops == null || crops.isEmpty())
 			return null;
 
-		int rand = RandomUtil.getRandomInt(1);
-		
+		int rand = RandomUtil.getRandomInt(3);
+			
+		if (rand == 0) {
+			Crop mostNeedyCrop = null;
+			double mostWork = 0; 
+			
+			// Pick the crop that requires most work
+			for (Crop c : crops) {
+				if (c.getCurrentWorkRequired() > mostWork) {
+					mostNeedyCrop = c;
+					mostWork = c.getCurrentWorkRequired();
+				}
+			}
+			
+			return mostNeedyCrop;
+		}
 		// Half the chance it will pick the current crop to work on
-		if (rand == 0 && currentCrop != null
+		else if ((rand == 1 || rand == 2) && currentCrop != null
 			&& currentCrop.requiresWork()) {
 			// Pick the current crop again unless it no longer requires work
 			return currentCrop;
-		}			
+		}
+		
+		else {
+			Crop nextCrop = null;
 			
-		Crop nextCrop = null;
-		
-		// Pick another crop that requires work
-		List<Crop> needyCrops = new ArrayList<>();
-		for (Crop c : crops) {
-			if (c.requiresWork()) {
-//				if (currentCrop != null) {
-					// Give priority to choosing a crop having the same crop spec
-//					if (c.getCropSpec().equals(lastCrop.getCropSpec()))
-//						return c;
-//				} else
+			// Pick another crop that requires work
+			List<Crop> needyCrops = new ArrayList<>();
+			for (Crop c : crops) {
+				if (c.requiresWork()) {
 					needyCrops.add(c);
+				}
 			}
+	
+			if (!needyCrops.isEmpty()) {
+				nextCrop = needyCrops.get(RandomUtil.getRandomInt(0,
+									needyCrops.size() - 1));
+			}
+	
+			needyCropCache = nextCrop;
+			return nextCrop;
 		}
-
-		if (!needyCrops.isEmpty()) {
-			nextCrop = needyCrops.get(RandomUtil.getRandomInt(0,
-								needyCrops.size() - 1));
-		}
-
-		needyCropCache = nextCrop;
-		
-		return nextCrop;
 	}
 
 	/**

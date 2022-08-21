@@ -208,7 +208,7 @@ implements MouseListener {
 		cropTableModel = new CropTableModel(farm);
 
 		// Prepare crop table
-		WebTable cropTable = new WebTable(cropTableModel){
+		WebTable cropTable = new WebTable(cropTableModel) {
 
 			public Component prepareRenderer(TableCellRenderer renderer,int Index_row, int Index_col) {
 			                Component comp = super.prepareRenderer(renderer, Index_row, Index_col);
@@ -248,6 +248,7 @@ implements MouseListener {
 		cropTable.getColumnModel().getColumn(2).setPreferredWidth(40);
 		cropTable.getColumnModel().getColumn(3).setPreferredWidth(20);
 		cropTable.getColumnModel().getColumn(4).setPreferredWidth(30);
+		cropTable.getColumnModel().getColumn(5).setPreferredWidth(30);
 		cropTable.setAutoCreateRowSorter(true);
 		
 		TableStyle.setTableStyle(cropTable);
@@ -278,15 +279,13 @@ implements MouseListener {
 		delButton.setPreferredSize(new Dimension(60, 20));
 		delButton.setFont(new Font("Serif", Font.PLAIN, 9));
 
-		delButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
+		delButton.addActionListener(s -> {
 				if (!list.isSelectionEmpty() && (list.getSelectedValue() != null)) {
 		           	selectCrop();
 	            	farm.deleteACropFromQueue(deletingCropIndex, deletingCropType);
 	            	listUpdate();
 	            	repaint();
 				}
-			}
 			});
 		buttonPanel.add(delButton, BorderLayout.CENTER);
 
@@ -314,11 +313,7 @@ implements MouseListener {
 	    comboBox.setRenderer(toolTipRenderer);
 	    toolTipRenderer.setTooltips(tooltipArray);
 
-		comboBox.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-            	cropName = (String) comboBox.getSelectedItem();
-            }
-        });
+		comboBox.addActionListener(s -> cropName = (String) comboBox.getSelectedItem());
 		comboBox.setMaximumRowCount(10);
 	    selectPanel.add(comboBox);
 
@@ -559,16 +554,13 @@ implements MouseListener {
 	 */
 	private class ListModel extends AbstractListModel<String> {
 
-	    /** default serial id. */
-	    private static final long serialVersionUID = 1L;
-
 	    private List<String> list;
 
 	    private ListModel() {
 
         	List<String> c = farm.getCropListInQueue();
 	        if (c != null)
-	        	list = new ArrayList<String>(c);
+	        	list = new ArrayList<>(c);
 	        else
 	        	list = null;
 	    }
@@ -600,7 +592,7 @@ implements MouseListener {
         		// if the list contains duplicate items, it somehow pass this test
         		if (list.size() != c.size() || !list.containsAll(c) || !c.containsAll(list)) {
 	                List<String> oldList = list;
-	                List<String> tempList = new ArrayList<String>(c);
+	                List<String> tempList = new ArrayList<>(c);
 	                //Collections.sort(tempList);
 
 	                list = tempList;
@@ -620,7 +612,7 @@ implements MouseListener {
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
 		private Farming farm;
-		private java.util.List<Crop> crops;
+		private List<Crop> crops;
 		private ImageIcon redDot;
 		private ImageIcon redHalfDot;
 		private ImageIcon yellowDot;
@@ -647,7 +639,7 @@ implements MouseListener {
 
 		// Change from 4 to 5 in order to include the crop's category as columnIndex 4
 		public int getColumnCount() {
-			return 5;
+			return 6;
 		}
 
 		public Class<?> getColumnClass(int columnIndex) {
@@ -656,35 +648,35 @@ implements MouseListener {
 			else if (columnIndex == 1) dataType = String.class;
 			else if (columnIndex == 2) dataType = String.class;
 			else if (columnIndex == 3) dataType = String.class;
-			// Aadd column 4 showing the crop's category
 			else if (columnIndex == 4) dataType = String.class;
+			else if (columnIndex == 5) dataType = Double.class;
+			
 			return dataType;
 		}
 
 		public String getColumnName(int columnIndex) {
 			if (columnIndex == 0) return "Health";
-			else if (columnIndex == 1) return "Name";
-			else if (columnIndex == 2) return "Phase";
-			else if (columnIndex == 3) return "Growth";
-			// Add column 4 showing the crop's category
-			else if (columnIndex == 4) return "Category";
-			else return null;
+			if (columnIndex == 1) return "Name";
+			if (columnIndex == 2) return "Phase";
+			if (columnIndex == 3) return "Growth";
+			if (columnIndex == 4) return "Category";
+			if (columnIndex == 5) return "Work";
+			return null;
 		}
 
 		public Object getValueAt(int row, int column) {
 
 			Crop crop = crops.get(row);
-			//String phase = crop.getPhase();
 			PhaseType currentPhase = crop.getPhaseType();
 			String category = crop.getCropSpec().getCropCategory().getName();
 
 			if (column == 0) {
 				double condition = crop.getHealthCondition();
-				if (condition > .9) return greenDot;
+				if (condition > .95) return greenDot;
 				else if (condition > .75) return greenHalfDot;
-				else if (condition > .5 ) return yellowDot;
-				else if (condition > .25 ) return yellowHalfDot;
-				else if (condition > .1 ) return redDot;
+				else if (condition > .55 ) return yellowDot;
+				else if (condition > .35 ) return yellowHalfDot;
+				else if (condition > .2 ) return redDot;
 				else return redHalfDot;
 			}
 			else if (column == 1) return Conversion.capitalize(crop.getCropName());
@@ -695,9 +687,10 @@ implements MouseListener {
 					growth = 100;
 				return String.valueOf(growth) + "%";
 			}
-			// Add column 4 showing the crop's category
 			else if (column == 4) return Conversion.capitalize(category);
-			else return null;
+			else if (column == 5) return DECIMAL_PLACES1.format(crop.getCurrentWorkRequired());
+	
+			return null;
 		}
 
 		public void update() {

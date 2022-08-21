@@ -26,9 +26,9 @@ import org.mars_sim.msp.core.structure.building.Building;
  */
 public class TendGreenhouseMeta extends MetaTask {
 
-    private static final double VALUE = .2;
+    private static final double VALUE = 1;
     
-    private static final int LIMIT = 10_000;
+    private static final int LIMIT = 15_000;
     
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(TendGreenhouseMeta.class.getName());
@@ -61,7 +61,6 @@ public class TendGreenhouseMeta extends MetaTask {
                 Building farmingBuilding = TendGreenhouse.getAvailableGreenhouse(person);
                 if (farmingBuilding != null) {
 
-//                    int needyCropsNum = person.getSettlement().getCropsNeedingTending();
                     double tendingNeed = person.getSettlement().getCropsTendingNeed();
                     result = tendingNeed * VALUE;
                     
