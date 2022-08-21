@@ -275,8 +275,6 @@ public class TendGreenhouse extends Task implements Serializable {
 	 * @return the amount of time (millisols) left over after performing the phase.
 	 */
 	private double tendingPhase(double time) {
-
-		double workTime = time;
 		
 		double remainingTime = 0;
 		
@@ -300,69 +298,79 @@ public class TendGreenhouse extends Task implements Serializable {
 		
 		if (needyCrop == null) {
 			setDescriptionCropDone();
+			return time;
 		}
 
-		else {
-			boolean needTending = needyCrop.getCurrentWorkRequired() > Crop.CROP_TIME_OFFSET;
-			
-			if (needTending) {
-				double mod = 1.0;
-				
-				if (worker.getUnitType() == UnitType.PERSON)
-					mod = 1.5;
-
-				// Determine amount of effective work time based on "Botany" skill
-				int greenhouseSkill = getEffectiveSkillLevel();
-				if (greenhouseSkill == 0)
-					mod *= RandomUtil.getRandomDouble(.85, 1.15);
-				else
-					mod *= RandomUtil.getRandomDouble(.85, 1.15) * greenhouseSkill * 1.25;
-				
-				double remain = greenhouse.addWork(workTime * mod, worker, needyCrop);
-				
-				// Calculate used time
-				double usedTime = workTime - remain;
-				
-				if (usedTime > 0) {
-					setCropDescription(needyCrop);
-	
-					if (remain > 0) {
-						// Divided by mod to get back any leftover real time
-						remainingTime = time - (usedTime / mod);
-					}
-					
-					// Add experience
-					addExperience(time);
-			
-					// Check for accident in greenhouse.
-					checkForAccident(farmBuilding, time, 0.005D);
-				}
-				else {
-					logger.log(greenhouse.getBuilding(), worker, Level.INFO, 30_000, 
-							"usedTime: " + usedTime + ".");
-					setDescriptionCropDone();
-				}
-				
-				if (!greenhouse.requiresWork(needyCrop))
-					needyCrop = null;
-			}
-			else {
-				logger.log(greenhouse.getBuilding(), worker, Level.INFO, 30_000, 
-						"Tending " + needyCrop.getCropName() + " not needed.");
-				setDescriptionCropDone();
-			}
+		boolean needTending = needyCrop.getCurrentWorkRequired() > Crop.CROP_TIME_OFFSET;
+		
+		if (needTending) {
+			remainingTime = tend(time);
+			return remainingTime;
 		}
 		
-//		logger.log(farmBuilding, worker, Level.INFO, 10_000,
-//				"mod: " + mod +
-//				"  time: " + time +
-//				"  workTime: " + workTime +
-//				"  usedTime: " + usedTime + 
-//				"  modRemainingTime: " + modRemainingTime +				
-//				"  remainingTime: " + remainingTime +
-//				"  TimeCompleted: " + getTimeCompleted() +
-//				"  duration: " + getDuration()		
-//				);
+		needyCrop = greenhouse.getNeedyCrop();
+		
+		if (needyCrop == null) {
+			setDescriptionCropDone();
+			return time;
+		}
+		
+		needTending = needyCrop.getCurrentWorkRequired() > 0;
+		
+		if (needTending) {
+			remainingTime = tend(time);
+			return remainingTime;
+		}
+
+		logger.log(greenhouse.getBuilding(), worker, Level.INFO, 30_000, 
+				"Tending " + needyCrop.getCropName() + " not needed.");
+		setDescriptionCropDone();
+
+		return remainingTime;
+	}
+	
+	public double tend(double time) {
+		double remainingTime = 0;
+		double workTime = time;
+		double mod = 1.0;
+		
+		if (worker.getUnitType() == UnitType.PERSON)
+			mod = 1.5;
+
+		// Determine amount of effective work time based on "Botany" skill
+		int greenhouseSkill = getEffectiveSkillLevel();
+		if (greenhouseSkill == 0)
+			mod *= RandomUtil.getRandomDouble(.85, 1.15);
+		else
+			mod *= RandomUtil.getRandomDouble(.85, 1.15) * greenhouseSkill * 1.25;
+		
+		double remain = greenhouse.addWork(workTime * mod, worker, needyCrop);
+		
+		// Calculate used time
+		double usedTime = workTime - remain;
+		
+		if (usedTime > 0) {
+			setCropDescription(needyCrop);
+
+			if (remain > 0) {
+				// Divided by mod to get back any leftover real time
+				remainingTime = time - (usedTime / mod);
+			}
+			
+			// Add experience
+			addExperience(time);
+	
+			// Check for accident in greenhouse.
+			checkForAccident(greenhouse.getBuilding(), time, 0.005D);
+		}
+		else {
+			logger.log(greenhouse.getBuilding(), worker, Level.INFO, 30_000, 
+					"usedTime: " + usedTime + ".");
+			setDescriptionCropDone();
+		}
+		
+		if (!greenhouse.requiresWork(needyCrop))
+			needyCrop = null;
 		
 		return remainingTime;
 	}

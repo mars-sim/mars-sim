@@ -542,14 +542,13 @@ public class Crop implements Comparable<Crop>, Serializable {
 		
 		// TODO: will need to model diseaseIndex
 		
-		
 		double workTimeFactor = 0;
-		if (currentWorkRequired < 100)
+		if (currentWorkRequired < 1000)
 			// Within 100 is still considered well taken care of
-			workTimeFactor = - (100 - currentWorkRequired) / WORK_TIME_FACTOR;
+			workTimeFactor = - (1000 - currentWorkRequired) / WORK_TIME_FACTOR;
 		else
 			// Beyond 100 will incur penalty
-			workTimeFactor = (currentWorkRequired - 100) / WORK_TIME_FACTOR;
+			workTimeFactor = (currentWorkRequired - 1000) / WORK_TIME_FACTOR;
 		
 		health = (1 - diseaseIndex) * total / size - workTimeFactor;
 

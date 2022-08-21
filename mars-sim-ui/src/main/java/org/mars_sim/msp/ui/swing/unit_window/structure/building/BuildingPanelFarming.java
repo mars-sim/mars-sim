@@ -249,7 +249,9 @@ implements MouseListener {
 		cropTable.getColumnModel().getColumn(3).setPreferredWidth(20);
 		cropTable.getColumnModel().getColumn(4).setPreferredWidth(30);
 		cropTable.getColumnModel().getColumn(5).setPreferredWidth(30);
-		cropTable.setAutoCreateRowSorter(true);
+		// Use of setAutoCreateRowSorter causes array error 
+		// when old crop is removed and new crop is added
+//		cropTable.setAutoCreateRowSorter(true);
 		
 		TableStyle.setTableStyle(cropTable);
 		tableScrollPanel.setViewportView(cropTable);
@@ -534,7 +536,6 @@ implements MouseListener {
 			workTimeTF.setText(Msg.getString("BuildingPanelFarming.workTime", workTime));
 		}
 		
-		
 		// Update crop table.
 		cropTableModel.update();
 
@@ -609,8 +610,6 @@ implements MouseListener {
 	 */
 	private static class CropTableModel extends AbstractTableModel {
 
-		/** default serial id. */
-		private static final long serialVersionUID = 1L;
 		private Farming farm;
 		private List<Crop> crops;
 		private ImageIcon redDot;
@@ -629,8 +628,6 @@ implements MouseListener {
 			yellowHalfDot = ImageLoader.getIcon("dot_yellow_half");
 			greenDot = ImageLoader.getIcon("GreenDot");
 			greenHalfDot = ImageLoader.getIcon("dot_green_half");
-
-
 		}
 
 		public int getRowCount() {
