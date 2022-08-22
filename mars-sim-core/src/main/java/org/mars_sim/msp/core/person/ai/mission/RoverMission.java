@@ -1059,16 +1059,19 @@ public abstract class RoverMission extends VehicleMission {
 		if (!atLeastOnePersonRemainingAtSettlement(getStartingSettlement(), startingMember)) {
 			// Remove last person added to the mission.
 			Person lastPerson = null;
-			Iterator<Worker> i = getMembers().iterator();
-			while (i.hasNext()) {
-				Worker member = i.next();
+			 for (Iterator<Worker> i = getMembers().iterator(); 
+					 i.hasNext();) {      
+				 Worker member = i.next();
 				if (member instanceof Person) {
 					lastPerson = (Person) member;
-					removeMember(lastPerson);
+					// Use Iterator's remove() method
+					i.remove();
+					// Adjust the work shift
+					adjustShift(member);
 				}
-			}
-
-			if (lastPerson != null) {
+			 }
+			
+			 if (lastPerson != null) {
 				lastPerson.getMind().setMission(null);
 				if (getMembersNumber() < minMembers) {
 					endMission(MissionStatus.NOT_ENOUGH_MEMBERS);

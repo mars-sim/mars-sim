@@ -403,6 +403,32 @@ public abstract class Mission implements Serializable, Temporal {
 		eventManager.registerNewEvent(newEvent);
 	}
 
+	public final void adjustShift(Worker member) {
+		// Added codes in reassigning a work shift
+		if (member.getUnitType() == UnitType.PERSON) {
+			Person person = (Person) member;
+			person.getMind().stopMission();
+			member.setMission(null);
+
+			ShiftType shift = null;
+			if (person.getSettlement() != null) {
+				shift = person.getSettlement().getAnEmptyWorkShift(-1);
+				person.setShiftType(shift);
+			}
+			else if ((person.getVehicle() != null) && (person.getVehicle().getSettlement() != null)) {
+					shift = person.getVehicle().getSettlement().getAnEmptyWorkShift(-1);
+					person.setShiftType(shift);
+			}
+
+			registerHistoricalEvent(person, EventType.MISSION_FINISH, "Removing a member");
+			fireMissionUpdate(MissionEventType.REMOVE_MEMBER_EVENT, member);
+
+			if (getPeopleNumber() == 0 && !done) {
+				endMission(MissionStatus.NO_MEMBERS_AVAILABLE);
+			}
+		}
+	}
+	
 	/**
 	 * Removes a member from the mission.
 	 *
@@ -411,30 +437,8 @@ public abstract class Mission implements Serializable, Temporal {
 	public final void removeMember(Worker member) {
 		if (members.contains(member)) {
 			members.remove(member);
-
-			// Added codes in reassigning a work shift
-			if (member.getUnitType() == UnitType.PERSON) {
-				Person person = (Person) member;
-				person.getMind().stopMission();
-				member.setMission(null);
-
-				ShiftType shift = null;
-				if (person.getSettlement() != null) {
-					shift = person.getSettlement().getAnEmptyWorkShift(-1);
-					person.setShiftType(shift);
-				}
-				else if ((person.getVehicle() != null) && (person.getVehicle().getSettlement() != null)) {
-						shift = person.getVehicle().getSettlement().getAnEmptyWorkShift(-1);
-						person.setShiftType(shift);
-				}
-
-				registerHistoricalEvent(person, EventType.MISSION_FINISH, "Removing a member");
-				fireMissionUpdate(MissionEventType.REMOVE_MEMBER_EVENT, member);
-
-				if (getPeopleNumber() == 0 && !done) {
-					endMission(MissionStatus.NO_MEMBERS_AVAILABLE);
-				}
-			}
+			// Adjust the work shift
+			adjustShift(member);
 		}
 	}
 
@@ -835,9 +839,11 @@ public abstract class Mission implements Serializable, Temporal {
 		if (members != null && !members.isEmpty()) {
 			String listOfMembers = members.stream().map(Worker::getName).collect(Collectors.joining(", "));
 			logger.info(startingMember, "Disbanding mission member(s): " + listOfMembers);
-			List<Worker> origMembers = new ArrayList<>(members);
-			for(Worker m : origMembers) {
-				removeMember(m);
+			Iterator<Worker> i = getMembers().iterator();
+			while (i.hasNext()) {
+				Worker member = i.next();
+				i.remove();
+				adjustShift(member);
 			}	
 		}
 
