@@ -509,7 +509,7 @@ public class MasterClock implements Serializable {
 				long earthMillisec = (long)(lastPulseTime * MILLISECONDS_PER_MILLISOL);
 
 				// Calculate the actual rate for feedback
-				actualTR = earthMillisec / realElapsedMillisec;
+				actualTR = (double)(earthMillisec / realElapsedMillisec);
 
 				if (!listenerExecutor.isTerminated()
 					&& !listenerExecutor.isShutdown()) {

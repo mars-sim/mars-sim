@@ -41,7 +41,7 @@ public class Matchfield extends Entity implements Moveable {
 
         this.setType(EntityType.MATCHFIELD);
         this.getViewComponent().addChild(grid);
-        this.setPosition(-(AppSettings.MAP_WIDTH - AppSettings.WINDOW_WIDTH) / 2, -(AppSettings.MAP_HEIGHT - AppSettings.WINDOW_HEIGHT) / 2);
+        this.setPosition(-(AppSettings.MAP_WIDTH - AppSettings.WINDOW_WIDTH) / 2.0, -(AppSettings.MAP_HEIGHT - AppSettings.WINDOW_HEIGHT) / 2.0);
         this.initPoints();
 
         //add entities to game world

@@ -414,7 +414,7 @@ public class TaskSchedule implements Serializable {
 			return base;
 		}
 		
-		double score = 90 - diff;
+		double score = 90.0 - diff;
 		if (score <= 0) {
 			return base;
 		}

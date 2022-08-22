@@ -653,46 +653,49 @@ public class BuildingConnectorManager implements Serializable {
 
 		boolean goodConnection = false;
 		BuildingManager manager = settlement.getBuildingManager();
+		
 		Iterator<Building> i = manager.getBuildings(FunctionType.LIFE_SUPPORT).iterator();
 		while (i.hasNext() && !goodConnection) {
 			Building building = i.next();
-			if (!building.equals(newBuilding)) {
-				if (getBuildingConnections(newBuilding, building).size() == 0) {
+			if (!building.equals(newBuilding)
+				&& getBuildingConnections(newBuilding, building).size() == 0) {
 
-					Set<Point2D> collisionPoints = LocalAreaUtil.getLinePathCollisionPoints(line, building);
-					if (collisionPoints.size() > 0) {
+				Set<Point2D> collisionPoints = LocalAreaUtil.getLinePathCollisionPoints(line, building);
+				if (collisionPoints.size() > 0) {
 
-						// Determine closest collision point.
-						Point2D closestCollisionPoint = null;
-						double closestDistance = Double.MAX_VALUE;
-						Iterator<Point2D> j = collisionPoints.iterator();
-						while (j.hasNext()) {
-							Point2D collisionPoint = j.next();
-							double distance = collisionPoint.distance(firstBuildingConnectionPt);
-							if (distance < closestDistance) {
-								closestCollisionPoint = collisionPoint;
-								closestDistance = distance;
-							}
+					// Determine closest collision point.
+					Point2D closestCollisionPoint = null;
+					double closestDistance = Double.MAX_VALUE;
+					Iterator<Point2D> j = collisionPoints.iterator();
+					while (j.hasNext()) {
+						Point2D collisionPoint = j.next();
+						double distance = collisionPoint.distance(firstBuildingConnectionPt);
+						if (distance < closestDistance) {
+							closestCollisionPoint = collisionPoint;
+							closestDistance = distance;
 						}
-
-						Point2D secondBuildingConnectionPt = closestCollisionPoint;
-
-						// Check if an existing building connection is too close to this connection.
-						if (checkRange
-								&& connectionTooCloseToExistingConnection(building, secondBuildingConnectionPt)) {
-							return false;
-						}
-
-						double hatch1Facing = determineHatchFacing(newBuilding, firstBuildingConnectionPt);
-						double hatch2Facing = determineHatchFacing(building, secondBuildingConnectionPt);
-
-						BuildingConnector connector = new BuildingConnector(newBuilding,
-								new LocalPosition(firstBuildingConnectionPt), hatch1Facing,
-								building, new LocalPosition(secondBuildingConnectionPt), hatch2Facing);
-						addBuildingConnection(connector);
-
-						goodConnection = true;
 					}
+
+					if (closestCollisionPoint == null)
+						return false;
+					
+					Point2D secondBuildingConnectionPt = closestCollisionPoint;
+
+					// Check if an existing building connection is too close to this connection.
+					if (checkRange
+							&& connectionTooCloseToExistingConnection(building, secondBuildingConnectionPt)) {
+						return false;
+					}
+
+					double hatch1Facing = determineHatchFacing(newBuilding, firstBuildingConnectionPt);
+					double hatch2Facing = determineHatchFacing(building, secondBuildingConnectionPt);
+
+					BuildingConnector connector = new BuildingConnector(newBuilding,
+							new LocalPosition(firstBuildingConnectionPt), hatch1Facing,
+							building, new LocalPosition(secondBuildingConnectionPt), hatch2Facing);
+					addBuildingConnection(connector);
+
+					goodConnection = true;
 				}
 			}
 		}

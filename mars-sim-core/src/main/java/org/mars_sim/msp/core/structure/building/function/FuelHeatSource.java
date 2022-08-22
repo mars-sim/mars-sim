@@ -106,7 +106,7 @@ public class FuelHeatSource extends HeatSource implements Serializable {
 				reserveFuel += STANDARD_RESERVE;
 				reserveOxidizer += STANDARD_RESERVE * RATIO;
 				settlement.retrieveAmountResource(METHANE_ID, STANDARD_RESERVE);
-				settlement.retrieveAmountResource(OXYGEN_ID, STANDARD_RESERVE * RATIO);
+				settlement.retrieveAmountResource(OXYGEN_ID, STANDARD_RESERVE * RATIO * 1.0);
 				
 				reserveFuel -= deltaFuel;
 				reserveOxidizer -= deltaFuel * RATIO;

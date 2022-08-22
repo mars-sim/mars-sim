@@ -100,6 +100,16 @@ public class Hatch implements Serializable, LocalBoundedObject, InsidePathLocati
 	}
 
 	/**
+	 * Gets the hash code for this object.
+	 *
+	 * @return hash code.
+	 */
+	@Override
+	public int hashCode() {
+		return super.hashCode();
+	}
+	
+	/**
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {

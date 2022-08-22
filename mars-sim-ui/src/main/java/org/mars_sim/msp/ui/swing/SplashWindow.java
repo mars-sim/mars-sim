@@ -134,7 +134,7 @@ public class SplashWindow extends JComponent {
 				g2d.setFont(authorStringFont);
 				
 				if (rand == 2)
-					g2d.drawString(AUTHOR_STRING[rand], 15, h - 15);
+					g2d.drawString(AUTHOR_STRING[rand], 15, h - 20);
 				else
 					g2d.drawString(AUTHOR_STRING[rand], 15, h - 15);
 				

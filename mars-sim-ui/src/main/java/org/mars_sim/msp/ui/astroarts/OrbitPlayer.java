@@ -46,7 +46,9 @@ public class OrbitPlayer implements Runnable {
 				Thread.sleep(50);
 			} catch (InterruptedException e) {
 				logger.warning("Sleep interrupted.");
-				break;
+			    // Restore interrupted state...
+			    Thread.currentThread().interrupt();
+			    break;
 			}
 			ATime atime = orbitViewer.getAtime();
 			atime.changeDate(orbitViewer.timeStep, orbitViewer.playDirection);

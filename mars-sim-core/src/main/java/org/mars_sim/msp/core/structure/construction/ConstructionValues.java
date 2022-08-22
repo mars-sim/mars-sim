@@ -508,6 +508,17 @@ implements Serializable {
         allStageInfoValueCache.clear();
     }
 
+	/**
+	 * Gets the hash code for this object.
+	 *
+	 * @return hash code.
+	 */
+	@Override
+	public int hashCode() {
+		return super.hashCode();
+	}
+	
+	
     /**
      * Prepare object for garbage collection.
      */

@@ -29,8 +29,8 @@ public class Player extends Entity implements Moveable {
         this.nickname = nickname;
         this.score = score;
 
-        this.x = this.startX = AppSettings.WINDOW_WIDTH / 2;
-        this.y = this.startY = AppSettings.WINDOW_HEIGHT / 2 - RADIUS;
+        this.x = this.startX = AppSettings.WINDOW_WIDTH / 2.0;
+        this.y = this.startY = AppSettings.WINDOW_HEIGHT / 2.0 - RADIUS;
 
         this.setType(EntityType.PLAYER);
         this.setPosition(this.x, this.y);

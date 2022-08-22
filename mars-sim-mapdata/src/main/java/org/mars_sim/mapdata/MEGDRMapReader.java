@@ -55,7 +55,7 @@ public class MEGDRMapReader {
 	
 	// Each number occupies 2 bytes
 	private static final int BUFFER_SIZE = 2;
-	private static final byte[] buffer = new byte[BUFFER_SIZE]; 
+//	private static final byte[] buffer = new byte[BUFFER_SIZE]; 
 	
 	// Each number occupies ? bytes
 	private static final int COMPRESSED_BUFFER_SIZE = 4;
@@ -84,7 +84,7 @@ public class MEGDRMapReader {
 	    return (int)( // NOTE: type cast not necessary for int
 	            (0xff & data[0]) << 8  |
 	            (data[0]) << 8  |
-	            (0xff & data[1]) << 0
+	            (0xff & data[1])
 	            );
 	}
 	

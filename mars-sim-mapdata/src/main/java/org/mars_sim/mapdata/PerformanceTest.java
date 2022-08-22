@@ -363,6 +363,8 @@ public class PerformanceTest {
 			grabber.grabPixels();
 		} catch (InterruptedException e) {
 			System.out.println("grabber error");
+		    // Restore interrupted state...
+		    Thread.currentThread().interrupt();
 		}
 		if ((grabber.status() & ImageObserver.ABORT) != 0)
 			System.out.println("grabber error");

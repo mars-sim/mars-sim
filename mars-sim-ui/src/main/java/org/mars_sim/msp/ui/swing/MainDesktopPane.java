@@ -513,48 +513,48 @@ public class MainDesktopPane extends JDesktopPane
 	 */
 	public void openToolWindow(String toolName, Mission mission) {
 		ToolWindow window = getToolWindow(toolName);
-		if (window != null) {
-			if (window.isClosed()) {
-				if (!window.wasOpened()) {
-					UIConfig config = UIConfig.INSTANCE;
+		if (window == null) {
+			return;	
+		}
+		
+		if (window.isClosed() && !window.wasOpened()) {
+			UIConfig config = UIConfig.INSTANCE;
 //					if (config.useUIDefault()) {
 //						window.setLocation(getCenterLocation(window));
 //					} else {
-					if (config.isInternalWindowConfigured(toolName)) {
-						window.setLocation(config.getInternalWindowLocation(toolName));
-						if (window.isResizable()) {
-							window.setSize(config.getInternalWindowDimension(toolName));
-						}
-					} else {
-						if (toolName.equals(TimeWindow.NAME))
-							window.setLocation(computeLocation(window, 0, 2));
-						else if (toolName.equals(MonitorWindow.TITLE))
-							window.setLocation(computeLocation(window, 1, 0));
-						else
-							window.setLocation(getCenterLocation(window));
-					}
+			if (config.isInternalWindowConfigured(toolName)) {
+				window.setLocation(config.getInternalWindowLocation(toolName));
+				if (window.isResizable()) {
+					window.setSize(config.getInternalWindowDimension(toolName));
+				}
+			} else {
+				if (toolName.equals(TimeWindow.NAME))
+					window.setLocation(computeLocation(window, 0, 2));
+				else if (toolName.equals(MonitorWindow.TITLE))
+					window.setLocation(computeLocation(window, 1, 0));
+				else
+					window.setLocation(getCenterLocation(window));
+			}
 //					}
-					window.setWasOpened(true);
-				}
+			window.setWasOpened(true);
+		}
 
-				// in case of classic swing mode for MainWindow
-				add(window, 0);
+		// in case of classic swing mode for MainWindow
+		add(window, 0);
 
-				try {
-					window.setClosed(false);
-				} catch (Exception e) {
-					logger.log(Level.SEVERE, e.toString());
-				}
-			}
+		try {
+			window.setClosed(false);
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, e.toString());
+		}
 
-			window.show();
+		window.show();
 
-			// bring to front if it overlaps with other windows
-			try {
-				window.setSelected(true);
-			} catch (PropertyVetoException e) {
-				// ignore if setSelected is vetoed
-			}
+		// bring to front if it overlaps with other windows
+		try {
+			window.setSelected(true);
+		} catch (PropertyVetoException e) {
+			// ignore if setSelected is vetoed
 		}
 
 		window.getContentPane().validate();
@@ -574,53 +574,55 @@ public class MainDesktopPane extends JDesktopPane
 	 */
 	public void openToolWindow(String toolName) {
 		ToolWindow window = getToolWindow(toolName);
-		if (window != null) {
-			if (window.isClosed()) {
-				if (!window.wasOpened()) {
-					UIConfig config = UIConfig.INSTANCE;
-					Point location = null;
-					if (config.isInternalWindowConfigured(toolName)) {
-						location = config.getInternalWindowLocation(toolName);
-						if (window.isResizable()) {
-							window.setSize(config.getInternalWindowDimension(toolName));
-						}
-					}
-					else if (toolName.equals(TimeWindow.NAME))
-						location = computeLocation(window, 0, 2);
-					else if (toolName.equals(MonitorWindow.TITLE))
-						location = computeLocation(window, 1, 0);
-					else
-						location = getCenterLocation(window);
-
-					// Check is visible
-					if ((location.x < 0) || (location.y < 0)) {
-						location = new Point(1,1);
-					}
-					window.setLocation(location);
-					window.setWasOpened(true);
-				}
-
-				// in case of classic swing mode for MainWindow
-				add(window, 0);
-
-				try {
-					window.setClosed(false);
-				} catch (Exception e) {
-					logger.log(Level.SEVERE, e.toString());
-				}
-			}
-
-			window.show();
-
-			// bring to front if it overlaps with other windows
-			try {
-				window.setSelected(true);
-			} catch (PropertyVetoException e) {
-				// ignore if setSelected is vetoed
-			}
-			window.getContentPane().validate();
-			window.getContentPane().repaint();
+		
+		if (window == null) {
+			return;	
 		}
+		
+		if (window.isClosed() && !window.wasOpened()) {
+			UIConfig config = UIConfig.INSTANCE;
+			Point location = null;
+			if (config.isInternalWindowConfigured(toolName)) {
+				location = config.getInternalWindowLocation(toolName);
+				if (window.isResizable()) {
+					window.setSize(config.getInternalWindowDimension(toolName));
+				}
+			}
+			else if (toolName.equals(TimeWindow.NAME))
+				location = computeLocation(window, 0, 2);
+			else if (toolName.equals(MonitorWindow.TITLE))
+				location = computeLocation(window, 1, 0);
+			else
+				location = getCenterLocation(window);
+
+			// Check is visible
+			if ((location.x < 0) || (location.y < 0)) {
+				location = new Point(1,1);
+			}
+			window.setLocation(location);
+			window.setWasOpened(true);
+		}
+
+		// in case of classic swing mode for MainWindow
+		add(window, 0);
+
+		try {
+			window.setClosed(false);
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, e.toString());
+		}
+
+		window.show();
+
+		// bring to front if it overlaps with other windows
+		try {
+			window.setSelected(true);
+		} catch (PropertyVetoException e) {
+			// ignore if setSelected is vetoed
+		}
+		
+		window.getContentPane().validate();
+		window.getContentPane().repaint();
 
 		validate();
 		repaint();
@@ -638,6 +640,7 @@ public class MainDesktopPane extends JDesktopPane
 				try {
 					window.setClosed(true);
 				} catch (java.beans.PropertyVetoException e) {
+					// ignore
 				}
 			}
 		});

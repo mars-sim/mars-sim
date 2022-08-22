@@ -402,7 +402,9 @@ public class MarsProject {
 					break;
 				}
 	        } catch (InterruptedException e) {
-				logger.log(Level.WARNING, "Trouble starting Main Window. ", e); //$NON-NLS-1$
+				logger.log(Level.WARNING, "Trouble starting Main Window. ", e); 
+				// Restore interrupted state...
+			    Thread.currentThread().interrupt();
 	        }
 		}
 	}
@@ -444,13 +446,9 @@ public class MarsProject {
 			LogManager.getLogManager().readConfiguration(MarsProject.class.getResourceAsStream(LOGGING_PROPERTIES));
 		} catch (IOException e) {
 			logger.log(Level.WARNING, "Could not load logging properties", e);
-			try {
-				LogManager.getLogManager().readConfiguration();
-			} catch (IOException e1) {
-				logger.log(Level.WARNING, "Could read logging default config", e);
-			}
-		}
-
+			LogManager.getLogManager().readConfiguration();
+        }
+		
 		// Sets text antialiasing
 		System.setProperty("swing.aatext", "true");
 		System.setProperty("awt.useSystemAAFontSettings", "lcd"); // for newer VMs

@@ -132,6 +132,8 @@ public abstract class ModalInternalFrame extends JInternalFrame {
 			}
 		} catch (InterruptedException e) {
 			logger.config("Problem in startModal's EventQueue" + e.getMessage());
+		    // Restore interrupted state
+		    Thread.currentThread().interrupt();
 		}
 	}
 

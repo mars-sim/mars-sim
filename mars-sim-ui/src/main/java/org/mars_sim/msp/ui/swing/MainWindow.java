@@ -440,36 +440,36 @@ extends JComponent implements ClockListener {
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		if (screenSize != null) {
 			logger.config("Current toolkit screen size is " + screenSize.width + " x " + screenSize.height);
-		}
-				
-		if (frameSize != null) {
-			// Check selected is not bigger than the screen
-			if (frameSize.width > screenSize.width
-					|| frameSize.height > screenSize.height) {
-				logger.warning("Selected screen size cannot be larger than physical screen size.");
-				frameSize = null;
+
+			if (frameSize != null) {
+				// Check selected is not bigger than the screen
+				if (frameSize.width > screenSize.width
+						|| frameSize.height > screenSize.height) {
+					logger.warning("Selected screen size cannot be larger than physical screen size.");
+					frameSize = null;
+				}
+//				else {
+//					// proceed to the next
+//				}
 			}
-			else {
-				// proceed to the next
+			
+
+			if (frameSize == null) {
+				// Make frame size 80% of screen size.
+				if (screenSize.width > 800) {
+					frameSize = new Dimension(
+						(int) Math.round(screenSize.getWidth() * .8),
+						(int) Math.round(screenSize.getHeight() * .8)
+					);
+					logger.config("New window size is " + frameSize.width + " x " + frameSize.height);
+				}
+				else {
+					frameSize = new Dimension(screenSize);
+					logger.config("New window size is " + frameSize.width + " x " + frameSize.height);
+				}
 			}
 		}
  
-		if (frameSize == null) {
-			// Make frame size 80% of screen size.
-			if (screenSize.width > 800) {
-				frameSize = new Dimension(
-					(int) Math.round(screenSize.getWidth() * .8),
-					(int) Math.round(screenSize.getHeight() * .8)
-				);
-				logger.config("New window size is " + frameSize.width + " x " + frameSize.height);
-			}
-			else {
-				frameSize = new Dimension(screenSize);
-				logger.config("New window size is " + frameSize.width + " x " + frameSize.height);
-
-			}
-		}
-		
 		return frameSize;
 	}
 

@@ -285,6 +285,8 @@ public class MarsProjectHeadlessStarter {
         	System.out.println(e.getMessage());
         } catch (InterruptedException e1) {
         	System.out.println(e1.getMessage());
+        	// Restore interrupted state
+            Thread.currentThread().interrupt();
         } catch (Exception e2) {
         	System.out.println(e2.getMessage());      	
         }

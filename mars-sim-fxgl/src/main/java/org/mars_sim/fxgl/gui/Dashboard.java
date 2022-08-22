@@ -18,7 +18,7 @@ import java.text.DecimalFormat;
 public class Dashboard extends VBox {
 
     public static final double WIDTH = AppSettings.WINDOW_WIDTH * 0.20;
-    public static final double HEIGHT = AppSettings.WINDOW_HEIGHT - 50;
+    public static final double HEIGHT = AppSettings.WINDOW_HEIGHT - 50.0;
     public static final double TRANSLATE = 25;
 
     private Operation[] operations;

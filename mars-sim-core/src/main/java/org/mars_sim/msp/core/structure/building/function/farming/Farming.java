@@ -290,25 +290,25 @@ public class Farming extends Function {
 	 */
 	public CropSpec selectVPCrop() {
 
-		CropSpec no_1_crop = null;
-		CropSpec no_2_crop = null;
+		CropSpec no1Crop = null;
+		CropSpec no2Crop = null;
 		CropSpec chosen = null;
-		double no_1_crop_VP = 0;
-		double no_2_crop_VP = 0;
+		double no1CropVP = 0;
+		double no2CropVP = 0;
 
 		for (CropSpec c : cropConfig.getCropTypes()) {
 			double cropVP = getCropValue(ResourceUtil.findAmountResource(c.getName()));
-			if (cropVP >= no_1_crop_VP) {
-				if (no_1_crop != null) {
-					no_2_crop_VP = no_1_crop_VP;
-					no_2_crop = no_1_crop;
+			if (cropVP >= no1CropVP) {
+				if (no1Crop != null) {
+					no2CropVP = no1CropVP;
+					no2Crop = no1Crop;
 				}
-				no_1_crop_VP = cropVP;
-				no_1_crop = c;
+				no1CropVP = cropVP;
+				no1Crop = c;
 
-			} else if (cropVP > no_2_crop_VP) {
-				no_2_crop_VP = cropVP;
-				no_2_crop = c;
+			} else if (cropVP > no2CropVP) {
+				no2CropVP = cropVP;
+				no2Crop = c;
 			}
 		}
 
@@ -322,28 +322,30 @@ public class Farming extends Function {
 			last2CT = cropHistory.get(size - 2);
 			lastCT = cropHistory.get(size - 1);
 
-			if (no_1_crop.getName().equalsIgnoreCase(last2CT) || no_1_crop.getName().equalsIgnoreCase(lastCT)) {
+			if (no1Crop.getName().equalsIgnoreCase(last2CT) || no1Crop.getName().equalsIgnoreCase(lastCT)) {
 				// if highestCrop has already been selected once
 
 				if (last2CT != null && lastCT != null && last2CT.equals(lastCT)) {
 					// Note : since the highestCrop has already been chosen previously,
 					// should not choose the same crop type again
 					// compareVP = false;
-					chosen = no_2_crop;
+					chosen = no2Crop;
 				}
 
 				else
 					compareVP = true;
 			}
 
-			else if (no_2_crop.getName().equalsIgnoreCase(last2CT) || no_2_crop.getName().equalsIgnoreCase(lastCT)) {
+			else if (no2Crop != null && 
+					(no2Crop.getName().equalsIgnoreCase(last2CT) 
+							|| no2Crop.getName().equalsIgnoreCase(lastCT))) {
 				// if secondCrop has already been selected once
 
 				if (last2CT != null && lastCT != null && last2CT.equals(lastCT)) {
 					// since the secondCrop has already been chosen twice,
 					// should not choose the same crop type again
 					// compareVP = false;
-					chosen = no_1_crop;
+					chosen = no1Crop;
 				}
 
 				else
@@ -357,7 +359,7 @@ public class Farming extends Function {
 
 			if (lastCT != null) {
 				// if highestCrop has already been selected for planting last time,
-				if (no_1_crop.getName().equalsIgnoreCase(lastCT))
+				if (no1Crop.getName().equalsIgnoreCase(lastCT))
 					compareVP = true;
 			}
 		}
@@ -367,16 +369,16 @@ public class Farming extends Function {
 			// if their VP are within 15%, toss a dice
 			// if they are further apart, should pick highestCrop
 			// if ((highestVP - secondVP) < .15 * secondVP)
-			if ((no_2_crop_VP / no_1_crop_VP) > .85) {
+			if ((no2CropVP / no1CropVP) > .85) {
 				int rand = RandomUtil.getRandomInt(0, 1);
 				if (rand == 0)
-					chosen = no_1_crop;
+					chosen = no1Crop;
 				else
-					chosen = no_2_crop;
+					chosen = no2Crop;
 			} else
-				chosen = no_2_crop;
+				chosen = no2Crop;
 		} else
-			chosen = no_1_crop;
+			chosen = no1Crop;
 
 		boolean flag = hasTooMany(chosen);
 

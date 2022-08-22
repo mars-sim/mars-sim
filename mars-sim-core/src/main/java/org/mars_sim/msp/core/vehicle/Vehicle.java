@@ -110,9 +110,9 @@ public abstract class Vehicle extends Unit
 	private static final int ESTIMATED_TRAVEL_HOURS_PER_SOL = 16;
 
 	// Format for unit
-	private static final String KWH = " kWh   ";
-	private static final String KG = " kg   ";
-	private static final String KM_KG = " km/kg   ";
+//	private static final String KWH = " kWh   ";
+//	private static final String KG = " kg   ";
+//	private static final String KM_KG = " km/kg   ";
 	
 	// Name format for numbers units
 	private static final String VEHICLE_TAG_NAME = "%s %03d";
@@ -661,22 +661,22 @@ public abstract class Vehicle extends Unit
 	 * @param facing    (degrees from North clockwise).
 	 */
 	public void setParkedLocation(LocalPosition position, double facing) {
-
-		// Get current human crew positions relative to the vehicle.
-		Map<Person, LocalPosition> currentCrewPositions = getCurrentCrewPositions();
-
-		// Get current robot crew positions relative to the vehicle.
-		Map<Robot, LocalPosition> currentRobotCrewPositions = getCurrentRobotCrewPositions();
-
 		// Set new parked location for the vehicle.
 		this.posParked = position;
 		this.facingParked = facing;
-
+		
+		// Get current human crew positions relative to the vehicle.
+		Map<Person, LocalPosition> currentCrewPositions = getCurrentCrewPositions();
 		// Set the human crew locations to the vehicle's new parked location.
-		setCrewPositions(currentCrewPositions);
+		if (currentCrewPositions != null)
+			setCrewPositions(currentCrewPositions);
+		
+		// Get current robot crew positions relative to the vehicle.
+		Map<Robot, LocalPosition> currentRobotCrewPositions = getCurrentRobotCrewPositions();
 
 		// Set the robot crew locations to the vehicle's new parked location.
-		setRobotCrewPositions(currentRobotCrewPositions);
+		if (currentRobotCrewPositions != null)
+			setRobotCrewPositions(currentRobotCrewPositions);
 	}
 
 	/**

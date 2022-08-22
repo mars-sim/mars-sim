@@ -833,20 +833,18 @@ public class Crop implements Comparable<Crop>, Serializable {
 	 */
 	public boolean resetEndOfSol(ClockPulse pulse) {
 		if (pulse.isNewSol()) {
-		
-			// Resets the daily harvest back to zero
-			dailyHarvest = 0;
 
-			if (dailyHarvest < 0) {
-				updatePhase(PhaseType.FINISHED);
-				dailyHarvest = 0;
-				return true;
-			}
 			// Note: is it better off doing the actualHarvest computation once a day or
 			// every time
 			// Reset the daily work counter currentPhaseWorkCompleted back to zero
 			// currentPhaseWorkCompleted = 0D;
 			cumulativeDailyPAR = 0;
+			
+			if (dailyHarvest < 0) {
+				updatePhase(PhaseType.FINISHED);
+				dailyHarvest = 0;
+				return true;
+			}
 		}
 
 		return false;
