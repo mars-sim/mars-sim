@@ -221,7 +221,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		String[] orbitValues = new String[MAX_FUTURE_ORBITS];
 		int startOrbit = resupplyTime.getOrbit();
 		for (int x = 0; x < MAX_FUTURE_ORBITS; x++) {
-			orbitValues[x] = formatter.format(startOrbit + x);
+			orbitValues[x] = formatter.format(1L * startOrbit + x);
 		}
 		orbitCB = new JComboBoxMW<>(orbitValues);
 		orbitCB.setSelectedItem(formatter.format(startOrbit));

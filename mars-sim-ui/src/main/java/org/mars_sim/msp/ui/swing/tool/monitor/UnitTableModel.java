@@ -308,13 +308,13 @@ abstract public class UnitTableModel extends AbstractTableModel implements Monit
 	}
 
 	/**
-	 * Prepares the model for deletion.
+	 * Gets the hash code for this object.
+	 *
+	 * @return hash code.
 	 */
-	public void destroy() {
-		if (units != null) {
-			clear();
-		}
-		units = null;
+	@Override
+	public int hashCode() {
+		return super.hashCode();
 	}
 
 	@Override
@@ -338,6 +338,16 @@ abstract public class UnitTableModel extends AbstractTableModel implements Monit
 		return result;
 	}
 
+	/**
+	 * Prepares the model for deletion.
+	 */
+	public void destroy() {
+		if (units != null) {
+			clear();
+		}
+		units = null;
+	}
+	
 	/**
 	 * Inner class for updating table after removing units.
 	 */

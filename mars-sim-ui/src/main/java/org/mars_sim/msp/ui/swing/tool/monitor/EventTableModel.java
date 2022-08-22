@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * EventTableModel.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-08-20
  * @author Barry Evans
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
@@ -391,7 +391,7 @@ public class EventTableModel extends AbstractTableModel
 				// Only display notification window when malfunction has occurred, not when
 				// fixed.
 				if (eventType == EventType.MALFUNCTION_HUMAN_FACTORS) {
-					during.replace("do ", "doing ");
+					during = during.replace("do ", "doing ");
 					message = cause + " in " + location0 + " at " + location1 + ". " + who
 							+ " reported the malfunction " + during + ".";
 					willNotify = true;
@@ -823,6 +823,16 @@ public class EventTableModel extends AbstractTableModel
 		return noFiring;
 	}
 
+	/**
+	 * Gets the hash code for this object.
+	 *
+	 * @return hash code.
+	 */
+	@Override
+	public int hashCode() {
+		return super.hashCode();
+	}
+	
 	/**
 	 * Prepares the model for deletion.
 	 */

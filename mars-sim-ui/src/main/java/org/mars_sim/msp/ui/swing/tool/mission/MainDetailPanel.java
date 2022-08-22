@@ -673,46 +673,44 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 
 		if (mission == null || missionCache == null) {	
 			clearInfo();
+			return;
 		}
 
+		if (currentVehicle == null && mission.getMembers().isEmpty() && mission.isDone()) {
+			// Check if the mission is done and the members have been disbanded
+			memberOuterPane.removeAll();
+			memberOuterPane.add(memberLabel);
+			memberLabel.setText(" Disbanded: " + printMembers(mission));
+		}
 		else {
-			
-			if (currentVehicle == null && mission.getMembers().isEmpty() && mission.isDone()) {
-				// Check if the mission is done and the members have been disbanded
-				memberOuterPane.removeAll();
-				memberOuterPane.add(memberLabel);
-				memberLabel.setText(" Disbanded: " + printMembers(mission));
-			}
-			else {
-				memberOuterPane.removeAll();
-				memberOuterPane.add(initMemberPane());
-				memberTableModel.setMission(mission);
-			}
-			
-			String d = mission.getFullMissionDesignation();
-			if (d == null || d.equals(""))
-				d = "";
-			designationLabel.setText(d);
-			typeLabel.setText(mission.getName());
-			
-			leaderLabel.setText(mission.getStartingPerson().getName());
-	
-			String phaseText = mission.getPhaseDescription();
-			phaseLabel.setToolTipText(phaseText);
-			if (phaseText.length() > MAX_LENGTH)
-				phaseText = phaseText.substring(0, MAX_LENGTH) + "...";
-			phaseLabel.setText(phaseText);
-	
-			var missionStatusText = new StringBuilder();
-			missionStatusText.append(mission.getMissionStatus().stream().map(MissionStatus::getName).collect(Collectors.joining(", ")));
-			missionStatusLabel.setText(missionStatusText.toString());
-			
-			settlementLabel.setText(mission.getAssociatedSettlement().getName());
-
-			logTableModel.setMission(mission);
-			
-			centerMapButton.setEnabled(true);
+			memberOuterPane.removeAll();
+			memberOuterPane.add(initMemberPane());
+			memberTableModel.setMission(mission);
 		}
+		
+		String d = mission.getFullMissionDesignation();
+		if (d == null || d.equals(""))
+			d = "";
+		designationLabel.setText(d);
+		typeLabel.setText(mission.getName());
+		
+		leaderLabel.setText(mission.getStartingPerson().getName());
+
+		String phaseText = mission.getPhaseDescription();
+		phaseLabel.setToolTipText(phaseText);
+		if (phaseText.length() > MAX_LENGTH)
+			phaseText = phaseText.substring(0, MAX_LENGTH) + "...";
+		phaseLabel.setText(phaseText);
+
+		var missionStatusText = new StringBuilder();
+		missionStatusText.append(mission.getMissionStatus().stream().map(MissionStatus::getName).collect(Collectors.joining(", ")));
+		missionStatusLabel.setText(missionStatusText.toString());
+		
+		settlementLabel.setText(mission.getAssociatedSettlement().getName());
+
+		logTableModel.setMission(mission);
+		
+		centerMapButton.setEnabled(true);
 		
 		// Update mission vehicle info in UI.
 		if (MissionType.isVehicleMission(mission.getMissionType())) {

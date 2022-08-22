@@ -509,6 +509,8 @@ extends ToolWindow {
 						Thread.sleep(2L);
 					} catch (InterruptedException e) {
 						logger.log(Level.SEVERE, "Problems in sleep : " + e.getMessage());
+						// Restore interrupted state
+					    Thread.currentThread().interrupt();
 					}
 				}
 				else {

@@ -82,6 +82,8 @@ public class MarsMap {
 			mtrack.waitForAll();
 		} catch (InterruptedException e) {
 			logger.log(Level.SEVERE, Msg.getString("MarsMap.log.mediaTrackerError", e.toString())); //$NON-NLS-1$
+			// Restore interrupted state
+		    Thread.currentThread().interrupt();
 		}
 
 		// Prepare Sphere
@@ -234,6 +236,8 @@ public class MarsMap {
 			imageDone = true;
 		} catch (InterruptedException e) {
 			logger.log(Level.SEVERE, Msg.getString("MarsMap.log.mediaTrackerError", e.toString())); //$NON-NLS-1$
+			// Restore interrupted state
+		    Thread.currentThread().interrupt();
 		}
 	}
 
@@ -262,11 +266,15 @@ public class MarsMap {
 		// Grab mars_surface image into pixels_color array using PixelGrabber
 		// NOTE: Replace PixelGrabber with faster method
 		PixelGrabber pg_color = new PixelGrabber(marsMap, 0, 0, MAP_W, MAP_H, pixels_color, 0, MAP_W);
+		
 		try {
 			pg_color.grabPixels();
 		} catch (InterruptedException e) {
 			logger.log(Level.SEVERE, Msg.getString("MarsMap.log.grabberError") + e); //$NON-NLS-1$
+			// Restore interrupted state
+		    Thread.currentThread().interrupt();
 		}
+		
 		if ((pg_color.status() & ImageObserver.ABORT) != 0)
 			logger.info(Msg.getString("MarsMap.log.grabberError")); //$NON-NLS-1$
 

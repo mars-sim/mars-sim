@@ -184,7 +184,13 @@ public class AudioPlayer {
 	 * @param filepath the file path to the music track.
 	 */
 	private void loadSound(String filepath) {
-		if (allSoundClips != null && allSoundClips.containsKey(filepath) && allSoundClips.get(filepath) != null) {
+		if (allSoundClips == null) {
+			logger.log(Level.SEVERE, "allSoundClips is null.");
+			return;
+		}
+		
+		if (allSoundClips.containsKey(filepath) 
+				&& allSoundClips.get(filepath) != null) {
 			currentSoundClip = allSoundClips.get(filepath);
 			currentSoundClip.determineGain(currentSoundVol);
 			currentSoundClip.play();
@@ -248,9 +254,11 @@ public class AudioPlayer {
 	 * Increase the music volume
 	 */
 	public void musicVolumeUp() {
-		if (!isVolumeDisabled || !isMusicMute())
+		if (!isVolumeDisabled || !isMusicMute()) {
 			pickANewTrack();
-		if (!isVolumeDisabled && hasMasterGain && currentMusic != null
+		}
+		
+		if (!isVolumeDisabled && hasMasterGain
 				&& currentMusic.getVol() < 1
 				&& currentMusic != null) {
 
@@ -267,9 +275,11 @@ public class AudioPlayer {
 	 * Decrease the music volume
 	 */
 	public void musicVolumeDown() {
-		if (!isVolumeDisabled || !isMusicMute())
+		if (!isVolumeDisabled || !isMusicMute()) {
 			pickANewTrack();
-		if (!isVolumeDisabled && hasMasterGain && currentMusic != null
+		}
+		
+		if (!isVolumeDisabled && hasMasterGain
 				&& currentMusic.getVol() > 0
 				&& currentMusic != null) {
 

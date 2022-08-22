@@ -427,6 +427,16 @@ public class RobotTableModel extends UnitTableModel {
 	}
 
 	/**
+	 * Gets the hash code for this object.
+	 *
+	 * @return hash code.
+	 */
+	@Override
+	public int hashCode() {
+		return super.hashCode();
+	}
+	
+	/**
 	 * Inner class for updating the robot table.
 	 */
 	private static class RobotTableUpdater implements Runnable {

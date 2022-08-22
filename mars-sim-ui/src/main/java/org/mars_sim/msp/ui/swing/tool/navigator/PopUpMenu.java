@@ -145,10 +145,11 @@ public class PopUpMenu extends JPopupMenu {
     }
 
 	public void destroy() {
-		settlement = null;
 		settlement.destroy();
-		unit = null;
+		settlement = null;
 		unit.destroy();
+		unit = null;
 		itemOne = null;
+		desktop = null;
 	}
 }

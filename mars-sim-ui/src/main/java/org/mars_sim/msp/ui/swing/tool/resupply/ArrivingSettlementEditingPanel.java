@@ -318,9 +318,9 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 		String[] orbitValues = new String[20];
 		int startOrbit = arrivingTime.getOrbit();
 		for (int x = 0; x < 20; x++) {
-			orbitValues[x] = formatter.format(startOrbit + x);
+			orbitValues[x] = formatter.format(1L * startOrbit + x);
 		}
-		orbitCB = new JComboBoxMW<Object>(orbitValues);
+		orbitCB = new JComboBoxMW<>(orbitValues);
 		orbitCB.setSelectedItem(formatter.format(startOrbit));
 		orbitCB.addActionListener(e -> {
 			// Update the solCB based on orbit and month

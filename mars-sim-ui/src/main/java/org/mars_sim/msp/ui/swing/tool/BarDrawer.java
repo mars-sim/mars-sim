@@ -64,11 +64,9 @@ public class BarDrawer extends TexturedPanel {
 	//	collectionMap.put("Downloads Folder", 1d);
 	//	collectionMap.put("Another collection", 22d);
 
-
 	//	collectionMap.put("Pictures", 66d);
 	//	collectionMap.put("Music", 1d);
 	//	collectionMap.put("Videos", 33d);
-
 
 		FileCollectionPanel fcp1 = new FileCollectionPanel();
 		fcp1.setTitle("Pictures");
@@ -101,12 +99,13 @@ public class BarDrawer extends TexturedPanel {
 		int heightOfBar = (int) (getHeight() - 50);
 
 	//	g.setColor(Color.decode("#cccccc"));
-		double radius = getHeight() / 3;
+		double radius = getHeight() / 3.0;
 		RoundRectangle2D r = new RoundRectangle2D.Double(0, 0, realWidth, heightOfBar, radius, radius * 2);
 
 		g.setClip(getBounds());
 		g.setColor(Color.black);
-		double barSegment = realWidth / collectionMap.size();
+		
+		double barSegment = 1.0 * realWidth / collectionMap.size();
 		if (barSegment > 120) {
 		    barSegment = 120;
 		}
@@ -211,54 +210,54 @@ public class BarDrawer extends TexturedPanel {
      * @return
      */
     public double adjustmentNeeded(LinkedHashMap<FileCollectionPanel, Double> map, FileCollectionPanel fcp) {
-	double minVal = Double.MAX_VALUE;
-	FileCollectionPanel smallestFcp = null;
-	for (FileCollectionPanel currentCollection : map.keySet()) {
-	    double val = map.get(currentCollection);
-	    if (minVal > val) {
-		minVal = val;
-		smallestFcp = currentCollection;
-	    }
-	}
-
-	double total = 0;
-	for (Double val : map.values()) {
-	    total += val;
-	}
-
-	if ((total < 100d) && (smallestFcp.equals(fcp))) {
-	    return 100d - total;
-	}
-
-	return 0;
+		double minVal = Double.MAX_VALUE;
+		FileCollectionPanel smallestFcp = null;
+		for (FileCollectionPanel currentCollection : map.keySet()) {
+		    double val = map.get(currentCollection);
+		    if (minVal > val) {
+			minVal = val;
+			smallestFcp = currentCollection;
+		    }
+		}
+	
+		double total = 0;
+		for (Double val : map.values()) {
+		    total += val;
+		}
+	
+		if (total < 100d && smallestFcp != null && smallestFcp.equals(fcp)) {
+		    return 100d - total;
+		}
+	
+		return 0;
     }
 
     public Color getSelectedColor() {
-	return colors[colorIndex];
+    	return colors[colorIndex];
     }
 
     public Color getNextColor() {
-	if (colorIndex < 0 || colorIndex >= colors.length - 1) {
-	    colorIndex = 0;
-	} else {
-	    colorIndex++;
-	}
-
-	return colors[colorIndex];
+		if (colorIndex < 0 || colorIndex >= colors.length - 1) {
+		    colorIndex = 0;
+		} else {
+		    colorIndex++;
+		}
+	
+		return colors[colorIndex];
     }
 
     public static void main(String[] args) throws IOException {
-	JFrame frame = new JFrame();
-
-	frame.add(new BarDrawer(null));
-	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	frame.setSize(600, 150);
-	frame.setVisible(true);
+		JFrame frame = new JFrame();
+	
+		frame.add(new BarDrawer(null));
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setSize(600, 150);
+		frame.setVisible(true);
     }
 }
 
 class FileCollectionPanel extends JPanel {
-
+	
     private String title;
 
     public FileCollectionPanel() {
@@ -268,13 +267,13 @@ class FileCollectionPanel extends JPanel {
      * @return the title
      */
     public String getTitle() {
-	return title;
+    	return title;
     }
 
     /**
      * @param title the title to set
      */
     public void setTitle(String title) {
-	this.title = title;
+    	this.title = title;
     }
 }

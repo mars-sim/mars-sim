@@ -368,7 +368,7 @@ public class VehicleTableModel extends UnitTableModel {
 		    	        	}
 		    			}
 		    		}
-		    		double value = Double.valueOf(sum);
+		    		double value = sum;
 					if (value == 0)
 						result = "--";
 					else

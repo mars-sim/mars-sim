@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ConstructionProjectPanel.java
- * @date 2021-10-21
+ * @date 2022-08-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.mission.create;
@@ -277,7 +277,7 @@ class ConstructionProjectPanel extends WizardPanel {
                     errorMessageTextPane.setText("Not enough vehicles and/or attachment " +
                             "parts at settlement for construction project.");
                 }
-                else if (!hasEnoughRemainingConstructionMaterials(site)) {
+                else if (site != null && !hasEnoughRemainingConstructionMaterials(site)) {
                     // Allow construction mission even when insufficient
                     // materials available to finish stage.
                     getWizard().setButtons(true);
@@ -568,6 +568,7 @@ class ConstructionProjectPanel extends WizardPanel {
     
     /**
      * Checks if there are enough remaining construction materials for a construction site.
+     * 
      * @param site the construction site.
      * @return true if enough remaining materials available.
      */

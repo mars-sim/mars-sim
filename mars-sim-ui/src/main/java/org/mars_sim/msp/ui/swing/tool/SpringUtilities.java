@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * SpringUtilities.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-08-20
  * @author Manny Kung
  */
 
@@ -124,14 +124,14 @@ public class SpringUtilities {
             if (i % cols == 0) { //start of new row
                 lastRowCons = lastCons;
                 cons.setX(initialXSpring);
-            } else { //x position depends on previous component
+            } else if (lastCons != null) { //x position depends on previous component
                 cons.setX(Spring.sum(lastCons.getConstraint(SpringLayout.EAST),
                                      xPadSpring));
             }
 
             if (i / cols == 0) { //first row
                 cons.setY(initialYSpring);
-            } else { //y position depends on previous row
+            } else if (lastRowCons != null) { //y position depends on previous row
                 cons.setY(Spring.sum(lastRowCons.getConstraint(SpringLayout.SOUTH),
                                      yPadSpring));
             }

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * PersonTableModel.java
- * @date 2022-07-21
+ * @date 2022-08-20
  * @author Barry Evans
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
@@ -512,7 +512,29 @@ public class PersonTableModel extends UnitTableModel {
 		return result;
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		boolean result = super.equals(o);
 
+		if (o instanceof PersonTableModel) {
+			PersonTableModel oModel = (PersonTableModel) o;
+			if (!sourceType.equals(oModel.sourceType))
+				result = false;
+		}
+
+		return result;
+	}
+	
+	/**
+	 * Gets the hash code for this object.
+	 *
+	 * @return hash code.
+	 */
+	@Override
+	public int hashCode() {
+		return super.hashCode();
+	}
+	
 	/**
 	 * Prepares the model for deletion.
 	 */
@@ -544,18 +566,6 @@ public class PersonTableModel extends UnitTableModel {
 		performanceValueCache = null;
 	}
 
-	@Override
-	public boolean equals(Object o) {
-		boolean result = super.equals(o);
-
-		if (o instanceof PersonTableModel) {
-			PersonTableModel oModel = (PersonTableModel) o;
-			if (!sourceType.equals(oModel.sourceType))
-				result = false;
-		}
-
-		return result;
-	}
 
 	/**
 	 * Inner class for updating the person table.

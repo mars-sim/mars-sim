@@ -349,6 +349,9 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 			globe = geoSphere;
 		}
 		
+		if (globe == null)
+			return;
+		
 		Image image = globe.getGlobeImage();
 		if (image != null) {
 			if (globe.isImageDone()) {

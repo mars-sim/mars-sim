@@ -95,9 +95,14 @@ implements MouseListener {
 			mtrack.addImage(lightUpButtons[x], x + 1);
 		}
 
-		try { mtrack.waitForAll(); }
-		catch (InterruptedException e) {
-			logger.log(Level.SEVERE,Msg.getString("NavButtonDisplay.log.mediaTrackerError", e.toString())); //$NON-NLS-1$
+		try { 
+			mtrack.waitForAll(); 
+		} catch (InterruptedException e) {
+			logger.log(Level.SEVERE,
+					Msg.getString("NavButtonDisplay.log.mediaTrackerError", 
+					e.toString())); //$NON-NLS-1$
+			// Restore interrupted state
+		    Thread.currentThread().interrupt();
 		}
 
 		// Set hot spots for mouse clicks

@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * UnitLabelMapLayer.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-08-20
  * @author Scott Davis
  */
 
@@ -64,7 +64,9 @@ public class UnitLabelMapLayer extends UnitMapLayer {
 
 			g2d.setFont(displayInfo.getMapLabelFont());
 	
-			if (!(displayInfo.isMapBlink(unit) && getBlinkFlag() && unit != null)) {
+			if (labelLocation != null && unit != null
+					&& !(displayInfo.isMapBlink(unit) 
+					&& getBlinkFlag())) {
 				g2d.drawString(unit.getName(), labelLocation.getiX(), labelLocation.getiY());
 			}
 		}

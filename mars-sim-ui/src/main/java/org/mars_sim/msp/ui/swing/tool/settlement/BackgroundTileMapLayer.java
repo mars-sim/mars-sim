@@ -78,6 +78,10 @@ implements SettlementMapLayer {
 
 		if (backgroundTileImage == null) {
 		    ImageIcon backgroundTileIcon = getBackgroundImage(settlement);
+		    if (backgroundTileIcon == null) {
+		    	return;
+		    }
+		    
 		    double imageScale = scale / SettlementMapPanel.DEFAULT_SCALE;
 		    int imageWidth = (int) (backgroundTileIcon.getIconWidth() * imageScale);
 		    int imageHeight = (int) (backgroundTileIcon.getIconHeight() * imageScale);

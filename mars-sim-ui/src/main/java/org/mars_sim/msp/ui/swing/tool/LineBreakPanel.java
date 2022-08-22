@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * LineBreakPanel.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-08-20
  * @author Manny Kung
  */
 
@@ -132,7 +132,7 @@ public class LineBreakPanel extends JPanel {
 //	        }
 	        // Set break width to width of Component.
 	        float breakWidth = (float)getSize().width - MARGIN_WIDTH * 6;
-	        float drawPosY = 5 + i * 18;
+	        float drawPosY = 5L + i * 18;
 	        // Set position to the index of the first character in the paragraph.
 	        lineMeasurer.setPosition(paragraphStart);
 	        // Get lines until the entire paragraph has been displayed.
