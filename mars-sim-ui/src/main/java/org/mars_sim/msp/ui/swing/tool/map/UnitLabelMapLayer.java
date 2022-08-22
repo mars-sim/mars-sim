@@ -63,7 +63,7 @@ public class UnitLabelMapLayer extends UnitMapLayer {
 			}
 
 			g2d.setFont(displayInfo.getMapLabelFont());
-	
+
 			if (labelLocation != null && unit != null
 					&& !(displayInfo.isMapBlink(unit) 
 					&& getBlinkFlag())) {
