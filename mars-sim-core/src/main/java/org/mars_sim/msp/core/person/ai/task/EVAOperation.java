@@ -650,6 +650,18 @@ public abstract class EVAOperation extends Task {
     }
 
 	/**
+	 * Checks if the person is physically fit for heavy EVA tasks.
+	 * Used by DigLocalMeta.
+	 *
+	 * @param person
+	 * @return
+	 */
+	public static boolean isEVAFit(Person person) {
+		return person.getPhysicalCondition().isFitEVAScreening() 
+				|| person.getPhysicalCondition().computeHealthScore() > 80;
+	}
+	
+	/**
 	 * Adds experience for this EVA task. The EVA_OPERATIONS skill is updated.
 	 * 
 	 * If the {@link #getPhase()} matches the value of {@link #getOutsideSitePhase()} then experience is also added

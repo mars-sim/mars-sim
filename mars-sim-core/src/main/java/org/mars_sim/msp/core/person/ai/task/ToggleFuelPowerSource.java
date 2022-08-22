@@ -120,12 +120,6 @@ implements Serializable {
             	
             	if (rand == 0) {
             		// Yes it requires EVA
-            		
-                	// Checks if a person is fit to perform this task
-                	if (!person.getPhysicalCondition().isEVAFitScreening()) {
-            			checkLocation();
-            			return;
-            		}
                 	
                     // Walk to power source building.
                     walkToPowerSourceBuilding(building);

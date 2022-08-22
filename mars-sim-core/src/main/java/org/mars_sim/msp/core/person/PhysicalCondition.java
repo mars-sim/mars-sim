@@ -1716,11 +1716,11 @@ public class PhysicalCondition implements Serializable {
 	}
 	
 	/**
-	 * Screens if the person is fit for an EVA task.
+	 * Screens if the person is fit for an heavy duty EVA task.
 	 * 
 	 * @return
 	 */
-	public boolean isEVAFitScreening() {
+	public boolean isFitEVAScreening() {
         return isFitByLevel(300, 30, 300, 200);
 	}
 	

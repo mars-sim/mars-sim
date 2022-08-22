@@ -77,8 +77,8 @@ public class LoadVehicleEVAMeta extends MetaTask {
         if (EVAOperation.isHungryAtMealTime(person))
         	return 0;
 
-        // Checks if the person is physically drained
-		if (EVAOperation.isExhausted(person))
+        // Checks if the person is physically fit for heavy EVA tasks
+		if (!EVAOperation.isEVAFit(person))
 			return 0;
 
     	double result = 0D;
@@ -86,9 +86,6 @@ public class LoadVehicleEVAMeta extends MetaTask {
         Settlement settlement = person.getSettlement();
 
     	if (settlement != null) {
-
-            if (!person.getPhysicalCondition().isEVAFitScreening())
-            	return 0;
 
         	boolean[] exposed = {false, false, false};
 

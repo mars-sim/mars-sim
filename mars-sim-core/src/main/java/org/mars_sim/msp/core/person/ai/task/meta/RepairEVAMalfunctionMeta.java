@@ -47,7 +47,7 @@ public class RepairEVAMalfunctionMeta extends MetaTask {
 		double result = 0D;
 
         // Probability affected by the person's stress and fatigue.
-        if (!person.getPhysicalCondition().isEVAFitScreening())
+        if (!person.getPhysicalCondition().isNominallyFit())
         	return 0;
 
         if (person.isInside() && EVAOperation.getWalkableAvailableAirlock(person, false) == null)

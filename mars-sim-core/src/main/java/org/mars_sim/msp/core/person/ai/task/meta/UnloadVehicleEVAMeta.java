@@ -52,10 +52,6 @@ public class UnloadVehicleEVAMeta extends MetaTask {
 
         if (settlement != null) {
 
-            // Probability affected by the person's stress, hunger, thirst and fatigue.
-            if (!person.getPhysicalCondition().isEVAFitScreening())
-            	return 0;
-
 	    	// Check for radiation events
 	    	boolean[] exposed = settlement.getExposed();
 
@@ -74,9 +70,9 @@ public class UnloadVehicleEVAMeta extends MetaTask {
             if (EVAOperation.isHungryAtMealTime(person))
             	return 0;
 
-            // Checks if the person is physically drained
-			if (EVAOperation.isExhausted(person))
-				return 0;
+            // Checks if the person is physically fit for heavy EVA tasks
+    		if (!EVAOperation.isEVAFit(person))
+    			return 0;
 
 			double score = person.getPhysicalCondition().computeHealthScore();
 			

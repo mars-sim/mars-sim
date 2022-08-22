@@ -65,8 +65,8 @@ public abstract class DigLocalMeta extends MetaTask {
         if (EVAOperation.isHungryAtMealTime(person))
         	return 0;
 
-        // Checks if the person is physically drained
-		if (EVAOperation.isExhausted(person))
+        // Checks if the person is physically fit for heavy EVA tasks
+		if (!EVAOperation.isEVAFit(person))
 			return 0;
 
         // Check at least one EVA suit at settlement.
@@ -83,9 +83,6 @@ public abstract class DigLocalMeta extends MetaTask {
 
         // Probability affected by the person's stress and fatigue.
         PhysicalCondition condition = person.getPhysicalCondition();
-        
-        if (!condition.isEVAFitScreening())
-        	return 0;
         
         double stress = condition.getStress();
         double fatigue = condition.getFatigue();

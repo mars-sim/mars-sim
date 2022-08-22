@@ -11,6 +11,7 @@ import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.JobType;
+import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.ToggleFuelPowerSource;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
@@ -63,7 +64,8 @@ public class ToggleFuelPowerSourceMeta extends MetaTask {
 	                
 	                // Checks if this is a standalone power building that requires EVA to reach
 	                if (BuildingCategory.POWER == building.getCategory() 
-	                		&& !person.getPhysicalCondition().isEVAFitScreening())
+	                		&&     // Checks if the person is physically fit for heavy EVA tasks
+	                		!EVAOperation.isEVAFit(person))
 		                // Probability affected by the person's stress, hunger, thirst and fatigue.
 	                	return 0;
 	                

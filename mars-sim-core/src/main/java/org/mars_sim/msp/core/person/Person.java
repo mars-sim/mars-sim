@@ -1129,7 +1129,8 @@ public class Person extends Unit implements Worker, Temporal, EquipmentOwner {
 	}
 
 	/**
-	 * Checks if the person is barely fit.
+	 * Checks if the person is barely fit. 
+	 * Used as the fitness limit for ending a heavy duty task in EVAOperation.
 	 *
 	 * @return true if the person is barely fit.
 	 */
@@ -1143,7 +1144,7 @@ public class Person extends Unit implements Worker, Temporal, EquipmentOwner {
 	 * @return true if a person is nominally fit
 	 */
 	public boolean isNominallyFit() {
-        return condition.isBarelyFit();
+        return condition.isNominallyFit();
     }
 	
 	/**

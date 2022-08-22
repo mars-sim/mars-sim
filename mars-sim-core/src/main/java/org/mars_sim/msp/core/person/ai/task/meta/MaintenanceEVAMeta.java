@@ -75,18 +75,14 @@ public class MaintenanceEVAMeta extends MetaTask {
             if (EVAOperation.isHungryAtMealTime(person))
             	return 0;
             
-            // Checks if the person is physically drained
-			if (EVAOperation.isExhausted(person))
-				return 0;
+            // Checks if the person is physically fit for heavy EVA tasks
+    		if (!EVAOperation.isEVAFit(person))
+    			return 0;
 			
 //            // Checks if a EVA suit is good
 			// don't have one until being donned on
 //            if (EVAOperation.hasEVAProblem(person))
-//            	return 0;	
-            
-            // Probability affected by the person's stress and fatigue.
-            if (!person.getPhysicalCondition().isEVAFitScreening())
-            	return 0;
+//            	return 0;
             	
         	// Check for radiation events
         	boolean[] exposed = settlement.getExposed();

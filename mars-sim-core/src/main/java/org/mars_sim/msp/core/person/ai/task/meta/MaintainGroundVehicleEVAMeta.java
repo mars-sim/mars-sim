@@ -50,9 +50,6 @@ public class MaintainGroundVehicleEVAMeta extends MetaTask {
 
         // Determine if settlement has a garage.
        	if (person.isInSettlement() || person.isRightOutsideSettlement()) {
-
-            if (!person.getPhysicalCondition().isEVAFitScreening())
-            	return 0;
             
         	Settlement settlement = person.getAssociatedSettlement();
         	
@@ -75,9 +72,9 @@ public class MaintainGroundVehicleEVAMeta extends MetaTask {
             if (EVAOperation.isHungryAtMealTime(person))
             	return 0;
             
-            // Checks if the person is physically drained
-			if (EVAOperation.isExhausted(person))
-				return 0;     	
+            // Checks if the person is physically fit for heavy EVA tasks
+    		if (!EVAOperation.isEVAFit(person))
+    			return 0;	
         	
 			// Determine if settlement has available space in garage.
 			int available = 0;
