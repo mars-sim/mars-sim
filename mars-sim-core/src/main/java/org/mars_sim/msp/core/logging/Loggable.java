@@ -10,42 +10,35 @@ package org.mars_sim.msp.core.logging;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * This is a simulation entity that can trigger a log message.
  */
 public interface Loggable {
 
-	/*
-	 * What is the settlement of this entity.
+	/**
+	 * Returns the settlement of this entity.
 	 */
 	Settlement getAssociatedSettlement();
 	
-	/*
-	 * What is the vehicle of this entity.
-	 */
-	Vehicle getVehicle();
-	
 	/**
-	 * Where is this entity held
+	 * Returns the container unit where this entity is held.
 	 * 
 	 * @return
 	 */
 	Unit getContainerUnit();
 
 	/**
-	 * What is the name of the entity to be logged
+	 * Returns the name of the entity to be logged.
 	 * 
 	 * @return
 	 */
 	String getName();
 
 	/**
-	 * Physical location the surface
+	 * Returns the physical location the surface.
 	 * 
 	 * @return
 	 */
 	Coordinates getCoordinates();
-
 }
