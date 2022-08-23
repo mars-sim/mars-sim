@@ -69,6 +69,9 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	/** The factor for estimating the adjusted fuel economy. */
 	public static final double FE_FACTOR = 3.0;
 	
+	/** The multiplication factor for the amount of oxygen needed. */
+	public static final double FUEL_OXIDIZER_FACTOR = 2.25;
+	
 	/** Mission phases. */
 	public static final MissionPhase REVIEWING = new MissionPhase("Mission.phase.reviewing");
 	public static final MissionPhase EMBARKING = new MissionPhase("Mission.phase.embarking");
@@ -1093,8 +1096,8 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 							vehicle.getEstimatedFuelEconomy(), useMargin);
 
 			result.put(vehicle.getFuelType(), amount);
-			// Assume double amount of oxygen as fuel oxidizer
-			result.put(ResourceUtil.oxygenID, 2 * amount);
+			// Require amount of oxygen (fuel oxidizer) ~2 times the amount of methane 
+			result.put(ResourceUtil.oxygenID, FUEL_OXIDIZER_FACTOR * amount);
 
 		}
 		return result;
