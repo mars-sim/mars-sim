@@ -26,14 +26,7 @@ public final class LocationFormat {
 	 * @param entity Entity in question.
 	 */
 	public static String getLocationDescription(Loggable entity) {
-		Unit location;
-		if (entity instanceof Building) {
-			location = entity.getContainerUnit().getAssociatedSettlement();
-		}
-		else {
-			location = entity.getContainerUnit();
-		}	
-		return getLocationDescription(entity, location);
+		return getLocationDescription(entity, entity.getContainerUnit());
 	}
 	
 	/**
