@@ -141,6 +141,13 @@ public interface Worker extends Loggable, Serializable, UnitIdentifer, Equipment
 	public Settlement getNearbySettlement();
 
 	/**
+	 * Gets the associated settlement.
+	 *  
+	 * @return the worker's associated settlement
+	 */
+	public Settlement getAssociatedSettlement();
+	
+	/**
 	 * Adds a unit listener.
 	 *
 	 * @param newListener the listener to add.

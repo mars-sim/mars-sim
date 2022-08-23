@@ -15,11 +15,6 @@ import org.mars_sim.msp.core.structure.Settlement;
  * This is a simulation entity that can trigger a log message.
  */
 public interface Loggable {
-
-	/**
-	 * Returns the settlement of this entity.
-	 */
-	Settlement getAssociatedSettlement();
 	
 	/**
 	 * Returns the container unit where this entity is held.

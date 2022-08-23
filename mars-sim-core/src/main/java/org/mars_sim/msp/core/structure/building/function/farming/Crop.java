@@ -1458,11 +1458,6 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 	}
 
 	@Override
-	public Settlement getAssociatedSettlement() {
-		return building.getAssociatedSettlement();
-	}
-
-	@Override
 	public Unit getContainerUnit() {
 		return building;
 	}
@@ -1474,7 +1469,7 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 
 	@Override
 	public Coordinates getCoordinates() {
-		return getAssociatedSettlement().getCoordinates();
+		return building.getCoordinates();
 	}
 
 	/**

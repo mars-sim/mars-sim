@@ -28,7 +28,7 @@ public final class LocationFormat {
 	public static String getLocationDescription(Loggable entity) {
 		Unit location;
 		if (entity instanceof Building) {
-			location = entity.getAssociatedSettlement();
+			location = entity.getContainerUnit().getAssociatedSettlement();
 		}
 		else {
 			location = entity.getContainerUnit();
