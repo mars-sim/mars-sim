@@ -43,6 +43,18 @@ public class BuildingPanelResourceProcessing extends BuildingFunctionPanel {
 	private static final SimLogger logger = SimLogger.getLogger(BuildingPanelResourceProcessing.class.getName());
 
 	private static final String CHEMICAL_ICON = Msg.getString("icon.chemical"); //$NON-NLS-1$
+	private static final String KG_SOL = " kg/sol";
+	private static final String BR = "<br>";
+	private static final String HTML = "<html>";
+	private static final String END_HTML = "</html>";
+	private static final String INPUTS = "&emsp;&emsp;&nbsp;Inputs:&emsp;";
+	private static final String OUTPUTS = "&emsp;&nbsp;&nbsp;Outputs:&emsp;";
+	private static final String SPACES = "&nbsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;";
+	private static final String PROCESS = "&emsp;&nbsp;Process:&emsp;";
+	private static final String BUILDING = "&emsp;&nbsp;Building:&emsp;";
+	private static final String POWER_REQ = "Power Req:&emsp;";
+	private static final String KW = " kW";
+	private static final String NOTE = "&emsp;<i>Note:  * denotes an ambient resource</i>";
 	
 	// Data members
 	private ResourceProcessing processor;
@@ -176,43 +188,44 @@ public class BuildingPanelResourceProcessing extends BuildingFunctionPanel {
 		 */
 		private String getToolTipString(Building building) {
 			// NOTE: internationalize the resource processes' dynamic tooltip.
-			StringBuilder result = new StringBuilder("<html>");
+			StringBuilder result = new StringBuilder(HTML);
 			// Future: Use another tool tip manager to align text to improve tooltip readability			
-			result.append("&emsp;&nbsp;Process:&emsp;").append(process.getProcessName()).append("<br>");
-			result.append("&emsp;&nbsp;Building:&emsp;").append(building.getNickName()).append("<br>");
-			result.append("Power Req:&emsp;").append(decFormatter.format(process.getPowerRequired())).append(" kW<br>");
-			result.append("&emsp;&emsp;&nbsp;Inputs:&emsp;");
+			result.append(PROCESS).append(process.getProcessName()).append(BR);
+			result.append(BUILDING).append(building.getNickName()).append(BR);
+			result.append(POWER_REQ).append(decFormatter.format(process.getPowerRequired()))
+			.append(KW).append(BR);
+			result.append(INPUTS);
 			Iterator<Integer> i = process.getInputResources().iterator();
 			String ambientStr = "";
 			int ii = 0;
 			while (i.hasNext()) {
-				if (ii!=0)	result.append("&nbsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;");
+				if (ii!=0)	result.append(SPACES);
 				Integer resource = i.next();
 				double rate = process.getMaxInputRate(resource) * 1000D;
 				String rateString = decFormatter.format(rate);
-				//result.append("&nbsp;&nbsp;&emsp;");
-				if (process.isAmbientInputResource(resource)) ambientStr = "*";
+				if (process.isAmbientInputResource(resource)) 
+					ambientStr = "*";
 				result.append(Conversion.capitalize(ResourceUtil.findAmountResource(resource).getName()))
 					.append(ambientStr).append(" @ ")
-					.append(rateString).append(" kg/sol<br>");
+					.append(rateString).append(KG_SOL).append(BR);
 				ii++;
 			}
-			result.append("&emsp;&nbsp;&nbsp;Outputs:&emsp;");
+			result.append(OUTPUTS);
 			Iterator<Integer> j = process.getOutputResources().iterator();
 			int jj = 0;
 			while (j.hasNext()) {
-				if (jj!=0) result.append("&nbsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;");
+				if (jj!=0) result.append(SPACES);
 				Integer resource = j.next();
 				double rate = process.getMaxOutputRate(resource) * 1000D;
 				String rateString = decFormatter.format(rate);
 				result.append(Conversion.capitalize(ResourceUtil.findAmountResource(resource).getName()))
-					.append(" @ ").append(rateString).append(" kg/sol<br>");
+					.append(" @ ").append(rateString).append(KG_SOL).append(BR);
 				jj++;
 			}
 			// Add a note to denote an ambient input resource
-			if (ambientStr == "*")
-				result.append("&emsp;<i>Note:  * denotes an ambient resource</i>");
-			result.append("</html>");
+			if (ambientStr.equals("*"))
+				result.append(NOTE);
+			result.append(END_HTML);
 			return result.toString();
 		}
 

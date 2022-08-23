@@ -308,6 +308,7 @@ public class TendGreenhouse extends Task implements Serializable {
 			return remainingTime;
 		}
 		
+		// Select a new needy crop
 		needyCrop = greenhouse.getNeedyCrop();
 		
 		if (needyCrop == null) {
@@ -315,7 +316,7 @@ public class TendGreenhouse extends Task implements Serializable {
 			return time;
 		}
 		
-		needTending = needyCrop.getCurrentWorkRequired() > 0;
+		needTending = needyCrop.getCurrentWorkRequired() > -50;
 		
 		if (needTending) {
 			remainingTime = tend(time);

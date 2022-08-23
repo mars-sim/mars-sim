@@ -40,7 +40,7 @@ extends BuildingFunctionPanel {
 	private int numCooksCache;
 	private int servingsDessertCache;
 	private int servingsDessertTodayCache;
-	//private double dessertQualityCache;
+	
 	private String dessertGradeCache = "";
 	
 	/**
@@ -69,63 +69,45 @@ extends BuildingFunctionPanel {
 	protected void buildUI(JPanel center) {
 			
 		// Prepare label panel
-		JPanel labelPanel = new JPanel(new GridLayout(5, 2, 0, 0));
+		JPanel labelPanel = new JPanel(new GridLayout(5, 2, 1, 1));
 		center.add(labelPanel, BorderLayout.NORTH);
-		labelPanel.setOpaque(false);
-		labelPanel.setBackground(new Color(0,0,0,128));
 
 		// Prepare cook number label
 		numCooksCache = kitchen.getNumCooks();
-		numCooksLabel = addTextField(labelPanel, Msg.getString("BuildingPanelPreparingDessert.numberOfCooks"), numCooksCache, null); //$NON-NLS-1$
+		numCooksLabel = addTextField(labelPanel, Msg.getString("BuildingPanelPreparingDessert.numberOfCooks")
+				, numCooksCache, null); //$NON-NLS-1$
 
 		// Prepare cook capacity label
-		addTextField(labelPanel, Msg.getString("BuildingPanelPreparingDessert.cookCapacity"), kitchen.getCookCapacity(), null); //$NON-NLS-1$
+		addTextField(labelPanel, Msg.getString("BuildingPanelPreparingDessert.cookCapacity"), 
+				kitchen.getCookCapacity(), null); //$NON-NLS-1$
 
 		// Prepare serving number label
 		servingsDessertCache = kitchen.getAvailableServingsDesserts();
-		servingsDessertLabel = addTextField(labelPanel, Msg.getString("BuildingPanelPreparingDessert.availableDesserts"),
-											servingsDessertCache, null); //$NON-NLS-1$
+		servingsDessertLabel = addTextField(labelPanel, 
+				Msg.getString("BuildingPanelPreparingDessert.availableDesserts"),
+					servingsDessertCache, null); //$NON-NLS-1$
 
-		// 2015-01-06 Added servingsDessertTodayLabel
 		// Prepare servings dessert today label
 		servingsDessertTodayCache = kitchen.getTotalServingsOfDessertsToday();
-		servingsDessertTodayLabel = addTextField(labelPanel, Msg.getString("BuildingPanelPreparingDessert.dessertsToday"),
-												 servingsDessertTodayCache, null); //$NON-NLS-1$
+		servingsDessertTodayLabel = addTextField(labelPanel, 
+				Msg.getString("BuildingPanelPreparingDessert.dessertsToday"),
+					servingsDessertTodayCache, null); //$NON-NLS-1$
 
-		String dessertGradeCache = computeGrade(kitchen.getBestDessertQualityCache());
+		dessertGradeCache = computeGrade(kitchen.getBestDessertQualityCache());
 		// Update Dessert grade
-		dessertQualityLabel = addTextField(labelPanel, Msg.getString("BuildingPanelPreparingDessert.bestQualityOfDessert"),
-										   dessertGradeCache, null); //$NON-NLS-1$
+		dessertQualityLabel = addTextField(labelPanel, 
+				Msg.getString("BuildingPanelPreparingDessert.bestQualityOfDessert"),
+						 dessertGradeCache, null); //$NON-NLS-1$
 	}
 
-	/***
-	 * Converts a numeral quality to letter grade for a dessert
+	/**
+	 * Converts a numeral quality to letter grade for a dessert.
+	 * 
 	 * @param quality 
 	 * @return grade
 	 */
 	private static String computeGrade(double quality) {
-		String grade = "";
-				
-		if (quality < -3)
-			grade = "C-";
-		else if (quality < -2)
-			grade = "C+";
-		else if (quality < -1)
-			grade = "C+";
-		else if (quality < -1)
-			grade = "B-";
-		else if (quality < 0)
-			grade = "B";
-		else if (quality < 1)
-			grade = "B+";
-		else if (quality < 2)
-			grade = "A-";
-		else if (quality < 3)
-			grade = "A";
-		else //if (quality < 4)
-			grade = "A+";
-				
-		return grade;
+		return BuildingPanelCooking.computeGrade(quality);
 	}
 	
 	/**

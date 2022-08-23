@@ -47,7 +47,7 @@ public abstract class CannedMarsMap extends JComponent implements Map {
 	 * @param displayArea the component display area.
 	 * @param mapData     the map data.
 	 */
-	public CannedMarsMap(JComponent displayArea, MapData mapData) {
+	protected CannedMarsMap(JComponent displayArea, MapData mapData) {
 		this.mapData = mapData;
 		this.displayArea = displayArea;
 	}
@@ -77,6 +77,8 @@ public abstract class CannedMarsMap extends JComponent implements Map {
 				mt.waitForID(0);
 			} catch (InterruptedException e) {
 				logger.log(Level.SEVERE, Msg.getString("CannedMarsMap.log.mediaTrackerInterrupted") + e); //$NON-NLS-1$
+				// Restore interrupted state
+			    Thread.currentThread().interrupt();
 			}
 			mapImageDone = true;
 			currentCenter = new Coordinates(newCenter);

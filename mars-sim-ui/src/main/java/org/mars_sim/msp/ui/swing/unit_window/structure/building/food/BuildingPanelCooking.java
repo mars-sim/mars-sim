@@ -46,6 +46,7 @@ extends BuildingFunctionPanel {
 
 	/**
 	 * Constructor.
+	 * 
 	 * @param kitchen the cooking building this panel is for.
 	 * @param desktop The main desktop.
 	 */
@@ -53,7 +54,7 @@ extends BuildingFunctionPanel {
 
 		// Use BuildingFunctionPanel constructor
 		super(
-			Msg.getString("BuildingPanelCooking.title"), 
+			Msg.getString("BuildingPanelCooking.title"),  //$NON-NLS-1$
 			ImageLoader.getNewIcon(COOKING_ICON),
 			kitchen.getBuilding(), 
 			desktop
@@ -66,23 +67,23 @@ extends BuildingFunctionPanel {
 	@Override
 	protected void buildUI(JPanel center) {
 		// Prepare label panel
-		JPanel labelPanel = new JPanel(new GridLayout(5, 2, 0, 0));
+		JPanel labelPanel = new JPanel(new GridLayout(5, 2, 1, 1));
 		center.add(labelPanel, BorderLayout.NORTH);
-		labelPanel.setOpaque(false);
-		labelPanel.setBackground(new Color(0,0,0,128));
 
 		// Prepare cook number label
 		numCooksCache = kitchen.getNumCooks();
-		numCooksLabel = addTextField(labelPanel, Msg.getString("BuildingPanelCooking.numberOfCooks"), numCooksCache, null); //$NON-NLS-1$
+		numCooksLabel = addTextField(labelPanel, Msg.getString("BuildingPanelCooking.numberOfCooks"), 
+				numCooksCache, null); //$NON-NLS-1$
 
 		// Prepare cook capacity label
-		addTextField(labelPanel, Msg.getString("BuildingPanelCooking.cookCapacity"), kitchen.getCookCapacity(), null);
+		addTextField(labelPanel, Msg.getString("BuildingPanelCooking.cookCapacity"), 
+				kitchen.getCookCapacity(), null);
 
 		// Prepare # of available meal label
 		numMealsCache = kitchen.getNumberOfAvailableCookedMeals();
-		numMealsLabel = addTextField(labelPanel, Msg.getString("BuildingPanelCooking.availableMeals"), numMealsCache, null); //$NON-NLS-1$
+		numMealsLabel = addTextField(labelPanel, Msg.getString("BuildingPanelCooking.availableMeals"), 
+				numMealsCache, null); //$NON-NLS-1$
 
-		// 2015-01-06 Added numMealsTodayLabel
 		// Prepare # of today cooked meal label
 		numMealsTodayCache = kitchen.getTotalNumberOfCookedMealsToday();
 		numMealsTodayLabel = addTextField(labelPanel, Msg.getString("BuildingPanelCooking.mealsToday"), numMealsTodayCache, null); //$NON-NLS-1$
@@ -93,7 +94,7 @@ extends BuildingFunctionPanel {
 	}
 
 	/**
-	 * Update this panel
+	 * Updates this panel.
 	 */
 	@Override
 	public void update() {
@@ -103,7 +104,7 @@ extends BuildingFunctionPanel {
 		// Update cook number
 		if (numCooksCache != numCooks) {
 			numCooksCache = numCooks;
-			numCooksLabel.setText(Integer.toString(numCooks)); //$NON-NLS-1$
+			numCooksLabel.setText(Integer.toString(numCooks));
 		}
 
 		int numMeals = 0;
@@ -111,7 +112,7 @@ extends BuildingFunctionPanel {
 		// Update # of available meals
 		if (numMealsCache != numMeals) {
 			numMealsCache = numMeals;
-			numMealsLabel.setText(Integer.toString(numMeals)); //$NON-NLS-1$
+			numMealsLabel.setText(Integer.toString(numMeals));
 		}
 
 		int numMealsToday = 0;
@@ -119,7 +120,7 @@ extends BuildingFunctionPanel {
 		// Update # of meals cooked today
 		if (numMealsTodayCache != numMealsToday) {
 			numMealsTodayCache = numMealsToday;
-			numMealsTodayLabel.setText(Integer.toString(numMealsToday)); //$NON-NLS-1$
+			numMealsTodayLabel.setText(Integer.toString(numMealsToday));
 		}
 
 		double mealQuality = kitchen.getBestMealQualityCache();
@@ -127,23 +128,24 @@ extends BuildingFunctionPanel {
 		// Update meal grade
 		if (!gradeCache.equals(grade)) {
 			gradeCache = grade;
-			mealGradeLabel.setText(grade); //$NON-NLS-1$
+			mealGradeLabel.setText(grade); 
 		}
 	}
 	
-	/***
-	 * Converts a numeral quality to letter grade for a meal
+	/**
+	 * Converts a numeral quality to letter grade for a meal.
+	 * 
 	 * @param quality 
 	 * @return grade
 	 */
-	private static String computeGrade(double quality) {
+	static String computeGrade(double quality) {
 		String grade = "";
 				
-		if (quality < -3)
+		if (quality < -4)
 			grade = "C-";
+		else if (quality < -3)
+			grade = "C";
 		else if (quality < -2)
-			grade = "C+";
-		else if (quality < -1)
 			grade = "C+";
 		else if (quality < -1)
 			grade = "B-";
@@ -155,7 +157,7 @@ extends BuildingFunctionPanel {
 			grade = "A-";
 		else if (quality < 3)
 			grade = "A";
-		else //if (quality < 4)
+		else
 			grade = "A+";
 				
 		return grade;

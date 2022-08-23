@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * BuildingPanelFarming.java
- * @date 2022-07-10
+ * @date 2022-08-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
@@ -12,8 +12,6 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
@@ -30,15 +28,12 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SpringLayout;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.environment.SurfaceFeatures;
 import org.mars_sim.msp.core.structure.building.function.farming.Crop;
 import org.mars_sim.msp.core.structure.building.function.farming.CropConfig;
 import org.mars_sim.msp.core.structure.building.function.farming.CropSpec;
@@ -70,9 +65,29 @@ public class BuildingPanelFarming extends BuildingFunctionPanel
 implements MouseListener {
 
 	private static final String PLANT_ICON = Msg.getString("icon.plant"); //$NON-NLS-1$
+	private static final String G_M2_DAY = " g/m2/day";
+	private static final String HTML = "<html>";
+	private static final String END_HTML = "</html>";
+	private static final String CROP_NAME = "&emsp;&nbsp;Crop Name:&emsp;";
+	private static final String CATEGORY = "<br>&emsp;&emsp;&nbsp;&nbsp;Category:&emsp;";
+	private static final String GROWING_DAYS = "<br>&nbsp;Growing Days:&emsp;";
+	private static final String EDIBLE_MASS = "<br>&emsp;Edible Mass:&emsp;";
+	private static final String INEDIBLE_MASS = "<br>&nbsp;Inedible Mass:&emsp;";
+	private static final String WATER_CONTENT = "<br>&nbsp;Water Content:&emsp;";
+	private static final String PERCENT = " %";
+	private static final String PAR_REQUIRED = "<br>&nbsp;&nbsp;PAR required:&emsp;";
+	private static final String MOL_M2_DAY = " mol/m2/day";
 
+	
 	// Data members
-	private JTextField radTF, farmersTF, cropsTF, waterUsageTF, greyWaterUsageTF, o2TF, co2TF, workTimeTF;
+	private JTextField radTF;
+	private JTextField farmersTF;
+	private JTextField cropsTF;
+	private JTextField waterUsageTF;
+	private JTextField greyWaterUsageTF;
+	private JTextField o2TF;
+	private JTextField co2TF;
+	private JTextField workTimeTF;
 
 	// Data cache
 	/** The number of farmers cache. */
@@ -113,7 +128,6 @@ implements MouseListener {
 
 	private CropConfig cropConfig;
 
-	private static SurfaceFeatures surface;
 
 	/**
 	 * Constructor.
@@ -133,7 +147,6 @@ implements MouseListener {
 		// Initialize data members
 		this.farm = farm;
 		location = farm.getBuilding().getCoordinates();
-		surface = desktop.getSimulation().getSurfaceFeatures();
 		cropConfig = SimulationConfig.instance().getCropConfiguration();
 	}
 	
@@ -148,7 +161,7 @@ implements MouseListener {
 		center.add(springPanel, BorderLayout.CENTER);
 
 		// Prepare solar irradiance label
-		radCache = Math.round(surface.getSolarIrradiance(location)*10.0)/10.0;
+		radCache = Math.round(surfaceFeatures.getSolarIrradiance(location)*10.0)/10.0;
 		radTF = addTextField(springPanel, Msg.getString("BuildingPanelFarming.solarIrradiance.title"),
 							 radCache + "", "Estimated sunlight on top of the greenhouse roof");
 
@@ -209,11 +222,11 @@ implements MouseListener {
 
 		// Prepare crop table
 		WebTable cropTable = new WebTable(cropTableModel) {
-
-			public Component prepareRenderer(TableCellRenderer renderer,int Index_row, int Index_col) {
-			                Component comp = super.prepareRenderer(renderer, Index_row, Index_col);
+			@Override
+			public Component prepareRenderer(TableCellRenderer renderer,int row, int col) {
+			                Component comp = super.prepareRenderer(renderer, row, col);
 			                //even index, selected or not selected
-			                if (Index_row % 2 == 0 && !isCellSelected(Index_row, Index_col)) {
+			                if (row % 2 == 0 && !isCellSelected(row, col)) {
 			                    comp.setBackground(new Color(242, 242, 242));
 			                }
 			                else {
@@ -223,6 +236,7 @@ implements MouseListener {
 			            }
 
 			// Implement Table Cell ToolTip for crops
+			@Override
             public String getToolTipText(MouseEvent e) {
                 java.awt.Point p = e.getPoint();
                 int rowIndex = rowAtPoint(p);
@@ -230,7 +244,6 @@ implements MouseListener {
     			StringBuilder result = new StringBuilder("");
 
                 try {
-                	//if (colIndex == 1)
                 		result.append(buildCropToolTip(rowIndex, colIndex, null));
                 	} catch (RuntimeException e1) {
                 		//catch null pointer exception if mouse is over an empty line
@@ -249,9 +262,8 @@ implements MouseListener {
 		cropTable.getColumnModel().getColumn(3).setPreferredWidth(20);
 		cropTable.getColumnModel().getColumn(4).setPreferredWidth(30);
 		cropTable.getColumnModel().getColumn(5).setPreferredWidth(30);
-		// Use of setAutoCreateRowSorter causes array error 
-		// when old crop is removed and new crop is added
-//		cropTable.setAutoCreateRowSorter(true);
+		// Note: Use of setAutoCreateRowSorter causes array error 
+		// whenever old crop is removed and new crop is added: cropTable.setAutoCreateRowSorter(true);
 		
 		TableStyle.setTableStyle(cropTable);
 		tableScrollPanel.setViewportView(cropTable);
@@ -266,13 +278,11 @@ implements MouseListener {
 		WebButton addButton = new WebButton(Msg.getString("BuildingPanelFarming.addButton")); //$NON-NLS-1$
 		addButton.setPreferredSize(new Dimension(60, 20));
 		addButton.setFont(new Font("Serif", Font.PLAIN, 9));
-		addButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
+		addButton.addActionListener(s -> {
 				cropName = (String) comboBox.getSelectedItem();
 				farm.addCropListInQueue(cropName);
 		        listUpdate();
 				repaint();
-			}
 			});
 		buttonPanel.add(addButton, BorderLayout.NORTH);
 		selectPanel.add(buttonPanel);
@@ -282,13 +292,13 @@ implements MouseListener {
 		delButton.setFont(new Font("Serif", Font.PLAIN, 9));
 
 		delButton.addActionListener(s -> {
-				if (!list.isSelectionEmpty() && (list.getSelectedValue() != null)) {
-		           	selectCrop();
-	            	farm.deleteACropFromQueue(deletingCropIndex, deletingCropType);
-	            	listUpdate();
-	            	repaint();
-				}
-			});
+			if (!list.isSelectionEmpty() && (list.getSelectedValue() != null)) {
+	           	selectCrop();
+            	farm.deleteACropFromQueue(deletingCropIndex, deletingCropType);
+            	listUpdate();
+            	repaint();
+			}
+		});
 		buttonPanel.add(delButton, BorderLayout.CENTER);
 
        	// Set up crop combo box model.
@@ -339,12 +349,10 @@ implements MouseListener {
 		// Create list
 		list = new JList<>(listModel);
 		listScrollPanel.setViewportView(list);
-		list.addListSelectionListener(new ListSelectionListener() {
-			public void valueChanged(ListSelectionEvent event) {
-		        if (!event.getValueIsAdjusting() && event != null){
-					selectCrop();
-		        }
-		    }
+		list.addListSelectionListener(event -> {
+			if (!event.getValueIsAdjusting()){
+				selectCrop();
+			}
 		});
 		queueListPanel.add(listScrollPanel);
 	}
@@ -355,10 +363,13 @@ implements MouseListener {
 	private StringBuilder buildCropToolTip(int row, int col, String n) {
 
 		StringBuilder result = new StringBuilder("");
-		String cropName, cat;
-		double time;
-		double mass0, mass1;
-		double water, PAR;
+		String cropName = "";
+		String cat = "";
+		double time = 0;
+		double mass0 = 0;
+		double mass1 = 0;
+		double water = 0;
+		double PAR = 0;
 		double sols = 0;
 		double health = 0;
 
@@ -381,15 +392,17 @@ implements MouseListener {
         	}
 
         	else if (col == 1) {
-	            result.append("<html>").append("&emsp;&nbsp;Crop Name:&emsp;").append(cropName);
-	        	result.append("<br>&emsp;&emsp;&nbsp;&nbsp;Category:&emsp;").append(cat);
-	           	result.append("<br>&nbsp;Growing Days:&emsp;").append(time);
-	        	result.append("<br>&emsp;Edible Mass:&emsp;").append(mass0).append(" g/m2/day");
-	        	result.append("<br>&nbsp;Inedible Mass:&emsp;").append(mass1).append(" g/m2/day");
-	        	result.append("<br>&nbsp;Water Content:&emsp;").append(water).append(" %");
-	        	result.append("<br>&nbsp;&nbsp;PAR required:&emsp;").append(PAR).append(" mol/m2/day").append("</html>");
+	            result.append(HTML)
+	            .append(CROP_NAME).append(cropName);
+	        	result.append(CATEGORY).append(cat);
+	           	result.append(GROWING_DAYS).append(time);
+	        	result.append(EDIBLE_MASS).append(mass0).append(G_M2_DAY);
+	        	result.append(INEDIBLE_MASS).append(mass1).append(G_M2_DAY);
+	        	result.append(WATER_CONTENT).append(water).append(PERCENT);
+	        	result.append(PAR_REQUIRED).append(PAR)
+	        	.append(MOL_M2_DAY).append(END_HTML);
         	}
-
+        	
         	else {
 	        	result.append("# of Sols since planted: ").append(sols);
         	}
@@ -409,8 +422,8 @@ implements MouseListener {
             result.append("<html>").append("&emsp;&nbsp;Crop Name:&emsp;").append(cropName);
         	result.append("<br>&emsp;&emsp;&nbsp;&nbsp;Category:&emsp;").append(cat);
            	result.append("<br>&nbsp;Growing Days:&emsp;").append(time);
-        	result.append("<br>&emsp;Edible Mass:&emsp;").append(mass0).append(" g/m2/day");
-        	result.append("<br>&nbsp;Inedible Mass:&emsp;").append(mass1).append(" g/m2/day");
+        	result.append("<br>&emsp;Edible Mass:&emsp;").append(mass0).append(G_M2_DAY);
+        	result.append("<br>&nbsp;Inedible Mass:&emsp;").append(mass1).append(G_M2_DAY);
         	result.append("<br>&nbsp;Water Content:&emsp;").append(water).append(" %");
         	result.append("<br>&nbsp;&nbsp;PAR required:&emsp;").append(PAR).append(" mol/m2/day").append("</p></html>");
         }
@@ -424,7 +437,7 @@ implements MouseListener {
 	 */
 	public void selectCrop() {
 
-		String n = (String) list.getSelectedValue();
+		String n = list.getSelectedValue();
 		if (n != null) {
 			deletingCropType = n;
 			deletingCropIndex = list.getSelectedIndex();
@@ -459,23 +472,27 @@ implements MouseListener {
 			selectCrop();
 			if (deletingCropType != null) {
             	// do something
-            	//listModel.update();
 			}
 		}
 	}
 
 	@Override
-	public void mousePressed(MouseEvent event) {}
-	
+	public void mousePressed(MouseEvent event) {
+		// do nothing
+	}
 	@Override
-	public void mouseReleased(MouseEvent event) {}
-	
+	public void mouseReleased(MouseEvent event) {
+		// do nothing
+	}
 	@Override
-	public void mouseEntered(MouseEvent event) {}
-	
+	public void mouseEntered(MouseEvent event) {
+		// do nothing
+	}
 	@Override
-	public void mouseExited(MouseEvent event) {}
-
+	public void mouseExited(MouseEvent event) {
+		// do nothing
+	}
+	
 	/**
 	 * Update this panel
 	 */
@@ -495,7 +512,7 @@ implements MouseListener {
 		}
 
 		// Update solar irradiance label
-		double rad = Math.round(surface.getSolarIrradiance(location)*10.0)/10.0;
+		double rad = Math.round(surfaceFeatures.getSolarIrradiance(location)*10.0)/10.0;
 		if (radCache != rad) {
 			radCache = rad;
 			radTF.setText(Msg.getString("BuildingPanelFarming.solarIrradiance", radCache));
@@ -594,8 +611,7 @@ implements MouseListener {
         		if (list.size() != c.size() || !list.containsAll(c) || !c.containsAll(list)) {
 	                List<String> oldList = list;
 	                List<String> tempList = new ArrayList<>(c);
-	                //Collections.sort(tempList);
-
+	 
 	                list = tempList;
 	                fireContentsChanged(this, 0, getSize());
 
@@ -639,6 +655,7 @@ implements MouseListener {
 			return 6;
 		}
 
+		@Override
 		public Class<?> getColumnClass(int columnIndex) {
 			Class<?> dataType = super.getColumnClass(columnIndex);
 			if (columnIndex == 0) dataType = ImageIcon.class;
@@ -651,6 +668,7 @@ implements MouseListener {
 			return dataType;
 		}
 
+		@Override
 		public String getColumnName(int columnIndex) {
 			if (columnIndex == 0) return "Health";
 			if (columnIndex == 1) return "Name";
@@ -697,7 +715,7 @@ implements MouseListener {
 	}
 
 	class ComboboxToolTipRenderer extends DefaultListCellRenderer {
-	    private ArrayList<String> tooltips;
+	    private List<String> tooltips;
 
 	    @Override
 	    public Component getListCellRendererComponent(JList<?> list, Object value,
@@ -707,12 +725,12 @@ implements MouseListener {
 	                value, index, isSelected, cellHasFocus);
 
 	        if (-1 < index && null != value && null != tooltipArray) {
-	        	list.setToolTipText((String) tooltipArray.get(index));
+	        	list.setToolTipText(tooltipArray.get(index));
 	        }
 	        return comp;
 	    }
 
-	    public void setTooltips(ArrayList<String> tooltipArray) {
+	    public void setTooltips(List<String> tooltipArray) {
 	        this.tooltips = tooltipArray;
 
 	    }
@@ -721,10 +739,6 @@ implements MouseListener {
 	class PromptComboBoxRenderer extends DefaultListCellRenderer {
 
 		private String prompt;
-
-//		private DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
-	    // Width doesn't matter as the combo box will size
-	    //private Dimension preferredSize = new Dimension(0, 20);
 
 		/*
 		 *  Set the text to display when no item has been selected.
@@ -747,22 +761,6 @@ implements MouseListener {
 				return this;
 			}
 
-
-			if (c instanceof WebLabel) {
-
-	            if (isSelected) {
-	                //c.setBackground(Color.orange);
-	            } else {
-	                //c.setBackground(Color.white);
-	                //c.setBackground(new Color(51,25,0,128));
-	            }
-
-	        } else {
-	        	//c.setBackground(Color.white);
-	            //c.setBackground(new Color(51,25,0,128));
-	            c = super.getListCellRendererComponent(
-	                    list, value, index, isSelected, cellHasFocus);
-	        }
 	        return c;
 		}
 	}

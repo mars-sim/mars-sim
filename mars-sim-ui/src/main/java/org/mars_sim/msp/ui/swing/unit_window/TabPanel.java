@@ -27,6 +27,7 @@ import javax.swing.border.TitledBorder;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitType;
+import org.mars_sim.msp.core.environment.SurfaceFeatures;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -72,6 +73,7 @@ public abstract class TabPanel extends JScrollPane {
 	private Unit unit;
 	private MainDesktopPane desktop;
 
+	protected static SurfaceFeatures surfaceFeatures;
 
 	/**
 	 * Constructor.
@@ -108,6 +110,9 @@ public abstract class TabPanel extends JScrollPane {
 		this.tabToolTip = tabToolTip;
 		this.unit = unit;
 		this.desktop = desktop;
+		
+		if (surfaceFeatures == null)
+			surfaceFeatures = desktop.getSimulation().getSurfaceFeatures();
 
 		if (unit.getUnitType() == UnitType.PERSON) {
 			this.setMaximumSize(new Dimension(UnitWindow.WIDTH - 30, UnitWindow.HEIGHT - 140));
