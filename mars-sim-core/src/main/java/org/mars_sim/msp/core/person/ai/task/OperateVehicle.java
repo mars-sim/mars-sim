@@ -16,6 +16,7 @@ import org.mars_sim.msp.core.Direction;
 import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.environment.TerrainElevation;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
@@ -388,9 +389,9 @@ public abstract class OperateVehicle extends Task implements Serializable {
 	protected double mobilizeVehicle(double time) {
         double remainingTime = 0;
 
-        if (worker instanceof Robot
+        if (worker.getUnitType() == UnitType.ROBOT
         	&& ((Robot)worker).getSystemCondition().isLowPower()) {
-        	logger.log((Robot)worker, Level.WARNING, 0,
+        	logger.log((Robot)worker, Level.WARNING, 20_000,
         			". Can't pilot " + getVehicle() + ".");
 	        endTask();
 	        return time;

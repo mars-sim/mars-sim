@@ -837,7 +837,14 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 		boolean malfunction = false;
 		boolean allCrewHasMedical = hasDangerousMedicalProblemsAllCrew();
 		boolean hasEmergency = hasEmergency();
-
+		boolean hasPower = true;
+		
+		if (member.getUnitType() == UnitType.ROBOT
+			 && ((Robot)member).getSystemCondition().isLowPower()) {
+			hasPower = false;
+			return;
+		}
+		
 		if (destination != null && vehicle != null) {
 
 			Coordinates current = vehicle.getCoordinates();
@@ -888,8 +895,8 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 					}
 					else {
 						assignTask((Robot)member, operateVehicleTask);
-
 					}
+					
 					lastOperator = member;
 					return;
 				}
@@ -1096,10 +1103,16 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 							vehicle.getEstimatedFuelEconomy(), useMargin);
 
 			result.put(vehicle.getFuelType(), amount);
-			// Require amount of oxygen (fuel oxidizer) ~2 times the amount of methane 
-			result.put(ResourceUtil.oxygenID, FUEL_OXIDIZER_FACTOR * amount);
+			
+			// if useMargin is true, include more oxygen
+			double amountOxygen = FUEL_OXIDIZER_FACTOR * amount;
+			
+			// if useMargin is true, include just 2x the amount of methane 
+			if (!useMargin)	amountOxygen = 2 * amount;
 
+			result.put(ResourceUtil.oxygenID, amountOxygen);
 		}
+		
 		return result;
 	}
 

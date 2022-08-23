@@ -489,6 +489,15 @@ public abstract class Mission implements Serializable, Temporal {
 	}
 
 	/**
+	 * Gets a set of the members in the mission.
+	 *
+	 * @return collection of members
+	 */
+	public Set<Worker> getMemberList() {
+		return members;
+	}
+	
+	/**
 	 * Returns a list of people and robots who have signed up for this mission.
 	 * 
 	 * @return
@@ -839,7 +848,7 @@ public abstract class Mission implements Serializable, Temporal {
 		if (members != null && !members.isEmpty()) {
 			String listOfMembers = members.stream().map(Worker::getName).collect(Collectors.joining(", "));
 			logger.info(startingMember, "Disbanding mission member(s): " + listOfMembers);
-			Iterator<Worker> i = getMembers().iterator();
+			Iterator<Worker> i = getMemberList().iterator();
 			while (i.hasNext()) {
 				Worker member = i.next();
 				i.remove();
@@ -891,19 +900,16 @@ public abstract class Mission implements Serializable, Temporal {
 	 * @return true if task can be performed.
 	 */
 	protected boolean assignTask(Robot robot, Task task) {
-		boolean canPerformTask = true;
 
 		// If robot is malfunctioning, it cannot perform task.
-		boolean hasMalfunction = robot.getMalfunctionManager().hasMalfunction();
-		if (hasMalfunction) {
-			canPerformTask = false;
+		if (robot.getMalfunctionManager().hasMalfunction()) {
+			return false;
 		}
 
-		if (canPerformTask) {
-			canPerformTask = robot.getBotMind().getBotTaskManager().addTask(task);
-		}
+		if (!robot.getSystemCondition().isBatteryAbove(0))
+			return false;
 
-		return canPerformTask;
+		return robot.getBotMind().getBotTaskManager().addTask(task);
 	}
 
 	/**

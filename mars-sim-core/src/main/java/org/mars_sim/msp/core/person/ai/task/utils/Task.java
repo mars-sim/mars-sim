@@ -312,23 +312,18 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		if (!done) {
 			// Set done to true first to catch any re-calls
 			done = true;
-
 			// Cleardown the subclass task
 			clearDown();
-			
-			// Set done to true
+			// Set phase to null
 			setPhase(null);
+			// Set description to blank
 			setDescription("");
-	
 			// End subtask2
-			endSubTask2();
-						
+			endSubTask2();			
 			// End subtask
 			endSubTask();
-			
 			// Fires task end event
 			eventTarget.fireUnitUpdate(UnitEventType.TASK_ENDED_EVENT, this);
-	
 			// Create ending task historical event if needed.
 			if (createEvents) {
 	

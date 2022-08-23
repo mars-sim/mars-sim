@@ -292,30 +292,26 @@ public abstract class RoverMission extends VehicleMission {
 		boolean	isRoverInAGarage = settlement.getBuildingManager().addToGarage(v);
 
 		// Load vehicle if not fully loaded.
-		if (!isVehicleLoaded()) {
-			if (member.isInSettlement()) {
-				// Note: randomly select this member to load resources for the rover
-				// This allows person to do other important things such as eating
-				if (RandomUtil.lessThanRandPercent(75)) {
-					if (member instanceof Person) {
-						Person person = (Person) member;
+		if (!isVehicleLoaded()
+			&& member.isInSettlement()
+			// Note: randomly select this member to load resources for the rover
+			// This allows person to do other important things such as eating
+			&& RandomUtil.lessThanRandPercent(75)
+			&& member instanceof Person) {
+				Person person = (Person) member;
 
-						boolean hasAnotherMission = false;
-						Mission m = person.getMission();
-						if (m != null && m != this)
-							hasAnotherMission = true;
+				boolean hasAnotherMission = false;
+				Mission m = person.getMission();
+				if (m != null && m != this)
+					hasAnotherMission = true;
 
-						if (!hasAnotherMission && isRoverInAGarage) {
-
-							assignTask(person,
-										new LoadVehicleGarage(person, this));
-						} else if (!hasAnotherMission) {
-							// Note: Should check if it is day time to do EVA
-							assignTask(person, new LoadVehicleEVA(person, this));
-						}
-					}
+				if (!hasAnotherMission && isRoverInAGarage) {
+					assignTask(person,
+								new LoadVehicleGarage(person, this));
+				} else if (!hasAnotherMission) {
+					// Note: Should check if it is day time to do EVA
+					assignTask(person, new LoadVehicleEVA(person, this));
 				}
-			}
 		}
 
 		else {
@@ -1059,7 +1055,7 @@ public abstract class RoverMission extends VehicleMission {
 		if (!atLeastOnePersonRemainingAtSettlement(getStartingSettlement(), startingMember)) {
 			// Remove last person added to the mission.
 			Person lastPerson = null;
-			 for (Iterator<Worker> i = getMembers().iterator(); 
+			 for (Iterator<Worker> i = getMemberList().iterator(); 
 					 i.hasNext();) {      
 				 Worker member = i.next();
 				if (member instanceof Person) {
