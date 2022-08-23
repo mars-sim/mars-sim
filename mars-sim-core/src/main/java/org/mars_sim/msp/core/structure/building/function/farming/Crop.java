@@ -10,11 +10,15 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.logging.Level;
 
+import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.logging.Loggable;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -24,7 +28,7 @@ import org.mars_sim.msp.core.tool.RandomUtil;
 /**
  * The Crop class describes the behavior of a crop growing on a greenhouse.
  */
-public class Crop implements Comparable<Crop>, Serializable {
+public class Crop implements Comparable<Crop>, Loggable, Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -1455,4 +1459,33 @@ public class Crop implements Comparable<Crop>, Serializable {
 		return cropSpec.compareTo(o.getCropSpec());
 	}
 
+	@Override
+	public Settlement getAssociatedSettlement() {
+		return building.getAssociatedSettlement();
+	}
+
+	@Override
+	public Unit getContainerUnit() {
+		return getAssociatedSettlement();
+	}
+
+	@Override
+	public String getName() {
+		return name;
+	}
+
+	@Override
+	public Coordinates getCoordinates() {
+		return getAssociatedSettlement().getCoordinates();
+	}
+
+	/**
+	 * Prepares object for garbage collection.
+	 */
+	public void destroy() {
+		cropSpec = null;
+		currentPhase = null;
+		farm = null;
+		building = null;
+	}
 }
