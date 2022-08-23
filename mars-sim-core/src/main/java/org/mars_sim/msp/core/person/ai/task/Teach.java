@@ -95,7 +95,7 @@ public class Teach extends Task implements Serializable {
 	 */
 	private double teachingPhase(double time) {
 
-		if (teachingTask == null) { //unit instanceof Person) {
+		if (teachingTask == null) {
 			
 			// Assume the student is a person.
 			Collection<Person> candidates = null;
@@ -130,7 +130,8 @@ public class Teach extends Task implements Serializable {
 				logger.log(person, Level.FINE, 4_000, "Teaching " + student.getName() 
 					+ " on " + teachingTask.getName(false) + ".");
 				setDescription(
-						Msg.getString("Task.description.teach.detail", teachingTask.getName(false), student.getName())); // $NON-NLS-1$
+						Msg.getString("Task.description.teach.detail", 
+								teachingTask.getName(false), student.getName())); // $NON-NLS-1$
 
 				boolean walkToBuilding = false;
 				// If in settlement, move teacher to building student is in.
@@ -168,37 +169,16 @@ public class Teach extends Task implements Serializable {
 				endTask();
 			}
 		}
-		
-//		if (person.isInSettlement()) {
-//			Building currentBuilding = BuildingManager.getBuilding(person);
-//			if (currentBuilding != null && currentBuilding.getBuildingType().equalsIgnoreCase(Building.EVA_AIRLOCK)) {
-//				// Walk out of the EVA Airlock
-//				walkToRandomLocation(false);
-//			}
-//		}
-		
+
 		// Check if task is finished.
-		if (teachingTask.isDone()) {
+		if (teachingTask != null && teachingTask.isDone())
 			endTask();
-		}
 		
     	if (getTimeCompleted() > getDuration())
-        	endTask();	
-
-        // Probability affected by the person's stress and fatigue.
-//        PhysicalCondition condition = person.getPhysicalCondition();
-//        double fatigue = condition.getFatigue();
-//        double stress = condition.getStress();
-//        double hunger = condition.getHunger();
-//        double energy = condition.getEnergy();
-//        
-//        if (fatigue > 1000 || stress > 75 || hunger > 750 || energy < 500)
-//        	endTask(); 
+        	endTask();
     	
-		if (!person.isBarelyFit()) {
-			if (!person.isOutside())
-        		endTask();
-		}
+		if (!person.isBarelyFit())
+        	endTask();
     	
 		// Add relationship modifier for opinion of teacher from the student.
 		addRelationshipModifier(time);
@@ -240,28 +220,27 @@ public class Teach extends Task implements Serializable {
         	int rand = RandomUtil.getRandomInt(taughtSkills.size()-1);
         	SkillType taskSkill = taughtSkills.get(rand);
 
-				int studentSkill = student.getSkillManager().getSkillLevel(taskSkill);
-				int teacherSkill = person.getSkillManager().getSkillLevel(taskSkill);
-				double studentExp = student.getSkillManager().getCumuativeExperience(taskSkill);
-				double teacherExp = person.getSkillManager().getCumuativeExperience(taskSkill);
-				double diff = Math.round((teacherExp - studentExp)*10.0)/10.0;
-				int points = teacherSkill - studentSkill;
-				double learned = (.5 + points) * exp / 1.5 * RandomUtil.getRandomDouble(1);
-				double reward = exp / 40.0 * RandomUtil.getRandomDouble(1);
-				
-//				logger.info(taskSkill.getName() 
+			int studentSkill = student.getSkillManager().getSkillLevel(taskSkill);
+			int teacherSkill = person.getSkillManager().getSkillLevel(taskSkill);
+			double studentExp = student.getSkillManager().getCumuativeExperience(taskSkill);
+			double teacherExp = person.getSkillManager().getCumuativeExperience(taskSkill);
+			double diff = Math.round((teacherExp - studentExp)*10.0)/10.0;
+			int points = teacherSkill - studentSkill;
+			double learned = (.5 + points) * exp / 1.5 * RandomUtil.getRandomDouble(1);
+			double reward = exp / 40.0 * RandomUtil.getRandomDouble(1);
+			
+//			logger.info(taskSkill.getName() 
 //					+ " - diff: " + diff + "   "
 //					+ "  mod: " + mod + "   "
 //					+ person + " [Lvl : " + teacherSkill + "]'s teaching reward: " + Math.round(reward*1000.0)/1000.0 
 //					+ "   " + student + " [Lvl : " + studentSkill + "]'s learned: " + Math.round(learned*1000.0)/1000.0 + ".");
-				
-				student.getSkillManager().addExperience(taskSkill, learned, time);
-		        person.getSkillManager().addExperience(taskSkill, reward, time);
-		        
-		        // If the student has more experience points than the teacher, the teaching session ends.
-		        if (diff < 0)
-		        	endTask();
-
+			
+			student.getSkillManager().addExperience(taskSkill, learned, time);
+	        person.getSkillManager().addExperience(taskSkill, reward, time);
+	        
+	        // If the student has more experience points than the teacher, the teaching session ends.
+	        if (diff < 0)
+	        	endTask();
 		}
 	}
 
@@ -272,11 +251,11 @@ public class Teach extends Task implements Serializable {
 	 * @return collection of the best students
 	 */
 	public static Collection<Person> getBestStudents(Person teacher) {
-		Collection<Person> result = new ConcurrentLinkedQueue<Person>();
+		Collection<Person> result = new ConcurrentLinkedQueue<>();
 		Collection<Person> students = getTeachableStudents(teacher);
 
 		// If teacher is in a settlement, best students are in least crowded buildings.
-		Collection<Person> leastCrowded = new ConcurrentLinkedQueue<Person>();
+		Collection<Person> leastCrowded = new ConcurrentLinkedQueue<>();
 		if (teacher.isInSettlement()) {
 			// Find the least crowded buildings that teachable students are in.
 			int crowding = Integer.MAX_VALUE;
@@ -317,7 +296,7 @@ public class Teach extends Task implements Serializable {
 		}
 
 		// Get the teacher's favorite students.
-		Collection<Person> favoriteStudents = new ConcurrentLinkedQueue<Person>();
+		Collection<Person> favoriteStudents = new ConcurrentLinkedQueue<>();
 
 		// Find favorite opinion.
 		double favorite = Double.NEGATIVE_INFINITY;
@@ -352,7 +331,7 @@ public class Teach extends Task implements Serializable {
 	 * @return collection of students
 	 */
 	private static Collection<Person> getTeachableStudents(Person teacher) {
-		Collection<Person> result = new ConcurrentLinkedQueue<Person>();
+		Collection<Person> result = new ConcurrentLinkedQueue<>();
 
 		Iterator<Person> i = getLocalPeople(teacher).iterator();
 		while (i.hasNext()) {
@@ -385,7 +364,7 @@ public class Teach extends Task implements Serializable {
 	 * @return collection of students
 	 */
 	private static Collection<Person> getTeachableStudents(Robot teacher) {
-		Collection<Person> result = new ConcurrentLinkedQueue<Person>();
+		Collection<Person> result = new ConcurrentLinkedQueue<>();
 
 		Iterator<Person> i = getLocalPeople(teacher).iterator();
 		while (i.hasNext()) {
@@ -418,11 +397,11 @@ public class Teach extends Task implements Serializable {
 	 * @return collection of the best students
 	 */
 	public static Collection<Person> getBestStudents(Robot teacher) {
-		Collection<Person> result = new ConcurrentLinkedQueue<Person>();
+		Collection<Person> result = new ConcurrentLinkedQueue<>();
 		Collection<Person> students = getTeachableStudents(teacher);
 
 		// If teacher is in a settlement, best students are in least crowded buildings.
-		Collection<Person> leastCrowded = new ConcurrentLinkedQueue<Person>();
+		Collection<Person> leastCrowded = new ConcurrentLinkedQueue<>();
 		if (teacher.isInSettlement()) {
 			// Find the least crowded buildings that teachable students are in.
 			int crowding = Integer.MAX_VALUE;
@@ -502,13 +481,13 @@ public class Teach extends Task implements Serializable {
 	 * @return collection of people
 	 */
 	private static Collection<Person> getLocalPeople(Person person) {
-		Collection<Person> people = new ConcurrentLinkedQueue<Person>();
+		Collection<Person> people = new ConcurrentLinkedQueue<>();
 
 		if (person.isInSettlement()) {
 			Iterator<Person> i = person.getSettlement().getIndoorPeople().iterator();
 			while (i.hasNext()) {
 				Person inhabitant = i.next();
-				if (person != inhabitant) {
+				if (person.equals(inhabitant)) {
 					people.add(inhabitant);
 				}
 			}
@@ -517,7 +496,7 @@ public class Teach extends Task implements Serializable {
 			Iterator<Person> i = rover.getCrew().iterator();
 			while (i.hasNext()) {
 				Person crewmember = i.next();
-				if (person != crewmember) {
+				if (person.equals(crewmember)) {
 					people.add(crewmember);
 				}
 			}
@@ -531,31 +510,24 @@ public class Teach extends Task implements Serializable {
 	 * collection doesn't include the given robot.
 	 * 
 	 * @param robot the robot checking
-	 * @return collection of robot
+	 * @return collection of person
 	 */
 	private static Collection<Person> getLocalPeople(Robot robot) {
-		Collection<Person> people = new ConcurrentLinkedQueue<Person>();
+		Collection<Person> people = new ConcurrentLinkedQueue<>();
 
 		if (robot.isInSettlement()) {
 			Iterator<Person> i = robot.getSettlement().getIndoorPeople().iterator();
 			while (i.hasNext()) {
-				Person inhabitant = i.next();
-//				if (robot != inhabitant) {
-					people.add(inhabitant);
-//				}
+				people.add(i.next());
 			}
 		} else if (robot.isInVehicle()) {
 			Crewable rover = (Crewable) robot.getVehicle();
 			Iterator<Person> i = rover.getCrew().iterator();
 			while (i.hasNext()) {
-				Person crewmember = i.next();
-//				if (robot != crewmember) {
-					people.add(crewmember);
-//				}
+				people.add(i.next());
 			}
 		}
 
 		return people;
 	}
-
 }
