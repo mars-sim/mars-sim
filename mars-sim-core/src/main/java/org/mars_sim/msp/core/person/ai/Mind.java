@@ -287,7 +287,7 @@ public class Mind implements Serializable, Temporal {
 
 		if (hasActiveMission) {
 			if (mission.getMissionType() == MissionType.DELIVERY) {
-				// In case of a delivery mission, the bot doesn't need to be onboard
+				// In case of a delivery mission, the person doesn't need to be onboard
 				if (mission.getPhase() != null) {
 					resumeMission(0);
 				}

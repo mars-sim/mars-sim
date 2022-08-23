@@ -112,7 +112,7 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 
 		// Use OperateVehicle constructor
 		super(NAME, person, flyer, destination, startTripTime, startTripDistance, STRESS_MODIFIER, 
-				150D + RandomUtil.getRandomDouble(10D) - RandomUtil.getRandomDouble(10D));
+				100D + RandomUtil.getRandomDouble(-20D, 20D));
 		
 		// Set initial parameters
 		setDescription(Msg.getString("Task.description.pilotDrone.detail", flyer.getName())); // $NON-NLS-1$
@@ -131,7 +131,7 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 
 		// Use OperateVehicle constructor
 		super(NAME, robot, flyer, destination, startTripTime, startTripDistance, STRESS_MODIFIER, true,
-				1000D);
+				250D);
 		
 		// Set initial parameters
 		setDescription(Msg.getString("Task.description.pilotDrone.detail", flyer.getName())); // $NON-NLS-1$
@@ -140,7 +140,7 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 		if (startingPhase != null)
 			setPhase(startingPhase);
 
-		logger.log(robot, Level.INFO, 0, "Took control of the drone at phase '"
+		logger.log(robot, Level.INFO, 20_000, "Took control of the drone at phase '"
 					+ startingPhase + "'.");
 	}
 

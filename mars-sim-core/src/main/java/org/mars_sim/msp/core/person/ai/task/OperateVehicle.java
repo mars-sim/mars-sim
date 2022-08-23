@@ -218,7 +218,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
 		// Check if there is a driver assigned to this vehicle.
 		if (vo == null) 
 			vehicle.setOperator(robot);
-			
+		
 		else if (!robot.equals(vo)) {
         	// Remove the task from the last driver
 	        clearDrivingTask(vo);
@@ -387,6 +387,14 @@ public abstract class OperateVehicle extends Task implements Serializable {
 	 */
 	protected double mobilizeVehicle(double time) {
         double remainingTime = 0;
+
+        if (worker instanceof Robot
+        	&& ((Robot)worker).getSystemCondition().isLowPower()) {
+        	logger.log((Robot)worker, Level.WARNING, 0,
+        			". Can't pilot " + getVehicle() + ".");
+	        endTask();
+	        return time;
+        }
         
 		if (time < 0) {
 			logger.severe(vehicle, "Negative time: " + time);
