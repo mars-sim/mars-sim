@@ -36,6 +36,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.LoadingController;
 import org.mars_sim.msp.core.person.ai.task.OperateVehicle;
+import org.mars_sim.msp.core.person.ai.task.Sleep;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
@@ -837,13 +838,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 		boolean malfunction = false;
 		boolean allCrewHasMedical = hasDangerousMedicalProblemsAllCrew();
 		boolean hasEmergency = hasEmergency();
-		boolean hasPower = true;
-		
-		if (member.getUnitType() == UnitType.ROBOT
-			 && ((Robot)member).getSystemCondition().isLowPower()) {
-			hasPower = false;
-			return;
-		}
+		boolean lowPower = false;
 		
 		if (destination != null && vehicle != null) {
 
@@ -868,9 +863,18 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 
 		// Choose a driver
 		if (!reachedDestination && !malfunction) {
+			
+			if (member.getUnitType() == UnitType.ROBOT) {
+				Robot robot = (Robot)member;
+				if (robot.getSystemCondition().isLowPower()) {
+					assignTask(robot, new Sleep(robot));
+					lowPower = true;
+				}
+			}
+			
 			boolean becomeDriver = false;
 
-			if (operateVehicleTask != null) {
+			if (!lowPower && operateVehicleTask != null) {
 				// Someone should be driving or it's me !!!
 				becomeDriver = vehicle != null &&
 					((vehicle.getOperator() == null)

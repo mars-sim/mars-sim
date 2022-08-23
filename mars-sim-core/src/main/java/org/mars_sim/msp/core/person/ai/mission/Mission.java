@@ -906,7 +906,7 @@ public abstract class Mission implements Serializable, Temporal {
 			return false;
 		}
 
-		if (!robot.getSystemCondition().isBatteryAbove(0))
+		if (!robot.getSystemCondition().isBatteryAbove(5))
 			return false;
 
 		return robot.getBotMind().getBotTaskManager().addTask(task);

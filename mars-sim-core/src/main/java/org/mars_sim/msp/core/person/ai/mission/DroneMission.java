@@ -10,6 +10,7 @@ import java.util.Iterator;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ShiftType;
@@ -177,6 +178,11 @@ public abstract class DroneMission extends VehicleMission {
 		
 		else if (member instanceof Robot) {
 			Robot robot = (Robot) member;
+
+			if (!robot.getSystemCondition().isBatteryAbove(10)) {
+				return null;
+			}
+			
 			Drone d = getDrone();
 			if (!d.haveStatusType(StatusType.OUT_OF_FUEL)) {
 				if (lastOperateVehicleTaskPhase != null) {

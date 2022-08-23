@@ -209,7 +209,7 @@ public class SleepMeta extends MetaTask {
         		result += (1.0 - level) * MAX;
         	}
         	else
-        		result += (1.0 - level) * 5.0;
+        		result += (1.0 - level) * 20;
         		
             Building building = Sleep.getAvailableRoboticStationBuilding(robot);
             if (building != null) {

@@ -468,7 +468,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
         double v_kph = v_ms * KPH_CONV;
         
         // Assume vehicle's speed max out
-    	v_kph = Math.min(v_kph, 2 * getAverageVehicleSpeed(vehicle, person));
+    	v_kph = Math.min(v_kph, 2 * getAverageVehicleSpeed(vehicle, worker));
     	v_ms = v_kph / KPH_CONV;
    
     	logger.log(vehicle, Level.INFO, 20_000L, 
@@ -671,7 +671,8 @@ public abstract class OperateVehicle extends Task implements Serializable {
 			distanceCache = d_km;
      	}      
 		else if (fuelUsed < 0) {
-			// Future: will consider how to apply regenerative braking to absorb the momentum and store energy into the vehicle's "battery" system
+			// TODO: will consider how to add an onboard battery to 
+			// absorb the power via regenerative braking
 			logger.log(vehicle, Level.INFO, 20_000, "Reducing speed to " + Math.round(v_kph * 1000.0)/1000.0
 					+ " kph, decelerating: " + Math.round(a_ms * 1000.0)/1000.0 
 					+ " m/s2. Force: " + Math.round(fTot * 1000.0)/1000.0  + " N.");
@@ -803,7 +804,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
         // Determine estimated speed in km/hr.
         // Assume the crew will drive the overall 50 % of the time (including the time for stopping by various sites)
         double estimatorConstant = .5D;
-        double estimatedSpeed = estimatorConstant *  getAverageVehicleSpeed(vehicle, person); //(vehicle.getBaseSpeed() + getSpeedSkillModifier());
+        double estimatedSpeed = estimatorConstant *  getAverageVehicleSpeed(vehicle, worker); //(vehicle.getBaseSpeed() + getSpeedSkillModifier());
 
         // Determine final estimated speed in km/hr.
         double tempAvgSpeed = avgSpeed * ((startTripDistance - getDistanceToDestination()) / startTripDistance);
@@ -908,7 +909,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
      */
     protected double testSpeed(Direction direction) {
 
-    	double speed = getAverageVehicleSpeed(vehicle, person); 
+    	double speed = getAverageVehicleSpeed(vehicle, worker); 
         if (speed < 0D) {
         	speed = 0D;
         }
@@ -1013,12 +1014,11 @@ public abstract class OperateVehicle extends Task implements Serializable {
     		// Need to update this to reflect the particular operator's average speed operating the vehicle.
     		double baseSpeed = vehicle.getBaseSpeed();
     		double mod = 0;
-    		Person p = null;
     		if (operator instanceof Person) {
-    			p = (Person)operator;
+    			Person p = (Person)operator;
     			
     			if (p.getMind().getJob() == JobType.PILOT) {
-    				mod += baseSpeed * 0.25; 
+    				mod = baseSpeed; 
     			}
     			
     			// Look up a person's prior pilot related training.
@@ -1026,12 +1026,12 @@ public abstract class OperateVehicle extends Task implements Serializable {
     			
     			int skill = p.getSkillManager().getEffectiveSkillLevel(SkillType.PILOTING);
     			if (skill <= 5) {
-    				mod += 0D - ((baseSpeed / 4D) * ((5D - skill) / 5D));
+    				mod += - baseSpeed / 10 * (5D - skill) / 5;
     	        }
     	        else {
     	            double tempSpeed = baseSpeed;
     	            for (int x=0; x < skill - 5; x++) {
-    	                tempSpeed /= 2D;
+    	                tempSpeed /= 5;
     	                mod += tempSpeed;
     	            }
     	        }
