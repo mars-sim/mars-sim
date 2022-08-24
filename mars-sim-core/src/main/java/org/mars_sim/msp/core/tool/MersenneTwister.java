@@ -238,8 +238,8 @@ public strictfp class MersenneTwister extends java.util.Random implements Serial
         for both.  You can guarantee that the internal gaussian storage is the same (and so the
         nextGaussian() methods will return the same values) by calling clearGaussian() on both
         objects. */
-    public synchronized boolean stateEquals(MersenneTwister other)
-        {
+    public synchronized boolean stateEquals(MersenneTwister mer)  {
+    	MersenneTwister other = mer;
         if (other == this) return true;
         if (other == null)return false;
         synchronized(other)
@@ -334,7 +334,7 @@ public strictfp class MersenneTwister extends java.util.Random implements Serial
         mag01[1] = MATRIX_A;
 
         mt[0]= (int)(seed & 0xffffffff);
-        mt[0] = (int) seed;
+//        mt[0] = (int) seed;
         for (mti=1; mti<N; mti++) 
             {
             mt[mti] = 

@@ -631,20 +631,20 @@ public class CommanderWindow extends ToolWindow {
 		WebScrollPane = new WebScrollPane(innerPanel);
 		WebScrollPane.setMaximumWidth(250);
 
-		if (noTrading) {
-			r2.setSelected(true);
-			r3.setSelected(false);
-			policyMainPanel.remove(WebScrollPane);
-			policyMainPanel.add(emptyPanel, BorderLayout.EAST);
-		}
-		
-		else {
+//		if (noTrading) {
+//			r2.setSelected(true);
+//			r3.setSelected(false);
+//			policyMainPanel.remove(WebScrollPane);
+//			policyMainPanel.add(emptyPanel, BorderLayout.EAST);
+//		}
+//		
+//		else {
 			r2.setSelected(false);
 			r3.setSelected(true);
 			r3.setText(ACCEPT + SEE_RIGHT);
 			policyMainPanel.remove(emptyPanel);
 			policyMainPanel.add(WebScrollPane, BorderLayout.EAST);
-		}
+//		}
 
 		group0.add(r0);
 		group0.add(r1);

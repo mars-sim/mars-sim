@@ -822,16 +822,6 @@ public class EventTableModel extends AbstractTableModel
 	public boolean isNoFiring() {
 		return noFiring;
 	}
-
-	/**
-	 * Gets the hash code for this object.
-	 *
-	 * @return hash code.
-	 */
-	@Override
-	public int hashCode() {
-		return super.hashCode();
-	}
 	
 	/**
 	 * Prepares the model for deletion.

@@ -1213,7 +1213,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 		String newName = askNameDialog();
 		if (!oldName.equals(newName)
 				&& newName != null
-				&& newName.trim() != ""
+				&& !newName.trim().equals("")
 				&& newName.trim().length() != 0) {
 			mapPanel.getSettlement().changeName(newName.trim());
 

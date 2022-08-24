@@ -181,12 +181,13 @@ public class TabPanelOrganization extends TabPanel {
 	    //Nothing is selected.
 	    return;
 
-	    Object nodeInfo = node.getUserObject();
-	    if (node.isLeaf()) {
-	        ;
-	    } else {
-	       ;
-	    }
+	    // TODO: update nodes 
+//	    Object nodeInfo = node.getUserObject();
+//	    if (node.isLeaf()) {
+//	        ;
+//	    } else {
+//	       ;
+//	    }
 	}
 
 	protected void initNodes() {

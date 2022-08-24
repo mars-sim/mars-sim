@@ -203,9 +203,9 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 			@Override
 			public void mouseDragged(MouseEvent evt) {
 				// Move map center based on mouse drag difference.
-				double xDiff = evt.getX() - xLast;
-				double yDiff = evt.getY() - yLast;
-				moveCenter(xDiff, yDiff);
+				int xDiff = evt.getX() - xLast;
+				int yDiff = evt.getY() - yLast;
+				moveCenter(1.0 * xDiff, 1.0 * yDiff);
 				xLast = evt.getX();
 				yLast = evt.getY();
 			}
@@ -393,7 +393,7 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 	 *
 	 * @return settlement or null if none.
 	 */
-	public Settlement getSettlement() {
+	public synchronized Settlement getSettlement() {
 		return settlement;
 	}
 
@@ -480,10 +480,10 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 	 * @param xDiff the X axis pixels.
 	 * @param yDiff the Y axis pixels.
 	 */
-	public void moveCenter(double xDiff, double yDiff) {
+	public void moveCenter(double xd, double yd) {
 		setCursor(new Cursor(Cursor.MOVE_CURSOR));
-		xDiff /= scale;
-		yDiff /= scale;
+		double xDiff = xd /= scale;
+		double yDiff = yd /= scale;
 
 		// Correct due to rotation of map.
 		double c = MoreMath.cos(rotation);
@@ -914,8 +914,8 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 
 		Point.Double result = new Point.Double(0D, 0D);
 
-		double xDiff1 = (getWidth() / 2) - xPixel;
-		double yDiff1 = (getHeight() / 2) - yPixel;
+		double xDiff1 = (getWidth() / 2.0) - xPixel;
+		double yDiff1 = (getHeight() / 2.0) - yPixel;
 
 		double xDiff2 = xDiff1 / scale;
 		double yDiff2 = yDiff1 / scale;

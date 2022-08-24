@@ -145,7 +145,7 @@ public class DecompressXZ {
 	                	  //s = s.substring(1, s.length());
 	                	  System.out.println("xz Filename2 : " + s);
 	                	  //s.trim().replaceAll("\\", "/");
-	                	  s.trim().replace("file:/", "");
+	                	  s = s.trim().replace("file:/", "");
 	                	  System.out.println("xz Filename3 : " + s);
 	                	  
 //	              	    path = Paths.get(s);

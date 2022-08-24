@@ -228,7 +228,7 @@ public class TabPanelLog extends TabPanel {
 		selectedSol = (Integer) solBox.getSelectedItem(); 
 
 		// Update the sol combobox at the beginning of a new sol
-		if (todayInteger != todayCache) {
+		if (!todayInteger.equals(todayCache)) {
 	
 			for (int i = 1; i < todayInteger + 1; i++) {
 				if (!solList.contains(i))
@@ -410,7 +410,7 @@ public class TabPanelLog extends TabPanel {
 			if (selectedSolCache != selectedSol) {
 				selectedSolCache = selectedSol;
 
-				if (todayInteger == (Integer) selectedSolCache) {
+				if (todayInteger.equals((Integer) selectedSolCache)) {
 					// Load today's schedule
 					oneDayStatuses = allStatuses.get(todayInteger);
 				} 

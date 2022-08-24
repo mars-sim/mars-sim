@@ -480,7 +480,7 @@ public class MEGDRMapReader {
     		
     		data[i*2]     = (byte)((array[i] >> 8) & 0xff);
 //    		data[i*2]     = (byte)((array[i] >> 8));
-    		data[i*2 + 1] = (byte)((array[i] >> 0) & 0xff);
+    		data[i*2 + 1] = (byte)((array[i]) & 0xff);
  		
 //    		data[i*4]     = (byte)((array[i] >> 24) & 0xff);
 //    		data[i*4 + 1] = (byte)((array[i] >> 16) & 0xff);

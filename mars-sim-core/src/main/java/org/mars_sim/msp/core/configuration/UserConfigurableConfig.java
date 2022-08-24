@@ -148,9 +148,13 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 															+ itemPrefix, xsdName));
 				XMLReaderJDOMFactory factory = new XMLReaderSchemaFactory(schema);
     		 	builder = new SAXBuilder(factory);
+    		 	builder.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+    		 	builder.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
 			}
 			else {
-				builder = new SAXBuilder(XMLReaders.NONVALIDATING);			
+				builder = new SAXBuilder(XMLReaders.NONVALIDATING);	
+				builder.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+				builder.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
 			}
 	        doc = builder.build(contents);
 	    }

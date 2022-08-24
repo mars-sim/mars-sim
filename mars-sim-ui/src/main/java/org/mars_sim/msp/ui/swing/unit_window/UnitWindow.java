@@ -305,7 +305,7 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 		else if (p.getAssociatedSettlement() != null)
 			townString = Conversion.capitalize(p.getAssociatedSettlement().getName());
 
-		if (!oldTownString.equals(townString)) {
+		if (townString != null && !oldTownString.equals(townString)) {
 			oldJobString = townString;
 			if (townString.length() > 40)
 				townString = townString.substring(0, 40);

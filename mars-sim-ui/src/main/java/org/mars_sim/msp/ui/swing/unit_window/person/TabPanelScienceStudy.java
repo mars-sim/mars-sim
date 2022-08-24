@@ -269,23 +269,25 @@ public class TabPanelScienceStudy extends TabPanel {
 		 * @return the number of columns in the model.
 		 */
 		public int getColumnCount() {
-			return 5;
+			return 6;
 		}
 
 		@Override
-		public String getColumnName(int columnIndex) {
-			if (columnIndex == 0)
+		public String getColumnName(int column) {
+			if (column == 0) 
+				return Msg.getString("TabPanelScience.column.id"); //$NON-NLS-1$
+			else if (column == 1)
 				return Msg.getString("TabPanelScience.column.study"); //$NON-NLS-1$
-			else if (columnIndex == 1)
+			else if (column == 2)
 				return Msg.getString("TabPanelScience.column.role"); //$NON-NLS-1$
-			else if (columnIndex == 2)
+			else if (column == 3)
 				return Msg.getString("TabPanelScience.column.phase"); //$NON-NLS-1$
-			else if (columnIndex == 3)
+			else if (column == 4)
 				return Msg.getString("TabPanelScience.column.researchTime"); //$NON-NLS-1$
-			else if (columnIndex == 4)
+			else if (column == 5)
 				return Msg.getString("TabPanelScience.column.paperTime"); //$NON-NLS-1$
-			else
-				return null;
+			
+			return null;
 		}
 
 		/**
@@ -308,26 +310,28 @@ public class TabPanelScienceStudy extends TabPanel {
 			String result = null;
 			if ((rowIndex >= 0) && (rowIndex < studies.size())) {
 				ScientificStudy study = studies.get(rowIndex);
-				if (columnIndex == 0)
+				if (columnIndex == 0) 
+					result = study.getID() + "";
+				else if (columnIndex == 1)
 					result = Conversion.capitalize(study.toString());
-				else if (columnIndex == 1) {
+				else if (columnIndex == 2) {
 					if (person.equals(study.getPrimaryResearcher()))
 						result = Msg.getString("TabPanelScience.primary"); //$NON-NLS-1$
 					else if (study.getCollaborativeResearchers().contains(person))
 						result = Msg.getString("TabPanelScience.collaborator"); //$NON-NLS-1$
-				} else if (columnIndex == 2) {
+				} else if (columnIndex == 3) {
 					if (study.isCompleted())
 						result = study.getCompletionState();
 					else
 						result = study.getPhase();
-				} else if (columnIndex == 3) {
+				} else if (columnIndex == 4) {
 					if (study.getPrimaryResearcher().equals(person))
 						return Math.round(study.getPrimaryResearchWorkTimeCompleted())/1000.0;
 					else if (study.getCollaborativeResearchers().contains(person))
 						return Math.round(study.getCollaborativeResearchWorkTimeCompleted(person))/1000.0;
 					else
 						return 0;
-				} else if (columnIndex == 4) {
+				} else {
 					if (study.getPrimaryResearcher().equals(person))
 						return Math.round(study.getPrimaryPaperWorkTimeCompleted())/1000.0;
 					else if (study.getCollaborativeResearchers().contains(person))

@@ -388,7 +388,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         
         if (!hasDestination) {
           	// If destination is none, update destination text label.
-        	if (destinationTextCache != "") {
+        	if (!destinationTextCache.equals("")) {
         		destinationTextCache = "";
         		destinationTextLabel.setText(destinationTextCache);
         		addDestinationTextLabel();

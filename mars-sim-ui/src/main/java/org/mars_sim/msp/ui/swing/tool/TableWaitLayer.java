@@ -52,6 +52,8 @@ public class TableWaitLayer {
 							try {
 								Thread.sleep(50);
 							} catch (InterruptedException ie) {
+						        // Restore interrupted state
+						        Thread.currentThread().interrupt();
 								return "Interrupted";
 							}
 							publish(new Object[] { "aaa", current++, false });
@@ -77,6 +79,9 @@ public class TableWaitLayer {
 						} else {
 							try {
 								text = get();
+							} catch (InterruptedException e) {
+								// Restore interrupted state...
+								Thread.currentThread().interrupt();							
 							} catch (Exception ex) {
 								text = "Exception";
 							}

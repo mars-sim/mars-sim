@@ -41,14 +41,16 @@ public final class SVGMapUtil {
         InputStream inputStream = null;
         try {
             inputStream = resource.openStream();
-            svgMapProperties.load(inputStream);
+            if (inputStream != null)
+            	svgMapProperties.load(inputStream);
         }
         catch (IOException e) {
             e.printStackTrace(System.err);
         }
         finally {
             try {
-                inputStream.close();
+            	if (inputStream != null)
+            		inputStream.close();
             }
             catch (IOException e) {
                 e.printStackTrace(System.err);

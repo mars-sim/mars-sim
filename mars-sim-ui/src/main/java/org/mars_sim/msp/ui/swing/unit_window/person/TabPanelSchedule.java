@@ -222,7 +222,7 @@ public class TabPanelSchedule extends TabPanel {
 				selectedSol = (Integer) solBox.getSelectedItem();
 				if (selectedSol != null) // e.g. when first loading up
 					scheduleTableModel.update((int) selectedSol);
-				if (selectedSol == todayInteger)
+				if (selectedSol.equals(todayInteger))
 					// Binds comboBox with realTimeUpdateCheckBox
 					realTimeBox.setSelected(true);
 			}
@@ -383,7 +383,7 @@ public class TabPanelSchedule extends TabPanel {
 		}
 
 		// Checks if the user is still looking at a previous sol's schedule
-		if (selectedSol != todayInteger) {
+		if (!selectedSol.equals(todayInteger)) {
 			// If yes, turn off the Real Time Update automatically
 			isRealTimeUpdate = false;
 			realTimeBox.setSelected(false);

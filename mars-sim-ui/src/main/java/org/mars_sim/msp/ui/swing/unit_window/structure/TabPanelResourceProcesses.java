@@ -268,7 +268,7 @@ public class TabPanelResourceProcesses extends TabPanel {
 				jj++;
 			}
 			// Add a note to denote an ambient input resource
-			if (ambientStr == "*")
+			if (ambientStr.equals("*"))
 				result.append("&emsp;<i>Note:  * denotes an ambient resource</i>");
 			result.append("</html>");
 			return result.toString();

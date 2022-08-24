@@ -169,32 +169,41 @@ public class LoadVehicleEVA extends EVAOperation {
 	 */
 	private double loadingPhase(double time) {
 	
-		boolean stopLoading = false;
-		
 		// Check for radiation exposure during the EVA operation.
 		if (isDone() || isRadiationDetected(time)) {
-			stopLoading = true;
-		}
-
-		stopLoading |= (shouldEndEVAOperation() || addTimeOnSite(time));
-		
-		// NOTE: if a person is not at a settlement or near its vicinity,  
-		stopLoading |= (settlement == null || vehicle == null); 
-		stopLoading |= settlement.getBuildingManager().isInGarage(vehicle);
-		stopLoading |= !person.isBarelyFit();
-		
-		// Do the load
-		if (!stopLoading) {
-			stopLoading = loadingPlan.load(worker, time);
-			
-			person.getPhysicalCondition().stressMuscle(time);
-		}
-
-		else {
 			checkLocation();
 			return time;
 		}
 		
+		if (shouldEndEVAOperation() || addTimeOnSite(time)) {
+			checkLocation();
+			return time;
+		}
+		
+		// Checks if a person is not at a settlement or near its vicinity,
+		if (settlement == null || vehicle == null) {
+			checkLocation();
+			return time;
+		}
+		
+		if (settlement.getBuildingManager().isInGarage(vehicle)) {
+			checkLocation();
+			return time;
+		}
+		
+		if (!person.isBarelyFit()) {
+			checkLocation();
+			return time;
+		}
+		
+		// Load the resource
+		if (loadingPlan.load(worker, time)) {
+			checkLocation();
+			return time;
+		}
+			
+		person.getPhysicalCondition().stressMuscle(time);
+
         // Add experience points
         addExperience(time);
 

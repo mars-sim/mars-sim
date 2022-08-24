@@ -263,7 +263,8 @@ extends TabPanel {
 		private List<ScientificStudy> studies;
 
 		/**
-		 * Constructor
+		 * Constructor.
+		 * 
 		 * @param settlement the settlement.
 		 */
 		private StudyTableModel(Settlement settlement) {
@@ -278,6 +279,7 @@ extends TabPanel {
 
 		/**
 		 * Returns the number of columns in the model.
+		 * 
 		 * @return the number of columns in the model.
 		 */
 		public int getColumnCount() {
@@ -296,14 +298,13 @@ extends TabPanel {
 				return Msg.getString("TabPanelScience.column.phase"); //$NON-NLS-1$
 			else if (column == 4)
 				return Msg.getString("TabPanelScience.column.researcher"); //$NON-NLS-1$
-
-//			if (columnIndex == 0) return Msg.getString("TabPanelScience.column.study"); //$NON-NLS-1$
-//			else if (columnIndex == 1) return Msg.getString("TabPanelScience.column.phase"); //$NON-NLS-1$
-			else return null;
+			
+			return null;
 		}
 
 		/**
 		 * Returns the number of rows in the model.
+		 * 
 		 * @return the number of rows in the model.
 		 */
 		public int getRowCount() {
@@ -312,6 +313,7 @@ extends TabPanel {
 
 		/**
 		 * Returns the value for the cell at columnIndex and rowIndex.
+		 * 
 		 * @param rowIndex the row whose value is to be queried.
 		 * @param columnIndex the column whose value is to be queried.
 		 * @return the value Object at the specified cell.
@@ -323,27 +325,21 @@ extends TabPanel {
 
 				if (columnIndex == 0) 
 					result = study.getID() + "";
-				else if (columnIndex == 0) 
-					result = Conversion.capitalize(study.getScience().getName());
 				else if (columnIndex == 1) 
+					result = Conversion.capitalize(study.getScience().getName());
+				else if (columnIndex == 2) 
 					result = study.getDifficultyLevel() + "";
-				else if (columnIndex == 2) {
+				else if (columnIndex == 3) {
 					if (study.isCompleted()) result = Conversion.capitalize(study.getCompletionState());
 					else result = Conversion.capitalize(study.getPhase());
 				}
-				else if (columnIndex == 3) {
+				else {
 					String researcherN = "";	
 					if (study.getPrimaryResearcher() != null) {
 						researcherN = study.getPrimaryResearcher().getName();
 						result = Conversion.capitalize(researcherN);
 					}
 				}
-				
-//				if (columnIndex == 0) result = Conversion.capitalize(study.toString());
-//				else if (columnIndex == 1) {
-//					if (study.isCompleted()) result = study.getCompletionState();
-//					else result = study.getPhase();
-//				}
 
 			}
 			return result;

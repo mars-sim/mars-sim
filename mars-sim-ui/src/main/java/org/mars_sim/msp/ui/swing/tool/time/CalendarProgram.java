@@ -172,7 +172,7 @@ public class CalendarProgram{
 
 		//Draw calendar
 		for (int i=1; i<=nod; i++){
-			int row = Integer.valueOf((i+som-2)/7);
+			int row = (i+som-2)/7;
 			int column  =  (i+som-2)%7;
 			mtblCalendar.setValueAt(i, row, column);
 		}

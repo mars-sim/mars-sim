@@ -121,6 +121,8 @@ public class MineralMapLayer implements MapLayer {
 				mt.waitForID(0);
 			} catch (InterruptedException e) {
 				logger.log(Level.SEVERE, "MineralMapLayer interrupted: " + e);
+				// Restore interrupted state
+			    Thread.currentThread().interrupt();
 			}
 		}
 

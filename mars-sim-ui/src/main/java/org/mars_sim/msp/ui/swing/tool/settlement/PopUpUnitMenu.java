@@ -336,10 +336,10 @@ public class PopUpUnitMenu extends WebPopupMenu {
 	public void destroy() {
 		panels.clear();
 		panels = null;
-		settlement = null;
 		settlement.destroy();
-		unit = null;
+		settlement = null;
 		unit.destroy();
+		unit = null;
 		itemOne = null;
 		itemTwo = null;
 		itemThree = null;

@@ -209,15 +209,15 @@ class CBListener extends MouseInputAdapter {
                                         glassPanePoint,
                                         contentPane);
         if (containerPoint.y < 0) { //we're not in the content pane
-            if (containerPoint.y + menuBar.getHeight() >= 0) { 
+//            if (containerPoint.y + menuBar.getHeight() >= 0) { 
                 //The mouse event is over the menu bar.
                 //Could handle specially.
-            } else { 
+//            } else { 
                 //The mouse event is over non-system window 
                 //decorations, such as the ones provided by
                 //the Java look and feel.
                 //Could handle specially.
-            }
+//            }
         } else {
             //The mouse event is probably over the content pane.
             //Find out exactly which component it's over.  

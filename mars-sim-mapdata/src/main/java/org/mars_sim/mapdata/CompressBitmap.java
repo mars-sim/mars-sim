@@ -51,43 +51,43 @@ public class CompressBitmap {
         int[] data = null;
 		try {
 			data = fromBitsetFileToArray(filename);
+			
+	        System.out.println("Compressing "+data.length+" integers");
+	        
+	        int[] compressed = iic.compress(data);
+	        int[] recov = iic.uncompress(compressed);
+	        
+	        System.out.println("compressed from "+data.length*4/1024+"KB to "+compressed.length*4/1024+"KB");
+	        System.out.println("ratio: "+Math.round(data.length*1.0/compressed.length));
+
+	        if(!Arrays.equals(recov,data)) throw new RuntimeException("bug");
+
+	        long bef,aft;
+	        bef = System.nanoTime();
+	        recov = iic.uncompress(compressed);
+	        aft = System.nanoTime();
+
+	        System.out.println("decoding speed:"+Math.round(data.length*1000.0/(aft-bef))+" millions of integers per second");
+
+
+	        bef = System.nanoTime();
+	        compressed = iic.compress(data);
+	        aft = System.nanoTime();
+
+	        System.out.println("encoding speed:"+Math.round(data.length*1000.0/(aft-bef))+" millions of integers per second");
+	        System.out.println("note: with a bit of effort, speed can be much higher.");
+	        System.out.println();
+	        
+	        try {
+				zipStats(filename);
+			} catch (IOException e) {
+				System.out.println("zipStats has issues: " + e.getMessage());
+			}
+
 		} catch (IOException e1) {
 			 System.out.println(e1.getMessage());
 		}
         
-        System.out.println("Compressing "+data.length+" integers");
-        
-        int[] compressed = iic.compress(data);
-        int[] recov = iic.uncompress(compressed);
-        
-        System.out.println("compressed from "+data.length*4/1024+"KB to "+compressed.length*4/1024+"KB");
-        System.out.println("ratio: "+Math.round(data.length*1.0/compressed.length));
-
-        if(!Arrays.equals(recov,data)) throw new RuntimeException("bug");
-
-        long bef,aft;
-        bef = System.nanoTime();
-        recov = iic.uncompress(compressed);
-        aft = System.nanoTime();
-
-        System.out.println("decoding speed:"+Math.round(data.length*1000.0/(aft-bef))+" millions of integers per second");
-
-
-        bef = System.nanoTime();
-        compressed = iic.compress(data);
-        aft = System.nanoTime();
-
-        System.out.println("encoding speed:"+Math.round(data.length*1000.0/(aft-bef))+" millions of integers per second");
-        System.out.println("note: with a bit of effort, speed can be much higher.");
-        System.out.println();
-        
-        try {
-			zipStats(filename);
-		} catch (IOException e) {
-			System.out.println("zipStats has issues: " + e.getMessage());
-		}
-
-
     }
 
     public static int[] fromBitsetFileToArray(String filename) throws IOException {

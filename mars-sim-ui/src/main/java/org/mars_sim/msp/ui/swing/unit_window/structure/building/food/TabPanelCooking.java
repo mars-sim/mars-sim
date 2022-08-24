@@ -481,11 +481,11 @@ public class TabPanelCooking extends TabPanel {
 		public String computeGrade(double quality) {
 			String grade = "";
 
-			if (quality < -3)
+			if (quality < -4)
 				grade = "C-";
+			else if (quality < -3)
+				grade = "C";
 			else if (quality < -2)
-				grade = "C+";
-			else if (quality < -1)
 				grade = "C+";
 			else if (quality < -1)
 				grade = "B-";
@@ -497,7 +497,7 @@ public class TabPanelCooking extends TabPanel {
 				grade = "A-";
 			else if (quality < 3)
 				grade = "A";
-			else // if (quality < 4)
+			else
 				grade = "A+";
 
 			return grade;
@@ -530,7 +530,7 @@ public class TabPanelCooking extends TabPanel {
 				double value = 0;
 				for (Map.Entry<String, Double> entry : allQualityMapE) {
 					String key = entry.getKey();
-					if (name == key) {
+					if (name.equals(key)) {
 						value = entry.getValue();
 						if (value > best)
 							best = value;
@@ -544,7 +544,7 @@ public class TabPanelCooking extends TabPanel {
 				double value = 0;
 				for (Map.Entry<String, Double> entry : allQualityMapE) {
 					String key = entry.getKey();
-					if (name == key) {
+					if (name.equals(key)) {
 						value = entry.getValue();
 
 						if (value < worst)

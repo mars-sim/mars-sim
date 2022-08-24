@@ -36,6 +36,10 @@ public final class RandomUtil {
 	// Note 2: other PRNG in the MT family can be found at
 	// https://github.com/zwxadz/SFMT-for-Java
 
+	// See Mersenne Twister in JAVA 
+	// at http://www.math.sci.hiroshima-u.ac.jp/m-mat/MT/VERSIONS/JAVA/java.html
+	
+	
 //	private static final SecureRandom sr = new SecureRandom();
 	// Note : if okay to block the thread during re-seeding,
 	// may use SecureRandom sr = SecureRandom.getInstanceStrong()

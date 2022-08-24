@@ -350,7 +350,7 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 
 		String missionText = "";
 
-		if (person != null) {
+		if (mind != null) {
 
 			if (dead)
 				missionText = deathInfo.getMission();
@@ -360,7 +360,7 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 				// if (missionText == null)
 				// missionText = "";
 			}
-		} else if (robot != null) {
+		} else if (botMind != null) {
 
 			if (dead)
 				missionText = deathInfo.getMission();
@@ -388,13 +388,13 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 		missionPhasePanel.add(missionPhaseLabel, BorderLayout.NORTH);
 
 		String missionPhaseText = "";
-		if (person != null) {
+		if (mind != null) {
 			// Prepare mission phase text area
 			if (dead)
 				missionPhaseText = deathInfo.getMissionPhase();
 			else if (mind.getMission() != null)
 				missionPhaseText = mind.getMission().getPhaseDescription();
-		} else if (robot != null) {
+		} else if (botMind != null) {
 			// Prepare mission phase text area
 			if (dead)
 				missionPhaseText = deathInfo.getMissionPhase();
@@ -424,9 +424,9 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 		// Msg.getString("TabPanelActivity.tooltip.mission")); //$NON-NLS-1$
 		missionButton.addActionListener(this);
 
-		if (person != null) {
+		if (mind != null) {
 			missionButton.setEnabled(mind.getMission() != null);
-		} else if (robot != null) {
+		} else if (botMind != null) {
 			missionButton.setEnabled(botMind.getMission() != null);
 		}
 

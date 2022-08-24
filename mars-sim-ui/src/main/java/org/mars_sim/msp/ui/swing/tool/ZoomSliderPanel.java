@@ -74,9 +74,9 @@ public class ZoomSliderPanel extends JPanel implements ChangeListener {
         shapes = new Shape[3];
         int w = getWidth();
         int h = getHeight();
-        shapes[0] = new Rectangle2D.Double(w/16, h/16, w*7/8, h*7/8);
-        shapes[1] = new Line2D.Double(w/16, h*15/16, w*15/16, h/16);
-        shapes[2] = new Ellipse2D.Double(w/4, h/4, w/2, h/2);
+        shapes[0] = new Rectangle2D.Double(w/16.0, h/16.0, w*7.0/8, h*7.0/8);
+        shapes[1] = new Line2D.Double(w/16.0, h*15.0/16, w*15.0/16, h/16.0);
+        shapes[2] = new Ellipse2D.Double(w/4.0, h/4.0, w/2.0, h/2.0);
         size.width = w;
         size.height = h;
     }

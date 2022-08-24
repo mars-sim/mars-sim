@@ -311,27 +311,25 @@ implements SettlementMapLayer {
 			while (i.hasNext()) {
 				ConstructionSite site = i.next();
 				String siteLabel = getConstructionLabel(site);
-				// Split up the name into multiple lines except with the whitespace after character 'm'
+				// Split up the name into multiple lines except with the whitespace after character 'm' or 'x'
+				// e.g. foundation name="subsurface foundation 5m x 10m x 3m"
 				String words[] = siteLabel.split(" ");
 				int s = words.length;
-				String last_1 = words[s-1];
-				String last_2 = words[s-2];
-				String last_3 = words[s-3];
-				//System.out.print("last_1 : " + last_1 + "   last_2 : " + last_2);
-				//System.out.print(" [" + last_3 + " " + last_2 + " " + last_1 + "] ");
-				int s_1 = last_1.length();
-				String test_1 = last_1.substring(s_1-1);
-				int s_2 = last_2.length();
-				String test_2 = last_2.substring(s_2-1);
-				int s_3 = last_3.length();
-				String test_3 = last_3.substring(s_3-1);
-				//System.out.println("   test_1 : " + test_1 + "   test_2 : " + test_2);
-				words[s-3] = last_3 + " " + last_2 + " " + last_1;
+				String last1 = words[s-1];
+				String last2 = words[s-2];
+				String last3 = words[s-3];
+				int s_1 = last1.length();
+				String test_1 = last1.substring(s_1-1);
+				int s_2 = last2.length();
+				String test_2 = last2.substring(s_2-1);
+				int s_3 = last3.length();
+				String test_3 = last3.substring(s_3-1);
+				words[s-3] = last3 + " " + last2 + " " + last1;
 				s = s-2;
 				if (test_1.equalsIgnoreCase("m") && test_2.equalsIgnoreCase("x") && test_3.equalsIgnoreCase("m")) {
 					for (int j = 0; j < s; j++) {
 						drawStructureLabel(g2d, words[j], site.getPosition(),
-							CONSTRUCTION_SITE_LABEL_COLOR, CONSTRUCTION_SITE_LABEL_OUTLINE_COLOR, j * (size));
+							CONSTRUCTION_SITE_LABEL_COLOR, CONSTRUCTION_SITE_LABEL_OUTLINE_COLOR, 0);
 					}
 				}
 				else {

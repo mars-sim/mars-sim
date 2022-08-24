@@ -294,6 +294,8 @@ public class MarsProjectStarter {
         	System.out.println("I/O issues: " + e.getMessage());
         } catch (InterruptedException e1) {
         	System.out.println("Interrupt issues: " + e1.getMessage());
+        	// Restore interrupted state
+            Thread.currentThread().interrupt();
         } catch (Exception e2) {
         	System.out.println("Other issues: " + e2.getMessage());       	
         }

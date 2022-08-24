@@ -288,6 +288,11 @@ public class StarRater extends JPanel {
       objectStream.close();
       return byteStream.toByteArray();
     }
+    catch (InterruptedException e) {
+        // Restore interrupted state
+        Thread.currentThread().interrupt();
+        throw new IOException("Error storing image in object: " + e);
+    }
     catch (Exception e) {
       throw new IOException("Error storing image in object: " + e);
     }
