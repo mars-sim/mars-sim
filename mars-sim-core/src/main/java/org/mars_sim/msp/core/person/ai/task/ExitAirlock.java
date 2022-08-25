@@ -93,6 +93,9 @@ public class ExitAirlock extends Task implements Serializable {
 	/** Is this a building airlock in a settlement? */
 	private boolean inSettlement;
 	
+	/** Is the airlock's EVA building attached to astronomy observatory ? */
+	private boolean isObservatoryAttached = false;
+	
 	/** The remaining time in donning the EVA suit. */
 	private double remainingDonningTime;
 	/** The time accumulatedTime for a task phase. */
@@ -118,6 +121,11 @@ public class ExitAirlock extends Task implements Serializable {
 		else
 			inSettlement = false;
 
+		Building airlockBuilding = (Building)(airlock.getEntity());
+		if (airlockBuilding.getSettlement().getBuildingManager().isObservatoryAttached(airlockBuilding)) {
+			isObservatoryAttached = true;
+		}
+		
 		// Initialize data members
 		setDescription(Msg.getString("Task.description.exitAirlock.detail", airlock.getEntityName())); // $NON-NLS-1$
 		// Initialize task phase
@@ -284,18 +292,12 @@ public class ExitAirlock extends Task implements Serializable {
 	 */
 	private boolean isFit() {
 		
-		if (inSettlement) {
-			// Note: if the person is in the airlock next to the observatory
-			// he will always be qualified to leave that place, or else
-			// he will get stranded
-			if (person.isAdjacentBuilding(FunctionType.ASTRONOMICAL_OBSERVATION)) {
-			 	return true;
-			}
-			
-			Building airlockBuilding = (Building)(airlock.getEntity());
-			if (airlockBuilding.getSettlement().getBuildingManager().isObservatoryAttached(airlockBuilding)) {
-				return true;
-			}
+		if (inSettlement && isObservatoryAttached) {
+			// Note: if the person is in an airlock next to the observatory 
+			// sitting at an isolated and remote part of the settlement,
+			// it will not check if he's physically fit to leave that place, or else
+			// he may get stranded
+			return true;
 		}
 		
 		// Checks if a person is nominally fit 
