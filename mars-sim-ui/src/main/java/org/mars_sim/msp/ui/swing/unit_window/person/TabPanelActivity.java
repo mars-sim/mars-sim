@@ -441,9 +441,9 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 		TooltipManager.setTooltip(monitorButton, Msg.getString("TabPanelActivity.tooltip.monitor"), TooltipWay.down);
 		monitorButton.addActionListener(this);
 
-		if (person != null) {
+		if (mind != null) {
 			monitorButton.setEnabled(mind.getMission() != null);
-		} else if (robot != null) {
+		} else if (botMind != null) {
 			monitorButton.setEnabled(botMind.getMission() != null);
 		}
 

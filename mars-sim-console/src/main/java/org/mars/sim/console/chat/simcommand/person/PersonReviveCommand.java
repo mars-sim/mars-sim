@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * PersonReviveCommand.java
- * @version 3.1.2 2021-11-30
+ * @date 2022-08-24
  * @author Barry Evans
  */
 

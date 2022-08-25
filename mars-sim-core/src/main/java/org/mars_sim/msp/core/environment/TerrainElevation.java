@@ -85,8 +85,7 @@ public class TerrainElevation implements Serializable {
 		double newX = 1.5D * currentDirection.getSinDirection();
 		Coordinates sampleLocation = currentLocation.convertRectToSpherical(newX, newY);
 		double elevationChange = getMOLAElevation(sampleLocation) - getMOLAElevation(currentLocation);
-		double result = Math.atan(elevationChange / 11.1D);
-		return result;
+		return Math.atan(elevationChange / 11.1D);
 	}
 
 	/**
@@ -335,17 +334,8 @@ public class TerrainElevation implements Serializable {
 	 * @return the elevation at the location (in km)
 	 */
 	public static double getPatchedElevation(Coordinates location) {
-
 		// Patch elevation problems at certain locations.
-		double elevation = patchElevation(getRawElevation(location), location);
-
-//			String s3 = String.format("RGB Elevation : %7.3f km   MOLA Elevation : %6d m",
-//					Math.round(elevation*1_000.0)/1_000.0,
-//					elevationMOLA);
-//			System.out.println(s3);
-
-		return elevation;
-
+		return patchElevation(getRawElevation(location), location);
 	}
 
 	/**
@@ -355,7 +345,6 @@ public class TerrainElevation implements Serializable {
 	 * @return the elevation at the location (in km)
 	 */
 	public static double getRawElevation(Coordinates location) {
-
 		// Find hue and saturation color components at location.
 		int rgb[] = getRGB(location);
 //		int red = rgb[0];
@@ -410,88 +399,80 @@ public class TerrainElevation implements Serializable {
 	 * @return the patched elevation for the location
 	 */
 	private static double patchElevation(double elevation, Coordinates location) {
-		double result = elevation;
-
 		// Patch errors at Olympus Mons
 		// Patch the smallest cauldera at the center
 		if (Math.abs(location.getTheta() - OLYMPUS_MONS_CALDERA_THETA) < .0176
 			 && Math.abs(location.getPhi() - OLYMPUS_MONS_CALDERA_PHI) < .0174) {
-//				System.out.println("elevation at Olympus : " + elevation);
-				result = 19;
+				return (elevation + 19) / 2.0;
 		}
 
 		// Patch errors at Olympus Mons caldera.
 		// Patch the larger white cauldera
-		else if (Math.abs(location.getTheta() - OLYMPUS_MONS_CALDERA_THETA) < .0796
+		if (Math.abs(location.getTheta() - OLYMPUS_MONS_CALDERA_THETA) < .0796
 			&& Math.abs(location.getPhi() - OLYMPUS_MONS_CALDERA_PHI) < .0796) {
-//				System.out.println("elevation at Olympus : " + elevation);
 			if (elevation > 19 && elevation < 21.2870)
-				result = elevation;
-			else
-				result = 21.287D;
+				return (elevation + 21.287D) / 2.0;
+			else if (elevation >= 21.2870)
+				return elevation;
+			
+			return (elevation + 19) / 2.0;
 		}
 
 		// Patch errors at Olympus Mons caldera.
 		// Patch the red base cauldera
-		else if (Math.abs(location.getTheta() - OLYMPUS_MONS_CALDERA_THETA) < .1731
+		if (Math.abs(location.getTheta() - OLYMPUS_MONS_CALDERA_THETA) < .1731
 			&& Math.abs(location.getPhi() - OLYMPUS_MONS_CALDERA_PHI) < .1731) {
-//				System.out.println("elevation at Olympus : " + elevation);
 			if (elevation < 19 && elevation > 3)
-				result = elevation;
-			else
-				result = 3;
+				return elevation;
+			else if (elevation >= 19)
+				return elevation;
+			
+			return (elevation + 3) / 2.0;
 		}
 
 		// Patch errors at Ascraeus Mons.
-		else if (Math.abs(location.getTheta() - ASCRAEUS_MONS_THETA) < .04D) {
-			if (Math.abs(location.getPhi() - ASCRAEUS_MONS_PHI) < .04D) {
-				if (elevation < 3.4D)
-					result = 18.219;
-			}
+		if (Math.abs(location.getTheta() - ASCRAEUS_MONS_THETA) < .04D
+			&& Math.abs(location.getPhi() - ASCRAEUS_MONS_PHI) < .04D) {
+			if (elevation < 3.4D)
+				return (elevation + 18.219) / 2.0;
 		}
 
-
-		else if (Math.abs(location.getTheta() - ARSIA_MONS_THETA) < .04D) {
-			if (Math.abs(location.getPhi() - ARSIA_MONS_PHI) < .04D) {
+		else if (Math.abs(location.getTheta() - ARSIA_MONS_THETA) < .04D
+			&& Math.abs(location.getPhi() - ARSIA_MONS_PHI) < .04D) {
 				if (elevation < 3D)
-					result = 17.781;
-			}
+					return (elevation + 17.781) / 2.0;
 		}
 
-		else if (Math.abs(location.getTheta() - ELYSIUM_MONS_THETA) < .04D) {
-			if (Math.abs(location.getPhi() - ELYSIUM_MONS_PHI) < .04D) {
+		else if (Math.abs(location.getTheta() - ELYSIUM_MONS_THETA) < .04D
+			&& Math.abs(location.getPhi() - ELYSIUM_MONS_PHI) < .04D) {
 				if (elevation < 3D)
-					result = 14.127;
-			}
+					return (elevation + 14.127) / 2.0;
 		}
 
-		else if (Math.abs(location.getTheta() - PAVONIS_MONS_THETA) < .04D) {
-			if (Math.abs(location.getPhi() - PAVONIS_MONS_PHI) < .04D) {
+		if (Math.abs(location.getTheta() - PAVONIS_MONS_THETA) < .04D
+			&& Math.abs(location.getPhi() - PAVONIS_MONS_PHI) < .04D) {
 				if (elevation < 3D)
-					result = 14.057;
-			}
+					return (elevation + 14.057) / 2.0;
 		}
 
-		else if (Math.abs(location.getTheta() - HECATES_THOLUS_THETA) < .04D) {
-			if (Math.abs(location.getPhi() - HECATES_THOLUS_PHI) < .04D) {
+		if (Math.abs(location.getTheta() - HECATES_THOLUS_THETA) < .04D
+			&& Math.abs(location.getPhi() - HECATES_THOLUS_PHI) < .04D) {
 //				if (elevation < 2.5D)
-					result = 4.853;
-			}
+					return (elevation + 4.853) / 2.0;
 		}
 
 		// Patch errors at Ascraeus Mons.
-		else if (Math.abs(location.getTheta() - ALBOR_THOLUS_THETA) < .04D) {
-			if (Math.abs(location.getPhi() - ALBOR_THOLUS_PHI) < .04D) {
+		if (Math.abs(location.getTheta() - ALBOR_THOLUS_THETA) < .04D
+			&& Math.abs(location.getPhi() - ALBOR_THOLUS_PHI) < .04D) {
 //				if (elevation < 2D)
-					result = 3.925;
-			}
+					return (elevation + 3.925) / 2.0;
 		}
 
 //		// Patch errors at the north pole.
 //		else if (Math.abs(location.getTheta() - NORTH_POLE_THETA) < .2D) {
 //			if (Math.abs(location.getPhi() - NORTH_POLE_PHI) < .04D) {
 ////				if (elevation < 2D)
-//					result = 1.015;
+//					return 1.015;
 //			}
 //		}
 //
@@ -499,11 +480,11 @@ public class TerrainElevation implements Serializable {
 //		else if (Math.abs(location.getTheta() - SOUTH_POLE_THETA) < .04D) {
 //			if (Math.abs(location.getPhi() - SOUTH_POLE_PHI) < .04D) {
 ////				if (elevation < 2D)
-//					result = .783;
+//					return .783;
 //			}
 //		}
 
-		return result;
+		return elevation;
 	}
 
 	public Set<CollectionSite> getCollectionSites() {

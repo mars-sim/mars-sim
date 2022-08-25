@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * PersonHealthCommand.java
- * @version 3.1.2 2020-12-30
+ * @date 2022-08-24
  * @author Barry Evans
  */
 
@@ -29,8 +29,9 @@ public class PersonHealthCommand extends AbstractPersonCommand {
 	private static final String HUNGER = "Hunger";
 	private static final String THIRST = "Thirst";
 	private static final String STRESS = "Stress";
+	private static final String PERFORMANCE = "Performance";
+	private static final String ENERGY = "Energy";
 	private static final String PROBLEMS = "Health problems";
-
 
 	private static final List<String> CHARACTERISTICS = List.of(
 													FATIGUE, 
@@ -61,12 +62,12 @@ public class PersonHealthCommand extends AbstractPersonCommand {
 			String h = !pc.isHungry() ? "(Not Hungry)" : "(Hungry)";
 			String t = !pc.isThirsty() ? "(Not Thirsty)" : "(Thirsty)";
 			
-			responseText.appendLabeledString("Thirst", String.format(CommandHelper.MILLISOL_FORMAT, pc.getThirst()) + " " + t);		
-			responseText.appendLabeledString("Hunger", String.format(CommandHelper.MILLISOL_FORMAT, pc.getHunger()) + " " + h);
-			responseText.appendLabeledString("Energy", energy + " kJ");
-			responseText.appendLabeledString("Fatigue", String.format(CommandHelper.MILLISOL_FORMAT, pc.getFatigue()));		
-			responseText.appendLabeledString("Performance", String.format(CommandHelper.PERC_FORMAT, perf));
-			responseText.appendLabeledString("Stress",  String.format(CommandHelper.PERC_FORMAT, stress));		
+			responseText.appendLabeledString(THIRST, String.format(CommandHelper.MILLISOL_FORMAT, pc.getThirst()) + " " + t);		
+			responseText.appendLabeledString(HUNGER, String.format(CommandHelper.MILLISOL_FORMAT, pc.getHunger()) + " " + h);
+			responseText.appendLabeledString(ENERGY, energy + " kJ");
+			responseText.appendLabeledString(FATIGUE, String.format(CommandHelper.MILLISOL_FORMAT, pc.getFatigue()));		
+			responseText.appendLabeledString(PERFORMANCE, String.format(CommandHelper.PERC_FORMAT, perf));
+			responseText.appendLabeledString(STRESS,  String.format(CommandHelper.PERC_FORMAT, stress));		
 			responseText.appendLabeledString("Surplus Ghrelin", String.format(CommandHelper.MILLISOL_FORMAT,
 											person.getCircadianClock().getSurplusGhrelin()));
 			responseText.appendLabeledString("Surplus Leptin", String.format(CommandHelper.MILLISOL_FORMAT,
@@ -95,7 +96,8 @@ public class PersonHealthCommand extends AbstractPersonCommand {
 	}
 
 	/**
-	 * Change certain characteristics of a condition
+	 * Changes certain characteristics of a condition.
+	 * 
 	 * @param context
 	 * @param pc
 	 */
@@ -134,13 +136,14 @@ public class PersonHealthCommand extends AbstractPersonCommand {
 				break;
 	
 			default:
-				context.println("Do not understand");
+				context.println("Invalid input !");
 			}
 		}
 	}
 	
 	/**
-	 * Add a new medical proble, to a person
+	 * Adds a new medical problem, to a person.
+	 * 
 	 * @param context
 	 * @param pc
 	 */

@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * BedCommand.java
- * @version 3.1.2 2020-12-30
+ * @date 2022-08-24
  * @author Barry Evans
  */
 

@@ -1,4 +1,4 @@
-/**
+/*
  * Mars Simulation Project
  * VehicleChat.java
  * @date 2022-06-27
