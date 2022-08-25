@@ -318,12 +318,12 @@ implements SettlementMapLayer {
 				String last1 = words[s-1];
 				String last2 = words[s-2];
 				String last3 = words[s-3];
-				int s_1 = last1.length();
-				String test_1 = last1.substring(s_1-1);
-				int s_2 = last2.length();
-				String test_2 = last2.substring(s_2-1);
-				int s_3 = last3.length();
-				String test_3 = last3.substring(s_3-1);
+				int s1 = last1.length();
+				String test_1 = last1.substring(s1-1);
+				int s2 = last2.length();
+				String test_2 = last2.substring(s2-1);
+				int s3 = last3.length();
+				String test_3 = last3.substring(s3-1);
 				words[s-3] = last3 + " " + last2 + " " + last1;
 				s = s-2;
 				if (test_1.equalsIgnoreCase("m") && test_2.equalsIgnoreCase("x") && test_3.equalsIgnoreCase("m")) {

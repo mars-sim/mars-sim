@@ -174,14 +174,14 @@ public class TabPanelOrganization extends TabPanel {
 	public void valueChanged(TreeSelectionEvent e) {
 		//Returns the last path element of the selection.
 		// This method is useful only when the selection model allows a single selection.
-		DefaultMutableTreeNode node = (DefaultMutableTreeNode)
-		                       tree.getLastSelectedPathComponent();
+//		DefaultMutableTreeNode node = (DefaultMutableTreeNode)
+//		                       tree.getLastSelectedPathComponent();
 
-	    if (node == null)
+//	    if (node == null)
 	    //Nothing is selected.
-	    return;
+//	    return;
 
-	    // TODO: update nodes 
+	    // Update nodes 
 //	    Object nodeInfo = node.getUserObject();
 //	    if (node.isLeaf()) {
 //	        ;

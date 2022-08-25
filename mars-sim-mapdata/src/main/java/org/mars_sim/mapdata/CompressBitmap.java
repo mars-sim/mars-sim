@@ -84,7 +84,7 @@ public class CompressBitmap {
 				System.out.println("zipStats has issues: " + e.getMessage());
 			}
 
-		} catch (IOException e1) {
+		} catch (Exception e1) {
 			 System.out.println(e1.getMessage());
 		}
         

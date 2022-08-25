@@ -410,7 +410,7 @@ public class TabPanelLog extends TabPanel {
 			if (selectedSolCache != selectedSol) {
 				selectedSolCache = selectedSol;
 
-				if (todayInteger.equals((Integer) selectedSolCache)) {
+				if (todayInteger.equals(selectedSolCache)) {
 					// Load today's schedule
 					oneDayStatuses = allStatuses.get(todayInteger);
 				} 

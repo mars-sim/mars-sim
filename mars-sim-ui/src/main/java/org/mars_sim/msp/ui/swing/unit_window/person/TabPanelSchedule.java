@@ -12,8 +12,6 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -89,13 +87,12 @@ public class TabPanelSchedule extends TabPanel {
 	private DefaultComboBoxModel<Object> comboBoxModel;
 	private ScheduleTableModel scheduleTableModel;
 
-	private List<OneActivity> activities = new ArrayList<OneActivity>();
+	private List<OneActivity> activities = new ArrayList<>();
 	private List<Integer> solList;
 	private Map<Integer, List<OneActivity>> allActivities;
 
 	/** The Person instance. */
 	private Person person = null;
-	
 	/** The Robot instance. */
 	private Robot robot = null;
 	
@@ -122,7 +119,7 @@ public class TabPanelSchedule extends TabPanel {
 		// Prepare combo box
 		if (unit instanceof Person) {
 			person = (Person) unit;
-		} else if (unit instanceof Robot) {
+		} else {
 			robot = (Robot) unit;
 		}
 	}
@@ -217,15 +214,13 @@ public class TabPanelSchedule extends TabPanel {
 			solBox.setSelectedItem(todayInteger);
 
 		solBox.setSelectedItem((Integer) 1);
-		solBox.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				selectedSol = (Integer) solBox.getSelectedItem();
-				if (selectedSol != null) // e.g. when first loading up
-					scheduleTableModel.update((int) selectedSol);
-				if (selectedSol.equals(todayInteger))
-					// Binds comboBox with realTimeUpdateCheckBox
-					realTimeBox.setSelected(true);
-			}
+		solBox.addActionListener(e -> {
+			selectedSol = (Integer) solBox.getSelectedItem();
+			if (selectedSol != null) // e.g. when first loading up
+				scheduleTableModel.update((int) selectedSol);
+			if (selectedSol != null && selectedSol.equals(todayInteger))
+				// Binds comboBox with realTimeUpdateCheckBox
+				realTimeBox.setSelected(true);
 		});
 
 		// Create realTimeUpdateCheckBox.
@@ -235,26 +230,22 @@ public class TabPanelSchedule extends TabPanel {
 		realTimeBox.setFont(new Font("Serif", Font.PLAIN, 12));
 		TooltipManager.setTooltip(realTimeBox, Msg.getString("TabPanelSchedule.tooltip.realTimeUpdate"),
 				TooltipWay.down);
-		realTimeBox.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				if (realTimeBox.isSelected()) {
-					isRealTimeUpdate = true;
-					scheduleTableModel.update(today);
-					solBox.setSelectedItem(todayInteger);
-				} else
-					isRealTimeUpdate = false;
-			}
+		realTimeBox.addActionListener(s -> {
+			if (realTimeBox.isSelected()) {
+				isRealTimeUpdate = true;
+				scheduleTableModel.update(today);
+				solBox.setSelectedItem(todayInteger);
+			} else
+				isRealTimeUpdate = false;
 		});
 		
 		topPanel.add(realTimeBox, BorderLayout.WEST);
-
 		topPanel.add(new WebPanel(new JLabel("                    ")), BorderLayout.EAST);
-		
 		
 		// Create schedule table model
 		if (unit instanceof Person)
 			scheduleTableModel = new ScheduleTableModel((Person) unit);
-		else if (unit instanceof Robot)
+		else 
 			scheduleTableModel = new ScheduleTableModel((Robot) unit);
 
 		// Create attribute scroll panel
@@ -383,7 +374,7 @@ public class TabPanelSchedule extends TabPanel {
 		}
 
 		// Checks if the user is still looking at a previous sol's schedule
-		if (!selectedSol.equals(todayInteger)) {
+		if (selectedSol != null && !selectedSol.equals(todayInteger)) {
 			// If yes, turn off the Real Time Update automatically
 			isRealTimeUpdate = false;
 			realTimeBox.setSelected(false);

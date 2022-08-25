@@ -319,7 +319,7 @@ public class SimulationConfig implements Serializable {
 		xmlDirExist = xmlLoc.exists();
 
 		boolean versionFileExist = versionLoc.exists();
-		boolean exceptionFileExist = exceptionLoc.exists();
+//		boolean exceptionFileExist = exceptionLoc.exists();
 
 		boolean xmlDirDeleted = false;
 		boolean invalid = false;

@@ -90,21 +90,19 @@ public abstract class ModalInternalFrame extends JInternalFrame {
 					Object source = event.getSource();
 					boolean dispatch = true;
 
-					if (event instanceof MouseEvent) {
-						MouseEvent e = (MouseEvent) event;
-						MouseEvent m = SwingUtilities.convertMouseEvent((Component) e.getSource(), e, this);
-
+//					if (event instanceof MouseEvent) {
+//						MouseEvent e = (MouseEvent) event;
+//						MouseEvent m = SwingUtilities.convertMouseEvent((Component) e.getSource(), e, this);
 						// Implement this bug fix posted in
 						// https://community.oracle.com/thread/1358431?start=0&tstart=0
-						if (!this.contains(m.getPoint()) && e.getID() != MouseEvent.MOUSE_DRAGGED
-								&& !e.getSource().getClass().getName().equals("javax.swing.Popup$HeavyWeightWindow")
-								&& e.getID() != MouseEvent.MOUSE_RELEASED) {
-							dispatch = false;
+//						if (!this.contains(m.getPoint()) && e.getID() != MouseEvent.MOUSE_DRAGGED
+//								&& !e.getSource().getClass().getName().equals("javax.swing.Popup$HeavyWeightWindow")
+//								&& e.getID() != MouseEvent.MOUSE_RELEASED) {
+//							dispatch = false;
+//						}
+//					}
 
-						}
-					}
-
-					else if (event instanceof ActiveEvent) {
+					if (event instanceof ActiveEvent) {
 						ActiveEvent activeEvent = (ActiveEvent) event;
 						activeEvent.dispatch();
 					}
