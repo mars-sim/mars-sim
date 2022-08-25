@@ -91,7 +91,7 @@ public class ExitAirlock extends Task implements Serializable {
 	
 	// Data members
 	/** Is this a building airlock in a settlement? */
-	private boolean inSettlement;
+	private boolean inSettlement = false;
 	
 	/** Is the airlock's EVA building attached to astronomy observatory ? */
 	private boolean isObservatoryAttached = false;
@@ -117,15 +117,12 @@ public class ExitAirlock extends Task implements Serializable {
 
 		if (airlock.getAirlockType() == AirlockType.BUILDING_AIRLOCK) {
 			inSettlement = true;
+			Building airlockBuilding = (Building)(airlock.getEntity());
+			if (airlockBuilding.getSettlement().getBuildingManager().isObservatoryAttached(airlockBuilding)) {
+				isObservatoryAttached = true;
+			}
 		}
-		else
-			inSettlement = false;
 
-		Building airlockBuilding = (Building)(airlock.getEntity());
-		if (airlockBuilding.getSettlement().getBuildingManager().isObservatoryAttached(airlockBuilding)) {
-			isObservatoryAttached = true;
-		}
-		
 		// Initialize data members
 		setDescription(Msg.getString("Task.description.exitAirlock.detail", airlock.getEntityName())); // $NON-NLS-1$
 		// Initialize task phase
