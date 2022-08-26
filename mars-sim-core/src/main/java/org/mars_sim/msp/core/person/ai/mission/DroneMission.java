@@ -243,7 +243,7 @@ public abstract class DroneMission extends VehicleMission {
 						Person person = (Person) member;
 						if (isDroneInAGarage && !person.getMind().getTaskManager().hasSameTask("LoadVehicleGarage")) {
 							person.getMind().getTaskManager().addAPendingTask("LoadVehicleGarage", false);
-						} else if (!person.getMind().getTaskManager().hasSameTask("LoadVehicleEVA")) {
+						} else if (person.isNominallyFit() && !person.getMind().getTaskManager().hasSameTask("LoadVehicleEVA")) {
 							person.getMind().getTaskManager().addAPendingTask("LoadVehicleEVA", false);
 						}
 					}
@@ -252,7 +252,7 @@ public abstract class DroneMission extends VehicleMission {
 			else {
 				if (member instanceof Person) {
 					Person person = (Person) member;
-					if (!person.getMind().getTaskManager().hasSameTask("LoadVehicleEVA")) {
+					if (person.isNominallyFit() && !person.getMind().getTaskManager().hasSameTask("LoadVehicleEVA")) {
 						person.getMind().getTaskManager().addAPendingTask("LoadVehicleEVA", false);
 					}
 				}
@@ -342,7 +342,7 @@ public abstract class DroneMission extends VehicleMission {
 				boolean result = false;
 				// Alert the people in the disembarked settlement to unload cargo
 				for (Person person: disembarkSettlement.getIndoorPeople()) {
-					if (person.isInSettlement() && person.isBarelyFit()) {
+					if (person.isInSettlement()) {
 						// Note : Random chance of having person unload (this allows person to do other things
 						// sometimes)
 						if (RandomUtil.lessThanRandPercent(50)) {
@@ -376,15 +376,12 @@ public abstract class DroneMission extends VehicleMission {
 	private boolean unloadCargo(Person person, Drone drone) {
 		boolean result = false;
 		if (isInAGarage() && !person.getMind().getTaskManager().hasSameTask("UnloadVehicleGarage")) {
-			person.getMind().getTaskManager().addAPendingTask("UnloadVehicleGarage", false);			
+			result = person.getMind().getTaskManager().addAPendingTask("UnloadVehicleGarage", false);			
 		}
 
-		else {
-			// Check if it is day time.
-			if (!EVAOperation.isGettingDark(person) 
-					&& !person.getMind().getTaskManager().hasSameTask("UnloadVehicleEVA")) {
-				result = person.getMind().getTaskManager().addAPendingTask("UnloadVehicleEVA", false);
-			}
+		else if (person.isNominallyFit() && !EVAOperation.isGettingDark(person) 
+				&& !person.getMind().getTaskManager().hasSameTask("UnloadVehicleEVA")) {
+			result = person.getMind().getTaskManager().addAPendingTask("UnloadVehicleEVA", false);
 		}
 		return result;
 	}

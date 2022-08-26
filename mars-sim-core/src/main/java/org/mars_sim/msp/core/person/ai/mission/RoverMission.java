@@ -304,11 +304,12 @@ public abstract class RoverMission extends VehicleMission {
 				Mission m = person.getMission();
 				if (m != null && m != this)
 					hasAnotherMission = true;
-
-				if (!hasAnotherMission && isRoverInAGarage && !person.getMind().getTaskManager().hasSameTask("LoadVehicleGarage")) {
-					person.getMind().getTaskManager().addAPendingTask("LoadVehicleGarage", false);
-				} else if (!person.getMind().getTaskManager().hasSameTask("LoadVehicleEVA")) {
-					person.getMind().getTaskManager().addAPendingTask("LoadVehicleEVA", false);
+				if (!hasAnotherMission) {
+					if (isRoverInAGarage && !person.getMind().getTaskManager().hasSameTask("LoadVehicleGarage")) {
+						person.getMind().getTaskManager().addAPendingTask("LoadVehicleGarage", false);
+					} else if (person.isNominallyFit() && !person.getMind().getTaskManager().hasSameTask("LoadVehicleEVA")) {
+						person.getMind().getTaskManager().addAPendingTask("LoadVehicleEVA", false);
+					}
 				}
 		}
 
@@ -516,10 +517,8 @@ public abstract class RoverMission extends VehicleMission {
 			// Note : Set random chance of having person unloading resources,
 			// thus allowing person to do other urgent things
 			for (Worker mm : getMembers()) {
-				if (((Person)mm).isBarelyFit()) {
-					if (RandomUtil.lessThanRandPercent(70)) {
-						unloadCargo(((Person)mm), rover);
-					}
+				if (RandomUtil.lessThanRandPercent(50)) {
+					unloadCargo(((Person)mm), rover);
 				}
 			}
 		}
@@ -558,12 +557,9 @@ public abstract class RoverMission extends VehicleMission {
 			person.getMind().getTaskManager().addAPendingTask("UnloadVehicleGarage", false);
 		}
 
-		else {
-			// Check if it is day time.
-			if (!EVAOperation.isGettingDark(person)
-					 && !person.getMind().getTaskManager().hasSameTask("UnloadVehicleEVA")) {
-				person.getMind().getTaskManager().addAPendingTask("UnloadVehicleEVA", false);
-			}
+		else if (person.isNominallyFit() && !EVAOperation.isGettingDark(person)
+				&& !person.getMind().getTaskManager().hasSameTask("UnloadVehicleEVA")) {
+			person.getMind().getTaskManager().addAPendingTask("UnloadVehicleEVA", false);
 		}
 	}
 
