@@ -729,5 +729,6 @@ public abstract class TaskManager implements Serializable, Temporal {
 	 */
 	public static void initializeInstances(MarsClock clock) {
 		marsClock = clock;
-	}	
+	}
+
 }

@@ -423,7 +423,7 @@ public class CommanderWindow extends ToolWindow {
 		addButton.addActionListener(e -> {
 				Person selected = (Person) personComboBox.getSelectedItem();
 				String taskName = (String) taskComboBox.getSelectedItem();
-				selected.getMind().getTaskManager().addAPendingTask(taskName);
+				selected.getMind().getTaskManager().addAPendingTask(taskName, true);
 
 				logBookTA.append(marsClock.getTrucatedDateTimeStamp()
 						+ " - Assigning '" + taskName + "' to " + selected + "\n");

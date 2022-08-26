@@ -2164,6 +2164,13 @@ public class BuildingManager implements Serializable {
 		if (getEVAAttachedBuilding(airlockBuilding).hasFunction(FunctionType.ASTRONOMICAL_OBSERVATION))
 			return true;
 		
+		List<Building> list = airlockBuilding.getSettlement().createAdjacentBuildings(airlockBuilding);
+ 		for (Building bb : list) {
+ 			if (bb.hasFunction(FunctionType.ASTRONOMICAL_OBSERVATION)) {
+ 				return true;
+ 			}
+ 		}
+ 		
 		return false;
 	}
 	

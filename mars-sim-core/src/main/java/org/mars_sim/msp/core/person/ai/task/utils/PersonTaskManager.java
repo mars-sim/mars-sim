@@ -200,7 +200,7 @@ public class PersonTaskManager extends TaskManager implements Serializable {
 			MetaTask metaTask = getAPendingMetaTask();
 			if (metaTask != null) {
 				Task newTask = metaTask.constructInstance(person);
-				logger.info(person, "Starting a task order of '" + newTask.getName() + "'.");
+//				logger.info(person, 20_000L, "Starting a task order of '" + newTask.getName() + "'.");
 				startTask(newTask);
 			}
 
@@ -219,18 +219,31 @@ public class PersonTaskManager extends TaskManager implements Serializable {
 		return pendingTasks;
 	}
 
-//	public boolean hasPendingTask() {
-//		return !pendingTasks.isEmpty();
-//	}
-
 	/**
-	 * Adds a pending task
+	 * Adds a pending task if it is not in the pendingTask list yet.
 	 *
 	 * @param task
+	 * @return
 	 */
-	public void addAPendingTask(String task) {
-		pendingTasks.add(task);
-		logger.info(person, "Given the new task order of '" + task + "'.");
+	public boolean addAPendingTask(String task, boolean allowDuplicate) {
+		if (allowDuplicate) {
+			if (!pendingTasks.contains(task)) {
+				logger.info(person, 20_000L, "Given a new task order of '" + task + "'.");
+			}
+			else {
+				logger.info(person, 20_000L, "Given a duplicated task order of '" + task + "'.");
+			}
+			pendingTasks.add(task);
+			return true;
+		}
+		
+		if (!pendingTasks.contains(task)) {
+			pendingTasks.add(task);
+			logger.info(person, 20_000L, "Given a new task order of '" + task + "'.");
+			return true;
+		}
+		
+		return false;
 	}
 
 	/**
@@ -243,6 +256,19 @@ public class PersonTaskManager extends TaskManager implements Serializable {
 		logger.info(worker, "Removed the task order of '" + task + "'.");
 	}
 
+	/**
+	 * Checks if the person is currently performing this task.
+	 * 
+	 * @param task
+	 * @return
+	 */
+	public boolean hasSameTask(String task) {
+		if (getTaskName().equals(task))
+			return true;
+		
+		return false;
+	}
+	
 	/**
 	 * Gets the first pending meta task in the queue
 	 *

@@ -97,6 +97,7 @@ public class TabPanelLog extends TabPanel {
 
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void buildUI(JPanel content) {
 		
@@ -237,12 +238,12 @@ public class TabPanelLog extends TabPanel {
 					
 			Collections.sort(solList, Collections.reverseOrder());
 
-			for (int s : solList) {
-				// Check if this element exist
-				if (comboBoxModel.getIndexOf(s) == -1) {
-					comboBoxModel.addElement(s);
-				}
-			}		
+//			for (int s : solList) {
+//				// Check if this element exist
+//				if (comboBoxModel.getIndexOf(s) == -1) {
+//					comboBoxModel.addElement(s);
+//				}
+//			}		
 			
 			// Update the solList comboBox
 			solBox.setModel(comboBoxModel);
@@ -400,12 +401,12 @@ public class TabPanelLog extends TabPanel {
 		 */
 		public void update() {
 				
-			for (int s : solList) {
-				// Check if this element exist
-				if (comboBoxModel.getIndexOf(s) == -1) {
-					comboBoxModel.addElement(s);
-				}
-			}
+//			for (int s : solList) {
+//				// Check if this element exist
+//				if (comboBoxModel.getIndexOf(s) == -1) {
+//					comboBoxModel.addElement(s);
+//				}
+//			}
 			
 			if (selectedSolCache != selectedSol) {
 				selectedSolCache = selectedSol;

@@ -305,12 +305,10 @@ public abstract class RoverMission extends VehicleMission {
 				if (m != null && m != this)
 					hasAnotherMission = true;
 
-				if (!hasAnotherMission && isRoverInAGarage) {
-					assignTask(person,
-								new LoadVehicleGarage(person, this));
-				} else if (!hasAnotherMission) {
-					// Note: Should check if it is day time to do EVA
-					assignTask(person, new LoadVehicleEVA(person, this));
+				if (!hasAnotherMission && isRoverInAGarage && !person.getMind().getTaskManager().hasSameTask("LoadVehicleGarage")) {
+					person.getMind().getTaskManager().addAPendingTask("LoadVehicleGarage", false);
+				} else if (!person.getMind().getTaskManager().hasSameTask("LoadVehicleEVA")) {
+					person.getMind().getTaskManager().addAPendingTask("LoadVehicleEVA", false);
 				}
 		}
 
@@ -550,20 +548,21 @@ public abstract class RoverMission extends VehicleMission {
 	 * @param p
 	 * @param rover
 	 */
-	private void unloadCargo(Person p, Rover rover) {
+	private void unloadCargo(Person person, Rover rover) {
 
-		Mission m = p.getMission();
+		Mission m = person.getMission();
 		if (m != null && !m.equals(this))
 			return;
 
-		if (isInAGarage()) {
-			assignTask(p, new UnloadVehicleGarage(p, rover));
+		if (isInAGarage() && !person.getMind().getTaskManager().hasSameTask("UnloadVehicleGarage")) {
+			person.getMind().getTaskManager().addAPendingTask("UnloadVehicleGarage", false);
 		}
 
 		else {
 			// Check if it is day time.
-			if (!EVAOperation.isGettingDark(p)) {
-				assignTask(p, new UnloadVehicleEVA(p, rover));
+			if (!EVAOperation.isGettingDark(person)
+					 && !person.getMind().getTaskManager().hasSameTask("UnloadVehicleEVA")) {
+				person.getMind().getTaskManager().addAPendingTask("UnloadVehicleEVA", false);
 			}
 		}
 	}
@@ -662,7 +661,7 @@ public abstract class RoverMission extends VehicleMission {
 				Walk walk = Walk.createWalkingTask(p, adjustedLoc, 0, destinationBuilding);
 				if (walk != null) {
 					// walk back home
-					assignTask(p,walk);
+					assignTask(p, walk);
 				}
 
 				else if (!hasStrength) {

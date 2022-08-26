@@ -241,11 +241,10 @@ public abstract class DroneMission extends VehicleMission {
 				if (RandomUtil.lessThanRandPercent(50)) {
 					if (member instanceof Person) {
 						Person person = (Person) member;
-						if (isDroneInAGarage) {
-							assignTask(person,
-										new LoadVehicleGarage(person, this));
-						} else {
-							assignTask(person, new LoadVehicleEVA(person, this));
+						if (isDroneInAGarage && !person.getMind().getTaskManager().hasSameTask("LoadVehicleGarage")) {
+							person.getMind().getTaskManager().addAPendingTask("LoadVehicleGarage", false);
+						} else if (!person.getMind().getTaskManager().hasSameTask("LoadVehicleEVA")) {
+							person.getMind().getTaskManager().addAPendingTask("LoadVehicleEVA", false);
 						}
 					}
 				}
@@ -253,7 +252,9 @@ public abstract class DroneMission extends VehicleMission {
 			else {
 				if (member instanceof Person) {
 					Person person = (Person) member;
-					assignTask(person, new LoadVehicleEVA(person, this));
+					if (!person.getMind().getTaskManager().hasSameTask("LoadVehicleEVA")) {
+						person.getMind().getTaskManager().addAPendingTask("LoadVehicleEVA", false);
+					}
 				}
 			}
 		}
@@ -372,16 +373,17 @@ public abstract class DroneMission extends VehicleMission {
 	 * @param p
 	 * @param drone
 	 */
-	private boolean unloadCargo(Person p, Drone drone) {
+	private boolean unloadCargo(Person person, Drone drone) {
 		boolean result = false;
-		if (isInAGarage()) {
-			result = assignTask(p, new UnloadVehicleGarage(p, drone));
+		if (isInAGarage() && !person.getMind().getTaskManager().hasSameTask("UnloadVehicleGarage")) {
+			person.getMind().getTaskManager().addAPendingTask("UnloadVehicleGarage", false);			
 		}
 
 		else {
 			// Check if it is day time.
-			if (!EVAOperation.isGettingDark(p)) {
-				result = assignTask(p, new UnloadVehicleEVA(p, drone));
+			if (!EVAOperation.isGettingDark(person) 
+					&& !person.getMind().getTaskManager().hasSameTask("UnloadVehicleGarage")) {
+				result = person.getMind().getTaskManager().addAPendingTask("UnloadVehicleEVA", false);
 			}
 		}
 		return result;
