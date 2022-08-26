@@ -42,8 +42,11 @@ public class RepairInsideMalfunction extends Task implements Repair, Serializabl
 
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(RepairInsideMalfunction.class.getName());
-
-	/** Task name */
+	
+	/** SImple Task name */
+	static final String SIMPLE_NAME = RepairInsideMalfunction.class.getSimpleName();
+	
+	/** Task description name */
 	static final String NAME = Msg.getString("Task.description.repairMalfunction"); //$NON-NLS-1$
 
 	/** Task phases. */

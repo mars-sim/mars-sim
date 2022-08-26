@@ -676,8 +676,9 @@ public abstract class RoverMission extends VehicleMission {
 							+ p.getBuildingLocation().getNickName()); //$NON-NLS-1$
 
 					// Note: how to force the person to receive some form of medical treatment ?
-					p.getMind().getTaskManager().clearAllTasks("Rover rescue");
-					p.getMind().getTaskManager().addTask(new RequestMedicalTreatment(p));
+		
+    				p.getMind().getTaskManager().addAPendingTask(RequestMedicalTreatment.SIMPLE_NAME, false);
+
 				}
 				else {
 					logger.severe(p, "Cannot find a walk path from "

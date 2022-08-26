@@ -35,12 +35,16 @@ public class RequestMedicalTreatment extends Task implements Serializable {
     private static final long serialVersionUID = 1L;
 
     // Static members
+    
     /** The stress modified per millisol. */
     private static final double STRESS_MODIFIER = .3D;
 
     /** default logger. */
     // For Future Use: private static final Logger logger = Logger.getLogger(RequestMedicalTreatment.class.getName())
 
+	/** SImple Task name */
+	public static final String SIMPLE_NAME = RequestMedicalTreatment.class.getSimpleName();
+	
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.requestMedicalTreatment"); //$NON-NLS-1$

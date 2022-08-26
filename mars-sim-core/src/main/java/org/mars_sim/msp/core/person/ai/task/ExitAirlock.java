@@ -1173,8 +1173,8 @@ public class ExitAirlock extends Task implements Serializable {
 							v.getName() + hasMission
 							+ ". Will try to repair an EVA suit.");
 
-					if (!person.getMind().getTaskManager().getLastTaskName().equalsIgnoreCase(RepairInsideMalfunction.NAME))
-						person.getMind().getTaskManager().addTask(new RepairInsideMalfunction(person));
+					if (person.isNominallyFit() && !person.getMind().getTaskManager().hasSameTask(RepairInsideMalfunction.SIMPLE_NAME))
+						person.getMind().getTaskManager().addAPendingTask(RepairInsideMalfunction.SIMPLE_NAME, false);
 
 					if (airlock.getCheckEVASuit() > 100)
 						// Set the emergency beacon on since no EVA suit is available

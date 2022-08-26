@@ -43,7 +43,10 @@ implements Serializable {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(PrescribeMedication.class.getName());
     
-	/** Task name */
+	/** SImple Task name */
+	static final String SIMPLE_NAME = PrescribeMedication.class.getSimpleName();
+	
+	/** Task description name */
     private static final String NAME = Msg.getString(
             "Task.description.prescribeMedication"); //$NON-NLS-1$
 
@@ -78,12 +81,14 @@ implements Serializable {
             if (person.isOutside())
             	endTask();
             // If in settlement, move doctor to building patient is in.
-            else if (person.isInSettlement() && patient.getBuildingLocation() != null) {
+            else if (person.isInSettlement() && patient.getBuildingLocation() != null
+				&& person.isNominallyFit() && !person.getMind().getTaskManager().hasSameTask(RequestMedicalTreatment.SIMPLE_NAME)) {
+
                 // Walk to patient's building.
-//            	patient.getMind().getTaskManager().clearTask();
-            	patient.getMind().getTaskManager().addTask(new RequestMedicalTreatment(patient));
-            	//walkToActivitySpotInBuilding(patient.getBuildingLocation(), FunctionType.MEDICAL_CARE, false);
-                //walkToRandomLocInBuilding(BuildingManager.getBuilding(patient), false);
+            	walkToActivitySpotInBuilding(person.getBuildingLocation(), FunctionType.MEDICAL_CARE, false);
+            	walkToActivitySpotInBuilding(patient.getBuildingLocation(), FunctionType.MEDICAL_CARE, false);
+            	
+            	patient.getMind().getTaskManager().addAPendingTask(RequestMedicalTreatment.SIMPLE_NAME, false);
             }
             else
             	endTask();
@@ -112,10 +117,12 @@ implements Serializable {
             // If in settlement, move doctor to building patient is in.
             if (robot.isInSettlement() && patient.getBuildingLocation() != null) {
                 // Walk to patient's building.
-//            	patient.getMind().getTaskManager().clearTask();
-            	patient.getMind().getTaskManager().addTask(new RequestMedicalTreatment(patient));
-            	//walkToActivitySpotInBuilding(BuildingManager.getBuilding(patient), FunctionType.MEDICAL_CARE, false);
-                //walkToRandomLocInBuilding(BuildingManager.getBuilding(patient), false);
+            	
+                // Walk to patient's building.
+            	walkToActivitySpotInBuilding(robot.getBuildingLocation(), FunctionType.MEDICAL_CARE, false);
+            	walkToActivitySpotInBuilding(patient.getBuildingLocation(), FunctionType.MEDICAL_CARE, false);
+            	
+            	patient.getMind().getTaskManager().addAPendingTask(RequestMedicalTreatment.SIMPLE_NAME, false);
             }
             else
             	endTask();
