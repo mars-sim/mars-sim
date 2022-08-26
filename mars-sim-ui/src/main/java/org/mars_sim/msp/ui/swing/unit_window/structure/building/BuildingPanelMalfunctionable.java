@@ -39,10 +39,11 @@ public class BuildingPanelMalfunctionable extends BuildingFunctionPanel {
 
 	/** The malfunctionable building. */
 	private Malfunctionable malfunctionable;
-	/** List of malfunction panels. */
+	
+	/** A collection of malfunction panels. */
 	private Collection<MalfunctionPanel> malfunctionPanels;
-	/** List of malfunctions in building. */
-	private Collection<Malfunction> malfunctionCache;
+	/** A collection of malfunctions in building. */
+	private Collection<Malfunction> malfunctions;
 	/** Malfunction list panel. */
 	private WebPanel malfunctionListPanel;
 
@@ -76,6 +77,7 @@ public class BuildingPanelMalfunctionable extends BuildingFunctionPanel {
 		WebScrollPane scrollPanel = new WebScrollPane();
 		scrollPanel.setPreferredSize(new Dimension(170, 120));
 		center.add(scrollPanel, BorderLayout.NORTH);
+		// Create titled border panel
 		addBorder(center, "Active Malfunctions");
 		
 		scrollPanel.setOpaque(false);
@@ -93,10 +95,11 @@ public class BuildingPanelMalfunctionable extends BuildingFunctionPanel {
 		malfunctionListPanel.setLayout(new BoxLayout(malfunctionListPanel, BoxLayout.Y_AXIS));
 		malfunctionListMainPanel.add(malfunctionListPanel, BorderLayout.NORTH);
 
-		// Create malfunction panels
-		malfunctionCache = new ArrayList<>(malfunctionable.getMalfunctionManager().getMalfunctions());
 		malfunctionPanels = new ArrayList<>();
-		Iterator<Malfunction> i = malfunctionCache.iterator();
+		
+		// Create malfunction panels
+		malfunctions = new ArrayList<>(malfunctionable.getMalfunctionManager().getMalfunctions());
+		Iterator<Malfunction> i = malfunctions.iterator();
 		while (i.hasNext()) {
 			MalfunctionPanel panel = new MalfunctionPanel(i.next(), null);
 			malfunctionListPanel.add(panel);
@@ -107,15 +110,15 @@ public class BuildingPanelMalfunctionable extends BuildingFunctionPanel {
 	@Override
 	public void update() {
 
-		Collection<Malfunction> malfunctions = malfunctionable.getMalfunctionManager().getMalfunctions();
+		Collection<Malfunction> newMalfunctions = malfunctionable.getMalfunctionManager().getMalfunctions();
 
 		// Update malfunction panels if necessary.
-		if (!CollectionUtils.isEqualCollection(malfunctionCache, malfunctions)) {
+		if (!CollectionUtils.isEqualCollection(malfunctions, newMalfunctions)) {
 			// Add malfunction panels for new malfunctions.
-			Iterator<Malfunction> iter1 = malfunctions.iterator();
+			Iterator<Malfunction> iter1 = newMalfunctions.iterator();
 			while (iter1.hasNext()) {
 				Malfunction malfunction = iter1.next();
-				if (!malfunctionCache.contains(malfunction)) {
+				if (!malfunctions.contains(malfunction)) {
 					MalfunctionPanel panel = new MalfunctionPanel(malfunction, null);
 					malfunctionPanels.add(panel);
 					malfunctionListPanel.add(panel);
@@ -123,10 +126,10 @@ public class BuildingPanelMalfunctionable extends BuildingFunctionPanel {
 			}
 
 			// Remove malfunction panels for repaired malfunctions.
-			Iterator<Malfunction> iter2 = malfunctionCache.iterator();
+			Iterator<Malfunction> iter2 = malfunctions.iterator();
 			while (iter2.hasNext()) {
 				Malfunction malfunction = iter2.next();
-				if (!malfunctions.contains(malfunction)) {
+				if (!newMalfunctions.contains(malfunction)) {
 					MalfunctionPanel panel = getMalfunctionPanel(malfunction);
 					if (panel != null) {
 						malfunctionPanels.remove(panel);
@@ -136,7 +139,7 @@ public class BuildingPanelMalfunctionable extends BuildingFunctionPanel {
 			}
 
 			// Update malfunction cache.
-			malfunctionCache = new ArrayList<>(malfunctions);
+			malfunctions = new ArrayList<>(newMalfunctions);
 		}
 
 		// Have each malfunction panel update.

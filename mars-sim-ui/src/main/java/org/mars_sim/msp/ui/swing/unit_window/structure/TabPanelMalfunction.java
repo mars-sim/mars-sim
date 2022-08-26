@@ -7,11 +7,14 @@
 package org.mars_sim.msp.ui.swing.unit_window.structure;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
+import java.awt.Color;
+import java.awt.Dimension;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 
@@ -23,6 +26,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.unit_window.MalfunctionPanel;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
@@ -36,9 +40,12 @@ public class TabPanelMalfunction extends TabPanel {
 	/** The Settlement instance. */
 	private Settlement settlement;
 	
-	private WebPanel malfunctionsListPanel;
-
-	private List<Malfunction> malfunctionsList;
+	/** A collection of malfunction panels. */
+	private Collection<MalfunctionPanel> malfunctionPanels;
+	/** A collection of malfunctions. */
+	private Collection<Malfunction> malfunctions;
+	/** Malfunction list panel. */
+	private WebPanel malfunctionListPanel;
 
 	/**
 	 * Constructor.
@@ -54,16 +61,15 @@ public class TabPanelMalfunction extends TabPanel {
 			unit, desktop);
 
 		settlement = (Settlement) unit;
-		malfunctionsList = new ArrayList<>();
 	}
 
 	@Override
 	protected void buildUI(JPanel content) {
 		
 		// Create malfunctions panel.
-		WebPanel malfunctionsPanel = new WebPanel(new BorderLayout());
-		content.add(malfunctionsPanel, BorderLayout.CENTER);
-		
+		WebPanel mainPanel = new WebPanel(new BorderLayout(0, 0));
+//		mainPanel.setPreferredSize(new Dimension(170, 120));
+		content.add(mainPanel, BorderLayout.NORTH);
 		// Create titled border panel
 		addBorder(content, "Active Building Malfunctions");
 
@@ -71,67 +77,117 @@ public class TabPanelMalfunction extends TabPanel {
 		WebPanel malfunctionListMainPanel = new WebPanel(new BorderLayout(0, 0));
 
 		// Prepare malfunctions list panel.
-		malfunctionsListPanel = new WebPanel();
-		malfunctionsListPanel.setPadding(5);
-		malfunctionsPanel.add(malfunctionsListPanel);
-		malfunctionsListPanel.setLayout(new BoxLayout(malfunctionsListPanel, BoxLayout.Y_AXIS));
-		malfunctionListMainPanel.add(malfunctionsListPanel, BorderLayout.NORTH);
+		malfunctionListPanel = new WebPanel();
+		malfunctionListPanel.setPadding(2);
+		malfunctionListPanel.setLayout(new BoxLayout(malfunctionListPanel, BoxLayout.Y_AXIS));
+		malfunctionListMainPanel.add(malfunctionListPanel, BorderLayout.NORTH);
 
-		populateMalfunctionsList();
-	}
-
-	/**
-	 * Populates the malfunctions list.
-	 */
-	private void populateMalfunctionsList() {
-		// Clear the list.
-		malfunctionsListPanel.removeAll();
-
-		// Populate the list.
-		malfunctionsList.clear();
+		mainPanel.add(malfunctionListPanel);
+		malfunctionPanels = new ArrayList<>();
+		malfunctions = new ArrayList<>();
+					
 		Iterator<Building> i = settlement.getBuildingManager().getBuildings().iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
 			Iterator<Malfunction> j = building.getMalfunctionManager().getMalfunctions().iterator();
 			while (j.hasNext()) {
 				Malfunction malfunction = j.next();
-				if (!malfunctionsList.contains(malfunction)) {
-					malfunctionsList.add(malfunction);
-					WebPanel panel = new MalfunctionPanel(malfunction, building);
-					malfunctionsListPanel.add(panel);
+				if (!malfunctions.contains(malfunction)) {
+					malfunctions.add(malfunction);
+					MalfunctionPanel panel = new MalfunctionPanel(malfunction, building);
+					panel.setBorder(new MarsPanelBorder());
+					panel.setPadding(5);
+					malfunctionListPanel.add(panel);
+					malfunctionPanels.add(panel);
 				}
 			}
 		}
 	}
 
 	/**
+	 * Populates the malfunctions list.
+	 * 
+	 * @param newMalfunctions
+	 */
+	private void populateMalfunctionsList(List<Malfunction> newMalfunctions) {
+
+		Iterator<Building> i = settlement.getBuildingManager().getBuildings().iterator();
+		while (i.hasNext()) {
+			Building building = i.next();
+			Iterator<Malfunction> j = building.getMalfunctionManager().getMalfunctions().iterator();
+			while (j.hasNext()) {
+				Malfunction malfunction = j.next();
+				if (!malfunctions.contains(malfunction)) {
+					MalfunctionPanel panel = new MalfunctionPanel(malfunction, building);
+					panel.setBorder(new MarsPanelBorder());
+					panel.setPadding(5);
+					malfunctionListPanel.add(panel);
+					malfunctionPanels.add(panel);
+				}
+			}
+	
+			// Remove malfunction panels for repaired malfunctions.
+			Iterator<Malfunction> iter2 = malfunctions.iterator();
+			while (iter2.hasNext()) {
+				Malfunction malfunction = iter2.next();
+				if (!newMalfunctions.contains(malfunction)) {
+					MalfunctionPanel panel = getMalfunctionPanel(malfunction);
+					if (panel != null) {
+						malfunctionPanels.remove(panel);
+						malfunctionListPanel.remove(panel);
+					}
+				}
+			}
+		}
+		
+		// Update malfunction cache.
+		malfunctions = new ArrayList<>(newMalfunctions);
+	}
+
+	/**
+	 * Gets an existing malfunction panel for a given malfunction.
+	 * 
+	 * @param malfunction the given malfunction
+	 * @return malfunction panel or null if none.
+	 */
+	private MalfunctionPanel getMalfunctionPanel(Malfunction malfunction) {
+		MalfunctionPanel result = null;
+
+		Iterator<MalfunctionPanel> i = malfunctionPanels.iterator();
+		while (i.hasNext()) {
+			MalfunctionPanel panel = i.next();
+			if (panel.getMalfunction() == malfunction)
+				result = panel;
+		}
+
+		return result;
+	}
+	
+	/**
 	 * Updates the tab panel.
 	 */
 	@Override
 	public void update() {
-		// Create temporary malfunctions list.
-		List<Malfunction> tempMalfunctions = new ArrayList<>();
+		// Create a new malfunctions list.
+		List<Malfunction> newMalfunctions = new ArrayList<>();
 		Iterator<Building> i = settlement.getBuildingManager().getBuildings().iterator();
 		while (i.hasNext()) {
 			Iterator<Malfunction> j = i.next().getMalfunctionManager().getMalfunctions().iterator();
 			while (j.hasNext()) {
-				tempMalfunctions.add(j.next());
+				newMalfunctions.add(j.next());
 			}
 		}
 
 		// Check if malfunctions list has changed.
-		if (!CollectionUtils.isEqualCollection(malfunctionsList, tempMalfunctions)) {		
+		if (!CollectionUtils.isEqualCollection(malfunctions, newMalfunctions)) {		
 			// Populate malfunctions list.
-			populateMalfunctionsList();
+			populateMalfunctionsList(newMalfunctions);
 		} 
-	
-		else {
-			// Update all building malfunction panels.
-			Component[] components = malfunctionsListPanel.getComponents();
-			for (Component component : components) {
-				((MalfunctionPanel) component).updateMalfunctionPanel();
-			}
-		}
+		
+		// Have each malfunction panel update.
+		Iterator<MalfunctionPanel> ii = malfunctionPanels.iterator();
+		while (ii.hasNext())
+			ii.next().updateMalfunctionPanel();
 	}
 
 	/**
@@ -140,7 +196,7 @@ public class TabPanelMalfunction extends TabPanel {
 	@Override
 	public void destroy() {
 		settlement = null;
-		malfunctionsList = null;
-		malfunctionsListPanel = null;
+		malfunctions = null;
+		malfunctionListPanel = null;
 	}
 }

@@ -83,6 +83,8 @@ extends WebPanel {
 		// Initialize data members.
 		this.malfunction = malfunction;
 
+		setPadding(5);
+		
 		// Prepare the building label.
 		if (building != null) {
 			// Set layout and border.
@@ -96,7 +98,6 @@ extends WebPanel {
 			setLayout(new GridLayout(4, 1, 0, 0));
 		}	
 		
-		// Set border setBorder(new MarsPanelBorder());
 		setOpaque(false);
 		setBackground(new Color(0,0,0,128));
 
@@ -111,7 +112,7 @@ extends WebPanel {
 		add(workLabel);
 
 		// Prepare repair pane.
-		WebPanel repairPane = new WebPanel(new BorderLayout(0, 0));
+		WebPanel repairPane = new WebPanel(new BorderLayout(2, 2));
 		add(repairPane, BorderLayout.CENTER);
 
 		// Prepare repair progress bar.
@@ -129,7 +130,7 @@ extends WebPanel {
 		add(partsLabel);
 
 		// Add tooltip.
-		TooltipManager.setTooltip(this, MalfunctionPanel.getToolTipString(malfunction), TooltipWay.right);
+		TooltipManager.setTooltip(this, MalfunctionPanel.getToolTipString(malfunction), TooltipWay.down);
 	
 		updateMalfunctionPanel();
 	}
