@@ -382,7 +382,7 @@ public abstract class DroneMission extends VehicleMission {
 		else {
 			// Check if it is day time.
 			if (!EVAOperation.isGettingDark(person) 
-					&& !person.getMind().getTaskManager().hasSameTask("UnloadVehicleGarage")) {
+					&& !person.getMind().getTaskManager().hasSameTask("UnloadVehicleEVA")) {
 				result = person.getMind().getTaskManager().addAPendingTask("UnloadVehicleEVA", false);
 			}
 		}
