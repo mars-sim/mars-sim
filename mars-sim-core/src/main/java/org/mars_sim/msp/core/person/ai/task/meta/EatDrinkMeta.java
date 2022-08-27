@@ -78,14 +78,14 @@ public class EatDrinkMeta extends MetaTask {
 		Cooking kitchen0 = EatDrink.getKitchenWithMeal(person);
 		if (kitchen0 != null) {
 			meals = kitchen0.getNumberOfAvailableCookedMeals();
-			mFactor = 1.5 * meals;
+			mFactor = 5 * meals;
 		}
 
 		// Check dessert is available in a kitchen building at the settlement.
 		PreparingDessert kitchen1 = EatDrink.getKitchenWithDessert(person);
 		if (kitchen1 != null) {
 			desserts = kitchen1.getAvailableServingsDesserts();
-			dFactor = 1.5 * desserts;
+			dFactor = 2 * desserts;
 		}
 
 		PhysicalCondition pc = person.getPhysicalCondition();
@@ -139,7 +139,7 @@ public class EatDrinkMeta extends MetaTask {
 				double ghrelin = person.getCircadianClock().getGhrelin();
 				double leptin = person.getCircadianClock().getLeptin();
 				
-				h0 += hunger / 2D + ghrelin / 2 - leptin / 2;
+				h0 += hunger / 2 + ghrelin / 2 - leptin / 2;
 
 				if (energy < 2525)
 					h0 += (2525 - energy) / 30D + ghrelin / 4 - leptin / 4;
@@ -161,7 +161,7 @@ public class EatDrinkMeta extends MetaTask {
 				}
 			}
 
-			double t0 = 2 * (thirst - PhysicalCondition.THIRST_THRESHOLD);
+			double t0 = 10 * (thirst - PhysicalCondition.THIRST_THRESHOLD / 2);
 			if (t0 <= 0)
 				t0 = 0;
 

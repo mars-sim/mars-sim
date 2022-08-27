@@ -93,15 +93,15 @@ extends TabPanel {
 	private MedicationTableModel medicationTableModel;
 	private HealthProblemTableModel healthProblemTableModel;
 	private RadiationTableModel radiationTableModel;
-	private SleepTableModel sleepTableModel;
-	private ExerciseTableModel exerciseTableModel;
+	private SleepExerciseTableModel sleepExerciseTableModel;
+	private FoodTableModel foodTableModel;
 	
 	private JTable radiationTable;
 	private JTable medicationTable;
 	private JTable healthProblemTable;
-	private JTable sleepTable;
-	private JTable exerciseTable;
-
+	private JTable sleepExerciseTable;
+	private JTable foodTable;
+	
 	/** The Person instance. */
 	private Person person = null;
 	
@@ -367,7 +367,7 @@ extends TabPanel {
 		tablesPanel.add(sleepPanel, BorderLayout.CENTER);
 
 		// Prepare sleep time label
-		WebLabel sleepLabel = new WebLabel(Msg.getString("TabPanelHealth.sleep"), SwingConstants.CENTER); //$NON-NLS-1$
+		WebLabel sleepLabel = new WebLabel(Msg.getString("TabPanelHealth.sleepExercise"), SwingConstants.CENTER); //$NON-NLS-1$
 		sleepLabel.setFont(SUBTITLE_FONT);
 		sleepPanel.add(sleepLabel, BorderLayout.NORTH);
 
@@ -376,59 +376,69 @@ extends TabPanel {
 		sleepPanel.add(sleepScrollPanel, BorderLayout.CENTER);
 
 		// Prepare sleep time table model
-		sleepTableModel = new SleepTableModel(person);
+		sleepExerciseTableModel = new SleepExerciseTableModel(person);
 		
 		// Create sleep time table
-		sleepTable = new ZebraJTable(sleepTableModel);
-		sleepTable.setPreferredScrollableViewportSize(new Dimension(225, 90));
-		sleepTable.getColumnModel().getColumn(0).setPreferredWidth(10);
-		sleepTable.getColumnModel().getColumn(1).setPreferredWidth(100);
-		sleepTable.setRowSelectionAllowed(true);
-		sleepScrollPanel.setViewportView(sleepTable);
+		sleepExerciseTable = new ZebraJTable(sleepExerciseTableModel);
+		sleepExerciseTable.setPreferredScrollableViewportSize(new Dimension(225, 90));
+		sleepExerciseTable.getColumnModel().getColumn(0).setPreferredWidth(10);
+		sleepExerciseTable.getColumnModel().getColumn(1).setPreferredWidth(70);
+		sleepExerciseTable.getColumnModel().getColumn(2).setPreferredWidth(70);
+		
+		sleepExerciseTable.setRowSelectionAllowed(true);
+		sleepScrollPanel.setViewportView(sleepExerciseTable);
 
 		DefaultTableCellRenderer sleepRenderer = new DefaultTableCellRenderer();
 		sleepRenderer.setHorizontalAlignment(SwingConstants.CENTER);
-		sleepTable.getColumnModel().getColumn(0).setCellRenderer(sleepRenderer);
-		sleepTable.getColumnModel().getColumn(1).setCellRenderer(sleepRenderer);
+		sleepExerciseTable.getColumnModel().getColumn(0).setCellRenderer(sleepRenderer);
+		sleepExerciseTable.getColumnModel().getColumn(1).setCellRenderer(sleepRenderer);
+		sleepExerciseTable.getColumnModel().getColumn(2).setCellRenderer(sleepRenderer);
 		
 		// Add sorting
-		sleepTable.setAutoCreateRowSorter(true);
-		TableStyle.setTableStyle(sleepTable);
-		
+		sleepExerciseTable.setAutoCreateRowSorter(true);
+		TableStyle.setTableStyle(sleepExerciseTable);
+	
 		/////////////////////////////////////////////////////////
 		
 		// Prepare exercise time panel
-		WebPanel exercisePanel = new WebPanel(new BorderLayout(0, 0));
-		tablesPanel.add(exercisePanel, BorderLayout.SOUTH);
+		WebPanel foodPanel = new WebPanel(new BorderLayout(0, 0));
+		tablesPanel.add(foodPanel, BorderLayout.SOUTH);
 
 		// Prepare exercise time label
-		WebLabel exerciseLabel = new WebLabel(Msg.getString("TabPanelHealth.exercise"), SwingConstants.CENTER); //$NON-NLS-1$
-		exerciseLabel.setFont(SUBTITLE_FONT);
-		exercisePanel.add(exerciseLabel, BorderLayout.NORTH);
+		WebLabel foodLabel = new WebLabel(Msg.getString("TabPanelHealth.food"), SwingConstants.CENTER); //$NON-NLS-1$
+		foodLabel.setFont(SUBTITLE_FONT);
+		foodPanel.add(foodLabel, BorderLayout.NORTH);
 
 		// Prepare exercise time scroll panel
-		WebScrollPane exerciseScrollPanel = new WebScrollPane();
-		exercisePanel.add(exerciseScrollPanel, BorderLayout.CENTER);
+		WebScrollPane foodScrollPanel = new WebScrollPane();
+		foodPanel.add(foodScrollPanel, BorderLayout.CENTER);
 
 		// Prepare exercise time table model
-		exerciseTableModel = new ExerciseTableModel(person);
+		foodTableModel = new FoodTableModel(person);
 		
 		// Create exercise time table
-		exerciseTable = new ZebraJTable(exerciseTableModel);
-		exerciseTable.setPreferredScrollableViewportSize(new Dimension(225, 90));
-		exerciseTable.getColumnModel().getColumn(0).setPreferredWidth(10);
-		exerciseTable.getColumnModel().getColumn(1).setPreferredWidth(100);
-		exerciseTable.setRowSelectionAllowed(true);
-		exerciseScrollPanel.setViewportView(exerciseTable);
+		foodTable = new ZebraJTable(foodTableModel);
+		foodTable.setPreferredScrollableViewportSize(new Dimension(225, 90));
+		foodTable.getColumnModel().getColumn(0).setPreferredWidth(10);
+		foodTable.getColumnModel().getColumn(1).setPreferredWidth(50);
+		foodTable.getColumnModel().getColumn(2).setPreferredWidth(50);
+		foodTable.getColumnModel().getColumn(3).setPreferredWidth(50);
+		foodTable.getColumnModel().getColumn(4).setPreferredWidth(50);
 
-		DefaultTableCellRenderer exerciseRenderer = new DefaultTableCellRenderer();
-		exerciseRenderer.setHorizontalAlignment(SwingConstants.CENTER);
-		exerciseTable.getColumnModel().getColumn(0).setCellRenderer(exerciseRenderer);
-		exerciseTable.getColumnModel().getColumn(1).setCellRenderer(exerciseRenderer);
+		foodTable.setRowSelectionAllowed(true);
+		foodScrollPanel.setViewportView(foodTable);
+
+		DefaultTableCellRenderer foodRenderer = new DefaultTableCellRenderer();
+		foodRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+		foodTable.getColumnModel().getColumn(0).setCellRenderer(foodRenderer);
+		foodTable.getColumnModel().getColumn(1).setCellRenderer(foodRenderer);
+		foodTable.getColumnModel().getColumn(2).setCellRenderer(foodRenderer);
+		foodTable.getColumnModel().getColumn(3).setCellRenderer(foodRenderer);	
+		foodTable.getColumnModel().getColumn(4).setCellRenderer(foodRenderer);	
 		
 		// Add sorting
-		exerciseTable.setAutoCreateRowSorter(true);
-		TableStyle.setTableStyle(exerciseTable);
+		foodTable.setAutoCreateRowSorter(true);
+		TableStyle.setTableStyle(foodTable);
 		
 		/////////////////////////////////////////////////////////		
 		
@@ -502,13 +512,12 @@ extends TabPanel {
 			TableStyle.setTableStyle(radiationTable);
 			TableStyle.setTableStyle(medicationTable);
 			TableStyle.setTableStyle(healthProblemTable);
-			TableStyle.setTableStyle(sleepTable);
-			TableStyle.setTableStyle(exerciseTable);
+			TableStyle.setTableStyle(sleepExerciseTable);
+			TableStyle.setTableStyle(foodTable);
 		}
 		
 		// Update fatigue if necessary.
-		int newF = (int)Math.round(condition.getFatigue());
-		//if (fatigueCache *.95 > newF || fatigueCache *1.05 < newF) {
+		int newF = (int)condition.getFatigue();
 		if (fatigueCache != newF) {
 			fatigueCache = newF;
 			fatigueLabel.setText(Msg.getString("TabPanelHealth.msols", //$NON-NLS-1$
@@ -516,8 +525,7 @@ extends TabPanel {
 		}
 
 		// Update thirst if necessary.
-		int newT = (int)Math.round(condition.getThirst());
-		//if (thirstCache *.95 > newT || thirstCache *1.05 < newT) {
+		int newT = (int)condition.getThirst();
 		if (thirstCache != newT) {
 			thirstCache = newT;
 			thirstLabel.setText(Msg.getString("TabPanelHealth.msols", //$NON-NLS-1$
@@ -525,8 +533,7 @@ extends TabPanel {
 		}
 		
 		// Update hunger if necessary.
-		int newH = (int)Math.round(condition.getHunger());
-		//if (hungerCache *.95 > newH || hungerCache *1.05 < newH) {
+		int newH = (int)condition.getHunger();
 		if (hungerCache != newH) {
 			hungerCache = newH;
 			hungerLabel.setText(Msg.getString("TabPanelHealth.msols", //$NON-NLS-1$
@@ -534,8 +541,7 @@ extends TabPanel {
 		}
 
 		// Update energy if necessary.
-		int newEnergy = (int)Math.round(condition.getEnergy());
-		//if (energyCache *.98 > newEnergy || energyCache *1.02 < newEnergy   ) {
+		int newEnergy = (int)condition.getEnergy();
 		if (energyCache != newEnergy) {
 			energyCache = newEnergy;
 			energyLabel.setText(Msg.getString("TabPanelHealth.kJ", //$NON-NLS-1$
@@ -543,8 +549,7 @@ extends TabPanel {
 		}
 
 		// Update stress if necessary.
-		int newS = (int)Math.round(condition.getStress());
-		//if (stressCache *.95 > newS || stressCache*1.05 < newS) {
+		int newS = (int)condition.getStress();
 		if (stressCache != newS) {
 			stressCache = newS;
 			stressLabel.setText(Msg.getString("TabPanelHealth.percentage", //$NON-NLS-1$
@@ -552,8 +557,7 @@ extends TabPanel {
 		}
 
 		// Update performance cache if necessary.
-		int newP = (int)Math.round(condition.getPerformanceFactor() * 100);
-		//if (performanceCache *95D > newP || performanceCache *105D < newP) {
+		int newP = (int)(condition.getPerformanceFactor() * 100);
 		if (performanceCache != newP) {
 			performanceCache = newP;
 			performanceLabel.setText(Msg.getString("TabPanelHealth.percentage", //$NON-NLS-1$
@@ -621,10 +625,10 @@ extends TabPanel {
 		radiationTableModel.update();
 		
 		// Update sleep time table model
-		sleepTableModel.update();
-    	
-		// Update exercise time table model
-		exerciseTableModel.update();
+		sleepExerciseTableModel.update();
+		
+		// Update food table model
+		foodTableModel.update();
 	}
 
 //	public class IconTextCellRenderer extends DefaultTableCellRenderer {
@@ -729,9 +733,6 @@ extends TabPanel {
 	private static class HealthProblemTableModel
 	extends AbstractTableModel {
 
-		/** default serial id. */
-		private static final long serialVersionUID = 1L;
-
 		private PhysicalCondition condition;
 		private Collection<?> problemsCache;
 
@@ -820,25 +821,25 @@ extends TabPanel {
 	/**
 	 * Internal class used as model for the sleep time table.
 	 */
-	private static class SleepTableModel
+	private static class SleepExerciseTableModel
 	extends AbstractTableModel {
 
-		/** default serial id. */
-		private static final long serialVersionUID = 1L;
-
-		private static final String SLEEP_TIME = "Sleep Time [in millisols]";
+		private static final String SLEEP_TIME = "Sleep";
+		private static final String EXERCISE_TIME = "Exercise";
 		
-		private static final String MISSION_SOL = "Mission Sol"; 
+		private static final String MISSION_SOL = "Sol"; 
 		
 		private DecimalFormat fmt = new DecimalFormat("0.0");
 
 		private CircadianClock circadian;
 		private Map<Integer, Double> sleepTime;
+		private Map<Integer, Double> exerciseTime;
 		private int solOffset = 1;
 
-		private SleepTableModel(Person person) {
+		private SleepExerciseTableModel(Person person) {
 			circadian = person.getCircadianClock();
 			sleepTime = circadian.getSleepHistory();
+			exerciseTime = circadian.getExerciseHistory();
 		}
 
 		public int getRowCount() {
@@ -846,7 +847,7 @@ extends TabPanel {
 		}
 
 		public int getColumnCount() {
-			return 2;
+			return 3;
 		}
 
 		public Class<?> getColumnClass(int columnIndex) {
@@ -854,8 +855,8 @@ extends TabPanel {
 			if (columnIndex == 0) {
 			    dataType = Integer.class;
 			}
-			else if (columnIndex == 1) {
-			    dataType = Double.class;
+			else {
+			    dataType = String.class;
 			}
 			return dataType;
 		}
@@ -867,9 +868,10 @@ extends TabPanel {
 			else if (columnIndex == 1) {
 			    return SLEEP_TIME;
 			}
-			else {
-			    return null;
+			else if (columnIndex == 2) {
+			    return EXERCISE_TIME;
 			}
+			return null;
 		}
 
 		public Object getValueAt(int row, int column) {
@@ -885,13 +887,20 @@ extends TabPanel {
 					else
 						result = fmt.format(0);
 				}
+				else if (column == 2) {
+					if (exerciseTime.containsKey(rowSol))
+						result = fmt.format(exerciseTime.get(rowSol));
+					else
+						result = fmt.format(0);
+				}
 			}
 			return result;
 		}
 
 		public void update() {
 			sleepTime = circadian.getSleepHistory();
-
+			exerciseTime = circadian.getExerciseHistory();
+			
 			// Find the lowest sol day in the data
 			solOffset = sleepTime.keySet().stream()
 					.mapToInt(v -> v)               
@@ -903,35 +912,42 @@ extends TabPanel {
 	}
 	
 	/**
-	 * Internal class used as model for the exercise time table.
+	 * Internal class used as model for the food time table.
 	 */
-	private static class ExerciseTableModel
+	private static class FoodTableModel
 	extends AbstractTableModel {
 
-		/** default serial id. */
-		private static final long serialVersionUID = 1L;
-
-		private static final String EXERCISE_TIME = "Exercise Time [in millisols]";
+		private static final String FOOD_AMOUNT = "Food";
+		private static final String MEAL_AMOUNT = "Meal";
+		private static final String DESSERT_AMOUNT = "Dessert";
+		private static final String WATER_AMOUNT = "Water";
 		
-		private static final String MISSION_SOL = "Mission Sol"; 
+		private static final String MISSION_SOL = "Sol"; 
 		
-		private DecimalFormat fmt = new DecimalFormat("0.0");
+		private DecimalFormat fmt = new DecimalFormat("0.000");
 
-		private CircadianClock circadian;
-		private Map<Integer, Double> exerciseTime;
+		private PhysicalCondition pc;
+		private Map<Integer, Double> foodMap;
+		private Map<Integer, Double> mealMap;
+		private Map<Integer, Double> dessertMap;
+		private Map<Integer, Double> waterMap;
+
 		private int solOffset = 1;
 
-		private ExerciseTableModel(Person person) {
-			circadian = person.getCircadianClock();
-			exerciseTime = circadian.getExerciseHistory();
+		private FoodTableModel(Person person) {
+			pc = person.getPhysicalCondition();
+			foodMap = pc.getFoodConsumption(0);
+			mealMap = pc.getFoodConsumption(1);
+			dessertMap = pc.getFoodConsumption(2);
+			waterMap = pc.getFoodConsumption(3);
 		}
 
 		public int getRowCount() {
-			return exerciseTime.size();
+			return waterMap.size();
 		}
 
 		public int getColumnCount() {
-			return 2;
+			return 5;
 		}
 
 		public Class<?> getColumnClass(int columnIndex) {
@@ -939,9 +955,10 @@ extends TabPanel {
 			if (columnIndex == 0) {
 			    dataType = Integer.class;
 			}
-			else if (columnIndex == 1) {
-			    dataType = Double.class;
+			else {
+			    dataType = String.class;
 			}
+			
 			return dataType;
 		}
 
@@ -950,11 +967,18 @@ extends TabPanel {
 			    return MISSION_SOL; 
 			}
 			else if (columnIndex == 1) {
-			    return EXERCISE_TIME;
+			    return FOOD_AMOUNT;
 			}
-			else {
-			    return null;
+			else if (columnIndex == 2) {
+			    return MEAL_AMOUNT;
 			}
+			else if (columnIndex == 3) {
+			    return DESSERT_AMOUNT;
+			}
+			else if (columnIndex == 4) {
+			    return WATER_AMOUNT;
+			}
+			return null;
 		}
 
 		public Object getValueAt(int row, int column) {
@@ -962,11 +986,29 @@ extends TabPanel {
 			if (row < getRowCount()) {
 				int rowSol = row + solOffset;
 				if (column == 0) {
-				    result = rowSol;
+					return rowSol;
 				}
 				else if (column == 1) {
-					if (exerciseTime.containsKey(rowSol))
-						result = fmt.format(exerciseTime.get(rowSol));
+					if (foodMap.containsKey(rowSol))
+						result = fmt.format(foodMap.get(rowSol));
+					else
+						result = fmt.format(0);
+				}
+				else if (column == 2) {
+					if (mealMap.containsKey(rowSol))
+						result = fmt.format(mealMap.get(rowSol));
+					else
+						result = fmt.format(0);
+				}
+				else if (column == 3) {
+					if (dessertMap.containsKey(rowSol))
+						result = fmt.format(dessertMap.get(rowSol));
+					else
+						result = fmt.format(0);
+				}
+				else if (column == 4) {
+					if (waterMap.containsKey(rowSol))
+						result = fmt.format(waterMap.get(rowSol));
 					else
 						result = fmt.format(0);
 				}
@@ -975,10 +1017,13 @@ extends TabPanel {
 		}
 
 		public void update() {
-			exerciseTime = circadian.getExerciseHistory();
+			foodMap = pc.getFoodConsumption(0);
+			mealMap = pc.getFoodConsumption(1);
+			dessertMap = pc.getFoodConsumption(2);
+			waterMap = pc.getFoodConsumption(3);
 			
 			// Find the lowest sol day in the data
-			solOffset = exerciseTime.keySet().stream()
+			solOffset = waterMap.keySet().stream()
 					.mapToInt(v -> v)               
 	                .min()                          
 	                .orElse(Integer.MAX_VALUE);
@@ -992,9 +1037,6 @@ extends TabPanel {
 	 */
 	private static class MedicationTableModel
 	extends AbstractTableModel {
-
-		/** default serial id. */
-		private static final long serialVersionUID = 1L;
 
 		private PhysicalCondition condition;
 		private List<Medication> medicationCache;

@@ -91,10 +91,10 @@ public class CircadianClock implements Serializable {
 	private Map<Integer, Integer> sleepCycleMap;
 
 	/** The amount of sleep [millisols] a person on each sol */
-	private SolSingleMetricDataLogger sleepHistory = new SolSingleMetricDataLogger(5);
+	private SolSingleMetricDataLogger sleepHistory = new SolSingleMetricDataLogger(7);
 
 	/** The amount of exercise [millisols] a person on each sol */
-	private SolSingleMetricDataLogger exerciseHistory = new SolSingleMetricDataLogger(5);
+	private SolSingleMetricDataLogger exerciseHistory = new SolSingleMetricDataLogger(7);
 
 
 	/**

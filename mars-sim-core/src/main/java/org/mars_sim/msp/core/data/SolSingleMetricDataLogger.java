@@ -19,7 +19,7 @@ public class SolSingleMetricDataLogger extends DataLogger<Double> {
 	}
 	
 	/**
-	 * The generated item is null to start with
+	 * The generated item is null to start with.
 	 */
 	@Override
 	protected Double getNewDataItem() {
@@ -27,8 +27,9 @@ public class SolSingleMetricDataLogger extends DataLogger<Double> {
 	}
 
 	/**
-	 * Increase the metric on one of the data points. It adds the increment to any existing value.
+	 * Increases the metric on one of the data points. It adds the increment to any existing value.
 	 * If no value for this metric is present; it created one.
+	 * 
 	 * @param increment Value to add to the existing metric.
 	 */
 	public void increaseDataPoint(Double increment) {
@@ -44,8 +45,9 @@ public class SolSingleMetricDataLogger extends DataLogger<Double> {
 	}
 	
 	/**
-	 * Calculate the daily average for the metric.
+	 * Calculates the daily average for the metric.
 	 * For the current day the current msol is taken into account to produce an estimate. 
+	 * 
 	 * @return Daily average
 	 */
 	public double getDailyAverage() {

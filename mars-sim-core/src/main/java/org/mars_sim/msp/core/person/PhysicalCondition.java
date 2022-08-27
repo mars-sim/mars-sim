@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.data.SolSingleMetricDataLogger;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
@@ -194,6 +195,12 @@ public class PhysicalCondition implements Serializable {
 	/** Record of illness start time. */
 	private Map<ComplaintType, List<String>> healthHistory;
 
+	/** 
+	 * The amount of food [millisols] a person consumes on each sol.
+	 * 1: food, 2: meal, 3: dessert, 4: water
+	 */
+	private SolSingleMetricDataLogger[] foodConsumption = new SolSingleMetricDataLogger[4];
+
 	/** The CircadianClock instance. */
 	private transient CircadianClock circadian;
 	/** The NaturalAttributeManager instance. */
@@ -320,15 +327,20 @@ public class PhysicalCondition implements Serializable {
 		// Initially set performance to 1.0 (=100%) to avoid issues at startup
 		performance = 1.0D;
 
+		// initialize it to save 7 sols
+		for (int i=0; i<4; i++) {
+			foodConsumption[i] = new SolSingleMetricDataLogger(7);
+		}
+		
 		initialize();
 	}
 
 	private void initializeHealthIndices() {
 		// Set up random physical healt index
 		thirst = RandomUtil.getRandomRegressionInteger(50);
-//		fatigue = RandomUtil.getRandomRegressionInteger(50);
+		fatigue = RandomUtil.getRandomRegressionInteger(50);
 		stress = RandomUtil.getRandomRegressionInteger(20);
-		hunger = RandomUtil.getRandomRegressionInteger(200);
+		hunger = RandomUtil.getRandomRegressionInteger(50);
 		// kJoules somewhat co-relates with hunger
 		kJoules = 10000 + (200 - hunger) * 100;
 		performance = 1.0D - (50 - fatigue) * .002 - (50 - stress) * .002 - (200 - hunger) * .002;
@@ -422,11 +434,11 @@ public class PhysicalCondition implements Serializable {
 			// Update the existing health problems
 			checkHealth(pulse);
 			// Update thirst
-			setThirst(thirst + time * bodyMassDeviation);
+			increaseThirst(time * bodyMassDeviation * .75);
 			// Update fatigue
 			setFatigue(fatigue + time);
 			// Update hunger
-			setHunger(hunger + time * bodyMassDeviation);
+			increaseHunger(time * bodyMassDeviation * .75);
 		}
 	}
 
@@ -703,6 +715,91 @@ public class PhysicalCondition implements Serializable {
 	}
 
 	/**
+	 * Reduces the thirst setting for this person.
+	 *
+	 * @param thirstRelieved
+	 */
+	public void reduceThirst(double thirstRelieved) {
+		double t = thirst - thirstRelieved;
+		if (t > 1000)
+			t = 1000;
+		else if (t < 0)
+			t = 0;
+
+		thirst = t;
+		person.fireUnitUpdate(UnitEventType.THIRST_EVENT);
+	}
+	
+	/**
+	 * Increases the hunger setting for this person.
+	 *
+	 * @param thirstAdded
+	 */
+	public void increaseThirst(double thirstAdded) {
+		double t = thirst + thirstAdded;
+		if (t > MAX_THIRST)
+			t = MAX_THIRST;
+
+		thirst = t;
+		person.fireUnitUpdate(UnitEventType.THIRST_EVENT);
+	}
+
+	/**
+	 * Defines the hunger setting for this person.
+	 *
+	 * @param newHunger New hunger.
+	 */
+	public void setHunger(double newHunger) {
+		double h = newHunger;
+		if (h > MAX_HUNGER)
+			h = MAX_HUNGER;
+		else if (h < 0)
+			h = 0;
+
+		hunger = h;
+		person.fireUnitUpdate(UnitEventType.HUNGER_EVENT);
+	}
+
+	/**
+	 * Reduces the hunger setting for this person.
+	 *
+	 * @param hungerRelieved
+	 */
+	public void reduceHunger(double hungerRelieved) {
+		double h = hunger - hungerRelieved;
+		if (h > 1000)
+			h = 1000;
+		else if (h < 0)
+			h = 0;
+
+		hunger = h;
+		person.fireUnitUpdate(UnitEventType.HUNGER_EVENT);
+	}
+	
+	/**
+	 * Increases the hunger setting for this person.
+	 *
+	 * @param hungerAdded
+	 */
+	public void increaseHunger(double hungerAdded) {
+		double h = hunger + hungerAdded;
+		if (h > MAX_HUNGER)
+			h = MAX_HUNGER;
+
+		hunger = h;
+		person.fireUnitUpdate(UnitEventType.HUNGER_EVENT);
+	}
+	
+	/**
+	 * Gets the person's hunger level.
+	 *
+	 * @return person's hunger
+	 */
+	public double getHunger() {
+		return hunger;
+	}
+
+	/**
 	 * Sets the person's stress level.
 	 *
 	 * @param newStress the new stress level (0.0 to 100.0)
@@ -740,14 +837,14 @@ public class PhysicalCondition implements Serializable {
 	}
 
 	/**
-	 * Gets the person's hunger level.
+	 * Gets the person's stress level.
 	 *
-	 * @return person's hunger
+	 * @return stress (0.0 to 100.0)
 	 */
-	public double getHunger() {
-		return hunger;
+	public double getStress() {
+		return stress;
 	}
-
+	
 	/**
 	 * Checks if a person is starving or no longer starving.
 	 *
@@ -1386,31 +1483,6 @@ public class PhysicalCondition implements Serializable {
 
 
 
-	/**
-	 * Defines the hunger setting for this person.
-	 *
-	 * @param newHunger New hunger.
-	 */
-	public void setHunger(double newHunger) {
-		double h = newHunger;
-		if (h > MAX_HUNGER)
-			h = MAX_HUNGER;
-		else if (h < 0)
-			h = 0;
-		if (hunger != h) {
-			hunger = h;
-		}
-		person.fireUnitUpdate(UnitEventType.HUNGER_EVENT);
-	}
-
-	/**
-	 * Gets the person's stress level.
-	 *
-	 * @return stress (0.0 to 100.0)
-	 */
-	public double getStress() {
-		return stress;
-	}
 
 	public double getMassPerServing() {
 		return foodDryMassPerServing;
@@ -1903,6 +1975,8 @@ public class PhysicalCondition implements Serializable {
 			musculoskeletal[1] = 100;
 		if (musculoskeletal[2] < 0)
 			musculoskeletal[2] = 0;
+		// Increase thirst
+		increaseThirst(-time/3.0); 
 	}
 
 	/**
@@ -2024,6 +2098,30 @@ public class PhysicalCondition implements Serializable {
 		remainingPrebreathingTime = STANDARD_PREBREATHING_TIME + RandomUtil.getRandomInt(-5, 5);
 	}
 
+	/**
+	 * Records the amount of food consumption in kg
+	 * 
+	 * @param amount in kg
+	 */
+	public void recordFoodConsumption(double amount, int type) {
+//		if (type >= 0 && type <= 3) {
+			foodConsumption[type].increaseDataPoint(amount);
+//			return;
+//		}
+	}
+	
+	/**
+	 * Returns the food consumption history.
+	 * 
+	 * @return
+	 */
+	public Map<Integer, Double> getFoodConsumption(int type) {
+//		if (type >= 0 && type <= 3) {
+			return foodConsumption[type].getHistory();
+//		}
+//		return null;
+	}
+	
 	public static void initializeInstances(Simulation s, MasterClock c0, MarsClock c1, MedicalManager m) {
 		sim = s;
 		masterClock = c0;

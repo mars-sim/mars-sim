@@ -142,7 +142,7 @@ public class Person extends Unit implements Worker, Temporal, EquipmentOwner {
 	private Integer buriedSettlement = Integer.valueOf(-1);
 
 	/** The eating speed of the person [kg/millisol]. */
-	private double eatingSpeed = 0.5 + .1 * RandomUtil.getRandomDouble(1) - .1 * RandomUtil.getRandomDouble(1);
+	private double eatingSpeed = 0.3 + RandomUtil.getRandomDouble(-.1, .1);
 	/** The height of the person (in cm). */
 	private double height;
 	/** The height of the person (in kg). */

@@ -136,7 +136,7 @@ public class PreparingDessert extends Function {
 		super(FunctionType.PREPARING_DESSERT, spec, building);
 
 		dessertMassPerServing = personConfig.getDessertConsumptionRate() / (double) NUM_OF_DESSERT_PER_SOL
-				* DESSERT_SERVING_FRACTION;
+				/ DESSERT_SERVING_FRACTION;
 
 		MealConfig mealConfig = SimulationConfig.instance().getMealConfiguration(); // need this to pass maven test
 		// Add loading the two parameters from meals.xml
