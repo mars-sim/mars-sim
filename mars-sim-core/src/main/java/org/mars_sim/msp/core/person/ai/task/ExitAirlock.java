@@ -31,7 +31,6 @@ import org.mars_sim.msp.core.structure.Airlock;
 import org.mars_sim.msp.core.structure.AirlockType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -1009,7 +1008,7 @@ public class ExitAirlock extends Task implements Serializable {
 			accumulatedTime = 0;
 			
 			if (inSettlement) {
-				// Remove the position at zone 4 before calling endTask()
+				// Remove the position at zone 4 before ending the task
 				if (airlock.vacate(4, id)) {
 					// Add experience
 			 		addExperience(time);
@@ -1063,12 +1062,6 @@ public class ExitAirlock extends Task implements Serializable {
 		// Resets the pre-breath time
 		person.getPhysicalCondition().resetRemainingPrebreathingTime();
 		
-		// Ends the sub task 2 within the EnterAirlock task
-//		endSubTask2();
-
-		// Remove all lingering tasks to avoid any unfinished walking tasks
-//		person.getMind().getTaskManager().endSubTask();
-
 		super.endTask();
 	}
 
@@ -1224,14 +1217,6 @@ public class ExitAirlock extends Task implements Serializable {
 	}
 	
 	public void destroy() {
-//		REQUEST_EGRESS = null;
-//		PRESSURIZE_CHAMBER = null;
-//		STEP_THRU_INNER_DOOR = null;
-//		WALK_TO_CHAMBER = null;
-//		DON_EVA_SUIT = null;
-//		PREBREATHE = null;
-//		DEPRESSURIZE_CHAMBER = null;
-//		LEAVE_AIRLOCK = null;
 		airlock = null;
 		super.destroy();
 	}

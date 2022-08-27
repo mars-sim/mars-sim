@@ -79,12 +79,6 @@ public class EnterAirlock extends Task implements Serializable {
 	// Data members
 	/** The airlock to be used. */
 	private Airlock airlock;
-	/** The inside airlock position. */
-//	private LocalPosition insideAirlockPos = null;
-	/** The exterior airlock position. */
-//	private LocalPosition exteriorDoorPos = null;
-	/** The interior airlock position. */
-//	private LocalPosition interiorDoorPos = null;
 
 	/**
 	 * Constructor.
@@ -314,31 +308,8 @@ public class EnterAirlock extends Task implements Serializable {
 			else {
 				logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4_000, "Requested ingress" 
 						+ " but cannot wait at " + airlock.getEntity().toString() + "'s outer door.");
-				endTask();
 				return 0;
 			}
-			
-//			if (exteriorDoorPos == null) {
-//				exteriorDoorPos = airlock.getAvailableExteriorPosition();
-//			}
-//
-//			if (exteriorDoorPos.isClose(person.getPosition())) {
-//
-//				if (airlock.addAwaitingOuterDoor(id)) {
-//					canProceed = true;
-//				}
-//			}
-//
-//			else {
-//				Rover airlockRover = (Rover) airlock.getEntity();
-//
-//				// Walk to exterior door position.
-//				addSubTask(new WalkOutside(person, person.getPosition(),
-//											exteriorDoorPos, true));
-//
-//				logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4_000,
-//						"Attempted to step closer to " + airlockRover.getNickName() + "'s exterior door.");
-//			}
 		}
 
 		if (canProceed && accumulatedTime > STANDARD_TIME) {
@@ -616,22 +587,6 @@ public class EnterAirlock extends Task implements Serializable {
 			if (airlock.isOperator(id)) {
 				// Command the airlock state to be transitioned to "pressurized"
 				airlock.setTransitioning(true);
-				
-				// TODO: if someone is waiting outside the outer door, ask the C2 to unlock
-				// outer door to let him in before pressurizing
-
-				// Pressurizing the chamber
-//				boolean succeed = airlock.setPressurizing();
-//				
-//				if (!succeed) {
-//					logger.log((Unit)airlock.getEntity(), person, Level.WARNING, 4_000,
-//							"Could not pressurize " + airlock.getEntity().toString() + ".");
-//				}
-//
-//				else {
-//					logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4_000,
-//							"Pressurizing " + airlock.getEntity().toString() + ".");
-//				}
 			}
 		}
 		
@@ -841,7 +796,7 @@ public class EnterAirlock extends Task implements Serializable {
 			// Reset accumulatedTime back to zero
 			accumulatedTime = 0;
 			
-			// Remove the position at zone 0 before calling endTask
+			// Remove the position at zone 0 before ending the task
 			airlock.vacate(0, id);
 			
 			// Add experience
@@ -921,16 +876,6 @@ public class EnterAirlock extends Task implements Serializable {
 			airlock.removeID(id);
 		}
 
-		// Ends the sub task 2 within the EnterAirlock task
-		// Note: when is calling endSubTask2() needed ?
-//		endSubTask2();
-
-		// Remove all lingering tasks to avoid any unfinished walking tasks
-//		person.getMind().getTaskManager().endSubTask();
-
-		// Walk away from this airlock anywhere
-//		walkToRandomLocation(false);
-
 		super.endTask();
 	}
 
@@ -946,8 +891,6 @@ public class EnterAirlock extends Task implements Serializable {
 	
 	public void destroy() {
 		airlock = null;
-//		exteriorDoorPos = null;
-//		interiorDoorPos = null;
 		super.destroy();
 	}
 }

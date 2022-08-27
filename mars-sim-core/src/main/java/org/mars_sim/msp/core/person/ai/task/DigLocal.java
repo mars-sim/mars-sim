@@ -106,19 +106,23 @@ implements Serializable {
         // To dig local a person must be in a Settlement
         if (!person.isInSettlement()) {
         	logger.warning(person, "Not in a settlement to start a DigLocal Task.");
-        	endTask();
+    		checkLocation();
+			return;
         }
 
      	settlement = CollectionUtils.findSettlement(person.getCoordinates());
-     	if (settlement == null)
-     		endTask();
-
+     	if (settlement == null) {
+    		checkLocation();
+			return;
+     	}
+     		
         // Get an available airlock in a settlement
      	if (person.isInSettlement()) {
 	        airlock = getWalkableAvailableEgressAirlock(person);
 	        if (airlock == null) {
 	        	logger.log(person, Level.WARNING, 4_000, "No walkable airlock for egress.");
-			    endTask();
+	    		checkLocation();
+				return;
 	        }
      	}
 
@@ -219,12 +223,12 @@ implements Serializable {
     private double collectResource(double time) {
    	
 		if (checkReadiness(time) > 0) {
-			endTask();
+			checkLocation();
 			return time;
 		}
 			
      	if (person.isInSettlement()) {
-     		endTask();
+			checkLocation();
      		return time;
      	}
 
@@ -396,12 +400,12 @@ implements Serializable {
             	if (!successful) {
             		aBag = null;
                 	logger.log(person, Level.WARNING, 10_000, "Strangely unable to transfer an empty bag for " + resourceName + ".");
-                	endTask();
+        			checkLocation();
                 }
 	        }
 	        else {
 	        	logger.log(person, Level.WARNING, 10_000, "Unable to find an empty bag in the inventory for " + resourceName + ".");
-	        	endTask();
+				checkLocation();
 	        }
         }
         return aBag;
