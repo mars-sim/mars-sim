@@ -181,7 +181,7 @@ public class ResourceCommand extends AbstractSettlementCommand {
 		double consumption = 0;
 		List<Person> ppl = new ArrayList<>(settlement.getAllAssociatedPeople());
 		for (Person p : ppl) {
-			consumption += p.getDailyUsage(id);
+			consumption += p.getPhysicalCondition().getDailyFoodUsage(3);
 		}
 		response.appendTableRow("People", Math.round(- sign * consumption * 100.0) / 100.0);
 		net = net - sign * consumption;

@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.data.SolMetricDataLogger;
 import org.mars_sim.msp.core.data.SolSingleMetricDataLogger;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
@@ -53,6 +54,9 @@ public class PhysicalCondition implements Serializable {
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(PhysicalCondition.class.getName());
 
+	/** The maximum number of sols for storing stats. */
+	public static final int MAX_NUM_SOLS = 7;
+	
 	/** The maximum number of sols in hunger [millisols]. */
 	public static final int MAX_HUNGER = 40_000;
 	/** The maximum number of sols in thirst [millisols]. */
@@ -203,6 +207,9 @@ public class PhysicalCondition implements Serializable {
 	 */
 	private SolSingleMetricDataLogger[] foodConsumption = new SolSingleMetricDataLogger[4];
 
+	/** The person's oxygen consumption. */
+	private SolMetricDataLogger<Integer> gasConsumption;
+	
 	/** The CircadianClock instance. */
 	private transient CircadianClock circadian;
 	/** The NaturalAttributeManager instance. */
@@ -335,8 +342,11 @@ public class PhysicalCondition implements Serializable {
 
 		// initialize it to save 7 sols
 		for (int i=0; i<4; i++) {
-			foodConsumption[i] = new SolSingleMetricDataLogger(7);
+			foodConsumption[i] = new SolSingleMetricDataLogger(MAX_NUM_SOLS);
 		}
+		
+		// Create the consumption map
+		gasConsumption = new SolMetricDataLogger<>(MAX_NUM_SOLS);
 		
 		initialize();
 	}
@@ -1327,7 +1337,7 @@ public class PhysicalCondition implements Serializable {
 			else {
 				double received = support.provideOxygen(amount);
 				// Track the amount consumed
-				person.addConsumptionTime(OXYGEN_ID, received);
+				addGasConsumed(OXYGEN_ID, received);
 				// Note: how to model how much oxygen we need properly ?
 				// Assume one half as the bare minimum
 				double required = amount / 2D;
@@ -2159,6 +2169,46 @@ public class PhysicalCondition implements Serializable {
 //		return null;
 	}
 	
+	/**
+	 * Gets the daily average water usage of the last x sols Not: most weight on
+	 * yesterday's usage. Least weight on usage from x sols ago
+	 *
+	 * @param type the id of the resource
+	 * @return the amount of resource consumed in a day
+	 */
+	public double getDailyFoodUsage(int type) {
+		return foodConsumption[type].getDailyAverage();
+	}
+	
+	/**
+	 * Adds the amount of gas consumed.
+	 *
+	 * @param waterID
+	 * @param amount
+	 */
+	public void addGasConsumed(int id, double amount) {
+		gasConsumption.increaseDataPoint(id, amount);
+	}
+	
+	/**
+	 * Gets the daily average water usage of the last x sols Not: most weight on
+	 * yesterday's usage. Least weight on usage from x sols ago
+	 *
+	 * @param type the id of the resource
+	 * @return the amount of resource consumed in a day
+	 */
+	public double getDailyUsage(Integer type) {
+		return gasConsumption.getDailyAverage(type);
+	}
+	
+	/**
+	 * Initializes that static instances.
+	 * 
+	 * @param s
+	 * @param c0
+	 * @param c1
+	 * @param m
+	 */
 	public static void initializeInstances(Simulation s, MasterClock c0, MarsClock c1, MedicalManager m) {
 		sim = s;
 		masterClock = c0;

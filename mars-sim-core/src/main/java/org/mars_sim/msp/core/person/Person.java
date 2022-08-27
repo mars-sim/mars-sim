@@ -85,7 +85,6 @@ public class Person extends Unit implements Worker, Temporal, EquipmentOwner {
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(Person.class.getName());
 
-	public static final int MAX_NUM_SOLS = 3;
 	/** A small amount. */
 	private static final double SMALL_AMOUNT = 0.00001;
 
@@ -210,8 +209,6 @@ public class Person extends Unit implements Worker, Temporal, EquipmentOwner {
 
 	/** The person's EVA times. */
 	private SolMetricDataLogger<String> eVATaskTime;
-	/** The person's water/oxygen consumption. */
-	private SolMetricDataLogger<Integer> consumption;
 
 	static {
 		// personConfig is needed by maven unit test
@@ -327,10 +324,8 @@ public class Person extends Unit implements Worker, Temporal, EquipmentOwner {
 		support = getLifeSupportType();
 		// Create the mission experiences map
 		missionExperiences = new EnumMap<>(MissionType.class);
-		// Create the EVA hours map
-		eVATaskTime = new SolMetricDataLogger<>(MAX_NUM_SOLS);
-		// Create the consumption map
-		consumption = new SolMetricDataLogger<>(MAX_NUM_SOLS);
+//		// Create the EVA hours map
+//		eVATaskTime = new SolMetricDataLogger<>(MAX_NUM_SOLS);
 		// Create a set of collaborative studies
 		collabStudies = new HashSet<>();
 		// Construct the EquipmentInventory instance.
@@ -1493,27 +1488,6 @@ public class Person extends Unit implements Worker, Temporal, EquipmentOwner {
 		}
 
 		return map;
-	}
-
-	/**
-	 * Adds the amount consumed.
-	 *
-	 * @param waterID
-	 * @param amount
-	 */
-	public void addConsumptionTime(int waterID, double amount) {
-		consumption.increaseDataPoint(waterID, amount);
-	}
-
-	/**
-	 * Gets the daily average water usage of the last x sols Not: most weight on
-	 * yesterday's usage. Least weight on usage from x sols ago
-	 *
-	 * @param type the id of the resource
-	 * @return the amount of resource consumed in a day
-	 */
-	public double getDailyUsage(Integer type) {
-		return consumption.getDailyAverage(type);
 	}
 
 	public double getEatingSpeed() {

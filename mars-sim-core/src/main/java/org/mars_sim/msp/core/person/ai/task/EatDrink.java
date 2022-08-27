@@ -53,18 +53,7 @@ public class EatDrink extends Task implements Serializable {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(EatDrink.class.getName());
 
-	private static final int HUNGER_CEILING = 1000;
-	private static final int THIRST_CEILING = 500;
-	private static final int RATIO = 300;
-	
-	/** The conversion ratio of thirst to one serving of water. */	
-	private static final double THIRST_PER_SERVING = 150.0;
-	/** The minimal amount of resource to be retrieved. */
-	private static final double MIN = 0.000_1;
-	
 	/** Task name */
-	private static final String JUICE = "juice";
-	private static final String MILK = "milk";
 	private static final String NAME = Msg.getString("Task.description.eatDrink"); //$NON-NLS-1$
 
 	/** Task phases. */
@@ -75,15 +64,29 @@ public class EatDrink extends Task implements Serializable {
 	private static final TaskPhase EAT_DESSERT = new TaskPhase(Msg.getString("Task.phase.eatingDessert")); //$NON-NLS-1$
 	private static final TaskPhase DRINK_WATER = new TaskPhase(Msg.getString("Task.phase.drinkingWater")); //$NON-NLS-1$
 
+	private static final String JUICE = "juice";
+	private static final String MILK = "milk";
+	
+	private static final int HUNGER_CEILING = 1000;
+	private static final int THIRST_CEILING = 500;
+	private static final int RATIO = 300;
+
 	// Static members
 	private static final int FOOD_ID = ResourceUtil.foodID;
 	private static final int WATER_ID = ResourceUtil.waterID;
 
+	private static final int NUMBER_OF_MEAL_PER_SOL = 3;
+	private static final int NUMBER_OF_DESSERT_PER_SOL = 4;
+	
+	/** The conversion ratio of thirst to one serving of water. */	
+	private static final double THIRST_PER_SERVING = 150.0;
+	/** The minimal amount of resource to be retrieved. */
+	private static final double MIN = 0.000_1;
+	
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = -1.2D;
 	private static final double DESSERT_STRESS_MODIFIER = -.8D;
-	private static final int NUMBER_OF_MEAL_PER_SOL = 3;
-	private static final int NUMBER_OF_DESSERT_PER_SOL = 4;
+	
 	/** The proportion of the task for eating a meal. */
 	private static final double MEAL_EATING_PROPORTION = .75D;
 	/** The proportion of the task for eating dessert. */
@@ -100,7 +103,7 @@ public class EatDrink extends Task implements Serializable {
 
 	private static double millisolPerKg;
 	private static double kJPerKg;
-	
+
 	// Data members
 	private int meals = 0;
 	private int desserts = 0;
@@ -120,7 +123,6 @@ public class EatDrink extends Task implements Serializable {
 	private Cooking kitchen;
 	private PreparingDessert dessertKitchen;
 	private PhysicalCondition pc;
-
 	private AmountResource unpreparedDessertAR;
 
 	/**
@@ -857,12 +859,12 @@ public class EatDrink extends Task implements Serializable {
 		// Note that the water content within the dessert has already been deducted from
 		// the settlement
 		// when the dessert was made.
-		double waterPortion = 1000 * (PreparingDessert.getDessertMassPerServing() - dryMass);
-		if (waterPortion > 0) {
+		double proportion = 1000 * (PreparingDessert.getDessertMassPerServing() - dryMass);
+		if (proportion > 0) {
 			// Record the amount consumed
-			pc.recordFoodConsumption(waterPortion, 3);
+			pc.recordFoodConsumption(proportion, 3);
 
-			waterFinal = waterFinal - waterPortion;
+			waterFinal = waterFinal - proportion;
 		}
 
 		if (waterFinal > 0) {
@@ -931,6 +933,8 @@ public class EatDrink extends Task implements Serializable {
 						pc.setThirst(0);
 						// Record the amount consumed
 						pc.recordFoodConsumption(amount, 3);
+						// Track the water consumption
+						pc.addGasConsumed(WATER_ID, amount);
 						endTask();
 					}
 					else if (newThirst > THIRST_CEILING) {
@@ -938,6 +942,8 @@ public class EatDrink extends Task implements Serializable {
 						pc.setThirst(THIRST_CEILING);
 						// Record the amount consumed
 						pc.recordFoodConsumption(amount, 3);
+						// Track the water consumption
+						pc.addGasConsumed(WATER_ID, amount);
 					}
 					else
 						pc.reduceThirst(currentThirst - newThirst);
@@ -946,9 +952,8 @@ public class EatDrink extends Task implements Serializable {
 						suit.retrieveAmountResource(WATER_ID, amount);
 						// Record the amount consumed
 						pc.recordFoodConsumption(amount, 3);
-						
 						// Track the water consumption
-						person.addConsumptionTime(WATER_ID, amount);
+						pc.addGasConsumed(WATER_ID, amount);
 						if (waterOnly)
 							setDescription(Msg.getString("Task.description.eatDrink.water")); //$NON-NLS-1$
 					}
@@ -977,6 +982,8 @@ public class EatDrink extends Task implements Serializable {
 							pc.setThirst(0);
 							// Record the amount consumed
 							pc.recordFoodConsumption(amount, 3);
+							// Track the water consumption
+							pc.addGasConsumed(WATER_ID, amount);
 							endTask();
 						}
 						else if (newThirst > THIRST_CEILING) {
@@ -984,6 +991,8 @@ public class EatDrink extends Task implements Serializable {
 							pc.setThirst(THIRST_CEILING);
 							// Record the amount consumed
 							pc.recordFoodConsumption(amount, 3);
+							// Track the water consumption
+							pc.addGasConsumed(WATER_ID, amount);
 						}
 						else
 							pc.reduceThirst(currentThirst - newThirst);
@@ -993,7 +1002,7 @@ public class EatDrink extends Task implements Serializable {
 							// Record the amount consumed
 							pc.recordFoodConsumption(amount, 3);
 							// Track the water consumption
-							person.addConsumptionTime(WATER_ID, amount);
+							pc.addGasConsumed(WATER_ID, amount);
 							if (waterOnly)
 								setDescription(Msg.getString("Task.description.eatDrink.water")); //$NON-NLS-1$
 						}
