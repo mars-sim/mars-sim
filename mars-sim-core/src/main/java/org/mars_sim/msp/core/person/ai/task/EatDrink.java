@@ -55,12 +55,12 @@ public class EatDrink extends Task implements Serializable {
 
 	private static final int HUNGER_CEILING = 1000;
 	private static final int THIRST_CEILING = 500;
-	private static final int RATIO = 1000;
+	private static final int RATIO = 300;
 	
 	/** The conversion ratio of thirst to one serving of water. */	
-	private static final double RATIO_WATER = 75.0;
+	private static final double THIRST_PER_SERVING = 150.0;
 	/** The minimal amount of resource to be retrieved. */
-	private static final double MIN = 0.0001;
+	private static final double MIN = 0.000_1;
 	
 	/** Task name */
 	private static final String JUICE = "juice";
@@ -95,11 +95,13 @@ public class EatDrink extends Task implements Serializable {
 	/** Mass (kg) of single napkin for meal. */
 	private static final double NAPKIN_MASS = .0025D;
 
-	private static double foodConsumptionRate;
-	private static double dessertConsumptionRate;
+	private static double foodConsumedPerServing;
+	private static double dessertConsumedPerServing;
 
+	private static double millisolPerKg;
+	private static double kJPerKg;
+	
 	// Data members
-
 	private int meals = 0;
 	private int desserts = 0;
 	private double foodAmount = 0;
@@ -127,8 +129,8 @@ public class EatDrink extends Task implements Serializable {
 	 * @param person the person to perform the task
 	 */
 	public EatDrink(Person person) {
-		super(NAME, person, false, false, STRESS_MODIFIER, 20D
-				+ RandomUtil.getRandomDouble(5D) - RandomUtil.getRandomDouble(5D));
+		super(NAME, person, false, false, STRESS_MODIFIER, 5
+				+ RandomUtil.getRandomDouble(-5, 5));
 
 		pc = person.getPhysicalCondition();
 
@@ -137,8 +139,12 @@ public class EatDrink extends Task implements Serializable {
 		dessertEatingDuration = dur * DESSERT_EATING_PROPORTION;
 
 		PersonConfig config = SimulationConfig.instance().getPersonConfig();
-		foodConsumptionRate = config.getFoodConsumptionRate() / NUMBER_OF_MEAL_PER_SOL;
-		dessertConsumptionRate = config.getDessertConsumptionRate() / NUMBER_OF_DESSERT_PER_SOL;
+		foodConsumedPerServing = config.getFoodConsumptionRate() / NUMBER_OF_MEAL_PER_SOL;
+		dessertConsumedPerServing = config.getDessertConsumptionRate() / NUMBER_OF_DESSERT_PER_SOL;
+		
+		millisolPerKg = RATIO / foodConsumedPerServing; 
+		kJPerKg = PhysicalCondition.FOOD_COMPOSITION_ENERGY_RATIO / foodConsumedPerServing;
+		
 		// ~.3 kg per serving
 		waterEachServing = pc.getWaterConsumedPerServing();
 
@@ -208,6 +214,15 @@ public class EatDrink extends Task implements Serializable {
 
 		//////////////////////////////
 
+		// Checks if this person has eaten too much already 
+		food = food && !person.getPhysicalCondition().eatenTooMuch();
+		
+		// Checks if this person has drank enough water already
+		water = water && !person.getPhysicalCondition().drinkEnoughWater();
+		
+		//////////////////////////////
+
+		
 		if (!food && !water) {
 			endTask();
 		}
@@ -281,11 +296,13 @@ public class EatDrink extends Task implements Serializable {
 		//////////////////////////////
 
 		if (water) {
+			// if water only
 			// Initialize task phase.
 			addPhase(DRINK_WATER);
 			setPhase(DRINK_WATER);
 		}
 		else {
+			// if both food and water
 			// Initialize task phase.
 			setPhase(LOOK_FOR_FOOD);
 		}
@@ -331,13 +348,14 @@ public class EatDrink extends Task implements Serializable {
 		// Call to consume water
 		consumeWater(true);
 
-		if (meals > 0 || foodAmount > 0)
-			setPhase(LOOK_FOR_FOOD);
-		else if (desserts > 0)
-			setPhase(PICK_UP_DESSERT);
-		else
-			// Note: must call endTask here to end this task
-			super.endTask();
+//		if (meals > 0 || foodAmount > 0)
+//			setPhase(LOOK_FOR_FOOD);
+//		else if (desserts > 0)
+//			setPhase(PICK_UP_DESSERT);
+//		else
+
+		// Note: must call endTask here to end this task
+		endTask();
 
 		return 0;
 	}
@@ -400,10 +418,10 @@ public class EatDrink extends Task implements Serializable {
 		double remainingTime = 0;
 		double eatingTime = time;
 
-		boolean enoughFood = eatPreservedFood(eatingTime);
+		double proportion = eatPreservedFood(eatingTime);
 
 		// If not enough preserved food available, change to dessert phase.
-		if (!enoughFood) {
+		if (proportion == 0) {
 			endTask();
 			return time;
 		}
@@ -411,6 +429,7 @@ public class EatDrink extends Task implements Serializable {
 			// Report eating preserved food.
 			setDescription(Msg.getString("Task.description.eatDrink.preserved")); //$NON-NLS-1$
 
+			// Make sure it does not exceed eatingDuration
 			if ((totalEatingTime + eatingTime) >= eatingDuration) {
 				eatingTime = eatingDuration - totalEatingTime;
 			}
@@ -419,19 +438,20 @@ public class EatDrink extends Task implements Serializable {
 				remainingTime = time - eatingTime;
 			}
 
-			if (cumulativeProportion >= foodConsumptionRate) {
+			if (cumulativeProportion + proportion >= foodConsumedPerServing) {
 				endTask();
 				return remainingTime;
 			}
 
+			// Also consume water with the preserved food
+			consumeWater(false);
+			
 			totalEatingTime += eatingTime;
 
 			if (totalEatingTime > getDuration()) {
 				endTask();
 				return remainingTime;
 			}
-
-			consumeWater(false);
 		}
 
 
@@ -469,9 +489,11 @@ public class EatDrink extends Task implements Serializable {
 				return remainingTime;
 			}
 
+			// Also consume water with the preserved food
+			consumeWater(false);
+			
 			// If finished eating, change to dessert phase.
 			if (eatingTime < time) {
-//						setPhase(PICK_UP_DESSERT);// EATING_DESSERT);
 				remainingTime = time - eatingTime;
 			}
 
@@ -483,14 +505,12 @@ public class EatDrink extends Task implements Serializable {
 				return remainingTime;
 			}
 
-			consumeWater(false);
-
 		} else {
 			// Eat preserved food if available
-			boolean enoughFood = eatPreservedFood(eatingTime);
+			double proportion = eatPreservedFood(eatingTime);
 
 			// If not enough preserved food available, change to dessert phase.
-			if (!enoughFood) {
+			if (proportion == 0.0) {
 				setPhase(PICK_UP_DESSERT);
 				return remainingTime;
 			}
@@ -612,14 +632,13 @@ public class EatDrink extends Task implements Serializable {
 	 * @param eatingTime the amount of time (millisols) to eat.
 	 * @return true if enough preserved food available to eat.
 	 */
-	private boolean eatPreservedFood(double eatingTime) {
-		boolean result = true;
+	private double eatPreservedFood(double eatingTime) {
 
 		// Proportion of food being eaten over this time period.
 		double proportion = person.getEatingSpeed() * eatingTime;
 
-		if ((cumulativeProportion + proportion) > foodConsumptionRate) {
-			proportion = foodConsumptionRate - cumulativeProportion;
+		if ((cumulativeProportion + proportion) > foodConsumedPerServing) {
+			proportion = foodConsumedPerServing - cumulativeProportion;
 		}
 
 		if (proportion > MIN) {
@@ -635,31 +654,24 @@ public class EatDrink extends Task implements Serializable {
 					// Add to cumulativeProportion
 					cumulativeProportion += proportion;
 					// Food amount eaten over this period of time.
-					double hungerRelieved = RATIO / foodConsumptionRate * proportion;
+					double hungerRelieved = millisolPerKg * proportion;
 					// Consume preserved food after eating
 					reduceHunger(hungerRelieved);
 					// Add caloric energy from the preserved food.
-					double caloricEnergyFoodAmount = PhysicalCondition.FOOD_COMPOSITION_ENERGY_RATIO / foodConsumptionRate * proportion;
-					pc.addEnergy(caloricEnergyFoodAmount);
+					double energy = kJPerKg * proportion;
+					pc.addEnergy(energy);
 
 				} else {
-					// Not enough food available to eat.
-					result = false;
-					// Need endTask() below to quit EatDrink
-					endTask();
+					// Not enough food available to eat, will end this task.
+					proportion = 0;
 				}
 			}
 		} else {
-			// Person is not inside a container unit, so end task.
-			result = false;
-			// Need endTask() below to quit EatDrink
-			endTask();
+			// Person is not inside a container unit, will end this task.
+			proportion = 0;
 		}
 
-		if (totalEatingTime > getDuration())
-			endTask();
-
-		return result;
+		return proportion;
 	}
 
 	/**
@@ -854,7 +866,7 @@ public class EatDrink extends Task implements Serializable {
 		}
 
 		if (waterFinal > 0) {
-			double newThirst = currentThirst - waterFinal * RATIO_WATER;
+			double newThirst = currentThirst - waterFinal * THIRST_PER_SERVING;
 			if (newThirst < 0) {
 				newThirst = 0;
 				pc.setThirst(0);
@@ -895,10 +907,10 @@ public class EatDrink extends Task implements Serializable {
 				}
 			}
 
-			double waterFinal = Math.min(waterEachServing, currentThirst / RATIO_WATER);
+			double waterFinal = Math.min(waterEachServing, currentThirst / THIRST_PER_SERVING);
 
 			if (suit != null && waterFinal > 0) {
-				double newThirst = currentThirst - waterFinal * RATIO_WATER;
+				double newThirst = currentThirst - waterFinal * THIRST_PER_SERVING;
 				// Test to see if there's enough water
 				boolean haswater = false;
 				double amount = waterFinal;
@@ -913,14 +925,19 @@ public class EatDrink extends Task implements Serializable {
 					return;
 
 				if (haswater) {
-					newThirst = newThirst - amount * RATIO_WATER;
+					newThirst = newThirst - amount * THIRST_PER_SERVING;
 					if (newThirst < 0) {
 						newThirst = 0;
 						pc.setThirst(0);
+						// Record the amount consumed
+						pc.recordFoodConsumption(amount, 3);
+						endTask();
 					}
 					else if (newThirst > THIRST_CEILING) {
 						newThirst = THIRST_CEILING;
 						pc.setThirst(THIRST_CEILING);
+						// Record the amount consumed
+						pc.recordFoodConsumption(amount, 3);
 					}
 					else
 						pc.reduceThirst(currentThirst - newThirst);
@@ -940,28 +957,33 @@ public class EatDrink extends Task implements Serializable {
 
 			else if (waterFinal > 0) {
 				int level = person.getAssociatedSettlement().getWaterRationLevel();
-				double newThirst = currentThirst - waterFinal * RATIO_WATER;
+				double newThirst = currentThirst - waterFinal * THIRST_PER_SERVING;
 				double [] levels = {1D, 5D, 10D, 15D};
 
 				// Try different level of water
 				for (double levelModifier : levels) {
 					// Test to see if there's enough water
 					boolean haswater = false;
-					double amount = Math.max(MIN, waterFinal / levelModifier / level);
+					double amount = Math.max(MIN, waterFinal * THIRST_PER_SERVING / levelModifier / level);
 
 					double available = getAmountResourceStored(containerUnit, WATER_ID);
 					if (available >= amount)
 						haswater = true;
 
 					if (haswater) {
-						newThirst = newThirst - amount * RATIO_WATER;
+						newThirst = newThirst - amount * THIRST_PER_SERVING;
 						if (newThirst < 0) {
 							newThirst = 0;
 							pc.setThirst(0);
+							// Record the amount consumed
+							pc.recordFoodConsumption(amount, 3);
+							endTask();
 						}
 						else if (newThirst > THIRST_CEILING) {
 							newThirst = THIRST_CEILING;
 							pc.setThirst(THIRST_CEILING);
+							// Record the amount consumed
+							pc.recordFoodConsumption(amount, 3);
 						}
 						else
 							pc.reduceThirst(currentThirst - newThirst);
@@ -975,8 +997,6 @@ public class EatDrink extends Task implements Serializable {
 							if (waterOnly)
 								setDescription(Msg.getString("Task.description.eatDrink.water")); //$NON-NLS-1$
 						}
-
-						return;
 					}
 				}
 			}
@@ -999,7 +1019,7 @@ public class EatDrink extends Task implements Serializable {
 
 			boolean isThirsty = pc.getThirst() > 50;
             // Determine list of available dessert resources.
-			List<AmountResource> availableDessertResources = getAvailableDessertResources(dessertConsumptionRate,
+			List<AmountResource> availableDessertResources = getAvailableDessertResources(dessertConsumedPerServing,
 					isThirsty);
 			if (availableDessertResources.size() > 0) {
 
@@ -1041,7 +1061,7 @@ public class EatDrink extends Task implements Serializable {
 						// Record the amount consumed
 						pc.recordFoodConsumption(proportion, 2);
 						// dessert amount eaten over this period of time.
-						double hungerRelieved = RATIO * proportion / dessertConsumptionRate;
+						double hungerRelieved = RATIO * proportion / dessertConsumedPerServing;
 
 						// Consume unpreserved dessert.
 						reduceHunger(hungerRelieved);
@@ -1053,7 +1073,7 @@ public class EatDrink extends Task implements Serializable {
 						pc.addStress(-deltaStress);
 
 						// Add caloric energy from dessert.
-						double caloricEnergy = proportion / dessertConsumptionRate * PhysicalCondition.FOOD_COMPOSITION_ENERGY_RATIO;
+						double caloricEnergy = proportion / dessertConsumedPerServing * PhysicalCondition.FOOD_COMPOSITION_ENERGY_RATIO;
 						pc.addEnergy(caloricEnergy);
 					} else {
 						// Not enough dessert resource available to eat.

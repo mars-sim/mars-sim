@@ -121,11 +121,6 @@ public class PhysicalCondition implements Serializable {
 	/** The standard pre-breathing time in the EVA suit. */
 	private static final double STANDARD_PREBREATHING_TIME = 40;
 
-
-	/** The time it takes to prebreathe the air mixture in the EVA suit. */
-	private double remainingPrebreathingTime = STANDARD_PREBREATHING_TIME + RandomUtil.getRandomInt(-5, 5);
-	/**  The amount of water this person would consume each time (assuming drinking water 8 times a day). */
-	private double waterConsumedPerServing;
 	/** True if person is starving. */
 	private boolean isStarving;
 	/** True if person is stressed out. */
@@ -169,15 +164,22 @@ public class PhysicalCondition implements Serializable {
 	/** Person's food appetite (0.0 to 1.0) */
 	private double appetite;
 
+	/** The time it takes to prebreathe the air mixture in the EVA suit. */
+	private double remainingPrebreathingTime = STANDARD_PREBREATHING_TIME + RandomUtil.getRandomInt(-5, 5);
+
 	private double starvationStartTime;
-
 	private double dehydrationStartTime;
-
+	
 	private double personalMaxEnergy;
-
-	private double foodDryMassPerServing;
-
 	private double bodyMassDeviation;
+	
+	/**  The amount of water this person would consume each time (assuming drinking water 10 times a day). */
+	private double waterConsumedPerServing;
+	/**  The amount of food this person would consume each time (assuming 3 meals a day). */
+	private double foodDryMassPerServing;
+	
+	private double waterConsumedPerSol;
+	private double foodConsumedPerSol;
 
 	/** Person owning this physical. */
 	private Person person;
@@ -312,10 +314,14 @@ public class PhysicalCondition implements Serializable {
 		// Note: p = mean + RandomUtil.getGaussianDouble() * standardDeviation
 		bodyMassDeviation = bodyMassDeviation + RandomUtil.getGaussianDouble() * bodyMassDeviation / 7D;
 		// Assume a person drinks 10 times a day, each time ~375 mL
-		waterConsumedPerServing = H2O_CONSUMPTION * bodyMassDeviation / 10D; // about .3 kg per serving
-
-		foodDryMassPerServing = FOOD_CONSUMPTION / (double) Cooking.NUMBER_OF_MEAL_PER_SOL;
-
+		waterConsumedPerSol = H2O_CONSUMPTION * bodyMassDeviation / 10D;
+		waterConsumedPerServing = waterConsumedPerSol / 8; 
+		logger.info(person, "waterConsumedPerServing: " + waterConsumedPerServing);
+		
+		// about .3 kg per serving
+		foodConsumedPerSol = FOOD_CONSUMPTION * bodyMassDeviation / 10D;
+		foodDryMassPerServing = foodConsumedPerSol / Cooking.NUMBER_OF_MEAL_PER_SOL;
+		logger.info(person, "foodDryMassPerServing: " + foodDryMassPerServing);
 		starvationStartTime = 1000D * (personConfig.getStarvationStartTime() - RandomUtil.getGaussianDouble() * bodyMassDeviation / 3);
 
 		dehydrationStartTime = 1000D * (personConfig.getDehydrationStartTime() - RandomUtil.getGaussianDouble() * bodyMassDeviation);
@@ -336,14 +342,17 @@ public class PhysicalCondition implements Serializable {
 	}
 
 	private void initializeHealthIndices() {
-		// Set up random physical healt index
+		// Set up random physical health index
 		thirst = RandomUtil.getRandomRegressionInteger(50);
 		fatigue = RandomUtil.getRandomRegressionInteger(50);
 		stress = RandomUtil.getRandomRegressionInteger(20);
 		hunger = RandomUtil.getRandomRegressionInteger(50);
 		// kJoules somewhat co-relates with hunger
-		kJoules = 10000 + (200 - hunger) * 100;
-		performance = 1.0D - (50 - fatigue) * .002 - (50 - stress) * .002 - (200 - hunger) * .002;
+		kJoules = 10000 + (50 - hunger) * 100;
+		performance = 1.0D - (50 - fatigue) * .002 
+				- (20 - stress) * .002 
+				- (50 - hunger) * .002
+				- (50 - thirst) * .002;
 	}
 
 	/**
@@ -2098,6 +2107,34 @@ public class PhysicalCondition implements Serializable {
 		remainingPrebreathingTime = STANDARD_PREBREATHING_TIME + RandomUtil.getRandomInt(-5, 5);
 	}
 
+	
+	/**
+	 * Has this person eaten too much ?
+	 * 
+	 * @return
+	 */
+	public boolean eatenTooMuch() {
+		double foodEaten = foodConsumption[0].getTodayDataValue();
+		double mealEaten = foodConsumption[1].getTodayDataValue();
+		if (foodEaten + mealEaten >= FOOD_CONSUMPTION)
+			return true;
+
+		return false;
+	}
+	
+	/**
+	 * Has this person drank enough water ?
+	 * 
+	 * @return
+	 */
+	public boolean drinkEnoughWater() {
+		double water = foodConsumption[3].getTodayDataValue();
+		if (water >= H2O_CONSUMPTION)
+			return true;
+
+		return false;
+	}
+	
 	/**
 	 * Records the amount of food consumption in kg
 	 * 

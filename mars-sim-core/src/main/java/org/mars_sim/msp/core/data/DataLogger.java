@@ -96,6 +96,19 @@ public abstract class DataLogger<T> implements Serializable {
 	}
 
 	/**
+	 * Gets the today's data value in double.
+	 * 
+	 * @return
+	 */
+	public double getTodayDataValue() {
+		double value = 0;
+		if (getHistory().containsKey(currentSol)
+				&& getHistory().get(currentSol) instanceof Double)
+			value = (double)getHistory().get(currentSol);
+		return value;
+	}
+	
+	/**
 	 * Gets the current sol the Data Logger is recording.
 	 * 
 	 * @return
