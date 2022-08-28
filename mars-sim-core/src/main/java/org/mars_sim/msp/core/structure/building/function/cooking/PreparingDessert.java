@@ -539,8 +539,6 @@ public class PreparingDessert extends Function {
 		double dryMass = getDryMass(selectedDessert);
 
 		if (selectedDessert == null) {
-			// System.out.println("PreparingDessert : selectedDessert is " +
-			// selectedDessert);
 			return null;
 		}
 
@@ -562,19 +560,17 @@ public class PreparingDessert extends Function {
 						* worker.getSkillManager().getEffectiveSkillLevel(SkillType.COOKING);
 
 			dessertQuality = Math.round((dessertQuality + culinarySkillPerf + cleanliness) * 10D) / 10D;
-			;
 
 			// Create a serving of dessert and add it into the list
 			servingsOfDessert.add(new PreparedDessert(selectedDessert, dessertQuality, dessertMassPerServing,
 					(MarsClock) marsClock.clone(), worker.getName(), this));
 
-			// consumeWater();
 			dessertCounterPerSol++;
 
 			preparingWorkTime -= PREPARE_DESSERT_WORK_REQUIRED;
 
 			// Reduce a tiny bit of kitchen's cleanliness upon every meal made
-			cleanliness = cleanliness - .0075;
+			cleanliness -= .0075;
 
 			return selectedDessert;
 		}

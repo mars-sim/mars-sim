@@ -449,30 +449,32 @@ public class Trade extends RoverMission implements CommerceMission {
 			for (Worker mm: getMembers()) {
 				if (mm instanceof Person) {
 					Person person = (Person) mm;
-					if (!person.isDeclaredDead()) {
-						EVASuit suit0 = getEVASuit(person);
-						if (suit0 == null) {
-							if (tradingSettlement.findNumContainersOfType(EquipmentType.EVA_SUIT) > 0) {
-								EVASuit suit1 = InventoryUtil.getGoodEVASuitNResource(tradingSettlement, person);
-								if (suit1 != null) {
-									boolean done = suit1.transfer(getVehicle());
-									if (!done)
-										logger.warning(person, "Not able to transfer an EVA suit from " + tradingSettlement);
-								} else {
-									logger.warning(person, "EVA suit not provided for by " + tradingSettlement);
-								}
+					if (person.isDeclaredDead()) {
+						continue;
+					}
+					
+					EVASuit suit0 = getEVASuit(person);
+					if (suit0 == null) {
+						if (tradingSettlement.findNumContainersOfType(EquipmentType.EVA_SUIT) > 0) {
+							EVASuit suit1 = InventoryUtil.getGoodEVASuitNResource(tradingSettlement, person);
+							if (suit1 != null) {
+								boolean done = suit1.transfer(getVehicle());
+								if (!done)
+									logger.warning(person, "Not able to transfer an EVA suit from " + tradingSettlement);
+							} else {
+								logger.warning(person, "EVA suit not provided for by " + tradingSettlement);
 							}
 						}
+					}
 
-						// Walk back to the vehicle and be ready to embark and go home
-						Walk walk = Walk.createWalkingTask(person, adjustedLoc, 0, getVehicle());
-						if (walk != null) {
-							assignTask(person, walk);
-						}
-						else {
-							logger.severe(person, "Unable to enter rover " + getVehicle().getName());
-							endMission(MissionStatus.CANNOT_ENTER_ROVER);
-						}
+					// Walk back to the vehicle and be ready to embark and go home
+					Walk walk = Walk.createWalkingTask(person, adjustedLoc, 0, getVehicle());
+					if (walk != null) {
+						assignTask(person, walk);
+					}
+					else {
+						logger.severe(person, "Unable to enter rover " + getVehicle().getName());
+						endMission(MissionStatus.CANNOT_ENTER_ROVER);
 					}
 				}
 			}
