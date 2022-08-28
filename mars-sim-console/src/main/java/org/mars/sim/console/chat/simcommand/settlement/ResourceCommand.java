@@ -136,14 +136,14 @@ public class ResourceCommand extends AbstractSettlementCommand {
 		double reserve = settlement.getAmountResourceStored(id);
 		response.appendLabeledString(CURRENT_RESERVE, String.format(CommandHelper.KG_FORMAT, reserve));
 		response.appendBlankLine();
-			
+		// For consumption, use the '+ve' sign	
 		double usage = 0;
 		double totalArea = 0;
 		int type = 0;
+		// For production, use the '-ve' sign
 		double sign = -1.0;
 		if (id == ResourceUtil.greyWaterID) {
 			type = 3;
-			
 		}
 		
 		// Prints greenhouse usage
@@ -163,6 +163,9 @@ public class ResourceCommand extends AbstractSettlementCommand {
 
 		response.appendBlankLine();
 
+		response.appendTableHeading("Category", 16, "[kg/sol] '+ve':Consumed '-ve':Produced ");
+		
+		
 		double net = 0;
 		double greenhouseUsage = 0;
 		
@@ -171,11 +174,8 @@ public class ResourceCommand extends AbstractSettlementCommand {
 			Farming f = b.getFarming();
 			greenhouseUsage += f.getDailyAverageWaterUsage();
 		}
-		
-		response.appendTableHeading("Area", 16, "Consumption (kg/sol)");
-		response.appendTableRow("Greenhouse", Math.round(-greenhouseUsage * 100.0) / 100.0);
-
-		net = net - greenhouseUsage;
+		response.appendTableRow("Greenhouse", Math.round(greenhouseUsage * 100.0) / 100.0);
+		net = net + greenhouseUsage;
 
 		// Prints consumption
 		double consumption = 0;
@@ -183,14 +183,14 @@ public class ResourceCommand extends AbstractSettlementCommand {
 		for (Person p : ppl) {
 			consumption += p.getPhysicalCondition().getDailyFoodUsage(3);
 		}
-		response.appendTableRow("People", Math.round(- sign * consumption * 100.0) / 100.0);
-		net = net - sign * consumption;
+		response.appendTableRow("People", Math.round(consumption * 100.0) / 100.0);
+		net = net + consumption;
 
 		// Add water usage from making meal and dessert
 		double cooking = settlement.getDailyWaterUsage(WaterUseType.PREP_MEAL)
 					+ settlement.getDailyWaterUsage(WaterUseType.PREP_DESSERT);
-		response.appendTableRow("Cooking", Math.round(- sign * cooking * 100.0) / 100.0);
-		net = net - sign * cooking;
+		response.appendTableRow("Cooking", Math.round(cooking * 100.0) / 100.0);
+		net = net + cooking;
 
 		// Prints living usage
 		List<Building> quarters = settlement.getBuildingManager()
@@ -200,14 +200,14 @@ public class ResourceCommand extends AbstractSettlementCommand {
 			LivingAccommodations la = b.getLivingAccommodations();
 			livingUsage += la.getDailyAverageWaterUsage();
 		}		
-		response.appendTableRow("Accommodation", Math.round(- sign * livingUsage * 100.0) / 100.0);
-		net = net - sign * livingUsage;
+		response.appendTableRow("Accommodation", Math.round(livingUsage * 100.0) / 100.0);
+		net = net + livingUsage;
 
 		// Prints cleaning usage
 		double cleaning = settlement.getDailyWaterUsage(WaterUseType.CLEAN_MEAL)
 					+ settlement.getDailyWaterUsage(WaterUseType.CLEAN_DESSERT);
-		response.appendTableRow("Cleaning", Math.round(- sign * cleaning * 100.0) / 100.0);
-		net = net - sign * cleaning;
+		response.appendTableRow("Cleaning", Math.round(cleaning * 100.0) / 100.0);
+		net = net + cleaning;
 
 		// Prints output from resource processing
 		double output = 0;
@@ -220,8 +220,11 @@ public class ResourceCommand extends AbstractSettlementCommand {
 					output += p.getMaxOutputRate(id);
 			}
 		}
-		response.appendTableRow(PROCESSES, Math.round(output * 1_000 * 100.0) / 100.0);
-		net = net + output * 1_000;
+		// convert from 'per millisol' to 'per sol'
+		output = output * 1_000;
+		
+		response.appendTableRow(PROCESSES, Math.round(- sign * output * 100.0) / 100.0);
+		net = net + - sign * output;
 		
 		// Prints output from waste processing
 		double output2 = 0;
@@ -231,8 +234,11 @@ public class ResourceCommand extends AbstractSettlementCommand {
 					output2 += p.getMaxOutputRate(id);
 			}
 		}
-		response.appendTableRow(WASTES, Math.round(output2 * 1_000 * 100.0) / 100.0);
-		net = net + output2 * 1_000;
+		// convert from 'per millisol' to 'per sol'
+		output2 = output2 * 1_000;
+		
+		response.appendTableRow(WASTES, Math.round(- sign * output2 * 100.0) / 100.0);
+		net = net + - sign * output2;
 
 		response.appendTableRow("NET", Math.round(net * 100.0) / 100.0);		
 	}
