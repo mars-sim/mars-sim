@@ -84,9 +84,6 @@ public abstract class Mission implements Serializable, Temporal {
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(Mission.class.getName());
 
-	public static final MissionPhase COMPLETED = new MissionPhase("Mission.phase.completed");
-	protected static final MissionPhase ABORTED = new MissionPhase("Mission.phase.aborted");
-
 	private static final String OUTSIDE = "Outside";
 
 	private static final int MAX_CAP = 8;
@@ -788,27 +785,25 @@ public abstract class Mission implements Serializable, Temporal {
 	 * @param reason
 	 */
 	private void addMissionScore() {
-		if (haveMissionStatus(MissionStatus.MISSION_ACCOMPLISHED)) {
-			for (Worker member : members) {
-				if (member.getUnitType() == UnitType.PERSON) {
-					Person person = (Person) member;
+		for (Worker member : members) {
+			if (member.getUnitType() == UnitType.PERSON) {
+				Person person = (Person) member;
 
-					if (!person.isDeclaredDead()) {
-						if (person.getPhysicalCondition().hasSeriousMedicalProblems()) {
-							// Note : there is a minor penalty for those who are sick
-							// and thus unable to fully function during the mission
-							person.addMissionExperience(missionType, 2);
-						}
-						else if (person.equals(startingMember)) {
-							// The mission lead receive extra bonus
-							person.addMissionExperience(missionType, 6);
-
-							// Add a leadership point to the mission lead
-							person.getNaturalAttributeManager().adjustAttribute(NaturalAttributeType.LEADERSHIP, 1);
-						}
-						else
-							person.addMissionExperience(missionType, 3);
+				if (!person.isDeclaredDead()) {
+					if (person.getPhysicalCondition().hasSeriousMedicalProblems()) {
+						// Note : there is a minor penalty for those who are sick
+						// and thus unable to fully function during the mission
+						person.addMissionExperience(missionType, 2);
 					}
+					else if (person.equals(startingMember)) {
+						// The mission lead receive extra bonus
+						person.addMissionExperience(missionType, 6);
+
+						// Add a leadership point to the mission lead
+						person.getNaturalAttributeManager().adjustAttribute(NaturalAttributeType.LEADERSHIP, 1);
+					}
+					else
+						person.addMissionExperience(missionType, 3);
 				}
 			}
 		}
@@ -828,13 +823,19 @@ public abstract class Mission implements Serializable, Temporal {
 		}
 
 		// Ended with a status
-		missionStatus.add(endStatus);
+		if (endStatus != null) {
+			missionStatus.add(endStatus);
+		}
 
-		// Add mission experience score
-		addMissionScore();
+		// If no mission flags have been added then it was accomplised
+		if (missionStatus.isEmpty()) {
+			missionStatus.add(MissionStatus.MISSION_ACCOMPLISHED);
+			addMissionScore();
+		}
 
 		done = true; // Note: done = true is very important to keep !
-		
+		phase = null; // No more phase
+
 		String listOfStatuses = missionStatus.stream().map(MissionStatus::getName).collect(Collectors.joining(", "));
 		
 		StringBuilder status = new StringBuilder();
@@ -855,21 +856,6 @@ public abstract class Mission implements Serializable, Temporal {
 				adjustShift(member);
 			}	
 		}
-
-		
-		if (haveMissionStatus(MissionStatus.ABORTED_MISSION)) {
-			// Note: set the aborted phase here for now
-			// Should look for another location to set the aborted phase 
-			setPhase(ABORTED, listOfStatuses);
-		}
-		
-//		// Mission is completed if it has not been abort by user AND mission status is marked as accomplished
-//		else if (endStatus == MissionStatus.MISSION_ACCOMPLISHED) {
-//			setPhase(COMPLETED, null);
-//		}
-
-		// Proactively call removeMission to update the list in MissionManager right away
-		// Note: Calling missionManager.removeMission(this) will crash the mission tab in monitor tool
 	}
 
 	/**
@@ -1396,36 +1382,16 @@ public abstract class Mission implements Serializable, Temporal {
 	}
 
 	/**
-	 * Checks if this mission has already been tagged with this mission status.
-	 *
-	 * @param status
-	 * @return
-	 */
-	public boolean haveMissionStatus(MissionStatus status) {
-        return missionStatus.contains(status);
-	}
-
-	/**
-	 * Checks if the rover has mission status that prompts to turn on the beacon to ask for help.
-	 *
-	 * @return
-	 */
-	public boolean needHelp() {
-        return missionStatus.contains(MissionStatus.NOT_ENOUGH_RESOURCES)
-                || missionStatus.contains(MissionStatus.NO_METHANE)
-                || missionStatus.contains(MissionStatus.UNREPAIRABLE_MALFUNCTION)
-                || missionStatus.contains(MissionStatus.NO_EMERGENCY_SETTLEMENT_DESTINATION_FOUND)
-                || missionStatus.contains(MissionStatus.MEDICAL_EMERGENCY)
-                || missionStatus.contains(MissionStatus.REQUEST_RESCUE);
-	}
-
-	/**
 	 * Adds a new mission status.
 	 *
 	 * @param status
 	 */
-	protected void addMissionStatus(MissionStatus status) {
-		missionStatus.add(status);
+	protected boolean addMissionStatus(MissionStatus status) {
+		boolean newStatus = missionStatus.add(status);
+		if (newStatus) {
+			addMissionLog(status.getName());
+		}
+		return newStatus;
 	}
 
 	public int getPriority() {

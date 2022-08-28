@@ -162,7 +162,7 @@ public class Exploration extends EVAMission
 		}
 
 		// Set exploration navpoints.
-		addNavpoints(explorationSites, (i -> EXPLORATION_SITE + (1+1)));
+		addNavpoints(explorationSites, (i -> EXPLORATION_SITE + (i+1)));
 
 		// Add home navpoint.
 		Settlement s = getStartingSettlement();

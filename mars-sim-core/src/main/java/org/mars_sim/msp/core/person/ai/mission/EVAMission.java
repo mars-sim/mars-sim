@@ -217,12 +217,7 @@ public abstract class EVAMission extends RoverMission {
 			}
 
 			// Check if enough resources for remaining trip. false = not using margin.
-			if (activeEVA && !hasEnoughResourcesForRemainingMission(false)) {
-				// If not, determine an emergency destination.
-				determineEmergencyDestination(member);
-				logger.info(getVehicle(), "Not enough resources");
-				addMissionLog("Not enough resources");
-
+			if (activeEVA && !hasEnoughResourcesForRemainingMission()) {
 				activeEVA = false;
 			}
 

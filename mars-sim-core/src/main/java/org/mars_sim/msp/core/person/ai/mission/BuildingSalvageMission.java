@@ -331,7 +331,7 @@ public class BuildingSalvageMission extends Mission {
 			setPhase(SALVAGE_PHASE, constructionStage.getInfo().getName());
 		}
 		else if (SALVAGE_PHASE.equals(getPhase())) {
-			endMission(MissionStatus.BUILDING_SALVAGE_SUCCESSFULLY_ENDED);
+			endMission(null);
 		}
 		else {
 			handled = false;

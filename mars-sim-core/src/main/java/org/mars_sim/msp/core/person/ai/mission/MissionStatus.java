@@ -10,7 +10,6 @@ package org.mars_sim.msp.core.person.ai.mission;
 public enum MissionStatus {
 	
 	MISSION_ACCOMPLISHED 							("Mission Accomplished"),
-	MISSION_ABORTED									("Mission aborted"),
 	MISSION_NOT_APPROVED 							("Mission not approved"),
 	
 	CURRENT_MISSION_PHASE_IS_NULL 					("Current mission phase is null"),	
