@@ -115,7 +115,8 @@ public class RepairInsideMalfunctionMeta extends MetaTask {
     }
     
     /**
-     * Get the initial score of the malfunction.
+     * Gets the initial score of the malfunction.
+     * 
      * @param malfunction
      * @return
      */

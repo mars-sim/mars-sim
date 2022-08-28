@@ -212,9 +212,7 @@ public class MainDesktopPane extends JDesktopPane
 			screen_size = Toolkit.getDefaultToolkit().getScreenSize();
 //			logger.config("Current toolkit screen size is " + screen_size.width + " x " + screen_size.height);
 		}
-//		else
-//			logger.config("Current main window frame is " + screen_size.width + " x " + screen_size.height);
-		
+	
 		Image backgroundImage = createImage((int) screen_size.getWidth(), (int) screen_size.getHeight());
 		Graphics backgroundGraphics = backgroundImage.getGraphics();
 

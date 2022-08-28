@@ -77,8 +77,6 @@ public class MineralMapLayer implements MapLayer {
 
 			double rho = CannedMarsMap.PIXEL_RHO;
 
-			// MineralMap mineralMap =
-			// Simulation.instance().getMars().getSurfaceFeatures().getMineralMap();
 			java.util.Map<String, Color> mineralColors = getMineralColors();
 			updateMineralsDisplayed();
 
@@ -87,24 +85,26 @@ public class MineralMapLayer implements MapLayer {
 					Coordinates location = mapCenter.convertRectToSpherical(x - centerX, y - centerY, rho);
 					java.util.Map<String, Double> mineralConcentrations = mineralMap
 							.getAllMineralConcentrations(location);
-					if (mineralConcentrations.size() > 0) {
-						Iterator<String> i = mineralConcentrations.keySet().iterator();
-						while (i.hasNext()) {
-							String mineralType = i.next();
-							if (isMineralDisplayed(mineralType)) {
-								double concentration = mineralConcentrations.get(mineralType);
-								if (concentration > 0D) {
-									Color baseColor = mineralColors.get(mineralType);
-									int index = x + (y * Map.MAP_VIS_WIDTH);
-									addColorToMineralConcentrationArray(index, baseColor, concentration);
-									addColorToMineralConcentrationArray((index + 1), baseColor, concentration);
-									if (y < Map.MAP_VIS_HEIGHT - 1) {
-										int indexNextLine = x + ((y + 1) * Map.MAP_VIS_WIDTH);
-										addColorToMineralConcentrationArray(indexNextLine, baseColor, concentration);
-										addColorToMineralConcentrationArray((indexNextLine + 1), baseColor,
-												concentration);
-									}
-								}
+					if (mineralConcentrations.size() == 0) {
+						continue;
+					}
+					Iterator<String> i = mineralConcentrations.keySet().iterator();
+					while (i.hasNext()) {
+						String mineralType = i.next();
+						if (isMineralDisplayed(mineralType)) {
+							double concentration = mineralConcentrations.get(mineralType);
+							if (concentration <= 0) {
+								continue;
+							}
+							Color baseColor = mineralColors.get(mineralType);
+							int index = x + (y * Map.MAP_VIS_WIDTH);
+							addColorToMineralConcentrationArray(index, baseColor, concentration);
+							addColorToMineralConcentrationArray((index + 1), baseColor, concentration);
+							if (y < Map.MAP_VIS_HEIGHT - 1) {
+								int indexNextLine = x + ((y + 1) * Map.MAP_VIS_WIDTH);
+								addColorToMineralConcentrationArray(indexNextLine, baseColor, concentration);
+								addColorToMineralConcentrationArray((indexNextLine + 1), baseColor,
+										concentration);
 							}
 						}
 					}
@@ -153,7 +153,7 @@ public class MineralMapLayer implements MapLayer {
 		// MineralMap mineralMap =
 		// Simulation.instance().getMars().getSurfaceFeatures().getMineralMap();
 		String[] mineralNames = mineralMap.getMineralTypeNames();
-		java.util.Map<String, Color> result = new HashMap<String, Color>(mineralNames.length);
+		java.util.Map<String, Color> result = new HashMap<>(mineralNames.length);
 		for (int x = 0; x < mineralNames.length; x++) {
 			String mineralTypeName = mineralMap.getMineralTypeNames()[x];
 			int mineralColor = Color.HSBtoRGB(((float) x / (float) mineralNames.length), 1F, 1F);
@@ -171,7 +171,7 @@ public class MineralMapLayer implements MapLayer {
 		String[] mineralNames = mineralMap.getMineralTypeNames();
 		Arrays.sort(mineralNames);
 		if (mineralsDisplayedMap == null)
-			mineralsDisplayedMap = new HashMap<String, Boolean>(mineralNames.length);
+			mineralsDisplayedMap = new HashMap<>(mineralNames.length);
 		String[] currentMineralNames = mineralsDisplayedMap.keySet().toArray(new String[mineralsDisplayedMap.size()]);
 		Arrays.sort(currentMineralNames);
 		if (!Arrays.equals(mineralNames, currentMineralNames)) {
@@ -205,5 +205,18 @@ public class MineralMapLayer implements MapLayer {
 			mineralsDisplayedMap.put(mineralType, displayed);
 			updateLayer = true;
 		}
+	}
+	
+	/**
+	 * Prepares object for garbage collection.
+	 */
+	public void destroy() {
+
+		displayComponent = null;
+		mineralConcentrationMap = null;
+		mapCenterCache = null;
+		mineralMap = null;
+		mineralsDisplayedMap.clear();
+		mineralsDisplayedMap = null;
 	}
 }

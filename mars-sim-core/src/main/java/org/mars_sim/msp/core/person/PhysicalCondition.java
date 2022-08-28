@@ -2222,7 +2222,7 @@ public class PhysicalCondition implements Serializable {
 	}
 
 	/**
-	 * Prepare object for garbage collection.
+	 * Prepares object for garbage collection.
 	 */
 	public void destroy() {
 

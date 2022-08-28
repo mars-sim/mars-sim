@@ -414,12 +414,12 @@ public class Coordinates implements Serializable {
 	 * @return latitude in radians
 	 */
 	public double getPhi2LatRadian() {
-		double phi = getPhi();
+		double p = getPhi();
 		double latRadian = 0;
-		if (phi < PI_HALF) {
-			latRadian = PI_HALF - phi;
+		if (p < PI_HALF) {
+			latRadian = PI_HALF - p;
 		} else {
-			latRadian = phi - PI_HALF;
+			latRadian = p - PI_HALF;
 		}
 		return latRadian;
 	}
@@ -448,22 +448,22 @@ public class Coordinates implements Serializable {
 	 * @param newPhi   the new phi coordinate
 	 * @param newTheta the new theta coordinate
 	 * @param rho      diameter of planet (in km)
-	 * @param half_map half the map's width (in pixels)
-	 * @param low_edge lower edge of map (in pixels)
+	 * @param halfMap half the map's width (in pixels)
+	 * @param lowEdge lower edge of map (in pixels)
 	 * @return pixel offset value for map
 	 */
-	public IntPoint findRectPosition(double newPhi, double newTheta, double rho, int half_map, int low_edge) {
+	public IntPoint findRectPosition(double newPhi, double newTheta, double rho, int halfMap, int lowEdge) {
 
 		double sinPhi = Math.sin(this.phi);
 		double cosPhi = Math.cos(this.phi);
 
-		double temp_col = newTheta + (-PI_HALF - theta);
-		double temp_buff_x = rho * Math.sin(newPhi);
-		int buff_x = ((int) Math.round(temp_buff_x * Math.cos(temp_col)) + half_map) - low_edge;
-		int buff_y = ((int) Math
-				.round(((temp_buff_x * (0D - cosPhi)) * Math.sin(temp_col)) + (rho * Math.cos(newPhi) * (0D - sinPhi)))
-				+ half_map) - low_edge;
-		return new IntPoint(buff_x, buff_y);
+		double tempCol = newTheta + (-PI_HALF - theta);
+		double tempBuffX = rho * Math.sin(newPhi);
+		int buffX = ((int) Math.round(tempBuffX * Math.cos(tempCol)) + halfMap) - lowEdge;
+		int buffY = ((int) Math
+				.round(((tempBuffX * (0D - cosPhi)) * Math.sin(tempCol)) + (rho * Math.cos(newPhi) * (0D - sinPhi)))
+				+ halfMap) - lowEdge;
+		return new IntPoint(buffX, buffY);
 	}
 
 	/**
@@ -503,20 +503,20 @@ public class Coordinates implements Serializable {
 		double y3 = (y2 * cosTheta) - (x2 * sinTheta);
 		double z3 = z2;
 
-		double phi_new = Math.acos(z3 / rho);
-		double theta_new = Math.asin(x3 / (rho * Math.sin(phi_new)));
+		double phiNew = Math.acos(z3 / rho);
+		double thetaNew = Math.asin(x3 / (rho * Math.sin(phiNew)));
 
 		if (x3 >= 0) {
 			if (y3 < 0)
-				theta_new = Math.PI - theta_new;
+				thetaNew = Math.PI - thetaNew;
 		} else {
 			if (y3 < 0)
-				theta_new = Math.PI - theta_new;
+				thetaNew = Math.PI - thetaNew;
 			else
-				theta_new = TWO_PI + theta_new;
+				thetaNew = TWO_PI + thetaNew;
 		}
 
-		return new Coordinates(phi_new, theta_new);
+		return new Coordinates(phiNew, thetaNew);
 	}
 
 	/**
@@ -555,11 +555,9 @@ public class Coordinates implements Serializable {
 
 		double iterationDistance = 10D;
 		int iterations = (int) (distance / iterationDistance);
-		double remainder = 0D;
+		double remainder = distance;
 		if (distance > 10D)
 			remainder = distance - (iterations * iterationDistance);
-		else
-			remainder = distance;
 
 		// Get successive iteration locations.
 		Coordinates startCoords = this;
@@ -570,11 +568,9 @@ public class Coordinates implements Serializable {
 		}
 
 		// Get final location based on remainder.
-		double finalY = -1D * direction.getCosDirection() * (remainder);
-		double finalX = direction.getSinDirection() * (remainder);
-		Coordinates finalCoordinates = startCoords.convertRectToSpherical(finalX, finalY);
-
-		return finalCoordinates;
+		double finalY = -1D * direction.getCosDirection() * remainder;
+		double finalX = direction.getSinDirection() * remainder;
+		return startCoords.convertRectToSpherical(finalX, finalY);
 	}
 
 	/**
@@ -634,9 +630,7 @@ public class Coordinates implements Serializable {
 				throw new IllegalStateException("Invalid Latitude direction : " + direction);
 		}
 
-
-		double phi = DEG_TO_RADIAN * latValue;
-		return phi;
+		return DEG_TO_RADIAN * latValue;
 	}
 
 	/**
@@ -693,20 +687,18 @@ public class Coordinates implements Serializable {
 
 		}
 
-		double theta = DEG_TO_RADIAN * longValue;
-		return theta;
+		return DEG_TO_RADIAN * longValue;
 	}
 
 	/**
-	 * Gets a random latitude.
+	 * Gets a random latitude (away from the poles).
 	 *
 	 * @return latitude
 	 */
 	public static double getRandomLatitude() {
 		// Random latitude should be less likely to be near the poles.
 		// Make sure phi is between 0 and PI.
-		double phi = .7 * RandomUtil.getRandomDouble(Math.PI);
-		return phi;
+		return .7 * RandomUtil.getRandomDouble(Math.PI);
 	}
 
 	/**
@@ -716,8 +708,7 @@ public class Coordinates implements Serializable {
 	 */
 	public static double getRandomLongitude() {
 		// Make sure theta is between 0 and 2 PI.
-		double theta = RandomUtil.getRandomDouble(2D * Math.PI);
-		return theta;
+		return RandomUtil.getRandomDouble(2D * Math.PI);
 	}
 
 	/**
@@ -726,50 +717,51 @@ public class Coordinates implements Serializable {
 	 * @param latitude the input latitude
 	 */
 	public static String checkLat(String latitude) {
-
+		
 		// Check that settlement latitude is valid.
 		if ((latitude == null) || (latitude.isEmpty())) {
 			return (Msg.getString("Coordinates.error.latitudeMissing")); //$NON-NLS-1$
 		}
 
-		else {
-			// check if the second from the last character is a digit or a letter,
-			// if a letter, setError
-			if (latitude.length() < 3 && Character.isLetter(latitude.charAt(latitude.length() - 2))) {
-				return LAT_BAD_FORMAT; //$NON-NLS-1$
-			}
-
-			// check if the last character is a digit or a letter,
-			// if a digit, setError
-			if (latitude.length() < 2 && Character.isDigit(latitude.charAt(latitude.length() - 1))) {
-				return LAT_BAD_FORMAT; //$NON-NLS-1$
-			}
-
-			String s = latitude.trim().toUpperCase();
-			String dir = s.substring(s.length() - 1, s.length());
-			Character c = dir.charAt(0);
-			if (Character.isDigit(c)) {
-				logger.warning(2_000, "An input latitude [" + s + "] is missing the direction sign.");
-				return LAT_BAD_FORMAT; //$NON-NLS-1$
-			}
-
-			if (!(s.endsWith(NORTH_SHORT) //$NON-NLS-1$ //$NON-NLS-2$
-					|| s.endsWith(SOUTH_SHORT)) //$NON-NLS-1$ //$NON-NLS-2$
-				) {
-				return Msg.getString("Coordinates.error.latitudeEndWith", //$NON-NLS-1$
-						NORTH_SHORT, SOUTH_SHORT);
-			} else {
-				String numLatitude = s.substring(0, s.length() - 1);
-				try {
-					double doubleLatitude = Double.parseDouble(numLatitude);
-					if ((doubleLatitude < 0) || (doubleLatitude > 90)) {
-						return LAT_BEGIN_WITH; //$NON-NLS-1$
-					}
-				} catch (NumberFormatException e) {
-					return LAT_BEGIN_WITH; //$NON-NLS-1$
-				}
-			}
+		// check if the second from the last character is a digit or a letter,
+		// if a letter, setError
+		if (latitude.length() < 3 && Character.isLetter(latitude.charAt(latitude.length() - 2))) {
+			return LAT_BAD_FORMAT; //$NON-NLS-1$
 		}
+
+		// check if the last character is a digit or a letter,
+		// if a digit, setError
+		if (latitude.length() < 2 && Character.isDigit(latitude.charAt(latitude.length() - 1))) {
+			return LAT_BAD_FORMAT; //$NON-NLS-1$
+		}
+
+		String s = latitude.trim().toUpperCase();
+		String dir = s.substring(s.length() - 1, s.length());
+		Character c = dir.charAt(0);
+		if (Character.isDigit(c)) {
+			logger.warning(2_000, "An input latitude [" + s + "] is missing the direction sign.");
+			return LAT_BAD_FORMAT; //$NON-NLS-1$
+		}
+
+		if (!(s.endsWith(NORTH_SHORT) //$NON-NLS-1$
+				|| s.endsWith(SOUTH_SHORT)) //$NON-NLS-1$ 
+			) {
+			return Msg.getString("Coordinates.error.latitudeEndWith", //$NON-NLS-1$
+					NORTH_SHORT,	//$NON-NLS-2$
+					SOUTH_SHORT 	//$NON-NLS-3$
+			);
+		}
+		
+		String numLatitude = s.substring(0, s.length() - 1);
+		try {
+			double doubleLatitude = Double.parseDouble(numLatitude);
+			if ((doubleLatitude < 0) || (doubleLatitude > 90)) {
+				return LAT_BEGIN_WITH; //$NON-NLS-1$
+			}
+		} catch (NumberFormatException e) {
+			return LAT_BEGIN_WITH; //$NON-NLS-1$
+		}
+		
 		return null;
 	}
 
@@ -785,46 +777,45 @@ public class Coordinates implements Serializable {
 			return Msg.getString("Coordinates.error.longitudeMissing"); //$NON-NLS-1$
 		}
 
-		else {
-			// check if the second from the last character is a digit or a letter,
-			// if a letter, setError
-			if (longitude.length() < 3 && Character.isLetter(longitude.charAt(longitude.length() - 2))) {
-				return LON_BAD_FORMAT; //$NON-NLS-1$
-			}
-
-			// check if the last character is a digit or a letter,
-			// if a digit, setError
-			if (longitude.length() < 2 && Character.isDigit(longitude.charAt(longitude.length() - 1))) {
-				return LON_BAD_FORMAT; //$NON-NLS-1$
-			}
-
-			String s = longitude.trim().toUpperCase();
-			String dir = s.substring(s.length() - 1, s.length());
-			Character c = dir.charAt(0);
-			if (Character.isDigit(c)) {
-				logger.warning(2_000, "An input longitude [" + s + "] is missing the direction sign.");
-				return LON_BAD_FORMAT; //$NON-NLS-1$
-			}
-
-			if (!s.endsWith(WEST_SHORT)  //$NON-NLS-1$ //$NON-NLS-2$
-					&& !s.endsWith(EAST_SHORT)  //$NON-NLS-1$ //$NON-NLS-2$
-					) {
-				return Msg.getString("Coordinates.error.longitudeEndWith", //$NON-NLS-1$
-						EAST_SHORT, //$NON-NLS-1$
-						WEST_SHORT //$NON-NLS-1$
-				);
-			} else {
-				String numLongitude = s.substring(0, s.length() - 1);
-				try {
-					double doubleLongitude = Double.parseDouble(numLongitude);
-					if ((doubleLongitude < 0) || (doubleLongitude > 180)) {
-						return LON_BEGIN_WITH; //$NON-NLS-1$
-					}
-				} catch (NumberFormatException e) {
-					return LON_BEGIN_WITH; //$NON-NLS-1$
-				}
-			}
+		// check if the second from the last character is a digit or a letter,
+		// if a letter, setError
+		if (longitude.length() < 3 && Character.isLetter(longitude.charAt(longitude.length() - 2))) {
+			return LON_BAD_FORMAT; //$NON-NLS-1$
 		}
+
+		// check if the last character is a digit or a letter,
+		// if a digit, setError
+		if (longitude.length() < 2 && Character.isDigit(longitude.charAt(longitude.length() - 1))) {
+			return LON_BAD_FORMAT; //$NON-NLS-1$
+		}
+
+		String s = longitude.trim().toUpperCase();
+		String dir = s.substring(s.length() - 1, s.length());
+		Character c = dir.charAt(0);
+		if (Character.isDigit(c)) {
+			logger.warning(2_000, "An input longitude [" + s + "] is missing the direction sign.");
+			return LON_BAD_FORMAT; //$NON-NLS-1$
+		}
+
+		if (!s.endsWith(WEST_SHORT)  //$NON-NLS-1$
+				&& !s.endsWith(EAST_SHORT)  //$NON-NLS-1$
+				) {
+			return Msg.getString("Coordinates.error.longitudeEndWith", //$NON-NLS-1$
+					EAST_SHORT, //$NON-NLS-2$
+					WEST_SHORT //$NON-NLS-3$
+			);
+		}
+
+		String numLongitude = s.substring(0, s.length() - 1);
+		try {
+			double doubleLongitude = Double.parseDouble(numLongitude);
+			if ((doubleLongitude < 0) || (doubleLongitude > 180)) {
+				return LON_BEGIN_WITH; //$NON-NLS-1$
+			}
+		} catch (NumberFormatException e) {
+			return LON_BEGIN_WITH; //$NON-NLS-1$
+		}
+
 		return null;
 	}
 

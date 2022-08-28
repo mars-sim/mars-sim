@@ -84,7 +84,8 @@ public class Person extends Unit implements Worker, Temporal, EquipmentOwner {
 	private static final long serialVersionUID = 1L;
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(Person.class.getName());
-
+	/** The maximum number of sols for storing stats. */
+	public static final int MAX_NUM_SOLS = 7;
 	/** A small amount. */
 	private static final double SMALL_AMOUNT = 0.00001;
 
@@ -325,7 +326,7 @@ public class Person extends Unit implements Worker, Temporal, EquipmentOwner {
 		// Create the mission experiences map
 		missionExperiences = new EnumMap<>(MissionType.class);
 //		// Create the EVA hours map
-//		eVATaskTime = new SolMetricDataLogger<>(MAX_NUM_SOLS);
+		eVATaskTime = new SolMetricDataLogger<>(MAX_NUM_SOLS);
 		// Create a set of collaborative studies
 		collabStudies = new HashSet<>();
 		// Construct the EquipmentInventory instance.
