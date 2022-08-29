@@ -105,9 +105,9 @@ public abstract class DigLocalMeta extends MetaTask {
         if (indoor > settlement.getPopulationCapacity())
             result = result * (indoor - settlement.getPopulationCapacity());
 
-        if (citizen <= 8 && citizen >= 4)
+        if (citizen <= 24 && citizen >= 4)
             // Adds effect of the # of citizen 
-        	result *= citizen * 10;
+        	result *= (25 - citizen) * 5;
 
         // Adds effect of the ratio of # indoor people vs. those outside already doing EVA 
         result *= (1.0 + indoor) / (1 + settlement.getNumOutsideEVA()) ;

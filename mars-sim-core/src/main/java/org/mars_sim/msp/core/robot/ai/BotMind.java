@@ -197,8 +197,8 @@ public class BotMind implements Serializable, Temporal {
 		}
 		
 		if (!hasTask) { 
-			if (robot.getRobotType() == RobotType.DELIVERYBOT)
-				logger.info(robot, 20_000, "hasTask: " + hasTask);
+//			if (robot.getRobotType() == RobotType.DELIVERYBOT)
+//				logger.info(robot, 20_000, "hasTask: " + hasTask);
 			// don't have an active mission
 			botTaskManager.startNewTask();
 		}

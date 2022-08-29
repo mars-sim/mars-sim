@@ -2622,11 +2622,11 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</ground-vehicle-maintenance>
 			<life-support capacity="8" power-required="0.4" />
 			<power-generation>
-				<power-source type="Solar Power Source" power="5.0" />
-				<power-source type="Fuel Power Source" toggle="false" power="5.0"
+				<power-source type="Solar Power Source" power="7.5" />
+				<power-source type="Fuel Power Source" toggle="false" power="7.5"
 				fuel-type="methane"	consumption-rate="7.9897" />
 			</power-generation>
-			<power-storage capacity="40" discharge-rate="1.25"/>
+			<power-storage capacity="60" discharge-rate="1.25"/>
 			<robotic-station capacity="4">
 				<activity>
 					<activity-spot xloc="-5.8" yloc="2.0" />
@@ -3840,7 +3840,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 <!-- end of Storage Shed -->
 
 	<building type="Loading Dock Garage" width="15.0" length="18.0" base-level="-1"
-			wear-lifetime="3340000" maintenance-time="50" room-temperature="22.5" base-mass="10000">
+			wear-lifetime="3340000" maintenance-time="75" room-temperature="22.5" base-mass="10000">
 		<description> The Loading Dock Garage is an enclosed maintenance facility
 			featuring a brick loading dock for easy access. It hosts equipment for
 			building, repairing and modifying rovers and vehicles.
@@ -3861,17 +3861,19 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
                 <activity>
 					<activity-spot xloc="-.5" yloc="-2.25" />
 					<activity-spot xloc="2.25" yloc="-3.25" />
+					<activity-spot xloc="0" yloc="-1.25" />
+					<activity-spot xloc="-1.125" yloc="0" />
 					<activity-spot xloc="-2.25" yloc="-4.75" />
 					<activity-spot xloc="1.0" yloc="-6.25" />
 				</activity>
 			</ground-vehicle-maintenance>
 			<life-support capacity="16" power-required="0.8" />
 			<power-generation>
-				<power-source type="Solar Power Source" power="5.0" />
-				<power-source type="Fuel Power Source" toggle="false" power="5.0"
+				<power-source type="Solar Power Source" power="10" />
+				<power-source type="Fuel Power Source" toggle="false" power="10"
 				fuel-type="methane"	consumption-rate="7.9897" />
 			</power-generation>
-			<power-storage capacity="40"  discharge-rate="1.25"/>
+			<power-storage capacity="40" discharge-rate="1.25"/>
 			<robotic-station capacity="4">
 				<activity>
 					<activity-spot xloc="-2.25" yloc="3.75" />
@@ -3880,12 +3882,12 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="2.5" yloc="-5.5" />
 				</activity>
 			</robotic-station>
-			<storage capacity="10000">
-				<resource-storage resource="methane" capacity="2000.0" />
-				<resource-storage resource="methanol" capacity="2000.0" />
+			<storage capacity="20000">
+				<resource-storage resource="methane" capacity="3000.0" />
+				<resource-storage resource="methanol" capacity="3000.0" />
 			</storage>
 			<thermal-generation>
-				<heat-source type="Solar Heating" capacity="5.0" />
+				<heat-source type="Solar Heating" capacity="15" />
 				<heat-source type="Fuel Heating" toggle="true"
 					fuel-type="methane"	consumption-rate="47.9385" capacity="30.0" />
 				<heat-source type="Electric Heating" capacity="60.0" />

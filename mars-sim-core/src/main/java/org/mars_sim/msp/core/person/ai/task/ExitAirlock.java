@@ -422,12 +422,11 @@ public class ExitAirlock extends Task implements Serializable {
 
 		else {
 
-			if (airlock.addAwaitingInnerDoor(id)) {
+			if (airlock.addAwaitingInnerDoor(id) || (!airlock.isInnerDoorLocked() || airlock.isEmpty())) {
 				canProceed = true;
 			}
 			else {
-				walkAway(person, TO_REQUEST_EGRESS 
-						+ ". Cannot wait at " + airlock.getEntity().toString() + " inner door.");
+				walkAway(person, "Requesting egress. can't get thru " + airlock.getEntity().toString() + "'s inner door.");
 				return time;
 			}
 		}

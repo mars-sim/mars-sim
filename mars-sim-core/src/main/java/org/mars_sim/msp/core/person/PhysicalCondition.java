@@ -323,12 +323,12 @@ public class PhysicalCondition implements Serializable {
 		// Assume a person drinks 10 times a day, each time ~375 mL
 		waterConsumedPerSol = H2O_CONSUMPTION * bodyMassDeviation / 10D;
 		waterConsumedPerServing = waterConsumedPerSol / 8; 
-		logger.info(person, "waterConsumedPerServing: " + waterConsumedPerServing);
+//		logger.info(person, "waterConsumedPerServing: " + waterConsumedPerServing);
 		
 		// about .3 kg per serving
 		foodConsumedPerSol = FOOD_CONSUMPTION * bodyMassDeviation / 10D;
 		foodDryMassPerServing = foodConsumedPerSol / Cooking.NUMBER_OF_MEAL_PER_SOL;
-		logger.info(person, "foodDryMassPerServing: " + foodDryMassPerServing);
+//		logger.info(person, "foodDryMassPerServing: " + foodDryMassPerServing);
 		starvationStartTime = 1000D * (personConfig.getStarvationStartTime() - RandomUtil.getGaussianDouble() * bodyMassDeviation / 3);
 
 		dehydrationStartTime = 1000D * (personConfig.getDehydrationStartTime() - RandomUtil.getGaussianDouble() * bodyMassDeviation);
