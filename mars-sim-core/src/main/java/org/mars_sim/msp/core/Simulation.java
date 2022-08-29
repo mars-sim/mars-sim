@@ -506,8 +506,7 @@ public class Simulation implements ClockListener, Serializable {
 			System.exit(1);
 		}
 
-		// Call up garbage collector. But it's up to the gc what it will do.
-		System.gc();
+		// Call up garbage collector. But it's up to the gc what it will do. System.gc();
 	}
 
     /**
@@ -762,17 +761,15 @@ public class Simulation implements ClockListener, Serializable {
 		if (!isAlreadyPaused) 
 			masterClock.setPaused(true, false);
 
-		// Call up garbage collector. But it's up to the gc what it will do.
-		System.gc();
+		// Call up garbage collector. But it's up to the gc what it will do. System.gc();
 
 		lastSaveTimeStamp = new Date();
 
 		Path srcPath = null;
 		Path destPath = null;
 
-		try {
-			// Use type to differentiate in what name/dir it is saved
-			switch(type) {
+		// Use type to differentiate in what name/dir it is saved
+		switch(type) {
 			case AUTOSAVE_AS_DEFAULT:
 			case SAVE_DEFAULT:
 				file = new File(SimulationFiles.getSaveDir(), SAVE_FILE + SAVE_FILE_EXTENSION);
@@ -785,8 +782,15 @@ public class Simulation implements ClockListener, Serializable {
 
 					destPath = fileSys.getPath(backupFile.getPath());
 					srcPath = fileSys.getPath(file.getPath());
-					// Backup the existing default.sim
-					Files.move(srcPath, destPath, StandardCopyOption.REPLACE_EXISTING);
+					
+					try {
+						// Backup the existing default.sim
+						Files.move(srcPath, destPath, StandardCopyOption.REPLACE_EXISTING);
+					
+					}
+					catch (IOException ioe) {
+						logger.severe("Problem saving simulation " + ioe.getMessage());
+					}
 				}
 	
 				logger.config("Saving the simulation as " + SAVE_FILE + SAVE_FILE_EXTENSION + ".");
@@ -813,13 +817,28 @@ public class Simulation implements ClockListener, Serializable {
 				
 			default:
 				break;
-			}
+		}
 	
-			// if the autosave/default save directory does not exist, create one now
-			if (!file.getParentFile().exists()) {
-				file.getParentFile().mkdirs();
-			}
+		// if the autosave/default save directory does not exist, create one now
+		if (!file.getParentFile().exists()) {
+			file.getParentFile().mkdirs();
+		}
 
+		checkHeapSizeSerialize(type, file, srcPath, destPath);
+			
+		if (callback != null) {
+			callback.eventPerformed(SimulationListener.SAVE_COMPLETED);
+		}
+
+		// Restarts the master clock and adds back the Simulation clock listener
+		if (!isAlreadyPaused) 
+			masterClock.setPaused(false, false);
+		
+		masterClock.restart();
+	}
+
+	private void checkHeapSizeSerialize(SaveType type, File file, Path  srcPath, Path destPath) {
+		try {
 			// Get maximum size of heap in bytes. The heap cannot grow beyond this size.// Any attempt will result in an OutOfMemoryException.
 			long heapMaxSize = Runtime.getRuntime().maxMemory();
 			 // Get amount of free memory within the heap in bytes. This size will increase // after garbage collection and decrease as new objects are created.
@@ -833,7 +852,7 @@ public class Simulation implements ClockListener, Serializable {
 				// Serialize the file
 				lastSaveTimeStamp = new Date();
 				boolean sucessful = serialize(type, file, srcPath, destPath);
-
+	
 				if (sucessful && (type == SaveType.AUTOSAVE)) {
 					// Purge old auto backups
 					SimulationFiles.purgeAutoSave(simulationConfig.getNumberAutoSaves(), SAVE_FILE_EXTENSION);
@@ -842,22 +861,13 @@ public class Simulation implements ClockListener, Serializable {
 			else {
 				logger.config("Not enough free memory in Heap Space. Try saving the sim later.");
 			}
+			
 		}
 		catch (IOException ioe) {
 			logger.severe("Problem saving simulation " + ioe.getMessage());
 		}
-		
-		if (callback != null) {
-			callback.eventPerformed(SimulationListener.SAVE_COMPLETED);
-		}
-
-		// Restarts the master clock and adds back the Simulation clock listener
-		if (!isAlreadyPaused) 
-			masterClock.setPaused(false, false);
-		
-		masterClock.restart();
 	}
-
+	
 	/**
 	 * Delays for a period of time in millis
 	 *

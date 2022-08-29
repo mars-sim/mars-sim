@@ -69,7 +69,6 @@ public class EatDrink extends Task implements Serializable {
 	
 	private static final int HUNGER_CEILING = 1000;
 	private static final int THIRST_CEILING = 500;
-	private static final int RATIO = 500;
 
 	// Static members
 	private static final int FOOD_ID = ResourceUtil.foodID;
@@ -78,10 +77,12 @@ public class EatDrink extends Task implements Serializable {
 	private static final int NUMBER_OF_MEAL_PER_SOL = 3;
 	private static final int NUMBER_OF_DESSERT_PER_SOL = 4;
 	
+	/** The conversion ratio of hunger to one serving of food. */	
+	private static final int HUNGER_RATIO_PER_FOOD_SERVING = 300;
 	/** The conversion ratio of thirst to one serving of water. */	
-	private static final double THIRST_PER_WATER_SERVING = 300.0;
+	private static final int THIRST_PER_WATER_SERVING = 300;
 	/** The minimal amount of resource to be retrieved. */
-	private static final double MIN = 0.000_1;
+	private static final double MIN = 0.001;
 	
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = -1.2D;
@@ -147,8 +148,8 @@ public class EatDrink extends Task implements Serializable {
 		foodConsumedPerServing = config.getFoodConsumptionRate() / NUMBER_OF_MEAL_PER_SOL;
 		dessertConsumedPerServing = config.getDessertConsumptionRate() / NUMBER_OF_DESSERT_PER_SOL;
 		
-		millisolPerKgFood = RATIO / foodConsumedPerServing; 
-		millisolPerKgDessert = RATIO / dessertConsumedPerServing;
+		millisolPerKgFood = HUNGER_RATIO_PER_FOOD_SERVING / foodConsumedPerServing; 
+		millisolPerKgDessert = HUNGER_RATIO_PER_FOOD_SERVING / dessertConsumedPerServing;
 		
 		// ~.03 kg per serving
 		waterEachServing = pc.getWaterConsumedPerServing();
@@ -608,7 +609,7 @@ public class EatDrink extends Task implements Serializable {
 			// Add to cumulativeProportion
 			cumulativeProportion += proportion;
 			// Food amount eaten over this period of time.
-			double hungerRelieved = RATIO * proportion / dryMass;
+			double hungerRelieved = HUNGER_RATIO_PER_FOOD_SERVING * proportion / dryMass;
 			// Record the amount consumed
 			pc.recordFoodConsumption(proportion, 1);
 			// Change the hunger level after eating
