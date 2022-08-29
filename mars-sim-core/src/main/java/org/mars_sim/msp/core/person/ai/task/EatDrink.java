@@ -69,7 +69,7 @@ public class EatDrink extends Task implements Serializable {
 	
 	private static final int HUNGER_CEILING = 1000;
 	private static final int THIRST_CEILING = 500;
-	private static final int RATIO = 300;
+	private static final int RATIO = 500;
 
 	// Static members
 	private static final int FOOD_ID = ResourceUtil.foodID;
@@ -79,7 +79,7 @@ public class EatDrink extends Task implements Serializable {
 	private static final int NUMBER_OF_DESSERT_PER_SOL = 4;
 	
 	/** The conversion ratio of thirst to one serving of water. */	
-	private static final double THIRST_PER_WATER_SERVING = 250.0;
+	private static final double THIRST_PER_WATER_SERVING = 300.0;
 	/** The minimal amount of resource to be retrieved. */
 	private static final double MIN = 0.000_1;
 	
@@ -105,6 +105,9 @@ public class EatDrink extends Task implements Serializable {
 	private static double millisolPerKgDessert;
 
 	// Data members
+	private boolean food = false;
+	private boolean water = false;
+	
 	private int meals = 0;
 	private int desserts = 0;
 	private double foodAmount = 0;
@@ -162,9 +165,6 @@ public class EatDrink extends Task implements Serializable {
 			waterAmount = rh.getAmountResourceStored(WATER_ID);
 		}
 
-		boolean food = false;
-		boolean water = false;
-
 		// Check if a cooked meal is available in a kitchen building at the settlement.
 		Cooking kitchen0 = EatDrink.getKitchenWithMeal(person);
 		if (kitchen0 != null) {
@@ -214,100 +214,100 @@ public class EatDrink extends Task implements Serializable {
 			}
 		}
 
-		//////////////////////////////
-
 		// Checks if this person has eaten too much already 
-		food = food && !person.getPhysicalCondition().eatenTooMuch();
-		
-		// Checks if this person has drank enough water already
-		water = water && !person.getPhysicalCondition().drinkEnoughWater();
-		
-		//////////////////////////////
+		if (person.getPhysicalCondition().eatenTooMuch())
+			food = false;
 
-		
+		// Checks if this person has drank enough water already
+		if (person.getPhysicalCondition().drinkEnoughWater())
+			water = false;
+
 		if (!food && !water) {
 			endTask();
 		}
 
-		//////////////////////////////
+		if (food)
+			goForFood();
+		
+		if (water)
+			goForWater();
+	}
+		
+	
+	private void goForFood() {
 
-		if (food) {
+		if (person.isInSettlement()) {
 
-			if (person.isInSettlement()) {
+			if (desserts > 0) {
+				// Initialize task phase.
+				addPhase(PICK_UP_DESSERT);
+				addPhase(EAT_DESSERT);
+				setPhase(LOOK_FOR_FOOD);
+			}
 
-				if (desserts > 0) {
+			if (meals > 0) {
+				Building diningBuilding = EatDrink.getAvailableDiningBuilding(person, false);
+				if (diningBuilding != null) {
 					// Initialize task phase.
-					addPhase(PICK_UP_DESSERT);
-					addPhase(EAT_DESSERT);
+					addPhase(LOOK_FOR_FOOD);
+					addPhase(EAT_MEAL);
+					setPhase(LOOK_FOR_FOOD);
 				}
 
-				if (meals > 0) {
-					Building diningBuilding = EatDrink.getAvailableDiningBuilding(person, false);
-					if (diningBuilding != null) {
-						// Initialize task phase.
-						addPhase(LOOK_FOR_FOOD);
-						addPhase(EAT_MEAL);
-					}
-
-					boolean want2Chat = true;
-					// See if a person wants to chat while eating
-					int score = person.getPreference().getPreferenceScore(new HaveConversationMeta());
-					if (score > 0)
-						want2Chat = true;
-					else if (score < 0)
+				boolean want2Chat = true;
+				// See if a person wants to chat while eating
+				int score = person.getPreference().getPreferenceScore(new HaveConversationMeta());
+				if (score > 0)
+					want2Chat = true;
+				else if (score < 0)
+					want2Chat = false;
+				else {
+					int rand = RandomUtil.getRandomInt(1);
+					if (rand == 0)
 						want2Chat = false;
-					else {
-						int rand = RandomUtil.getRandomInt(1);
-						if (rand == 0)
-							want2Chat = false;
-					}
-
-					diningBuilding = EatDrink.getAvailableDiningBuilding(person, want2Chat);
-					if (diningBuilding != null)
-						// Walk to that building.
-						walkToActivitySpotInBuilding(diningBuilding, FunctionType.DINING, true);
-
-					// Take napkin from inventory if available.
-					if (person.getSettlement().retrieveAmountResource(ResourceUtil.napkinID, NAPKIN_MASS) > 0)
-						hasNapkin = true;
 				}
 
-				else if (foodAmount > 0) {
-					// Initialize task phase.
-					addPhase(LOOK_FOR_FOOD);
-					addPhase(EAT_PRESERVED_FOOD);
-				}
+				diningBuilding = EatDrink.getAvailableDiningBuilding(person, want2Chat);
+				if (diningBuilding != null)
+					// Walk to that building.
+					walkToActivitySpotInBuilding(diningBuilding, FunctionType.DINING, true);
+
+				// Take napkin from inventory if available.
+				if (person.getSettlement().retrieveAmountResource(ResourceUtil.napkinID, NAPKIN_MASS) > 0)
+					hasNapkin = true;
 			}
 
-			else if (person.isInVehicle()) {
-
-				if (desserts > 0) {
-					// Initialize task phase.
-					addPhase(PICK_UP_DESSERT);
-					addPhase(EAT_DESSERT);
-				}
-
-				if (foodAmount > 0) {
-					// Initialize task phase.
-					addPhase(LOOK_FOR_FOOD);
-					addPhase(EAT_PRESERVED_FOOD);
-				}
+			else if (foodAmount > 0) {
+				// Initialize task phase.
+				addPhase(LOOK_FOR_FOOD);
+				addPhase(EAT_PRESERVED_FOOD);
+				setPhase(LOOK_FOR_FOOD);
 			}
 		}
 
-		//////////////////////////////
+		else if (person.isInVehicle()) {
 
-		if (water) {
-			// if water only
-			// Initialize task phase.
-			addPhase(DRINK_WATER);
-			setPhase(DRINK_WATER);
+			if (desserts > 0) {
+				// Initialize task phase.
+				addPhase(PICK_UP_DESSERT);
+				addPhase(EAT_DESSERT);
+				setPhase(LOOK_FOR_FOOD);
+			}
+
+			if (foodAmount > 0) {
+				// Initialize task phase.
+				addPhase(LOOK_FOR_FOOD);
+				addPhase(EAT_PRESERVED_FOOD);
+				setPhase(LOOK_FOR_FOOD);
+			}
 		}
-		else {
-			// if both food and water
-			// Initialize task phase.
-			setPhase(LOOK_FOR_FOOD);
-		}
+	}
+
+	private void goForWater() {
+		// if water only
+		// Initialize task phase.
+		addPhase(DRINK_WATER);
+		setPhase(DRINK_WATER);
 	}
 
 	/**
@@ -915,8 +915,10 @@ public class EatDrink extends Task implements Serializable {
 			// Test to see if there's enough water
 			if (available >= amount)
 				consumeWater(suit, amount, waterOnly);
-			else
-				endTask();
+			else if (available > 0){
+				amount = available;
+				consumeWater(suit, amount, waterOnly);
+			}
 		}
 
 		// Case 2: drink from settlement
@@ -924,13 +926,17 @@ public class EatDrink extends Task implements Serializable {
 			int level = person.getAssociatedSettlement().getWaterRationLevel();
 			double [] levels = {1D, 5D, 10D, 15D};
 
-			// Try different level of water
+			// Try different level of water due to ration
 			for (double levelModifier : levels) {
 
 				amount = Math.max(MIN, amount / levelModifier / level);
-				// Test to see if there's enough water
+			
 				double available = getAmountResourceStored(containerUnit, WATER_ID);
-				if (amount > 0 && available >= amount) {		
+				// Test to see if there's enough water
+				if (available >= amount)
+					consumeWater(containerUnit, amount, waterOnly);
+				else if (available > 0){
+					amount = available;
 					consumeWater(containerUnit, amount, waterOnly);
 				}
 			}

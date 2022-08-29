@@ -161,7 +161,7 @@ public class EatDrinkMeta extends MetaTask {
 				}
 			}
 
-			double t0 = 10 * (thirst - PhysicalCondition.THIRST_THRESHOLD / 2.0);
+			double t0 = 10 * (thirst - PhysicalCondition.THIRST_THRESHOLD);
 			if (t0 <= 0)
 				t0 = 0;
 

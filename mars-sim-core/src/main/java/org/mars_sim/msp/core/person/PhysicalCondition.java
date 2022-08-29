@@ -1996,7 +1996,7 @@ public class PhysicalCondition implements Serializable {
 		if (musculoskeletal[2] < 0)
 			musculoskeletal[2] = 0;
 		// Increase thirst
-		increaseThirst(-time/3.0); 
+		increaseThirst(-time/4.5); 
 	}
 
 	/**
