@@ -179,7 +179,7 @@ public class SimulationBuilder {
 				.desc("New simulation from a scenario").build());
 		options.add(Option.builder(TEMPLATE_ARG).argName("template name").hasArg().optionalArg(false)
 						.desc("New simulation from a template").build());
-		options.add(Option.builder(SPONSOR_ARG).argName("sponsor").hasArg().optionalArg(false)
+		options.add(Option.builder(SPONSOR_ARG).argName(SPONSOR_ARG).hasArg().optionalArg(false)
 						.desc("Set the sponsor for the settlement template").build());		
 		options.add(Option.builder(LATITUDE_ARG).argName("latitude").hasArg().optionalArg(false)
 				.desc("Set the latitude of the new template Settlement").build());	

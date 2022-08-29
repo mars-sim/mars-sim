@@ -319,18 +319,21 @@ public class PhysicalCondition implements Serializable {
 		bodyMassDeviation = Math.sqrt(person.getBaseMass() / Person.getAverageWeight()
 				* person.getHeight() / Person.getAverageHeight());
 		// Note: p = mean + RandomUtil.getGaussianDouble() * standardDeviation
-		bodyMassDeviation = bodyMassDeviation + RandomUtil.getGaussianDouble() * bodyMassDeviation / 7D;
+		// bodyMassDeviation average around 0.7 to 1.3
+		bodyMassDeviation = bodyMassDeviation * (1 + RandomUtil.getGaussianDouble() / 10D);
+		logger.info(person, "bodyMassDeviation: " + bodyMassDeviation);
 		// Assume a person drinks 10 times a day, each time ~375 mL
-		waterConsumedPerSol = H2O_CONSUMPTION * bodyMassDeviation / 10D;
-		waterConsumedPerServing = waterConsumedPerSol / 8; 
-//		logger.info(person, "waterConsumedPerServing: " + waterConsumedPerServing);
-		
-		// about .3 kg per serving
-		foodConsumedPerSol = FOOD_CONSUMPTION * bodyMassDeviation / 10D;
-		foodDryMassPerServing = foodConsumedPerSol / Cooking.NUMBER_OF_MEAL_PER_SOL;
-//		logger.info(person, "foodDryMassPerServing: " + foodDryMassPerServing);
-		starvationStartTime = 1000D * (personConfig.getStarvationStartTime() - RandomUtil.getGaussianDouble() * bodyMassDeviation / 3);
+		waterConsumedPerSol = H2O_CONSUMPTION * bodyMassDeviation ;
+		// waterConsumedPerServing is ~ 0.19 kg
+		waterConsumedPerServing = waterConsumedPerSol / 10; 
+		logger.info(person, "waterConsumedPerServing: " + waterConsumedPerServing);
 
+		foodConsumedPerSol = FOOD_CONSUMPTION * bodyMassDeviation;
+		// foodDryMassPerServing is ~ 0.113 kg
+		foodDryMassPerServing = foodConsumedPerSol / Cooking.NUMBER_OF_MEAL_PER_SOL;
+		logger.info(person, "foodDryMassPerServing: " + foodDryMassPerServing);
+
+		starvationStartTime = 1000D * (personConfig.getStarvationStartTime() - RandomUtil.getGaussianDouble() * bodyMassDeviation / 3);
 		dehydrationStartTime = 1000D * (personConfig.getDehydrationStartTime() - RandomUtil.getGaussianDouble() * bodyMassDeviation);
 
 		isStarving = false;

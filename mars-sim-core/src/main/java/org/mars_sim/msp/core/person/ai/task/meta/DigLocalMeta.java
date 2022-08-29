@@ -22,7 +22,7 @@ public abstract class DigLocalMeta extends MetaTask {
 
 //	private static SimLogger logger = SimLogger.getLogger(DigLocalMeta.class.getName());
 
-	private static final double VALUE = 1.0;
+	private static final double VALUE = 5.0;
 	private static final int MAX = 5000;
 	private static final int LIMIT = 10000;
 	
@@ -116,13 +116,13 @@ public abstract class DigLocalMeta extends MetaTask {
         double shiftBonus = person.getTaskSchedule().obtainScoreAtStartOfShift();
         
         // Encourage to get this task done early in a work shift
-        result *= shiftBonus / 10;
+        result *= shiftBonus / 2;
         
         // The amount of sunlight influences the probability of starting this task
         double sunlight = surfaceFeatures.getSunlightRatio(settlement.getCoordinates());
         
         if (sunlight > 0.1) {
-        	result *= sunlight * 10;
+        	result *= sunlight * 50;
         }
         
         if (result <= 0)
