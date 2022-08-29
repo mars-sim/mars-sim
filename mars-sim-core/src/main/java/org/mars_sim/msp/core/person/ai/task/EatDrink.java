@@ -89,9 +89,9 @@ public class EatDrink extends Task implements Serializable {
 	private static final double DESSERT_STRESS_MODIFIER = -.8D;
 	
 	/** The proportion of the task for eating a meal. */
-	private static final double MEAL_EATING_PROPORTION = .75D;
+//	private static final double MEAL_EATING_PROPORTION = .75D;
 	/** The proportion of the task for eating dessert. */
-	private static final double DESSERT_EATING_PROPORTION = .25D;
+//	private static final double DESSERT_EATING_PROPORTION = .25D;
 	/** Percentage chance that preserved food has gone bad. */
 	// private static final double PRESERVED_FOOD_BAD_CHANCE = 1D; // in %
 	/** Percentage chance that unprepared dessert has gone bad. */
@@ -99,11 +99,11 @@ public class EatDrink extends Task implements Serializable {
 	/** Mass (kg) of single napkin for meal. */
 	private static final double NAPKIN_MASS = .0025D;
 
-	private static double foodConsumedPerServing;
-	private static double dessertConsumedPerServing;
+	private double foodConsumedPerServing;
+	private double dessertConsumedPerServing;
 
-	private static double millisolPerKgFood;
-	private static double millisolPerKgDessert;
+	private double millisolPerKgFood;
+	private double millisolPerKgDessert;
 
 	// Data members
 	private boolean food = false;
@@ -141,14 +141,13 @@ public class EatDrink extends Task implements Serializable {
 		pc = person.getPhysicalCondition();
 
 		double dur = getDuration();
-		eatingDuration = dur * MEAL_EATING_PROPORTION;
-		dessertEatingDuration = dur * DESSERT_EATING_PROPORTION;
+		eatingDuration = dur;// * MEAL_EATING_PROPORTION;
+		dessertEatingDuration = dur;// * DESSERT_EATING_PROPORTION;
 
-		PersonConfig config = SimulationConfig.instance().getPersonConfig();
-		foodConsumedPerServing = config.getFoodConsumptionRate() / NUMBER_OF_MEAL_PER_SOL;
-		dessertConsumedPerServing = config.getDessertConsumptionRate() / NUMBER_OF_DESSERT_PER_SOL;
-		
+		foodConsumedPerServing = personConfig.getFoodConsumptionRate() / NUMBER_OF_MEAL_PER_SOL;			
 		millisolPerKgFood = HUNGER_RATIO_PER_FOOD_SERVING / foodConsumedPerServing; 
+		
+		dessertConsumedPerServing = personConfig.getDessertConsumptionRate() / NUMBER_OF_DESSERT_PER_SOL;
 		millisolPerKgDessert = HUNGER_RATIO_PER_FOOD_SERVING / dessertConsumedPerServing;
 		
 		// ~.03 kg per serving

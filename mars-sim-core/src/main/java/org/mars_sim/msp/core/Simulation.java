@@ -506,7 +506,7 @@ public class Simulation implements ClockListener, Serializable {
 			System.exit(1);
 		}
 
-		// Call up garbage collector. But it's up to the gc what it will do. System.gc();
+		// Call up garbage collector System.gc(). But it's still up to the gc what it will do.
 	}
 
     /**
@@ -761,7 +761,7 @@ public class Simulation implements ClockListener, Serializable {
 		if (!isAlreadyPaused) 
 			masterClock.setPaused(true, false);
 
-		// Call up garbage collector. But it's up to the gc what it will do. System.gc();
+		// Call up garbage collector System.gc(). But it's still up to the gc what it will do.
 
 		lastSaveTimeStamp = new Date();
 
