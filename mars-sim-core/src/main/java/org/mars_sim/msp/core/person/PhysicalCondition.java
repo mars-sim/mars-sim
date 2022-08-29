@@ -321,12 +321,10 @@ public class PhysicalCondition implements Serializable {
 		// Note: p = mean + RandomUtil.getGaussianDouble() * standardDeviation
 		// bodyMassDeviation average around 0.7 to 1.3
 		bodyMassDeviation = bodyMassDeviation * (1 + RandomUtil.getGaussianDouble() / 10D);
-		logger.info(person, "bodyMassDeviation: " + bodyMassDeviation);
 		// Assume a person drinks 10 times a day, each time ~375 mL
 		waterConsumedPerSol = H2O_CONSUMPTION * bodyMassDeviation ;
 		// waterConsumedPerServing is ~ 0.19 kg
 		waterConsumedPerServing = waterConsumedPerSol / 10; 
-		logger.info(person, "waterConsumedPerServing: " + waterConsumedPerServing);
 
 		foodConsumedPerSol = FOOD_CONSUMPTION * bodyMassDeviation;
 		// foodDryMassPerServing is ~ 0.113 kg

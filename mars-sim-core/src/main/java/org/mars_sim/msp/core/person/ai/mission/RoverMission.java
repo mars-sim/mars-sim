@@ -580,7 +580,7 @@ public abstract class RoverMission extends VehicleMission {
 			EVASuit suit = null;
 			if (v != null)
 				// Checks to see if the rover has any EVA suit
-				suit = getEVASuit(p, v);
+				suit = getEVASuitFromVehicle(p, v);
 			
 			if (suit == null) {
 
@@ -607,17 +607,18 @@ public abstract class RoverMission extends VehicleMission {
 
 
 	/**
-	 * Finds a EVA suit in storage. Select one with the most resources already
+	 * Finds a EVA suit in a particular vehicle. Select one with the most resources already
 	 * loaded.
 	 *
 	 * @param person Person needing the suit
+	 * @param vehicle
 	 * @return instance of EVASuit or null if none.
 	 */
-	protected EVASuit getEVASuit(Person p,  Vehicle v) {
+	protected EVASuit getEVASuitFromVehicle(Person p,  Vehicle v) {
 		EVASuit goodSuit = null;
 		double goodFullness = 0D;
 		
-		for (Equipment e : getVehicle().getEquipmentSet()) {
+		for (Equipment e : v.getEquipmentSet()) {
 			if (e.getEquipmentType() == EquipmentType.EVA_SUIT) {
 				EVASuit suit = (EVASuit)e;
 				boolean malfunction = suit.getMalfunctionManager().hasMalfunction();
