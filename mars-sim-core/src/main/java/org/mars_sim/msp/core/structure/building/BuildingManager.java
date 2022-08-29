@@ -1108,7 +1108,7 @@ public class BuildingManager implements Serializable {
 	public static boolean removeFromGarage(Vehicle vehicle) {
 		// If the vehicle is in a garage, put the vehicle outside.
 		Building garage = vehicle.getGarage();
-		if (garage != null && garage.getVehicleMaintenance().removeVehicle(vehicle)) {
+		if (garage != null && garage.getVehicleMaintenance().removeVehicle(vehicle, true)) {
 			return true;
 		}
 
