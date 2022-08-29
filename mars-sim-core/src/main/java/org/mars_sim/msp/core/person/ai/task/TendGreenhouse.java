@@ -282,15 +282,17 @@ public class TendGreenhouse extends Task implements Serializable {
 			return time;
 		}
 		
-    	if (getTimeCompleted() > getDuration())
+    	if (getTimeCompleted() > getDuration()) {
         	endTask();
+        	return time;
+    	}
 
 		Building farmBuilding = greenhouse.getBuilding();
 		
 		// Check if greenhouse has malfunction.
 		if (farmBuilding.getMalfunctionManager() != null && farmBuilding.getMalfunctionManager().hasMalfunction()) {
 			endTask();
-			return time;
+			return 0;
 		}
 
 		if (needyCrop == null)
@@ -298,7 +300,7 @@ public class TendGreenhouse extends Task implements Serializable {
 		
 		if (needyCrop == null) {
 			setDescriptionCropDone();
-			return time;
+			return 0;
 		}
 
 		boolean needTending = needyCrop.getCurrentWorkRequired() > Crop.CROP_TIME_OFFSET;
@@ -313,7 +315,7 @@ public class TendGreenhouse extends Task implements Serializable {
 		
 		if (needyCrop == null) {
 			setDescriptionCropDone();
-			return time;
+			return 0;
 		}
 		
 		needTending = needyCrop.getCurrentWorkRequired() > -50;
@@ -323,9 +325,12 @@ public class TendGreenhouse extends Task implements Serializable {
 			return remainingTime;
 		}
 
-		logger.log(greenhouse.getBuilding(), worker, Level.INFO, 30_000, 
-				"Tending " + needyCrop.getCropName() + " not needed.");
+		logger.log(greenhouse.getBuilding(), worker, Level.INFO, 1_000, 
+				"Tending " + needyCrop.getCropName() + " was no longer needed.");
 		setDescriptionCropDone();
+		
+		// Set needyCrop to null since needTending is false
+		needyCrop = null;
 
 		return remainingTime;
 	}
