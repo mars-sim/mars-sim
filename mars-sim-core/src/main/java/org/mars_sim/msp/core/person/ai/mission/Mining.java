@@ -50,6 +50,9 @@ public class Mining extends EVAMission
 	
 	/** Mission phases */
 	private static final MissionPhase MINING_SITE = new MissionPhase("Mission.phase.miningSite");
+	private static final MissionStatus MINING_SITE_NOT_BE_DETERMINED = new MissionStatus("Mission.status.miningSite");
+	private static final MissionStatus LUV_NOT_AVAILABLE = new MissionStatus("Mission.status.noLUV");
+	private static final MissionStatus LUV_ATTACHMENT_PARTS_NOT_LOADABLE = new MissionStatus("Mission.status.noLUVAttachments");
 
 	private static final int MAX = 200;
 	
@@ -65,11 +68,13 @@ public class Mining extends EVAMission
 	/** Minimum amount (kg) of an excavated mineral that can be collected. */
 	private static final double MINIMUM_COLLECT_AMOUNT = 10D;
 
+
 	/**
 	 * The minimum number of mineral concentration estimation improvements for an
 	 * exploration site for it to be considered mature enough to mine.
 	 */
 	public static final int MATURE_ESTIMATE_NUM = 10;
+
 	
 	private ExploredLocation miningSite;
 	private LightUtilityVehicle luv;
@@ -109,7 +114,7 @@ public class Mining extends EVAMission
 				}
 			} catch (Exception e) {
 				logger.severe(startingPerson, "Mining site could not be determined.", e);
-				endMission(MissionStatus.MINING_SITE_NOT_BE_DETERMINED);
+				endMission(MINING_SITE_NOT_BE_DETERMINED);
 			}
 
 			// Add home settlement
@@ -117,14 +122,14 @@ public class Mining extends EVAMission
 
 			// Check if vehicle can carry enough supplies for the mission.
 			if (hasVehicle() && !isVehicleLoadable()) {
-				endMission(MissionStatus.CANNOT_LOAD_RESOURCES);
+				endMission(CANNOT_LOAD_RESOURCES);
 			}
 
 			if (!isDone()) {
 				// Reserve light utility vehicle.
 				luv = reserveLightUtilityVehicle();
 				if (luv == null) {
-					endMission(MissionStatus.LUV_NOT_AVAILABLE);
+					endMission(LUV_NOT_AVAILABLE);
 					return;
 				}
 				setInitialPhase(needsReview);
@@ -165,14 +170,14 @@ public class Mining extends EVAMission
 
 		// Check if vehicle can carry enough supplies for the mission.
 		if (hasVehicle() && !isVehicleLoadable()) {
-			endMission(MissionStatus.CANNOT_LOAD_RESOURCES);
+			endMission(CANNOT_LOAD_RESOURCES);
 		}
 
 		// Reserve light utility vehicle.
 		this.luv = luv;
 		if (luv == null) {
 			logger.warning("Light utility vehicle not available.");
-			endMission(MissionStatus.LUV_NOT_AVAILABLE);
+			endMission(LUV_NOT_AVAILABLE);
 		} else {
 			luv.setReservedForMission(true);
 		}
@@ -254,22 +259,16 @@ public class Mining extends EVAMission
 					|| !settlement.hasItemResource(ItemResourceUtil.backhoeID)) {
 				logger.warning(luv, 
 						"Could not load LUV and/or its attachment parts for mission " + getName());
-				endMission(MissionStatus.LUV_ATTACHMENT_PARTS_NOT_LOADABLE);
+				endMission(LUV_ATTACHMENT_PARTS_NOT_LOADABLE);
 				return;
 			}
-				
-			try {
-				// Load light utility vehicle with attachment parts.
-				settlement.retrieveItemResource(ItemResourceUtil.pneumaticDrillID, 1);
-				luv.storeItemResource(ItemResourceUtil.pneumaticDrillID, 1);
+			
+			// Load light utility vehicle with attachment parts.
+			settlement.retrieveItemResource(ItemResourceUtil.pneumaticDrillID, 1);
+			luv.storeItemResource(ItemResourceUtil.pneumaticDrillID, 1);
 
-				settlement.retrieveItemResource(ItemResourceUtil.backhoeID, 1);
-				luv.storeItemResource(ItemResourceUtil.backhoeID, 1);
-			} catch (Exception e) {
-				logger.severe(luv, 
-						"Problem loading attachments", e);
-				endMission(MissionStatus.LUV_ATTACHMENT_PARTS_NOT_LOADABLE);
-			}
+			settlement.retrieveItemResource(ItemResourceUtil.backhoeID, 1);
+			luv.storeItemResource(ItemResourceUtil.backhoeID, 1);
 		}
 	}
 
@@ -282,24 +281,19 @@ public class Mining extends EVAMission
 	protected void performDisembarkTo() {
 		// Unload towed light utility vehicle.
 		if (!isDone() && (getRover().getTowedVehicle() != null)) {
-			try {
-				Settlement settlement = getStartingSettlement();
-				
-				getRover().setTowedVehicle(null);
-				luv.setTowingVehicle(null);
-				settlement.removeParkedVehicle(luv);
-				luv.findNewParkingLoc();
+			Settlement settlement = getStartingSettlement();
+			
+			getRover().setTowedVehicle(null);
+			luv.setTowingVehicle(null);
+			settlement.removeParkedVehicle(luv);
+			luv.findNewParkingLoc();
 
-				// Unload attachment parts.
-				luv.retrieveItemResource(ItemResourceUtil.pneumaticDrillID, 1);
-				settlement.storeItemResource(ItemResourceUtil.pneumaticDrillID, 1);
+			// Unload attachment parts.
+			luv.retrieveItemResource(ItemResourceUtil.pneumaticDrillID, 1);
+			settlement.storeItemResource(ItemResourceUtil.pneumaticDrillID, 1);
 
-				luv.retrieveItemResource(ItemResourceUtil.backhoeID, 1);
-				settlement.storeItemResource(ItemResourceUtil.backhoeID, 1);
-			} catch (Exception e) {
-				logger.log(Level.SEVERE, "Error unloading light utility vehicle and attachment parts.");
-				endMission(MissionStatus.LUV_ATTACHMENT_PARTS_NOT_LOADABLE);
-			}
+			luv.retrieveItemResource(ItemResourceUtil.backhoeID, 1);
+			settlement.storeItemResource(ItemResourceUtil.backhoeID, 1);
 		}
 	}
 

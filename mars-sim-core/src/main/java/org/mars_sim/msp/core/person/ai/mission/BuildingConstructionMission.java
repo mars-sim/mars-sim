@@ -74,6 +74,11 @@ public class BuildingConstructionMission extends Mission {
 	private static final MissionPhase PREPARE_SITE_PHASE = new MissionPhase("Mission.phase.prepareConstructionSite");
 	private static final MissionPhase CONSTRUCTION_PHASE = new MissionPhase("Mission.phase.construction");
 
+	private static final MissionStatus LUV_NOT_AVAILABLE = new MissionStatus("Mission.status.noLUV");
+	private static final MissionStatus CONSTRUCTION_SITE_NOT_FOUND_OR_CREATED =new MissionStatus("Mission.status.noConstructionSite");
+	private static final MissionStatus CONSTRUCTION_ENDED = new MissionStatus("Mission.status.constructionEnded");
+	private static final MissionStatus NEW_CONSTRUCTION_STAGE_NOT_DETERMINED = new MissionStatus("Mission.status.noConstructionStage");
+
 	// Number of mission members.
 	public static final int MIN_PEOPLE = 3;
 	private static final int MAX_PEOPLE = 10;
@@ -147,7 +152,7 @@ public class BuildingConstructionMission extends Mission {
 		if (!isDone()) {
 			// Set initial mission phase.
 			if (site == null) {
-				endMission(MissionStatus.CONSTRUCTION_SITE_NOT_FOUND_OR_CREATED);
+				endMission(CONSTRUCTION_SITE_NOT_FOUND_OR_CREATED);
 			}
 			else {
 				// Reserve construction vehicles.
@@ -228,7 +233,7 @@ public class BuildingConstructionMission extends Mission {
 				
 				else {
 					logger.warning(settlement, "New construction stage could not be determined.");
-					endMission(MissionStatus.NEW_CONSTRUCTION_STAGE_NOT_DETERMINED);
+					endMission(NEW_CONSTRUCTION_STAGE_NOT_DETERMINED);
 					return;
 				}
 
@@ -260,7 +265,7 @@ public class BuildingConstructionMission extends Mission {
 					values.clearCache();
 					logger.info(settlement, "Starting new construction stage: " + stage);
 				} else {
-					endMission(MissionStatus.NEW_CONSTRUCTION_STAGE_NOT_DETERMINED);
+					endMission(NEW_CONSTRUCTION_STAGE_NOT_DETERMINED);
 				}
 			}
 
@@ -270,7 +275,7 @@ public class BuildingConstructionMission extends Mission {
 			}
 		}
 		else {
-			endMission(MissionStatus.CONSTRUCTION_SITE_NOT_FOUND_OR_CREATED);
+			endMission(CONSTRUCTION_SITE_NOT_FOUND_OR_CREATED);
 		}
 
 	}
@@ -409,7 +414,7 @@ public class BuildingConstructionMission extends Mission {
 				}
 
 				else {
-					endMission(MissionStatus.CONSTRUCTION_SITE_NOT_FOUND_OR_CREATED);
+					endMission(CONSTRUCTION_SITE_NOT_FOUND_OR_CREATED);
 				}
 
 				setupConstructionStage(site, stageInfo);
@@ -438,14 +443,11 @@ public class BuildingConstructionMission extends Mission {
 		if (site.hasUnfinishedStage()) {
 			stage = site.getCurrentConstructionStage();
 			logger.info(settlement, 5_000, "Using existing construction stage: " + stage);
-		} else {
+		}
+		else {
 			stage = new ConstructionStage(info, site);
 			logger.info(settlement, 5_000, "Starting new construction stage: " + stage);
-			try {
-				site.addNewStage(stage);
-			} catch (Exception e) {
-				endMission(MissionStatus.CONSTRUCTION_STAGE_NOT_CREATED);
-			}
+			site.addNewStage(stage);
 		}
 
 		// Mark site as undergoing construction.
@@ -462,9 +464,7 @@ public class BuildingConstructionMission extends Mission {
 			GroundVehicle vehicle = j.next();
 			vehicle.setReservedForMission(true);
 			if (!settlement.removeParkedVehicle(vehicle)) {
-				logger.warning(settlement, "Unable to retrieve " + vehicle.getName()
-					+ " cannot be retrieved.");
-				endMission(MissionStatus.CONSTRUCTION_VEHICLE_NOT_RETRIEVED);
+				endMissionProblem(vehicle, "Can not remove parked vehicle");
 			}
 		}
 	}
@@ -508,7 +508,7 @@ public class BuildingConstructionMission extends Mission {
 						constructionVehicles.add(luv);
 					} else {
 						logger.warning(settlement, "BuildingConstructionMission : LUV not available");
-						endMission(MissionStatus.LUV_NOT_AVAILABLE);
+						endMission(LUV_NOT_AVAILABLE);
 					}
 				}
 			}
@@ -540,8 +540,7 @@ public class BuildingConstructionMission extends Mission {
 						luvAttachmentParts.add(part);
 					} catch (Exception e) {
 						Part p = ItemResourceUtil.findItemResource(part);
-						logger.severe(settlement, "Error retrieving attachment part " + p.getName());
-						endMission(MissionStatus.CONSTRUCTION_ATTACHMENT_PART_NOT_RETRIEVED);
+						endMissionProblem(settlement, "Cannot retreive Part " + p.getName());
 					}
 				}
 				vehicleIndex++;
@@ -609,7 +608,7 @@ public class BuildingConstructionMission extends Mission {
 			setPhase(CONSTRUCTION_PHASE, stage.getInfo().getName());
 		}
 		else if (CONSTRUCTION_PHASE.equals(getPhase())) {
-			endMission(MissionStatus.CONSTRUCTION_ENDED);
+			endMission(CONSTRUCTION_ENDED);
 		}
 		else {
 			handled = false;
@@ -835,8 +834,7 @@ public class BuildingConstructionMission extends Mission {
 					luvTemp.setParkedLocation(settlementLocSite, RandomUtil.getRandomDouble(360D));
 
 					if (!settlement.removeParkedVehicle(luvTemp)) {
-						logger.severe(settlement, "Unable to retrieve " + luvTemp.getName() + " cannot be retrieved.");
-						endMission(MissionStatus.CONSTRUCTION_VEHICLE_NOT_RETRIEVED);
+						endMissionProblem(luvTemp, "Can not remove parked vehicle");
 					}
 				}
 			}

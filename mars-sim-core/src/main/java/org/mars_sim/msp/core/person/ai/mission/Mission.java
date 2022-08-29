@@ -31,6 +31,7 @@ import org.mars_sim.msp.core.environment.SurfaceFeatures;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
+import org.mars_sim.msp.core.logging.Loggable;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
@@ -107,6 +108,12 @@ public abstract class Mission implements Serializable, Temporal {
 	 * The marginal factor for the amount of dessert to be brought during a mission.
 	 */
 	public static final double DESSERT_MARGIN = 1.25;
+
+	protected static final MissionStatus NOT_ENOUGH_MEMBERS = new MissionStatus("Mission.status.noMembers");
+	private static final MissionStatus MISSION_NOT_APPROVED = new MissionStatus("Mission.status.notApproved");
+	private static final MissionStatus MISSION_ACCOMPLISHED = new MissionStatus("Mission.status.accomplished");
+	private static final String INTERNAL_PROBLEM = "Mission.status.internalProblem";
+
 
 	// Data members
 	/** The number of people that can be in the mission. */
@@ -421,7 +428,7 @@ public abstract class Mission implements Serializable, Temporal {
 			fireMissionUpdate(MissionEventType.REMOVE_MEMBER_EVENT, member);
 
 			if (getPeopleNumber() == 0 && !done) {
-				endMission(MissionStatus.NO_MEMBERS_AVAILABLE);
+				endMission(NOT_ENOUGH_MEMBERS);
 			}
 		}
 	}
@@ -726,7 +733,7 @@ public abstract class Mission implements Serializable, Temporal {
 	 */
 	protected void performPhase(Worker member) {
 		if (phase == null) {
-			endMission(MissionStatus.CURRENT_MISSION_PHASE_IS_NULL);
+			endMission(new MissionStatus(INTERNAL_PROBLEM, "Current phase null"));
 		}
 	}
 
@@ -829,7 +836,7 @@ public abstract class Mission implements Serializable, Temporal {
 
 		// If no mission flags have been added then it was accomplised
 		if (missionStatus.isEmpty()) {
-			missionStatus.add(MissionStatus.MISSION_ACCOMPLISHED);
+			missionStatus.add(MISSION_ACCOMPLISHED);
 			addMissionScore();
 		}
 
@@ -1048,7 +1055,7 @@ public abstract class Mission implements Serializable, Temporal {
 		}
 
 		if (getMembersNumber() < minMembers) {
-			endMission(MissionStatus.NOT_ENOUGH_MEMBERS);
+			endMission(NOT_ENOUGH_MEMBERS);
 			return false;
 		}
 
@@ -1302,7 +1309,7 @@ public abstract class Mission implements Serializable, Temporal {
 
 		else {
 			if (plan.getStatus() == PlanType.NOT_APPROVED) {
-				endMission(MissionStatus.MISSION_NOT_APPROVED);
+				endMission(MISSION_NOT_APPROVED);
 			}
 
 			else if (plan.getStatus() == PlanType.APPROVED) {
@@ -1376,6 +1383,16 @@ public abstract class Mission implements Serializable, Temporal {
 	public String getReservedVehicle() {
 		return vehicleReserved;
 	}
+
+	/**
+	 * An internal problem has happened so end the mission.
+	 */
+	protected void endMissionProblem(Loggable source, String reason) {
+		MissionStatus status = new MissionStatus(INTERNAL_PROBLEM, reason);
+		logger.severe(source, getName() + ": " + status.getName());
+		endMission(status);
+	}
+
 
 	public Set<MissionStatus> getMissionStatus() {
 		return missionStatus;

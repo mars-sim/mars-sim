@@ -33,9 +33,11 @@ public abstract class EVAMission extends RoverMission {
 	private static SimLogger logger = SimLogger.getLogger(EVAMission.class.getName());
 	
 	private static final MissionPhase WAIT_SUNLIGHT = new MissionPhase("Mission.phase.waitSunlight");
+	private static final MissionStatus EVA_SUIT_CANNOT_BE_LOADED = new MissionStatus("Mission.status.noEVASuits");
 
 	// Maximum time to wait for sunrise
 	protected static final double MAX_WAIT_SUBLIGHT = 400D;
+
 
     private MissionPhase evaPhase;
     private boolean activeEVA = true;
@@ -52,7 +54,7 @@ public abstract class EVAMission extends RoverMission {
 		// Check suit although these may be claimed before loading
 		int suits = getNumberAvailableEVASuitsAtSettlement(getStartingSettlement());
 		if (suits < getMembersNumber()) {
-			endMission(MissionStatus.EVA_SUIT_CANNOT_BE_LOADED);
+			endMission(EVA_SUIT_CANNOT_BE_LOADED);
 		}
     }
 

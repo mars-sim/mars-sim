@@ -79,6 +79,14 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	public static final MissionPhase TRAVELLING = new MissionPhase("Mission.phase.travelling");
 	public static final MissionPhase DISEMBARKING = new MissionPhase("Mission.phase.disembarking");
 
+	// Mission Status
+	protected static final MissionStatus NO_AVAILABLE_VEHICLES = new MissionStatus("Mission.status.noVehicle");
+	protected static final MissionStatus VEHICLE_BEACON_ACTIVE = new MissionStatus("Mission.status.vehicleBeacon");
+	private static final MissionStatus VEHICLE_UNDER_MAINTENANCE = new MissionStatus("Mission.status.vehicleMaintenance");
+	protected static final MissionStatus CANNOT_LOAD_RESOURCES = new MissionStatus("Mission.status.loadResources");
+	private static final MissionStatus UNREPAIRABLE_MALFUNCTION = new MissionStatus("Mission.status.unrepairable");
+	private static final MissionStatus ABORTED_MISSION = new MissionStatus("Mission.status.aborted");
+
 	// Static members
 
 	// Travel Mission status
@@ -97,6 +105,10 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	protected static final double AVERAGE_EVA_MALFUNCTION = MalfunctionManager.AVERAGE_EVA_MALFUNCTION;
 	/** Default speed if no operators have ever driven. */
 	private static final double DEFAULT_SPEED = 10D;
+
+
+
+
 
 	/** True if a person is submitting the mission plan request. */
 	private boolean isMissionPlanReady;
@@ -228,7 +240,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 		// Reserve a vehicle.
 		Worker startingMember = getStartingPerson();
 		if (startingMember.getSettlement() == null || !reserveVehicle(startingMember)) {
-			endMission(MissionStatus.NO_RESERVABLE_VEHICLES);
+			endMission(NO_AVAILABLE_VEHICLES);
 			logger.warning(startingMember, "Could not reserve a vehicle for " + getName() + ".");
 			return false;
 		}
@@ -286,7 +298,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 		if (vehicle.haveStatusType(StatusType.MAINTENANCE)) {
 			logger.warning(vehicle, "Under maintenance and not ready for " + getName() + ".");
 
-			endMission(MissionStatus.VEHICLE_UNDER_MAINTENANCE);
+			endMission(VEHICLE_UNDER_MAINTENANCE);
 			return false;
 		}
 		return true;
@@ -656,7 +668,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 		if (loadingPlan != null) {
 			if (loadingPlan.isFailure()) {
 				logger.warning(vehicle, "Loading has failed.");
-				endMission(MissionStatus.CANNOT_LOAD_RESOURCES);
+				endMission(CANNOT_LOAD_RESOURCES);
 			}
 			return loadingPlan.isCompleted();
 		}
@@ -741,7 +753,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 			}
 			else {
 				logger.warning(vehicle, getName() + " cannot load Resources.");
-				endMission(MissionStatus.CANNOT_LOAD_RESOURCES);
+				endMission(CANNOT_LOAD_RESOURCES);
 			}
 		}
 
@@ -918,7 +930,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 			// Must set margin to false since it's not needed.
 			if (hasEnoughResourcesForRemainingMission() && hasUnrepairableMalfunction()) {
 				// If vehicle has unrepairable malfunction, end mission.
-				getHelp(MissionStatus.UNREPAIRABLE_MALFUNCTION);
+				getHelp(UNREPAIRABLE_MALFUNCTION);
 			}
 		}
 	}
@@ -1171,19 +1183,18 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 			int missingResourceId = hasEnoughResources(getResourcesNeededForRemainingMission(false));
 			if (missingResourceId >= 0) {
 				// Create Missiion Flag
-				String resourceName = GoodsUtil.getGood(missingResourceId).getName();
-				MissionStatus status = MissionStatus.NOT_ENOUGH_RESOURCES;
+				MissionStatus status = createResourceStatus(missingResourceId);
 				if (addMissionStatus(status)) {
 					// If the MissionFlag is not present then do it
 					// A resource is mission
 					determineEmergencyDestination(status);
 
-					logger.info(getVehicle(), "Not enough " + resourceName + " for mission.");
+					logger.info(getVehicle(), status.getName());
 
 					//Create the resource emergency mission event.
 					HistoricalEvent newEvent = new MissionHistoricalEvent(EventType.MISSION_NOT_ENOUGH_RESOURCES,
 							this,
-							"Dwindling resource " + resourceName,
+							status.getName(),
 							getName(),
 							getStartingPerson().getName(),
 							vehicle.getName(),
@@ -2028,7 +2039,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	 */
 	@Override
 	public void abortMission() {
-		addMissionStatus(MissionStatus.ABORTED_MISSION);
+		addMissionStatus(ABORTED_MISSION);
 		returnHome();
 	}
 
@@ -2295,8 +2306,6 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	 * Starts the disembarking phase.
 	 */
 	protected void startDisembarkingPhase() {
-//		NavPoint np = getCurrentNavpoint();
-//		setPhase(DISEMBARKING, (np != null ? np.getDescription() : "Unknown"));
 		Settlement settlement =	getCurrentNavpointSettlement();
 		setPhase(DISEMBARKING, (settlement != null ? settlement.getName() : "Unknown"));
 	}
@@ -2318,5 +2327,10 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	 */
 	public final Settlement getStartingSettlement() {
 		return startingSettlement;
+	}
+
+	public static MissionStatus createResourceStatus(int missingResourceId) {
+		String resourceName = GoodsUtil.getGood(missingResourceId).getName();
+		return new MissionStatus("Mission.status.noResources", resourceName);
 	}
 }

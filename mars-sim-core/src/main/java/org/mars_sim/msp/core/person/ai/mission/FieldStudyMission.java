@@ -43,8 +43,10 @@ public abstract class FieldStudyMission extends EVAMission {
 	
 	/** Mission phase. */
 	public static final MissionPhase RESEARCH_SITE = new MissionPhase("Mission.phase.researchingFieldSite");
+	private static final MissionStatus NO_ONGOING_SCIENTIFIC_STUDY = new MissionStatus("Mission.status.noStudy");
 
 	private static final int MIN_MEMEBRS = 2;
+
 	
 	// Data members
 	/** The field site location. */
@@ -78,7 +80,7 @@ public abstract class FieldStudyMission extends EVAMission {
 			// Set the lead researcher and study.
 			study = determineStudy(science, startingPerson);
 			if (study == null) {
-				endMission(MissionStatus.NO_ONGOING_SCIENTIFIC_STUDY);
+				endMission(NO_ONGOING_SCIENTIFIC_STUDY);
 			}
 
 			// Recruit additional members to mission.
@@ -96,7 +98,7 @@ public abstract class FieldStudyMission extends EVAMission {
 
 			// Check if vehicle can carry enough supplies for the mission.
 			if (hasVehicle() && !isVehicleLoadable()) {
-				endMission(MissionStatus.CANNOT_LOAD_RESOURCES);
+				endMission(CANNOT_LOAD_RESOURCES);
 				return;
 			}
 		}
@@ -141,7 +143,7 @@ public abstract class FieldStudyMission extends EVAMission {
 			
 		// Check if vehicle can carry enough supplies for the mission.
 		if (hasVehicle() && !isVehicleLoadable()) {
-			endMission(MissionStatus.CANNOT_LOAD_RESOURCES);
+			endMission(CANNOT_LOAD_RESOURCES);
 			return;
 		}
 

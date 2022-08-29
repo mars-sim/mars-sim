@@ -71,6 +71,8 @@ public class EmergencySupply extends RoverMission {
 	private static final MissionPhase LOAD_RETURN_TRIP_SUPPLIES = new MissionPhase("Mission.phase.loadReturnTripSupplies");
 	private static final MissionPhase RETURN_TRIP_EMBARKING = new MissionPhase("Mission.phase.returnTripEmbarking");
 
+	private static final MissionStatus NO_SETTLEMENT_FOUND_TO_DELIVER_EMERGENCY_SUPPLIES = new MissionStatus("Mission.status.noEmergencySettlement");
+
 	// Data members.
 	private boolean outbound;
 
@@ -122,7 +124,7 @@ public class EmergencySupply extends RoverMission {
 						return;
 				}
 			} else {
-				endMission(MissionStatus.NO_SETTLEMENT_FOUND_TO_DELIVER_EMERGENCY_SUPPLIES);
+				endMission(NO_SETTLEMENT_FOUND_TO_DELIVER_EMERGENCY_SUPPLIES);
 				logger.warning("No settlement could be found to deliver emergency supplies to.");
 				return;
 			}
@@ -225,7 +227,7 @@ public class EmergencySupply extends RoverMission {
 			else if (SUPPLY_DELIVERY.equals(getPhase())) {
 				// Check if vehicle can hold enough supplies for mission.
 				if (!isVehicleLoadable()) {
-					endMission(MissionStatus.CANNOT_LOAD_RESOURCES);
+					endMission(CANNOT_LOAD_RESOURCES);
 				}
 				else {
 					setPhase(LOAD_RETURN_TRIP_SUPPLIES, emergencySettlement.getName());
@@ -345,8 +347,7 @@ public class EmergencySupply extends RoverMission {
 				}
 			}
 			else {
-				logger.severe("No inhabitable buildings at " + emergencySettlement);
-				endMission(MissionStatus.NO_INHABITABLE_BUILDING);
+				endMissionProblem(emergencySettlement, "No inhabitable buildings");
 			}
 		}
 
@@ -461,8 +462,7 @@ public class EmergencySupply extends RoverMission {
 						assignTask(person, walk);
 					}
 					else {
-						logger.severe(person.getName() + " unable to enter rover " + getVehicle());
-						endMission(MissionStatus.CANNOT_ENTER_ROVER);
+						endMissionProblem(person, "Cannot enter rover");
 					}
 				}
 			}
@@ -475,8 +475,7 @@ public class EmergencySupply extends RoverMission {
 					assignTask(robot, walkingTask);
 				}
 				else {
-					logger.severe(robot.getName() + " unable to enter rover " + getVehicle());
-					endMission(MissionStatus.CANNOT_ENTER_ROVER);
+					endMissionProblem(robot, "Can not enter Rover");
 				}
 			}
 		}

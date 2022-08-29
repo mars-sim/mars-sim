@@ -68,6 +68,8 @@ public class RescueSalvageVehicle extends RoverMission {
 
 	// Mission phases
 	private static final MissionPhase RENDEZVOUS = new MissionPhase("Mission.phase.rendezvous");
+
+	private static final MissionStatus TARGET_VEHICLE_NOT_FOUND = new MissionStatus("Mission.status.noTargetVehicle");
 	
 	// Data members
 	private boolean rescue = false;
@@ -103,21 +105,22 @@ public class RescueSalvageVehicle extends RoverMission {
 				}
 
 				if (!hasVehicle()) {
-					endMission(MissionStatus.NO_AVAILABLE_VEHICLES);
+					endMission(NO_AVAILABLE_VEHICLES);
 					return;
 				}
 				
 				// Check if vehicle can carry enough supplies for the mission.
 				if (hasVehicle() && !isVehicleLoadable()) {			
-					endMission(MissionStatus.CANNOT_LOAD_RESOURCES);
+					endMission(CANNOT_LOAD_RESOURCES);
 					return;
 				}
 				
 				// Set initial phase
 				setInitialPhase(needsReview);
 				
-			} else {
-				endMission(MissionStatus.TARGET_VEHICLE_NOT_FOUND);
+			}
+			else {
+				endMission(TARGET_VEHICLE_NOT_FOUND);
 			}
 		}
 	}
@@ -151,13 +154,13 @@ public class RescueSalvageVehicle extends RoverMission {
 		addMembers(members, false);
 
 		if (!hasVehicle()) {
-			endMission(MissionStatus.NO_AVAILABLE_VEHICLES);
+			endMission(NO_AVAILABLE_VEHICLES);
 			return;
 		}
 		
 		// Check if vehicle can carry enough supplies for the mission.
 		if (hasVehicle() && !isVehicleLoadable()) {
-			endMission(MissionStatus.CANNOT_LOAD_RESOURCES);
+			endMission(CANNOT_LOAD_RESOURCES);
 			return;
 		}
 	

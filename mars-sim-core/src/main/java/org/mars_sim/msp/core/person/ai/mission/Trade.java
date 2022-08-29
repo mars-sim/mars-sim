@@ -52,11 +52,14 @@ public class Trade extends RoverMission implements CommerceMission {
 	public static final MissionPhase UNLOAD_GOODS = new MissionPhase("Mission.phase.unloadGoods");
 	public static final MissionPhase LOAD_GOODS = new MissionPhase("Mission.phase.loadGoods");
 	private static final MissionPhase TRADE_EMBARKING = new MissionPhase("Mission.phase.tradeEmbarking");
+	private static final MissionStatus SELLING_VEHICLE_NOT_AVAILABLE_FOR_TRADE = new MissionStatus("Mission.status.noSellingVehicle");
 
 	// Static members
 	public static final double MAX_STARTING_PROBABILITY = 100D;
 
 	public static final int MAX_MEMBERS = 2;
+
+
 
 	// Data members.
 	private double profit;
@@ -99,7 +102,7 @@ public class Trade extends RoverMission implements CommerceMission {
 			// Get trading settlement
 			Deal deal = s.getGoodsManager().getBestDeal(MissionType.TRADE, getVehicle());
 			if (deal == null) {
-				endMission(MissionStatus.NO_TRADING_SETTLEMENT);
+				endMission(NO_TRADING_SETTLEMENT);
 				return;
 			}
 			tradingSettlement = deal.getBuyer();
@@ -190,7 +193,7 @@ public class Trade extends RoverMission implements CommerceMission {
 			else if (UNLOAD_GOODS.equals(getPhase())) {
 				// Check if vehicle can hold enough supplies for mission.
 				if (!isVehicleLoadable()) {
-					endMission(MissionStatus.CANNOT_LOAD_RESOURCES);
+					endMission(CANNOT_LOAD_RESOURCES);
 				}
 				else {
 					setPhase(LOAD_GOODS, tradingSettlement.getName());
@@ -277,8 +280,7 @@ public class Trade extends RoverMission implements CommerceMission {
 				}
 			}
 			else {
-				logger.severe(tradingSettlement, "No inhabitable buildings");
-				endMission(MissionStatus.NO_INHABITABLE_BUILDING);
+				endMissionProblem(tradingSettlement, "No inhabitable buildings");
 			}
 		}
 
@@ -404,7 +406,7 @@ public class Trade extends RoverMission implements CommerceMission {
 					tradingSettlement.removeParkedVehicle(buyVehicle);
 				} else {
 					logger.warning(getRover(), "Selling vehicle (" + vehicleType + ") is not available (Trade).");
-					endMission(MissionStatus.SELLING_VEHICLE_NOT_AVAILABLE_FOR_TRADE);
+					endMission(SELLING_VEHICLE_NOT_AVAILABLE_FOR_TRADE);
 				}
 			}
 		}
@@ -470,8 +472,7 @@ public class Trade extends RoverMission implements CommerceMission {
 							assignTask(person, walk);
 						}
 						else {
-							logger.severe(person, "Unable to enter rover " + getVehicle().getName());
-							endMission(MissionStatus.CANNOT_ENTER_ROVER);
+							endMissionProblem(person, "Unable to enter rover " + getVehicle().getName());
 						}
 					}
 				}
@@ -505,7 +506,7 @@ public class Trade extends RoverMission implements CommerceMission {
 					getStartingSettlement().removeParkedVehicle(sellVehicle);
 				} else {
 					logger.warning(getRover(), "Selling vehicle (" + vehicleType + ") is not available (Trade).");
-					endMission(MissionStatus.SELLING_VEHICLE_NOT_AVAILABLE_FOR_TRADE);
+					endMission(SELLING_VEHICLE_NOT_AVAILABLE_FOR_TRADE);
 				}
 			}
 		}

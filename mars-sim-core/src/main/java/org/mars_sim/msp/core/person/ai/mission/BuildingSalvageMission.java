@@ -58,9 +58,14 @@ public class BuildingSalvageMission extends Mission {
 	public static final MissionType missionType = MissionType.BUILDING_SALVAGE;
 	
 	/** Mission phases. */
-	private final static MissionPhase PREPARE_SITE_PHASE = new MissionPhase("Mission.phase.prepareSalvageSite");
-	private final static MissionPhase SALVAGE_PHASE = new MissionPhase("Mission.phase.salvage");
+	private static final MissionPhase PREPARE_SITE_PHASE = new MissionPhase("Mission.phase.prepareSalvageSite");
+	private static final MissionPhase SALVAGE_PHASE = new MissionPhase("Mission.phase.salvage");
 	
+	private static final MissionStatus LUV_NOT_AVAILABLE = new MissionStatus("Mission.status.noLUV");
+	private static final MissionStatus SALVAGE_CONSTRUCTION_SITE_NOT_FOUND_OR_CREATED = new MissionStatus("Mission.status.noSalvageSite");
+	private static final MissionStatus SALVAGE_CONSTRUCTION_STAGE_NOT_FOUND = new MissionStatus("Mission.status.noSalvageStage");
+
+
 	// Number of mission members.
 	public static final int MIN_PEOPLE = 3;
 	private static final int MAX_PEOPLE = 10;
@@ -70,6 +75,7 @@ public class BuildingSalvageMission extends Mission {
 	 * Time (millisols) required to prepare construction site for salvaging stage.
 	 */
 	private static final double SITE_PREPARE_TIME = 500D;
+
 
 	// Data members
 	private boolean finishingExistingStage;
@@ -158,7 +164,7 @@ public class BuildingSalvageMission extends Mission {
 								, constructionStage.toString()));
 					} else {
 						logger.warning(Msg.getString("BuildingSalvageMission.log.stageNotFound")); //$NON-NLS-1$
-						endMission(MissionStatus.SALVAGE_CONSTRUCTION_STAGE_NOT_FOUND);
+						endMission(SALVAGE_CONSTRUCTION_STAGE_NOT_FOUND);
 					}
 				}
 
@@ -168,7 +174,7 @@ public class BuildingSalvageMission extends Mission {
 				}
 			} else {
 				logger.warning(Msg.getString("BuildingSalvageMission.log.siteNotFound")); //$NON-NLS-1$
-				endMission(MissionStatus.SALVAGE_CONSTRUCTION_SITE_NOT_FOUND_OR_CREATED);
+				endMission(SALVAGE_CONSTRUCTION_SITE_NOT_FOUND_OR_CREATED);
 			}
 
 			// Reserve construction vehicles.
@@ -228,7 +234,7 @@ public class BuildingSalvageMission extends Mission {
 							, constructionStage.toString()));
 				} else {
 					logger.warning(Msg.getString("BuildingSalvageMission.log.stageNotFound")); //$NON-NLS-1$					
-					endMission(MissionStatus.SALVAGE_CONSTRUCTION_STAGE_NOT_FOUND);
+					endMission(SALVAGE_CONSTRUCTION_STAGE_NOT_FOUND);
 				}
 			}
 
@@ -237,7 +243,7 @@ public class BuildingSalvageMission extends Mission {
 				constructionSite.setUndergoingSalvage(true);
 		} else {
 			logger.warning(Msg.getString("BuildingSalvageMission.log.siteNotFound")); //$NON-NLS-1$
-			endMission(MissionStatus.SALVAGE_CONSTRUCTION_SITE_NOT_FOUND_OR_CREATED);
+			endMission(SALVAGE_CONSTRUCTION_SITE_NOT_FOUND_OR_CREATED);
 		}
 
 		// Mark site as undergoing salvage.
@@ -255,9 +261,7 @@ public class BuildingSalvageMission extends Mission {
 			// Record the name of this vehicle in Mission
 			setReservedVehicle(vehicle.getName());
 			if (!settlement.removeParkedVehicle(vehicle)) {
-				logger.severe(Msg.getString("BuildingSalvageMission.log.cantRetrieve" //$NON-NLS-1$
-						, vehicle.getName(), settlement.getName()));
-				endMission(MissionStatus.CONSTRUCTION_VEHICLE_NOT_RETRIEVED);
+				endMissionProblem(vehicle, "Can not remove parked vehicle");
 			}
 		}
 
@@ -498,7 +502,7 @@ public class BuildingSalvageMission extends Mission {
 						constructionVehicles.add(luv);
 					else {
 						logger.warning(Msg.getString("BuildingSalvageMission.log.noLUV")); //$NON-NLS-1$
-						endMission(MissionStatus.LUV_NOT_AVAILABLE);
+						endMission(LUV_NOT_AVAILABLE);
 					}				
 				}
 			}
@@ -530,9 +534,7 @@ public class BuildingSalvageMission extends Mission {
 						luvAttachmentParts.add(part);
 					} catch (Exception e) {
 						Part p = ItemResourceUtil.findItemResource(part);
-						logger.log(Level.SEVERE, Msg.getString("BuildingSalvageMission.log.attachmentPart" //$NON-NLS-1$
-								, p.getName()));
-						endMission(MissionStatus.CONSTRUCTION_ATTACHMENT_PART_NOT_RETRIEVED);
+						endMissionProblem(settlement, "Cannot retreive Part " + p.getName());
 					}
 				}
 				vehicleIndex++;
@@ -565,9 +567,7 @@ public class BuildingSalvageMission extends Mission {
 					luvTemp.setParkedLocation(settlementLocSite, RandomUtil.getRandomDouble(360D));
 
 					if (!settlement.removeParkedVehicle(luvTemp)) {
-						logger.severe(Msg.getString("BuildingSalvageMission.log.cantRetrieve" //$NON-NLS-1$
-								, luvTemp.getName(), settlement.getName()));
-						endMission(MissionStatus.LUV_NOT_RETRIEVED);
+						endMissionProblem(luvTemp, "Can not remove parked vehicle");
 					}
 				}
 			}

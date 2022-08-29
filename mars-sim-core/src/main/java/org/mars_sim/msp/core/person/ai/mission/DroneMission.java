@@ -212,20 +212,20 @@ public abstract class DroneMission extends VehicleMission {
 		Vehicle v = getVehicle();
 
 		if (v == null) {
-			endMission(MissionStatus.NO_AVAILABLE_VEHICLES);
+			endMission(NO_AVAILABLE_VEHICLES);
 			return;
 		}
 
 		Settlement settlement = v.getSettlement();
 		if (settlement == null) {
 			logger.warning(Msg.getString("RoverMission.log.notAtSettlement", getPhase().getName())); //$NON-NLS-1$
-			endMission(MissionStatus.NO_AVAILABLE_VEHICLES);
+			endMission(NO_AVAILABLE_VEHICLES);
 			return;
 		}
 
 		// While still in the settlement, check if the beacon is turned on and and endMission()
 		else if (v.isBeaconOn()) {
-			endMission(MissionStatus.VEHICLE_BEACON_ACTIVE);
+			endMission(VEHICLE_BEACON_ACTIVE);
 			return;
 		}
 
@@ -284,7 +284,7 @@ public abstract class DroneMission extends VehicleMission {
 					setPhaseEnded(true);
 				}
 				else {
-					endMission(MissionStatus.COULD_NOT_EXIT_SETTLEMENT);
+					endMissionProblem(v, "Could not enter Settlement");
 				}
 			}
 		}

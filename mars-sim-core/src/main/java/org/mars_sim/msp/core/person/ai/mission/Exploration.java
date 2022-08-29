@@ -54,6 +54,7 @@ public class Exploration extends EVAMission
 
 	/** Mission phase. */
 	private static final MissionPhase EXPLORE_SITE = new MissionPhase("Mission.phase.exploreSite");
+	private static final MissionStatus NO_EXPLORATION_SITES = new MissionStatus("Mission.status.noExplorationSites");
 
 	/** Exploration Site */
 	private static final String EXPLORATION_SITE = "Exploration Site ";
@@ -66,6 +67,7 @@ public class Exploration extends EVAMission
 
 	/** Amount of time to explore a site. */
 	public static final double EXPLORING_SITE_TIME = 500D;
+
 
 	// Data members
 	/** Map of exploration sites and their completion. */
@@ -95,7 +97,7 @@ public class Exploration extends EVAMission
 			if (!recruitMembersForMission(startingPerson, MIN_GOING_MEMBERS)) {
 				logger.warning(getVehicle(), "Not enough members recruited for mission " 
 						+ getName() + ".");
-				endMission(MissionStatus.NO_MEMBERS_AVAILABLE);
+				endMission(NOT_ENOUGH_MEMBERS);
 				return;
 			}
 
@@ -110,7 +112,7 @@ public class Exploration extends EVAMission
 					NUM_SITES, skill);
 
 			if (explorationSites.isEmpty()) {
-				endMission(MissionStatus.NO_EXPLORATION_SITES);
+				endMission(NO_EXPLORATION_SITES);
 				return;
 			}
 
@@ -170,7 +172,7 @@ public class Exploration extends EVAMission
 
 		// Check if vehicle can carry enough supplies for the mission. Must have NavPoints loaded
 		if (!isVehicleLoadable()) {
-			endMission(MissionStatus.CANNOT_LOAD_RESOURCES);
+			endMission(CANNOT_LOAD_RESOURCES);
 		}
 	}
 

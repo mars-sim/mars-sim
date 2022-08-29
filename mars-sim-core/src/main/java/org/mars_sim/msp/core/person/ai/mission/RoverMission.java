@@ -270,7 +270,7 @@ public abstract class RoverMission extends VehicleMission {
 		Vehicle v = getVehicle();
 
 		if (v == null) {
-			endMission(MissionStatus.NO_AVAILABLE_VEHICLES);
+			endMission(NO_AVAILABLE_VEHICLES);
 			return;
 		}
 
@@ -278,13 +278,13 @@ public abstract class RoverMission extends VehicleMission {
 		if (settlement == null) {
 			logger.warning(member,
 					Msg.getString("RoverMission.log.notAtSettlement", getPhase().getName())); //$NON-NLS-1$
-			endMission(MissionStatus.NO_AVAILABLE_VEHICLES);
+			endMission(NO_AVAILABLE_VEHICLES);
 			return;
 		}
 
 		// While still in the settlement, check if the beacon is turned on and and endMission()
 		else if (v.isBeaconOn()) {
-			endMission(MissionStatus.VEHICLE_BEACON_ACTIVE);
+			endMission(VEHICLE_BEACON_ACTIVE);
 			return;
 		}
 
@@ -398,7 +398,7 @@ public abstract class RoverMission extends VehicleMission {
 					setPhaseEnded(true);
 				}
 				else {
-					endMission(MissionStatus.COULD_NOT_EXIT_SETTLEMENT);
+					endMissionProblem(v, "Could not exit Settlement");
 				}
 			}
 		}
@@ -1066,12 +1066,9 @@ public abstract class RoverMission extends VehicleMission {
 			 if (lastPerson != null) {
 				lastPerson.getMind().setMission(null);
 				if (getMembersNumber() < minMembers) {
-					endMission(MissionStatus.NOT_ENOUGH_MEMBERS);
+					endMission(NOT_ENOUGH_MEMBERS);
 					return false;
-				} else if (getPeopleNumber() == 0) {
-					endMission(MissionStatus.NO_MEMBERS_AVAILABLE);
-					return false;
-				}
+				} 
 			}
 		}
 

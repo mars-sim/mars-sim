@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -40,14 +39,13 @@ import org.mars_sim.msp.core.vehicle.Drone;
 import org.mars_sim.msp.core.vehicle.Flyer;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
-import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * The OperateVehicle class is an abstract task for operating a vehicle, 
  * driving it to a destination.
  */
-public abstract class OperateVehicle extends Task implements Serializable {
+public abstract class OperateVehicle extends Task {
 	
     /** default serial id. */
     private static final long serialVersionUID = 1L;
@@ -357,13 +355,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
 	 */
 	private void turnOnBeacon(int resource) {
 		vehicle.setSpeed(0D);
-        MissionStatus status = MissionStatus.NO_METHANE;
-        if (resource == ResourceUtil.oxygenID) {
-        	status = MissionStatus.NO_OXYGEN;        
-        }
-        else if (resource == ResourceUtil.methanolID) {
-        	status = MissionStatus.NO_METHANOL;        
-        }
+        MissionStatus status = VehicleMission.createResourceStatus(resource);
         	
     	if (!vehicle.isBeaconOn()) {
     		Mission m = vehicle.getMission();

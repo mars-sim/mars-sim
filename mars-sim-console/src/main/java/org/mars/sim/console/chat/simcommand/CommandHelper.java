@@ -292,13 +292,12 @@ public class CommandHelper {
 		}
 		
 		response.appendLabeledString("Lead", startingPerson.getName());		
-		if (mission.isDone()) {
-			response.appendLabeledString("Status:",
-										mission.getMissionStatus().stream()
-										.map(MissionStatus::getName)
-										.collect(Collectors.joining(", ")));
-		}
-		else {
+		response.appendLabeledString("Status:",
+									mission.getMissionStatus().stream()
+									.map(MissionStatus::getName)
+									.collect(Collectors.joining(", ")));
+		
+		if (!mission.isDone()) {
 			response.appendLabeledString("Phase", mission.getPhaseDescription());
 			response.appendLabeledString("Phase Started", mission.getPhaseStartTime().getTrucatedDateTimeStamp());
 		
