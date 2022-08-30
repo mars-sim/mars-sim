@@ -407,14 +407,7 @@ public class TabPanelCooking extends TabPanel {
 	 */
 	private class CookingTableModel extends AbstractTableModel {
 
-		/** default serial id. */
-		private static final long serialVersionUID = 1L;
-
 		private Settlement settlement;
-		// private java.util.List<Building> buildings;
-		// private ImageIcon dotRed; // ingredients missing
-		// private ImageIcon dotYellow; // meal not available
-		// private ImageIcon dotGreen; // meal available
 
 		private Multiset<String> allServingsSet;
 
@@ -427,18 +420,16 @@ public class TabPanelCooking extends TabPanel {
 		private Collection<Map.Entry<String, Double>> allQualityMapE;
 		private Collection<Entry<String, MarsClock>> allTimeMapE;
 
+
+		private String[] columnNames = { "Meal", "# Servings",
+				"Best", "Worst" };
+		
 		private CookingTableModel(Settlement settlement) {
 			this.settlement = settlement;
-
-			// dotRed = ImageLoader.getIcon(Msg.getString("img.dotRed")); //$NON-NLS-1$
-			// dotYellow = ImageLoader.getIcon(Msg.getString("img.dotYellow"));
-			// //$NON-NLS-1$
-			// dotGreen = ImageLoader.getIcon(Msg.getString("img.dotGreen")); //$NON-NLS-1$
 
 			allServingsSet = HashMultiset.create();
 			allQualityMap = ArrayListMultimap.create();
 			allTimeMap = ArrayListMultimap.create();
-
 		}
 
 		public int getRowCount() {
@@ -452,7 +443,6 @@ public class TabPanelCooking extends TabPanel {
 
 		public Class<?> getColumnClass(int columnIndex) {
 			Class<?> dataType = super.getColumnClass(columnIndex);
-			// if (columnIndex == 0) dataType = ImageIcon.class;
 			if (columnIndex == 0)
 				dataType = String.class;
 			else if (columnIndex == 1)
@@ -465,29 +455,16 @@ public class TabPanelCooking extends TabPanel {
 		}
 
 		public String getColumnName(int columnIndex) {
-
-//			String[] columnNames = { "<html>Meal<br>Name</html>", "<html># of<br>Servings</html>",
-//					"<html>Best<br>Grade</html>", "<html>Worst<br>Grade</html>" };
-			String[] columnNames = { "Meal", "# Servings",
-					"Best", "Worst" };
-
-			
-			// if (columnIndex == 0) return Msg.getString("TabPanelCooking.column.s");
-			// //$NON-NLS-1$
 			if (columnIndex == 0)
 				return columnNames[0];
-			// Msg.getString("TabPanelCooking.column.nameOfMeal"); //$NON-NLS-1$
-			else if (columnIndex == 1)
+			if (columnIndex == 1)
 				return columnNames[1];
-			// Msg.getString("TabPanelCooking.column.numberOfServings"); //$NON-NLS-1$
-			else if (columnIndex == 2)
+			if (columnIndex == 2)
 				return columnNames[2];
-			// Msg.getString("TabPanelCooking.column.bestQuality"); //$NON-NLS-1$
-			else if (columnIndex == 3)
+			if (columnIndex == 3)
 				return columnNames[3];
-			// Msg.getString("TabPanelCooking.column.worstQuality"); //$NON-NLS-1$
-			else
-				return null;
+
+			return null;
 		}
 
 		/***
@@ -522,25 +499,16 @@ public class TabPanelCooking extends TabPanel {
 		}
 
 		public Object getValueAt(int row, int column) {
-			// System.out.println("entering getValueAt()");
 			Object result = null;
-//			/* if (column == 0) {
-//				if (haveAllIngredients)
-//					return dotGreen;
-//				else return dotRed;
-//			} else */
-
 			String name = nameList.get(row);
 
 			if (column == 0)
 				result = name;
 
 			else if (column == 1) {
-				// use Multimap.get(key) returns a view of the values associated with the
-				// specified key
-				// int numServings = servingsList.addAll(timeMap.get(name));
+				// Use Multimap.get(key) returns a view of the values 
+				// associated with the specified key
 				int numServings = allServingsSet.count(name);
-				// System.out.println(" numServings is "+ numServings);
 				result = numServings;
 				// allServingsSet.clear();
 			} else if (column == 2) {
@@ -555,7 +523,6 @@ public class TabPanelCooking extends TabPanel {
 					}
 					result = computeGrade(best);
 					// allQualityMap.clear();
-					// System.out.println(" best is " +best);
 				}
 			} else if (column == 3) {
 				double worst = 10;
@@ -570,7 +537,6 @@ public class TabPanelCooking extends TabPanel {
 					}
 					result = computeGrade(worst);
 					// allTimeMap.clear();
-					// System.out.println(" worst is " + worst);
 				}
 			} else
 				result = null;
@@ -584,18 +550,15 @@ public class TabPanelCooking extends TabPanel {
 			cleanUpTable();
 			getMultimap();
 			fireTableDataChanged();
-
 		}
 
 		public void getMultimap() {
 
 			Iterator<Building> i = settlement.getBuildingManager().getBuildings(COOKING).iterator();
 
-			while (i.hasNext()) { // for each building's kitchen in the settlement
-
+			while (i.hasNext()) { 
+				// for each building's kitchen in the settlement
 				Building building = i.next();
-				// System.out.println("Building is " + building.getNickName());
-//	        	if (building.hasFunction(COOKING)) {
 				Cooking kitchen = building.getCooking();
 
 				qualityMap = kitchen.getQualityMap();
@@ -603,7 +566,6 @@ public class TabPanelCooking extends TabPanel {
 
 				allQualityMap.putAll(qualityMap);
 				allTimeMap.putAll(timeMap);
-//	        	}
 			}
 
 			allQualityMapE = allQualityMap.entries();
@@ -611,13 +573,9 @@ public class TabPanelCooking extends TabPanel {
 			allServingsSet = allQualityMap.keys();
 
 			numRow = allTimeMap.keySet().size();
-			// System.out.println(" numRow : " + numRow);
 			nameSet = allTimeMap.keySet();
 			// nameSet = servingsSet.elementSet(); // or using servingsSet
 			nameList = new ArrayList<String>(nameSet);
-
-			// nameList.addAll(listOfNames);
-			// System.out.println("nameSet's size : " + nameSet.size());
 		}
 
 		/**
@@ -635,17 +593,16 @@ public class TabPanelCooking extends TabPanel {
 			// System.out.println("cleanUpTable() : Today is sol " + currentDay);
 
 			if (dayCache != currentDay) {
-				if (!allTimeMap.isEmpty()) {
+//				if (!allTimeMap.isEmpty()) {
 					allTimeMap.clear();
 					allTimeMapE.clear();
-				}
-				if (!allQualityMap.isEmpty()) {
+//				}
+//				if (!allQualityMap.isEmpty()) {
 					allQualityMap.clear();
 					allQualityMapE.clear();
-				}
-				if (!allServingsSet.isEmpty())
+//				}
+//				if (!allServingsSet.isEmpty())
 					allServingsSet.clear();
-				// System.out.println("cleanUpTable() : all maps deleted");
 
 				// TODO: is it better to use .remove() to remove entries and when?
 //					timeMap.remove(key, value);
@@ -657,7 +614,6 @@ public class TabPanelCooking extends TabPanel {
 //					servingsSet.remove(key);
 
 				dayCache = currentDay;
-
 			}
 		}
 	}

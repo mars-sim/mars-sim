@@ -30,7 +30,7 @@ public class PrepareDessertMeta extends MetaTask {
             "Task.description.prepareDessertMeta"); //$NON-NLS-1$
 
     public PrepareDessertMeta() {
-		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
+		super(NAME, WorkerType.BOTH, TaskScope.ANY_HOUR);
 		
 		setFavorite(FavoriteType.COOKING);
 		setTrait(TaskTrait.ARTISTIC);
@@ -76,7 +76,7 @@ public class PrepareDessertMeta extends MetaTask {
 
                 if ((numGoodRecipes > 0) && !enoughMeals) {
 
-                    result = 20D;
+                    result = numGoodRecipes * 100;
 
                     // Crowding modifier.
                     result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, kitchenBuilding);
@@ -112,7 +112,7 @@ public class PrepareDessertMeta extends MetaTask {
 
                if ((numGoodRecipes > 0) && !enoughMeals) {
 
-                   result = 50D;
+            	   result = numGoodRecipes * 200;
 
                    // Crowding modifier.
                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(robot, kitchenBuilding);

@@ -29,7 +29,7 @@ public class CookMealMeta extends MetaTask {
             "Task.description.cookMeal"); //$NON-NLS-1$
     
     public CookMealMeta() {
-		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
+		super(NAME, WorkerType.BOTH, TaskScope.ANY_HOUR);
 		setFavorite(FavoriteType.COOKING);
 		setTrait(TaskTrait.ARTISTIC);
 		setPreferredJob(JobType.CHEF);

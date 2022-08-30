@@ -467,25 +467,25 @@ public class EatDrink extends Task implements Serializable {
 		double remainingTime = 0;
 		double eatingTime = time;
 		
-		if (!person.isInVehicle()) {
-			return time;
+		if (cumulativeProportion >= cookedMeal.getDryMass()) {
+			endTask();
+			return remainingTime;
 		}
-		
+
 		if ((totalEatingTime + eatingTime) >= eatingDuration) {
 			eatingTime = eatingDuration - totalEatingTime;
 		}
 
+		if (eatingTime <= 0) {
+			setDuration(getDuration() + 5);
+		}
+		
 		if (eatingTime > 0 && cookedMeal != null) {
 			String s = Msg.getString("Task.description.eatDrink.cooked.eating.detail", cookedMeal.getName());
 			// Set descriptoin for eating cooked meal.
 			setDescription(s); //$NON-NLS-1$
 			// Eat cooked meal.
 			eatCookedMeal(eatingTime);
-
-			if (cumulativeProportion >= cookedMeal.getDryMass()) {
-				endTask();
-				return remainingTime;
-			}
 
 			// Also consume water with the preserved food
 			if (!person.getPhysicalCondition().drinkEnoughWater())
@@ -581,15 +581,15 @@ public class EatDrink extends Task implements Serializable {
 	 *
 	 * @param eatingTime the amount of time (millisols) to eat.
 	 */
-	private void eatCookedMeal(double eatingTime) {
+	private double eatCookedMeal(double eatingTime) {
 		// Obtain the dry mass of the dessert
 		double dryMass = cookedMeal.getDryMass();
 		// Proportion of meal being eaten over this time period.
 		// eatingSpeed ~ 0.01 kg / millisols
 		double proportion = person.getEatingSpeed() * eatingTime;
 
-		if (cumulativeProportion > dryMass) {
-			double excess = cumulativeProportion - dryMass;
+		if (cumulativeProportion + proportion > dryMass) {
+			double excess = cumulativeProportion + proportion - dryMass;
 			cumulativeProportion = cumulativeProportion - excess;
 			proportion = proportion - excess;
 		}
@@ -616,6 +616,8 @@ public class EatDrink extends Task implements Serializable {
 			double caloricEnergyFoodAmount = hungerRelieved * PhysicalCondition.FOOD_COMPOSITION_ENERGY_RATIO;
 			pc.addEnergy(caloricEnergyFoodAmount);
 		}
+		
+		return proportion;
 	}
 
 	/**

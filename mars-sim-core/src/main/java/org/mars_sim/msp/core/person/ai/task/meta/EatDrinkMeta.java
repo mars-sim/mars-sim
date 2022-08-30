@@ -79,7 +79,7 @@ public class EatDrinkMeta extends MetaTask {
 			Cooking kitchen0 = EatDrink.getKitchenWithMeal(person);
 			if (kitchen0 != null) {
 				meals = kitchen0.getNumberOfAvailableCookedMeals();
-				mFactor = 100.0 * meals;
+				mFactor = 200.0 * meals;
 			}
 		}
 
@@ -87,7 +87,7 @@ public class EatDrinkMeta extends MetaTask {
 		PreparingDessert kitchen1 = EatDrink.getKitchenWithDessert(person);
 		if (kitchen1 != null) {
 			desserts = kitchen1.getAvailableServingsDesserts();
-			dFactor = 50.0 * desserts;
+			dFactor = 100.0 * desserts;
 		}
 
 		PhysicalCondition pc = person.getPhysicalCondition();
@@ -141,17 +141,12 @@ public class EatDrinkMeta extends MetaTask {
 				double ghrelin = person.getCircadianClock().getGhrelin();
 				double leptin = person.getCircadianClock().getLeptin();
 				
-				h0 += 3 * (hunger * 3 + ghrelin / 2 - leptin / 2);
+				h0 += 2 * (hunger * 2 + ghrelin / 2 - leptin / 2);
 
 				if (energy < 2525)
 					h0 += (2525 - energy) / 30D + ghrelin / 4 - leptin / 4;
 
 				if (person.isInSettlement()) {
-
-					if (!CookMeal.isLocalMealTime(person.getCoordinates(), 0)) {
-						// If it's not meal time yet, reduce the probability
-						mFactor /= 5D;
-					}
 
 					// Check if there is a local dining building.
 					Building diningBuilding = EatDrink.getAvailableDiningBuilding(person, false);
