@@ -288,11 +288,21 @@ public class ExitAirlock extends Task implements Serializable {
 	 */
 	private boolean isFit() {
 		
-		if (inSettlement && isObservatoryAttached) {
-			// Note: if the person is in an airlock next to the observatory 
-			// sitting at an isolated and remote part of the settlement,
-			// it will not check if he's physically fit to leave that place, or else
-			// he may get stranded
+		if (inSettlement) {
+			if (isObservatoryAttached) {
+				// Note: if the person is in an airlock next to the observatory 
+				// sitting at an isolated and remote part of the settlement,
+				// it will not check if he's physically fit to leave that place, or else
+				// he may get stranded.
+				return true;
+			}
+			
+			// else need to go to the bottom to check fitness
+		}
+		else if (person.isInVehicle() && person.getVehicle().getSettlement() != null) {
+			// if vehicle occupant is unfit and the vehicle is at settlement/vicinity,
+			// bypass checking for fitness since the person may just be too exhausted and
+			// should be allowed to return home to recuperate.
 			return true;
 		}
 		
