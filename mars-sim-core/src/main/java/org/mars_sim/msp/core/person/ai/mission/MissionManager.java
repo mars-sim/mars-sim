@@ -58,8 +58,6 @@ public class MissionManager implements Serializable, Temporal {
 	/** A history of mission plans by sol. */
 	private SolMetricDataLogger<String> historicalMissions;
 
-	private Map<String, Integer> settlementID;
-
 	/** Prob boost for Mission Types */
 	private transient Map<MissionType, Integer> missionBoost = new EnumMap<>(MissionType.class);
 
@@ -69,10 +67,9 @@ public class MissionManager implements Serializable, Temporal {
 	public MissionManager() {
 
 		// Initialize data members
-		missionIdentifer = 0;
+		missionIdentifer = 1;
 		onGoingMissions = new CopyOnWriteArrayList<>();
 		historicalMissions = new SolMetricDataLogger<>(30);
-		settlementID = new HashMap<>();
 		listeners = null;
 	}
 
@@ -82,26 +79,8 @@ public class MissionManager implements Serializable, Temporal {
 	 *
 	 * @return
 	 */
-	private synchronized int getNextIdentifier() {
+	synchronized int getNextIdentifier() {
 		return missionIdentifer++;
-	}
-
-	private int getSettlementID(String name) {
-		synchronized (settlementID) {
-			if (settlementID.containsKey(name)) {
-				return settlementID.get(name);
-			}
-			else {
-				int size = settlementID.size();
-				settlementID.put(name, size);
-
-				return size;
-			}
-		}
-	}
-
-	public String getMissionDesignationString(String settlementName) {
-		return String.format("%2d-%d3", getSettlementID(settlementName), getNextIdentifier());
 	}
 
 	/**

@@ -29,12 +29,9 @@ import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.ai.task.DriveGroundVehicle;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
-import org.mars_sim.msp.core.person.ai.task.LoadVehicleEVA;
-import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.OperateVehicle;
 import org.mars_sim.msp.core.person.ai.task.RequestMedicalTreatment;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
-import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.Walk;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.person.ai.task.utils.Worker;
@@ -837,37 +834,6 @@ public abstract class RoverMission extends VehicleMission {
 				result = true;
 		}
 
-		return result;
-	}
-
-	/**
-	 * Checks if there is only one person at the associated settlement and he/she
-	 * has a serious medical problem.
-	 *
-	 * @return true if serious medical problem
-	 */
-	protected final boolean hasDangerousMedicalProblemAtAssociatedSettlement() {
-		boolean result = false;
-		if (getAssociatedSettlement() != null) {
-			if (getAssociatedSettlement().getIndoorPeopleCount() == 1) {
-				Person person = (Person) getAssociatedSettlement().getIndoorPeople().toArray()[0];
-				if (person.getPhysicalCondition().hasSeriousMedicalProblems())
-					result = true;
-			}
-		}
-		return result;
-	}
-
-	/**
-	 * Checks if the mission has an emergency situation.
-	 *
-	 * @return true if emergency.
-	 */
-	@Override
-	protected final boolean hasEmergency() {
-		boolean result = super.hasEmergency();
-		if (hasDangerousMedicalProblemAtAssociatedSettlement())
-			result = true;
 		return result;
 	}
 

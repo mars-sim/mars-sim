@@ -89,9 +89,6 @@ public abstract class Mission implements Serializable, Temporal {
 
 	private static final int MAX_CAP = 8;
 
-	// Global mission identifier
-	private static int missionIdentifer = 1;
-
 	/**
 	 * The marginal factor for the amount of water to be brought during a mission.
 	 */
@@ -109,9 +106,14 @@ public abstract class Mission implements Serializable, Temporal {
 	 */
 	public static final double DESSERT_MARGIN = 1.25;
 
+	private static final MissionPhase COMPLETED_PHASE = new MissionPhase("Mission.phase.completed");
+	private static final MissionPhase ABORTED_PHASE = new MissionPhase("Mission.phase.aborted");
+
 	protected static final MissionStatus NOT_ENOUGH_MEMBERS = new MissionStatus("Mission.status.noMembers");
 	private static final MissionStatus MISSION_NOT_APPROVED = new MissionStatus("Mission.status.notApproved");
 	private static final MissionStatus MISSION_ACCOMPLISHED = new MissionStatus("Mission.status.accomplished");
+	private static final MissionStatus MISSION_ABORTED = new MissionStatus("Mission.status.aborted");
+
 	private static final String INTERNAL_PROBLEM = "Mission.status.internalProblem";
 
 
@@ -127,11 +129,14 @@ public abstract class Mission implements Serializable, Temporal {
 	private boolean phaseEnded;
 	/** True if mission is completed. */
 	private boolean done = false;
+	private boolean aborted = false;
 
 	/** The name of the vehicle reserved. */
 	private String vehicleReserved;
 	/** The Name of this mission. */
 	private String missionName;
+	/** Unique identifer  */
+	private int identifier;
 	/** The description of this mission. */
 	private String description;
 	/** The full mission designation. */
@@ -176,24 +181,12 @@ public abstract class Mission implements Serializable, Temporal {
 	private transient List<MissionListener> listeners;
 
 	// Static members
-	protected static Simulation sim = Simulation.instance();
-
 	protected static UnitManager unitManager;
 	protected static HistoricalEventManager eventManager;
 	protected static MissionManager missionManager;
 	protected static SurfaceFeatures surfaceFeatures;
 	protected static PersonConfig personConfig;
 	protected static MarsClock marsClock;
-
-	/**
-	 * Must be synchronised to prevent duplicate ids being assigned via different
-	 * threads.
-	 *
-	 * @return
-	 */
-	private static synchronized int getNextIdentifier() {
-		return missionIdentifer++;
-	}
 
 	/**
 	 * Constructor.
@@ -203,7 +196,10 @@ public abstract class Mission implements Serializable, Temporal {
 	 */
 	protected Mission(MissionType missionType, Worker startingMember) {
 		// Initialize data members
-		this.missionName = missionType.getName() + " #" + getNextIdentifier();
+
+		this.identifier = missionManager.getNextIdentifier();
+		
+		this.missionName = missionType.getName() + " #" + identifier;
 		this.missionType = missionType;
 		this.startingMember = startingMember;
 		this.description = missionName;
@@ -568,16 +564,6 @@ public abstract class Mission implements Serializable, Temporal {
     }
 
 	/**
-	 * Gets the type and identifier of the mission.
-	 *
-	 * @return type and identifier of the mission
-	 * @deprecated use {@link #getName()}
-	 */
-	public final String getTypeID() {
-		return missionName;
-	}
-
-	/**
 	 * Gets the mission type enum.
 	 *
 	 * @return
@@ -733,7 +719,7 @@ public abstract class Mission implements Serializable, Temporal {
 	 */
 	protected void performPhase(Worker member) {
 		if (phase == null) {
-			endMission(new MissionStatus(INTERNAL_PROBLEM, "Current phase null"));
+			endMissionProblem(member, "Current phase null");
 		}
 	}
 
@@ -780,10 +766,19 @@ public abstract class Mission implements Serializable, Temporal {
 	}
 
 	/**
-	 * Abort the mission. Will not immediately stop
+	 * Abort the mission by the user. Will stop currnet phase.
 	 */
-	public void abortMission() {
-		// Normal mission can not be aborted
+	public final void abortMission() {
+		abortMission(MISSION_ABORTED, null);
+	}
+
+	/**
+	 * Mission is being aborted because of a problem.
+	 * @param reason Reason to abort
+	 * @param event Optional type of event to create
+	 */
+	protected void abortMission(MissionStatus reason, EventType event) {
+		aborted = true;
 	}
 
 	/**
@@ -835,15 +830,18 @@ public abstract class Mission implements Serializable, Temporal {
 		}
 
 		// If no mission flags have been added then it was accomplised
-		if (missionStatus.isEmpty()) {
+		String listOfStatuses = missionStatus.stream().map(MissionStatus::getName).collect(Collectors.joining(", "));
+		MissionPhase finalPhase;
+		if (missionStatus.isEmpty() && !aborted) {
 			missionStatus.add(MISSION_ACCOMPLISHED);
 			addMissionScore();
+			finalPhase = COMPLETED_PHASE;
 		}
-
-		done = true; // Note: done = true is very important to keep !
-		phase = null; // No more phase
-
-		String listOfStatuses = missionStatus.stream().map(MissionStatus::getName).collect(Collectors.joining(", "));
+		else {
+			finalPhase = ABORTED_PHASE;
+		}
+		setPhase(finalPhase, listOfStatuses);
+		done = true; 
 		
 		StringBuilder status = new StringBuilder();
 		status.append("Ended the ")
@@ -913,15 +911,21 @@ public abstract class Mission implements Serializable, Temporal {
 	 * @return true if dangerous medical problems
 	 */
 	private final boolean hasDangerousMedicalProblems() {
+		Person patient = null;
 		for (Worker member : members) {
 			if (member.getUnitType() == UnitType.PERSON) {
 				if (((Person) member).getPhysicalCondition().hasSeriousMedicalProblems()) {
-					return true;
+					patient = (Person) member;
 				}
 			}
 		}
 
-		return false;
+		if (patient != null) {
+			// Abort the mission and return home
+			abortMission(new MissionStatus("Mission.status.medicalEmergency", patient.getName()),
+						 EventType.MISSION_MEDICAL_EMERGENCY);
+		}
+		return patient != null;
 	}
 
 	/**
@@ -1370,9 +1374,14 @@ public abstract class Mission implements Serializable, Temporal {
 	 * @return
 	 */
 	protected void createFullDesignation() {
-		fullMissionDesignation = Conversion.getInitials(getDescription().replace("with", "").trim()) + " "
-				+ missionManager.getMissionDesignationString(getAssociatedSettlement().getName());
-		
+		StringBuilder buffer = new StringBuilder();
+		buffer.append(Conversion.getInitials(missionType.getName().replace("with", "").trim()))
+			  .append(" ")
+			  .append(Conversion.getInitials(getAssociatedSettlement().getName()))
+			  .append('-')
+			  .append(String.format("%3d", identifier));
+		fullMissionDesignation = buffer.toString();
+
 		fireMissionUpdate(MissionEventType.DESIGNATION_EVENT, fullMissionDesignation);
 	}
 
@@ -1433,8 +1442,7 @@ public abstract class Mission implements Serializable, Temporal {
 		if (obj == null) return false;
 		if (this.getClass() != obj.getClass()) return false;
 		Mission m = (Mission) obj;
-		return this.missionType == m.getMissionType()
-				&& this.missionName.equals(m.getName());
+		return this.identifier == m.identifier;
 	}
 
 	/**
@@ -1443,9 +1451,7 @@ public abstract class Mission implements Serializable, Temporal {
 	 * @return hash code.
 	 */
 	public int hashCode() {
-		int hashCode = (1 + missionName.hashCode());
-		hashCode *= missionType.hashCode();
-		return hashCode;
+		return (1 + identifier) % 64; 
 	}
 
 	/**
@@ -1461,7 +1467,6 @@ public abstract class Mission implements Serializable, Temporal {
 	public static void initializeInstances(Simulation si, MarsClock c, HistoricalEventManager e,
 			UnitManager u, SurfaceFeatures sf, 
 			MissionManager m, PersonConfig pc) {
-		sim = si;
 		marsClock = c;
 		eventManager = e;
 		unitManager = u;
@@ -1478,9 +1483,7 @@ public abstract class Mission implements Serializable, Temporal {
 			members.clear();
 		}
 		members = null;
-		missionName = null;
 		phase = null;
-		phaseDescription = null;
 		if (listeners != null) {
 			listeners.clear();
 		}

@@ -214,7 +214,6 @@ public abstract class EVAMission extends RoverMission {
 			// illness, end phase.
 			if (activeEVA && hasEmergency()) {
 				logger.info(getVehicle(), "Has emergency");
-				addMissionLog("Has emergency");
 				activeEVA = false;
 			}
 

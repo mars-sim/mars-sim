@@ -85,7 +85,6 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	private static final MissionStatus VEHICLE_UNDER_MAINTENANCE = new MissionStatus("Mission.status.vehicleMaintenance");
 	protected static final MissionStatus CANNOT_LOAD_RESOURCES = new MissionStatus("Mission.status.loadResources");
 	private static final MissionStatus UNREPAIRABLE_MALFUNCTION = new MissionStatus("Mission.status.unrepairable");
-	private static final MissionStatus ABORTED_MISSION = new MissionStatus("Mission.status.aborted");
 
 	// Static members
 
@@ -548,7 +547,6 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 			// the vehicle has been disembarked.
 
 			// What if a vehicle is still at a settlement and Mission is not approved ?
-
 			if (!isDroneDone() && !isRoverDone()) {
 				// Either the drone is still unloading or the rover is still unloading
 				continueToEndMission = false;
@@ -1184,25 +1182,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 			if (missingResourceId >= 0) {
 				// Create Missiion Flag
 				MissionStatus status = createResourceStatus(missingResourceId);
-				if (addMissionStatus(status)) {
-					// If the MissionFlag is not present then do it
-					// A resource is mission
-					determineEmergencyDestination(status);
-
-					logger.info(getVehicle(), status.getName());
-
-					//Create the resource emergency mission event.
-					HistoricalEvent newEvent = new MissionHistoricalEvent(EventType.MISSION_NOT_ENOUGH_RESOURCES,
-							this,
-							status.getName(),
-							getName(),
-							getStartingPerson().getName(),
-							vehicle.getName(),
-							vehicle.getCoordinates().getCoordinateString(),
-							getStartingSettlement().getName()
-							);
-					eventManager.registerNewEvent(newEvent);
-				}
+				abortMission(status, EventType.MISSION_NOT_ENOUGH_RESOURCES);
 			}
 		}
 
@@ -1259,126 +1239,18 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	}
 
 	/**
-	 * Gets the closet distance
-	 *
-	 * @return
-	 */
-	protected double getClosestDistance() {
-		Settlement settlement = findClosestSettlement();
-		if (settlement != null)
-			return Coordinates.computeDistance(getCurrentMissionLocation(), settlement.getCoordinates());
-		return 0;
-	}
-
-	/**
-	 * Determines a new route for traveling
-	 *
-	 * @param reason
-	 * @param oldHome
-	 * @param newDestination
-	 * @param oldDistance
-	 * @param newDistance
-	 */
-	protected void travel(MissionStatus reason, Settlement oldHome, Settlement newDestination, double oldDistance, double newDistance) {
-		double newTripTime = getEstimatedTripTime(false, newDistance);
-
-		if (newDestination == oldHome) {
-			// If the closest settlement is already the next navpoint.
-			logger.log(vehicle, Level.WARNING, 10_000L, "Emergency encountered. Returning to home settlement (" + newDestination.getName()
-					+ ") : " + Math.round(newDistance * 100D) / 100D
-					+ " km    Duration : "
-					+ Math.round(newTripTime * 100.0 / 1000.0) / 100.0 + " sols");
-			
-			returnHome();
-		}
-
-		else {
-			// If the closet settlement is not the home settlement
-			logger.log(vehicle, Level.WARNING, 10_000L, "Emergency encountered.  Home settlement (" + oldHome.getName() + ") : "
-					+ Math.round(oldDistance * 100D) / 100D
-					+ " km    Going to nearest Settlement (" + newDestination.getName() + ") : "
-					+ Math.round(newDistance * 100D) / 100D
-					+ " km    Duration : "
-					+ Math.round(newTripTime * 100.0 / 1000.0) / 100.0 + " sols");
-			
-					// Creating emergency destination mission event for going to a new settlement.
-					HistoricalEvent newEvent = new MissionHistoricalEvent(EventType.MISSION_EMERGENCY_DESTINATION,
-					this,
-					reason.getName(),
-					getName(),
-					getStartingPerson().getName(),
-					vehicle.getName(),
-					vehicle.getCoordinates().getCoordinateString(),
-					oldHome.getName()
-					);
-			eventManager.registerNewEvent(newEvent);
-
-			// Note: use Mission.goToNearestSettlement() as reference
-
-			// Set the new destination as the travel mission's next and final navpoint.
-			clearRemainingNavpoints();
-			addNavpoint(newDestination);
-			// each member to switch the associated settlement to the new destination
-			// Note: need to consider if enough beds are available at the destination settlement
-			// Note: can they go back to the settlement of their origin ?
-			updateTravelDestination();
-			abortPhase();
-		}
-	}
-
-	/**
 	 * Determines the emergency destination settlement for the mission if one is
 	 * reachable, otherwise sets the emergency beacon and ends the mission.
 
 	 */
 	protected final void determineEmergencyDestination(MissionStatus reason) {
-
-		// boolean hasMedicalEmergency = false;
-		// Person person = (Person) member;
-		// String reason = "";
-
-		// if (member.getUnitType() == UnitType.PERSON
-		// 		&& (hasAnyPotentialMedicalProblems() ||
-		// 				person.getPhysicalCondition().hasSeriousMedicalProblems() || hasEmergencyAllCrew())
-		// 		) {
-		// 	reason = EventType.MISSION_MEDICAL_EMERGENCY.getName();
-		// 	hasMedicalEmergency = true;
-		// 	// 1. Create the medical emergency mission event.
-		// 	HistoricalEvent newEvent = new MissionHistoricalEvent(EventType.MISSION_MEDICAL_EMERGENCY,
-		// 			this,
-		// 			person.getName() + " had " + person.getPhysicalCondition().getHealthSituation(),
-		// 			this.getName(),
-		// 			member.getName(),
-		// 			vehicle.getName(),
-		// 			vehicle.getCoordinates().getCoordinateString(),
-		// 			person.getAssociatedSettlement().getName()
-		// 			);
-		// 	eventManager.registerNewEvent(newEvent);
-		// } else {
-		// 	reason = EventType.MISSION_NOT_ENOUGH_RESOURCES.getName();
-
-		// 	// 2. Create the resource emergency mission event.
-		// 	HistoricalEvent newEvent = new MissionHistoricalEvent(EventType.MISSION_NOT_ENOUGH_RESOURCES,
-		// 			this,
-		// 			"Dwindling resource(s)",
-		// 			this.getName(),
-		// 			member.getName(),
-		// 			vehicle.getName(),
-		// 			vehicle.getCoordinates().getCoordinateString(),
-		// 			person.getAssociatedSettlement().getName()
-		// 			);
-		// 	eventManager.registerNewEvent(newEvent);
-		// }
-
 		Settlement oldHome = getStartingSettlement();
-		double oldDistance = getCurrentMissionLocation().getDistance(oldHome.getCoordinates());
 
 		// Determine closest settlement.
 		boolean requestHelp = false;
 		Settlement newDestination = findClosestSettlement();
 		
 		if (newDestination != null) {
-
 			double newDistance = getCurrentMissionLocation().getDistance(newDestination.getCoordinates());
 			boolean enough = true;
 
@@ -1388,25 +1260,28 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 				enough = hasEnoughResources(getResourcesNeededForTrip(false, newDistance)) < 0;
 
 				// Check if enough resources to get to settlement.
-				if (newDistance > 0 && enough) {
+				if (enough) {
+					travelDirectToSettlement(newDestination);
 
-					travel(reason, oldHome, newDestination, oldDistance, newDistance);
-
-				} else if (newDistance > 0
-							&& (hasEnoughResources(getResourcesNeededForTrip(false, newDistance * 0.667)) < 0)) {
-
-					travel(reason, oldHome, newDestination, oldDistance, newDistance * 0.667);
-
-				} else if (newDistance > 0
-						&& (hasEnoughResources(getResourcesNeededForTrip(false, newDistance * 0.333)) < 0)) {
-
-					travel(reason, oldHome, newDestination, oldDistance, newDistance * 0.333);
-
-				} else {
+					logger.info(getVehicle(), "Returning to " + newDestination.getName());
+					// Creating emergency destination mission event for going to a new settlement.
+					if (!newDestination.equals(oldHome)) {
+						HistoricalEvent newEvent = new MissionHistoricalEvent(EventType.MISSION_EMERGENCY_DESTINATION,
+								this,
+								reason.getName(),
+								getName(),
+								getStartingPerson().getName(),
+								vehicle.getName(),
+								vehicle.getCoordinates().getCoordinateString(),
+								oldHome.getName()
+								);
+						eventManager.registerNewEvent(newEvent);
+					}
+				}
+				else {
 					requestHelp = true;
 				}
 			}
-
 		}
 		else {
 			requestHelp = true;
@@ -1817,22 +1692,6 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 		}
 		fireMissionUpdate(MissionEventType.NAVPOINTS_EVENT);
 	}
-	
-	/**
-	 * Sets a nav point for the mission.
-	 * 
-	 * @param index    the index in the list of nav points.
-	 * @param navPoint the new navpoint
-	 * @throws IllegalArgumentException if location is null or index < 0.
-	 */
-	protected final void setNavpoint(int index, NavPoint navPoint) {
-		if ((navPoint != null) && (index >= 0)) {
-			navPoints.set(index, navPoint);
-			fireMissionUpdate(MissionEventType.NAVPOINTS_EVENT);
-		} else {
-			logger.severe(getName() + " navPoint is null");
-		}
-	}
 
 	/**
 	 * Clears out any unreached nav points.
@@ -2035,24 +1894,58 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	}
 
 	/**
-	 * For a travel mission, return home as soon as possible
+	 * Mission is aborted because of a reason. If possible return tothe starting Settlement.
+	 * @param status Reason for the abort.
+	 * @param eventType Optional register an event
 	 */
 	@Override
-	public void abortMission() {
-		addMissionStatus(ABORTED_MISSION);
-		returnHome();
+	protected void abortMission(MissionStatus status, EventType eventType) {
+
+		if (addMissionStatus(status)) {
+			// If the MissionFlag is not present then do it
+			// A resource is mission
+			determineEmergencyDestination(status);
+
+			logger.info(getVehicle(), status.getName());
+
+			// Create an event if needed
+			if (eventType != null) {
+				HistoricalEvent newEvent = new MissionHistoricalEvent(eventType,
+						this,
+						status.getName(),
+						getName(),
+						getStartingPerson().getName(),
+						vehicle.getName(),
+						vehicle.getCoordinates().getCoordinateString(),
+						getStartingSettlement().getName()
+						);
+				eventManager.registerNewEvent(newEvent);
+			}
+
+			super.abortMission(status, eventType);
+		}
 	}
 
 	/**
 	 * Have the mission return home and end collection phase if necessary.
 	 */
-	protected void returnHome() {
-		int offset = 2;
-		if (getPhase().equals(VehicleMission.TRAVELLING))
-			offset = 1;
-		setNextNavpointIndex(getNumberOfNavpoints() - offset);
+	protected void travelDirectToSettlement(Settlement newDestination) {
+
+		// Clear remaining route and add a new one
+		// Set the new destination as the travel mission's next and final navpoint.
+		clearRemainingNavpoints();
+
+		addNavpoint(new NavPoint(newDestination, vehicle.getCoordinates()));
+		if (getPhase().equals(TRAVELLING)) {
+			// Already travelling so just change destination
+			startTravelToNextNode();
+		}
+		else {
+			// Abort what we are doing
+			abortPhase();
+		}
+
 		updateTravelDestination();
-		abortPhase();
 	}
 
 	/**
