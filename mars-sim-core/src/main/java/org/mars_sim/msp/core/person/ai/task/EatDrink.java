@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.environment.MarsSurface;
@@ -21,7 +20,6 @@ import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.ResourceHolder;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.task.meta.HaveConversationMeta;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
@@ -449,11 +447,6 @@ public class EatDrink extends Task implements Serializable {
 			calculateWater(false);
 			
 			totalEatingTime += eatingTime;
-
-			if (totalEatingTime > getDuration()) {
-				endTask();
-				return remainingTime;
-			}
 		}
 
 
@@ -500,12 +493,6 @@ public class EatDrink extends Task implements Serializable {
 			}
 
 			totalEatingTime += eatingTime;
-
-			if (totalEatingTime > getDuration()) {
-				logger.info(person, 10_000, "Done " + s.toLowerCase() + ".");
-				endTask();
-				return remainingTime;
-			}
 
 		} else {
 			// Eat preserved food if available
@@ -753,10 +740,6 @@ public class EatDrink extends Task implements Serializable {
 					}
 
 					totalEatingTime += eatingTime;
-
-					if (totalEatingTime > getDuration())
-						endTask();
-
 				}
 
 				// If not enough unprepared dessert available, end task.
