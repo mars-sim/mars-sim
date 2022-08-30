@@ -4,7 +4,7 @@
  * @date 2022-07-09
  * @author Manny Kung
  */
-package org.mars_sim.msp.ui.swing.unit_window.structure.building.food;
+package org.mars_sim.msp.ui.swing.unit_window.structure;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -32,6 +32,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.person.ai.task.CookMeal;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
@@ -76,6 +77,8 @@ public class TabPanelCooking extends TabPanel {
 	private JTable table;
 	private CookingTableModel cookingTableModel;
 
+
+	
 	/** The number of available meals. */
 	private JLabel availableMealsLabel;
 	private int availableMealsCache = 0;
@@ -95,6 +98,9 @@ public class TabPanelCooking extends TabPanel {
 	private JLabel dessertsReplenishmentLabel;
 	private double dessertsReplenishmentCache = 0;
 
+	private JTextField mealTimeLabel;
+	private String mealTimeCache;
+	
 	/** The number of cooks label. */
 	private JTextField numCooksLabel;
 	private int numCooksCache = 0;
@@ -161,12 +167,24 @@ public class TabPanelCooking extends TabPanel {
 		JPanel topPanel = new JPanel(new SpringLayout()); //new GridLayout(4, 1, 0, 0));
 		northPanel.add(topPanel, BorderLayout.NORTH);
 
+		addTextField(topPanel, Msg.getString("TabPanelCooking.breakfastTime"), 
+				CookMeal.getMealTimeString(settlement.getCoordinates(), 0), null);
+		
+		addTextField(topPanel, Msg.getString("TabPanelCooking.lunchTime"), 
+				CookMeal.getMealTimeString(settlement.getCoordinates(), 1), null);
+		
+		addTextField(topPanel, Msg.getString("TabPanelCooking.dinnerTime"), 
+				CookMeal.getMealTimeString(settlement.getCoordinates(), 2), null);
+		
+		addTextField(topPanel, Msg.getString("TabPanelCooking.midnightTime"), 
+				CookMeal.getMealTimeString(settlement.getCoordinates(), 3), null);
+		
 		// Prepare cook number label
 		numCooksLabel = addTextField(topPanel, Msg.getString("TabPanelCooking.numberOfCooks"), numCooksCache, null);
 		cookCapacityLabel = addTextField(topPanel, Msg.getString("TabPanelCooking.cookCapacity"), cookCapacityCache, null); //$NON-NLS-1$
 
 		// Set up the spring layout.
-		SpringUtilities.makeCompactGrid(topPanel, 2, 2, // rows, cols
+		SpringUtilities.makeCompactGrid(topPanel, 6, 2, // rows, cols
 				INITX_DEFAULT, INITY_DEFAULT, // initX, initY
 				5, 2); // xPad, yPad
 		

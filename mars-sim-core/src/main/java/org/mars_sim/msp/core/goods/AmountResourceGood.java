@@ -60,14 +60,16 @@ class AmountResourceGood extends Good {
 	private static final double CH4_VALUE = 0.1;
 	private static final double H2_VALUE = 1;
 	private static final double CO_VALUE = 0.05;
-    private static final double CO2_VALUE = 0.00001;
-	private static final double CL_VALUE = 1.0;
+    private static final double CO2_VALUE = 0.0000005;
+	private static final double CL_VALUE = 0.25;
 	private static final double ICE_VALUE = 1.5;
 	private static final double FOOD_VALUE = 0.1;
 	private static final double DERIVED_VALUE = .07;
 	private static final double SOY_VALUE = .05;
-	private static final int CROP_VALUE = 3;
-	private static final double WASTE_WATER_VALUE = .05D;
+	private static final double CROP_VALUE = 5;
+	private static final double WASTE_WATER_VALUE = 1.5;
+	private static final double GREY_WATER_VALUE = 1;
+	private static final double BLACK_WATER_VALUE = .5;
 	private static final double USEFUL_WASTE_VALUE = 1.05D;
 	private static final double ANIMAL_VALUE = .1;
 	private static final double CHEMICAL_VALUE = 0.01;
@@ -84,7 +86,7 @@ class AmountResourceGood extends Good {
 
     private static final double ICE_VALUE_MODIFIER = 5D;
 	private static final double WATER_VALUE_MODIFIER = 1D;
-	private static final double SOIL_VALUE_MODIFIER = .5;
+	private static final double SOIL_VALUE_MODIFIER = 5;
 	private static final double REGOLITH_VALUE_MODIFIER = 25D;
 	private static final double SAND_VALUE_MODIFIER = 5D;
 	private static final double CONCRETE_VALUE_MODIFIER = .5D;
@@ -185,7 +187,7 @@ class AmountResourceGood extends Good {
         }
         
         else if (type == GoodType.WASTE)
-            result += WASTE_VALUE ;
+            result += WASTE_VALUE;
 
 		// TODO Should be a Map GoodType -> double VALUE
         else if (type == GoodType.MEDICAL)
@@ -209,17 +211,17 @@ class AmountResourceGood extends Good {
 //        else
 //            result += STANDARD_AMOUNT_VALUE ;
   
-        else if (ar.getName().equalsIgnoreCase("methane"))
+        else if (ar.getID() == ResourceUtil.methaneID)
             result += CH4_VALUE;
-        else if (ar.getName().equalsIgnoreCase("hydrogen"))
+        else if (ar.getID() == ResourceUtil.hydrogenID)
             result += H2_VALUE;
-        else if (ar.getName().equalsIgnoreCase("chlorine"))
+        else if (ar.getID() == ResourceUtil.chlorineID)
             result += CL_VALUE;
-        else if (ar.getName().equalsIgnoreCase("carbon dioxide"))
+        else if (ar.getID() == ResourceUtil.co2ID)
             result += CO2_VALUE;
-        else if (ar.getName().equalsIgnoreCase("carbon monoxide"))
+        else if (ar.getID() == ResourceUtil.coID)
             result += CO_VALUE;
-        else if (ar.getName().equalsIgnoreCase("ice"))
+        else if (ar.getID() == ResourceUtil.iceID)
             result += ICE_VALUE;
 
         return result;
@@ -1161,10 +1163,14 @@ class AmountResourceGood extends Good {
 	private double modifyWasteResource() {
 		int resource = getID();
 
-		if (resource == ResourceUtil.greyWaterID || resource == ResourceUtil.blackWaterID) {
-			return  WASTE_WATER_VALUE;
+		if (resource == ResourceUtil.greyWaterID) {
+			return GREY_WATER_VALUE;
 		}
 
+		if (resource == ResourceUtil.blackWaterID) {
+			return BLACK_WATER_VALUE;
+		}
+		
 		if (resource == ResourceUtil.leavesID) {
 			return LEAVES_FACTOR;
 		}
@@ -1173,30 +1179,28 @@ class AmountResourceGood extends Good {
 			return SOIL_VALUE_MODIFIER;
 		}
 
-		if (resource == ResourceUtil.coID) {
-			return .5;
-		}
-
 		if (resource == ResourceUtil.foodWasteID) {
-			return .6;
+			return 4 * USEFUL_WASTE_VALUE;
 		}
 
+		if (resource == ResourceUtil.solidWasteID) {
+			return .2;
+		}
+		
+		if (resource == ResourceUtil.toxicWasteID) {
+			return .05;
+		}
+		
 		if (resource == ResourceUtil.cropWasteID) {
-			return .7 * USEFUL_WASTE_VALUE;
+			return 4 * USEFUL_WASTE_VALUE;
 		}
 
 		if (resource == ResourceUtil.compostID) {
-			return .5 * USEFUL_WASTE_VALUE;
+			return 2 * USEFUL_WASTE_VALUE;
 		}
 
-		if (resource == ResourceUtil.co2ID) {
-			return .5;
-		}
-
-		else {
-			if (getGoodType() == GoodType.WASTE) {
-				return WASTE_VALUE;
-			}
+		if (getGoodType() == GoodType.WASTE) {
+			return WASTE_VALUE;
 		}
 		
 		return 1;

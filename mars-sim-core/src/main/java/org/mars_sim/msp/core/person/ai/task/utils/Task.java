@@ -204,7 +204,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	protected Task(String name, Worker worker, boolean effort, boolean createEvents, double stressModifier,
 			SkillType primarySkill, double experienceRatio) {
 		this.name = name;
-		this.description = name;
 		this.effortDriven = effort;
 		this.createEvents = createEvents;
 		this.stressModifier = stressModifier;
@@ -232,6 +231,9 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			this.eventTarget = this.robot;
 		}
 
+		// Call setDescription to record this task
+		setDescription(name);
+		
 		done = false;
 
 		timeCompleted = 0D;
@@ -384,11 +386,11 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 
 	/**
-	 * Gets the task name.
+	 * Gets the task class simple name.
 	 * 
-	 * @return the task's name in String.
+	 * @return the task class simple name in String.
 	 */
-	public String getTaskName() {
+	public String getTaskSimpleName() {
 		return this.getClass().getSimpleName();
 
 	}
@@ -437,17 +439,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @param des the task description.
 	 */
 	protected void setDescription(String des) {
-		description = des;
-		eventTarget.fireUnitUpdate(UnitEventType.TASK_DESCRIPTION_EVENT, des);
-		
-		if (phase != null) {
-			// Record the activity
-			if (canRecord()) {
-				Mission ms = worker.getMission();
-				worker.getTaskManager().recordTask(this,
-						(ms != null ? ms.getName() : null));
-			}
-		}
+		setDescription(des, true);
 	}
 
 	/**

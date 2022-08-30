@@ -50,19 +50,8 @@ public class RelaxMeta extends MetaTask{
         // Crowding modifier
         if (person.isInside()) {
 
-        	result = 0.1D;
-        	
-            // Probability affected by the person's stress and fatigue.
-            PhysicalCondition condition = person.getPhysicalCondition();
-            double fatigue = condition.getFatigue();
-            double stress = condition.getStress();
-            double hunger = condition.getHunger();
-              
-            if (fatigue > 1000 || stress > 75 || hunger > 667)
-            	return 0;
-            else
-            	result += fatigue / 2000 + stress / 200 + hunger / 2000;
-            
+        	result = 0.5D;
+        	         
             double pref = person.getPreference().getPreferenceScore(this);
             
           	result = result + result * pref/6D;

@@ -235,10 +235,10 @@ public class CommandHelper {
 				// Not nice code. Step through the Task stack looking for a Airlock tack
 				Task active = p.getTaskManager().getTask();
 				while ((active != null) && (direction == null)) {
-					if (active.getTaskName().equalsIgnoreCase("EnterAirlock")) {
+					if (active.getTaskSimpleName().equalsIgnoreCase("EnterAirlock")) {
 						direction = "In";
 					}
-					else if (active.getTaskName().equalsIgnoreCase("Exitairlock")) {
+					else if (active.getTaskSimpleName().equalsIgnoreCase("Exitairlock")) {
 						direction = "Out";
 					}
 					else {

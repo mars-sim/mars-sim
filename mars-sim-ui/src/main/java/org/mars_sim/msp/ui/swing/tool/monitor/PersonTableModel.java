@@ -355,29 +355,14 @@ public class PersonTableModel extends UnitTableModel {
 			case TASK: {
 				// If the Person is dead, there is no Task Manager
 				TaskManager mgr = person.getMind().getTaskManager();
-				String t = "";
-
-				if (mgr != null) {
-
-					t = mgr.getTaskDescription(false);
-
-//					if (t != null && !t.equals(taskCache)) // !t.toLowerCase().contains(WALK) &&
-//						result = t;
-//					else
-						result = t;
-
-				} else
-					result = t;
-
-				// result = ((mgr != null) ? mgr.getTaskDescription(true) : null);
-
+				result = ((mgr != null) ? mgr.getTaskDescription(false) : "");
 			}
 				break;
 
 			case MISSION_COL: {
 				Mission mission = person.getMind().getMission();
 				if (mission != null) {
-					result = mission.getFullMissionDesignation();//getDescription();
+					result = mission.getFullMissionDesignation();
 				}
 			}
 				break;

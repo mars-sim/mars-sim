@@ -541,6 +541,7 @@ public class Simulation implements ClockListener, Serializable {
 			
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, "Cannot deserialize : " + e.getMessage());
+			
 		} finally {
 
 			if (ois != null) {
@@ -640,10 +641,8 @@ public class Simulation implements ClockListener, Serializable {
 	 */
 	private void reinitializeInstances() {
 		SimuLoggingFormatter.initializeInstances(masterClock);
-		
 		// Re-initialize the utility class for getting lists of meta tasks.
 		MetaTaskUtil.initializeMetaTasks();
-
 		// Re-initialize the resources for the saved sim
 		ResourceUtil.getInstance().initializeInstances();
 		// Re-initialize the MarsSurface instance
@@ -657,36 +656,28 @@ public class Simulation implements ClockListener, Serializable {
 
 		// Reload mission configs
 		missionManager.initializeInstances(simulationConfig);
-
 		//  Re-initialize the GameManager
 		GameManager.initializeInstances(unitManager);
-
 		// Gets he MarsClock instance
 		MarsClock marsClock = masterClock.getMarsClock();
 		// Gets he MarsClock instance
 		EarthClock earthClock = masterClock.getEarthClock();
 		
 		Weather.initializeInstances(this, marsClock, orbitInfo);
-	
 		// Initialize instances in Airlock
 		Airlock.initializeInstances(unitManager, marsSurface, marsClock);
 		// Initialize instances in TaskSchedule
 		TaskSchedule.initializeInstances(marsClock);
-		
 		// Re-initialize the instances in LogConsolidated
 		DataLogger.changeTime(marsClock);
 		SurfaceFeatures.initializeInstances(this, simulationConfig.getLandmarkConfiguration(),
 				marsClock, orbitInfo, weather);
-
-		
 		// Re-initialize units prior to starting the unit manager
 		Unit.initializeInstances(masterClock, marsClock, earthClock, this, weather, surfaceFeatures, missionManager);
 		Unit.setUnitManager(unitManager);
 		EquipmentFactory.initialise(unitManager);
-
 		// Re-initialize Building function related class
 		Function.initializeInstances(bc, marsClock, pc, cc, surfaceFeatures, weather, unitManager);
-
 		// Rediscover the MissionControls
 		ReportingAuthorityFactory rf  = simulationConfig.getReportingAuthorityFactory();
 		rf.discoverReportingAuthorities(unitManager);
@@ -740,7 +731,6 @@ public class Simulation implements ClockListener, Serializable {
 
 		// Start a chain of calls to set instances
 		unitManager.reinit();
-
 		doneInitializing = true;
 	}
 

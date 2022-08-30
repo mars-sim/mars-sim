@@ -56,6 +56,9 @@ public class PreparingDessert extends Function {
 	public static final String FOOD_WASTE = "food waste";
 	public static final String WATER = "water";
 	public static final String SODIUM_HYPOCHLORITE = "sodium hypochlorite";
+	public static final String JUICE = "juice";
+	public static final String MILK = "milk";
+	
 	/**
 	 * The base amount of work time in milliSols (for cooking skill 0) to prepare
 	 * fresh dessert .
@@ -287,7 +290,7 @@ public class PreparingDessert extends Function {
 
 		if (thirst > 100) {
 			for (PreparedDessert d : servingsOfDessert) {
-				if (d.getName().contains("juice") || d.getName().contains("milk"))
+				if (d.getName().contains(JUICE) || d.getName().contains(MILK))
 					menu.add(d);
 			}
 		} else
@@ -300,10 +303,6 @@ public class PreparingDessert extends Function {
 			if (d.getName().equals(favoriteDessert)) {
 				// person will choose his/her favorite dessert right away
 				if (q > bestQuality) {
-					// if (q > currentBestQuality) {
-					// currentBestQuality = q;
-					// bestQuality = q;
-					// }
 					bestQuality = q;
 					bestFavDessert = d;
 					menu.remove(bestFavDessert);

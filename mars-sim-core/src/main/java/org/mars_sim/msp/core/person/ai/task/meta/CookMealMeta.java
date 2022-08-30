@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * CookMealMeta.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-08-30
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -68,20 +68,23 @@ public class CookMealMeta extends MetaTask {
 
                 if (kitchen.canCookMeal()) {
 
-                    result = 50D;
+                    result = 50;
                     
                 	if (CookMeal.isLocalMealTime(person.getCoordinates(), 20)) {
-                		result *= 2.5D;
+                		result *= 50;
                 	}
                 	else
-                		result *= .25D;   
+                		return 0;  
                 	
                     // Crowding modifier.
                     result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, kitchenBuilding);
+                    // Effort-driven task modifier.
                     result *= TaskProbabilityUtil.getRelationshipModifier(person, kitchenBuilding);
                     
                     // Apply the standard Person modifiers
                     result = applyPersonModifier(result, person);
+                    
+//                    System.out.println(person + " CookMealMeta : " + result);
                 }
             }
         }
@@ -99,7 +102,6 @@ public class CookMealMeta extends MetaTask {
 
         double result = 0D;
 
-
         if (CookMeal.isMealTime(robot, 20)
             && robot.getRobotType() == RobotType.CHEFBOT) {
             // See if there is an available kitchen.
@@ -115,16 +117,25 @@ public class CookMealMeta extends MetaTask {
                 if (enoughMeals) return 0;
 
                 if (kitchen.canCookMeal()) {
-                    result = 300D;
+                	
+                    result = 300D;                	
+                    
+                    if (CookMeal.isLocalMealTime(robot.getCoordinates(), 20)) {
+                		result *= 50;
+                	}
+                	else
+                		return 0;  
+                	
                     // Crowding modifier.
                     result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(robot, kitchenBuilding);
                     // Effort-driven task modifier.
                     result *= robot.getPerformanceRating();
+                    
+//                    System.out.println(robot + "CookMealMeta : " + result);
                 }
             }
         }
 
-        //System.out.println("cook meal : " + result);
         return result;
 	}
 }

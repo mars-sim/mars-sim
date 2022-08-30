@@ -16,8 +16,6 @@ import org.mars_sim.msp.ui.swing.unit_window.InventoryTabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.LocationTabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.NotesTabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
-import org.mars_sim.msp.ui.swing.unit_window.structure.building.food.TabPanelCooking;
-import org.mars_sim.msp.ui.swing.unit_window.structure.building.food.TabPanelFoodProduction;
 
 /**
  * The SettlementUnitWindow is the window for displaying a settlement.

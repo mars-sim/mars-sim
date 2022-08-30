@@ -74,11 +74,13 @@ public class EatDrinkMeta extends MetaTask {
 		int desserts = 0;
 		double dFactor = 1;
 
-		// Check if a cooked meal is available in a kitchen building at the settlement.
-		Cooking kitchen0 = EatDrink.getKitchenWithMeal(person);
-		if (kitchen0 != null) {
-			meals = kitchen0.getNumberOfAvailableCookedMeals();
-			mFactor = 100.0 * meals;
+		if (CookMeal.isLocalMealTime(person.getCoordinates(), 0)) {
+			// Check if a cooked meal is available in a kitchen building at the settlement.
+			Cooking kitchen0 = EatDrink.getKitchenWithMeal(person);
+			if (kitchen0 != null) {
+				meals = kitchen0.getNumberOfAvailableCookedMeals();
+				mFactor = 100.0 * meals;
+			}
 		}
 
 		// Check dessert is available in a kitchen building at the settlement.
@@ -139,7 +141,7 @@ public class EatDrinkMeta extends MetaTask {
 				double ghrelin = person.getCircadianClock().getGhrelin();
 				double leptin = person.getCircadianClock().getLeptin();
 				
-				h0 += hunger * 3 + ghrelin / 2 - leptin / 2;
+				h0 += 3 * (hunger * 3 + ghrelin / 2 - leptin / 2);
 
 				if (energy < 2525)
 					h0 += (2525 - energy) / 30D + ghrelin / 4 - leptin / 4;
@@ -161,7 +163,7 @@ public class EatDrinkMeta extends MetaTask {
 				}
 			}
 
-			double t0 = (thirst - PhysicalCondition.THIRST_THRESHOLD);
+			double t0 = .5 * (thirst - PhysicalCondition.THIRST_THRESHOLD);
 			if (t0 <= 0)
 				t0 = 0;
 

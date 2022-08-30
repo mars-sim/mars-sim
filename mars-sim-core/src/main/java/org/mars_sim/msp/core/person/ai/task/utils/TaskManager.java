@@ -247,7 +247,7 @@ public abstract class TaskManager implements Serializable, Temporal {
 	 */
 	public String getTaskClassName() {
 		if (currentTask != null) {
-			return currentTask.getTaskName();
+			return currentTask.getTaskSimpleName();
 		} else {
 			return "";
 		}
@@ -261,13 +261,9 @@ public abstract class TaskManager implements Serializable, Temporal {
 	 */
 	public String getTaskDescription(boolean subTask) {
 		if (currentTask != null) {
-			String t = currentTask.getDescription(subTask);
-			if (t != null) // || !t.equals(""))
-				return t;
-			else
-				return "";
-		} else
-			return "";
+			return currentTask.getDescription(subTask);
+		}
+		return "";
 	}
 
 	public String getSubTaskDescription() {
@@ -334,7 +330,7 @@ public abstract class TaskManager implements Serializable, Temporal {
 	}
 
 	public String getLastTaskName() {
-		return (lastTask != null ? lastTask.getTaskName() : "");
+		return (lastTask != null ? lastTask.getTaskSimpleName() : "");
 	}
 
 	public String getLastTaskDescription() {

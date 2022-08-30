@@ -596,7 +596,7 @@ public class UnitManager implements Serializable, Temporal {
 
 
 	/**
-	 * Reloads instances after loading from a saved sim
+	 * Reloads instances after loading from a saved sim.
 	 *
 	 * @param clock
 	 */

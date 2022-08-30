@@ -347,7 +347,7 @@ public class Preference implements Serializable {
 	 */
 	public static MetaTask convertTask2MetaTask(Task task) {
 		MetaTask result = null;
-		String name = task.getTaskName();
+		String name = task.getTaskSimpleName();
 		result = MetaTaskUtil.getMetaTask(name + META);
 		return result;
 	}

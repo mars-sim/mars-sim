@@ -253,7 +253,7 @@ public abstract class EVAOperation extends Task {
 				setPhase(WALK_BACK_INSIDE);
 			}
 			else
-				person.addEVATime(getTaskName(), time);
+				person.addEVATime(getTaskSimpleName(), time);
 		}
 
 		if (getPhase() == null) {

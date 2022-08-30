@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
+import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitType;
@@ -78,22 +79,13 @@ public class EatDrink extends Task implements Serializable {
 	/** The conversion ratio of hunger to one serving of food. */	
 	private static final int HUNGER_RATIO_PER_FOOD_SERVING = 300;
 	/** The conversion ratio of thirst to one serving of water. */	
-	private static final int THIRST_PER_WATER_SERVING = 300;
+	private static final int THIRST_PER_WATER_SERVING = 450;
 	/** The minimal amount of resource to be retrieved. */
-	private static final double MIN = 0.001;
+	private static final double MIN = 0.00001;
 	
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = -1.2D;
 	private static final double DESSERT_STRESS_MODIFIER = -.8D;
-	
-	/** The proportion of the task for eating a meal. */
-//	private static final double MEAL_EATING_PROPORTION = .75D;
-	/** The proportion of the task for eating dessert. */
-//	private static final double DESSERT_EATING_PROPORTION = .25D;
-	/** Percentage chance that preserved food has gone bad. */
-	// private static final double PRESERVED_FOOD_BAD_CHANCE = 1D; // in %
-	/** Percentage chance that unprepared dessert has gone bad. */
-	// private static final double UNPREPARED_DESSERT_BAD_CHANCE = 1D; // in %
 	/** Mass (kg) of single napkin for meal. */
 	private static final double NAPKIN_MASS = .0025D;
 
@@ -133,8 +125,8 @@ public class EatDrink extends Task implements Serializable {
 	 * @param person the person to perform the task
 	 */
 	public EatDrink(Person person) {
-		super(NAME, person, false, false, STRESS_MODIFIER, 5
-				+ RandomUtil.getRandomDouble(-5, 5));
+		super(NAME, person, false, false, STRESS_MODIFIER, 10
+				+ RandomUtil.getRandomDouble(-2, 2));
 
 		pc = person.getPhysicalCondition();
 
@@ -236,43 +228,52 @@ public class EatDrink extends Task implements Serializable {
 
 		if (person.isInSettlement()) {
 
-			if (desserts > 0) {
+			if (CookMeal.isLocalMealTime(person.getSettlement().getCoordinates(), 0)) {
+				if (meals > 0) {
+					Building diningBuilding = EatDrink.getAvailableDiningBuilding(person, false);
+					if (diningBuilding != null) {
+						// Initialize task phase.
+						addPhase(LOOK_FOR_FOOD);
+						addPhase(EAT_MEAL);
+						setPhase(LOOK_FOR_FOOD);
+					}
+
+					boolean want2Chat = true;
+					// See if a person wants to chat while eating
+					int score = person.getPreference().getPreferenceScore(new HaveConversationMeta());
+					if (score > 0)
+						want2Chat = true;
+					else if (score < 0)
+						want2Chat = false;
+					else {
+						int rand = RandomUtil.getRandomInt(1);
+						if (rand == 0)
+							want2Chat = false;
+					}
+
+					diningBuilding = EatDrink.getAvailableDiningBuilding(person, want2Chat);
+					if (diningBuilding != null)
+						// Walk to that building.
+						walkToActivitySpotInBuilding(diningBuilding, FunctionType.DINING, true);
+
+					// Take napkin from inventory if available.
+					if (person.getSettlement().retrieveAmountResource(ResourceUtil.napkinID, NAPKIN_MASS) > 0)
+						hasNapkin = true;
+				}
+				
+				else if (foodAmount > 0) {
+					// Initialize task phase.
+					addPhase(LOOK_FOR_FOOD);
+					addPhase(EAT_PRESERVED_FOOD);
+					setPhase(LOOK_FOR_FOOD);
+				}
+			}
+			
+			else if (desserts > 0) {
 				// Initialize task phase.
 				addPhase(PICK_UP_DESSERT);
 				addPhase(EAT_DESSERT);
 				setPhase(LOOK_FOR_FOOD);
-			}
-
-			if (meals > 0) {
-				Building diningBuilding = EatDrink.getAvailableDiningBuilding(person, false);
-				if (diningBuilding != null) {
-					// Initialize task phase.
-					addPhase(LOOK_FOR_FOOD);
-					addPhase(EAT_MEAL);
-					setPhase(LOOK_FOR_FOOD);
-				}
-
-				boolean want2Chat = true;
-				// See if a person wants to chat while eating
-				int score = person.getPreference().getPreferenceScore(new HaveConversationMeta());
-				if (score > 0)
-					want2Chat = true;
-				else if (score < 0)
-					want2Chat = false;
-				else {
-					int rand = RandomUtil.getRandomInt(1);
-					if (rand == 0)
-						want2Chat = false;
-				}
-
-				diningBuilding = EatDrink.getAvailableDiningBuilding(person, want2Chat);
-				if (diningBuilding != null)
-					// Walk to that building.
-					walkToActivitySpotInBuilding(diningBuilding, FunctionType.DINING, true);
-
-				// Take napkin from inventory if available.
-				if (person.getSettlement().retrieveAmountResource(ResourceUtil.napkinID, NAPKIN_MASS) > 0)
-					hasNapkin = true;
 			}
 
 			else if (foodAmount > 0) {
@@ -284,7 +285,7 @@ public class EatDrink extends Task implements Serializable {
 		}
 
 		else if (person.isInVehicle()) {
-
+			
 			if (desserts > 0) {
 				// Initialize task phase.
 				addPhase(PICK_UP_DESSERT);
@@ -346,7 +347,8 @@ public class EatDrink extends Task implements Serializable {
 	private double drinkingWaterPhase(double time) {
 	
 		// Call to consume water
-		calculateWater(true);
+		if (!person.getPhysicalCondition().drinkEnoughWater())
+			calculateWater(true);
 
 //		if (meals > 0 || foodAmount > 0)
 //			setPhase(LOOK_FOR_FOOD);
@@ -444,7 +446,8 @@ public class EatDrink extends Task implements Serializable {
 			}
 
 			// Also consume water with the preserved food
-			calculateWater(false);
+			if (!person.getPhysicalCondition().drinkEnoughWater())
+				calculateWater(false);
 			
 			totalEatingTime += eatingTime;
 		}
@@ -485,7 +488,8 @@ public class EatDrink extends Task implements Serializable {
 			}
 
 			// Also consume water with the preserved food
-			calculateWater(false);
+			if (!person.getPhysicalCondition().drinkEnoughWater())
+				calculateWater(false);
 			
 			// If finished eating, change to dessert phase.
 			if (eatingTime < time) {
@@ -581,7 +585,7 @@ public class EatDrink extends Task implements Serializable {
 		// Obtain the dry mass of the dessert
 		double dryMass = cookedMeal.getDryMass();
 		// Proportion of meal being eaten over this time period.
-		// eatingSpeed ~ 0.3 kg / millisols
+		// eatingSpeed ~ 0.01 kg / millisols
 		double proportion = person.getEatingSpeed() * eatingTime;
 
 		if (cumulativeProportion > dryMass) {
@@ -591,7 +595,6 @@ public class EatDrink extends Task implements Serializable {
 		}
 
 		if (proportion > MIN) {
-
 			// Add to cumulativeProportion
 			cumulativeProportion += proportion;
 			// Food amount eaten over this period of time.
@@ -625,7 +628,6 @@ public class EatDrink extends Task implements Serializable {
 
 		// Proportion of food being eaten over this time period.
 		double proportion = person.getEatingSpeed() * eatingTime;
-
 		if ((cumulativeProportion + proportion) > foodConsumedPerServing) {
 			proportion = foodConsumedPerServing - cumulativeProportion;
 		}
