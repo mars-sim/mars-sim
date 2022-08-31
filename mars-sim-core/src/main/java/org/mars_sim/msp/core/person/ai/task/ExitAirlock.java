@@ -322,7 +322,6 @@ public class ExitAirlock extends Task implements Serializable {
 		
 		airlock.removeID(person.getIdentifier());
 
-
 		logger.log((Unit)airlock.getEntity(), person, Level.INFO, 16_000, reason);
 		
 		// Note: For person in a vehicle with high fatigue or hunger,
@@ -736,28 +735,30 @@ public class ExitAirlock extends Task implements Serializable {
 
 		boolean canProceed = false;
 
-		if (!isFit()) {
-			walkAway(person, NOT_FIT + " to don an EVA suit.");
-			return time;
-		}
-
-		if (isOccupantHalfPrebreathed()) {
-			walkAway(person, "Can't don an EVA suit - " + PREBREATH_HALF_DONE);
-			return time;
-		}
-		
-		if (!airlock.isPressurized()) {
-			// Go back to the previous phase
-			setPhase(PRESSURIZE_CHAMBER);
-			return time;
-		}
-		
 		// Gets the suit instance
 		EVASuit suit = person.getSuit();
-		EquipmentOwner housing = null;
 		
 		if (suit == null) {
+			
+			if (!isFit()) {
+				walkAway(person, NOT_FIT + " to don an EVA suit.");
+				return time;
+			}
+	
+			if (isOccupantHalfPrebreathed()) {
+				walkAway(person, "Can't don an EVA suit - " + PREBREATH_HALF_DONE);
+				return time;
+			}
+			
+			if (!airlock.isPressurized()) {
+				// Go back to the previous phase
+				setPhase(PRESSURIZE_CHAMBER);
+				return time;
+			}
+
 			// Get an EVA suit from entity inventory.
+			
+			EquipmentOwner housing = null;
 			
 			if (inSettlement)
 				housing = ((Building)airlock.getEntity()).getSettlement();
@@ -774,7 +775,7 @@ public class ExitAirlock extends Task implements Serializable {
 				//    if there is no known working EVA suit ? Unless there is a sync issue 
 				// Q: how do we make an EVA suit pre-assigned to a person prior to starting 
 				//    the process of EVA. 
-				walkAway(person, "In donEVASuit(). No EVA suit available.");
+				walkAway(person, "No EVA suit available.");
 				return 0;
 			}
 			
@@ -836,15 +837,9 @@ public class ExitAirlock extends Task implements Serializable {
 
 		boolean canProceed = false;
 		
-		if (!isFit()) {
-			walkAway(person, NOT_FIT + " to prebreathe.");
-			return time;
-		}
-		
 		if (person.getSuit() == null) {
 			// Go back to previous task phase
 			setPhase(DON_EVA_SUIT);
-			
 			return time;
 		}
 

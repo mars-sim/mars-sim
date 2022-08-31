@@ -25,9 +25,6 @@ import org.mars_sim.msp.core.tool.RandomUtil;
  */
 public class SleepMeta extends MetaTask {
 
-	/** default logger. */
-//	private static SimLogger logger = SimLogger.getLogger(SleepMeta.class.getName());
-
 	private static final double MAX = 1000;
 	
     /** Task name */
@@ -169,8 +166,7 @@ public class SleepMeta extends MetaTask {
         else {
         	// if process is false
         	
-	        // Reduce the probability if it's not the right time to sleep
-//	    	refreshSleepHabit(person);  
+	        // Reduce the probability if it's not the right time to sleep refreshSleepHabit(person)
        }
 
         return result;

@@ -17,8 +17,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
@@ -33,8 +33,9 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 public class LocalAreaUtil {
 
 	/** default logger. */
-	private static final Logger logger = Logger.getLogger(LocalAreaUtil.class.getName());
+	private static SimLogger logger = SimLogger.getLogger(LocalAreaUtil.class.getName());
 
+	
 	/** Distance from edge of boundary when determining internal locations. */
 	private static final double INNER_BOUNDARY_DISTANCE = 1.5D;
 
@@ -277,8 +278,8 @@ public class LocalAreaUtil {
 				result = true;
 				if (needToMove) {
 					Vehicle v = (Vehicle) vehicle;
+					logger.info(v, "Collided with '" + object + "'.");
 					v.findNewParkingLoc();
-					logger.info("Collided with '" + v + "'. Moved it to another location.");
 					// Call again recursively to clear any vehicles
 					result = isVehicleBoundedOjectIntersected(object, coordinates, needToMove);
 				}

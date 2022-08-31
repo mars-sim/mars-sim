@@ -446,22 +446,18 @@ public class TendGreenhouse extends Task implements Serializable {
 			}
 		}
 			
-		if (goal != null) {
-			printDescription(Msg.getString("Task.description.tendGreenhouse.grow.detail", goal.toLowerCase()));
+		printDescription(Msg.getString("Task.description.tendGreenhouse.grow.detail", goal.toLowerCase()));
 
-			createExperienceFromSkill(time);
-	
-			if (getDuration() <= (getTimeCompleted() + time)) {		
+		createExperienceFromSkill(time);
 
-				greenhouse.getResearch().harvestTissue(worker);
-				
-				logger.log(greenhouse.getBuilding(), worker, Level.INFO, 0, "Done with growing " + goal + " tissues in botany lab.");
-				
-				endTask();
-			}
-		}
-		else
+		if (getDuration() <= (getTimeCompleted() + time)) {		
+
+			greenhouse.getResearch().harvestTissue(worker);
+			
+			logger.log(greenhouse.getBuilding(), worker, Level.INFO, 0, "Done with growing " + goal + " tissues in botany lab.");
+			
 			endTask();
+		}
 
 		return 0;
 	}
