@@ -38,16 +38,17 @@ public class LocalAreaUtil {
 	/** Distance from edge of boundary when determining internal locations. */
 	private static final double INNER_BOUNDARY_DISTANCE = 1.5D;
 
-	/** A very small distance (meters) for measuring how close two locations are. */
-	private static final double VERY_SMALL_DISTANCE = .00001D;
+	private static final double TWO_PI = Math.PI * 2;
+	
+	private static final double DEGREE_PER_RAD = 180 / Math.PI;
 
 	/**
 	 * Cache for total area containing obstacles for a given coordinate location.
 	 */
-	private static final Map<Coordinates, Area> obstacleAreaCache = new ConcurrentHashMap<Coordinates, Area>();
+	private static final Map<Coordinates, Area> obstacleAreaCache = new ConcurrentHashMap<>();
 
 	/** Time stamps for obstacle area cache. */
-	private static final Map<Coordinates, String> obstacleAreaTimestamps = new ConcurrentHashMap<Coordinates, String>();
+	private static final Map<Coordinates, String> obstacleAreaTimestamps = new ConcurrentHashMap<>();
 
 	private static UnitManager unitManager;
 	private static MarsClock marsClock;
@@ -129,7 +130,7 @@ public class LocalAreaUtil {
 		double translateX = position.getX() - boundedObject.getPosition().getX();
 		double translateY = position.getY() - boundedObject.getPosition().getY();
 
-		double radianRotation = (Math.PI * 2D) - Math.toRadians(boundedObject.getFacing());
+		double radianRotation = TWO_PI - Math.toRadians(boundedObject.getFacing());
 		double rotateX = (translateX * Math.cos(radianRotation)) - (translateY * Math.sin(radianRotation));
 		double rotateY = (translateX * Math.sin(radianRotation)) + (translateY * Math.cos(radianRotation));
 
@@ -277,8 +278,7 @@ public class LocalAreaUtil {
 				if (needToMove) {
 					Vehicle v = (Vehicle) vehicle;
 					v.findNewParkingLoc();
-					logger.info("checkVehicleBoundedOjectIntersected(): Colliding with vehicle " + v
-							+ ". Moving it to another location");
+					logger.info("Collided with '" + v + "'. Moved it to another location.");
 					// Call again recursively to clear any vehicles
 					result = isVehicleBoundedOjectIntersected(object, coordinates, needToMove);
 				}
@@ -547,9 +547,7 @@ public class LocalAreaUtil {
 		Rectangle2D rect = new Rectangle2D.Double(object.getXLocation() - (object.getWidth() / 2D),
 				object.getYLocation() - (object.getLength() / 2D), object.getWidth(), object.getLength());
 		Path2D path = getPathFromRectangleRotation(rect, object.getFacing());
-		Area area = new Area(path);
-
-		return area;
+		return new Area(path);
 	}
 
 	/**
@@ -609,9 +607,7 @@ public class LocalAreaUtil {
 
 		double facing = getDirection(line.getP1(), line.getP2());
 
-		Path2D rectPath = getPathFromRectangleRotation(lineRect, facing);
-
-		return rectPath;
+		return getPathFromRectangleRotation(lineRect, facing);
 	}
 
 	/**
@@ -625,17 +621,15 @@ public class LocalAreaUtil {
 
 		double radDir = Math.atan2(point1.getX() - point2.getX(), point2.getY() - point1.getY());
 
-		while (radDir > (Math.PI * 2D)) {
-			radDir -= (Math.PI * 2D);
+		while (radDir > TWO_PI) {
+			radDir -= TWO_PI;
 		}
 
 		while (radDir < 0D) {
-			radDir += (Math.PI * 2D);
+			radDir += TWO_PI;
 		}
 
-		double degreeDir = radDir * (180D / Math.PI);
-
-		return degreeDir;
+		return radDir * DEGREE_PER_RAD;
 	}
 
 	/**
@@ -657,9 +651,8 @@ public class LocalAreaUtil {
 		boolean cached = false;
 		Area obstacleArea = null;
 		if (useCache && obstacleAreaCache.containsKey(coordinates)) {
-			String currentTimestamp = marsClock.getDateTimeStamp();
 			String cachedTimestamp = obstacleAreaTimestamps.get(coordinates);
-			if (currentTimestamp.equals(cachedTimestamp)) {
+			if (marsClock.getDateTimeStamp().equals(cachedTimestamp)) {
 				cached = true;
 				obstacleArea = obstacleAreaCache.get(coordinates);
 			}
@@ -694,16 +687,12 @@ public class LocalAreaUtil {
 				// (slower).
 				Area pathArea = new Area(path);
 				result = !doAreasCollide(pathArea, obstacleArea);
-//				logger.info("collision is " + result + " at " + pathArea.getBounds2D());
 			}
 		}
 
 		// Store cached obstacle area for location with current timestamp if needed.
 		if (useCache && !cached && (obstacleArea != null)) {
 			obstacleAreaCache.put(coordinates, obstacleArea);
-//			String currentTimestamp = marsClock.getDateTimeStamp();
-			if (marsClock == null)
-				marsClock = Simulation.instance().getMasterClock().getMarsClock();
 			obstacleAreaTimestamps.put(coordinates, marsClock.getDateTimeStamp());
 		}
 
@@ -714,10 +703,10 @@ public class LocalAreaUtil {
 	 * Clears the obstacle area cache and time stamps.
 	 */
 	public static void clearObstacleCache() {
-		if (obstacleAreaCache != null) {
+		if (!obstacleAreaCache.isEmpty()) {
 			obstacleAreaCache.clear();
 		}
-		if (obstacleAreaTimestamps != null) {
+		if (!obstacleAreaTimestamps.isEmpty()) {
 			obstacleAreaTimestamps.clear();
 		}
 	}
@@ -745,7 +734,7 @@ public class LocalAreaUtil {
 	 * @return path representing rotated rectangle.
 	 */
 	private static Path2D getPathFromRectangleRotation(Rectangle2D rectangle, double rotation) {
-		double radianRotation = rotation * (Math.PI / 180D);
+		double radianRotation = rotation / DEGREE_PER_RAD;
 		AffineTransform at = AffineTransform.getRotateInstance(radianRotation, rectangle.getCenterX(),
 				rectangle.getCenterY());
 		return new Path2D.Double(rectangle, at);

@@ -7,7 +7,6 @@
 package org.mars_sim.msp.core.person.ai.task.meta;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.CircadianClock;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -27,7 +26,7 @@ import org.mars_sim.msp.core.tool.RandomUtil;
 public class SleepMeta extends MetaTask {
 
 	/** default logger. */
-	private static SimLogger logger = SimLogger.getLogger(SleepMeta.class.getName());
+//	private static SimLogger logger = SimLogger.getLogger(SleepMeta.class.getName());
 
 	private static final double MAX = 1000;
 	
@@ -69,8 +68,6 @@ public class SleepMeta extends MetaTask {
     	// Note : each millisol generates 1 fatigue point
     	// 500 millisols is ~12 hours
 
-       // boolean isOnCall = ts.getShiftType() == ShiftType.ON_CALL;
-        
         double fatigue = pc.getFatigue();
     	double stress = pc.getStress();
     	double ghrelinS = circadian.getSurplusGhrelin();
@@ -138,17 +135,22 @@ public class SleepMeta extends MetaTask {
                 result *= 2D;
             }
 
-            if (person.getShiftType() == ShiftType.ON_CALL)
-            	result = result * 10;
+            boolean isOnCall = (person.getShiftType() == ShiftType.ON_CALL);
+            
+            if (isOnCall)
+            	// Note: For on-call personnel, there is no longer a definite sleep 
+            	// pattern, recommend resting as much as possible to get ready 
+            	// when duties call.
+            	result = result * 100;
             
             else if (person.getTaskSchedule().isShiftHour(marsClock.getMillisolInt())) {
          	   // Reduce the probability of sleep
-               result = result / 10D;
+               result = result / 100D;
             }
 
         	int maxNumSleep = 0;
 
-        	if (person.getTaskSchedule().getShiftType() == ShiftType.ON_CALL)
+        	if (isOnCall)
             	maxNumSleep = 8;
             else
             	maxNumSleep = 4;

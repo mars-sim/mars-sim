@@ -39,7 +39,7 @@ public class CollectionUtils {
 		return units
 				.stream()
 				.filter(u -> UnitType.EQUIPMENT == u.getUnitType())
-				.map(u -> (Equipment) u)
+				.map(Equipment.class::cast)
 				.filter(u -> !u.isSalvaged())
 				.collect(Collectors.toList());
 	}
@@ -52,7 +52,7 @@ public class CollectionUtils {
 		return units
 				.stream()
 				.filter(u-> UnitType.ROBOT == u.getUnitType())
-				.map(u -> (Robot) u)
+				.map(Robot.class::cast)
 				.collect(Collectors.toList());
 	}
 
@@ -164,8 +164,8 @@ public class CollectionUtils {
 	public static <T extends Unit> Collection<T> sortByName(
 		Collection<T> collection
 	) {
-		ConcurrentSkipListSet<T> sorted = new ConcurrentSkipListSet<T>(
-			new Comparator<T>() {
+		ConcurrentSkipListSet<T> sorted = new ConcurrentSkipListSet<>(
+			new Comparator<>() {
 				@Override
 				public int compare(T o1, T o2) {
 					return o1.getName().compareToIgnoreCase(o2.getName());
@@ -185,7 +185,7 @@ public class CollectionUtils {
 	 */
 	public static List<Person> getPeopleToDisplay(Settlement settlement) {
 
-		List<Person> result = new ArrayList<Person>();
+		List<Person> result = new ArrayList<>();
 
 		if (settlement != null) {
 			Iterator<Person> i = unitManager.getPeople().iterator();

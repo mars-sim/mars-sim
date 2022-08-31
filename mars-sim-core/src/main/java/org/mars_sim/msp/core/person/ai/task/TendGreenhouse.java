@@ -425,10 +425,10 @@ public class TendGreenhouse extends Task implements Serializable {
 		printDescription(Msg.getString("Task.description.tendGreenhouse.grow"));
 		
 		// Check if the lab is available
-		if (greenhouse.checkBotanyLab())  {
+		if (!greenhouse.checkBotanyLab())  {
 			endTask();
 		}
-			
+	
 		if (goal == null) {
 			goal = greenhouse.chooseCrop2Extract(Farming.STANDARD_AMOUNT_TISSUE_CULTURE);
 			if (goal != null) {
@@ -439,9 +439,10 @@ public class TendGreenhouse extends Task implements Serializable {
 			else {
 				// Can't find any matured crop to sample
 				logger.log(greenhouse.getBuilding(), worker, Level.INFO, 20_000, 
-						"Can't find any matured crops to sample in botany lab.");
+						"Can't find matured crops to sample in botany lab.");
 				
 				endTask();
+				return 0;
 			}
 		}
 			
