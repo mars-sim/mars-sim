@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * PreparingDessert.java
- * @date 2021-10-21
+ * @date 2022-08-30
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.structure.building.function.cooking;
@@ -65,7 +65,6 @@ public class PreparingDessert extends Function {
 	 */
 	public static final double PREPARE_DESSERT_WORK_REQUIRED = 3D;
 
-	// public double dessertsReplenishmentRate;
 	public static double UP = 0.01;
 	public static double DOWN = 0.007;
 
@@ -78,9 +77,14 @@ public class PreparingDessert extends Function {
 
 	private static double dessertMassPerServing;
 
-	private static String[] availableDesserts = { "sesame milk", 
-			"soymilk", "sugarcane juice", "cranberry juice",
-			"strawberry", "granola bar", "blueberry muffin"};
+	private static String[] availableDesserts = { 
+			"sesame milk", 
+			"soymilk", 
+			"sugarcane juice", 
+			"cranberry juice",
+			"strawberry", 
+			"granola bar", 
+			"blueberry muffin"};
 
 	private static int NUM_DESSERTS = availableDesserts.length;
 
@@ -144,7 +148,6 @@ public class PreparingDessert extends Function {
 		MealConfig mealConfig = SimulationConfig.instance().getMealConfiguration(); // need this to pass maven test
 		// Add loading the two parameters from meals.xml
 		cleaningAgentPerSol = mealConfig.getCleaningAgentPerSol();
-		// waterUsagePerMeal = mealConfig.getWaterConsumptionRate();
 
 		preparingWorkTime = 0D;
 		servingsOfDessert = new CopyOnWriteArrayList<>();
@@ -211,8 +214,6 @@ public class PreparingDessert extends Function {
 			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(buildingType) && !removedBuilding) {
 				removedBuilding = true;
 			} else {
-				// PreparingDessert preparingDessertFunction = (PreparingDessert)
-				// building.getFunction(FUNCTION);
 				double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .25D + .25D;
 				supply += building.getPreparingDessert().cookCapacity * wearModifier;
 			}
@@ -220,7 +221,7 @@ public class PreparingDessert extends Function {
 
 		double preparingDessertCapacityValue = demand / (supply + 1D);
 
-		double preparingDessertCapacity = buildingConfig.getFunctionSpec(buildingType, FunctionType.COOKING).getCapacity();
+		double preparingDessertCapacity = buildingConfig.getFunctionSpec(buildingType, FunctionType.PREPARING_DESSERT).getCapacity();
 
 		return preparingDessertCapacity * preparingDessertCapacityValue;
 	}
@@ -280,7 +281,7 @@ public class PreparingDessert extends Function {
 	 * @return PreparedDessert
 	 */
 	public PreparedDessert chooseADessert(Person person) {
-		List<PreparedDessert> menu = new CopyOnWriteArrayList<>();// servingsOfDessert);
+		List<PreparedDessert> menu = new CopyOnWriteArrayList<>();
 		PreparedDessert bestDessert = null;
 		PreparedDessert bestFavDessert = null;
 		double bestQuality = -1;
@@ -350,9 +351,6 @@ public class PreparingDessert extends Function {
 		// quality among the current servings ?
 		Iterator<PreparedDessert> i = servingsOfDessert.iterator();
 		while (i.hasNext()) {
-			// PreparedDessert freshDessert = i.next();
-			// if (freshDessert.getQuality() > bestQuality)
-			// bestQuality = freshDessert.getQuality();
 			double q = i.next().getQuality();
 			if (q > bestQuality)
 				bestQuality = q;
@@ -505,7 +503,6 @@ public class PreparingDessert extends Function {
 	 * @return number of prepared desserts.
 	 */
 	private int getTotalAvailablePreparedDessertsAtSettlement(Settlement settlement) {
-
 		int result = 0;
 
 		Iterator<Building> i = settlement.getBuildingManager().getBuildings(FunctionType.PREPARING_DESSERT).iterator();
@@ -636,7 +633,7 @@ public class PreparingDessert extends Function {
 	
 			// Check if not meal time, clean up.
 			Coordinates location = building.getSettlement().getCoordinates();
-			if (!CookMeal.isLocalMealTime(location, 10)) {
+			if (!CookMeal.isLocalMealTime(location, 0)) {
 				finishUp();
 			}
 	

@@ -54,7 +54,7 @@ public class PrepareDessertMeta extends MetaTask {
 
         double result = 0D;
         
-        if (person.isInside() && CookMeal.isLocalMealTime(person.getCoordinates(), 10)) {
+        if (person.isInside() && CookMeal.isLocalMealTime(person.getCoordinates(), PrepareDessert.PREP_TIME)) {
             // Desserts should be prepared during meal times.
         	
             // Probability affected by the person's stress and fatigue.

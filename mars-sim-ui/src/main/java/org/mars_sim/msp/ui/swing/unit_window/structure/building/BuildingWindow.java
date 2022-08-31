@@ -50,6 +50,7 @@ public class BuildingWindow extends UnitWindow {
 				addTabPanel( new BuildingPanelComputation(building.getComputation(), desktop));
 				break;
 			case COOKING:
+			case PREPARING_DESSERT:
 	        	addTabPanel( new BuildingPanelCooking(building.getCooking(), desktop));	
 				break;
 			case EVA:

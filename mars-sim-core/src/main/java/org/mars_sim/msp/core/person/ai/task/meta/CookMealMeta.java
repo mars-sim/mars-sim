@@ -47,7 +47,7 @@ public class CookMealMeta extends MetaTask {
     		
         double result = 0D;
 
-        if (person.isInSettlement() && CookMeal.isLocalMealTime(person.getCoordinates(), 20)) {
+        if (person.isInSettlement() && CookMeal.isLocalMealTime(person.getCoordinates(), CookMeal.PREP_TIME)) {
 
             // Probability affected by the person's stress and fatigue.
             if (!person.getPhysicalCondition().isFitByLevel(1000, 70, 1000)) {
@@ -70,7 +70,7 @@ public class CookMealMeta extends MetaTask {
 
                     result = 50;
                     
-                	if (CookMeal.isLocalMealTime(person.getCoordinates(), 20)) {
+                	if (CookMeal.isLocalMealTime(person.getCoordinates(), CookMeal.PREP_TIME)) {
                 		result *= 50;
                 	}
                 	else

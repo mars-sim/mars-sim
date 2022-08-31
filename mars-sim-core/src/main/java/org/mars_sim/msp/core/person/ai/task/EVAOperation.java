@@ -634,7 +634,7 @@ public abstract class EVAOperation extends Task {
 	 * @return
 	 */
 	public static boolean isHungryAtMealTime(Person person) {
-        return CookMeal.isLocalMealTime(person.getCoordinates(), 15) 
+        return CookMeal.isLocalMealTime(person.getCoordinates(), 0) 
         		&& person.getPhysicalCondition().isHungry();
     }
 

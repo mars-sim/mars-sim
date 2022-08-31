@@ -607,7 +607,6 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 
 			case COOKING:
 				buildingFunctions.add(new Cooking(this, fSpec));
-				buildingFunctions.add(new PreparingDessert(this, fSpec));
 				break;
 
 			case DINING:
@@ -670,6 +669,10 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 				buildingFunctions.add(new PowerStorage(this, fSpec));
 				break;
 
+			case PREPARING_DESSERT:
+				buildingFunctions.add(new PreparingDessert(this, fSpec));
+				break;
+				
 			case RECREATION:
 				buildingFunctions.add(new Recreation(this, fSpec));
 				break;

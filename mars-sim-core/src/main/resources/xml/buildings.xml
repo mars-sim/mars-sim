@@ -20,7 +20,7 @@
 	<!ELEMENT functions (administration?, astronomical-observation?, building-connection?,
 	communication?, computation?, cooking?, dining?, earth-return?, EVA?, exercise?, food-production?, farming?, fishery?,
 	ground-vehicle-maintenance?, life-support?, living-accommodations?, management?, manufacture?,
-	medical-care?, power-generation?, power-storage?, recreation?, research?,
+	medical-care?, power-generation?, power-storage?, preparing-dessert?, recreation?, research?,
 	resource-processing?, robotic-station?, storage?, thermal-generation?, thermal-storage?, waste-processing? )>
 
 	<!ELEMENT administration (activity?)>
@@ -116,7 +116,8 @@
 	<!ATTLIST thermal-storage capacity CDATA #REQUIRED>
 	<!ELEMENT waste-processing (process+, activity?)>
 	<!ATTLIST waste-processing power-down-level CDATA #REQUIRED>
-	
+	<!ELEMENT preparing-dessert (activity?)>
+	<!ATTLIST preparing-dessert capacity CDATA #REQUIRED>
 	<!ELEMENT process (description?, input+, output+)>
 	<!ATTLIST process name CDATA #REQUIRED>
 	<!ATTLIST process power-required CDATA #REQUIRED>
@@ -220,7 +221,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<cooking capacity="2">
 				<activity>
 					<activity-spot xloc="1.7"  yloc="-2.42" />
-					<activity-spot xloc="0.38" yloc="-2.42" />
+					<activity-spot xloc="0.4" yloc="-2.42" />
 				</activity>
 			</cooking>
 
@@ -310,6 +311,13 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!-- power storage capacity in the energy unit of kW hr. -->
 			<power-storage capacity="40" discharge-rate="1.25"/>
 
+			<!-- The building has facilities for preparing dessert. -->
+			<preparing-dessert capacity="1">
+				<activity>
+					<activity-spot xloc="2.25"  yloc="-3.05" />
+				</activity>
+			</preparing-dessert>
+			
 			<!-- The building has recreation facilities (movies, games, music, etc.). -->
 			<recreation capacity="2">
 				<activity>
@@ -2190,15 +2198,19 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<power-required base-power="2.0" base-power-down-power="0.2" />
 
 		<functions>
-			<cooking capacity="4">
+			<cooking capacity="6">
 				<activity>
-					<activity-spot xloc="-1.7" yloc="3.7" />
-					<activity-spot xloc="-1.7" yloc="3.2" />
-					<activity-spot xloc="-1.9" yloc="2.9" />
-					<activity-spot xloc="-2.4" yloc="2.9" />
+					<activity-spot xloc="-1.7" yloc="3.4" />
+					<activity-spot xloc="-1.7" yloc="2.95" />
+					
+					<activity-spot xloc="-2.15" yloc="2.95" />
+					<activity-spot xloc="-2.5" yloc="2.95" />
+					
+					<activity-spot xloc="-2.5" yloc="3.4" />
+					<activity-spot xloc="-2.5" yloc="3.85" />
 				</activity>
 			</cooking>
-
+			
 			<dining capacity="33">
 				<activity>
 					<activity-spot xloc="-.65" yloc="2.0" />
@@ -2253,15 +2265,16 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			<food-production tech-level="4" concurrent-processes="8">
 				<activity>
-					<activity-spot xloc="-0.8" yloc="3.4" />
-					<activity-spot xloc="-0.7" yloc="3.2" />
-					<activity-spot xloc="-0.8" yloc="3.1" />
-					<activity-spot xloc="-0.7" yloc="2.9" />
-
-					<activity-spot xloc="-2.4" yloc="3.1" />
-					<activity-spot xloc="-1.6" yloc="3.2" />
-					<activity-spot xloc="-2.3" yloc="2.9" />
-					<activity-spot xloc="-2.3" yloc="2.9" />
+					<activity-spot xloc="1.85" yloc="4.2" />
+					<activity-spot xloc="1.85" yloc="2.85" />
+					
+					<activity-spot xloc="3" yloc="3.85" />
+					<activity-spot xloc="2.5" yloc="3.85" />
+					<activity-spot xloc="2.05" yloc="3.85" />
+					
+					<activity-spot xloc="3" yloc="3.15" />
+					<activity-spot xloc="2.5" yloc="3.15" />
+					<activity-spot xloc="2.05" yloc="3.15" />
 				</activity>
 			</food-production>
 
@@ -2274,6 +2287,12 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</power-generation>
 
 			<power-storage capacity="20"  discharge-rate="1.25"/>
+			
+			<preparing-dessert capacity="1">
+				<activity>
+					<activity-spot xloc="-3.25"  yloc="2.95" />
+				</activity>
+			</preparing-dessert>
 
 			<recreation capacity="25">
 				<activity>
@@ -2282,16 +2301,19 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="2.2" yloc="1.05" />
 					<activity-spot xloc=".7" yloc="2.1" />
 					<activity-spot xloc=".3" yloc="2.3" />
+					
 					<activity-spot xloc="2.5" yloc="2.1" />
 					<activity-spot xloc="2.9" yloc="2.3" />
 					<activity-spot xloc="-.55" yloc="-1.4" />
 					<activity-spot xloc="-1.35" yloc="-1.3" />
 					<activity-spot xloc="-1.2" yloc="-2.05" />
+					
 					<activity-spot xloc="-.4" yloc="-2.15" />
 					<activity-spot xloc="-2.1" yloc="-1.1" />
 					<activity-spot xloc="-2.2" yloc="-1.85" />
 					<activity-spot xloc="-2.05" yloc="-2.35" />
 					<activity-spot xloc="-2.05" yloc="-3.25" />
+					
 					<activity-spot xloc="-1.45" yloc="-2.75" />
 					<activity-spot xloc="-1.15" yloc="-2.95" />
 					<activity-spot xloc="-.35" yloc="-2.8" />
@@ -2302,10 +2324,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			<robotic-station capacity="4">
 				<activity>
-					<activity-spot xloc="0.5" yloc="-3.5" />
-					<activity-spot xloc="1.0" yloc="-3.5" />
-					<activity-spot xloc="1.5" yloc="-3.5" />
-					<activity-spot xloc="2.0" yloc="-3.5" />
+					<activity-spot xloc="-3.0" yloc="-3.4" />
+					<activity-spot xloc="3.0" yloc="-3.4" />
+					<activity-spot xloc="-2.5" yloc="-4.05" />
+					<activity-spot xloc="2.5" yloc="-4.05" />
 				</activity>
 			</robotic-station>
 
@@ -3420,17 +3442,20 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="0" yloc="0" />
 				</activity>
 			</computation>
+			
 			<cooking capacity="2">
 				<activity>
 					<activity-spot xloc="-1.3" yloc="3.7" />
-					<activity-spot xloc="-1.3" yloc="3.7" />
+					<activity-spot xloc="-1.5" yloc="3.7" />
 				</activity>
 			</cooking>
+			
 			<dining capacity="6">
 				<activity>
 					<activity-spot xloc="-.75" yloc="2.67" />
 					<activity-spot xloc="-3.73" yloc="2.67" />
 					<activity-spot xloc="-1.65" yloc="3.05" />
+					
 					<activity-spot xloc="-2.8" yloc="3.05" />
 					<activity-spot xloc="-1.65" yloc="2.3" />
 					<activity-spot xloc="-2.8" yloc="2.3" />
@@ -3473,6 +3498,12 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			<power-storage capacity="40"  discharge-rate="1.25"/>
 
+			<preparing-dessert capacity="1">
+				<activity>
+					<activity-spot xloc="-1.1"  yloc="3.7" />
+				</activity>
+			</preparing-dessert>
+			
 			<recreation capacity="4">
 				<activity>
 					<activity-spot xloc="-2.15" yloc="1.35" />

@@ -43,13 +43,15 @@ public class CookMeal extends Task implements Serializable {
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.cookMeal"); //$NON-NLS-1$
 
+	
 	/** Task phases. */
 	private static final TaskPhase COOKING = new TaskPhase(Msg.getString("Task.phase.cooking")); //$NON-NLS-1$
 
 	// Static members
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = -.1D;
-
+	/** The meal preparation time. */
+	public static final int PREP_TIME = 15;
 	// Starting meal times (millisol) for 0 degrees longitude.
 	private static final int BREAKFAST_START = 250; // at 6am
 	private static final int LUNCH_START = 500; // at 12 am
@@ -184,7 +186,7 @@ public class CookMeal extends Task implements Serializable {
 		double workTime = time;
 
 		// If meal time is over, end task.
-		if (!isLocalMealTime(worker.getCoordinates(), 20)) {
+		if (!isLocalMealTime(worker.getCoordinates(), PREP_TIME)) {
 			if (lastCookedMeal != null)
 				logger.log(worker, Level.FINE, 0, "Ended cooking " + lastCookedMeal + ". The meal time was over.");
 			else

@@ -1656,7 +1656,6 @@ public class BuildingManager implements Serializable {
 
 				case COOKING:
 					result += Cooking.getFunctionValue(buildingType, newBuilding, settlement);
-					result += PreparingDessert.getFunctionValue(buildingType, newBuilding, settlement);
 					break;
 
 				case DINING:
@@ -1719,6 +1718,10 @@ public class BuildingManager implements Serializable {
 					result += PowerStorage.getFunctionValue(buildingType, newBuilding, settlement);
 					break;
 
+				case PREPARING_DESSERT:
+					result += PreparingDessert.getFunctionValue(buildingType, newBuilding, settlement);
+					break;
+					
 				case RECREATION:
 					result += Recreation.getFunctionValue(buildingType, newBuilding, settlement);
 					break;
