@@ -870,31 +870,23 @@ public class PhysicalCondition implements Serializable {
 	 * @param hunger
 	 */
 	private void checkStarvation(double hunger) {
-		starved = getStarvationProblem();
-
-		if (starved == null)
-			return;
 		
 		if (!isStarving && hunger > starvationStartTime) {
 
+			starved = getStarvationProblem();
+
 			// if problems doesn't have starvation, execute the following
-			if (!problems.contains(starved)) {
-
+			if (starved == null || !problems.contains(starved)) {
 				addMedicalComplaint(starvation);
-
 				isStarving = true;
-
 				person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
-
 				logger.log(person, Level.INFO, 20_000, "Starting starving.");
 			}
 
 			else {
-
 				starved.setCured();
 				// Set isStarving to false
 				isStarving = false;
-
 				logger.log(person, Level.INFO, 20_000, "Cured of starving (case 1).");
 			}
 
@@ -967,15 +959,13 @@ public class PhysicalCondition implements Serializable {
 	 * @param hunger
 	 */
 	private void checkDehydration(double thirst) {
-		dehydrated = getDehydrationProblem();
 
-		if (dehydrated == null)
-			return;
-		
 		// If the person's thirst is greater than dehydrationStartTime
 		if (!isDehydrated && thirst > dehydrationStartTime) {
 
-			if (!isDehydrated && problems.contains(dehydrated)) {
+			dehydrated = getDehydrationProblem();
+
+			if (dehydrated == null || problems.contains(dehydrated)) {
 				addMedicalComplaint(dehydration);
 				isDehydrated = true;
 				person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
@@ -985,8 +975,7 @@ public class PhysicalCondition implements Serializable {
 				dehydrated.setCured();
 				// Set dehydrated to false
 				isDehydrated = false;
-
-				logger.log(person, Level.INFO, 0, "Cured of dehydrated (case 1).");
+				logger.log(person, Level.INFO, 0, "Cured of dehydration (case 1).");
 			}
 		}
 
@@ -2151,10 +2140,7 @@ public class PhysicalCondition implements Serializable {
 	 * @param amount in kg
 	 */
 	public void recordFoodConsumption(double amount, int type) {
-//		if (type >= 0 && type <= 3) {
-			foodConsumption[type].increaseDataPoint(amount);
-//			return;
-//		}
+		foodConsumption[type].increaseDataPoint(amount);
 	}
 	
 	/**
@@ -2163,10 +2149,7 @@ public class PhysicalCondition implements Serializable {
 	 * @return
 	 */
 	public Map<Integer, Double> getFoodConsumption(int type) {
-//		if (type >= 0 && type <= 3) {
-			return foodConsumption[type].getHistory();
-//		}
-//		return null;
+		return foodConsumption[type].getHistory();
 	}
 	
 	/**

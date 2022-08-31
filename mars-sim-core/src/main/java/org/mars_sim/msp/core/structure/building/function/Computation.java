@@ -58,11 +58,11 @@ public class Computation extends Function {
 	 * @param spec Specification of the Computing Function
 	 * @throws BuildingException if error in constructing function.
 	 */
-	public Computation(Building building, FunctionSpec spec) {
+	public Computation(Building bldg, FunctionSpec spec) {
 		// Call Function constructor.
-		super(FunctionType.COMPUTATION, spec, building);
+		super(FunctionType.COMPUTATION, spec, bldg);
 		
-		this.building = building;
+		this.building = bldg;
 		
 		peakCU = spec.getDoubleProperty(COMPUTING_UNIT);
 		computingUnit = peakCU; 

@@ -45,8 +45,6 @@ public class ItemResourceUtil implements Serializable {
 	public static final String LASER_SINTERING_3D_PRINTER = "laser sintering 3d printer";
 
 	private static final String PIPE_WRENCH = "pipe wrench";
-	private static final String DECONTAMINATION_KIT = "decontamination kit";
-	private static final String AIRLEAK_PATCH = "airleak patch";
 	private static final String FIRE_EXTINGUSHER = "fire extinguisher";
 	private static final String WORK_GLOVES = "work gloves";
 	private static final String CONTAINMENT_KIT = "mushroom containment kit";
@@ -120,7 +118,7 @@ public class ItemResourceUtil implements Serializable {
 			REFRIGERATOR,		STOVE};
 	
 	public static Part pneumaticDrill;
-	public static Part backhoe;
+	public static Part backhoePart;
 	public static Part socketWrench;
 	public static Part pipeWrench;
 
@@ -198,7 +196,7 @@ public class ItemResourceUtil implements Serializable {
 	 */
 	public void createIDs() {
 		pneumaticDrill = (Part) findItemResource(PNEUMATIC_DRILL);
-		backhoe = (Part) findItemResource(BACKHOE);
+		backhoePart = (Part) findItemResource(BACKHOE);
 		socketWrench = (Part) findItemResource(SOCKET_WRENCH);
 		pipeWrench = (Part) findItemResource(PIPE_WRENCH);
 

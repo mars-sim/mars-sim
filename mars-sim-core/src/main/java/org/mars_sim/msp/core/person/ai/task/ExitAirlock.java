@@ -983,7 +983,7 @@ public class ExitAirlock extends Task implements Serializable {
 				setPhase(DEPRESSURIZE_CHAMBER);
 				// Reset accumulatedTime back to zero
 				accumulatedTime = 0;
-				return 0;
+				return time / 2.0;
 			}
 			
 			if (airlock.inAirlock(person)) {

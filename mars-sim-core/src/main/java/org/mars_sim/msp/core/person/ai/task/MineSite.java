@@ -148,7 +148,7 @@ public class MineSite extends EVAOperation {
 		double remainingTime = 0;
 		
 		if (checkReadiness(time) > 0)
-			return remainingTime;
+			return time;
 
 		// Check if there is reason to cut the mining phase short and return
 		// to the rover.
