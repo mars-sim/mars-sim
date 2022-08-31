@@ -883,18 +883,18 @@ public class PhysicalCondition implements Serializable {
 				logger.log(person, Level.INFO, 20_000, "Starting starving.");
 			}
 
-			else {
-				starved.setCured();
-				// Set isStarving to false
-				isStarving = false;
-				logger.log(person, Level.INFO, 20_000, "Cured of starving (case 1).");
-			}
+//			else if (starved != null) {
+//				starved.setCured();
+//				// Set isStarving to false
+//				isStarving = false;
+//				logger.log(person, Level.INFO, 20_000, "Cured of starving (case 1).");
+//			}
 
 			// Note : how to tell a person to walk back to the settlement ?
 			// Note : should check if a person is on a critical mission,
 		}
 
-		else if (isStarving) {
+		else if (starved != null && isStarving) {
 
 			if (hunger < HUNGER_THRESHOLD / 2 || kJoules > ENERGY_THRESHOLD) {
 
@@ -929,14 +929,15 @@ public class PhysicalCondition implements Serializable {
 			}
 		}
 
-		else {
-
-			starved.setCured();
-			// Set isStarving to false
-			isStarving = false;
-
-			logger.log(person, Level.INFO, 20_000, "Cured of starving (case 3).");
-		}
+//		else {
+//
+//			if (starved != null)
+//				starved.setCured();
+//			// Set isStarving to false
+//			isStarving = false;
+//
+//			logger.log(person, Level.INFO, 20_000, "Cured of starving (case 3).");
+//		}
 	}
 
 	/**
@@ -965,21 +966,21 @@ public class PhysicalCondition implements Serializable {
 
 			dehydrated = getDehydrationProblem();
 
-			if (dehydrated == null || problems.contains(dehydrated)) {
+			if (dehydrated == null || !problems.contains(dehydrated)) {
 				addMedicalComplaint(dehydration);
 				isDehydrated = true;
 				person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
 			}
 
-			else {
-				dehydrated.setCured();
-				// Set dehydrated to false
-				isDehydrated = false;
-				logger.log(person, Level.INFO, 0, "Cured of dehydration (case 1).");
-			}
+//			else if (dehydrated != null) {
+//				dehydrated.setCured();
+//				// Set dehydrated to false
+//				isDehydrated = false;
+//				logger.log(person, Level.INFO, 0, "Cured of dehydration (case 1).");
+//			}
 		}
 
-		else if (isDehydrated) {
+		else if (dehydrated != null && isDehydrated) {
 
 			if (thirst < THIRST_THRESHOLD / 2) {
 				dehydrated.setCured();
@@ -1012,13 +1013,14 @@ public class PhysicalCondition implements Serializable {
 			}
 		}
 
-		else {
-			dehydrated.setCured();
-			// Set dehydrated to false
-			isDehydrated = false;
-
-			logger.log(person, Level.INFO, 0, "Cured of dehydrated (case 3).");
-		}
+//		else {
+//			if (dehydrated != null)
+//				dehydrated.setCured();
+//			// Set dehydrated to false
+//			isDehydrated = false;
+//
+//			logger.log(person, Level.INFO, 0, "Cured of dehydrated (case 3).");
+//		}
 	}
 
 	/**
