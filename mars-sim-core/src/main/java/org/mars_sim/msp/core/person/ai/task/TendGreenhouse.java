@@ -183,11 +183,14 @@ public class TendGreenhouse extends Task implements Serializable {
 				
 				addPhase(acceptedTask);
 				setPhase(acceptedTask);
-				
-				return;
 			}
 		}
-		
+		else 	
+			calculateProbability(tendingNeed);
+	}
+	
+	public void calculateProbability(double tendingNeed) {
+	
 		int probability = (int)(tendingNeed/10.0 + RandomUtil.getRandomInt(-10, 10));
 		if (probability > 15)
 			probability = 15;
@@ -444,7 +447,6 @@ public class TendGreenhouse extends Task implements Serializable {
 				// Can't find any matured crop to sample
 				logger.log(greenhouse.getBuilding(), worker, Level.INFO, 20_000, 
 						"Can't find matured crops to sample in botany lab.");
-	
 				// Find another task
 				selectTask();
 				
@@ -461,6 +463,9 @@ public class TendGreenhouse extends Task implements Serializable {
 			greenhouse.getResearch().harvestTissue(worker);
 			
 			logger.log(greenhouse.getBuilding(), worker, Level.INFO, 0, "Done with growing " + goal + " tissues in botany lab.");
+					
+			// Reset goal to null
+			goal = null;
 			
 			endTask();
 		}

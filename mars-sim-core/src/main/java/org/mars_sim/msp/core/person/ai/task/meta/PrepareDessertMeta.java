@@ -54,7 +54,8 @@ public class PrepareDessertMeta extends MetaTask {
 
         double result = 0D;
         
-        if (person.isInside() && CookMeal.isLocalMealTime(person.getCoordinates(), PrepareDessert.PREP_TIME)) {
+        if (person.isInSettlement() 
+        		&& CookMeal.isLocalMealTime(person.getCoordinates(), PrepareDessert.PREP_TIME)) {
             // Desserts should be prepared during meal times.
         	
             // Probability affected by the person's stress and fatigue.
@@ -76,13 +77,13 @@ public class PrepareDessertMeta extends MetaTask {
 
                 if ((numGoodRecipes > 0) && !enoughMeals) {
 
-                    result = numGoodRecipes * 100;
+                    result = numGoodRecipes * 200;
 
                     // Crowding modifier.
                     result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, kitchenBuilding);
                     result *= TaskProbabilityUtil.getRelationshipModifier(person, kitchenBuilding);
 
-                    result = applyPersonModifier(result, person);
+                    result = 100 * applyPersonModifier(result, person);
                 }
             }
         }
@@ -96,7 +97,8 @@ public class PrepareDessertMeta extends MetaTask {
 
        double result = 0D;
 
-       if (CookMeal.isMealTime(robot, 10) && robot.getRobotType() == RobotType.CHEFBOT) {
+       if (CookMeal.isMealTime(robot, PrepareDessert.PREP_TIME) 
+    		   && robot.getRobotType() == RobotType.CHEFBOT) {
            // See if there is an available kitchen.
            Building kitchenBuilding = PrepareDessert.getAvailableKitchen(robot);
 
@@ -112,7 +114,7 @@ public class PrepareDessertMeta extends MetaTask {
 
                if ((numGoodRecipes > 0) && !enoughMeals) {
 
-            	   result = numGoodRecipes * 200;
+            	   result = numGoodRecipes * 500;
 
                    // Crowding modifier.
                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(robot, kitchenBuilding);

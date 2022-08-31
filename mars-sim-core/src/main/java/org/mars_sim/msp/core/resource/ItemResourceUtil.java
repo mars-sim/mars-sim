@@ -194,7 +194,7 @@ public class ItemResourceUtil implements Serializable {
 	/**
 	 * Prepares the id's of a few item resources
 	 */
-	public void createIDs() {
+	public static void createIDs() {
 		pneumaticDrill = (Part) findItemResource(PNEUMATIC_DRILL);
 		backhoePart = (Part) findItemResource(BACKHOE);
 		socketWrench = (Part) findItemResource(SOCKET_WRENCH);

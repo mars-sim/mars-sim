@@ -47,7 +47,8 @@ public class CookMealMeta extends MetaTask {
     		
         double result = 0D;
 
-        if (person.isInSettlement() && CookMeal.isLocalMealTime(person.getCoordinates(), CookMeal.PREP_TIME)) {
+        if (person.isInSettlement() 
+        		&& CookMeal.isLocalMealTime(person.getCoordinates(), CookMeal.PREP_TIME)) {
 
             // Probability affected by the person's stress and fatigue.
             if (!person.getPhysicalCondition().isFitByLevel(1000, 70, 1000)) {
@@ -68,13 +69,7 @@ public class CookMealMeta extends MetaTask {
 
                 if (kitchen.canCookMeal()) {
 
-                    result = 50;
-                    
-                	if (CookMeal.isLocalMealTime(person.getCoordinates(), CookMeal.PREP_TIME)) {
-                		result *= 50;
-                	}
-                	else
-                		return 0;  
+                    result = 500;
                 	
                     // Crowding modifier.
                     result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, kitchenBuilding);
@@ -82,9 +77,7 @@ public class CookMealMeta extends MetaTask {
                     result *= TaskProbabilityUtil.getRelationshipModifier(person, kitchenBuilding);
                     
                     // Apply the standard Person modifiers
-                    result = applyPersonModifier(result, person);
-                    
-//                    System.out.println(person + " CookMealMeta : " + result);
+                    result = 100 * applyPersonModifier(result, person);
                 }
             }
         }
@@ -102,7 +95,7 @@ public class CookMealMeta extends MetaTask {
 
         double result = 0D;
 
-        if (CookMeal.isMealTime(robot, 20)
+        if (CookMeal.isMealTime(robot, CookMeal.PREP_TIME)
             && robot.getRobotType() == RobotType.CHEFBOT) {
             // See if there is an available kitchen.
             Building kitchenBuilding = CookMeal.getAvailableKitchen(robot);
@@ -114,24 +107,16 @@ public class CookMealMeta extends MetaTask {
                 // Check if enough meals have been cooked at kitchen for this meal time.
                 boolean enoughMeals = kitchen.getCookNoMore();
 
-                if (enoughMeals) return 0;
+                if (enoughMeals) 
+                	return 0;
 
                 if (kitchen.canCookMeal()) {
                 	
-                    result = 300D;                	
-                    
-                    if (CookMeal.isLocalMealTime(robot.getCoordinates(), 20)) {
-                		result *= 50;
-                	}
-                	else
-                		return 0;  
-                	
+                    result = 1000D;
                     // Crowding modifier.
                     result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(robot, kitchenBuilding);
                     // Effort-driven task modifier.
                     result *= robot.getPerformanceRating();
-                    
-//                    System.out.println(robot + "CookMealMeta : " + result);
                 }
             }
         }

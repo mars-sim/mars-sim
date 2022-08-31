@@ -243,19 +243,17 @@ public class Farming extends Function {
 	 * @return
 	 */
 	public String chooseCrop2Extract(double amount) {
-		List<CropSpec> cropList = new ArrayList<>(cropConfig.getCropTypes());
-		Collections.shuffle(cropList);
+		List<CropSpec> list = new ArrayList<>(cropConfig.getCropTypes());
+		Collections.shuffle(list);
 
-		cropList = cropList.stream()
+		list = list.stream()
 				.filter(c -> building.getSettlement()
 				.getAllAmountResourceOwned(c.getCropID()) > amount)
 				.collect(Collectors.toList());
-		
-//		logger.info(cropList.toString());
-		
+			
 		List<AmountResource> tissues = new ArrayList<>();
 		
-		for (CropSpec c: cropList) {
+		for (CropSpec c: list) {
 			String cropName = c.getName();
 			String tissueName = cropName + Farming.TISSUE;
 			AmountResource tissue = ResourceUtil.findAmountResource(tissueName);	
@@ -263,9 +261,7 @@ public class Farming extends Function {
 			if (amountTissue < LOW_AMOUNT_TISSUE_CULTURE)
 				tissues.add(tissue);
 		}
-		
-//		logger.info(tissues.toString());
-		
+	
 		String tissueName = null;
 		double amountTissue = 0;
 		

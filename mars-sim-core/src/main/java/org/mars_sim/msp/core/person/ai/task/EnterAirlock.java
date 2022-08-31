@@ -276,7 +276,7 @@ public class EnterAirlock extends Task implements Serializable {
 			if (!airlock.addAwaitingOuterDoor(id)) {
 				logger.log(unit, person, Level.FINE, 60_000,
 						"Cannot get a spot outside the outer door in " + airlock.getEntity().toString() + ".");
-				// Reset accumulatedTime back to zero accumulatedTime = 0;
+				// Reset accumulatedTime back to zero accumulatedTime = 0
 				// Do nothing in this frame
 				// Wait and see if he's allowed to be at the outer door in the next frame
 				return 0;
@@ -285,7 +285,7 @@ public class EnterAirlock extends Task implements Serializable {
 			if (airlock.isChamberFull() || !airlock.hasSpace()) {
 				logger.log(unit, person, Level.FINE, 60_000,
 						"Chamber full in " + airlock.getEntity().toString() + ".");
-				// Reset accumulatedTime back to zero accumulatedTime = 0;
+				// Reset accumulatedTime back to zero accumulatedTime = 0
 				// Do nothing in this frame
 				// Wait and see if he's allowed to be at the outer door in the next frame
 				return 0;
