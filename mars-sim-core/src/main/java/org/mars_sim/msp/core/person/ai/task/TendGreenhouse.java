@@ -69,6 +69,8 @@ public class TendGreenhouse extends Task implements Serializable {
 	private TaskPhase acceptedTask;
 	/** The crop to be worked on. */
 	private Crop needyCrop;
+	/** The crop specs to be selected to plant. */
+	private CropSpec cropSpec;
 	
 	/**
 	 * Constructor.
@@ -184,6 +186,9 @@ public class TendGreenhouse extends Task implements Serializable {
 				addPhase(acceptedTask);
 				setPhase(acceptedTask);
 			}
+			
+			else 
+				endTask();
 		}
 		else 	
 			calculateProbability(tendingNeed);
@@ -367,14 +372,14 @@ public class TendGreenhouse extends Task implements Serializable {
 
 			if (remain > 0) {
 				// Divided by mod to get back any leftover real time
-				remainingTime = time - (usedTime / mod);
+				remainingTime = time - usedTime;
 			}
 			
 			// Add experience
 			addExperience(time);
 	
 			// Check for accident in greenhouse.
-			checkForAccident(greenhouse.getBuilding(), time, 0.005D);
+			checkForAccident(greenhouse.getBuilding(), time, 0.005);
 		}
 		else {
 			logger.log(greenhouse.getBuilding(), worker, Level.INFO, 30_000, 
@@ -407,17 +412,37 @@ public class TendGreenhouse extends Task implements Serializable {
 
 		double workTime = time * mod;
 		
-		addExperience(workTime);
-		
-		printDescription(Msg.getString("Task.description.tendGreenhouse.transfer"));
-		
-		if (getDuration() <= (getTimeCompleted() + time)) {
-			Crop crop = greenhouse.transferSeedling(getTimeCompleted() + time, worker);
-			if (crop != null)
-				printDescription(Msg.getString("Task.description.tendGreenhouse.plant.detail", crop.getCropName()));
-			endTask();
-		}
+		if (cropSpec == null) {
+			cropSpec = greenhouse.selectSeedling();
+			if (cropSpec != null) {
+				printDescription(Msg.getString("Task.description.tendGreenhouse.plant.detail", cropSpec.getName()));
+			}
+			else {
+				// Can't find any matured crop to sample
+				logger.log(greenhouse.getBuilding(), worker, Level.INFO, 20_000, 
+						"Can't find matured crops to sample in botany lab.");
+				// Find another task
+				selectTask();
+				
+				return time / 2.0;
+			}
+			
+			printDescription(Msg.getString("Task.description.tendGreenhouse.transfer"));
 
+			
+			addExperience(workTime);
+	
+		}
+		
+		else {
+			
+			addExperience(workTime);
+	
+			if (getDuration() <= (getTimeCompleted() + time)) {
+				greenhouse.plantSeedling(cropSpec, getTimeCompleted() + time, worker);
+			}
+		}
+		
 		return 0;
 	}
 

@@ -138,15 +138,17 @@ public class MedicalManager implements Serializable {
 		freezing = createEnvironmentComplaint(ComplaintType.FREEZING, 50, personConfig.getFreezingTime(), 1, 50, false);
 		addEnvComplaint(freezing);
 
-		// Somewhat serious complaint
+		// degrade = (7 - 3) * 1000 millisols
+		double degrade = (personConfig.getWaterDeprivationTime() - personConfig.getDehydrationStartTime()) * 1000D;
 		dehydration = createEnvironmentComplaint(ComplaintType.DEHYDRATION, 20,
-				(personConfig.getWaterDeprivationTime() - personConfig.getDehydrationStartTime()) * 1000D, 1, 80,
+				degrade, 1, 80,
 				false);
 		addEnvComplaint(dehydration);
 
-		// Least serious complaint
+		// degrade = (40 - 7) * 1000 millisols
+		degrade = (personConfig.getFoodDeprivationTime() - personConfig.getStarvationStartTime()) * 1000D;
 		starvation = createEnvironmentComplaint(ComplaintType.STARVATION, 40,
-				(personConfig.getFoodDeprivationTime() - personConfig.getStarvationStartTime()) * 1000D, 1, 60, false);
+				degrade, 1, 60, false);
 		addEnvComplaint(starvation);
 	}
 

@@ -279,7 +279,7 @@ public class EnterAirlock extends Task implements Serializable {
 				// Reset accumulatedTime back to zero accumulatedTime = 0
 				// Do nothing in this frame
 				// Wait and see if he's allowed to be at the outer door in the next frame
-				return 0;
+				return time * .75;
 			}
 
 			if (airlock.isChamberFull() || !airlock.hasSpace()) {
@@ -288,7 +288,7 @@ public class EnterAirlock extends Task implements Serializable {
 				// Reset accumulatedTime back to zero accumulatedTime = 0
 				// Do nothing in this frame
 				// Wait and see if he's allowed to be at the outer door in the next frame
-				return 0;
+				return time * .75;
 			}
 						
 			if (!airlock.isOuterDoorLocked() && transitionTo(4)) {
@@ -385,7 +385,6 @@ public class EnterAirlock extends Task implements Serializable {
 						+ list + " still inside not wearing EVA suit.");
 				// Reset accumulatedTime back to zero
 				accumulatedTime = 0;
-				return 0;
 			}
 
 			if (!airlock.isActivated()) {
@@ -402,7 +401,6 @@ public class EnterAirlock extends Task implements Serializable {
 		if (canProceed && accumulatedTime > STANDARD_TIME) {
 			// Reset accumulatedTime back to zero
 			accumulatedTime = 0;
-			
 			// Add experience
 			addExperience(time);
 
@@ -427,9 +425,9 @@ public class EnterAirlock extends Task implements Serializable {
 		if (!airlock.isDepressurized()) {
 			// Not at the correct airlock state. Go back to the previous task phase
 			setPhase(DEPRESSURIZE_CHAMBER);
-			// Reset accumulatedTime back to zero
-			accumulatedTime = 0;
-			return 0;
+			// Reset accumulatedTime back to zero accumulatedTime = 0;
+			
+			return time * .75;
 		}
 
 		if (inSettlement) {
@@ -438,18 +436,16 @@ public class EnterAirlock extends Task implements Serializable {
 				logger.log(unit, person, Level.WARNING, 4_000,
 						"Outer door locked in " + airlock.getEntity() + ".");
 
-				// Reset accumulatedTime back to zero
-				accumulatedTime = 0;
-				return 0;
+				// Reset accumulatedTime back to zero accumulatedTime = 0
+				return time * .75;
 			}
 			
 			if (airlock.isChamberFull() || !airlock.hasSpace())  {
 				logger.log(unit, person, Level.WARNING, 4_000,
 						"Chamber full in " + airlock.getEntity().toString() + ".");
 				
-				// Reset accumulatedTime back to zero
-				accumulatedTime = 0;
-				return 0;
+				// Reset accumulatedTime back to zero accumulatedTime = 0
+				return time * .75;
 			}
 				
             if (!airlock.inAirlock(person)) {
@@ -475,9 +471,9 @@ public class EnterAirlock extends Task implements Serializable {
 
 			else {
 				setPhase(REQUEST_INGRESS);
-				// Reset accumulatedTime back to zero
-				accumulatedTime = 0;
-				return 0;
+				// Reset accumulatedTime back to zero accumulatedTime = 0;
+				
+				return time * .75;
 			}
 		}
 
@@ -715,7 +711,8 @@ public class EnterAirlock extends Task implements Serializable {
 			setPhase(PRESSURIZE_CHAMBER);
 			// Reset accumulatedTime back to zero
 			accumulatedTime = 0;
-			return 0;
+			
+			return time * .75;
 		}
 
 		boolean doneCleaning = false;
@@ -774,27 +771,13 @@ public class EnterAirlock extends Task implements Serializable {
 
 		else {
 
-//			if (interiorDoorPos == null) {
-//				interiorDoorPos = airlock.getAvailableInteriorPosition();
-//			}
-//
-//			if (interiorDoorPos.isClose(person.getPosition())) {
-				if (airlock.inAirlock(person)) {
-					canProceed = airlock.exitAirlock(person, id, false);
-				}
-				else {
-					// Already exit the air lock
-					canProceed = true;
-				}
-//			}
-//
-//			else {
-//				Rover airlockRover = (Rover) airlock.getEntity();
-//				logger.log(unit, person, Level.FINE, 4_000,
-//						"Attempted to step closer to " + airlockRover.getNickName() + "'s inner door.");
-//
-//				addSubTask(new WalkRoverInterior(person, airlockRover, interiorDoorPos));
-//			}
+			if (airlock.inAirlock(person)) {
+				canProceed = airlock.exitAirlock(person, id, false);
+			}
+			else {
+				// Already exit the air lock
+				canProceed = true;
+			}
 		}
 
 		if (canProceed && accumulatedTime > STANDARD_TIME) {

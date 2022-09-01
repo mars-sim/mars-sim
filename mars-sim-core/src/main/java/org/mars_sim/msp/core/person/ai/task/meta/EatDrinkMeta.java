@@ -30,6 +30,8 @@ public class EatDrinkMeta extends MetaTask {
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.eatDrink"); //$NON-NLS-1$
 
+	private static final int LIMIT = 20000;
+	
     public EatDrinkMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.ANY_HOUR);
 
@@ -174,6 +176,9 @@ public class EatDrinkMeta extends MetaTask {
 			// Add Preference modifier
 			result += result * person.getPreference().getPreferenceScore(this) / 8D;
 
+        if (result > LIMIT)
+        	result = LIMIT;
+        
 		return result;
 	}
 }

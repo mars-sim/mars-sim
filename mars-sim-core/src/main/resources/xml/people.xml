@@ -250,11 +250,11 @@
 
 		<!-- Number of sols without water before dehydration kicks in -->
 		<!-- Default: 2.0 -->
-		<dehydration-start-time value="2.0" />
+		<dehydration-start-time value="3.0" />
 
 		<!-- Number of sols a person can go without food before dying -->
-		<!-- Default: 30.0 -->
-		<food-deprivation-time value="30.0" />
+		<!-- Default: 40.0 -->
+		<food-deprivation-time value="40.0" />
 
 		<!-- Number of sols without food before starvation kicks in -->
 		<!-- Default: 7.0 -->

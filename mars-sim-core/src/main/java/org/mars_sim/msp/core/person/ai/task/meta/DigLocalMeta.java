@@ -7,7 +7,6 @@
 package org.mars_sim.msp.core.person.ai.task.meta;
 
 import org.mars_sim.msp.core.equipment.EquipmentType;
-import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -21,7 +20,7 @@ import org.mars_sim.msp.core.structure.Settlement;
  */
 public abstract class DigLocalMeta extends MetaTask {
 
-	private static SimLogger logger = SimLogger.getLogger(DigLocalMeta.class.getName());
+//	private static SimLogger logger = SimLogger.getLogger(DigLocalMeta.class.getName());
 
 	private static final double VALUE = 5.0;
 	private static final int MAX = 5000;

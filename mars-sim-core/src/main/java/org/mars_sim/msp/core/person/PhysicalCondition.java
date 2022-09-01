@@ -921,10 +921,10 @@ public class PhysicalCondition implements Serializable {
 	 * @param hunger
 	 */
 	private void checkStarvation(double hunger) {
+
+		starved = getStarvationProblem();
 		
 		if (!isStarving && hunger > starvationStartTime) {
-
-			starved = getStarvationProblem();
 
 			// if problems doesn't have starvation, execute the following
 			if (starved == null || !problems.contains(starved)) {
@@ -995,10 +995,10 @@ public class PhysicalCondition implements Serializable {
 	 */
 	private void checkDehydration(double thirst) {
 
+		dehydrated = getDehydrationProblem();
+		
 		// If the person's thirst is greater than dehydrationStartTime
 		if (!isDehydrated && thirst > dehydrationStartTime) {
-
-			dehydrated = getDehydrationProblem();
 
 			if (dehydrated == null || !problems.contains(dehydrated)) {
 				addMedicalComplaint(dehydration);
@@ -1075,6 +1075,7 @@ public class PhysicalCondition implements Serializable {
 	 * @param time the time passing (millisols)
 	 */
 	private void checkRadiationPoisoning(double time) {
+		
 		radiationPoisoned = getRadiationProblem();
 
 		if (!isRadiationPoisoned && radiation.isSick()) {

@@ -839,10 +839,10 @@ public class Farming extends Function {
 	 * @param worker
 	 * @return Crop
 	 */
-	public Crop transferSeedling(double time, Worker worker) {
+	public CropSpec selectSeedling() {
+		CropSpec ct = null;
 		// Add any new crops.
 		for (int x = 0; x < numCrops2Plant; x++) {
-			CropSpec ct;
 			int size = cropListInQueue.size();
 			if (size > 0) {
 				String n = cropListInQueue.get(0);
@@ -853,19 +853,18 @@ public class Farming extends Function {
 			else {
 				ct = selectVPCrop();
 			}
-
-			if (ct != null) {
-				Crop crop = plantACrop(ct, false, 0);
-				cropList.add(crop);
-				cropHistory.put(crop.getIdentifier(), crop.getCropName());
-				building.fireUnitUpdate(UnitEventType.CROP_EVENT, crop);
-
-				logger.log(building, worker, Level.INFO, 3_000, "Planted a new crop of " + crop.getCropName() + ".");
-				numCrops2Plant--;
-				return crop;
-			}
 		}
-		return null;
+		return ct;
+	}
+	
+	public void plantSeedling(CropSpec ct, double time, Worker worker) {
+		Crop crop = plantACrop(ct, false, 0);
+		cropList.add(crop);
+		cropHistory.put(crop.getIdentifier(), crop.getCropName());
+		building.fireUnitUpdate(UnitEventType.CROP_EVENT, crop);
+
+		logger.log(building, worker, Level.INFO, 3_000, "Planted a new crop of " + crop.getCropName() + ".");
+		numCrops2Plant--;
 	}
 
 	/**
