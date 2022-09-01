@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * ManufactureConstructionMaterialsMeta.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-09-01
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -15,11 +15,13 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.JobType;
+import org.mars_sim.msp.core.person.ai.task.MaintainGroundVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.ManufactureConstructionMaterials;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 import org.mars_sim.msp.core.structure.OverrideType;
 import org.mars_sim.msp.core.structure.building.Building;
 
@@ -41,7 +43,7 @@ public class ManufactureConstructionMaterialsMeta extends MetaTask {
 		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
 		setFavorite(FavoriteType.TINKERING);
 		setTrait(TaskTrait.ARTISTIC);
-		setPreferredJob(JobType.ARCHITECT);
+		setPreferredJob(JobType.ARCHITECT, JobType.CHEMIST, JobType.ENGINEER);
 	}
 
     @Override
@@ -124,7 +126,7 @@ public class ManufactureConstructionMaterialsMeta extends MetaTask {
         if (robot.getSettlement().getProcessOverride(OverrideType.MANUFACTURE)) {
             return 0;
         }
-        
+			
         double result = 0D;
 
         if (robot.isInSettlement()) {

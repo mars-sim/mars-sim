@@ -122,6 +122,24 @@ public abstract class RobotJob implements Serializable {
 	}
 
 	/**
+	 * Gets the probability modifier for starting a non-job-related task.
+	 * 
+	 * @param taskName the task name
+	 * @return modifier >= 0.0
+	 */
+	public double getStartTaskProbabilityModifier(String taskName) {
+		double result = 1D;
+		for (Class<?> c: jobTasks) {
+			if (c.getSimpleName().contains(taskName)) {
+				result = NON_JOB_TASK_PENALTY;
+				break;
+			}
+		}
+		return result;
+	}
+
+	
+	/**
 	 * Gets the probability modifier for starting a non-job-related mission.
 	 * 
 	 * @param missionClass the mission class

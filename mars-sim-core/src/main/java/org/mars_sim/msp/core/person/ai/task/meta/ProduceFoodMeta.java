@@ -40,7 +40,6 @@ public class ProduceFoodMeta extends MetaTask {
 		
 		setPreferredJob(JobType.BIOLOGIST, JobType.CHEF,
 						JobType.CHEMIST, JobType.BOTANIST);
-
 	}
     
     @Override

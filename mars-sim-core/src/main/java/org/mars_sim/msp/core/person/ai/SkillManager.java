@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * SkillManager.java
- * @date 2022-07-16
+ * @date 2022-09-01
  * @author Scott Davis
  */
 
@@ -50,7 +50,7 @@ public class SkillManager implements Serializable {
 			robot = (Robot)unit;
 		}
 
-		skills = new ConcurrentHashMap<SkillType, Skill>();
+		skills = new ConcurrentHashMap<>();
 	}
 
 	/**
@@ -58,8 +58,8 @@ public class SkillManager implements Serializable {
 	 * 
 	 * @param t
 	 */
-	public void setRandomBotSkills(RobotType t) {
-		// Add starting skills randomly for a bot.
+	public void setBotSkills(RobotType t) {
+		// Add basic skills to a bot.
 		List<SkillType> skills = new ArrayList<>();
 		if (t == RobotType.MAKERBOT) {
 			skills.add(SkillType.MATERIALS_SCIENCE);
@@ -95,7 +95,6 @@ public class SkillManager implements Serializable {
 			int skillLevel = 1;
 			addNewSkillNExperience(startingSkill, skillLevel);
 		}
-
 	}
 	
 	/**

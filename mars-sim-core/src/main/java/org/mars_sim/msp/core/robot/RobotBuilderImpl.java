@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * RobotBuilderImpl.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-09-01
  * @author Manny Kung
  */
 
@@ -50,7 +50,7 @@ public class RobotBuilderImpl implements RobotBuilder<Robot>{
 
 	public RobotBuilder<Robot> setSkill(Map<String, Integer> skillMap, RobotType t) {
 		if (skillMap == null || skillMap.isEmpty()) {
-			robot.getSkillManager().setRandomBotSkills(t);
+			robot.getSkillManager().setBotSkills(t);
 		}
 		else {
 			Iterator<String> i = skillMap.keySet().iterator();

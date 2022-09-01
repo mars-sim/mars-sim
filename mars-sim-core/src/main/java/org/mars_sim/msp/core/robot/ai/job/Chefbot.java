@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Chefbot.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-09-01
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.robot.ai.job;
@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
+import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 
 /** 
  * The Chefbot class represents a job for a chefbot.
@@ -32,8 +33,6 @@ implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	//	private static final Logger logger = Logger.getLogger(Chef.class.getName());
-
 	/** constructor. */
 	public Chefbot() {
 		// Use Job constructor
@@ -43,11 +42,11 @@ implements Serializable {
 		jobTasks.add(CookMeal.class);
 		jobTasks.add(PrepareDessert.class);
 		jobTasks.add(ProduceFood.class);
-
 	}
 
 	/**
 	 * Gets a robot's capability to perform this job.
+	 * 
 	 * @param robot the person to check.
 	 * @return capability .
 	 */	
@@ -67,6 +66,7 @@ implements Serializable {
 
 	/**
 	 * Gets the base settlement need for this job.
+	 * 
 	 * @param settlement the settlement in need.
 	 * @return the base need >= 0
 	 */
@@ -74,7 +74,8 @@ implements Serializable {
 		double result = 15D;
 
 		// Add all kitchen work space in settlement.
-		List<Building> kitchenBuildings = settlement.getBuildingManager().getBuildings(FunctionType.COOKING);
+		List<Building> kitchenBuildings = settlement.getBuildingManager()
+				.getBuildings(FunctionType.COOKING);
 		Iterator<Building> i = kitchenBuildings.iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
@@ -82,9 +83,18 @@ implements Serializable {
 			result += (double) kitchen.getCookCapacity();
 		}
 
-		// Add total population / 10.
+		// Add all kitchen work space in settlement.
+		List<Building> dessertBuildings = settlement.getBuildingManager()
+				.getBuildings(FunctionType.PREPARING_DESSERT);
+		Iterator<Building> ii = dessertBuildings.iterator();
+		while (ii.hasNext()) {
+			Building building = ii.next();
+			PreparingDessert kitchen = (PreparingDessert) building.getFunction(FunctionType.PREPARING_DESSERT); 
+			result += (double) kitchen.getCookCapacity();
+		}
+		
 		int population = settlement.getIndoorPeopleCount();
-		result+= population / 10D;
+		result += population / 12.5;
 
 		return result;			
 	}
