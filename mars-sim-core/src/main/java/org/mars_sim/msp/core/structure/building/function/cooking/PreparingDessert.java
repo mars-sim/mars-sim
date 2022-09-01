@@ -632,8 +632,7 @@ public class PreparingDessert extends Function {
 			}
 	
 			// Check if not meal time, clean up.
-			Coordinates location = building.getSettlement().getCoordinates();
-			if (!CookMeal.isLocalMealTime(location, 0)) {
+			if (!CookMeal.isLocalMealTime(building.getSettlement().getCoordinates(), 0)) {
 				finishUp();
 			}
 	

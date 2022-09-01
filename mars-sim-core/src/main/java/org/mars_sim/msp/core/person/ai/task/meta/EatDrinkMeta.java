@@ -74,7 +74,7 @@ public class EatDrinkMeta extends MetaTask {
 		int desserts = 0;
 		double dFactor = 1;
 
-		if (CookMeal.isLocalMealTime(person.getCoordinates(), 0)) {
+		if (CookMeal.isMealTime(person, 0)) {
 			// Check if a cooked meal is available in a kitchen building at the settlement.
 			Cooking kitchen0 = EatDrink.getKitchenWithMeal(person);
 			if (kitchen0 != null) {
@@ -144,7 +144,7 @@ public class EatDrinkMeta extends MetaTask {
 				h0 += hunger * hunger / 50 + ghrelin / 2 - leptin / 2;
 
 				if (energy < 2525)
-					h0 += (2525 - energy) / 30D + ghrelin / 4 - leptin / 4;
+					h0 += (2525 - energy) / 30D;
 
 				if (person.isInSettlement()) {
 

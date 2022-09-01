@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
-import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitType;
@@ -199,6 +198,7 @@ public class EatDrink extends Task implements Serializable {
 		}
 
 		else {
+			// A person is on EVA suit
 			if (thirsty && waterAmount > 0) {
 				water = true;
 			}
@@ -228,7 +228,7 @@ public class EatDrink extends Task implements Serializable {
 
 		if (person.isInSettlement()) {
 
-			if (CookMeal.isLocalMealTime(person.getSettlement().getCoordinates(), 0)) {
+			if (CookMeal.isMealTime(person, 0)) {
 				if (meals > 0) {
 					Building diningBuilding = EatDrink.getAvailableDiningBuilding(person, false);
 					if (diningBuilding != null) {
@@ -566,13 +566,6 @@ public class EatDrink extends Task implements Serializable {
 	public void reduceHunger(double hungerRelieved) {
 		// Note: once a person has eaten a bit of food,
 		// the hunger index should be reset to HUNGER_CEILING
-		double hunger = pc.getHunger();
-		if (hunger > HUNGER_CEILING) {
-			hunger = HUNGER_CEILING;
-			pc.setHunger(hunger);
-			return;
-		}
-
 		pc.reduceHunger(hungerRelieved);
 	}
 

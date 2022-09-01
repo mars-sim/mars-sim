@@ -62,13 +62,13 @@ public class PhysicalCondition implements Serializable {
 	/** The maximum number of sols in thirst [millisols]. */
 	public static final int MAX_THIRST = 7_000;
 	/** The amount of thirst threshold [millisols]. */
-	public static final int THIRST_THRESHOLD = 150;// + RandomUtil.getRandomInt(20);
+	public static final int THIRST_THRESHOLD = 150;
 	/** The amount of thirst threshold [millisols]. */
-	private static final int HUNGER_THRESHOLD = 500;// + RandomUtil.getRandomInt(30);
+	private static final int HUNGER_THRESHOLD = 333;
 	/** The amount of thirst threshold [millisols]. */
-	private static final int ENERGY_THRESHOLD = 2525;// + RandomUtil.getRandomInt(20);
+	private static final int ENERGY_THRESHOLD = 2525;
 	/** The amount of fatigue threshold [millisols]. */
-	private static final int FATIGUE_THRESHOLD = 500;
+	private static final int FATIGUE_THRESHOLD = 750;
 	/** The amount of stress threshold [millisols]. */
 	private static final int STRESS_THRESHOLD = 65;
 
@@ -330,8 +330,11 @@ public class PhysicalCondition implements Serializable {
 		// foodDryMassPerServing is ~ 0.13 kg
 		foodDryMassPerServing = foodConsumedPerSol / Cooking.NUMBER_OF_MEAL_PER_SOL;
 
-		starvationStartTime = 1000D * (personConfig.getStarvationStartTime() - RandomUtil.getGaussianDouble() * bodyMassDeviation / 3);
-		dehydrationStartTime = 1000D * (personConfig.getDehydrationStartTime() - RandomUtil.getGaussianDouble() * bodyMassDeviation);
+		double sTime = personConfig.getStarvationStartTime();
+		starvationStartTime = 1000D * RandomUtil.computeGaussianWithLimit(sTime, 0.2, bodyMassDeviation / 10);
+		
+		double dTime = personConfig.getDehydrationStartTime();
+		dehydrationStartTime = 1000D * RandomUtil.computeGaussianWithLimit(dTime, 0.2, bodyMassDeviation / 10);
 
 		isStarving = false;
 		isStressedOut = false;
@@ -455,7 +458,7 @@ public class PhysicalCondition implements Serializable {
 			// Update thirst
 			increaseThirst(time * bodyMassDeviation * .75);
 			// Update fatigue
-			setFatigue(fatigue + time);
+			increaseFatigue(time);
 			// Update hunger
 			increaseHunger(time * bodyMassDeviation * .75);
 		}
@@ -716,7 +719,20 @@ public class PhysicalCondition implements Serializable {
 		fatigue = ff;
 		person.fireUnitUpdate(UnitEventType.FATIGUE_EVENT);
 	}
-
+	
+	/**
+	 * Increases the fatigue for this person.
+	 *
+	 * @param delta
+	 */
+	public void increaseFatigue(double delta) {
+		double f = fatigue + delta;
+		if (f < MAX_THIRST) {
+			fatigue = f;
+			person.fireUnitUpdate(UnitEventType.FATIGUE_EVENT);
+		}
+	}
+	
 	/**
 	 * Sets the thirst value for this person.
 	 * 
@@ -740,9 +756,7 @@ public class PhysicalCondition implements Serializable {
 	 */
 	public void reduceThirst(double thirstRelieved) {
 		double t = thirst - thirstRelieved;
-		if (t > 1000)
-			t = 1000;
-		else if (t < 0)
+		if (t < 0)
 			t = 0;
 
 		thirst = t;
@@ -752,15 +766,14 @@ public class PhysicalCondition implements Serializable {
 	/**
 	 * Increases the hunger setting for this person.
 	 *
-	 * @param thirstAdded
+	 * @param delta
 	 */
-	public void increaseThirst(double thirstAdded) {
-		double t = thirst + thirstAdded;
-		if (t > MAX_THIRST)
-			t = MAX_THIRST;
-
-		thirst = t;
-		person.fireUnitUpdate(UnitEventType.THIRST_EVENT);
+	public void increaseThirst(double delta) {
+		double t = thirst + delta;
+		if (t > MAX_THIRST) {
+			thirst = t;
+			person.fireUnitUpdate(UnitEventType.THIRST_EVENT);
+		}
 	}
 
 	/**
@@ -896,7 +909,7 @@ public class PhysicalCondition implements Serializable {
 
 		else if (starved != null && isStarving) {
 
-			if (hunger < HUNGER_THRESHOLD / 2 || kJoules > ENERGY_THRESHOLD) {
+			if (hunger < HUNGER_THRESHOLD || kJoules > ENERGY_THRESHOLD) {
 
 				starved.setCured();
 				// Set isStarving to false
@@ -906,7 +919,7 @@ public class PhysicalCondition implements Serializable {
 			}
 
 			// If this person's hunger has reached the buffer zone
-			else if (hunger < HUNGER_THRESHOLD * 2 || kJoules > ENERGY_THRESHOLD / 4) {
+			else if (hunger < HUNGER_THRESHOLD * 2 || kJoules > ENERGY_THRESHOLD * 2) {
 				String status = "Unknown";
 
 				starved.startRecovery();
@@ -2050,7 +2063,7 @@ public class PhysicalCondition implements Serializable {
 	 * @return
 	 */
 	public boolean isHungry() {
-		return hunger > HUNGER_THRESHOLD || kJoules < ENERGY_THRESHOLD / 2.5;
+		return hunger > HUNGER_THRESHOLD || kJoules < ENERGY_THRESHOLD * 2;
 	}
 
 	/**

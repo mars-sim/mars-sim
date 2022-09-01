@@ -270,6 +270,11 @@ public class CookMeal extends Task implements Serializable {
 		return isLocalMealTime(robot.getCoordinates(), prepTime);
 	}
 
+
+	public static boolean isMealTime(Person person, int prepTime) {
+		return isLocalMealTime(person.getCoordinates(), prepTime);
+	}
+	
 	/**
 	 * Returns the start and end of the meal time of interest.
 	 * 

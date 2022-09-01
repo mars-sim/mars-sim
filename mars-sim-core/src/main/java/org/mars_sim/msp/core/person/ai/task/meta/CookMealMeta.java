@@ -48,7 +48,7 @@ public class CookMealMeta extends MetaTask {
         double result = 0D;
 
         if (person.isInSettlement() 
-        		&& CookMeal.isLocalMealTime(person.getCoordinates(), CookMeal.PREP_TIME)) {
+        		&& CookMeal.isMealTime(person, CookMeal.PREP_TIME)) {
 
             // Probability affected by the person's stress and fatigue.
             if (!person.getPhysicalCondition().isFitByLevel(1000, 70, 1000)) {
@@ -69,7 +69,7 @@ public class CookMealMeta extends MetaTask {
 
                 if (kitchen.canCookMeal()) {
 
-                    result = 500;
+                    result = 200;
                 	
                     // Crowding modifier.
                     result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, kitchenBuilding);
@@ -77,7 +77,7 @@ public class CookMealMeta extends MetaTask {
                     result *= TaskProbabilityUtil.getRelationshipModifier(person, kitchenBuilding);
                     
                     // Apply the standard Person modifiers
-                    result = 100 * applyPersonModifier(result, person);
+                    result = 10 * applyPersonModifier(result, person);
                 }
             }
         }
@@ -112,7 +112,7 @@ public class CookMealMeta extends MetaTask {
 
                 if (kitchen.canCookMeal()) {
                 	
-                    result = 1000D;
+                    result = 500D;
                     // Crowding modifier.
                     result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(robot, kitchenBuilding);
                     // Effort-driven task modifier.
