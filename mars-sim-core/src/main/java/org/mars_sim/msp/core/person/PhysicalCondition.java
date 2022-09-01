@@ -719,8 +719,8 @@ public class PhysicalCondition implements Serializable {
 		double ff = f;
 		if (ff > MAX_FATIGUE)
 			ff = MAX_FATIGUE;
-		else if (ff < 0)
-			ff = 0;
+		else if (ff < -100)
+			ff = -100;
 
 		fatigue = ff;
 		person.fireUnitUpdate(UnitEventType.FATIGUE_EVENT);
@@ -747,8 +747,8 @@ public class PhysicalCondition implements Serializable {
 	 */
 	public void reduceFatigue(double delta) {
 		double f = fatigue - delta;
-		if (f < 0) 
-			f = 0;
+		if (f < -100) 
+			f = -100;
 		
 		fatigue = f;
 		person.fireUnitUpdate(UnitEventType.FATIGUE_EVENT);
@@ -763,8 +763,8 @@ public class PhysicalCondition implements Serializable {
 		double tt = t;
 		if (tt > MAX_THIRST)
 			tt = MAX_THIRST;
-		else if (tt < 0)
-			tt = 0;
+		else if (tt < -50)
+			tt = -50;
 
 		thirst = tt;
 		person.fireUnitUpdate(UnitEventType.THIRST_EVENT);
@@ -777,8 +777,8 @@ public class PhysicalCondition implements Serializable {
 	 */
 	public void reduceThirst(double delta) {
 		double t = thirst - delta;
-		if (t < 0)
-			t = 0;
+		if (t < -50)
+			t = -50;
 		else if (t > THIRST_CEILING_UPON_DRINKING)
 			t = THIRST_CEILING_UPON_DRINKING;
 		
@@ -809,8 +809,8 @@ public class PhysicalCondition implements Serializable {
 		double h = newHunger;
 		if (h > MAX_HUNGER)
 			h = MAX_HUNGER;
-		else if (h < 0)
-			h = 0;
+		else if (h < -100)
+			h = -100;
 
 		hunger = h;
 		person.fireUnitUpdate(UnitEventType.HUNGER_EVENT);
@@ -823,8 +823,8 @@ public class PhysicalCondition implements Serializable {
 	 */
 	public void reduceHunger(double hungerRelieved) {
 		double h = hunger - hungerRelieved;
-		if (h < 0)
-			h = 0;
+		if (h < -100)
+			h = -100;
 		else if (h > HUNGER_CEILING_UPON_EATING)
 			h = HUNGER_CEILING_UPON_EATING;
 		

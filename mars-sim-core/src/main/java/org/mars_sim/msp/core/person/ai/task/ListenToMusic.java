@@ -141,9 +141,7 @@ implements Serializable {
 		double remainingTime = 0;
 		
         // Reduce person's fatigue
-        person.getPhysicalCondition().reduceFatigue(2 * time);
-        // Reduce person's stress
-        person.getPhysicalCondition().reduceStress(time);
+        person.getPhysicalCondition().reduceFatigue(.5 * time);
 
         setDescription(Msg.getString("Task.description.listenToMusic")); //$NON-NLS-1$
         
