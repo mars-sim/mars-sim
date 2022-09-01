@@ -141,7 +141,7 @@ implements Serializable {
 		double remainingTime = 0;
 		
         // Reduce person's fatigue
-        person.getPhysicalCondition().reduceFatigue(time);
+        person.getPhysicalCondition().reduceFatigue(2 * time);
         // Reduce person's stress
         person.getPhysicalCondition().reduceStress(time);
 

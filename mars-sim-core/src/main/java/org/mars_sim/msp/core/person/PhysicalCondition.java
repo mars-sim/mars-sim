@@ -61,8 +61,12 @@ public class PhysicalCondition implements Serializable {
 	public static final int MAX_FATIGUE = 40_000;
 	/** The maximum number of sols in hunger [millisols]. */
 	public static final int MAX_HUNGER = 40_000;
+	/** Reset to hunger [millisols] immediately upon eating. */
+	public static final int HUNGER_CEILING_UPON_EATING = 1000;
 	/** The maximum number of sols in thirst [millisols]. */
 	public static final int MAX_THIRST = 7_000;
+	/** The maximum number of sols in thirst [millisols]. */
+	public static final int THIRST_CEILING_UPON_DRINKING = 500;
 	/** The amount of thirst threshold [millisols]. */
 	public static final int THIRST_THRESHOLD = 150;
 	/** The amount of thirst threshold [millisols]. */
@@ -775,7 +779,9 @@ public class PhysicalCondition implements Serializable {
 		double t = thirst - delta;
 		if (t < 0)
 			t = 0;
-
+		else if (t > THIRST_CEILING_UPON_DRINKING)
+			t = THIRST_CEILING_UPON_DRINKING;
+		
 		thirst = t;
 		person.fireUnitUpdate(UnitEventType.THIRST_EVENT);
 	}
@@ -819,7 +825,9 @@ public class PhysicalCondition implements Serializable {
 		double h = hunger - hungerRelieved;
 		if (h < 0)
 			h = 0;
-
+		else if (h > HUNGER_CEILING_UPON_EATING)
+			h = HUNGER_CEILING_UPON_EATING;
+		
 		hunger = h;
 		person.fireUnitUpdate(UnitEventType.HUNGER_EVENT);
 	}
@@ -853,29 +861,29 @@ public class PhysicalCondition implements Serializable {
 	 * @param newStress the new stress level (0.0 to 100.0)
 	 */
 	public void setStress(double s) {
-		if (stress != s) {
-			double ss = s;
-			if (ss > 100D)
-				ss = 100D;
-			else if (ss < 0D)
-				ss = 0D;
-			else if (Double.isNaN(stress))
-				ss = 0D;
-			
-			stress = ss;
-			person.fireUnitUpdate(UnitEventType.STRESS_EVENT);
-		}
+		double ss = s;
+		if (ss > 100)
+			ss = 100;
+		else if (ss < 0
+				|| Double.isNaN(stress))
+			ss = 0D;
+		
+		stress = ss;
+		person.fireUnitUpdate(UnitEventType.STRESS_EVENT);
 	}
 	
 	/**
 	 * Adds to a person's stress level.
 	 *
-	 * @param deltaStress
+	 * @param d
 	 */
 	public void addStress(double d) {
 		double ss = stress + d;
-		if (ss > 100D)
-			ss = 100D;
+		if (ss > 100)
+			ss = 100;
+		else if (ss < 0
+			|| Double.isNaN(ss))
+			ss = 0;
 		
 		stress = ss;
 		person.fireUnitUpdate(UnitEventType.STRESS_EVENT);
@@ -887,10 +895,12 @@ public class PhysicalCondition implements Serializable {
 	 * @param d
 	 */
 	public void reduceStress(double d) {
-		double ss = stress + d;
-		if (ss < 0D
+		double ss = stress - d;
+		if (ss > 100)
+			ss = 100;
+		else if (ss < 0
 			|| Double.isNaN(ss))
-			ss = 0D;
+			ss = 0;
 		
 		stress = ss;
 		person.fireUnitUpdate(UnitEventType.STRESS_EVENT);

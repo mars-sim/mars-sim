@@ -65,7 +65,7 @@ public class EatDrink extends Task implements Serializable {
 	private static final String JUICE = "juice";
 	private static final String MILK = "milk";
 	
-	private static final int HUNGER_CEILING = 1000;
+//	private static final int HUNGER_CEILING = 1000;
 	private static final int THIRST_CEILING = 500;
 
 	// Static members
@@ -559,17 +559,6 @@ public class EatDrink extends Task implements Serializable {
 	}
 
 	/**
-	 * Reduces the hunger level.
-	 *
-	 * @param hungerRelieved
-	 */
-	public void reduceHunger(double hungerRelieved) {
-		// Note: once a person has eaten a bit of food,
-		// the hunger index should be reset to HUNGER_CEILING
-		pc.reduceHunger(hungerRelieved);
-	}
-
-	/**
 	 * Eats a cooked meal.
 	 *
 	 * @param eatingTime the amount of time (millisols) to eat.
@@ -595,7 +584,7 @@ public class EatDrink extends Task implements Serializable {
 			// Record the amount consumed
 			pc.recordFoodConsumption(proportion, 1);
 			// Change the hunger level after eating
-			reduceHunger(hungerRelieved);
+			pc.reduceHunger(hungerRelieved);
 
 			logger.log(worker, Level.FINE, 1000, "Ate '" + cookedMeal.getName());
 
@@ -603,7 +592,7 @@ public class EatDrink extends Task implements Serializable {
 			// This is in addition to normal stress reduction from eating task.
 			double stressModifier = STRESS_MODIFIER * (cookedMeal.getQuality() + 1D);
 			double deltaStress = stressModifier * eatingTime;
-			pc.addStress(-deltaStress);
+			pc.reduceStress(deltaStress);
 
 			// Add caloric energy from meal.
 			double caloricEnergyFoodAmount = hungerRelieved * PhysicalCondition.FOOD_COMPOSITION_ENERGY_RATIO;
@@ -642,7 +631,7 @@ public class EatDrink extends Task implements Serializable {
 					// Food amount eaten over this period of time.
 					double hungerRelieved = millisolPerKgFood * proportion;
 					// Consume preserved food after eating
-					reduceHunger(hungerRelieved);
+					pc.reduceHunger(hungerRelieved);
 					// Add caloric energy from the preserved food.
 					double energy = hungerRelieved * PhysicalCondition.FOOD_COMPOSITION_ENERGY_RATIO;
 					pc.addEnergy(energy);
@@ -807,13 +796,13 @@ public class EatDrink extends Task implements Serializable {
 					// dessert amount eaten over this period of time.
 					double hungerRelieved = millisolPerKgDessert * proportion;
 					// Consume unpreserved dessert.
-					reduceHunger(hungerRelieved);
+					pc.reduceHunger(hungerRelieved);
 
 					// Reduce person's stress after eating a prepared dessert.
 					// This is in addition to normal stress reduction from eating task.
 					double stressModifier = DESSERT_STRESS_MODIFIER * (nameOfDessert.getQuality() + 1D);
 					double deltaStress = stressModifier * eatingTime;
-					pc.addStress(-deltaStress);
+					pc.reduceStress(deltaStress);
 
 					// Add caloric energy from dessert.
 					double caloricEnergy = hungerRelieved * PhysicalCondition.FOOD_COMPOSITION_ENERGY_RATIO;
@@ -859,7 +848,7 @@ public class EatDrink extends Task implements Serializable {
 				pc.reduceThirst(currentThirst - newThirst);
 			
 			// Assume dessert can reduce stress
-			pc.addStress(-proportion * THIRST_PER_WATER_SERVING /10);
+			pc.reduceStress(proportion * 2);
 		}
 	}
 
@@ -1022,13 +1011,13 @@ public class EatDrink extends Task implements Serializable {
 						double hungerRelieved = millisolPerKgDessert * proportion;
 
 						// Consume unpreserved dessert.
-						reduceHunger(hungerRelieved);
+						pc.reduceHunger(hungerRelieved);
 
 						// Reduce person's stress after eating an unprepared dessert.
 						// This is in addition to normal stress reduction from eating task.
 						double stressModifier = DESSERT_STRESS_MODIFIER;
 						double deltaStress = stressModifier * eatingTime;
-						pc.addStress(-deltaStress);
+						pc.reduceStress(deltaStress);
 
 						// Add caloric energy from dessert.
 						double caloricEnergy = hungerRelieved * PhysicalCondition.FOOD_COMPOSITION_ENERGY_RATIO;

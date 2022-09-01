@@ -870,15 +870,14 @@ public class Person extends Unit implements Worker, Temporal, EquipmentOwner {
 							circadian.updateSleepCycle(m, true);
 						}
 
-						double fatigue = condition.getFatigue();
 						if (getShiftType() == ShiftType.B) {
-							condition.setFatigue(fatigue + RandomUtil.getRandomInt(500));
+							condition.increaseFatigue(RandomUtil.getRandomInt(500));
 						}
 						else if (getShiftType() == ShiftType.Y) {
-							condition.setFatigue(fatigue + RandomUtil.getRandomInt(333));
+							condition.increaseFatigue(RandomUtil.getRandomInt(333));
 						}
 						else if (getShiftType() == ShiftType.Z) {
-							condition.setFatigue(fatigue + RandomUtil.getRandomInt(667));
+							condition.increaseFatigue(RandomUtil.getRandomInt(667));
 						}
 
 					}

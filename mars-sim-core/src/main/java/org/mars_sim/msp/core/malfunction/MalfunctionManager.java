@@ -733,8 +733,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 			Collection<Person> people = entity.getAffectedPeople();
 			Iterator<Person> i = people.iterator();
 			while (i.hasNext()) {
-				PhysicalCondition condition = i.next().getPhysicalCondition();
-				condition.setStress(condition.getStress() + ACCIDENT_STRESS);
+				i.next().getPhysicalCondition().addStress(ACCIDENT_STRESS);
 			}
 		}
 	}

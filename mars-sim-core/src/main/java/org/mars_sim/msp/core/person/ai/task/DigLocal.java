@@ -285,7 +285,7 @@ implements Serializable {
         double skillMod = 1.0 + person.getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);		
         		
         // Add penalty to the fatigue
-        condition.setFatigue(fatigue + time * factor * (1.1D - strengthMod)/skillMod);
+        condition.increaseFatigue(time * factor * (1.1D - strengthMod)/skillMod);
 
         // Add experience points
         addExperience(time);

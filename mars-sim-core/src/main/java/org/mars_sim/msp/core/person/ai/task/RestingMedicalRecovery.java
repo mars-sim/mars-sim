@@ -245,14 +245,7 @@ public class RestingMedicalRecovery extends Task implements Serializable {
         }
 
         // Reduce person's fatigue due to bed rest.
-        double newFatigue = person.getPhysicalCondition().getFatigue() - (3D * time);
-        if (newFatigue > MAX_FATIGUE) {
-            newFatigue = MAX_FATIGUE;
-        }
-        if (newFatigue < 0D) {
-            newFatigue = 0D;
-        }
-        person.getPhysicalCondition().setFatigue(newFatigue);
+        person.getPhysicalCondition().reduceFatigue(3D * time);
 
         // If out of bed rest time, end task.
         if (timeOver) {

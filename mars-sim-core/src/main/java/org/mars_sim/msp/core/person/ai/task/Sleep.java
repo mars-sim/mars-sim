@@ -189,20 +189,7 @@ public class Sleep extends Task implements Serializable {
 			// (4) The lost hours of sleep is already lost and there's no need to rest on a per
 			//     msol basis, namely, exchanging 1 msol of fatigue per msol of sleep.
 
-			double newFatigue = f - fractionOfRest - residualFatigue;
-//			logger.info(person + " f : " + Math.round(f*10.0)/10.0
-//					+ "   time : " + Math.round(time*1000.0)/1000.0
-//					+ "   residualFatigue : " + Math.round(residualFatigue*10.0)/10.0
-//					+ "   fractionOfRest : " + Math.round(fractionOfRest*10.0)/10.0
-//							+ "   newFatigue : " + Math.round(newFatigue*10.0)/10.0);
-
-			if (newFatigue < 0)
-				newFatigue = 0;
-
-			if (newFatigue > MAX_FATIGUE)
-				newFatigue = MAX_FATIGUE;
-
-			pc.setFatigue(newFatigue);
+			pc.reduceFatigue(fractionOfRest + residualFatigue);
 
 			circadian.setAwake(false);
 			// Change hormones
@@ -216,7 +203,7 @@ public class Sleep extends Task implements Serializable {
 			}
 
 			// Check if fatigue is zero
-			if (newFatigue <= 0) {
+			if (pc.getFatigue() <= 0) {
 				logger.log(person, Level.FINE, 0, "Totally refreshed from a good sleep.");
 				endTask();
 			}
