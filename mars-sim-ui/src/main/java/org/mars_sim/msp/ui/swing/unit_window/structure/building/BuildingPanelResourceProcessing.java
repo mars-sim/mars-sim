@@ -51,7 +51,7 @@ public class BuildingPanelResourceProcessing extends BuildingFunctionPanel {
 	private static final String OUTPUTS = "&emsp;&nbsp;&nbsp;Outputs:&emsp;";
 	private static final String SPACES = "&nbsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;";
 	private static final String PROCESS = "&emsp;&nbsp;Process:&emsp;";
-	private static final String BUILDING = "&emsp;&nbsp;Building:&emsp;";
+	private static final String BUILDING_HEADER = "&emsp;&nbsp;Building:&emsp;";
 	private static final String POWER_REQ = "Power Req:&emsp;";
 	private static final String KW = " kW";
 	private static final String NOTE = "&emsp;<i>Note:  * denotes an ambient resource</i>";
@@ -191,7 +191,7 @@ public class BuildingPanelResourceProcessing extends BuildingFunctionPanel {
 			StringBuilder result = new StringBuilder(HTML);
 			// Future: Use another tool tip manager to align text to improve tooltip readability			
 			result.append(PROCESS).append(process.getProcessName()).append(BR);
-			result.append(BUILDING).append(building.getNickName()).append(BR);
+			result.append(BUILDING_HEADER).append(building.getNickName()).append(BR);
 			result.append(POWER_REQ).append(decFormatter.format(process.getPowerRequired()))
 			.append(KW).append(BR);
 			result.append(INPUTS);

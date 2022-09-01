@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * AlphaImageIcon.java
- * @date 2021-09-20
+ * @date 2022-09-01
  * @author Manny Kung
  */
 
@@ -30,7 +30,7 @@ import javax.swing.ImageIcon;
 public class AlphaImageIcon extends ImageIcon {
 
   private transient Icon icon;
-  private transient Image image;
+  private transient Image imageObj;
   private float alpha;
 
   /**
@@ -54,7 +54,7 @@ public class AlphaImageIcon extends ImageIcon {
    */
   @Override
   public Image getImage() {
-    return image;
+    return imageObj;
   }
 
   /**
@@ -141,9 +141,9 @@ public class AlphaImageIcon extends ImageIcon {
   @Override
   public synchronized void paintIcon(Component c, Graphics g, int x, int y) {
     if (icon instanceof ImageIcon) {
-      image = ((ImageIcon) icon).getImage();
+      imageObj = ((ImageIcon) icon).getImage();
     } else {
-      image = null;
+      imageObj = null;
     }
     Graphics2D g2 = (Graphics2D) g.create();
     g2.setComposite(AlphaComposite.SrcAtop.derive(alpha));

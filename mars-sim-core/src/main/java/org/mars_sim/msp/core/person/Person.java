@@ -293,6 +293,14 @@ public class Person extends Unit implements Worker, Temporal, EquipmentOwner {
 	}
 
 	/**
+	 * Initializes field data and class for maven test.
+	 */
+	public void initializeForMaven() {
+		// Construct the EquipmentInventory instance.
+		eqmInventory = new EquipmentInventory(this, carryingCapacity);
+	}
+	
+	/**
 	 * Initializes field data and class.
 	 */
 	public void initialize() {

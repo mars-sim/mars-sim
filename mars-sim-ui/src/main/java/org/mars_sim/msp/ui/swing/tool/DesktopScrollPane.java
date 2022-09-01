@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * DesktopScrollPane.java
- * @date 2021-09-20
+ * @date 2022-09-01
  * @author Manny Kung
  */
 
@@ -56,7 +56,7 @@ import javax.swing.SwingUtilities;
 public class DesktopScrollPane extends JScrollPane {
 
     private JDesktopPane desktopPane;
-    private InternalFrameComponentListener componentListener;
+    private InternalFrameComponentListener ifComponentListener;
 
     /**
      * creates the DesktopScrollPane object
@@ -65,7 +65,7 @@ public class DesktopScrollPane extends JScrollPane {
      */
     public DesktopScrollPane(JDesktopPane desktopPane) {
 
-        componentListener = new InternalFrameComponentListener();
+        ifComponentListener = new InternalFrameComponentListener();
 
         this.desktopPane = desktopPane;
         desktopPane.addContainerListener(new ContainerListener() {
@@ -89,7 +89,7 @@ public class DesktopScrollPane extends JScrollPane {
     private void onComponentRemoted(ContainerEvent event) {
         Component removedComponent = event.getChild();
         if (removedComponent instanceof JInternalFrame)
-            removedComponent.removeComponentListener(componentListener);
+            removedComponent.removeComponentListener(ifComponentListener);
 
     }
 
@@ -97,7 +97,7 @@ public class DesktopScrollPane extends JScrollPane {
         Component addedComponent = event.getChild();
         if (addedComponent instanceof JInternalFrame)
         {
-            addedComponent.addComponentListener(componentListener);
+            addedComponent.addComponentListener(ifComponentListener);
             resizeDesktop();
         }
     }
