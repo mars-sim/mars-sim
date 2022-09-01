@@ -10,7 +10,6 @@ package org.mars_sim.msp.core.person.ai.task.utils;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.Serializable;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -18,9 +17,11 @@ import java.util.Map.Entry;
 import org.mars_sim.msp.core.SimulationFiles;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.data.SolListDataLogger;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.task.Walk;
+import org.mars_sim.msp.core.person.ai.task.meta.SleepMeta;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -520,7 +521,7 @@ public abstract class TaskManager implements Serializable, Temporal {
 	 * to the manager to start working.
 	 */
 	public void startNewTask() {
-		Task result = null;
+		Task selectedTask = null;
 		MetaTask selectedMetaTask = null;
 
 		// If cache is not current, calculate the probabilities.
@@ -529,21 +530,25 @@ public abstract class TaskManager implements Serializable, Temporal {
 		}		
 
 		if (totalProbCache == 0D) {
-			logger.warning(worker, "No normal Tasks available");
+			logger.warning(worker, 20_000, "No normal Tasks available.");
 
 			// Switch to loading non-work hour meta tasks since
 			// leisure tasks are NOT based on needs
-			List<MetaTask> list = MetaTaskUtil.getNonWorkHourMetaTasks();
-			selectedMetaTask = list.get(RandomUtil.getRandomInt(list.size() - 1));
+			if (worker.getUnitType() == UnitType.PERSON) {
+				List<MetaTask> list = MetaTaskUtil.getNonWorkHourMetaTasks();
+				selectedMetaTask = list.get(RandomUtil.getRandomInt(list.size() - 1));
+			}
+			else {
+				logger.severe(worker, 20_000, "Putting on Sleep Mode.");
+				selectedMetaTask = new SleepMeta();
+			}
 		} else if (taskProbCache != null && !taskProbCache.isEmpty()) {
-
+			// Comes up with a random double based on probability
 			double r = RandomUtil.getRandomDouble(totalProbCache);
-
 			// Determine which task is selected.
-			Iterator<MetaTask> it = taskProbCache.keySet().iterator();
-			while ((selectedMetaTask == null) && it.hasNext()) {
-				MetaTask mt = it.next();
-				double probWeight = taskProbCache.get(mt);
+			for (Map.Entry<MetaTask, Double> entry: taskProbCache.entrySet()) {
+				MetaTask mt = entry.getKey();
+				double probWeight = entry.getValue();
 				if (r <= probWeight) {
 					// Select this task
 					selectedMetaTask = mt;
@@ -554,13 +559,14 @@ public abstract class TaskManager implements Serializable, Temporal {
 		}
 
 		if (selectedMetaTask == null) {
-			logger.severe(worker, "Could not determine a new task.");
-		} else {
-			// Call constructInstance of the selected Meta Task to commence the ai task
-			result = createTask(selectedMetaTask);
-			
-			startTask(result);
-		}
+//			logger.severe(worker, 20_000, "Could not determine a new task. Putting on Sleep Mode.");
+			selectedMetaTask = new SleepMeta();
+		} 
+		
+		// Call constructInstance of the selected Meta Task to commence the ai task
+		selectedTask = createTask(selectedMetaTask);
+		// Start this new task
+		startTask(selectedTask);
 
 		// Clear time cache.
 		msolCache = -1;	

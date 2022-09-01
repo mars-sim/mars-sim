@@ -16,6 +16,8 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.CookMeal;
 import org.mars_sim.msp.core.person.ai.task.PrepareDessert;
 import org.mars_sim.msp.core.person.ai.task.ProduceFood;
+import org.mars_sim.msp.core.person.ai.task.Sleep;
+import org.mars_sim.msp.core.person.ai.task.Teach;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -42,6 +44,8 @@ implements Serializable {
 		jobTasks.add(CookMeal.class);
 		jobTasks.add(PrepareDessert.class);
 		jobTasks.add(ProduceFood.class);
+		jobTasks.add(Sleep.class);
+		jobTasks.add(Teach.class);
 	}
 
 	/**

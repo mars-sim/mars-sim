@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * TeachMeta.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-09-01
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -14,6 +14,7 @@ import org.mars_sim.msp.core.person.ai.task.Teach;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
+import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -28,7 +29,7 @@ public class TeachMeta extends MetaTask {
             "Task.description.teach"); //$NON-NLS-1$
 
     public TeachMeta() {
-		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
+		super(NAME, WorkerType.BOTH, TaskScope.ANY_HOUR);
 		
 		setTrait(TaskTrait.TEACHING);
 	}
@@ -91,6 +92,42 @@ public class TeachMeta extends MetaTask {
             }
         }
 
+
+        return result;
+    }
+    
+    @Override
+    public Task constructInstance(Robot robot) {
+        return new Teach(robot);
+    }
+
+    @Override
+    public double getProbability(Robot robot) {
+
+        double result = 0D;
+
+        if (robot.isInSettlement()) {
+
+            // Find potential students.
+            Collection<Person> potentialStudents = Teach.getBestStudents(robot);
+            if (potentialStudents.size() == 0)
+            	return 0;
+
+            else {
+
+	            result = potentialStudents.size() * 20D;
+	            
+	            Person student = (Person) potentialStudents.toArray()[0];
+                Building building = BuildingManager.getBuilding(student);
+
+                if (building != null) {
+                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(robot,
+                            building);
+                }
+                
+    	        if (result < 0) result = 0;
+            }
+        }
 
         return result;
     }

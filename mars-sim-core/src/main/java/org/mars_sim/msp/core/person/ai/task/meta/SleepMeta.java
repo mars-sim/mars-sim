@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core.person.ai.task.meta;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.CircadianClock;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -18,6 +19,7 @@ import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingCategory;
+import org.mars_sim.msp.core.structure.building.function.RoboticStation;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
@@ -25,11 +27,12 @@ import org.mars_sim.msp.core.tool.RandomUtil;
  */
 public class SleepMeta extends MetaTask {
 
-	private static final double MAX = 1000;
-	
+	private static SimLogger logger = SimLogger.getLogger(SleepMeta.class.getName());
+
     /** Task name */
     private static final String NAME = Msg.getString("Task.description.sleep"); //$NON-NLS-1$
 		
+	private static final double MAX = 1000;
     
     public SleepMeta() {
 		super(NAME, WorkerType.BOTH, TaskScope.ANY_HOUR);
@@ -207,16 +210,25 @@ public class SleepMeta extends MetaTask {
         		result += (1.0 - level) * MAX;
         	}
         	else
-        		result += (1.0 - level) * 20;
-        		
+        		result += (1.0 - level) * 50;
+        	
+        	Building currentBldg = robot.getBuildingLocation();
+        	
+			RoboticStation station = currentBldg.getRoboticStation();
+			if (station.getSleepers() < station.getSlots()) {
+				// This is a good building to sleep and charge up
+				result *= 10;
+				return result;
+			}
+        	
             Building building = Sleep.getAvailableRoboticStationBuilding(robot);
             if (building != null) {
-//            	logger.info(robot, building + " has empty slot.");
+            	// has empty slot
+            	result *= 5;
             }
-            else
-            	result = 0;
             
-//    		logger.info(robot, "level: " + level + "  prob: " + result);
+            if (result <= 0)
+            	logger.info(robot, "level: " + level + "  prob: " + result);
         }
 
         return result;

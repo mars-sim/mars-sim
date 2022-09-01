@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Gardenbot.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-09-01
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.robot.ai.job;
@@ -13,6 +13,9 @@ import java.util.List;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.person.ai.task.Sleep;
+import org.mars_sim.msp.core.person.ai.task.Teach;
+import org.mars_sim.msp.core.person.ai.task.TendFishTank;
 import org.mars_sim.msp.core.person.ai.task.TendGreenhouse;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -40,7 +43,9 @@ implements Serializable {
 		super(Gardenbot.class);
 
 		jobTasks.add(TendGreenhouse.class);
-
+		jobTasks.add(TendFishTank.class);
+		jobTasks.add(Sleep.class);
+		jobTasks.add(Teach.class);
 	}
 
 	/**

@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Deliverybot.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-09-01
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.robot.ai.job;
@@ -15,6 +15,8 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Delivery;
 import org.mars_sim.msp.core.person.ai.task.ConsolidateContainers;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
+import org.mars_sim.msp.core.person.ai.task.Sleep;
+import org.mars_sim.msp.core.person.ai.task.Teach;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -41,7 +43,9 @@ implements Serializable {
         //jobTasks.add(UnloadVehicleEVA.class); //determine to what extend the walking bug is affecting the outdoor portion of this task
         jobTasks.add(UnloadVehicleGarage.class);
         jobTasks.add(ConsolidateContainers.class); //determine to what extend the walking bug is affecting the outdoor portion of this task
-        
+		jobTasks.add(Sleep.class);
+		jobTasks.add(Teach.class);
+		
         jobMissionStarts.add(Delivery.class);
         
 		//jobMissionStarts.add(Trade.class);

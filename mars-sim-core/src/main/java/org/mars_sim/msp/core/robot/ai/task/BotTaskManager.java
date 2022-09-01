@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core.robot.ai.task;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -17,6 +18,7 @@ import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskManager;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.BotMind;
+import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 import org.mars_sim.msp.core.time.MarsClock;
 
 /**
@@ -40,6 +42,8 @@ implements Serializable {
 	
 	/** The robot instance. */
 	private transient Robot robot = null;
+	
+	private transient List<MetaTask> mtList;
 
 	/**
 	 * Constructor.
@@ -124,24 +128,44 @@ implements Serializable {
 	 * Calculates and caches the probabilities.
 	 */
 	protected synchronized void rebuildTaskCache() {
-		    	
-		List<MetaTask> mtList = MetaTaskUtil.getRobotMetaTasks();
-
-		// Create new taskProbCache
-		taskProbCache = new ConcurrentHashMap<>(mtList.size());
-		totalProbCache = 0D;
-
+		if (mtList == null) {
+			List<MetaTask> list = MetaTaskUtil.getRobotMetaTasks();
+			List<MetaTask> newList = new ArrayList<>();
+			// Create new taskProbCache
+			taskProbCache = new ConcurrentHashMap<>(list.size());
+			totalProbCache = 0D;
+	
+			// Determine probabilities.
+			for (MetaTask mt : list) {
+				// Get task name
+				String taskName = mt.getClass().getSimpleName().replaceAll("Meta", "");
+		        // Prevent bots from performing tasks not being programmed for
+		     	RobotJob job = robot.getBotMind().getRobotJob();
+		     	if (job != null) {
+		     		double mod = job.getStartTaskProbabilityModifier(taskName);
+		     		if (mod > 0) {
+		     			newList.add(mt);
+		     		}
+		     	}
+			}
+			
+			mtList = newList;
+		}
+		
 		// Determine probabilities.
 		for (MetaTask mt : mtList) {
 			double probability = mt.getProbability(robot);
-
+	
 			if ((probability > 0D) && (!Double.isNaN(probability)) && (!Double.isInfinite(probability))) {
 				taskProbCache.put(mt, probability);
 				totalProbCache += probability;
+//				logger.info(robot, 
+//						mt +
+//						"   totalProbCache: " + totalProbCache
+//						+ "   probability: " + probability);
 			}
 		}
-		
-		
+	
 		// Output shift
 		if (diagnosticFile != null) {
 			outputCache();

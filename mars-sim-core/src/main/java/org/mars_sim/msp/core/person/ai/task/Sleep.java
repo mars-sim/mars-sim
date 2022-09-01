@@ -110,7 +110,8 @@ public class Sleep extends Task implements Serializable {
 
 	public Sleep(Robot robot) {
 		super(SLEEP_MODE, robot, false, false, STRESS_MODIFIER, 10D);
-
+		setDescription(SLEEP_MODE);
+		
 		// Initialize phase
 		addPhase(SLEEPING_MODE);
 		setPhase(SLEEPING_MODE);
@@ -548,28 +549,50 @@ public class Sleep extends Task implements Serializable {
 	}
 
 	public static Building getAvailableRoboticStationBuilding(Robot robot) {
-
-		Building result = null;
-
 		if (robot.isInSettlement()) {
 			BuildingManager manager = robot.getSettlement().getBuildingManager();
-			List<Building> buildings = manager.getBuildings(FunctionType.ROBOTIC_STATION);
-			buildings = BuildingManager.getNonMalfunctioningBuildings(buildings);
-			buildings = getRoboticStationsWithEmptySlots(buildings);
-			if (RandomUtil.getRandomInt(2) == 0) // robot is not as inclined to move around
-				buildings = BuildingManager.getLeastCrowded4BotBuildings(buildings);
-			int size = buildings.size();
-			// System.out.println("size is "+size);
+			List<Building> buildings0 = manager.getBuildings(FunctionType.ROBOTIC_STATION);
+			List<Building> buildings1 = BuildingManager.getNonMalfunctioningBuildings(buildings0);
+			List<Building> buildings2 = getRoboticStationsWithEmptySlots(buildings1);
+			List<Building> buildings3 = null;
+			if (!buildings2.isEmpty()) {
+				// robot is not as inclined to move around
+				buildings3 = BuildingManager.getLeastCrowded4BotBuildings(buildings2);
+				if (buildings3 == null) {
+					buildings3 = buildings2;
+				}
+			}
+			else if (!buildings1.isEmpty()) {
+				// robot is not as inclined to move around
+				buildings3 = BuildingManager.getLeastCrowded4BotBuildings(buildings1);
+				if (buildings3 == null) {
+					buildings3 = buildings1;
+				}
+			}
+			else if (!buildings0.isEmpty()) {
+				// robot is not as inclined to move around
+				buildings3 = BuildingManager.getLeastCrowded4BotBuildings(buildings0);
+				if (buildings3 == null) {
+					buildings3 = buildings0;
+				}
+			}
+			
+			if (buildings3 == null)
+				return null;
+			
+			int size = buildings3.size();
+
 			int selected = 0;
-			if (size == 0)
-				result = null;
-			else if (size >= 1) {
+			if (size == 1) {
+				 return buildings3.get(0);
+			}
+			else if (size > 1) {
 				selected = RandomUtil.getRandomInt(size - 1);
-				result = buildings.get(selected);
+				return buildings3.get(selected);
 			}
 		}
 
-		return result;
+		return null;
 	}
 
 	/**
@@ -602,7 +625,7 @@ public class Sleep extends Task implements Serializable {
 		return result;
 	}
 
-	/***
+	/**
 	 * Gets a list of robotic stations with empty spots
 	 *
 	 * @param buildingList

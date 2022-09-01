@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Repairbot.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-09-01
  * @author Manny Kung
  */
 
@@ -15,6 +15,8 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.MaintainGroundVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.RepairInsideMalfunction;
+import org.mars_sim.msp.core.person.ai.task.Sleep;
+import org.mars_sim.msp.core.person.ai.task.Teach;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 
@@ -38,7 +40,8 @@ public class Repairbot extends RobotJob implements Serializable {
 		// jobTasks.add(RepairEVAMalfunction.class); //check to what extend the walking
 		// bug is affecting the outdoor portion of this task
 		jobTasks.add(RepairInsideMalfunction.class);
-//		jobTasks.add(RepairEmergencyMalfunction.class);
+		jobTasks.add(Sleep.class);
+		jobTasks.add(Teach.class);
 	}
 
 	/**

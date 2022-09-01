@@ -93,6 +93,8 @@ implements Serializable {
         // Use EVAOperation constructor.
         super(name, person, false, 100, SkillType.AREOLOGY);
 
+        addAdditionSkill(SkillType.PROSPECTING);
+        
         this.containerType = containerType;
         this.resourceID = resourceID;
         this.resourceName = ResourceUtil.findAmountResourceName(resourceID);

@@ -199,7 +199,7 @@ public class MetaTaskUtil {
 		List<MetaTask> anyHourMetaTasks = allMetaTasks.stream()
 				.filter(m -> m.getScope() == TaskScope.ANY_HOUR)
 				.collect(Collectors.toList());
-		List<MetaTask> tasks = new ArrayList<MetaTask>();
+		List<MetaTask> tasks = new ArrayList<>();
 		tasks.addAll(anyHourMetaTasks);
 		tasks.addAll(workHourMetaTasks);
 		dutyHourTasks = Collections.unmodifiableList(tasks);

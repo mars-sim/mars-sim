@@ -9,7 +9,6 @@ package org.mars_sim.msp.core.person.ai.task;
 
 import java.util.logging.Level;
 
-import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.InventoryUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.Container;
@@ -67,6 +66,8 @@ public class CollectMinedMinerals extends EVAOperation {
 		super(NAME, person, true, LABOR_TIME + RandomUtil.getRandomDouble(10D) - RandomUtil.getRandomDouble(10D),
 					SkillType.AREOLOGY);
 		
+		addAdditionSkill(SkillType.PROSPECTING);
+	       
 		// Initialize data members.
 		this.rover = rover;
 		this.mineralType = mineralType;

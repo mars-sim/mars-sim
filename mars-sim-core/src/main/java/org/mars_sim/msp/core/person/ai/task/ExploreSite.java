@@ -72,10 +72,11 @@ public class ExploreSite extends EVAOperation {
 	 * @throws exception if error creating task.
 	 */
 	public ExploreSite(Person person, ExploredLocation site, Rover rover) {
-
 		// Use EVAOperation parent constructor.
 		super(NAME, person, true, LABOR_TIME + RandomUtil.getRandomDouble(-5D, 5D), SkillType.AREOLOGY);
 
+		addAdditionSkill(SkillType.PROSPECTING);
+		
 		// Initialize data members.
 		this.site = site;
 		this.rover = rover;
