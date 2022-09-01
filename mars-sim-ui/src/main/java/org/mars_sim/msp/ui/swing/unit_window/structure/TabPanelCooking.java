@@ -586,32 +586,21 @@ public class TabPanelCooking extends TabPanel {
 			// 2. remove any expired meals from all 3 maps
 			// 3. call cookingTableModel.update()
 
-			// TODO: optimize it so that it doesn't have to check it on every update
-//			MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
 			int currentDay = currentTime.getSolOfMonth();
-			// logger.info
-			// System.out.println("cleanUpTable() : Today is sol " + currentDay);
 
 			if (dayCache != currentDay) {
-//				if (!allTimeMap.isEmpty()) {
+				if (!allTimeMap.isEmpty())
 					allTimeMap.clear();
+				if (allTimeMapE != null)
 					allTimeMapE.clear();
-//				}
-//				if (!allQualityMap.isEmpty()) {
-					allQualityMap.clear();
-					allQualityMapE.clear();
-//				}
-//				if (!allServingsSet.isEmpty())
-					allServingsSet.clear();
 
-				// TODO: is it better to use .remove() to remove entries and when?
-//					timeMap.remove(key, value);
-//					timeMapE.remove(key);
-//					bestQualityMap.remove(key, value);
-//					bestQualityMapE.remove(key);
-//					worstQualityMap.remove(key, value);
-//					worstQualityMapE.remove(key);
-//					servingsSet.remove(key);
+				if (!allQualityMap.isEmpty())
+					allQualityMap.clear();
+				if (allQualityMapE != null)
+					allQualityMapE.clear();
+
+				if (!allServingsSet.isEmpty())
+					allServingsSet.clear();
 
 				dayCache = currentDay;
 			}

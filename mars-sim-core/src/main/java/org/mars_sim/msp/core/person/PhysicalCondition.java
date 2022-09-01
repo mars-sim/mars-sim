@@ -727,10 +727,25 @@ public class PhysicalCondition implements Serializable {
 	 */
 	public void increaseFatigue(double delta) {
 		double f = fatigue + delta;
-		if (f < MAX_THIRST) {
-			fatigue = f;
-			person.fireUnitUpdate(UnitEventType.FATIGUE_EVENT);
-		}
+		if (f < MAX_THIRST)
+			f = MAX_THIRST;
+
+		fatigue = f;	
+		person.fireUnitUpdate(UnitEventType.FATIGUE_EVENT);
+	}
+	
+	/**
+	 * Reduces the fatigue for this person.
+	 *
+	 * @param delta
+	 */
+	public void reduceFatigue(double delta) {
+		double f = fatigue - delta;
+		if (f < 0) 
+			f = 0;
+		
+		fatigue = f;
+		person.fireUnitUpdate(UnitEventType.FATIGUE_EVENT);
 	}
 	
 	/**
@@ -754,8 +769,8 @@ public class PhysicalCondition implements Serializable {
 	 *
 	 * @param thirstRelieved
 	 */
-	public void reduceThirst(double thirstRelieved) {
-		double t = thirst - thirstRelieved;
+	public void reduceThirst(double delta) {
+		double t = thirst - delta;
 		if (t < 0)
 			t = 0;
 
@@ -770,10 +785,11 @@ public class PhysicalCondition implements Serializable {
 	 */
 	public void increaseThirst(double delta) {
 		double t = thirst + delta;
-		if (t > MAX_THIRST) {
-			thirst = t;
-			person.fireUnitUpdate(UnitEventType.THIRST_EVENT);
-		}
+		if (t > MAX_THIRST)
+			t = MAX_THIRST;
+		
+		thirst = t;
+		person.fireUnitUpdate(UnitEventType.THIRST_EVENT);
 	}
 
 	/**
@@ -799,9 +815,7 @@ public class PhysicalCondition implements Serializable {
 	 */
 	public void reduceHunger(double hungerRelieved) {
 		double h = hunger - hungerRelieved;
-		if (h > 1000)
-			h = 1000;
-		else if (h < 0)
+		if (h < 0)
 			h = 0;
 
 		hunger = h;
@@ -868,6 +882,21 @@ public class PhysicalCondition implements Serializable {
 		person.fireUnitUpdate(UnitEventType.STRESS_EVENT);
 	}
 
+	/**
+	 * Reduces to a person's stress level.
+	 *
+	 * @param d
+	 */
+	public void reduceStress(double d) {
+		double ss = stress + d;
+		if (ss < 0D
+			|| Double.isNaN(ss))
+			ss = 0D;
+		
+		stress = ss;
+		person.fireUnitUpdate(UnitEventType.STRESS_EVENT);
+	}
+	
 	/**
 	 * Gets the person's stress level.
 	 *
