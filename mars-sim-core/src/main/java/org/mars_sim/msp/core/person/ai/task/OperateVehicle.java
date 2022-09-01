@@ -436,6 +436,7 @@ public abstract class OperateVehicle extends Task {
             if (isSettlementDestination())
                 determineInitialSettlementParkedLocation();
             
+			endTask();
         	return remainingTime;
         }
         

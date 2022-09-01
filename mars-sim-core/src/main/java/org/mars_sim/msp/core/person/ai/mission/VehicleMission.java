@@ -1700,7 +1700,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 		int index = getNextNavpointIndex();
 
 		// REmove all points that are after the current point
-		for (int x = navPoints.size()-1; x > index; x--) {
+		for (int x = navPoints.size()-1; x >= index; x--) {
 			navPoints.remove(x);
 		}
 		

@@ -308,7 +308,7 @@ public class CommandHelper {
 			if (mission instanceof VehicleMission) {
 				VehicleMission tm = (VehicleMission) mission;
 				int navPoints = tm.getNumberOfNavpoints();
-				if (navPoints > 0) {
+				if ((navPoints > 0) && (tm.getNextNavpointIndex() >= 0)) {
 					response.appendText("Itinerary:");
 					response.appendTableHeading("Way Point", COORDINATE_WIDTH, "Distance", 10,
 										"Description");
