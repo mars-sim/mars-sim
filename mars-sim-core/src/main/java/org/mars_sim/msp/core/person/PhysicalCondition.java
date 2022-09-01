@@ -57,6 +57,8 @@ public class PhysicalCondition implements Serializable {
 	/** The maximum number of sols for storing stats. */
 	public static final int MAX_NUM_SOLS = 7;
 	
+	/** The maximum number of sols in fatigue [millisols]. */
+	public static final int MAX_FATIGUE = 40_000;
 	/** The maximum number of sols in hunger [millisols]. */
 	public static final int MAX_HUNGER = 40_000;
 	/** The maximum number of sols in thirst [millisols]. */
@@ -711,8 +713,8 @@ public class PhysicalCondition implements Serializable {
 	 */
 	public void setFatigue(double f) {
 		double ff = f;
-		if (ff > 10_000)
-			ff = 10_000;
+		if (ff > MAX_FATIGUE)
+			ff = MAX_FATIGUE;
 		else if (ff < 0)
 			ff = 0;
 
@@ -727,8 +729,8 @@ public class PhysicalCondition implements Serializable {
 	 */
 	public void increaseFatigue(double delta) {
 		double f = fatigue + delta;
-		if (f < MAX_THIRST)
-			f = MAX_THIRST;
+		if (f > MAX_FATIGUE)
+			f = MAX_FATIGUE;
 
 		fatigue = f;	
 		person.fireUnitUpdate(UnitEventType.FATIGUE_EVENT);
@@ -874,9 +876,6 @@ public class PhysicalCondition implements Serializable {
 		double ss = stress + d;
 		if (ss > 100D)
 			ss = 100D;
-		else if (ss < 0D
-			|| Double.isNaN(ss))
-			ss = 0D;
 		
 		stress = ss;
 		person.fireUnitUpdate(UnitEventType.STRESS_EVENT);
@@ -925,13 +924,6 @@ public class PhysicalCondition implements Serializable {
 				logger.log(person, Level.INFO, 20_000, "Starting starving.");
 			}
 
-//			else if (starved != null) {
-//				starved.setCured();
-//				// Set isStarving to false
-//				isStarving = false;
-//				logger.log(person, Level.INFO, 20_000, "Cured of starving (case 1).");
-//			}
-
 			// Note : how to tell a person to walk back to the settlement ?
 			// Note : should check if a person is on a critical mission,
 		}
@@ -970,16 +962,6 @@ public class PhysicalCondition implements Serializable {
 					"Remember that no child should go empty stomach in the 21st century.");
 			}
 		}
-
-//		else {
-//
-//			if (starved != null)
-//				starved.setCured();
-//			// Set isStarving to false
-//			isStarving = false;
-//
-//			logger.log(person, Level.INFO, 20_000, "Cured of starving (case 3).");
-//		}
 	}
 
 	/**
@@ -1013,13 +995,6 @@ public class PhysicalCondition implements Serializable {
 				isDehydrated = true;
 				person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
 			}
-
-//			else if (dehydrated != null) {
-//				dehydrated.setCured();
-//				// Set dehydrated to false
-//				isDehydrated = false;
-//				logger.log(person, Level.INFO, 0, "Cured of dehydration (case 1).");
-//			}
 		}
 
 		else if (dehydrated != null && isDehydrated) {
@@ -1054,15 +1029,6 @@ public class PhysicalCondition implements Serializable {
 						"Thousands have lived without love, not one without water. – W.H.Auden.");
 			}
 		}
-
-//		else {
-//			if (dehydrated != null)
-//				dehydrated.setCured();
-//			// Set dehydrated to false
-//			isDehydrated = false;
-//
-//			logger.log(person, Level.INFO, 0, "Cured of dehydrated (case 3).");
-//		}
 	}
 
 	/**
@@ -1103,7 +1069,7 @@ public class PhysicalCondition implements Serializable {
 
 		if (!isRadiationPoisoned && radiation.isSick()) {
 
-			if (!isRadiationPoisoned && !problems.contains(radiationPoisoned)) {
+			if (radiationPoisoned == null || !problems.contains(radiationPoisoned)) {
 				addMedicalComplaint(radiationPoisoning);
 				isRadiationPoisoned = true;
 				person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
