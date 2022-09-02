@@ -405,17 +405,23 @@ implements Serializable {
 	}
 
 	public static double getHighestProcessValue(int skillLevel, Building foodProductionBuilding) {
-
+		// This method has 45.5% cpu util
 		double highestProcessValue = 0D;
 		FoodProduction foodProductionFunction = foodProductionBuilding.getFoodProduction();
 		int techLevel = foodProductionFunction.getTechLevel();
 
 		for (FoodProductionProcessInfo process : FoodProductionUtil.getFoodProductionProcessesForTechSkillLevel(
 				techLevel, skillLevel)) {
-			if (FoodProductionUtil.canProcessBeStarted(process, foodProductionFunction) ||
-					isProcessRunning(process, foodProductionFunction)) {
+
+			if (isProcessRunning(process, foodProductionFunction)
+					// This method has 29.2% cpu util
+					||FoodProductionUtil.canProcessBeStarted(process, foodProductionFunction)) {
+				
 				Settlement settlement = foodProductionBuilding.getSettlement();
+				
+				// This method has 16.2% cpu util
 				double processValue = FoodProductionUtil.getFoodProductionProcessValue(process, settlement);
+				
 				if (processValue > highestProcessValue) {
 					highestProcessValue = processValue;
 				}

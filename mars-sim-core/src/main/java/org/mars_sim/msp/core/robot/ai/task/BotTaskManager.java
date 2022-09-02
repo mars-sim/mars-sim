@@ -8,8 +8,8 @@ package org.mars_sim.msp.core.robot.ai.task;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
@@ -128,12 +128,10 @@ implements Serializable {
 	 * Calculates and caches the probabilities.
 	 */
 	protected synchronized void rebuildTaskCache() {
+		
 		if (mtList == null) {
 			List<MetaTask> list = MetaTaskUtil.getRobotMetaTasks();
 			List<MetaTask> newList = new ArrayList<>();
-			// Create new taskProbCache
-			taskProbCache = new ConcurrentHashMap<>(list.size());
-			totalProbCache = 0D;
 	
 			// Determine probabilities.
 			for (MetaTask mt : list) {
@@ -152,6 +150,10 @@ implements Serializable {
 			mtList = newList;
 		}
 		
+		// Reset taskProbCache and totalProbCache
+		taskProbCache = new HashMap<>(mtList.size());
+		totalProbCache = 0D;
+		
 		// Determine probabilities.
 		for (MetaTask mt : mtList) {
 			double probability = mt.getProbability(robot);
@@ -159,13 +161,9 @@ implements Serializable {
 			if ((probability > 0D) && (!Double.isNaN(probability)) && (!Double.isInfinite(probability))) {
 				taskProbCache.put(mt, probability);
 				totalProbCache += probability;
-//				logger.info(robot, 
-//						mt +
-//						"   totalProbCache: " + totalProbCache
-//						+ "   probability: " + probability);
 			}
 		}
-	
+		
 		// Output shift
 		if (diagnosticFile != null) {
 			outputCache();
