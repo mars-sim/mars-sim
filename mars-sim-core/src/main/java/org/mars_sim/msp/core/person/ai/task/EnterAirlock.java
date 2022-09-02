@@ -257,8 +257,6 @@ public class EnterAirlock extends Task implements Serializable {
 	 * @return
 	 */
 	private double requestIngress(double time) {
-		// Accumulate work for this task phase
-		accumulatedTime += time;
 
 		boolean canProceed = false;
 		
@@ -317,9 +315,7 @@ public class EnterAirlock extends Task implements Serializable {
 			}
 		}
 
-		if (canProceed && accumulatedTime > STANDARD_TIME) {
-			// Reset accumulatedTime back to zero
-			accumulatedTime = 0;
+		if (canProceed && isInZone(4)) {
 
 			if (airlock.isDepressurized() && !airlock.isOuterDoorLocked()) {
 				// If airlock has already been depressurized,
@@ -449,8 +445,8 @@ public class EnterAirlock extends Task implements Serializable {
 			}
 				
             if (!airlock.inAirlock(person)) {
-				canProceed = airlock.enterAirlock(person, id, false)
-						&& transitionTo(3);
+				canProceed = airlock.enterAirlock(person, id, false);
+						
 			}
             // True if the person is already inside the chamber from previous frame
             else if (isInZone(2) || isInZone(3)) {
@@ -480,6 +476,9 @@ public class EnterAirlock extends Task implements Serializable {
 		if (canProceed && accumulatedTime > STANDARD_TIME) {
 			// Reset accumulatedTime back to zero
 			accumulatedTime = 0;
+			
+			// Go to zone 3
+			transitionTo(3);
 			
 			logger.log(unit, person, Level.FINE, 4_000,
 					"Just entered through the outer door into " + airlock.getEntity().toString() + ".");
