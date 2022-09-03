@@ -200,7 +200,7 @@ public abstract class TaskManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * Gets the real-time task 
+	 * Gets the bottom-most real-time task. 
 	 * 
 	 * @return
 	 */

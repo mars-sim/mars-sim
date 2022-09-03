@@ -363,12 +363,12 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 
 	/**
-	 * Returns the name of the task.
+	 * Returns the name of the task (not its subtask).
 	 * 
 	 * @return the task's name
 	 */
 	public String getName() {
-		return getName(true);
+		return getName(false);
 	}
 
 	/**
