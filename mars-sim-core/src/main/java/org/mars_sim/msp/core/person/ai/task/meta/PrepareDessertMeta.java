@@ -32,7 +32,7 @@ public class PrepareDessertMeta extends MetaTask {
             "Task.description.prepareDessertMeta"); //$NON-NLS-1$
 
     private static final int PREP_TIME = 10;
-    private static final int VALUE = 10;
+    private static final double VALUE = 10;
     private static final int MOD = 5;
     
     public PrepareDessertMeta() {

@@ -260,7 +260,8 @@ implements Serializable {
     		}
         }
         
-        inviteeId = invitee.getIdentifier();
+        if (invitee != null)
+        	inviteeId = invitee.getIdentifier();
     	return invitee;
     }
 
@@ -308,7 +309,8 @@ implements Serializable {
     		}
         }
         
-        inviteeId = invitee.getIdentifier();
+        if (invitee != null)
+        	inviteeId = invitee.getIdentifier();
     	return invitee;
     }
 
@@ -344,7 +346,8 @@ implements Serializable {
         	endTask();
         }
         
-        inviteeId = invitee.getIdentifier();
+        if (invitee != null)
+        	inviteeId = invitee.getIdentifier();
     	initiatorLocation = Location.EVA;
     	
     	return invitee;

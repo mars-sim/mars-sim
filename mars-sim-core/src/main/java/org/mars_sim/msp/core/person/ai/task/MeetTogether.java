@@ -97,72 +97,72 @@ implements Serializable {
 		}
 		
 		else {
-			
 			// Case 2: This person is the initiator
 			initiator = person;
 			
 	        settlement = initiator.getSettlement();
 	        
-	        if (settlement != null) {
-	        	
-	            Set<Person> pool = new HashSet<>();
-	
-	            Collection<Person> ppl = settlement.getAllAssociatedPeople(); 
-	            RoleType roleType = person.getRole().getType();
-	            
-	            if (roleType != null && roleType.isCouncil()) {
-	            	
-	                for (Person p : ppl) {
-	                    RoleType type = p.getRole().getType();
-	
-	                    if (type != null 
-	                    	&& roleType.isChief()) {
-	     
-	                    	if (p.getBuildingLocation() != null)
-	                    		// if that person is inside the settlement and within a building
-	                    		pool.add(p);
-	                    }
-	                }    
-	                
-	                Person pp = ppl
-							.stream()
-							.filter(p -> p.getMeetingInitiator() != -1 &&  p.getMeetingInvitee() != -1)
-							.findAny().orElse(null);	
-	                
-	                if (pool.size() == 0)
-	                	pool.add(pp);
-	            }
-	            
-	            else if (roleType != null && roleType.isChief()) {
-	            	pool = getPool(ppl, roleType);
-	            }
-	      	
-	            pool.remove(initiator);
-	            
-	            List<Person> list = new ArrayList<>();
-	            
-	            list.addAll(pool);
-	
-	            if (list.size() == 0) {
-	                clearTask();
-	            }
-	            else {
-	    	    	int size = list.size();
-	    	        
-	    	        if (size == 1)
-	    	        	invitee = list.get(0); 
-	    	        else
-	    	        	invitee = list.get(RandomUtil.getRandomInt(0, size-1));
-	            }
-	        }
-	        else {
+	        if (settlement == null) { 
 	            clearTask();
+	            return;
 	        }
+	        	
+            Set<Person> pool = new HashSet<>();
+
+            Collection<Person> ppl = settlement.getAllAssociatedPeople(); 
+            RoleType roleType = person.getRole().getType();
+            
+            if (roleType != null && roleType.isCouncil()) {
+            	
+                for (Person p : ppl) {
+                    RoleType type = p.getRole().getType();
+
+                    if (type != null 
+                    	&& roleType.isChief()) {
+     
+                    	if (p.getBuildingLocation() != null)
+                    		// if that person is inside the settlement and within a building
+                    		pool.add(p);
+                    }
+                }    
+                
+                Person pp = ppl
+						.stream()
+						.filter(p -> p.getMeetingInitiator() == -1 && p.getMeetingInvitee() == -1)
+						.findAny().orElse(null);	
+                
+                if (pool.size() == 0)
+                	pool.add(pp);
+            }
+            
+            else if (roleType != null && roleType.isChief()) {
+            	pool = getPool(ppl, roleType);
+            }
+      	
+            pool.remove(initiator);
+            
+            List<Person> list = new ArrayList<>();
+            
+            list.addAll(pool);
+
+            if (list.size() == 0) {
+                clearTask();
+            }
+            else {
+    	    	int size = list.size();
+    	        
+    	        if (size == 1)
+    	        	invitee = list.get(0); 
+    	        else
+    	        	invitee = list.get(RandomUtil.getRandomInt(0, size-1));
+            }
 	
-	        // Set the invitee's inviter's ID
-	        invitee.setMeetingInitiator(initiator.getIdentifier());
-	        // Set the person's invitee's ID
-	        initiator.setMeetingInvitee(invitee.getIdentifier());
+	        if (invitee != null) {
+		        // Set the invitee's inviter's ID
+	        	invitee.setMeetingInitiator(initiator.getIdentifier());
+	        	// Set the person's invitee's ID
+	        	initiator.setMeetingInvitee(invitee.getIdentifier());
+	        }
 		}
 		
         // Initialize phase
@@ -219,7 +219,7 @@ implements Serializable {
     		return time * .75;
     	}
     	
-    	if (!(invitee.getMind().getTaskManager().getTask() instanceof MeetTogether)) {
+    	if (invitee != null && !(invitee.getMind().getTaskManager().getTask() instanceof MeetTogether)) {
 	    	
 	    	boolean willMeet = invitee.getMind().getTaskManager().addAPendingTask(MeetTogether.SIMPLE_NAME, false);
 	    	if (!willMeet) {
@@ -228,39 +228,43 @@ implements Serializable {
 	    	}
 	    }
     	
-		Building personbuilding = initiator.getBuildingLocation();
-		
-    	if (!personbuilding.hasFunction(FunctionType.DINING)) {
-    		Building building = settlement.getBuildingManager()
-					.getBuildings(FunctionType.DINING)
-					.stream()
-					.findAny().orElse(null);	 
-		
-			if (building != null) {
-				walkToActivitySpotInBuilding(building, FunctionType.DINING, false);
+    	Building personbuilding = null;
+    	
+    	if (initiator != null) {
+			personbuilding = initiator.getBuildingLocation();
+			
+	    	if (!personbuilding.hasFunction(FunctionType.DINING)) {
+	    		Building building = settlement.getBuildingManager()
+						.getBuildings(FunctionType.DINING)
+						.stream()
+						.findAny().orElse(null);	 
+			
+				if (building != null) {
+					walkToActivitySpotInBuilding(building, FunctionType.DINING, false);
+				}
+	    	}
+
+			// The person is setting up and inviting the candidate
+			// e.g. Joe is meeting with Mary
+			
+			Building inviteebuilding = invitee.getBuildingLocation();
+	
+			if (inviteebuilding.equals(personbuilding)) {
+				setDescription(Msg.getString("Task.description.meetTogether.detail", invitee.getName())); //$NON-NLS-1$
+				
+				logger.info(initiator, Msg.getString("Task.description.meetTogether.detail", invitee.getName()));
+				
+				RelationshipUtil.changeOpinion(initiator, invitee, RelationshipType.COMMUNICATION_MEETING, RandomUtil.getRandomDouble(-.1, .15));
+				RelationshipUtil.changeOpinion(invitee, initiator, RelationshipType.COMMUNICATION_MEETING, RandomUtil.getRandomDouble(-.1, .15));
+		   
+				// The person is invited to a meeting setup by the inviter
+				// e.g. Joe is invited to meet with Mary
+			}
+			else {
+				// Walk to invitee building first
+				walkToActivitySpotInBuilding(inviteebuilding, FunctionType.DINING, false);
 			}
     	}
-
-		// The person is setting up and inviting the candidate
-		// e.g. Joe is meeting with Mary
-		
-		Building inviteebuilding = invitee.getBuildingLocation();
-
-		if (inviteebuilding.equals(personbuilding)) {
-			setDescription(Msg.getString("Task.description.meetTogether.detail", invitee.getName())); //$NON-NLS-1$
-			
-			logger.info(initiator, Msg.getString("Task.description.meetTogether.detail", invitee.getName()));
-			
-			RelationshipUtil.changeOpinion(initiator, invitee, RelationshipType.COMMUNICATION_MEETING, RandomUtil.getRandomDouble(-.1, .15));
-			RelationshipUtil.changeOpinion(invitee, initiator, RelationshipType.COMMUNICATION_MEETING, RandomUtil.getRandomDouble(-.1, .15));
-	   
-	    		// The person is invited to a meeting setup by the inviter
-			// e.g. Joe is invited to meet with Mary
-		}
-		else {
-			// Walk to invitee building first
-			walkToActivitySpotInBuilding(inviteebuilding, FunctionType.DINING, false);
-		}
 		
         if (getTimeCompleted() + time >= getDuration()) {
         	clearTask();
