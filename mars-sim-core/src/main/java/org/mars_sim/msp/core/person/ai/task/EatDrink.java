@@ -21,7 +21,7 @@ import org.mars_sim.msp.core.equipment.ResourceHolder;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
-import org.mars_sim.msp.core.person.ai.task.meta.HaveConversationMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.ConversationMeta;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.resource.AmountResource;
@@ -240,7 +240,7 @@ public class EatDrink extends Task implements Serializable {
 
 					boolean want2Chat = true;
 					// See if a person wants to chat while eating
-					int score = person.getPreference().getPreferenceScore(new HaveConversationMeta());
+					int score = person.getPreference().getPreferenceScore(new ConversationMeta());
 					if (score > 0)
 						want2Chat = true;
 					else if (score < 0)
@@ -1076,25 +1076,30 @@ public class EatDrink extends Task implements Serializable {
 	 * @throws BuildingException if error finding dining building.
 	 */
 	public static Building getAvailableDiningBuilding(Person person, boolean canChat) {
-		Building b = person.getBuildingLocation();
+		Building b = null;
 
 		// If this person is located in the settlement
 		if (person.isInSettlement()) {
 			Settlement settlement = person.getSettlement();
 			BuildingManager manager = settlement.getBuildingManager();
-			List<Building> diningBuildings = manager.getBuildings(FunctionType.DINING);
+			List<Building> list0 = manager.getBuildings(FunctionType.DINING);
 
-			diningBuildings = BuildingManager.getWalkableBuildings(person, diningBuildings);
+			List<Building> list1 = BuildingManager.getWalkableBuildings(person, list0);
 			if (canChat)
 				// Choose between the most crowded or the least crowded dining hall
-				diningBuildings = BuildingManager.getChattyBuildings(diningBuildings);
+				list1 = BuildingManager.getChattyBuildings(list1);
 			else
-				diningBuildings = BuildingManager.getLeastCrowdedBuildings(diningBuildings);
+				list1 = BuildingManager.getLeastCrowdedBuildings(list1);
 
-			if (diningBuildings.size() > 0) {
-				Map<Building, Double> diningBuildingProbs = BuildingManager.getBestRelationshipBuildings(person,
-						diningBuildings);
-				b = RandomUtil.getWeightedRandomObject(diningBuildingProbs);
+			if (!list1.isEmpty()) {
+				Map<Building, Double> probs = BuildingManager.getBestRelationshipBuildings(person,
+						list1);
+				b = RandomUtil.getWeightedRandomObject(probs);
+			}
+			else if (!list0.isEmpty()) {
+				Map<Building, Double> probs = BuildingManager.getBestRelationshipBuildings(person,
+						list0);
+				b = RandomUtil.getWeightedRandomObject(probs);
 			}
 		}
 

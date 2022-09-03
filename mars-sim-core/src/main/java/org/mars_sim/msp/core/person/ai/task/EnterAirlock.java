@@ -444,14 +444,15 @@ public class EnterAirlock extends Task implements Serializable {
 				return time * .75;
 			}
 				
-            if (!airlock.inAirlock(person)) {
-				canProceed = airlock.enterAirlock(person, id, false);
-						
-			}
             // True if the person is already inside the chamber from previous frame
-            else if (isInZone(2) || isInZone(3)) {
+            if (isInZone(2) || isInZone(3)) {
              	canProceed = true;
              }
+			
+            else if (!airlock.inAirlock(person)) {
+				canProceed = airlock.enterAirlock(person, id, false) 
+						&& transitionTo(3);						
+			}
 		}
 
 		else {
@@ -477,8 +478,8 @@ public class EnterAirlock extends Task implements Serializable {
 			// Reset accumulatedTime back to zero
 			accumulatedTime = 0;
 			
-			// Go to zone 3
-			transitionTo(3);
+//			// Go to zone 3
+//			transitionTo(3);
 			
 			logger.log(unit, person, Level.FINE, 4_000,
 					"Just entered through the outer door into " + airlock.getEntity().toString() + ".");

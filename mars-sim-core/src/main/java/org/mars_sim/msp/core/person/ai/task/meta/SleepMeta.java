@@ -84,14 +84,14 @@ public class SleepMeta extends MetaTask {
     	
     	// 1000 millisols is 24 hours, if a person hasn't slept for 24 hours,
         // he is supposed to want to sleep right away.
-    	// Note:  sleep deprivation increases ghrelin levels, while at the same time 
+    	// Note: sleep deprivation increases ghrelin levels, while at the same time 
     	// lowers leptin levels in the blood.
-    	if (fatigue > 300 || stress > 50 || ghrelinS > 0 || leptinS == 0) {
+    	// Take a break from sleep if it's too hungry and too low energy
+    	if (fatigue > 200 && hunger < 1000 && energy > 3000 
+    			&& (stress > 50 || ghrelinS > 0 || leptinS == 0)) {
     		
         	int rand = RandomUtil.getRandomInt(1);
-        	// Take a break from sleep if it's too hungry and too low energy
-            proceed = rand != 1 || (!(hunger > 667) && !(energy < 1000));
-//    		logger.info(person + "  ghrelin: " + ghrelin + "  leptin:" + leptin);
+            proceed = rand != 1 ;
     	}
     	
         if (proceed) {
