@@ -90,7 +90,7 @@ public class Delivery extends DroneMission implements CommerceMission {
 			// Get trading settlement
 			Deal deal = s.getGoodsManager().getBestDeal(MissionType.DELIVERY, getVehicle());
 			if (deal == null) {
-				endMission(MissionStatus.NO_TRADING_SETTLEMENT);
+				endMission(NO_TRADING_SETTLEMENT);
 				return;
 			}
 
@@ -185,7 +185,7 @@ public class Delivery extends DroneMission implements CommerceMission {
 					setPhase(LOAD_GOODS, tradingSettlement.getName());
 				}
 				else {
-					endMission(MissionStatus.CANNOT_LOAD_RESOURCES);
+					endMission(CANNOT_LOAD_RESOURCES);
 				}
 			}
 

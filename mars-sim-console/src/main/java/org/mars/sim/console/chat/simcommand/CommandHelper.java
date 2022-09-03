@@ -292,13 +292,12 @@ public class CommandHelper {
 		}
 		
 		response.appendLabeledString("Lead", startingPerson.getName());		
-		if (mission.isDone()) {
-			response.appendLabeledString("Status:",
-										mission.getMissionStatus().stream()
-										.map(MissionStatus::getName)
-										.collect(Collectors.joining(", ")));
-		}
-		else {
+		response.appendLabeledString("Status:",
+									mission.getMissionStatus().stream()
+									.map(MissionStatus::getName)
+									.collect(Collectors.joining(", ")));
+		
+		if (!mission.isDone()) {
 			response.appendLabeledString("Phase", mission.getPhaseDescription());
 			response.appendLabeledString("Phase Started", mission.getPhaseStartTime().getTrucatedDateTimeStamp());
 		
@@ -309,7 +308,7 @@ public class CommandHelper {
 			if (mission instanceof VehicleMission) {
 				VehicleMission tm = (VehicleMission) mission;
 				int navPoints = tm.getNumberOfNavpoints();
-				if (navPoints > 0) {
+				if ((navPoints > 0) && (tm.getNextNavpointIndex() >= 0)) {
 					response.appendText("Itinerary:");
 					response.appendTableHeading("Way Point", COORDINATE_WIDTH, "Distance", 10,
 										"Description");

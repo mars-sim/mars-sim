@@ -33,9 +33,11 @@ public abstract class EVAMission extends RoverMission {
 	private static SimLogger logger = SimLogger.getLogger(EVAMission.class.getName());
 	
 	private static final MissionPhase WAIT_SUNLIGHT = new MissionPhase("Mission.phase.waitSunlight");
+	private static final MissionStatus EVA_SUIT_CANNOT_BE_LOADED = new MissionStatus("Mission.status.noEVASuits");
 
 	// Maximum time to wait for sunrise
 	protected static final double MAX_WAIT_SUBLIGHT = 400D;
+
 
     private MissionPhase evaPhase;
     private boolean activeEVA = true;
@@ -52,7 +54,7 @@ public abstract class EVAMission extends RoverMission {
 		// Check suit although these may be claimed before loading
 		int suits = getNumberAvailableEVASuitsAtSettlement(getStartingSettlement());
 		if (suits < getMembersNumber()) {
-			endMission(MissionStatus.EVA_SUIT_CANNOT_BE_LOADED);
+			endMission(EVA_SUIT_CANNOT_BE_LOADED);
 		}
     }
 
@@ -212,17 +214,11 @@ public abstract class EVAMission extends RoverMission {
 			// illness, end phase.
 			if (activeEVA && hasEmergency()) {
 				logger.info(getVehicle(), "Has emergency");
-				addMissionLog("Has emergency");
 				activeEVA = false;
 			}
 
 			// Check if enough resources for remaining trip. false = not using margin.
-			if (activeEVA && !hasEnoughResourcesForRemainingMission(false)) {
-				// If not, determine an emergency destination.
-				determineEmergencyDestination(member);
-				logger.info(getVehicle(), "Not enough resources");
-				addMissionLog("Not enough resources");
-
+			if (activeEVA && !hasEnoughResourcesForRemainingMission()) {
 				activeEVA = false;
 			}
 

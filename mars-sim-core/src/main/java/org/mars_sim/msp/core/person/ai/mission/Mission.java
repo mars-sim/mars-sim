@@ -31,6 +31,7 @@ import org.mars_sim.msp.core.environment.SurfaceFeatures;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
+import org.mars_sim.msp.core.logging.Loggable;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
@@ -84,32 +85,20 @@ public abstract class Mission implements Serializable, Temporal {
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(Mission.class.getName());
 
-	public static final MissionPhase COMPLETED = new MissionPhase("Mission.phase.completed");
-	protected static final MissionPhase ABORTED = new MissionPhase("Mission.phase.aborted");
-
 	private static final String OUTSIDE = "Outside";
 
 	private static final int MAX_CAP = 8;
 
-	// Global mission identifier
-	private static int missionIdentifer = 1;
+	private static final MissionPhase COMPLETED_PHASE = new MissionPhase("Mission.phase.completed");
+	private static final MissionPhase ABORTED_PHASE = new MissionPhase("Mission.phase.aborted");
 
-	/**
-	 * The marginal factor for the amount of water to be brought during a mission.
-	 */
-	public static final double WATER_MARGIN = 1.00;
-	/**
-	 * The marginal factor for the amount of oxygen to be brought during a mission.
-	 */
-	public static final double OXYGEN_MARGIN = 1.5;
-	/**
-	 * The marginal factor for the amount of food to be brought during a mission.
-	 */
-	public static final double FOOD_MARGIN = 2.25;
-	/**
-	 * The marginal factor for the amount of dessert to be brought during a mission.
-	 */
-	public static final double DESSERT_MARGIN = 1.25;
+	protected static final MissionStatus NOT_ENOUGH_MEMBERS = new MissionStatus("Mission.status.noMembers");
+	private static final MissionStatus MISSION_NOT_APPROVED = new MissionStatus("Mission.status.notApproved");
+	private static final MissionStatus MISSION_ACCOMPLISHED = new MissionStatus("Mission.status.accomplished");
+	private static final MissionStatus MISSION_ABORTED = new MissionStatus("Mission.status.aborted");
+
+	private static final String INTERNAL_PROBLEM = "Mission.status.internalProblem";
+
 
 	// Data members
 	/** The number of people that can be in the mission. */
@@ -123,11 +112,14 @@ public abstract class Mission implements Serializable, Temporal {
 	private boolean phaseEnded;
 	/** True if mission is completed. */
 	private boolean done = false;
+	private boolean aborted = false;
 
 	/** The name of the vehicle reserved. */
 	private String vehicleReserved;
 	/** The Name of this mission. */
 	private String missionName;
+	/** Unique identifer  */
+	private int identifier;
 	/** The description of this mission. */
 	private String description;
 	/** The full mission designation. */
@@ -172,24 +164,12 @@ public abstract class Mission implements Serializable, Temporal {
 	private transient List<MissionListener> listeners;
 
 	// Static members
-	protected static Simulation sim = Simulation.instance();
-
 	protected static UnitManager unitManager;
 	protected static HistoricalEventManager eventManager;
 	protected static MissionManager missionManager;
 	protected static SurfaceFeatures surfaceFeatures;
 	protected static PersonConfig personConfig;
 	protected static MarsClock marsClock;
-
-	/**
-	 * Must be synchronised to prevent duplicate ids being assigned via different
-	 * threads.
-	 *
-	 * @return
-	 */
-	private static synchronized int getNextIdentifier() {
-		return missionIdentifer++;
-	}
 
 	/**
 	 * Constructor.
@@ -199,7 +179,10 @@ public abstract class Mission implements Serializable, Temporal {
 	 */
 	protected Mission(MissionType missionType, Worker startingMember) {
 		// Initialize data members
-		this.missionName = missionType.getName() + " #" + getNextIdentifier();
+
+		this.identifier = missionManager.getNextIdentifier();
+		
+		this.missionName = missionType.getName() + " #" + identifier;
 		this.missionType = missionType;
 		this.startingMember = startingMember;
 		this.description = missionName;
@@ -424,7 +407,7 @@ public abstract class Mission implements Serializable, Temporal {
 			fireMissionUpdate(MissionEventType.REMOVE_MEMBER_EVENT, member);
 
 			if (getPeopleNumber() == 0 && !done) {
-				endMission(MissionStatus.NO_MEMBERS_AVAILABLE);
+				endMission(NOT_ENOUGH_MEMBERS);
 			}
 		}
 	}
@@ -562,16 +545,6 @@ public abstract class Mission implements Serializable, Temporal {
     public void setName(String newName) {
 		this.missionName = newName;
     }
-
-	/**
-	 * Gets the type and identifier of the mission.
-	 *
-	 * @return type and identifier of the mission
-	 * @deprecated use {@link #getName()}
-	 */
-	public final String getTypeID() {
-		return missionName;
-	}
 
 	/**
 	 * Gets the mission type enum.
@@ -729,7 +702,7 @@ public abstract class Mission implements Serializable, Temporal {
 	 */
 	protected void performPhase(Worker member) {
 		if (phase == null) {
-			endMission(MissionStatus.CURRENT_MISSION_PHASE_IS_NULL);
+			endMissionProblem(member, "Current phase null");
 		}
 	}
 
@@ -776,10 +749,19 @@ public abstract class Mission implements Serializable, Temporal {
 	}
 
 	/**
-	 * Abort the mission. Will not immediately stop
+	 * Abort the mission by the user. Will stop currnet phase.
 	 */
-	public void abortMission() {
-		// Normal mission can not be aborted
+	public final void abortMission() {
+		abortMission(MISSION_ABORTED, null);
+	}
+
+	/**
+	 * Mission is being aborted because of a problem.
+	 * @param reason Reason to abort
+	 * @param event Optional type of event to create
+	 */
+	protected void abortMission(MissionStatus reason, EventType event) {
+		aborted = true;
 	}
 
 	/**
@@ -788,27 +770,25 @@ public abstract class Mission implements Serializable, Temporal {
 	 * @param reason
 	 */
 	private void addMissionScore() {
-		if (haveMissionStatus(MissionStatus.MISSION_ACCOMPLISHED)) {
-			for (Worker member : members) {
-				if (member.getUnitType() == UnitType.PERSON) {
-					Person person = (Person) member;
+		for (Worker member : members) {
+			if (member.getUnitType() == UnitType.PERSON) {
+				Person person = (Person) member;
 
-					if (!person.isDeclaredDead()) {
-						if (person.getPhysicalCondition().hasSeriousMedicalProblems()) {
-							// Note : there is a minor penalty for those who are sick
-							// and thus unable to fully function during the mission
-							person.addMissionExperience(missionType, 2);
-						}
-						else if (person.equals(startingMember)) {
-							// The mission lead receive extra bonus
-							person.addMissionExperience(missionType, 6);
-
-							// Add a leadership point to the mission lead
-							person.getNaturalAttributeManager().adjustAttribute(NaturalAttributeType.LEADERSHIP, 1);
-						}
-						else
-							person.addMissionExperience(missionType, 3);
+				if (!person.isDeclaredDead()) {
+					if (person.getPhysicalCondition().hasSeriousMedicalProblems()) {
+						// Note : there is a minor penalty for those who are sick
+						// and thus unable to fully function during the mission
+						person.addMissionExperience(missionType, 2);
 					}
+					else if (person.equals(startingMember)) {
+						// The mission lead receive extra bonus
+						person.addMissionExperience(missionType, 6);
+
+						// Add a leadership point to the mission lead
+						person.getNaturalAttributeManager().adjustAttribute(NaturalAttributeType.LEADERSHIP, 1);
+					}
+					else
+						person.addMissionExperience(missionType, 3);
 				}
 			}
 		}
@@ -828,14 +808,23 @@ public abstract class Mission implements Serializable, Temporal {
 		}
 
 		// Ended with a status
-		missionStatus.add(endStatus);
+		if (endStatus != null) {
+			missionStatus.add(endStatus);
+		}
 
-		// Add mission experience score
-		addMissionScore();
-
-		done = true; // Note: done = true is very important to keep !
-		
+		// If no mission flags have been added then it was accomplised
 		String listOfStatuses = missionStatus.stream().map(MissionStatus::getName).collect(Collectors.joining(", "));
+		MissionPhase finalPhase;
+		if (missionStatus.isEmpty() && !aborted) {
+			missionStatus.add(MISSION_ACCOMPLISHED);
+			addMissionScore();
+			finalPhase = COMPLETED_PHASE;
+		}
+		else {
+			finalPhase = ABORTED_PHASE;
+		}
+		setPhase(finalPhase, listOfStatuses);
+		done = true; 
 		
 		StringBuilder status = new StringBuilder();
 		status.append("Ended the ")
@@ -855,21 +844,6 @@ public abstract class Mission implements Serializable, Temporal {
 				adjustShift(member);
 			}	
 		}
-
-		
-		if (haveMissionStatus(MissionStatus.ABORTED_MISSION)) {
-			// Note: set the aborted phase here for now
-			// Should look for another location to set the aborted phase 
-			setPhase(ABORTED, listOfStatuses);
-		}
-		
-//		// Mission is completed if it has not been abort by user AND mission status is marked as accomplished
-//		else if (endStatus == MissionStatus.MISSION_ACCOMPLISHED) {
-//			setPhase(COMPLETED, null);
-//		}
-
-		// Proactively call removeMission to update the list in MissionManager right away
-		// Note: Calling missionManager.removeMission(this) will crash the mission tab in monitor tool
 	}
 
 	/**
@@ -920,15 +894,21 @@ public abstract class Mission implements Serializable, Temporal {
 	 * @return true if dangerous medical problems
 	 */
 	private final boolean hasDangerousMedicalProblems() {
+		Person patient = null;
 		for (Worker member : members) {
 			if (member.getUnitType() == UnitType.PERSON) {
 				if (((Person) member).getPhysicalCondition().hasSeriousMedicalProblems()) {
-					return true;
+					patient = (Person) member;
 				}
 			}
 		}
 
-		return false;
+		if (patient != null) {
+			// Abort the mission and return home
+			abortMission(new MissionStatus("Mission.status.medicalEmergency", patient.getName()),
+						 EventType.MISSION_MEDICAL_EMERGENCY);
+		}
+		return patient != null;
 	}
 
 	/**
@@ -1062,7 +1042,7 @@ public abstract class Mission implements Serializable, Temporal {
 		}
 
 		if (getMembersNumber() < minMembers) {
-			endMission(MissionStatus.NOT_ENOUGH_MEMBERS);
+			endMission(NOT_ENOUGH_MEMBERS);
 			return false;
 		}
 
@@ -1316,7 +1296,7 @@ public abstract class Mission implements Serializable, Temporal {
 
 		else {
 			if (plan.getStatus() == PlanType.NOT_APPROVED) {
-				endMission(MissionStatus.MISSION_NOT_APPROVED);
+				endMission(MISSION_NOT_APPROVED);
 			}
 
 			else if (plan.getStatus() == PlanType.APPROVED) {
@@ -1377,9 +1357,14 @@ public abstract class Mission implements Serializable, Temporal {
 	 * @return
 	 */
 	protected void createFullDesignation() {
-		fullMissionDesignation = Conversion.getInitials(getDescription().replace("with", "").trim()) + " "
-				+ missionManager.getMissionDesignationString(getAssociatedSettlement().getName());
-		
+		StringBuilder buffer = new StringBuilder();
+		buffer.append(Conversion.getInitials(missionType.getName().replace("with", "").trim()))
+			  .append(" ")
+			  .append(Conversion.getInitials(getAssociatedSettlement().getName()))
+			  .append('-')
+			  .append(String.format("%3d", identifier));
+		fullMissionDesignation = buffer.toString();
+
 		fireMissionUpdate(MissionEventType.DESIGNATION_EVENT, fullMissionDesignation);
 	}
 
@@ -1391,32 +1376,18 @@ public abstract class Mission implements Serializable, Temporal {
 		return vehicleReserved;
 	}
 
+	/**
+	 * An internal problem has happened so end the mission.
+	 */
+	protected void endMissionProblem(Loggable source, String reason) {
+		MissionStatus status = new MissionStatus(INTERNAL_PROBLEM, reason);
+		logger.severe(source, getName() + ": " + status.getName());
+		endMission(status);
+	}
+
+
 	public Set<MissionStatus> getMissionStatus() {
 		return missionStatus;
-	}
-
-	/**
-	 * Checks if this mission has already been tagged with this mission status.
-	 *
-	 * @param status
-	 * @return
-	 */
-	public boolean haveMissionStatus(MissionStatus status) {
-        return missionStatus.contains(status);
-	}
-
-	/**
-	 * Checks if the rover has mission status that prompts to turn on the beacon to ask for help.
-	 *
-	 * @return
-	 */
-	public boolean needHelp() {
-        return missionStatus.contains(MissionStatus.NOT_ENOUGH_RESOURCES)
-                || missionStatus.contains(MissionStatus.NO_METHANE)
-                || missionStatus.contains(MissionStatus.UNREPAIRABLE_MALFUNCTION)
-                || missionStatus.contains(MissionStatus.NO_EMERGENCY_SETTLEMENT_DESTINATION_FOUND)
-                || missionStatus.contains(MissionStatus.MEDICAL_EMERGENCY)
-                || missionStatus.contains(MissionStatus.REQUEST_RESCUE);
 	}
 
 	/**
@@ -1424,8 +1395,12 @@ public abstract class Mission implements Serializable, Temporal {
 	 *
 	 * @param status
 	 */
-	protected void addMissionStatus(MissionStatus status) {
-		missionStatus.add(status);
+	protected boolean addMissionStatus(MissionStatus status) {
+		boolean newStatus = missionStatus.add(status);
+		if (newStatus) {
+			addMissionLog(status.getName());
+		}
+		return newStatus;
 	}
 
 	public int getPriority() {
@@ -1450,8 +1425,7 @@ public abstract class Mission implements Serializable, Temporal {
 		if (obj == null) return false;
 		if (this.getClass() != obj.getClass()) return false;
 		Mission m = (Mission) obj;
-		return this.missionType == m.getMissionType()
-				&& this.missionName.equals(m.getName());
+		return this.identifier == m.identifier;
 	}
 
 	/**
@@ -1460,9 +1434,7 @@ public abstract class Mission implements Serializable, Temporal {
 	 * @return hash code.
 	 */
 	public int hashCode() {
-		int hashCode = (1 + missionName.hashCode());
-		hashCode *= missionType.hashCode();
-		return hashCode;
+		return (1 + identifier) % 64; 
 	}
 
 	/**
@@ -1478,7 +1450,6 @@ public abstract class Mission implements Serializable, Temporal {
 	public static void initializeInstances(Simulation si, MarsClock c, HistoricalEventManager e,
 			UnitManager u, SurfaceFeatures sf, 
 			MissionManager m, PersonConfig pc) {
-		sim = si;
 		marsClock = c;
 		eventManager = e;
 		unitManager = u;
@@ -1495,9 +1466,7 @@ public abstract class Mission implements Serializable, Temporal {
 			members.clear();
 		}
 		members = null;
-		missionName = null;
 		phase = null;
-		phaseDescription = null;
 		if (listeners != null) {
 			listeners.clear();
 		}

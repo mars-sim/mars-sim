@@ -116,7 +116,7 @@ public abstract class CollectResourcesMission extends EVAMission
 			if (!recruitMembersForMission(startingPerson, MIN_PEOPLE)) {
 				logger.warning(getVehicle(), "Not enough members recruited for mission " 
 						+ getName() + ".");
-				endMission(MissionStatus.NO_MEMBERS_AVAILABLE);
+				endMission(NOT_ENOUGH_MEMBERS);
 				return;
 			}
 
@@ -134,7 +134,7 @@ public abstract class CollectResourcesMission extends EVAMission
 				if (range <= 0D) {
 					logger.warning(getVehicle(), "Zero range for mission " 
 							+ getName() + ".");
-					endMission(MissionStatus.NO_AVAILABLE_VEHICLES);
+					endMission(NO_AVAILABLE_VEHICLES);
 					return;
 				}
 
@@ -174,7 +174,7 @@ public abstract class CollectResourcesMission extends EVAMission
 
 			// Check if vehicle can carry enough supplies for the mission.
 			if (hasVehicle() && !isVehicleLoadable()) {
-				endMission(MissionStatus.CANNOT_LOAD_RESOURCES);
+				endMission(CANNOT_LOAD_RESOURCES);
 			}
 		}
 
@@ -222,7 +222,7 @@ public abstract class CollectResourcesMission extends EVAMission
 
 		// Check if vehicle can carry enough supplies for the mission.
 		if (hasVehicle() && !isVehicleLoadable()) {
-			endMission(MissionStatus.CANNOT_LOAD_RESOURCES);
+			endMission(CANNOT_LOAD_RESOURCES);
 		}
 		else {
 			setInitialPhase(false);

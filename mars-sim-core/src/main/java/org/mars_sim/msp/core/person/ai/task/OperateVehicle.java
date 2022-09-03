@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -40,14 +39,13 @@ import org.mars_sim.msp.core.vehicle.Drone;
 import org.mars_sim.msp.core.vehicle.Flyer;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
-import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * The OperateVehicle class is an abstract task for operating a vehicle, 
  * driving it to a destination.
  */
-public abstract class OperateVehicle extends Task implements Serializable {
+public abstract class OperateVehicle extends Task {
 	
     /** default serial id. */
     private static final long serialVersionUID = 1L;
@@ -74,7 +72,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
 	/** Half the PI. */
 	private static final double HALF_PI = Math.PI / 2D;
 	/** Comparison to indicate a small but non-zero amount of fuel (methane) in kg that can still work on the fuel cell to propel the engine. */
-    private static final double LEAST_AMOUNT = RoverMission.LEAST_AMOUNT;
+    private static final double LEAST_AMOUNT = GroundVehicle.LEAST_AMOUNT;
     /** Distance buffer for arriving at destination (km). */
     private static final double DESTINATION_BUFFER = .000_1;
     /** The base percentage chance of an accident while operating vehicle per millisol. */
@@ -357,24 +355,11 @@ public abstract class OperateVehicle extends Task implements Serializable {
 	 */
 	private void turnOnBeacon(int resource) {
 		vehicle.setSpeed(0D);
-		vehicle.setPrimaryStatus(StatusType.PARKED, StatusType.OUT_OF_FUEL);
-        MissionStatus status = MissionStatus.NO_METHANE;
-        if (resource == ResourceUtil.oxygenID) {
-        	status = MissionStatus.NO_OXYGEN;        
-        }
-        else if (resource == ResourceUtil.methanolID) {
-        	status = MissionStatus.NO_METHANOL;        
-        }
+        MissionStatus status = VehicleMission.createResourceStatus(resource);
         	
     	if (!vehicle.isBeaconOn()) {
     		Mission m = vehicle.getMission();
-    		if (person != null) {
-    			((VehicleMission)m).setEmergencyBeacon(person, vehicle, true, status.getName());
-    		}
-    		else {
-    			((VehicleMission)m).setEmergencyBeacon(robot, vehicle, true, status.getName());
-    		}
-    		
+    		((VehicleMission)m).setEmergencyBeacon(worker, vehicle, true, status.getName());
     		((VehicleMission)m).getHelp(status);
     	}
 	}
@@ -451,6 +436,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
             if (isSettlementDestination())
                 determineInitialSettlementParkedLocation();
             
+			endTask();
         	return remainingTime;
         }
         

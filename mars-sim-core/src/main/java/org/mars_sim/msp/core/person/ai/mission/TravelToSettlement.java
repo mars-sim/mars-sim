@@ -74,9 +74,9 @@ public class TravelToSettlement extends RoverMission {
 				addNavpoint(destinationSettlement);
 				setDescription(Msg.getString("Mission.description.travelToSettlement.detail",
 						destinationSettlement.getName())); // $NON-NLS-1$)
-			} else {
-				logger.warning(MissionStatus.DESTINATION_IS_NULL.getName());
-				endMission(MissionStatus.DESTINATION_IS_NULL);
+			}
+			else {
+				endMissionProblem(startingMember, "No destination");
 			}
 
 			// Check mission available space
@@ -97,7 +97,7 @@ public class TravelToSettlement extends RoverMission {
 
 			// Check if vehicle can carry enough supplies for the mission.
 			if (hasVehicle() && !isVehicleLoadable()) {
-				endMission(MissionStatus.CANNOT_LOAD_RESOURCES);
+				endMission(CANNOT_LOAD_RESOURCES);
 				return;
 			}
 
@@ -120,7 +120,7 @@ public class TravelToSettlement extends RoverMission {
 
 		// Check if vehicle can carry enough supplies for the mission.
 		if (hasVehicle() && !isVehicleLoadable()) {
-			endMission(MissionStatus.CANNOT_LOAD_RESOURCES);
+			endMission(CANNOT_LOAD_RESOURCES);
 			return;
 		}
 

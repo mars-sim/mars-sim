@@ -347,7 +347,6 @@ public class RelationshipUtil implements Serializable {
 				// Check if new relationship.
 				if (!hasRelationship(person, localPerson)) {
 					createRelationship(person, localPerson, RelationshipType.EXISTING_RELATIONSHIP);
-					logger.info(person, "Got to know " + localPerson.getName() + " for the first time.");
 				}
 	
 				// Determine probability of relationship change per millisol.

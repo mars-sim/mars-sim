@@ -32,6 +32,8 @@ public class CollectIce extends CollectResourcesMission {
 	/** Number of collection sites. */
 	private static final int NUM_SITES = 3;
 
+	private static final MissionStatus NO_ICE_COLLECTION_SITES = new MissionStatus("Mission.status.noIceSites");
+
 	private int searchCount = 0;
 
 	/**
@@ -84,7 +86,7 @@ public class CollectIce extends CollectResourcesMission {
 	protected boolean isValidScore(double score) {
 		boolean accept = (score > 0);
 		if (!accept && (searchCount++ >= 10)) {
-			endMission(MissionStatus.NO_ICE_COLLECTION_SITES);
+			endMission(NO_ICE_COLLECTION_SITES);
 		}
 
 		return accept;

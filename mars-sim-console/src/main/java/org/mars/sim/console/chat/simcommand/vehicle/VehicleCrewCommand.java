@@ -74,16 +74,14 @@ public class VehicleCrewCommand extends ChatCommand {
 			StructuredResponse response = new StructuredResponse();
 	
 			if (people != null) {
-				Map<String, List<String>> pmap = people.stream()
-						.collect(Collectors.groupingBy(Person::getTaskDescription, Collectors.mapping(Person::getName,
-						                             Collectors.toList())));
+				Map<String, List<Worker>> pmap = people.stream()
+						.collect(Collectors.groupingBy(Person::getTaskDescription, Collectors.toList()));
 				outputTasks(response, "People", pmap);
 			}
 			
 			if (robots != null) {
-				Map<String, List<String>> rmap = robots.stream()
-						.collect(Collectors.groupingBy(Robot::getTaskDescription, Collectors.mapping(Robot::getName,
-						                             Collectors.toList())));
+				Map<String, List<Worker>> rmap = robots.stream()
+						.collect(Collectors.groupingBy(Robot::getTaskDescription, Collectors.toList()));
 				if (!rmap.isEmpty()) {
 					response.appendBlankLine();
 					outputTasks(response, "Robots", rmap);
@@ -95,11 +93,11 @@ public class VehicleCrewCommand extends ChatCommand {
 		return true;
 	}
 	
-	private static void outputTasks(StructuredResponse response, String name, Map<String, List<String>> tasks) {
-		response.appendTableHeading("Task", CommandHelper.TASK_WIDTH, name, CommandHelper.PERSON_WIDTH);
-		for (Map.Entry<String, List<String>> entry : tasks.entrySet()) {
+	private static void outputTasks(StructuredResponse response, String name, Map<String, List<Worker>> tasks) {
+		response.appendTableHeading("Task", CommandHelper.TASK_WIDTH, "OnBoard", name, CommandHelper.PERSON_WIDTH);
+		for (Map.Entry<String, List<Worker>> entry : tasks.entrySet()) {
 			String task = entry.getKey();
-			List<String> plist = entry.getValue();
+			List<Worker> plist = entry.getValue();
 			String tableGroup = null;
 			if (task != null) {
 				tableGroup = task;
@@ -108,8 +106,8 @@ public class VehicleCrewCommand extends ChatCommand {
 			}
 
 			// Add the rows for each person
-			for (String p : plist) {
-				response.appendTableRow(tableGroup, p);
+			for (Worker p : plist) {
+				response.appendTableRow(tableGroup, p.isInVehicle(), p.getName());
 				tableGroup = ""; // Reset table subgroup
 			}
 		}

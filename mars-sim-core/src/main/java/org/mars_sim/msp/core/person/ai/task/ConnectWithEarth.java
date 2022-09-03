@@ -139,9 +139,6 @@ public class ConnectWithEarth extends Task implements Serializable {
 		
 		if (isDone()) {
         	// this task has ended
-    		logger.info(person, 30_000L, connection.getName() + " - "
-    				+ Math.round((TOTAL_COMPUTING_NEEDED - computingNeeded) * 100.0)/100.0 
-    				+ " CUs Used.");
 			endTask();
 			return time;
 		}
@@ -186,9 +183,6 @@ public class ConnectWithEarth extends Task implements Serializable {
         }
         else if (computingNeeded <= 0) {
         	// this task has ended
-    		logger.info(person, 30_000L, connection.getName() + " - "
-    				+ Math.round(TOTAL_COMPUTING_NEEDED * 100.0)/100.0 
-    				+ " CUs Used.");
         	endTask();
         }
         
