@@ -135,7 +135,11 @@ public class Person extends Unit implements Worker, Temporal, EquipmentOwner {
 	private int currentBuildingInt;
 	/** The carrying capacity of the person. */
 	private int carryingCapacity;
-
+	/** The id of the person who invite this person for a meeting. */
+	private int initiatorId = -1;
+	/** The id of the person being invited by this person for a meeting. */
+	private int inviteeId = -1;
+	
 	/** The settlement the person is currently associated with. */
 	private Integer associatedSettlementID = Integer.valueOf(-1);
 	/** The buried settlement if the person has been deceased. */
@@ -2294,6 +2298,22 @@ public class Person extends Unit implements Worker, Temporal, EquipmentOwner {
 	 */
 	public Relation getRelation( ) {
 		return mind.getRelation();
+	}
+	
+	public void setMeetingInitiator(int initiatorId) {
+		this.initiatorId = initiatorId;
+	}
+	
+	public void setMeetingInvitee(int inviteeId) {
+		this.inviteeId = inviteeId;
+	}
+	
+	public int getMeetingInitiator() {
+		return initiatorId;
+	}
+	
+	public int getMeetingInvitee() {
+		return inviteeId;
 	}
 	
 	/**

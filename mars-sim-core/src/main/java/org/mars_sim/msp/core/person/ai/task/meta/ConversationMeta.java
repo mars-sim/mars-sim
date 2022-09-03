@@ -36,7 +36,7 @@ public class ConversationMeta extends MetaTask {
             "Task.description.conversation"); //$NON-NLS-1$
     
     private static final double VALUE = .1;
-    private static final int CAP = 10;
+    private static final int CAP = 1;
     
 	public ConversationMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.ANY_HOUR);
@@ -179,7 +179,9 @@ public class ConversationMeta extends MetaTask {
             }
         }
         
-        return result;
+        int pop = settlement.getIndoorPeopleCount();
+        
+        return result / pop * 2;
 	}
 
 	private double checkVehicle(Person person) { 

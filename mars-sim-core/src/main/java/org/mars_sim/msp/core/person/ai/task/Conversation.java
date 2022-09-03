@@ -83,6 +83,7 @@ implements Serializable {
         super(NAME, person, true, false, 
         		STRESS_MODIFIER - RandomUtil.getRandomDouble(.2),
         		3 + RandomUtil.getRandomDouble(person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.CONVERSATION))/20
+        		 + RandomUtil.getRandomDouble(person.getPreference().getPreferenceScore(new ConversationMeta())/3.0)
         		);
 
         if (person.isInSettlement()) {
@@ -265,13 +266,9 @@ implements Serializable {
 
     public Person selectFromVehicle() {
     	Person invitee = null;
-        int score = person.getPreference().getPreferenceScore(new ConversationMeta());
-        super.setDuration(1.0 + score);
-        // Factored in a person's preference for the new stress modifier
-        super.setStressModifier(score/10D + STRESS_MODIFIER);
 
         Set<Person> pool = new HashSet<>();
-         Vehicle v = (Vehicle) person.getContainerUnit();
+        Vehicle v = (Vehicle) person.getContainerUnit();
          
         Collection<Person> candidates = v.getTalkingPeople();
         pool.addAll(candidates);
@@ -317,10 +314,6 @@ implements Serializable {
 
     public Person selectforEVA() {
     	Person invitee = null;
-    	int score = person.getPreference().getPreferenceScore(new ConversationMeta());
-        super.setDuration(1.0 + score);
-        // Factored in a person's preference for the new stress modifier
-        super.setStressModifier(score/10D + STRESS_MODIFIER);
 
         Set<Person> pool = new HashSet<>();
     	Settlement s = person.getAssociatedSettlement();
@@ -394,8 +387,7 @@ implements Serializable {
         RelationshipUtil.changeOpinion(person, invitee, 
         		RelationshipType.COMMUNICATION_MEETING, RandomUtil.getRandomDouble(-.1, .15));
 
-        // If duration, send invitation.
-        if (getDuration() >= (getTimeCompleted() + time)) {
+        if (getTimeCompleted() + time >= getDuration()) {
         	endTask();
         }
 

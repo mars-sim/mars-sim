@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MeetTogether.java
- * @date 2022-06-11
+ * @date 2022-09-02
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -14,12 +14,13 @@ import java.util.List;
 import java.util.Set;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.person.ai.role.RoleUtil;
-import org.mars_sim.msp.core.person.ai.social.RelationshipUtil;
 import org.mars_sim.msp.core.person.ai.social.RelationshipType;
+import org.mars_sim.msp.core.person.ai.social.RelationshipUtil;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -40,6 +41,9 @@ implements Serializable {
     /** default logger. */
     private static final SimLogger logger = SimLogger.getLogger(MeetTogether.class.getName());
 	
+	/** Simple Task name */
+	static final String SIMPLE_NAME = MeetTogether.class.getSimpleName();
+	
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.meetTogether"); //$NON-NLS-1$
@@ -51,11 +55,14 @@ implements Serializable {
     // Static members
     /** The stress modified per millisol. */
     private static final double STRESS_MODIFIER = -.2D;
-
-    private List<Person> list = new ArrayList<Person>();
     
-    private Person candidate;  
-    private Person inviter;
+    private transient Person invitee;
+    private transient Person initiator;
+    
+    /** The id of the person choosen by initiator for having a meeting. */
+    private int inviteeId = -1;
+    /** The id of the person who initiates the meeting. */
+    private int initiatorId = -1;
     
     private Settlement settlement;
 
@@ -73,91 +80,95 @@ implements Serializable {
         		10D + RandomUtil.getRandomDouble(20));
 
         this.person = person;
-
+        
 		setDescription(Msg.getString("Task.description.meetTogether")); //$NON-NLS-1$
 
-        settlement = person.getSettlement();
-        
-        if (settlement != null) {
-        	
-            Set<Person> pool = new HashSet<>();
-
-            Collection<Person> ppl = settlement.getAllAssociatedPeople(); 
-            RoleType roleType = person.getRole().getType();
-            
-            if (roleType != null && roleType.isCouncil()) {
-            	
-                for (Person p : ppl) {
-                    RoleType type = p.getRole().getType();
-
-                    if (type != null 
-                    	&& roleType.isChief()) {
-     
-                    	if (p.getBuildingLocation() != null)
-                    		// if that person is inside the settlement and within a building
-                    		pool.add(p);
-
-                    }
-                }    
-                
-                Person pp = ppl
-						.stream()
-						.findAny().orElse(null);	
-                
-                if (pool.size() == 0)
-                	pool.add(pp);
-                
-            }
-            
-            else if (roleType != null && roleType.isChief()) {
-            	pool = getPool(ppl, roleType);
-            }
-      	
-            pool.remove(person);
-            
-            list.addAll(pool);
-
-            if (list.size() == 0) {
-                endTask();
-            }
-            else {
-    	    	int size = list.size();
-    	        
-    	        if (size == 1)
-    	        	candidate = list.get(0); 
-    	        else
-    	        	candidate = list.get(RandomUtil.getRandomInt(0, size-1));
-            }
-            
-        }
-        
-        else {
-            endTask();
-        }
-
+		// Check if this person has an meeting initiator
+		initiatorId = person.getMeetingInitiator();
+		
+		// Check if this person is being invited by a initiator for this meeting
+		if (initiatorId != -1) {
+			// Case 1: This person is the invitee
+			inviteeId = person.getIdentifier();
+			// Set this person as invitee
+			invitee = person;
+			// Get the initiator's person instance
+			initiator = Simulation.instance().getUnitManager().getPersonByID(initiatorId);
+		}
+		
+		else {
+			
+			// Case 2: This person is the initiator
+			initiator = person;
+			
+	        settlement = initiator.getSettlement();
+	        
+	        if (settlement != null) {
+	        	
+	            Set<Person> pool = new HashSet<>();
+	
+	            Collection<Person> ppl = settlement.getAllAssociatedPeople(); 
+	            RoleType roleType = person.getRole().getType();
+	            
+	            if (roleType != null && roleType.isCouncil()) {
+	            	
+	                for (Person p : ppl) {
+	                    RoleType type = p.getRole().getType();
+	
+	                    if (type != null 
+	                    	&& roleType.isChief()) {
+	     
+	                    	if (p.getBuildingLocation() != null)
+	                    		// if that person is inside the settlement and within a building
+	                    		pool.add(p);
+	                    }
+	                }    
+	                
+	                Person pp = ppl
+							.stream()
+							.filter(p -> p.getMeetingInitiator() != -1 &&  p.getMeetingInvitee() != -1)
+							.findAny().orElse(null);	
+	                
+	                if (pool.size() == 0)
+	                	pool.add(pp);
+	            }
+	            
+	            else if (roleType != null && roleType.isChief()) {
+	            	pool = getPool(ppl, roleType);
+	            }
+	      	
+	            pool.remove(initiator);
+	            
+	            List<Person> list = new ArrayList<>();
+	            
+	            list.addAll(pool);
+	
+	            if (list.size() == 0) {
+	                clearTask();
+	            }
+	            else {
+	    	    	int size = list.size();
+	    	        
+	    	        if (size == 1)
+	    	        	invitee = list.get(0); 
+	    	        else
+	    	        	invitee = list.get(RandomUtil.getRandomInt(0, size-1));
+	            }
+	        }
+	        else {
+	            clearTask();
+	        }
+	
+	        // Set the invitee's inviter's ID
+	        invitee.setMeetingInitiator(initiator.getIdentifier());
+	        // Set the person's invitee's ID
+	        initiator.setMeetingInvitee(invitee.getIdentifier());
+		}
+		
         // Initialize phase
         addPhase(MEET_TOGETHER);
         setPhase(MEET_TOGETHER);
     }
-
-    
-    // Note: how to use this version of MeetTogether
-    public MeetTogether(Person candidate, Person inviter) {
-        // Use Task constructor.
-        super(NAME, candidate, true, false, STRESS_MODIFIER - RandomUtil.getRandomDouble(.2), null, 100D,
-        	  5D + RandomUtil.getRandomDouble(10));
-        
-        this.inviter = inviter;
-        
-		setDescription(Msg.getString("Task.description.meetTogether")); //$NON-NLS-1$
-
-        settlement = candidate.getSettlement();
-        
-        if (settlement != null) {
-            RelationshipUtil.changeOpinion(candidate, inviter, RelationshipType.COMMUNICATION_MEETING, RandomUtil.getRandomDouble(1));
-        }
-    }
-    
     
     @Override
     protected double performMappedPhase(double time) {
@@ -180,50 +191,93 @@ implements Serializable {
      */
     private double meetingTogether(double time) {
 
-    	// When loading from a saved sim, candidate will be null
-    	if (candidate == null)
-    		return time;
-    	
-    	if (inviter == null) {
-    		// The person is setting up and inviting the candidate
-    		// e.g. Joe is meeting with Mary
-    		
-       		Building building = settlement.getBuildingManager()
-        					.getBuildings(FunctionType.COMMUNICATION)
-							.stream()
-							.findAny().orElse(null);	        		
-	        		
-	    	if (building != null) {
-	    				
-				walkToActivitySpotInBuilding(building, FunctionType.COMMUNICATION, false);
+    	// When loading from a saved sim, invitee will be null
+    	if (invitee == null) {
+    		if (inviteeId == -1)
+    			logger.warning(initiator, "inviteeId is -1.");
+    		else
+    			invitee = Simulation.instance().getUnitManager().getPersonByID(inviteeId);
 
-				setDescription(Msg.getString("Task.description.meetTogether.detail", candidate.getName())); //$NON-NLS-1$
-			
-				logger.fine(person, Msg.getString("Task.description.meetTogether.detail", candidate.getName()));
-	
-		        if (getDuration() <= (getTimeCompleted() + time)) {
-		            RelationshipUtil.changeOpinion(person, candidate, RelationshipType.COMMUNICATION_MEETING, RandomUtil.getRandomDouble(1));
-		        }
-		    }
+    	}
+    	else {
+    		invitee.setMeetingInitiator(-1);
+    		clearTask();
+    		return time * .75;
+    	}
+    		
+    	// When loading from a saved sim, initiator will be null
+    	if (initiator == null) {
+    		if (initiatorId == -1)
+    			logger.warning(initiator, "initiatorId is -1.");
+    		else
+    			initiator = Simulation.instance().getUnitManager().getPersonByID(initiatorId);
+
+    	}
+    	else {
+    		initiator.setMeetingInitiator(-1);
+    		clearTask();
+    		return time * .75;
     	}
     	
-    	else if (inviter != null) {
-    		// The person is invited to a meeting setup by the inviter
-    		// e.g. Joe is invited to meet with Mary
-    		
-    		Building building = inviter.getBuildingLocation();
-  			    		
-			walkToActivitySpotInBuilding(building, FunctionType.COMMUNICATION, false);
-
-			setDescription(Msg.getString("Task.description.meetTogether.detail.invited", inviter.getName())); //$NON-NLS-1$
-			
-			logger.fine(person, Msg.getString("Task.description.meetTogether.detail.invited", inviter.getName()));
-    	}
+    	if (!(invitee.getMind().getTaskManager().getTask() instanceof MeetTogether)) {
 	    	
+	    	boolean willMeet = invitee.getMind().getTaskManager().addAPendingTask(MeetTogether.SIMPLE_NAME, false);
+	    	if (!willMeet) {
+	    		clearTask();
+	    		return time * .75;
+	    	}
+	    }
+    	
+		Building personbuilding = initiator.getBuildingLocation();
+		
+    	if (!personbuilding.hasFunction(FunctionType.DINING)) {
+    		Building building = settlement.getBuildingManager()
+					.getBuildings(FunctionType.DINING)
+					.stream()
+					.findAny().orElse(null);	 
+		
+			if (building != null) {
+				walkToActivitySpotInBuilding(building, FunctionType.DINING, false);
+			}
+    	}
+
+		// The person is setting up and inviting the candidate
+		// e.g. Joe is meeting with Mary
+		
+		Building inviteebuilding = invitee.getBuildingLocation();
+
+		if (inviteebuilding.equals(personbuilding)) {
+			setDescription(Msg.getString("Task.description.meetTogether.detail", invitee.getName())); //$NON-NLS-1$
+			
+			logger.info(initiator, Msg.getString("Task.description.meetTogether.detail", invitee.getName()));
+			
+			RelationshipUtil.changeOpinion(initiator, invitee, RelationshipType.COMMUNICATION_MEETING, RandomUtil.getRandomDouble(-.1, .15));
+			RelationshipUtil.changeOpinion(invitee, initiator, RelationshipType.COMMUNICATION_MEETING, RandomUtil.getRandomDouble(-.1, .15));
+	   
+	    		// The person is invited to a meeting setup by the inviter
+			// e.g. Joe is invited to meet with Mary
+		}
+		else {
+			// Walk to invitee building first
+			walkToActivitySpotInBuilding(inviteebuilding, FunctionType.DINING, false);
+		}
+		
+        if (getTimeCompleted() + time >= getDuration()) {
+        	clearTask();
+        }
+
         return 0D;
     }
 
 
+    private void clearTask() {
+    	if (invitee != null)
+    		invitee.setMeetingInitiator(-1);
+    	if (initiator != null)
+    		initiator.setMeetingInvitee(-1);
+    	super.endTask();
+    }
+    
     /**
      * Gets a pool of candidates
      * 
@@ -234,7 +288,7 @@ implements Serializable {
     public Set<Person> getPool(Collection<Person> ppl, RoleType roleType) {
     	RoleType candidateType = RoleUtil.getChiefSpeciality(roleType);
  
-        Set<Person> pool = new HashSet<Person>();
+        Set<Person> pool = new HashSet<>();
         if (candidateType != null) {
 	        for (Person p : ppl) {
 	        	if (p.getRole().getType() == candidateType) {

@@ -413,7 +413,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @return the description of what the task is currently doing
 	 */
 	public String getDescription() {
-		if (description == null || description.equals("") ) {
+		if (description == null) {
 			return "";
 		}
 		return description;
@@ -426,10 +426,10 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @return the task description.
 	 */
 	public String getDescription(boolean allowSubtask) {
-		if (allowSubtask && (subTask != null) && !subTask.done) {
+		if (allowSubtask && subTask != null && !subTask.done) {
 			return subTask.getDescription();
 		} else {
-			return description;
+			return getDescription();
 		}
 	}
 

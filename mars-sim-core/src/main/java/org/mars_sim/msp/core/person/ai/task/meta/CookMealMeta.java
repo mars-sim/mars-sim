@@ -42,19 +42,19 @@ public class CookMealMeta extends MetaTask {
 
     @Override
     public double getProbability(Person person) {
+    	
     	if (person.isOutside())
     		return 0;
     		
+        // Probability affected by the person's stress and fatigue.
+        if (!person.getPhysicalCondition().isFitByLevel(1000, 70, 1000))
+        	return 0;
+        
         double result = 0D;
 
         if (person.isInSettlement() 
-        		&& CookMeal.isMealTime(person, CookMeal.PREP_TIME)) {
+        	&& CookMeal.isMealTime(person, CookMeal.PREP_TIME)) {
 
-            // Probability affected by the person's stress and fatigue.
-            if (!person.getPhysicalCondition().isFitByLevel(1000, 70, 1000)) {
-            	return 0;
-            }
-            
             // See if there is an available kitchen.
             Building kitchenBuilding = CookMeal.getAvailableKitchen(person);
 
@@ -70,14 +70,12 @@ public class CookMealMeta extends MetaTask {
                 if (kitchen.canCookMeal()) {
 
                     result = 200;
-                	
                     // Crowding modifier.
                     result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, kitchenBuilding);
                     // Effort-driven task modifier.
-                    result *= TaskProbabilityUtil.getRelationshipModifier(person, kitchenBuilding);
-                    
+                    result *= TaskProbabilityUtil.getRelationshipModifier(person, kitchenBuilding);  
                     // Apply the standard Person modifiers
-                    result = 10 * applyPersonModifier(result, person);
+                    result = applyPersonModifier(result, person);
                 }
             }
         }

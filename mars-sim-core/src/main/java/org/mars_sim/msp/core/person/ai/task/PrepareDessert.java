@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * PrepareDessert.java
- * @date 2021-08-29
+ * @date 2022-09-02
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -140,13 +140,6 @@ public class PrepareDessert extends Task implements Serializable {
 			endTask();
 			return time;
 		}
-
-		// If meal time is over, end task.
-//		if (!CookMeal.isLocalMealTime(worker.getCoordinates(), PREP_TIME)) {
-//			logger.log(worker, Level.FINE, 0, "ended preparing desserts : meal time was over.");
-//			endTask();
-//			return time;
-//		}
 
 		// If enough desserts have been prepared for this meal time, end task.
 		if (kitchen.getMakeNoMoreDessert()) {
