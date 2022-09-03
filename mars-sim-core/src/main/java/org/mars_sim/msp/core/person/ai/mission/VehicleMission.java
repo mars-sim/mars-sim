@@ -71,7 +71,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	public static final double FE_FACTOR = 3.0;
 	
 	/** The multiplication factor for the amount of oxygen needed. */
-	public static final double FUEL_OXIDIZER_FACTOR = 2.25;
+	private static final double FUEL_OXIDIZER_FACTOR = 2.25;
 	
 	/** Mission phases. */
 	public static final MissionPhase REVIEWING = new MissionPhase("Mission.phase.reviewing");
@@ -104,10 +104,6 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	protected static final double AVERAGE_EVA_MALFUNCTION = MalfunctionManager.AVERAGE_EVA_MALFUNCTION;
 	/** Default speed if no operators have ever driven. */
 	private static final double DEFAULT_SPEED = 10D;
-
-
-
-
 
 	/** True if a person is submitting the mission plan request. */
 	private boolean isMissionPlanReady;
@@ -151,8 +147,6 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	private transient double cachedDistance = -1;
 
 	private Settlement startingSettlement;
-
-
 	
 	/** The last navpoint the mission stopped at. */
 	private NavPoint lastStopNavpoint;
@@ -344,9 +338,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 												getRequiredResourcesToLoad(),
 												getOptionalResourcesToLoad(),
 												getRequiredEquipmentToLoad(),
-												getOptionalEquipmentToLoad());
-			
-			//logger.info(vehicle, "Needs " + loadingPlan.dumpContents());
+												getOptionalEquipmentToLoad());			
 		}
 		return loadingPlan;
 	}

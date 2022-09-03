@@ -89,23 +89,6 @@ public abstract class Mission implements Serializable, Temporal {
 
 	private static final int MAX_CAP = 8;
 
-	/**
-	 * The marginal factor for the amount of water to be brought during a mission.
-	 */
-	public static final double WATER_MARGIN = 1.00;
-	/**
-	 * The marginal factor for the amount of oxygen to be brought during a mission.
-	 */
-	public static final double OXYGEN_MARGIN = 1.5;
-	/**
-	 * The marginal factor for the amount of food to be brought during a mission.
-	 */
-	public static final double FOOD_MARGIN = 2.25;
-	/**
-	 * The marginal factor for the amount of dessert to be brought during a mission.
-	 */
-	public static final double DESSERT_MARGIN = 1.25;
-
 	private static final MissionPhase COMPLETED_PHASE = new MissionPhase("Mission.phase.completed");
 	private static final MissionPhase ABORTED_PHASE = new MissionPhase("Mission.phase.aborted");
 

@@ -72,7 +72,7 @@ public abstract class OperateVehicle extends Task {
 	/** Half the PI. */
 	private static final double HALF_PI = Math.PI / 2D;
 	/** Comparison to indicate a small but non-zero amount of fuel (methane) in kg that can still work on the fuel cell to propel the engine. */
-    private static final double LEAST_AMOUNT = RoverMission.LEAST_AMOUNT;
+    private static final double LEAST_AMOUNT = GroundVehicle.LEAST_AMOUNT;
     /** Distance buffer for arriving at destination (km). */
     private static final double DESTINATION_BUFFER = .000_1;
     /** The base percentage chance of an accident while operating vehicle per millisol. */

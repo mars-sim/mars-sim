@@ -277,13 +277,6 @@ public class LoadingController implements Serializable {
 		double amountNeeded = manifest.get(resource).doubleValue();
 		double amountToLoad = Math.min(amountNeeded, amountLoading);
 
-		// Check the amount to load is not too small.
-		if (amountToLoad < SMALLEST_RESOURCE_LOAD) {
-			// Too small to load
-			amountToLoad = 0;
-			amountNeeded = 0;
-		}
-
 		if (amountToLoad > 0) {
 			// Check if enough resource in settlement inventory.
 			double settlementStored = settlement.getAmountResourceStored(resource);
@@ -335,12 +328,12 @@ public class LoadingController implements Serializable {
 
 		// Check if this resource is complete
 		amountNeeded -= amountToLoad;
-		if (amountNeeded <= 0) {
-			logger.fine(vehicle, loader + " completed loading amount " + resourceName);
+		if (amountNeeded <= SMALLEST_RESOURCE_LOAD) {
+			logger.info(vehicle, loader + " completed loading amount " + resourceName);
 			manifest.remove(resource);
 		}
 		else if (!mandatory && usedSupply) {
-			logger.fine(vehicle, loader + " optional amount " + resourceName
+			logger.info(vehicle, loader + " optional amount " + resourceName
 						+ ", " + amountNeeded + " not loaded ");
 			manifest.remove(resource);
 		}
