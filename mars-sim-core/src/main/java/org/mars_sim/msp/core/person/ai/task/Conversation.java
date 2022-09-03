@@ -58,7 +58,7 @@ implements Serializable {
     private transient Person invitee;
     
     /** The id of the person selected by initiator for having a conversation. */
-    private int inviteeId;
+    private int inviteeId = -1;
 
     private Location initiatorLocation = null;
 
@@ -365,7 +365,7 @@ implements Serializable {
      */
     private double havingConversation(double time) {
 		double remainingTime = 0;
-    	
+		
         if (isDone()) {
         	endTask();
             return time;
@@ -373,7 +373,11 @@ implements Serializable {
         
         // After loading from saved sim, need to reload invitee
     	if (invitee == null) {
-    		invitee = Simulation.instance().getUnitManager().getPersonByID(inviteeId);
+    		if (inviteeId == -1) {
+    			logger.warning(person, "inviteeId is -1.");
+    		}
+    		else
+    			invitee = Simulation.instance().getUnitManager().getPersonByID(inviteeId);
     		
     		// starting the conversation talking to the invitee
     		if (invitee != null)
@@ -384,9 +388,11 @@ implements Serializable {
     		// TODO: check if the invitee can or cannot carry on the conversation 
     		// and switch to another invitee
     	}
+    	else
+    		talkTo(invitee);
  
         RelationshipUtil.changeOpinion(person, invitee, 
-        		RelationshipType.COMMUNICATION_MEETING, RandomUtil.getRandomDouble(.5));
+        		RelationshipType.COMMUNICATION_MEETING, RandomUtil.getRandomDouble(-.1, .15));
 
         // If duration, send invitation.
         if (getDuration() >= (getTimeCompleted() + time)) {
