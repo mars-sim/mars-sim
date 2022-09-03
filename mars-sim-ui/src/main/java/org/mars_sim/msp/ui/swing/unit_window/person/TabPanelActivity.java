@@ -460,6 +460,30 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 	public void update() {
 		Person person = null;
 		Robot robot = null;
+
+		boolean dead = false;
+		Unit unit = getUnit();
+		
+		if (unit.getUnitType() == UnitType.PERSON) {
+			person = (Person) unit;
+			dead = person.getPhysicalCondition().isDead();
+		} else {
+			robot = (Robot) unit;
+			dead = robot.getSystemCondition().isInoperable();
+		}
+
+		if (dead) {
+			updateDead();
+		}
+		else {
+			updateAlive();
+		}
+		
+	}
+	
+	private void updateDead() {
+		Person person = null;
+		Robot robot = null;
 		Mind mind = null;
 		BotMind botMind = null;
 		TaskManager taskManager = null;
@@ -478,7 +502,7 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 			dead = robot.getSystemCondition().isInoperable();
 			// deathInfo = robot.getSystemCondition().getDeathDetails();
 		}
-
+		
 		Mission mission = null;
 
 		String newTaskText = "";
@@ -494,87 +518,185 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 		String newMissionPhase = "";
 
 		// Prepare task text area
-		if (dead) {
-			String t = deathInfo.getTask();
-			String tp = deathInfo.getTaskPhase();
-			String st = deathInfo.getSubTask();
-			String stp = deathInfo.getSubTaskPhase();
-			String st2 = deathInfo.getSubTask2();
-			String st2p = deathInfo.getSubTask2Phase();
 
-			if (t == null || t.equals(""))
-				newTaskText = NONE + DEAD_PHRASE;
-			else
-				newTaskText = t + DEAD_PHRASE;
+		String t = deathInfo.getTask();
+		String tp = deathInfo.getTaskPhase();
+		String st = deathInfo.getSubTask();
+		String stp = deathInfo.getSubTaskPhase();
+		String st2 = deathInfo.getSubTask2();
+		String st2p = deathInfo.getSubTask2Phase();
 
-			if (tp == null || tp.equals(""))
-				newTaskPhase = NONE + DEAD_PHRASE;
-			else
-				newTaskPhase = tp + DEAD_PHRASE;
+		if (t == null || t.equals(""))
+			newTaskText = NONE + DEAD_PHRASE;
+		else
+			newTaskText = t + DEAD_PHRASE;
 
-			if (st == null || st.equals(""))
-				newSubTaskText = NONE + DEAD_PHRASE;
-			else
-				newSubTaskText = st + DEAD_PHRASE;
+		if (tp == null || tp.equals(""))
+			newTaskPhase = NONE + DEAD_PHRASE;
+		else
+			newTaskPhase = tp + DEAD_PHRASE;
 
-			if (stp == null || stp.equals(""))
-				newSubTaskPhase = NONE + DEAD_PHRASE;
-			else
-				newSubTaskPhase = stp + DEAD_PHRASE;
+		if (st == null || st.equals(""))
+			newSubTaskText = NONE + DEAD_PHRASE;
+		else
+			newSubTaskText = st + DEAD_PHRASE;
 
-			if (st2 == null || st2.equals(""))
-				newSubTask2Text = NONE + DEAD_PHRASE;
-			else
-				newSubTask2Text = st + DEAD_PHRASE;
+		if (stp == null || stp.equals(""))
+			newSubTaskPhase = NONE + DEAD_PHRASE;
+		else
+			newSubTaskPhase = stp + DEAD_PHRASE;
 
-			if (st2p == null || st2p.equals(""))
-				newSubTask2Phase = NONE + DEAD_PHRASE;
-			else
-				newSubTask2Phase = stp + DEAD_PHRASE;
+		if (st2 == null || st2.equals(""))
+			newSubTask2Text = NONE + DEAD_PHRASE;
+		else
+			newSubTask2Text = st + DEAD_PHRASE;
+
+		if (st2p == null || st2p.equals(""))
+			newSubTask2Phase = NONE + DEAD_PHRASE;
+		else
+			newSubTask2Phase = stp + DEAD_PHRASE;
+		
+		if (!taskTextCache.equals(newTaskText)) {
+			taskTextCache = newTaskText;
+			taskTextArea.setText(newTaskText);
 		}
 
-		else {
+		if (taskTextCache.equals(""))
+			taskPhaseArea.setText("");
 
-			if (person != null) {
-				taskManager = mind.getTaskManager();
-				if (mind.hasActiveMission())
-					mission = mind.getMission();
-
-			} else if (robot != null) {
-				taskManager = botMind.getBotTaskManager();
-				if (botMind.hasActiveMission())
-					mission = botMind.getMission();
-			}
-
-
-			newTaskText = taskManager.getTaskDescription(false);
-			newSubTaskText = taskManager.getSubTaskDescription();
-			newSubTask2Text = taskManager.getSubTask2Description();
-
-
-			TaskPhase taskPhase = taskManager.getPhase();
-			TaskPhase subTaskPhase = taskManager.getSubTaskPhase();
-			TaskPhase subTask2Phase = taskManager.getSubTask2Phase();
-
-			if (taskPhase != null) {
-				newTaskPhase = taskPhase.getName();
-			} else {
-				newTaskPhase = "";
-			}
-
-			if (subTaskPhase != null) {
-				newSubTaskPhase = subTaskPhase.getName();
-			} else {
-				newSubTaskPhase = "";
-			}
-
-			if (subTask2Phase != null) {
-				newSubTask2Phase = subTask2Phase.getName();
-			} else {
-				newSubTask2Phase = "";
-			}
-
+		else if (!taskPhaseCache.equals(newTaskPhase)) {
+			taskPhaseCache = newTaskPhase;
+			taskPhaseArea.setText(newTaskPhase);
 		}
+
+
+		if (!subTaskTextCache.equals(newSubTaskText)) {
+			subTaskTextCache = newSubTaskText;
+			subTaskTextArea.setText(newSubTaskText);
+		}
+
+		if (subTaskTextCache.equals(""))
+			subTaskPhaseArea.setText("");
+
+		else if (!subTaskPhaseCache.equals(newSubTaskPhase)) {
+			subTaskPhaseCache = newSubTaskPhase;
+			subTaskPhaseArea.setText(newSubTaskPhase);
+		}
+
+		if (!subTask2TextCache.equals(newSubTask2Text)) {
+			subTask2TextCache = newSubTask2Text;
+			subTask2TextArea.setText(newSubTask2Text);
+		}
+
+		if (subTask2TextCache.equals(""))
+			subTask2PhaseArea.setText("");
+
+		else if (!subTask2PhaseCache.equals(newSubTask2Phase)) {
+			subTask2PhaseCache = newSubTask2Phase;
+			subTask2PhaseArea.setText(newSubTask2Phase);
+		}
+
+		// Update mission text area if necessary.
+		String m = deathInfo.getMission();
+		String mp = deathInfo.getMissionPhase();
+
+		if (m == null || m.equals(""))
+			newMissionText = NONE + DEAD_PHRASE;
+		else
+			newMissionText = m + DEAD_PHRASE;
+
+		if (mp == null || mp.equals(""))
+			newMissionPhase = NONE + DEAD_PHRASE;
+		else
+			newMissionPhase = mp + DEAD_PHRASE;
+
+		if (!missionTextCache.equals(newMissionText)) {
+			missionTextCache = newMissionText;
+			missionTextArea.setText(newMissionText);
+		}
+
+		if (!missionPhaseCache.equals(newMissionPhase)) {
+			missionPhaseCache = newMissionPhase;
+			missionPhaseTextArea.setText(newMissionPhase);
+		}
+		
+		// Update mission and monitor buttons.
+		missionButton.setEnabled(mission != null);
+		monitorButton.setEnabled(mission != null);		
+	}
+	
+	private void updateAlive() {
+		Person person = null;
+		Robot robot = null;
+		Mind mind = null;
+		BotMind botMind = null;
+		TaskManager taskManager = null;
+		boolean dead = false;
+		DeathInfo deathInfo = null;
+		Unit unit = getUnit();
+		
+		if (unit.getUnitType() == UnitType.PERSON) {
+			person = (Person) unit;
+			mind = person.getMind();
+			dead = person.getPhysicalCondition().isDead();
+			deathInfo = person.getPhysicalCondition().getDeathDetails();
+		} else {
+			robot = (Robot) unit;
+			botMind = robot.getBotMind();
+			dead = robot.getSystemCondition().isInoperable();
+		}
+		
+		Mission mission = null;
+
+		String newTaskText = "";
+		String newTaskPhase = "";
+
+		String newSubTaskText = "";
+		String newSubTaskPhase = "";
+
+		String newSubTask2Text = "";
+		String newSubTask2Phase = "";
+
+		String newMissionText = "";
+		String newMissionPhase = "";
+		
+		if (person != null) {
+			taskManager = mind.getTaskManager();
+			if (mind.hasActiveMission())
+				mission = mind.getMission();
+
+		} else if (robot != null) {
+			taskManager = botMind.getBotTaskManager();
+			if (botMind.hasActiveMission())
+				mission = botMind.getMission();
+		}
+
+		newTaskText = taskManager.getTaskDescription(false);
+		newSubTaskText = taskManager.getSubTaskDescription();
+		newSubTask2Text = taskManager.getSubTask2Description();
+
+		TaskPhase taskPhase = taskManager.getPhase();
+		TaskPhase subTaskPhase = taskManager.getSubTaskPhase();
+		TaskPhase subTask2Phase = taskManager.getSubTask2Phase();
+
+		if (taskPhase != null) {
+			newTaskPhase = taskPhase.getName();
+		} else {
+			newTaskPhase = "";
+		}
+
+		if (subTaskPhase != null) {
+			newSubTaskPhase = subTaskPhase.getName();
+		} else {
+			newSubTaskPhase = "";
+		}
+
+		if (subTask2Phase != null) {
+			newSubTask2Phase = subTask2Phase.getName();
+		} else {
+			newSubTask2Phase = "";
+		}
+
 
 		if (!taskTextCache.equals(newTaskText)) {
 			taskTextCache = newTaskText;
@@ -617,33 +739,15 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 		}
 
 		// Update mission text area if necessary.
-		if (dead) {
-			String m = deathInfo.getMission();
-			String mp = deathInfo.getMissionPhase();
+		if (mission != null)
+			newMissionText = mission.getDescription();
+		else
+			newMissionText = "";
 
-			if (m == null || m.equals(""))
-				newMissionText = NONE + DEAD_PHRASE;
-			else
-				newMissionText = m + DEAD_PHRASE;
-
-			if (mp == null || mp.equals(""))
-				newMissionPhase = NONE + DEAD_PHRASE;
-			else
-				newMissionPhase = mp + DEAD_PHRASE;
-		}
-
-		else {
-
-			if (mission != null)
-				newMissionText = mission.getDescription();
-			else
-				newMissionText = ""; //$NON-NLS-1$
-
-			if (mission != null)
-				newMissionPhase = mission.getPhaseDescription();
-			else
-				newMissionPhase = ""; //$NON-NLS-1$
-		}
+		if (mission != null)
+			newMissionPhase = mission.getPhaseDescription();
+		else
+			newMissionPhase = "";
 
 		if (!missionTextCache.equals(newMissionText)) {
 			missionTextCache = newMissionText;
@@ -654,23 +758,7 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 			missionPhaseCache = newMissionPhase;
 			missionPhaseTextArea.setText(newMissionPhase);
 		}
-
-		// Update mission phase text area if necessary.
-//		if (dead) {
-//			if (deathInfo.getMissionPhase() == null)
-//				missionPhaseCache = "None " + DEAD_PHRASE;
-//			else
-//				missionPhaseCache = deathInfo.getMissionPhase() + DEAD_PHRASE;
-//		}
-//		else {
-//			if (mission != null)
-//				missionPhaseCache = mission.getPhaseDescription();
-//			else missionPhaseCache = ""; //$NON-NLS-1$
-//		}
-//
-//		if ((missionPhaseCache != null) && !missionPhaseCache.equals(missionPhaseTextArea.getText()))
-//			missionPhaseTextArea.setText(missionPhaseCache);
-
+		
 		// Update mission and monitor buttons.
 		missionButton.setEnabled(mission != null);
 		monitorButton.setEnabled(mission != null);

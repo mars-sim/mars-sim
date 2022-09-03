@@ -49,28 +49,15 @@ public abstract class TaskManager implements Serializable, Temporal {
 		private String missionName;
 		private String description;
 		private String phase;
-		private int startTime;
+		private double startTime;
 
 
-		public OneActivity(int startTime, String taskName, String description, String phase, String missionName) {
+		public OneActivity(double startTime, String taskName, String description, String phase, String missionName) {
 			this.taskName = taskName;
 			this.missionName = missionName;
 			this.description = description;
 			this.startTime = startTime;
 			this.phase = phase;
-		}
-		
-		/**
-		 * Are these 2 activities equivalent? i.e. are the taskName & phase the same
-		 * @param lastActivity
-		 * @return
-		 */
-		boolean isEquivalent(OneActivity lastActivity) {
-			// Cheat here to save some time.
-			// Do not bother checking the task name since if the description
-			// and phase are the same then it will be the same Task.
-			return (description.equals(lastActivity.description)
-					&& phase.equals(lastActivity.phase));
 		}
 
 		/**
@@ -78,7 +65,7 @@ public abstract class TaskManager implements Serializable, Temporal {
 		 * 
 		 * @return start time
 		 */
-		public int getStartTime() {
+		public double getStartTime() {
 			return startTime;
 		}
 
@@ -156,12 +143,15 @@ public abstract class TaskManager implements Serializable, Temporal {
 	private double msolCache = -1.0;
 	/** The cache for total probability. */
 	protected double totalProbCache;
+	/** The cache for meta tasks and probability. */
 	protected transient Map<MetaTask, Double> taskProbCache;
 
-	// Activity tracking. Keep a handy reference to the last one recorded
+	/** The history of tasks. */
 	private SolListDataLogger<OneActivity> allActivities;
+	
 	private OneActivity lastActivity = null;
-	private int now = -1;
+	private double now = -1;
+	
 
 	protected TaskManager(Unit worker) {
 		this.worker = worker;
@@ -613,11 +603,13 @@ public abstract class TaskManager implements Serializable, Temporal {
 	 * Time has advanced on. This has to carry over the last Activity of yesterday into today.
 	 */
 	public boolean timePassing(ClockPulse pulse) {
-		now = pulse.getMarsTime().getMillisolInt();
+		// Create a timestamp with 1 decimal place
+		now = Math.round(pulse.getMarsTime().getMillisol() * 100.0)/100.0;
 		
 		// New day so the Activity at the end of yesterday has to be carried over to the 1st of today
-		if (pulse.isNewSol() && (lastActivity != null)) {
-			// New activity for the start of the day
+		if (pulse.isNewSol() && lastActivity != null) {
+			// Save the first activity at the start of the day
+			// Note: it could be the previous activity from previous day
 			OneActivity firstActivity = new OneActivity(0,
 											lastActivity.getTaskName(),
 											lastActivity.getDescription(),
@@ -635,12 +627,20 @@ public abstract class TaskManager implements Serializable, Temporal {
 	 * @param mission Associated mission.
 	 */
 	void recordTask(Task changed, String mission) {
-		OneActivity newActivity = new OneActivity(now, changed.getName(false),
-												  changed.getDescription(),
-												  changed.getPhase().getName(), mission);
+		double newStartTime = now;
+		String newDescription = changed.getDescription();
+		String newPhase = changed.getPhase().getName();
 		
-		if ((lastActivity == null) || !newActivity.isEquivalent(lastActivity)) {
-			// Identify the level.
+		if (lastActivity == null 
+				|| !newDescription.equals(lastActivity.description)
+				|| !newPhase.equals(lastActivity.phase)) {
+			
+			OneActivity newActivity = new OneActivity(newStartTime, 
+												changed.getName(false),
+												newDescription,
+												newPhase, 
+												mission);
+
 			allActivities.addData(newActivity);
 			lastActivity = newActivity;
 		}

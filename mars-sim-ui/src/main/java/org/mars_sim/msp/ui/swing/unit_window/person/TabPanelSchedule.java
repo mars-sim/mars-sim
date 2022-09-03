@@ -324,14 +324,13 @@ public class TabPanelSchedule extends TabPanel {
 			}
 		}
 
-//		today = taskSchedule.getSolCache();
 		today = marsClock.getMissionSol();
 		
 		todayInteger = (Integer) today;
-
 		selectedSol = (Integer) solBox.getSelectedItem(); 
+		
 		// necessary or else if (isRealTimeUpdate) below will have NPE
-
+		
 		// Update the sol combobox at the beginning of a new sol
 		if (today != todayCache) {
 
@@ -343,10 +342,7 @@ public class TabPanelSchedule extends TabPanel {
 			// Update allActivities
 			allActivities = taskManager.getAllActivities();
 
-
 			Collections.sort(solList, Collections.reverseOrder());
-//			DefaultComboBoxModel<Object> newComboBoxModel = new DefaultComboBoxModel<Object>();
-//			solList.forEach(s -> newComboBoxModel.addElement(s));
 
 			for (int s : solList) {
 				// Check if this element exist
@@ -448,7 +444,7 @@ public class TabPanelSchedule extends TabPanel {
 	 */
 	private class ScheduleTableModel extends AbstractTableModel {
 
-		DecimalFormat fmt = new DecimalFormat("000");
+		DecimalFormat fmt = new DecimalFormat("000.00");
 
 		/**
 		 * hidden constructor.
@@ -475,13 +471,15 @@ public class TabPanelSchedule extends TabPanel {
 		public Class<?> getColumnClass(int columnIndex) {
 			Class<?> dataType = super.getColumnClass(columnIndex);
 			if (columnIndex == 0)
+				dataType = Double.class;
+			else if (columnIndex == 1)
 				dataType = String.class;
-			if (columnIndex == 1)
+			else if (columnIndex == 2)
 				dataType = String.class;
-			if (columnIndex == 2)
+			else if (columnIndex == 3)
 				dataType = String.class;
-			if (columnIndex == 3)
-				dataType = String.class;
+			else
+				dataType = null;
 			return dataType;
 		}
 
@@ -517,12 +515,12 @@ public class TabPanelSchedule extends TabPanel {
 
 
 		/**
-		 * Prepares a list of activities done on the selected day
+		 * Prepares a list of activities done on the selected sol.
 		 * 
 		 * @param selectedSol
 		 */
 		public void update(int selectedSol) {		
-			List<OneActivity> activityList = new ArrayList<OneActivity>();
+			List<OneActivity> activityList = new ArrayList<>();
 			
 			allActivities = taskManager.getAllActivities();
 			// Load the schedule of a particular sol

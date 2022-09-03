@@ -313,7 +313,7 @@ extends Airlock {
 	 */
 	@Override
 	public boolean isChamberFull() {
-		return getOccupants().size() > MAX_SLOTS;
+		return getOccupants().size() >= MAX_SLOTS;
 	}
 
 	/**
