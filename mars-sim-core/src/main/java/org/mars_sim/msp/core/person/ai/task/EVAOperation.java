@@ -253,7 +253,7 @@ public abstract class EVAOperation extends Task {
 				setPhase(WALK_BACK_INSIDE);
 			}
 			else
-				person.addEVATime(getTaskName(), time);
+				person.addEVATime(getTaskSimpleName(), time);
 		}
 
 		if (getPhase() == null) {
@@ -634,7 +634,7 @@ public abstract class EVAOperation extends Task {
 	 * @return
 	 */
 	public static boolean isHungryAtMealTime(Person person) {
-        return CookMeal.isLocalMealTime(person.getCoordinates(), 15) 
+        return CookMeal.isMealTime(person, 0) 
         		&& person.getPhysicalCondition().isHungry();
     }
 
@@ -799,15 +799,17 @@ public abstract class EVAOperation extends Task {
 	public static Airlock getClosestWalkableAvailableAirlock(Worker worker, LocalPosition pos, boolean ingress) {
 		Airlock result = null;
 
-		Settlement s = worker.getSettlement();
-		if (s != null) {
-			result = s.getClosestWalkableAvailableAirlock(worker, pos, ingress);
-		}
-
-		else if (worker.isInVehicle()) {
+		if (worker.isInVehicle()) {
 			Vehicle vehicle = worker.getVehicle();
 			if (vehicle instanceof Airlockable) {
 				result = ((Airlockable) vehicle).getAirlock();
+			}
+		}
+		
+		else {
+			Settlement s = worker.getSettlement();
+			if (s != null) {
+				result = s.getClosestWalkableAvailableAirlock(worker, pos, ingress);
 			}
 		}
 

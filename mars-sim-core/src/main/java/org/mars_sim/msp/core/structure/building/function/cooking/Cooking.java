@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Cooking.java
- * @date 2021-10-21
+ * @date 2022-08-30
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function.cooking;
@@ -146,8 +146,8 @@ public class Cooking extends Function {
 	private void computeDryMass() {
 
 		for (HotMeal aMeal : MealConfig.getDishList()) {
-			List<Double> proportionList = new ArrayList<>(); // <Double>();
-			List<Double> waterContentList = new ArrayList<>(); // ArrayList<Double>();
+			List<Double> proportionList = new ArrayList<>(); 
+			List<Double> waterContentList = new ArrayList<>(); 
 
 			for(Ingredient oneIngredient : aMeal.getIngredientList()) {
 				String ingredientName = oneIngredient.getName();
@@ -837,7 +837,7 @@ public class Cooking extends Function {
 			}
 
 			// Check if not meal time, clean up.
-			if (!CookMeal.isLocalMealTime(building.getSettlement().getCoordinates(), 20)) {
+			if (!CookMeal.isLocalMealTime(building.getSettlement().getCoordinates(), 0)) {
 				finishUp();
 			}
 

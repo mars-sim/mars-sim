@@ -1,7 +1,7 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <template xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="settlement.xsd"
     name="Phase 1-IN" default-population="4" description="Phase 1 base for ISRO"
-	number-of-robots="3" sponsor="ISRO">
+	number-of-robots="4" sponsor="ISRO">
 
     <building id="0" type="Lander Hab" xloc="0.0" yloc="0.0"
         facing="0.0">

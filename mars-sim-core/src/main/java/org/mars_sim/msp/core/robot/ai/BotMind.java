@@ -14,7 +14,6 @@ import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 import org.mars_sim.msp.core.robot.ai.task.BotTaskManager;
 import org.mars_sim.msp.core.time.ClockPulse;
@@ -197,8 +196,7 @@ public class BotMind implements Serializable, Temporal {
 		}
 		
 		if (!hasTask) { 
-			if (robot.getRobotType() == RobotType.DELIVERYBOT)
-				logger.info(robot, 20_000, "hasTask: " + hasTask);
+			// Note: may use if (robot.getRobotType() == RobotType.DELIVERYBOT) for testing
 			// don't have an active mission
 			botTaskManager.startNewTask();
 		}

@@ -213,32 +213,17 @@ public class PlayHoloGame extends Task implements Serializable {
 
 		 // Probability affected by the person's stress and fatigue.
         PhysicalCondition condition = person.getPhysicalCondition();
-        double fatigue = condition.getFatigue();
-        double hunger = condition.getHunger();
+		// May either increase or reduce a person's fatigue level
+		condition.increaseFatigue(2 * time * rand);
+        // Reduce person's stress
+        condition.reduceStress(2 * time);
         
-        if (hunger > 1000) {
-    		logger.log(person, Level.INFO, 30_000L, "Playing holo games - " 
-    				+ Math.round((TOTAL_COMPUTING_NEEDED - computingNeeded) * 100.0)/100.0 
-    				+ " CUs Used.");
-        	endTask();
-        }
-        
-		// Reduce stress but may increase or reduce a person's fatigue level
-		double newFatigue = fatigue - (2D * time * rand);
-		if (newFatigue < 0D)
-			newFatigue = 0D;
-		condition.setFatigue(newFatigue);
-		
-		if (newFatigue > 1000) {
+        if (condition.getHunger() > 666 || condition.getFatigue() > 666) {
 	    	logger.log(person, Level.INFO, 30_000L, "Playing holo games. " 
 	    			+ Math.round((TOTAL_COMPUTING_NEEDED - computingNeeded) * 100.0)/100.0 
 	    			+ " CUs Used.");
 	        endTask();
 		}
-		
-        // Reduce person's stress
-        double stress = condition.getStress() - (2.5 * time);
-        condition.setStress(stress);
         
 		return remainingTime;
 	}

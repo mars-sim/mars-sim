@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * RobotJob.java
- * @date 2021-12-22
+ * @date 2022-09-01
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.robot.ai.job;
@@ -121,6 +121,24 @@ public abstract class RobotJob implements Serializable {
 		return result;
 	}
 
+	/**
+	 * Gets the probability modifier for starting a non-job-related task.
+	 * 
+	 * @param taskName the task name
+	 * @return modifier >= 0.0
+	 */
+	public double getStartTaskProbabilityModifier(String taskName) {
+		double result = NON_JOB_TASK_PENALTY;
+		for (Class<?> c: jobTasks) {
+			if (c.getSimpleName().equalsIgnoreCase(taskName)) {
+				result = 1;
+				break;
+			}
+		}
+		return result;
+	}
+
+	
 	/**
 	 * Gets the probability modifier for starting a non-job-related mission.
 	 * 

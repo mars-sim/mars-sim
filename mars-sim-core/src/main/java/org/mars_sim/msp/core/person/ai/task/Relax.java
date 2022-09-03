@@ -136,12 +136,7 @@ implements Serializable {
 			double f =  pc.getFatigue();
 					
 	        // Reduce person's fatigue
-	        double newFatigue = f - f * fractionOfRest;
-
-	        if (newFatigue < 0D) {
-	            newFatigue = 0D;
-	        }
-	        pc.setFatigue(newFatigue);
+	        pc.reduceFatigue(f * fractionOfRest);
 	        
 	        pc.relaxMuscle(time);
 		}

@@ -19,10 +19,10 @@ public class Direction implements Serializable {
 
 	// Data members
 	/** Direction in radians. */
-	private double direction;
+	private double dir;
 
 	// Static data members
-	private static double TWO_PI = 2 * Math.PI;
+	private static final double TWO_PI = 2 * Math.PI;
 
 	/**
 	 * Constructs a Direction object, hence a constructor. 0 = North, clockwise
@@ -30,7 +30,7 @@ public class Direction implements Serializable {
 	 * @param direction direction in radians
 	 */
 	public Direction(double direction) {
-		this.direction = cleanDirection(direction);
+		this.dir = cleanDirection(direction);
 	}
 	
 	/**
@@ -41,8 +41,8 @@ public class Direction implements Serializable {
 	 */
 	public boolean equals(Object obj) {
 		boolean result = false;
-		if (obj instanceof Direction) {
-			if (((Direction) obj).direction == direction)
+		if (obj instanceof Direction
+			&& ((Direction) obj).dir == dir) {
 				result = true;
 		}
 		return result;
@@ -54,14 +54,14 @@ public class Direction implements Serializable {
 	 * @return hash code.
 	 */
 	public int hashCode() {
-		return (int) (direction * 1000D);
+		return (int) (dir * 1000D);
 	}
 
 	/**
 	 * Gets the string value of the object.
 	 */
 	public String toString() {
-		return "" + direction;
+		return "" + dir;
 	}
 
 	/**
@@ -70,7 +70,7 @@ public class Direction implements Serializable {
 	 * @return direction in radians
 	 */
 	public double getDirection() {
-		return direction;
+		return dir;
 	}
 
 	/**
@@ -79,7 +79,7 @@ public class Direction implements Serializable {
 	 * @return the sine of the direction
 	 */
 	public double getSinDirection() {
-		return Math.sin(direction);
+		return Math.sin(dir);
 	}
 
 	/**
@@ -88,7 +88,7 @@ public class Direction implements Serializable {
 	 * @return the cosine of the direction
 	 */
 	public double getCosDirection() {
-		return Math.cos(direction);
+		return Math.cos(dir);
 	}
 
 	/**

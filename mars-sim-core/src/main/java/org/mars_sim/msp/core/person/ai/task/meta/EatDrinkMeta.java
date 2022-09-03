@@ -30,6 +30,8 @@ public class EatDrinkMeta extends MetaTask {
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.eatDrink"); //$NON-NLS-1$
 
+	private static final int LIMIT = 20000;
+	
     public EatDrinkMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.ANY_HOUR);
 
@@ -74,18 +76,20 @@ public class EatDrinkMeta extends MetaTask {
 		int desserts = 0;
 		double dFactor = 1;
 
-		// Check if a cooked meal is available in a kitchen building at the settlement.
-		Cooking kitchen0 = EatDrink.getKitchenWithMeal(person);
-		if (kitchen0 != null) {
-			meals = kitchen0.getNumberOfAvailableCookedMeals();
-			mFactor = 5 * meals;
+		if (CookMeal.isMealTime(person, 0)) {
+			// Check if a cooked meal is available in a kitchen building at the settlement.
+			Cooking kitchen0 = EatDrink.getKitchenWithMeal(person);
+			if (kitchen0 != null) {
+				meals = kitchen0.getNumberOfAvailableCookedMeals();
+				mFactor = 200.0 * meals;
+			}
 		}
 
 		// Check dessert is available in a kitchen building at the settlement.
 		PreparingDessert kitchen1 = EatDrink.getKitchenWithDessert(person);
 		if (kitchen1 != null) {
 			desserts = kitchen1.getAvailableServingsDesserts();
-			dFactor = 2 * desserts;
+			dFactor = 100.0 * desserts;
 		}
 
 		PhysicalCondition pc = person.getPhysicalCondition();
@@ -139,17 +143,12 @@ public class EatDrinkMeta extends MetaTask {
 				double ghrelin = person.getCircadianClock().getGhrelin();
 				double leptin = person.getCircadianClock().getLeptin();
 				
-				h0 += hunger / 2 + ghrelin / 2 - leptin / 2;
+				h0 += hunger * hunger / 50 + ghrelin / 2 - leptin / 2;
 
 				if (energy < 2525)
-					h0 += (2525 - energy) / 30D + ghrelin / 4 - leptin / 4;
+					h0 += (2525 - energy) / 30D;
 
 				if (person.isInSettlement()) {
-
-					if (!CookMeal.isLocalMealTime(person.getCoordinates(), 0)) {
-						// If it's not meal time yet, reduce the probability
-						mFactor /= 5D;
-					}
 
 					// Check if there is a local dining building.
 					Building diningBuilding = EatDrink.getAvailableDiningBuilding(person, false);
@@ -161,7 +160,7 @@ public class EatDrinkMeta extends MetaTask {
 				}
 			}
 
-			double t0 = 10 * (thirst - PhysicalCondition.THIRST_THRESHOLD / 2);
+			double t0 = .5 * (thirst - PhysicalCondition.THIRST_THRESHOLD);
 			if (t0 <= 0)
 				t0 = 0;
 
@@ -177,6 +176,9 @@ public class EatDrinkMeta extends MetaTask {
 			// Add Preference modifier
 			result += result * person.getPreference().getPreferenceScore(this) / 8D;
 
+        if (result > LIMIT)
+        	result = LIMIT;
+        
 		return result;
 	}
 }

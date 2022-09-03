@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * PreparedDessert.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-08-30
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.structure.building.function.cooking;
@@ -34,8 +34,7 @@ public class PreparedDessert implements Serializable {
 	private String name;
 
 	private String producerName;
-	// private String consumerName;
-	
+
 	private PreparingDessert kitchen;
 
 	private MarsClock expirationTime;
@@ -56,13 +55,6 @@ public class PreparedDessert implements Serializable {
 		this.producerName = producerName;
 		this.kitchen = kitchen;
 	}
-
-//	public PreparedDessert(PreparedDessert preparedDessert, String consumerName) {
-//		this.quality = preparedDessert.quality;
-//		this.name = preparedDessert.name;
-//		this.expirationTime = preparedDessert.expirationTime;
-//		this.consumerName = consumerName;
-//	}
 
 	/**
 	 * Gets the name of the dessert.
@@ -99,9 +91,4 @@ public class PreparedDessert implements Serializable {
 	public MarsClock getExpirationTime() {
 		return expirationTime;
 	}
-
-//	public void setConsumerName(String consumerName) {
-//		this.consumerName = consumerName; 
-//	}
-	 
 }

@@ -329,7 +329,6 @@ public class LoadingController implements Serializable {
 		// Check if this resource is complete
 		amountNeeded -= amountToLoad;
 		if (amountNeeded <= SMALLEST_RESOURCE_LOAD) {
-			logger.info(vehicle, loader + " completed loading amount " + resourceName);
 			manifest.remove(resource);
 		}
 		else if (!mandatory && usedSupply) {

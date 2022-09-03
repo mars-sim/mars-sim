@@ -30,7 +30,6 @@ import org.mars_sim.msp.core.logging.LocationFormat;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.PersonalityTraitType;
 import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.person.health.Complaint;
@@ -733,8 +732,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 			Collection<Person> people = entity.getAffectedPeople();
 			Iterator<Person> i = people.iterator();
 			while (i.hasNext()) {
-				PhysicalCondition condition = i.next().getPhysicalCondition();
-				condition.setStress(condition.getStress() + ACCIDENT_STRESS);
+				i.next().getPhysicalCondition().addStress(ACCIDENT_STRESS);
 			}
 		}
 	}

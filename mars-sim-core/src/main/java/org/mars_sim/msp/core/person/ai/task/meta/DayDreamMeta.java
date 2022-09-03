@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * DayDreamMeta.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-09-02
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.person.ai.task.meta;

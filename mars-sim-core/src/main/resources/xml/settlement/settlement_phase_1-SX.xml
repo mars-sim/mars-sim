@@ -1,7 +1,7 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <template xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="settlement.xsd"
     name="Phase 1-SX" default-population="4" description="Phase 1 base for Space X"
-	number-of-robots="3" sponsor="SPACEX">
+	number-of-robots="4" sponsor="SPACEX">
 
     <building id="0" type="Lander Hab" xloc="0.0" yloc="0.0"
         facing="0.0">

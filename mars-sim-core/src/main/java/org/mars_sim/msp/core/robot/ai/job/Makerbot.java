@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Makerbot.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-09-01
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.robot.ai.job;
@@ -13,9 +13,12 @@ import java.util.List;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.person.ai.task.ManufactureConstructionMaterials;
 import org.mars_sim.msp.core.person.ai.task.ManufactureGood;
 import org.mars_sim.msp.core.person.ai.task.ProduceFood;
 import org.mars_sim.msp.core.person.ai.task.SalvageGood;
+import org.mars_sim.msp.core.person.ai.task.Sleep;
+import org.mars_sim.msp.core.person.ai.task.Teach;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -38,11 +41,12 @@ implements Serializable {
 	public Makerbot() {
 		// Use Job constructor
 		super(Makerbot.class);
-
+		jobTasks.add(ManufactureConstructionMaterials.class);
 		jobTasks.add(ManufactureGood.class);
 		jobTasks.add(SalvageGood.class);
 		jobTasks.add(ProduceFood.class);
-
+		jobTasks.add(Sleep.class);
+		jobTasks.add(Teach.class);
 	}
 
 	/**

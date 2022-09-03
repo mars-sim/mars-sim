@@ -387,13 +387,13 @@ public class MBTIPersonality implements Serializable {
 		// Introverts reduce stress when alone (just me in group).
 		if (isIntrovert() && (groupSize == 1)) {
 			double solitudeStressModifier = BASE_SOLITUDE_STRESS_MODIFIER * time;
-			p.getPhysicalCondition().addStress(-solitudeStressModifier);
+			p.getPhysicalCondition().reduceStress(solitudeStressModifier);
 		}
 
 		// Extroverts reduce stress when with company, i.e. mor ethan me
 		if (isExtrovert() && (groupSize > 1)) {
 			double companyStressModifier = BASE_COMPANY_STRESS_MODIFIER * time;
-			p.getPhysicalCondition().addStress(-companyStressModifier);
+			p.getPhysicalCondition().reduceStress(companyStressModifier);
 		}
 
 	}

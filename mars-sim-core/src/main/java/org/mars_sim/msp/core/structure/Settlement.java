@@ -58,7 +58,8 @@ import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.person.ai.task.EatDrink;
-import org.mars_sim.msp.core.person.ai.task.HaveConversation;
+import org.mars_sim.msp.core.person.ai.task.Conversation;
+import org.mars_sim.msp.core.person.ai.task.DayDream;
 import org.mars_sim.msp.core.person.ai.task.Read;
 import org.mars_sim.msp.core.person.ai.task.Relax;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
@@ -1522,50 +1523,52 @@ public class Settlement extends Structure implements Temporal,
 
 		while (i.hasNext()) {
 			Person person = i.next();
-			if (person.isInSettlement() // .getLocationStateType() == LocationStateType.INSIDE_SETTLEMENT
-					&& initiator.isInSettlement()) {// getLocationStateType() == LocationStateType.INSIDE_SETTLEMENT) {
-				Task task = person.getMind().getTaskManager().getTask();
+			Task task = person.getMind().getTaskManager().getTask();
+
+			if (person.isInSettlement()
+					&& initiator.isInSettlement()) {
 
 				if (sameBuilding) {
 					// face-to-face conversation
 					if (initiator.getBuildingLocation().equals(person.getBuildingLocation())) {
-						if (checkIdle) {
-							if (isIdleTask(task)) {
-								if (!person.equals(initiator))
-									people.add(person);
-							}
-						} else if (task instanceof HaveConversation) {
-
-							if (!person.equals(initiator))
-								people.add(person);
-						}
+						addPerson(checkIdle, task, initiator, people, person);
 					}
 				}
 
 				else {
 					// may be radio (non face-to-face) conversation
-
-					if (checkIdle) {
-						if (isIdleTask(task)) {
-							if (!person.equals(initiator))
-								people.add(person);
-						}
-					} else if (task instanceof HaveConversation) {
-
-						if (!person.equals(initiator))
-							people.add(person);
-					}
+					addPerson(checkIdle, task, initiator, people, person);
 				}
+			}
+			
+			else {
+				addPerson(checkIdle, task, initiator, people, person);
 			}
 		}
 
 		return people;
 	}
+	
+	private void addPerson(boolean checkIdle, Task task, Person initiator, Collection<Person> people, Person person) {
+		if (checkIdle
+			&& isIdleTask(task)
+				&& !person.equals(initiator)) {
+					people.add(person);
+	
+		} else if ((task == null 
+			|| initiator.getMind().getTaskManager().getTask() == null
+			|| task.getName().equals(initiator.getMind().getTaskManager().getTask().getName())
+			|| task instanceof Conversation)
+				&& !person.equals(initiator)) {
+				people.add(person);
+		}
+	}
 
 	private boolean isIdleTask(Task task) {
         return task instanceof Relax
                 || task instanceof Read
-                || task instanceof HaveConversation
+                || task instanceof DayDream
+                || task instanceof Conversation
                 || task instanceof EatDrink;
     }
 

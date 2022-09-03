@@ -149,6 +149,22 @@ public final class RandomUtil {
 	}
 
 	/**
+	 * Compute the gaussian random double number.
+	 * 
+	 * @param center
+	 * @param fraction
+	 * @param sigma
+	 * @return
+	 */
+	public static double computeGaussianWithLimit(double center, double fraction, double sigma) {
+		double value = RandomUtil.getGaussianDouble() * sigma;
+		if (value > 0)
+			return (center + Math.min(center * fraction, value));
+		else
+			return (center - Math.min(center * fraction, -value));
+	}
+	
+	/**
 	 * Returns a random integer from 1 to the given integer. 1 has twice the chance
 	 * of being chosen than 2 and so forth to the given integer.
 	 *

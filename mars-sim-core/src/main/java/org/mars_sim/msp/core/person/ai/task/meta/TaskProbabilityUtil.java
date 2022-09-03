@@ -87,6 +87,7 @@ public class TaskProbabilityUtil {
     /**
      * Gets the probability modifier for a person performing a task based on his/her
      * relationships with the people in the room the task is to be performed in.
+     * 
      * @param person the person to check for.
      * @param building the building the person will need to be in for the task.
      * @return probability modifier

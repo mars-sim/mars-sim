@@ -84,7 +84,8 @@ public class Person extends Unit implements Worker, Temporal, EquipmentOwner {
 	private static final long serialVersionUID = 1L;
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(Person.class.getName());
-
+	/** The maximum number of sols for storing stats. */
+	public static final int MAX_NUM_SOLS = 7;
 	/** A small amount. */
 	private static final double SMALL_AMOUNT = 0.00001;
 
@@ -134,14 +135,18 @@ public class Person extends Unit implements Worker, Temporal, EquipmentOwner {
 	private int currentBuildingInt;
 	/** The carrying capacity of the person. */
 	private int carryingCapacity;
-
+	/** The id of the person who invite this person for a meeting. */
+	private int initiatorId = -1;
+	/** The id of the person being invited by this person for a meeting. */
+	private int inviteeId = -1;
+	
 	/** The settlement the person is currently associated with. */
 	private Integer associatedSettlementID = Integer.valueOf(-1);
 	/** The buried settlement if the person has been deceased. */
 	private Integer buriedSettlement = Integer.valueOf(-1);
 
 	/** The eating speed of the person [kg/millisol]. */
-	private double eatingSpeed = .1 + RandomUtil.getRandomDouble(-.025, .025);
+	private double eatingSpeed = .01 + RandomUtil.getRandomDouble(-.0025, .0025);
 	/** The height of the person (in cm). */
 	private double height;
 	/** The height of the person (in kg). */
@@ -292,6 +297,14 @@ public class Person extends Unit implements Worker, Temporal, EquipmentOwner {
 	}
 
 	/**
+	 * Initializes field data and class for maven test.
+	 */
+	public void initializeForMaven() {
+		// Construct the EquipmentInventory instance.
+		eqmInventory = new EquipmentInventory(this, carryingCapacity);
+	}
+	
+	/**
 	 * Initializes field data and class.
 	 */
 	public void initialize() {
@@ -325,7 +338,7 @@ public class Person extends Unit implements Worker, Temporal, EquipmentOwner {
 		// Create the mission experiences map
 		missionExperiences = new EnumMap<>(MissionType.class);
 //		// Create the EVA hours map
-//		eVATaskTime = new SolMetricDataLogger<>(MAX_NUM_SOLS);
+		eVATaskTime = new SolMetricDataLogger<>(MAX_NUM_SOLS);
 		// Create a set of collaborative studies
 		collabStudies = new HashSet<>();
 		// Construct the EquipmentInventory instance.
@@ -869,15 +882,14 @@ public class Person extends Unit implements Worker, Temporal, EquipmentOwner {
 							circadian.updateSleepCycle(m, true);
 						}
 
-						double fatigue = condition.getFatigue();
 						if (getShiftType() == ShiftType.B) {
-							condition.setFatigue(fatigue + RandomUtil.getRandomInt(500));
+							condition.increaseFatigue(RandomUtil.getRandomInt(500));
 						}
 						else if (getShiftType() == ShiftType.Y) {
-							condition.setFatigue(fatigue + RandomUtil.getRandomInt(333));
+							condition.increaseFatigue(RandomUtil.getRandomInt(333));
 						}
 						else if (getShiftType() == ShiftType.Z) {
-							condition.setFatigue(fatigue + RandomUtil.getRandomInt(667));
+							condition.increaseFatigue(RandomUtil.getRandomInt(667));
 						}
 
 					}
@@ -2286,6 +2298,22 @@ public class Person extends Unit implements Worker, Temporal, EquipmentOwner {
 	 */
 	public Relation getRelation( ) {
 		return mind.getRelation();
+	}
+	
+	public void setMeetingInitiator(int initiatorId) {
+		this.initiatorId = initiatorId;
+	}
+	
+	public void setMeetingInvitee(int inviteeId) {
+		this.inviteeId = inviteeId;
+	}
+	
+	public int getMeetingInitiator() {
+		return initiatorId;
+	}
+	
+	public int getMeetingInvitee() {
+		return inviteeId;
 	}
 	
 	/**

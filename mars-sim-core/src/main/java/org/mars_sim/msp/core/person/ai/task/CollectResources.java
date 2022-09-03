@@ -80,8 +80,10 @@ public class CollectResources extends EVAOperation implements Serializable {
 
 		// Use EVAOperation parent constructor.
 		super(taskName, person, true, LABOR_TIME + RandomUtil.getRandomDouble(-10D, 10D),
-				SkillType.PROSPECTING);
+				SkillType.AREOLOGY);
 
+		addAdditionSkill(SkillType.PROSPECTING);
+		
 		if (!person.isBarelyFit()) {
 			checkLocation();
 	      	return;

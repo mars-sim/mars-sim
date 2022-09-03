@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Teach.java
- * @date 2022-06-11
+ * @date 2022-09-01
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -15,6 +15,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -69,7 +70,10 @@ public class Teach extends Task implements Serializable {
 	public Teach(Worker unit) {
 		super(NAME, unit, false, false, STRESS_MODIFIER, null, 10D);
 		
-		person = (Person) unit;
+		if (unit.getUnitType() == UnitType.PERSON)
+			person = (Person) unit;
+		else
+			robot = (Robot) unit;
 		
 		// Initialize phase
 		addPhase(TEACHING);
@@ -101,23 +105,20 @@ public class Teach extends Task implements Serializable {
 			Collection<Person> candidates = null;
 			List<Person> students = new ArrayList<>();
 			
-			candidates = getBestStudents(person);
+			if (worker.getUnitType() == UnitType.PERSON)
+				candidates = getBestStudents(person);
+			else
+				candidates = getBestStudents(robot);
 			
 			Iterator<Person> i = candidates.iterator();
 			while (i.hasNext()) {
 				Person candidate = i.next();
-//				Task task = candidate.getMind().getTaskManager().getTask();
-				// Ensure to filter off student performing digging local ice or regolith 
-//				if (task instanceof DigLocalRegolith || task instanceof DigLocalIce) {
-//					if (candidate.isInSettlement())
-//						;// Do NOTHING
-//					else {
-						logger.log(person, Level.FINE, 4_000, "Connecting with student " + candidate.getName() + ".");
-						students.add(candidate);
-//					}
-//				}
-//				else
-//					students.add(candidate);
+				if (worker.getUnitType() == UnitType.PERSON)
+					logger.log(person, Level.FINE, 4_000, "Connecting with student " + candidate.getName() + ".");
+				else
+					logger.log(robot, Level.FINE, 4_000, "Connecting with student " + candidate.getName() + ".");
+				
+				students.add(candidate);
 			}
 			
 			if (students.size() > 0) {
@@ -125,24 +126,37 @@ public class Teach extends Task implements Serializable {
 				// Randomly get a person student.
 				int rand = RandomUtil.getRandomInt(students.size() - 1);
 				student = (Person) array[rand];
+				// Gets the task the studen is doing
 				teachingTask = student.getMind().getTaskManager().getTask();
-				teachingTask.setTeacher(person);
-				logger.log(person, Level.FINE, 4_000, "Teaching " + student.getName() 
+				
+				if (worker.getUnitType() == UnitType.PERSON) {
+//					teachingTask.setTeacher(person);
+					logger.log(person, Level.INFO, 10_000, "Teaching " + student.getName() 
 					+ " on " + teachingTask.getName(false) + ".");
+				}
+				else {
+//					teachingTask.setTeacher(robot);
+					logger.log(robot, Level.INFO, 10_000, "Teaching " + student.getName() 
+					+ " on " + teachingTask.getName(false) + ".");
+				}
+				
 				setDescription(
 						Msg.getString("Task.description.teach.detail", 
 								teachingTask.getName(false), student.getName())); // $NON-NLS-1$
 
 				boolean walkToBuilding = false;
-				// If in settlement, move teacher to building student is in.
-				if (person.isInSettlement()) {
+				
+				boolean isInSettlement = false;
+				if (worker.getUnitType() == UnitType.PERSON) {
+					isInSettlement = person.isInSettlement();
+				}
+				else {
+					isInSettlement = robot.isInSettlement();
+				}
+				
+				if (isInSettlement) {
 
-//					Building currentBuilding = BuildingManager.getBuilding(person);
-//					if (currentBuilding != null && currentBuilding.getBuildingType().equalsIgnoreCase(Building.EVA_AIRLOCK)) {
-//						// Walk out of the EVA Airlock
-//						walkToRandomLocation(false);
-//					}
-					
+					// If in settlement, move teacher to the building where student is in.
 					Building studentBuilding = BuildingManager.getBuilding(student);
 
 					if (studentBuilding != null && 
@@ -177,11 +191,12 @@ public class Teach extends Task implements Serializable {
     	if (getTimeCompleted() > getDuration())
         	endTask();
     	
-		if (!person.isBarelyFit())
-        	endTask();
-    	
-		// Add relationship modifier for opinion of teacher from the student.
-		addRelationshipModifier(time);
+    	if (worker.getUnitType() == UnitType.PERSON) {
+    		if (!person.isBarelyFit())
+    			endTask();
+    		// Add relationship modifier for opinion of teacher from the student.
+    		addRelationshipModifier(time);
+    	}
 
         // Add experience points
         addExperience(time);
@@ -221,9 +236,20 @@ public class Teach extends Task implements Serializable {
         	SkillType taskSkill = taughtSkills.get(rand);
 
 			int studentSkill = student.getSkillManager().getSkillLevel(taskSkill);
-			int teacherSkill = person.getSkillManager().getSkillLevel(taskSkill);
 			double studentExp = student.getSkillManager().getCumuativeExperience(taskSkill);
-			double teacherExp = person.getSkillManager().getCumuativeExperience(taskSkill);
+
+			int teacherSkill = 0;
+			double teacherExp = 0;
+			
+			if (worker.getUnitType() == UnitType.PERSON) {
+				teacherSkill = person.getSkillManager().getSkillLevel(taskSkill);
+				teacherExp = person.getSkillManager().getCumuativeExperience(taskSkill);
+			}
+			else {
+				teacherSkill = robot.getSkillManager().getSkillLevel(taskSkill);
+				teacherExp = robot.getSkillManager().getCumuativeExperience(taskSkill);
+			}
+	
 			double diff = Math.round((teacherExp - studentExp)*10.0)/10.0;
 			int points = teacherSkill - studentSkill;
 			double learned = (.5 + points) * exp / 1.5 * RandomUtil.getRandomDouble(1);
@@ -236,8 +262,13 @@ public class Teach extends Task implements Serializable {
 //					+ "   " + student + " [Lvl : " + studentSkill + "]'s learned: " + Math.round(learned*1000.0)/1000.0 + ".");
 			
 			student.getSkillManager().addExperience(taskSkill, learned, time);
-	        person.getSkillManager().addExperience(taskSkill, reward, time);
-	        
+			
+			if (worker.getUnitType() == UnitType.PERSON) {
+				person.getSkillManager().addExperience(taskSkill, reward, time);
+			}
+			else
+				robot.getSkillManager().addExperience(taskSkill, reward, time);
+			
 	        // If the student has more experience points than the teacher, the teaching session ends.
 	        if (diff < 0)
 	        	endTask();
@@ -264,6 +295,18 @@ public class Teach extends Task implements Serializable {
 				Person student = i.next();
 				Building building = BuildingManager.getBuilding(student);
 				if (building != null) {
+					// If this is an EVA airlock
+					if (building.getCategory() == BuildingCategory.EVA_AIRLOCK) {
+						// Go to the next building
+						continue;
+					}
+						
+					// If this building/hallway is next to the observatory
+					if (building.getSettlement().getBuildingManager().isObservatoryAttached(building)) {
+						// Go to the next building
+						continue;
+					}
+				
 					LifeSupport lifeSupport = building.getLifeSupport();
 					int buildingCrowding = lifeSupport.getOccupantNumber() - lifeSupport.getOccupantCapacity() + 1;
 					if (buildingCrowding < -1) {
@@ -281,6 +324,18 @@ public class Teach extends Task implements Serializable {
 				Person student = j.next();
 				Building building = BuildingManager.getBuilding(student);
 				if (building != null) {
+					// If this is an EVA airlock
+					if (building.getCategory() == BuildingCategory.EVA_AIRLOCK) {
+						// Go to the next building
+						continue;
+					}
+						
+					// If this building/hallway is next to the observatory
+					if (building.getSettlement().getBuildingManager().isObservatoryAttached(building)) {
+						// Go to the next building
+						continue;
+					}
+					
 					LifeSupport lifeSupport = building.getLifeSupport();
 					int buildingCrowding = lifeSupport.getOccupantNumber() - lifeSupport.getOccupantCapacity() + 1;
 					if (buildingCrowding < -1) {
@@ -324,6 +379,86 @@ public class Teach extends Task implements Serializable {
 		return result;
 	}
 
+	/**
+	 * Gets a collection of the best students the teacher can teach.
+	 * 
+	 * @param teacher the teacher looking for students.
+	 * @return collection of the best students
+	 */
+	public static Collection<Person> getBestStudents(Robot teacher) {
+		Collection<Person> result = new ConcurrentLinkedQueue<>();
+		Collection<Person> students = getTeachableStudents(teacher);
+
+		// If teacher is in a settlement, best students are in least crowded buildings.
+		Collection<Person> leastCrowded = new ConcurrentLinkedQueue<>();
+		if (teacher.isInSettlement()) {
+			// Find the least crowded buildings that teachable students are in.
+			int crowding = Integer.MAX_VALUE;
+			Iterator<Person> i = students.iterator();
+			while (i.hasNext()) {
+				Person student = i.next();
+				Building building = BuildingManager.getBuilding(student);
+				if (building != null) {
+					// If this is an EVA airlock
+					if (building.getCategory() == BuildingCategory.EVA_AIRLOCK) {
+						// Go to the next building
+						continue;
+					}
+						
+					// If this building/hallway is next to the observatory
+					if (building.getSettlement().getBuildingManager().isObservatoryAttached(building)) {
+						// Go to the next building
+						continue;
+					}
+					
+					LifeSupport lifeSupport = building.getLifeSupport();
+					int buildingCrowding = lifeSupport.getOccupantNumber() - lifeSupport.getOccupantCapacity() + 1;
+					if (buildingCrowding < -1) {
+						buildingCrowding = -1;
+					}
+					if (buildingCrowding < crowding) {
+						crowding = buildingCrowding;
+					}
+				}
+			}
+
+			// Add students in least crowded buildings to result.
+			Iterator<Person> j = students.iterator();
+			while (j.hasNext()) {
+				Person student = j.next();
+				Building building = BuildingManager.getBuilding(student);
+				if (building != null) {
+					// If this is an EVA airlock
+					if (building.getCategory() == BuildingCategory.EVA_AIRLOCK) {
+						// Go to the next building
+						continue;
+					}
+						
+					// If this building/hallway is next to the observatory
+					if (building.getSettlement().getBuildingManager().isObservatoryAttached(building)) {
+						// Go to the next building
+						continue;
+					}
+					
+					LifeSupport lifeSupport = building.getLifeSupport();
+					int buildingCrowding = lifeSupport.getOccupantNumber() - lifeSupport.getOccupantCapacity() + 1;
+					if (buildingCrowding < -1) {
+						buildingCrowding = -1;
+					}
+					if (buildingCrowding == crowding) {
+						leastCrowded.add(student);
+					}
+				}
+			}
+		} else {
+			leastCrowded = students;
+		}
+
+		result = leastCrowded;
+
+		return result;
+	}
+	
 	/**
 	 * Get a collection of students the teacher can teach.
 	 * 
@@ -371,7 +506,7 @@ public class Teach extends Task implements Serializable {
 			Person student = i.next();
 			boolean possibleStudent = false;
 			Task task = student.getMind().getTaskManager().getTask();
-			if (task != null) {
+			if (task != null && task.getAssociatedSkills() != null) {
 				Iterator<SkillType> j = task.getAssociatedSkills().iterator();
 				while (j.hasNext()) {
 					SkillType taskSkill = j.next();
@@ -390,88 +525,6 @@ public class Teach extends Task implements Serializable {
 		return result;
 	}
 	
-	/**
-	 * Gets a collection of the best students the teacher can teach.
-	 * 
-	 * @param teacher the teacher looking for students.
-	 * @return collection of the best students
-	 */
-	public static Collection<Person> getBestStudents(Robot teacher) {
-		Collection<Person> result = new ConcurrentLinkedQueue<>();
-		Collection<Person> students = getTeachableStudents(teacher);
-
-		// If teacher is in a settlement, best students are in least crowded buildings.
-		Collection<Person> leastCrowded = new ConcurrentLinkedQueue<>();
-		if (teacher.isInSettlement()) {
-			// Find the least crowded buildings that teachable students are in.
-			int crowding = Integer.MAX_VALUE;
-			Iterator<Person> i = students.iterator();
-			while (i.hasNext()) {
-				Person student = i.next();
-				Building building = BuildingManager.getBuilding(student);
-				if (building != null) {
-					LifeSupport lifeSupport = building.getLifeSupport();
-					int buildingCrowding = lifeSupport.getOccupantNumber() - lifeSupport.getOccupantCapacity() + 1;
-					if (buildingCrowding < -1) {
-						buildingCrowding = -1;
-					}
-					if (buildingCrowding < crowding) {
-						crowding = buildingCrowding;
-					}
-				}
-			}
-
-			// Add students in least crowded buildings to result.
-			Iterator<Person> j = students.iterator();
-			while (j.hasNext()) {
-				Person student = j.next();
-				Building building = BuildingManager.getBuilding(student);
-				if (building != null) {
-					LifeSupport lifeSupport = building.getLifeSupport();
-					int buildingCrowding = lifeSupport.getOccupantNumber() - lifeSupport.getOccupantCapacity() + 1;
-					if (buildingCrowding < -1) {
-						buildingCrowding = -1;
-					}
-					if (buildingCrowding == crowding) {
-						leastCrowded.add(student);
-					}
-				}
-			}
-		} else {
-			leastCrowded = students;
-		}
-
-		// TODO : may account for the attitude (like and dislike) of the person having a robot as his tutor 
-		
-//		// Get the teacher's favorite students.
-//		RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
-//		Collection<Person> favoriteStudents = new ConcurrentLinkedQueue<Person>();
-//
-//		// Find favorite opinion.
-//		double favorite = Double.NEGATIVE_INFINITY;
-//		Iterator<Person> k = leastCrowded.iterator();
-//		while (k.hasNext()) {
-//			Person student = k.next();
-//			double opinion = relationshipManager.getOpinionOfPerson(teacher, student);
-//			if (opinion > favorite) {
-//				favorite = opinion;
-//			}
-//		}
-//
-//		// Get list of favorite students.
-//		k = leastCrowded.iterator();
-//		while (k.hasNext()) {
-//			Person student = k.next();
-//			double opinion = relationshipManager.getOpinionOfPerson(teacher, student);
-//			if (opinion == favorite) {
-//				favoriteStudents.add(student);
-//			}
-//		}
-
-		result = leastCrowded;
-
-		return result;
-	}
 	
 	/**
 	 * Gets a collection of people in a person's settlement or rover. The resulting

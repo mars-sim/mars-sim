@@ -36,7 +36,7 @@ import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.social.RelationshipUtil;
-import org.mars_sim.msp.core.person.ai.task.HaveConversation;
+import org.mars_sim.msp.core.person.ai.task.Conversation;
 import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScienceType;
@@ -1108,7 +1108,7 @@ public class BuildingManager implements Serializable {
 	public static boolean removeFromGarage(Vehicle vehicle) {
 		// If the vehicle is in a garage, put the vehicle outside.
 		Building garage = vehicle.getGarage();
-		if (garage != null && garage.getVehicleMaintenance().removeVehicle(vehicle)) {
+		if (garage != null && garage.getVehicleMaintenance().removeVehicle(vehicle, true)) {
 			return true;
 		}
 
@@ -1320,7 +1320,7 @@ public class BuildingManager implements Serializable {
 			LifeSupport lifeSupport = building.getLifeSupport();
 			int numPeople = 0;
 			for (Person occupant : lifeSupport.getOccupants()) {
-				if (occupant.getMind().getTaskManager().getTask() instanceof HaveConversation) {
+				if (occupant.getMind().getTaskManager().getTask() instanceof Conversation) {
 					numPeople++;
 				}
 			}
@@ -1656,7 +1656,6 @@ public class BuildingManager implements Serializable {
 
 				case COOKING:
 					result += Cooking.getFunctionValue(buildingType, newBuilding, settlement);
-					result += PreparingDessert.getFunctionValue(buildingType, newBuilding, settlement);
 					break;
 
 				case DINING:
@@ -1719,6 +1718,10 @@ public class BuildingManager implements Serializable {
 					result += PowerStorage.getFunctionValue(buildingType, newBuilding, settlement);
 					break;
 
+				case PREPARING_DESSERT:
+					result += PreparingDessert.getFunctionValue(buildingType, newBuilding, settlement);
+					break;
+					
 				case RECREATION:
 					result += Recreation.getFunctionValue(buildingType, newBuilding, settlement);
 					break;

@@ -418,12 +418,13 @@ public class Trade extends RoverMission implements CommerceMission {
 	 * @param member the mission member performing the phase.
 	 */
 	private void performTradeEmbarkingPhase(Worker member) {
-
+		Vehicle v = getVehicle();
+		
 		// If person is not aboard the rover, board rover.
 		if (!isDone() && !member.isInVehicle()) {
 
 			// Move person to random location within rover.
-			LocalPosition adjustedLoc = LocalAreaUtil.getRandomLocalRelativePosition(getVehicle());
+			LocalPosition adjustedLoc = LocalAreaUtil.getRandomLocalRelativePosition(v);
 
 			// Elect a new mission lead if the previous one was dead
 			if (member instanceof Person) {
@@ -451,29 +452,34 @@ public class Trade extends RoverMission implements CommerceMission {
 			for (Worker mm: getMembers()) {
 				if (mm instanceof Person) {
 					Person person = (Person) mm;
-					if (!person.isDeclaredDead()) {
-						EVASuit suit0 = getEVASuit(person);
-						if (suit0 == null) {
-							if (tradingSettlement.findNumContainersOfType(EquipmentType.EVA_SUIT) > 0) {
-								EVASuit suit1 = InventoryUtil.getGoodEVASuitNResource(tradingSettlement, person);
-								if (suit1 != null) {
-									boolean done = suit1.transfer(getVehicle());
-									if (!done)
-										logger.warning(person, "Not able to transfer an EVA suit from " + tradingSettlement);
-								} else {
-									logger.warning(person, "EVA suit not provided for by " + tradingSettlement);
-								}
+					if (person.isDeclaredDead()) {
+						continue;
+					}
+
+					if (v == null)
+						v = person.getVehicle();
+					
+					EVASuit suit0 = getEVASuitFromVehicle(person, v);
+					if (suit0 == null) {
+						if (tradingSettlement.findNumContainersOfType(EquipmentType.EVA_SUIT) > 0) {
+							EVASuit suit1 = InventoryUtil.getGoodEVASuitNResource(tradingSettlement, person);
+							if (suit1 != null) {
+								boolean done = suit1.transfer(v);
+								if (!done)
+									logger.warning(person, "Not able to transfer an EVA suit from " + tradingSettlement);
+							} else {
+								logger.warning(person, "EVA suit not provided for by " + tradingSettlement);
 							}
 						}
+					}
 
-						// Walk back to the vehicle and be ready to embark and go home
-						Walk walk = Walk.createWalkingTask(person, adjustedLoc, 0, getVehicle());
-						if (walk != null) {
-							assignTask(person, walk);
-						}
-						else {
-							endMissionProblem(person, "Unable to enter rover " + getVehicle().getName());
-						}
+					// Walk back to the vehicle and be ready to embark and go home
+					Walk walk = Walk.createWalkingTask(person, adjustedLoc, 0, v);
+					if (walk != null) {
+						assignTask(person, walk);
+					}
+					else {
+						endMissionProblem(person, "Unable to enter rover " + v.getName());
 					}
 				}
 			}
@@ -483,10 +489,10 @@ public class Trade extends RoverMission implements CommerceMission {
 		if (!isDone() && isEveryoneInRover()) {
 
 			// If the rover is in a garage, put the rover outside.
-			BuildingManager.removeFromGarage(getVehicle());
+			BuildingManager.removeFromGarage(v);
 
 			// Embark from settlement
-			tradingSettlement.removeParkedVehicle(getVehicle());
+			tradingSettlement.removeParkedVehicle(v);
 			setPhaseEnded(true);
 		}
 	}

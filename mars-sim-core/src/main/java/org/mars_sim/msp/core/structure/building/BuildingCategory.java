@@ -10,7 +10,7 @@ import org.mars_sim.msp.core.Msg;
 
 public enum BuildingCategory {
 
-    // Note the order of these Enums represent their importance
+    // Note the order of these enums represent their importance
     COMMAND, 
     MEDICAL,
     ERV,

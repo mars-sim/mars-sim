@@ -22,9 +22,9 @@ public abstract class DigLocalMeta extends MetaTask {
 
 //	private static SimLogger logger = SimLogger.getLogger(DigLocalMeta.class.getName());
 
-	private static final double VALUE = 1.0;
+	private static final double VALUE = 5.0;
 	private static final int MAX = 5000;
-	private static final int LIMIT = 10000;
+	private static final int LIMIT = 20000;
 	
 	private EquipmentType containerType;
 
@@ -89,7 +89,6 @@ public abstract class DigLocalMeta extends MetaTask {
         double hunger = condition.getHunger();
 
         result = collectionProbability * VALUE;
-   
         if (result > MAX)
         	result = MAX;
 
@@ -100,36 +99,36 @@ public abstract class DigLocalMeta extends MetaTask {
 
 	    int indoor = settlement.getIndoorPeopleCount(); 
 	    int citizen = settlement.getNumCitizens();
-
+	    int cap = settlement.getPopulationCapacity();
 	    // Crowded settlement modifier
-        if (indoor > settlement.getPopulationCapacity())
-            result = result * (indoor - settlement.getPopulationCapacity());
+        if (indoor > cap)
+            result = result * (indoor - cap + 1);
 
-        if (citizen <= 8 && citizen >= 4)
+        if (citizen <= 24 && citizen >= 4)
             // Adds effect of the # of citizen 
-        	result *= citizen * 10;
+        	result *= (25 - citizen) * 1.2;
 
         // Adds effect of the ratio of # indoor people vs. those outside already doing EVA 
         result *= (1.0 + indoor) / (1 + settlement.getNumOutsideEVA()) ;
-
+        
         // shiftBonus will have a minimum of 10
         double shiftBonus = person.getTaskSchedule().obtainScoreAtStartOfShift();
         
         // Encourage to get this task done early in a work shift
-        result *= shiftBonus / 10;
-        
+        result *= shiftBonus;
+
         // The amount of sunlight influences the probability of starting this task
         double sunlight = surfaceFeatures.getSunlightRatio(settlement.getCoordinates());
         
         if (sunlight > 0.1) {
-        	result *= sunlight * 10;
+        	result *= sunlight * 50;
         }
-        
+
         if (result <= 0)
             return 0;
         
         result = applyPersonModifier(result, person);
-        
+
     	if (exposed[0]) {
     		// Baseline can give a fair amount dose of radiation
 			result = result/50D;
@@ -139,10 +138,10 @@ public abstract class DigLocalMeta extends MetaTask {
     		// GCR can give nearly lethal dose of radiation
 			result = result/100D;
 		}
-    	
+
         if (result > LIMIT)
         	result = LIMIT;
-        
+
         return result;
     }
 }

@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * CookMealMeta.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-08-30
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -29,7 +29,7 @@ public class CookMealMeta extends MetaTask {
             "Task.description.cookMeal"); //$NON-NLS-1$
     
     public CookMealMeta() {
-		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
+		super(NAME, WorkerType.BOTH, TaskScope.ANY_HOUR);
 		setFavorite(FavoriteType.COOKING);
 		setTrait(TaskTrait.ARTISTIC);
 		setPreferredJob(JobType.CHEF);
@@ -42,18 +42,19 @@ public class CookMealMeta extends MetaTask {
 
     @Override
     public double getProbability(Person person) {
+    	
     	if (person.isOutside())
     		return 0;
     		
+        // Probability affected by the person's stress and fatigue.
+        if (!person.getPhysicalCondition().isFitByLevel(1000, 70, 1000))
+        	return 0;
+        
         double result = 0D;
 
-        if (person.isInSettlement() && CookMeal.isLocalMealTime(person.getCoordinates(), 20)) {
+        if (person.isInSettlement() 
+        	&& CookMeal.isMealTime(person, CookMeal.PREP_TIME)) {
 
-            // Probability affected by the person's stress and fatigue.
-            if (!person.getPhysicalCondition().isFitByLevel(1000, 70, 1000)) {
-            	return 0;
-            }
-            
             // See if there is an available kitchen.
             Building kitchenBuilding = CookMeal.getAvailableKitchen(person);
 
@@ -68,18 +69,11 @@ public class CookMealMeta extends MetaTask {
 
                 if (kitchen.canCookMeal()) {
 
-                    result = 50D;
-                    
-                	if (CookMeal.isLocalMealTime(person.getCoordinates(), 20)) {
-                		result *= 2.5D;
-                	}
-                	else
-                		result *= .25D;   
-                	
+                    result = 200;
                     // Crowding modifier.
                     result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, kitchenBuilding);
-                    result *= TaskProbabilityUtil.getRelationshipModifier(person, kitchenBuilding);
-                    
+                    // Effort-driven task modifier.
+                    result *= TaskProbabilityUtil.getRelationshipModifier(person, kitchenBuilding);  
                     // Apply the standard Person modifiers
                     result = applyPersonModifier(result, person);
                 }
@@ -99,8 +93,7 @@ public class CookMealMeta extends MetaTask {
 
         double result = 0D;
 
-
-        if (CookMeal.isMealTime(robot, 20)
+        if (CookMeal.isMealTime(robot, CookMeal.PREP_TIME)
             && robot.getRobotType() == RobotType.CHEFBOT) {
             // See if there is an available kitchen.
             Building kitchenBuilding = CookMeal.getAvailableKitchen(robot);
@@ -112,10 +105,12 @@ public class CookMealMeta extends MetaTask {
                 // Check if enough meals have been cooked at kitchen for this meal time.
                 boolean enoughMeals = kitchen.getCookNoMore();
 
-                if (enoughMeals) return 0;
+                if (enoughMeals) 
+                	return 0;
 
                 if (kitchen.canCookMeal()) {
-                    result = 300D;
+                	
+                    result = 500D;
                     // Crowding modifier.
                     result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(robot, kitchenBuilding);
                     // Effort-driven task modifier.
@@ -124,7 +119,6 @@ public class CookMealMeta extends MetaTask {
             }
         }
 
-        //System.out.println("cook meal : " + result);
         return result;
 	}
 }

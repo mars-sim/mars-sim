@@ -293,12 +293,10 @@ public class PersonTaskManager extends TaskManager implements Serializable {
 	}
 
 	public void reinit() {
-		super.reinit();
-
 		person = mind.getPerson();
 		circadian = person.getCircadianClock();
-
 		worker = person;
+		super.reinit();
 	}
 
 	/**

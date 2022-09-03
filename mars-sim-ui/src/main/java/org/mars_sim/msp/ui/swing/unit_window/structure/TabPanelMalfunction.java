@@ -7,14 +7,11 @@
 package org.mars_sim.msp.ui.swing.unit_window.structure;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 

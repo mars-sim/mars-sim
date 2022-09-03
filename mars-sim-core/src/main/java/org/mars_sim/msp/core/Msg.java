@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Msg.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-08-31
  * @author stpa
  */
 package org.mars_sim.msp.core;
@@ -11,6 +11,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,10 +24,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * used to get internationizations of strings
- * and other stuff from {@link ResourceBundle}-
+ * For getting internationizations of strings
+ * from {@link ResourceBundle}-
  * properties-files, like date or decimal formats,
- * or image-icon-paths (think of red cross vs. crescent)
+ * or image-icon-paths (think of red cross vs. crescent).
+ * 
  * @author stpa
  */
 public class Msg {
@@ -70,12 +72,8 @@ public class Msg {
 		try {
 			return RESOURCE_BUNDLE.getString(key);
 		} catch (MissingResourceException e) {
-//			Log.warn(e.getStackTrace()[1].getClassName());
 			return handle(e,key);
 		}
-		
-
-		
 	}
 
 
@@ -140,7 +138,7 @@ public class Msg {
 			) {
 				rest = rest.substring(1,rest.length() - 1);
 				String[] parts = rest.split(",");
-				List<String> list = new ArrayList<String>();
+				List<String> list = new ArrayList<>();
 				for (String part : parts) {
 					if (part != null && part.length() > 0) {
 						list.add(part);
@@ -158,9 +156,9 @@ public class Msg {
 	}
 
 	/** prints an error message to the console. */
-	public static final String handle(Exception e,String key) {
-		// Note : StringBuffer is thread safe and synchronized whereas StringBuilder is not, 
-		// thats why StringBuilder is more faster than StringBuffer.
+	public static final String handle(Exception e, String key) {
+		// Note : StringBuffer is thread safe and synchronized whereas StringBuilder is not.
+		// StringBuilder is not synchronized and is faster than StringBuffer.
 		StringBuffer msg = new StringBuffer();
 		msg.append("!!") //$NON-NLS-1$
 		.append(key)
@@ -204,9 +202,9 @@ public class Msg {
 				stream = loader.getResourceAsStream(resourceName);
 			}
 			if (stream != null) {
-				try {
+				try (InputStreamReader reader = new InputStreamReader(stream, StandardCharsets.UTF_8)) {
 					// Only this line is changed to make it to read properties files as UTF-8.
-					bundle = new PropertyResourceBundle(new InputStreamReader(stream, "UTF-8"));
+					bundle = new PropertyResourceBundle(reader);
 				} finally {
 					stream.close();
 				}

@@ -510,6 +510,6 @@ public class TerrainElevation implements Serializable {
 	 * Prepares object for garbage collection.
 	 */
 	public void destroy() {
-		mapdata = null;
+		//nothing
 	}
 }

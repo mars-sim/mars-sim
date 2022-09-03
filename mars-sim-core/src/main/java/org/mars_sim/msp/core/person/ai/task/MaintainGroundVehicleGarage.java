@@ -251,10 +251,10 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 			if (vehicle instanceof Crewable) {
 				Crewable crewableVehicle = (Crewable) vehicle;
 				if (crewableVehicle.getCrewNum() == 0 && crewableVehicle.getRobotCrewNum() == 0) {
-					garage.removeVehicle(vehicle);
+					garage.removeVehicle(vehicle, false);
 				}
 			} else {
-				garage.removeVehicle(vehicle);
+				garage.removeVehicle(vehicle, false);
 			}
 		}
 		super.clearDown();

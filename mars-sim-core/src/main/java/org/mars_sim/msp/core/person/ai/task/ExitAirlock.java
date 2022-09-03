@@ -53,7 +53,7 @@ public class ExitAirlock extends Task implements Serializable {
 	
 	private static final String TO_REQUEST_EGRESS = " to request egress"; 
 	private static final String TRIED_TO_STEP_THRU_INNER_DOOR = "Tried to step through inner door"; 
-	private static final String PREBREATH_HALF_DONE = "Other occupant(s) have already pre-breathed half-way";
+	private static final String PREBREATH_HALF_DONE = "other occupant(s) have already pre-breathed half-way";
 	private static final String RESERVATION_NOT_MADE = "Reservation not made.";
 	private static final String NOT_FIT = "Not fit enough";
 	private static final String INNER_DOOR_LOCKED = "Inner door was locked.";
@@ -288,11 +288,21 @@ public class ExitAirlock extends Task implements Serializable {
 	 */
 	private boolean isFit() {
 		
-		if (inSettlement && isObservatoryAttached) {
-			// Note: if the person is in an airlock next to the observatory 
-			// sitting at an isolated and remote part of the settlement,
-			// it will not check if he's physically fit to leave that place, or else
-			// he may get stranded
+		if (inSettlement) {
+			if (isObservatoryAttached) {
+				// Note: if the person is in an airlock next to the observatory 
+				// sitting at an isolated and remote part of the settlement,
+				// it will not check if he's physically fit to leave that place, or else
+				// he may get stranded.
+				return true;
+			}
+			
+			// else need to go to the bottom to check fitness
+		}
+		else if (person.isInVehicle() && person.getVehicle().getSettlement() != null) {
+			// if vehicle occupant is unfit and the vehicle is at settlement/vicinity,
+			// bypass checking for fitness since the person may just be too exhausted and
+			// should be allowed to return home to recuperate.
 			return true;
 		}
 		
@@ -311,7 +321,6 @@ public class ExitAirlock extends Task implements Serializable {
 		accumulatedTime = 0;
 		
 		airlock.removeID(person.getIdentifier());
-
 
 		logger.log((Unit)airlock.getEntity(), person, Level.INFO, 16_000, reason);
 		
@@ -395,8 +404,8 @@ public class ExitAirlock extends Task implements Serializable {
 			airlock.loadEVAActivitySpots();
 
 			if (!airlock.addAwaitingInnerDoor(id)) {
-				walkAway(person, TO_REQUEST_EGRESS 
-						+ ". Cannot get a spot at the inner door of " + airlock.getEntity().toString() + ".");
+				walkAway(person, "Requesting egress but cannot get a spot at the inner door of " 
+						+ airlock.getEntity().toString() + ".");
 				return time;
 			}
 
@@ -422,12 +431,11 @@ public class ExitAirlock extends Task implements Serializable {
 
 		else {
 
-			if (airlock.addAwaitingInnerDoor(id)) {
+			if (airlock.addAwaitingInnerDoor(id) || (!airlock.isInnerDoorLocked() || airlock.isEmpty())) {
 				canProceed = true;
 			}
 			else {
-				walkAway(person, TO_REQUEST_EGRESS 
-						+ ". Cannot wait at " + airlock.getEntity().toString() + " inner door.");
+				walkAway(person, "Requesting egress. can't get thru " + airlock.getEntity().toString() + "'s inner door.");
 				return time;
 			}
 		}
@@ -727,28 +735,30 @@ public class ExitAirlock extends Task implements Serializable {
 
 		boolean canProceed = false;
 
-		if (!isFit()) {
-			walkAway(person, NOT_FIT + " to don an EVA suit.");
-			return time;
-		}
-
-		if (isOccupantHalfPrebreathed()) {
-			walkAway(person, "Can't don an EVA suit - " + PREBREATH_HALF_DONE);
-			return time;
-		}
-		
-		if (!airlock.isPressurized()) {
-			// Go back to the previous phase
-			setPhase(PRESSURIZE_CHAMBER);
-			return time;
-		}
-		
 		// Gets the suit instance
 		EVASuit suit = person.getSuit();
-		EquipmentOwner housing = null;
 		
 		if (suit == null) {
+			
+			if (!isFit()) {
+				walkAway(person, NOT_FIT + " to don an EVA suit.");
+				return time;
+			}
+	
+			if (isOccupantHalfPrebreathed()) {
+				walkAway(person, "Can't don an EVA suit - " + PREBREATH_HALF_DONE);
+				return time;
+			}
+			
+			if (!airlock.isPressurized()) {
+				// Go back to the previous phase
+				setPhase(PRESSURIZE_CHAMBER);
+				return time;
+			}
+
 			// Get an EVA suit from entity inventory.
+			
+			EquipmentOwner housing = null;
 			
 			if (inSettlement)
 				housing = ((Building)airlock.getEntity()).getSettlement();
@@ -765,7 +775,7 @@ public class ExitAirlock extends Task implements Serializable {
 				//    if there is no known working EVA suit ? Unless there is a sync issue 
 				// Q: how do we make an EVA suit pre-assigned to a person prior to starting 
 				//    the process of EVA. 
-				walkAway(person, "In donEVASuit(). No EVA suit available.");
+				walkAway(person, "No EVA suit available.");
 				return 0;
 			}
 			
@@ -827,15 +837,9 @@ public class ExitAirlock extends Task implements Serializable {
 
 		boolean canProceed = false;
 		
-		if (!isFit()) {
-			walkAway(person, NOT_FIT + " to prebreathe.");
-			return time;
-		}
-		
 		if (person.getSuit() == null) {
 			// Go back to previous task phase
 			setPhase(DON_EVA_SUIT);
-			
 			return time;
 		}
 
@@ -979,7 +983,7 @@ public class ExitAirlock extends Task implements Serializable {
 				setPhase(DEPRESSURIZE_CHAMBER);
 				// Reset accumulatedTime back to zero
 				accumulatedTime = 0;
-				return 0;
+				return time / 2.0;
 			}
 			
 			if (airlock.inAirlock(person)) {

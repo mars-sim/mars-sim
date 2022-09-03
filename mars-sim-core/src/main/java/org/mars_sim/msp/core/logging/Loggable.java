@@ -9,7 +9,6 @@ package org.mars_sim.msp.core.logging;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.structure.Settlement;
 
 /**
  * This is a simulation entity that can trigger a log message.

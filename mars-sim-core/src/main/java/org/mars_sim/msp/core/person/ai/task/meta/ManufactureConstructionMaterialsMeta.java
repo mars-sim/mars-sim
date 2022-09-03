@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * ManufactureConstructionMaterialsMeta.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-09-01
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -41,7 +41,7 @@ public class ManufactureConstructionMaterialsMeta extends MetaTask {
 		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
 		setFavorite(FavoriteType.TINKERING);
 		setTrait(TaskTrait.ARTISTIC);
-		setPreferredJob(JobType.ARCHITECT);
+		setPreferredJob(JobType.ARCHITECT, JobType.CHEMIST, JobType.ENGINEER);
 	}
 
     @Override
@@ -124,7 +124,7 @@ public class ManufactureConstructionMaterialsMeta extends MetaTask {
         if (robot.getSettlement().getProcessOverride(OverrideType.MANUFACTURE)) {
             return 0;
         }
-        
+			
         double result = 0D;
 
         if (robot.isInSettlement()) {

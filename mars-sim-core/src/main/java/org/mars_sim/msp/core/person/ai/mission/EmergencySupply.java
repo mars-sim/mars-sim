@@ -438,26 +438,30 @@ public class EmergencySupply extends RoverMission {
 	 * @param member the mission member performing the phase.
 	 */
 	private void performReturnTripEmbarkingPhase(Worker member) {
-
+		Vehicle v = getVehicle();
+		
 		if (member.isInVehicle()) {
 
 			// Move person to random location within rover.
-			LocalPosition adjustedLoc = LocalAreaUtil.getRandomLocalRelativePosition(getVehicle());
+			LocalPosition adjustedLoc = LocalAreaUtil.getRandomLocalRelativePosition(v);
 			// TODO Refactor
 			if (member instanceof Person) {
 				Person person = (Person) member;
 				if (!person.isDeclaredDead()) {
-
-					EVASuit suit0 = getEVASuit(person);
+					
+					if (v == null)
+						v = person.getVehicle();
+					
+					EVASuit suit0 = getEVASuitFromVehicle(person, v);
 					if (suit0 == null) {
 						EVASuit suit1 = InventoryUtil.getGoodEVASuitNResource(emergencySettlement, person);
-						if (!suit1.transfer(getVehicle())) {
+						if (!suit1.transfer(v)) {
 							logger.warning(person, "EVA suit not provided for by " + emergencySettlement);
 						}
 					}
 
 					// If person is not aboard the rover, board rover.
-					Walk walk = Walk.createWalkingTask(person, adjustedLoc, 0, getVehicle());
+					Walk walk = Walk.createWalkingTask(person, adjustedLoc, 0, v);
 					if (walk != null) {
 						assignTask(person, walk);
 					}
@@ -470,7 +474,7 @@ public class EmergencySupply extends RoverMission {
 			else if (member instanceof Robot) {
 				Robot robot = (Robot) member;
 				// If robot is not aboard the rover, board rover.
-				Walk walkingTask = Walk.createWalkingTask(robot, adjustedLoc, getVehicle());
+				Walk walkingTask = Walk.createWalkingTask(robot, adjustedLoc, v);
 				if (walkingTask != null) {
 					assignTask(robot, walkingTask);
 				}
@@ -484,10 +488,10 @@ public class EmergencySupply extends RoverMission {
 		if (isEveryoneInRover()) {
 
 			// If the rover is in a garage, put the rover outside.
-			BuildingManager.removeFromGarage(getVehicle());
+			BuildingManager.removeFromGarage(v);
 
 			// Embark from settlement
-			emergencySettlement.removeParkedVehicle(getVehicle());
+			emergencySettlement.removeParkedVehicle(v);
 			setPhaseEnded(true);
 		}
 	}

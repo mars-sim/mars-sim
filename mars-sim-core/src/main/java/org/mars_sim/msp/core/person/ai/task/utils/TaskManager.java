@@ -10,7 +10,6 @@ package org.mars_sim.msp.core.person.ai.task.utils;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.Serializable;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -18,9 +17,11 @@ import java.util.Map.Entry;
 import org.mars_sim.msp.core.SimulationFiles;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.data.SolListDataLogger;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.task.Walk;
+import org.mars_sim.msp.core.person.ai.task.meta.SleepMeta;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -48,28 +49,15 @@ public abstract class TaskManager implements Serializable, Temporal {
 		private String missionName;
 		private String description;
 		private String phase;
-		private int startTime;
+		private double startTime;
 
 
-		public OneActivity(int startTime, String taskName, String description, String phase, String missionName) {
+		public OneActivity(double startTime, String taskName, String description, String phase, String missionName) {
 			this.taskName = taskName;
 			this.missionName = missionName;
 			this.description = description;
 			this.startTime = startTime;
 			this.phase = phase;
-		}
-		
-		/**
-		 * Are these 2 activities equivalent? i.e. are the taskName & phase the same
-		 * @param lastActivity
-		 * @return
-		 */
-		boolean isEquivalent(OneActivity lastActivity) {
-			// Cheat here to save some time.
-			// Do not bother checking the task name since if the description
-			// and phase are the same then it will be the same Task.
-			return (description.equals(lastActivity.description)
-					&& phase.equals(lastActivity.phase));
 		}
 
 		/**
@@ -77,7 +65,7 @@ public abstract class TaskManager implements Serializable, Temporal {
 		 * 
 		 * @return start time
 		 */
-		public int getStartTime() {
+		public double getStartTime() {
 			return startTime;
 		}
 
@@ -155,12 +143,15 @@ public abstract class TaskManager implements Serializable, Temporal {
 	private double msolCache = -1.0;
 	/** The cache for total probability. */
 	protected double totalProbCache;
+	/** The cache for meta tasks and probability. */
 	protected transient Map<MetaTask, Double> taskProbCache;
 
-	// Activity tracking. Keep a handy reference to the last one recorded
+	/** The history of tasks. */
 	private SolListDataLogger<OneActivity> allActivities;
+	
 	private OneActivity lastActivity = null;
-	private int now = -1;
+	private double now = -1;
+	
 
 	protected TaskManager(Unit worker) {
 		this.worker = worker;
@@ -209,7 +200,7 @@ public abstract class TaskManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * Gets the real-time task 
+	 * Gets the bottom-most real-time task. 
 	 * 
 	 * @return
 	 */
@@ -247,7 +238,7 @@ public abstract class TaskManager implements Serializable, Temporal {
 	 */
 	public String getTaskClassName() {
 		if (currentTask != null) {
-			return currentTask.getTaskName();
+			return currentTask.getTaskSimpleName();
 		} else {
 			return "";
 		}
@@ -261,13 +252,9 @@ public abstract class TaskManager implements Serializable, Temporal {
 	 */
 	public String getTaskDescription(boolean subTask) {
 		if (currentTask != null) {
-			String t = currentTask.getDescription(subTask);
-			if (t != null) // || !t.equals(""))
-				return t;
-			else
-				return "";
-		} else
-			return "";
+			return currentTask.getDescription(subTask);
+		}
+		return "None";
 	}
 
 	public String getSubTaskDescription() {
@@ -334,7 +321,7 @@ public abstract class TaskManager implements Serializable, Temporal {
 	}
 
 	public String getLastTaskName() {
-		return (lastTask != null ? lastTask.getTaskName() : "");
+		return (lastTask != null ? lastTask.getTaskSimpleName() : "");
 	}
 
 	public String getLastTaskDescription() {
@@ -425,18 +412,6 @@ public abstract class TaskManager implements Serializable, Temporal {
 	 * Sets the current task to null.
 	 */
 	public void clearAllTasks(String reason) {
-//			String lastTask = (currentTask != null ? currentTask.getDescription() : "Unknown Task");
-//			String subtask1 = getSubTaskDescription();
-//			String subtask2 = getSubTask2Description();
-//			StringBuilder s = new StringBuilder(reason);
-//			s.append(". Clearing task(s): ").append(lastTask);
-//			if (!subtask1.equalsIgnoreCase("")) {
-//				s.append(", ").append(subtask1);
-//				if (!subtask2.equalsIgnoreCase(""))
-//					s.append(", ").append(subtask2);
-//			}
-//			s.append(".");
-//			logger.info(worker, 1_000, s.toString());
 			endCurrentTask();
 		}
 
@@ -504,7 +479,7 @@ public abstract class TaskManager implements Serializable, Temporal {
 	protected boolean useCache() {
 		double msol = marsClock.getMillisol();
 		double diff = msol - msolCache;
-		if (diff > 0.1D) {
+		if (diff > 0.1) {
 			msolCache = msol;
 			return false;
 		}
@@ -524,7 +499,7 @@ public abstract class TaskManager implements Serializable, Temporal {
 	 * to the manager to start working.
 	 */
 	public void startNewTask() {
-		Task result = null;
+		Task selectedTask = null;
 		MetaTask selectedMetaTask = null;
 
 		// If cache is not current, calculate the probabilities.
@@ -533,21 +508,25 @@ public abstract class TaskManager implements Serializable, Temporal {
 		}		
 
 		if (totalProbCache == 0D) {
-			logger.warning(worker, "No normal Tasks available");
+			logger.warning(worker, 20_000, "No normal Tasks available.");
 
 			// Switch to loading non-work hour meta tasks since
 			// leisure tasks are NOT based on needs
-			List<MetaTask> list = MetaTaskUtil.getNonWorkHourMetaTasks();
-			selectedMetaTask = list.get(RandomUtil.getRandomInt(list.size() - 1));
+			if (worker.getUnitType() == UnitType.PERSON) {
+				List<MetaTask> list = MetaTaskUtil.getNonWorkHourMetaTasks();
+				selectedMetaTask = list.get(RandomUtil.getRandomInt(list.size() - 1));
+			}
+			else {
+				logger.severe(worker, 20_000, "Putting on Sleep Mode.");
+				selectedMetaTask = new SleepMeta();
+			}
 		} else if (taskProbCache != null && !taskProbCache.isEmpty()) {
-
+			// Comes up with a random double based on probability
 			double r = RandomUtil.getRandomDouble(totalProbCache);
-
 			// Determine which task is selected.
-			Iterator<MetaTask> it = taskProbCache.keySet().iterator();
-			while ((selectedMetaTask == null) && it.hasNext()) {
-				MetaTask mt = it.next();
-				double probWeight = taskProbCache.get(mt);
+			for (Map.Entry<MetaTask, Double> entry: taskProbCache.entrySet()) {
+				MetaTask mt = entry.getKey();
+				double probWeight = entry.getValue();
 				if (r <= probWeight) {
 					// Select this task
 					selectedMetaTask = mt;
@@ -558,13 +537,14 @@ public abstract class TaskManager implements Serializable, Temporal {
 		}
 
 		if (selectedMetaTask == null) {
-			logger.severe(worker, "Could not determine a new task.");
-		} else {
-			// Call constructInstance of the selected Meta Task to commence the ai task
-			result = createTask(selectedMetaTask);
-			
-			startTask(result);
-		}
+//			logger.severe(worker, 20_000, "Could not determine a new task. Putting on Sleep Mode.");
+			selectedMetaTask = new SleepMeta();
+		} 
+		
+		// Call constructInstance of the selected Meta Task to commence the ai task
+		selectedTask = createTask(selectedMetaTask);
+		// Start this new task
+		startTask(selectedTask);
 
 		// Clear time cache.
 		msolCache = -1;	
@@ -623,11 +603,13 @@ public abstract class TaskManager implements Serializable, Temporal {
 	 * Time has advanced on. This has to carry over the last Activity of yesterday into today.
 	 */
 	public boolean timePassing(ClockPulse pulse) {
-		now = pulse.getMarsTime().getMillisolInt();
+		// Create a timestamp with 1 decimal place
+		now = Math.round(pulse.getMarsTime().getMillisol() * 100.0)/100.0;
 		
 		// New day so the Activity at the end of yesterday has to be carried over to the 1st of today
-		if (pulse.isNewSol() && (lastActivity != null)) {
-			// New activity for the start of the day
+		if (pulse.isNewSol() && lastActivity != null) {
+			// Save the first activity at the start of the day
+			// Note: it could be the previous activity from previous day
 			OneActivity firstActivity = new OneActivity(0,
 											lastActivity.getTaskName(),
 											lastActivity.getDescription(),
@@ -645,12 +627,20 @@ public abstract class TaskManager implements Serializable, Temporal {
 	 * @param mission Associated mission.
 	 */
 	void recordTask(Task changed, String mission) {
-		OneActivity newActivity = new OneActivity(now, changed.getName(false),
-												  changed.getDescription(),
-												  changed.getPhase().getName(), mission);
+		double newStartTime = now;
+		String newDescription = changed.getDescription();
+		String newPhase = changed.getPhase().getName();
 		
-		if ((lastActivity == null) || !newActivity.isEquivalent(lastActivity)) {
-			// Identify the level.
+		if (lastActivity == null 
+				|| !newDescription.equals(lastActivity.description)
+				|| !newPhase.equals(lastActivity.phase)) {
+			
+			OneActivity newActivity = new OneActivity(newStartTime, 
+												changed.getName(false),
+												newDescription,
+												newPhase, 
+												mission);
+
 			allActivities.addData(newActivity);
 			lastActivity = newActivity;
 		}

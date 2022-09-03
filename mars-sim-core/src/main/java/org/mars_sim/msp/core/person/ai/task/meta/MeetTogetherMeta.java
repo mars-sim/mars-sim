@@ -1,14 +1,14 @@
 /*
  * Mars Simulation Project
  * MeetTogetherMeta.java
- * @date 2021-12-17
+ * @date 2022-09-02
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.person.ai.task.MeetTogether;
@@ -21,6 +21,9 @@ import org.mars_sim.msp.core.person.ai.task.utils.Task;
  */
 public class MeetTogetherMeta extends MetaTask {
 
+    /** default logger. */
+//    private static final SimLogger logger = SimLogger.getLogger(MeetTogetherMeta.class.getName());
+	
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.meetTogether"); //$NON-NLS-1$
@@ -57,26 +60,28 @@ public class MeetTogetherMeta extends MetaTask {
 	        boolean isOnShiftNow = person.getTaskSchedule().isShiftHour(now);
 	        
 	        int size = person.getAssociatedSettlement().getIndoorPeopleCount();
-	        result *= Math.sqrt(size)/2.0;
+	        result /= 2 * Math.sqrt(size/8.0);
 	        
 	        if (isOnShiftNow)
-	        	result = result*3D;
+	        	result = result * 10;
 	        
 	        if (result > 0)
 	        	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
 	
 	        // Probability affected by the person's stress and fatigue.
-	        PhysicalCondition condition = person.getPhysicalCondition();
-	        double fatigue = condition.getFatigue();
+	        double fatigue = person.getPhysicalCondition().getFatigue();
 	        
-	        result -= fatigue/75;
+	        result -= fatigue/50;
+	         
+	        if (result < 0) 
+	        	result = 0;
 	        
 	        // Effort-driven task modifier.
 	        result *= person.getPerformanceRating();
-	        
-	        if (result < 0) 
-	        	result = 0;
+	       
         }
+        
+//        if (result > 0) logger.info(person, "probability: " + result);
         
         return result;
     }

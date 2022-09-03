@@ -8,10 +8,10 @@ package org.mars_sim.msp.core.person.ai.task;
 
 import java.io.Serializable;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
@@ -33,7 +33,7 @@ implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static final Logger logger = Logger.getLogger(ListenToMusic.class.getName());
+	private static final SimLogger logger = SimLogger.getLogger(ListenToMusic.class.getName());
 
 	/** Task name */
     private static final String NAME = Msg.getString(
@@ -57,7 +57,7 @@ implements Serializable {
 	 */
 	public ListenToMusic(Person person) {
 		super(NAME, person, false, false, STRESS_MODIFIER, 
-				10D + RandomUtil.getRandomDouble(2.5D) - RandomUtil.getRandomDouble(2.5D));
+				10D + RandomUtil.getRandomDouble(-2.5, 2.5));
 		
 		if (person.isOutside()) {
 			endTask();
@@ -71,76 +71,48 @@ implements Serializable {
 		    setDuration(this.getDuration()/4D);
 		}
 
-		// If person is in a settlement, try to find a place to relax.
-		boolean walkSite = false;
-		
+		// If person is in a settlement, try to find a place to relax.	
 		if (person.isInSettlement()) {
-
 			try {
 				Building rec = BuildingManager.getAvailableRecBuilding(person);
 				if (rec != null) {
 					// Walk to recreation building.
 				    walkToActivitySpotInBuilding(rec, FunctionType.RECREATION, true);
-				    walkSite = true;
 				} else {
                 	// if rec building is not available, go to a gym
                 	Building gym = Workout.getAvailableGym(person);
                 	if (gym != null) {
 	                	walkToActivitySpotInBuilding(gym, FunctionType.EXERCISE, true);
-	                	walkSite = true;
 	                } else {
 						// Go back to his quarters
 						Building quarters = person.getQuarters();
 						if (quarters != null) {
 							walkToBed(quarters, person, true);
-						    walkSite = true;
 		                }
 	                }
 				}
 				
-            	setDescription(Msg.getString("Task.description.listenToMusic"));
-        		
 			} catch (Exception e) {
 				logger.log(Level.SEVERE,"ListenToMusic's constructor(): " + e.getMessage());
 				endTask();
 			}
 		}
 
-		if (!walkSite) {
-		    if (person.isInVehicle()) {
-                if (person.getVehicle() instanceof Rover) {
-                    // If person is in rover, walk to passenger activity spot.
-                    walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), true);
-                    
-            		// Initialize phase
-            		addPhase(FINDING_A_SONG);
-            		addPhase(LISTENING_TO_MUSIC);
-
-            		setPhase(FINDING_A_SONG);
-                }
-            }
-		    else {
-                // Walk to random location.
-                walkToRandomLocation(true);
-                
-        		// Initialize phase
-        		addPhase(FINDING_A_SONG);
-        		addPhase(LISTENING_TO_MUSIC);
-
-        		setPhase(FINDING_A_SONG);
-
-            }
+		else if (person.isInVehicle()
+                && person.getVehicle() instanceof Rover) {
+				// If person is in rover, walk to passenger activity spot.
+				walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), true);
+		}
 		    
-        	setDescription(Msg.getString("Task.description.listenToMusic"));
-		}
-		
-		else {
-    		// Initialize phase
-    		addPhase(FINDING_A_SONG);
-    		addPhase(LISTENING_TO_MUSIC);
-
-    		setPhase(FINDING_A_SONG);
-		}
+        setDescription(Msg.getString("Task.description.listenToMusic"));
+	
+    
+		// Initialize phase
+		addPhase(FINDING_A_SONG);
+		addPhase(LISTENING_TO_MUSIC);
+	
+		setPhase(FINDING_A_SONG);
+	
 	}
 
 	@Override
@@ -168,20 +140,8 @@ implements Serializable {
 	private double listeningPhase(double time) {
 		double remainingTime = 0;
 		
-		if (person.isOutside()) {
-			endTask();
-			return time;
-		}
         // Reduce person's fatigue
-        double fatigue = person.getPhysicalCondition().getFatigue() - (10D * time);
-		if (fatigue < 0D)
-			fatigue = 0D;
-        person.getPhysicalCondition().setFatigue(fatigue);
-        // Reduce person's stress
-        double stress = person.getPhysicalCondition().getStress() - (2.5 * time);
-		if (stress < 0D)
-			stress = 0D;
-        person.getPhysicalCondition().setStress(stress);
+        person.getPhysicalCondition().reduceFatigue(.5 * time);
 
         setDescription(Msg.getString("Task.description.listenToMusic")); //$NON-NLS-1$
         

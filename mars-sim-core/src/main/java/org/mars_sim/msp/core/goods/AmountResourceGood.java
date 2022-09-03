@@ -10,8 +10,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.food.FoodProductionProcess;
@@ -57,17 +57,19 @@ class AmountResourceGood extends Good {
 	private static final double INITIAL_AMOUNT_DEMAND = 0;
 	private static final double INITIAL_AMOUNT_SUPPLY = 0;
 
-	private static final double CH4_VALUE = 0.001;
-	private static final double H2_VALUE = 0.01;
-	private static final double CO_VALUE = 0.000005;
-    private static final double CO2_VALUE = 0.00001;
-	private static final double CL_VALUE = 5.0;
+	private static final double CH4_VALUE = 0.1;
+	private static final double H2_VALUE = 1;
+	private static final double CO_VALUE = 0.05;
+    private static final double CO2_VALUE = 0.0000005;
+	private static final double CL_VALUE = 0.25;
 	private static final double ICE_VALUE = 1.5;
 	private static final double FOOD_VALUE = 0.1;
 	private static final double DERIVED_VALUE = .07;
 	private static final double SOY_VALUE = .05;
-	private static final int CROP_VALUE = 3;
-	private static final double WASTE_WATER_VALUE = .05D;
+	private static final double CROP_VALUE = 5;
+	private static final double WASTE_WATER_VALUE = 1.5;
+	private static final double GREY_WATER_VALUE = 1;
+	private static final double BLACK_WATER_VALUE = .5;
 	private static final double USEFUL_WASTE_VALUE = 1.05D;
 	private static final double ANIMAL_VALUE = .1;
 	private static final double CHEMICAL_VALUE = 0.01;
@@ -84,7 +86,7 @@ class AmountResourceGood extends Good {
 
     private static final double ICE_VALUE_MODIFIER = 5D;
 	private static final double WATER_VALUE_MODIFIER = 1D;
-	private static final double SOIL_VALUE_MODIFIER = .5;
+	private static final double SOIL_VALUE_MODIFIER = 5;
 	private static final double REGOLITH_VALUE_MODIFIER = 25D;
 	private static final double SAND_VALUE_MODIFIER = 5D;
 	private static final double CONCRETE_VALUE_MODIFIER = .5D;
@@ -116,7 +118,11 @@ class AmountResourceGood extends Good {
 	private static final double CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR = 100D;
 	private static final double CONSTRUCTING_INPUT_FACTOR = 2D;
 
-	private static final double LIFE_SUPPORT_MAX = 100;
+	private static final double MAX_RESOURCE_PROCESSING_DEMAND = 3000; 
+	private static final double MAX_MANUFACTURING_DEMAND = 3000;
+	private static final double MAX_FOOD_PRODUCTION_DEMAND = 3000;
+	
+	private static final double LIFE_SUPPORT_MAX = 3000;
 
 	private static final int METEORITE_ID = ResourceUtil.findIDbyAmountResourceName("meteorite");
 
@@ -181,7 +187,7 @@ class AmountResourceGood extends Good {
         }
         
         else if (type == GoodType.WASTE)
-            result += WASTE_VALUE ;
+            result += WASTE_VALUE;
 
 		// TODO Should be a Map GoodType -> double VALUE
         else if (type == GoodType.MEDICAL)
@@ -205,17 +211,17 @@ class AmountResourceGood extends Good {
 //        else
 //            result += STANDARD_AMOUNT_VALUE ;
   
-        else if (ar.getName().equalsIgnoreCase("methane"))
+        else if (ar.getID() == ResourceUtil.methaneID)
             result += CH4_VALUE;
-        else if (ar.getName().equalsIgnoreCase("hydrogen"))
+        else if (ar.getID() == ResourceUtil.hydrogenID)
             result += H2_VALUE;
-        else if (ar.getName().equalsIgnoreCase("chlorine"))
+        else if (ar.getID() == ResourceUtil.chlorineID)
             result += CL_VALUE;
-        else if (ar.getName().equalsIgnoreCase("carbon dioxide"))
+        else if (ar.getID() == ResourceUtil.co2ID)
             result += CO2_VALUE;
-        else if (ar.getName().equalsIgnoreCase("carbon monoxide"))
+        else if (ar.getID() == ResourceUtil.coID)
             result += CO_VALUE;
-        else if (ar.getName().equalsIgnoreCase("ice"))
+        else if (ar.getID() == ResourceUtil.iceID)
             result += ICE_VALUE;
 
         return result;
@@ -340,14 +346,14 @@ class AmountResourceGood extends Good {
 			+ getResourceConstructionDemand(settlement)
 			// Tune construction site demand.
 			+ getResourceConstructionSiteDemand(settlement)
-			// Adjust the demand on various waste products with the disposal cost.
-			+ getWasteDisposalSinkCost()
 			// Adjust the demand on minerals and ores.
 			+ getMineralDemand(owner, settlement);
 		
 		projected = projected
 			// Flatten certain types of demand.
-			* flattenDemand;
+			* flattenDemand
+			// Adjust the demand on various waste products with the disposal cost.
+			* modifyWasteResource();
 			
 		// Add trade value. Cache is always false if this method is called
 		trade = owner.determineTradeDemand(this);
@@ -455,7 +461,7 @@ class AmountResourceGood extends Good {
 			demand += processDemand;
 		}
 
-		return Math.min(2000, demand);
+		return Math.min(MAX_RESOURCE_PROCESSING_DEMAND, demand);
 	}
 
 	/**
@@ -533,7 +539,7 @@ class AmountResourceGood extends Good {
 			}
 		}
 
-		return Math.min(1000, demand);
+		return Math.min(MAX_MANUFACTURING_DEMAND, demand);
 	}
 
 	/**
@@ -554,7 +560,7 @@ class AmountResourceGood extends Good {
 			}
 		}
 
-		return Math.min(1000, demand);
+		return Math.min(MAX_FOOD_PRODUCTION_DEMAND, demand);
 	}
 
 	/**
@@ -1063,7 +1069,7 @@ class AmountResourceGood extends Good {
 	private double capLifeSupportAmountDemand(double demand) {
         int resource = getID();
 
-        // TODO can be calcualted at constructor time
+        // TODO can be calculated at constructor time
 		if (resource == ResourceUtil.foodID
 				|| resource == ResourceUtil.oxygenID || resource == ResourceUtil.waterID 
 				|| resource == ResourceUtil.hydrogenID || resource == ResourceUtil.methaneID)
@@ -1150,54 +1156,54 @@ class AmountResourceGood extends Good {
 	}
 
 	/**
-	 * Adjusts the sink cost for various waste resources.
+	 * Adjusts the demand for waste resources.
 	 *
-	 * TODO This method doesn;t make sense; it will always return zero unless WASTE type
 	 * @return demand (kg)
 	 */
-	private double getWasteDisposalSinkCost() {
+	private double modifyWasteResource() {
 		int resource = getID();
-		double demand = 0;
-		if (resource == ResourceUtil.greyWaterID || resource == ResourceUtil.blackWaterID) {
-			return demand * WASTE_WATER_VALUE;
+
+		if (resource == ResourceUtil.greyWaterID) {
+			return GREY_WATER_VALUE;
 		}
 
+		if (resource == ResourceUtil.blackWaterID) {
+			return BLACK_WATER_VALUE;
+		}
+		
 		if (resource == ResourceUtil.leavesID) {
-			return demand * LEAVES_FACTOR;
+			return LEAVES_FACTOR;
 		}
 
 		if (resource == ResourceUtil.soilID) {
-			return demand / 2D;
-		}
-
-		if (resource == ResourceUtil.coID) {
-			return demand / 2D;
+			return SOIL_VALUE_MODIFIER;
 		}
 
 		if (resource == ResourceUtil.foodWasteID) {
-			return demand / 2D;
+			return 4 * USEFUL_WASTE_VALUE;
 		}
 
+		if (resource == ResourceUtil.solidWasteID) {
+			return .2;
+		}
+		
+		if (resource == ResourceUtil.toxicWasteID) {
+			return .05;
+		}
+		
 		if (resource == ResourceUtil.cropWasteID) {
-			return demand / 2D;
+			return 4 * USEFUL_WASTE_VALUE;
 		}
 
 		if (resource == ResourceUtil.compostID) {
-			return demand / 2D * USEFUL_WASTE_VALUE;
+			return 2 * USEFUL_WASTE_VALUE;
 		}
 
-		if (resource == ResourceUtil.co2ID) {
-			return demand / 2D;
+		if (getGoodType() == GoodType.WASTE) {
+			return WASTE_VALUE;
 		}
-
-		else {
-			if (getGoodType() == GoodType.WASTE) {
-				return WASTE_VALUE;
-			}
-
-		}
-
-		return demand;
+		
+		return 1;
 	}
 
 	/**

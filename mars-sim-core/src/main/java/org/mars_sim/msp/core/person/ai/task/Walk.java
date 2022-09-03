@@ -837,6 +837,8 @@ public class Walk extends Task implements Serializable {
 	private double exitingRoverGaragePhase(double time) {
 
 		double remainingTime = time - minPulseTime;
+		
+		boolean canExit = false;
 
 		WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
 		Rover rover = step.rover;
@@ -844,39 +846,35 @@ public class Walk extends Task implements Serializable {
 
 		setDescription(Msg.getString("Task.description.walk.exitingRoverInGarage")); //$NON-NLS-1$
 
-		if (person != null) {
+		if (person != null
 			// Exit the rover parked inside a garage onto the settlement
-			if (person.isInVehicleInGarage()) {
-
-				if (person.transfer(garageBuilding)) {
+			&& person.isInVehicleInGarage()
+				&& person.transfer(garageBuilding)) {
 					logger.log(person, Level.INFO, 4_000,
 							"Exited rover " + rover.getName()
 							+ " inside " + garageBuilding + ".");
 					endTask();
-					return remainingTime;
-				}
-			}
+					canExit = true;
 		}
 
-		else {
+		else
 			// Exit the rover parked inside a garage onto the settlement
-			if (robot.isInVehicleInGarage()) {
-
-				if (robot.transfer(garageBuilding)) {
+			if (robot.isInVehicleInGarage()
+				&& robot.transfer(garageBuilding)) {
 					logger.log(robot, Level.INFO, 4_000,
 							"Exited rover " + rover.getName()
 							+ " inside " + garageBuilding + ".");
 					endTask();
-					return remainingTime;
-				}
-			}
+					canExit = true;
 		}
 
-		if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
-			walkingStepIndex++;
-			setPhase(getWalkingStepPhase());
-		} else {
-			endTask();
+		if (!canExit) {
+			if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
+				walkingStepIndex++;
+				setPhase(getWalkingStepPhase());
+			} else {
+				endTask();
+			}
 		}
 
 		return remainingTime;

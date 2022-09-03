@@ -1,17 +1,23 @@
 /*
  * Mars Simulation Project
- * LoadCapacityTest.java
- * @date 2021-09-29
+ * LoadEVASuitTest.java
+ * @date 2022-09-01
  * @author Manny Kung
  */
 
 package org.mars_sim.msp.core.person;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.mars_sim.msp.core.InventoryUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.equipment.EquipmentOwner;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.MockSettlement;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.MockBuilding;
@@ -20,14 +26,11 @@ import org.mars_sim.msp.core.structure.building.function.Function;
 import junit.framework.TestCase;
 
 /**
- * Tests the loading capacity of a person
+ * Tests the ability of a person to load resources into an EVA suit.
  */
-public class LoadCapacityTest
+public class LoadEVASuitTest
 extends TestCase {
 
-	// Extra amount to add to resource to handle double arithmetic mismatch
-//	private static final double EXTRA_RESOURCE = 0.01D;
-	
 	private Settlement settlement = null;
 	private UnitManager unitManager;
 	private Person person;
@@ -56,10 +59,7 @@ extends TestCase {
     
 		b1.setWidth(10D);
 		b1.setLength(10D);
-		
-		// Mock building already added. 
-//		settlement.getBuildingManager().addMockBuilding(b1);
-		
+			
 		person = Person.create(name, settlement)
 				.setGender(GenderType.MALE)
 				.setCountry(null)
@@ -69,7 +69,7 @@ extends TestCase {
 				.setAttribute(null)
 				.build();
 				
-		person.initialize();
+		person.initializeForMaven();
 		unitManager.addUnit(person);
 		
 		// Make the person strong to get loading quicker
@@ -78,36 +78,32 @@ extends TestCase {
     }
 
 	/*
-	 * Test if a person can carry an EVA suit.
+	 * Test if a person don an EVA suit and load it with resources.
 	 */
 	public void testLoading() throws Exception {
-//		Map<Integer, Number> requiredResourcesMap = new HashMap<>();
-//		requiredResourcesMap.put(ResourceUtil.oxygenID, 50D);
-//		requiredResourcesMap.put(ResourceUtil.methaneID, 10D);
+		Map<Integer, Number> requiredResourcesMap = new HashMap<>();
+		requiredResourcesMap.put(ResourceUtil.oxygenID, 1D);
+		requiredResourcesMap.put(ResourceUtil.waterID, 4D);
 		
-		EVASuit suit = new EVASuit("EVA Suit 001", settlement);
-//		double mass = suit.getBaseMass();
-//		System.out.println("EVA suit's empty mass: " + mass);
-		unitManager.addUnit(suit);
-		suit.setContainerUnit(person);
+		EVASuit suit0 = new EVASuit("EVA Suit 001", settlement);
+		settlement.addEquipment(suit0);
 		
-//		assertTrue("Suit's Empty Mass", answer);
-		
-//		Inventory inventory1 = person.getInventory();
-//        inventory1.addGeneralCapacity(100D);
-        
-//		boolean answer = inventory1.canStoreUnit(suit, false);
-//		if (answer) 
-//			System.out.println("Can carry an EVA suit.");
-//		assertTrue("Can't carry an EVA suit", answer);
-		
-//		inventory1.addAmountResourceTypeCapacity(ResourceUtil.oxygenID, 50);
-//		inventory1.storeAmountResource(ResourceUtil.oxygenID, 50, false);
-//		
-//		boolean answer1 = inventory1.canStoreUnit(suit, false);
-//		if (answer1) 
-//			System.out.println(name + " can carry 50 kg oxygen and an EVA suit.");
-//		
-//		assertTrue(name + " can't carry 50 kg oxygen and an EVA suit", answer1);	
+		EquipmentOwner housing = (EquipmentOwner)settlement;
+		EVASuit suit = InventoryUtil.getGoodEVASuitNResource(settlement, person);
+		System.out.println("EVA suit's name : " + suit.getName());
+		assertTrue("Wrong EVA suit name.", suit.getName().equals(suit0.getName()));
+		double mass = suit.getBaseMass();
+		System.out.println("EVA suit's empty mass: " + mass);
+		assertTrue("EVA suit's empty mass is NOT correct.", mass == 14.05);
+
+		// 1. Transfer the EVA suit from settlement/vehicle to person
+		suit.transfer(person);
+		// 2. Set the person as the owner
+		suit.setLastOwner(person);
+		// 3. Register the suit the person will take into the airlock to don
+		person.registerSuit(suit);
+		// 4. Loads the resources into the EVA suit
+		assertTrue("Loading resources into EVA suit but NOT fully loaded.", 
+				(suit.loadResources(housing) < 0.9D));
 	}
 }

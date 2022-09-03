@@ -510,7 +510,7 @@ public abstract class RoverMission extends VehicleMission {
 			}
 			else {
 				// See if this person needs an EVA suit
-		        getEVASuit(p, disembarkSettlement);
+				checkEVASuit(p, disembarkSettlement);
 			}
 		}
 
@@ -573,15 +573,21 @@ public abstract class RoverMission extends VehicleMission {
 	 * @param p
 	 * @param disembarkSettlement
 	 */
-	protected void getEVASuit(Person p, Settlement disembarkSettlement) {
+	protected void checkEVASuit(Person p, Settlement disembarkSettlement) {
 		if (p.getSuit() == null && p.isInVehicle()) {
-			// Checks to see if the rover has any EVA suit
-			EVASuit suit = getEVASuit(p);
-			Vehicle v = getVehicle();
 
+			Vehicle v = getVehicle();
+			if (v == null)
+				v = p.getVehicle();
+				
+			EVASuit suit = null;
+			if (v != null)
+				// Checks to see if the rover has any EVA suit
+				suit = getEVASuitFromVehicle(p, v);
+			
 			if (suit == null) {
 
-				logger.warning(p, "Could not find a working EVA suit in " + v + " and needed to wait.");
+				logger.warning(p, 10_000L, "Could not find a working EVA suit in " + v + " and needed to wait.");
 
 				// If the person does not have an EVA suit
 				int availableSuitNum = disembarkSettlement.findNumContainersOfType(EquipmentType.EVA_SUIT);
@@ -604,17 +610,18 @@ public abstract class RoverMission extends VehicleMission {
 
 
 	/**
-	 * Finds a EVA suit in storage. Select one with the most resources already
+	 * Finds a EVA suit in a particular vehicle. Select one with the most resources already
 	 * loaded.
 	 *
 	 * @param person Person needing the suit
+	 * @param vehicle
 	 * @return instance of EVASuit or null if none.
 	 */
-	protected EVASuit getEVASuit(Person p) {
+	protected EVASuit getEVASuitFromVehicle(Person p,  Vehicle v) {
 		EVASuit goodSuit = null;
 		double goodFullness = 0D;
-
-		for (Equipment e : getVehicle().getEquipmentSet()) {
+		
+		for (Equipment e : v.getEquipmentSet()) {
 			if (e.getEquipmentType() == EquipmentType.EVA_SUIT) {
 				EVASuit suit = (EVASuit)e;
 				boolean malfunction = suit.getMalfunctionManager().hasMalfunction();

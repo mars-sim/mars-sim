@@ -306,6 +306,7 @@ public class BuildingConfig implements Serializable {
 				case EXERCISE:
 				case FOOD_PRODUCTION:
 				case LIVING_ACCOMMODATIONS:
+				case PREPARING_DESSERT:
 				case RECREATION:
 					cats.add(BuildingCategory.LIVING);
 					break;
@@ -726,16 +727,11 @@ public class BuildingConfig implements Serializable {
 	}
 
 	/**
-<<<<<<< HEAD
 	 * Get the Function spec from a Building Type.
+	 * 
 	 * @param type Building type
 	 * @param functionType Type of function
-=======
-	 * Gets the number of people supported by an Administration function in a building.
-	 * 
-	 * @param buildingType
 	 * @return
->>>>>>> master
 	 */
 	public FunctionSpec getFunctionSpec(String type, FunctionType functionType) {
 		return getBuildingSpec(type).getFunctionSpec(functionType);

@@ -478,7 +478,9 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 			}
 
 			if (!transferred) {
-				logger.warning(this + " could not be stored into " + destination + ".");
+				logger.warning(this, "Could not be transferred from '"
+						+ cu + " to '" 
+						+ destination + "'.");
 				// NOTE: need to revert back the storage action
 			}
 			else {

@@ -82,8 +82,7 @@ implements Serializable {
 
 		// Initialize data members
 		if (person.isInSettlement()) {
-		    setDescription(Msg.getString(DETAIL_DESCRIPTION, //$NON-NLS-1$
-                    person.getSettlement().getName())); 
+		    setDescription(Msg.getString(TASK_DESCRIPTION_PRODUCE_FOOD)); //$NON-NLS-1$
 	
 			// Get available food production foodFactory if any.
 			Building foodProductionBuilding = getAvailableFoodProductionBuilding(person);
@@ -116,8 +115,7 @@ implements Serializable {
 
 		// Initialize data members
 		if (robot.isInSettlement()) {
-		    setDescription(Msg.getString(DETAIL_DESCRIPTION, //$NON-NLS-1$
-                    robot.getSettlement().getName()));
+		    setDescription(Msg.getString(TASK_DESCRIPTION_PRODUCE_FOOD)); //$NON-NLS-1$
 	
 			// Get available food production foodFactory if any.
 			Building foodProductionBuilding = getAvailableFoodProductionBuilding(robot);
@@ -405,17 +403,23 @@ implements Serializable {
 	}
 
 	public static double getHighestProcessValue(int skillLevel, Building foodProductionBuilding) {
-
+		// This method has 45.5% cpu util
 		double highestProcessValue = 0D;
 		FoodProduction foodProductionFunction = foodProductionBuilding.getFoodProduction();
 		int techLevel = foodProductionFunction.getTechLevel();
 
 		for (FoodProductionProcessInfo process : FoodProductionUtil.getFoodProductionProcessesForTechSkillLevel(
 				techLevel, skillLevel)) {
-			if (FoodProductionUtil.canProcessBeStarted(process, foodProductionFunction) ||
-					isProcessRunning(process, foodProductionFunction)) {
+
+			if (isProcessRunning(process, foodProductionFunction)
+					// This method has 29.2% cpu util
+					||FoodProductionUtil.canProcessBeStarted(process, foodProductionFunction)) {
+				
 				Settlement settlement = foodProductionBuilding.getSettlement();
+				
+				// This method has 16.2% cpu util
 				double processValue = FoodProductionUtil.getFoodProductionProcessValue(process, settlement);
+				
 				if (processValue > highestProcessValue) {
 					highestProcessValue = processValue;
 				}
@@ -530,9 +534,9 @@ implements Serializable {
                     Conversion.capitalize(process.toString())));
 				
 				if (person != null)
-					logger.log(person, Level.INFO, 20_000, "Worked on '" + process.getInfo().getName() + "'.");
-//				else
-//					logger.log(robot, Level.INFO, 100_000, "Worked on '" + process.getInfo().getName() + "'.");
+					logger.log(person, Level.FINE, 30_000, "Worked on '" + process.getInfo().getName() + "'.");
+				else
+					logger.log(robot, Level.FINE, 30_000, "Worked on '" + process.getInfo().getName() + "'.");
 				
 			} else {
 				if (!worker.getAssociatedSettlement().getProcessOverride(OverrideType.FOOD_PRODUCTION)) {

@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Medicbot.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-09-01
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.robot.ai.job;
@@ -14,6 +14,9 @@ import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.PrescribeMedication;
+import org.mars_sim.msp.core.person.ai.task.Sleep;
+import org.mars_sim.msp.core.person.ai.task.Teach;
+import org.mars_sim.msp.core.person.ai.task.TreatMedicalPatient;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -36,7 +39,9 @@ implements Serializable {
 		super(Medicbot.class);
 
 		jobTasks.add(PrescribeMedication.class);
-		//jobTasks.add(TreatMedicalPatient.class);
+		jobTasks.add(TreatMedicalPatient.class);
+		jobTasks.add(Sleep.class);
+		jobTasks.add(Teach.class);
 	}
 
 	/**

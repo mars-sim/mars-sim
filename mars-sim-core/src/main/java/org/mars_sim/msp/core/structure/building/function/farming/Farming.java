@@ -110,7 +110,7 @@ public class Farming extends Function {
 	/** List of crop types in queue */
 	private List<String> cropListInQueue;
 	/** List of crops the greenhouse is currently growing */
-	private List<Crop> crops;
+	private List<Crop> cropList;
 	/** A map of all the crops ever planted in this greenhouse. */
 	private Map<Integer, String> cropHistory;
 	/** The attribute scores map for this greenhouse. */
@@ -147,7 +147,7 @@ public class Farming extends Function {
 		houseKeeping = new HouseKeeping(CLEANING_LIST, INSPECTION_LIST);
 
 		cropListInQueue = new ArrayList<>();
-		crops = new ArrayList<>();
+		cropList = new ArrayList<>();
 		cropHistory = new HashMap<>();
 		dailyWaterUsage = new SolSingleMetricDataLogger(MAX_NUM_SOLS);
 		cropUsage = new HashMap<>();
@@ -167,7 +167,7 @@ public class Farming extends Function {
 			}
 			else {
 				Crop crop = plantACrop(cropType, true, 0);
-				crops.add(crop);
+				cropList.add(crop);
 				cropHistory.put(crop.getIdentifier(), cropType.getName());
 				building.getSettlement().fireUnitUpdate(UnitEventType.CROP_EVENT, crop);
 
@@ -243,19 +243,17 @@ public class Farming extends Function {
 	 * @return
 	 */
 	public String chooseCrop2Extract(double amount) {
-		List<CropSpec> cropList = new ArrayList<>(cropConfig.getCropTypes());
-		Collections.shuffle(cropList);
+		List<CropSpec> list = new ArrayList<>(cropConfig.getCropTypes());
+		Collections.shuffle(list);
 
-		cropList = cropList.stream()
+		list = list.stream()
 				.filter(c -> building.getSettlement()
 				.getAllAmountResourceOwned(c.getCropID()) > amount)
 				.collect(Collectors.toList());
-		
-//		logger.info(cropList.toString());
-		
+			
 		List<AmountResource> tissues = new ArrayList<>();
 		
-		for (CropSpec c: cropList) {
+		for (CropSpec c: list) {
 			String cropName = c.getName();
 			String tissueName = cropName + Farming.TISSUE;
 			AmountResource tissue = ResourceUtil.findAmountResource(tissueName);	
@@ -263,9 +261,7 @@ public class Farming extends Function {
 			if (amountTissue < LOW_AMOUNT_TISSUE_CULTURE)
 				tissues.add(tissue);
 		}
-		
-//		logger.info(tissues.toString());
-		
+	
 		String tissueName = null;
 		double amountTissue = 0;
 		
@@ -398,7 +394,7 @@ public class Farming extends Function {
 	 */
 	private boolean hasTooMany(CropSpec name) {
 		int num = 0;
-		for (Crop c : crops) {
+		for (Crop c : cropList) {
 			if (c.getCropSpec().equals(name))
 				num++;
 		}
@@ -644,7 +640,7 @@ public class Farming extends Function {
 	 * @return true if farm requires work
 	 */
 	public boolean requiresWork() {
-		for (Crop c : crops) {
+		for (Crop c : cropList) {
 			if (c.requiresWork()) {
 				return true;
 			}
@@ -682,7 +678,7 @@ public class Farming extends Function {
 	public Crop getNeedyCrop() {
 		Crop currentCrop = needyCropCache;
 		
-		if (crops == null || crops.isEmpty())
+		if (cropList == null || cropList.isEmpty())
 			return null;
 
 		int rand = RandomUtil.getRandomInt(3);
@@ -692,7 +688,7 @@ public class Farming extends Function {
 			double mostWork = 0; 
 			
 			// Pick the crop that requires most work
-			for (Crop c : crops) {
+			for (Crop c : cropList) {
 				if (c.requiresWork() && c.getCurrentWorkRequired() > mostWork) {
 					mostNeedyCrop = c;
 					mostWork = c.getCurrentWorkRequired();
@@ -713,7 +709,7 @@ public class Farming extends Function {
 			
 			// Pick another crop that requires work
 			List<Crop> needyCrops = new ArrayList<>();
-			for (Crop c : crops) {
+			for (Crop c : cropList) {
 				if (c.requiresWork()) {
 					needyCrops.add(c);
 				}
@@ -784,7 +780,7 @@ public class Farming extends Function {
 				}
 
 				// Reset cumulativeDailyPAR
-				for (Crop c : crops)
+				for (Crop c : cropList)
 					c.resetPAR();
 				// Note: will need to limit the size of the other usage maps
 			}
@@ -810,7 +806,7 @@ public class Farming extends Function {
 
 			// Call timePassing on each crop.
 			List<Crop> toRemove = new ArrayList<>();
-			for(Crop crop : crops) {
+			for(Crop crop : cropList) {
 
 				try {
 					crop.timePassing(pulse, productionLevel, solarIrradiance,
@@ -830,7 +826,7 @@ public class Farming extends Function {
 			}
 
 			// Remove finished crops
-			crops.removeAll(toRemove);
+			cropList.removeAll(toRemove);
 		}
 		return valid;
 	}
@@ -843,10 +839,10 @@ public class Farming extends Function {
 	 * @param worker
 	 * @return Crop
 	 */
-	public Crop transferSeedling(double time, Worker worker) {
+	public CropSpec selectSeedling() {
+		CropSpec ct = null;
 		// Add any new crops.
 		for (int x = 0; x < numCrops2Plant; x++) {
-			CropSpec ct;
 			int size = cropListInQueue.size();
 			if (size > 0) {
 				String n = cropListInQueue.get(0);
@@ -857,19 +853,18 @@ public class Farming extends Function {
 			else {
 				ct = selectVPCrop();
 			}
-
-			if (ct != null) {
-				Crop crop = plantACrop(ct, false, 0);
-				crops.add(crop);
-				cropHistory.put(crop.getIdentifier(), crop.getCropName());
-				building.fireUnitUpdate(UnitEventType.CROP_EVENT, crop);
-
-				logger.log(building, worker, Level.INFO, 3_000, "Planted a new crop of " + crop.getCropName() + ".");
-				numCrops2Plant--;
-				return crop;
-			}
 		}
-		return null;
+		return ct;
+	}
+	
+	public void plantSeedling(CropSpec ct, double time, Worker worker) {
+		Crop crop = plantACrop(ct, false, 0);
+		cropList.add(crop);
+		cropHistory.put(crop.getIdentifier(), crop.getCropName());
+		building.fireUnitUpdate(UnitEventType.CROP_EVENT, crop);
+
+		logger.log(building, worker, Level.INFO, 3_000, "Planted a new crop of " + crop.getCropName() + ".");
+		numCrops2Plant--;
 	}
 
 	/**
@@ -882,7 +877,7 @@ public class Farming extends Function {
 		// Power (kW) required for normal operations.
 		double powerRequired = 0D;
 
-		for (Crop crop : crops) {
+		for (Crop crop : cropList) {
 			// Tailor the lighting according to the phase type the crop is at
 			if (crop.getPhaseType() == PhaseType.PLANTING 
 					|| crop.getPhaseType() == PhaseType.INCUBATION)
@@ -913,7 +908,7 @@ public class Farming extends Function {
 	 * @return power (kW)
 	 */
 	public double getTotalLightingPower() {
-		return crops.stream().mapToDouble(Crop::getLightingPower).sum();
+		return cropList.stream().mapToDouble(Crop::getLightingPower).sum();
 	}
 
 	/**
@@ -928,7 +923,7 @@ public class Farming extends Function {
 		double powerRequired = 0D;
 
 		// Add power required to sustain growing or harvest-ready crops.
-		for (Crop crop : crops) {
+		for (Crop crop : cropList) {
 			if (crop.needsPower())
 				powerRequired += powerSustainingCrop;
 		}
@@ -1034,7 +1029,7 @@ public class Farming extends Function {
 	 * @return collection of crops
 	 */
 	public List<Crop> getCrops() {
-		return crops;
+		return cropList;
 	}
 
 	public List<String> getUninspected() {
@@ -1094,7 +1089,7 @@ public class Farming extends Function {
 		// Note: the value is kg per square meter per sol
 		double sum = 0;
 
-		for (Crop c : crops) {
+		for (Crop c : cropList) {
 			sum += computeUsage(type, c.getCropName());
 		}
 		
@@ -1139,7 +1134,7 @@ public class Farming extends Function {
 	public int getNumNeedTending() {
 
 		int cropsNeedingTending = 0;
-		for (Crop c : crops) {
+		for (Crop c : cropList) {
 			if (c.requiresWork()) {
 				cropsNeedingTending++;
 			}
@@ -1160,7 +1155,7 @@ public class Farming extends Function {
 	 */
 	public double getTendingNeed() {
 		double need = 0;
-		for (Crop c : crops) {
+		for (Crop c : cropList) {
 			need += c.getCurrentWorkRequired();
 		}
 		return need;
@@ -1190,6 +1185,6 @@ public class Farming extends Function {
 	
 		lab = null;
 		cropListInQueue = null;
-		crops = null;
+		cropList = null;
 	}
 }

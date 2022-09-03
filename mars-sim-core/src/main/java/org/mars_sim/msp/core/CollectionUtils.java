@@ -11,7 +11,6 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.stream.Collectors;
 
@@ -30,13 +29,17 @@ public class CollectionUtils {
 	private static UnitManager unitManager = Simulation.instance().getUnitManager();
 	private static SimulationConfig simulationConfig = SimulationConfig.instance();
 
+	private CollectionUtils() {
+		// nothing
+	}
+	
 	public static Collection<Equipment> getEquipment(
 		Collection<Unit> units
 	) {
 		return units
 				.stream()
-				.filter(u -> u instanceof Equipment)
-				.map(u -> (Equipment) u)
+				.filter(u -> UnitType.EQUIPMENT == u.getUnitType())
+				.map(Equipment.class::cast)
 				.filter(u -> !u.isSalvaged())
 				.collect(Collectors.toList());
 	}
@@ -46,19 +49,11 @@ public class CollectionUtils {
 		Collection<Unit> units
 	) {
 
-//		return units
-//				.stream()
-//				.filter(u-> u instanceof Robot)
-//				.map(u -> (Robot) u)
-//				.collect(Collectors.toList());
-
-		ConcurrentLinkedQueue<Robot> robots = new ConcurrentLinkedQueue<Robot>();
-		for (Unit unit : units) {
-			if (unit instanceof Robot)
-				robots.add((Robot) unit);
-		}
-		return robots;
-
+		return units
+				.stream()
+				.filter(u-> UnitType.ROBOT == u.getUnitType())
+				.map(Robot.class::cast)
+				.collect(Collectors.toList());
 	}
 
 	/**
@@ -169,8 +164,8 @@ public class CollectionUtils {
 	public static <T extends Unit> Collection<T> sortByName(
 		Collection<T> collection
 	) {
-		ConcurrentSkipListSet<T> sorted = new ConcurrentSkipListSet<T>(
-			new Comparator<T>() {
+		ConcurrentSkipListSet<T> sorted = new ConcurrentSkipListSet<>(
+			new Comparator<>() {
 				@Override
 				public int compare(T o1, T o2) {
 					return o1.getName().compareToIgnoreCase(o2.getName());
@@ -190,7 +185,7 @@ public class CollectionUtils {
 	 */
 	public static List<Person> getPeopleToDisplay(Settlement settlement) {
 
-		List<Person> result = new ArrayList<Person>();
+		List<Person> result = new ArrayList<>();
 
 		if (settlement != null) {
 			Iterator<Person> i = unitManager.getPeople().iterator();

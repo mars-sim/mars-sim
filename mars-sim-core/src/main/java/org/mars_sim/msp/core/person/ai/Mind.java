@@ -126,32 +126,25 @@ public class Mind implements Serializable, Temporal {
 
 		int msol = pulse.getMarsTime().getMillisolInt();
 		if (msol % STRESS_UPDATE_CYCLE == 0) {
-
 			// Update stress based on personality.
 			mbti.updateStress(pulse.getElapsed());
-
 			// Update emotion
 			updateEmotion();
-
 			// Update relationships.
 			RelationshipUtil.timePassing(person, pulse.getElapsed());
 		}
 
-		// Note : for now a Mayor/Manager cannot switch job
-		if (job == JobType.POLITICIAN) {
-			jobLock = true;
-			return true;
-		}
-		
-		if (jobLock) {
+		// Note : for now, a Mayor/Manager cannot switch job
+		if (jobLock && job != JobType.POLITICIAN) {
 			// check for the passing of each day
 			if (pulse.isNewSol()) {
-				// Note: for non-manager, the new job needs to be locked in until 
-				// the beginning of the next sol
+				// Note: for non-managerial position, the new job needs to be locked in
+				// (i.e. no change allowed) until the beginning of the next sol
 				jobLock = false;
 			}
 		} else if (job == null) {
-			 getAJob(false, JobUtil.SETTLEMENT);
+			// Assign a new job but do not bypass jobLock
+			getAJob(false, JobUtil.SETTLEMENT);
 		}
 
 		return true;
@@ -160,6 +153,7 @@ public class Mind implements Serializable, Temporal {
 	/**
 	 * Assigns a job, either at the start of the sim or later.
 	 *
+	 * @param bypassingJobLock 
 	 * @param assignedBy the authority that assigns the job
 	 */
 	public void getAJob(boolean bypassingJobLock, String assignedBy) {

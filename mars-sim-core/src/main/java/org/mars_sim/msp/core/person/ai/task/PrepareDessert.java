@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * PrepareDessert.java
- * @date 2021-08-29
+ * @date 2022-09-02
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -47,7 +47,9 @@ public class PrepareDessert extends Task implements Serializable {
 	// Static members
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = -.2D;
-
+	/** The meal preparation time. */
+	public static final int PREP_TIME = 5;
+	
 	// Data members
 	/** The kitchen the person is making dessert. */
 	private PreparingDessert kitchen;
@@ -85,18 +87,11 @@ public class PrepareDessert extends Task implements Serializable {
 		boolean enoughDessert = kitchen.getMakeNoMoreDessert();
 
 		if (isAvailable && !enoughDessert) {
-			// Set the chef name at the kitchen.
-			// kitchen.setChef(person.getName());
+			// Set the chef name at the kitchen kitchen.setChef(person.getName())
 
 			// Add task phase
 			addPhase(PREPARING_DESSERT);
 			setPhase(PREPARING_DESSERT);
-			// String jobName = person.getMind().getJob().getName(person.getGender());
-
-			// String newLog = jobName + " " + person.getName() + " prepared desserts in " +
-			// kitchen.getBuilding().getNickName() +
-			// " at " + person.getSettlement();
-			// LogConsolidated.log(logger, Level.INFO, 5000, sourceName, newLog, null);
 		} else {
 			// No dessert available or enough desserts have been prepared for now.
 			endTask();
@@ -146,32 +141,21 @@ public class PrepareDessert extends Task implements Serializable {
 			return time;
 		}
 
-		// Add this work to the kitchen.
-		String nameOfDessert = null;
-		double workTime = time;
-
-		// If meal time is over, end task.
-		if (!CookMeal.isLocalMealTime(worker.getCoordinates(), 10)) {
-			logger.log(worker, Level.FINE, 0, "ended preparing desserts : meal time was over.");
-			endTask();
-			return time;
-		}
-
 		// If enough desserts have been prepared for this meal time, end task.
 		if (kitchen.getMakeNoMoreDessert()) {
 			logger.log(worker, Level.FINE, 0, "ended preparing desserts : enough desserts prepared.");
 			endTask();
-			return time;
+			return time * .75;
 		}
+
+		String nameOfDessert = null;
+		double workTime = time;
 
 		if (worker instanceof Robot) {
 			// A robot moves slower than a person and incurs penalty on workTime
 			workTime = time / 2;
 		}
 		
-		// Add this work to the kitchen.
-		nameOfDessert = kitchen.addWork(workTime, worker);
-
 		// Determine amount of effective work time based on Cooking skill.
 		int dessertMakingSkill = getEffectiveSkillLevel();
 		if (dessertMakingSkill == 0) {
@@ -182,18 +166,20 @@ public class PrepareDessert extends Task implements Serializable {
 			workTime += workTime * (.2D * (double) dessertMakingSkill);
 		}
 
-		if (nameOfDessert != null)
-			setDescription(Msg.getString("Task.description.prepareDessert.detail.finish", nameOfDessert)); // $NON-NLS-1$
-		else {
-			endTask();
-			return time;
-		}
+		// Add workTime in the kitchen.
+		nameOfDessert = kitchen.addWork(workTime, worker);
 
 		// Add experience
 		addExperience(time);
 
 		// Check for accident in kitchen.
 		checkForAccident(kitchen.getBuilding(), time, 0.005D);
+		
+		if (nameOfDessert != null) {
+			// if nameOfDessert is done
+			setDescription(Msg.getString("Task.description.prepareDessert.detail.finish", nameOfDessert)); // $NON-NLS-1$
+			endTask();
+		}
 
 		return 0D;
 	}

@@ -24,7 +24,7 @@ import org.mars_sim.msp.core.person.ai.task.meta.DigLocalIceMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.DigLocalRegolithMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.EatDrinkMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.ExamineBodyMeta;
-import org.mars_sim.msp.core.person.ai.task.meta.HaveConversationMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.ConversationMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.InviteStudyCollaboratorMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.ListenToMusicMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.LoadVehicleEVAMeta;
@@ -123,7 +123,7 @@ public class MetaTaskUtil {
 		allMetaTasks.add(new DigLocalRegolithMeta());
 		allMetaTasks.add(new EatDrinkMeta());
 		allMetaTasks.add(new ExamineBodyMeta());
-		allMetaTasks.add(new HaveConversationMeta());
+		allMetaTasks.add(new ConversationMeta());
 		allMetaTasks.add(new InviteStudyCollaboratorMeta());
 		allMetaTasks.add(new ListenToMusicMeta());
 		allMetaTasks.add(new LoadVehicleEVAMeta());
@@ -199,7 +199,7 @@ public class MetaTaskUtil {
 		List<MetaTask> anyHourMetaTasks = allMetaTasks.stream()
 				.filter(m -> m.getScope() == TaskScope.ANY_HOUR)
 				.collect(Collectors.toList());
-		List<MetaTask> tasks = new ArrayList<MetaTask>();
+		List<MetaTask> tasks = new ArrayList<>();
 		tasks.addAll(anyHourMetaTasks);
 		tasks.addAll(workHourMetaTasks);
 		dutyHourTasks = Collections.unmodifiableList(tasks);

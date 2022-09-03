@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingCategory;
+import org.mars_sim.msp.core.structure.building.function.RoboticStation;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
@@ -26,14 +27,12 @@ import org.mars_sim.msp.core.tool.RandomUtil;
  */
 public class SleepMeta extends MetaTask {
 
-	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(SleepMeta.class.getName());
 
-	private static final double MAX = 1000;
-	
     /** Task name */
     private static final String NAME = Msg.getString("Task.description.sleep"); //$NON-NLS-1$
 		
+	private static final double MAX = 1000;
     
     public SleepMeta() {
 		super(NAME, WorkerType.BOTH, TaskScope.ANY_HOUR);
@@ -69,8 +68,6 @@ public class SleepMeta extends MetaTask {
     	// Note : each millisol generates 1 fatigue point
     	// 500 millisols is ~12 hours
 
-       // boolean isOnCall = ts.getShiftType() == ShiftType.ON_CALL;
-        
         double fatigue = pc.getFatigue();
     	double stress = pc.getStress();
     	double ghrelinS = circadian.getSurplusGhrelin();
@@ -87,14 +84,14 @@ public class SleepMeta extends MetaTask {
     	
     	// 1000 millisols is 24 hours, if a person hasn't slept for 24 hours,
         // he is supposed to want to sleep right away.
-    	// Note:  sleep deprivation increases ghrelin levels, while at the same time 
+    	// Note: sleep deprivation increases ghrelin levels, while at the same time 
     	// lowers leptin levels in the blood.
-    	if (fatigue > 300 || stress > 50 || ghrelinS > 0 || leptinS == 0) {
+    	// Take a break from sleep if it's too hungry and too low energy
+    	if (fatigue > 200 && hunger < 1000 && energy > 3000 
+    			&& (stress > 50 || ghrelinS > 0 || leptinS == 0)) {
     		
         	int rand = RandomUtil.getRandomInt(1);
-        	// Take a break from sleep if it's too hungry and too low energy
-            proceed = rand != 1 || (!(hunger > 667) && !(energy < 1000));
-//    		logger.info(person + "  ghrelin: " + ghrelin + "  leptin:" + leptin);
+            proceed = rand != 1 ;
     	}
     	
         if (proceed) {
@@ -138,17 +135,22 @@ public class SleepMeta extends MetaTask {
                 result *= 2D;
             }
 
-            if (person.getShiftType() == ShiftType.ON_CALL)
-            	result = result * 10;
+            boolean isOnCall = (person.getShiftType() == ShiftType.ON_CALL);
+            
+            if (isOnCall)
+            	// Note: For on-call personnel, there is no longer a definite sleep 
+            	// pattern, recommend resting as much as possible to get ready 
+            	// when duties call.
+            	result = result * 100;
             
             else if (person.getTaskSchedule().isShiftHour(marsClock.getMillisolInt())) {
          	   // Reduce the probability of sleep
-               result = result / 10D;
+               result = result / 100D;
             }
 
         	int maxNumSleep = 0;
 
-        	if (person.getTaskSchedule().getShiftType() == ShiftType.ON_CALL)
+        	if (isOnCall)
             	maxNumSleep = 8;
             else
             	maxNumSleep = 4;
@@ -167,8 +169,7 @@ public class SleepMeta extends MetaTask {
         else {
         	// if process is false
         	
-	        // Reduce the probability if it's not the right time to sleep
-//	    	refreshSleepHabit(person);  
+	        // Reduce the probability if it's not the right time to sleep refreshSleepHabit(person)
        }
 
         return result;
@@ -209,16 +210,25 @@ public class SleepMeta extends MetaTask {
         		result += (1.0 - level) * MAX;
         	}
         	else
-        		result += (1.0 - level) * 20;
-        		
+        		result += (1.0 - level) * 50;
+        	
+        	Building currentBldg = robot.getBuildingLocation();
+        	
+			RoboticStation station = currentBldg.getRoboticStation();
+			if (station.getSleepers() < station.getSlots()) {
+				// This is a good building to sleep and charge up
+				result *= 10;
+				return result;
+			}
+        	
             Building building = Sleep.getAvailableRoboticStationBuilding(robot);
             if (building != null) {
-//            	logger.info(robot, building + " has empty slot.");
+            	// has empty slot
+            	result *= 5;
             }
-            else
-            	result = 0;
             
-//    		logger.info(robot, "level: " + level + "  prob: " + result);
+            if (result <= 0)
+            	logger.info(robot, "level: " + level + "  prob: " + result);
         }
 
         return result;

@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * Architect.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-09-01
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.robot.ai.job;
@@ -10,6 +10,8 @@ import java.io.Serializable;
 
 import org.mars_sim.msp.core.person.ai.task.ConsolidateContainers;
 import org.mars_sim.msp.core.person.ai.task.ManufactureConstructionMaterials;
+import org.mars_sim.msp.core.person.ai.task.Sleep;
+import org.mars_sim.msp.core.person.ai.task.Teach;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 
@@ -36,7 +38,8 @@ implements Serializable {
 		//jobTasks.add(ConstructBuilding.class); //determine to what extend the walking bug is affecting the outdoor portion of this task
 		//jobTasks.add(SalvageBuilding.class); //determine to what extend the walking bug is affecting the outdoor portion of this task
         jobTasks.add(ConsolidateContainers.class); //determine to what extend the walking bug is affecting the outdoor portion of this task
-
+		jobTasks.add(Sleep.class);
+		jobTasks.add(Teach.class);
 
 		// Add architect-related missions.
 		//jobMissionStarts.add(BuildingConstructionMission.class);

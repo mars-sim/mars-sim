@@ -166,4 +166,14 @@ public class BuildingPanelMalfunctionable extends BuildingFunctionPanel {
 
 		return result;
 	}
+	
+	/**
+	 * Prepares object for garbage collection.
+	 */
+	public void destroy() {
+		malfunctionable = null;
+		malfunctionPanels = null;
+		malfunctions = null;
+		malfunctionListPanel = null;
+	}
 }

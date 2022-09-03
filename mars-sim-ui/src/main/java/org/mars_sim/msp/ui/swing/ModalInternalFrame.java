@@ -12,7 +12,6 @@ import java.awt.ActiveEvent;
 import java.awt.Component;
 import java.awt.EventQueue;
 import java.awt.MenuComponent;
-import java.awt.event.MouseEvent;
 import java.util.logging.Logger;
 
 import javax.swing.JInternalFrame;

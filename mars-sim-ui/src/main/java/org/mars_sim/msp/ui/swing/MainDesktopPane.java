@@ -206,16 +206,15 @@ public class MainDesktopPane extends JDesktopPane
 
 		ImageIcon baseImageIcon = ImageLoader.getIcon(Msg.getString("img.background")); //$NON-NLS-1$
 		
-		Dimension screen_size = mainWindow.getFrame().getSize();
+		Dimension screenSize = mainWindow.getSelectedSize();
+//		logger.config("Main Window's selected size is " + screenSize.width + " x " + screenSize.height);
 		
-		if (screen_size == null || (int) screen_size.getWidth() == 0 || (int) screen_size.getHeight() == 0) {
-			screen_size = Toolkit.getDefaultToolkit().getScreenSize();
-//			logger.config("Current toolkit screen size is " + screen_size.width + " x " + screen_size.height);
+		if (screenSize == null || screenSize.width == 0 || screenSize.height == 0) {
+			screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+			logger.config("Toolkit default screen size is " + screenSize.width + " x " + screenSize.height);
 		}
-//		else
-//			logger.config("Current main window frame is " + screen_size.width + " x " + screen_size.height);
-		
-		Image backgroundImage = createImage((int) screen_size.getWidth(), (int) screen_size.getHeight());
+	
+		Image backgroundImage = createImage(screenSize.width, screenSize.height);
 		Graphics backgroundGraphics = backgroundImage.getGraphics();
 
 		for (int x = 0; x < backgroundImage.getWidth(this); x += baseImageIcon.getIconWidth()) {
@@ -225,11 +224,8 @@ public class MainDesktopPane extends JDesktopPane
 		}
 
 		backgroundImageIcon.setImage(backgroundImage);
-
-
 		// Set the backgroundLabel size to the size of the desktop
 		backgroundLabel.setSize(getSize());
-
 	}
 
 	// Additional Component Listener methods implemented but not used.

@@ -1,7 +1,7 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <template xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="settlement.xsd"
     name="Trading Outpost" default-population="4" description="Base for a trading outpost"
-    number-of-robots="3" sponsor="MS">
+    number-of-robots="4" sponsor="MS">
     
     <building id="0" type="Outpost Hub" xloc="0.0" yloc="0.0"
         facing="0.0">
