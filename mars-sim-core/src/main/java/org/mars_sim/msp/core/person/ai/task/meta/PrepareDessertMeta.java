@@ -29,6 +29,8 @@ public class PrepareDessertMeta extends MetaTask {
     private static final String NAME = Msg.getString(
             "Task.description.prepareDessertMeta"); //$NON-NLS-1$
 
+    private static final double VALUE = 50;
+    
     public PrepareDessertMeta() {
 		super(NAME, WorkerType.BOTH, TaskScope.ANY_HOUR);
 		
@@ -77,13 +79,13 @@ public class PrepareDessertMeta extends MetaTask {
 
                 if ((numGoodRecipes > 0) && !enoughMeals) {
 
-                    result = numGoodRecipes * 100;
+                    result = numGoodRecipes * VALUE;
 
                     // Crowding modifier.
                     result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, kitchenBuilding);
                     result *= TaskProbabilityUtil.getRelationshipModifier(person, kitchenBuilding);
 
-                    result = 10 * applyPersonModifier(result, person);
+                    result = applyPersonModifier(result, person);
                 }
             }
         }
@@ -114,7 +116,7 @@ public class PrepareDessertMeta extends MetaTask {
 
                if ((numGoodRecipes > 0) && !enoughMeals) {
 
-            	   result = numGoodRecipes * 200;
+            	   result = numGoodRecipes * VALUE;
 
                    // Crowding modifier.
                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(robot, kitchenBuilding);

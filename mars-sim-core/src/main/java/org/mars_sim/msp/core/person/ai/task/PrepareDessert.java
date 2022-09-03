@@ -141,32 +141,28 @@ public class PrepareDessert extends Task implements Serializable {
 			return time;
 		}
 
-		// Add this work to the kitchen.
-		String nameOfDessert = null;
-		double workTime = time;
-
 		// If meal time is over, end task.
-		if (!CookMeal.isLocalMealTime(worker.getCoordinates(), PREP_TIME)) {
-			logger.log(worker, Level.FINE, 0, "ended preparing desserts : meal time was over.");
-			endTask();
-			return time;
-		}
+//		if (!CookMeal.isLocalMealTime(worker.getCoordinates(), PREP_TIME)) {
+//			logger.log(worker, Level.FINE, 0, "ended preparing desserts : meal time was over.");
+//			endTask();
+//			return time;
+//		}
 
 		// If enough desserts have been prepared for this meal time, end task.
 		if (kitchen.getMakeNoMoreDessert()) {
 			logger.log(worker, Level.FINE, 0, "ended preparing desserts : enough desserts prepared.");
 			endTask();
-			return time;
+			return time * .75;
 		}
+
+		String nameOfDessert = null;
+		double workTime = time;
 
 		if (worker instanceof Robot) {
 			// A robot moves slower than a person and incurs penalty on workTime
 			workTime = time / 2;
 		}
 		
-		// Add this work to the kitchen.
-		nameOfDessert = kitchen.addWork(workTime, worker);
-
 		// Determine amount of effective work time based on Cooking skill.
 		int dessertMakingSkill = getEffectiveSkillLevel();
 		if (dessertMakingSkill == 0) {
@@ -177,18 +173,20 @@ public class PrepareDessert extends Task implements Serializable {
 			workTime += workTime * (.2D * (double) dessertMakingSkill);
 		}
 
-		if (nameOfDessert != null)
-			setDescription(Msg.getString("Task.description.prepareDessert.detail.finish", nameOfDessert)); // $NON-NLS-1$
-		else {
-			endTask();
-			return time;
-		}
+		// Add workTime in the kitchen.
+		nameOfDessert = kitchen.addWork(workTime, worker);
 
 		// Add experience
 		addExperience(time);
 
 		// Check for accident in kitchen.
 		checkForAccident(kitchen.getBuilding(), time, 0.005D);
+		
+		if (nameOfDessert != null) {
+			// if nameOfDessert is done
+			setDescription(Msg.getString("Task.description.prepareDessert.detail.finish", nameOfDessert)); // $NON-NLS-1$
+			endTask();
+		}
 
 		return 0D;
 	}

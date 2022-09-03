@@ -469,6 +469,8 @@ public class PreparingDessert extends Function {
 	 * skill.
 	 * 
 	 * @param workTime work time (millisols)
+	 * @param worker
+	 * @return
 	 */
 	public String addWork(double workTime, Worker worker) {
 		String selectedDessert = null;
