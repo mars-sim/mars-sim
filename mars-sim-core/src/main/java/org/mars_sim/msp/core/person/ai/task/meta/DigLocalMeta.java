@@ -46,13 +46,7 @@ public abstract class DigLocalMeta extends MetaTask {
      * @param collectionProbability
      * @return
      */
-    protected double getProbability(int resourceId, Settlement settlement, Person person, double collectionProbability) {
-    	String resource = "";
-    	if (resourceId == ResourceUtil.regolithID)
-    		resource = "Regolith";
-    	else
-    		resource = "Ice";
-    	
+    protected double getProbability(int resourceId, Settlement settlement, Person person, double collectionProbability) {	
     	// Will not perform this task if he has a mission
     	if ((person.getMission() != null) || !person.isInSettlement()) {
     		return 0;
@@ -63,9 +57,7 @@ public abstract class DigLocalMeta extends MetaTask {
     	// Check if an airlock is available
 //        if (!settlement.isAirlockAvailable(person, false))
 //    		return 0;
-
-        logger.info(person, "A. DigLocalMeta: " + resource + " " + result);
-        
+     
         //Checked for radiation events
     	boolean[] exposed = settlement.getExposed();
 
@@ -73,37 +65,27 @@ public abstract class DigLocalMeta extends MetaTask {
 			// SEP can give lethal dose of radiation
             return 0;
 		}
-
-        logger.info(person, "B. DigLocalMeta: " + resource + " " + result);
-        
+      
         // Checks if the person is physically fit for heavy EVA tasks
 		if (!EVAOperation.isEVAFit(person))
 			return 0;
-		
-        logger.info(person, "C. DigLocalMeta: " + resource + " " + result);
 
         // Check at least one EVA suit at settlement.
         int numSuits = settlement.findNumContainersOfType(EquipmentType.EVA_SUIT);
         if (numSuits == 0) {
             return 0;
         }
-	
-        logger.info(person, "D. DigLocalMeta: " + resource + " " + result);
-      
+    
         // Check if at least one empty bag at settlement.
         int numEmptyBags = settlement.findNumContainersOfType(containerType);
         if (numEmptyBags == 0) {
             return 0;
         }
 
-        logger.info(person, "E. DigLocalMeta: " + resource + " " + result);
-
         // Checks if the person's settlement is at meal time and is hungry
         if (EVAOperation.isHungryAtMealTime(person))
         	result = .2;
         
-        logger.info(person, "F. DigLocalMeta: " + resource + " " + result);
-
         // Probability affected by the person's stress and fatigue.
         PhysicalCondition condition = person.getPhysicalCondition();
         
@@ -115,9 +97,7 @@ public abstract class DigLocalMeta extends MetaTask {
         	result = collectionProbability * VALUE;
         else
         	result *= collectionProbability * VALUE;
-        
-        logger.info(person, "1 DigLocalMeta: " + resource + " " + result);
-        
+                
         if (result > MAX)
         	result = MAX;
 
@@ -137,9 +117,8 @@ public abstract class DigLocalMeta extends MetaTask {
         // Effect of population. The smaller the population, the more they are motivated to dig.
         if (citizen <= 24)
             // Adds effect of the # of citizen 
-        	result *= (25 - citizen) * 1.2;
-        logger.info(person, "2 DigLocalMeta: " + resource + " " + result);
-        
+        	result *= Math.max(1, (32 - citizen) * 1.5);
+     
         // Effect of the ratio of # indoor people vs. those outside already doing EVA 
         result *= (1.0 + indoor) / (1 + settlement.getNumOutsideEVA());
         
@@ -147,16 +126,13 @@ public abstract class DigLocalMeta extends MetaTask {
         // shiftBonus will have a minimum of 10
         double shiftBonus = person.getTaskSchedule().obtainScoreAtStartOfShift();
         // Encourage to get this task done early in a work shift
-        result *= shiftBonus / 10;
-        logger.info(person, "3 DigLocalMeta: " + resource + " " + result);
+        result *= shiftBonus;
+
         // Effect of the amount of sunlight that influences the probability of starting this task
         double sunlight = surfaceFeatures.getSunlightRatio(settlement.getCoordinates());
         // The higher the sunlight (0 to 1, 1 being the highest) 
-//        if (sunlight > 0.01) {
-        	result *= Math.max(.01, sunlight * 10);
-//        }
-            logger.info(person, "4 DigLocalMeta: " + resource + " " + result);
-            
+        result *= Math.max(.01, sunlight * 10);
+     
         if (result <= 0)
             return 0;
 
@@ -175,7 +151,6 @@ public abstract class DigLocalMeta extends MetaTask {
         if (result > LIMIT)
         	result = LIMIT;
 
-        logger.info(person, "5 DigLocalMeta: " + resource + " " + result);
         return result;
     }
 }

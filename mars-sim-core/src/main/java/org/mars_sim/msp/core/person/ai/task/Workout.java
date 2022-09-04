@@ -101,11 +101,9 @@ public class Workout extends Task implements Serializable {
 	 */
 	private double exercisingPhase(double time) {
 		// Regulates hormones
-		person.getCircadianClock().exercise(time);
-		//Improves musculoskeletal systems
-		person.getPhysicalCondition().exerciseMuscle(time);
-		// Record the sleep time [in millisols]
-		person.getCircadianClock().recordExercise(time);
+		// Improves musculoskeletal systems
+		// Record the exercise time [in millisols]
+		person.getPhysicalCondition().workout(time);
 		
 		return 0;
 	}

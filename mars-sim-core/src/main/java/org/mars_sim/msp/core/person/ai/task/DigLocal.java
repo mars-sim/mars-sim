@@ -277,13 +277,16 @@ implements Serializable {
 		}
 
         PhysicalCondition condition = person.getPhysicalCondition();
-        double fatigue = condition.getFatigue();
+//        double fatigue = condition.getFatigue();
         double strengthMod = condition.getStrengthMod();
         double skillMod = 1.0 + person.getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);		
         		
         // Add penalty to the fatigue
         condition.increaseFatigue(time * factor * (1.1D - strengthMod)/skillMod);
 
+        // Account for hormone regulation, musculosketetal impact and record exercise time
+        condition.workout(time);
+		
         // Add experience points
         addExperience(time);
 

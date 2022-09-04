@@ -1976,6 +1976,16 @@ public class PhysicalCondition implements Serializable {
 		musculoskeletal = value;
 	}
 
+	
+	public void workout(double time) {
+		// Regulates hormones
+		circadian.exercise(time);
+		// Improves musculoskeletal systems
+		exerciseMuscle(time);
+		// Record the sleep time [in millisols]
+		circadian.recordExercise(time);
+	}
+	
 	/**
 	 * Stress out the musculoskeletal systems.
 	 * 
