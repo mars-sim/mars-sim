@@ -49,7 +49,7 @@ public class PreparingDessert extends Function {
 
 	public static final String REFRIGERATE = "A dessert has expired. Refigerating ";
 
-	public static final String DISCARDED = " is expired and discarded at ";
+	public static final String DISCARDED = " has expired and discarded.";
 
 	public static final String GREY_WATER = "grey water";
 	public static final String FOOD_WASTE = "food waste";
@@ -611,16 +611,16 @@ public class PreparingDessert extends Function {
 							log.append(getDryMass(dessert.getName())).append(" kg ")
 									.append(dessert.getName()).append(DISCARDED);
 	
-							logger.log(building, Level.INFO, 10000, log.toString());
+							logger.log(building, Level.INFO, 30_000, log.toString());
 	
 						} else {
 							// Refrigerate prepared dessert.
 							refrigerateFood(dessert);
 	
 							log.append(REFRIGERATE).append(getDryMass(dessert.getName())).append(" kg ")
-									.append(dessert.getName());
+									.append(dessert.getName() + ".");
 	
-							logger.log(building, Level.INFO, 10000, log.toString());
+							logger.log(building, Level.INFO, 30_000, log.toString());
 						}
 	
 						// Adjust the rate to go down for each dessert that wasn't eaten.

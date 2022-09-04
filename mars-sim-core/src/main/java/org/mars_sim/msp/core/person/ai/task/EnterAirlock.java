@@ -158,7 +158,8 @@ public class EnterAirlock extends Task implements Serializable {
 		if (isInZone(zone))
 			return true;
 		
-		// For ingress, a person first arrives at zone 4 right outside an EVA Airlock.
+		// For ingress, 
+		// a person first arrives at zone 4 right outside an EVA Airlock.
 		// Then he progresses via the outer/exterior door onto zone 3.
 		// At zone 3, he's waiting for an empty chamber to be available.
 		// At zone 2, he's at the airlock chamber doffing his EVA suit.
@@ -287,7 +288,8 @@ public class EnterAirlock extends Task implements Serializable {
 
 			if (airlock.areAll4ChambersFull() || !airlock.hasSpace()) {
 				logger.log(unit, person, Level.FINE, 60_000,
-						CHAMBER_FULL + airlock.getEntity().toString() + ".");
+						"Cannot ingress. "
+						+ CHAMBER_FULL + airlock.getEntity().toString() + ".");
 				// Reset accumulatedTime back to zero accumulatedTime = 0
 				// Do nothing in this frame
 				// Wait and see if he's allowed to be at the outer door in the next frame
@@ -343,7 +345,7 @@ public class EnterAirlock extends Task implements Serializable {
 					// Command the airlock state to be transitioned to "depressurized"
 					airlock.setTransitioning(true);
 
-					logger.log(unit, person, Level.INFO, 4_000, "Ready to depressurize the chamber.");
+					logger.log(unit, person, Level.FINE, 4_000, "Ready to depressurize the chamber.");
 
 					if (!airlock.isDepressurized() || !airlock.isDepressurizing()) {
 						// Note: Only the operator has the authority to start the depressurization
@@ -452,7 +454,8 @@ public class EnterAirlock extends Task implements Serializable {
 				
 			if (airlock.areAll4ChambersFull()) {
 				logger.log(unit, person, Level.WARNING, 16_000,
-						CHAMBER_FULL + airlock.getEntity().toString() + ".");
+						"Can't step thru outer door. "
+						+ CHAMBER_FULL + airlock.getEntity().toString() + ".");
 				// Reset accumulatedTime back to zero accumulatedTime = 0
 				// Do nothing in this frame
 				// Wait and see if he's allowed to be at the outer door in the next frame
@@ -521,11 +524,12 @@ public class EnterAirlock extends Task implements Serializable {
 		logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4_000,
 				"Walking to a chamber in " + airlock.getEntity().toString() + ".");
 
-		if (inSettlement) {
+//		if (inSettlement) {
 			
-			if (airlock.areAll4ChambersFull()) {
+			if (!isInZone(2) && airlock.areAll4ChambersFull()) {
 				logger.log((Unit)airlock.getEntity(), person, Level.WARNING, 16_000,
-						CHAMBER_FULL + airlock.getEntity().toString() + ".");
+						"Can't walk to a chamber. " 
+						+ CHAMBER_FULL + airlock.getEntity().toString() + ".");
 				// Reset accumulatedTime back to zero accumulatedTime = 0
 				// Do nothing in this frame
 				// Wait and see if he's allowed to be at the outer door in the next frame
@@ -535,21 +539,28 @@ public class EnterAirlock extends Task implements Serializable {
 			if (transitionTo(2)) {
 				canProceed = true;
 			}
-		}
-		
-		else {
-			
-			if (airlock.areAll4ChambersFull()) {
-				logger.log((Unit)airlock.getEntity(), person, Level.WARNING, 16_000,
-						CHAMBER_FULL + airlock.getEntity().toString() + ".");
-				// Reset accumulatedTime back to zero accumulatedTime = 0
-				// Do nothing in this frame
-				// Wait and see if he's allowed to be at the outer door in the next frame
-				return time * .75;
+			else {
+				setPhase(STEP_THRU_OUTER_DOOR);
+				// Reset accumulatedTime back to zero
+				accumulatedTime = 0;
+				return 0;
 			}
-			else
-				canProceed = true;
-		}
+//		}
+//		
+//		else {
+//			
+//			if (airlock.areAll4ChambersFull()) {
+//				logger.log((Unit)airlock.getEntity(), person, Level.WARNING, 16_000,
+//						"Can't walk to a chamber. "
+//						+ CHAMBER_FULL + airlock.getEntity().toString() + ".");
+//				// Reset accumulatedTime back to zero accumulatedTime = 0
+//				// Do nothing in this frame
+//				// Wait and see if he's allowed to be at the outer door in the next frame
+//				return time * .75;
+//			}
+//			else
+//				canProceed = true;
+//		}
 
 		if (canProceed && accumulatedTime > STANDARD_TIME) {
 			// Reset accumulatedTime back to zero

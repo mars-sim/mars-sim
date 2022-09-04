@@ -9,11 +9,11 @@ package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.GridLayout;
 import java.util.Collection;
 
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SpringLayout;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
@@ -21,8 +21,8 @@ import org.mars_sim.msp.core.structure.building.function.BuildingAirlock;
 import org.mars_sim.msp.core.structure.building.function.EVA;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.unit_window.UnitListPanel;
-import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 
 import com.alee.laf.panel.WebPanel;
 
@@ -93,18 +93,20 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 	/**
 	 * Build the UI
 	 * 
-	 * @param center
+	 * @param content
 	 */
 	@Override
-	protected void buildUI(JPanel center) {
+	protected void buildUI(JPanel content) {
 
 		// Create label panel
-		WebPanel topPanel = new WebPanel(new GridLayout(6, 1, 0, 0));
-        topPanel.setMaximumSize(UnitWindow.WIDTH, UnitWindow.HEIGHT);
-		center.add(topPanel, BorderLayout.NORTH);
+		WebPanel topPanel = new WebPanel(new BorderLayout());
+		content.add(topPanel, BorderLayout.CENTER);
 
+		WebPanel labelGrid = new WebPanel(new SpringLayout());
+		topPanel.add(labelGrid, BorderLayout.NORTH);
+		
 		// Create innerDoorLabel
-		innerDoorLabel = addTextField(topPanel, Msg.getString("BuildingPanelEVA.innerDoor.number"),
+		innerDoorLabel = addTextField(labelGrid, Msg.getString("BuildingPanelEVA.innerDoor.number"),
 									  eva.getNumAwaitingInnerDoor(), 4, null);
 
 		if (eva.getAirlock().isInnerDoorLocked())
@@ -113,11 +115,11 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 			innerDoorStateCache = UNLOCKED;
 		}
 		// Create innerDoorStateLabel
-		innerDoorStateLabel = addTextField(topPanel, Msg.getString("BuildingPanelEVA.innerDoor.state"),
-										   innerDoorStateCache, 10, null);
+		innerDoorStateLabel = addTextField(labelGrid, Msg.getString("BuildingPanelEVA.innerDoor.state"),
+										   innerDoorStateCache, 8, null);
 
 		// Create outerDoorLabel
-		outerDoorLabel = addTextField(topPanel, Msg.getString("BuildingPanelEVA.outerDoor.number"),
+		outerDoorLabel = addTextField(labelGrid, Msg.getString("BuildingPanelEVA.outerDoor.number"),
 									  eva.getNumAwaitingOuterDoor(), 4, null);
 
 		if (eva.getAirlock().isOuterDoorLocked())
@@ -126,44 +128,48 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 			outerDoorStateCache = UNLOCKED;
 		}
 		// Create outerDoorStateLabel
-		outerDoorStateLabel = addTextField(topPanel, Msg.getString("BuildingPanelEVA.outerDoor.state"),
-										   outerDoorStateCache, 10, null);
+		outerDoorStateLabel = addTextField(labelGrid, Msg.getString("BuildingPanelEVA.outerDoor.state"),
+										   outerDoorStateCache, 8, null);
 		
 		// Create occupiedLabel
-		occupiedLabel = addTextField(topPanel, Msg.getString("BuildingPanelEVA.occupied"),
+		occupiedLabel = addTextField(labelGrid, Msg.getString("BuildingPanelEVA.occupied"),
 									 eva.getNumInChamber(), 4, null);
 
 		// Create activationLabel
-		activationLabel = addTextField(topPanel, Msg.getString("BuildingPanelEVA.airlock.activation"),
-										 buildingAirlock.isActivated() + "", 10, null);
+		activationLabel = addTextField(labelGrid, Msg.getString("BuildingPanelEVA.airlock.activation"),
+										 buildingAirlock.isActivated() + "", 8, null);
 
 		// Create emptyLabel
-		emptyLabel = addTextField(topPanel, Msg.getString("BuildingPanelEVA.empty"),
+		emptyLabel = addTextField(labelGrid, Msg.getString("BuildingPanelEVA.empty"),
 								  eva.getNumEmptied(), 4, null);
 
 		// Create airlockStateLabel
-		airlockStateLabel = addTextField(topPanel, Msg.getString("BuildingPanelEVA.airlock.state"),
-										 buildingAirlock.getState().toString(), 10, null);
+		airlockStateLabel = addTextField(labelGrid, Msg.getString("BuildingPanelEVA.airlock.state"),
+										 buildingAirlock.getState().toString(), 8, null);
 
 		// Create cycleTimeLabel
-		cycleTimeLabel = addTextField(topPanel, Msg.getString("BuildingPanelEVA.airlock.cycleTime"),
+		cycleTimeLabel = addTextField(labelGrid, Msg.getString("BuildingPanelEVA.airlock.cycleTime"),
 									  DECIMAL_PLACES1.format(buildingAirlock.getRemainingCycleTime()), 4, null);
 		
-		transitionLabel = addTextField(topPanel, Msg.getString("BuildingPanelEVA.airlock.transition"),
-				 buildingAirlock.isTransitioning() + "", 10, null);
+		transitionLabel = addTextField(labelGrid, Msg.getString("BuildingPanelEVA.airlock.transition"),
+				 buildingAirlock.isTransitioning() + "", 8, null);
 
+		SpringUtilities.makeCompactGrid(labelGrid,
+                5, 4, //rows, cols
+                10, INITY_DEFAULT,        //initX, initY
+                XPAD_DEFAULT, YPAD_DEFAULT);       //xPad, yPad	
 		
 		WebPanel operatorPanel = new WebPanel(new FlowLayout());
 		topPanel.add(operatorPanel, BorderLayout.CENTER);
 		
 		// Create OperatorLabel
 		operatorLabel = addTextField(operatorPanel, Msg.getString("BuildingPanelEVA.operator"),
-									 eva.getOperatorName(), 10, null);
-				
+									 eva.getOperatorName(), 12, null);
+
 		// Create occupant panel
 		WebPanel occupantPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 		addBorder(occupantPanel, Msg.getString("BuildingPanelEVA.titledB.occupants"));
-		center.add(occupantPanel, BorderLayout.CENTER);
+		content.add(occupantPanel, BorderLayout.CENTER);
 
 		// Create occupant list 
 		MainDesktopPane desktop = getDesktop();
@@ -178,7 +184,7 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 		// Create reservation panel
 		WebPanel reservationPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 		addBorder(reservationPanel, Msg.getString("BuildingPanelEVA.titledB.Reserved"));
-		center.add(reservationPanel, BorderLayout.SOUTH);
+		content.add(reservationPanel, BorderLayout.SOUTH);
 
 		reservationList = new UnitListPanel<>(desktop, new Dimension(150, 100)) {
 			@Override

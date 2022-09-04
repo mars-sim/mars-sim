@@ -425,7 +425,6 @@ extends Airlock {
     	}
 
     	else if (zone == 2) {
-//    		loadEVAActivitySpots();
     		LocalPosition p0 = getOldPos(airlockInsidePosMap, p.getIdentifier());
     		if (p0 == null)
     			return false;
@@ -435,7 +434,6 @@ extends Airlock {
     			}
     		}
     	}
-
 
     	else if (zone == 4) {
     		LocalPosition p0 = getOldPos(airlockExteriorPosMap, p.getIdentifier());

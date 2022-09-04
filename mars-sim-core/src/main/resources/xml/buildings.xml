@@ -917,8 +917,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<exterior-position xloc="3.2" yloc="0.0"/>
 				<activity>
 					<activity-spot xloc="1.55" yloc="1.35" />
-					<activity-spot xloc="1.55" yloc="-1.35" />
-					<activity-spot xloc="0.0" yloc="1.35" />
+					<activity-spot xloc="1.55" yloc="-1.0" />
+					<activity-spot xloc="0.0" yloc="1.0" />
 					<activity-spot xloc="0.0" yloc="-1.35" />
 				</activity>
 			</EVA>

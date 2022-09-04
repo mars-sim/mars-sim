@@ -404,12 +404,12 @@ public abstract class Airlock implements Serializable {
 	 * @param id the person's id
 	 */
 	public void removeID(Integer id) {
-		if (getAirlockType() == AirlockType.BUILDING_AIRLOCK) {
+//		if (getAirlockType() == AirlockType.BUILDING_AIRLOCK) {
 			for (int i=0; i<5; i++) {
 				// Remove this person from all zone maps
 				vacate(i, id);
 			}
-		}
+//		}
 
 		if (operatorID.equals(id)) {;
 			operatorID = Integer.valueOf(-1);

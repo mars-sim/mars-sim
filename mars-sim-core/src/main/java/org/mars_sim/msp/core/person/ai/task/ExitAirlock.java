@@ -398,7 +398,7 @@ public class ExitAirlock extends Task implements Serializable {
 		}
 
 		if (isOccupantHalfPrebreathed()) {
-			walkAway(person, "Requesting egress but " + PREBREATH_HALF_DONE + ".");
+			walkAway(person, "Can't egress. " + PREBREATH_HALF_DONE + ".");
 			return time;
 		}
 
@@ -409,13 +409,13 @@ public class ExitAirlock extends Task implements Serializable {
 			airlock.loadEVAActivitySpots();
 
 			if (!airlock.addAwaitingInnerDoor(id)) {
-				walkAway(person, "Requesting egress but cannot get a spot at the inner door of " 
+				walkAway(person, "Can't egress. Cannot get a spot at the inner door of " 
 						+ airlock.getEntity().toString() + ".");
 				return time;
 			}
 
 			if (airlock.areAll4ChambersFull() || !airlock.hasSpace()) {
-				walkAway(person, CHAMBER_FULL);
+				walkAway(person, "Can't egress. " + CHAMBER_FULL);
 				return time;
 			}
 				
@@ -672,12 +672,12 @@ public class ExitAirlock extends Task implements Serializable {
 		}
 
 		logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4_000,
-				"Walking to a chamber in " + airlock.getEntity().toString() + ".");
+				"Can't walk to a chamber in " + airlock.getEntity().toString() + ".");
 
-		if (inSettlement) {
+//		if (inSettlement) {
 
-			if (airlock.areAll4ChambersFull()) {
-				walkAway(person, CHAMBER_FULL);
+			if (!isInZone(2) && airlock.areAll4ChambersFull()) {
+				walkAway(person, "Can't walk to chamber. " + CHAMBER_FULL);
 				return time;
 			}
 			
@@ -691,20 +691,20 @@ public class ExitAirlock extends Task implements Serializable {
 				accumulatedTime = 0;
 				return 0;
 			}
-		}
-
-		else {
-
- 			if (!airlock.isInnerDoorLocked()) {
- 				canProceed = true;
-			}
- 			else {
-				setPhase(STEP_THRU_INNER_DOOR);
-				// Reset accumulatedTime back to zero
-				accumulatedTime = 0;
-				return 0;
-			}
-		}
+//		}
+//
+//		else {
+//
+// 			if (!airlock.isInnerDoorLocked()) {
+// 				canProceed = true;
+//			}
+// 			else {
+//				setPhase(STEP_THRU_INNER_DOOR);
+//				// Reset accumulatedTime back to zero
+//				accumulatedTime = 0;
+//				return 0;
+//			}
+//		}
 
 		if (canProceed && accumulatedTime > STANDARD_TIME) {
 			// Reset accumulatedTime back to zero

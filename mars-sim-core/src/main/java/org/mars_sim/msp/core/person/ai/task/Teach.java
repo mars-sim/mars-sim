@@ -126,18 +126,18 @@ public class Teach extends Task implements Serializable {
 				// Randomly get a person student.
 				int rand = RandomUtil.getRandomInt(students.size() - 1);
 				student = (Person) array[rand];
-				// Gets the task the studen is doing
+				// Gets the task the student is doing
 				teachingTask = student.getMind().getTaskManager().getTask();
 				
 				if (worker.getUnitType() == UnitType.PERSON) {
 //					teachingTask.setTeacher(person);
-					logger.log(person, Level.INFO, 10_000, "Teaching " + student.getName() 
-					+ " on " + teachingTask.getName(false) + ".");
+					logger.log(person, Level.INFO, 30_000, "Teaching " + student.getName() 
+					+ " about " + teachingTask.getName(false) + ".");
 				}
 				else {
 //					teachingTask.setTeacher(robot);
-					logger.log(robot, Level.INFO, 10_000, "Teaching " + student.getName() 
-					+ " on " + teachingTask.getName(false) + ".");
+					logger.log(robot, Level.INFO, 30_000, "Teaching " + student.getName() 
+					+ " about " + teachingTask.getName(false) + ".");
 				}
 				
 				setDescription(
