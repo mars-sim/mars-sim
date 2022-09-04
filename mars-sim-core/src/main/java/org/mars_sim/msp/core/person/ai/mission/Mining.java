@@ -609,22 +609,6 @@ public class Mining extends EVAMission
 	}
 
 	@Override
-	public void destroy() {
-		super.destroy();
-
-		miningSite = null;
-		if (excavatedMinerals != null) {
-			excavatedMinerals.clear();
-		}
-		excavatedMinerals = null;
-		if (totalExcavatedMinerals != null) {
-			totalExcavatedMinerals.clear();
-		}
-		totalExcavatedMinerals = null;
-		luv = null;
-	}
-
-	@Override
 	public double getTotalSiteScore(Settlement reviewerSettlement) {
 		return getMiningSiteValue(miningSite, reviewerSettlement);
 	}

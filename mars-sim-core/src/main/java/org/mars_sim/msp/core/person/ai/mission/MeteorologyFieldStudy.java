@@ -44,7 +44,7 @@ public class MeteorologyFieldStudy extends FieldStudyMission {
 			  ScienceType.METEOROLOGY, FIELD_SITE_TIME, needsReview);
 		
 		setEVAEquipment(EquipmentType.SPECIMEN_BOX,
-			  getMembersNumber() * SPECIMEN_BOX_MEMBER);
+			  getMembers().size() * SPECIMEN_BOX_MEMBER);
 	}
 
 	/**
@@ -63,7 +63,7 @@ public class MeteorologyFieldStudy extends FieldStudyMission {
 				  study, FIELD_SITE_TIME, members, fieldSite);
 
 		setEVAEquipment(EquipmentType.SPECIMEN_BOX,
-						getMembersNumber() * SPECIMEN_BOX_MEMBER);
+						getMembers().size() * SPECIMEN_BOX_MEMBER);
 	}
 	
 	@Override

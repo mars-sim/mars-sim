@@ -22,7 +22,7 @@ import org.mars_sim.msp.core.malfunction.Malfunction.Repairer;
 import org.mars_sim.msp.core.malfunction.MalfunctionRepairWork;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.MissionLogEntry;
+import org.mars_sim.msp.core.person.ai.mission.MissionLog;
 import org.mars_sim.msp.core.person.ai.mission.MissionPlanning;
 import org.mars_sim.msp.core.person.ai.mission.MissionStatus;
 import org.mars_sim.msp.core.person.ai.mission.NavPoint;
@@ -341,7 +341,7 @@ public class CommandHelper {
 		// Mission log
 		response.appendText("Log:");
 		response.appendTableHeading("Time", TIMESTAMP_TRUNCATED_WIDTH, "Phase");
-		for (MissionLogEntry entry : mission.getLog()) {
+		for (MissionLog.MissionLogEntry entry : mission.getLog().getEntries()) {
 			response.appendTableRow(entry.getTime(), entry.getEntry());
 		}
 	}

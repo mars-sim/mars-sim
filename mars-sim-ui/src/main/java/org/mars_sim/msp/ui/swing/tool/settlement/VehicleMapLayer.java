@@ -19,14 +19,11 @@ import java.util.Map;
 import org.apache.batik.gvt.GraphicsNode;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.mission.Delivery;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.MissionPhase;
-import org.mars_sim.msp.core.person.ai.mission.RoverMission;
-import org.mars_sim.msp.core.person.ai.mission.Trade;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
+import org.mars_sim.msp.core.person.ai.task.LoadingController;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
@@ -198,21 +195,8 @@ public class VehicleMapLayer implements SettlementMapLayer {
 		Mission mission = missionManager.getMissionForVehicle(vehicle);
 		if ((mission != null) && (mission instanceof VehicleMission)) {
 			VehicleMission vehicleMission = (VehicleMission) mission;
-			MissionPhase missionPhase = vehicleMission.getPhase();
-			if ((RoverMission.EMBARKING.equals(missionPhase) || Trade.LOAD_GOODS.equals(missionPhase)) && 
-					!mission.getPhaseEnded()) {
-				result = true;
-			}
-			else if (RoverMission.DISEMBARKING.equals(missionPhase) || Trade.UNLOAD_GOODS.equals(missionPhase)) {
-				result = true;
-			}
-			else if ((VehicleMission.EMBARKING.equals(missionPhase) || Delivery.LOAD_GOODS.equals(missionPhase)) && 
-					!mission.getPhaseEnded()) {
-				result = true;
-			}
-			else if (VehicleMission.DISEMBARKING.equals(missionPhase) || Delivery.UNLOAD_GOODS.equals(missionPhase)) {
-				result = true;
-			}
+			LoadingController lp = vehicleMission.getLoadingPlan();
+			result = (lp != null) && !lp.isCompleted();
 		}
 
 		// Otherwise, check if someone is actively loading or unloading the vehicle at a settlement.

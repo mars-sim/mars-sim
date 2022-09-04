@@ -104,11 +104,11 @@ public class InfoPanel extends JPanel {
 		add(descriptionPane);
 		
 		// Create the description label.
-		WebLabel descriptionLabel = new WebLabel("Description: ");
+		WebLabel descriptionLabel = new WebLabel("Name: ");
 		descriptionPane.add(descriptionLabel);
 		
 		// Create the description text field.
-		descriptionField = new WebTextField(mission.getDescription(), 20);
+		descriptionField = new WebTextField(mission.getName(), 20);
 		descriptionPane.add(descriptionField);
 		
 		// Create the action panel.
@@ -121,7 +121,7 @@ public class InfoPanel extends JPanel {
 		actionPane.add(actionLabel);
 		
 		// Create the action drop down box.
-		actionDropDown = new JComboBoxMW<String>(getActions(mission));
+		actionDropDown = new JComboBoxMW<>(getActions(mission));
 		actionDropDown.setEnabled(actionDropDown.getItemCount() > 1);
 		actionPane.add(actionDropDown);
 		

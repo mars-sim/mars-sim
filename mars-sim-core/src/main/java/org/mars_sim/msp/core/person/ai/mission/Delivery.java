@@ -81,7 +81,7 @@ public class Delivery extends DroneMission implements CommerceMission {
 
 		Settlement s = startingMember.getSettlement();
 		// Set the mission capacity.
-		calculateMissionCapacity(MAX_MEMBERS);
+		setMissionCapacity(MAX_MEMBERS);
 
 		outbound = true;
 		doNegotiation = true;
@@ -135,7 +135,7 @@ public class Delivery extends DroneMission implements CommerceMission {
 		addMembers(members, true);
 
 		// Sets the mission capacity.
-		calculateMissionCapacity(MAX_MEMBERS);
+		setMissionCapacity(MAX_MEMBERS);
 
 		// Set mission destination.
 		this.tradingSettlement = tradingSettlement;
@@ -585,24 +585,5 @@ public class Delivery extends DroneMission implements CommerceMission {
 	 */
 	public Settlement getTradingSettlement() {
 		return tradingSettlement;
-	}
-
-
-
-	@Override
-	public void destroy() {
-		super.destroy();
-
-		tradingSettlement = null;
-		if (sellLoad != null)
-			sellLoad.clear();
-		sellLoad = null;
-		if (buyLoad != null)
-			buyLoad.clear();
-		buyLoad = null;
-		if (desiredBuyLoad != null)
-			desiredBuyLoad.clear();
-		desiredBuyLoad = null;
-		negotiationTask = null;
 	}
 }

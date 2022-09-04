@@ -107,7 +107,7 @@ extends TabPanel {
 		missionTopPanel.add(missionPanel);
 
 		// Prepare mission text area
-		if (mission != null) missionCache = mission.getDescription();
+		if (mission != null) missionCache = mission.getName();
 		missionTextArea = new WebTextArea(2, 20);
 		if (missionCache != null) missionTextArea.setText(missionCache);
 		missionTextArea.setLineWrap(true);
@@ -219,7 +219,7 @@ extends TabPanel {
 		Mission mission = getSimulation().getMissionManager().getMissionForVehicle(vehicle);
 
 		if (mission != null) {
-		    missionCache = mission.getDescription();
+		    missionCache = mission.getName();
 		}
 		else {
 		    missionCache = null;

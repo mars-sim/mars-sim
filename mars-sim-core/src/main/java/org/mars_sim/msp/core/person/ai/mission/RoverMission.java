@@ -262,6 +262,40 @@ public abstract class RoverMission extends VehicleMission {
 		return result;
 	}
 
+		/**
+	 * Calculate the mission capacity the lower of desired capacity or number of EVASuits.
+	 */
+	protected void calculateMissionCapacity(int desiredCap) {
+		if (!isDone()) {
+			// Set mission capacity.
+			int availableSuitNum = getNumberAvailableEVASuitsAtSettlement(getStartingPerson().getAssociatedSettlement());
+			if (availableSuitNum < desiredCap) {
+				desiredCap = availableSuitNum;
+			}
+			setMissionCapacity(desiredCap);
+		}
+	}
+	
+	/**
+	 * Gets the number of available EVA suits for a mission at a settlement.
+	 *
+	 * @param settlement the settlement to check.
+	 * @return number of available suits.
+	 */
+	public static int getNumberAvailableEVASuitsAtSettlement(Settlement settlement) {
+
+		if (settlement == null)
+			throw new IllegalArgumentException("Settlement is null");
+
+		int result = settlement.findNumContainersOfType(EquipmentType.EVA_SUIT);
+
+		// Leave one suit for settlement use.
+		if (result > 0) {
+			result--;
+		}
+		return result;
+	}
+    
 	/**
 	 * Performs the embark from settlement phase of the mission.
 	 *
@@ -859,7 +893,7 @@ public abstract class RoverMission extends VehicleMission {
 		Map<Integer, Integer> result = super.getOptionalEquipmentToLoad();
 
 		// Gets a spare EVA suit for each 4 members in a mission
-		int numEVA = (int) (getPeopleNumber() * EXTRA_EVA_SUIT_FACTOR);
+		int numEVA = (int) (getMembers().size() * EXTRA_EVA_SUIT_FACTOR);
 		int id = EquipmentType.getResourceID(EquipmentType.EVA_SUIT);
 		result.put(id, numEVA);
 
@@ -883,7 +917,7 @@ public abstract class RoverMission extends VehicleMission {
 		double time = getEstimatedTripTime(useBuffer, distance);
 		double timeSols = time / 1000D;
 
-		int people = getPeopleNumber();
+		int people = getMembers().size();
 		addLifeSupportResources(result, people, timeSols, useBuffer);
 
 		// Add resources to load EVA suit of each person
@@ -1029,7 +1063,7 @@ public abstract class RoverMission extends VehicleMission {
 		if (!atLeastOnePersonRemainingAtSettlement(getStartingSettlement(), startingMember)) {
 			// Remove last person added to the mission.
 			Person lastPerson = null;
-			 for (Iterator<Worker> i = getMemberList().iterator(); 
+			 for (Iterator<Worker> i = getMembers().iterator(); 
 					 i.hasNext();) {      
 				 Worker member = i.next();
 				if (member instanceof Person) {
@@ -1043,7 +1077,7 @@ public abstract class RoverMission extends VehicleMission {
 			
 			 if (lastPerson != null) {
 				lastPerson.getMind().setMission(null);
-				if (getMembersNumber() < minMembers) {
+				if (getMembers().size() < minMembers) {
 					endMission(NOT_ENOUGH_MEMBERS);
 					return false;
 				} 

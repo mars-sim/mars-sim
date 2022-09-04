@@ -89,7 +89,7 @@ public abstract class FieldStudyMission extends EVAMission {
 
 			// Determine field site location.
 			if (hasVehicle()) {
-				double tripTimeLimit = getTotalTripTimeLimit(getRover(), getPeopleNumber(), true);
+				double tripTimeLimit = getTotalTripTimeLimit(getRover(), getMembers().size(), true);
 				determineFieldSite(getVehicle().getRange(missionType), tripTimeLimit);
 			}
 
@@ -316,13 +316,6 @@ public abstract class FieldStudyMission extends EVAMission {
 	@Override
 	protected Set<JobType> getPreferredPersonJobs() {
 		return PREFERRED_JOBS;
-	}
-
-	@Override
-	public void destroy() {
-		super.destroy();
-		fieldSite = null;
-		study = null;
 	}
 
 	@Override

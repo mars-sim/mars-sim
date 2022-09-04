@@ -820,23 +820,6 @@ public class Trade extends RoverMission implements CommerceMission {
 		return tradingSettlement;
 	}
 
-	@Override
-	public void destroy() {
-		super.destroy();
-
-		tradingSettlement = null;
-		if (sellLoad != null)
-			sellLoad.clear();
-		sellLoad = null;
-		if (buyLoad != null)
-			buyLoad.clear();
-		buyLoad = null;
-		if (desiredBuyLoad != null)
-			desiredBuyLoad.clear();
-		desiredBuyLoad = null;
-		negotiationTask = null;
-	}
-
 	/**
 	 * If the mission is in the UNLOAD_GOODS phase at the trading settlement
 	 * then it can be unloaded.

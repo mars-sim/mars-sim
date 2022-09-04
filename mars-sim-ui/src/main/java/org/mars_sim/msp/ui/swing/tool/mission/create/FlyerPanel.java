@@ -247,7 +247,7 @@ class FlyerPanel extends WizardPanel {
 					else if (column == 6) {
 						Mission mission = missionManager.getMissionForVehicle(vehicle);
 						if (mission != null)
-							result = mission.getDescription();
+							result = mission.getName();
 						else
 							result = "None";
 					}

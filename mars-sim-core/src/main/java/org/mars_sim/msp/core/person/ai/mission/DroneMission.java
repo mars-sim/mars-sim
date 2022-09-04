@@ -397,7 +397,7 @@ public abstract class DroneMission extends VehicleMission {
 		while (r.hasNext()) {
 			Robot robot = r.next();
 			if (robot.getRobotType() == RobotType.DELIVERYBOT) {
-				addRobot(robot);
+				addMember(robot);
 			}
 		}
 

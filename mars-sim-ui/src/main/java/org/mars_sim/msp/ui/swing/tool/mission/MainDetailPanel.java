@@ -72,7 +72,7 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
 import org.mars_sim.msp.core.person.ai.mission.MissionEventType;
 import org.mars_sim.msp.core.person.ai.mission.MissionListener;
-import org.mars_sim.msp.core.person.ai.mission.MissionLogEntry;
+import org.mars_sim.msp.core.person.ai.mission.MissionLog;
 import org.mars_sim.msp.core.person.ai.mission.MissionStatus;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
@@ -1045,7 +1045,7 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 		 * @return row count.
 		 */
 		public int getRowCount() {
-			return (mission != null ? mission.getLog().size() : 0);
+			return (mission != null ? mission.getLog().getEntries().size() : 0);
 		}
 
 		/**
@@ -1080,7 +1080,7 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 		 * @return the value.
 		 */
 		public Object getValueAt(int row, int column) {
-			List<MissionLogEntry> entries = mission.getLog();
+			List<MissionLog.MissionLogEntry> entries = mission.getLog().getEntries();
 			if (row < entries.size()) {
 				if (column == 0)
 					return entries.get(row).getTime();

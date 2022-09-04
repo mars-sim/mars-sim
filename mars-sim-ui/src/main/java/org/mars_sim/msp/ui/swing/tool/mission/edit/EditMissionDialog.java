@@ -116,7 +116,7 @@ public class EditMissionDialog extends ModalInternalFrame {
 	 */
 	private void modifyMission() {
 		// Set the mission description.
-		mission.setDescription(infoPane.descriptionField.getText());
+		mission.setName(infoPane.descriptionField.getText());
 		
 		// Change the mission's action.
 		setAction((String) infoPane.actionDropDown.getSelectedItem());
@@ -169,7 +169,7 @@ public class EditMissionDialog extends ModalInternalFrame {
 		// Add new members.
 		for (int x = 0; x < infoPane.memberListModel.size(); x++) {
 		    Worker member = (Worker) infoPane.memberListModel.elementAt(x);
-			if (!mission.hasMember(member)) {
+			if (!mission.getMembers().contains(member)) {
 			    member.setMission(mission);
 			}
 		}

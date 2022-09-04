@@ -46,7 +46,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**s
  * Mission for salvaging a construction stage at a building construction site.
  */
-public class BuildingSalvageMission extends Mission {
+public class BuildingSalvageMission extends AbstractMission {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -107,7 +107,7 @@ public class BuildingSalvageMission extends Mission {
 			settlement = startingMember.getSettlement();
 
 			// Sets the mission capacity.
-			calculateMissionCapacity(MAX_PEOPLE);
+			setMissionCapacity(MAX_PEOPLE);
 
 			// Recruit additional members to mission.
 			recruitMembersForMission(startingMember, true, MIN_PEOPLE);
@@ -259,7 +259,6 @@ public class BuildingSalvageMission extends Mission {
 			GroundVehicle vehicle = j.next();
 			vehicle.setReservedForMission(true);
 			// Record the name of this vehicle in Mission
-			setReservedVehicle(vehicle.getName());
 			if (!settlement.removeParkedVehicle(vehicle)) {
 				endMissionProblem(vehicle, "Can not remove parked vehicle");
 			}
@@ -362,7 +361,7 @@ public class BuildingSalvageMission extends Mission {
 	@Override
 	public Map<Integer, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer) {
 		Map<Integer, Integer> equipment = new HashMap<>(1);
-		equipment.put(EquipmentType.convertName2ID(EVASuit.TYPE), getPeopleNumber());
+		equipment.put(EquipmentType.convertName2ID(EVASuit.TYPE), getMembers().size());
 		return equipment;
 	}
 
@@ -634,7 +633,7 @@ public class BuildingSalvageMission extends Mission {
 			totalSkill += member.getSkillManager()
 					.getEffectiveSkillLevel(SkillType.CONSTRUCTION);
 		}
-		double averageSkill = totalSkill / getPeopleNumber();
+		double averageSkill = totalSkill / getMembers().size();
 
 		// Modify salvage chance based on average construction skill.
 		salvageChance += averageSkill * 5D;
@@ -700,20 +699,5 @@ public class BuildingSalvageMission extends Mission {
 	 */
 	public ConstructionStage getConstructionStage() {
 		return constructionStage;
-	}
-
-	@Override
-	public void destroy() {
-		super.destroy();
-
-		settlement = null;
-		constructionSite = null;
-		constructionStage = null;
-		if (constructionVehicles != null)
-			constructionVehicles.clear();
-		constructionVehicles = null;
-		if (luvAttachmentParts != null)
-			luvAttachmentParts.clear();
-		luvAttachmentParts = null;
 	}
 }

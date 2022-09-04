@@ -58,7 +58,7 @@ import org.mars_sim.msp.core.vehicle.VehicleType;
  * Mission for construction a stage for a settlement building. TODO externalize
  * strings
  */
-public class BuildingConstructionMission extends Mission {
+public class BuildingConstructionMission extends AbstractMission {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -131,7 +131,7 @@ public class BuildingConstructionMission extends Mission {
 			settlement = startingMember.getSettlement();
 
 			// Sets the mission capacity.
-			calculateMissionCapacity(MAX_PEOPLE);
+			setMissionCapacity(MAX_PEOPLE);
 
 			// Recruit additional members to mission.
 			recruitMembersForMission(startingMember, true, MIN_PEOPLE);
@@ -314,7 +314,7 @@ public class BuildingConstructionMission extends Mission {
 
 //		int bestConstructionSkill = 0;
 
-		calculateMissionCapacity(MAX_PEOPLE);
+		setMissionCapacity(MAX_PEOPLE);
 
 //		Iterator<Worker> i = members.iterator();
 //		while (i.hasNext()) {
@@ -806,7 +806,7 @@ public class BuildingConstructionMission extends Mission {
 	@Override
 	public Map<Integer, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer) {
 		Map<Integer, Integer> equipment = new HashMap<>(1);
-		equipment.put(EquipmentType.convertName2ID(EVASuit.TYPE), getPeopleNumber());
+		equipment.put(EquipmentType.convertName2ID(EVASuit.TYPE), getMembers().size());
 		return equipment;
 	}
 
@@ -1432,22 +1432,5 @@ public class BuildingConstructionMission extends Mission {
 		}
 
 		return goodPosition;
-	}
-
-	@Override
-	public void destroy() {
-		super.destroy();
-
-		settlement = null;
-		site = null;
-		stage = null;
-		if (constructionVehicles != null) {
-			constructionVehicles.clear();
-		}
-		constructionVehicles = null;
-		if (luvAttachmentParts != null) {
-			luvAttachmentParts.clear();
-		}
-		luvAttachmentParts = null;
 	}
 }
