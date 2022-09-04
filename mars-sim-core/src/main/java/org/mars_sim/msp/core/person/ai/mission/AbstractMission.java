@@ -1212,7 +1212,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 			  .append(" ")
 			  .append(Conversion.getInitials(getAssociatedSettlement().getName()))
 			  .append('-')
-			  .append(String.format("%3d", identifier));
+			  .append(String.format("%03d", identifier));
 		fullMissionDesignation = buffer.toString();
 
 		fireMissionUpdate(MissionEventType.DESIGNATION_EVENT, fullMissionDesignation);
