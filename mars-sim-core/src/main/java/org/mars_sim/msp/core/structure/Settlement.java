@@ -1037,8 +1037,13 @@ public class Settlement extends Structure implements Temporal,
 
 			// Initialize tasks at the start of the sim only
 			if (justLoaded) {
+				// Reset justLoaded
 				justLoaded = false;
 
+				iceProbabilityValue = computeIceProbability();
+
+				regolithProbabilityValue = computeRegolithProbability();
+				
 				for (Person p : citizens) {
 					// Register each settler a quarter/bed
 					Building b = getBestAvailableQuarters(p, true);
@@ -1088,11 +1093,11 @@ public class Settlement extends Structure implements Temporal,
 			}
 
 			remainder = msol % RESOURCE_UPDATE_FREQ;
-			if (remainder == 5) {
+			if (remainder == 0 && remainder == 20) {
 				iceProbabilityValue = computeIceProbability();
 			}
 
-			if (remainder == 10) {
+			if (remainder == 0 && remainder == 30) {
 				regolithProbabilityValue = computeRegolithProbability();
 			}
 		}
@@ -3254,18 +3259,18 @@ public class Settlement extends Structure implements Temporal,
 		// local ice and its quantity
 		if (iceAvailable > MIN_ICE_RESERVE * pop + iceVP/10
 				&& waterAvailable < MIN_WATER_RESERVE * pop + waterVP/10) {
-			result = .5 * ((MIN_ICE_RESERVE * pop - iceAvailable + waterVP/10 
-					+ MIN_WATER_RESERVE * pop - waterAvailable + iceVP/10));
+			result = (MIN_ICE_RESERVE / 100 * pop - iceAvailable + waterVP/10 
+					+ MIN_WATER_RESERVE / 100 * pop - waterAvailable + iceVP/10);
 		}
 
 		// Prompt the collect ice mission to proceed more easily if water resource is
 		// dangerously low,
 		else if (waterAvailable + iceAvailable > (MIN_ICE_RESERVE + MIN_WATER_RESERVE) * pop) {
 			// no change to missionProbability
-			result = (MIN_ICE_RESERVE + MIN_WATER_RESERVE) * pop - waterAvailable - iceAvailable ;
+			result = (MIN_ICE_RESERVE + MIN_WATER_RESERVE) / 100 * pop - waterAvailable - iceAvailable ;
 		}
 		else {
-			result = (MIN_ICE_RESERVE + MIN_WATER_RESERVE) * pop + waterVP/10 + iceVP/10;
+			result = (MIN_ICE_RESERVE + MIN_WATER_RESERVE) / 100 * pop + waterVP/10 + iceVP/10;
 		}
 
 		return result;

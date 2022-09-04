@@ -100,11 +100,6 @@ implements Serializable {
         this.resourceName = ResourceUtil.findAmountResourceName(resourceID);
         this.collectionPhase = collectionPhase;
 
-        if (!person.getPhysicalCondition().isFitByLevel(250, 25, 250)) {
-			checkLocation();
-			return;
-		}
-
         // To dig local a person must be in a Settlement
         if (!person.isInSettlement()) {
         	logger.warning(person, "Not in a settlement to start a DigLocal Task.");
@@ -224,7 +219,7 @@ implements Serializable {
      */
     private double collectResource(double time) {
    	
-		if (checkReadiness(time) > 0) {
+		if (checkReadiness(time, false) > 0) {
 			checkLocation();
 			return time;
 		}

@@ -87,7 +87,7 @@ class AmountResourceGood extends Good {
     private static final double ICE_VALUE_MODIFIER = 5D;
 	private static final double WATER_VALUE_MODIFIER = 1D;
 	private static final double SOIL_VALUE_MODIFIER = 5;
-	private static final double REGOLITH_VALUE_MODIFIER = 25D;
+	private static final double REGOLITH_VALUE_MODIFIER = 5D;
 	private static final double SAND_VALUE_MODIFIER = 5D;
 	private static final double CONCRETE_VALUE_MODIFIER = .5D;
 	private static final double ROCK_MODIFIER = 0.99D;
@@ -105,11 +105,11 @@ class AmountResourceGood extends Good {
 	private static final double CROP_FACTOR = .1;
 	private static final double DESSERT_FACTOR = .1;
 
-	private static final double REGOLITH_DEMAND_FACTOR = 30;
-	private static final double CHEMICAL_DEMAND_FACTOR = 2;
-	private static final double COMPOUND_DEMAND_FACTOR = 2;
-	private static final double ELEMENT_DEMAND_FACTOR = 2;
-	private static final double ROCK_DEMAND_FACTOR = 5;
+	private static final double REGOLITH_DEMAND_FACTOR = 10;
+	private static final double CHEMICAL_DEMAND_FACTOR = 10;
+	private static final double COMPOUND_DEMAND_FACTOR = 10;
+	private static final double ELEMENT_DEMAND_FACTOR = 10;
+	private static final double ROCK_DEMAND_FACTOR = 10;
 
 	private static final double COOKED_MEAL_INPUT_FACTOR = .5;
 	private static final double MANUFACTURING_INPUT_FACTOR = 2D;
@@ -1237,7 +1237,7 @@ class AmountResourceGood extends Good {
 			double ice = 1 + owner.getGoodValuePoint(resource);
 			double water = 1 + owner.getGoodValuePoint(ResourceUtil.waterID);
 			// Use the water's VP and existing iceSupply to compute the ice demand
-			return Math.max(1, settlement.getNumCitizens()) * (.8 * water + .2 * ice) / ice
+			return Math.max(8, settlement.getNumCitizens()) * (.8 * water + .2 * ice) / ice
 					* ICE_VALUE_MODIFIER * settlement.getWaterRationLevel();
 		}
 
@@ -1256,14 +1256,23 @@ class AmountResourceGood extends Good {
 			|| (resource == ResourceUtil.regolithBID)
 			|| (resource ==  ResourceUtil.regolithCID)
 			|| (resource ==  ResourceUtil.regolithDID)) {
+
 			double sand = 1 + owner.getGoodValuePoint(ResourceUtil.sandID);
 			double concrete = 1 + owner.getGoodValuePoint(ResourceUtil.concreteID);
 			double cement = 1 + owner.getGoodValuePoint(ResourceUtil.cementID);
-			double regolith = 1 + owner.getGoodValuePoint(getID());
+
+			double targetRegolith = 1 + owner.getGoodValuePoint(resource);
+			double regolith = 1 + owner.getGoodValuePoint(ResourceUtil.regolithID);
+			double regolithB = 1 + owner.getGoodValuePoint(ResourceUtil.regolithBID);
+			double regolithC = 1 + owner.getGoodValuePoint(ResourceUtil.regolithCID);
+			double regolithD = 1 + owner.getGoodValuePoint(ResourceUtil.regolithDID);
+			
+			double averageRegolith = (regolith + regolithB + regolithC + regolithD) / 4.0;
+			
 			// Limit the minimum value of regolith projected demand
-			demand = 1 + Math.min(48, settlement.getNumCitizens()) *
-					(.1 * cement + .2 * concrete + .5 * regolith + .2 * sand) / regolith
-					* REGOLITH_VALUE_MODIFIER;
+			demand = 1 + Math.max(12, settlement.getNumCitizens()) *
+					(.1 * cement + .1 * concrete + .4 * targetRegolith + .2 * sand + .2 * averageRegolith) 
+					/ targetRegolith * REGOLITH_VALUE_MODIFIER;
 		}
 
 		return demand;
