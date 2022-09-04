@@ -170,20 +170,13 @@ public interface Mission extends Serializable {
 	 */
 	Person getStartingPerson();
 
-	/**
-	 * Checks if this worker can participate.
-	 * 
-	 * @param worker This maybe used by overridding methods
-	 * @return
-	 */
-	boolean canParticipate(Worker worker);
-
     /**
 	 * Performs the mission.
 	 *
 	 * @param member the member performing the mission.
+	 * @return Can teh work participate
 	 */
-	void performMission(Worker member);
+	boolean performMission(Worker member);
 
 	/**
 	 * Adds a listener.

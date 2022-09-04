@@ -1496,7 +1496,7 @@ public abstract class VehicleMission extends AbstractMission implements UnitList
 	 * @param worker Worker requesting to help
 	 */
 	@Override
-	public boolean canParticipate(Worker worker) {
+	protected boolean canParticipate(Worker worker) {
 		boolean valid = true;
 
         if (REVIEWING.equals(getPhase())) {

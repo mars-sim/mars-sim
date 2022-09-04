@@ -555,9 +555,13 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 * Performs the mission.
 	 *
 	 * @param member the member performing the mission.
+	 * @return Can the work participate
 	 */
 	@Override
-	public void performMission(Worker member) {
+	public boolean performMission(Worker member) {
+		if (!canParticipate(member)) {
+			return false;
+		}
 
 		// If current phase is over, decide what to do next.
 		if (phaseEnded && !determineNewPhase()) {
@@ -569,6 +573,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 		if (!done) {
 			performPhase(member);
 		}
+		return true;
 	}
 
 	/**
@@ -1256,8 +1261,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 * @param worker This maybe used by overridding methods
 	 * @return
 	 */
-	@Override
-	public boolean canParticipate(Worker worker) {
+	protected boolean canParticipate(Worker worker) {
 		return true;
 	}
 	

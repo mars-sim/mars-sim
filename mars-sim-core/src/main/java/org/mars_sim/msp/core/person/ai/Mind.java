@@ -320,13 +320,11 @@ public class Mind implements Serializable, Temporal {
 	 * @param modifier
 	 */
 	private void resumeMission(int modifier) {
-		if (mission.canParticipate(person)) {
-			int fitness = person.getPhysicalCondition().computeFitnessLevel();
-			int priority = mission.getPriority();
-			int rand = RandomUtil.getRandomInt(5);
-			if (rand - (fitness)/1.5D <= priority + modifier) {
-				mission.performMission(person);
-			}
+		int fitness = person.getPhysicalCondition().computeFitnessLevel();
+		int priority = mission.getPriority();
+		int rand = RandomUtil.getRandomInt(5);
+		if (rand - (fitness)/1.5D <= priority + modifier) {
+			mission.performMission(person);
 		}
 	}
 

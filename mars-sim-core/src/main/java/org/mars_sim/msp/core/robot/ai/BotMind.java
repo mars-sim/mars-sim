@@ -208,9 +208,8 @@ public class BotMind implements Serializable, Temporal {
 	 * @param modifier
 	 */
 	private boolean resumeMission() {
-		if (mission.canParticipate(robot) && robot.isFit() && !robot.getSystemCondition().isLowPower()) {
-			mission.performMission(robot);
-			return true;
+		if (robot.isFit() && !robot.getSystemCondition().isLowPower()) {
+			return mission.performMission(robot);
 		}
 
 		return false;
