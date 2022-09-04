@@ -108,8 +108,8 @@ public class EatDrinkMeta extends MetaTask {
 		// person per sol
 
 		if (person.isInSettlement()) {
-			if (hungry && (foodAmount > 0 || meals > 0 || desserts > 0 
-					|| leptinS == 0 || ghrelinS > 0)) {
+			if ((hungry || leptinS == 0 || ghrelinS > 0)
+					&& (foodAmount > 0 || meals > 0 || desserts > 0)) {
 				food = true;
 			}
 

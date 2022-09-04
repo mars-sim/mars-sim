@@ -70,7 +70,7 @@ public class PhysicalCondition implements Serializable {
 	/** The amount of thirst threshold [millisols]. */
 	public static final int THIRST_THRESHOLD = 150;
 	/** The amount of thirst threshold [millisols]. */
-	private static final int HUNGER_THRESHOLD = 333;
+	private static final int HUNGER_THRESHOLD = 250;
 	/** The amount of thirst threshold [millisols]. */
 	private static final int ENERGY_THRESHOLD = 2525;
 	/** The amount of fatigue threshold [millisols]. */
@@ -1822,7 +1822,7 @@ public class PhysicalCondition implements Serializable {
 	 * @return
 	 */
 	public boolean isFitEVAScreening() {
-        return isFitByLevel(300, 30, 300, 200);
+        return isFitByLevel(350, 35, 350, 200);
 	}
 	
 	/**
@@ -1831,11 +1831,12 @@ public class PhysicalCondition implements Serializable {
 	 * @return
 	 */
 	public double computeHealthScore() {
-		return (Math.min(100 - fatigue/10, 0) 
-				+ Math.min(100 - stress/10, 0) 
-				+ Math.min(100 - hunger/10, 0) 
-				+ Math.min(100 - thirst/10, 0) 
-				+ Math.min(performance * 100, 0)) / 5.0;
+		return (Math.max(100 - fatigue/10, 0) 
+				+ Math.max(100 - stress, 0) 
+				+ Math.max(100 - hunger/10, 0) 
+				+ Math.max(100 - thirst/10, 0) 
+				+ Math.max(100 - performance * 100, 0))
+				/ 5.0;
 	}
 	
 	/**
@@ -2078,7 +2079,7 @@ public class PhysicalCondition implements Serializable {
 	 * @return
 	 */
 	public boolean isThirsty() {
-		return thirst > THIRST_THRESHOLD * 2;
+		return thirst > THIRST_THRESHOLD;
 	}
 
 	/**

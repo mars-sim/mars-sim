@@ -659,7 +659,7 @@ public abstract class EVAOperation extends Task {
 	public static boolean isEVAFit(Person person) {
 		return person.getPhysicalCondition().isFitEVAScreening() 
 				|| person.getPhysicalCondition().computeHealthScore() > 80;
-	}
+	} 
 	
 	/**
 	 * Adds experience for this EVA task. The EVA_OPERATIONS skill is updated.
