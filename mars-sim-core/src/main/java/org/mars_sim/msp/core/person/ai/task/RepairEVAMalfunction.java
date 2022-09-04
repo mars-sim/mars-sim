@@ -206,7 +206,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 		endTask |= (isRadiationDetected(time)
 					|| malfunction.isWorkDone(MalfunctionRepairWork.EVA));
 		endTask |= malfunction.isWorkDone(MalfunctionRepairWork.EVA);
-		endTask |= (shouldEndEVAOperation() || addTimeOnSite(time));
+		endTask |= (shouldEndEVAOperation(false) || addTimeOnSite(time));
 		endTask |= (person != null && !person.isBarelyFit());
 		
 		if (endTask) {

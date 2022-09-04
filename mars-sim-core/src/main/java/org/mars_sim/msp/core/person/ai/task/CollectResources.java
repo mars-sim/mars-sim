@@ -186,7 +186,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 	 */
 	private double collectResources(double time) {
 		
-		if (checkReadiness(time) > 0)
+		if (checkReadiness(time, false) > 0)
 			return time;
 
 		// Collect resources.

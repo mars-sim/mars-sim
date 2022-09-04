@@ -175,7 +175,7 @@ public class LoadVehicleEVA extends EVAOperation {
 			return time;
 		}
 		
-		if (shouldEndEVAOperation() || addTimeOnSite(time)) {
+		if (shouldEndEVAOperation(true) || addTimeOnSite(time)) {
 			checkLocation();
 			return time;
 		}

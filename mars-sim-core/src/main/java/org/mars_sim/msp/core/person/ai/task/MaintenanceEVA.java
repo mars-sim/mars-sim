@@ -131,7 +131,7 @@ implements Serializable {
 	 */
 	private double maintenancePhase(double time) {
 		
-		if (checkReadiness(time) > 0)
+		if (checkReadiness(time, true) > 0)
 			return time;
 		
 		MalfunctionManager manager = entity.getMalfunctionManager();

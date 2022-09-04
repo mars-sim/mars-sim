@@ -49,6 +49,7 @@ public class DigLocalIceMeta extends DigLocalMeta {
         	return 0;
         }
     	
-    	return getProbability(settlement, person, settlement.getIceProbabilityValue());
+    	return getProbability(ResourceUtil.iceID, settlement, 
+    			person, settlement.getIceProbabilityValue());
     }
 }

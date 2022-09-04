@@ -76,7 +76,7 @@ public class PhysicalCondition implements Serializable {
 	/** The amount of fatigue threshold [millisols]. */
 	private static final int FATIGUE_THRESHOLD = 750;
 	/** The amount of stress threshold [millisols]. */
-	private static final int STRESS_THRESHOLD = 65;
+	private static final int STRESS_THRESHOLD = 60;
 
 	/** Life support minimum value. */
 	private static final int MIN_VALUE = 0;

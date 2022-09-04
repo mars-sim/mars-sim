@@ -124,7 +124,7 @@ public abstract class ScientificStudyFieldWork extends EVAOperation {
 		// 2. Site duration has ended or there is reason to stop the field work
 		// 3. The study activities are completed
 		if (isDone() || isRadiationDetected(time)
-				|| shouldEndEVAOperation() || addTimeOnSite(time)
+				|| shouldEndEVAOperation(true) || addTimeOnSite(time)
 				|| performStudy(time)) {
 			checkLocation();
 			return time;

@@ -234,7 +234,7 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
 	private double constructionPhase(double time) {
 		double remainingTime = 0;
 		
-		if (checkReadiness(time) > 0)
+		if (checkReadiness(time, true) > 0)
 			return remainingTime;
 		
 		// Operate light utility vehicle if no one else is operating it.
@@ -352,8 +352,8 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
 	}
 
 	@Override
-	protected boolean shouldEndEVAOperation() {
-		boolean result = super.shouldEndEVAOperation();
+	protected boolean shouldEndEVAOperation(boolean checkLight) {
+		boolean result = super.shouldEndEVAOperation(checkLight);
 
 		// If operating LUV, check if LUV has malfunction.
 		if (operatingLUV && luv.getMalfunctionManager().hasMalfunction()) {

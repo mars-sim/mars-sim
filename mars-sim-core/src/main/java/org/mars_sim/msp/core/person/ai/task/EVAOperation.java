@@ -431,10 +431,11 @@ public abstract class EVAOperation extends Task {
 	/**
 	 * Checks if situation requires the EVA operation to end prematurely and the
 	 * person should return to the airlock.
-	 *
+	 * 
+	 * @param checkLight
 	 * @return true if EVA operation should end
 	 */
-	protected boolean shouldEndEVAOperation() {
+	protected boolean shouldEndEVAOperation(boolean checkLight) {
 
 		boolean result = false;
 
@@ -443,13 +444,13 @@ public abstract class EVAOperation extends Task {
 			return true;
 
 		// Check for sunlight
-		if (isGettingDark(person)) {
+		if (checkLight && isGettingDark(person)) {
 			// Added to show issue #509
 			logger.warning(worker, 10_000L, "Ended '" + getName() + "': becoming too dark.");
 			return true;
 		}
 		
-		if (getSolarIrradiance(person.getCoordinates()) <= minEVASunlight) {
+		if (checkLight && getSolarIrradiance(person.getCoordinates()) <= minEVASunlight) {
 			logger.warning(worker, 10_000L, "Ended '" + getName() + "': too dark already.");
 			return true;
 		}
@@ -530,7 +531,7 @@ public abstract class EVAOperation extends Task {
 	 * @param time
 	 * @return
 	 */
-	public double checkReadiness(double time) {
+	public double checkReadiness(double time, boolean checkSunlight) {
 		// Check for radiation exposure during the EVA operation.
 		if (isDone() || isRadiationDetected(time)) {
 			checkLocation();
@@ -538,11 +539,18 @@ public abstract class EVAOperation extends Task {
 		}
 
         // Check if there is a reason to cut short and return.
-		if (shouldEndEVAOperation() || addTimeOnSite(time)) {
+		if (checkSunlight && shouldEndEVAOperation(checkSunlight)) {
 			checkLocation();
 			return time;
 		}
 
+        // Check time on site
+		if (addTimeOnSite(time)) {
+			checkLocation();
+			return time;
+		}		
+		
+		
 		if (!person.isBarelyFit()) {
 			checkLocation();
 			return time;
@@ -645,8 +653,8 @@ public abstract class EVAOperation extends Task {
 	 * @return
 	 */
 	public static boolean isExhausted(Person person) {
-        return person.getPhysicalCondition().isHungry() || person.getPhysicalCondition().isThirsty()
-                || person.getPhysicalCondition().isSleepy() || person.getPhysicalCondition().isStressed();
+        return person.getPhysicalCondition().isHungry() && person.getPhysicalCondition().isThirsty()
+                && person.getPhysicalCondition().isSleepy() || person.getPhysicalCondition().isStressed();
     }
 
 	/**

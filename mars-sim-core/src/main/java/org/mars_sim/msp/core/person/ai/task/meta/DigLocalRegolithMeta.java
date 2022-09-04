@@ -47,6 +47,7 @@ public class DigLocalRegolithMeta extends DigLocalMeta {
         	return 0;
         }
         
-    	return getProbability(settlement, person, settlement.getRegolithProbabilityValue());
+    	return getProbability(ResourceUtil.regolithID, settlement, 
+    			person, settlement.getRegolithProbabilityValue());
     }
 }

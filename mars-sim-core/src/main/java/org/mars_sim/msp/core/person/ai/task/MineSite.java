@@ -74,7 +74,7 @@ public class MineSite extends EVAOperation {
 		this.luv = luv;
 		operatingLUV = false;
 
-		if (shouldEndEVAOperation()) {
+		if (shouldEndEVAOperation(false)) {
 			checkLocation();
         	return;
         }
@@ -147,7 +147,7 @@ public class MineSite extends EVAOperation {
 	private double miningPhase(double time) {
 		double remainingTime = 0;
 		
-		if (checkReadiness(time) > 0)
+		if (checkReadiness(time, false) > 0)
 			return time;
 
 		// Check if there is reason to cut the mining phase short and return
@@ -257,8 +257,8 @@ public class MineSite extends EVAOperation {
 	}
 
 	@Override
-	protected boolean shouldEndEVAOperation() {
-		boolean result = super.shouldEndEVAOperation();
+	protected boolean shouldEndEVAOperation(boolean checkLight) {
+		boolean result = super.shouldEndEVAOperation(checkLight);
 
 		// If operating LUV, check if LUV has malfunction.
 		if (operatingLUV && luv.getMalfunctionManager().hasMalfunction()) {

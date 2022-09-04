@@ -187,7 +187,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 	protected double unloadingPhase(double time) {		
 		double remainingTime = 0;
 		
-		if (checkReadiness(time) > 0)
+		if (checkReadiness(time, true) > 0)
 			return time;
 		
 		if (settlement == null || vehicle == null) {

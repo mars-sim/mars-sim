@@ -126,7 +126,7 @@ implements Serializable {
     private double maintainVehiclePhase(double time) {
     	double remainingTime = 0;
     	
-		if (checkReadiness(time) > 0)
+		if (checkReadiness(time, true) > 0)
 			return remainingTime;
 				
 		// NOTE: if a person is not at a settlement or near its vicinity,  
@@ -144,7 +144,7 @@ implements Serializable {
         boolean malfunction = manager.hasMalfunction();
         boolean finishedMaintenance = (manager.getEffectiveTimeSinceLastMaintenance() == 0D);
         
-        if (finishedMaintenance || malfunction || shouldEndEVAOperation() ||
+        if (finishedMaintenance || malfunction || shouldEndEVAOperation(true) ||
                 addTimeOnSite(time)) {
         	checkLocation();
 			return remainingTime;

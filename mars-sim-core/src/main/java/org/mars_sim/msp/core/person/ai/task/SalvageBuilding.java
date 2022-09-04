@@ -261,8 +261,8 @@ implements Serializable {
     }
 
     @Override
-    protected boolean shouldEndEVAOperation() {
-        boolean result = super.shouldEndEVAOperation();
+    protected boolean shouldEndEVAOperation(boolean checkLight) {
+        boolean result = super.shouldEndEVAOperation(checkLight);
 
         // If operating LUV, check if LUV has malfunction.
         if (operatingLUV && luv.getMalfunctionManager().hasMalfunction())
@@ -286,7 +286,7 @@ implements Serializable {
 			return time;
 		}
 
-		if (shouldEndEVAOperation() || addTimeOnSite(time)) {
+		if (shouldEndEVAOperation(true) || addTimeOnSite(time)) {
 			checkLocation();
 			return time;
 		}

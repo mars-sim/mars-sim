@@ -168,7 +168,7 @@ public class ExploreSite extends EVAOperation {
 	private double exploringPhase(double time) {
 		double remainingTime = 0;
 		
-		if (checkReadiness(time) > 0)
+		if (checkReadiness(time, false) > 0)
 			return time;
 
 		if (totalCollected >= AVERAGE_ROCK_SAMPLES_COLLECTED_SITE) {

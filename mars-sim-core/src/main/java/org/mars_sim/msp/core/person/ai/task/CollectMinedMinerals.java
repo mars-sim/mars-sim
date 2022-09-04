@@ -155,7 +155,7 @@ public class CollectMinedMinerals extends EVAOperation {
 		
 		// Check if site duration has ended or there is reason to cut the collect
 		// minerals phase short and return to the rover.
-		if (shouldEndEVAOperation() || addTimeOnSite(time)) {
+		if (shouldEndEVAOperation(false) || addTimeOnSite(time)) {
 			checkLocation();
 			return time;
 		}
