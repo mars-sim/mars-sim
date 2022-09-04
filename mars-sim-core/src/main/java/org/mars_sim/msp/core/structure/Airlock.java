@@ -1057,11 +1057,11 @@ public abstract class Airlock implements Serializable {
 	}
 
 	/**
-	 * Checks if the chamber is full.
+	 * Checks if all 4 chambers in zone 2 are full.
 	 *
 	 * @return
 	 */
-	public abstract boolean isChamberFull();
+	public abstract boolean areAll4ChambersFull();
 
 	/**
 	 * Checks if there is no occupants inside the airlock.

@@ -1639,7 +1639,7 @@ public class Settlement extends Structure implements Temporal,
 		Iterator<Integer> i = bldgs.iterator();
 		while (i.hasNext()) {
 			Building building = unitManager.getBuildingByID(i.next());
-			boolean chamberFull = building.getEVA().getAirlock().isChamberFull();
+			boolean chamberFull = building.getEVA().getAirlock().areAll4ChambersFull();
 			boolean reservationFull = building.getEVA().getAirlock().isReservationFull();
 
 			if (!ASTRONOMY_OBSERVATORY.equalsIgnoreCase(building.getBuildingType())) {
@@ -1667,7 +1667,7 @@ public class Settlement extends Structure implements Temporal,
 		Iterator<Integer> i = bldgs.iterator();
 		while (i.hasNext()) {
 			Building building = unitManager.getBuildingByID(i.next());
-			boolean chamberFull = building.getEVA().getAirlock().isChamberFull();
+			boolean chamberFull = building.getEVA().getAirlock().areAll4ChambersFull();
 			boolean reservationFull = building.getEVA().getAirlock().isReservationFull();
 
 			// Select airlock that fulfill either conditions:
@@ -1731,7 +1731,7 @@ public class Settlement extends Structure implements Temporal,
 		Iterator<Integer> i = bldgs.iterator();
 		while (i.hasNext()) {
 			Building building = unitManager.getBuildingByID(i.next());
-			boolean chamberFull = building.getEVA().getAirlock().isChamberFull();
+			boolean chamberFull = building.getEVA().getAirlock().areAll4ChambersFull();
 			boolean reservationFull = building.getEVA().getAirlock().isReservationFull();
 
 			// Select airlock that fulfill either conditions:
@@ -1785,7 +1785,7 @@ public class Settlement extends Structure implements Temporal,
 	 */
 	public void trackAirlocks(List<Building> bldgs, boolean pressurized) {	
 		for (Building building : bldgs) {
-			boolean chamberFull = building.getEVA().getAirlock().isChamberFull();
+			boolean chamberFull = building.getEVA().getAirlock().areAll4ChambersFull();
 			boolean reservationFull = building.getEVA().getAirlock().isReservationFull();
 			int id = building.getIdentifier();
 			// Select airlock that fulfill either conditions:
@@ -1835,7 +1835,7 @@ public class Settlement extends Structure implements Temporal,
 		Iterator<Building> i = buildingManager.getBuildings(FunctionType.EVA).iterator();
 		while (i.hasNext()) {
 			Building nextBuilding = i.next();
-			boolean chamberFull = nextBuilding.getEVA().getAirlock().isChamberFull();
+			boolean chamberFull = nextBuilding.getEVA().getAirlock().areAll4ChambersFull();
 			boolean reservationFull = nextBuilding.getEVA().getAirlock().isReservationFull();
 
 			// Select airlock that fulfill either conditions:

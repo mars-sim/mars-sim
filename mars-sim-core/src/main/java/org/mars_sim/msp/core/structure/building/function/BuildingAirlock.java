@@ -743,13 +743,13 @@ public class BuildingAirlock extends Airlock {
 	}
 
 	/**
-	 * Checks if the chamber is full
+	 * Checks if all 4 chambers in zone 2 are full.
 	 *
 	 * @return
 	 */
 	@Override
-	public boolean isChamberFull() {
-		return getNumOccupants() >= MAX_SLOTS;
+	public boolean areAll4ChambersFull() {
+		return getInsideChamberNum() >= MAX_SLOTS;
 	}
 
 	/**

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * VehicleAirlock.java
- * @date 2021-09-25
+ * @date 2022-09-05
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.vehicle;
@@ -25,6 +25,8 @@ import org.mars_sim.msp.core.time.ClockPulse;
 
 /**
  * This class represents an airlock for a vehicle.
+ * Note: a vehicle airlock has zone 0, 2, 4 and does NOT have zone 1 and 3
+ * 
  */
 public class VehicleAirlock
 extends Airlock {
@@ -50,10 +52,6 @@ extends Airlock {
 	
 	/** The vehicle this airlock is for. */
 	private Vehicle vehicle;
-	
-	private LocalPosition airlockInsidePos;
-	private LocalPosition airlockInteriorPos;
-	private LocalPosition airlockExteriorPos;
 
     private Map<LocalPosition, Integer> airlockInsidePosMap;
     private Map<LocalPosition, Integer> airlockInteriorPosMap;
@@ -61,12 +59,16 @@ extends Airlock {
 
 	/**
 	 * Constructor.
+	 * 
 	 * @param vehicle the vehicle this airlock of for.
 	 * @param capacity number of people airlock can hold.
 	 */
 	public VehicleAirlock(
-		Vehicle vehicle, int capacity, LocalPosition loc, LocalPosition interiorLoc,
+		Vehicle vehicle, int capacity, 
+		LocalPosition loc, 
+		LocalPosition interiorLoc,
 		LocalPosition exteriorLoc) {
+		
 		// User Airlock constructor
 		super(capacity);
 
@@ -87,15 +89,12 @@ extends Airlock {
 		remainingCycleTime = CYCLE_TIME;
 		
 		// Determine airlock interior position.
-		airlockInteriorPos = LocalAreaUtil.getLocalRelativePosition(interiorLoc, vehicle);
 		airlockInteriorPosMap = buildDoorMap(interiorLoc, vehicle, 0.3, 0.6, 0.5);
 		
 		// Determine airlock exterior position.
-		airlockExteriorPos = LocalAreaUtil.getLocalRelativePosition(exteriorLoc, vehicle);
 		airlockExteriorPosMap = buildDoorMap(exteriorLoc, vehicle, 0.3, 0.6, 0.5);
 
 		// Determine airlock inside position.
-		airlockInsidePos = LocalAreaUtil.getLocalRelativePosition(loc, vehicle);
 		airlockInsidePosMap = new HashMap<>();
 	}
 
@@ -245,7 +244,6 @@ extends Airlock {
 		}
     	
     	return null;
-//		return airlockInsidePos;
 	}
 
 	/**
@@ -307,15 +305,30 @@ extends Airlock {
 	}
 
 	/**
-	 * Checks if the chamber is full
+	 * Checks if all 4 chambers in zone 2 are full.
 	 *
 	 * @return
 	 */
 	@Override
-	public boolean isChamberFull() {
-		return getOccupants().size() >= MAX_SLOTS;
+	public boolean areAll4ChambersFull() {
+		return getInsideChamberNum() >= MAX_SLOTS;
 	}
 
+	/**
+	 * Gets the total number of people occupying the chamber in zone 2
+	 *
+	 * @return a list of occupants inside zone 2
+	 */
+	public int getInsideChamberNum() {
+		int result = 0;
+		loadEVAActivitySpots();
+		for (LocalPosition p : airlockInsidePosMap.keySet()) {
+			if (!airlockInsidePosMap.get(p).equals(-1))
+				result++;
+		}
+		return result;
+	}
+	
 	/**
 	 * Gets the type of airlock
 	 *
@@ -633,8 +646,11 @@ extends Airlock {
 	
 	public void destroy() {
 	    vehicle = null;
-	    airlockInsidePos = null;
-	    airlockInteriorPos = null;
-	    airlockExteriorPos = null;
+	    airlockInsidePosMap.clear();
+	    airlockInteriorPosMap.clear();
+	    airlockExteriorPosMap.clear();
+	    airlockInsidePosMap = null;
+	    airlockInteriorPosMap = null;
+	    airlockExteriorPosMap = null;
 	}
 }

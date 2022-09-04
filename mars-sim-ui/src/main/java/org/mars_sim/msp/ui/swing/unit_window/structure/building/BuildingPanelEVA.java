@@ -9,11 +9,11 @@ package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.GridLayout;
 import java.util.Collection;
 
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.SpringLayout;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
@@ -21,8 +21,8 @@ import org.mars_sim.msp.core.structure.building.function.BuildingAirlock;
 import org.mars_sim.msp.core.structure.building.function.EVA;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.unit_window.UnitListPanel;
+import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 
 import com.alee.laf.panel.WebPanel;
 
@@ -36,8 +36,8 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 	
 	private static final String SUIT_ICON = Msg.getString("icon.suit"); //$NON-NLS-1$
 
-	private static final String UNLOCKED = "UNLOCKED";
-	private static final String LOCKED = "LOCKED";
+	private static final String UNLOCKED = "Unlocked";
+	private static final String LOCKED = "Locked";
 
 	private int innerDoorCache;
 	private int outerDoorCache;
@@ -92,19 +92,19 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 	
 	/**
 	 * Build the UI
+	 * 
+	 * @param center
 	 */
 	@Override
 	protected void buildUI(JPanel center) {
 
 		// Create label panel
-		WebPanel topPanel = new WebPanel(new BorderLayout(0, 0));
+		WebPanel topPanel = new WebPanel(new GridLayout(6, 1, 0, 0));
+        topPanel.setMaximumSize(UnitWindow.WIDTH, UnitWindow.HEIGHT);
 		center.add(topPanel, BorderLayout.NORTH);
-		
-		WebPanel labelPanel = new WebPanel(new SpringLayout());
-		topPanel.add(labelPanel, BorderLayout.NORTH);
 
 		// Create innerDoorLabel
-		innerDoorLabel = addTextField(labelPanel, Msg.getString("BuildingPanelEVA.innerDoor.number"),
+		innerDoorLabel = addTextField(topPanel, Msg.getString("BuildingPanelEVA.innerDoor.number"),
 									  eva.getNumAwaitingInnerDoor(), 4, null);
 
 		if (eva.getAirlock().isInnerDoorLocked())
@@ -113,52 +113,45 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 			innerDoorStateCache = UNLOCKED;
 		}
 		// Create innerDoorStateLabel
-		innerDoorStateLabel = addTextField(labelPanel, Msg.getString("BuildingPanelEVA.innerDoor.state"),
+		innerDoorStateLabel = addTextField(topPanel, Msg.getString("BuildingPanelEVA.innerDoor.state"),
 										   innerDoorStateCache, 10, null);
 
 		// Create outerDoorLabel
-		outerDoorLabel = addTextField(labelPanel, Msg.getString("BuildingPanelEVA.outerDoor.number"),
+		outerDoorLabel = addTextField(topPanel, Msg.getString("BuildingPanelEVA.outerDoor.number"),
 									  eva.getNumAwaitingOuterDoor(), 4, null);
 
-		
 		if (eva.getAirlock().isOuterDoorLocked())
 			outerDoorStateCache = LOCKED;
 		else {
 			outerDoorStateCache = UNLOCKED;
 		}
 		// Create outerDoorStateLabel
-		outerDoorStateLabel = addTextField(labelPanel, Msg.getString("BuildingPanelEVA.outerDoor.state"),
+		outerDoorStateLabel = addTextField(topPanel, Msg.getString("BuildingPanelEVA.outerDoor.state"),
 										   outerDoorStateCache, 10, null);
-
 		
 		// Create occupiedLabel
-		occupiedLabel = addTextField(labelPanel, Msg.getString("BuildingPanelEVA.occupied"),
+		occupiedLabel = addTextField(topPanel, Msg.getString("BuildingPanelEVA.occupied"),
 									 eva.getNumInChamber(), 4, null);
 
-
 		// Create activationLabel
-		activationLabel = addTextField(labelPanel, Msg.getString("BuildingPanelEVA.airlock.activation"),
+		activationLabel = addTextField(topPanel, Msg.getString("BuildingPanelEVA.airlock.activation"),
 										 buildingAirlock.isActivated() + "", 10, null);
 
 		// Create emptyLabel
-		emptyLabel = addTextField(labelPanel, Msg.getString("BuildingPanelEVA.empty"),
+		emptyLabel = addTextField(topPanel, Msg.getString("BuildingPanelEVA.empty"),
 								  eva.getNumEmptied(), 4, null);
 
 		// Create airlockStateLabel
-		airlockStateLabel = addTextField(labelPanel, Msg.getString("BuildingPanelEVA.airlock.state"),
+		airlockStateLabel = addTextField(topPanel, Msg.getString("BuildingPanelEVA.airlock.state"),
 										 buildingAirlock.getState().toString(), 10, null);
 
 		// Create cycleTimeLabel
-		cycleTimeLabel = addTextField(labelPanel, Msg.getString("BuildingPanelEVA.airlock.cycleTime"),
+		cycleTimeLabel = addTextField(topPanel, Msg.getString("BuildingPanelEVA.airlock.cycleTime"),
 									  DECIMAL_PLACES1.format(buildingAirlock.getRemainingCycleTime()), 4, null);
 		
-		transitionLabel = addTextField(labelPanel, Msg.getString("BuildingPanelEVA.airlock.transition"),
+		transitionLabel = addTextField(topPanel, Msg.getString("BuildingPanelEVA.airlock.transition"),
 				 buildingAirlock.isTransitioning() + "", 10, null);
 
-		SpringUtilities.makeCompactGrid(labelPanel,
-                5, 4, //rows, cols
-                10, INITY_DEFAULT,        //initX, initY
-                XPAD_DEFAULT, YPAD_DEFAULT);       //xPad, yPad	
 		
 		WebPanel operatorPanel = new WebPanel(new FlowLayout());
 		topPanel.add(operatorPanel, BorderLayout.CENTER);
@@ -214,17 +207,17 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 		}
 
 		// Update occupiedLabel
-		int num0 = eva.getNumInChamber();
-		if (occupiedCache != num0) {
-			occupiedCache = num0;
-			occupiedLabel.setText(Integer.toString(num0));
+		int numChamber = eva.getNumInChamber();
+		if (occupiedCache != numChamber) {
+			occupiedCache = numChamber;
+			occupiedLabel.setText(Integer.toString(numChamber));
 		}
 
 		// Update emptyLabel
-		int num = eva.getNumEmptied();
-		if (emptyCache != num) {
-			emptyCache = num;
-			emptyLabel.setText(Integer.toString(num));
+		int emptyNumChamber = eva.getNumEmptied();
+		if (emptyCache != emptyNumChamber) {
+			emptyCache = emptyNumChamber;
+			emptyLabel.setText(Integer.toString(emptyNumChamber));
 		}
 
 		// Update operatorLabel

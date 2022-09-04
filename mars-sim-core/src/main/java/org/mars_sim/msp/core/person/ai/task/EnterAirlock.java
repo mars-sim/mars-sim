@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * EnterAirlock.java
- * @date 2021-11-04
+ * @date 2022-09-05
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -53,6 +53,8 @@ public class EnterAirlock extends Task implements Serializable {
 	private static final TaskPhase CLEAN_UP = new TaskPhase(Msg.getString("Task.phase.cleanUp")); //$NON-NLS-1$
 	private static final TaskPhase LEAVE_AIRLOCK = new TaskPhase(Msg.getString("Task.phase.leaveAirlock")); //$NON-NLS-1$
 
+	private static final String CHAMBER_FULL = "All 4 chambers are occupied in ";
+	
 	// Static members
 	/** The standard time for doffing the EVA suit. */
 	private static final double SUIT_DOFFING_TIME = 15;
@@ -79,8 +81,6 @@ public class EnterAirlock extends Task implements Serializable {
 	// Data members
 	/** The airlock to be used. */
 	private Airlock airlock;
-
-	private Unit unit;
 	
 	/**
 	 * Constructor.
@@ -92,8 +92,6 @@ public class EnterAirlock extends Task implements Serializable {
 		super(NAME, person, false, false, STRESS_MODIFIER, SkillType.EVA_OPERATIONS, 100D);
 
 		this.airlock = airlock;
-		
-		this.unit = (Unit)airlock.getEntity();
 
 		if (airlock.getAirlockType() == AirlockType.BUILDING_AIRLOCK) {
 			inSettlement = true;
@@ -115,7 +113,7 @@ public class EnterAirlock extends Task implements Serializable {
 
 		setPhase(REQUEST_INGRESS);
 
-		logger.log(unit, person, Level.FINER, 4000, "Starting EVA ingress in " + airlock.getEntityName() + ".");
+		logger.log((Unit)airlock.getEntity(), person, Level.FINER, 4000, "Starting EVA ingress in " + airlock.getEntityName() + ".");
 	}
 
 	/**
@@ -246,7 +244,7 @@ public class EnterAirlock extends Task implements Serializable {
 			person.setPosition(newPos);
 		}
 
-		logger.log(unit, person, Level.FINE, 4000, "Arrived at "
+		logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4000, "Arrived at "
 				+ newPos.getShortFormat() + " in airlock zone " + zone + ".");
 	}
 
@@ -258,6 +256,8 @@ public class EnterAirlock extends Task implements Serializable {
 	 */
 	private double requestIngress(double time) {
 
+		Unit unit = (Unit)airlock.getEntity();
+				
 		boolean canProceed = false;
 		
 		logger.log(unit, person, Level.FINE, 20_000, "Requested EVA ingress in " + airlock.getEntity().toString() + ".");
@@ -275,7 +275,7 @@ public class EnterAirlock extends Task implements Serializable {
 		if (inSettlement) {
 			// Load up the EVA activity spots
 			airlock.loadEVAActivitySpots();
-
+			
 			if (!airlock.addAwaitingOuterDoor(id)) {
 				logger.log(unit, person, Level.FINE, 60_000,
 						"Cannot get a spot outside the outer door in " + airlock.getEntity().toString() + ".");
@@ -285,21 +285,25 @@ public class EnterAirlock extends Task implements Serializable {
 				return time * .75;
 			}
 
-			if (airlock.isChamberFull() || !airlock.hasSpace()) {
+			if (airlock.areAll4ChambersFull() || !airlock.hasSpace()) {
 				logger.log(unit, person, Level.FINE, 60_000,
-						"Chamber full in " + airlock.getEntity().toString() + ".");
+						CHAMBER_FULL + airlock.getEntity().toString() + ".");
 				// Reset accumulatedTime back to zero accumulatedTime = 0
 				// Do nothing in this frame
 				// Wait and see if he's allowed to be at the outer door in the next frame
 				return time * .75;
 			}
 						
-			if (!airlock.isOuterDoorLocked() && transitionTo(4)) {
+			if (isInZone(4)) {
+				canProceed = true;
+			}
+			
+			else if (!airlock.isOuterDoorLocked() && transitionTo(4)) {
 				// The outer door will stay locked if the chamber is NOT depressurized
 				canProceed = true;
 			}
 			
-			if (airlock.isEmpty()) {
+			else if (airlock.isEmpty()) {
 				// If the airlock is empty, it means no one is using it
 				logger.log(unit, person, Level.FINE, 60_000,
 						"No one is at " + airlock.getEntity().toString() + ".");
@@ -320,7 +324,7 @@ public class EnterAirlock extends Task implements Serializable {
 			}
 		}
 
-		if (canProceed && isInZone(4)) {
+		if (canProceed) {
 
 			if (airlock.isDepressurized() && !airlock.isOuterDoorLocked()) {
 				// If airlock has already been depressurized,
@@ -367,7 +371,7 @@ public class EnterAirlock extends Task implements Serializable {
 		
 		if (airlock.isDepressurized() && !airlock.isOuterDoorLocked()) {
 
-			logger.log(unit, person, Level.FINE, 4_000,
+			logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4_000,
 					"Chamber already depressurized for entry in " + airlock.getEntity().toString() + ".");
 
 			canProceed = true;
@@ -381,7 +385,7 @@ public class EnterAirlock extends Task implements Serializable {
 
 			Set<Person> list = airlock.noEVASuit();
 			if (list.size() > 0) {
-				logger.log(unit, person, Level.WARNING, 4_000,
+				logger.log((Unit)airlock.getEntity(), person, Level.WARNING, 4_000,
 						"Could not depressurize " + airlock.getEntity().toString() + ". "
 						+ list + " still inside not wearing EVA suit.");
 
@@ -421,13 +425,15 @@ public class EnterAirlock extends Task implements Serializable {
 		// Accumulate work for this task phase
 		accumulatedTime += time;
 
+		Unit unit = (Unit)airlock.getEntity();
+		
 		boolean canProceed = false;
 
 		if (!airlock.isDepressurized()) {
 			// Not at the correct airlock state. Go back to the previous task phase
 			setPhase(DEPRESSURIZE_CHAMBER);
-			// Reset accumulatedTime back to zero accumulatedTime = 0;
-			
+			// Reset accumulatedTime back to zero 
+			accumulatedTime = 0;
 			return time * .75;
 		}
 
@@ -436,16 +442,18 @@ public class EnterAirlock extends Task implements Serializable {
 			if (airlock.isOuterDoorLocked()) {
 				logger.log(unit, person, Level.WARNING, 4_000,
 						"Outer door locked in " + airlock.getEntity() + ".");
-
-				// Reset accumulatedTime back to zero accumulatedTime = 0
+				// The outer door is locked probably because of not being 
+				// at the correct airlock state. Go back to the previous task phase
+				setPhase(DEPRESSURIZE_CHAMBER);
+				// Reset accumulatedTime back to zero 
+				accumulatedTime = 0;
 				return time * .75;
 			}
 			
-			if (airlock.isChamberFull() || !airlock.hasSpace())  {
+			if (airlock.areAll4ChambersFull() || !airlock.hasSpace())  {
 				logger.log(unit, person, Level.WARNING, 4_000,
-						"Chamber full in " + airlock.getEntity().toString() + ".");
-				
-				// Reset accumulatedTime back to zero accumulatedTime = 0
+						CHAMBER_FULL + airlock.getEntity().toString() + ".");
+				// Wait for next frame to see if one of the 4 chambers is vacated
 				return time * .75;
 			}
 				
@@ -473,7 +481,8 @@ public class EnterAirlock extends Task implements Serializable {
 
 			else {
 				setPhase(REQUEST_INGRESS);
-				// Reset accumulatedTime back to zero accumulatedTime = 0;
+				// Reset accumulatedTime back to zero 
+				accumulatedTime = 0;
 				
 				return time * .75;
 			}
@@ -482,9 +491,6 @@ public class EnterAirlock extends Task implements Serializable {
 		if (canProceed && accumulatedTime > STANDARD_TIME) {
 			// Reset accumulatedTime back to zero
 			accumulatedTime = 0;
-			
-//			// Go to zone 3
-//			transitionTo(3);
 			
 			logger.log(unit, person, Level.FINE, 4_000,
 					"Just entered through the outer door into " + airlock.getEntity().toString() + ".");
@@ -510,7 +516,7 @@ public class EnterAirlock extends Task implements Serializable {
 
 		boolean canProceed = false;
 		
-		logger.log(unit, person, Level.FINE, 4_000,
+		logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4_000,
 				"Walking to a chamber in " + airlock.getEntity().toString() + ".");
 
 		if (inSettlement) {
@@ -518,6 +524,8 @@ public class EnterAirlock extends Task implements Serializable {
 			if (transitionTo(2)) {
 				canProceed = true;
 			}
+			else
+				canProceed = false;
 		}
 		
 		else {
@@ -542,7 +550,7 @@ public class EnterAirlock extends Task implements Serializable {
 			}
 
 			if (airlock.isPressurized()) {
-				logger.log(unit, person, Level.FINE, 4_000,
+				logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4_000,
 						"Chamber alraedy pressurized for entry in " + airlock.getEntity().toString() + ".");
 
 				// Reset the count down doffing time
@@ -573,7 +581,7 @@ public class EnterAirlock extends Task implements Serializable {
 		
 		if (airlock.isPressurized()) {
 
-			logger.log(unit, person, Level.FINE, 4_000,
+			logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4_000,
 					"Chamber already pressurized for entry in " + airlock.getEntity().toString() + ".");
 			
 			canProceed = true;
@@ -636,7 +644,7 @@ public class EnterAirlock extends Task implements Serializable {
 			}
 			
 			else {
-				logger.log(unit, person, Level.WARNING, 4_000,
+				logger.log((Unit)airlock.getEntity(), person, Level.WARNING, 4_000,
 						"did not possess an EVA suit in " + airlock.getEntity().toString()
 						+ ".");
 				// If a person is in the process of doffing off his EVA suit, one 
@@ -648,7 +656,7 @@ public class EnterAirlock extends Task implements Serializable {
 		}
 		
 		else {
-			logger.log(unit, person, Level.WARNING, 4_000,
+			logger.log((Unit)airlock.getEntity(), person, Level.WARNING, 4_000,
 				"Not pressurized. Walking back to the chamber and wait.");
 
 			// It's not pressurized yet, go back to the WALK_TO_CHAMBER phase and wait
@@ -720,21 +728,26 @@ public class EnterAirlock extends Task implements Serializable {
 			return time * .75;
 		}
 
-		boolean doneCleaning = false;
+		if (inSettlement) {
+			boolean doneCleaning = false;
 
-		remainingCleaningTime -= time;
+			remainingCleaningTime -= time;
 
-		if (remainingCleaningTime <= 0) {
-			logger.log(unit, person, Level.FINE, 4_000, "Completed the clean-up.");
-			doneCleaning = true;
-		}
+			if (remainingCleaningTime <= 0) {
+				logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4_000, "Completed the clean-up.");
+				doneCleaning = true;
+			}
 
-		if (doneCleaning
-			 && (!inSettlement || transitionTo(1))) {
-			// If in vehicle, it doesn't need to transition to zone 1
-			canProceed = true;
+			if (doneCleaning && transitionTo(1)) {
+				// If in vehicle, it doesn't need to clean up
+				canProceed = true;
+			}
 		}
 		
+		else {
+			// If in vehicle, there are only two chambers, no time to clean up
+			canProceed = true;
+		}
 		
 		if (canProceed) {
 			// Reset accumulatedTime back to zero
@@ -795,7 +808,7 @@ public class EnterAirlock extends Task implements Serializable {
 			// Add experience
 			addExperience(time);
 
-			logger.log(unit, person, Level.FINE, 4_000,
+			logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4_000,
 					"Departing " + airlock.getEntity().toString() + ".");
 
 			// This completes the EVA ingress through the airlock
@@ -823,10 +836,10 @@ public class EnterAirlock extends Task implements Serializable {
 			result = false;
 		}
 
-		else if (airlock.isChamberFull() || !airlock.hasSpace()) {
+		else if (airlock.areAll4ChambersFull() || !airlock.hasSpace()) {
 			logger.log((Unit)airlock.getEntity(), person, Level.INFO, 20_000,
-					"Could not enter " + airlock.getEntityName()
-					+ ". Already full.");
+					CHAMBER_FULL + airlock.getEntityName().toString()
+					+ "Could not enter.");
 			result = false;
 		}
 
@@ -838,11 +851,11 @@ public class EnterAirlock extends Task implements Serializable {
 		// Clear the person as the airlock operator if task ended prematurely.
 		if (airlock != null && person.getName().equals(airlock.getOperatorName())) {
 			if (inSettlement) {
-				logger.log(unit, person, Level.FINE, 4_000,
+				logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4_000,
 							"Concluded the airlock operator task.");
 			}
 			else {
-				logger.log(unit, person, Level.FINE, 4_000,
+				logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4_000,
 						"Concluded the vehicle airlock operator task.");
 			}
 
@@ -858,11 +871,11 @@ public class EnterAirlock extends Task implements Serializable {
 		// Clear the person as the airlock operator if task ended prematurely.
 		if (airlock != null && person.getName().equals(airlock.getOperatorName())) {
 			if (airlock.getEntity() instanceof Building) {
-				logger.log(unit, person, Level.FINE, 4_000,
+				logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4_000,
 						"Concluded the building airlock operator task.");
 			}
 			else {
-				logger.log(unit, person, Level.FINE, 4_000,
+				logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4_000,
 						"Concluded the vehicle airlock operator task.");
 			}
 

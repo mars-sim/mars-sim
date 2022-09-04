@@ -57,7 +57,7 @@ public class ExitAirlock extends Task implements Serializable {
 	private static final String RESERVATION_NOT_MADE = "Reservation not made.";
 	private static final String NOT_FIT = "Not fit enough";
 	private static final String INNER_DOOR_LOCKED = "Inner door was locked.";
-	private static final String CHAMBER_FULL = "Chamber was full.";
+	private static final String CHAMBER_FULL = "All 4 chambers are occupied.";
 	
     /** The minimum performance needed. */
 	private static final double MIN_PERFORMANCE = 0.05;
@@ -414,17 +414,21 @@ public class ExitAirlock extends Task implements Serializable {
 				return time;
 			}
 
-			if (airlock.isChamberFull() || !airlock.hasSpace()) {
+			if (airlock.areAll4ChambersFull() || !airlock.hasSpace()) {
 				walkAway(person, CHAMBER_FULL);
 				return time;
 			}
 				
-			if (transitionTo(0) && (!airlock.isInnerDoorLocked() || airlock.isEmpty())) {
+			if (isInZone(0)) {
+				canProceed = true;
+			}
+			
+			else if (transitionTo(0) && (!airlock.isInnerDoorLocked() || airlock.isEmpty())) {
 				// The inner door will stay locked if the chamber is NOT pressurized
 				canProceed = true;
 			}
 			
-			if (airlock.isEmpty()) {
+			else if (airlock.isEmpty()) {
 				// If the airlock is empty, it means no one is using it
 				logger.log((Unit)airlock.getEntity(), person, Level.FINE, 60_000,
 						"No one is at " + airlock.getEntity().toString() + ".");
@@ -581,8 +585,8 @@ public class ExitAirlock extends Task implements Serializable {
 				return time;
 			}
 
-			if (airlock.isChamberFull() || !airlock.hasSpace()) {
-				walkAway(person, TRIED_TO_STEP_THRU_INNER_DOOR + " but " + CHAMBER_FULL);
+			if (airlock.areAll4ChambersFull() || !airlock.hasSpace()) {
+				walkAway(person, TRIED_TO_STEP_THRU_INNER_DOOR + ". " + CHAMBER_FULL);
 				return time;
 			}
 			
@@ -672,7 +676,7 @@ public class ExitAirlock extends Task implements Serializable {
 
 		if (inSettlement) {
 
-			if (airlock.isChamberFull() || !airlock.hasSpace()) {
+			if (airlock.areAll4ChambersFull() || !airlock.hasSpace()) {
 				walkAway(person, CHAMBER_FULL);
 				return time;
 			}

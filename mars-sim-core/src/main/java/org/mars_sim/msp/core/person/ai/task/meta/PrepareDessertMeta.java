@@ -21,7 +21,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 
 /**
- * Meta task for the PrepareSoymilk task.
+ * Meta task for preparing dessert task.
  */
 public class PrepareDessertMeta extends MetaTask {
 	

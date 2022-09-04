@@ -49,7 +49,7 @@
             <connection id="6" xloc="0.0" yloc="-1.5" />
         </connection-list>
     </building>
-    <building id="6" type="Laboratory" xloc="-12.0" yloc="0.0"
+    <building id="6" type="Lounge" xloc="-12.0" yloc="0.0"
         facing="270.0">
         <connection-list>
             <connection id="5" xloc="0.0" yloc="4.5" />
@@ -64,7 +64,7 @@
             <connection id="8" xloc="0.0" yloc="-1.5" />
         </connection-list>
     </building>
-    <building id="8" type="Inflatable Greenhouse" xloc="-24.0"
+    <building id="8" type="Residential Quarters" xloc="-24.0"
         yloc="0.0" facing="270.0">
         <connection-list>
             <connection id="7" xloc="0.0" yloc="4.5" />
@@ -81,7 +81,7 @@
             <connection id="10" xloc="0.0" yloc="-1.5" />
         </connection-list>
     </building>
-    <building id="10" type="Residential Quarters" xloc="-12.0"
+    <building id="10" type="Inflatable Greenhouse" xloc="-12.0"
         yloc="13.0" facing="270.0">
         <connection-list>
             <connection id="9" xloc="0.0" yloc="4.5" />
@@ -113,7 +113,7 @@
             <connection id="14" xloc="0.0" yloc="-1.5" />
         </connection-list>
     </building>
-    <building id="14" type="Lounge" xloc="-12.0" yloc="26.0"
+    <building id="14" type="Laboratory" xloc="-12.0" yloc="26.0"
         facing="270.0">
         <connection-list>
             <connection id="13" xloc="0.0" yloc="4.5" />

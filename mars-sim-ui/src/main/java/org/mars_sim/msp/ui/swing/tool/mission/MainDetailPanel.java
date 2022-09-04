@@ -87,6 +87,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
+import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 
 import com.alee.laf.button.WebButton;
 import com.alee.laf.label.WebLabel;
@@ -159,7 +160,8 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 		
 		// Set the layout.
 		setLayout(new BorderLayout());
-
+        setMaximumSize(MissionWindow.WIDTH - MissionWindow.LEFT_PANEL_WIDTH, MissionWindow.HEIGHT);
+        
 		WebScrollPane scrollPane = new WebScrollPane();
 //		scrollPane.setBorder(new MarsPanelBorder());
 		scrollPane.getVerticalScrollBar().setUnitIncrement(10);

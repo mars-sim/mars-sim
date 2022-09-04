@@ -38,6 +38,7 @@ public class MissionWindow extends ToolWindow {
 	/** Tool name. */
 	public static final String NAME = "Mission Tool";
 	public static final int WIDTH = 640;
+	public static final int LEFT_PANEL_WIDTH = 180;
 	public static final int HEIGHT = 640;
 
 	// Private members
@@ -80,12 +81,12 @@ public class MissionWindow extends ToolWindow {
 
 		// Create the settlement list panel.
 		WebPanel settlementListPane = new WebPanel(new BorderLayout());
-		settlementListPane.setPreferredSize(new Dimension(200, 200));
+		settlementListPane.setPreferredSize(new Dimension(LEFT_PANEL_WIDTH, 220));
 		leftPane.add(settlementListPane, BorderLayout.NORTH);
 
 		// Create the mission list panel.
 		WebPanel missionListPane = new WebPanel(new BorderLayout());
-		missionListPane.setPreferredSize(new Dimension(200, 400));
+		missionListPane.setPreferredSize(new Dimension(LEFT_PANEL_WIDTH, 400));
 		leftPane.add(missionListPane, BorderLayout.CENTER);
 
 		// Create the settlement list.
@@ -128,7 +129,7 @@ public class MissionWindow extends ToolWindow {
 
 		// Create the main detail panel.
 		mainPanel = new MainDetailPanel(desktop, this);
-		mainPanel.setSize(new Dimension(WIDTH - 200, HEIGHT));
+		mainPanel.setSize(new Dimension(WIDTH - LEFT_PANEL_WIDTH, HEIGHT));
 		tabPane.add("Main", mainPanel);
 
 		// Create the navpoint panel.
