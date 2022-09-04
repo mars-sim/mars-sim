@@ -102,7 +102,7 @@ public abstract class DigLocalMeta extends MetaTask {
         double fatigue = condition.getFatigue();
         double hunger = condition.getHunger();
 
-        result -= stress * 2 + fatigue/4 + hunger/4;
+        result -= stress * 2 + fatigue/2 + hunger/2;
 
         if (result < 0)
         	return 0;
@@ -116,9 +116,9 @@ public abstract class DigLocalMeta extends MetaTask {
             result *= indoor - cap;
 
         // Effect of population. The smaller the population, the more they are motivated to dig.
-        if (citizen <= 24)
+        if (citizen <= 32)
             // Adds effect of the # of citizen 
-        	result *= Math.max(1, (32 - citizen) * 1.5);
+        	result *= Math.max(1, 33 - citizen);
      
         // Effect of the ratio of # indoor people vs. those outside already doing EVA 
         result *= (1.0 + indoor) / (1 + settlement.getNumOutsideEVA());
@@ -132,7 +132,7 @@ public abstract class DigLocalMeta extends MetaTask {
         // Effect of the amount of sunlight that influences the probability of starting this task
         double sunlight = surfaceFeatures.getSunlightRatio(settlement.getCoordinates());
         // The higher the sunlight (0 to 1, 1 being the highest) 
-        result *= Math.max(.01, sunlight * 10);
+        result *= Math.max(.01, sunlight * 2);
      
         if (result <= 0)
             return 0;

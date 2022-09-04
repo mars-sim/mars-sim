@@ -350,11 +350,13 @@ public class TendGreenhouse extends Task implements Serializable {
 	public double tend(double time) {
 		double remainingTime = 0;
 		double workTime = time;
-		double mod = 0.5;
+		double mod = 0;
 		
 		if (worker.getUnitType() == UnitType.PERSON)
 			mod = 1.0;
-
+		else
+			mod = .25 * RandomUtil.getRandomDouble(.85, 1.15);
+		
 		// Determine amount of effective work time based on "Botany" skill
 		int greenhouseSkill = getEffectiveSkillLevel();
 		if (greenhouseSkill == 0)

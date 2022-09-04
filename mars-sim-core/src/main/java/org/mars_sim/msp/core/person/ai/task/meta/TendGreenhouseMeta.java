@@ -26,9 +26,9 @@ import org.mars_sim.msp.core.structure.building.Building;
  */
 public class TendGreenhouseMeta extends MetaTask {
 
-    private static final double VALUE = 1;
+    private static final double VALUE = .1;
     
-    private static final int LIMIT = 15_000;
+    private static final int LIMIT = 10_000;
     
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(TendGreenhouseMeta.class.getName());
@@ -60,7 +60,11 @@ public class TendGreenhouseMeta extends MetaTask {
                 // See if there is an available greenhouse.
                 Building farmingBuilding = TendGreenhouse.getAvailableGreenhouse(person);
                 if (farmingBuilding != null) {
-
+  	
+                    int needyCropsNum = person.getSettlement().getCropsNeedingTending();
+                    if (needyCropsNum == 0)
+                    	return 0;
+                    
                     double tendingNeed = person.getSettlement().getCropsTendingNeed();
                     result = tendingNeed * VALUE;
                     
@@ -106,8 +110,12 @@ public class TendGreenhouseMeta extends MetaTask {
                 if (farmingBuilding != null) {
  
                     int needyCropsNum = robot.getSettlement().getCropsNeedingTending();
-
-                    result += needyCropsNum * 50D;
+                    if (needyCropsNum == 0)
+                    	return 0;
+                    
+                    double tendingNeed = robot.getSettlement().getCropsTendingNeed();
+                    result = tendingNeed * VALUE;
+                    
     	            // Effort-driven task modifier.
     	            result *= robot.getPerformanceRating();
                 }

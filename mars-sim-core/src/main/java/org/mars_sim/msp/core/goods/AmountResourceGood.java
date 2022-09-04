@@ -1092,7 +1092,7 @@ class AmountResourceGood extends Good {
 		else if (resource == ResourceUtil.epsomSaltID)
 			return demand * SALT_VALUE_MODIFIER;
 		else if (resource == ResourceUtil.soilID)
-			return demand * settlement.getCropsNeedingTending() * SAND_VALUE_MODIFIER;
+			return demand * settlement.getCropsNeedingTending() * SOIL_VALUE_MODIFIER;
 		else if (resource == ResourceUtil.concreteID) {
 			double regolithVP = 1 + owner.getGoodValuePoint(ResourceUtil.regolithID);
 			double sandVP = 1 + owner.getGoodValuePoint(ResourceUtil.sandID);
