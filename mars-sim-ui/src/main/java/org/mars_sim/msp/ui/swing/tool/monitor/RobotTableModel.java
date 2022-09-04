@@ -335,7 +335,7 @@ public class RobotTableModel extends UnitTableModel {
 			case MISSION_COL: {
 				Mission mission = robot.getBotMind().getMission();
 				if (mission != null) {
-					result = mission.getDescription();
+					result = mission.getName();
 				}
 			}
 				break;

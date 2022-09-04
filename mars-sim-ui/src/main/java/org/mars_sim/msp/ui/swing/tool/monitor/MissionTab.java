@@ -54,10 +54,7 @@ public class MissionTab extends TableTab {
 		Iterator<?> it = rows.iterator();
 		if (it.hasNext()) {
 			Mission mission = (Mission) it.next();
-			if (mission.getMembersNumber() > 0) {
-				Worker member = (Worker) mission.getMembers().toArray()[0];
-				desktop.centerMapGlobe(member.getCoordinates());
-			}
+			desktop.centerMapGlobe(mission.getCurrentMissionLocation());
 		}
 	}
 }

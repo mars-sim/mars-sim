@@ -458,7 +458,7 @@ implements SettlementMapLayer {
 				// Draw mission.
 				Mission mission = selectedPerson.getMind().getMission();
 				if (mission != null) {
-					String missionString = Msg.getString("LabelMapLayer.mission", mission.getDescription(), mission.getPhaseDescription()); //$NON-NLS-1$
+					String missionString = Msg.getString("LabelMapLayer.mission", mission.getName(), mission.getPhaseDescription()); //$NON-NLS-1$
 					if (missionString != null && !missionString.equals(""))
 						drawPersonRobotLabel(
 							g2d, missionString, selectedPerson.getPosition(), sColor, soColor,
@@ -549,7 +549,7 @@ implements SettlementMapLayer {
 			// Draw mission.
 			Mission mission = selectedRobot.getBotMind().getMission();
 			if (mission != null) {
-				String missionString = Msg.getString("LabelMapLayer.mission", mission.getDescription(), mission.getPhaseDescription()); //$NON-NLS-1$
+				String missionString = Msg.getString("LabelMapLayer.mission", mission.getName(), mission.getPhaseDescription()); //$NON-NLS-1$
 				if (missionString != null && !missionString.equals(""))
 					drawPersonRobotLabel(
 						g2d, missionString, selectedRobot.getPosition(),

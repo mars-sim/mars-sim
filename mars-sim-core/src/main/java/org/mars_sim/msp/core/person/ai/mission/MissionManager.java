@@ -139,42 +139,6 @@ public class MissionManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * Gets the mission a given person is a member of. If member isn't a part of any
-	 * mission, return null.
-	 *
-	 * @param member the member.
-	 * @return mission for that member
-	 */
-	public Mission getMission(Worker member) {
-		Mission result = null;
-		for (Mission tempMission : onGoingMissions) {
-			if (tempMission.hasMember(member)) {
-				result = tempMission;
-			}
-		}
-
-		return result;
-	}
-
-	/**
-	 * Gets the mission a given person is a member of. If member isn't a part of any
-	 * mission, return null.
-	 *
-	 * @param member the member.
-	 * @return mission for that member
-	 */
-	public boolean hasMission(Worker member) {
-		for (Mission tempMission : onGoingMissions) {
-			if (tempMission.hasMember(member)) {
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-
-	/**
 	 * Adds a new mission to the mission list.
 	 *
 	 * @param newMission new mission to be added

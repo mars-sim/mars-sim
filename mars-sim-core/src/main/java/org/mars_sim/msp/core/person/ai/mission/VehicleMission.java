@@ -55,7 +55,7 @@ import org.mars_sim.msp.core.vehicle.VehicleType;
 /**
  * A mission that involves driving a vehicle along a series of navpoints.
  */
-public abstract class VehicleMission extends Mission implements UnitListener {
+public abstract class VehicleMission extends AbstractMission implements UnitListener {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -126,7 +126,6 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	/** The estimated total remaining distance at this moment. */
 	private double distanceTotalRemaining;
 	
-	private String dateEmbarked;
 	/** The current traveling status of the mission. */
 	private String travelStatus;
 	/** The String record of the mission vehicle. */
@@ -366,8 +365,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 				startingTravelledDistance = vehicle.getOdometerMileage();
 				newVehicle.setReservedForMission(true);
 				vehicle.addUnitListener(this);
-				// Record the name of this vehicle in Mission
-				setReservedVehicle(newVehicle.getName());
+
 				fireMissionUpdate(MissionEventType.VEHICLE_EVENT);
 			}
 			if (!usable) {
@@ -687,7 +685,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 		}
 
 		boolean settlementSupplies = LoadVehicleGarage.hasEnoughSupplies(settlement, vehicle, resources, equipment,
-				getPeopleNumber(), tripTime);
+				getMembers().size(), tripTime);
 
 		if (!settlementSupplies) {
 			logger.warning(settlement, "Not enough supplies for "
@@ -759,17 +757,6 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 		}
 
 		return handled;
-	}
-
-
-	/**
-	 * Gets the date embarked timestamp of the mission.
-	 *
-	 * @return
-	 */
-	@Override
-	public String getDateEmbarked() {
-		return dateEmbarked;
 	}
 
 	public void flag4Submission() {
@@ -2131,25 +2118,6 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 		return distanceTravelled;
 	}	
 	
-	@Override
-	public void destroy() {
-		super.destroy();
-
-		if (navPoints != null)
-			navPoints.clear();
-		navPoints = null;
-		travelStatus = null;
-		lastStopNavpoint = null;
-
-		vehicle = null;
-		lastOperator = null;
-		operateVehicleTask = null;
-		if (equipmentNeededCache != null) {
-			equipmentNeededCache.clear();
-		}
-		equipmentNeededCache = null;
-	}
-
 	
 	/**
 	 * Can the mission vehicle be unloaded at this Settlement ?
@@ -2180,9 +2148,7 @@ public abstract class VehicleMission extends Mission implements UnitListener {
 	 * next navigation point.
 	 */
 	protected void startTravellingPhase() {
-		if (dateEmbarked == null) {
-			dateEmbarked = marsClock.getTrucatedDateTimeStamp();
-		}
+		getLog().setStarted();
 		startTravelToNextNode();
 		setPhase(TRAVELLING, getNextNavpointDescription());
 	}

@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core.person.ai.mission.meta;
 
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.mission.AbstractMission;
 import org.mars_sim.msp.core.person.ai.mission.EmergencySupply;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
@@ -72,7 +73,7 @@ public class EmergencySupplyMeta extends AbstractMetaMission {
 	            	min_num = RoverMission.MIN_GOING_MEMBERS;
 	    	    
 	            // Check if min number of EVA suits at settlement.
-	            if (Mission.getNumberAvailableEVASuitsAtSettlement(settlement) < min_num) {
+	            if (RoverMission.getNumberAvailableEVASuitsAtSettlement(settlement) < min_num) {
 	    	        return 0;
 	    	    }
 	

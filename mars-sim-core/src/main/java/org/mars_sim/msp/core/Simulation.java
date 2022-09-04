@@ -51,6 +51,7 @@ import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.mission.AbstractMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.MissionPlanning;
@@ -445,7 +446,7 @@ public class Simulation implements ClockListener, Serializable {
 		GameManager.initializeInstances(unitManager);
 
 		// Set instances for classes that extend Unit and Task and Mission
-		Mission.initializeInstances(this, marsClock, eventManager, unitManager,
+		AbstractMission.initializeInstances(this, marsClock, eventManager, unitManager,
 				surfaceFeatures, missionManager, pc);
 		Task.initializeInstances(masterClock, marsClock, eventManager, unitManager,
 				scientificStudyManager, surfaceFeatures, orbitInfo, missionManager, pc);
@@ -725,7 +726,7 @@ public class Simulation implements ClockListener, Serializable {
 		LocalAreaUtil.initializeInstances(unitManager, marsClock);
 		
 		// Re-initialize Mission related class
-		Mission.initializeInstances(this, marsClock, eventManager, unitManager,
+		AbstractMission.initializeInstances(this, marsClock, eventManager, unitManager,
 				surfaceFeatures, missionManager, pc);
 		MissionPlanning.initializeInstances(marsClock);
 

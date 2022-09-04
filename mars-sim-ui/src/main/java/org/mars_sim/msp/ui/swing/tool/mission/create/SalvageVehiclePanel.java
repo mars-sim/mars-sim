@@ -246,7 +246,7 @@ public class SalvageVehiclePanel extends WizardPanel {
                         result = vehicle.printStatusTypes();
                     else if (column == 2) {
                         Mission mission = missionManager.getMissionForVehicle(vehicle);
-                        if (mission != null) result = mission.getDescription();
+                        if (mission != null) result = mission.getName();
                         else result = "None";
                     }
                 }

@@ -356,21 +356,21 @@ public class MissionTableModel extends AbstractTableModel
 		if (rowIndex < missionCache.size()) {
 			Mission mission = missionCache.get(rowIndex);
 
-			if (mission != null) {// && mission.getDescription() != null && !mission.getDescription().equals("")) {
+			if (mission != null) {
 				switch (columnIndex) {
 
 				case DATE_FILED: {
-					result = mission.getDateFiled();
+					result = mission.getLog().getDateCreated();
 				}
 					break;
 
 				case DATE_EMBARKED: {
-					result = mission.getDateEmbarked();
+					result = mission.getLog().getDateStarted();
 				}
 					break;
 
 				case DATE_RETURNED : {
-					result = mission.getDateReturned();
+					result = mission.getLog().getDateFinished();
 				}
 					break;
 
@@ -406,22 +406,24 @@ public class MissionTableModel extends AbstractTableModel
 
 				case VEHICLE: {
 					result = "";
-					if (MissionType.isVehicleMission(mission.getMissionType())) {
-						result = mission.getReservedVehicle();
+					Vehicle reserved = null;
+					if (mission instanceof VehicleMission) {
+						reserved = ((VehicleMission)mission).getVehicle();
 					} else if (mission.getMissionType() == MissionType.BUILDING_CONSTRUCTION) {
 						BuildingConstructionMission constructionMission = (BuildingConstructionMission) mission;
 						List<GroundVehicle> constVehicles = constructionMission.getConstructionVehicles();
 						if (!constVehicles.isEmpty()) {
-							Vehicle vehicle = constVehicles.get(0);
-							result = vehicle.getName();
+							reserved = constVehicles.get(0);
 						}
 					} else if (mission.getMissionType() == MissionType.BUILDING_SALVAGE) {
 						BuildingSalvageMission salvageMission = (BuildingSalvageMission) mission;
 						List<GroundVehicle> constVehicles = salvageMission.getConstructionVehicles();
 						if (!constVehicles.isEmpty()) {
-							Vehicle vehicle = constVehicles.get(0);
-							result = vehicle.getName();
+							reserved = constVehicles.get(0);
 						}
+					}
+					if (reserved != null) {
+						result = reserved.getName();
 					}
 				}
 					break;
@@ -432,7 +434,7 @@ public class MissionTableModel extends AbstractTableModel
 					break;
 
 				case MEMBER_NUM: {
-					result = mission.getRecordMembersNum();
+					result = mission.getSignup().size();
 				}
 					break;
 
@@ -494,6 +496,8 @@ public class MissionTableModel extends AbstractTableModel
 						result = 0;
 				}
 
+				default:
+					result = "";
 				}
 			}
 		}

@@ -215,7 +215,7 @@ public class DeathInfo implements Serializable {
 
 		Mission mm = mind.getMission();
 		if (mm != null) {
-			mission = mm.getDescription();
+			mission = mm.getName();
 			missionPhase = mm.getPhaseDescription();
 		}
 

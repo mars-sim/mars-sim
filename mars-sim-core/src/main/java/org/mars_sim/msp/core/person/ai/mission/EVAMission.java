@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.Worker;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Rover;
 
@@ -53,7 +54,7 @@ public abstract class EVAMission extends RoverMission {
 
 		// Check suit although these may be claimed before loading
 		int suits = getNumberAvailableEVASuitsAtSettlement(getStartingSettlement());
-		if (suits < getMembersNumber()) {
+		if (suits < getMembers().size()) {
 			endMission(EVA_SUIT_CANNOT_BE_LOADED);
 		}
     }
@@ -64,7 +65,6 @@ public abstract class EVAMission extends RoverMission {
 		boolean handled = true;
 		if (!super.determineNewPhase()) {
 			if (TRAVELLING.equals(getPhase())) {
-//				if (getCurrentNavpoint().isSettlementAtNavpoint()) {
 				if (isCurrentNavpointSettlement()) {
 					startDisembarkingPhase();
 				}
@@ -277,7 +277,7 @@ public abstract class EVAMission extends RoverMission {
 
 		// Determine repair parts for EVA Suits.
 		double evaTime = getEstimatedRemainingEVATime(true);
-		double numberAccidents = evaTime * getPeopleNumber() * EVAOperation.BASE_ACCIDENT_CHANCE;
+		double numberAccidents = evaTime * getMembers().size()* EVAOperation.BASE_ACCIDENT_CHANCE;
 
 		// Assume the average number malfunctions per accident is 1.5.
 		double numberMalfunctions = numberAccidents * VehicleMission.AVERAGE_EVA_MALFUNCTION;
@@ -395,15 +395,13 @@ public abstract class EVAMission extends RoverMission {
 		double explorationSitesTime = getEstimatedRemainingEVATime(useBuffer);
 		double timeSols = explorationSitesTime / 1000D;
 
-		int crewNum = getPeopleNumber();
-
 		// Add the maount for the site visits
-		addLifeSupportResources(result, crewNum, timeSols, useBuffer);
+		addLifeSupportResources(result, getMembers().size(), timeSols, useBuffer);
 
 		return result;
 	}
 
-    
+
 	/**
 	 * Order a list of Coordinates starting from a point to minimise
 	 * the travel time.

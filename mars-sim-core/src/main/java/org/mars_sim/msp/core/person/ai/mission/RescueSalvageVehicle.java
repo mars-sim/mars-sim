@@ -92,7 +92,7 @@ public class RescueSalvageVehicle extends RoverMission {
 
 			if (vehicleTarget != null) {
 				rescue = true;
-				setDescription(
+				setName(
 							Msg.getString("Mission.description.rescueSalvageVehicle.rescue", vehicleTarget.getName())); // $NON-NLS-1$)
 						
 				// Add navpoints for target vehicle and back home again.
@@ -696,14 +696,5 @@ public class RescueSalvageVehicle extends RoverMission {
 		result.putAll(getSparePartsForTrip(computeTotalDistanceRemaining()));
 
 		return result;
-	}
-
-	
-	@Override
-	public void destroy() {
-		super.destroy();
-
-		vehicleTarget = null;
-		missionManager = null;
 	}
 }

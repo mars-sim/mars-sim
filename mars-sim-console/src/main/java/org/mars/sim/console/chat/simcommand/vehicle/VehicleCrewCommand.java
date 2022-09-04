@@ -49,7 +49,7 @@ public class VehicleCrewCommand extends ChatCommand {
 		// Find the crew off the Mission if one assigned
 		// and outside the Settlement
 		Mission m = source.getMission();
-		if ((m != null) && !source.isInSettlement()) {
+		if (m != null) {
 			Collection<Worker> members = m.getMembers();
 			people = members.stream()
 							.filter(mp -> mp instanceof Person)

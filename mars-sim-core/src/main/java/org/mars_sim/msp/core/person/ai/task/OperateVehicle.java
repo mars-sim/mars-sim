@@ -932,11 +932,7 @@ public abstract class OperateVehicle extends Task {
 		
 		// Look up a person's prior pilot related training.
         mod += baseSpeed * getPilotingMod(person);
-        	
-        // Check for any crew emergency
-        if (vehicle.getMission() != null && vehicle.getMission().hasEmergencyAllCrew())
-			mod += baseSpeed * 0.25;
-		
+        
         return mod;
     }
     

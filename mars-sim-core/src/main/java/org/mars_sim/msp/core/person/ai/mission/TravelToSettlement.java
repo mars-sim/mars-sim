@@ -7,6 +7,7 @@
 
 package org.mars_sim.msp.core.person.ai.mission;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -72,7 +73,7 @@ public class TravelToSettlement extends RoverMission {
 			setDestinationSettlement(getRandomDestinationSettlement(startingMember, s));
 			if (destinationSettlement != null) {
 				addNavpoint(destinationSettlement);
-				setDescription(Msg.getString("Mission.description.travelToSettlement.detail",
+				setName(Msg.getString("Mission.description.travelToSettlement.detail",
 						destinationSettlement.getName())); // $NON-NLS-1$)
 			}
 			else {
@@ -346,13 +347,8 @@ public class TravelToSettlement extends RoverMission {
 			// Subtract modifier for average relationship with non-mission
 			// inhabitants of starting settlement.
 			if (getStartingSettlement() != null) {
-				Collection<Person> startingInhabitants = getStartingSettlement().getAllAssociatedPeople();
-				Iterator<Person> i = startingInhabitants.iterator();
-				while (i.hasNext()) {
-					if (hasMember(i.next())) {
-						i.remove();
-					}
-				}
+				Collection<Person> startingInhabitants = new ArrayList<>(getStartingSettlement().getAllAssociatedPeople());
+				startingInhabitants.removeAll(getMembers());
 				double startingSocialModifier = (RelationshipUtil.getAverageOpinionOfPeople(person,
 						startingInhabitants) - 50D) / 50D;
 				result -= startingSocialModifier;
@@ -416,11 +412,5 @@ public class TravelToSettlement extends RoverMission {
 		}
 
 		return result;
-	}
-
-	@Override
-	public void destroy() {
-		super.destroy();
-		destinationSettlement = null;
 	}
 }

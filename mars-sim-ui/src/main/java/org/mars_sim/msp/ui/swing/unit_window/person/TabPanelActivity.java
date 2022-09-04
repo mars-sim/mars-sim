@@ -356,7 +356,7 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 				missionText = deathInfo.getMission();
 
 			else if (mind.getMission() != null) {
-				missionText = mind.getMission().getDescription();
+				missionText = mind.getMission().getName();
 				// if (missionText == null)
 				// missionText = "";
 			}
@@ -366,7 +366,7 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 				missionText = deathInfo.getMission();
 
 			else if (botMind.getMission() != null) {
-				missionText = botMind.getMission().getDescription();
+				missionText = botMind.getMission().getName();
 				// if (missionText == null)
 				// missionText = "";
 			}
@@ -740,7 +740,7 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 
 		// Update mission text area if necessary.
 		if (mission != null)
-			newMissionText = mission.getDescription();
+			newMissionText = mission.getName();
 		else
 			newMissionText = "";
 

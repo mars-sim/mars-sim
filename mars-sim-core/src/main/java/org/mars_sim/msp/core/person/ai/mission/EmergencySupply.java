@@ -1017,26 +1017,4 @@ public class EmergencySupply extends RoverMission {
 			}
 		}
 	}
-
-	@Override
-	public void destroy() {
-		super.destroy();
-
-		emergencySettlement = null;
-
-		if (emergencyResources != null) {
-			emergencyResources.clear();
-			emergencyResources = null;
-		}
-
-		if (emergencyEquipment != null) {
-			emergencyEquipment.clear();
-			emergencyEquipment = null;
-		}
-
-		if (emergencyParts != null) {
-			emergencyParts.clear();
-			emergencyParts = null;
-		}
-	}
 }

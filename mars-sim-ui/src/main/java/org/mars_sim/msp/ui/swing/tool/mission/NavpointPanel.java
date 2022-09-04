@@ -441,7 +441,7 @@ implements ListSelectionListener, MissionListener {
 		// Updates coordinates in map
 		updateCoords(missionCache.getAssociatedSettlement().getCoordinates());
 		
-		if (missionCache.getMembersNumber() > 0) {
+		if (!missionCache.getMembers().isEmpty()) {
 			if (missionCache instanceof VehicleMission) {
 				trailLayer.setSingleVehicle(((VehicleMission) missionCache).getVehicle());
             }

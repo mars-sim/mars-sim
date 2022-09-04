@@ -108,7 +108,7 @@ public class Exploration extends EVAMission
 
 			int skill = startingPerson.getSkillManager().getEffectiveSkillLevel(SkillType.AREOLOGY);
 			List<Coordinates> explorationSites = determineExplorationSites(getVehicle().getRange(MISSION_TYPE),
-					getTotalTripTimeLimit(getRover(), getPeopleNumber(), true),
+					getTotalTripTimeLimit(getRover(), getMembers().size(), true),
 					NUM_SITES, skill);
 
 			if (explorationSites.isEmpty()) {
@@ -590,18 +590,5 @@ public class Exploration extends EVAMission
 	@Override
 	protected Set<JobType> getPreferredPersonJobs() {
 		return PREFERRED_JOBS;
-	}
-
-	@Override
-	public void destroy() {
-		super.destroy();
-
-		if (explorationSiteCompletion != null)
-			explorationSiteCompletion.clear();
-		explorationSiteCompletion = null;
-		currentSite = null;
-		if (exploredSites != null)
-			exploredSites.clear();
-		exploredSites = null;
 	}
 }

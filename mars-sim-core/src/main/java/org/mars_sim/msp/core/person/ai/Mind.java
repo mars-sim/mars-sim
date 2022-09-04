@@ -291,41 +291,18 @@ public class Mind implements Serializable, Temporal {
 				// If the mission vehicle has embarked but the person is not on board,
 				// then release the person from the mission
 				
-				// NOTE: this logic fails because a Units coordinate can only be trusted when on the Surface.
-				// Maybe this should use TopContainer but would be better to identify
-				// if this Person is on board
-//				if (!(mission.getCurrentMissionLocation().equals(person.getCoordinates()))) {
-//					mission.removeMember(person);
-//					logger.info(person, "Not boarded and taken out of " + mission + " mission.");
-//					mission = null;
-//				}
 //
 //				else
 				if (mission.getPhase() != null) {
-					// Checks if a person is tired, too stressful or hungry and need
-					// to take break, eat and/or sleep
-			        boolean inDarkPolarRegion = surfaceFeatures.inDarkPolarRegion(mission.getCurrentMissionLocation());
-					double sun = surfaceFeatures.getSunlightRatio(mission.getCurrentMissionLocation());
-					int mod = 2;
-
-					if (!inDarkPolarRegion) {
-						if (sun < .05)
-							mod = 0;
-						else if (sun < .2)
-							mod = 1;
-					}
-
 			        // Missions have to be done and are stressfull so allow high stress.
-					if ((person.getPhysicalCondition().getPerformanceFactor() < 0.7D)
-			        	&& !mission.hasDangerousMedicalProblemsAllCrew()) {
+					if (person.getPhysicalCondition().getPerformanceFactor() < 0.7D)
 			        	// Cannot perform the mission if a person is not well
 			        	// Note: If everyone has dangerous medical condition during a mission,
 			        	// then it won't matter and someone needs to drive the rover home.
 						// Add penalty in resuming the mission
-						resumeMission(mod - 1);
-					}
+						resumeMission(1);
 					else {
-						resumeMission(mod);
+						resumeMission(2);
 					}
 				}
 			}
@@ -751,8 +728,6 @@ public class Mind implements Serializable, Temporal {
 	public void destroy() {
 		person = null;
 		taskManager.destroy();
-		if (mission != null)
-			mission.destroy();
 		mission = null;
 		job = null;
 		if (mbti != null)
