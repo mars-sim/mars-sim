@@ -72,8 +72,8 @@ public class WasteProcessing extends Function {
 			}
 
 			double inputInventoryLimit = 1D;
-			Set<Integer> set = process.getInputResources();
-			for (int inResource : new HashSet<>(set)) {
+			// May try List.copyOf(process.getInputResources())
+			for (int inResource : process.getInputResources()) {
 				if (!process.isAmbientInputResource(inResource)) {
 					double rate = process.getMaxInputRate(inResource);
 					processValue -= settlement.getGoodsManager().getGoodValuePoint(inResource) * rate;

@@ -77,7 +77,7 @@ public class ResourceProcessing extends Function {
 			}
 
 			double inputInventoryLimit = 1D;
-			for(int inResource : process.getInputResources()) {
+			for (int inResource : process.getInputResources()) {
 				if (!process.isAmbientInputResource(inResource)) {
 					double rate = process.getMaxInputRate(inResource);
 					processValue -= settlement.getGoodsManager().getGoodValuePoint(inResource) * rate;

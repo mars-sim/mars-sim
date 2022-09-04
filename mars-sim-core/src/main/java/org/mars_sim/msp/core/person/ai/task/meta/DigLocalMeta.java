@@ -14,8 +14,8 @@ import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
-import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * Meta task for the DigLocal task.
@@ -24,9 +24,9 @@ public abstract class DigLocalMeta extends MetaTask {
 
 	private static SimLogger logger = SimLogger.getLogger(DigLocalMeta.class.getName());
 
-	private static final double VALUE = 2.5;
-	private static final int MAX = 10000;
-	private static final int LIMIT = 20000;
+	private static final double VALUE = 0.05;
+	private static final int MAX = 5000;
+	private static final int LIMIT = 5000;
 	
 	private EquipmentType containerType;
 
@@ -47,12 +47,21 @@ public abstract class DigLocalMeta extends MetaTask {
      * @return
      */
     protected double getProbability(int resourceId, Settlement settlement, Person person, double collectionProbability) {	
+
+        double result = 0;
+       
     	// Will not perform this task if he has a mission
     	if ((person.getMission() != null) || !person.isInSettlement()) {
     		return 0;
     	}
-
-        double result = 0D;
+ 
+      if (result == 0)
+    	  result = RandomUtil.getRandomDouble(collectionProbability / 2.0, collectionProbability) * VALUE;
+      else
+    	  result *= RandomUtil.getRandomDouble(collectionProbability / 2.0, collectionProbability) * VALUE;
+            
+      if (result > MAX)
+    	  result = MAX;
 
     	// Check if an airlock is available
 //        if (!settlement.isAirlockAvailable(person, false))
@@ -84,7 +93,7 @@ public abstract class DigLocalMeta extends MetaTask {
 
         // Checks if the person's settlement is at meal time and is hungry
         if (EVAOperation.isHungryAtMealTime(person))
-        	result = .2;
+        	result *= .2;
         
         // Probability affected by the person's stress and fatigue.
         PhysicalCondition condition = person.getPhysicalCondition();
@@ -92,14 +101,6 @@ public abstract class DigLocalMeta extends MetaTask {
         double stress = condition.getStress();
         double fatigue = condition.getFatigue();
         double hunger = condition.getHunger();
-
-        if (result == 0)
-        	result = collectionProbability * VALUE;
-        else
-        	result *= collectionProbability * VALUE;
-                
-        if (result > MAX)
-        	result = MAX;
 
         result -= stress * 2 + fatigue/4 + hunger/4;
 
