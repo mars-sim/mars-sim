@@ -30,6 +30,8 @@ public class ListenToMusicMeta extends MetaTask {
     private static final String NAME = Msg.getString(
             "Task.description.listenToMusic"); //$NON-NLS-1$
 
+    private static final double CAP = 1_000D;
+    
     /** Modifier if during person's work shift. */
     private static final double WORK_SHIFT_MODIFIER = .2D;
 
@@ -100,6 +102,9 @@ public class ListenToMusicMeta extends MetaTask {
 	        }
         }
 
+        if (result > CAP)
+        	result = CAP;
+        
         if (result < 0) result = 0;
 
         return result;

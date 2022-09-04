@@ -7,7 +7,6 @@
 package org.mars_sim.msp.core.person.ai.task.meta;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
@@ -28,6 +27,8 @@ public class MeetTogetherMeta extends MetaTask {
     private static final String NAME = Msg.getString(
             "Task.description.meetTogether"); //$NON-NLS-1$
     
+	private static final int CAP = 1_000;
+	
     public MeetTogetherMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
 		
@@ -81,7 +82,8 @@ public class MeetTogetherMeta extends MetaTask {
 	       
         }
         
-//        if (result > 0) logger.info(person, "probability: " + result);
+        if (result > CAP)
+        	result = CAP;
         
         return result;
     }

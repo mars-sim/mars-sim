@@ -31,7 +31,7 @@ public class ProduceFoodMeta extends MetaTask {
     private static final String NAME = Msg.getString(
             "Task.description.produceFood"); //$NON-NLS-1$
 
-    private static final double CAP = 3000D;
+    private static final double CAP = 3_000D;
     
     public ProduceFoodMeta() {
 		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);

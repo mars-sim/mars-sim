@@ -33,7 +33,8 @@ public class ToggleResourceProcessMeta extends MetaTask {
 	private static final String NAME = Msg.getString("Task.description.toggleResourceProcess"); //$NON-NLS-1$
 
 	private static final double FACTOR = 1_000D;
-
+	private static final int CAP = 3_000;
+	
     public ToggleResourceProcessMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
 		setFavorite(FavoriteType.TINKERING);
@@ -93,6 +94,9 @@ public class ToggleResourceProcessMeta extends MetaTask {
 			}
 		}
 
+        if (result > CAP)
+        	result = CAP;
+        
 		return result;
 	}
 }

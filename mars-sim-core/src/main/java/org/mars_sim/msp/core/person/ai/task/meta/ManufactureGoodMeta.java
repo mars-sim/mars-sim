@@ -27,7 +27,7 @@ import org.mars_sim.msp.core.structure.building.Building;
  */
 public class ManufactureGoodMeta extends MetaTask {
 
-    private static final double CAP = 3000D; 
+    private static final double CAP = 3_000D; 
     
     /** Task name */
     private static final String NAME = Msg.getString(

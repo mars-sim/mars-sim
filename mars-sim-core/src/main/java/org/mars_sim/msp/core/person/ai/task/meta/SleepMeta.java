@@ -33,6 +33,7 @@ public class SleepMeta extends MetaTask {
     private static final String NAME = Msg.getString("Task.description.sleep"); //$NON-NLS-1$
 		
 	private static final double MAX = 1000;
+	private static final int CAP = 6_000;
     
     public SleepMeta() {
 		super(NAME, WorkerType.BOTH, TaskScope.ANY_HOUR);
@@ -165,12 +166,9 @@ public class SleepMeta extends MetaTask {
     	    if (result < 0)
     	    	result = 0;
         }
-        
-        else {
-        	// if process is false
-        	
-	        // Reduce the probability if it's not the right time to sleep refreshSleepHabit(person)
-       }
+ 
+        if (result > CAP)
+        	result = CAP;
 
         return result;
     }

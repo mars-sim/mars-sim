@@ -28,7 +28,7 @@ public class TendGreenhouseMeta extends MetaTask {
 
     private static final double VALUE = .1;
     
-    private static final int LIMIT = 10_000;
+    private static final int CAP = 3_000;
     
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(TendGreenhouseMeta.class.getName());
@@ -80,8 +80,8 @@ public class TendGreenhouseMeta extends MetaTask {
             		
                     result = applyPersonModifier(result, person);
                     
-                    if (result > LIMIT)
-                    	result = LIMIT;
+                    if (result > CAP)
+                    	result = CAP;
                 }
             }
             catch (Exception e) {

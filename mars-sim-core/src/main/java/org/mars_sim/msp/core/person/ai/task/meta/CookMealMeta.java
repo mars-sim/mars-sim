@@ -28,6 +28,8 @@ public class CookMealMeta extends MetaTask {
     private static final String NAME = Msg.getString(
             "Task.description.cookMeal"); //$NON-NLS-1$
     
+	private static final int CAP = 6_000;
+	
     public CookMealMeta() {
 		super(NAME, WorkerType.BOTH, TaskScope.ANY_HOUR);
 		setFavorite(FavoriteType.COOKING);
@@ -80,6 +82,9 @@ public class CookMealMeta extends MetaTask {
             }
         }
 
+        if (result > CAP)
+        	result = CAP;
+        
         return result;
     }
 
@@ -118,6 +123,9 @@ public class CookMealMeta extends MetaTask {
                 }
             }
         }
+        
+        if (result > CAP)
+        	result = CAP;
 
         return result;
 	}

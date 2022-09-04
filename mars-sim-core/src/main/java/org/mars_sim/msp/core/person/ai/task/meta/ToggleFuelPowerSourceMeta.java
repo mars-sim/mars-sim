@@ -33,8 +33,8 @@ public class ToggleFuelPowerSourceMeta extends MetaTask {
     private static final String NAME = Msg.getString(
             "Task.description.toggleFuelPowerSource"); //$NON-NLS-1$
 
-	private static final double FACTOR = 10_000D;
-	private static final int LIMIT = 20000;
+	private static final double FACTOR = 1_000D;
+	private static final int CAP = 3_000;
 	
     public ToggleFuelPowerSourceMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
@@ -73,8 +73,8 @@ public class ToggleFuelPowerSourceMeta extends MetaTask {
 	                
 	                double diff = ToggleFuelPowerSource.getValueDiff(settlement, powerSource);
 	                double baseProb = diff * FACTOR;
-	                if (baseProb > 10000) {
-	                    baseProb = 10000;
+	                if (baseProb > 1000) {
+	                    baseProb = 1000;
 	                }
 	                result += baseProb;
 	
@@ -98,8 +98,8 @@ public class ToggleFuelPowerSourceMeta extends MetaTask {
 	
 	        if (result < 0) result = 0;
 
-	        if (result > LIMIT)
-	        	result = LIMIT;
+	        if (result > CAP)
+	        	result = CAP;
         }
         
         return result;

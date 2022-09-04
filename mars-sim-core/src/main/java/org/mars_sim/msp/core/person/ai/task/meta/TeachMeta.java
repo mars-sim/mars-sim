@@ -92,7 +92,6 @@ public class TeachMeta extends MetaTask {
             }
         }
 
-
         return result;
     }
     

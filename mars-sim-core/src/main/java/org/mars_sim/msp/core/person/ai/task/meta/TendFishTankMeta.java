@@ -33,6 +33,8 @@ public class TendFishTankMeta extends MetaTask {
     private static final String NAME = Msg.getString(
             "Task.description.tendFishTank"); //$NON-NLS-1$
 
+	private static final int CAP = 3_000;
+	
     public TendFishTankMeta() {
 		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
 		setFavorite(FavoriteType.TENDING_GARDEN);
@@ -74,6 +76,10 @@ public class TendFishTankMeta extends MetaTask {
                 logger.log(Level.SEVERE, "Problem calculating Person probability", e);
             }
         }
+        
+        if (result > CAP)
+        	result = CAP;
+        
         return result;
     }
 

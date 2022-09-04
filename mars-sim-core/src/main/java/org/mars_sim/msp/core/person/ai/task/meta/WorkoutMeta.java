@@ -27,7 +27,8 @@ public class WorkoutMeta extends MetaTask {
             "Task.description.workout"); //$NON-NLS-1$
 
     private static final int FACTOR = 10;
-    
+	private static final int CAP = 3_000;
+	
     public WorkoutMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.NONWORK_HOUR);
 		setFavorite(FavoriteType.SPORT);
@@ -102,9 +103,11 @@ public class WorkoutMeta extends MetaTask {
 
             if (result < 0) 
             	return 0;
-
         }
     
+        if (result > CAP)
+        	result = CAP;
+        
         return result;
     }
 }

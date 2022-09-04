@@ -6,8 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.util.logging.Level;
-
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
@@ -34,6 +32,7 @@ public class PrepareDessertMeta extends MetaTask {
     private static final int PREP_TIME = 10;
     private static final double VALUE = 10;
     private static final int MOD = 5;
+    private static final double CAP = 3_000D;
     
     public PrepareDessertMeta() {
 		super(NAME, WorkerType.BOTH, TaskScope.ANY_HOUR);
@@ -95,7 +94,10 @@ public class PrepareDessertMeta extends MetaTask {
         		}
             }
         }
-
+        
+        if (result > CAP)
+        	result = CAP;
+        
         return result;
     }
 
@@ -134,6 +136,9 @@ public class PrepareDessertMeta extends MetaTask {
            }
        }
 
+       if (result > CAP)
+       	result = CAP;
+       
        return result;
 	}
 }
