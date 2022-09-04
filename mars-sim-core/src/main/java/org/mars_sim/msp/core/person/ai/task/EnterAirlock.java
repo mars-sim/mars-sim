@@ -449,14 +449,16 @@ public class EnterAirlock extends Task implements Serializable {
 				accumulatedTime = 0;
 				return time * .75;
 			}
-			
-			if (airlock.areAll4ChambersFull() || !airlock.hasSpace())  {
-				logger.log(unit, person, Level.WARNING, 4_000,
+				
+			if (airlock.areAll4ChambersFull()) {
+				logger.log(unit, person, Level.WARNING, 16_000,
 						CHAMBER_FULL + airlock.getEntity().toString() + ".");
-				// Wait for next frame to see if one of the 4 chambers is vacated
+				// Reset accumulatedTime back to zero accumulatedTime = 0
+				// Do nothing in this frame
+				// Wait and see if he's allowed to be at the outer door in the next frame
 				return time * .75;
 			}
-				
+			
             // True if the person is already inside the chamber from previous frame
             if (isInZone(2) || isInZone(3)) {
              	canProceed = true;
@@ -521,15 +523,32 @@ public class EnterAirlock extends Task implements Serializable {
 
 		if (inSettlement) {
 			
+			if (airlock.areAll4ChambersFull()) {
+				logger.log((Unit)airlock.getEntity(), person, Level.WARNING, 16_000,
+						CHAMBER_FULL + airlock.getEntity().toString() + ".");
+				// Reset accumulatedTime back to zero accumulatedTime = 0
+				// Do nothing in this frame
+				// Wait and see if he's allowed to be at the outer door in the next frame
+				return time * .75;
+			}
+			
 			if (transitionTo(2)) {
 				canProceed = true;
 			}
-			else
-				canProceed = false;
 		}
 		
 		else {
-			canProceed = true;
+			
+			if (airlock.areAll4ChambersFull()) {
+				logger.log((Unit)airlock.getEntity(), person, Level.WARNING, 16_000,
+						CHAMBER_FULL + airlock.getEntity().toString() + ".");
+				// Reset accumulatedTime back to zero accumulatedTime = 0
+				// Do nothing in this frame
+				// Wait and see if he's allowed to be at the outer door in the next frame
+				return time * .75;
+			}
+			else
+				canProceed = true;
 		}
 
 		if (canProceed && accumulatedTime > STANDARD_TIME) {

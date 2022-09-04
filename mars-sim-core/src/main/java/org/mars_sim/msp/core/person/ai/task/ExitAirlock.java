@@ -585,7 +585,7 @@ public class ExitAirlock extends Task implements Serializable {
 				return time;
 			}
 
-			if (airlock.areAll4ChambersFull() || !airlock.hasSpace()) {
+			if (airlock.areAll4ChambersFull()) {
 				walkAway(person, TRIED_TO_STEP_THRU_INNER_DOOR + ". " + CHAMBER_FULL);
 				return time;
 			}
@@ -676,7 +676,7 @@ public class ExitAirlock extends Task implements Serializable {
 
 		if (inSettlement) {
 
-			if (airlock.areAll4ChambersFull() || !airlock.hasSpace()) {
+			if (airlock.areAll4ChambersFull()) {
 				walkAway(person, CHAMBER_FULL);
 				return time;
 			}

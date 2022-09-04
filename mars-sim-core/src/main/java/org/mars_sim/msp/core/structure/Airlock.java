@@ -317,7 +317,7 @@ public abstract class Airlock implements Serializable {
 		// List can't tell if the method remove(Object o) should be used.
 
 		// If the airlock is not full
-		if (!occupantIDs.contains(id) && hasSpace()) {
+		if (!occupantIDs.contains(id)) {
 			result = transferIn(person, id, egress);
 		}
 
@@ -1043,7 +1043,7 @@ public abstract class Airlock implements Serializable {
 	/**
 	 * Gets the number of occupants currently inside the airlock zone 1, 2, and 3.
 	 *
-	 * @return the number of occupants
+	 * @return the number of occupants in zone 1, 2, and 3.
 	 */
 	public abstract int getNumOccupants();
 
@@ -1074,7 +1074,8 @@ public abstract class Airlock implements Serializable {
 
 	/**
 	 * Checks if there is an empty slot left in Zone 1, 2 and 3.
-	 *
+	 * Note: can only use this method before ingressing through outer door
+	 * or egressing through the inner door. 
 	 * @return true if there is space
 	 */
 	public boolean hasSpace() {
