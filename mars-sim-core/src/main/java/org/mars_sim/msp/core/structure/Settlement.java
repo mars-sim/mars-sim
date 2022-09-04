@@ -1050,7 +1050,7 @@ public class Settlement extends Structure implements Temporal,
 				goodsManager.updateGoodValues();
 			}
 
-			// Check for available airlocks
+			// Tag available airlocks into two categories
 			checkAvailableAirlocks();
 
 			// Check if good need updating
@@ -1651,6 +1651,32 @@ public class Settlement extends Structure implements Temporal,
 		return result;
 	}
 
+	public boolean isAirlockAvailable(Person person, boolean ingress) {
+		Building currentBldg = person.getBuildingLocation();
+	
+		Set<Integer> bldgs = null;
+		if (ingress)
+			bldgs = availableDAirlocks;
+		else
+			bldgs = availablePAirlocks;
+		Iterator<Integer> i = bldgs.iterator();
+		while (i.hasNext()) {
+			Building building = unitManager.getBuildingByID(i.next());
+			boolean chamberFull = building.getEVA().getAirlock().isChamberFull();
+			boolean reservationFull = building.getEVA().getAirlock().isReservationFull();
+
+			// Select airlock that fulfill either conditions:
+			// 1. Chambers are NOT full
+			// 2. Chambers are full but the reservation is NOT full
+			if ((!chamberFull || !reservationFull)
+				// Check valid path
+				&& buildingConnectorManager.hasValidPath(currentBldg, building)) {
+					return true;
+			}
+		}
+
+		return false;
+	}
 
 	/**
 	 * Gets the closest available airlock at the settlement to the given location.
@@ -1728,7 +1754,6 @@ public class Settlement extends Structure implements Temporal,
 	public void checkAvailableAirlocks() {
 		List<Building> pressurizedBldgs = new ArrayList<>();
 		List<Building> depressurizedBldgs = new ArrayList<>();
-//		List<Building> selectedPool = new ArrayList<>();
 
 		for(Building airlockBdg : buildingManager.getBuildings(FunctionType.EVA)) {
 			Airlock airlock = airlockBdg.getEVA().getAirlock();

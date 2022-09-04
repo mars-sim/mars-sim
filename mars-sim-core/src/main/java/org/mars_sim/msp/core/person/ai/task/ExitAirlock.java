@@ -374,6 +374,11 @@ public class ExitAirlock extends Task implements Serializable {
 			airlock.setActivated(true);
 		}
 		
+		if (airlock.isOperator(id)) {
+			// Command the airlock state to be transitioned to "pressurized"
+			airlock.setTransitioning(true);
+		}
+		
 		// If a person is in a vehicle, not needed of checking for reservation
 		if (inSettlement && !airlock.addReservation(person.getIdentifier())) {
 			walkAway(person, RESERVATION_NOT_MADE);
@@ -460,7 +465,9 @@ public class ExitAirlock extends Task implements Serializable {
 				// since it's not pressurized, will need to pressurize the chamber first
 
 				if (airlock.isOperator(id)) {
-
+					// Command the airlock state to be transitioned to "pressurized"
+					airlock.setTransitioning(true);
+					
 					logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4_000, "Ready to pressurize the chamber.");
 
 					if (!airlock.isPressurized() || !airlock.isPressurizing()) {

@@ -146,14 +146,14 @@ implements Serializable {
                     detail); //$NON-NLS-1$
         	setDescription(s);
 
-			logger.log(person, Level.INFO, 10_000, s + ".");
+			logger.log(person, Level.FINE, 30_000, s + ".");
         }
     	else {
     		String s = Msg.getString("Task.description.conversation.to.detail",
                     detail); //$NON-NLS-1$
         	setDescription(s);
 
-			logger.log(person, Level.INFO, 10_000, s + ".");
+			logger.log(person, Level.FINE, 30_000, s + ".");
     	}
     }
 
@@ -237,7 +237,7 @@ implements Serializable {
 
         if (pool.size() == 0) {
         	initiatorLocation = Location.NONE;
-        	logger.info(person, "can't find anyone to chat with.");
+        	logger.info(person, 10_000, "can't find anyone to chat with.");
         	return null;
         }
 

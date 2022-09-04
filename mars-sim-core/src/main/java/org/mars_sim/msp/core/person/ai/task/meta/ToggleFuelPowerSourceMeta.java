@@ -34,6 +34,7 @@ public class ToggleFuelPowerSourceMeta extends MetaTask {
             "Task.description.toggleFuelPowerSource"); //$NON-NLS-1$
 
 	private static final double FACTOR = 10_000D;
+	private static final int LIMIT = 20000;
 	
     public ToggleFuelPowerSourceMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
@@ -97,6 +98,8 @@ public class ToggleFuelPowerSourceMeta extends MetaTask {
 	
 	        if (result < 0) result = 0;
 
+	        if (result > LIMIT)
+	        	result = LIMIT;
         }
         
         return result;

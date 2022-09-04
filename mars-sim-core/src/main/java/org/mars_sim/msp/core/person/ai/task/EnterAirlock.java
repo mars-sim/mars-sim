@@ -266,7 +266,12 @@ public class EnterAirlock extends Task implements Serializable {
 			// Only the airlock operator may activate the airlock
 			airlock.setActivated(true);
 		}
-
+		
+		if (airlock.isOperator(id)) {
+			// Command the airlock state to be transitioned to "depressurized"
+			airlock.setTransitioning(true);
+		}
+		
 		if (inSettlement) {
 			// Load up the EVA activity spots
 			airlock.loadEVAActivitySpots();
@@ -334,7 +339,7 @@ public class EnterAirlock extends Task implements Serializable {
 					// Command the airlock state to be transitioned to "depressurized"
 					airlock.setTransitioning(true);
 
-					logger.log(unit, person, Level.FINE, 4_000, "Ready to depressurize the chamber.");
+					logger.log(unit, person, Level.INFO, 4_000, "Ready to depressurize the chamber.");
 
 					if (!airlock.isDepressurized() || !airlock.isDepressurizing()) {
 						// Note: Only the operator has the authority to start the depressurization
@@ -379,8 +384,8 @@ public class EnterAirlock extends Task implements Serializable {
 				logger.log(unit, person, Level.WARNING, 4_000,
 						"Could not depressurize " + airlock.getEntity().toString() + ". "
 						+ list + " still inside not wearing EVA suit.");
-				// Reset accumulatedTime back to zero
-				accumulatedTime = 0;
+
+				// need to wait here for them to put on the EVA suit first
 			}
 
 			if (!airlock.isActivated()) {
