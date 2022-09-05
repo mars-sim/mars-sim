@@ -400,9 +400,9 @@ public class BuildingConfig implements Serializable {
 			List<Element> inputNodes = processElement.getChildren(INPUT);
 			for (Element inputElement : inputNodes) {
 				String resourceName = inputElement.getAttributeValue(RESOURCE).toLowerCase();
-				// AmountResource resource = ResourceUtil.findAmountResource(resourceName);
 				Integer id = ResourceUtil.findIDbyAmountResourceName(resourceName);
-				double rate = Double.parseDouble(inputElement.getAttributeValue(RATE)) / 1000D;
+				// Convert RATE [in kg/sol] to rate [in kg/millisol]
+				double rate = Double.parseDouble(inputElement.getAttributeValue(RATE)) / 1000.0;
 				boolean ambient = Boolean.valueOf(inputElement.getAttributeValue(AMBIENT));
 				process.addMaxInputResourceRate(id, rate, ambient);
 			}
@@ -411,9 +411,9 @@ public class BuildingConfig implements Serializable {
 			List<Element> outputNodes = processElement.getChildren(OUTPUT);
 			for (Element outputElement : outputNodes) {
 				String resourceName = outputElement.getAttributeValue(RESOURCE).toLowerCase();
-				// AmountResource resource = ResourceUtil.findAmountResource(resourceName);
 				Integer id = ResourceUtil.findIDbyAmountResourceName(resourceName);
-				double rate = Double.parseDouble(outputElement.getAttributeValue(RATE)) / 1000D;
+				// Convert RATE [in kg/sol] to rate [in kg/millisol]
+				double rate = Double.parseDouble(outputElement.getAttributeValue(RATE)) / 1000.0;
 				boolean ambient = Boolean.valueOf(outputElement.getAttributeValue(AMBIENT));
 				process.addMaxOutputResourceRate(id, rate, ambient);
 			}
@@ -466,6 +466,7 @@ public class BuildingConfig implements Serializable {
 			for (Element inputElement : inputNodes) {
 				String resourceName = inputElement.getAttributeValue(RESOURCE).toLowerCase();
 				Integer id = ResourceUtil.findIDbyAmountResourceName(resourceName);
+				// Convert RATE [in kg/sol] to rate [in kg/millisol]
 				double rate = Double.parseDouble(inputElement.getAttributeValue(RATE)) / 1000D;
 				boolean ambient = Boolean.parseBoolean(inputElement.getAttributeValue(AMBIENT));
 				process.addMaxInputRate(id, rate, ambient);
@@ -476,6 +477,7 @@ public class BuildingConfig implements Serializable {
 			for (Element outputElement : outputNodes) {
 				String resourceName = outputElement.getAttributeValue(RESOURCE).toLowerCase();
 				Integer id = ResourceUtil.findIDbyAmountResourceName(resourceName);
+				// Convert RATE [in kg/sol] to rate [in kg/millisol]
 				double rate = Double.parseDouble(outputElement.getAttributeValue(RATE)) / 1000D;
 				boolean ambient = Boolean.parseBoolean(outputElement.getAttributeValue(AMBIENT));
 				process.addMaxOutputRate(id, rate, ambient);

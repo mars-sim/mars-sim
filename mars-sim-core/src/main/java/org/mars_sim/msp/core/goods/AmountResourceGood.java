@@ -63,41 +63,45 @@ class AmountResourceGood extends Good {
     private static final double CO2_VALUE = 0.0000005;
 	private static final double CL_VALUE = 0.25;
 	private static final double ICE_VALUE = 1.5;
-	private static final double FOOD_VALUE = 0.1;
-	private static final double DERIVED_VALUE = .07;
-	private static final double SOY_VALUE = .05;
-	private static final double CROP_VALUE = 5;
 	private static final double WASTE_WATER_VALUE = 1.5;
 	private static final double GREY_WATER_VALUE = 1;
 	private static final double BLACK_WATER_VALUE = .5;
 	private static final double USEFUL_WASTE_VALUE = 1.05D;
-	private static final double ANIMAL_VALUE = .1;
-	private static final double CHEMICAL_VALUE = 0.01;
-	private static final double MEDICAL_VALUE = 0.001;
-	private static final double WASTE_VALUE = 0.0001;
-	private static final double OIL_VALUE = 0.001;
-	private static final double ROCK_VALUE = 0.005;
-	private static final double REGOLITH_VALUE = .02;
-	private static final double ORE_VALUE = 0.03;
-	private static final double MINERAL_VALUE = 0.1;
-	private static final double STANDARD_AMOUNT_VALUE = 0.3;
-	private static final double ELEMENT_VALUE = 0.5;
-	private static final double LIFE_SUPPORT_VALUE = .5;
+	
+	// Cost modifiers
+	private static final double FOOD_COST = 0.1;
+	private static final double DERIVED_COST = .07;
+	private static final double SOY_COST = .05;
+	private static final double CROP_COST = 5;
+	private static final double ANIMAL_COST = .1;
+	private static final double CHEMICAL_COST = 0.01;
+	private static final double MEDICAL_COST = 0.01;
+	private static final double WASTE_COST = 0.0001;
+	private static final double OIL_COST = 0.01;
+	private static final double ROCK_COST = 5;
+	private static final double REGOLITH_COST = .02;
+	private static final double ORE_COST = 0.3;
+	private static final double MINERAL_COST = 0.3;
+	private static final double ELEMENT_COST = 0.5;
+	private static final double LIFE_SUPPORT_COST = .5;
 
+	// Value point modifiers
     private static final double ICE_VALUE_MODIFIER = 1;
 	private static final double WATER_VALUE_MODIFIER = 1;
 	private static final double SOIL_VALUE_MODIFIER = 5;
-	private static final double REGOLITH_VALUE_MODIFIER = 1;
-	private static final double SAND_VALUE_MODIFIER = 1D;
-	private static final double CONCRETE_VALUE_MODIFIER = .5D;
-	private static final double ROCK_MODIFIER = 0.99D;
+	private static final double REGOLITH_VALUE_MODIFIER = .5;
+	private static final double SAND_VALUE_MODIFIER = 3;
+	private static final double ORES_VALUE_MODIFIER = 5;
+	private static final double CONCRETE_VALUE_MODIFIER = 5;
+	private static final double MINERAL_VALUE_MODIFIER = 2;
+	private static final double ROCK_VALUE_MODIFIER = 1;
 	private static final double METEORITE_MODIFIER = 1.05;
 	private static final double SALT_VALUE_MODIFIER = .2;
 	private static final double OXYGEN_VALUE_MODIFIER = .02D;
 	private static final double METHANE_VALUE_MODIFIER = 1;
-	private static final double LIFE_SUPPORT_FACTOR = .005;
 	private static final double FOOD_VALUE_MODIFIER = .1;
 
+	private static final double LIFE_SUPPORT_FACTOR = .005;
 	private static final double VEHICLE_FUEL_FACTOR = 1;
 	private static final double FARMING_FACTOR = .1;
 	private static final double TISSUE_CULTURE_FACTOR = .75;
@@ -105,7 +109,10 @@ class AmountResourceGood extends Good {
 	private static final double CROP_FACTOR = .1;
 	private static final double DESSERT_FACTOR = .1;
 
-	private static final double REGOLITH_DEMAND_FACTOR = 1;
+	private static final double REGOLITH_DEMAND_FACTOR = 0.5;
+	private static final double ORE_DEMAND_FACTOR = 3;
+	private static final double MINERAL_DEMAND_FACTOR = 2;
+
 	private static final double CHEMICAL_DEMAND_FACTOR = 1;
 	private static final double COMPOUND_DEMAND_FACTOR = 1;
 	private static final double ELEMENT_DEMAND_FACTOR = 1;
@@ -173,41 +180,41 @@ class AmountResourceGood extends Good {
         double result = 0D;
 
         if (lifeSupport)
-            result += LIFE_SUPPORT_VALUE;
+            result += LIFE_SUPPORT_COST;
         
         else if (edible) {
             if (type == GoodType.DERIVED)
-                result += DERIVED_VALUE;
+                result += DERIVED_COST;
             else if (type == GoodType.SOY_BASED)
-                result += SOY_VALUE;
+                result += SOY_COST;
             else if (type == GoodType.ANIMAL)
-                result += ANIMAL_VALUE;
+                result += ANIMAL_COST;
             else
-                result += FOOD_VALUE;
+                result += FOOD_COST;
         }
         
         else if (type == GoodType.WASTE)
-            result += WASTE_VALUE;
+            result += WASTE_COST;
 
 		// TODO Should be a Map GoodType -> double VALUE
         else if (type == GoodType.MEDICAL)
-            result += MEDICAL_VALUE;
+            result += MEDICAL_COST;
         else if (type == GoodType.OIL)
-            result += OIL_VALUE;
+            result += OIL_COST;
         else if (type == GoodType.CROP)
-            result += CROP_VALUE;
+            result += CROP_COST;
         else if (type == GoodType.ROCK)
-            result += ROCK_VALUE;
+            result += ROCK_COST;
         else if (type == GoodType.REGOLITH)
-            result += REGOLITH_VALUE;
+            result += REGOLITH_COST;
         else if (type == GoodType.ORE)
-            result += ORE_VALUE;
+            result += ORE_COST;
         else if (type == GoodType.MINERAL)
-            result += MINERAL_VALUE;
+            result += MINERAL_COST;
         else if (type == GoodType.ELEMENT)
-            result += ELEMENT_VALUE;
+            result += ELEMENT_COST;
         else if (type == GoodType.CHEMICAL)
-            result += CHEMICAL_VALUE;
+            result += CHEMICAL_COST;
 //        else
 //            result += STANDARD_AMOUNT_VALUE ;
   
@@ -413,9 +420,15 @@ class AmountResourceGood extends Good {
 		double demand = 0;
 		switch(ar.getGoodType()) {
 			case REGOLITH:
-			case ORE:
-			case MINERAL:
 				demand = REGOLITH_DEMAND_FACTOR;
+				break;
+
+			case ORE:
+				demand = ORE_DEMAND_FACTOR;
+				break;
+
+			case MINERAL:
+				demand = MINERAL_DEMAND_FACTOR;
 				break;
 
 			case ROCK:
@@ -435,7 +448,7 @@ class AmountResourceGood extends Good {
 				break;
 
 			case WASTE:
-				demand = WASTE_VALUE;
+				demand = WASTE_COST;
 				break;
 
 			default:
@@ -1085,7 +1098,7 @@ class AmountResourceGood extends Good {
 	 */
 	private double getMineralDemand(GoodsManager owner, Settlement settlement) {
 		double demand = 1;
-		int resource= getID();
+		int resource = getID();
 
         if (resource == ResourceUtil.rockSaltID)
 			return demand * SALT_VALUE_MODIFIER;
@@ -1114,14 +1127,14 @@ class AmountResourceGood extends Good {
 			for (int id : ResourceUtil.rockIDs) {
 				if (resource == id) {
 					double vp = owner.getGoodValuePoint(id);
-					return demand * (.2 * regolithVP + .9 * vp) / vp * ROCK_VALUE;
+					return demand * (.2 * regolithVP + .9 * vp) / vp * ROCK_VALUE_MODIFIER;
 				}
 			}
 
 			for (int id : ResourceUtil.mineralConcIDs) {
 				if (resource == id) {
 					double vp = owner.getGoodValuePoint(id);
-					return demand * (.2 * regolithVP + .9 * vp) / vp * MINERAL_VALUE;
+					return demand * (.2 * regolithVP + .9 * vp) / vp * MINERAL_VALUE_MODIFIER;
 				}
 			}
 
@@ -1129,14 +1142,16 @@ class AmountResourceGood extends Good {
 				if (resource == id) {
 					double vp = owner.getGoodValuePoint(id);
 					// loses 10% by default
-					return demand * (.3 * regolithVP + .6 * vp) / vp * ORE_VALUE;
+					return demand * (.3 * regolithVP + .6 * vp) / vp * ORES_VALUE_MODIFIER;
 				}
 			}
 
-			if (resource == ResourceUtil.regolithBID || resource == ResourceUtil.regolithCID
+			if (resource == ResourceUtil.regolithID
+					|| resource == ResourceUtil.regolithBID 
+					|| resource == ResourceUtil.regolithCID
 					|| resource == ResourceUtil.regolithDID) {
 				double vp = owner.getGoodValuePoint(resource);
-				return demand * (.3 * regolithVP + .6 * vp) / vp;
+				return demand * vp * REGOLITH_VALUE_MODIFIER;
 			}
 
 			// Checks if this resource is a ROCK type
@@ -1147,7 +1162,7 @@ class AmountResourceGood extends Good {
 				if (resource == METEORITE_ID)
 					return demand * (.4 * regolithVP + .5 * vp) / vp * METEORITE_MODIFIER;
 				else
-					return demand * (.2 * sandVP + .7 * vp) / vp * ROCK_MODIFIER;
+					return demand * (.2 * sandVP + .7 * vp) / vp * ROCK_VALUE_MODIFIER;
 			}
 
 		}
@@ -1200,7 +1215,7 @@ class AmountResourceGood extends Good {
 		}
 
 		if (getGoodType() == GoodType.WASTE) {
-			return WASTE_VALUE;
+			return WASTE_COST;
 		}
 		
 		return 1;

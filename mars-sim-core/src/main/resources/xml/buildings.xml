@@ -416,7 +416,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				-->
 			
 				<process name="Sabatier RWGS Reactor" number-modules="4" power-required="0.47" default="on">
-				<!-- 33.6g imported from outside. 6g from storage -->
+				<!-- rate: the input/output resource rate [in kg/sol] -->
 					<input resource="carbon dioxide" rate="39.6" ambient="true" />
 					<input resource="hydrogen" rate="3.6" ambient="false" />
 					<output resource="methane" rate="4.8" ambient="false" />
@@ -1452,8 +1452,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-storage capacity="20" discharge-rate="1.25"/>
 			<resource-processing power-down-level="0.0">
 			
-				<process name="convert regolith to ores with sand" 
-					power-required="0.5" default="off">
+				<process name="convert regolith to ores with sand" number-modules="10" 
+					power-required="0.5" default="on">
 					<description> A Mars Aqueous Regolith Extract (MARE) was prepared from the Phoenix
 					analogue regolith and analyzed by ion chromatography. The MARE contained (mg/L) 
 					Nitrogen-containing species NO3- has 773 and NO2- has 6.9 
@@ -1480,7 +1480,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</process>
 				-->
 				
-				<process name="extract nitrogen compounds from regolith" power-required="0.1" default="off">
+				<process name="extract nitrogen compounds from regolith" number-modules="10" 
+					power-required="0.1" default="off">
 					<input resource="regolith" rate="5.0" ambient="false" />
 					
 					<output resource="nitrate" rate="1.0" ambient="false" />
@@ -1490,7 +1491,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="argon" rate="0.1" ambient="false" />
 				</process>
 	
-				<process name="process regolith-B rich in poly-hydrated sulfate" power-required="0.1" default="off">
+				<process name="process regolith-B rich in poly-hydrated sulfate" number-modules="3" 
+					power-required="0.1" default="off">
 					<description>
 						Gypsum is CaSO&lt;sub&gt;4&lt;/sub&gt; * 2H&lt;sub&gt;2&lt;/sub&gt;O.
 						This is Case B (Deposit Type : Poly-hydrated) in NASA Mars ISRU Water Study,
@@ -1507,7 +1509,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 						<output resource="sand" rate="20.0" ambient="false" />
 				</process>
 			
-				<process name="process regolith-C rich in phyllo-silicate" power-required="0.1" default="off">
+				<process name="process regolith-C rich in phyllo-silicate" number-modules="3" 
+					power-required="0.1" default="off">
 					<description>
 						Gypsum is CaSO&lt;sub&gt;4&lt;/sub&gt; * 2H&lt;sub&gt;2&lt;/sub&gt;O.
 						This is Case C (Deposit Type : Clay) in NASA Mars ISRU Water Study,
@@ -1524,7 +1527,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 						<output resource="sand" rate="20.0" ambient="false" />
 				</process>
 			
-				<process name="process regolith-D rich in basaltic" power-required="0.1" default="off">
+				<process name="process regolith-D rich in basaltic" number-modules="3" 
+					power-required="0.1" default="off">
 					<description>
 						Gypsum is CaSO&lt;sub&gt;4&lt;/sub&gt; * 2H&lt;sub&gt;2&lt;/sub&gt;O.
 						This is Case D (Deposit Type : typical regolith) in NASA Mars ISRU Water Study,
@@ -1548,28 +1552,32 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 						<output resource="table salt" rate="0.4" ambient="false" />
 				</process>
 	
-				<process name="do hematite smelting" power-required="5.0" default="off">
+				<process name="do hematite smelting" number-modules="3" 
+					power-required="5.0" default="off">
 					<input resource="hematite" rate="50.0" ambient="false" />
 					<input resource="carbon monoxide" rate=".5" ambient="false" />
 					<output resource="iron powder" rate="25.0" ambient="false" />
 					<output resource="carbon dioxide" rate="1.0" ambient="false" />
 				</process>
 			
-				<process name="do magnetite smelting" power-required="5.0" default="off">
+				<process name="do magnetite smelting" number-modules="3" 
+					power-required="5.0" default="off">
 						<input resource="magnetite" rate="50.0" ambient="false" />
 						<input resource="carbon monoxide" rate=".5" ambient="false" />
 						<output resource="iron powder" rate="30.0" ambient="false" />
 						<output resource="carbon dioxide" rate="1.0" ambient="false" />
 				</process>
 			
-				<process name="do goethite smelting" power-required="5.0" default="off">
+				<process name="do goethite smelting" number-modules="3" 
+					power-required="5.0" default="off">
 						<input resource="goethite" rate="50.0" ambient="false" />
 						<input resource="carbon monoxide" rate=".5" ambient="false" />
 						<output resource="iron powder" rate="27.0" ambient="false" />
 						<output resource="carbon dioxide" rate="1.0" ambient="false" />
 				</process>
 			
-				<process name="do olivine smelting" power-required="5.0" default="off">
+				<process name="do olivine smelting" number-modules="3" 
+					power-required="5.0" default="off">
 						<input resource="olivine" rate="50.0" ambient="false" />
 						<input resource="carbon monoxide" rate="32.5" ambient="false" />
 						<output resource="magnesium" rate="11.6" ambient="false" />
@@ -1578,7 +1586,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 						<output resource="carbon dioxide" rate="51.2" ambient="false" />
 				</process>
 			
-				<process name="do magnesite smelting" power-required="5.0" default="off">
+				<process name="do magnesite smelting" number-modules="3" 
+					power-required="5.0" default="off">
 						<input resource="magnesite" rate="50.0" ambient="false" />
 						<input resource="carbon monoxide" rate="16.6" ambient="false" />
 						<output resource="magnesium" rate="14.4" ambient="false" />
@@ -1586,26 +1595,30 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 						<output resource="silica" rate="5" ambient="false" />
 				</process>
 			
-				<process name="do kamacite smelting" power-required="5.0" default="off">
+				<process name="do kamacite smelting" number-modules="3" 
+					power-required="5.0" default="off">
 						<input resource="kamacite" rate="50.0" ambient="false" />
 						<output resource="iron powder" rate="45.0" ambient="false" />
 						<output resource="nickel" rate="5.0" ambient="false" />
 				</process>
 			
-				<process name="do taenite smelting" power-required="5.0" default="off">
+				<process name="do taenite smelting" number-modules="3" 
+					power-required="5.0" default="off">
 						<input resource="taenite" rate="50.0" ambient="false" />
 						<output resource="iron powder" rate="20.0" ambient="false" />
 						<output resource="nickel" rate="30.0" ambient="false" />
 				</process>
 			
-				<process name="do chalcopyrite smelting" power-required="5.0" default="off">
+				<process name="do chalcopyrite smelting" number-modules="3" 
+					power-required="5.0" default="off">
 						<input resource="chalcopyrite" rate="50.0" ambient="false" />
 						<output resource="copper" rate="17.3" ambient="false"/>
 						<output resource="iron powder" rate="15.2" ambient="false"  />
 						<output resource="sulfur" rate="17.5" ambient="false" />
 				</process>
 			
-				<process name="do malachite smelting" power-required="5.0" default="off">
+				<process name="do malachite smelting" number-modules="3" 
+					power-required="5.0" default="off">
 						<input resource="malachite" rate="50.0" ambient="false" />
 						<input resource="carbon" rate="2.7" ambient="false" />
 						<output resource="copper" rate="28.7" ambient="false" />
@@ -1613,7 +1626,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 						<output resource="grey water" rate="4.1" ambient="false" />
 				</process>
 			
-				<process name="extract minerals from basaltic deposits" power-required="0.2" default="off">
+				<process name="extract minerals from basaltic deposits" number-modules="3" 
+					power-required="0.2" default="off">
 						<input resource="basaltic" rate="50.0" ambient="false" />
 						<output resource="aluminum oxide" rate="9.0" ambient="false" />
 						<output resource="magnesium" rate="7.0" ambient="false" />
@@ -1625,7 +1639,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 						<output resource="grey water" rate="10.0" ambient="false" />
 				</process>
 			
-				<process name="extract minerals from smectite deposits" power-required="0.2" default="off">
+				<process name="extract minerals from smectite deposits" number-modules="3" 
+					power-required="0.2" default="off">
 						<input resource="smectite" rate="50.0" ambient="false" />
 						<output resource="aluminum oxide" rate="9.0" ambient="false" />
 						<output resource="lithium" rate="0.5" ambient="false" />
@@ -1639,7 +1654,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 						<output resource="grey water" rate="2.0" ambient="false" />
 				</process>
 			
-				<process name="extract minerals from allophane deposits" power-required="0.2" default="off">
+				<process name="extract minerals from allophane deposits" number-modules="3"
+					power-required="0.2" default="off">
 						<input resource="allophane" rate="50.0" ambient="false" />
 						<output resource="aluminum oxide" rate="30.0" ambient="false" />
 						<output resource="silica" rate="1.0" ambient="false" />
@@ -1647,7 +1663,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 						<output resource="grey water" rate="10.0" ambient="false" />
 				</process>
 			
-				<process name="extract minerals from akaganeite deposits" power-required="0.2" default="off">
+				<process name="extract minerals from akaganeite deposits" number-modules="3" 
+					power-required="0.2" default="off">
 						<input resource="akaganeite" rate="50.0" ambient="false" />
 						<output resource="iron oxide" rate="20.0" ambient="false" />
 						<output resource="iron hydroxide" rate="10.0" ambient="false" />
@@ -1655,14 +1672,16 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 						<output resource="grey water" rate="6.0" ambient="false" />
 				</process>
 			
-				<process name="extract minerals from bassanite deposits" power-required="0.2" default="off">
+				<process name="extract minerals from bassanite deposits" number-modules="3" 
+					power-required="0.2" default="off">
 					<input resource="bassanite" rate="50.0" ambient="false" />
 					<output resource="calcium sulfate" rate="45.0" ambient="false" />
 					<output resource="grey water" rate="3.0" ambient="false" />
 				</process>
 
 				
-				<process name="extract minerals from sand" power-required="1.0" default="off">
+				<process name="extract minerals from sand" number-modules="5" 
+					power-required="1.0" default="off">
 					<description>Typically, manufactured glass contains around 15% sodium oxide, 70% silica
 				     (silicon dioxide) and 9% lime (calcium oxide). The sodium carbonate "soda"
 				     serves as a flux to lower the temperature at which the silica melts.
@@ -1684,7 +1703,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<!-- CaSO4*2H2O (gypsum) + 2C -> CaS + 2CO2 + 2H2O -->
 				<!-- CaS + H2O + CO2 -> CaCO3 (calcium carbonate) + H2S -->
 				<!-- Note: ignoring hydrogen sulfide as waste for now. -->
-				<process name="reduce gypsum to calcium carbonate with carbon" power-required=".1" default="off">
+				<process name="reduce gypsum to calcium carbonate with carbon" number-modules="3"
+					power-required=".1" default="off">
 					<description>
 						Reducing gypsum to calcium carbonate using carbon. Gypsum on earth has up to 8.6 % water. Wrapping two processes below:
 						CaSO&lt;sub&gt;4&lt;/sub&gt; * 2H&lt;sub&gt;2&lt;/sub&gt;O (gypsum) + 2C -> CaS + 2CO&lt;sub&gt;2&lt;/sub&gt; + 2H&lt;sub&gt;2&lt;/sub&gt;O
@@ -1699,7 +1719,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="grey water" rate="5.2" ambient="false" />
 				</process>
 
-				<process name="reduce gypsum to calcium carbonate with carbon monoxide" power-required=".1" default="off">
+				<process name="reduce gypsum to calcium carbonate with carbon monoxide" number-modules="3"
+					power-required=".1" default="off">
 					<description>
 						Process for reducing gypsum to calcium carbonate using carbon monoxide.
 						Wrapping two processes:
@@ -1715,7 +1736,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="grey water" rate="5.2" ambient="false" />
 				</process>
 		
-				<process name="reduce gypsum to calcium carbonate with hydrogen" power-required=".1" default="off">
+				<process name="reduce gypsum to calcium carbonate with hydrogen" number-modules="3"
+					power-required=".1" default="off">
 					<description>
 						Process for reducing gypsum to calcium carbonate using hydrogen.
 						Wrapping two processes:
@@ -1731,7 +1753,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="grey water" rate="26.0" ambient="false" />
 				</process>
 			
-				<process name="make quartz from silica" power-required="1.0" default="off">
+				<process name="make quartz from silica" number-modules="2"
+					power-required="1.0" default="off">
 					<input resource="silica" rate="45.0" ambient="false" />
 					<input resource="calcium carbonate" rate="1.0" ambient="false" />
 					<input resource="sodium carbonate" rate="1.0" ambient="false" />
@@ -1740,7 +1763,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</process>
 
 
-				<process name="make soda from sodium oxide" power-required=".1" default="off">
+				<process name="make soda from sodium oxide" number-modules="2"
+					power-required=".1" default="off">
 					<description>
 						Soda is sodium carbonate. That is a salt. Sodium exists in Martian regolith as an
 						oxide or super oxide and can be converted into soda. Dissolve the sodium oxide
@@ -1754,7 +1778,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="sodium carbonate" rate="5.0" ambient="false" />
 				</process>
 
-				<process name="make cement" power-required="1.0" default="off">
+				<process name="make cement" number-modules="5"
+					power-required="1.0" default="off">
 					<input resource="regolith" rate="70.0" ambient="false" />
 					<input resource="gypsum" rate="10.0" ambient="false" />
 					<input resource="aluminum oxide" rate="5.0" ambient="false" />
@@ -1764,7 +1789,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="cement" rate="100.0" ambient="false" />
 				</process>
 
-				<process name="mix sulfur concrete" power-required="1.0" default="off">
+				<process name="mix sulfur concrete" number-modules="5"
+					power-required="1.0" default="off">
 					<description>
 					Makes sulfur concrete using sulfur as the cement, with sand and regolith as aggregates.
 					1. https://www.fastcompany.com/3055172/why-martian-concrete-might-be-the-best-building-material-in-the-solar-system
@@ -1790,7 +1816,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</process>
 
 				<!-- Same as concrete mixing but using lime in place of cement. -->
-				<process name="mix limecrete" power-required="1.0" default="off">
+				<process name="mix limecrete" number-modules="5"
+					power-required="1.0" default="off">
 					<input resource="sulfur" rate="10.0" ambient="false" />
 					<input resource="sand" rate="40.0" ambient="false" />
 					<input resource="lime" rate="50.0" ambient="false" />
@@ -1800,7 +1827,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</process>
 
 
-				<process name="make magnesium-based concrete" power-required="1.0" default="off">
+				<process name="make magnesium-based concrete" number-modules="4"
+					power-required="1.0" default="off">
 					<description> 
 					 Serpentinization : olivine (Mg,Fe)2 + SiO4 produces H2 and Mg(OH)2, 
 					 which in terms produce water 
@@ -1823,7 +1851,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</process>
 
 
-				<process name="produce ethylene" power-required="0.2" default="off">
+				<process name="produce ethylene" number-modules="3"
+					power-required="0.2" default="off">
 					<description>
 						2CO + 4H&lt;sub&gt;2&lt;/sub&gt; -> C&lt;sub&gt;2&lt;/sub&gt;H&lt;sub&gt;4&lt;/sub&gt; (ethylene) + 2H&lt;sub&gt;2&lt;/sub&gt;O
 						Requires iron catalyst.
@@ -1836,7 +1865,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="iron powder" rate="0.95" ambient="false" />
 				</process>
 						
-				<process name="produce polyethylene" power-required="0.1" default="off">
+				<process name="produce polyethylene" number-modules="5"
+					power-required="0.1" default="off">
 					<description>
 						This reaction occurs when ethylene (aka ethene) is heated 
 						and put under pressure in the presence of a catalyst. 
@@ -1846,7 +1876,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="polyethylene" rate="45.0" ambient="false" />
 				</process>
 
-				<process name="produce styrene" power-required=".5" default="off">
+				<process name="produce styrene"
+					power-required=".5" default="off">
 					<description>
 					 	Wrapping four processes into one as follows: 
 						3C + CaO -> CaC2 + CO
@@ -1854,20 +1885,22 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 						3C2H2 (acetylene) -> (condensed) C6H6 (benzene)
 						C6H6 (benzene) + C2H4 (ethylene) -> C2H3C6H5 (styrene)
 					</description>	
-					<input resource="carbon" rate="321.2" ambient="false" />
-					<input resource="lime" rate="20.0" ambient="false" />
-					<input resource="water" rate="160.5" ambient="false" />
-					<input resource="ethylene" rate="83.4" ambient="false" />
-					<output resource="carbon monoxide" rate="249.7" ambient="false" />
-					<output resource="styrene" rate="309.5" ambient="false" />
+					<input resource="carbon" rate="32.12" ambient="false" />
+					<input resource="lime" rate="2.0" ambient="false" />
+					<input resource="water" rate="16.05" ambient="false" />
+					<input resource="ethylene" rate="8.34" ambient="false" />
+					<output resource="carbon monoxide" rate="24.97" ambient="false" />
+					<output resource="styrene" rate="30.95" ambient="false" />
 				</process>
 					
-				<process name="produce polystyrene" power-required=".1" default="off">
+				<process name="produce polystyrene" 
+					power-required=".1" default="off">
 					<input resource="styrene" rate="50" ambient="false" />
 					<output resource="polystyrene" rate="50" ambient="false" />
 				</process>
 
-				<process name="bake calcium carbonate to lime" power-required=".1"  default="off">
+				<process name="bake calcium carbonate to lime" 
+					power-required=".1"  default="off">
 					<description>
 					 	CaCO3 (calcium carbonate) -> CaO (lime) + CO2 
 					</description>	
@@ -1975,7 +2008,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			
 			<resource-processing power-down-level="0.0">
 
-				<process name="Sabatier RWGS Reactor" number-modules="8" power-required="0.47" default="on">
+				<process name="Sabatier RWGS Reactor" number-modules="8" power-required="0.47" default="off">
 					<input resource="carbon dioxide" rate="39.6" ambient="true" />
 					<input resource="hydrogen" rate="3.6" ambient="false" />
 					<output resource="methane" rate="4.8" ambient="false" />
@@ -1983,7 +2016,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="water" rate="21.6" ambient="false" />
 				</process>
 				
-				<process name="Carbon Formation Reactor" number-modules="2" power-required="0.1" default="on">
+				<process name="Carbon Formation Reactor" number-modules="2" power-required="0.1" default="off">
 					<description> The Continuous Bosch (C-Bosch) Reactor reduces CO2 to C(s) and H20 using H2. 
 					 It aims to produce water and elemental carbon from hydrogen and carbon dioxide. 
 					</description> 
@@ -3018,7 +3051,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 		<functions>
 			<resource-processing power-down-level="0.0">
-				<process name="Sabatier RWGS Reactor" number-modules="6" power-required="2.08" default="on">
+				<process name="Sabatier RWGS Reactor" number-modules="6" power-required="2.08" default="off">
 					<input resource="carbon dioxide" rate="264" ambient="true" />
 					<input resource="hydrogen" rate="24" ambient="false" />
 					<output resource="methane" rate="32" ambient="false" />
@@ -3618,7 +3651,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="methanol" rate="32.0" ambient="false" />
 				</process>
 		
-				<process name="melt and filter ice" number-modules="3" power-required="7" default="off">
+				<process name="melt and filter ice" number-modules="10" 
+					power-required="7" default="off">
 					<description> Melting permafrost ice and filtering the water. 
 						Requires 450kJ/kg extraction energy.
 						

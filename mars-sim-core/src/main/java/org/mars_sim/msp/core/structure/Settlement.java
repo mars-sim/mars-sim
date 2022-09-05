@@ -3187,7 +3187,7 @@ public class Settlement extends Structure implements Temporal,
 	 */
 	private double computeRegolithProbability() {
 		double result = 0;
-
+		double demand = goodsManager.getAmountDemandValue(REGOLITH_ID);
 		double regolithVP = goodsManager.getGoodValuePoint(REGOLITH_ID) * GoodsManager.REGOLITH_VALUE_MODIFIER;
 		if (regolithVP > REGOLITH_MAX)
 			regolithVP = REGOLITH_MAX;
@@ -3224,7 +3224,7 @@ public class Settlement extends Structure implements Temporal,
 		if (result < 0)
 			result = 0;
 
-		return result;
+		return result * demand / 200;
 	}
 
 	/***
@@ -3234,7 +3234,7 @@ public class Settlement extends Structure implements Temporal,
 	 */
 	private double computeIceProbability() {
 		double result = 0;
-
+		double demand = goodsManager.getAmountDemandValue(ICE_ID);
 		double iceVP = goodsManager.getGoodValuePoint(ICE_ID);
 		if (iceVP > ICE_MAX)
 			iceVP = ICE_MAX;
@@ -3273,7 +3273,7 @@ public class Settlement extends Structure implements Temporal,
 			result = (MIN_ICE_RESERVE + MIN_WATER_RESERVE) * pop + waterVP + iceVP;
 		}
 		
-		return result / 1.6;
+		return result * demand / 30;
 	}
 
 	/**
