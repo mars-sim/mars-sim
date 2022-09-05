@@ -469,7 +469,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="carbon" rate="24.0" ambient="false" />
 				</process>
 				
-				<process name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="4" power-required="0.1" default="on">
+				<process name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="4" power-required="0.2" default="on">
 					<description>
 					  By partial pyrolysis in microwave generated plasma, methane is converted to 
 					  hydrogen and acetylene:					  
@@ -539,7 +539,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="oxygen" rate="64" ambient="false" />
 				</process>
 				
-				<process name="Low Temperature Plasma CO2 Decomposition" power-required="0.4" default="on">
+				<process name="Low Temperature Plasma CO2 Decomposition" number-modules="4" 
+					power-required="0.4" default="on">
 					<description> 
 						The atmosphere is mainly CO2, so there is no need to capture it and plasma can 
 						be ignited in ambient Martian atmosphere. The traces of Ar and N2 present can only
@@ -548,14 +549,11 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 						The pressure on Mars – of 600 Pa (4.5 Torr), about 150 times lower than on Earth 
 						– is close to the ideal for advantageous plasma operation, so there is no need 
 						to use vacuum pumps or compressors on the first steps of the process.
-						Reference :
-						1. https://www.europhysicsnews.org/articles/epn/pdf/2018/03/epn2018493p15.pdf
-						2. https://www.space.com/comet-tech-generate-breathable-air-mars.html
-						3. https://www.nature.com/articles/s41467-019-10342-6.pdf
+						See https://www.europhysicsnews.org/articles/epn/pdf/2018/03/epn2018493p15.pdf
 					</description>
-					<input resource="carbon dioxide" rate="352" ambient="true" />
-					<output resource="carbon monoxide" rate="112" ambient="false" />
-					<output resource="oxygen" rate="128" ambient="false" />
+					<input resource="carbon dioxide" rate="35.2" ambient="true" />
+					<output resource="carbon monoxide" rate="11.2" ambient="false" />
+					<output resource="oxygen" rate="12.8" ambient="false" />
 				</process>
 				
 				<process name="Carbon Dioxide Pump" power-required=".4" default="off">
@@ -1290,13 +1288,13 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-storage capacity="20" discharge-rate="1.25"/>
 			<resource-processing power-down-level="0.0">
 			
-				<process name="Sabatier RWGS Reactor" number-modules="6" power-required="1.88" default="on">
+				<process name="Sabatier RWGS Reactor" number-modules="4" power-required=".47" default="on">
 					<!-- the amount of input and output (per module) -->
-					<input resource="carbon dioxide" rate="158.4" ambient="true" />
-					<input resource="hydrogen" rate="14.4" ambient="false" />
-					<output resource="methane" rate="19.2" ambient="false" />
-					<output resource="carbon monoxide" rate="67.2" ambient="false" />
-					<output resource="water" rate="86.4" ambient="false" />
+					<input resource="carbon dioxide" rate="39.6" ambient="true" />
+					<input resource="hydrogen" rate="3.6" ambient="false" />
+					<output resource="methane" rate="4.8" ambient="false" />
+					<output resource="carbon monoxide" rate="16.8" ambient="false" />
+					<output resource="water" rate="21.6" ambient="false" />
 				</process>
 				
 				<process name="Carbon Formation Reactor" number-modules="2" power-required="0.1" default="on">
@@ -1310,7 +1308,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="carbon" rate="24.0" ambient="false" />
 				</process>
 				
-				<process name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="6" power-required="0.1" default="off">
+				<process name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="6" power-required="0.3" default="off">
 					<description>
 					  By partial pyrolysis in microwave generated plasma, methane is converted to 
 					  hydrogen and acetylene:					  
@@ -1335,7 +1333,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="oxygen" rate="64" ambient="false" />
 				</process>
 								
-				<process name="Low Temperature Plasma CO2 Decomposition" power-required="0.4" default="on">
+				<process name="Low Temperature Plasma CO2 Decomposition" number-modules="6" 
+					power-required="0.6" default="on">
 					<description> 
 						The atmosphere is mainly CO2, so there is no need to capture it and plasma can 
 						be ignited in ambient Martian atmosphere. The traces of Ar and N2 present can only
@@ -1346,9 +1345,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 						to use vacuum pumps or compressors on the first steps of the process.
 						See https://www.europhysicsnews.org/articles/epn/pdf/2018/03/epn2018493p15.pdf
 					</description>
-					<input resource="carbon dioxide" rate="352" ambient="true" />
-					<output resource="carbon monoxide" rate="112" ambient="false" />
-					<output resource="oxygen" rate="128" ambient="false" />
+					<input resource="carbon dioxide" rate="35.2" ambient="true" />
+					<output resource="carbon monoxide" rate="11.2" ambient="false" />
+					<output resource="oxygen" rate="12.8" ambient="false" />
 				</process>
 				
 				<process name="melt and filter ice" number-modules="4" power-required="7" default="off">
@@ -2008,7 +2007,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			
 			<resource-processing power-down-level="0.0">
 
-				<process name="Sabatier RWGS Reactor" number-modules="8" power-required="0.47" default="off">
+				<process name="Sabatier RWGS Reactor" number-modules="8" power-required="0.96" default="off">
 					<input resource="carbon dioxide" rate="39.6" ambient="true" />
 					<input resource="hydrogen" rate="3.6" ambient="false" />
 					<output resource="methane" rate="4.8" ambient="false" />
@@ -2027,7 +2026,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="carbon" rate="24.0" ambient="false" />
 				</process>
 				
-				<process name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="8" power-required="0.1" default="off">
+				<process name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="8" power-required="0.4" default="off">
 					<description>
 					  By partial pyrolysis in microwave generated plasma, methane is converted to 
 					  hydrogen and acetylene:					  
@@ -2052,7 +2051,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="oxygen" rate="256" ambient="false" />
 				</process>
 				
-				<process name="Low Temperature Plasma CO2 Decomposition" number-modules="8" power-required="3.2" default="on">
+				<process name="Low Temperature Plasma CO2 Decomposition" number-modules="8" 
+					power-required="0.8" default="on">
 					<description> 
 						The atmosphere is mainly CO2, so there is no need to capture it and plasma can 
 						be ignited in ambient Martian atmosphere. The traces of Ar and N2 present can only
@@ -2063,9 +2063,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 						to use vacuum pumps or compressors on the first steps of the process.
 						See https://www.europhysicsnews.org/articles/epn/pdf/2018/03/epn2018493p15.pdf
 					</description>
-					<input resource="carbon dioxide" rate="352" ambient="true" />
-					<output resource="carbon monoxide" rate="112" ambient="false" />
-					<output resource="oxygen" rate="128" ambient="false" />
+					<input resource="carbon dioxide" rate="35.2" ambient="true" />
+					<output resource="carbon monoxide" rate="11.2" ambient="false" />
+					<output resource="oxygen" rate="12.8" ambient="false" />
 				</process>
 				
 			</resource-processing>
@@ -3051,12 +3051,12 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 		<functions>
 			<resource-processing power-down-level="0.0">
-				<process name="Sabatier RWGS Reactor" number-modules="6" power-required="2.08" default="off">
-					<input resource="carbon dioxide" rate="264" ambient="true" />
-					<input resource="hydrogen" rate="24" ambient="false" />
-					<output resource="methane" rate="32" ambient="false" />
-					<output resource="carbon monoxide" rate="112" ambient="false" />
-					<output resource="water" rate="144" ambient="false" />
+				<process name="Sabatier RWGS Reactor" number-modules="12" power-required="1.41" default="off">
+					<input resource="carbon dioxide" rate="39.6" ambient="true" />
+					<input resource="hydrogen" rate="3.6" ambient="false" />
+					<output resource="methane" rate="4.8" ambient="false" />
+					<output resource="carbon monoxide" rate="16.8" ambient="false" />
+					<output resource="water" rate="21.6" ambient="false" />
 				</process>
 			</resource-processing>
 			<storage capacity="20000">
@@ -3595,7 +3595,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="carbon" rate="24.0" ambient="false" />
 				</process>
 				
-				<process name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="4" power-required="0.1" default="on">
+				<process name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="4" power-required="0.2" default="on">
 					<description>
 					  By partial pyrolysis in microwave generated plasma, methane is converted to 
 					  hydrogen and acetylene:					  
@@ -3620,7 +3620,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="oxygen" rate="64" ambient="false" />
 				</process>
 
-				<process name="Low Temperature Plasma CO2 Decomposition" power-required="0.4" default="on">
+				<process name="Low Temperature Plasma CO2 Decomposition" number-modules="4"
+					power-required="0.4" default="on">
 					<description> 
 						The atmosphere is mainly CO2, so there is no need to capture it and plasma can 
 						be ignited in ambient Martian atmosphere. The traces of Ar and N2 present can only
@@ -3631,9 +3632,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 						to use vacuum pumps or compressors on the first steps of the process.
 						See https://www.europhysicsnews.org/articles/epn/pdf/2018/03/epn2018493p15.pdf
 					</description>
-					<input resource="carbon dioxide" rate="352" ambient="true" />
-					<output resource="carbon monoxide" rate="112" ambient="false" />
-					<output resource="oxygen" rate="128" ambient="false" />
+					<input resource="carbon dioxide" rate="35.2" ambient="true" />
+					<output resource="carbon monoxide" rate="11.2" ambient="false" />
+					<output resource="oxygen" rate="12.8" ambient="false" />
 				</process>
 				
 				<process name="Carbon Dioxide Pump" power-required=".4" default="off">

@@ -262,7 +262,7 @@ public abstract class MetaTask {
 	 */
 	protected double applyJobModifier(double score, Person person) {
 		
-        // Job modifier. If not myjob then a penalty.
+        // Job modifier. If not my job then a penalty.
 		// But only if the Task has preferred jobs defined
         JobType job = person.getMind().getJob();
         if ((job != null) && !preferredJob.isEmpty()

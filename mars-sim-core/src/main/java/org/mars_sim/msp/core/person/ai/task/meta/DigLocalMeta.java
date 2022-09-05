@@ -23,7 +23,7 @@ public abstract class DigLocalMeta extends MetaTask {
 
 //	private static SimLogger logger = SimLogger.getLogger(DigLocalMeta.class.getName());
 
-	private static final double VALUE = 1;
+	private static final double VALUE = .5;
 	private static final int MAX = 2_000;
 	private static final int CAP = 6_000;
 	
@@ -53,11 +53,8 @@ public abstract class DigLocalMeta extends MetaTask {
     	if ((person.getMission() != null) || !person.isInSettlement()) {
     		return 0;
     	}
- 
-      if (result == 0)
-    	  result = RandomUtil.getRandomDouble(collectionProbability / 2.0, collectionProbability) * VALUE;
-      else
-    	  result *= RandomUtil.getRandomDouble(collectionProbability / 2.0, collectionProbability) * VALUE;
+
+    	result *= RandomUtil.getRandomDouble(collectionProbability / 2.0, collectionProbability) * VALUE;
             
       if (result > MAX)
     	  result = MAX;

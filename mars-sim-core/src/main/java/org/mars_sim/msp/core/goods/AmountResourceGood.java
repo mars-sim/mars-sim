@@ -100,6 +100,7 @@ class AmountResourceGood extends Good {
 	private static final double OXYGEN_VALUE_MODIFIER = .02D;
 	private static final double METHANE_VALUE_MODIFIER = 1;
 	private static final double FOOD_VALUE_MODIFIER = .1;
+	private static final double HYDROGEN_VALUE_MODIFIER = 2;
 
 	private static final double LIFE_SUPPORT_FACTOR = .005;
 	private static final double VEHICLE_FUEL_FACTOR = 1;
@@ -319,7 +320,7 @@ class AmountResourceGood extends Good {
 		double totalSupply = 0;
 
 		// Calculate the average demand
-		average = capLifeSupportAmountDemand(getAverageAmountDemand(owner));		
+		average = modifyLifeSupportAmountDemand(getAverageAmountDemand(owner));		
 
 		// Calculate projected demand
 		double projected = 
@@ -372,7 +373,7 @@ class AmountResourceGood extends Good {
 		else {
 			// Intentionally loses .01% 
 			// Allows only very small fluctuations of demand as possible
-			totalDemand = (.9998 * previousDemand + .00005 * projected + .00005 * trade);
+			totalDemand = (.1 * average + .898 * previousDemand + .0005 * projected + .0005 * trade);
 		}
 
 		// Save the goods demand
@@ -1074,20 +1075,25 @@ class AmountResourceGood extends Good {
 
 
     /**
-	 * Limits the demand of life support resources.
+	 * Modify the demand of life support resources.
 	 * 
 	 * @param demand
 	 * @return
 	 */
-	private double capLifeSupportAmountDemand(double demand) {
+	private double modifyLifeSupportAmountDemand(double demand) {
         int resource = getID();
 
         // TODO can be calculated at constructor time
 		if (resource == ResourceUtil.foodID
-				|| resource == ResourceUtil.oxygenID || resource == ResourceUtil.waterID 
-				|| resource == ResourceUtil.hydrogenID || resource == ResourceUtil.methaneID)
+				|| resource == ResourceUtil.oxygenID 
+				|| resource == ResourceUtil.waterID)
 			// Cap the resource at less than LIFE_SUPPORT_MAX
 			return Math.min(LIFE_SUPPORT_MAX, demand);
+		
+		else if (resource == ResourceUtil.hydrogenID) {
+			return demand * HYDROGEN_VALUE_MODIFIER;
+		}
+		
 		return demand;
 	}
 
