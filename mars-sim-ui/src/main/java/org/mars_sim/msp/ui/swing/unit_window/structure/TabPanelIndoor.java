@@ -1,12 +1,13 @@
 /*
  * Mars Simulation Project
- * TabPanelPopulation.java
+ * TabPanelIndoor.java
  * @date 2022-07-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.util.Collection;
 
@@ -30,7 +31,7 @@ import com.alee.laf.panel.WebPanel;
  * This is a tab panel for population information.
  */
 @SuppressWarnings("serial")
-public class TabPanelPopulation extends TabPanel {
+public class TabPanelIndoor extends TabPanel {
 
 	private static final String POP_ICON = Msg.getString("icon.pop"); //$NON-NLS-1$
 	
@@ -50,12 +51,12 @@ public class TabPanelPopulation extends TabPanel {
 	 * @param unit the unit to display.
 	 * @param desktop the main desktop.
 	 */
-	public TabPanelPopulation(Unit unit, MainDesktopPane desktop) {
+	public TabPanelIndoor(Unit unit, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
-			null,
+				Msg.getString("TabPanelIndoor.title"), //$NON-NLS-1$
 			ImageLoader.getNewIcon(POP_ICON),
-			Msg.getString("TabPanelPopulation.title"), //$NON-NLS-1$
+			Msg.getString("TabPanelIndoor.title"), //$NON-NLS-1$
 			unit, desktop
 		);
 
@@ -72,13 +73,13 @@ public class TabPanelPopulation extends TabPanel {
 
 		// Create population indoor label
 		populationIndoorCache = settlement.getIndoorPeopleCount();
-		populationIndoorLabel = addTextField(countPanel, Msg.getString("TabPanelPopulation.indoor"),
-											 populationIndoorCache, null);
+		populationIndoorLabel = addTextField(countPanel, Msg.getString("TabPanelIndoor.indoor"),
+											 populationIndoorCache, 4, null);
 
 		// Create population capacity label
 		populationCapacityCache = settlement.getPopulationCapacity();
-		populationCapacityLabel = addTextField(countPanel, Msg.getString("TabPanelPopulation.capacity"),
-											   populationCapacityCache, null);
+		populationCapacityLabel = addTextField(countPanel, Msg.getString("TabPanelIndoor.capacity"),
+											   populationCapacityCache, 4, null);
 
 		SpringUtilities.makeCompactGrid(countPanel, 2, 2, // rows, cols
 				INITX_DEFAULT, INITY_DEFAULT, // initX, initY
@@ -86,11 +87,11 @@ public class TabPanelPopulation extends TabPanel {
 		
 		// Create spring layout population display panel
 		JPanel populationDisplayPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		addBorder(populationDisplayPanel, Msg.getString("TabPanelPopulation.TitledBorder"));
+		addBorder(populationDisplayPanel, Msg.getString("TabPanelIndoor.TitledBorder"));
 		content.add(populationDisplayPanel, BorderLayout.CENTER);
 
-		// Create scroll panel for population list. new Dimension(200, 250)
-		populationList = new UnitListPanel<>(getDesktop()) {
+		// Create scroll panel for population list.
+		populationList = new UnitListPanel<>(getDesktop(), new Dimension(175, 250)) {
 			@Override
 			protected Collection<Person> getData() {
 				return settlement.getIndoorPeople();

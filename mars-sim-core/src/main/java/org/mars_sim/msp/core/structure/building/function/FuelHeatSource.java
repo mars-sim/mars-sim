@@ -46,17 +46,17 @@ public class FuelHeatSource extends HeatSource implements Serializable {
 
 	private double time;
 
-	private double factor;
+	private double modRate;
 	
 	private Building building;
 
 	/**
 	 * Constructor.
 	 * 
-	 * @param _maxHeat          the maximum power/heat (kW) of the heat source.
-	 * @param _toggle           if the heat source is toggled on or off.
+	 * @param maxHeat          the maximum power/heat (kW) of the heat source.
+	 * @param toggle           if the heat source is toggled on or off.
 	 * @param fuelType          the fuel type.
-	 * @param _consumptionSpeed the rate of fuel consumption (kg/Sol).
+	 * @param consumptionSpeed the rate of fuel consumption (kg/Sol).
 	 */
 	public FuelHeatSource(Building building, double maxHeat, boolean toggle, String fuelType, double consumptionSpeed) {
 		super(HeatSourceType.FUEL_HEATING, maxHeat);
@@ -64,7 +64,7 @@ public class FuelHeatSource extends HeatSource implements Serializable {
 		this.toggle = toggle;
 		this.building = building;
 
-		factor = rate / 1000D / 100D;
+		modRate = rate / 1000D;
 	}
 
 //     Note : every mole of methane (16 g) releases 810 KJ of energy if burning with 2 moles of oxygen (64 g)
@@ -90,7 +90,7 @@ public class FuelHeatSource extends HeatSource implements Serializable {
 	private double consumeFuel(double time, Settlement settlement) {
 		double consumed = 0;
 		
-		double deltaFuel = getPercentagePower() * time * factor;
+		double deltaFuel = (getPercentagePower() / 100.0) * time * modRate;
 		
 		if (deltaFuel <= reserveFuel && deltaFuel * RATIO <= reserveOxidizer) {
 			reserveFuel -= deltaFuel;

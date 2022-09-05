@@ -237,7 +237,7 @@ implements Serializable {
 
         if (pool.size() == 0) {
         	initiatorLocation = Location.NONE;
-        	logger.info(person, 10_000, "can't find anyone to chat with.");
+        	logger.info(person, 30_000, "can't find anyone to chat with.");
         	return null;
         }
 

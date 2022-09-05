@@ -69,7 +69,7 @@ public class ResourceProcessing extends Function {
 		double result = 0D;
 		for(ResourceProcessSpec process :buildingConfig.getResourceProcesses(type)) {
 			double processValue = 0D;
-			for(int outResource : process.getOutputResources()) {
+			for (int outResource : process.getOutputResources()) {
 				if (!process.isWasteOutputResource(outResource)) {
 					double rate = process.getMaxOutputRate(outResource);
 					processValue += settlement.getGoodsManager().getGoodValuePoint(outResource) * rate;

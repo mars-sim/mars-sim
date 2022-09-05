@@ -23,7 +23,7 @@ public abstract class DigLocalMeta extends MetaTask {
 
 //	private static SimLogger logger = SimLogger.getLogger(DigLocalMeta.class.getName());
 
-	private static final double VALUE = 0.05;
+	private static final double VALUE = 1;
 	private static final int MAX = 2_000;
 	private static final int CAP = 6_000;
 	
@@ -117,7 +117,7 @@ public abstract class DigLocalMeta extends MetaTask {
         // Effect of population. The smaller the population, the more they are motivated to dig.
         if (citizen <= 32)
             // Adds effect of the # of citizen 
-        	result *= Math.max(1, 33 - citizen);
+        	result *= Math.max(1, 1.5 * (33 - citizen));
      
         // Effect of the ratio of # indoor people vs. those outside already doing EVA 
         result *= (1.0 + indoor) / (1 + settlement.getNumOutsideEVA());

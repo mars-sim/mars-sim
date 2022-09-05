@@ -3193,14 +3193,12 @@ public class Settlement extends Structure implements Temporal,
 			regolithVP = REGOLITH_MAX;
 		else if (regolithVP < 0)
 			return 0;
-		regolithVP = regolithVP / 5.0;
 
 		double sandVP = goodsManager.getGoodValuePoint(SAND_ID) * GoodsManager.SAND_VALUE_MODIFIER;
 		if (sandVP > REGOLITH_MAX)
 			sandVP = REGOLITH_MAX;
 		else if (sandVP < 0)
 			return 0;
-		sandVP = sandVP / 5.0;
 		
 		int pop = numCitizens;
 
@@ -3242,7 +3240,6 @@ public class Settlement extends Structure implements Temporal,
 			iceVP = ICE_MAX;
 		if (iceVP < 1)
 			iceVP = 1;
-		iceVP = iceVP / 5.0;
 		
 		double waterVP = goodsManager.getGoodValuePoint(WATER_ID);
 		waterVP = waterVP * waterRationLevel;
@@ -3276,7 +3273,7 @@ public class Settlement extends Structure implements Temporal,
 			result = (MIN_ICE_RESERVE + MIN_WATER_RESERVE) * pop + waterVP + iceVP;
 		}
 		
-		return result / 16.11;
+		return result / 1.6;
 	}
 
 	/**

@@ -302,7 +302,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-generation>
 				<!-- A solar cell on top of the lander hab. -->
 				<!-- type: the type of power source. -->
+				<!-- toggle: is it on by default. -->
 				<!-- power: the maximum power (kW) produced by the power source. -->
+				<!-- fuel-type: the type of fuel to be used. -->
+				<!-- consumption-rate: the rate of fuel used [kg/millisol] -->
 				<power-source type="Solar Power Source" power="5.0" />
 				<power-source type="Fuel Power Source" toggle="false" power="5.0"
 				fuel-type="methane"	consumption-rate="7.9897" />

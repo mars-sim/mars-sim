@@ -1,6 +1,6 @@
 /*
  * Mars Simulation Project
- * TabPanelAssociatedPeople.java
+ * TabPanelCitizen.java
  * @date 2022-07-09
  * @author Scott Davis
  */
@@ -31,7 +31,7 @@ import com.alee.laf.panel.WebPanel;
  * associated with a settlement.
  */
 @SuppressWarnings("serial")
-public class TabPanelAssociatedPeople extends TabPanel{
+public class TabPanelCitizen extends TabPanel{
 
 	private static final String CITIZEN_ICON = Msg.getString("icon.citizen"); //$NON-NLS-1$
 	
@@ -54,12 +54,12 @@ public class TabPanelAssociatedPeople extends TabPanel{
 	 * @param unit    the unit to display.
 	 * @param desktop the main desktop.
 	 */
-	public TabPanelAssociatedPeople(Unit unit, MainDesktopPane desktop) {
+	public TabPanelCitizen(Unit unit, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
-			null,
+			Msg.getString("TabPanelCitizen.title"), //$NON-NLS-1$
 			ImageLoader.getNewIcon(CITIZEN_ICON),
-			Msg.getString("TabPanelAssociatedPeople.title"), //$NON-NLS-1$
+			Msg.getString("TabPanelCitizen.title"), //$NON-NLS-1$
 			unit, desktop
 		);
 
@@ -74,31 +74,31 @@ public class TabPanelAssociatedPeople extends TabPanel{
 
 		// Create associate label
 		populationCitizensCache = settlement.getNumCitizens();
-		populationCitizensLabel = addTextField(countPanel, Msg.getString("TabPanelAssociatedPeople.associated"),
-											   populationCitizensCache, null);
+		populationCitizensLabel = addTextField(countPanel, Msg.getString("TabPanelCitizen.associated"),
+											   populationCitizensCache, 4, null);
 
 		// Create population indoor label
 		populationIndoorCache = settlement.getIndoorPeopleCount();
-		populationIndoorLabel = addTextField(countPanel, Msg.getString("TabPanelAssociatedPeople.indoor"),
-											 populationIndoorCache, null);
+		populationIndoorLabel = addTextField(countPanel, Msg.getString("TabPanelCitizen.indoor"),
+											 populationIndoorCache, 4, null);
 
 		// Create population capacity label
 		populationCapacityCache = settlement.getPopulationCapacity();
-		populationCapacityLabel = addTextField(countPanel, Msg.getString("TabPanelAssociatedPeople.capacity"),
-											   populationCapacityCache, null);
+		populationCapacityLabel = addTextField(countPanel, Msg.getString("TabPanelCitizen.capacity"),
+											   populationCapacityCache, 4, null);
 
 		// Set up the spring layout.
 		SpringUtilities.makeCompactGrid(countPanel, 3, 2, // rows, cols
 				INITX_DEFAULT, INITY_DEFAULT, // initX, initY
 				XPAD_DEFAULT, YPAD_DEFAULT); // xPad, yPad
 
-		populationList = new UnitListPanel<>(getDesktop(), new Dimension(175, 200)) {
+		populationList = new UnitListPanel<>(getDesktop(), new Dimension(175, 250)) {
 			@Override
 			protected Collection<Person> getData() {
 				return settlement.getAllAssociatedPeople();
 			}
 		};
-		addBorder(populationList, Msg.getString("TabPanelAssociatedPeople.titledBorder"));
+		addBorder(populationList, Msg.getString("TabPanelCitizen.titledBorder"));
 		content.add(populationList, BorderLayout.CENTER);
 	}
 

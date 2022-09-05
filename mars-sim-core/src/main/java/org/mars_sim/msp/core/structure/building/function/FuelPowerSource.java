@@ -51,22 +51,24 @@ implements Serializable {
 
 	private double time;
 
-	private double factor;
+	private double modRate;
 
 
 	/**
 	 * Constructor.
 	 * 
-	 * @param _maxPower the maximum power (kW) of the power source.
-	 * @param _toggle if the power source is toggled on or off.
+	 * @param maxPower the maximum power (kW) of the power source.
+	 * @param toggle if the power source is toggled on or off.
 	 * @param fuelType the fuel type.
-	 * @param _consumptionSpeed the rate of fuel consumption (kg/Sol).
+	 * @param consumptionSpeed the rate of fuel consumption (kg/sol).
 	 */
-	public FuelPowerSource(double _maxPower, boolean _toggle, String fuelType,
-			double _consumptionSpeed) {
-		super(PowerSourceType.FUEL_POWER, _maxPower);
-		rate = _consumptionSpeed;
-		toggle = _toggle;
+	public FuelPowerSource(double maxPower, boolean toggle, String fuelType,
+			double consumptionSpeed) {
+		super(PowerSourceType.FUEL_POWER, maxPower);
+		rate = consumptionSpeed;
+		this.toggle = toggle;
+		
+		modRate = rate / 1000.0;
 	}
 	
 //	 Note : every mole of methane (16 g) releases 810 KJ of energy if burning with 2 moles of oxygen (64 g)
@@ -95,8 +97,8 @@ implements Serializable {
 	 */
 	public double consumeFuel(double time, Settlement settlement) {
 		double consumed = 0;
-		
-		double deltaFuel = time * factor;
+
+		double deltaFuel = time * modRate;
 		
 		if (deltaFuel <= reserveFuel && deltaFuel * RATIO <= reserveOxidizer) {
 			reserveFuel -= deltaFuel;
@@ -171,7 +173,7 @@ implements Serializable {
 	/**
 	 * Gets the rate the fuel is consumed.
 	 * 
-	 * @return rate (kg/Sol).
+	 * @return rate (kg/sol).
 	 */
 	 public double getFuelConsumptionRate() {
 		 return rate;

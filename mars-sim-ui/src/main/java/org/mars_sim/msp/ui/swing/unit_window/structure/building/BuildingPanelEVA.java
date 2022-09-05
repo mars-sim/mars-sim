@@ -100,7 +100,7 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 
 		// Create label panel
 		WebPanel topPanel = new WebPanel(new BorderLayout());
-		content.add(topPanel, BorderLayout.CENTER);
+		content.add(topPanel, BorderLayout.NORTH);
 
 		WebPanel labelGrid = new WebPanel(new SpringLayout());
 		topPanel.add(labelGrid, BorderLayout.NORTH);

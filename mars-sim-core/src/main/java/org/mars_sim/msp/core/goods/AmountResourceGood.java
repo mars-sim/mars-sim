@@ -84,11 +84,11 @@ class AmountResourceGood extends Good {
 	private static final double ELEMENT_VALUE = 0.5;
 	private static final double LIFE_SUPPORT_VALUE = .5;
 
-    private static final double ICE_VALUE_MODIFIER = 5D;
-	private static final double WATER_VALUE_MODIFIER = 1D;
+    private static final double ICE_VALUE_MODIFIER = 1;
+	private static final double WATER_VALUE_MODIFIER = 1;
 	private static final double SOIL_VALUE_MODIFIER = 5;
-	private static final double REGOLITH_VALUE_MODIFIER = 5D;
-	private static final double SAND_VALUE_MODIFIER = 5D;
+	private static final double REGOLITH_VALUE_MODIFIER = 1;
+	private static final double SAND_VALUE_MODIFIER = 1D;
 	private static final double CONCRETE_VALUE_MODIFIER = .5D;
 	private static final double ROCK_MODIFIER = 0.99D;
 	private static final double METEORITE_MODIFIER = 1.05;
@@ -105,11 +105,11 @@ class AmountResourceGood extends Good {
 	private static final double CROP_FACTOR = .1;
 	private static final double DESSERT_FACTOR = .1;
 
-	private static final double REGOLITH_DEMAND_FACTOR = 10;
-	private static final double CHEMICAL_DEMAND_FACTOR = 10;
-	private static final double COMPOUND_DEMAND_FACTOR = 10;
-	private static final double ELEMENT_DEMAND_FACTOR = 10;
-	private static final double ROCK_DEMAND_FACTOR = 10;
+	private static final double REGOLITH_DEMAND_FACTOR = 1;
+	private static final double CHEMICAL_DEMAND_FACTOR = 1;
+	private static final double COMPOUND_DEMAND_FACTOR = 1;
+	private static final double ELEMENT_DEMAND_FACTOR = 1;
+	private static final double ROCK_DEMAND_FACTOR = 1;
 
 	private static final double COOKED_MEAL_INPUT_FACTOR = .5;
 	private static final double MANUFACTURING_INPUT_FACTOR = 2D;

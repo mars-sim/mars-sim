@@ -39,9 +39,9 @@ public class SettlementUnitWindow extends UnitWindow {
 
 		addTabPanel(new TabPanelBots(settlement, desktop));
 
+		addTabPanel(new TabPanelCitizen(settlement, desktop));
+		
 		addTabPanel(new TabPanelCooking(settlement, desktop));
-
-		addTabPanel(new TabPanelAssociatedPeople(settlement, desktop));
 
 		addTabPanel(new TabPanelConstruction(settlement, desktop));
 
@@ -51,11 +51,11 @@ public class SettlementUnitWindow extends UnitWindow {
 
 		addTabPanel(new TabPanelGoods(settlement, desktop));
 
+		addTabPanel(new TabPanelIndoor(settlement, desktop));
+		
 		addTabPanel(new InventoryTabPanel(settlement, desktop));
 
 		addTopPanel(new LocationTabPanel(settlement, desktop));
-
-		addTabPanel(new NotesTabPanel(settlement, desktop));
 		
 		addTabPanel(new TabPanelMaintenance(settlement, desktop));
 
@@ -64,10 +64,10 @@ public class SettlementUnitWindow extends UnitWindow {
 		addTabPanel(new TabPanelManufacture(settlement, desktop));
 
 		addTabPanel(new TabPanelMissions(settlement, desktop));
+		
+		addTabPanel(new NotesTabPanel(settlement, desktop));
 
 		addTabPanel(new TabPanelOrganization(settlement, desktop));
-
-		addTabPanel(new TabPanelPopulation(settlement, desktop));
 
 		addTabPanel(new TabPanelPowerGrid(settlement, desktop));
 
