@@ -17,6 +17,8 @@ import org.mars_sim.msp.core.person.ai.task.ConsolidateContainers;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.Sleep;
 import org.mars_sim.msp.core.person.ai.task.Teach;
+import org.mars_sim.msp.core.person.ai.task.ToggleFuelPowerSource;
+import org.mars_sim.msp.core.person.ai.task.ToggleResourceProcess;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -45,6 +47,8 @@ implements Serializable {
         jobTasks.add(ConsolidateContainers.class); //determine to what extend the walking bug is affecting the outdoor portion of this task
 		jobTasks.add(Sleep.class);
 		jobTasks.add(Teach.class);
+		jobTasks.add(ToggleResourceProcess.class);
+		jobTasks.add(ToggleFuelPowerSource.class);
 		
         jobMissionStarts.add(Delivery.class);
         

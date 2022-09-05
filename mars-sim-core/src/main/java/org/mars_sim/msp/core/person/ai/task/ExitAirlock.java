@@ -53,7 +53,7 @@ public class ExitAirlock extends Task implements Serializable {
 	
 	private static final String TO_REQUEST_EGRESS = " to request egress"; 
 	private static final String TRIED_TO_STEP_THRU_INNER_DOOR = "Tried to step through inner door"; 
-	private static final String PREBREATH_HALF_DONE = "other occupant(s) have already pre-breathed half-way";
+	private static final String PREBREATH_HALF_DONE = "other occupant(s) have already pre-breathed half-way thru";
 	private static final String RESERVATION_NOT_MADE = "Reservation not made.";
 	private static final String NOT_FIT = "Not fit enough";
 	private static final String INNER_DOOR_LOCKED = "Inner door was locked.";
