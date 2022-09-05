@@ -524,7 +524,7 @@ public class EnterAirlock extends Task implements Serializable {
 		logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4_000,
 				"Walking to a chamber in " + airlock.getEntity().toString() + ".");
 
-//		if (inSettlement) {
+		if (inSettlement) {
 			
 			if (!isInZone(2) && airlock.areAll4ChambersFull()) {
 				logger.log((Unit)airlock.getEntity(), person, Level.WARNING, 16_000,
@@ -545,22 +545,11 @@ public class EnterAirlock extends Task implements Serializable {
 				accumulatedTime = 0;
 				return 0;
 			}
-//		}
-//		
-//		else {
-//			
-//			if (airlock.areAll4ChambersFull()) {
-//				logger.log((Unit)airlock.getEntity(), person, Level.WARNING, 16_000,
-//						"Can't walk to a chamber. "
-//						+ CHAMBER_FULL + airlock.getEntity().toString() + ".");
-//				// Reset accumulatedTime back to zero accumulatedTime = 0
-//				// Do nothing in this frame
-//				// Wait and see if he's allowed to be at the outer door in the next frame
-//				return time * .75;
-//			}
-//			else
-//				canProceed = true;
-//		}
+		}
+		
+		else {
+			canProceed = true;
+		}
 
 		if (canProceed && accumulatedTime > STANDARD_TIME) {
 			// Reset accumulatedTime back to zero

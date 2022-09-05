@@ -674,7 +674,7 @@ public class ExitAirlock extends Task implements Serializable {
 		logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4_000,
 				"Can't walk to a chamber in " + airlock.getEntity().toString() + ".");
 
-//		if (inSettlement) {
+		if (inSettlement) {
 
 			if (!isInZone(2) && airlock.areAll4ChambersFull()) {
 				walkAway(person, "Can't walk to chamber. " + CHAMBER_FULL);
@@ -691,20 +691,11 @@ public class ExitAirlock extends Task implements Serializable {
 				accumulatedTime = 0;
 				return 0;
 			}
-//		}
-//
-//		else {
-//
-// 			if (!airlock.isInnerDoorLocked()) {
-// 				canProceed = true;
-//			}
-// 			else {
-//				setPhase(STEP_THRU_INNER_DOOR);
-//				// Reset accumulatedTime back to zero
-//				accumulatedTime = 0;
-//				return 0;
-//			}
-//		}
+		}
+
+		else {
+ 			canProceed = true;
+		}
 
 		if (canProceed && accumulatedTime > STANDARD_TIME) {
 			// Reset accumulatedTime back to zero
@@ -1170,7 +1161,7 @@ public class ExitAirlock extends Task implements Serializable {
 				// Mission m = missionManager.getMission(person);
 				logger.log((Unit)airlock.getEntity(), person, Level.WARNING, 20_000,
 						v.getName() + hasMission
-						+ ". No working EVA suit, awaiting the response for rescue.");
+						+ ". No working EVA suit, awaiting response for rescue.");
 
 				// TODO: should at least wait for a period of time for the EVA suit to be fixed
 				// before calling for rescue
