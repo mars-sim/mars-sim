@@ -55,6 +55,10 @@ public class ResourceProcessSpec implements Serializable {
 		this.powerRequired = powerRequired;
 	}
 
+	public int getNumModules() {
+		return modules;
+	}
+	
 	/**
 	 * Adds a maximum input resource rate if it doesn't already exist.
 	 *

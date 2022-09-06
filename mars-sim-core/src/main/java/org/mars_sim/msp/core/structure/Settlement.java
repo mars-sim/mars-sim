@@ -16,6 +16,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -77,6 +78,7 @@ import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorMana
 import org.mars_sim.msp.core.structure.building.function.EVA;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
+import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
 import org.mars_sim.msp.core.structure.construction.ConstructionManager;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -110,7 +112,7 @@ public class Settlement extends Structure implements Temporal,
 	public static final int MAX_NUM_SOLS = 3;
 	public static final int MAX_SOLS_DAILY_OUTPUT = 14;
 	public static final int SUPPLY_DEMAND_REFRESH = 7;
-	private static final int RESOURCE_UPDATE_FREQ = 10;
+	private static final int RESOURCE_UPDATE_FREQ = 20;
 	private static final int CHECK_WATER_RATION = 66;
 	private static final int RESOURCE_SAMPLING_FREQ = 50; // in msols
 	public static final int NUM_CRITICAL_RESOURCES = 10;
@@ -179,6 +181,7 @@ public class Settlement extends Structure implements Temporal,
 	/** The settlement's map of adjacent buildings. */
 	private transient Map<Building, List<Building>> adjacentBuildingMap = new HashMap<>();
 	
+	private List<SimpleEntry<Building, SimpleEntry<ResourceProcess, Double>>> resourceProcessList = new ArrayList<>();
 
 	/** The flag for checking if the simulation has just started. */
 	private boolean justLoaded = true;
@@ -1099,6 +1102,11 @@ public class Settlement extends Structure implements Temporal,
 
 			if (remainder == 5) {
 				regolithProbabilityValue = computeRegolithProbability();
+			}
+			
+			if (remainder == 3) {
+				if (!resourceProcessList.isEmpty() && resourceProcessList.size() > 5)
+					resourceProcessList.remove(0);
 			}
 		}
 	}
@@ -3224,7 +3232,7 @@ public class Settlement extends Structure implements Temporal,
 		if (result < 0)
 			result = 0;
 
-		return result * demand / 200;
+		return result * demand / 100;
 	}
 
 	/***
@@ -3272,6 +3280,9 @@ public class Settlement extends Structure implements Temporal,
 		else {
 			result = (MIN_ICE_RESERVE + MIN_WATER_RESERVE) * pop + waterVP + iceVP;
 		}
+		
+		if (result < 0)
+			result = 0;
 		
 		return result * demand / 30;
 	}
@@ -3960,7 +3971,24 @@ public class Settlement extends Structure implements Temporal,
 	public Unit getHolder() {
 		return this;
 	}
+	
+	
+	public List<SimpleEntry<Building, SimpleEntry<ResourceProcess, Double>>> getResourceProcessList() {
+		return resourceProcessList;
+	}
+	
+	public void addResourceProcess(SimpleEntry<Building, SimpleEntry<ResourceProcess, Double>> process) {
+		if (!resourceProcessList.contains(process))
+			resourceProcessList.add(process);
+	}
 
+	public SimpleEntry<Building, SimpleEntry<ResourceProcess, Double>> retrieveFirstResourceProcess() {
+		SimpleEntry<Building, SimpleEntry<ResourceProcess, Double>> process = resourceProcessList.get(0);
+		logger.info(process.getKey(), "Selected '" + process.getValue().getKey() + "' to toggle.");
+		resourceProcessList.remove(0);
+		return process;
+	}
+	
 	/**
 	 * Reinitialize references after loading from a saved sim
 	 */

@@ -47,15 +47,17 @@ public abstract class DigLocalMeta extends MetaTask {
      */
     protected double getProbability(int resourceId, Settlement settlement, Person person, double collectionProbability) {	
 
-        double result = 0;
+    	if (collectionProbability == 0.0)
+    		return 0;
+    	
+        double result = RandomUtil.getRandomDouble(collectionProbability / 2.0, collectionProbability) * VALUE;
        
     	// Will not perform this task if he has a mission
     	if ((person.getMission() != null) || !person.isInSettlement()) {
     		return 0;
     	}
 
-    	result *= RandomUtil.getRandomDouble(collectionProbability / 2.0, collectionProbability) * VALUE;
-            
+    
       if (result > MAX)
     	  result = MAX;
 

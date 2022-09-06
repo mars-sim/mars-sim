@@ -35,8 +35,10 @@ public class ResourceProcess implements Serializable {
 	// How often should the process be checked? 
 	private static final double PROCESS_CHECK_FREQUENCY = 5D; // 200 times per sol
 	
+	/** Flag to toggle on or off. */
+	private boolean toToggleOn;
 	/** Flag for change. */
-	private boolean flag;
+	private boolean flag = false;
 	/** is this process running ? */
 	private boolean runningProcess;
 	/** The time accumulated [in millisols]. */
@@ -126,6 +128,25 @@ public class ResourceProcess implements Serializable {
 	}
 	
 	/**
+	 * Sets the process to be toggled on or off.
+	 *
+	 * @param value
+	 */
+	public void setToggleOn(boolean value) {
+		toToggleOn = value;
+	}
+	
+
+	/**
+	 * Checks if the process has been flagged to be toggled on or off.
+	 *
+	 * @return true if it was flagged to be toggled on. False if it was flagged to be off.
+	 */
+	public boolean isToggledOn() {
+		return toToggleOn;
+	}
+	
+	/**
 	 * Adds work time to toggling the process on or off.
 	 *
 	 * @param time the amount (millisols) of time to add.
@@ -156,6 +177,10 @@ public class ResourceProcess implements Serializable {
 		return definition.getInputResources();
 	}
 
+	public int getNumModules() {
+		return definition.getNumModules();
+	}
+	
 	/**
 	 * Gets the max input resource rate for a given resource.
 	 *

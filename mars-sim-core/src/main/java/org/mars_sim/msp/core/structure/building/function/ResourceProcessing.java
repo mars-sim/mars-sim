@@ -31,6 +31,16 @@ public class ResourceProcessing extends Function {
 
 	public static final String SABATIER = "sabatier";
 	
+	public static final String REGOLITH = "regolith";
+	
+	public static final String WATER = "water";
+	
+	public static final String PPA = "PPA";
+	
+	public static final String CFR = "Carbon Formation Reactor";
+	
+	public static final String OGS = "Oxygen Generation System";
+	
 	public static final double PROCESS_MAX_VALUE = 100D;
 
 	private double powerDownProcessingLevel;
