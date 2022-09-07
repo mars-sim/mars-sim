@@ -259,18 +259,21 @@ class PartGood extends Good {
 
 		if (previousDemand == 0) {
 			// At the start of the sim
-			totalDemand = (.4 * repair 
-					+ .1 * average 
+			totalDemand = (
+					.1 * repair 
+					+ .4 * average 
 					+ .4 * projected 
 					+ .1 * trade);
 		}
 
 		else {
-			// Intentionally lose 1% of its value
-			totalDemand = (.986 * previousDemand + .001 * repair 
+			// Intentionally lose a tiny percentage of its value
+			totalDemand = (
+					.9973 * previousDemand 
+					+ .001 * repair 
 					+ .001 * average 
-					+ .001 * projected 
-					+ .001 * trade); 
+					+ .0005 * projected 
+					+ .0001 * trade); 
 		}
 		
 		// Save the goods demand
@@ -292,7 +295,7 @@ class PartGood extends Good {
 	 * @return
 	 */
 	private static double getAverageItemSupply(double supplyStored) {
-		return Math.sqrt(supplyStored);
+		return Math.sqrt(1 + supplyStored);
 	}
 
 	/**
@@ -350,7 +353,7 @@ class PartGood extends Good {
 			return 0.1 * ELECTRICAL_DEMAND;
 
 		if (name.contains("wire connector"))
-			return 0.5 * ELECTRICAL_DEMAND;
+			return 0.05 * ELECTRICAL_DEMAND;
 		
 		if (name.contains("pipe"))
 			return .1;

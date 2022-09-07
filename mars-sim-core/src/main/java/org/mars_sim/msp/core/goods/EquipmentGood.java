@@ -291,7 +291,7 @@ public class EquipmentGood extends Good {
 	 * @return
 	 */
 	private static double getAverageEquipmentSupply(double supplyStored) {
-		return Math.sqrt(supplyStored);
+		return Math.sqrt(1 + supplyStored);
 	}
 	
 }

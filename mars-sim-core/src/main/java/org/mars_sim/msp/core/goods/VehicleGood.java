@@ -175,7 +175,10 @@ class VehicleGood extends Good {
 
 		else {
 			// Intentionally lose 2% of its value
-			totalDemand = .97 * previousDemand + .003 * average + .003 * projected + .003 * trade;
+			totalDemand = .97 * previousDemand 
+					+ .003 * average 
+					+ .003 * projected 
+					+ .003 * trade;
 		}
 				
 		owner.setDemandValue(this, totalDemand);
@@ -228,7 +231,7 @@ class VehicleGood extends Good {
 	 * @return
 	 */
 	private static double getAverageVehicleSupply(double supplyStored) {
-		return Math.sqrt(supplyStored);
+		return Math.sqrt(1 + supplyStored);
 	}
 
 	/**

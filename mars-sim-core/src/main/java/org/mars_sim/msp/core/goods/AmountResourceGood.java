@@ -111,7 +111,7 @@ class AmountResourceGood extends Good {
 	private static final double DESSERT_FACTOR = .1;
 
 	private static final double REGOLITH_DEMAND_FACTOR = 0.5;
-	private static final double ORE_DEMAND_FACTOR = 3;
+	private static final double ORE_DEMAND_FACTOR = 2;
 	private static final double MINERAL_DEMAND_FACTOR = 2;
 
 	private static final double CHEMICAL_DEMAND_FACTOR = 1;
@@ -368,12 +368,19 @@ class AmountResourceGood extends Good {
 		
 		if (previousDemand == 0) {
 			// At the start of the sim
-			totalDemand = (.5 * average + .1 * projected + .01 * trade);
+			totalDemand = (
+					.5 * average 
+					+ .4 * projected 
+					+ .1 * trade);
 		}
 		else {
-			// Intentionally loses .01% 
+			// Intentionally loses a tiny percentage of its value
 			// Allows only very small fluctuations of demand as possible
-			totalDemand = (.1 * average + .898 * previousDemand + .0005 * projected + .0005 * trade);
+			totalDemand = (
+					.9983 * previousDemand 
+					+ .001 * average 
+					+ .0005 * projected 
+					+ .0001 * trade); 
 		}
 
 		// Save the goods demand
@@ -395,7 +402,7 @@ class AmountResourceGood extends Good {
 	 * @return
 	 */
 	private static double getAverageAmountSupply(double supplyStored) {
-		return Math.sqrt(supplyStored);
+		return Math.sqrt(1 + supplyStored);
 	}
 
 	/**
