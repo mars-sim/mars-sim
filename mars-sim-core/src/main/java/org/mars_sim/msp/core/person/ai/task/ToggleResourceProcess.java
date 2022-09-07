@@ -16,15 +16,18 @@ import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.UnitType;
+import org.mars_sim.msp.core.goods.GoodsManager;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.person.ai.task.utils.Worker;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
+import org.mars_sim.msp.core.structure.building.function.ResourceProcessing;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
@@ -44,6 +47,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 	private static final String TOGGLE_OFF = Msg.getString("Task.description.toggleResourceProcess.off"); //$NON-NLS-1$
 
 	/** The stress modified per millisol. */
+	private static final double FACTOR = 1_000;
 	private static final double STRESS_MODIFIER = .25D;
 	private static final double SMALL_AMOUNT = 0.000001;
 	
@@ -59,7 +63,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 	private boolean toBeToggledOn;
 	/** True if the finished phase of the process has been completed. */
 	private boolean isFinished = false;
-
+	
 	/** The resource process to be toggled. */
 	private ResourceProcess process;
 
@@ -75,6 +79,10 @@ public class ToggleResourceProcess extends Task implements Serializable {
         super(TOGGLE_ON, worker, true, false, STRESS_MODIFIER, SkillType.MECHANICS, 100D, 10D);
 
         SimpleEntry<Building, SimpleEntry<ResourceProcess, Double>> entry = worker.getSettlement().retrieveFirstResourceProcess();
+        if (entry == null) {
+        	entry = ToggleResourceProcess.getResourceProcessingBuilding(worker);
+        }
+        	
 		resourceProcessBuilding = entry.getKey();
 		process = entry.getValue().getKey();
 		
@@ -102,11 +110,11 @@ public class ToggleResourceProcess extends Task implements Serializable {
 		if (!state) {
 			setName(TOGGLE_OFF);
 			setDescription(TOGGLE_OFF);
-			logger.info(worker, TOGGLE_OFF + " '" + process + ".");
+			logger.info(resourceProcessBuilding, worker + ": Toggling off '" + process + "'.");
 		}
 		else {
 			setDescription(TOGGLE_ON);
-			logger.info(worker, TOGGLE_ON + " '" + process + ".");
+			logger.info(resourceProcessBuilding, worker + ": Toggling on '" + process + "'.");
 		}
 
 		if (resourceProcessBuilding.hasFunction(FunctionType.LIFE_SUPPORT))
@@ -208,15 +216,15 @@ public class ToggleResourceProcess extends Task implements Serializable {
 		double highest = 0;
 		double lowest = 0;
 		SimpleEntry<ResourceProcess, Double> entry = null;
-		boolean tobeToggleOn = false;
-		
+	
 		Settlement settlement = worker.getSettlement();
 		if (settlement != null) {
 			Iterator<Building> i = settlement.getBuildingManager().getBuildings(FunctionType.RESOURCE_PROCESSING).iterator();
 			while (i.hasNext()) {
 				Building building = i.next();
 				// In this building, select the best resource to compete
-				entry = selectMostPosNegResourceProcess(building);		
+				entry = selectMostPosNegResourceProcess(building);	
+//				logger.info(worker, "" + building + "  entry: " + entry);
 				// Check if this resource process is in the cache list.
 				// If true, go to the next one
 				if (settlement.getResourceProcessList().contains(entry)) {
@@ -226,12 +234,12 @@ public class ToggleResourceProcess extends Task implements Serializable {
 				
 				ResourceProcess process = entry.getKey();
 				double score = entry.getValue();
-				
-				if (score > 0)
-					tobeToggleOn = true;
-				else if (score <= 0)
-					tobeToggleOn = false;
-				
+						
+				if (process == null) {
+//					logger.info(building, "process is null.");
+					continue;
+				}
+			
 				if (process != null && process.isToggleAvailable() && !process.isFlagged()) {
 					if (score >= highest) {
 						highest = score;
@@ -251,15 +259,9 @@ public class ToggleResourceProcess extends Task implements Serializable {
 		
 		if (mostPosProcess != null && highest >= Math.abs(lowest)) {
 			buildingProcess = new SimpleEntry<>(selectedbuilding, new SimpleEntry<>(mostPosProcess, highest));
-			settlement.addResourceProcess(buildingProcess);
-			mostPosProcess.setFlag(true);
-			mostPosProcess.setToggleOn(tobeToggleOn);
 		}
 		else if (mostNegProcess != null){
 			buildingProcess = new SimpleEntry<>(selectedbuilding, new SimpleEntry<>(mostNegProcess, lowest));
-			settlement.addResourceProcess(buildingProcess);
-			mostNegProcess.setFlag(true);
-			mostNegProcess.setToggleOn(tobeToggleOn);
 		}
 		
 		return buildingProcess;
@@ -277,16 +279,109 @@ public class ToggleResourceProcess extends Task implements Serializable {
 		double highest = 0;
 		double lowest = 0;
 		
+		GoodsManager goodsManager = building.getSettlement().getGoodsManager();
+		double regStored = building.getSettlement().getAmountResourceStored(ResourceUtil.regolithID);
+		double iceStored = building.getSettlement().getAmountResourceStored(ResourceUtil.iceID);
+
+		double hydrogenVP = goodsManager.getGoodValuePoint(ResourceUtil.hydrogenID);
+		double methaneVP = goodsManager.getGoodValuePoint(ResourceUtil.methaneID);
+		double waterVP = goodsManager.getGoodValuePoint(ResourceUtil.waterID);
+		double oxygenVP = goodsManager.getGoodValuePoint(ResourceUtil.oxygenID);
+
 		Iterator<ResourceProcess> i = building.getResourceProcessing().getProcesses().iterator();
 		while (i.hasNext()) {
 			ResourceProcess process = i.next();
 			if (process.isToggleAvailable() && !process.isFlagged()) {
 				double score = computeResourceScore(building.getSettlement(), process);
+//				logger.info(building, process + "  score: " + score);
+				
+				// Check if settlement is missing one or more of the output resources.
+				// Will multiply by 10 internally within computeResourcesValue() in ToggleResourceProcess
+				if (isEmptyOutputResourceInProcess(building.getSettlement(), process)) {
+					// will push for toggling on this process to produce more output resources
+					if (process.isProcessRunning()) {
+						// no need to change it
+						continue;
+					} else {
+						// will need to push for toggling on this process since output resource is zero
+						score *= FACTOR;
+					}
+				}
+				
+				// NOTE: Need to detect if the output resource is dwindling 
+
+				// Check if settlement is missing one or more of the input resources.
+				if (isEmptyInputResourceInProcess(building.getSettlement(), process)) {
+					if (process.isProcessRunning()) {
+						// will need to push for toggling off this process since input resource is insufficient 
+						score *= FACTOR;
+					} else {
+						// no need to turn it on
+						continue;
+					}
+				}
+				
+//				logger.info(worker, "1. " + process + "  result: " + result);
+				
+				if (score > 0 && process.isProcessRunning()) {
+					// let it continue running. No need to turn it off.
+					continue;
+				}
+				
+				else if (score < 0 && process.isProcessRunning()) {
+					// need to shut it down 
+					score *= FACTOR;
+				}
+
+				else if (score > 0 && !process.isProcessRunning()) {
+					// need to turn it on
+					score *= FACTOR;
+				}
+				
+				else if (score < 0 && !process.isProcessRunning()) {
+					// let it continue not running. No need to turn it on.
+					continue;
+				}	
+				
+				String name = process.getProcessName().toLowerCase();
+				
+				boolean sab = name.equalsIgnoreCase(ResourceProcessing.SABATIER);
+				boolean reg = name.equalsIgnoreCase(ResourceProcessing.REGOLITH);
+				boolean ice = name.equalsIgnoreCase(ResourceProcessing.ICE);
+				boolean ppa = name.equalsIgnoreCase(ResourceProcessing.PPA);
+				boolean cfr = name.equalsIgnoreCase(ResourceProcessing.CFR);
+				boolean ogs = name.equalsIgnoreCase(ResourceProcessing.OGS);
+				
+				if (reg) {
+					score *= goodsManager.getAmountDemandValue(ResourceUtil.regolithID) * (1 + regStored * 10);
+				}
+
+				else if (ice) {
+					score *= goodsManager.getAmountDemandValue(ResourceUtil.iceID) * (1 + iceStored * 10);
+				}
+				
+				else if (ppa) {
+					score *= hydrogenVP / methaneVP ;
+				}
+				
+				else if (cfr) {
+					score *= waterVP / hydrogenVP ;
+				}
+				
+				else if (sab) {
+					score *= waterVP * methaneVP / hydrogenVP;
+				}
+
+				else if (ogs) {
+					score *= hydrogenVP * oxygenVP / waterVP;
+				}
+				
 				// Randomize it to give other processes a chance
-//				if (score > 0.0)
-//					score = RandomUtil.getRandomDouble(score * .1, score * 10);
-//				else if (score < 0.0)
-//					score = RandomUtil.getRandomDouble(score * 10, score * .1);
+				if (score > 0.0)
+					score = RandomUtil.getRandomDouble(score * .2, score * 5);
+				else if (score < 0.0)
+					score = - RandomUtil.getRandomDouble(-score * .2, -score * 5);
+				
 				if (score >= highest) {
 					highest = score;
 					mostPosProcess = process;
@@ -339,6 +434,13 @@ public class ToggleResourceProcess extends Task implements Serializable {
 	public static double computeResourceScore(Settlement settlement, ResourceProcess process) {
 		double inputValue = computeResourcesValue(settlement, process, true);
 		double outputValue = computeResourcesValue(settlement, process, false);
+		
+		logger.info(settlement, process 
+//				+ "   inputValue: " + (int)inputValue
+//				+ "   outputValue: " + (int)outputValue
+				+ "   score: " + Math.round((outputValue - inputValue)*100.0)/100.0
+				);
+		
 		return outputValue - inputValue;
 	}
 
@@ -351,7 +453,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 	 * @return the total value for the input or output.
 	 */
 	private static double computeResourcesValue(Settlement settlement, ResourceProcess process, boolean input) {
-		double result = 0D;
+		double score = 0D;
 		double benchmarkValue = 0;
 		
 		Set<Integer> set = null;
@@ -359,63 +461,85 @@ public class ToggleResourceProcess extends Task implements Serializable {
 			set = process.getInputResources();
 		else
 			set = process.getOutputResources();
-		int size = set.size();
-		
-		for (int resource: set) {
-			
-			boolean useResource = (!input || !process.isAmbientInputResource(resource));
-            if (useResource && (!input && process.isWasteOutputResource(resource))) {
-				useResource = false;
-			}
-			if (useResource) {
-				// Gets the vp for this resource
-				double vp = settlement.getGoodsManager().getGoodValuePoint(resource);	
-				
-				if (input) {
-					// Gets the supply of this resource
-					// Note: use supply instead of stored amount.
-					// Stored amount is slower and more time consuming
-					double supply = settlement.getGoodsManager().getSupplyValue(resource);
-					
-					if (supply < 1.0)
-						return 0;
-					
-					double rate = process.getMaxInputRate(resource) / process.getNumModules();
-					double need = rate;
-					
-					if (need > supply) {
-						need = supply;
-					}
-					
-					benchmarkValue += need;
-					result += (need * vp);
-					
-//					logger.info(settlement, process + "   resource: " + resource + "   benchmarkValue: " + benchmarkValue + "  result: " + result);
 
-				} else {
-					// Gets the remaining amount of this resource
-					double remain = settlement.getAmountResourceRemainingCapacity(resource);
-					
-					if (remain == 0.0)
-						return 0;
-					
-					double rate = process.getMaxOutputRate(resource) / process.getNumModules();
-					double product = rate;
-					
-					// For output value
-					if (product > remain) {
-						product = remain;
-					}
-					
-					benchmarkValue += rate;
-					result += (rate * vp);
-					
-//					logger.info(settlement, process + "   resource: " + resource + "   benchmarkValue: " + benchmarkValue + "  result: " + result);
+		for (int resource: set) {
+			// Gets the vp for this resource
+			double vp = settlement.getGoodsManager().getGoodValuePoint(resource);	
+
+			// Gets the supply of this resource
+			// Note: use supply instead of stored amount.
+			// Stored amount is slower and more time consuming
+			double supply = settlement.getGoodsManager().getSupplyValue(resource);
+			
+			if (input) {
+				
+				double rate = process.getMaxInputRate(resource) / process.getNumModules() * 1000;
+				// Limit the vp so as to favor the production of output resources
+				double modVp = Math.min(15, vp/10);
+				// The original value without being affected by vp and supply
+				benchmarkValue += rate;
+				
+				// if this resource is ambient 
+				// that the settlement doesn't need to supply (e.g. carbon dioxide),
+				// then it won't need to check how much it has in stock
+				// and it will not be affected by its vp and supply
+				if (process.isAmbientInputResource(resource)) {
+					score += rate;
 				}
+				else
+					score += ((rate * modVp) / supply);
+									
+//					logger.info(settlement, process + "   input resource: " + resource 
+//							+ "   benchmarkValue: " + benchmarkValue 
+//							+ "   score: " + Math.round(score * 100.0)/100.0);
+			}
+
+			else {
+				// Gets the remaining amount of this resource
+				double remain = settlement.getAmountResourceRemainingCapacity(resource);
+				
+				if (remain == 0.0)
+					return 0;
+				
+				double rate = process.getMaxOutputRate(resource) / process.getNumModules() * 1000;
+				
+				// For output value
+				if (rate > remain) {
+					rate = remain;
+				}
+				
+				benchmarkValue += rate;
+				
+				// if this resource is ambient or a waste product 
+				// that the settlement won't keep (e.g. carbon dioxide),
+				// then it won't need to check how much it has in stock
+				// and it will not be affected by its vp and supply
+				if (process.isWasteOutputResource(resource)) {
+					score += rate;
+				}
+				else
+					score += ((rate * vp) / supply);
+				
+//					logger.info(settlement, process + "   output resource: " + resource 
+//							+ "   benchmarkValue: " + Math.round(benchmarkValue * 10.0)/10.0
+//							+ "   score: " + Math.round(score * 100.0)/100.0);
 			}
 		}
 
-		return (result - benchmarkValue ) / size;
+		String type = "input -"; 
+		
+		if (!input)
+			type = "output -";
+		
+		logger.info(settlement, process 
+				+ "   " + type
+				+ "   benchmarkValue: " + Math.round(benchmarkValue * 100.0)/100.0
+				+ "   value: " + Math.round(score * 100.0)/100.0
+				+ "   score: " + Math.round((score - benchmarkValue) * 100.0)/100.0
+				);
+
+		
+		return (score - benchmarkValue);
 	}
 
 	/**
@@ -465,6 +589,19 @@ public class ToggleResourceProcess extends Task implements Serializable {
 
 		return result;
 	}
+	
+	@Override
+	protected double performMappedPhase(double time) {
+		if (getPhase() == null) {
+			throw new IllegalArgumentException("Task phase is null");
+		} else if (TOGGLING.equals(getPhase())) {
+			return togglingPhase(time);
+		} else if (FINISHED.equals(getPhase())) {
+			return finishedPhase(time);
+		} else {
+			return time;
+		}
+	}
 
 	/**
 	 * Performs the toggle process phase.
@@ -511,13 +648,6 @@ public class ToggleResourceProcess extends Task implements Serializable {
 		if (resourceProcessBuilding != null) {
 			checkForAccident(resourceProcessBuilding, time, 0.005);
 		}
-		
-		if (isDone()) {
-			// if the work has been accomplished (it takes some finite amount of time to
-			// finish the task
-			endTask();
-			return time;
-		}
 
 		return 0;
 	}
@@ -547,33 +677,24 @@ public class ToggleResourceProcess extends Task implements Serializable {
 				
 				if (resourceProcessBuilding.hasFunction(FunctionType.LIFE_SUPPORT))
 					logger.log(worker, Level.INFO, 1_000,
-						   "Manually turned " + toggle + " " + process.getProcessName()
-						   + " in " + resourceProcessBuilding.getName()
+						   "Manually toggled " + toggle + " '" + process.getProcessName()
+						   + "' in " + resourceProcessBuilding.getName()
 						   + ".");
 				else
 					logger.log(worker, Level.INFO, 1_000,
-							"Turned " + toggle + " remotely " + process.getProcessName()
-					       + " in " + worker.getBuildingLocation().getName()
+							"Remotely toggled " + toggle + " '" + process.getProcessName()
+					       + "' in " + worker.getBuildingLocation().getName()
 					       + ".");
 			}
 			
 			// Only need to run the finished phase once and for all
 			isFinished = true;
+			
+			endTask();
 		}
 		
 		return 0D;
 	}
 
-	@Override
-	protected double performMappedPhase(double time) {
-		if (getPhase() == null) {
-			throw new IllegalArgumentException("Task phase is null");
-		} else if (TOGGLING.equals(getPhase())) {
-			return togglingPhase(time);
-		} else if (FINISHED.equals(getPhase())) {
-			return finishedPhase(time);
-		} else {
-			return time;
-		}
-	}
+
 }

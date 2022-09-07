@@ -37,10 +37,10 @@ public class ResourceProcessSpec implements Serializable {
 	private Set<Integer> outputResources;
 
 	/** The minimum period of time in millisols the process must stay on or off. */
-	private int togglePeriodicity = 200;
+	private int togglePeriodicity = 100;
 
 	/** The work time required to toggle this process on or off. */
-	private int toggleDuration = 20;
+	private int toggleDuration = 10;
 	/** By default there is at least one module. */
 	private int modules = 1;
 

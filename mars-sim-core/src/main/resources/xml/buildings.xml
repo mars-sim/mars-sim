@@ -571,33 +571,23 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="methanol" rate="32.0" ambient="false" />
 				</process>
 
-				<process name="melt and filter ice" number-modules="3" power-required="7" default="off">
+				<process name="melt and filter ice" number-modules="3" 
+					power-required="3" default="off">
 					<description> Melting permafrost ice and filtering the water. 
 						Requires 450kJ/kg extraction energy.
-						
-						Specific heat capacity of ice is 2.09 J/g/C
-				
+						Specific heat capacity of ice is 2.09 J/g/C			
 						e.g. For 1 mol of ice, from -25 C to 0 C
-						= 18 g * 2.09 * (0 -(-25)) = 0.941 kJ
-				
-						To transition from ice to liquid, it takes a total of 6.02 kJ/mol
-				
-						Specific heat capacity of water is 4.18 J/g/C
-				
-						To warm liquid water to vapor, it takes a total of 7.52 kJ/mol
-				
-						It's (.941 + 6.02) kJ / 18 g = 386.7 kJ / kg
-				
+						= 18 g * 2.09 * (0 -(-25)) = 0.941 kJ			
+						To transition from ice to liquid, it takes a total of 6.02 kJ/mol			
+						Specific heat capacity of water is 4.18 J/g/C			
+						To warm liquid water to vapor, it takes a total of 7.52 kJ/mol			
+						It's (.941 + 6.02) kJ / 18 g = 386.7 kJ / kg				
 						For 1 kg, heating for 25 millisols,
-						Heat req = 386.7 kJ/(88.775244*25) = 0.1742 kW / kg
-				
-						or 1.3939 kW for 8 kg of ice
-										
-						See "Water and Brines on Mars: Current Evidence and Implications for MSL", 2013						
-						
+						Heat req = 386.7 kJ/(88.775244*25) = 0.1742 kW / kg			
+						or 1.3939 kW for 8 kg of ice							
+						See "Water and Brines on Mars: Current Evidence and Implications for MSL", 2013										
 						Note: assume using vacuum chamber, microwaving, or field effects, electrocatalysis, 
-						or other techniques to reduce power usage of ice melting by ~10-fold.
-						
+						or other techniques to reduce power usage of ice melting by ~10-fold.	
 					</description>
 					<input resource="ice" rate="40.0" ambient="false" />
 					
@@ -1350,33 +1340,23 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="oxygen" rate="12.8" ambient="false" />
 				</process>
 				
-				<process name="melt and filter ice" number-modules="4" power-required="7" default="off">
+				<process name="melt and filter ice" number-modules="4" 
+					power-required="4" default="off">
 					<description> Melting permafrost ice and filtering the water. 
 						Requires 450kJ/kg extraction energy.
-						
-						Specific heat capacity of ice is 2.09 J/g/C
-				
+						Specific heat capacity of ice is 2.09 J/g/C			
 						e.g. For 1 mol of ice, from -25 C to 0 C
-						= 18 g * 2.09 * (0 -(-25)) = 0.941 kJ
-				
-						To transition from ice to liquid, it takes a total of 6.02 kJ/mol
-				
-						Specific heat capacity of water is 4.18 J/g/C
-				
-						To warm liquid water to vapor, it takes a total of 7.52 kJ/mol
-				
-						It's (.941 + 6.02) kJ / 18 g = 386.7 kJ / kg
-				
+						= 18 g * 2.09 * (0 -(-25)) = 0.941 kJ			
+						To transition from ice to liquid, it takes a total of 6.02 kJ/mol			
+						Specific heat capacity of water is 4.18 J/g/C			
+						To warm liquid water to vapor, it takes a total of 7.52 kJ/mol			
+						It's (.941 + 6.02) kJ / 18 g = 386.7 kJ / kg				
 						For 1 kg, heating for 25 millisols,
-						Heat req = 386.7 kJ/(88.775244*25) = 0.1742 kW / kg
-				
-						or 1.3939 kW for 8 kg of ice
-										
-						See "Water and Brines on Mars: Current Evidence and Implications for MSL", 2013						
-						
+						Heat req = 386.7 kJ/(88.775244*25) = 0.1742 kW / kg			
+						or 1.3939 kW for 8 kg of ice							
+						See "Water and Brines on Mars: Current Evidence and Implications for MSL", 2013										
 						Note: assume using vacuum chamber, microwaving, or field effects, electrocatalysis, 
-						or other techniques to reduce power usage of ice melting by ~10-fold.
-						
+						or other techniques to reduce power usage of ice melting by ~10-fold.	
 					</description>
 					<input resource="ice" rate="40.0" ambient="false" />
 					
@@ -1452,7 +1432,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<resource-processing power-down-level="0.0">
 			
 				<process name="convert regolith to ores with sand" number-modules="10" 
-					power-required="0.5" default="on">
+					power-required="2" default="on">
 					<description> A Mars Aqueous Regolith Extract (MARE) was prepared from the Phoenix
 					analogue regolith and analyzed by ion chromatography. The MARE contained (mg/L) 
 					Nitrogen-containing species NO3- has 773 and NO2- has 6.9 
@@ -1762,7 +1742,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</process>
 
 
-				<process name="make soda from sodium oxide" number-modules="2"
+				<process name="make soda from sodium oxide" number-modules="3"
 					power-required=".1" default="off">
 					<description>
 						Soda is sodium carbonate. That is a salt. Sodium exists in Martian regolith as an
@@ -1826,7 +1806,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</process>
 
 
-				<process name="make magnesium-based concrete" number-modules="4"
+				<process name="make magnesium-based concrete" number-modules="2"
 					power-required="1.0" default="off">
 					<description> 
 					 Serpentinization : olivine (Mg,Fe)2 + SiO4 produces H2 and Mg(OH)2, 
@@ -1850,7 +1830,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</process>
 
 
-				<process name="produce ethylene" number-modules="3"
+				<process name="produce ethylene" number-modules="2"
 					power-required="0.2" default="off">
 					<description>
 						2CO + 4H&lt;sub&gt;2&lt;/sub&gt; -> C&lt;sub&gt;2&lt;/sub&gt;H&lt;sub&gt;4&lt;/sub&gt; (ethylene) + 2H&lt;sub&gt;2&lt;/sub&gt;O
@@ -1864,7 +1844,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="iron powder" rate="0.95" ambient="false" />
 				</process>
 						
-				<process name="produce polyethylene" number-modules="5"
+				<process name="produce polyethylene" number-modules="2"
 					power-required="0.1" default="off">
 					<description>
 						This reaction occurs when ethylene (aka ethene) is heated 
@@ -2045,10 +2025,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="hydrogen" rate="26.0" ambient="false" />
 				</process>
 				
-				<process name="Oxygen Generation System" number-modules="4" power-required="2" default="off">
-					<input resource="water" rate="288" ambient="false" />
-					<output resource="hydrogen" rate="32" ambient="false" />
-					<output resource="oxygen" rate="256" ambient="false" />
+				<process name="Oxygen Generation System" number-modules="6" power-required="1.5" default="off">
+					<input resource="water" rate="72" ambient="false" />
+					<output resource="hydrogen" rate="8" ambient="false" />
+					<output resource="oxygen" rate="64" ambient="false" />
 				</process>
 				
 				<process name="Low Temperature Plasma CO2 Decomposition" number-modules="8" 
@@ -3653,33 +3633,22 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</process>
 		
 				<process name="melt and filter ice" number-modules="10" 
-					power-required="7" default="off">
+					power-required="10" default="off">
 					<description> Melting permafrost ice and filtering the water. 
 						Requires 450kJ/kg extraction energy.
-						
-						Specific heat capacity of ice is 2.09 J/g/C
-				
+						Specific heat capacity of ice is 2.09 J/g/C			
 						e.g. For 1 mol of ice, from -25 C to 0 C
-						= 18 g * 2.09 * (0 -(-25)) = 0.941 kJ
-				
-						To transition from ice to liquid, it takes a total of 6.02 kJ/mol
-				
-						Specific heat capacity of water is 4.18 J/g/C
-				
-						To warm liquid water to vapor, it takes a total of 7.52 kJ/mol
-				
-						It's (.941 + 6.02) kJ / 18 g = 386.7 kJ / kg
-				
+						= 18 g * 2.09 * (0 -(-25)) = 0.941 kJ			
+						To transition from ice to liquid, it takes a total of 6.02 kJ/mol			
+						Specific heat capacity of water is 4.18 J/g/C			
+						To warm liquid water to vapor, it takes a total of 7.52 kJ/mol			
+						It's (.941 + 6.02) kJ / 18 g = 386.7 kJ / kg				
 						For 1 kg, heating for 25 millisols,
-						Heat req = 386.7 kJ/(88.775244*25) = 0.1742 kW / kg
-				
-						or 1.3939 kW for 8 kg of ice
-										
-						See "Water and Brines on Mars: Current Evidence and Implications for MSL", 2013						
-						
+						Heat req = 386.7 kJ/(88.775244*25) = 0.1742 kW / kg			
+						or 1.3939 kW for 8 kg of ice							
+						See "Water and Brines on Mars: Current Evidence and Implications for MSL", 2013										
 						Note: assume using vacuum chamber, microwaving, or field effects, electrocatalysis, 
-						or other techniques to reduce power usage of ice melting by ~10-fold.
-						
+						or other techniques to reduce power usage of ice melting by ~10-fold.			
 					</description>
 					<input resource="ice" rate="40.0" ambient="false" />
 					
