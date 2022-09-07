@@ -57,18 +57,18 @@ class AmountResourceGood extends Good {
 	private static final double INITIAL_AMOUNT_DEMAND = 0;
 	private static final double INITIAL_AMOUNT_SUPPLY = 0;
 
-	private static final double CH4_VALUE = 0.1;
-	private static final double H2_VALUE = 1;
-	private static final double CO_VALUE = 0.05;
-    private static final double CO2_VALUE = 0.0000005;
-	private static final double CL_VALUE = 0.25;
-	private static final double ICE_VALUE = 1.5;
 	private static final double WASTE_WATER_VALUE = 1.5;
 	private static final double GREY_WATER_VALUE = 1;
 	private static final double BLACK_WATER_VALUE = .5;
 	private static final double USEFUL_WASTE_VALUE = 1.05D;
 	
 	// Cost modifiers
+	private static final double CH4_COST = 0.1;
+	private static final double H2_COST = 1;
+	private static final double CO_COST = 0.05;
+    private static final double CO2_COST = 0.0000005;
+	private static final double CL_COST = 0.25;
+	private static final double ICE_COST = .5;
 	private static final double FOOD_COST = 0.1;
 	private static final double DERIVED_COST = .07;
 	private static final double SOY_COST = .05;
@@ -113,7 +113,10 @@ class AmountResourceGood extends Good {
 	private static final double REGOLITH_DEMAND_FACTOR = 0.5;
 	private static final double ORE_DEMAND_FACTOR = 2;
 	private static final double MINERAL_DEMAND_FACTOR = 2;
-
+	private static final double POLYETHYLENE_DEMAND_FACTOR = 0.5;
+	private static final double POLYESTHER_RESIN_DEMAND_FACTOR = 0.5;
+	private static final double STYRENE_DEMAND_FACTOR = 0.5;
+	
 	private static final double CHEMICAL_DEMAND_FACTOR = 1;
 	private static final double COMPOUND_DEMAND_FACTOR = 1;
 	private static final double ELEMENT_DEMAND_FACTOR = 1;
@@ -136,7 +139,7 @@ class AmountResourceGood extends Good {
 
 	private double flattenDemand;
 
-	private double costModifier;
+	private double costModifier = -1;
 
     AmountResourceGood(AmountResource ar) {
         super(ar.getName(), ar.getID());
@@ -172,8 +175,11 @@ class AmountResourceGood extends Good {
 	}
 
 	/**
-	 * Calculate the cost modifier from a resource
-	 */
+	 * Calculates the cost modifier from a resource.
+	 * 
+     * @param ar
+     * @return
+     */
 	private static double calculateCostModifier(AmountResource ar) {
         boolean edible = ar.isEdible();
         boolean lifeSupport = ar.isLifeSupport();
@@ -220,17 +226,17 @@ class AmountResourceGood extends Good {
 //            result += STANDARD_AMOUNT_VALUE ;
   
         else if (ar.getID() == ResourceUtil.methaneID)
-            result += CH4_VALUE;
+            result += CH4_COST;
         else if (ar.getID() == ResourceUtil.hydrogenID)
-            result += H2_VALUE;
+            result += H2_COST;
         else if (ar.getID() == ResourceUtil.chlorineID)
-            result += CL_VALUE;
+            result += CL_COST;
         else if (ar.getID() == ResourceUtil.co2ID)
-            result += CO2_VALUE;
+            result += CO2_COST;
         else if (ar.getID() == ResourceUtil.coID)
-            result += CO_VALUE;
+            result += CO_COST;
         else if (ar.getID() == ResourceUtil.iceID)
-            result += ICE_VALUE;
+            result += ICE_COST;
 
         return result;
     }
@@ -444,7 +450,13 @@ class AmountResourceGood extends Good {
 				break;
 	
 			case CHEMICAL:
-				demand = CHEMICAL_DEMAND_FACTOR;
+				demand = CHEMICAL_DEMAND_FACTOR;	
+				if (ar.getName().equalsIgnoreCase("polyethylene"))
+					demand *= POLYETHYLENE_DEMAND_FACTOR;
+				else if (ar.getName().equalsIgnoreCase("polyester resin"))
+					demand *= POLYESTHER_RESIN_DEMAND_FACTOR;
+				else if (ar.getName().equalsIgnoreCase("styrene"))
+					demand *= STYRENE_DEMAND_FACTOR;
 				break;
 
 			case ELEMENT:

@@ -1104,10 +1104,8 @@ public class Settlement extends Structure implements Temporal,
 				regolithProbabilityValue = computeRegolithProbability();
 			}
 			
-			if (remainder == 3) {
-				if (!resourceProcessList.isEmpty() && resourceProcessList.size() > 5)
-					resourceProcessList.remove(0);
-			}
+			if (!resourceProcessList.isEmpty())
+				resourceProcessList.remove(0);
 		}
 	}
 
@@ -3983,10 +3981,13 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	public SimpleEntry<Building, SimpleEntry<ResourceProcess, Double>> retrieveFirstResourceProcess() {
-		SimpleEntry<Building, SimpleEntry<ResourceProcess, Double>> process = resourceProcessList.get(0);
-		logger.info(process.getKey(), "Selected '" + process.getValue().getKey() + "' to toggle.");
-		resourceProcessList.remove(0);
-		return process;
+		if (!resourceProcessList.isEmpty()) {
+			SimpleEntry<Building, SimpleEntry<ResourceProcess, Double>> process = resourceProcessList.get(0);
+			logger.info(process.getKey(), "Selected '" + process.getValue().getKey() + "' to toggle.");
+			resourceProcessList.remove(0);
+			return process;
+		}
+		return null;
 	}
 	
 	/**
