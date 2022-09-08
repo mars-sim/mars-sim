@@ -1289,7 +1289,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="water" rate="21.6" ambient="false" />
 				</process>
 				
-				<process name="Carbon Formation Reactor" number-modules="2" power-required="0.1" default="on">
+				<process name="Carbon Formation Reactor" number-modules="2" power-required="0.1" default="off">
 					<description> The Continuous Bosch (C-Bosch) Reactor reduces CO2 to C(s) and H20 using H2. 
 					 It aims to produce water and elemental carbon from hydrogen and carbon dioxide. 
 					</description> 
@@ -1760,14 +1760,14 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</process>
 
 				<process name="make cement" number-modules="5"
-					power-required="1.0" default="off">
-					<input resource="regolith" rate="70.0" ambient="false" />
-					<input resource="gypsum" rate="10.0" ambient="false" />
-					<input resource="aluminum oxide" rate="5.0" ambient="false" />
-					<input resource="iron oxide" rate="5.0" ambient="false" />
-					<input resource="silica" rate="10.0" ambient="false" />
+					power-required=".5" default="off">
+					<input resource="regolith" rate="35.0" ambient="false" />
+					<input resource="gypsum" rate="5.0" ambient="false" />
+					<input resource="aluminum oxide" rate="2.5" ambient="false" />
+					<input resource="iron oxide" rate="2.5" ambient="false" />
+					<input resource="silica" rate="5.0" ambient="false" />
 
-					<output resource="cement" rate="100.0" ambient="false" />
+					<output resource="cement" rate="5.0" ambient="false" />
 				</process>
 
 				<process name="mix sulfur concrete" number-modules="5"

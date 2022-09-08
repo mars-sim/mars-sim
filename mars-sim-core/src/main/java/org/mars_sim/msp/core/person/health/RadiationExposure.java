@@ -175,7 +175,7 @@ public class RadiationExposure implements Serializable, Temporal {
 	 */
 	private static final int WHOLE_BODY_DOSE = 1000; 
 
-	private static final String EXPOSED_TO = "exposed to ";
+	private static final String EXPOSED_TO = "Exposed to ";
 	private static final String DOSE_OF_RAD = " mSv dose of radiation";
 	private static final String EVA_OPERATION = " during an EVA operation.";
 

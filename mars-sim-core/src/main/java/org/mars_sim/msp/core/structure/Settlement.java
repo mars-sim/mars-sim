@@ -1106,11 +1106,15 @@ public class Settlement extends Structure implements Temporal,
 				regolithProbabilityValue = computeRegolithProbability();
 			}
 			
-			if (!resourceProcessList.isEmpty()) {
+			if (!resourceProcessList.isEmpty() && resourceProcessList.size() > 1) {
+				int size = resourceProcessList.size();
 				SimpleEntry<Building, SimpleEntry<ResourceProcess, Double>> entry =
 						resourceProcessList.get(0);
-		        logger.info(this, "Removing " + entry.getKey() + "   " + entry.getValue().getKey() 
-		        		+ " (" + entry.getValue().getValue() + ").");
+		        logger.info(this, "resourceProcessList has a total of " + size 
+		        		+ " entries. Now removing the first entry '" + entry.getKey() 
+		        		+ " " + entry.getValue().getKey() 
+		        		+ " (score: " + entry.getValue().getValue().intValue() + ") ."
+		        		);
 				resourceProcessList.remove(0);
 			}
 		}
@@ -3996,13 +4000,19 @@ public class Settlement extends Structure implements Temporal,
 	public SimpleEntry<Building, SimpleEntry<ResourceProcess, Double>> retrieveFirstResourceProcess() {
 		if (!resourceProcessList.isEmpty()) {
 			SimpleEntry<Building, SimpleEntry<ResourceProcess, Double>> process = resourceProcessList.get(0);
-			logger.info(process.getKey(), "Selected '" + process.getValue().getKey() + "' to toggle.");
+//			logger.info(process.getKey(), "Selected '" + process.getValue().getKey() + "' to toggle.");
 			resourceProcessList.remove(0);
 			return process;
 		}
 		
-		logger.info(this, "resourceProcessList is empty.");
 		return null;
+	}
+	
+	public boolean canRetrieveFirstResourceProcess() {
+		if (!resourceProcessList.isEmpty()) { 
+			return true;
+		}
+		return false;
 	}
 	
 	/**

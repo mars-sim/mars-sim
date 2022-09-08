@@ -858,7 +858,7 @@ public class EnterAirlock extends Task implements Serializable {
 		else if (airlock.areAll4ChambersFull() || !airlock.hasSpace()) {
 			logger.log((Unit)airlock.getEntity(), person, Level.INFO, 20_000,
 					CHAMBER_FULL + airlock.getEntityName().toString()
-					+ "Could not enter.");
+					+ ". Could not enter.");
 			result = false;
 		}
 

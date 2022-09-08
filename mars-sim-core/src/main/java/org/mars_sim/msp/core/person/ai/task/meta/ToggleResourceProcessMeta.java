@@ -83,35 +83,29 @@ public class ToggleResourceProcessMeta extends MetaTask {
 			if (settlement.getProcessOverride(OverrideType.RESOURCE_PROCESS))
 				return 0;
 			
-	        SimpleEntry<Building, SimpleEntry<ResourceProcess, Double>> entry = worker.getSettlement().retrieveFirstResourceProcess();
-	        if (entry != null) {
-//				logger.info(entry.getKey(), worker + "  0. " + entry.getValue().getKey() + "  result: " + entry.getValue().getValue());			
+	        if (settlement.canRetrieveFirstResourceProcess()) {
 	        	return CAP;
 	        } 
 	        
-	        else {
-	        	entry = ToggleResourceProcess.getResourceProcessingBuilding(worker);
-		        if (entry == null)
-		        	return 0;
-	        }
+	        SimpleEntry<Building, SimpleEntry<ResourceProcess, Double>> entry = 
+	        		ToggleResourceProcess.getResourceProcessingBuilding(worker);
+	        if (entry == null)
+		    	return 0;
 	        
 //			Building resourceProcessBuilding = entry.getKey();
 			ResourceProcess process = entry.getValue().getKey();
 			double score = entry.getValue().getValue();
 			result = score;
-			
-//			logger.info(resourceProcessBuilding, worker + "  1. " + process + "  result: " + result);
-				
+						
 			boolean toggleOn = true;
-			// Remove the negative sign
-			
+	
 			if (result < 0) {
+				// Remove the negative sign	
 				result = - result;
 				toggleOn = false;
 			}
 				
 	        if (result > THRESHOLD) {
-//				logger.info(resourceProcessBuilding, worker + "  2. " + process + "  result: " + result);
 	        	settlement.addResourceProcess(entry);
 	        	process.setFlag(true);
 	        	process.setToggleOn(toggleOn);

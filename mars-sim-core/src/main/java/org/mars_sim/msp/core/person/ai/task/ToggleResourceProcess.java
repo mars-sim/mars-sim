@@ -76,7 +76,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 	 * @param worker the worker performing the task.
 	 */
 	public ToggleResourceProcess(Worker worker) {
-        super(TOGGLE_ON, worker, true, false, STRESS_MODIFIER, SkillType.MECHANICS, 100D, 10D);
+        super(TOGGLE_ON, worker, true, false, STRESS_MODIFIER, SkillType.MECHANICS, 100D, 20D);
 
         SimpleEntry<Building, SimpleEntry<ResourceProcess, Double>> entry = worker.getSettlement().retrieveFirstResourceProcess();
         if (entry == null) {
@@ -84,7 +84,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
         }
         
         logger.info(worker, entry.getKey() + "   " + entry.getValue().getKey() 
-        		+ " (" + entry.getValue().getValue() + ") will be toggled.");
+        		+ " (score: " + entry.getValue().getValue().intValue() + ") will be toggled.");
         
 		resourceProcessBuilding = entry.getKey();
 		process = entry.getValue().getKey();
@@ -108,16 +108,16 @@ public class ToggleResourceProcess extends Task implements Serializable {
 	 */
 	private void setupResourceProcess() {
 		// Copy the current state of this process
-		boolean state = process.isProcessRunning();
-
-		if (state) {
+		toBeToggledOn = !process.isProcessRunning();
+		
+		if (!toBeToggledOn) {
 			setName(TOGGLE_OFF);
 			setDescription(TOGGLE_OFF);
-			logger.info(resourceProcessBuilding, worker + ": Toggling off '" + process + "'.");
+			logger.info(resourceProcessBuilding, worker + ": Attempting to toggle off '" + process + "'.");
 		}
 		else {
 			setDescription(TOGGLE_ON);
-			logger.info(resourceProcessBuilding, worker + ": Toggling on '" + process + "'.");
+			logger.info(resourceProcessBuilding, worker + ": Attempting to toggle on '" + process + "'.");
 		}
 
 		if (resourceProcessBuilding.hasFunction(FunctionType.LIFE_SUPPORT))
@@ -487,10 +487,10 @@ public class ToggleResourceProcess extends Task implements Serializable {
 				// then it won't need to check how much it has in stock
 				// and it will not be affected by its vp and supply
 				if (process.isAmbientInputResource(resource)) {
-					score += rate / supply;
+					score += rate /  Math.max(10, supply) / 10;
 				}
 				else if (process.isInSitu(resource)) {
-					score += rate / supply / supply;
+					score += rate / supply / supply / 10;
 				}
 				else
 					score += ((rate * modVp) / supply);
@@ -634,7 +634,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 
 		// Add work to the toggle process.
 		if (process.addToggleWorkTime(workTime)) {
-			toBeToggledOn = !process.isProcessRunning();
+//			toBeToggledOn = !process.isProcessRunning();
 			setPhase(FINISHED);
 		}
 
@@ -642,7 +642,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 		addExperience(time);
 
 		// Check if an accident happens during the manual toggling.
-		if (resourceProcessBuilding != null) {
+		if (resourceProcessBuilding.hasFunction(FunctionType.LIFE_SUPPORT)) {
 			checkForAccident(resourceProcessBuilding, time, 0.005);
 		}
 
@@ -674,12 +674,12 @@ public class ToggleResourceProcess extends Task implements Serializable {
 				
 				if (resourceProcessBuilding.hasFunction(FunctionType.LIFE_SUPPORT))
 					logger.log(worker, Level.INFO, 1_000,
-						   "Manually toggled " + toggle + " '" + process.getProcessName()
+						   "Done manually toggled " + toggle + " '" + process.getProcessName()
 						   + "' in " + resourceProcessBuilding.getName()
 						   + ".");
 				else
 					logger.log(worker, Level.INFO, 1_000,
-							"Remotely toggled " + toggle + " '" + process.getProcessName()
+							"Done remotely toggled " + toggle + " '" + process.getProcessName()
 					       + "' in " + worker.getBuildingLocation().getName()
 					       + ".");
 			}
