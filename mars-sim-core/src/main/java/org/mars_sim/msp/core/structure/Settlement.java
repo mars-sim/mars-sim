@@ -1106,8 +1106,13 @@ public class Settlement extends Structure implements Temporal,
 				regolithProbabilityValue = computeRegolithProbability();
 			}
 			
-			if (!resourceProcessList.isEmpty())
+			if (!resourceProcessList.isEmpty()) {
+				SimpleEntry<Building, SimpleEntry<ResourceProcess, Double>> entry =
+						resourceProcessList.get(0);
+		        logger.info(this, "Removing " + entry.getKey() + "   " + entry.getValue().getKey() 
+		        		+ " (" + entry.getValue().getValue() + ").");
 				resourceProcessList.remove(0);
+			}
 		}
 	}
 
@@ -3995,6 +4000,8 @@ public class Settlement extends Structure implements Temporal,
 			resourceProcessList.remove(0);
 			return process;
 		}
+		
+		logger.info(this, "resourceProcessList is empty.");
 		return null;
 	}
 	

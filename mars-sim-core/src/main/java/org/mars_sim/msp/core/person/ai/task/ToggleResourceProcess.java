@@ -82,7 +82,10 @@ public class ToggleResourceProcess extends Task implements Serializable {
         if (entry == null) {
         	entry = ToggleResourceProcess.getResourceProcessingBuilding(worker);
         }
-        	
+        
+        logger.info(worker, entry.getKey() + "   " + entry.getValue().getKey() 
+        		+ " (" + entry.getValue().getValue() + ") will be toggled.");
+        
 		resourceProcessBuilding = entry.getKey();
 		process = entry.getValue().getKey();
 		
@@ -107,7 +110,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 		// Copy the current state of this process
 		boolean state = process.isProcessRunning();
 
-		if (!state) {
+		if (state) {
 			setName(TOGGLE_OFF);
 			setDescription(TOGGLE_OFF);
 			logger.info(resourceProcessBuilding, worker + ": Toggling off '" + process + "'.");

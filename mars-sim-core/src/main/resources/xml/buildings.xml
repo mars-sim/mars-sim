@@ -458,7 +458,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				1. power consumption - high temperature endothermic reactions, catalyst resupply, volume/mass.
 				 -->
 				 
-				<process name="Carbon Formation Reactor" number-modules="2" power-required="0.1" default="on">
+				<process name="Carbon Formation Reactor" number-modules="2" 
+					power-required="0.1" default="off">
 					<description> The Continuous Bosch (C-Bosch) Reactor reduces CO2 to C(s) and H20 using H2. 
 					 It aims to produce water and elemental carbon from hydrogen and carbon dioxide. 
 					</description> 
@@ -469,7 +470,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="carbon" rate="24.0" ambient="false" />
 				</process>
 				
-				<process name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="4" power-required="0.2" default="on">
+				<process name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="4" 
+					power-required="0.2" default="off">
 					<description>
 					  By partial pyrolysis in microwave generated plasma, methane is converted to 
 					  hydrogen and acetylene:					  
@@ -1432,7 +1434,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<resource-processing power-down-level="0.0">
 			
 				<process name="convert regolith to ores with sand" number-modules="10" 
-					power-required="2" default="on">
+					power-required="2" default="off">
 					<description> A Mars Aqueous Regolith Extract (MARE) was prepared from the Phoenix
 					analogue regolith and analyzed by ion chromatography. The MARE contained (mg/L) 
 					Nitrogen-containing species NO3- has 773 and NO2- has 6.9 
@@ -3556,7 +3558,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</research>
 
 			<resource-processing power-down-level="0.0">
-				<process name="Sabatier RWGS Reactor" number-modules="4" power-required="0.47" default="on">
+				<process name="Sabatier RWGS Reactor" number-modules="4" 
+					power-required="0.47" default="on">
 					<input resource="carbon dioxide" rate="39.6" ambient="true" />
 					<input resource="hydrogen" rate="3.6" ambient="false" />
 					<output resource="methane" rate="4.8" ambient="false" />
@@ -3564,7 +3567,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="water" rate="21.6" ambient="false" />
 				</process>
 
-				<process name="Carbon Formation Reactor" number-modules="2" power-required="0.1" default="on">
+				<process name="Carbon Formation Reactor" number-modules="2" 
+					power-required="0.1" default="off">
 					<description> The Continuous Bosch (C-Bosch) Reactor reduces CO2 to C(s) and H20 using H2. 
 					 It aims to produce water and elemental carbon from hydrogen and carbon dioxide. 
 					</description> 
@@ -3575,7 +3579,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="carbon" rate="24.0" ambient="false" />
 				</process>
 				
-				<process name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="4" power-required="0.2" default="on">
+				<process name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="4" 
+					power-required="0.2" default="off">
 					<description>
 					  By partial pyrolysis in microwave generated plasma, methane is converted to 
 					  hydrogen and acetylene:					  
@@ -3594,7 +3599,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="hydrogen" rate="26.0" ambient="false" />
 				</process>
 				
-				<process name="Oxygen Generation System" number-modules="2" power-required=".5" default="on">
+				<process name="Oxygen Generation System" number-modules="2" 
+					power-required=".5" default="on">
 					<input resource="water" rate="72" ambient="false" />
 					<output resource="hydrogen" rate="8" ambient="false" />
 					<output resource="oxygen" rate="64" ambient="false" />
