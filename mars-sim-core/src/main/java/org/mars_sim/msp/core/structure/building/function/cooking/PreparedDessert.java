@@ -50,7 +50,7 @@ public class PreparedDessert implements Serializable {
 		this.quality = quality;
 		this.name = name;
 		this.dryMass = dryMass;
-		expirationTime = (MarsClock) creationTime.clone();
+		expirationTime = new MarsClock(creationTime);
 		expirationTime.addTime(SHELF_LIFE);
 		this.producerName = producerName;
 		this.kitchen = kitchen;

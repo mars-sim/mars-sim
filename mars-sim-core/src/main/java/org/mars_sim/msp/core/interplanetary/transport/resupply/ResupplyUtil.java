@@ -79,12 +79,12 @@ public final class ResupplyUtil {
 	                settlementConfig.getItem(templateName).getResupplyMissionTemplates().iterator();
 	            while (j.hasNext()) {
 	                ResupplyMissionTemplate template = j.next();
-	                MarsClock arrivalDate = (MarsClock) currentTime.clone();
+	                MarsClock arrivalDate = new MarsClock(currentTime);
 	                arrivalDate.addTime(template.getArrivalTime() * 1000D);
 	                Resupply resupply = new Resupply(arrivalDate, settlement);
 
 	                // Determine launch date.
-	                MarsClock launchDate = (MarsClock) arrivalDate.clone();
+	                MarsClock launchDate = new MarsClock(arrivalDate);
 	                launchDate.addTime(-1D * averageTransitTime * 1000D);
 	                resupply.setLaunchDate(launchDate);
 

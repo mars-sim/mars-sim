@@ -496,6 +496,8 @@ public class MissionTableModel extends AbstractTableModel
 						result = 0;
 				}
 
+				break;
+				
 				default:
 					result = "";
 				}

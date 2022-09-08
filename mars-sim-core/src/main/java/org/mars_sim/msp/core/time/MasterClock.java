@@ -134,7 +134,7 @@ public class MasterClock implements Serializable {
 		marsClock = MarsClockFormat.fromDateString(simulationConfig.getMarsStartDateTime());
 
 		// Save a copy of the initial mars time
-		initialMarsTime = (MarsClock) marsClock.clone();
+		initialMarsTime = new MarsClock(marsClock);
 
 		// Create an Earth clock
 		earthClock = new EarthClock(simulationConfig.getEarthStartDateTime());

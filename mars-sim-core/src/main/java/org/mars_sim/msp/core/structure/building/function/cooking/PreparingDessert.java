@@ -560,7 +560,7 @@ public class PreparingDessert extends Function {
 
 			// Create a serving of dessert and add it into the list
 			servingsOfDessert.add(new PreparedDessert(selectedDessert, dessertQuality, dessertMassPerServing,
-					(MarsClock) marsClock.clone(), worker.getName(), this));
+					new MarsClock(marsClock), worker.getName(), this));
 
 			dessertCounterPerSol++;
 

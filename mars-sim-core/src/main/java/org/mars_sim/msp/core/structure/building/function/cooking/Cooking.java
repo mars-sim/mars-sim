@@ -618,7 +618,7 @@ public class Cooking extends Function {
 
 		String nameOfMeal = hotMeal.getMealName();
 
-		MarsClock currentTime = (MarsClock) marsClock.clone();
+		MarsClock currentTime = new MarsClock(marsClock);
 
 		CookedMeal meal = new CookedMeal(nameOfMeal, mealQuality, dryMassPerServing, currentTime, theCook.getName(), this);
 		cookedMeals.add(meal);

@@ -173,7 +173,7 @@ public class HistoricalEventManager implements Serializable {
 		if (marsClock == null)
 			marsClock = Simulation.instance().getMasterClock().getMarsClock();
 
-		MarsClock timestamp = (MarsClock) marsClock.clone();
+		MarsClock timestamp = new MarsClock(marsClock);
 
 		if (timestamp == null)
 			throw new IllegalStateException("timestamp is null");

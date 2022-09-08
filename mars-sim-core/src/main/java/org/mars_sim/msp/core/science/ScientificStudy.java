@@ -545,7 +545,7 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 		}
 		
 		// Update last primary work time.
-		primaryStats.lastContribution = (MarsClock) marsClock.clone();
+		primaryStats.lastContribution = new MarsClock(marsClock);
 
 		// Fire scientific study update event.
 		fireScientificStudyUpdate(ScientificStudyEvent.PRIMARY_RESEARCH_WORK_EVENT, getPrimaryResearcher());
@@ -604,7 +604,7 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 			c.reseachWorkTime = requiredWorkTime;
 
 		// Update last collaborative work time.
-		c.lastContribution = (MarsClock) marsClock.clone();
+		c.lastContribution = new MarsClock(marsClock);
 
 		// Fire scientific study update event.
 		fireScientificStudyUpdate(ScientificStudyEvent.COLLABORATION_RESEARCH_WORK_EVENT, researcher);		
@@ -749,7 +749,7 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	 * Start the peer review phase of the study.
 	 */
 	private void startingPeerReview() {
-		peerReviewStartTime = (MarsClock) marsClock.clone();
+		peerReviewStartTime = new MarsClock(marsClock);
 	}
 
 	/**

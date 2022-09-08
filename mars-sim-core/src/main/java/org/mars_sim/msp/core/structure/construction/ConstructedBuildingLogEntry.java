@@ -28,7 +28,7 @@ public class ConstructedBuildingLogEntry implements Serializable {
      */
     ConstructedBuildingLogEntry(String buildingName, MarsClock builtTime) {
         this.buildingName = buildingName;
-        this.builtTime = (MarsClock) builtTime.clone();
+        this.builtTime = new MarsClock(builtTime);
     }
     
     /**
@@ -44,6 +44,6 @@ public class ConstructedBuildingLogEntry implements Serializable {
      * @return time stamp.
      */
     public MarsClock getBuiltTime() {
-        return (MarsClock) builtTime.clone();
+        return new MarsClock(builtTime);
     }
 }

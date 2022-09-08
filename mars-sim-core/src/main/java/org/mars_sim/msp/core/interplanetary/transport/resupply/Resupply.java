@@ -135,7 +135,7 @@ public class Resupply implements Serializable, Transportable {
 		this.arrivalDate = arrivalDate;
 		
         // Determine launch date.
-        launchDate = (MarsClock) arrivalDate.clone();
+        launchDate = new MarsClock(arrivalDate);
         launchDate.addTime(-1D * ResupplyUtil.getAverageTransitTime() * 1000D);
  
 		settlementID = ((Unit)settlement).getIdentifier();
@@ -1298,7 +1298,7 @@ public class Resupply implements Serializable, Transportable {
 
 	@Override
 	public MarsClock getLaunchDate() {
-		return (MarsClock) launchDate.clone();
+		return new MarsClock(launchDate);
 	}
 
 	/**
@@ -1307,7 +1307,7 @@ public class Resupply implements Serializable, Transportable {
 	 * @param launchDate the launch date.
 	 */
 	public void setLaunchDate(MarsClock launchDate) {
-		this.launchDate = (MarsClock) launchDate.clone();
+		this.launchDate = new MarsClock(launchDate);
 	}
 
 	/**
@@ -1439,7 +1439,7 @@ public class Resupply implements Serializable, Transportable {
 
 	@Override
 	public MarsClock getArrivalDate() {
-		return (MarsClock) arrivalDate.clone();
+		return new MarsClock(arrivalDate);
 	}
 
 	/**
@@ -1448,7 +1448,7 @@ public class Resupply implements Serializable, Transportable {
 	 * @param arrivalDate the arrival date.
 	 */
 	public void setArrivalDate(MarsClock arrivalDate) {
-		this.arrivalDate = (MarsClock) arrivalDate.clone();
+		this.arrivalDate = new MarsClock(arrivalDate);
 	}
 
 	/**

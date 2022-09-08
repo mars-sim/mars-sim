@@ -433,7 +433,7 @@ public class BuildingConnectorManager implements Serializable {
 			}
 
 			// Copy existing path to create new path.
-			InsideBuildingPath newPath = (InsideBuildingPath) existingPath.clone();
+			InsideBuildingPath newPath = new InsideBuildingPath(existingPath);
 
 			// Add building connector to new path.
 			if (connector.isSplitConnection()) {

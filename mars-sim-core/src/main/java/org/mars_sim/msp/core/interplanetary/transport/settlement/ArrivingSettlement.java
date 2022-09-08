@@ -320,12 +320,12 @@ public class ArrivingSettlement implements Transportable, Serializable {
 	 */
 	public void scheduleLaunch(MarsClock currentTime, int transitSols) {
 		// Determine the arrival date
-		arrivalDate = (MarsClock) currentTime.clone();
+		arrivalDate = new MarsClock(currentTime);
 		arrivalDate.addTime((arrivalSols * 1000D)
 						+ RandomUtil.getRandomDouble(999D));
 		
 		// Determine launch date.
-		launchDate = (MarsClock) arrivalDate.clone();
+		launchDate = new MarsClock(arrivalDate);
 		launchDate.addTime(-1D * transitSols * 1000D);
 		
 		if (landingLocation == null) {

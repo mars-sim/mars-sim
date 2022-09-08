@@ -145,15 +145,18 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 		this.description = name;
 		this.baseMass = 0;// Double.MAX_VALUE;
 
-		this.lastPulse = sim.getMasterClock().getNextPulse() - 1;
+		if (sim.getMasterClock() != null) {
+			// Needed for maven test
+			this.lastPulse = sim.getMasterClock().getNextPulse() - 1;
 
-		unitManager = sim.getUnitManager();
-
-		// Creates a new location tag instance for each unit
-		tag = new LocationTag(this);
-
-		// Calculate the new Identifier for this type
-		identifer = unitManager.generateNewId(getUnitType());
+			unitManager = sim.getUnitManager();
+	
+			// Creates a new location tag instance for each unit
+			tag = new LocationTag(this);
+	
+			// Calculate the new Identifier for this type
+			identifer = unitManager.generateNewId(getUnitType());
+		}
 
 		// Define the default LocationStateType of an unit at the start of the sim
 		// Instantiate Inventory as needed. Still needs to be pushed to subclass

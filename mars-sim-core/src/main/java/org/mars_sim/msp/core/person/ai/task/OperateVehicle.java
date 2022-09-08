@@ -801,7 +801,7 @@ public abstract class OperateVehicle extends Task {
         double millisolsToDestination = hoursToDestination / MarsClock.HOURS_PER_MILLISOL;// MarsClock.convertSecondsToMillisols(hoursToDestination * 60D * 60D);
 
         // Determine ETA
-        MarsClock eta = (MarsClock) marsClock.clone();
+        MarsClock eta = new MarsClock(marsClock);
         eta.addTime(millisolsToDestination);
 
         return eta;

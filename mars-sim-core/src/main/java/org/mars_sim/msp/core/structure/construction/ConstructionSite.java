@@ -351,7 +351,7 @@ implements  LocalBoundedObject {
 
         // Record completed building name.
         constructionManager = settlement.getConstructionManager();
-        MarsClock timeStamp = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
+        MarsClock timeStamp = new MarsClock(Simulation.instance().getMasterClock().getMarsClock());
         constructionManager.addConstructedBuildingLogEntry(buildingStage.getInfo().getName(), timeStamp);
 
         // Clear construction value cache.

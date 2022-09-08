@@ -89,7 +89,7 @@ implements Serializable {
 			if (settlementSalvageValueCache == null) 
 				settlementSalvageValueCache = new HashMap<>();
 			settlementSalvageValueCache.clear();
-			settlementSalvageValueCacheTime = (MarsClock) currentTime.clone();
+			settlementSalvageValueCacheTime = new MarsClock(currentTime);
 		}
 
 		if (!settlementSalvageValueCache.containsKey(constructionSkill)) {

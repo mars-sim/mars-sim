@@ -49,8 +49,6 @@ public class Computation extends Function {
 	/** The schedule demand [in CUs] for the current mission sol. */
 	private Map<Integer, Double> todayDemand;
 
-	private Building building;
-	
 	/**
 	 * Constructor.
 	 * 
@@ -61,8 +59,6 @@ public class Computation extends Function {
 	public Computation(Building bldg, FunctionSpec spec) {
 		// Call Function constructor.
 		super(FunctionType.COMPUTATION, spec, bldg);
-		
-		this.building = bldg;
 		
 		peakCU = spec.getDoubleProperty(COMPUTING_UNIT);
 		computingUnit = peakCU; 

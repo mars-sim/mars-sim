@@ -1616,7 +1616,7 @@ public class BuildingManager implements Serializable {
 				|| (MarsClock.getTimeDiff(marsClock, lastVPUpdateTime) > 1000D)) {
 			vPNewCache.clear();
 			vPOldCache.clear();
-			lastVPUpdateTime = (MarsClock) marsClock.clone();
+			lastVPUpdateTime = new MarsClock(marsClock);
 		}
 
 		if (newBuilding && vPNewCache.containsKey(buildingType)) {

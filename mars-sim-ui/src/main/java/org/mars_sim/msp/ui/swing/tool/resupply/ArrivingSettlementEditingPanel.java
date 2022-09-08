@@ -964,7 +964,7 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 		settlement.setArrivalDate(arrivalDate);
 
 		// Populate launch date.
-		MarsClock launchDate = (MarsClock) arrivalDate.clone();
+		MarsClock launchDate = new MarsClock(arrivalDate);
 		launchDate.addTime(-1D * ResupplyUtil.getAverageTransitTime() * 1000D);
 		settlement.setLaunchDate(launchDate);
 
@@ -998,7 +998,7 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 	 */
 	private MarsClock getArrivalDate() {
 
-		MarsClock result = (MarsClock) marsClock.clone();
+		MarsClock result = new MarsClock(marsClock);
 
 		if (arrivalDateRB.isSelected()) {
 			// Determine arrival date from arrival date combo boxes.

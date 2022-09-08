@@ -42,7 +42,7 @@ public class CookedMeal implements Serializable, Cloneable {
 		this.quality = quality;
 		this.mealName = mealName;
 		this.dryMass = dryMass;
-		expirationTime = (MarsClock) creationTime.clone();
+		expirationTime = new MarsClock(creationTime);
 		expirationTime.addTime(SHELF_LIFE);
 		this.producerName = producerName;
 		this.kitchen = kitchen;

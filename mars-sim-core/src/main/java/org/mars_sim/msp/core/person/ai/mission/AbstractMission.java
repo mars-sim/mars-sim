@@ -483,7 +483,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 		// Move phase on
  		phase = newPhase;
 		setPhaseEnded(false);
-		phaseStartTime = (MarsClock) marsClock.clone();
+		phaseStartTime = new MarsClock(marsClock);
 
 		String template = newPhase.getDescriptionTemplate();
 		if (template != null) {

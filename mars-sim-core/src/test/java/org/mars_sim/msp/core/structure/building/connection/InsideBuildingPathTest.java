@@ -177,7 +177,8 @@ public class InsideBuildingPathTest extends TestCase {
         InsidePathLocation location3 = new BuildingLocation(building, POSITION_10X10);
         path1.addPathLocation(location3);
         
-        InsideBuildingPath path2 = (InsideBuildingPath) path1.clone();
+//        InsideBuildingPath path2 = (InsideBuildingPath) path1.clone();
+        InsideBuildingPath path2 = new InsideBuildingPath(path1);
         assertNotNull(path2);
         
         assertEquals(location1, path2.getNextPathLocation());
@@ -190,7 +191,8 @@ public class InsideBuildingPathTest extends TestCase {
         
         path2.iteratePathLocation();
         
-        InsideBuildingPath path3 = (InsideBuildingPath) path2.clone();
+//        InsideBuildingPath path3 = (InsideBuildingPath) path2.clone();
+        InsideBuildingPath path3 = new InsideBuildingPath(path2);
         assertNotNull(path3);
         
         assertEquals(location2, path3.getNextPathLocation());

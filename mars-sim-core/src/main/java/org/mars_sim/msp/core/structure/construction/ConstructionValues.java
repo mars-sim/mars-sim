@@ -69,7 +69,7 @@ implements Serializable {
             if (settlementConstructionValueCache == null) 
                 settlementConstructionValueCache = new HashMap<>();
             settlementConstructionValueCache.clear();
-            settlementConstructionValueCacheTime = (MarsClock) currentTime.clone();
+            settlementConstructionValueCacheTime = new MarsClock(currentTime);
         }
 
         if (!settlementConstructionValueCache.containsKey(constructionSkill)) {
@@ -274,7 +274,7 @@ implements Serializable {
                         getConstructionStageValue(stageInfo, constructionSkill));
             }
 
-            allStageInfoValueCacheTime = (MarsClock) currentTime.clone();
+            allStageInfoValueCacheTime = new MarsClock(currentTime);
 
             // Display building construction values report to System.out for testing purposes.
 //            displayAllBuildingConstructionValues();
@@ -307,7 +307,7 @@ implements Serializable {
                 stageInfoValueCache = new HashMap<>();
             }
             stageInfoValueCache.clear();
-            stageInfoValueCacheTime = (MarsClock) currentTime.clone();
+            stageInfoValueCacheTime = new MarsClock(currentTime);
         }
 
         ConstructionStageInfoSkillKey key = new ConstructionStageInfoSkillKey(stageInfo, constructionSkill);
@@ -494,13 +494,13 @@ implements Serializable {
             settlementConstructionValueCache = new HashMap<>();
         }
         settlementConstructionValueCache.clear();
-        settlementConstructionValueCacheTime = (MarsClock) currentTime.clone();
+        settlementConstructionValueCacheTime = new MarsClock(currentTime);
 
         if (stageInfoValueCache == null) {
             stageInfoValueCache = new HashMap<>();
         }
         stageInfoValueCache.clear();
-        stageInfoValueCacheTime = (MarsClock) currentTime.clone();
+        stageInfoValueCacheTime = new MarsClock(currentTime);
 
         if (allStageInfoValueCache == null) {
             allStageInfoValueCache = new HashMap<>();

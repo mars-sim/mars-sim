@@ -43,7 +43,7 @@ public class SalvageInfo implements Serializable {
         this.item = item;
         this.processInfo = processInfo;
         this.settlementID = settlementID;
-        startTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
+        startTime = new MarsClock(Simulation.instance().getMasterClock().getMarsClock());
         finishTime = null;
         partsSalvaged = new HashMap<>(processInfo.getPartSalvageList().size());
     }
@@ -54,7 +54,7 @@ public class SalvageInfo implements Serializable {
      */
     public void finishSalvage(Map<Integer, Integer> partsSalvaged) {
         this.partsSalvaged = partsSalvaged;
-        finishTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
+        finishTime = new MarsClock(Simulation.instance().getMasterClock().getMarsClock());
     }
     
     /**

@@ -539,7 +539,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 		// Get the time as a ratio of the global times msols per day
 		double timeToSunRise = (gapTheta * 1000D)/(2 * Math.PI);
 
-		MarsClock sunRise = (MarsClock) currentTime.clone();
+		MarsClock sunRise = new MarsClock(currentTime);
 		sunRise.addTime(timeToSunRise);
 		return sunRise;
 	}

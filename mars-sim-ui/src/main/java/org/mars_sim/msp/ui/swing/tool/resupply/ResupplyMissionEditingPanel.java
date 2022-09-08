@@ -201,7 +201,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		if (resupply != null) {
 			resupplyTime = resupply.getArrivalDate();
 		} else {
-			resupplyTime = (MarsClock) marsClock.clone();
+			resupplyTime = new MarsClock(marsClock);
 			resupplyTime.addTime(ResupplyUtil.getAverageTransitTime() * 1000D);
 		}
 
@@ -760,7 +760,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		resupplyMission.setArrivalDate(arrivalDate);
 
 		// Determine launch date.
-		MarsClock launchDate = (MarsClock) arrivalDate.clone();
+		MarsClock launchDate = new MarsClock(arrivalDate);
 		launchDate.addTime(-1D * ResupplyUtil.getAverageTransitTime() * 1000D);
 		resupplyMission.setLaunchDate(launchDate);
 
@@ -1009,7 +1009,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		errorString = null;
 
 		if (arrivalDateRB.isSelected()) {
-			marsCurrentTime = (MarsClock) marsClock.clone();
+			marsCurrentTime = new MarsClock(marsClock);
 
 			// Determine arrival date from arrival date combo boxes.
 			try {
@@ -1077,7 +1077,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 				
 				validation_result = true;
 
-				marsCurrentTime = (MarsClock) marsClock.clone();
+				marsCurrentTime = new MarsClock(marsClock);
 				if (inputSol == 0)
 					marsCurrentTime.addTime(marsCurrentTime.getMillisol());
 				else
