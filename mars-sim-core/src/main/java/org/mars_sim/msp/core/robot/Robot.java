@@ -826,24 +826,26 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	 */
 	public static RobotType selectNewRobotType(Settlement s) {
 
-		// Ordinal number
-		// 0 CHEFBOT
-		// 1 CONSTRUCTIONBOT
-		// 2 DELIVERYBOT
-		// 3 GARDENBOT
-		// 4 MAKERBOT
-		// 5 MEDICBOT
-		// 6 REPAIRBOT
+		// Ordinal numbers: 
+		//  0 CHEFBOT
+		//  1 CONSTRUCTIONBOT
+		//  2 DELIVERYBOT
+		//  3 GARDENBOT
+		//  4 MAKERBOT
+		//  5 MEDICBOT
+		//  6 REPAIRBOT
+		
+		// Note: to be used in numBots[ordinalNum]
 
 		// 3 things that determine which robot type to make:
-		// A. Based on # of settlers in a settlement (related to B.)
-		// B. Based on # of bots allowed in a settlement (implemented in this method)
-		// C. Based on sponsor/country's preference (to be implemented in future)
+		//   A. Based on # of settlers in a settlement (related to B.)
+		//   B. Based on # of bots allowed in a settlement (implemented in this method)
+		//   C. Based on sponsor/country's preference (to be implemented in future)
 
 		int[] numBots = new int[7];
 
 		RobotType robotType = null;
-		int max = s.getInitialNumOfRobots();
+		int initialNumBots = s.getInitialNumOfRobots();
 
 		// Find out how many in each robot type
 		// already exists in this settlement
@@ -856,29 +858,33 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		}
 
 		// determine the robotType
-		if (max <= 4) {
+		if (initialNumBots <= 4) {
 			if (numBots[4] < 1)
 				robotType = RobotType.MAKERBOT;
-			else if (numBots[6] < 1)
-				robotType = RobotType.REPAIRBOT;
-			else if (numBots[0] < 1)
-				robotType = RobotType.CHEFBOT;
 			else if (numBots[3] < 1)
 				robotType = RobotType.GARDENBOT;
+			else if (numBots[6] < 1)
+				robotType = RobotType.REPAIRBOT;	
+			else if (numBots[0] < 1)
+				robotType = RobotType.CHEFBOT;			
 		}
 
-		else if (max <= 6) {
+		else if (initialNumBots <= 6) {
 			if (numBots[4] < 1)
 				robotType = RobotType.MAKERBOT;
-			else if (numBots[6] < 1)
-				robotType = RobotType.REPAIRBOT;
-			else if (numBots[0] < 1)
-				robotType = RobotType.CHEFBOT;
 			else if (numBots[3] < 1)
 				robotType = RobotType.GARDENBOT;
+			else if (numBots[6] < 1)
+				robotType = RobotType.REPAIRBOT;	
+			else if (numBots[0] < 1)
+				robotType = RobotType.CHEFBOT;	
+			else if (numBots[5] < 1)
+				robotType = RobotType.MEDICBOT;
+			else if (numBots[2] < 1)
+				robotType = RobotType.DELIVERYBOT;			
 			else {
-				int rand = RandomUtil.getRandomInt(6);
-				if (rand == 1) {
+				int rand = RandomUtil.getRandomInt(4);
+				if (rand <= 2) {
 					if (numBots[5] < 1)
 						robotType = RobotType.MEDICBOT;
 					else if (numBots[2] < 1)
@@ -890,18 +896,22 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 			}
 		}
 
-		else if (max <= 9) {
+		else if (initialNumBots <= 8) {
 			if (numBots[4] < 1)
 				robotType = RobotType.MAKERBOT;
-			else if (numBots[6] < 1)
-				robotType = RobotType.REPAIRBOT;
-			else if (numBots[0] < 1)
-				robotType = RobotType.CHEFBOT;
 			else if (numBots[3] < 1)
 				robotType = RobotType.GARDENBOT;
+			else if (numBots[6] < 1)
+				robotType = RobotType.REPAIRBOT;	
+			else if (numBots[0] < 1)
+				robotType = RobotType.CHEFBOT;	
+			else if (numBots[5] < 1)
+				robotType = RobotType.MEDICBOT;
+			else if (numBots[2] < 1)
+				robotType = RobotType.DELIVERYBOT;
 			else {
-				int rand = RandomUtil.getRandomInt(6);
-				if (rand == 1) {
+				int rand = RandomUtil.getRandomInt(4);
+				if (rand <= 2) {
 					if (numBots[5] < 1)
 						robotType = RobotType.MEDICBOT;
 					else if (numBots[2] < 1)
@@ -918,49 +928,25 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 			}
 		}
 
-		else if (max <= 12) {
+		else if (initialNumBots <= 12) {
 			if (numBots[4] < 2)
 				robotType = RobotType.MAKERBOT;
-			else if (numBots[6] < 2)
-				robotType = RobotType.REPAIRBOT;
-			else if (numBots[0] < 1)
-				robotType = RobotType.CHEFBOT;
 			else if (numBots[3] < 2)
 				robotType = RobotType.GARDENBOT;
-			else {
-				int rand = RandomUtil.getRandomInt(6);
-				if (rand == 1) {
-					if (numBots[5] < 1)
-						robotType = RobotType.MEDICBOT;
-					else if (numBots[2] < 1)
-						robotType = RobotType.DELIVERYBOT;
-					else if (numBots[1] < 1)
-						robotType = RobotType.CONSTRUCTIONBOT;
-					else {
-						robotType = RobotType.values()[rand];
-					}
-				}
-				else {
-					robotType = RobotType.values()[rand];
-				}
-			}
-		}
-
-		else if (max <= 18) {
-			if (numBots[4] < 2)
-				robotType = RobotType.MAKERBOT;
 			else if (numBots[6] < 2)
-				robotType = RobotType.REPAIRBOT;
+				robotType = RobotType.REPAIRBOT;	
 			else if (numBots[0] < 2)
-				robotType = RobotType.CHEFBOT;
-			else if (numBots[3] < 2)
-				robotType = RobotType.GARDENBOT;
+				robotType = RobotType.CHEFBOT;	
+			else if (numBots[5] < 1)
+				robotType = RobotType.MEDICBOT;
+			else if (numBots[2] < 1)
+				robotType = RobotType.DELIVERYBOT;
 			else {
-				int rand = RandomUtil.getRandomInt(6);
-				if (rand == 1) {
+				int rand = RandomUtil.getRandomInt(4);
+				if (rand <= 2) {
 					if (numBots[5] < 1)
 						robotType = RobotType.MEDICBOT;
-					else if (numBots[2] < 1)
+					else if (numBots[2] < 2)
 						robotType = RobotType.DELIVERYBOT;
 					else if (numBots[1] < 1)
 						robotType = RobotType.CONSTRUCTIONBOT;
@@ -974,23 +960,59 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 			}
 		}
 
-		else if (max <= 24) {
+		else if (initialNumBots <= 18) {
+			if (numBots[4] < 2)
+				robotType = RobotType.MAKERBOT;
+			else if (numBots[3] < 2)
+				robotType = RobotType.GARDENBOT;
+			else if (numBots[6] < 2)
+				robotType = RobotType.REPAIRBOT;	
+			else if (numBots[0] < 2)
+				robotType = RobotType.CHEFBOT;	
+			else if (numBots[5] < 1)
+				robotType = RobotType.MEDICBOT;
+			else if (numBots[2] < 2)
+				robotType = RobotType.DELIVERYBOT;
+			else {
+				int rand = RandomUtil.getRandomInt(4);
+				if (rand <= 2) {
+					if (numBots[5] < 2)
+						robotType = RobotType.MEDICBOT;
+					else if (numBots[2] < 2)
+						robotType = RobotType.DELIVERYBOT;
+					else if (numBots[1] < 2)
+						robotType = RobotType.CONSTRUCTIONBOT;
+					else {
+						robotType = RobotType.values()[rand];
+					}
+				}
+				else {
+					robotType = RobotType.values()[rand];
+				}
+			}
+		}
+
+		else if (initialNumBots <= 24) {
 			if (numBots[4] < 3)
 				robotType = RobotType.MAKERBOT;
-			else if (numBots[6] < 3)
-				robotType = RobotType.REPAIRBOT;
-			else if (numBots[0] < 2)
-				robotType = RobotType.CHEFBOT;
 			else if (numBots[3] < 3)
 				robotType = RobotType.GARDENBOT;
+			else if (numBots[6] < 3)
+				robotType = RobotType.REPAIRBOT;	
+			else if (numBots[0] < 3)
+				robotType = RobotType.CHEFBOT;	
+			else if (numBots[5] < 2)
+				robotType = RobotType.MEDICBOT;
+			else if (numBots[2] < 3)
+				robotType = RobotType.DELIVERYBOT;
 			else {
-				int rand = RandomUtil.getRandomInt(6);
-				if (rand == 1) {
-					if (numBots[5] < 1)
+				int rand = RandomUtil.getRandomInt(4);
+				if (rand <= 2) {
+					if (numBots[5] < 2)
 						robotType = RobotType.MEDICBOT;
-					else if (numBots[2] < 1)
+					else if (numBots[2] < 3)
 						robotType = RobotType.DELIVERYBOT;
-					else if (numBots[1] < 1)
+					else if (numBots[1] < 2)
 						robotType = RobotType.CONSTRUCTIONBOT;
 					else {
 						robotType = RobotType.values()[rand];
@@ -1002,23 +1024,27 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 			}
 		}
 
-		else if (max <= 36) {
+		else if (initialNumBots <= 36) {
 			if (numBots[4] < 4)
 				robotType = RobotType.MAKERBOT;
-			else if (numBots[6] < 4)
-				robotType = RobotType.REPAIRBOT;
-			else if (numBots[0] < 3)
-				robotType = RobotType.CHEFBOT;
 			else if (numBots[3] < 4)
 				robotType = RobotType.GARDENBOT;
+			else if (numBots[6] < 4)
+				robotType = RobotType.REPAIRBOT;	
+			else if (numBots[0] < 4)
+				robotType = RobotType.CHEFBOT;	
+			else if (numBots[5] < 2)
+				robotType = RobotType.MEDICBOT;
+			else if (numBots[2] < 4)
+				robotType = RobotType.DELIVERYBOT;
 			else {
-				int rand = RandomUtil.getRandomInt(6);
-				if (rand == 1) {
-					if (numBots[5] < 1)
+				int rand = RandomUtil.getRandomInt(4);
+				if (rand <= 2) {
+					if (numBots[5] < 3)
 						robotType = RobotType.MEDICBOT;
-					else if (numBots[2] < 1)
+					else if (numBots[2] < 3)
 						robotType = RobotType.DELIVERYBOT;
-					else if (numBots[1] < 1)
+					else if (numBots[1] < 3)
 						robotType = RobotType.CONSTRUCTIONBOT;
 					else {
 						robotType = RobotType.values()[rand];
@@ -1030,15 +1056,19 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 			}
 		}
 
-		else if (max <= 48) {
+		else if (initialNumBots <= 48) {
 			if (numBots[4] < 5)
 				robotType = RobotType.MAKERBOT;
-			else if (numBots[6] < 5)
-				robotType = RobotType.REPAIRBOT;
-			else if (numBots[0] < 4)
-				robotType = RobotType.CHEFBOT;
 			else if (numBots[3] < 5)
 				robotType = RobotType.GARDENBOT;
+			else if (numBots[6] < 5)
+				robotType = RobotType.REPAIRBOT;	
+			else if (numBots[0] < 5)
+				robotType = RobotType.CHEFBOT;	
+			else if (numBots[5] < 3)
+				robotType = RobotType.MEDICBOT;
+			else if (numBots[2] < 5)
+				robotType = RobotType.DELIVERYBOT;		
 			else {
 				int rand = RandomUtil.getRandomInt(6);
 				if (rand == 1) {
@@ -1059,22 +1089,22 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		}
 
 		else {
-			if (numBots[4] < (max/9 + RandomUtil.getRandomInt(-2, 2)))
+			if (numBots[4] < (initialNumBots/9 + RandomUtil.getRandomInt(-2, 2)))
 				robotType = RobotType.MAKERBOT;
-			else if (numBots[6] < (max/9 + RandomUtil.getRandomInt(-2, 2)))
+			else if (numBots[6] < (initialNumBots/9 + RandomUtil.getRandomInt(-2, 2)))
 				robotType = RobotType.REPAIRBOT;
-			else if (numBots[0] < (max/12 + RandomUtil.getRandomInt(-2, 2)))
+			else if (numBots[0] < (initialNumBots/12 + RandomUtil.getRandomInt(-2, 2)))
 				robotType = RobotType.CHEFBOT;
-			else if (numBots[3] < (max/9 + RandomUtil.getRandomInt(-2, 2)))
+			else if (numBots[3] < (initialNumBots/9 + RandomUtil.getRandomInt(-2, 2)))
 				robotType = RobotType.GARDENBOT;
 			else {
 				int rand = RandomUtil.getRandomInt(6);
 				if (rand == 1) {
-					if (numBots[2] < (max/24 + RandomUtil.getRandomInt(-2, 2)))
+					if (numBots[2] < (initialNumBots/24 + RandomUtil.getRandomInt(-2, 2)))
 						robotType = RobotType.DELIVERYBOT;
-					else if (numBots[1] < (max/24 + RandomUtil.getRandomInt(-2, 2)))
+					else if (numBots[1] < (initialNumBots/24 + RandomUtil.getRandomInt(-2, 2)))
 						robotType = RobotType.CONSTRUCTIONBOT;
-					else if (numBots[5] < (max/24 + RandomUtil.getRandomInt(-2, 2)))
+					else if (numBots[5] < (initialNumBots/24 + RandomUtil.getRandomInt(-2, 2)))
 						robotType = RobotType.MEDICBOT;
 					else {
 						robotType = RobotType.values()[rand];
