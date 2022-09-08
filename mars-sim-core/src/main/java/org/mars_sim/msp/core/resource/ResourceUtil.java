@@ -657,6 +657,16 @@ public class ResourceUtil implements Serializable {
 		return sortedResources;
 	}
 	
+	public static boolean isInSitu(int resource) {
+		if (resource == iceID || resource == regolithID
+				|| resource == regolithBID || resource == regolithCID || resource == regolithDID
+				) {
+			return true;
+		}
+		
+		return false;
+	}
+	
 	public void destroy() {
 		resources = null;
 		amountResourceMap = null;

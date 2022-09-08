@@ -45,6 +45,7 @@ public class ResourceProcess implements Serializable {
 	private double accumulatedTime;
 
 	private double currentProductionLevel;
+	
 	private double toggleRunningWorkTime;
 
 	private String name;
@@ -200,6 +201,10 @@ public class ResourceProcess implements Serializable {
 		return definition.isAmbientInputResource(resource);
 	}
 
+	public boolean isInSitu(int resource) {
+		return ResourceUtil.isInSitu(resource);
+	}
+	
 	/**
 	 * Gets the set of output resources.
 	 *

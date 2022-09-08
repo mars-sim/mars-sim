@@ -85,19 +85,21 @@ class AmountResourceGood extends Good {
 	private static final double ELEMENT_COST = 0.5;
 	private static final double LIFE_SUPPORT_COST = .5;
 
-	// Value point modifiers
-    private static final double ICE_VALUE_MODIFIER = 1;
-	private static final double WATER_VALUE_MODIFIER = 1;
-	private static final double SOIL_VALUE_MODIFIER = 5;
-	private static final double REGOLITH_VALUE_MODIFIER = .5;
-	private static final double SAND_VALUE_MODIFIER = 3;
-	private static final double ORES_VALUE_MODIFIER = 5;
-	private static final double CONCRETE_VALUE_MODIFIER = 5;
-	private static final double MINERAL_VALUE_MODIFIER = 2;
-	private static final double ROCK_VALUE_MODIFIER = 1;
-	private static final double METEORITE_MODIFIER = 1.05;
-	private static final double SALT_VALUE_MODIFIER = .2;
-	private static final double OXYGEN_VALUE_MODIFIER = .02D;
+	// modifiers
+    private static final double ICE_VALUE_MODIFIER = .1;
+	private static final double WATER_VALUE_MODIFIER = .07;
+	private static final double SOIL_VALUE_MODIFIER = .05;
+	private static final double SAND_VALUE_MODIFIER = .03;
+	private static final double ORES_VALUE_MODIFIER = .05;
+	private static final double CONCRETE_VALUE_MODIFIER = .5;
+	private static final double CEMENT_VALUE_MODIFIER = .4;
+	private static final double MINERAL_VALUE_MODIFIER = .02;
+	private static final double ROCK_VALUE_MODIFIER = .02;
+	private static final double METEORITE_MODIFIER = 100;
+	private static final double ROCK_SALT_VALUE_MODIFIER = 1;
+	private static final double EPSOM_SALT_VALUE_MODIFIER = .1;
+	
+	private static final double OXYGEN_VALUE_MODIFIER = .02;
 	private static final double METHANE_VALUE_MODIFIER = 1;
 	private static final double FOOD_VALUE_MODIFIER = .1;
 	private static final double HYDROGEN_VALUE_MODIFIER = 2;
@@ -110,18 +112,33 @@ class AmountResourceGood extends Good {
 	private static final double CROP_FACTOR = .1;
 	private static final double DESSERT_FACTOR = .1;
 
-	private static final double REGOLITH_DEMAND_FACTOR = 0.5;
-	private static final double ORE_DEMAND_FACTOR = 2;
-	private static final double MINERAL_DEMAND_FACTOR = 2;
-	private static final double POLYETHYLENE_DEMAND_FACTOR = 0.5;
-	private static final double POLYESTHER_RESIN_DEMAND_FACTOR = 0.5;
-	private static final double STYRENE_DEMAND_FACTOR = 0.5;
-	
-	private static final double CHEMICAL_DEMAND_FACTOR = 1;
-	private static final double COMPOUND_DEMAND_FACTOR = 1;
-	private static final double ELEMENT_DEMAND_FACTOR = 1;
+	private static final double REGOLITH_DEMAND_FACTOR = .5;
+	private static final double ORE_DEMAND_FACTOR = .15;
+	private static final double MINERAL_DEMAND_FACTOR = .15;
+	private static final double POLYETHYLENE_DEMAND_FACTOR = 0.05;
+	private static final double POLYESTHER_RESIN_DEMAND_FACTOR = 0.05;
+	private static final double STYRENE_DEMAND_FACTOR = .1;
+	private static final double POLYSTYRENE_DEMAND_FACTOR = 2.5;
+	private static final double CHEMICAL_DEMAND_FACTOR = 5;
+	private static final double COMPOUND_DEMAND_FACTOR = 5;
+	private static final double ELEMENT_DEMAND_FACTOR = 3;
 	private static final double ROCK_DEMAND_FACTOR = 1;
-
+	private static final double GEMSTONE_DEMAND_FACTOR = 100;
+	private static final double INSECT_DEMAND_FACTOR = 100;
+	private static final double WASTE_DEMAND_FACTOR = .25;
+	private static final double UTILITY_DEMAND_FACTOR = 50;
+	private static final double INSTRUMENT_DEMAND_FACTOR = 5;
+	private static final double TISSUE_DEMAND_FACTOR = 10;
+	private static final double ORGANISM_DEMAND_FACTOR = 25;
+	private static final double SOYBASED_DEMAND_FACTOR = 5;
+	private static final double ANIMAL_DEMAND_FACTOR = 10;
+	private static final double CROP_DEMAND_FACTOR = 10;
+	private static final double DERIVED_DEMAND_FACTOR = 5;
+	private static final double SAND_DEMAND_FACTOR = .005;
+	private static final double ICE_DEMAND_FACTOR = .05;
+	private static final double CO_DEMAND_FACTOR = .1;
+	private static final double LIME_DEMAND_FACTOR = 4.5;
+	
 	private static final double COOKED_MEAL_INPUT_FACTOR = .5;
 	private static final double MANUFACTURING_INPUT_FACTOR = 2D;
 	private static final double FOOD_PRODUCTION_INPUT_FACTOR = .1;
@@ -368,7 +385,7 @@ class AmountResourceGood extends Good {
 			* flattenDemand
 			// Adjust the demand on various waste products with the disposal cost.
 			* modifyWasteResource();
-			
+		
 		// Add trade value. Cache is always false if this method is called
 		trade = owner.determineTradeDemand(this);
 		
@@ -385,7 +402,7 @@ class AmountResourceGood extends Good {
 			totalDemand = (
 					.9983 * previousDemand 
 					+ .001 * average 
-					+ .0005 * projected 
+					+ .0002 * projected 
 					+ .0001 * trade); 
 		}
 
@@ -433,46 +450,97 @@ class AmountResourceGood extends Good {
 	private static double calculateFlattenAmountDemand(AmountResource ar) {
 		double demand = 0;
 		switch(ar.getGoodType()) {
-			case REGOLITH:
-				demand = REGOLITH_DEMAND_FACTOR;
-				break;
+		
+		case ANIMAL:
+			demand = ANIMAL_DEMAND_FACTOR;
+			break;	
 
-			case ORE:
-				demand = ORE_DEMAND_FACTOR;
-				break;
+		case CHEMICAL:
+			demand = CHEMICAL_DEMAND_FACTOR;	
+			if (ar.getName().equalsIgnoreCase("polyethylene"))
+				demand *= POLYETHYLENE_DEMAND_FACTOR;
+			else if (ar.getName().equalsIgnoreCase("polyester resin"))
+				demand *= POLYESTHER_RESIN_DEMAND_FACTOR;
+			else if (ar.getName().equalsIgnoreCase("styrene"))
+				demand *= STYRENE_DEMAND_FACTOR;
+			else if (ar.getName().equalsIgnoreCase("polystyrene"))
+				demand *= POLYSTYRENE_DEMAND_FACTOR;
+			else if (ar.getName().equalsIgnoreCase("lime"))
+				demand *= LIME_DEMAND_FACTOR;
+			break;
 
-			case MINERAL:
-				demand = MINERAL_DEMAND_FACTOR;
-				break;
-
-			case ROCK:
-				demand = ROCK_DEMAND_FACTOR;
-				break;
+		case COMPOUND:
+			demand = COMPOUND_DEMAND_FACTOR;
+			if (ar.getID() == ResourceUtil.sandID)
+				demand *= SAND_DEMAND_FACTOR;
+			else if (ar.getID() == ResourceUtil.iceID)
+				demand *= ICE_DEMAND_FACTOR;
+			else if (ar.getID() == ResourceUtil.coID)
+				demand *= CO_DEMAND_FACTOR;
+			break;
 	
-			case CHEMICAL:
-				demand = CHEMICAL_DEMAND_FACTOR;	
-				if (ar.getName().equalsIgnoreCase("polyethylene"))
-					demand *= POLYETHYLENE_DEMAND_FACTOR;
-				else if (ar.getName().equalsIgnoreCase("polyester resin"))
-					demand *= POLYESTHER_RESIN_DEMAND_FACTOR;
-				else if (ar.getName().equalsIgnoreCase("styrene"))
-					demand *= STYRENE_DEMAND_FACTOR;
-				break;
+		case CROP:
+			demand = CROP_DEMAND_FACTOR;
+			break;
+			
+		case DERIVED:
+			demand = DERIVED_DEMAND_FACTOR;
+			break;
+			
+		case ELEMENT:
+			demand = ELEMENT_DEMAND_FACTOR;
+			break;
 
-			case ELEMENT:
-				demand = ELEMENT_DEMAND_FACTOR;
-				break;
+		case GEMSTONE:
+			demand = GEMSTONE_DEMAND_FACTOR;
+			break;
+			
+		case INSECT:
+			demand = INSECT_DEMAND_FACTOR;
+			break;
 
-			case COMPOUND:
-				demand = COMPOUND_DEMAND_FACTOR;
-				break;
+		case INSTRUMENT:
+			demand = INSTRUMENT_DEMAND_FACTOR;
+			break;
+			
+		case MINERAL:
+			demand = MINERAL_DEMAND_FACTOR;
+			break;
+	
+		case ORE:
+			demand = ORE_DEMAND_FACTOR;
+			break;
 
-			case WASTE:
-				demand = WASTE_COST;
-				break;
+		case ORGANISM:
+			demand = ORGANISM_DEMAND_FACTOR;
+			break;
+			
+		case REGOLITH:
+			demand = REGOLITH_DEMAND_FACTOR;
+			break;
+			
+		case ROCK:
+			demand = ROCK_DEMAND_FACTOR;
+			break;
 
-			default:
-				demand = 1;
+		case SOY_BASED:
+			demand = SOYBASED_DEMAND_FACTOR;
+			break;
+			
+		case TISSUE:
+			demand = TISSUE_DEMAND_FACTOR;
+			break;
+			
+		case UTILITY:
+			demand = UTILITY_DEMAND_FACTOR;
+			break;
+			
+		case WASTE:
+			demand = WASTE_DEMAND_FACTOR;
+			break;
+
+		default:
+			demand = 1;
 		}
 
 		return demand;
@@ -1126,70 +1194,85 @@ class AmountResourceGood extends Good {
 		int resource = getID();
 
         if (resource == ResourceUtil.rockSaltID)
-			return demand * SALT_VALUE_MODIFIER;
+			return demand * ROCK_SALT_VALUE_MODIFIER;
 		else if (resource == ResourceUtil.epsomSaltID)
-			return demand * SALT_VALUE_MODIFIER;
+			return demand * EPSOM_SALT_VALUE_MODIFIER;
 		else if (resource == ResourceUtil.soilID)
 			return demand * settlement.getCropsNeedingTending() * SOIL_VALUE_MODIFIER;
+		else if (resource == ResourceUtil.cementID) {
+			double cementDemand = owner.getAmountDemandValue(ResourceUtil.cementID);
+			double concreteDemand = owner.getAmountDemandValue(ResourceUtil.concreteID);
+			double regolithDemand = owner.getAmountDemandValue(ResourceUtil.regolithID);
+			double sandDemand = owner.getAmountDemandValue(ResourceUtil.sandID);
+			return demand * (.5 * cementDemand + .2 * regolithDemand + .2 * sandDemand + .1 * concreteDemand) 
+					/ (1 + cementDemand) * CEMENT_VALUE_MODIFIER;
+		}
 		else if (resource == ResourceUtil.concreteID) {
-			double regolithVP = 1 + owner.getGoodValuePoint(ResourceUtil.regolithID);
-			double sandVP = 1 + owner.getGoodValuePoint(ResourceUtil.sandID);
+			double concreteDemand = owner.getAmountDemandValue(ResourceUtil.concreteID);
+			double regolithDemand = owner.getAmountDemandValue(ResourceUtil.regolithID);
+			double sandDemand = owner.getAmountDemandValue(ResourceUtil.sandID);
 			// the demand for sand is dragged up or down by that of regolith
 			// loses 5% by default
-			return demand * (.75 * regolithVP + .2 * sandVP) / sandVP * CONCRETE_VALUE_MODIFIER;
+			return demand * (.5 * concreteDemand + .55 * regolithDemand + .25 * sandDemand) 
+						/ (1 + concreteDemand) * CONCRETE_VALUE_MODIFIER;
 		}
 		else if (resource == ResourceUtil.sandID) {
-			double regolithVP = 1 + owner.getGoodValuePoint(ResourceUtil.regolithID);
-			double sandVP = 1 + owner.getGoodValuePoint(ResourceUtil.sandID);
+			double regolithDemand = owner.getAmountDemandValue(ResourceUtil.regolithID);
+			double sandDemand = owner.getAmountDemandValue(ResourceUtil.sandID);
 			// the demand for sand is dragged up or down by that of regolith
 			// loses 10% by default
-			return demand * (.2 * regolithVP + .7 * sandVP) / sandVP * SAND_VALUE_MODIFIER;
+			return demand * (.2 * regolithDemand + .7 * sandDemand) 
+						/ (1 + sandDemand) * SAND_VALUE_MODIFIER;
 		}
         else {
-			double regolithVP = owner.getGoodValuePoint(ResourceUtil.regolithID);
-			double sandVP = 1 + owner.getGoodValuePoint(ResourceUtil.sandID);
+			double regolithDemand = owner.getAmountDemandValue(ResourceUtil.regolithID);
+			double sandDemand = owner.getAmountDemandValue(ResourceUtil.sandID);
 
 			for (int id : ResourceUtil.rockIDs) {
 				if (resource == id) {
-					double vp = owner.getGoodValuePoint(id);
-					return demand * (.2 * regolithVP + .9 * vp) / vp * ROCK_VALUE_MODIFIER;
+					double rockDemand = owner.getAmountDemandValue(id);
+					return demand * (.2 * regolithDemand + .9 * rockDemand) 
+							/ (1 + rockDemand) * ROCK_VALUE_MODIFIER;
 				}
 			}
 
 			for (int id : ResourceUtil.mineralConcIDs) {
 				if (resource == id) {
-					double vp = owner.getGoodValuePoint(id);
-					return demand * (.2 * regolithVP + .9 * vp) / vp * MINERAL_VALUE_MODIFIER;
+					double mineralDemand = owner.getAmountDemandValue(id);
+					return demand * (.2 * regolithDemand + .9 * mineralDemand) 
+							/ (1 + mineralDemand) * MINERAL_VALUE_MODIFIER;
 				}
 			}
 
 			for (int id : ResourceUtil.oreDepositIDs) {
 				if (resource == id) {
-					double vp = owner.getGoodValuePoint(id);
+					double oreDemand = owner.getAmountDemandValue(id);
 					// loses 10% by default
-					return demand * (.3 * regolithVP + .6 * vp) / vp * ORES_VALUE_MODIFIER;
+					return demand * (.3 * regolithDemand + .6 * oreDemand) 
+							/ (1 + oreDemand) * ORES_VALUE_MODIFIER;
 				}
 			}
 
-			if (resource == ResourceUtil.regolithID
-					|| resource == ResourceUtil.regolithBID 
-					|| resource == ResourceUtil.regolithCID
-					|| resource == ResourceUtil.regolithDID) {
-				double vp = owner.getGoodValuePoint(resource);
-				return demand * vp * REGOLITH_VALUE_MODIFIER;
-			}
+//			if (resource == ResourceUtil.regolithID
+//					|| resource == ResourceUtil.regolithBID 
+//					|| resource == ResourceUtil.regolithCID
+//					|| resource == ResourceUtil.regolithDID) {
+//				double regDemand = owner.getAmountDemandValue(resource);
+//				return demand * regDemand * REGOLITH_TYPE_VALUE_MODIFIER;
+//			}
 
 			// Checks if this resource is a ROCK type
 			GoodType type = getGoodType();
 			if (type != null && type == GoodType.ROCK) {
-				double vp = owner.getGoodValuePoint(resource);
+				double rockDemand = owner.getAmountDemandValue(resource);
 
 				if (resource == METEORITE_ID)
-					return demand * (.4 * regolithVP + .5 * vp) / vp * METEORITE_MODIFIER;
+					return demand * (.4 * regolithDemand + .5 * rockDemand) 
+							/ (1 + rockDemand) * METEORITE_MODIFIER;
 				else
-					return demand * (.2 * sandVP + .7 * vp) / vp * ROCK_VALUE_MODIFIER;
+					return demand * (.2 * sandDemand + .7 * rockDemand) 
+							/ (1 + rockDemand) * ROCK_VALUE_MODIFIER;
 			}
-
 		}
 
 		return demand;
@@ -1259,35 +1342,39 @@ class AmountResourceGood extends Good {
 			double waterRationLevel = settlement.getWaterRationLevel();
 			double amountNeededSol = personConfig.getWaterUsageRate();
 			int numPeople = settlement.getNumCitizens();
-			demand = numPeople * amountNeededSol *  WATER_VALUE_MODIFIER * owner.getTradeFactor() * (1 + waterRationLevel);
+			demand = numPeople * amountNeededSol *  WATER_VALUE_MODIFIER 
+					* owner.getTradeFactor() * (1 + waterRationLevel);
 		}
 
 		return demand;
 	}
 
 	/**
-	 * Computes the ice demand.
+	 * Computes ice projected demand.
 	 *
-	 * @param owner Owner of Supply Demand tables
-	 * @return demand (kg)
+	 * @param owner
+	 * @param settlement
+	 * @return demand
 	 */
 	private double computeIceProjectedDemand(GoodsManager owner, Settlement settlement) {
         int resource = getID();
 		if (resource == ResourceUtil.iceID) {
-			double ice = 1 + owner.getGoodValuePoint(resource);
-			double water = 1 + owner.getGoodValuePoint(ResourceUtil.waterID);
+			double ice = 1 + owner.getAmountDemandValue(resource);
+			double water = 1 + owner.getAmountDemandValue(ResourceUtil.waterID);
 			// Use the water's VP and existing iceSupply to compute the ice demand
-			return Math.max(8, settlement.getNumCitizens()) * (.8 * water + .2 * ice) / ice
-					* ICE_VALUE_MODIFIER * settlement.getWaterRationLevel();
+			return  (.5 * water + .5 * ice) / ice
+					* ICE_VALUE_MODIFIER;
 		}
 
 		return 0;
 	}
 
 	/**
-	 * Computes the regolith demand.
+	 * Computes regolith projected demand.
 	 *
-	 * @return demand (kg)
+	 * @param owner
+	 * @param settlement
+	 * @return demand
 	 */
 	private double computeRegolithProjectedDemand(GoodsManager owner, Settlement settlement) {
 		double demand = 0;
@@ -1297,22 +1384,21 @@ class AmountResourceGood extends Good {
 			|| (resource ==  ResourceUtil.regolithCID)
 			|| (resource ==  ResourceUtil.regolithDID)) {
 
-			double sand = 1 + owner.getGoodValuePoint(ResourceUtil.sandID);
-			double concrete = 1 + owner.getGoodValuePoint(ResourceUtil.concreteID);
-			double cement = 1 + owner.getGoodValuePoint(ResourceUtil.cementID);
+			double sand = owner.getAmountDemandValue(ResourceUtil.sandID);
+			double concrete = owner.getAmountDemandValue(ResourceUtil.concreteID);
+			double cement = owner.getAmountDemandValue(ResourceUtil.cementID);
 
-			double targetRegolith = 1 + owner.getGoodValuePoint(resource);
-			double regolith = 1 + owner.getGoodValuePoint(ResourceUtil.regolithID);
-			double regolithB = 1 + owner.getGoodValuePoint(ResourceUtil.regolithBID);
-			double regolithC = 1 + owner.getGoodValuePoint(ResourceUtil.regolithCID);
-			double regolithD = 1 + owner.getGoodValuePoint(ResourceUtil.regolithDID);
+			double targetRegolith = owner.getAmountDemandValue(resource);
+			double regolith = owner.getAmountDemandValue(ResourceUtil.regolithID);
+			double regolithB = owner.getAmountDemandValue(ResourceUtil.regolithBID);
+			double regolithC = owner.getAmountDemandValue(ResourceUtil.regolithCID);
+			double regolithD = owner.getAmountDemandValue(ResourceUtil.regolithDID);
 			
 			double averageRegolith = (regolith + regolithB + regolithC + regolithD) / 4.0;
 			
 			// Limit the minimum value of regolith projected demand
-			demand = 1 + Math.max(12, settlement.getNumCitizens()) *
-					(.1 * cement + .1 * concrete + .4 * targetRegolith + .2 * sand + .2 * averageRegolith) 
-					/ targetRegolith * REGOLITH_VALUE_MODIFIER;
+			demand = (.1 * cement + .1 * concrete + .4 * targetRegolith + .2 * sand + .2 * averageRegolith) 
+					/ ( 1 + targetRegolith) * REGOLITH_DEMAND_FACTOR;
 		}
 
 		return demand;

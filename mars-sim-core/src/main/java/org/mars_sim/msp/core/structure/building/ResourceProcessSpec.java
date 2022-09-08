@@ -40,7 +40,7 @@ public class ResourceProcessSpec implements Serializable {
 	private int togglePeriodicity = 100;
 
 	/** The work time required to toggle this process on or off. */
-	private int toggleDuration = 10;
+	private int toggleDuration = 0;
 	/** By default there is at least one module. */
 	private int modules = 1;
 

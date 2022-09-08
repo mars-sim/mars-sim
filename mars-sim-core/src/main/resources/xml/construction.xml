@@ -963,6 +963,7 @@
 
 		<building name="outpost hub" width="10.0" length="10.0" base-level="-1" constructable="true"
 		 salvagable="true" work-time="2.0" skill-required="3" frame="round vaulted brick frame" >
+		 	<resource name="cement" amount="200.0" />
 			<part name="steel pipe" number="6" />
 			<part name="plastic pipe" number="8" />
 			<part name="valve" number="10" />
@@ -1019,7 +1020,7 @@
 
 		<building name="mining lab" width="5.0" length="5.0" base-level="-1" constructable="true"
 		 salvagable="true" work-time="1.0" skill-required="3" frame="small brick shed frame" >
-		 	<resource name="cement" amount="20.0" />
+		 	<resource name="cement" amount="50.0" />
 			<part name="steel pipe" number="3" />
 			<part name="plastic pipe" number="10" />
 			<part name="valve" number="10" />

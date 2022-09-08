@@ -346,18 +346,18 @@ public class ToggleResourceProcess extends Task implements Serializable {
 				String name = process.getProcessName().toLowerCase();
 				
 				boolean sab = name.equalsIgnoreCase(ResourceProcessing.SABATIER);
-				boolean reg = name.equalsIgnoreCase(ResourceProcessing.REGOLITH);
+				boolean reg = name.contains(ResourceProcessing.REGOLITH);
 				boolean ice = name.equalsIgnoreCase(ResourceProcessing.ICE);
 				boolean ppa = name.equalsIgnoreCase(ResourceProcessing.PPA);
 				boolean cfr = name.equalsIgnoreCase(ResourceProcessing.CFR);
 				boolean ogs = name.equalsIgnoreCase(ResourceProcessing.OGS);
 				
 				if (reg) {
-					score *= goodsManager.getAmountDemandValue(ResourceUtil.regolithID) * (1 + regStored * 10);
+					score *= goodsManager.getAmountDemandValue(ResourceUtil.regolithID) * (1 + regStored * FACTOR);
 				}
 
 				else if (ice) {
-					score *= goodsManager.getAmountDemandValue(ResourceUtil.iceID) * (1 + iceStored * 10);
+					score *= goodsManager.getAmountDemandValue(ResourceUtil.iceID) * (1 + iceStored * FACTOR);
 				}
 				
 				else if (ppa) {
@@ -435,11 +435,11 @@ public class ToggleResourceProcess extends Task implements Serializable {
 		double inputValue = computeResourcesValue(settlement, process, true);
 		double outputValue = computeResourcesValue(settlement, process, false);
 		
-		logger.info(settlement, process 
-//				+ "   inputValue: " + (int)inputValue
-//				+ "   outputValue: " + (int)outputValue
-				+ "   score: " + Math.round((outputValue - inputValue)*100.0)/100.0
-				);
+//		logger.info(settlement, process 
+////				+ "   inputValue: " + (int)inputValue
+////				+ "   outputValue: " + (int)outputValue
+//				+ "   score: " + Math.round((outputValue - inputValue)*100.0)/100.0
+//				);
 		
 		return outputValue - inputValue;
 	}
@@ -475,7 +475,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 				
 				double rate = process.getMaxInputRate(resource) / process.getNumModules() * 1000;
 				// Limit the vp so as to favor the production of output resources
-				double modVp = Math.min(15, vp/10);
+				double modVp = Math.max(.01, Math.min(20, vp/10));
 				// The original value without being affected by vp and supply
 				benchmarkValue += rate;
 				
@@ -484,14 +484,13 @@ public class ToggleResourceProcess extends Task implements Serializable {
 				// then it won't need to check how much it has in stock
 				// and it will not be affected by its vp and supply
 				if (process.isAmbientInputResource(resource)) {
-					score += rate;
+					score += rate / supply;
+				}
+				else if (process.isInSitu(resource)) {
+					score += rate / supply / supply;
 				}
 				else
 					score += ((rate * modVp) / supply);
-									
-//					logger.info(settlement, process + "   input resource: " + resource 
-//							+ "   benchmarkValue: " + benchmarkValue 
-//							+ "   score: " + Math.round(score * 100.0)/100.0);
 			}
 
 			else {
@@ -515,29 +514,24 @@ public class ToggleResourceProcess extends Task implements Serializable {
 				// then it won't need to check how much it has in stock
 				// and it will not be affected by its vp and supply
 				if (process.isWasteOutputResource(resource)) {
-					score += rate;
+					score += rate / supply;
 				}
 				else
 					score += ((rate * vp) / supply);
-				
-//					logger.info(settlement, process + "   output resource: " + resource 
-//							+ "   benchmarkValue: " + Math.round(benchmarkValue * 10.0)/10.0
-//							+ "   score: " + Math.round(score * 100.0)/100.0);
 			}
 		}
 
-		String type = "input -"; 
-		
-		if (!input)
-			type = "output -";
-		
-		logger.info(settlement, process 
-				+ "   " + type
-				+ "   benchmarkValue: " + Math.round(benchmarkValue * 100.0)/100.0
-				+ "   value: " + Math.round(score * 100.0)/100.0
-				+ "   score: " + Math.round((score - benchmarkValue) * 100.0)/100.0
-				);
-
+//		String type = "input -"; 
+//		
+//		if (!input)
+//			type = "output -";
+//		
+//		logger.info(settlement, process 
+//				+ "   " + type
+//				+ "   benchmarkValue: " + Math.round(benchmarkValue * 100.0)/100.0
+//				+ "   value: " + Math.round(score * 100.0)/100.0
+//				+ "   score: " + Math.round((score - benchmarkValue) * 100.0)/100.0
+//				);
 		
 		return (score - benchmarkValue);
 	}

@@ -112,7 +112,7 @@ public class Settlement extends Structure implements Temporal,
 	public static final int MAX_NUM_SOLS = 3;
 	public static final int MAX_SOLS_DAILY_OUTPUT = 14;
 	public static final int SUPPLY_DEMAND_REFRESH = 7;
-	private static final int RESOURCE_UPDATE_FREQ = 20;
+	private static final int RESOURCE_UPDATE_FREQ = 30;
 	private static final int CHECK_WATER_RATION = 66;
 	private static final int RESOURCE_SAMPLING_FREQ = 50; // in msols
 	public static final int NUM_CRITICAL_RESOURCES = 10;
@@ -121,9 +121,12 @@ public class Settlement extends Structure implements Temporal,
 	public static final int REGOLITH_MAX = 4000;
 	public static final int MIN_REGOLITH_RESERVE = 400; // per person
 	public static final int MIN_SAND_RESERVE = 400; // per person
+	
 	public static final int ICE_MAX = 4000;
 	public static final int WATER_MAX = 4000;
-	public static final int MIN_ICE_RESERVE = 200; // per person
+	
+	public static final int MIN_WATER_RESERVE = 400; // per person
+	public static final int MIN_ICE_RESERVE = 400; // per person
 
 	private static final int OXYGEN_ID = ResourceUtil.oxygenID;
 	private static final int HYDROGEN_ID = ResourceUtil.hydrogenID;
@@ -158,7 +161,6 @@ public class Settlement extends Structure implements Temporal,
 	// Threshold to adjust filtering rate
 	private static final double GREY_WATER_THRESHOLD = 0.00001;
 
-	public static final double MIN_WATER_RESERVE = 400D; // per person
 	public static final double SAFE_TEMPERATURE_RANGE = 18;
 	// Initial mission passing score
 	private static final double INITIAL_MISSION_SCORE = 400D;
@@ -1096,11 +1098,11 @@ public class Settlement extends Structure implements Temporal,
 			}
 
 			remainder = msol % RESOURCE_UPDATE_FREQ;
-			if (remainder == 10) {
+			if (remainder == 12) {
 				iceProbabilityValue = computeIceProbability();
 			}
 
-			if (remainder == 5) {
+			if (remainder == 13) {
 				regolithProbabilityValue = computeRegolithProbability();
 			}
 			
@@ -3193,44 +3195,47 @@ public class Settlement extends Structure implements Temporal,
 	 */
 	private double computeRegolithProbability() {
 		double result = 0;
-		double demand = goodsManager.getAmountDemandValue(REGOLITH_ID);
-		double regolithVP = goodsManager.getGoodValuePoint(REGOLITH_ID) * GoodsManager.REGOLITH_VALUE_MODIFIER;
-		if (regolithVP > REGOLITH_MAX)
-			regolithVP = REGOLITH_MAX;
-		else if (regolithVP < 0)
-			return 0;
+		double regolithDemand = goodsManager.getAmountDemandValue(REGOLITH_ID);
+		if (regolithDemand > REGOLITH_MAX)
+			regolithDemand = REGOLITH_MAX;
+		else if (regolithDemand < 1)
+			regolithDemand = 1;
 
-		double sandVP = goodsManager.getGoodValuePoint(SAND_ID) * GoodsManager.SAND_VALUE_MODIFIER;
-		if (sandVP > REGOLITH_MAX)
-			sandVP = REGOLITH_MAX;
-		else if (sandVP < 0)
-			return 0;
+		double sandDemand = goodsManager.getAmountDemandValue(SAND_ID);
+		if (sandDemand > REGOLITH_MAX)
+			sandDemand = REGOLITH_MAX;
+		else if (sandDemand < 1)
+			sandDemand = 1;
 		
 		int pop = numCitizens;
 
-		double regolithAvailable = getAmountResourceStored(REGOLITH_ID);
-		double sandAvailable = getAmountResourceStored(SAND_ID);
-
-		if (regolithAvailable > MIN_REGOLITH_RESERVE * pop + regolithVP
-				|| sandAvailable > MIN_SAND_RESERVE * pop + sandVP) {
-			result = (MIN_REGOLITH_RESERVE * pop - regolithVP - regolithAvailable
-					+ MIN_SAND_RESERVE * pop - sandVP - sandAvailable);
+		double regolithAvailable = goodsManager.getSupplyValue(REGOLITH_ID);
+		regolithAvailable = regolithAvailable * regolithAvailable - 1;
+		double sandAvailable = goodsManager.getSupplyValue(SAND_ID);
+		sandAvailable = sandAvailable * sandAvailable - 1;
+		
+		if (regolithAvailable > MIN_REGOLITH_RESERVE * pop + regolithDemand
+				|| sandAvailable > MIN_SAND_RESERVE * pop + sandDemand) {
+			result = (MIN_REGOLITH_RESERVE * pop - regolithDemand - regolithAvailable
+					+ MIN_SAND_RESERVE * pop - sandDemand - sandAvailable);
 		}
 
 		// Prompt the regolith mission if regolith resource is low,
 		else if (regolithAvailable > MIN_REGOLITH_RESERVE * pop
 				|| sandAvailable > MIN_SAND_RESERVE * pop) {
-			// no change to missionProbability
 			result = (MIN_REGOLITH_RESERVE + MIN_SAND_RESERVE) * pop - regolithAvailable - sandAvailable;
 		}
 		else {
-			result = (MIN_REGOLITH_RESERVE + MIN_SAND_RESERVE) * pop + regolithVP + sandVP;
+			result = (MIN_REGOLITH_RESERVE + MIN_SAND_RESERVE) * pop + regolithDemand + sandDemand;
 		}
 
 		if (result < 0)
 			result = 0;
 
-		return result * demand / 100;
+//		logger.info(this, 30_000L, "regolithDemand: " + regolithDemand
+//						+ "   sandDemand: " + sandDemand
+//						+ "   regolith Prob value: " + result);
+		return result;
 	}
 
 	/***
@@ -3240,49 +3245,52 @@ public class Settlement extends Structure implements Temporal,
 	 */
 	private double computeIceProbability() {
 		double result = 0;
-		double demand = goodsManager.getAmountDemandValue(ICE_ID);
-		double iceVP = goodsManager.getGoodValuePoint(ICE_ID);
-		if (iceVP > ICE_MAX)
-			iceVP = ICE_MAX;
-		if (iceVP < 1)
-			iceVP = 1;
+		double iceDemand = goodsManager.getAmountDemandValue(ICE_ID);
+		if (iceDemand > ICE_MAX)
+			iceDemand = ICE_MAX;
+		if (iceDemand < 1)
+			iceDemand = 1;
 		
-		double waterVP = goodsManager.getGoodValuePoint(WATER_ID);
-		waterVP = waterVP * waterRationLevel;
-		if (waterVP > WATER_MAX)
-			waterVP = WATER_MAX;
-		if (waterVP < 1)
-			waterVP = 1;
-		waterVP = waterVP / 100.0;
+		double waterDemand = goodsManager.getAmountDemandValue(WATER_ID);
+		waterDemand = waterDemand * waterRationLevel / 10;
+		if (waterDemand > WATER_MAX)
+			waterDemand = WATER_MAX;
+		if (waterDemand < 1)
+			waterDemand = 1;
 		
 		// Compare the available amount of water and ice reserve
-		double iceAvailable =  getAmountResourceStored(ICE_ID);
-		double waterAvailable =  Math.log(1 + getAmountResourceStored(WATER_ID));
+		double iceSupply = goodsManager.getSupplyValue(ICE_ID);
+		double waterSupply = goodsManager.getSupplyValue(WATER_ID);
 
 		int pop = numCitizens;
 
 		// Create a task to find local ice and simulate the probability of finding
 		// local ice and its quantity
-		if (iceAvailable > MIN_ICE_RESERVE * pop + iceVP
-				&& waterAvailable < MIN_WATER_RESERVE * pop + waterVP) {
-			result = MIN_ICE_RESERVE * pop - iceAvailable + waterVP 
-					+ MIN_WATER_RESERVE * pop - waterAvailable + iceVP;
+		if (iceSupply + waterSupply > (MIN_WATER_RESERVE + MIN_ICE_RESERVE) * pop 
+				+ iceDemand + waterDemand) {
+			result = .5 * (MIN_WATER_RESERVE + MIN_ICE_RESERVE) * pop 
+				+ iceDemand + waterDemand - iceSupply - waterSupply;
 		}
 
 		// Prompt the collect ice mission to proceed more easily if water resource is
 		// dangerously low,
-		else if (waterAvailable + iceAvailable > (MIN_ICE_RESERVE + MIN_WATER_RESERVE) * pop) {
+		else if (waterSupply + iceSupply > (MIN_ICE_RESERVE + MIN_WATER_RESERVE) * pop) {
 			// no change to missionProbability
-			result = (MIN_ICE_RESERVE + MIN_WATER_RESERVE) * pop - waterAvailable - iceAvailable ;
+			result = .5 * (MIN_ICE_RESERVE + MIN_WATER_RESERVE) * pop - waterSupply - iceSupply ;
 		}
 		else {
-			result = (MIN_ICE_RESERVE + MIN_WATER_RESERVE) * pop + waterVP + iceVP;
+			result = .5 * (MIN_ICE_RESERVE + MIN_WATER_RESERVE) * pop + waterDemand + iceDemand;
 		}
 		
 		if (result < 0)
 			result = 0;
 		
-		return result * demand / 30;
+//		logger.info(this, 30_000L, "iceDemand: " + iceDemand
+//				+ "   waterDemand: " + waterDemand
+//				+ "   ice Prob value: " + result
+//				);
+		
+		return result;
 	}
 
 	/**

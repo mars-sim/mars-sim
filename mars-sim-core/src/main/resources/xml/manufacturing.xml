@@ -774,7 +774,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="petri dish" number="50" />
 		</outputs>
 	</process>
-
+	
 	<process name="make gasket" tech="4" skill="2" work-time="100" process-time="200"
 			power-required=".1">
 		<inputs>
@@ -1238,8 +1238,9 @@ Note: 1 kg of H2 is 14.13 liter
 			power-required=".1">
 		<inputs>
 			<resource name="polyester resin" amount="25.0" />
+			<resource name="polystyrene" amount="10" />
 			<resource name="styrene" amount="25.0" />
-			<part name="fiberglass" number="50" />
+			<part name="fiberglass" number="40" />
 		</inputs>
 		<outputs>
 			<part name="rover chassis panel" number="1" />
@@ -1368,7 +1369,8 @@ Note: 1 kg of H2 is 14.13 liter
 		<inputs>
 			<resource name="polyethylene" amount="3.0" />
 			<resource name="polyester resin" amount="20.0" />
-			<resource name="styrene" amount="20.0" />
+			<resource name="polystyrene" amount="10" />			
+			<resource name="styrene" amount="10.0" />
 			<part name="fiberglass" number="40" />
 			<part name="navigation circuit board" number="1" />
 			<part name="communications circuit board" number="1" />
@@ -1490,7 +1492,8 @@ Note: 1 kg of H2 is 14.13 liter
 			power-required="1.0">
 		<inputs>
 			<resource name="polyethylene" amount=".5" />
-			<resource name="polyester resin" amount="3.0" />
+			<resource name="polyester resin" amount="2.0" />
+			<resource name="polystyrene" amount="1.0" />
 			<resource name="styrene" amount="1.0" />
 			<part name="fiberglass" number="5" />
 			<part name="electrical wire" number="2" />
@@ -1559,6 +1562,7 @@ Note: 1 kg of H2 is 14.13 liter
 			power-required="2.0">
 		<inputs>
 			<resource name="acetylene" amount="1.0" />
+			<resource name="polystyrene" amount="5" />			
 			<part name="navigation circuit board" number="1" />
 			<part name="communications circuit board" number="1" />
 			<part name="vehicle frame - small" number="2" />
@@ -1588,6 +1592,7 @@ Note: 1 kg of H2 is 14.13 liter
 			power-required="4.0">
 		<inputs>
 			<resource name="acetylene" amount="2.0" />		
+			<resource name="polystyrene" amount="15" />				
 			<part name="navigation circuit board" number="1" />
 			<part name="communications circuit board" number="1" />
 
@@ -1627,6 +1632,7 @@ Note: 1 kg of H2 is 14.13 liter
 			power-required="5.0">
 		<inputs>
 			<resource name="acetylene" amount="3.0" />		
+			<resource name="polystyrene" amount="20" />				
 			<part name="navigation circuit board" number="1" />
 			<part name="communications circuit board" number="1" />
 
@@ -1666,6 +1672,7 @@ Note: 1 kg of H2 is 14.13 liter
 			power-required="6.0">
 		<inputs>
 			<resource name="acetylene" amount="3.0" />
+			<resource name="polystyrene" amount="30" />				
 			<part name="navigation circuit board" number="1" />
 			<part name="communications circuit board" number="1" />
 

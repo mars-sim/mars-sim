@@ -43,10 +43,13 @@ class PartGood extends Good {
 	private static final String BRICK = "brick";
 	private static final String HEAT_PROBE = "heat probe";
 	private static final String BOTTLE = "bottle";
+	private static final String GLASS_TUBE = "glass";
+	private static final String GLASS_SHEET = "glass sheet";
 
 	private static final double BOTTLE_DEMAND = .02;
 	private static final double FIBERGLASS_DEMAND = .1;
-	private static final double VEHICLE_PART_DEMAND = .05;
+	private static final double VEHICLE_PART_DEMAND = 4;
+	private static final double EVA_PART_DEMAND = 7;
     private static final double KITCHEN_DEMAND = 1.5;
 	private static final double SCRAP_METAL_DEMAND = .01;
 	private static final double INGOT_METAL_DEMAND = .01;
@@ -54,29 +57,36 @@ class PartGood extends Good {
 	private static final double TRUSS_DEMAND = .05;
 	private static final double STEEL_DEMAND = .1;
 	private static final double BRICK_DEMAND = .005;
-	private static final double ELECTRICAL_DEMAND = .8;
-	private static final double INSTRUMENT_DEMAND = 1.2;
-	private static final double METALLIC_DEMAND = .7;
-	private static final double UTILITY_DEMAND = .7;
-	private static final double TOOL_DEMAND = .8;
+	private static final double ELECTRICAL_DEMAND = 70;
+	private static final double INSTRUMENT_DEMAND = 60;
+	private static final double METALLIC_DEMAND = 30;
+	private static final double UTILITY_DEMAND = 50;
+	private static final double TOOL_DEMAND = 40;
 	private static final double CONSTRUCTION_DEMAND = .8;
+	private static final double GLASS_SHEET_DEMAND = .1;
+	private static final double GLASS_TUBE_DEMAND  = 80;
+	private static final double ITEM_DEMAND = 1;
+	
+	
 	private static final double CONSTRUCTION_SITE_REQUIRED_PART_FACTOR = 100D;
 
-	private static final int VEHICLE_PART_VALUE = 3;
+	private static final int VEHICLE_PART_COST = 3;
 	private static final int EVA_PARTS_VALUE = 20;
-	private static final double ATTACHMENT_PARTS_DEMAND = 1.2;
+	private static final double ATTACHMENT_PARTS_DEMAND = 20;
 
-	private static final double ITEM_VALUE = 1.1D;
-	private static final double FC_STACK_VALUE = 8;
-	private static final double FC_VALUE = 1;
-	private static final double BOARD_VALUE = 1;
-	private static final double CPU_VALUE = 10;
-	private static final double WAFER_VALUE = 50;
-	private static final double BATTERY_VALUE = 5;
-	private static final double INSTRUMENT_VALUE = 1;
-	private static final double WIRE_VALUE = .005;
-	private static final double ELECTRONIC_VALUE = .5;
-    private static final double INITIAL_PART_DEMAND = 0;
+	// Cost modifiers
+	private static final double ITEM_COST = 1.1D;
+	private static final double FC_STACK_COST = 8;
+	private static final double FC_COST = 1;
+	private static final double BOARD_COST = 1;
+	private static final double CPU_COST = 10;
+	private static final double WAFER_COST = 50;
+	private static final double BATTERY_COST = 5;
+	private static final double INSTRUMENT_COST = 1;
+	private static final double WIRE_COST = .005;
+	private static final double ELECTRONIC_COST = .5;
+	
+    private static final double INITIAL_PART_DEMAND = 1;
 	private static final double INITIAL_PART_SUPPLY = 0;
 
 	private static final double MANUFACTURING_INPUT_FACTOR = 2D;
@@ -130,35 +140,31 @@ class PartGood extends Good {
         String name = part.getName().toLowerCase();
         
         if (name.contains("wire"))
-            return WIRE_VALUE;
+            return WIRE_COST;
         
         GoodType type = part.getGoodType();
         
         if (name.contains("battery"))
-            return BATTERY_VALUE;
-        
+            return BATTERY_COST;    
         if (type == GoodType.VEHICLE)
-            return VEHICLE_PART_VALUE;
-        
-        else if (type == GoodType.ELECTRONIC)
-            return ELECTRONIC_VALUE;
-        
-        else if (type == GoodType.INSTRUMENT)
-            return INSTRUMENT_VALUE;
+            return VEHICLE_PART_COST;     
+        if (type == GoodType.ELECTRONIC)
+            return ELECTRONIC_COST;      
+        if (type == GoodType.INSTRUMENT)
+            return INSTRUMENT_COST;  
         
         if (name.equalsIgnoreCase("stack"))
-            return FC_STACK_VALUE;
+            return FC_STACK_COST;
         else if (name.equalsIgnoreCase("fuel cell"))
-            return FC_VALUE;
+            return FC_COST;
         else if (name.contains("board"))
-            return BOARD_VALUE;
+            return BOARD_COST;
         else if (name.equalsIgnoreCase("microcontroller"))
-            return CPU_VALUE;
+            return CPU_COST;
         else if (name.equalsIgnoreCase("semiconductor wafer"))
-            return WAFER_VALUE;
+            return WAFER_COST;
 
-        
-        return ITEM_VALUE;
+        return ITEM_COST;
     }
 
     @Override
@@ -318,6 +324,12 @@ class PartGood extends Good {
 		if (name.contains(INGOT))
 			return INGOT_METAL_DEMAND;
 
+		if (name.contains(GLASS_SHEET))
+			return GLASS_SHEET_DEMAND;
+		
+		if (name.contains(GLASS_TUBE))
+			return GLASS_TUBE_DEMAND;
+		
 		if (name.contains(SHEET))
 			return SHEET_METAL_DEMAND;
 
@@ -333,10 +345,8 @@ class PartGood extends Good {
 		if (name.equalsIgnoreCase(BRICK))
 			return BRICK_DEMAND;
 
-		if (name.equalsIgnoreCase("glass sheet"))
-			return .5;
 		
-		return 1;
+		return ITEM_DEMAND;
 	}
 
 	/**
@@ -349,14 +359,8 @@ class PartGood extends Good {
 		String name = part.getName();
 		GoodType type = part.getGoodType();
 
-		if (name.contains("electrical wire"))
-			return 0.1 * ELECTRICAL_DEMAND;
-
-		if (name.contains("wire connector"))
-			return 0.05 * ELECTRICAL_DEMAND;
-		
 		if (name.contains("pipe"))
-			return .1;
+			return 1;
 		
 		if (name.contains("valve"))
 			return .05;
@@ -380,12 +384,22 @@ class PartGood extends Good {
 		if (name.contains("gasket"))
 			return .1;
 		
-		if (type == GoodType.ELECTRICAL
-				|| name.contains("light")
+		if (type == GoodType.ELECTRICAL) {
+			if (name.contains("light")
 				|| name.contains("resistor")
 				|| name.contains("capacitor")
-				|| name.contains("diode"))
+				|| name.contains("diode")) {
+				return 10;
+			}
+			else if (name.contains("electrical wire")
+					|| name.contains("wire connector"))
+				return .25;
+			else if (name.contains("steel wire"))
+				return 10;
+			else if (name.contains("wire"))
+				return .05;
 			return ELECTRICAL_DEMAND;
+		}
 
 		if (type == GoodType.INSTRUMENT)
 			return INSTRUMENT_DEMAND;
@@ -402,6 +416,9 @@ class PartGood extends Good {
 		if (type == GoodType.CONSTRUCTION)
 			return CONSTRUCTION_DEMAND;
 
+		if (type == GoodType.EVA)
+			return EVA_PART_DEMAND;
+		
 		return 1;
 	}
 
@@ -424,7 +441,7 @@ class PartGood extends Good {
 	 */
 	private double getAttachmentPartsDemand(GoodsManager owner) {
 		if (ItemResourceUtil.ATTACHMENTS_ID.contains(getID())) {
-			return ATTACHMENT_PARTS_DEMAND * owner.getDemandValue(this);
+			return ATTACHMENT_PARTS_DEMAND * (1 + owner.getDemandValue(this));
 		}
 		return 0;
 	}
@@ -739,10 +756,10 @@ class PartGood extends Good {
 	private double geFuelCellDemand(GoodsManager owner) {
 		String name = getName().toLowerCase();
 		if (name.contains("fuel cell")) {
-			return FC_VALUE;
+			return FC_COST;
 		}
 		if (name.contains("stack")) {
-			return FC_STACK_VALUE;
+			return FC_STACK_COST;
 		}
 		return 0;
 	}

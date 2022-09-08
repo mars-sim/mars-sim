@@ -31,7 +31,7 @@ public class ResourceProcessing extends Function {
 
 	public static final String SABATIER = "sabatier";
 	
-	public static final String REGOLITH = "convert regolith to ores with sand";
+	public static final String REGOLITH = "regolith"; // Do not use "convert regolith to ores with sand"
 	
 	public static final String ICE = "melt and filter ice";
 	

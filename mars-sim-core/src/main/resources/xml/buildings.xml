@@ -1666,15 +1666,15 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				     serves as a flux to lower the temperature at which the silica melts.
 				     https://en.wikipedia.org/wiki/Sodium_oxide
 					</description>
-					<input resource="sand" rate="80.0" ambient="false" />					
-					<input resource="sodium carbonate" rate="10.0" ambient="false" />
+					<input resource="sand" rate="40.0" ambient="false" />					
+					<input resource="sodium carbonate" rate="5.0" ambient="false" />
 
-					<output resource="aluminum oxide" rate="4.0" ambient="false" />
-					<output resource="aluminum" rate="16.0" ambient="false" />
-					<output resource="sulfur" rate="8.0" ambient="false" />					
-					<output resource="silica" rate="26.0" ambient="false" />
-					<output resource="silicon" rate="4.0" ambient="false" />
-					<output resource="glass" rate="50.0" ambient="false" />				
+					<output resource="aluminum oxide" rate="2.0" ambient="false" />
+					<output resource="aluminum" rate="8.0" ambient="false" />
+					<output resource="sulfur" rate="4.0" ambient="false" />					
+					<output resource="silica" rate="13.0" ambient="false" />
+					<output resource="silicon" rate="2.0" ambient="false" />
+					<output resource="glass" rate="25.0" ambient="false" />				
 				</process>
 
 				<!-- Process for reducing gypsum to calcium carbonate using carbon. -->
@@ -3618,6 +3618,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</process>
 				
 				<process name="Carbon Dioxide Pump" power-required=".4" default="off">
+					<description> For acquiring carbon dioxide </description>
 					<input resource="carbon dioxide" rate="40.0" ambient="true" />
 					<output resource="carbon dioxide" rate="40.0" ambient="false" />
 				</process>
@@ -3631,7 +3632,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="water" rate="18.0" ambient="false" />
 					<output resource="methanol" rate="32.0" ambient="false" />
 				</process>
-		
+
 				<process name="melt and filter ice" number-modules="10" 
 					power-required="10" default="off">
 					<description> Melting permafrost ice and filtering the water. 
