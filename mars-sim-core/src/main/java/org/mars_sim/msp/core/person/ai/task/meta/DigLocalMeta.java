@@ -25,7 +25,7 @@ public abstract class DigLocalMeta extends MetaTask {
 
 	private static final double VALUE = .25;
 	private static final int MAX = 2_000;
-	private static final int CAP = 6_000;
+	private static final int CAP = 4_000;
 	
 	private EquipmentType containerType;
 

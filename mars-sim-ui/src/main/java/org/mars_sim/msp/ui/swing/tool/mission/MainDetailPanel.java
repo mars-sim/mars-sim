@@ -87,7 +87,6 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
-import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 
 import com.alee.laf.button.WebButton;
 import com.alee.laf.label.WebLabel;

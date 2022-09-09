@@ -7,7 +7,6 @@
 package org.mars_sim.msp.core.person.ai.mission.meta;
 
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.mission.AbstractMission;
 import org.mars_sim.msp.core.person.ai.mission.EmergencySupply;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;

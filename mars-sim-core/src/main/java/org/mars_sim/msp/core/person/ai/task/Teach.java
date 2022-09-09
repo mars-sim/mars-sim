@@ -132,12 +132,12 @@ public class Teach extends Task implements Serializable {
 				if (worker.getUnitType() == UnitType.PERSON) {
 //					teachingTask.setTeacher(person);
 					logger.log(person, Level.INFO, 30_000, "Teaching " + student.getName() 
-					+ " about " + teachingTask.getName(false) + ".");
+					+ " on '" + teachingTask.getName(false) + "'.");
 				}
 				else {
 //					teachingTask.setTeacher(robot);
 					logger.log(robot, Level.INFO, 30_000, "Teaching " + student.getName() 
-					+ " about " + teachingTask.getName(false) + ".");
+					+ " on '" + teachingTask.getName(false) + "'.");
 				}
 				
 				setDescription(

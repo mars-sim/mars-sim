@@ -9,7 +9,6 @@ package org.mars_sim.msp.core.person.ai.task.meta;
 import java.util.AbstractMap.SimpleEntry;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.JobType;
@@ -29,14 +28,14 @@ import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
 public class ToggleResourceProcessMeta extends MetaTask {
 
 	/** default logger. */
-	private static SimLogger logger = SimLogger.getLogger(ToggleResourceProcessMeta.class.getName());
+//	private static SimLogger logger = SimLogger.getLogger(ToggleResourceProcessMeta.class.getName());
 
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.toggleResourceProcess"); //$NON-NLS-1$
 
 	private static final int THRESHOLD = 300;
 	
-	private static final int CAP = 3_000;
+	private static final int CAP = 4_000;
 	
     public ToggleResourceProcessMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);

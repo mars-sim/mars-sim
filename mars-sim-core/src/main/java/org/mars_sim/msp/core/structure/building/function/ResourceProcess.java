@@ -169,6 +169,14 @@ public class ResourceProcess implements Serializable {
 		return false;
 	}
 
+	public double getRemainingToggleWorkTime() {
+		double time = definition.getToggleDuration() - toggleRunningWorkTime;
+		if (time > 0)
+			return time;
+		else
+			return 0;
+	}
+			
 	/**
 	 * Gets the set of input resources.
 	 *

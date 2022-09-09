@@ -83,8 +83,8 @@ public class ToggleResourceProcess extends Task implements Serializable {
         	entry = ToggleResourceProcess.getResourceProcessingBuilding(worker);
         }
         
-        logger.info(worker, entry.getKey() + "   " + entry.getValue().getKey() 
-        		+ " (score: " + entry.getValue().getValue().intValue() + ") will be toggled.");
+//        logger.info(worker, entry.getKey() + "   " + entry.getValue().getKey() 
+//        		+ " (score: " + entry.getValue().getValue().intValue() + ") will be toggled.");
         
 		resourceProcessBuilding = entry.getKey();
 		process = entry.getValue().getKey();
@@ -634,8 +634,14 @@ public class ToggleResourceProcess extends Task implements Serializable {
 
 		// Add work to the toggle process.
 		if (process.addToggleWorkTime(workTime)) {
-//			toBeToggledOn = !process.isProcessRunning();
 			setPhase(FINISHED);
+		}
+		else {
+			double remainingTime = process.getRemainingToggleWorkTime();
+			if (getDuration() < remainingTime + time * 2) {
+				// Add two more frames and the remaining time to the task duration
+				setDuration(remainingTime + time * 2 - getDuration());
+			}
 		}
 
 		// Add experience points

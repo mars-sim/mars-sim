@@ -107,6 +107,7 @@ public class Settlement extends Structure implements Temporal,
 	private static final String MINING_OUTPOST = "Mining Outpost";
 	private static final String ASTRONOMY_OBSERVATORY = "Astronomy Observatory";
 
+	private static final int MAX = 5000;
 	private static final int UPDATE_GOODS_PERIOD = (1000/20); // Update 20 times per day
 	public static final int CHECK_MISSION = 20; // once every 10 millisols
 	public static final int MAX_NUM_SOLS = 3;
@@ -1098,11 +1099,11 @@ public class Settlement extends Structure implements Temporal,
 			}
 
 			remainder = msol % RESOURCE_UPDATE_FREQ;
-			if (remainder == 12) {
+			if (remainder == 9) {
 				iceProbabilityValue = computeIceProbability();
 			}
 
-			if (remainder == 13) {
+			if (remainder == 8) {
 				regolithProbabilityValue = computeRegolithProbability();
 			}
 			
@@ -3222,25 +3223,28 @@ public class Settlement extends Structure implements Temporal,
 		regolithAvailable = regolithAvailable * regolithAvailable - 1;
 		double sandAvailable = goodsManager.getSupplyValue(SAND_ID);
 		sandAvailable = sandAvailable * sandAvailable - 1;
+		double reserve = (MIN_REGOLITH_RESERVE + MIN_SAND_RESERVE) * pop;
 		
-		if (regolithAvailable > MIN_REGOLITH_RESERVE * pop + regolithDemand
-				|| sandAvailable > MIN_SAND_RESERVE * pop + sandDemand) {
-			result = (MIN_REGOLITH_RESERVE * pop - regolithDemand - regolithAvailable
-					+ MIN_SAND_RESERVE * pop - sandDemand - sandAvailable);
+		if (regolithAvailable + sandAvailable > reserve + regolithDemand + sandDemand + regolithAvailable + sandAvailable) {
+			result = reserve - regolithDemand - sandDemand - regolithAvailable - sandAvailable;
+		}
+		
+		else if (regolithAvailable + sandAvailable > reserve + regolithDemand + sandDemand) {
+			result = reserve - regolithDemand - sandDemand;
 		}
 
-		// Prompt the regolith mission if regolith resource is low,
-		else if (regolithAvailable > MIN_REGOLITH_RESERVE * pop
-				|| sandAvailable > MIN_SAND_RESERVE * pop) {
-			result = (MIN_REGOLITH_RESERVE + MIN_SAND_RESERVE) * pop - regolithAvailable - sandAvailable;
+		else if (regolithAvailable + sandAvailable > reserve) {
+			result = reserve;
 		}
 		else {
-			result = (MIN_REGOLITH_RESERVE + MIN_SAND_RESERVE) * pop + regolithDemand + sandDemand;
+			result = reserve + regolithDemand + sandDemand + regolithAvailable + sandAvailable;
 		}
 
 		if (result < 0)
 			result = 0;
-
+		if (result > MAX)
+			result = MAX;
+		
 //		logger.info(this, 30_000L, "regolithDemand: " + regolithDemand
 //						+ "   sandDemand: " + sandDemand
 //						+ "   regolith Prob value: " + result);
@@ -3272,23 +3276,26 @@ public class Settlement extends Structure implements Temporal,
 		double waterSupply = goodsManager.getSupplyValue(WATER_ID);
 
 		int pop = numCitizens;
+		int reserve = (MIN_WATER_RESERVE + MIN_ICE_RESERVE) * pop;
 
-		// Create a task to find local ice and simulate the probability of finding
-		// local ice and its quantity
-		if (iceSupply + waterSupply > (MIN_WATER_RESERVE + MIN_ICE_RESERVE) * pop 
-				+ iceDemand + waterDemand) {
-			result = .5 * (MIN_WATER_RESERVE + MIN_ICE_RESERVE) * pop 
-				+ iceDemand + waterDemand - iceSupply - waterSupply;
+		if (iceSupply + waterSupply > reserve 
+				+ iceDemand + waterDemand + iceSupply + waterSupply) {
+			result = reserve
+				- iceDemand - waterDemand - iceSupply - waterSupply;
+		}
+		
+		else if (iceSupply + waterSupply > reserve + iceDemand + waterDemand) {
+			result = reserve - iceDemand - waterDemand;
 		}
 
 		// Prompt the collect ice mission to proceed more easily if water resource is
 		// dangerously low,
-		else if (waterSupply + iceSupply > (MIN_ICE_RESERVE + MIN_WATER_RESERVE) * pop) {
+		else if (waterSupply + iceSupply > reserve) {
 			// no change to missionProbability
-			result = .5 * (MIN_ICE_RESERVE + MIN_WATER_RESERVE) * pop - waterSupply - iceSupply ;
+			result = reserve;
 		}
 		else {
-			result = .5 * (MIN_ICE_RESERVE + MIN_WATER_RESERVE) * pop + waterDemand + iceDemand;
+			result = reserve + waterDemand + iceDemand + waterSupply + iceSupply ;
 		}
 		
 		if (result < 0)
@@ -3298,6 +3305,9 @@ public class Settlement extends Structure implements Temporal,
 //				+ "   waterDemand: " + waterDemand
 //				+ "   ice Prob value: " + result
 //				);
+		
+		if (result > MAX)
+			result = MAX;
 		
 		return result;
 	}
