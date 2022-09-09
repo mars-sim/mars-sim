@@ -14,7 +14,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 /**
  * A path of location navigation objects at a settlement.
  */
-public class InsideBuildingPath implements Serializable, Cloneable {
+public class InsideBuildingPath implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	// Data members.
@@ -147,21 +147,6 @@ public class InsideBuildingPath implements Serializable, Cloneable {
     public int getNextLocationIndex() {
     	return nextLocationIndex;
     }
-    
-//    @Override
-//    public Object clone() {
-//        
-//        InsideBuildingPath result = new InsideBuildingPath();
-//        
-//        Iterator<InsidePathLocation> i = pathLocations.iterator();
-//        while (i.hasNext()) {
-//            result.addPathLocation(i.next());
-//        }
-//        
-//        result.nextLocationIndex = nextLocationIndex;
-//        
-//        return result;
-//    }
     
     /**
      * Destroys object.

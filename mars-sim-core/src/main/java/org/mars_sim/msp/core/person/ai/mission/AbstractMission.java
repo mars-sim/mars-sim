@@ -301,7 +301,12 @@ public abstract class AbstractMission implements Mission, Temporal {
 			members.add(member);
 
 			signUp.add(member);
-			registerHistoricalEvent((Person) member, EventType.MISSION_JOINING,
+			if (UnitType.ROBOT == member.getUnitType()) {
+				registerHistoricalEvent((Robot) member, EventType.MISSION_JOINING,
+						"Adding a member");
+			}
+			else
+				registerHistoricalEvent((Person) member, EventType.MISSION_JOINING,
 									"Adding a member");
 	
 			fireMissionUpdate(MissionEventType.ADD_MEMBER_EVENT, member);
@@ -317,27 +322,27 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 * @param type
 	 * @param message
 	 */
-	private void registerHistoricalEvent(Person person, EventType type, String message) {
+	private void registerHistoricalEvent(Worker member, EventType type, String message) {
 		String loc0 = null;
 		String loc1 = null;
-		if (person.isInSettlement()) {
-			loc0 = person.getBuildingLocation().getNickName();
-			loc1 = person.getSettlement().getName();
-		} else if (person.isInVehicle()) {
-			loc0 = person.getVehicle().getName();
+		if (member.isInSettlement()) {
+			loc0 = member.getBuildingLocation().getNickName();
+			loc1 = member.getSettlement().getName();
+		} else if (member.isInVehicle()) {
+			loc0 = member.getVehicle().getName();
 
-			if (person.getVehicle().getBuildingLocation() != null)
-				loc1 = person.getVehicle().getSettlement().getName();
+			if (member.getVehicle().getBuildingLocation() != null)
+				loc1 = member.getVehicle().getSettlement().getName();
 			else
-				loc1 = person.getCoordinates().toString();
+				loc1 = member.getCoordinates().toString();
 		} else {
 			loc0 = OUTSIDE;
-			loc1 = person.getCoordinates().toString();
+			loc1 = member.getCoordinates().toString();
 		}
 
 		// Creating mission joining event.
 		HistoricalEvent newEvent = new MissionHistoricalEvent(type, this,
-				message, missionName, person.getName(), loc0, loc1, person.getAssociatedSettlement().getName());
+				message, missionName, member.getName(), loc0, loc1, member.getAssociatedSettlement().getName());
 		eventManager.registerNewEvent(newEvent);
 	}
 

@@ -169,14 +169,14 @@ public class BuildingAirlock extends Airlock {
 			}
 
 			else
-				logger.log(person, Level.SEVERE, 0,
+				logger.log(person, Level.SEVERE, 12_000,
 						"Could not step inside "
 						+ settlement.getName() + ".");
         }
 
         else if (!person.isBuried() || !person.isDeclaredDead()) {
 
-        	logger.log(person, Level.SEVERE, 0,
+        	logger.log(person, Level.SEVERE, 12_000,
         			"Could not step inside " + getEntityName() + ".");
         }
 
@@ -216,13 +216,13 @@ public class BuildingAirlock extends Airlock {
         			+ " and stepped outside.");
 			}
 			else
-				logger.log(person, Level.SEVERE, 0,
+				logger.log(person, Level.SEVERE, 12_000,
 					"Could not step outside " + settlement.getName() + ".");
         }
 
         else if (!person.isBuried() || !person.isDeclaredDead()) {
 
-        	logger.log(person, Level.SEVERE, 0,
+        	logger.log(person, Level.SEVERE, 12_000,
         			"Could not step outside " + getEntityName() + ".");
         }
 

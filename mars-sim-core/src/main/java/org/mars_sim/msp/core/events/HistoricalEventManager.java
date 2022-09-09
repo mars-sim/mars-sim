@@ -58,7 +58,7 @@ public class HistoricalEventManager implements Serializable {
 	private MarsClock marsClock;
 
 	/**
-	 * Create a new EventManager that represents a particular simulation.
+	 * Creates a new EventManager that represents a particular simulation.
 	 */
 	public HistoricalEventManager() {
 		listeners = new CopyOnWriteArrayList<HistoricalEventListener>();
@@ -75,7 +75,7 @@ public class HistoricalEventManager implements Serializable {
 	}
 
 	/**
-	 * Add a historical event listener
+	 * Adds a historical event listener
 	 *
 	 * @param newListener listener to add.
 	 */
@@ -175,9 +175,6 @@ public class HistoricalEventManager implements Serializable {
 
 		MarsClock timestamp = new MarsClock(marsClock);
 
-		if (timestamp == null)
-			throw new IllegalStateException("timestamp is null");
-
 		newEvent.setTimestamp(timestamp);
 
 		SimpleEvent se = convert2SimpleEvent(newEvent, timestamp);
@@ -251,8 +248,18 @@ public class HistoricalEventManager implements Serializable {
 				.collect(Collectors.toList());
 	}
 
+
 	/**
-	 * Prepare object for garbage collection.
+	 * Gets the recent historical events.
+	 * 
+	 * @return
+	 */
+	public List<HistoricalEvent> getRecentEvents() {
+		return lastEvents;
+	}
+	
+	/**
+	 * Prepares object for garbage collection.
 	 */
 	public void destroy() {
 //		listeners.clear();
@@ -261,11 +268,4 @@ public class HistoricalEventManager implements Serializable {
 		eventsRegistry = null;
 	}
 
-	/**
-	 * Get the recent historical events.
-	 * @return
-	 */
-	public List<HistoricalEvent> getRecentEvents() {
-		return lastEvents;
-	}
 }
