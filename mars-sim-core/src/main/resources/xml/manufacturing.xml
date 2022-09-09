@@ -2490,8 +2490,8 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- 2015-05-19 Added manufacturing led bulb. -->
-	<process name="manufacture light emitting diode bulb" tech="3" skill="2" work-time="200" process-time="500"
-			power-required="0.5">
+	<process name="manufacture light emitting diode bulb" tech="3" skill="2" work-time="50" process-time="100"
+			power-required="0.2">
 		<inputs>
 			<part name="semiconductor wafer" number="1" />
 		</inputs>
@@ -2501,8 +2501,8 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Add manufacturing microcontroller. -->
-	<process name="manufacture microcontroller" tech="4" skill="4" work-time="300" process-time="200"
-			power-required="0.5">
+	<process name="manufacture microcontroller" tech="4" skill="4" work-time="400" process-time="200"
+			power-required="1.0">
 		<inputs>
 			<part name="semiconductor wafer" number="1" />
 		</inputs>
@@ -2511,12 +2511,12 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<!-- 2015-05-19 Added manufacturing lED kit assembly. -->
-	<process name="make light emitting diode kit" tech="3" skill="2" work-time="200" process-time="500"
-			power-required="0.5">
+	<!-- 2015-05-19 Added manufacturing LED kit assembly. -->
+	<process name="make light emitting diode kit" tech="3" skill="2" work-time="100" process-time="50"
+			power-required="0.2">
 		<inputs>
 			<part name="aluminum sheet" number="1" />
-			<part name="electrical wire" number="1" />
+			<part name="electrical wire" number="3" />
 			<part name="wire connector" number="1" />
 			<part name="light emitting diode bulb" number="20" />
 			<part name="glass sheet" number="1" />
@@ -2527,6 +2527,21 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
+	<process name="make flood light" tech="3" skill="2" work-time="90" process-time="20"
+			power-required="0.2">
+		<inputs>
+			<resource name="styrene" amount=".5" />		
+			<part name="aluminum sheet" number="1" />
+			<part name="copper wire" number="3" />		
+			<part name="power cable" number="1" />				
+			<part name="wire connector" number="9" />
+			<part name="light emitting diode kit" number="9" />
+		</inputs>
+		<outputs>
+			<part name="flood light" number="3" />
+		</outputs>
+	</process>
+	
 	<!-- 2015-05-19 Added manufacturing carbon dioxide laser. -->
 	<process name="manufacture carbon dioxide laser" tech="3" skill="4" work-time="400" process-time="600"
 			power-required="1.0">

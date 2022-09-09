@@ -5,12 +5,11 @@ Copyright (C) 2022 Scott Davis
 
 ------------------------------------------|---------------------
 
-## v3.4.0 (build ____) - 2022-08-__
+## v3.4.0 (build ____) - 2022-09-__
 
 ### ISSUES ADDRESSED :
 
 ### CORE ENGINE IMPROVEMENTS :
-  <LI>  Airlock : Implement airlock reservation system for EVA egress. </LI>
   <LI>Base Mass : Add base mass to all buildings, in preparation for calculating overall rocket payload mass. </LI>
   <LI> Building : Add building general info such as dimensions and mass. </LI>
   <LI>Computing : Add computing function and skill. Track computing resource. </LI>
@@ -33,17 +32,19 @@ Copyright (C) 2022 Scott Davis
   <LI>  Authority : Add editor that customize sponsors/authorities.</LI> 
   <LI>   Economic : Display the cost/profit/price of a good in each settlement for comparison.</LI>
   <LI>      Icons : Replace word title of each tab with an icon in all Unit Windows.</LI>
-  <LI>   Location : Show areocentric longitude of Mars in the solar system in Time Tool. </LI>  
-  <LI>   Scenario : Edit and load basic scenarios.</LI>
+  <LI>   Location : Show areocentric longitude of Mars in Time Tool. </LI>  
   <LI>      Power : Display generated/load power & stored energy for settlements in Monitor Tool.</LI>
+  <LI>   Scenario : Edit and load basic scenarios.</LI>
   <LI>     Window : Add new Building Window with tab, replacing old Building tab.</LI>
   
 ### FIXES :
-  <LI>    Trading : Consider loading/unloading edge cases for Trading/Delivery. </LI>
+  <LI>    Airlock : Fix bugs during EVA egress and ingress. </LI>
   <LI>   Delivery : Resolve stalled negotiation. </LI>
   <LI>Exploration : Revisit existing sites until they reach an evaluation ready for Mining. </LI>
   <LI>Maintenance :	Ground vehicle maintenance no longer stalls when EVA is aborted. </LI>
   <LI>    Mission : Fix the mission selection. Correct Navigation tab.</LI>
+  <LI> Settlement : Correct settlement selection in Monitor Tool. </LI>
+  <LI>    Trading : Consider loading/unloading edge cases for Trading/Delivery. </LI>
   <LI>    Vehicle : Correct vehicle fuel calculation.</LI>
 
 

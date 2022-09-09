@@ -995,7 +995,9 @@
 		</maintenance-entity-list>
 	</part>
 
-
+	<part name="flood light" type="electrical" mass="3">
+		<description>a LED outdoor weather-proof, adjustable flood light with tripod stand</description>
+	</part>
 
 <!-- Future:
 	1. work glove

@@ -640,7 +640,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 			double remainingTime = process.getRemainingToggleWorkTime();
 			if (getDuration() < remainingTime + time * 2) {
 				// Add two more frames and the remaining time to the task duration
-				setDuration(remainingTime + time * 2 - getDuration());
+				setDuration(remainingTime + time * 2 + getDuration());
 			}
 		}
 
