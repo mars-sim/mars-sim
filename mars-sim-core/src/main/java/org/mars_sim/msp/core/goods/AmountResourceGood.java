@@ -100,7 +100,7 @@ class AmountResourceGood extends Good {
 	private static final double EPSOM_SALT_VALUE_MODIFIER = .1;
 	
 	private static final double OXYGEN_VALUE_MODIFIER = .02;
-	private static final double METHANE_VALUE_MODIFIER = 1;
+	private static final double METHANE_VALUE_MODIFIER = .1;
 	private static final double FOOD_VALUE_MODIFIER = .1;
 	private static final double HYDROGEN_VALUE_MODIFIER = 3;
 
@@ -392,17 +392,17 @@ class AmountResourceGood extends Good {
 		if (previousDemand == 0) {
 			// At the start of the sim
 			totalDemand = (
-					.5 * average 
+					  .5 * average 
 					+ .4 * projected 
 					+ .1 * trade);
 		}
 		else {
-			// Intentionally loses a tiny percentage (e.g. 1%) of its value
+			// Intentionally loses a tiny percentage (e.g. 0.0003) of its value
 			// Allows only very small fluctuations of demand as possible
 			totalDemand = (
-					  .9895 * previousDemand 
+					  .9990 * previousDemand 
 					+ .0001 * average 
-					+ .0002 * projected 
+					+ .0004 * projected 
 					+ .0002 * trade); 
 		}
 

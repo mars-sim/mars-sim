@@ -88,8 +88,8 @@ class PartGood extends Good {
 	private static final double WIRE_COST = .005;
 	private static final double ELECTRONIC_COST = .5;
 	
-    private static final double INITIAL_PART_DEMAND = 1;
-	private static final double INITIAL_PART_SUPPLY = 0;
+    private static final double INITIAL_PART_DEMAND = 10;
+	private static final double INITIAL_PART_SUPPLY = 1;
 
 	private static final double MANUFACTURING_INPUT_FACTOR = 2D;
 
@@ -275,12 +275,12 @@ class PartGood extends Good {
 		}
 
 		else {
-			// Intentionally lose a tiny percentage (e.g. 1%) of its value
+			// Intentionally lose a tiny percentage (e.g. 0.0003) of its value
 			totalDemand = (
-					  .9894 * previousDemand 
+					  .9990 * previousDemand 
 					+ .0001 * repair 
 					+ .0001 * average 
-					+ .0002 * projected 
+					+ .0003 * projected 
 					+ .0002 * trade); 
 		}
 		
