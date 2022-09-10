@@ -102,7 +102,7 @@ class AmountResourceGood extends Good {
 	private static final double OXYGEN_VALUE_MODIFIER = .02;
 	private static final double METHANE_VALUE_MODIFIER = 1;
 	private static final double FOOD_VALUE_MODIFIER = .1;
-	private static final double HYDROGEN_VALUE_MODIFIER = 2;
+	private static final double HYDROGEN_VALUE_MODIFIER = 3;
 
 	private static final double LIFE_SUPPORT_FACTOR = .005;
 	private static final double VEHICLE_FUEL_FACTOR = 1;
@@ -397,13 +397,13 @@ class AmountResourceGood extends Good {
 					+ .1 * trade);
 		}
 		else {
-			// Intentionally loses a tiny percentage of its value
+			// Intentionally loses a tiny percentage (e.g. 1%) of its value
 			// Allows only very small fluctuations of demand as possible
 			totalDemand = (
-					.9983 * previousDemand 
-					+ .001 * average 
+					  .9895 * previousDemand 
+					+ .0001 * average 
 					+ .0002 * projected 
-					+ .0001 * trade); 
+					+ .0002 * trade); 
 		}
 
 		// Save the goods demand

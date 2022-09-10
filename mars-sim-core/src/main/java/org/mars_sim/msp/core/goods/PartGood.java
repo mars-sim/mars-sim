@@ -45,9 +45,11 @@ class PartGood extends Good {
 	private static final String BOTTLE = "bottle";
 	private static final String GLASS_TUBE = "glass";
 	private static final String GLASS_SHEET = "glass sheet";
+	private static final String DRILL = "drill";
 
+	private static final double DRILL_DEMAND  = 12;
 	private static final double BOTTLE_DEMAND = .02;
-	private static final double FIBERGLASS_DEMAND = .1;
+	private static final double FIBERGLASS_DEMAND = .01;
 	private static final double VEHICLE_PART_DEMAND = 4;
 	private static final double EVA_PART_DEMAND = 7;
     private static final double KITCHEN_DEMAND = 1.5;
@@ -273,13 +275,13 @@ class PartGood extends Good {
 		}
 
 		else {
-			// Intentionally lose a tiny percentage of its value
+			// Intentionally lose a tiny percentage (e.g. 1%) of its value
 			totalDemand = (
-					.9973 * previousDemand 
-					+ .001 * repair 
-					+ .001 * average 
-					+ .0005 * projected 
-					+ .0001 * trade); 
+					  .9894 * previousDemand 
+					+ .0001 * repair 
+					+ .0001 * average 
+					+ .0002 * projected 
+					+ .0002 * trade); 
 		}
 		
 		// Save the goods demand
@@ -407,11 +409,19 @@ class PartGood extends Good {
 		if (type == GoodType.METALLIC)
 			return  METALLIC_DEMAND;
 		
-		if (type == GoodType.UTILITY)
+		if (type == GoodType.UTILITY) {
+			if (name.contains(FIBERGLASS)) {
+				return FIBERGLASS_DEMAND;
+			}
 			return UTILITY_DEMAND;
+		}
 		
-		if (type == GoodType.TOOL)
+		if (type == GoodType.TOOL) {
+			if (name.contains(DRILL)) {
+				return DRILL_DEMAND;
+			}
 			return TOOL_DEMAND;
+		}
 
 		if (type == GoodType.CONSTRUCTION)
 			return CONSTRUCTION_DEMAND;

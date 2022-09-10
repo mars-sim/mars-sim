@@ -120,7 +120,7 @@ public class ResourceProcess implements Serializable {
 	}
 
 	/**
-	 * Flag the process for change.
+	 * Flags the process for change.
 	 *
 	 * @param value true if the flag is true.
 	 */

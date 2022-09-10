@@ -4010,7 +4010,7 @@ public class Settlement extends Structure implements Temporal,
 	public SimpleEntry<Building, SimpleEntry<ResourceProcess, Double>> retrieveFirstResourceProcess() {
 		if (!resourceProcessList.isEmpty()) {
 			SimpleEntry<Building, SimpleEntry<ResourceProcess, Double>> process = resourceProcessList.get(0);
-//			logger.info(process.getKey(), "Selected '" + process.getValue().getKey() + "' to toggle.");
+			logger.info(process.getKey(), "Selected '" + process.getValue().getKey() + "' from " + resourceProcessList.size() + " flagged process(es).");
 			resourceProcessList.remove(0);
 			return process;
 		}

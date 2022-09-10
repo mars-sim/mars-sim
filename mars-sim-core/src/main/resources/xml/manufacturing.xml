@@ -1267,15 +1267,40 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="make winch" tech="2" skill="3" work-time="200" process-time="100"
+	<process name="make winch" tech="1" skill="1" work-time="40" process-time="80"
 			power-required=".1">
 		<inputs>
-			<resource name="acetylene" amount="0.2" />			
-			<part name="steel sheet" number="2" />
-			<part name="steel cable" number="9" />
+			<resource name="acetylene" amount="0.5" />			
+			<part name="steel ingot" number="6" />
+			<part name="rover wheel" number="2" />			
+			<part name="steel sheet" number="3" />			
+			<part name="steel cable" number="4" />
 		</inputs>
 		<outputs>
 			<part name="winch" number="1" />
+		</outputs>
+	</process>
+
+	<process name="make socket wrench" tech="1" skill="1" work-time="20" process-time="40"
+			power-required=".1">
+		<inputs>
+			<resource name="acetylene" amount="0.1" />			
+			<part name="steel ingot" number="1" />
+		</inputs>
+		<outputs>
+			<part name="socket wrench" number="5" />
+		</outputs>
+	</process>
+
+	<process name="make pipe wrench" tech="1" skill="1" work-time="20" process-time="60"
+			power-required=".1">
+		<inputs>
+			<resource name="acetylene" amount="0.1" />	
+			<resource name="iron" amount="1.0" />						
+			<part name="steel ingot" number="2" />
+		</inputs>
+		<outputs>
+			<part name="pipe wrench" number="6" />
 		</outputs>
 	</process>
 
