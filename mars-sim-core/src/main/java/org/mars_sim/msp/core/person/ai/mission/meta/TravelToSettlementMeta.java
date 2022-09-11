@@ -9,13 +9,12 @@ package org.mars_sim.msp.core.person.ai.mission.meta;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
+import org.mars_sim.msp.core.person.ai.mission.MissionUtil;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
-import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -107,8 +106,8 @@ public class TravelToSettlementMeta extends AbstractMetaMission {
         missionProbability = TravelToSettlement.BASE_MISSION_WEIGHT
                 + (topSettlementDesirability / 100D);
 
-		int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
-		int numThisMission = Simulation.instance().getMissionManager().numParticularMissions(MissionType.TRAVEL_TO_SETTLEMENT, settlement);
+		int numEmbarked = MissionUtil.numEmbarkingMissions(settlement);
+		int numThisMission = missionManager.numParticularMissions(MissionType.TRAVEL_TO_SETTLEMENT, settlement);
 
    		// Check for # of embarking missions.
 		if (Math.max(1, settlement.getNumCitizens() / 8.0) < numEmbarked + numThisMission) {

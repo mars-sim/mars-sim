@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.person.ai.mission.AbstractVehicleMission;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -390,7 +391,7 @@ public class MissionTableModel extends AbstractTableModel
 					break;
 
 				case PHASE: {
-					if (VehicleMission.REVIEWING.equals(mission.getPhase())) {
+					if (AbstractVehicleMission.REVIEWING.equals(mission.getPhase())) {
 						int percent = (int) mission.getPlan().getPercentComplete();
 						if (percent > 100)
 							percent = 100;

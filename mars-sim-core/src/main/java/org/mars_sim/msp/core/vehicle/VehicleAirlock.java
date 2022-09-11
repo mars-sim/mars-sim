@@ -253,7 +253,7 @@ extends Airlock {
 	 * @return
 	 */
 	public Person getAssociatedPerson(int id) {
-		return vehicle.getAssociatedSettlement().getAssociatedPerson(id);
+		return unitManager.getPersonByID(id);
 	}
 
 	/**

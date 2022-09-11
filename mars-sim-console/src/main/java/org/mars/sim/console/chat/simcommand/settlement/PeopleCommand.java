@@ -43,7 +43,6 @@ public class PeopleCommand extends AbstractSettlementCommand {
 		Collection<Person> indoorP = settlement.getIndoorPeople();
 		Collection<Person> deceasedP = settlement.getDeceasedPeople();
 		Collection<Person> buriedP = settlement.getBuriedPeople();
-		Collection<Person> onMission = settlement.getOnMissionPeople();
 
 		Set<Person> everyone = new TreeSet<>();
 		everyone.addAll(citizens);
@@ -51,12 +50,10 @@ public class PeopleCommand extends AbstractSettlementCommand {
 		everyone.addAll(indoorP);
 		everyone.addAll(buriedP);
 		everyone.addAll(deceasedP);
-		everyone.addAll(onMission);
 		
 		response.appendHeading("Summary");
 		response.appendLabelledDigit("Registered", citizens.size());
 		response.appendLabelledDigit("Inside", indoorP.size());
-		response.appendLabelledDigit("On a Mission", onMission.size());
 		response.appendLabelledDigit("EVA Operation", eva.size());
 		response.appendLabeledString("Deceased (Buried)", deceasedP.size() + "(" + buriedP.size() + ")");
 
@@ -68,7 +65,7 @@ public class PeopleCommand extends AbstractSettlementCommand {
 			response.appendTableRow(person.getName(),
 									citizens.contains(person),
 									(indoorP.contains(person) ? person.getBuildingLocation().getName() : "No"),
-									onMission.contains(person),
+									(person.getMission() != null),
 									eva.contains(person),
 									(buriedP.contains(person) ? "Buried"
 											: (deceasedP.contains(person) ?

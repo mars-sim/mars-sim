@@ -29,6 +29,7 @@ import org.mars_sim.msp.core.UnitManagerEventType;
 import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.malfunction.Malfunction;
+import org.mars_sim.msp.core.person.ai.mission.AbstractVehicleMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
 import org.mars_sim.msp.core.person.ai.mission.MissionEventType;
@@ -255,11 +256,11 @@ public class VehicleTableModel extends UnitTableModel {
 				case DESTINATION : {
 					result = null;
 					Mission mission = missionManager.getMissionForVehicle(vehicle);
-					if ((mission != null) && (mission instanceof VehicleMission)) {
+					if (mission instanceof VehicleMission) {
 						VehicleMission vehicleMission = (VehicleMission) mission;
 						String status = vehicleMission.getTravelStatus();
 						if (status != null) {
-							if (status.equals(VehicleMission.TRAVEL_TO_NAVPOINT)) {
+							if (status.equals(AbstractVehicleMission.TRAVEL_TO_NAVPOINT)) {
 								NavPoint destination = vehicleMission.getNextNavpoint();
 								if (destination.isSettlementAtNavpoint())
 									result = destination.getSettlement().getName();
@@ -267,7 +268,7 @@ public class VehicleTableModel extends UnitTableModel {
 									result = Conversion.capitalize(destination.getDescription()) 
 										+ " - " + destination.getLocation().getFormattedString();
 							}
-							else if (status.equals(VehicleMission.AT_NAVPOINT)) {
+							else if (status.equals(AbstractVehicleMission.AT_NAVPOINT)) {
 								NavPoint destination = vehicleMission.getCurrentNavpoint();
 								result = Conversion.capitalize(destination.getDescription());
 							}
@@ -277,14 +278,9 @@ public class VehicleTableModel extends UnitTableModel {
 
 				case DESTDIST : {
 					Mission mission = missionManager.getMissionForVehicle(vehicle);
-					if ((mission != null) && (mission instanceof VehicleMission)) {
+					if (mission instanceof VehicleMission) {
 						VehicleMission vehicleMission = (VehicleMission) mission;
-						try {
-							result = Math.round(vehicleMission.getDistanceCurrentLegRemaining()*10.0)/10.0;
-						}
-						catch (Exception e) {
-							logger.log(Level.SEVERE,"Error getting current leg remaining distance.");
-						}
+						result = Math.round(vehicleMission.getDistanceCurrentLegRemaining()*10.0)/10.0;
 					}
 					else result = null;
 				} break;
@@ -292,7 +288,7 @@ public class VehicleTableModel extends UnitTableModel {
 				case MISSION : {
 					Mission mission = missionManager.getMissionForVehicle(vehicle);
 					if (mission != null) {
-						result = mission.getFullMissionDesignation();//getDescription();.getName();
+						result = mission.getFullMissionDesignation();
 					}
 					else result = null;
 				} break;

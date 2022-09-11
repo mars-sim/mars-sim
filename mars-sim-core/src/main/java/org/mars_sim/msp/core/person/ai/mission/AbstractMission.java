@@ -1311,5 +1311,6 @@ public abstract class AbstractMission implements Mission, Temporal {
 		personConfig = pc;
 
 		MissionLog.initialise(c);
+		MissionUtil.initializeInstances(u, m);
 	}
 }

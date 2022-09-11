@@ -17,7 +17,7 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.person.ai.mission.Trade;
-import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
+import org.mars_sim.msp.core.person.ai.mission.MissionUtil;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -114,7 +114,7 @@ public class TradeMeta extends AbstractMetaMission {
 			missionProbability = Trade.MAX_STARTING_PROBABILITY;
 		}
 
-		int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
+		int numEmbarked = MissionUtil.numEmbarkingMissions(settlement);
 		int numThisMission = Simulation.instance().getMissionManager().numParticularMissions(MissionType.TRADE, settlement);
 
    		// Check for # of embarking missions.

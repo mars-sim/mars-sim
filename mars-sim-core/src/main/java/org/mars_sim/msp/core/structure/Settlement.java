@@ -56,7 +56,6 @@ import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
-import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.person.ai.task.EatDrink;
 import org.mars_sim.msp.core.person.ai.task.Conversation;
@@ -726,20 +725,6 @@ public class Settlement extends Structure implements Temporal,
 						&& (p.getLocationStateType() == LocationStateType.WITHIN_SETTLEMENT_VICINITY
 						|| p.getLocationStateType() == LocationStateType.MARS_SURFACE))
 				.collect(Collectors.counting());
-	}
-	
-	/**
-	 * Gets a collection of people who are doing EVA outside the settlement.
-	 *
-	 * @return Collection of people
-	 */
-	public Collection<Person> getOnMissionPeople() {
-
-		return citizens.stream()
-				.filter(p -> !p.isDeclaredDead() && p.getMind().getMission() != null
-						&& !p.getMind().getMission().getPhase().equals(VehicleMission.REVIEWING))
-				.collect(Collectors.toList());
-
 	}
 
 	/**
@@ -1964,28 +1949,6 @@ public class Settlement extends Structure implements Temporal,
 		return unitManager.getPeople().stream()
 				.filter(p -> (p.getAssociatedSettlement() == this && p.isDeclaredDead()) || p.getBuriedSettlement() == this)
 				.collect(Collectors.toList());
-	}
-
-	/**
-	 * Gets the person by id
-	 *
-	 * @param id
-	 * @return
-	 */
-	public Person getPerson(int id) {
-		return peopleWithin.stream()
-				.filter(p -> p.getIdentifier() == id).findFirst().orElse(null);
-	}
-
-	/**
-	 * Gets the associated person by id
-	 *
-	 * @param id
-	 * @return
-	 */
-	public Person getAssociatedPerson(int id) {
-		return citizens.stream()
-				.filter(p -> p.getIdentifier() == id).findFirst().orElse(null);
 	}
 
 

@@ -12,9 +12,9 @@ import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
+import org.mars_sim.msp.core.person.ai.mission.MissionUtil;
 import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
-import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -83,19 +83,20 @@ public class RescueSalvageVehicleMeta extends AbstractMetaMission {
             	min_num = RescueSalvageVehicle.MIN_STAYING_MEMBERS;
     	    
             // FIXME : need to know how many extra EVA suits needed in the broken vehicle
+			int numEmbarked = MissionUtil.numEmbarkingMissions(settlement);
 
             // Check if min number of EVA suits at settlement.
-            if (RoverMission.getNumberAvailableEVASuitsAtSettlement(settlement) < min_num) {
+            if (MissionUtil.getNumberAvailableEVASuitsAtSettlement(settlement) < min_num) {
     	        return 0;
     	    }
 
             // Check for embarking missions.
-            else if (!VehicleMission.hasEmbarkingMissions(settlement)) {
+            else if (numEmbarked == 0) {
                 return missionProbability * 2;
             }
    
             // Check if minimum number of people are available at the settlement.
-            if (!RoverMission.minAvailablePeopleAtSettlement(settlement, min_num)) {
+            if (!MissionUtil.minAvailablePeopleAtSettlement(settlement, min_num)) {
                 return 0;
             }
 
@@ -107,7 +108,6 @@ public class RescueSalvageVehicleMeta extends AbstractMetaMission {
     		if (missionProbability <= 0)
     			return 0;
     		
-			int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
 			int numThisMission = missionManager.numParticularMissions(MissionType.RESCUE_SALVAGE_VEHICLE, settlement);
             
 	   		// Check for # of embarking missions.

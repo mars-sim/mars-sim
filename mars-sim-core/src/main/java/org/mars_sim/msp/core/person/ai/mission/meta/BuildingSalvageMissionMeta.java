@@ -17,7 +17,7 @@ import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
-import org.mars_sim.msp.core.person.ai.mission.RoverMission;
+import org.mars_sim.msp.core.person.ai.mission.MissionUtil;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.structure.OverrideType;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -45,15 +45,7 @@ public class BuildingSalvageMissionMeta extends AbstractMetaMission {
 
         double missionProbability = 0D;
   
-        // No construction until after the first ten sols of the simulation.
-        //MarsClock startTime = Simulation.instance().getMasterClock().getInitialMarsTime();
-        //MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-        //double totalTimeMillisols = MarsClock.getTimeDiff(currentTime, startTime);
-        //double totalTimeSols = totalTimeMillisols / 1000D;
-        //if (totalTimeSols < 10D)
-        //    return 0;
-        //int today = Simulation.instance().getMasterClock().getMarsClock().getSolElapsedFromStart();
-        
+      
         if (marsClock.getMissionSol() < BuildingSalvageMission.FIRST_AVAILABLE_SOL)
         	return 0;
 
@@ -97,7 +89,7 @@ public class BuildingSalvageMissionMeta extends AbstractMetaMission {
 	                return 0;
 	
 	            // Check if min number of EVA suits at settlement.
-	            if (RoverMission.getNumberAvailableEVASuitsAtSettlement(settlement) < BuildingSalvageMission.MIN_PEOPLE) {
+	            if (MissionUtil.getNumberAvailableEVASuitsAtSettlement(settlement) < BuildingSalvageMission.MIN_PEOPLE) {
 	            	return 0;
 	            }
 	

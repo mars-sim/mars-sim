@@ -13,6 +13,7 @@ import java.util.Map;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.logging.SimLogger;
+import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
@@ -52,7 +53,7 @@ public abstract class EVAMission extends RoverMission {
         this.evaPhase = evaPhase;
 
 		// Check suit although these may be claimed before loading
-		int suits = getNumberAvailableEVASuitsAtSettlement(getStartingSettlement());
+		int suits = MissionUtil.getNumberAvailableEVASuitsAtSettlement(getStartingSettlement());
 		if (suits < getMembers().size()) {
 			endMission(EVA_SUIT_CANNOT_BE_LOADED);
 		}
@@ -279,7 +280,7 @@ public abstract class EVAMission extends RoverMission {
 		double numberAccidents = evaTime * getMembers().size()* EVAOperation.BASE_ACCIDENT_CHANCE;
 
 		// Assume the average number malfunctions per accident is 1.5.
-		double numberMalfunctions = numberAccidents * VehicleMission.AVERAGE_EVA_MALFUNCTION;
+		double numberMalfunctions = numberAccidents * MalfunctionManager.AVERAGE_EVA_MALFUNCTION;
 
 		result.putAll(getEVASparePartsForTrip(numberMalfunctions));
 

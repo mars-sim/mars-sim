@@ -43,6 +43,7 @@ import org.mars_sim.msp.core.manufacture.Salvagable;
 import org.mars_sim.msp.core.manufacture.SalvageInfo;
 import org.mars_sim.msp.core.manufacture.SalvageProcessInfo;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.mission.AbstractVehicleMission;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -1081,8 +1082,9 @@ public abstract class Vehicle extends Unit
         	// Before the mission is created, the range would be based on vehicle's capacity
         	range = estimatedFuelEconomy * fuelCapacity * getBaseMass() / getMass();// * fuel_range_error_margin
         }
-        else if (VehicleMission.REVIEWING.equals(mission.getPhase())
-        	|| VehicleMission.EMBARKING.equals(mission.getPhase())) {
+		// TODO Fix this; is this clause every triggered
+        else if (AbstractVehicleMission.REVIEWING.equals(mission.getPhase())
+        	|| AbstractVehicleMission.EMBARKING.equals(mission.getPhase())) {
         	// Before loading/embarking phase, the amountOfFuel to be loaded is still zero.
         	// So the range would be based on vehicle's capacity
         	range = estimatedFuelEconomy * fuelCapacity * getBaseMass() / getMass();

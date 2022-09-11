@@ -747,7 +747,7 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 			}
 			else {
 	
-				vehicleButton.setText(vehicleMission.getVehicleRecord());
+				vehicleButton.setText(vehicleMission.getVehicle().getName());
 				
 				vehicleStatusLabel.setText(" ");
 				speedLabel.setText(Msg.getString("MainDetailPanel.kmhSpeed", "0")); //$NON-NLS-1$ //$NON-NLS-2$
