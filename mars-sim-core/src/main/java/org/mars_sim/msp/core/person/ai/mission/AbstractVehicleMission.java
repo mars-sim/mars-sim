@@ -33,6 +33,7 @@ import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.mission.MissionPhase.Stage;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.LoadingController;
 import org.mars_sim.msp.core.person.ai.task.OperateVehicle;
@@ -71,10 +72,9 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	private static final double FUEL_OXIDIZER_FACTOR = 2.25;
 	
 	/** Mission phases. */
-	public static final MissionPhase REVIEWING = new MissionPhase("Mission.phase.reviewing");
-	public static final MissionPhase EMBARKING = new MissionPhase("Mission.phase.embarking");
-	public static final MissionPhase TRAVELLING = new MissionPhase("Mission.phase.travelling");
-	public static final MissionPhase DISEMBARKING = new MissionPhase("Mission.phase.disembarking");
+	private static final MissionPhase EMBARKING = new MissionPhase("embarking", Stage.PREPARATION);
+	protected static final MissionPhase TRAVELLING = new MissionPhase("travelling");
+	private static final MissionPhase DISEMBARKING = new MissionPhase("disembarking", Stage.CLOSEDOWN);
 
 	// Mission Status
 	protected static final MissionStatus NO_AVAILABLE_VEHICLES = new MissionStatus("Mission.status.noVehicle");
@@ -100,9 +100,6 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 
 	/** Default speed if no operators have ever driven. */
 	private static final double DEFAULT_SPEED = 10D;
-
-	/** True if a person is submitting the mission plan request. */
-	private boolean isMissionPlanReady;
 	
 	/** The msol cache. */
 	private int msolCache;
@@ -203,7 +200,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	protected void setInitialPhase(boolean needsReview) {
 		if (needsReview) {
 			// Set initial mission phase.
-			setPhase(REVIEWING, null);
+			startReview();
 		}
 		else {
 			// Set initial mission phase.
@@ -710,10 +707,6 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		return handled;
 	}
 
-	public void flag4Submission() {
-		isMissionPlanReady = true;
-	}
-
 	public void recordStartMass() {
 		vehicle.recordStartMass();
 	}
@@ -721,12 +714,8 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	@Override
 	protected void performPhase(Worker member) {
 		super.performPhase(member);
-		if (REVIEWING.equals(getPhase())) {
-			if (isMissionPlanReady) {
-				requestReviewPhase(member);
-			}
-		}
-		else if (EMBARKING.equals(getPhase())) {
+		
+		if (EMBARKING.equals(getPhase())) {
 			checkVehicleMaintenance();
 			performEmbarkFromSettlementPhase(member);
 		}

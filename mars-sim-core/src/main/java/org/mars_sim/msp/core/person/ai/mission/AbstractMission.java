@@ -87,8 +87,10 @@ public abstract class AbstractMission implements Mission, Temporal {
 
 	private static final int MAX_CAP = 8;
 
-	private static final MissionPhase COMPLETED_PHASE = new MissionPhase("Mission.phase.completed");
-	private static final MissionPhase ABORTED_PHASE = new MissionPhase("Mission.phase.aborted");
+	private static final MissionPhase COMPLETED_PHASE = new MissionPhase("completed", MissionPhase.Stage.CLOSEDOWN);
+	private static final MissionPhase ABORTED_PHASE = new MissionPhase("aborted", MissionPhase.Stage.CLOSEDOWN);
+	protected static final MissionPhase REVIEWING = new MissionPhase("reviewing", MissionPhase.Stage.PREPARATION);
+
 
 	protected static final MissionStatus NOT_ENOUGH_MEMBERS = new MissionStatus("Mission.status.noMembers");
 	private static final MissionStatus MISSION_NOT_APPROVED = new MissionStatus("Mission.status.notApproved");
@@ -597,6 +599,10 @@ public abstract class AbstractMission implements Mission, Temporal {
 	protected void performPhase(Worker member) {
 		if (phase == null) {
 			endMissionProblem(member, "Current phase null");
+		}
+
+		if (REVIEWING.equals(getPhase())) {
+			requestReviewPhase(member);
 		}
 	}
 
@@ -1138,23 +1144,19 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 *
 	 * @param member the mission lead.
 	 */
-	protected void requestReviewPhase(Worker member) {
+	private void requestReviewPhase(Worker member) {
 		Person p = (Person)member;
 
 		if (plan == null) {
-			plan = new MissionPlanning(this);
-			logger.log(member, Level.INFO, 0, "Serving as the mission lead on " + this + ".");
-
-			 missionManager.requestMissionApproving(plan);
+			throw new IllegalStateException("No Mission plan");
 		}
 
-		else {
-			if (plan.getStatus() == PlanType.NOT_APPROVED) {
+		switch(plan.getStatus()) {
+			case NOT_APPROVED:
 				endMission(MISSION_NOT_APPROVED);
-			}
-
-			else if (plan.getStatus() == PlanType.APPROVED) {
-
+				break;
+			
+			case APPROVED:
 				createFullDesignation();
 
 				logger.log(p, Level.INFO, 0, "Mission plan for " + getName() + " was approved.");
@@ -1162,14 +1164,23 @@ public abstract class AbstractMission implements Mission, Temporal {
 				if (!(this instanceof VehicleMission)) {
 					// Set the members' work shift to on-call to get ready
 					for (Worker m : members) {
-						 ((Person) m).setShiftType(ShiftType.ON_CALL);
+						((Person) m).setShiftType(ShiftType.ON_CALL);
 					}
 				}
 				setPhaseEnded(true);
-			}
+				break;
+			default:
+				// Nothing to do yet
 		}
 	}
 
+	/**
+	 * Start reviewing this Mission
+	 */
+	protected void startReview() {
+		setPhase(REVIEWING, null);
+		plan = new MissionPlanning(this);
+	}
 	/**
 	 * Returns the mission plan.
 	 *

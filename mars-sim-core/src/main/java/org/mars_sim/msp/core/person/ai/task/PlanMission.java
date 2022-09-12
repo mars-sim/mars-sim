@@ -16,6 +16,8 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.MissionPlanning;
+import org.mars_sim.msp.core.person.ai.mission.PlanType;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
@@ -156,17 +158,15 @@ public class PlanMission extends Task implements Serializable {
 		double remainingTime = 0;
 		
 		Mission mission = person.getMind().getMission();
+		MissionPlanning plan = mission.getPlan();
 		
-		if (mission instanceof VehicleMission && !mission.isDone()) {
+		if ((plan != null) && !mission.isDone()) {
 			logger.log(worker, Level.INFO, 30_000, "Submitted a mission plan for " 
 					+ mission.getName() + ".");
-			// Flag the mission plan ready for submission
-			((VehicleMission)mission).flag4Submission();
-				// Note: the plan will go up the chain of command
-				// 1. takeAction() in Mind will call mission.performMission(person) 
-				// 2. performMission() in Mission will lead to calling  performPhase() in VehicleMission
-				// 3. performPhase() in VehicleMission will call requestApprovalPhase() 
-				// 4. requestReviewPhase() in VehicleMission will call requestApprovalPhase() in Mission
+			
+			// Set the plan pending and add to approval list
+			plan.setStatus(PlanType.PENDING);
+			missionManager.requestMissionApproving(plan);
 		}
 		
 		// Add experience

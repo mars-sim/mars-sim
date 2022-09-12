@@ -18,7 +18,6 @@ import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.person.ai.mission.AbstractVehicleMission;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -27,7 +26,9 @@ import org.mars_sim.msp.core.person.ai.mission.MissionEventType;
 import org.mars_sim.msp.core.person.ai.mission.MissionListener;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.MissionManagerListener;
+import org.mars_sim.msp.core.person.ai.mission.MissionPlanning;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
+import org.mars_sim.msp.core.person.ai.mission.PlanType;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
@@ -391,12 +392,13 @@ public class MissionTableModel extends AbstractTableModel
 					break;
 
 				case PHASE: {
-					if (AbstractVehicleMission.REVIEWING.equals(mission.getPhase())) {
-						int percent = (int) mission.getPlan().getPercentComplete();
+					MissionPlanning plan = mission.getPlan();
+					if ((plan != null) && plan.getStatus() == PlanType.PENDING) {
+						int percent = (int) plan.getPercentComplete();
 						if (percent > 100)
 							percent = 100;
-						int score = (int)mission.getPlan().getScore();
-						int min = (int)mission.getStartingPerson().getAssociatedSettlement().getMinimumPassingScore();
+						int score = (int)plan.getScore();
+						int min = (int)mission.getAssociatedSettlement().getMinimumPassingScore();
 						result = percent + "% Reviewed - Score: " + score + " [Min: " + min + "]";
 					}
 					else

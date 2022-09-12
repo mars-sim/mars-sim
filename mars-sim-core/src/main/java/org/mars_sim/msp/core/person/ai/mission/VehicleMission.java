@@ -71,9 +71,6 @@ public interface VehicleMission extends Mission {
     //TODO Remove thi as it exposes internal working of travelling
     String getTravelStatus();
 
-    // TODO This needs removing and functionality adding to MissionPlan with a REVIEWING PlanType & PREPARE.PlanType
-    void flag4Submission();
-
     // TODO Remove these. OperateVehcile should just notify mission there is no Fuel; then VehcileMission detaisl with it
     void setEmergencyBeacon(Worker worker, Vehicle vehicle, boolean b, String name);
     void getHelp(MissionStatus status);

@@ -23,7 +23,7 @@ public class MissionPlanning implements Serializable {
 	private double score; // 0 to 1000 points
 	private double passingScore = 0;
 
-	private PlanType status = PlanType.PENDING;
+	private PlanType status = PlanType.PREPARING;
 
 	private Mission mission;
 	

@@ -81,7 +81,7 @@ public class MissionUtil {
 	public static int numEmbarkingMissions(Settlement settlement) {
 		int result = 0;
 		for(Mission i : missionManager.getMissionsForSettlement(settlement)) {
-			if (AbstractVehicleMission.EMBARKING.equals(i.getPhase())) {
+			if (i.getPhase().getStage() == MissionPhase.Stage.PREPARATION) {
 				result++;
 			}
 		}

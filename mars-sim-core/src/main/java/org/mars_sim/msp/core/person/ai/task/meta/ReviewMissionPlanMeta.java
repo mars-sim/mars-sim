@@ -20,6 +20,7 @@ import org.mars_sim.msp.core.person.ai.task.ReviewMissionPlan;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.Administration;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -55,47 +56,30 @@ public class ReviewMissionPlanMeta extends MetaTask {
             if (!person.getPhysicalCondition().isFitByLevel(1000, 70, 1000))
             	return 0;
             
-        	//if (roleType == null)
-        	//NOTE: sometimes enum is null. sometimes it is NOT. why?
-//        	RoleType roleType = person.getRole().getType();
 
-        	int pop = person.getAssociatedSettlement().getNumCitizens();
-//			if (pop <= 4		
-//				|| (pop <= 8 && roleType == RoleType.RESOURCE_SPECIALIST)
-//				|| ReviewMissionPlan.isRoleValid(roleType)) {
-//        	System.out.println("missionManager :" + missionManager); 
+        	Settlement target = person.getAssociatedSettlement();
+			int pop = target.getNumCitizens();
+
         	MissionManager missionManager = Simulation.instance().getMissionManager();
-            List<Mission> missions = missionManager.getPendingMissions(person.getAssociatedSettlement());
-//   		    if (missions.size() > 0)
-//   		    	System.out.println(person + " " + person.getRole().getType() + " has " + missions.size() + " to review.");
+            List<Mission> missions = missionManager.getPendingMissions(target);
 
             for (Mission m : missions) {
             	
             	if (m.getPlan() != null) {
 
             		MissionPlanning mp = m.getPlan();
-            		
-                    PlanType status = mp.getStatus();
-
-                    if (status != null && status == PlanType.PENDING) {
-//	                    	&& mp.getPercentComplete() <= 100D) {
-    		            		
-                    	result += missions.size() * 1500D / pop;   
-                    	
-//	                    	System.out.println(person + " " + person.getRole().getType() + " on " 
-//	                    			+ mp.getMission().getDescription() + " has " 
-//	                    			+ mp.getPercentComplete() + "%");
-
+                    if (mp.getStatus() == PlanType.PENDING) {
 						String reviewedBy = person.getName();
 						
 						Person p = m.getStartingPerson();
 						String requestedBy = p.getName();
 						
 						if (reviewedBy.equals(requestedBy) || !mp.isReviewerValid(reviewedBy, pop)) {
-							// Add penalty to the probability score if reviewer is the same as requester
-							return 0;
+							// Skip this plan as a candidate
+							continue;
 						}
-                    	
+
+                    	result += missions.size() * 1500D / pop;                       	
                         
                     	// Add adjustment based on how many sol the request has since been submitted
                         // if the job assignment submitted date is > 1 sol
@@ -117,7 +101,6 @@ public class ReviewMissionPlanMeta extends MetaTask {
             }
             
             if (result > 0D) {
-            	 
             	RoleType roleType = person.getRole().getType();
             	
             	if (RoleType.MISSION_SPECIALIST == roleType)
