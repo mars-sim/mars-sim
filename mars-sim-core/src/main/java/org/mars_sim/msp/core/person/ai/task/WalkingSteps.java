@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * WalkingSteps.java
- * @date 2021-12-06
+ * @date 2022-09-12
  * @author Scott Davis
  */
 
@@ -508,9 +508,9 @@ implements Serializable {
         }
         else {
 
-            // Find closest walkable airlock to destination.
+            // Find closest walkable airlock (for egress) to destination.
             Airlock airlock = settlement.getClosestWalkableAvailableAirlock(initialBuilding,
-                    destinationWalkState.loc);
+                    destinationWalkState.loc, false);
             if (airlock == null) {
                 canWalkAllSteps = false;
                 if (person != null) {
@@ -595,19 +595,19 @@ implements Serializable {
             walkingStepList.add(enterRoverInGarageStep);
         }
         else {
-            // Find closest walkable airlock to destination.
+            // Find closest walkable airlock (for egress) to destination.
             Airlock airlock = settlement.getClosestWalkableAvailableAirlock(initialBuilding,
-                    destinationWalkState.loc);
+                    destinationWalkState.loc, false);
             if (airlock == null) {
                 canWalkAllSteps = false;
                 if (person != null) {
                 	logger.log(person, Level.WARNING, 10_000,
-                		"No walkable airlock from building interior to building interior in "
+                		"No walkable airlock from building interior to rover interior in "
                 		+ person.getBuildingLocation().getNickName());
                 }
                 else {
                 	logger.log(robot, Level.WARNING, 10_000,
-                		"No walkable airlock from building interior to building interior in "
+                		"No walkable airlock from building interior to rover interior in "
                     	+ robot.getBuildingLocation().getNickName());
                 }
                return;
@@ -641,9 +641,9 @@ implements Serializable {
         Building initialBuilding = initialWalkState.building;
         Settlement settlement = initialBuilding.getSettlement();
 
-        // Find closest walkable airlock to destination.
+        // Find closest walkable airlock (for egress) to destination.
         Airlock airlock = settlement.getClosestWalkableAvailableAirlock(initialBuilding,
-                destinationWalkState.loc);
+                destinationWalkState.loc, false);
         if (airlock == null) {
             canWalkAllSteps = false;
             if (person != null) {
@@ -1084,7 +1084,9 @@ implements Serializable {
 
             // Check if valid interior walking path between airlock building and destination building.
             Settlement settlement = airlockBuilding.getSettlement();
-            if (settlement.getBuildingConnectorManager().hasValidPath(airlockBuilding, destinationBuilding)) {
+            
+            if (settlement.getBuildingConnectorManager()
+            		.hasValidPath(airlockBuilding, destinationBuilding)) {
 
                 // Create enter airlock walk step.
                 createEnterAirlockStep(airlock);
@@ -1102,7 +1104,7 @@ implements Serializable {
 
                 // Determine closest airlock to destination building.
                 Airlock destinationAirlock = settlement.getClosestWalkableAvailableAirlock(destinationBuilding,
-                        initialWalkState.loc);
+                        initialWalkState.loc, true);
                 if (destinationAirlock != null) {
 
                     // Create walk step to exterior airlock position.
@@ -1142,7 +1144,7 @@ implements Serializable {
 
             // Determine closest airlock to destination building.
             Airlock destinationAirlock = settlement.getClosestWalkableAvailableAirlock(destinationBuilding,
-                    initialWalkState.loc);
+                    initialWalkState.loc, true);
             if (destinationAirlock != null) {
 
                 // Create walk step to exterior airlock position.
@@ -1190,7 +1192,7 @@ implements Serializable {
 
             Settlement settlement = garageBuilding.getSettlement();
             Airlock destinationAirlock = settlement.getClosestWalkableAvailableAirlock(garageBuilding,
-                    initialWalkState.loc);
+                    initialWalkState.loc, true);
             if (destinationAirlock != null) {
 
                 if (initialAirlock.equals(destinationAirlock)) {
@@ -1324,9 +1326,9 @@ implements Serializable {
         Building destinationBuilding = destinationWalkState.building;
         Settlement settlement = destinationBuilding.getSettlement();
 
-        // Determine closest airlock to destination building.
+        // Determine closest airlock (for ingress) to destination building.
         Airlock destinationAirlock = settlement.getClosestWalkableAvailableAirlock(destinationBuilding,
-                initialWalkState.loc);
+                initialWalkState.loc, true);
         if (destinationAirlock != null) {
 
             // Create walk step to exterior airlock position.
@@ -1360,14 +1362,15 @@ implements Serializable {
             WalkState destinationWalkState) {
 
         Rover destinationRover = destinationWalkState.rover;
-
         // Check if rover is in a garage or outside.
         Building garageBuilding = destinationRover.getGarage();
+        
         if (garageBuilding != null) {
 
             Settlement settlement = garageBuilding.getSettlement();
+            // Determine closest airlock (for ingress) to destination rover. 		
             Airlock destinationAirlock = settlement.getClosestWalkableAvailableAirlock(garageBuilding,
-                    initialWalkState.loc);
+                    initialWalkState.loc, true);
             if (destinationAirlock != null) {
 
                 // Create walk step to exterior airlock position.
@@ -1419,7 +1422,7 @@ implements Serializable {
      * Determines the walking steps between an outside and outside location.
      *
      * @param initialWalkState the initial walk state.
-     * @param destinationWalkState the destinatino walk state.
+     * @param destinationWalkState the destination walk state.
      */
     private void determineOutsideToOutsideWalkingSteps(WalkState initialWalkState,
             WalkState destinationWalkState) {

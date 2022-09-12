@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * EnterAirlock.java
- * @date 2022-09-05
+ * @date 2022-09-12
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -55,7 +55,7 @@ public class EnterAirlock extends Task implements Serializable {
 	private static final TaskPhase LEAVE_AIRLOCK = new TaskPhase(Msg.getString("Task.phase.leaveAirlock")); //$NON-NLS-1$
 
 	private static final String CHAMBER_FULL = "All 4 chambers are occupied in ";
-	private static final String NOT_IN_RIGHT_AIRLOCK_MODE = "Airlock mode is not ingree.";
+	private static final String NOT_IN_RIGHT_AIRLOCK_MODE = "Airlock is not in ingress mode.";
 	
 	// Static members
 	/** The standard time for doffing the EVA suit. */
@@ -266,7 +266,7 @@ public class EnterAirlock extends Task implements Serializable {
 		logger.log(unit, person, Level.FINE, 20_000, "Requested EVA ingress in " + airlock.getEntity().toString() + ".");
 
 		// If the airlock mode is egress, will need to wait until its done
-		if (airlock.getAirlockMode() == AirlockMode.INGRESS) {
+		if (airlock.getAirlockMode() == AirlockMode.EGRESS) {
 			logger.log(unit, person, Level.FINE, 60_000,
 					NOT_IN_RIGHT_AIRLOCK_MODE);
 			return time *.75;
@@ -336,7 +336,6 @@ public class EnterAirlock extends Task implements Serializable {
 		}
 
 		if (canProceed) {
-			
 
 			if (airlock.isDepressurized() && !airlock.isOuterDoorLocked()) {
 				// If airlock has already been depressurized,
@@ -364,8 +363,6 @@ public class EnterAirlock extends Task implements Serializable {
 					}
 				}
 			}
-			
-			airlock.setAirlockMode(AirlockMode.INGRESS);
 		}
 
 		return 0;
@@ -424,6 +421,12 @@ public class EnterAirlock extends Task implements Serializable {
 			addExperience(time);
 
 			setPhase(STEP_THRU_OUTER_DOOR);
+			
+			AirlockMode airlockMode = airlock.getAirlockMode();
+			
+			if (airlockMode != AirlockMode.INGRESS
+				&& (airlock.isEmpty() || airlockMode != AirlockMode.EGRESS))
+					airlock.setAirlockMode(AirlockMode.INGRESS);
 		}
 		
 		return 0;
@@ -912,7 +915,8 @@ public class EnterAirlock extends Task implements Serializable {
 
 			airlock.removeID(id);
 			
-			airlock.setAirlockMode(AirlockMode.NOT_IN_USE);
+			if (airlock.isEmpty())
+				airlock.setAirlockMode(AirlockMode.NOT_IN_USE);
 		}
 		
 		super.endTask();

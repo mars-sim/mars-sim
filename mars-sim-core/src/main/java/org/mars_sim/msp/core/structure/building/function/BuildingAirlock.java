@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Airlock;
 import org.mars_sim.msp.core.structure.AirlockType;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.Airlock.AirlockMode;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.time.ClockPulse;
@@ -859,6 +860,9 @@ public class BuildingAirlock extends Airlock {
 				checkOperator();
 			}
 		}
+		
+		if (isEmpty())
+			setAirlockMode(AirlockMode.NOT_IN_USE);
 	}
 	
 	/**

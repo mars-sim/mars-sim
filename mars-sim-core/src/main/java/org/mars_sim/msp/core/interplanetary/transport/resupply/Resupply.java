@@ -1017,7 +1017,7 @@ public class Resupply implements Serializable, Transportable {
 		final int right = 2;
 		final int left = 3;
 
-		List<Integer> directions = new CopyOnWriteArrayList<Integer>();
+		List<Integer> directions = new CopyOnWriteArrayList<>();
 		directions.add(front);
 		directions.add(back);
 		directions.add(right);
@@ -1118,7 +1118,7 @@ public class Resupply implements Serializable, Transportable {
 		BuildingTemplate newPosition = null;
 
 		// Determine valid placement lines for connector building.
-		List<Line2D> validLines = new CopyOnWriteArrayList<Line2D>();
+		List<Line2D> validLines = new CopyOnWriteArrayList<>();
 
 		// Check each building side for the two buildings for a valid line unblocked by
 		// obstacles.
@@ -1227,7 +1227,7 @@ public class Resupply implements Serializable, Transportable {
 	 */
 	private List<Point2D> getFourPositionsSurroundingBuilding(Building building, double distanceFromSide) {
 
-		List<Point2D> result = new CopyOnWriteArrayList<Point2D>();
+		List<Point2D> result = new CopyOnWriteArrayList<>();
 
 		final int front = 0;
 		final int back = 1;
