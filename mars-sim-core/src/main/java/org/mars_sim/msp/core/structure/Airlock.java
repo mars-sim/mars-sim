@@ -63,7 +63,7 @@ public abstract class Airlock implements Serializable {
 	/** The effective reservation period [in millisols]. */
 	public static final int RESERVATION_PERIOD = 40;
 	
-	public AirlockMode airlockMode = AirlockMode.NOT_IN_USE;
+	private AirlockMode airlockMode = AirlockMode.NOT_IN_USE;
 	
 	/**
 	 * Available Airlock mode
@@ -83,6 +83,7 @@ public abstract class Airlock implements Serializable {
 			return this.name;
 		}
 		
+		@Override
 		public String toString() {
 			return this.name;
 		}
@@ -109,6 +110,7 @@ public abstract class Airlock implements Serializable {
 			return this.name;
 		}
 		
+		@Override
 		public String toString() {
 			return this.name;
 		}

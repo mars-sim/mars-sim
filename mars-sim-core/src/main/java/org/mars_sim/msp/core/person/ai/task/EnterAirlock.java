@@ -911,9 +911,9 @@ public class EnterAirlock extends Task implements Serializable {
 			}
 
 			airlock.removeID(id);
+			
+			airlock.setAirlockMode(AirlockMode.NOT_IN_USE);
 		}
-
-		airlock.setAirlockMode(AirlockMode.NOT_IN_USE);
 		
 		super.endTask();
 	}

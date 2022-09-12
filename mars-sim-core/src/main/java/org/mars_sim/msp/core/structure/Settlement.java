@@ -1692,13 +1692,11 @@ public class Settlement extends Structure implements Temporal,
 			boolean isIngressMode = airlock.getAirlockMode() == AirlockMode.INGRESS;
 			boolean isEgressMode = airlock.getAirlockMode() == AirlockMode.EGRESS;
 			boolean notInUse = airlock.getAirlockMode() == AirlockMode.NOT_IN_USE;
-			if (!chamberFull) {
-				if (notInUse)
-					return true;
-				else if (ingress && isIngressMode)
-					return true;
-				else if (!ingress && isEgressMode)
-					return true;
+			if (!chamberFull
+				&& (notInUse
+					|| (ingress && isIngressMode)
+					|| (!ingress && isEgressMode))) {
+						return true;
 			}
 		}
 		
@@ -3256,7 +3254,7 @@ public class Settlement extends Structure implements Temporal,
 		regolithAvailable = regolithAvailable * regolithAvailable - 1;
 		double sandAvailable = goodsManager.getSupplyValue(SAND_ID);
 		sandAvailable = sandAvailable * sandAvailable - 1;
-		double reserve = (MIN_REGOLITH_RESERVE + MIN_SAND_RESERVE) * pop;
+		int reserve = (MIN_REGOLITH_RESERVE + MIN_SAND_RESERVE) * pop;
 		
 		if (regolithAvailable + sandAvailable > reserve + regolithDemand + sandDemand + regolithAvailable + sandAvailable) {
 			result = reserve - regolithDemand - sandDemand - regolithAvailable - sandAvailable;

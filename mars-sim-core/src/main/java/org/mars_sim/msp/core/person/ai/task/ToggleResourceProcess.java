@@ -81,26 +81,26 @@ public class ToggleResourceProcess extends Task implements Serializable {
         SimpleEntry<Building, SimpleEntry<ResourceProcess, Double>> entry = worker.getSettlement().retrieveFirstResourceProcess();
         if (entry == null) {
         	entry = ToggleResourceProcess.getResourceProcessingBuilding(worker);
+            
+//          logger.info(worker, entry.getKey() + "   " + entry.getValue().getKey() 
+//          		+ " (score: " + entry.getValue().getValue().intValue() + ") will be toggled.");
+          
+	  		resourceProcessBuilding = entry.getKey();
+	  		process = entry.getValue().getKey();
+	  		
+	  		if (resourceProcessBuilding != null || process != null) {
+	
+	  	        if (worker.isInSettlement()) {
+	  	        	setupResourceProcess();
+	  	        }
+	  	        else {
+	  	        	clearTask("Not in Settlement.");
+	  	        }
+	  		}
+	  		else {
+	  			clearTask("No resource processes found.");
+	  		}
         }
-        
-//        logger.info(worker, entry.getKey() + "   " + entry.getValue().getKey() 
-//        		+ " (score: " + entry.getValue().getValue().intValue() + ") will be toggled.");
-        
-		resourceProcessBuilding = entry.getKey();
-		process = entry.getValue().getKey();
-		
-		if (resourceProcessBuilding != null || process != null) {
-
-	        if (worker.isInSettlement()) {
-	        	setupResourceProcess();
-	        }
-	        else {
-	        	clearTask("Not in Settlement.");
-	        }
-		}
-		else {
-			clearTask("No resource processes found.");
-		}
 	}
 
 	/**

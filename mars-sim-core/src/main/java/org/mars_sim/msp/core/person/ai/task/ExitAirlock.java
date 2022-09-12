@@ -1073,12 +1073,12 @@ public class ExitAirlock extends Task implements Serializable {
 			}
 
 			airlock.removeID(id);
+			
+			airlock.setAirlockMode(AirlockMode.NOT_IN_USE);
 		}
 
 		// Resets the pre-breath time
 		person.getPhysicalCondition().resetRemainingPrebreathingTime();
-		
-		airlock.setAirlockMode(AirlockMode.NOT_IN_USE);
 		
 		super.endTask();
 	}

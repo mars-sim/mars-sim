@@ -62,8 +62,9 @@ public abstract class DigLocalMeta extends MetaTask {
     	  result = MAX;
 
     	// Check if an airlock is available for egress
-        if (!settlement.anyAirlocksForIngressEgress(person, false))
+        if (!settlement.anyAirlocksForIngressEgress(person, false)) {
     		return 0;
+        }
      
         //Checked for radiation events
     	boolean[] exposed = settlement.getExposed();
