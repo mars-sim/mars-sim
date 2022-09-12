@@ -282,7 +282,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 
 
 	/**
-	 * Get the equipment's settlement, null if equipment is not at a settlement
+	 * Gets the equipment's settlement, null if equipment is not at a settlement.
 	 *
 	 * @return {@link Settlement} the equipment's settlement
 	 */
@@ -294,6 +294,9 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 
 		Unit c = getContainerUnit();
 
+		if (c == null)
+			return null;
+		
 		if (c.getUnitType() == UnitType.SETTLEMENT) {
 			return (Settlement) c;
 		}
@@ -357,7 +360,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	}
 
 	/**
-	 * Updates the location state type of an equipment
+	 * Updates the location state type of an equipment.
 	 *
 	 * @param newContainer
 	 */
@@ -371,7 +374,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	}
 
 	/**
-	 * Gets the location state type based on the type of the new container unit
+	 * Gets the location state type based on the type of the new container unit.
 	 *
 	 * @param newContainer
 	 * @return {@link LocationStateType}
@@ -401,7 +404,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	}
 
 	/**
-	 * Is this unit inside a settlement
+	 * Is this unit inside a settlement ?
 	 *
 	 * @return true if the unit is inside a settlement
 	 */
@@ -444,7 +447,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	}
 
 	/**
-	 * Transfer the unit from one owner to another owner
+	 * Transfers the unit from one owner to another owner.
 	 *
 	 * @param origin {@link Unit} the original container unit
 	 * @param destination {@link Unit} the destination container unit
@@ -501,7 +504,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	}
 
 	/**
-	 * Compares if an object is the same as this equipment
+	 * Compares if an object is the same as this equipment.
 	 *
 	 * @param obj
 	 */

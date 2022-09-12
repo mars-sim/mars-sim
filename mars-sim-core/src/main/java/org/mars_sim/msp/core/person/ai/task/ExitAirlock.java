@@ -30,6 +30,7 @@ import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.structure.Airlock;
 import org.mars_sim.msp.core.structure.AirlockType;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.Airlock.AirlockMode;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -58,6 +59,7 @@ public class ExitAirlock extends Task implements Serializable {
 	private static final String NOT_FIT = "Not fit enough";
 	private static final String INNER_DOOR_LOCKED = "Inner door was locked.";
 	private static final String CHAMBER_FULL = "All 4 chambers are occupied.";
+	private static final String NOT_IN_RIGHT_AIRLOCK_MODE = "Airlock mode is not egree.";
 	
     /** The minimum performance needed. */
 	private static final double MIN_PERFORMANCE = 0.05;
@@ -379,6 +381,12 @@ public class ExitAirlock extends Task implements Serializable {
 			airlock.setTransitioning(true);
 		}
 		
+		// If the airlock mode is egress, will need to wait until its done
+		if (airlock.getAirlockMode() == AirlockMode.EGRESS) {
+			walkAway(person, NOT_IN_RIGHT_AIRLOCK_MODE);
+			return time;
+		}
+		
 		// If a person is in a vehicle, not needed of checking for reservation
 		if (inSettlement && !airlock.addReservation(person.getIdentifier())) {
 			walkAway(person, RESERVATION_NOT_MADE);
@@ -480,6 +488,8 @@ public class ExitAirlock extends Task implements Serializable {
 					}
 				}
 			}
+			
+			airlock.setAirlockMode(AirlockMode.EGRESS);
 		}
 
 		return 0;
@@ -1067,6 +1077,8 @@ public class ExitAirlock extends Task implements Serializable {
 
 		// Resets the pre-breath time
 		person.getPhysicalCondition().resetRemainingPrebreathingTime();
+		
+		airlock.setAirlockMode(AirlockMode.NOT_IN_USE);
 		
 		super.endTask();
 	}

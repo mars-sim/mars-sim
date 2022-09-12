@@ -71,6 +71,7 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.science.ScienceType;
+import org.mars_sim.msp.core.structure.Airlock.AirlockMode;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.connection.BuildingConnector;
@@ -1674,6 +1675,37 @@ public class Settlement extends Structure implements Temporal,
 		return result;
 	}
 
+	/**
+	 * Are any airlocks available for ingree or egress ?
+	 * 
+	 * @param person
+	 * @param ingress
+	 * @return
+	 */
+	public boolean anyAirlocksForIngressEgress(Person person, boolean ingress) {
+		List<Building> bldgs = person.getSettlement().getBuildingManager().getBuildings(FunctionType.EVA);
+
+		Iterator<Building> i = bldgs.iterator();
+		while (i.hasNext()) {
+			Airlock airlock = i.next().getEVA().getAirlock();
+			boolean chamberFull = airlock.areAll4ChambersFull();
+			boolean isIngressMode = airlock.getAirlockMode() == AirlockMode.INGRESS;
+			boolean isEgressMode = airlock.getAirlockMode() == AirlockMode.EGRESS;
+			boolean notInUse = airlock.getAirlockMode() == AirlockMode.NOT_IN_USE;
+			if (!chamberFull) {
+				if (notInUse)
+					return true;
+				else if (ingress && isIngressMode)
+					return true;
+				else if (!ingress && isEgressMode)
+					return true;
+			}
+		}
+		
+		return false;
+	}
+		
+	
 	public boolean isAirlockAvailable(Person person, boolean ingress) {
 		Building currentBldg = person.getBuildingLocation();
 	
@@ -1805,6 +1837,7 @@ public class Settlement extends Structure implements Temporal,
 		for (Building building : bldgs) {
 			boolean chamberFull = building.getEVA().getAirlock().areAll4ChambersFull();
 			boolean reservationFull = building.getEVA().getAirlock().isReservationFull();
+
 			int id = building.getIdentifier();
 			// Select airlock that fulfill either conditions:
 			// 1. Chambers are NOT full

@@ -1099,8 +1099,8 @@ public class Resupply implements Serializable, Transportable {
 		return newPosition;
 	}
 
-	/**new 
-	 * Determine the position and length (for variable length) for a connector
+	/**
+	 * Determines the position and length (for variable length) for a connector
 	 * building between two existing buildings.
 	 * 
 	 * @param newBuildingType the new connector building type.
@@ -1111,7 +1111,7 @@ public class Resupply implements Serializable, Transportable {
 	 */
 	private BuildingTemplate positionConnectorBetweenTwoBuildings(String newBuildingType, Building firstBuilding,
 			Building secondBuilding) {
-		// logger.config("Calling positionConnectorBetweenTwoBuildings()");
+
 		Settlement settlement = unitManager.getSettlementByID(settlementID);
 		BuildingManager buildingManager = settlement.getBuildingManager();
 		
@@ -1192,7 +1192,7 @@ public class Resupply implements Serializable, Transportable {
 	}
 
 	/**
-	 * Adjust the connector end point based on relative angle of the connection.
+	 * Adjusts the connector end point based on relative angle of the connection.
 	 * 
 	 * @param point          the initial connector location.
 	 * @param lineFacing     the facing of the connector line (degrees).
@@ -1265,7 +1265,7 @@ public class Resupply implements Serializable, Transportable {
 	}
 
 	/**
-	 * Maps a number to an alphabet
+	 * Maps a number to an alphabet.
 	 * 
 	 * @param a number
 	 * @return a String
@@ -1498,12 +1498,11 @@ public class Resupply implements Serializable, Transportable {
 
 	@Override
 	public String getSettlementName() {
-		// TODO Auto-generated method stub
 		return settlementName;
 	}
 	
 	/**
-	 * Reloads instances after loading from a saved sim
+	 * Reloads instances after loading from a saved sim.
 	 * 
 	 * @param pc
 	 */
@@ -1527,6 +1526,4 @@ public class Resupply implements Serializable, Transportable {
 		newParts.clear();
 		newParts = null;
 	}
-
-
 }

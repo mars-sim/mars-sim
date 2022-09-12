@@ -568,6 +568,8 @@ public abstract class EVAOperation extends Task {
         	endTask();
 	}
 	
+
+
 	
 	/**
 	 * Checks if there is an EVA problem for a person.

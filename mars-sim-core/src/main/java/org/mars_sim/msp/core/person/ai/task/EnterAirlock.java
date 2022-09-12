@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.structure.Airlock;
+import org.mars_sim.msp.core.structure.Airlock.AirlockMode;
 import org.mars_sim.msp.core.structure.AirlockType;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -54,6 +55,7 @@ public class EnterAirlock extends Task implements Serializable {
 	private static final TaskPhase LEAVE_AIRLOCK = new TaskPhase(Msg.getString("Task.phase.leaveAirlock")); //$NON-NLS-1$
 
 	private static final String CHAMBER_FULL = "All 4 chambers are occupied in ";
+	private static final String NOT_IN_RIGHT_AIRLOCK_MODE = "Airlock mode is not ingree.";
 	
 	// Static members
 	/** The standard time for doffing the EVA suit. */
@@ -263,6 +265,13 @@ public class EnterAirlock extends Task implements Serializable {
 		
 		logger.log(unit, person, Level.FINE, 20_000, "Requested EVA ingress in " + airlock.getEntity().toString() + ".");
 
+		// If the airlock mode is egress, will need to wait until its done
+		if (airlock.getAirlockMode() == AirlockMode.INGRESS) {
+			logger.log(unit, person, Level.FINE, 60_000,
+					NOT_IN_RIGHT_AIRLOCK_MODE);
+			return time *.75;
+		}
+		
 		if (!airlock.isActivated()) {
 			// Only the airlock operator may activate the airlock
 			airlock.setActivated(true);
@@ -327,6 +336,7 @@ public class EnterAirlock extends Task implements Serializable {
 		}
 
 		if (canProceed) {
+			
 
 			if (airlock.isDepressurized() && !airlock.isOuterDoorLocked()) {
 				// If airlock has already been depressurized,
@@ -354,6 +364,8 @@ public class EnterAirlock extends Task implements Serializable {
 					}
 				}
 			}
+			
+			airlock.setAirlockMode(AirlockMode.INGRESS);
 		}
 
 		return 0;
@@ -901,6 +913,8 @@ public class EnterAirlock extends Task implements Serializable {
 			airlock.removeID(id);
 		}
 
+		airlock.setAirlockMode(AirlockMode.NOT_IN_USE);
+		
 		super.endTask();
 	}
 
