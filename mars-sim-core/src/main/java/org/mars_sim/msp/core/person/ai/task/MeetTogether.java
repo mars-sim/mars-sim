@@ -230,7 +230,7 @@ implements Serializable {
     	
     	Building personbuilding = null;
     	
-    	if (initiator != null) {
+    	if (invitee != null && initiator != null) {
 			personbuilding = initiator.getBuildingLocation();
 			
 	    	if (!personbuilding.hasFunction(FunctionType.DINING)) {

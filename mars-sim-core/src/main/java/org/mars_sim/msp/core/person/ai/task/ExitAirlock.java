@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ExitAirlock.java
- * @date 2021-10-03
+ * @date 2022-09-12
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -30,6 +30,7 @@ import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.structure.Airlock;
 import org.mars_sim.msp.core.structure.AirlockType;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.Airlock.AirlockMode;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -58,6 +59,7 @@ public class ExitAirlock extends Task implements Serializable {
 	private static final String NOT_FIT = "Not fit enough";
 	private static final String INNER_DOOR_LOCKED = "Inner door was locked.";
 	private static final String CHAMBER_FULL = "All 4 chambers are occupied.";
+	private static final String NOT_IN_RIGHT_AIRLOCK_MODE = "Airlock is not in egress mode.";
 	
     /** The minimum performance needed. */
 	private static final double MIN_PERFORMANCE = 0.05;
@@ -321,6 +323,9 @@ public class ExitAirlock extends Task implements Serializable {
 		accumulatedTime = 0;
 		
 		airlock.removeID(person.getIdentifier());
+		
+		if (airlock.isEmpty())
+			airlock.setAirlockMode(AirlockMode.NOT_IN_USE);
 
 		logger.log((Unit)airlock.getEntity(), person, Level.INFO, 16_000, reason);
 		
@@ -367,16 +372,10 @@ public class ExitAirlock extends Task implements Serializable {
 		logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4_000,
 				"Requesting EVA egress in " + airlock.getEntity().toString() + ".");
 		
-		// Activates airlock first to check for occupant ids and operator
-		// before calling other checks
-		if (!airlock.isActivated()) {
-			// Only the airlock operator may activate the airlock
-			airlock.setActivated(true);
-		}
-		
-		if (airlock.isOperator(id)) {
-			// Command the airlock state to be transitioned to "pressurized"
-			airlock.setTransitioning(true);
+		// If the airlock mode is ingress, will need to wait until its done
+		if (airlock.getAirlockMode() == AirlockMode.INGRESS) {
+			walkAway(person, NOT_IN_RIGHT_AIRLOCK_MODE);
+			return time;
 		}
 		
 		// If a person is in a vehicle, not needed of checking for reservation
@@ -404,6 +403,18 @@ public class ExitAirlock extends Task implements Serializable {
 
 		// NOTE: don't need to allow the airlock to transition its state yet.
 
+		// Activates airlock first to check for occupant ids and operator
+		// before calling other checks
+		if (!airlock.isActivated()) {
+			// Only the airlock operator may activate the airlock
+			airlock.setActivated(true);
+		}
+		
+		if (airlock.isOperator(id)) {
+			// Command the airlock state to be transitioned to "pressurized"
+			airlock.setTransitioning(true);
+		}
+		
 		if (inSettlement) {
 			// Load up the EVA activity spots
 			airlock.loadEVAActivitySpots();
@@ -543,6 +554,12 @@ public class ExitAirlock extends Task implements Serializable {
 			addExperience(time);
 	
 			setPhase(STEP_THRU_INNER_DOOR);
+				
+			AirlockMode airlockMode = airlock.getAirlockMode();
+			
+			if (airlockMode != AirlockMode.EGRESS
+				&& (airlock.isEmpty() || airlockMode != AirlockMode.INGRESS))
+					airlock.setAirlockMode(AirlockMode.EGRESS);
 		}
 		
 		return 0;
@@ -1063,6 +1080,9 @@ public class ExitAirlock extends Task implements Serializable {
 			}
 
 			airlock.removeID(id);
+			
+			if (airlock.isEmpty())
+				airlock.setAirlockMode(AirlockMode.NOT_IN_USE);
 		}
 
 		// Resets the pre-breath time

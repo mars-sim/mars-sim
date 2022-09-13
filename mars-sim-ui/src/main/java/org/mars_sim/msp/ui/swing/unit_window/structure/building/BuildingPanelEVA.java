@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * BuildingPanelEVA.java
- * @date 2022-07-10
+ * @date 2022-09-12
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
@@ -17,6 +17,7 @@ import javax.swing.SpringLayout;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.structure.Airlock.AirlockMode;
 import org.mars_sim.msp.core.structure.building.function.BuildingAirlock;
 import org.mars_sim.msp.core.structure.building.function.EVA;
 import org.mars_sim.msp.ui.swing.ImageLoader;
@@ -43,6 +44,7 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 	private int outerDoorCache;
 	private int occupiedCache;
 	private int emptyCache;
+	
 	private double cycleTimeCache;
 	private boolean activationCache;
 	private boolean transitionCache;
@@ -51,6 +53,8 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 	private String airlockStateCache = "";
 	private String innerDoorStateCache = "";
 	private String outerDoorStateCache = "";
+	
+	private AirlockMode airlockModeCache;
 
 	private JTextField innerDoorLabel;
 	private JTextField outerDoorLabel;
@@ -63,6 +67,7 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 	private JTextField cycleTimeLabel;
 	private JTextField innerDoorStateLabel;
 	private JTextField outerDoorStateLabel;
+	private JTextField airlockModeLabel;
 
 	private UnitListPanel<Person> occupants;
 	private UnitListPanel<Person> reservationList;
@@ -151,21 +156,23 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 		cycleTimeLabel = addTextField(labelGrid, Msg.getString("BuildingPanelEVA.airlock.cycleTime"),
 									  DECIMAL_PLACES1.format(buildingAirlock.getRemainingCycleTime()), 4, null);
 		
+		// Create transitionLabel
 		transitionLabel = addTextField(labelGrid, Msg.getString("BuildingPanelEVA.airlock.transition"),
 				 buildingAirlock.isTransitioning() + "", 8, null);
+		
+		// Create airlockModeLabel
+		airlockModeLabel = addTextField(labelGrid, Msg.getString("BuildingPanelEVA.airlock.mode"),
+				 buildingAirlock.getAirlockMode().getName() + "", 8, null);
 
+		// Create OperatorLabel
+		operatorLabel = addTextField(labelGrid, Msg.getString("BuildingPanelEVA.operator"),
+									 eva.getOperatorName(), 12, null);
+		
 		SpringUtilities.makeCompactGrid(labelGrid,
-                5, 4, //rows, cols
+                6, 4, //rows, cols
                 10, INITY_DEFAULT,        //initX, initY
                 XPAD_DEFAULT, YPAD_DEFAULT);       //xPad, yPad	
 		
-		WebPanel operatorPanel = new WebPanel(new FlowLayout());
-		topPanel.add(operatorPanel, BorderLayout.CENTER);
-		
-		// Create OperatorLabel
-		operatorLabel = addTextField(operatorPanel, Msg.getString("BuildingPanelEVA.operator"),
-									 eva.getOperatorName(), 12, null);
-
 		// Create occupant panel
 		WebPanel occupantPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 		addBorder(occupantPanel, Msg.getString("BuildingPanelEVA.titledB.occupants"));
@@ -232,27 +239,6 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 			operatorCache = name;
 			operatorLabel.setText(name);
 		}
-
-		// Update airlockStateLabel
-		String state = buildingAirlock.getState().toString();
-		if (!airlockStateCache.equalsIgnoreCase(state)) {
-			airlockStateCache = state;
-			airlockStateLabel.setText(state);
-		}
-		
-		// Update activationLabel
-		boolean activated = buildingAirlock.isActivated();
-		if (activationCache != activated) {
-			activationCache = activated;
-			activationLabel.setText(Boolean.toString(activated));
-		}
-
-		// Update activationLabel
-		boolean transition = buildingAirlock.isTransitioning();
-		if (transitionCache != transition) {
-			transitionCache = transition;
-			transitionLabel.setText(Boolean.toString(transition));
-		}
 		
 		// Update cycleTimeLabel
 		double time = buildingAirlock.getRemainingCycleTime();
@@ -287,6 +273,34 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 			outerDoorStateLabel.setText(outerDoorState);
 		}
 
+		// Update airlockStateLabel
+		String state = buildingAirlock.getState().toString();
+		if (!airlockStateCache.equalsIgnoreCase(state)) {
+			airlockStateCache = state;
+			airlockStateLabel.setText(state);
+		}
+		
+		// Update activationLabel
+		boolean activated = buildingAirlock.isActivated();
+		if (activationCache != activated) {
+			activationCache = activated;
+			activationLabel.setText(Boolean.toString(activated));
+		}
+
+		// Update activationLabel
+		boolean transition = buildingAirlock.isTransitioning();
+		if (transitionCache != transition) {
+			transitionCache = transition;
+			transitionLabel.setText(Boolean.toString(transition));
+		}
+		
+		// Update airlockModeLabel
+		AirlockMode airlockMode = buildingAirlock.getAirlockMode();
+		if (airlockModeCache != airlockMode) {
+			airlockModeCache = airlockMode;
+			airlockModeLabel.setText(airlockMode.getName());
+		}
+		
 		// Update occupant list
 		occupants.update();
 		reservationList.update();

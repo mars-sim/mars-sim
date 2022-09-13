@@ -78,19 +78,6 @@ public class ClockUtils implements Serializable {
 	private static DecimalFormat fmt = new DecimalFormat("##.###");
 
 	/**
-	 * Constructor
-	 */
-//	public ClockUtils() {
-//	}
-
-//	public MarsClock convertTimeEarth2Mars() {
-//		MarsClock marsClock = null;
-//		// ;
-//		// ;
-//		return marsClock;
-//	}
-
-	/**
 	 * Obtain the first landing date and time
 	 */
 	public static void getFirstLandingDateTime() {

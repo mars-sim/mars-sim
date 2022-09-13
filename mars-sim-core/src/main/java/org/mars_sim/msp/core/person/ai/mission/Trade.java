@@ -272,7 +272,8 @@ public class Trade extends RoverMission implements CommerceMission {
 					Robot robot = (Robot) member;
 					Walk walkingTask = Walk.createWalkingTask(robot, adjustedLoc, destinationBuilding);
 					if (walkingTask != null) {
-						assignTask(robot, walkingTask);
+//						assignTask(robot, walkingTask);
+						robot.getBotMind().getBotTaskManager().getTask().addSubTask(walkingTask);
 					}
 					else {
 						logger.severe(robot, "Is unable to walk to building " + destinationBuilding);

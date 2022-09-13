@@ -63,6 +63,33 @@ public abstract class Airlock implements Serializable {
 	/** The effective reservation period [in millisols]. */
 	public static final int RESERVATION_PERIOD = 40;
 	
+	private AirlockMode airlockMode = AirlockMode.NOT_IN_USE;
+	
+	/**
+	 * Available Airlock mode
+	 */
+	public enum AirlockMode {
+		NOT_IN_USE 	("Not in use"),
+		INGRESS 	("Ingress"), 
+		EGRESS		("Egress");
+		
+		private String name;
+
+		private AirlockMode(String name) {
+			this.name = name;
+		}
+
+		public String getName() {
+			return this.name;
+		}
+		
+		@Override
+		public String toString() {
+			return this.name;
+		}
+	}
+		
+	
 	/**
 	 * Available Airlock States
 	 */
@@ -83,6 +110,7 @@ public abstract class Airlock implements Serializable {
 			return this.name;
 		}
 		
+		@Override
 		public String toString() {
 			return this.name;
 		}
@@ -1115,6 +1143,24 @@ public abstract class Airlock implements Serializable {
 	 */
 	public abstract AirlockType getAirlockType();
 
+	/**
+	 * Gets the current mode of the airlock.
+	 *
+	 * @return the airlockMode.
+	 */
+	public AirlockMode getAirlockMode() {
+		return airlockMode;
+	}
+
+	/**
+	 * Sets the mode of the airlock.
+	 *
+	 * @param airlockMode the airlock mode.
+	 */
+	public void setAirlockMode(AirlockMode airlockMode) {
+		this.airlockMode = airlockMode;
+	}
+	
 	/**
 	 * Time passing for the building.
 	 * 

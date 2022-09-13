@@ -859,6 +859,9 @@ public class BuildingAirlock extends Airlock {
 				checkOperator();
 			}
 		}
+		
+		if (isEmpty())
+			setAirlockMode(AirlockMode.NOT_IN_USE);
 	}
 	
 	/**

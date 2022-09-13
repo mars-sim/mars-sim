@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Settlement.java
- * @date 2021-10-21
+ * @date 2022-09-12
  * @author Scott Davis
  */
 
@@ -70,6 +70,7 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.science.ScienceType;
+import org.mars_sim.msp.core.structure.Airlock.AirlockMode;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.connection.BuildingConnector;
@@ -1659,6 +1660,37 @@ public class Settlement extends Structure implements Temporal,
 		return result;
 	}
 
+	/**
+	 * Are any airlocks available for ingree or egress ?
+	 * 
+	 * @param person
+	 * @param ingress
+	 * @return
+	 */
+	public boolean anyAirlocksForIngressEgress(Person person, boolean ingress) {
+		List<Building> bldgs = person.getSettlement().getBuildingManager().getBuildings(FunctionType.EVA);
+
+		Iterator<Building> i = bldgs.iterator();
+		while (i.hasNext()) {
+			Airlock airlock = i.next().getEVA().getAirlock();
+			boolean chamberFull = airlock.areAll4ChambersFull();
+			AirlockMode airlockMode = airlock.getAirlockMode();
+			boolean isIngressMode = airlockMode == AirlockMode.INGRESS;
+			boolean isEgressMode = airlockMode == AirlockMode.EGRESS;
+			boolean notInUse = airlockMode == AirlockMode.NOT_IN_USE;
+
+			if (!chamberFull
+				&& (notInUse
+					|| (ingress && isIngressMode)
+					|| (!ingress && isEgressMode))) {
+						return true;
+			}
+		}
+		
+		return false;
+	}
+		
+	
 	public boolean isAirlockAvailable(Person person, boolean ingress) {
 		Building currentBldg = person.getBuildingLocation();
 	
@@ -1790,6 +1822,7 @@ public class Settlement extends Structure implements Temporal,
 		for (Building building : bldgs) {
 			boolean chamberFull = building.getEVA().getAirlock().areAll4ChambersFull();
 			boolean reservationFull = building.getEVA().getAirlock().isReservationFull();
+
 			int id = building.getIdentifier();
 			// Select airlock that fulfill either conditions:
 			// 1. Chambers are NOT full
@@ -1828,9 +1861,11 @@ public class Settlement extends Structure implements Temporal,
 	 *
 	 * @param building  the building in the walkable interior path.
 	 * @param location  Starting position.
+	 * @param isIngress is airlock in ingress mode ?
 	 * @return airlock or null if none available.
 	 */
-	public Airlock getClosestWalkableAvailableAirlock(Building building, LocalPosition location) {
+	public Airlock getClosestWalkableAvailableAirlock(Building building, LocalPosition location, 
+			boolean isIngress) {
 		Airlock result = null;
 
 		double leastDistance = Double.MAX_VALUE;
@@ -1838,13 +1873,29 @@ public class Settlement extends Structure implements Temporal,
 		Iterator<Building> i = buildingManager.getBuildings(FunctionType.EVA).iterator();
 		while (i.hasNext()) {
 			Building nextBuilding = i.next();
-			boolean chamberFull = nextBuilding.getEVA().getAirlock().areAll4ChambersFull();
-			boolean reservationFull = nextBuilding.getEVA().getAirlock().isReservationFull();
+			Airlock airlock = nextBuilding.getEVA().getAirlock();
+			
+			boolean chamberFull = airlock.areAll4ChambersFull();
+			
+//			boolean reservationFull = airlock.isReservationFull();
 
 			// Select airlock that fulfill either conditions:
 			// 1. Chambers are NOT full
 			// 2. Chambers are full but the reservation is NOT full
-			if ((!chamberFull || !reservationFull)
+			// 3. if ingressing, make sure this airlock is in ingress mode or not-in-use mode
+			// 4. if egressing, make sure this airlock is in egress mode or not-in-use mode
+
+			// Note: the use of reservationFull is being put on hold
+			
+			AirlockMode airlockMode = airlock.getAirlockMode();
+			boolean isIngressMode = airlockMode == AirlockMode.INGRESS;
+			boolean isEgressMode = airlockMode == AirlockMode.EGRESS;
+			boolean notInUse = airlockMode == AirlockMode.NOT_IN_USE;
+			
+			if (!chamberFull
+				&& (notInUse
+						|| (isIngress && isIngressMode)
+						|| (!isIngress && isEgressMode)) 
 				&& buildingConnectorManager.hasValidPath(building, nextBuilding)) {
 
 				double distance = nextBuilding.getPosition().getDistanceTo(location);
@@ -1862,13 +1913,83 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
+	 * Gets the closest available airlock at the settlement to the given location.
+	 * The airlock must have a valid walkable interior path from the given
+	 * building's current location.
+	 *
+	 * @param building  the building in the walkable interior path.
+	 * @param location  Starting position.
+	 * @return airlock or null if none available.
+	 */
+	public Airlock getClosestWalkableAvailableAirlock(Building building, LocalPosition location) {
+		Airlock result = null;
+
+		double leastDistance = Double.MAX_VALUE;
+
+		Iterator<Building> i = buildingManager.getBuildings(FunctionType.EVA).iterator();
+		while (i.hasNext()) {
+			Building nextBuilding = i.next();
+			Airlock airlock = nextBuilding.getEVA().getAirlock();
+			
+			boolean chamberFull = airlock.areAll4ChambersFull();
+			
+//			boolean reservationFull = airlock.isReservationFull();
+
+			// Select airlock that fulfill either conditions:
+			// 1. Chambers are NOT full
+			// 2. Chambers are full but the reservation is NOT full
+
+			// Note: the use of reservationFull is being put on hold
+			
+			if (!chamberFull
+				&& buildingConnectorManager.hasValidPath(building, nextBuilding)) {
+
+				double distance = nextBuilding.getPosition().getDistanceTo(location);
+				if (distance < leastDistance) {
+					EVA eva = nextBuilding.getEVA();
+					if (eva != null) {
+						result = eva.getAirlock();
+						leastDistance = distance;
+					}
+				}
+			}
+		}
+
+		return result;
+	}
+	
+	/**
+	 * Gets the closest available airlock at the settlement to the given location.
+	 * The airlock must have a valid walkable interior path from the given
+	 * building's current location.
+	 *
+	 * @param building  the building in the walkable interior path.
+	 * @param location  Starting position.
+	 * @param isIngress is airlock in ingress mode ?
+	 * @return airlock or null if none available.
+	 */
+	public boolean hasClosestWalkableAvailableAirlock(Building building, LocalPosition location) {
+		Iterator<Building> i = buildingManager.getBuildings(FunctionType.EVA).iterator();
+		while (i.hasNext()) {
+			Building nextBuilding = i.next();
+			boolean chamberFull = nextBuilding.getEVA().getAirlock().areAll4ChambersFull();
+			if (!chamberFull
+				&& buildingConnectorManager.hasValidPath(building, nextBuilding)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+	
+	/**
 	 * Checks if a building has a walkable path from it to an airlock.
 	 *
 	 * @param building the building.
 	 * @return true if an airlock is walkable from the building.
 	 */
 	public boolean hasWalkableAvailableAirlock(Building building) {
-		return (getClosestWalkableAvailableAirlock(building, LocalPosition.DEFAULT_POSITION) != null);
+		return hasClosestWalkableAvailableAirlock(building, LocalPosition.DEFAULT_POSITION);
 	}
 
 	/**
@@ -3186,7 +3307,7 @@ public class Settlement extends Structure implements Temporal,
 		regolithAvailable = regolithAvailable * regolithAvailable - 1;
 		double sandAvailable = goodsManager.getSupplyValue(SAND_ID);
 		sandAvailable = sandAvailable * sandAvailable - 1;
-		double reserve = (MIN_REGOLITH_RESERVE + MIN_SAND_RESERVE) * pop;
+		int reserve = (MIN_REGOLITH_RESERVE + MIN_SAND_RESERVE) * pop;
 		
 		if (regolithAvailable + sandAvailable > reserve + regolithDemand + sandDemand + regolithAvailable + sandAvailable) {
 			result = reserve - regolithDemand - sandDemand - regolithAvailable - sandAvailable;
@@ -3973,7 +4094,7 @@ public class Settlement extends Structure implements Temporal,
 	public SimpleEntry<Building, SimpleEntry<ResourceProcess, Double>> retrieveFirstResourceProcess() {
 		if (!resourceProcessList.isEmpty()) {
 			SimpleEntry<Building, SimpleEntry<ResourceProcess, Double>> process = resourceProcessList.get(0);
-			logger.info(process.getKey(), "Selected '" + process.getValue().getKey() + "' from " + resourceProcessList.size() + " flagged process(es).");
+//			logger.info(process.getKey(), "Selected '" + process.getValue().getKey() + "' from " + resourceProcessList.size() + " flagged process(es).");
 			resourceProcessList.remove(0);
 			return process;
 		}

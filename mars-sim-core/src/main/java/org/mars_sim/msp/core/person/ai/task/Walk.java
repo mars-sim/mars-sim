@@ -168,7 +168,7 @@ public class Walk extends Task implements Serializable {
 		}
 
 		if (targetObject == null) {
-			logger.log(person, Level.SEVERE, 4_000,
+			logger.log(person, Level.SEVERE, 30_000,
       				"Walking steps could not be determined.");
 
 			endTask();
@@ -179,7 +179,7 @@ public class Walk extends Task implements Serializable {
 		walkingSteps = new WalkingSteps(person, targetPosition, 0, targetObject);
 
 		if (!canWalkAllSteps(person, walkingSteps)) {
-			logger.log(person, Level.SEVERE, 4_000, "Could not walk all steps.");
+			logger.log(person, Level.SEVERE, 30_000, "Could not walk all steps.");
 			endTask();
 			return;
 		}
