@@ -205,7 +205,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		else {
 			// Set initial mission phase.
 			createFullDesignation();
-			setPhase(EMBARKING, getStartingSettlement().getName());
+			startEmbarkingPhase();
 		}
 
 		Worker startingMember = getStartingPerson();
@@ -215,61 +215,46 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	}
 
 	/**
-	 * Reserves a vehicle.
-	 *
-	 * @return
-	 */
-	protected boolean reserveVehicle() {
-		// Reserve a vehicle.
-		Worker startingMember = getStartingPerson();
-		if (startingMember.getSettlement() == null || !reserveVehicle(startingMember)) {
-			endMission(NO_AVAILABLE_VEHICLES);
-			logger.warning(startingMember, "Could not reserve a vehicle for " + getName() + ".");
-			return false;
-		}
-		return true;
-	}
-
-	/**
 	 * Reserves a vehicle for the mission if possible.
 	 *
-	 * @param person the person reserving the vehicle.
 	 * @return true if vehicle is reserved, false if unable to.
-	 * @throws MissionException if error reserving vehicle.
 	 */
-	protected final boolean reserveVehicle(Worker member) {
-		Collection<Vehicle> vList = getAvailableVehicles(member.getSettlement());
-		if (vList.isEmpty())
-			return false;
-
-		Collection<Vehicle> bestVehicles = new ConcurrentLinkedQueue<>();
+	private final boolean reserveVehicle() {
+		Collection<Vehicle> vList = getAvailableVehicles(getStartingSettlement());
+		List<Vehicle> bestVehicles = new ArrayList<>();
 
 		for (Vehicle v : vList) {
-			if (!bestVehicles.isEmpty()) {
-				int comparison = compareVehicles(v, (Vehicle) bestVehicles.toArray()[0]);
-				if (comparison == 0) {
-					bestVehicles.add(v);
-				} else if (comparison == 1) {
-					bestVehicles.clear();
-					bestVehicles.add(v);
+			// CHeck if vehicle is usable
+			if (isUsableVehicle(v)) {
+				// Compare to existing best
+				if (!bestVehicles.isEmpty()) {
+					int comparison = compareVehicles(v, bestVehicles.get(0));
+					if (comparison == 0) {
+						bestVehicles.add(v);
+					} else if (comparison == 1) {
+						bestVehicles.clear();
+						bestVehicles.add(v);
+					}
 				}
-			} else
-				bestVehicles.add(v);
-		}
-
-		// Randomly select from the best vehicles.
-		if (!bestVehicles.isEmpty()) {
-			Vehicle selected = null;
-			int bestVehicleIndex = RandomUtil.getRandomInt(bestVehicles.size() - 1);
-			try {
-				selected = (Vehicle) bestVehicles.toArray()[bestVehicleIndex];
-				setVehicle(selected);
-			} catch (Exception e) {
-				logger.severe(selected, "Cannot set the best vehicle: ", e);
+				else
+					bestVehicles.add(v);
 			}
 		}
 
-		return hasVehicle();
+		boolean result;
+		// Randomly select from the best vehicles.
+		if (!bestVehicles.isEmpty()) {
+			int bestVehicleIndex = RandomUtil.getRandomInt(bestVehicles.size() - 1);
+			setVehicle(bestVehicles.get(bestVehicleIndex));
+			result = true;
+		}
+		else {
+			endMission(NO_AVAILABLE_VEHICLES);
+			logger.warning(getStartingPerson(), "Could not reserve a vehicle for " + getName() + ".");
+			result = false;
+		}
+
+		return result;
 	}
 	
 	/**
@@ -314,7 +299,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 * 
 	 * @param loadingSite
 	 */
-	public LoadingController prepareLoadingPlan(Settlement loadingSite) {
+	protected LoadingController prepareLoadingPlan(Settlement loadingSite) {
 		if ((loadingPlan == null) || !loadingPlan.getSettlement().equals(loadingSite)) {
 			logger.info(vehicle, 10_000L, "Prepared a loading plan sourced from " + loadingSite.getName() + ".");
 			loadingPlan = new LoadingController(loadingSite, vehicle,
@@ -329,7 +314,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	/**
 	 * Clears the current loading plan.
 	 */
-	public void clearLoadingPlan() {
+	protected void clearLoadingPlan() {
 		loadingPlan = null;
 	}
 
@@ -341,20 +326,14 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 */
 	protected void setVehicle(Vehicle newVehicle) {
 		if (newVehicle != null) {
-			boolean usable = false;
-			usable = isUsableVehicle(newVehicle);
-			if (usable) {
-				vehicle = newVehicle;
-				startingTravelledDistance = vehicle.getOdometerMileage();
-				newVehicle.setReservedForMission(true);
-				vehicle.addUnitListener(this);
+			vehicle = newVehicle;
+			startingTravelledDistance = vehicle.getOdometerMileage();
+			newVehicle.setReservedForMission(true);
+			vehicle.addUnitListener(this);
 
-				fireMissionUpdate(MissionEventType.VEHICLE_EVENT);
-			}
-			if (!usable) {
-				throw new IllegalStateException(getPhase() + " : newVehicle is not usable for this mission.");
-			}
-		} else {
+			fireMissionUpdate(MissionEventType.VEHICLE_EVENT);
+		}
+		else {
 			throw new IllegalArgumentException("newVehicle is null.");
 		}
 	}
@@ -364,7 +343,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 *
 	 * @return true if vehicle.
 	 */
-	public final boolean hasVehicle() {
+	protected boolean hasVehicle() {
 		return (vehicle != null);
 	}
 
@@ -391,20 +370,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 * @throws MissionException         if problem checking vehicle is loadable.
 	 */
 	protected boolean isUsableVehicle(Vehicle vehicle) {
-		if (vehicle != null) {
-
-			boolean usable = vehicle.isVehicleReady();
-
-			if (vehicle.getStoredMass() > 0D)
-				usable = false;
-
-			logger.log(vehicle, Level.FINER, 1000, "Availability : "
-						+ usable + " [ID: " + getName() + "].");
-			return usable;
-
-		} else {
-			throw new IllegalArgumentException("isUsableVehicle: newVehicle is null.");
-		}
+		return vehicle.isVehicleReady() && (vehicle.getStoredMass() <= 0D);
 	}
 
 	/**
@@ -419,22 +385,9 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 * @throws MissionException if error determining vehicle range.
 	 */
 	protected int compareVehicles(Vehicle firstVehicle, Vehicle secondVehicle) {
-		if (isUsableVehicle(firstVehicle)) {
-			if (isUsableVehicle(secondVehicle)) {
-				return 0;
-			} else {
-				return 1;
-			}
-		} else {
-			if (isUsableVehicle(secondVehicle)) {
-				return -1;
-			} else {
-				return 0;
-			}
-		}
+		// By default all vehciles are equal
+		return 0;
 	}
-
-	
 
 	/**
 	 * Gets a collection of available vehicles at a settlement that are usable for
@@ -685,7 +638,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		if (REVIEWING.equals(getPhase())) {
 			// Check the vehicle is loadable before starting the embarking
 			if (isVehicleLoadable()) {
-				setPhase(EMBARKING, getCurrentNavpointDescription());
+				startEmbarkingPhase();
 			}
 			else {
 				logger.warning(vehicle, getName() + " cannot load Resources.");
@@ -707,7 +660,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		return handled;
 	}
 
-	public void recordStartMass() {
+	protected void recordStartMass() {
 		vehicle.recordStartMass();
 	}
 
@@ -852,10 +805,6 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		}
 	}
 
-	public Worker getLastOperator() {
-		return lastOperator;
-	}
-
 	/**
 	 * Gets a new instance of an OperateVehicle task for the person.
 	 *
@@ -927,7 +876,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 * @return time (millisols)
 	 * @throws MissionException
 	 */
-	public final double getEstimatedTripTime(boolean useMargin, double distance) {
+	protected final double getEstimatedTripTime(boolean useMargin, double distance) {
 		double result = 0;
 		// Determine average driving speed for all mission members.
 		double averageSpeed = getAverageVehicleSpeedForOperators();
@@ -1008,7 +957,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 * @return map of amount and item resources and their Double amount or Integer
 	 *         number.
 	 */
-	public Map<Integer, Number> getResourcesNeededForTrip(boolean useMargin, double distance) {
+	protected Map<Integer, Number> getResourcesNeededForTrip(boolean useMargin, double distance) {
 		Map<Integer, Number> result = new HashMap<>();
 		if (vehicle != null) {
 			double amount = 0;
@@ -1273,7 +1222,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	/**
 	 * Updates mission to the next navpoint destination.
 	 */
-	public void updateTravelDestination() {
+	protected void updateTravelDestination() {
 		NavPoint nextPoint = getNextNavpoint();
 
 		if (operateVehicleTask != null && nextPoint != null) {
@@ -1426,45 +1375,6 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			// Note: may check if vehicle operator() is null or not
         }
 		return valid && super.canParticipate(worker);
-	}
-
-	/**
-	 * Checks to see if there are any currently embarking missions at the
-	 * settlement.
-	 *
-	 * @param settlement the settlement.
-	 * @return true if embarking missions.
-	 */
-	public static boolean hasEmbarkingMissions(Settlement settlement) {
-		boolean result = false;
-		Iterator<Mission> i = missionManager.getMissionsForSettlement(settlement).iterator();
-		while (i.hasNext()) {
-			if (EMBARKING.equals(i.next().getPhase())) {
-				result = true;
-				break;
-			}
-		}
-
-		return result;
-	}
-
-
-	/**
-	 * Checks to see how many missions currently under the approval phase at the settlement.
-	 *
-	 * @param settlement the settlement.
-	 * @return true if embarking missions.
-	 */
-	public static int numApprovingMissions(Settlement settlement) {
-		int result = 0;
-		Iterator<Mission> i = missionManager.getMissionsForSettlement(settlement).iterator();
-		while (i.hasNext()) {
-			if (REVIEWING.equals(i.next().getPhase())) {
-				result++;
-			}
-		}
-
-		return result;
 	}
 
 	/**
@@ -1634,7 +1544,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 * @param newNavIndex the next navpoint index.
 	 * @throws MissionException if the new navpoint is out of range.
 	 */
-	public final void setNextNavpointIndex(int newNavIndex) {
+	protected final void setNextNavpointIndex(int newNavIndex) {
 		if (newNavIndex < getNumberOfNavpoints()) {
 			navIndex = newNavIndex;
 		} else
@@ -1685,7 +1595,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 * 
 	 * @return navpoint or null if mission is not stopped at a navpoint.
 	 */
-	public final boolean isCurrentNavpointSettlement() {
+	protected boolean isCurrentNavpointSettlement() {
 		if (travelStatus != null && AT_NAVPOINT.equals(travelStatus)
 			&& navIndex < navPoints.size()
 			&& navPoints.get(navIndex).getSettlement() != null) {
@@ -1700,7 +1610,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 * 
 	 * @return Settlement or null if mission is not stopped at a Settlement.
 	 */
-	public final Settlement getCurrentNavpointSettlement() {
+	private Settlement getCurrentNavpointSettlement() {
 		if (travelStatus != null && AT_NAVPOINT.equals(travelStatus)
 			&& navIndex < navPoints.size()) {
 			return navPoints.get(navIndex).getSettlement();
@@ -1923,7 +1833,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 * 
 	 * @return distance (km)
 	 */
-	public final void computeTotalDistanceProposed() {
+	protected final void computeTotalDistanceProposed() {
 		if (navPoints.size() > 1) {
 			double result = 0D;
 			
@@ -1955,7 +1865,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 * @return distance (km).
 	 * @throws MissionException if error determining distance.
 	 */
-	public final double computeTotalDistanceRemaining() {
+	protected final double computeTotalDistanceRemaining() {
 
 		double leg = computeDistanceCurrentLegRemaining();
 
@@ -1990,6 +1900,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 * @return distance (km).
 	 * @throws MissionException if error determining distance.
 	 */
+	@Override
 	public final double getTotalDistanceRemaining() {
 		return distanceTotalRemaining;
 	}
@@ -2009,7 +1920,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 *
 	 * @return distance (km)
 	 */
-	public double computeTotalDistanceTravelled() {
+	private double computeTotalDistanceTravelled() {
 		if (vehicle != null) {
 			double dist = vehicle.getOdometerMileage() - startingTravelledDistance;
 			if (dist != distanceTravelled) {
@@ -2030,21 +1941,10 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 * @param settlement
 	 * @return
 	 */
+	@Override
 	public boolean isVehicleUnloadableHere(Settlement settlement) {
 		// It is either a local mission unloading
 		return DISEMBARKING.equals(getPhase())
-					&& getAssociatedSettlement().equals(settlement);
-	}
-
-	/**
-	 * Can the mission vehicle be loaded at a Settlement. Must be in
-	 * the EMBARKING phase at the mission starting point.
-	 *
-	 * @param settlement
-	 * @return
-	 */
-	public boolean isVehicleLoadableHere(Settlement settlement) {
-		return EMBARKING.equals(getPhase())
 					&& getAssociatedSettlement().equals(settlement);
 	}
 
@@ -2056,6 +1956,14 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		getLog().setStarted();
 		startTravelToNextNode();
 		setPhase(TRAVELLING, getNextNavpointDescription());
+	}
+
+	/**
+	 * Start the Embarking phase
+	 */
+	private void startEmbarkingPhase() {
+		setPhase(EMBARKING, getStartingSettlement().getName());
+		prepareLoadingPlan(getStartingSettlement());
 	}
 
 	/**

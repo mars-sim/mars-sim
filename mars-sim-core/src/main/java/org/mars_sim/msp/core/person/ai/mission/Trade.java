@@ -683,7 +683,7 @@ public class Trade extends RoverMission implements CommerceMission {
 	protected int compareVehicles(Vehicle firstVehicle, Vehicle secondVehicle) {
 		int result = super.compareVehicles(firstVehicle, secondVehicle);
 
-		if ((result == 0) && isUsableVehicle(firstVehicle) && isUsableVehicle(secondVehicle)) {
+		if (result == 0) {
 			// Check if one has more general cargo capacity than the other.
 			double firstCapacity = firstVehicle.getCargoCapacity();
 			double secondCapacity = secondVehicle.getCargoCapacity();
@@ -695,9 +695,11 @@ public class Trade extends RoverMission implements CommerceMission {
 
 			// Vehicle with superior range should be ranked higher.
 			if (result == 0) {
-				if (firstVehicle.getRange(MissionType.TRADE) > secondVehicle.getRange(MissionType.TRADE)) {
+				double firstRange = firstVehicle.getRange(MissionType.TRADE);
+				double secondRange = secondVehicle.getRange(MissionType.TRADE);
+				if (firstRange > secondRange) {
 					result = 1;
-				} else if (firstVehicle.getRange(MissionType.TRADE) < secondVehicle.getRange(MissionType.TRADE)) {
+				} else if (firstRange <secondRange) {
 					result = -1;
 				}
 			}
@@ -832,20 +834,5 @@ public class Trade extends RoverMission implements CommerceMission {
 			return true;
 		}
 		return super.isVehicleUnloadableHere(settlement);
-	}
-
-	/**
-	 * Can the mission vehicle be loaded at a Settlement. Must be in
-	 * the LOAD_GOODS phase at the mission trading settlement.
-	 * @param settlement
-	 * @return
-	 */
-	@Override
-	public boolean isVehicleLoadableHere(Settlement settlement) {
-		if (LOAD_GOODS.equals(getPhase())
-				&& settlement.equals(tradingSettlement)) {
-			return true;
-		}
-		return super.isVehicleLoadableHere(settlement);
 	}
 }

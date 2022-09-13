@@ -890,9 +890,11 @@ public class EmergencySupply extends RoverMission {
 
 			// Vehicle with superior range should be ranked higher.
 			if (result == 0) {
-				if (firstVehicle.getRange(MissionType.EMERGENCY_SUPPLY) > secondVehicle.getRange(MissionType.EMERGENCY_SUPPLY)) {
+				double firstRange = firstVehicle.getRange(MissionType.EMERGENCY_SUPPLY);
+				double secondRange = secondVehicle.getRange(MissionType.EMERGENCY_SUPPLY);
+				if (firstRange > secondRange) {
 					result = 1;
-				} else if (firstVehicle.getRange(MissionType.EMERGENCY_SUPPLY) < secondVehicle.getRange(MissionType.EMERGENCY_SUPPLY)) {
+				} else if (firstRange < secondRange) {
 					result = -1;
 				}
 			}

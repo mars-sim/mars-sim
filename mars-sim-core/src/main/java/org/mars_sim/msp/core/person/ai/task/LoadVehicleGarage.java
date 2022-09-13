@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.MissionPlanning;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
@@ -119,7 +120,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 		
 			setDescription(Msg.getString("Task.description.loadVehicleGarage.detail", vehicle.getName())); // $NON-NLS-1$
 			
-			loadController = vehicleMission.prepareLoadingPlan(starter.getAssociatedSettlement());
+			loadController = vehicleMission.getLoadingPlan();
 			
 			// Initialize task phase
 			addPhase(LOADING);
@@ -180,10 +181,12 @@ public class LoadVehicleGarage extends Task implements Serializable {
 		for(Mission mission : missionManager.getMissions()) {
 			if (mission instanceof VehicleMission) {
 				VehicleMission vehicleMission = (VehicleMission) mission;
-				if (vehicleMission.isVehicleLoadableHere(settlement)) {
+				LoadingController plan = vehicleMission.getLoadingPlan();
+
+				// Must have a local Loading Plan that is not complete
+				if ((plan != null) && plan.getSettlement().equals(settlement) && !plan.isCompleted()) {
 					Vehicle vehicle = vehicleMission.getVehicle();
-					if (!vehicleMission.isVehicleLoaded()
-						&& (!addToGarage || settlement.getBuildingManager().addToGarage(vehicle))) {
+					if (!addToGarage || settlement.getBuildingManager().addToGarage(vehicle)) {
 						result.add(vehicleMission);
 					}
 				}

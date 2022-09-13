@@ -6,8 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.mission;
 
-import java.awt.Component;
-
 import org.mars_sim.msp.core.person.ai.task.LoadingController;
 import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -75,14 +73,12 @@ public interface VehicleMission extends Mission {
     void setEmergencyBeacon(Worker worker, Vehicle vehicle, boolean b, String name);
     void getHelp(MissionStatus status);
 
-    // TODO Remove these by using the assigned LoadingController
-    boolean isVehicleLoadableHere(Settlement settlement);
-    boolean isVehicleLoaded();
-    
-    // TODO removve this. Get the plan created as part of Mission
-    LoadingController prepareLoadingPlan(Settlement associatedSettlement);
-
-    // TODO Not sure what this method is doing
+	/**
+	 * Can the mission vehicle be unloaded at this Settlement ?
+	 *
+	 * @param settlement
+	 * @return
+	 */
     boolean isVehicleUnloadableHere(Settlement settlement);
 
     // TODO Only used in a single case ??
