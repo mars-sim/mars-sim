@@ -21,7 +21,6 @@ import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Airlock;
 import org.mars_sim.msp.core.structure.AirlockType;
-import org.mars_sim.msp.core.structure.Airlock.AirlockMode;
 import org.mars_sim.msp.core.time.ClockPulse;
 
 /**

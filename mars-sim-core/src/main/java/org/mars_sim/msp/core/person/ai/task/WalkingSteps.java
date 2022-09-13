@@ -1346,9 +1346,9 @@ implements Serializable {
 
             // Cannot walk to destination building.
             canWalkAllSteps = false;
-        	logger.log(person, Level.WARNING, 10_000,
-        			"No walkable airlock from outside to building interior in "
-            		 + destinationBuilding.getNickName());
+//        	logger.log(person, Level.WARNING, 10_000,
+//        			"No walkable airlock from outside to building interior in "
+//            		 + destinationBuilding.getNickName());
         }
     }
 

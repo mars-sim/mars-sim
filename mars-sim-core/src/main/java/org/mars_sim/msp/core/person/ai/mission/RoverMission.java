@@ -362,21 +362,21 @@ public abstract class RoverMission extends VehicleMission {
 
 					Walk walk = Walk.createWalkingTask(person, adjustedLoc, 0, v);
 					if (walk != null) {
-						boolean canDo = assignTask(person, walk);
-						if (!canDo) {
-							logger.warning(person, "Unable to start walk to " + v + ".");
-						}
+//						boolean canDo = assignTask(person, walk);
+//						if (!canDo) {
+//							logger.warning(person, "Unable to start walk to " + v + ".");
+//						}
+						person.getMind().getTaskManager().getTask().addSubTask(walk);
 
-						if (!isDone() && isRoverInAGarage) {
+						if (!isDone() && isRoverInAGarage
 
-							if (settlement.findNumContainersOfType(EquipmentType.EVA_SUIT) > 1
+							&& settlement.findNumContainersOfType(EquipmentType.EVA_SUIT) > 1
 									&& !hasBaselineNumEVASuit(v)) {
 
 								EVASuit suit = InventoryUtil.getGoodEVASuitNResource(settlement, person);
 								if (suit != null && !suit.transfer(v)) {
 									logger.warning(person, "Unable to transfer a spare " + suit.getName() + " from "
 											+ settlement + " to " + v + ".");
-								}
 							}
 						}
 					}
@@ -392,10 +392,11 @@ public abstract class RoverMission extends VehicleMission {
 				Robot robot = (Robot) member;
 				Walk walkingTask = Walk.createWalkingTask(robot, adjustedLoc, v);
 				if (walkingTask != null) {
-					boolean canDo = assignTask(robot, walkingTask);
-					if (!canDo) {
-						logger.warning(robot, "Unable to walk to " + v + ".");
-					}
+//					boolean canDo = assignTask(robot, walkingTask);
+//					if (!canDo) {
+//						logger.warning(robot, "Unable to walk to " + v + ".");
+//					}
+					robot.getBotMind().getBotTaskManager().getTask().addSubTask(walkingTask);
 				}
 				else {
 					logger.severe(member, Msg.getString("RoverMission.log.unableToEnter", //$NON-NLS-1$
@@ -700,7 +701,8 @@ public abstract class RoverMission extends VehicleMission {
 				Walk walk = Walk.createWalkingTask(p, adjustedLoc, 0, destinationBuilding);
 				if (walk != null) {
 					// walk back home
-					assignTask(p, walk);
+//					assignTask(p, walk);
+					p.getMind().getTaskManager().getTask().addSubTask(walk);
 				}
 
 				else if (!hasStrength) {

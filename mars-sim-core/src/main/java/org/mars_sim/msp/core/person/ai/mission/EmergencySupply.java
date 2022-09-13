@@ -339,7 +339,8 @@ public class EmergencySupply extends RoverMission {
 					Robot robot = (Robot) member;
 					Walk walkingTask = Walk.createWalkingTask(robot, adjustedLoc, destinationBuilding);
 					if (walkingTask != null) {
-						assignTask(robot, walkingTask);
+//						assignTask(robot, walkingTask);
+						robot.getBotMind().getBotTaskManager().getTask().addSubTask(walkingTask);						
 					}
 					else {
 						logger.severe("Unable to walk to building " + destinationBuilding);
@@ -476,7 +477,8 @@ public class EmergencySupply extends RoverMission {
 				// If robot is not aboard the rover, board rover.
 				Walk walkingTask = Walk.createWalkingTask(robot, adjustedLoc, v);
 				if (walkingTask != null) {
-					assignTask(robot, walkingTask);
+//					assignTask(robot, walkingTask);
+					robot.getBotMind().getBotTaskManager().getTask().addSubTask(walkingTask);
 				}
 				else {
 					endMissionProblem(robot, "Can not enter Rover");
