@@ -1934,14 +1934,19 @@ public class Settlement extends Structure implements Temporal,
 	 *
 	 * @param building  the building in the walkable interior path.
 	 * @param location  Starting position.
-	 * @param isIngress is airlock in ingress mode ?
 	 * @return airlock or null if none available.
 	 */
-	public boolean hasClosestWalkableAvailableAirlock(Building building, LocalPosition location) {
+	public Airlock getClosestWalkableAvailableAirlock(Building building, LocalPosition location) {
+		Airlock result = null;
+
+		double leastDistance = Double.MAX_VALUE;
+
 		Iterator<Building> i = buildingManager.getBuildings(FunctionType.EVA).iterator();
 		while (i.hasNext()) {
 			Building nextBuilding = i.next();
-			boolean chamberFull = nextBuilding.getEVA().getAirlock().areAll4ChambersFull();
+			Airlock airlock = nextBuilding.getEVA().getAirlock();
+			
+			boolean chamberFull = airlock.areAll4ChambersFull();
 			
 //			boolean reservationFull = airlock.isReservationFull();
 
@@ -1951,6 +1956,38 @@ public class Settlement extends Structure implements Temporal,
 
 			// Note: the use of reservationFull is being put on hold
 			
+			if (!chamberFull
+				&& buildingConnectorManager.hasValidPath(building, nextBuilding)) {
+
+				double distance = nextBuilding.getPosition().getDistanceTo(location);
+				if (distance < leastDistance) {
+					EVA eva = nextBuilding.getEVA();
+					if (eva != null) {
+						result = eva.getAirlock();
+						leastDistance = distance;
+					}
+				}
+			}
+		}
+
+		return result;
+	}
+	
+	/**
+	 * Gets the closest available airlock at the settlement to the given location.
+	 * The airlock must have a valid walkable interior path from the given
+	 * building's current location.
+	 *
+	 * @param building  the building in the walkable interior path.
+	 * @param location  Starting position.
+	 * @param isIngress is airlock in ingress mode ?
+	 * @return airlock or null if none available.
+	 */
+	public boolean hasClosestWalkableAvailableAirlock(Building building, LocalPosition location) {
+		Iterator<Building> i = buildingManager.getBuildings(FunctionType.EVA).iterator();
+		while (i.hasNext()) {
+			Building nextBuilding = i.next();
+			boolean chamberFull = nextBuilding.getEVA().getAirlock().areAll4ChambersFull();
 			if (!chamberFull
 				&& buildingConnectorManager.hasValidPath(building, nextBuilding)) {
 				return true;
@@ -4094,7 +4131,7 @@ public class Settlement extends Structure implements Temporal,
 	public SimpleEntry<Building, SimpleEntry<ResourceProcess, Double>> retrieveFirstResourceProcess() {
 		if (!resourceProcessList.isEmpty()) {
 			SimpleEntry<Building, SimpleEntry<ResourceProcess, Double>> process = resourceProcessList.get(0);
-			logger.info(process.getKey(), "Selected '" + process.getValue().getKey() + "' from " + resourceProcessList.size() + " flagged process(es).");
+//			logger.info(process.getKey(), "Selected '" + process.getValue().getKey() + "' from " + resourceProcessList.size() + " flagged process(es).");
 			resourceProcessList.remove(0);
 			return process;
 		}

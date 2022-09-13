@@ -192,6 +192,9 @@ public class ToggleResourceProcess extends Task implements Serializable {
 			workTime /= 2;
 		}
 
+		// Add experience points
+		addExperience(time);
+		
 		// Add work to the toggle process.
 		if (process.addToggleWorkTime(workTime)) {
 			setPhase(FINISHED);
@@ -203,9 +206,6 @@ public class ToggleResourceProcess extends Task implements Serializable {
 				setDuration(remainingTime + time * 2 + getDuration());
 			}
 		}
-
-		// Add experience points
-		addExperience(time);
 
 		// Check if an accident happens during the manual toggling.
 		if (resourceProcessBuilding.hasFunction(FunctionType.LIFE_SUPPORT)) {

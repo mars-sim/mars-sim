@@ -302,7 +302,7 @@ public abstract class EVAOperation extends Task {
         	}
         }
 
-        return time;
+        return time * .9;
     }
 
 	/**
@@ -327,7 +327,7 @@ public abstract class EVAOperation extends Task {
             endTask();
         }
 
-        return time;
+        return time * .9;
     }
 
     
@@ -354,7 +354,7 @@ public abstract class EVAOperation extends Task {
 					interiorObject = (Building)(s.getClosestAvailableAirlock(person, true)).getEntity();
 					if (interiorObject == null)
 						interiorObject = (LocalBoundedObject)(s.getClosestAvailableAirlock(person, true)).getEntity();
-					logger.log(person, Level.FINE, 4_000,
+					logger.log(person, Level.FINE, 30_000,
 							"Found " + ((Building)interiorObject).getNickName()
 							+ " as the closet building with an airlock to enter.");
 				}
@@ -362,14 +362,14 @@ public abstract class EVAOperation extends Task {
 					// near a vehicle
 					Rover r = (Rover)person.getVehicle();
 					interiorObject = (LocalBoundedObject) (r.getAirlock()).getEntity();
-					logger.log(person, Level.INFO, 4_000,
+					logger.log(person, Level.INFO, 30_000,
 							"Near " + r.getName()
 							+ ". Had to walk back inside the vehicle.");
 				}
 			}
 
 			if (interiorObject == null) {
-				logger.log(person, Level.SEVERE, 20_000, "Trying to walk somewhere. interiorObject is null.");
+				logger.log(person, Level.SEVERE, 30_000, "Trying to walk somewhere. interiorObject is null.");
 				addSubTask(new Walk(person));
 			}
 
@@ -381,7 +381,8 @@ public abstract class EVAOperation extends Task {
 						!LocalAreaUtil.isPositionWithinLocalBoundedObject(
 								returnInsideLoc, interiorObject)) {
 
-					logger.log(person, Level.SEVERE, 20_000, "Trying to walk somewhere. returnInsideLoc failed.");
+					logger.log(person, Level.SEVERE, 30_000, 
+							"Trying to walk somewhere. returnInsideLoc failed.");
 					addSubTask(new Walk(person));
 				}
 			}
@@ -407,25 +408,28 @@ public abstract class EVAOperation extends Task {
 					addSubTask(walkingTask);
 				}
 				else {
-					logger.log(person, Level.SEVERE, 20_000, "Trying to walk somewhere. cannot walk all steps.");
+					logger.log(person, Level.SEVERE, 30_000, 
+							"Trying to walk somewhere. cannot walk all steps.");
 					addSubTask(new Walk(person));
 				}
 			}
 
 			else {
-				logger.log(person, Level.SEVERE, 20_000, "Trying to walk somewhere. interiorObject is null or close to returnInsideLoc.");
+				logger.log(person, Level.SEVERE, 30_000, 
+						"Trying to walk somewhere. interiorObject is null or close to returnInsideLoc.");
 				addSubTask(new Walk(person));
 			}
 		}
 
 		else { // if a person is already inside, end the task gracefully here
 			logger.log(person, Level.FINE, 4_000,
-					"Walked back inside. Ended '" + Conversion.capitalize(person.getTaskDescription().toLowerCase()) + "'.");
+					"Walked back inside. Ended '" 
+							+ Conversion.capitalize(person.getTaskDescription().toLowerCase()) + "'.");
 			endTask();
 		}
 
 
-		return time;
+		return time * .9;
 	}
 
 	/**
