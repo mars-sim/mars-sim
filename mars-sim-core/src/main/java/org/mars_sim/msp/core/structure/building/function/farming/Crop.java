@@ -305,7 +305,7 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 		else {
 			// This is a grown crop at the start of the sim,
 			// Set the percentage of growth randomly
-			growingTimeCompleted = RandomUtil.getRandomDouble(growingTime * .95);
+			growingTimeCompleted = RandomUtil.getRandomDouble(growingTime * .7);
 
 			percentageGrowth = (growingTimeCompleted * 100D) / growingTime;
 
@@ -782,6 +782,7 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 			double time = accumulatedTime * productionLevel;
 
 			growingTimeCompleted += time;
+			
 			percentageGrowth = (growingTimeCompleted * 100D) / cropSpec.getGrowingTime();
 
 			// Right before the harvesting phase

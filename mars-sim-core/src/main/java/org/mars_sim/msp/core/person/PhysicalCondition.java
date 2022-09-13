@@ -639,7 +639,6 @@ public class PhysicalCondition implements Serializable {
 	 * @param person's energy level in kilojoules
 	 */
 	public void addEnergy(double foodAmount) {
-		
 		// 1 calorie = 4.1858 kJ
 		// Should vary MAX_KJ according to the individual's physical profile strength,
 		// endurance, etc..
@@ -673,13 +672,19 @@ public class PhysicalCondition implements Serializable {
 			kJoules += xdelta * .3;
 		} else if (kJoules > 5_000D) {
 			kJoules += xdelta * .35;
-		} else
+		} else if (kJoules > 4_000D) {
 			kJoules += xdelta * .4;
+		} else if (kJoules > 3_000D) {
+			kJoules += xdelta * .45;			
+		} else if (kJoules > ENERGY_THRESHOLD) {
+			kJoules += xdelta * .5;	
+		} else
+			kJoules = ENERGY_THRESHOLD;
 
 		circadian.eatFood(xdelta / 1000D);
 
-		if (kJoules > personalMaxEnergy * 1.5) {
-			kJoules = personalMaxEnergy * 1.5;
+		if (kJoules > personalMaxEnergy * 1.25) {
+			kJoules = personalMaxEnergy * 1.25;
 		}
 		person.fireUnitUpdate(UnitEventType.HUNGER_EVENT);
 	}

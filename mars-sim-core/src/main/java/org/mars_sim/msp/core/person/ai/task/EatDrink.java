@@ -632,9 +632,10 @@ public class EatDrink extends Task implements Serializable {
 					double hungerRelieved = millisolPerKgFood * proportion;
 					// Consume preserved food after eating
 					pc.reduceHunger(hungerRelieved);
+					
 					// Add caloric energy from the preserved food.
-					double energy = hungerRelieved * PhysicalCondition.FOOD_COMPOSITION_ENERGY_RATIO;
-					pc.addEnergy(energy);
+					double caloricEnergyFoodAmount = hungerRelieved * PhysicalCondition.FOOD_COMPOSITION_ENERGY_RATIO;
+					pc.addEnergy(caloricEnergyFoodAmount);
 
 				} else {
 					// Not enough food available to eat, will end this task.
