@@ -129,14 +129,21 @@ public class EatDrink extends Task implements Serializable {
 
 		pc = person.getPhysicalCondition();
 
+		// Checks if this person has eaten too much already 
+		if (pc.eatenTooMuch()
+			// Checks if this person has drank enough water already
+			|| pc.drinkEnoughWater()) {
+			endTask();
+		}
+		
 		double dur = getDuration();
 		eatingDuration = dur;// * MEAL_EATING_PROPORTION;
 		dessertEatingDuration = dur;// * DESSERT_EATING_PROPORTION;
 
-		foodConsumedPerServing = personConfig.getFoodConsumptionRate() / NUMBER_OF_MEAL_PER_SOL;			
+		foodConsumedPerServing = personConfig.getFoodConsumptionRate();// / NUMBER_OF_MEAL_PER_SOL;			
 		millisolPerKgFood = HUNGER_RATIO_PER_FOOD_SERVING / foodConsumedPerServing; 
 		
-		dessertConsumedPerServing = personConfig.getDessertConsumptionRate() / NUMBER_OF_DESSERT_PER_SOL;
+		dessertConsumedPerServing = personConfig.getDessertConsumptionRate();// / NUMBER_OF_DESSERT_PER_SOL;
 		millisolPerKgDessert = HUNGER_RATIO_PER_FOOD_SERVING / dessertConsumedPerServing;
 		
 		// ~.03 kg per serving
@@ -203,14 +210,6 @@ public class EatDrink extends Task implements Serializable {
 				water = true;
 			}
 		}
-
-		// Checks if this person has eaten too much already 
-		if (person.getPhysicalCondition().eatenTooMuch())
-			food = false;
-
-		// Checks if this person has drank enough water already
-		if (person.getPhysicalCondition().drinkEnoughWater())
-			water = false;
 
 		if (!food && !water) {
 			endTask();

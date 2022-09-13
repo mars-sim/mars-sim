@@ -28,7 +28,7 @@ public class TendGreenhouseMeta extends MetaTask {
 
     private static final double VALUE = 1.5;
     
-    private static final int CAP = 3_000;
+    private static final int CAP = 5_000;
     
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(TendGreenhouseMeta.class.getName());

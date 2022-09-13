@@ -452,13 +452,12 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		description = des;
 		eventTarget.fireUnitUpdate(UnitEventType.TASK_DESCRIPTION_EVENT, des);
 		
-		if (phase != null) {
+		if (!des.equals("") && worker.getTaskManager().getTask() != null
 			// Record the activity
-			if (record && canRecord()) {
+			&& record && canRecord()) {
 				Mission ms = worker.getMission();
 				worker.getTaskManager().recordTask(this,
 						(ms != null ? ms.getName() : null));
-			}
 		}
 	}
 	
@@ -489,20 +488,19 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		phase = newPhase;
 	
 		// Method is called via endTask with a null phase
-		if (newPhase != null) {
-			if (phases != null && !phases.isEmpty() && phases.contains(newPhase)) {
-	
-				// Note: need to avoid java.lang.StackOverflowError when calling
-				// PersonTableModel.unitUpdate()
-				eventTarget.fireUnitUpdate(UnitEventType.TASK_PHASE_EVENT, newPhase);
-			}
-			
-			// Record the activity
-			if (canRecord()) {
-				Mission ms = worker.getMission();
-				worker.getTaskManager().recordTask(this,
-						(ms != null ? ms.getName() : null));
-			}
+		if (newPhase != null && phases != null 
+			&& !phases.isEmpty() && phases.contains(newPhase)) {
+
+			// Note: need to avoid java.lang.StackOverflowError when calling
+			// PersonTableModel.unitUpdate()
+			eventTarget.fireUnitUpdate(UnitEventType.TASK_PHASE_EVENT, newPhase);
+		}
+		
+		// Record the activity
+		if (canRecord()) {
+			Mission ms = worker.getMission();
+			worker.getTaskManager().recordTask(this,
+					(ms != null ? ms.getName() : null));
 		}
 	}
 

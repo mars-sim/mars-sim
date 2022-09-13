@@ -36,6 +36,7 @@ import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
 import org.mars_sim.msp.core.person.ai.mission.MissionEventType;
 import org.mars_sim.msp.core.person.ai.mission.MissionListener;
 import org.mars_sim.msp.core.person.ai.role.Role;
+import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskManager;
 import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -354,8 +355,8 @@ public class PersonTableModel extends UnitTableModel {
 
 			case TASK: {
 				// If the Person is dead, there is no Task Manager
-				TaskManager mgr = person.getMind().getTaskManager();
-				result = ((mgr != null) ? mgr.getTaskDescription(false) : "");
+				Task task = person.getMind().getTaskManager().getTask();
+				result = ((task != null) ? task.getDescription() : "");
 			}
 				break;
 
@@ -576,7 +577,7 @@ public class PersonTableModel extends UnitTableModel {
 			m.put(UnitEventType.TASK_NAME_EVENT, TASK);
 			m.put(UnitEventType.TASK_DESCRIPTION_EVENT, TASK);
 			m.put(UnitEventType.TASK_ENDED_EVENT, TASK);
-			m.put(UnitEventType.TASK_SUBTASK_EVENT, TASK);
+//			m.put(UnitEventType.TASK_SUBTASK_EVENT, TASK);
 			m.put(UnitEventType.MISSION_EVENT, MISSION_COL);
 			m.put(UnitEventType.ILLNESS_EVENT, HEALTH);
 			m.put(UnitEventType.DEATH_EVENT, HEALTH);

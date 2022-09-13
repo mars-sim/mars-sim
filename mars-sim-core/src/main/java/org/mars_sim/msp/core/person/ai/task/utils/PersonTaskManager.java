@@ -109,23 +109,14 @@ public class PersonTaskManager extends TaskManager implements Serializable {
 			double energyTime = time - remainingTime;
 
 			// Double energy expenditure if performing effort-driven task.
-			if (currentTask != null && currentTask.isEffortDriven()) {
-				// why java.lang.NullPointerException at TR = 2048 ?
-				energyTime *= 2D;
-			}
+			if (energyTime > 0D && currentTask != null && currentTask.isEffortDriven()) {
 
-			if (energyTime > 0D) {
 				if (person.isOutside()) {
 					// Take more energy to be in EVA doing work
-					reduceEnergy(energyTime * 1.1);
-
-//					if (circadian == null)
-//						circadian = person.getCircadianClock();
-//					// Regulate hormones
-//					circadian.exercise(time);
-					
+					// TODO: should also consider skill level and strength and body weight
+					reduceEnergy(energyTime * 1.5);
 				} else {
-					// Expend energy based on activity.
+					// Expend nominal energy based on activity.
 					reduceEnergy(energyTime);
 				}
 			}
@@ -172,7 +163,7 @@ public class PersonTaskManager extends TaskManager implements Serializable {
 					if (!mt.getName().toLowerCase().contains("sleep")) {
 						logger.log(person, Level.WARNING, 10_000,
 							mt.getName() + "'s probability is at all time high ("
-							+ Math.round(probability * 10.0) / 10.0 + ").");
+							+ Math.round(probability) + ").");
 					}
 					probability = MAX_TASK_PROBABILITY;
 				}

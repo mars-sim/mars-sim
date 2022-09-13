@@ -1647,7 +1647,7 @@ public class Settlement extends Structure implements Temporal,
 		Airlock result = null;
 
 		double leastDistance = Double.MAX_VALUE;
-//		BuildingManager manager = buildingManager;
+
 		Set<Integer> bldgs = null;
 		if (ingress) {
 			bldgs = availableDAirlocks;
@@ -1947,23 +1947,23 @@ public class Settlement extends Structure implements Temporal,
 			Airlock airlock = nextBuilding.getEVA().getAirlock();
 			
 			boolean chamberFull = airlock.areAll4ChambersFull();
-			
 //			boolean reservationFull = airlock.isReservationFull();
 
 			// Select airlock that fulfill either conditions:
 			// 1. Chambers are NOT full
 			// 2. Chambers are full but the reservation is NOT full
 
-			// Note: the use of reservationFull is being put on hold
+			// Note: the use of chamberFull and reservationFull are being put on hold
+			// since it creates excessive logs. Thus it needs to be handled differently 
 			
-			if (!chamberFull
-				&& buildingConnectorManager.hasValidPath(building, nextBuilding)) {
-
+			if (buildingConnectorManager.hasValidPath(building, nextBuilding)) {
+				if (result == null) {
+					result = airlock;
+				}
 				double distance = nextBuilding.getPosition().getDistanceTo(location);
 				if (distance < leastDistance) {
-					EVA eva = nextBuilding.getEVA();
-					if (eva != null) {
-						result = eva.getAirlock();
+					if (!chamberFull) {
+						result = airlock;
 						leastDistance = distance;
 					}
 				}

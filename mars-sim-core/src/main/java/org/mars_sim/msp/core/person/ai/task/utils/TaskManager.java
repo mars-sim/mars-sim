@@ -35,6 +35,12 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  * assign a new task based on a list of possible tasks and the current situation.
  */
 public abstract class TaskManager implements Serializable, Temporal {
+
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+	/** default logger. */
+	private static final SimLogger logger = SimLogger.getLogger(TaskManager.class.getName());
+	
 	/*
 	 * This class represents a record of a given activity (task or mission)
 	 * undertaken by a person
@@ -101,16 +107,13 @@ public abstract class TaskManager implements Serializable, Temporal {
 		}
 	}
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-	
-	// Number of days to record Tack Activities
+	/** Number of days to record Tack Activities. */
 	private static final int NUM_SOLS = 5;
 	
+	/** Amount of millisols elapsed before the task cache is rebuilt. */
+	private static final double TASK_MILLISOLS  = 0.1;
+	
 	protected static MarsClock marsClock;
-
-	/** default logger. */
-	private static final SimLogger logger = SimLogger.getLogger(TaskManager.class.getName());
 
 	protected static PrintWriter diagnosticFile = null;
 
@@ -138,19 +141,23 @@ public abstract class TaskManager implements Serializable, Temporal {
 	protected transient Task currentTask;
 	/** The last task the person was doing. */
 	private transient Task lastTask;
+	/** The cache for meta tasks and probability. */
+	protected transient Map<MetaTask, Double> taskProbCache;
 	
+	// Data members
+	/** The timestamp (with 2 decimal place) of the task to be recorded. */
+	private double now = -1;
 	/** The cache for msol. */
 	private double msolCache = -1.0;
 	/** The cache for total probability. */
 	protected double totalProbCache;
-	/** The cache for meta tasks and probability. */
-	protected transient Map<MetaTask, Double> taskProbCache;
+
 
 	/** The history of tasks. */
 	private SolListDataLogger<OneActivity> allActivities;
 	
 	private OneActivity lastActivity = null;
-	private double now = -1;
+
 	
 
 	protected TaskManager(Unit worker) {
@@ -254,7 +261,7 @@ public abstract class TaskManager implements Serializable, Temporal {
 		if (currentTask != null) {
 			return currentTask.getDescription(subTask);
 		}
-		return "None";
+		return "";
 	}
 
 	public String getSubTaskDescription() {
@@ -381,12 +388,6 @@ public abstract class TaskManager implements Serializable, Temporal {
 	public boolean addTask(Task newTask) {
 		
 		if (newTask == null) {
-			// if newTask is null, it comes from TaskManager's startNewTask()
-			
-			lastTask = currentTask;
-			
-			currentTask = null;
-			
 			return false;
 		}
 		
@@ -479,7 +480,7 @@ public abstract class TaskManager implements Serializable, Temporal {
 	protected boolean useCache() {
 		double msol = marsClock.getMillisol();
 		double diff = msol - msolCache;
-		if (diff > 0.1) {
+		if (diff > TASK_MILLISOLS) {
 			msolCache = msol;
 			return false;
 		}
@@ -505,7 +506,7 @@ public abstract class TaskManager implements Serializable, Temporal {
 		// If cache is not current, calculate the probabilities.
 		if (!useCache()) {
 			rebuildTaskCache();
-		}		
+		}
 
 		if (totalProbCache == 0D) {
 			logger.warning(worker, 20_000, "No normal Tasks available.");
@@ -520,7 +521,7 @@ public abstract class TaskManager implements Serializable, Temporal {
 				logger.severe(worker, 20_000, "Putting on Sleep Mode.");
 				selectedMetaTask = new SleepMeta();
 			}
-		} else if (taskProbCache != null && !taskProbCache.isEmpty()) {
+		} else if (totalProbCache != 0.0 && taskProbCache != null && !taskProbCache.isEmpty()) {
 			// Comes up with a random double based on probability
 			double r = RandomUtil.getRandomDouble(totalProbCache);
 			// Determine which task is selected.
@@ -603,7 +604,7 @@ public abstract class TaskManager implements Serializable, Temporal {
 	 * Time has advanced on. This has to carry over the last Activity of yesterday into today.
 	 */
 	public boolean timePassing(ClockPulse pulse) {
-		// Create a timestamp with 1 decimal place
+		// Create a timestamp with 2 decimal place
 		now = Math.round(pulse.getMarsTime().getMillisol() * 100.0)/100.0;
 		
 		// New day so the Activity at the end of yesterday has to be carried over to the 1st of today
@@ -629,11 +630,13 @@ public abstract class TaskManager implements Serializable, Temporal {
 	void recordTask(Task changed, String mission) {
 		double newStartTime = now;
 		String newDescription = changed.getDescription();
-		String newPhase = changed.getPhase().getName();
+		String newPhase = "";
+		if (changed.getPhase() != null)
+			newPhase = changed.getPhase().getName();
 		
-		if (lastActivity == null 
+		if (!newDescription.equals("") && (lastActivity == null 
 				|| !newDescription.equals(lastActivity.description)
-				|| !newPhase.equals(lastActivity.phase)) {
+				|| !newPhase.equals(lastActivity.phase))) {
 			
 			OneActivity newActivity = new OneActivity(newStartTime, 
 												changed.getName(false),

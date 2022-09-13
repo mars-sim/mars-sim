@@ -286,7 +286,7 @@ public abstract class EVAOperation extends Task {
                 addSubTask(walkingTask);
             }
             else {
-				logger.severe(person, "Cannot walk to outside site.");
+				logger.severe(person, 30_000, "Cannot walk to outside site.");
                 endTask();
             }
         }

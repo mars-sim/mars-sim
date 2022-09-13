@@ -467,6 +467,8 @@ public class PhysicalCondition implements Serializable {
 			increaseFatigue(time);
 			// Update hunger
 			increaseHunger(time * bodyMassDeviation * .75);
+			// Update energy via PersonTaskManager's executeTask()
+			// since it can discern if it's a resting task or a labor-intensive (effort-driven) task
 		}
 	}
 
@@ -613,23 +615,33 @@ public class PhysicalCondition implements Serializable {
 		// double xdelta = 4 * time / FOOD_COMPOSITION_ENERGY_RATIO;
 		// kJoules = kJoules / exponential(xdelta);
 
-		if (kJoules < 200D) {
+		if (kJoules < 250) {
+			// 250 kJ is the lowest possible energy level
+			kJoules = 250;
+		}
+		else if (kJoules < 500) {
+			kJoules -= xdelta * .5;
+		} else if (kJoules < 1000) {
+			kJoules -= xdelta * .55;
+		} else if (kJoules < 3000) {
+			kJoules -= xdelta * .6;
+		} else if (kJoules < 5000) {
+			kJoules -= xdelta * .65;
+		} else if (kJoules < 7000) {
+			kJoules -= xdelta * .7;
+		} else if (kJoules < 9000) {
 			kJoules -= xdelta * .75;
-		} else if (kJoules < 400D) {
+		} else if (kJoules < 11000) {
 			kJoules -= xdelta * .8;
-		} else if (kJoules < 600D) {
+		} else if (kJoules < 13000) {
 			kJoules -= xdelta * .85;
-		} else if (kJoules < 800D) {
-			kJoules -= xdelta * .9;
-		} else if (kJoules < 1000D) {
-			kJoules -= xdelta * .95;
+		} else if (kJoules < 15000) {
+			kJoules -= xdelta * .9;			
+		} else if (kJoules < 17000) {
+			kJoules -= xdelta * .95;	
 		} else
 			kJoules -= xdelta;
 
-		if (kJoules < 100D) {
-			// 100 kJ is the lowest possible energy level
-			kJoules = 100D;
-		}
 		person.fireUnitUpdate(UnitEventType.HUNGER_EVENT);
 	}
 

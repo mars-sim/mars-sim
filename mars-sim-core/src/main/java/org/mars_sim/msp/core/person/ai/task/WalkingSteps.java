@@ -648,13 +648,15 @@ implements Serializable {
             canWalkAllSteps = false;
             if (person != null) {
             	logger.log(person, Level.WARNING, 10_000,
-            			"No walkable airlock from building interior to outside in "
-            		+ person.getBuildingLocation().getNickName());
+            		"No walkable airlock from "
+            		+ person.getBuildingLocation().getNickName() 
+            		+ " to outside.");
             }
-            else if (robot != null) {
+            else {
             	logger.log(robot, Level.WARNING, 10_000,
-            			"No walkable airlock from building interior to outside in "
-                		+ robot.getBuildingLocation().getNickName());
+            		"No walkable airlock from "
+                    + robot.getBuildingLocation().getNickName() 
+                    + " to outside.") ;
             }
            return;
         }
