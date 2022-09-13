@@ -62,11 +62,11 @@ public class PhysicalCondition implements Serializable {
 	/** The maximum number of sols in hunger [millisols]. */
 	public static final int MAX_HUNGER = 40_000;
 	/** Reset to hunger [millisols] immediately upon eating. */
-	public static final int HUNGER_CEILING_UPON_EATING = 1000;
+	public static final int HUNGER_CEILING_UPON_EATING = 750;
 	/** The maximum number of sols in thirst [millisols]. */
 	public static final int MAX_THIRST = 7_000;
 	/** The maximum number of sols in thirst [millisols]. */
-	public static final int THIRST_CEILING_UPON_DRINKING = 500;
+	public static final int THIRST_CEILING_UPON_DRINKING = 250;
 	/** The amount of thirst threshold [millisols]. */
 	public static final int THIRST_THRESHOLD = 150;
 	/** The amount of thirst threshold [millisols]. */
@@ -2164,7 +2164,7 @@ public class PhysicalCondition implements Serializable {
 	public boolean eatenTooMuch() {
 		double foodEaten = foodConsumption[0].getTodayDataValue();
 		double mealEaten = foodConsumption[1].getTodayDataValue();
-		if (foodEaten + mealEaten >= FOOD_CONSUMPTION)
+		if (foodEaten + mealEaten >= FOOD_CONSUMPTION * 1.25)
 			return true;
 
 		return false;
@@ -2177,7 +2177,7 @@ public class PhysicalCondition implements Serializable {
 	 */
 	public boolean drinkEnoughWater() {
 		double water = foodConsumption[3].getTodayDataValue();
-		if (water >= H2O_CONSUMPTION)
+		if (water >= H2O_CONSUMPTION * 1.25)
 			return true;
 
 		return false;
