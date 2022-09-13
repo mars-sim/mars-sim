@@ -1657,17 +1657,23 @@ public class Settlement extends Structure implements Temporal,
 		}
 		Iterator<Integer> i = bldgs.iterator();
 		while (i.hasNext()) {
-			Building building = unitManager.getBuildingByID(i.next());
-			boolean chamberFull = building.getEVA().getAirlock().areAll4ChambersFull();
-			boolean reservationFull = building.getEVA().getAirlock().isReservationFull();
+			Building nextBuilding = unitManager.getBuildingByID(i.next());
+			Airlock airlock = nextBuilding.getEVA().getAirlock();
+			boolean chamberFull = nextBuilding.getEVA().getAirlock().areAll4ChambersFull();
+//			boolean reservationFull = building.getEVA().getAirlock().isReservationFull();
 
-			if (!ASTRONOMY_OBSERVATORY.equalsIgnoreCase(building.getBuildingType())) {
-				if (!chamberFull || !reservationFull) {
-					double distance = building.getPosition().getDistanceTo(person.getPosition());
-					if (distance < leastDistance) {
-						result = building.getEVA().getAirlock();
+			// Note: ingress is not being used here
+			
+			if (!ASTRONOMY_OBSERVATORY.equalsIgnoreCase(nextBuilding.getBuildingType())) {
+				if (result == null) {
+					result = airlock;
+					continue;
+				}
+				double distance = nextBuilding.getPosition().getDistanceTo(person.getPosition());
+				if (distance < leastDistance
+					&& !chamberFull) {
+						result = airlock;
 						leastDistance = distance;
-					}
 				}
 			}
 		}
@@ -1677,6 +1683,7 @@ public class Settlement extends Structure implements Temporal,
 
 	/**
 	 * Are any airlocks available for ingree or egress ?
+	 * Used by DigLocalMeta
 	 * 
 	 * @param person
 	 * @param ingress
@@ -1706,6 +1713,14 @@ public class Settlement extends Structure implements Temporal,
 	}
 		
 	
+	/**
+	 * is an airlock available ? 
+	 * Note: currently not being used.
+	 * 
+	 * @param person
+	 * @param ingress
+	 * @return
+	 */
 	public boolean isAirlockAvailable(Person person, boolean ingress) {
 		Building currentBldg = person.getBuildingLocation();
 	
@@ -1781,20 +1796,25 @@ public class Settlement extends Structure implements Temporal,
 		Iterator<Integer> i = bldgs.iterator();
 		while (i.hasNext()) {
 			Building building = unitManager.getBuildingByID(i.next());
-			boolean chamberFull = building.getEVA().getAirlock().areAll4ChambersFull();
-			boolean reservationFull = building.getEVA().getAirlock().isReservationFull();
+			Airlock airlock = building.getEVA().getAirlock();
+			boolean chamberFull = airlock.areAll4ChambersFull();
+//			boolean reservationFull = building.getEVA().getAirlock().isReservationFull();
 
 			// Select airlock that fulfill either conditions:
 			// 1. Chambers are NOT full
 			// 2. Chambers are full but the reservation is NOT full
-			if ((!chamberFull || !reservationFull)
-				&& buildingConnectorManager.hasValidPath(currentBuilding, building)) {
-
+//			if ((!chamberFull || !reservationFull)
+					
+			if (buildingConnectorManager.hasValidPath(currentBuilding, building)) {
+				if (result == null) {
+					result = airlock;
+					continue;
+				}
 				double distance = building.getPosition().getDistanceTo(pos);
-				if (distance < leastDistance) {
-
-					result = building.getEVA().getAirlock();
-					leastDistance = distance;
+				if (distance < leastDistance
+					&& !chamberFull) {
+						result = airlock;
+						leastDistance = distance;
 				}
 			}
 		}
@@ -1873,6 +1893,8 @@ public class Settlement extends Structure implements Temporal,
 	 * Gets the closest available airlock at the settlement to the given location.
 	 * The airlock must have a valid walkable interior path from the given
 	 * building's current location.
+	 * 
+	 * @Note: Currently, not being in use
 	 *
 	 * @param building  the building in the walkable interior path.
 	 * @param location  Starting position.
@@ -1888,8 +1910,7 @@ public class Settlement extends Structure implements Temporal,
 		Iterator<Building> i = buildingManager.getBuildings(FunctionType.EVA).iterator();
 		while (i.hasNext()) {
 			Building nextBuilding = i.next();
-			Airlock airlock = nextBuilding.getEVA().getAirlock();
-			
+			Airlock airlock = nextBuilding.getEVA().getAirlock();		
 			boolean chamberFull = airlock.areAll4ChambersFull();
 			
 //			boolean reservationFull = airlock.isReservationFull();
@@ -1959,13 +1980,13 @@ public class Settlement extends Structure implements Temporal,
 			if (buildingConnectorManager.hasValidPath(building, nextBuilding)) {
 				if (result == null) {
 					result = airlock;
+					continue;
 				}
 				double distance = nextBuilding.getPosition().getDistanceTo(location);
-				if (distance < leastDistance) {
-					if (!chamberFull) {
+				if (distance < leastDistance
+					&& !chamberFull) {
 						result = airlock;
 						leastDistance = distance;
-					}
 				}
 			}
 		}
