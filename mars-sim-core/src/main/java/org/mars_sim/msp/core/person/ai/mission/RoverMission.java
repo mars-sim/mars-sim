@@ -33,6 +33,7 @@ import org.mars_sim.msp.core.person.ai.task.OperateVehicle;
 import org.mars_sim.msp.core.person.ai.task.RequestMedicalTreatment;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.Walk;
+import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.robot.Robot;
@@ -362,11 +363,13 @@ public abstract class RoverMission extends VehicleMission {
 
 					Walk walk = Walk.createWalkingTask(person, adjustedLoc, 0, v);
 					if (walk != null) {
-//						boolean canDo = assignTask(person, walk);
-//						if (!canDo) {
-//							logger.warning(person, "Unable to start walk to " + v + ".");
-//						}
-						person.getMind().getTaskManager().getTask().addSubTask(walk);
+						boolean canDo = assignTask(person, walk);
+						if (!canDo) {
+							logger.warning(person, "Unable to start walk to " + v + ".");
+						}
+//						Task task = person.getMind().getTaskManager().getTask();
+//						if (task != null)
+//							task.addSubTask(walk);
 
 						if (!isDone() && isRoverInAGarage
 
@@ -392,11 +395,11 @@ public abstract class RoverMission extends VehicleMission {
 				Robot robot = (Robot) member;
 				Walk walkingTask = Walk.createWalkingTask(robot, adjustedLoc, v);
 				if (walkingTask != null) {
-//					boolean canDo = assignTask(robot, walkingTask);
-//					if (!canDo) {
-//						logger.warning(robot, "Unable to walk to " + v + ".");
-//					}
-					robot.getBotMind().getBotTaskManager().getTask().addSubTask(walkingTask);
+					boolean canDo = assignTask(robot, walkingTask);
+					if (!canDo) {
+						logger.warning(robot, "Unable to walk to " + v + ".");
+					}
+//					robot.getBotMind().getBotTaskManager().getTask().addSubTask(walkingTask);
 				}
 				else {
 					logger.severe(member, Msg.getString("RoverMission.log.unableToEnter", //$NON-NLS-1$
@@ -701,8 +704,8 @@ public abstract class RoverMission extends VehicleMission {
 				Walk walk = Walk.createWalkingTask(p, adjustedLoc, 0, destinationBuilding);
 				if (walk != null) {
 					// walk back home
-//					assignTask(p, walk);
-					p.getMind().getTaskManager().getTask().addSubTask(walk);
+					assignTask(p, walk);
+//					p.getMind().getTaskManager().getTask().addSubTask(walk);
 				}
 
 				else if (!hasStrength) {
