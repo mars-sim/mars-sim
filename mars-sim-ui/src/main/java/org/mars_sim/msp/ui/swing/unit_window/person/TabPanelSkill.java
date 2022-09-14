@@ -19,11 +19,10 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.utils.Worker;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
@@ -34,7 +33,7 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 import com.alee.laf.scroll.WebScrollPane;
 
 /**
- * The SkillTabPanel is a tab panel for the skills of a person.
+ * The SkillTabPanel is a tab panel for the skills of a person or robot.
  */
 @SuppressWarnings("serial")
 public class TabPanelSkill
@@ -45,41 +44,23 @@ extends TabPanel {
 	private JTable skillTable ;
 	private SkillTableModel skillTableModel;
 
-	
 	/**
 	 * Constructor 1.
-	 * @param person the person.
+	 * 
+	 * @param unit the unit.
 	 * @param desktop the main desktop.
 	 */
-	public TabPanelSkill(Person person, MainDesktopPane desktop) {
+	public TabPanelSkill(Unit unit, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
-			null,
+			Msg.getString("TabPanelSkill.title"), //$NON-NLS-1$
 			ImageLoader.getNewIcon(SKILL_ICON),
 			Msg.getString("TabPanelSkill.title"), //$NON-NLS-1$
-			person, desktop
+			unit, desktop
 		);
 
 		// Create skill table model
-		skillTableModel = new SkillTableModel(person);
-	}
-
-	/**
-	 * Constructor 1.
-	 * @param person the person.
-	 * @param desktop the main desktop.
-	 */
-	public TabPanelSkill(Robot robot, MainDesktopPane desktop) {
-		// Use the TabPanel constructor
-		super(
-			Msg.getString("TabPanelSkill.title"), //$NON-NLS-1$
-			null,
-			Msg.getString("TabPanelSkill.tooltip"), //$NON-NLS-1$
-			robot, desktop
-		);
-
-		// Create skill table model
-		skillTableModel = new SkillTableModel(robot);
+		skillTableModel = new SkillTableModel((Worker)unit);
 	}
 
 	@Override
@@ -92,7 +73,7 @@ extends TabPanel {
 		// Create skill table
 		skillTable = new ZebraJTable(skillTableModel);
 		skillTable.setPreferredScrollableViewportSize(new Dimension(250, 100));
-		skillTable.getColumnModel().getColumn(0).setPreferredWidth(150);
+		skillTable.getColumnModel().getColumn(0).setPreferredWidth(110);
 		skillTable.getColumnModel().getColumn(1).setPreferredWidth(50);
 		skillTable.getColumnModel().getColumn(2).setPreferredWidth(60);
 		skillTable.getColumnModel().getColumn(3).setPreferredWidth(100);
@@ -103,6 +84,7 @@ extends TabPanel {
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
 		renderer.setHorizontalAlignment(SwingConstants.RIGHT);
 		skillTable.getColumnModel().getColumn(0).setCellRenderer(renderer);
+		renderer.setHorizontalAlignment(SwingConstants.CENTER);
 		skillTable.getColumnModel().getColumn(1).setCellRenderer(renderer);
 		skillTable.getColumnModel().getColumn(2).setCellRenderer(renderer);
 		skillTable.getColumnModel().getColumn(3).setCellRenderer(renderer);
@@ -187,10 +169,10 @@ extends TabPanel {
 
 		public void update() {
 			SkillType[] keys = skillManager.getKeys();
-			List<String> newSkillNames = new ArrayList<String>();
-			Map<String, Integer> newSkills = new HashMap<String, Integer>();
-			Map<String, Integer> newExps = new HashMap<String, Integer>();
-			Map<String, Integer> newTimes = new HashMap<String, Integer>();
+			List<String> newSkillNames = new ArrayList<>();
+			Map<String, Integer> newSkills = new HashMap<>();
+			Map<String, Integer> newExps = new HashMap<>();
+			Map<String, Integer> newTimes = new HashMap<>();
 			for (SkillType skill : keys) {
 				int level = skillManager.getSkillLevel(skill);
 				int exp = skillManager.getSkillDeltaExp(skill);
