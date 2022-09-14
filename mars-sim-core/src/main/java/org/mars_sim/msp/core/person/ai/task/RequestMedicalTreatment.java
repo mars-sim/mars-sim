@@ -42,7 +42,7 @@ public class RequestMedicalTreatment extends Task implements Serializable {
     /** default logger. */
     // For Future Use: private static final Logger logger = Logger.getLogger(RequestMedicalTreatment.class.getName())
 
-	/** SImple Task name */
+	/** Simple Task name */
 	public static final String SIMPLE_NAME = RequestMedicalTreatment.class.getSimpleName();
 	
     /** Task name */

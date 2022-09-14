@@ -29,11 +29,13 @@ import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.ai.task.DriveGroundVehicle;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
+import org.mars_sim.msp.core.person.ai.task.LoadVehicleEVA;
+import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.OperateVehicle;
 import org.mars_sim.msp.core.person.ai.task.RequestMedicalTreatment;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
+import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.Walk;
-import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.robot.Robot;
@@ -342,10 +344,10 @@ public abstract class RoverMission extends VehicleMission {
 				if (m != null && m != this)
 					hasAnotherMission = true;
 				if (!hasAnotherMission) {
-					if (isRoverInAGarage && !person.getMind().getTaskManager().hasSameTask("LoadVehicleGarage")) {
-						person.getMind().getTaskManager().addAPendingTask("LoadVehicleGarage", false);
-					} else if (person.isNominallyFit() && !person.getMind().getTaskManager().hasSameTask("LoadVehicleEVA")) {
-						person.getMind().getTaskManager().addAPendingTask("LoadVehicleEVA", false);
+					if (isRoverInAGarage && !person.getMind().getTaskManager().hasSameTask(LoadVehicleGarage.SIMPLE_NAME)) {
+						person.getMind().getTaskManager().addAPendingTask(LoadVehicleGarage.SIMPLE_NAME, false);
+					} else if (person.isNominallyFit() && !person.getMind().getTaskManager().hasSameTask(LoadVehicleEVA.SIMPLE_NAME)) {
+						person.getMind().getTaskManager().addAPendingTask(LoadVehicleEVA.SIMPLE_NAME, false);
 					}
 				}
 		}
@@ -593,13 +595,13 @@ public abstract class RoverMission extends VehicleMission {
 		if (m != null && !m.equals(this))
 			return;
 
-		if (isInAGarage() && !person.getMind().getTaskManager().hasSameTask("UnloadVehicleGarage")) {
-			person.getMind().getTaskManager().addAPendingTask("UnloadVehicleGarage", false);
+		if (isInAGarage() && !person.getMind().getTaskManager().hasSameTask(UnloadVehicleGarage.SIMPLE_NAME)) {
+			person.getMind().getTaskManager().addAPendingTask(UnloadVehicleGarage.SIMPLE_NAME, false);
 		}
 
 		else if (person.isNominallyFit() && !EVAOperation.isGettingDark(person)
-				&& !person.getMind().getTaskManager().hasSameTask("UnloadVehicleEVA")) {
-			person.getMind().getTaskManager().addAPendingTask("UnloadVehicleEVA", false);
+				&& !person.getMind().getTaskManager().hasSameTask(UnloadVehicleEVA.SIMPLE_NAME)) {
+			person.getMind().getTaskManager().addAPendingTask(UnloadVehicleEVA.SIMPLE_NAME, false);
 		}
 	}
 
@@ -704,7 +706,10 @@ public abstract class RoverMission extends VehicleMission {
 				Walk walk = Walk.createWalkingTask(p, adjustedLoc, 0, destinationBuilding);
 				if (walk != null) {
 					// walk back home
-					assignTask(p, walk);
+					boolean canDo = assignTask(p, walk);
+					if (!canDo) {
+						logger.warning(p, "Unable to walk to " + destinationBuilding + ".");
+					}
 //					p.getMind().getTaskManager().getTask().addSubTask(walk);
 				}
 

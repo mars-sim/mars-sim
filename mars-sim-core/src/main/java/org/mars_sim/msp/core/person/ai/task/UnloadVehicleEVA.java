@@ -57,6 +57,9 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.unloadVehicleEVA"); //$NON-NLS-1$
 
+	/** Simple Task name */
+	public static final String SIMPLE_NAME = UnloadVehicleEVA.class.getSimpleName();
+	
 	/** Task phases. */
 	private static final TaskPhase UNLOADING = new TaskPhase(Msg.getString("Task.phase.unloading")); //$NON-NLS-1$
 

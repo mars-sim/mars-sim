@@ -59,6 +59,9 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.unloadVehicleGarage"); //$NON-NLS-1$
 
+	/** Simple Task name */
+	public static final String SIMPLE_NAME = UnloadVehicleGarage.class.getSimpleName();
+	
 	/** Task phases. */
 	private static final TaskPhase UNLOADING = new TaskPhase(Msg.getString("Task.phase.unloading")); //$NON-NLS-1$
 

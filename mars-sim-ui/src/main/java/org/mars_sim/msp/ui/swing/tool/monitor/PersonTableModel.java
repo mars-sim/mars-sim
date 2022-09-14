@@ -37,7 +37,6 @@ import org.mars_sim.msp.core.person.ai.mission.MissionEventType;
 import org.mars_sim.msp.core.person.ai.mission.MissionListener;
 import org.mars_sim.msp.core.person.ai.role.Role;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
-import org.mars_sim.msp.core.person.ai.task.utils.TaskManager;
 import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Crewable;
