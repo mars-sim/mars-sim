@@ -9,11 +9,9 @@ package org.mars_sim.msp.core.person.ai.task.utils;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.logging.SimLogger;
-import org.mars_sim.msp.core.person.CircadianClock;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.ai.Mind;

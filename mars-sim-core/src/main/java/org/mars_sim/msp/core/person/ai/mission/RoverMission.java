@@ -359,16 +359,14 @@ public abstract class RoverMission extends VehicleMission {
 				Mission m = robot.getMission();
 				if (m != null && m != this)
 					hasAnotherMission = true;
-				if (!hasAnotherMission) {
-					if (isRoverInAGarage && !robot.getTaskManager().hasSameTask(LoadVehicleGarage.SIMPLE_NAME)) {
+				if (!hasAnotherMission
+					&& isRoverInAGarage && !robot.getTaskManager().hasSameTask(LoadVehicleGarage.SIMPLE_NAME)) {
 						robot.getTaskManager().addAPendingTask(LoadVehicleGarage.SIMPLE_NAME, false);
-					}
 				}
 			}
 		}
 
 		else {
-
 			// Gets a random location within rover.
 			LocalPosition adjustedLoc = LocalAreaUtil.getRandomLocalRelativePosition(v);
 
@@ -389,14 +387,13 @@ public abstract class RoverMission extends VehicleMission {
 //							task.addSubTask(walk);
 
 						if (!isDone() && isRoverInAGarage
-
 							&& settlement.findNumContainersOfType(EquipmentType.EVA_SUIT) > 1
-									&& !hasBaselineNumEVASuit(v)) {
+							&& !hasBaselineNumEVASuit(v)) {
 
-								EVASuit suit = InventoryUtil.getGoodEVASuitNResource(settlement, person);
-								if (suit != null && !suit.transfer(v)) {
-									logger.warning(person, "Unable to transfer a spare " + suit.getName() + " from "
-											+ settlement + " to " + v + ".");
+							EVASuit suit = InventoryUtil.getGoodEVASuitNResource(settlement, person);
+							if (suit != null && !suit.transfer(v)) {
+								logger.warning(person, "Unable to transfer a spare " + suit.getName() + " from "
+									+ settlement + " to " + v + ".");
 							}
 						}
 					}

@@ -139,9 +139,9 @@ public abstract class TaskManager implements Serializable, Temporal {
 	/**The worker **/
 	protected transient Unit worker;
 	/** The current task the worker is doing. */
-	protected transient Task currentTask;
+	protected Task currentTask;
 	/** The last task the person was doing. */
-	private transient Task lastTask;
+	private Task lastTask;
 	/** The cache for meta tasks and probability. */
 	protected transient Map<MetaTask, Double> taskProbCache;
 	
