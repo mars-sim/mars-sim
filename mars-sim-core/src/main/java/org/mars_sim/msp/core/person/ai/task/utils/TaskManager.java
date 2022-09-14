@@ -13,6 +13,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.mars_sim.msp.core.SimulationFiles;
 import org.mars_sim.msp.core.Unit;
@@ -43,7 +44,7 @@ public abstract class TaskManager implements Serializable, Temporal {
 	
 	/*
 	 * This class represents a record of a given activity (task or mission)
-	 * undertaken by a person
+	 * undertaken by a person or a robot
 	 */
 	public final class OneActivity implements Serializable {
 
@@ -155,15 +156,16 @@ public abstract class TaskManager implements Serializable, Temporal {
 
 	/** The history of tasks. */
 	private SolListDataLogger<OneActivity> allActivities;
-	
+	/** The last activity. */
 	private OneActivity lastActivity = null;
-
+	/** The list of pending of tasks. */
+	private List<String> pendingTasks;
 	
 
 	protected TaskManager(Unit worker) {
 		this.worker = worker;
-		
-		this.allActivities = new SolListDataLogger<>(NUM_SOLS);
+		allActivities = new SolListDataLogger<>(NUM_SOLS);
+		pendingTasks = new CopyOnWriteArrayList<>();
 	}
 
 	/**
@@ -714,6 +716,98 @@ public abstract class TaskManager implements Serializable, Temporal {
 		}
 	
 		return result;
+	}
+	
+	/**
+	 * Gets all pending tasks
+	 *
+	 * @return
+	 */
+	public List<String> getPendingTasks() {
+		return pendingTasks;
+	}
+	
+	/**
+	 * Gets all pending tasks
+	 *
+	 * @return
+	 */
+	public void addPendingTasks(String task) {
+		pendingTasks.add(task);
+	}
+	
+	/**
+	 * Adds a pending task if it is not in the pendingTask list yet.
+	 *
+	 * @param task
+	 * @param allowDuplicate
+	 * @return
+	 */
+	public boolean addAPendingTask(String task, boolean allowDuplicate) {
+		if (allowDuplicate) {
+			if (!getPendingTasks().contains(task)) {
+				logger.info(worker, 20_000L, "Given a new task order of '" + task + "'.");
+			}
+			else {
+				logger.info(worker, 20_000L, "Given a duplicated task order of '" + task + "'.");
+			}
+			addPendingTasks(task);
+			return true;
+		}
+
+		if (!getPendingTasks().contains(task)) {
+			addPendingTasks(task);
+			logger.info(worker, 20_000L, "Given a new task order of '" + task + "'.");
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Deletes a pending task
+	 *
+	 * @param task
+	 */
+	public void deleteAPendingTask(String task) {
+		getPendingTasks().remove(task);
+		logger.info(worker, "Removed the task order of '" + task + "'.");
+	}
+
+	/**
+	 * Gets the first pending meta task in the queue
+	 *
+	 * @return
+	 */
+	protected MetaTask getAPendingMetaTask() {
+		if (!getPendingTasks().isEmpty()) {
+			String firstTask = getPendingTasks().get(0);
+			getPendingTasks().remove(firstTask);
+			return convertTask2MetaTask(firstTask);
+		}
+		return null;
+	}
+
+	/**
+	 * Converts a task to its corresponding meta task
+	 *
+	 * @param a task
+	 */
+	private static MetaTask convertTask2MetaTask(String task) {
+		return MetaTaskUtil.getMetaTask(task.replaceAll(" ","") + "Meta");
+	}
+	
+	/**
+	 * Checks if the worker is currently performing this task.
+	 * 
+	 * @param task
+	 * @return
+	 */
+	public boolean hasSameTask(String task) {
+		if (getTaskName().equalsIgnoreCase(task))
+			return true;
+		
+		return false;
 	}
 	
 	/**

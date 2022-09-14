@@ -45,9 +45,8 @@ public class PersonTaskManager extends TaskManager implements Serializable {
 	private transient Person person;
 
 	/** The CircadianClock reference */
-	private transient CircadianClock circadian = null;
+//	private transient CircadianClock circadian = null;
 
-	private List<String> pendingTasks;
 
 	/**
 	 * Constructor.
@@ -61,9 +60,7 @@ public class PersonTaskManager extends TaskManager implements Serializable {
 		this.mind = mind;
 
 		this.person = mind.getPerson();
-		circadian = person.getCircadianClock();
-
-		pendingTasks = new CopyOnWriteArrayList<>();
+//		circadian = person.getCircadianClock();
 	}
 
 	/**
@@ -187,7 +184,7 @@ public class PersonTaskManager extends TaskManager implements Serializable {
 	@Override
 	public void startNewTask() {
 		// Check if there are any assigned tasks that are pending
-		if (!pendingTasks.isEmpty()) {
+		if (!getPendingTasks().isEmpty()) {
 			MetaTask metaTask = getAPendingMetaTask();
 			if (metaTask != null) {
 				Task newTask = metaTask.constructInstance(person);
@@ -201,91 +198,9 @@ public class PersonTaskManager extends TaskManager implements Serializable {
 		super.startNewTask();
 	}
 
-	/**
-	 * Gets all pending tasks
-	 *
-	 * @return
-	 */
-	public List<String> getPendingTasks() {
-		return pendingTasks;
-	}
-
-	/**
-	 * Adds a pending task if it is not in the pendingTask list yet.
-	 *
-	 * @param task
-	 * @return
-	 */
-	public boolean addAPendingTask(String task, boolean allowDuplicate) {
-		if (allowDuplicate) {
-			if (!pendingTasks.contains(task)) {
-				logger.info(person, 20_000L, "Given a new task order of '" + task + "'.");
-			}
-			else {
-				logger.info(person, 20_000L, "Given a duplicated task order of '" + task + "'.");
-			}
-			pendingTasks.add(task);
-			return true;
-		}
-		
-		if (!pendingTasks.contains(task)) {
-			pendingTasks.add(task);
-			logger.info(person, 20_000L, "Given a new task order of '" + task + "'.");
-			return true;
-		}
-		
-		return false;
-	}
-
-	/**
-	 * Deletes a pending task
-	 *
-	 * @param task
-	 */
-	public void deleteAPendingTask(String task) {
-		pendingTasks.remove(task);
-		logger.info(worker, "Removed the task order of '" + task + "'.");
-	}
-
-	/**
-	 * Checks if the person is currently performing this task.
-	 * 
-	 * @param task
-	 * @return
-	 */
-	public boolean hasSameTask(String task) {
-		if (getTaskName().equals(task))
-			return true;
-		
-		return false;
-	}
-	
-	/**
-	 * Gets the first pending meta task in the queue
-	 *
-	 * @return
-	 */
-	private MetaTask getAPendingMetaTask() {
-		if (!pendingTasks.isEmpty()) {
-			String firstTask = pendingTasks.get(0);
-			pendingTasks.remove(firstTask);
-			return convertTask2MetaTask(firstTask);
-		}
-		return null;
-	}
-
-	/**
-	 * Converts a task to its corresponding meta task
-	 *
-	 * @param a task
-	 */
-	private static MetaTask convertTask2MetaTask(String task) {
-		return MetaTaskUtil.getMetaTask(task.replaceAll(" ","") + "Meta");
-	}
-
 	public void reinit() {
 		person = mind.getPerson();
-		circadian = person.getCircadianClock();
+//		circadian = person.getCircadianClock();
 		worker = person;
 		super.reinit();
 	}
@@ -297,7 +212,7 @@ public class PersonTaskManager extends TaskManager implements Serializable {
 
 		mind = null;
 		person = null;
-		circadian = null;
+//		circadian = null;
 		if (taskProbCache != null) {
 			taskProbCache.clear();
 			taskProbCache = null;
