@@ -335,8 +335,9 @@ public abstract class RoverMission extends VehicleMission {
 			&& member.isInSettlement()
 			// Note: randomly select this member to load resources for the rover
 			// This allows person to do other important things such as eating
-			&& RandomUtil.lessThanRandPercent(75)
-			&& member instanceof Person) {
+			&& RandomUtil.lessThanRandPercent(75)) {
+			
+			if (member instanceof Person) {
 				Person person = (Person) member;
 
 				boolean hasAnotherMission = false;
@@ -350,6 +351,20 @@ public abstract class RoverMission extends VehicleMission {
 						person.getMind().getTaskManager().addAPendingTask(LoadVehicleEVA.SIMPLE_NAME, false);
 					}
 				}
+			}
+			else {
+				Robot robot = (Robot) member;
+
+				boolean hasAnotherMission = false;
+				Mission m = robot.getMission();
+				if (m != null && m != this)
+					hasAnotherMission = true;
+				if (!hasAnotherMission) {
+					if (isRoverInAGarage && !robot.getTaskManager().hasSameTask(LoadVehicleGarage.SIMPLE_NAME)) {
+						robot.getTaskManager().addAPendingTask(LoadVehicleGarage.SIMPLE_NAME, false);
+					}
+				}
+			}
 		}
 
 		else {
