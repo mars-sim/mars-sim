@@ -29,9 +29,12 @@ import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.ai.task.DriveGroundVehicle;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
+import org.mars_sim.msp.core.person.ai.task.LoadVehicleEVA;
+import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.OperateVehicle;
 import org.mars_sim.msp.core.person.ai.task.RequestMedicalTreatment;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
+import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.Walk;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.person.ai.task.utils.Worker;
@@ -308,8 +311,9 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			&& member.isInSettlement()
 			// Note: randomly select this member to load resources for the rover
 			// This allows person to do other important things such as eating
-			&& RandomUtil.lessThanRandPercent(75)
-			&& member instanceof Person) {
+			&& RandomUtil.lessThanRandPercent(75)) {
+			
+			if (member instanceof Person) {
 				Person person = (Person) member;
 
 				boolean hasAnotherMission = false;
@@ -317,16 +321,28 @@ public abstract class RoverMission extends AbstractVehicleMission {
 				if (m != null && m != this)
 					hasAnotherMission = true;
 				if (!hasAnotherMission) {
-					if (isRoverInAGarage && !person.getMind().getTaskManager().hasSameTask("LoadVehicleGarage")) {
-						person.getMind().getTaskManager().addAPendingTask("LoadVehicleGarage", false);
-					} else if (person.isNominallyFit() && !person.getMind().getTaskManager().hasSameTask("LoadVehicleEVA")) {
-						person.getMind().getTaskManager().addAPendingTask("LoadVehicleEVA", false);
+					if (isRoverInAGarage && !person.getMind().getTaskManager().hasSameTask(LoadVehicleGarage.SIMPLE_NAME)) {
+						person.getMind().getTaskManager().addAPendingTask(LoadVehicleGarage.SIMPLE_NAME, false);
+					} else if (person.isNominallyFit() && !person.getMind().getTaskManager().hasSameTask(LoadVehicleEVA.SIMPLE_NAME)) {
+						person.getMind().getTaskManager().addAPendingTask(LoadVehicleEVA.SIMPLE_NAME, false);
 					}
 				}
+			}
+			else {
+				Robot robot = (Robot) member;
+
+				boolean hasAnotherMission = false;
+				Mission m = robot.getMission();
+				if (m != null && m != this)
+					hasAnotherMission = true;
+				if (!hasAnotherMission
+					&& isRoverInAGarage && !robot.getTaskManager().hasSameTask(LoadVehicleGarage.SIMPLE_NAME)) {
+						robot.getTaskManager().addAPendingTask(LoadVehicleGarage.SIMPLE_NAME, false);
+				}
+			}
 		}
 
 		else {
-
 			// Gets a random location within rover.
 			LocalPosition adjustedLoc = LocalAreaUtil.getRandomLocalRelativePosition(v);
 
@@ -338,21 +354,22 @@ public abstract class RoverMission extends AbstractVehicleMission {
 
 					Walk walk = Walk.createWalkingTask(person, adjustedLoc, 0, v);
 					if (walk != null) {
-//						boolean canDo = assignTask(person, walk);
-//						if (!canDo) {
-//							logger.warning(person, "Unable to start walk to " + v + ".");
-//						}
-						person.getMind().getTaskManager().getTask().addSubTask(walk);
+						boolean canDo = assignTask(person, walk);
+						if (!canDo) {
+							logger.warning(person, "Unable to start walk to " + v + ".");
+						}
+//						Task task = person.getMind().getTaskManager().getTask();
+//						if (task != null)
+//							task.addSubTask(walk);
 
 						if (!isDone() && isRoverInAGarage
-
 							&& settlement.findNumContainersOfType(EquipmentType.EVA_SUIT) > 1
-									&& !hasBaselineNumEVASuit(v)) {
+							&& !hasBaselineNumEVASuit(v)) {
 
-								EVASuit suit = InventoryUtil.getGoodEVASuitNResource(settlement, person);
-								if (suit != null && !suit.transfer(v)) {
-									logger.warning(person, "Unable to transfer a spare " + suit.getName() + " from "
-											+ settlement + " to " + v + ".");
+							EVASuit suit = InventoryUtil.getGoodEVASuitNResource(settlement, person);
+							if (suit != null && !suit.transfer(v)) {
+								logger.warning(person, "Unable to transfer a spare " + suit.getName() + " from "
+									+ settlement + " to " + v + ".");
 							}
 						}
 					}
@@ -368,11 +385,11 @@ public abstract class RoverMission extends AbstractVehicleMission {
 				Robot robot = (Robot) member;
 				Walk walkingTask = Walk.createWalkingTask(robot, adjustedLoc, v);
 				if (walkingTask != null) {
-//					boolean canDo = assignTask(robot, walkingTask);
-//					if (!canDo) {
-//						logger.warning(robot, "Unable to walk to " + v + ".");
-//					}
-					robot.getBotMind().getBotTaskManager().getTask().addSubTask(walkingTask);
+					boolean canDo = assignTask(robot, walkingTask);
+					if (!canDo) {
+						logger.warning(robot, "Unable to walk to " + v + ".");
+					}
+//					robot.getBotMind().getBotTaskManager().getTask().addSubTask(walkingTask);
 				}
 				else {
 					logger.severe(member, Msg.getString("RoverMission.log.unableToEnter", //$NON-NLS-1$
@@ -566,13 +583,13 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		if (m != null && !m.equals(this))
 			return;
 
-		if (isInAGarage() && !person.getMind().getTaskManager().hasSameTask("UnloadVehicleGarage")) {
-			person.getMind().getTaskManager().addAPendingTask("UnloadVehicleGarage", false);
+		if (isInAGarage() && !person.getMind().getTaskManager().hasSameTask(UnloadVehicleGarage.SIMPLE_NAME)) {
+			person.getMind().getTaskManager().addAPendingTask(UnloadVehicleGarage.SIMPLE_NAME, false);
 		}
 
 		else if (person.isNominallyFit() && !EVAOperation.isGettingDark(person)
-				&& !person.getMind().getTaskManager().hasSameTask("UnloadVehicleEVA")) {
-			person.getMind().getTaskManager().addAPendingTask("UnloadVehicleEVA", false);
+				&& !person.getMind().getTaskManager().hasSameTask(UnloadVehicleEVA.SIMPLE_NAME)) {
+			person.getMind().getTaskManager().addAPendingTask(UnloadVehicleEVA.SIMPLE_NAME, false);
 		}
 	}
 
@@ -677,8 +694,11 @@ public abstract class RoverMission extends AbstractVehicleMission {
 				Walk walk = Walk.createWalkingTask(p, adjustedLoc, 0, destinationBuilding);
 				if (walk != null) {
 					// walk back home
-//					assignTask(p, walk);
-					p.getMind().getTaskManager().getTask().addSubTask(walk);
+					boolean canDo = assignTask(p, walk);
+					if (!canDo) {
+						logger.warning(p, "Unable to walk to " + destinationBuilding + ".");
+					}
+//					p.getMind().getTaskManager().getTask().addSubTask(walk);
 				}
 
 				else if (!hasStrength) {

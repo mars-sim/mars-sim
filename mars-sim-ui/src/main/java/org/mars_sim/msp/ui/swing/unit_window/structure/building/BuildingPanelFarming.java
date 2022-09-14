@@ -253,9 +253,8 @@ implements MouseListener {
             }
         }; // end of WebTable
 
-        cropTable.setRowSelectionAllowed(true);
 		cropTable.setDefaultRenderer(Double.class, new NumberCellRenderer());
-		cropTable.setCellSelectionEnabled(false); // need it so that the tooltip can be displayed.
+
 		cropTable.getColumnModel().getColumn(0).setPreferredWidth(5);
 		cropTable.getColumnModel().getColumn(1).setPreferredWidth(40);
 		cropTable.getColumnModel().getColumn(2).setPreferredWidth(40);
@@ -266,6 +265,10 @@ implements MouseListener {
 		// whenever old crop is removed and new crop is added: cropTable.setAutoCreateRowSorter(true);
 		
 		TableStyle.setTableStyle(cropTable);
+		
+		cropTable.setCellSelectionEnabled(false); // need it so that the tooltip can be displayed.
+		cropTable.setRowSelectionAllowed(true);
+		
 		tableScrollPanel.setViewportView(cropTable);
 
 		WebPanel queuePanel = new WebPanel(new BorderLayout());
@@ -333,7 +336,7 @@ implements MouseListener {
 		WebPanel queueButtonLabelPanel = new WebPanel(new BorderLayout());
 	    WebLabel queueListLabel = new WebLabel("     Crop Queue     ");
 		queueListLabel.setUI(new VerticalLabelUI(false));
-	    queueListLabel.setFont( new Font( "Dialog", Font.PLAIN, 14) );
+	    queueListLabel.setFont( new Font("Dialog", Font.PLAIN, 14) );
 		queueListLabel.setBorder(new MarsPanelBorder());
 	    queueButtonLabelPanel.add(queueListLabel, BorderLayout.NORTH);
 		queueListPanel.add(queueButtonLabelPanel);
@@ -385,7 +388,8 @@ implements MouseListener {
         	time = ct.getGrowingTime() /1000;
         	PAR = ct.getDailyPAR();
         	health =  Math.round(crop.getHealthCondition()*10.0 * 100.0)/10.0;
-        	sols = Math.round(crop.getGrowingTimeCompleted()*10.0 /1_000.0)/10.0;
+        	sols = Math.round(crop.getGrowingTimeCompleted()/1_000.0 *10.0)/10.0;
+
 
         	if (col == 0) {
 	        	result.append("Health: ").append(health).append(" %");
@@ -432,7 +436,8 @@ implements MouseListener {
 	}
 
 	/**
-	 * Selects Crop
+	 * Selects Crop.
+	 * 
 	 * @param table
 	 */
 	public void selectCrop() {
@@ -462,6 +467,7 @@ implements MouseListener {
 
 	/**
 	 * Mouse clicked event occurs.
+	 * 
 	 * @param event the mouse event
 	 */
 	@Override
@@ -494,7 +500,7 @@ implements MouseListener {
 	}
 	
 	/**
-	 * Update this panel
+	 * Updates this panel.
 	 */
 	@Override
 	public void update() {

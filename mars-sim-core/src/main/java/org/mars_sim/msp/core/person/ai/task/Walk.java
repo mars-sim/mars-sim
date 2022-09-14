@@ -465,6 +465,7 @@ public class Walk extends Task implements Serializable {
 	 *         phase.
 	 */
 	private double walkingSettlementInteriorPhase(double time) {
+		
 		double remainingTime = time - minPulseTime;
 
 		if (person != null) {
@@ -551,7 +552,9 @@ public class Walk extends Task implements Serializable {
 	 *         phase.
 	 */
 	private double walkingRoverInteriorPhase(double time) {
+		
 		double remainingTime = time - minPulseTime;
+		
 		setDescription(Msg.getString("Task.description.walk")); //$NON-NLS-1$
 
 		if (person != null) {
@@ -650,6 +653,7 @@ public class Walk extends Task implements Serializable {
 	 *         phase.
 	 */
 	private double walkingExteriorPhase(double time) {
+		
 		double remainingTime = time - minPulseTime;
 		
 		setDescription(Msg.getString("Task.description.walk")); //$NON-NLS-1$
@@ -731,6 +735,7 @@ public class Walk extends Task implements Serializable {
 	 *         phase.
 	 */
 	private double egressingAirlockPhase(double time) {
+		
 		double remainingTime = time - minPulseTime;
 		
 		setDescription(Msg.getString("Task.description.walk.egressingAirlock")); //$NON-NLS-1$
@@ -787,8 +792,9 @@ public class Walk extends Task implements Serializable {
 	 *         phase.
 	 */
 	private double ingressingAirlockPhase(double time) {
-		double remainingTime = time - minPulseTime;
 		
+		double remainingTime = time - minPulseTime;
+
 		setDescription(Msg.getString("Task.description.walk.ingressingAirlock")); //$NON-NLS-1$
 
 		logger.log(person, Level.FINER, 4_000,

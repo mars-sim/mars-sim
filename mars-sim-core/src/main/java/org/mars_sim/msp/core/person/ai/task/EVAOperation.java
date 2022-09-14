@@ -113,7 +113,7 @@ public abstract class EVAOperation extends Task {
 		if (person.isInSettlement()) {
 			interiorObject = BuildingManager.getBuilding(person);
 			if (interiorObject == null) {
-				logger.warning(person, "Is supposed to be in a building but interiorObject is null.");
+				logger.warning(person, "Supposed to be inside a building but interiorObject is null.");
 				endTask();
 			}
 
@@ -130,7 +130,7 @@ public abstract class EVAOperation extends Task {
 		else if (person.isInVehicleInGarage()) {
 			interiorObject = person.getVehicle();
 			if (interiorObject == null) {
-				logger.warning(person, "Is supposed to be in a vehicle inside a garage but interiorObject is null.");
+				logger.warning(person, "Supposed to be in a vehicle inside a garage but interiorObject is null.");
 				endTask();
 			}
 
@@ -149,7 +149,7 @@ public abstract class EVAOperation extends Task {
 			
 			interiorObject = person.getVehicle();
 			if (interiorObject == null) {
-				logger.warning(person, "Is supposed to be in a vehicle but interiorObject is null.");
+				logger.warning(person, "Supposed to be in a vehicle but interiorObject is null.");
 			}
 			// Add task phases.
 			addPhase(WALK_TO_OUTSIDE_SITE);
@@ -286,7 +286,7 @@ public abstract class EVAOperation extends Task {
                 addSubTask(walkingTask);
             }
             else {
-				logger.severe(person, "Cannot walk to outside site.");
+				logger.severe(person, 30_000, "Cannot walk to outside site.");
                 endTask();
             }
         }
@@ -351,20 +351,19 @@ public abstract class EVAOperation extends Task {
 				// Get closest airlock building at settlement.
 				Settlement s = CollectionUtils.findSettlement(person.getCoordinates());
 				if (s != null) {
-					interiorObject = (Building)(s.getClosestAvailableAirlock(person, true)).getEntity();
-					if (interiorObject == null)
-						interiorObject = (LocalBoundedObject)(s.getClosestAvailableAirlock(person, true)).getEntity();
-					logger.log(person, Level.FINE, 30_000,
-							"Found " + ((Building)interiorObject).getNickName()
-							+ " as the closet building with an airlock to enter.");
+					interiorObject = (LocalBoundedObject)(s.getClosestAvailableAirlock(person, true)).getEntity();
+					if (interiorObject instanceof Building)
+						logger.log(person, Level.INFO, 30_000,
+							"Found " + ((Airlock)interiorObject).getEntityName()
+							+ " to enter.");
 				}
 				else {
 					// near a vehicle
 					Rover r = (Rover)person.getVehicle();
 					interiorObject = (LocalBoundedObject) (r.getAirlock()).getEntity();
 					logger.log(person, Level.INFO, 30_000,
-							"Near " + r.getName()
-							+ ". Had to walk back inside the vehicle.");
+							"Found " + ((Airlock)interiorObject).getEntityName()
+							+ " to enter.");
 				}
 			}
 

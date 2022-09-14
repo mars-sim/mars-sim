@@ -9,11 +9,9 @@ package org.mars_sim.msp.core.person.ai.task.utils;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.logging.SimLogger;
-import org.mars_sim.msp.core.person.CircadianClock;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.ai.Mind;
@@ -45,9 +43,8 @@ public class PersonTaskManager extends TaskManager implements Serializable {
 	private transient Person person;
 
 	/** The CircadianClock reference */
-	private transient CircadianClock circadian = null;
+//	private transient CircadianClock circadian = null;
 
-	private List<String> pendingTasks;
 
 	/**
 	 * Constructor.
@@ -61,9 +58,7 @@ public class PersonTaskManager extends TaskManager implements Serializable {
 		this.mind = mind;
 
 		this.person = mind.getPerson();
-		circadian = person.getCircadianClock();
-
-		pendingTasks = new CopyOnWriteArrayList<>();
+//		circadian = person.getCircadianClock();
 	}
 
 	/**
@@ -109,23 +104,14 @@ public class PersonTaskManager extends TaskManager implements Serializable {
 			double energyTime = time - remainingTime;
 
 			// Double energy expenditure if performing effort-driven task.
-			if (currentTask != null && currentTask.isEffortDriven()) {
-				// why java.lang.NullPointerException at TR = 2048 ?
-				energyTime *= 2D;
-			}
+			if (energyTime > 0D && currentTask != null && currentTask.isEffortDriven()) {
 
-			if (energyTime > 0D) {
 				if (person.isOutside()) {
 					// Take more energy to be in EVA doing work
-					reduceEnergy(energyTime * 1.1);
-
-//					if (circadian == null)
-//						circadian = person.getCircadianClock();
-//					// Regulate hormones
-//					circadian.exercise(time);
-					
+					// TODO: should also consider skill level and strength and body weight
+					reduceEnergy(energyTime * 1.5);
 				} else {
-					// Expend energy based on activity.
+					// Expend nominal energy based on activity.
 					reduceEnergy(energyTime);
 				}
 			}
@@ -172,7 +158,7 @@ public class PersonTaskManager extends TaskManager implements Serializable {
 					if (!mt.getName().toLowerCase().contains("sleep")) {
 						logger.log(person, Level.WARNING, 10_000,
 							mt.getName() + "'s probability is at all time high ("
-							+ Math.round(probability * 10.0) / 10.0 + ").");
+							+ Math.round(probability) + ").");
 					}
 					probability = MAX_TASK_PROBABILITY;
 				}
@@ -196,7 +182,7 @@ public class PersonTaskManager extends TaskManager implements Serializable {
 	@Override
 	public void startNewTask() {
 		// Check if there are any assigned tasks that are pending
-		if (!pendingTasks.isEmpty()) {
+		if (!getPendingTasks().isEmpty()) {
 			MetaTask metaTask = getAPendingMetaTask();
 			if (metaTask != null) {
 				Task newTask = metaTask.constructInstance(person);
@@ -210,91 +196,9 @@ public class PersonTaskManager extends TaskManager implements Serializable {
 		super.startNewTask();
 	}
 
-	/**
-	 * Gets all pending tasks
-	 *
-	 * @return
-	 */
-	public List<String> getPendingTasks() {
-		return pendingTasks;
-	}
-
-	/**
-	 * Adds a pending task if it is not in the pendingTask list yet.
-	 *
-	 * @param task
-	 * @return
-	 */
-	public boolean addAPendingTask(String task, boolean allowDuplicate) {
-		if (allowDuplicate) {
-			if (!pendingTasks.contains(task)) {
-				logger.info(person, 20_000L, "Given a new task order of '" + task + "'.");
-			}
-			else {
-				logger.info(person, 20_000L, "Given a duplicated task order of '" + task + "'.");
-			}
-			pendingTasks.add(task);
-			return true;
-		}
-		
-		if (!pendingTasks.contains(task)) {
-			pendingTasks.add(task);
-			logger.info(person, 20_000L, "Given a new task order of '" + task + "'.");
-			return true;
-		}
-		
-		return false;
-	}
-
-	/**
-	 * Deletes a pending task
-	 *
-	 * @param task
-	 */
-	public void deleteAPendingTask(String task) {
-		pendingTasks.remove(task);
-		logger.info(worker, "Removed the task order of '" + task + "'.");
-	}
-
-	/**
-	 * Checks if the person is currently performing this task.
-	 * 
-	 * @param task
-	 * @return
-	 */
-	public boolean hasSameTask(String task) {
-		if (getTaskName().equals(task))
-			return true;
-		
-		return false;
-	}
-	
-	/**
-	 * Gets the first pending meta task in the queue
-	 *
-	 * @return
-	 */
-	private MetaTask getAPendingMetaTask() {
-		if (!pendingTasks.isEmpty()) {
-			String firstTask = pendingTasks.get(0);
-			pendingTasks.remove(firstTask);
-			return convertTask2MetaTask(firstTask);
-		}
-		return null;
-	}
-
-	/**
-	 * Converts a task to its corresponding meta task
-	 *
-	 * @param a task
-	 */
-	private static MetaTask convertTask2MetaTask(String task) {
-		return MetaTaskUtil.getMetaTask(task.replaceAll(" ","") + "Meta");
-	}
-
 	public void reinit() {
 		person = mind.getPerson();
-		circadian = person.getCircadianClock();
+//		circadian = person.getCircadianClock();
 		worker = person;
 		super.reinit();
 	}
@@ -306,7 +210,7 @@ public class PersonTaskManager extends TaskManager implements Serializable {
 
 		mind = null;
 		person = null;
-		circadian = null;
+//		circadian = null;
 		if (taskProbCache != null) {
 			taskProbCache.clear();
 			taskProbCache = null;

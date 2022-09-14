@@ -170,6 +170,26 @@ implements Serializable {
 		}
 	}
 
+	/**
+	 * Start a new Task by first checking for pending tasks.
+	 */
+	@Override
+	public void startNewTask() {
+		// Check if there are any assigned tasks that are pending
+		if (!getPendingTasks().isEmpty()) {
+			MetaTask metaTask = getAPendingMetaTask();
+			if (metaTask != null) {
+				Task newTask = metaTask.constructInstance(robot);
+//				logger.info(person, 20_000L, "Starting a task order of '" + newTask.getName() + "'.");
+				startTask(newTask);
+			}
+
+			return;
+		}
+
+		super.startNewTask();
+	}
+	
 	public void reinit() {
 		super.reinit();
 

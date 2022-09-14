@@ -100,8 +100,9 @@ public abstract class DigLocalMeta extends MetaTask {
         double stress = condition.getStress();
         double fatigue = condition.getFatigue();
         double hunger = condition.getHunger();
-
-        result -= stress * 2 + fatigue/2 + hunger/2;
+        double exerciseMillisols = person.getCircadianClock().getTodayExerciseTime();
+        
+        result -= stress * 2 + fatigue/2 + hunger/2 - exerciseMillisols;
 
         if (result < 0)
         	return 0;

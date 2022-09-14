@@ -62,11 +62,11 @@ public class PhysicalCondition implements Serializable {
 	/** The maximum number of sols in hunger [millisols]. */
 	public static final int MAX_HUNGER = 40_000;
 	/** Reset to hunger [millisols] immediately upon eating. */
-	public static final int HUNGER_CEILING_UPON_EATING = 1000;
+	public static final int HUNGER_CEILING_UPON_EATING = 750;
 	/** The maximum number of sols in thirst [millisols]. */
 	public static final int MAX_THIRST = 7_000;
 	/** The maximum number of sols in thirst [millisols]. */
-	public static final int THIRST_CEILING_UPON_DRINKING = 500;
+	public static final int THIRST_CEILING_UPON_DRINKING = 250;
 	/** The amount of thirst threshold [millisols]. */
 	public static final int THIRST_THRESHOLD = 150;
 	/** The amount of thirst threshold [millisols]. */
@@ -467,6 +467,8 @@ public class PhysicalCondition implements Serializable {
 			increaseFatigue(time);
 			// Update hunger
 			increaseHunger(time * bodyMassDeviation * .75);
+			// Update energy via PersonTaskManager's executeTask()
+			// since it can discern if it's a resting task or a labor-intensive (effort-driven) task
 		}
 	}
 
@@ -613,23 +615,33 @@ public class PhysicalCondition implements Serializable {
 		// double xdelta = 4 * time / FOOD_COMPOSITION_ENERGY_RATIO;
 		// kJoules = kJoules / exponential(xdelta);
 
-		if (kJoules < 200D) {
+		if (kJoules < 250) {
+			// 250 kJ is the lowest possible energy level
+			kJoules = 250;
+		}
+		else if (kJoules < 500) {
+			kJoules -= xdelta * .5;
+		} else if (kJoules < 1000) {
+			kJoules -= xdelta * .55;
+		} else if (kJoules < 3000) {
+			kJoules -= xdelta * .6;
+		} else if (kJoules < 5000) {
+			kJoules -= xdelta * .65;
+		} else if (kJoules < 7000) {
+			kJoules -= xdelta * .7;
+		} else if (kJoules < 9000) {
 			kJoules -= xdelta * .75;
-		} else if (kJoules < 400D) {
+		} else if (kJoules < 11000) {
 			kJoules -= xdelta * .8;
-		} else if (kJoules < 600D) {
+		} else if (kJoules < 13000) {
 			kJoules -= xdelta * .85;
-		} else if (kJoules < 800D) {
-			kJoules -= xdelta * .9;
-		} else if (kJoules < 1000D) {
-			kJoules -= xdelta * .95;
+		} else if (kJoules < 15000) {
+			kJoules -= xdelta * .9;			
+		} else if (kJoules < 17000) {
+			kJoules -= xdelta * .95;	
 		} else
 			kJoules -= xdelta;
 
-		if (kJoules < 100D) {
-			// 100 kJ is the lowest possible energy level
-			kJoules = 100D;
-		}
 		person.fireUnitUpdate(UnitEventType.HUNGER_EVENT);
 	}
 
@@ -639,7 +651,6 @@ public class PhysicalCondition implements Serializable {
 	 * @param person's energy level in kilojoules
 	 */
 	public void addEnergy(double foodAmount) {
-		
 		// 1 calorie = 4.1858 kJ
 		// Should vary MAX_KJ according to the individual's physical profile strength,
 		// endurance, etc..
@@ -673,13 +684,19 @@ public class PhysicalCondition implements Serializable {
 			kJoules += xdelta * .3;
 		} else if (kJoules > 5_000D) {
 			kJoules += xdelta * .35;
-		} else
+		} else if (kJoules > 4_000D) {
 			kJoules += xdelta * .4;
+		} else if (kJoules > 3_000D) {
+			kJoules += xdelta * .45;			
+		} else if (kJoules > ENERGY_THRESHOLD) {
+			kJoules += xdelta * .5;	
+		} else
+			kJoules = ENERGY_THRESHOLD;
 
 		circadian.eatFood(xdelta / 1000D);
 
-		if (kJoules > personalMaxEnergy * 1.5) {
-			kJoules = personalMaxEnergy * 1.5;
+		if (kJoules > personalMaxEnergy * 1.25) {
+			kJoules = personalMaxEnergy * 1.25;
 		}
 		person.fireUnitUpdate(UnitEventType.HUNGER_EVENT);
 	}
@@ -2147,7 +2164,7 @@ public class PhysicalCondition implements Serializable {
 	public boolean eatenTooMuch() {
 		double foodEaten = foodConsumption[0].getTodayDataValue();
 		double mealEaten = foodConsumption[1].getTodayDataValue();
-		if (foodEaten + mealEaten >= FOOD_CONSUMPTION)
+		if (foodEaten + mealEaten >= FOOD_CONSUMPTION * 1.25)
 			return true;
 
 		return false;
@@ -2160,7 +2177,7 @@ public class PhysicalCondition implements Serializable {
 	 */
 	public boolean drinkEnoughWater() {
 		double water = foodConsumption[3].getTodayDataValue();
-		if (water >= H2O_CONSUMPTION)
+		if (water >= H2O_CONSUMPTION * 1.25)
 			return true;
 
 		return false;

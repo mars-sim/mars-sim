@@ -88,6 +88,10 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	protected boolean effortDriven;
 	/** Task should create Historical events. */
 	private boolean createEvents;
+	
+	/** The level of this Task, one is top level Task **/
+	private int level = TOP_LEVEL;
+	
 	/** Amount of time required to complete current phase (in millisols) */
 	protected double phaseTimeRequired;
 	/** Amount of time completed on the current phase (in millisols) */
@@ -98,16 +102,19 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	private double duration;
 	/** The current amount of time spent on the task (in millisols). */
 	private double timeCompleted;
+	/** Ratio of work time to experience */
+	private double experienceRatio;
+	
 	/** The id of the person/robot. */
 	protected Integer id;
 	/** The id of the teacher. */
 	protected Integer teacherID;
+	
 	/** The name of the task. */
 	private String name = "";
 	/** Description of the task. */
 	private String description = "";
-	/** The level of this Task, one is top level Task **/
-	private int level = TOP_LEVEL;
+
 
 	/** The person teaching this task if any. */
 	private transient Person teacher;
@@ -131,8 +138,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 
 	private List<SkillType> neededSkills = null;
 
-	/** Ratio of work time to experience */
-	private double experienceRatio;
 
 	/** What natural attribute influences experience points */
 	private NaturalAttributeType experienceAttribute = NaturalAttributeType.EXPERIENCE_APTITUDE;
@@ -452,13 +457,12 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		description = des;
 		eventTarget.fireUnitUpdate(UnitEventType.TASK_DESCRIPTION_EVENT, des);
 		
-		if (phase != null) {
+		if (!des.equals("") && worker.getTaskManager().getTask() != null
 			// Record the activity
-			if (record && canRecord()) {
+			&& record && canRecord()) {
 				Mission ms = worker.getMission();
 				worker.getTaskManager().recordTask(this,
 						(ms != null ? ms.getName() : null));
-			}
 		}
 	}
 	
@@ -489,20 +493,19 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		phase = newPhase;
 	
 		// Method is called via endTask with a null phase
-		if (newPhase != null) {
-			if (phases != null && !phases.isEmpty() && phases.contains(newPhase)) {
-	
-				// Note: need to avoid java.lang.StackOverflowError when calling
-				// PersonTableModel.unitUpdate()
-				eventTarget.fireUnitUpdate(UnitEventType.TASK_PHASE_EVENT, newPhase);
-			}
-			
-			// Record the activity
-			if (canRecord()) {
-				Mission ms = worker.getMission();
-				worker.getTaskManager().recordTask(this,
-						(ms != null ? ms.getName() : null));
-			}
+		if (newPhase != null && phases != null 
+			&& !phases.isEmpty() && phases.contains(newPhase)) {
+
+			// Note: need to avoid java.lang.StackOverflowError when calling
+			// PersonTableModel.unitUpdate()
+			eventTarget.fireUnitUpdate(UnitEventType.TASK_PHASE_EVENT, newPhase);
+		}
+		
+		// Record the activity
+		if (canRecord()) {
+			Mission ms = worker.getMission();
+			worker.getTaskManager().recordTask(this,
+					(ms != null ? ms.getName() : null));
 		}
 	}
 

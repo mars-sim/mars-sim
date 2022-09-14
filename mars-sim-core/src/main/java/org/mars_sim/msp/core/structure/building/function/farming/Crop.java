@@ -53,10 +53,10 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 	private static final int CHECK_HEALTH_FREQUENCY = 20;
 	
 	/** The modifier for the work time on a crop. */
-	private static final double WORK_TIME_FACTOR = 10000.0;
+	private static final double WORK_TIME_FACTOR = 4000.0;
 	
 	/** The modifier for the work time on a crop. */
-	private static final int WORK_FACTOR = 15;
+	private static final int WORK_FACTOR = 25;
 	
 	/** The rate of taking care of the health of the crop. */
 	private static final double RECOVER_HEALTH_RATE = .5;
@@ -305,7 +305,7 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 		else {
 			// This is a grown crop at the start of the sim,
 			// Set the percentage of growth randomly
-			growingTimeCompleted = RandomUtil.getRandomDouble(growingTime * .95);
+			growingTimeCompleted = RandomUtil.getRandomDouble(growingTime * .7);
 
 			percentageGrowth = (growingTimeCompleted * 100D) / growingTime;
 
@@ -771,6 +771,8 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 
 		double elapsed = pulse.getElapsed();
 		
+		// TODO: currentWorkRequired should be modified by the crop category. 
+		// Some category of crop doesn't need much care while some need more attention
 		currentWorkRequired += elapsed * growingArea / WORK_FACTOR;
 
 		accumulatedTime += elapsed;
@@ -782,6 +784,7 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 			double time = accumulatedTime * productionLevel;
 
 			growingTimeCompleted += time;
+			
 			percentageGrowth = (growingTimeCompleted * 100D) / cropSpec.getGrowingTime();
 
 			// Right before the harvesting phase

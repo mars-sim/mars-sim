@@ -269,7 +269,7 @@ public class TendGreenhouse extends Task implements Serializable {
 	public void setCropDescription(Crop needyCrop) {
 		logger.log(greenhouse.getBuilding(), worker, Level.FINE, 30_000L, "Tending " + needyCrop.getCropName() + ".");
 		setDescription(Msg.getString("Task.description.tendGreenhouse.tend.detail",
-				Conversion.capitalize(needyCrop.getCropName())), false);
+				Conversion.capitalize(needyCrop.getCropName())), true);
 	}
 
 	/**
@@ -342,8 +342,14 @@ public class TendGreenhouse extends Task implements Serializable {
 		setDescriptionCropDone();
 		
 		// Set needyCrop to null since needTending is false
-		needyCrop = null;
-
+		// This allow another needyCrop to be picked
+		
+		// Select a new needy crop
+		needyCrop = greenhouse.getNeedyCrop();	
+		if (needyCrop == null) {
+			endTask();
+		}
+		
 		return remainingTime;
 	}
 	

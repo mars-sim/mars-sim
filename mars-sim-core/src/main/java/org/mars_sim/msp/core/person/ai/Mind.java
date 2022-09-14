@@ -290,9 +290,7 @@ public class Mind implements Serializable, Temporal {
 			else {
 				// If the mission vehicle has embarked but the person is not on board,
 				// then release the person from the mission
-				
-//
-//				else
+
 				if (mission.getPhase() != null) {
 			        // Missions have to be done and are stressfull so allow high stress.
 					if (person.getPhysicalCondition().getPerformanceFactor() < 0.7D)

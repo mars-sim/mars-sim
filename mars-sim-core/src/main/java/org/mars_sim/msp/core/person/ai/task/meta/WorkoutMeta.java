@@ -69,7 +69,7 @@ public class WorkoutMeta extends MetaTask {
             		// Note: muscle condition affects the desire to exercise
             		+ muscle[0]/2.5 - muscle[2]/2.5 
             		+ stress / 10
-            		- exerciseMillisols * 10;
+            		- exerciseMillisols * 20;
             
             if (result < 0) 
             	return 0;
