@@ -77,21 +77,23 @@ public class MainDesktopPane extends JDesktopPane
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(MainDesktopPane.class.getName());
 
-	public final static String THEME_PATH = "/fxui/css/theme/";
-
-	public final static String ORANGE_CSS_THEME = THEME_PATH + "nimrodskin.css";
-	public final static String BLUE_CSS_THEME = THEME_PATH + "snowBlue.css";
-
-	public final static String ORANGE_CSS = ORANGE_CSS_THEME;
-	public final static String BLUE_CSS = BLUE_CSS_THEME;
-
-	public GameMode mode;
-
+	public static final String THEME_PATH = "/fxui/css/theme/";
+	public static final String ORANGE_CSS_THEME = THEME_PATH + "nimrodskin.css";
+	public static final String BLUE_CSS_THEME = THEME_PATH + "snowBlue.css";
+	public static final String ORANGE_CSS = ORANGE_CSS_THEME;
+	public static final String BLUE_CSS = BLUE_CSS_THEME;
+	
+	/** The sound player. */
+	private static AudioPlayer soundPlayer;
+	
 	// Data members
 //	private double timeCache = 0;
 	private boolean isTransportingBuilding = false, isConstructingSite = false;
 	/** True if this MainDesktopPane hasn't been displayed yet. */
 	private boolean firstDisplay;
+	
+	/** The game mode of this simulation session. */
+	public GameMode mode;
 	/** List of open or buttoned unit windows. */
 	private Collection<UnitWindow> unitWindows;
 	/** List of tool windows. */
@@ -101,8 +103,6 @@ public class MainDesktopPane extends JDesktopPane
 	/** Label that contains the tiled background. */
 	private JLabel backgroundLabel;
 
-	/** The sound player. */
-	private static AudioPlayer soundPlayer;
 
 	/** The desktop popup announcement window. */
 	private AnnouncementWindow announcementWindow;
@@ -195,7 +195,7 @@ public class MainDesktopPane extends JDesktopPane
 	}
 
 	/**
-	 * Create background tile when MainDesktopPane is first displayed. Recenter
+	 * Create background tile when MainDesktopPane is first displayed. Center
 	 * logoLabel on MainWindow and set backgroundLabel to the size of
 	 * MainDesktopPane.
 	 *

@@ -146,8 +146,6 @@ extends JComponent implements ClockListener {
 	/** Keeps track of whether icons have been added to the IconManager . */
 	private static boolean iconsConfigured = false;
 
-	private boolean isIconified = false;
-
 	/** The main window frame. */
 	private static JFrame frame;
 	/** The lander hab icon. */
@@ -155,6 +153,10 @@ extends JComponent implements ClockListener {
 	/** The Telescope icon. */
 	private static Icon telescopeIcon;
 
+	private static SplashWindow splashWindow;
+
+	private static InteractiveTerm interactiveTerm;
+	
 	/** The four types of theme types. */
 	public enum ThemeType {
 		SYSTEM, NIMBUS, NIMROD, WEBLAF, METAL
@@ -163,7 +165,9 @@ extends JComponent implements ClockListener {
 	public ThemeType defaultThemeType = ThemeType.NIMBUS;
 
 	// Data members
-	private boolean useDefault = true;
+	private boolean isIconified = false;
+
+	private boolean useDefault = false;
 
 	private int solCache = 0;
 
@@ -217,14 +221,11 @@ extends JComponent implements ClockListener {
 
 	private Dimension selectedSize;
 
-	private static SplashWindow splashWindow;
-
 	private Simulation sim;
 	private MasterClock masterClock;
 	private EarthClock earthClock;
 	private MarsClock marsClock;
 
-	private static InteractiveTerm interactiveTerm;
 
 	/**
 	 * Constructor 1.
@@ -276,7 +277,7 @@ extends JComponent implements ClockListener {
 			askScreenConfig(screenWidth, screenHeight);
 		}
 		else {
-			useDefaultScreenConfig(screenWidth, screenHeight);
+			chooseScreenSize(screenWidth, screenHeight);
 		}	
 
 		// Set up MainDesktopPane
@@ -321,120 +322,121 @@ extends JComponent implements ClockListener {
 				JOptionPane.YES_NO_OPTION);
         if (reply == JOptionPane.YES_OPTION) {
         	
-			logger.config("You choose Yes. Loading last saved screen configuration.");	
+			logger.config("You choose Yes to loading last saved screen configuration.");	
 			
     		// Load previous UI configuration.
 			UIConfig.INSTANCE.parseFile();
 			
 			// Set the UI configuration
 			useDefault = UIConfig.INSTANCE.useUIDefault();
-//			logger.config("useDefault is: " + useDefault);
-			
+			logger.config("useDefault is: " + useDefault);
+		
 			if (useDefault) {
-//				selectedSize = calculatedScreenSize(screenWidth, screenHeight);
-	    		selectedSize = new Dimension(screenWidth, screenHeight);
-	    		
-				// Set frame size
-				frame.setSize(selectedSize);
-				logger.config("The default window dimension is "
-						+ selectedSize.width
-						+ " x "
-						+ selectedSize.height
-						+ ".");
-
-				frame.setLocation(
-					((screenWidth - selectedSize.width) / 2),
-					((screenHeight - selectedSize.height) / 2)
-				);
-				
-				logger.config("Use default configuration to set frame to the center of the screen.");	
-				logger.config("The window frame is centered and starts at (" 
-						+ (screenWidth - selectedSize.width) / 2 
-						+ ", "
-						+ (screenHeight - selectedSize.height) / 2
-						+ ").");
+				logger.config("Will calculate screen size for default display instead.");
+				setUpCalculatedScreen(screenWidth, screenHeight);
 			}
 			else {
-	    		selectedSize = UIConfig.INSTANCE.getMainWindowDimension();
-				
-				// Set frame size
-				frame.setSize(selectedSize);
-				logger.config("The last saved window dimension is "	
-					+ selectedSize.width
-					+ " x "
-					+ selectedSize.height
-					+ ".");
-				
-				// Display screen at a certain location
-				frame.setLocation(UIConfig.INSTANCE.getMainWindowLocation());
-				logger.config("The last saved frame starts at (" 
-						+ UIConfig.INSTANCE.getMainWindowLocation().x
-						+ ", "
-						+ UIConfig.INSTANCE.getMainWindowLocation().y
-						+ ").");
+				setUpSavedScreen();
 			}
         }
         
         // No. use the new default setting
         else {
-        	useDefaultScreenConfig(screenWidth, screenHeight);
+			logger.config("Will calculate screen size for default display instead.");
+			setUpCalculatedScreen(screenWidth, screenHeight);
         }
 	}
 	
-	/**
-	 * Uses the default screen config.
-	 * 
-	 * @param screenWidth
-	 * @param screenHeight
-	 */
-	private void useDefaultScreenConfig(int screenWidth, int screenHeight) {
-	   	selectedSize = interactiveTerm.getSelectedScreen();
+	private void setUpSavedScreen() {
+		selectedSize = UIConfig.INSTANCE.getMainWindowDimension();
 		
-		logger.config("You choose No. Loading default screen dimension "
-				+ selectedSize.width
-				+ " x "
-				+ selectedSize.height
-				+ ".");
+		// Set frame size
+		frame.setSize(selectedSize);
+		logger.config("The last saved window dimension is "	
+			+ selectedSize.width
+			+ " x "
+			+ selectedSize.height
+			+ ".");
+		
+		// Display screen at a certain location
+		frame.setLocation(UIConfig.INSTANCE.getMainWindowLocation());
+		logger.config("The last saved frame starts at (" 
+				+ UIConfig.INSTANCE.getMainWindowLocation().x
+				+ ", "
+				+ UIConfig.INSTANCE.getMainWindowLocation().y
+				+ ").");
+	}
+	
+	private void setUpCalculatedScreen(int screenWidth, int screenHeight) {
+		selectedSize = calculatedScreenSize(screenWidth, screenHeight);
+//		selectedSize = new Dimension(screenWidth, screenHeight);
 		
 		// Set frame size
 		frame.setSize(selectedSize);
 		
-		// Center frame on screen
+		logger.config("The default window dimension is "
+				+ selectedSize.width
+				+ " x "
+				+ selectedSize.height
+				+ ".");
+
 		frame.setLocation(
 			((screenWidth - selectedSize.width) / 2),
 			((screenHeight - selectedSize.height) / 2)
 		);
 		
-		logger.config("Use default configuration to set frame to the center of the screen.");
+		logger.config("Use default configuration to set frame to the center of the screen.");	
 		logger.config("The window frame is centered and starts at (" 
 				+ (screenWidth - selectedSize.width) / 2 
 				+ ", "
 				+ (screenHeight - selectedSize.height) / 2
-				+ ").");	
+				+ ").");
+	}
+	
+	/**
+	 * Chooses screen size.
+	 * 
+	 * @param screenWidth
+	 * @param screenHeight
+	 */
+	private void chooseScreenSize(int screenWidth, int screenHeight) {
+		// Load previous UI configuration.
+		UIConfig.INSTANCE.parseFile();
+		
+		// Set the UI configuration
+		useDefault = UIConfig.INSTANCE.useUIDefault();
+		logger.config("useDefault is: " + useDefault);
+	
+		if (useDefault) {
+			logger.config("Will calculate screen size for default display instead.");
+			setUpCalculatedScreen(screenWidth, screenHeight);
+		}
+		else {
+			setUpSavedScreen();
+		}
 	}
 	
 	/**
 	 * Calculates the screen size.
 	 * 
+	 * @param screenWidth
+	 * @param screenHeight
 	 * @return
 	 */
 	private Dimension calculatedScreenSize(int screenWidth, int screenHeight) {
 		logger.config("Current screen size is " + screenWidth + " x " + screenHeight);
+		logger.config("useDefault is: " + useDefault);
 		
-		Dimension frameSize = interactiveTerm.getSelectedScreen();
-		if (frameSize != null) {
+		Dimension frameSize = null;
+		if (useDefault) {
+			frameSize = interactiveTerm.getSelectedScreen();
+			logger.config("Use default screen configuration.");
 			logger.config("Selected screen size is " + frameSize.width + " x " + frameSize.height);
 		}
 		else {
-			if (useDefault) {
-				logger.config("useDefault is: " + useDefault);
-				logger.config("Use default screen configuration.");
-			}
-			else {
-				// Use any stored size
-				frameSize = UIConfig.INSTANCE.getMainWindowDimension();
-				logger.config("Use last saved window size " + frameSize.width + " x " + frameSize.height);	
-			}
+			// Use any stored size
+			frameSize = UIConfig.INSTANCE.getMainWindowDimension();
+			logger.config("Use last saved window size " + frameSize.width + " x " + frameSize.height);	
 		}
 		
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
