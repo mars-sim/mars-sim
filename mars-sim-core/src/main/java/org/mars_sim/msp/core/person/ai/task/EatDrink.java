@@ -831,7 +831,7 @@ public class EatDrink extends Task implements Serializable {
 		if (proportion > 0) {
 			System.out.println("consumeDessertWater's proportion " + proportion);
 			// Record the amount consumed
-			pc.recordFoodConsumption(proportion, 3);
+			pc.recordFoodConsumption(proportion, 2);
 		}
 
 		if (proportion > 0) {

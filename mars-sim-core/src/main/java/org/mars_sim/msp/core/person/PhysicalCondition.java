@@ -22,7 +22,6 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.data.SolMetricDataLogger;
-import org.mars_sim.msp.core.data.SolSingleMetricDataLogger;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
@@ -44,7 +43,6 @@ import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * This class represents the Physical Condition of a Person. It models a
- * person's health and physical characteristics.
  */
 public class PhysicalCondition implements Serializable {
 
@@ -208,13 +206,10 @@ public class PhysicalCondition implements Serializable {
 	private Map<ComplaintType, List<String>> healthHistory;
 
 	/** 
-	 * The amount of food [millisols] a person consumes on each sol.
-	 * 1: food, 2: meal, 3: dessert, 4: water
+	 * The amount a person consumes on each sol.
+	 * 0: food (kg), 1: meal (kg), 2: dessert (kg), 3: water (kg), 4: oxygen (kg)
 	 */
-	private SolSingleMetricDataLogger[] foodConsumption = new SolSingleMetricDataLogger[4];
-
-	/** The person's oxygen consumption. */
-	private SolMetricDataLogger<Integer> gasConsumption;
+	private SolMetricDataLogger<Integer> consumption;
 	
 	/** The CircadianClock instance. */
 	private transient CircadianClock circadian;
@@ -350,12 +345,17 @@ public class PhysicalCondition implements Serializable {
 		performance = 1.0D;
 
 		// initialize it to save 7 sols
-		for (int i=0; i<4; i++) {
-			foodConsumption[i] = new SolSingleMetricDataLogger(MAX_NUM_SOLS);
-		}
+//		for (int i=0; i<4; i++) {
+//			foodConsumption[i] = new SolSingleMetricDataLogger(MAX_NUM_SOLS);
+//		}
 		
-		// Create the consumption map
-		gasConsumption = new SolMetricDataLogger<>(MAX_NUM_SOLS);
+		// Initialize the food consumption logger
+		consumption = new SolMetricDataLogger<>(MAX_NUM_SOLS);
+		consumption.increaseDataPoint(0, 0.0);
+		consumption.increaseDataPoint(1, 0.0);
+		consumption.increaseDataPoint(2, 0.0);
+		consumption.increaseDataPoint(3, 0.0);
+		consumption.increaseDataPoint(4, 0.0);
 		
 		initialize();
 	}
@@ -2162,9 +2162,21 @@ public class PhysicalCondition implements Serializable {
 	 * @return
 	 */
 	public boolean eatenTooMuch() {
-		double foodEaten = foodConsumption[0].getTodayDataValue();
-		double mealEaten = foodConsumption[1].getTodayDataValue();
-		if (foodEaten + mealEaten >= FOOD_CONSUMPTION * 1.25)
+		double foodEaten = 0;
+		Double f = consumption.getDataPoint(0);
+		if (f != null)
+			foodEaten = f.doubleValue();
+		
+		double mealEaten = 0;
+		Double m = consumption.getDataPoint(1);
+		if (m != null)
+			mealEaten = m.doubleValue();
+		
+		double dessertEaten = 0;
+		Double d = consumption.getDataPoint(2);
+		if (d != null)
+			dessertEaten = d.doubleValue();
+		if (foodEaten + mealEaten + dessertEaten >= FOOD_CONSUMPTION * 1.25)
 			return true;
 
 		return false;
@@ -2176,9 +2188,11 @@ public class PhysicalCondition implements Serializable {
 	 * @return
 	 */
 	public boolean drinkEnoughWater() {
-		double water = foodConsumption[3].getTodayDataValue();
-		if (water >= H2O_CONSUMPTION * 1.25)
-			return true;
+		Double w = consumption.getDataPoint(3);
+		if (w != null) {
+			if (w.doubleValue() >= H2O_CONSUMPTION * 1.25)
+				return true;
+		}
 
 		return false;
 	}
@@ -2189,16 +2203,16 @@ public class PhysicalCondition implements Serializable {
 	 * @param amount in kg
 	 */
 	public void recordFoodConsumption(double amount, int type) {
-		foodConsumption[type].increaseDataPoint(amount);
+		consumption.increaseDataPoint(type, amount);
 	}
 	
 	/**
-	 * Returns the food consumption history.
+	 * Returns the consumption history.
 	 * 
 	 * @return
 	 */
-	public Map<Integer, Double> getFoodConsumption(int type) {
-		return foodConsumption[type].getHistory();
+	public Map<Integer, Map<Integer, Double>> getConsumptionHistory() {
+		return consumption.getHistory();
 	}
 	
 	/**
@@ -2209,28 +2223,30 @@ public class PhysicalCondition implements Serializable {
 	 * @return the amount of resource consumed in a day
 	 */
 	public double getDailyFoodUsage(int type) {
-		return foodConsumption[type].getDailyAverage();
+		return consumption.getDailyAverage(type);
 	}
 	
 	/**
 	 * Adds the amount of gas consumed.
 	 *
-	 * @param waterID
+	 * @param type
 	 * @param amount
 	 */
-	public void addGasConsumed(int id, double amount) {
-		gasConsumption.increaseDataPoint(id, amount);
+	public void addGasConsumed(int type, double amount) {
+		if (type == OXYGEN_ID)
+			consumption.increaseDataPoint(4, amount);
 	}
 	
 	/**
-	 * Gets the daily average water usage of the last x sols Not: most weight on
-	 * yesterday's usage. Least weight on usage from x sols ago
+	 * Gets the daily gas consumption.
 	 *
 	 * @param type the id of the resource
 	 * @return the amount of resource consumed in a day
 	 */
-	public double getDailyUsage(Integer type) {
-		return gasConsumption.getDailyAverage(type);
+	public double getGasUsage(int type) {
+		if (type == OXYGEN_ID)
+			return consumption.getDailyAverage(4);
+		return 0;
 	}
 	
 	/**

@@ -374,30 +374,35 @@ public class ExitAirlock extends Task implements Serializable {
 		
 		// If the airlock mode is ingress, will need to wait until its done
 		if (airlock.getAirlockMode() == AirlockMode.INGRESS) {
-			walkAway(person, NOT_IN_RIGHT_AIRLOCK_MODE);
+			walkAway(person, NOT_IN_RIGHT_AIRLOCK_MODE 
+					+ ". Current task: " + person.getTaskDescription() + ".");
 			return time;
 		}
 		
 		// If a person is in a vehicle, not needed of checking for reservation
 		if (inSettlement && !airlock.addReservation(person.getIdentifier())) {
-			walkAway(person, RESERVATION_NOT_MADE);
+			walkAway(person, RESERVATION_NOT_MADE 
+					+ " Current task: " + person.getTaskDescription() + ".");
 			return time;
 		}
 
 		if (inSettlement && !isFit()) {
-			walkAway(person, NOT_FIT + TO_REQUEST_EGRESS + ".");
+			walkAway(person, NOT_FIT + TO_REQUEST_EGRESS + ". Current task: " 
+					+ person.getTaskDescription() + ".");
 			return time;
 		}
 
 		if (person.isOutside()) {
-			walkAway(person, "Already outside, not supposed " + TO_REQUEST_EGRESS + ".");
+			walkAway(person, "Already outside, not supposed " + TO_REQUEST_EGRESS 
+					+ ". Current task: " + person.getTaskDescription() + ".");
 			// Reset accumulatedTime back to zero
 			accumulatedTime = 0;
 			return time;
 		}
 
 		if (isOccupantHalfPrebreathed()) {
-			walkAway(person, "Can't egress. " + PREBREATH_HALF_DONE + ".");
+			walkAway(person, "Can't egress. " + PREBREATH_HALF_DONE + 
+					". Current task: " + person.getTaskDescription() + ".");
 			return time;
 		}
 
@@ -426,7 +431,8 @@ public class ExitAirlock extends Task implements Serializable {
 			}
 
 			if (airlock.areAll4ChambersFull() || !airlock.hasSpace()) {
-				walkAway(person, "Can't egress. " + CHAMBER_FULL);
+				walkAway(person, "Can't egress. " + CHAMBER_FULL 
+						+ " Current task: " + person.getTaskDescription() + ".");
 				return time;
 			}
 				
@@ -470,7 +476,7 @@ public class ExitAirlock extends Task implements Serializable {
 
 				logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4_000,
 						"Chamber already pressurized for entry in "
-					+ airlock.getEntity().toString() + ".");
+								+ airlock.getEntity().toString() + ".");
 
 				// Skip PRESSURIZE_CHAMBER phase and go to the ENTER_AIRLOCK phase
 				setPhase(STEP_THRU_INNER_DOOR);

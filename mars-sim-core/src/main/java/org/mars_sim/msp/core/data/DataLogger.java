@@ -145,6 +145,14 @@ public abstract class DataLogger<T> implements Serializable {
 		return currentData;
 	}
 	
+//	/**
+//	 * Gets the data held for the current sol.
+//	 * 
+//	 * @return
+//	 */
+//	public T getSolData() {
+//		return getSolData(currentSol);
+//	}
 	
 	/**
 	 * Checks if yestersol's data valid.

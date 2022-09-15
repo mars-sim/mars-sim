@@ -927,23 +927,17 @@ extends TabPanel {
 		private DecimalFormat fmt = new DecimalFormat("0.000");
 
 		private PhysicalCondition pc;
-		private Map<Integer, Double> foodMap;
-		private Map<Integer, Double> mealMap;
-		private Map<Integer, Double> dessertMap;
-		private Map<Integer, Double> waterMap;
+		private Map<Integer, Map<Integer, Double>> map;
 
 		private int solOffset = 1;
 
 		private FoodTableModel(Person person) {
 			pc = person.getPhysicalCondition();
-			foodMap = pc.getFoodConsumption(0);
-			mealMap = pc.getFoodConsumption(1);
-			dessertMap = pc.getFoodConsumption(2);
-			waterMap = pc.getFoodConsumption(3);
+			map = pc.getConsumptionHistory();
 		}
 
 		public int getRowCount() {
-			return waterMap.size();
+			return map.size();
 		}
 
 		public int getColumnCount() {
@@ -989,26 +983,26 @@ extends TabPanel {
 					return rowSol;
 				}
 				else if (column == 1) {
-					if (foodMap.containsKey(rowSol))
-						result = fmt.format(foodMap.get(rowSol));
+					if (map.containsKey(rowSol))
+						result = fmt.format(map.get(rowSol).get(0));
 					else
 						result = fmt.format(0);
 				}
 				else if (column == 2) {
-					if (mealMap.containsKey(rowSol))
-						result = fmt.format(mealMap.get(rowSol));
+					if (map.containsKey(rowSol))
+						result = fmt.format(map.get(rowSol).get(1));
 					else
 						result = fmt.format(0);
 				}
 				else if (column == 3) {
-					if (dessertMap.containsKey(rowSol))
-						result = fmt.format(dessertMap.get(rowSol));
+					if (map.containsKey(rowSol))
+						result = fmt.format(map.get(rowSol).get(2));
 					else
 						result = fmt.format(0);
 				}
 				else if (column == 4) {
-					if (waterMap.containsKey(rowSol))
-						result = fmt.format(waterMap.get(rowSol));
+					if (map.containsKey(rowSol))
+						result = fmt.format(map.get(rowSol).get(3));
 					else
 						result = fmt.format(0);
 				}
@@ -1017,13 +1011,9 @@ extends TabPanel {
 		}
 
 		public void update() {
-			foodMap = pc.getFoodConsumption(0);
-			mealMap = pc.getFoodConsumption(1);
-			dessertMap = pc.getFoodConsumption(2);
-			waterMap = pc.getFoodConsumption(3);
 			
 			// Find the lowest sol day in the data
-			solOffset = waterMap.keySet().stream()
+			solOffset = map.keySet().stream()
 					.mapToInt(v -> v)               
 	                .min()                          
 	                .orElse(Integer.MAX_VALUE);
