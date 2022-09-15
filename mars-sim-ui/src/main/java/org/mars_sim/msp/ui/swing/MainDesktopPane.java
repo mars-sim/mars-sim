@@ -102,7 +102,8 @@ public class MainDesktopPane extends JDesktopPane
 	private ImageIcon backgroundImageIcon;
 	/** Label that contains the tiled background. */
 	private JLabel backgroundLabel;
-
+	/** The image icon of the tiled background. */
+	private ImageIcon baseImageIcon = ImageLoader.getIcon(Msg.getString("img.background")); //$NON-NLS-1$
 
 	/** The desktop popup announcement window. */
 	private AnnouncementWindow announcementWindow;
@@ -204,10 +205,8 @@ public class MainDesktopPane extends JDesktopPane
 	@Override
 	public void componentResized(ComponentEvent e) {
 
-		ImageIcon baseImageIcon = ImageLoader.getIcon(Msg.getString("img.background")); //$NON-NLS-1$
-		
-		Dimension screenSize = mainWindow.getSelectedSize();
-//		logger.config("Main Window's selected size is " + screenSize.width + " x " + screenSize.height);
+		Dimension screenSize = getSize();
+//		logger.config("Resizing background to " + screenSize.width + " x " + screenSize.height);
 		
 		if (screenSize == null || screenSize.width == 0 || screenSize.height == 0) {
 			screenSize = Toolkit.getDefaultToolkit().getScreenSize();
