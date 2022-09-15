@@ -25,7 +25,7 @@ class MainDesktopManager extends DefaultDesktopManager {
 	// See https://stackoverflow.com/questions/8136944/preventing-jinternalframe-from-being-moved-out-of-a-jdesktoppane#8138986
 
 	/** The value of GAP is to ensure the frame is flushed exactly at the edge of the main window. */
-	private static final int GAP = 8;
+	private static final int GAP = 9;
 
 	/** Constructs a MainDesktopManager object */
 	public MainDesktopManager() {
@@ -56,8 +56,10 @@ class MainDesktopManager extends DefaultDesktopManager {
 	public void setBoundsForFrame(JComponent f, int newX, int newY, int newWidth, int newHeight) {
 		boolean hitBoundary = (f.getWidth() != newWidth || f.getHeight() != newHeight);
 
+		// If user drags the internal frame outside of its parent, 
+		// disallow it to go further
 		if (!inBounds((JInternalFrame) f, newX, newY, newWidth, newHeight)) {
-			// Note: Ensure the jinternalframe stay inside and never go outside of
+			// Note: Ensure the jinternal frame stay inside and never go outside of
 			// the desktop
 			Container parent = f.getParent();
 			Dimension parentSize = parent.getSize();
@@ -72,11 +74,11 @@ class MainDesktopManager extends DefaultDesktopManager {
 			int boundedY = -GAP;
 
 			if (parentSize.getHeight() >= newHeight) {
-				boundedY = (int) (Math.min(Math.max(-GAP, newY), parentSize.getHeight() - newHeight + GAP));
+				boundedY = (int) (Math.min(Math.max(-GAP, newY), parentSize.getHeight() * 1.4 - newHeight + GAP));
 			}
 
 			if (parentSize.getWidth() >= newWidth) {
-				boundedX = (int) (Math.min(Math.max(-GAP, newX), parentSize.getWidth() - newWidth + GAP));
+				boundedX = (int) (Math.min(Math.max(-GAP, newX), parentSize.getWidth() * 1.3 - newWidth + GAP));
 			}
 
 			if (f != null)
