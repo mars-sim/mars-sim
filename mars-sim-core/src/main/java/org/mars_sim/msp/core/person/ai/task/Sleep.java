@@ -47,7 +47,11 @@ public class Sleep extends Task implements Serializable {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(Sleep.class.getName());
 
-	private static final int MAX_FATIGUE = 3000;
+	/** Simple Task name */
+	public static final String SIMPLE_NAME = Sleep.class.getSimpleName();
+	
+//	private static final int MAX_FATIGUE = 3000;
+	
     private static final int MAX_SUPPRESSION = 100;
 
 	/** Task name */

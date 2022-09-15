@@ -749,7 +749,7 @@ public abstract class TaskManager implements Serializable, Temporal {
 				logger.info(worker, 20_000L, "Given a new task order of '" + task + "'.");
 			}
 			else {
-				logger.info(worker, 20_000L, "Given a duplicated task order of '" + task + "'.");
+				logger.info(worker, 20_000L, "Given a duplicated new task order of '" + task + "'.");
 			}
 			addPendingTasks(task);
 			return true;

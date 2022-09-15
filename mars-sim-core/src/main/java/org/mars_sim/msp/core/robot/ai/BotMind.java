@@ -12,6 +12,7 @@ import java.util.logging.Level;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.task.Sleep;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.RobotJob;
@@ -138,8 +139,8 @@ public class BotMind implements Serializable, Temporal {
 		if (robot.getSystemCondition().getBatteryState() <= 0.05) {
 			logger.log(robot, Level.WARNING, 30_000L, "Battery almost depleted and must be recharged."
 					+ " Current task: " + botTaskManager.getTaskName() + ".");
-			// Trigger sleep task 
-			lookForATask();
+			// Add sleep task
+			botTaskManager.addAPendingTask(Sleep.SIMPLE_NAME, false);
 		}
 			
 		if (botTaskManager.hasActiveTask()) {
