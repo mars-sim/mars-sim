@@ -23,8 +23,8 @@ import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
+import org.mars_sim.msp.core.person.ai.mission.MissionUtil;
 import org.mars_sim.msp.core.person.ai.mission.Trade;
-import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -50,6 +50,9 @@ public final class CommerceUtil {
 	private static final int OXYGEN_ID = ResourceUtil.oxygenID;
 	private static final int WATER_ID = ResourceUtil.waterID;
 	private static final int FOOD_ID = ResourceUtil.foodID;
+
+	/** The factor for estimating the adjusted fuel economy. */
+	private static final double FE_FACTOR = 3.0;
 
 	private static MissionManager missionManager;
 	private static UnitManager unitManager;
@@ -442,8 +445,8 @@ public final class CommerceUtil {
 
 		// Get required fuel.
 		Good fuelGood = GoodsUtil.getGood(delivery.getFuelType());
-		neededResources.put(fuelGood, (int) VehicleMission.getFuelNeededForTrip(delivery, distance, 
-				(delivery.getCumFuelEconomy() + delivery.getEstimatedFuelEconomy()) / VehicleMission.FE_FACTOR, false));
+		neededResources.put(fuelGood, (int) MissionUtil.getFuelNeededForTrip(delivery, distance, 
+				(delivery.getCumFuelEconomy() + delivery.getEstimatedFuelEconomy()) / FE_FACTOR, false));
 
 		if (delivery instanceof Crewable) {
 			// Needs a crew

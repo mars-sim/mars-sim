@@ -27,7 +27,7 @@ import org.mars_sim.msp.core.vehicle.Drone;
 import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
-public abstract class DroneMission extends VehicleMission {
+public abstract class DroneMission extends AbstractVehicleMission {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;

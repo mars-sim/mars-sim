@@ -13,7 +13,7 @@ import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.mission.CollectIce;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
-import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
+import org.mars_sim.msp.core.person.ai.mission.MissionUtil;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.structure.Settlement;
 
@@ -55,7 +55,7 @@ public class CollectIceMeta extends AbstractMetaMission {
 					) {
 
 				missionProbability = 1D;
-	    		int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
+	    		int numEmbarked = MissionUtil.numEmbarkingMissions(settlement);
 	    		int numThisMission = missionManager.numParticularMissions(MissionType.COLLECT_ICE, settlement);
 
 		   		// Check for # of embarking missions.

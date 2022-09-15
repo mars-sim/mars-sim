@@ -14,30 +14,49 @@ import org.mars_sim.msp.core.Msg;
  * A phase of a mission.
  */
 public final class MissionPhase implements Serializable {
+	// Classificatino of the phase interms of Stage
+	public enum Stage {
+		PREPARATION,
+		ACTIVE,
+		CLOSEDOWN
+	};
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
+
+	private static final String MSG_KEY_PREFIX = "Mission.phase.";
 
 	// The phase name.
 	private String name;
 	
 	private String descriptionTemplate = null;
 
+	private Stage stage = Stage.ACTIVE;
+
 	/**
-	 * Constructor
+	 * Constructor for an ACTIVE phase
 	 * 
 	 * @param the phase name.
 	 */
 	public MissionPhase(String name) {
+		this(name, Stage.ACTIVE);
+	}
+
+	/**
+	 * Constructor
+	 * 
+	 * @param key The key for the phase name.
+	 */
+	public MissionPhase(String key, Stage stage) {
 		// Hack for the transition phase
-		if (name.startsWith("Mission.")) {
-			// Assume it a key
-			this.name = Msg.getString(name);
-			this.descriptionTemplate = Msg.getString(name + ".description");
+		if (!key.startsWith(MSG_KEY_PREFIX)) {
+			key = MSG_KEY_PREFIX + key;
 		}
-		else {
-			this.name = name;
-		}
+
+		this.name = Msg.getString(key);
+		this.descriptionTemplate = Msg.getString(key + ".description");
+
+		this.stage = stage;
 	}
 
 	/**
@@ -57,6 +76,13 @@ public final class MissionPhase implements Serializable {
 		return descriptionTemplate;
 	}
 	
+	/**
+	 * Get teh Stage associated wth this phase.
+	 */
+	public Stage getStage() {
+		return stage;
+	}
+
 	@Override
 	public String toString() {
 		return getName();

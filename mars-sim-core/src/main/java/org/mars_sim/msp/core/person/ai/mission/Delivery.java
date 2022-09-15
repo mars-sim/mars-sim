@@ -472,7 +472,7 @@ public class Delivery extends DroneMission implements CommerceMission {
 	protected int compareVehicles(Vehicle firstVehicle, Vehicle secondVehicle) {
 		int result = super.compareVehicles(firstVehicle, secondVehicle);
 
-		if ((result == 0) && isUsableVehicle(firstVehicle) && isUsableVehicle(secondVehicle)) {
+		if (result == 0) {
 			// Check if one has more general cargo capacity than the other.
 			double firstCapacity = firstVehicle.getCargoCapacity();
 			double secondCapacity = secondVehicle.getCargoCapacity();

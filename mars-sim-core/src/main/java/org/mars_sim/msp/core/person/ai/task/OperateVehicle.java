@@ -354,7 +354,7 @@ public abstract class OperateVehicle extends Task {
 	 */
 	private void turnOnBeacon(int resource) {
 		vehicle.setSpeed(0D);
-        MissionStatus status = VehicleMission.createResourceStatus(resource);
+        MissionStatus status = MissionStatus.createResourceStatus(resource);
         	
     	if (!vehicle.isBeaconOn()) {
     		Mission m = vehicle.getMission();

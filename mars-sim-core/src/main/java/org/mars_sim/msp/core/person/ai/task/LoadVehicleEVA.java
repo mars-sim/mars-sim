@@ -101,7 +101,7 @@ public class LoadVehicleEVA extends EVAOperation {
 	        	return;
 			}
 
-			loadingPlan = vehicleMission.prepareLoadingPlan(starter.getAssociatedSettlement());
+			loadingPlan = vehicleMission.getLoadingPlan();
 			
 			// Determine location for loading.
 			setOutsideLocation(vehicle);

@@ -393,7 +393,7 @@ public class TravelToSettlement extends RoverMission {
 	protected int compareVehicles(Vehicle firstVehicle, Vehicle secondVehicle) {
 		int result = super.compareVehicles(firstVehicle, secondVehicle);
 
-		if ((result == 0) && isUsableVehicle(firstVehicle) && isUsableVehicle(secondVehicle)) {
+		if (result == 0) {
 			// Check if one can hold more crew than the other.
 			if (((Rover) firstVehicle).getCrewCapacity() > ((Rover) secondVehicle).getCrewCapacity()) {
 				result = 1;

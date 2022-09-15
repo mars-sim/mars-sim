@@ -19,7 +19,7 @@ import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
-import org.mars_sim.msp.core.person.ai.mission.RoverMission;
+import org.mars_sim.msp.core.person.ai.mission.MissionUtil;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.structure.OverrideType;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -95,7 +95,7 @@ public class BuildingConstructionMissionMeta extends AbstractMetaMission {
 	            }
 	            
 	            // Check if min number of EVA suits at settlement.
-	        	if (RoverMission.getNumberAvailableEVASuitsAtSettlement(settlement) <
+	        	if (MissionUtil.getNumberAvailableEVASuitsAtSettlement(settlement) <
 	                    BuildingConstructionMission.MIN_PEOPLE) {
 	        		return 0;
 	            }

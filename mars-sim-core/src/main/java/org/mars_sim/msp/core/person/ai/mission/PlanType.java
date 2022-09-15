@@ -11,6 +11,7 @@ import org.mars_sim.msp.core.Msg;
 
 public enum PlanType {
 
+	PREPARING 				("Preparing"),
 	PENDING					(Msg.getString("PlanType.pending")), //$NON-NLS-1$
 	APPROVED				(Msg.getString("PlanType.approved")), //$NON-NLS-1$
 	NOT_APPROVED			(Msg.getString("PlanType.notApproved")); //$NON-NLS-1$

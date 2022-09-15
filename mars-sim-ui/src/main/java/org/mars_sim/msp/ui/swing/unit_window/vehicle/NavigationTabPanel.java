@@ -27,11 +27,13 @@ import javax.swing.border.EmptyBorder;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.person.ai.mission.AbstractVehicleMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.NavPoint;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -182,11 +184,10 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         boolean hasDestination = false;
 
         Mission mission = missionManager.getMissionForVehicle(vehicle);
-        if ((mission != null) && (mission instanceof VehicleMission)) {
+        if (mission instanceof VehicleMission) {
 
             VehicleMission vehicleMission = (VehicleMission) mission;
-            if (vehicleMission != null
-            		&& vehicleMission.getTravelStatus().equals(VehicleMission.TRAVEL_TO_NAVPOINT)) {
+            if (vehicleMission.getTravelStatus().equals(AbstractVehicleMission.TRAVEL_TO_NAVPOINT)) {
                 hasDestination = true;
                 destinationLocationCache = vehicleMission.getNextNavpoint().getLocation();
                 NavPoint destinationPoint = vehicleMission.getNextNavpoint();
@@ -198,7 +199,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
                 }
                 else {
                     // If destination is coordinates, add destination text label.
-                    destinationTextCache = Conversion.capitalize(destinationPoint.getDescription());//"A Navpoint";
+                    destinationTextCache = Conversion.capitalize(destinationPoint.getDescription());
                     destinationTextLabel.setText(destinationTextCache);
                     destinationLabelPanel.add(destinationTextLabel);
                 }
@@ -237,7 +238,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         // Prepare distance label.
         String distanceText;
 		if ((mission instanceof VehicleMission) &&
-                ((VehicleMission) mission).getTravelStatus().equals(VehicleMission.TRAVEL_TO_NAVPOINT)) {
+                ((VehicleMission) mission).getTravelStatus().equals(AbstractVehicleMission.TRAVEL_TO_NAVPOINT)) {
         	try {
         		remainingDistanceCache = ((VehicleMission) mission).getTotalDistanceRemaining();
         	}
@@ -340,8 +341,8 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         
         boolean hasDestination = false;
         		
-        if ((mission != null) && (mission instanceof VehicleMission)
-                && ((VehicleMission) mission).getTravelStatus().equals(VehicleMission.TRAVEL_TO_NAVPOINT)) {
+        if ((mission instanceof VehicleMission)
+                && ((VehicleMission) mission).getTravelStatus().equals(AbstractVehicleMission.TRAVEL_TO_NAVPOINT)) {
         	NavPoint destinationPoint = ((VehicleMission) mission).getNextNavpoint();
         	
         	hasDestination = true;
@@ -378,8 +379,8 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         
 
         // Update latitude and longitude panels if necessary.
-        if ((mission != null) && (mission instanceof VehicleMission)
-                && ((VehicleMission) mission).getTravelStatus().equals(VehicleMission.TRAVEL_TO_NAVPOINT)) {
+        if ((mission instanceof VehicleMission)
+                && ((VehicleMission) mission).getTravelStatus().equals(AbstractVehicleMission.TRAVEL_TO_NAVPOINT)) {
             VehicleMission vehicleMission = (VehicleMission) mission;
         	if (destinationLocationCache == null)
         		destinationLocationCache = new Coordinates(vehicleMission.getNextNavpoint().getLocation());
@@ -399,35 +400,26 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         }
 
         // Update distance to destination if necessary.
-        if ((mission != null) && (mission instanceof VehicleMission)) {
+        if (mission instanceof VehicleMission) {
             VehicleMission vehicleMission = (VehicleMission) mission;
-        	try {
-        		if (remainingDistanceCache != vehicleMission.getTotalDistanceRemaining()) {
-        			remainingDistanceCache = vehicleMission.getTotalDistanceRemaining();
-        			remainingDistanceLabel.setText(DECIMAL_PLACES1.format(remainingDistanceCache) + " km");
-        		}
-        	}
-        	catch (Exception e) {
-        		logger.log(Level.SEVERE,"Error getting current leg remaining distance.");
-        	}
-        }
-        else {
-        	remainingDistanceCache = 0D;
-        	remainingDistanceLabel.setText("");
-        }
+            if (remainingDistanceCache != vehicleMission.getTotalDistanceRemaining()) {
+                remainingDistanceCache = vehicleMission.getTotalDistanceRemaining();
+                remainingDistanceLabel.setText(DECIMAL_PLACES1.format(remainingDistanceCache) + " km");
+            }
 
-        // Update ETA if necessary
-        if ((mission != null) && (mission instanceof VehicleMission)) {
-            VehicleMission vehicleMission = (VehicleMission) mission;
-            if (vehicleMission.getLegETA() != null) {
-                if (!etaCache.equals(vehicleMission.getLegETA().toString())) {
-                    etaCache = vehicleMission.getLegETA().toString();
-                    etaLabel.setText("" + etaCache);
+            MarsClock newETA = vehicleMission.getLegETA();
+            if (newETA != null) {
+                String newText = newETA.toString();
+                if (!etaCache.equals(newText)) {
+                    etaCache = newText;
+                    etaLabel.setText(etaCache);
                 }
             }
         }
         else {
-        	etaCache = "";
+        	remainingDistanceCache = 0D;
+        	remainingDistanceLabel.setText("");
+            etaCache = "";
         	etaLabel.setText("");
         }
 

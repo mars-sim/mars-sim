@@ -8,9 +8,19 @@
 package org.mars_sim.msp.core.person.ai.mission;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.goods.GoodsUtil;
+
 import java.io.Serializable;
 
 public class MissionStatus implements Serializable {
+
+	/**
+	 * Factory helper method to create a status based on a resource.
+	 */
+	public static MissionStatus createResourceStatus(int missingResourceId) {
+		String resourceName = GoodsUtil.getGood(missingResourceId).getName();
+		return new MissionStatus("Mission.status.noResources", resourceName);
+	}
 
 	private String name;
 

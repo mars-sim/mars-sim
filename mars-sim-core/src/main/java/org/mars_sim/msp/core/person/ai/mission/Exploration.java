@@ -328,7 +328,7 @@ public class Exploration extends EVAMission
 		int result = super.compareVehicles(firstVehicle, secondVehicle);
 
 		// Check of one rover has a research lab and the other one doesn't.
-		if ((result == 0) && (isUsableVehicle(firstVehicle)) && (isUsableVehicle(secondVehicle))) {
+		if (result == 0) {
 			boolean firstLab = ((Rover) firstVehicle).hasLab();
 			boolean secondLab = ((Rover) secondVehicle).hasLab();
 			if (firstLab && !secondLab)

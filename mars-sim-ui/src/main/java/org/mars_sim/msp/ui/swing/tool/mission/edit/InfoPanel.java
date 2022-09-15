@@ -35,6 +35,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.CollectResourcesMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionPhase;
+import org.mars_sim.msp.core.person.ai.mission.MissionUtil;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.task.utils.Worker;
@@ -250,15 +251,15 @@ public class InfoPanel extends JPanel {
 			// Check if go home action can be added.
 			int nextNavpointIndex = vehicleMission.getNextNavpointIndex();
 			if ((nextNavpointIndex > -1) && (nextNavpointIndex < (vehicleMission.getNumberOfNavpoints() - 1))) {
-				if (!mission.getPhase().equals(VehicleMission.EMBARKING))
+				if (mission.getPhase().getStage() == MissionPhase.Stage.ACTIVE)
 					actions.add(ACTION_HOME);
 			}
 
 			// Check if nearest settlement action can be added.
 			try {
-				Settlement closestSettlement = vehicleMission.findClosestSettlement();
+				Settlement closestSettlement = MissionUtil.findClosestSettlement(mission.getCurrentMissionLocation());
 				if ((closestSettlement != null) && !closestSettlement.equals(vehicleMission.getAssociatedSettlement())) {
-					if (!mission.getPhase().equals(VehicleMission.EMBARKING))
+					if (mission.getPhase().getStage() == MissionPhase.Stage.ACTIVE)
 						actions.add(ACTION_NEAREST);
 				}
 			}
@@ -281,8 +282,7 @@ public class InfoPanel extends JPanel {
 			MissionPhase phase = mission.getPhase();
 			Collection<Worker> membersAtLocation = new ArrayList<>();
 			if (rover != null) {
-				if (phase.equals(RoverMission.EMBARKING) || 
-						phase.equals(RoverMission.DISEMBARKING)) {
+				if (phase.getStage() == MissionPhase.Stage.PREPARATION) {
 					// Add available people and robots at the local settlement.
 					Settlement settlement = rover.getSettlement();
 					if (settlement != null) {

@@ -51,7 +51,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * A mission that involves driving a rover vehicle along a series of navpoints.
  */
-public abstract class RoverMission extends VehicleMission {
+public abstract class RoverMission extends AbstractVehicleMission {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -75,10 +75,6 @@ public abstract class RoverMission extends VehicleMission {
 	 * The marginal factor for the amount of food to be brought during a mission.
 	 */
 	private static final double FOOD_MARGIN = 2.25;
-
-	private static final String PHASE_1 = "phase 1";
-	private static final String MINING = "mining";
-	private static final String TRADING = "trading";
 
 	// What is the lowest fullness of an EVASuit to be usable
 	private static final double EVA_LOWEST_FILL = 0.5D;
@@ -271,34 +267,14 @@ public abstract class RoverMission extends VehicleMission {
 	protected void calculateMissionCapacity(int desiredCap) {
 		if (!isDone()) {
 			// Set mission capacity.
-			int availableSuitNum = getNumberAvailableEVASuitsAtSettlement(getStartingPerson().getAssociatedSettlement());
+			int availableSuitNum = MissionUtil.getNumberAvailableEVASuitsAtSettlement(getStartingPerson().getAssociatedSettlement());
 			if (availableSuitNum < desiredCap) {
 				desiredCap = availableSuitNum;
 			}
 			setMissionCapacity(desiredCap);
 		}
 	}
-	
-	/**
-	 * Gets the number of available EVA suits for a mission at a settlement.
-	 *
-	 * @param settlement the settlement to check.
-	 * @return number of available suits.
-	 */
-	public static int getNumberAvailableEVASuitsAtSettlement(Settlement settlement) {
 
-		if (settlement == null)
-			throw new IllegalArgumentException("Settlement is null");
-
-		int result = settlement.findNumContainersOfType(EquipmentType.EVA_SUIT);
-
-		// Leave one suit for settlement use.
-		if (result > 0) {
-			result--;
-		}
-		return result;
-	}
-    
 	/**
 	 * Performs the embark from settlement phase of the mission.
 	 *
@@ -871,39 +847,6 @@ public abstract class RoverMission extends VehicleMission {
 		return result;
 	}
 
-	/**
-	 * Checks to see if at least a minimum number of people are available for a
-	 * mission at a settlement.
-	 *
-	 * @param settlement the settlement to check.
-	 * @param minNum     minimum number of people required.
-	 * @return true if minimum people available.
-	 */
-	public static boolean minAvailablePeopleAtSettlement(Settlement settlement, int minNum) {
-		boolean result = false;
-		int min = minNum;
-		if (settlement != null) {
-
-			String template = settlement.getTemplate();
-			// Override the mininum num req if the settlement is too small
-			if (template.toLowerCase().contains(PHASE_1)
-					|| template.toLowerCase().contains(MINING)
-					|| template.toLowerCase().contains(TRADING))
-				min = 0;
-
-			int numAvailable = 0;
-			Iterator<Person> i = settlement.getIndoorPeople().iterator();
-			while (i.hasNext()) {
-				Person inhabitant = i.next();
-				if (!inhabitant.getMind().hasActiveMission())
-					numAvailable++;
-			}
-			if (numAvailable >= min)
-				result = true;
-		}
-
-		return result;
-	}
 
 	/**
 	 * Gets the optional containers for a Rover mission. Add a spare EVASuit

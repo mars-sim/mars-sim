@@ -10,6 +10,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.EmergencySupply;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
+import org.mars_sim.msp.core.person.ai.mission.MissionUtil;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
@@ -72,13 +73,13 @@ public class EmergencySupplyMeta extends AbstractMetaMission {
 	            	min_num = RoverMission.MIN_GOING_MEMBERS;
 	    	    
 	            // Check if min number of EVA suits at settlement.
-	            if (RoverMission.getNumberAvailableEVASuitsAtSettlement(settlement) < min_num) {
+	            if (MissionUtil.getNumberAvailableEVASuitsAtSettlement(settlement) < min_num) {
 	    	        return 0;
 	    	    }
 	
 	            missionProbability = EmergencySupply.BASE_STARTING_PROBABILITY;
 	
-	    		int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);	
+	    		int numEmbarked = MissionUtil.numEmbarkingMissions(settlement);	
 	    		int numThisMission = missionManager.numParticularMissions(MissionType.EMERGENCY_SUPPLY, settlement);
 	    		
 		   		// Check for # of embarking missions.
