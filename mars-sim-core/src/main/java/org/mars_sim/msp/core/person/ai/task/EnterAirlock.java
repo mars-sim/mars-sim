@@ -666,9 +666,11 @@ public class EnterAirlock extends Task implements Serializable {
 		// 1. Gets the suit instance
 		EVASuit suit = person.getSuit();
 		
+		// If a person is in the process of doffing off his EVA suit, one 
+		// must make sure the airlock must stay pressurized. But how ?
 		if (airlock.isPressurized()) {
 			
-			if (suit != null) {		
+			if (suit != null) {
 				
 				remainingDoffingTime -= time;
 
@@ -681,11 +683,9 @@ public class EnterAirlock extends Task implements Serializable {
 				logger.log((Unit)airlock.getEntity(), person, Level.WARNING, 4_000,
 						"did not possess an EVA suit in " + airlock.getEntity().toString()
 						+ ".");
-				// If a person is in the process of doffing off his EVA suit, one 
-				// must make sure the airlock will not change its state of being
-				// pressurized. 
-				// Or else right that after the person has taken off the suit,
-				// the person cannot go out.
+				
+				// Presumably, this person would have doffed the suit in order to get to this phase
+				canProceed = true;
 			}
 		}
 		
@@ -693,8 +693,9 @@ public class EnterAirlock extends Task implements Serializable {
 			logger.log((Unit)airlock.getEntity(), person, Level.WARNING, 4_000,
 				"Not pressurized. Walking back to the chamber and wait.");
 
-			// It's not pressurized yet, go back to the WALK_TO_CHAMBER phase and wait
-			setPhase(WALK_TO_CHAMBER);
+			// It's not pressurized yet, go back to the PRESSURIZE_CHAMBER phase and wait
+			setPhase(PRESSURIZE_CHAMBER);
+			
 			return time;
 		}
 
@@ -744,7 +745,7 @@ public class EnterAirlock extends Task implements Serializable {
 
 
 	/**
-	 * Performs cleaning up of EVA suit and onself.
+	 * Performs cleaning up of EVA suit and oneself.
 	 *
 	 * @param time
 	 * @return
@@ -753,14 +754,14 @@ public class EnterAirlock extends Task implements Serializable {
 
 		boolean canProceed = false;
 
-		if (!airlock.isPressurized()) {
-			// Go back to the previous phase
-			setPhase(PRESSURIZE_CHAMBER);
-			// Reset accumulatedTime back to zero
-			accumulatedTime = 0;
-			
-			return time * .75;
-		}
+//		if (!airlock.isPressurized()) {
+//			// Go back to the previous phase
+//			setPhase(PRESSURIZE_CHAMBER);
+//			// Reset accumulatedTime back to zero
+//			accumulatedTime = 0;
+//			
+//			return time * .75;
+//		}
 
 		if (inSettlement) {
 			boolean doneCleaning = false;
@@ -791,7 +792,6 @@ public class EnterAirlock extends Task implements Serializable {
 			addExperience(time);
 
 			setPhase(LEAVE_AIRLOCK);
-			
 		}
 		
 		return 0;

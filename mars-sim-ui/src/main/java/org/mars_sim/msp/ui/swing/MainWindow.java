@@ -1040,8 +1040,7 @@ extends JComponent implements ClockListener {
 			if (SimulationListener.SAVE_COMPLETED.equals(action)) {
 				// Save the current main window ui config
 				UIConfig.INSTANCE.saveFile(this);
-
-				logger.log(Level.CONFIG, "Done calling saveSimulation().");
+//				logger.log(Level.CONFIG, "Done calling saveSimulation().");
 			}
 		});
 
