@@ -197,8 +197,8 @@ public class CookMeal extends Task implements Serializable {
 
 		// If enough meals have been cooked for this meal, end task.
 		if (kitchen.getCookNoMore()) {
-			if (lastCookedMeal != null && !lastCookedMeal.isBlank())
-				logger.log(worker, Level.INFO, 0, "Ended cooking " + lastCookedMeal + ". Enough servings cooked.");
+//			if (lastCookedMeal != null && !lastCookedMeal.isBlank())
+//				logger.log(worker, Level.INFO, 0, "Ended cooking " + lastCookedMeal + ". Enough servings cooked.");
 //			else
 //				logger.log(worker, Level.INFO, 0, "Ended cooking. Enough servings cooked.");
 			endTask();
@@ -210,27 +210,28 @@ public class CookMeal extends Task implements Serializable {
 			workTime = time / 3;
 		}
 		
+		// Determine amount of effective work time based on "Cooking" skill.
+		int cookingSkill = getEffectiveSkillLevel();
+		if (cookingSkill == 0) {
+			workTime /= 2;
+		} else {
+			workTime += workTime * (.2D * (double) cookingSkill);
+		}
+
 		// Add this work to the kitchen.
 		String nameOfMeal = kitchen.addWork(workTime, worker);
+		
+		// Add experience
+		addExperience(time);
+
+		// Check for accident in kitchen.
+		checkForAccident(kitchenBuilding, time, 0.005);
 
 		if (nameOfMeal != null) {
 			lastCookedMeal = nameOfMeal;
+			logger.log(worker, Level.INFO, 4_000, Msg.getString("Task.description.cookMeal.detail.finish", nameOfMeal)); // $NON-NLS-1$
 			setDescription(Msg.getString("Task.description.cookMeal.detail.finish", nameOfMeal)); // $NON-NLS-1$
-
-			// Determine amount of effective work time based on "Cooking" skill.
-			int cookingSkill = getEffectiveSkillLevel();
-			if (cookingSkill == 0) {
-				workTime /= 2;
-			} else {
-				workTime += workTime * (.2D * (double) cookingSkill);
-			}
-
-			// Add experience
-			addExperience(time);
-
-			// Check for accident in kitchen.
-			checkForAccident(kitchenBuilding, time, 0.005);
-
+			endTask();
 		}
 
 		return 0D;

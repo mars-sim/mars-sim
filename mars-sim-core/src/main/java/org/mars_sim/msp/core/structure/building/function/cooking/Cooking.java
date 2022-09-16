@@ -434,7 +434,7 @@ public class Cooking extends Function {
 			double population = getPopulation();
 			double maxServings = population * building.getSettlement().getMealsReplenishmentRate();
 
-			int numSettlementCookedMeals = getTotalAvailableCookedMealsAtSettlement();//building.getSettlement());
+			int numSettlementCookedMeals = getTotalAvailableCookedMealsAtSettlement();
 			if (numSettlementCookedMeals >= maxServings) {
 				cookNoMore = true;
 			}

@@ -72,13 +72,11 @@ public class TabPanelCooking extends TabPanel {
 	private int dayCache = 1;
 
 	private Set<String> nameSet;
-	private List<String> nameList;;
+	private List<String> nameList;
 
 	private JTable table;
 	private CookingTableModel cookingTableModel;
 
-
-	
 	/** The number of available meals. */
 	private JLabel availableMealsLabel;
 	private int availableMealsCache = 0;
@@ -499,7 +497,11 @@ public class TabPanelCooking extends TabPanel {
 		}
 
 		public Object getValueAt(int row, int column) {
+			if (nameList.isEmpty())
+				return null;
+			
 			Object result = null;
+			
 			String name = nameList.get(row);
 
 			if (column == 0)
@@ -575,7 +577,7 @@ public class TabPanelCooking extends TabPanel {
 			numRow = allTimeMap.keySet().size();
 			nameSet = allTimeMap.keySet();
 			// nameSet = servingsSet.elementSet(); // or using servingsSet
-			nameList = new ArrayList<String>(nameSet);
+			nameList = new ArrayList<>(nameSet);
 		}
 
 		/**

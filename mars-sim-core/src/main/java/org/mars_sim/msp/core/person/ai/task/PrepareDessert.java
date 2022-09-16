@@ -55,7 +55,7 @@ public class PrepareDessert extends Task implements Serializable {
 	private PreparingDessert kitchen;
 
 	/**
-	 * Constructor.
+	 * Constructor 1.
 	 * 
 	 * @param person the person performing the task.
 	 * @throws Exception if error constructing task.
@@ -74,7 +74,26 @@ public class PrepareDessert extends Task implements Serializable {
 			endTask();
 		}
 	}
-	
+
+	/**
+	 * Constructor 2.
+	 * 
+	 * @param robot the robot performing the task.
+	 * @throws Exception if error constructing task.
+	 */
+	public PrepareDessert(Robot robot) {
+		// Use Task constructor
+		super(NAME, robot, true, false, STRESS_MODIFIER, SkillType.COOKING, 25D);
+
+		// Get available kitchen if any.
+		Building kitchenBuilding = getAvailableKitchen(robot);
+
+		if (kitchenBuilding != null) {
+			initDessert(kitchenBuilding);
+		} else
+			endTask();
+	}
+
 	private void initDessert(Building kitchenBuilding) {
 
 		kitchen = kitchenBuilding.getPreparingDessert();
@@ -98,20 +117,7 @@ public class PrepareDessert extends Task implements Serializable {
 		}
 
 	}
-
-	public PrepareDessert(Robot robot) {
-		// Use Task constructor
-		super(NAME, robot, true, false, STRESS_MODIFIER, SkillType.COOKING, 25D);
-
-		// Get available kitchen if any.
-		Building kitchenBuilding = getAvailableKitchen(robot);
-
-		if (kitchenBuilding != null) {
-			initDessert(kitchenBuilding);
-		} else
-			endTask();
-	}
-
+	
 	/**
 	 * Performs the method mapped to the task's current phase.
 	 * 
@@ -143,7 +149,7 @@ public class PrepareDessert extends Task implements Serializable {
 
 		// If enough desserts have been prepared for this meal time, end task.
 		if (kitchen.getMakeNoMoreDessert()) {
-			logger.log(worker, Level.FINE, 0, "ended preparing desserts : enough desserts prepared.");
+//			logger.log(worker, Level.INFO, 4_000, "ended preparing desserts: enough desserts prepared.");
 			endTask();
 			return time * .75;
 		}
@@ -177,6 +183,7 @@ public class PrepareDessert extends Task implements Serializable {
 		
 		if (nameOfDessert != null) {
 			// if nameOfDessert is done
+			logger.log(worker, Level.INFO, 4_000, Msg.getString("Task.description.prepareDessert.detail.finish", nameOfDessert));
 			setDescription(Msg.getString("Task.description.prepareDessert.detail.finish", nameOfDessert)); // $NON-NLS-1$
 			endTask();
 		}

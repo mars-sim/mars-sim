@@ -24,7 +24,7 @@ public class PreparedDessert implements Serializable {
 	/**
 	 * The time (millisols) between when the dessert is made and when it expires.
 	 */
-	private static final double SHELF_LIFE = 150D;
+	private static final double SHELF_LIFE = 500D;
 
 	// Data members
 	private double quality;
@@ -33,9 +33,9 @@ public class PreparedDessert implements Serializable {
 
 	private String name;
 
-	private String producerName;
+//	private String producerName;
 
-	private PreparingDessert kitchen;
+//	private PreparingDessert kitchen;
 
 	private MarsClock expirationTime;
 
@@ -52,8 +52,8 @@ public class PreparedDessert implements Serializable {
 		this.dryMass = dryMass;
 		expirationTime = new MarsClock(creationTime);
 		expirationTime.addTime(SHELF_LIFE);
-		this.producerName = producerName;
-		this.kitchen = kitchen;
+//		this.producerName = producerName;
+//		this.kitchen = kitchen;
 	}
 
 	/**

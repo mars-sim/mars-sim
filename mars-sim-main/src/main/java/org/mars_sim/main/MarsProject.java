@@ -62,15 +62,10 @@ public class MarsProject {
 	
 	/** true if displaying graphic user interface. */
 	private boolean useGUI = true;
-	
 	private boolean useNew = false;
-	
 	private boolean useCleanUI = false;
-	
 	private boolean useSiteEditor;
-	
 	private boolean useProfile = false;
-	
 	private boolean isSandbox = false;
 
 	private InteractiveTerm interactiveTerm = new InteractiveTerm(false);

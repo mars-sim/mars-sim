@@ -1022,6 +1022,9 @@ extends TabPanel {
 		
 		
 		public void update() {
+			// The size of map needs to be updated
+			map = pc.getConsumptionHistory();
+			
 			// Find the lowest sol day in the data
 			solOffset = map.keySet().stream()
 					.mapToInt(v -> v)               

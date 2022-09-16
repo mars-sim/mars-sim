@@ -262,9 +262,9 @@ public class Settlement extends Structure implements Temporal,
 //	/** Amount of time (millisols) that the settlement has had zero population. */
 //	private double zeroPopulationTime;
 	/** The settlement's current meal replenishment rate. */
-	public double mealsReplenishmentRate = 0.6;
+	public double mealsReplenishmentRate = 0.3;
 	/** The settlement's current dessert replenishment rate. */
-	public double dessertsReplenishmentRate = 0.7;
+	public double dessertsReplenishmentRate = 0.4;
 	/** The settlement's current probability value for ice. */
 	private double iceProbabilityValue = 0;
 	/** The settlement's current probability value for regolith. */

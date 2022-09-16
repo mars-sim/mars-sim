@@ -29,7 +29,6 @@ public class PrepareDessertMeta extends MetaTask {
     private static final String NAME = Msg.getString(
             "Task.description.prepareDessertMeta"); //$NON-NLS-1$
 
-    private static final int PREP_TIME = 10;
     private static final double VALUE = 10;
     private static final int MOD = 5;
     private static final double CAP = 3_000D;
@@ -78,18 +77,18 @@ public class PrepareDessertMeta extends MetaTask {
                 // Check if enough desserts have been prepared at kitchen for this meal time.
                 boolean enoughMeals = kitchen.getMakeNoMoreDessert();
 
-                if ((numGoodRecipes > 0) && !enoughMeals) {
-
-                    result = numGoodRecipes * VALUE;
-                    // Crowding modifier.
-                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, kitchenBuilding);
-                    result *= TaskProbabilityUtil.getRelationshipModifier(person, kitchenBuilding);
-
-                    result = applyPersonModifier(result, person);
+                if (numGoodRecipes == 0 || enoughMeals) {
+             	   return 0;
                 }
                 
+                result = numGoodRecipes * VALUE;
+                // Crowding modifier.
+                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, kitchenBuilding);
+                // Effort-driven task modifier.
+                result *= person.getPerformanceRating();
+                
         		// If it's meal time, increase probability
-        		if (CookMeal.isMealTime(person, PREP_TIME)) {
+        		if (CookMeal.isMealTime(person, 0)) {
         			result *= MOD;
         		}
             }
@@ -120,17 +119,18 @@ public class PrepareDessertMeta extends MetaTask {
                // Check if enough desserts have been prepared at kitchen for this meal time.
                boolean enoughMeals = kitchen.getMakeNoMoreDessert();
 
-               if ((numGoodRecipes > 0) && !enoughMeals) {
-
-            	   result = numGoodRecipes * VALUE;
-                   // Crowding modifier.
-                   result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(robot, kitchenBuilding);
-                   // Effort-driven task modifier.
-                   result *= robot.getPerformanceRating();
+               if (numGoodRecipes == 0 || enoughMeals) {
+            	   return 0;
                }
                
+               result = numGoodRecipes * VALUE;
+               // Crowding modifier.
+               result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(robot, kitchenBuilding);
+               // Effort-driven task modifier.
+               result *= robot.getPerformanceRating();
+   
                // If it's meal time, increase probability
-               if (CookMeal.isMealTime(robot, PREP_TIME)) {
+               if (CookMeal.isMealTime(robot, 0)) {
             	   result *= MOD;
                }
            }

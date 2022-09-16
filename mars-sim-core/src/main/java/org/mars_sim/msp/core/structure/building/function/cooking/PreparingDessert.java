@@ -474,11 +474,15 @@ public class PreparingDessert extends Function {
 	 */
 	public String addWork(double workTime, Worker worker) {
 		String selectedDessert = null;
-
+		// TODO: should first choose the dessert to prepare and not wait until 
+		// preparingWorkTime has reached PREPARE_DESSERT_WORK_REQUIRED
+		
 		preparingWorkTime += workTime;
 
 		if ((preparingWorkTime >= PREPARE_DESSERT_WORK_REQUIRED) && !makeNoMoreDessert) {
 
+			preparingWorkTime = 0;
+			
 			// max allowable # of dessert servings per meal time.
 			double population = building.getSettlement().getIndoorPeopleCount();
 			double maxServings = population * building.getSettlement().getDessertsReplenishmentRate();
@@ -487,14 +491,18 @@ public class PreparingDessert extends Function {
 
 			if (numServings >= maxServings) {
 				makeNoMoreDessert = true;
-			} else {
+			} 
+			
+			else {
 				// List<String> dessertList = getAListOfDesserts();
 				// selectedDessert = makeADessert(getADessert(dessertList));
 				selectedDessert = makeADessert(getADessert(getListDessertsToMake()), worker);
+				// TODO: why not create an PreparedDessert object ?
+				return Conversion.capitalize(selectedDessert);
 			}
 		}
 
-		return Conversion.capitalize(selectedDessert);
+		return selectedDessert;
 	}
 
 	/**

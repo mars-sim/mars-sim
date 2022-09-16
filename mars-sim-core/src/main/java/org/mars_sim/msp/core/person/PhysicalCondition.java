@@ -2176,7 +2176,7 @@ public class PhysicalCondition implements Serializable {
 		Double d = consumption.getDataPoint(2);
 		if (d != null)
 			dessertEaten = d.doubleValue();
-		if (foodEaten + mealEaten + dessertEaten >= FOOD_CONSUMPTION * 1.25)
+		if (foodEaten + mealEaten + dessertEaten >= FOOD_CONSUMPTION * 1.5)
 			return true;
 
 		return false;
@@ -2190,7 +2190,7 @@ public class PhysicalCondition implements Serializable {
 	public boolean drinkEnoughWater() {
 		Double w = consumption.getDataPoint(3);
 		if (w != null) {
-			if (w.doubleValue() >= H2O_CONSUMPTION * 1.25)
+			if (w.doubleValue() >= H2O_CONSUMPTION * 1.5)
 				return true;
 		}
 
