@@ -984,25 +984,25 @@ extends TabPanel {
 				}
 				else if (column == 1) {
 					if (map.containsKey(rowSol))
-						result = fmt.format(map.get(rowSol).get(0));
+						result = fmt.format(returnAmount(rowSol, 0));
 					else
 						result = fmt.format(0);
 				}
 				else if (column == 2) {
 					if (map.containsKey(rowSol))
-						result = fmt.format(map.get(rowSol).get(1));
+						result = fmt.format(returnAmount(rowSol, 1));
 					else
 						result = fmt.format(0);
 				}
 				else if (column == 3) {
 					if (map.containsKey(rowSol))
-						result = fmt.format(map.get(rowSol).get(2));
+						result = fmt.format(returnAmount(rowSol, 2));
 					else
 						result = fmt.format(0);
 				}
 				else if (column == 4) {
 					if (map.containsKey(rowSol))
-						result = fmt.format(map.get(rowSol).get(3));
+						result = fmt.format(returnAmount(rowSol, 3));
 					else
 						result = fmt.format(0);
 				}
@@ -1010,8 +1010,18 @@ extends TabPanel {
 			return result;
 		}
 
+		private double returnAmount(int rowSol, int type) {
+			if (map.containsKey(rowSol)) {
+				Map<Integer, Double> map1 = map.get(rowSol);
+				Double amount = map1.get(type);
+				if (amount != null)
+					return amount.doubleValue();
+			}
+			return 0;
+		}
+		
+		
 		public void update() {
-			
 			// Find the lowest sol day in the data
 			solOffset = map.keySet().stream()
 					.mapToInt(v -> v)               

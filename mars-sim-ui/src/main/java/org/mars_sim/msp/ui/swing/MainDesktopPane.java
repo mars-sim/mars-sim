@@ -208,12 +208,12 @@ public class MainDesktopPane extends JDesktopPane
 		Dimension screenSize = getSize();
 //		logger.config("Resizing background to " + screenSize.width + " x " + screenSize.height);
 		
-		if (screenSize == null || screenSize.width == 0 || screenSize.height == 0) {
+		if (screenSize == null || screenSize.getWidth() == 0 || screenSize.getHeight() == 0) {
 			screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-			logger.config("Toolkit default screen size is " + screenSize.width + " x " + screenSize.height);
+			logger.config("Toolkit default screen size is " + screenSize.getWidth() + " x " + screenSize.getHeight());
 		}
 	
-		Image backgroundImage = createImage(screenSize.width, screenSize.height);
+		Image backgroundImage = createImage((int)screenSize.getWidth(), (int)screenSize.getHeight());
 		Graphics backgroundGraphics = backgroundImage.getGraphics();
 
 		for (int x = 0; x < backgroundImage.getWidth(this); x += baseImageIcon.getIconWidth()) {

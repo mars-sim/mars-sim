@@ -566,7 +566,7 @@ public class EatDrink extends Task implements Serializable {
 		// Obtain the dry mass of the dessert
 		double dryMass = cookedMeal.getDryMass();
 		// Proportion of meal being eaten over this time period.
-		// eatingSpeed ~ 0.01 kg / millisols
+		// eatingSpeed ~ 0.1 kg / millisols
 		double proportion = person.getEatingSpeed() * eatingTime;
 
 		if (cumulativeProportion + proportion > dryMass) {
