@@ -33,36 +33,34 @@
 	<agendas>
 		<agenda name="Advanced Technology"
 				objective="Prototyping Advanced Technologies"
-				findings="Updating the report of how advanced technologies may be tested and successfully deployed here."
-				samples="Mappping the morphology of this local region and where to use as test bed for developing advanced technologies of interest.">
+				findings="Updating the report of how advanced technologies may be tested and successfully deployed here"
+				samples="Mapping the morphology of this local region as test bed for developing advanced technologies of interest">
 			<sub-agenda description="Improve rover and flyer range and performance">
-				<modifier mission="AREOLOGY" value="2"/>
-				<modifier mission="BIOLOGY" value="2"/>
 				<modifier mission="EMERGENCY_SUPPLY" value="6"/>
 				<modifier mission="EXPLORATION" value="2"/>
 				<modifier mission="RESCUE_SALVAGE_VEHICLE" value="6"/>
 				<modifier mission="TRADE" value="3"/>
 				<modifier mission="TRAVEL_TO_SETTLEMENT" value="3"/>
-				<modifier science="ENGINEERING" value="2"/>
-				<modifier science="PHYSICS" value="6"/>
+				<modifier science="ENGINEERING" value="5"/>
+				<modifier science="PHYSICS" value="2"/>
 			</sub-agenda>
 			<sub-agenda description="Prototype new building material">
 				<modifier mission="COLLECT_REGOLITH" value="4"/>
 				<modifier mission="MINING" value="4"/>
 				<modifier mission="TRADE" value="2"/>
-				<modifier science="ENGINEERING" value="10"/>
+				<modifier science="ENGINEERING" value="9"/>
 			</sub-agenda>
 			<sub-agenda description="Test out new propulsion systems">
 				<modifier mission="DELIVERY" value="1"/>
 				<modifier mission="TRADE" value="1"/>
 				<modifier mission="TRAVEL_TO_SETTLEMENT" value="1"/>
-				<modifier science="ENGINEERING" value="9"/>
+				<modifier science="ENGINEERING" value="8"/>
 			</sub-agenda>
 		</agenda>
 		<agenda name="Building Colonies"
 				objective="Building Self-Sustaining Colonies"
-				findings="Updating the report of the best practices in resource utilization."
-				samples="Analyzing various geological and environment factors affecting how one may build several self-sustainable colonies in this region.">
+				findings="Updating the report of the best practices in resource utilization"
+				samples="Analyzing various geological and environment factors affecting how to build self-sustainable colonies">
 			<sub-agenda description="Study meteorological environmental factors">
 				<modifier mission="AREOLOGY" value="3"/>
 				<modifier mission="METEOROLOGY" value="9"/>
@@ -83,11 +81,12 @@
 		</agenda>
 		<agenda name="Finding Life"
 				objective="Finding Life Past and Present on Mars"
-				findings="Updating the report of the oxygen content in the soil samples."
-				samples="Analyzing the soil samples from various sites for the amount of oxygen and water contents.">
+				findings="Looking for signature of life in soil samples"
+				samples="Analyzing and Cataloging samples from various sites">
 			<sub-agenda description="Follow the water">
 				<modifier mission="BIOLOGY" value="3"/>
-				<modifier mission="COLLECT_ICE" value="9"/>
+				<modifier mission="COLLECT_ICE" value="8"/>
+				<modifier science="BIOLOGY" value="7"/>					
 			</sub-agenda>
 			<sub-agenda description="Search regions capable hosting/sustaining microbial life">
 				<modifier mission="BIOLOGY" value="9"/>
@@ -98,16 +97,17 @@
 			</sub-agenda>
 		</agenda>
 		<agenda name="Health Hazards"
-				objective="Researching Short and Long Term Health Hazards"
-				findings="Updating the report of the various health hazards for human beings on Mars."
-				samples="Analyzing the soil samples from various sites for possible human health hazards">
+				objective="Researching short and long term medical impact on human health"
+				findings="Reporting on the various health hazards for human beings living on Mars"
+				samples="Classifying environmental hazards for surface operation">
 			<sub-agenda description="Investigate biological hazards">
 				<modifier mission="BIOLOGY" value="6"/>
 				<modifier mission="COLLECT_ICE" value="2"/>
 				<modifier mission="METEOROLOGY" value="1"/>
-				<modifier science="BIOLOGY" value="10"/>
+				<modifier science="BIOLOGY" value="7"/>
+				<modifier science="MEDICINE" value="6"/>				
 			</sub-agenda>
-			<sub-agenda description="Study underground water reserve">
+			<sub-agenda description="Examining microbes in water ice">
 				<modifier mission="AREOLOGY" value="1"/>
 				<modifier mission="BIOLOGY" value="1"/>
 				<modifier mission="COLLECT_ICE" value="1"/>
@@ -122,13 +122,13 @@
 				<modifier mission="COLLECT_REGOLITH" value="1"/>
 				<modifier mission="TRADE" value="1"/>
 				<modifier mission="TRAVEL_TO_SETTLEMENT" value="1"/>
-				<modifier science="MEDICINE" value="10"/>
+				<modifier science="MEDICINE" value="9"/>
 			</sub-agenda>
 		</agenda>
 		<agenda name="Human Habitation"
 				objective="Determining Human Habitability"
-				findings="Updating the report of the habitability of a local region for human beings."
-				samples="Analyzing soil samples, atmospheric condition dataset and geographical factors of how suitable human beings are to live in this local region.">
+				findings="Identifying engineering challenge of improving human habitability on the surface of Mars"
+				samples="Analyzing atmospheric condition dataset and geographical factors of human habitability in a local region">
 			<sub-agenda description="Predict meteorological changes">
 				<modifier mission="AREOLOGY" value="3"/>
 				<modifier mission="METEOROLOGY" value="9"/>
@@ -136,41 +136,39 @@
 			</sub-agenda>
 			<sub-agenda description="Study underground water reserve">
 				<modifier mission="COLLECT_ICE" value="9"/>
+				<modifier mission="AREOLOGY" value="6"/>				
 			</sub-agenda>
 			<sub-agenda description="Characterize radiation countermeasures">
-				<modifier mission="BIOLOGY" value="3"/>
+				<modifier mission="BIOLOGY" value="8"/>
 				<modifier mission="METEOROLOGY" value="3"/>
 				<modifier science="MEDICINE" value="5"/>
 			</sub-agenda>
 		</agenda>
 		<agenda name="Planet Life"
-				objective="Making Life Multiplanetary"
+				objective="Making life multiplanetary"
 				findings="Updating the report of the best practices in resource utilization."
-				samples="Analyzing various geological and environment factors affecting how we may transform Mars into a more hospitable environment to support lives.">
+				samples="Analyzing factors affecting the transformation of Mars into hospitable environment to support colonization of Mars">
 			<sub-agenda description="Conceptualize interplanetary transportation network">
 				<modifier mission="DELIVERY" value="9"/>
 				<modifier mission="EMERGENCY_SUPPLY" value="3"/>
-				<modifier mission="EXPLORATION" value="3"/>
-				<modifier mission="METEOROLOGY" value="3"/>
-				<modifier mission="RESCUE_SALVAGE_VEHICLE" value="6"/>
-				<modifier mission="TRAVEL_TO_SETTLEMENT" value="3"/>
+				<modifier mission="EXPLORATION" value="2"/>
+				<modifier mission="METEOROLOGY" value="1"/>
+				<modifier mission="RESCUE_SALVAGE_VEHICLE" value="4"/>
+				<modifier mission="TRAVEL_TO_SETTLEMENT" value="8"/>
 			</sub-agenda>
 			<sub-agenda description="Study terraforming Mars environment">
 				<modifier mission="AREOLOGY" value="3"/>
 				<modifier mission="BIOLOGY" value="3"/>
 				<modifier mission="EXPLORATION" value="3"/>
 				<modifier science="AREOLOGY" value="3"/>
+				<modifier science="AREOLOGY" value="7"/>				
 			</sub-agenda>
 			<sub-agenda description="Investigate environmentally sustainable energy solutions">
 				<modifier mission="AREOLOGY" value="2"/>
-				<modifier mission="BIOLOGY" value="2"/>
-				<modifier mission="COLLECT_ICE" value="2"/>
-				<modifier mission="COLLECT_REGOLITH" value="2"/>
 				<modifier mission="DELIVERY" value="2"/>
-				<modifier mission="EXPLORATION" value="2"/>
-				<modifier mission="METEOROLOGY" value="2"/>
-				<modifier mission="MINING" value="2"/>
-				<modifier mission="TRADE" value="2"/>
+				<modifier mission="EXPLORATION" value="1"/>
+				<modifier mission="METEOROLOGY" value="1"/>
+				<modifier mission="TRADE" value="6"/>
 			</sub-agenda>
 		</agenda>
 		<agenda name="Prospect Minerals"
@@ -188,28 +186,31 @@
 			<sub-agenda description="Corroborate surface geological data with on-orbit scans">
 				<modifier mission="AREOLOGY" value="3"/>
 				<modifier mission="METEOROLOGY" value="3"/>
+				<modifier science="AREOLOGY" value="7"/>					
 			</sub-agenda>
 			<sub-agenda description="Core drill rock samples from selected locations">
 				<modifier mission="EXPLORATION" value="4"/>
 				<modifier mission="MINING" value="6"/>
 			</sub-agenda>
 		</agenda>
-		<agenda name="Science Knowledge"
+		<agenda name="Leapfrogs Science and Technology"
 				objective="Advancing Scientific Knowledge"
-				findings="Updating the report of possible research opportunities in this region."
-				samples="Analyzing the variation of gravity and atmospheric conditions in this local region for the impact of deploying a laser communication array.">
-			<sub-agenda description="Collect astronomical data">
-				<modifier mission="AREOLOGY" value="3"/>
-				<modifier mission="METEOROLOGY" value="6"/>
+				findings="Updating the report of possible research opportunities in this region"
+				samples="Analyzing the variation of gravity and atmospheric conditions for deploying a laser communication array">
+			<sub-agenda description="Analyze meteorite fragments">
+				<modifier mission="EXPLORATION" value="4"/>			
+				<modifier mission="AREOLOGY" value="5"/>
+				<modifier mission="MINING" value="6"/>
+				<modifier mission="METEOROLOGY" value="3"/>
 			</sub-agenda>
-			<sub-agenda description="Sample aerological data">
-				<modifier mission="AREOLOGY" value="9"/>
+			<sub-agenda description="Research environmental suitability for scientific projects">
+				<modifier mission="AREOLOGY" value="5"/>
 				<modifier mission="EXPLORATION" value="3"/>
 			</sub-agenda>
-			<sub-agenda description="Analyze bio-signature in rocks">
+			<sub-agenda description="Analyze bio-signature in rocks and water ice">
 				<modifier mission="BIOLOGY" value="8"/>
-				<modifier mission="COLLECT_ICE" value="2"/>
-				<modifier mission="METEOROLOGY" value="6"/>
+				<modifier mission="COLLECT_ICE" value="5"/>
+				<modifier mission="COLLECT_REGOLITH" value="5"/>
 				<modifier mission="MINING" value="2"/>
 			</sub-agenda>
 		</agenda>
@@ -219,10 +220,13 @@
 				samples="Analyzing structural integrity of geological features for building settlements in this region.">
 			<sub-agenda description="Engineer soil capable of hosting and sustaining organic microbial life">
 				<modifier mission="COLLECT_REGOLITH" value="3"/>
+				<modifier science="BIOLOGY" value="6"/>				
 			</sub-agenda>
 			<sub-agenda description="Improve building structural integrity">
 				<modifier mission="COLLECT_REGOLITH" value="1"/>
 				<modifier mission="TRADE" value="2"/>
+				<modifier science="ENGINEERING" value="8"/>
+				<modifier science="COMPUTING" value="6"/>										
 			</sub-agenda>
 			<sub-agenda description="Minimize physiological effects of long term exposure to martian environment">
 				<modifier mission="AREOLOGY" value="1"/>
@@ -246,16 +250,21 @@
 				<modifier mission="EXPLORATION" value="3"/>
 				<modifier mission="METEOROLOGY" value="3"/>
 				<modifier mission="TRADE" value="1"/>
+				<modifier science="PHYSICS" value="8"/>	
+				<modifier science="COMPUTING" value="4"/>								
 			</sub-agenda>
 			<sub-agenda description="Test new flexible space suit micro fabric">
 				<modifier mission="BIOLOGY" value="3"/>
 				<modifier mission="METEOROLOGY" value="3"/>
 				<modifier mission="TRADE" value="1"/>
+				<modifier science="ENGINEERING" value="8"/>				
 			</sub-agenda>
 			<sub-agenda description="Improve closed-loop life support system">
 				<modifier mission="COLLECT_REGOLITH" value="9"/>
 				<modifier mission="METEOROLOGY" value="3"/>
 				<modifier mission="MINING" value="3"/>
+				<modifier science="COMPUTING" value="4"/>
+				<modifier science="MEDICINE" value="6"/>										
 			</sub-agenda>
 		</agenda>
 		<agenda name="Surface Operations"
@@ -273,6 +282,7 @@
 				<modifier mission="EMERGENCY_SUPPLY" value="3"/>
 				<modifier mission="RESCUE_SALVAGE_VEHICLE" value="3"/>
 				<modifier mission="TRAVEL_TO_SETTLEMENT" value="2"/>
+				<modifier science="ENGINEERING" value="8"/>					
 			</sub-agenda>
 			<sub-agenda description="Characterize dynamics of human interactions">
 				<modifier mission="AREOLOGY" value="1"/>
@@ -336,7 +346,7 @@
 			<rover-name name="Gaofei" />    <!-- Chinese for flying up -->
 		</authority>
 		<authority code="CSA" name="Canadian Space Agency"
-					agenda="Science Knowledge">
+					agenda="Leapfrogs Science and Technology">
 			<country name="Canada"/>
 			<settlement-name name="New Quebec" />
 			<settlement-name name="New Columbia" />
