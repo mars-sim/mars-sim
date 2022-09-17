@@ -8,6 +8,7 @@ package org.mars_sim.msp.core.person.ai.task;
 
 import java.io.Serializable;
 import java.util.Iterator;
+import java.util.List;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Msg;
@@ -115,8 +116,33 @@ public class RepairInsideMalfunction extends Task implements Repair, Serializabl
 			}
 		}
 		else {
-			logger.warning(worker, "Could not find a malfunction to work on for in my vicinity.");
-			endTask();
+			for (Malfunctionable next : MalfunctionFactory.getAssociatedMalfunctionables(worker.getSettlement())) {
+				List<Malfunction> list = next.getMalfunctionManager().getMalfunctions();
+				if (!list.isEmpty()) {
+					Malfunction potential = next.getMalfunctionManager().getMalfunctions().get(0);
+					entity = next;
+					malfunction = potential;
+					break; // Stop searching
+				}
+			}
+			
+			if (entity != null) {
+				// Add person to location of malfunction if possible.
+				addPersonOrRobotToMalfunctionLocation(entity);
+
+				// Possible the Task could be aborted due to walking problems
+				if (!isDone()) {
+					RepairHelper.startRepair(malfunction, worker, MalfunctionRepairWork.INSIDE, entity);
+
+					// Initialize phase
+					addPhase(REPAIRING);
+					setPhase(REPAIRING);
+				}
+			}
+			else {
+				logger.warning(worker, 30_000, "Could not find a malfunction to work on in my vicinity.");
+				endTask();
+			}
 		}
 	}
 
@@ -213,7 +239,6 @@ public class RepairInsideMalfunction extends Task implements Repair, Serializabl
 		}
 
 		return workTimeLeft;
-//		return 0; // Used all available time repairing
 	}
 
 

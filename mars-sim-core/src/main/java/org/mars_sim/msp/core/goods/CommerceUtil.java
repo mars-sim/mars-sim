@@ -82,11 +82,11 @@ public final class CommerceUtil {
 		}
 
 		if (bestDeal == null) {
-			logger.info(startingSettlement, "No trading deal for " + commerceType.name());
+			logger.info(startingSettlement, 30_000, "No deal for a " + commerceType.name().toLowerCase() + " mission.");
 			return null;
 		}
 		logger.info(startingSettlement, "New best deal for " + commerceType.name() + " to " + bestDeal.getBuyer().getName()
-									+ " profit " + bestDeal.getProfit());
+									+ " profit " + bestDeal.getProfit() + ".");
 		return bestDeal;
 	}
 

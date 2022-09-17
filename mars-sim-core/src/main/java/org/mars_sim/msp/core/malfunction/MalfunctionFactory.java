@@ -18,6 +18,8 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitType;
+import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentOwner;
 import org.mars_sim.msp.core.person.Person;
@@ -111,7 +113,7 @@ public final class MalfunctionFactory implements Serializable {
 	 */
 	public static Collection<Malfunctionable> getLocalMalfunctionables(Worker source) {
 
-		Collection<Malfunctionable> entities = new ArrayList<Malfunctionable>();
+		Collection<Malfunctionable> entities = new ArrayList<>();
 
 		if (source.isInSettlement()) {
 			entities = getBuildingMalfunctionables(source.getSettlement());
@@ -157,7 +159,7 @@ public final class MalfunctionFactory implements Serializable {
 	 */
 	public static Collection<Malfunctionable> getMalfunctionables(Malfunctionable entity) {
 
-		Collection<Malfunctionable> entities = new ArrayList<Malfunctionable>();
+		Collection<Malfunctionable> entities = new ArrayList<>();
 
 		entities.add(entity);
 
@@ -227,6 +229,15 @@ public final class MalfunctionFactory implements Serializable {
 				entities.addAll(getLocalMalfunctionables(person));
 		}
 
+		// Get entities carried by people on EVA.
+		for (Equipment e: settlement.getEquipmentSet()) {
+			if (e.getUnitType() == UnitType.EVA_SUIT) {
+				EVASuit suit = (EVASuit)e;
+				if (suit.getMalfunctionManager().hasMalfunction())
+					entities.add(suit);
+			}
+		}
+		
 		return entities;
 	}
 

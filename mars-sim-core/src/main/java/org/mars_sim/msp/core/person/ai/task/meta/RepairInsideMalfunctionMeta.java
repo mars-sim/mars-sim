@@ -60,25 +60,25 @@ public class RepairInsideMalfunctionMeta extends MetaTask {
             if (!person.getPhysicalCondition().isFitByLevel(1000, 70, 1000))
             	return 0;
             
-            if (person.isInSettlement()) 
+            if (person.isInSettlement()) {
             	result = computeProbability(person.getSettlement(), person);
-            else {
-            	// Get the malfunctioning entity.
-            	Malfunctionable entity = RepairInsideMalfunction.getMalfunctionEntity(person);
-    			
-    			if (entity != null) {
-    				Malfunction malfunction = RepairInsideMalfunction.getMalfunction(person, entity);
-    						
-    				if (malfunction == null) {
-    						return 0;
-    				}
-    				result = scoreMalfunction(malfunction);
-    			}
-    			else {
-    				// No entity at fault
-    				return 0;
-    			}
             }
+
+        	// Get the malfunctioning entity.
+        	Malfunctionable entity = RepairInsideMalfunction.getMalfunctionEntity(person);
+			
+			if (entity != null) {
+				Malfunction malfunction = RepairInsideMalfunction.getMalfunction(person, entity);
+						
+				if (malfunction == null) {
+					return 0;
+				}
+				result += scoreMalfunction(malfunction);
+			}
+			else {
+				// No entity at fault
+				return 0;
+			}
             
 	        result = applyPersonModifier(result, person);
         }

@@ -61,8 +61,8 @@ public class UnloadVehicleGarageMeta extends MetaTask {
             // Check all vehicle missions occurring at the settlement.
             try {
                 int numVehicles = 0;
-                numVehicles += UnloadVehicleGarage.getAllMissionsNeedingUnloading(settlement, true).size();
-                numVehicles += UnloadVehicleGarage.getNonMissionVehiclesNeedingUnloading(settlement).size();
+                numVehicles += UnloadVehicleGarage.numMissionsNeedingUnloading(settlement, true);
+                numVehicles += UnloadVehicleGarage.numNonMissionVehiclesNeedingUnloading(settlement);
                 result = 100D * numVehicles;
             }
             catch (Exception e) {
@@ -99,8 +99,8 @@ public class UnloadVehicleGarageMeta extends MetaTask {
                 
                	Settlement settlement = robot.getAssociatedSettlement();
                 
-                numVehicles += UnloadVehicleGarage.getAllMissionsNeedingUnloading(settlement, true).size();
-                numVehicles += UnloadVehicleGarage.getNonMissionVehiclesNeedingUnloading(settlement).size();
+                numVehicles += UnloadVehicleGarage.numMissionsNeedingUnloading(settlement, true);
+                numVehicles += UnloadVehicleGarage.numNonMissionVehiclesNeedingUnloading(settlement);
                 result = 100D * numVehicles;
             }
             catch (Exception e) {

@@ -280,16 +280,69 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 	}
 
 	/**
+	 * Gets the number of vehicles that need unloading and aren't reserved for a
+	 * mission.
+	 *
+	 * @param settlement the settlement the vehicle is at.
+	 * @return number of vehicles.
+	 */
+	public static int numNonMissionVehiclesNeedingUnloading(Settlement settlement) {
+		int num = 0;
+
+		if (settlement != null) {
+			Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
+			while (i.hasNext()) {
+				Vehicle vehicle = i.next();
+				boolean needsUnloading = false;
+				if (VehicleType.isRover(vehicle.getVehicleType()) && !vehicle.isReserved()
+						&& (vehicle.getAssociatedSettlementID() == settlement.getIdentifier())) {
+					int peopleOnboard = ((Crewable)vehicle).getCrewNum();
+					if (peopleOnboard == 0) {
+						if (vehicle.getStoredMass() > 0D) {
+							needsUnloading = true;
+						}
+						if (vehicle instanceof Towing) {
+							if (((Towing) vehicle).getTowedVehicle() != null) {
+								needsUnloading = true;
+							}
+						}
+					}
+
+					int robotsOnboard = ((Crewable)vehicle).getRobotCrewNum();
+					if (robotsOnboard == 0) {
+						if (vehicle.getStoredMass() > 0D) {
+							needsUnloading = true;
+						}
+						if (vehicle instanceof Towing) {
+							if (((Towing) vehicle).getTowedVehicle() != null) {
+								needsUnloading = true;
+							}
+						}
+					}
+
+				}
+				
+				if (needsUnloading) { // && settlement.getBuildingManager().addToGarage(vehicle))
+					num++;
+				}
+			}
+		}
+
+		return num;
+	}
+	
+	/**
 	 * Gets a list of all disembarking vehicle missions at a settlement.
 	 *
 	 * @param settlement the settlement.
+	 * @param addToGarage
 	 * @return list of vehicle missions.
 	 */
 	public static List<Mission> getAllMissionsNeedingUnloading(Settlement settlement, boolean addToGarage) {
 
 		List<Mission> result = new ArrayList<>();
 
-		for(Mission mission : missionManager.getMissions()) {
+		for (Mission mission : missionManager.getMissions()) {
 			if (mission instanceof VehicleMission) {
 				VehicleMission vehicleMission = (VehicleMission) mission;
 
@@ -319,6 +372,39 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 	}
 
 	/**
+	 * Gets a number of disembarking vehicle missions at a settlement.
+	 *
+	 * @param settlement the settlement.
+	 * @param addToGarage
+	 * @return number of vehicle missions.
+	 */
+	public static int numMissionsNeedingUnloading(Settlement settlement, boolean addToGarage) {
+
+		int num = 0;
+
+		for (Mission mission : missionManager.getMissions()) {
+			if (mission instanceof VehicleMission) {
+				VehicleMission vehicleMission = (VehicleMission) mission;
+
+				if (vehicleMission.isVehicleUnloadableHere(settlement)) {
+					Vehicle vehicle = vehicleMission.getVehicle();
+
+					// If looking for garaged vehicles; then add to garage otherwise
+					// check vehicle is not in garage
+					if (!isFullyUnloaded(vehicle)) {
+						if ((addToGarage && settlement.getBuildingManager().addToGarage(vehicle))
+								|| (!addToGarage && !settlement.getBuildingManager().isInGarage(vehicle))) {
+							num++;
+						}
+					}
+				}
+			}
+		}
+
+		return num;
+	}
+	
+	/**
 	 * Gets a random vehicle mission unloading at the settlement.
 	 *
 	 * @return vehicle mission.
@@ -328,7 +414,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 		VehicleMission result = null;
 		List<Mission> unloadingMissions = getAllMissionsNeedingUnloading(worker.getSettlement(), true);
 
-		if (unloadingMissions.size() > 0) {
+		if (!unloadingMissions.isEmpty()) {
 			int index = RandomUtil.getRandomInt(unloadingMissions.size() - 1);
 			result = (VehicleMission) unloadingMissions.get(index);
 		}

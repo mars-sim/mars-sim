@@ -28,14 +28,9 @@ public class PreparedDessert implements Serializable {
 
 	// Data members
 	private double quality;
-
 	private double dryMass;
 
 	private String name;
-
-//	private String producerName;
-
-//	private PreparingDessert kitchen;
 
 	private MarsClock expirationTime;
 
@@ -45,15 +40,12 @@ public class PreparedDessert implements Serializable {
 	 * @param quality      the quality of the dessert
 	 * @param creationTime the time the dessert was cooked.
 	 */
-	public PreparedDessert(String name, double quality, double dryMass, MarsClock creationTime, String producerName,
-			PreparingDessert kitchen) {
+	public PreparedDessert(String name, double quality, double dryMass, MarsClock creationTime) {
 		this.quality = quality;
 		this.name = name;
 		this.dryMass = dryMass;
 		expirationTime = new MarsClock(creationTime);
 		expirationTime.addTime(SHELF_LIFE);
-//		this.producerName = producerName;
-//		this.kitchen = kitchen;
 	}
 
 	/**

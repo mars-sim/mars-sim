@@ -474,7 +474,7 @@ public class PreparingDessert extends Function {
 	 */
 	public String addWork(double workTime, Worker worker) {
 		String selectedDessert = null;
-		// TODO: should first choose the dessert to prepare and not wait until 
+		// Note: chould first choose the dessert to prepare and not wait until 
 		// preparingWorkTime has reached PREPARE_DESSERT_WORK_REQUIRED
 		
 		preparingWorkTime += workTime;
@@ -497,7 +497,6 @@ public class PreparingDessert extends Function {
 				// List<String> dessertList = getAListOfDesserts();
 				// selectedDessert = makeADessert(getADessert(dessertList));
 				selectedDessert = makeADessert(getADessert(getListDessertsToMake()), worker);
-				// TODO: why not create an PreparedDessert object ?
 				return Conversion.capitalize(selectedDessert);
 			}
 		}
@@ -568,7 +567,7 @@ public class PreparingDessert extends Function {
 
 			// Create a serving of dessert and add it into the list
 			servingsOfDessert.add(new PreparedDessert(selectedDessert, dessertQuality, dessertMassPerServing,
-					new MarsClock(marsClock), worker.getName(), this));
+					new MarsClock(marsClock)));
 
 			dessertCounterPerSol++;
 

@@ -72,8 +72,8 @@ public class EatDrink extends Task implements Serializable {
 	private static final int FOOD_ID = ResourceUtil.foodID;
 	private static final int WATER_ID = ResourceUtil.waterID;
 
-//	private static final int NUMBER_OF_MEAL_PER_SOL = 3;
-//	private static final int NUMBER_OF_DESSERT_PER_SOL = 4;
+	private static final int NUMBER_OF_MEAL_PER_SOL = 3;
+	private static final int NUMBER_OF_DESSERT_PER_SOL = 4;
 	
 	/** The conversion ratio of hunger to one serving of food. */	
 	private static final int HUNGER_RATIO_PER_FOOD_SERVING = 300;
@@ -97,22 +97,17 @@ public class EatDrink extends Task implements Serializable {
 	// Data members
 	private boolean food = false;
 	private boolean water = false;
+	private boolean hasNapkin = false;
 	
 	private int meals = 0;
 	private int desserts = 0;
+	
 	private double foodAmount = 0;
 	/** how much eaten [in kg]. */
 	private double cumulativeProportion = 0;
-	
 	private double totalEatingTime = 0D;
 	private double eatingDuration = 0D;
-	
-//	private double totalDessertEatingTime = 0D;
-//	private double dessertEatingDuration = 0D;
-	
 	private double waterEachServing;
-
-	private boolean hasNapkin = false;
 
 	private CookedMeal cookedMeal;
 	private PreparedDessert nameOfDessert;
@@ -143,10 +138,10 @@ public class EatDrink extends Task implements Serializable {
 		eatingDuration = dur;// * MEAL_EATING_PROPORTION;
 //		dessertEatingDuration = dur;// * DESSERT_EATING_PROPORTION;
 
-		foodConsumedPerServing = personConfig.getFoodConsumptionRate();// / NUMBER_OF_MEAL_PER_SOL;			
+		foodConsumedPerServing = personConfig.getFoodConsumptionRate() / NUMBER_OF_MEAL_PER_SOL;			
 		millisolPerKgFood = HUNGER_RATIO_PER_FOOD_SERVING / foodConsumedPerServing; 
 		
-		dessertConsumedPerServing = personConfig.getDessertConsumptionRate();// / NUMBER_OF_DESSERT_PER_SOL;
+		dessertConsumedPerServing = personConfig.getDessertConsumptionRate() / NUMBER_OF_DESSERT_PER_SOL;
 		millisolPerKgDessert = HUNGER_RATIO_PER_FOOD_SERVING / dessertConsumedPerServing;
 		
 		// ~.03 kg per serving
@@ -366,17 +361,14 @@ public class EatDrink extends Task implements Serializable {
 	 */
 	private double lookingforFoodPhase(double time) {
 		double remainingTime = 0;
-		
+
 		// Determine preferred kitchen to get meal.
 		if (kitchen == null) {
 			kitchen = getKitchenWithMeal(person);
 
 			if (kitchen == null) {
-				int rand = RandomUtil.getRandomInt(5);
-				if (rand == 0)
-					setPhase(EAT_DESSERT);
-				else
-					setPhase(EAT_PRESERVED_FOOD);
+				setPhaseToEatPreservedFoodOrDessert();
+				return remainingTime;
 			}
 		}
 
@@ -390,20 +382,24 @@ public class EatDrink extends Task implements Serializable {
 				setPhase(EAT_MEAL);
 			}
 			else {
-				int rand = RandomUtil.getRandomInt(5);
-				if (rand == 0)
-					setPhase(EAT_DESSERT);
-				else
-					setPhase(EAT_PRESERVED_FOOD);
+				setPhaseToEatPreservedFoodOrDessert();
+				return remainingTime;
 			}
 			
 			if (canWalk)
 				return remainingTime;
 		}
 
-		return time;
+		return remainingTime;
 	}
 
+	private void setPhaseToEatPreservedFoodOrDessert() {
+		int rand = RandomUtil.getRandomInt(5);
+		if (rand == 0)
+			setPhase(EAT_DESSERT);
+		else
+			setPhase(EAT_PRESERVED_FOOD);
+	}
 
 	/**
 	 * Performs eating preserved food phase.
@@ -856,7 +852,6 @@ public class EatDrink extends Task implements Serializable {
 		// when the dessert was made.
 		double proportion = PreparingDessert.getDessertMassPerServing() - dryMass;
 		if (proportion > 0) {
-//			System.out.println("consumeDessertWater's proportion " + proportion);
 			// Record the amount consumed
 			pc.recordFoodConsumption(proportion, 2);
 		}

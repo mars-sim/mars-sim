@@ -197,10 +197,6 @@ public class CookMeal extends Task implements Serializable {
 
 		// If enough meals have been cooked for this meal, end task.
 		if (kitchen.getCookNoMore()) {
-//			if (lastCookedMeal != null && !lastCookedMeal.isBlank())
-//				logger.log(worker, Level.INFO, 0, "Ended cooking " + lastCookedMeal + ". Enough servings cooked.");
-//			else
-//				logger.log(worker, Level.INFO, 0, "Ended cooking. Enough servings cooked.");
 			endTask();
 			return time;
 		}
