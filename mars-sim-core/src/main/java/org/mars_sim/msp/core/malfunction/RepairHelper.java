@@ -29,36 +29,37 @@ public final class RepairHelper {
 	}
 
 	/**
-	 * Start working on a Malfunction. This selects Deputy or Cheif if available and registers for work.
+	 * Prepares working on a Malfunction. This selects Deputy or Chief if available and registers for work.
+	 * 
 	 * @param malfunction
 	 * @param repairer
 	 * @param type
 	 * @param entity
 	 */
-	public static void startRepair(Malfunction malfunction, Worker repairer,
+	public static void prepareRepair(Malfunction malfunction, Worker repairer,
 									MalfunctionRepairWork type, Malfunctionable entity) {
 
 		String chief = malfunction.getChiefRepairer(type);
 		String deputy = malfunction.getDeputyRepairer(type);
 		String myName = repairer.getName();
 		if (chief == null) {
-			logger.fine(repairer, "Appointed as the chief repairer handling the "
+			 malfunction.setChiefRepairer(type, myName);
+			logger.info(repairer, 10_000L, "Appointed as the chief repairer handling the "
 					+ type.getName() + " work for '"
 					+ malfunction.getName() + "' on "
 					+ entity.getNickName());
-			 malfunction.setChiefRepairer(type, myName);
 		}
 		else if ((deputy == null) && !chief.equals(myName)) {
-			logger.fine(repairer, "Appointed as the deputy repairer handling the "
+			malfunction.setDeputyRepairer(type, myName);
+			logger.info(repairer, 10_000L, "Appointed as the deputy repairer handling the "
 					+ type.getName() + " work for '"
 					+ malfunction.getName() + "' on "
 					+ entity.getNickName());
-			malfunction.setDeputyRepairer(type, myName);
 		}
 
-		logger.log(repairer, Level.FINEST, 500, "About to repair malfunction.");
+		logger.log(repairer, Level.FINEST, 10_000, "About to repair malfunction.");
 
-		// Add time to reserved a slot
+		// Add name to reserved a slot
 		malfunction.addWorkTime(type, 0D, myName);
 	}
 

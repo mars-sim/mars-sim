@@ -41,15 +41,15 @@ public final class CommerceUtil {
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(CommerceUtil.class.getName());
 
+	private static final int OXYGEN_ID = ResourceUtil.oxygenID;
+	private static final int WATER_ID = ResourceUtil.waterID;
+	private static final int FOOD_ID = ResourceUtil.foodID;
+	
 	/**
 	 * Credit limit under which a seller is willing to sell goods to a buyer. Buyer
 	 * must pay off credit to under limit to continue buying.
 	 */
 	private static final double SELL_CREDIT_LIMIT = 10_000_000D;
-
-	private static final int OXYGEN_ID = ResourceUtil.oxygenID;
-	private static final int WATER_ID = ResourceUtil.waterID;
-	private static final int FOOD_ID = ResourceUtil.foodID;
 
 	/** The factor for estimating the adjusted fuel economy. */
 	private static final double FE_FACTOR = 3.0;

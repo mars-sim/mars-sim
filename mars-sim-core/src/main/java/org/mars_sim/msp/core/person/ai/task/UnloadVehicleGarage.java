@@ -124,7 +124,8 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 	}
 
 	/**
-	 * Initialise the task
+	 * Initialises the task.
+	 * 
 	 * @param starter
 	 */
 	private void init(Worker starter) {
@@ -289,46 +290,51 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 	public static int numNonMissionVehiclesNeedingUnloading(Settlement settlement) {
 		int num = 0;
 
-		if (settlement != null) {
-			Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
-			while (i.hasNext()) {
-				Vehicle vehicle = i.next();
-				boolean needsUnloading = false;
-				if (VehicleType.isRover(vehicle.getVehicleType()) && !vehicle.isReserved()
-						&& (vehicle.getAssociatedSettlementID() == settlement.getIdentifier())) {
-					int peopleOnboard = ((Crewable)vehicle).getCrewNum();
-					if (peopleOnboard == 0) {
-						if (vehicle.getStoredMass() > 0D) {
-							needsUnloading = true;
-						}
-						if (vehicle instanceof Towing) {
-							if (((Towing) vehicle).getTowedVehicle() != null) {
-								needsUnloading = true;
-							}
-						}
-					}
-
-					int robotsOnboard = ((Crewable)vehicle).getRobotCrewNum();
-					if (robotsOnboard == 0) {
-						if (vehicle.getStoredMass() > 0D) {
-							needsUnloading = true;
-						}
-						if (vehicle instanceof Towing) {
-							if (((Towing) vehicle).getTowedVehicle() != null) {
-								needsUnloading = true;
-							}
-						}
-					}
-
-				}
-				
-				if (needsUnloading) { // && settlement.getBuildingManager().addToGarage(vehicle))
-					num++;
-				}
+		Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
+		while (i.hasNext()) {
+			Vehicle vehicle = i.next();
+			boolean needsUnloading = false;
+			if (VehicleType.isRover(vehicle.getVehicleType()) && !vehicle.isReserved()
+					&& (vehicle.getAssociatedSettlementID() == settlement.getIdentifier())) {
+				needsUnloading = checkVehicle(vehicle);
+			}
+			
+			if (needsUnloading) {
+				num++;
 			}
 		}
 
 		return num;
+	}
+	
+	public static boolean checkVehicle(Vehicle vehicle) {
+		boolean needsUnloading = false;
+		
+		int peopleOnboard = ((Crewable)vehicle).getCrewNum();
+		if (peopleOnboard == 0) {
+			needsUnloading = isVehicleEmpty(vehicle, peopleOnboard);
+		}
+
+		int robotsOnboard = ((Crewable)vehicle).getRobotCrewNum();
+		if (robotsOnboard == 0) {
+			needsUnloading = isVehicleEmpty(vehicle, robotsOnboard);
+		}
+		
+		return needsUnloading;
+	}
+	
+	public static boolean isVehicleEmpty(Vehicle vehicle, int peopleOnboard) {
+		boolean needsUnloading = false;
+		
+		if (vehicle.getStoredMass() > 0D) {
+			needsUnloading = true;
+		}
+		if (vehicle instanceof Towing
+			&& ((Towing) vehicle).getTowedVehicle() != null) {
+				needsUnloading = true;
+		}
+		
+		return needsUnloading;
 	}
 	
 	/**
@@ -358,11 +364,10 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 
 					// If looking for garaged vehicles; then add to garage otherwise
 					// check vehicle is not in garage
-					if (!isFullyUnloaded(vehicle)) {
-						if ((addToGarage && settlement.getBuildingManager().addToGarage(vehicle))
-								|| (!addToGarage && !settlement.getBuildingManager().isInGarage(vehicle))) {
+					if (!isFullyUnloaded(vehicle)
+						&& (addToGarage && settlement.getBuildingManager().addToGarage(vehicle)
+						|| !addToGarage && !settlement.getBuildingManager().isInGarage(vehicle))) {
 							result.add(vehicleMission);
-						}
 					}
 				}
 			}
@@ -391,11 +396,10 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 
 					// If looking for garaged vehicles; then add to garage otherwise
 					// check vehicle is not in garage
-					if (!isFullyUnloaded(vehicle)) {
-						if ((addToGarage && settlement.getBuildingManager().addToGarage(vehicle))
-								|| (!addToGarage && !settlement.getBuildingManager().isInGarage(vehicle))) {
+					if (!isFullyUnloaded(vehicle)
+						&& (addToGarage && settlement.getBuildingManager().addToGarage(vehicle)
+						|| !addToGarage && !settlement.getBuildingManager().isInGarage(vehicle))) {
 							num++;
-						}
 					}
 				}
 			}

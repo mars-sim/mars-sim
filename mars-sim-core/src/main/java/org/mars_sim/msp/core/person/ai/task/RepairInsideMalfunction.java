@@ -84,14 +84,9 @@ public class RepairInsideMalfunction extends Task implements Repair, Serializabl
 	}
 
 	/**
-	 * Find a repair with available slots and register for the work.
+	 * Chooses the malfunctioning entity.
 	 */
-	private void initRepair() {
-		if (worker.isOutside()) {
-			endTask();
-			return;
-		}
-
+	private void chooseEntity() {
 		// Get the malfunctioning entity.
 		for (Malfunctionable next : MalfunctionFactory.getLocalMalfunctionables(worker)) {
 			Malfunction potential = next.getMalfunctionManager().getMostSeriousMalfunctionInNeed(MalfunctionRepairWork.INSIDE);
@@ -101,19 +96,23 @@ public class RepairInsideMalfunction extends Task implements Repair, Serializabl
 				break; // Stop searching
 			}
 		}
+	}
+	
+	/**
+	 * Finds a repair with available slots and register for the work.
+	 */
+	private void initRepair() {
+		if (worker.isOutside()) {
+			endTask();
+			return;
+		}
+
+		// Choose the malfunctioning entity
+		chooseEntity();
 
 		if (entity != null) {
-			// Add person to location of malfunction if possible.
-			addPersonOrRobotToMalfunctionLocation(entity);
-
-			// Possible the Task could be aborted due to walking problems
-			if (!isDone()) {
-				RepairHelper.startRepair(malfunction, worker, MalfunctionRepairWork.INSIDE, entity);
-
-				// Initialize phase
-				addPhase(REPAIRING);
-				setPhase(REPAIRING);
-			}
+			// Prep up for repair
+			prepareForRepair();
 		}
 		else {
 			for (Malfunctionable next : MalfunctionFactory.getAssociatedMalfunctionables(worker.getSettlement())) {
@@ -127,17 +126,8 @@ public class RepairInsideMalfunction extends Task implements Repair, Serializabl
 			}
 			
 			if (entity != null) {
-				// Add person to location of malfunction if possible.
-				addPersonOrRobotToMalfunctionLocation(entity);
-
-				// Possible the Task could be aborted due to walking problems
-				if (!isDone()) {
-					RepairHelper.startRepair(malfunction, worker, MalfunctionRepairWork.INSIDE, entity);
-
-					// Initialize phase
-					addPhase(REPAIRING);
-					setPhase(REPAIRING);
-				}
+				// Prep up for repair
+				prepareForRepair();
 			}
 			else {
 				logger.warning(worker, 30_000, "Could not find a malfunction to work on in my vicinity.");
@@ -146,6 +136,23 @@ public class RepairInsideMalfunction extends Task implements Repair, Serializabl
 		}
 	}
 
+	/**
+	 * Prepares for a repair.
+	 */
+	private void prepareForRepair() {
+		// Add person to location of malfunction if possible.
+		addPersonOrRobotToMalfunctionLocation(entity);
+
+		// Possible the Task could be aborted due to walking problems
+		if (!isDone()) {
+			RepairHelper.prepareRepair(malfunction, worker, MalfunctionRepairWork.INSIDE, entity);
+
+			// Initialize phase
+			addPhase(REPAIRING);
+			setPhase(REPAIRING);
+		}
+	}
+	
 	@Override
 	protected double performMappedPhase(double time) {
 		if (getPhase() == null) {

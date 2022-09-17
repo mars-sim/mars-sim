@@ -368,27 +368,25 @@ public class EatDrink extends Task implements Serializable {
 
 			if (kitchen == null) {
 				setPhaseToEatPreservedFoodOrDessert();
-				return remainingTime;
+				return time * .75;
 			}
 		}
 
-		if (kitchen != null) {
-			// Walk to kitchen.
-			boolean canWalk = walkToActivitySpotInBuilding(kitchen.getBuilding(), FunctionType.DINING, true);
+		// Walk to kitchen.
+		boolean canWalk = walkToActivitySpotInBuilding(kitchen.getBuilding(), FunctionType.DINING, true);
 
-			// Pick up a meal at kitchen if one is available.
-			cookedMeal = kitchen.chooseAMeal(person);
-			if (cookedMeal != null) {
-				setPhase(EAT_MEAL);
-			}
-			else {
-				setPhaseToEatPreservedFoodOrDessert();
-				return remainingTime;
-			}
-			
-			if (canWalk)
-				return remainingTime;
+		// Pick up a meal at kitchen if one is available.
+		cookedMeal = kitchen.chooseAMeal(person);
+		if (cookedMeal != null) {
+			setPhase(EAT_MEAL);
 		}
+		else {
+			setPhaseToEatPreservedFoodOrDessert();
+			return time * .75;
+		}
+		
+		if (canWalk)
+			return remainingTime * .5;
 
 		return remainingTime;
 	}

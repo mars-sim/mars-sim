@@ -101,11 +101,9 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 
 			// Can fail to get a path and Task will be Done
 			if (!isDone()) {
-//	            if (person.isInside()) {
-	            	setPhase(WALK_TO_OUTSIDE_SITE);
-//	            }
+	            setPhase(WALK_TO_OUTSIDE_SITE);
 
-				RepairHelper.startRepair(malfunction, person, MalfunctionRepairWork.EVA, entity);
+				RepairHelper.prepareRepair(malfunction, person, MalfunctionRepairWork.EVA, entity);
 
 				// Initialize phase
 				addPhase(REPAIRING);
