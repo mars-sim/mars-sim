@@ -293,7 +293,7 @@ public class Maintenance extends Task implements Serializable {
 		}
 
 		if (result != null) {
-			setDescription(Msg.getString("Task.description.maintenance.detail", result.getNickName())); // $NON-NLS-1$
+			setDescription(Msg.getString("Task.description.maintenance.detail", result.getName())); // $NON-NLS-1$
 		}
 
 		return result;

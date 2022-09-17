@@ -6,8 +6,6 @@
  */
 package org.mars_sim.msp.core.equipment;
 
-import java.io.Serializable;
-import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -72,7 +70,7 @@ import org.mars_sim.msp.core.time.Temporal;
  * `Extravehicular Activity Suit Systems Design How to Walk, Talk, and Breathe on Mars` 
  */
 public class EVASuit extends Equipment
-	implements LifeSupportInterface, Serializable, Malfunctionable, ResourceHolder, ItemHolder,
+	implements LifeSupportInterface, Malfunctionable, ResourceHolder, ItemHolder,
 				Temporal {
 
 	/** default serial id. */
@@ -95,7 +93,7 @@ public class EVASuit extends Equipment
 	/** capacity (kg). */
 	public static final double CAPACITY = OXYGEN_CAPACITY + CO2_CAPACITY + WATER_CAPACITY;
 	/** Typical O2 air pressure (Pa) inside EVA suit is set to be 20.7 kPa. */
-	private static final double NORMAL_AIR_PRESSURE = 17;// 20.7; // CompositionOfAir.SKYLAB_TOTAL_AIR_PRESSURE_kPA; // 101325D;
+	private static final double NORMAL_AIR_PRESSURE = 17;
 	/** Normal temperature (celsius). */
 	private static final double NORMAL_TEMP = 25D;
 	/** The wear lifetime value of 334 Sols (1/2 orbit). */
@@ -262,10 +260,8 @@ public class EVASuit extends Equipment
 	 * @throws Exception if error checking life support.
 	 */
 	public boolean lifeSupportCheck() {
-		// boolean result = true;
 		try {
 			// With the minimum required O2 partial pressure of 11.94 kPa (1.732 psi), the minimum mass of O2 is 0.1792 kg
-//			String name = getOwner().getName();
 			if (getAmountResourceStored(OXYGEN_ID) <= MASS_O2_MINIMUM_LIMIT) {
 				logger.log(getOwner(), Level.WARNING, 30_000,
 						"Less than 0.1792 kg oxygen (below the safety limit).");
@@ -275,7 +271,6 @@ public class EVASuit extends Equipment
 			if (getAmountResourceStored(WATER_ID) <= 0D) {
 				logger.log(getOwner(), Level.WARNING, 30_000,
 						"Ran out of water.");
-//				return false;
 			}
 
 			if (malfunctionManager.getOxygenFlowModifier() < 100D) {
@@ -283,12 +278,7 @@ public class EVASuit extends Equipment
 						"Oxygen flow sensor malfunction.", null);
 				return false;
 			}
-//			if (malfunctionManager.getWaterFlowModifier() < 100D) {
-//				LogConsolidated.log(Level.INFO, 5000, sourceName,
-//						"[" + this.getLocationTag().getLocale() + "] "
-//								+ person.getName() + "'s " + this.getName() + "'s water flow sensor detected malfunction.", null);
-//				return false;
-//			}
+
 
 			double p = getAirPressure();
 			if (p > PhysicalCondition.MAXIMUM_AIR_PRESSURE || p <= MIN_O2_PRESSURE) {
@@ -338,7 +328,7 @@ public class EVASuit extends Equipment
 		double carbonDioxideProvided = GAS_RATIO * (oxygenTaken - oxygenLacking);
 		storeAmountResource(CO2_ID, carbonDioxideProvided);
 
-		return oxygenTaken - oxygenLacking;// * (malfunctionManager.getOxygenFlowModifier() / 100D);
+		return oxygenTaken - oxygenLacking;
 	}
 
 	/**
@@ -349,16 +339,9 @@ public class EVASuit extends Equipment
 	 * @throws Exception if error providing water.
 	 */
 	public double provideWater(double waterTaken) {
-//		double waterLeft = getAmountResourceStored(WATER_ID);
-		double lacking = 0;
+		double lacking = retrieveAmountResource(WATER_ID, waterTaken);
 
-//		if (waterTaken > waterLeft) {
-//			waterTaken = waterLeft;
-//		}
-//		if (waterTaken > 0)
-			lacking = retrieveAmountResource(WATER_ID, waterTaken);
-
-		return waterTaken - lacking;// * (malfunctionManager.getWaterFlowModifier() / 100D);
+		return waterTaken - lacking;
 	}
 
 	/**
@@ -431,21 +414,6 @@ public class EVASuit extends Equipment
 		return true;
 	}
 
-	/**
-	 * Gets a list of people affected by this equipment
-	 * 
-	 * @return Collection<Person>
-	 */
-	@Override
-	public Collection<Person> getAffectedPeople() {
-		return super.getAffectedPeople();
-	}
-
-	@Override
-	public String getNickName() {
-		return getName();
-	}
-
 	@Override
 	public Building getBuildingLocation() {
 		return getContainerUnit().getBuildingLocation();
@@ -464,7 +432,7 @@ public class EVASuit extends Equipment
 	 * @return owner
 	 */
 	private Person getOwner() {
-		return (Person)getLastOwner();
+		return getLastOwner();
 	}
 
 	/**
@@ -565,6 +533,7 @@ public class EVASuit extends Equipment
 	 *
 	 * @return a list of resource ids
 	 */
+	@Override
 	public Set<Integer> getItemResourceIDs() {
 		return microInventory.getItemsStored();
 	}
@@ -581,6 +550,7 @@ public class EVASuit extends Equipment
 	 * @param quantity
 	 * @return quantity that cannot be retrieved
 	 */
+	@Override
 	public double retrieveAmountResource(int resource, double quantity) {
 		if (isResourceSupported(resource)) {
 			return microInventory.retrieveAmountResource(resource, quantity);
@@ -600,6 +570,7 @@ public class EVASuit extends Equipment
 	 * @param resource
 	 * @return quantity
 	 */
+	@Override
 	public double getAmountResourceRemainingCapacity(int resource) {
 		return microInventory.getAmountResourceRemainingCapacity(resource);
 	}
@@ -651,20 +622,6 @@ public class EVASuit extends Equipment
 		return microInventory.hasAmountResourceRemainingCapacity(resource);
 	}
 	
-//	/**
-//	 * Does this unit have this resource ?
-//	 *
-//	 * @param resource
-//	 * @return
-//	 */
-//	public boolean hasResource(int resource) {
-//		for (int id: getAmountResourceIDs()) {
-//			if (id == resource)
-//				return true;
-//		}
-//		return false;
-//	}
-
 	public void destroy() {
 		malfunctionManager = null;
 		microInventory = null;

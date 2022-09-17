@@ -94,7 +94,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 		// Start if found
 		if (entity != null) {
 			setDescription(Msg.getString("Task.description.repairEVAMalfunction.detail", malfunction.getName(),
-					entity.getNickName())); // $NON-NLS-1$
+					entity.getName())); // $NON-NLS-1$
 
 			// Determine location for repairing malfunction.
 			setOutsideLocation((LocalBoundedObject) entity);

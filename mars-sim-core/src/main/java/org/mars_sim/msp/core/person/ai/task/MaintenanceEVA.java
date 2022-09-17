@@ -237,7 +237,7 @@ implements Serializable {
 
 		if (result != null) {
 		    setDescription(Msg.getString("Task.description.maintenanceEVA.detail",
-                    result.getNickName())); //$NON-NLS-1$;
+                    result.getName())); //$NON-NLS-1$;
 		}
 
 		return result;

@@ -27,13 +27,6 @@ public interface Malfunctionable extends Loggable, Serializable {
 	public MalfunctionManager getMalfunctionManager();
 
 	/**
-	 * Gets the unique/nickname of the malfunctionable entity if it's a building.
-	 * 
-	 * @return nickname
-	 */
-	public String getNickName();
-
-	/**
 	 * Gets a collection of people affected by this entity.
 	 * 
 	 * @return person collection

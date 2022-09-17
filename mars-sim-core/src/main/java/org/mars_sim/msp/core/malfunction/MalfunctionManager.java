@@ -430,7 +430,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 		String malfunctionName = malfunction.getName();
 
 		Settlement settlement = entity.getAssociatedSettlement();
-		String loc0 = entity.getNickName();
+		String loc0 = entity.getName();
 		String loc1 = LocationFormat.getLocationDescription(entity);
 		EventType eventType = EventType.MALFUNCTION_PARTS_FAILURE;
 
@@ -592,7 +592,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 			String chiefRepairer = m.getMostProductiveRepairer();
 
 			HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_FIXED, m,
-					m.getName(), "Repairing", chiefRepairer, entity.getNickName(), 
+					m.getName(), "Repairing", chiefRepairer, entity.getName(), 
 					LocationFormat.getLocationDescription(entity),
 					entity.getAssociatedSettlement().getName());
 

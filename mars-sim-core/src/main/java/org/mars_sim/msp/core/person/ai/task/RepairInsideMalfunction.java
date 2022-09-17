@@ -208,7 +208,7 @@ public class RepairInsideMalfunction extends Task implements Repair, Serializabl
 		// Add repair parts if necessary.
 		if (RepairHelper.hasRepairParts(worker.getTopContainerUnit(), malfunction)) {
 			setDescription(Msg.getString("Task.description.repairMalfunction.detail", malfunction.getName(),
-					entity.getNickName())); // $NON-NLS-1$
+					entity.getName())); // $NON-NLS-1$
 
 			if (!worker.isOutside()) {
 				logger.log(worker, Level.FINE, 10_000, "Parts for repairing malfunction '" + malfunction + "' available from " + containerUnit.getName() + ".");
@@ -226,7 +226,7 @@ public class RepairInsideMalfunction extends Task implements Repair, Serializabl
 		addExperience(time);
 
 		// Check if an accident happens during repair.
-		checkForAccident(entity, time, 0.001D, getEffectiveSkillLevel(), "Repairing " + entity.getNickName());
+		checkForAccident(entity, time, 0.001D, getEffectiveSkillLevel(), "Repairing " + entity.getName());
 
 		// Add EVA work to malfunction.
 		double workTimeLeft = 0D;
