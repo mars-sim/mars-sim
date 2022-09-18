@@ -9,7 +9,7 @@ package org.mars_sim.msp.core.logging;
 import java.io.FileNotFoundException;
 
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.person.ai.task.utils.TaskManager;
+import org.mars_sim.msp.core.person.ai.task.util.TaskManager;
 
 public class DiagnosticsManager {
 

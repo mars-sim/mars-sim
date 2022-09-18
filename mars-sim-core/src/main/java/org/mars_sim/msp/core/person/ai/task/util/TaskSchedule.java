@@ -4,7 +4,7 @@
  * @date 2022-08-05
  * @author Manny Kung
  */
-package org.mars_sim.msp.core.person.ai.task.utils;
+package org.mars_sim.msp.core.person.ai.task.util;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ShiftType;
+import org.mars_sim.msp.core.person.ai.job.util.ShiftType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 

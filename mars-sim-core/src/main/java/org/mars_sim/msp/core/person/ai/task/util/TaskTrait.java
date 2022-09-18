@@ -5,7 +5,7 @@
  * @author Barry Evans
  */
 
-package org.mars_sim.msp.core.person.ai.task.utils;
+package org.mars_sim.msp.core.person.ai.task.util;
 
 public enum TaskTrait {
 	ACADEMIC,

@@ -4,7 +4,7 @@
  * @date 2022-09-01
  * @author Scott Davis
  */
-package org.mars_sim.msp.core.person.ai.job;
+package org.mars_sim.msp.core.person.ai.job.util;
 
 import java.util.Collection;
 import java.util.Collections;

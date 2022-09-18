@@ -5,11 +5,12 @@
  * @author Manny Kung
  */
 
-package org.mars_sim.msp.core.person;
+package org.mars_sim.msp.core.person.ai.fav;
 
 import java.io.Serializable;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.structure.building.function.cooking.HotMeal;
 import org.mars_sim.msp.core.structure.building.function.cooking.MealConfig;

@@ -4,7 +4,7 @@
  * @date 2022-09-01
  * @author Scott Davis
  */
-package org.mars_sim.msp.core.person.ai.job;
+package org.mars_sim.msp.core.person.ai.job.util;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,6 +16,25 @@ import java.util.Map;
 
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.job.Architect;
+import org.mars_sim.msp.core.person.ai.job.Areologist;
+import org.mars_sim.msp.core.person.ai.job.Astronomer;
+import org.mars_sim.msp.core.person.ai.job.Biologist;
+import org.mars_sim.msp.core.person.ai.job.Botanist;
+import org.mars_sim.msp.core.person.ai.job.Chef;
+import org.mars_sim.msp.core.person.ai.job.Chemist;
+import org.mars_sim.msp.core.person.ai.job.ComputerScientist;
+import org.mars_sim.msp.core.person.ai.job.Doctor;
+import org.mars_sim.msp.core.person.ai.job.Engineer;
+import org.mars_sim.msp.core.person.ai.job.Mathematician;
+import org.mars_sim.msp.core.person.ai.job.Meteorologist;
+import org.mars_sim.msp.core.person.ai.job.Physicist;
+import org.mars_sim.msp.core.person.ai.job.Pilot;
+import org.mars_sim.msp.core.person.ai.job.Politician;
+import org.mars_sim.msp.core.person.ai.job.Psychologist;
+import org.mars_sim.msp.core.person.ai.job.Reporter;
+import org.mars_sim.msp.core.person.ai.job.Technician;
+import org.mars_sim.msp.core.person.ai.job.Trader;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.Chefbot;
 import org.mars_sim.msp.core.robot.ai.job.Constructionbot;

@@ -13,6 +13,8 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.person.ai.job.util.Job;
+import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -23,7 +25,7 @@ import org.mars_sim.msp.core.structure.building.function.Manufacture;
  * The Engineer class represents an engineer job focusing on repair and
  * maintenance of buildings and vehicles.
  */
-class Engineer extends Job {
+public class Engineer extends Job {
 	
 	/** Constructor. */
 	public Engineer() {

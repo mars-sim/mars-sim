@@ -19,7 +19,6 @@ import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.hazard.HazardEvent;
 import org.mars_sim.msp.core.logging.SimLogger;
-import org.mars_sim.msp.core.person.BodyRegionType;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.time.ClockPulse;

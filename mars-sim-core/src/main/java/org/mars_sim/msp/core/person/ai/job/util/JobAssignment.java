@@ -4,7 +4,7 @@
  * @date 2022-07-06
  * @author Manny Kung
  */
-package org.mars_sim.msp.core.person.ai.job;
+package org.mars_sim.msp.core.person.ai.job.util;
 
 import java.io.Serializable;
 

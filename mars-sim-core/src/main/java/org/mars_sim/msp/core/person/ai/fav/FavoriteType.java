@@ -5,7 +5,7 @@
  * @author Manny Kung
  */
 
-package org.mars_sim.msp.core.person;
+package org.mars_sim.msp.core.person.ai.fav;
 
 import java.util.Arrays;
 import java.util.List;

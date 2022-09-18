@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.TrainingType;
+import org.mars_sim.msp.core.person.ai.training.TrainingType;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.tool.RandomUtil;

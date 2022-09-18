@@ -9,8 +9,6 @@ package org.mars_sim.msp.core.person.health;
 
 import java.io.Serializable;
 
-import org.mars_sim.msp.core.person.BodyRegionType;
-
 public class RadiationEvent implements Serializable {
 
 	/** default serial id.*/

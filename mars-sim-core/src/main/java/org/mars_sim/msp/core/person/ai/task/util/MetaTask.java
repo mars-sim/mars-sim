@@ -4,7 +4,7 @@
  * @date 2022-06-24
  * @author Scott Davis
  */
-package org.mars_sim.msp.core.person.ai.task.utils;
+package org.mars_sim.msp.core.person.ai.task.util;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -12,9 +12,9 @@ import java.util.Set;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.environment.SurfaceFeatures;
-import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.job.JobType;
+import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
+import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -68,7 +68,7 @@ public abstract class MetaTask {
 	private Set<TaskTrait> traits = Collections.emptySet();
 	private Set<FavoriteType> favourites = Collections.emptySet();
 	private boolean effortDriven = true;
-	private Set<JobType> preferredJob = new HashSet<>();
+	private Set<JobType> preferredJobs = new HashSet<>();
 	
 	protected MetaTask(String name, WorkerType workerType, TaskScope scope) {
 		super();
@@ -111,7 +111,7 @@ public abstract class MetaTask {
 	 * @param jobs
 	 */
     protected void setPreferredJob(Set<JobType> jobs) {
-    	this.preferredJob = jobs;
+    	this.preferredJobs = jobs;
 	}
 
 	/**
@@ -120,7 +120,7 @@ public abstract class MetaTask {
 	 * @param jobs
 	 */
     protected void setPreferredJob(JobType... jobs) {
-        Collections.addAll(this.preferredJob, jobs);
+        Collections.addAll(this.preferredJobs, jobs);
 	}
 	
 	/**
@@ -138,7 +138,20 @@ public abstract class MetaTask {
 	 * @return
 	 */
 	public Set<JobType> getPreferredJob() {
-		return preferredJob;
+		return preferredJobs;
+	}
+	
+	/**
+	 * Is this job type preferred ?
+	 * 
+	 * @param type
+	 * @return
+	 */
+	public boolean isPreferredJob(JobType type) {
+		if (preferredJobs.contains(type))
+			return true;
+		
+		return false;
 	}
 	
 	/**
@@ -265,8 +278,8 @@ public abstract class MetaTask {
         // Job modifier. If not my job then a penalty.
 		// But only if the Task has preferred jobs defined
         JobType job = person.getMind().getJob();
-        if ((job != null) && !preferredJob.isEmpty()
-        		&& !preferredJob.contains(job)) {
+        if ((job != null) && !preferredJobs.isEmpty()
+        		&& !preferredJobs.contains(job)) {
             score *= NON_JOB_PENALTY;
         }
         

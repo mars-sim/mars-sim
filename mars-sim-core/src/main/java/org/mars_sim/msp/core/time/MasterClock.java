@@ -22,7 +22,7 @@ import java.util.logging.Level;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.logging.SimLogger;
-import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.person.ai.task.util.Task;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 

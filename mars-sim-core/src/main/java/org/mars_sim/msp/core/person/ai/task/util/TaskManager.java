@@ -5,7 +5,7 @@
  * @author Scott Davis
  */
 
-package org.mars_sim.msp.core.person.ai.task.utils;
+package org.mars_sim.msp.core.person.ai.task.util;
 
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;

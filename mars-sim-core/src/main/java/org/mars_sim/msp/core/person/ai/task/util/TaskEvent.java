@@ -4,7 +4,7 @@
  * @date 2022-07-24
  * @author Scott Davis
  */
-package org.mars_sim.msp.core.person.ai.task.utils;
+package org.mars_sim.msp.core.person.ai.task.util;
 
 import java.io.Serializable;
 

@@ -4,7 +4,7 @@
  * @date 2022-08-01
  * @author Scott Davis
  */
-package org.mars_sim.msp.core.person.ai.task.utils;
+package org.mars_sim.msp.core.person.ai.task.util;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -76,8 +76,8 @@ import org.mars_sim.msp.core.person.ai.task.meta.UnloadVehicleGarageMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.WorkoutMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.WriteReportMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.YogaMeta;
-import org.mars_sim.msp.core.person.ai.task.utils.MetaTask.TaskScope;
-import org.mars_sim.msp.core.person.ai.task.utils.MetaTask.WorkerType;
+import org.mars_sim.msp.core.person.ai.task.util.MetaTask.TaskScope;
+import org.mars_sim.msp.core.person.ai.task.util.MetaTask.WorkerType;
 
 /**
  * A utility task for getting the list of meta tasks.

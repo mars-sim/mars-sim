@@ -19,10 +19,13 @@ import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.person.ai.fav.Preference;
+import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.social.RelationshipUtil;
-import org.mars_sim.msp.core.person.ai.task.utils.Task;
-import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
-import org.mars_sim.msp.core.person.ai.task.utils.Worker;
+import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
+import org.mars_sim.msp.core.person.ai.task.util.Task;
+import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
+import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingCategory;
@@ -104,6 +107,21 @@ public class Teach extends Task implements Serializable {
 				if (worker.getUnitType() == UnitType.ROBOT
 					&& ((Robot)worker).getBotMind().getRobotJob().isJobRelatedTask(candidateTask.getClass())) {
 					// nothing
+				}
+				else if (worker.getUnitType() == UnitType.ROBOT) {
+					MetaTask metaTask = Preference.convertTask2MetaTask(candidateTask);
+					JobType jobType = ((Person)worker).getMind().getJob();
+					
+					boolean isGood = metaTask.isPreferredJob(jobType);
+					if (isGood) {
+						// nothing
+					}
+					else {
+						// this task is not a part of this person's job
+						// Note: may need to relax on this criteria
+						continue;
+					}
+				
 				}
 				else {
 					// this robot cannot perform this task, go to next student candidate

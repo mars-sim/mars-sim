@@ -6,7 +6,9 @@
  */
 
 
-package org.mars_sim.msp.core.person;
+package org.mars_sim.msp.core.person.ai.training;
+
+import org.mars_sim.msp.core.person.Person;
 
 public class Training {
 
