@@ -699,18 +699,7 @@ public abstract class TaskManager implements Serializable, Temporal {
 	 * @return
 	 */
 	public boolean addAPendingTask(String task, boolean allowDuplicate) {
-		if (allowDuplicate) {
-			if (!pendingTasks.contains(task)) {
-				logger.info(worker, 20_000L, "Given a new task order of '" + task + "'.");
-			}
-			else {
-				logger.info(worker, 20_000L, "Given a duplicated new task order of '" + task + "'.");
-			}
-			pendingTasks.add(task);
-			return true;
-		}
-
-		if (!pendingTasks.contains(task)) {
+		if (allowDuplicate || !pendingTasks.contains(task)) {
 			pendingTasks.add(task);
 			logger.info(worker, 20_000L, "Given a new task order of '" + task + "'.");
 			return true;

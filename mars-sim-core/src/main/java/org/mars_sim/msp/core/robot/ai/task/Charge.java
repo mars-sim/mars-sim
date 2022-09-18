@@ -15,6 +15,7 @@ import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.robot.SystemCondition;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
@@ -78,16 +79,17 @@ public class Charge extends Task {
 		RoboticStation station = null;
 
 		boolean toCharge = false;
-		double level = robot.getSystemCondition().getBatteryState();
-		
+		SystemCondition sc = robot.getSystemCondition();
+		double batteryLevel = sc.getBatteryState();
+
 		// if power is below a certain threshold, stay to get a recharge
-		if (robot.getSystemCondition().isLowPower()) {
+		if (batteryLevel < sc.getMinimumChargeBattery()) {
 			toCharge = true;
 		}
 		
-		else if (!robot.getSystemCondition().isBatteryAbove(70)) {
-			double rand = RandomUtil.getRandomDouble(level);
-			if (rand < robot.getSystemCondition().getLowPowerPercent()/100.0)
+		else if (batteryLevel < 100D) {
+			double rand = RandomUtil.getRandomDouble(batteryLevel);
+			if (rand < sc.getLowPowerPercent())
 				toCharge = true;
 		}
 		
@@ -120,13 +122,11 @@ public class Charge extends Task {
 				station.setPowerLoad(energy/hrs);
 
 				// Lengthen the duration for charging the battery
-				setDuration(getDuration() + 1.5 * (1 - level));
-
+				setDuration(getDuration() + 1.5 * (100 - batteryLevel));
 			}
 		}
 		else {
 			// Disable charging
-			robot.getSystemCondition().setCharging(false);
 			endTask();
 		}
 

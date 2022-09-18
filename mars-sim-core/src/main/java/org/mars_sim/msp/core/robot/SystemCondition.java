@@ -48,7 +48,8 @@ public class SystemCondition implements Serializable {
     private double lowPowerPercent;
 
 	/** The max energy capacity of the robot in kWh. */
-	private final double MAX_CAPACITY = 10D;
+	private static final double MAX_CAPACITY = 10D;
+
 	/** The current energy of the robot in kWh. */
 	private double currentEnergy = RandomUtil.getRandomDouble(1, MAX_CAPACITY);
 	
@@ -72,6 +73,12 @@ public class SystemCondition implements Serializable {
         catch (Exception e) {
           	logger.log(Level.SEVERE, "Cannot config low power mode start time: "+ e.getMessage());
         }
+
+        updateLowPowerMode();
+    }
+
+    private void updateLowPowerMode() {
+        isLowPower = getBatteryState() < lowPowerPercent;
     }
 
     /**
@@ -104,6 +111,8 @@ public class SystemCondition implements Serializable {
 	    	if (diff >= 0) {
 	    		currentEnergy = diff; 
 	    		robot.fireUnitUpdate(UnitEventType.ROBOT_POWER_EVENT);
+
+                updateLowPowerMode();
 	    	}
 	    	else
 	    		logger.warning(robot, 30_000L, "Out of power.");
@@ -117,10 +126,7 @@ public class SystemCondition implements Serializable {
      * @return
      */
     public boolean isBatteryAbove(double percent) {
-    	if (getBatteryState() > percent/100.0) {
-    		return true;
-    	}
-    	return false;
+    	return (getBatteryState() > percent);
     }
 
 	/** 
@@ -189,14 +195,21 @@ public class SystemCondition implements Serializable {
     }
 
     /**
-     * Returns a fraction (between 0 and 1) of the battery energy level.
+     * Returns a percentage 0..100 of the battery energy level.
      * 
      * @return
      */
     public double getBatteryState() {
-    	return currentEnergy / MAX_CAPACITY;
+    	return (currentEnergy * 100D) / MAX_CAPACITY;
     }
     
+    /**
+     * Get teh maximum battery capacity in kWh.
+     */
+    public double getBatteryCapacity() {
+        return MAX_CAPACITY;
+    }
+
     /**
      * Is the robot on low power mode ?
      * 
@@ -221,6 +234,9 @@ public class SystemCondition implements Serializable {
     	double diff = newEnergy - currentEnergy;
     	currentEnergy = newEnergy;
 		robot.fireUnitUpdate(UnitEventType.ROBOT_POWER_EVENT);
+
+        updateLowPowerMode();
+
     	return diff;
     }
 
@@ -239,5 +255,13 @@ public class SystemCondition implements Serializable {
      */
     public void destroy() {
         robot = null;
+    }
+
+    /**
+     * Get the minimum battery power when charging.
+     * @return Percentage (0..100)
+     */
+    public double getMinimumChargeBattery() {
+        return 70D;
     }
 }

@@ -56,10 +56,10 @@ public class ChargeMeta extends MetaTask {
         	
         	// Checks if the battery is low
         	if (robot.getSystemCondition().isLowPower()) {
-        		result += (1.0 - level) * MAX;
+        		result += (100 - level) * MAX;
         	}
         	else
-        		result += (1.0 - level) * 50;
+        		result += (100 - level) * 50;
         	
         	Building currentBldg = robot.getBuildingLocation();
         	
