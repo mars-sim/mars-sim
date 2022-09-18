@@ -84,15 +84,6 @@ public class SystemCondition implements Serializable {
      */
     public boolean timePassing(double time) {
 
-    	// 1. Perform self-diagnostic
-        // performSystemCheck();
-
-        // 2. If a robot needs to be recharged
-        if (checkEnergyLevel()) {
-        	// Go and dock to a robotic station in Sleep Mode
-//        	logger.log(robot, Level.INFO, 20_000L, "Positioned to get recharged.");
-        }
-        
         // 3. Consume a minute amount of energy even if a robot does not perform any tasks
         if (!isCharging)
         	consumeEnergy(time * MarsClock.HOURS_PER_MILLISOL * standbyPower);
@@ -117,31 +108,6 @@ public class SystemCondition implements Serializable {
 	    	else
 	    		logger.warning(robot, 30_000L, "Out of power.");
     	}
-    }
-
-    /**
-     * Checks the energy level of the robot and see if it has been position for recharge.
-     */
-    private boolean checkEnergyLevel() {
-    	boolean result = false;
-    	if (currentEnergy < lowPowerPercent / 100D * MAX_CAPACITY) {
-    		// Turn on the low power indicator
-    		isLowPower = true;
-    		
-    		// Time to recharge
-    		if (robot.isAtStation()) {
-    			result = true;
-    		}
-    	}
-    	else
-    		isLowPower = false;
-    		
-    	if (isCharging && currentEnergy >= .95 * MAX_CAPACITY) {
-    		// Stop at 95% and don't need to continue charging. 
-		    isCharging = false;
-    	}
-    	
-    	return result;
     }
 
     /**
@@ -175,31 +141,6 @@ public class SystemCondition implements Serializable {
 	public void setCharging(boolean value) {
 		isCharging = value;
 	}
-	
-//    /**
-//     * Is it within the required minimum air pressure ?
-//     * 
-//     * @param pressure minimum air pressure person requires (in Pa)
-//     * @return 
-//     */
-//    private boolean requireAirPressure(double pressure) {
-//    	// placeholder
-//    	return true;
-//    }
-//
-//    /**
-//     * Is it within the required minimum temperature?
-//     * 
-//     * @param minTemperature minimum temperature required (in degrees Celsius)
-//     * @param maxTemperature maximum temperature required (in degrees Celsius)
-//     * @return
-//     */
-//    private boolean requireTemperature(double minTemperature,
-//            double maxTemperature) {
-//        boolean freeze = false; // placeholder
-//        boolean hot = false; // placeholder
-//        return !freeze && !hot;
-//    }
 
     /**
      * Get the performance factor that effect Person with the complaint.
@@ -292,17 +233,6 @@ public class SystemCondition implements Serializable {
     public double getStandbyPowerConsumption() {
         return standbyPower;
     }
-    
-//    /**
-//     * Gets the fuel consumption rate per Sol.
-//     * 
-//     * @return fuel consumed (kJ/Sol)
-//     * @throws Exception if error in configuration.
-//     */
-//    public static double getFuelConsumptionRate() {
-//        RobotConfig config = SimulationConfig.instance().getRobotConfiguration();
-//        return config.getFuelConsumptionRate();
-//    }
 
     /**
      * Prepare object for garbage collection.

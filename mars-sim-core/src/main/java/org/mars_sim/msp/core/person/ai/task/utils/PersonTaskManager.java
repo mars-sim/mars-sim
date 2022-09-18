@@ -6,8 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task.utils;
 
-import java.io.Serializable;
-import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -24,7 +22,7 @@ import org.mars_sim.msp.core.person.ai.role.Role;
  *
  * There is one instance of TaskManager per person.
  */
-public class PersonTaskManager extends TaskManager implements Serializable {
+public class PersonTaskManager extends TaskManager {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -32,19 +30,15 @@ public class PersonTaskManager extends TaskManager implements Serializable {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(PersonTaskManager.class.getName());
 
+	private static TaskCache defaultTasks;
+
 	private static final int MAX_TASK_PROBABILITY = 35_000;
-	/** A decimal number a little bigger than zero for comparing doubles. */
-//	private static final double SMALL_AMOUNT = 0.001;
 
 	// Data members
 	/** The mind of the person the task manager is responsible for. */
 	private Mind mind;
 
 	private transient Person person;
-
-	/** The CircadianClock reference */
-//	private transient CircadianClock circadian = null;
-
 
 	/**
 	 * Constructor.
@@ -58,7 +52,6 @@ public class PersonTaskManager extends TaskManager implements Serializable {
 		this.mind = mind;
 
 		this.person = mind.getPerson();
-//		circadian = person.getCircadianClock();
 	}
 
 	/**
@@ -104,7 +97,7 @@ public class PersonTaskManager extends TaskManager implements Serializable {
 			double energyTime = time - remainingTime;
 
 			// Double energy expenditure if performing effort-driven task.
-			if (energyTime > 0D && currentTask != null && currentTask.isEffortDriven()) {
+			if (energyTime > 0D && currentTask.isEffortDriven()) {
 
 				if (person.isOutside()) {
 					// Take more energy to be in EVA doing work
@@ -127,7 +120,7 @@ public class PersonTaskManager extends TaskManager implements Serializable {
 	 * This will NOT use the cache but assumes the callers know when a cache can be used or not used.
 	 */
 	@Override
-	protected synchronized void rebuildTaskCache() {
+	protected TaskCache rebuildTaskCache() {
 
 		String shiftDesc = null;
 		TaskSchedule taskSchedule = person.getTaskSchedule();
@@ -147,8 +140,7 @@ public class PersonTaskManager extends TaskManager implements Serializable {
 
 
 		// Create new taskProbCache
-		taskProbCache = new HashMap<>(mtList.size());
-		totalProbCache = 0D;
+		TaskCache newCache = new TaskCache();
 
 		// Determine probabilities.
 		for (MetaTask mt : mtList) {
@@ -163,17 +155,35 @@ public class PersonTaskManager extends TaskManager implements Serializable {
 					probability = MAX_TASK_PROBABILITY;
 				}
 
-				taskProbCache.put(mt, probability);
-				totalProbCache += probability;
+				newCache.put(mt, probability);
 			}
+		}
+
+		// Check somethign has been found
+		if (newCache.getTasks().isEmpty()) {
+			newCache = getDefaultTasks();
+			logger.warning(person, "No normal task available");
 		}
 
 		// Output shift
 		if (diagnosticFile != null) {
             Role role = person.getRole();
             String roleDetails = "Role: " + (role != null ? role.getType() : "None");
-			outputCache("Shift: " + shiftDesc, roleDetails);
+			outputCache(newCache, "Shift: " + shiftDesc, roleDetails);
 		}
+
+		return newCache;
+	}
+
+	private static synchronized TaskCache getDefaultTasks() {
+		if (defaultTasks == null) {
+			defaultTasks = new TaskCache();
+			for(MetaTask mt : MetaTaskUtil.getNonWorkHourMetaTasks()) {
+				defaultTasks.put(mt, 1D);
+			}
+
+		}
+		return defaultTasks;
 	}
 
 	/**
@@ -186,7 +196,6 @@ public class PersonTaskManager extends TaskManager implements Serializable {
 			MetaTask metaTask = getAPendingMetaTask();
 			if (metaTask != null) {
 				Task newTask = metaTask.constructInstance(person);
-//				logger.info(person, 20_000L, "Starting a task order of '" + newTask.getName() + "'.");
 				startTask(newTask);
 			}
 
@@ -196,9 +205,9 @@ public class PersonTaskManager extends TaskManager implements Serializable {
 		super.startNewTask();
 	}
 
+	@Override
 	public void reinit() {
 		person = mind.getPerson();
-//		circadian = person.getCircadianClock();
 		worker = person;
 		super.reinit();
 	}
@@ -207,14 +216,8 @@ public class PersonTaskManager extends TaskManager implements Serializable {
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {
-
 		mind = null;
 		person = null;
-//		circadian = null;
-		if (taskProbCache != null) {
-			taskProbCache.clear();
-			taskProbCache = null;
-		}
 	}
 
 	@Override

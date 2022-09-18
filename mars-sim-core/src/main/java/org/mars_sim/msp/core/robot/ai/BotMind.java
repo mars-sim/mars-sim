@@ -140,24 +140,17 @@ public class BotMind implements Serializable, Temporal {
 			logger.log(robot, Level.WARNING, 30_000L, "Battery almost depleted and must be recharged."
 					+ " Current task: " + botTaskManager.getTaskName() + ".");
 			// Add sleep task
-			botTaskManager.addAPendingTask(Sleep.SIMPLE_NAME, false);
+			botTaskManager.endCurrentTask();
+			return;
 		}
 			
-		if (botTaskManager.hasActiveTask()) {
-			
-//			String previousTask = botTaskManager.getTaskName();
-			
+		if (botTaskManager.hasActiveTask()) {			
 			// Call executeTask
 			double remainingTime = botTaskManager.executeTask(pulseTime, robot.getPerformanceRating());
 			
 			if (remainingTime == pulseTime) {
 				// Reduce the time by standardPulseTime
 				remainingTime = pulseTime - Task.standardPulseTime;
-				
-//				logger.log(robot, Level.SEVERE, 40_000L, 
-//						"Previous Task: " + previousTask
-//					+ "    Current Task: " + botTaskManager.getTaskName() 
-//					+ "    remainingTime & time: " + remainingTime + ".");
 				
 				// Do not call takeAction
 				return;

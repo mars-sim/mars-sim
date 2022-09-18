@@ -6,15 +6,14 @@
  */
 package org.mars_sim.msp.core.robot.ai.task;
 
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTaskUtil;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskCache;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskManager;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.BotMind;
@@ -25,14 +24,16 @@ import org.mars_sim.msp.core.time.MarsClock;
  * The BotTaskManager class keeps track of a robot's current task and can randomly
  * assign a new task to a robot.
  */
-public class BotTaskManager extends TaskManager
-implements Serializable {
+public class BotTaskManager extends TaskManager {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(BotTaskManager.class.getName());
+
+	private static TaskCache chargeMap;
 
 	// Data members
 	/** The mind of the robot. */
@@ -108,7 +109,7 @@ implements Serializable {
 		    double energyTime = time - remainingTime;
 		    
 		    // Double energy expenditure if performing effort-driven task.
-		    if (currentTask != null && currentTask.isEffortDriven()) {
+		    if (currentTask.isEffortDriven()) {
 		        energyTime *= 2D;
 		    }
 
@@ -127,8 +128,17 @@ implements Serializable {
 	/**
 	 * Calculates and caches the probabilities.
 	 */
-	protected synchronized void rebuildTaskCache() {
+	@Override
+	protected TaskCache rebuildTaskCache() {
+
+		// If robot is low power then can only charge
+		if (robot.getSystemCondition().isLowPower()) {
+
+			logger.info(robot, "Forcing charge due to low power");
+			return getChargeTaskMap();
+		}
 		
+		// Create a task list based on probabilty
 		if (mtList == null) {
 			List<MetaTask> list = MetaTaskUtil.getRobotMetaTasks();
 			List<MetaTask> newList = new ArrayList<>();
@@ -151,23 +161,35 @@ implements Serializable {
 		}
 		
 		// Reset taskProbCache and totalProbCache
-		taskProbCache = new HashMap<>(mtList.size());
-		totalProbCache = 0D;
+		TaskCache newCache = new TaskCache();
 		
 		// Determine probabilities.
 		for (MetaTask mt : mtList) {
 			double probability = mt.getProbability(robot);
 	
 			if ((probability > 0D) && (!Double.isNaN(probability)) && (!Double.isInfinite(probability))) {
-				taskProbCache.put(mt, probability);
-				totalProbCache += probability;
+				newCache.put(mt, probability);
 			}
 		}
 		
+		if (newCache.getTasks().isEmpty()) {
+			newCache = getChargeTaskMap();
+		}
+
 		// Output shift
 		if (diagnosticFile != null) {
-			outputCache();
+			outputCache(newCache);
 		}
+
+		return newCache;
+	}
+
+	private static synchronized TaskCache getChargeTaskMap() {
+		if (chargeMap == null) {
+			chargeMap = new TaskCache();
+			chargeMap.put(new ChargeMeta(), 1D);
+		}
+		return chargeMap;
 	}
 
 	/**
@@ -180,7 +202,6 @@ implements Serializable {
 			MetaTask metaTask = getAPendingMetaTask();
 			if (metaTask != null) {
 				Task newTask = metaTask.constructInstance(robot);
-//				logger.info(person, 20_000L, "Starting a task order of '" + newTask.getName() + "'.");
 				startTask(newTask);
 			}
 
@@ -190,6 +211,7 @@ implements Serializable {
 		super.startNewTask();
 	}
 	
+	@Override
 	public void reinit() {
 		super.reinit();
 

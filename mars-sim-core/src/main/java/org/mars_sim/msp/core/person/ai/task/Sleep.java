@@ -6,9 +6,7 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -23,14 +21,11 @@ import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskSchedule;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
-import org.mars_sim.msp.core.structure.building.function.RoboticStation;
-import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Rover;
 
@@ -39,7 +34,7 @@ import org.mars_sim.msp.core.vehicle.Rover;
  * default chosen randomly, between 250 - 330 millisols. Note: Sleeping reduces
  * fatigue and stress.
  */
-public class Sleep extends Task implements Serializable {
+public class Sleep extends Task {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -56,14 +51,10 @@ public class Sleep extends Task implements Serializable {
 
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.sleep"); //$NON-NLS-1$
-	/** Task name for robot */
-	private static final String SLEEP_MODE = Msg.getString("Task.description.sleepMode"); //$NON-NLS-1$
 
 	/** Task phases for person. */
 	private static final TaskPhase SLEEPING = new TaskPhase(Msg.getString("Task.phase.sleeping")); //$NON-NLS-1$
 
-	/** Task phases for robot. */
-	private static final TaskPhase SLEEPING_MODE = new TaskPhase(Msg.getString("Task.phase.sleepMode")); //$NON-NLS-1$
 
 	// Static members
 	/** The stress modified per millisol. */
@@ -112,15 +103,6 @@ public class Sleep extends Task implements Serializable {
 		}
 	}
 
-	public Sleep(Robot robot) {
-		super(SLEEP_MODE, robot, false, false, STRESS_MODIFIER, 10D);
-		setDescription(SLEEP_MODE);
-		
-		// Initialize phase
-		addPhase(SLEEPING_MODE);
-		setPhase(SLEEPING_MODE);
-	}
-
 	/**
 	 * Refers the person to sleep in a bed inside the EVA airlock
 	 *
@@ -139,8 +121,7 @@ public class Sleep extends Task implements Serializable {
 	protected double performMappedPhase(double time) {
 		if (getPhase() == null)
 			throw new IllegalArgumentException("Task phase is null");
-		else if (SLEEPING.equals(getPhase())
-				|| SLEEPING_MODE.equals(getPhase()))
+		else if (SLEEPING.equals(getPhase()))
 			return sleepingPhase(time);
 		else
 			return time;
@@ -157,139 +138,63 @@ public class Sleep extends Task implements Serializable {
 		
 		if (isDone() || getTimeLeft() <= 0) {
         	// this task has ended
-			clearTask();
+			endTask();
 			return time;
 		}
-		
-		if (person != null) {
 
-			if (person.isInSettlement()) {
-				// Walk to a location
-				walkToDestination();
-			}
+		if (person.isInSettlement()) {
+			// Walk to a location
+			walkToDestination();
+		}
 
 //			// Check if a person's subtask is not the Sleep task itself
 //			if (isNotSubTask())
 //				// Clear the sub task to avoid getting stuck before walking to a bed or a destination
 //				endSubTask();
 
-			PhysicalCondition pc = person.getPhysicalCondition();
-			
-			CircadianClock circadian = person.getCircadianClock();
+		PhysicalCondition pc = person.getPhysicalCondition();
+		
+		CircadianClock circadian = person.getCircadianClock();
 
-			pc.recoverFromSoreness(time);
-			
-			pc.relaxMuscle(time);
+		pc.recoverFromSoreness(time);
+		
+		pc.relaxMuscle(time);
 
-			double fractionOfRest = time * TIME_FACTOR;
+		double fractionOfRest = time * TIME_FACTOR;
 
-			double f = pc.getFatigue();
+		double f = pc.getFatigue();
 
-			double residualFatigue = f * RESIDUAL_MODIFIER;
-			// (1) Use the residualFatigue to speed up the recuperation for higher fatigue cases
-			// (2) Realistically speaking, the first hour of sleep restore more strength than the
-			//     the last hour.
-			// (3) For someone who is deprived of sleep for 3 sols or 3000 msols, it should still
-			//     take 8 hours of sleep to regain most of the strength, not 24 hours.
-			// (4) The lost hours of sleep is already lost and there's no need to rest on a per
-			//     msol basis, namely, exchanging 1 msol of fatigue per msol of sleep.
+		double residualFatigue = f * RESIDUAL_MODIFIER;
+		// (1) Use the residualFatigue to speed up the recuperation for higher fatigue cases
+		// (2) Realistically speaking, the first hour of sleep restore more strength than the
+		//     the last hour.
+		// (3) For someone who is deprived of sleep for 3 sols or 3000 msols, it should still
+		//     take 8 hours of sleep to regain most of the strength, not 24 hours.
+		// (4) The lost hours of sleep is already lost and there's no need to rest on a per
+		//     msol basis, namely, exchanging 1 msol of fatigue per msol of sleep.
 
-			pc.reduceFatigue(fractionOfRest + residualFatigue);
+		pc.reduceFatigue(fractionOfRest + residualFatigue);
 
-			circadian.setAwake(false);
-			// Change hormones
-			circadian.setRested(time);
-			// Record the sleep time [in millisols]
-			circadian.recordSleep(time);
+		circadian.setAwake(false);
+		// Change hormones
+		circadian.setRested(time);
+		// Record the sleep time [in millisols]
+		circadian.recordSleep(time);
 
-			if (person.getTaskSchedule().isShiftHour(marsClock.getMillisolInt())) {
-				// Reduce the probability if it's not the right time to sleep
-				refreshSleepHabit(person, circadian);
-			}
-
-			// Check if fatigue is zero
-			if (pc.getFatigue() <= 0) {
-				logger.log(person, Level.FINE, 0, "Totally refreshed from a good sleep.");
-				endTask();
-			}
+		if (person.getTaskSchedule().isShiftHour(marsClock.getMillisolInt())) {
+			// Reduce the probability if it's not the right time to sleep
+			refreshSleepHabit(person, circadian);
 		}
 
-		else {
-			RoboticStation station = null;
-
-			boolean toCharge = false;
-			double level = robot.getSystemCondition().getBatteryState();
-			
-			// if power is below a certain threshold, stay to get a recharge
-			if (robot.getSystemCondition().isLowPower()) {
-				toCharge = true;
-			}
-			
-			else if (!robot.getSystemCondition().isBatteryAbove(70)) {
-				double rand = RandomUtil.getRandomDouble(level);
-				if (rand < robot.getSystemCondition().getLowPowerPercent()/100.0)
-					toCharge = true;
-			}
-			
-			boolean canWalk = false;
-			if (toCharge) {
-				// Switch to charging
-    			robot.getSystemCondition().setCharging(true);
-    			
-				station = robot.getStation();
-				if (station == null) {
-//					BuildingManager.addRobotToRoboticStation(robot);
-					canWalk = walkToRoboticStation(robot, false);
-					logger.info(robot, 10_000L, "canWalk: " + canWalk + ".");
-				}
-				
-				if (canWalk) {	
-					logger.info(robot, 10_000L, "Walking to " + station + ".");
-					station = robot.getStation();
-				}
-
-				if (station != null) {
-					if (station.getSleepers() < station.getSlots()) {
-						station.addSleeper();
-					}
-					
-	    			double hrs = time * MarsClock.HOURS_PER_MILLISOL;
-	
-	    			double energy = robot.getSystemCondition().deliverEnergy(RoboticStation.CHARGE_RATE * hrs);
-	    			
-	    			// Record the power spent at the robotic station
-	    			station.setPowerLoad(energy/hrs);
-	
-					// Lengthen the duration for charging the battery
-					setDuration(getDuration() + 1.5 * (1 - level));
-					
-//					logger.info(robot, 10_000L, "Dumping " + Math.round(energy * 1000.0)/1000.0 + " kWh to the battery. "
-//							+ "New Duration: " + getDuration());
-				}
-			}
-			else {
-				// Disable charging
-    			robot.getSystemCondition().setCharging(false);
-    			endTask();
-			}
+		// Check if fatigue is zero
+		if (pc.getFatigue() <= 0) {
+			logger.log(person, Level.FINE, 0, "Totally refreshed from a good sleep.");
+			endTask();
 		}
 
 		return 0;
 	}
 
-	/**
-	 * Clears the current task. Disables charging. 
-	 */
-	public void clearTask() {
-		
-		// Disable charging so that it can potentially 
-		// be doing other tasks while consuming energy
-		robot.getSystemCondition().setCharging(false);
-		
-		super.endTask();
-	}
-	
-	
 	/**
 	 * Walk to a destination
 	 */
@@ -502,16 +407,7 @@ public class Sleep extends Task implements Serializable {
 			circadian.updateSleepCycle((int) marsClock.getMillisol(), true);
 			circadian.setAwake(true);
 
-		} else if (robot != null) {
-			// Remove robot from stations so other robots can use it.
-			RoboticStation station = robot.getStation();
-			if (station != null && station.getSleepers() > 0) {
-				station.removeSleeper();
-				// NOTE: assess how well this work
-			}
-//    		logger.info(robot.getNickName() + " was done sleeping and waking up.");
-			walkToAssignedDutyLocation(robot, true);
-		}
+		} 
 	}
 
 	/**
@@ -552,53 +448,6 @@ public class Sleep extends Task implements Serializable {
 		return b;
 	}
 
-	public static Building getAvailableRoboticStationBuilding(Robot robot) {
-		if (robot.isInSettlement()) {
-			BuildingManager manager = robot.getSettlement().getBuildingManager();
-			List<Building> buildings0 = manager.getBuildings(FunctionType.ROBOTIC_STATION);
-			List<Building> buildings1 = BuildingManager.getNonMalfunctioningBuildings(buildings0);
-			List<Building> buildings2 = getRoboticStationsWithEmptySlots(buildings1);
-			List<Building> buildings3 = null;
-			if (!buildings2.isEmpty()) {
-				// robot is not as inclined to move around
-				buildings3 = BuildingManager.getLeastCrowded4BotBuildings(buildings2);
-				if (buildings3 == null) {
-					buildings3 = buildings2;
-				}
-			}
-			else if (!buildings1.isEmpty()) {
-				// robot is not as inclined to move around
-				buildings3 = BuildingManager.getLeastCrowded4BotBuildings(buildings1);
-				if (buildings3 == null) {
-					buildings3 = buildings1;
-				}
-			}
-			else if (!buildings0.isEmpty()) {
-				// robot is not as inclined to move around
-				buildings3 = BuildingManager.getLeastCrowded4BotBuildings(buildings0);
-				if (buildings3 == null) {
-					buildings3 = buildings0;
-				}
-			}
-			
-			if (buildings3 == null)
-				return null;
-			
-			int size = buildings3.size();
-
-			int selected = 0;
-			if (size == 1) {
-				 return buildings3.get(0);
-			}
-			else if (size > 1) {
-				selected = RandomUtil.getRandomInt(size - 1);
-				return buildings3.get(selected);
-			}
-		}
-
-		return null;
-	}
-
 	/**
 	 * Gets living accommodations with empty beds from a list of buildings with the
 	 * living accommodations function.
@@ -622,27 +471,6 @@ public class Sleep extends Task implements Serializable {
 				}
 			}
 			else if (notFull) {
-				result.add(building);
-			}
-		}
-
-		return result;
-	}
-
-	/**
-	 * Gets a list of robotic stations with empty spots
-	 *
-	 * @param buildingList
-	 * @return
-	 */
-	private static List<Building> getRoboticStationsWithEmptySlots(List<Building> buildingList) {
-		List<Building> result = new ArrayList<Building>();
-
-		Iterator<Building> i = buildingList.iterator();
-		while (i.hasNext()) {
-			Building building = i.next();
-			RoboticStation station = building.getRoboticStation();
-			if (station.getSleepers() < station.getSlots()) {
 				result.add(building);
 			}
 		}
@@ -705,7 +533,6 @@ public class Sleep extends Task implements Serializable {
            		if (spaceOut < now && habit < MAX_SUPPRESSION) {
 	           		// Discourage the person from forming the sleep habit at this time
 		  	  		person.updateSleepCycle(now, false);
-			    	//System.out.println("spaceOut : " + spaceOut + "   now : " + now + "  suppressHabit : " + habit);
 
 		  	  		int rand = RandomUtil.getRandomInt(2);
 		  	  		if (rand == 2) {

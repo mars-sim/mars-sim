@@ -7,7 +7,6 @@
 
 package org.mars.sim.console.chat.simcommand.unit;
 
-import java.util.Map;
 import java.util.Map.Entry;
 
 import org.mars.sim.console.chat.Conversation;
@@ -17,6 +16,7 @@ import org.mars.sim.console.chat.simcommand.StructuredResponse;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskCache;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskManager;
 import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 
@@ -50,14 +50,14 @@ public class WorkerWorkCommand extends AbstractUnitCommand {
 			response.appendLabeledString("Favourite", p.getFavorite().getFavoriteActivity().getName());
 		}
 		
-		Map<MetaTask, Double> tasks = tm.getLatestTaskProbability();
-		double sum = tm.getTotalProbabilityScore();
+		TaskCache tasks = tm.getLatestTaskProbability();
+		double sum = tasks.getTotal();
 		response.appendTableHeading("Task", CommandHelper.TASK_WIDTH, 
 									"P Score", 9,
 									"P %", 6,
 									"Trait", 25, 
 									"Favourite", 18);
-		for (Entry<MetaTask, Double> item : tasks.entrySet()) {
+		for (Entry<MetaTask, Double> item : tasks.getTasks().entrySet()) {
 			MetaTask mt = item.getKey();
 			response.appendTableRow(mt.getName(), 
 									item.getValue(),
