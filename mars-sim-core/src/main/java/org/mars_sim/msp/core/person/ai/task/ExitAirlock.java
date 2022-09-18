@@ -375,7 +375,7 @@ public class ExitAirlock extends Task implements Serializable {
 		// If the airlock mode is ingress, will need to wait until its done
 		if (airlock.getAirlockMode() == AirlockMode.INGRESS) {
 			walkAway(person, NOT_IN_RIGHT_AIRLOCK_MODE 
-					+ ". Current task: " + person.getTaskDescription() + ".");
+					+ " Current task: " + person.getTaskDescription() + ".");
 			return time;
 		}
 		

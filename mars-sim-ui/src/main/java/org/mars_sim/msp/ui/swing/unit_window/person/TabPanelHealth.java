@@ -498,6 +498,9 @@ extends TabPanel {
 		medicationTable.setAutoCreateRowSorter(true);
 
 		TableStyle.setTableStyle(medicationTable);
+		
+		// Update at least one before displaying it
+		update();
 	}
 
 

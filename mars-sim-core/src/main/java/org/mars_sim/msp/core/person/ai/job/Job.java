@@ -39,7 +39,6 @@ public abstract class Job {
 	private static final String FEMALE_STR = "female.";
 	private static final String UNKNOWN = "unknown.";
 
-
 	private Map<RoleType, Double> jobProspects;
 	private JobType jobType;
 
@@ -136,7 +135,7 @@ public abstract class Job {
 		return Collections.unmodifiableMap(m);
 	}
 	
-	public Map<RoleType,Double> getRoleProspects() {
+	public Map<RoleType, Double> getRoleProspects() {
 		return jobProspects;
 	}
 

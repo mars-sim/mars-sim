@@ -269,7 +269,7 @@ public abstract class TaskManager implements Serializable, Temporal {
 	public String getSubTaskDescription() {
 		if (currentTask != null && currentTask.getSubTask() != null) {
 			String t = currentTask.getSubTask().getDescription();
-			if (t != null) // || !t.equals(""))
+			if (t != null && !t.equals(""))
 				return t;
 			else
 				return "";

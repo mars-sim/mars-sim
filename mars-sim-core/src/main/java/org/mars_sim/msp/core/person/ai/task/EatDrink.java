@@ -408,7 +408,7 @@ public class EatDrink extends Task implements Serializable {
 	private double eatingPreservedFoodPhase(double time) {
 		
 		// Checks if this person has eaten too much already 
-		if (pc.eatenTooMuch()) {
+		if (pc.eatenTooMuch() || pc.getFatigue() > 2_000) {
 			endTask();
 			return time;
 		}
@@ -419,7 +419,7 @@ public class EatDrink extends Task implements Serializable {
 		double proportion = eatPreservedFood(eatingTime);
 
 		// If not enough preserved food available, change to dessert phase.
-		if (proportion == 0) {
+		if (proportion == 0.0) {
 			endTask();
 			return time;
 		}
@@ -462,7 +462,7 @@ public class EatDrink extends Task implements Serializable {
 	private double eatingMealPhase(double time) {
 		
 		// Checks if this person has eaten too much already 
-		if (pc.eatenTooMuch()) {
+		if (pc.eatenTooMuch() || pc.getFatigue() > 2_000) {
 			endTask();
 			return time;
 		}
@@ -479,9 +479,9 @@ public class EatDrink extends Task implements Serializable {
 			eatingTime = eatingDuration - totalEatingTime;
 		}
 
-		if (eatingTime <= 0) {
-			setDuration(getDuration() + 5);
-		}
+//		if (eatingTime <= 0) {
+//			setDuration(getDuration() + 5);
+//		}
 		
 		if (eatingTime > 0 && cookedMeal != null) {
 			String s = Msg.getString("Task.description.eatDrink.cooked.eating.detail", cookedMeal.getName());
@@ -588,7 +588,7 @@ public class EatDrink extends Task implements Serializable {
 			// Change the hunger level after eating
 			pc.reduceHunger(hungerRelieved);
 
-			logger.log(worker, Level.INFO, 4_000, "Ate " + cookedMeal.getName() + ".");
+			logger.log(worker, Level.INFO, 4_000, "Eating " + cookedMeal.getName() + ".");
 
 			// Reduce person's stress over time from eating a cooked meal.
 			// This is in addition to normal stress reduction from eating task.
@@ -614,7 +614,7 @@ public class EatDrink extends Task implements Serializable {
 
 		// Proportion of food being eaten over this time period.
 		double proportion = person.getEatingSpeed() * eatingTime;
-		if ((cumulativeProportion + proportion) > foodConsumedPerServing) {
+		if (cumulativeProportion + proportion > foodConsumedPerServing) {
 			proportion = foodConsumedPerServing - cumulativeProportion;
 		}
 
@@ -699,7 +699,7 @@ public class EatDrink extends Task implements Serializable {
 	private double eatingDessertPhase(double time) {
 
 		// Checks if this person has eaten too much already 
-		if (pc.eatenTooMuch()) {
+		if (pc.eatenTooMuch() || pc.getFatigue() > 2_000) {
 			endTask();
 			return time;
 		}
@@ -879,13 +879,6 @@ public class EatDrink extends Task implements Serializable {
 	 */
 	private void calculateWater(boolean waterOnly) {
 
-		double thirst = pc.getThirst();
-
-		if (thirst < PhysicalCondition.THIRST_THRESHOLD / 6) {
-			endTask();
-			return;
-		}
-
 		Unit containerUnit = person.getContainerUnit();
 		EVASuit suit = null;
 
@@ -969,6 +962,10 @@ public class EatDrink extends Task implements Serializable {
 
 		if (waterOnly)
 			setDescription(Msg.getString("Task.description.eatDrink.water")); //$NON-NLS-1$
+
+		if (thirst < PhysicalCondition.THIRST_THRESHOLD / 6) {
+			endTask();
+		}
 	}
 
 	/**

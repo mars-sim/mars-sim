@@ -88,7 +88,7 @@ public class SleepMeta extends MetaTask {
     	// Note: sleep deprivation increases ghrelin levels, while at the same time 
     	// lowers leptin levels in the blood.
     	// Take a break from sleep if it's too hungry and too low energy
-    	if (fatigue > 200 && hunger < 1000 && energy > 3000 
+    	if (fatigue > PhysicalCondition.FATIGUE_MIN || energy < PhysicalCondition.ENERGY_THRESHOLD
     			&& (stress > 50 || ghrelinS > 0 || leptinS == 0)) {
     		
         	int rand = RandomUtil.getRandomInt(1);

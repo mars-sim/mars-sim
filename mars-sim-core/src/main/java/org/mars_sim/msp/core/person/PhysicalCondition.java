@@ -68,11 +68,13 @@ public class PhysicalCondition implements Serializable {
 	/** The amount of thirst threshold [millisols]. */
 	public static final int THIRST_THRESHOLD = 150;
 	/** The amount of thirst threshold [millisols]. */
-	private static final int HUNGER_THRESHOLD = 250;
+	public static final int HUNGER_THRESHOLD = 250;
 	/** The amount of thirst threshold [millisols]. */
-	private static final int ENERGY_THRESHOLD = 2525;
+	public static final int ENERGY_THRESHOLD = 2525;
 	/** The amount of fatigue threshold [millisols]. */
 	private static final int FATIGUE_THRESHOLD = 750;
+	/** The amount of fatigue threshold [millisols]. */
+	public static final int FATIGUE_MIN = 150;
 	/** The amount of stress threshold [millisols]. */
 	private static final int STRESS_THRESHOLD = 60;
 
