@@ -56,7 +56,7 @@ public class MarsProjectHeadless {
 	 * @param args command line arguments.
 	 */
 	public MarsProjectHeadless(String[] args) {
-		logger.config("Starting " + Simulation.title);
+		logger.config("Starting " + Simulation.TITLE);
 		logger.config("List of input args : " + Arrays.toString(args));
 
 		// Initialize the simulation.

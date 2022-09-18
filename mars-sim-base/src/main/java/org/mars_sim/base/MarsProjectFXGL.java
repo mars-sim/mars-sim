@@ -67,7 +67,7 @@ public class MarsProjectFXGL extends GameApplication {
 	 * Constructor
 	 */
 	public MarsProjectFXGL() {
-		logger.config("Starting " + Simulation.title);
+		logger.config("Starting " + Simulation.TITLE);
 	}
 
 	@Override

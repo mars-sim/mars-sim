@@ -78,7 +78,7 @@ public class MarsProject {
 	 * Constructor
 	 */
 	public MarsProject() {
-		logger.config("Starting " + Simulation.title);
+		logger.config("Starting " + Simulation.TITLE);
 		// Set the InteractionTerm instance
 		MainWindow.setInteractiveTerm(interactiveTerm);
 	}

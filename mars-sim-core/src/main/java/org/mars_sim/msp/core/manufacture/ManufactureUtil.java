@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ManufactureUtil.java
- * @date 2021-10-20
+ * @date 2022-09-17
  * @author Scott Davis
  */
 
@@ -434,9 +434,7 @@ public final class ManufactureUtil {
 					return false;
 			}
 
-			else if (ItemType.VEHICLE == item.getType()) {
-				// Vehicles are stored outside a settlement.
-			}
+			// else if (ItemType.VEHICLE == item.getType()) // Vehicles are stored outside a settlement.
 
 			else
 				logger.severe(settlement, "ManufactureUtil.addProcess(): output: " +

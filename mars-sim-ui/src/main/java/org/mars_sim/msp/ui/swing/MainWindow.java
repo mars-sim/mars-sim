@@ -1298,15 +1298,15 @@ extends JComponent implements ClockListener {
 	private void changeTitle(boolean isPaused) {
 		if (GameManager.getGameMode() == GameMode.COMMAND) {
 			if (isPaused) {
-				frame.setTitle(Simulation.title + "  -  Command Mode" + "  -  [ P A U S E ]");
+				frame.setTitle(Simulation.TITLE + "  -  Command Mode" + "  -  [ P A U S E ]");
 			} else {
-				frame.setTitle(Simulation.title + "  -  Command Mode");
+				frame.setTitle(Simulation.TITLE + "  -  Command Mode");
 			}
 		} else {
 			if (isPaused) {
-				frame.setTitle(Simulation.title + "  -  Sandbox Mode" + "  -  [ P A U S E ]");
+				frame.setTitle(Simulation.TITLE + "  -  Sandbox Mode" + "  -  [ P A U S E ]");
 			} else {
-				frame.setTitle(Simulation.title + "  -  Sandbox Mode");
+				frame.setTitle(Simulation.TITLE + "  -  Sandbox Mode");
 			}
 		}
 	}

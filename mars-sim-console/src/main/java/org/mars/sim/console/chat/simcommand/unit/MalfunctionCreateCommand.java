@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MalfunctionCreateCommand.java
- * @date 2022-06-14
+ * @date 2022-09-17
  * @author Barry Evans
  */
 
@@ -16,7 +16,6 @@ import org.mars.sim.console.chat.ConversationRole;
 import org.mars.sim.console.chat.simcommand.CommandHelper;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentOwner;
 import org.mars_sim.msp.core.malfunction.MalfunctionConfig;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
@@ -85,8 +84,8 @@ public class MalfunctionCreateCommand extends AbstractUnitCommand {
 			// Get the smart equipment that have failures
 			EquipmentOwner eo = (EquipmentOwner) source;
 			List<Malfunctionable> smartEqm = eo.getEquipmentSet().stream()
-										.filter(e -> e instanceof Malfunctionable)
-										.map(e -> (Malfunctionable) e)
+										.filter(Malfunctionable.class::isInstance)
+										.map(Malfunctionable.class::cast)
 										.collect(Collectors.toList());
 
 			if (!smartEqm.isEmpty() && 

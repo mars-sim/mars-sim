@@ -100,14 +100,14 @@ public class InventoryCommand extends AbstractUnitCommand {
 		if (input != null) {
 			// Filter according to input
 			itemResources = itemIDs.stream()
-									.map(d -> ItemResourceUtil.findItemResource(d))
+									.map(ItemResourceUtil::findItemResource)
 									.filter(Objects::nonNull)
 									.filter(i -> i.getName().contains(input))
 									.collect(Collectors.toSet());
 		}
 		else {
 			itemResources = itemIDs.stream()
-					.map(d -> ItemResourceUtil.findItemResource(d))
+					.map(ItemResourceUtil::findItemResource)
 					.filter(Objects::nonNull)
 					.collect(Collectors.toSet());	
 		}
@@ -126,14 +126,14 @@ public class InventoryCommand extends AbstractUnitCommand {
 		if (input != null) {
 			// Filter according to input
 			amountResources = amountIDs.stream()
-									.map(d -> ResourceUtil.findAmountResource(d))
+									.map(ResourceUtil::findAmountResource)
 									.filter(Objects::nonNull)
 									.filter(a -> a.getName().contains(input))
 									.collect(Collectors.toSet());
 		}
 		else {
 			amountResources = amountIDs.stream()
-					.map(d -> ResourceUtil.findAmountResource(d))
+					.map(ResourceUtil::findAmountResource)
 					.filter(Objects::nonNull)
 					.collect(Collectors.toSet());		
 		}
