@@ -108,7 +108,7 @@ public class Teach extends Task implements Serializable {
 					&& ((Robot)worker).getBotMind().getRobotJob().isJobRelatedTask(candidateTask.getClass())) {
 					// nothing
 				}
-				else if (worker.getUnitType() == UnitType.ROBOT) {
+				else if (worker.getUnitType() == UnitType.PERSON) {
 					MetaTask metaTask = Preference.convertTask2MetaTask(candidateTask);
 					JobType jobType = ((Person)worker).getMind().getJob();
 					
@@ -182,7 +182,7 @@ public class Teach extends Task implements Serializable {
 			setPhase(TEACHING);
 		}
 		else {
-			logger.warning(worker, 10_000L, "Can't find a student.");
+			logger.fine(worker, 10_000L, "Can't find a student.");
 			endTask();
 		}
 	}

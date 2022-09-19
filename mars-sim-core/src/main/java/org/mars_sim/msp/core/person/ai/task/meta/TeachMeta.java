@@ -28,6 +28,8 @@ public class TeachMeta extends MetaTask {
     private static final String NAME = Msg.getString(
             "Task.description.teach"); //$NON-NLS-1$
 
+	private static final int CAP = 1_000;
+	
     public TeachMeta() {
 		super(NAME, WorkerType.BOTH, TaskScope.ANY_HOUR);
 		
@@ -57,7 +59,7 @@ public class TeachMeta extends MetaTask {
 
             else {
 
-	            result = potentialStudents.size() * 10;
+	            result = potentialStudents.size() * 30;
 
 	            if (person.isInVehicle()) {	
 	    	        // Check if person is in a moving rover.
@@ -91,6 +93,9 @@ public class TeachMeta extends MetaTask {
             }
         }
 
+        if (result > CAP)
+        	result = CAP;
+        
         return result;
     }
     
@@ -113,7 +118,7 @@ public class TeachMeta extends MetaTask {
 
             else {
 
-	            result = potentialStudents.size() * 5D;
+	            result = potentialStudents.size() * 15D;
 	            
 	            for (Person student : potentialStudents) {
 	                Building building = BuildingManager.getBuilding(student);
@@ -128,6 +133,9 @@ public class TeachMeta extends MetaTask {
             }
         }
 
+        if (result > CAP)
+        	result = CAP;
+        
         return result;
     }
 }
