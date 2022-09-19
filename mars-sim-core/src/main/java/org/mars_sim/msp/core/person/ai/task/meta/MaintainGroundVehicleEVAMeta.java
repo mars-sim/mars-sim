@@ -10,7 +10,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
@@ -29,11 +28,12 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  */
 public class MaintainGroundVehicleEVAMeta extends MetaTask {
 
-
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.maintainGroundVehicleEVA"); //$NON-NLS-1$
     
+	private static final int CAP = 3_000;
+	
     public MaintainGroundVehicleEVAMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
 		setPreferredJob(JobType.MECHANICS);
@@ -109,12 +109,11 @@ public class MaintainGroundVehicleEVAMeta extends MetaTask {
 	            // Get all vehicles needing maintenance.
                 Iterator<Vehicle> i = MaintainGroundVehicleGarage.getAllVehicleCandidates(person, true).iterator();
                 while (i.hasNext()) {
-                    MalfunctionManager manager = i.next().getMalfunctionManager();
-                    double entityProb = (manager.getEffectiveTimeSinceLastMaintenance() / 50D);
-                    if (entityProb > score) {
-                        entityProb = score;
+                    double entityProb = i.next().getMalfunctionManager().getEffectiveTimeSinceLastMaintenance() / 50D;
+                    if (entityProb > 1000) {
+                        entityProb = 1000;
                     }
-                    result += entityProb;
+                    result += entityProb * score / 50;
                 }
                 		
 	            int num = settlement.getIndoorPeopleCount();
@@ -145,6 +144,9 @@ public class MaintainGroundVehicleEVAMeta extends MetaTask {
        		}
         }
  
+        if (result > CAP)
+        	result = CAP;
+        
         return result;
     }
 }

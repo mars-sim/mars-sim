@@ -38,7 +38,7 @@ import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
-import org.mars_sim.msp.core.person.ai.task.Maintenance;
+import org.mars_sim.msp.core.person.ai.task.MaintainBuilding;
 import org.mars_sim.msp.core.person.ai.task.Repair;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -1045,8 +1045,8 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 			Task task = person.getMind().getTaskManager().getTask();
 
 			// Add all people maintaining this building.
-			if (task instanceof Maintenance) {
-				if (((Maintenance) task).getEntity() == this) {
+			if (task instanceof MaintainBuilding) {
+				if (((MaintainBuilding) task).getEntity() == this) {
 					if (!people.contains(person))
 						people.add(person);
 				}

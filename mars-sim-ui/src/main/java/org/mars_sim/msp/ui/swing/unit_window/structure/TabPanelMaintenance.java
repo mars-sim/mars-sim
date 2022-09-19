@@ -123,7 +123,7 @@ public class TabPanelMaintenance extends TabPanel {
 		// Data members
 		private MalfunctionManager manager;
 		private int lastCompletedCache;
-		private int wearConditionCache;
+		private double wearConditionCache;
 		private BoundedRangeModel progressBarModel;
 		private WebLabel lastLabel;
 		private WebLabel partsLabel;
@@ -148,7 +148,7 @@ public class TabPanelMaintenance extends TabPanel {
 			add(buildingLabel);
 
 			// Add wear condition cache and label.
-			wearConditionCache = (int) Math.round(manager.getWearCondition());
+			double wearConditionCache = Math.round(manager.getWearCondition() * 100.0)/100.0;
 			wearConditionLabel = new WebLabel(
 					Msg.getString("BuildingPanelMaintenance.wearCondition", wearConditionCache),
 					SwingConstants.RIGHT);
@@ -180,8 +180,8 @@ public class TabPanelMaintenance extends TabPanel {
 			// Set initial value for progress bar.
 			double completed = manager.getMaintenanceWorkTimeCompleted();
 			double total = manager.getMaintenanceWorkTime();
-			int percentDone = (int) (100D * (completed / total));
-			progressBarModel.setValue(percentDone);
+			double percentDone = Math.round(100D * completed / total * 10.0)/10.0;
+			progressBarModel.setValue((int)percentDone);
 
 			// Prepare parts label.
 			Map<Integer, Integer> parts = manager.getMaintenanceParts();
@@ -199,11 +199,11 @@ public class TabPanelMaintenance extends TabPanel {
 			// Update progress bar.
 			double completed = manager.getMaintenanceWorkTimeCompleted();
 			double total = manager.getMaintenanceWorkTime();
-			int percentDone = (int) (100D * (completed / total));
-			progressBarModel.setValue(percentDone);
+			double percentDone = Math.round(100D * completed / total * 10.0)/10.0;
+			progressBarModel.setValue((int)percentDone);
 
 			// Add wear condition cache and label
-			int wearCondition = (int) Math.round(manager.getWearCondition());
+			double wearCondition = Math.round(manager.getWearCondition() * 100.0)/100.0;
 			if (wearCondition != wearConditionCache) {
 				wearConditionCache = wearCondition;
 				wearConditionLabel.setText(Msg.getString("BuildingPanelMaintenance.wearCondition", wearConditionCache));

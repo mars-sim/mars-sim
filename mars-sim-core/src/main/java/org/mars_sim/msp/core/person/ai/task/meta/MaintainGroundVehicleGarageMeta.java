@@ -13,7 +13,7 @@ import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.task.MaintainGroundVehicleGarage;
-import org.mars_sim.msp.core.person.ai.task.Maintenance;
+import org.mars_sim.msp.core.person.ai.task.MaintainBuilding;
 import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
@@ -34,6 +34,8 @@ public class MaintainGroundVehicleGarageMeta extends MetaTask {
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.maintainGroundVehicleGarage"); //$NON-NLS-1$
 
+	private static final int CAP = 3_000;
+	
     public MaintainGroundVehicleGarageMeta() {
 		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
 		
@@ -67,6 +69,9 @@ public class MaintainGroundVehicleGarageMeta extends MetaTask {
 			result = applyPersonModifier(result, person);
 		}
 
+        if (result > CAP)
+        	result = CAP;
+        
 		return result;
 	}
 
@@ -111,19 +116,29 @@ public class MaintainGroundVehicleGarageMeta extends MetaTask {
 			if (hasMalfunction)
 				return 0;
 			
-			boolean hasParts = Maintenance.hasMaintenanceParts(mechanic, vehicle);
+			boolean hasParts = MaintainBuilding.hasMaintenanceParts(mechanic, vehicle);
 			if (!hasParts)
 				return 0;
 			
 			double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();
 			boolean minTime = (effectiveTime >= 1000D);
 			if (hasParts && minTime) {
-				double entityProb = effectiveTime / 50D;
-				if (entityProb > 100D) {
-					entityProb = 100D;
+				double entityProb = effectiveTime / 5;
+				if (entityProb > 1000D) {
+					entityProb = 1000D;
 				}
 				result += entityProb;
 			}
+			
+			 int num = mechanic.getSettlement().getIndoorPeopleCount();
+			 int total = mechanic.getSettlement().getOwnedVehicleNum(); 
+			 int onMission = mechanic.getSettlement().getMissionVehicles().size();
+				
+             result = result 
+             		+ result * num / mechanic.getSettlement().getPopulationCapacity() / 4D
+             		+ result * (total - onMission) / 2.5;
+
+             result *= mechanic.getSettlement().getGoodsManager().getTransportationFactor();
 		}
 
 		// Determine if settlement has available space in garage.

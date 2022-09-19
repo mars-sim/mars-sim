@@ -177,15 +177,15 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 		MalfunctionManager manager = vehicle.getMalfunctionManager();
 		
 		// Check if maintenance has already been completed.
-		if (manager.getEffectiveTimeSinceLastMaintenance() == 0D) {
-			endTask();
-			return time;
-		}
+//		if (manager.getEffectiveTimeSinceLastMaintenance() == 0D) {
+//			endTask();
+//			return time;
+//		}
 
 		// If vehicle has malfunction, end task.
 		if (manager.hasMalfunction()) {
 			endTask();
-			return time;
+			return time * .75;
 		}
 
 		if (isDone()) {
@@ -194,7 +194,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 		}
 
 		// Add repair parts if necessary.
-		if (Maintenance.hasMaintenanceParts(worker.getTopContainerUnit(), vehicle)) {	
+		if (MaintainBuilding.hasMaintenanceParts(worker.getTopContainerUnit(), vehicle)) {	
 			Settlement settlement = worker.getSettlement();
 
 			Map<Integer, Integer> parts = new HashMap<>(manager.getMaintenanceParts());
@@ -339,7 +339,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 		if (hasMalfunction)
 			return 0;
 
-		if (!Maintenance.hasMaintenanceParts(mechanic, vehicle)) 
+		if (!MaintainBuilding.hasMaintenanceParts(mechanic, vehicle)) 
 			return 0;
 		
 		

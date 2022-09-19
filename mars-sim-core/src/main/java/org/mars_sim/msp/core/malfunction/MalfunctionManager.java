@@ -82,7 +82,6 @@ public class MalfunctionManager implements Serializable, Temporal {
 	private static final double WEAR_ACCIDENT_FACTOR = 1D;
 
 	private static final String OXYGEN = "Oxygen";
-
 	private static final String CAUSE = ". Probable Cause: ";
 	private static final String CAUSED_BY = " caused by ";
 
@@ -108,7 +107,9 @@ public class MalfunctionManager implements Serializable, Temporal {
 	private double maintenanceTimeCompleted;
 	/** The percentage of the malfunctionable's condition from wear and tear. 0% = worn out -> 100% = new condition. */
 	private double currentWearCondition;
-
+	/** The cumulative time [in millisols] since active use. */
+	private double cumulativeTime;
+	
 	/**
 	 * The expected life time [in millisols] of active use before the malfunctionable
 	 * is worn out.
@@ -155,15 +156,19 @@ public class MalfunctionManager implements Serializable, Temporal {
 		// Initialize data members
 		this.entity = entity;
 
-		timeSinceLastMaintenance = 0D;
-		effectiveTimeSinceLastMaintenance = 0D;
 		scopes = new HashSet<>();
 		malfunctions = new CopyOnWriteArrayList<>();
+		
 		this.maintenanceWorkTime = maintenanceWorkTime;
 		baseWearLifeTime = wearLifeTime;
-		currentWearLifeTime = wearLifeTime;
-
-		currentWearCondition = 100D;
+		
+		double preUseTime = RandomUtil.getRandomDouble(100);
+		currentWearLifeTime = wearLifeTime - preUseTime;
+		cumulativeTime = preUseTime;
+		effectiveTimeSinceLastMaintenance = preUseTime;
+		timeSinceLastMaintenance = preUseTime;
+		
+		currentWearCondition = currentWearLifeTime/baseWearLifeTime * 100D;
 	}
 
 	/**
@@ -469,9 +474,9 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 * @param time amount of time passing (in millisols)
 	 */
 	public void activeTimePassing(double time) {
-
+		cumulativeTime += time;
 		effectiveTimeSinceLastMaintenance += time;
-		currentWearLifeTime -= time;
+		currentWearLifeTime -= time * RandomUtil.getRandomDouble(.5, 1.5);
 
 		currentWearCondition = currentWearLifeTime/baseWearLifeTime * 100D;
 		if (currentWearCondition < 0D)
@@ -788,10 +793,16 @@ public class MalfunctionManager implements Serializable, Temporal {
 			numberMaintenances++;
 
 			// Improve the currentWearlifetime
-			currentWearLifeTime *= (1 + RandomUtil.getRandomDouble(.005));
+			currentWearLifeTime += time * RandomUtil.getRandomDouble(100, 300);
+			if (currentWearLifeTime > baseWearLifeTime - cumulativeTime)
+				currentWearLifeTime = baseWearLifeTime - cumulativeTime;
 		}
 	}
 
+	public double getAdjustedCondition() { 
+		return currentWearLifeTime / (baseWearLifeTime - cumulativeTime) * 100;
+	}
+	
 	/**
 	 * Issues any necessary medical complaints.
 	 *

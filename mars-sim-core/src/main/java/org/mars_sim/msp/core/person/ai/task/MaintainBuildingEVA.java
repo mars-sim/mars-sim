@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
- * MaintenanceEVA.java
- * @date 2022-08-06
+ * MaintainBuildingEVA.java
+ * @date 2022-09-18
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -10,29 +10,25 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.logging.Level;
 
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.logging.SimLogger;
-import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.Structure;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
- * The Maintenance class is a task for performing
- * preventive maintenance on malfunctionable entities outdoors.
+ * The task for performing preventive maintenance on malfunctionable entities outdoors.
  */
-public class MaintenanceEVA
+public class MaintainBuildingEVA
 extends EVAOperation
 implements Serializable {
 
@@ -40,16 +36,17 @@ implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static final SimLogger logger = SimLogger.getLogger(MaintenanceEVA.class.getName());
+	private static final SimLogger logger = SimLogger.getLogger(MaintainBuildingEVA.class.getName());
 
 	/** Task name */
     private static final String NAME = Msg.getString(
-            "Task.description.maintenanceEVA"); //$NON-NLS-1$
+            "Task.description.maintainBuildingEVA"); //$NON-NLS-1$
 
     /** Task phases. */
     private static final TaskPhase MAINTAIN = new TaskPhase(Msg.getString(
             "Task.phase.maintain")); //$NON-NLS-1$
 
+    
 	// Data members
 	/** Entity to be maintained. */
 	private Malfunctionable entity;
@@ -59,8 +56,8 @@ implements Serializable {
 	 * Constructor.
 	 * @param person the person to perform the task
 	 */
-	public MaintenanceEVA(Person person) {
-		super(NAME, person, true, RandomUtil.getRandomDouble(50D) + 10D, SkillType.MECHANICS);
+	public MaintainBuildingEVA(Person person) {
+		super(NAME, person, true, RandomUtil.getRandomDouble(90, 100), SkillType.MECHANICS);
 
 		if (!person.isNominallyFit()) {
 			checkLocation();
@@ -73,26 +70,26 @@ implements Serializable {
         	return;
         }
         	
-		try {
-			entity = getMaintenanceMalfunctionable();
-			if (entity != null) {
-				if (!Maintenance.hasMaintenanceParts(settlement, entity)) {		
-					checkLocation();
-				    return;
-				}
-			}
-			else {
+		entity = getWorstBuilding();
+
+		if (entity != null) {
+			if (!MaintainBuilding.hasMaintenanceParts(settlement, entity)) {		
 				checkLocation();
 			    return;
 			}
-		}
-		catch (Exception e) {
-		    logger.log(Level.SEVERE,"MaintenanceEVA.constructor()",e);
-		    checkLocation();
-			return;
+
+			else {
+				String des = Msg.getString("Task.description.maintainBuildingEVA.detail", entity.getName()); //$NON-NLS-1$
+				setDescription(des);
+				logger.info(person, 4_000, des + ".");
+			}
 		}
 
-        // Determine location for maintenance.
+		else {
+			checkLocation();
+		}
+        
+	    // Determine location for maintenance.
         setOutsideLocation((LocalBoundedObject) entity);
 
 		// Initialize phase
@@ -154,10 +151,15 @@ implements Serializable {
 		    workTime += workTime * (.4D * mechanicSkill);
 		}
 
-		// Gets a malfunctionable
-		entity = getMaintenanceMalfunctionable();
+		// Gets the building with the worst condition
+		if (entity == null) {
+			entity = getWorstBuilding();
+			String des = Msg.getString("Task.description.maintainBuildingEVA.detail", entity.getName()); //$NON-NLS-1$
+			setDescription(des);
+			logger.info(worker, 4_000, des + ".");
+		}
 		
-		if (entity != null && Maintenance.hasMaintenanceParts(settlement, entity)) {
+		if (entity != null && MaintainBuilding.hasMaintenanceParts(settlement, entity)) {
 			
 			Map<Integer, Integer> parts = new HashMap<>(manager.getMaintenanceParts());
 			Iterator<Integer> j = parts.keySet().iterator();
@@ -176,7 +178,7 @@ implements Serializable {
 	        addExperience(time);
 
 			// Check if an accident happens during maintenance.
-			checkForAccident(time);
+			checkForAccident(entity, time, 0.005D);
 			
         }
 		else {
@@ -198,80 +200,24 @@ implements Serializable {
 		checkForAccident(entity, time, 0.005D, skill, entity.getName());
 	}
 
+
 	/**
-	 * Gets a random malfunctionable to perform maintenance on.
+	 * Gets the building with worst condition to maintain.
 	 * 
-	 * @return malfunctionable or null.
-	 * @throws Exception if error finding malfunctionable.
+	 * @return
 	 */
-	private Malfunctionable getMaintenanceMalfunctionable() {
+	public Malfunctionable getWorstBuilding() {
 		Malfunctionable result = null;
-
-		// Determine all malfunctionables local to the person.
-		Map<Malfunctionable, Double> malfunctionables = new HashMap<>();
-
-		if (person != null) {
-	        Iterator<Malfunctionable> i = MalfunctionFactory.getLocalMalfunctionables(person).iterator();
-	        while (i.hasNext()) {
-	            Malfunctionable entity = i.next();
-	            double probability = getProbabilityWeight(entity);
-	            if (probability > 0D) {
-	                malfunctionables.put(entity, probability);
-	            }
-	        }
+		double worstCondition = 100;
+		for (Building building: person.getAssociatedSettlement().getBuildingManager().getBuildings()) {
+			if (!building.hasFunction(FunctionType.LIFE_SUPPORT)) {
+				double condition = building.getMalfunctionManager().getWearCondition();
+				if (condition < worstCondition) {
+					worstCondition = condition;
+					result = building;
+				}
+			}
 		}
-		else {
-	        Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(robot).iterator();
-	        while (i.hasNext()) {
-	            Malfunctionable entity = i.next();
-	            double probability = getProbabilityWeight(entity);
-	            if (probability > 0D) {
-	                malfunctionables.put(entity, probability);
-	            }
-	        }
-		}
-
-        if (!malfunctionables.isEmpty()) {
-            result = RandomUtil.getWeightedRandomObject(malfunctionables);
-        }
-
-		if (result != null) {
-		    setDescription(Msg.getString("Task.description.maintenanceEVA.detail",
-                    result.getName())); //$NON-NLS-1$;
-		}
-
-		return result;
-	}
-
-	/**
-	 * Gets the probability weight for a malfunctionable.
-	 * 
-	 * @param malfunctionable the malfunctionable.
-	 * @return the probability weight.
-	 */
-	private double getProbabilityWeight(Malfunctionable malfunctionable) {
-		double result = 0D;
-		boolean isStructure = (malfunctionable instanceof Structure);
-		boolean uninhabitableBuilding = false;
-		if (malfunctionable instanceof Building)
-			uninhabitableBuilding = !((Building) malfunctionable).hasFunction(FunctionType.LIFE_SUPPORT);
-		if (!(isStructure || uninhabitableBuilding))
-			return 0;
-		
-		MalfunctionManager manager = malfunctionable.getMalfunctionManager();
-		boolean hasMalfunction = manager.hasMalfunction();
-		if (hasMalfunction)
-			return 0;
-		
-		boolean hasParts = Maintenance.hasMaintenanceParts(settlement, malfunctionable);
-		if (!hasParts)
-			return 0;
-		
-		double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();
-		boolean minTime = (effectiveTime >= 1000D);
-		if (minTime) 
-			result = effectiveTime;
-		
 		return result;
 	}
 }

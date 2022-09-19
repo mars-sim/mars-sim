@@ -157,7 +157,7 @@ implements Serializable {
         if (skill > 1) workTime += workTime * (.2D * skill);
 
         // Add repair parts if necessary.
-        if (Maintenance.hasMaintenanceParts(settlement, vehicle)) {
+        if (MaintainBuilding.hasMaintenanceParts(settlement, vehicle)) {
             Map<Integer, Integer> parts = new HashMap<>(manager.getMaintenanceParts());
             Iterator<Integer> j = parts.keySet().iterator();
             while (j.hasNext()) {

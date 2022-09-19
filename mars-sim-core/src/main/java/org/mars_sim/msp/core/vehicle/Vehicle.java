@@ -50,7 +50,7 @@ import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.mission.MissionPhase.Stage;
 import org.mars_sim.msp.core.person.ai.task.Conversation;
-import org.mars_sim.msp.core.person.ai.task.Maintenance;
+import org.mars_sim.msp.core.person.ai.task.MaintainBuilding;
 import org.mars_sim.msp.core.person.ai.task.Repair;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
@@ -1512,8 +1512,8 @@ public abstract class Vehicle extends Unit
 			Task task = person.getMind().getTaskManager().getTask();
 
 			// Add all people maintaining this vehicle.
-			if ((task instanceof Maintenance)
-				&& this.equals(((Maintenance) task).getEntity())) {
+			if ((task instanceof MaintainBuilding)
+				&& this.equals(((MaintainBuilding) task).getEntity())) {
 				people.add(person);
 			}
 
@@ -1565,8 +1565,8 @@ public abstract class Vehicle extends Unit
 			Task task = robot.getBotMind().getBotTaskManager().getTask();
 
 			// Add all robots maintaining this vehicle.
-			if (task instanceof Maintenance) {
-				if (((Maintenance) task).getEntity() == this) {
+			if (task instanceof MaintainBuilding) {
+				if (((MaintainBuilding) task).getEntity() == this) {
 					robots.add(robot);
 				}
 			}
