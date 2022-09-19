@@ -58,9 +58,9 @@ public class BuildingPanelMaintenance extends BuildingFunctionPanel {
 	private static final String SPANNER_ICON = Msg.getString("icon.spanner"); //$NON-NLS-1$
 
 	/** Cached value for the wear condition. */
-	private int wearConditionCache;
+	private double wearConditionCache;
 	/** The time since last completed maintenance. */
-	private int lastCompletedTime;
+	private double lastCompletedTime;
 
 	/** The malfunction manager instance. */
 	private MalfunctionManager manager;
@@ -112,17 +112,17 @@ public class BuildingPanelMaintenance extends BuildingFunctionPanel {
 	protected void buildUI(JPanel center) {
 	
 		WebPanel labelPanel = new WebPanel(new GridLayout(4, 1, 2, 1));
-		add(labelPanel, BorderLayout.NORTH);
+		center.add(labelPanel, BorderLayout.NORTH);
 		
 		// Create wear condition label.
-		int wearConditionCache = (int) Math.round(manager.getWearCondition());
+		wearConditionCache = Math.round(manager.getWearCondition() * 100.0)/100.0;
 		wearConditionLabel = new WebLabel(Msg.getString("BuildingPanelMaintenance.wearCondition", wearConditionCache),
 				JLabel.CENTER);
 		wearConditionLabel.setToolTipText(Msg.getString("BuildingPanelMaintenance.wear.toolTip"));
 		labelPanel.add(wearConditionLabel);
 
 		// Create lastCompletedLabel.
-		lastCompletedTime = (int) (manager.getTimeSinceLastMaintenance() / 1000D);
+		lastCompletedTime = Math.round(manager.getTimeSinceLastMaintenance() / 1000D * 10.0)/10.0;
 		lastCompletedLabel = new JLabel(Msg.getString("BuildingPanelMaintenance.lastCompleted", lastCompletedTime),
 				JLabel.CENTER);
 		labelPanel.add(lastCompletedLabel);
@@ -137,13 +137,14 @@ public class BuildingPanelMaintenance extends BuildingFunctionPanel {
 		JProgressBar progressBar = new JProgressBar();
 		progressBarModel = progressBar.getModel();
 		progressBar.setStringPainted(true);
+		progressBar.setPreferredSize(new Dimension(300, 15));
 		progressPanel.add(progressBar);
 
 		// Set initial value for progress bar.
 		double completed = manager.getMaintenanceWorkTimeCompleted();
 		double total = manager.getMaintenanceWorkTime();
-		int percentDone = (int) (100D * (completed / total));
-		progressBarModel.setValue(percentDone);
+		double percentDone = Math.round(100.0 * completed / total * 100.0)/100.0;
+		progressBarModel.setValue((int)percentDone);
 
 		// Prepare maintenance parts label.
 		partsLabel = new JLabel(getPartsString(false), JLabel.CENTER);
@@ -199,14 +200,14 @@ public class BuildingPanelMaintenance extends BuildingFunctionPanel {
 	public void update() {
 
 		// Update the wear condition label.
-		int wearCondition = (int) Math.round(manager.getWearCondition());
+		double wearCondition = Math.round(manager.getWearCondition() * 100.0)/100.0;
 		if (wearCondition != wearConditionCache) {
 			wearConditionCache = wearCondition;
 			wearConditionLabel.setText(Msg.getString("BuildingPanelMaintenance.wearCondition", wearConditionCache));
 		}
 
 		// Update last completed label.
-		int lastComplete = (int) (manager.getTimeSinceLastMaintenance() / 1000D);
+		double lastComplete = Math.round(manager.getTimeSinceLastMaintenance() / 1000D * 10.0)/10.0;
 		if (lastComplete != lastCompletedTime) {
 			lastCompletedTime = lastComplete;
 			lastCompletedLabel.setText(Msg.getString("BuildingPanelMaintenance.lastCompleted", lastCompletedTime));
@@ -218,14 +219,13 @@ public class BuildingPanelMaintenance extends BuildingFunctionPanel {
 		// Update progress bar.
 		double completed = manager.getMaintenanceWorkTimeCompleted();
 		double total = manager.getMaintenanceWorkTime();
-		int percentDone = (int) (100D * (completed / total));
-		progressBarModel.setValue(percentDone);
+		double percentDone = Math.round(100.0 * completed / total * 100.0)/100.0;
+		progressBarModel.setValue((int)percentDone);
 
 		// Update parts label.
 		partsLabel.setText(getPartsString(false));
 		// Update tool tip.
 		partsLabel.setToolTipText("<html>" + getPartsString(true) + "</html>");
-
 	}
 
 	/**

@@ -121,13 +121,15 @@ public class TabPanelMaintenance extends TabPanel {
 		private static final long serialVersionUID = 1L;
 
 		// Data members
-		private MalfunctionManager manager;
-		private int lastCompletedCache;
+		private double lastCompletedCache;
 		private double wearConditionCache;
+		
 		private BoundedRangeModel progressBarModel;
 		private WebLabel lastLabel;
 		private WebLabel partsLabel;
 		private WebLabel wearConditionLabel;
+		
+		private MalfunctionManager manager;
 
 		/**
 		 * Constructor.
@@ -148,7 +150,7 @@ public class TabPanelMaintenance extends TabPanel {
 			add(buildingLabel);
 
 			// Add wear condition cache and label.
-			double wearConditionCache = Math.round(manager.getWearCondition() * 100.0)/100.0;
+			wearConditionCache = Math.round(manager.getWearCondition() * 100.0)/100.0;
 			wearConditionLabel = new WebLabel(
 					Msg.getString("BuildingPanelMaintenance.wearCondition", wearConditionCache),
 					SwingConstants.RIGHT);
@@ -159,7 +161,7 @@ public class TabPanelMaintenance extends TabPanel {
 			WebPanel mainPanel = new WebPanel(new BorderLayout(0, 0));
 			add(mainPanel);
 
-			lastCompletedCache = (int) (manager.getTimeSinceLastMaintenance() / 1000D);
+			lastCompletedCache = Math.round(manager.getTimeSinceLastMaintenance() / 1000D * 10.0)/10.0;
 			lastLabel = new WebLabel("Last completed : " + lastCompletedCache + " sols ago", SwingConstants.LEFT);
 			mainPanel.add(lastLabel, BorderLayout.WEST);;
 			TooltipManager.setTooltip(lastLabel, getToolTipString(), TooltipWay.down);
@@ -210,7 +212,7 @@ public class TabPanelMaintenance extends TabPanel {
 			}
 
 			// Update last completed.
-			int lastCompleted = (int) (manager.getTimeSinceLastMaintenance() / 1000D);
+			double lastCompleted = Math.round(manager.getTimeSinceLastMaintenance() / 1000D * 10.0)/10.0;
 			if (lastCompleted != lastCompletedCache) {
 				lastCompletedCache = lastCompleted;
 				lastLabel.setText("Last Completed : " + lastCompletedCache + " sols ago");

@@ -32,7 +32,7 @@ public class MaintainBuildingEVAMeta extends MetaTask {
 
 	private static final int CAP = 3_000;
 	
-	private static final double FACTOR = 300;
+	private static final double FACTOR = 400;
 	
     public MaintainBuildingEVAMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
@@ -52,58 +52,53 @@ public class MaintainBuildingEVAMeta extends MetaTask {
   
     	Settlement settlement = person.getSettlement();
         
-        if (settlement != null) {
+        if (settlement == null)
+        	return 0;
+        	  	
+        // Check if an airlock is available
+        if (EVAOperation.getWalkableAvailableAirlock(person, false) == null)
+    		return 0;
+
+        // Check if it is night time.
+        if (EVAOperation.isGettingDark(person))
+        	return 0;
+
+        // Checks if the person's settlement is at meal time and is hungry
+        if (EVAOperation.isHungryAtMealTime(person))
+        	return 0;
+        
+        // Checks if the person is physically fit for heavy EVA tasks
+		if (!EVAOperation.isEVAFit(person))
+			return 0;
         	
-            // Check if an airlock is available
-            if (EVAOperation.getWalkableAvailableAirlock(person, false) == null)
-	    		return 0;
+    	// Check for radiation events
+    	boolean[] exposed = settlement.getExposed();
 
-            // Check if it is night time.
-            if (EVAOperation.isGettingDark(person))
-            	return 0;
+		if (exposed[2]) {// SEP can give lethal dose of radiation
+			return 0;
+		}
+		
+		result = getSettlementProbability(settlement);
 
-            // Checks if the person's settlement is at meal time and is hungry
-            if (EVAOperation.isHungryAtMealTime(person))
-            	return 0;
-            
-            // Checks if the person is physically fit for heavy EVA tasks
-    		if (!EVAOperation.isEVAFit(person))
-    			return 0;
-			
-//            // Checks if a EVA suit is good
-			// don't have one until being donned on
-//            if (EVAOperation.hasEVAProblem(person))
-//            	return 0;
-            	
-        	// Check for radiation events
-        	boolean[] exposed = settlement.getExposed();
+        if (settlement.getIndoorPeopleCount() > settlement.getPopulationCapacity())
+            result *= 2D;
+        
+        double shiftBonus = person.getTaskSchedule().obtainScoreAtStartOfShift();
+        
+        // Encourage to get this task done early in a work shift
+        result *= shiftBonus / 10;
+        
+        result = applyPersonModifier(result, person);
 
-    		if (exposed[2]) {// SEP can give lethal dose of radiation
-    			return 0;
-    		}
-    		
-    		result = getSettlementProbability(settlement);
+    	if (exposed[0]) {
+			result = result/2D;// Baseline can give a fair amount dose of radiation
+		}
 
-            if (settlement.getIndoorPeopleCount() > settlement.getPopulationCapacity())
-                result *= 2D;
-            
-            double shiftBonus = person.getTaskSchedule().obtainScoreAtStartOfShift();
-            
-            // Encourage to get this task done early in a work shift
-            result *= shiftBonus / 10;
-            
-            result = applyPersonModifier(result, person);
+    	if (exposed[1]) {// GCR can give nearly lethal dose of radiation
+			result = result/4D;
+		}
 
-        	if (exposed[0]) {
-    			result = result/2D;// Baseline can give a fair amount dose of radiation
-    		}
-
-        	if (exposed[1]) {// GCR can give nearly lethal dose of radiation
-    			result = result/4D;
-    		}
-
-            if (result < 0) result = 0;
-        }
+        if (result < 0) result = 0;
 
         if (result > CAP)
         	result = CAP;

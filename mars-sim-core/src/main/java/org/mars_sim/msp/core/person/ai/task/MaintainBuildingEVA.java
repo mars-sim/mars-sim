@@ -7,8 +7,10 @@
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.mars_sim.msp.core.CollectionUtils;
@@ -41,6 +43,8 @@ implements Serializable {
 	/** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.maintainBuildingEVA"); //$NON-NLS-1$
+    
+    private static final String DETAIL = "Task.description.maintainBuildingEVA.detail";
 
     /** Task phases. */
     private static final TaskPhase MAINTAIN = new TaskPhase(Msg.getString(
@@ -79,7 +83,7 @@ implements Serializable {
 			}
 
 			else {
-				String des = Msg.getString("Task.description.maintainBuildingEVA.detail", entity.getName()); //$NON-NLS-1$
+				String des = Msg.getString(DETAIL, entity.getName()); //$NON-NLS-1$
 				setDescription(des);
 				logger.info(person, 4_000, des + ".");
 			}
@@ -154,38 +158,40 @@ implements Serializable {
 		// Gets the building with the worst condition
 		if (entity == null) {
 			entity = getWorstBuilding();
-			String des = Msg.getString("Task.description.maintainBuildingEVA.detail", entity.getName()); //$NON-NLS-1$
+			String des = Msg.getString(DETAIL, entity.getName()); //$NON-NLS-1$
 			setDescription(des);
 			logger.info(worker, 4_000, des + ".");
 		}
 		
-		if (entity != null && MaintainBuilding.hasMaintenanceParts(settlement, entity)) {
+		if (MaintainBuilding.hasMaintenanceParts(settlement, entity)) {
 			
+			// Note: should allow replace one part at a time
+			// and not to wait till all the parts are available
 			Map<Integer, Integer> parts = new HashMap<>(manager.getMaintenanceParts());
 			Iterator<Integer> j = parts.keySet().iterator();
 			while (j.hasNext()) {
 				Integer part = j.next();
 				int number = parts.get(part);
-				settlement.retrieveItemResource(part, number);
-		        // Add repair parts if necessary.
-				manager.maintainWithParts(part, number);
+				int numMissing = settlement.retrieveItemResource(part, number);
+		        // Consume the number of repair parts that are available.
+				manager.maintainWithParts(part, number - numMissing);
 			}
-
-	        // Add work to the maintenance
-			manager.addMaintenanceWorkTime(workTime);
-			
-	        // Add experience points
-	        addExperience(time);
-
-			// Check if an accident happens during maintenance.
-			checkForAccident(entity, time, 0.005D);
 			
         }
 		else {
 			checkLocation();
-			return time;
+			return time *.75;
 		}
 
+        // Add work to the maintenance
+		manager.addMaintenanceWorkTime(workTime);
+		
+        // Add experience points
+        addExperience(time);
+
+		// Check if an accident happens during maintenance.
+		checkForAccident(entity, time, 0.005D);
+		
 		return 0;
 	}
 	
@@ -209,7 +215,9 @@ implements Serializable {
 	public Malfunctionable getWorstBuilding() {
 		Malfunctionable result = null;
 		double worstCondition = 100;
-		for (Building building: person.getAssociatedSettlement().getBuildingManager().getBuildings()) {
+		List<Building> list = worker.getAssociatedSettlement().getBuildingManager().getBuildings();
+		Collections.shuffle(list);
+		for (Building building: list) {
 			if (!building.hasFunction(FunctionType.LIFE_SUPPORT)) {
 				double condition = building.getMalfunctionManager().getWearCondition();
 				if (condition < worstCondition) {

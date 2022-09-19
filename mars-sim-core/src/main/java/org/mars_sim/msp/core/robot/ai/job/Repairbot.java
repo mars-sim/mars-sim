@@ -35,7 +35,7 @@ public class Repairbot extends RobotJob implements Serializable {
 		// Add technician-related tasks.
 		jobTasks.add(MaintainBuilding.class);
 		jobTasks.add(MaintainGroundVehicleGarage.class);
-		// jobTasks.add(MaintenanceEVA.class); //check to what extend the walking bug is
+		// jobTasks.add(MaintainBuildingEVA.class); //check to what extend the walking bug is
 		// affecting the outdoor portion of this task
 		// jobTasks.add(RepairEVAMalfunction.class); //check to what extend the walking
 		// bug is affecting the outdoor portion of this task

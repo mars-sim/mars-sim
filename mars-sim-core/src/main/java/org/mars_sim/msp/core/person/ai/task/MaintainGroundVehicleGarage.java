@@ -177,10 +177,10 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 		MalfunctionManager manager = vehicle.getMalfunctionManager();
 		
 		// Check if maintenance has already been completed.
-//		if (manager.getEffectiveTimeSinceLastMaintenance() == 0D) {
-//			endTask();
-//			return time;
-//		}
+		if (manager.getEffectiveTimeSinceLastMaintenance() == 0D) {
+			endTask();
+			return time;
+		}
 
 		// If vehicle has malfunction, end task.
 		if (manager.hasMalfunction()) {

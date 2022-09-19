@@ -26,15 +26,12 @@ import org.mars_sim.msp.core.structure.building.function.FunctionType;
  */
 public class MaintainBuildingMeta extends MetaTask {
 
-	/** default logger. */
-//	private static final Logger logger = Logger.getLogger(MaintainBuildingMeta.class.getName());
-
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.maintainBuilding"); //$NON-NLS-1$
 
 	private static final int CAP = 3_000;
 	
-	private static final double FACTOR = 200;
+	private static final double FACTOR = 250;
 	
     public MaintainBuildingMeta() {
 		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
@@ -76,13 +73,13 @@ public class MaintainBuildingMeta extends MetaTask {
 			MalfunctionManager manager = building.getMalfunctionManager();
 			boolean hasMalfunction = manager.hasMalfunction();
 			boolean hasParts = MaintainBuilding.hasMaintenanceParts(settlement, building);
-			boolean uninhabitableBuilding = !building.hasFunction(FunctionType.LIFE_SUPPORT);
+			boolean inhabitableBuilding = building.hasFunction(FunctionType.LIFE_SUPPORT);
 			
 			double condition = manager.getAdjustedCondition();
 			double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();
 			boolean minTime = (effectiveTime >= 100D);
 			
-			if (!hasMalfunction && !uninhabitableBuilding && hasParts && minTime) {
+			if (!hasMalfunction && inhabitableBuilding && hasParts && minTime) {
 				result += (100 - condition);
 			}
 		}
@@ -108,7 +105,7 @@ public class MaintainBuildingMeta extends MetaTask {
 			result = getSettlementProbability(settlement);
 			
 			// Effort-driven task modifier.
-			result *= robot.getPerformanceRating() * 5;
+			result *= FACTOR;
 		}
 
         if (result > CAP)

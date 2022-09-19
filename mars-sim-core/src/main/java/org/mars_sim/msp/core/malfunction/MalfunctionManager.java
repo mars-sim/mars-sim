@@ -61,6 +61,11 @@ public class MalfunctionManager implements Serializable, Temporal {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(MalfunctionManager.class.getName());
 
+	/** Wear-and-tear points earned from a low quality inspection. */
+	private static final double LOW_QUALITY_INSPECTION = 200;
+	/** Wear-and-tear points earned from a high quality inspection. */
+	private static final double HIGH_QUALITY_INSPECTION = 2000;
+	
 	/** Stress jump resulting from being in an accident. */
 	private static final double ACCIDENT_STRESS = 10D;
 	/** Modifier for number of parts needed for a trip. */
@@ -441,6 +446,8 @@ public class MalfunctionManager implements Serializable, Temporal {
 
 		String offender = "None";
 		String task = "N/A";
+		// Note: may add lack of maintenance as actor ?!
+		
 		if (actor != null) {
 			task = actor.getTaskDescription();
 			offender = actor.getName();
@@ -483,7 +490,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 			currentWearCondition = 0D;
 
 		double maintFactor = effectiveTimeSinceLastMaintenance * MAINTENANCE_MALFUNCTION_FACTOR;
-		double wearFactor = (100D - currentWearCondition) / 100D * WEAR_MALFUNCTION_FACTOR;
+		double wearFactor = (100 - currentWearCondition) / 100 * WEAR_MALFUNCTION_FACTOR;
 		double chance = time * maintFactor * wearFactor;
 
 		// Check for malfunction due to lack of maintenance and wear condition.
@@ -492,8 +499,8 @@ public class MalfunctionManager implements Serializable, Temporal {
 			// Reduce the max possible health condition
 //			maxCondition = (wearCondition + 400D)/500D;
 			logger.warning(entity,
-					"Experienced a malfunction due to wear-and-tear.  "
-					+ "# of sols since last check-up: " + solsLastMaint + ". Condition: " + Math.round(currentWearCondition*10.0)/10.0
+					"Malfunctioned due to wear-and-tear. "
+					+ solsLastMaint + " sols since last check-up. Condition: " + Math.round(currentWearCondition*10.0)/10.0
 					+ " %.");
 
 			// FUTURE : how to connect maintenance to field reliability statistics when selecting a malfunction ?
@@ -684,7 +691,8 @@ public class MalfunctionManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * Creates a series of related malfunctions
+	 * Creates a series of related malfunctions.
+	 * 
 	 * @param location the place of accident
 	 * @param r the Worker who triggers the malfunction
 	 */
@@ -793,9 +801,10 @@ public class MalfunctionManager implements Serializable, Temporal {
 			numberMaintenances++;
 
 			// Improve the currentWearlifetime
-			currentWearLifeTime += time * RandomUtil.getRandomDouble(100, 300);
-			if (currentWearLifeTime > baseWearLifeTime - cumulativeTime)
-				currentWearLifeTime = baseWearLifeTime - cumulativeTime;
+			currentWearLifeTime += time * RandomUtil.getRandomDouble(LOW_QUALITY_INSPECTION, HIGH_QUALITY_INSPECTION);
+			double fixedFactor = RandomUtil.getRandomDouble(.75, 1);
+			if (currentWearLifeTime > baseWearLifeTime - cumulativeTime * fixedFactor)
+				currentWearLifeTime = baseWearLifeTime - cumulativeTime * fixedFactor;
 		}
 	}
 
@@ -929,6 +938,8 @@ public class MalfunctionManager implements Serializable, Temporal {
 			else {
 				numberNeeded -= number;
 				if (numberNeeded > 0)
+					// Consume the number of parts available 
+					// and reset the number needed for this part
 					partsNeededForMaintenance.put(part, numberNeeded);
 				else
 					partsNeededForMaintenance.remove(part);

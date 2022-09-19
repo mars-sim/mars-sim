@@ -163,8 +163,9 @@ implements Serializable {
             while (j.hasNext()) {
             	Integer part = j.next();
                 int number = parts.get(part);
-                settlement.retrieveItemResource(part, number);
-                manager.maintainWithParts(part, number);
+				int numMissing = settlement.retrieveItemResource(part, number);
+		        // Consume the number of repair parts that are available.
+				manager.maintainWithParts(part, number - numMissing);               
             }
         }
         else {
