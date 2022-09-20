@@ -273,7 +273,7 @@ public class SkillManager implements Serializable {
 	 * @param skillType {@link SkillType}
 	 * @return the cumulative experience points
 	 */
-	public double getCumuativeExperience(SkillType skillType) {
+	public double getCumulativeExperience(SkillType skillType) {
 		Skill skill = getSkill(skillType);
 		if (skill != null) {
 			// Calculate exp points at the current level

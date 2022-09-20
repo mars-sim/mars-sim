@@ -63,6 +63,7 @@ public class Teach extends Task implements Serializable {
 	// Data members
 	private Person student;
 	private Task teachingTask;
+	private SkillType taskSkill;
 
 	/**
 	 * Constructor.
@@ -139,21 +140,22 @@ public class Teach extends Task implements Serializable {
 		        if (!taughtSkills.isEmpty()) {
 		        	Iterator<SkillType> iii = taughtSkills.iterator();
 					while (ii.hasNext() && teachingTask == null && student == null) {
-						SkillType taskSkill = iii.next();
+						SkillType candidateSkill = iii.next();
 
 						if (worker.getUnitType() == UnitType.PERSON) {
-							teacherExp = person.getSkillManager().getCumuativeExperience(taskSkill);
+							teacherExp = person.getSkillManager().getCumulativeExperience(candidateSkill);
 						}
 						else {
-							teacherExp = robot.getSkillManager().getCumuativeExperience(taskSkill);
+							teacherExp = robot.getSkillManager().getCumulativeExperience(candidateSkill);
 						}
 				
-						double studentExp = candidate.getSkillManager().getCumuativeExperience(taskSkill);
+						double studentExp = candidate.getSkillManager().getCumulativeExperience(candidateSkill);
 						
 						double diff = teacherExp - studentExp;
 		
 						if (diff > 0) {
 							teachingTask = candidateTask;
+							taskSkill = candidateSkill;
 							student = candidate;
 							if (worker.getUnitType() == UnitType.PERSON) {
 								logger.log(person, Level.INFO, 30_000, "Teaching " + student.getName() 
@@ -265,61 +267,60 @@ public class Teach extends Task implements Serializable {
         // Experience points adjusted by person's "Experience Aptitude" attribute.
         double mod = getTeachingExperienceModifier() * 90;
         exp *= mod;
-        
+
         if (teachingTask == null)  {
         	logger.severe(worker, 20_000L, "teachingTask is null.");
         	return;
         }
-        
+
         List<SkillType> taughtSkills = teachingTask.getAssociatedSkills();
         if (taughtSkills == null) {
         	logger.severe(worker, 20_000L, "No taught skills found.");
         	return;
         }
-        
+
         if (!taughtSkills.isEmpty()) {
-        	// Pick one skill to improve upon
-        	int rand = RandomUtil.getRandomInt(taughtSkills.size()-1);
-        	SkillType taskSkill = taughtSkills.get(rand);
 
 			int studentSkill = student.getSkillManager().getSkillLevel(taskSkill);
-			double studentExp = student.getSkillManager().getCumuativeExperience(taskSkill);
+			double studentExp = student.getSkillManager().getCumulativeExperience(taskSkill);
 
 			int teacherSkill = 0;
 			double teacherExp = 0;
 			
 			if (worker.getUnitType() == UnitType.PERSON) {
 				teacherSkill = person.getSkillManager().getSkillLevel(taskSkill);
-				teacherExp = person.getSkillManager().getCumuativeExperience(taskSkill);
+				teacherExp = person.getSkillManager().getCumulativeExperience(taskSkill);
 			}
 			else {
 				teacherSkill = robot.getSkillManager().getSkillLevel(taskSkill);
-				teacherExp = robot.getSkillManager().getCumuativeExperience(taskSkill);
+				teacherExp = robot.getSkillManager().getCumulativeExperience(taskSkill);
 			}
 	
 			int points = teacherSkill - studentSkill;
 			double reward = exp / 60 * RandomUtil.getRandomDouble(1);
 			double learned = (.05 + points) * exp / 2 * RandomUtil.getRandomDouble(1);
 			
-			student.getSkillManager().addExperience(taskSkill, learned, time);
-			
-			if (worker.getUnitType() == UnitType.PERSON) {
-				person.getSkillManager().addExperience(taskSkill, reward, time);
-			}
-			else
-				robot.getSkillManager().addExperience(taskSkill, reward, time);
-			
 			double diff = Math.round((teacherExp - studentExp)*10.0)/10.0;
-			
-			logger.info(taskSkill.getName() 
-					+ " - diff: " + diff
-					+ "   mod: " + mod
-					+ "   " + worker + " [Lvl " + teacherSkill + "]'s teaching reward: " + Math.round(reward*1000.0)/1000.0 
-					+ "   " + student + " [Lvl " + studentSkill + "]'s learned: " + Math.round(learned*1000.0)/1000.0 + ".");
 
 	        // If the student has more experience points than the teacher, the teaching session ends.
-	        if (diff < 0)
+	        if (diff < 0) {
 	        	endTask();
+	        }
+	        else {	
+				logger.info("On task " + taskSkill.getName() 
+						+ "   diff: " + diff
+						+ "   mod: " + mod
+						+ "   " + worker + " [Lvl " + teacherSkill + "]'s teaching reward: " + Math.round(reward*1000.0)/1000.0 
+						+ "   " + student + " [Lvl " + studentSkill + "]'s learned: " + Math.round(learned*1000.0)/1000.0 + ".");
+				// Add exp to student
+				student.getSkillManager().addExperience(taskSkill, learned, time);
+				// Add exp to teacher
+				if (worker.getUnitType() == UnitType.PERSON) {
+					person.getSkillManager().addExperience(taskSkill, reward, time);
+				}
+				else
+					robot.getSkillManager().addExperience(taskSkill, reward, time);
+	        }
 		}
 	}
 
