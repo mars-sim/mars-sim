@@ -1,8 +1,8 @@
 /*
  * Mars Simulation Project
- * LoadVehicleTest
- * @date 2021-09-29
- * @author Scott Davis
+ * MicroInventoryTest
+ * @date 2022-09-20
+ * @author Barry Evans
  */
 
 package org.mars_sim.msp.core;
@@ -15,7 +15,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import junit.framework.TestCase;
 
 /**
- * Tests the loading of a vehicle
+ * Tests the micro inventory
  */
 public class MicroInventoryTest
 extends TestCase {
