@@ -118,10 +118,11 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 	public static Malfunctionable getEVAMalfunctionEntity(Person person) {
 		Malfunctionable result = null;
 
-		for(Malfunctionable entity : MalfunctionFactory.getLocalMalfunctionables(person)) {
-			if (getMalfunction(person, entity) != null) {
+		for (Malfunctionable entity : MalfunctionFactory.getLocalMalfunctionables(person)) {
+			if (getRepairableEVAMalfunction(person, entity) != null) {
 				return entity;
 			}
+
 			MalfunctionManager manager = entity.getMalfunctionManager();
 			Unit container = person.getTopContainerUnit();
 
@@ -147,7 +148,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 	 * @param entity the entity with a malfunction.
 	 * @return malfunction requiring an EVA repair or null if none found.
 	 */
-	public static Malfunction getMalfunction(Person person, Malfunctionable entity) {
+	public static Malfunction getRepairableEVAMalfunction(Person person, Malfunctionable entity) {
 		MalfunctionManager manager = entity.getMalfunctionManager();
 
 		// Check if entity has any EVA malfunctions.

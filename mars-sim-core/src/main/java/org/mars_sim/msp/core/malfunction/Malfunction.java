@@ -95,7 +95,8 @@ public class Malfunction implements Serializable {
 		}
 
 		/**
-		 * Worker leaves the repair
+		 * Worker leaves the repair.
+		 * 
 		 * @param name
 		 * @return If the worker was active
 		 */
@@ -112,7 +113,8 @@ public class Malfunction implements Serializable {
 		}
 
 		/**
-		 * Add some repair time for a worker
+		 * Adds some repair time for a worker.
+		 * 
 		 * @param repairer
 		 * @param time
 		 */
@@ -129,7 +131,8 @@ public class Malfunction implements Serializable {
 		}
 
 		/**
-		 * Get the repairers effort. For non-active works add a "*"
+		 * Gets the repairers effort. For non-active works add a "*".
+		 * 
 		 * @return
 		 */
 		public List<Repairer> getEffort() {
@@ -169,7 +172,7 @@ public class Malfunction implements Serializable {
 
 
 	/**
-	 * Create a new Malfunction instance based on a meta definition
+	 * Creates a new Malfunction instance based on a meta definition.
 	 *
 	 * @param incident the incident id
 	 * @param definition the MalfunctionMeta instance
@@ -207,6 +210,20 @@ public class Malfunction implements Serializable {
 		determineRepairParts();
 	}
 
+	/**
+	 * Does this malfunction have this particular work type ?
+	 * 
+	 * @param type
+	 * @return
+	 */
+	public boolean hasWorkType(MalfunctionRepairWork type) {
+		Map<MalfunctionRepairWork, EffortSpec> workEffort = definition.getRepairEffort();
+		if (workEffort.keySet().contains(type))
+			return true;
+		
+		return false;
+	}
+	
 	/**
 	 * This find the details of a work type for this malfunction.
 	 * 

@@ -58,7 +58,7 @@ public class RepairEVAMalfunctionMeta extends MetaTask {
         	Malfunctionable entity = RepairEVAMalfunction.getEVAMalfunctionEntity(person);
 
 			if (entity != null) {
-				Malfunction malfunction = RepairEVAMalfunction.getMalfunction(person, entity);
+				Malfunction malfunction = RepairEVAMalfunction.getRepairableEVAMalfunction(person, entity);
 
 				if (malfunction != null) {
 					result += WEIGHT * malfunction.numRepairerSlotsEmpty(MalfunctionRepairWork.EVA);

@@ -249,6 +249,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 * Malfunction must need work of the specified work type and
 	 * have worker slots vacant.
 	 *
+	 * @param work
 	 * @return malfunction
 	 */
 	public Malfunction getMostSeriousMalfunctionInNeed(MalfunctionRepairWork work) {
@@ -258,7 +259,8 @@ public class MalfunctionManager implements Serializable, Temporal {
 
 		if (hasMalfunction()) {
 			for (Malfunction malfunction : malfunctions) {
-				if (!malfunction.isWorkDone(work)
+				if (malfunction.hasWorkType(work)
+						&& !malfunction.isWorkDone(work)
 						&& (malfunction.numRepairerSlotsEmpty(work) > 0)
 						&& malfunction.getSeverity() > highestSeverity) {
 					highestSeverity = malfunction.getSeverity();
@@ -278,7 +280,8 @@ public class MalfunctionManager implements Serializable, Temporal {
 	public List<Malfunction> getAllInsideMalfunctions() {
 		List<Malfunction> result = new ArrayList<>();
 		for (Malfunction malfunction : malfunctions) {
-			if (!malfunction.isWorkDone(MalfunctionRepairWork.INSIDE))
+			if (malfunction.hasWorkType(MalfunctionRepairWork.INSIDE)
+					&& !malfunction.isWorkDone(MalfunctionRepairWork.INSIDE))
 				result.add(malfunction);
 		}
 		Collections.sort(result, new MalfunctionSeverityComparator());
@@ -293,7 +296,8 @@ public class MalfunctionManager implements Serializable, Temporal {
 	public List<Malfunction> getAllEVAMalfunctions() {
 		List<Malfunction> result = new ArrayList<>();
 		for (Malfunction malfunction : malfunctions) {
-			if (!malfunction.isWorkDone(MalfunctionRepairWork.EVA))
+			if (malfunction.hasWorkType(MalfunctionRepairWork.EVA)
+					&& !malfunction.isWorkDone(MalfunctionRepairWork.EVA))
 				result.add(malfunction);
 		}
 		Collections.sort(result, new MalfunctionSeverityComparator());
@@ -510,7 +514,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 				// of having malfunction and doesn't necessarily result in one
 				selectMalfunction(null);
 			}
-			
+
 			// FUTURE : how to connect maintenance to field reliability statistics
 			double maintenanceChance = time * maintFactor * wearFactor / (1 + numberMaintenances) * MAINTENANCE_FACTOR;
 			// Check for repair items needed due to lack of maintenance and wear condition.

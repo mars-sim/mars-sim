@@ -14,6 +14,7 @@ import java.util.logging.Level;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitType;
+import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
@@ -261,8 +262,32 @@ public class RepairInsideMalfunction extends Task implements Repair, Serializabl
 		Iterator<Malfunctionable> i = MalfunctionFactory.getLocalMalfunctionables(person).iterator();
 		while (i.hasNext() && (result == null)) {
 			Malfunctionable entity = i.next();
-			if (entity.getMalfunctionManager().hasMalfunction()) {
-					result = entity;
+			
+			List<Malfunction> malfunctions = entity.getMalfunctionManager().getMalfunctions();
+			for (Malfunction m: malfunctions) {
+				if (m.hasWorkType(MalfunctionRepairWork.INSIDE)) {
+					if (entity.getUnitType() == UnitType.BUILDING) {
+						Building building = (Building) entity;
+						if (building.hasFunction(FunctionType.LIFE_SUPPORT)) {
+							result = entity;
+						}
+					}
+					else if (entity.getUnitType() == UnitType.VEHICLE) {
+						Vehicle vehicle = (Vehicle) entity;
+						if (vehicle.isInAGarage()) {
+							result = entity;
+						}
+					}
+					else if (entity.getUnitType() == UnitType.EQUIPMENT) {
+						Equipment equipment = (Equipment) entity;
+						if (equipment.isInside()) {
+							result = entity;
+						}
+					}
+					else if (entity.getUnitType() == UnitType.SETTLEMENT) {
+						logger.warning(entity, "entity is " + entity);
+					}
+				}
 			}
 		}
 

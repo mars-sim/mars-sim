@@ -405,7 +405,8 @@ public class EVASuit extends Equipment
 		// called when in use by a Person.
 		Unit container = getContainerUnit();
 		if (container.getUnitType() == UnitType.PERSON
-			&&!((Person) container).getPhysicalCondition().isDead()) {
+			&& container.isOutside()
+			&& !((Person) container).getPhysicalCondition().isDead()) {
 				malfunctionManager.activeTimePassing(pulse);
 		}
 
