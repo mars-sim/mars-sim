@@ -360,6 +360,7 @@ public class Malfunction implements Serializable {
 
 	/**
 	 * Is the work repair done ?
+	 * 
 	 * @param type Type of work
 	 * @return true if work type repair is done
 	 */

@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
- * MaintainGroundVehicleGarageMeta.java
- * @date 2021-12-22
+ * MaintainGarageVehicleMeta.java
+ * @date 2022-09-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -12,7 +12,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
-import org.mars_sim.msp.core.person.ai.task.MaintainGroundVehicleGarage;
+import org.mars_sim.msp.core.person.ai.task.MaintainGarageVehicle;
 import org.mars_sim.msp.core.person.ai.task.MaintainBuilding;
 import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
@@ -27,16 +27,16 @@ import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
- * Meta task for the MaintainGroundVehicleGarage task.
+ * Meta task for the MaintainGarageVehicle task.
  */
-public class MaintainGroundVehicleGarageMeta extends MetaTask {
+public class MaintainGarageVehicleMeta extends MetaTask {
 
 	/** Task name */
-	private static final String NAME = Msg.getString("Task.description.maintainGroundVehicleGarage"); //$NON-NLS-1$
+	private static final String NAME = Msg.getString("Task.description.maintainGarageVehicle"); //$NON-NLS-1$
 
 	private static final int CAP = 3_000;
 	
-    public MaintainGroundVehicleGarageMeta() {
+    public MaintainGarageVehicleMeta() {
 		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
 		
 		setPreferredJob(JobType.MECHANICS);
@@ -44,7 +44,7 @@ public class MaintainGroundVehicleGarageMeta extends MetaTask {
 
 	@Override
 	public Task constructInstance(Person person) {
-		return new MaintainGroundVehicleGarage(person);
+		return new MaintainGarageVehicle(person);
 	}
 
 	@Override
@@ -77,7 +77,7 @@ public class MaintainGroundVehicleGarageMeta extends MetaTask {
 
 	@Override
 	public Task constructInstance(Robot robot) {
-		return new MaintainGroundVehicleGarage(robot);
+		return new MaintainGarageVehicle(robot);
 	}
 
 	@Override
@@ -95,7 +95,7 @@ public class MaintainGroundVehicleGarageMeta extends MetaTask {
 			// Job modifier.
 			RobotJob job = robot.getBotMind().getRobotJob();
 			if (job != null) {
-				result *= job.getStartTaskProbabilityModifier(MaintainGroundVehicleGarage.class)
+				result *= job.getStartTaskProbabilityModifier(MaintainGarageVehicle.class)
 						* robot.getSettlement().getGoodsManager().getTransportationFactor();
 			}
 
@@ -110,7 +110,7 @@ public class MaintainGroundVehicleGarageMeta extends MetaTask {
 	private double getSettlementProbability(Worker mechanic) {
 		double result = 0D;
 		
-		for( Vehicle vehicle : MaintainGroundVehicleGarage.getAllVehicleCandidates(mechanic, false)) {
+		for( Vehicle vehicle : MaintainGarageVehicle.getAllVehicleCandidates(mechanic, false)) {
 			MalfunctionManager manager = vehicle.getMalfunctionManager();
 			boolean hasMalfunction = manager.hasMalfunction();
 			if (hasMalfunction)

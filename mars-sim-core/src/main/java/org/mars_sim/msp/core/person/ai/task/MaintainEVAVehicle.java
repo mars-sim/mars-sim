@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
- * MaintainGroundVehicleEVA.java
- * @date 2022-08-06
+ * MaintainEVAVehicle.java
+ * @date 2022-09-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -25,10 +25,10 @@ import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
- * The MaintainGroundVehicleEVA class is a task for performing
- * preventive maintenance on ground vehicles outside a settlement.
+ * The MaintainEVAVehicle class is a task for performing
+ * preventive maintenance on ground vehicles on the surface of Mars.
  */
-public class MaintainGroundVehicleEVA
+public class MaintainEVAVehicle
 extends EVAOperation
 implements Serializable {
 
@@ -36,11 +36,11 @@ implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /** default logger. */
-    private static final Logger logger = Logger.getLogger(MaintainGroundVehicleEVA.class.getName());
+    private static final Logger logger = Logger.getLogger(MaintainEVAVehicle.class.getName());
 
     /** Task name */
     private static final String NAME = Msg.getString(
-            "Task.description.maintainGroundVehicleEVA"); //$NON-NLS-1$
+            "Task.description.maintainEVAVehicle"); //$NON-NLS-1$
 
     /** Task phases. */
     private static final TaskPhase MAINTAIN_VEHICLE = new TaskPhase(Msg.getString(
@@ -57,7 +57,7 @@ implements Serializable {
      * 
      * @param person the person to perform the task
      */
-    public MaintainGroundVehicleEVA(Person person) {
+    public MaintainEVAVehicle(Person person) {
         super(NAME, person, true, 25, SkillType.MECHANICS);
 
 		if (!person.isNominallyFit()) {
@@ -88,7 +88,7 @@ implements Serializable {
             // Initialize phase.
             addPhase(MAINTAIN_VEHICLE);
 
-            logger.finest(person.getName() + " started MaintainGroundVehicleEVA task.");
+            logger.finest(person.getName() + " started maintainEVAVehicle task.");
         }
         else {
         	checkLocation();
@@ -222,7 +222,7 @@ implements Serializable {
         Vehicle result = null;
 
         // Find all vehicles that can be maintained.
-        List<Vehicle> availableVehicles = MaintainGroundVehicleGarage.getAllVehicleCandidates(person, true);
+        List<Vehicle> availableVehicles = MaintainGarageVehicle.getAllVehicleCandidates(person, true);
 
         // Populate vehicles and probabilities.
         Map<Vehicle, Double> vehicleProb = new HashMap<>(availableVehicles.size());
@@ -230,7 +230,7 @@ implements Serializable {
         while (i.hasNext()) {
             Vehicle vehicle = i.next();
             if (!vehicle.getSettlement().getBuildingManager().addToGarage(vehicle)) {
-	            double prob = MaintainGroundVehicleGarage.getProbabilityWeight(vehicle, person);
+	            double prob = MaintainGarageVehicle.getProbabilityWeight(vehicle, person);
 	            if (prob > 0D) {
 	                vehicleProb.put(vehicle, prob);
 	            }
@@ -247,7 +247,7 @@ implements Serializable {
 	            	result = null;
 	            }
 	            else {
-	                setDescription(Msg.getString("Task.description.maintainGroundVehicleEVA.detail",
+	                setDescription(Msg.getString("Task.description.maintainEVAVehicle.detail",
 	                        result.getName())); //$NON-NLS-1$
 	            }
 	        }

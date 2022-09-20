@@ -94,7 +94,8 @@ public class RepairInsideMalfunctionMeta extends MetaTask {
         for (Malfunctionable entity : MalfunctionFactory.getAssociatedMalfunctionables(settlement)) {
         	
             if (unit instanceof Robot && entity instanceof Vehicle) {
-            	// Note that currently robot cannot go outside and board a vehicle
+            	// Note: robot's malfunction is not currently modeled
+            	// vehicle malfunctions are handled by 
             	continue;
             }
             

@@ -506,10 +506,9 @@ public class MalfunctionManager implements Serializable, Temporal {
 //				logger.info(entity, "wearFactor: " + wearFactor);
 //				logger.info(entity, "MalfunctionChance: " + malfunctionChance + " %");
 				double solsLastMaint = Math.round(effectiveTimeSinceLastMaintenance / 1000D * 10.0)/10.0;
-				logger.info(entity,
-						"Checking for malfunction if it's warranted due to wear-and-tear. "
-						+ solsLastMaint + " sols since last check-up. Condition: " + Math.round(currentWearCondition*100.0)/100.0
-						+ " %.");
+//				logger.info(entity, "Checking for malfunction if it's warranted due to wear-and-tear. "
+//						+ solsLastMaint + " sols since last check-up. Condition: " 
+//						+ Math.round(currentWearCondition*100.0)/100.0 + " %.");
 				// Note: call selectMalfunction is just checking for the possibility 
 				// of having malfunction and doesn't necessarily result in one
 				selectMalfunction(null);
@@ -525,10 +524,8 @@ public class MalfunctionManager implements Serializable, Temporal {
 				// of having needed repair parts and doesn't necessarily result in one
 				// Updates the repair parts 
 				determineNewMaintenanceParts();
-				logger.info(entity,
-						"Checking if repair parts are needed due to wear-and-tear. "
-						+ "Condition: " + Math.round(currentWearCondition*100.0)/100.0
-						+ " %.");
+//				logger.info(entity, "Checking if repair parts are needed due to wear-and-tear. "
+//						+ "Condition: " + Math.round(currentWearCondition*100.0)/100.0 + " %.");
 			}
 		}
 	}

@@ -111,15 +111,16 @@ public class MaintainBuildingEVAMeta extends MetaTask {
 		for (Building building: settlement.getBuildingManager().getBuildings()) {
 			
 			MalfunctionManager manager = building.getMalfunctionManager();
-			boolean hasMalfunction = manager.hasMalfunction();
+			boolean hasNoMalfunction = !manager.hasMalfunction();
 			boolean hasParts = MaintainBuilding.hasMaintenanceParts(settlement, building);
 			boolean uninhabitableBuilding = !building.hasFunction(FunctionType.LIFE_SUPPORT);
 			
 			double condition = manager.getAdjustedCondition();
 			double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();
 			boolean minTime = (effectiveTime >= 100D);
-			
-			if (!hasMalfunction && uninhabitableBuilding && hasParts && minTime) {
+			// Note: look for buildings that are NOT malfunction since
+			// malfunctioned building are being taken care of by the two Repair*Malfunction tasks
+			if (hasNoMalfunction && uninhabitableBuilding && hasParts && minTime) {
 				result += (100 - condition);
 			}
 		}

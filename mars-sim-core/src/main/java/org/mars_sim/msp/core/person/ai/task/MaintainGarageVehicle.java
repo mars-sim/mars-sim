@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
- * MaintainGroundVehicleGarage.java
- * @date 2021-10-21
+ * MaintainGarageVehicle.java
+ * @date 2022-09-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -35,19 +35,19 @@ import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
- * The MaintainGroundVehicleGarage class is a task for performing preventive
+ * The MaintainGarageVehicle class is a task for performing preventive
  * maintenance on ground vehicles in a garage.
  */
-public class MaintainGroundVehicleGarage extends Task implements Serializable {
+public class MaintainGarageVehicle extends Task implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static SimLogger logger = SimLogger.getLogger(MaintainGroundVehicleGarage.class.getName());
+	private static SimLogger logger = SimLogger.getLogger(MaintainGarageVehicle.class.getName());
 
 	/** Task name */
-	private static final String NAME = Msg.getString("Task.description.maintainGroundVehicleGarage"); //$NON-NLS-1$
+	private static final String NAME = Msg.getString("Task.description.maintainGarageVehicle"); //$NON-NLS-1$
 
 	/** Task phases. */
 	private static final TaskPhase MAINTAIN_VEHICLE = new TaskPhase(Msg.getString("Task.phase.maintainVehicle")); //$NON-NLS-1$
@@ -67,7 +67,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 	 * 
 	 * @param person the person to perform the task
 	 */
-	public MaintainGroundVehicleGarage(Worker unit) {
+	public MaintainGarageVehicle(Worker unit) {
 		super(NAME, unit, true, false, STRESS_MODIFIER, SkillType.MECHANICS, 100D);
 
 		if (unit instanceof Person) {
@@ -137,7 +137,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 			endTask();
 		}
 		else {
-			logger.log(worker, Level.FINER, 0, "Starting MaintainGroundVehicleGarage task on " + vehicle.getName());
+			logger.log(worker, Level.FINER, 0, "Starting maintainGarageVehicle task on " + vehicle.getName());
 		
 			// Initialize phase
 			addPhase(MAINTAIN_VEHICLE);
@@ -314,7 +314,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
             	result = null;
             }
             else {
-                setDescription(Msg.getString("Task.description.maintainGroundVehicleGarage.detail",
+                setDescription(Msg.getString("Task.description.maintainGarageVehicle.detail",
                         result.getName())); //$NON-NLS-1$
             }
 		}
@@ -334,7 +334,8 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 		boolean tethered = vehicle.isBeingTowed() || (vehicle.getTowingVehicle() != null);
 		if (tethered)
 			return 0;
-		
+		// Note: look for vehicles that have no malfunctions since
+		// malfunctioned vehicles are being taken care of by the two Repair*VehicleMalfunction tasks
 		boolean hasMalfunction = manager.hasMalfunction();
 		if (hasMalfunction)
 			return 0;

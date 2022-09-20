@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
- * MaintainGroundVehicleEVAMeta.java
- * @date 2022-08-06
+ * MaintainEVAVehicleMeta.java
+ * @date 2022-09-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -13,8 +13,8 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
-import org.mars_sim.msp.core.person.ai.task.MaintainGroundVehicleEVA;
-import org.mars_sim.msp.core.person.ai.task.MaintainGroundVehicleGarage;
+import org.mars_sim.msp.core.person.ai.task.MaintainEVAVehicle;
+import org.mars_sim.msp.core.person.ai.task.MaintainGarageVehicle;
 import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -24,9 +24,9 @@ import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
- * Meta task for the MaintainGroundVehicleEVA task.
+ * Meta task for the MaintainEVAVehicle task.
  */
-public class MaintainGroundVehicleEVAMeta extends MetaTask {
+public class MaintainEVAVehicleMeta extends MetaTask {
 
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -34,14 +34,14 @@ public class MaintainGroundVehicleEVAMeta extends MetaTask {
     
 	private static final int CAP = 3_000;
 	
-    public MaintainGroundVehicleEVAMeta() {
+    public MaintainEVAVehicleMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
 		setPreferredJob(JobType.MECHANICS);
 	}
 
     @Override
     public Task constructInstance(Person person) {
-        return new MaintainGroundVehicleEVA(person);
+        return new MaintainEVAVehicle(person);
     }
 
     @Override
@@ -107,7 +107,7 @@ public class MaintainGroundVehicleEVAMeta extends MetaTask {
        			double score = person.getPhysicalCondition().computeHealthScore();
        			
 	            // Get all vehicles needing maintenance.
-                Iterator<Vehicle> i = MaintainGroundVehicleGarage.getAllVehicleCandidates(person, true).iterator();
+                Iterator<Vehicle> i = MaintainGarageVehicle.getAllVehicleCandidates(person, true).iterator();
                 while (i.hasNext()) {
                     double entityProb = i.next().getMalfunctionManager().getEffectiveTimeSinceLastMaintenance() / 50D;
                     if (entityProb > 1000) {

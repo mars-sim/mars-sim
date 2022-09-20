@@ -12,7 +12,7 @@ import java.io.Serializable;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.task.MaintainGroundVehicleGarage;
+import org.mars_sim.msp.core.person.ai.task.MaintainGarageVehicle;
 import org.mars_sim.msp.core.person.ai.task.MaintainBuilding;
 import org.mars_sim.msp.core.person.ai.task.RepairInsideMalfunction;
 import org.mars_sim.msp.core.person.ai.task.Sleep;
@@ -34,7 +34,7 @@ public class Repairbot extends RobotJob implements Serializable {
 
 		// Add technician-related tasks.
 		jobTasks.add(MaintainBuilding.class);
-		jobTasks.add(MaintainGroundVehicleGarage.class);
+		jobTasks.add(MaintainGarageVehicle.class);
 		// jobTasks.add(MaintainBuildingEVA.class); //check to what extend the walking bug is
 		// affecting the outdoor portion of this task
 		// jobTasks.add(RepairEVAMalfunction.class); //check to what extend the walking
