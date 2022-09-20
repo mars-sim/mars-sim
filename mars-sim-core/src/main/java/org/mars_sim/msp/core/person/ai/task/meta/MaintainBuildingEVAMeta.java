@@ -48,8 +48,7 @@ public class MaintainBuildingEVAMeta extends MetaTask {
 
     @Override
     public double getProbability(Person person) {
-        double result = 0D;
-  
+
     	Settlement settlement = person.getSettlement();
         
         if (settlement == null)
@@ -78,7 +77,7 @@ public class MaintainBuildingEVAMeta extends MetaTask {
 			return 0;
 		}
 		
-		result = getSettlementProbability(settlement);
+		double result = getSettlementProbability(settlement);
 
         if (settlement.getIndoorPeopleCount() > settlement.getPopulationCapacity())
             result *= 2D;

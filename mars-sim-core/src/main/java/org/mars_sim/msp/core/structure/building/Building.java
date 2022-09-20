@@ -1081,7 +1081,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 
 		// If powered up, active time passing.
 		if (powerModeCache == PowerMode.FULL_POWER)
-			malfunctionManager.activeTimePassing(pulse.getElapsed());
+			malfunctionManager.activeTimePassing(pulse);
 
 		// Update malfunction manager.
 		malfunctionManager.timePassing(pulse);

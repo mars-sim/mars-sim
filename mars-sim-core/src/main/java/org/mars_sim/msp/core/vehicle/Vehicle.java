@@ -1445,14 +1445,16 @@ public abstract class Vehicle extends Unit
 
 		if (primaryStatus == StatusType.MOVING) {
 			// Assume the wear and tear factor is at 100% by being used in a mission
-			malfunctionManager.activeTimePassing(pulse.getElapsed());
+			malfunctionManager.activeTimePassing(pulse);
 		}
 
 		// If it's back at a settlement and is NOT in a garage
 		else if (LocationStateType.WITHIN_SETTLEMENT_VICINITY == getLocationStateType()
 			&& !haveStatusType(StatusType.MAINTENANCE)) {
-			// Assume the wear and tear factor is 75% less by being exposed outdoor
-			malfunctionManager.activeTimePassing(pulse.getElapsed() * .25);
+			int rand = RandomUtil.getRandomInt(3);
+			// Assume the wear and tear factor is 75% less when not operating 
+			if (rand == 3)
+				malfunctionManager.activeTimePassing(pulse);
 		}
 
 		// Make sure reservedForMaintenance is false if vehicle needs no maintenance.

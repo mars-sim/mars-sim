@@ -406,7 +406,7 @@ public class EVASuit extends Equipment
 		Unit container = getContainerUnit();
 		if (container.getUnitType() == UnitType.PERSON
 			&&!((Person) container).getPhysicalCondition().isDead()) {
-				malfunctionManager.activeTimePassing(pulse.getElapsed());
+				malfunctionManager.activeTimePassing(pulse);
 		}
 
 		malfunctionManager.timePassing(pulse);
