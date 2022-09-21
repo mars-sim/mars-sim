@@ -7,13 +7,11 @@
 
 package org.mars_sim.msp.core.robot;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Coordinates;
@@ -25,9 +23,9 @@ import org.mars_sim.msp.core.environment.MarsSurface;
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentInventory;
-import org.mars_sim.msp.core.equipment.EquipmentOwner;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.location.LocationStateType;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.manufacture.Salvagable;
@@ -62,13 +60,13 @@ import org.mars_sim.msp.core.vehicle.VehicleType;
 /**
  * The robot class represents operating a robot on Mars.
  */
-public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable, Worker, Serializable, EquipmentOwner {
+public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable, Worker {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static final  Logger logger = Logger.getLogger(Robot.class.getName());
+	private static final  SimLogger logger = SimLogger.getLogger(Robot.class.getName());
 
 	// Static members
 	/** The base carrying capacity (kg) of a robot. */
@@ -82,8 +80,6 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	/** A small amount. */
 	private static final double SMALL_AMOUNT = 0.00001;
 
-	/** The string type of this equipment. */
-	public static final String TYPE = "Robot";
 	/** The string tag of operable. */
 	private static final String OPERABLE = "Operable";
 	/** The string tag of inoperable. */
@@ -116,8 +112,6 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	private String birthplace;
 	/** The birth time of the robot. */
 	private String birthTimeStamp;
-	/** The nick name for this robot. e.g. Chefbot 001 */
-	private String nickName;
 	/** The country of the robot made. */
 	private String country;
 	/** The sponsor of the robot. */
@@ -154,7 +148,6 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		super(name, settlement.getCoordinates());
 
 		// Initialize data members.
-		this.nickName = name;
 		this.associatedSettlementID = (Integer) settlement.getIdentifier();
 		this.robotType = robotType;
 		this.position = LocalPosition.DEFAULT_POSITION;
@@ -254,7 +247,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 
 		// TODO: find out why sometimes day = 0 as seen on
 		if (day == 0) {
-			logger.warning(nickName + "'s date of birth is on the day 0th. Incrementing to the 1st.");
+			logger.warning(this, "date of birth is on the day 0th. Incrementing to the 1st.");
 			day = 1;
 		}
 
@@ -631,10 +624,6 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 		return isSalvaged;
 	}
 
-	public String getName() {
-		return nickName;
-	}
-
 	/**
 	 * Indicate the start of a salvage process on the item.
 	 *
@@ -752,11 +741,6 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 	 */
 	public void setSponsor(String sponsor) {
 		this.sponsor = sponsor;
-	}
-
-	@Override
-	public String getNickName() {
-		return nickName;
 	}
 
 	public Settlement findSettlementVicinity() {
@@ -1584,14 +1568,13 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 				transferred = ((Crewable)cu).removeRobot(this);
 			}
 			else {
-				logger.warning(this + "Not possible to be retrieved from " + cu + ".");
+				logger.warning(this, "Not possible to be retrieved from " + cu + ".");
 			}
 		}
 		else if (ut == UnitType.PLANET) {
 			transferred = ((MarsSurface)cu).removeRobot(this);
 		}
 		else if (ut == UnitType.BUILDING) {
-//			BuildingManager.removeRobotFromBuilding(this, (Building)cu);
 			transferred = true;
 		}
 		else {
@@ -1608,7 +1591,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 					transferred = ((Crewable)destination).addRobot(this);
 				}
 				else {
-					logger.warning(this + "Not possible to be stored into " + cu + ".");
+					logger.warning(this, "Not possible to be stored into " + cu + ".");
 				}
 			}
 			else if (destination.getUnitType() == UnitType.PLANET) {
@@ -1623,7 +1606,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 			}
 
 			if (!transferred) {
-				logger.warning(this + " cannot be stored into " + destination + ".");
+				logger.warning(this, "Cannot be stored into " + destination + ".");
 				// NOTE: need to revert back the storage action
 			}
 			else {
@@ -1636,7 +1619,7 @@ public class Robot extends Unit implements Salvagable, Temporal, Malfunctionable
 			}
 		}
 		else {
-			logger.warning(this + " cannot be retrieved from " + cu + ".");
+			logger.warning(this, "Cannot be retrieved from " + cu + ".");
 			// NOTE: need to revert back the retrieval action
 		}
 
