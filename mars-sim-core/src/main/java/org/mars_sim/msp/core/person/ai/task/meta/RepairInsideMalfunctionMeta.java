@@ -6,6 +6,8 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
+import java.util.AbstractMap.SimpleEntry;
+
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.malfunction.Malfunction;
@@ -35,7 +37,9 @@ public class RepairInsideMalfunctionMeta extends MetaTask {
     private static final String NAME = Msg.getString(
             "Task.description.repairMalfunction"); //$NON-NLS-1$
 
-	private static final double WEIGHT = 300D;
+	private static final int WEIGHT = 300;
+	
+	private static final int CAP = 6000;
 	
     public RepairInsideMalfunctionMeta() {
 		super(NAME, WorkerType.BOTH, TaskScope.ANY_HOUR);
@@ -64,24 +68,11 @@ public class RepairInsideMalfunctionMeta extends MetaTask {
             	result = computeProbability(person.getSettlement(), person);
             }
 
-        	// Get the malfunctioning entity.
-        	Malfunctionable entity = RepairInsideMalfunction.getMalfunctionEntity(person);
-			
-			if (entity != null) {
-				Malfunction malfunction = RepairInsideMalfunction.getMalfunction(person, entity);
-						
-				if (malfunction == null) {
-					return 0;
-				}
-				result += scoreMalfunction(malfunction);
-			}
-			else {
-				// No entity at fault
-				return 0;
-			}
-            
 	        result = applyPersonModifier(result, person);
         }
+        
+        if (result > CAP)
+        	result = CAP;
         
         return result;
     }
@@ -89,6 +80,13 @@ public class RepairInsideMalfunctionMeta extends MetaTask {
 
     private double computeProbability(Settlement settlement, Unit unit) {
 
+    	 // Load the malfunction pair in the settlement
+		SimpleEntry<Malfunction, Malfunctionable> pair = unit.getSettlement().getMalfunctionPair();    
+
+		if (pair != null) {
+			return CAP;
+		}
+    	
         double result = 0D;
         // Add probability for all malfunctionable entities in person's local.
         for (Malfunctionable entity : MalfunctionFactory.getAssociatedMalfunctionables(settlement)) {
@@ -98,17 +96,32 @@ public class RepairInsideMalfunctionMeta extends MetaTask {
             	// vehicle malfunctions are handled by other meta tasks
             	continue;
             }
-            
+	
             MalfunctionManager manager = entity.getMalfunctionManager();
+            
             if (manager.hasMalfunction()) {
-	            for(Malfunction malfunction : manager.getAllInsideMalfunctions()) {
-	                double initialResult = scoreMalfunction(malfunction);
-	                if ((initialResult > 0) &&
-	                		RepairHelper.hasRepairParts(settlement, malfunction)) {
-	                	initialResult += WEIGHT;
-	                }
-	                
-	                result += initialResult;
+            	// Pick the worst malfunction
+            	Malfunction mal = manager.getMostSeriousMalfunctionInNeed(MalfunctionRepairWork.INSIDE);
+
+            	if (mal != null) {
+                	// Create the malfunction pair for storage
+	            	pair = new SimpleEntry<>(mal, entity);
+			        // Save the malfunction pair in the settlement
+			        settlement.saveMalfunctionPair(pair);
+	            }
+
+	            for (Malfunction malfunction : manager.getAllInsideMalfunctions()) {
+	            	
+	            	// Since it fails to find the most serious malfunction earlier
+	            	if (mal == null) {
+	            		mal = malfunction;
+	                	// Create the malfunction pair for storage
+		            	pair = new SimpleEntry<>(malfunction, entity);
+				        // Save the malfunction pair in the settlement
+				        settlement.saveMalfunctionPair(pair);
+		            }
+	            	
+	                result += scoreMalfunction(settlement, malfunction);
 	            }
             }
         }
@@ -121,12 +134,18 @@ public class RepairInsideMalfunctionMeta extends MetaTask {
      * @param malfunction
      * @return
      */
-    private static double scoreMalfunction(Malfunction malfunction) {    
+    private static double scoreMalfunction(Settlement settlement, Malfunction malfunction) {    
     	double result = 0D;
 		if (!malfunction.isWorkDone(MalfunctionRepairWork.INSIDE)
 				&& (malfunction.numRepairerSlotsEmpty(MalfunctionRepairWork.INSIDE) > 0)) {
 	        result = WEIGHT + ((WEIGHT * malfunction.getSeverity()) / 100D);
 		}
+    	if (RepairHelper.hasRepairParts(settlement, malfunction)) {
+    		result += 100;
+    	}
+    	else {
+    		result += 50;
+    	}
 		return result;
     }
     

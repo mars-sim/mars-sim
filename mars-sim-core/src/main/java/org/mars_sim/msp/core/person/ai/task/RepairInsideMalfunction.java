@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.person.ai.task;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Msg;
@@ -88,13 +89,22 @@ public class RepairInsideMalfunction extends Task implements Repair, Serializabl
 	 * Chooses the malfunctioning entity.
 	 */
 	private void chooseEntity() {
-		// Get the malfunctioning entity.
-		for (Malfunctionable next : MalfunctionFactory.getLocalMalfunctionables(worker)) {
-			Malfunction potential = next.getMalfunctionManager().getMostSeriousMalfunctionInNeed(MalfunctionRepairWork.INSIDE);
-			if (potential != null) {
-				entity = next;
-				malfunction = potential;
-				break; // Stop searching
+	    // Load the malfunction pair in the settlement
+		SimpleEntry<Malfunction, Malfunctionable> pair = worker.getSettlement().getMalfunctionPair();    
+
+		if (pair != null) {
+			entity = pair.getValue();
+			malfunction = pair.getKey();
+		}
+		else {
+			// Get the malfunctioning entity.
+			for (Malfunctionable next : MalfunctionFactory.getLocalMalfunctionables(worker)) {
+				Malfunction potential = next.getMalfunctionManager().getMostSeriousMalfunctionInNeed(MalfunctionRepairWork.INSIDE);
+				if (potential != null) {
+					entity = next;
+					malfunction = potential;
+					break; // Stop searching
+				}
 			}
 		}
 	}
@@ -108,7 +118,7 @@ public class RepairInsideMalfunction extends Task implements Repair, Serializabl
 			return;
 		}
 
-		// Choose the malfunctioning entity
+		// Choose the malfunction and the entity
 		chooseEntity();
 
 		if (entity != null) {
@@ -119,7 +129,7 @@ public class RepairInsideMalfunction extends Task implements Repair, Serializabl
 			for (Malfunctionable next : MalfunctionFactory.getAssociatedMalfunctionables(worker.getSettlement())) {
 				List<Malfunction> list = next.getMalfunctionManager().getMalfunctions();
 				if (!list.isEmpty()) {
-					Malfunction potential = next.getMalfunctionManager().getMalfunctions().get(0);
+					Malfunction potential = next.getMalfunctionManager().getMostSeriousMalfunctionInNeed(MalfunctionRepairWork.INSIDE);
 					entity = next;
 					malfunction = potential;
 					break; // Stop searching
@@ -212,12 +222,12 @@ public class RepairInsideMalfunction extends Task implements Repair, Serializabl
 					entity.getName())); // $NON-NLS-1$
 
 			if (!worker.isOutside()) {
-				logger.log(worker, Level.FINE, 10_000, "Parts for repairing malfunction '" + malfunction + "' available from " + containerUnit.getName() + ".");
+				logger.log(worker, Level.INFO, 10_000, "Parts for repairing malfunction '" + malfunction + "' available from " + containerUnit.getName() + ".");
 				RepairHelper.claimRepairParts(containerUnit, malfunction);
 			}
 		} 
 		else {
-			logger.log(worker, Level.FINE, 10_000, "Parts for repairing malfunction '" + malfunction + "' not available from " + containerUnit.getName() + ".");
+			logger.log(worker, Level.INFO, 10_000, "Parts for repairing malfunction '" + malfunction + "' NOT available from " + containerUnit.getName() + ".");
 		}
 
 		// Add work to malfunction.
@@ -306,10 +316,10 @@ public class RepairInsideMalfunction extends Task implements Repair, Serializabl
 		MalfunctionManager manager = entity.getMalfunctionManager();
 
 		// Check if entity has any malfunctions.
-		for(Malfunction malfunction : manager.getMalfunctions()) {
+		for (Malfunction malfunction : manager.getMalfunctions()) {
 			try {
-				if (RepairHelper.hasRepairParts(person.getTopContainerUnit(),
-						malfunction)) {
+				if (malfunction.hasWorkType(MalfunctionRepairWork.INSIDE)
+					&& RepairHelper.hasRepairParts(person.getTopContainerUnit(), malfunction)) {
 					return malfunction;
 				}
 			} catch (Exception e) {
@@ -318,7 +328,7 @@ public class RepairInsideMalfunction extends Task implements Repair, Serializabl
 		}
 
 		// Check if entity needs no EVA and has any normal malfunctions.
-		if (!hasEVA(person, entity)) {
+		if (!requiresEVA(person, entity)) {
 			for(Malfunction malfunction : manager.getAllInsideMalfunctions()) {
 				try {
 					if (RepairHelper.hasRepairParts(person, malfunction)) {
@@ -344,7 +354,7 @@ public class RepairInsideMalfunction extends Task implements Repair, Serializabl
 	 * @param entity the entity with a malfunction.
 	 * @return true if entity requires an EVA repair.
 	 */
-	private static boolean hasEVA(Person person, Malfunctionable entity) {
+	private static boolean requiresEVA(Person person, Malfunctionable entity) {
 
 		boolean result = false;
 
