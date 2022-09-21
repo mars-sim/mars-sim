@@ -16,10 +16,8 @@ import org.mars_sim.msp.core.person.ai.job.util.ShiftType;
 import org.mars_sim.msp.core.person.ai.task.Sleep;
 import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingCategory;
-import org.mars_sim.msp.core.structure.building.function.RoboticStation;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
@@ -32,11 +30,10 @@ public class SleepMeta extends MetaTask {
     /** Task name */
     private static final String NAME = Msg.getString("Task.description.sleep"); //$NON-NLS-1$
 		
-	private static final double MAX = 1000;
 	private static final int CAP = 6_000;
     
     public SleepMeta() {
-		super(NAME, WorkerType.BOTH, TaskScope.ANY_HOUR);
+		super(NAME, WorkerType.PERSON, TaskScope.ANY_HOUR);
 	}
     
     @Override
@@ -172,67 +169,8 @@ public class SleepMeta extends MetaTask {
 
         return result;
     }
-    
-    public double modifyProbability(double value, Person person, Building quarters) {
-    	return value * TaskProbabilityUtil.getCrowdingProbabilityModifier(person, quarters) 
-    			* TaskProbabilityUtil.getRelationshipModifier(person, quarters);
-    }
-    
-    
-	@Override
-	public Task constructInstance(Robot robot) {
-		return new Sleep(robot); 	  	
-	}
-
-	@Override
-	public double getProbability(Robot robot) {
-
-        double result = 1D;
-
-        // No sleeping outside.
-        if (robot.isOutside())
-            return 0;
-
-        else if (robot.isInVehicle())
-        	// Future: will re-enable robot serving in a vehicle
-            return result;
-        
-        // Crowding modifier.
-        else if (robot.isInSettlement()) {
-        	result += 1D;
-     
-        	double level = robot.getSystemCondition().getBatteryState();
-        	
-        	// Checks if the battery is low
-        	if (robot.getSystemCondition().isLowPower()) {
-        		result += (1.0 - level) * MAX;
-        	}
-        	else
-        		result += (1.0 - level) * 50;
-        	
-        	Building currentBldg = robot.getBuildingLocation();
-        	
-			RoboticStation station = currentBldg.getRoboticStation();
-			if (station.getSleepers() < station.getSlots()) {
-				// This is a good building to sleep and charge up
-				result *= 10;
-				return result;
-			}
-        	
-            Building building = Sleep.getAvailableRoboticStationBuilding(robot);
-            if (building != null) {
-            	// has empty slot
-            	result *= 5;
-            }
-            
-            if (result <= 0)
-            	logger.info(robot, "level: " + level + "  prob: " + result);
-        }
-
-        return result;
-	}
 	
-	public double modifiedBySleepHabit(Person person, double result) {
+	private double modifiedBySleepHabit(Person person, double result) {
         	// Checks the current time against the sleep habit heat map
 	    	int bestSleepTime[] = person.getPreferredSleepHours();
 	    	// is now falling two of the best sleep time ?

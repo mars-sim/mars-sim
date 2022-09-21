@@ -18,17 +18,14 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.mars_sim.msp.core.SimulationFiles;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
-import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.data.SolListDataLogger;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.task.Walk;
-import org.mars_sim.msp.core.person.ai.task.meta.SleepMeta;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MarsClockFormat;
 import org.mars_sim.msp.core.time.Temporal;
-import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /*
@@ -142,16 +139,15 @@ public abstract class TaskManager implements Serializable, Temporal {
 	protected Task currentTask;
 	/** The last task the person was doing. */
 	private Task lastTask;
-	/** The cache for meta tasks and probability. */
-	protected transient Map<MetaTask, Double> taskProbCache;
-	
+
+	private transient TaskCache taskProbCache = null;
+
 	// Data members
 	/** The timestamp (with 2 decimal place) of the task to be recorded. */
 	private double now = -1;
 	/** The cache for msol. */
 	private double msolCache = -1.0;
-	/** The cache for total probability. */
-	protected double totalProbCache;
+
 
 
 	/** The history of tasks. */
@@ -396,7 +392,7 @@ public abstract class TaskManager implements Serializable, Temporal {
 		if (hasActiveTask()) {
 			String currentDes = currentTask.getDescription();
 
-			// Note: make sure robot's 'Sleep Mode' won't return false;
+			// Note: make sure robot's 'Sleep Mode' won't return false
 			if (currentDes.contains("Sleeping"))
 				return false;
 			
@@ -414,10 +410,11 @@ public abstract class TaskManager implements Serializable, Temporal {
 
 	/**
 	 * Sets the current task to null.
+	 * @param reason May ebe used in an override method
 	 */
 	public void clearAllTasks(String reason) {
-			endCurrentTask();
-		}
+		endCurrentTask();
+	}
 
 	/**
 	 * Ends the current task.
@@ -495,7 +492,7 @@ public abstract class TaskManager implements Serializable, Temporal {
 	 * 
 	 * This will NOT use the cache but assumes the callers know when a cahce can be used or not used. 
 	 */
-	protected abstract void rebuildTaskCache();
+	protected abstract TaskCache rebuildTaskCache();
 
 	/**
 	 * Start a new task for the worker based on tasks available at their location.
@@ -508,45 +505,22 @@ public abstract class TaskManager implements Serializable, Temporal {
 
 		// If cache is not current, calculate the probabilities.
 		if (!useCache()) {
-			rebuildTaskCache();
+			taskProbCache = rebuildTaskCache();
 		}
 
-		if (totalProbCache == 0D) {
-			logger.warning(worker, 20_000, "No normal Tasks available.");
-
-			// Switch to loading non-work hour meta tasks since
-			// leisure tasks are NOT based on needs
-			if (worker.getUnitType() == UnitType.PERSON) {
-				List<MetaTask> list = MetaTaskUtil.getNonWorkHourMetaTasks();
-				selectedMetaTask = list.get(RandomUtil.getRandomInt(list.size() - 1));
-			}
-			else {
-				logger.severe(worker, 20_000, "Putting on Sleep Mode.");
-				selectedMetaTask = new SleepMeta();
-			}
-		} else if (totalProbCache != 0.0 && taskProbCache != null && !taskProbCache.isEmpty()) {
-			// Comes up with a random double based on probability
-			double r = RandomUtil.getRandomDouble(totalProbCache);
-			// Determine which task is selected.
-			for (Map.Entry<MetaTask, Double> entry: taskProbCache.entrySet()) {
-				MetaTask mt = entry.getKey();
-				double probWeight = entry.getValue();
-				if (r <= probWeight) {
-					// Select this task
-					selectedMetaTask = mt;
-				} else {
-					r -= probWeight;
-				}
-			}
+		if (taskProbCache.getTasks().isEmpty()) {
+			// SHhould never happen since TaskManagers have to return a populated list
+			// with doable defaults if needed
+			logger.severe(worker, "No normal Tasks available.");
+			return;
+		}
+		else {
+			selectedMetaTask = taskProbCache.getRandomSelection();
 		}
 
-		if (selectedMetaTask == null) {
-//			logger.severe(worker, 20_000, "Could not determine a new task. Putting on Sleep Mode.");
-			selectedMetaTask = new SleepMeta();
-		} 
-		
 		// Call constructInstance of the selected Meta Task to commence the ai task
 		selectedTask = createTask(selectedMetaTask);
+
 		// Start this new task
 		startTask(selectedTask);
 
@@ -567,34 +541,24 @@ public abstract class TaskManager implements Serializable, Temporal {
 	 * 
 	 * @return
 	 */
-	public Map<MetaTask, Double> getLatestTaskProbability() {
+	public TaskCache getLatestTaskProbability() {
 		return taskProbCache;
 	}
 	
-	/**
-	 * Returns the sum of all the values of the map.
-	 * 
-	 * @return
-	 */
-	public double getTotalProbabilityScore() {
-		return taskProbCache.entrySet().stream().mapToDouble
-		   (e -> e.getValue()).sum();
-	}
-
 	/**
 	 * Outputs the cache to a file for diagnostics.
 	 * 
 	 * @param extras Extra details about Task
 	 */
-	protected void outputCache(String... extras) {	
+	protected void outputCache(TaskCache current, String... extras) {	
 		synchronized (diagnosticFile) {	
 			diagnosticFile.println(MarsClockFormat.getDateTimeStamp(marsClock));
 			diagnosticFile.println("Worker:" + worker.getName());
 			for (String s : extras) {
 				diagnosticFile.println(s);				
 			}
-			diagnosticFile.println("Total:" + totalProbCache);
-			for (Entry<MetaTask, Double> task : taskProbCache.entrySet()) {
+			diagnosticFile.println("Total:" + current.getTotal());
+			for (Entry<MetaTask, Double> task : taskProbCache.getTasks().entrySet()) {
 				diagnosticFile.println(task.getKey().getName() + ":" + task.getValue());
 			}
 			
@@ -728,15 +692,6 @@ public abstract class TaskManager implements Serializable, Temporal {
 	}
 	
 	/**
-	 * Gets all pending tasks
-	 *
-	 * @return
-	 */
-	public void addPendingTasks(String task) {
-		pendingTasks.add(task);
-	}
-	
-	/**
 	 * Adds a pending task if it is not in the pendingTask list yet.
 	 *
 	 * @param task
@@ -744,19 +699,8 @@ public abstract class TaskManager implements Serializable, Temporal {
 	 * @return
 	 */
 	public boolean addAPendingTask(String task, boolean allowDuplicate) {
-		if (allowDuplicate) {
-			if (!getPendingTasks().contains(task)) {
-				logger.info(worker, 20_000L, "Given a new task order of '" + task + "'.");
-			}
-			else {
-				logger.info(worker, 20_000L, "Given a duplicated new task order of '" + task + "'.");
-			}
-			addPendingTasks(task);
-			return true;
-		}
-
-		if (!getPendingTasks().contains(task)) {
-			addPendingTasks(task);
+		if (allowDuplicate || !pendingTasks.contains(task)) {
+			pendingTasks.add(task);
 			logger.info(worker, 20_000L, "Given a new task order of '" + task + "'.");
 			return true;
 		}
@@ -770,7 +714,7 @@ public abstract class TaskManager implements Serializable, Temporal {
 	 * @param task
 	 */
 	public void deleteAPendingTask(String task) {
-		getPendingTasks().remove(task);
+		pendingTasks.remove(task);
 		logger.info(worker, "Removed the task order of '" + task + "'.");
 	}
 
@@ -780,9 +724,9 @@ public abstract class TaskManager implements Serializable, Temporal {
 	 * @return
 	 */
 	protected MetaTask getAPendingMetaTask() {
-		if (!getPendingTasks().isEmpty()) {
-			String firstTask = getPendingTasks().get(0);
-			getPendingTasks().remove(firstTask);
+		if (!pendingTasks.isEmpty()) {
+			String firstTask = pendingTasks.get(0);
+			pendingTasks.remove(firstTask);
 			return convertTask2MetaTask(firstTask);
 		}
 		return null;

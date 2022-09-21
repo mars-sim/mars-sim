@@ -19,7 +19,6 @@ import org.mars_sim.msp.core.person.ai.task.meta.ConnectWithEarthMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.ConsolidateContainersMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.ConstructBuildingMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.CookMealMeta;
-import org.mars_sim.msp.core.person.ai.task.meta.DayDreamMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.DigLocalIceMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.DigLocalRegolithMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.EatDrinkMeta;
@@ -78,6 +77,7 @@ import org.mars_sim.msp.core.person.ai.task.meta.WriteReportMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.YogaMeta;
 import org.mars_sim.msp.core.person.ai.task.util.MetaTask.TaskScope;
 import org.mars_sim.msp.core.person.ai.task.util.MetaTask.WorkerType;
+import org.mars_sim.msp.core.robot.ai.task.ChargeMeta;
 
 /**
  * A utility task for getting the list of meta tasks.
@@ -113,12 +113,12 @@ public class MetaTaskUtil {
 		allMetaTasks = new ArrayList<>();
 		allMetaTasks.add(new AnalyzeMapDataMeta());
 		allMetaTasks.add(new AssistScientificStudyResearcherMeta());
+		allMetaTasks.add(new ChargeMeta());
 		allMetaTasks.add(new CompileScientificStudyResultsMeta());
 		allMetaTasks.add(new ConnectWithEarthMeta());
 		allMetaTasks.add(new ConsolidateContainersMeta());
 		allMetaTasks.add(new ConstructBuildingMeta());
 		allMetaTasks.add(new CookMealMeta());
-		allMetaTasks.add(new DayDreamMeta());
 		allMetaTasks.add(new DigLocalIceMeta());
 		allMetaTasks.add(new DigLocalRegolithMeta());
 		allMetaTasks.add(new EatDrinkMeta());
@@ -188,15 +188,15 @@ public class MetaTaskUtil {
 		
 		// Build special Shift based lists
 		// Should these be just Person task?
-		List<MetaTask> workHourMetaTasks = allMetaTasks.stream()
+		List<MetaTask> workHourMetaTasks = personMetaTasks.stream()
 				.filter(m -> m.getScope() == TaskScope.WORK_HOUR)
 				.collect(Collectors.toList());		
 		
-		nonWorkHourMetaTasks = allMetaTasks.stream()
+		nonWorkHourMetaTasks = personMetaTasks.stream()
 				.filter(m -> m.getScope() == TaskScope.NONWORK_HOUR)
 				.collect(Collectors.toUnmodifiableList());
 
-		List<MetaTask> anyHourMetaTasks = allMetaTasks.stream()
+		List<MetaTask> anyHourMetaTasks = personMetaTasks.stream()
 				.filter(m -> m.getScope() == TaskScope.ANY_HOUR)
 				.collect(Collectors.toList());
 		List<MetaTask> tasks = new ArrayList<>();

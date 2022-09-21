@@ -734,10 +734,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			
 			if (member.getUnitType() == UnitType.ROBOT) {
 				Robot robot = (Robot)member;
-				if (robot.getSystemCondition().isLowPower()) {
-					assignTask(robot, new Sleep(robot));
-					lowPower = true;
-				}
+				lowPower = robot.getSystemCondition().isLowPower();
 			}
 			
 			boolean becomeDriver = false;

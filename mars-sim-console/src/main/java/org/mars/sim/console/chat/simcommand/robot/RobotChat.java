@@ -13,6 +13,7 @@ import java.util.List;
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.command.InteractiveChatCommand;
 import org.mars.sim.console.chat.simcommand.ConnectedUnitCommand;
+import org.mars.sim.console.chat.simcommand.unit.EquipmentCommand;
 import org.mars.sim.console.chat.simcommand.unit.MalfunctionCreateCommand;
 import org.mars.sim.console.chat.simcommand.unit.MissionCommand;
 import org.mars.sim.console.chat.simcommand.unit.UnitLocationCommand;
@@ -31,6 +32,8 @@ public class RobotChat extends ConnectedUnitCommand {
 	public static final String ROBOT_GROUP = "Robot";
 
 	private static final List<ChatCommand> COMMANDS = Arrays.asList(new WorkerAttributeCommand(ROBOT_GROUP),
+																	SystemCommand.SYSTEM,
+																	new EquipmentCommand(ROBOT_GROUP),
 																	new MissionCommand(ROBOT_GROUP),
 																	new WorkerSkillsCommand(ROBOT_GROUP),
 																	new UnitMalfunctionCommand(ROBOT_GROUP),
