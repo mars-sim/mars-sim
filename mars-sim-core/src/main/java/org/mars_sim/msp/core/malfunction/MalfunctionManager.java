@@ -632,7 +632,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 
 			eventManager.registerNewEvent(newEvent);
 
-			logger.log(entity, Level.INFO, 0,"The malfunction '" + m.getName() + "' had been dealt with");
+			logger.log(entity, Level.INFO, 0,"The malfunction '" + m.getName() + "' had been dealt with.");
 
 			// Remove the malfunction
 			malfunctions.remove(m);

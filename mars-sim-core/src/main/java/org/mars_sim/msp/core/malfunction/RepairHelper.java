@@ -47,14 +47,14 @@ public final class RepairHelper {
 			logger.info(repairer, 10_000L, "Appointed as the chief repairer handling the "
 					+ type.getName() + " work for '"
 					+ malfunction.getName() + "' on "
-					+ entity.getName());
+					+ entity.getName() + ".");
 		}
 		else if ((deputy == null) && !chief.equals(myName)) {
 			malfunction.setDeputyRepairer(type, myName);
 			logger.info(repairer, 10_000L, "Appointed as the deputy repairer handling the "
 					+ type.getName() + " work for '"
 					+ malfunction.getName() + "' on "
-					+ entity.getName());
+					+ entity.getName() + ".");
 		}
 
 		logger.log(repairer, Level.FINEST, 10_000, "About to repair malfunction.");

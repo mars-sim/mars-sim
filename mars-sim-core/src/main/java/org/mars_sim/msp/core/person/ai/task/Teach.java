@@ -306,12 +306,12 @@ public class Teach extends Task implements Serializable {
 	        if (diff < 0) {
 	        	endTask();
 	        }
-	        else {	
-				logger.info("On task " + taskSkill.getName() 
-						+ "   diff: " + diff
-						+ "   mod: " + mod
-						+ "   " + worker + " [Lvl " + teacherSkill + "]'s teaching reward: " + Math.round(reward*1000.0)/1000.0 
-						+ "   " + student + " [Lvl " + studentSkill + "]'s learned: " + Math.round(learned*1000.0)/1000.0 + ".");
+	        else {
+//				logger.info("On task " + taskSkill.getName() 
+//						+ "   diff: " + diff
+//						+ "   mod: " + mod
+//						+ "   " + worker + " [Lvl " + teacherSkill + "]'s teaching reward: " + Math.round(reward*1000.0)/1000.0 
+//						+ "   " + student + " [Lvl " + studentSkill + "]'s learned: " + Math.round(learned*1000.0)/1000.0 + ".");
 				// Add exp to student
 				student.getSkillManager().addExperience(taskSkill, learned, time);
 				// Add exp to teacher

@@ -194,7 +194,8 @@ public class Malfunction implements Serializable {
 			// If it's an inhabitable building, change to EVA
 			if (!supportsInside && (type == MalfunctionRepairWork.INSIDE)) {
 				type = MalfunctionRepairWork.EVA;
-				logger.warning(0, "'" + name + "' cannot do inside repair on inhabitable structure. Change to EVA repair.");
+				logger.warning(0, "'" + name + "' cannot do inside repair on an inhabitable structure"
+						+ ". Will perform EVA repair.");
 			}
 			
 			double workTime = effort.getValue().getWorkTime();
@@ -232,10 +233,14 @@ public class Malfunction implements Serializable {
 	 * @throws IllegalArgumentException If the type is not supported for this Malfunction
 	 */
 	private RepairWork getWorkType(MalfunctionRepairWork type) {
-		RepairWork w = work.get(type);
-		if (w == null) {
-			throw new IllegalArgumentException("'" + getName()
-							+ "' does not need " + type.toString() + " repair.");
+		RepairWork w = null;
+		if (work.containsKey(type)) {
+			w = work.get(type);
+		}
+		else {
+			logger.info("'" + getName()
+				+ "' does not need " + type.toString() + " repair.");
+			return null;
 		}
 		return w;
 	}

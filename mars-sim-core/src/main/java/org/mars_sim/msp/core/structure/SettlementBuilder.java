@@ -413,10 +413,10 @@ public final class SettlementBuilder {
 				String name = m.getName();
 				if (existingfullnames.contains(name)) {
 					// Should not happen so a cheap fix in place
-					logger.warning("Person already called " + name);
+					logger.warning("Person already called " + name + ".");
 					name = crew.getName() + " Member" + settlement.getNumCitizens();
 				}
-				logger.log(Level.INFO, name + " from crew '" + crew.getName() + "' assigned to Settlement " + settlement.getName());
+				logger.log(Level.INFO, name + " from crew '" + crew.getName() + "' assigned to " + settlement.getName() + ".");
 				existingfullnames.add(name);
 
 				// Get person's gender or randomly determine it if not configured.
