@@ -10,13 +10,15 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.person.ai.job.util.Job;
+import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.structure.Settlement;
 
 /**
  * The Architect class represents an architect job focusing on construction of buildings, settlement
  * and other structures.
  */
-class Architect
+public class Architect
 extends Job {
 
 	/** Constructor. */

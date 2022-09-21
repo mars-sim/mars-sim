@@ -9,7 +9,7 @@ package org.mars.sim.console.chat.simcommand.person;
 
 import org.mars.sim.console.chat.Conversation;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.TrainingType;
+import org.mars_sim.msp.core.person.ai.training.TrainingType;
 
 /** 
  * Reports on a Persons training

@@ -19,10 +19,13 @@ import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.person.ai.fav.Preference;
+import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.social.RelationshipUtil;
-import org.mars_sim.msp.core.person.ai.task.utils.Task;
-import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
-import org.mars_sim.msp.core.person.ai.task.utils.Worker;
+import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
+import org.mars_sim.msp.core.person.ai.task.util.Task;
+import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
+import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingCategory;
@@ -30,7 +33,6 @@ import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Crewable;
-import org.mars_sim.msp.core.vehicle.Rover;
 
 /**
  * This is a task for teaching a student a task.
@@ -61,6 +63,7 @@ public class Teach extends Task implements Serializable {
 	// Data members
 	private Person student;
 	private Task teachingTask;
+	private SkillType taskSkill;
 
 	/**
 	 * Constructor.
@@ -68,16 +71,122 @@ public class Teach extends Task implements Serializable {
 	 * @param unit the unit performing the task.
 	 */
 	public Teach(Worker unit) {
-		super(NAME, unit, false, false, STRESS_MODIFIER, null, 10D);
+		super(NAME, unit, false, false, STRESS_MODIFIER, null, 10, 10);
 		
 		if (unit.getUnitType() == UnitType.PERSON)
 			person = (Person) unit;
 		else
 			robot = (Robot) unit;
+				
+		// Assume the student is a person.
+		Collection<Person> candidates = null;
+		List<Person> students = new ArrayList<>();
 		
-		// Initialize phase
-		addPhase(TEACHING);
-		setPhase(TEACHING);
+		if (worker.getUnitType() == UnitType.PERSON)
+			candidates = getBestStudents(person);
+		else
+			candidates = getBestStudents(robot);
+		
+		Iterator<Person> i = candidates.iterator();
+		while (i.hasNext()) {
+			Person candidate = i.next();
+			if (worker.getUnitType() == UnitType.PERSON)
+				logger.log(person, Level.FINE, 4_000, "Connecting with student " + candidate.getName() + ".");
+			else
+				logger.log(robot, Level.FINE, 4_000, "Connecting with student " + candidate.getName() + ".");
+			
+			students.add(candidate);
+		}
+		
+		if (students.size() > 0) {
+			Iterator<Person> ii = students.iterator();
+			while (ii.hasNext() && teachingTask == null && student == null) {
+				Person candidate = ii.next();
+			
+				// Gets the task the student is doing
+				Task candidateTask = candidate.getMind().getTaskManager().getTask();
+				if (worker.getUnitType() == UnitType.ROBOT
+					&& ((Robot)worker).getBotMind().getRobotJob().isJobRelatedTask(candidateTask.getClass())) {
+					// nothing
+				}
+				else if (worker.getUnitType() == UnitType.PERSON) {
+					MetaTask metaTask = Preference.convertTask2MetaTask(candidateTask);
+					JobType jobType = ((Person)worker).getMind().getJob();
+					
+					boolean isGood = metaTask.isPreferredJob(jobType);
+					if (isGood) {
+						// nothing
+					}
+					else {
+						// this task is not a part of this person's job
+						// Note: may need to relax on this criteria
+						continue;
+					}
+				
+				}
+				else {
+					// this robot cannot perform this task, go to next student candidate
+					continue;
+				}
+				
+				double teacherExp = 0;
+				
+				List<SkillType> taughtSkills = candidateTask.getAssociatedSkills();
+		        if (taughtSkills == null) {
+		        	logger.severe(worker, 20_000L, "No taught skills found.");
+		        	continue;
+		        }
+		        
+		        if (!taughtSkills.isEmpty()) {
+		        	Iterator<SkillType> iii = taughtSkills.iterator();
+					while (ii.hasNext() && teachingTask == null && student == null) {
+						SkillType candidateSkill = iii.next();
+
+						if (worker.getUnitType() == UnitType.PERSON) {
+							teacherExp = person.getSkillManager().getCumulativeExperience(candidateSkill);
+						}
+						else {
+							teacherExp = robot.getSkillManager().getCumulativeExperience(candidateSkill);
+						}
+				
+						double studentExp = candidate.getSkillManager().getCumulativeExperience(candidateSkill);
+						
+						double diff = teacherExp - studentExp;
+		
+						if (diff > 0) {
+							teachingTask = candidateTask;
+							taskSkill = candidateSkill;
+							student = candidate;
+							if (worker.getUnitType() == UnitType.PERSON) {
+								logger.log(person, Level.INFO, 30_000, "Teaching " + student.getName() 
+										+ " on '" + teachingTask.getName(false) + "'.");
+							}
+							else {
+								logger.log(robot, Level.INFO, 30_000, "Teaching " + student.getName() 
+								+ " on '" + teachingTask.getName(false) + "'.");
+							}
+							
+							setDescription(
+								Msg.getString("Task.description.teach.detail", 
+										teachingTask.getName(false), student.getName())); // $NON-NLS-1$								
+						}
+						else {
+							// This person has more exp points than the teacher. Go to next 
+						}							
+					}
+		        }
+			}
+		}
+
+		if (teachingTask != null && student != null) {
+			// Initialize phase
+			addPhase(TEACHING);
+			setPhase(TEACHING);
+		}
+		else {
+			logger.fine(worker, 10_000L, "Can't find a student.");
+			endTask();
+		}
 	}
 
 	@Override
@@ -99,101 +208,37 @@ public class Teach extends Task implements Serializable {
 	 */
 	private double teachingPhase(double time) {
 
-		if (teachingTask == null) {
-			
-			// Assume the student is a person.
-			Collection<Person> candidates = null;
-			List<Person> students = new ArrayList<>();
-			
-			if (worker.getUnitType() == UnitType.PERSON)
-				candidates = getBestStudents(person);
-			else
-				candidates = getBestStudents(robot);
-			
-			Iterator<Person> i = candidates.iterator();
-			while (i.hasNext()) {
-				Person candidate = i.next();
-				if (worker.getUnitType() == UnitType.PERSON)
-					logger.log(person, Level.FINE, 4_000, "Connecting with student " + candidate.getName() + ".");
-				else
-					logger.log(robot, Level.FINE, 4_000, "Connecting with student " + candidate.getName() + ".");
-				
-				students.add(candidate);
-			}
-			
-			if (students.size() > 0) {
-				Object[] array = students.toArray();
-				// Randomly get a person student.
-				int rand = RandomUtil.getRandomInt(students.size() - 1);
-				student = (Person) array[rand];
-				// Gets the task the student is doing
-				teachingTask = student.getMind().getTaskManager().getTask();
-				
-				if (worker.getUnitType() == UnitType.PERSON) {
-//					teachingTask.setTeacher(person);
-					logger.log(person, Level.INFO, 30_000, "Teaching " + student.getName() 
-					+ " on '" + teachingTask.getName(false) + "'.");
-				}
-				else {
-//					teachingTask.setTeacher(robot);
-					logger.log(robot, Level.INFO, 30_000, "Teaching " + student.getName() 
-					+ " on '" + teachingTask.getName(false) + "'.");
-				}
-				
-				setDescription(
-						Msg.getString("Task.description.teach.detail", 
-								teachingTask.getName(false), student.getName())); // $NON-NLS-1$
+		boolean isInSettlement = false;
+		if (worker.getUnitType() == UnitType.PERSON) {
+			isInSettlement = person.isInSettlement();
+		}
+		else {
+			isInSettlement = robot.isInSettlement();
+		}
+		
+		if (isInSettlement) {
+			// If in settlement, move teacher to the building where student is in.
+			Building studentBuilding = BuildingManager.getBuilding(student);
 
-				boolean walkToBuilding = false;
-				
-				boolean isInSettlement = false;
-				if (worker.getUnitType() == UnitType.PERSON) {
-					isInSettlement = person.isInSettlement();
-				}
-				else {
-					isInSettlement = robot.isInSettlement();
-				}
-				
-				if (isInSettlement) {
-
-					// If in settlement, move teacher to the building where student is in.
-					Building studentBuilding = BuildingManager.getBuilding(student);
-
-					if (studentBuilding != null && 
-							studentBuilding.getCategory() != BuildingCategory.EVA_AIRLOCK) {
-						// Walk to random location in student's building.
-						walkToRandomLocInBuilding(BuildingManager.getBuilding(student), false);
-				
-						walkToBuilding = true;
-					}
-				}
-
-				if (!walkToBuilding) {
-					if (person.isInVehicle()) {
-						// If person is in rover, walk to passenger activity spot.
-						if (person.getVehicle() instanceof Rover) {
-							walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), false);
-						}
-					} else {
-						// Walk to random location.
-						walkToRandomLocation(true);
-					}
-				}
-			} else {
-				endTask();
+			if (studentBuilding != null && 
+					studentBuilding.getCategory() != BuildingCategory.EVA_AIRLOCK) {
+				// Walk to random location in student's building.
+				walkToRandomLocInBuilding(BuildingManager.getBuilding(student), false);
 			}
 		}
+
 
 		// Check if task is finished.
 		if (teachingTask != null && teachingTask.isDone())
 			endTask();
 		
-    	if (getTimeCompleted() > getDuration())
+    	if (getTimeCompleted() + time > getDuration())
         	endTask();
     	
     	if (worker.getUnitType() == UnitType.PERSON) {
-    		if (!person.isBarelyFit())
+    		if (!person.isBarelyFit()) {
     			endTask();
+    		}
     		// Add relationship modifier for opinion of teacher from the student.
     		addRelationshipModifier(time);
     	}
@@ -217,61 +262,65 @@ public class Teach extends Task implements Serializable {
 	protected void addExperience(double time) {
         // Add experience to associated skill.
         // (1 base experience point per 100 millisols of time spent)
-        double exp = time / 100D;
+        double exp = time / 100;
 
         // Experience points adjusted by person's "Experience Aptitude" attribute.
-//        NaturalAttributeManager nManager = person.getNaturalAttributeManager();
-//        int teaching = nManager.getAttribute(NaturalAttributeType.TEACHING);
-        double mod = getTeachingExperienceModifier() * 150.0;
+        double mod = getTeachingExperienceModifier() * 90;
         exp *= mod;
-        
-        if (teachingTask == null)
+
+        if (teachingTask == null)  {
+        	logger.severe(worker, 20_000L, "teachingTask is null.");
         	return;
+        }
+
         List<SkillType> taughtSkills = teachingTask.getAssociatedSkills();
-        if (taughtSkills == null)
+        if (taughtSkills == null) {
+        	logger.severe(worker, 20_000L, "No taught skills found.");
         	return;
+        }
+
         if (!taughtSkills.isEmpty()) {
-        	// Pick one skill to improve upon
-        	int rand = RandomUtil.getRandomInt(taughtSkills.size()-1);
-        	SkillType taskSkill = taughtSkills.get(rand);
 
 			int studentSkill = student.getSkillManager().getSkillLevel(taskSkill);
-			double studentExp = student.getSkillManager().getCumuativeExperience(taskSkill);
+			double studentExp = student.getSkillManager().getCumulativeExperience(taskSkill);
 
 			int teacherSkill = 0;
 			double teacherExp = 0;
 			
 			if (worker.getUnitType() == UnitType.PERSON) {
 				teacherSkill = person.getSkillManager().getSkillLevel(taskSkill);
-				teacherExp = person.getSkillManager().getCumuativeExperience(taskSkill);
+				teacherExp = person.getSkillManager().getCumulativeExperience(taskSkill);
 			}
 			else {
 				teacherSkill = robot.getSkillManager().getSkillLevel(taskSkill);
-				teacherExp = robot.getSkillManager().getCumuativeExperience(taskSkill);
+				teacherExp = robot.getSkillManager().getCumulativeExperience(taskSkill);
 			}
 	
-			double diff = Math.round((teacherExp - studentExp)*10.0)/10.0;
 			int points = teacherSkill - studentSkill;
-			double learned = (.5 + points) * exp / 1.5 * RandomUtil.getRandomDouble(1);
-			double reward = exp / 40.0 * RandomUtil.getRandomDouble(1);
+			double reward = exp / 60 * RandomUtil.getRandomDouble(1);
+			double learned = (.05 + points) * exp / 2 * RandomUtil.getRandomDouble(1);
 			
-//			logger.info(taskSkill.getName() 
-//					+ " - diff: " + diff + "   "
-//					+ "  mod: " + mod + "   "
-//					+ person + " [Lvl : " + teacherSkill + "]'s teaching reward: " + Math.round(reward*1000.0)/1000.0 
-//					+ "   " + student + " [Lvl : " + studentSkill + "]'s learned: " + Math.round(learned*1000.0)/1000.0 + ".");
-			
-			student.getSkillManager().addExperience(taskSkill, learned, time);
-			
-			if (worker.getUnitType() == UnitType.PERSON) {
-				person.getSkillManager().addExperience(taskSkill, reward, time);
-			}
-			else
-				robot.getSkillManager().addExperience(taskSkill, reward, time);
-			
+			double diff = Math.round((teacherExp - studentExp)*10.0)/10.0;
+
 	        // If the student has more experience points than the teacher, the teaching session ends.
-	        if (diff < 0)
+	        if (diff < 0) {
 	        	endTask();
+	        }
+	        else {
+//				logger.info("On task " + taskSkill.getName() 
+//						+ "   diff: " + diff
+//						+ "   mod: " + mod
+//						+ "   " + worker + " [Lvl " + teacherSkill + "]'s teaching reward: " + Math.round(reward*1000.0)/1000.0 
+//						+ "   " + student + " [Lvl " + studentSkill + "]'s learned: " + Math.round(learned*1000.0)/1000.0 + ".");
+				// Add exp to student
+				student.getSkillManager().addExperience(taskSkill, learned, time);
+				// Add exp to teacher
+				if (worker.getUnitType() == UnitType.PERSON) {
+					person.getSkillManager().addExperience(taskSkill, reward, time);
+				}
+				else
+					robot.getSkillManager().addExperience(taskSkill, reward, time);
+	        }
 		}
 	}
 

@@ -31,7 +31,7 @@ import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.PersonalityTraitType;
-import org.mars_sim.msp.core.person.ai.task.utils.Worker;
+import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.person.health.Complaint;
 import org.mars_sim.msp.core.person.health.ComplaintType;
 import org.mars_sim.msp.core.person.health.MedicalManager;
@@ -61,6 +61,11 @@ public class MalfunctionManager implements Serializable, Temporal {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(MalfunctionManager.class.getName());
 
+	/** Wear-and-tear points earned from a low quality inspection. */
+	private static final double LOW_QUALITY_INSPECTION = 200;
+	/** Wear-and-tear points earned from a high quality inspection. */
+	private static final double HIGH_QUALITY_INSPECTION = 2000;
+	
 	/** Stress jump resulting from being in an accident. */
 	private static final double ACCIDENT_STRESS = 10D;
 	/** Modifier for number of parts needed for a trip. */
@@ -75,14 +80,15 @@ public class MalfunctionManager implements Serializable, Temporal {
 	/** Initial estimate for maintenances per orbit for an entity. */
 	private static final double ESTIMATED_MAINTENANCES_PER_ORBIT = 10D;
 	/** Factor for chance of malfunction by time since last maintenance. */
-	private static final double MAINTENANCE_MALFUNCTION_FACTOR = .000_000_001D;
+	private static final double MAINTENANCE_FACTOR = .3;
+	/** Factor for chance of malfunction by time since last maintenance. */
+	private static final double MALFUNCTION_FACTOR = .05;
 	/** Factor for chance of malfunction due to wear condition. */
-	private static final double WEAR_MALFUNCTION_FACTOR = 5D;
+	private static final double WEAR_MALFUNCTION_FACTOR = .2;
 	/** Factor for chance of accident due to wear condition. */
 	private static final double WEAR_ACCIDENT_FACTOR = 1D;
 
 	private static final String OXYGEN = "Oxygen";
-
 	private static final String CAUSE = ". Probable Cause: ";
 	private static final String CAUSED_BY = " caused by ";
 
@@ -108,7 +114,9 @@ public class MalfunctionManager implements Serializable, Temporal {
 	private double maintenanceTimeCompleted;
 	/** The percentage of the malfunctionable's condition from wear and tear. 0% = worn out -> 100% = new condition. */
 	private double currentWearCondition;
-
+	/** The cumulative time [in millisols] since active use. */
+	private double cumulativeTime;
+	
 	/**
 	 * The expected life time [in millisols] of active use before the malfunctionable
 	 * is worn out.
@@ -155,15 +163,19 @@ public class MalfunctionManager implements Serializable, Temporal {
 		// Initialize data members
 		this.entity = entity;
 
-		timeSinceLastMaintenance = 0D;
-		effectiveTimeSinceLastMaintenance = 0D;
 		scopes = new HashSet<>();
 		malfunctions = new CopyOnWriteArrayList<>();
+		
 		this.maintenanceWorkTime = maintenanceWorkTime;
 		baseWearLifeTime = wearLifeTime;
-		currentWearLifeTime = wearLifeTime;
-
-		currentWearCondition = 100D;
+		
+		double preUseTime = RandomUtil.getRandomDouble(100);
+		currentWearLifeTime = wearLifeTime - preUseTime;
+		cumulativeTime = preUseTime;
+		effectiveTimeSinceLastMaintenance = preUseTime;
+		timeSinceLastMaintenance = preUseTime;
+		
+		currentWearCondition = currentWearLifeTime/baseWearLifeTime * 100D;
 	}
 
 	/**
@@ -237,6 +249,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 * Malfunction must need work of the specified work type and
 	 * have worker slots vacant.
 	 *
+	 * @param work
 	 * @return malfunction
 	 */
 	public Malfunction getMostSeriousMalfunctionInNeed(MalfunctionRepairWork work) {
@@ -246,7 +259,8 @@ public class MalfunctionManager implements Serializable, Temporal {
 
 		if (hasMalfunction()) {
 			for (Malfunction malfunction : malfunctions) {
-				if (!malfunction.isWorkDone(work)
+				if (malfunction.hasWorkType(work)
+						&& !malfunction.isWorkDone(work)
 						&& (malfunction.numRepairerSlotsEmpty(work) > 0)
 						&& malfunction.getSeverity() > highestSeverity) {
 					highestSeverity = malfunction.getSeverity();
@@ -266,7 +280,8 @@ public class MalfunctionManager implements Serializable, Temporal {
 	public List<Malfunction> getAllInsideMalfunctions() {
 		List<Malfunction> result = new ArrayList<>();
 		for (Malfunction malfunction : malfunctions) {
-			if (!malfunction.isWorkDone(MalfunctionRepairWork.INSIDE))
+			if (malfunction.hasWorkType(MalfunctionRepairWork.INSIDE)
+					&& !malfunction.isWorkDone(MalfunctionRepairWork.INSIDE))
 				result.add(malfunction);
 		}
 		Collections.sort(result, new MalfunctionSeverityComparator());
@@ -281,7 +296,8 @@ public class MalfunctionManager implements Serializable, Temporal {
 	public List<Malfunction> getAllEVAMalfunctions() {
 		List<Malfunction> result = new ArrayList<>();
 		for (Malfunction malfunction : malfunctions) {
-			if (!malfunction.isWorkDone(MalfunctionRepairWork.EVA))
+			if (malfunction.hasWorkType(MalfunctionRepairWork.EVA)
+					&& !malfunction.isWorkDone(MalfunctionRepairWork.EVA))
 				result.add(malfunction);
 		}
 		Collections.sort(result, new MalfunctionSeverityComparator());
@@ -436,6 +452,8 @@ public class MalfunctionManager implements Serializable, Temporal {
 
 		String offender = "None";
 		String task = "N/A";
+		// Note: may add lack of maintenance as actor ?!
+		
 		if (actor != null) {
 			task = actor.getTaskDescription();
 			offender = actor.getName();
@@ -468,31 +486,47 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 *
 	 * @param time amount of time passing (in millisols)
 	 */
-	public void activeTimePassing(double time) {
-
+	public void activeTimePassing(ClockPulse pulse) {
+		double time = pulse.getElapsed();
+		
+		// Updates params
+		cumulativeTime += time;
 		effectiveTimeSinceLastMaintenance += time;
-		currentWearLifeTime -= time;
-
-		currentWearCondition = currentWearLifeTime/baseWearLifeTime * 100D;
+		currentWearLifeTime -= time * RandomUtil.getRandomDouble(.5, 1.5);
 		if (currentWearCondition < 0D)
 			currentWearCondition = 0D;
+		currentWearCondition = currentWearLifeTime/baseWearLifeTime * 100D;
 
-		double maintFactor = effectiveTimeSinceLastMaintenance * MAINTENANCE_MALFUNCTION_FACTOR;
-		double wearFactor = (100D - currentWearCondition) / 100D * WEAR_MALFUNCTION_FACTOR;
-		double chance = time * maintFactor * wearFactor;
+		if (pulse.isNewMSol()) {
+			double maintFactor = effectiveTimeSinceLastMaintenance * MALFUNCTION_FACTOR;
+			double wearFactor = (100 - currentWearCondition) * WEAR_MALFUNCTION_FACTOR;
+			double malfunctionChance = time * maintFactor * wearFactor;
+			// Check for malfunction due to lack of maintenance and wear condition.
+			if (RandomUtil.lessThanRandPercent(malfunctionChance)) {
+//				logger.info(entity, "wearFactor: " + wearFactor);
+//				logger.info(entity, "MalfunctionChance: " + malfunctionChance + " %");
+				double solsLastMaint = Math.round(effectiveTimeSinceLastMaintenance / 1000D * 10.0)/10.0;
+//				logger.info(entity, "Checking for malfunction if it's warranted due to wear-and-tear. "
+//						+ solsLastMaint + " sols since last check-up. Condition: " 
+//						+ Math.round(currentWearCondition*100.0)/100.0 + " %.");
+				// Note: call selectMalfunction is just checking for the possibility 
+				// of having malfunction and doesn't necessarily result in one
+				selectMalfunction(null);
+			}
 
-		// Check for malfunction due to lack of maintenance and wear condition.
-		if (RandomUtil.lessThanRandPercent(chance)) {
-			int solsLastMaint = (int) (effectiveTimeSinceLastMaintenance / 1000D);
-			// Reduce the max possible health condition
-//			maxCondition = (wearCondition + 400D)/500D;
-			logger.warning(entity,
-					"Experienced a malfunction due to wear-and-tear.  "
-					+ "# of sols since last check-up: " + solsLastMaint + ". Condition: " + Math.round(currentWearCondition*10.0)/10.0
-					+ " %.");
-
-			// FUTURE : how to connect maintenance to field reliability statistics when selecting a malfunction ?
-			selectMalfunction(null);
+			// FUTURE : how to connect maintenance to field reliability statistics
+			double maintenanceChance = time * maintFactor * wearFactor / (1 + numberMaintenances) * MAINTENANCE_FACTOR;
+			// Check for repair items needed due to lack of maintenance and wear condition.
+			if (RandomUtil.lessThanRandPercent(maintenanceChance)) {
+//				logger.info(entity, "wearFactor: " + wearFactor);
+//				logger.info(entity, "maintenanceChance: " + maintenanceChance + " %");
+				// Note: call determineNewMaintenanceParts is just checking for the possibility 
+				// of having needed repair parts and doesn't necessarily result in one
+				// Updates the repair parts 
+				determineNewMaintenanceParts();
+//				logger.info(entity, "Checking if repair parts are needed due to wear-and-tear. "
+//						+ "Condition: " + Math.round(currentWearCondition*100.0)/100.0 + " %.");
+			}
 		}
 	}
 
@@ -598,7 +632,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 
 			eventManager.registerNewEvent(newEvent);
 
-			logger.log(entity, Level.INFO, 0,"The malfunction '" + m.getName() + "' had been dealt with");
+			logger.log(entity, Level.INFO, 0,"The malfunction '" + m.getName() + "' had been dealt with.");
 
 			// Remove the malfunction
 			malfunctions.remove(m);
@@ -679,7 +713,8 @@ public class MalfunctionManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * Creates a series of related malfunctions
+	 * Creates a series of related malfunctions.
+	 * 
 	 * @param location the place of accident
 	 * @param r the Worker who triggers the malfunction
 	 */
@@ -781,17 +816,26 @@ public class MalfunctionManager implements Serializable, Temporal {
 	public void addMaintenanceWorkTime(double time) {
 		maintenanceTimeCompleted += time;
 		if (maintenanceTimeCompleted >= maintenanceWorkTime) {
+			// Reset the following params
 			maintenanceTimeCompleted = 0D;
 			timeSinceLastMaintenance = 0D;
 			effectiveTimeSinceLastMaintenance = 0D;
-			determineNewMaintenanceParts();
+			// Increment num of maintenance 
 			numberMaintenances++;
-
 			// Improve the currentWearlifetime
-			currentWearLifeTime *= (1 + RandomUtil.getRandomDouble(.005));
+			currentWearLifeTime += time * RandomUtil.getRandomDouble(LOW_QUALITY_INSPECTION, HIGH_QUALITY_INSPECTION);
+			double improvement = RandomUtil.getRandomDouble(.95, 1);
+			// Set a upper limit for currentWearLifeTime
+			// Note: it would deteriorate over time and won't get back to baseWearLifeTime but it can improve somewhat
+			if (currentWearLifeTime > baseWearLifeTime - cumulativeTime * improvement)
+				currentWearLifeTime = baseWearLifeTime - cumulativeTime * improvement;
 		}
 	}
 
+	public double getAdjustedCondition() { 
+		return currentWearLifeTime / (baseWearLifeTime - cumulativeTime) * 100;
+	}
+	
 	/**
 	 * Issues any necessary medical complaints.
 	 *
@@ -871,19 +915,19 @@ public class MalfunctionManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * Determines a new set of required maintenance parts.
+	 * Determines a new set of required repair parts for maintenance. 
 	 */
 	private void determineNewMaintenanceParts() {
-		if (partsNeededForMaintenance == null)
+		if (partsNeededForMaintenance == null) {
 			partsNeededForMaintenance = new ConcurrentHashMap<>();
-		partsNeededForMaintenance.clear();
+		}
 
-		for(MaintenanceScope maintenance : partConfig.getMaintenance(scopes)) {
+		for (MaintenanceScope maintenance : partConfig.getMaintenance(scopes)) {
 			if (RandomUtil.lessThanRandPercent(maintenance.getProbability())) {
 				int number = RandomUtil.getRandomRegressionInteger(maintenance.getMaxNumber());
 				int id = maintenance.getPart().getID();
-				if (partsNeededForMaintenance.containsKey(maintenance.getPart().getID())) {
-						number += partsNeededForMaintenance.get(id);
+				if (partsNeededForMaintenance.containsKey(id)) {
+					number += partsNeededForMaintenance.get(id);
 				}
 				partsNeededForMaintenance.put(id, number);
 			}
@@ -918,6 +962,8 @@ public class MalfunctionManager implements Serializable, Temporal {
 			else {
 				numberNeeded -= number;
 				if (numberNeeded > 0)
+					// Consume the number of parts available 
+					// and reset the number needed for this part
 					partsNeededForMaintenance.put(part, numberNeeded);
 				else
 					partsNeededForMaintenance.remove(part);
@@ -955,9 +1001,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 */
 	public double getEstimatedNumberOfMalfunctionsPerOrbit() {
 		double avgMalfunctionsPerOrbit = 0D;
-
 		double totalTimeMillisols = MarsClock.getTimeDiff(currentTime, masterClock.getInitialMarsTime());
-		
 		double totalTimeOrbits = totalTimeMillisols / 1000D / MarsClock.AVERAGE_SOLS_PER_ORBIT_NON_LEAPYEAR;
 
 		if (totalTimeOrbits < 1D) {
@@ -983,17 +1027,14 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 */
 	public double getEstimatedNumberOfMaintenancesPerOrbit() {
 		double avgMaintenancesPerOrbit = 0D;
+		double totalTimeMillisols = MarsClock.getTimeDiff(currentTime, masterClock.getInitialMarsTime());
+		double totalTimeOrbits = totalTimeMillisols / 1000D / MarsClock.AVERAGE_SOLS_PER_ORBIT_NON_LEAPYEAR;
 
-
-			double totalTimeMillisols = MarsClock.getTimeDiff(currentTime, masterClock.getInitialMarsTime());
-			double totalTimeOrbits = totalTimeMillisols / 1000D / MarsClock.AVERAGE_SOLS_PER_ORBIT_NON_LEAPYEAR;
-
-			if (totalTimeOrbits < 1D) {
-				avgMaintenancesPerOrbit = (numberMaintenances + ESTIMATED_MAINTENANCES_PER_ORBIT) / 2D;
-			} else {
-				avgMaintenancesPerOrbit = numberMaintenances / totalTimeOrbits;
-			}
-//		}
+		if (totalTimeOrbits < 1D) {
+			avgMaintenancesPerOrbit = (numberMaintenances + ESTIMATED_MAINTENANCES_PER_ORBIT) / 2D;
+		} else {
+			avgMaintenancesPerOrbit = numberMaintenances / totalTimeOrbits;
+		}
 
 		return avgMaintenancesPerOrbit;
 	}
@@ -1031,7 +1072,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 
 	/**
 	 * Gets the multiplying modifier for the chance of an accident due to the
-	 * malfunctionable entity's wear condition.
+	 * malfunctionable entity's wear condition. From 0 to 1
 	 *
 	 * @return accident modifier.
 	 */

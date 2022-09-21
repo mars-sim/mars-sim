@@ -24,7 +24,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
-import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
+import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
 
 /**
  * The RepairEVAMalfunction class is a task to repair a malfunction requiring an
@@ -80,15 +80,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 		}
 
 		if (containerUnit != null) {
-			// Get the malfunctioning entity.
-			for (Malfunctionable next : MalfunctionFactory.getLocalMalfunctionables(person)) {
-				Malfunction potential = next.getMalfunctionManager().getMostSeriousMalfunctionInNeed(MalfunctionRepairWork.EVA);
-				if (potential != null) {
-					entity = next;
-					malfunction = potential;
-					break; // Stop searching
-				}
-			}
+			chooseEntity();
 		}
 
 		// Start if found
@@ -114,21 +106,37 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 		}
 	}
 
+	/**
+	 * Chooses the malfunctioning entity.
+	 */
+	private void chooseEntity() {
+		// Get the malfunctioning entity.
+		for (Malfunctionable next : MalfunctionFactory.getLocalMalfunctionables(worker)) {
+			Malfunction potential = next.getMalfunctionManager().getMostSeriousMalfunctionInNeed(MalfunctionRepairWork.EVA);
+			if (potential != null) {
+				entity = next;
+				malfunction = potential;
+				break; // Stop searching
+			}
+		}
+	}
 
 	public static Malfunctionable getEVAMalfunctionEntity(Person person) {
 		Malfunctionable result = null;
 
-		for(Malfunctionable entity : MalfunctionFactory.getLocalMalfunctionables(person)) {
-			if (getMalfunction(person, entity) != null) {
+		for (Malfunctionable entity : MalfunctionFactory.getLocalMalfunctionables(person)) {
+			Malfunction malfunction0 = getRepairableEVAMalfunction(person, entity);
+			if (malfunction0 != null) {
 				return entity;
 			}
+
 			MalfunctionManager manager = entity.getMalfunctionManager();
 			Unit container = person.getTopContainerUnit();
 
 			// Check if entity has any EVA malfunctions.
-			for(Malfunction malfunction : manager.getAllEVAMalfunctions()) {
+			for (Malfunction malfunction1 : manager.getAllEVAMalfunctions()) {
 				try {
-					if (RepairHelper.hasRepairParts(container, malfunction)) {
+					if (RepairHelper.hasRepairParts(container, malfunction1)) {
 						return entity;
 					}
 				} catch (Exception e) {
@@ -147,11 +155,11 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 	 * @param entity the entity with a malfunction.
 	 * @return malfunction requiring an EVA repair or null if none found.
 	 */
-	public static Malfunction getMalfunction(Person person, Malfunctionable entity) {
+	public static Malfunction getRepairableEVAMalfunction(Person person, Malfunctionable entity) {
 		MalfunctionManager manager = entity.getMalfunctionManager();
 
 		// Check if entity has any EVA malfunctions.
-		for(Malfunction malfunction : manager.getAllEVAMalfunctions()) {
+		for (Malfunction malfunction : manager.getAllEVAMalfunctions()) {
 			try {
 				if (RepairHelper.hasRepairParts(person.getTopContainerUnit(),
 						malfunction)) {

@@ -13,6 +13,8 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.person.ai.job.util.Job;
+import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -22,7 +24,7 @@ import org.mars_sim.msp.core.structure.building.function.MedicalCare;
 /**
  * The Psychologist class represents a job for evaluating a person's mind and behavior.
  */
-class Psychologist extends Job {
+public class Psychologist extends Job {
 	
 	/** Constructor. */
 	public Psychologist() {

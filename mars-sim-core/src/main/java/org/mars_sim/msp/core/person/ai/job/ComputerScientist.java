@@ -10,6 +10,8 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.person.ai.job.util.Job;
+import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 
@@ -18,7 +20,7 @@ import org.mars_sim.msp.core.structure.Settlement;
  * that specializes in operating and programming computer software 
  * and computing devices.
  */
-class ComputerScientist extends Job {
+public class ComputerScientist extends Job {
 	
 	/** Constructor. */
 	public ComputerScientist() {

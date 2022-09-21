@@ -121,13 +121,15 @@ public class TabPanelMaintenance extends TabPanel {
 		private static final long serialVersionUID = 1L;
 
 		// Data members
-		private MalfunctionManager manager;
-		private int lastCompletedCache;
-		private int wearConditionCache;
+		private double lastCompletedCache;
+		private double wearConditionCache;
+		
 		private BoundedRangeModel progressBarModel;
 		private WebLabel lastLabel;
 		private WebLabel partsLabel;
 		private WebLabel wearConditionLabel;
+		
+		private MalfunctionManager manager;
 
 		/**
 		 * Constructor.
@@ -148,7 +150,7 @@ public class TabPanelMaintenance extends TabPanel {
 			add(buildingLabel);
 
 			// Add wear condition cache and label.
-			wearConditionCache = (int) Math.round(manager.getWearCondition());
+			wearConditionCache = Math.round(manager.getWearCondition() * 100.0)/100.0;
 			wearConditionLabel = new WebLabel(
 					Msg.getString("BuildingPanelMaintenance.wearCondition", wearConditionCache),
 					SwingConstants.RIGHT);
@@ -159,7 +161,7 @@ public class TabPanelMaintenance extends TabPanel {
 			WebPanel mainPanel = new WebPanel(new BorderLayout(0, 0));
 			add(mainPanel);
 
-			lastCompletedCache = (int) (manager.getTimeSinceLastMaintenance() / 1000D);
+			lastCompletedCache = Math.round(manager.getTimeSinceLastMaintenance() / 1000D * 10.0)/10.0;
 			lastLabel = new WebLabel("Last completed : " + lastCompletedCache + " sols ago", SwingConstants.LEFT);
 			mainPanel.add(lastLabel, BorderLayout.WEST);;
 			TooltipManager.setTooltip(lastLabel, getToolTipString(), TooltipWay.down);
@@ -180,8 +182,8 @@ public class TabPanelMaintenance extends TabPanel {
 			// Set initial value for progress bar.
 			double completed = manager.getMaintenanceWorkTimeCompleted();
 			double total = manager.getMaintenanceWorkTime();
-			int percentDone = (int) (100D * (completed / total));
-			progressBarModel.setValue(percentDone);
+			double percentDone = Math.round(100D * completed / total * 10.0)/10.0;
+			progressBarModel.setValue((int)percentDone);
 
 			// Prepare parts label.
 			Map<Integer, Integer> parts = manager.getMaintenanceParts();
@@ -199,18 +201,18 @@ public class TabPanelMaintenance extends TabPanel {
 			// Update progress bar.
 			double completed = manager.getMaintenanceWorkTimeCompleted();
 			double total = manager.getMaintenanceWorkTime();
-			int percentDone = (int) (100D * (completed / total));
-			progressBarModel.setValue(percentDone);
+			double percentDone = Math.round(100D * completed / total * 10.0)/10.0;
+			progressBarModel.setValue((int)percentDone);
 
 			// Add wear condition cache and label
-			int wearCondition = (int) Math.round(manager.getWearCondition());
+			double wearCondition = Math.round(manager.getWearCondition() * 100.0)/100.0;
 			if (wearCondition != wearConditionCache) {
 				wearConditionCache = wearCondition;
 				wearConditionLabel.setText(Msg.getString("BuildingPanelMaintenance.wearCondition", wearConditionCache));
 			}
 
 			// Update last completed.
-			int lastCompleted = (int) (manager.getTimeSinceLastMaintenance() / 1000D);
+			double lastCompleted = Math.round(manager.getTimeSinceLastMaintenance() / 1000D * 10.0)/10.0;
 			if (lastCompleted != lastCompletedCache) {
 				lastCompletedCache = lastCompleted;
 				lastLabel.setText("Last Completed : " + lastCompletedCache + " sols ago");

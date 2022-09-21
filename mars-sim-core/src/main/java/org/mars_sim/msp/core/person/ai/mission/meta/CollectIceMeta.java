@@ -9,7 +9,7 @@ package org.mars_sim.msp.core.person.ai.mission.meta;
 import java.util.Set;
 
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.job.JobType;
+import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.mission.CollectIce;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;

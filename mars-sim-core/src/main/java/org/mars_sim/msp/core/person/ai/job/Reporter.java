@@ -12,9 +12,11 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.person.ai.job.util.Job;
+import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.structure.Settlement;
 
-class Reporter extends Job {
+public class Reporter extends Job {
 	
 	private static final double TRADING_RANGE = 1500D;
 	private static final double SETTLEMENT_MULTIPLIER = 1D;

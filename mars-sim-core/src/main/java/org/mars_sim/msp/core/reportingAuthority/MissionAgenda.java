@@ -12,7 +12,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.mars_sim.msp.core.logging.SimLogger;
-import org.mars_sim.msp.core.person.ai.task.utils.Worker;
+import org.mars_sim.msp.core.person.ai.task.util.Worker;
 
 /**
  * Mission agenda for a ReportingAuthority to follow. It defines a set

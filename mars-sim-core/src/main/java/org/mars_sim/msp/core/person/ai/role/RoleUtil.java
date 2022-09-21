@@ -17,11 +17,11 @@ import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.TrainingType;
-import org.mars_sim.msp.core.person.TrainingUtils;
-import org.mars_sim.msp.core.person.ai.job.Job;
-import org.mars_sim.msp.core.person.ai.job.JobType;
-import org.mars_sim.msp.core.person.ai.job.JobUtil;
+import org.mars_sim.msp.core.person.ai.job.util.Job;
+import org.mars_sim.msp.core.person.ai.job.util.JobType;
+import org.mars_sim.msp.core.person.ai.job.util.JobUtil;
+import org.mars_sim.msp.core.person.ai.training.TrainingType;
+import org.mars_sim.msp.core.person.ai.training.TrainingUtils;
 import org.mars_sim.msp.core.structure.ChainOfCommand;
 
 /**

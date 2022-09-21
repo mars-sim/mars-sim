@@ -14,7 +14,7 @@ import java.util.logging.Level;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.EquipmentOwner;
 import org.mars_sim.msp.core.logging.SimLogger;
-import org.mars_sim.msp.core.person.ai.task.utils.Worker;
+import org.mars_sim.msp.core.person.ai.task.util.Worker;
 
 /**
  * This is a helper class for completing Repair activities on a Malfunction
@@ -47,14 +47,14 @@ public final class RepairHelper {
 			logger.info(repairer, 10_000L, "Appointed as the chief repairer handling the "
 					+ type.getName() + " work for '"
 					+ malfunction.getName() + "' on "
-					+ entity.getName());
+					+ entity.getName() + ".");
 		}
 		else if ((deputy == null) && !chief.equals(myName)) {
 			malfunction.setDeputyRepairer(type, myName);
 			logger.info(repairer, 10_000L, "Appointed as the deputy repairer handling the "
 					+ type.getName() + " work for '"
 					+ malfunction.getName() + "' on "
-					+ entity.getName());
+					+ entity.getName() + ".");
 		}
 
 		logger.log(repairer, Level.FINEST, 10_000, "About to repair malfunction.");

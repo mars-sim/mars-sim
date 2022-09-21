@@ -7,12 +7,12 @@
 package org.mars_sim.msp.core.person.ai.task.meta;
 
 import org.mars_sim.msp.core.equipment.EquipmentType;
-import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
+import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
-import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
-import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
+import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
+import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
@@ -23,9 +23,9 @@ public abstract class DigLocalMeta extends MetaTask {
 
 //	private static SimLogger logger = SimLogger.getLogger(DigLocalMeta.class.getName());
 
-	private static final double VALUE = .25;
-	private static final int MAX = 2_000;
-	private static final int CAP = 4_000;
+	private static final double VALUE = .1;
+	private static final int MAX = 1_500;
+	private static final int CAP = 3_000;
 	
 	private EquipmentType containerType;
 
@@ -121,7 +121,7 @@ public abstract class DigLocalMeta extends MetaTask {
         	result *= Math.max(1, 1.5 * (33 - citizen));
      
         // Effect of the ratio of # indoor people vs. those outside already doing EVA 
-        result *= (1.0 + indoor) / (1 + settlement.getNumOutsideEVA());
+        result *= 1.0 / (1 + settlement.getNumOutsideEVA());
         
         // Effect of the beginning of a work shift
         // shiftBonus will have a minimum of 10
@@ -132,7 +132,7 @@ public abstract class DigLocalMeta extends MetaTask {
         // Effect of the amount of sunlight that influences the probability of starting this task
         double sunlight = surfaceFeatures.getSunlightRatio(settlement.getCoordinates());
         // The higher the sunlight (0 to 1, 1 being the highest) 
-        result *= Math.max(.01, sunlight * 2);
+        result *= Math.max(.001, sunlight);
      
         if (result <= 0)
             return 0;

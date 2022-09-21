@@ -15,7 +15,7 @@ import org.mars.sim.console.chat.simcommand.StructuredResponse;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
-import org.mars_sim.msp.core.person.ai.task.utils.Worker;
+import org.mars_sim.msp.core.person.ai.task.util.Worker;
 
 /** 
  * 

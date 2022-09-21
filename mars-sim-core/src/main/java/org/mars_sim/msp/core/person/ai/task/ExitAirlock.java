@@ -25,8 +25,8 @@ import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
-import org.mars_sim.msp.core.person.ai.task.utils.Task;
-import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
+import org.mars_sim.msp.core.person.ai.task.util.Task;
+import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
 import org.mars_sim.msp.core.structure.Airlock;
 import org.mars_sim.msp.core.structure.AirlockType;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -375,7 +375,7 @@ public class ExitAirlock extends Task implements Serializable {
 		// If the airlock mode is ingress, will need to wait until its done
 		if (airlock.getAirlockMode() == AirlockMode.INGRESS) {
 			walkAway(person, NOT_IN_RIGHT_AIRLOCK_MODE 
-					+ ". Current task: " + person.getTaskDescription() + ".");
+					+ " Current task: " + person.getTaskDescription() + ".");
 			return time;
 		}
 		

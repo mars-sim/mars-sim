@@ -7,7 +7,7 @@
 package org.mars_sim.msp.core.person.ai.mission;
 
 import org.mars_sim.msp.core.person.ai.task.LoadingController;
-import org.mars_sim.msp.core.person.ai.task.utils.Worker;
+import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Vehicle;

@@ -11,11 +11,11 @@ import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.CircadianClock;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
-import org.mars_sim.msp.core.person.ShiftType;
-import org.mars_sim.msp.core.person.ai.job.JobType;
+import org.mars_sim.msp.core.person.ai.job.util.JobType;
+import org.mars_sim.msp.core.person.ai.job.util.ShiftType;
 import org.mars_sim.msp.core.person.ai.task.Sleep;
-import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
-import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
+import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingCategory;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -85,7 +85,7 @@ public class SleepMeta extends MetaTask {
     	// Note: sleep deprivation increases ghrelin levels, while at the same time 
     	// lowers leptin levels in the blood.
     	// Take a break from sleep if it's too hungry and too low energy
-    	if (fatigue > 200 && hunger < 1000 && energy > 3000 
+    	if (fatigue > PhysicalCondition.FATIGUE_MIN || energy < PhysicalCondition.ENERGY_THRESHOLD
     			&& (stress > 50 || ghrelinS > 0 || leptinS == 0)) {
     		
         	int rand = RandomUtil.getRandomInt(1);

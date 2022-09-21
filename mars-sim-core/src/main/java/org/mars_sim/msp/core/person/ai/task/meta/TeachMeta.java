@@ -11,9 +11,9 @@ import java.util.Collection;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.Teach;
-import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
-import org.mars_sim.msp.core.person.ai.task.utils.Task;
-import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
+import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
+import org.mars_sim.msp.core.person.ai.task.util.Task;
+import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -28,6 +28,8 @@ public class TeachMeta extends MetaTask {
     private static final String NAME = Msg.getString(
             "Task.description.teach"); //$NON-NLS-1$
 
+	private static final int CAP = 1_000;
+	
     public TeachMeta() {
 		super(NAME, WorkerType.BOTH, TaskScope.ANY_HOUR);
 		
@@ -52,12 +54,12 @@ public class TeachMeta extends MetaTask {
 
             // Find potential students.
             Collection<Person> potentialStudents = Teach.getBestStudents(person);
-            if (potentialStudents.size() == 0)
+            if (potentialStudents.isEmpty())
             	return 0;
 
             else {
 
-	            result = potentialStudents.size() * 20D;
+	            result = potentialStudents.size() * 30;
 
 	            if (person.isInVehicle()) {	
 	    	        // Check if person is in a moving rover.
@@ -72,17 +74,16 @@ public class TeachMeta extends MetaTask {
 	    	        	result += 10;
 	            }
 	            
-	            Person student = (Person) potentialStudents.toArray()[0];
-                Building building = BuildingManager.getBuilding(student);
-
-                if (building != null) {
-
-                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person,
-                            building);
-                    result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
-
-                }
-                
+	            for (Person student : potentialStudents) {
+	                Building building = BuildingManager.getBuilding(student);
+	
+	                if (building != null) {
+	                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person,
+	                            building);
+	                    result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
+	                }
+	            }
+	           
     	        // Add Preference modifier
     	        if (result > 0)
     	         	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
@@ -92,6 +93,9 @@ public class TeachMeta extends MetaTask {
             }
         }
 
+        if (result > CAP)
+        	result = CAP;
+        
         return result;
     }
     
@@ -109,25 +113,29 @@ public class TeachMeta extends MetaTask {
 
             // Find potential students.
             Collection<Person> potentialStudents = Teach.getBestStudents(robot);
-            if (potentialStudents.size() == 0)
+            if (potentialStudents.isEmpty())
             	return 0;
 
             else {
 
-	            result = potentialStudents.size() * 20D;
+	            result = potentialStudents.size() * 15D;
 	            
-	            Person student = (Person) potentialStudents.toArray()[0];
-                Building building = BuildingManager.getBuilding(student);
-
-                if (building != null) {
-                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(robot,
-                            building);
-                }
-                
+	            for (Person student : potentialStudents) {
+	                Building building = BuildingManager.getBuilding(student);
+	
+	                if (building != null) {
+	                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(robot,
+	                            building);
+	                }
+	            }
+	            
     	        if (result < 0) result = 0;
             }
         }
 
+        if (result > CAP)
+        	result = CAP;
+        
         return result;
     }
 }

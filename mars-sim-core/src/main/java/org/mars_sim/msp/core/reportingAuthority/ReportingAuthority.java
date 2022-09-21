@@ -12,7 +12,7 @@ import java.util.List;
 import org.mars_sim.msp.core.configuration.UserConfigurable;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
-import org.mars_sim.msp.core.person.ai.task.utils.Worker;
+import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.tool.RandomUtil;
 

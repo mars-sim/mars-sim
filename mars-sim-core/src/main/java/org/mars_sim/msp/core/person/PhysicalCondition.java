@@ -25,6 +25,7 @@ import org.mars_sim.msp.core.data.SolMetricDataLogger;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
+import org.mars_sim.msp.core.person.ai.job.util.ShiftType;
 import org.mars_sim.msp.core.person.ai.task.meta.EatDrinkMeta;
 import org.mars_sim.msp.core.person.health.Complaint;
 import org.mars_sim.msp.core.person.health.ComplaintType;
@@ -68,11 +69,13 @@ public class PhysicalCondition implements Serializable {
 	/** The amount of thirst threshold [millisols]. */
 	public static final int THIRST_THRESHOLD = 150;
 	/** The amount of thirst threshold [millisols]. */
-	private static final int HUNGER_THRESHOLD = 250;
+	public static final int HUNGER_THRESHOLD = 250;
 	/** The amount of thirst threshold [millisols]. */
-	private static final int ENERGY_THRESHOLD = 2525;
+	public static final int ENERGY_THRESHOLD = 2525;
 	/** The amount of fatigue threshold [millisols]. */
 	private static final int FATIGUE_THRESHOLD = 750;
+	/** The amount of fatigue threshold [millisols]. */
+	public static final int FATIGUE_MIN = 150;
 	/** The amount of stress threshold [millisols]. */
 	private static final int STRESS_THRESHOLD = 60;
 

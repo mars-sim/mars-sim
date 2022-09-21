@@ -16,7 +16,7 @@ import org.mars.sim.console.chat.simcommand.CommandHelper;
 import org.mars.sim.console.chat.simcommand.StructuredResponse;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.ai.SkillManager;
-import org.mars_sim.msp.core.person.ai.task.utils.Worker;
+import org.mars_sim.msp.core.person.ai.task.util.Worker;
 
 /**
  * Command to display the Skills of a Worker

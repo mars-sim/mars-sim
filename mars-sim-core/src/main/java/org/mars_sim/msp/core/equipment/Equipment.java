@@ -18,9 +18,9 @@ import org.mars_sim.msp.core.manufacture.Salvagable;
 import org.mars_sim.msp.core.manufacture.SalvageInfo;
 import org.mars_sim.msp.core.manufacture.SalvageProcessInfo;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.task.Maintenance;
+import org.mars_sim.msp.core.person.ai.task.MaintainBuilding;
 import org.mars_sim.msp.core.person.ai.task.Repair;
-import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -174,8 +174,8 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 			Task task = person.getMind().getTaskManager().getTask();
 
 			// Add all people maintaining this equipment.
-			if (task instanceof Maintenance) {
-				if (((Maintenance) task).getEntity() == this) {
+			if (task instanceof MaintainBuilding) {
+				if (((MaintainBuilding) task).getEntity() == this) {
 					if (!people.contains(person))
 						people.add(person);
 				}

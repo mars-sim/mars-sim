@@ -38,9 +38,9 @@ import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
-import org.mars_sim.msp.core.person.ai.task.Maintenance;
+import org.mars_sim.msp.core.person.ai.task.MaintainBuilding;
 import org.mars_sim.msp.core.person.ai.task.Repair;
-import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScienceType;
@@ -1045,8 +1045,8 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 			Task task = person.getMind().getTaskManager().getTask();
 
 			// Add all people maintaining this building.
-			if (task instanceof Maintenance) {
-				if (((Maintenance) task).getEntity() == this) {
+			if (task instanceof MaintainBuilding) {
+				if (((MaintainBuilding) task).getEntity() == this) {
 					if (!people.contains(person))
 						people.add(person);
 				}
@@ -1081,7 +1081,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 
 		// If powered up, active time passing.
 		if (powerModeCache == PowerMode.FULL_POWER)
-			malfunctionManager.activeTimePassing(pulse.getElapsed());
+			malfunctionManager.activeTimePassing(pulse);
 
 		// Update malfunction manager.
 		malfunctionManager.timePassing(pulse);

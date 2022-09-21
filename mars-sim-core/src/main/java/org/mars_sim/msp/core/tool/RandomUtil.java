@@ -74,7 +74,7 @@ public final class RandomUtil {
 	 * @return true if random percent is less than percentage limit
 	 */
 	public static boolean lessThanRandPercent(double randomLimit) {
-		double rand = random.nextDouble() * 100D;
+		double rand = random.nextDouble() * 100;
 		return rand < randomLimit;
 	}
 

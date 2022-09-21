@@ -12,14 +12,14 @@ import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionRepairWork;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.malfunction.RepairHelper;
-import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.job.JobType;
+import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
+import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.RepairEVAMalfunction;
-import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
-import org.mars_sim.msp.core.person.ai.task.utils.Task;
-import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
+import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
+import org.mars_sim.msp.core.person.ai.task.util.Task;
+import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.structure.Settlement;
 
 public class RepairEVAMalfunctionMeta extends MetaTask {
@@ -58,7 +58,7 @@ public class RepairEVAMalfunctionMeta extends MetaTask {
         	Malfunctionable entity = RepairEVAMalfunction.getEVAMalfunctionEntity(person);
 
 			if (entity != null) {
-				Malfunction malfunction = RepairEVAMalfunction.getMalfunction(person, entity);
+				Malfunction malfunction = RepairEVAMalfunction.getRepairableEVAMalfunction(person, entity);
 
 				if (malfunction != null) {
 					result += WEIGHT * malfunction.numRepairerSlotsEmpty(MalfunctionRepairWork.EVA);

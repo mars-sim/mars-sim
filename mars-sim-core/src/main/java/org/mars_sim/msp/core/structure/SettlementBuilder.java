@@ -28,14 +28,14 @@ import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Crew;
-import org.mars_sim.msp.core.person.Favorite;
 import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.Member;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
-import org.mars_sim.msp.core.person.ai.job.JobAssignmentType;
-import org.mars_sim.msp.core.person.ai.job.JobType;
-import org.mars_sim.msp.core.person.ai.job.JobUtil;
+import org.mars_sim.msp.core.person.ai.fav.Favorite;
+import org.mars_sim.msp.core.person.ai.job.util.JobAssignmentType;
+import org.mars_sim.msp.core.person.ai.job.util.JobType;
+import org.mars_sim.msp.core.person.ai.job.util.JobUtil;
 import org.mars_sim.msp.core.person.ai.social.RelationshipType;
 import org.mars_sim.msp.core.person.ai.social.RelationshipUtil;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
@@ -413,10 +413,10 @@ public final class SettlementBuilder {
 				String name = m.getName();
 				if (existingfullnames.contains(name)) {
 					// Should not happen so a cheap fix in place
-					logger.warning("Person already called " + name);
+					logger.warning("Person already called " + name + ".");
 					name = crew.getName() + " Member" + settlement.getNumCitizens();
 				}
-				logger.log(Level.INFO, name + " from crew '" + crew.getName() + "' assigned to Settlement " + settlement.getName());
+				logger.log(Level.INFO, name + " from crew '" + crew.getName() + "' assigned to " + settlement.getName() + ".");
 				existingfullnames.add(name);
 
 				// Get person's gender or randomly determine it if not configured.

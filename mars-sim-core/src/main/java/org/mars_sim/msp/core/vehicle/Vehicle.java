@@ -50,10 +50,10 @@ import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.mission.MissionPhase.Stage;
 import org.mars_sim.msp.core.person.ai.task.Conversation;
-import org.mars_sim.msp.core.person.ai.task.Maintenance;
+import org.mars_sim.msp.core.person.ai.task.MaintainBuilding;
 import org.mars_sim.msp.core.person.ai.task.Repair;
-import org.mars_sim.msp.core.person.ai.task.utils.Task;
-import org.mars_sim.msp.core.person.ai.task.utils.Worker;
+import org.mars_sim.msp.core.person.ai.task.util.Task;
+import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
@@ -1445,14 +1445,16 @@ public abstract class Vehicle extends Unit
 
 		if (primaryStatus == StatusType.MOVING) {
 			// Assume the wear and tear factor is at 100% by being used in a mission
-			malfunctionManager.activeTimePassing(pulse.getElapsed());
+			malfunctionManager.activeTimePassing(pulse);
 		}
 
 		// If it's back at a settlement and is NOT in a garage
 		else if (LocationStateType.WITHIN_SETTLEMENT_VICINITY == getLocationStateType()
 			&& !haveStatusType(StatusType.MAINTENANCE)) {
-			// Assume the wear and tear factor is 75% less by being exposed outdoor
-			malfunctionManager.activeTimePassing(pulse.getElapsed() * .25);
+			int rand = RandomUtil.getRandomInt(3);
+			// Assume the wear and tear factor is 75% less when not operating 
+			if (rand == 3)
+				malfunctionManager.activeTimePassing(pulse);
 		}
 
 		// Make sure reservedForMaintenance is false if vehicle needs no maintenance.
@@ -1512,8 +1514,8 @@ public abstract class Vehicle extends Unit
 			Task task = person.getMind().getTaskManager().getTask();
 
 			// Add all people maintaining this vehicle.
-			if ((task instanceof Maintenance)
-				&& this.equals(((Maintenance) task).getEntity())) {
+			if ((task instanceof MaintainBuilding)
+				&& this.equals(((MaintainBuilding) task).getEntity())) {
 				people.add(person);
 			}
 
@@ -1565,8 +1567,8 @@ public abstract class Vehicle extends Unit
 			Task task = robot.getBotMind().getBotTaskManager().getTask();
 
 			// Add all robots maintaining this vehicle.
-			if (task instanceof Maintenance) {
-				if (((Maintenance) task).getEntity() == this) {
+			if (task instanceof MaintainBuilding) {
+				if (((MaintainBuilding) task).getEntity() == this) {
 					robots.add(robot);
 				}
 			}

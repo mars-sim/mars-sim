@@ -32,10 +32,10 @@ import javax.swing.table.DefaultTableCellRenderer;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ShiftType;
-import org.mars_sim.msp.core.person.ai.task.utils.TaskManager;
-import org.mars_sim.msp.core.person.ai.task.utils.TaskManager.OneActivity;
-import org.mars_sim.msp.core.person.ai.task.utils.TaskSchedule;
+import org.mars_sim.msp.core.person.ai.job.util.ShiftType;
+import org.mars_sim.msp.core.person.ai.task.util.TaskManager;
+import org.mars_sim.msp.core.person.ai.task.util.TaskSchedule;
+import org.mars_sim.msp.core.person.ai.task.util.TaskManager.OneActivity;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.ui.swing.ImageLoader;
@@ -181,8 +181,10 @@ public class TabPanelSchedule extends TabPanel {
 		solList = new CopyOnWriteArrayList<Integer>();
 
 		allActivities = taskManager.getAllActivities();
-
-		for (int i = 1; i < today + 1; i++) {
+		int lowerSol = today - 7;
+		if (lowerSol < 1)
+			lowerSol = 1;
+		for (int i = lowerSol; i < today + 1; i++) {
 			if (!solList.contains(i))
 				solList.add(i);
 		}
@@ -194,7 +196,7 @@ public class TabPanelSchedule extends TabPanel {
 		solList.forEach(s -> comboBoxModel.addElement(s));
 
 		// Create comboBox
-		solBox = new JComboBoxMW<Object>(comboBoxModel);
+		solBox = new JComboBoxMW<>(comboBoxModel);
 		solBox.setPreferredSize(new Dimension(80, 25));
 		solBox.setPrototypeDisplayValue(new Dimension(80, 25));
 		solBox.setSelectedItem(todayInteger);
@@ -333,8 +335,10 @@ public class TabPanelSchedule extends TabPanel {
 		
 		// Update the sol combobox at the beginning of a new sol
 		if (today != todayCache) {
-
-			for (int i = 1; i < today + 1; i++) {
+			int lowerSol = today - 7;
+			if (lowerSol < 1)
+				lowerSol = 1;
+			for (int i = lowerSol; i < today + 1; i++) {
 				if (!solList.contains(i))
 					solList.add(i);
 			}

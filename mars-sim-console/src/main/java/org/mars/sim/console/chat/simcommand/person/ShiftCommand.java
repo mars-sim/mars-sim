@@ -11,8 +11,8 @@ import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
 import org.mars.sim.console.chat.simcommand.StructuredResponse;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ShiftType;
-import org.mars_sim.msp.core.person.ai.task.utils.TaskSchedule;
+import org.mars_sim.msp.core.person.ai.job.util.ShiftType;
+import org.mars_sim.msp.core.person.ai.task.util.TaskSchedule;
 
 /** 
  * 
