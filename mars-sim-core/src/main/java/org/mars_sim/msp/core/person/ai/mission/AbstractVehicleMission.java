@@ -37,7 +37,6 @@ import org.mars_sim.msp.core.person.ai.mission.MissionPhase.Stage;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.LoadingController;
 import org.mars_sim.msp.core.person.ai.task.OperateVehicle;
-import org.mars_sim.msp.core.person.ai.task.Sleep;
 import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;

@@ -190,12 +190,10 @@ public class Malfunction implements Serializable {
 		Map<MalfunctionRepairWork, EffortSpec> workEffort = definition.getRepairEffort();
 		for (Entry<MalfunctionRepairWork, EffortSpec> effort : workEffort.entrySet()) {
 			MalfunctionRepairWork type = effort.getKey();
-			
-			// If it's an inhabitable building, change to EVA
+		
+			// If supportsInside is false, skip setting up inside repair
 			if (!supportsInside && (type == MalfunctionRepairWork.INSIDE)) {
-				type = MalfunctionRepairWork.EVA;
-				logger.warning(0, "'" + name + "' cannot do inside repair on an inhabitable structure"
-						+ ". Will perform EVA repair.");
+				continue;
 			}
 			
 			double workTime = effort.getValue().getWorkTime();
@@ -248,7 +246,7 @@ public class Malfunction implements Serializable {
 	/**
 	 * Obtains the name of the chief repairer
 	 *
-	 * @param type 1: general repair; 2: emergency repair; 3: EVA repair
+	 * @param type MalfunctionRepairWork type
 	 * @return the name of the chief repairer
 	 */
 	public String getChiefRepairer(MalfunctionRepairWork type) {

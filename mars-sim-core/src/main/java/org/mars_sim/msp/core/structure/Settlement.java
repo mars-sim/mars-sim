@@ -46,6 +46,8 @@ import org.mars_sim.msp.core.goods.CreditManager;
 import org.mars_sim.msp.core.goods.GoodsManager;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.logging.SimLogger;
+import org.mars_sim.msp.core.malfunction.Malfunction;
+import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.Commander;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
@@ -178,14 +180,11 @@ public class Settlement extends Structure implements Temporal,
 	/** The settlement life support requirements. */
 	public static double[][] life_support_value = new double[2][7];
 
-	
 	/** The cache for the number of building connectors. */
 	private transient int numConnectorsCache = 0;
 	/** The settlement's map of adjacent buildings. */
 	private transient Map<Building, List<Building>> adjacentBuildingMap = new HashMap<>();
 	
-	private List<SimpleEntry<Building, SimpleEntry<ResourceProcess, Double>>> resourceProcessList = new ArrayList<>();
-
 	/** The flag for checking if the simulation has just started. */
 	private boolean justLoaded = true;
 	/** The flag signifying this settlement as the destination of the user-defined commander. */
@@ -354,6 +353,10 @@ public class Settlement extends Structure implements Temporal,
 	/** The settlement's list of robots within. */
 	private Set<Robot> robotsWithin;
 
+	private List<SimpleEntry<Building, SimpleEntry<ResourceProcess, Double>>> resourceProcessList = new ArrayList<>();
+	
+	private SimpleEntry<Malfunction, Malfunctionable> malfunctionPair;
+	
 	private static SettlementConfig settlementConfig = SimulationConfig.instance().getSettlementConfiguration();
 	private static PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
 
@@ -4118,6 +4121,28 @@ public class Settlement extends Structure implements Temporal,
 //			logger.info(process.getKey(), "Selected '" + process.getValue().getKey() + "' from " + resourceProcessList.size() + " flagged process(es).");
 			resourceProcessList.remove(0);
 			return process;
+		}
+		
+		return null;
+	}
+	
+	
+	public void saveMalfunctionPair(SimpleEntry<Malfunction, Malfunctionable> pair) {
+		malfunctionPair = pair;
+	}
+	
+	public SimpleEntry<Malfunction, Malfunctionable> getMalfunctionPair() {
+		if (malfunctionPair != null) {
+			return malfunctionPair;
+		}
+		return null;
+	}
+		
+	public SimpleEntry<Malfunction, Malfunctionable> retrieveMalfunctionPair() {
+		if (malfunctionPair != null) {
+			SimpleEntry<Malfunction, Malfunctionable> pair = malfunctionPair;
+			malfunctionPair = null;
+			return pair;
 		}
 		
 		return null;

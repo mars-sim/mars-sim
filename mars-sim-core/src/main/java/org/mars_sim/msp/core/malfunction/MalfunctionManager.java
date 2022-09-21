@@ -80,11 +80,11 @@ public class MalfunctionManager implements Serializable, Temporal {
 	/** Initial estimate for maintenances per orbit for an entity. */
 	private static final double ESTIMATED_MAINTENANCES_PER_ORBIT = 10D;
 	/** Factor for chance of malfunction by time since last maintenance. */
-	private static final double MAINTENANCE_FACTOR = .3;
+	private static final double MAINTENANCE_FACTOR = .03;
 	/** Factor for chance of malfunction by time since last maintenance. */
 	private static final double MALFUNCTION_FACTOR = .05;
 	/** Factor for chance of malfunction due to wear condition. */
-	private static final double WEAR_MALFUNCTION_FACTOR = .2;
+	private static final double WEAR_MALFUNCTION_FACTOR = .02;
 	/** Factor for chance of accident due to wear condition. */
 	private static final double WEAR_ACCIDENT_FACTOR = 1D;
 
@@ -260,11 +260,11 @@ public class MalfunctionManager implements Serializable, Temporal {
 		if (hasMalfunction()) {
 			for (Malfunction malfunction : malfunctions) {
 				if (malfunction.hasWorkType(work)
-						&& !malfunction.isWorkDone(work)
-						&& (malfunction.numRepairerSlotsEmpty(work) > 0)
-						&& malfunction.getSeverity() > highestSeverity) {
-					highestSeverity = malfunction.getSeverity();
-					result = malfunction;
+					&& !malfunction.isWorkDone(work)
+					&& (malfunction.numRepairerSlotsEmpty(work) > 0)
+					&& (result == null || malfunction.getSeverity() > highestSeverity)) {
+						highestSeverity = malfunction.getSeverity();
+						result = malfunction;
 				}
 			}
 		}
@@ -505,7 +505,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 			if (RandomUtil.lessThanRandPercent(malfunctionChance)) {
 //				logger.info(entity, "wearFactor: " + wearFactor);
 //				logger.info(entity, "MalfunctionChance: " + malfunctionChance + " %");
-				double solsLastMaint = Math.round(effectiveTimeSinceLastMaintenance / 1000D * 10.0)/10.0;
+//				double solsLastMaint = Math.round(effectiveTimeSinceLastMaintenance / 1000D * 10.0)/10.0;
 //				logger.info(entity, "Checking for malfunction if it's warranted due to wear-and-tear. "
 //						+ solsLastMaint + " sols since last check-up. Condition: " 
 //						+ Math.round(currentWearCondition*100.0)/100.0 + " %.");
