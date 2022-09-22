@@ -58,7 +58,7 @@ import org.mars_sim.msp.core.structure.building.function.Exercise;
 import org.mars_sim.msp.core.structure.building.function.FoodProduction;
 import org.mars_sim.msp.core.structure.building.function.Function;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
-import org.mars_sim.msp.core.structure.building.function.GroundVehicleMaintenance;
+import org.mars_sim.msp.core.structure.building.function.VehicleGarage;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
 import org.mars_sim.msp.core.structure.building.function.Management;
@@ -88,6 +88,7 @@ import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.tool.AlphanumComparator;
 import org.mars_sim.msp.core.tool.RandomUtil;
+import org.mars_sim.msp.core.vehicle.Flyer;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -185,7 +186,7 @@ public class BuildingManager implements Serializable {
 
 		buildings = buildings.stream().sorted(new AlphanumComparator()).collect(Collectors.toList());
 
-		garages = getBuildings(FunctionType.GROUND_VEHICLE_MAINTENANCE);
+		garages = getBuildings(FunctionType.VEHICLE_MAINTENANCE);
 		for (Building b: garages) {
 			garageInts.add(b.getIdentifier());
 		}
@@ -216,7 +217,7 @@ public class BuildingManager implements Serializable {
 		// Construct all buildings in the settlement.
 		buildings = new ArrayList<Building>();
 
-		garages = getBuildings(FunctionType.GROUND_VEHICLE_MAINTENANCE);
+		garages = getBuildings(FunctionType.VEHICLE_MAINTENANCE);
 		for (Building b: garages) {
 			garageInts.add(b.getIdentifier());
 		}
@@ -236,7 +237,7 @@ public class BuildingManager implements Serializable {
 				if (b.hasFunction(f)) {
 					list.add(b);
 					// Add this new building to the garage list if it has a garage
-					if (f == FunctionType.GROUND_VEHICLE_MAINTENANCE)
+					if (f == FunctionType.VEHICLE_MAINTENANCE)
 						if (!garages.contains(b))
 							garages.add(b);
 				}
@@ -285,7 +286,7 @@ public class BuildingManager implements Serializable {
 						buildingFunctionsMap.put(ft, list);
 					}
 					// Remove this old building from the garage list if it has a garage
-					if (ft == FunctionType.GROUND_VEHICLE_MAINTENANCE) {
+					if (ft == FunctionType.VEHICLE_MAINTENANCE) {
 						if (garages.contains(oldBuilding)) {
 							garages.remove(oldBuilding);
 							garageInts.remove(oldBuilding.getIdentifier());
@@ -312,7 +313,7 @@ public class BuildingManager implements Serializable {
 				buildingFunctionsMap.put(ft, list);
 			}
 			// Remove this old building from the garage list if it has a garage
-			if (ft == FunctionType.GROUND_VEHICLE_MAINTENANCE) {
+			if (ft == FunctionType.VEHICLE_MAINTENANCE) {
 				if (garages.contains(b)) {
 					garages.remove(b);
 					garageInts.remove(b.getIdentifier());
@@ -373,7 +374,7 @@ public class BuildingManager implements Serializable {
 					}
 					buildingFunctionsMap.put(ft, list);
 
-					if (ft == FunctionType.GROUND_VEHICLE_MAINTENANCE) {
+					if (ft == FunctionType.VEHICLE_MAINTENANCE) {
 						if (garages != null && !garages.contains(newBuilding)) {
 							garages.add(newBuilding);
 							garageInts.add(newBuilding.getIdentifier());
@@ -1065,8 +1066,8 @@ public class BuildingManager implements Serializable {
 		if (vehicle.isBeingTowed())
 			return null;
 
-		if (VehicleType.isRover(vehicle.getVehicleType())) {
-			if (((Rover)vehicle).isTowingAVehicle())
+		if (VehicleType.isRover(vehicle.getVehicleType())
+			&& ((Rover)vehicle).isTowingAVehicle()) {
 				return null;
 		}
 
@@ -1079,7 +1080,27 @@ public class BuildingManager implements Serializable {
 		for (Building garageBuilding : garages) {
 			VehicleMaintenance garage = garageBuilding.getVehicleMaintenance();
 
-			if (garage != null) {
+			if (garage == null) {
+				continue;
+			}
+		
+			if (vehicle.getVehicleType() == VehicleType.DELIVERY_DRONE) {
+				
+				if (garage.containsFlyer((Flyer)vehicle)) {
+					logger.log(settlement, vehicle, Level.INFO, 60_000,
+							"Already inside " + garage.getBuilding().getNickName() + ".");
+
+					return garageBuilding;
+				}
+				else if ((garage.getFlyerCapacity() > 0)
+							&& garage.addFlyer((Flyer)vehicle)) {
+
+					logger.log(settlement, (Flyer)vehicle, Level.INFO, 60_000,
+ 							   "Just stowed inside " + garage.getBuilding().getNickName() + ".");
+					return garageBuilding;
+				}
+			}
+			else {
 				if (garage.containsVehicle(vehicle)) {
 					logger.log(settlement, vehicle, Level.INFO, 60_000,
 							"Already inside " + garage.getBuilding().getNickName() + ".");
@@ -1178,7 +1199,7 @@ public class BuildingManager implements Serializable {
 	 */
 	public static Building getAGarage(Settlement settlement) {
 		if (settlement != null) {
-			List<Building> list = settlement.getBuildingManager().getBuildings(FunctionType.GROUND_VEHICLE_MAINTENANCE);
+			List<Building> list = settlement.getBuildingManager().getBuildings(FunctionType.VEHICLE_MAINTENANCE);
 			int size = list.size();
 			int rand = RandomUtil.getRandomInt(size-1);
 			return list.get(rand);
@@ -1686,8 +1707,8 @@ public class BuildingManager implements Serializable {
 					result += FoodProduction.getFunctionValue(buildingType, newBuilding, settlement);
 					break;
 
-				case GROUND_VEHICLE_MAINTENANCE:
-					result += GroundVehicleMaintenance.getFunctionValue(buildingType, newBuilding, settlement);
+				case VEHICLE_MAINTENANCE:
+					result += VehicleGarage.getFunctionValue(buildingType, newBuilding, settlement);
 					break;
 
 				case LIFE_SUPPORT:

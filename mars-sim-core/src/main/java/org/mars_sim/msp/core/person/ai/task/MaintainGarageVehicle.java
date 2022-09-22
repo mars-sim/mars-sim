@@ -30,9 +30,11 @@ import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Crewable;
+import org.mars_sim.msp.core.vehicle.Flyer;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.core.vehicle.VehicleType;
 
 /**
  * The MaintainGarageVehicle class is a task for performing preventive
@@ -60,7 +62,7 @@ public class MaintainGarageVehicle extends Task implements Serializable {
 	/** The maintenance garage. */
 	private VehicleMaintenance garage;
 	/** Vehicle to be maintained. */
-	private GroundVehicle vehicle;
+	private Vehicle vehicle;
 
 	/**
 	 * Constructor.
@@ -103,7 +105,7 @@ public class MaintainGarageVehicle extends Task implements Serializable {
 				try {
 					garage = building.getVehicleMaintenance();
 					// Walk to garage.
-					walkToTaskSpecificActivitySpotInBuilding(building, FunctionType.GROUND_VEHICLE_MAINTENANCE, false);
+					walkToTaskSpecificActivitySpotInBuilding(building, FunctionType.VEHICLE_MAINTENANCE, false);
 				} catch (Exception e) {
 					logger.severe(unit, "Problem walking to vehicle's garage activity spot", e);
 				}
@@ -112,18 +114,31 @@ public class MaintainGarageVehicle extends Task implements Serializable {
 				Settlement settlement = worker.getSettlement();
 
 				Iterator<Building> j = settlement.getBuildingManager()
-						.getBuildings(FunctionType.GROUND_VEHICLE_MAINTENANCE).iterator();
+						.getBuildings(FunctionType.VEHICLE_MAINTENANCE).iterator();
 				while (j.hasNext() && (garage == null)) {
 					try {
 						Building garageBuilding = j.next();
 						VehicleMaintenance garageTemp = garageBuilding.getVehicleMaintenance();
-						if (garageTemp.getAvailableCapacity() > 0) {
-							garage = garageTemp;
-							garage.addVehicle(vehicle);
-
-							// Walk to garage.
-							walkToTaskSpecificActivitySpotInBuilding(garageBuilding, FunctionType.GROUND_VEHICLE_MAINTENANCE, false);
-							break;
+						
+						if (vehicle.getVehicleType() == VehicleType.DELIVERY_DRONE) {
+							if (garageTemp.getFlyerCapacity() > 0) {
+								garage = garageTemp;
+								garage.addFlyer((Flyer)vehicle);
+	
+								// Walk to garage.
+								walkToTaskSpecificActivitySpotInBuilding(garageBuilding, FunctionType.VEHICLE_MAINTENANCE, false);
+								break;
+							}							
+						}
+						else {
+							if (garageTemp.getAvailableCapacity() > 0) {
+								garage = garageTemp;
+								garage.addVehicle(vehicle);
+	
+								// Walk to garage.
+								walkToTaskSpecificActivitySpotInBuilding(garageBuilding, FunctionType.VEHICLE_MAINTENANCE, false);
+								break;
+							}
 						}
 					} catch (Exception e) {
 						logger.severe(unit, "Problem walking to building activity spot", e);

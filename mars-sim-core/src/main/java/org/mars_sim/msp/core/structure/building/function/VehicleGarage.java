@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
- * GroundVehicleMaintenance.java
- * @version 3.2.0 2021-06-20
+ * VehicleGarage.java
+ * @date 2022-09-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -14,10 +14,10 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.FunctionSpec;
 
 /**
- * The GroundVehicleMaintenance class is a building function for a building
- * capable of maintaining ground vehicles.
+ * The VehicleGarage class is a building function for parking vehicles 
+ * and performing maintenance of vehicles.
  */
-public class GroundVehicleMaintenance
+public class VehicleGarage
 extends VehicleMaintenance {
 
 	/** default serial id. */
@@ -25,26 +25,32 @@ extends VehicleMaintenance {
 
 	/**
 	 * Constructor.
+	 * 
 	 * @param building the building the function is for.
 	 * @param spec Defines the Function details
 	 */
-	public GroundVehicleMaintenance(Building building, FunctionSpec spec) {
+	public VehicleGarage(Building building, FunctionSpec spec) {
 		// Call VehicleMaintenance constructor.
-		super(FunctionType.GROUND_VEHICLE_MAINTENANCE, spec, building);
+		super(FunctionType.VEHICLE_MAINTENANCE, spec, building);
 
-		for (LocalPosition parkingLocationPoint : buildingConfig.getParkingLocations(building.getBuildingType())) {
-			addParkingLocation(parkingLocationPoint);
+		for (LocalPosition loc : buildingConfig.getParkingLocations(building.getBuildingType())) {
+			addParkingLocation(loc);
+		}
+		
+		for (LocalPosition loc : buildingConfig.getDroneLocations(building.getBuildingType())) {
+			addDroneLocation(loc);
 		}
 	}
 
 	/**
-	 * Constructor.
+	 * Constructor for unit test.
+	 * 
 	 * @param building the building the function is for.
 	 * @param parkingLocations the parking locations.
 	 */
-	public GroundVehicleMaintenance(Building building, LocalPosition[] parkingLocations) {
+	public VehicleGarage(Building building, LocalPosition[] parkingLocations) {
 		// Call VehicleMaintenance constructor.
-		super(FunctionType.GROUND_VEHICLE_MAINTENANCE, null, building);
+		super(FunctionType.VEHICLE_MAINTENANCE, null, building);
 		
 		for (LocalPosition parkingLocation : parkingLocations) {
 			addParkingLocation(parkingLocation);
@@ -53,6 +59,7 @@ extends VehicleMaintenance {
 
 	/**
 	 * Gets the value of the function for a named building.
+	 * 
 	 * @param buildingName the building name.
 	 * @param newBuilding true if adding a new building.
 	 * @param settlement the settlement.
@@ -67,14 +74,14 @@ extends VehicleMaintenance {
 
 		double supply = 0D;
 		boolean removedBuilding = false;
-		Iterator<Building> i = settlement.getBuildingManager().getBuildings(FunctionType.GROUND_VEHICLE_MAINTENANCE).iterator();
+		Iterator<Building> i = settlement.getBuildingManager().getBuildings(FunctionType.VEHICLE_MAINTENANCE).iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
 			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(buildingName) && !removedBuilding) {
 				removedBuilding = true;
 			}
 			else {
-				GroundVehicleMaintenance maintFunction = building.getGroundVehicleMaintenance();
+				VehicleGarage maintFunction = building.getVehicleParking();
 				double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
 				supply += maintFunction.getVehicleCapacity() * wearModifier;
 			}
@@ -82,7 +89,8 @@ extends VehicleMaintenance {
 
 		double vehicleCapacityValue = demand / (supply + 1D);
 
-		double vehicleCapacity = buildingConfig.getParkingLocations(buildingName).size();
+		double vehicleCapacity = buildingConfig.getParkingLocations(buildingName).size()
+					+ buildingConfig.getDroneLocations(buildingName).size();
 
 		return vehicleCapacity * vehicleCapacityValue;
 	}

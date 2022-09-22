@@ -21,7 +21,7 @@ import org.mars_sim.msp.core.structure.building.MockBuilding;
 import org.mars_sim.msp.core.structure.building.function.EVA;
 import org.mars_sim.msp.core.structure.building.function.Function;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
-import org.mars_sim.msp.core.structure.building.function.GroundVehicleMaintenance;
+import org.mars_sim.msp.core.structure.building.function.VehicleGarage;
 import org.mars_sim.msp.core.vehicle.Rover;
 
 import junit.framework.TestCase;
@@ -78,14 +78,14 @@ public abstract class AbstractMarsSimUnitTest extends TestCase {
 	    return rover1;
 	}
 
-	protected GroundVehicleMaintenance buildGarage(BuildingManager buildingManager, LocalPosition pos, double facing, int id) {
+	protected VehicleGarage buildGarage(BuildingManager buildingManager, LocalPosition pos, double facing, int id) {
 	
 		MockBuilding building0 = buildBuilding(buildingManager, pos, facing, id);
 
 	    building0.addFunction(new EVA(building0, evaFunction));
 	
 	    LocalPosition parkingLocation = LocalPosition.DEFAULT_POSITION;
-	    GroundVehicleMaintenance garage = new GroundVehicleMaintenance(building0,
+	    VehicleGarage garage = new VehicleGarage(building0,
 	            new LocalPosition[] { parkingLocation });
 	    building0.addFunction(garage);
 	    

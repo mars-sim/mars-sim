@@ -24,7 +24,7 @@ public enum FunctionType {
 	FARMING						(Msg.getString("FunctionType.farming")), //$NON-NLS-1$
 	FISHERY						(Msg.getString("FunctionType.fishery")), //$NON-NLS-1$
 	FOOD_PRODUCTION  			(Msg.getString("FunctionType.foodProduction")), //$NON-NLS-1$	
-	GROUND_VEHICLE_MAINTENANCE	(Msg.getString("FunctionType.groundVehicleMaintenance")), //$NON-NLS-1$
+	VEHICLE_MAINTENANCE			(Msg.getString("FunctionType.vehicleMaintenance")), //$NON-NLS-1$
 	LIFE_SUPPORT				(Msg.getString("FunctionType.lifeSupport")), //$NON-NLS-1$
 	LIVING_ACCOMMODATIONS		(Msg.getString("FunctionType.livingAccommodations")), //$NON-NLS-1$
 	MANAGEMENT					(Msg.getString("FunctionType.management")), //$NON-NLS-1$
@@ -70,7 +70,7 @@ public enum FunctionType {
 			return FunctionType.MANUFACTURE;
 			
 		case DELIVERYBOT:
-			return FunctionType.GROUND_VEHICLE_MAINTENANCE;
+			return FunctionType.VEHICLE_MAINTENANCE;
 			
 		case GARDENBOT:
 			return FunctionType.FARMING;

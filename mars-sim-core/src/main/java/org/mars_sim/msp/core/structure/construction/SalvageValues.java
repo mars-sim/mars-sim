@@ -22,7 +22,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
-import org.mars_sim.msp.core.structure.building.function.GroundVehicleMaintenance;
+import org.mars_sim.msp.core.structure.building.function.VehicleGarage;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
 import org.mars_sim.msp.core.structure.building.function.RoboticStation;
@@ -299,8 +299,8 @@ implements Serializable {
         }
 		
 		// Check that the building doesn't currently have any vehicles in it.
-		if (building.hasFunction(FunctionType.GROUND_VEHICLE_MAINTENANCE)) {
-		    GroundVehicleMaintenance vehicleMaint = building.getGroundVehicleMaintenance();
+		if (building.hasFunction(FunctionType.VEHICLE_MAINTENANCE)) {
+		    VehicleGarage vehicleMaint = building.getVehicleParking();
 		    if (vehicleMaint.getCurrentVehicleNumber() > 0) {
 		        result = 0D;
 		    }

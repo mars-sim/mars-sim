@@ -30,7 +30,7 @@ public class MaintainEVAVehicleMeta extends MetaTask {
 
     /** Task name */
     private static final String NAME = Msg.getString(
-            "Task.description.maintainGroundVehicleEVA"); //$NON-NLS-1$
+            "Task.description.maintainEVAVehicle"); //$NON-NLS-1$
     
 	private static final int CAP = 3_000;
 	
@@ -80,13 +80,13 @@ public class MaintainEVAVehicleMeta extends MetaTask {
 			int available = 0;
 			int totalCap = 0;
 			
-			List<Building> garages = settlement.getBuildingManager().getBuildings(FunctionType.GROUND_VEHICLE_MAINTENANCE);
+			List<Building> garages = settlement.getBuildingManager().getBuildings(FunctionType.VEHICLE_MAINTENANCE);
 			
 			Iterator<Building> j = garages.iterator();
 			while (j.hasNext()) {
 				try {
 					Building building = j.next();
-					VehicleMaintenance garage = building.getGroundVehicleMaintenance();
+					VehicleMaintenance garage = building.getVehicleParking();
 					totalCap += garage.getVehicleCapacity();
 					available += garage.getAvailableCapacity();
 				} catch (Exception e) {

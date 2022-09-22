@@ -59,7 +59,7 @@ import org.mars_sim.msp.core.structure.building.function.Exercise;
 import org.mars_sim.msp.core.structure.building.function.FoodProduction;
 import org.mars_sim.msp.core.structure.building.function.Function;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
-import org.mars_sim.msp.core.structure.building.function.GroundVehicleMaintenance;
+import org.mars_sim.msp.core.structure.building.function.VehicleGarage;
 import org.mars_sim.msp.core.structure.building.function.HeatMode;
 import org.mars_sim.msp.core.structure.building.function.Heating;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
@@ -165,7 +165,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	private Farming farm;
 	private Fishery fish;
 	private FoodProduction foodFactory;
-	private GroundVehicleMaintenance maint;
+	private VehicleGarage maint;
 	private Heating heating;
 	private LivingAccommodations livingAccommodations;
 	private LifeSupport lifeSupport;
@@ -422,9 +422,9 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 		return foodFactory;
 	}
 
-	public GroundVehicleMaintenance getGroundVehicleMaintenance() {
+	public VehicleGarage getVehicleParking() {
 		if (maint == null)
-			maint = (GroundVehicleMaintenance) getFunction(FunctionType.GROUND_VEHICLE_MAINTENANCE);
+			maint = (VehicleGarage) getFunction(FunctionType.VEHICLE_MAINTENANCE);
 		return maint;
 	}
 
@@ -515,7 +515,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 
 	public VehicleMaintenance getVehicleMaintenance() {
 		if (vehicleMaintenance == null)
-			vehicleMaintenance = (VehicleMaintenance) getFunction(FunctionType.GROUND_VEHICLE_MAINTENANCE);
+			vehicleMaintenance = (VehicleMaintenance) getFunction(FunctionType.VEHICLE_MAINTENANCE);
 		return vehicleMaintenance;
 	}
 
@@ -637,8 +637,8 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 				buildingFunctions.add(new FoodProduction(this, fSpec));
 				break;
 
-			case GROUND_VEHICLE_MAINTENANCE:
-				buildingFunctions.add(new GroundVehicleMaintenance(this, fSpec));
+			case VEHICLE_MAINTENANCE:
+				buildingFunctions.add(new VehicleGarage(this, fSpec));
 				break;
 
 			case LIFE_SUPPORT:

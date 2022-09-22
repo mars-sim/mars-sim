@@ -66,7 +66,7 @@ public class BuildingWindow extends UnitWindow {
 				addTabPanel( new BuildingPanelFoodProduction(building.getFoodProduction(), desktop));
 				addTabPanel( new BuildingPanelPreparingDessert(building.getPreparingDessert(), desktop));
 				break;
-			case GROUND_VEHICLE_MAINTENANCE:
+			case VEHICLE_MAINTENANCE:
 				addTabPanel( new BuildingPanelVehicleMaintenance(building.getVehicleMaintenance(), desktop));
 				break;
 			case LIFE_SUPPORT:

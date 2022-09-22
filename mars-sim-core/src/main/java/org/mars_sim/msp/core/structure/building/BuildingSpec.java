@@ -62,6 +62,7 @@ public class BuildingSpec {
 
 	private List<LocalPosition> beds;
 	private List<LocalPosition> parking;
+	private List<LocalPosition> droneParking;
 
 	private BuildingCategory category;
 	
@@ -94,7 +95,6 @@ public class BuildingSpec {
 	public Set<FunctionType> getFunctionSupported() {
 		return supportedFunctions.keySet();	
 	}
-
 	
 	/**
 	 * Gets the function details for this building type.
@@ -237,5 +237,13 @@ public class BuildingSpec {
 
 	void setParking(List<LocalPosition> parking) {
 		this.parking = Collections.unmodifiableList(parking);
+	}
+	
+	public List<LocalPosition> getDroneParking() {
+		return droneParking;
+	}
+
+	void setDroneParking(List<LocalPosition> droneParking) {
+		this.droneParking = Collections.unmodifiableList(droneParking);
 	}
 }

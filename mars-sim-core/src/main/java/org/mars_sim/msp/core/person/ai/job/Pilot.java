@@ -18,7 +18,7 @@ import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
-import org.mars_sim.msp.core.structure.building.function.GroundVehicleMaintenance;
+import org.mars_sim.msp.core.structure.building.function.VehicleGarage;
 
 /**
  * The Pilot class represents a pilot job.
@@ -64,11 +64,11 @@ public class Pilot extends Job {
 		int population = settlement.getNumCitizens();
 
 		// Add contributions from all garage.
-		List<Building> garage = settlement.getBuildingManager().getBuildings(FunctionType.GROUND_VEHICLE_MAINTENANCE);
+		List<Building> garage = settlement.getBuildingManager().getBuildings(FunctionType.VEHICLE_MAINTENANCE);
 		Iterator<Building> j = garage.iterator();
 		while (j.hasNext()) {
 			Building building = j.next();
-			GroundVehicleMaintenance g = building.getGroundVehicleMaintenance();
+			VehicleGarage g = building.getVehicleParking();
 			result += (double) g.getVehicleCapacity() / 2.5;
 		}
 		

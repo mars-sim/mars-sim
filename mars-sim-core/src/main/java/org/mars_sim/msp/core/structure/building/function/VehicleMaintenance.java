@@ -27,8 +27,11 @@ import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.FunctionSpec;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.vehicle.Crewable;
+import org.mars_sim.msp.core.vehicle.Flyer;
+import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.core.vehicle.VehicleType;
 
 /**
  * The VehicleMaintenance interface is a building function for a building
@@ -43,8 +46,11 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 	private static final SimLogger logger = SimLogger.getLogger(VehicleMaintenance.class.getName());
 
 	protected List<ParkingLocation> parkingLocations;
+	protected List<DroneLocation> droneLocations;
+	
 	private Collection<Vehicle> vehicles;
-
+	private Collection<Flyer> flyers;
+	
 	/**
 	 * Constructor.
 	 * 
@@ -56,7 +62,10 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 		super(function,spec, building);
 
 		vehicles = new UnitSet<>();
+		flyers = new UnitSet<>();
+		
 		parkingLocations = new ArrayList<>();
+		droneLocations = new ArrayList<>();
 	}
 
 	/**
@@ -78,7 +87,8 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 	}
 
 	/**
-	 * How many available locations unoccupied does the Garage have?
+	 * How many available locations unoccupied does the garage have?
+	 * 
 	 * @param Available parking locations.
 	 */
 	public int getAvailableCapacity() {
@@ -86,7 +96,83 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 	}
 
 	/**
-	 * Add vehicle to building if there's room.
+	 * Gets the number of flyers the building can accommodate.
+	 * 
+	 * @return flyer capacity
+	 */
+	public int getFlyerCapacity() {
+		return droneLocations.size();
+	}
+
+	/**
+	 * Gets the current number of flyers in the building.
+	 * 
+	 * @return number of flyers
+	 */
+	public int getCurrentFlyerNumber() {
+		return flyers.size();
+	}
+
+	/**
+	 * How many available drone locations unoccupied does the garage have?
+	 * 
+	 * @param Available drone locations.
+	 */
+	public int getAvailableDroneCapacity() {
+		return droneLocations.size() - flyers.size();
+	}
+	
+	/**
+	 * Adds flyer to building if there's room for parking.
+	 * 
+	 * @param flyer the flyer to be added.
+	 * @return true if flyer can be added.
+	 */
+	public boolean addFlyer(Flyer flyer) {
+
+		// Check if flyer cannot be added to building.
+		if (flyers.contains(flyer)) {
+			logger.log(flyer, Level.INFO, 1000, 
+				"Already garaged in " + building + ".");
+			 return false;
+		}
+		
+		if (flyers.size() >= parkingLocations.size()) {
+			logger.log(flyer, Level.INFO, 1000,
+				building + " already full.");
+			return false;
+		}
+
+		if (flyers.add(flyer)) {
+			
+			// Put vehicle in assigned parking location within building.
+			DroneLocation location = getEmptyDroneLocation();
+			LocalPosition newLoc;
+			
+			if (location != null) {
+				newLoc = LocalAreaUtil.getLocalRelativePosition(location.getPosition(), getBuilding());
+				location.parkFlyer(flyer);
+				
+				// change the vehicle status
+				flyer.setPrimaryStatus(StatusType.GARAGED);
+				// Update the vehicle's location state type
+				flyer.updateLocationStateType(LocationStateType.INSIDE_SETTLEMENT);
+				
+				double newFacing = getBuilding().getFacing();
+				flyer.setDroneLocation(newLoc, newFacing);
+		
+				logger.fine(flyer, "Added to " + building.getNickName() + " in " + building.getSettlement());
+				
+				return true;
+			}
+		}
+		
+		// can't add the flyer to a garage
+		return false;
+	}
+		
+	/**
+	 * Adds vehicle to building if there's room for parking.
 	 * 
 	 * @param vehicle the vehicle to be added.
 	 * @return true if vehicle can be added.
@@ -105,34 +191,34 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 				building + " already full.");
 			return false;
 		}
-
-		// Add vehicle to building.
-		if (vehicles.add(vehicle)) {	
 		
-			vehicle.setPrimaryStatus(StatusType.GARAGED);
-		
-			// Update the vehicle's location state type
-			vehicle.updateLocationStateType(LocationStateType.INSIDE_SETTLEMENT);
-		
+		if ((vehicle instanceof Rover || vehicle.getVehicleType() == VehicleType.LUV)
+			// Add vehicle to building.
+			&& vehicles.add(vehicle)) {
+	
 			// Put vehicle in assigned parking location within building.
 			ParkingLocation location = getEmptyParkingLocation();
 			LocalPosition newLoc;
+			
 			if (location != null) {
 				newLoc = LocalAreaUtil.getLocalRelativePosition(location.getPosition(), getBuilding());
 				location.parkVehicle(vehicle);
-			} else {
-				// Park vehicle in center point of building.
-				newLoc = getBuilding().getPosition();
+				
+				// change the vehicle status
+				vehicle.setPrimaryStatus(StatusType.GARAGED);
+				// Update the vehicle's location state type
+				vehicle.updateLocationStateType(LocationStateType.INSIDE_SETTLEMENT);
+				
+				double newFacing = getBuilding().getFacing();
+				vehicle.setParkedLocation(newLoc, newFacing);
+		
+				logger.fine(vehicle, "Added to " + building.getNickName() + " in " + building.getSettlement());
+				
+				return true;
 			}
-	
-			double newFacing = getBuilding().getFacing();
-			vehicle.setParkedLocation(newLoc, newFacing);
-	
-			logger.fine(vehicle, "Added to " + building.getNickName() + " in " + building.getSettlement());
-			
-			return true;
 		}
 		
+		// can't add the vehicle to a garage
 		return false;
 	}
 
@@ -211,13 +297,20 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 	 */
 	public void handleParking(Vehicle vehicle) {
 		
-		ParkingLocation parkedLoc = getVehicleParkedLocation(vehicle);
-		if (parkedLoc != null) {
-			parkedLoc.clearParking();
+		if (vehicle.getVehicleType() == VehicleType.DELIVERY_DRONE) {
+			DroneLocation loc = getFlyerParkedLocation((Flyer)vehicle);
+			if (loc != null) {
+				loc.clearParking();
+			}
+		}
+		else {
+			ParkingLocation parkedLoc = getVehicleParkedLocation(vehicle);
+			if (parkedLoc != null) {
+				parkedLoc.clearParking();
+			}
 		}
 
 		vehicle.setPrimaryStatus(StatusType.PARKED);
-		
 		// Update the vehicle's location state type
 		vehicle.updateLocationStateType(LocationStateType.WITHIN_SETTLEMENT_VICINITY);
 
@@ -234,6 +327,15 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 	}
 
 	/**
+	 * Checks if a flyer is in the building.
+	 * 
+	 * @return true if flyer is in the building.
+	 */
+	public boolean containsFlyer(Flyer flyer) {
+		return flyers.contains(flyer);
+	}
+	
+	/**
 	 * Gets a collection of vehicles in the building.
 	 * 
 	 * @return Collection of vehicles in the building.
@@ -242,6 +344,15 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 		return vehicles;
 	}
 
+	/**
+	 * Gets a collection of flyers in the building.
+	 * 
+	 * @return Collection of flyers in the building.
+	 */
+	public Collection<Flyer> getFlyers() {
+		return flyers;
+	}
+	
 	/**
 	 * Time passing for the building.
 	 * 
@@ -285,6 +396,15 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 	}
 
 	/**
+	 * Add a new flyer parking location in the building.
+	 * 
+	 * @param position the relative position of the parking spot.
+	 */
+	protected void addDroneLocation(LocalPosition position) {
+		droneLocations.add(new DroneLocation(position));
+	}
+	
+	/**
 	 * Gets the parking location of a given parked vehicle.
 	 * 
 	 * @param vehicle the parked vehicle.
@@ -303,6 +423,25 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 		return result;
 	}
 
+	/**
+	 * Gets the drone parking location of a given parked flyer.
+	 * 
+	 * @param flyer the parked flyer.
+	 * @return the drone location or null if none.
+	 */
+	public DroneLocation getFlyerParkedLocation(Flyer flyer) {
+		DroneLocation result = null;
+		Iterator<DroneLocation> i = droneLocations.iterator();
+		while (i.hasNext()) {
+			DroneLocation location = i.next();
+			if (flyer.equals(location.getParkedFlyer())) {
+				result = location;
+			}
+		}
+
+		return result;
+	}
+	
 	/**
 	 * Gets an empty parking location.
 	 * 
@@ -330,6 +469,33 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 		return result;
 	}
 
+	/**
+	 * Gets an empty drone parking location.
+	 * 
+	 * @return empty parking location or null if none available.
+	 */
+	public DroneLocation getEmptyDroneLocation() {
+		DroneLocation result = null;
+
+		// Get list of empty parking locations.
+		List<DroneLocation> emptyLocations = new ArrayList<>(droneLocations.size());
+		Iterator<DroneLocation> i = droneLocations.iterator();
+		while (i.hasNext()) {
+			DroneLocation location = i.next();
+			if (!location.hasParkedFlyer()) {
+				emptyLocations.add(location);
+			}
+		}
+
+		// Randomize empty parking locations and select one.
+		if (emptyLocations.size() > 0) {
+			Collections.shuffle(emptyLocations);
+			result = emptyLocations.get(0);
+		}
+
+		return result;
+	}
+	
 	@Override
 	public double getMaintenanceTime() {
 		return parkingLocations.size() * 50D;
@@ -344,6 +510,9 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 
 		parkingLocations.clear();
 		parkingLocations = null;
+		
+		droneLocations.clear();
+		droneLocations = null;
 	}
 
 	/**
@@ -380,6 +549,43 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 
 		protected void clearParking() {
 			parkedVehicle = null;
+		}
+	}
+	
+	/**
+	 * Inner class to represent a drone parking location in the building.
+	 */
+	public class DroneLocation implements Serializable {
+
+		private static final long serialVersionUID = 1L;
+		
+		// Data members
+		private LocalPosition pos;
+		private Flyer flyer;
+
+		protected DroneLocation(LocalPosition pos) {
+			this.pos = pos;
+			flyer = null;
+		}
+
+		public LocalPosition getPosition() {
+			return pos;
+		}
+
+		public Flyer getParkedFlyer() {
+			return flyer;
+		}
+
+		public boolean hasParkedFlyer() {
+			return (flyer != null);
+		}
+
+		protected void parkFlyer(Flyer flyer) {
+			this.flyer = flyer;
+		}
+
+		protected void clearParking() {
+			flyer = null;
 		}
 	}
 }

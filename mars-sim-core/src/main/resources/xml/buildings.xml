@@ -19,7 +19,7 @@
 
 	<!ELEMENT functions (administration?, astronomical-observation?, building-connection?,
 	communication?, computation?, cooking?, dining?, earth-return?, EVA?, exercise?, food-production?, farming?, fishery?,
-	ground-vehicle-maintenance?, life-support?, living-accommodations?, management?, manufacture?,
+	vehicle-maintenance?, life-support?, living-accommodations?, management?, manufacture?,
 	medical-care?, power-generation?, power-storage?, preparing-dessert?, recreation?, research?,
 	resource-processing?, robotic-station?, storage?, thermal-generation?, thermal-storage?, waste-processing? )>
 
@@ -65,12 +65,16 @@
 	<!ELEMENT food-production (activity?)>
 	<!ATTLIST food-production tech-level CDATA #REQUIRED>
 	<!ATTLIST food-production concurrent-processes CDATA #REQUIRED>
-	<!ELEMENT ground-vehicle-maintenance (parking, activity?)>
+	<!ELEMENT vehicle-maintenance (parking, droneParking, activity?)>
 	<!ELEMENT parking (parking-location+)>
 	<!ELEMENT parking-location EMPTY>
 	<!ATTLIST parking-location xloc CDATA #REQUIRED>
 	<!ATTLIST parking-location yloc CDATA #REQUIRED>
-
+	<!ELEMENT droneParking (drone-location+)>
+	<!ELEMENT drone-location EMPTY>
+	<!ATTLIST drone-location xloc CDATA #REQUIRED>
+	<!ATTLIST drone-location yloc CDATA #REQUIRED>
+	
 	<!ELEMENT life-support EMPTY>
 	<!ATTLIST life-support capacity CDATA #REQUIRED>
 	<!ATTLIST life-support power-required CDATA #REQUIRED>
@@ -2646,11 +2650,15 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<functions>
 			<!--  EVA airlock-capacity="8" xloc="0.0" yloc="7.5" interior-xloc="0.0" interior-yloc="7.0"
 			exterior-xloc="0.0" exterior-yloc="9.0" /-->
-			<ground-vehicle-maintenance>
+			<vehicle-maintenance>
 				<parking>
 		        	<parking-location xloc="2.60" yloc="2.0" />
 		        	<parking-location xloc="-2.60" yloc="2.0" />
 		        </parking>
+				<droneParking>
+		        	<drone-location xloc="2.60" yloc="-3.0" />
+		        	<drone-location xloc="-2.60" yloc="-3.0" />
+		        </droneParking>		        
 		        <activity>
 					<activity-spot xloc="1.75" yloc="-3.5" />
 					<activity-spot xloc="0.0" yloc="-3.5" />
@@ -2659,7 +2667,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc=".75" yloc="1.0" />
 					<activity-spot xloc="-.75" yloc="1.0" />
 				</activity>
-			</ground-vehicle-maintenance>
+			</vehicle-maintenance>
 			<life-support capacity="8" power-required="0.4" />
 			<power-generation>
 				<power-source type="Solar Power Source" power="7.5" />
@@ -3898,11 +3906,15 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<interior-position xloc="0.0" yloc=".5"/>
 				<exterior-position xloc="0.0" yloc="10.0"/>
 			</EVA> -->
-			<ground-vehicle-maintenance>
+			<vehicle-maintenance>
 				<parking>
                 	<parking-location xloc="4.5" yloc="-3.2" />
                 	<parking-location xloc="-4.5" yloc="-3.2" />
                 </parking>
+				<droneParking>
+		        	<drone-location xloc="4.5" yloc="4.0" />
+		        	<drone-location xloc="-4.5" yloc="4.0" />
+		        </droneParking>	                
                 <activity>
 					<activity-spot xloc="-.5" yloc="-2.25" />
 					<activity-spot xloc="2.25" yloc="-3.25" />
@@ -3911,7 +3923,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="-2.25" yloc="-4.75" />
 					<activity-spot xloc="1.0" yloc="-6.25" />
 				</activity>
-			</ground-vehicle-maintenance>
+			</vehicle-maintenance>
 			<life-support capacity="16" power-required="0.8" />
 			<power-generation>
 				<power-source type="Solar Power Source" power="10" />

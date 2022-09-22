@@ -217,6 +217,7 @@ public abstract class Vehicle extends Unit
 	private List<LocalPosition> passengerActivitySpots;
 	/** List of status types. */
 	private Set<StatusType> statusTypes = new HashSet<>();
+	/** The primary status type. */
 	private StatusType primaryStatus;
 
 	/** The vehicle's status log. */
@@ -681,6 +682,18 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
+	 * Sets the location and facing of the drone when parked at a settlement.
+	 *
+	 * @param position  Position of the parking relative to the Settlement
+	 * @param facing    (degrees from North clockwise).
+	 */
+	public void setDroneLocation(LocalPosition position, double facing) {
+		// Set new parked location for the flyer.
+		this.posParked = position;
+		this.facingParked = facing;
+	}
+	
+	/**
 	 * Gets all human crew member positions relative to within the vehicle.
 	 *
 	 * @return map of crew members and their relative vehicle positions.
@@ -895,7 +908,7 @@ public abstract class Vehicle extends Unit
 
 		Settlement settlement = getSettlement();
 		if (settlement != null) {
-			List<Building> list = settlement.getBuildingManager().getBuildings(FunctionType.GROUND_VEHICLE_MAINTENANCE);
+			List<Building> list = settlement.getBuildingManager().getBuildings(FunctionType.VEHICLE_MAINTENANCE);
 			for (Building garageBuilding : list) {
 				VehicleMaintenance garage = garageBuilding.getVehicleMaintenance();
 				if (garage != null && garage.containsVehicle(this)) {

@@ -83,9 +83,10 @@ public class BuildingConfig implements Serializable {
 	private static final String TYPE = "type";
 	private static final String MEDICAL_CARE = "medical-care";
 	private static final String BEDS = "beds";
-	private static final String GROUND_VEHICLE_MAINTENANCE = "ground-vehicle-maintenance";
+	private static final String VEHICLE_MAINTENANCE = "vehicle-maintenance";
 	private static final String PARKING_LOCATION = "parking-location";
-
+	private static final String DRONE_LOCATION = "drone-location";
+	
 	private static final String WASTE_PROCESSING = "waste-processing";
 
 	private static final String ACTIVITY = "activity";
@@ -243,13 +244,19 @@ public class BuildingConfig implements Serializable {
 			parseWasteProcessing(newSpec, wasteProcessingElement);
 		}
 
-		Element vehicleElement = functionsElement.getChild(GROUND_VEHICLE_MAINTENANCE);
+		Element vehicleElement = functionsElement.getChild(VEHICLE_MAINTENANCE);
 		if (vehicleElement != null) {
 			List<LocalPosition> parking = parsePositions(vehicleElement, "parking", PARKING_LOCATION,
 												   width, length);
 			newSpec.setParking(parking);
 		}
 
+		if (vehicleElement != null) {
+			List<LocalPosition> droneParking = parsePositions(vehicleElement, "droneParking", DRONE_LOCATION,
+												   width, length);
+			newSpec.setDroneParking(droneParking);
+		}
+		
 		Element medicalElement = functionsElement.getChild(MEDICAL_CARE);
 		if (medicalElement != null) {
 			List<LocalPosition> beds = parsePositions(medicalElement, BEDS, BED_LOCATION,
@@ -330,7 +337,7 @@ public class BuildingConfig implements Serializable {
 					cats.add(BuildingCategory.PROCESSING);
 					break;
 
-				case GROUND_VEHICLE_MAINTENANCE:
+				case VEHICLE_MAINTENANCE:
 					cats.add(BuildingCategory.VEHICLE);
 					break;
 
@@ -724,6 +731,18 @@ public class BuildingConfig implements Serializable {
 		return getBuildingSpec(buildingType).getParking();
 	}
 
+	/**
+	 * Gets the relative location in the building of a drone location.
+	 *
+	 * @param buildingType the type of the building.
+	 * @return Positions containing the relative X & Y position from the building
+	 *         center.
+	 */
+	public List<LocalPosition> getDroneLocations(String buildingType) {
+		return getBuildingSpec(buildingType).getDroneParking();
+	}
+
+	
 	private static final String generateSpecKey(String buildingType) {
 		return buildingType.toLowerCase().replace(" ", "-");
 	}

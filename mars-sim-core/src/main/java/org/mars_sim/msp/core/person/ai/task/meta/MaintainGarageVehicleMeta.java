@@ -146,11 +146,11 @@ public class MaintainGarageVehicleMeta extends MetaTask {
 		boolean needyVehicleInGarage = false;
 
 		Settlement settlement = mechanic.getSettlement();
-		Iterator<Building> j = settlement.getBuildingManager().getBuildings(FunctionType.GROUND_VEHICLE_MAINTENANCE)
+		Iterator<Building> j = settlement.getBuildingManager().getBuildings(FunctionType.VEHICLE_MAINTENANCE)
 				.iterator();
 		while (j.hasNext() && !garageSpace) {
 			Building building = j.next();
-			VehicleMaintenance garage = building.getGroundVehicleMaintenance();
+			VehicleMaintenance garage = building.getVehicleParking();
 			garageSpace = (garage.getAvailableCapacity() > 0);
 
 			Iterator<Vehicle> i = garage.getVehicles().iterator();

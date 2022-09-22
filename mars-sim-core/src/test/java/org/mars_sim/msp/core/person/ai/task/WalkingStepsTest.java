@@ -12,7 +12,7 @@ import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.MockBuilding;
 import org.mars_sim.msp.core.structure.building.connection.BuildingConnector;
 import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
-import org.mars_sim.msp.core.structure.building.function.GroundVehicleMaintenance;
+import org.mars_sim.msp.core.structure.building.function.VehicleGarage;
 import org.mars_sim.msp.core.vehicle.Rover;
 
 /**
@@ -465,7 +465,7 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
         BuildingManager buildingManager = settlement.getBuildingManager();
 
         Rover rover = buildRover(settlement, "Test Rover", LocalPosition.DEFAULT_POSITION);
-        GroundVehicleMaintenance garage = buildGarage(buildingManager, LocalPosition.DEFAULT_POSITION, 0D,  0);
+        VehicleGarage garage = buildGarage(buildingManager, LocalPosition.DEFAULT_POSITION, 0D,  0);
         garage.addVehicle(rover);
 
         buildingManager.setupBuildingFunctionsMap();
@@ -509,7 +509,7 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
         Rover rover = buildRover(settlement, "Test Rover", LocalPosition.DEFAULT_POSITION);
         rover.transfer(settlement);
         
-        GroundVehicleMaintenance garage = buildGarage(buildingManager, LocalPosition.DEFAULT_POSITION, 0D, 0);
+        VehicleGarage garage = buildGarage(buildingManager, LocalPosition.DEFAULT_POSITION, 0D, 0);
         garage.addVehicle(rover);
         buildingManager.setupBuildingFunctionsMap();
         

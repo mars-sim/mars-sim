@@ -118,7 +118,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 			}
 			
 			// Walk to garage.
-			walkToTaskSpecificActivitySpotInBuilding(garage, FunctionType.GROUND_VEHICLE_MAINTENANCE, false);
+			walkToTaskSpecificActivitySpotInBuilding(garage, FunctionType.VEHICLE_MAINTENANCE, false);
 		
 			setDescription(Msg.getString("Task.description.loadVehicleGarage.detail", vehicle.getName())); // $NON-NLS-1$
 			

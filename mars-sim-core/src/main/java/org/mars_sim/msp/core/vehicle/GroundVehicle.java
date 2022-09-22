@@ -176,7 +176,7 @@ public abstract class GroundVehicle extends Vehicle {
 			int weight = 2;
 
 			List<Building> evas = settlement.getBuildingManager().getBuildingsOfSameCategory(BuildingCategory.EVA_AIRLOCK);
-			int numGarages = settlement.getBuildingManager().getBuildings(FunctionType.GROUND_VEHICLE_MAINTENANCE)
+			int numGarages = settlement.getBuildingManager().getBuildings(FunctionType.VEHICLE_MAINTENANCE)
 					.size();
 			int total = (int)(evas.size() + numGarages * weight - 1);
 			if (total < 0)
