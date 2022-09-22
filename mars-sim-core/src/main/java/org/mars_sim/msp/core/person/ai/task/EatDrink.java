@@ -408,7 +408,14 @@ public class EatDrink extends Task implements Serializable {
 	private double eatingPreservedFoodPhase(double time) {
 		
 		// Checks if this person has eaten too much already 
-		if (pc.eatenTooMuch() || pc.getFatigue() > 2_000) {
+		if (pc.eatenTooMuch()) {
+			endTask();
+			return time;
+		}
+		
+		// Give a person the chance to eat even if in high fatigue
+		int rand = RandomUtil.getRandomInt(1);
+		if (rand == 1 && pc.getFatigue() > 2_000) {
 			endTask();
 			return time;
 		}
@@ -462,7 +469,14 @@ public class EatDrink extends Task implements Serializable {
 	private double eatingMealPhase(double time) {
 		
 		// Checks if this person has eaten too much already 
-		if (pc.eatenTooMuch() || pc.getFatigue() > 2_000) {
+		if (pc.eatenTooMuch()) {
+			endTask();
+			return time;
+		}
+		
+		// Give a person the chance to eat even if in high fatigue
+		int rand = RandomUtil.getRandomInt(1);
+		if (rand == 1 && pc.getFatigue() > 2_000) {
 			endTask();
 			return time;
 		}
@@ -697,15 +711,21 @@ public class EatDrink extends Task implements Serializable {
 	 *         dessert phase.
 	 */
 	private double eatingDessertPhase(double time) {
-
+		
 		// Checks if this person has eaten too much already 
-		if (pc.eatenTooMuch() || pc.getFatigue() > 2_000) {
+		if (pc.eatenTooMuch()) {
+			endTask();
+			return time;
+		}
+		
+		// Give a person the chance to eat even if in high fatigue
+		int rand = RandomUtil.getRandomInt(1);
+		if (rand == 1 && pc.getFatigue() > 2_000) {
 			endTask();
 			return time;
 		}
 		
 		double remainingTime = 0D;
-
 		double eatingTime = time;
 		
 		if ((totalEatingTime + eatingTime) >= eatingDuration) {

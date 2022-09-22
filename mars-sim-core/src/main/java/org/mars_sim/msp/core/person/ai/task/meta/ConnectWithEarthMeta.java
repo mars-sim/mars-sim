@@ -56,32 +56,27 @@ public class ConnectWithEarthMeta extends MetaTask {
             double stress = condition.getStress();
             double hunger = condition.getHunger();
             
-            if (fatigue > 1000 || hunger > 500)
+            if (fatigue > 1500 || hunger > 1500)
             	return 0;
-            
-            result -= fatigue/20;
-            
+             
             double pref = person.getPreference().getPreferenceScore(this);
             
             // Use preference modifier
          	result += pref * .1D;
          	
             if (pref > 0) {
-             	if (stress < 25)
-             		result*=1.5;
-             	else if (stress < 50)
-             		result*=2D;
-             	else if (stress < 75)
-             		result*=3D;
-             	else if (stress < 90)
-             		result*=4D;
+            	result *= Math.max(1, stress/20);
             }
 
+            result -= fatigue/100 + hunger/100;
+   
+	        if (result < 0) result = 0;
+	        
             // Get an available office space.
             Building building = BuildingManager.getAvailableCommBuilding(person);
 
             if (building != null) {
-            	result += 2;
+            	result += 5;
             	// A comm facility has terminal equipment that provides communication access with Earth
             	// It is necessary
                 result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
@@ -91,7 +86,7 @@ public class ConnectWithEarthMeta extends MetaTask {
             else if (person.isInVehicle()) {	
     	        // Check if person is in a moving rover.
     	        if (Vehicle.inMovingRover(person)) {
-    	        	result += 20D;
+    	        	result += 10;
     	        }
             }
         

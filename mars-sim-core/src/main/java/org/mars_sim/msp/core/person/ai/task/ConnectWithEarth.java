@@ -115,6 +115,9 @@ public class ConnectWithEarth extends Task implements Serializable {
 			addPhase(CONNECTING_EARTH);
 			setPhase(CONNECTING_EARTH);
 		}
+		else {
+			endTask();
+		}
 	}
 
 	@Override
@@ -186,6 +189,12 @@ public class ConnectWithEarth extends Task implements Serializable {
         	endTask();
         }
         
+		if (getTimeCompleted() + time > getDuration()) {
+        	// this task has ended
+			endTask();
+			return 0;
+		}
+		
 		return remainingTime;
 	}
 }

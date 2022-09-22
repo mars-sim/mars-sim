@@ -7,7 +7,6 @@
 package org.mars_sim.msp.core.person.ai.task.meta;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.CircadianClock;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -25,7 +24,7 @@ import org.mars_sim.msp.core.tool.RandomUtil;
  */
 public class SleepMeta extends MetaTask {
 
-	private static SimLogger logger = SimLogger.getLogger(SleepMeta.class.getName());
+//	private static SimLogger logger = SimLogger.getLogger(SleepMeta.class.getName());
 
     /** Task name */
     private static final String NAME = Msg.getString("Task.description.sleep"); //$NON-NLS-1$

@@ -62,7 +62,7 @@ public class PlayHoloGame extends Task implements Serializable {
 	 */
 	public PlayHoloGame(Person person) {
 		super(NAME, person, false, false, STRESS_MODIFIER, RandomUtil.getRandomInt(10, 20));
-
+		
 		TOTAL_COMPUTING_NEEDED = getDuration() * seed;
 		computingNeeded = TOTAL_COMPUTING_NEEDED;
 		
@@ -158,6 +158,10 @@ public class PlayHoloGame extends Task implements Serializable {
     				+ " CUs Used.");
 			endTask();
 			return time;
+		}
+		
+		if (!person.getPhysicalCondition().isNominallyFit()) {
+			endTask();
 		}
 		
 		int msol = marsClock.getMillisolInt();       
