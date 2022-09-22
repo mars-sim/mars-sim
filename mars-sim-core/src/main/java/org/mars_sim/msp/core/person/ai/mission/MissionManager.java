@@ -460,7 +460,7 @@ public class MissionManager implements Serializable, Temporal {
 		double totalPercent = percent + weight * PERCENT_PER_SCORE;
 		if (totalPercent > 100)
 			totalPercent = 100;
-		missionPlan.setPercentComplete(totalPercent);
+		missionPlan.setReviewPercentComplete(totalPercent);
 		double score = missionPlan.getScore();
 		missionPlan.setScore(score + weight * newScore);
 

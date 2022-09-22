@@ -63,23 +63,19 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	public static final int MIN_STAYING_MEMBERS = 1;
 	public static final int MIN_GOING_MEMBERS = 2;
 	
-	/**
-	 * The marginal factor for the amount of water to be brought during a mission.
-	 */
+	/* The marginal factor for the amount of water to be brought during a mission. */
 	private static final double WATER_MARGIN = 1.5;
-	/**
-	 * The marginal factor for the amount of oxygen to be brought during a mission.
-	 */
+	
+	/* The marginal factor for the amount of oxygen to be brought during a mission. */
 	private static final double OXYGEN_MARGIN = 1.5;
-	/**
-	 * The marginal factor for the amount of food to be brought during a mission.
-	 */
+	
+	/* The marginal factor for the amount of food to be brought during a mission. */
 	private static final double FOOD_MARGIN = 2.25;
 
-	// What is the lowest fullness of an EVASuit to be usable
+	/* What is the lowest fullness of an EVASuit to be usable. */
 	private static final double EVA_LOWEST_FILL = 0.5D;
 
-	/** The factor for determining how many more EVA suits are needed for a trip. */
+	/* The factor for determining how many more EVA suits are needed for a trip. */
 	private static final double EXTRA_EVA_SUIT_FACTOR = .2;
 
 	/**

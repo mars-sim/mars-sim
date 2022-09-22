@@ -61,10 +61,13 @@ public class PlanMission extends Task implements Serializable {
 	 */
 	public PlanMission(Person person) {
 		// Use Task constructor.
-		super(NAME, person, true, false, STRESS_MODIFIER, 150D + RandomUtil.getRandomInt(-15, 15));
+		super(NAME, person, true, false, STRESS_MODIFIER, RandomUtil.getRandomInt(20, 50));
 
-		
-		//if (person.isInSettlement() && person.getBuildingLocation().getBuildingType().contains("EVA Airlock")) {
+		boolean canDo = person.getMind().canStartNewMission();
+		if (!canDo) {
+			endTask();
+		}
+			
 		if (person.isInSettlement()) {
 
 			// If person is in a settlement, try to find an office building.
@@ -98,7 +101,6 @@ public class PlanMission extends Task implements Serializable {
 
 		// Initialize phase
 		addPhase(SELECTING);
-
 		addPhase(SUBMITTING);
 		
 		setPhase(SELECTING);
@@ -127,7 +129,6 @@ public class PlanMission extends Task implements Serializable {
 		double remainingTime = 0;
 		
 		boolean canDo = person.getMind().canStartNewMission();
-		
 		if (!canDo) {
 			endTask();
 		}

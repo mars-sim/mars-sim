@@ -75,7 +75,8 @@ public class ReviewMissionPlanMeta extends MetaTask {
 						String requestedBy = p.getName();
 						
 						if (reviewedBy.equals(requestedBy) || !mp.isReviewerValid(reviewedBy, pop)) {
-							// Skip this plan as a candidate
+							// Skip this plan if the request and review is the same person
+							// Also, reviewer must be valid
 							continue;
 						}
 

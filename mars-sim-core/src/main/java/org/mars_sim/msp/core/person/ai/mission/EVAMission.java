@@ -23,11 +23,6 @@ import org.mars_sim.msp.core.vehicle.Rover;
 
 public abstract class EVAMission extends RoverMission {
 
-	/**
-	 *
-	 */
-	private static final String NOT_ENOUGH_SUNLIGHT = "EVA - Not enough sunlight";
-
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
@@ -39,6 +34,7 @@ public abstract class EVAMission extends RoverMission {
 	// Maximum time to wait for sunrise
 	protected static final double MAX_WAIT_SUBLIGHT = 400D;
 
+	private static final String NOT_ENOUGH_SUNLIGHT = "EVA - Not enough sunlight";
 
     private MissionPhase evaPhase;
     private boolean activeEVA = true;

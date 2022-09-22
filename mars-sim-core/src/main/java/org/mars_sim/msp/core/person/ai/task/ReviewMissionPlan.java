@@ -339,20 +339,34 @@ public class ReviewMissionPlan extends Task implements Serializable {
 									
 									// Why do we adjust these score ?
 									if (mt == MissionType.COLLECT_ICE) {
-										siteValue *= 4D;
+										siteValue /= 40D;
 									}
 									else if (mt == MissionType.COLLECT_REGOLITH) {
-										siteValue *= 2D;
+										siteValue /= 30D;
+									}
+									else if (mt == MissionType.MINING) {
+										siteValue /= 20D;
 									}
 								}
 
-								// 7. proposed route distance (0 to 10 points)
+								// 7. proposed route distance (-10 to 10 points)
 								int dist = 0;
 								if (m instanceof VehicleMission) {
-									int max = m.getAssociatedSettlement().getMissionRadius(mt);
-									if (max > 0) {
+									int range = m.getAssociatedSettlement().getMissionRadius(mt);
+									if (range > 0) {
+										
+										// Call this to obtain the distanceProposed
+										((VehicleMission) m).computeTotalDistanceProposed();
+										
 										int proposed = (int)(((VehicleMission) m).getDistanceProposed());
-										dist = (int)(1.0 * (max - proposed) / max * 10);
+										
+										// Scoring rule:
+										// At range = 0, the score is 10
+										// At full range, the score is -10
+										// The score for half the range is zero.
+
+										// Calculate the dist score
+										dist = (int)(- 20.0 / range * proposed + 10);
 									}
 								}
 								
@@ -413,7 +427,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 								msg.append(", Luck: ").append(luck); 
 								msg.append(" = Subtotal: ").append(score);
 								
-								logger.log(worker, Level.FINE, 0,  msg.toString());
+								logger.log(worker, Level.INFO, 0,  msg.toString());
 	
 							      // Add experience
 						        addExperience(time);
@@ -421,9 +435,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 								// Do only one review each time
 						        endTask();
 						    }
-
 						}
-						
 							
 						if (mp.getPercentComplete() >= 100D) {
 			            	// Go to the finished phase and finalize the approval

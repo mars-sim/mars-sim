@@ -1825,11 +1825,11 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	}
 	
 	/**
-	 * Computes the estimated total distance of the trip.
+	 * Computes the proposed distance (or estimated total distance) of the trip.
 	 * 
 	 * @return distance (km)
 	 */
-	protected final void computeTotalDistanceProposed() {
+	public final void computeTotalDistanceProposed() {
 		if (navPoints.size() > 1) {
 			double result = 0D;
 			

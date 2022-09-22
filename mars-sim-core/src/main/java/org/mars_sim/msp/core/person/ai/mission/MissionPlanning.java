@@ -7,6 +7,8 @@
 package org.mars_sim.msp.core.person.ai.mission;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -19,7 +21,8 @@ public class MissionPlanning implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	private int requestedSol;
-	private double percentComplete; // 0% to 100%
+	private double proposalPercentComplete; // 0% to 100%
+	private double reviewPercentComplete; // 0% to 100%
 	private double score; // 0 to 1000 points
 	private double passingScore = 0;
 
@@ -27,28 +30,24 @@ public class MissionPlanning implements Serializable {
 
 	private Mission mission;
 	
-	private Map<String, Integer> reviewers;
+	private List<String> reviewers;
 	
 	private static MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
 
 	public MissionPlanning(Mission mission) {
 		this.requestedSol = clock.getMissionSol();
 		this.mission = mission;
-		reviewers = new ConcurrentHashMap<>();
+		reviewers = new ArrayList<>();
 	}
 	
+	/**
+	 * Adds the name of the reviewer to the map.
+	 * 
+	 * @param name
+	 */
 	public void setReviewedBy(String name) {
-		setReviewer(name);
-	}
-	
-	public void setReviewer(String name) {
-		if (reviewers.containsKey(name)) {
-			int num = reviewers.get(name);
-			reviewers.put(name, num++);
-		}
-		
-		else {
-			reviewers.put(name, 1);
+		if (!reviewers.contains(name)) {
+			reviewers.add(name);
 		}
 	}
 	
@@ -62,19 +61,22 @@ public class MissionPlanning implements Serializable {
 	 * @return
 	 */
 	public boolean isReviewerValid(String name, int pop) {
-		if (!reviewers.containsKey(name)) {
+		if (!reviewers.contains(name)) {
 			return true;
 		}
 		else {
-			int num = reviewers.get(name);
+			// If he has reviewed this mission plan before, 
+			// he can still review it again, after other reviewers
+			// have looked at the plan
+			int num = reviewers.size();
 			if (pop >= 48) {
-                return num < 2;
+                return num < 5;
 			}
 			else if (pop >= 24) {
-                return num < 2;
+                return num < 4;
 			}
 			else if (pop >= 12) {
-                return num < 2;
+                return num < 3;
 			}
 			else if (pop >= 10) {
                 return num < 3;
@@ -83,20 +85,19 @@ public class MissionPlanning implements Serializable {
                 return num < 3;
 			}			
 			else if (pop >= 6) {
-                return num < 3;
+                return num < 2;
 			}	
 			else if (pop >= 4) {
-                return num < 4;
+                return num < 2;
 			}
 			else if (pop == 3) {
-                return num < 5;
+                return num < 1;
 			}
 			else if (pop == 2) {
-                return num < 6;
+                return true;
 			}
-			else {
-				return true;
-			}
+			
+			return true;
 		}
 	}
 	
@@ -108,8 +109,12 @@ public class MissionPlanning implements Serializable {
 		score = value;
 	}
 	
-	public void setPercentComplete(double value) {
-		percentComplete = value;
+	public void setReviewPercentComplete(double value) {
+		reviewPercentComplete = value;
+	}
+	
+	public void setProposalPercentComplete(double value) {
+		proposalPercentComplete = value;
 	}
 
 	public void setPassingScore(double threshold) {
@@ -129,7 +134,11 @@ public class MissionPlanning implements Serializable {
 	}
 	
 	public double getPercentComplete() {
-		return percentComplete;
+		return reviewPercentComplete;
+	}
+	
+	public double getProposalPercentComplete() {
+		return proposalPercentComplete;
 	}
 	
 	public double getScore() {;

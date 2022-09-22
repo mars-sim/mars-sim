@@ -24,7 +24,7 @@ public class PlanMissionMeta extends MetaTask {
     /** Task name */
     private static final String NAME = Msg.getString("Task.description.planMission"); //$NON-NLS-1$
 
-    private static final int START_FACTOR = 20;
+    private static final int START_FACTOR = 100;
     
     public PlanMissionMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
@@ -86,8 +86,7 @@ public class PlanMissionMeta extends MetaTask {
             }
         }
 
-//      if (result > 0) 
-//  			logger.info(person + " (" + person.getRole().getType() + ") was at PlanMissionMeta : " + Math.round(result*100.0)/100.0);
+//      if (result > 0) logger.info(person + " (" + person.getRole().getType() + ") was at PlanMissionMeta : " + Math.round(result*100.0)/100.0)
 
         return result;
     }

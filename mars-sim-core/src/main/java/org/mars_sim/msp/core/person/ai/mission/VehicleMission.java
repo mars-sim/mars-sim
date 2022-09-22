@@ -27,6 +27,8 @@ public interface VehicleMission extends Mission {
 	 */
     double getDistanceProposed();
 
+    void computeTotalDistanceProposed();
+    
     /**
 	 * Gets the actual total distance travelled during the mission so far.
 	 *

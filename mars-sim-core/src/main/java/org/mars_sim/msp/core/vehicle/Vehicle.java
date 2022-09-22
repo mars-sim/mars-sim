@@ -1107,9 +1107,7 @@ public abstract class Vehicle extends Unit
     		range = estimatedFuelEconomy * amountOfFuel * getBaseMass() / getMass();
         }
 
-		range = Math.min(radius, (int)range);
-
-		return range;
+        return Math.min(radius, (int)range);
 	}
 
 	/**
