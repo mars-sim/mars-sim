@@ -85,7 +85,7 @@ public class BuildingConfig implements Serializable {
 	private static final String BEDS = "beds";
 	private static final String VEHICLE_MAINTENANCE = "vehicle-maintenance";
 	private static final String PARKING_LOCATION = "parking-location";
-	private static final String DRONE_LOCATION = "drone-location";
+	private static final String FLYER_LOCATION = "flyer-location";
 	
 	private static final String WASTE_PROCESSING = "waste-processing";
 
@@ -252,9 +252,9 @@ public class BuildingConfig implements Serializable {
 		}
 
 		if (vehicleElement != null) {
-			List<LocalPosition> droneParking = parsePositions(vehicleElement, "droneParking", DRONE_LOCATION,
+			List<LocalPosition> flyerParking = parsePositions(vehicleElement, "flyerParking", FLYER_LOCATION,
 												   width, length);
-			newSpec.setDroneParking(droneParking);
+			newSpec.setFlyerParking(flyerParking);
 		}
 		
 		Element medicalElement = functionsElement.getChild(MEDICAL_CARE);
@@ -739,7 +739,7 @@ public class BuildingConfig implements Serializable {
 	 *         center.
 	 */
 	public List<LocalPosition> getDroneLocations(String buildingType) {
-		return getBuildingSpec(buildingType).getDroneParking();
+		return getBuildingSpec(buildingType).getFlyerParking();
 	}
 
 	

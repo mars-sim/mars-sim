@@ -38,7 +38,7 @@ extends VehicleMaintenance {
 		}
 		
 		for (LocalPosition loc : buildingConfig.getDroneLocations(building.getBuildingType())) {
-			addDroneLocation(loc);
+			addFlyerLocation(loc);
 		}
 	}
 

@@ -395,8 +395,8 @@ public class Mind implements Serializable, Temporal {
 					jh.saveJob(newJob, assignedBy, status, approvedBy, false);
 				}
 
-				logger.log(person, Level.CONFIG, 0, "Assigned as " + newJob.getName()
-								+ " by " + approvedBy + ".");
+//				logger.log(person, Level.CONFIG, 0, "Assigned as " + newJob.getName()
+//								+ " by " + approvedBy + ".");
 
 				person.fireUnitUpdate(UnitEventType.JOB_EVENT, newJob);
 

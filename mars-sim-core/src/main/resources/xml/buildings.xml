@@ -65,15 +65,15 @@
 	<!ELEMENT food-production (activity?)>
 	<!ATTLIST food-production tech-level CDATA #REQUIRED>
 	<!ATTLIST food-production concurrent-processes CDATA #REQUIRED>
-	<!ELEMENT vehicle-maintenance (parking, droneParking, activity?)>
+	<!ELEMENT vehicle-maintenance (parking, flyerParking, activity?)>
 	<!ELEMENT parking (parking-location+)>
 	<!ELEMENT parking-location EMPTY>
 	<!ATTLIST parking-location xloc CDATA #REQUIRED>
 	<!ATTLIST parking-location yloc CDATA #REQUIRED>
-	<!ELEMENT droneParking (drone-location+)>
-	<!ELEMENT drone-location EMPTY>
-	<!ATTLIST drone-location xloc CDATA #REQUIRED>
-	<!ATTLIST drone-location yloc CDATA #REQUIRED>
+	<!ELEMENT flyerParking (flyer-location+)>
+	<!ELEMENT flyer-location EMPTY>
+	<!ATTLIST flyer-location xloc CDATA #REQUIRED>
+	<!ATTLIST flyer-location yloc CDATA #REQUIRED>
 	
 	<!ELEMENT life-support EMPTY>
 	<!ATTLIST life-support capacity CDATA #REQUIRED>
@@ -2655,10 +2655,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		        	<parking-location xloc="2.60" yloc="2.0" />
 		        	<parking-location xloc="-2.60" yloc="2.0" />
 		        </parking>
-				<droneParking>
-		        	<drone-location xloc="2.60" yloc="-3.0" />
-		        	<drone-location xloc="-2.60" yloc="-3.0" />
-		        </droneParking>		        
+				<flyerParking>
+		        	<flyer-location xloc="2.60" yloc="-3.3" />
+		        	<flyer-location xloc="-2.60" yloc="-3.3" />
+		        </flyerParking>		        
 		        <activity>
 					<activity-spot xloc="1.75" yloc="-3.5" />
 					<activity-spot xloc="0.0" yloc="-3.5" />
@@ -3911,10 +3911,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
                 	<parking-location xloc="4.5" yloc="-3.2" />
                 	<parking-location xloc="-4.5" yloc="-3.2" />
                 </parking>
-				<droneParking>
-		        	<drone-location xloc="4.5" yloc="4.0" />
-		        	<drone-location xloc="-4.5" yloc="4.0" />
-		        </droneParking>	                
+				<flyerParking>
+		        	<flyer-location xloc="4.5" yloc="4.0" />
+		        	<flyer-location xloc="-4.5" yloc="4.0" />
+		        </flyerParking>	                
                 <activity>
 					<activity-spot xloc="-.5" yloc="-2.25" />
 					<activity-spot xloc="2.25" yloc="-3.25" />

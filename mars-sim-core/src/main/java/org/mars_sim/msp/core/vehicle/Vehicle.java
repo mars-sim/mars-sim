@@ -687,7 +687,7 @@ public abstract class Vehicle extends Unit
 	 * @param position  Position of the parking relative to the Settlement
 	 * @param facing    (degrees from North clockwise).
 	 */
-	public void setDroneLocation(LocalPosition position, double facing) {
+	public void setFlyerLocation(LocalPosition position, double facing) {
 		// Set new parked location for the flyer.
 		this.posParked = position;
 		this.facingParked = facing;

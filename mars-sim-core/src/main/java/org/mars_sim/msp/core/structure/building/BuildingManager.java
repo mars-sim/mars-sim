@@ -286,11 +286,10 @@ public class BuildingManager implements Serializable {
 						buildingFunctionsMap.put(ft, list);
 					}
 					// Remove this old building from the garage list if it has a garage
-					if (ft == FunctionType.VEHICLE_MAINTENANCE) {
-						if (garages.contains(oldBuilding)) {
+					if (ft == FunctionType.VEHICLE_MAINTENANCE
+						&& garages.contains(oldBuilding)) {
 							garages.remove(oldBuilding);
 							garageInts.remove(oldBuilding.getIdentifier());
-						}
 					}
 				}
 			}
@@ -648,7 +647,6 @@ public class BuildingManager implements Serializable {
 
 		else {
 			List<Building> list = buildings.stream().filter(b -> b.hasFunction(bf)).collect(Collectors.toList());
-
 			buildingFunctionsMap.put(bf, list);
 			return list;
 		}
@@ -1071,6 +1069,7 @@ public class BuildingManager implements Serializable {
 				return null;
 		}
 
+		// if no garage buildings are present in this settlement
 		if (garages.isEmpty()) {
 			// The vehicle may already be PARKED ?
 			vehicle.setPrimaryStatus(StatusType.PARKED);
@@ -1079,10 +1078,6 @@ public class BuildingManager implements Serializable {
 
 		for (Building garageBuilding : garages) {
 			VehicleMaintenance garage = garageBuilding.getVehicleMaintenance();
-
-			if (garage == null) {
-				continue;
-			}
 		
 			if (vehicle.getVehicleType() == VehicleType.DELIVERY_DRONE) {
 				
@@ -1129,13 +1124,22 @@ public class BuildingManager implements Serializable {
 	public static boolean removeFromGarage(Vehicle vehicle) {
 		// If the vehicle is in a garage, put the vehicle outside.
 		Building garage = vehicle.getGarage();
-		if (garage != null && garage.getVehicleMaintenance().removeVehicle(vehicle, true)) {
+		if (garage == null) {
+			return false;
+		}
+		
+		if (vehicle.getVehicleType() == VehicleType.DELIVERY_DRONE) {
+			if (garage.getVehicleMaintenance().removeFlyer((Flyer)vehicle)) {
+				return true;
+			}
+		}
+		else if (garage.getVehicleMaintenance().removeVehicle(vehicle, true)) {
 			return true;
 		}
 
 		return false;
 	}
-
+	
 	/**
 	 * Adds a vehicle to a random ground vehicle maintenance building within
 	 * a settlement.
@@ -1167,7 +1171,16 @@ public class BuildingManager implements Serializable {
 		if (settlement != null) {
 			for (Building garageBuilding : getGarages()) {
 				VehicleMaintenance garage = garageBuilding.getVehicleMaintenance();
-				if (garage != null && garage.containsVehicle(vehicle)) {
+				if (garage == null) {
+					return false;
+				}
+				
+				if (vehicle.getVehicleType() == VehicleType.DELIVERY_DRONE) {
+					if (garage.containsFlyer((Flyer)vehicle)) {
+						return true;
+					}
+				}
+				else if (garage.containsVehicle(vehicle)) {
 					return true;
 				}
 			}

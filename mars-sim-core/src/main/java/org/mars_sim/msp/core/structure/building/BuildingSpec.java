@@ -62,7 +62,7 @@ public class BuildingSpec {
 
 	private List<LocalPosition> beds;
 	private List<LocalPosition> parking;
-	private List<LocalPosition> droneParking;
+	private List<LocalPosition> flyerParking;
 
 	private BuildingCategory category;
 	
@@ -239,11 +239,11 @@ public class BuildingSpec {
 		this.parking = Collections.unmodifiableList(parking);
 	}
 	
-	public List<LocalPosition> getDroneParking() {
-		return droneParking;
+	public List<LocalPosition> getFlyerParking() {
+		return flyerParking;
 	}
 
-	void setDroneParking(List<LocalPosition> droneParking) {
-		this.droneParking = Collections.unmodifiableList(droneParking);
+	void setFlyerParking(List<LocalPosition> droneParking) {
+		this.flyerParking = Collections.unmodifiableList(droneParking);
 	}
 }

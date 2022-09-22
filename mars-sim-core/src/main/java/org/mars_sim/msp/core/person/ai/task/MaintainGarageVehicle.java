@@ -268,8 +268,14 @@ public class MaintainGarageVehicle extends Task implements Serializable {
 				if (crewableVehicle.getCrewNum() == 0 && crewableVehicle.getRobotCrewNum() == 0) {
 					garage.removeVehicle(vehicle, false);
 				}
+				else
+					garage.removeVehicle(vehicle, true);
 			} else {
-				garage.removeVehicle(vehicle, false);
+				if (vehicle.getVehicleType() == VehicleType.DELIVERY_DRONE) {
+					garage.removeFlyer((Flyer)vehicle);
+				}
+				else
+					garage.removeVehicle(vehicle, false);
 			}
 		}
 		super.clearDown();
