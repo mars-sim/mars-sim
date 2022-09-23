@@ -615,6 +615,7 @@
 		<authority code="NASA" name="National Aeronautics and Space Administration"
 					agenda="Finding Life">
 			<country name="USA"/>
+			<settlement-name name="Jamestown" />
 			<settlement-name name="Port Braun" />
 			<settlement-name name="Sagan Station" />
 			<settlement-name name="McKay Base" />

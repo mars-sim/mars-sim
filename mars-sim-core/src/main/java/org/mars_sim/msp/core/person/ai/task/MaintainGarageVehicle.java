@@ -16,6 +16,7 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.person.Person;
@@ -31,7 +32,6 @@ import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Flyer;
-import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleType;
@@ -294,7 +294,7 @@ public class MaintainGarageVehicle extends Task implements Serializable {
 		if (home != null) {
 			// Vehicle must not be reserved for Mission nor maintenance
 			return home.getParkedVehicles().stream()
-				.filter(v -> ((v instanceof GroundVehicle || v.getVehicleType() == VehicleType.DELIVERY_DRONE) 
+				.filter(v -> ((v.getUnitType() == UnitType.VEHICLE) 
 							&& !v.isReserved()
 							&& (!mustBeOutside || !v.isInAGarage())))
 				.collect(Collectors.toList());
@@ -327,7 +327,7 @@ public class MaintainGarageVehicle extends Task implements Serializable {
 
 		// Randomly determine needy vehicle.
 		if (!vehicleProb.isEmpty()) {
-			result = (GroundVehicle) RandomUtil.getWeightedRandomObject(vehicleProb);
+			result = RandomUtil.getWeightedRandomObject(vehicleProb);
 		}
 
 		if (result != null) {
