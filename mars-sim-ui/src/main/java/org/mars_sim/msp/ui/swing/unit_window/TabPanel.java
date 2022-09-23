@@ -53,6 +53,7 @@ public abstract class TabPanel extends JScrollPane {
 	// Default values for any top level Spring panel holding values
 	protected static final int INITY_DEFAULT = 5;
 	protected static final int INITX_DEFAULT = 75;
+	protected static final int INITX_DEFAULT_1 = 135;
 	protected static final int YPAD_DEFAULT = 1;
 	protected static final int XPAD_DEFAULT = 5;
 	

@@ -162,7 +162,7 @@ public class PersonTaskManager extends TaskManager {
 		// Check if the map cache is empty
 		if (newCache.getTasks().isEmpty()) {
 			newCache = getDefaultTasks();
-			logger.warning(person, "No normal task available. Get default tasks.");
+			logger.warning(person, 30_000L, "No normal task available. Get default tasks.");
 		}
 
 		// Output shift

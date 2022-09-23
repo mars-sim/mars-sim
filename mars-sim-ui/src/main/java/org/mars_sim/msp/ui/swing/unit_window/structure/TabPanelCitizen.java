@@ -47,7 +47,6 @@ public class TabPanelCitizen extends TabPanel{
 
 	private UnitListPanel<Person> populationList;
 
-
 	/**
 	 * Constructor.
 	 *
@@ -89,7 +88,7 @@ public class TabPanelCitizen extends TabPanel{
 
 		// Set up the spring layout.
 		SpringUtilities.makeCompactGrid(countPanel, 3, 2, // rows, cols
-				INITX_DEFAULT, INITY_DEFAULT, // initX, initY
+				INITX_DEFAULT_1, INITY_DEFAULT, // initX, initY
 				XPAD_DEFAULT, YPAD_DEFAULT); // xPad, yPad
 
 		populationList = new UnitListPanel<>(getDesktop(), new Dimension(175, 250)) {

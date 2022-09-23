@@ -9,6 +9,7 @@ package org.mars_sim.msp.ui.swing.unit_window.structure;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
@@ -89,12 +90,13 @@ extends TabPanel {
 		content.add(mainPane);
 
 		// Create the studies panel.
-		WebPanel studiesPane = new WebPanel(new BorderLayout());
+		WebPanel studiesPane = new WebPanel(new BorderLayout(5, 5));
 //		studiesPane.setBorder(new MarsPanelBorder());
 		mainPane.add(studiesPane);
 
 		// Create the studies label.
 		WebLabel studiesLabel = new WebLabel(Msg.getString("TabPanelScience.scientificStudies"), WebLabel.CENTER); //$NON-NLS-1$
+		studiesLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, 13));
 		studiesPane.add(studiesLabel, BorderLayout.NORTH);
 
 		// Create the study scroll panel.

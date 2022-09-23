@@ -147,10 +147,10 @@ extends TabPanel {
         latlonPanel.setLayout(new BorderLayout(0, 0));
         WebLabel latLabel = new WebLabel("Lat : ");//, JLabel.RIGHT);
         latLabel.setFont(font);
-        latLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+        latLabel.setHorizontalAlignment(SwingConstants.CENTER);
         WebLabel longLabel = new WebLabel("Lon : ");
         longLabel.setFont(font);
-        longLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+        longLabel.setHorizontalAlignment(SwingConstants.CENTER);
         latlonPanel.add(latLabel, BorderLayout.CENTER);
         latlonPanel.add(longLabel, BorderLayout.SOUTH);
 

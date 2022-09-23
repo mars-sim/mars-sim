@@ -55,7 +55,7 @@ public class TabPanelBots extends TabPanel {
 	public TabPanelBots(Unit unit, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
-			null, 
+			Msg.getString("TabPanelBots.title"), //$NON-NLS-1$
 			ImageLoader.getNewIcon(ROBOT_ICON),
 			Msg.getString("TabPanelBots.title"), //$NON-NLS-1$
 			unit, desktop
@@ -73,19 +73,19 @@ public class TabPanelBots extends TabPanel {
 
 		// Create robot num label
 		robotNumCache = settlement.getNumBots();
-		robotNumLabel = addTextField(countPanel, Msg.getString("TabPanelBots.associated"), robotNumCache, null); // $NON-NLS-1$
+		robotNumLabel = addTextField(countPanel, Msg.getString("TabPanelBots.associated"), robotNumCache, 4, null); // $NON-NLS-1$
 
 		// Create robot indoor label
 		robotIndoorCache = settlement.getNumBots();
-		robotIndoorLabel = addTextField(countPanel, Msg.getString("TabPanelBots.indoor"), robotIndoorCache, null);
+		robotIndoorLabel = addTextField(countPanel, Msg.getString("TabPanelBots.indoor"), robotIndoorCache, 4, null);
 
 		// Create robot capacity label
 		robotCapacityCache = settlement.getRobotCapacity();
-		robotCapLabel = addTextField(countPanel, Msg.getString("TabPanelBots.capacity"), robotCapacityCache, null); // $NON-NLS-1$
+		robotCapLabel = addTextField(countPanel, Msg.getString("TabPanelBots.capacity"), robotCapacityCache, 4, null); // $NON-NLS-1$
 
 		// Set up the spring layout.
 		SpringUtilities.makeCompactGrid(countPanel, 3, 2, // rows, cols
-				INITX_DEFAULT, INITY_DEFAULT, // initX, initY
+				60, INITY_DEFAULT, // initX, initY
 				XPAD_DEFAULT, YPAD_DEFAULT); // xPad, yPad
 
 		// Create spring layout robot display panel
@@ -93,8 +93,7 @@ public class TabPanelBots extends TabPanel {
 			@Override
 			protected Collection<Robot> getData() {
 				return settlement.getRobots();
-			}
-			
+			}			
 		};
 		addBorder(robotList, "Robots");
 		content.add(robotList, BorderLayout.CENTER);

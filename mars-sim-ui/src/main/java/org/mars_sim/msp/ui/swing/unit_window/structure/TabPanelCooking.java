@@ -165,25 +165,25 @@ public class TabPanelCooking extends TabPanel {
 		JPanel topPanel = new JPanel(new SpringLayout()); //new GridLayout(4, 1, 0, 0));
 		northPanel.add(topPanel, BorderLayout.NORTH);
 
-		addTextField(topPanel, Msg.getString("TabPanelCooking.breakfastTime"), 
-				CookMeal.getMealTimeString(settlement.getCoordinates(), 0), null);
+		addTextField(topPanel, Msg.getString("TabPanelCooking.breakfastTime"), //$NON-NLS-1$
+				CookMeal.getMealTimeString(settlement.getCoordinates(), 0), 6, null);
 		
-		addTextField(topPanel, Msg.getString("TabPanelCooking.lunchTime"), 
-				CookMeal.getMealTimeString(settlement.getCoordinates(), 1), null);
+		addTextField(topPanel, Msg.getString("TabPanelCooking.lunchTime"), //$NON-NLS-1$
+				CookMeal.getMealTimeString(settlement.getCoordinates(), 1), 6, null);
 		
-		addTextField(topPanel, Msg.getString("TabPanelCooking.dinnerTime"), 
-				CookMeal.getMealTimeString(settlement.getCoordinates(), 2), null);
+		addTextField(topPanel, Msg.getString("TabPanelCooking.dinnerTime"), //$NON-NLS-1$
+				CookMeal.getMealTimeString(settlement.getCoordinates(), 2), 6, null);
 		
-		addTextField(topPanel, Msg.getString("TabPanelCooking.midnightTime"), 
-				CookMeal.getMealTimeString(settlement.getCoordinates(), 3), null);
+		addTextField(topPanel, Msg.getString("TabPanelCooking.midnightTime"), //$NON-NLS-1$
+				CookMeal.getMealTimeString(settlement.getCoordinates(), 3), 6, null);
 		
 		// Prepare cook number label
-		numCooksLabel = addTextField(topPanel, Msg.getString("TabPanelCooking.numberOfCooks"), numCooksCache, null);
-		cookCapacityLabel = addTextField(topPanel, Msg.getString("TabPanelCooking.cookCapacity"), cookCapacityCache, null); //$NON-NLS-1$
+		numCooksLabel = addTextField(topPanel, Msg.getString("TabPanelCooking.numberOfCooks"), numCooksCache, 4, null); //$NON-NLS-1$
+		cookCapacityLabel = addTextField(topPanel, Msg.getString("TabPanelCooking.cookCapacity"), cookCapacityCache, 4, null); //$NON-NLS-1$
 
 		// Set up the spring layout.
 		SpringUtilities.makeCompactGrid(topPanel, 6, 2, // rows, cols
-				INITX_DEFAULT, INITY_DEFAULT, // initX, initY
+				90, INITY_DEFAULT, // initX, initY
 				5, 2); // xPad, yPad
 		
 		// Prepare cooking label panel.

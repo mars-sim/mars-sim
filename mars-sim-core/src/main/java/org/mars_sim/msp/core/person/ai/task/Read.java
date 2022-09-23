@@ -58,7 +58,7 @@ public class Read extends Task implements Serializable {
 		// Use Task constructor. Skill is set later
 		super(NAME, person, true, false, STRESS_MODIFIER, RandomUtil.getRandomInt(5, 20));
 
-		if (person.isInSettlement() || person.isInVehicle()) {
+		if (person.isInside()) {
 
 			int score = person.getPreference().getPreferenceScore(new ReadMeta());
 			// Modify the duration based on the preference score
@@ -121,7 +121,7 @@ public class Read extends Task implements Serializable {
 				}
 			}
 
-			setDescription(Msg.getString("Task.description.read"));
+//			setDescription(Msg.getString("Task.description.read"));
 
 		} else {
 			endTask();
@@ -179,9 +179,10 @@ public class Read extends Task implements Serializable {
 	private double reading(double time) {
 		double remainingTime = 0;
 		
-		if (isDone()) {
+		if ((getTimeCompleted() + time > getDuration()) || isDone()) {
 	        String s = Msg.getString("Task.description.read.detail", selectedSkill.getName()); //$NON-NLS-1$
-	        logger.info(person, 10_000L, "Done " + s.toLowerCase() + ".");
+	        setDescription(s);
+	        logger.info(person, 4_000, "Done " + s.toLowerCase() + ".");
 			endTask();
 			return time;
 		}
@@ -190,10 +191,12 @@ public class Read extends Task implements Serializable {
         if (selectedSkill == null) {
         	selectedSkill = person.getSkillManager().getARandomSkillType();
         
+        	// Future: get this person's most favorite topics
+        	
 	        String s = Msg.getString("Task.description.read.detail", selectedSkill.getName()); //$NON-NLS-1$
 	    	// Display reading on a particular subject (skill type)
 			setDescription(s);		
-//	        logger.info(person, 10_000L, "Started " + s.toLowerCase() + ".");
+	        logger.info(person, 4_000, "Started " + s.toLowerCase() + ".");
         }
 
 		// Reading serves to improve skill

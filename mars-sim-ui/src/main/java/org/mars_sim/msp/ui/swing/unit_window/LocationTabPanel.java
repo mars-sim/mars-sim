@@ -81,7 +81,9 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 	private WebButton locatorButton;
 	private SettlementMapPanel mapPanel;
 
-	private DisplaySingle lcdLong, lcdLat, lcdText; 
+	private DisplaySingle lcdLong;
+	private DisplaySingle lcdLat;
+	private DisplaySingle lcdText; 
 	private DisplayCircular gauge;
 
 	/**
@@ -206,9 +208,9 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 		lcdLong.setGlowColor(Color.yellow);
 		lcdLong.setDigitalFont(true);
 		lcdLong.setLcdDecimals(4);
-		lcdLong.setSize(new Dimension(120, 45));
-		lcdLong.setMaximumSize(new Dimension(120, 45));
-		lcdLong.setPreferredSize(new Dimension(120, 45));
+		lcdLong.setSize(new Dimension(150, 45));
+		lcdLong.setMaximumSize(new Dimension(150, 45));
+		lcdLong.setPreferredSize(new Dimension(150, 45));
 		lcdLong.setVisible(true);
 		lcdPanel.add(lcdLong);
 		northPanel.add(lcdPanel);

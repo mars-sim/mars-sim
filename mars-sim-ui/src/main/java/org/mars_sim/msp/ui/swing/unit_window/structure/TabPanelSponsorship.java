@@ -111,7 +111,7 @@ public class TabPanelSponsorship extends TabPanel {
 		}
 		templateTF.setText(Conversion.capitalize(template));
 		templateTF.setEditable(false);
-		templateTF.setColumns(16);
+		templateTF.setColumns(8);
 		templateTF.setCaretPosition(0);
 		infoPanel.add(templateTF);
 		
@@ -127,7 +127,8 @@ public class TabPanelSponsorship extends TabPanel {
 		WebTextArea ta = new WebTextArea();
 		ta.setEditable(false);
 		ta.setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
-		ta.setColumns(7);
+		ta.setColumns (25);
+		ta.setLineWrap (true);
 		ta.setBorder(new MarsPanelBorder());
 		panel.add(ta);
 		

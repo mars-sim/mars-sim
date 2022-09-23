@@ -54,7 +54,7 @@ public class TabPanelIndoor extends TabPanel {
 	public TabPanelIndoor(Unit unit, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
-				Msg.getString("TabPanelIndoor.title"), //$NON-NLS-1$
+			Msg.getString("TabPanelIndoor.title"), //$NON-NLS-1$
 			ImageLoader.getNewIcon(POP_ICON),
 			Msg.getString("TabPanelIndoor.title"), //$NON-NLS-1$
 			unit, desktop
@@ -82,7 +82,7 @@ public class TabPanelIndoor extends TabPanel {
 											   populationCapacityCache, 4, null);
 
 		SpringUtilities.makeCompactGrid(countPanel, 2, 2, // rows, cols
-				INITX_DEFAULT, INITY_DEFAULT, // initX, initY
+				150, INITY_DEFAULT, // initX, initY
 				XPAD_DEFAULT, YPAD_DEFAULT); // xPad, yPad
 		
 		// Create spring layout population display panel
