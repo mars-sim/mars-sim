@@ -68,11 +68,6 @@ public class LoadVehicleEVA extends EVAOperation {
         	return;
 		}
 		
-		if (settlement.getBuildingManager().isInGarage(vehicle)) {
-			checkLocation();
-        	return;
-		}
-		
         if (!anyVehiclesNeedEVA(settlement)) {
         	checkLocation();
         	return;
@@ -86,6 +81,13 @@ public class LoadVehicleEVA extends EVAOperation {
 		}		
 			
 		initLoad(person);
+		
+		// Check the location of the vehicle only after 
+		// the target vehicle is found
+		if (settlement.getBuildingManager().isInGarage(vehicle)) {
+			checkLocation();
+        	return;
+		}
 	}
 	
 	private void initLoad(Person starter) {	
