@@ -133,9 +133,8 @@ public class ReturnLightUtilityVehicle extends Task implements Serializable {
 			throw new IllegalArgumentException("Task phase is null");
 		} else if (RETURN_LUV.equals(getPhase())) {
 			return returnLUVPhase(time);
-		} else {
-			return time;
-		}
+		} 
+		return time;
 	}
 
 	/**

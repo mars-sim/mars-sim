@@ -294,13 +294,13 @@ public class MaintainGarageVehicle extends Task implements Serializable {
 		if (home != null) {
 			// Vehicle must not be reserved for Mission nor maintenance
 			return home.getParkedVehicles().stream()
-				.filter(v -> (v instanceof GroundVehicle && !v.isReserved()
-								&& (!mustBeOutside || !v.isInVehicleInGarage())))
+				.filter(v -> ((v instanceof GroundVehicle || v.getVehicleType() == VehicleType.DELIVERY_DRONE) 
+							&& !v.isReserved()
+							&& (!mustBeOutside || !v.isInAGarage())))
 				.collect(Collectors.toList());
 		}
 		return Collections.emptyList();
 	}
-
 
 	/**
 	 * Gets a ground vehicle that requires maintenance in a local garage. Returns
@@ -309,9 +309,9 @@ public class MaintainGarageVehicle extends Task implements Serializable {
 	 * @param person person checking.
 	 * @return ground vehicle
 	 */
-	private GroundVehicle getNeedyGroundVehicle(Worker mechanic) {
+	private Vehicle getNeedyGroundVehicle(Worker mechanic) {
 
-		GroundVehicle result = null;
+		Vehicle result = null;
 
 		// Find all vehicles that can be maintained.
 		List<Vehicle> availableVehicles = getAllVehicleCandidates(mechanic, false);

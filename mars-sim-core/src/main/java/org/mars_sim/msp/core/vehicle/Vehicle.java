@@ -911,8 +911,12 @@ public abstract class Vehicle extends Unit
 			List<Building> list = settlement.getBuildingManager().getBuildings(FunctionType.VEHICLE_MAINTENANCE);
 			for (Building garageBuilding : list) {
 				VehicleMaintenance garage = garageBuilding.getVehicleMaintenance();
-				if (garage != null && garage.containsVehicle(this)) {
-					return true;
+				if (garage != null) {
+					if (garage.containsVehicle(this)
+						|| (getVehicleType() == VehicleType.DELIVERY_DRONE
+						&& garage.containsFlyer((Flyer)this))) {
+							return true;
+					}
 				}
 			}
 		}

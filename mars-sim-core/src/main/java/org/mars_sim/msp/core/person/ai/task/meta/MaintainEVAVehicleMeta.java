@@ -22,6 +22,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.core.vehicle.VehicleType;
 
 /**
  * Meta task for the MaintainEVAVehicle task.
@@ -87,8 +88,8 @@ public class MaintainEVAVehicleMeta extends MetaTask {
 				try {
 					Building building = j.next();
 					VehicleMaintenance garage = building.getVehicleParking();
-					totalCap += garage.getVehicleCapacity();
-					available += garage.getAvailableCapacity();
+					totalCap += garage.getVehicleCapacity() + garage.getFlyerCapacity();
+					available += garage.getAvailableCapacity() + garage.getAvailableFlyerCapacity();
 				} catch (Exception e) {
 				}
 			}
@@ -100,7 +101,7 @@ public class MaintainEVAVehicleMeta extends MetaTask {
 			}
 			
 			int total = settlement.getOwnedVehicleNum(); 
-			int onMission = settlement.getMissionVehicles().size();
+			int onMission = settlement.getMissionVehicleNum();
 			
        		if (total - onMission - totalCap > 0) {
 				

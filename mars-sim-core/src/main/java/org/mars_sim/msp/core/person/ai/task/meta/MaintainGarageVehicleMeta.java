@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
+import org.mars_sim.msp.core.vehicle.Flyer;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
@@ -110,15 +111,17 @@ public class MaintainGarageVehicleMeta extends MetaTask {
 	private double getSettlementProbability(Worker mechanic) {
 		double result = 0D;
 		
-		for( Vehicle vehicle : MaintainGarageVehicle.getAllVehicleCandidates(mechanic, false)) {
+		for (Vehicle vehicle : MaintainGarageVehicle.getAllVehicleCandidates(mechanic, false)) {
 			MalfunctionManager manager = vehicle.getMalfunctionManager();
 			boolean hasMalfunction = manager.hasMalfunction();
+			// Go to the next Vehicle if malfunction is found
 			if (hasMalfunction)
-				return 0;
+				continue;
 			
 			boolean hasParts = MaintainBuilding.hasMaintenanceParts(mechanic, vehicle);
+			// Go to the next Vehicle if repair parts are not available
 			if (!hasParts)
-				return 0;
+				continue;
 			
 			double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();
 			boolean minTime = (effectiveTime >= 1000D);
@@ -144,14 +147,16 @@ public class MaintainGarageVehicleMeta extends MetaTask {
 		// Determine if settlement has available space in garage.
 		boolean garageSpace = false;
 		boolean needyVehicleInGarage = false;
-
+		boolean needyFlyerInGarage = false;
+		
 		Settlement settlement = mechanic.getSettlement();
 		Iterator<Building> j = settlement.getBuildingManager().getBuildings(FunctionType.VEHICLE_MAINTENANCE)
 				.iterator();
 		while (j.hasNext() && !garageSpace) {
 			Building building = j.next();
 			VehicleMaintenance garage = building.getVehicleParking();
-			garageSpace = (garage.getAvailableCapacity() > 0);
+			
+			garageSpace = (garage.getAvailableCapacity() + garage.getAvailableFlyerCapacity() > 0);
 
 			Iterator<Vehicle> i = garage.getVehicles().iterator();
 			while (i.hasNext()) {
@@ -159,9 +164,16 @@ public class MaintainGarageVehicleMeta extends MetaTask {
 					needyVehicleInGarage = true;
 				}
 			}
+			
+			Iterator<Flyer> ii = garage.getFlyers().iterator();
+			while (ii.hasNext()) {
+				if (ii.next().isReservedForMaintenance()) {
+					needyFlyerInGarage = true;
+				}
+			}
 		}
 
-		if (!garageSpace && !needyVehicleInGarage) {
+		if (!garageSpace && !needyVehicleInGarage && !needyFlyerInGarage) {
 			result = 0D;
 		}
 		return result;
