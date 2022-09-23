@@ -347,6 +347,9 @@ public class ReviewMissionPlan extends Task implements Serializable {
 									else if (mt == MissionType.MINING) {
 										siteValue /= 20D;
 									}
+									else if (mt == MissionType.EXPLORATION) {
+										siteValue /= 20D;
+									}
 								}
 
 								// 7. proposed route distance (-10 to 10 points)

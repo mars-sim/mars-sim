@@ -8,7 +8,6 @@ package org.mars_sim.msp.core.person.ai;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEventType;
