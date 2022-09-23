@@ -250,7 +250,12 @@ public class Malfunction implements Serializable {
 	 * @return the name of the chief repairer
 	 */
 	public String getChiefRepairer(MalfunctionRepairWork type) {
-		return getWorkType(type).chiefRepairer;
+		RepairWork work = getWorkType(type);
+		if (work != null) {
+			return work.chiefRepairer;
+		}
+		
+		return null;
 	}
 
 	/**
@@ -260,7 +265,10 @@ public class Malfunction implements Serializable {
 	 * @param name the name of the deputy repairer
 	 */
 	public void setDeputyRepairer(MalfunctionRepairWork type, String name) {
-		getWorkType(type).deputyRepairer = name;
+		RepairWork work = getWorkType(type);
+		if (work != null) {
+			work.deputyRepairer = name;
+		}
 	}
 
 	/**
@@ -270,7 +278,12 @@ public class Malfunction implements Serializable {
 	 * @return the name of the deputy repairer
 	 */
 	public String getDeputyRepairer(MalfunctionRepairWork type) {
-		return getWorkType(type).deputyRepairer;
+		RepairWork work = getWorkType(type);
+		if (work != null) {
+			return work.deputyRepairer;
+		}
+		
+		return null;
 	}
 
 	/**
@@ -292,9 +305,10 @@ public class Malfunction implements Serializable {
 	 */
 	public int getDesiredRepairers(MalfunctionRepairWork type) {
 		RepairWork rw = work.get(type);
-		return rw.desiredWorkers;
+		if (rw != null)
+			return rw.desiredWorkers;
+		return 0;
 	}
-
 
 	/**
 	 * Sets the name of the chief repairer of a particular type of repair
@@ -303,7 +317,10 @@ public class Malfunction implements Serializable {
 	 * @param name the name of the chief repairer
 	 */
 	public void setChiefRepairer(MalfunctionRepairWork type, String name) {
-		getWorkType(type).chiefRepairer = name;
+		RepairWork work = getWorkType(type);
+		if (work != null) {
+			work.chiefRepairer = name;
+		}
 	}
 
 	/**
@@ -497,7 +514,7 @@ public class Malfunction implements Serializable {
 	 */
 	public void leaveWork(MalfunctionRepairWork required, String name) {
 		RepairWork w = getWorkType(required);
-		if (w.leaveWork(name) && !w.isCompleted()) {
+		if (w != null && w.leaveWork(name) && !w.isCompleted()) {
 			logger.info(10_000, "Repairer " + name + " leaving the scene.");
 		}
 	}
@@ -534,7 +551,10 @@ public class Malfunction implements Serializable {
 	 */
 	public List<Repairer> getRepairersEffort(MalfunctionRepairWork type) {
 		RepairWork w = getWorkType(type);
-		return w.getEffort();
+		if (w != null) {
+			return w.getEffort();
+		}
+		return new ArrayList<>();
 	}
 
 	/**

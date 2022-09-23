@@ -90,7 +90,7 @@ extends VehicleMaintenance {
 		double vehicleCapacityValue = demand / (supply + 1D);
 
 		double vehicleCapacity = buildingConfig.getParkingLocations(buildingName).size()
-					+ buildingConfig.getDroneLocations(buildingName).size();
+					+ buildingConfig.getDroneLocations(buildingName).size() + 1.0;
 
 		return vehicleCapacity * vehicleCapacityValue;
 	}

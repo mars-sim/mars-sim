@@ -59,7 +59,7 @@ public class TeachMeta extends MetaTask {
 
             else {
 
-	            result = potentialStudents.size() * 30;
+	            result = potentialStudents.size() * 30.0;
 
 	            if (person.isInVehicle()) {	
 	    	        // Check if person is in a moving rover.

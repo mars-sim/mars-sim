@@ -121,15 +121,13 @@ public class Read extends Task implements Serializable {
 				}
 			}
 
-//			setDescription(Msg.getString("Task.description.read"));
-
+			// Initialize phase
+			addPhase(READING);
+			setPhase(READING);
+			
 		} else {
 			endTask();
 		}
-
-		// Initialize phase
-		addPhase(READING);
-		setPhase(READING);
 	}
 
 	/**

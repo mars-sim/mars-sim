@@ -685,7 +685,7 @@ public class EnterAirlock extends Task implements Serializable {
 						+ ".");
 				
 				// Presumably, this person would have doffed the suit in order to get to this phase
-				canProceed = true;
+				setPhase(CLEAN_UP);
 			}
 		}
 		
@@ -699,7 +699,7 @@ public class EnterAirlock extends Task implements Serializable {
 			return time;
 		}
 
-		if (canProceed) {
+		if (canProceed && suit != null) {
 
 			EquipmentOwner housing = null;
 
