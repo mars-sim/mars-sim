@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MalfunctionManager.java
- * @date 2022-06-14
+ * @date 2022-09-24
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.malfunction;
@@ -76,15 +76,15 @@ public class MalfunctionManager implements Serializable, Temporal {
 	public static final double AVERAGE_EVA_MALFUNCTION = 2.0;
 
 	/** Initial estimate for malfunctions per orbit for an entity. */
-	private static final double ESTIMATED_MALFUNCTIONS_PER_ORBIT = 10D;
+	private static final double ESTIMATED_MALFUNCTIONS_PER_ORBIT = 100;
 	/** Initial estimate for maintenances per orbit for an entity. */
-	private static final double ESTIMATED_MAINTENANCES_PER_ORBIT = 10D;
+	private static final double ESTIMATED_MAINTENANCES_PER_ORBIT = 2000;
 	/** Factor for chance of malfunction by time since last maintenance. */
-	private static final double MAINTENANCE_FACTOR = .03;
+	private static final double MAINTENANCE_FACTOR = .01;
 	/** Factor for chance of malfunction by time since last maintenance. */
-	private static final double MALFUNCTION_FACTOR = .05;
+	private static final double MALFUNCTION_FACTOR = .01;
 	/** Factor for chance of malfunction due to wear condition. */
-	private static final double WEAR_MALFUNCTION_FACTOR = .02;
+	private static final double WEAR_MALFUNCTION_FACTOR = .01;
 	/** Factor for chance of accident due to wear condition. */
 	private static final double WEAR_ACCIDENT_FACTOR = 1D;
 
@@ -497,7 +497,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 			currentWearCondition = 0D;
 		currentWearCondition = currentWearLifeTime/baseWearLifeTime * 100D;
 
-		if (pulse.isNewMSol()) {
+		if (pulse.getMarsTime().getMillisolInt() % 3 == 0) {
 			double maintFactor = effectiveTimeSinceLastMaintenance * MALFUNCTION_FACTOR;
 			double wearFactor = (100 - currentWearCondition) * WEAR_MALFUNCTION_FACTOR;
 			double malfunctionChance = time * maintFactor * wearFactor;

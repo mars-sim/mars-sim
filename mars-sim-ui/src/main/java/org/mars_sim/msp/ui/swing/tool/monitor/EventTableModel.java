@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * EventTableModel.java
- * @date 2022-08-20
+ * @date 2022-09-24
  * @author Barry Evans
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
@@ -293,13 +293,14 @@ public class EventTableModel extends AbstractTableModel
 			SimpleEvent event = cachedEvents.get(rowIndex);
 			if (event != null) {
 				switch (columnIndex) {
+				
 				case TIMESTAMP: {
 					result = event.getFullDateTimeString();
 				}
 					break;
 
 				case CATEGORY: {
-					result = HistoricalEventCategory.int2enum(event.getCat());
+					result = HistoricalEventCategory.int2enum(event.getCat()).getName();
 				}
 					break;
 
