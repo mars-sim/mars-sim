@@ -99,7 +99,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 		settlement = person.getSettlement();
 
 		if (settlement != null) {
-			init(robot);
+			init(person);
 		}
 	}
 

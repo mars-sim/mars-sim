@@ -1215,7 +1215,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	}
 
 	/**
-	 * Mission desgniatino code. Only defined once mission has started.
+	 * Mission designation code. Only defined once mission has started.
 	 */
 	@Override
 	public String getFullMissionDesignation() {

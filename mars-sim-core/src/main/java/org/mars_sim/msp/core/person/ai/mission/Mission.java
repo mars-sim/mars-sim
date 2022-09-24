@@ -65,7 +65,7 @@ public interface Mission extends Serializable {
 	Settlement getAssociatedSettlement();
 
     /**
-	 * Mission desgniatino code. Only defined once mission has started.
+	 * Mission designation code. Only defined once mission has started.
 	 */
 	String getFullMissionDesignation();
 
