@@ -15,7 +15,7 @@
 		<release>11</release>
 		<project.version>pre-3.4.0</project.version>
 		<fxgl.version>11.17</fxgl.version>
-		<junit-jupiter.version>5.9.0</junit-jupiter.version>
+		<junit-jupiter.version>5.9.1</junit-jupiter.version>
         <!-- optional : if we want to use a junit4 specific version -->
         <junit.version>4.13.2</junit.version>
 		<timestamp>${maven.build.timestamp}</timestamp>
