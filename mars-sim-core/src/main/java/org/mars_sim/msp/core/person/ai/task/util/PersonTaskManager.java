@@ -14,6 +14,9 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.job.util.ShiftType;
 import org.mars_sim.msp.core.person.ai.role.Role;
+import org.mars_sim.msp.core.person.ai.task.Walk;
+import org.mars_sim.msp.core.person.ai.task.util.MetaTask.TaskScope;
+import org.mars_sim.msp.core.person.ai.task.util.MetaTask.WorkerType;
 
 /**
  * The PersonTaskManager class keeps track of a person's current task and can randomly
@@ -30,7 +33,8 @@ public class PersonTaskManager extends TaskManager {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(PersonTaskManager.class.getName());
 
-	private static TaskCache defaultTasks;
+	private static TaskCache defaultInsideTasks;
+	private static TaskCache defaultOutsideTasks;
 
 	private static final int MAX_TASK_PROBABILITY = 35_000;
 
@@ -160,8 +164,14 @@ public class PersonTaskManager extends TaskManager {
 
 		// Check if the map cache is empty
 		if (newCache.getTasks().isEmpty()) {
-			newCache = getDefaultTasks();
-			logger.warning(person, 30_000L, "No normal task available. Get default tasks.");
+			if (person.isOutside()) {
+				newCache = getDefaultOutsideTasks();
+			}
+			else {
+				newCache = getDefaultInsideTasks();
+			}
+			logger.warning(person, 30_000L, "No normal task available. Get default "
+								+ (person.isOutside() ? "outside" : "inside") + " tasks.");
 		}
 
 		// Output shift
@@ -174,17 +184,43 @@ public class PersonTaskManager extends TaskManager {
 		return newCache;
 	}
 
-	private static synchronized TaskCache getDefaultTasks() {
-		if (defaultTasks == null) {
-			defaultTasks = new TaskCache();
-			for(MetaTask mt : MetaTaskUtil.getNonWorkHourMetaTasks()) {
-				defaultTasks.put(mt, 1D);
-			}
+	/**
+	 * Shared cache for peron who are Inside. Contains the basic Task
+	 * that can always be done
+	 */
+	private static synchronized TaskCache getDefaultInsideTasks() {
+		if (defaultInsideTasks == null) {
+			defaultInsideTasks = new TaskCache();
 
+			// TODO Not great that we use the class name to do lookups
+			defaultInsideTasks.put(MetaTaskUtil.getMetaTask("SleepMeta"), 1D);
+			defaultInsideTasks.put(MetaTaskUtil.getMetaTask("EatDrinkMeta"), 1D);
 		}
-		return defaultTasks;
+		return defaultInsideTasks;
 	}
 
+	/**
+	 * Shared cache for person who are Outside. This forces a return to the settlement.
+	 */
+	private static synchronized TaskCache getDefaultOutsideTasks() {
+		if (defaultOutsideTasks == null) {
+			defaultOutsideTasks = new TaskCache();
+
+			// Create a MetaTask to return inside
+			MetaTask walkBack = new MetaTask("Return Inside", WorkerType.PERSON, TaskScope.ANY_HOUR) {
+				/** 
+				 * Force a return to the base
+				 */
+				@Override
+				public Task constructInstance(Person person) {
+					logger.info(person, "Returning inside to find work.");
+					return new Walk(person);
+				}	
+			};
+			defaultOutsideTasks.put(walkBack, 1D);
+		}
+		return defaultOutsideTasks;
+	}
 	/**
 	 * Start a new Task by first checking for pending tasks.
 	 */
