@@ -61,8 +61,7 @@ public class LoadVehicleGarageMeta extends MetaTask {
             
             // Check all vehicle missions occurring at the settlement.
             try {
-                List<Mission> missions = LoadVehicleGarage.getAllMissionsNeedingLoading(settlement, true);
-                int num = missions.size();
+                int num = LoadVehicleGarage.numAllMissionsNeedingLoading(settlement, true);
                 if (num == 0)
                 	return 0;
                 else
@@ -72,6 +71,7 @@ public class LoadVehicleGarageMeta extends MetaTask {
             catch (Exception e) {
                 logger.severe(person, "Error finding loading missions.", e);
             }
+            
             result *= person.getSettlement().getGoodsManager().getTransportationFactor();
 
             result = applyPersonModifier(result, person);

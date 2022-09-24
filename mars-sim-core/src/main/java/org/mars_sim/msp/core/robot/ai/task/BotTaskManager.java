@@ -138,7 +138,7 @@ public class BotTaskManager extends TaskManager {
 			return getChargeTaskMap();
 		}
 		
-		// Create a task list based on probabilty
+		// Create a task list based on probability
 		if (mtList == null) {
 			List<MetaTask> list = MetaTaskUtil.getRobotMetaTasks();
 			List<MetaTask> newList = new ArrayList<>();

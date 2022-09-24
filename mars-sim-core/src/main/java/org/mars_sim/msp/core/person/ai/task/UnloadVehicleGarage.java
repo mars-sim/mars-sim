@@ -386,7 +386,6 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 	 * @return number of vehicle missions.
 	 */
 	public static int numMissionsNeedingUnloading(Settlement settlement, boolean addToGarage) {
-
 		int num = 0;
 
 		for (Mission mission : missionManager.getMissions()) {
@@ -395,7 +394,9 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 
 				if (vehicleMission.isVehicleUnloadableHere(settlement)) {
 					Vehicle vehicle = vehicleMission.getVehicle();
-
+					if (vehicle == null)
+						continue;
+					
 					// If looking for garaged vehicles; then add to garage otherwise
 					// check vehicle is not in garage
 					if (!isFullyUnloaded(vehicle)

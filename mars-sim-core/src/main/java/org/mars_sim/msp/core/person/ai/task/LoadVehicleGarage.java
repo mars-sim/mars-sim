@@ -177,6 +177,40 @@ public class LoadVehicleGarage extends Task implements Serializable {
 	 * @return list of vehicle missions.
 	 * @throws Exception if error finding missions.
 	 */
+	public static int numAllMissionsNeedingLoading(Settlement settlement, boolean addToGarage) {
+		int num = 0;
+
+		for(Mission mission : missionManager.getMissions()) {
+			if (mission instanceof VehicleMission) {
+				VehicleMission vehicleMission = (VehicleMission) mission;
+				LoadingController plan = vehicleMission.getLoadingPlan();
+
+				// Must have a local Loading Plan that is not complete
+				if ((plan != null) && plan.getSettlement().equals(settlement) && !plan.isCompleted()) {
+					Vehicle vehicle = vehicleMission.getVehicle();
+					if (vehicle == null)
+						continue;
+					
+					if ((addToGarage && settlement.getBuildingManager().addToGarage(vehicle)
+						|| !addToGarage && !settlement.getBuildingManager().isInGarage(vehicle))) {
+							num++;
+					}
+				}
+			}
+		}
+
+		return num;
+	}
+	
+	/**
+	 * Gets a list of all embarking vehicle missions at a settlement with vehicle
+	 * currently in a garage.
+	 * 
+	 * @param settlement the settlement.
+	 * @param addToGarage Should the found vehicle be added to the garage
+	 * @return list of vehicle missions.
+	 * @throws Exception if error finding missions.
+	 */
 	public static List<Mission> getAllMissionsNeedingLoading(Settlement settlement, boolean addToGarage) {
 
 		List<Mission> result = new ArrayList<>();
@@ -190,6 +224,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 					Vehicle vehicle = vehicleMission.getVehicle();
 					if (vehicle == null)
 						continue;
+					
 					if ((addToGarage && settlement.getBuildingManager().addToGarage(vehicle)
 						|| !addToGarage && !settlement.getBuildingManager().isInGarage(vehicle))) {
 							result.add(vehicleMission);
