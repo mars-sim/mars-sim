@@ -73,17 +73,10 @@ public class PersonTaskManager extends TaskManager {
 	 */
 	public double executeTask(double time, double efficiency) {
 		double remainingTime = 0D;
-
+		
 		if (currentTask != null) {
-
-			if (efficiency <= 0D) {
-				efficiency = 0D;
-			}
-
-			if (currentTask.isEffortDriven()) {
-				// For effort driven task, reduce the effective time based on efficiency.
-				time *= efficiency;
-			}
+			
+			boolean effort = currentTask.isEffortDriven();
 
 			try {
 				remainingTime = currentTask.performTask(time);
@@ -93,19 +86,26 @@ public class PersonTaskManager extends TaskManager {
 				return remainingTime;
 			}
 
-			// Calculate the energy time
-			double energyTime = time - remainingTime;
-
-			// Double energy expenditure if performing effort-driven task.
-			if (energyTime > 0D && currentTask.isEffortDriven()) {
-
-				if (person.isOutside()) {
-					// Take more energy to be in EVA doing work
-					// TODO: should also consider skill level and strength and body weight
-					reduceEnergy(energyTime * 1.5);
-				} else {
-					// Expend nominal energy based on activity.
-					reduceEnergy(energyTime);
+			if (effort) {
+				
+				if (efficiency <= 0D)
+					efficiency = 0D;
+				// For effort driven task, reduce the effective time based on efficiency.
+				time *= efficiency;
+				// Calculate the energy time
+				double energyTime = time - remainingTime;
+				
+				// Double energy expenditure if performing effort-driven task.
+				if (energyTime > 0D) {
+	
+					if (person.isOutside()) {
+						// Take more energy to be in EVA doing work
+						// Future: should also consider skill level and strength and body weight
+						reduceEnergy(energyTime * 1.5);
+					} else {
+						// Expend nominal energy based on activity.
+						reduceEnergy(energyTime);
+					}
 				}
 			}
 		}

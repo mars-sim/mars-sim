@@ -31,6 +31,7 @@ import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.job.util.ShiftType;
+import org.mars_sim.msp.core.person.ai.mission.AbstractMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
 import org.mars_sim.msp.core.person.ai.mission.MissionEventType;
@@ -360,7 +361,7 @@ public class PersonTableModel extends UnitTableModel {
 				break;
 
 			case MISSION_COL: {
-				Mission mission = person.getMind().getMission();
+				mission = person.getMind().getMission();
 				if (mission != null) {
 					result = mission.getFullMissionDesignation();
 				}
