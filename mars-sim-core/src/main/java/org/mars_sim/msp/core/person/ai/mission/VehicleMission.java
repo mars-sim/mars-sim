@@ -26,8 +26,6 @@ public interface VehicleMission extends Mission {
 	 * @return distance (km)
 	 */
     double getDistanceProposed();
-
-    void computeTotalDistanceProposed();
     
     /**
 	 * Gets the actual total distance travelled during the mission so far.

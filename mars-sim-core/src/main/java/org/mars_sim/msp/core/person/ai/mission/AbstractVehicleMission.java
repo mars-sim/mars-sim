@@ -197,6 +197,9 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 * @return
 	 */
 	protected void setInitialPhase(boolean needsReview) {
+		// NavPoints are fixed in so how far to go?
+		computeTotalDistanceProposed();
+
 		if (needsReview) {
 			// Set initial mission phase.
 			startReview();
@@ -209,8 +212,6 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 
 		Worker startingMember = getStartingPerson();
 		logger.info(startingMember, "Started mission " + getName() + " using " + getVehicle().getName());
-
-		computeTotalDistanceProposed();
 	}
 
 	/**

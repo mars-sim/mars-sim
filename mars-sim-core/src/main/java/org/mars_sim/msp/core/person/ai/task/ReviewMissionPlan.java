@@ -176,29 +176,24 @@ public class ReviewMissionPlan extends Task implements Serializable {
 
         List<Mission> missions = missionManager.getPendingMissions(reviewerSettlement);
         
-        if (missions.size() == 0)
+        if (missions.isEmpty())
         	endTask();
         
         GoodsManager goodsManager = reviewerSettlement.getGoodsManager();
         
 		// Iterates through each pending mission 
-		Iterator<Mission> i = missions.iterator();
-		while (i.hasNext()) {
-			Mission m = i.next();
+		for(Mission m : missions) {
 			MissionPlanning mp = m.getPlan();
 			
 			if (m.getPlan() != null) {
 	            PlanType status = mp.getStatus();
 	
 	            if (status != null && status == PlanType.PENDING) {
-	            	
-	            	
 		            if (mp.getPercentComplete() >= 100D) {
 		            	// Go to the finished phase and finalize the approval
 		            	setPhase(APPROVING);
 		                return time * .9; // return time is needed
 		            }
-		            
 		            else {
 		            	// if not 100% reviewed
 		            	
@@ -357,10 +352,6 @@ public class ReviewMissionPlan extends Task implements Serializable {
 								if (m instanceof VehicleMission) {
 									int range = m.getAssociatedSettlement().getMissionRadius(mt);
 									if (range > 0) {
-										
-										// Call this to obtain the distanceProposed
-										((VehicleMission) m).computeTotalDistanceProposed();
-										
 										int proposed = (int)(((VehicleMission) m).getDistanceProposed());
 										
 										// Scoring rule:
