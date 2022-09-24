@@ -157,7 +157,7 @@ public class VehicleTableModel extends UnitTableModel {
 	private int mapSizeCache = 0;
 
 	private UnitManagerListener unitManagerListener;
-	private LocalMissionManagerListener missionManagerListener;
+	private transient LocalMissionManagerListener missionManagerListener;
 
 	private Map<Vehicle, Map<Integer, Double>> resourceCache;
 
@@ -588,9 +588,21 @@ public class VehicleTableModel extends UnitTableModel {
 		return Math.round(((Vehicle)unit).getAmountResourceStored(resource) * 100.0) / 100.0;
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (this.getClass() != obj.getClass())
+			return false;
+		return false;
+	}
+	
 	/**
 	 * Prepares the model for deletion.
 	 */
+	@Override
 	public void destroy() {
 		super.destroy();
 

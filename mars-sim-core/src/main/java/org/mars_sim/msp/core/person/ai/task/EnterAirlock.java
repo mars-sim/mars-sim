@@ -699,7 +699,7 @@ public class EnterAirlock extends Task implements Serializable {
 			return time;
 		}
 
-		if (canProceed && suit != null) {
+		if (canProceed) {
 
 			EquipmentOwner housing = null;
 

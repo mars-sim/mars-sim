@@ -250,9 +250,9 @@ public class Malfunction implements Serializable {
 	 * @return the name of the chief repairer
 	 */
 	public String getChiefRepairer(MalfunctionRepairWork type) {
-		RepairWork work = getWorkType(type);
-		if (work != null) {
-			return work.chiefRepairer;
+		RepairWork w = getWorkType(type);
+		if (w != null) {
+			return w.chiefRepairer;
 		}
 		
 		return null;
@@ -265,9 +265,9 @@ public class Malfunction implements Serializable {
 	 * @param name the name of the deputy repairer
 	 */
 	public void setDeputyRepairer(MalfunctionRepairWork type, String name) {
-		RepairWork work = getWorkType(type);
-		if (work != null) {
-			work.deputyRepairer = name;
+		RepairWork w = getWorkType(type);
+		if (w != null) {
+			w.deputyRepairer = name;
 		}
 	}
 
@@ -278,9 +278,9 @@ public class Malfunction implements Serializable {
 	 * @return the name of the deputy repairer
 	 */
 	public String getDeputyRepairer(MalfunctionRepairWork type) {
-		RepairWork work = getWorkType(type);
-		if (work != null) {
-			return work.deputyRepairer;
+		RepairWork w = getWorkType(type);
+		if (w != null) {
+			return w.deputyRepairer;
 		}
 		
 		return null;
@@ -317,9 +317,9 @@ public class Malfunction implements Serializable {
 	 * @param name the name of the chief repairer
 	 */
 	public void setChiefRepairer(MalfunctionRepairWork type, String name) {
-		RepairWork work = getWorkType(type);
-		if (work != null) {
-			work.chiefRepairer = name;
+		RepairWork w = getWorkType(type);
+		if (w != null) {
+			w.chiefRepairer = name;
 		}
 	}
 

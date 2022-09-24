@@ -62,9 +62,9 @@ public class Read extends Task implements Serializable {
 
 			int score = person.getPreference().getPreferenceScore(new ReadMeta());
 			// Modify the duration based on the preference score
-			setDuration(getDuration() + score);
+			setDuration(Math.max(5, score + getDuration()));
 			// Factor in a person's preference for the new stress modifier
-			setStressModifier(- score / 10D + STRESS_MODIFIER);
+			setStressModifier(-score / 20D + STRESS_MODIFIER);
 
 			// Set the boolean to true so that it won't be done again today
 			// person.getPreference().setTaskStatus(this, false);

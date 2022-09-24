@@ -367,7 +367,7 @@ public class EatDrink extends Task implements Serializable {
 			kitchen = getKitchenWithMeal(person);
 
 			if (kitchen == null) {
-				setPhaseToEatPreservedFoodOrDessert();
+				choosePreservedFoodOrDessert();
 				return time * .75;
 			}
 		}
@@ -381,17 +381,20 @@ public class EatDrink extends Task implements Serializable {
 			setPhase(EAT_MEAL);
 		}
 		else {
-			setPhaseToEatPreservedFoodOrDessert();
+			choosePreservedFoodOrDessert();
 			return time * .75;
 		}
 		
 		if (canWalk)
-			return remainingTime * .5;
+			return remainingTime * .75;
 
 		return remainingTime;
 	}
 
-	private void setPhaseToEatPreservedFoodOrDessert() {
+	/**
+	 * Chooses either preserved food or dessert randomly
+	 */
+	private void choosePreservedFoodOrDessert() {
 		int rand = RandomUtil.getRandomInt(5);
 		if (rand == 0)
 			setPhase(EAT_DESSERT);
@@ -492,10 +495,6 @@ public class EatDrink extends Task implements Serializable {
 		if ((totalEatingTime + eatingTime) >= eatingDuration) {
 			eatingTime = eatingDuration - totalEatingTime;
 		}
-
-//		if (eatingTime <= 0) {
-//			setDuration(getDuration() + 5);
-//		}
 		
 		if (eatingTime > 0 && cookedMeal != null) {
 			String s = Msg.getString("Task.description.eatDrink.cooked.eating.detail", cookedMeal.getName());
@@ -517,18 +516,7 @@ public class EatDrink extends Task implements Serializable {
 
 		} else {
 			// Eat preserved food if available
-			double proportion = eatPreservedFood(eatingTime);
-
-			// If not enough preserved food available, change to dessert phase.
-			if (proportion == 0.0) {
-				setPhase(PICK_UP_DESSERT);
-				return remainingTime;
-			}
-			else {
-				// Report eating preserved food.
-				setDescription(Msg.getString("Task.description.eatDrink.preserved")); //$NON-NLS-1$
-				return remainingTime;
-			}
+			setPhase(EAT_PRESERVED_FOOD);
 		}
 
 		return remainingTime;

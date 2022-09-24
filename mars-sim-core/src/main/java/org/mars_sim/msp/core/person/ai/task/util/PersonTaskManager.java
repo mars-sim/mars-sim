@@ -138,7 +138,6 @@ public class PersonTaskManager extends TaskManager {
 			shiftDesc = "NonDuty";
 		}
 
-
 		// Create new taskProbCache
 		TaskCache newCache = new TaskCache();
 

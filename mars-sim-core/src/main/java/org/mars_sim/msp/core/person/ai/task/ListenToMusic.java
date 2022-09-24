@@ -68,7 +68,7 @@ implements Serializable {
 		int millisols = Simulation.instance().getMasterClock().getMarsClock().getMillisolInt();
         boolean isShiftHour = person.getTaskSchedule().isShiftHour(millisols);
 		if (isShiftHour) {
-		    setDuration(this.getDuration()/4D);
+		    setDuration(getDuration()/4D);
 		}
 
 		// If person is in a settlement, try to find a place to relax.	
