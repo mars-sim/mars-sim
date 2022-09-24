@@ -508,7 +508,8 @@ public class Malfunction implements Serializable {
 	}
 
 	/**
-	 * A worker is not longer contributing
+	 * Leaves the position as a repair. THis worker is not longer contributing.
+	 * 
 	 * @param required
 	 * @param name
 	 */
@@ -520,7 +521,7 @@ public class Malfunction implements Serializable {
 	}
 
 	/**
-	 * Gets the name of the person who spent most time repairing this malfunction
+	 * Gets the name of the person who spent most time repairing this malfunction.
 	 *
 	 * @return the name of the person
 	 */

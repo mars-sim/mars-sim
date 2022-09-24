@@ -229,10 +229,7 @@ public class RepairInsideMalfunction extends Task implements Repair, Serializabl
 		else {
 			logger.log(worker, Level.INFO, 10_000, "Parts for repairing malfunction '" + malfunction + "' NOT available from " + containerUnit.getName() + ".");
 		}
-
-		// Add work to malfunction.
-//		double workTimeLeft = malfunction.addWorkTime(MalfunctionRepairWork.INSIDE, workTime, worker.getName());
-
+		
 		// Add experience
 		addExperience(time);
 

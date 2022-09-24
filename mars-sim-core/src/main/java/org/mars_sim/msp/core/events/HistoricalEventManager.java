@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * HistoricalEventManager.java
- * @date 2021-12-02
+ * @date 2022-09-24
  * @author Barry Evans
  */
 
@@ -47,7 +47,8 @@ public class HistoricalEventManager implements Serializable {
 	// The following list cannot be static since it needs to be serialized
 	private List<SimpleEvent> eventsRegistry;
 
-	// The following 4 list cannot be static since they need to be serialized
+	// The following lists cannot be static since they need to be serialized
+	private List<Object> sourceList;
 	private List<String> whatList;
 	private List<String> whileDoingList;
 	private List<String> whoList;
@@ -67,6 +68,7 @@ public class HistoricalEventManager implements Serializable {
 	}
 
 	private void initMaps() {
+		sourceList = new CopyOnWriteArrayList<>();
 		whatList = new CopyOnWriteArrayList<>();
 		whileDoingList = new CopyOnWriteArrayList<>();
 		whoList = new CopyOnWriteArrayList<>();
@@ -120,6 +122,7 @@ public class HistoricalEventManager implements Serializable {
 			for (HistoricalEvent e : lastEvents) {
 				if (e.getType() == newEvent.getType()
 						&& e.getCategory() == newEvent.getCategory()
+						&& e.getSource().equals(newEvent.getSource())
 						&& e.getWhatCause().equals(newEvent.getWhatCause())
 						&& e.getWhileDoing().equals(newEvent.getWhileDoing())
 						&& e.getWho().equals(newEvent.getWho())
@@ -195,6 +198,7 @@ public class HistoricalEventManager implements Serializable {
 		float millisols = (float) (event.getTimestamp().getMillisol());
 		byte cat = (byte) (event.getCategory().ordinal());
 		byte type = (byte) (event.getType().ordinal());
+		short source = (short) (getID(sourceList, event.getSource()));
 		short what = (short) (getID(whatList, event.getWhatCause()));
 		short whileDoing = (short) (getID(whileDoingList, event.getWhileDoing()));
 		short who = (short) (getID(whoList, event.getWho()));
@@ -202,7 +206,7 @@ public class HistoricalEventManager implements Serializable {
 		short loc1 = (short) (getID(loc1List, event.getLocation1()));
 		short id = (short) CollectionUtils.findSettlementID(event.getAssociatedSettlement());
 
-		SimpleEvent se = new SimpleEvent(missionSol, millisols, cat, type, what, whileDoing, who, loc0, loc1, id);
+		SimpleEvent se = new SimpleEvent(missionSol, millisols, cat, type, source, what, whileDoing, who, loc0, loc1, id);
 		eventsRegistry.add(0, se);
 		return se;
 	}
@@ -217,6 +221,20 @@ public class HistoricalEventManager implements Serializable {
 		}
 	}
 
+	public int getID(List<Object> list, Object o) {
+		if (list.contains(o)) {
+			return list.indexOf(o);
+		} else {
+			int size = list.size();
+			list.add(o);
+			return size;
+		}
+	}
+	
+	public Object getSource(int id) {
+		return sourceList.get(id);
+	}
+	
 	public String getWhat(int id) {
 		return whatList.get(id);
 	}

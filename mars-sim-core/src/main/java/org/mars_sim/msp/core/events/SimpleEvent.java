@@ -23,6 +23,7 @@ public class SimpleEvent implements Serializable {
 	private float msol;
 	private byte cat;
 	private byte type;
+	private short source;
 	private short what;
 	private short whileDoing;
 	private short who;
@@ -33,12 +34,13 @@ public class SimpleEvent implements Serializable {
 
 	private DecimalFormat df = new DecimalFormat("000.000");
 
-	public SimpleEvent(short missionSol, float msol, byte cat, byte type, short what, short whileDoing, short who, short loc0,
+	public SimpleEvent(short missionSol, float msol, byte cat, byte type, short source, short what, short whileDoing, short who, short loc0,
 			short loc1, short settlementID) {
 		this.missionSol = missionSol;
 		this.msol = msol;
 		this.cat = cat;
 		this.type = type;
+		this.source = source;
 		this.what = what;
 		this.whileDoing = whileDoing;
 		this.who = who;
@@ -77,6 +79,10 @@ public class SimpleEvent implements Serializable {
 
 	public byte getType() {
 		return type;
+	}
+	
+	public short getSource() {
+		return source;
 	}
 
 	public short getWhat() {

@@ -961,7 +961,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		chance *= entity.getMalfunctionManager().getWearConditionAccidentModifier();
 
 		if (RandomUtil.lessThanRandPercent(chance * time)) {
-			entity.getMalfunctionManager().createASeriesOfMalfunctions(location, worker);
+			entity.getMalfunctionManager().createASeriesOfMalfunctions(location, (Unit)worker);
 		}
 	}
 

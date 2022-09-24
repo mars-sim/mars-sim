@@ -1137,7 +1137,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 					// Simulate the meteorite impact as a malfunction event for now
 					Malfunction mal = malfunctionManager.triggerMalfunction(MalfunctionFactory
 							.getMalfunctionByName(MalfunctionFactory.METEORITE_IMPACT_DAMAGE),
-							true, null);
+							true, this);
 
 					logger.log(this, Level.INFO, 0, mal.getName() + " just occurred.");
 					logger.log(this, Level.INFO, 0, "EventType: " + mal.getMalfunctionMeta().getName() + ".");
@@ -1176,17 +1176,16 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 								logger.log(this, Level.WARNING, 0, victimName + " was traumatized by the meteorite impact");
 
 						}
-					}
-				}
-				else {
+					} // loop for persons
+
 					// If it's not breached, how to record the damage
 					logger.log(this, Level.INFO, 0, "Meteorite Impact event observed but damage not detected.");
 
 					HistoricalEvent hEvent = new HazardEvent(
 							EventType.HAZARD_METEORITE_IMPACT,
 							getAssociatedSettlement(),
-							"Meteorite Hit",
-							"None",
+							"Meteorite",
+							"Normal Ops",
 							getNickName(), 
 							getLocationTag().getImmediateLocation(),
 							getLocationTag().getLocale(),

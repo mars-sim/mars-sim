@@ -49,12 +49,14 @@ public abstract class HistoricalEvent implements Serializable {
 	 * Construct an event with the appropriate information. The time is not defined
 	 * until the event is registered with the Event Manager.
 	 * 
-	 * @param category    {@link HistoricalEventCategory} Category of event.
-	 * @param type        {@link EventType} Type of event.
-	 * @param whatCause   The cause for this event
-	 * @param whoAffected Who is being primarily affected by this event.
-	 * @param location0   the building/vehicle where it occurs
-	 * @param location1   the settlement/coordinate where it occurs
+	 * @param category		{@link HistoricalEventCategory} Category of event
+	 * @param type			{@link EventType} Type of event
+	 * @param source		The source for this event
+	 * @param whatCause		The cause for this event
+	 * @param whileDoing	during or While doing what
+	 * @param whoAffected	Who is being primarily affected by this event
+	 * @param location0		the building/vehicle where it occurs
+	 * @param location1		the settlement/coordinate where it occurs
 	 * @see org.mars_sim.msp.core.events.HistoricalEventManager#registerNewEvent
 	 */
 	public HistoricalEvent(HistoricalEventCategory category, EventType type, Object source, String whatCause,
@@ -62,7 +64,7 @@ public abstract class HistoricalEvent implements Serializable {
 		this.category = category;
 		this.type = type;
 		this.source = source;
-		this.whatCause = whatCause;
+//		this.whatCause = whatCause;
 		this.whileDoing = whileDoing;
 		this.who = whoAffected;
 		this.location0 = location0;
@@ -78,7 +80,7 @@ public abstract class HistoricalEvent implements Serializable {
 	void setTimestamp(MarsClock timestamp) {
 		this.timestamp = timestamp;
 	}
-
+	
 	/**
 	 * Get the cause.
 	 * 
@@ -159,7 +161,7 @@ public abstract class HistoricalEvent implements Serializable {
 	public Object getSource() {
 		return source;
 	}
-
+	
 	/**
 	 * Gets the category of the event.
 	 * 

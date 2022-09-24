@@ -64,7 +64,7 @@ public class MalfunctionCreateCommand extends AbstractUnitCommand {
 
 		MalfunctionMeta malfunction = relatedMalfunctions.get(choice);
 
-		malfunctionManager.triggerMalfunction(malfunction, true, null);
+		malfunctionManager.triggerMalfunction(malfunction, true, source);
 
 		context.println(malfunctionManager.getUnit().getName() + " just had '" 
 				+ malfunction.getName() + "'");

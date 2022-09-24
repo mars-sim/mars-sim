@@ -23,6 +23,7 @@ import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.equipment.ResourceHolder;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
@@ -40,6 +41,7 @@ import org.mars_sim.msp.core.resource.MaintenanceScope;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.PartConfig;
 import org.mars_sim.msp.core.resource.ResourceUtil;
+import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.ClockPulse;
@@ -309,7 +311,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 *
 	 * @param actor
 	 */
-	private boolean selectMalfunction(Worker actor) {
+	private boolean selectMalfunction(Unit actor) {
 		boolean result = false;
 		// Clones a malfunction and determines repair parts
 		MalfunctionMeta malfunction = factory.pickAMalfunction(scopes);
@@ -328,7 +330,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 * @param registerEvent
 	 * @param actor
 	 */
-	public Malfunction triggerMalfunction(MalfunctionMeta m, boolean registerEvent, Worker actor) {
+	public Malfunction triggerMalfunction(MalfunctionMeta m, boolean registerEvent, Unit actor) {
 		Malfunction malfunction = new Malfunction(factory.getNewIncidentNum(), m, supportsInside);
 
 		malfunctions.add(malfunction);
@@ -442,7 +444,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 * @param malfunction
 	 * @param actor
 	 */
-	private void registerAMalfunction(Malfunction malfunction, Worker actor) {
+	private void registerAMalfunction(Malfunction malfunction, Unit actor) {
 		String malfunctionName = malfunction.getName();
 
 		Settlement settlement = entity.getAssociatedSettlement();
@@ -450,35 +452,50 @@ public class MalfunctionManager implements Serializable, Temporal {
 		String loc1 = LocationFormat.getLocationDescription(entity);
 		EventType eventType = EventType.MALFUNCTION_PARTS_FAILURE;
 
-		String offender = "None";
-		String task = "N/A";
-		// Note: may add lack of maintenance as actor ?!
-		
+		String whoAffected = "None";
+		String whileDoing = "N/A";
+	
 		if (actor != null) {
-			task = actor.getTaskDescription();
-			offender = actor.getName();
 
-			if (actor instanceof Person) {
+			if (actor.getUnitType() == UnitType.PERSON) {
 				eventType = EventType.MALFUNCTION_HUMAN_FACTORS;
+				whileDoing = ((Person)actor).getTaskDescription();
+				whoAffected = actor.getName();
+			}
+			else if (actor.getUnitType() == UnitType.ROBOT) {
+				eventType = EventType.MALFUNCTION_PROGRAMMING_ERROR;
+				whileDoing = ((Robot)actor).getTaskDescription();
+				whoAffected = actor.getName();
+			}
+			else if (actor.getUnitType() == UnitType.BUILDING) {
+				if (malfunction.getMalfunctionMeta().getName().contains(MalfunctionFactory.METEORITE_IMPACT_DAMAGE)) {
+					eventType = EventType.HAZARD_METEORITE_IMPACT;
+					whileDoing = "Normal Ops";
+					whoAffected = actor.getName();
+				}
+				else {
+					eventType = EventType.MALFUNCTION_PARTS_FAILURE;
+					whileDoing = "Normal Ops";
+					whoAffected = actor.getName();
+				}
 			}
 			else {
-				eventType = EventType.MALFUNCTION_PROGRAMMING_ERROR;
+				eventType = EventType.MALFUNCTION_PARTS_FAILURE;
+				whileDoing = "Normal Ops";
+				whoAffected = actor.getName();
 			}
 		}
 
-		// Meteorite override the event type
-		if (malfunction.getMalfunctionMeta().getName().contains(MalfunctionFactory.METEORITE_IMPACT_DAMAGE)) {
-			eventType = EventType.MALFUNCTION_ACT_OF_GOD;
-		}
-
-		HistoricalEvent newEvent = new MalfunctionEvent(eventType,
-								malfunction, malfunctionName, task, offender, loc0, loc1, settlement.getName());
+		HistoricalEvent newEvent = new MalfunctionEvent(eventType, malfunction, 
+								malfunctionName, whileDoing, 
+								whoAffected, loc0, 
+								loc1, settlement.getName());
 		eventManager.registerNewEvent(newEvent);
 
 		logger.log(entity, Level.WARNING, 0, malfunction.getName()
 									+ CAUSE + eventType.getName()
 									+ (actor != null ? CAUSED_BY
-									+ offender + "." : "."));
+									+ whoAffected + "." : "."));
 	}
 
 	/**
@@ -497,7 +514,8 @@ public class MalfunctionManager implements Serializable, Temporal {
 			currentWearCondition = 0D;
 		currentWearCondition = currentWearLifeTime/baseWearLifeTime * 100D;
 
-		if (pulse.getMarsTime().getMillisolInt() % 3 == 0) {
+		if (pulse.isNewMSol()
+				&& pulse.getMarsTime().getMillisolInt() % 3 == 0) {
 			double maintFactor = effectiveTimeSinceLastMaintenance * MALFUNCTION_FACTOR;
 			double wearFactor = (100 - currentWearCondition) * WEAR_MALFUNCTION_FACTOR;
 			double malfunctionChance = time * maintFactor * wearFactor;
@@ -511,7 +529,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 //						+ Math.round(currentWearCondition*100.0)/100.0 + " %.");
 				// Note: call selectMalfunction is just checking for the possibility 
 				// of having malfunction and doesn't necessarily result in one
-				selectMalfunction(null);
+				selectMalfunction((Unit)entity);
 			}
 
 			// FUTURE : how to connect maintenance to field reliability statistics
@@ -590,7 +608,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * Checks if any malfunctions have been fixed
+	 * Checks if any malfunctions have been fixed.
 	 *
 	 * @param time
 	 */
@@ -718,13 +736,13 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 * @param location the place of accident
 	 * @param r the Worker who triggers the malfunction
 	 */
-	public void createASeriesOfMalfunctions(String location, Worker r) {
+	public void createASeriesOfMalfunctions(String location, Unit actor) {
 		int nervousness = SCORE_DEFAULT;
-		if (r instanceof Person) {
-			Person p = (Person) r;
+		if (actor instanceof Person) {
+			Person p = (Person) actor;
 			nervousness = p.getMind().getTraitManager().getPersonalityTrait(PersonalityTraitType.NEUROTICISM);
 		}
-		determineNumOfMalfunctions(location, nervousness, r);
+		determineNumOfMalfunctions(location, nervousness, actor);
 	}
 
 	/**
@@ -734,7 +752,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 * @param s     the place of accident
 	 * @param actor the person/robot who triggers the malfunction
 	 */
-	private void determineNumOfMalfunctions(String location, int score, Worker actor) {
+	private void determineNumOfMalfunctions(String location, int score, Unit actor) {
 		// Multiple malfunctions may have occurred.
 		// 50% one malfunction, 25% two etc.
 		boolean hasMal = false;

@@ -45,13 +45,14 @@ public class EventTableModel extends AbstractTableModel
 	private static final int TIMESTAMP = 0;
 	private static final int CATEGORY = 1;
 	private static final int TYPE = 2;
-	private static final int CAUSE = 3;
-	private static final int WHILE = 4;
-	private static final int WHO = 5;
-	private static final int LOCATION0 = 6;
-	private static final int LOCATION1 = 7;
+	private static final int SOURCE = 3;
+	private static final int CAUSE = 4;
+	private static final int WHILE = 5;
+	private static final int WHO = 6;
+	private static final int LOCATION0 = 7;
+	private static final int LOCATION1 = 8;
 
-	private static final int COLUMNCOUNT = 8;
+	private static final int COLUMNCOUNT = 9;
 
 	/** Names of the displayed columns. */
 	static private String columnNames[];
@@ -67,6 +68,8 @@ public class EventTableModel extends AbstractTableModel
 		columnTypes[CATEGORY] = String.class;
 		columnNames[TYPE] = Msg.getString("EventTableModel.column.eventType"); //$NON-NLS-1$
 		columnTypes[TYPE] = String.class;
+		columnNames[SOURCE] = Msg.getString("EventTableModel.column.source"); //$NON-NLS-1$
+		columnTypes[SOURCE] = Object.class;		
 		columnNames[CAUSE] = Msg.getString("EventTableModel.column.cause"); //$NON-NLS-1$
 		columnTypes[CAUSE] = String.class;
 		columnNames[WHILE] = Msg.getString("EventTableModel.column.while"); //$NON-NLS-1$
@@ -309,10 +312,15 @@ public class EventTableModel extends AbstractTableModel
 				}
 					break;
 
+				case SOURCE: {
+					result = eventManager.getSource(event.getSource());
+				}
+					break;
+					
 				case CAUSE: {
 					result = eventManager.getWhat(event.getWhat());
 				}
-					break;
+					break;	
 
 				case WHILE: {
 					result = eventManager.getWhileDoing(event.getWhileDoing());
