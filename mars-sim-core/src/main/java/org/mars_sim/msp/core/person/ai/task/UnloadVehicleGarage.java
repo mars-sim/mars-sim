@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * UnloadVehicleGarage.java
- * @date 2021-12-05
+ * @date 2022-09-24
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -354,6 +354,8 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 
 				if (vehicleMission.isVehicleUnloadableHere(settlement)) {
 					Vehicle vehicle = vehicleMission.getVehicle();
+					if (vehicle == null)
+						continue;
 					if (vehicle instanceof Crewable) {
 						Crewable c = (Crewable)vehicle;
 						if (c.getCrewNum() > 0 || c.getRobotCrewNum() > 0) {
@@ -416,7 +418,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 	private VehicleMission getMissionNeedingUnloading() {
 
 		VehicleMission result = null;
-		List<Mission> unloadingMissions = getAllMissionsNeedingUnloading(worker.getSettlement(), true);
+		List<Mission> unloadingMissions = getAllMissionsNeedingUnloading(settlement, true);
 
 		if (!unloadingMissions.isEmpty()) {
 			int index = RandomUtil.getRandomInt(unloadingMissions.size() - 1);

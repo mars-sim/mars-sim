@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * LoadVehicleGarageMeta.java
- * @date 2021-12-22
+ * @date 2022-09-24
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
+import org.mars_sim.msp.core.structure.Settlement;
 
 /**
  * Meta task for the LoadVehicleGarage task.
@@ -51,14 +52,16 @@ public class LoadVehicleGarageMeta extends MetaTask {
 
         double result = 0D;
 
-        if (person.isInSettlement()) {
+        Settlement settlement = person.getSettlement();
+        
+        if (settlement != null) {
         	
             if (!person.getPhysicalCondition().isFitByLevel(1000, 70, 1000))
             	return 0;
             
             // Check all vehicle missions occurring at the settlement.
             try {
-                List<Mission> missions = LoadVehicleGarage.getAllMissionsNeedingLoading(person.getSettlement(), true);
+                List<Mission> missions = LoadVehicleGarage.getAllMissionsNeedingLoading(settlement, true);
                 int num = missions.size();
                 if (num == 0)
                 	return 0;

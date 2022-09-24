@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * LoadVehicleGarage.java
- * @date 2022-07-05
+ * @date 2022-09-24
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -188,8 +188,11 @@ public class LoadVehicleGarage extends Task implements Serializable {
 				// Must have a local Loading Plan that is not complete
 				if ((plan != null) && plan.getSettlement().equals(settlement) && !plan.isCompleted()) {
 					Vehicle vehicle = vehicleMission.getVehicle();
-					if (!addToGarage || settlement.getBuildingManager().addToGarage(vehicle)) {
-						result.add(vehicleMission);
+					if (vehicle == null)
+						continue;
+					if ((addToGarage && settlement.getBuildingManager().addToGarage(vehicle)
+						|| !addToGarage && !settlement.getBuildingManager().isInGarage(vehicle))) {
+							result.add(vehicleMission);
 					}
 				}
 			}
