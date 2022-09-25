@@ -114,20 +114,20 @@ public class RadiationExposure implements Serializable, Temporal {
 //	public static final double BASELINE_PERCENT = 72.5; // [in %] calculated
 
 	/** 
-	 * Galactic cosmic rays (GCRs) events. Based on Ref_A's DAT data, 
-	 * ~25% of the GCR for the one day duration of the event. 
+	 * The percentage of probability per millisol of having a Galactic cosmic rays (GCRs) event. 
+	 * <br>Note: based on Ref_A's DAT data, there's a ~25% of the GCR for the one day duration of the event. 
 	 */
-	public static final double GCR_PERCENT = 25; // [in %] based on DAT
+	public static final double GCR_PERCENT = 25.0/1000; // [in %] based on DAT
 
 	/** 
-	 * Percent of Solar energetic particles (SEPs) events [in %] (arbitrary). 
+	 * The percentage of probability per millisol of having of Solar energetic particles (SEPs) event. 
 	 * <br>Note: it Includes Coronal Mass Ejection and Solar Flare. The astronauts 
 	 * <br>should expect one SPE every 2 months on average and a total of 3 or 4 
 	 * <br>during their entire trip, with each one usually lasting not more than a
 	 * <br>couple of days. 
 	 * <br>Source : http://www.mars-one.com/faq/health-and-ethics/how-much-radiation-will-the-settlers-be-exposed-to. 
 	 */
-	public static final double SEP_PERCENT = 2.5; 
+	public static final double SEP_PERCENT = 2.5/1000; 
 	/** THe Baseline radiation dose per sol [in mSv] arbitrary. */
 	public static final double BASELINE_RAD_PER_SOL = .1;
 
@@ -174,6 +174,12 @@ public class RadiationExposure implements Serializable, Temporal {
 	 */
 	private static final int WHOLE_BODY_DOSE = 1000; 
 
+	private static final String BL_STRING = "Baseline";
+	private static final String GCR_STRING = "Galactic Comsic Radiation";
+	private static final String SEP_STRING = "Solar Energetic Particles ";
+	private static final String BFO_STRING = "Blood-Forming Organs";
+	private static final String OCULAR_STRING = "Ocular";
+	private static final String SKIN_STRING = "SKin";
 	private static final String EXPOSED_TO = "Exposed to ";
 	private static final String DOSE_OF_RAD = " mSv dose of radiation";
 	private static final String EVA_OPERATION = " during an EVA operation.";
@@ -188,7 +194,7 @@ public class RadiationExposure implements Serializable, Temporal {
 	/** Randomize dose at the start of the sim when a settler arrives on Mars. */
 	private double[][] dose;
 
-	private Map<RadiationEvent, Integer> eventMap = new ConcurrentHashMap<>();
+	private Map<Radiation, Integer> eventMap = new ConcurrentHashMap<>();
 
 	private Person person;
 
@@ -201,7 +207,7 @@ public class RadiationExposure implements Serializable, Temporal {
 		dose = new double[3][3];
 	}
 
-	public Map<RadiationEvent, Integer> getRadiationEventMap() {
+	public Map<Radiation, Integer> getRadiationEventMap() {
 		return eventMap;
 	}
 
@@ -212,7 +218,16 @@ public class RadiationExposure implements Serializable, Temporal {
 	 * @param amount
 	 * @see checkForRadiation() in EVAOperation and WalkOutside
 	 */
-	public RadiationEvent addDose(int bodyRegion, double amount) {
+	public Radiation addDose(RadiationType radiationType, BodyRegionType bodyRegionType, double amount) {
+		int bodyRegion = -1;
+
+		if (bodyRegionType == BodyRegionType.BFO)
+			bodyRegion = 0;
+		else if (bodyRegionType == BodyRegionType.OCULAR)
+			bodyRegion = 1;
+		else if (bodyRegionType == BodyRegionType.SKIN)
+			bodyRegion = 2;
+		
 		// Since amount is cumulative, need to carry over
 		dose[bodyRegion][THIRTY_DAY] = dose[bodyRegion][THIRTY_DAY] + amount;
 		dose[bodyRegion][ANNUAL] = dose[bodyRegion][ANNUAL] + amount;
@@ -220,18 +235,10 @@ public class RadiationExposure implements Serializable, Temporal {
 
 		BodyRegionType region = null;
 
-		if (bodyRegion == BFO)
-			region = BodyRegionType.BFO;
-		else if (bodyRegion == OCULAR)
-			region = BodyRegionType.OCULAR;
-		else if (bodyRegion == SKIN)
-			region = BodyRegionType.SKIN;
+		Radiation rad = new Radiation(radiationType, region, Math.round(amount * 10000.0) / 10000.0);
+		eventMap.put(rad, solCache);
 
-
-		RadiationEvent event = new RadiationEvent(region, Math.round(amount * 10000.0) / 10000.0);
-		eventMap.put(event, solCache);
-
-		return event;
+		return rad;
 
 	}
 
@@ -371,11 +378,11 @@ public class RadiationExposure implements Serializable, Temporal {
 		double dosage = 0;
 		BodyRegionType region = null;
 
-		Iterator<Map.Entry<RadiationEvent, Integer>> entries = eventMap.entrySet().iterator();
+		Iterator<Map.Entry<Radiation, Integer>> entries = eventMap.entrySet().iterator();
 
 		while (entries.hasNext()) {
-			Map.Entry<RadiationEvent, Integer> entry = entries.next();
-			RadiationEvent key = entry.getKey();
+			Map.Entry<Radiation, Integer> entry = entries.next();
+			Radiation key = entry.getKey();
 			Integer value = entry.getValue();
 
 			if (solCache - (int) value == interval + 1) {
@@ -415,11 +422,16 @@ public class RadiationExposure implements Serializable, Temporal {
 	 * @return true if radiation is detected
 	 */
 	public boolean isRadiationDetected(double time) {
+
 		
 		// Check every RADIATION_CHECK_FREQ (in millisols)
 		if (masterClock.getClockPulse().isNewMSol() 
 			&& marsClock.getMillisolInt() % RadiationExposure.RADIATION_CHECK_FREQ == 0) {
 
+			RadiationType radiationType = null;
+			BodyRegionType bodyRegionType = null;
+			Radiation rad = null;
+			
 			double totalExposure = 0;
 			double exposure = 0;
 			double shield_factor = 0;
@@ -428,70 +440,81 @@ public class RadiationExposure implements Serializable, Temporal {
 			double sep = 0;
 			double gcr = 0;
 
-			// TODO: account for the effect of atmosphere pressure on radiation dosage as
+			// Future: account for the effect of atmosphere pressure on radiation dosage as
 			// shown by RAD data
 
-			// TODO: compute radiation if a person steps outside of a rover on a mission
+			// Future: compute radiation if a person steps outside of a rover on a mission
 			// somewhere on Mars
+			
 			boolean[] exposed = new boolean[]{false, false, false};
 
 			if (person.isOutside()) {
-				// if a person is outside
-				// TODO: how to make radiation more consistent/less random by coordinates/locale
-				// ?
+				// Future: how to make radiation more consistent/less random by coordinates/locale
+				
 				exposed = person.getAssociatedSettlement().getExposed();
 
 				if (exposed[1])
 					shield_factor = RandomUtil.getRandomDouble(1); // arbitrary
-				// NOTE: SPE may shield off GCR as shown in Curiosity's RAD data
-				// since GCR flux is modulated by solar activity. It DECREASES during solar
-				// activity maximum
-				// and INCREASES during solar activity minimum
+				// NOTE: SEP may shield off GCR as shown in Curiosity's RAD data
+				// since GCR flux is modulated by solar activity.
+				// It DECREASES during solar activity maximum and 
+				// INCREASES during solar activity minimum
 				else
 					shield_factor = 1; // arbitrary
 
-				List<RadiationEvent> eventMap = new ArrayList<>();
-				// Compute whether a baseline, GCR, or SEP event has occurred
-				for (int i = 0; i < 3; i++) {
-					if (exposed[i]) {
-						// each body region receive a random max dosage
-						for (int j = 0; j < 3; j++) {
-							double baselevel = 0;
-							if (exposed[2]) {
-								baselevel = 0.0; // somewhat arbitrary
-								sep += (baselevel + RandomUtil.getRandomInt(-1, 1)
-										* RandomUtil.getRandomDouble(SEP_RAD_PER_SOL * time / RADIATION_CHECK_FREQ)) // highly
-																														// unpredictable,
-																														// somewhat
-																														// arbitrary
-										* RandomUtil.getRandomDouble(SEP_SWING_FACTOR);
-							}
-							// for now, if SEP happens, ignore GCR and Baseline
-							else if (exposed[1]) {
-								baselevel = GCR_RAD_PER_SOL * time / 100D;
-								gcr += baselevel + RandomUtil.getRandomInt(-1, 1) * RandomUtil
-										.getRandomDouble(shield_factor * GCR_RAD_SWING * time / RADIATION_CHECK_FREQ); // according
-																														// to
-																														// Curiosity
-																														// RAD's
-																														// data
+				int region = RandomUtil.getRandomInt(6);
+				if (region == 0 || region == 1)
+					bodyRegionType = BodyRegionType.BFO;
+				else if (region == 2)
+					bodyRegionType = BodyRegionType.OCULAR;
+				else
+					bodyRegionType = BodyRegionType.SKIN;
+				
+				List<Radiation> eventMap = new ArrayList<>();
+				
+				double baselevel = 0;
+				if (exposed[2]) {
+					radiationType = RadiationType.SEP;
 
-							}
-							// for now, if GCR happens, ignore Baseline
-							else if (exposed[0]) {
-								baselevel = BASELINE_RAD_PER_SOL * time / RADIATION_CHECK_FREQ;
-								baseline += baselevel
-										+ RandomUtil.getRandomInt(-1, 1) * RandomUtil.getRandomDouble(baselevel / 3D); // arbitrary
-							}
-
-							exposure = sep + gcr + baseline;
-							RadiationEvent event = addDose(j, exposure);
-							eventMap.add(event);
-
-							totalExposure += exposure;
-						}
-					}
+					baselevel = 0.0; 
+					// highly unpredictable, somewhat arbitrary
+					sep += (baselevel + RandomUtil.getRandomInt(-1, 1)
+							* RandomUtil.getRandomDouble(SEP_RAD_PER_SOL * time / RADIATION_CHECK_FREQ)) 
+							* RandomUtil.getRandomDouble(SEP_SWING_FACTOR);
+					if (sep > 0) {
+						rad = addDose(radiationType, bodyRegionType, exposure);
+						eventMap.add(rad);
+					}	
 				}
+				// for now, if SEP happens, ignore GCR and Baseline
+				else if (exposed[1]) {
+					baselevel = GCR_RAD_PER_SOL * time / 100D;
+					// according
+					// to
+					// Curiosity
+					// RAD's
+					// data
+					gcr += baselevel + RandomUtil.getRandomInt(-1, 1) * RandomUtil
+							.getRandomDouble(shield_factor * GCR_RAD_SWING * time / RADIATION_CHECK_FREQ); 
+					if (gcr > 0) {
+						rad = addDose(radiationType, bodyRegionType, exposure);
+						eventMap.add(rad);
+					}	
+				}
+				// for now, if GCR happens, ignore Baseline
+				else if (exposed[0]) {
+					baselevel = BASELINE_RAD_PER_SOL * time / RADIATION_CHECK_FREQ;
+					// arbitrary
+					baseline += baselevel
+							+ RandomUtil.getRandomInt(-1, 1) * RandomUtil.getRandomDouble(baselevel / 3D); 
+					if (baseline > 0) {
+						rad = addDose(radiationType, bodyRegionType, exposure);
+						eventMap.add(rad);
+					}	
+				}
+
+				exposure = sep + gcr + baseline;
+				totalExposure += exposure;
 			}
 
 			if (totalExposure > 0) {
@@ -511,12 +534,13 @@ public class RadiationExposure implements Serializable, Temporal {
 				}
 
 				HistoricalEvent hEvent = new HazardEvent(EventType.HAZARD_RADIATION_EXPOSURE,
-						eventMap,
-						Math.round(totalExposure * 10000.0) / 10000.0 + DOSE_OF_RAD,
+						rad,
+						rad.toString(),
 						person.getTaskDescription(),
-						person.getName(), person.getLocationTag().getImmediateLocation(),
-						person.getLocationTag().getLocale(),
-						person.getAssociatedSettlement().getName()
+						person.getName(), 
+						person.getLocationTag().getImmediateLocation(),
+						person.getAssociatedSettlement().getName(),
+						person.getCoordinates().getCoordinateString()
 						);
 				Simulation.instance().getEventManager().registerNewEvent(hEvent);
 
