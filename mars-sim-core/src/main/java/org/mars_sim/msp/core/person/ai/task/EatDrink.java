@@ -39,6 +39,7 @@ import org.mars_sim.msp.core.structure.building.function.cooking.PreparedDessert
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.tool.RandomUtil;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * The EatDrink class is a task for eating a meal. The duration of the task is 40
@@ -193,12 +194,47 @@ public class EatDrink extends Task implements Serializable {
 		}
 
 		else if (person.isInVehicle()) {
-			if (hungry && (foodAmount > 0 || desserts > 0)) {
-				food = true;
-			}
+			
+			if (UnitType.VEHICLE == container.getUnitType()) {
+				Vehicle vehicle = (Vehicle)container;
+				
+				if (vehicle.isInSettlement()) {
+					// How to make a person walk out of vehicle back to settlement 
+					// if hunger is >500 ?
+					
+					ResourceHolder rh = (ResourceHolder) vehicle.getSettlement();
+					foodAmount = rh.getAmountResourceStored(FOOD_ID);
+					waterAmount = rh.getAmountResourceStored(WATER_ID);
+					
+					if (hungry && (foodAmount > 0 || desserts > 0)) {
+						food = true;
+					}
 
-			if (thirsty && waterAmount > 0) {
-				water = true;
+					if (thirsty && waterAmount > 0) {
+						water = true;
+					}
+					
+					if (food || water) {
+						
+						// Check if there is a local dining building.
+			        	Building diningBuilding = getAvailableDiningBuilding(vehicle.getSettlement());
+			        	
+			        	if (diningBuilding != null) {
+			        		// Initiates a walking task to go back to the settlement
+			        		walkToDiningLoc(diningBuilding, false);
+			        	}
+					}
+				}
+			}
+			
+			else {
+				if (hungry && (foodAmount > 0 || desserts > 0)) {
+					food = true;
+				}
+
+				if (thirsty && waterAmount > 0) {
+					water = true;
+				}
 			}
 		}
 
@@ -226,6 +262,7 @@ public class EatDrink extends Task implements Serializable {
 		if (person.isInSettlement()) {
 
 			if (CookMeal.isMealTime(person, 0)) {
+				
 				if (meals > 0) {
 					Building diningBuilding = EatDrink.getAvailableDiningBuilding(person, false);
 					if (diningBuilding != null) {
@@ -233,6 +270,8 @@ public class EatDrink extends Task implements Serializable {
 						addPhase(LOOK_FOR_FOOD);
 						addPhase(EAT_MEAL);
 						setPhase(LOOK_FOR_FOOD);
+						
+						walkToDiningLoc(diningBuilding, false);
 					}
 
 					boolean want2Chat = true;
@@ -258,47 +297,53 @@ public class EatDrink extends Task implements Serializable {
 						hasNapkin = true;
 				}
 				
-				else if (foodAmount > 0) {
-					// Initialize task phase.
-					addPhase(LOOK_FOR_FOOD);
-					addPhase(EAT_PRESERVED_FOOD);
-					setPhase(LOOK_FOR_FOOD);
+				else {
+					checkFoodDessertAmount();
 				}
 			}
-			
-			else if (desserts > 0) {
-				// Initialize task phase.
-				addPhase(PICK_UP_DESSERT);
-				addPhase(EAT_DESSERT);
-				setPhase(LOOK_FOR_FOOD);
-			}
-
-			else if (foodAmount > 0) {
-				// Initialize task phase.
-				addPhase(LOOK_FOR_FOOD);
-				addPhase(EAT_PRESERVED_FOOD);
-				setPhase(LOOK_FOR_FOOD);
+			else {
+				checkFoodDessertAmount();
 			}
 		}
 
 		else if (person.isInVehicle()) {
 			
-			if (desserts > 0) {
-				// Initialize task phase.
+			checkFoodDessertAmount();
+		}
+	}
+
+	private void checkFoodDessertAmount() {
+		
+		if (foodAmount > 0 && desserts > 0) {
+			
+			int rand = RandomUtil.getRandomInt(5);
+			if (rand == 0) {
 				addPhase(PICK_UP_DESSERT);
 				addPhase(EAT_DESSERT);
 				setPhase(LOOK_FOR_FOOD);
 			}
-
-			if (foodAmount > 0) {
-				// Initialize task phase.
+			else {
 				addPhase(LOOK_FOR_FOOD);
 				addPhase(EAT_PRESERVED_FOOD);
 				setPhase(LOOK_FOR_FOOD);
 			}
 		}
-	}
+				
+		else if (desserts > 0) {
+			// Initialize task phase.
+			addPhase(PICK_UP_DESSERT);
+			addPhase(EAT_DESSERT);
+			setPhase(LOOK_FOR_FOOD);
+		}
 
+		else if (foodAmount > 0) {
+			// Initialize task phase.
+			addPhase(LOOK_FOR_FOOD);
+			addPhase(EAT_PRESERVED_FOOD);
+			setPhase(LOOK_FOR_FOOD);
+		}
+	}
+	
 	private void goForWater() {
 		// if water only
 		// Initialize task phase.
@@ -396,10 +441,14 @@ public class EatDrink extends Task implements Serializable {
 	 */
 	private void choosePreservedFoodOrDessert() {
 		int rand = RandomUtil.getRandomInt(5);
-		if (rand == 0)
+		if (rand == 0) {
+			addPhase(EAT_DESSERT);
 			setPhase(EAT_DESSERT);
-		else
+		}
+		else {
+			addPhase(EAT_PRESERVED_FOOD);
 			setPhase(EAT_PRESERVED_FOOD);
+		}
 	}
 
 	/**
@@ -1096,6 +1145,7 @@ public class EatDrink extends Task implements Serializable {
 	 * dining building is currently available.
 	 *
 	 * @param person the person
+	 * @param canChat
 	 * @return available dining building
 	 * @throws BuildingException if error finding dining building.
 	 */
@@ -1130,6 +1180,26 @@ public class EatDrink extends Task implements Serializable {
 		return b;
 	}
 
+	/**
+	 * Gets an available dining building in the settlement. Returns null if no
+	 * dining building is currently available.
+	 *
+	 * @param settlement the settlement
+	 * @return available dining building
+	 * @throws BuildingException if error finding dining building.
+	 */
+	public static Building getAvailableDiningBuilding(Settlement settlement) {
+		Building b = null;
+		BuildingManager manager = settlement.getBuildingManager();
+		List<Building> list0 = manager.getBuildings(FunctionType.DINING);
+		 if (!list0.isEmpty()) {
+			int rand = RandomUtil.getRandomInt(list0.size()-1);
+			b = list0.get(rand);
+		}
+
+		return b;
+	}
+	
 	/**
 	 * Gets a kitchen in the person's settlement that currently has cooked meals.
 	 *

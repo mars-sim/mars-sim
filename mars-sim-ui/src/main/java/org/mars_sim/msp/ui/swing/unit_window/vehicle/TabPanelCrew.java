@@ -240,9 +240,6 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 	 */
 	private class MemberTableModel extends AbstractTableModel implements UnitListener {
 
-		/** default serial id. */
-		private static final long serialVersionUID = 1L;
-
 		// Private members.
 		private Mission mission;
 		private List<Worker> members;
@@ -380,8 +377,8 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 		void updateMembers() {
 			if (mission != null) {
 //				clearMembers();
-				List<Worker> newList = new ArrayList<Worker>(mission.getMembers());
-				Collections.sort(newList, new Comparator<Worker>() {
+				List<Worker> newList = new ArrayList<>(mission.getMembers());
+				Collections.sort(newList, new Comparator<>() {
 					@Override
 					public int compare(Worker o1, Worker o2) {
 						return o1.getName().compareToIgnoreCase(o2.getName());
@@ -389,7 +386,7 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 				});
 
 				if (!members.equals(newList)) {
-					List<Integer> rows = new ArrayList<Integer>();
+					List<Integer> rows = new ArrayList<>();
 
 					for (Worker mm: members) {
 						if (!newList.contains(mm)) {

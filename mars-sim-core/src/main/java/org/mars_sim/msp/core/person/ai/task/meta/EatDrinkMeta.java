@@ -52,20 +52,13 @@ public class EatDrinkMeta extends MetaTask {
 			return 0;
 		}
 		
+		
 		double result = 0;
 		double foodAmount = 0;
 		double waterAmount = 0;
 
 		Unit container = person.getContainerUnit();
-		// Do not allow a person to eat the food in the vehicle 
-		// until after the vehicle has departed the settlement
-		// or else it will affect the amount of food available 
-		// for the mission
-		if (UnitType.VEHICLE == container.getUnitType()) {
-			Vehicle vehicle = (Vehicle)container;
-			if (vehicle.isInSettlement())
-				return 0;
-		}
+		Vehicle vehicle = null;
 		
 		if (container != null && container instanceof ResourceHolder) {
 			ResourceHolder rh = (ResourceHolder) container;
@@ -125,12 +118,38 @@ public class EatDrinkMeta extends MetaTask {
 		}
 
 		else if (person.isInVehicle()) {
-			if (hungry && (foodAmount > 0 || desserts > 0)) {
-				food = true;
-			}
+			// Future: how to prevent a person to eat food from the vehicle 
+			// before the mission embarking ? 
+			
+			// Note: it will affect the amount of food available 
+			// for the mission
+			
+			if (UnitType.VEHICLE == container.getUnitType()) {
+				vehicle = (Vehicle)container;
+				if (vehicle.isInSettlement()) {
+					// How to make a person walk out of vehicle back to settlement 
+					// if hunger is >500 ?
+					
+					ResourceHolder rh = (ResourceHolder) vehicle.getSettlement();
+					foodAmount = rh.getAmountResourceStored(FOOD_ID);
+					waterAmount = rh.getAmountResourceStored(WATER_ID);
+		
+					if (hungry && (foodAmount > 0 || desserts > 0)) {
+						food = true;
+					}
 
-			if (thirsty && waterAmount > 0) {
-				water = true;
+					else if (thirsty && waterAmount > 0) {
+						water = true;
+					}
+				}
+				
+				else if (hungry && (foodAmount > 0 || desserts > 0)) {
+					food = true;
+				}
+
+				else if (thirsty && waterAmount > 0) {
+					water = true;
+				}
 			}
 		}
 
@@ -153,8 +172,8 @@ public class EatDrinkMeta extends MetaTask {
 
 				if (energy < 2525)
 					h0 += (2525 - energy) / 30D;
-
-				if (person.isInSettlement()) {
+				
+				if (person.isInSettlement() || vehicle.isInSettlement()) {
 
 					// Check if there is a local dining building.
 					Building diningBuilding = EatDrink.getAvailableDiningBuilding(person, false);

@@ -83,6 +83,7 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
+import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
@@ -917,6 +918,34 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 		}
 	}
 
+	public MissionWindow getMissionWindow() {
+		return missionWindow;
+	}
+
+	public void destroy() {
+		designationLabel = null;
+		typeLabel = null;
+		leaderLabel = null;
+		phaseLabel = null;
+		missionStatusLabel = null;
+		settlementLabel = null;
+		vehicleStatusLabel = null;
+		speedLabel = null;
+		distanceNextNavLabel = null;
+		traveledLabel = null;
+		centerMapButton = null;
+		vehicleButton = null;
+		formatter = null;
+		customPanelLayout = null;
+		missionCustomPane = null;
+		missionCache = null;
+		currentVehicle = null;
+		missionWindow = null;
+		desktop = null;
+		memberTable = null;
+		memberTableModel = null;
+	}
+	
 	/**
 	 * Gets the main desktop.
 	 *
@@ -1027,6 +1056,7 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 		}
 	}
 
+	
 	/**
 	 * Adapter for the mission log
 	 */
@@ -1107,9 +1137,6 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 	 */
 	private class MemberTableModel extends AbstractTableModel implements UnitListener {
 
-		/** default serial id. */
-		private static final long serialVersionUID = 1L;
-
 		// Private members.
 		private Mission mission;
 		private List<Worker> members;
@@ -1121,7 +1148,7 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 			mission = null;
 			members = new ArrayList<>();
 		}
-
+		
 		/**
 		 * Gets the row count.
 		 *
@@ -1137,7 +1164,7 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 		 * @return column count.
 		 */
 		public int getColumnCount() {
-			return 2;
+			return 3;
 		}
 
 		/**
@@ -1152,7 +1179,7 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 			else if (columnIndex == 1)
 				return Msg.getString("MainDetailPanel.column.task"); //$NON-NLS-1$
 			else
-				return Msg.getString("unknown"); //$NON-NLS-1$
+				return "Boarded";
 		}
 
 		/**
@@ -1168,12 +1195,35 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 				Worker member = (Worker) array[row];
 				if (column == 0)
 					return member.getName();
-				else
+				else if (column == 1)
 					return member.getTaskDescription();
+				else {
+					if (boarded(member))
+						return "Y";
+					else
+						return "N";
+				}
 			} else
 				return Msg.getString("unknown"); //$NON-NLS-1$
 		}
 
+		/**
+		 * Has this member boarded the vehicle ?
+		 *
+		 * @param member
+		 * @return
+		 */
+		boolean boarded(Worker member) {
+			if (mission instanceof VehicleMission) {			
+				if (member.getUnitType() == UnitType.PERSON) {
+					Rover r = (Rover)(((VehicleMission)mission).getVehicle());
+					if (r != null && r.isCrewmember((Person)member))
+						return true;
+				}
+			}
+			return false;
+		}
+		
 		/**
 		 * Sets the mission for this table model.
 		 *
@@ -1301,33 +1351,5 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 				}
 			}
 		}
-	}
-
-	public MissionWindow getMissionWindow() {
-		return missionWindow;
-	}
-
-	public void destroy() {
-		designationLabel = null;
-		typeLabel = null;
-		leaderLabel = null;
-		phaseLabel = null;
-		missionStatusLabel = null;
-		settlementLabel = null;
-		vehicleStatusLabel = null;
-		speedLabel = null;
-		distanceNextNavLabel = null;
-		traveledLabel = null;
-		centerMapButton = null;
-		vehicleButton = null;
-		formatter = null;
-		customPanelLayout = null;
-		missionCustomPane = null;
-		missionCache = null;
-		currentVehicle = null;
-		missionWindow = null;
-		desktop = null;
-		memberTable = null;
-		memberTableModel = null;
 	}
 }

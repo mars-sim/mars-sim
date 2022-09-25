@@ -134,7 +134,7 @@ public class BotTaskManager extends TaskManager {
 		// If robot is low power then can only charge
 		if (robot.getSystemCondition().isLowPower()) {
 
-			logger.info(robot, "Forcing charge due to low power");
+			logger.info(robot, "Forcing to be recharged due to low power.");
 			return getChargeTaskMap();
 		}
 		

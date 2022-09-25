@@ -115,12 +115,20 @@ class AmountResourceGood extends Good {
 	private static final double REGOLITH_DEMAND_FACTOR = .5;
 	private static final double ORE_DEMAND_FACTOR = .15;
 	private static final double MINERAL_DEMAND_FACTOR = .15;
-	private static final double POLYETHYLENE_DEMAND_FACTOR = 0.05;
+	
+	private static final double ETHYLENE_DEMAND_FACTOR = 6;
+	private static final double POLYETHYLENE_DEMAND_FACTOR = 40;
+	
 	private static final double POLYESTHER_RESIN_DEMAND_FACTOR = 0.05;
+	private static final double POLYCARBONATE_RESIN_DEMAND_FACTOR = 20;
+	
 	private static final double STYRENE_DEMAND_FACTOR = .1;
 	private static final double POLYSTYRENE_DEMAND_FACTOR = 2.5;
-	private static final double CHEMICAL_DEMAND_FACTOR = 5;
-	private static final double COMPOUND_DEMAND_FACTOR = 5;
+	
+	private static final double POLYURETHANE_DEMAND_FACTOR = 100;
+	
+	private static final double CHEMICAL_DEMAND_FACTOR = 10;
+	private static final double COMPOUND_DEMAND_FACTOR = 10;
 	private static final double ELEMENT_DEMAND_FACTOR = 3;
 	private static final double ROCK_DEMAND_FACTOR = 1;
 	private static final double GEMSTONE_DEMAND_FACTOR = 100;
@@ -134,6 +142,9 @@ class AmountResourceGood extends Good {
 	private static final double ANIMAL_DEMAND_FACTOR = 10;
 	private static final double CROP_DEMAND_FACTOR = 10;
 	private static final double DERIVED_DEMAND_FACTOR = 5;
+	
+	private static final double METHANOL_DEMAND_FACTOR = 30;
+	private static final double METHANE_DEMAND_FACTOR = .1;
 	private static final double SAND_DEMAND_FACTOR = .005;
 	private static final double ICE_DEMAND_FACTOR = .05;
 	private static final double CO_DEMAND_FACTOR = .1;
@@ -459,12 +470,18 @@ class AmountResourceGood extends Good {
 			demand = CHEMICAL_DEMAND_FACTOR;	
 			if (ar.getName().equalsIgnoreCase("polyethylene"))
 				demand *= POLYETHYLENE_DEMAND_FACTOR;
+			else if (ar.getName().equalsIgnoreCase("ethylene"))
+				demand *= ETHYLENE_DEMAND_FACTOR;
 			else if (ar.getName().equalsIgnoreCase("polyester resin"))
 				demand *= POLYESTHER_RESIN_DEMAND_FACTOR;
+			else if (ar.getName().equalsIgnoreCase("polycarbonate resin"))
+				demand *= POLYCARBONATE_RESIN_DEMAND_FACTOR;
 			else if (ar.getName().equalsIgnoreCase("styrene"))
 				demand *= STYRENE_DEMAND_FACTOR;
 			else if (ar.getName().equalsIgnoreCase("polystyrene"))
 				demand *= POLYSTYRENE_DEMAND_FACTOR;
+			else if (ar.getName().equalsIgnoreCase("polyurethane"))
+				demand *= POLYURETHANE_DEMAND_FACTOR;			
 			else if (ar.getName().equalsIgnoreCase("lime"))
 				demand *= LIME_DEMAND_FACTOR;
 			break;
@@ -477,6 +494,10 @@ class AmountResourceGood extends Good {
 				demand *= ICE_DEMAND_FACTOR;
 			else if (ar.getID() == ResourceUtil.coID)
 				demand *= CO_DEMAND_FACTOR;
+			else if (ar.getID() == ResourceUtil.methaneID)
+				demand *= METHANE_DEMAND_FACTOR;
+			else if (ar.getID() == ResourceUtil.methanolID)
+				demand *= METHANOL_DEMAND_FACTOR;
 			break;
 	
 		case CROP:

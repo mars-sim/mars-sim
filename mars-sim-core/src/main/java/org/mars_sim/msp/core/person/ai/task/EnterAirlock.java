@@ -234,21 +234,42 @@ public class EnterAirlock extends Task implements Serializable {
 	 * @param newPos the target position in that zone
 	 * @param zone
 	 */
-	private void moveThere(LocalPosition newPos, int zone) {
+	private boolean moveThere(LocalPosition newPos, int zone) {
 		if (zone == 2) {
-			walkToEVASpot((Building) airlock.getEntity());
+			boolean canWalk = false;
+			
+			LocalPosition loc = walkToEVASpot((Building) airlock.getEntity());
+			
+			if (loc != null) {
+				// Create subtask for walking to destination.
+				canWalk = createWalkingSubtask((Building) airlock.getEntity(), loc, false);
+			}
+			
+			if (canWalk) {
+				logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4000, "Arrived at "
+						+ newPos.getShortFormat() + " in airlock zone " + zone + ".");
+				return true;
+			}
+			else {
+				logger.log((Unit)airlock.getEntity(), person, Level.INFO, 4000, "Could not enter the chamber at "
+						+ newPos.getShortFormat() + " in airlock zone " + zone + ".");
+				return false;
+			}
 		}
 
 		else if (zone == 4) {
+			logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4000, "Creating a subtask to walk outside at "
+					+ newPos.getShortFormat() + " in airlock zone " + zone + ".");
 			addSubTask(new WalkOutside(person, person.getPosition(), newPos, true));
+			return true;
 		}
 
 		else {
 			person.setPosition(newPos);
+			logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4000, "Arrived at "
+					+ newPos.getShortFormat() + " in airlock zone " + zone + ".");
+			return true;
 		}
-
-		logger.log((Unit)airlock.getEntity(), person, Level.FINE, 4000, "Arrived at "
-				+ newPos.getShortFormat() + " in airlock zone " + zone + ".");
 	}
 
 	/**
