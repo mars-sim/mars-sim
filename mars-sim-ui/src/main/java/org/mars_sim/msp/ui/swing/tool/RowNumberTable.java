@@ -59,8 +59,8 @@ public class RowNumberTable extends JTable
 		addColumn( column );
 		column.setCellRenderer((TableCellRenderer) new RowNumberRenderer());
 
-//		getColumnModel().getColumn(0).setPreferredWidth(40);
-//		setPreferredScrollableViewportSize(getPreferredSize());
+		getColumnModel().getColumn(0).setPreferredWidth(40);
+		setPreferredScrollableViewportSize(getPreferredSize());
 	}
 
 	@Override
