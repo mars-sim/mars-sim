@@ -52,8 +52,9 @@ public class HistoricalEventManager implements Serializable {
 	private List<String> whatList;
 	private List<String> whileDoingList;
 	private List<String> whoList;
-	private List<String> loc0List;
-	private List<String> loc1List;
+	private List<String> containerList;
+	private List<String> hometownList;
+	private List<String> coordinatesList;
 
 	// Note : marsClock CAN'T be initialized until the simulation start
 	private MarsClock marsClock;
@@ -72,8 +73,9 @@ public class HistoricalEventManager implements Serializable {
 		whatList = new CopyOnWriteArrayList<>();
 		whileDoingList = new CopyOnWriteArrayList<>();
 		whoList = new CopyOnWriteArrayList<>();
-		loc0List = new CopyOnWriteArrayList<>();
-		loc1List = new CopyOnWriteArrayList<>();
+		containerList = new CopyOnWriteArrayList<>();
+		hometownList = new CopyOnWriteArrayList<>();
+		coordinatesList = new CopyOnWriteArrayList<>();
 	}
 
 	/**
@@ -126,8 +128,9 @@ public class HistoricalEventManager implements Serializable {
 						&& e.getWhatCause().equals(newEvent.getWhatCause())
 						&& e.getWhileDoing().equals(newEvent.getWhileDoing())
 						&& e.getWho().equals(newEvent.getWho())
-						&& e.getLocation0().equals(newEvent.getLocation0())
-						&& e.getLocation1().equals(newEvent.getLocation1())) {
+						&& e.getContainer().equals(newEvent.getContainer())
+						&& e.getHomeTown().equals(newEvent.getHomeTown())
+						&& e.getCoordinates().equals(newEvent.getCoordinates())) {
 					return true;
 				}
 			}
@@ -202,11 +205,11 @@ public class HistoricalEventManager implements Serializable {
 		short what = (short) (getID(whatList, event.getWhatCause()));
 		short whileDoing = (short) (getID(whileDoingList, event.getWhileDoing()));
 		short who = (short) (getID(whoList, event.getWho()));
-		short loc0 = (short) (getID(loc0List, event.getLocation0()));
-		short loc1 = (short) (getID(loc1List, event.getLocation1()));
-		short id = (short) CollectionUtils.findSettlementID(event.getAssociatedSettlement());
-
-		SimpleEvent se = new SimpleEvent(missionSol, millisols, cat, type, source, what, whileDoing, who, loc0, loc1, id);
+		short container = (short) (getID(containerList, event.getContainer()));
+		short hometown = (short) CollectionUtils.findSettlementID(event.getHomeTown());
+		short coordinates = (short) (getID(coordinatesList, event.getCoordinates()));
+		
+		SimpleEvent se = new SimpleEvent(missionSol, millisols, cat, type, source, what, whileDoing, who, container, hometown, coordinates);
 		eventsRegistry.add(0, se);
 		return se;
 	}
@@ -247,24 +250,29 @@ public class HistoricalEventManager implements Serializable {
 		return whoList.get(id);
 	}
 
-	public String getLoc0(int id) {
-		return loc0List.get(id);
+	public String getContainer(int id) {
+		return containerList.get(id);
 	}
 
-	public String getLoc1(int id) {
-		return loc1List.get(id);
+	public String getHomeTown(int id) {
+		return hometownList.get(id);
+	}
+	
+	public String getCoordinates(int id) {
+		return coordinatesList.get(id);
 	}
 
+	
 	public List<SimpleEvent> getEvents() {
 		return eventsRegistry;
 	}
 
-	public List<SimpleEvent> getEvents(int settlementID) {
-		return eventsRegistry
-				.stream()
-				.filter(e -> e.getSettlementID() == settlementID)
-				.collect(Collectors.toList());
-	}
+//	public List<SimpleEvent> getEvents(int settlementID) {
+//		return eventsRegistry
+//				.stream()
+//				.filter(e -> e.getSettlementID() == settlementID)
+//				.collect(Collectors.toList());
+//	}
 
 
 	/**

@@ -52,12 +52,12 @@ public class EventCommand extends ChatCommand {
 				response.appendLabeledString("Cause", e.getWhatCause());
 				
 				// Create location description
-				StringBuilder location = new StringBuilder(e.getLocation0());
-				if (!e.getLocation0().equals(e.getLocation1())) {
-					location.append(",").append(e.getLocation1());
+				StringBuilder location = new StringBuilder(e.getContainer());
+				if (!e.getContainer().equals(e.getCoordinates())) {
+					location.append(",").append(e.getCoordinates());
 				}
 				response.appendLabeledString("Location", location.toString());
-				response.appendLabeledString("Settlement", e.getAssociatedSettlement());
+				response.appendLabeledString("Settlement", e.getHomeTown());
 				
 				response.appendBlankLine();
 			}

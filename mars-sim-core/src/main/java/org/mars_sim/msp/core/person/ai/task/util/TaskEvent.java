@@ -28,7 +28,9 @@ extends HistoricalEvent implements Serializable {
 	 * @param task The task with the event.
 	 * @param object The source of the event.
 	 * @param eventType The type of event.
-	 * @param location The location of the event.
+	 * @param container		the building/vehicle where it occurs
+	 * @param homeTown		the associated settlement where it belongs
+	 * @param coordinates	the coordinates where it belongs
 	 * @param description Further description of the event (may be empty string).
 	 */
     // only 5 types of task events so far
@@ -41,9 +43,9 @@ extends HistoricalEvent implements Serializable {
 				task.getDescription() + " " + description,
 				"N/A",
 				unit.getName(), 
-				"None",
-				location, 
-				unit.getAssociatedSettlement().getName()
+				unit.getLocationTag().getImmediateLocation(),
+				unit.getAssociatedSettlement().getName(),
+				unit.getCoordinates().getCoordinateString()
 				);
 	}
 }

@@ -301,20 +301,20 @@ public class RescueSalvageVehicle extends RoverMission {
 		if (rescue) {
 			newEvent = new MissionHistoricalEvent(EventType.MISSION_RENDEZVOUS, this,
 					"Stranded Vehicle", // cause
-					this.getName(), // during
+					getName(), // during
 					member.getName(), // member
-					getVehicle().getName(), // loc0
-					vehicleTarget.getLocationTag().getLocale(), // loc1
-					vehicleTarget.getAssociatedSettlement().getName()
+					vehicleTarget.getLocationTag().getLocale(),
+					vehicleTarget.getAssociatedSettlement().getName(),
+					vehicleTarget.getCoordinates().getCoordinateString()
 			);
 		} else {
 			newEvent = new MissionHistoricalEvent(EventType.MISSION_RENDEZVOUS, this,
 					"Salvaged Vehicle", 
-					this.getName(), 
-					member.getName(), 
-					getVehicle().getName(),
+					getName(), // during
+					member.getName(), // member
 					vehicleTarget.getLocationTag().getLocale(),
-					vehicleTarget.getAssociatedSettlement().getName()
+					vehicleTarget.getAssociatedSettlement().getName(),
+					vehicleTarget.getCoordinates().getCoordinateString()
 			);
 		}
 		eventManager.registerNewEvent(newEvent);
@@ -360,9 +360,9 @@ public class RescueSalvageVehicle extends RoverMission {
 						serious.getName(),
 					this.getName(), 
 					towedVehicle.getName(),
-					person.getLocationTag().getImmediateLocation(), 
-					person.getLocationTag().getLocale(),
-					person.getAssociatedSettlement().getName()
+					towedVehicle.getLocationTag().getImmediateLocation(), 
+					towedVehicle.getAssociatedSettlement().getName(),
+					towedVehicle.getCoordinates().getCoordinateString()
 					);
 				eventManager.registerNewEvent(salvageEvent);
 			}
@@ -394,9 +394,10 @@ public class RescueSalvageVehicle extends RoverMission {
 								p.getPhysicalCondition().getHealthSituation(), 
 								p.getTaskDescription(), 
 								p.getName(),
-								p.getVehicle().getName(), 
-								p.getLocationTag().getLocale(),
-								p.getAssociatedSettlement().getName()
+//								p.getVehicle().getName(), 
+								p.getLocationTag().getImmediateLocation(), 
+								p.getAssociatedSettlement().getName(),
+								p.getAssociatedSettlement().getCoordinates().getCoordinateString()
 								);
 						eventManager.registerNewEvent(rescueEvent);												
 					}

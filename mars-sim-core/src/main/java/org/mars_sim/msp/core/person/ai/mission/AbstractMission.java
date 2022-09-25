@@ -325,26 +325,27 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 * @param message
 	 */
 	private void registerHistoricalEvent(Worker member, EventType type, String message) {
-		String loc0 = null;
-		String loc1 = null;
+		String container = null;
+		String hometown = null;
+		String coordinates = null;
 		if (member.isInSettlement()) {
-			loc0 = member.getBuildingLocation().getNickName();
-			loc1 = member.getSettlement().getName();
+			container = member.getBuildingLocation().getNickName();
+			hometown = member.getAssociatedSettlement().getName();
+			coordinates = member.getAssociatedSettlement().getCoordinates().getCoordinateString();
 		} else if (member.isInVehicle()) {
-			loc0 = member.getVehicle().getName();
-
-			if (member.getVehicle().getBuildingLocation() != null)
-				loc1 = member.getVehicle().getSettlement().getName();
-			else
-				loc1 = member.getCoordinates().toString();
+			container = member.getVehicle().getName();
+			hometown = member.getVehicle().getCoordinates().toString();
+			coordinates = member.getVehicle().getCoordinates().getCoordinateString();
 		} else {
-			loc0 = OUTSIDE;
-			loc1 = member.getCoordinates().toString();
+			container = OUTSIDE;
+			hometown = member.getAssociatedSettlement().getName();
+			coordinates = member.getCoordinates().toString();
 		}
 
 		// Creating mission joining event.
 		HistoricalEvent newEvent = new MissionHistoricalEvent(type, this,
-				message, missionName, member.getName(), loc0, loc1, member.getAssociatedSettlement().getName());
+				message, missionName, member.getName(), 
+				container, hometown, coordinates);
 		eventManager.registerNewEvent(newEvent);
 	}
 

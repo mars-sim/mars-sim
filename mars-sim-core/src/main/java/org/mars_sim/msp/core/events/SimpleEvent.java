@@ -27,15 +27,15 @@ public class SimpleEvent implements Serializable {
 	private short what;
 	private short whileDoing;
 	private short who;
-	private short loc0;
-	private short loc1;
-	private short settlementID;
+	private short container;
+	private short homeTown;
+	private short coordinates;
 	private String dateTime = null;
 
 	private DecimalFormat df = new DecimalFormat("000.000");
 
-	public SimpleEvent(short missionSol, float msol, byte cat, byte type, short source, short what, short whileDoing, short who, short loc0,
-			short loc1, short settlementID) {
+	public SimpleEvent(short missionSol, float msol, byte cat, byte type, short source, short what, short whileDoing, short who, short container,
+			short homeTown, short coordinates) {
 		this.missionSol = missionSol;
 		this.msol = msol;
 		this.cat = cat;
@@ -44,9 +44,9 @@ public class SimpleEvent implements Serializable {
 		this.what = what;
 		this.whileDoing = whileDoing;
 		this.who = who;
-		this.loc0 = loc0;
-		this.loc1 = loc1;
-		this.settlementID = settlementID;
+		this.container = container;
+		this.homeTown = homeTown;
+		this.coordinates = coordinates;
 		
 		df.setMinimumFractionDigits(3);
 		df.setMinimumIntegerDigits(3);
@@ -97,15 +97,15 @@ public class SimpleEvent implements Serializable {
 		return who;
 	}
 
-	public short getLoc0() {
-		return loc0;
+	public short getContainer() {
+		return container;
 	}
 
-	public short getLoc1() {
-		return loc1;
+	public short getHomeTown() {
+		return homeTown;
 	}
 	
-	public short getSettlementID() {
-		return settlementID;
+	public short getCoordinates() {
+		return coordinates;
 	}
 }

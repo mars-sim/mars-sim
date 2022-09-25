@@ -38,12 +38,12 @@ public abstract class HistoricalEvent implements Serializable {
 	private MarsClock timestamp;
 	/** Source of event may be null. */
 	private Object source;
-	private String whileDoing;
 	private String whatCause;
+	private String whileDoing;
 	private String who;
-	private String location0;
-	private String location1;
-	private String associatedSettlement;
+	private String container;
+	private String homeTown;
+	private String coordinates;
 
 	/**
 	 * Construct an event with the appropriate information. The time is not defined
@@ -55,21 +55,22 @@ public abstract class HistoricalEvent implements Serializable {
 	 * @param whatCause		The cause for this event
 	 * @param whileDoing	during or While doing what
 	 * @param whoAffected	Who is being primarily affected by this event
-	 * @param location0		the building/vehicle where it occurs
-	 * @param location1		the settlement/coordinate where it occurs
+	 * @param container		the building/vehicle where it occurs
+	 * @param homeTown		the associated settlement where it belongs
+	 * @param coordinates	the coordinates where it belongs
 	 * @see org.mars_sim.msp.core.events.HistoricalEventManager#registerNewEvent
 	 */
 	public HistoricalEvent(HistoricalEventCategory category, EventType type, Object source, String whatCause,
-			String whileDoing, String whoAffected, String location0, String location1, String associatedSettlement) {
+			String whileDoing, String whoAffected, String container, String homeTown, String coordinates) {
 		this.category = category;
 		this.type = type;
 		this.source = source;
-//		this.whatCause = whatCause;
+		this.whatCause = whatCause;
 		this.whileDoing = whileDoing;
 		this.who = whoAffected;
-		this.location0 = location0;
-		this.location1 = location1;
-		this.associatedSettlement = associatedSettlement;
+		this.container = container;
+		this.homeTown = homeTown;
+		this.coordinates = coordinates;
 	}
 
 	/**
@@ -109,30 +110,30 @@ public abstract class HistoricalEvent implements Serializable {
 	}
 
 	/**
-	 * Get the building/vehicle.
+	 * Get the building/vehicle container.
 	 * 
-	 * @return String the building/vehicle.
+	 * @return he building/vehicle container string
 	 */
-	public String getLocation0() {
-		return location0;
+	public String getContainer() {
+		return container;
 	}
 
 	/**
-	 * Get the settlement/coordinates.
+	 * Get the coordinates.
 	 * 
-	 * @return String the settlement/coordinates
+	 * @return the coordinates string
 	 */
-	public String getLocation1() {
-		return location1;
+	public String getCoordinates() {
+		return coordinates;
 	}
 
 	/**
-	 * Get the settlement/coordinates.
+	 * Get the associated settlement.
 	 * 
-	 * @return String the settlement/coordinates
+	 * @return the associated settlement string
 	 */
-	public String getAssociatedSettlement() {
-		return associatedSettlement;
+	public String getHomeTown() {
+		return homeTown;
 	}
 	
 	/**

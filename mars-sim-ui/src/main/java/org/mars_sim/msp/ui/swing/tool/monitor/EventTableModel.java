@@ -45,13 +45,13 @@ public class EventTableModel extends AbstractTableModel
 	private static final int TIMESTAMP = 0;
 	private static final int CATEGORY = 1;
 	private static final int TYPE = 2;
-	private static final int SOURCE = 3;
-	private static final int CAUSE = 4;
-	private static final int WHILE = 5;
-	private static final int WHO = 6;
-	private static final int LOCATION0 = 7;
-	private static final int LOCATION1 = 8;
-
+	private static final int CAUSE = 3;
+	private static final int WHILE = 4;
+	private static final int WHO = 5;
+	private static final int CONTAINER = 6;
+	private static final int HOMETOWN = 7;
+	private static final int COORDINATES = 8;
+	
 	private static final int COLUMNCOUNT = 9;
 
 	/** Names of the displayed columns. */
@@ -67,19 +67,19 @@ public class EventTableModel extends AbstractTableModel
 		columnNames[CATEGORY] = Msg.getString("EventTableModel.column.category"); //$NON-NLS-1$
 		columnTypes[CATEGORY] = String.class;
 		columnNames[TYPE] = Msg.getString("EventTableModel.column.eventType"); //$NON-NLS-1$
-		columnTypes[TYPE] = String.class;
-		columnNames[SOURCE] = Msg.getString("EventTableModel.column.source"); //$NON-NLS-1$
-		columnTypes[SOURCE] = Object.class;		
+		columnTypes[TYPE] = String.class;	
 		columnNames[CAUSE] = Msg.getString("EventTableModel.column.cause"); //$NON-NLS-1$
 		columnTypes[CAUSE] = String.class;
 		columnNames[WHILE] = Msg.getString("EventTableModel.column.while"); //$NON-NLS-1$
 		columnTypes[WHILE] = String.class;
 		columnNames[WHO] = Msg.getString("EventTableModel.column.who"); //$NON-NLS-1$
 		columnTypes[WHO] = Object.class;
-		columnNames[LOCATION0] = Msg.getString("EventTableModel.column.location0"); //$NON-NLS-1$
-		columnTypes[LOCATION0] = Object.class;
-		columnNames[LOCATION1] = Msg.getString("EventTableModel.column.location1"); //$NON-NLS-1$
-		columnTypes[LOCATION1] = Object.class;
+		columnNames[CONTAINER] = Msg.getString("EventTableModel.column.container"); //$NON-NLS-1$
+		columnTypes[CONTAINER] = String.class;
+		columnNames[HOMETOWN] = Msg.getString("EventTableModel.column.hometown"); //$NON-NLS-1$
+		columnTypes[HOMETOWN] = String.class;
+		columnNames[COORDINATES] = Msg.getString("EventTableModel.column.coordinates"); //$NON-NLS-1$
+		columnTypes[COORDINATES] = String.class;
 	}
 
 	private boolean showMedical = true;
@@ -134,13 +134,13 @@ public class EventTableModel extends AbstractTableModel
 		// Clean out existing cached events for the Event Table.
 		cachedEvents = new ArrayList<>();
 
-		if (GameManager.getGameMode() == GameMode.COMMAND) {
-			int id = unitManager.getCommanderSettlement().getIdentifier();
-			events = new ArrayList<>(eventManager.getEvents(id));
-		}
-		else {
+//		if (GameManager.getGameMode() == GameMode.COMMAND) {
+//			int id = unitManager.getCommanderSettlement().getIdentifier();
+//			events = new ArrayList<>(eventManager.getEvents(id));
+//		}
+//		else {
 			events = new ArrayList<>(eventManager.getEvents());
-		}
+//		}
 
 
 		for (SimpleEvent event : events) {
@@ -311,11 +311,6 @@ public class EventTableModel extends AbstractTableModel
 					result = EventType.int2enum(event.getType());
 				}
 					break;
-
-				case SOURCE: {
-					result = eventManager.getSource(event.getSource());
-				}
-					break;
 					
 				case CAUSE: {
 					result = eventManager.getWhat(event.getWhat());
@@ -332,15 +327,23 @@ public class EventTableModel extends AbstractTableModel
 				}
 					break;
 
-				case LOCATION0: {
-					result = eventManager.getLoc0(event.getLoc0());
+				case CONTAINER: {
+					result = eventManager.getContainer(event.getContainer());
 				}
 					break;
 
-				case LOCATION1: {
-					result = eventManager.getLoc1(event.getLoc1());
+				case HOMETOWN: {
+					result = eventManager.getHomeTown(event.getHomeTown());
 				}
 					break;
+					
+
+				case COORDINATES: {
+					result = eventManager.getSource(event.getCoordinates());
+				}
+					break;
+					
+				default: 	
 				}
 			} // end of if event
 		}
@@ -380,9 +383,10 @@ public class EventTableModel extends AbstractTableModel
 			String cause = eventManager.getWhat(event.getWhat());
 			String during = (eventManager.getWhileDoing(event.getWhileDoing()));
 			String who = eventManager.getWho(event.getWho());
-			String location0 = eventManager.getLoc0(event.getLoc0());
-			String location1 = eventManager.getLoc1(event.getLoc1());
-
+			String container = eventManager.getContainer(event.getContainer());
+			String hometown = eventManager.getHomeTown(event.getHomeTown());
+			String coordinates = eventManager.getCoordinates(event.getCoordinates());
+			
 			HistoricalEventCategory category = HistoricalEventCategory.int2enum(event.getCat());
 			EventType eventType = EventType.int2enum(event.getType());
 
@@ -401,29 +405,29 @@ public class EventTableModel extends AbstractTableModel
 				// fixed.
 				if (eventType == EventType.MALFUNCTION_HUMAN_FACTORS) {
 					during = during.replace("do ", "doing ");
-					message = cause + " in " + location0 + " at " + location1 + ". " + who
+					message = cause + " in " + container + " at " + coordinates + ". " + who
 							+ " reported the malfunction " + during + ".";
 					willNotify = true;
 				}
 
 				else if (eventType == EventType.MALFUNCTION_PROGRAMMING_ERROR) {
-					message = cause + " in " + location0 + " at " + location1 + ". " + who
+					message = cause + " in " + container + " at " + coordinates + ". " + who
 							+ " may have caused the malfunction due to software quality control issues " + during + ".";
 					willNotify = true;
 				}
 
 				else if (eventType == EventType.MALFUNCTION_PARTS_FAILURE) {
-					message = who + " reported " + cause + " in " + location0 + " at " + location1 + ".";
+					message = who + " reported " + cause + " in " + container + " at " + coordinates + ".";
 					willNotify = true;
 				}
 
 				else if (eventType == EventType.MALFUNCTION_ACT_OF_GOD) {
 					if (who.toLowerCase().equals("none"))
-						message = "No one witnessed " + cause + " in " + location0 + " at "
-								+ location1+ ".";
+						message = "No one witnessed " + cause + " in " + container + " at "
+								+ coordinates+ ".";
 					else
 						message = who + " got traumatized by " + cause + during
-							+ " in " + location0 + " at " + location1+ ".";
+							+ " in " + container + " at " + coordinates+ ".";
 					willNotify = true;
 				}
 
@@ -470,23 +474,23 @@ public class EventTableModel extends AbstractTableModel
 
 					if (!during.equals("sleeping"))
 						during = "falling asleep";
-					if (!location0.equals("outside on Mars"))
-						location0 = " in " + location0;
-					message = who + phrase + " while " + during + location0 + " at " + location1;
+					if (!container.equals("outside on Mars"))
+						container = " in " + container;
+					message = who + phrase + " while " + during + container + " at " + coordinates;
 
 				} else if (eventType == EventType.MEDICAL_DEATH) {
 
 					willNotify = true;
-					if (!location0.equals("outside on Mars"))
-						location0 = " in " + location0;
-					message = who + " died from " + cause + location0 + " at " + location1;
+					if (!container.equals("outside on Mars"))
+						container = " in " + container;
+					message = who + " died from " + cause + container + " at " + coordinates;
 
 				} else if (eventType == EventType.MEDICAL_TREATED) {
 
 					willNotify = true;
-					if (!location0.equals("outside on Mars"))
-						location0 = " in " + location0;
-					message = who + " was being treated for " + cause + location0 + " at " + location1;
+					if (!container.equals("outside on Mars"))
+						container = " in " + container;
+					message = who + " was being treated for " + cause + container + " at " + coordinates;
 
 //					} else if (eventType == EventType.MEDICAL_CURED) {
 //
@@ -509,7 +513,7 @@ public class EventTableModel extends AbstractTableModel
 						|| eventType == EventType.MISSION_SALVAGE_VEHICLE
 						|| eventType == EventType.MISSION_RENDEZVOUS) {
 					message = who + " is " + during
-						+ " from " + location0 + " at " + location1;
+						+ " from " + container + " at " + coordinates;
 					willNotify = true;
 				}
 				else if (eventType == EventType.MISSION_EMERGENCY_BEACON_ON
@@ -518,7 +522,7 @@ public class EventTableModel extends AbstractTableModel
 //							|| eventType == EventType.MISSION_NOT_ENOUGH_RESOURCES
 						|| eventType == EventType.MISSION_MEDICAL_EMERGENCY) {
 					message = who + " has " + Conversion.setFirstWordLowercase(cause)
-						+ " while " + during.toLowerCase() + " in " + location0 + " at " + location1;
+						+ " while " + during.toLowerCase() + " in " + container + " at " + coordinates;
 					willNotify = true;
 				}
 
@@ -533,12 +537,12 @@ public class EventTableModel extends AbstractTableModel
 					header = Msg.getString("EventType.hazard.meteoriteImpact"); //$NON-NLS-1$
 
 					if (who.toLowerCase().equals("none"))
-						message = "There was a " + eventType.getName() + " in " + location0 + " at " + location1
+						message = "There was a " + eventType.getName() + " in " + container + " at " + coordinates
 								+ ". Fortunately, no one was hurt.";
 					else
 						message = who + " was rattled by the " + eventType.getName() + " while "
-								+ Conversion.setFirstWordLowercase(during) + " in " + location0
-								+ " at " + location1;
+								+ Conversion.setFirstWordLowercase(during) + " in " + container
+								+ " at " + coordinates;
 					willNotify = true;
 				}
 
@@ -548,7 +552,7 @@ public class EventTableModel extends AbstractTableModel
 					willNotify = true;
 					message = who + " was exposed to " + cause.replace("Dose", "dose")
 							+ " radiation while " + during + " in "
-							+ location0 + " at " + location1;
+							+ container + " at " + coordinates;
 				}
 
 				type = 3;

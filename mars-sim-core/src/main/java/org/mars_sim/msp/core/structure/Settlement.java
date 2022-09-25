@@ -3080,29 +3080,32 @@ public class Settlement extends Structure implements Temporal,
 	 * Compute the probability of radiation exposure during EVA/outside walk
 	 */
 	private void checkRadiationProbability(double time) {
-		// boolean[] exposed = {false, false, false};
-		// double exposure = 0;
+
 		double ratio = time / RadiationExposure.RADIATION_CHECK_FREQ;
-		double mag_variation1 = 1 + RandomUtil.getRandomDouble(RadiationExposure.GCR_CHANCE_SWING)
-				- RandomUtil.getRandomDouble(RadiationExposure.GCR_CHANCE_SWING);
+		double mag_variation1 = 1 + RandomUtil.getRandomDouble(-RadiationExposure.GCR_CHANCE_SWING, RadiationExposure.GCR_CHANCE_SWING);
 		if (mag_variation1 < 0)
 			mag_variation1 = 0;
-		double mag_variation2 = 1 + RandomUtil.getRandomDouble(RadiationExposure.SEP_CHANCE_SWING)
-				- RandomUtil.getRandomDouble(RadiationExposure.SEP_CHANCE_SWING);
+		double mag_variation2 = 1 + RandomUtil.getRandomDouble(- RadiationExposure.SEP_CHANCE_SWING, RadiationExposure.SEP_CHANCE_SWING);
 		if (mag_variation2 < 0)
 			mag_variation2 = 0;
 
-		// Galactic cosmic rays (GCRs) event
-		double chance1 = RadiationExposure.GCR_PERCENT * ratio * mag_variation1; // normally 1.22%
-		// Solar energetic particles (SEPs) event
-		double chance2 = RadiationExposure.SEP_PERCENT * ratio * mag_variation2; // 0.122 %
+		// Galactic cosmic rays (GCRs) event // average 1.22% per 1000 millisols
+		double chance1 = (1.22/1000 + RadiationExposure.GCR_PERCENT * ratio * mag_variation1) / 2.0; 
+		// Solar energetic particles (SEPs) event // average 0.122 % per 1000 millisols
+		double chance2 = (0.122/1000 + RadiationExposure.SEP_PERCENT * ratio * mag_variation2) / 2.0; 
 		// Baseline radiation event
-		double chance0 = 100 - chance1 - chance2;
+		double chance0 = (3.53/1000 + .1 - chance1 - chance2) / 2.0; // average 3.53% per 1000 millisols
 		// Note that RadiationExposure.BASELINE_PERCENT * ratio * (variation1 + variation2);
-		// average 3.53%
 
 		if (chance0 < 0)
 			chance0 = 0;
+		
+		else if (RandomUtil.lessThanRandPercent(chance0)) {
+			exposed[0] = true;
+			logger.log(this, Level.INFO, 1_000, DETECTOR_GRID + UnitEventType.BASELINE_EVENT.toString() + " is imminent.");
+			this.fireUnitUpdate(UnitEventType.BASELINE_EVENT);
+		} else
+			exposed[0] = false;
 
 		// Galactic cosmic rays (GCRs) event
 		// double rand2 = Math.round(RandomUtil.getRandomDouble(100) * 100.0)/100.0;

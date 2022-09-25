@@ -1138,8 +1138,8 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 								getName(),
 								getStartingPerson().getName(),
 								vehicle.getName(),
-								vehicle.getCoordinates().getCoordinateString(),
-								oldHome.getName()
+								oldHome.getName(),
+								vehicle.getCoordinates().getCoordinateString()
 								);
 						eventManager.registerNewEvent(newEvent);
 					}
@@ -1186,8 +1186,8 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 					this.getName(),
 					member.getName(),
 					vehicle.getName(),
-					vehicle.getCoordinates().getCoordinateString(),
-					settlement
+					vehicle.getAssociatedSettlement().getName(),
+					vehicle.getCoordinates().getCoordinateString()
 					);
 
 			eventManager.registerNewEvent(newEvent);
@@ -1705,8 +1705,8 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 						getName(),
 						getStartingPerson().getName(),
 						vehicle.getName(),
-						vehicle.getCoordinates().getCoordinateString(),
-						getStartingSettlement().getName()
+						getStartingSettlement().getName(),
+						vehicle.getCoordinates().getCoordinateString()
 						);
 				eventManager.registerNewEvent(newEvent);
 			}

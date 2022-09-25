@@ -28,8 +28,9 @@ public class MissionHistoricalEvent extends HistoricalEvent implements Serializa
 	 * @param whatCause  The cause for this event.
 	 * @param whileDoing the activity the member was engaging.
 	 * @param member     a member of this mission.
-	 * @param location0  the building/vehicle where it occurs.
-	 * @param location1  the settlement/coordinate where it occurs.
+	 * @param container		the building/vehicle where it occurs
+	 * @param homeTown		the associated settlement where it belongs
+	 * @param coordinates	the coordinates where it belongs
 	 */
 	public MissionHistoricalEvent(EventType eventType, Mission mission, String cause, String whileDoing, String member,
 			String location0, String location1, String associatedsettlement) {

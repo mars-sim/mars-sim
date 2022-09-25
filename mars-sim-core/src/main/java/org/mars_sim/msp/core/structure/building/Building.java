@@ -1188,8 +1188,8 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 							"Normal Ops",
 							getNickName(), 
 							getLocationTag().getImmediateLocation(),
-							getLocationTag().getLocale(),
-							getAssociatedSettlement().getName()
+							getAssociatedSettlement().getName(),
+							getAssociatedSettlement().getCoordinates().getCoordinateString()
 							);
 					Simulation.instance().getEventManager().registerNewEvent(hEvent);
 

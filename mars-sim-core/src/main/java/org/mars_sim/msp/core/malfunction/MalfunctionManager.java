@@ -32,7 +32,6 @@ import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.PersonalityTraitType;
-import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.person.health.Complaint;
 import org.mars_sim.msp.core.person.health.ComplaintType;
 import org.mars_sim.msp.core.person.health.MedicalManager;
@@ -448,8 +447,9 @@ public class MalfunctionManager implements Serializable, Temporal {
 		String malfunctionName = malfunction.getName();
 
 		Settlement settlement = entity.getAssociatedSettlement();
-		String loc0 = entity.getName();
-		String loc1 = LocationFormat.getLocationDescription(entity);
+		String container = entity.getName();
+//		String loc1 = LocationFormat.getLocationDescription(entity);
+		String coordinates = entity.getCoordinates().getCoordinateString();
 		EventType eventType = EventType.MALFUNCTION_PARTS_FAILURE;
 
 		String whoAffected = "None";
@@ -488,8 +488,8 @@ public class MalfunctionManager implements Serializable, Temporal {
 
 		HistoricalEvent newEvent = new MalfunctionEvent(eventType, malfunction, 
 								malfunctionName, whileDoing, 
-								whoAffected, loc0, 
-								loc1, settlement.getName());
+								whoAffected, container, 
+								settlement.getName(), coordinates);
 		eventManager.registerNewEvent(newEvent);
 
 		logger.log(entity, Level.WARNING, 0, malfunction.getName()
@@ -644,9 +644,10 @@ public class MalfunctionManager implements Serializable, Temporal {
 			String chiefRepairer = m.getMostProductiveRepairer();
 
 			HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_FIXED, m,
-					m.getName(), "Repairing", chiefRepairer, entity.getName(), 
-					LocationFormat.getLocationDescription(entity),
-					entity.getAssociatedSettlement().getName());
+					m.getName(), "Repairing", chiefRepairer, 
+					entity.getName(), 
+					entity.getAssociatedSettlement().getName(), 
+					entity.getCoordinates().getCoordinateString());
 
 			eventManager.registerNewEvent(newEvent);
 
