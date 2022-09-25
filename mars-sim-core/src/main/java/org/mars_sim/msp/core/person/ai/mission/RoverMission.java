@@ -513,7 +513,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			}
 
 			// Initiate an rescue operation
-			// Note : Gets a lead person to perform it and give him a rescue badge
+			// Future : Gets a lead person to perform it and give him a rescue badge
 			else if (!p.getPhysicalCondition().isFitByLevel(1500, 90, 1500)) {
 				rescueOperation(rover, p, disembarkSettlement);
 			}
@@ -776,7 +776,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 				p.getPhysicalCondition().getHealthSituation(),
 				p.getTaskDescription(),
 				p.getName(),
-				p.getLocationTag().getLocale(),
+				p.getLocationTag().getImmediateLocation(),
 				p.getAssociatedSettlement().getName(),
 				p.getCoordinates().getCoordinateString()
 				);

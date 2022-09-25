@@ -24,6 +24,7 @@ import java.util.logging.Level;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitType;
+import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.ResourceHolder;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
@@ -470,18 +471,23 @@ public class MalfunctionManager implements Serializable, Temporal {
 			else if (actor.getUnitType() == UnitType.BUILDING) {
 				if (malfunction.getMalfunctionMeta().getName().contains(MalfunctionFactory.METEORITE_IMPACT_DAMAGE)) {
 					eventType = EventType.HAZARD_METEORITE_IMPACT;
-					whileDoing = "Normal Ops";
-					whoAffected = actor.getName();
+					whileDoing = "";
+					whoAffected = "";
 				}
 				else {
 					eventType = EventType.MALFUNCTION_PARTS_FAILURE;
-					whileDoing = "Normal Ops";
-					whoAffected = actor.getName();
+					whileDoing = "";
+					whoAffected = "";
 				}
+			}
+			else if (actor.getUnitType() == UnitType.EVA_SUIT) {
+				eventType = EventType.MALFUNCTION_PARTS_FAILURE;
+				whileDoing = ""; 
+				whoAffected = ((EVASuit)actor).getOwner().getName();
 			}
 			else {
 				eventType = EventType.MALFUNCTION_PARTS_FAILURE;
-				whileDoing = "Normal Ops";
+				whileDoing = "";
 				whoAffected = actor.getName();
 			}
 		}

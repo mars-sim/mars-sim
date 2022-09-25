@@ -300,7 +300,7 @@ public class RescueSalvageVehicle extends RoverMission {
 		HistoricalEvent newEvent = null;
 		if (rescue) {
 			newEvent = new MissionHistoricalEvent(EventType.MISSION_RENDEZVOUS, this,
-					"Stranded Vehicle", // cause
+					"Rescuing Stranded Vehicle", // cause
 					getName(), // during
 					member.getName(), // member
 					vehicleTarget.getLocationTag().getLocale(),
@@ -309,7 +309,7 @@ public class RescueSalvageVehicle extends RoverMission {
 			);
 		} else {
 			newEvent = new MissionHistoricalEvent(EventType.MISSION_RENDEZVOUS, this,
-					"Salvaged Vehicle", 
+					"Salvaging Vehicle", 
 					getName(), // during
 					member.getName(), // member
 					vehicleTarget.getLocationTag().getLocale(),

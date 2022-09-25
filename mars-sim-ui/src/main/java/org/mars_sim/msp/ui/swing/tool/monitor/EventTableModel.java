@@ -339,11 +339,15 @@ public class EventTableModel extends AbstractTableModel
 					
 
 				case COORDINATES: {
-					result = eventManager.getSource(event.getCoordinates());
+					result = eventManager.getCoordinates(event.getCoordinates());
 				}
 					break;
 					
-				default: 	
+				default: {
+					result = null;
+				}
+					break;
+	
 				}
 			} // end of if event
 		}

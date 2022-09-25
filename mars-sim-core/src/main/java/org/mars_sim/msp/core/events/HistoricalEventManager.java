@@ -7,17 +7,14 @@
 
 package org.mars_sim.msp.core.events;
 
-import org.mars_sim.msp.core.CollectionUtils;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.person.EventType;
-import org.mars_sim.msp.core.time.MarsClock;
-
 import java.io.Serializable;
-
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.stream.Collectors;
+
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.person.EventType;
+import org.mars_sim.msp.core.time.MarsClock;
 
 
 /**
@@ -197,7 +194,7 @@ public class HistoricalEventManager implements Serializable {
 	}
 
 	private SimpleEvent convert2SimpleEvent(HistoricalEvent event, MarsClock timestamp) {
-		short missionSol = (short) (timestamp.getMissionSol());//event.getTimestamp().getMissionSol());
+		short missionSol = (short) (timestamp.getMissionSol());
 		float millisols = (float) (event.getTimestamp().getMillisol());
 		byte cat = (byte) (event.getCategory().ordinal());
 		byte type = (byte) (event.getType().ordinal());
@@ -206,7 +203,7 @@ public class HistoricalEventManager implements Serializable {
 		short whileDoing = (short) (getID(whileDoingList, event.getWhileDoing()));
 		short who = (short) (getID(whoList, event.getWho()));
 		short container = (short) (getID(containerList, event.getContainer()));
-		short hometown = (short) CollectionUtils.findSettlementID(event.getHomeTown());
+		short hometown = (short) (getID(hometownList, event.getHomeTown()));
 		short coordinates = (short) (getID(coordinatesList, event.getCoordinates()));
 		
 		SimpleEvent se = new SimpleEvent(missionSol, millisols, cat, type, source, what, whileDoing, who, container, hometown, coordinates);
@@ -292,6 +289,21 @@ public class HistoricalEventManager implements Serializable {
 		listeners = null;
 		eventsRegistry.clear();
 		eventsRegistry = null;
+		lastEvents = new CopyOnWriteArrayList<>();
+		sourceList.clear();
+		whatList.clear();
+		whileDoingList.clear();
+		whoList.clear();
+		containerList.clear();
+		hometownList.clear();
+		coordinatesList.clear();
+		sourceList = null;
+		whatList = null;
+		whileDoingList = null;
+		whoList = null;
+		containerList = null;
+		hometownList = null;
+		coordinatesList = null;
 	}
 
 }

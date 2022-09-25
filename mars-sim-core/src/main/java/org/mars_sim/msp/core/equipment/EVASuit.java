@@ -432,7 +432,7 @@ public class EVASuit extends Equipment
 	 *
 	 * @return owner
 	 */
-	private Person getOwner() {
+	public Person getOwner() {
 		return getLastOwner();
 	}
 
