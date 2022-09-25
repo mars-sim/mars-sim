@@ -333,10 +333,12 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			eventTarget.fireUnitUpdate(UnitEventType.TASK_ENDED_EVENT, this);
 			// Create ending task historical event if needed.
 			if (createEvents) {
-	
-				registerNewEvent(new TaskEvent(eventTarget, this, eventTarget, EventType.TASK_FINISH,
-						eventTarget.getLocationTag().getExtendedLocation(),
-						""));
+				registerNewEvent(
+						new TaskEvent(eventTarget, 
+						this, 
+						eventTarget, 
+						EventType.TASK_FINISH,
+						getDescription()));
 			}
 		}
 	}

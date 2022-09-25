@@ -338,9 +338,9 @@ public class SelfTreatHealthProblem extends Task implements Serializable {
                 TaskEvent startingEvent = new TaskEvent(person,
                 		this, 
                 		person,
-                		EventType.TASK_START, 
-                		person.getAssociatedSettlement().getName(), 
-                		"Self-treating Health Problem");
+                		EventType.TASK_START,
+                		NAME
+                );
                 registerNewEvent(startingEvent);
             }
         }

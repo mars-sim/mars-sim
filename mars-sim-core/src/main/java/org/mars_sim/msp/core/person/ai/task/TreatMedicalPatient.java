@@ -313,12 +313,12 @@ public class TreatMedicalPatient extends Task implements Serializable {
     		
             // Create starting task event if needed.
             if (getCreateEvents()) {
-                TaskEvent startingEvent = new TaskEvent(person, 
-                		this, 
-                		healthProblem.getSufferer(),
-                		EventType.TASK_START, 
-                		person.getAssociatedSettlement().getName(), 
-                		"Treating Medical Patient");
+                TaskEvent startingEvent = new TaskEvent(person, // unit
+                		this,  // task
+                		healthProblem.getSufferer(), // source
+                		EventType.TASK_START,  // event type
+                		NAME // description
+                ); 
                 registerNewEvent(startingEvent);
             }
         }

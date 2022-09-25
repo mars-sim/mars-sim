@@ -120,10 +120,15 @@ public class MedicalAssistance extends Task implements Serializable {
 
 					// Create starting task event if needed.
 					if (getCreateEvents()) {
-						TaskEvent startingEvent = new TaskEvent(person, this, problem.getSufferer(),
-								EventType.TASK_START, person.getSettlement().getName(), "Provide Medical Assistance");
+						TaskEvent startingEvent = new TaskEvent(person, 
+								this, 
+								problem.getSufferer(),
+								EventType.TASK_START, 
+								NAME
+						);
 						registerNewEvent(startingEvent);
 					}
+					
 					produceMedicalWaste();
 
 				} else if (medical instanceof SickBay) {
@@ -135,9 +140,13 @@ public class MedicalAssistance extends Task implements Serializable {
 
 						// Create starting task event if needed.
 						if (getCreateEvents()) {
-							TaskEvent startingEvent = new TaskEvent(person, this, problem.getSufferer(),
-									EventType.TASK_START, person.getVehicle().getName(), "Provide Medical Assistance");
-							Simulation.instance().getEventManager().registerNewEvent(startingEvent);
+							TaskEvent startingEvent = new TaskEvent(person, 
+									this, 
+									problem.getSufferer(),
+									EventType.TASK_START,
+									NAME
+							);
+							registerNewEvent(startingEvent);
 						}
 
 						produceMedicalWaste();

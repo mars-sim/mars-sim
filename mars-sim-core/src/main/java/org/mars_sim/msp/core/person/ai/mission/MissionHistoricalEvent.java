@@ -33,8 +33,8 @@ public class MissionHistoricalEvent extends HistoricalEvent implements Serializa
 	 * @param coordinates	the coordinates where it belongs
 	 */
 	public MissionHistoricalEvent(EventType eventType, Mission mission, String cause, String whileDoing, String member,
-			String location0, String location1, String associatedsettlement) {
+			String container, String homeTown, String coordinates) {
 		// Use HistoricalEvent constructor.
-		super(HistoricalEventCategory.MISSION, eventType, mission, cause, whileDoing, member, location0, location1, associatedsettlement);
+		super(HistoricalEventCategory.MISSION, eventType, mission, cause, whileDoing, member, container, homeTown, coordinates);
 	}
 }
