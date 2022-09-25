@@ -32,17 +32,18 @@
 	<!-- see https://space.stackexchange.com/questions/8449/is-there-a-cost-effective-way-to-obtain-nitrogen-argon-on-mars-for-usage-in-a-hu/8548 -->
 	<!-- Other Gas Resources -->
 	<resource name="hydrogen" type="element" phase="gas" />
+	
 	<resource name="methane" type="compound" phase="gas" />
 	<resource name="methanol" type="compound" phase="liquid">Methanol CH3OH can be used as a fuel source, solvent, pesticide, or 
 	 a chemical feedstock for production of a range of important industrial chemicals such as polyester. 
 	 It appears as a colorless fairly volatile liquid with a faintly sweet pungent odor like that of ethyl alcohol. </resource>
+	 
 	<resource name="nitrogen" type="element" phase="gas"> N2 is an odorless gas </resource>
-
 	<resource name="argon" type="element" phase="gas"/>
+	
 	<resource name="carbon monoxide" type="compound" phase="gas" />
 	<resource name="chlorine" type="element" phase="gas"/>
 	<resource name="ethylene" type="compound" phase="gas" />
-
 	<resource name="acetylene" type="compound" phase="gas">Acetylene is a colorless gas that has a strong 
 	 garlic-like odor. When combined with oxygen, it becomes very hot and is classified as the hottest fuel gas. 
 	 It is also the only fuel gas that can weld and cut steel, making it the preferred choice for welders.
@@ -257,6 +258,10 @@
 		packaging products. </resource>
 	<resource name="bisphenol-a" type="chemical" phase="solid"> The chemical used for reinforcing
 		plastic and for making polycarbonate</resource>
+	<resource name="ceramic electrolyte" type="chemical" phase="solid"> The ceramic electrolyte 
+		is highly ion-conductive and chemically stable for making batteries and fuel cells. 
+		This solid metal oxide is an insulator that will not conduct electricity. However, it 
+		is capable of conducting oxygen ions and suitable for cell reactions. </resource>
 
 <!-- Regolith and its directly derived ore deposits
      https://en.wikipedia.org/wiki/Martian_soil

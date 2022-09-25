@@ -92,7 +92,7 @@ class AmountResourceGood extends Good {
 	private static final double SAND_VALUE_MODIFIER = .03;
 	private static final double ORES_VALUE_MODIFIER = .05;
 	private static final double CONCRETE_VALUE_MODIFIER = .5;
-	private static final double CEMENT_VALUE_MODIFIER = .4;
+	private static final double CEMENT_VALUE_MODIFIER = 8;
 	private static final double MINERAL_VALUE_MODIFIER = .02;
 	private static final double ROCK_VALUE_MODIFIER = .02;
 	private static final double METEORITE_MODIFIER = 100;
@@ -116,16 +116,19 @@ class AmountResourceGood extends Good {
 	private static final double ORE_DEMAND_FACTOR = .15;
 	private static final double MINERAL_DEMAND_FACTOR = .15;
 	
+	private static final double ACETYLENE_DEMAND_FACTOR = .1;
 	private static final double ETHYLENE_DEMAND_FACTOR = 6;
-	private static final double POLYETHYLENE_DEMAND_FACTOR = 40;
+	private static final double POLYETHYLENE_DEMAND_FACTOR = .01;
 	
-	private static final double POLYESTHER_RESIN_DEMAND_FACTOR = 0.05;
-	private static final double POLYCARBONATE_RESIN_DEMAND_FACTOR = 20;
+	private static final double POLYESTHER_RESIN_DEMAND_FACTOR = 0.025;
+	private static final double POLYCARBONATE_RESIN_DEMAND_FACTOR = 15;
 	
-	private static final double STYRENE_DEMAND_FACTOR = .1;
+	private static final double STYRENE_DEMAND_FACTOR = .04;
 	private static final double POLYSTYRENE_DEMAND_FACTOR = 2.5;
 	
-	private static final double POLYURETHANE_DEMAND_FACTOR = 100;
+	private static final double POLYURETHANE_DEMAND_FACTOR = 10;
+	
+	private static final double POTASH_LYE_DEMAND_FACTOR = 20;
 	
 	private static final double CHEMICAL_DEMAND_FACTOR = 10;
 	private static final double COMPOUND_DEMAND_FACTOR = 10;
@@ -145,10 +148,11 @@ class AmountResourceGood extends Good {
 	
 	private static final double METHANOL_DEMAND_FACTOR = 30;
 	private static final double METHANE_DEMAND_FACTOR = .1;
-	private static final double SAND_DEMAND_FACTOR = .005;
+	private static final double SAND_DEMAND_FACTOR = .07;
 	private static final double ICE_DEMAND_FACTOR = .05;
-	private static final double CO_DEMAND_FACTOR = .1;
+	private static final double CO_DEMAND_FACTOR = .05;
 	private static final double LIME_DEMAND_FACTOR = 4.5;
+	private static final double CALCIUM_CARBONATE_DEMAND_FACTOR = 0.1;
 	
 	private static final double COOKED_MEAL_INPUT_FACTOR = .5;
 	private static final double MANUFACTURING_INPUT_FACTOR = 2D;
@@ -468,7 +472,7 @@ class AmountResourceGood extends Good {
 
 		case CHEMICAL:
 			demand = CHEMICAL_DEMAND_FACTOR;	
-			if (ar.getName().equalsIgnoreCase("polyethylene"))
+			 if (ar.getName().equalsIgnoreCase("polyethylene"))
 				demand *= POLYETHYLENE_DEMAND_FACTOR;
 			else if (ar.getName().equalsIgnoreCase("ethylene"))
 				demand *= ETHYLENE_DEMAND_FACTOR;
@@ -498,6 +502,12 @@ class AmountResourceGood extends Good {
 				demand *= METHANE_DEMAND_FACTOR;
 			else if (ar.getID() == ResourceUtil.methanolID)
 				demand *= METHANOL_DEMAND_FACTOR;
+			else if (ar.getName().equalsIgnoreCase("potash lye"))
+				demand *= POTASH_LYE_DEMAND_FACTOR;
+			else if (ar.getName().equalsIgnoreCase("acetylene"))
+				demand *= ACETYLENE_DEMAND_FACTOR;		
+			else if (ar.getName().equalsIgnoreCase("calcium carbonate"))
+				demand *= CALCIUM_CARBONATE_DEMAND_FACTOR;
 			break;
 	
 		case CROP:
@@ -1072,7 +1082,7 @@ class AmountResourceGood extends Good {
 			// Estimate fertilizer needed for average number of crop plantings for total
 			// growing area.
 			// Estimate fertilizer needed when grey water not available.
-			demand = (Crop.FERTILIZER_NEEDED_IN_SOIL_PER_SQM + Crop.FERTILIZER_NEEDED_WATERING) * factor;
+			demand = (Crop.FERTILIZER_NEEDED_IN_SOIL_PER_SQM * Crop.FERTILIZER_NEEDED_WATERING * solsInOrbit) * factor * 1_000;
 		} else if (resource == ResourceUtil.greyWaterID) {
 			// NOTE: how to properly get rid of grey water? it should NOT be considered an
 			// economically vital resource

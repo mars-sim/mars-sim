@@ -2811,22 +2811,41 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
+	<process name="make ceramic electrolyte" tech="2" skill="3" work-time="100" process-time="100"
+			power-required=".2">
+		<description>
+			Ceramic electrolytes are critical for the production of batteries and fuel cells
+		</description>
+		<inputs>
+			<resource name="maganese" amount=".1" />	
+			<resource name="nickel" amount=".1" />	
+			<resource name="iron" amount=".1" />		
+			<resource name="aluminum" amount=".1" />								
+			<resource name="glass" amount="4.2" />	
+			<resource name="oxygen" amount=".5" />				
+		</inputs>
+		<outputs>
+			<part name="ceramic electrolyte" number="5" /> 
+		</outputs>
+	</process>
+	
 	<!-- manufacturing methane solid oxide fuel cell. -->
-	<process name="make methane solid oxide fuel cells" tech="3" skill="4" work-time="200" process-time="50"
+	<process name="make methane solid oxide fuel cells" tech="3" skill="3" work-time="200" process-time="50"
 			power-required="1">
 		<description>
-			Each methane solid oxide fuel cell (SOFC) can generate 200W.
+			Each methane solid oxide fuel cell (SOFC) can generate 200W. Each fuel cell weighs 0.2 kg.
 		</description>
 		<inputs>
 			<resource name="sodium carbonate" amount=".25" />
 			<resource name="aluminum" amount=".5" />
-			<resource name="nickel" amount=".05" />
-			<resource name="lithium" amount=".05" />
+			<resource name="nickel" amount=".025" />
+			<resource name="lithium" amount=".025" />
 			<resource name="iron powder" amount=".5" />
-			<resource name="glass" amount=".5" />
+			<resource name="glass" amount=".1" />
+			<resource name="ceramic electrolyte" amount=".6" />			
 		</inputs>
 		<outputs>
-			<part name="methane fuel cell" number="10" />
+			<part name="methane fuel cell" number="10" /> 
 		</outputs>
 	</process>
 
@@ -2834,15 +2853,16 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="make methanol fuel cells" tech="3" skill="4" work-time="200" process-time="50"
 			power-required="1">
 		<description>
-			Each methanol fuel cell (SOFC) can generate 200W.
+			Each methanol fuel cell (SOFC) can generate 200W. Each fuel cell weighs 0.2 kg.
 		</description>
 		<inputs>
 			<resource name="sodium carbonate" amount=".25" />
 			<resource name="aluminum" amount=".5" />
-			<resource name="nickel" amount=".05" />
-			<resource name="lithium" amount=".05" />
+			<resource name="nickel" amount=".025" />
+			<resource name="lithium" amount=".025" />
 			<resource name="iron powder" amount=".5" />
-			<resource name="glass" amount=".5" />
+			<resource name="glass" amount=".1" />
+			<resource name="ceramic electrolyte" amount=".6" />
 		</inputs>
 		<outputs>
 			<part name="methane fuel cell" number="10" />

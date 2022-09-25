@@ -1671,6 +1671,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				     (silicon dioxide) and 9% lime (calcium oxide). The sodium carbonate "soda"
 				     serves as a flux to lower the temperature at which the silica melts.
 				     https://en.wikipedia.org/wiki/Sodium_oxide
+				     https://www.nasa.gov/sites/default/files/atoms/files/isru-isfr-mrs-nr.pdf
 					</description>
 					<input resource="sand" rate="40.0" ambient="false" />					
 					<input resource="sodium carbonate" rate="5.0" ambient="false" />

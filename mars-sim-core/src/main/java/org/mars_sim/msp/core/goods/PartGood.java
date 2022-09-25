@@ -67,8 +67,7 @@ class PartGood extends Good {
 	private static final double CONSTRUCTION_DEMAND = .8;
 	private static final double GLASS_SHEET_DEMAND = .1;
 	private static final double GLASS_TUBE_DEMAND  = 80;
-	private static final double ITEM_DEMAND = 1;
-	
+	private static final double ITEM_DEMAND = 50;
 	
 	private static final double CONSTRUCTION_SITE_REQUIRED_PART_FACTOR = 100D;
 
@@ -88,7 +87,7 @@ class PartGood extends Good {
 	private static final double WIRE_COST = .005;
 	private static final double ELECTRONIC_COST = .5;
 	
-    private static final double INITIAL_PART_DEMAND = 10;
+    private static final double INITIAL_PART_DEMAND = 30;
 	private static final double INITIAL_PART_SUPPLY = 1;
 
 	private static final double MANUFACTURING_INPUT_FACTOR = 2D;
@@ -313,42 +312,42 @@ class PartGood extends Good {
 	 * TODO Replace this with value off Part class which comes form the XML file
 	 */
 	private static double calculateFlattenRawPartDemand(Part part) {
+		double demand = ITEM_DEMAND; 
 		String name = part.getName();
 		// Reduce the demand on the steel/aluminum scrap metal
 		// since they can only be produced by salvaging a vehicle
 		// therefore it's not reasonable to have high VP
 
 		if (name.contains(SCRAP))
-			return SCRAP_METAL_DEMAND;
+			return demand * SCRAP_METAL_DEMAND;
 		// May recycle the steel/AL scrap back to ingot
 		// Note: the VP of a scrap metal could be heavily influence by VP of regolith
 
 		if (name.contains(INGOT))
-			return INGOT_METAL_DEMAND;
+			return demand * INGOT_METAL_DEMAND;
 
 		if (name.contains(GLASS_SHEET))
-			return GLASS_SHEET_DEMAND;
+			return demand * GLASS_SHEET_DEMAND;
 		
 		if (name.contains(GLASS_TUBE))
-			return GLASS_TUBE_DEMAND;
+			return demand * GLASS_TUBE_DEMAND;
 		
 		if (name.contains(SHEET))
-			return SHEET_METAL_DEMAND;
+			return demand * SHEET_METAL_DEMAND;
 
 		if (name.contains(TRUSS))
-			return TRUSS_DEMAND;
+			return demand * TRUSS_DEMAND;
 
 		if (name.contains(STEEL))
-			return STEEL_DEMAND;
+			return demand * STEEL_DEMAND;
 
 		if (name.contains(FIBERGLASS))
-			return FIBERGLASS_DEMAND;
+			return demand * FIBERGLASS_DEMAND;
 
 		if (name.equalsIgnoreCase(BRICK))
-			return BRICK_DEMAND;
+			return demand * BRICK_DEMAND;
 
-		
-		return ITEM_DEMAND;
+		return demand;
 	}
 
 	/**
