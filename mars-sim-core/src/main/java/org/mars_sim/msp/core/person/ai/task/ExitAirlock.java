@@ -199,15 +199,13 @@ public class ExitAirlock extends Task implements Serializable {
 		if (newPos != null && airlock.occupy(zone, newPos, id)) {
 			if (previousZone >= 0) {
 				if (airlock.vacate(previousZone, id)) {
-					moveThere(newPos, zone);
-					return true;
+					return moveThere(newPos, zone);
 				}
 				else
 					return false;
 			}
 			else {
-				moveThere(newPos, zone);
-				return true;
+				return moveThere(newPos, zone);
 			}
 		}
 			

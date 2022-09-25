@@ -456,8 +456,7 @@ public abstract class OperateVehicle extends Task {
     	v_kph = Math.min(v_kph, 2 * getAverageVehicleSpeed(vehicle, worker));
     	v_ms = v_kph / KPH_CONV;
    
-    	logger.log(vehicle, Level.INFO, 20_000L, 
-				"max v_kph: " + Math.round(v_kph * 1000.0)/1000.0 + " kph");
+//    	logger.log(vehicle, Level.INFO, 20_000L, "max v_kph: " + Math.round(v_kph * 1000.0)/1000.0 + " kph");
     	
     	// Determine distance traveled in time given.
         double d_km = hrsTime * (u_kph + v_kph) / 2.0; // [in km]
@@ -658,8 +657,10 @@ public abstract class OperateVehicle extends Task {
 		else if (fuelUsed < 0) {
 			// TODO: will consider how to add an onboard battery to 
 			// absorb the power via regenerative braking
-			logger.log(vehicle, Level.INFO, 20_000, "Reducing speed to " + Math.round(v_kph * 1000.0)/1000.0
-					+ " kph, decelerating: " + Math.round(a_ms * 1000.0)/1000.0 
+			logger.log(vehicle, Level.INFO, 20_000, "Reducing speed from " 
+					+  Math.round(u_kph * 1000.0)/1000.0 + " kph "
+					+ " to " + Math.round(v_kph * 1000.0)/1000.0
+					+ " kph. Deceleration: " + Math.round(a_ms * 1000.0)/1000.0 
 					+ " m/s2. Force: " + Math.round(fTot * 1000.0)/1000.0  + " N.");
 		}
 		
