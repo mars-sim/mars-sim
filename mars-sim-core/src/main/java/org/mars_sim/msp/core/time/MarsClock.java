@@ -75,8 +75,8 @@ public class MarsClock implements Serializable {
 	// milder.
 
 	// Data members
-	/** The Martian year. */
-	private int orbit;
+	/** The Martian year. Note: the year of landing is considered to be the first year/orbit */
+	private int orbit = 1;
 	/** The Martian month. */
 	private int month;
 	/** The Martian day. */
@@ -309,10 +309,10 @@ public class MarsClock implements Serializable {
 				if (solOfMonth > MarsClockFormat.getSolsInMonth(month, orbit)) {
 					solOfMonth = 1;
 					month += 1;
-					if (month > MONTHS_PER_ORBIT) {
-						month = 1;
-						orbit += 1;
-					}
+				}
+				if (month > MONTHS_PER_ORBIT) {
+					month = 1;
+					orbit += 1;
 				}
 			}
 		} else if (addedMillisols < 0D) {
@@ -322,11 +322,11 @@ public class MarsClock implements Serializable {
 				missionSol -= 1;
 				if (solOfMonth < 1) {
 					month -= 1;
-					if (month < 1) {
-						month = MONTHS_PER_ORBIT;
-						orbit -= 1;
-					}
 					solOfMonth = MarsClockFormat.getSolsInMonth(month, orbit);
+				}
+				if (month < 1) {
+					month = MONTHS_PER_ORBIT;
+					orbit -= 1;
 				}
 			}
 		}
