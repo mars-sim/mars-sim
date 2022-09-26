@@ -102,7 +102,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	/** The number of times the entity has been maintained so far. */
 	private int numberMaintenances;
 	/** The number of orbits. */
-	private int orbitCache = 0;
+	private int orbitCache = MarsClock.FIRST_ORBIT;
 	/** Time passing (in millisols) since last maintenance on entity. */
 	private double timeSinceLastMaintenance;
 	/**
