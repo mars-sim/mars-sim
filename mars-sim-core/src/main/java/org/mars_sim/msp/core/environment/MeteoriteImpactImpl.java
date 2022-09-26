@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * MeteoriteImpactImpl.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-09-25
  * @author Manny Kung
  */
 
@@ -9,7 +9,6 @@ package org.mars_sim.msp.core.environment;
 
 import java.io.Serializable;
 
-import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.time.ClockUtils;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -40,22 +39,10 @@ public class MeteoriteImpactImpl implements MeteoriteImpact, Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
-	/** default logger. */
-	private static final SimLogger logger = SimLogger.getLogger(MeteoriteImpactImpl.class.getName());
-	
 	
 	private static final double CRITICAL_DIAMETER = .0016; // in cm
 	private static final double AVERAGE_DENSITY = 1D; // in gram/cm^3
 	private static final double IMPACT_VELOCITY = 1D; // in km/s
-
-	// private Meteorite meteorite;
-	// private BuildingManager buildingManager;
-
-	// public MeteoriteImpactImpl(BuildingManager buildingManager) {
-	// this.buildingManager = buildingManager;
-	// this.meteorite = buildingManager.getMeteorite();
-	// }
 
 	/*
 	 * Calculates the meteorite impact probability for the whole settlement once a

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * IncomingListPanel.java
- * @date 2021-09-20
+ * @date 2022-09-25
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.resupply;
@@ -112,6 +112,8 @@ implements ListSelectionListener {
 			 if (!transportList.isEmpty()) {
 				 Collections.sort(transportList);
 			 }
+			 
+			 System.out.println(transportList);
 			 
 			 // Register as historical event listener.
 			 Simulation.instance().getEventManager().addListener(this);

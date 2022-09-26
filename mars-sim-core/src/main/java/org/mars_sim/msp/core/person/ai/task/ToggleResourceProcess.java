@@ -46,10 +46,12 @@ public class ToggleResourceProcess extends Task implements Serializable {
 	private static final String TOGGLE_ON = Msg.getString("Task.description.toggleResourceProcess.on"); //$NON-NLS-1$
 	private static final String TOGGLE_OFF = Msg.getString("Task.description.toggleResourceProcess.off"); //$NON-NLS-1$
 
+
 	/** The stress modified per millisol. */
 	private static final double FACTOR = 1_000;
 	private static final double STRESS_MODIFIER = .25D;
 	private static final double SMALL_AMOUNT = 0.000001;
+	
 	
 	/** Task phases. */
 	private static final TaskPhase TOGGLING = new TaskPhase(Msg.getString("Task.phase.toggleProcess")); //$NON-NLS-1$
@@ -66,7 +68,6 @@ public class ToggleResourceProcess extends Task implements Serializable {
 	
 	/** The resource process to be toggled. */
 	private ResourceProcess process;
-
 	/** The building the resource process is in. */
 	private Building resourceProcessBuilding;
 
@@ -576,9 +577,10 @@ public class ToggleResourceProcess extends Task implements Serializable {
 	 * @return the total value for the input or output.
 	 */
 	private static double computeResourcesValue(Settlement settlement, ResourceProcess process, boolean input) {
+		int level = process.getLevel();
 		double score = 0D;
 		double benchmarkValue = 0;
-		
+				
 		Set<Integer> set = null;
 		if (input)
 			set = process.getInputResources();
@@ -595,7 +597,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 			double supply = settlement.getGoodsManager().getSupplyValue(resource);
 			
 			if (input) {
-				
+
 				double rate = process.getMaxInputRate(resource) / process.getNumModules() * 1000;
 				// Limit the vp so as to favor the production of output resources
 				double modVp = Math.max(.01, Math.min(20, vp/10));
@@ -637,10 +639,10 @@ public class ToggleResourceProcess extends Task implements Serializable {
 				// then it won't need to check how much it has in stock
 				// and it will not be affected by its vp and supply
 				if (process.isWasteOutputResource(resource)) {
-					score += rate / supply;
+					score += rate * (1 + level) * 2;
 				}
 				else
-					score += ((rate * vp) / supply);
+					score += ((rate * vp) / supply) * (1 + level) * 2;
 			}
 		}
 

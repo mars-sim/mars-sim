@@ -245,7 +245,7 @@ public class MaintainGarageVehicle extends Task implements Serializable {
 
 		// If maintenance is complete, task is done.
 		if (manager.getEffectiveTimeSinceLastMaintenance() == 0D) {
-			logger.info(worker, "Completed maintenance on " + vehicle.getName());
+			logger.info(worker, "Completed maintenance on " + vehicle.getName() + ".");
 			endTask();
 		}
 

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * PartGood.java
- * @date 2022-06-26
+ * @date 2022-09-25
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.goods;
@@ -67,7 +67,7 @@ class PartGood extends Good {
 	private static final double CONSTRUCTION_DEMAND = .8;
 	private static final double GLASS_SHEET_DEMAND = .1;
 	private static final double GLASS_TUBE_DEMAND  = 80;
-	private static final double ITEM_DEMAND = 50;
+	private static final double ITEM_DEMAND = 2.5;
 	
 	private static final double CONSTRUCTION_SITE_REQUIRED_PART_FACTOR = 100D;
 

@@ -181,20 +181,14 @@
     <equipment type="Specimen Box" number="50" />
 
     <resource type="oxygen" amount="4000.0" />
-    <resource type="water" amount="8000.0" />
     <resource type="food" amount="4000.0" />
-
-    <resource type="argon" amount="160.0" />
-
-    <resource type="fertilizer" amount="50.0" />
-
-    <resource type="black water" amount="25.0" />
-    <resource type="grey water" amount="25.0" />
-    <resource type="food waste" amount="25.0" />
-    <resource type="solid waste" amount="25.0" />
-    <resource type="crop waste" amount="25.0" />
-    <!-- Food Resources -->
-    <!-- No starting food resources for this template. -->
-
+    <resource type="water" amount="8000.0" />
+    
     <part-package name="package 1" number="1" />
+    
+    <resupply>
+       	<resupply-mission name="Standard Resupply 1"
+            arrival-time="0.1" /> 
+    </resupply>
+    
 </template>

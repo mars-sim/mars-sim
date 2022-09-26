@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * AmountResourceGood.java
- * @date 2022-06-26
+ * @date 2022-09-25
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.goods;
@@ -116,14 +116,14 @@ class AmountResourceGood extends Good {
 	private static final double ORE_DEMAND_FACTOR = .15;
 	private static final double MINERAL_DEMAND_FACTOR = .15;
 	
-	private static final double ACETYLENE_DEMAND_FACTOR = .1;
+	private static final double ACETYLENE_DEMAND_FACTOR = .01;
 	private static final double ETHYLENE_DEMAND_FACTOR = 6;
 	private static final double POLYETHYLENE_DEMAND_FACTOR = .01;
 	
-	private static final double POLYESTHER_RESIN_DEMAND_FACTOR = 0.025;
+	private static final double POLYESTHER_RESIN_DEMAND_FACTOR = 0.015;
 	private static final double POLYCARBONATE_RESIN_DEMAND_FACTOR = 15;
 	
-	private static final double STYRENE_DEMAND_FACTOR = .04;
+	private static final double STYRENE_DEMAND_FACTOR = .015;
 	private static final double POLYSTYRENE_DEMAND_FACTOR = 2.5;
 	
 	private static final double POLYURETHANE_DEMAND_FACTOR = 10;

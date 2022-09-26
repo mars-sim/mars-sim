@@ -26,12 +26,10 @@ public class ResourceProcess implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(ResourceProcess.class.getName());
 
 	private static final double SMALL_AMOUNT = 0.000001;
-
 	// How often should the process be checked? 
 	private static final double PROCESS_CHECK_FREQUENCY = 5D; // 200 times per sol
 	
@@ -41,11 +39,14 @@ public class ResourceProcess implements Serializable {
 	private boolean flag = false;
 	/** is this process running ? */
 	private boolean runningProcess;
+	
+	/** The level of effort for this resource process. */	
+	private int level = 2;
 	/** The time accumulated [in millisols]. */
 	private double accumulatedTime;
 
 	private double currentProductionLevel;
-	
+
 	private double toggleRunningWorkTime;
 
 	private String name;
@@ -472,4 +473,12 @@ public class ResourceProcess implements Serializable {
 		return new double[] {toggleRunningWorkTime, definition.getToggleDuration()};
 	}
 
+	public void setLevel(int level) {
+		this.level = level;
+	}
+
+	public int getLevel() {
+		return level;
+	}
+	
 }

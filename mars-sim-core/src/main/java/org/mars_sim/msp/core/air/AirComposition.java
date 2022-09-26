@@ -18,7 +18,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.ClockPulse;
 
 /**
- * Models the composition of auir within a containment. Holds the specific gas composition and pressure.
+ * Models the composition of air within a containment. Holds the specific gas composition and pressure.
  */
 public class AirComposition implements Serializable {
 	// Note : Gas volumes are additive. If you mix some volumes of oxygen and

@@ -28,17 +28,11 @@ public class ResourceProcessing extends Function {
 	private static final long serialVersionUID = 1L;
 
 	private static final String POWER_DOWN_LEVEL = "power-down-level";
-
 	public static final String SABATIER = "sabatier";
-	
 	public static final String REGOLITH = "regolith"; // Do not use "convert regolith to ores with sand"
-	
 	public static final String ICE = "melt and filter ice";
-	
 	public static final String PPA = "PPA";
-	
 	public static final String CFR = "Carbon Formation Reactor";
-	
 	public static final String OGS = "Oxygen Generation System";
 	
 	public static final double PROCESS_MAX_VALUE = 100D;

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TabPanelResourceProcesses.java
- * @date 2022-07-26
+ * @date 2022-09-25
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -11,6 +11,8 @@ import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 import java.util.Collections;
 import java.util.Iterator;
@@ -20,6 +22,7 @@ import java.util.logging.Level;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
@@ -33,7 +36,6 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
-import org.mars_sim.msp.core.structure.building.function.ResourceProcessing;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
@@ -44,7 +46,7 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
  * A tab panel for displaying all of the resource processes in a settlement.
  */
 @SuppressWarnings("serial")
-public class TabPanelResourceProcesses extends TabPanel {
+public class TabPanelResourceProcesses extends TabPanel implements ActionListener {
 	
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(TabPanelResourceProcesses.class.getName());
@@ -57,9 +59,11 @@ public class TabPanelResourceProcesses extends TabPanel {
 	private List<Building> buildings;
 	private JPanel processListPanel;
 	private JCheckBox overrideCheckbox;
-
+	private JComboBox<String> levelComboBox;
+	
 	private BuildingManager mgr;
 
+	private int level;
 	private int size;
 
 	/**
@@ -87,17 +91,14 @@ public class TabPanelResourceProcesses extends TabPanel {
 		buildings = mgr.getBuildings(FunctionType.RESOURCE_PROCESSING);
 		size = buildings.size();
 
-		// Prepare process list panel.
-		processListPanel = new JPanel(new GridLayout(0, 1, 5, 2));
-		processListPanel.setAlignmentY(TOP_ALIGNMENT);
-		processListPanel.setBorder(new MarsPanelBorder());
-		content.add(processListPanel, BorderLayout.CENTER);
-		populateProcessList();
-
+		// Create override check box panel.
+		JPanel topPanel = new JPanel(new GridLayout(1, 2, 2, 2));
+		content.add(topPanel, BorderLayout.NORTH);
+		
 		// Create override check box panel.
 		JPanel overrideCheckboxPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		content.add(overrideCheckboxPane, BorderLayout.NORTH);
-
+		topPanel.add(overrideCheckboxPane, BorderLayout.NORTH);
+	
 		// Create override check box.
 		overrideCheckbox = new JCheckBox(Msg.getString("TabPanelResourceProcesses.checkbox.overrideResourceProcessToggling")); //$NON-NLS-1$
 		overrideCheckbox.setToolTipText(Msg.getString("TabPanelResourceProcesses.tooltip.overrideResourceProcessToggling")); //$NON-NLS-1$
@@ -106,12 +107,52 @@ public class TabPanelResourceProcesses extends TabPanel {
 		);
 		overrideCheckbox.setSelected(settlement.getProcessOverride(OverrideType.RESOURCE_PROCESS));
 		overrideCheckboxPane.add(overrideCheckbox);
+		
+		// Create level panel.
+		JPanel levelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		topPanel.add(levelPanel, BorderLayout.NORTH);
+		
+		JLabel levelLabel = new JLabel(" Overall Effort Level : ");
+		levelPanel.add(levelLabel);
+			
+		// Prepare level combo box
+		String[] level = {"1", "2", "3", "4", "5"}; 
+		levelComboBox = new JComboBox<>(level);
+		levelPanel.add(levelComboBox);
+		levelComboBox.setSelectedItem("2");
+		levelComboBox.addActionListener(this);
+		 // add ItemListener levelComboBox.addItemListener(this)
+        
+		// Prepare process list panel.
+		processListPanel = new JPanel(new GridLayout(0, 1, 5, 1));
+		processListPanel.setAlignmentY(TOP_ALIGNMENT);
+		processListPanel.setBorder(new MarsPanelBorder());
+		content.add(processListPanel, BorderLayout.CENTER);
+		populateProcessList(false);
 	}
 
+
+	/**
+	 * Action event occurs.
+	 *
+	 * @param event {@link ActionEvent} the action event
+	 */
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if (e.getSource() instanceof JComboBox) {
+			int newLevel = Integer.parseInt((String)levelComboBox.getSelectedItem());
+			if (newLevel != level) {
+				level = newLevel;
+				populateProcessList(true);
+				logger.info("The Overall Effort Level of resource processing is now at " + newLevel + ".");
+			}
+		}
+	}	
+	
 	/**
 	 * Populates the process list panel with all building processes.
 	 */
-	private void populateProcessList() {
+	private void populateProcessList(boolean updateLevel) {
 		// Clear the list.
 		processListPanel.removeAll();
 
@@ -119,10 +160,11 @@ public class TabPanelResourceProcesses extends TabPanel {
 		Iterator<Building> i = buildings.iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
-			ResourceProcessing processing = building.getResourceProcessing();
-			Iterator<ResourceProcess> j = processing.getProcesses().iterator();
+			Iterator<ResourceProcess> j = building.getResourceProcessing().getProcesses().iterator();
 			while (j.hasNext()) {
 				ResourceProcess process = j.next();
+				if (updateLevel)
+					process.setLevel(level);
 				processListPanel.add(new ResourceProcessPanel(process, building));
 			}
 		}
@@ -137,12 +179,12 @@ public class TabPanelResourceProcesses extends TabPanel {
 			size = newSize;
 			buildings = selectBuildings();
 			Collections.sort(buildings);
-			populateProcessList();
+			populateProcessList(false);
 		}
 		else if (!buildings.equals(newBuildings)) {
 			buildings = newBuildings;
 			Collections.sort(buildings);
-			populateProcessList();
+			populateProcessList(false);
 		}
 		else {
 			// Update process list.
@@ -299,5 +341,5 @@ public class TabPanelResourceProcesses extends TabPanel {
 		overrideCheckbox = null;
 		settlement = null;
 		mgr = null;
-	}	
+	}
 }

@@ -255,109 +255,16 @@
     <equipment type="Large Bag" number="70" />
     <equipment type="Specimen Box" number="70" />
 
-    <!-- Resources -->
-    <resource type="food" amount="6000.0" />
-    <resource type="water" amount="10000.0" />
-
-    <resource type="black water" amount="25.0" />
-    <resource type="grey water" amount="25.0" />
-    <resource type="food waste" amount="25.0" />
-    <resource type="solid waste" amount="25.0" />
-    <resource type="crop waste" amount="25.0" />
-
-    <resource type="argon" amount="90.0" />
-    <resource type="fertilizer" amount="50.0" />
-
-    <!-- Crop -->
-    <resource type="Blueberry" amount="50.0" />
-    <resource type="Cabbage" amount="50.0" />
-    <resource type="Carrot" amount="50.0" />
-    <resource type="Celery" amount="50.0" />
-    <resource type="Corn" amount="50.0" />
-
-    <resource type="Cranberry" amount="50.0" />
-    <resource type="Cucumber" amount="50.0" />
-    <resource type="Garlic" amount="50.0" />
-    <resource type="Ginger" amount="50.0" />
-    <resource type="Green Bell Pepper" amount="50.0" />
-
-    <resource type="Spring Onion" amount="50.0" />
-    <resource type="Kidney Bean" amount="50.0" />
-    <resource type="Lettuce" amount="50.0" />
-    <resource type="Peanut" amount="50.0" />
-    <resource type="Peas" amount="50.0" />
-
-    <resource type="Potato" amount="50.0" />
-    <resource type="Quinoa" amount="50.0" />
-    <resource type="Rice" amount="50.0" />
-    <resource type="Soybean" amount="50.0" />
-    <resource type="Strawberry" amount="50.0" />
-
-    <resource type="Sugarcane" amount="50.0" />
-    <resource type="Swiss Chard" amount="50.0" />
-    <resource type="Taro" amount="50.0" />
-    <resource type="Tomato" amount="50.0" />
-
-    <resource type="Wheat" amount="50.0" />
-    <resource type="White Rice" amount="50.0" />
-    <resource type="White Onion" amount="50.0" />
-    <resource type="Yam" amount="50.0" />
-
-    <resource type="morel mushroom" amount="50.0" />
-    <resource type="radish" amount="50.0" />
-    <resource type="red beet" amount="50.0" />
-    <resource type="sweet potato" amount="50.0" />
-
-    <resource type="Mustard Seed" amount="50.0" />
-    <resource type="Sesame Seed" amount="50.0" />
-
-    <!-- Kitchen Resources -->
-    <resource type="chlorine" amount="50.0" />
-    <resource type="Sodium Hypochlorite" amount="20.0" />
-    <resource type="Acetic Acid Bacteria" amount="20.0" />
-    <resource type="Nitrosomonas spp" amount="20.0" />
-    <resource type="Nitrospira spp" amount="20.0" />
-    <resource type="Rhizobia" amount="20.0" />
-
-    <resource type="bisphenol-A" amount="100.0" />
-    <resource type="toilet tissue" amount="100.0" />
-    <resource type="paper" amount="100.0" />
-    <resource type="napkin" amount="100.0" />
-    <resource type="bleaching chemical" amount="50.0" />
-    <resource type="Baking Powder" amount="100.0" />
-    <resource type="pulp" amount="100.0" />
-    <resource type="Honey" amount="100.0" />
-    <resource type="Yeast" amount="50.0" />
-    <resource type="Epsom Salt" amount="50.0" />
-    <resource type="Table Salt" amount="50.0" />
-    <resource type="Sugar" amount="50.0" />
-
-    <!-- Food Derived Items -->
-    <resource type="mustard" amount="50.0" />
-    <resource type="Tofu" amount="50.0" />
-    <resource type="Roasted Peanut" amount="50.0" />
-    <resource type="White Bread" amount="50.0" />
-    <resource type="White Bun" amount="50.0" />
-    <resource type="Veggie Patty" amount="50.0" />
-    <resource type="Wheat Bread" amount="50" />
-    <resource type="Wheat Bun" amount="50" />
-    <resource type="Soy Protein" amount="50.0" />
-    <resource type="Peanut Butter" amount="50.0" />
-    <resource type="Soy Sprout" amount="50.0" />
-    <resource type="Soybean Oil" amount="50.0" />
-    <resource type="Peanut Oil" amount="50.0" />
-    <resource type="Garlic Oil" amount="50.0" />
-    <resource type="Sesame Oil" amount="50.0" />
-    <resource type="Cane Fiber" amount="100.0" />
-    <resource type="Rice Vinegar" amount="50.0" />
-    <resource type="Soy Sauce" amount="50.0" />
-    <resource type="Soymilk" amount="50.0" />
-    <resource type="Soy Flour" amount="50.0" />
-    <resource type="Wheat Flour" amount="50.0" />
-    <resource type="Granola Bar" amount="10.0" />
-
+	<!-- Life Support Resources -->
+	<resource type="food" amount="6000.0" />
+	<resource type="water" amount="12000.0" />
+	<resource type="oxygen" amount="6000.0" />
+	
     <part-package name="package 3" number="1" />
+    
     <resupply>
+       	<resupply-mission name="Standard Resupply 1"
+            arrival-time="0.1" /> 
         <resupply-mission name="Resupply for Phase 3"
             arrival-time="670.0" />
     </resupply>

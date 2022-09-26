@@ -25,7 +25,7 @@ public class TradeTab extends TableTab implements UnitManagerListener {
 	/** The minimum 2 of decimal places to be displayed. */
 	private static final int TWO_DIGITS = 2;
 	/** The minimum 3 decimal places to be displayed. */
-	private static final int THREE_DIGITS = 3;
+//	private static final int THREE_DIGITS = 3;
 	
 	/**
 	 * constructor.
@@ -54,7 +54,7 @@ public class TradeTab extends TableTab implements UnitManagerListener {
 				else if (c == 6 || c == 7)
 					m.getColumn(i).setCellRenderer(NumberRenderer.getCurrencyRenderer());
 				else 
-					m.getColumn(i).setCellRenderer(new NumberCellRenderer(THREE_DIGITS, true));
+					m.getColumn(i).setCellRenderer(new NumberCellRenderer(TWO_DIGITS, true));
 			}
 		}
 

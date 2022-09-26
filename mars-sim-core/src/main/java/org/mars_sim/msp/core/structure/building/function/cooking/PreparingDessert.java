@@ -47,7 +47,7 @@ public class PreparingDessert extends Function {
 	/** The minimal amount of resource to be retrieved. */
 	private static final double MIN = 0.00001;
 
-	public static final String REFRIGERATE = "A dessert has expired. Refigerating ";
+	public static final String REFRIGERATE = "A dessert has expired. Refrigerating ";
 
 	public static final String DISCARDED = " has expired and discarded.";
 

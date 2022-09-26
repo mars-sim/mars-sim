@@ -16,7 +16,6 @@ import java.awt.event.ActionListener;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 
-import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
@@ -32,7 +31,7 @@ import com.alee.laf.panel.WebPanel;
 public class NewTransportItemDialog extends ModalInternalFrame {
 
 	/** default logger. */
-	private static SimLogger logger = SimLogger.getLogger(NewTransportItemDialog.class.getName());
+//	private static SimLogger logger = SimLogger.getLogger(NewTransportItemDialog.class.getName());
 
 	// Transport item types.
 	private static final String DEFAULT_MESSAGE = "Select Transport Item Type";

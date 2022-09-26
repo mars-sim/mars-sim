@@ -1344,7 +1344,7 @@ public class PhysicalCondition implements Serializable {
 
 			clocks.add(marsClock.getDateTimeStamp());
 			healthHistory.put(type, clocks);
-			logger.log(person, Level.INFO, 1_000L, "Suffered from " + type.getName());
+			logger.log(person, Level.INFO, 1_000L, "Suffered from " + type.getName() + ".");
 			recalculatePerformance();
 		}
 	}

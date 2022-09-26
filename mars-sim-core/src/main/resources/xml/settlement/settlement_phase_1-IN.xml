@@ -98,7 +98,7 @@
 
     <resupply>
     	<resupply-mission name="Standard Resupply 1"
-            arrival-time="0.0" />    
+            arrival-time="0.1" />    
         <resupply-mission name="Resupply for Phase 1"
             arrival-time="668.0" />
         <resupply-mission name="Resupply for Phase 2"

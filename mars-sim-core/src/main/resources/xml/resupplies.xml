@@ -33,18 +33,15 @@
 <resupply-list>
 
 	<resupply name="Standard Resupply 1">
-	    <!-- Resources -->
+	    <!-- Life Support Resources -->
 	    <resource name="food" amount="4000.0" />
-	    <resource name="water" amount="6000.0" />
-	
-	    <resource name="black water" amount="25.0" />
-	    <resource name="grey water" amount="25.0" />
-	    <resource name="food waste" amount="25.0" />
-	    <resource name="solid waste" amount="25.0" />
-	    <resource name="crop waste" amount="25.0" />
-	    
+	    <resource name="water" amount="8000.0" />
+	    <resource name="oxygen" amount="4000.0" />
+
+		<!-- Gases -->
 	    <resource name="argon" amount="60.0" />
 	
+		<!-- Crop related -->
 	    <resource name="fertilizer" amount="50.0" />
 	
 	    <!-- Crop -->
@@ -76,17 +73,16 @@
 	    <resource name="Swiss Chard" amount="50.0" />
 	    <resource name="Taro" amount="50.0" />
 	    <resource name="Tomato" amount="50.0" />
-	
 	    <resource name="Wheat" amount="50.0" />
+	    
 	    <resource name="White Rice" amount="50.0" />
 	    <resource name="White Onion" amount="50.0" />
 	    <resource name="Yam" amount="50.0" />
-	
 	    <resource name="morel mushroom" amount="50.0" />
 	    <resource name="radish" amount="50.0" />
+	    
 	    <resource name="red beet" amount="50.0" />
 	    <resource name="sweet potato" amount="50.0" />
-	
 	    <resource name="Mustard Seed" amount="50.0" />
 	    <resource name="Sesame Seed" amount="50.0" />
 	
@@ -99,21 +95,22 @@
 	    <resource name="Acetic Acid Bacteria" amount="20.0" />
 	    <resource name="Nitrosomonas spp" amount="20.0" />
 	    <resource name="Nitrospira spp" amount="20.0" />
+	    
 	    <resource name="Rhizobia" amount="20.0" />
-	
 	    <resource name="bisphenol-A" amount="100.0" />
 	    <resource name="toilet tissue" amount="100.0" />
 	    <resource name="paper" amount="100.0" />
 	    <resource name="napkin" amount="100.0" />
+	    
 	    <resource name="bleaching chemical" amount="50.0" />
 	    <resource name="Baking Powder" amount="100.0" />
 	    <resource name="pulp" amount="100.0" />
 	    <resource name="Honey" amount="100.0" />
 	    <resource name="Yeast" amount="50.0" />
+	    
 	    <resource name="Epsom Salt" amount="50.0" />
 	    <resource name="Table Salt" amount="50.0" />
-	    <resource name="Sugar" amount="50.0" />
-    	<resource name="iron powder" amount="10.0" />  	    
+	    <resource name="Sugar" amount="50.0" />	    
 	
 	    <!-- Food Derived Items -->
 	    <resource name="mustard" amount="50.0" />
@@ -121,24 +118,30 @@
 	    <resource name="Roasted Peanut" amount="50.0" />
 	    <resource name="White Bread" amount="50.0" />
 	    <resource name="White Bun" amount="50.0" />
+	    
 	    <resource name="Veggie Patty" amount="50.0" />
 	    <resource name="Wheat Bread" amount="50" />
 	    <resource name="Wheat Bun" amount="50" />
 	    <resource name="Soy Protein" amount="50.0" />
 	    <resource name="Peanut Butter" amount="50.0" />
+	    
 	    <resource name="Soy Sprout" amount="50.0" />
 	    <resource name="Soybean Oil" amount="50.0" />
 	    <resource name="Peanut Oil" amount="50.0" />
 	    <resource name="Garlic Oil" amount="50.0" />
 	    <resource name="Sesame Oil" amount="50.0" />
+	    
 	    <resource name="Cane Fiber" amount="100.0" />
 	    <resource name="Rice Vinegar" amount="50.0" />
 	    <resource name="Soy Sauce" amount="50.0" />
 	    <resource name="Soymilk" amount="50.0" />
 	    <resource name="Soy Flour" amount="50.0" />
+	    
 	    <resource name="Wheat Flour" amount="50.0" />
 	    <resource name="Granola Bar" amount="10.0" />
 
+	    <!-- Utility Resources -->
+	    <resource name="iron powder" amount="10.0" />  
 	</resupply>
 	
 	<!-- Resupply mission from Earth. -->
