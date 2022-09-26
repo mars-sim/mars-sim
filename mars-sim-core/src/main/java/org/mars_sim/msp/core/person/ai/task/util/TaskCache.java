@@ -18,9 +18,10 @@ import org.mars_sim.msp.core.tool.RandomUtil;
 public class TaskCache {
 	private Map<MetaTask, Double> tasks = new HashMap<>();
     private double totalProb = 0;
+    private String context;
 
-    public TaskCache() {
-        // Nothing to do
+    public TaskCache(String context) {
+        this.context = context;
     }
 
     /**
@@ -39,6 +40,14 @@ public class TaskCache {
      */
     public double getTotal() {
         return totalProb;
+    }
+
+    /**
+     * Get the context where this cache was created.
+     * @return
+     */
+    public String getContext() {
+        return context;
     }
 
     /**

@@ -161,7 +161,7 @@ public class BotTaskManager extends TaskManager {
 		}
 		
 		// Reset taskProbCache and totalProbCache
-		TaskCache newCache = new TaskCache();
+		TaskCache newCache = new TaskCache("Robot");
 		
 		// Determine probabilities.
 		for (MetaTask mt : mtList) {
@@ -175,18 +175,12 @@ public class BotTaskManager extends TaskManager {
 		if (newCache.getTasks().isEmpty()) {
 			newCache = getChargeTaskMap();
 		}
-
-		// Output shift
-		if (diagnosticFile != null) {
-			outputCache(newCache);
-		}
-
 		return newCache;
 	}
 
 	private static synchronized TaskCache getChargeTaskMap() {
 		if (chargeMap == null) {
-			chargeMap = new TaskCache();
+			chargeMap = new TaskCache("Robot Charge");
 			chargeMap.put(new ChargeMeta(), 1D);
 		}
 		return chargeMap;

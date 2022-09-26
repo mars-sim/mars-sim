@@ -113,7 +113,7 @@ public abstract class TaskManager implements Serializable, Temporal {
 	
 	protected static MarsClock marsClock;
 
-	protected static PrintWriter diagnosticFile = null;
+	private static PrintWriter diagnosticFile = null;
 
 	/**
 	 * Enable the detailed diagnostics
@@ -507,6 +507,11 @@ public abstract class TaskManager implements Serializable, Temporal {
 		// If cache is not current, calculate the probabilities.
 		if (!useCache()) {
 			taskProbCache = rebuildTaskCache();
+			
+			// Output shift
+			if (diagnosticFile != null) {
+				outputCache(taskProbCache);
+			}
 		}
 
 		if (taskProbCache.getTasks().isEmpty()) {
@@ -551,13 +556,11 @@ public abstract class TaskManager implements Serializable, Temporal {
 	 * 
 	 * @param extras Extra details about Task
 	 */
-	protected void outputCache(TaskCache current, String... extras) {	
+	private void outputCache(TaskCache current) {	
 		synchronized (diagnosticFile) {	
 			diagnosticFile.println(MarsClockFormat.getDateTimeStamp(marsClock));
 			diagnosticFile.println("Worker:" + worker.getName());
-			for (String s : extras) {
-				diagnosticFile.println(s);				
-			}
+			diagnosticFile.println(current.getContext());				
 			diagnosticFile.println("Total:" + current.getTotal());
 			for (Entry<MetaTask, Double> task : taskProbCache.getTasks().entrySet()) {
 				diagnosticFile.println(task.getKey().getName() + ":" + task.getValue());

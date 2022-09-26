@@ -6,12 +6,12 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
+import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitType;
@@ -31,6 +31,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingCategory;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.function.Function;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.core.structure.building.function.cooking.CookedMeal;
@@ -45,7 +46,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  * The EatDrink class is a task for eating a meal. The duration of the task is 40
  * millisols. Note: Eating a meal reduces hunger to 0.
  */
-public class EatDrink extends Task implements Serializable {
+public class EatDrink extends Task {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -344,6 +345,51 @@ public class EatDrink extends Task implements Serializable {
 		}
 	}
 	
+	/**
+	 * Walks to an activity in the dining building.
+	 * 
+	 * @param building  the dining building.
+	 * @param allowFail true if walking is allowed to fail.
+	 */
+	protected void walkToDiningLoc(Building building, boolean allowFail) {
+
+		LocalPosition pos = findDiningSpot(building);
+
+		if (pos != null) {
+			// Create subtask for walking to destination.
+			createWalkingSubtask(building, pos, allowFail);
+		}
+	}
+
+	/**
+	 * Finds a dining spot in this building.
+	 * 
+	 * @param building
+	 * @return
+	 */
+	private LocalPosition findDiningSpot(Building building) {
+
+		LocalPosition loc = building.getFunction(FunctionType.DINING).getAvailableActivitySpot(person);
+		if (loc != null) {
+			return loc;
+		}
+		
+		Function f = building.getEmptyActivitySpotFunction();
+		if (f == null) {
+			return null;
+		}
+
+		if (person != null) {
+			// Find available activity spot in building.
+			loc = f.getAvailableActivitySpot(person);
+		} else {
+			// Find available activity spot in building.
+			loc = f.getAvailableActivitySpot(robot);
+		}
+
+		return loc;
+	}
+
 	private void goForWater() {
 		// if water only
 		// Initialize task phase.

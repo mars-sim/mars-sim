@@ -11,12 +11,13 @@ import java.util.logging.Level;
 
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.job.util.ShiftType;
-import org.mars_sim.msp.core.person.ai.role.Role;
 import org.mars_sim.msp.core.person.ai.task.Walk;
 import org.mars_sim.msp.core.person.ai.task.util.MetaTask.TaskScope;
 import org.mars_sim.msp.core.person.ai.task.util.MetaTask.WorkerType;
+import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * The PersonTaskManager class keeps track of a person's current task and can randomly
@@ -126,24 +127,34 @@ public class PersonTaskManager extends TaskManager {
 	@Override
 	protected TaskCache rebuildTaskCache() {
 
+		// Check if a Person is in a bad physical condition and a slight random
+		PhysicalCondition pc = person.getPhysicalCondition();
+		if (person.isInside() && (pc.isThirsty() || pc.isHungry())
+			&& (RandomUtil.lessThanRandPercent(50))) {
+				// Force the person to do the basic tasks.
+				logger.warning(person, "Need health tasks");
+				return getDefaultInsideTasks();
+		}
+
+
 		String shiftDesc = null;
 		TaskSchedule taskSchedule = person.getTaskSchedule();
 		List<MetaTask> mtList = null;
 		if (taskSchedule.getShiftType() == ShiftType.ON_CALL) {
 			mtList = MetaTaskUtil.getPersonMetaTasks();
-			shiftDesc = "OnCall";
+			shiftDesc = "Shift: OnCall";
 		}
 		else if (taskSchedule.isShiftHour(marsClock.getMillisolInt())) {
 			mtList = MetaTaskUtil.getDutyHourTasks();
-			shiftDesc = "Duty";
+			shiftDesc = "Shift: Duty";
 		}
 		else {
 			mtList = MetaTaskUtil.getNonDutyHourTasks();
-			shiftDesc = "NonDuty";
+			shiftDesc = "Shift: NonDuty";
 		}
 
 		// Create new taskProbCache
-		TaskCache newCache = new TaskCache();
+		TaskCache newCache = new TaskCache(shiftDesc);
 
 		// Determine probabilities.
 		for (MetaTask mt : mtList) {
@@ -173,14 +184,6 @@ public class PersonTaskManager extends TaskManager {
 			logger.warning(person, 30_000L, "No normal task available. Get default "
 								+ (person.isOutside() ? "outside" : "inside") + " tasks.");
 		}
-
-		// Output shift
-		if (diagnosticFile != null) {
-            Role role = person.getRole();
-            String roleDetails = "Role: " + (role != null ? role.getType() : "None");
-			outputCache(newCache, "Shift: " + shiftDesc, roleDetails);
-		}
-
 		return newCache;
 	}
 
@@ -190,7 +193,7 @@ public class PersonTaskManager extends TaskManager {
 	 */
 	private static synchronized TaskCache getDefaultInsideTasks() {
 		if (defaultInsideTasks == null) {
-			defaultInsideTasks = new TaskCache();
+			defaultInsideTasks = new TaskCache("Default Inside");
 
 			// TODO Not great that we use the class name to do lookups
 			defaultInsideTasks.put(MetaTaskUtil.getMetaTask("SleepMeta"), 1D);
@@ -204,7 +207,7 @@ public class PersonTaskManager extends TaskManager {
 	 */
 	private static synchronized TaskCache getDefaultOutsideTasks() {
 		if (defaultOutsideTasks == null) {
-			defaultOutsideTasks = new TaskCache();
+			defaultOutsideTasks = new TaskCache("Default Outside");
 
 			// Create a MetaTask to return inside
 			MetaTask walkBack = new MetaTask("Return Inside", WorkerType.PERSON, TaskScope.ANY_HOUR) {

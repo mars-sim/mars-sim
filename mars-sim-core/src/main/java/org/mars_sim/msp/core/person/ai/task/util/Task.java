@@ -159,7 +159,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	/** The static instance of the MissionManager */
 	protected static MissionManager missionManager;
 	/** The static instance of the SimulationConfig */
-	public static SimulationConfig simulationConfig = SimulationConfig.instance();
+	protected static SimulationConfig simulationConfig = SimulationConfig.instance();
 	/** The static instance of the personConfig */
 	protected static PersonConfig personConfig = simulationConfig.getPersonConfig();
 	/** The static instance of the personConfig */
@@ -1134,35 +1134,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 
 	/**
-	 * Finds a dining spot in this building.
-	 * 
-	 * @param building
-	 * @return
-	 */
-	protected LocalPosition findDiningSpot(Building building) {
-
-		LocalPosition loc = building.getFunction(FunctionType.DINING).getAvailableActivitySpot(person);
-		if (loc != null) {
-			return loc;
-		}
-		
-		Function f = building.getEmptyActivitySpotFunction();
-		if (f == null) {
-			return null;
-		}
-
-		if (person != null) {
-			// Find available activity spot in building.
-			loc = f.getAvailableActivitySpot(person);
-		} else {
-			// Find available activity spot in building.
-			loc = f.getAvailableActivitySpot(robot);
-		}
-
-		return loc;
-	}
-	
-	/**
 	 * Walks to an empty activity spot in a building.
 	 * 
 	 * @param building     the destination building.
@@ -1199,21 +1170,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		}
 	}
 
-	/**
-	 * Walks to an activity in the dining building.
-	 * 
-	 * @param building  the dining building.
-	 * @param allowFail true if walking is allowed to fail.
-	 */
-	protected void walkToDiningLoc(Building building, boolean allowFail) {
 
-		LocalPosition pos = findDiningSpot(building);
-
-		if (pos != null) {
-			// Create subtask for walking to destination.
-			createWalkingSubtask(building, pos, allowFail);
-		}
-	}
 	
 	/**
 	 * Walks to a random interior location in a building.
