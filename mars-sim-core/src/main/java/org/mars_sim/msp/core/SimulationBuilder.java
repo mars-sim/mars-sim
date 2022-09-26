@@ -317,10 +317,11 @@ public class SimulationBuilder {
 		}
 
 		sim.startClock(false);
-		// initialize getTransportManager	
-		sim.getTransportManager().init();
-		// initialize ResupplyUtil
-		new ResupplyUtil();
+		
+		if (!loaded) {
+			// initialize getTransportManager	
+			sim.getTransportManager().init();
+		}
 		
 		return sim;
 	}
@@ -340,7 +341,6 @@ public class SimulationBuilder {
 			}
 			logger.config("Loading from " + simFile.getAbsolutePath());
 
-			
 			Simulation sim = Simulation.instance();
 			
 			// Create class instances
@@ -348,11 +348,9 @@ public class SimulationBuilder {
 			
 			sim.loadSimulation(simFile);		
 			
-			result  = true;		
-			// initialize getTransportManager	
-			sim.getTransportManager().init();		
+			result  = true;			
 			// initialize ResupplyUtil.
-			new ResupplyUtil();
+//			new ResupplyUtil();
 		}
 		else if (!newAllowed) {
 			// Not allowed to create a new simulation so throw error
