@@ -5,6 +5,7 @@
 	<!ATTLIST resource name CDATA #REQUIRED>
 	<!ATTLIST resource type CDATA #IMPLIED>
 	<!ATTLIST resource phase (solid|liquid|gas) #REQUIRED>
+	<!ATTLIST resource demand CDATA #IMPLIED>
 	<!ATTLIST resource life-support (true|false) "false">
 	<!ATTLIST resource edible (true|false) "false">
 ]>
@@ -43,8 +44,8 @@
 	
 	<resource name="carbon monoxide" type="compound" phase="gas" />
 	<resource name="chlorine" type="element" phase="gas"/>
-	<resource name="ethylene" type="compound" phase="gas" />
-	<resource name="acetylene" type="compound" phase="gas">Acetylene is a colorless gas that has a strong 
+	<resource name="ethylene" type="compound" phase="gas" demand=".1" />
+	<resource name="acetylene" type="compound" phase="gas" demand=".01" >Acetylene is a colorless gas that has a strong 
 	 garlic-like odor. When combined with oxygen, it becomes very hot and is classified as the hottest fuel gas. 
 	 It is also the only fuel gas that can weld and cut steel, making it the preferred choice for welders.
 	 The welding process that uses acetylene is known as oxy-fuel cutting or gas cutting. Acetylene is 
@@ -123,10 +124,10 @@
 		 http://extension.psu.edu/plants/green-industry/news/2014/tissue-culture-finishing-for-greenhouse-growers-stage-iii-stage-iv -->
 
 <!-- Seeds from Crop Produce -->
-	<resource name="mustard seed" type="crop" phase="solid" edible="true">Seeds from
-		white mustard plant</resource>
-	<resource name="sesame seed" type="crop" phase="solid" edible="true">Seeds from
-		sesame plant.</resource>
+	<resource name="mustard seed" type="crop" phase="solid" edible="true">
+		Seeds from white mustard plant</resource>
+	<resource name="sesame seed" type="crop" phase="solid" edible="true">
+		Seeds from sesame plant.</resource>
 
 <!-- Soybean-derived food resources -->
 	<resource name="miso" type="soy-based" phase="solid" edible="true">Paste made from fermented soybeans and rice</resource>
@@ -176,24 +177,33 @@
 	<resource name="white rice" type="derived" phase="solid" edible="true"></resource>
 
 <!-- Types of oil -->
-	<resource name="sesame oil" type="oil" phase="liquid" edible="true">Oil pressed from sesame seeds.</resource>
-	<resource name="rice bran oil" type="oil" phase="liquid" edible="true">Oil is extracted from the germ and inner husk of rice. </resource>
-	<resource name="peanut oil" type="oil" phase="liquid" edible="true">Oil is extracted from peanuts.</resource>
-	<resource name="soybean oil" type="oil" phase="liquid" edible="true">Oil derived from soybean.</resource>
+	<resource name="sesame oil" type="oil" phase="liquid" edible="true">
+		Oil pressed from sesame seeds.</resource>
+	<resource name="rice bran oil" type="oil" phase="liquid" edible="true">
+		Oil is extracted from the germ and inner husk of rice. </resource>
+	<resource name="peanut oil" type="oil" phase="liquid" edible="true">
+		Oil is extracted from peanuts.</resource>
+	<resource name="soybean oil" type="oil" phase="liquid" edible="true">
+		Oil derived from soybean.</resource>
 	
 <!-- Food resources derived from Bio-organism -->
-	<resource name="Aspergillus mix" type="organism" phase="solid" edible="true">A mix of the fungi Aspergillus oryzae and 
+	<resource name="Aspergillus mix" type="organism" phase="solid" edible="true">
+		A mix of the fungi Aspergillus oryzae and 
 		Aspergillus sojae. Used in the fermentation of miso, soy sauce, and sake.</resource>
-	<resource name="Rhizopus oligosporus" type="organism" phase="solid" edible="true">This edible fungus is used to ferment 
+	<resource name="Rhizopus oligosporus" type="organism" phase="solid" edible="true">
+		This edible fungus is used to ferment 
 		tempeh. As the fungus grows, its mycelia grow throughout the edible medium, producing
 		an edible block.</resource>
-	<resource name="yeast" type="organism" phase="solid" edible="true">Yeasts are single-celled fungi. It is an essential Baking Ingredient for making bread.</resource>
+	<resource name="yeast" type="organism" phase="solid" edible="true">
+		Yeasts are single-celled fungi. It is an essential Baking Ingredient for making bread.</resource>
 
 <!-- Chemical resources derived from insect -->
-	<resource name="beeswax" type="insect" phase="solid" edible="true"> a natural wax produced by honey as a lubricant,
+	<resource name="beeswax" type="insect" phase="solid" edible="true"> 
+		a natural wax produced by honey as a lubricant,
 		waterproofing agent, an ingredient in cosmetics, a medicinal agent to help lower cholesterol levels, prevent
 		infections, and help protect the stomach from ulcers. </resource>
-	<resource name="propolis" type="insect" phase="liquid" edible="true">Propolis or bee glue is a resinous
+	<resource name="propolis" type="insect" phase="liquid" edible="true">
+		Propolis or bee glue is a resinous
 		mixture collected by honey bees from tree buds,	sap flows, or other
 		botanical sources. Used as a sealant for unwanted open spaces in the
 		hive. It's the focus of a large number of research projects published
@@ -202,42 +212,56 @@
 		in cancer treatment and cancer prevention.	</resource>
 
 <!-- Food resources derived from fish -->
-	<resource name="fish meat" type="animal" phase="solid" edible="true">meat from fish</resource>
+	<resource name="fish meat" type="animal" phase="solid" edible="true">
+		meat from fish</resource>
 <!-- Since fish oil is not a neutral flavour (just like garlic oil), it should not be used in place of generic oil -->
-	<resource name="fish oil" type="animal" phase="liquid" edible="true">Oil derived from fish.</resource>
-	<resource name="fish patty" type="animal" phase="solid" edible="true">patty made of fish meat</resource>
+	<resource name="fish oil" type="animal" phase="liquid" edible="true">
+		Oil derived from fish.</resource>
+	<resource name="fish patty" type="animal" phase="solid" edible="true">
+		patty made of fish meat</resource>
 
 <!-- Chemical food resources -->
-	<resource name="baking powder" type="chemical" phase="solid" edible="true">Baking powder contains sodium bicarbonate as well as the acidifying agent (cream of tartar), and also a drying agent (usually starch). </resource>
-	<resource name="table salt" type="chemical" phase="solid" edible="true">Food Grade Salt, is the common name for the substance sodium chloride (NaCI), which occurs in the form of transparent cubic crystals. </resource>
-	<resource name="rock salt" type="compound" phase="solid">Halite, commonly known as rock salt, is the mineral
+	<resource name="baking powder" type="chemical" phase="solid" edible="true">
+		Baking powder contains sodium bicarbonate as well as the acidifying agent (cream of tartar), and also a drying agent (usually starch). </resource>
+	<resource name="table salt" type="chemical" phase="solid" edible="true">
+		Food Grade Salt, is the common name for the substance sodium chloride (NaCI), which occurs in the form of transparent cubic crystals. </resource>
+	<resource name="rock salt" type="compound" phase="solid">
+		Halite, commonly known as rock salt, is the mineral
 	 	form of sodium chloride (NaCl).</resource>
 	
 <!-- Chemical for utility -->
-	<resource name="sodium hypochlorite" type="chemical" phase="liquid">Sodium Hypochlorite is
-		one of the bleaching chemical for sanitization of Soybean as well as pulp
+	<resource name="sodium hypochlorite" type="chemical" phase="liquid">
+		Sodium Hypochlorite is
+		one of the bleaching chemical for sanitizing soybean as well as pulp
 		bleaching during paper making </resource>
-	<resource name="bleaching chemical" type="chemical" phase="liquid">Bleaching chemical
+	<resource name="bleaching chemical" type="chemical" phase="liquid">
+		Bleaching chemical
 		include chlorine dioxide, oxygen, or hydrogen peroxide. </resource>
-	<resource name="activated charcoal" type="chemical" phase="solid">Activated charcoal's main use is as an
+	<resource name="activated charcoal" type="chemical" phase="solid"> 
+		Activated charcoal's main use is as an
 	antidote in poisoning and in constructing water filter</resource>
-	<resource name="epsom salt" type="chemical" phase="solid">Magnesium Sulfate as bath salt to
+	<resource name="epsom salt" type="chemical" phase="solid"> 
+		Magnesium Sulfate as bath salt to
 		soothe sore muscles or for gardeners to improve crops. </resource>
-	<resource name="fertilizer" type="chemical" phase="solid">Inorganic nutrients for crop growth </resource>
-	<resource name="lime" type="chemical" phase="solid">Lime is a calcium-containing inorganic
+	<resource name="fertilizer" type="chemical" phase="solid" demand="4.5"> 
+		Inorganic nutrients for crop growth </resource>
+	<resource name="lime" type="chemical" phase="solid" demand=".01"> 
+		Lime is a calcium-containing inorganic
 		material in which carbonates, oxides, and hydroxides predominate. In the
 		strict sense of the term, lime is CaO or Ca(OH)2.</resource>
-	<resource name="polycarbonate resin" type="chemical" phase="solid">These are partially bio-based
+	<resource name="polycarbonate resin" type="chemical" phase="solid" demand="15"> 
+		These are partially bio-based
 		polycarbonates made use of renewable feedstocks (food waste) and CO2. See
 		https://www.bio.org/sites/default/files/Natalie%20Bittner.pdf. They
 		are strong, tough materials, easily worked, molded, and thermoformed.</resource>
-	<resource name="polyurethane" type="chemical" phase="solid">These bio-based polyurethane made
+	<resource name="polyurethane" type="chemical" phase="solid" demand="10">
+		These bio-based polyurethane made
 		use of natural-oil polyols (NOPs) produced from renewable
 		raw materials such as soybean or vegetable oil. Polyurethanes are used
 		in the manufacturing of foot wears, solid plastic items, foams for
 		bedding and upholstery. </resource>
-	<resource name="polyester resin" type="chemical" phase="liquid"> Polyester resins are 
-	 thermoplastic polymers. It's the most widely used resin systems in the marine industry. 
+	<resource name="polyester resin" type="chemical" phase="liquid" demand="0.015"> 
+		Polyester resins are thermoplastic polymers. It's the most widely used resin systems in the marine industry. 
 	 By far the majority of dinghies, yachts and workboats built in composites make use of this 
 	 resin system. Polyesters are produced commercially both as saturated and unsaturated resins. 
 	 The most common, highest volume produced polyester is Polyethylene terephthalate (PET), a 
@@ -248,17 +272,22 @@
 	 and holes that need to remain watertight. See comparison between polyester resin and 
 	 epoxy resin at https://www.pcepoxy.com/what-is-the-difference-between-epoxy-and-polyester-resin/
 	</resource>
-	<resource name="polyethylene" type="chemical" phase="solid">Polyethylene pellets or flakes.</resource>
-	<resource name="styrene" type="chemical" phase="liquid">Synthetic styrene, which is chemically
+	<resource name="polyethylene" type="chemical" phase="solid" demand=".01">
+		Polyethylene pellets or flakes.</resource>
+	<resource name="styrene" type="chemical" phase="liquid" demand=".015">
+		Synthetic styrene, which is chemically
 		identical to naturally occurring styrene, is manufactured as a chemical building block for
 		materials used to make packaging, insulation </resource>
-	<resource name="polystyrene" type="chemical" phase="solid">When styrene molecules are linked
+	<resource name="polystyrene" type="chemical" phase="solid" demand="2.5">
+		When styrene molecules are linked
 		together into a polymer, polystyrene is created. Polystyrene is an inert plastic that can
 		be used to make many products, such as disposable plates, cups and other foodservice
 		packaging products. </resource>
-	<resource name="bisphenol-a" type="chemical" phase="solid"> The chemical used for reinforcing
+	<resource name="bisphenol-a" type="chemical" phase="solid"> 
+		The chemical used for reinforcing
 		plastic and for making polycarbonate</resource>
-	<resource name="ceramic electrolyte" type="chemical" phase="solid"> The ceramic electrolyte 
+	<resource name="ceramic electrolyte" type="chemical" phase="solid"> 
+		The ceramic electrolyte 
 		is highly ion-conductive and chemically stable for making batteries and fuel cells. 
 		This solid metal oxide is an insulator that will not conduct electricity. However, it 
 		is capable of conducting oxygen ions and suitable for cell reactions. </resource>
@@ -268,24 +297,34 @@
      https://www.pnas.org/content/117/50/31685
      https://scholarworks.wm.edu/cgi/viewcontent.cgi?article=6537&context=etd
 -->
-	<resource name="regolith-b" type="regolith" phase="solid">Type B Martian soil rich in poly-hydrated sulfate. 40% gypsum.</resource>
-	<resource name="regolith-c" type="regolith" phase="solid">Type C Martian soil rich in phyllo-silicate. 40% smectite.</resource>
-	<resource name="regolith-d" type="regolith" phase="solid">Type D Martian soil 23.5% basaltic.</resource>
-	<resource name="regolith" type="regolith" phase="solid">Unspecified type of Martian soil.</resource>
+	<resource name="regolith-b" type="regolith" phase="solid"> 
+		Type B Martian soil rich in poly-hydrated sulfate. 40% gypsum.</resource>
+	<resource name="regolith-c" type="regolith" phase="solid"> 
+		Type C Martian soil rich in phyllo-silicate. 40% smectite.</resource>
+	<resource name="regolith-d" type="regolith" phase="solid"> 
+		Type D Martian soil 23.5% basaltic.</resource>
+	<resource name="regolith" type="regolith" phase="solid"> 
+		Unspecified type of Martian soil.</resource>
 
-	<resource name="gypsum" type="ore" phase="solid">Gypsum is a soft sulfate mineral composed of calcium sulfate dihydrate,
+	<resource name="gypsum" type="ore" phase="solid"> 
+		Gypsum is a soft sulfate mineral composed of calcium sulfate dihydrate,
 		with the chemical formula CaSO4·2H2O. It is widely mined and used as a fertilizer. A typical regolith
 		derived mineral deposit in NASA Water ISRU Study Reference Case B</resource>
-	<resource name="basaltic" type="ore" phase="solid">Basalt is a common extrusive igneous rock formed from the rapid cooling
+	<resource name="basaltic" type="ore" phase="solid"> 
+		Basalt is a common extrusive igneous rock formed from the rapid cooling
 		of basaltic lava exposed at or very near the surface of a planet. A typical regolith derived mineral deposit
 		in NASA Water ISRU Study Reference Case D</resource>
-	<resource name="smectite" type="ore" phase="solid">Smectite is the name used for a group of phyllo-silicate mineral species.
+	<resource name="smectite" type="ore" phase="solid"> 
+		Smectite is the name used for a group of phyllo-silicate mineral species.
 		It's a clay-like regolith derived mineral deposit in NASA Water ISRU Study Reference Case C. </resource>
-	<resource name="allophane" type="ore" phase="solid">Allophane is an amorphous to poorly crystalline hydrous aluminium
+	<resource name="allophane" type="ore" phase="solid"> 
+		Allophane is an amorphous to poorly crystalline hydrous aluminium
 		silicate clay mineraloid. Its chemical formula is Al2O3·1.3-2·H2O. A regolith derived mineral deposit</resource>
-	<resource name="akaganeite" type="ore" phase="solid">Akaganeite is an iron oxide-hydroxide / chloride mineral with
+	<resource name="akaganeite" type="ore" phase="solid"> 
+		Akaganeite is an iron oxide-hydroxide / chloride mineral with
 		formula: Fe3+O e.g.; β-FeO. It is formed by the weathering of pyrrhotite. A regolith derived mineral deposit</resource>
-	<resource name="bassanite" type="ore" phase="solid">Bassanite is a calcium sulfate mineral with formula CaSO4·0.5
+	<resource name="bassanite" type="ore" phase="solid"> 
+		Bassanite is a calcium sulfate mineral with formula CaSO4·0.5
 		or 2CaSO4·H2O. In other words it has half a water per CaSO4 unit hence its synonym hemihydrate.
 		A regolith derived mineral deposit</resource>
 
@@ -293,30 +332,30 @@
 <!-- Assorted mineral compounds -->
 	<resource name="aluminum oxide" type="compound" phase="solid" />
 	<resource name="ammonia" type="compound" phase="solid"> NH3+ is an essential nutrient for plants</resource>
-	<resource name="calcium carbonate" type="compound" phase="solid" />
+	<resource name="calcium carbonate" type="compound" phase="solid" demand=".1" />
 	<resource name="calcium sulfate" type="compound" phase="solid" />
-	<resource name="iron oxide" type="compound" phase="solid">also known as rust</resource>
-	<resource name="iron chloride" type="compound" phase="solid">Iron(III) chloride, also called ferric chloride,
+	<resource name="iron oxide" type="compound" phase="solid"> also known as rust</resource>
+	<resource name="iron chloride" type="compound" phase="solid"> Iron(III) chloride, also called ferric chloride,
 	is an industrial scale commodity chemical compound, with the formula FeCl3 and with
 	iron in the +3 oxidation state. When dissolved in water, iron(III) chloride undergoes
 	hydrolysis and gives off heat in an exothermic reaction. The resulting brown, acidic, and
 	corrosive solution is used as a flocculant in sewage treatment and drinking water production,
 	and as an etchant for copper-based metals in printed circuit boards. Extracted from akaganeite.</resource>
 
-	<resource name="iron hydroxide" type="compound" phase="solid">Iron(II) hydroxide is a white solid, but even traces
+	<resource name="iron hydroxide" type="compound" phase="solid"> Iron(II) hydroxide is a white solid, but even traces
 	of oxygen impart a greenish tinge. The air-oxidized solid is sometimes known as "green rust".
 	Extracted from akaganeite.</resource>
 
 	<resource name="nitrate" type="compound" phase="solid"> NO3 is an essential nutrient for plants</resource>
 	<resource name="nitrite" type="compound" phase="solid"> NO2 is an essential nutrient for plants</resource>
-	<resource name="potash lye" type="compound" phase="solid">Potassium Hydroxide</resource>
-	<resource name="sand" type="compound" phase="solid">Soil with iron oxide removed. Used for making glass.</resource>
-	<resource name="silica" type="compound" phase="solid">The word Silica came from the Latin silex. 
+	<resource name="potash lye" type="compound" phase="solid" demand="20"> Potassium Hydroxide</resource>
+	<resource name="sand" type="compound" phase="solid"> Soil with iron oxide removed. Used for making glass.</resource>
+	<resource name="silica" type="compound" phase="solid"> The word Silica came from the Latin silex. 
 	 Also known as silicon dioxide, silica is an oxide of silicon with the chemical formula
 	 SiO2, most commonly found in nature as quartz and in various living
 	 organisms. In many parts of the world, silica is the major constituent
 	 of sand. </resource>
-	<resource name="sodium oxide" type="compound" phase="solid">extracted from regolith.</resource>
+	<resource name="sodium oxide" type="compound" phase="solid"> extracted from regolith.</resource>
 
 <!-- Utility items derived from crop harvest -->
 	<resource name="fiber cloth" type="utility" phase="solid" edible="false">Cloth made from Soy Fiber and cane fiber.</resource>

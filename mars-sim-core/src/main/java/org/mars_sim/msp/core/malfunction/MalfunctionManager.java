@@ -92,6 +92,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	private static final String OXYGEN = "Oxygen";
 	private static final String CAUSE = ". Probable Cause: ";
 	private static final String CAUSED_BY = " caused by ";
+	private static final String ARROW = "  -->  ";
 
 	private static final int SCORE_DEFAULT = 50;
 
@@ -373,18 +374,18 @@ public class MalfunctionManager implements Serializable, Temporal {
 			logger.warning("           *** Part : " + part_name + " ***");
 
 			logger.warning(" (1).   Reliability : " + addWhiteSpace(Math.round(old_rel * 1000.0) / 1000.0 + " %")
-							+ "  -->  " + Math.round(new_rel * 1000.0) / 1000.0 + " %");
+							+ ARROW + Math.round(new_rel * 1000.0) / 1000.0 + " %");
 
 			logger.warning(" (2).  Failure Rate : " + addWhiteSpace(Math.round(old_failure * 1000.0) / 1000.0 + " %")
-							+ "  -->  " + Math.round(new_failure * 1000.0) / 1000.0 + " %");
+							+ ARROW + Math.round(new_failure * 1000.0) / 1000.0 + " %");
 
 			logger.warning(" (3).          MTBF : " + addWhiteSpace(Math.round(old_MTBF * 1000.0) / 1000.0 + " hr")
-							+ "  -->  " + Math.round(new_MTBF * 1000.0) / 1000.0 + " hr");
+							+ ARROW + Math.round(new_MTBF * 1000.0) / 1000.0 + " hr");
 
 			logger.warning("          *** Malfunction : " + malfunction.getName() + " ***");
 
 			logger.warning(" (4).   Probability : " + addWhiteSpace(Math.round(old_mal_prob_failure * 1000.0) / 1000.0 + " %")
-							+ "  -->  " + Math.round(new_mal_prob_failure * 1000.0) / 1000.0 + " %");
+							+ ARROW + Math.round(new_mal_prob_failure * 1000.0) / 1000.0 + " %");
 
 			// Modify the probability of failure for this particular malfunction
 			malfunction.setProbability(new_mal_prob_failure);

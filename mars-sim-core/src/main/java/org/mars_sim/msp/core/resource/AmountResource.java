@@ -37,31 +37,35 @@ public final class AmountResource extends ResourceAbstract implements Serializab
 	public static final int NAPKIN = 150;
 
 	// Data members
-	private int hashcode = -1;
-
 	private boolean edible;
 
 	private boolean lifeSupport;
+	
+	private int hashcode = -1;
+	/** By default, demandMultiplier is zero. */
+	private double demandMultiplier = 0;
 
 	private GoodType goodType;
 
 	private PhaseType phase;
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 *
 	 * @param name			the resource's name
 	 * @param goodType		the good type
 	 * @param description {@link String}
-	 * @param phase			the material phase of the resource.
-	 * @param lifeSupport	true if life support resource.
+	 * @param phase			the material phase of the resource
+	 * @param demand		the demand multiplier of this good
+	 * @param lifeSupport	true if life support resource
 	 * @param edible		true if edible.
 	 */
-	public AmountResource(int id, String name, GoodType goodType, String description, PhaseType phase, boolean lifeSupport,
-			boolean edible) {
+	public AmountResource(int id, String name, GoodType goodType, String description, 
+			PhaseType phase, double demand, boolean lifeSupport, boolean edible) {
 		super(name.toLowerCase(), id, description);
 		this.goodType = goodType;
 		this.phase = phase;
+		this.demandMultiplier = demand;
 		this.lifeSupport = lifeSupport;
 		this.edible = edible;
 		this.hashcode = getName().toLowerCase().hashCode() * phase.hashCode();
@@ -85,6 +89,15 @@ public final class AmountResource extends ResourceAbstract implements Serializab
 		return phase;
 	}
 
+	/**
+	 * Gets the demand multiplier.
+	 * 
+	 * @return
+	 */
+	public double getDemand() {
+		return demandMultiplier;
+	}
+	
 	/**
 	 * Checks if life support resource.
 	 *

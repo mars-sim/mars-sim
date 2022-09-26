@@ -116,20 +116,7 @@ class AmountResourceGood extends Good {
 	private static final double ORE_DEMAND_FACTOR = .15;
 	private static final double MINERAL_DEMAND_FACTOR = .15;
 	
-	private static final double ACETYLENE_DEMAND_FACTOR = .01;
-	private static final double ETHYLENE_DEMAND_FACTOR = 6;
-	private static final double POLYETHYLENE_DEMAND_FACTOR = .01;
-	
-	private static final double POLYESTHER_RESIN_DEMAND_FACTOR = 0.015;
-	private static final double POLYCARBONATE_RESIN_DEMAND_FACTOR = 15;
-	
-	private static final double STYRENE_DEMAND_FACTOR = .015;
-	private static final double POLYSTYRENE_DEMAND_FACTOR = 2.5;
-	
-	private static final double POLYURETHANE_DEMAND_FACTOR = 10;
-	
-	private static final double POTASH_LYE_DEMAND_FACTOR = 20;
-	
+	// Demand factor based on good type
 	private static final double CHEMICAL_DEMAND_FACTOR = 10;
 	private static final double COMPOUND_DEMAND_FACTOR = 10;
 	private static final double ELEMENT_DEMAND_FACTOR = 3;
@@ -151,8 +138,6 @@ class AmountResourceGood extends Good {
 	private static final double SAND_DEMAND_FACTOR = .07;
 	private static final double ICE_DEMAND_FACTOR = .05;
 	private static final double CO_DEMAND_FACTOR = .05;
-	private static final double LIME_DEMAND_FACTOR = 4.5;
-	private static final double CALCIUM_CARBONATE_DEMAND_FACTOR = 0.1;
 	
 	private static final double COOKED_MEAL_INPUT_FACTOR = .5;
 	private static final double MANUFACTURING_INPUT_FACTOR = 2D;
@@ -463,35 +448,27 @@ class AmountResourceGood extends Good {
 	 * @return
 	 */
 	private static double calculateFlattenAmountDemand(AmountResource ar) {
+		double mod = ar.getDemand();
+		
 		double demand = 0;
 		switch(ar.getGoodType()) {
 		
 		case ANIMAL:
 			demand = ANIMAL_DEMAND_FACTOR;
+			if (mod != 0)
+				return demand *= mod;
 			break;	
 
 		case CHEMICAL:
 			demand = CHEMICAL_DEMAND_FACTOR;	
-			 if (ar.getName().equalsIgnoreCase("polyethylene"))
-				demand *= POLYETHYLENE_DEMAND_FACTOR;
-			else if (ar.getName().equalsIgnoreCase("ethylene"))
-				demand *= ETHYLENE_DEMAND_FACTOR;
-			else if (ar.getName().equalsIgnoreCase("polyester resin"))
-				demand *= POLYESTHER_RESIN_DEMAND_FACTOR;
-			else if (ar.getName().equalsIgnoreCase("polycarbonate resin"))
-				demand *= POLYCARBONATE_RESIN_DEMAND_FACTOR;
-			else if (ar.getName().equalsIgnoreCase("styrene"))
-				demand *= STYRENE_DEMAND_FACTOR;
-			else if (ar.getName().equalsIgnoreCase("polystyrene"))
-				demand *= POLYSTYRENE_DEMAND_FACTOR;
-			else if (ar.getName().equalsIgnoreCase("polyurethane"))
-				demand *= POLYURETHANE_DEMAND_FACTOR;			
-			else if (ar.getName().equalsIgnoreCase("lime"))
-				demand *= LIME_DEMAND_FACTOR;
+			if (mod != 0)
+				return demand *= mod;
 			break;
 
 		case COMPOUND:
 			demand = COMPOUND_DEMAND_FACTOR;
+			if (mod != 0)
+				return demand *= mod;
 			if (ar.getID() == ResourceUtil.sandID)
 				demand *= SAND_DEMAND_FACTOR;
 			else if (ar.getID() == ResourceUtil.iceID)
@@ -502,76 +479,102 @@ class AmountResourceGood extends Good {
 				demand *= METHANE_DEMAND_FACTOR;
 			else if (ar.getID() == ResourceUtil.methanolID)
 				demand *= METHANOL_DEMAND_FACTOR;
-			else if (ar.getName().equalsIgnoreCase("potash lye"))
-				demand *= POTASH_LYE_DEMAND_FACTOR;
-			else if (ar.getName().equalsIgnoreCase("acetylene"))
-				demand *= ACETYLENE_DEMAND_FACTOR;		
-			else if (ar.getName().equalsIgnoreCase("calcium carbonate"))
-				demand *= CALCIUM_CARBONATE_DEMAND_FACTOR;
 			break;
 	
 		case CROP:
 			demand = CROP_DEMAND_FACTOR;
+			if (mod != 0)
+				return demand *= mod;
 			break;
 			
 		case DERIVED:
 			demand = DERIVED_DEMAND_FACTOR;
+			if (mod != 0)
+				return demand *= mod;
 			break;
 			
 		case ELEMENT:
 			demand = ELEMENT_DEMAND_FACTOR;
+			if (mod != 0)
+				return demand *= mod;
 			break;
 
 		case GEMSTONE:
 			demand = GEMSTONE_DEMAND_FACTOR;
+			if (mod != 0)
+				return demand *= mod;
 			break;
 			
 		case INSECT:
 			demand = INSECT_DEMAND_FACTOR;
+			if (mod != 0)
+				return demand *= mod;
 			break;
 
 		case INSTRUMENT:
 			demand = INSTRUMENT_DEMAND_FACTOR;
+			if (mod != 0)
+				return demand *= mod;
 			break;
 			
 		case MINERAL:
 			demand = MINERAL_DEMAND_FACTOR;
+			if (mod != 0)
+				return demand *= mod;
 			break;
 	
 		case ORE:
 			demand = ORE_DEMAND_FACTOR;
+			if (mod != 0)
+				return demand *= mod;
 			break;
 
 		case ORGANISM:
 			demand = ORGANISM_DEMAND_FACTOR;
+			if (mod != 0)
+				return demand *= mod;
 			break;
 			
 		case REGOLITH:
 			demand = REGOLITH_DEMAND_FACTOR;
+			if (mod != 0)
+				return demand *= mod;
 			break;
 			
 		case ROCK:
 			demand = ROCK_DEMAND_FACTOR;
+			if (mod != 0)
+				return demand *= mod;
 			break;
 
 		case SOY_BASED:
 			demand = SOYBASED_DEMAND_FACTOR;
+			if (mod != 0)
+				return demand *= mod;
 			break;
 			
 		case TISSUE:
 			demand = TISSUE_DEMAND_FACTOR;
+			if (mod != 0)
+				return demand *= mod;
 			break;
 			
 		case UTILITY:
 			demand = UTILITY_DEMAND_FACTOR;
+			if (mod != 0)
+				return demand *= mod;
 			break;
 			
 		case WASTE:
 			demand = WASTE_DEMAND_FACTOR;
+			if (mod != 0)
+				return demand *= mod;
 			break;
 
 		default:
 			demand = 1;
+			if (mod != 0)
+				return demand *= mod;
 		}
 
 		return demand;
@@ -1082,7 +1085,7 @@ class AmountResourceGood extends Good {
 			// Estimate fertilizer needed for average number of crop plantings for total
 			// growing area.
 			// Estimate fertilizer needed when grey water not available.
-			demand = (Crop.FERTILIZER_NEEDED_IN_SOIL_PER_SQM * Crop.FERTILIZER_NEEDED_WATERING * solsInOrbit) * factor * 1_000;
+			demand = (Crop.FERTILIZER_NEEDED_IN_SOIL_PER_SQM * Crop.FERTILIZER_NEEDED_WATERING * solsInOrbit) * factor * 5;
 		} else if (resource == ResourceUtil.greyWaterID) {
 			// NOTE: how to properly get rid of grey water? it should NOT be considered an
 			// economically vital resource
