@@ -57,7 +57,7 @@ public class FoodUtil {
 	}
 
 	/**
-	 * Create the food instance from the amount resource
+	 * Creates the food instance from the amount resource.
 	 * 
 	 * @param resource
 	 * @return
@@ -89,7 +89,7 @@ public class FoodUtil {
 		else if (type == GoodType.TISSUE)
 			foodType = FoodType.TISSUE;
 		
-		return new Food(resource.getName(), resource, foodType);
+		return new Food(resource.getName(), resource, foodType, resource.getDemand());
 	}
 
 	/**

@@ -57,7 +57,6 @@ public class TransportManager implements Serializable, Temporal {
 	}
 	
 	public void init() {
-		// Create initial resupply missions.
 		transportItems.addAll(ResupplyUtil.loadInitialResupplyMissions());
 	}
 	

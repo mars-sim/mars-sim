@@ -338,4 +338,8 @@
 
     <part-package name="package 4" number="1" />
     
+    <resupply>
+       	<resupply-mission name="Standard Resupply 1"
+            arrival-time="0.1" /> 
+    </resupply>     
 </template>

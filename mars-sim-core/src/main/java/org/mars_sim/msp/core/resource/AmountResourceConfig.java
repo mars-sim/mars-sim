@@ -31,6 +31,7 @@ public class AmountResourceConfig implements Serializable {
 	private static final String RESOURCE = "resource";
 	private static final String NAME = "name";
 	private static final String PHASE = "phase";
+	private static final String DEMAND = "demand";
 	private static final String LIFE_SUPPORT = "life-support";
 	private static final String EDIBLE = "edible";
 	private static final String TYPE = "type";
@@ -69,18 +70,23 @@ public class AmountResourceConfig implements Serializable {
 				GoodType goodType = GoodType.convertName2Enum(type.toLowerCase());
 						
 				String description = resourceElement.getText();
-				// Get phase.
+				// Get phase 
 				String phaseString = resourceElement.getAttributeValue(PHASE).toLowerCase();
-
 				// PhaseType phase = PhaseType.valueOf(phaseString);
 				PhaseType phaseType = PhaseType.fromString(phaseString);
 
+				// Get the demand modifier
+				double demand = 0;
+				String demandString = resourceElement.getAttributeValue(DEMAND);
+				if (demandString != null)
+				demand = Double.parseDouble(demandString);
+				
 				// Get life support
 				Boolean lifeSupport = Boolean.parseBoolean(resourceElement.getAttributeValue(LIFE_SUPPORT));
 
 				Boolean edible = Boolean.parseBoolean(resourceElement.getAttributeValue(EDIBLE));
 
-				AmountResource resource = new AmountResource(nextID, name, goodType, description, phaseType, lifeSupport, edible);
+				AmountResource resource = new AmountResource(nextID, name, goodType, description, phaseType, demand, lifeSupport, edible);
 
 				if (phaseString == null || phaseType == null)
 					throw new IllegalStateException(
@@ -99,8 +105,9 @@ public class AmountResourceConfig implements Serializable {
 					
 					// Create a tissue culture object for each crop.
 					// Note: may set edible to true
+					// Assume the demand multiplier of a crop tissue is twice as much
 					AmountResource tissue = new AmountResource(nextID, (name + " " + TISSUE), GoodType.TISSUE,
-							description, phaseType, lifeSupport, false);
+							description, phaseType, demand * 2, lifeSupport, false);
 					tissueCultureSet.add(nextID);
 
 					for (AmountResource r: resourceSet) {

@@ -38,6 +38,8 @@ public class MarsClock implements Serializable {
 
 	// Martian calendar static members
 
+
+	
 	static final int SOLS_PER_MONTH_SHORT = 27;
 
 	private static final int SOLS_PER_ORBIT_LEAPYEAR = 669;
@@ -74,9 +76,12 @@ public class MarsClock implements Serializable {
 	// southern hemisphere are more extreme and the seasons in the northern are
 	// milder.
 
+	/** Set the year of the planetfall as orbit 01. */
+	public static final int FIRST_ORBIT = 1;
+	
 	// Data members
-	/** The Martian year. */
-	private int orbit;
+	/** The Martian year. Note: the year of landing is considered to be the first year/orbit */
+	private int orbit = FIRST_ORBIT;
 	/** The Martian month. */
 	private int month;
 	/** The Martian day. */
@@ -309,10 +314,10 @@ public class MarsClock implements Serializable {
 				if (solOfMonth > MarsClockFormat.getSolsInMonth(month, orbit)) {
 					solOfMonth = 1;
 					month += 1;
-					if (month > MONTHS_PER_ORBIT) {
-						month = 1;
-						orbit += 1;
-					}
+				}
+				if (month > MONTHS_PER_ORBIT) {
+					month = 1;
+					orbit += 1;
 				}
 			}
 		} else if (addedMillisols < 0D) {
@@ -322,11 +327,11 @@ public class MarsClock implements Serializable {
 				missionSol -= 1;
 				if (solOfMonth < 1) {
 					month -= 1;
-					if (month < 1) {
-						month = MONTHS_PER_ORBIT;
-						orbit -= 1;
-					}
 					solOfMonth = MarsClockFormat.getSolsInMonth(month, orbit);
+				}
+				if (month < 1) {
+					month = MONTHS_PER_ORBIT;
+					orbit -= 1;
 				}
 			}
 		}

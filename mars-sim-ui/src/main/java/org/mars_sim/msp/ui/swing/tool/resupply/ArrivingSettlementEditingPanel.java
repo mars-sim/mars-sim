@@ -65,6 +65,8 @@ import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 @SuppressWarnings("serial")
 public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 	
+	private static final int MAX_FUTURE_ORBITS = 10;
+	
 	// Data members
 	private String errorString = new String();
 	// the degree sign 
@@ -285,7 +287,7 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 
 		// Create sol combo box.
 		martianSolCBModel = new MartianSolComboBoxModel(arrivingTime.getMonth(), arrivingTime.getOrbit());
-		solCB = new JComboBoxMW<Integer>(martianSolCBModel);
+		solCB = new JComboBoxMW<>(martianSolCBModel);
 		solCB.setSelectedItem(arrivingTime.getSolOfMonth());
 		arrivalDateSelectionPane.add(solCB);
 
@@ -294,7 +296,7 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 		arrivalDateSelectionPane.add(monthLabel);
 
 		// Create month combo box.
-		monthCB = new JComboBoxMW<Object>(MarsClockFormat.getMonthNames());
+		monthCB = new JComboBoxMW<>(MarsClockFormat.getMonthNames());
 		monthCB.setSelectedItem(arrivingTime.getMonthName());
 		monthCB.addActionListener(e -> {
 			// Update the solCB based on orbit and month
@@ -315,9 +317,9 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 		// Create orbit combo box.
 		NumberFormat formatter = NumberFormat.getInstance();
 		formatter.setMinimumIntegerDigits(2);
-		String[] orbitValues = new String[20];
+		String[] orbitValues = new String[MAX_FUTURE_ORBITS];
 		int startOrbit = arrivingTime.getOrbit();
-		for (int x = 0; x < 20; x++) {
+		for (int x = 0; x < MAX_FUTURE_ORBITS; x++) {
 			orbitValues[x] = formatter.format(1L * startOrbit + x);
 		}
 		orbitCB = new JComboBoxMW<>(orbitValues);

@@ -1838,7 +1838,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</process>
 
 				<process name="produce ethylene" number-modules="2"
-					power-required="0.2" default="off">
+					power-required="0.1" default="off">
 					<description>
 						2CO + 4H&lt;sub&gt;2&lt;/sub&gt; -> C&lt;sub&gt;2&lt;/sub&gt;H&lt;sub&gt;4&lt;/sub&gt; (ethylene) + 2H&lt;sub&gt;2&lt;/sub&gt;O
 						Requires iron catalyst.
@@ -1851,19 +1851,19 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="iron powder" rate="0.05" ambient="false" />
 				</process>
 						
-				<process name="produce polyethylene" number-modules="2"
-					power-required="0.1" default="off">
+				<process name="produce polyethylene" number-modules="50"
+					power-required="0.05" default="off">
 					<description>
 						This reaction occurs when ethylene (aka ethene) is heated 
 						and put under pressure in the presence of a catalyst. 
 						Assuming 10% loss during production.
 					</description>
-					<input resource="ethylene" rate="50.0" ambient="false" />
-					<output resource="polyethylene" rate="45.0" ambient="false" />
+					<input resource="ethylene" rate="5.0" ambient="false" />
+					<output resource="polyethylene" rate="4.5" ambient="false" />
 				</process>
 
-				<process name="produce styrene"
-					power-required=".5" default="off">
+				<process name="produce styrene" number-modules="20"
+					power-required=".05" default="off">
 					<description>
 					 	Wrapping four processes into one as follows: 
 						3C + CaO -> CaC2 + CO
@@ -1879,10 +1879,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="styrene" rate="30.95" ambient="false" />
 				</process>
 					
-				<process name="produce polystyrene" 
-					power-required=".1" default="off">
-					<input resource="styrene" rate="50" ambient="false" />
-					<output resource="polystyrene" rate="50" ambient="false" />
+				<process name="produce polystyrene" number-modules="10"
+					power-required=".05" default="off">
+					<input resource="styrene" rate="5" ambient="false" />
+					<output resource="polystyrene" rate="5" ambient="false" />
 				</process>
 
 				<process name="bake calcium carbonate to lime" 

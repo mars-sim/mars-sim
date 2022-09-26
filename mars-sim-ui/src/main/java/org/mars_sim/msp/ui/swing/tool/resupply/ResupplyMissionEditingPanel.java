@@ -89,7 +89,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 	private static SimLogger logger = SimLogger.getLogger(ResupplyMissionEditingPanel.class.getName());
 			
 	private static final Integer[] EMPTY_STRING_ARRAY = new Integer[0];
-	private static final int MAX_FUTURE_ORBITS = 20;
+	private static final int MAX_FUTURE_ORBITS = 10;
 	private static final int MAX_IMMIGRANTS = 48;
 	private static final int MAX_BOTS = 48;
 	private static final int MILLISOLS_DELAY = 10;
