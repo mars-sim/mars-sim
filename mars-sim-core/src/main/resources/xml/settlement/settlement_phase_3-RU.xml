@@ -181,20 +181,31 @@
         </connection-list>
     </building>
 
-    <building type="MD1 Nuclear Reactor" xloc="40.0"
-        yloc="-60.0" facing="0.0" />
-    <building type="MD1 Nuclear Reactor" xloc="40.0"
-        yloc="-80.0" facing="0.0" />
-    <building type="MD1 Nuclear Reactor" xloc="60.0"
-        yloc="-60.0" facing="0.0" />
-    <building type="MD1 Nuclear Reactor" xloc="60.0"
-        yloc="-80.0" facing="0.0" />
+
 
     <building type="MD4 Nuclear Reactor" xloc="100.0"
         yloc="-100" facing="0.0" />
 
-    <building type="Solar Photovoltaic Array" xloc="50.0"
-        yloc="-50.0" facing="0.0" />
+
+    <building type="Medium Battery Array" xloc="40.0"
+        yloc="-60.0" facing="0.0" />
+     <building type="Medium Battery Array" xloc="60.0"
+        yloc="-60.0" facing="0.0" />
+               
+    <building type="Solar Photovoltaic Array" xloc="40.0"
+        yloc="-70.0" facing="0.0" />       
+    <building type="Solar Photovoltaic Array" xloc="40.0"
+        yloc="-80.0" facing="0.0" />            
+    <building type="Solar Photovoltaic Array" xloc="40.0"
+        yloc="-90.0" facing="0.0" />
+        
+    <building type="Solar Photovoltaic Array" xloc="60.0"
+        yloc="-70.0" facing="0.0" />       
+    <building type="Solar Photovoltaic Array" xloc="60.0"
+        yloc="-80.0" facing="0.0" />            
+    <building type="Solar Photovoltaic Array" xloc="60.0"
+        yloc="-90.0" facing="0.0" />   
+        
 
     <building type="ERV-A" xloc="80.0" yloc="45.0"
         facing="0.0" />

@@ -242,12 +242,12 @@ public class ToggleResourceProcess extends Task implements Serializable {
 				if (resourceProcessBuilding.hasFunction(FunctionType.LIFE_SUPPORT))
 					logger.log(worker, Level.INFO, 1_000,
 						   "Done manually toggled " + toggle + " '" + process.getProcessName()
-						   + "' in " + resourceProcessBuilding.getName()
+						   + "' inside " + worker.getBuildingLocation().getName()
 						   + ".");
 				else
 					logger.log(worker, Level.INFO, 1_000,
 							"Done remotely toggled " + toggle + " '" + process.getProcessName()
-					       + "' in " + worker.getBuildingLocation().getName()
+					       + "' for " + resourceProcessBuilding.getName()
 					       + ".");
 			}
 			
