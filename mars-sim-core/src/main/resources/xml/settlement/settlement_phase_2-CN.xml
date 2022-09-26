@@ -176,7 +176,7 @@
     
     <resource type="argon" amount="60.0" />
 
-    <resource type="fertilizer" amount="50.0" />
+    <resource type="fertilizer" amount="50.0" /> 
 
     <!-- Crop -->
     <resource type="Blueberry" amount="50.0" />

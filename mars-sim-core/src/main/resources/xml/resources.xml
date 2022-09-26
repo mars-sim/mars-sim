@@ -53,7 +53,10 @@
 	 in perfumes, vitamins, polymers, solvents and other materials due to its versatility and ease of
 	 reactive control in comparison to other gases. It combines nicely with a variety of elements and
 	 compounds, making it the most important of starting materials for organic synthesis.</resource>
-	 
+	<resource name="sodium carbonate" type="compound" phase="solid">Na2CO3, also called washing soda,
+		soda ash and soda crystals, is the water-soluble sodium salt of carbonic acid
+	</resource>
+	
 <!-- Elements -->
 	<resource name="iron powder" type="element" phase="solid" />
 
@@ -209,14 +212,11 @@
 	<resource name="table salt" type="chemical" phase="solid" edible="true">Food Grade Salt, is the common name for the substance sodium chloride (NaCI), which occurs in the form of transparent cubic crystals. </resource>
 	<resource name="rock salt" type="compound" phase="solid">Halite, commonly known as rock salt, is the mineral
 	 	form of sodium chloride (NaCl).</resource>
-
+	
 <!-- Chemical for utility -->
 	<resource name="sodium hypochlorite" type="chemical" phase="liquid">Sodium Hypochlorite is
 		one of the bleaching chemical for sanitization of Soybean as well as pulp
 		bleaching during paper making </resource>
-	<resource name="sodium carbonate" type="chemical" phase="solid">Na2CO3, also called washing soda,
-		soda ash and soda crystals, is the water-soluble sodium salt of carbonic acid
-	</resource>
 	<resource name="bleaching chemical" type="chemical" phase="liquid">Bleaching chemical
 		include chlorine dioxide, oxygen, or hydrogen peroxide. </resource>
 	<resource name="activated charcoal" type="chemical" phase="solid">Activated charcoal's main use is as an

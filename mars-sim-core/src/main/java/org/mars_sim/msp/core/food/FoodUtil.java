@@ -37,7 +37,7 @@ public class FoodUtil {
 	public static List<Food> getFoodList() {
 
 		if (foodList == null) {
-			foodList = new ArrayList<Food>();
+			foodList = new ArrayList<>();
 			populateFoodList();
 		}
 

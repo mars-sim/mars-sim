@@ -277,6 +277,7 @@ public class ResupplyConfig implements Serializable {
      */
     public Map<AmountResource, Double> getResupplyResources(String resupplyName) {
         ResupplyTemplate foundTemplate = getResupplyTemplate(resupplyName);
+		System.out.println("ResupplyConfig::getResupplyResources");
         return new HashMap<>(foundTemplate.resources);
     }
 

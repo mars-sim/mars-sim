@@ -807,7 +807,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="produce polyester resin" tech="2" skill="2" work-time="10" process-time="40"
+	<process name="produce polyester resin" tech="2" skill="1" work-time="10" process-time="40"
 			power-required="0.05">
 		<description>
 			This is to produce unsaturated polyester resin (C&lt;sub&gt;10&lt;/sub&gt;H&lt;sub&gt;8&lt;/sub&gt;O&lt;sub&gt;4&lt;/sub&gt;).
@@ -824,7 +824,7 @@ Note: 1 kg of H2 is 14.13 liter
 
 	<!-- This is to produce unsaturated polyester resin (C10H8O4). -->
 	<!-- We don't have a detailed process for producing polyester, so we're just using component elements. -->
-	<process name="produce polyester resin (large batch)" tech="2" skill="2" work-time="50" process-time="200"
+	<process name="produce polyester resin (large batch)" tech="2" skill="1" work-time="50" process-time="200"
 			power-required="0.1">
 		<inputs>
 			<resource name="carbon" amount="300.0" />

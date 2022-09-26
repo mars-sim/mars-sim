@@ -116,6 +116,8 @@
         <!-- name: the resupply mission's name -->
         <!-- arrival-time: arrival time (in Sols) since the settlement is founded. -->
         <!-- (668 Sols = 1 Martian orbit) -->
+     	<resupply-mission name="Standard Resupply 1"
+            arrival-time="0.0" />       
         <resupply-mission name="Resupply for Phase 1"
             arrival-time="668.0" />
         <resupply-mission name="Resupply for Phase 2"

@@ -42,7 +42,7 @@ implements Serializable, Comparable<Food> {
 
 		if (ar != null) {
 			this.object = ar;
-			this.classType = ar.getClass();		
+			this.classType = ar.getClass();
 			this.type = foodType.getName(); 
 			this.id = ar.getID();
 		}

@@ -19,6 +19,7 @@ import org.apache.commons.cli.Option;
 import org.mars_sim.msp.core.configuration.Scenario;
 import org.mars_sim.msp.core.configuration.ScenarioConfig;
 import org.mars_sim.msp.core.configuration.UserConfigurableConfig;
+import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyUtil;
 import org.mars_sim.msp.core.logging.DiagnosticsManager;
 import org.mars_sim.msp.core.person.Crew;
 import org.mars_sim.msp.core.person.CrewConfig;
@@ -316,7 +317,11 @@ public class SimulationBuilder {
 		}
 
 		sim.startClock(false);
-				
+		// initialize getTransportManager	
+		sim.getTransportManager().init();
+		// initialize ResupplyUtil
+		new ResupplyUtil();
+		
 		return sim;
 	}
 
@@ -341,8 +346,13 @@ public class SimulationBuilder {
 			// Create class instances
 			sim.createNewSimulation(userTimeRatio);
 			
-			sim.loadSimulation(simFile);			
-			result  = true;
+			sim.loadSimulation(simFile);		
+			
+			result  = true;		
+			// initialize getTransportManager	
+			sim.getTransportManager().init();		
+			// initialize ResupplyUtil.
+			new ResupplyUtil();
 		}
 		else if (!newAllowed) {
 			// Not allowed to create a new simulation so throw error

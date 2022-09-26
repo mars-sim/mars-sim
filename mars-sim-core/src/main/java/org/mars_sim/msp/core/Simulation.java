@@ -43,6 +43,7 @@ import org.mars_sim.msp.core.goods.CreditManager;
 import org.mars_sim.msp.core.goods.GoodsManager;
 import org.mars_sim.msp.core.interplanetary.transport.TransportManager;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
+import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyUtil;
 import org.mars_sim.msp.core.logging.SimuLoggingFormatter;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
@@ -429,6 +430,7 @@ public class Simulation implements ClockListener, Serializable {
         new ManufactureUtil();
         // Initialize RoleUtil
         new RoleUtil();
+     // Initialize RoleUtil
         RoleUtil.initialize();
 
 		// Initialize instances prior to UnitManager initiatiation
@@ -450,7 +452,7 @@ public class Simulation implements ClockListener, Serializable {
 		Task.initializeInstances(masterClock, marsClock, eventManager, unitManager,
 				scientificStudyManager, surfaceFeatures, orbitInfo, missionManager, pc);
 		LocalAreaUtil.initializeInstances(unitManager, marsClock);
-
+		
 		doneInitializing = true;
 	}
 

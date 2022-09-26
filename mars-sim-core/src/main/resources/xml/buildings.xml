@@ -1678,10 +1678,11 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 					<output resource="aluminum oxide" rate="2.0" ambient="false" />
 					<output resource="aluminum" rate="8.0" ambient="false" />
+					<output resource="iron powder" rate="1.0" ambient="false" />					
 					<output resource="sulfur" rate="4.0" ambient="false" />					
 					<output resource="silica" rate="13.0" ambient="false" />
 					<output resource="silicon" rate="2.0" ambient="false" />
-					<output resource="glass" rate="25.0" ambient="false" />				
+					<output resource="glass" rate="15.0" ambient="false" />	
 				</process>
 
 				<!-- Process for reducing gypsum to calcium carbonate using carbon. -->
@@ -1836,7 +1837,6 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="concrete" rate="71.0" ambient="false" />
 				</process>
 
-
 				<process name="produce ethylene" number-modules="2"
 					power-required="0.2" default="off">
 					<description>
@@ -1845,10 +1845,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					</description>
 					<input resource="carbon dioxide" rate="100.0"  ambient="true" />
 					<input resource="hydrogen" rate="15.0"  ambient="false" />
-					<input resource="iron powder" rate="1.0"  ambient="false" />
+					<input resource="iron powder" rate="0.05"  ambient="false" />
 					<output resource="ethylene" rate="50.0"  ambient="false" />
 					<output resource="grey water" rate="64.2" ambient="false" />
-					<output resource="iron powder" rate="0.95" ambient="false" />
+					<output resource="iron powder" rate="0.05" ambient="false" />
 				</process>
 						
 				<process name="produce polyethylene" number-modules="2"
@@ -2745,14 +2745,14 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-storage resource="iron oxide" capacity="500.0" />
 				<resource-storage resource="aluminum oxide" capacity="50.0" />
 				<resource-storage resource="Sand" capacity="1000.0" />
-				<resource-storage resource="iron powder" capacity="100.0" />
+				<resource-storage resource="iron powder" capacity="200.0" />
 				<resource-storage resource="ethylene" capacity="100.0" />
 				<resource-storage resource="polyethylene" capacity="100.0" />
 				<resource-storage resource="gypsum" capacity="100.0" />
 				<resource-storage resource="calcium Carbonate" capacity="100.0" />
 				<resource-storage resource="lime" capacity="100.0" />
 				<resource-storage resource="styrene" capacity="100.0" />
-				<resource-storage resource="polyester Resin" capacity="100.0" />
+				<resource-storage resource="polyester resin" capacity="100.0" />
 				<resource-storage resource="cement" capacity="500.0" />
 				<resource-storage resource="concrete" capacity="500.0" />
 			</storage>
@@ -3385,28 +3385,27 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</robotic-station>
 			<storage capacity="50000">
-				<resource-storage resource="Regolith" capacity="2000.0" />
-				<resource-storage resource="Carbon" capacity="100.0" />
-				<resource-storage resource="Iron Oxide" capacity="100.0" />
-				<resource-storage resource="Aluminum Oxide" capacity="100.0" />
-				<resource-storage resource="Sand" capacity="2000.0" />
-				<resource-storage resource="Iron Powder" capacity="100.0" />
-				<resource-storage resource="Ethylene" capacity="50.0" />
-				<resource-storage resource="Polyethylene" capacity="50.0" />
-				<resource-storage resource="Gypsum" capacity="50.0" />
-				<resource-storage resource="Calcium Carbonate" capacity="50.0" />
-				<resource-storage resource="Lime" capacity="50.0" />
-				<resource-storage resource="Styrene" capacity="50.0" />
-				<resource-storage resource="Polyester Resin" capacity="50.0" />
-				<resource-storage resource="Cement" capacity="100.0" />
-				<resource-storage resource="Concrete" capacity="100.0" />
+				<resource-storage resource="regolith" capacity="2000.0" />
+				<resource-storage resource="carbon" capacity="1000.0" />
+				<resource-storage resource="iron oxide" capacity="100.0" />
+				<resource-storage resource="aluminum oxide" capacity="100.0" />
+				<resource-storage resource="sand" capacity="2000.0" />
+				<resource-storage resource="iron powder" capacity="100.0" />
+				<resource-storage resource="ethylene" capacity="50.0" />
+				<resource-storage resource="polyethylene" capacity="50.0" />
+				<resource-storage resource="gypsum" capacity="50.0" />
+				<resource-storage resource="calcium carbonate" capacity="50.0" />
+				<resource-storage resource="lime" capacity="50.0" />
+				<resource-storage resource="styrene" capacity="50.0" />
+				<resource-storage resource="polyester resin" capacity="50.0" />
+				<resource-storage resource="cement" capacity="100.0" />
+				<resource-storage resource="concrete" capacity="100.0" />
 			</storage>
 			<thermal-generation>
 				<heat-source type="Solar Heating" capacity="5.0" />
 				<heat-source type="Electric Heating" capacity="15.0" />
 				<heat-source type="Fuel Heating" toggle="true"
 					fuel-type="methane"	consumption-rate="31.959" capacity="20.0"/>
-
 			</thermal-generation>
 		</functions>
 	</building>

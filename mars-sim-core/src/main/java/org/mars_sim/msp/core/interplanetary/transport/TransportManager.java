@@ -46,19 +46,18 @@ public class TransportManager implements Serializable, Temporal {
 
 	/**
 	 * Constructor.
+	 * 
 	 * @param scenario 
 	 * @param raFactory 
 	 */
 	public TransportManager(HistoricalEventManager eventManager) {
 		this.eventManager = eventManager;
-		
-		// initialize ResupplyUtil.
-		new ResupplyUtil();
 		// Initialize data
 		transportItems = new ArrayList<>();
-
+	}
+	
+	public void init() {
 		// Create initial resupply missions.
-		// TODO Need to revisit
 		transportItems.addAll(ResupplyUtil.loadInitialResupplyMissions());
 	}
 	
