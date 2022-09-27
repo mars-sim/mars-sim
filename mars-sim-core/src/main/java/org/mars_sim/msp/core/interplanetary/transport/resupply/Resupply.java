@@ -158,22 +158,27 @@ public class Resupply implements Serializable, Transportable {
 	 * Generates the delivery event.
 	 */
 	public synchronized void startDeliveryEvent() {
-		Settlement s = unitManager.getSettlementByID(settlementID);
-		// Interrupts everyone's task (Walking tasks can cause issues) 
-		s.endAllIndoorTasks();
 		// Deliver buildings to the destination settlement.
-		deliverBuildings();
+		boolean hasBuildings = deliverBuildings();
+		
+		if (hasBuildings) {
+			// Interrupts everyone's task (Walking tasks can cause issues) 
+			unitManager.getSettlementByID(settlementID).endAllIndoorTasks();
+		}
+		
 		// Deliver the rest of the supplies and add people.
 		deliverOthers();
 	}
 
 	/**
 	 * Delivers new buildings to the settlement.
+	 * 
+	 * @return
 	 */
-	public void deliverBuildings() {
+	public boolean deliverBuildings() {
 		List<BuildingTemplate> orderedBuildings = orderNewBuildings();
 
-		if (orderedBuildings.size() > 0) {
+		if (!orderedBuildings.isEmpty()) {
 
 			Settlement settlement = unitManager.getSettlementByID(settlementID);
 			BuildingManager buildingManager = settlement.getBuildingManager();
@@ -204,7 +209,11 @@ public class Resupply implements Serializable, Transportable {
 
 				checkTemplateAddBuilding(correctedTemplate);
 			}
+			
+			return true;
 		}
+		
+		return false;
 	}
 
 	private static BoundedObject getCorrectedBounds(BuildingSpec spec, BoundedObject bounds) {
@@ -503,7 +512,7 @@ public class Resupply implements Serializable, Transportable {
 
 		
 		// Deliver immigrants.
-		// TODO : add a crew editor for user to define what team and who to send
+		// Future: add a crew editor for user to define what team and who to send
 		Collection<Person> immigrants = new ConcurrentLinkedQueue<>();
 		for (int x = 0; x < getNewImmigrantNum(); x++) {
 			GenderType gender = GenderType.FEMALE;
@@ -546,14 +555,11 @@ public class Resupply implements Serializable, Transportable {
 		// Update command/governance and work shift schedules at settlement with new
 		// immigrants.
 		if (immigrants.size() > 0) {
-
 			// Reset work shift schedules at settlement.
 			settlement.reassignWorkShift();
-			
 			// Reset command/government system at settlement.
 			settlement.getChainOfCommand().establishSettlementGovernance();
 		}
-
 	}
 
 	/**

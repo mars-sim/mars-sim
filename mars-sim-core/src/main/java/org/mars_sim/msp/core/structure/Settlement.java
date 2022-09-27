@@ -690,7 +690,7 @@ public class Settlement extends Structure implements Temporal,
 	public void endAllIndoorTasks() {
 		for (Person p : getIndoorPeople()) {
 			logger.log(this, p, Level.INFO, 4_000,
-						"Had to end the current indoor tasks at "
+						"Ended the current indoor task at "
 						+  p.getPosition() + ".", null);
 			p.getMind().getTaskManager().clearAllTasks("Stop indoor tasks");
 		}

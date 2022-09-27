@@ -19,8 +19,12 @@ import java.util.Vector;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.SpringLayout;
+import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 
@@ -46,41 +50,41 @@ import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 
-import com.alee.laf.label.WebLabel;
-import com.alee.laf.panel.WebPanel;
-import com.alee.laf.scroll.WebScrollPane;
-
 /**
  * A panel showing a selected resupply mission details.
  */
 @SuppressWarnings("serial")
 public class ResupplyDetailPanel
-extends WebPanel
+extends JPanel
 implements ClockListener, HistoricalEventListener {
 
 	// Data members
+	private int solsToArrival = -1;
+	
+	private JLabel templateLabel;
+	private JLabel destinationValueLabel;
+	private JLabel stateValueLabel;
+	private JLabel arrivalDateValueLabel;
+	private JLabel launchDateValueLabel;
+	private JLabel timeArrivalValueLabel;
+	private JLabel immigrantsValueLabel;
+	
+	private JPanel innerSupplyPane;
+
+	private MainDesktopPane desktop;
+
 	private Resupply resupply;
-	private WebLabel destinationValueLabel;
-	private WebLabel stateValueLabel;
-	private WebLabel arrivalDateValueLabel;
-	private WebLabel launchDateValueLabel;
-	private WebLabel timeArrivalValueLabel;
-	private WebLabel immigrantsValueLabel;
-	private WebPanel innerSupplyPane;
 
 	private static MarsClock currentTime;
 	private static MasterClock masterClock;
-	
-	private MainDesktopPane desktop;
 
-	private int solsToArrival = -1;
 	
 	/**
 	 * Constructor.
 	 */
 	public ResupplyDetailPanel(MainDesktopPane desktop) {
 
-		// Use WebPanel constructor
+		// Use JPanel constructor
 		super();
 
 		this.desktop = desktop;
@@ -95,106 +99,110 @@ implements ClockListener, HistoricalEventListener {
 		setBorder(new MarsPanelBorder());
 
 		// Create the info panel.
-		WebPanel infoPane = new WebPanel(new BorderLayout());
+		JPanel infoPane = new JPanel(new BorderLayout());
 		add(infoPane, BorderLayout.NORTH);
 
 		// Create the title label.
-		WebLabel titleLabel = new WebLabel("Resupply Mission", WebLabel.CENTER);
+		JLabel titleLabel = new JLabel("Resupply Mission", SwingConstants.CENTER);
 		titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD));
 		titleLabel.setPreferredSize(new Dimension(-1, 25));
 		infoPane.add(titleLabel, BorderLayout.NORTH);
 
 		// Create the spring panel.
-		WebPanel springPane = new WebPanel(new SpringLayout());
+		JPanel springPane = new JPanel(new SpringLayout());
 		infoPane.add(springPane, BorderLayout.CENTER);
 
-		// Create destination panel.
-		//WebPanel destinationPane = new WebPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-		//info2Pane.add(destinationPane);
-
+		// Create template name label.
+		JLabel templateNameLabel = new JLabel("Template : ", SwingConstants.RIGHT);
+		springPane.add(templateNameLabel);
+		
+		// Create destination value label.
+		templateLabel = new JLabel("", SwingConstants.LEFT);
+		springPane.add(templateLabel);
+		
 		// Create destination title label.
-		WebLabel destinationTitleLabel = new WebLabel("Destination : ", WebLabel.RIGHT);
+		JLabel destinationTitleLabel = new JLabel("Destination : ", SwingConstants.RIGHT);
 		springPane.add(destinationTitleLabel);
 
 		// Create destination value label.
-		destinationValueLabel = new WebLabel("", WebLabel.LEFT);
+		destinationValueLabel = new JLabel("", SwingConstants.LEFT);
 		springPane.add(destinationValueLabel);
 
 		// Create state panel.
-		//WebPanel statePane = new WebPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+		//JPanel statePane = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
 		//springPane.add(statePane);
 
 		// Create state title label.
-		WebLabel stateTitleLabel = new WebLabel("State : ", WebLabel.RIGHT);
+		JLabel stateTitleLabel = new JLabel("State : ", SwingConstants.RIGHT);
 		springPane.add(stateTitleLabel);
 
 		// Create state value label.
-		stateValueLabel = new WebLabel("", WebLabel.LEFT);
+		stateValueLabel = new JLabel("", SwingConstants.LEFT);
 		springPane.add(stateValueLabel);
 
 		// Create launch date panel.
-		//WebPanel launchDatePane = new WebPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+		//JPanel launchDatePane = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
 		//springPane.add(launchDatePane);
 
 		// Create launch date title label.
-		WebLabel launchDateTitleLabel = new WebLabel("Launch Date : ", WebLabel.RIGHT);
+		JLabel launchDateTitleLabel = new JLabel("Launch Date : ", SwingConstants.RIGHT);
 		springPane.add(launchDateTitleLabel);
 
 		// Create launch date value label.
-		launchDateValueLabel = new WebLabel("", WebLabel.LEFT);
+		launchDateValueLabel = new JLabel("", SwingConstants.LEFT);
 		springPane.add(launchDateValueLabel);
 
 		// Create arrival date panel.
-		//WebPanel arrivalDatePane = new WebPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+		//JPanel arrivalDatePane = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
 		//springPane.add(arrivalDatePane);
 
 		// Create arrival date title label.
-		WebLabel arrivalDateTitleLabel = new WebLabel("Arrival Date : ", WebLabel.RIGHT);
+		JLabel arrivalDateTitleLabel = new JLabel("Arrival Date : ", SwingConstants.RIGHT);
 		springPane.add(arrivalDateTitleLabel);
 
 		// Create arrival date value label.
-		arrivalDateValueLabel = new WebLabel("", WebLabel.LEFT);
+		arrivalDateValueLabel = new JLabel("", SwingConstants.LEFT);
 		springPane.add(arrivalDateValueLabel);
 
 		// Create time arrival panel.
-		//WebPanel timeArrivalPane = new WebPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+		//JPanel timeArrivalPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
 		//springPane.add(timeArrivalPane);
 
 		// Create time arrival title label.
-		WebLabel timeArrivalTitleLabel = new WebLabel("Time Until Arrival : ", WebLabel.RIGHT);
+		JLabel timeArrivalTitleLabel = new JLabel("Time Until Arrival : ", SwingConstants.RIGHT);
 		springPane.add(timeArrivalTitleLabel);
 
 		// Create time arrival value label.
-		timeArrivalValueLabel = new WebLabel("", WebLabel.LEFT);
+		timeArrivalValueLabel = new JLabel("", SwingConstants.LEFT);
 		springPane.add(timeArrivalValueLabel);
 
 		// Create immigrants panel.
-		//WebPanel immigrantsPane = new WebPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+		//JPanel immigrantsPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
 		//springPane.add(immigrantsPane);
 
 		// Create immigrants title label.
-		WebLabel immigrantsTitleLabel = new WebLabel("Immigrants : ", WebLabel.RIGHT);
+		JLabel immigrantsTitleLabel = new JLabel("Immigrants : ", SwingConstants.RIGHT);
 		springPane.add(immigrantsTitleLabel);
 
 		// Create immigrants value label.
-		immigrantsValueLabel = new WebLabel("", WebLabel.LEFT);
+		immigrantsValueLabel = new JLabel("", SwingConstants.LEFT);
 		springPane.add(immigrantsValueLabel);
 
 		// Prepare SpringLayout
 		SpringUtilities.makeCompactGrid(springPane,
-						6, 2, //rows, cols
+						7, 2, //rows, cols
 						30, 10, // initX, initY
 						7, 3); // xPad, yPad
 
 		// Create the outer supply panel.
-		WebPanel outerSupplyPane = new WebPanel(new BorderLayout(0, 0));
+		JPanel outerSupplyPane = new JPanel(new BorderLayout(0, 0));
 		outerSupplyPane.setBorder(new TitledBorder("Supplies"));
 		add(outerSupplyPane, BorderLayout.CENTER);
 
 		// Create the inner supply panel.
-		innerSupplyPane = new WebPanel();
+		innerSupplyPane = new JPanel();
 		innerSupplyPane.setLayout(new BoxLayout(innerSupplyPane, BoxLayout.Y_AXIS));
-		outerSupplyPane.add(new WebScrollPane(innerSupplyPane), BorderLayout.CENTER);
+		outerSupplyPane.add(new JScrollPane(innerSupplyPane), BorderLayout.CENTER);
 
 		// Set as clock listener. Only need sparse updates
 		Simulation sim = desktop.getSimulation();
@@ -226,6 +234,7 @@ implements ClockListener, HistoricalEventListener {
 	 * Clear the resupply info.
 	 */
 	private void clearInfo() {
+		templateLabel.setText("");
 		destinationValueLabel.setText("");
 		stateValueLabel.setText("");
 		launchDateValueLabel.setText("");
@@ -240,18 +249,14 @@ implements ClockListener, HistoricalEventListener {
 	 */
 	private void updateResupplyInfo() {
 
+		templateLabel.setText(resupply.getName());
 		destinationValueLabel.setText(resupply.getSettlement().getName());
-
 		stateValueLabel.setText(Conversion.capitalize(resupply.getTransitState().getName()));
-
 		launchDateValueLabel.setText(resupply.getLaunchDate().getDateString());
-
 		arrivalDateValueLabel.setText(resupply.getArrivalDate().getDateString());
-
-		updateTimeToArrival();
-
 		immigrantsValueLabel.setText(Integer.toString(resupply.getNewImmigrantNum()));
-
+		
+		updateTimeToArrival();
 		updateSupplyPanel();
 
 		validate();
@@ -266,35 +271,35 @@ implements ClockListener, HistoricalEventListener {
 		innerSupplyPane.removeAll();
 
 		// Create buildings panel.
-		WebPanel buildingsPanel = createBuildingsDisplayPanel();
+		JPanel buildingsPanel = createBuildingsDisplayPanel();
 		if (buildingsPanel != null) {
 			innerSupplyPane.add(buildingsPanel);
 			innerSupplyPane.add(Box.createVerticalStrut(10));
 		}
 
 		// Create vehicles panel.
-		WebPanel vehiclesPanel = createVehiclesDisplayPanel();
+		JPanel vehiclesPanel = createVehiclesDisplayPanel();
 		if (vehiclesPanel != null) {
 			innerSupplyPane.add(vehiclesPanel);
 			innerSupplyPane.add(Box.createVerticalStrut(10));
 		}
 
 		// Create equipment panel.
-		WebPanel equipmentPanel = createEquipmentDisplayPanel();
+		JPanel equipmentPanel = createEquipmentDisplayPanel();
 		if (equipmentPanel != null) {
 			innerSupplyPane.add(equipmentPanel);
 			innerSupplyPane.add(Box.createVerticalStrut(10));
 		}
 
 		// Create resources panel.
-		WebPanel resourcesPanel = createResourcesDisplayPanel();
+		JPanel resourcesPanel = createResourcesDisplayPanel();
 		if (resourcesPanel != null) {
 			innerSupplyPane.add(resourcesPanel);
 			innerSupplyPane.add(Box.createVerticalStrut(10));
 		}
 
 		// Create parts panel.
-		WebPanel partsPanel = createPartsDisplayPanel();
+		JPanel partsPanel = createPartsDisplayPanel();
 		if (partsPanel != null) {
 			innerSupplyPane.add(partsPanel);
 		}
@@ -307,21 +312,21 @@ implements ClockListener, HistoricalEventListener {
 	 * 
 	 * @return panel.
 	 */
-	private WebPanel createBuildingsDisplayPanel() {
+	private JPanel createBuildingsDisplayPanel() {
 
-		WebPanel buildingsPanel = null;
+		JPanel buildingsPanel = null;
 
 		List<BuildingTemplate> buildings = resupply.getNewBuildings();
 		if (buildings.size() > 0) {
 			// Create buildings panel.
-			buildingsPanel = new WebPanel(new BorderLayout());
+			buildingsPanel = new JPanel(new BorderLayout());
 
 			// Create buildings label.
-			WebLabel buildingsLabel = new WebLabel("Buildings", WebLabel.CENTER);
+			JLabel buildingsLabel = new JLabel("Buildings", SwingConstants.CENTER);
 			buildingsPanel.add(buildingsLabel, BorderLayout.NORTH);
 
 			// Create table data.
-			Map<String, Integer> buildingMap = new HashMap<String, Integer>(buildings.size());
+			Map<String, Integer> buildingMap = new HashMap<>(buildings.size());
 			Iterator<BuildingTemplate> i = buildings.iterator();
 			while (i.hasNext()) {
 				BuildingTemplate buildingTemplate = i.next();
@@ -346,7 +351,7 @@ implements ClockListener, HistoricalEventListener {
 			tableModel.addColumn("Quantity");
 
 			// Populate table model with data.
-			List<String> buildingTypes = new ArrayList<String>(buildingMap.keySet());
+			List<String> buildingTypes = new ArrayList<>(buildingMap.keySet());
 			Collections.sort(buildingTypes);
 			Iterator<String> j = buildingTypes.iterator();
 			while (j.hasNext()) {
@@ -365,7 +370,7 @@ implements ClockListener, HistoricalEventListener {
 			buildingTable.setCellSelectionEnabled(false);
 			buildingTable.getColumnModel().getColumn(1).setMaxWidth(100);
 			buildingTable.getColumnModel().getColumn(1).setCellRenderer(new NumberCellRenderer(0));
-			buildingsPanel.add(new WebScrollPane(buildingTable), BorderLayout.CENTER);
+			buildingsPanel.add(new JScrollPane(buildingTable), BorderLayout.CENTER);
 
 			// Set preferred height for panel to show all of table.
 			int panelHeight = buildingTable.getPreferredSize().height +
@@ -382,21 +387,21 @@ implements ClockListener, HistoricalEventListener {
 	 * 
 	 * @return panel.
 	 */
-	private WebPanel createVehiclesDisplayPanel() {
+	private JPanel createVehiclesDisplayPanel() {
 
-		WebPanel vehiclesPanel = null;
+		JPanel vehiclesPanel = null;
 
 		List<String> vehicles = resupply.getNewVehicles();
 		if (vehicles.size() > 0) {
 			// Create vehicles panel.
-			vehiclesPanel = new WebPanel(new BorderLayout());
+			vehiclesPanel = new JPanel(new BorderLayout());
 
 			// Create vehicles label.
-			WebLabel vehiclesLabel = new WebLabel("Vehicles", WebLabel.CENTER);
+			JLabel vehiclesLabel = new JLabel("Vehicles", SwingConstants.CENTER);
 			vehiclesPanel.add(vehiclesLabel, BorderLayout.NORTH);
 
 			// Create table data.
-			Map<String, Integer> vehicleMap = new HashMap<String, Integer>(vehicles.size());
+			Map<String, Integer> vehicleMap = new HashMap<>(vehicles.size());
 			Iterator<String> i = vehicles.iterator();
 			while (i.hasNext()) {
 				String vehicle = i.next();
@@ -421,7 +426,7 @@ implements ClockListener, HistoricalEventListener {
 			tableModel.addColumn("Quantity");
 
 			// Populate table model with data.
-			List<String> vehicleTypes = new ArrayList<String>(vehicleMap.keySet());
+			List<String> vehicleTypes = new ArrayList<>(vehicleMap.keySet());
 			Collections.sort(vehicleTypes);
 			Iterator<String> j = vehicleTypes.iterator();
 			while (j.hasNext()) {
@@ -440,7 +445,7 @@ implements ClockListener, HistoricalEventListener {
 			vehicleTable.setCellSelectionEnabled(false);
 			vehicleTable.getColumnModel().getColumn(1).setMaxWidth(100);
 			vehicleTable.getColumnModel().getColumn(1).setCellRenderer(new NumberCellRenderer(0));
-			vehiclesPanel.add(new WebScrollPane(vehicleTable), BorderLayout.CENTER);
+			vehiclesPanel.add(new JScrollPane(vehicleTable), BorderLayout.CENTER);
 
 			// Set preferred height for panel to show all of table.
 			int panelHeight = vehicleTable.getPreferredSize().height +
@@ -457,17 +462,17 @@ implements ClockListener, HistoricalEventListener {
 	 * 
 	 * @return panel.
 	 */
-	private WebPanel createEquipmentDisplayPanel() {
+	private JPanel createEquipmentDisplayPanel() {
 
-		WebPanel equipmentPanel = null;
+		JPanel equipmentPanel = null;
 
 		Map<String, Integer> equipment = resupply.getNewEquipment();
 		if (equipment.size() > 0) {
 			// Create equipment panel.
-			equipmentPanel = new WebPanel(new BorderLayout());
+			equipmentPanel = new JPanel(new BorderLayout());
 
 			// Create equipment label.
-			WebLabel equipmentLabel = new WebLabel("Equipment", WebLabel.CENTER);
+			JLabel equipmentLabel = new JLabel("Equipment", SwingConstants.CENTER);
 			equipmentPanel.add(equipmentLabel, BorderLayout.NORTH);
 
 			// Create table model.
@@ -482,7 +487,7 @@ implements ClockListener, HistoricalEventListener {
 			tableModel.addColumn("Quantity");
 
 			// Populate table model with data.
-			List<String> equipmentTypes = new ArrayList<String>(equipment.keySet());
+			List<String> equipmentTypes = new ArrayList<>(equipment.keySet());
 			Collections.sort(equipmentTypes);
 			Iterator<String> j = equipmentTypes.iterator();
 			while (j.hasNext()) {
@@ -501,7 +506,7 @@ implements ClockListener, HistoricalEventListener {
 			equipmentTable.setCellSelectionEnabled(false);
 			equipmentTable.getColumnModel().getColumn(1).setMaxWidth(100);
 			equipmentTable.getColumnModel().getColumn(1).setCellRenderer(new NumberCellRenderer(0));
-			equipmentPanel.add(new WebScrollPane(equipmentTable), BorderLayout.CENTER);
+			equipmentPanel.add(new JScrollPane(equipmentTable), BorderLayout.CENTER);
 
 			// Set preferred height for panel to show all of table.
 			int panelHeight = equipmentTable.getPreferredSize().height +
@@ -518,17 +523,17 @@ implements ClockListener, HistoricalEventListener {
 	 * 
 	 * @return panel.
 	 */
-	private WebPanel createResourcesDisplayPanel() {
+	private JPanel createResourcesDisplayPanel() {
 
-		WebPanel resourcesPanel = null;
+		JPanel resourcesPanel = null;
 
 		Map<AmountResource, Double> resources = resupply.getNewResources();
 		if (resources.size() > 0) {
 			// Create resources panel.
-			resourcesPanel = new WebPanel(new BorderLayout());
+			resourcesPanel = new JPanel(new BorderLayout());
 
 			// Create resources label.
-			WebLabel resourcesLabel = new WebLabel("Resources", WebLabel.CENTER);
+			JLabel resourcesLabel = new JLabel("Resources", SwingConstants.CENTER);
 			resourcesPanel.add(resourcesLabel, BorderLayout.NORTH);
 
 			// Create table model.
@@ -543,13 +548,12 @@ implements ClockListener, HistoricalEventListener {
 			tableModel.addColumn("Amount [kg]");
 
 			// Populate table model with data.
-			List<AmountResource> resourceTypes = new ArrayList<AmountResource>(resources.keySet());
+			List<AmountResource> resourceTypes = new ArrayList<>(resources.keySet());
 			Collections.sort(resourceTypes);
 			Iterator<AmountResource> j = resourceTypes.iterator();
 			while (j.hasNext()) {
 				AmountResource resourceType = j.next();
 				double amount = resources.get(resourceType);
-				// 2014-12-01 Added Conversion.capitalize()
 				String resourceName = Conversion.capitalize(resourceType.getName());
 				Vector<Comparable<?>> rowData = new Vector<Comparable<?>>(2);
 				//rowData.add(resourceType);
@@ -565,7 +569,7 @@ implements ClockListener, HistoricalEventListener {
 			resourcesTable.setCellSelectionEnabled(false);
 			resourcesTable.getColumnModel().getColumn(1).setMaxWidth(120);
 			resourcesTable.getColumnModel().getColumn(1).setCellRenderer(new NumberCellRenderer(1));
-			resourcesPanel.add(new WebScrollPane(resourcesTable), BorderLayout.CENTER);
+			resourcesPanel.add(new JScrollPane(resourcesTable), BorderLayout.CENTER);
 
 			// Set preferred height for panel to show all of table.
 			int panelHeight = resourcesTable.getPreferredSize().height +
@@ -582,17 +586,17 @@ implements ClockListener, HistoricalEventListener {
 	 * 
 	 * @return panel.
 	 */
-	private WebPanel createPartsDisplayPanel() {
+	private JPanel createPartsDisplayPanel() {
 
-		WebPanel partsPanel = null;
+		JPanel partsPanel = null;
 
 		Map<Part, Integer> parts = resupply.getNewParts();
 		if (parts.size() > 0) {
 			// Create parts panel.
-			partsPanel = new WebPanel(new BorderLayout());
+			partsPanel = new JPanel(new BorderLayout());
 
 			// Create parts label.
-			WebLabel partsLabel = new WebLabel("Parts", WebLabel.CENTER);
+			JLabel partsLabel = new JLabel("Parts", SwingConstants.CENTER);
 			partsPanel.add(partsLabel, BorderLayout.NORTH);
 
 			// Create table model.
@@ -607,14 +611,13 @@ implements ClockListener, HistoricalEventListener {
 			tableModel.addColumn("Quantity");
 
 			// Populate table model with data.
-			List<Part> partTypes = new ArrayList<Part>(parts.keySet());
+			List<Part> partTypes = new ArrayList<>(parts.keySet());
 			Collections.sort(partTypes);
 			Iterator<Part> j = partTypes.iterator();
 			while (j.hasNext()) {
 				Part partType = j.next();
 				int num = parts.get(partType);
 				Vector<Comparable<?>> rowData = new Vector<Comparable<?>>(2);
-				// 2014-12-01 Added Conversion.capitalize()
 				String partName = Conversion.capitalize(partType.getName());
 				rowData.add(partName);
 				//rowData.add(partType);
@@ -630,7 +633,7 @@ implements ClockListener, HistoricalEventListener {
 			partsTable.setCellSelectionEnabled(false);
 			partsTable.getColumnModel().getColumn(1).setMaxWidth(100);
 			partsTable.getColumnModel().getColumn(1).setCellRenderer(new NumberCellRenderer(0));
-			partsPanel.add(new WebScrollPane(partsTable), BorderLayout.CENTER);
+			partsPanel.add(new JScrollPane(partsTable), BorderLayout.CENTER);
 
 			// Set preferred height for panel to show all of table.
 			int panelHeight = partsTable.getPreferredSize().height +
@@ -716,7 +719,7 @@ implements ClockListener, HistoricalEventListener {
 		sim.getEventManager().removeListener(this);
 		
 		resupply = null;
-
+		templateLabel = null;
 		destinationValueLabel = null;
 		stateValueLabel = null;
 		arrivalDateValueLabel = null;
