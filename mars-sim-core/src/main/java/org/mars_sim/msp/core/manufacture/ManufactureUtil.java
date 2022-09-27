@@ -206,12 +206,13 @@ public final class ManufactureUtil {
 			outputsValue += getManufactureProcessItemValue(j.next(), settlement, true);
 
 		// Get power value.
-		double powerValue = process.getPowerRequired() * settlement.getPowerGrid().getPowerValue();
+		double processTimeRequired = process.getProcessTimeRequired();
+		double powerValue = process.getPowerRequired() * settlement.getPowerGrid().getPowerValue() * Math.log(1 + processTimeRequired);
 		
 		// Get the time value.
-		double processTimeRequired = process.getProcessTimeRequired();
+
 		double workTimeRequired = process.getWorkTimeRequired();
-		double timeValue = WORK_EFFORT_MULTIPLIER * (processTimeRequired + workTimeRequired);
+		double timeValue = Math.log(1 + processTimeRequired + workTimeRequired);
 		
 		// Add a small degree of randomness to the input value 
 		// to avoid getting stuck at selecting the same process over and over

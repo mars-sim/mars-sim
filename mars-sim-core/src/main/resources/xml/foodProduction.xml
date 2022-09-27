@@ -823,7 +823,7 @@
 	<process name="Process White Rice into Rice Flour"
 		tech="1" skill="2" work-time="25" process-time="300"
 			power-required="0.25">
-		<description> Rince rice, dry, and finely grind.</description>
+		<description> Rinse rice, dry, and finely grind.</description>
 		<inputs>
 			<resource name="White Rice" amount="1.0" />
 			<resource name="Water" amount="3.0" />
