@@ -69,7 +69,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<dependency>
 			<groupId>org.apache.xmlgraphics</groupId>
 			<artifactId>batik-transcoder</artifactId>
-			<version>1.14</version>
+			<version>1.15</version>
 		</dependency>
 
 		<!-- http://www.jcraft.com/jorbis/
