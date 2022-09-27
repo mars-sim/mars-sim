@@ -207,7 +207,7 @@ public class MissionManager implements Serializable, Temporal {
 		ReportingAuthority sponsor = startingSettlement.getSponsor();
 
 		// Determine probabilities.
-		for (MetaMission metaMission : MetaMissionUtil.getMetaMissions()) {
+		for (MetaMission metaMission : List.copyOf(MetaMissionUtil.getMetaMissions())) {
 			if (startingSettlement.isMissionEnable(metaMission.getType())) {
 				double baseProb = metaMission.getProbability(person);
 				if (Double.isNaN(baseProb) || Double.isInfinite(baseProb)) {

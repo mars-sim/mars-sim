@@ -887,7 +887,7 @@ extends JComponent implements ClockListener {
 
 	public void createEarthDate() {
 		earthDateField = new WebDateField(StyleId.datefield);
-		TooltipManager.setTooltip(earthDateField, "Earth Timestamp in Greenwich Mean Time (GMT)", TooltipWay.up);
+		TooltipManager.setTooltip(earthDateField, "Greenwich Mean Time (GMT) for Earth", TooltipWay.up);
 		earthDateField.setAllowUserInput(false);
 		earthDateField.setFont(ARIAL_FONT);
 		earthDateField.setForeground(new Color(0, 69, 165));
@@ -914,7 +914,7 @@ extends JComponent implements ClockListener {
 		marsTimeTF.setForeground(new Color(150,96,0));
 		marsTimeTF.setPadding(0, 10, 0, 10);
 		marsTimeTF.setMargin(0, 0, 0, 0);
-		TooltipManager.setTooltip(marsTimeTF, "Mars Timestamp in Universal Mean Time (UMT)", TooltipWay.up);
+		TooltipManager.setTooltip(marsTimeTF, "Universal Mean Time (UMT) for Mars. Format: 'Orbit-Month-Sol:Millisols Weekday'", TooltipWay.up);
 	}
 
 	public WebTextField getMarsTime() {

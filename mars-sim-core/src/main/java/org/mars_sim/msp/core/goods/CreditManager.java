@@ -26,6 +26,7 @@ public class CreditManager implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
+	
 	private static SimLogger logger = SimLogger.getLogger(CreditManager.class.getName());
 
 	// Domain members
@@ -33,7 +34,7 @@ public class CreditManager implements Serializable {
 	
 	/** Credit listeners. */
 	private transient List<CreditListener> listeners;
-	/** The person's opinion toward another person. */
+	/** The map of this settlement's credit/debit with another settlement. */
 	private Map<Integer, Double> creditMap = new HashMap<>();
 	
 	/** The Unit Manager instance. */
@@ -135,7 +136,7 @@ public class CreditManager implements Serializable {
 	}
 
 	/**
-	 * Add a new settlement to the credit graph.
+	 * Adds a new settlement to the credit graph.
 	 * 
 	 * @param newSettlement the new settlement.
 	 */
@@ -149,7 +150,7 @@ public class CreditManager implements Serializable {
 	}
 
 	/**
-	 * Returns the credit map
+	 * Returns the credit map.
 	 * 
 	 * @return
 	 */
@@ -169,7 +170,7 @@ public class CreditManager implements Serializable {
 	}
 
 	/**
-	 * Add a listener
+	 * Adds a listener.
 	 * 
 	 * @param newListener The listener to add.
 	 */
@@ -179,7 +180,7 @@ public class CreditManager implements Serializable {
 	}
 
 	/**
-	 * Remove a listener
+	 * Removes a listener.
 	 * 
 	 * @param oldListener the listener to remove.
 	 */
@@ -189,7 +190,7 @@ public class CreditManager implements Serializable {
 	}
 
 	/**
-	 * Initialize instances
+	 * Initializes instances.
 	 * 
 	 * @param um the unitManager instance
 	 */
@@ -198,12 +199,14 @@ public class CreditManager implements Serializable {
 	}
 	
 	/**
-	 * Prepare object for garbage collection.
+	 * Prepares object for garbage collection.
 	 */
 	public void destroy() {
-		unitManager = null;
 		if (listeners != null)
 			listeners.clear();
 		listeners = null;
+		if (creditMap != null)
+			creditMap.clear();
+		creditMap = null;
 	}
 }
