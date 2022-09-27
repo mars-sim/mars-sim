@@ -194,7 +194,7 @@ public class TabPanelManufacture extends TabPanel {
 									workshop.addProcess(new ManufactureProcess(selectedProcess, workshop));
 									update();
 
-									logger.log(workshopBuilding, Level.CONFIG, 0L, "Player starts the '" 
+									logger.log(workshopBuilding, Level.CONFIG, 0L, "Player selected the manufacturing process '" 
 											+ selectedProcess.getName() + "'.");
 									
 									buildingComboBox.setRenderer(new PromptComboBoxRenderer(" (1). Select a Building"));
@@ -211,7 +211,7 @@ public class TabPanelManufacture extends TabPanel {
 											new SalvageProcess(selectedSalvage, workshop, salvagedUnit));
 									update();
 
-									logger.log(workshopBuilding, Level.CONFIG, 0L, "Player starts salvaging '" 
+									logger.log(workshopBuilding, Level.CONFIG, 0L, "Player selected the salvaging process '" 
 											+ salvagedUnit.getName() + "'.");
 								}
 							}

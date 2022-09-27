@@ -40,9 +40,11 @@ public class BuildingTableModel extends UnitTableModel {
 	private static final int CATEGORY = 2;
 	private static final int POWER_MODE = 3;
 	private static final int POWER_REQUIRED = 4;
-	private static final int HEAT_MODE = 5;
-	private static final int TEMPERATURE = 6;
-	private static final int COLUMNCOUNT = 7;
+	private static final int POWER_GEN = 5;
+	private static final int HEAT_MODE = 6;
+	private static final int TEMPERATURE = 7;
+	
+	private static final int COLUMNCOUNT = 8;
 
 	/** Names of Columns. */
 	private static String[] columnNames;
@@ -81,6 +83,8 @@ public class BuildingTableModel extends UnitTableModel {
 		columnTypes[TEMPERATURE] = Double.class;
 		columnNames[POWER_REQUIRED]  = Msg.getString("BuildingTableModel.column.powerRequired"); //$NON-NLS-1$
 		columnTypes[POWER_REQUIRED] = Double.class;
+		columnNames[POWER_GEN]  = Msg.getString("BuildingTableModel.column.powerGenerated"); //$NON-NLS-1$
+		columnTypes[POWER_GEN] = Double.class;
 	}
 
 	/**
@@ -104,6 +108,63 @@ public class BuildingTableModel extends UnitTableModel {
 		}
 	}
 
+
+
+	/**
+	 * Returns the value of a Cell.
+	 *
+	 * @param rowIndex    Row index of the cell.
+	 * @param columnIndex Column index of the cell.
+	 */
+	public Object getValueAt(int rowIndex, int columnIndex) {
+		Object result = null;
+
+		if (rowIndex < getUnitNumber()) {
+			Building building = (Building) getUnit(rowIndex);
+
+			switch (columnIndex) {
+
+			case NAME: 
+				result = building.getName();
+				break;
+
+			case TYPE: 
+				result = building.getBuildingType();
+				break;
+			
+			case CATEGORY:
+				result = building.getCategory().getName();
+				break;
+
+			case POWER_MODE:
+				result = building.getPowerMode().getName();
+				break;
+							
+			case POWER_REQUIRED:
+				result =  building.getFullPowerRequired();
+				break;
+				
+			case POWER_GEN:
+				if (building.getPowerGeneration() != null)
+					result =  building.getPowerGeneration().getGeneratedPower();
+				break;
+				
+			case HEAT_MODE:
+				result = building.getHeatMode().getPercentage();
+				break;
+				
+			case TEMPERATURE:
+				result = Math.round(building.getCurrentTemperature() * 10.0)/10.0;
+				break;
+				
+			default:
+				break;
+			}
+		}
+
+		return result;
+	}
+	
 	/**
 	 * Catches unit update event.
 	 *
@@ -145,54 +206,7 @@ public class BuildingTableModel extends UnitTableModel {
 			SwingUtilities.invokeLater(new BuildingTableCellUpdater(unitIndex, columnNum));
 		}
 	}
-
-	/**
-	 * Returns the value of a Cell.
-	 *
-	 * @param rowIndex    Row index of the cell.
-	 * @param columnIndex Column index of the cell.
-	 */
-	public Object getValueAt(int rowIndex, int columnIndex) {
-		Object result = null;
-
-		if (rowIndex < getUnitNumber()) {
-			Building building = (Building) getUnit(rowIndex);
-
-			switch (columnIndex) {
-
-			case NAME: 
-				result = building.getName();
-				break;
-
-			case TYPE: 
-				result = building.getBuildingType();
-				break;
-			
-			case CATEGORY:
-				result = building.getCategory().getName();
-				break;
-
-			case POWER_MODE:
-				result = building.getPowerMode().getName();
-				break;
-			
-			case POWER_REQUIRED:
-				result =  building.getFullPowerRequired();
-				break;
-				
-			case HEAT_MODE:
-				result = building.getHeatMode().getPercentage();
-				break;
-				
-			case TEMPERATURE:
-				result = Math.round(building.getCurrentTemperature() * 10.0)/10.0;
-				break;
-			}
-		}
-
-		return result;
-	}
-
+	
 	/**
 	 * Prepares the model for deletion.
 	 */

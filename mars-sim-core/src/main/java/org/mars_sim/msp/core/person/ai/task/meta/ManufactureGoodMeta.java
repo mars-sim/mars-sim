@@ -52,7 +52,6 @@ public class ManufactureGoodMeta extends MetaTask {
         if (!person.getPhysicalCondition().isFitByLevel(1000, 70, 1000))
         	return 0;
         
-
         double result = 0D;
 
         if (person.isInSettlement()) {
@@ -69,8 +68,8 @@ public class ManufactureGoodMeta extends MetaTask {
             
             // See if there is an available manufacturing building.
             Building manufacturingBuilding = ManufactureGood.getAvailableManufacturingBuilding(person);
+            
             if (manufacturingBuilding != null) {
-
                 // If manufacturing building has process requiring work, add
                 // modifier.
                 SkillManager skillManager = person.getSkillManager();
@@ -121,32 +120,29 @@ public class ManufactureGoodMeta extends MetaTask {
         
         double result = 0D;
 
-        if (robot.getRobotType() == RobotType.MAKERBOT) {
-
 	        if (robot.isInSettlement()) {
 
-	            // See if there is an available manufacturing building.
-	            Building manufacturingBuilding = ManufactureGood.getAvailableManufacturingBuilding(robot);
-	            if (manufacturingBuilding != null) {
-	                result = 100D;
+            // See if there is an available manufacturing building.
+            Building manufacturingBuilding = ManufactureGood.getAvailableManufacturingBuilding(robot);
+            if (manufacturingBuilding != null) {
+                result = 100D;
 
-	                if (result > 100D) {
-	                    result = 100D;
-	                }
+                if (result > 100D) {
+                    result = 100D;
+                }
 
-	                // If manufacturing building has process requiring work, add
-	                // modifier.
-	                SkillManager skillManager = robot.getSkillManager();
-	                int skill = skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
-	                if (ManufactureGood.hasProcessRequiringWork(manufacturingBuilding, skill)) {
-	                    result += 10D;
-	                }
+                // If manufacturing building has process requiring work, add
+                // modifier.
+                SkillManager skillManager = robot.getSkillManager();
+                int skill = skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
+                if (ManufactureGood.hasProcessRequiringWork(manufacturingBuilding, skill)) {
+                    result += 10D;
+                }
 
-		            // Effort-driven task modifier.
-		            result *= robot.getPerformanceRating();
-	            }
+	            // Effort-driven task modifier.
+	            result *= robot.getPerformanceRating();
+            }
 
-	        }
             
 	        // Cancel any manufacturing processes that's beyond the skill of any people
 	        // associated with the settlement.

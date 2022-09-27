@@ -47,11 +47,11 @@ class PartGood extends Good {
 	private static final String GLASS_SHEET = "glass sheet";
 	private static final String DRILL = "drill";
 
-	private static final double DRILL_DEMAND  = 12;
+	private static final double DRILL_DEMAND  = .5;
 	private static final double BOTTLE_DEMAND = .02;
 	private static final double FIBERGLASS_DEMAND = .01;
 	private static final double VEHICLE_PART_DEMAND = 4;
-	private static final double EVA_PART_DEMAND = 7;
+	private static final double EVA_PART_DEMAND = 1;
     private static final double KITCHEN_DEMAND = 1.5;
 	private static final double SCRAP_METAL_DEMAND = .01;
 	private static final double INGOT_METAL_DEMAND = .01;
@@ -59,15 +59,16 @@ class PartGood extends Good {
 	private static final double TRUSS_DEMAND = .05;
 	private static final double STEEL_DEMAND = .1;
 	private static final double BRICK_DEMAND = .005;
-	private static final double ELECTRICAL_DEMAND = 70;
-	private static final double INSTRUMENT_DEMAND = 60;
-	private static final double METALLIC_DEMAND = 30;
-	private static final double UTILITY_DEMAND = 50;
-	private static final double TOOL_DEMAND = 40;
+	private static final double ELECTRICAL_DEMAND = 7;
+	private static final double INSTRUMENT_DEMAND = 6;
+	private static final double METALLIC_DEMAND = 3;
+	private static final double UTILITY_DEMAND = 3;
+	private static final double TOOL_DEMAND = 4;
 	private static final double CONSTRUCTION_DEMAND = .8;
 	private static final double GLASS_SHEET_DEMAND = .1;
-	private static final double GLASS_TUBE_DEMAND  = 80;
-	private static final double ITEM_DEMAND = 2.5;
+	private static final double GLASS_TUBE_DEMAND  = 8;
+	
+	private static final double ITEM_DEMAND = 1;
 	
 	private static final double CONSTRUCTION_SITE_REQUIRED_PART_FACTOR = 100D;
 
@@ -358,8 +359,7 @@ class PartGood extends Good {
 	 */
 	private static double calculateFlattenPartDemand(Part part) {
 		String name = part.getName();
-		GoodType type = part.getGoodType();
-
+		
 		if (name.contains("pipe"))
 			return 1;
 		
@@ -369,7 +369,6 @@ class PartGood extends Good {
 		if (name.contains("plastic"))
 			return 1.1;
 		
-		// Note that there are 'plastic pipe', 'plastic sheet', 'plastic tubing'
 		if (name.contains("tank"))
 			return .1;
 		
@@ -385,12 +384,14 @@ class PartGood extends Good {
 		if (name.contains("gasket"))
 			return .1;
 		
+		GoodType type = part.getGoodType();
+
 		if (type == GoodType.ELECTRICAL) {
 			if (name.contains("light")
 				|| name.contains("resistor")
 				|| name.contains("capacitor")
 				|| name.contains("diode")) {
-				return 10;
+				return 5;
 			}
 			else if (name.contains("electrical wire")
 					|| name.contains("wire connector"))
@@ -428,6 +429,8 @@ class PartGood extends Good {
 		if (type == GoodType.EVA)
 			return EVA_PART_DEMAND;
 		
+
+
 		return 1;
 	}
 
@@ -844,46 +847,39 @@ class PartGood extends Good {
 		return demand;
 	}
 
-    /**
-	 * Determines the number demand for all parts at the settlement.
-	 *
-	 * @return map of parts and their demand.
-	 */
-	// private void determineRepairPartsDemand() {
-	// 	Map<Good, Double> partsProbDemand = new HashMap<>();
-
-	// 	// Get all malfunctionables associated with settlement.
-	// 	Iterator<Malfunctionable> i = MalfunctionFactory.getAssociatedMalfunctionables(settlement).iterator();
-	// 	while (i.hasNext()) {
-	// 		Malfunctionable entity = i.next();
-
-	// 		// Determine wear condition modifier.
-	// 		double wearModifier = (entity.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
-
-	// 		// Estimate repair parts needed per orbit for entity.
-	// 		sumPartsDemand(partsProbDemand, getEstimatedOrbitRepairParts(entity), wearModifier);
-
-	// 		// Add outstanding repair parts required.
-	// 		sumPartsDemand(partsProbDemand, getOutstandingRepairParts(entity), MALFUNCTION_REPAIR_COEF);
-
-	// 		// Estimate maintenance parts needed per orbit for entity.
-	// 		sumPartsDemand(partsProbDemand, getEstimatedOrbitMaintenanceParts(entity), wearModifier);
-
-	// 		// Add outstanding maintenance parts required.
-	// 		sumPartsDemand(partsProbDemand, getOutstandingMaintenanceParts(entity), MAINTENANCE_REPAIR_COEF);
-	// 	}
-	
-	// 	// Add demand for vehicle attachment parts.
-	// 	sumPartsDemand(partsProbDemand, getVehicleAttachmentParts(), 1D);
-
-	// 	// Store in parts demand cache.
-	// 	for(Entry<Good, Double> entry : partsProbDemand.entrySet()) {
-	// 		Good part = entry.getKey();
-
-	// 		if (getDemandValue(part) < 1)
-	// 			setDemandValue(part, 1.0);
-	// 		else
-	// 			setDemandValue(part, entry.getValue());
-	// 	}
-	// }
+//    /**
+//	 * Determines the number demand for all parts at the settlement.
+//	 *
+//	 * @return map of parts and their demand.
+//	 */
+//	 private void determineRepairPartsDemand() {
+//	 	Map<Good, Double> partsProbDemand = new HashMap<>();
+//	 	// Get all malfunctionables associated with settlement.
+//	 	Iterator<Malfunctionable> i = MalfunctionFactory.getAssociatedMalfunctionables(settlement).iterator();
+//	 	while (i.hasNext()) {
+//	 		Malfunctionable entity = i.next();
+//	 		// Determine wear condition modifier.
+//	 		double wearModifier = (entity.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
+//	 		// Estimate repair parts needed per orbit for entity.
+//	 		sumPartsDemand(partsProbDemand, getEstimatedOrbitRepairParts(entity), wearModifier);
+//	 		// Add outstanding repair parts required.
+//	 		sumPartsDemand(partsProbDemand, getOutstandingRepairParts(entity), MALFUNCTION_REPAIR_COEF);
+//	 		// Estimate maintenance parts needed per orbit for entity.
+//	 		sumPartsDemand(partsProbDemand, getEstimatedOrbitMaintenanceParts(entity), wearModifier);
+//	 		// Add outstanding maintenance parts required.
+//	 		sumPartsDemand(partsProbDemand, getOutstandingMaintenanceParts(entity), MAINTENANCE_REPAIR_COEF);
+//	 	}
+//	 	
+//	 	// Add demand for vehicle attachment parts.
+//	 	sumPartsDemand(partsProbDemand, getVehicleAttachmentParts(), 1D);
+//	 	
+//	 	// Store in parts demand cache.
+//	 	for(Entry<Good, Double> entry : partsProbDemand.entrySet()) {
+//	 		Good part = entry.getKey();
+//	 		if (getDemandValue(part) < 1)
+//	 			setDemandValue(part, 1.0);
+//	 		else
+//	 			setDemandValue(part, entry.getValue());
+//	 	}
+//	 }
 }

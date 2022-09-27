@@ -22,11 +22,15 @@ public class ManufactureProcessInfo implements Serializable, Comparable<Manufact
 	// Data members
 	private String name;
 	private String description;
+	
 	private int techLevelRequired;
 	private int skillLevelRequired;
+	private int effortLevel = 2;
+	
 	private double workTimeRequired;
 	private double processTimeRequired;
 	private double powerRequired;
+	
 	private List<ManufactureProcessItem> inputList;
 	private List<ManufactureProcessItem> outputList;
 
@@ -88,6 +92,10 @@ public class ManufactureProcessInfo implements Serializable, Comparable<Manufact
 		return skillLevelRequired;
 	}
 
+	public int getEffortLevel() {
+		return effortLevel;
+	}
+	
 	/**
 	 * Sets the material science skill level required to work on the process.
 	 * 

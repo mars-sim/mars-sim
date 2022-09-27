@@ -37,7 +37,7 @@ import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.Manufacture;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleConfig;
@@ -51,10 +51,19 @@ public final class ManufactureUtil {
 	/* default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(ManufactureUtil.class.getName());
 
+	private static final int OUTPUT_VALUE = 10;
+	private static final int PART_VALUE = 20;
+	private static final int EQUIPMENT_VALUE = 40;
+	private static final int VEHICLE_VALUE = 60;
+	
+	private static final double WORK_EFFORT_MULTIPLIER = 0.05;
+	
 	private static final SimulationConfig simulationConfig = SimulationConfig.instance();
 	private static final ManufactureConfig manufactureConfig = simulationConfig.getManufactureConfiguration();
 	private static final VehicleConfig vehicleConfig = simulationConfig.getVehicleConfiguration();
 
+	
+	
 	/** constructor. */
 	public ManufactureUtil() {}
 
@@ -184,7 +193,8 @@ public final class ManufactureUtil {
 	 * @throws Exception if error determining good values.
 	 */
 	public static double getManufactureProcessValue(ManufactureProcessInfo process, Settlement settlement) {
-
+		int effortLevel = process.getEffortLevel();
+		
 		double inputsValue = 0D;
 		Iterator<ManufactureProcessItem> i = process.getInputList().iterator();
 		while (i.hasNext())
@@ -195,11 +205,32 @@ public final class ManufactureUtil {
 		while (j.hasNext())
 			outputsValue += getManufactureProcessItemValue(j.next(), settlement, true);
 
-		// Subtract power value.
-		double powerHrsRequiredPerMillisol = process.getPowerRequired() * MarsClock.HOURS_PER_MILLISOL;
-		double powerValue = powerHrsRequiredPerMillisol * settlement.getPowerGrid().getPowerValue();
-
-		return outputsValue - inputsValue - powerValue;
+		// Get power value.
+		double powerValue = process.getPowerRequired() * settlement.getPowerGrid().getPowerValue();
+		
+		// Get the time value.
+		double processTimeRequired = process.getProcessTimeRequired();
+		double workTimeRequired = process.getWorkTimeRequired();
+		double timeValue = WORK_EFFORT_MULTIPLIER * (processTimeRequired + workTimeRequired);
+		
+		// Add a small degree of randomness to the input value 
+		// to avoid getting stuck at selecting the same process over and over
+		double rand0 = RandomUtil.getRandomDouble(.75, 1.25);
+		inputsValue = Math.round(inputsValue * rand0 * 10.0)/10.0;
+		
+		// Add a small degree of randomness to the output value
+		// to avoid getting stuck at selecting the same process over and over
+		double rand1 = RandomUtil.getRandomDouble(.75, 1.25);
+		outputsValue = Math.round(rand1 * (OUTPUT_VALUE + outputsValue) * effortLevel * 10.0)/10.0;
+		
+		double score = Math.round((outputsValue - inputsValue - timeValue - powerValue) * 10.0)/10.0;
+		
+//		logger.info(settlement + " - " + process + "  outputsValue: " + outputsValue 
+//				+ "  inputsValue: " + inputsValue
+//				+ "  powerValue: " + Math.round(powerValue * 100.0)/100.0
+//				+ "  timeValue: " + Math.round(timeValue * 100.0)/100.0
+//				+ "  score: " + score);
+		return score;
 	}
 
 	/**
@@ -293,12 +324,18 @@ public final class ManufactureUtil {
 		} else if (item.getType() == ItemType.PART) {
             int id = ItemResourceUtil.findIDbyItemResourceName(item.getName());
 			result = manager.getGoodValuePoint(id) * item.getAmount();
+			if (isOutput)
+				result *= PART_VALUE;
 		} else if (item.getType() == ItemType.EQUIPMENT) {
 			int id = EquipmentType.convertName2ID(item.getName());
 			result = manager.getGoodValuePoint(id) * item.getAmount();
+			if (isOutput)
+				result *= EQUIPMENT_VALUE;
 		} else if (item.getType() == ItemType.VEHICLE) {
 			Good good = GoodsUtil.getVehicleGood(item.getName());
 			result = manager.getGoodValuePoint(good.getID()) * item.getAmount();
+			if (isOutput)
+				result *= VEHICLE_VALUE;
 		}
 
 		else

@@ -151,7 +151,6 @@ public class GoodsManager implements Serializable {
 			deflationIndexMap.put(id, 0);
 			demandCache.put(id, good.getDefaultDemandValue());
 			supplyCache.put(id, good.getDefaultSupplyValue());
-
 		}
 	}
 

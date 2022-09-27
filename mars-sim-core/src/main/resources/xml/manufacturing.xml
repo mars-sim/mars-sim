@@ -865,7 +865,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 	
 	<!-- Epoxy uses bisphenol-a (C15H16O2) -->
-	<process name="make epoxy resin bottle" tech="3" skill="1" work-time="100" process-time="300"
+	<process name="make epoxy resin bottle" tech="3" skill="1" work-time="20" process-time="300"
 			power-required="0.1">
 		<inputs>
 			<resource name="bisphenol-a" amount=".5" />
@@ -877,7 +877,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Using polyester resin as a lubricant. -->
-	<process name="make lubricant bottle" tech="3" skill="1" work-time="100" process-time="300"
+	<process name="make lubricant bottle" tech="3" skill="1" work-time="20" process-time="300"
 			power-required="0.1">
 		<inputs>
 			<resource name="polyester resin" amount=".5" />
@@ -888,7 +888,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="make coolant bottle" tech="3" skill="1" work-time="100" process-time="300"
+	<process name="make coolant bottle" tech="3" skill="1" work-time="20" process-time="300"
 			power-required="0.1">
 		<description>
 			Using ethylene glycol as a coolant.
@@ -904,7 +904,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="make airleak patch" tech="3" skill="1" work-time="100" process-time="100"
+	<process name="make airleak patch" tech="3" skill="1" work-time="20" process-time="100"
 			power-required="0.1">
 		<inputs>
 			<resource name="polyester resin" amount="7.5" />
@@ -932,7 +932,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces 1kg spool of fiber glass. -->
-	<process name="draw optical fiber glass" tech="3" skill="1" work-time="300" process-time="300"
+	<process name="draw optical fiber glass" tech="3" skill="1" work-time="50" process-time="100"
 			power-required=".1">
 		<inputs>
 			<resource name="sand" amount="2.0" />
@@ -943,7 +943,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
     <!-- Produces 10 1kg spools of fiber glass. -->
-	<process name="draw optical fiber glass (large batch)" tech="3" skill="2" work-time="1500" process-time="1500"
+	<process name="draw optical fiber glass (large batch)" tech="3" skill="2" work-time="150" process-time="300"
 			power-required=".5">
 		<inputs>
 			<resource name="sand" amount="20.0" />
@@ -954,7 +954,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces 1m x 1m woven fiberglass cloth. -->
-	<process name="weave fiberglass cloth" tech="2" skill="1" work-time="400" process-time="400"
+	<process name="weave fiberglass cloth" tech="2" skill="1" work-time="10" process-time="100"
 			power-required="0">
 		<inputs>
 			<part name="fiberglass" number="1" />
@@ -965,7 +965,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces 1m x 1m thin sheet of plastic. -->
-	<process name="do plastic sheet extrusion" tech="1" skill="1" work-time="200" process-time="200"
+	<process name="do plastic sheet extrusion" tech="1" skill="1" work-time="20" process-time="200"
 			power-required=".2">
 		<inputs>
 			<resource name="polyester resin" amount="10.0" />
@@ -1000,7 +1000,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces 1m x 1m x 1cm (26kg) sheet of glass. -->
-	<process name="make sheet glass" tech="2" skill="1" work-time="100" process-time="300"
+	<process name="make sheet glass" tech="2" skill="1" work-time="10" process-time="300"
 			power-required=".2">
 		<inputs>
 			<resource name="sand" amount="26.0" />
@@ -1010,7 +1010,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="make garment" tech="2" skill="1" work-time="100" process-time="100"
+	<process name="make garment" tech="2" skill="1" work-time="50" process-time="100"
 			power-required=".2">
 		<inputs>
 			<resource name="cane fiber" amount="0.2" />
@@ -1022,7 +1022,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="make eva helmet" tech="2" skill="2" work-time="400" process-time="300"
+	<process name="make eva helmet" tech="2" skill="2" work-time="100" process-time="300"
 			power-required=".2">
 		<inputs>
 			<resource name="cane fiber" amount="0.2" />
@@ -1037,7 +1037,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="make helmet visor" tech="2" skill="2" work-time="300" process-time="200"
+	<process name="make helmet visor" tech="2" skill="2" work-time="100" process-time="200"
 			power-required=".1">
 		<inputs>
 			<resource name="polycarbonate resin" amount=".2" />
@@ -1048,7 +1048,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="make pressure suit" tech="2" skill="2" work-time="400" process-time="300"
+	<process name="make pressure suit" tech="2" skill="2" work-time="100" process-time="300"
 			power-required=".2">
 		<inputs>
 			<resource name="polyethylene" amount="0.2" />
@@ -1061,7 +1061,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="make coveralls" tech="2" skill="2" work-time="200" process-time="100"
+	<process name="make coveralls" tech="2" skill="2" work-time="100" process-time="100"
 			power-required=".2">
 		<inputs>
 			<resource name="cane fiber" amount="0.2" />
@@ -1074,7 +1074,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="make eva gloves" tech="3" skill="3" work-time="200" process-time="100"
+	<process name="make eva gloves" tech="3" skill="3" work-time="100" process-time="100"
 			power-required=".1">
 		<inputs>
 			<resource name="cane fiber" amount="0.1" />
@@ -1087,7 +1087,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="make eva boots" tech="3" skill="3" work-time="300" process-time="100"
+	<process name="make eva boots" tech="3" skill="3" work-time="100" process-time="100"
 			power-required=".1">
 		<inputs>
 			<resource name="cane fiber" amount="0.2" />
@@ -1101,7 +1101,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="make eva pads" tech="3" skill="3" work-time="300" process-time="100"
+	<process name="make eva pads" tech="3" skill="3" work-time="50" process-time="100"
 			power-required=".7">
 		<inputs>
 			<resource name="cane fiber" amount="0.1" />
@@ -1114,7 +1114,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="make eva backpack" tech="2" skill="2" work-time="400" process-time="200"
+	<process name="make eva backpack" tech="2" skill="2" work-time="100" process-time="200"
 			power-required=".5">
 		<description>Polyethylene box with steel frame and fiberglass cloth straps.</description>
 		<inputs>
@@ -1152,7 +1152,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="assemble eva suit" tech="2" skill="3" work-time="200" process-time="0"
+	<process name="assemble eva suit" tech="2" skill="3" work-time="100" process-time="0"
 			power-required="0.5">
 		<inputs>
 			<part name="eva helmet" number="1" />
@@ -1175,7 +1175,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="make work gloves" tech="1" skill="1" work-time="100" process-time="100"
+	<process name="make work gloves" tech="1" skill="1" work-time="50" process-time="100"
 			power-required=".05">
 		<inputs>
 			<resource name="cane fiber" amount="0.1" />
@@ -2231,7 +2231,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Manufacturing a large water pump. -->
-	<process name="make large water pump" tech="1" skill="1" work-time="200" process-time="100"
+	<process name="make large water pump" tech="1" skill="1" work-time="100" process-time="100"
 			power-required=".2">
 		<inputs>
 			<part name="iron ingot" number="2" />
@@ -2246,7 +2246,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Electrolyzing water into oxygen and hydrogen. -->
-	<process name="do water electrolysis" tech="0" skill="0" work-time="10" process-time="10" power-required="2.0">
+	<process name="do water electrolysis" tech="0" skill="0" work-time="5" process-time="100" power-required="2.0">
 		<inputs>
 			<resource name="water" amount="10.0" />
 		</inputs>
@@ -2257,7 +2257,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Sabatier process converting co2 and hydrogen into water and methane. -->
-	<process name="do sabatier processing" tech="1" skill="0" work-time="10" process-time="10" power-required="2.0">
+	<process name="do sabatier processing" tech="1" skill="0" work-time="5" process-time="100" power-required="2.0">
 		<inputs>
 			<resource name="carbon dioxide" amount="10.0" />
 			<resource name="hydrogen" amount="1.7" />
@@ -2269,7 +2269,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Reducing carbon dioxide in oxygen and carbon monoxide. -->
-	<process name="do CO2 reduction" tech="1" skill="0" work-time="10" process-time="10" power-required="1.0">
+	<process name="do CO2 reduction" tech="1" skill="0" work-time="5" process-time="100" power-required="1.0">
 		<inputs>
 			<resource name="carbon dioxide" amount="10.0" />
 		</inputs>
@@ -2280,7 +2280,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- 2014-11-19 Added manufacturing a small water pump. -->
-	<process name="make small water pump" tech="1" skill="1" work-time="200" process-time="50"
+	<process name="make small water pump" tech="1" skill="1" work-time="50" process-time="50"
 			power-required="1.0">
 		<inputs>
 			<part name="iron ingot" number="1" />
