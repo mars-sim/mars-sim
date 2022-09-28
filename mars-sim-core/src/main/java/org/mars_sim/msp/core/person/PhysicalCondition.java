@@ -65,7 +65,7 @@ public class PhysicalCondition implements Serializable {
 	/** The maximum number of sols in thirst [millisols]. */
 	public static final int MAX_THIRST = 7_000;
 	/** The maximum number of sols in thirst [millisols]. */
-	public static final int THIRST_CEILING_UPON_DRINKING = 250;
+	public static final int THIRST_CEILING_UPON_DRINKING = 500;
 	/** The amount of thirst threshold [millisols]. */
 	public static final int THIRST_THRESHOLD = 150;
 	/** The amount of thirst threshold [millisols]. */
@@ -2160,11 +2160,11 @@ public class PhysicalCondition implements Serializable {
 
 	
 	/**
-	 * Has this person eaten too much ?
+	 * Has this person eaten the amount of food that exceed the max daily limits ? 
 	 * 
 	 * @return
 	 */
-	public boolean eatenTooMuch() {
+	public boolean eatTooMuch() {
 		double foodEaten = 0;
 		Double f = consumption.getDataPoint(0);
 		if (f != null)
@@ -2179,21 +2179,23 @@ public class PhysicalCondition implements Serializable {
 		Double d = consumption.getDataPoint(2);
 		if (d != null)
 			dessertEaten = d.doubleValue();
-		if (foodEaten + mealEaten + dessertEaten >= FOOD_CONSUMPTION * 1.5)
+		if (foodEaten + mealEaten + dessertEaten >= FOOD_CONSUMPTION * 1.5
+				&& hunger < HUNGER_THRESHOLD)
 			return true;
 
 		return false;
 	}
 	
 	/**
-	 * Has this person drank enough water ?
+	 * Has this person drank the amount of water that exceed the max daily limits ? 
 	 * 
 	 * @return
 	 */
 	public boolean drinkEnoughWater() {
 		Double w = consumption.getDataPoint(3);
 		if (w != null) {
-			if (w.doubleValue() >= H2O_CONSUMPTION * 1.5)
+			if (w.doubleValue() >= H2O_CONSUMPTION * 1.5
+					&& thirst < THIRST_THRESHOLD)
 				return true;
 		}
 

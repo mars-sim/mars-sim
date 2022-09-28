@@ -46,7 +46,7 @@ public class EatDrinkMeta extends MetaTask {
 	@Override
 	public double getProbability(Person person) {
 		// Checks if this person has eaten too much already 
-		if (person.getPhysicalCondition().eatenTooMuch()
+		if (person.getPhysicalCondition().eatTooMuch()
 			// Checks if this person has drank enough water already
 			&& person.getPhysicalCondition().drinkEnoughWater()) {
 			return 0;

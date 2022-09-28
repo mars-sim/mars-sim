@@ -68,7 +68,7 @@ public class EatDrink extends Task {
 	private static final String MILK = "milk";
 	
 //	private static final int HUNGER_CEILING = 1000;
-	private static final int THIRST_CEILING = 500;
+	private static final int THIRST_CEILING = PhysicalCondition.THIRST_CEILING_UPON_DRINKING;
 
 	// Static members
 	private static final int FOOD_ID = ResourceUtil.foodID;
@@ -130,7 +130,7 @@ public class EatDrink extends Task {
 		pc = person.getPhysicalCondition();
 
 		// Checks if this person has eaten too much already 
-		if (pc.eatenTooMuch()
+		if (pc.eatTooMuch()
 			// Checks if this person has drank enough water already
 			&& pc.drinkEnoughWater()) {
 			endTask();
@@ -240,7 +240,7 @@ public class EatDrink extends Task {
 		}
 
 		else {
-			// A person is on EVA suit
+			// if a person is on EVA suit
 			if (thirsty && waterAmount > 0) {
 				water = true;
 			}
@@ -439,7 +439,7 @@ public class EatDrink extends Task {
 			calculateWater(true);
 
 		// Note: must call endTask here to end this task
-		endTask();
+//		endTask();
 
 		return 0;
 	}
@@ -506,7 +506,7 @@ public class EatDrink extends Task {
 	private double eatingPreservedFoodPhase(double time) {
 		
 		// Checks if this person has eaten too much already 
-		if (pc.eatenTooMuch()) {
+		if (pc.eatTooMuch()) {
 			endTask();
 			return time;
 		}
@@ -547,8 +547,8 @@ public class EatDrink extends Task {
 			}
 
 			// Also consume water with the preserved food
-			if (!person.getPhysicalCondition().drinkEnoughWater())
-				calculateWater(false);
+//			if (!person.getPhysicalCondition().drinkEnoughWater())
+//				calculateWater(false);
 			
 			totalEatingTime += eatingTime;
 		}
@@ -567,7 +567,7 @@ public class EatDrink extends Task {
 	private double eatingMealPhase(double time) {
 		
 		// Checks if this person has eaten too much already 
-		if (pc.eatenTooMuch()) {
+		if (pc.eatTooMuch()) {
 			endTask();
 			return time;
 		}
@@ -592,15 +592,16 @@ public class EatDrink extends Task {
 		}
 		
 		if (eatingTime > 0 && cookedMeal != null) {
+			
 			String s = Msg.getString("Task.description.eatDrink.cooked.eating.detail", cookedMeal.getName());
-			// Set descriptoin for eating cooked meal.
+			// Set description for eating cooked meal.
 			setDescription(s); //$NON-NLS-1$
 			// Eat cooked meal.
 			eatCookedMeal(eatingTime);
 
 			// Also consume water with the preserved food
-			if (!person.getPhysicalCondition().drinkEnoughWater())
-				calculateWater(false);
+//			if (!person.getPhysicalCondition().drinkEnoughWater())
+//				calculateWater(false);
 			
 			// If finished eating, change to dessert phase.
 			if (eatingTime < time) {
@@ -796,7 +797,7 @@ public class EatDrink extends Task {
 	private double eatingDessertPhase(double time) {
 		
 		// Checks if this person has eaten too much already 
-		if (pc.eatenTooMuch()) {
+		if (pc.eatTooMuch()) {
 			endTask();
 			return time;
 		}
@@ -818,9 +819,8 @@ public class EatDrink extends Task {
 		if (eatingTime > 0D) {
 
 			if (nameOfDessert != null) {
-
-				checkInDescription(PreparingDessert.convertString2AR(nameOfDessert.getName()), true);
-				
+				// Display what dessert to east
+				showDessertDescription(PreparingDessert.convertString2AR(nameOfDessert.getName()), true);
 				// Eat a serving of prepared dessert
 				eatPreparedDessert(eatingTime);
 
@@ -829,8 +829,8 @@ public class EatDrink extends Task {
 				boolean enoughDessert = eatUnpreparedDessert(eatingTime);
 
 				if (enoughDessert) {
-					checkInDescription(unpreparedDessertAR, false);
-
+					// Display what dessert to east
+					showDessertDescription(unpreparedDessertAR, false);
 					// Obtain the dry mass of the dessert
 					double dryMass = PreparingDessert.getDryMass(PreparingDessert.convertAR2String(unpreparedDessertAR));
 		
@@ -858,7 +858,7 @@ public class EatDrink extends Task {
 		return remainingTime;
 	}
 
-	private void checkInDescription(AmountResource dessertAR, boolean prepared) {
+	private void showDessertDescription(AmountResource dessertAR, boolean prepared) {
 		String s = dessertAR.getName();
 		String text = "";
 		if (s.contains(MILK) || s.contains(JUICE)) {
@@ -941,13 +941,11 @@ public class EatDrink extends Task {
 	}
 
 	/**
-	 * Calculates the amount of water to consume during a dessert
+	 * Calculates the amount of water to consume during a dessert.
 	 *
 	 * @param dryMass of the dessert
 	 */
 	private void consumeDessertWater(double dryMass) {
-		double currentThirst = pc.getThirst();
-//		double waterFinal = waterEachServing;
 		// Note that the water content within the dessert has already been deducted from
 		// the settlement
 		// when the dessert was made.
@@ -958,25 +956,17 @@ public class EatDrink extends Task {
 		}
 
 		if (proportion > 0) {
-			double newThirst = currentThirst - proportion * THIRST_PER_WATER_SERVING;
-			if (newThirst < 0) {
-				newThirst = 0;
-				pc.setThirst(0);
-			}
-			else if (newThirst > THIRST_CEILING) {
-				newThirst = THIRST_CEILING;
-				pc.setThirst(THIRST_CEILING);
-			}
-			else
-				pc.reduceThirst(currentThirst - newThirst);
-			
+			// Record the amount consumed
+			pc.recordFoodConsumption(proportion * THIRST_PER_WATER_SERVING, 3);
+			// Reduce thirst
+			pc.reduceThirst(proportion * THIRST_PER_WATER_SERVING);
 			// Assume dessert can reduce stress
 			pc.reduceStress(proportion * 2);
 		}
 	}
 
 	/**
-	 * Calculates the amount of water to consume
+	 * Calculates the amount of water to consume.
 	 *
 	 * @param is it water only
 	 */
@@ -1037,38 +1027,18 @@ public class EatDrink extends Task {
 	 * @param waterOnly
 	 */
 	private void consumeWater(Unit containerUnit, double amount, boolean waterOnly) {
-		double thirst = pc.getThirst();
-		double newThirst = thirst - amount * THIRST_PER_WATER_SERVING;
-		
-		if (newThirst < 0) {
-			newThirst = 0;
-			pc.setThirst(0);
-			// Record the amount consumed
-			pc.recordFoodConsumption(amount, 3);
-			
-			if (waterOnly)
-				setDescription(Msg.getString("Task.description.eatDrink.water")); //$NON-NLS-1$
-			endTask();
-		}
-		else if (newThirst > THIRST_CEILING) {
-			newThirst = THIRST_CEILING;
-			pc.setThirst(THIRST_CEILING);
-		}
-		else
-			pc.reduceThirst(thirst - newThirst);
-
+		// Reduce thirst
+		pc.reduceThirst(amount * THIRST_PER_WATER_SERVING);
 		// Retrieve the water
 		retrieveAnResource(amount, WATER_ID, containerUnit);
-		
 		// Record the amount consumed
 		pc.recordFoodConsumption(amount, 3);
 
 		if (waterOnly)
 			setDescription(Msg.getString("Task.description.eatDrink.water")); //$NON-NLS-1$
 
-		if (thirst < PhysicalCondition.THIRST_THRESHOLD / 6) {
+		if (pc.getThirst() < PhysicalCondition.THIRST_THRESHOLD / 6)
 			endTask();
-		}
 	}
 
 	/**
