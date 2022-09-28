@@ -358,7 +358,6 @@ public abstract class OperateVehicle extends Task {
         	
     	if (!vehicle.isBeaconOn()) {
     		Mission m = vehicle.getMission();
-    		((VehicleMission)m).setEmergencyBeacon(worker, vehicle, true, status.getName());
     		((VehicleMission)m).getHelp(status);
     	}
 	}

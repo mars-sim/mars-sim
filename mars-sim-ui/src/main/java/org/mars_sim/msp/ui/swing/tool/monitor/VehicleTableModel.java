@@ -29,7 +29,6 @@ import org.mars_sim.msp.core.UnitManagerEventType;
 import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.malfunction.Malfunction;
-import org.mars_sim.msp.core.person.ai.mission.AbstractVehicleMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
 import org.mars_sim.msp.core.person.ai.mission.MissionEventType;
@@ -254,25 +253,16 @@ public class VehicleTableModel extends UnitTableModel {
 				} break;
 
 				case DESTINATION : {
-					result = null;
 					Mission mission = missionManager.getMissionForVehicle(vehicle);
 					if (mission instanceof VehicleMission) {
 						VehicleMission vehicleMission = (VehicleMission) mission;
-						String status = vehicleMission.getTravelStatus();
-						if (status != null) {
-							if (status.equals(AbstractVehicleMission.TRAVEL_TO_NAVPOINT)) {
-								NavPoint destination = vehicleMission.getNextNavpoint();
-								if (destination.isSettlementAtNavpoint())
-									result = destination.getSettlement().getName();
-								else
-									result = Conversion.capitalize(destination.getDescription()) 
-										+ " - " + destination.getLocation().getFormattedString();
-							}
-							else if (status.equals(AbstractVehicleMission.AT_NAVPOINT)) {
-								NavPoint destination = vehicleMission.getCurrentNavpoint();
-								result = Conversion.capitalize(destination.getDescription());
-							}
-						}
+
+						NavPoint destination = vehicleMission.getCurrentDestination();
+						if (destination.isSettlementAtNavpoint())
+							result = destination.getSettlement().getName();
+						else
+							result = Conversion.capitalize(destination.getDescription()) 
+								+ " - " + destination.getLocation().getFormattedString();
 					}
 				} break;
 

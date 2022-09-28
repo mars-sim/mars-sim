@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -24,6 +23,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.MissionStatus;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
@@ -40,7 +40,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  * The ExitAirlock class is a Task for EVA egress, namely, exiting an airlock of a settlement or vehicle
  * in order to perform an EVA operation outside.
  */
-public class ExitAirlock extends Task implements Serializable {
+public class ExitAirlock extends Task {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -89,6 +89,9 @@ public class ExitAirlock extends Task implements Serializable {
 	private static final double SUIT_DONNING_TIME = 25;
 	/** The standard time for each task phase. */
 	private static final double STANDARD_TIME = 0.5;
+
+	private static final MissionStatus NO_EVA_SUITS = new MissionStatus("Mission.status.noevasuits"); // "No good Eva Suit"
+
 	
 	// Data members
 	/** Is this a building airlock in a settlement? */
@@ -1215,8 +1218,7 @@ public class ExitAirlock extends Task implements Serializable {
 
 					if (airlock.getCheckEVASuit() > 100)
 						// Set the emergency beacon on since no EVA suit is available
-						((VehicleMission) m).setEmergencyBeacon(person, v, true, "No good Eva Suit");
-
+						((VehicleMission) m).getHelp(NO_EVA_SUITS);
 				}
 
 				airlock.addCheckEVASuit();

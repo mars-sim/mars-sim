@@ -64,8 +64,6 @@ public class InfoPanel extends JPanel {
 	final static String ACTION_CONTINUE = "End EVA and Continue to Next Site";
 	/** action text. */
 	final static String ACTION_HOME = "Return to Home Settlement and End Mission";
-	/** action text. */
-	final static String ACTION_NEAREST = "Go to Nearest Settlement and End Mission";
 	
 	// Data members.
 	protected Mission mission;
@@ -254,16 +252,6 @@ public class InfoPanel extends JPanel {
 				if (mission.getPhase().getStage() == MissionPhase.Stage.ACTIVE)
 					actions.add(ACTION_HOME);
 			}
-
-			// Check if nearest settlement action can be added.
-			try {
-				Settlement closestSettlement = MissionUtil.findClosestSettlement(mission.getCurrentMissionLocation());
-				if ((closestSettlement != null) && !closestSettlement.equals(vehicleMission.getAssociatedSettlement())) {
-					if (mission.getPhase().getStage() == MissionPhase.Stage.ACTIVE)
-						actions.add(ACTION_NEAREST);
-				}
-			}
-			catch (Exception e) {}
 		}
 		
 		return actions;

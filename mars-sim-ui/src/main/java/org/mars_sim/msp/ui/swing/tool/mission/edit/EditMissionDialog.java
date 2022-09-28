@@ -132,7 +132,6 @@ public class EditMissionDialog extends ModalInternalFrame {
 	private void setAction(String action) {
 		if (action.equals(InfoPanel.ACTION_CONTINUE)) endEVAPhase();
 		else if (action.equals(InfoPanel.ACTION_HOME)) returnHome();
-		else if (action.equals(InfoPanel.ACTION_NEAREST)) goToNearestSettlement();
 	}
 	
 	/**
@@ -150,15 +149,6 @@ public class EditMissionDialog extends ModalInternalFrame {
 	private void returnHome() {
 		if (mission != null) {
 			mission.abortMission();
-		}
-	}
-	
-	/**
-	 * Go to the nearest settlement and end collection phase if necessary.
-	 */
-	private void goToNearestSettlement() {
-		if (mission instanceof VehicleMission) {
-			((VehicleMission)mission).goToNearestSettlement();
 		}
 	}
 	

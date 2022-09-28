@@ -293,8 +293,9 @@ public class RescueSalvageVehicle extends RoverMission {
 
 		// The member of the rescuing vehicle will turn off the target vehicle's
 		// emergency beacon.
-		if (vehicleTarget.isBeaconOn())
-			setEmergencyBeacon(member, vehicleTarget, false, "Towing vehicles arrived");
+		if (vehicleTarget.isBeaconOn()) {
+			vehicleTarget.setEmergencyBeacon(false);
+		}
 
 		// Set mission event.
 		HistoricalEvent newEvent = null;

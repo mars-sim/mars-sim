@@ -7,7 +7,6 @@
 package org.mars_sim.msp.core.person.ai.mission;
 
 import org.mars_sim.msp.core.person.ai.task.LoadingController;
-import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -40,6 +39,11 @@ public interface VehicleMission extends Mission {
     double getTotalDistanceRemaining();
 
     /**
+     * Get the remaining distacne for the current travel leg
+     */
+    double getDistanceCurrentLegRemaining();
+
+    /**
 	 * Gets the current loading plan for this Mission phase.
 	 * @return
 	 */
@@ -53,24 +57,44 @@ public interface VehicleMission extends Mission {
 	MarsClock getLegETA();
 
     /**
-     * Get the remaining distacne for the current travel leg
+     * Is the Mission travelling to the current destination.
+     * @see #getCurrentDestination()
      */
-    double getDistanceCurrentLegRemaining();
+    boolean isTravelling();
 
-    // TODO Revoe this
+    /**
+	 * What is the current desitnation of the Mission. The isTravelling flag
+	 * identifies if the Mission is on the way.
+     * @see #isTravelling()
+	 */
+	NavPoint getCurrentDestination();
+
+	/**
+	 * Gets the number of navpoints on the trip.
+	 * 
+	 * @return number of navpoints
+	 */
     int getNumberOfNavpoints();
 
-    // TODO remove this Consolidate these methods
+    /**
+	 * Gets the navpoint at an index value.
+	 * 
+	 * @param index the index value
+	 * @return navpoint
+	 * @throws IllegaArgumentException if no navpoint at that index.
+	 */
     NavPoint getNavpoint(int i);
-	NavPoint getNextNavpoint();
-    NavPoint getCurrentNavpoint();
+
+    /**
+     * Gets the mission's next navpoint index.
+     * 
+     * @return navpoint index or -1 if none.
+     */
     int getNextNavpointIndex();
 
-    //TODO Remove thi as it exposes internal working of travelling
-    String getTravelStatus();
-
-    // TODO Remove these. OperateVehcile should just notify mission there is no Fuel; then VehcileMission detaisl with it
-    void setEmergencyBeacon(Worker worker, Vehicle vehicle, boolean b, String name);
+    /**
+     * Somehting has gone wrong so request help
+     */
     void getHelp(MissionStatus status);
 
 	/**
@@ -80,7 +104,4 @@ public interface VehicleMission extends Mission {
 	 * @return
 	 */
     boolean isVehicleUnloadableHere(Settlement settlement);
-
-    // TODO Only used in a single case ??
-    void goToNearestSettlement();
 }

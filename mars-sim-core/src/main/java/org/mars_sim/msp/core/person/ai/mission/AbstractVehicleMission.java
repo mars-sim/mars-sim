@@ -85,8 +85,8 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	// Static members
 
 	// Travel Mission status
-	public static final String AT_NAVPOINT = "At a navpoint";
-	public static final String TRAVEL_TO_NAVPOINT = "Traveling to navpoint";
+	protected static final String AT_NAVPOINT = "At a navpoint";
+	protected static final String TRAVEL_TO_NAVPOINT = "Traveling to navpoint";
 
 	/** How often are remaining resources checked. */
 	private static final int RESOURCE_CHECK_DURATION = 40;
@@ -525,7 +525,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	public void getHelp(MissionStatus reason) {
 		logger.info(vehicle, 20_000, "Needs help.");
 		addMissionStatus(reason);
-
+		
 		// Set emergency beacon if vehicle is not at settlement.
 		// Note: need to find out if there are other matching reasons for setting
 		// emergency beacon.
@@ -533,49 +533,36 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 
 			// if the vehicle somewhere on Mars
 			if (!vehicle.isBeaconOn()) {
-				triggerEmergencyBeacon();
+				var message = new StringBuilder();
 
-				if (VehicleType.isRover(vehicle.getVehicleType()) && vehicle.isBeingTowed()) {
-					// Note: the vehicle is being towed, wait till the journey is over
-					// don't end the mission yet
-					logger.log(vehicle, Level.INFO, 20_000, "Currently being towed by "
-									+ vehicle.getTowingVehicle().getName());
-				}
+				// Question: could the emergency beacon itself be broken ?
+				message.append("Turned on emergency beacon to request for towing. Status flag(s): ");
+				message.append(getMissionStatus().stream().map(MissionStatus::getName).collect(Collectors.joining(", ")));
+		
+				logger.info(vehicle, 20_000, message.append(".").toString());
+		
+				vehicle.setEmergencyBeacon(true);
+		
+				// Creating mission emergency beacon event.
+				HistoricalEvent newEvent = new MissionHistoricalEvent(EventType.MISSION_EMERGENCY_BEACON_ON,
+						this,
+						reason.getName(),
+						getName(),
+						getStartingPerson().getName(),
+						vehicle.getName(),
+						vehicle.getAssociatedSettlement().getName(),
+						vehicle.getCoordinates().getCoordinateString()
+						);
+		
+				eventManager.registerNewEvent(newEvent);
 			}
 		}
 
 		else { // Vehicle is still in the settlement vicinity or has arrived in a settlement
-
-			if (!vehicle.isBeaconOn()) {
-				triggerEmergencyBeacon();
-			}
-
-			// if the vehicle is still somewhere inside the settlement when it got broken
-			// down
-			// Note: consider to wait till the repair is done and the mission may resume ?!?
-
-			else if (vehicle.getSettlement() != null) {
 				// if a vehicle is at a settlement
 				setPhaseEnded(true);
 				endMission(reason);
-			}
 		}
-	}
-
-	/**
-	 * Trigger the emergency beacon on the Mission vehicle
-	 */
-	private void triggerEmergencyBeacon() {
-		var message = new StringBuilder();
-
-		// if the emergency beacon is off
-		// Question: could the emergency beacon itself be broken ?
-		message.append("Turned on emergency beacon to request for towing. Status flag(s): ");
-		message.append(getMissionStatus().stream().map(MissionStatus::getName).collect(Collectors.joining(", ")));
-
-		logger.info(vehicle, 20_000, message.append(".").toString());
-
-		vehicle.setEmergencyBeacon(true);
 	}
 
 	/**
@@ -1503,7 +1490,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 * 
 	 * @return navpoint or null if no more navpoints.
 	 */
-	public final NavPoint getNextNavpoint() {
+	protected final NavPoint getNextNavpoint() {
 		if (navIndex < navPoints.size())
 			return navPoints.get(navIndex);
 		else
@@ -1515,7 +1502,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 * 
 	 * @return the description of the next navpoint.
 	 */
-	public final String getNextNavpointDescription() {
+	private final String getNextNavpointDescription() {
 		if (navIndex < navPoints.size()) {
 			return navPoints.get(navIndex).getDescription();
 		}
@@ -1528,6 +1515,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 * 
 	 * @return navpoint index or -1 if none.
 	 */
+	@Override
 	public final int getNextNavpointIndex() {
 		if (navIndex < navPoints.size())
 			return navIndex;
@@ -1555,7 +1543,8 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 * @return navpoint
 	 * @throws IllegaArgumentException if no navpoint at that index.
 	 */
-	public final NavPoint getNavpoint(int index) {
+	@Override
+	public NavPoint getNavpoint(int index) {
 		if ((index >= 0) && (index < getNumberOfNavpoints()))
 			return navPoints.get(index);
 		else {
@@ -1569,7 +1558,8 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 * 
 	 * @return number of navpoints
 	 */
-	public final int getNumberOfNavpoints() {
+	@Override
+	public int getNumberOfNavpoints() {
 		return navPoints.size();
 	}
 	
@@ -1644,12 +1634,25 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	}
 
 	/**
+	 * What is the current desitnation of the Mission. The isTravelling flag
+	 * identifies if the Mission is on the way.
+	 */
+	@Override
+	public NavPoint getCurrentDestination() {
+		if (isTravelling()) {
+			return getNextNavpoint();
+		}
+		return getCurrentNavpoint();
+	}
+
+	/**
 	 * Get the travel mission's current status.
 	 * 
-	 * @return travel status as a String.
+	 * @return travel status
 	 */
-	public final String getTravelStatus() {
-		return travelStatus;
+	@Override
+	public boolean isTravelling() {
+		return TRAVEL_TO_NAVPOINT.equals(travelStatus);
 	}
 
 	/**
