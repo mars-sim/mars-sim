@@ -128,13 +128,14 @@ public class PersonTaskManager extends TaskManager {
 	protected TaskCache rebuildTaskCache() {
 
 		// Check if a Person is in a bad physical condition and a slight random
-		PhysicalCondition pc = person.getPhysicalCondition();
-		if (person.isInside() && (pc.isThirsty() || pc.isHungry())
-			&& (RandomUtil.lessThanRandPercent(50))) {
-				// Force the person to do the basic tasks.
-				logger.warning(person, "Need health tasks");
-				return getDefaultInsideTasks();
-		}
+		// Taken out until the DatDrink task works correctly
+		// PhysicalCondition pc = person.getPhysicalCondition();
+		// if (person.isInside() && (pc.isThirsty() || pc.isHungry())
+		// 	&& (RandomUtil.lessThanRandPercent(50))) {
+		// 		// Force the person to do the basic tasks.
+		// 		logger.warning(person, "Need health tasks");
+		// 		return getDefaultInsideTasks();
+		// }
 
 
 		String shiftDesc = null;
