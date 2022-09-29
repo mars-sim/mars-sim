@@ -56,7 +56,7 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 	private static final double WORK_TIME_FACTOR = 4000.0;
 	
 	/** The modifier for the work time on a crop. */
-	private static final int WORK_FACTOR = 25;
+	private static final int WORK_FACTOR = 20;
 	
 	/** The rate of taking care of the health of the crop. */
 	private static final double RECOVER_HEALTH_RATE = .5;

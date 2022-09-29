@@ -359,7 +359,7 @@ public class TendGreenhouse extends Task implements Serializable {
 		double mod = 0;
 		
 		if (worker.getUnitType() == UnitType.PERSON)
-			mod = 1.0;
+			mod = 1;
 		else
 			mod = .25 * RandomUtil.getRandomDouble(.85, 1.15);
 		

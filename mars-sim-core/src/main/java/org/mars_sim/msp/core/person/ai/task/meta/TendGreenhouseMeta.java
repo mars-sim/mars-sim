@@ -26,9 +26,9 @@ import org.mars_sim.msp.core.structure.building.Building;
  */
 public class TendGreenhouseMeta extends MetaTask {
 
-    private static final double VALUE = 1.5;
+    private static final double VALUE = 2;
     
-    private static final int CAP = 5_000;
+    private static final int CAP = 4_000;
     
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(TendGreenhouseMeta.class.getName());
@@ -38,7 +38,7 @@ public class TendGreenhouseMeta extends MetaTask {
             "Task.description.tendGreenhouse"); //$NON-NLS-1$
 
     public TendGreenhouseMeta() {
-		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
+		super(NAME, WorkerType.BOTH, TaskScope.ANY_HOUR);
 		setFavorite(FavoriteType.TENDING_GARDEN);
 		setPreferredJob(JobType.BOTANIST, JobType.BIOLOGIST);
 		setTrait(TaskTrait.ARTISTIC, TaskTrait.RELAXATION);
@@ -66,6 +66,7 @@ public class TendGreenhouseMeta extends MetaTask {
                     	return 0;
                     
                     double tendingNeed = person.getSettlement().getCropsTendingNeed();
+
                     result = tendingNeed * VALUE;
                     
                     if (result <= 0) result = 0;
