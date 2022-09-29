@@ -152,18 +152,23 @@ public class AirComposition implements Serializable {
 	 * Calculate the impact of time passing
 	 */
 	public void timePassing(Building building, ClockPulse pulse) {
-		accumulatedTime += pulse.getElapsed();
+		double time = pulse.getElapsed();
 		double tt = building.getCurrentTemperature();
 
 		if (tt > -40 && tt < 40) {
 			double t = AirComposition.C_TO_K + tt;
 
-			if (accumulatedTime >= CALCULATE_FREQUENCY) {
+			accumulatedTime += time;
 
+			double newCheckPeriod = CALCULATE_FREQUENCY * time;
+			
+			if (accumulatedTime >= newCheckPeriod) {
+				// Compute the remaining accumulatedTime
+				accumulatedTime -= newCheckPeriod;
+				
 				int numPeople = building.getNumPeople();
 
 				calcPersonImpact(t, numPeople,  accumulatedTime);
-				accumulatedTime = 0;
 			}
 
 			if (pulse.getMarsTime().getMillisolInt() % MILLISOLS_PER_UPDATE == 0) {

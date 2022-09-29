@@ -481,9 +481,9 @@ public class ExitAirlock extends Task {
 			}
 		}
 
-		if (canProceed && accumulatedTime > STANDARD_TIME) {
+		if (canProceed && accumulatedTime > STANDARD_TIME * time) {
 			// Reset accumulatedTime back to zero
-			accumulatedTime = 0;
+			accumulatedTime -= STANDARD_TIME * time;
 
 			if (airlock.isPressurized() && !airlock.isInnerDoorLocked()) {
 				// If airlock has already been pressurized,
@@ -568,9 +568,9 @@ public class ExitAirlock extends Task {
 		}
 
 		
-		if (canProceed && accumulatedTime > STANDARD_TIME) {
+		if (canProceed && accumulatedTime > STANDARD_TIME * time) {
 			// Reset accumulatedTime back to zero
-			accumulatedTime = 0;
+			accumulatedTime -= STANDARD_TIME * time;
 			// Add experience
 			addExperience(time);
 	
@@ -653,9 +653,9 @@ public class ExitAirlock extends Task {
 			}
 		}
 
-		if (canProceed && accumulatedTime > STANDARD_TIME) {
+		if (canProceed && accumulatedTime > STANDARD_TIME * time) {
 			// Reset accumulatedTime back to zero
-			accumulatedTime = 0;
+			accumulatedTime -= STANDARD_TIME * time;
 			
 			// Remove person from reservation map
 			if (inSettlement)
@@ -735,9 +735,9 @@ public class ExitAirlock extends Task {
  			canProceed = true;
 		}
 
-		if (canProceed && accumulatedTime > STANDARD_TIME) {
+		if (canProceed && accumulatedTime > STANDARD_TIME * time) {
 			// Reset accumulatedTime back to zero
-			accumulatedTime = 0;
+			accumulatedTime -= STANDARD_TIME * time;
 			
 			if (airlock.isOperator(id)) {
 				// Elect an operator to handle this task
@@ -991,9 +991,9 @@ public class ExitAirlock extends Task {
 			
 		}
 		
-		if (canProceed && accumulatedTime > STANDARD_TIME) {
+		if (canProceed && accumulatedTime > STANDARD_TIME * time) {
 			// Reset accumulatedTime back to zero
-			accumulatedTime = 0;
+			accumulatedTime -= STANDARD_TIME * time;
 			
 			// Add experience
 			addExperience(time);
@@ -1047,9 +1047,9 @@ public class ExitAirlock extends Task {
 			}
 		}
 
-		if (canProceed && accumulatedTime > STANDARD_TIME) {
+		if (canProceed && accumulatedTime > STANDARD_TIME * time) {
 			// Reset accumulatedTime back to zero
-			accumulatedTime = 0;
+			accumulatedTime -= STANDARD_TIME * time;
 			
 			if (inSettlement) {
 				// Remove the position at zone 4 before ending the task

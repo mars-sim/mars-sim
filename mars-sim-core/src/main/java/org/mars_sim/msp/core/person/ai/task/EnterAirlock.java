@@ -433,9 +433,9 @@ public class EnterAirlock extends Task implements Serializable {
 			}
 		}
 
-		if (canProceed && accumulatedTime > STANDARD_TIME) {
+		if (canProceed && accumulatedTime > STANDARD_TIME * time) {
 			// Reset accumulatedTime back to zero
-			accumulatedTime = 0;
+			accumulatedTime -= STANDARD_TIME * time;
 			// Add experience
 			addExperience(time);
 
@@ -527,9 +527,9 @@ public class EnterAirlock extends Task implements Serializable {
 			}
 		}
 
-		if (canProceed && accumulatedTime > STANDARD_TIME) {
+		if (canProceed && accumulatedTime > STANDARD_TIME * time) {
 			// Reset accumulatedTime back to zero
-			accumulatedTime = 0;
+			accumulatedTime -= STANDARD_TIME * time;
 			
 			logger.log(unit, person, Level.FINE, 4_000,
 					"Just entered through the outer door into " + airlock.getEntity().toString() + ".");
@@ -585,9 +585,9 @@ public class EnterAirlock extends Task implements Serializable {
 			canProceed = true;
 		}
 
-		if (canProceed && accumulatedTime > STANDARD_TIME) {
+		if (canProceed && accumulatedTime > STANDARD_TIME * time) {
 			// Reset accumulatedTime back to zero
-			accumulatedTime = 0;
+			accumulatedTime -= STANDARD_TIME * time;
 
 			if (!airlock.isActivated()) {
 				// Only the airlock operator may activate the airlock
@@ -657,9 +657,9 @@ public class EnterAirlock extends Task implements Serializable {
 			}
 		}
 		
-		if (canProceed && accumulatedTime > STANDARD_TIME) {
+		if (canProceed && accumulatedTime > STANDARD_TIME * time) {
 			// Reset accumulatedTime back to zero
-			accumulatedTime = 0;
+			accumulatedTime -= STANDARD_TIME * time;
 			
 			// Add experience
 			addExperience(time);
@@ -851,9 +851,9 @@ public class EnterAirlock extends Task implements Serializable {
 			}
 		}
 
-		if (canProceed && accumulatedTime > STANDARD_TIME) {
+		if (canProceed && accumulatedTime > STANDARD_TIME * time) {
 			// Reset accumulatedTime back to zero
-			accumulatedTime = 0;
+			accumulatedTime -= STANDARD_TIME * time;
 			
 			// Remove the position at zone 0 before ending the task
 			airlock.vacate(0, id);

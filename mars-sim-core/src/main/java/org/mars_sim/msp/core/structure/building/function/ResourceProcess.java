@@ -261,7 +261,11 @@ public class ResourceProcess implements Serializable {
 
 			accumulatedTime += time;
 
-			if (accumulatedTime >= PROCESS_CHECK_FREQUENCY) {
+			double newCheckPeriod = PROCESS_CHECK_FREQUENCY * time;
+			
+			if (accumulatedTime >= newCheckPeriod) {
+				// Compute the remaining accumulatedTime
+				accumulatedTime -= newCheckPeriod;
 //				logger.info(settlement, 30_000, name + "  pulse width: " + Math.round(time * 10000.0)/10000.0 
 //						+ "  accumulatedTime: " + Math.round(accumulatedTime * 100.0)/100.0 
 //						+ "  processInterval: " + processInterval);
@@ -349,11 +353,8 @@ public class ResourceProcess implements Serializable {
 						break;
 					}
 				}
-				
-				// Compute the remaining accumulatedTime
-				accumulatedTime = accumulatedTime - PROCESS_CHECK_FREQUENCY;
-				
-			} else
+			} 
+			else
 				level = 0D;
 
 			// Set the current production level.
