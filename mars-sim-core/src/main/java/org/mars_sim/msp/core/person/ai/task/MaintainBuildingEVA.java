@@ -179,8 +179,16 @@ implements Serializable {
 			
         }
 		else {
+			// Gets the building with the worst condition
+			entity = getWorstBuilding();
+			String des = Msg.getString(DETAIL, entity.getName()); //$NON-NLS-1$
+			setDescription(des);
+			logger.info(worker, 4_000, des + ".");
+		}
+		
+		if (entity == null) {
 			checkLocation();
-			return time *.75;
+			return 0;
 		}
 
         // Add work to the maintenance
