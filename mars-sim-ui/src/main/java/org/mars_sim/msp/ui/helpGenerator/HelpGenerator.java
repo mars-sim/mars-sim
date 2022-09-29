@@ -1116,15 +1116,15 @@ public class HelpGenerator {
 	public static final void generateHtmlHelpFiles() {
 		logger.log(Level.INFO,"Starting to generate help files");
 
-		logger.log(Level.INFO,"Vehicles htmls are at " + getAbsPath(VEHICLE_DIR));
+		logger.log(Level.INFO,"Vehicles htmls are at " + getAbsPath(VEHICLE_DIR).replaceAll("\\\\", "/"));
 		HelpGenerator.generateVehicleDescriptions();
-		logger.log(Level.INFO,"Resources htmls are at " + getAbsPath(RESOURCE_DIR));
+		logger.log(Level.INFO,"Resources htmls are at " + getAbsPath(RESOURCE_DIR).replaceAll("\\\\", "/"));
 		HelpGenerator.generateResourceDescriptions();
-		logger.log(Level.INFO,"Parts htmls are at " + getAbsPath(PART_DIR));
+		logger.log(Level.INFO,"Parts htmls are at " + getAbsPath(PART_DIR).replaceAll("\\\\", "/"));
 		HelpGenerator.generatePartsDescriptions();
-		logger.log(Level.INFO,"Processes htmls are at " + getAbsPath(PROCESS_DIR));
+		logger.log(Level.INFO,"Processes htmls are at " + getAbsPath(PROCESS_DIR).replaceAll("\\\\", "/"));
 		HelpGenerator.generateProcessDescriptions();
-		logger.log(Level.INFO,"Food htmls are at " + getAbsPath(FOOD_DIR));
+		logger.log(Level.INFO,"Food htmls are at " + getAbsPath(FOOD_DIR).replaceAll("\\\\", "/"));
 		HelpGenerator.generateFoodProductionDescriptions();
 		logger.log(Level.INFO,"All done !");
 
@@ -1143,37 +1143,37 @@ public class HelpGenerator {
 		logger.log(
 				Level.INFO,
 				new StringBuffer()
-					.append("All of the src html files are located at /git/mars-sim/mars-sim-ui/src/main/resources/docs/help/")
+					.append("All of the old html files are located at mars-sim-ui's src folder in /git/mars-sim/mars-sim-ui/src/main/resources/docs/help/")
 				.toString()
 			);
 		
 		logger.log(
 				Level.INFO,
 				new StringBuffer()
-					.append("1. All of the newly generated html files are located at /git/mars-sim/mars-sim-ui/target/classes/docs/help/")
+					.append("1. All of the newly generated html files are located at mars-sim-ui's target folder in /git/mars-sim/mars-sim-ui/target/classes/docs/help/")
 				.toString()
 			);
 		
 		logger.log(
 				Level.INFO,
 				new StringBuffer()
-					.append("2. Now go to /docs/help/ in mars-sim-ui's submodule")
+					.append("2. Now open the old src folder and go to /main/resources/docs/help/")
 					.toString()
 			);
 
 		logger.log(
 				Level.INFO,
 				new StringBuffer()
-					.append("3. Manually delete those 5 folders (food, parts, processes, resources, and vehicles) "
-							+ ", thus removing all old generated html files within")
+					.append("3. Manually delete 5 folders (food, parts, processes, resources, and vehicles)"
+							+ ", thus removing all old html files within")
 					.toString()
 			);
 		
 		logger.log(
 				Level.INFO,
 				new StringBuffer()
-					.append("4. Manually copy all of the newly generated html files by dragging those "
-							+ "5 folders over /docs/help/")
+					.append("4. Manually copy all of the newly generated html files in those 5 folders from the target folder "
+							+ "to the src folder, essentially replacing those deleted htmls in the src folder")
 					.toString()
 			);
 		System.exit(0);
