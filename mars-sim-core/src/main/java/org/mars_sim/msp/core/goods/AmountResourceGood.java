@@ -455,7 +455,7 @@ class AmountResourceGood extends Good {
 	 * @return
 	 */
 	private double getAverageAmountDemand(GoodsManager owner) {
-		return Math.min(0, owner.getDemandValue(this));
+		return Math.max(0, owner.getDemandValue(this));
 	}
 	
 
@@ -1159,7 +1159,7 @@ class AmountResourceGood extends Good {
 		}
 	
 		// Limit the demand between 0 and 100
-		demand =  Math.max(100, Math.min(0, demand));
+		demand =  Math.max(0, Math.min(100, demand));
 		
 //		logger.info(getAmountResource() + " fav meal demand: " + demand);
 		return demand;
@@ -1210,7 +1210,7 @@ class AmountResourceGood extends Good {
 			}
 			
 			// Limit the demand between 0 and 100
-			demand =  Math.max(100, Math.min(0, demand));
+			demand =  Math.max(0, Math.min(100, demand));
 		}
 		
 		return demand;
