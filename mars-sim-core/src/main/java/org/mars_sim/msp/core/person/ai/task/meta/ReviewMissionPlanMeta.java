@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * ReviewMissionPlanMeta.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-09-28
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -34,6 +34,8 @@ public class ReviewMissionPlanMeta extends MetaTask {
     private static final String NAME = Msg.getString(
             "Task.description.reviewMissionPlan"); //$NON-NLS-1$
     
+    private static final int PENALTY_FACTOR = 2;
+    
     public ReviewMissionPlanMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
 		setTrait(TaskTrait.LEADERSHIP);
@@ -55,7 +57,6 @@ public class ReviewMissionPlanMeta extends MetaTask {
             // Probability affected by the person's stress and fatigue.
             if (!person.getPhysicalCondition().isFitByLevel(1000, 70, 1000))
             	return 0;
-            
 
         	Settlement target = person.getAssociatedSettlement();
 			int pop = target.getNumCitizens();
@@ -65,40 +66,48 @@ public class ReviewMissionPlanMeta extends MetaTask {
 
             for (Mission m : missions) {
             	
-            	if (m.getPlan() != null) {
-
-            		MissionPlanning mp = m.getPlan();
-                    if (mp.getStatus() == PlanType.PENDING) {
-						String reviewedBy = person.getName();
-						
-						Person p = m.getStartingPerson();
-						String requestedBy = p.getName();
-						
-						if (reviewedBy.equals(requestedBy) || !mp.isReviewerValid(reviewedBy, pop)) {
-							// Skip this plan if the request and review is the same person
-							// Also, reviewer must be valid
-							continue;
-						}
-
-                    	result += missions.size() * 1500D / pop;                       	
-                        
-                    	// Add adjustment based on how many sol the request has since been submitted
-                        // if the job assignment submitted date is > 1 sol
-                        int sol = marsClock.getMissionSol();
-                        int solRequest = m.getPlan().getMissionSol();
-                        
-                    	// Check if this reviewer has already exceeded the max # of reviews allowed
-						if (!mp.isReviewerValid(reviewedBy, pop)) {
-							if (sol - solRequest > 7) {
-								// If no one else is able to offer the review after x days, 
-								// do allow the review to go through even if the reviewer is not valid
-								result += 800;
-							}
-							else
-								result += (sol - solRequest) * 100;
-						}                        
-                    }
+            	if (m.getPlan() == null) {
+            		// Go to next mission
+            		continue;
             	}
+
+        		MissionPlanning mp = m.getPlan();
+        		
+                if (mp.getStatus() == PlanType.PENDING) {
+					String reviewedBy = person.getName();
+					
+					Person p = m.getStartingPerson();
+					String requestedBy = p.getName();
+			
+					if (reviewedBy.equals(requestedBy)) {
+						// Skip this plan if the request and review is the same person
+						// Also, reviewer must be valid
+						continue;
+					}
+
+                	result += missions.size() * 1500D / Math.max(4, Math.min(24, pop));                       	
+
+                	// Add adjustment based on how many sol the request has since been submitted
+                    // if the job assignment submitted date is > 1 sol
+                    int sol = marsClock.getMissionSol();
+                    int solRequest = m.getPlan().getMissionSol();
+
+                	// Check if this reviewer has already exceeded the max # of reviews allowed
+					if (!mp.isReviewerValid(reviewedBy, pop)) {
+						double diff = sol - solRequest;
+						if (diff == 0) {
+							result /= PENALTY_FACTOR;
+						}
+						else if (diff > 7) {
+							// If no one else is able to offer the review after x days, 
+							// do allow the review to go through even if the reviewer is not valid
+							result += 800;
+						}
+						else {
+							result += (sol - solRequest) * 100;
+						}
+					}                        
+                }
             }
             
             if (result > 0D) {
@@ -119,6 +128,7 @@ public class ReviewMissionPlanMeta extends MetaTask {
                     result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
                     result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
                 }
+                
                 else if (person.isInVehicle()) {	
         	        // Check if person is in a moving rover.
         	        if (Vehicle.inMovingRover(person)) {

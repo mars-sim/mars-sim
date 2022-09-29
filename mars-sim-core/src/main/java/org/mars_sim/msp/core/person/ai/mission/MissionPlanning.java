@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * MissionPlanning.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-09-28
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -68,28 +68,28 @@ public class MissionPlanning implements Serializable {
 			// have looked at the plan
 			int num = reviewers.size();
 			if (pop >= 48) {
-                return num < 5;
+                return num > 5;
 			}
 			else if (pop >= 24) {
-                return num < 4;
+                return num > 4;
 			}
 			else if (pop >= 12) {
-                return num < 3;
+                return num > 3;
 			}
 			else if (pop >= 10) {
-                return num < 3;
+                return num > 2;
 			}
 			else if (pop >= 8) {
-                return num < 3;
+                return num > 2;
 			}			
 			else if (pop >= 6) {
-                return num < 2;
+                return num > 2;
 			}	
 			else if (pop >= 4) {
-                return num < 2;
+                return num > 2;
 			}
 			else if (pop == 3) {
-                return num < 1;
+                return num > 1;
 			}
 			else if (pop == 2) {
                 return true;
