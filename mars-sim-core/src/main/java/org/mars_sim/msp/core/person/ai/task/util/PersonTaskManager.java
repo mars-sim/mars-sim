@@ -11,13 +11,11 @@ import java.util.logging.Level;
 
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.job.util.ShiftType;
 import org.mars_sim.msp.core.person.ai.task.Walk;
 import org.mars_sim.msp.core.person.ai.task.util.MetaTask.TaskScope;
 import org.mars_sim.msp.core.person.ai.task.util.MetaTask.WorkerType;
-import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * The PersonTaskManager class keeps track of a person's current task and can randomly

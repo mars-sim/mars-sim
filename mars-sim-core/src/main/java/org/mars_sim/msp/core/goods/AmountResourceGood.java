@@ -112,7 +112,10 @@ class AmountResourceGood extends Good {
 	private static final double CROP_FACTOR = .1;
 	private static final double DESSERT_FACTOR = .1;
 
-	private static final double REGOLITH_DEMAND_FACTOR = .5;
+	private static final double REGOLITH_TYPE_DEMAND_FACTOR = .1;
+	private static final double REGOLITH_DEMAND_FACTOR = .1;
+	private static final double REGOLITH_DEMAND_FACTOR_1 = 10;
+	private static final double REGOLITH_DEMAND_FACTOR_2 = .15;
 	private static final double ORE_DEMAND_FACTOR = .15;
 	private static final double MINERAL_DEMAND_FACTOR = .15;
 	
@@ -536,7 +539,7 @@ class AmountResourceGood extends Good {
 			break;
 			
 		case REGOLITH:
-			demand = REGOLITH_DEMAND_FACTOR;
+			demand = REGOLITH_TYPE_DEMAND_FACTOR;
 			if (mod != 0)
 				return demand *= mod;
 			break;
@@ -1287,6 +1290,19 @@ class AmountResourceGood extends Good {
 				}
 			}
 
+			if (resource == ResourceUtil.regolithID) {
+				return demand * regolithDemand * REGOLITH_DEMAND_FACTOR;
+			}
+			
+			else if (resource == ResourceUtil.regolithBID 
+					|| resource == ResourceUtil.regolithCID) {
+				return demand * regolithDemand * REGOLITH_DEMAND_FACTOR_1;
+			}
+			
+			else if (resource == ResourceUtil.regolithDID) {
+				return demand * regolithDemand * REGOLITH_DEMAND_FACTOR_2;
+			}
+			
 //			if (resource == ResourceUtil.regolithID
 //					|| resource == ResourceUtil.regolithBID 
 //					|| resource == ResourceUtil.regolithCID
@@ -1431,8 +1447,8 @@ class AmountResourceGood extends Good {
 			double averageRegolith = (regolith + regolithB + regolithC + regolithD) / 4.0;
 			
 			// Limit the minimum value of regolith projected demand
-			demand = (.1 * cement + .1 * concrete + .4 * targetRegolith + .2 * sand + .2 * averageRegolith) 
-					/ ( 1 + targetRegolith) * REGOLITH_DEMAND_FACTOR;
+			demand = .1 * (cement + concrete + 4 * targetRegolith + 2 * sand + 2 * averageRegolith) 
+					* REGOLITH_TYPE_DEMAND_FACTOR;
 		}
 
 		return demand;

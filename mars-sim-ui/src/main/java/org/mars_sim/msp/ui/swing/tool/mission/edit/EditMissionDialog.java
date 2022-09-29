@@ -17,7 +17,6 @@ import java.util.Iterator;
 import javax.swing.JComponent;
 
 import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
