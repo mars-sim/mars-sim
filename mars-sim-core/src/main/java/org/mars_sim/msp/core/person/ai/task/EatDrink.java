@@ -931,10 +931,6 @@ public class EatDrink extends Task {
 					// Add caloric energy from dessert.
 					double caloricEnergy = hungerRelieved * PhysicalCondition.FOOD_COMPOSITION_ENERGY_RATIO;
 					pc.addEnergy(caloricEnergy);
-
-//				} else {
-					// Not enough dessert resource available to eat.
-	//				result = false;
 				}
 			}
 		}
@@ -951,13 +947,10 @@ public class EatDrink extends Task {
 		// when the dessert was made.
 		double proportion = PreparingDessert.getDessertMassPerServing() - dryMass;
 		if (proportion > 0) {
-			// Record the amount consumed
+			// Record the dessert amount consumed
 			pc.recordFoodConsumption(proportion, 2);
-		}
-
-		if (proportion > 0) {
-			// Record the amount consumed
-			pc.recordFoodConsumption(proportion * THIRST_PER_WATER_SERVING, 3);
+			// Record the water amount consumed
+			pc.recordFoodConsumption(proportion, 3);
 			// Reduce thirst
 			pc.reduceThirst(proportion * THIRST_PER_WATER_SERVING);
 			// Assume dessert can reduce stress
