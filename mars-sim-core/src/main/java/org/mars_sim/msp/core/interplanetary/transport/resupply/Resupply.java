@@ -107,8 +107,11 @@ public class Resupply implements Serializable, Transportable {
 	private int scenarioID;
 	
 	private String settlementName;
+	
 	private TransitState state;
 
+	private ResupplyMissionTemplate template;
+	
 	private List<BuildingTemplate> newBuildings;
 	private List<String> newVehicles;
 	private Map<String, Integer> newEquipment;
@@ -130,9 +133,10 @@ public class Resupply implements Serializable, Transportable {
 	 * @param arrivalDate the arrival date of the supplies.
 	 * @param settlement  the settlement receiving the supplies.
 	 */
-	public Resupply(MarsClock arrivalDate, Settlement settlement) {
+	public Resupply(ResupplyMissionTemplate template, MarsClock arrivalDate, Settlement settlement) {
 		// Initialize data members.
 		this.arrivalDate = arrivalDate;
+		this.template = template;
 		
         // Determine launch date.
         launchDate = new MarsClock(arrivalDate);
@@ -145,6 +149,10 @@ public class Resupply implements Serializable, Transportable {
 		buildingConfig = simulationConfig.getBuildingConfiguration();
 	}
 
+	public ResupplyMissionTemplate getTemplate() {
+		return template;
+	}
+	
 	/**
 	 * Commits a set of modifications for the resupply mission.
 	 */

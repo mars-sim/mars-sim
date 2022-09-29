@@ -56,6 +56,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.interplanetary.transport.TransitState;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
+import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyMissionTemplate;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyUtil;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.resource.AmountResource;
@@ -95,6 +96,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 	private static final int MILLISOLS_DELAY = 10;
 
 	// Data members
+	private int num = 0;
 	private String errorString = new String();
 	private boolean validation_result = true;
 	private Integer[] solsUntil = new Integer[ResupplyUtil.MAX_NUM_SOLS_PLANNED];
@@ -718,7 +720,8 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 			return false;
 
 		else {
-			Resupply newResupply = new Resupply(arrivalDate, destination);
+			String name = "Template " + num++;
+			Resupply newResupply = new Resupply(new ResupplyMissionTemplate(name, arrivalDate.getTotalMillisols()/1000), arrivalDate, destination);
 			modifyResupplyMission(newResupply, arrivalDate);
 			Simulation.instance().getTransportManager().addNewTransportItem(newResupply);
 			return true;

@@ -249,7 +249,7 @@ implements ClockListener, HistoricalEventListener {
 	 */
 	private void updateResupplyInfo() {
 
-		templateLabel.setText(resupply.getName());
+		templateLabel.setText(resupply.getTemplate().getName());
 		destinationValueLabel.setText(resupply.getSettlement().getName());
 		stateValueLabel.setText(Conversion.capitalize(resupply.getTransitState().getName()));
 		launchDateValueLabel.setText(resupply.getLaunchDate().getDateString());

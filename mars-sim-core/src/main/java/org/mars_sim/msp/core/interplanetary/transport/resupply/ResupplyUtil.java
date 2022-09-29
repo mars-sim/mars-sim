@@ -87,7 +87,7 @@ public final class ResupplyUtil {
 	                MarsClock arrivalDate = new MarsClock(currentTime);
 	                arrivalDate.addTime(template.getArrivalTime() * 1000D);
 	               
-	                Resupply resupply = new Resupply(arrivalDate, settlement);
+	                Resupply resupply = new Resupply(template, arrivalDate, settlement);
 	                
 	                // Determine launch date.
 	                MarsClock launchDate = new MarsClock(arrivalDate);
