@@ -34,9 +34,9 @@
 
 	<resupply name="Standard Resupply 1">
 	    <!-- Life Support Resources -->
-	    <resource name="food" amount="4000.0" />
-	    <resource name="water" amount="8000.0" />
-	    <resource name="oxygen" amount="4000.0" />
+	    <resource name="food" amount="1000.0" />
+	    <resource name="water" amount="4000.0" />
+	    <resource name="oxygen" amount="1000.0" />
 
 		<!-- Gases -->
 	    <resource name="argon" amount="60.0" />

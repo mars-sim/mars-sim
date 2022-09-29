@@ -32,9 +32,9 @@
 
 	<!-- see https://space.stackexchange.com/questions/8449/is-there-a-cost-effective-way-to-obtain-nitrogen-argon-on-mars-for-usage-in-a-hu/8548 -->
 	<!-- Other Gas Resources -->
-	<resource name="hydrogen" type="element" phase="gas" />
+	<resource name="hydrogen" type="element" phase="gas" demand=".15" />
 	
-	<resource name="methane" type="compound" phase="gas" />
+	<resource name="methane" type="compound" phase="gas" demand=".15" />
 	<resource name="methanol" type="compound" phase="liquid">Methanol CH3OH can be used as a fuel source, solvent, pesticide, or 
 	 a chemical feedstock for production of a range of important industrial chemicals such as polyester. 
 	 It appears as a colorless fairly volatile liquid with a faintly sweet pungent odor like that of ethyl alcohol. </resource>
@@ -42,7 +42,7 @@
 	<resource name="nitrogen" type="element" phase="gas"> N2 is an odorless gas </resource>
 	<resource name="argon" type="element" phase="gas"/>
 	
-	<resource name="carbon monoxide" type="compound" phase="gas" />
+	<resource name="carbon monoxide" type="compound" phase="gas" demand=".05" />
 	<resource name="chlorine" type="element" phase="gas"/>
 	<resource name="ethylene" type="compound" phase="gas" demand=".1" />
 	<resource name="acetylene" type="compound" phase="gas" demand=".01" >Acetylene is a colorless gas that has a strong 
@@ -223,12 +223,17 @@
 <!-- Chemical food resources -->
 	<resource name="baking powder" type="chemical" phase="solid" edible="true">
 		Baking powder contains sodium bicarbonate as well as the acidifying agent (cream of tartar), and also a drying agent (usually starch). </resource>
-	<resource name="table salt" type="chemical" phase="solid" edible="true">
+
+<!-- Salt resources -->
+	<resource name="table salt" type="chemical" phase="solid" demand=".15" edible="true">
 		Food Grade Salt, is the common name for the substance sodium chloride (NaCI), which occurs in the form of transparent cubic crystals. </resource>
-	<resource name="rock salt" type="compound" phase="solid">
+	<resource name="rock salt" type="compound" phase="solid" demand="1.5">
 		Halite, commonly known as rock salt, is the mineral
 	 	form of sodium chloride (NaCl).</resource>
-	
+	<resource name="epsom salt" type="chemical" phase="solid" demand=".5"> 
+		Magnesium Sulfate as bath salt to
+		soothe sore muscles or for gardeners to improve crops. </resource>
+		
 <!-- Chemical for utility -->
 	<resource name="sodium hypochlorite" type="chemical" phase="liquid">
 		Sodium Hypochlorite is
@@ -240,16 +245,13 @@
 	<resource name="activated charcoal" type="chemical" phase="solid"> 
 		Activated charcoal's main use is as an
 	antidote in poisoning and in constructing water filter</resource>
-	<resource name="epsom salt" type="chemical" phase="solid"> 
-		Magnesium Sulfate as bath salt to
-		soothe sore muscles or for gardeners to improve crops. </resource>
 	<resource name="fertilizer" type="chemical" phase="solid" demand="4.5"> 
 		Inorganic nutrients for crop growth </resource>
 	<resource name="lime" type="chemical" phase="solid" demand=".01"> 
 		Lime is a calcium-containing inorganic
 		material in which carbonates, oxides, and hydroxides predominate. In the
 		strict sense of the term, lime is CaO or Ca(OH)2.</resource>
-	<resource name="polycarbonate resin" type="chemical" phase="solid" demand="15"> 
+	<resource name="polycarbonate resin" type="chemical" phase="solid" demand="1.5"> 
 		These are partially bio-based
 		polycarbonates made use of renewable feedstocks (food waste) and CO2. See
 		https://www.bio.org/sites/default/files/Natalie%20Bittner.pdf. They
@@ -330,7 +332,7 @@
 
 
 <!-- Assorted mineral compounds -->
-	<resource name="aluminum oxide" type="compound" phase="solid" />
+	<resource name="aluminum oxide" type="compound" phase="solid" demand=".05" />
 	<resource name="ammonia" type="compound" phase="solid"> NH3+ is an essential nutrient for plants</resource>
 	<resource name="calcium carbonate" type="compound" phase="solid" demand=".1" />
 	<resource name="calcium sulfate" type="compound" phase="solid" />
@@ -479,20 +481,20 @@
     see https://en.wikipedia.org/wiki/Ore_resources_on_Mars
 
     -->
-	<resource name="aluminum" type="element" phase="solid">An element.</resource>
+	<resource name="aluminum" type="element" phase="solid" demand=".15" >An element.</resource>
 	<resource name="calcium" type="element" phase="solid">An element.</resource>
-	<resource name="carbon" type="element" phase="solid">Carbon powder</resource>
+	<resource name="carbon" type="element" phase="solid" demand=".01" >Carbon powder</resource>
 	<resource name="chromium" type="element" phase="solid">An element.</resource>
 	<resource name="copper" type="element" phase="solid">An element.</resource>
 	<resource name="gold" type="element" phase="solid">An element.</resource>
-	<resource name="iron" type="element" phase="solid">An element.</resource>
+	<resource name="iron" type="element" phase="solid" demand=".1">An element.</resource>
 	<resource name="lithium" type="element" phase="solid">An element.</resource>
 	<resource name="magnesium" type="element" phase="solid">An element.</resource>
 	<resource name="nickel" type="element" phase="solid">An element.</resource>
 	<resource name="phosphorus" type="element" phase="solid">An element.</resource>
 	<resource name="platinum" type="element" phase="solid">An element.</resource>
 	<resource name="potassium" type="element" phase="solid">An element.</resource>
-	<resource name="silicon" type="element" phase="solid">An element.</resource>
+	<resource name="silicon" type="element" phase="solid" demand=".15" >An element.</resource>
 	<resource name="silver" type="element" phase="solid">An element.</resource>
 	<resource name="sulfur" type="element" phase="solid">An element.</resource>
 	<resource name="tin" type="element" phase="solid">An element.</resource>
@@ -527,8 +529,8 @@
 	-->
 
 <!-- Misc. -->
-	<resource name="glass" type="gemstone" phase="solid">For making vessels</resource>
-	<resource name="quartz" type="gemstone" phase="solid">For making electronic components</resource>
+	<resource name="glass" type="gemstone" phase="solid" demand="2" >For making vessels</resource>
+	<resource name="quartz" type="gemstone" phase="solid" demand="5" >For making electronic components</resource>
 
 
 </resource-list>

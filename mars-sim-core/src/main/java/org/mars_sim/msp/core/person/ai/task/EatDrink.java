@@ -943,8 +943,7 @@ public class EatDrink extends Task {
 	 */
 	private void consumeDessertWater(double dryMass) {
 		// Note that the water content within the dessert has already been deducted from
-		// the settlement
-		// when the dessert was made.
+		// the settlement when the dessert was made.
 		double proportion = PreparingDessert.getDessertMassPerServing() - dryMass;
 		if (proportion > 0) {
 			// Record the dessert amount consumed

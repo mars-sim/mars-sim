@@ -18,10 +18,12 @@ import org.mars_sim.msp.core.food.FoodProductionProcess;
 import org.mars_sim.msp.core.food.FoodProductionProcessInfo;
 import org.mars_sim.msp.core.food.FoodProductionProcessItem;
 import org.mars_sim.msp.core.food.FoodProductionUtil;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessInfo;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessItem;
 import org.mars_sim.msp.core.manufacture.ManufactureUtil;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.task.EatDrink;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemType;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -53,6 +55,9 @@ class AmountResourceGood extends Good {
 	
 	private static final long serialVersionUID = 1L;
 	
+	/** default logger. */
+	private static SimLogger logger = SimLogger.getLogger(AmountResourceGood.class.getName());
+
 	// TODO, move these to the AmountResource class via XML config
 	private static final double INITIAL_AMOUNT_DEMAND = 0;
 	private static final double INITIAL_AMOUNT_SUPPLY = 0;
@@ -100,18 +105,30 @@ class AmountResourceGood extends Good {
 	private static final double EPSOM_SALT_VALUE_MODIFIER = .1;
 	
 	private static final double OXYGEN_VALUE_MODIFIER = .02;
-	private static final double METHANE_VALUE_MODIFIER = .1;
 	private static final double FOOD_VALUE_MODIFIER = .1;
-	private static final double HYDROGEN_VALUE_MODIFIER = 3;
+	
+	private static final double METHANE_VALUE_MODIFIER = .05;
+	private static final double HYDROGEN_VALUE_MODIFIER = .5;
+	private static final double METHANOL_VALUE_MODIFIER = .5;
 
 	private static final double LIFE_SUPPORT_FACTOR = .005;
 	private static final double VEHICLE_FUEL_FACTOR = 1;
 	private static final double FARMING_FACTOR = .1;
-	private static final double TISSUE_CULTURE_FACTOR = .75;
+
 	private static final double LEAVES_FACTOR = .5;
-	private static final double CROP_FACTOR = .1;
+
 	private static final double DESSERT_FACTOR = .1;
 
+	private static final double CROP_FACTOR = .01;
+	
+	private static final double TISSUE_CULTURE_VALUE = 0.5;
+	
+	private static final double ORGANISM_FACTOR = .05;
+	private static final double SOY_BASED_FACTOR = .075;
+	private static final double DERIVED_FACTOR = .05;
+	private static final double INSECT_FACTOR = .075;
+	private static final double OIL_FACTOR = .05;
+	
 	private static final double REGOLITH_TYPE_DEMAND_FACTOR = .1;
 	private static final double REGOLITH_DEMAND_FACTOR = .1;
 	private static final double REGOLITH_DEMAND_FACTOR_1 = 10;
@@ -120,21 +137,24 @@ class AmountResourceGood extends Good {
 	private static final double MINERAL_DEMAND_FACTOR = .15;
 	
 	// Demand factor based on good type
-	private static final double CHEMICAL_DEMAND_FACTOR = 10;
-	private static final double COMPOUND_DEMAND_FACTOR = 10;
+	private static final double CHEMICAL_DEMAND_FACTOR = 3;
+	private static final double COMPOUND_DEMAND_FACTOR = 3;
 	private static final double ELEMENT_DEMAND_FACTOR = 3;
 	private static final double ROCK_DEMAND_FACTOR = 1;
-	private static final double GEMSTONE_DEMAND_FACTOR = 100;
-	private static final double INSECT_DEMAND_FACTOR = 100;
+	private static final double GEMSTONE_DEMAND_FACTOR = 3;
+
 	private static final double WASTE_DEMAND_FACTOR = .25;
-	private static final double UTILITY_DEMAND_FACTOR = 50;
+	private static final double UTILITY_DEMAND_FACTOR = 10;
 	private static final double INSTRUMENT_DEMAND_FACTOR = 5;
-	private static final double TISSUE_DEMAND_FACTOR = 10;
-	private static final double ORGANISM_DEMAND_FACTOR = 25;
-	private static final double SOYBASED_DEMAND_FACTOR = 5;
-	private static final double ANIMAL_DEMAND_FACTOR = 10;
-	private static final double CROP_DEMAND_FACTOR = 10;
-	private static final double DERIVED_DEMAND_FACTOR = 5;
+
+	private static final double INSECT_DEMAND_FACTOR = 5;
+	private static final double ORGANISM_DEMAND_FACTOR = 1;
+	private static final double SOYBASED_DEMAND_FACTOR = .5;
+	private static final double ANIMAL_DEMAND_FACTOR = 1;
+	private static final double CROP_DEMAND_FACTOR = 1;
+	private static final double DERIVED_DEMAND_FACTOR = .5;
+	private static final double TISSUE_DEMAND_FACTOR = 1.1;
+	
 	
 	private static final double METHANOL_DEMAND_FACTOR = 30;
 	private static final double METHANE_DEMAND_FACTOR = .1;
@@ -142,7 +162,8 @@ class AmountResourceGood extends Good {
 	private static final double ICE_DEMAND_FACTOR = .05;
 	private static final double CO_DEMAND_FACTOR = .05;
 	
-	private static final double COOKED_MEAL_INPUT_FACTOR = .5;
+	private static final double COOKED_MEAL_INPUT_FACTOR = .05;
+	
 	private static final double MANUFACTURING_INPUT_FACTOR = 2D;
 	private static final double FOOD_PRODUCTION_INPUT_FACTOR = .1;
 	private static final double RESOURCE_PROCESSING_INPUT_FACTOR = .5;
@@ -152,8 +173,6 @@ class AmountResourceGood extends Good {
 	private static final double MAX_RESOURCE_PROCESSING_DEMAND = 3000; 
 	private static final double MAX_MANUFACTURING_DEMAND = 3000;
 	private static final double MAX_FOOD_PRODUCTION_DEMAND = 3000;
-	
-	private static final double LIFE_SUPPORT_MAX = 3000;
 
 	private static final int METEORITE_ID = ResourceUtil.findIDbyAmountResourceName("meteorite");
 
@@ -340,13 +359,9 @@ class AmountResourceGood extends Good {
 		double previousDemand = owner.getDemandValue(this);
 
         Settlement settlement = owner.getSettlement();
-		double average = 0;
 		double trade = 0;
 		double totalDemand = 0;
-		double totalSupply = 0;
-
-		// Calculate the average demand
-		average = modifyLifeSupportAmountDemand(getAverageAmountDemand(owner));		
+		double totalSupply = 0;	
 
 		// Calculate projected demand
 		double projected = 
@@ -365,15 +380,17 @@ class AmountResourceGood extends Good {
 			// Tune farming demand.
 			+ getFarmingDemand(owner, settlement)
 			// Tune the crop demand
-			+ getCropDemand(owner, settlement)
+//			+ getFavoriteMealDemand(owner, settlement)
+			// Tune the tissue demand due to its crop
+			+ computeTissueDemandDueToCrop(owner)
 			// Tune resource processing demand.
 			+ getResourceProcessingDemand(owner, settlement)
 			// Tune manufacturing demand.
 			+ getResourceManufacturingDemand(owner, settlement)
 			// Tune food production related demand.
 			+ getResourceFoodProductionDemand(owner, settlement)
-			// Tune demand for the ingredients in a cooked meal.
-			+ getResourceCookedMealIngredientDemand(settlement)
+			// Tune demand for the ingredients in all meals.
+			+ getAvailableMealDemand(settlement)
 			// Tune dessert demand.
 			+ getResourceDessertDemand(settlement)
 			// Tune construction demand.
@@ -395,16 +412,14 @@ class AmountResourceGood extends Good {
 		if (previousDemand == 0) {
 			// At the start of the sim
 			totalDemand = (
-					  .5 * average 
-					+ .4 * projected 
-					+ .1 * trade);
+					.7 * projected 
+					+ .3 * trade);
 		}
 		else {
-			// Intentionally loses a tiny percentage (e.g. 0.0003) of its value
+			// Intentionally loses a tiny percentage (e.g. 0.0004) of its value
 			// Allows only very small fluctuations of demand as possible
 			totalDemand = (
 					  .9990 * previousDemand 
-					+ .0001 * average 
 					+ .0004 * projected 
 					+ .0002 * trade); 
 		}
@@ -432,7 +447,7 @@ class AmountResourceGood extends Good {
 	}
 
 	/**
-	 * Gets the new demand.
+	 * Gets the average demand.
 	 *
 	 * @param resource
 	 * @param projectedDemand
@@ -440,7 +455,7 @@ class AmountResourceGood extends Good {
 	 * @return
 	 */
 	private double getAverageAmountDemand(GoodsManager owner) {
-		return Math.max(1, owner.getDemandValue(this));
+		return Math.min(0, owner.getDemandValue(this));
 	}
 	
 
@@ -843,44 +858,49 @@ class AmountResourceGood extends Good {
 	}
 
 	/**
-	 * Gets the demand for a resource as a cooked meal ingredient.
+	 * Gets the resource demand for all available meals.
 	 *
 	 * @param resource the amount resource.
 	 * @return demand (kg)
 	 */
-	private double getResourceCookedMealIngredientDemand(Settlement settlement) {
-		double demand = 0D;
+	private double getAvailableMealDemand(Settlement settlement) {
 
-		if (getAmountResource().isEdible()) {
-			int id = getID();
-			if (id == ResourceUtil.tableSaltID) {
-				// Assuming a person takes 3 meals per sol
-				return MarsClock.AVERAGE_SOLS_PER_ORBIT_NON_LEAPYEAR * 3 * Cooking.AMOUNT_OF_SALT_PER_MEAL;
+		if (!getAmountResource().isEdible())
+			return 0;
+		
+		double demand = 0D;
+		int id = getID();
+		
+		if (id == ResourceUtil.tableSaltID) {
+			// Assuming a person takes 3 meals per sol
+			return MarsClock.AVERAGE_SOLS_PER_ORBIT_NON_LEAPYEAR * 3 * Cooking.AMOUNT_OF_SALT_PER_MEAL; 
+		}
+
+		else {
+			for (int oilID : Cooking.getOilMenu()) {
+				if (id == oilID) {
+					// Assuming a person takes 3 meals per sol
+					return MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR * 3 * Cooking.AMOUNT_OF_OIL_PER_MEAL;
+				}
 			}
 
-			else {
-				for (int oilID : Cooking.getOilMenu()) {
-					if (id == oilID) {
-						// Assuming a person takes 3 meals per sol
-						return MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR * 3 * Cooking.AMOUNT_OF_OIL_PER_MEAL;
-					}
-				}
+			// Determine total demand for cooked meal mass for the settlement.
+			double cookedMealDemandSol = personConfig.getFoodConsumptionRate();
+			double cookedMealDemandOrbit = cookedMealDemandSol * MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR;
+			int numPeople = settlement.getNumCitizens();
+			double cookedMealDemand = numPeople * cookedMealDemandOrbit;
+			int numMeals = MealConfig.getDishList().size();
+			double factor = cookedMealDemand / numMeals * COOKED_MEAL_INPUT_FACTOR;
+//			logger.info(getAmountResource() + "   factor: " + factor);
+			
+			// Determine demand for the resource as an ingredient for each cooked meal
+			// recipe.
 
-				// Determine total demand for cooked meal mass for the settlement.
-				double cookedMealDemandSol = personConfig.getFoodConsumptionRate();
-				double cookedMealDemandOrbit = cookedMealDemandSol * MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR;
-				int numPeople = settlement.getNumCitizens();
-				double cookedMealDemand = numPeople * cookedMealDemandOrbit;
-
-				// Determine demand for the resource as an ingredient for each cooked meal
-				// recipe.
-				int numMeals = MealConfig.getDishList().size();
-				for(HotMeal meal : MealConfig.getDishList()) {
-					for(Ingredient ingredient : meal.getIngredientList()) {
-						if (id == ingredient.getAmountResourceID()) {
-							demand += ingredient.getProportion() * cookedMealDemand / numMeals
-									* COOKED_MEAL_INPUT_FACTOR;
-						}
+			
+			for (HotMeal meal : MealConfig.getDishList()) {
+				for (Ingredient ingredient : meal.getIngredientList()) {
+					if (id == ingredient.getAmountResourceID()) {
+						demand += ingredient.getProportion() * factor;
 					}
 				}
 			}
@@ -1102,20 +1122,28 @@ class AmountResourceGood extends Good {
 	}
 
 	/**
-	 * Gets the farming demand for the resource.
+	 * Gets the resource demand based on settlement favorite meals.
 	 *
 	 * @return demand (kg) for the resource.
 	 */
-	private double getCropDemand(GoodsManager owner, Settlement settlement) {
-		double demand = 0D;
-
+	private double getFavoriteMealDemand(GoodsManager owner, Settlement settlement) {
 		if (settlement.getNumCitizens() == 0)
-			return demand;
+			return 0;
+
+		if (!getAmountResource().isEdible())
+			return 0;
+		
+		if (getAmountResource().getGoodType() == GoodType.TISSUE)
+			return 0;
+		
+		double demand = 0D;
 
 		HotMeal mainMeal = null;
 		HotMeal sideMeal = null;
 
-		// TODO Why does it scan all People but only take a single meal ?
+		// Question: Why does it scan all People, instead of scanning each meal in meal.xml ? 
+		// Answer: each settlement will have unique demand on the type of food (and ingredient)
+		// because it's based on what people like to eat
 		Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
 		while (i.hasNext()) {
 			Person p = i.next();
@@ -1123,35 +1151,68 @@ class AmountResourceGood extends Good {
 			String sideDish = p.getFavorite().getFavoriteSideDish();
 			mainMeal = getHotMeal(MealConfig.getMainDishList(), mainDish);
 			sideMeal = getHotMeal(MealConfig.getSideDishList(), sideDish);
+			logger.info(30_000, p + "  " + "  mainMeal: " + mainMeal + "  sideMeal: " + sideMeal);
+			if (mainMeal != null)
+				demand +=  computeIngredientDemand(owner, getID(), mainMeal.getIngredientList());
+			if (sideMeal != null)
+				demand +=  computeIngredientDemand(owner, getID(), sideMeal.getIngredientList());
 		}
+	
+		// Limit the demand between 0 and 100
+		demand =  Math.max(100, Math.min(0, demand));
 		
-		if (mainMeal != null)
-			demand +=  getIngredientDemand(owner, getID(), mainMeal.getIngredientList());
-		if (sideMeal != null)
-			demand +=  getIngredientDemand(owner, getID(), sideMeal.getIngredientList());
-
+//		logger.info(getAmountResource() + " fav meal demand: " + demand);
 		return demand;
 	}
 
-	private static double getIngredientDemand(GoodsManager owner, int resource, List<Ingredient> ingredients) {
-		double demand = 0D;
-
-		for(Ingredient it : ingredients) {
-			AmountResource ar = ResourceUtil.findAmountResource(it.getAmountResourceID());
-			if (ar.getGoodType() == GoodType.CROP) {
-				String tissueName = it.getName() + Farming.TISSUE;
-
-				if (it.getAmountResourceID() == resource) {
-					// Tune demand with various factors
-					demand += CROP_FACTOR *  owner.getCropFarmFactor();
-				}
-
-				else if (ResourceUtil.findIDbyAmountResourceName(tissueName.toLowerCase()) == resource) {
-					// Tune demand with various factors
-					demand += TISSUE_CULTURE_FACTOR *  owner.getCropFarmFactor();
-				}
-			}
+	/**
+	 * Computes the food ingredient demand.
+	 * 
+	 * @param owner
+	 * @param resource
+	 * @param ingredients
+	 * @return
+	 */
+	private double computeIngredientDemand(GoodsManager owner, int resource, List<Ingredient> ingredients) {
+		if (ingredients.isEmpty()) {
+			logger.info("ingredients is empty.");
+			return 0;
 		}
+			
+		double demand = 0D;
+		double cropFarmFactor = owner.getCropFarmFactor();
+		double factor = .01 * cropFarmFactor;
+		
+		for (Ingredient it : ingredients) {		
+			if (it.getAmountResourceID() == resource) {
+				logger.info("resource: " + it.getName());
+				GoodType goodType = getAmountResource().getGoodType();
+
+				if (goodType == GoodType.CROP) {
+					// Tune demand with various factors
+					demand += CROP_FACTOR * factor;
+				}
+				else if (goodType == GoodType.ORGANISM) {
+					demand += ORGANISM_FACTOR * factor;
+				}
+				else if (goodType == GoodType.SOY_BASED) {
+					demand += SOY_BASED_FACTOR * factor;
+				}
+				else if (goodType == GoodType.DERIVED) {
+					demand += DERIVED_FACTOR * factor;
+				}
+				else if (goodType == GoodType.INSECT) {
+					demand += INSECT_FACTOR * factor;
+				}		
+				else if (goodType == GoodType.OIL) {
+					demand += OIL_FACTOR * factor;
+				}		
+			}
+			
+			// Limit the demand between 0 and 100
+			demand =  Math.max(100, Math.min(0, demand));
+		}
+		
 		return demand;
 	}
 
@@ -1171,6 +1232,17 @@ class AmountResourceGood extends Good {
 		return null;
 	}
 
+	private double computeTissueDemandDueToCrop(GoodsManager owner) {
+
+		AmountResource ar = getAmountResource();
+		if (ar.getGoodType() != GoodType.TISSUE)
+			return 0;
+			
+		String cropName = ar.getName().replace(" tissue", "");
+		return owner.getDemandValue(GoodsUtil.getGood(cropName)) * TISSUE_CULTURE_VALUE;
+	}
+	
+	
 	/**
 	 * Gets the life support demand for an amount resource.
 	 *
@@ -1179,46 +1251,23 @@ class AmountResourceGood extends Good {
 	 */
 	private double getLifeSupportDemand(GoodsManager owner, Settlement settlement) {
 		int resource = getID();
-		if (ResourceUtil.isLifeSupport(resource)) {
-			double amountNeededSol = 0;
-			int numPeople = settlement.getNumCitizens();
-
-			if (resource == ResourceUtil.oxygenID) {
-				amountNeededSol = personConfig.getNominalO2ConsumptionRate() * OXYGEN_VALUE_MODIFIER;
-			} else if (resource == ResourceUtil.waterID) {
-				amountNeededSol = personConfig.getWaterConsumptionRate() *  WATER_VALUE_MODIFIER;
-			} else if (resource == ResourceUtil.foodID) {
-				amountNeededSol = personConfig.getFoodConsumptionRate() * FOOD_VALUE_MODIFIER;
-			}
-
-			return numPeople * amountNeededSol * owner.getTradeFactor() * LIFE_SUPPORT_FACTOR;
-
-		} else
-			return 0;
-	}
-
-
-    /**
-	 * Modify the demand of life support resources.
-	 * 
-	 * @param demand
-	 * @return
-	 */
-	private double modifyLifeSupportAmountDemand(double demand) {
-        int resource = getID();
-
-        // TODO can be calculated at constructor time
-		if (resource == ResourceUtil.foodID
-				|| resource == ResourceUtil.oxygenID 
-				|| resource == ResourceUtil.waterID)
-			// Cap the resource at less than LIFE_SUPPORT_MAX
-			return Math.min(LIFE_SUPPORT_MAX, demand);
 		
-		else if (resource == ResourceUtil.hydrogenID) {
-			return demand * HYDROGEN_VALUE_MODIFIER;
+		if (!ResourceUtil.isLifeSupport(resource)) {
+			return 0;
 		}
 		
-		return demand;
+		double amountNeededSol = 0;
+		int numPeople = settlement.getNumCitizens();
+
+		if (resource == ResourceUtil.oxygenID) {
+			amountNeededSol = personConfig.getNominalO2ConsumptionRate() * OXYGEN_VALUE_MODIFIER;
+		} else if (resource == ResourceUtil.waterID) {
+			amountNeededSol = personConfig.getWaterConsumptionRate() *  WATER_VALUE_MODIFIER;
+		} else if (resource == ResourceUtil.foodID) {
+			amountNeededSol = personConfig.getFoodConsumptionRate() * FOOD_VALUE_MODIFIER;
+		}
+
+		return numPeople * amountNeededSol * owner.getTradeFactor() * LIFE_SUPPORT_FACTOR;
 	}
 
 	/**
@@ -1483,6 +1532,13 @@ class AmountResourceGood extends Good {
 				demand += fuelDemand * owner.getTransportationFactor() * VEHICLE_FUEL_FACTOR * METHANE_VALUE_MODIFIER;
 			}
 		}
+		else if (getID() == ResourceUtil.methanolID) {
+			demand += owner.getTransportationFactor() * VEHICLE_FUEL_FACTOR * METHANOL_VALUE_MODIFIER;
+		}
+		else if (getID() == ResourceUtil.hydrogenID) {
+			demand +=  owner.getTransportationFactor() * VEHICLE_FUEL_FACTOR * HYDROGEN_VALUE_MODIFIER;
+		}
+		
 
 		return demand;
 	}
