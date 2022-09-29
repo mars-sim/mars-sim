@@ -821,10 +821,19 @@ public class Farming extends Function {
 					// Take back the growing area
 					remainingGrowingArea = remainingGrowingArea + crop.getGrowingArea();
 					toRemove.add(crop);
-					numCrops2Plant++;
+//					numCrops2Plant++;
 				}
 			}
 
+			int size = cropList.size();
+			numCrops2Plant = defaultCropNum - size;
+	
+//			logger.info(building, 10_000L,
+//					"  defaultCropNum: " + defaultCropNum
+//					+ "   size: " + size
+//					+ "   numCrops2Plant: " + numCrops2Plant
+//					+ "   remainingGrowingArea: " + remainingGrowingArea);
+			
 			// Remove finished crops
 			cropList.removeAll(toRemove);
 		}

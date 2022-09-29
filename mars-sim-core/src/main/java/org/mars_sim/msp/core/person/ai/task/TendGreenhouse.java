@@ -173,25 +173,35 @@ public class TendGreenhouse extends Task implements Serializable {
 
 	private void selectTask() {
 
-		double tendingNeed = person.getSettlement().getCropsTendingNeed();
-		
-		if (tendingNeed > 100) {
-
-			// Checks quickly to see if a needy crop is available
-			needyCrop = greenhouse.getNeedyCrop();
-			
-			if (needyCrop != null) {
-				acceptedTask = TENDING;
-				
-				addPhase(acceptedTask);
-				setPhase(acceptedTask);
-			}
-			
-			else 
-				endTask();
+		// Plant a crop or tending a crop
+		if (greenhouse.getNumCrops2Plant() > 0) {
+			acceptedTask = TRANSFERRING_SEEDLING;
+			addPhase(acceptedTask);
+			setPhase(acceptedTask);
 		}
-		else 	
-			calculateProbability(tendingNeed);
+		
+		else {
+		
+			double tendingNeed = person.getSettlement().getCropsTendingNeed();
+			
+			if (tendingNeed > 500) {
+	
+				// Checks quickly to see if a needy crop is available
+				needyCrop = greenhouse.getNeedyCrop();
+				
+				if (needyCrop != null) {
+					acceptedTask = TENDING;
+					
+					addPhase(acceptedTask);
+					setPhase(acceptedTask);
+				}
+				
+				else 
+					endTask();
+			}
+			else 	
+				calculateProbability(tendingNeed);
+		}
 	}
 	
 	public void calculateProbability(double tendingNeed) {
@@ -222,11 +232,7 @@ public class TendGreenhouse extends Task implements Serializable {
 			needyCrop = greenhouse.getNeedyCrop();
 			
 			if (needyCrop != null) {
-				// Plant a crop or tending a crop
-				if (greenhouse.getNumCrops2Plant() > 0)
-					acceptedTask = TRANSFERRING_SEEDLING;
-				else
-					acceptedTask = TENDING;
+				acceptedTask = TENDING;
 			}
 			
 			else {
@@ -442,13 +448,11 @@ public class TendGreenhouse extends Task implements Serializable {
 	
 		}
 		
-		else {
-			
+		else if (getDuration() <= (getTimeCompleted() + time)) {
+			greenhouse.plantSeedling(cropSpec, getTimeCompleted() + time, worker);
+			printDescription("Planting " + cropSpec + ".");
+				
 			addExperience(workTime);
-	
-			if (getDuration() <= (getTimeCompleted() + time)) {
-				greenhouse.plantSeedling(cropSpec, getTimeCompleted() + time, worker);
-			}
 		}
 		
 		return 0;

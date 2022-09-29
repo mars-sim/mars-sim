@@ -66,7 +66,7 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 	
 	// Future: Move params into crops.xml and load from CropConfig
 	/** How often are the crops checked in mSols */
-	private static final double CHECK_CROP_PERIOD = 4D;
+	private static final double CHECK_CROP_PERIOD = 4;
 
 	private static final double TUNING_FACTOR = 3.5;
 	
@@ -777,9 +777,11 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 
 		accumulatedTime += elapsed;
 
-		if (accumulatedTime >= CHECK_CROP_PERIOD) {
+		double newCheckPeriod = CHECK_CROP_PERIOD * elapsed;
+		
+		if (accumulatedTime >= newCheckPeriod) {
 
-			accumulatedTime = accumulatedTime - CHECK_CROP_PERIOD;
+			accumulatedTime -= newCheckPeriod;
 
 			double time = accumulatedTime * productionLevel;
 
@@ -787,6 +789,15 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 			
 			percentageGrowth = (growingTimeCompleted * 100D) / cropSpec.getGrowingTime();
 
+//			if (name.equalsIgnoreCase("strawberry"))
+//				logger.info(building, name 
+//					+ "   currentWorkRequired: " + (int)currentWorkRequired
+//					+ "   percentageGrowth: " + (int)percentageGrowth
+//					+ "   growingTimeCompleted: " + (int)growingTimeCompleted 
+//					+ "   elapsed: " + elapsed
+//					+ "   accumulatedTime: " + (int)accumulatedTime
+//					+ "   time: " + (int)time);
+			
 			// Right before the harvesting phase
 			if (phaseType != PhaseType.HARVESTING && percentageGrowth > cropSpec.getNextPhasePercentage(phaseType)) {
 				// Advance onto the next phase
