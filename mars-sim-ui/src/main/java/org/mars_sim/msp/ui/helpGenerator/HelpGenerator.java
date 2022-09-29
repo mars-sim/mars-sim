@@ -202,6 +202,9 @@ public class HelpGenerator {
 		try {
 			String absPath = getAbsPath(dir);
 			
+			if (absPath == null)
+				return;
+			
 			File file = new File(absPath + '/' + path.toString());
 			
 		      // if the autosave/default save directory does not exist, create one now

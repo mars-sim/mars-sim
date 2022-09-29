@@ -517,7 +517,7 @@ public class RadiationExposure implements Serializable, Temporal {
 				totalExposure += exposure;
 			}
 
-			if (totalExposure > 0) {
+			if (totalExposure > 0 && rad != null) {
 				String str = EXPOSED_TO + Math.round(totalExposure * 10000.0) / 10000.0
 							+ DOSE_OF_RAD;
 

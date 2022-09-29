@@ -719,13 +719,15 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		if (!validation_result)
 			return false;
 
-		else {
+		else if (arrivalDate != null) {
 			String name = "Template " + num++;
 			Resupply newResupply = new Resupply(new ResupplyMissionTemplate(name, arrivalDate.getTotalMillisols()/1000), arrivalDate, destination);
 			modifyResupplyMission(newResupply, arrivalDate);
 			Simulation.instance().getTransportManager().addNewTransportItem(newResupply);
 			return true;
 		}
+		
+		return false;
 	}
 
 	/**
@@ -1037,10 +1039,10 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 						&& (month == marsClock.getMonth())
 						&& (orbit == marsClock.getOrbit())) {
 					millisols = marsClock.getMillisol() + MILLISOLS_DELAY;
+
+					marsCurrentTime = new MarsClock(orbit, month, sol, millisols, marsClock.getMissionSol());
 				}
 
-				marsCurrentTime = new MarsClock(orbit, month, sol, millisols, marsClock.getMissionSol());
-				
 			} catch (NumberFormatException e) {
 				logger.severe("Can't create marsCurrentTime: " + e.getMessage());
 			}

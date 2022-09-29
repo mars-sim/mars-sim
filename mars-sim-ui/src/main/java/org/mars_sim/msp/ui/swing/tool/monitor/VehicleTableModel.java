@@ -590,6 +590,16 @@ public class VehicleTableModel extends UnitTableModel {
 	}
 	
 	/**
+	 * Gets the hash code for this object.
+	 *
+	 * @return hash code.
+	 */
+	@Override
+	public int hashCode() {
+		return super.hashCode();
+	}
+	
+	/**
 	 * Prepares the model for deletion.
 	 */
 	@Override
