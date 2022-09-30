@@ -298,7 +298,7 @@ public class Malfunction implements Serializable {
 	}
 
 	/**
-	 * Gets the number of repairers  desired
+	 * Gets the number of repairers desired
 	 *
 	 * @param type Type of work
 	 * @return the # of desired repairs

@@ -109,9 +109,6 @@ public class RepairInsideMalfunction extends Task implements Repair, Serializabl
 				}
 			}
 		}
-		
-
-
 	}
 	
 	/**
@@ -126,7 +123,7 @@ public class RepairInsideMalfunction extends Task implements Repair, Serializabl
 		// Choose the malfunction and the entity
 		chooseEntity();
 
-		if (entity != null) {
+		if (entity != null && malfunction != null) {
 			// Prep up for repair
 			prepareForRepair();
 		}
@@ -141,7 +138,7 @@ public class RepairInsideMalfunction extends Task implements Repair, Serializabl
 				}
 			}
 			
-			if (entity != null) {
+			if (entity != null && malfunction != null) {
 				// Prep up for repair
 				prepareForRepair();
 			}
@@ -219,10 +216,10 @@ public class RepairInsideMalfunction extends Task implements Repair, Serializabl
 			workTime += workTime * (.2D * mechanicSkill);
 		}
 
-		Unit containerUnit = worker.getTopContainerUnit();
+		Unit containerUnit = worker.getContainerUnit();
 		
 		// Add repair parts if necessary.
-		if (RepairHelper.hasRepairParts(worker.getTopContainerUnit(), malfunction)) {
+		if (RepairHelper.hasRepairParts(containerUnit, malfunction)) {
 			setDescription(Msg.getString("Task.description.repairMalfunction.detail", malfunction.getName(),
 					entity.getName())); // $NON-NLS-1$
 

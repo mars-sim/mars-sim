@@ -39,17 +39,17 @@ public final class RepairHelper {
 	public static void prepareRepair(Malfunction malfunction, Worker repairer,
 									MalfunctionRepairWork type, Malfunctionable entity) {
 
-		String chief = malfunction.getChiefRepairer(type);
-		String deputy = malfunction.getDeputyRepairer(type);
 		String myName = repairer.getName();
-		if (chief == null) {
-			 malfunction.setChiefRepairer(type, myName);
+
+		if (malfunction.getChiefRepairer(type) == null) {
+			malfunction.setChiefRepairer(type, myName);
 			logger.info(repairer, 10_000L, "Appointed as the chief repairer handling the "
 					+ type.getName() + " work for '"
 					+ malfunction.getName() + "' on "
 					+ entity.getName() + ".");
 		}
-		else if ((deputy == null) && !chief.equals(myName)) {
+
+		else if (malfunction.getDeputyRepairer(type) == null) {
 			malfunction.setDeputyRepairer(type, myName);
 			logger.info(repairer, 10_000L, "Appointed as the deputy repairer handling the "
 					+ type.getName() + " work for '"
