@@ -553,8 +553,13 @@ public class Manufacture extends Function {
 						throw new IllegalStateException(
 								"Manufacture.addProcess(): output: " + item.getType() + " not a valid type.");
 
-					// Recalculate settlement good value for the output item.
-					settlement.getGoodsManager().determineGoodValue(GoodsUtil.getGood(item.getName()));
+					Good good = GoodsUtil.getGood(item.getName());
+					if (good == null) {
+						logger.severe(item.getName() + " is not a good.");
+					}
+					else
+						// Recalculate settlement good value for the output item.
+						settlement.getGoodsManager().determineGoodValue(good);
 				}
 			}
 		}
@@ -688,8 +693,13 @@ public class Manufacture extends Function {
 					if (mass <= capacity)
 						settlement.storeItemResource(id, totalNumber);
 
-					// Recalculate settlement good value for salvaged part.
-					settlement.getGoodsManager().determineGoodValue(GoodsUtil.getGood(part.getName()));
+					Good good = GoodsUtil.getGood(part.getName());
+					if (good == null) {
+						logger.severe(part.getName() + " is not a good.");
+					}
+					else
+						// Recalculate settlement good value for salvaged part.
+						settlement.getGoodsManager().determineGoodValue(good);
 				}
 			}
 		}

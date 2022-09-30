@@ -422,8 +422,6 @@ public class RadiationExposure implements Serializable, Temporal {
 	 * @return true if radiation is detected
 	 */
 	public boolean isRadiationDetected(double time) {
-
-		
 		// Check every RADIATION_CHECK_FREQ (in millisols)
 		if (masterClock.getClockPulse().isNewMSol() 
 			&& marsClock.getMillisolInt() % RadiationExposure.RADIATION_CHECK_FREQ == 0) {
@@ -488,6 +486,7 @@ public class RadiationExposure implements Serializable, Temporal {
 				}
 				// for now, if SEP happens, ignore GCR and Baseline
 				else if (exposed[1]) {
+					radiationType = RadiationType.GCR;
 					baselevel = GCR_RAD_PER_SOL * time / 100D;
 					// according
 					// to
@@ -503,6 +502,7 @@ public class RadiationExposure implements Serializable, Temporal {
 				}
 				// for now, if GCR happens, ignore Baseline
 				else if (exposed[0]) {
+					radiationType = RadiationType.BASELINE;
 					baselevel = BASELINE_RAD_PER_SOL * time / RADIATION_CHECK_FREQ;
 					// arbitrary
 					baseline += baselevel

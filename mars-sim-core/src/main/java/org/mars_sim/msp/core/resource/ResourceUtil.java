@@ -22,6 +22,8 @@ import java.util.Set;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.food.Food;
 import org.mars_sim.msp.core.food.FoodUtil;
+import org.mars_sim.msp.core.logging.SimLogger;
+import org.mars_sim.msp.core.person.ai.task.EatDrink;
 import org.mars_sim.msp.core.tool.Conversion;
 
 public class ResourceUtil implements Serializable {
@@ -29,6 +31,10 @@ public class ResourceUtil implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	/** default logger. */
+	private static SimLogger logger = SimLogger.getLogger(ResourceUtil.class.getName());
+
+	
 	public static final int FIRST_AMOUNT_RESOURCE_ID = 200;
 	public static final int FIRST_ITEM_RESOURCE_ID = 500;
 	public static final int FIRST_VEHICLE_RESOURCE_ID = 1000;
@@ -615,7 +621,7 @@ public class ResourceUtil implements Serializable {
 				return entry.getKey();
 			}
 		}
-		System.out.println(value + " cannot be found.");
+		logger.severe(value + " cannot be found.");
 		return null;
 	}
 
