@@ -90,7 +90,7 @@ public class ExitAirlock extends Task {
 	/** The standard time for each task phase. */
 	private static final double STANDARD_TIME = 0.5;
 
-	private static final MissionStatus NO_EVA_SUITS = new MissionStatus("Mission.status.noevasuits"); // "No good Eva Suit"
+	private static final MissionStatus NO_EVA_SUITS = new MissionStatus("Mission.status.noEVASuits"); // "No good Eva Suit"
 
 	
 	// Data members
