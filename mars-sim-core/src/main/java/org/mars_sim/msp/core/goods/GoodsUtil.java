@@ -18,7 +18,6 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
-import org.mars_sim.msp.core.robot.RobotConfig;
 import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.vehicle.VehicleConfig;
 import org.mars_sim.msp.core.vehicle.VehicleSpec;
@@ -32,28 +31,28 @@ public class GoodsUtil {
     /** default logger. */
     private static final SimLogger logger = SimLogger.getLogger(GoodsUtil.class.getName());
 
-    private static final String HEAVY = "Vehicle - Heavy";
-    private static final String MEDIUM = "Vehicle - Medium";
-    private static final String SMALL = "Vehicle - Small";
-
-    public static final String CHEMICAL = "Chemical";
-    public static final String ELEMENT = "Element";
-    public static final String COMPOUND = "Compound";
-    public static final String VEHICLE_PART = "Vehicle";
-    public static final String METALLIC = "Metallic";
-    public static final String UTILITY = "Utility";
-    public static final String INSTRUMENT = "Instrument";
-    public static final String RAW = "Raw";
-    public static final String ELECTRICAL = "Electrical";
-    public static final String KITCHEN = "Kitchen";
-    public static final String CONSTRUCTION = "Construction";
+    private static final String HEAVY = "vehicle heavy";
+    private static final String MEDIUM = "vehicle medium";
+    private static final String SMALL = "vehicle small";
+//
+//    public static final String CHEMICAL = "Chemical";
+//    public static final String ELEMENT = "Element";
+//    public static final String COMPOUND = "Compound";
+//    public static final String VEHICLE_PART = "Vehicle";
+//    public static final String METALLIC = "Metallic";
+//    public static final String UTILITY = "Utility";
+//    public static final String INSTRUMENT = "Instrument";
+//    public static final String RAW = "Raw";
+//    public static final String ELECTRICAL = "Electrical";
+//    public static final String KITCHEN = "Kitchen";
+//    public static final String CONSTRUCTION = "Construction";
 
     // Data members
     private static Map<Integer, Good> goodsMap = null;
     private static List<Good> goodsList = null;
 
     private static VehicleConfig vehicleConfig = SimulationConfig.instance().getVehicleConfiguration();
-    private static RobotConfig robotConfig = SimulationConfig.instance().getRobotConfiguration();
+//    private static RobotConfig robotConfig = SimulationConfig.instance().getRobotConfiguration();
 
     /**
      * Private constructor for utility class.

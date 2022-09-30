@@ -23,7 +23,6 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.food.Food;
 import org.mars_sim.msp.core.food.FoodUtil;
 import org.mars_sim.msp.core.logging.SimLogger;
-import org.mars_sim.msp.core.person.ai.task.EatDrink;
 import org.mars_sim.msp.core.tool.Conversion;
 
 public class ResourceUtil implements Serializable {

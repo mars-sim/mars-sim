@@ -178,6 +178,10 @@ class AmountResourceGood extends Good {
 	private double flattenDemand;
 
 	private double costModifier = -1;
+	
+	private GoodType goodType;
+	
+	private AmountResource resource;
 
     AmountResourceGood(AmountResource ar) {
         super(ar.getName(), ar.getID());
@@ -199,12 +203,17 @@ class AmountResourceGood extends Good {
 
     @Override
     public GoodType getGoodType() {
-        return getAmountResource().getGoodType();
-
+    	if (goodType == null) {
+    		goodType = getAmountResource().getGoodType();
+    	}
+        return goodType;
     }
 
     private AmountResource getAmountResource() {
-        return ResourceUtil.findAmountResource(getID());
+    	if (resource == null) {
+    		resource = ResourceUtil.findAmountResource(getID());
+    	}
+        return resource;
     }
 
     @Override

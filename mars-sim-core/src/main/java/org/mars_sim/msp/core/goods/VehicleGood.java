@@ -56,11 +56,11 @@ class VehicleGood extends Good {
     private static final String METHANE = "methane";
     private static final double SPEED_TO_DISTANCE = 2D / 60D / 60D / MarsClock.convertSecondsToMillisols(1D) * 1000D;
 
+	private double theoreticalRange;
 
     private GoodType goodType;
+    
     private VehicleType vehicleType;
-
-	private double theoreticalRange;
 
 	// Suitability of this vehicle type for different Missions
 	private transient Map<MissionType,Double> missionCapacities = new EnumMap<>(MissionType.class);

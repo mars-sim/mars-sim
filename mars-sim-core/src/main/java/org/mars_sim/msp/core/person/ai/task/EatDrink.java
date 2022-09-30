@@ -227,7 +227,7 @@ public class EatDrink extends Task {
 					}
 				}
 				else {
-					ResourceHolder rh = (ResourceHolder) person.getSettlement();
+					ResourceHolder rh = (ResourceHolder) vehicle;
 					foodAmount = rh.getAmountResourceStored(FOOD_ID);
 					waterAmount = rh.getAmountResourceStored(WATER_ID);
 					

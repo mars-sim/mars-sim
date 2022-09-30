@@ -35,33 +35,33 @@ public enum GoodType {
 	WASTE		("waste"),
 	
 	// For amount resources
-    COMPOUND		("Compound"),
+    COMPOUND		("compound"),
     
 	// For Parts
-	ATTACHMENT		("Attachment"),
-    CONSTRUCTION	("Construction"),
-    ELECTRICAL		("Electrical"),
-    ELECTRONIC		("Electronic"),
-    KITCHEN			("Kitchen"),
-    INSTRUMENT		("Instrument"),
-    METALLIC		("Metallic"),
-    RAW				("Raw"),
-    TOOL			("Tool"),
-    VEHICLE			("Vehicle"),
+	ATTACHMENT		("attachment"),
+    CONSTRUCTION	("construction"),
+    ELECTRICAL		("electrical"),
+    ELECTRONIC		("electronic"),
+    KITCHEN			("kitchen"),
+    INSTRUMENT		("instrument"),
+    METALLIC		("metallic"),
+    RAW				("raw"),
+    TOOL			("tool"),
+    VEHICLE			("vehicle"),
     
 	// For both Amount Resources or Parts
 	CHEMICAL		(Msg.getString("FoodType.chemical")), //$NON-NLS-1$ 
-    ELEMENT			("Element"),
-    UTILITY			("Utility"),
+    ELEMENT			("element"),
+    UTILITY			("utility"),
     
     // For containers
-    CONTAINER		("Container"),
-    EVA				("EVA"),
+    CONTAINER		("container"),
+    EVA				("eva"),
     
     // For vehicles
-	VEHICLE_HEAVY		("Vehicle Heavy"),
-	VEHICLE_MEDIUM		("Vehicle Medium"),
-	VEHICLE_SMALL		("Vehicle Small"),
+	VEHICLE_HEAVY		("vehicle heavy"),
+	VEHICLE_MEDIUM		("vehicle medium"),
+	VEHICLE_SMALL		("vehicle small"),
     
     // For robots
     CHEFBOT				(Msg.getString("RobotType.chefBot")), //$NON-NLS-1$

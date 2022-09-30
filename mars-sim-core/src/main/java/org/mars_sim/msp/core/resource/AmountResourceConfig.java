@@ -62,7 +62,7 @@ public class AmountResourceConfig implements Serializable {
 			Element root = amountResourceDoc.getRootElement();
 			List<Element> resourceNodes = root.getChildren(RESOURCE);
 			for (Element resourceElement : resourceNodes) {
-				nextID++;
+
 				String name = resourceElement.getAttributeValue(NAME).toLowerCase();
 
 				String type = resourceElement.getAttributeValue(TYPE);
@@ -87,7 +87,10 @@ public class AmountResourceConfig implements Serializable {
 				Boolean edible = Boolean.parseBoolean(resourceElement.getAttributeValue(EDIBLE));
 
 				AmountResource resource = new AmountResource(nextID++, name, goodType, description, phaseType, demand, lifeSupport, edible);
-
+				
+				if (name.equalsIgnoreCase("paper"))
+					System.out.println(resource);
+					
 				if (phaseString == null || phaseType == null)
 					throw new IllegalStateException(
 							"AmountResourceConfig detected invalid PhaseType in resources.xml : " + resource.getName());
@@ -100,9 +103,8 @@ public class AmountResourceConfig implements Serializable {
 
 				resourceSet.add(resource);
 
+				// Create a tissue culture object for each crop
 				if (goodType != null && goodType == GoodType.CROP) {
-					
-					// Create a tissue culture object for each crop.
 					// Note: may set edible to true
 					// Assume the demand multiplier of a crop tissue is twice as much
 					AmountResource tissue = new AmountResource(nextID, (name + " " + TISSUE), GoodType.TISSUE,
