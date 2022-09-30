@@ -58,7 +58,7 @@ public class RepairInsideMalfunctionMeta extends MetaTask {
 
         double result = 0D;
 
-        if (person.isInSettlement() || person.isInVehicle() || person.isInVehicleInGarage()) { 
+        if (person.isInside()) { 
         	    
             // Probability affected by the person's stress and fatigue.
             if (!person.getPhysicalCondition().isFitByLevel(1000, 70, 1000))

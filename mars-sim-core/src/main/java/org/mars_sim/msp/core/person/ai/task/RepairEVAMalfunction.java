@@ -161,7 +161,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 		// Check if entity has any EVA malfunctions.
 		for (Malfunction malfunction : manager.getAllEVAMalfunctions()) {
 			try {
-				if (RepairHelper.hasRepairParts(person.getTopContainerUnit(),
+				if (RepairHelper.hasRepairParts(person.getContainerUnit(),
 						malfunction)) {
 					return malfunction;
 				}

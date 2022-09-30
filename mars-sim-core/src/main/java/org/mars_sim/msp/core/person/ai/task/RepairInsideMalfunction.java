@@ -89,23 +89,38 @@ public class RepairInsideMalfunction extends Task implements Repair, Serializabl
 	 * Chooses the malfunctioning entity.
 	 */
 	private void chooseEntity() {
-	    // Load the malfunction pair in the settlement
-		
-		if (worker.getSettlement().canRetrieveMalfunctionPair()) {
-			SimpleEntry<Malfunction, Malfunctionable> pair = worker.getSettlement().retrieveMalfunctionPair();    
-			if (pair != null) {
-				entity = pair.getValue();
-				malfunction = pair.getKey();
-			}
-			else {
-				// Get the malfunctioning entity.
-				for (Malfunctionable next : MalfunctionFactory.getLocalMalfunctionables(worker)) {
-					Malfunction potential = next.getMalfunctionManager().getMostSeriousMalfunctionInNeed(MalfunctionRepairWork.INSIDE);
-					if (potential != null) {
-						entity = next;
-						malfunction = potential;
-						break; // Stop searching
+
+		if (worker.isInSettlement() || worker.isInVehicleInGarage()) {
+
+			if (worker.getSettlement().canRetrieveMalfunctionPair()) {
+			    // Load the malfunction pair in the settlement
+				SimpleEntry<Malfunction, Malfunctionable> pair = worker.getAssociatedSettlement().retrieveMalfunctionPair();    
+				if (pair != null) {
+					entity = pair.getValue();
+					malfunction = pair.getKey();
+				}
+				else {
+					// Get the malfunctioning entity.
+					for (Malfunctionable next : MalfunctionFactory.getLocalMalfunctionables(worker)) {
+						Malfunction potential = next.getMalfunctionManager().getMostSeriousMalfunctionInNeed(MalfunctionRepairWork.INSIDE);
+						if (potential != null) {
+							entity = next;
+							malfunction = potential;
+							break; // Stop searching
+						}
 					}
+				}
+			}
+		}
+		
+		else if (worker.isInVehicle()) {
+			// Get the malfunctioning entity.
+			for (Malfunctionable next : MalfunctionFactory.getLocalMalfunctionables(worker)) {
+				Malfunction potential = next.getMalfunctionManager().getMostSeriousMalfunctionInNeed(MalfunctionRepairWork.INSIDE);
+				if (potential != null) {
+					entity = next;
+					malfunction = potential;
+					break; // Stop searching
 				}
 			}
 		}
@@ -127,7 +142,7 @@ public class RepairInsideMalfunction extends Task implements Repair, Serializabl
 			// Prep up for repair
 			prepareForRepair();
 		}
-		else {
+		else if (worker.isInSettlement() || worker.isInVehicleInGarage()) {
 			for (Malfunctionable next : MalfunctionFactory.getAssociatedMalfunctionables(worker.getSettlement())) {
 				List<Malfunction> list = next.getMalfunctionManager().getMalfunctions();
 				if (!list.isEmpty()) {
@@ -146,6 +161,10 @@ public class RepairInsideMalfunction extends Task implements Repair, Serializabl
 				logger.warning(worker, 30_000, "Could not find a malfunction to work on in my vicinity.");
 				endTask();
 			}
+		}
+		else {
+			logger.warning(worker, 30_000, "Could not find a malfunction to work on in my vicinity.");
+			endTask();
 		}
 	}
 
@@ -217,6 +236,10 @@ public class RepairInsideMalfunction extends Task implements Repair, Serializabl
 		}
 
 		Unit containerUnit = worker.getContainerUnit();
+		if (containerUnit.getUnitType() == UnitType.PLANET) {
+			logger.log(worker, Level.INFO, 0, "Not inside.");
+			endTask();
+		}
 		
 		// Add repair parts if necessary.
 		if (RepairHelper.hasRepairParts(containerUnit, malfunction)) {
@@ -318,7 +341,7 @@ public class RepairInsideMalfunction extends Task implements Repair, Serializabl
 		for (Malfunction malfunction : manager.getMalfunctions()) {
 			try {
 				if (malfunction.hasWorkType(MalfunctionRepairWork.INSIDE)
-					&& RepairHelper.hasRepairParts(person.getTopContainerUnit(), malfunction)) {
+					&& RepairHelper.hasRepairParts(person.getContainerUnit(), malfunction)) {
 					return malfunction;
 				}
 			} catch (Exception e) {

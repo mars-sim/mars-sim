@@ -57,6 +57,7 @@ import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitListener;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.mission.AbstractVehicleMission;
 import org.mars_sim.msp.core.person.ai.mission.AreologyFieldStudy;
 import org.mars_sim.msp.core.person.ai.mission.BiologyFieldStudy;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
@@ -748,7 +749,10 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 			}
 			else {
 	
-				vehicleButton.setText(vehicleMission.getVehicle().getName());
+				String name = ((AbstractVehicleMission)vehicleMission).getVehicleName();
+				
+				if (name != null)
+					vehicleButton.setText(name);
 				
 				vehicleStatusLabel.setText(" ");
 				speedLabel.setText(Msg.getString("MainDetailPanel.kmhSpeed", "0")); //$NON-NLS-1$ //$NON-NLS-2$

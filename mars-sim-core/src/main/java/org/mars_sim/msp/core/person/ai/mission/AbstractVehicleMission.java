@@ -100,6 +100,8 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	/** Default speed if no operators have ever driven. */
 	private static final double DEFAULT_SPEED = 10D;
 	
+	
+	// Data members
 	/** The msol cache. */
 	private int msolCache;
 	/** The current navpoint index. */
@@ -117,12 +119,12 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	private double distanceCurrentLegRemaining;
 	/** The estimated total remaining distance at this moment. */
 	private double distanceTotalRemaining;
-	
+
+	private transient double cachedDistance = -1;
 	/** The current traveling status of the mission. */
 	private String travelStatus;
-	
-	
-	// Data members
+	/** The cache for the mission vehicle. */
+	private String vehicleNameCache;
 	/** The vehicle currently used in the mission. */
 	private Vehicle vehicle;
 	/** The last operator of this vehicle in the mission. */
@@ -132,11 +134,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	/** Details of the loading operation */
 	private LoadingController loadingPlan;
 
-
-	private transient double cachedDistance = -1;
-
 	private Settlement startingSettlement;
-	
 	/** The last navpoint the mission stopped at. */
 	private NavPoint lastStopNavpoint;
 	
@@ -273,7 +271,15 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 
 	}
 
-
+	/**
+	 * Gets the mission's vehicle name
+	 *
+	 * @return vehicle or null if none.
+	 */
+	public String getVehicleName() {
+		return vehicleNameCache;
+	}
+	
 	/**
 	 * Gets the mission's vehicle if there is one.
 	 *
@@ -330,7 +336,10 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			startingTravelledDistance = vehicle.getOdometerMileage();
 			newVehicle.setReservedForMission(true);
 			vehicle.addUnitListener(this);
-
+			
+			// Record the vehicle name
+			vehicleNameCache = vehicle.getName();
+			
 			fireMissionUpdate(MissionEventType.VEHICLE_EVENT);
 		}
 		else {
