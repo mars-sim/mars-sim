@@ -4129,6 +4129,12 @@ public class Settlement extends Structure implements Temporal,
 		return null;
 	}
 	
+	public boolean canRetrieveFirstResourceProcess() {
+		if (!resourceProcessList.isEmpty()) { 
+			return true;
+		}
+		return false;
+	}
 	
 	public void saveMalfunctionPair(SimpleEntry<Malfunction, Malfunctionable> pair) {
 		malfunctionPair = pair;
@@ -4151,11 +4157,11 @@ public class Settlement extends Structure implements Temporal,
 		return null;
 	}
 	
-	public boolean canRetrieveFirstResourceProcess() {
-		if (!resourceProcessList.isEmpty()) { 
-			return true;
+	public boolean canRetrieveMalfunctionPair() {
+		if (malfunctionPair == null) { 
+			return false;
 		}
-		return false;
+		return true;
 	}
 	
 	/**

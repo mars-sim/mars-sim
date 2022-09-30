@@ -90,23 +90,28 @@ public class RepairInsideMalfunction extends Task implements Repair, Serializabl
 	 */
 	private void chooseEntity() {
 	    // Load the malfunction pair in the settlement
-		SimpleEntry<Malfunction, Malfunctionable> pair = worker.getSettlement().getMalfunctionPair();    
-
-		if (pair != null) {
-			entity = pair.getValue();
-			malfunction = pair.getKey();
-		}
-		else {
-			// Get the malfunctioning entity.
-			for (Malfunctionable next : MalfunctionFactory.getLocalMalfunctionables(worker)) {
-				Malfunction potential = next.getMalfunctionManager().getMostSeriousMalfunctionInNeed(MalfunctionRepairWork.INSIDE);
-				if (potential != null) {
-					entity = next;
-					malfunction = potential;
-					break; // Stop searching
+		
+		if (worker.getSettlement().canRetrieveMalfunctionPair()) {
+			SimpleEntry<Malfunction, Malfunctionable> pair = worker.getSettlement().retrieveMalfunctionPair();    
+			if (pair != null) {
+				entity = pair.getValue();
+				malfunction = pair.getKey();
+			}
+			else {
+				// Get the malfunctioning entity.
+				for (Malfunctionable next : MalfunctionFactory.getLocalMalfunctionables(worker)) {
+					Malfunction potential = next.getMalfunctionManager().getMostSeriousMalfunctionInNeed(MalfunctionRepairWork.INSIDE);
+					if (potential != null) {
+						entity = next;
+						malfunction = potential;
+						break; // Stop searching
+					}
 				}
 			}
 		}
+		
+
+
 	}
 	
 	/**

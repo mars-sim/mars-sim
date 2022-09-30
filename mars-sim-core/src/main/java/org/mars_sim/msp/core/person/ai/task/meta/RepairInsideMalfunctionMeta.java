@@ -80,14 +80,16 @@ public class RepairInsideMalfunctionMeta extends MetaTask {
 
     private double computeProbability(Settlement settlement, Unit unit) {
 
-    	 // Load the malfunction pair in the settlement
-		SimpleEntry<Malfunction, Malfunctionable> pair = unit.getSettlement().getMalfunctionPair();    
-
-		if (pair != null) {
+		if (unit.getSettlement().canRetrieveMalfunctionPair()) {
 			return CAP;
 		}
     	
-        double result = 0D;
+        double result = 0;
+        double highestScore = 0;
+        
+        Malfunction highestScoreMalfunction = null;
+        Malfunctionable highestScoreEntity = null;
+ 
         // Add probability for all malfunctionable entities in person's local.
         for (Malfunctionable entity : MalfunctionFactory.getAssociatedMalfunctionables(settlement)) {
         	
@@ -104,27 +106,35 @@ public class RepairInsideMalfunctionMeta extends MetaTask {
             	Malfunction mal = manager.getMostSeriousMalfunctionInNeed(MalfunctionRepairWork.INSIDE);
 
             	if (mal != null) {
-                	// Create the malfunction pair for storage
-	            	pair = new SimpleEntry<>(mal, entity);
-			        // Save the malfunction pair in the settlement
-			        settlement.saveMalfunctionPair(pair);
+            		highestScoreMalfunction = mal; 
+            		highestScoreEntity = entity;
 	            }
-
-	            for (Malfunction malfunction : manager.getAllInsideMalfunctions()) {
-	            	
-	            	// Since it fails to find the most serious malfunction earlier
-	            	if (mal == null) {
-	            		mal = malfunction;
-	                	// Create the malfunction pair for storage
-		            	pair = new SimpleEntry<>(malfunction, entity);
-				        // Save the malfunction pair in the settlement
-				        settlement.saveMalfunctionPair(pair);
-		            }
-	            	
-	                result += scoreMalfunction(settlement, malfunction);
-	            }
+            	
+            	else {
+    	            for (Malfunction malfunction : manager.getAllInsideMalfunctions()) {
+    	            	
+    	            	// Since it fails to find the most serious malfunction earlier
+    	            	if (mal == null) {
+    	            		mal = malfunction;
+    		            }
+    	            	
+    	            	double score = scoreMalfunction(settlement, malfunction);
+    	            	if (score >= highestScore) {
+    	            		highestScoreMalfunction = malfunction; 
+    	            		highestScoreEntity = entity;
+    	            	}
+    	                result += score;
+    	                
+    	            }
+            	}
             }
         }
+        
+        // Create the malfunction pair for storage
+		SimpleEntry<Malfunction, Malfunctionable> highestScorePair = new SimpleEntry<>(highestScoreMalfunction, highestScoreEntity);
+        // Save the malfunction pair in the settlement
+        settlement.saveMalfunctionPair(highestScorePair);
+        
         return result;
     }
     
