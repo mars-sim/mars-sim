@@ -529,7 +529,8 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="make steel sheet" tech="0" skill="0" work-time="50" process-time="10"
 			power-required=".3">
 		<inputs>
-			<resource name="iron powder" amount="7.8" />
+			<resource name="iron powder" amount="7.7" />
+			<resource name="manganese" amount=".1" />			
 			<resource name="carbon" amount=".1" />
 		</inputs>
 		<outputs>
@@ -541,6 +542,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="roll steel sheet" tech="0" skill="0" work-time="50" process-time="10"
 			power-required=".3">
 		<inputs>
+			<resource name="manganese" amount=".1" />		
 			<part name="steel ingot" number="8" />
 		</inputs>
 		<outputs>
@@ -2817,7 +2819,7 @@ Note: 1 kg of H2 is 14.13 liter
 			Ceramic electrolytes are critical for the production of batteries and fuel cells
 		</description>
 		<inputs>
-			<resource name="maganese" amount=".1" />	
+			<resource name="manganese" amount=".1" />	
 			<resource name="nickel" amount=".1" />	
 			<resource name="iron" amount=".1" />		
 			<resource name="aluminum" amount=".1" />								
@@ -2825,7 +2827,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<resource name="oxygen" amount=".5" />				
 		</inputs>
 		<outputs>
-			<part name="ceramic electrolyte" number="5" /> 
+			<resource name="ceramic electrolyte" amount="5" /> 
 		</outputs>
 	</process>
 	
@@ -2909,7 +2911,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 	
 		<!-- 2016-05-08 Added turbopump manufacturing -->
-	<process name="manufacture turbopump" tech="3" skill="4" work-time="500" process-time="100"
+	<process name="manufacture turbopump" tech="3" skill="4" work-time="200" process-time="100"
 			power-required="1">
 		<inputs>
 			<part name="steel sheet" number="1" />

@@ -87,10 +87,7 @@ public class AmountResourceConfig implements Serializable {
 				Boolean edible = Boolean.parseBoolean(resourceElement.getAttributeValue(EDIBLE));
 
 				AmountResource resource = new AmountResource(nextID++, name, goodType, description, phaseType, demand, lifeSupport, edible);
-				
-				if (name.equalsIgnoreCase("paper"))
-					System.out.println(resource);
-					
+
 				if (phaseString == null || phaseType == null)
 					throw new IllegalStateException(
 							"AmountResourceConfig detected invalid PhaseType in resources.xml : " + resource.getName());

@@ -60,6 +60,7 @@
 	
 <!-- Elements -->
 	<resource name="iron powder" type="element" phase="solid" />
+	<resource name="manganese" type="element" phase="solid" />
 
 <!-- Wastes -->
 	<resource name="soil" type="waste" phase="solid">Soil is the mixture of minerals, organic matter, gases, liquids, and the myriad of organisms that together support plant life.</resource>
@@ -342,7 +343,7 @@
 	<resource name="ammonia" type="compound" phase="solid"> NH3+ is an essential nutrient for plants</resource>
 	<resource name="calcium carbonate" type="compound" phase="solid" demand=".1" />
 	<resource name="calcium sulfate" type="compound" phase="solid" />
-	<resource name="iron oxide" type="compound" phase="solid"> also known as rust</resource>
+	<resource name="iron oxide" type="compound" phase="solid"> oxide mineral such as Fe2O3</resource>
 	<resource name="iron chloride" type="compound" phase="solid"> Iron(III) chloride, also called ferric chloride,
 	is an industrial scale commodity chemical compound, with the formula FeCl3 and with
 	iron in the +3 oxidation state. When dissolved in water, iron(III) chloride undergoes
@@ -366,7 +367,7 @@
 	<resource name="sodium oxide" type="compound" phase="solid"> extracted from regolith.</resource>
 
 <!-- Utility items derived from crop harvest -->
-	<resource name="fiber cloth" type="utility" phase="solid" edible="false">Cloth made from Soy Fiber and cane fiber.</resource>
+	<resource name="fiber cloth" type="utility" phase="solid" >Cloth made from Soy Fiber and cane fiber.</resource>
 	<resource name="napkin" type="utility" phase="solid" />
 	<resource name="paper" type="utility" phase="solid" />
 	<resource name="pulp" type="utility" phase="solid">Pulp is a mixture of cellulose fibers.</resource>

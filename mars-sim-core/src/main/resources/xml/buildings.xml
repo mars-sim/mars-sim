@@ -1475,7 +1475,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="ammonia" rate="1.0" ambient="false" />
 					<output resource="argon" rate="0.1" ambient="false" />
 				</process>
-	
+
+
 				<process name="process regolith-B rich in poly-hydrated sulfate" number-modules="3" 
 					power-required="0.1" default="off">
 					<description>
@@ -1493,7 +1494,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 						<output resource="smectite" rate="1.5" ambient="false" />
 						<output resource="sand" rate="20.0" ambient="false" />
 				</process>
-			
+
+
 				<process name="process regolith-C rich in phyllo-silicate" number-modules="3" 
 					power-required="0.1" default="off">
 					<description>
@@ -1511,7 +1513,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 						<output resource="bassanite" rate="1.5" ambient="false" />
 						<output resource="sand" rate="20.0" ambient="false" />
 				</process>
-			
+
+
 				<process name="process regolith-D rich in basaltic" number-modules="3" 
 					power-required="0.1" default="off">
 					<description>
@@ -1536,31 +1539,44 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 						<output resource="baking powder" rate="4.0" ambient="false" />
 						<output resource="table salt" rate="0.4" ambient="false" />
 				</process>
-	
+
+
+				<!-- https://geologyscience.com/minerals/hematite/ -->
 				<process name="do hematite smelting" number-modules="3" 
 					power-required="5.0" default="off">
-					<input resource="hematite" rate="50.0" ambient="false" />
+					<input resource="hematite" rate="25.0" ambient="false" />
 					<input resource="carbon monoxide" rate=".5" ambient="false" />
-					<output resource="iron powder" rate="25.0" ambient="false" />
-					<output resource="carbon dioxide" rate="1.0" ambient="false" />
+					<output resource="iron powder" rate="2.0" ambient="false" />
+					<output resource="iron oxide" rate="20.0" ambient="false" />
+					<output resource="manganese" rate="2.0" ambient="false" />						
+					<output resource="carbon dioxide" rate=".5" ambient="false" />
 				</process>
-			
+
+
 				<process name="do magnetite smelting" number-modules="3" 
 					power-required="5.0" default="off">
-						<input resource="magnetite" rate="50.0" ambient="false" />
+						<input resource="magnetite" rate="25.0" ambient="false" />
 						<input resource="carbon monoxide" rate=".5" ambient="false" />
-						<output resource="iron powder" rate="30.0" ambient="false" />
-						<output resource="carbon dioxide" rate="1.0" ambient="false" />
+						<output resource="iron powder" rate="1.0" ambient="false" />
+						<output resource="iron oxide" rate="21.0" ambient="false" />									
+						<output resource="carbon dioxide" rate=".5" ambient="false" />
+						<output resource="oxygen" rate="2.0" ambient="false" />						
 				</process>
-			
+
+
+				<!-- https://geologyscience.com/minerals/goethite/ -->
 				<process name="do goethite smelting" number-modules="3" 
 					power-required="5.0" default="off">
 						<input resource="goethite" rate="50.0" ambient="false" />
 						<input resource="carbon monoxide" rate=".5" ambient="false" />
-						<output resource="iron powder" rate="27.0" ambient="false" />
+						<output resource="iron powder" rate="2.0" ambient="false" />
+						<output resource="iron oxide" rate="18.0" ambient="false" />	
+						<output resource="iron hydroxide" rate="5.0" ambient="false" />											
+						<output resource="magnesium" rate="2.0" ambient="false" />						
 						<output resource="carbon dioxide" rate="1.0" ambient="false" />
 				</process>
-			
+
+
 				<process name="do olivine smelting" number-modules="3" 
 					power-required="5.0" default="off">
 						<input resource="olivine" rate="50.0" ambient="false" />
@@ -1570,7 +1586,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 						<output resource="silicon" rate="8.1" ambient="false" />
 						<output resource="carbon dioxide" rate="51.2" ambient="false" />
 				</process>
-			
+
+
 				<process name="do magnesite smelting" number-modules="3" 
 					power-required="5.0" default="off">
 						<input resource="magnesite" rate="50.0" ambient="false" />
@@ -1579,21 +1596,24 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 						<output resource="carbon dioxide" rate="52.2" ambient="false" />
 						<output resource="silica" rate="5" ambient="false" />
 				</process>
-			
+
+
 				<process name="do kamacite smelting" number-modules="3" 
 					power-required="5.0" default="off">
 						<input resource="kamacite" rate="50.0" ambient="false" />
 						<output resource="iron powder" rate="45.0" ambient="false" />
 						<output resource="nickel" rate="5.0" ambient="false" />
 				</process>
-			
+
+
 				<process name="do taenite smelting" number-modules="3" 
 					power-required="5.0" default="off">
 						<input resource="taenite" rate="50.0" ambient="false" />
 						<output resource="iron powder" rate="20.0" ambient="false" />
 						<output resource="nickel" rate="30.0" ambient="false" />
 				</process>
-			
+
+
 				<process name="do chalcopyrite smelting" number-modules="3" 
 					power-required="5.0" default="off">
 						<input resource="chalcopyrite" rate="50.0" ambient="false" />
@@ -1601,7 +1621,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 						<output resource="iron powder" rate="15.2" ambient="false"  />
 						<output resource="sulfur" rate="17.5" ambient="false" />
 				</process>
-			
+
+
 				<process name="do malachite smelting" number-modules="3" 
 					power-required="5.0" default="off">
 						<input resource="malachite" rate="50.0" ambient="false" />
@@ -1610,12 +1631,14 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 						<output resource="carbon dioxide" rate="19.9" ambient="false" />
 						<output resource="grey water" rate="4.1" ambient="false" />
 				</process>
-			
+
+
 				<process name="extract minerals from basaltic deposits" number-modules="3" 
 					power-required="0.2" default="off">
 						<input resource="basaltic" rate="50.0" ambient="false" />
-						<output resource="aluminum oxide" rate="9.0" ambient="false" />
-						<output resource="magnesium" rate="7.0" ambient="false" />
+						<output resource="aluminum oxide" rate="8.0" ambient="false" />
+						<output resource="magnesium" rate="6.0" ambient="false" />
+						<output resource="manganese" rate="2.0" ambient="false" />						
 						<output resource="sodium oxide" rate="5.0" ambient="false" />
 						<output resource="potassium" rate="3.0" ambient="false" />
 						<output resource="titanium" rate="3.0" ambient="false" />
@@ -1623,13 +1646,15 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 						<output resource="sand" rate="5.0" ambient="false" />
 						<output resource="grey water" rate="10.0" ambient="false" />
 				</process>
-			
+
+
 				<process name="extract minerals from smectite deposits" number-modules="3" 
 					power-required="0.2" default="off">
 						<input resource="smectite" rate="50.0" ambient="false" />
 						<output resource="aluminum oxide" rate="9.0" ambient="false" />
 						<output resource="lithium" rate="0.5" ambient="false" />
 						<output resource="magnesium" rate="4.0" ambient="false" />
+						<output resource="manganese" rate="2.0" ambient="false" />						
 						<output resource="sodium oxide" rate="2.0" ambient="false" />
 						<output resource="potassium" rate="2.0" ambient="false" />
 						<output resource="calcium" rate="4.0" ambient="false" />
@@ -1638,7 +1663,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 						<output resource="sand" rate="10.0" ambient="false" />
 						<output resource="grey water" rate="2.0" ambient="false" />
 				</process>
-			
+
+
 				<process name="extract minerals from allophane deposits" number-modules="3"
 					power-required="0.2" default="off">
 						<input resource="allophane" rate="50.0" ambient="false" />
@@ -1647,14 +1673,18 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 						<output resource="sand" rate="6.0" ambient="false" />
 						<output resource="grey water" rate="10.0" ambient="false" />
 				</process>
-			
+
+				<!-- http://www.handbookofmineralogy.org/pdfs/akaganeite.pdf 
+					https://agupubs.onlinelibrary.wiley.com/doi/pdf/10.1029/2018JE005630 -->
 				<process name="extract minerals from akaganeite deposits" number-modules="3" 
 					power-required="0.2" default="off">
 						<input resource="akaganeite" rate="50.0" ambient="false" />
-						<output resource="iron oxide" rate="20.0" ambient="false" />
+						<output resource="iron oxide" rate="29.0" ambient="false" />
+						<output resource="manganese" rate="0.2" ambient="false" />						
 						<output resource="iron hydroxide" rate="10.0" ambient="false" />
-						<output resource="iron chloride" rate="10.0" ambient="false" />
-						<output resource="grey water" rate="6.0" ambient="false" />
+						<output resource="iron chloride" rate="2.0" ambient="false" />
+						<output resource="potash lye" rate="0.1" ambient="false" />
+						<output resource="grey water" rate="1.0" ambient="false" />
 				</process>
 			
 				<process name="extract minerals from bassanite deposits" number-modules="3" 
@@ -1685,6 +1715,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="glass" rate="15.0" ambient="false" />	
 				</process>
 
+
 				<!-- Process for reducing gypsum to calcium carbonate using carbon. -->
 				<!-- Wrapping two processes: -->
 				<!-- CaSO4*2H2O (gypsum) + 2C -> CaS + 2CO2 + 2H2O -->
@@ -1700,11 +1731,13 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					</description>
 					<input resource="gypsum" rate="50.0" ambient="false" />
 					<input resource="carbon" rate="7.0" ambient="false" />
-					
-					<output resource="calcium carbonate" rate="29.0" ambient="false" />
+
+					<output resource="calcium sulfate" rate="2.0" ambient="false" />
+					<output resource="calcium carbonate" rate="27.0" ambient="false" />
 					<output resource="carbon dioxide" rate="12.7" ambient="true" />
 					<output resource="grey water" rate="5.2" ambient="false" />
 				</process>
+
 
 				<process name="reduce gypsum to calcium carbonate with carbon monoxide" number-modules="3"
 					power-required=".1" default="off">
@@ -1718,11 +1751,13 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<input resource="gypsum" rate="50.0" ambient="false" />
 					<input resource="carbon monoxide" rate="32.5" ambient="false" />
 					
-					<output resource="calcium carbonate" rate="29.0" ambient="false" />
+					<output resource="calcium sulfate" rate="2.0" ambient="false" />
+					<output resource="calcium carbonate" rate="27.0" ambient="false" />
 					<output resource="carbon dioxide" rate="38.1" ambient="true" />
 					<output resource="grey water" rate="5.2" ambient="false" />
 				</process>
-		
+
+
 				<process name="reduce gypsum to calcium carbonate with hydrogen" number-modules="3"
 					power-required=".1" default="off">
 					<description>
@@ -1735,10 +1770,12 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<input resource="gypsum" rate="50.0" ambient="false" />
 					<input resource="hydrogen" rate="2.3" ambient="false" />
 					<input resource="carbon dioxide" rate="12.8" ambient="true" />
-					
-					<output resource="calcium carbonate" rate="29.0" ambient="false" />
+
+					<output resource="calcium sulfate" rate="2.0" ambient="false" />					
+					<output resource="calcium carbonate" rate="27.0" ambient="false" />
 					<output resource="grey water" rate="26.0" ambient="false" />
 				</process>
+			
 			
 				<process name="make quartz from silica" number-modules="2"
 					power-required="1.0" default="off">
@@ -1765,6 +1802,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="sodium carbonate" rate="5.0" ambient="false" />
 				</process>
 
+
 				<process name="make cement" number-modules="5"
 					power-required=".5" default="off">
 					<input resource="regolith" rate="35.0" ambient="false" />
@@ -1775,6 +1813,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 					<output resource="cement" rate="5.0" ambient="false" />
 				</process>
+
 
 				<process name="mix sulfur concrete" number-modules="5"
 					power-required="1.0" default="off">
@@ -1801,6 +1840,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 					<output resource="concrete" rate="120.0" ambient="false" />
 				</process>
+
 
 				<!-- Same as concrete mixing but using lime in place of cement. -->
 				<process name="mix limecrete" number-modules="5"
@@ -1837,6 +1877,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="concrete" rate="71.0" ambient="false" />
 				</process>
 
+
 				<process name="produce ethylene" number-modules="2"
 					power-required="0.1" default="off">
 					<description>
@@ -1850,7 +1891,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="grey water" rate="64.2" ambient="false" />
 					<output resource="iron powder" rate="0.05" ambient="false" />
 				</process>
-						
+
+	
 				<process name="produce polyethylene" number-modules="50"
 					power-required="0.05" default="off">
 					<description>
@@ -1861,6 +1903,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<input resource="ethylene" rate="5.0" ambient="false" />
 					<output resource="polyethylene" rate="4.5" ambient="false" />
 				</process>
+
 
 				<process name="produce styrene" number-modules="20"
 					power-required=".05" default="off">
@@ -1878,12 +1921,14 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="carbon monoxide" rate="24.97" ambient="false" />
 					<output resource="styrene" rate="30.95" ambient="false" />
 				</process>
-					
+
+
 				<process name="produce polystyrene" number-modules="10"
 					power-required=".05" default="off">
 					<input resource="styrene" rate="5" ambient="false" />
 					<output resource="polystyrene" rate="5" ambient="false" />
 				</process>
+
 
 				<process name="bake calcium carbonate to lime" 
 					power-required=".1"  default="off">
