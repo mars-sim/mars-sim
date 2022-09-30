@@ -226,6 +226,19 @@ public class EatDrink extends Task {
 			        	}
 					}
 				}
+				else {
+					ResourceHolder rh = (ResourceHolder) person.getSettlement();
+					foodAmount = rh.getAmountResourceStored(FOOD_ID);
+					waterAmount = rh.getAmountResourceStored(WATER_ID);
+					
+					if (hungry && (foodAmount > 0 || desserts > 0)) {
+						food = true;
+					}
+
+					if (thirsty && waterAmount > 0) {
+						water = true;
+					}
+				}
 			}
 			
 			else {
