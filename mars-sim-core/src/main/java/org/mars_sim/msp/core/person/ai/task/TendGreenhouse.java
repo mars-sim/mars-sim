@@ -427,14 +427,13 @@ public class TendGreenhouse extends Task implements Serializable {
 		double workTime = time * mod;
 		
 		if (cropSpec == null) {
+			
 			cropSpec = greenhouse.selectSeedling();
+			
 			if (cropSpec != null) {
 				printDescription(Msg.getString("Task.description.tendGreenhouse.plant.detail", cropSpec.getName()));
 			}
 			else {
-				// Can't find any matured crop to sample
-				logger.log(greenhouse.getBuilding(), worker, Level.INFO, 20_000, 
-						"Can't find matured crops to sample in botany lab.");
 				// Find another task
 				selectTask();
 				
@@ -443,16 +442,20 @@ public class TendGreenhouse extends Task implements Serializable {
 			
 			printDescription(Msg.getString("Task.description.tendGreenhouse.transfer"));
 
-			
 			addExperience(workTime);
 	
 		}
 		
-		else if (getDuration() <= (getTimeCompleted() + time)) {
+		else if (greenhouse.getNumCrops2Plant() > 0 && getDuration() <= (getTimeCompleted() + time)) {
 			greenhouse.plantSeedling(cropSpec, getTimeCompleted() + time, worker);
 			printDescription("Planting " + cropSpec + ".");
 				
 			addExperience(workTime);
+		}
+		
+		else {
+			// Find another task
+			selectTask();
 		}
 		
 		return 0;
@@ -482,8 +485,8 @@ public class TendGreenhouse extends Task implements Serializable {
 			}
 			else {
 				// Can't find any matured crop to sample
-				logger.log(greenhouse.getBuilding(), worker, Level.INFO, 20_000, 
-						"Can't find matured crops to sample in botany lab.");
+//				logger.log(greenhouse.getBuilding(), worker, Level.INFO, 20_000, 
+//						"Can't find matured crops to sample in botany lab.");
 				// Find another task
 				selectTask();
 				

@@ -328,7 +328,10 @@ implements UnitListener, MonitorModel, UnitManagerListener {
     	}
     	else if (id < ResourceUtil.FIRST_VEHICLE_RESOURCE_ID) {
     		// For Item Resource
-    		return settlement.getItemResourceStored(id) * ItemResourceUtil.findItemResource(id).getMassPerItem();
+    		if (ItemResourceUtil.findItemResource(id) != null) {
+    			return settlement.getItemResourceStored(id) * ItemResourceUtil.findItemResource(id).getMassPerItem();
+    		}
+    			return 0;
     	}
     	else if (id < ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID) {
     		// For Vehicle

@@ -137,12 +137,19 @@ public class ResupplyConfig implements Serializable {
 	            List<Element> resourceNodes = resupplyElement.getChildren(RESOURCE);
 	            for (Element resourceElement : resourceNodes) {
 	                String resourceName = resourceElement.getAttributeValue(NAME);
-	                //System.out.println("resourceName is " + resourceName);
+
 	                AmountResource resource = ResourceUtil.findAmountResource(resourceName);
+	                if (resource == null) {
+	                	throw new IllegalStateException(
+								"ResupplyConfig detected a null resource entry in resupply.xml. resourceName: " + resourceName);
+	                }
+	                
 	                double resourceAmount = Double.parseDouble(resourceElement
 	                        .getAttributeValue(AMOUNT));
+	                
 	                if (template.resources.containsKey(resource))
 	                    resourceAmount += template.resources.get(resource);
+	                
 	                template.resources.put(resource, resourceAmount);
 	            }
 	

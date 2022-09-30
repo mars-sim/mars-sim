@@ -86,29 +86,33 @@
 	<resource name="carrot" type="crop" phase="solid" edible="true"></resource>
 	<resource name="celery" type="crop" phase="solid" edible="true"></resource>
 	<resource name="corn" type="crop" phase="solid" edible="true"></resource>
+	
 	<resource name="cranberry" type="crop" phase="solid" edible="true"></resource>
 	<resource name="cucumber" type="crop" phase="solid" edible="true"></resource>
 	<resource name="garlic" type="crop" phase="solid" edible="true"></resource>
 	<resource name="ginger" type="crop" phase="solid" edible="true"></resource>
 	<resource name="green bell pepper" type="crop" phase="solid" edible="true"></resource>
-	<resource name="spring onion" type="crop" phase="solid" edible="true"></resource>
+	
 	<resource name="kidney bean" type="crop" phase="solid" edible="true"></resource>
 	<resource name="lettuce" type="crop" phase="solid" edible="true"></resource>
 	<resource name="morel mushroom" type="crop" phase="solid" edible="true"></resource>
-	<resource name="white mustard" type="crop" phase="solid" edible="true"></resource>
 	<resource name="peanut" type="crop" phase="solid" edible="true"></resource>
 	<resource name="peas" type="crop" phase="solid" edible="true"></resource>
+	
 	<resource name="potato" type="crop" phase="solid" edible="true"></resource>
 	<resource name="quinoa" type="crop" phase="solid" edible="true">A nutritious grain
 		having most amino acids</resource>
 	<resource name="radish" type="crop" phase="solid" edible="true"></resource>
 	<resource name="red beet" type="crop" phase="solid" edible="true"></resource>
 	<resource name="rice" type="crop" phase="solid" edible="true"></resource>
+	
 	<resource name="sesame" type="crop" phase="solid" edible="true">A flowering plant--
 		source of sesame seeds</resource>
 	<resource name="soybean" type="crop" phase="solid" edible="true">Soybean seeds.</resource>
+	<resource name="spring onion" type="crop" phase="solid" edible="true"></resource>
 	<resource name="strawberry" type="crop" phase="solid" edible="true"></resource>
 	<resource name="sugarcane" type="crop" phase="solid" edible="true"></resource>
+	
 	<resource name="sweet potato" type="crop" phase="solid" edible="true"></resource>
 	<resource name="swiss chard" type="crop" phase="solid" edible="true"></resource>
 	<resource name="taro" type="crop" phase="solid" edible="true"></resource>
@@ -116,6 +120,8 @@
 	<resource name="wheat" type="crop" phase="solid" edible="true">Wheat Kernels are
 		seeds harvested from wheat crop. The kernel is the whole grain, made up of 3
 		edible parts – bran, germ, and endosperm – protected by an inedible husk </resource>
+		
+	<resource name="white mustard" type="crop" phase="solid" edible="true"></resource>		
 	<resource name="white onion" type="crop" phase="solid" edible="true"></resource>
 	<resource name="yam" type="crop" phase="solid" edible="true"></resource>
 
@@ -124,9 +130,9 @@
 		 http://extension.psu.edu/plants/green-industry/news/2014/tissue-culture-finishing-for-greenhouse-growers-stage-iii-stage-iv -->
 
 <!-- Seeds from Crop Produce -->
-	<resource name="mustard seed" type="crop" phase="solid" edible="true">
+	<resource name="mustard seed" type="derived" phase="solid" edible="true">
 		Seeds from white mustard plant</resource>
-	<resource name="sesame seed" type="crop" phase="solid" edible="true">
+	<resource name="sesame seed" type="derived" phase="solid" edible="true">
 		Seeds from sesame plant.</resource>
 
 <!-- Soybean-derived food resources -->

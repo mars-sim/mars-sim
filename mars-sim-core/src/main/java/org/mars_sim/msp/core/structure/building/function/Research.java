@@ -304,9 +304,9 @@ implements Lab {
 			if (amount > 0.5) {
 				String tissueName = cropName + Farming.TISSUE;
 				int tissueID = ResourceUtil.findIDbyAmountResourceName(tissueName);
-				building.getFarming().store(0.5, tissueID, "Farming::growCropTissue");
+				building.getFarming().store(Farming.LOW_AMOUNT_TISSUE_CULTURE, tissueID, "Farming::growCropTissue");
 				logger.log(building, worker, Level.INFO, 10_000,  
-						"Extracted 0.5 kg " + tissueName + " in Botany lab.");
+						"Harvested 0.5 kg " + tissueName + " in Botany lab.");
 				return true;
 			}
 		}

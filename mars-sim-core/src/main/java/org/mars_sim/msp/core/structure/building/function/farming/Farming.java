@@ -60,7 +60,8 @@ public class Farming extends Function {
 	private static final int SOIL_ID = ResourceUtil.soilID;
 	private static final int FERTILIZER_ID = ResourceUtil.fertilizerID;
 	
-	private static final double LOW_AMOUNT_TISSUE_CULTURE = 0.5;
+	public static final double LOW_AMOUNT_TISSUE_CULTURE = 0.5;
+	public static final double CROP_AMOUNT_FOR_TISSUE_EXTRACTION = 0.5;
 	/** The average temperature tolerance of a crop [in C]. */
 	private static final double T_TOLERANCE = 3D;
 	/** The amount of crop tissue culture needed for each square meter of growing area. */
@@ -251,6 +252,8 @@ public class Farming extends Function {
 				.getAllAmountResourceOwned(c.getCropID()) > amount)
 				.collect(Collectors.toList());
 			
+//		logger.log(getBuilding(), Level.INFO, 0, "list: " + list);
+		
 		List<AmountResource> tissues = new ArrayList<>();
 		
 		for (CropSpec c: list) {
@@ -262,21 +265,51 @@ public class Farming extends Function {
 				tissues.add(tissue);
 		}
 	
-		String tissueName = null;
-		double amountTissue = 0;
+//		logger.log(getBuilding(), Level.INFO, 0, "tissues: " + tissues);
 		
+		String cropName = null;
+
 		for (AmountResource ar: tissues) {
-			double amountT = building.getSettlement().getAmountResourceStored(ar.getID());
-			if (amountTissue == 0 || amountT < amountTissue) {
-				amountTissue = amountT;
-				tissueName = ar.getName();
+			if (cropName == null) {
+				String tissueName = ar.getName();
+				cropName = tissueName.replace(" tissue", "");
+				int cropId = ResourceUtil.findIDbyAmountResourceName(cropName);
+				double amountCrop = building.getSettlement().getAmountResourceStored(cropId);
+				if (amountCrop > CROP_AMOUNT_FOR_TISSUE_EXTRACTION) {
+					building.getSettlement().retrieveAmountResource(cropId, CROP_AMOUNT_FOR_TISSUE_EXTRACTION);
+					break;
+				}
+				else
+					cropName = null;
+			}
+		}
+	
+		if (cropName != null) {
+			logger.log(getBuilding(), Level.INFO, 0, "cropName: " + cropName);
+			return cropName;
+		}
+		else {	
+			String selectedTissueName = null;
+			int selectedTissueid = 0;
+			double selectedTissueAmount = 0;
+			
+			for (AmountResource ar: tissues) {
+				double tissueAmount = building.getSettlement().getAmountResourceStored(ar.getID());
+				if (tissueAmount <= selectedTissueAmount) {
+					selectedTissueAmount = tissueAmount;
+					selectedTissueName = ar.getName();
+					selectedTissueid = ar.getID();
+				}
+			}
+			
+			if (selectedTissueName != null) {
+				building.getSettlement().retrieveAmountResource(selectedTissueid, STANDARD_AMOUNT_TISSUE_CULTURE);
+				logger.log(getBuilding(), Level.INFO, 0, "selectedTissueName: " + selectedTissueName);
+				return selectedTissueName.replace(" tissue", "");
 			}
 		}
 		
-		if (tissueName != null)
-			tissueName = tissueName.replace(Farming.TISSUE, "");
-		
-		return tissueName;
+		return null;
 	}
 	
 	/**

@@ -86,7 +86,7 @@ public class AmountResourceConfig implements Serializable {
 
 				Boolean edible = Boolean.parseBoolean(resourceElement.getAttributeValue(EDIBLE));
 
-				AmountResource resource = new AmountResource(nextID, name, goodType, description, phaseType, demand, lifeSupport, edible);
+				AmountResource resource = new AmountResource(nextID++, name, goodType, description, phaseType, demand, lifeSupport, edible);
 
 				if (phaseString == null || phaseType == null)
 					throw new IllegalStateException(
@@ -101,14 +101,13 @@ public class AmountResourceConfig implements Serializable {
 				resourceSet.add(resource);
 
 				if (goodType != null && goodType == GoodType.CROP) {
-					nextID++;
 					
 					// Create a tissue culture object for each crop.
 					// Note: may set edible to true
 					// Assume the demand multiplier of a crop tissue is twice as much
 					AmountResource tissue = new AmountResource(nextID, (name + " " + TISSUE), GoodType.TISSUE,
 							description, phaseType, demand * 2, lifeSupport, false);
-					tissueCultureSet.add(nextID);
+					tissueCultureSet.add(nextID++);
 
 					for (AmountResource r: resourceSet) {
 						if (r.getName().equalsIgnoreCase(tissue.getName()))

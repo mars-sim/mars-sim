@@ -44,47 +44,50 @@
 		<!-- Crop related -->
 	    <resource name="fertilizer" amount="50.0" />
 	
-	    <!-- Crop -->
-	    <resource name="Blueberry" amount="50.0" />
-	    <resource name="Cabbage" amount="50.0" />
-	    <resource name="Carrot" amount="50.0" />
-	    <resource name="Celery" amount="50.0" />
-	    <resource name="Corn" amount="50.0" />
+	    <!-- Crop tissues -->
+	    <resource name="blueberry tissue" amount="1.0" />
+	    <resource name="cabbage tissue" amount="1.0" />
+	    <resource name="carrot tissue" amount="1.0" />
+	    <resource name="celery tissue" amount="1.0" />
+	    <resource name="corn tissue" amount="1.0" />
 	
-	    <resource name="Cranberry" amount="50.0" />
-	    <resource name="Cucumber" amount="50.0" />
-	    <resource name="Garlic" amount="50.0" />
-	    <resource name="Ginger" amount="50.0" />
-	    <resource name="Green Bell Pepper" amount="50.0" />
+	    <resource name="cranberry tissue" amount="1.0" />
+	    <resource name="cucumber tissue" amount="1.0" />
+	    <resource name="garlic tissue" amount="1.0" />
+	    <resource name="ginger tissue" amount="1.0" />
+	    <resource name="green bell pepper tissue" amount="1.0" />
 	
-	    <resource name="Spring Onion" amount="50.0" />
-	    <resource name="Kidney Bean" amount="50.0" />
-	    <resource name="Lettuce" amount="50.0" />
-	    <resource name="Peanut" amount="50.0" />
-	    <resource name="Peas" amount="50.0" />
-	
-	    <resource name="Potato" amount="50.0" />
-	    <resource name="Quinoa" amount="50.0" />
-	    <resource name="Rice" amount="50.0" />
-	    <resource name="Soybean" amount="50.0" />
-	    <resource name="Strawberry" amount="50.0" />
-	
-	    <resource name="Sugarcane" amount="50.0" />
-	    <resource name="Swiss Chard" amount="50.0" />
-	    <resource name="Taro" amount="50.0" />
-	    <resource name="Tomato" amount="50.0" />
-	    <resource name="Wheat" amount="50.0" />
+	    <resource name="kidney bean tissue" amount="1.0" />
+	    <resource name="lettuce tissue" amount="1.0" />
+	    <resource name="morel mushroom tissue" amount="1.0" />
+	    <resource name="peanut tissue" amount="1.0" />
+	    <resource name="peas tissue" amount="1.0" />
 	    
-	    <resource name="White Rice" amount="50.0" />
-	    <resource name="White Onion" amount="50.0" />
-	    <resource name="Yam" amount="50.0" />
-	    <resource name="morel mushroom" amount="50.0" />
-	    <resource name="radish" amount="50.0" />
+	    <resource name="potato tissue" amount="1.0" />
+	    <resource name="quinoa tissue" amount="1.0" />
+	    <resource name="radish tissue" amount="1.0" />	    
+	    <resource name="red beet tissue" amount="1.0" />
+	    <resource name="rice tissue" amount="1.0" />
 	    
-	    <resource name="red beet" amount="50.0" />
-	    <resource name="sweet potato" amount="50.0" />
-	    <resource name="Mustard Seed" amount="50.0" />
-	    <resource name="Sesame Seed" amount="50.0" />
+	    <resource name="sesame tissue" amount="1.0" />	    
+	    <resource name="soybean tissue" amount="1.0" />
+	   	<resource name="spring onion tissue" amount="1.0" />
+	    <resource name="strawberry tissue" amount="1.0" />
+	    <resource name="sugarcane tissue" amount="1.0" />
+	    
+	   	<resource name="sweet potato tissue" amount="1.0" />
+	    <resource name="swiss chard tissue" amount="1.0" />
+	    <resource name="taro tissue" amount="1.0" />
+	    <resource name="tomato tissue" amount="1.0" />
+	    <resource name="wheat tissue" amount="1.0" />
+	    
+	    <resource name="white mustard tissue" amount="1.0" />
+	    <resource name="white onion tissue" amount="1.0" />
+	    <resource name="yam tissue" amount="1.0" />
+	    
+	    <!-- Seeds -->
+	    <resource name="mustard seed" amount="50.0" />
+	    <resource name="sesame seed" amount="50.0" />
 	
 	    <!-- Food Derived Items -->
 	    <resource name="mustard" amount="50.0" />
