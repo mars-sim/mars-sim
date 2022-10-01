@@ -21,7 +21,7 @@ import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Rover;
 
-public abstract class EVAMission extends RoverMission {
+abstract class EVAMission extends RoverMission {
 
 	private static final long serialVersionUID = 1L;
 
@@ -41,6 +41,9 @@ public abstract class EVAMission extends RoverMission {
 	private int containerID;
 	private int containerNum;
 
+	// Does these EVA work in the dark?
+	private boolean ignoreSunlight;
+
     protected EVAMission(MissionType missionType, 
             Worker startingPerson, Rover rover,
             MissionPhase evaPhase) {
@@ -55,6 +58,9 @@ public abstract class EVAMission extends RoverMission {
 		}
     }
 
+	protected void setIgnoreSunlight(boolean newIgnore) {
+		ignoreSunlight = newIgnore;
+	}
     
 	@Override
 	protected boolean determineNewPhase() {
@@ -133,7 +139,7 @@ public abstract class EVAMission extends RoverMission {
 	 * @return
 	 */
 	protected boolean isEnoughSunlightForEVA() {
-		return EVAOperation.isEnoughSunlightForEVA(getCurrentMissionLocation());
+		return ignoreSunlight || EVAOperation.isEnoughSunlightForEVA(getCurrentMissionLocation());
 	}
 
 	/**

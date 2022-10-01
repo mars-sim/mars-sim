@@ -92,7 +92,8 @@ public class Mining extends EVAMission
 
 		// Use RoverMission constructor.
 		super(MissionType.MINING, startingPerson, null, MINING_SITE);
-		
+		setIgnoreSunlight(true);
+
 		if (!isDone()) {
 			// Initialize data members.
 			excavatedMinerals = new HashMap<>(1);
@@ -106,15 +107,15 @@ public class Mining extends EVAMission
 			Settlement s = getStartingSettlement();
 			
 			// Determine mining site.
-			try {
-				if (hasVehicle()) {
-					miningSite = determineBestMiningSite(getRover(), s);
-					miningSite.setReserved(true);
-					addNavpoint(miningSite.getLocation(), "mining site");
+			if (hasVehicle()) {
+				miningSite = determineBestMiningSite(getRover(), s);
+				if (miningSite == null) {
+					logger.severe(startingPerson, "Mining site could not be determined.");
+					endMission(MINING_SITE_NOT_BE_DETERMINED);
+					return;
 				}
-			} catch (Exception e) {
-				logger.severe(startingPerson, "Mining site could not be determined.", e);
-				endMission(MINING_SITE_NOT_BE_DETERMINED);
+				miningSite.setReserved(true);
+				addNavpoint(miningSite.getLocation(), "mining site");
 			}
 
 			// Add home settlement
@@ -151,7 +152,8 @@ public class Mining extends EVAMission
 
 		// Use RoverMission constructor.,  
 		super(MissionType.MINING, (Worker) members.toArray()[0], rover, MINING_SITE);
-		
+		setIgnoreSunlight(true);
+
 		// Initialize data members.
 		this.miningSite = miningSite;
 		miningSite.setReserved(true);
@@ -431,9 +433,7 @@ public class Mining extends EVAMission
 					// Only mine from sites explored from home settlement.
 					Settlement owner = site.getSettlement();
 					if ((owner == null) || homeSettlement.equals(site.getSettlement())) {
-						Coordinates siteLocation = site.getLocation();
-						Coordinates homeLocation = homeSettlement.getCoordinates();
-						if (Coordinates.computeDistance(homeLocation, siteLocation) <= range) {
+						if (homeSettlement.getCoordinates().getDistance(site.getLocation()) <= range) {
 							double value = getMiningSiteValue(site, homeSettlement);
 							if (value > bestValue) {
 								result = site;
