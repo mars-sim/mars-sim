@@ -10,6 +10,7 @@ import java.util.AbstractMap.SimpleEntry;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
@@ -23,6 +24,7 @@ import org.mars_sim.msp.core.person.ai.task.RepairInsideMalfunction;
 import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
+import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -33,6 +35,9 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  */
 public class RepairInsideMalfunctionMeta extends MetaTask {
 
+	/** default logger. */
+	private static SimLogger logger = SimLogger.getLogger(RepairInsideMalfunctionMeta.class.getName());
+	
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.repairMalfunction"); //$NON-NLS-1$
@@ -78,9 +83,9 @@ public class RepairInsideMalfunctionMeta extends MetaTask {
     }
 
 
-    private double computeProbability(Settlement settlement, Unit unit) {
+    private double computeProbability(Settlement settlement, Worker worker) {
 
-		if (unit.getSettlement().canRetrieveMalfunctionPair()) {
+		if (worker.getSettlement().canRetrieveMalfunctionPair()) {
 			return CAP;
 		}
     	
@@ -130,10 +135,14 @@ public class RepairInsideMalfunctionMeta extends MetaTask {
             }
         }
         
-        // Create the malfunction pair for storage
-		SimpleEntry<Malfunction, Malfunctionable> highestScorePair = new SimpleEntry<>(highestScoreMalfunction, highestScoreEntity);
-        // Save the malfunction pair in the settlement
-        settlement.saveMalfunctionPair(highestScorePair);
+        if (result > 0 && highestScoreMalfunction !=  null && highestScoreEntity != null) {
+	        // Create the malfunction pair for storage
+			SimpleEntry<Malfunction, Malfunctionable> highestScorePair = new SimpleEntry<>(highestScoreMalfunction, highestScoreEntity);
+	        // Save the malfunction pair in the settlement
+	        settlement.saveMalfunctionPair(highestScorePair);
+	        
+	        logger.info(worker, "mal: " + highestScoreMalfunction);
+        }
         
         return result;
     }
@@ -148,14 +157,13 @@ public class RepairInsideMalfunctionMeta extends MetaTask {
     	double result = 0D;
 		if (!malfunction.isWorkDone(MalfunctionRepairWork.INSIDE)
 				&& (malfunction.numRepairerSlotsEmpty(MalfunctionRepairWork.INSIDE) > 0)) {
-	        result = WEIGHT + ((WEIGHT * malfunction.getSeverity()) / 100D);
+	        result = ((WEIGHT * malfunction.getSeverity()) / 100D);
+	        
+	        if (RepairHelper.hasRepairParts(settlement, malfunction)) {
+	    		result *= 2;
+	    	}
 		}
-    	if (RepairHelper.hasRepairParts(settlement, malfunction)) {
-    		result += 100;
-    	}
-    	else {
-    		result += 50;
-    	}
+    	
 		return result;
     }
     
