@@ -586,4 +586,18 @@ public class Delivery extends DroneMission implements CommerceMission {
 	public Settlement getTradingSettlement() {
 		return tradingSettlement;
 	}
+
+	
+	/**
+	 * If the mission is in the UNLOAD_GOODS phase at the trading settlement
+	 * then it can be unloaded.
+	 */
+	@Override
+	public boolean isVehicleUnloadableHere(Settlement settlement) {
+		if (UNLOAD_GOODS.equals(getPhase())
+					&& settlement.equals(tradingSettlement)) {
+			return true;
+		}
+		return super.isVehicleUnloadableHere(settlement);
+	}
 }
