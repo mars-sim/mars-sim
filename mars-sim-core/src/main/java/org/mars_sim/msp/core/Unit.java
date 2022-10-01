@@ -446,7 +446,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	 *
 	 * @param newContainer the unit to contain this unit.
 	 */
-	public void setContainerUnit(Unit newContainer) {
+	protected void setContainerUnit(Unit newContainer) {
 		if (newContainer != null && newContainer.equals(getContainerUnit())) {
 			return;
 		}

@@ -196,6 +196,8 @@ public class Trade extends RoverMission implements CommerceMission {
 					endMission(CANNOT_LOAD_RESOURCES);
 				}
 				else {
+					// Start the loading
+					prepareLoadingPlan(tradingSettlement);
 					setPhase(LOAD_GOODS, tradingSettlement.getName());
 				}
 			}
@@ -338,9 +340,6 @@ public class Trade extends RoverMission implements CommerceMission {
 					new NavPoint(getStartingSettlement(), tradingSettlement.getCoordinates()));
 
 			getStartingSettlement().getGoodsManager().clearDeal(MissionType.TRADE);
-
-			// Start the loading
-			prepareLoadingPlan(tradingSettlement);
 		}
 	}
 
@@ -493,8 +492,12 @@ public class Trade extends RoverMission implements CommerceMission {
 			BuildingManager.removeFromGarage(v);
 
 			// Embark from settlement
-			tradingSettlement.removeParkedVehicle(v);
-			setPhaseEnded(true);
+			if (v.transfer(unitManager.getMarsSurface())) {
+				setPhaseEnded(true);
+			}
+			else {
+				endMissionProblem(v, "Could not transfer to Surface");
+			}			
 		}
 	}
 

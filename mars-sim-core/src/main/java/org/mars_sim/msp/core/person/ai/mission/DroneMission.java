@@ -66,65 +66,26 @@ public abstract class DroneMission extends AbstractVehicleMission {
 	 * @throws Exception if error finding vehicles.
 	 */
 	public static Drone getDroneWithGreatestRange(MissionType missionType, Settlement settlement, boolean allowMaintReserved) {
-		Drone result = null;
+		Drone bestDrone = null;
+		double bestRange = 0D;
 
-		Iterator<Drone> i = settlement.getParkedDrones().iterator();
-		while (i.hasNext()) {
-			Drone drone = i.next();
+		for(Drone drone : settlement.getParkedDrones()) {
 
 			boolean usable = !drone.isReservedForMission();
-
-            if (!allowMaintReserved && drone.isReserved())
-				usable = false;
-
-			usable = drone.isVehicleReady();
-
-			if (drone.getStoredMass() > 0D)
-				usable = false;
+            usable = usable && (allowMaintReserved || !drone.isReserved());
+			usable = usable && drone.isVehicleReady();
+			usable = usable && (drone.getStoredMass() == 0);
 
 			if (usable) {
-				if (result == null)
-					// so far, this is the first vehicle being picked
-					result = drone;
-				else if (drone.getRange(missionType) > result.getRange(missionType))
-					// This vehicle has a better range than the previously selected vehicle
-					result = drone;
+				double range = drone.getRange(missionType);
+				if ((bestDrone == null) || (bestRange > range)) {
+					bestDrone = drone;
+					bestRange = range;
+				}
 			}
 		}
 
-		return result;
-	}
-
-	/**
-	 * Checks to see if any drones are available at a settlement.
-	 *
-	 * @param settlement         the settlement to check.
-	 * @param allowMaintReserved allow drones that are reserved for maintenance.
-	 * @return true if drones are available.
-	 */
-	public static boolean areDronesAvailable(Settlement settlement, boolean allowMaintReserved) {
-
-		boolean result = false;
-
-		Iterator<Drone> i = settlement.getParkedDrones().iterator();
-		while (i.hasNext()) {
-			Drone drone = i.next();
-
-			boolean usable = !drone.isReservedForMission();
-
-            if (!allowMaintReserved && drone.isReserved())
-				usable = false;
-
-			usable = drone.isVehicleReady();
-
-			if (drone.getStoredMass() > 0D)
-				usable = false;
-
-			if (usable)
-				result = true;
-		}
-
-		return result;
+		return bestDrone;
 	}
 
 	/**
@@ -279,7 +240,7 @@ public abstract class DroneMission extends AbstractVehicleMission {
 					setPhaseEnded(true);
 				}
 				else {
-					endMissionProblem(v, "Could not enter Settlement");
+					endMissionProblem(v, "Could not transfer to Surface");
 				}
 			}
 		}

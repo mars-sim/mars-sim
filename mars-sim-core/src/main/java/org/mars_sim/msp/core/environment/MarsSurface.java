@@ -122,6 +122,10 @@ public class MarsSurface extends Unit implements Serializable {
 	 */
 	public boolean addVehicle(Vehicle vehicle) {
 		synchronized (vehicleList) {
+			// There is a bug somewhere because Drones in Delivery remianing on the Surface
+			if (vehicleList.contains(vehicle)) {
+				return true;
+			}
 			return vehicleList.add(vehicle);
 		}
 	}

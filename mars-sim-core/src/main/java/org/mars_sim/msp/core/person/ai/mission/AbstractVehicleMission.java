@@ -318,13 +318,6 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	}
 
 	/**
-	 * Clears the current loading plan.
-	 */
-	protected void clearLoadingPlan() {
-		loadingPlan = null;
-	}
-
-	/**
 	 * Sets the vehicle for this mission.
 	 *
 	 * @param newVehicle the vehicle to use.

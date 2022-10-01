@@ -181,7 +181,8 @@ public class Delivery extends DroneMission implements CommerceMission {
 
 			else if (UNLOAD_GOODS.equals(getPhase())) {
 				if (isVehicleLoadable()) {
-					clearLoadingPlan(); // Clear the original loading plan
+					// Start the loading
+					prepareLoadingPlan(tradingSettlement);
 					setPhase(LOAD_GOODS, tradingSettlement.getName());
 				}
 				else {
@@ -313,6 +314,9 @@ public class Delivery extends DroneMission implements CommerceMission {
 					new NavPoint(tradingSettlement, null),
 					new NavPoint(getStartingSettlement(), tradingSettlement.getCoordinates()));
 			getStartingSettlement().getGoodsManager().clearDeal(MissionType.DELIVERY);
+
+			// Start the loading can't do this before the unload
+			//prepareLoadingPlan(tradingSettlement);
 		}
 	}
 
@@ -379,11 +383,16 @@ public class Delivery extends DroneMission implements CommerceMission {
 			}
 
 			// If the rover is in a garage, put the rover outside.
-			BuildingManager.removeFromGarage(getVehicle());
+			Vehicle v = getVehicle();
+			BuildingManager.removeFromGarage(v);
 
 			// Embark from settlement
-			tradingSettlement.removeParkedVehicle(getVehicle());
-			setPhaseEnded(true);
+			if (v.transfer(unitManager.getMarsSurface())) {
+				setPhaseEnded(true);
+			}
+			else {
+				endMissionProblem(v, "Could not transfer to Surface");
+			}
 		}
 	}
 
