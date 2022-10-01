@@ -460,11 +460,11 @@ public class RadiationExposure implements Serializable, Temporal {
 				else
 					shield_factor = 1; // arbitrary
 
-				int region = RandomUtil.getRandomInt(6);
-				if (region == 0 || region == 1)
-					bodyRegionType = BodyRegionType.BFO;
-				else if (region == 2)
+				int rand = RandomUtil.getRandomInt(10);
+				if (rand == 0)
 					bodyRegionType = BodyRegionType.OCULAR;
+				else if (rand <= 3)
+					bodyRegionType = BodyRegionType.BFO;
 				else
 					bodyRegionType = BodyRegionType.SKIN;
 				
@@ -515,39 +515,38 @@ public class RadiationExposure implements Serializable, Temporal {
 
 				exposure = sep + gcr + baseline;
 				totalExposure += exposure;
-			}
+				
+				if (totalExposure > 0 && rad != null) {
+					String str = EXPOSED_TO + Math.round(totalExposure * 10000.0) / 10000.0
+								+ DOSE_OF_RAD;
 
-			if (totalExposure > 0 && rad != null) {
-				String str = EXPOSED_TO + Math.round(totalExposure * 10000.0) / 10000.0
-							+ DOSE_OF_RAD;
+					if (person.getVehicle() == null)
+						// if a person steps outside of the vehicle
+						logger.info(person, str + EVA_OPERATION);
+					else {
+						String activity = "";
+						if (person.getMind().getMission() != null)
+							activity = person.getMind().getMission().getName();
+						else
+							activity = person.getTaskDescription();
+						logger.info(person, str + " while " + activity);
+					}
 
-				if (person.getVehicle() == null)
-					// if a person steps outside of the vehicle
-					logger.info(person, str + EVA_OPERATION);
-				else {
-					String activity = "";
-					if (person.getMind().getMission() != null)
-						activity = person.getMind().getMission().getName();
-					else
-						activity = person.getTaskDescription();
-					logger.info(person, str + " while " + activity);
+					HistoricalEvent hEvent = new HazardEvent(EventType.HAZARD_RADIATION_EXPOSURE,
+							rad,
+							rad.toString(),
+							person.getTaskDescription(),
+							person.getName(), 
+							person.getLocationTag().getImmediateLocation(),
+							person.getAssociatedSettlement().getName(),
+							person.getCoordinates().getCoordinateString()
+							);
+					Simulation.instance().getEventManager().registerNewEvent(hEvent);
+
+					person.fireUnitUpdate(UnitEventType.RADIATION_EVENT);
+
+					return true;
 				}
-
-				HistoricalEvent hEvent = new HazardEvent(EventType.HAZARD_RADIATION_EXPOSURE,
-						rad,
-						rad.toString(),
-						person.getTaskDescription(),
-						person.getName(), 
-						person.getLocationTag().getImmediateLocation(),
-						person.getAssociatedSettlement().getName(),
-						person.getCoordinates().getCoordinateString()
-						);
-				Simulation.instance().getEventManager().registerNewEvent(hEvent);
-
-				person.fireUnitUpdate(UnitEventType.RADIATION_EVENT);
-
-				return true;
-
 			}
 		}
 
