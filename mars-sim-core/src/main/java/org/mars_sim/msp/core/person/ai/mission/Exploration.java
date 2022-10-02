@@ -89,7 +89,8 @@ public class Exploration extends EVAMission
 		// Use RoverMission constructor.
 		super(MISSION_TYPE, startingPerson, null,
 				EXPLORE_SITE);
-
+		setIgnoreSunlight(true);
+		
 		Settlement s = getStartingSettlement();
 
 		if (s != null && !isDone()) {
@@ -136,7 +137,8 @@ public class Exploration extends EVAMission
 		// Use RoverMission constructor.
 		super(MISSION_TYPE,(Worker) members.toArray()[0], rover,
 				EXPLORE_SITE);
-
+		setIgnoreSunlight(true);
+		
 		initSites(explorationSites);
 
 		// Add mission members.
