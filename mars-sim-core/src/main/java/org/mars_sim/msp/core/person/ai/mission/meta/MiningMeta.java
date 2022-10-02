@@ -86,8 +86,6 @@ public class MiningMeta extends AbstractMetaMission {
 	    		if (numThisMission > 1)
 	    			return 0;
 
-	    		missionProbability = 0;
-
 	            try {
 	                // Get available rover.
 	                Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(MissionType.MINING,
@@ -95,15 +93,7 @@ public class MiningMeta extends AbstractMetaMission {
 
 	                if (rover != null) {
 	                    // Find best mining site.
-	                    ExploredLocation miningSite = Mining.determineBestMiningSite(
-	                            rover, settlement);
-	                    if (miningSite != null) {
-	                        missionProbability = 1.5 * Mining.getMiningSiteValue(miningSite, settlement);
-	    					if (missionProbability < 0)
-	    						missionProbability = 0;
-	                    }
-	                    else // no mining site can be identified
-	                    	return 0;
+	                	missionProbability = Mining.getMatureMiningSitesTotalScore(rover, settlement);
 	                }
 	            } catch (Exception e) {
 	                logger.log(Level.SEVERE, "Error getting mining site.", e);

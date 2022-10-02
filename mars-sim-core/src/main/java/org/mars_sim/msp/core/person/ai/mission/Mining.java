@@ -446,6 +446,43 @@ public class Mining extends EVAMission
 	}
 
 	/**
+	 * Determines the total mature mining sites score.
+	 * 
+	 * @param rover          the mission rover.
+	 * @param homeSettlement the mission home settlement.
+	 * @return the total score
+	 */
+	public static double getMatureMiningSitesTotalScore(Rover rover, Settlement homeSettlement) {
+
+		double total = 0;
+
+		try {
+			double roverRange = rover.getRange(MissionType.MINING);
+			double tripTimeLimit = getTotalTripTimeLimit(rover, rover.getCrewCapacity(), true);
+			double tripRange = getTripTimeRange(tripTimeLimit, rover.getBaseSpeed() / 2D);
+			double range = roverRange;
+			if (tripRange < range) {
+				range = tripRange;
+			}
+
+			for (ExploredLocation site : surfaceFeatures.getExploredLocations()) {
+				boolean isMature = (site.getNumEstimationImprovement() >= MATURE_ESTIMATE_NUM);
+				if (!site.isMined() && !site.isReserved() && site.isExplored() && isMature
+					// Only mine from sites explored from home settlement.
+					&& (site.getSettlement() == null || homeSettlement.equals(site.getSettlement()))
+					&& homeSettlement.getCoordinates().getDistance(site.getLocation()) <= range) {
+						double value = getMiningSiteValue(site, homeSettlement);
+						total += value;
+				}
+			}
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, "Error determining best mining site.");
+		}
+
+		return total;
+	}
+	
+	/**
 	 * Gets the estimated mineral value of a mining site.
 	 * 
 	 * @param site       the mining site.
