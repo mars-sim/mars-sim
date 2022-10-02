@@ -1126,12 +1126,13 @@ public class ExitAirlock extends Task {
 		
 		// Check if person is incapacitated.
 		if (person.getPerformanceRating() <= MIN_PERFORMANCE) {
+			// May need to relocate the following code to a proper place
+			
 			// Prevent the logger statement below from being repeated multiple times
 			logger.log((Unit)airlock.getEntity(), person, Level.INFO, 4_000,
 					"Could not exit the airlock from " + airlock.getEntityName()
 					+ " due to crippling performance rating of " + person.getPerformanceRating() + ".");
 
-			// May need to relocate the following code to a proper place
 			try {
 				if (person.isInVehicle()) {
 					Settlement nearbySettlement = CollectionUtils.findSettlement(person.getVehicle().getCoordinates());

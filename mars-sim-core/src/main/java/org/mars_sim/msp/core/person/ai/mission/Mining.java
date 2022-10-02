@@ -65,7 +65,7 @@ public class Mining extends EVAMission
 	private static final double MINING_SITE_TIME = 4000D;
 
 	/** Minimum amount (kg) of an excavated mineral that can be collected. */
-	private static final double MINIMUM_COLLECT_AMOUNT = 10D;
+	private static final double MINIMUM_COLLECT_AMOUNT = 1;
 
 
 	/**
@@ -326,7 +326,6 @@ public class Mining extends EVAMission
 			return false;
 		}
 
-		// 75% chance of assigning task, otherwise allow break.
 		if (canCollectExcavatedMinerals(person)) {
 			AmountResource mineralToCollect = getMineralToCollect(person);
 			assignTask(person, new CollectMinedMinerals(person, getRover(), mineralToCollect));
@@ -428,17 +427,14 @@ public class Mining extends EVAMission
 			for(ExploredLocation site : surfaceFeatures.getExploredLocations()) {
 				boolean isMature = (site.getNumEstimationImprovement() >= MATURE_ESTIMATE_NUM);
 
-				if (!site.isMined() && !site.isReserved() && site.isExplored() && isMature) {
+				if (!site.isMined() && !site.isReserved() && site.isExplored() && isMature
 					// Only mine from sites explored from home settlement.
-					Settlement owner = site.getSettlement();
-					if ((owner == null) || homeSettlement.equals(site.getSettlement())) {
-						if (homeSettlement.getCoordinates().getDistance(site.getLocation()) <= range) {
-							double value = getMiningSiteValue(site, homeSettlement);
-							if (value > bestValue) {
-								result = site;
-								bestValue = value;
-							}
-						}
+					&& (site.getSettlement() == null || homeSettlement.equals(site.getSettlement()))
+					&& homeSettlement.getCoordinates().getDistance(site.getLocation()) <= range) {
+						double value = getMiningSiteValue(site, homeSettlement);
+						if (value > bestValue) {
+							result = site;
+							bestValue = value;
 					}
 				}
 			}
@@ -461,7 +457,7 @@ public class Mining extends EVAMission
 
 		double result = 0D;
 
-		for (Map.Entry<String,Double> conc : site.getEstimatedMineralConcentrations().entrySet()) {
+		for (Map.Entry<String, Double> conc : site.getEstimatedMineralConcentrations().entrySet()) {
 			int mineralResource = ResourceUtil.findIDbyAmountResourceName(conc.getKey());
 			double mineralValue = settlement.getGoodsManager().getGoodValuePoint(mineralResource);
 			double mineralAmount = (conc.getValue() / 100D) * MINERAL_BASE_AMOUNT;

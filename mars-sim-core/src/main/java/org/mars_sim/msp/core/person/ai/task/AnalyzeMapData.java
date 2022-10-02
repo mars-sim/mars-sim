@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * AnalyzeMapData.java
- * @date 2022-07-24
+ * @date 2022-10-01
  * @author Manny Kung
  */
 
@@ -91,7 +91,7 @@ public class AnalyzeMapData extends Task implements Serializable {
     			.getExploredLocations().stream()
     			.filter(site -> !site.isMined())
     			.collect(Collectors.toList());
-		
+
 		int num = siteList0.size();
 		if (num == 0) {
 			endTask();
@@ -100,7 +100,7 @@ public class AnalyzeMapData extends Task implements Serializable {
 		}
 		else {
 			List<ExploredLocation> siteList1 = siteList0.stream()
-	    			.filter(site -> site.getNumEstimationImprovement() < 20)
+	    			.filter(site -> site.getNumEstimationImprovement() < 30)
 	    			.collect(Collectors.toList());
 			
 			num = siteList1.size();
@@ -123,8 +123,8 @@ public class AnalyzeMapData extends Task implements Serializable {
 		// the more the computing resources needed to do the refinement.		
 		// The higher the composite skill, the less the computing resource.  
 		double score = (1 + numImprovement)/compositeSkill;
-		double rand = RandomUtil.getRandomDouble(score/20.0, score/10.0);
-		seed = Math.min(MAX_SEED, rand);
+		double rand1 = RandomUtil.getRandomDouble(score/20.0, score/10.0);
+		seed = Math.min(MAX_SEED, rand1);
 			
 		TOTAL_COMPUTING_NEEDED = getDuration() * seed;
 		computingNeeded = TOTAL_COMPUTING_NEEDED;
@@ -133,9 +133,9 @@ public class AnalyzeMapData extends Task implements Serializable {
 				+ Math.round(TOTAL_COMPUTING_NEEDED * 1000.0)/1000.0 
 				+ " CUs. score: " 
 				+ Math.round(score * 1000.0)/1000.0 + ". rand: "
-				+ Math.round(rand * 1000.0)/1000.0 + ". seed: "
+				+ Math.round(rand1 * 1000.0)/1000.0 + ". seed: "
 				+ Math.round(seed * 1000.0)/1000.0 + ". "
-				+ num + " candidate sites were identified. Final site selection: " 
+				+ num + " candidate sites identified. Final site selected: " 
 				+ site.getLocation().getCoordinateString() + ".");
 		
        	// Add task phases
@@ -230,7 +230,7 @@ public class AnalyzeMapData extends Task implements Serializable {
         	effort = 0;
         }
         	
-		if (isDone() || getTimeLeft() < 0 || totalWork / workPerMillisol > getDuration() ) {
+		if (isDone() || getTimeLeft() <= 0 || totalWork / workPerMillisol > getDuration() ) {
         	// this task has ended
     		logger.info(person, 30_000L, "Done '" + NAME + "' - " 
     				+ Math.round(TOTAL_COMPUTING_NEEDED * 100.0)/100.0 
@@ -249,13 +249,14 @@ public class AnalyzeMapData extends Task implements Serializable {
 	 * Improves the mineral concentration estimates of an explored site.
 	 *
 	 * @param time the amount of time available (millisols).
-	 */
+     * @param improvement
+     */
 	private void improveMineralConcentrationEstimates(double time, double improvement) {
 		double probability = (time * Exploration.EXPLORING_SITE_TIME / 1000.0) * improvement;
 		if (probability > .9)
 			probability = .9;
 		if ((site.getNumEstimationImprovement() == 0) || (RandomUtil.getRandomDouble(1.0D) <= probability)) {
-			improveSiteEstimates(site, (int)Math.round(compositeSkill));
+			ExploreSite.improveSiteEstimates(site, (int)Math.round(compositeSkill));
 
 			logger.log(person, Level.INFO, 10_000,
 					NAME + " for " + site.getLocation().getFormattedString()
@@ -264,35 +265,6 @@ public class AnalyzeMapData extends Task implements Serializable {
 		}
 	}
 
-	/**
-	 * Improves the mineral estimates for a particular site. Reviewer has a certain
-	 * skill rating.
-	 * 
-	 * @param site
-	 * @param skill
-	 */
-	public static void improveSiteEstimates(ExploredLocation site, double skill) {
-		MineralMap mineralMap = surfaceFeatures.getMineralMap();
-		Map<String, Double> estimatedMineralConcentrations = site.getEstimatedMineralConcentrations();
-
-		for (String mineralType : estimatedMineralConcentrations.keySet()) {
-			double actualConcentration = mineralMap.getMineralConcentration(mineralType, site.getLocation());
-			double estimatedConcentration = estimatedMineralConcentrations.get(mineralType);
-			double estimationDiff = Math.abs(actualConcentration - estimatedConcentration);
-			double estimationImprovement = RandomUtil.getRandomDouble(1D * skill);
-			if (estimationImprovement > estimationDiff)
-				estimationImprovement = estimationDiff;
-			if (estimatedConcentration < actualConcentration)
-				estimatedConcentration += estimationImprovement;
-			else
-				estimatedConcentration -= estimationImprovement;
-			estimatedMineralConcentrations.put(mineralType, estimatedConcentration);
-		}
-
-		// Add to site mineral concentration estimation improvement number.
-		site.addEstimationImprovement();
-	}
-    
     /**
      * Closes out this task. If person is inside then transfer the resource from the bag to the Settlement.
      */

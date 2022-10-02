@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * AnalyzeMapDataMeta.java
- * @date 2022-07-24
+ * @date 2022-10-01
  * @author Manny Kung
  */
 
@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.environment.ExploredLocation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
@@ -21,15 +20,16 @@ import org.mars_sim.msp.core.person.ai.task.AnalyzeMapData;
 import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
+import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
- * Meta task for the AnalyzeMapDataMeta task.
+ * Meta task for the AnalyzeMapData task.
  */
 public class AnalyzeMapDataMeta extends MetaTask {
     
 	/** Task name */
-	private static final int VALUE = 1;
+	private static final int VALUE = 5;
 	
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -60,11 +60,12 @@ public class AnalyzeMapDataMeta extends MetaTask {
         	return 0;
         
         if (person.isInside()) {
-
-        	List<ExploredLocation> siteList = Simulation.instance().getSurfaceFeatures()
+        	int rand = RandomUtil.getRandomInt(0, 30);
+        	
+        	List<ExploredLocation> siteList = surfaceFeatures
         			.getExploredLocations().stream()
         			.filter(site -> !site.isMined()
-        					&& site.getNumEstimationImprovement() < 15)
+        					&& site.getNumEstimationImprovement() < rand)
         			.collect(Collectors.toList());  	
         	
         	int num = siteList.size();
@@ -85,9 +86,9 @@ public class AnalyzeMapDataMeta extends MetaTask {
             
             if (RoleType.COMPUTING_SPECIALIST == person.getRole().getType())
             	result *= 1.5;
-            else if (RoleType.CHIEF_OF_COMPUTING == person.getRole().getType())
-            	result *= 1.25;       
             
+            else if (RoleType.CHIEF_OF_COMPUTING == person.getRole().getType())
+            	result *= 1.25;
         }
 
         if (result == 0) return 0;

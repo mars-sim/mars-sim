@@ -375,7 +375,7 @@ public class Exploration extends EVAMission
 		// Determine the first exploration site.
 		Coordinates startingLocation = getCurrentMissionLocation();
 		Coordinates currentLocation = null;
-		List<Coordinates> outstandingSites = findOutstandingSites(startingLocation);
+		List<Coordinates> outstandingSites = findCandidateSites(startingLocation);
 		if (!outstandingSites.isEmpty()) {
 			currentLocation = outstandingSites.remove(0);
 		}
@@ -448,22 +448,24 @@ public class Exploration extends EVAMission
 	}
 
 	/**
-	 * Get a list of explored location for this Settlement that needs further investigation
+	 * Gets a list of candidate explored location for this Settlement that needs estimation improvement.
+	 * 
 	 * @return
 	 */
-	private List<Coordinates> findOutstandingSites(Coordinates startingLoc) {
+	private List<Coordinates> findCandidateSites(Coordinates startingLoc) {
 
 		Settlement home = getStartingSettlement();
 
+		int rand = RandomUtil.getRandomRegressionInteger(100);
 		// Get any locations that belong to this home Settlement and need further
 		// exploration before mining
-		List<Coordinates> candiateLocations = surfaceFeatures.getExploredLocations().stream()
-				.filter(e -> e.getNumEstimationImprovement() < Mining.MATURE_ESTIMATE_NUM)
+		List<Coordinates> candidateLocs = surfaceFeatures.getExploredLocations().stream()
+				.filter(e -> e.getNumEstimationImprovement() < rand)
 				.filter(s -> home.equals(s.getSettlement()))
 				.map(ExploredLocation::getLocation)
 				.collect(Collectors.toList());
-		if (!candiateLocations.isEmpty()) {
-			return getMinimalPath(startingLoc, candiateLocations);
+		if (!candidateLocs.isEmpty()) {
+			return getMinimalPath(startingLoc, candidateLocs);
 		}
 		return Collections.emptyList();
 	}

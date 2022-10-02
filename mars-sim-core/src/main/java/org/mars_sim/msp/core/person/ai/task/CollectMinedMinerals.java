@@ -40,6 +40,9 @@ public class CollectMinedMinerals extends EVAOperation {
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.collectMinedMinerals"); //$NON-NLS-1$
 
+	/** Simple Task name */
+	static final String SIMPLE_NAME = CollectMinedMinerals.class.getSimpleName();
+	
 	/** Task phases. */
 	private static final TaskPhase COLLECT_MINERALS = new TaskPhase(Msg.getString("Task.phase.collectMinerals")); //$NON-NLS-1$
 
@@ -63,7 +66,7 @@ public class CollectMinedMinerals extends EVAOperation {
 	public CollectMinedMinerals(Person person, Rover rover, AmountResource mineralType) {
 
 		// Use EVAOperation parent constructor.
-		super(NAME, person, true, LABOR_TIME + RandomUtil.getRandomDouble(10D) - RandomUtil.getRandomDouble(10D),
+		super(NAME, person, true, LABOR_TIME + RandomUtil.getRandomDouble(-10, 10),
 					SkillType.AREOLOGY);
 		
 		addAdditionSkill(SkillType.PROSPECTING);

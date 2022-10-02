@@ -268,6 +268,8 @@ public class ExploreSite extends EVAOperation {
 	 * @param skill
 	 */
 	public static void improveSiteEstimates(ExploredLocation site, int skill) {
+
+		int certainty = site.getNumEstimationImprovement();
 		MineralMap mineralMap = surfaceFeatures.getMineralMap();
 		Map<String, Double> estimatedMineralConcentrations = site.getEstimatedMineralConcentrations();
 

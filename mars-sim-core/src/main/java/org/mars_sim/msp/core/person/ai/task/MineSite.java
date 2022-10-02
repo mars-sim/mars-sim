@@ -40,6 +40,9 @@ public class MineSite extends EVAOperation {
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.mineSite"); //$NON-NLS-1$
 
+	/** Simple Task name */
+	static final String SIMPLE_NAME = MineSite.class.getSimpleName();
+	
 	/** Task phases. */
 	private static final TaskPhase MINING = new TaskPhase(Msg.getString("Task.phase.mining")); //$NON-NLS-1$
 
