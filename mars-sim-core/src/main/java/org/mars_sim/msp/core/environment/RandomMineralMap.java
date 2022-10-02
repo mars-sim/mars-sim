@@ -46,6 +46,12 @@ public class RandomMineralMap implements Serializable, MineralMap {
 	private static final int W = 300;
 	private static final int H = 150;
 	
+	private static final int MAX_SETS = 6000;
+	private static final int MAX_CONC = 3000;
+	
+	private static final float REGION_FACTOR = 5;
+	private static final float NON_REGION_FACTOR = 100F;
+	
 	// Topographical Region Strings
 	private static final String CRATER_IMG = Msg.getString("RandomMineralMap.image.crater"); //$NON-NLS-1$
 	private static final String VOLCANIC_IMG = Msg.getString("RandomMineralMap.image.volcanic"); //$NON-NLS-1$
@@ -70,7 +76,7 @@ public class RandomMineralMap implements Serializable, MineralMap {
 	 * Constructor
 	 */
 	RandomMineralMap() {
-		mineralConcentrations = new ArrayList<>(2000);
+		mineralConcentrations = new ArrayList<>(MAX_CONC);
 
 		// Determine mineral concentrations.
 		determineMineralConcentrations();
@@ -99,7 +105,7 @@ public class RandomMineralMap implements Serializable, MineralMap {
 				MineralType mineralType = i.next();
 
 				// Create super set of topographical regions.
-				Set<Coordinates> regionSet = new HashSet<>(4000);
+				Set<Coordinates> regionSet = new HashSet<>(MAX_SETS);
 				Iterator<String> j = mineralType.getLocales().iterator();
 				while (j.hasNext()) {
 					String locale = j.next().trim();
@@ -115,7 +121,8 @@ public class RandomMineralMap implements Serializable, MineralMap {
 				if (regionArray.length > 0) {
 					// Determine individual mineral concentrations.
 					int concentrationNumber = Math
-							.round((float) regionArray.length / 10F / getFrequencyModifier(mineralType.frequency));
+							.round((float) regionArray.length / REGION_FACTOR / getFrequencyModifier(mineralType.frequency));
+
 					for (int x = 0; x < concentrationNumber; x++) {
 						int regionLocationIndex = RandomUtil.getRandomInt(regionArray.length - 1);
 						Coordinates regionLocation = regionArray[regionLocationIndex];
@@ -128,9 +135,11 @@ public class RandomMineralMap implements Serializable, MineralMap {
 					}
 				} else {
 					// If no locales, randomly distribute mineral on surface.
-					int concentrationNumber = Math.round(100F / getFrequencyModifier(mineralType.frequency));
+					int concentrationNumber = Math.round(NON_REGION_FACTOR / getFrequencyModifier(mineralType.frequency));
 					for (int x = 0; x < concentrationNumber; x++) {
+						// Get a rand lat
 						double phi = Coordinates.getRandomLatitude();
+						// Get a rand lon
 						double theta = Coordinates.getRandomLongitude();
 						Coordinates location = new Coordinates(phi, theta);
 						double concentration = RandomUtil.getRandomDouble(100D);
