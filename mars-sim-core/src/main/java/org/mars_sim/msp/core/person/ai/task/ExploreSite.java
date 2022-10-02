@@ -269,22 +269,23 @@ public class ExploreSite extends EVAOperation {
 	 */
 	public static void improveSiteEstimates(ExploredLocation site, int skill) {
 
-		int certainty = site.getNumEstimationImprovement();
+		int certainty = Math.max(100, site.getNumEstimationImprovement());
 		MineralMap mineralMap = surfaceFeatures.getMineralMap();
 		Map<String, Double> estimatedMineralConcentrations = site.getEstimatedMineralConcentrations();
 
 		for (String mineralType : estimatedMineralConcentrations.keySet()) {
-			double actualConcentration = mineralMap.getMineralConcentration(mineralType, site.getLocation());
-			double estimatedConcentration = estimatedMineralConcentrations.get(mineralType);
-			double estimationDiff = Math.abs(actualConcentration - estimatedConcentration);
-			double estimationImprovement = RandomUtil.getRandomDouble(1D * skill);
-			if (estimationImprovement > estimationDiff)
-				estimationImprovement = estimationDiff;
-			if (estimatedConcentration < actualConcentration)
-				estimatedConcentration += estimationImprovement;
+			double actual = mineralMap.getMineralConcentration(mineralType, site.getLocation());
+			double estimated = estimatedMineralConcentrations.get(mineralType);
+			double diff = Math.abs(actual - estimated);
+			// Note that rand can 'overshoot' the target
+			double rand = RandomUtil.getRandomDouble(1D * skill * certainty / 50);
+			if (rand > diff * 1.25)
+				rand = diff * 1.25;
+			if (estimated < actual)
+				estimated += rand;
 			else
-				estimatedConcentration -= estimationImprovement;
-			estimatedMineralConcentrations.put(mineralType, estimatedConcentration);
+				estimated -= rand;
+			estimatedMineralConcentrations.put(mineralType, estimated);
 		}
 
 		// Add to site mineral concentration estimation improvement number.
