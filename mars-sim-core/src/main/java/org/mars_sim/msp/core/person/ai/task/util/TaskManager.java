@@ -106,7 +106,7 @@ public abstract class TaskManager implements Serializable, Temporal {
 	}
 
 	/** Number of days to record Tack Activities. */
-	private static final int NUM_SOLS = 5;
+	public static final int NUM_SOLS = 7;
 	
 	/** Amount of millisols elapsed before the task cache is rebuilt. */
 	private static final double TASK_MILLISOLS  = 0.1;

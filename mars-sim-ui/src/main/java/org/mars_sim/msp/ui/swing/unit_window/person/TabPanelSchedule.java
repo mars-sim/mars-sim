@@ -181,7 +181,7 @@ public class TabPanelSchedule extends TabPanel {
 		solList = new CopyOnWriteArrayList<Integer>();
 
 		allActivities = taskManager.getAllActivities();
-		int lowerSol = today - 7;
+		int lowerSol = today - TaskManager.NUM_SOLS;
 		if (lowerSol < 1)
 			lowerSol = 1;
 		for (int i = lowerSol; i < today + 1; i++) {
@@ -335,7 +335,7 @@ public class TabPanelSchedule extends TabPanel {
 		
 		// Update the sol combobox at the beginning of a new sol
 		if (today != todayCache) {
-			int lowerSol = today - 7;
+			int lowerSol = today - TaskManager.NUM_SOLS;
 			if (lowerSol < 1)
 				lowerSol = 1;
 			for (int i = lowerSol; i < today + 1; i++) {
