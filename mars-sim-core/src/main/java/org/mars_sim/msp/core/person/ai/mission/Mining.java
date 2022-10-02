@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 
-import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.environment.ExploredLocation;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -323,7 +322,7 @@ public class Mining extends EVAMission
 
 		// Nobody can do anything so stop
 		if (nobodyMineOrCollect) {
-			logger.warning(getRover(), "No one can do mining Task in mission " + getName());
+			logger.warning(getRover(), "No one can mine sites in " + getName() + ".");
 			return false;
 		}
 
@@ -462,7 +461,7 @@ public class Mining extends EVAMission
 
 		double result = 0D;
 
-		for( Map.Entry<String,Double> conc : site.getEstimatedMineralConcentrations().entrySet()) {
+		for (Map.Entry<String,Double> conc : site.getEstimatedMineralConcentrations().entrySet()) {
 			int mineralResource = ResourceUtil.findIDbyAmountResourceName(conc.getKey());
 			double mineralValue = settlement.getGoodsManager().getGoodValuePoint(mineralResource);
 			double mineralAmount = (conc.getValue() / 100D) * MINERAL_BASE_AMOUNT;

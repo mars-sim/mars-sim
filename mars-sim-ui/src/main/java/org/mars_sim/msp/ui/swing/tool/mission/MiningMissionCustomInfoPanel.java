@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MiningMissionCustomInfoPanel.java
- * @date 2022-07-23
+ * @date 2022-10-01
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.mission;
@@ -246,12 +246,12 @@ public class MiningMissionCustomInfoPanel extends MissionCustomInfoPanel {
 				if (column == 0) {
 					result = minerals[row];
 				} else if (column == 1) {
-					result = estimatedConcentrationMap.get(minerals[row]);
+					result = Math.round(estimatedConcentrationMap.get(minerals[row]) * 100.0)/100.0;
 				} else if (column == 2) {
 					if (actualConcentrationMap.containsKey(minerals[row])) {
 						result = actualConcentrationMap.get(minerals[row]);
 					} else {
-						result = Double.valueOf(0D);
+						result = Math.round(Double.valueOf(0D) * 100.0)/100.0;
 					}
 				}
 			}
@@ -265,7 +265,7 @@ public class MiningMissionCustomInfoPanel extends MissionCustomInfoPanel {
 		private void updateTable() {
 			if (mission.getMiningSite() != null) {
 				estimatedConcentrationMap = mission.getMiningSite().getEstimatedMineralConcentrations();
-				actualConcentrationMap = Simulation.instance().getSurfaceFeatures().getMineralMap()
+				actualConcentrationMap = surfaceFeatures.getMineralMap()
 						.getAllMineralConcentrations(mission.getMiningSite().getLocation());
 			} else {
 				estimatedConcentrationMap.clear();
@@ -317,7 +317,7 @@ public class MiningMissionCustomInfoPanel extends MissionCustomInfoPanel {
 			if (columnIndex == 0)
 				return "Mineral";
 			else
-				return "Excavated (kg)";
+				return "Excavated [kg]";
 		}
 
 		@Override
@@ -345,7 +345,7 @@ public class MiningMissionCustomInfoPanel extends MissionCustomInfoPanel {
 				if (column == 0)
 					result = minerals[row];
 				else
-					result = excavationMap.get(minerals[row]);
+					result = Math.round(excavationMap.get(minerals[row]) * 100.0)/100.0;
 			}
 
 			return result;

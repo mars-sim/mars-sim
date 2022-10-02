@@ -239,9 +239,9 @@ public class CollectMinedMinerals extends EVAOperation {
 			if (!ExitAirlock.canExitAirlock(person, rover.getAirlock()))
 				return false;
 
-			if (EVAOperation.isGettingDark(person)) {
-				return false;
-			}
+//			if (EVAOperation.isGettingDark(person)) {
+//				return false;
+//			}
 
 			if (!isEnoughSunlightForEVA(person.getCoordinates())) {
 				return false;

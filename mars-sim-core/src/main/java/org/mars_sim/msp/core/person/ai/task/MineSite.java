@@ -107,8 +107,8 @@ public class MineSite extends EVAOperation {
 			if (!ExitAirlock.canExitAirlock(person, rover.getAirlock()))
 				return false;
 
-			if (EVAOperation.isGettingDark(person))
-				return false;
+//			if (EVAOperation.isGettingDark(person))
+//				return false;
 
 			// Check if person's medical condition will not allow task.
             return !(person.getPerformanceRating() < .2D);
