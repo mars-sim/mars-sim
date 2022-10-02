@@ -274,7 +274,7 @@ public class ExploreSite extends EVAOperation {
 		Map<String, Double> estimatedMineralConcentrations = site.getEstimatedMineralConcentrations();
 
 		for (String mineralType : estimatedMineralConcentrations.keySet()) {
-			double actual = mineralMap.getMineralConcentration(mineralType, site.getLocation());
+			double actual = mineralMap.getMineralConcentration(mineralType, site.getLocation());			
 			double estimated = estimatedMineralConcentrations.get(mineralType);
 			double diff = Math.abs(actual - estimated);
 			// Note that rand can 'overshoot' the target
@@ -285,6 +285,11 @@ public class ExploreSite extends EVAOperation {
 				estimated += rand;
 			else
 				estimated -= rand;
+			
+//			System.out.println("improveSiteEstimates  " + mineralType 
+//					+ "   estimated: " + Math.round(estimated * 100.0)/100.0
+//					+ "   actual: " + Math.round(actual * 100.0)/100.0);
+			
 			estimatedMineralConcentrations.put(mineralType, estimated);
 		}
 

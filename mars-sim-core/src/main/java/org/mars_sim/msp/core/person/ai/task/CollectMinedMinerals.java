@@ -100,7 +100,7 @@ public class CollectMinedMinerals extends EVAOperation {
 	 * @return true if carrying bags.
 	 */
 	private boolean hasBags() {
-		return worker.containsEquipment(EquipmentType.BAG);
+		return worker.containsEquipment(EquipmentType.LARGE_BAG);
 	}
 
 	/**
@@ -110,7 +110,7 @@ public class CollectMinedMinerals extends EVAOperation {
 	 */
 	private boolean takeBag() {
 		Container bag = ContainerUtil.findLeastFullContainer(rover,
-											EquipmentType.BAG,
+											EquipmentType.LARGE_BAG,
 											mineralType.getID());
 		if (bag != null) {
 			if (person != null) {
@@ -256,7 +256,7 @@ public class CollectMinedMinerals extends EVAOperation {
 
 			// Checks if available bags with remaining capacity for resource.
 			Container bag = ContainerUtil.findLeastFullContainer(rover,
-																EquipmentType.BAG,
+																EquipmentType.LARGE_BAG,
 																mineralType.getID());
 			boolean bagAvailable = (bag != null);
 

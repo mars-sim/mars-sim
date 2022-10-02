@@ -249,9 +249,9 @@ public class MiningMissionCustomInfoPanel extends MissionCustomInfoPanel {
 					result = Math.round(estimatedConcentrationMap.get(minerals[row]) * 100.0)/100.0;
 				} else if (column == 2) {
 					if (actualConcentrationMap.containsKey(minerals[row])) {
-						result = actualConcentrationMap.get(minerals[row]);
+						result = Math.round(actualConcentrationMap.get(minerals[row]) * 100.0)/100.0;
 					} else {
-						result = Math.round(Double.valueOf(0D) * 100.0)/100.0;
+						result = Double.valueOf(0D);
 					}
 				}
 			}
