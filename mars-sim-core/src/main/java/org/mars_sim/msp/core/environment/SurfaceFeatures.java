@@ -20,6 +20,7 @@ import java.util.Set;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -587,24 +588,32 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	 */
 	public ExploredLocation addExploredLocation(Coordinates location,
 			int estimationImprovement, Settlement settlement) {
+
 		String [] mineralTypes = mineralMap.getMineralTypeNames();
 		Map<String, Double> initialMineralEstimations = new HashMap<>(mineralTypes.length);
 		for (String mineralType : mineralTypes) {
-			double estimation = mineralMap.getMineralConcentration(mineralType, location);
-
-			// Estimations are zero for initial site.
-			int varianceMax = (10 - estimationImprovement) * MINERAL_ESTIMATION_VARIANCE;
-			if (varianceMax > 0) {
- 				estimation += RandomUtil.getRandomDouble(varianceMax);
+			double actual = mineralMap.getMineralConcentration(mineralType, location);
+			double estimated = 0;
+			double varianceMax = 0;
+			
+			// via the use of ExploredCommand			
+			if (estimationImprovement == Mining.MATURE_ESTIMATE_NUM) {
+				varianceMax = actual * MINERAL_ESTIMATION_VARIANCE / 2;
+			}
+			else {
+				varianceMax = actual * MINERAL_ESTIMATION_VARIANCE * 2;
 			}
 
+			estimated = actual + RandomUtil.getRandomDouble(-varianceMax, varianceMax);
+			
 			// With no improvements the estimates are capped
-			if (estimation < 0D)
-				estimation = 0D - estimation;
-			else if (estimation > MINERAL_ESTIMATION_MAX) {
-				estimation = MINERAL_ESTIMATION_MAX - estimation;
+			if (estimated < 0)
+				estimated = 0;
+			else if (estimated > MINERAL_ESTIMATION_MAX) {
+				estimated = MINERAL_ESTIMATION_MAX;
 			}
-			initialMineralEstimations.put(mineralType, estimation);
+			
+			initialMineralEstimations.put(mineralType, estimated);
 		}
 
 		ExploredLocation result = new ExploredLocation(location, estimationImprovement, initialMineralEstimations, settlement);
