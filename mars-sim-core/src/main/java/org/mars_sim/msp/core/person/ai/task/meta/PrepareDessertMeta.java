@@ -29,9 +29,9 @@ public class PrepareDessertMeta extends MetaTask {
     private static final String NAME = Msg.getString(
             "Task.description.prepareDessertMeta"); //$NON-NLS-1$
 
-    private static final double VALUE = 10;
+    private static final double VALUE = 1;
     private static final int MOD = 5;
-    private static final double CAP = 3_000D;
+    private static final int CAP = 2_000;
     
     public PrepareDessertMeta() {
 		super(NAME, WorkerType.BOTH, TaskScope.ANY_HOUR);
@@ -89,7 +89,7 @@ public class PrepareDessertMeta extends MetaTask {
                 
         		// If it's meal time, increase probability
         		if (CookMeal.isMealTime(person, 0)) {
-        			result *= MOD;
+        			result /= MOD;
         		}
             }
         }

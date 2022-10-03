@@ -47,10 +47,10 @@ public class CollectMinedMinerals extends EVAOperation {
 	private static final TaskPhase COLLECT_MINERALS = new TaskPhase(Msg.getString("Task.phase.collectMinerals")); //$NON-NLS-1$
 
 	/** Rate of mineral collection (kg/millisol). */
-	private static final double MINERAL_COLLECTION_RATE = 10D;
+	private static final double MINERAL_COLLECTION_RATE = 30D;
 
-	/** The average labor time it takes to find the minerel */
-	public static final double LABOR_TIME = 50D;
+	/** The average labor time it takes to find the mineral */
+	public static final double LABOR_TIME = 40D;
 	
 	// Data members
 	private Rover rover; // Rover used.
@@ -66,7 +66,7 @@ public class CollectMinedMinerals extends EVAOperation {
 	public CollectMinedMinerals(Person person, Rover rover, AmountResource mineralType) {
 
 		// Use EVAOperation parent constructor.
-		super(NAME, person, true, LABOR_TIME + RandomUtil.getRandomDouble(-10, 10),
+		super(NAME, person, true, LABOR_TIME + RandomUtil.getRandomDouble(-5, 5),
 					SkillType.AREOLOGY);
 		
 		addAdditionSkill(SkillType.PROSPECTING);
