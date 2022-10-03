@@ -7,7 +7,6 @@
 
 package org.mars_sim.msp.core;
 
-import java.awt.geom.Point2D;
 import java.io.Serializable;
 
 /**
@@ -34,18 +33,6 @@ public class LocalPosition implements Serializable {
 		super();
 		this.x = x;
 		this.y = y;
-	}
-
-	/**
-	 * Constructor provides a temporary bridge between the 2 approaches.
-	 * 
-	 * @param point
-	 * @deprecated
-	 */
-	@Deprecated
-	public LocalPosition(Point2D point) {
-		this.x = point.getX();
-		this.y = point.getY();
 	}
 
 	public double getX() {
@@ -186,16 +173,5 @@ public class LocalPosition implements Serializable {
 	@Override
 	public String toString() {
 		return "(" + Math.round(x*10_000.0)/10_000.0 + ", " + Math.round(y*10_000.0)/10_000.0 + ")";
-	}
-
-	/**
-	 * Bridging method for transition.
-	 * 
-	 * @deprecated
-	 * @return
-	 */
-	@Deprecated
-	public java.awt.geom.Point2D.Double toPoint() {
-		return new java.awt.geom.Point2D.Double(x, y);
 	}
 }

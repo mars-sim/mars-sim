@@ -455,8 +455,6 @@ public class BuildingConnectorManager implements Serializable {
 
 				// Recursively call this method with new path and connection building.
 				// Note: how to avoid StackOverflow ?
-//				logger.config(connectionBuilding.getNickName() + " -> " + targetBuilding.getNickName() 
-//					+ " (" + endingLocation.getXLocation() + ", " + endingLocation.getYLocation() + ")");
 				bestPath = determineShortestPath(newPath, connectionBuilding, targetBuilding, endingLocation);
 			}
 
@@ -691,8 +689,11 @@ public class BuildingConnectorManager implements Serializable {
 					double hatch2Facing = determineHatchFacing(building, secondBuildingConnectionPt);
 
 					BuildingConnector connector = new BuildingConnector(newBuilding,
-							new LocalPosition(firstBuildingConnectionPt), hatch1Facing,
-							building, new LocalPosition(secondBuildingConnectionPt), hatch2Facing);
+							new LocalPosition(firstBuildingConnectionPt.getX(), firstBuildingConnectionPt.getY()),
+							hatch1Facing,
+							building,
+							new LocalPosition(secondBuildingConnectionPt.getX(), secondBuildingConnectionPt.getY()),
+							hatch2Facing);
 					addBuildingConnection(connector);
 
 					goodConnection = true;
@@ -781,7 +782,8 @@ public class BuildingConnectorManager implements Serializable {
 
 		// Exception in thread "JavaFX Application Thread"
 		// java.lang.NullPointerException
-		Point2D buildingRelativePt = LocalAreaUtil.getObjectRelativeLocation(point.getX(), point.getY(), building);
+		LocalPosition buildingRelativePt = LocalAreaUtil.getObjectRelativePosition(new LocalPosition(point.getX(), point.getY()),
+													building);
 
 		if (Math.abs(buildingRelativePt.getY() - (building.getLength() / 2D)) < SMALL_AMOUNT_COMPARISON) {
 			result = BuildingSide.FRONT;

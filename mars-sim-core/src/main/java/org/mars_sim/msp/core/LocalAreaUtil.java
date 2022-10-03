@@ -110,19 +110,6 @@ public class LocalAreaUtil {
 	/**
 	 * Gets a object relative location for a given location and an object.
 	 *
-	 * @param xLoc          the X location relative to the local area.
-	 * @param yLoc          the Y location relative to the local area.
-	 * @param boundedObject the local bounded object.
-	 * @return Point containing the X and Y locations relative to the object.
-	 * @deprecated
-	 */
-	public static Point2D.Double getObjectRelativeLocation(double xLoc, double yLoc, LocalBoundedObject boundedObject) {
-		return getObjectRelativePosition(new LocalPosition(xLoc, yLoc), boundedObject).toPoint();
-	}
-
-	/**
-	 * Gets a object relative location for a given location and an object.
-	 *
 	 * @param position          the position relative to the local area.
 	 * @param boundedObject the local bounded object.
 	 * @return Point containing the X and Y locations relative to the object.
