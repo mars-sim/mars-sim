@@ -272,8 +272,8 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 				currentPhaseWorkCompleted = 0;
 				logger.log(building, this, Level.INFO, 0, "No tissue-culture left. Restocking.");
 				// Need a petri dish
-				if (building.getSettlement().hasItemResource(ItemResourceUtil.PETRI_DISH_ID)) {
-					building.getSettlement().retrieveItemResource(ItemResourceUtil.PETRI_DISH_ID, 1);
+				if (building.getSettlement().hasItemResource(ItemResourceUtil.petriDishID)) {
+					building.getSettlement().retrieveItemResource(ItemResourceUtil.petriDishID, 1);
 				}
 				else
 					logger.log(building, this, Level.WARNING, 60_000, "No petri dish left for growing " + cropSpec.getName()
@@ -343,8 +343,8 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 			building.getSettlement().retrieveItemResource(MUSHROOM_BOX_ID, 1);
 		}
 		// Need a petri dish
-		if (building.getSettlement().hasItemResource(ItemResourceUtil.PETRI_DISH_ID)) {
-			building.getSettlement().retrieveItemResource(ItemResourceUtil.PETRI_DISH_ID, 1);
+		if (building.getSettlement().hasItemResource(ItemResourceUtil.petriDishID)) {
+			building.getSettlement().retrieveItemResource(ItemResourceUtil.petriDishID, 1);
 		}
 		else
 			logger.log(building, this, Level.WARNING, 60_000, 

@@ -28,6 +28,7 @@ import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
 import org.mars_sim.msp.core.person.ai.mission.MissionEventType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
+import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
@@ -244,7 +245,7 @@ public class MiningMissionCustomInfoPanel extends MissionCustomInfoPanel {
 					.toArray(new String[estimatedConcentrationMap.size()]);
 			if ((row >= 0) && (row < minerals.length)) {
 				if (column == 0) {
-					result = minerals[row];
+					result = Conversion.capitalize(minerals[row]);
 				} else if (column == 1) {
 					result = Math.round(estimatedConcentrationMap.get(minerals[row]) * 100.0)/100.0;
 				} else if (column == 2) {
@@ -343,7 +344,7 @@ public class MiningMissionCustomInfoPanel extends MissionCustomInfoPanel {
 			AmountResource[] minerals = excavationMap.keySet().toArray(new AmountResource[excavationMap.size()]);
 			if ((row >= 0) && (row < minerals.length)) {
 				if (column == 0)
-					result = minerals[row];
+					result = Conversion.capitalize(minerals[row].getName());
 				else
 					result = Math.round(excavationMap.get(minerals[row]) * 100.0)/100.0;
 			}

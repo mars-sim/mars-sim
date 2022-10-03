@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * PartConfig.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-10-03
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.resource;
@@ -29,9 +29,6 @@ public final class PartConfig implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-	/* default logger. */
-//	private static final Logger logger = Logger.getLogger(PartConfig.class.getName());
-//  private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
 
 	// Element names
 	public static final String PART = "part";
@@ -39,17 +36,18 @@ public final class PartConfig implements Serializable {
 	public static final String NAME = "name";
 	public static final String TYPE = "type";
 	public static final String MASS = "mass";
+	public static final String STORABLE = "storable";
 	public static final String MAINTENANCE_ENTITY_LIST = "maintenance-entity-list";
 	public static final String ENTITY = "entity";
 	public static final String PROBABILITY = "probability";
 	public static final String MAX_NUMBER = "max-number";
 
-
 	/** The next global part ID. */
 	private int nextID;
-
+	/** The set of parts. */
 	private Set<Part> partSet = new TreeSet<>();
-	private Map<String,List<MaintenanceScope>> scopes = new HashMap<>();
+	/** The map of maintenance scopes. */
+	private Map<String, List<MaintenanceScope>> scopes = new HashMap<>();
 
 	/**
 	 * Constructor
@@ -103,14 +101,28 @@ public final class PartConfig implements Serializable {
 				throw new IllegalStateException(
 						"PartConfig detected invalid type in parts.xml : " + type);
 
-			Part p = new Part(name, nextID, description, goodType, mass, 1);
+			
+			// Get storable
+			
+			String storableString = partElement.getAttributeValue(STORABLE);
+			
+			boolean isStorable = Boolean.parseBoolean(storableString);
+			
+			Part p = null;
+			
+			if (isStorable) {
+				p = new StorableItem(name, nextID, description, goodType, mass, 1);
+			}
+			else {
+				p = new Part(name, nextID, description, goodType, mass, 1);
+			}
 
 			for (Part pp: partSet) {
 				if (pp.getName().equalsIgnoreCase(name))
 					throw new IllegalStateException(
-							"PartConfig detected an duplicated part entry in parts.xml : " + name);
+						"PartConfig detected an duplicated part entry in parts.xml : " + name);
 			}
-
+			
 			partSet.add(p);
 
 			// Add maintenance entities for part.
@@ -137,7 +149,8 @@ public final class PartConfig implements Serializable {
 	}
 
 	/**
-	 * Get the maintenance schedules for a specific scopes, e.g. type of vehicle or function.
+	 * Gets the maintenance schedules for a specific scopes, e.g. type of vehicle or function.
+	 * 
 	 * @param scope Possible scopes
 	 * @return
 	 */
@@ -153,8 +166,9 @@ public final class PartConfig implements Serializable {
 	}
 
 	/**
-	 * Get the maintenance schedules for a specific scopes, e.g. type of vehicle or function.
+	 * Gets the maintenance schedules for a specific scopes, e.g. type of vehicle or function.
 	 * Apply a filter so only a certain part is taken.
+	 * 
 	 * @param scope Possible scopes
 	 * @param part Filter to part
 	 * @return

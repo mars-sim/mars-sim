@@ -5,6 +5,7 @@
 	<!ATTLIST part name CDATA #REQUIRED>
 	<!ATTLIST part type CDATA #REQUIRED>
 	<!ATTLIST part mass CDATA #REQUIRED>
+	<!ATTLIST part storable (true|false) "false">
 	<!ELEMENT description (#PCDATA)>
 	<!ELEMENT maintenance-entity-list (entity*)>
 	<!ELEMENT entity EMPTY>
@@ -997,6 +998,10 @@
 
 	<part name="flood light" type="electrical" mass="3">
 		<description>a LED outdoor weather-proof, adjustable flood light with tripod stand</description>
+	</part>
+
+	<part name="wheelbarrow" type="container" mass="12" storable="true">
+		<description>For loading and transporting regolith, ores, minerals, rocks, etc.</description>
 	</part>
 
 <!-- Future:

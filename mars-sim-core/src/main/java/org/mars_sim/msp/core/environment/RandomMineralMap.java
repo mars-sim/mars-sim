@@ -46,8 +46,8 @@ public class RandomMineralMap implements Serializable, MineralMap {
 	private static final int W = 300;
 	private static final int H = 150;
 	
-	private static final int MAX_SETS = 6000;
-	private static final int MAX_CONC = 3000;
+	private static final int NUM_REGIONS = 3300;
+	private static final int NUM_CONCONCENTRATIONS = 2500;
 	
 	private static final float REGION_FACTOR = 5;
 	private static final float NON_REGION_FACTOR = 100F;
@@ -76,7 +76,7 @@ public class RandomMineralMap implements Serializable, MineralMap {
 	 * Constructor
 	 */
 	RandomMineralMap() {
-		mineralConcentrations = new ArrayList<>(MAX_CONC);
+		mineralConcentrations = new ArrayList<>(NUM_CONCONCENTRATIONS);
 
 		// Determine mineral concentrations.
 		determineMineralConcentrations();
@@ -105,7 +105,7 @@ public class RandomMineralMap implements Serializable, MineralMap {
 				MineralType mineralType = i.next();
 
 				// Create super set of topographical regions.
-				Set<Coordinates> regionSet = new HashSet<>(MAX_SETS);
+				Set<Coordinates> regionSet = new HashSet<>(NUM_REGIONS);
 				Iterator<String> j = mineralType.getLocales().iterator();
 				while (j.hasNext()) {
 					String locale = j.next().trim();
@@ -117,7 +117,7 @@ public class RandomMineralMap implements Serializable, MineralMap {
 						regionSet.addAll(sedimentaryRegionSet);
 				}
 				Coordinates[] regionArray = regionSet.toArray(new Coordinates[regionSet.size()]);
-
+//				System.out.println("regionArray: " + regionArray.length);
 				if (regionArray.length > 0) {
 					// Determine individual mineral concentrations.
 					int concentrationNumber = Math
@@ -150,6 +150,8 @@ public class RandomMineralMap implements Serializable, MineralMap {
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, "Error creating random mineral map.", e);
 		}
+		
+//		System.out.println("mineralConcentrations: " + mineralConcentrations.size());
 	}
 
 	/**

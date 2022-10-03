@@ -3042,6 +3042,19 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
+	<!-- Small wheels are made with steel sheets and steel wires. -->
+	<process name="make wheelbarrow" tech="1" skill="1" work-time="50" process-time="100"
+			power-required="0.75">
+		<inputs>
+			<resource name="carbon" amount=".15" />		
+			<part name="iron sheet" number="1" />
+			<part name="steel wire" number="8" />
+		</inputs>
+		<outputs>
+			<part name="wheelbarrow" number="1" />
+		</outputs>
+	</process>
+
 	<!-- To be added :
 
 	1. Zirconia, Silicon Nittride Si3N4, 	manufacturing ceramic tile.

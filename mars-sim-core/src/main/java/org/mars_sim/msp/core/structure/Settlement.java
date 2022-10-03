@@ -7,6 +7,7 @@
 
 package org.mars_sim.msp.core.structure;
 
+import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
@@ -16,7 +17,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.AbstractMap.SimpleEntry;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -59,9 +59,9 @@ import org.mars_sim.msp.core.person.ai.job.util.ShiftType;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
-import org.mars_sim.msp.core.person.ai.task.EatDrink;
 import org.mars_sim.msp.core.person.ai.task.Conversation;
 import org.mars_sim.msp.core.person.ai.task.DayDream;
+import org.mars_sim.msp.core.person.ai.task.EatDrink;
 import org.mars_sim.msp.core.person.ai.task.Read;
 import org.mars_sim.msp.core.person.ai.task.Relax;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
@@ -69,6 +69,7 @@ import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.person.health.RadiationExposure;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.resource.ResourceUtil;
+import org.mars_sim.msp.core.resource.StorableItem;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.science.ScienceType;
@@ -316,6 +317,9 @@ public class Settlement extends Structure implements Temporal,
 	/** The settlement's daily labor hours output. */
 	private SolMetricDataLogger<Integer> dailyLaborTime;
 
+	/** The object that keeps track of wheelbarrows. */
+	private StorableItem wheelbarrows;
+	
 	/** The settlement's achievement in scientific fields. */
 	private EnumMap<ScienceType, Double> scientificAchievement;
 	/** The map of settlements allowed to trade. */
@@ -553,7 +557,9 @@ public class Settlement extends Structure implements Temporal,
 		// Check nearby mineral concentration
 		mineralConcentrationMap = checkNearbyMineral();
 		if (!mineralConcentrationMap.isEmpty())
-			logger.log(this, Level.INFO, 0L, "Initial mineral concentration map: " + mineralConcentrationMap.toString());
+			logger.log(this, Level.INFO, 0L, "Settlement vicinity mineral concentration: " + mineralConcentrationMap.toString());
+		
+
 	}
 
 	/*
@@ -3665,10 +3671,7 @@ public class Settlement extends Structure implements Temporal,
 	/**
 	 * Checks if there are any mineral locations in the vicinity.
 	 *
-	 * @param rover          the rover to use.
-	 * @param homeSettlement the starting settlement.
-	 * @return true if mineral locations.
-	 * @throws Exception if error determining mineral locations.
+	 * @return a map of mineral and amounts.
 	 */
 	public Map<String, Double> checkNearbyMineral() {
 		Map<String, Double> minerals = new HashMap<>();

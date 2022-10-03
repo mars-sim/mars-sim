@@ -28,6 +28,7 @@ public class ItemResourceUtil implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	private static final String WHEELBARROW = "wheelbarrow";
 	private static final String PRESSURE_SUIT = "pressure suit";
 	private static final String PETRI_DISH = "petri dish";
 	private static final String GARMENT = "garment";
@@ -129,10 +130,12 @@ public class ItemResourceUtil implements Serializable {
 
 	public static Part wheel;
 	public static Part battery;
+
+	public static int wheelbarrowID;
 	
 	public static int garmentID;
 	public static int pressureSuitID;
-	public static int PETRI_DISH_ID;
+	public static int petriDishID;
 
 	public static int pneumaticDrillID;
 	public static int backhoeID;
@@ -174,6 +177,10 @@ public class ItemResourceUtil implements Serializable {
 		createIDs();
 	}
 
+	public static int getTotalNum() {
+		return partIDNameMap.size();
+	}
+	
 	/**
 	 * Creates an item resource. This is only used for test cases but should it be here?
 	 *
@@ -195,6 +202,7 @@ public class ItemResourceUtil implements Serializable {
 	 * Prepares the id's of a few item resources
 	 */
 	public static void createIDs() {
+		// Create parts reference
 		pneumaticDrill = (Part) findItemResource(PNEUMATIC_DRILL);
 		backhoePart = (Part) findItemResource(BACKHOE);
 		socketWrench = (Part) findItemResource(SOCKET_WRENCH);
@@ -208,7 +216,8 @@ public class ItemResourceUtil implements Serializable {
 		wheel = (Part) findItemResource(ROVER_WHEEL);
 		battery = (Part) findItemResource(CHEMICAL_BATTERY);
 		
-		PETRI_DISH_ID = findIDbyItemResourceName(PETRI_DISH);
+		// Create item ids reference
+		petriDishID = findIDbyItemResourceName(PETRI_DISH);
 		garmentID = findIDbyItemResourceName(GARMENT);
 		pressureSuitID = findIDbyItemResourceName(PRESSURE_SUIT);
 
@@ -229,6 +238,9 @@ public class ItemResourceUtil implements Serializable {
 		steelIngotID = findIDbyItemResourceName(STEEL_INGOT);
 		steelSheetID = findIDbyItemResourceName(STEEL_SHEET);
 
+		// Create storable item ids reference
+		wheelbarrowID = findIDbyItemResourceName(WHEELBARROW);
+		
 		for (int i = 0; i < ATTACHMENTS.length; i++) {
 			int id = findIDbyItemResourceName(ATTACHMENTS[i]);
 			ATTACHMENTS_ID.add(id);
@@ -262,7 +274,7 @@ public class ItemResourceUtil implements Serializable {
 			itemResourceIDMap.put(p.getID(), p);
 		}
 
-		partIDNameMap = new HashMap<Integer, String>();
+		partIDNameMap = new HashMap<>();
 		for (Part p : sortedParts) {
 			partIDNameMap.put(p.getID(), p.getName());
 		}
@@ -277,7 +289,7 @@ public class ItemResourceUtil implements Serializable {
 		sortedParts = new CopyOnWriteArrayList<>(partSet);
 		Collections.sort(sortedParts);
 
-		partIDNameMap = new HashMap<Integer, String>();
+		partIDNameMap = new HashMap<>();
 		for (Part p : sortedParts) {
 			partIDNameMap.put(p.getID(), p.getName());
 		}
@@ -304,8 +316,7 @@ public class ItemResourceUtil implements Serializable {
 	public static ItemResource findItemResource(String name) {
 		// Use Java 8 stream
 		return getItemResources().stream().filter(item -> item.getName().equals(name.toLowerCase())).findFirst()
-				.orElse(null);// .get();
-		// return getItemResourcesMap().get(name.toLowerCase());
+				.orElse(null);
 	}
 
 	/**
@@ -318,14 +329,6 @@ public class ItemResourceUtil implements Serializable {
 	public static Part findItemResource(int id) {
 		return itemResourceIDMap.get(id);
 	}
-
-//	/**
-//	 * Gets an immutable collection of all the item resources.
-//	 * @return collection of item resources.
-//	 */
-//	public static Set<ItemResource> getItemResources() {
-//		return Collections.unmodifiableSet(partConfig.getItemResources());
-//	}
 
 	/**
 	 * Creates a set of item resources
@@ -392,7 +395,7 @@ public class ItemResourceUtil implements Serializable {
 	public static Integer findIDbyItemResourceName(String name) {
 		return getKeyByValue(partIDNameMap, name.toLowerCase());
 	}
-
+	
 	/**
 	 * Returns the first matched key from a given value in a map for one-to-one
 	 * relationship
@@ -431,15 +434,6 @@ public class ItemResourceUtil implements Serializable {
 		return itemResourceIDMap.keySet();
 	}
 
-//	/**
-//	 * gets a sorted map of all amount resource names by calling
-//	 * {@link AmountResourceConfig#getAmountResourcesMap()}.
-//	 * @return {@link Map}<{@link Integer}, {@link String}>
-//	 */
-//	public static Map<Integer, String> getIDNameMap() {
-//		return IDNameMap;
-//	}
-
 	/**
 	 * gets a sorted map of all amount resources by calling
 	 * {@link AmountResourceConfig#getAmountResourcesIDMap()}.
@@ -450,15 +444,6 @@ public class ItemResourceUtil implements Serializable {
 		return itemResourceIDMap;
 	}
 
-//	/**
-//	 * gets a sorted map of all amount resources by calling
-//	 * {@link AmountResourceConfig#getAmountResourcesMap()}.
-//	 * @return {@link Map}<{@link String},{@link AmountResource}>
-//	 */
-//	public static Map<String, Part> getItemResourcesMap() {
-//		return itemResourceMap;
-//	}
-
 	/**
 	 * convenience method that calls {@link #getAmountResources()} and turns the
 	 * result into an alphabetically ordered list of strings.
@@ -466,7 +451,7 @@ public class ItemResourceUtil implements Serializable {
 	 * @return {@link List}<{@link String}>
 	 */
 	public static List<String> getItemResourceStringSortedList() {
-		List<String> resourceNames = new CopyOnWriteArrayList<String>();
+		List<String> resourceNames = new CopyOnWriteArrayList<>();
 		Iterator<Part> i = partSet.iterator();
 		while (i.hasNext()) {
 			resourceNames.add(i.next().getName().toLowerCase());

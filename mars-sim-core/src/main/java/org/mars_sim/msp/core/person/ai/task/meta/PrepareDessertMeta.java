@@ -30,7 +30,7 @@ public class PrepareDessertMeta extends MetaTask {
             "Task.description.prepareDessertMeta"); //$NON-NLS-1$
 
     private static final double VALUE = 1;
-    private static final int MOD = 5;
+    private static final int MOD = 10;
     private static final int CAP = 2_000;
     
     public PrepareDessertMeta() {
@@ -58,8 +58,7 @@ public class PrepareDessertMeta extends MetaTask {
 
         double result = 0D;
         
-        if (person.isInSettlement() 
-        		&& CookMeal.isMealTime(person, PrepareDessert.PREP_TIME)) {
+        if (person.isInSettlement()) {
             // Desserts should be prepared during meal times.
         	
             // Probability affected by the person's stress and fatigue.
@@ -87,8 +86,8 @@ public class PrepareDessertMeta extends MetaTask {
                 // Effort-driven task modifier.
                 result *= person.getPerformanceRating();
                 
-        		// If it's meal time, increase probability
-        		if (CookMeal.isMealTime(person, 0)) {
+        		// If it's meal time, decrease probability
+        		if (CookMeal.isMealTime(person, PrepareDessert.PREP_TIME)) {
         			result /= MOD;
         		}
             }
