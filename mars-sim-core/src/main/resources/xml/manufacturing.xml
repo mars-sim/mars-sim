@@ -1001,6 +1001,17 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
+	<process name="maufacture thermal bottle" tech="1" skill="1" work-time="20" process-time="20"
+			power-required="0.2">
+		<inputs>
+			<resource name="aluminum" amount="0.8" />			
+			<part name="plastic sheet" number="2" />
+		</inputs>
+		<outputs>
+			<equipment name="thermal bottle" number="2" />
+		</outputs>
+	</process>
+	
 	<!-- Produces 1m x 1m x 1cm (26kg) sheet of glass. -->
 	<process name="make sheet glass" tech="2" skill="1" work-time="10" process-time="300"
 			power-required=".2">

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * EquipmentGood.java
- * @date 2022-06-26
+ * @date 2022-10-04
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.goods;
@@ -35,12 +35,15 @@ public class EquipmentGood extends Good {
 	private static final long serialVersionUID = 1L;
 	
 	private static final int PROJECTED_GAS_CANISTERS = 10;
+	private static final int PROJECTED_THERMAL_BOTTLE = 1;
+	
 	private static final double GAS_CANISTER_DEMAND = 1;
 	private static final double SPECIMEN_BOX_DEMAND = 1.2;
 	private static final double LARGE_BAG_DEMAND = .5;
 	private static final double BAG_DEMAND = .1;
 	private static final double BARREL_DEMAND = .2;
-
+	private static final double THERMAL_BOTTLE_DEMAND = 0.25;
+	
 	private static final double INITIAL_EQUIPMENT_DEMAND = 0;
 	private static final double INITIAL_EQUIPMENT_SUPPLY = 0;
 	private static final double EVA_SUIT_VALUE = 50;
@@ -231,6 +234,9 @@ public class EquipmentGood extends Good {
 			case GAS_CANISTER:
 				return Math.max(baseDemand * ratio * PROJECTED_GAS_CANISTERS, 1000) * areologistFactor * GAS_CANISTER_DEMAND;
 
+			case THERMAL_BOTTLE:
+				return Math.max(baseDemand * ratio * PROJECTED_THERMAL_BOTTLE, 1000) * areologistFactor * THERMAL_BOTTLE_DEMAND;
+				
 			default:
 				throw new IllegalArgumentException("Do not know how to calculate demand for " + equipmentType);
 		}

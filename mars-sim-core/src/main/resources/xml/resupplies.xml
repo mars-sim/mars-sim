@@ -33,6 +33,10 @@
 <resupply-list>
 
 	<resupply name="Standard Resupply 1">
+	
+	    <!-- Containers-->
+	    <equipment type="thermal bottle" number="12" />	
+	
 	    <!-- Life Support Resources -->
 	    <resource name="food" amount="1000.0" />
 	    <resource name="water" amount="4000.0" />
@@ -145,6 +149,8 @@
 
 	    <!-- Utility Resources -->
 	    <resource name="iron powder" amount="10.0" />  
+	
+	        	
 	</resupply>
 	
 	<!-- Resupply mission from Earth. -->
@@ -174,13 +180,18 @@
 			
 		<!-- New equipment -->
 		<!-- type: the type of equipment. -->
-		<!-- number: the number of this type of equipment. -->
+		<!-- number: the number of this type of equipment. -->		
+		
 		<equipment type="EVA Suit" number="16" />
+							
+		 <!-- Containers-->
+	    <equipment type="thermal bottle" number="8" />
 		<equipment type="Gas Canister" number="100" />
 		<equipment type="Bag" number="100" />
 		<equipment type="Large Bag" number="100" />
 		<equipment type="Barrel" number="100" />
-
+    	<equipment type="thermal bottle" number="12" />
+    
 		<!-- New immigrants from Earth. -->
 		<!-- number: the number of immigrants. -->
 		<person number="4" />
@@ -220,13 +231,17 @@
 		<vehicle type="Light Utility Vehicle" number="1" />
 		<vehicle type="Delivery Drone" number="1" />
 					
+	    
 		<equipment type="EVA Suit" number="24" />
+							
+		 <!-- Containers-->
+	    <equipment type="thermal bottle" number="12" />		
 		<equipment type="Gas Canister" number="140" />
 		<equipment type="Barrel" number="140" />
 		<equipment type="Bag" number="140" />
 		<equipment type="Large Bag" number="140" />
 		<equipment type="Specimen Box" number="140" />
-		
+	    		
 		<person number="4" />
 		
 		<resource name="hydrogen" amount="1000.0" />
@@ -286,11 +301,15 @@
 		<vehicle type="Delivery Drone" number="1" />
 		
 		<equipment type="EVA Suit" number="48" />
+		
+		 <!-- Containers-->
+	    <equipment type="thermal bottle" number="24" />		 
 		<equipment type="Gas Canister" number="260" />
 		<equipment type="Barrel" number="260" />
 		<equipment type="Bag" number="260" />
 		<equipment type="Large Bag" number="260" />
 		<equipment type="Specimen Box" number="260" />
+
 		
 		<person number="12" />
 		

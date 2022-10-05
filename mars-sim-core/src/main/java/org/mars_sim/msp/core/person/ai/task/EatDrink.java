@@ -16,6 +16,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.environment.MarsSurface;
+import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.ResourceHolder;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -68,7 +69,7 @@ public class EatDrink extends Task {
 	private static final String MILK = "milk";
 	
 //	private static final int HUNGER_CEILING = 1000;
-	private static final int THIRST_CEILING = PhysicalCondition.THIRST_CEILING_UPON_DRINKING;
+//	private static final int THIRST_CEILING = PhysicalCondition.THIRST_CEILING_UPON_DRINKING;
 
 	// Static members
 	private static final int FOOD_ID = ResourceUtil.foodID;
@@ -153,12 +154,18 @@ public class EatDrink extends Task {
 
 		double waterAmount = 0;
 
+		ResourceHolder rh = (ResourceHolder) person;
+		foodAmount = rh.getAmountResourceStored(FOOD_ID);
+		waterAmount = rh.getAmountResourceStored(WATER_ID);
+		
 		Unit container = person.getContainerUnit();
 		if (container instanceof ResourceHolder) {
-			ResourceHolder rh = (ResourceHolder) container;
 			// Take preserved food from inventory if it is available.
-			foodAmount = rh.getAmountResourceStored(FOOD_ID);
-			waterAmount = rh.getAmountResourceStored(WATER_ID);
+			rh = (ResourceHolder) container;
+			if (foodAmount == 0)
+				foodAmount = rh.getAmountResourceStored(FOOD_ID);
+			if (waterAmount == 0)
+				waterAmount = rh.getAmountResourceStored(WATER_ID);
 		}
 
 		// Check if a cooked meal is available in a kitchen building at the settlement.
@@ -203,9 +210,12 @@ public class EatDrink extends Task {
 					// How to make a person walk out of vehicle back to settlement 
 					// if hunger is >500 ?
 					
-					ResourceHolder rh = (ResourceHolder) vehicle.getSettlement();
-					foodAmount = rh.getAmountResourceStored(FOOD_ID);
-					waterAmount = rh.getAmountResourceStored(WATER_ID);
+					rh = (ResourceHolder) vehicle.getSettlement();
+
+					if (foodAmount == 0)
+						foodAmount = rh.getAmountResourceStored(FOOD_ID);
+					if (waterAmount == 0)
+						waterAmount = rh.getAmountResourceStored(WATER_ID);
 					
 					if (hungry && (foodAmount > 0 || desserts > 0)) {
 						food = true;
@@ -227,9 +237,11 @@ public class EatDrink extends Task {
 					}
 				}
 				else {
-					ResourceHolder rh = (ResourceHolder) vehicle;
-					foodAmount = rh.getAmountResourceStored(FOOD_ID);
-					waterAmount = rh.getAmountResourceStored(WATER_ID);
+					rh = (ResourceHolder) container;
+					if (foodAmount == 0)
+						foodAmount = rh.getAmountResourceStored(FOOD_ID);
+					if (waterAmount == 0)
+						waterAmount = rh.getAmountResourceStored(WATER_ID);
 					
 					if (hungry && (foodAmount > 0 || desserts > 0)) {
 						food = true;
@@ -734,7 +746,7 @@ public class EatDrink extends Task {
 			Unit container = person.getContainerUnit();
 			if (person.isInside()) {
 				// Take preserved food from inventory if it is available.
-				boolean haveFood = retrieveAnResource(proportion, FOOD_ID, container);
+				boolean haveFood = retrieveAnResource(proportion, FOOD_ID, (ResourceHolder)container);
 
 				if (haveFood) {
 					// Record the amount consumed
@@ -772,7 +784,7 @@ public class EatDrink extends Task {
 	 * @param provider The provider of resources.
 	 * @return Did retrieve all ?
 	 */
-	private boolean retrieveAnResource(double quantity, int resourceID, Unit provider) {
+	private boolean retrieveAnResource(double quantity, int resourceID, ResourceHolder provider) {
 		boolean result = false;
 		if (provider instanceof ResourceHolder) {
 			ResourceHolder rh = (ResourceHolder) provider;
@@ -923,7 +935,7 @@ public class EatDrink extends Task {
 
 				boolean hasDessert = retrieveAnResource(proportion,
 							ResourceUtil.findIDbyAmountResourceName(nameOfDessert.getName()),
-							containerUnit);
+							(ResourceHolder)containerUnit);
 
 				if (hasDessert) {
 					// Record the amount consumed
@@ -977,7 +989,53 @@ public class EatDrink extends Task {
 	 */
 	private void calculateWater(boolean waterOnly) {
 
+		double amount = waterEachServing;
+
+		// Case 0: drink from thermal bottle
+		double availableBottle = 0;
+		
+		Container bottle = person.getThermalBottle();
+		
+		if (bottle != null)  {
+			
+			availableBottle = bottle.getAmountResourceStored(WATER_ID);
+
+			// Test to see if there's enough water
+			if (availableBottle >= amount) {
+				System.out.println("1. Use bottle to drink " + amount + " kg of water.");
+				consumeWater(bottle, amount, waterOnly);
+				return;
+			}
+			else if (availableBottle > 0) {
+				amount = availableBottle;
+				System.out.println("2. Use bottle to drink " + amount + " kg of water.");
+				consumeWater(bottle, amount, waterOnly);
+				return;
+			}
+		}
+				
 		Unit containerUnit = person.getContainerUnit();
+		
+		if (bottle == null) {
+			// if the person does not have a thermal bottle assigned
+			bottle = person.AssignThermalBottle();
+		}
+
+		// Need to fill up the empty bottle
+		if (bottle != null) {
+			
+			availableBottle = bottle.getAmountResourceStored(WATER_ID);
+			
+			if (availableBottle == 0.0) {
+				// Retrieve the water from settlement/vehicle
+				double missing = ((ResourceHolder)containerUnit).retrieveAmountResource(WATER_ID, 0.5);
+				// Fill up the bottle with water
+				if (missing < 0.5) {
+					person.fillUpThermalBottle(0.5 - missing);
+				}
+			}	
+		}
+		
 		EVASuit suit = null;
 
 		if (containerUnit != null
@@ -985,8 +1043,6 @@ public class EatDrink extends Task {
 			// Doing EVA outside. Get water from one's EVA suit
 			suit = person.getSuit();
 		}
-
-		double amount = waterEachServing;
 
 		// Case 1: drink from EVA suit
 		if (suit != null && amount > 0) {
@@ -1014,10 +1070,10 @@ public class EatDrink extends Task {
 				double available = getAmountResourceStored(containerUnit, WATER_ID);
 				// Test to see if there's enough water
 				if (available >= amount)
-					consumeWater(containerUnit, amount, waterOnly);
+					consumeWater((ResourceHolder)containerUnit, amount, waterOnly);
 				else if (available > 0){
 					amount = available;
-					consumeWater(containerUnit, amount, waterOnly);
+					consumeWater((ResourceHolder)containerUnit, amount, waterOnly);
 				}
 			}
 		}
@@ -1031,7 +1087,7 @@ public class EatDrink extends Task {
 	 * @param amount
 	 * @param waterOnly
 	 */
-	private void consumeWater(Unit containerUnit, double amount, boolean waterOnly) {
+	private void consumeWater(ResourceHolder containerUnit, double amount, boolean waterOnly) {
 		// Reduce thirst
 		pc.reduceThirst(amount * THIRST_PER_WATER_SERVING);
 		// Retrieve the water

@@ -64,6 +64,7 @@ import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.person.ai.training.TrainingType;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -1798,7 +1799,7 @@ public class Person extends Unit implements Worker, Temporal, EquipmentOwner {
 	public boolean removeEquipment(Equipment equipment) {
 		return eqmInventory.removeEquipment(equipment);
 	}
-
+	
 	/**
 	 * Stores the item resource.
 	 *
@@ -1888,7 +1889,7 @@ public class Person extends Unit implements Worker, Temporal, EquipmentOwner {
 	 */
 	@Override
 	public boolean hasAmountResourceRemainingCapacity(int resource) {
-		return eqmInventory. hasAmountResourceRemainingCapacity(resource);
+		return eqmInventory.hasAmountResourceRemainingCapacity(resource);
 	}
 	
 	/**
@@ -2219,6 +2220,43 @@ public class Person extends Unit implements Worker, Temporal, EquipmentOwner {
 		return getItemResourceStored(ItemResourceUtil.pressureSuitID) > 0;
 	}
 
+	public boolean hasThermalBottle() {
+		return findNumContainersOfType(EquipmentType.THERMAL_BOTTLE) > 0;
+	}
+	
+	public void fillUpThermalBottle(double amount) {
+		Container bottle = getThermalBottle();
+		bottle.storeAmountResource(ResourceUtil.waterID, amount);
+	}
+	
+	public Container getThermalBottle() {
+		return findContainer(EquipmentType.THERMAL_BOTTLE, true, ResourceUtil.waterID);
+	}
+	
+	/**
+	 * Assigns standard living necessity.
+	 */
+	public Container AssignThermalBottle() {
+		if (!hasThermalBottle()) {
+			Equipment bottle = null;
+			
+			for (Equipment e : getSettlement().getEquipmentSet()) {
+				if (e.getEquipmentType() == EquipmentType.THERMAL_BOTTLE) {	
+					bottle = e;
+					break;
+				}
+			}
+					
+			if (bottle != null) {
+				getSettlement().removeEquipment(bottle);
+				addEquipment(bottle);
+				return (Container)bottle;
+			}
+		}
+		
+		return null;
+	}
+	
 	/**
 	 * Puts on a garment.
 	 *

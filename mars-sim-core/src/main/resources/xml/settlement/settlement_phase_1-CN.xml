@@ -88,12 +88,14 @@
     <vehicle type="Delivery Drone" number="1" />
 
     <equipment type="EVA Suit" number="8" />
+    
     <equipment type="Gas Canister" number="40" />
     <equipment type="Barrel" number="40" />
     <equipment type="Bag" number="40" />
     <equipment type="Large Bag" number="25" />
     <equipment type="Specimen Box" number="50" />
-
+ 
+    
     <part-package name="package 1" number="1" />
 
     <resupply>

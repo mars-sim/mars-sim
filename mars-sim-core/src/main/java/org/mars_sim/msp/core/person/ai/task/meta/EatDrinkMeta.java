@@ -52,18 +52,24 @@ public class EatDrinkMeta extends MetaTask {
 			return 0;
 		}
 		
-		
 		double result = 0;
 		double foodAmount = 0;
 		double waterAmount = 0;
 
-		Unit container = person.getContainerUnit();
 		Vehicle vehicle = null;
 		
+		ResourceHolder rh = (ResourceHolder) person;
+		foodAmount = rh.getAmountResourceStored(FOOD_ID);
+		waterAmount = rh.getAmountResourceStored(WATER_ID);
+		
+		Unit container = person.getContainerUnit();
+		
 		if (container != null && container instanceof ResourceHolder) {
-			ResourceHolder rh = (ResourceHolder) container;
-			foodAmount = rh.getAmountResourceStored(FOOD_ID);
-			waterAmount = rh.getAmountResourceStored(WATER_ID);
+			rh = (ResourceHolder) container;
+			if (foodAmount == 0)
+				foodAmount = rh.getAmountResourceStored(FOOD_ID);
+			if (waterAmount == 0)
+				waterAmount = rh.getAmountResourceStored(WATER_ID);
 		}
 
 		boolean food = false;
@@ -118,6 +124,7 @@ public class EatDrinkMeta extends MetaTask {
 		}
 
 		else if (person.isInVehicle()) {
+
 			// Future: how to prevent a person to eat food from the vehicle 
 			// before the mission embarking ? 
 			
@@ -126,13 +133,16 @@ public class EatDrinkMeta extends MetaTask {
 			
 			if (UnitType.VEHICLE == container.getUnitType()) {
 				vehicle = (Vehicle)container;
+				
 				if (vehicle.isInSettlement()) {
 					// How to make a person walk out of vehicle back to settlement 
 					// if hunger is >500 ?
-					
-					ResourceHolder rh = (ResourceHolder) vehicle.getSettlement();
-					foodAmount = rh.getAmountResourceStored(FOOD_ID);
-					waterAmount = rh.getAmountResourceStored(WATER_ID);
+		
+					rh = (ResourceHolder) vehicle.getSettlement();
+					if (foodAmount == 0)
+						foodAmount = rh.getAmountResourceStored(FOOD_ID);
+					if (waterAmount == 0)
+						waterAmount = rh.getAmountResourceStored(WATER_ID);
 		
 					if (hungry && (foodAmount > 0 || desserts > 0)) {
 						food = true;

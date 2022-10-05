@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * EquipmentType.java
- * @date 2021-10-08
+ * @date 2022-10-04
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.equipment;
@@ -23,7 +23,8 @@ public enum EquipmentType {
 	BARREL 				(Msg.getString("EquipmentType.barrel")), //$NON-NLS-1$
 	GAS_CANISTER		(Msg.getString("EquipmentType.gasCanister")), //$NON-NLS-1$
 	LARGE_BAG			(Msg.getString("EquipmentType.largeBag")), //$NON-NLS-1$
-	SPECIMEN_BOX		(Msg.getString("EquipmentType.specimenBox")); //$NON-NLS-1$
+	SPECIMEN_BOX		(Msg.getString("EquipmentType.specimenBox")), //$NON-NLS-1$
+	THERMAL_BOTTLE		(Msg.getString("EquipmentType.thermalBottle")); //$NON-NLS-1$
 	
 	private String name;	
 

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * EquipmentFactory.java
- * @date 2021-11-13
+ * @date 2022-10-04
  * @author Scott Davis
  */
 
@@ -48,8 +48,9 @@ public final class EquipmentFactory {
 		case LARGE_BAG:
 			newEqm = new GenericContainer(newName, type, false, settlement);
 			break;
-
+			
 		case SPECIMEN_BOX:
+		case THERMAL_BOTTLE:
 			// Reusable Containers
 			newEqm = new GenericContainer(newName, type, true, settlement);
 			break;
@@ -100,6 +101,8 @@ public final class EquipmentFactory {
 			return 0.2;
 		case SPECIMEN_BOX:
 			return 0.65;
+		case THERMAL_BOTTLE:
+			return 0.5;			
 		default:
 			throw new IllegalStateException("Class for equipment: " + type + " could not be found.");
 		}

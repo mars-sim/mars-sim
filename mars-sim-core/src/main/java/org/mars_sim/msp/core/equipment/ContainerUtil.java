@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * ContainerUtil.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-10-04
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.equipment;
@@ -77,6 +77,8 @@ public final class ContainerUtil {
 			return 100D;
 		case SPECIMEN_BOX:
 			return 50D;	
+		case THERMAL_BOTTLE:
+			return .5;				
 		default:
 			throw new IllegalArgumentException("Equipment type " + type + " is not a container");
 		}
@@ -100,7 +102,9 @@ public final class ContainerUtil {
 		case LARGE_BAG:
 			return (PhaseType.SOLID == phase);
 		case SPECIMEN_BOX:
-			return (PhaseType.SOLID == phase);			
+			return (PhaseType.SOLID == phase);	
+		case THERMAL_BOTTLE:
+			return (PhaseType.LIQUID == phase);			
 		default:
 			throw new IllegalArgumentException("Equipment type " + container + " is not a container");
 		}

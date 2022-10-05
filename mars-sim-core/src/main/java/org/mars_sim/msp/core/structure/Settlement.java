@@ -1054,6 +1054,7 @@ public class Settlement extends Structure implements Temporal,
 
 				// Initialize the goods manager
 				goodsManager.updateGoodValues();
+		
 			}
 
 			// Tag available airlocks into two categories

@@ -105,9 +105,9 @@ public class Conversion {
 					// Check if it is "And" string and skip making the 'a' upper-case
 					if (input.length() > 2 
 							&& charArray[index] == 'a'
-							&& charArray[index+1] == 'n'
-							&& charArray[index+2] == 'd'
-							&& Character.isSpaceChar(charArray[index+3])) {
+							&& (index+1 < charArray.length && charArray[index+1] == 'n')
+							&& (index+2 < charArray.length && charArray[index+2] == 'd')
+							&& (index+3 < charArray.length && Character.isSpaceChar(charArray[index+3]))) {
 						nextTitleCase = false;	
 					}
 					else {
