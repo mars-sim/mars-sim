@@ -78,7 +78,9 @@ public final class ContainerUtil {
 		case SPECIMEN_BOX:
 			return 50D;	
 		case THERMAL_BOTTLE:
-			return .5;				
+			return .5;		
+		case WHEELBARROW:
+			return 100;					
 		default:
 			throw new IllegalArgumentException("Equipment type " + type + " is not a container");
 		}
@@ -104,7 +106,9 @@ public final class ContainerUtil {
 		case SPECIMEN_BOX:
 			return (PhaseType.SOLID == phase);	
 		case THERMAL_BOTTLE:
-			return (PhaseType.LIQUID == phase);			
+			return (PhaseType.LIQUID == phase);	
+		case WHEELBARROW:
+			return (PhaseType.SOLID == phase);
 		default:
 			throw new IllegalArgumentException("Equipment type " + container + " is not a container");
 		}

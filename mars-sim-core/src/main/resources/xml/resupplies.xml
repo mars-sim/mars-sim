@@ -35,7 +35,14 @@
 	<resupply name="Standard Resupply 1">
 	
 	    <!-- Containers-->
-	    <equipment type="thermal bottle" number="12" />	
+			 <!-- Containers-->
+		<equipment type="barrel" number="40" />
+		<equipment type="bag" number="40" />
+		<equipment type="gas canister" number="40" />		
+		<equipment type="large bag" number="40" />
+		<equipment type="specimen box" number="40" />
+    	<equipment type="thermal bottle" number="8" />	
+ 	    <equipment type="wheelbarrow" number="24" />	   	
 	
 	    <!-- Life Support Resources -->
 	    <resource name="food" amount="1000.0" />
@@ -182,16 +189,17 @@
 		<!-- type: the type of equipment. -->
 		<!-- number: the number of this type of equipment. -->		
 		
-		<equipment type="EVA Suit" number="16" />
+		<equipment type="EVA Suit" number="8" />
 							
 		 <!-- Containers-->
-	    <equipment type="thermal bottle" number="8" />
-		<equipment type="Gas Canister" number="100" />
-		<equipment type="Bag" number="100" />
-		<equipment type="Large Bag" number="100" />
-		<equipment type="Barrel" number="100" />
-    	<equipment type="thermal bottle" number="12" />
-    
+		<equipment type="barrel" number="80" />
+		<equipment type="bag" number="80" />
+		<equipment type="gas canister" number="80" />		
+		<equipment type="large bag" number="80" />
+		<equipment type="specimen box" number="80" />
+    	<equipment type="thermal bottle" number="4" />			
+   	    <equipment type="wheelbarrow" number="4" />
+   	      
 		<!-- New immigrants from Earth. -->
 		<!-- number: the number of immigrants. -->
 		<person number="4" />
@@ -232,16 +240,17 @@
 		<vehicle type="Delivery Drone" number="1" />
 					
 	    
-		<equipment type="EVA Suit" number="24" />
+		<equipment type="EVA Suit" number="8" />
 							
 		 <!-- Containers-->
-	    <equipment type="thermal bottle" number="12" />		
-		<equipment type="Gas Canister" number="140" />
-		<equipment type="Barrel" number="140" />
-		<equipment type="Bag" number="140" />
-		<equipment type="Large Bag" number="140" />
-		<equipment type="Specimen Box" number="140" />
-	    		
+		<equipment type="barrel" number="80" />
+		<equipment type="bag" number="80" />
+		<equipment type="gas canister" number="80" />		
+		<equipment type="large bag" number="80" />
+		<equipment type="specimen box" number="80" />
+    	<equipment type="thermal bottle" number="4" />	
+ 	    <equipment type="wheelbarrow" number="2" />
+ 	    	    		
 		<person number="4" />
 		
 		<resource name="hydrogen" amount="1000.0" />
@@ -300,16 +309,16 @@
 		<vehicle type="Light Utility Vehicle" number="1" />
 		<vehicle type="Delivery Drone" number="1" />
 		
-		<equipment type="EVA Suit" number="48" />
+		<equipment type="EVA Suit" number="24" />
 		
 		 <!-- Containers-->
-	    <equipment type="thermal bottle" number="24" />		 
-		<equipment type="Gas Canister" number="260" />
-		<equipment type="Barrel" number="260" />
-		<equipment type="Bag" number="260" />
-		<equipment type="Large Bag" number="260" />
-		<equipment type="Specimen Box" number="260" />
-
+		<equipment type="barrel" number="80" />
+		<equipment type="bag" number="80" />
+		<equipment type="gas canister" number="80" />		
+		<equipment type="large bag" number="80" />
+		<equipment type="specimen box" number="80" />
+    	<equipment type="thermal bottle" number="12" />	
+ 	    <equipment type="wheelbarrow" number="12" />
 		
 		<person number="12" />
 		

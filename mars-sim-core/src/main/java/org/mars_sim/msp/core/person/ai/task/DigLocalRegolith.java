@@ -42,7 +42,7 @@ implements Serializable {
 	public DigLocalRegolith(Person person) {
         // Use EVAOperation constructor.
         super(NAME, COLLECT_REGOLITH, ResourceUtil.regolithID, 
-        	  EquipmentType.BAG, person);
+        	  EquipmentType.WHEELBARROW, person);
         if (!isDone()) {
         	setCollectionRate(getSettlement().getRegolithCollectionRate());
         }

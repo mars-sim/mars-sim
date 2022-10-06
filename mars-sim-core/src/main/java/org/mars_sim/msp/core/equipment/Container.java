@@ -17,6 +17,7 @@ public interface Container extends ResourceHolder {
 
 	/**
 	 * Containers only support a single resource.
+	 * 
 	 * @return Resource ID assigned to the container.
 	 */
 	public int getResource();

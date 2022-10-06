@@ -58,7 +58,7 @@ public class ExitAirlock extends Task {
 	private static final String RESERVATION_NOT_MADE = "Reservation not made.";
 	private static final String NOT_FIT = "Not fit enough";
 	private static final String INNER_DOOR_LOCKED = "Inner door was locked.";
-	private static final String CHAMBER_FULL = "All 4 chambers are occupied.";
+	private static final String CHAMBER_FULL = "All chambers are occupied.";
 	private static final String NOT_IN_RIGHT_AIRLOCK_MODE = "Airlock is not in egress mode.";
 	
     /** The minimum performance needed. */

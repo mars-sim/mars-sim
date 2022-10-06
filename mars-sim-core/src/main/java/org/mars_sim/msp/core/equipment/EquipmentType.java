@@ -24,7 +24,8 @@ public enum EquipmentType {
 	GAS_CANISTER		(Msg.getString("EquipmentType.gasCanister")), //$NON-NLS-1$
 	LARGE_BAG			(Msg.getString("EquipmentType.largeBag")), //$NON-NLS-1$
 	SPECIMEN_BOX		(Msg.getString("EquipmentType.specimenBox")), //$NON-NLS-1$
-	THERMAL_BOTTLE		(Msg.getString("EquipmentType.thermalBottle")); //$NON-NLS-1$
+	THERMAL_BOTTLE		(Msg.getString("EquipmentType.thermalBottle")), //$NON-NLS-1$
+	WHEELBARROW			(Msg.getString("EquipmentType.wheelbarrow")); //$NON-NLS-1$
 	
 	private String name;	
 

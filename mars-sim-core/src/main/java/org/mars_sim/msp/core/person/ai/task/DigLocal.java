@@ -123,8 +123,8 @@ implements Serializable {
 	        }
      	}
 
-        // Take bags for collecting resource.
-        // If bags are not available, end task.
+        // Take container for collecting resource.
+        // If container are not available, end task.
         if (transferContainer() == null) {
         	logger.log(person, Level.WARNING, 4_000, "No " + containerType.name()
         				+ " for " + resourceName + " are available.");
@@ -230,8 +230,8 @@ implements Serializable {
      	}
 
      	// Get a container
-        Container aBag = person.findContainer(containerType, false, resourceID);
-        if (aBag == null) {
+        Container container = person.findContainer(containerType, false, resourceID);
+        if (container == null) {
         	logger.log(person, Level.WARNING, 4_000, "Has no " + containerType.getName()
         			+ " for " + resourceName);
         	checkLocation();
@@ -252,7 +252,7 @@ implements Serializable {
         boolean finishedCollecting = false;
 
         if (collected > SMALL_AMOUNT) {
-        	double excess = aBag.storeAmountResource(resourceID, collected);
+        	double excess = container.storeAmountResource(resourceID, collected);
         	if (excess > 0) {
     			finishedCollecting = true;
             }
@@ -320,18 +320,18 @@ implements Serializable {
 	public double dropOffResource(double time) {
     	double remainingTime = time;
     	
-    	Container bag = person.findContainer(containerType, false, resourceID);
-    	if (bag == null)
+    	Container container = person.findContainer(containerType, false, resourceID);
+    	if (container == null)
     		return time;
 	   	
-    	double bagAmount = bag.getAmountResourceStored(resourceID);	
+    	double amount = container.getAmountResourceStored(resourceID);	
     	
-        if (bagAmount > 0) {
+        if (amount > 0) {
         	 	
            	double portion = LOADING_RATE * time;
            	         	
-           	if (portion > bagAmount) {
-           		portion = bagAmount;
+           	if (portion > amount) {
+           		portion = amount;
            	} 	
            	
            	// Check if the bin runs out of storage space for that resource
@@ -358,7 +358,7 @@ implements Serializable {
 	        	remainingTime = remainingTime - loadingTime;
 	        	
 	        	// Retrieve this amount from the bag
-	        	bag.retrieveAmountResource(resourceID, portion);
+	        	container.retrieveAmountResource(resourceID, portion);
 				// Add to the daily output
 				settlement.addOutput(resourceID, portion, time);
 				// Store the amount in the settlement
@@ -391,24 +391,24 @@ implements Serializable {
     	// Note: should take a bag before leaving the airlock
     	// Note: also consider dropping off the resource in a shed
     	// or a shed outside of the workshop/landerhab for processing
-        Container aBag = person.findContainer(containerType, false, resourceID);
-        if (aBag == null) {
+        Container container = person.findContainer(containerType, false, resourceID);
+        if (container == null) {
         	// Doesn't have a Bag
-        	aBag = settlement.findContainer(containerType, true, resourceID);
-	        if (aBag != null) {
-            	boolean successful = aBag.transfer(person);
+        	container = settlement.findContainer(containerType, true, resourceID);
+	        if (container != null) {
+            	boolean successful = container.transfer(person);
             	if (!successful) {
-            		aBag = null;
-                	logger.log(person, Level.WARNING, 10_000, "Strangely unable to transfer an empty bag for " + resourceName + ".");
+            		container = null;
+                	logger.log(person, Level.WARNING, 10_000, "Strangely unable to transfer an empty container for " + resourceName + ".");
         			checkLocation();
                 }
 	        }
 	        else {
-	        	logger.log(person, Level.WARNING, 10_000, "Unable to find an empty bag in the inventory for " + resourceName + ".");
+	        	logger.log(person, Level.WARNING, 10_000, "Unable to find an empty container in the inventory for " + resourceName + ".");
 				checkLocation();
 	        }
         }
-        return aBag;
+        return container;
     }
 
     @Override
@@ -513,11 +513,11 @@ implements Serializable {
 		if (person.isOutside())
             setPhase(WALK_BACK_INSIDE);
     	else {
-	    	Container bag = person.findContainer(containerType, false, resourceID);
-	    	if (bag == null)
+	    	Container container = person.findContainer(containerType, false, resourceID);
+	    	if (container == null)
 	    		return;
 	    	
-            double amount = bag.getAmountResourceStored(resourceID);
+            double amount = container.getAmountResourceStored(resourceID);
 
             if (amount > 0) {
 
@@ -539,7 +539,7 @@ implements Serializable {
 //	            }
 	                	
 		    	// Transfer the bag back to the settlement
-		    	bag.transfer(settlement);
+		    	container.transfer(settlement);
 //				// Add to the daily output
 				settlement.addOutput(resourceID, amount, getTimeCompleted());
 //				// Store the amount in the settlement

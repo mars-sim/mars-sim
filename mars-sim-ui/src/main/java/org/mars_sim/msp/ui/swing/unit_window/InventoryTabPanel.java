@@ -617,8 +617,8 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 
 		public Class<?> getColumnClass(int columnIndex) {
 			Class<?> dataType = super.getColumnClass(columnIndex);
-			if (columnIndex == 0) dataType = String.class;
-			else if (columnIndex == 1) dataType = Equipment.class;
+			if (columnIndex == 0) dataType = Equipment.class;
+			else if (columnIndex == 1) dataType = String.class;
 			else if (columnIndex == 2) dataType = Double.class;
 			else if (columnIndex == 3) dataType = String.class;
 			return dataType;
@@ -641,7 +641,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 					if (name != null && mass.get(name) != null)
 						return Math.round(mass.get(name)*100.0)/100.0;
 				}
-				else if (column == 3) return contentOwner.get(equipmentList.get(row).getName()) + WHITESPACE;
+				else if (column == 3) return Conversion.capitalize(contentOwner.get(equipmentList.get(row).getName()) + WHITESPACE);
 			}
 			return "unknown";
 		}

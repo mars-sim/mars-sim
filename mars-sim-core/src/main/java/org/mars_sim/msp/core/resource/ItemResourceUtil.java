@@ -28,7 +28,7 @@ public class ItemResourceUtil implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private static final String WHEELBARROW = "wheelbarrow";
+//	private static final String WHEELBARROW = "wheelbarrow";
 	private static final String PRESSURE_SUIT = "pressure suit";
 	private static final String PETRI_DISH = "petri dish";
 	private static final String GARMENT = "garment";
@@ -239,7 +239,7 @@ public class ItemResourceUtil implements Serializable {
 		steelSheetID = findIDbyItemResourceName(STEEL_SHEET);
 
 		// Create storable item ids reference
-		wheelbarrowID = findIDbyItemResourceName(WHEELBARROW);
+//		wheelbarrowID = findIDbyItemResourceName(WHEELBARROW);
 		
 		for (int i = 0; i < ATTACHMENTS.length; i++) {
 			int id = findIDbyItemResourceName(ATTACHMENTS[i]);

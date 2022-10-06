@@ -38,7 +38,7 @@ extends Airlock {
 	private static SimLogger logger = SimLogger.getLogger(VehicleAirlock.class.getName());
 
 	/** Pressurize/depressurize time (millisols). */
-	public static final double CYCLE_TIME = 5D; 
+	public static final double CYCLE_TIME = 2D; 
 	/** The maximum number of space in the chamber. */
 	public static final int MAX_SLOTS = 2;
 	

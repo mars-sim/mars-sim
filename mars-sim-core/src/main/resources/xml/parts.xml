@@ -1000,10 +1000,6 @@
 		<description>a LED outdoor weather-proof, adjustable flood light with tripod stand</description>
 	</part>
 
-	<part name="wheelbarrow" type="container" mass="12" storable="true">
-		<description>For loading and transporting regolith, ores, minerals, rocks, etc.</description>
-	</part>
-
 <!-- Future:
 	1. work glove
 		<maintenance-entity-list>

@@ -3062,7 +3062,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="steel wire" number="8" />
 		</inputs>
 		<outputs>
-			<part name="wheelbarrow" number="1" />
+			<equipment name="wheelbarrow" number="1" />
 		</outputs>
 	</process>
 

@@ -54,7 +54,7 @@ public class EnterAirlock extends Task implements Serializable {
 	private static final TaskPhase CLEAN_UP = new TaskPhase(Msg.getString("Task.phase.cleanUp")); //$NON-NLS-1$
 	private static final TaskPhase LEAVE_AIRLOCK = new TaskPhase(Msg.getString("Task.phase.leaveAirlock")); //$NON-NLS-1$
 
-	private static final String CHAMBER_FULL = "All 4 chambers are occupied in ";
+	private static final String CHAMBER_FULL = "All chambers are occupied in ";
 	private static final String NOT_IN_RIGHT_AIRLOCK_MODE = "Airlock is not in ingress mode.";
 	
 	// Static members

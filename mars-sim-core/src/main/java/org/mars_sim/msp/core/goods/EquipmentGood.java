@@ -36,6 +36,7 @@ public class EquipmentGood extends Good {
 	
 	private static final int PROJECTED_GAS_CANISTERS = 10;
 	private static final int PROJECTED_THERMAL_BOTTLE = 1;
+	private static final double PROJECTED_WHEELBARROW = 1;
 	
 	private static final double GAS_CANISTER_DEMAND = 1;
 	private static final double SPECIMEN_BOX_DEMAND = 1.2;
@@ -43,6 +44,7 @@ public class EquipmentGood extends Good {
 	private static final double BAG_DEMAND = .1;
 	private static final double BARREL_DEMAND = .2;
 	private static final double THERMAL_BOTTLE_DEMAND = 0.25;
+	private static final double WHEELBARROW_DEMAND = .5;
 	
 	private static final double INITIAL_EQUIPMENT_DEMAND = 0;
 	private static final double INITIAL_EQUIPMENT_SUPPLY = 0;
@@ -236,9 +238,12 @@ public class EquipmentGood extends Good {
 
 			case THERMAL_BOTTLE:
 				return Math.max(baseDemand * ratio * PROJECTED_THERMAL_BOTTLE, 1000) * areologistFactor * THERMAL_BOTTLE_DEMAND;
-				
+
+			case WHEELBARROW:
+				return Math.max(baseDemand * ratio * PROJECTED_WHEELBARROW, 1000) * areologistFactor *WHEELBARROW_DEMAND;
+							
 			default:
-				throw new IllegalArgumentException("Do not know how to calculate demand for " + equipmentType);
+				throw new IllegalArgumentException("Do not know how to calculate demand for " + equipmentType + ".");
 		}
 	}
 

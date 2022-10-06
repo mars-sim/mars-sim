@@ -51,6 +51,7 @@ public final class EquipmentFactory {
 			
 		case SPECIMEN_BOX:
 		case THERMAL_BOTTLE:
+		case WHEELBARROW:			
 			// Reusable Containers
 			newEqm = new GenericContainer(newName, type, true, settlement);
 			break;
@@ -102,7 +103,9 @@ public final class EquipmentFactory {
 		case SPECIMEN_BOX:
 			return 0.65;
 		case THERMAL_BOTTLE:
-			return 0.5;			
+			return 0.5;		
+		case WHEELBARROW:
+			return 12;	
 		default:
 			throw new IllegalStateException("Class for equipment: " + type + " could not be found.");
 		}
