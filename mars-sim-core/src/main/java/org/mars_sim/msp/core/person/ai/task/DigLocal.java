@@ -357,7 +357,7 @@ implements Serializable {
 	        	
 	        	remainingTime = remainingTime - loadingTime;
 	        	
-	        	// Retrieve this amount from the bag
+	        	// Retrieve this amount from the container
 	        	container.retrieveAmountResource(resourceID, portion);
 				// Add to the daily output
 				settlement.addOutput(resourceID, portion, time);
@@ -383,17 +383,17 @@ implements Serializable {
     }
     
     /**
-     * Transfers an empty bag from a settlement to a person.
+     * Transfers an empty container from a settlement to a person.
      * 
-     * @return a bag
+     * @return a container
      */
     private Container transferContainer() {
-    	// Note: should take a bag before leaving the airlock
+    	// Note: should take a container before leaving the airlock
     	// Note: also consider dropping off the resource in a shed
     	// or a shed outside of the workshop/landerhab for processing
         Container container = person.findContainer(containerType, false, resourceID);
         if (container == null) {
-        	// Doesn't have a Bag
+        	// Doesn't have a container
         	container = settlement.findContainer(containerType, true, resourceID);
 	        if (container != null) {
             	boolean successful = container.transfer(person);
@@ -506,7 +506,7 @@ implements Serializable {
     }
 
     /**
-     * Closes out this task. If person is inside then transfer the resource from the bag to the Settlement.
+     * Closes out this task. If person is inside then transfer the resource from the container to the Settlement.
      */
     @Override
     protected void clearDown() {
@@ -538,7 +538,7 @@ implements Serializable {
 //	            			"Checking in " + Math.round(amount*10.0)/10.0 + " kg " + resourceName + ".");
 //	            }
 	                	
-		    	// Transfer the bag back to the settlement
+		    	// Transfer the container back to the settlement
 		    	container.transfer(settlement);
 //				// Add to the daily output
 				settlement.addOutput(resourceID, amount, getTimeCompleted());

@@ -65,6 +65,7 @@ import org.mars_sim.msp.core.person.ai.training.TrainingType;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
+import org.mars_sim.msp.core.science.ResearcherInterface;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -84,7 +85,7 @@ import org.mars_sim.msp.core.vehicle.VehicleType;
  * The Person class represents a person on Mars. It keeps track of everything
  * related to that person and provides information about him/her.
  */
-public class Person extends Unit implements Worker, Temporal, EquipmentOwner {
+public class Person extends Unit implements Worker, Temporal, EquipmentOwner, ResearcherInterface {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -1209,28 +1210,49 @@ public class Person extends Unit implements Worker, Temporal, EquipmentOwner {
 		return unitManager.getSettlementByID(buriedSettlement);
 	}
 
-
 	/**
 	 * Set the study that this Person is the lead on.
 	 * 
 	 * @param scientificStudy
 	 */
+	@Override
 	public void setStudy(ScientificStudy scientificStudy) {
 		this.study = scientificStudy;
 	}
 
+	
+	/**
+	 * Gets the scientific study instance.		
+	 */
+	@Override
 	public ScientificStudy getStudy() {
 		return study;
 	}
 
+	/**
+	 * Gets the collaborative study sets.
+	 */
+	@Override
 	public Set<ScientificStudy> getCollabStudies() {
 		return collabStudies;
 	}
-
+	
+	/**
+	 * Adds the collaborative study.
+	 * 
+	 * @param study
+	 */
+	@Override
 	public void addCollabStudy(ScientificStudy study) {
 		this.collabStudies.add(study);
 	}
 
+	/**
+	 * Removes the collaborative study.
+	 * 
+	 * @param study
+	 */
+	@Override
 	public void removeCollabStudy(ScientificStudy study) {
 		this.collabStudies.remove(study);
 	}
@@ -1241,6 +1263,7 @@ public class Person extends Unit implements Worker, Temporal, EquipmentOwner {
 	 * @param science the scientific field.
 	 * @return achievement credit.
 	 */
+	@Override
 	public double getScientificAchievement(ScienceType science) {
 		double result = 0D;
 		if (science == null)
@@ -1256,6 +1279,7 @@ public class Person extends Unit implements Worker, Temporal, EquipmentOwner {
 	 *
 	 * @return achievement credit.
 	 */
+	@Override
 	public double getTotalScientificAchievement() {
 		double result = 0d;
 		for (double value : scientificAchievement.values()) {
@@ -1270,6 +1294,7 @@ public class Person extends Unit implements Worker, Temporal, EquipmentOwner {
 	 * @param achievementCredit the achievement credit.
 	 * @param science           the scientific field.
 	 */
+	@Override
 	public void addScientificAchievement(double achievementCredit, ScienceType science) {
 		if (scientificAchievement.containsKey(science)) {
 			achievementCredit += scientificAchievement.get(science);
