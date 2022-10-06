@@ -1016,7 +1016,7 @@ public class EatDrink extends Task {
 				
 		Unit containerUnit = person.getContainerUnit();
 		
-		if (bottle == null) {
+		if (bottle == null && person.isInSettlement()) {
 			// if the person does not have a thermal bottle assigned
 			bottle = person.AssignThermalBottle();
 		}

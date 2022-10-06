@@ -2237,7 +2237,7 @@ public class Person extends Unit implements Worker, Temporal, EquipmentOwner {
 	 * Assigns standard living necessity.
 	 */
 	public Container AssignThermalBottle() {
-		if (!hasThermalBottle()) {
+		if (!hasThermalBottle() && isInSettlement()) {
 			Equipment bottle = null;
 			
 			for (Equipment e : getSettlement().getEquipmentSet()) {
