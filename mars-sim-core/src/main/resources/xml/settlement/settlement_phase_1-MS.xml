@@ -87,11 +87,15 @@
 
     <!-- Equipment -->
     <equipment type="EVA Suit" number="8" />
-    <equipment type="Gas Canister" number="40" />
-    <equipment type="Barrel" number="40" />
-    <equipment type="Bag" number="40" />
-    <equipment type="Large Bag" number="25" />
-    <equipment type="Specimen Box" number="50" />
+    
+    <!-- Containers-->
+	<equipment type="barrel" number="40" />
+	<equipment type="bag" number="40" />
+	<equipment type="gas canister" number="40" />		
+	<equipment type="large bag" number="40" />
+	<equipment type="specimen box" number="40" />
+    <equipment type="thermal bottle" number="8" />	
+ 	<equipment type="wheelbarrow" number="12" />
 
     <!-- Resources -->
     <!-- type: the type of resource (see resources.txt) -->

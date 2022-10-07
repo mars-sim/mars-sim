@@ -179,12 +179,16 @@
     <vehicle type="Delivery Drone" number="1" />
 
     <equipment type="EVA Suit" number="16" />
-    <equipment type="Gas Canister" number="80" />
-    <equipment type="Barrel" number="80" />
-    <equipment type="Bag" number="80" />
-    <equipment type="Large Bag" number="20" />
-    <equipment type="Specimen Box" number="50" />
 
+    <!-- Containers-->
+	<equipment type="barrel" number="40" />
+	<equipment type="bag" number="40" />
+	<equipment type="gas canister" number="40" />		
+	<equipment type="large bag" number="40" />
+	<equipment type="specimen box" number="40" />
+    <equipment type="thermal bottle" number="12" />	
+ 	<equipment type="wheelbarrow" number="12" />
+ 	
 	<!-- Life Support Resources -->
 	<resource type="food" amount="4000.0" />
 	<resource type="water" amount="8000.0" />
