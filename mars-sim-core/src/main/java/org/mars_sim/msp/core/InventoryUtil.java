@@ -42,13 +42,16 @@ public class InventoryUtil {
 			return null;
 		}
 		
+		int numMalSuits = 0;
+		
 		Collection<Equipment> candidates = ((EquipmentOwner)cu).getEquipmentSet();
  		// Find suit without malfunction
 		for (Equipment e : candidates) {
 			if (e.getEquipmentType() == EquipmentType.EVA_SUIT) {
 				if (((EVASuit)e).getMalfunctionManager().hasMalfunction()) {
+					numMalSuits++;
 					logger.log(p, Level.WARNING, 50_000,
-							"Spotted malfunction with " + ((EVASuit)e).getName() + " when being examined.");
+							"Spotted a malfunction with " + ((EVASuit)e).getName() + " when being examined.");
 				}
 				else
 					return (EVASuit)e;
@@ -57,7 +60,15 @@ public class InventoryUtil {
 
 		int numEVASuit = ((EquipmentOwner)cu).findNumContainersOfType(EquipmentType.EVA_SUIT);
 
-		logger.warning(p, "Could not find a working EVA suit in " + cu.getName() + "(# of Available EVA Suits: " + numEVASuit + ").");
+		if (numEVASuit == 0) {
+			logger.warning(p, "Could not find any EVA suits in " + cu.getName() + ".");
+		}
+		else {
+			logger.warning(p, "Could not find a working EVA suit in " + cu.getName() 
+				+ " (Out of " + numEVASuit + " suits, "
+				+ numMalSuits + " are currently malfunctioned.");			
+		}
+
 		return null;
 	}
 

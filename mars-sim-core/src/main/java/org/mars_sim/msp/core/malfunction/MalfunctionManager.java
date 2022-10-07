@@ -83,14 +83,14 @@ public class MalfunctionManager implements Serializable, Temporal {
 	/** Factor for chance of malfunction by time since last maintenance. */
 	private static final double MAINTENANCE_FACTOR = .01;
 	/** Factor for chance of malfunction by time since last maintenance. */
-	private static final double MALFUNCTION_FACTOR = .01;
+	private static final double MALFUNCTION_FACTOR = .001;
 	/** Factor for chance of malfunction due to wear condition. */
 	private static final double WEAR_MALFUNCTION_FACTOR = .01;
 	/** Factor for chance of accident due to wear condition. */
 	private static final double WEAR_ACCIDENT_FACTOR = 1D;
 
 	private static final String OXYGEN = "Oxygen";
-	private static final String CAUSE = ". Probable Cause: ";
+	private static final String PROBABLE_CAUSE = ". Probable Cause: ";
 	private static final String CAUSED_BY = " caused by ";
 	private static final String ARROW = "  -->  ";
 
@@ -492,6 +492,9 @@ public class MalfunctionManager implements Serializable, Temporal {
 			}
 		}
 
+		if (whoAffected.equalsIgnoreCase(""))
+			whoAffected = "None";
+		
 		HistoricalEvent newEvent = new MalfunctionEvent(eventType, malfunction, 
 								malfunctionName, whileDoing, 
 								whoAffected, container, 
@@ -499,7 +502,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 		eventManager.registerNewEvent(newEvent);
 
 		logger.log(entity, Level.WARNING, 0, malfunction.getName()
-									+ CAUSE + eventType.getName()
+									+ PROBABLE_CAUSE + eventType.getName()
 									+ (actor != null ? CAUSED_BY
 									+ whoAffected + "." : "."));
 	}
@@ -525,8 +528,12 @@ public class MalfunctionManager implements Serializable, Temporal {
 			double maintFactor = effectiveTimeSinceLastMaintenance * MALFUNCTION_FACTOR;
 			double wearFactor = (100 - currentWearCondition) * WEAR_MALFUNCTION_FACTOR;
 			double malfunctionChance = time * maintFactor * wearFactor;
+			if (malfunctionChance > 1)
+				malfunctionChance = Math.log10(malfunctionChance);
 			// Check for malfunction due to lack of maintenance and wear condition.
 			if (RandomUtil.lessThanRandPercent(malfunctionChance)) {
+//				logger.info(entity, "currentWearCondition: " + currentWearCondition);
+//				logger.info(entity, "maintFactor: " + maintFactor);
 //				logger.info(entity, "wearFactor: " + wearFactor);
 //				logger.info(entity, "MalfunctionChance: " + malfunctionChance + " %");
 //				double solsLastMaint = Math.round(effectiveTimeSinceLastMaintenance / 1000D * 10.0)/10.0;
@@ -539,7 +546,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 			}
 
 			// FUTURE : how to connect maintenance to field reliability statistics
-			double maintenanceChance = time * maintFactor * wearFactor / (1 + numberMaintenances) * MAINTENANCE_FACTOR;
+			double maintenanceChance = malfunctionChance / (1 + numberMaintenances) * MAINTENANCE_FACTOR;
 			// Check for repair items needed due to lack of maintenance and wear condition.
 			if (RandomUtil.lessThanRandPercent(maintenanceChance)) {
 //				logger.info(entity, "wearFactor: " + wearFactor);
@@ -785,7 +792,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 			}
 
 			// More generic simplifed log message
-			logger.log(entity, Level.WARNING, 3000, "Accident " + aType + " occurred caused by "
+			logger.log(entity, Level.WARNING, 3000, "Accident " + aType + " occurred " + CAUSED_BY
 						 + actor.getName());
 
 			// Add stress to people affected by the accident.

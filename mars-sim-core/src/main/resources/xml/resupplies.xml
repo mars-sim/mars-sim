@@ -35,14 +35,13 @@
 	<resupply name="Standard Resupply 1">
 	
 	    <!-- Containers-->
-			 <!-- Containers-->
-		<equipment type="barrel" number="40" />
-		<equipment type="bag" number="40" />
-		<equipment type="gas canister" number="40" />		
-		<equipment type="large bag" number="40" />
-		<equipment type="specimen box" number="40" />
+		<equipment type="barrel" number="24" />
+		<equipment type="bag" number="24" />
+		<equipment type="gas canister" number="24" />		
+		<equipment type="large bag" number="24" />
+		<equipment type="specimen box" number="24" />
     	<equipment type="thermal bottle" number="8" />	
- 	    <equipment type="wheelbarrow" number="24" />	   	
+ 	    <equipment type="wheelbarrow" number="8" />	   	
 	
 	    <!-- Life Support Resources -->
 	    <resource name="food" amount="1000.0" />
