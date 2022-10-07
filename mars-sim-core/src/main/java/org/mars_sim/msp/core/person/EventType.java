@@ -48,7 +48,7 @@ public enum EventType {
 	TRANSPORT_ITEM_ARRIVED		(Msg.getString("EventType.transportItem.arrived")), //$NON-NLS-1$
 	TRANSPORT_ITEM_MODIFIED		(Msg.getString("EventType.transportItem.modified")), //$NON-NLS-1$
 	
-	HAZARD_METEORITE_IMPACT		(Msg.getString("EventType.hazard.meteoriteImpact")), //$NON-NLS-1$ 
+	HAZARD_ACTS_OF_GOD			(Msg.getString("EventType.hazard.actsOfGod")), //$NON-NLS-1$ 
 	HAZARD_RADIATION_EXPOSURE	(Msg.getString("EventType.hazard.radiationExposure")); //$NON-NLS-1$
 
 	private String name;

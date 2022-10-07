@@ -91,7 +91,8 @@ public class MalfunctionManager implements Serializable, Temporal {
 
 	private static final String OXYGEN = "Oxygen";
 	private static final String PROBABLE_CAUSE = ". Probable Cause: ";
-	private static final String CAUSED_BY = " caused by ";
+	private static final String CAUSED_BY = " Caused by '";
+	private static final String ACTS_OF_GOD = "Acts of God";
 	private static final String ARROW = "  -->  ";
 
 	private static final int SCORE_DEFAULT = 50;
@@ -373,23 +374,22 @@ public class MalfunctionManager implements Serializable, Temporal {
 
 			logger.warning("           *** Part : " + part_name + " ***");
 
-			logger.warning(" (1).   Reliability : " + addWhiteSpace(Math.round(old_rel * 1000.0) / 1000.0 + " %")
-							+ ARROW + Math.round(new_rel * 1000.0) / 1000.0 + " %");
+			logger.warning(" (1).   Reliability : " + addWhiteSpace(Math.round(old_rel * 1000.0) / 1000.0 + " % ")
+							+ ARROW + addWhiteSpace(Math.round(new_rel * 1000.0) / 1000.0 + " % "));
 
-			logger.warning(" (2).  Failure Rate : " + addWhiteSpace(Math.round(old_failure * 1000.0) / 1000.0 + " %")
-							+ ARROW + Math.round(new_failure * 1000.0) / 1000.0 + " %");
+			logger.warning(" (2).  Failure Rate : " + addWhiteSpace(Math.round(old_failure * 1000.0) / 1000.0 + " % ")
+							+ ARROW + addWhiteSpace(Math.round(new_failure * 1000.0) / 1000.0 + " % "));
 
 			logger.warning(" (3).          MTBF : " + addWhiteSpace(Math.round(old_MTBF * 1000.0) / 1000.0 + " hr")
-							+ ARROW + Math.round(new_MTBF * 1000.0) / 1000.0 + " hr");
+							+ ARROW + addWhiteSpace(Math.round(new_MTBF * 1000.0) / 1000.0 + " hr"));
 
-			logger.warning("          *** Malfunction : " + malfunction.getName() + " ***");
+//			logger.warning("          *** Malfunction : " + malfunction.getName() + " ***");
 
-			logger.warning(" (4).   Probability : " + addWhiteSpace(Math.round(old_mal_prob_failure * 1000.0) / 1000.0 + " %")
-							+ ARROW + Math.round(new_mal_prob_failure * 1000.0) / 1000.0 + " %");
+			logger.warning(" (4).   Probability : " + addWhiteSpace(Math.round(old_mal_prob_failure * 1000.0) / 1000.0 + " % ")
+							+ ARROW + addWhiteSpace(Math.round(new_mal_prob_failure * 1000.0) / 1000.0 + " % "));
 
 			// Modify the probability of failure for this particular malfunction
 			malfunction.setProbability(new_mal_prob_failure);
-
 		}
 
 		issueMedicalComplaints(malfunction);
@@ -420,7 +420,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * Adds whitespaces
+	 * Adds whitespace.
 	 *
 	 * @param text
 	 * @return
@@ -430,7 +430,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 		int max = 11;
 		int size = text.length();
 
-		for (int j=0; j< (max-size); j++) {
+		for (int j = 0; j < (max-size); j++) {
 			s.append(" ");
 		}
 		s.append(text);
@@ -445,7 +445,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 * @param actor
 	 */
 	private void registerAMalfunction(Malfunction malfunction, Unit actor) {
-		String malfunctionName = malfunction.getName();
+		String malfunctionName = malfunction.getMalfunctionMeta().getName();
 
 		Settlement settlement = entity.getAssociatedSettlement();
 		String container = entity.getName();
@@ -470,9 +470,9 @@ public class MalfunctionManager implements Serializable, Temporal {
 			}
 			else if (actor.getUnitType() == UnitType.BUILDING) {
 				if (malfunction.getMalfunctionMeta().getName().contains(MalfunctionFactory.METEORITE_IMPACT_DAMAGE)) {
-					eventType = EventType.HAZARD_METEORITE_IMPACT;
+					eventType = EventType.HAZARD_ACTS_OF_GOD;
 					whileDoing = "";
-					whoAffected = "";
+					whoAffected = ACTS_OF_GOD;
 				}
 				else {
 					eventType = EventType.MALFUNCTION_PARTS_FAILURE;
@@ -493,18 +493,26 @@ public class MalfunctionManager implements Serializable, Temporal {
 		}
 
 		if (whoAffected.equalsIgnoreCase(""))
-			whoAffected = "None";
+			whoAffected = "N/A";
 		
-		HistoricalEvent newEvent = new MalfunctionEvent(eventType, malfunction, 
-								malfunctionName, whileDoing, 
-								whoAffected, container, 
-								settlement.getName(), coordinates);
+		HistoricalEvent newEvent = new MalfunctionEvent(
+								eventType, 
+								malfunction, 
+								malfunctionName, 
+								whileDoing, 
+								whoAffected, 
+								container, 
+								settlement.getName(), 
+								coordinates);
+		
 		eventManager.registerNewEvent(newEvent);
 
-		logger.log(entity, Level.WARNING, 0, malfunction.getName()
-									+ PROBABLE_CAUSE + eventType.getName()
-									+ (actor != null ? CAUSED_BY
-									+ whoAffected + "." : "."));
+		logger.log(entity, Level.WARNING, 0, 
+								malfunction.getName()
+								+ PROBABLE_CAUSE 
+								+ eventType.getName() 
+								+ "."
+								+ (actor != null ? CAUSED_BY + whoAffected + "'." : "."));
 	}
 
 	/**
@@ -528,8 +536,8 @@ public class MalfunctionManager implements Serializable, Temporal {
 			double maintFactor = effectiveTimeSinceLastMaintenance * MALFUNCTION_FACTOR;
 			double wearFactor = (100 - currentWearCondition) * WEAR_MALFUNCTION_FACTOR;
 			double malfunctionChance = time * maintFactor * wearFactor;
-			if (malfunctionChance > 1)
-				malfunctionChance = Math.log10(malfunctionChance);
+			malfunctionChance = Math.min(20, 1 + malfunctionChance);
+			malfunctionChance = Math.log10(malfunctionChance);
 			// Check for malfunction due to lack of maintenance and wear condition.
 			if (RandomUtil.lessThanRandPercent(malfunctionChance)) {
 //				logger.info(entity, "currentWearCondition: " + currentWearCondition);
@@ -792,8 +800,8 @@ public class MalfunctionManager implements Serializable, Temporal {
 			}
 
 			// More generic simplifed log message
-			logger.log(entity, Level.WARNING, 3000, "Accident " + aType + " occurred " + CAUSED_BY
-						 + actor.getName());
+			logger.log(entity, Level.WARNING, 3000, "Accident " + aType + " occurred. " + CAUSED_BY
+						 + actor.getName() + "'.");
 
 			// Add stress to people affected by the accident.
 			Collection<Person> people = entity.getAffectedPeople();

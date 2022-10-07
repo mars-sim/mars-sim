@@ -534,7 +534,7 @@ public class EventTableModel extends AbstractTableModel
 
 			else if (category == HistoricalEventCategory.HAZARD) {
 
-				if (eventType == EventType.HAZARD_METEORITE_IMPACT) {
+				if (eventType == EventType.HAZARD_ACTS_OF_GOD) {
 
 					header = Msg.getString("EventType.hazard.meteoriteImpact"); //$NON-NLS-1$
 

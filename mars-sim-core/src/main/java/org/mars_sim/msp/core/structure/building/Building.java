@@ -27,6 +27,7 @@ import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.equipment.ItemHolder;
 import org.mars_sim.msp.core.equipment.ResourceHolder;
 import org.mars_sim.msp.core.events.HistoricalEvent;
+import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.hazard.HazardEvent;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -187,6 +188,8 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	protected PowerMode powerModeCache;
 	protected HeatMode heatModeCache;
 	private BuildingCategory category;
+	
+	private static HistoricalEventManager eventManager;
 
 	/**
 	 * Constructor 1. Constructs a Building object.
@@ -1182,16 +1185,19 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 					logger.log(this, Level.INFO, 0, "Meteorite Impact event observed but damage not detected.");
 
 					HistoricalEvent hEvent = new HazardEvent(
-							EventType.HAZARD_METEORITE_IMPACT,
+							EventType.HAZARD_ACTS_OF_GOD,
 							getAssociatedSettlement(),
-							"Meteorite Impact Damage",
+							mal.getMalfunctionMeta().getName(),
 							"",
 							getNickName(), 
 							getLocationTag().getImmediateLocation(),
 							getAssociatedSettlement().getName(),
-							getAssociatedSettlement().getCoordinates().getCoordinateString()
-							);
-					Simulation.instance().getEventManager().registerNewEvent(hEvent);
+							getAssociatedSettlement().getCoordinates().getCoordinateString());
+
+					if (eventManager == null)
+						eventManager = Simulation.instance().getEventManager();
+					
+					eventManager.registerNewEvent(hEvent);
 
 					fireUnitUpdate(UnitEventType.METEORITE_EVENT);
 				}
