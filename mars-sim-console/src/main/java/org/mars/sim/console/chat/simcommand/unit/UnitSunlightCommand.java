@@ -20,7 +20,7 @@ public class UnitSunlightCommand extends AbstractUnitCommand {
 
 
 	public UnitSunlightCommand(String groupName) {
-		super(groupName, "sl", "sunlight", "Show Sunlight details at Unit's location");
+		super(groupName, "su", "sunlight", "Show Sunlight details at Unit's location");
 	}
 
 	/** 
