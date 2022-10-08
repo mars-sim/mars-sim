@@ -6,6 +6,7 @@
  */
 package org.mars_sim.msp.core.interplanetary.transport;
 
+import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.time.MarsClock;
 
 /**
@@ -13,10 +14,6 @@ import org.mars_sim.msp.core.time.MarsClock;
  */
 public interface Transportable
 extends Comparable<Transportable>{
-
-	// Launching locations and destinations.
-	public static final String MARS = "Mars";
-	public static final String EARTH = "Earth";
 
 	/**
 	 * Gets the name of the transportable.
@@ -29,6 +26,11 @@ extends Comparable<Transportable>{
 	 * @return the settlement's name.
 	 */
 	public String getSettlementName();
+
+	/**
+	 * Get the Landing site
+	 */
+	public Coordinates getLandingLocation();
 
 	/**
 	 * Gets the current transit state.

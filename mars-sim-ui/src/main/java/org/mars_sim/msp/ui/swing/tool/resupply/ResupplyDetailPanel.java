@@ -253,7 +253,7 @@ implements ClockListener, HistoricalEventListener {
 		destinationValueLabel.setText(resupply.getSettlement().getName());
 		stateValueLabel.setText(Conversion.capitalize(resupply.getTransitState().getName()));
 		launchDateValueLabel.setText(resupply.getLaunchDate().getDateString());
-		arrivalDateValueLabel.setText(resupply.getArrivalDate().getDateString());
+		arrivalDateValueLabel.setText(resupply.getArrivalDate().getDateTimeStamp());
 		immigrantsValueLabel.setText(Integer.toString(resupply.getNewImmigrantNum()));
 		
 		updateTimeToArrival();

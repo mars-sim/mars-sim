@@ -151,8 +151,10 @@ implements ListSelectionListener {
 				 else if (EventType.TRANSPORT_ITEM_ARRIVED.equals(he.getType()) ||
 						 EventType.TRANSPORT_ITEM_CANCELLED.equals(he.getType())) {
 					 int transportIndex = transportList.indexOf(transportItem);
-					 transportList.remove(transportItem);
-					 fireIntervalRemoved(this, transportIndex, transportIndex);
+					 if (transportIndex >= 0) {
+						transportList.remove(transportItem);
+						fireIntervalRemoved(this, transportIndex, transportIndex);
+					 }
 				 }
 				 else if (EventType.TRANSPORT_ITEM_MODIFIED.equals(he.getType())) {
 					 if (transportList.contains(transportItem)) {

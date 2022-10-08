@@ -218,7 +218,7 @@ implements ClockListener, HistoricalEventListener {
 	private void updateArrivingSettlementInfo() {
 		nameValueLabel.setText(arrivingSettlement.getName());
 		stateValueLabel.setText(arrivingSettlement.getTransitState().getName());
-		arrivalDateValueLabel.setText(arrivingSettlement.getArrivalDate().getDateString());
+		arrivalDateValueLabel.setText(arrivingSettlement.getArrivalDate().getDateTimeStamp());
 
 		updateTimeToArrival();
 

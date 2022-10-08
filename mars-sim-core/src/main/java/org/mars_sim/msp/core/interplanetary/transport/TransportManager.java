@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.configuration.Scenario;
@@ -19,6 +18,7 @@ import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyUtil;
 import org.mars_sim.msp.core.interplanetary.transport.settlement.ArrivingSettlement;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
 import org.mars_sim.msp.core.structure.SettlementConfig;
@@ -38,7 +38,7 @@ public class TransportManager implements Serializable, Temporal {
 	private static int AVG_TRANSIT_TIME = 250;
 
 	/** default logger. */
-	private static final Logger logger = Logger.getLogger(TransportManager.class.getName());
+	private static final SimLogger logger = SimLogger.getLogger(TransportManager.class.getName());
 
 	private Collection<Transportable> transportItems;
 
@@ -95,7 +95,7 @@ public class TransportManager implements Serializable, Temporal {
 		HistoricalEvent newEvent = new TransportEvent(transportItem, EventType.TRANSPORT_ITEM_CREATED,
 				"Mission Control", transportItem.getSettlementName());
 		eventManager.registerNewEvent(newEvent);
-		logger.info("A new transport item was created.");
+		logger.info("A transport item was added: " + transportItem.toString());
 	}
 
 	/**
@@ -148,7 +148,7 @@ public class TransportManager implements Serializable, Temporal {
 		HistoricalEvent cancelEvent = new TransportEvent(transportItem, EventType.TRANSPORT_ITEM_CANCELLED, "Reserved",
 				transportItem.getSettlementName());
 		eventManager.registerNewEvent(cancelEvent);
-		logger.info("A transport item was cancelled: ");// + transportItem.toString());
+		logger.info("A transport item was cancelled: ");
 	}
 
 	/**
@@ -170,7 +170,6 @@ public class TransportManager implements Serializable, Temporal {
 							"Transport item launched", transportItem.getSettlementName());
 					eventManager.registerNewEvent(deliverEvent);
 					logger.info("Transport item launched: " + transportItem.toString());
-					continue;
 				}
 			} else if (TransitState.IN_TRANSIT == transportItem.getTransitState()) {
 				if (MarsClock.getTimeDiff(pulse.getMarsTime(), transportItem.getArrivalDate()) >= 0D) {
