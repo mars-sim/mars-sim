@@ -916,7 +916,6 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 		// Validate the arriving settlement data.
 		if (validateData()) {
 			populateArrivingSettlement(settlement);
-			settlement.commitModification();
 			return true;
 		} else {
 			return false;

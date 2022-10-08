@@ -12,11 +12,8 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
-import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.interplanetary.transport.TransitState;
-import org.mars_sim.msp.core.interplanetary.transport.TransportEvent;
 import org.mars_sim.msp.core.interplanetary.transport.Transportable;
-import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.structure.InitialSettlement;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.SettlementBuilder;
@@ -260,15 +257,6 @@ public class ArrivingSettlement implements Transportable, Serializable {
 		this.numOfRobots = numOfRobots;
 	}
 
-	/**
-	 * Commits a set of modifications for the arriving settlement.
-	 */
-	public void commitModification() {
-		HistoricalEvent newEvent = new TransportEvent(this, EventType.TRANSPORT_ITEM_MODIFIED,
-				"Arriving settlement mission modded", landingLocation.toString());
-		Simulation.instance().getEventManager().registerNewEvent(newEvent);
-	}
-
 	@Override
 	public String getSettlementName() {
 		return name;
@@ -301,19 +289,15 @@ public class ArrivingSettlement implements Transportable, Serializable {
 	}
 
 	@Override
-	public synchronized void performArrival() {
-		Simulation sim = Simulation.instance();
-		UnitManager unitManager = sim.getUnitManager();
-		
-		SettlementBuilder build = new SettlementBuilder(sim,
-												SimulationConfig.instance());
+	public synchronized void performArrival(SimulationConfig sc, Simulation sim) {
+		SettlementBuilder build = new SettlementBuilder(sim, sc);
 		InitialSettlement spec = new InitialSettlement(name, sponsorCode,
 													   template, populationNum, numOfRobots,
 													   landingLocation, null);
 		Settlement newSettlement = build.createFullSettlement(spec);
 		
 		// Sim is already running so add to the active queue
-		unitManager.activateSettlement(newSettlement);
+		sim.getUnitManager().activateSettlement(newSettlement);
 	}
 
 	/**
@@ -373,5 +357,9 @@ public class ArrivingSettlement implements Transportable, Serializable {
 		} else if (!name.equals(other.name))
 			return false;
 		return true;
+	}
+
+	@Override
+	public void reinit(UnitManager um) {
 	}
 }

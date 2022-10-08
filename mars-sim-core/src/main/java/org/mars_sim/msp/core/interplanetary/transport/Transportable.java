@@ -7,6 +7,9 @@
 package org.mars_sim.msp.core.interplanetary.transport;
 
 import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.time.MarsClock;
 
 /**
@@ -59,7 +62,13 @@ extends Comparable<Transportable>{
 	/**
 	 * Perform the arrival of the transportable.
 	 */
-	public void performArrival();
+	public void performArrival(SimulationConfig sc, Simulation sim);
+
+	/**
+	 * Reattact a loading item to the active UnitManager
+	 * @param um
+	 */
+	public void reinit(UnitManager um);
 
 	/**
 	 * Prepare object for garbage collection.

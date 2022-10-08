@@ -13,6 +13,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.configuration.Scenario;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
@@ -42,7 +44,9 @@ public class TransportManager implements Serializable, Temporal {
 
 	private Collection<Transportable> transportItems;
 
-	private HistoricalEventManager eventManager;
+	private transient HistoricalEventManager eventManager;
+	private transient SimulationConfig simConfig;
+	private transient Simulation sim;
 
 	/**
 	 * Constructor.
@@ -50,8 +54,11 @@ public class TransportManager implements Serializable, Temporal {
 	 * @param scenario 
 	 * @param raFactory 
 	 */
-	public TransportManager(HistoricalEventManager eventManager) {
-		this.eventManager = eventManager;
+	public TransportManager(SimulationConfig simConfig, Simulation sim) {
+		this.eventManager = sim.getEventManager();
+		this.sim = sim;
+		this.simConfig = simConfig;
+
 		// Initialize data
 		transportItems = new ArrayList<>();
 	}
@@ -159,31 +166,48 @@ public class TransportManager implements Serializable, Temporal {
 	 */
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
-		Iterator<Transportable> i = transportItems.iterator();
-		while (i.hasNext()) {
-			Transportable transportItem = i.next();
-			if (TransitState.PLANNED == transportItem.getTransitState()) {
-				if (MarsClock.getTimeDiff(pulse.getMarsTime(), transportItem.getLaunchDate()) >= 0D) {
-					// Transport item is launched.
-					transportItem.setTransitState(TransitState.IN_TRANSIT);
-					HistoricalEvent deliverEvent = new TransportEvent(transportItem, EventType.TRANSPORT_ITEM_LAUNCHED,
-							"Transport item launched", transportItem.getSettlementName());
-					eventManager.registerNewEvent(deliverEvent);
-					logger.info("Transport item launched: " + transportItem.toString());
-				}
-			} else if (TransitState.IN_TRANSIT == transportItem.getTransitState()) {
-				if (MarsClock.getTimeDiff(pulse.getMarsTime(), transportItem.getArrivalDate()) >= 0D) {
-					// Transport item has arrived on Mars.
-					transportItem.setTransitState(TransitState.ARRIVED);
-					transportItem.performArrival();
-					HistoricalEvent arrivalEvent = new TransportEvent(transportItem, EventType.TRANSPORT_ITEM_ARRIVED,
-							transportItem.getSettlementName(), "Transport item arrived on Mars");
-					eventManager.registerNewEvent(arrivalEvent);
-					logger.info("Transport item arrived at " + transportItem.toString());
-				}
+		for(Transportable transportItem : transportItems) {
+			switch(transportItem.getTransitState()) {
+				case PLANNED:
+					if (MarsClock.getTimeDiff(pulse.getMarsTime(), transportItem.getLaunchDate()) >= 0D) {
+						// Transport item is launched.
+						transportItem.setTransitState(TransitState.IN_TRANSIT);
+						HistoricalEvent deliverEvent = new TransportEvent(transportItem, EventType.TRANSPORT_ITEM_LAUNCHED,
+								"Transport item launched", transportItem.getSettlementName());
+						eventManager.registerNewEvent(deliverEvent);
+						logger.info("Transport item launched: " + transportItem.toString());
+					}
+					break;
+
+				case IN_TRANSIT:
+					if (MarsClock.getTimeDiff(pulse.getMarsTime(), transportItem.getArrivalDate()) >= 0D) {
+						// Transport item has arrived on Mars.
+						transportItem.setTransitState(TransitState.ARRIVED);
+						transportItem.performArrival(simConfig, sim);
+						HistoricalEvent arrivalEvent = new TransportEvent(transportItem, EventType.TRANSPORT_ITEM_ARRIVED,
+								transportItem.getSettlementName(), "Transport item arrived on Mars");
+						eventManager.registerNewEvent(arrivalEvent);
+						logger.info("Transport item arrived at " + transportItem.toString());
+					}
+					break;
+
+				default:
 			}
 		}
 		
 		return true;
+	}
+
+	/**
+	 * Reset links to the managers classes after a reload. This also reinit's the TransportItems
+	 */
+	public void initalizeInstances(SimulationConfig simConfig, Simulation sim) {
+		this.sim = sim;
+		this.simConfig = simConfig;
+
+		UnitManager um = sim.getUnitManager();
+		for(Transportable t : transportItems) {
+			t.reinit(um);
+		}
 	}
 }

@@ -652,7 +652,6 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 	public boolean modifyTransportItem() {
 		// Modify resupply mission.
 		populateResupplyMission(resupply);
-		resupply.commitModification();
 		updateSolsUntilCB();
 		return true;
 	}

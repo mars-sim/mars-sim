@@ -423,7 +423,7 @@ public class Simulation implements ClockListener, Serializable {
 		MetaTaskUtil.initializeMetaTasks();
 
 		eventManager = new HistoricalEventManager();
-		transportManager = new TransportManager(eventManager);
+		transportManager = new TransportManager(simulationConfig, this);
 
         // Initialize ManufactureUtil
         new ManufactureUtil();
@@ -683,6 +683,8 @@ public class Simulation implements ClockListener, Serializable {
 		ReportingAuthorityFactory rf  = simulationConfig.getReportingAuthorityFactory();
 		rf.discoverReportingAuthorities(unitManager);
 
+		transportManager.initalizeInstances(simulationConfig, this);
+
 		Relation.initializeInstances(unitManager);
 		CreditManager.initializeInstances(unitManager);
 
@@ -691,8 +693,6 @@ public class Simulation implements ClockListener, Serializable {
 												simulationConfig.getPartConfiguration());
 		ScientificStudy.initializeInstances(marsClock);
 		ScientificStudyUtil.initializeInstances(unitManager);
-
-		Resupply.initializeInstances(bc, unitManager);
 
 		// Re-initialize Unit related class
 		SalvageValues.initializeInstances(unitManager);
@@ -838,7 +838,8 @@ public class Simulation implements ClockListener, Serializable {
 			logger.config("Heap Max Size: " + formatSize(heapMaxSize)
 						+ ", Heap Free Size: " + formatSize(heapFreeSize));
 	
-			if (heapFreeSize > MIN_HEAP_SPACE){
+			//if (heapFreeSize > MIN_HEAP_SPACE){
+			if (true) {
 				// Save local machine timestamp
 				// Serialize the file
 				lastSaveTimeStamp = new Date();

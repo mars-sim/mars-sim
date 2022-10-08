@@ -25,17 +25,13 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
-import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.interplanetary.transport.TransitState;
-import org.mars_sim.msp.core.interplanetary.transport.TransportEvent;
 import org.mars_sim.msp.core.interplanetary.transport.Transportable;
 import org.mars_sim.msp.core.logging.SimLogger;
-import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
@@ -121,12 +117,6 @@ public class Resupply implements Serializable, Transportable {
 	private MarsClock launchDate;
 	private MarsClock arrivalDate;
 	
-	private static Simulation sim = Simulation.instance();
-	private static SimulationConfig simulationConfig = SimulationConfig.instance();
-	private static BuildingConfig buildingConfig;
-	private static UnitManager unitManager = sim.getUnitManager();
-	private static PersonConfig personConfig = simulationConfig.getPersonConfig();
-
 	/**
 	 * Constructor.
 	 * 
@@ -144,21 +134,10 @@ public class Resupply implements Serializable, Transportable {
  
 		this.settlement = settlement;
 		settlementID = settlement.getIdentifier();
-
-		buildingConfig = simulationConfig.getBuildingConfiguration();
 	}
 
 	public ResupplyMissionTemplate getTemplate() {
 		return template;
-	}
-	
-	/**
-	 * Commits a set of modifications for the resupply mission.
-	 */
-	public void commitModification() {
-		HistoricalEvent newEvent = new TransportEvent(this, EventType.TRANSPORT_ITEM_MODIFIED,
-				"Resupply mission modded", getSettlement().getName());
-		Simulation.instance().getEventManager().registerNewEvent(newEvent);
 	}
 
 	@Override
@@ -192,13 +171,13 @@ public class Resupply implements Serializable, Transportable {
 	/**
 	 * Generates the delivery event.
 	 */
-	 private synchronized void startDeliveryEvent() {
-		// Ensure settlement has been laaded
-		getSettlement();
-
-		logger.info(settlement, "Resuply has arrived");
+	@Override
+	public synchronized void performArrival(SimulationConfig sc, Simulation sim) {
 		// Deliver buildings to the destination settlement.
-		boolean hasBuildings = deliverBuildings();
+		logger.info(settlement, "Resuply has arrived");
+
+		// Deliver buildings to the destination settlement.
+		boolean hasBuildings = deliverBuildings(sc.getBuildingConfiguration());
 		
 		if (hasBuildings) {
 			// Interrupts everyone's task (Walking tasks can cause issues) 
@@ -206,7 +185,7 @@ public class Resupply implements Serializable, Transportable {
 		}
 		
 		// Deliver the rest of the supplies and add people.
-		deliverOthers();
+		deliverOthers(sim.getUnitManager(), sc.getPersonConfig());
 	}
 
 	/**
@@ -214,8 +193,8 @@ public class Resupply implements Serializable, Transportable {
 	 * 
 	 * @return
 	 */
-	public boolean deliverBuildings() {
-		List<BuildingTemplate> orderedBuildings = orderNewBuildings();
+	private boolean deliverBuildings(BuildingConfig buildingConfig) {
+		List<BuildingTemplate> orderedBuildings = orderNewBuildings(buildingConfig);
 
 		if (!orderedBuildings.isEmpty()) {
 
@@ -244,7 +223,7 @@ public class Resupply implements Serializable, Transportable {
 				BuildingTemplate correctedTemplate = new BuildingTemplate(buildingID,
 						btemplate.getBuildingType(), buildingNickName, correctedBounds);
 
-				checkTemplateAddBuilding(correctedTemplate);
+				checkTemplateAddBuilding(spec, correctedTemplate);
 			}
 			
 			return true;
@@ -279,16 +258,17 @@ public class Resupply implements Serializable, Transportable {
 	 * creates the building based on the template to the settlement
 	 * 
 	 * @param bt a building template
+	 * @param bc 
 	 */
-	public void checkTemplateAddBuilding(BuildingTemplate bt) {
+	private void checkTemplateAddBuilding(BuildingSpec spec, BuildingTemplate bt) {
 		// Check if building template position/facing collides with any existing
 		// buildings/vehicles/construction sites.
-		if (!isTemplatePositionClear(bt)) {
-			bt = clearCollision(bt, MAX_COUNTDOWN);
+		if (!isTemplatePositionClear(spec, bt)) {
+			bt = clearCollision(spec, bt, MAX_COUNTDOWN);
 		}
 
 		if (bt != null) {
-			getSettlement().getBuildingManager().addBuilding(bt, true);
+			settlement.getBuildingManager().addBuilding(bt, true);
 		}
 	}
 
@@ -298,9 +278,11 @@ public class Resupply implements Serializable, Transportable {
 	 * 
 	 * @param bt    a building template
 	 * @param count number of counts
+	 * @param bc 
+	 * @param spec 
 	 * @return corrected building template
 	 */
-	private BuildingTemplate clearCollision(BuildingTemplate bt, int count) {
+	private BuildingTemplate clearCollision(BuildingSpec spec, BuildingTemplate bt, int count) {
 		count--;
 		logger.config("#" + (Resupply.MAX_COUNTDOWN - count) + " : Calling clearCollision() for " + bt.getBuildingName());
 		
@@ -325,15 +307,15 @@ public class Resupply implements Serializable, Transportable {
 			}
 
 			if (noConflictResupply) {
-				inZone = isWithinZone(bt, buildingManager);
+				inZone = isWithinZone(spec, bt, buildingManager);
 			}
 
 			if (!noImmovable || !noConflictResupply || !inZone) {// if there are obstacles
 				// get a new template
-				BuildingTemplate repositioned = positionNewResupplyBuilding(bt.getBuildingType());
+				BuildingTemplate repositioned = positionNewResupplyBuilding(spec);
 
 				// Call again recursively to check for any collision
-				bt = clearCollision(repositioned, count);
+				bt = clearCollision(spec, repositioned, count);
 			}
 		}
 
@@ -406,12 +388,12 @@ public class Resupply implements Serializable, Transportable {
 	 * @param bt the building template
 	 * @return true if it's within the prescribed zone
 	 */
-	private static boolean isWithinZone(BuildingTemplate bt, BuildingManager mgr) {
+	private static boolean isWithinZone(BuildingSpec spec, BuildingTemplate bt, BuildingManager mgr) {
 
 		boolean withinRadius = true;
 		int leastDistance = 0;
 		// TOD: also check if
-		Set<FunctionType> supported = buildingConfig.getBuildingSpec(bt.getBuildingType()).getFunctionSupported();
+		Set<FunctionType> supported = spec.getFunctionSupported();
 		boolean hasLifeSupport = supported.contains(FunctionType.LIFE_SUPPORT);
 		if (hasLifeSupport) {
 
@@ -446,8 +428,10 @@ public class Resupply implements Serializable, Transportable {
 	/**
 	 * Delivers vehicles, resources, bots and immigrants to a settlement on a resupply
 	 * mission.
+	 * @param unitManager 
+	 * @param personConfig 
 	 */
-	private void deliverOthers() {
+	private void deliverOthers(UnitManager unitManager, PersonConfig personConfig) {
 		ReportingAuthority sponsor = settlement.getSponsor();
 		Iterator<String> vehicleI = getNewVehicles().iterator();
 		while (vehicleI.hasNext()) {
@@ -595,10 +579,11 @@ public class Resupply implements Serializable, Transportable {
 	/**
 	 * Orders the new buildings with non-connector buildings first and connector
 	 * buildings last.
+	 * @param buildingConfig 
 	 * 
 	 * @return list of new buildings.
 	 */
-	private List<BuildingTemplate> orderNewBuildings() {
+	private List<BuildingTemplate> orderNewBuildings(BuildingConfig buildingConfig) {
 		List<BuildingTemplate> result = new CopyOnWriteArrayList<>();
 		
 		List<BuildingTemplate> list = getNewBuildings().stream()
@@ -627,15 +612,15 @@ public class Resupply implements Serializable, Transportable {
 	 * existing structures.
 	 * 
 	 * @param template the building template.
+	 * @param buildingConfig 
 	 * @return true if building template position is clear.
 	 */
-	private boolean isTemplatePositionClear(BuildingTemplate template) {
+	private boolean isTemplatePositionClear(BuildingSpec spec, BuildingTemplate template) {
 
 		boolean result = true;
 		
 		// Replace width and length defaults to deal with variable width and length
 		// buildings.
-		BuildingSpec spec = buildingConfig.getBuildingSpec(template.getBuildingType());
 		BoundedObject correctedBounds = getCorrectedBounds(spec, template.getBounds());
 
 		result = settlement.getBuildingManager()
@@ -646,17 +631,17 @@ public class Resupply implements Serializable, Transportable {
 
 	/**
 	 * Determines and sets the position of a new resupply building.
+	 * @param buildingConfig 
 	 * 
 	 * @param building type the new building type.
 	 * @return the repositioned building template.
 	 */
-	private BuildingTemplate positionNewResupplyBuilding(String buildingType) {
+	private BuildingTemplate positionNewResupplyBuilding(BuildingSpec spec) {
 
 		BuildingTemplate newPosition = null;
 		BuildingManager buildingManager = settlement.getBuildingManager();
 		
 		// Note : only hallway and tunnel has "building-connection" function
-		BuildingSpec spec = buildingConfig.getBuildingSpec(buildingType);
 		Set<FunctionType> supported = spec.getFunctionSupported();
 		boolean isBuildingConnector = supported.contains(FunctionType.BUILDING_CONNECTION);
 		boolean hasLifeSupport = supported.contains(FunctionType.LIFE_SUPPORT);
@@ -664,7 +649,7 @@ public class Resupply implements Serializable, Transportable {
 		if (isBuildingConnector) {
 			// Case 0 : a hallway or tunnel
 			// Try to find best location to connect between the two buildings.
-			newPosition = positionNewConnector(buildingType);
+			newPosition = positionNewConnector(spec);
 			if (newPosition != null) {
 				logger.config("Case 0: it is a hallway or tunnel.");
 				return newPosition;
@@ -673,7 +658,7 @@ public class Resupply implements Serializable, Transportable {
 
 		else if (hasLifeSupport) {
 			// Case 1 : same type and with life support
-			newPosition = positionSameType(buildingType, true);
+			newPosition = positionSameType(spec, true);
 
 			if (newPosition != null) {
 				logger.config("Case 1: " + POSITIONING + " near the same building type ("
@@ -701,7 +686,7 @@ public class Resupply implements Serializable, Transportable {
 								MAX_INHABITABLE_BUILDING_DISTANCE * 2) / 2D;
 					}
 
-					newPosition = positionNextToBuilding(buildingType, building, Math.round(dist1), false);
+					newPosition = positionNextToBuilding(spec, building, Math.round(dist1), false);
 					if (newPosition != null) {
 						logger.config("Case 2: " + POSITIONING 
 								+ " near a different building type (" 
@@ -712,7 +697,7 @@ public class Resupply implements Serializable, Transportable {
 			}
 		} else {
 			// Case 3 : the same type but having no life support
-			newPosition = positionSameType(buildingType, false);
+			newPosition = positionSameType(spec, false);
 			if (newPosition != null) {
 				logger.config("Case 3: " + POSITIONING + newPosition.getBuildingName()
 						+ " near the same building type with no life support");
@@ -734,7 +719,7 @@ public class Resupply implements Serializable, Transportable {
 					Iterator<Building> i = allBuildings.iterator();
 					while (i.hasNext()) {
 						Building building = i.next();
-						newPosition = positionNextToBuilding(buildingType, building, (double) x, false);
+						newPosition = positionNextToBuilding(spec, building, (double) x, false);
 						if (newPosition != null) {
 							logger.config("Case 4: " + POSITIONING + newPosition.getBuildingName() + " at " + x
 									+ " meters away near a different building type with no life support");
@@ -759,12 +744,12 @@ public class Resupply implements Serializable, Transportable {
 				// facing.
 				// Note: check to make sure it does not overlap another building.
 				int buildingID = buildingManager.getNextTemplateID();
-				int buildingTypeID = buildingManager.getNextBuildingTypeID(buildingType);
+				int buildingTypeID = buildingManager.getNextBuildingTypeID(spec.getBuildingType());
 
-				String buildingNickName = buildingType + " " + buildingTypeID;
+				String buildingNickName = spec.getBuildingType() + " " + buildingTypeID;
 				// Note : ask for user to define the location for the new building as well
 				newPosition = new BuildingTemplate(buildingID,
-						buildingType, buildingNickName, new BoundedObject(0,  0, width, length, 0));
+						spec.getBuildingType(), buildingNickName, new BoundedObject(0,  0, width, length, 0));
 
 				logger.config("Case 5: " + POSITIONING + buildingNickName + " at (0, 0)");
 				return newPosition;
@@ -781,14 +766,13 @@ public class Resupply implements Serializable, Transportable {
 	 * @param lifeSupport
 	 * @return
 	 */
-	private BuildingTemplate positionSameType(String buildingType, boolean lifeSupport) {
+	private BuildingTemplate positionSameType(BuildingSpec buildingSpec , boolean lifeSupport) {
 		BuildingTemplate newPosition = null;
 
 		// Put this non-habitable building next to the same building type.
 		List<Building> sameTypeBuildings = settlement.getBuildingManager()
-				.getBuildingsOfSameType(buildingType);
+				.getBuildingsOfSameType(buildingSpec.getBuildingType());
 		
-		BuildingSpec buildingSpec = buildingConfig.getBuildingSpec(buildingType);
 		BuildingCategory buildingCategory = buildingSpec.getCategory();
 		
 		List<Building> sameCategoryBuildings = settlement.getBuildingManager()
@@ -819,7 +803,7 @@ public class Resupply implements Serializable, Transportable {
 				dist2 = RandomUtil.getRandomRegressionInteger(MIN_INHABITABLE_BUILDING_DISTANCE * 2,
 						MAX_INHABITABLE_BUILDING_DISTANCE * 2) / 2D;
 			
-			newPosition = positionNextToBuilding(buildingType, building, Math.round(dist2), false);
+			newPosition = positionNextToBuilding(buildingSpec, building, Math.round(dist2), false);
 			if (newPosition != null) {
 				break;
 			}
@@ -834,10 +818,9 @@ public class Resupply implements Serializable, Transportable {
 	 * @param newBuildingType the new building type.
 	 * @return new building template with position/length, or null if none found.
 	 */
-	private BuildingTemplate positionNewConnector(String newBuildingType) {
+	private BuildingTemplate positionNewConnector(BuildingSpec spec) {
 		BuildingManager buildingManager = settlement.getBuildingManager();
 		BuildingTemplate newTemplate = null;
-		BuildingSpec spec = buildingConfig.getBuildingSpec(newBuildingType);
 
 		int baseLevel = spec.getBaseLevel();
 		List<Building> inhabitableBuildings = buildingManager.getBuildings(FunctionType.LIFE_SUPPORT);
@@ -872,7 +855,7 @@ public class Resupply implements Serializable, Transportable {
 										building.getYLocation());
 								if ((distance < leastDistance) && (distance >= MINIMUM_CONNECTOR_LENGTH)) {
 									// Check that new building can be placed between the two buildings.
-									if (positionConnectorBetweenTwoBuildings(newBuildingType, startingBuilding,
+									if (positionConnectorBetweenTwoBuildings(spec, startingBuilding,
 											building) != null) {
 										closestStartingBuilding = startingBuilding;
 										closestEndingBuilding = building;
@@ -886,11 +869,9 @@ public class Resupply implements Serializable, Transportable {
 
 				if ((closestStartingBuilding != null) && (closestEndingBuilding != null)) {
 					// Determine new location/length between the two buildings.
-					newTemplate = positionConnectorBetweenTwoBuildings(newBuildingType, closestStartingBuilding,
+					newTemplate = positionConnectorBetweenTwoBuildings(spec, closestStartingBuilding,
 							closestEndingBuilding);
-//					if (newTemplate != null)
-//						logger.config("Case 1 : Just created a new connector template " +
-							// newTemplate.getNickName() + " in positionNewConnector()");
+
 				}
 			}
 		}
@@ -924,7 +905,7 @@ public class Resupply implements Serializable, Transportable {
 								startingBuilding.getYLocation(), building.getXLocation(), building.getYLocation());
 						if ((distance < leastDistance) && (distance >= MINIMUM_CONNECTOR_LENGTH)) {
 							// Check that new building can be placed between the two buildings.
-							if (positionConnectorBetweenTwoBuildings(newBuildingType, startingBuilding,
+							if (positionConnectorBetweenTwoBuildings(spec, startingBuilding,
 									building) != null) {
 								closestStartingBuilding = startingBuilding;
 								closestEndingBuilding = building;
@@ -937,7 +918,7 @@ public class Resupply implements Serializable, Transportable {
 
 			if ((closestStartingBuilding != null) && (closestEndingBuilding != null)) {
 				// Determine new location/length between the two buildings.
-				newTemplate = positionConnectorBetweenTwoBuildings(newBuildingType, closestStartingBuilding,
+				newTemplate = positionConnectorBetweenTwoBuildings(spec, closestStartingBuilding,
 						closestEndingBuilding);
 			}
 		}
@@ -972,7 +953,7 @@ public class Resupply implements Serializable, Transportable {
 								startingBuilding.getYLocation(), building.getXLocation(), building.getYLocation());
 						if ((distance < leastDistance) && (distance >= 5D)) { 
 							// Check that new building can be placed between the two buildings.
-							if (positionConnectorBetweenTwoBuildings(newBuildingType, startingBuilding,
+							if (positionConnectorBetweenTwoBuildings(spec, startingBuilding,
 									building) != null) {
 								closestStartingBuilding = startingBuilding;
 								closestEndingBuilding = building;
@@ -985,7 +966,7 @@ public class Resupply implements Serializable, Transportable {
 
 			if ((closestStartingBuilding != null) && (closestEndingBuilding != null)) {
 				// Determine new location/length between the two buildings.
-				newTemplate = positionConnectorBetweenTwoBuildings(newBuildingType, closestStartingBuilding,
+				newTemplate = positionConnectorBetweenTwoBuildings(spec, closestStartingBuilding,
 						closestEndingBuilding);
 			}
 		}
@@ -998,7 +979,7 @@ public class Resupply implements Serializable, Transportable {
 			while (l.hasNext()) {
 				Building building = l.next();
 				// Make connector building face away from building.
-				newTemplate = positionNextToBuilding(newBuildingType, building, 0D, true);
+				newTemplate = positionNextToBuilding(spec, building, 0D, true);
 			}
 		}
 
@@ -1016,13 +997,12 @@ public class Resupply implements Serializable, Transportable {
 	 * @return new building template with determined position, or null if none
 	 *         found.
 	 */
-	private BuildingTemplate positionNextToBuilding(String newBuildingType, Building building,
+	private BuildingTemplate positionNextToBuilding(BuildingSpec spec, Building building,
 			double separationDistance, boolean faceAway) {
 		BuildingTemplate newPosition = null;
 
 		// Replace width and length defaults to deal with variable width and length
 		// buildings.
-		BuildingSpec spec = buildingConfig.getBuildingSpec(newBuildingType);
 		double width = spec.getWidth();
 		if (width <= 0D) {
 			width = DEFAULT_VARIABLE_BUILDING_WIDTH;
@@ -1096,15 +1076,15 @@ public class Resupply implements Serializable, Transportable {
 			if (buildingManager.isBuildingLocationOpen(position)) {
 				// Set the new building here.
 				int buildingID = buildingManager.getNextTemplateID();
-				int buildingTypeID = buildingManager.getNextBuildingTypeID(newBuildingType);
+				int buildingTypeID = buildingManager.getNextBuildingTypeID(spec.getBuildingType());
 
-				String buildingNickName = newBuildingType + " " + buildingTypeID;
+				String buildingNickName = spec.getBuildingType() + " " + buildingTypeID;
 
 				logger.config(POSITIONING + "at (" + Math.round(rectCenterX * 10D) / 10D + ", "
 						+ Math.round(rectCenterY * 10D) / 10D + ") at " + Math.round(rectRotation) + " deg");
 
 				newPosition = new BuildingTemplate(buildingID, 
-						newBuildingType, buildingNickName, position);
+						spec.getBuildingType(), buildingNickName, position);
 				break;
 			}
 		}
@@ -1122,7 +1102,7 @@ public class Resupply implements Serializable, Transportable {
 	 * @return new building template with determined position, or null if none
 	 *         found.
 	 */
-	private BuildingTemplate positionConnectorBetweenTwoBuildings(String newBuildingType, Building firstBuilding,
+	private BuildingTemplate positionConnectorBetweenTwoBuildings(BuildingSpec spec, Building firstBuilding,
 			Building secondBuilding) {
 
 		BuildingManager buildingManager = settlement.getBuildingManager();
@@ -1134,7 +1114,6 @@ public class Resupply implements Serializable, Transportable {
 
 		// Check each building side for the two buildings for a valid line unblocked by
 		// obstacles.
-		BuildingSpec spec = buildingConfig.getBuildingSpec(newBuildingType);
 		double width = spec.getWidth();
 		List<Point2D> firstBuildingPositions = getFourPositionsSurroundingBuilding(firstBuilding, .1D);
 		List<Point2D> secondBuildingPositions = getFourPositionsSurroundingBuilding(secondBuilding, .1D);
@@ -1190,11 +1169,11 @@ public class Resupply implements Serializable, Transportable {
 			double facingDegrees = LocalAreaUtil.getDirection(p1, p2);
 			// Set the new building here.
 			int buildingID = buildingManager.getNextTemplateID();
-			int buildingTypeID = buildingManager.getNextBuildingTypeID(newBuildingType);
+			int buildingTypeID = buildingManager.getNextBuildingTypeID(spec.getBuildingType());
 
-			String buildingNickName = newBuildingType + " " + buildingTypeID;
+			String buildingNickName = spec.getBuildingType() + " " + buildingTypeID;
 
-			newPosition = new BuildingTemplate(buildingID, newBuildingType, buildingNickName, 
+			newPosition = new BuildingTemplate(buildingID, spec.getBuildingType(), buildingNickName, 
 					new BoundedObject(centerX, centerY, width, newLength,	facingDegrees));
 		}
 
@@ -1294,11 +1273,6 @@ public class Resupply implements Serializable, Transportable {
 		this.state = transitState;
 	}
 
-	@Override
-	public synchronized void performArrival() {
-		// Deliver buildings to the destination settlement.
-		startDeliveryEvent();
-	}
 
 	@Override
 	public MarsClock getLaunchDate() {
@@ -1461,10 +1435,16 @@ public class Resupply implements Serializable, Transportable {
 	 * @return destination settlement.
 	 */
 	public Settlement getSettlement() {
-		if (settlement == null) {
-			settlement = unitManager.getSettlementByID(settlementID);
-		}
 		return settlement;
+	}
+
+	/**
+	 * Reattact a loading item to the active UnitManager
+	 * @param um
+	 */
+	@Override
+	public void reinit(UnitManager um) {
+		settlement = um.getSettlementByID(settlementID);
 	}
 
 	/**
@@ -1474,7 +1454,7 @@ public class Resupply implements Serializable, Transportable {
 	 */
 	public void setSettlement(Settlement settlement) {
 		this.settlement = settlement;
-		settlementID = ((Unit)settlement).getIdentifier();
+		settlementID = settlement.getIdentifier();
 	}
 
 	@Override
@@ -1508,17 +1488,7 @@ public class Resupply implements Serializable, Transportable {
 	public String getSettlementName() {
 		return getSettlement().getName();
 	}
-	
-	/**
-	 * Reloads instances after loading from a saved sim.
-	 * 
-	 * @param pc
-	 */
-	public static void initializeInstances(BuildingConfig bc, UnitManager u) {
-		buildingConfig = bc;
-		unitManager = u;
-	}
-			
+		
 	@Override
 	public void destroy() {
 		launchDate = null;
