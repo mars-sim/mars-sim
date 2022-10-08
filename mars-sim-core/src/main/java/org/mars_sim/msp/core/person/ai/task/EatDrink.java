@@ -989,7 +989,7 @@ public class EatDrink extends Task {
 	 */
 	private void calculateWater(boolean waterOnly) {
 
-		double amount = RandomUtil.getRandomDouble(waterEachServing / 3, waterEachServing);
+		double amount = RandomUtil.getRandomDouble(waterEachServing / 2, waterEachServing);
 
 		Unit containerUnit = person.getContainerUnit();
 		
@@ -1008,12 +1008,12 @@ public class EatDrink extends Task {
 			
 			// Test to see if there's enough water
 			if (available >= amount) {
-				logger.info(person, 10_000L, "Drinking " + amount + " kg of water from EVA suit.");
+				logger.info(person, 10_000L, "Drinking " + Math.round(amount * 100.0)/100.0 + " kg of water from EVA suit.");
 				consumeWater(suit, amount, waterOnly);
 			}
 			else if (available > 0) {
 				amount = available;
-				logger.info(person, 10_000L, "Drinking " + amount + " kg of water from EVA suit.");
+				logger.info(person, 10_000L, "Drinking " + Math.round(amount * 100.0)/100.0 + " kg of water from EVA suit.");
 				consumeWater(suit, amount, waterOnly);
 			}
 		}
@@ -1039,13 +1039,13 @@ public class EatDrink extends Task {
 		
 				// Case 1: See if there's enough water in the bottle
 				if (availableAmount >= amount) {
-//					logger.info(person, 10_000L, "Drinking " + amount + " kg of water from thermal bottle.");
+//					logger.info(person, 10_000L, "Drinking " + Math.round(amount * 100.0)/100.0 + " kg of water from thermal bottle.");
 					consumeWater(bottle, amount, waterOnly);
 					return;
 				}
 				else if (availableAmount > 0) {
 					amount = availableAmount;
-//					logger.info(person, 10_000L, "Drinking " + amount + " kg of water from thermal bottle.");
+//					logger.info(person, 10_000L, "Drinking " + Math.round(amount * 100.0)/100.0 + " kg of water from thermal bottle.");
 					consumeWater(bottle, amount, waterOnly);
 					return;
 				}
@@ -1053,11 +1053,11 @@ public class EatDrink extends Task {
 				// Case 2: See if the person needs to fill up the empty bottle
 				if (availableAmount == 0.0) {
 					// Retrieve the water from settlement/vehicle
-					double missing = ((ResourceHolder)containerUnit).retrieveAmountResource(WATER_ID, 0.5);
+					double missing = ((ResourceHolder)containerUnit).retrieveAmountResource(WATER_ID, 1);
 					// Fill up the bottle with water
-					if (missing < 0.5) {
-						amount = 0.5 - missing;
-						logger.info(person, 10_000L, "Filled up the bottle with " + amount + " kg of water.");
+					if (missing < 1) {
+						amount = 1 - missing;
+						logger.info(person, 10_000L, "Filled up the bottle with " + Math.round(amount * 100.0)/100.0 + " kg of water.");
 						person.fillUpThermalBottle(amount);
 					}
 				}	
@@ -1101,7 +1101,7 @@ public class EatDrink extends Task {
 		pc.recordFoodConsumption(amount, 3);
 
 		if (waterOnly) {
-			logger.info(person, 10_000L, "Drinking " + amount + " kg of water.");
+//			logger.info(person, 10_000L, "Drinking " + Math.round(amount * 100.0)/100.0 + " kg of water.");
 			setDescription(Msg.getString("Task.description.eatDrink.water")); //$NON-NLS-1$
 		}
 
