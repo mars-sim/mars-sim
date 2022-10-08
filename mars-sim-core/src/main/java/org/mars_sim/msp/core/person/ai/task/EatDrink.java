@@ -989,93 +989,98 @@ public class EatDrink extends Task {
 	 */
 	private void calculateWater(boolean waterOnly) {
 
-		double amount = waterEachServing;
+		double amount = RandomUtil.getRandomDouble(waterEachServing / 3, waterEachServing);
 
-		// Case 0: drink from thermal bottle
-		double availableBottle = 0;
-		
-		Container bottle = person.getThermalBottle();
-		
-		if (bottle != null)  {
-			
-			availableBottle = bottle.getAmountResourceStored(WATER_ID);
-
-			// Test to see if there's enough water
-			if (availableBottle >= amount) {
-				System.out.println("1. Use bottle to drink " + amount + " kg of water.");
-				consumeWater(bottle, amount, waterOnly);
-				return;
-			}
-			else if (availableBottle > 0) {
-				amount = availableBottle;
-				System.out.println("2. Use bottle to drink " + amount + " kg of water.");
-				consumeWater(bottle, amount, waterOnly);
-				return;
-			}
-		}
-				
 		Unit containerUnit = person.getContainerUnit();
-		
-		if (bottle == null && person.isInSettlement()) {
-			// if the person does not have a thermal bottle assigned
-			bottle = person.AssignThermalBottle();
-		}
-
-		// Need to fill up the empty bottle
-		if (bottle != null) {
-			
-			availableBottle = bottle.getAmountResourceStored(WATER_ID);
-			
-			if (availableBottle == 0.0) {
-				// Retrieve the water from settlement/vehicle
-				double missing = ((ResourceHolder)containerUnit).retrieveAmountResource(WATER_ID, 0.5);
-				// Fill up the bottle with water
-				if (missing < 0.5) {
-					person.fillUpThermalBottle(0.5 - missing);
-				}
-			}	
-		}
 		
 		EVASuit suit = null;
 
 		if (containerUnit != null
-			&& containerUnit instanceof MarsSurface) {
+			&& containerUnit.getUnitType() == UnitType.PLANET) {
 			// Doing EVA outside. Get water from one's EVA suit
 			suit = person.getSuit();
 		}
 
 		// Case 1: drink from EVA suit
-		if (suit != null && amount > 0) {
+		
+		if (suit != null) {
 			double available = suit.getAmountResourceStored(WATER_ID);
-
+			
 			// Test to see if there's enough water
-			if (available >= amount)
+			if (available >= amount) {
+				logger.info(person, 10_000L, "Drinking " + amount + " kg of water from EVA suit.");
 				consumeWater(suit, amount, waterOnly);
-			else if (available > 0){
+			}
+			else if (available > 0) {
 				amount = available;
+				logger.info(person, 10_000L, "Drinking " + amount + " kg of water from EVA suit.");
 				consumeWater(suit, amount, waterOnly);
 			}
 		}
 
-		// Case 2: drink from settlement
-		else if (amount > 0) {
-			int level = person.getAssociatedSettlement().getWaterRationLevel();
-			double [] levels = {1D, 5D, 10D, 15D};
-
-			// Try different level of water due to ration
-			for (double levelModifier : levels) {
-
-				amount = Math.max(MIN, amount / levelModifier / level);
+		// Case 2: drink from bottle when being inside the settlement or vehicle
+		else {
 			
-				double available = getAmountResourceStored(containerUnit, WATER_ID);
-				// Test to see if there's enough water
-				if (available >= amount)
-					consumeWater((ResourceHolder)containerUnit, amount, waterOnly);
-				else if (available > 0){
-					amount = available;
-					consumeWater((ResourceHolder)containerUnit, amount, waterOnly);
-				}
+			// Case 0: drink from thermal bottle
+			double availableAmount = 0;
+			
+			Container bottle = person.getThermalBottle();
+					
+			if (bottle == null && person.isInSettlement()) {
+				// Assign the person a thermal bottle
+				bottle = person.AssignThermalBottle();
+				logger.info(person, 10_000L, "Assigned a thermal bottle.");
 			}
+
+			// for either in settlement or vehicle
+			if (bottle != null)  {
+				
+				availableAmount = bottle.getAmountResourceStored(WATER_ID);
+		
+				// Case 1: See if there's enough water in the bottle
+				if (availableAmount >= amount) {
+//					logger.info(person, 10_000L, "Drinking " + amount + " kg of water from thermal bottle.");
+					consumeWater(bottle, amount, waterOnly);
+					return;
+				}
+				else if (availableAmount > 0) {
+					amount = availableAmount;
+//					logger.info(person, 10_000L, "Drinking " + amount + " kg of water from thermal bottle.");
+					consumeWater(bottle, amount, waterOnly);
+					return;
+				}
+				
+				// Case 2: See if the person needs to fill up the empty bottle
+				if (availableAmount == 0.0) {
+					// Retrieve the water from settlement/vehicle
+					double missing = ((ResourceHolder)containerUnit).retrieveAmountResource(WATER_ID, 0.5);
+					// Fill up the bottle with water
+					if (missing < 0.5) {
+						amount = 0.5 - missing;
+						logger.info(person, 10_000L, "Filled up the bottle with " + amount + " kg of water.");
+						person.fillUpThermalBottle(amount);
+					}
+				}	
+			}
+			
+//			int level = person.getAssociatedSettlement().getWaterRationLevel();
+//			double [] levels = {1D, 5D, 10D, 15D};
+//
+//			// Try different level of water due to ration
+//			for (double levelModifier : levels) {
+//
+//				amount = Math.max(MIN, amount / levelModifier / level);
+//			
+//				double available = getAmountResourceStored(containerUnit, WATER_ID);
+//				// Test to see if there's enough water
+//				if (available >= amount)
+//					consumeWater((ResourceHolder)containerUnit, amount, waterOnly);
+//				else if (available > 0){
+//					amount = available;
+//					consumeWater((ResourceHolder)containerUnit, amount, waterOnly);
+//				}
+//			}
+			
 		}
 	}
 
@@ -1087,16 +1092,18 @@ public class EatDrink extends Task {
 	 * @param amount
 	 * @param waterOnly
 	 */
-	private void consumeWater(ResourceHolder containerUnit, double amount, boolean waterOnly) {
+	private void consumeWater(ResourceHolder rh, double amount, boolean waterOnly) {
 		// Reduce thirst
 		pc.reduceThirst(amount * THIRST_PER_WATER_SERVING);
 		// Retrieve the water
-		retrieveAnResource(amount, WATER_ID, containerUnit);
+		rh.retrieveAmountResource(WATER_ID, amount);
 		// Record the amount consumed
 		pc.recordFoodConsumption(amount, 3);
 
-		if (waterOnly)
+		if (waterOnly) {
+			logger.info(person, 10_000L, "Drinking " + amount + " kg of water.");
 			setDescription(Msg.getString("Task.description.eatDrink.water")); //$NON-NLS-1$
+		}
 
 		if (pc.getThirst() < PhysicalCondition.THIRST_THRESHOLD / 6)
 			endTask();

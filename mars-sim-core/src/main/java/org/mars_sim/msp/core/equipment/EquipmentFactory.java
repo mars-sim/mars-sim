@@ -103,7 +103,7 @@ public final class EquipmentFactory {
 		case SPECIMEN_BOX:
 			return 0.65;
 		case THERMAL_BOTTLE:
-			return 0.5;		
+			return 1.0;		
 		case WHEELBARROW:
 			return 12;	
 		default:

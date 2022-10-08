@@ -2253,7 +2253,7 @@ public class Person extends Unit implements Worker, Temporal, EquipmentOwner, Re
 	}
 	
 	public Container getThermalBottle() {
-		return findContainer(EquipmentType.THERMAL_BOTTLE, true, ResourceUtil.waterID);
+		return findContainer(EquipmentType.THERMAL_BOTTLE, false, ResourceUtil.waterID);
 	}
 	
 	/**
