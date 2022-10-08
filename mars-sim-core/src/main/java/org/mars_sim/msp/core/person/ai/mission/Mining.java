@@ -53,13 +53,13 @@ public class Mining extends EVAMission
 	private static final MissionStatus LUV_NOT_AVAILABLE = new MissionStatus("Mission.status.noLUV");
 	private static final MissionStatus LUV_ATTACHMENT_PARTS_NOT_LOADABLE = new MissionStatus("Mission.status.noLUVAttachments");
 
-	private static final int MAX = 200;
+	private static final int MAX = 1000;
 	
 	/** Number of large bags needed for mission. */
 	public static final int NUMBER_OF_LARGE_BAGS = 20;
 
 	/** Base amount (kg) of a type of mineral at a site. */
-	static final double MINERAL_BASE_AMOUNT = 2500D;
+	static final double MINERAL_BASE_AMOUNT = .001;
 
 	/** Amount of time(millisols) to spend at the mining site. */
 	private static final double MINING_SITE_TIME = 4000D;
@@ -78,7 +78,7 @@ public class Mining extends EVAMission
 	private ExploredLocation miningSite;
 	private LightUtilityVehicle luv;
 	
-	private Map<AmountResource, Double> excavatedMinerals;
+	private Map<AmountResource, Double> detectedMinerals;
 	private Map<AmountResource, Double> totalExcavatedMinerals;
 
 	/**
@@ -95,7 +95,7 @@ public class Mining extends EVAMission
 
 		if (!isDone()) {
 			// Initialize data members.
-			excavatedMinerals = new HashMap<>(1);
+			detectedMinerals = new HashMap<>(1);
 			totalExcavatedMinerals = new HashMap<>(1);
 			setEVAEquipment(EquipmentType.LARGE_BAG, NUMBER_OF_LARGE_BAGS);
 
@@ -114,7 +114,10 @@ public class Mining extends EVAMission
 					return;
 				}
 				miningSite.setReserved(true);
+
 				addNavpoint(miningSite.getLocation(), "mining site");
+				
+				setupDetectedMinerals();
 			}
 
 			// Add home settlement
@@ -135,7 +138,6 @@ public class Mining extends EVAMission
 				setInitialPhase(needsReview);
 			}
 		}
-
 	}
 
 	/**
@@ -156,7 +158,7 @@ public class Mining extends EVAMission
 		// Initialize data members.
 		this.miningSite = miningSite;
 		miningSite.setReserved(true);
-		excavatedMinerals = new HashMap<>(1);
+		detectedMinerals = new HashMap<>(1);
 		totalExcavatedMinerals = new HashMap<>(1);
 		setEVAEquipment(EquipmentType.LARGE_BAG, NUMBER_OF_LARGE_BAGS);
 
@@ -165,6 +167,8 @@ public class Mining extends EVAMission
 		// Add mining site nav point.
 		addNavpoint(miningSite.getLocation(), "mining site");
 
+		setupDetectedMinerals();
+		
 		// Add home settlement
 		Settlement s = getStartingSettlement();
 		addNavpoint(s);
@@ -356,6 +360,19 @@ public class Mining extends EVAMission
 		}
 	}
 
+	private void setupDetectedMinerals() {
+		Map<String, Double> concs = miningSite.getEstimatedMineralConcentrations();
+		double remainingMass = miningSite.getRemainingMass();
+
+		Iterator<String> i = concs.keySet().iterator();
+		while (i.hasNext()) {
+			String name = i.next();
+			AmountResource resource = ResourceUtil.findAmountResource(name);
+			double percent = concs.get(name);
+			detectedMinerals.put(resource, remainingMass * percent / 100);
+		}
+	}
+	
 	/**
 	 * Checks if a person can collect minerals from the excavation pile.
 	 * 
@@ -365,10 +382,10 @@ public class Mining extends EVAMission
 	private boolean canCollectExcavatedMinerals(Worker member) {
 		boolean result = false;
 
-		Iterator<AmountResource> i = excavatedMinerals.keySet().iterator();
+		Iterator<AmountResource> i = detectedMinerals.keySet().iterator();
 		while (i.hasNext()) {
 			AmountResource resource = i.next();
-			if ((excavatedMinerals.get(resource) >= MINIMUM_COLLECT_AMOUNT)
+			if ((detectedMinerals.get(resource) >= MINIMUM_COLLECT_AMOUNT)
 					&& CollectMinedMinerals.canCollectMinerals(member, getRover(), resource)) {
 				result = true;
 			}
@@ -387,12 +404,12 @@ public class Mining extends EVAMission
 		AmountResource result = null;
 		double largestAmount = 0D;
 
-		Iterator<AmountResource> i = excavatedMinerals.keySet().iterator();
+		Iterator<AmountResource> i = detectedMinerals.keySet().iterator();
 		while (i.hasNext()) {
 			AmountResource resource = i.next();
-			if ((excavatedMinerals.get(resource) >= MINIMUM_COLLECT_AMOUNT)
+			if ((detectedMinerals.get(resource) >= MINIMUM_COLLECT_AMOUNT)
 					&& CollectMinedMinerals.canCollectMinerals(person, getRover(), resource)) {
-				double amount = excavatedMinerals.get(resource);
+				double amount = detectedMinerals.get(resource);
 				if (amount > largestAmount) {
 					result = resource;
 					largestAmount = amount;
@@ -497,10 +514,12 @@ public class Mining extends EVAMission
 		for (Map.Entry<String, Double> conc : site.getEstimatedMineralConcentrations().entrySet()) {
 			int mineralResource = ResourceUtil.findIDbyAmountResourceName(conc.getKey());
 			double mineralValue = settlement.getGoodsManager().getGoodValuePoint(mineralResource);
-			double mineralAmount = (conc.getValue() / 100D) * MINERAL_BASE_AMOUNT;
+			double reserve = site.getRemainingMass();
+			double mineralAmount = (conc.getValue() / 100) * reserve * MINERAL_BASE_AMOUNT;
 			result += mineralValue * mineralAmount;
 		}
 			
+//		logger.info(site.getLocation().getCoordinateString() + " site value: " + result);
 		result = Math.min(MAX, result);
 		return result;
 	}
@@ -579,7 +598,7 @@ public class Mining extends EVAMission
 	 * @return amount (kg)
 	 */
 	public double getMineralExcavationAmount(AmountResource mineral) {
-		return excavatedMinerals.getOrDefault(mineral, 0D);
+		return detectedMinerals.getOrDefault(mineral, 0D);
 	}
 
 	/**
@@ -600,10 +619,10 @@ public class Mining extends EVAMission
 	 */
 	public void excavateMineral(AmountResource mineral, double amount) {
 		double currentExcavated = amount;
-		if (excavatedMinerals.containsKey(mineral)) {
-			currentExcavated += excavatedMinerals.get(mineral);
+		if (detectedMinerals.containsKey(mineral)) {
+			currentExcavated += detectedMinerals.get(mineral);
 		}
-		excavatedMinerals.put(mineral, currentExcavated);
+		detectedMinerals.put(mineral, currentExcavated);
 
 		double totalExcavated = amount;
 		if (totalExcavatedMinerals.containsKey(mineral)) {
@@ -623,11 +642,15 @@ public class Mining extends EVAMission
 	 */
 	public void collectMineral(AmountResource mineral, double amount) {
 		double currentExcavated = 0D;
-		if (excavatedMinerals.containsKey(mineral)) {
-			currentExcavated = excavatedMinerals.get(mineral);
+		if (detectedMinerals.containsKey(mineral)) {
+			currentExcavated = detectedMinerals.get(mineral);
 		}
 		if (currentExcavated >= amount) {
-			excavatedMinerals.put(mineral, (currentExcavated - amount));
+			// Record the excavated amount
+			detectedMinerals.put(mineral, (currentExcavated - amount));
+			// Reduce the mass at the site
+			getMiningSite().excavateMass((currentExcavated - amount));	
+		
 		} else {
 			throw new IllegalStateException(
 					mineral.getName() + " amount: " + amount + " more than currently excavated.");

@@ -1145,7 +1145,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 					logger.log(this, Level.INFO, 0, mal.getName() + " just occurred.");
 					logger.log(this, Level.INFO, 0, "EventType: " + mal.getMalfunctionMeta().getName() + ".");
 					
-					String victimName = "None";
+					String victimNames = null;
 //					String task = "N/A";
 
 					// check if someone under this roof may have seen/affected by the impact
@@ -1166,8 +1166,12 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 							if (factor > 1)
 								pc.setStress(pc.getStress() * factor);
 
-							victimName = person.getName();
-							mal.setTraumatized(victimName);
+							if (victimNames != null)
+								victimNames += ", " + person.getName();
+							else
+								victimNames = person.getName();
+							
+							mal.setTraumatized(victimNames);
 
 							// Store the meteorite fragment in the settlement
 							settlement.storeAmountResource(ResourceUtil.meteoriteID, getBuildingManager().getDebrisMass());
@@ -1176,21 +1180,25 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 									+ " kg of meteorite fragments in " + getNickName() + ".");
 
 							if (pc.getStress() > 30)
-								logger.log(this, Level.WARNING, 0, victimName + " was traumatized by the meteorite impact");
+								logger.log(this, Level.WARNING, 0, victimNames + " was traumatized by the meteorite impact");
 
 						}
+						
 					} // loop for persons
 
 					// If it's not breached, how to record the damage
 					logger.log(this, Level.INFO, 0, "Meteorite Impact event observed but damage not detected.");
 
+					if (victimNames == null)
+						victimNames = "";
+						
 					HistoricalEvent hEvent = new HazardEvent(
 							EventType.HAZARD_ACTS_OF_GOD,
 							getAssociatedSettlement(),
 							mal.getMalfunctionMeta().getName(),
 							"",
-							getNickName(), 
-							getLocationTag().getImmediateLocation(),
+							victimNames,
+							getName(), 
 							getAssociatedSettlement().getName(),
 							getAssociatedSettlement().getCoordinates().getCoordinateString());
 

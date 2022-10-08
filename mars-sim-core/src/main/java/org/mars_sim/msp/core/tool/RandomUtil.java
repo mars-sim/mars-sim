@@ -153,11 +153,11 @@ public final class RandomUtil {
 	 * 
 	 * @param center
 	 * @param fraction
-	 * @param sigma
+	 * @param oneVariance the size of one variance of the gaussian distribution
 	 * @return
 	 */
-	public static double computeGaussianWithLimit(double center, double fraction, double sigma) {
-		double value = RandomUtil.getGaussianDouble() * sigma;
+	public static double computeGaussianWithLimit(double center, double fraction, double oneVariance) {
+		double value = RandomUtil.getGaussianDouble() * oneVariance;
 		if (value > 0)
 			return (center + Math.min(center * fraction, value));
 		else

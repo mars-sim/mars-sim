@@ -183,7 +183,7 @@ public class EatDrinkMeta extends MetaTask {
 				if (energy < 2525)
 					h0 += (2525 - energy) / 30D;
 				
-				if (person.isInSettlement() || vehicle.isInSettlement()) {
+				if (person.isInSettlement() || (vehicle != null && vehicle.isInSettlement())) {
 
 					// Check if there is a local dining building.
 					Building diningBuilding = EatDrink.getAvailableDiningBuilding(person, false);

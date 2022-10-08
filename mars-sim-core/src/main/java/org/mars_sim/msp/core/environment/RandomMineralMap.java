@@ -118,11 +118,12 @@ public class RandomMineralMap implements Serializable, MineralMap {
 				}
 				Coordinates[] regionArray = regionSet.toArray(new Coordinates[regionSet.size()]);
 //				System.out.println("regionArray: " + regionArray.length);
+				double CONC = 100;
+				
 				if (regionArray.length > 0) {
 					// Determine individual mineral concentrations.
 					int concentrationNumber = Math
 							.round((float) regionArray.length / REGION_FACTOR / getFrequencyModifier(mineralType.frequency));
-
 					for (int x = 0; x < concentrationNumber; x++) {
 						int regionLocationIndex = RandomUtil.getRandomInt(regionArray.length - 1);
 						Coordinates regionLocation = regionArray[regionLocationIndex];
@@ -130,7 +131,8 @@ public class RandomMineralMap implements Serializable, MineralMap {
 						double pixelRadius = (Coordinates.MARS_CIRCUMFERENCE / W) / 2D;
 						double distance = RandomUtil.getRandomDouble(pixelRadius);
 						Coordinates location = regionLocation.getNewLocation(direction, distance);
-						double concentration = RandomUtil.getRandomDouble(100D);
+						double concentration = RandomUtil.getRandomDouble(CONC);
+//						System.out.println("1. " + mineralType.name + ": " + concentration);
 						mineralConcentrations.add(new MineralConcentration(location, concentration, mineralType.name));
 					}
 				} else {
@@ -142,7 +144,8 @@ public class RandomMineralMap implements Serializable, MineralMap {
 						// Get a rand lon
 						double theta = Coordinates.getRandomLongitude();
 						Coordinates location = new Coordinates(phi, theta);
-						double concentration = RandomUtil.getRandomDouble(100D);
+						double concentration = RandomUtil.getRandomDouble(CONC);
+//						System.out.println("2. " + mineralType.name + ": " + concentration);
 						mineralConcentrations.add(new MineralConcentration(location, concentration, mineralType.name));
 					}
 				}

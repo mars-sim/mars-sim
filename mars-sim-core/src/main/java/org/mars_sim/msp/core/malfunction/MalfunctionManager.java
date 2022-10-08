@@ -472,7 +472,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 				if (malfunction.getMalfunctionMeta().getName().contains(MalfunctionFactory.METEORITE_IMPACT_DAMAGE)) {
 					eventType = EventType.HAZARD_ACTS_OF_GOD;
 					whileDoing = "";
-					whoAffected = ACTS_OF_GOD;
+					whoAffected = "";
 				}
 				else {
 					eventType = EventType.MALFUNCTION_PARTS_FAILURE;

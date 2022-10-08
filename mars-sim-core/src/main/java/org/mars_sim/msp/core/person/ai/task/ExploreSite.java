@@ -226,7 +226,7 @@ public class ExploreSite extends EVAOperation {
 					// Box is empty so choose at random
 					int randomNum = RandomUtil.getRandomInt(((ResourceUtil.rockIDs).length) - 1);
 					rockId = ResourceUtil.rockIDs[randomNum];
-					logger.info(person, 10_000, "collectRocks - Type of Rock collected: " + ResourceUtil.ROCKS[randomNum]);
+					logger.info(person, 10_000, "Type of rocks collected: " + ResourceUtil.ROCKS[randomNum] + ".");
 				}
 
 				double mass = RandomUtil.getRandomDouble(AVERAGE_ROCK_SAMPLE_MASS / 2D, AVERAGE_ROCK_SAMPLE_MASS * 2D);
@@ -252,10 +252,10 @@ public class ExploreSite extends EVAOperation {
 			probability = .9;
 		if ((site.getNumEstimationImprovement() == 0) || (RandomUtil.getRandomDouble(1.0D) <= probability)) {
 			improveSiteEstimates(site, getEffectiveSkillLevel());
-
+			
 			logger.log(person, Level.INFO, 5_000,
-					"Exploring at site " + site.getLocation().getFormattedString()
-					+ ". Estimation Improvement: "
+					"Exploring site at " + site.getLocation().getFormattedString()				
+					+ ". # of estimation made: "
 					+ site.getNumEstimationImprovement() + ".");
 		}
 	}

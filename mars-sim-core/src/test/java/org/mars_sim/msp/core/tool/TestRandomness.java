@@ -80,16 +80,116 @@ extends TestCase {
 				}
 			}
 		}
+		System.out.println();
+		System.out.println("NORMAL DISTRIBUTION");
 		System.out.println("lessThanOne: " + lessThanOne);
-		System.out.println("total: " + total);
-		
+		System.out.println("total: " + total);		
 		System.out.println(map);
-		
-		
+	
 //		assertEquals("Location state type", lon, source.getLocationStateType());
 //		assertTrue(msg + ": InSettlement", source.isInSettlement());
 //		assertFalse(msg + ": IsOutside", source.isOutside());
 //		assertNull(msg + ": Vehicle", source.getVehicle());
-
 	}
+    
+
+    public void testGaussianRandom() {
+    	List<Double> list = new ArrayList<>();
+		for (int i=0; i<1000; i++) {
+			double rand = RandomUtil.getGaussianDouble();
+			System.out.print(Math.round(rand * 1000.0) / 1000.0 + ", ");
+			list.add(rand);
+		}
+
+		SortedMap<Integer, Integer> map = new TreeMap<>();
+		
+		int total = 0;
+		int onePosVariance = 1;
+		int oneNegVariance = -1;	
+		int twoPosVariance = 2;
+		int twoNegVariance = -2;
+		int threeMoreVariance = 3;
+		int threeLessVariance = -3;
+		
+		for (double d: list) {
+			total++;
+			if (d >= 0) {
+				if (d < 1) {
+					if (map.containsKey(1)) {
+						int num = map.get(1);
+						map.put(1, num + 1);
+					}
+					else {
+						map.put(1, 1);
+					}
+					onePosVariance++;
+				}
+				else if (d < 2) {
+					if (map.containsKey(2)) {
+						int num = map.get(2);
+						map.put(2, num + 1);
+					}
+					else {
+						map.put(2, 1);
+					}
+					twoPosVariance++;
+				}
+				else {
+					if (map.containsKey(3)) {
+						int num = map.get(3);
+						map.put(3, num + 1);
+					}
+					else {
+						map.put(3, 1);
+					}
+					threeMoreVariance++;
+				}
+			}
+			else {
+				if (d > -1) {
+					if (map.containsKey(-1)) {
+						int num = map.get(-1);
+						map.put(-1, num + 1);
+					}
+					else {
+						map.put(-1, 1);
+					}
+					oneNegVariance++;
+				}
+				else if (d > -2) {
+					if (map.containsKey(-2)) {
+						int num = map.get(-2);
+						map.put(-2, num + 1);
+					}
+					else {
+						map.put(-2, 1);
+					}
+					twoNegVariance++;
+				}
+				else {
+					if (map.containsKey(-3)) {
+						int num = map.get(-3);
+						map.put(-3, num + 1);
+					}
+					else {
+						map.put(-3, 1);
+					}
+					threeLessVariance++;
+				}
+			}
+		}
+		
+		System.out.println();
+		System.out.println("GAUSSIAN DISTRIBUTION");
+		System.out.println("threeLessVariance: " + threeLessVariance);
+		System.out.println("twoNegVariance: " + twoNegVariance);
+		System.out.println("oneNegVariance: " + oneNegVariance);
+		System.out.println("onePosVariance: " + onePosVariance);
+		System.out.println("twoPosVariance: " + twoPosVariance);
+		System.out.println("threeMoreVariance: " + threeMoreVariance);
+		System.out.println("total: " + total);
+		
+		System.out.println(map);
+    }
+       
 }

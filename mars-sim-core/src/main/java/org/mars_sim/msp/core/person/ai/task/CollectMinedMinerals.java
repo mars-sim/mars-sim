@@ -47,7 +47,7 @@ public class CollectMinedMinerals extends EVAOperation {
 	private static final TaskPhase COLLECT_MINERALS = new TaskPhase(Msg.getString("Task.phase.collectMinerals")); //$NON-NLS-1$
 
 	/** Rate of mineral collection (kg/millisol). */
-	private static final double MINERAL_COLLECTION_RATE = 30D;
+	private static final double FULL_COLLECTION_RATE = 40D;
 
 	/** The average labor time it takes to find the mineral */
 	public static final double LABOR_TIME = 40D;
@@ -165,25 +165,31 @@ public class CollectMinedMinerals extends EVAOperation {
 		
 		Mining mission = (Mining) worker.getMission();
 
-		double mineralsExcavated = mission.getMineralExcavationAmount(mineralType);
-		double remainingPersonCapacity = 0;
-
-		double roverRemainingCap = rover.getAmountResourceRemainingCapacity(mineralType.getID());
-		
-		double weight = 0;
-		if (person != null)
-			weight = person.getMass();
-		else if (robot != null)
-			weight = robot.getMass();
-		
-		if (roverRemainingCap < weight + 5) {
+		if (mission.getMiningSite().isEmpty()) {
 			checkLocation();
 			return time;
 		}
-			
-		remainingPersonCapacity = worker.getAmountResourceRemainingCapacity(mineralType.getID());
+		
+		double mineralsExcavated = mission.getMineralExcavationAmount(mineralType);
+		double remainingPersonCapacity = 0;
 
-		double mineralsCollected = time * MINERAL_COLLECTION_RATE;
+//		double roverRemainingCap = rover.getAmountResourceRemainingCapacity(mineralType.getID());
+//		
+//		double weight = 0;
+//		if (person != null)
+//			weight = person.getMass();
+//		else if (robot != null)
+//			weight = robot.getMass();
+//		
+//		if (roverRemainingCap < weight + 5) {
+//			checkLocation();
+//			return time;
+//		}
+			
+		remainingPersonCapacity = worker.getRemainingCargoCapacity();
+
+		double concentration = mission.getMiningSite().getEstimatedMineralConcentrations().get(mineralType.getName());		
+		double mineralsCollected = time * FULL_COLLECTION_RATE * concentration;
 
 		// Modify collection rate by "Areology" skill.
 		int areologySkill = worker.getSkillManager().getEffectiveSkillLevel(SkillType.AREOLOGY);

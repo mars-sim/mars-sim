@@ -199,7 +199,7 @@ abstract class EVAMission extends RoverMission {
 			// Check if crew has been at site for more than one sol.
 			double timeDiff = getPhaseDuration();
 			if (timeDiff > getEstimatedTimeAtEVASite(false)) {
-				logger.info(getVehicle(), "EVA out of time");
+				logger.info(getVehicle(), "Ran out of EVA site time.");
 
 				activeEVA = false;
 			}
@@ -207,7 +207,7 @@ abstract class EVAMission extends RoverMission {
 			// If no one can explore the site and this is not due to it just being
 			// night time, end the exploring phase.
 			if (activeEVA && !isEnoughSunlightForEVA()) {
-				logger.info(getVehicle(), "Not enough sunlight");
+				logger.info(getVehicle(), "Not enough sunlight.");
 				addMissionLog(NOT_ENOUGH_SUNLIGHT);
 				activeEVA = false;
 			}
@@ -215,7 +215,7 @@ abstract class EVAMission extends RoverMission {
 			// Anyone in the crew or a single person at the home settlement has a dangerous
 			// illness, end phase.
 			if (activeEVA && hasEmergency()) {
-				logger.info(getVehicle(), "Has emergency");
+				logger.info(getVehicle(), "Had emergency.");
 				activeEVA = false;
 			}
 
@@ -228,8 +228,8 @@ abstract class EVAMission extends RoverMission {
 			if (activeEVA) {
 				activeEVA = performEVA((Person) member);
 				if (!activeEVA) {
-					logger.info(getVehicle(), "EVA operation halted");
-					addMissionLog("EVA operation halted");
+					logger.info(getVehicle(), "EVA operation halted.");
+					addMissionLog("EVA operation halted.");
 
 				}
 			}

@@ -323,8 +323,10 @@ public class PhysicalCondition implements Serializable {
 		bodyMassDeviation = Math.sqrt(person.getBaseMass() / Person.getAverageWeight()
 				* person.getHeight() / Person.getAverageHeight());
 		// Note: p = mean + RandomUtil.getGaussianDouble() * standardDeviation
+		double mod2 = RandomUtil.computeGaussianWithLimit(1, .5, .2);
 		// bodyMassDeviation average around 0.7 to 1.3
-		bodyMassDeviation = bodyMassDeviation * (1 + RandomUtil.getGaussianDouble() / 10D);
+		bodyMassDeviation = bodyMassDeviation * mod2;
+
 		// Assume a person drinks 10 times a day, each time ~375 mL
 		waterConsumedPerSol = H2O_CONSUMPTION * bodyMassDeviation ;
 		// waterConsumedPerServing is ~ 0.19 kg
@@ -335,10 +337,10 @@ public class PhysicalCondition implements Serializable {
 		foodDryMassPerServing = foodConsumedPerSol / Cooking.NUMBER_OF_MEAL_PER_SOL;
 
 		double sTime = personConfig.getStarvationStartTime();
-		starvationStartTime = 1000D * RandomUtil.computeGaussianWithLimit(sTime, 0.2, bodyMassDeviation / 10);
+		starvationStartTime = 1000D * RandomUtil.computeGaussianWithLimit(sTime, 0.3, bodyMassDeviation / 5);
 		
 		double dTime = personConfig.getDehydrationStartTime();
-		dehydrationStartTime = 1000D * RandomUtil.computeGaussianWithLimit(dTime, 0.2, bodyMassDeviation / 10);
+		dehydrationStartTime = 1000D * RandomUtil.computeGaussianWithLimit(dTime, 0.3, bodyMassDeviation / 5);
 
 		isStarving = false;
 		isStressedOut = false;

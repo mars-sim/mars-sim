@@ -7,11 +7,13 @@
 
 package org.mars_sim.msp.core.environment;
 
-import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.structure.Settlement;
-
 import java.io.Serializable;
 import java.util.Map;
+
+import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.logging.SimLogger;
+import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * A class representing an explored location. It contains information on
@@ -24,12 +26,17 @@ public class ExploredLocation implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	/** default logger. */
+	private static SimLogger logger = SimLogger.getLogger(ExploredLocation.class.getName());
+	
+	
 	// Private members.
 	private boolean mined;
 	private boolean explored;
 	private boolean reserved;
 	private int numEstimationImprovement;
 	private double totalMass;
+	private double remainingMass;
 	private double averageDensity;
 
 	private Settlement settlement;
@@ -55,8 +62,36 @@ public class ExploredLocation implements Serializable {
 		explored = false;
 		reserved = false;
 		this.numEstimationImprovement = estimationImprovement;
+		
+		double reserve = RandomUtil.getRandomDouble(10_000, 100_000);
+		totalMass = RandomUtil.computeGaussianWithLimit(reserve, .5, reserve * .1);
+		remainingMass = totalMass;
+		
+		logger.info(settlement + " - " + location.getFormattedString() 
+			+ "  random reserve: " + (int)totalMass + " kg.  Concentration: "
+			+ estimatedMineralConcentrations);
 	}
 
+	public boolean isEmpty() {
+		if (remainingMass == 0.0)
+			return true;
+		
+		return false;
+	}
+	
+	public double excavateMass(double amount) {
+		if (remainingMass < amount) {
+			remainingMass = 0;
+			return amount - remainingMass;
+		}
+		remainingMass -= amount;
+		return 0;
+	}
+	
+	public double getRemainingMass() {
+		return remainingMass;
+	}
+	
 	/**
 	 * Gets the location coordinates.
 	 *
