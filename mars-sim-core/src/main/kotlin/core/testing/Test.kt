@@ -4,5 +4,5 @@ class Test {
 }
 
 fun main(args: Array<String>) {
-	println("Hello, Test!")
+	println("Hello, Test!" + args)
 } 

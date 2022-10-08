@@ -1110,8 +1110,6 @@ public class Person extends Unit implements Worker, Temporal, EquipmentOwner, Re
 	 * Gets the birthplace of the person.
 	 *
 	 * @return the birthplace
-	 * @deprecated TODO internationalize the place of birth for display in user
-	 *             interface.
 	 */
 	public String getBirthplace() {
 		return birthplace;

@@ -279,8 +279,6 @@ extends TestCase {
         unitManager.addUnit(vehicle);
         settlement.addOwnedVehicle(vehicle);
         
-        System.out.println("1. person: " + person.getLocationStateType());
-        System.out.println("2. vehicle: " + vehicle.getLocationStateType());
 		assertTrue("Transfer person from settlement to vehicle", person.transfer(vehicle));
 		assertInVehicle("In vehicle", person, vehicle);
 		assertEquals("Person's location state type is INSIDE_VEHICLE", LocationStateType.INSIDE_VEHICLE, person.getLocationStateType());
@@ -293,23 +291,17 @@ extends TestCase {
 		settlement.getBuildingManager().addToGarageBuilding(vehicle);
 		assertTrue("Vehicle has entered a garage", vehicle.isInAGarage());
 		assertInsideSettllement("Vehicle still in a settlement", vehicle, settlement);
-        System.out.println("3. person: " + person.getLocationStateType());
-        System.out.println("4. vehicle: " + vehicle.getLocationStateType());
+
 		assertEquals("vehicle location state type is INSIDE_SETTLEMENT", LocationStateType.INSIDE_SETTLEMENT, vehicle.getLocationStateType());
 		assertEquals("Person's location state type is INSIDE_VEHICLE", LocationStateType.INSIDE_VEHICLE, person.getLocationStateType());
 		
 		
         // Vehicle leaves garage
         BuildingManager.removeFromGarage(vehicle);
-        System.out.println("5. person: " + person.getLocationStateType());
-        System.out.println("6. vehicle: " + vehicle.getLocationStateType());
 		assertEquals("Person's location state type is INSIDE_VEHICLE", LocationStateType.INSIDE_VEHICLE, person.getLocationStateType());
 		
 		assertFalse("Vehicle has left garage", vehicle.isInAGarage());
-        System.out.println("7. person still considered inside settlement as the vehicle still in settlemnt: " + person.getSettlement());
-        System.out.println("7a. person: " + person.getVehicle());
-        System.out.println("7b. person: " + person.getLocationStateType());
-        System.out.println("8. vehicle: " + vehicle.getSettlement());
+
 //		assertNull("Person in a vehicle. Vehicle is not in settlement", person.getSettlement());
 		
 		assertInVehicle("In vehicle", person, vehicle);

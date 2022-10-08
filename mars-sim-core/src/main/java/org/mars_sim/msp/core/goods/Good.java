@@ -15,7 +15,6 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.food.FoodProductionProcessInfo;
 import org.mars_sim.msp.core.food.FoodProductionProcessItem;
 import org.mars_sim.msp.core.food.FoodProductionUtil;
@@ -120,16 +119,6 @@ public abstract class Good implements Serializable, Comparable<Good> {
 	 */
 	public String getName() {
 		return name;
-	}
-
-	/**
-	 * Gets the good's equipment class.
-	 *
-	 * @return equipment class
-	 * @deprecated
-	 */
-	public EquipmentType getEquipmentType() {
-		return EquipmentType.convertName2Enum(name);
 	}
 
 	/**

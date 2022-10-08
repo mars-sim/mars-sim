@@ -67,6 +67,10 @@ public class EquipmentGood extends Good {
         return GoodCategory.CONTAINER;
     }
 
+	public EquipmentType getEquipmentType() {
+		return equipmentType;
+	}
+
     @Override
     public double getMassPerItem() {
         return EquipmentFactory.getEquipmentMass(equipmentType);

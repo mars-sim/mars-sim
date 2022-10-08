@@ -378,27 +378,31 @@ public final class CommerceUtil {
 	 * @throws Exception if error getting number of goods in inventory.
 	 */
 	public static double getNumInInventory(Good good, Settlement settlement) {
-		if (good.getCategory() == GoodCategory.AMOUNT_RESOURCE) {
-			return settlement.getAmountResourceStored(good.getID());
-		} else if (good.getCategory() == GoodCategory.ITEM_RESOURCE) {
-			return settlement.getItemResourceStored(good.getID());
-		} else if (good.getCategory() == GoodCategory.EQUIPMENT
-				|| good.getCategory() == GoodCategory.CONTAINER) {
-			return settlement.findNumEmptyContainersOfType(good.getEquipmentType(), false);
-		} else if (good.getCategory() == GoodCategory.VEHICLE) {
-			int count = 0;
-			VehicleType vehicleType = VehicleType.convertNameToVehicleType(good.getName());
-			Iterator<Unit> i = settlement.getVehicleTypeList(vehicleType).iterator();
-			while (i.hasNext()) {
-				Vehicle vehicle = (Vehicle) i.next();
-				boolean isEmpty = vehicle.isEmpty();
-				if (vehicle.getDescription().equalsIgnoreCase(good.getName()) && !vehicle.isReserved() && isEmpty) {
-					count++;
+		switch(good.getCategory()) {
+			case AMOUNT_RESOURCE:
+				return settlement.getAmountResourceStored(good.getID());
+			
+			case ITEM_RESOURCE:
+				return settlement.getItemResourceStored(good.getID());
+			
+			case EQUIPMENT:
+			case CONTAINER:
+				return settlement.findNumEmptyContainersOfType(((EquipmentGood) good).getEquipmentType(), false);
+			
+			case VEHICLE:
+				int count = 0;
+				VehicleType vehicleType = VehicleType.convertNameToVehicleType(good.getName());
+				Iterator<Unit> i = settlement.getVehicleTypeList(vehicleType).iterator();
+				while (i.hasNext()) {
+					Vehicle vehicle = (Vehicle) i.next();
+					boolean isEmpty = vehicle.isEmpty();
+					if (vehicle.getDescription().equalsIgnoreCase(good.getName()) && !vehicle.isReserved() && isEmpty) {
+						count++;
+					}
 				}
-			}
-			return count;
-		} else {
-			return 0D;
+				return count;
+			default:
+				return 0D;
 		}
 	}
 

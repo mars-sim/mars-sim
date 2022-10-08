@@ -755,7 +755,6 @@ public class BuildingManager implements Serializable {
 	 *
 	 * @param buildingType the building type.
 	 * @return list of buildings.
-	 * @deprecated Use #getBuildingsOfSameCategory
 	 */
 	public List<Building> getBuildingsOfSameType(String buildingType) {
 		// Called by Resupply.java and BuildingConstructionMission.java

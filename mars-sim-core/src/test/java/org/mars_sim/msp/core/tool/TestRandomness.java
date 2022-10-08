@@ -80,11 +80,7 @@ extends TestCase {
 				}
 			}
 		}
-		System.out.println();
-		System.out.println("NORMAL DISTRIBUTION");
-		System.out.println("lessThanOne: " + lessThanOne);
-		System.out.println("total: " + total);		
-		System.out.println(map);
+
 	
 //		assertEquals("Location state type", lon, source.getLocationStateType());
 //		assertTrue(msg + ": InSettlement", source.isInSettlement());
@@ -97,7 +93,6 @@ extends TestCase {
     	List<Double> list = new ArrayList<>();
 		for (int i=0; i<1000; i++) {
 			double rand = RandomUtil.getGaussianDouble();
-			System.out.print(Math.round(rand * 1000.0) / 1000.0 + ", ");
 			list.add(rand);
 		}
 
@@ -179,17 +174,18 @@ extends TestCase {
 			}
 		}
 		
-		System.out.println();
-		System.out.println("GAUSSIAN DISTRIBUTION");
-		System.out.println("threeLessVariance: " + threeLessVariance);
-		System.out.println("twoNegVariance: " + twoNegVariance);
-		System.out.println("oneNegVariance: " + oneNegVariance);
-		System.out.println("onePosVariance: " + onePosVariance);
-		System.out.println("twoPosVariance: " + twoPosVariance);
-		System.out.println("threeMoreVariance: " + threeMoreVariance);
-		System.out.println("total: " + total);
+		// This should be converted into Asserts not printed out
+		// System.out.println();
+		// System.out.println("GAUSSIAN DISTRIBUTION");
+		// System.out.println("threeLessVariance: " + threeLessVariance);
+		// System.out.println("twoNegVariance: " + twoNegVariance);
+		// System.out.println("oneNegVariance: " + oneNegVariance);
+		// System.out.println("onePosVariance: " + onePosVariance);
+		// System.out.println("twoPosVariance: " + twoPosVariance);
+		// System.out.println("threeMoreVariance: " + threeMoreVariance);
+		// System.out.println("total: " + total);
 		
-		System.out.println(map);
+		// System.out.println(map);
     }
        
 }
