@@ -2170,14 +2170,14 @@ public class BuildingManager implements Serializable {
 		Building eVAAttachedBuilding = null;
 		
 		for (BuildingTemplate bt: templates) {
-			if (bt.getNickName().equalsIgnoreCase(evaBuilding.getNickName())) {
+			if (bt.getBuildingName().equalsIgnoreCase(evaBuilding.getNickName())) {
 				idEVAAttachedBuilding = bt.getEVAAttachedBuildingID();
 			}
 		}
 		
 		for (BuildingTemplate bt: templates) {
 			if (bt.getID() == idEVAAttachedBuilding) {
-				nickName = bt.getNickName();
+				nickName = bt.getBuildingName();
 			}
 		}
 		

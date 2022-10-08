@@ -118,8 +118,6 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	boolean isImpactImminent = false;
 	/** Checked by getAllImmovableBoundedObjectsAtLocation() in LocalAreaUtil */
 	boolean inTransportMode = true;
-	/** building id on the building template. */
-	private int bid;
 	/** Unique template id assigned for the settlement template of this building belong. */
 	protected int templateID;
 	/** The inhabitable ID for this building. */
@@ -199,9 +197,8 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	 * @throws BuildingException if building can not be created.
 	 */
 	public Building(BuildingTemplate template, BuildingManager manager) {
-		this(template.getID(), template.getBuildingType(), template.getNickName(), template.getBounds(), manager);
+		this(template.getID(), template.getBuildingType(), template.getBuildingName(), template.getBounds(), manager);
 
-		this.bid = template.getID();
 		buildingType = template.getBuildingType();
 		settlement = manager.getSettlement();
 		settlementID = settlement.getIdentifier();
@@ -1293,10 +1290,6 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 		return getSettlement();
 	}
 
-	public int getBuildingID() {
-		return bid;
-	}
-
 	public void reinit() {
 		settlement = unitManager.getSettlementByID(settlementID);
 
@@ -1307,6 +1300,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 		}
 	}
 
+	// TODO this is wrong as names can change. This is just used to identify if there are multiple floors.
 	public boolean isAHabOrHub() {
         return buildingType.contains(" Hab")
                 || buildingType.contains(" Hub");

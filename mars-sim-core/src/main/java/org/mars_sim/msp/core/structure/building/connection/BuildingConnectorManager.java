@@ -193,13 +193,13 @@ public class BuildingConnectorManager implements Serializable {
 				} else {
 					throw new IllegalStateException("Unable to find building connection for "
 							+ partialConnector.building.getBuildingType() 
-							+ " (buildingID: " + partialConnector.building.getBuildingID()
+							+ " (buildingID: " + partialConnector.building.getName()
 							+ ") in " + settlement.getName());
 				}
 			} else {
 				throw new IllegalStateException("Unable to find building connection for "
 						+ partialConnector.building.getBuildingType() 
-						+ " (buildingID: " + partialConnector.building.getBuildingID()
+						+ " (buildingID: " + partialConnector.building.getName()
 						+ ") in " + settlement.getName());
 			}
 		}

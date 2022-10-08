@@ -92,12 +92,7 @@ public class ResupplyConfig implements Serializable {
 	                String buildingType = buildingElement.getAttributeValue(TYPE);
 	                BoundedObject bounds = ConfigHelper.parseBoundedObject(buildingElement);
 	
-	                String scenario = "A";
-	                //if (NAME.toLowerCase().equals("Mars Direct Base Resupply 3".toLowerCase()))
-	                //	scenario = "A";
-	                // TODO: need to rework how "scenario" and "scenarioID" are applied
-	
-	                template.buildings.add(new BuildingTemplate(template.name, 0, scenario, buildingType,
+	                template.buildings.add(new BuildingTemplate(0, buildingType,
 	                        buildingType, bounds));
 	
 	            }
@@ -226,7 +221,7 @@ public class ResupplyConfig implements Serializable {
         List<BuildingTemplate> result = new ArrayList<>();
         ResupplyTemplate foundTemplate = getResupplyTemplate(resupplyName);
         if (foundTemplate != null) {
-            result = new ArrayList<BuildingTemplate>(foundTemplate.buildings);
+            result = new ArrayList<>(foundTemplate.buildings);
         }
         return result;
     }

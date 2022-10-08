@@ -37,8 +37,6 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 
 	private static final Logger logger = Logger.getLogger(SettlementConfig.class.getName());
 
-	private static int templateID = 0;
-
 	// Element names
 	private static final String ROVER_LIFE_SUPPORT_RANGE_ERROR_MARGIN = "rover-life-support-range-error-margin";
 	private static final String ROVER_FUEL_RANGE_ERROR_MARGIN = "rover-fuel-range-error-margin";
@@ -87,8 +85,6 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 	private double[][] life_support_values = new double[2][7];
 
 	// Data members
-	private Map<Integer, String> templateMap = new HashMap<>();
-
 	private PartPackageConfig partPackageConfig;
 
 	/**
@@ -113,17 +109,6 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 		loadUserDefined();
 	}
 
-	/**
-	 * Maps a number to an alphabet
-	 *
-	 * @param a number
-	 * @return a String
-	 */
-	private String getCharForNumber(int i) {
-		// NOTE: i must be > 1, if i = 0, return null
-		return i > 0 && i < 27 ? String.valueOf((char) (i + 'A' - 1)) : null;
-	}
-
 	public double[] getRoverValues() {
 		return rover_values;
 	}
@@ -137,7 +122,6 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 	 */
 	private void loadMissionControl(Document settlementDoc) {
 		if (rover_values[0] != 0 || rover_values[1] != 0) {
-			// System.out.println("using saved rover_values");
 			return;
 		}
 
@@ -192,35 +176,20 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 				VENTILATION};
 
 		for (int j = 0; j < 2; j++) {
-			for (int i = 0; i < 7; i++) {
-				double t[] = getValues(req, types[i]);
+			for (int i = 0; i < types.length; i++) {
+				double [] t = getLowHighValues(req, types[i]);
 				life_support_values[j][i] = t[j];
 			}
 		}
 	}
 
-	private double[] getValues(Element element, String name) {
+	private double[] getLowHighValues(Element element, String name) {
 		Element el = (Element) element.getChild(name);
 
 		double a = Double.parseDouble(el.getAttributeValue(LOW));
-		// if (result[0] < 1.0 || result[0] > 15.0 )
-		// result[0] = 101.0;
-		// System.out.println(a);
-
 		double b = Double.parseDouble(el.getAttributeValue(HIGH));
-		// if (result[0] < 1.0 || result[0] > 15.0 )
-		// result[0] = 99.0;
-		// System.out.println(b);
 
 		return new double[] { a, b };
-
-//		TOTAL_PRESSURE; // low="99.9" high="102.7" />
-//		PARTIAL_PRESSURE_OF_O2 ; //low="19.5" high="23.1" />
-//		PARTIAL_PRESSURE_OF_N2 ;// low="79" high="79"/>
-//		PARTIAL_PRESSURE_OF_CO2 ; //low=".4" high=".4" />
-//		TEMPERATURE ;// low="18.3" high="23.9"/>
-//		RELATIVE_HUMIDITY ; //low="30" high="70"/>
-//		VENTILATION ;//
 	}
 
 	/**
@@ -252,11 +221,6 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 		String settlementTemplateName = templateElement.getAttributeValue(NAME);
 		String description = templateElement.getAttributeValue(DESCRIPTION);
 		String sponsor = templateElement.getAttributeValue(SPONSOR);
-		if (templateMap.containsKey(templateID)) {
-			throw new IllegalStateException("Error in SettlementConfig.xml: template ID in settlement template "
-					+ settlementTemplateName + " is not unique.");
-		} else
-			templateMap.put(templateID, settlementTemplateName);
 
 		// Obtains the default population
 		int defaultPopulation = Integer.parseInt(templateElement.getAttributeValue(DEFAULT_POPULATION));
@@ -265,7 +229,6 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 
 		// Add templateID
 		SettlementTemplate template = new SettlementTemplate(
-				templateID,
 				settlementTemplateName,
 				description,
 				predefined,
@@ -304,15 +267,13 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 				buildingTypeIDMap.put(buildingType, 1);
 
 			// Create a building nickname for every building
-			// by appending the settlement id and building id to that building's type.
-			String templateString = getCharForNumber(templateID + 1);
 			// NOTE: i = sid + 1 since i must be > 1, if i = 0, s = null
 
 			int buildingTypeID = buildingTypeIDMap.get(buildingType);
 
 			String buildingNickName = buildingType + " " + buildingTypeID;
 
-			BuildingTemplate buildingTemplate = new BuildingTemplate(settlementTemplateName, bid, templateString,
+			BuildingTemplate buildingTemplate = new BuildingTemplate(bid,
 					buildingType, buildingNickName, bounds);
 
 			template.addBuildingTemplate(buildingTemplate);
@@ -349,7 +310,7 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 			for (BuildingConnectionTemplate connectionTemplate : connectionTemplates) {
 				if (!existingIDs.contains(connectionTemplate.getID())) {
 					throw new IllegalStateException("Connection ID: " + connectionTemplate.getID()
-							+ " invalid for building: " + buildingTemplate.getNickName()
+							+ " invalid for building: " + buildingTemplate.getBuildingName()
 							+ " in settlement template: " + settlementTemplateName);
 				}
 			}
@@ -428,8 +389,6 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 				template.addResupplyMissionTemplate(resupplyMissionTemplate);
 			}
 		}
-		// Increments the templateID to be used for the next template
-		templateID++;
 
 		return template;
 	}

@@ -28,38 +28,21 @@ public class BuildingTemplate implements Serializable, Comparable<BuildingTempla
 	private BoundedObject bounds;
 
 	private String buildingType;
-	private String nickName;
-	private String scenario;
-
-	private String missionName;
+	private String buildingName;
 
 	private List<BuildingConnectionTemplate> connectionList;
 
 	/*
 	 * * BuildingTemplate Constructor.
 	 */
-	public BuildingTemplate(String missionName, int bid, String scenario, String buildingType, String nickName,
+	public BuildingTemplate(int bid, String buildingType, String buildingName,
 			BoundedObject bounds) {
 
-		this.missionName = missionName;
 		this.bid = bid;
-		this.scenario = scenario;
 		this.buildingType = buildingType;
-		this.nickName = nickName;
+		this.buildingName = buildingName;
 		this.bounds = bounds;
 		connectionList = new ArrayList<>(0);
-	}
-
-	public String getMissionName() {
-		return missionName;
-	}
-
-	public void setMissionName(String name) {
-		this.missionName = name;
-	}
-
-	public String getScenario() {
-		return scenario;
 	}
 
 	/**
@@ -85,8 +68,8 @@ public class BuildingTemplate implements Serializable, Comparable<BuildingTempla
 	 * 
 	 * @return building nickname.
 	 */
-	public String getNickName() {
-		return nickName;
+	public String getBuildingName() {
+		return buildingName;
 	}
 
 

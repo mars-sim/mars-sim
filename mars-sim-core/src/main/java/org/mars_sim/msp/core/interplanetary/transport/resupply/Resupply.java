@@ -55,7 +55,6 @@ import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.BuildingSpec;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.time.MarsClockFormat;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Drone;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
@@ -104,7 +103,6 @@ public class Resupply implements Serializable, Transportable {
 	private int newImmigrantNum;
 	private int newBotNum;
 	private int settlementID;
-	private int scenarioID;
 	
 	private String settlementName;
 	
@@ -144,7 +142,6 @@ public class Resupply implements Serializable, Transportable {
  
 		settlementID = ((Unit)settlement).getIdentifier();
 		settlementName = settlement.getName();
-		scenarioID = settlement.getID();
 		
 		buildingConfig = simulationConfig.getBuildingConfiguration();
 	}
@@ -197,23 +194,22 @@ public class Resupply implements Serializable, Transportable {
 			Iterator<BuildingTemplate> buildingI = orderedBuildings.iterator();
 
 			while (buildingI.hasNext()) {
-				BuildingTemplate template = buildingI.next();
+				BuildingTemplate btemplate = buildingI.next();
 
 				// Correct length and width in building template.
 				// Replace width and length defaults to deal with variable width and length
 				// buildings.
-				BuildingSpec spec = buildingConfig.getBuildingSpec(template.getBuildingType());
-				BoundedObject correctedBounds = getCorrectedBounds(spec, template.getBounds());
+				BuildingSpec spec = buildingConfig.getBuildingSpec(btemplate.getBuildingType());
+				BoundedObject correctedBounds = getCorrectedBounds(spec, btemplate.getBounds());
 
 				int buildingID = buildingManager.getNextTemplateID();
 				
-				int buildingTypeID = buildingManager.getNextBuildingTypeID(template.getBuildingType());
-				String scenario = getCharForNumber(scenarioID + 1);
+				int buildingTypeID = buildingManager.getNextBuildingTypeID(btemplate.getBuildingType());
 				// Note: scenario is null since template does NOT have a scenario string yet
-				String buildingNickName = template.getBuildingType() + " " + buildingTypeID;
+				String buildingNickName = btemplate.getBuildingType() + " " + buildingTypeID;
 
-				BuildingTemplate correctedTemplate = new BuildingTemplate(template.getMissionName(), buildingID,
-						scenario, template.getBuildingType(), buildingNickName, correctedBounds);
+				BuildingTemplate correctedTemplate = new BuildingTemplate(buildingID,
+						btemplate.getBuildingType(), buildingNickName, correctedBounds);
 
 				checkTemplateAddBuilding(correctedTemplate);
 			}
@@ -273,7 +269,7 @@ public class Resupply implements Serializable, Transportable {
 	 */
 	private BuildingTemplate clearCollision(BuildingTemplate bt, int count) {
 		count--;
-		logger.config("#" + (Resupply.MAX_COUNTDOWN - count) + " : Calling clearCollision() for " + bt.getNickName());
+		logger.config("#" + (Resupply.MAX_COUNTDOWN - count) + " : Calling clearCollision() for " + bt.getBuildingName());
 		
 		BuildingManager buildingManager = unitManager.getSettlementByID(settlementID).getBuildingManager();
 		
@@ -282,33 +278,27 @@ public class Resupply implements Serializable, Transportable {
 		boolean noConflictResupply = true;
 		boolean inZone = true;
 		if (count < 1) {
-//			log to show logger.config("clearCollision() : count is down to 0. Quit building placement.");
 			return null;
 		} else {
 			// check if a vehicle is the obstacle and move it
 			noVehicle = isCollisionFreeVehicle(bt);
-//			log to show logger.config("noVehicle is " + noVehicle);
 
 			if (noVehicle) {
 				noImmovable = isCollisionFreeImmovable(bt);
 			}
-//			log to show logger.config("noImmovable is " + noImmovable);
 
 			if (noImmovable) {
 				noConflictResupply = isCollisionFreeResupplyBuildings(bt, buildingManager);
 			}
-//			log to show logger.config("noConflictResupply is " + noConflictResupply);
 
 			if (noConflictResupply) {
 				inZone = isWithinZone(bt, buildingManager);
 			}
-//			log to show logger.config("inZone : " + inZone);
 
 			if (!noImmovable || !noConflictResupply || !inZone) {// if there are obstacles
 				// get a new template
 				BuildingTemplate repositioned = positionNewResupplyBuilding(bt.getBuildingType());
 
-				repositioned.setMissionName(bt.getMissionName());
 				// Call again recursively to check for any collision
 				bt = clearCollision(repositioned, count);
 			}
@@ -657,7 +647,7 @@ public class Resupply implements Serializable, Transportable {
 
 			if (newPosition != null) {
 				logger.config("Case 1: " + POSITIONING + " near the same building type ("
-							+ newPosition.getNickName()
+							+ newPosition.getBuildingName()
 							+ ") having life support.");
 				return newPosition;
 			} else {
@@ -694,7 +684,7 @@ public class Resupply implements Serializable, Transportable {
 			// Case 3 : the same type but having no life support
 			newPosition = positionSameType(buildingType, false);
 			if (newPosition != null) {
-				logger.config("Case 3: " + POSITIONING + newPosition.getNickName()
+				logger.config("Case 3: " + POSITIONING + newPosition.getBuildingName()
 						+ " near the same building type with no life support");
 				return newPosition;
 			}
@@ -716,7 +706,7 @@ public class Resupply implements Serializable, Transportable {
 						Building building = i.next();
 						newPosition = positionNextToBuilding(buildingType, building, (double) x, false);
 						if (newPosition != null) {
-							logger.config("Case 4: " + POSITIONING + newPosition.getNickName() + " at " + x
+							logger.config("Case 4: " + POSITIONING + newPosition.getBuildingName() + " at " + x
 									+ " meters away near a different building type with no life support");
 							return newPosition;
 						}
@@ -741,12 +731,9 @@ public class Resupply implements Serializable, Transportable {
 				int buildingID = buildingManager.getNextTemplateID();
 				int buildingTypeID = buildingManager.getNextBuildingTypeID(buildingType);
 
-				String scenario = getCharForNumber(scenarioID + 1);
-				// String buildingNickName = buildingType + " " + scenario + buildingID;
 				String buildingNickName = buildingType + " " + buildingTypeID;
 				// Note : ask for user to define the location for the new building as well
-				newPosition = new BuildingTemplate(
-						LAUNCH_ON + MarsClockFormat.getDateTimeStamp(launchDate), buildingID, scenario,
+				newPosition = new BuildingTemplate(buildingID,
 						buildingType, buildingNickName, new BoundedObject(0,  0, width, length, 0));
 
 				logger.config("Case 5: " + POSITIONING + buildingNickName + " at (0, 0)");
@@ -947,8 +934,8 @@ public class Resupply implements Serializable, Transportable {
 				Iterator<Building> k = inhabitableBuildings.iterator();
 				while (k.hasNext()) {
 					Building building = k.next();
-					boolean directlyConnected = (settlement.getBuildingConnectorManager()
-							.getBuildingConnections(startingBuilding, building).size() > 0);
+					boolean directlyConnected = (!settlement.getBuildingConnectorManager()
+							.getBuildingConnections(startingBuilding, building).isEmpty());
 
 					// Check if connector base level matches either building.
 					boolean matchingBaseLevel = (baseLevel == startingBuilding.getBaseLevel())
@@ -958,7 +945,7 @@ public class Resupply implements Serializable, Transportable {
 						//  Case 3A
 						double distance = Point2D.distance(startingBuilding.getXLocation(),
 								startingBuilding.getYLocation(), building.getXLocation(), building.getYLocation());
-						if ((distance < leastDistance) && (distance >= 5D)) { // MINIMUM_CONNECTOR_LENGTH)) {
+						if ((distance < leastDistance) && (distance >= 5D)) { 
 							// Check that new building can be placed between the two buildings.
 							if (positionConnectorBetweenTwoBuildings(newBuildingType, startingBuilding,
 									building) != null) {
@@ -1048,7 +1035,6 @@ public class Resupply implements Serializable, Transportable {
 			case front:
 				direction = building.getFacing();
 				structureDistance = (building.getLength() / 2D) + (length / 2D);
-				// logger.config("front");
 				break;
 			case back:
 				direction = building.getFacing() + 180D;
@@ -1056,7 +1042,6 @@ public class Resupply implements Serializable, Transportable {
 				if (faceAway) {
 					rectRotation = building.getFacing() + 180D;
 				}
-				// logger.config("back");
 				break;
 			case right:
 				direction = building.getFacing() + 90D;
@@ -1065,7 +1050,6 @@ public class Resupply implements Serializable, Transportable {
 					structureDistance = (building.getWidth() / 2D) + (length / 2D);
 					rectRotation = building.getFacing() + 90D;
 				}
-				// logger.config("right");
 				break;
 			case left:
 				direction = building.getFacing() + 270D;
@@ -1074,7 +1058,6 @@ public class Resupply implements Serializable, Transportable {
 					structureDistance = (building.getWidth() / 2D) + (length / 2D);
 					rectRotation = building.getFacing() + 270D;
 				}
-				// logger.config("left");
 			}
 
 			if (rectRotation > 360D) {
@@ -1096,15 +1079,12 @@ public class Resupply implements Serializable, Transportable {
 				int buildingID = buildingManager.getNextTemplateID();
 				int buildingTypeID = buildingManager.getNextBuildingTypeID(newBuildingType);
 
-				String scenario = getCharForNumber(scenarioID + 1);
-
 				String buildingNickName = newBuildingType + " " + buildingTypeID;
 
 				logger.config(POSITIONING + "at (" + Math.round(rectCenterX * 10D) / 10D + ", "
 						+ Math.round(rectCenterY * 10D) / 10D + ") at " + Math.round(rectRotation) + " deg");
 
-				newPosition = new BuildingTemplate(
-						LAUNCH_ON + MarsClockFormat.getDateTimeStamp(launchDate), buildingID, scenario,
+				newPosition = new BuildingTemplate(buildingID, 
 						newBuildingType, buildingNickName, position);
 				break;
 			}
@@ -1194,11 +1174,9 @@ public class Resupply implements Serializable, Transportable {
 			int buildingID = buildingManager.getNextTemplateID();
 			int buildingTypeID = buildingManager.getNextBuildingTypeID(newBuildingType);
 
-			String scenario = getCharForNumber(scenarioID + 1);
 			String buildingNickName = newBuildingType + " " + buildingTypeID;
 
-			newPosition = new BuildingTemplate(LAUNCH_ON + MarsClockFormat.getDateTimeStamp(launchDate),
-					buildingID, scenario, newBuildingType, buildingNickName, 
+			newPosition = new BuildingTemplate(buildingID, newBuildingType, buildingNickName, 
 					new BoundedObject(centerX, centerY, width, newLength,	facingDegrees));
 		}
 

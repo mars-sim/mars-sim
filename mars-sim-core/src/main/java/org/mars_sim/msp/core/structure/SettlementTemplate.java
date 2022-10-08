@@ -30,7 +30,6 @@ public class SettlementTemplate implements Serializable, UserConfigurable {
 	// Data members.
 	private int defaultPopulation;
 	private int defaultNumOfRobots;
-	private int id;
 	
 	private String name;
 	private String sponsor;
@@ -52,13 +51,11 @@ public class SettlementTemplate implements Serializable, UserConfigurable {
 	 * Constructor. Called by SettlementConfig.java
 	 * 
 	 * @param name
-	 * @param id
 	 * @param defaultPopulation
 	 * @param defaultNumOfRobots
 	 */
-	public SettlementTemplate(int id, String name, String desription, boolean bundled,
+	public SettlementTemplate(String name, String desription, boolean bundled,
 								String sponsor, int defaultPopulation, int defaultNumOfRobots) {
-		this.id = id;
 		this.name = name;
 		this.description = desription;
 		this.bundled = bundled;
@@ -104,15 +101,6 @@ public class SettlementTemplate implements Serializable, UserConfigurable {
 	 */
 	public String toString() {
 		return name;
-	}
-	
-	/**
-	 * Gets the template's unique ID.
-	 * 
-	 * @return ID number.
-	 */
-	public int getID() {
-		return id;
 	}
 
 	/**
