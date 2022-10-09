@@ -1060,7 +1060,7 @@ public class EatDrink extends Task {
 					// Fill up the bottle with water
 					if (missing < 1) {
 						amount = 1 - missing;
-						logger.info(person, 10_000L, "Filled up the bottle with " + Math.round(amount * 100.0)/100.0 + " kg of water.");
+//						logger.info(person, 10_000L, "Filled up the bottle with " + Math.round(amount * 100.0)/100.0 + " kg of water.");
 						person.fillUpThermalBottle(amount);
 					}
 				}	

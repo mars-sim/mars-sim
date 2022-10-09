@@ -239,7 +239,7 @@ public class WasteProcess implements Serializable {
 					Integer resource = input.getKey();
 					double maxRate = input.getValue();
 					double resourceRate = maxRate * level;
-					double resourceAmount = resourceRate * accumulatedTime;
+					double required = resourceRate * accumulatedTime;
 					double stored = settlement.getAmountResourceStored(resource);
 					
 					// Get resource bottleneck
@@ -252,23 +252,23 @@ public class WasteProcess implements Serializable {
 					
 					// Retrieve the right amount
 					if (stored > SMALL_AMOUNT) {
-						if (resourceAmount > stored) {
-							logger.warning(settlement, 30_000, "Case A. Just used up all '" + ResourceUtil.findAmountResourceName(resource)
-								+ "' input to start '" + name + "'. Still missing " + Math.round(resourceAmount * 1000.0)/1000.0 + " kg. "
+						if (required > stored) {
+							logger.warning(settlement, 30_000, "Case A. Used up all '" + ResourceUtil.findAmountResourceName(resource)
+								+ "' input to start '" + name + "'. Required: " + Math.round(required * 1000.0)/1000.0 + " kg. Remaining: "
 								+ Math.round(stored * 1000.0)/1000.0 + " kg in storage.");
-							resourceAmount = stored;
-							settlement.retrieveAmountResource(resource, resourceAmount);
+							required = stored;
+							settlement.retrieveAmountResource(resource, required);
 							setProcessRunning(false);
 							break;
 							// Note: turn on a yellow flag and indicate which the input resource is missing
 						}
 						else
-							settlement.retrieveAmountResource(resource, resourceAmount);
+							settlement.retrieveAmountResource(resource, required);
 						
 					}
 					else {
 						logger.warning(settlement, 30_000, "Case B. Not enough '" + ResourceUtil.findAmountResourceName(resource)
-							+ "' input to start '" + name + "'. Still missing " + Math.round(resourceAmount * 1000.0)/1000.0 + " kg. "
+							+ "' input to start '" + name + "'. Required: " + Math.round(required * 1000.0)/1000.0 + " kg. Remaining: "
 							+ Math.round(stored * 1000.0)/1000.0 + " kg in storage.");
 						setProcessRunning(false);
 						break;
@@ -285,31 +285,31 @@ public class WasteProcess implements Serializable {
 					Integer resource = output.getKey();
 					double maxRate = output.getValue();
 					double resourceRate = maxRate * level;
-					double resourceAmount = resourceRate * accumulatedTime;
+					double required = resourceRate * accumulatedTime;
 					double remainingCap = settlement.getAmountResourceRemainingCapacity(resource);
 					
 					// Store the right amount
 					if (remainingCap > SMALL_AMOUNT) {
-						if (resourceAmount > remainingCap) {
-							logger.warning(settlement, 30_000, "Case C. Just used up all remaining space for storing '" 
+						if (required > remainingCap) {
+							logger.warning(settlement, 30_000, "Case C. Used up all remaining space for storing '" 
 									+ ResourceUtil.findAmountResourceName(resource)
-									+ "' output in '" + name + "'. Requiring " + Math.round((resourceAmount - remainingCap) * 1000.0)/1000.0 
+									+ "' output in '" + name + "'. Required: " + Math.round((required - remainingCap) * 1000.0)/1000.0 
 									+ " kg of storage. Remaining cap: 0 kg.");
-							resourceAmount = remainingCap;
-							settlement.storeAmountResource(resource, resourceAmount);
-							setProcessRunning(false);
+							required = remainingCap;
+							settlement.storeAmountResource(resource, required);
+							setProcessRunning(false);						
 							break;
 							// Note: turn on a yellow flag and indicate which the output resource is missing
 						}
 						else
-							settlement.storeAmountResource(resource, resourceAmount);
+							settlement.storeAmountResource(resource, required);
 						
 					}
 					else {
 						logger.warning(settlement, 30_000, "Case D. Not enough space for storing '" 
 								+ ResourceUtil.findAmountResourceName(resource)
-								+ "' output to continue '" + name + "'. Requiring " + Math.round(resourceAmount * 1000.0)/1000.0 
-								+ " kg of storage.. Remaining cap: " + Math.round(remainingCap * 1000.0)/1000.0 + " kg.");
+								+ "' output to continue '" + name + "'. Required: " + Math.round(required * 1000.0)/1000.0 
+								+ " kg of storage. Remaining cap: " + Math.round(remainingCap * 1000.0)/1000.0 + " kg.");
 						setProcessRunning(false);
 						break;
 					}
