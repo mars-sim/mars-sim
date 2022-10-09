@@ -811,7 +811,9 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		}
 
 		public void mouseClicked(MouseEvent event) {
-			checkClick(event);
+			if (SwingUtilities.isRightMouseButton(event) && event.getClickCount() == 1) {
+				checkClick(event);
+            }
 		}
 	}
 

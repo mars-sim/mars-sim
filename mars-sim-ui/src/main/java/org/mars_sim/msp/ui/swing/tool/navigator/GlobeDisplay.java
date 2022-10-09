@@ -17,6 +17,7 @@ import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.util.Iterator;
 
 import javax.swing.JComponent;
@@ -163,7 +164,19 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 		shadingArray = new int[globeBoxWidth * globeBoxHeight * 2 * 2];
 //		showDayNightShading = true;
 
+		addMouseListener(new MouseAdapter() {
+			// Note: must use MouseAdapter's mousePressed separately from Dragger
+			// Use mousePressed in Dragger would result in jumpy dragging
+            @Override
+            public void mousePressed(MouseEvent e) {
+    			dragx = e.getX();
+    			dragy = e.getY();
+                repaint();
+            }
+        });
+		
 		dragger = new Dragger(navwin);
+		
 		addMouseMotionListener(dragger);
 
 		// Initially show real surface globe
@@ -179,44 +192,21 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 		public Dragger (NavigatorWindow navwin) {
 			this.navwin = navwin;
 	    }
-
-		@Override
-		public void mousePressed(MouseEvent e) {
-			navwin.setCursor(new Cursor(Cursor.MOVE_CURSOR));
-			dragx = e.getX();
-			dragy = e.getY();
-
-			e.consume();
-		}
-
-		@Override
-		public void mouseReleased(MouseEvent e) {
-			navwin.setCursor(new Cursor(Cursor.HAND_CURSOR));
-			dragx = 0;
-			dragy = 0;
-			navwin.updateCoords(centerCoords);
-			e.consume();
-		}
-
-	    @Override
-	    public void mouseExited(MouseEvent e){
-	    	navwin.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-			e.consume();
-	    }
 	    
 		@Override
 		public void mouseDragged(MouseEvent e) {
-			int dx, dy, x = e.getX(), y = e.getY();
+			int x = e.getX();
+			int y = e.getY();
 
-			dx = dragx - x;
-			dy = dragy - y;
+			int dx = dragx - x;
+			int dy = dragy - y;
 
 			if ((dx != 0 || dy != 0)// (dx < -2 || dx > 2) || (dy < -2 || dy > 2)) {
 				&& dx > -LIMIT && dx < LIMIT && dy > -LIMIT && dy < LIMIT
 				&& ((dxCache - dx) > -LIMIT) && ((dxCache - dx) < LIMIT) 
 				&& ((dyCache - dy) > -LIMIT) && ((dyCache - dy) < LIMIT)
 				&& x > 50 * RATIO && x < 245 * RATIO && y > 50 * RATIO && y < 245 * RATIO) {
-					setCursor(new Cursor(Cursor.MOVE_CURSOR));
+					setCursor(new Cursor(Cursor.HAND_CURSOR));
 
 					centerCoords = centerCoords.convertRectToSpherical((double) dx, (double) dy, rho);
 					navwin.updateCoords(centerCoords);				
@@ -224,8 +214,6 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 					// Regenerate globe if recreate is true, then display
 					drawSphere();
 			}
-			else
-				navwin.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 
 			dxCache = dx;
 			dyCache = dy;
@@ -236,6 +224,7 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 			e.consume();
 		}
 	}
+	
 	/**
 	 * Displays real surface globe, regenerating if necessary
 	 */
