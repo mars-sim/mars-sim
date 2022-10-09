@@ -558,8 +558,13 @@ public class UnitManager implements Serializable, Temporal {
 		if (listeners == null) {
 			listeners = new HashSet<>();
 		}
-		if (!listeners.contains(newListener)) {
-			listeners.add(newListener);
+		synchronized(listeners) {
+			if (!listeners.contains(newListener)) {
+				listeners.add(newListener);
+
+				// Over adding listeners?
+				//logger.info("Added Listener #" + listeners.size() + " : " + newListener.toString());
+			}
 		}
 	}
 
@@ -570,10 +575,14 @@ public class UnitManager implements Serializable, Temporal {
 	 */
 	public final void removeUnitManagerListener(UnitManagerListener oldListener) {
 		if (listeners == null) {
-			listeners = new HashSet<>();
+			// Will never happen
+			return;
 		}
-		if (listeners.contains(oldListener)) {
-			listeners.remove(oldListener);
+
+		synchronized(listeners) {
+			if (listeners.contains(oldListener)) {
+				listeners.remove(oldListener);
+			}
 		}
 	}
 
@@ -585,7 +594,7 @@ public class UnitManager implements Serializable, Temporal {
 	 */
 	public final void fireUnitManagerUpdate(UnitManagerEventType eventType, Unit unit) {
 		if (listeners == null) {
-			listeners = new HashSet<>();
+			return;
 		}
 		synchronized (listeners) {
 			for (UnitManagerListener listener : listeners) {
