@@ -280,7 +280,7 @@ public class SimLogger {
 	 * @param message
 	 * @param e Exception
 	 */
-	public void log(Level level, String message, Exception e) {
+	public void log(Level level, String message, Throwable e) {
 		rootLogger.log(level, sourceName + " : " + message, e);
 	}
 
@@ -431,6 +431,15 @@ public class SimLogger {
 		log(Level.SEVERE, message);
 	}
 
+		/**
+	 * Log directly without formatting.
+	 * 
+	 * @param message
+	 */
+	public void severe(String message, Throwable e) {
+		log(Level.SEVERE, message, e);
+	}
+
 	/**
 	 * Helper method just to log a severe message. Message timeout is predefined.
 	 * 
@@ -467,17 +476,6 @@ public class SimLogger {
 	/**
 	 * Helper method just to log a severe message. Message timeout is predefined.
 	 * 
-	 * @param location
-	 * @param actor
-	 * @param message
-	 */
-	public void severe(Unit location, Loggable actor, String string) {
-		log(location, actor, Level.SEVERE, DEFAULT_SEVERE_TIME, string, null);
-	}
-
-	/**
-	 * Helper method just to log a severe message. Message timeout is predefined.
-	 * 
 	 * @param actor
 	 * @param message
 	 * @param reason
@@ -493,17 +491,6 @@ public class SimLogger {
 	 */
 	public void config(String message) {
 		log(Level.CONFIG, message);
-	}
-
-	/**
-	 * Helper method just to log a config message. Message timeout is predefined.
-	 * 
-	 * @param actor
-	 * @param message
-	 * @param reason
-	 */
-	public void config(Loggable actor, String message, Throwable reason) {
-		log(null, actor, Level.CONFIG, 0, message, reason);
 	}
 
 	/**

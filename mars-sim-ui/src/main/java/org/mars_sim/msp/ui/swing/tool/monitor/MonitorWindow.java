@@ -494,7 +494,9 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		int columns[] = ColumnSelector.createBarSelector(desktop, model);
 
 		if (columns != null && columns.length > 0) {
-			addTab(new BarChartTab(model, columns));
+			MonitorTab bar = new BarChartTab(model, columns);
+			addTab(bar);
+			selectNewTab(bar);
 		}
 	}
 
@@ -506,7 +508,9 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		if (model != null) {
 			int column = ColumnSelector.createPieSelector(desktop, model);
 			if (column >= 0) {
-				addTab(new PieChartTab(model, column));
+				MonitorTab pie = new PieChartTab(model, column);
+				addTab(pie);
+				selectNewTab(pie);
 			}
 		}
 	}
@@ -570,7 +574,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 			
 		// if "Mars" tab is being selected 
 		else if (index == 0) {
-			// Hide the settlement box
+			// Hide the settlement boxPieChart
 			setSettlementBox(true);
 			// Update the row count label with new numbers
 			rowCount.setText(selectedTab.getCountString());
@@ -594,14 +598,11 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		tabsSection.removeChangeListener(tabsSection.getChangeListeners()[0]);
 		
 		// Disable all buttons
-		buttonBar.setEnabled(false);
-		buttonMap.setEnabled(false);
-		buttonDetails.setEnabled(false);
-		buttonMissions.setEnabled(false);
-		buttonFilter.setEnabled(false);
-
-		// Set the opaqueness of the settlement box
-		boolean isOpaque = false;
+		boolean enableMap = false;
+		boolean enableDetails = false;
+		boolean enableMission = false;
+		boolean enableFilter = false;
+		boolean enableSettlement = true;
 		
 		try {
 			TableTab tableTab = null;
@@ -610,10 +611,9 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 			MonitorTab newTab = null;
 			if (selectedTab instanceof UnitTab) {
 				// Enable these buttons
-				buttonMap.setEnabled(true);
-				buttonDetails.setEnabled(true);
-
 				UnitTableModel unitTableModel = (UnitTableModel)model;
+				enableDetails = true;
+				enableMap = true;
 
 				if (model instanceof RobotTableModel) {
 					unitTableModel = new RobotTableModel(selectedSettlement, true);
@@ -641,42 +641,31 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 				}
 			} else if (selectedTab instanceof MissionTab) {
 				// Enable these buttons
-				buttonBar.setEnabled(true);
-				buttonMap.setEnabled(true);
-				buttonMissions.setEnabled(true);
+				enableDetails = true;
+				enableMission = true;
 
 				// Hide the settlement box
-				isOpaque = true;
+				enableSettlement = false;
 				
 				newTab = new MissionTab(this);
 
 			} else if (selectedTab instanceof EventTab) {
 				// Enable these buttons
-				buttonMap.setEnabled(true);
-				buttonDetails.setEnabled(true);
-				buttonFilter.setEnabled(true);
+				enableDetails = true;
+				enableFilter = true;
 
 				// Hide the settlement box
-				isOpaque = true;
+				enableSettlement = false;
 				
 				eventsTab = new EventTab(this, desktop);
 				newTab = eventsTab;
 
 			} else if (selectedTab instanceof FoodInventoryTab) {
-				// Enable these buttons
-				buttonBar.setEnabled(true);
-				buttonMap.setEnabled(true);
-				buttonDetails.setEnabled(true);
-				buttonFilter.setEnabled(true);
-
 				newTab = new FoodInventoryTab(selectedSettlement, this);
 
 			} else if (selectedTab instanceof TradeTab) {
 				// Enable these buttons
-				buttonBar.setEnabled(true);
-				buttonMap.setEnabled(true);
-				buttonDetails.setEnabled(true);
-				buttonFilter.setEnabled(true);
+				enableFilter = true;
 
 				newTab = new TradeTab(selectedSettlement, this);
 				tradeTab = (TradeTab) newTab;
@@ -686,14 +675,29 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 				
 				scrollToVisible(((TableTab)newTab).getTable(), rowIndex, 0);
 			}
+			else {
+				// Simple tab
+				newTab = selectedTab;
 
-			swapTab(selectedTab, newTab);
+				// Hide the settlement box
+				enableSettlement = false;
+			}
+
+			if (!selectedTab.equals(newTab)) {
+				swapTab(selectedTab, newTab);
+			}
 			model = newTab.getModel();
 			model.addTableModelListener(this);
 			
-			tableTab = (TableTab)newTab;
-			table = tableTab.getTable();
-			this.table = table;
+			boolean enableBar = false;
+			boolean enablePie = false;
+			if (newTab instanceof TableTab) {
+				tableTab = (TableTab)newTab;
+				table = tableTab.getTable();
+				this.table = table;
+				enableBar = true;
+				enablePie = true;
+			}
 			
 			tabsSection.setSelectedComponent(newTab);
 			tabsSection.addChangeListener(e -> updateTab());
@@ -702,10 +706,17 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 			rowCount.setText(newTab.getCountString());
 			
 			// Set the opaqueness of the settlement box
-			setSettlementBox(isOpaque);
+			setSettlementBox(!enableSettlement);
+
+			buttonBar.setEnabled(enableBar);
+			buttonPie.setEnabled(enablePie);
+			buttonMap.setEnabled(enableMap);
+			buttonDetails.setEnabled(enableDetails);
+			buttonMissions.setEnabled(enableMission);
+			buttonFilter.setEnabled(enableFilter);
 			
 		} catch (Exception e) {
-			logger.severe("Problems in re-creating tabs in MonitorWindow: " + e.getMessage());
+			logger.severe("Problems in re-creating tabs in MonitorWindow: " + e.getMessage(), e);
 		}
 		
 	}
