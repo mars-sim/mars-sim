@@ -414,8 +414,7 @@ public class EquipmentInventory
 				Container c = (Container) e;
 				// Check it matches the resource spec
 				int containerResource = c.getResource();
-				if (resource == -1 || containerResource == resource || containerResource == -1)
-				{
+				if (resource == -1 || containerResource == resource || containerResource == -1) {
 					if (!empty || (c.getStoredMass() == 0D)) {
 						return c;
 					}
@@ -425,6 +424,30 @@ public class EquipmentInventory
 		return null;
 	}
 
+	/**
+	 * Finds a container in storage.
+	 *
+	 * @param containerType
+	 * @param empty does it need to be empty ?
+	 * @param resource If -1 then resource doesn't matter
+	 * @return instance of container or null if none.
+	 */
+	public Container findOwnedContainer(EquipmentType containerType, int personId, int resource) {
+		for (Equipment e : equipmentSet) {
+			if (e.getEquipmentType() == containerType) {
+				Container c = (Container) e;
+				// Check it matches the resource spec
+				int containerResource = c.getResource();
+				if (resource == -1 || containerResource == resource || containerResource == -1) {
+					if (e.getLastOwnerID() == personId) {
+						return c;
+					}
+				}
+			}
+		}
+		return null;
+	}
+	
 	/**
 	 * Gets a set of item resources in storage.
 	 *

@@ -1028,11 +1028,12 @@ public class EatDrink extends Task {
 			// Case 0: drink from thermal bottle
 			double availableAmount = 0;
 			
-			Container bottle = person.getThermalBottle();
+			// Get the bottle the person is carrying
+			Container bottle = person.lookForThermalBottle();
 					
-			if (bottle == null && person.isInSettlement()) {
+			if (bottle == null && person.isInside()) {
 				// Assign the person a thermal bottle
-				bottle = person.AssignThermalBottle();
+				bottle = person.assignThermalBottle();
 				logger.info(person, 10_000L, "Assigned a thermal bottle.");
 			}
 

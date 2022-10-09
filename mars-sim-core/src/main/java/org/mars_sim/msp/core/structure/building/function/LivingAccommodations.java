@@ -164,13 +164,13 @@ public class LivingAccommodations extends Function {
 	/**
 	 * Assigns standard living necessity.
 	 */
-	public void	AssignStandardNecessity(Person person) {
+	public void	assignStandardNecessity(Person person) {
 
 		// Obtain a standard set of clothing items
 		person.wearGarment(building.getSettlement());
 
 		// Assign thermal bottle
-		person.AssignThermalBottle();
+		person.assignThermalBottle();
 	}
 	
 	/**
@@ -182,7 +182,7 @@ public class LivingAccommodations extends Function {
 	 */
 	public LocalPosition registerSleeper(Person person, boolean isAGuest) {
 		// Assign standard necessity
-		AssignStandardNecessity(person);	
+		assignStandardNecessity(person);	
 		
 		LocalPosition registeredBed = person.getBed();
 

@@ -2243,27 +2243,46 @@ public class Person extends Unit implements Worker, Temporal, EquipmentOwner, Re
 		return getItemResourceStored(ItemResourceUtil.pressureSuitID) > 0;
 	}
 
+	/**
+	 * Does this person have a thermal bottle ?
+	 * 
+	 * @return
+	 */
 	public boolean hasThermalBottle() {
 		return findNumContainersOfType(EquipmentType.THERMAL_BOTTLE) > 0;
 	}
 	
+	/**
+	 * Fills up a thermal bottle with water.
+	 * 
+	 * @param amount
+	 */
 	public void fillUpThermalBottle(double amount) {
-		Container bottle = getThermalBottle();
+		Container bottle = lookForThermalBottle();
 		bottle.storeAmountResource(ResourceUtil.waterID, amount);
 	}
 	
-	public Container getThermalBottle() {
-		return findContainer(EquipmentType.THERMAL_BOTTLE, false, ResourceUtil.waterID);
+	/**
+	 * Looks for one's thermal bottle.
+	 * 
+	 * @return
+	 */
+	public Container lookForThermalBottle() {
+		Container c = eqmInventory.findOwnedContainer(EquipmentType.THERMAL_BOTTLE, getIdentifier(), ResourceUtil.waterID);
+		if (c == null)
+			return findContainer(EquipmentType.THERMAL_BOTTLE, false, ResourceUtil.waterID);
+		else
+			return c;
 	}
 	
 	/**
 	 * Assigns standard living necessity.
 	 */
-	public Container AssignThermalBottle() {
-		if (!hasThermalBottle() && isInSettlement()) {
+	public Container assignThermalBottle() {
+		if (!hasThermalBottle() && isInside()) {
 			Equipment bottle = null;
 			
-			for (Equipment e : getSettlement().getEquipmentSet()) {
+			for (Equipment e : ((EquipmentOwner)getContainerUnit()).getEquipmentSet()) {
 				if (e.getEquipmentType() == EquipmentType.THERMAL_BOTTLE) {	
 					bottle = e;
 					break;
@@ -2271,8 +2290,10 @@ public class Person extends Unit implements Worker, Temporal, EquipmentOwner, Re
 			}
 					
 			if (bottle != null) {
-				getSettlement().removeEquipment(bottle);
+				((EquipmentOwner)getContainerUnit()).removeEquipment(bottle);
 				addEquipment(bottle);
+				// Register the person as the owner of this bottle
+				bottle.setLastOwner(this);
 				return (Container)bottle;
 			}
 		}
