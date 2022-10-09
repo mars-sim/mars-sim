@@ -15,7 +15,6 @@ import org.mars_sim.msp.core.LocalPosition;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitType;
-import org.mars_sim.msp.core.environment.MarsSurface;
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.ResourceHolder;
@@ -83,7 +82,7 @@ public class EatDrink extends Task {
 	/** The conversion ratio of thirst to one serving of water. */	
 	private static final int THIRST_PER_WATER_SERVING = 450;
 	/** The minimal amount of resource to be retrieved. */
-	private static final double MIN = 0.00001;
+	private static final double MIN = 0.001;
 	
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = -1.2D;
@@ -187,9 +186,14 @@ public class EatDrink extends Task {
 
 		if (person.isInSettlement()) {
 			Building currentBuilding = BuildingManager.getBuilding(person);
-			if (currentBuilding != null && currentBuilding.getCategory() == BuildingCategory.EVA_AIRLOCK) {
-				// Walk out of the EVA Airlock
-				walkToRandomLocation(false);
+			if (currentBuilding != null && currentBuilding.getCategory() != BuildingCategory.EVA_AIRLOCK) {
+				// Check if there is a local dining building.
+	        	Building diningBuilding = getAvailableDiningBuilding(person.getSettlement());
+	        	
+	        	if (diningBuilding != null) {
+	        		// Initiates a walking task to go back to the settlement
+	        		walkToDiningLoc(diningBuilding, false);
+	        	}			
 			}
 
 			if (hungry && (foodAmount > 0 || meals > 0 || desserts > 0)) {
@@ -1032,7 +1036,6 @@ public class EatDrink extends Task {
 				logger.info(person, 10_000L, "Assigned a thermal bottle.");
 			}
 
-			// for either in settlement or vehicle
 			if (bottle != null)  {
 				
 				availableAmount = bottle.getAmountResourceStored(WATER_ID);
@@ -1063,24 +1066,21 @@ public class EatDrink extends Task {
 				}	
 			}
 			
-//			int level = person.getAssociatedSettlement().getWaterRationLevel();
-//			double [] levels = {1D, 5D, 10D, 15D};
-//
-//			// Try different level of water due to ration
-//			for (double levelModifier : levels) {
-//
-//				amount = Math.max(MIN, amount / levelModifier / level);
-//			
-//				double available = getAmountResourceStored(containerUnit, WATER_ID);
-//				// Test to see if there's enough water
-//				if (available >= amount)
-//					consumeWater((ResourceHolder)containerUnit, amount, waterOnly);
-//				else if (available > 0){
-//					amount = available;
-//					consumeWater((ResourceHolder)containerUnit, amount, waterOnly);
-//				}
-//			}
+			int level = person.getAssociatedSettlement().getWaterRationLevel();
+			amount = Math.max(MIN, amount / level);
 			
+			// for either in settlement or vehicle
+			double available = getAmountResourceStored(containerUnit, WATER_ID);
+			// Test to see if there's enough water
+			if (available >= amount) {
+				consumeWater((ResourceHolder)containerUnit, amount, waterOnly);
+				return;
+			}
+			else if (available > 0) {
+				amount = available;
+				consumeWater((ResourceHolder)containerUnit, amount, waterOnly);
+				return;
+			}
 		}
 	}
 

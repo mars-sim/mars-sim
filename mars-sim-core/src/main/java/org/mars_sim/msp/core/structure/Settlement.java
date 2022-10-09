@@ -194,7 +194,7 @@ public class Settlement extends Structure implements Temporal,
 	private boolean[] exposed = { false, false, false };
 	
 	
-	/** The water ration level of the settlement. */
+	/** The water ration level of the settlement. The higher the more urgent. */
 	private int waterRationLevel = 1;
 	/** The number of people at the start of the settlement. */
 	private int initialPopulation;
@@ -3161,7 +3161,7 @@ public class Settlement extends Structure implements Temporal,
 			waterRationLevel = 1000;
 
 		if (waterRationLevel > 100)
-			logger.severe(this, 20_000L, "Water Ration Level: " + waterRationLevel);//Math.round(ratio * 10.0)/10.0);
+			logger.severe(this, 20_000L, "Water Ration Level: " + waterRationLevel);
 	}
 
 	/**

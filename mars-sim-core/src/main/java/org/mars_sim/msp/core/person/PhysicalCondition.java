@@ -625,27 +625,27 @@ public class PhysicalCondition implements Serializable {
 			kJoules = 250;
 		}
 		else if (kJoules < 500) {
-			kJoules -= xdelta * .5;
+			kJoules -= xdelta * .4;
 		} else if (kJoules < 1000) {
-			kJoules -= xdelta * .55;
+			kJoules -= xdelta * .45;
 		} else if (kJoules < 3000) {
-			kJoules -= xdelta * .6;
+			kJoules -= xdelta * .5;
 		} else if (kJoules < 5000) {
-			kJoules -= xdelta * .65;
+			kJoules -= xdelta * .55;
 		} else if (kJoules < 7000) {
-			kJoules -= xdelta * .7;
+			kJoules -= xdelta * .6;
 		} else if (kJoules < 9000) {
-			kJoules -= xdelta * .75;
+			kJoules -= xdelta * .65;
 		} else if (kJoules < 11000) {
-			kJoules -= xdelta * .8;
+			kJoules -= xdelta * .7;
 		} else if (kJoules < 13000) {
-			kJoules -= xdelta * .85;
+			kJoules -= xdelta * .75;
 		} else if (kJoules < 15000) {
-			kJoules -= xdelta * .9;			
+			kJoules -= xdelta * .8;			
 		} else if (kJoules < 17000) {
-			kJoules -= xdelta * .95;	
+			kJoules -= xdelta * .85;	
 		} else
-			kJoules -= xdelta;
+			kJoules -= xdelta * .9;
 
 		person.fireUnitUpdate(UnitEventType.HUNGER_EVENT);
 	}
@@ -674,29 +674,35 @@ public class PhysicalCondition implements Serializable {
 		// kJoules) / ENERGY_FACTOR;
 
 		if (kJoules > 19_000D) {
-			kJoules += xdelta * .025;
+			kJoules += xdelta * .035;
 		} else if (kJoules > 17_000D) {
-			kJoules += xdelta * .05;
+			kJoules += xdelta * .06;
 		} else if (kJoules > 15_000D) {
-			kJoules += xdelta * .1;
-		} else if (kJoules > 13_000D) {
 			kJoules += xdelta * .15;
-		} else if (kJoules > 11_000D) {
+		} else if (kJoules > 13_000D) {
 			kJoules += xdelta * .2;
-		} else if (kJoules > 9_000D) {
+		} else if (kJoules > 11_000D) {
 			kJoules += xdelta * .25;
-		} else if (kJoules > 7_000D) {
+		} else if (kJoules > 9_000D) {
 			kJoules += xdelta * .3;
+		} else if (kJoules > 7_000D) {
+			kJoules += xdelta * .45;
 		} else if (kJoules > 5_000D) {
-			kJoules += xdelta * .35;
+			kJoules += xdelta * .55;
 		} else if (kJoules > 4_000D) {
-			kJoules += xdelta * .4;
+			kJoules += xdelta * .65;
 		} else if (kJoules > 3_000D) {
-			kJoules += xdelta * .45;			
+			kJoules += xdelta * .75;			
 		} else if (kJoules > ENERGY_THRESHOLD) {
-			kJoules += xdelta * .5;	
+			kJoules += xdelta * .85;	
+		} else if (kJoules > ENERGY_THRESHOLD / 2) {
+			kJoules += xdelta * .95;	
+		} else if (kJoules > ENERGY_THRESHOLD / 4) {
+			kJoules += xdelta * 1.1;	
+		} else if (kJoules > ENERGY_THRESHOLD / 8) {
+			kJoules += xdelta * 1.3;	
 		} else
-			kJoules = ENERGY_THRESHOLD;
+			kJoules = ENERGY_THRESHOLD / 8;
 
 		circadian.eatFood(xdelta / 1000D);
 
@@ -1675,17 +1681,17 @@ public class PhysicalCondition implements Serializable {
 	 */
 	public static String getHungerStatus(double hunger, double energy) {
 		String status = "N/A";
-		if (hunger < 50 && energy > 19000) // Full
+		if (hunger < 50 && energy > 15000) // Full
 			status = Msg.getString("PersonTableModel.column.energy.level1");
-		else if (hunger < 250 && energy > 14000) // Satisfied
+		else if (hunger < 250 && energy > 10000) // Satisfied
 			status = Msg.getString("PersonTableModel.column.energy.level2");
-		else if (hunger < 500 && energy > 9000) // Comfy
+		else if (hunger < 500 && energy > 5000) // Comfy
 			status = Msg.getString("PersonTableModel.column.energy.level3");
-		else if (hunger < 750 && energy > 4000) // Adequate
+		else if (hunger < 750 && energy > ENERGY_THRESHOLD) // Adequate
 			status = Msg.getString("PersonTableModel.column.energy.level4");
-		else if (hunger < 900 && energy > 1500) // Rumbling
+		else if (hunger < 1000 && energy > 1000) // Rumbling
 			status = Msg.getString("PersonTableModel.column.energy.level5");
-		else if (hunger < 1200 && energy > 750) // Ravenous
+		else if (hunger < 1500 && energy > 500) // Ravenous
 			status = Msg.getString("PersonTableModel.column.energy.level6");
 		else // Famished
 			status = Msg.getString("PersonTableModel.column.energy.level7");
