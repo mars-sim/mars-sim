@@ -1749,10 +1749,9 @@ public class Person extends Unit implements Worker, Temporal, EquipmentOwner, Re
 	public double getMass() {
 		// TODO because the Person is not fully initialised in the constructor this
 		// can be null. The initialise method is the culprit.
-		return (eqmInventory != null ? eqmInventory.getStoredMass() : 0) + getBaseMass();
-
+		return (eqmInventory != null ? eqmInventory.getModifiedMass(EquipmentType.WHEELBARROW, 20) : 0) + getBaseMass();
 	}
-
+	
 	/**
 	 * Gets the equipment list.
 	 *

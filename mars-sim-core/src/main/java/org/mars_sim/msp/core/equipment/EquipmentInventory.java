@@ -71,6 +71,26 @@ public class EquipmentInventory
 	}
 
 	/**
+	 * Gets the modified mass. Useful when accounting for pushing a wheelbarrow, 
+	 * instead of carrying a wheelbarrow.
+	 * 
+	 * @param type  the equipment type of interest
+	 * @param percent the percent of mass of the equipment type to be treated as carrying mass
+	 * @return
+	 */
+	public double getModifiedMass(EquipmentType type, double percent) {
+		double result = 0;
+		for (Equipment e: equipmentSet) {
+			if (type == EquipmentType.WHEELBARROW) {
+				result += e.getMass() * percent / 100;
+			}
+			else
+				result += e.getMass();
+		}
+		return result +  microInventory.getStoredMass();
+	}
+	
+	/**
 	 * Gets the equipment set.
 	 *
 	 * @return
