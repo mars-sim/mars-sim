@@ -126,7 +126,7 @@ extends MonitorTab {
 		 * of the rows in the model, i.e. the first column.
 		 */
 		private void loadCategories() {
-			categories = new ArrayList<String>(model.getRowCount());
+			categories = new ArrayList<>(model.getRowCount());
 
 			// Iterate the rows and add the value from the first cell.
 			for (int i = 0; i < model.getRowCount(); i++) {
@@ -214,7 +214,11 @@ extends MonitorTab {
 		}
 
 		public Number getValue(int row, int column) {
-			return (Number)model.getValueAt(column, columns[row]);
+			Object obj = model.getValueAt(column, columns[row]);
+			if (obj instanceof Number) {
+				return (Number)obj;
+			}
+			return (Number) Double.valueOf((String)obj);
 		}
 
 		public Number getValue(Comparable rowKey, Comparable columnKey) {
