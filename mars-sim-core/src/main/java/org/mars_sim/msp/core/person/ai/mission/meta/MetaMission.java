@@ -21,7 +21,7 @@ import org.mars_sim.msp.core.time.MarsClock;
  */
 public interface MetaMission {
 
-    public static final double LIMIT = 100D;
+    public static final double LIMIT = 200D;
     
 	static Simulation sim = Simulation.instance();
     static MissionManager missionManager = sim.getMissionManager();
