@@ -22,7 +22,7 @@ public class MeteorologyFieldStudyMeta extends FieldStudyMeta {
 
     MeteorologyFieldStudyMeta() {
     	super(MissionType.METEOROLOGY, 
-    		 Set.of(JobType.METEOROLOGIST),
+    		 Set.of(JobType.METEOROLOGIST, JobType.PHYSICIST),
     		 ScienceType.METEOROLOGY);
     }
     

@@ -28,9 +28,9 @@ import org.mars_sim.msp.core.vehicle.Rover;
 public class ExplorationMeta extends AbstractMetaMission {
 
 	/** Mission name */
-	private static final double VALUE = 1.25D;
+	private static final double VALUE = 1D;
 
-	private static final int MAX = 100;
+	private static final int MAX = 200;
 
 	/** default logger. */
 	private static final Logger logger = Logger.getLogger(ExplorationMeta.class.getName());
@@ -72,20 +72,18 @@ public class ExplorationMeta extends AbstractMetaMission {
 					return 0;
 				}
 
-				missionProbability = 1D;
 				int numEmbarked = MissionUtil.numEmbarkingMissions(settlement);
 				int numThisMission = missionManager.numParticularMissions(MissionType.EXPLORATION, settlement);
-
+				int pop = settlement.getNumCitizens();
+				
 		   		// Check for # of embarking missions.
-	    		if (Math.max(1, settlement.getNumCitizens() / 6.0) < numEmbarked + numThisMission) {
+	    		if (Math.max(1, pop / 8.0) < numEmbarked + numThisMission) {
 	    			return 0;
 	    		}
 
-	    		if (numThisMission > 1) {
+	    		if (numThisMission > Math.max(1, pop / 8.0)) {
 	    			return 0;
 	    		}
-
-	    		missionProbability = 0;
 
 				try {
 					// Get available rover.
@@ -104,9 +102,9 @@ public class ExplorationMeta extends AbstractMetaMission {
 				}
 
 				int f1 = numEmbarked + 1;
-				int f2 = 3 * numThisMission + 1;
+				int f2 = numThisMission + 1;
 
-				missionProbability *= (double)settlement.getNumCitizens() / f1 / f2;
+				missionProbability *= (double)pop / f1 / f2;
 
 				// Job modifier.
 				missionProbability *= getLeaderSuitability(person)
@@ -118,9 +116,9 @@ public class ExplorationMeta extends AbstractMetaMission {
 
 				// if introvert, score  0 to  50 --> -2 to 0
 				// if extrovert, score 50 to 100 -->  0 to 2
-				// Reduce probability if introvert
+				// Increase probability if extrovert
 				int extrovert = person.getExtrovertmodifier();
-				missionProbability += extrovert;
+				missionProbability = missionProbability * (1 + extrovert/2.0);
 
 				if (missionProbability < 0)
 					missionProbability = 0;

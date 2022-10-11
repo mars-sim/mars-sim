@@ -68,7 +68,7 @@ public class TravelToSettlementMeta extends AbstractMetaMission {
 			// if extrovert, score 50 to 100 -->  0 to 2
 			// Reduce probability if introvert
 			int extrovert = person.getExtrovertmodifier();
-			missionProbability += extrovert;
+			missionProbability = missionProbability * (1 + extrovert/2.0);
 			
 			if (missionProbability < 0)
 				missionProbability = 0;

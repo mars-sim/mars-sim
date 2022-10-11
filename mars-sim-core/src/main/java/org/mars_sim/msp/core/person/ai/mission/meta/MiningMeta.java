@@ -10,7 +10,6 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.environment.ExploredLocation;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
@@ -32,7 +31,7 @@ public class MiningMeta extends AbstractMetaMission {
     private static final Logger logger = Logger.getLogger(MiningMeta.class.getName());
 
     MiningMeta() {
-    	super(MissionType.MINING, Set.of(JobType.AREOLOGIST));
+    	super(MissionType.MINING, Set.of(JobType.AREOLOGIST, JobType.ENGINEER));
     }
 
     @Override
@@ -124,7 +123,7 @@ public class MiningMeta extends AbstractMetaMission {
 				// if extrovert, score 50 to 100 -->  0 to 2
 				// Reduce probability if introvert
 				int extrovert = person.getExtrovertmodifier();
-				missionProbability += extrovert;
+				missionProbability = missionProbability * (1 + extrovert/2.0);
 
 				if (missionProbability < 0)
 					missionProbability = 0;

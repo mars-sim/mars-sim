@@ -66,7 +66,8 @@ public class AbstractMetaMission implements MetaMission {
 	}
 
 	/**
-	 * Check the suitability for this Person to be the leader. It currently checks their Job
+	 * Checks the suitability for this Person to be the leader. It currently checks their Job.
+	 * 
 	 * @param person
 	 * @return
 	 */
@@ -77,7 +78,7 @@ public class AbstractMetaMission implements MetaMission {
 		JobType jt = person.getMind().getJob();
 		
 		// If the person has a job and it is a preferred job
-		// OR there are no preferred Jobs then give it  boost
+		// OR there are no preferred Jobs then give it a boost
 		if ((jt != null) &&
 				((preferredLeaderJob  == null) || preferredLeaderJob.contains(jt))) {
 			result = 1D;
