@@ -35,15 +35,20 @@
 		<settlement name="Zvezda" template="Phase 3-RU" persons="12" robots="8" sponsor="RKA">
 			<location longitude="76.37 E" latitude="25.94 N" />
 		</settlement>
-					
+		
+		<settlement name="New Boston" template="Phase 3-MS" persons="12" robots="12" sponsor="MS">
+			<location longitude="20.9156 E" latitude="0.7777 N" />	
+		</settlement>
+			
 		<settlement name="Schiaparelli Point" template="Alpha Base" crew="Alpha" persons="24" robots="12" sponsor="MS">
 			<location longitude="0.0 W" latitude="0.0 N" />
 		</settlement>
 		
 	</initial-settlement-list>
 	<arriving-settlement-list>
-		<arriving-settlement name="New Town" template="Phase 1-MS" persons="10"
-							 robots="4" sponsor="MS" arrival-in-sols="20">
+		<arriving-settlement name="Port Ares" template="Phase 2-MS" persons="8"
+							 robots="6" sponsor="MS" arrival-in-sols="1">
+			<location longitude="37.0579 E" latitude="22.6532 N" />				 
 		</arriving-settlement>
 	</arriving-settlement-list>
 </scenario-configuration>

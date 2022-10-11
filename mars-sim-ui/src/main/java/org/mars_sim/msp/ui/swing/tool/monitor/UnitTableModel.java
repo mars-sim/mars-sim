@@ -81,7 +81,8 @@ abstract public class UnitTableModel extends AbstractTableModel implements Monit
 			units.add(newUnit);
 			refreshSize = true;
 			newUnit.addUnitListener(this);
-
+			
+			
 			// Must update the table as later the table may have extra rows
 			fireTableRowsInserted(getUnitNumber() - 1, getUnitNumber() - 1);
 		}

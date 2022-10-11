@@ -174,7 +174,7 @@ public class Resupply implements Serializable, Transportable {
 	@Override
 	public synchronized void performArrival(SimulationConfig sc, Simulation sim) {
 		// Deliver buildings to the destination settlement.
-		logger.info(settlement, "Resuply has arrived");
+		logger.info(settlement, "Preparing for the arrival of a resupply mission.");
 
 		// Deliver buildings to the destination settlement.
 		boolean hasBuildings = deliverBuildings(sc.getBuildingConfiguration());

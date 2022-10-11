@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * ArrivingSettlement.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-10-11
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.interplanetary.transport.settlement;
@@ -67,6 +67,12 @@ public class ArrivingSettlement implements Transportable, Serializable {
 		this.landingLocation = landingLocation;
 		this.populationNum = populationNum;
 		this.numOfRobots = numOfRobots;
+		
+		arrivalDate = new MarsClock(Simulation.instance().getMasterClock().getMarsClock());
+		arrivalDate.addTime(
+			(arrivalSols - 1) * 1000D
+			+ 100 
+			+ RandomUtil.getRandomDouble(890));
 	}
 
 	/**
@@ -297,6 +303,7 @@ public class ArrivingSettlement implements Transportable, Serializable {
 		Settlement newSettlement = build.createFullSettlement(spec);
 		
 		// Sim is already running so add to the active queue
+//		sim.getUnitManager().addUnit(newSettlement);
 		sim.getUnitManager().activateSettlement(newSettlement);
 	}
 
@@ -305,9 +312,13 @@ public class ArrivingSettlement implements Transportable, Serializable {
 	 */
 	public void scheduleLaunch(MarsClock currentTime, int transitSols) {
 		// Determine the arrival date
-		arrivalDate = new MarsClock(currentTime);
-		arrivalDate.addTime((arrivalSols * 1000D)
-						+ RandomUtil.getRandomDouble(999D));
+		if (arrivalDate ==  null) {
+			arrivalDate = new MarsClock(currentTime);
+			arrivalDate.addTime(
+					(arrivalSols - 1) * 1000D
+					+ 100 
+					+ RandomUtil.getRandomDouble(890));
+		}
 		
 		// Determine launch date.
 		launchDate = new MarsClock(arrivalDate);

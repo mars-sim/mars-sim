@@ -68,7 +68,8 @@ public class TransportManager implements Serializable, Temporal {
 	}
 	
 	/**
-	 * Add any arriving Settlements that are defined in a Scenario
+	 * Adds any arriving Settlements that are defined in a Scenario.
+	 * 
 	 * @param scenario
 	 * @param settlementConfig 
 	 * @param raFactory 
@@ -86,7 +87,7 @@ public class TransportManager implements Serializable, Temporal {
 			}
 			
 			a.scheduleLaunch(now, AVG_TRANSIT_TIME);
-			logger.info("New settlement called " + a.getName() + " arriving in sols "
+			logger.config("Scheduling a new settlement called '" + a.getName() + "' to arrive at Sol "
 						+ a.getArrivalDate().getTrucatedDateTimeStamp());
 			transportItems.add(a);
 		}
@@ -173,9 +174,9 @@ public class TransportManager implements Serializable, Temporal {
 						// Transport item is launched.
 						transportItem.setTransitState(TransitState.IN_TRANSIT);
 						HistoricalEvent deliverEvent = new TransportEvent(transportItem, EventType.TRANSPORT_ITEM_LAUNCHED,
-								"Transport item launched", transportItem.getSettlementName());
+								"A transport item launched", transportItem.getSettlementName());
 						eventManager.registerNewEvent(deliverEvent);
-						logger.info("Transport item launched: " + transportItem.toString());
+						logger.info("A transport item launched on " + transportItem.toString());
 					}
 					break;
 
@@ -185,9 +186,9 @@ public class TransportManager implements Serializable, Temporal {
 						transportItem.setTransitState(TransitState.ARRIVED);
 						transportItem.performArrival(simConfig, sim);
 						HistoricalEvent arrivalEvent = new TransportEvent(transportItem, EventType.TRANSPORT_ITEM_ARRIVED,
-								transportItem.getSettlementName(), "Transport item arrived on Mars");
+								transportItem.getSettlementName(), "A transport item arrived on Mars");
 						eventManager.registerNewEvent(arrivalEvent);
-						logger.info("Transport item arrived at " + transportItem.toString());
+						logger.info("A transport item arrived at " + transportItem.toString());
 					}
 					break;
 

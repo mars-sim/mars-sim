@@ -459,7 +459,8 @@ class ArrivingSettlementModel extends AbstractTableModel {
 	}
 
 	/**
-	 * Add a partial Settlement with the minimum information. The rest is defaulted fron Sponsor & Template.
+	 * Adds a partial Settlement with the minimum information. The rest is defaulted from Sponsor & Template.
+	 * 
 	 * @param sponsor
 	 * @param template
 	 * @param location

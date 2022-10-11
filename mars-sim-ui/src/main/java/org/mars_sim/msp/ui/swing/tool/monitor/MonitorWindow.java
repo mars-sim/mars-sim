@@ -38,7 +38,15 @@ import javax.swing.event.TableModelListener;
 import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitEvent;
+import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.UnitListener;
 import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.UnitManagerEvent;
+import org.mars_sim.msp.core.UnitManagerEventType;
+import org.mars_sim.msp.core.UnitManagerListener;
+import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -64,7 +72,7 @@ import com.alee.managers.tooltip.TooltipWay;
  * of which monitor a set of Units.
  */
 @SuppressWarnings("serial")
-public class MonitorWindow extends ToolWindow implements TableModelListener, ActionListener {
+public class MonitorWindow extends ToolWindow implements TableModelListener, ActionListener, UnitManagerListener {
 
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(MonitorWindow.class.getName());
@@ -359,6 +367,26 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	 */
 	public List<Settlement> getSettlements() {
 		return settlementList;
+	}
+	
+	/**
+	 * Adds a settlement.
+	 * 
+	 * @param settlement
+	 */
+	public void addSettlement(Settlement settlement) {
+		settlementList.add(settlement);
+		settlementComboBox.addItem(settlement);
+	}
+	
+	/**
+	 * Removes a settlement.
+	 * 
+	 * @param settlement
+	 */
+	public void removeSettlement(Settlement settlement) {
+		settlementList.remove(settlement);
+		settlementComboBox.removeItem(settlement);
 	}
 	
 	/**
@@ -987,6 +1015,39 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		}
 	}
 
+	/**
+	 * Catches unit manager update event.
+	 * 
+	 * @param event the unit manager event.
+	 */
+	@Override
+	public void unitManagerUpdate(UnitManagerEvent event) {
+		Unit unit = event.getUnit();
+		UnitManagerEventType eventType = event.getEventType();
+
+		if (unit.getUnitType() == UnitType.SETTLEMENT) {
+			if (eventType == UnitManagerEventType.ADD_UNIT && !getSettlements().contains(unit)) {
+				addSettlement((Settlement)unit);
+			} else if (eventType == UnitManagerEventType.REMOVE_UNIT && getSettlements().contains(unit)) {
+				removeSettlement((Settlement)unit);
+			}
+		}
+	}
+	
+
+//	public void unitUpdate(UnitEvent event) {
+//		Unit unit = (Unit) event.getSource();
+//		Object source = event.getTarget();
+//		UnitEventType eventType = event.getType();
+//
+//		if (eventType == UnitEventType.INVENTORY_STORING_UNIT_EVENT
+//			&& unit.getUnitType() == UnitType.SETTLEMENT 
+//			) {
+//			
+//		}
+//				
+//	}
+	
 	/**
 	 * Prepares tool window for deletion.
 	 */

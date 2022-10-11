@@ -178,7 +178,7 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 		if (found == null) {
 			// Then it's a load on dmand entry
 			String file = getItemFilename(name);
-			logger.info("Loading an item on demand " + itemPrefix + " " + name);
+			logger.config("Loading an item on demand " + itemPrefix + " " + name);
 			loadItem(file, true);
 
 			found = knownItems.get(name);
@@ -206,7 +206,7 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 		String filename = getItemFilename(name);
 		File oldFile = new File(SimulationFiles.getUserConfigDir(), filename);
 		if (oldFile.delete()) {
-			logger.info("Deleted file " + oldFile.getAbsolutePath());
+			logger.config("Deleted file " + oldFile.getAbsolutePath());
 		}
 	}
 

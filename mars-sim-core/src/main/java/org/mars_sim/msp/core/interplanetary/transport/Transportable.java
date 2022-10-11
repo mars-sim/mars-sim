@@ -20,12 +20,14 @@ extends Comparable<Transportable>{
 
 	/**
 	 * Gets the name of the transportable.
+	 * 
 	 * @return name string.
 	 */
 	public String getName();
 
 	/**
 	 * Gets the settlementName.
+	 * 
 	 * @return the settlement's name.
 	 */
 	public String getSettlementName();
@@ -37,41 +39,46 @@ extends Comparable<Transportable>{
 
 	/**
 	 * Gets the current transit state.
+	 * 
 	 * @return {@link TransitState} transit state.
 	 */
 	public TransitState getTransitState();
 
 	/**
 	 * Sets the current transit state.
+	 * 
 	 * @param transitState {@link TransitState} the transit state.
 	 */
 	public void setTransitState(TransitState transitState);
 
 	/**
 	 * Gets the launch date from the launching location.
+	 * 
 	 * @return launch date as a MarsClock instance.
 	 */
 	public MarsClock getLaunchDate();
 
 	/**
 	 * Gets the arrival date at the destination.
+	 * 
 	 * @return arrival date as a MarsClock instance.
 	 */
 	public MarsClock getArrivalDate();
 
 	/**
-	 * Perform the arrival of the transportable.
+	 * Performs the arrival of the transportable.
 	 */
 	public void performArrival(SimulationConfig sc, Simulation sim);
 
 	/**
-	 * Reattact a loading item to the active UnitManager
+	 * Reinitializes a loading item to the active UnitManager.
+	 * 
 	 * @param um
 	 */
 	public void reinit(UnitManager um);
 
 	/**
-	 * Prepare object for garbage collection.
+	 * Prepares object for garbage collection.
 	 */
 	public void destroy();
 }

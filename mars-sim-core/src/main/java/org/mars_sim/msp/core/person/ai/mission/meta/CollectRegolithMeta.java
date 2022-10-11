@@ -22,7 +22,7 @@ import org.mars_sim.msp.core.structure.Settlement;
  */
 public class CollectRegolithMeta extends AbstractMetaMission {
 
-	private static final double VALUE = 3000D;
+	private static final double VALUE = 4000D;
 
 	/** starting sol for this mission to commence. */
 	public final static int MIN_STARTING_SOL = 2;
@@ -72,7 +72,7 @@ public class CollectRegolithMeta extends AbstractMetaMission {
 	    		}
 
 	    		missionProbability = settlement.getRegolithProbabilityValue() / VALUE;
-	    		System.out.println(settlement + " reg prob: " + missionProbability);
+
 	    		int f1 = numEmbarked + 1;
 	    		int f2 = 4 * numThisMission + 1;
 

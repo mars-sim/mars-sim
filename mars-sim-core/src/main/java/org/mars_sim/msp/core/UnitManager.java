@@ -405,10 +405,11 @@ public class UnitManager implements Serializable, Temporal {
 	 */
 	public void activateSettlement(Settlement s) {
 		if (!lookupSettlement.containsKey(s.getIdentifier())) {
-			throw new IllegalStateException("Do not know new Settlement "
+			throw new IllegalStateException("Do not know new settlement "
 						+ s.getName());
 		}
 
+		logger.config("Setting up settlement task thread for " + s + ".");
 		SettlementTask st = new SettlementTask(s);
 		settlementTasks.add(st);
 	}

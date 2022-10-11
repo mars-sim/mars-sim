@@ -58,6 +58,7 @@ import org.mars_sim.msp.core.vehicle.VehicleType;
  * The creation includes all Persons, Vehicles & Robots.
  */
 public final class SettlementBuilder {
+	
 	private static SimLogger logger = SimLogger.getLogger(SettlementBuilder.class.getName());
 
 	public static final String EARTH = "Earth";
@@ -416,7 +417,7 @@ public final class SettlementBuilder {
 					logger.warning("Person already called " + name + ".");
 					name = crew.getName() + " Member" + settlement.getNumCitizens();
 				}
-				logger.log(Level.INFO, name + " from crew '" + crew.getName() + "' assigned to " + settlement.getName() + ".");
+				logger.config(name + " from crew '" + crew.getName() + "' assigned to " + settlement.getName() + ".");
 				existingfullnames.add(name);
 
 				// Get person's gender or randomly determine it if not configured.

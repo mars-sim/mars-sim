@@ -3,12 +3,13 @@
     name="Phase 3-MS" default-population="12" description="Phase 3 base for Mars Society"
 	number-of-robots="7" sponsor="MS">
     
+    
     <building id="0" type="Lander Hab" xloc="0.0" yloc="0.0"
         facing="0.0">
         <connection-list>
             <connection id="1" xloc="0.0" yloc="4.5" />
             <connection id="5" xloc="-4.5" yloc="0.0" />
-            <connection id="11" xloc="4.5" yloc="0.0" />
+            <connection id="21" xloc="4.5" yloc="0.0" />
         </connection-list>
     </building>
     <building id="1" type="Hallway" length="4.0" xloc="0.0"
@@ -23,7 +24,7 @@
         <connection-list>
             <connection id="1" xloc="0.0" yloc="-4.5" />
             <connection id="3" xloc="0.0" yloc="4.5" />
-            <connection id="7" xloc="-4.5" yloc="0.0" />
+            <connection id="9" xloc="-4.5" yloc="0.0" />
         </connection-list>
     </building>
     <building id="3" type="Hallway" length="4.0" xloc="0.0"
@@ -33,13 +34,15 @@
             <connection id="4" xloc="0.0" yloc="2.0" />
         </connection-list>
     </building>
-    <building id="4" type="Lander Hab" xloc="0.0" yloc="26.0"
+    <building id="4" type="Research Hab" xloc="0.0" yloc="26.0"
         facing="0.0">
         <connection-list>
             <connection id="3" xloc="0.0" yloc="-4.5" />
-            <connection id="9" xloc="-4.5" yloc="0.0" />
+            <connection id="13" xloc="-4.5" yloc="0.0" />
         </connection-list>
     </building>
+
+    <!-- The first row -->
     <building id="5" type="Hallway" length="3.0" xloc="-6.0"
         yloc="0.0" facing="270.0">
         <connection-list>
@@ -47,41 +50,132 @@
             <connection id="6" xloc="0.0" yloc="-1.5" />
         </connection-list>
     </building>
-    <building id="6" type="Inflatable Greenhouse" xloc="-12.0"
-        yloc="0.0" facing="270.0">
+    <building id="6" type="Laboratory" xloc="-12.0" yloc="0.0"
+        facing="270.0">
         <connection-list>
             <connection id="5" xloc="0.0" yloc="4.5" />
+            <connection id="7" xloc="0.0" yloc="-4.5" />
         </connection-list>
     </building>
-    <building id="7" type="Hallway" length="3.0" xloc="-6.0"
-        yloc="13.0" facing="270.0">
+
+    <building id="7" type="Hallway" length="3.0" xloc="-18.0"
+        yloc="0.0" facing="270.0">
         <connection-list>
-            <connection id="2" xloc="0.0" yloc="1.5" />
+            <connection id="6" xloc="0.0" yloc="1.5" />
             <connection id="8" xloc="0.0" yloc="-1.5" />
         </connection-list>
     </building>
-    <building id="8" type="Inflatable Greenhouse" xloc="-12.0"
-        yloc="13.0" facing="270.0">
+    <building id="8" type="Inflatable Greenhouse" xloc="-24.0"
+        yloc="0.0" facing="270.0">
         <connection-list>
             <connection id="7" xloc="0.0" yloc="4.5" />
+            <connection id="17" xloc="-3.0" yloc="0.0" />
+            <connection id="19" xloc="3.0" yloc="0.0" />
         </connection-list>
     </building>
+
+    <!-- The second row -->
     <building id="9" type="Hallway" length="3.0" xloc="-6.0"
-        yloc="26.0" facing="270.0">
+        yloc="13.0" facing="270.0">
         <connection-list>
-            <connection id="4" xloc="0.0" yloc="1.5" />
+            <connection id="2" xloc="0.0" yloc="1.5" />
             <connection id="10" xloc="0.0" yloc="-1.5" />
         </connection-list>
     </building>
-    <building id="10" type="Inflatable Greenhouse" xloc="-12.0"
-        yloc="26.0" facing="270.0">
+    <building id="10" type="Workshop" xloc="-12.0"
+        yloc="13.0" facing="270.0">
         <connection-list>
             <connection id="9" xloc="0.0" yloc="4.5" />
+            <connection id="11" xloc="0.0" yloc="-4.5" />
+        </connection-list>
+    </building>
+
+    <building id="11" type="Hallway" length="3.0" xloc="-18.0"
+        yloc="13.0" facing="270.0">
+        <connection-list>
+            <connection id="10" xloc="0.0" yloc="1.5" />
+            <connection id="12" xloc="0.0" yloc="-1.5" />
+        </connection-list>
+    </building>
+    <building id="12" type="Fish Farm" xloc="-24.0"
+        yloc="13.0" facing="270.0">
+        <connection-list>
+            <connection id="11" xloc="0.0" yloc="4.5" />
+            <connection id="17" xloc="3.0" yloc="0.0" />
+            <connection id="18" xloc="-3.0" yloc="0.0" />
+        </connection-list>
+    </building>
+
+    <!-- The third row -->
+    <building id="13" type="Hallway" length="3.0" xloc="-6.0"
+        yloc="26.0" facing="270.0">
+        <connection-list>
+            <connection id="4" xloc="0.0" yloc="1.5" />
+            <connection id="14" xloc="0.0" yloc="-1.5" />
+        </connection-list>
+    </building>
+    <building id="14" type="Lounge" xloc="-12.0" yloc="26.0"
+        facing="270.0">
+        <connection-list>
+            <connection id="13" xloc="0.0" yloc="4.5" />
+            <connection id="15" xloc="0.0" yloc="-4.5" />
+        </connection-list>
+    </building>
+
+    <building id="15" type="Hallway" length="3.0" xloc="-18.0"
+        yloc="26.0" facing="270.0">
+        <connection-list>
+            <connection id="14" xloc="0.0" yloc="1.5" />
+            <connection id="16" xloc="0.0" yloc="-1.5" />
+        </connection-list>
+    </building>
+    <building id="16" type="Inflatable Greenhouse" xloc="-24.0"
+        yloc="26.0" facing="270.0">
+        <connection-list>
+            <connection id="15" xloc="0.0" yloc="4.5" />
+            <connection id="18" xloc="3.0" yloc="0.0" />
+        </connection-list>
+    </building>
+
+    <!-- This hallway connects the inflatable greenhouse on the first row
+        to that of second row -->
+    <building id="17" type="Hallway" length="7.0" xloc="-24.0"
+        yloc="6.5" facing="0.0">
+        <connection-list>
+            <connection id="8" xloc="0.0" yloc="-3.5" />
+            <connection id="12" xloc="0.0" yloc="3.5" />
+        </connection-list>
+    </building>
+
+    <!-- This hallway connects the inflatable greenhouse on the second row
+        to that of the third row -->
+    <building id="18" type="Hallway" length="7.0" xloc="-24.0"
+        yloc="19.5" facing="0.0">
+        <connection-list>
+            <connection id="12" xloc="0.0" yloc="-3.5" />
+            <connection id="16" xloc="0.0" yloc="3.5" />
+        </connection-list>
+    </building>
+
+    <!-- This hallway connects the inflatable greenhouse in the first row
+        to the garage -->
+    <building id="19" type="Hallway" length="4.0" xloc="-24.0"
+        yloc="-5.0" facing="0.0">
+        <connection-list>
+            <connection id="8" xloc="0.0" yloc="2.0" />
+            <connection id="20" xloc="0.0" yloc="-2.0" />
+        </connection-list>
+    </building>
+
+    <building id="20" type="Garage" xloc="-24.0" yloc="-15"
+        facing="180.0">
+        <connection-list>
+            <connection id="19" xloc="0.0" yloc="-8.0" />
         </connection-list>
     </building>
 
     <!-- EVA Airlock is attached to the lander hab -->
-    <building id="11" type="EVA Airlock" xloc="7.5" yloc="0.0"
+    <building id="21" type="EVA Airlock" xloc="7.5" yloc="0.0"
         facing="0.0">
         <connection-list>
             <connection id="0" xloc="-3.0" yloc="0.0" />

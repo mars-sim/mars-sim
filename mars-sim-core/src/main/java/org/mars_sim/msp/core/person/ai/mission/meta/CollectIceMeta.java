@@ -22,7 +22,7 @@ import org.mars_sim.msp.core.structure.Settlement;
  */
 public class CollectIceMeta extends AbstractMetaMission {
 
-	private static final double VALUE = 2500D;
+	private static final double VALUE = 3500D;
 
 	/** starting sol for this mission to commence. */
 	public final static int MIN_STARTING_SOL = 3;
@@ -74,7 +74,7 @@ public class CollectIceMeta extends AbstractMetaMission {
 	    		}
 
 	    		missionProbability = settlement.getIceProbabilityValue() / VALUE;
-	    		System.out.println(settlement + " ice prob: " + missionProbability);
+
 	    		int f1 = numEmbarked + 1;
 	    		int f2 = numThisMission + 1;
 

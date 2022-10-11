@@ -523,6 +523,9 @@ public class SettlementTableModel extends UnitTableModel {
 
 	@Override
 	protected void addUnit(Unit newUnit) {
+		// Add the settlement to UnitTableModel
+		super.addUnit(newUnit);
+		
 		if (resourceCache == null)
 			resourceCache = new HashMap<>();
 		if (!resourceCache.containsKey(newUnit)) {
@@ -557,7 +560,6 @@ public class SettlementTableModel extends UnitTableModel {
 			} catch (Exception e) {
 			}
 		}
-		super.addUnit(newUnit);
 	}
 	
 	@Override
