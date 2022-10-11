@@ -1281,7 +1281,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 			// Initialize settlement list.
 			updateSettlements();
 			// Add this as a unit manager listener.
-			unitManager.addUnitManagerListener(this);
+			unitManager.addUnitManagerListener(UnitType.SETTLEMENT, this);
 
 			// Add addUnitListener
 			Collection<Settlement> settlements = unitManager.getSettlements();
@@ -1356,7 +1356,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 		 * Prepare class for deletion.
 		 */
 		public void destroy() {
-			unitManager.removeUnitManagerListener(this);
+			unitManager.removeUnitManagerListener(UnitType.SETTLEMENT, this);
 			Collection<Settlement> settlements = unitManager.getSettlements();
 			List<Settlement> settlementList = new ArrayList<>(settlements);
 			Iterator<Settlement> i = settlementList.iterator();

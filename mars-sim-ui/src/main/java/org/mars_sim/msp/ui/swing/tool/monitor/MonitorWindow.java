@@ -16,8 +16,6 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -39,6 +37,9 @@ import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.UnitManagerEventType;
+import org.mars_sim.msp.core.UnitManagerListener;
+import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -127,6 +128,8 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	private List<Settlement> settlementList;
 
 	private UnitManager unitManager;
+
+	private UnitManagerListener umListener;
 
 	/**
 	 * Constructor.
@@ -370,48 +373,30 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		settlementComboBox = new WebComboBox(StyleId.comboboxHover, getSettlements());
 		settlementComboBox.setWidePopup(true);
 		settlementComboBox.setSize(getNameLength() * 12, 30);
-//		settlementComboBox.setBackground(new Color(205, 133, 63, 128));// (51, 35, 0, 128) is dull gold color
 		settlementComboBox.setOpaque(false);
 		settlementComboBox.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 16));
 		settlementComboBox.setForeground(Color.ORANGE.darker());
 		settlementComboBox.setToolTipText(Msg.getString("SettlementWindow.tooltip.selectSettlement")); //$NON-NLS-1$
 		settlementComboBox.setRenderer(new PromptComboBoxRenderer());
 
-//		int size = settlementComboBox.getModel().getSize();
-//		if (size > 1) {
-//			// Gets the selected settlement from SettlementMapPanel
-//			Settlement s = desktop.getSettlementMapPanel().getSettlement();
-//			// Selects the settlement in the combo box
-//			settlementComboBox.setSelectedItem(s);
-//			// Change to the selected settlement in SettlementMapPanel
-//			if (s != null)
-//				setSettlement(s);
-//		}
-//
-//		else if (size == 1) {
-//			// Selects the first settlement
-//			settlementComboBox.setSelectedIndex(0);
-//			// Gets the settlement
-//			Settlement s = (Settlement) settlementComboBox.getSelectedItem();
-//			// Change to the selected settlement in SettlementMapPanel
-//			setSettlement(s);
-//		}
-
 		// Set the item listener only after the setup is done
-		settlementComboBox.addItemListener(new ItemListener() {
-			// Note: need to ensure unitUpdate() would update combobox when a new settlement is added
-			@Override
-			// Invoked when an item has been selected or deselected by the user.
-			public void itemStateChanged(ItemEvent event) {
-				Settlement newSettlement = (Settlement) event.getItem();
-				// Change to the selected settlement in SettlementMapPanel
-				if (newSettlement != selectedSettlement) {
-					setSettlement(newSettlement);
-					// Need to update the existing tab
-					updateTab();
-				}
+		settlementComboBox.addItemListener(event -> {
+			Settlement newSettlement = (Settlement) event.getItem();
+			// Change to the selected settlement in SettlementMapPanel
+			if (newSettlement != selectedSettlement) {
+				setSettlement(newSettlement);
+				// Need to update the existing tab
+				updateTab();
 			}
 		});
+
+		// Listen for new Settlements
+		umListener = event -> {
+			if (event.getEventType() == UnitManagerEventType.ADD_UNIT) {
+				settlementComboBox.addItem(event.getUnit());
+			}
+		};
+		unitManager.addUnitManagerListener(UnitType.SETTLEMENT, umListener);
 	}
 
 	/**
@@ -992,21 +977,9 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	 */
 	@Override
 	public void destroy() {
-		tabsSection = null;
-		rowCount = null;
-		eventsTab = null;
-		buttonPie = null;
-		buttonBar = null;
-		buttonRemoveTab = null;
-		buttonMap = null;
-		buttonDetails = null;
-		buttonMissions = null;
-		buttonFilter = null;
-		buttonProps = null;
-		desktop = null;
-		statusPanel = null;
-		table = null;
-		rowTable = null;
+		super.destroy();
+
+		unitManager.removeUnitManagerListener(UnitType.SETTLEMENT, umListener);
 	}
 
 	class PromptComboBoxRenderer extends DefaultListCellRenderer {

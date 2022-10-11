@@ -8,9 +8,6 @@ package org.mars_sim.msp.ui.swing.tool.monitor;
 
 import javax.swing.table.TableColumnModel;
 
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.UnitManagerEvent;
-import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.NumberRenderer;
@@ -20,7 +17,7 @@ import org.mars_sim.msp.ui.swing.tool.NumberRenderer;
  * the Monitor Window.
  */
 @SuppressWarnings("serial")
-public class FoodInventoryTab extends TableTab implements UnitManagerListener {
+public class FoodInventoryTab extends TableTab {
 	
 	/** The minimum 2 of decimal places to be displayed. */
 	private static final int TWO_DIGITS = 2;
@@ -37,8 +34,6 @@ public class FoodInventoryTab extends TableTab implements UnitManagerListener {
 		// Use TableTab constructor
 		super(window, new FoodInventoryTableModel(selectedSettlement), true, false, MonitorWindow.FOOD_ICON);
 	
-		// Override default cell renderer for format double values.
-//		table.setDefaultRenderer(Double.class, new NumberCellRenderer(2));
 
 		TableColumnModel m = table.getColumnModel();
 		int init = FoodInventoryTableModel.NUM_INITIAL_COLUMNS;
@@ -56,12 +51,5 @@ public class FoodInventoryTab extends TableTab implements UnitManagerListener {
 
 			}
 		}
-		
-		// Add as unit manager listener.
-		Simulation.instance().getUnitManager().addUnitManagerListener(this);
-	}
-
-	@Override
-	public void unitManagerUpdate(UnitManagerEvent event) {
 	}
 }

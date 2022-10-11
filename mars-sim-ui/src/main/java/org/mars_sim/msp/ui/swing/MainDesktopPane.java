@@ -41,6 +41,7 @@ import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitManagerEvent;
 import org.mars_sim.msp.core.UnitManagerEventType;
 import org.mars_sim.msp.core.UnitManagerListener;
+import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.ClockListener;
@@ -290,7 +291,7 @@ public class MainDesktopPane extends JDesktopPane
 	public void prepareListeners() {
 		// Attach UnitManagerListener to desktop
 		UnitManager unitManager = sim.getUnitManager();
-		unitManager.addUnitManagerListener(this);
+		unitManager.addUnitManagerListener(UnitType.SETTLEMENT, this);
 
 		Collection<Settlement> settlements = unitManager.getSettlements();
 

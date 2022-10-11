@@ -18,15 +18,10 @@ import javax.swing.SwingUtilities;
 
 import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEvent;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitListener;
-import org.mars_sim.msp.core.UnitManager;
-import org.mars_sim.msp.core.UnitManagerEvent;
-import org.mars_sim.msp.core.UnitManagerEventType;
-import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -143,8 +138,6 @@ public class PersonTableModel extends UnitTableModel {
 		ALL_PEOPLE, VEHICLE_CREW, SETTLEMENT_INHABITANTS, SETTLEMENT_ALL_ASSOCIATED_PEOPLE, MISSION_PEOPLE;
 	}
 
-	private static UnitManager unitManager = Simulation.instance().getUnitManager();
-
 	private ValidSourceType sourceType;
 
 	private Crewable vehicle;
@@ -154,7 +147,6 @@ public class PersonTableModel extends UnitTableModel {
 	private UnitListener crewListener;
 	private UnitListener settlementListener;
 	private MissionListener missionListener;
-	private UnitManagerListener unitManagerListener;
 
 	/**
 	 * Map for caching a person's hunger, fatigue, stress and performance status
@@ -169,7 +161,7 @@ public class PersonTableModel extends UnitTableModel {
 	 * @param unitManager Manager containing Person objects.
 	 */
 	public PersonTableModel(MainDesktopPane desktop) throws Exception {
-		super(Msg.getString("PersonTableModel.tabName"), //$NON-NLS-1$
+		super(UnitType.PERSON, Msg.getString("PersonTableModel.tabName"), //$NON-NLS-1$
 				"PersonTableModel.countingPeople", //$NON-NLS-1$
 				columnNames, columnTypes);
 
@@ -180,9 +172,7 @@ public class PersonTableModel extends UnitTableModel {
 		else
 			setSource(unitManager.getPeople());
 
-		unitManagerListener = new LocalUnitManagerListener();
-		unitManager.addUnitManagerListener(unitManagerListener);
-
+		listenForUnits();
 	}
 
 	/**
@@ -193,7 +183,7 @@ public class PersonTableModel extends UnitTableModel {
 	 */
 	public PersonTableModel(Crewable vehicle) throws Exception {
 		
-		super(Msg.getString("PersonTableModel.nameVehicle", //$NON-NLS-1$
+		super(UnitType.PERSON, Msg.getString("PersonTableModel.nameVehicle", //$NON-NLS-1$
 				((Unit)vehicle).getName()), 
 				"PersonTableModel.countingPeople", //$NON-NLS-1$
 				columnNames, 
@@ -215,7 +205,7 @@ public class PersonTableModel extends UnitTableModel {
 	 *                      displayed?
 	 */
 	public PersonTableModel(Settlement settlement, boolean allAssociated) throws Exception {
-		super ((allAssociated ? Msg.getString("PersonTableModel.nameAllCitizens") //$NON-NLS-1$
+		super (UnitType.PERSON, (allAssociated ? Msg.getString("PersonTableModel.nameAllCitizens") //$NON-NLS-1$
 				 : Msg.getString("PersonTableModel.nameIndoor", //$NON-NLS-1$
 					settlement.getName())
 				),
@@ -244,7 +234,7 @@ public class PersonTableModel extends UnitTableModel {
 	 * @param mission Monitored mission Person objects.
 	 */
 	public PersonTableModel(Mission mission) throws Exception {
-		super(Msg.getString("PersonTableModel.nameMission", //$NON-NLS-1$
+		super(UnitType.PERSON, Msg.getString("PersonTableModel.nameMission", //$NON-NLS-1$
 				mission.getName()), "PersonTableModel.countingMissionMembers", //$NON-NLS-1$
 				columnNames, columnTypes);
 
@@ -334,6 +324,7 @@ public class PersonTableModel extends UnitTableModel {
 	 *
 	 * @param event the unit event.
 	 */
+	@Override
 	public void unitUpdate(UnitEvent event) {
 		SwingUtilities.invokeLater(new PersonTableUpdater(event, this));
 	}
@@ -344,6 +335,7 @@ public class PersonTableModel extends UnitTableModel {
 	 * @param rowIndex    Row index of the cell.
 	 * @param columnIndex Column index of the cell.
 	 */
+	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		Object result = null;
 
@@ -483,7 +475,7 @@ public class PersonTableModel extends UnitTableModel {
 			case SHIFT: {
 				// If person is dead, disable it.
 				if (person.getPhysicalCondition().isDead())
-					result = ShiftType.OFF; // person.getPhysicalCondition().getDeathDetails().getJob();
+					result = ShiftType.OFF; 
 				else {
 					ShiftType shift = person.getTaskSchedule().getShiftType();
                     result = shift;
@@ -527,11 +519,7 @@ public class PersonTableModel extends UnitTableModel {
 	public void destroy() {
 		super.destroy();
 
-		if (sourceType == ValidSourceType.ALL_PEOPLE) {
-			UnitManager unitManager = Simulation.instance().getUnitManager();
-			unitManager.removeUnitManagerListener(unitManagerListener);
-			unitManagerListener = null;
-		} else if (sourceType == ValidSourceType.VEHICLE_CREW) {
+		 if (sourceType == ValidSourceType.VEHICLE_CREW) {
 			((Unit) vehicle).removeUnitListener(crewListener);
 			crewListener = null;
 			vehicle = null;
@@ -603,7 +591,6 @@ public class PersonTableModel extends UnitTableModel {
 					Unit unit = (Unit) event.getTarget();
 					String personName = unit.getName();
 					String announcement = personName + " has just passed away. ";
-					// desktop.openMarqueeBanner(announcement);
 					logger.info(announcement);
 				}
 			} else if (eventType == UnitEventType.ILLNESS_EVENT) {
@@ -611,8 +598,6 @@ public class PersonTableModel extends UnitTableModel {
 					Unit unit = (Unit) event.getTarget();
 					String personName = unit.getName();
 					String announcement = personName + " got sick.";
-					// desktop.disposeMarqueeBanner();
-					// desktop.openMarqueeBanner(announcement);
 					logger.info(announcement);
 				}
 			} else if (eventType == UnitEventType.JOB_EVENT) {
@@ -620,8 +605,7 @@ public class PersonTableModel extends UnitTableModel {
 					Unit unit = (Unit) event.getTarget();
 					String personName = unit.getName();
 					String announcement = personName + " just got a new job.";
-					// desktop.disposeMarqueeBanner();
-					// desktop.openMarqueeBanner(announcement);
+
 					logger.info(announcement);
 				}
 			} else if (eventType == UnitEventType.ROLE_EVENT) {
@@ -777,30 +761,6 @@ public class PersonTableModel extends UnitTableModel {
 						addUnit(unit);
 				}
 				else if (eventType == MissionEventType.REMOVE_MEMBER_EVENT) {
-					if (containsUnit(unit))
-						removeUnit(unit);
-				}
-			}
-		}
-	}
-
-	/**
-	 * UnitManagerListener inner class.
-	 */
-	private class LocalUnitManagerListener implements UnitManagerListener {
-		/**
-		 * Catch unit manager update event.
-		 *
-		 * @param event the unit event.
-		 */
-		public void unitManagerUpdate(UnitManagerEvent event) {
-			Unit unit = event.getUnit();
-			UnitManagerEventType eventType = event.getEventType();
-			if (unit != null && unit.getUnitType() == UnitType.PERSON) {
-				if (eventType == UnitManagerEventType.ADD_UNIT) {
-					if (!containsUnit(unit))
-						addUnit(unit);
-				} else if (eventType == UnitManagerEventType.REMOVE_UNIT) {
 					if (containsUnit(unit))
 						removeUnit(unit);
 				}

@@ -24,9 +24,6 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEvent;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitManager;
-import org.mars_sim.msp.core.UnitManagerEvent;
-import org.mars_sim.msp.core.UnitManagerEventType;
-import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -155,7 +152,6 @@ public class VehicleTableModel extends UnitTableModel {
 	// Data members
 	private int mapSizeCache = 0;
 
-	private UnitManagerListener unitManagerListener;
 	private transient LocalMissionManagerListener missionManagerListener;
 
 	private Map<Vehicle, Map<Integer, Double>> resourceCache;
@@ -169,7 +165,7 @@ public class VehicleTableModel extends UnitTableModel {
 	 * @param unitManager Proxy manager contains displayable Vehicles.
 	 */
 	public VehicleTableModel() throws Exception {
-		super(
+		super(UnitType.VEHICLE,
 			Msg.getString("VehicleTableModel.tabName"),
 			"VehicleTableModel.countingVehicles", //$NON-NLS-1$
 			columnNames,
@@ -183,11 +179,12 @@ public class VehicleTableModel extends UnitTableModel {
 		else
 			setSource(unitManager.getVehicles());
 
-		init();
+		listenForUnits();
+		missionManagerListener = new LocalMissionManagerListener();
 	}
 
 	public VehicleTableModel(Settlement settlement) throws Exception {
-		super(
+		super(UnitType.VEHICLE,
 			Msg.getString("VehicleTableModel.tabName"),
 			"VehicleTableModel.countingVehicles", //$NON-NLS-1$
 			columnNames,
@@ -195,14 +192,6 @@ public class VehicleTableModel extends UnitTableModel {
 		);
 
 		setSource(settlement.getAllAssociatedVehicles());
-
-		init();
-	}
-
-	public void init() {
-
-		unitManagerListener = new LocalUnitManagerListener();
-		unitManager.addUnitManagerListener(unitManagerListener);
 
 		missionManagerListener = new LocalMissionManagerListener();
 	}
@@ -213,6 +202,7 @@ public class VehicleTableModel extends UnitTableModel {
 	 * @param rowIndex Row index of the cell.
 	 * @param columnIndex Column index of the cell.
 	 */
+	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		Object result = null;
 
@@ -406,6 +396,7 @@ public class VehicleTableModel extends UnitTableModel {
 	 * 
 	 * @param event the unit event.
 	 */
+	@Override
 	public void unitUpdate(UnitEvent event) {
 		Unit unit = (Unit) event.getSource();
 
@@ -526,6 +517,7 @@ public class VehicleTableModel extends UnitTableModel {
 	 * 
 	 * @param newUnit Unit to add to the model.
 	 */
+	@Override
 	protected void addUnit(Unit newUnit) {
 		if (resourceCache == null) resourceCache = new HashMap<>();
 		if (!resourceCache.containsKey(newUnit)) {
@@ -557,6 +549,7 @@ public class VehicleTableModel extends UnitTableModel {
 	 * 
 	 * @param oldUnit Unit to remove from the model.
 	 */
+	@Override
 	protected void removeUnit(Unit oldUnit) {
 		if (resourceCache == null) resourceCache = new HashMap<>();
 		if (resourceCache.containsKey(oldUnit)) {
@@ -606,10 +599,6 @@ public class VehicleTableModel extends UnitTableModel {
 	public void destroy() {
 		super.destroy();
 
-		unitManager.removeUnitManagerListener(unitManagerListener);
-		unitManager = null;
-		unitManagerListener = null;
-
 		if (missionManagerListener != null) {
 			missionManagerListener.destroy();
 		}
@@ -621,40 +610,6 @@ public class VehicleTableModel extends UnitTableModel {
 		resourceCache = null;
 	}
 
-	/**
-	 * UnitManagerListener inner class.
-	 */
-	private class LocalUnitManagerListener implements UnitManagerListener {
-
-		/**
-		 * Catch unit manager update event.
-		 * @param event the unit event.
-		 */
-		public void unitManagerUpdate(UnitManagerEvent event) {
-			Unit unit = event.getUnit();
-			UnitManagerEventType eventType = event.getEventType();
-
-			if (unit.getUnitType() == UnitType.VEHICLE) {
-				boolean change = false;
-				if (mode == GameMode.COMMAND) {
-					if (unit.getAssociatedSettlement().getName().equalsIgnoreCase(commanderSettlement.getName()))
-						change = true;
-				}
-				else {
-					change = true;
-				}
-
-				if (change) {
-					if (eventType == UnitManagerEventType.ADD_UNIT) {
-						if (!containsUnit(unit)) addUnit(unit);
-					}
-					else if (eventType == UnitManagerEventType.REMOVE_UNIT) {
-						if (containsUnit(unit)) removeUnit(unit);
-					}
-				}
-			}
-		}
-	}
 
 	private class LocalMissionManagerListener implements MissionManagerListener {
 

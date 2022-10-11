@@ -8,9 +8,6 @@ package org.mars_sim.msp.ui.swing.tool.monitor;
 
 import javax.swing.table.TableColumnModel;
 
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.UnitManagerEvent;
-import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.NumberRenderer;
@@ -20,7 +17,7 @@ import org.mars_sim.msp.ui.swing.tool.NumberRenderer;
  * within the Monitor Window.
  */
 @SuppressWarnings("serial")
-public class TradeTab extends TableTab implements UnitManagerListener {
+public class TradeTab extends TableTab {
 
 	/** The minimum 2 of decimal places to be displayed. */
 	private static final int TWO_DIGITS = 2;
@@ -57,12 +54,5 @@ public class TradeTab extends TableTab implements UnitManagerListener {
 					m.getColumn(i).setCellRenderer(new NumberCellRenderer(TWO_DIGITS, true));
 			}
 		}
-
-		// Add as unit manager listener.
-		Simulation.instance().getUnitManager().addUnitManagerListener(this);
-	}
-
-	@Override
-	public void unitManagerUpdate(UnitManagerEvent event) {
 	}
 }

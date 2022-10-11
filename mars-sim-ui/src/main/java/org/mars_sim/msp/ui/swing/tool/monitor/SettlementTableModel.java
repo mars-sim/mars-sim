@@ -22,9 +22,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEvent;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitManager;
-import org.mars_sim.msp.core.UnitManagerEvent;
-import org.mars_sim.msp.core.UnitManagerEventType;
-import org.mars_sim.msp.core.UnitManagerListener;
+
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.person.Person;
@@ -162,9 +160,6 @@ public class SettlementTableModel extends UnitTableModel {
 		df.setMinimumIntegerDigits(1);	
 	}
 
-	// Data members
-	private UnitManagerListener unitManagerListener;
-
 	private Map<Unit, Map<Integer, Double>> resourceCache;
 
 	/**
@@ -172,7 +167,7 @@ public class SettlementTableModel extends UnitTableModel {
 	 * simulation.
 	 */
 	public SettlementTableModel() throws Exception {
-		super("Mars", "SettlementTableModel.countingSettlements",
+		super(UnitType.SETTLEMENT, "Mars", "SettlementTableModel.countingSettlements",
 				columnNames, columnTypes);
 
 //		if (mode == GameMode.COMMAND)
@@ -180,8 +175,7 @@ public class SettlementTableModel extends UnitTableModel {
 //		else
 			setSource(unitManager.getSettlements());
 			
-		unitManagerListener = new LocalUnitManagerListener();
-		unitManager.addUnitManagerListener(unitManagerListener);
+		listenForUnits();
 	}
 
 	/**
@@ -191,14 +185,13 @@ public class SettlementTableModel extends UnitTableModel {
 	 * @param settlement
 	 */
 	public SettlementTableModel(Settlement settlement) throws Exception {
-		super(Msg.getString("SettlementTableModel.tabName"), //$NON-NLS-2$
+		super(UnitType.SETTLEMENT, Msg.getString("SettlementTableModel.tabName"), //$NON-NLS-2$
 				"SettlementTableModel.countingSettlements", 
 				columnNames, columnTypes);
 
 		addUnit(settlement);
 
-		unitManagerListener = new LocalUnitManagerListener();
-		unitManager.addUnitManagerListener(unitManagerListener);
+		listenForUnits();
 	}
 
 	/**
@@ -207,6 +200,7 @@ public class SettlementTableModel extends UnitTableModel {
 	 * @param rowIndex    Row index of the cell.
 	 * @param columnIndex Column index of the cell.
 	 */
+	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		Object result = null;
 
@@ -382,6 +376,7 @@ public class SettlementTableModel extends UnitTableModel {
 	 * 
 	 * @param event the unit event.
 	 */
+	@Override
 	public void unitUpdate(UnitEvent event) {
 		Unit unit = (Unit) event.getSource();
 		int unitIndex = getUnitIndex(unit);
@@ -588,10 +583,9 @@ public class SettlementTableModel extends UnitTableModel {
 	/**
 	 * Prepares the model for deletion.
 	 */
+	@Override
 	public void destroy() {
 		super.destroy();
-		unitManager.removeUnitManagerListener(unitManagerListener);
-		unitManagerListener = null;
 		resourceCache = null;
 	}
 
@@ -607,30 +601,6 @@ public class SettlementTableModel extends UnitTableModel {
 
 		public void run() {
 			fireTableCellUpdated(row, column);
-		}
-	}
-
-	/**
-	 * UnitManagerListener inner class.
-	 */
-	private class LocalUnitManagerListener implements UnitManagerListener {
-
-		/**
-		 * Catch unit manager update event.
-		 *
-		 * @param event the unit event.
-		 */
-		public void unitManagerUpdate(UnitManagerEvent event) {
-			Unit unit = event.getUnit();
-			UnitManagerEventType eventType = event.getEventType();
-			if (unit.getUnitType() == UnitType.SETTLEMENT) {
-				if (eventType == UnitManagerEventType.ADD_UNIT
-					&& !containsUnit(unit)) {
-						addUnit(unit);
-				} else if (eventType == UnitManagerEventType.REMOVE_UNIT
-					&& containsUnit(unit))
-						removeUnit(unit);
-			}
 		}
 	}
 }

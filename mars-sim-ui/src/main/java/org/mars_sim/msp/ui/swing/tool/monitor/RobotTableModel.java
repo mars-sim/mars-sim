@@ -17,15 +17,10 @@ import javax.swing.SwingUtilities;
 
 import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEvent;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitListener;
-import org.mars_sim.msp.core.UnitManager;
-import org.mars_sim.msp.core.UnitManagerEvent;
-import org.mars_sim.msp.core.UnitManagerEventType;
-import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
@@ -113,8 +108,6 @@ public class RobotTableModel extends UnitTableModel {
 		ALL_ROBOTS, VEHICLE_ROBOTS, SETTLEMENT_ROBOTS, SETTLEMENT_ALL_ASSOCIATED_ROBOTS, MISSION_ROBOTS;
 	}
 
-	private static UnitManager unitManager = Simulation.instance().getUnitManager();
-
 	/** The type of source for the people table. */
 	private ValidSourceType sourceType;
 
@@ -126,7 +119,6 @@ public class RobotTableModel extends UnitTableModel {
 	private UnitListener crewListener;
 	private UnitListener settlementListener;
 	private MissionListener missionListener;
-	private UnitManagerListener unitManagerListener;
 
 	/**
 	 * constructor. Constructs a RobotTableModel object that displays all people in
@@ -135,7 +127,7 @@ public class RobotTableModel extends UnitTableModel {
 	 * @param unitManager Manager containing Robot objects.
 	 */
 	public RobotTableModel(MainDesktopPane desktop) throws Exception {
-		super(Msg.getString("RobotTableModel.tabName"), //$NON-NLS-1$
+		super(UnitType.ROBOT, Msg.getString("RobotTableModel.tabName"), //$NON-NLS-1$
 				"RobotTableModel.countingRobots", //$NON-NLS-1$
 				columnNames, columnTypes);
 
@@ -146,9 +138,7 @@ public class RobotTableModel extends UnitTableModel {
 		else
 			setSource(unitManager.getRobots());
 
-		unitManagerListener = new LocalUnitManagerListener();
-		unitManager.addUnitManagerListener(unitManagerListener);
-
+		listenForUnits();
 	}
 
 	/**
@@ -158,7 +148,7 @@ public class RobotTableModel extends UnitTableModel {
 	 * @param vehicle Monitored vehicle Robot objects.
 	 */
 	public RobotTableModel(Crewable vehicle) throws Exception {
-		super(Msg.getString("RobotTableModel.nameRobots", //$NON-NLS-1$
+		super(UnitType.ROBOT, Msg.getString("RobotTableModel.nameRobots", //$NON-NLS-1$
 				((Unit) vehicle).getName()), "RobotTableModel.countingRobots", //$NON-NLS-1$
 				columnNames, 
 				columnTypes);
@@ -179,8 +169,8 @@ public class RobotTableModel extends UnitTableModel {
 	 *                      displayed?
 	 */
 	public RobotTableModel(Settlement settlement, boolean allAssociated) throws Exception {
-		super ((allAssociated ? Msg.getString("RobotTableModel.nameAssociatedRobots") //$NON-NLS-1$
-				: Msg.getString("RobotTableModel.nameRobots", //$NON-NLS-1$
+		super (UnitType.ROBOT, (allAssociated ? Msg.getString("RobotTableModel.nameAssociatedRobots") //$NON-NLS-1$
+			 	: Msg.getString("RobotTableModel.nameRobots", //$NON-NLS-1$
 					settlement.getName())
 				),
 				(allAssociated ? "RobotTableModel.countingRobots" : //$NON-NLS-1$
@@ -208,7 +198,7 @@ public class RobotTableModel extends UnitTableModel {
 	 * @throws Exception
 	 */
 	public RobotTableModel(Settlement settlement) throws Exception {
-		super(Msg.getString("RobotTableModel.nameAssociatedRobots", //$NON-NLS-1$
+		super(UnitType.ROBOT, Msg.getString("RobotTableModel.nameAssociatedRobots", //$NON-NLS-1$
 				settlement.getName()),
 				"RobotTableModel.countingRobots", //$NON-NLS-1$
 				columnNames, columnTypes);
@@ -227,7 +217,7 @@ public class RobotTableModel extends UnitTableModel {
 	 * @param mission Monitored mission Robot objects.
 	 */
 	public RobotTableModel(Mission mission) throws Exception {
-		super(Msg.getString("RobotTableModel.nameRobots", //$NON-NLS-1$
+		super(UnitType.ROBOT, Msg.getString("RobotTableModel.nameRobots", //$NON-NLS-1$
 				mission.getName()), "RobotTableModel.countingWorkers", //$NON-NLS-1$
 				columnNames, columnTypes);
 
@@ -394,11 +384,7 @@ public class RobotTableModel extends UnitTableModel {
 	public void destroy() {
 		super.destroy();
 
-		if (sourceType == ValidSourceType.ALL_ROBOTS) {
-			UnitManager unitManager = Simulation.instance().getUnitManager();
-			unitManager.removeUnitManagerListener(unitManagerListener);
-			unitManagerListener = null;
-		} else if (sourceType == ValidSourceType.VEHICLE_ROBOTS) {
+		if (sourceType == ValidSourceType.VEHICLE_ROBOTS) {
 			((Unit) vehicle).removeUnitListener(crewListener);
 			crewListener = null;
 			vehicle = null;
@@ -571,31 +557,6 @@ public class RobotTableModel extends UnitTableModel {
 						addUnit(unit);
 				}
 				else if (eventType == MissionEventType.REMOVE_MEMBER_EVENT) {
-					if (containsUnit(unit))
-						removeUnit(unit);
-				}
-			}
-		}
-	}
-
-	/**
-	 * UnitManagerListener inner class.
-	 */
-	private class LocalUnitManagerListener implements UnitManagerListener {
-
-		/**
-		 * Catch unit manager update event.
-		 *
-		 * @param event the unit event.
-		 */
-		public void unitManagerUpdate(UnitManagerEvent event) {
-			Unit unit = event.getUnit();
-			UnitManagerEventType eventType = event.getEventType();
-			if (unit != null && unit.getUnitType() == UnitType.ROBOT) {
-				if (eventType == UnitManagerEventType.ADD_UNIT) {
-					if (!containsUnit(unit))
-						addUnit(unit);
-				} else if (eventType == UnitManagerEventType.REMOVE_UNIT) {
 					if (containsUnit(unit))
 						removeUnit(unit);
 				}

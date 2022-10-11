@@ -100,7 +100,7 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 		while (i.hasNext()) i.next().addUnitListener(this);
 
 		// Add as unit manager listener.
-		unitManager.addUnitManagerListener(this);
+		unitManager.addUnitManagerListener(UnitType.SETTLEMENT, this);
 	}
 	
 	/**
@@ -387,7 +387,7 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 		Iterator<Settlement> i = settlements.iterator();
 		while (i.hasNext()) i.next().removeUnitListener(this);
 		settlements = null;
-		unitManager.removeUnitManagerListener(this);
+		unitManager.removeUnitManagerListener(UnitType.SETTLEMENT, this);
 		unitManager = null;		
 		goodsList.clear();
 		goodsList = null;

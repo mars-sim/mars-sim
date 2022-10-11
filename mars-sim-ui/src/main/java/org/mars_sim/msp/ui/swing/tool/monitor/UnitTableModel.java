@@ -19,6 +19,9 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitListener;
 import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.UnitManagerEvent;
+import org.mars_sim.msp.core.UnitManagerListener;
+import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.GameManager.GameMode;
 
 /**
@@ -27,6 +30,35 @@ import org.mars_sim.msp.core.GameManager.GameMode;
  */
 @SuppressWarnings("serial")
 abstract public class UnitTableModel extends AbstractTableModel implements MonitorModel, UnitListener {
+
+	/**
+	 * UnitManagerListener inner class.
+	 */
+	private class LocalUnitManagerListener implements UnitManagerListener {
+
+		/**
+		 * Catches unit manager update event.
+		 *
+		 * @param event the unit event.
+		 */
+		public void unitManagerUpdate(UnitManagerEvent event) {
+			Unit unit = event.getUnit();
+
+			switch(event.getEventType()) {
+				case ADD_UNIT:
+					if (!containsUnit(unit)) {
+						addUnit(unit);
+					}
+					break;
+
+				case REMOVE_UNIT:
+					if (containsUnit(unit)) {
+						removeUnit(unit);
+					}
+					break;
+			}
+		}
+	}
 
 	// Data members
 	/** Should it be refreshed to get the number of units. */
@@ -46,6 +78,10 @@ abstract public class UnitTableModel extends AbstractTableModel implements Monit
 	/** Collection of units. */
 	private Collection<Unit> units;
 
+	private UnitManagerListener umListener;
+
+	private UnitType unitType;
+
 	protected static GameMode mode = GameManager.getGameMode();
 	
 	protected static UnitManager unitManager = Simulation.instance().getUnitManager();
@@ -53,6 +89,7 @@ abstract public class UnitTableModel extends AbstractTableModel implements Monit
 	/**
 	 * Constructor.
 	 *
+	 * @param unitType		 Type of Unit being displayed
 	 * @param name           Name of the model.
 	 * @param countingMsgKey {@link String} key for calling the internationalized
 	 *                       text that counts the number of units. should be a valid
@@ -61,14 +98,20 @@ abstract public class UnitTableModel extends AbstractTableModel implements Monit
 	 * @param names          Names of the columns displayed.
 	 * @param types          The Classes of the individual columns.
 	 */
-	protected UnitTableModel(String name, String countingMsgKey, String names[], Class<?> types[]) throws Exception {
+	protected UnitTableModel(UnitType unitType, String name, String countingMsgKey, String names[], Class<?> types[]) throws Exception {
 		// Initialize data members
+		this.unitType = unitType;
 		this.name = name;
 		this.countingMsgKey = countingMsgKey;
-		this.units = new ConcurrentLinkedQueue<Unit>();
+		this.units = new ConcurrentLinkedQueue<>();
 		// getRowCount();
 		this.columnNames = names;
 		this.columnTypes = types;
+	}
+
+	protected void listenForUnits() {
+		umListener = new LocalUnitManagerListener();
+		unitManager.addUnitManagerListener(unitType, umListener);
 	}
 
 	/**
@@ -346,6 +389,9 @@ abstract public class UnitTableModel extends AbstractTableModel implements Monit
 			clear();
 		}
 		units = null;
+		if (umListener != null) {
+			unitManager.removeUnitManagerListener(unitType, umListener);
+		}
 	}
 	
 	/**

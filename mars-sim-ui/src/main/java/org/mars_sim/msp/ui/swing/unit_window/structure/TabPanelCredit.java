@@ -50,6 +50,8 @@ extends TabPanel {
 
 	private JTable creditTable;
 
+	private CreditTableModel creditTableModel;
+
 	/**
 	 * Constructor.
 	 * @param unit {@link Unit} the unit to display.
@@ -77,7 +79,7 @@ extends TabPanel {
 		content.add(creditScrollPanel);
 
 		// Prepare credit table model.
-		CreditTableModel creditTableModel = new CreditTableModel(settlement);
+		creditTableModel = new CreditTableModel(settlement);
 
 		// Prepare credit table.
 		creditTable = new ZebraJTable(creditTableModel);
@@ -92,7 +94,6 @@ extends TabPanel {
 
 		// Resizable automatically when its Panel resizes
 		creditTable.setPreferredScrollableViewportSize(new Dimension(225, -1));
-//		creditTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 
 		// Add sorting
 		creditTable.setAutoCreateRowSorter(true);
@@ -151,7 +152,7 @@ extends TabPanel {
 				}
 			}
 
-			unitManager.addUnitManagerListener(this);
+			unitManager.addUnitManagerListener(UnitType.SETTLEMENT, this);
 		}
 
 		@Override
@@ -254,6 +255,10 @@ extends TabPanel {
 				);
 			}
 		}
+
+		public void destroy() {
+			unitManager.removeUnitManagerListener(UnitType.SETTLEMENT, this);
+		}
 	}
 
 	/**
@@ -261,6 +266,8 @@ extends TabPanel {
 	 */
 	@Override
 	public void destroy() {
-		creditTable = null;
+		super.destroy();
+
+		creditTableModel.destroy();
 	}
 }

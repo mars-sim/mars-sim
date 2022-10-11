@@ -18,7 +18,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.DefaultListModel;
@@ -31,8 +30,6 @@ import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitManager;
-import org.mars_sim.msp.core.UnitManagerEvent;
-import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -180,7 +177,9 @@ extends ToolWindow {
 		// Create select text field
 		selectTextField = new WebTextField();
 		selectTextField.getDocument().addDocumentListener(new DocumentListener() {
-			public void changedUpdate(DocumentEvent event) {}
+			public void changedUpdate(DocumentEvent event) {
+				// Not needed
+			}
 			public void insertUpdate(DocumentEvent event) {
 				searchTextChange();
 				searchButton.setEnabled(true);
@@ -194,9 +193,10 @@ extends ToolWindow {
 
 		// Create unit list
 		unitListModel = new UnitListModel(UnitCategory.PEOPLE);
-		unitList = new JList<Unit>(unitListModel);
+		unitList = new JList<>(unitListModel);
 		unitList.setSelectedIndex(0);
 		unitList.addMouseListener(new MouseAdapter() {
+			@Override
 			public void mouseReleased(MouseEvent event) {
 				if (event.getClickCount() == 2) search();
 				else if (!lockUnitList) {
@@ -263,7 +263,6 @@ extends ToolWindow {
 	private void search() {
 		Collection<? extends Unit> units = null;
 		String category = (String) searchForSelect.getSelectedItem();
-//		UnitManager unitManager = Simulation.instance().getUnitManager();
 		if (category.equals(UnitCategory.PEOPLE.getName())) {
 			Collection<Person> people = unitManager.getPeople();
 			units = CollectionUtils.sortByName(people);
@@ -360,8 +359,6 @@ extends ToolWindow {
 	}
 	
 	public void showPersonRobot(Unit u) {
-//		Settlement s = u.findSettlementVicinity();
-
 		// person just happens to step outside the settlement at its
 		// vicinity temporarily
 
@@ -380,7 +377,7 @@ extends ToolWindow {
 				mapPanel.displayPerson(p);
 		} 
 		
-		else { //if (u instanceof Robot) {
+		else { 
 			Robot r = (Robot) u;
 			
 			double xLoc = r.getPosition().getX();
@@ -421,7 +418,7 @@ extends ToolWindow {
 			int fitIndex = 0;
 			boolean goodFit = false;
 			for (int x = unitListModel.size() - 1; x > -1; x--) {
-				Unit unit = (Unit) unitListModel.elementAt(x);
+				Unit unit = unitListModel.elementAt(x);
 				String unitString = unit.getName().toLowerCase();
 				if (unitString.startsWith(searchText)) {
 					fitIndex = x;
@@ -441,11 +438,10 @@ extends ToolWindow {
 	}
 
 	@Override
-	public void destroy() {} {
-
+	public void destroy() {
+		super.destroy();
+		
 		if (unitListModel != null) {
-//			UnitManager manager = Simulation.instance().getUnitManager();
-			unitManager.removeUnitManagerListener(unitListModel);
 			unitListModel.clear();
 			unitListModel = null;
 		}
@@ -455,8 +451,7 @@ extends ToolWindow {
 	 * Inner class list model for categorized units.
 	 */
 	private class UnitListModel
-	extends DefaultListModel<Unit>
-	implements UnitManagerListener {
+	extends DefaultListModel<Unit> {
 
 		private static final long serialVersionUID = 1L;
 		// Data members.
@@ -475,9 +470,6 @@ extends ToolWindow {
 			this.category = initialCategory;
 
 			updateList();
-
-			// Add model as unit manager listener.
-			unitManager.addUnitManagerListener(this);
 		}
 
 		/**
@@ -502,21 +494,8 @@ extends ToolWindow {
 			Collection<? extends Unit> units = null;
 
 			if (category.equals(UnitCategory.PEOPLE)) {
-
-				if (unitManager.getTotalNumPeople() == 0) {
-					Thread.yield();
-					try {
-						Thread.sleep(2L);
-					} catch (InterruptedException e) {
-						logger.log(Level.SEVERE, "Problems in sleep : " + e.getMessage());
-						// Restore interrupted state
-					    Thread.currentThread().interrupt();
-					}
-				}
-				else {
-					Collection<Person> people = unitManager.getPeople();
-					units = CollectionUtils.sortByName(people);
-				}
+				Collection<Person> people = unitManager.getPeople();
+				units = CollectionUtils.sortByName(people);
 			}
 			else if (category.equals(UnitCategory.SETTLEMENTS)) {
 				Collection<Settlement> settlement = unitManager.getSettlements();
@@ -538,25 +517,6 @@ extends ToolWindow {
 					addElement(unitI.next());
 				}
 			}
-		}
-
-		@Override
-		public void unitManagerUpdate(UnitManagerEvent event) {
-
-			Unit selectedUnit = (Unit) unitList.getSelectedValue();
-			lockUnitList = true;
-
-			updateList();
-
-			if (selectedUnit != null) {
-				int index = indexOf(selectedUnit);
-				if (index >= 0) {
-					unitList.setSelectedIndex(index);
-					unitList.ensureIndexIsVisible(index);
-				}
-			}
-
-			lockUnitList = false;
 		}
 	}
 }

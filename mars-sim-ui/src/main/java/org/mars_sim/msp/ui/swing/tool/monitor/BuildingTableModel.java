@@ -16,9 +16,6 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEvent;
 import org.mars_sim.msp.core.UnitEventType;
-import org.mars_sim.msp.core.UnitManagerEvent;
-import org.mars_sim.msp.core.UnitManagerEventType;
-import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -50,8 +47,6 @@ public class BuildingTableModel extends UnitTableModel {
 	private static String[] columnNames;
 	/** Types of Columns. */
 	private static Class<?>[] columnTypes;
-
-	private UnitManagerListener unitManagerListener;
 
 	private static List<UnitEventType> powerEvents = new ArrayList<>();
 
@@ -94,13 +89,12 @@ public class BuildingTableModel extends UnitTableModel {
 	 * @throws Exception
 	 */
 	public BuildingTableModel(Settlement settlement) throws Exception {
-		super(Msg.getString("BuildingTableModel.nameBuildings", //$NON-NLS-1$
+		super(UnitType.BUILDING, Msg.getString("BuildingTableModel.nameBuildings", //$NON-NLS-1$
 				settlement.getName()),
 				"BuildingTableModel.countingBuilding", //$NON-NLS-1$
 				columnNames, columnTypes);
 		
-		unitManagerListener = new LocalUnitManagerListener();
-		unitManager.addUnitManagerListener(unitManagerListener);
+		listenForUnits();
 
 		BuildingManager bm = settlement.getBuildingManager();
 		for(Building b : bm.getBuildings()) {
@@ -116,6 +110,7 @@ public class BuildingTableModel extends UnitTableModel {
 	 * @param rowIndex    Row index of the cell.
 	 * @param columnIndex Column index of the cell.
 	 */
+	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		Object result = null;
 
@@ -170,6 +165,7 @@ public class BuildingTableModel extends UnitTableModel {
 	 *
 	 * @param event the unit event.
 	 */
+	@Override
 	public void unitUpdate(UnitEvent event) {
 		Unit unit = (Unit) event.getSource();
 		UnitEventType eventType = event.getType();
@@ -207,37 +203,6 @@ public class BuildingTableModel extends UnitTableModel {
 		}
 	}
 	
-	/**
-	 * Prepares the model for deletion.
-	 */
-	@Override
-	public void destroy() {
-		super.destroy();
-	}
-	
-	/**
-	 * UnitManagerListener inner class.
-	 */
-	private class LocalUnitManagerListener implements UnitManagerListener {
-
-		/**
-		 * Catches unit manager update event.
-		 *
-		 * @param event the unit event.
-		 */
-		public void unitManagerUpdate(UnitManagerEvent event) {
-			Unit unit = event.getUnit();
-			UnitManagerEventType eventType = event.getEventType();
-
-			if (unit.getUnitType() == UnitType.BUILDING) {
-				if (eventType == UnitManagerEventType.ADD_UNIT && !containsUnit(unit)) {
-					addUnit(unit);
-				} else if (eventType == UnitManagerEventType.REMOVE_UNIT && containsUnit(unit)) {
-					removeUnit(unit);
-				}
-			}
-		}
-	}
 	
 	/**
 	 * The class for updating the table cell.

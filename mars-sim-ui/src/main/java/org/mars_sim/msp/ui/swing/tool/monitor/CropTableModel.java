@@ -19,14 +19,9 @@ import javax.swing.SwingUtilities;
 
 import org.apache.commons.lang3.StringUtils;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEvent;
 import org.mars_sim.msp.core.UnitEventType;
-import org.mars_sim.msp.core.UnitManager;
-import org.mars_sim.msp.core.UnitManagerEvent;
-import org.mars_sim.msp.core.UnitManagerEventType;
-import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -81,10 +76,6 @@ public class CropTableModel extends UnitTableModel {
 
 	// Data members
 	/**
-	 * The listener for unit manager.
-	 */
-	private UnitManagerListener unitManagerListener;
-	/**
 	 * A list of settlements.
 	 */
 	private List<Settlement> paddedSettlements;
@@ -107,10 +98,8 @@ public class CropTableModel extends UnitTableModel {
 
 	private Settlement selectedSettlement;
 
-	private static UnitManager unitManager = Simulation.instance().getUnitManager();
-
 	public CropTableModel(Settlement settlement) throws Exception {
-		super (Msg.getString("CropTableModel.tabName"), //$NON-NLS-1$
+		super (UnitType.BUILDING, Msg.getString("CropTableModel.tabName"), //$NON-NLS-1$
 				"CropTableModel.countingCrops", //$NON-NLS-1$
 				columnNames, columnTypes);
 
@@ -125,18 +114,13 @@ public class CropTableModel extends UnitTableModel {
 		
 		paddedSettlements.add(selectedSettlement);
 
-		init();
-
 		createCatList();
 		
 		createBuildingCropCatMap();
 		
 		updateCropCatMap();
-	}
-	
-	public void init() {
-		unitManagerListener = new LocalUnitManagerListener();
-		unitManager.addUnitManagerListener(unitManagerListener);
+
+		listenForUnits();
 	}
 	
 	/**
@@ -276,6 +260,7 @@ public class CropTableModel extends UnitTableModel {
 	 * Overload the super class (UnitTableModel)'s getUnitNumber()
 	 * @return number of units.
 	 */
+	@Override
 	protected int getUnitNumber() {
 		int result = 0;
 		if (totalNumCropMap != null && !totalNumCropMap.isEmpty()) {
@@ -294,6 +279,7 @@ public class CropTableModel extends UnitTableModel {
 	/**
 	 * Gets the model count string.
 	 */
+	@Override
 	public String getCountString() {
 		return " " + Msg.getString("CropTableModel.countingCrops", //$NON-NLS-1$
 				Integer.toString(getUnitNumber()));
@@ -304,6 +290,7 @@ public class CropTableModel extends UnitTableModel {
 	 *
 	 * @return the number of Units in the super class.
 	 */
+	@Override
 	public int getRowCount() {
 		return buildings.size();
 	}
@@ -452,16 +439,13 @@ public class CropTableModel extends UnitTableModel {
 	/**
 	 * Prepares the model for deletion.
 	 */
+	@Override
 	public void destroy() {
 		super.destroy();
-
-		unitManager.removeUnitManagerListener(unitManagerListener);
-		unitManagerListener = null;
 
 		cropCatMap = null;
 		buildings = null;
 		paddedSettlements = null;
-
 	}
 
 	private class FoodTableCellUpdater implements Runnable {
@@ -475,30 +459,6 @@ public class CropTableModel extends UnitTableModel {
 
 		public void run() {
 			fireTableCellUpdated(row, column);
-		}
-	}
-
-	/**
-	 * UnitManagerListener inner class.
-	 */
-	private class LocalUnitManagerListener implements UnitManagerListener {
-
-		/**
-		 * Catch unit manager update event.
-		 *
-		 * @param event the unit event.
-		 */
-		public void unitManagerUpdate(UnitManagerEvent event) {
-			Unit unit = event.getUnit();
-			UnitManagerEventType eventType = event.getEventType();
-
-			if (unit.getUnitType() == UnitType.BUILDING) {
-				if (eventType == UnitManagerEventType.ADD_UNIT && !containsUnit(unit)) {
-					addUnit(unit);
-				} else if (eventType == UnitManagerEventType.REMOVE_UNIT && containsUnit(unit)) {
-					removeUnit(unit);
-				}
-			}
 		}
 	}
 }

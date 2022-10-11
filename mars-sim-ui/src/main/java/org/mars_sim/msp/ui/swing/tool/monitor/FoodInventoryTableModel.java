@@ -89,7 +89,7 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 		while (i.hasNext()) i.next().addUnitListener(this);
 
 		// Add as unit manager listener.
-		unitManager.addUnitManagerListener(this);
+		unitManager.addUnitManagerListener(UnitType.SETTLEMENT, this);
 	}
 
 	/**
@@ -154,6 +154,7 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 	 * @param columnIndex Index of column.
 	 * @return name of specified column.
 	 */
+	@Override
 	public String getColumnName(int columnIndex) {
 		if (columnIndex == 0) 
 			return FOOD_COL + settlements.get(0).getName();
@@ -185,6 +186,7 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 	 * @param columnIndex Index of column.
 	 * @return Class of specified column.
 	 */
+	@Override
 	public Class<?> getColumnClass(int columnIndex) {
 		if (columnIndex < NUM_INITIAL_COLUMNS)
 			return String.class;
@@ -268,11 +270,9 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 		while (i.hasNext()) i.next().removeUnitListener(this);
 
 		// Remove as listener to unit manager.
-		unitManager.removeUnitManagerListener(this);
+		unitManager.removeUnitManagerListener(UnitType.SETTLEMENT, this);
 		
 		foodList = null;
-//		commanderSettlement = null;
-		unitManager = null;
 	}
 	
 	/**

@@ -138,7 +138,7 @@ public class TabPanelOrganization extends TabPanel {
 	protected void buildUI(JPanel content) {
 		UnitManager unitManager = getSimulation().getUnitManager();
 		unitManagerListener = new LocalUnitManagerListener();
-		unitManager.addUnitManagerListener(unitManagerListener);
+		unitManager.addUnitManagerListener(UnitType.PERSON, unitManagerListener);
 
 		// Prepare info panel.
 		infoPanel = new JPanel(new GridLayout(1, 2, 0, 0));
@@ -646,7 +646,7 @@ public class TabPanelOrganization extends TabPanel {
 		super.destroy();
 		
 		UnitManager unitManager = getSimulation().getUnitManager();
-		unitManager.removeUnitManagerListener(unitManagerListener);
+		unitManager.removeUnitManagerListener(UnitType.PERSON, unitManagerListener);
 		
 		// take care to avoid null exceptions
 		settlement = null;
