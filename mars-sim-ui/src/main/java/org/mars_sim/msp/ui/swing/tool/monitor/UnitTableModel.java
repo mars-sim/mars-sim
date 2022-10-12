@@ -6,14 +6,15 @@
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.List;
 
 import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
 import org.mars_sim.msp.core.GameManager;
+import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
@@ -22,7 +23,6 @@ import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitManagerEvent;
 import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.UnitType;
-import org.mars_sim.msp.core.GameManager.GameMode;
 
 /**
  * The UnitTableModel that maintains a table model of Units objects. It is only
@@ -60,27 +60,23 @@ abstract public class UnitTableModel extends AbstractTableModel implements Monit
 		}
 	}
 
-	// Data members
-	/** Should it be refreshed to get the number of units. */
-	private boolean refreshSize = true;
-	/** The number of the units */
-	private int size = -1;
-
 	/** Model name. */
 	private String name;
 	/** Key for calling the internationalized text that counts the number of units. */
 	private String countingMsgKey;
 	/** Names of the displayed columns. */
-	private String columnNames[];
+	private String [] columnNames;
 
 	/** Types of the individual columns. */
-	private Class<?> columnTypes[];
+	private Class<?>[] columnTypes;
 	/** Collection of units. */
-	private Collection<Unit> units;
+	private List<Unit> units;
 
 	private UnitManagerListener umListener;
 
 	private UnitType unitType;
+
+	private boolean fireEnabled = true;
 
 	protected static GameMode mode = GameManager.getGameMode();
 	
@@ -103,8 +99,7 @@ abstract public class UnitTableModel extends AbstractTableModel implements Monit
 		this.unitType = unitType;
 		this.name = name;
 		this.countingMsgKey = countingMsgKey;
-		this.units = new ConcurrentLinkedQueue<>();
-		// getRowCount();
+		this.units = new ArrayList<>();
 		this.columnNames = names;
 		this.columnTypes = types;
 	}
@@ -115,6 +110,31 @@ abstract public class UnitTableModel extends AbstractTableModel implements Monit
 	}
 
 	/**
+	 * Reset thhe monitored Units
+	 * @param newUnits
+	 */
+	protected void resetUnits(Collection<? extends Unit> newUnits) {
+		fireEnabled = false;
+
+		if (!units.isEmpty()) {
+			// Take a shallow copy as going to be removing items
+			List<Unit> oldUnits = new ArrayList<>(units);
+			for(Unit old : oldUnits) {
+				removeUnit(old);
+			}
+		}
+
+		for(Unit newUnit : newUnits) {
+			addUnit(newUnit);
+		}
+
+		// Just fire one table event for teh whole table
+		fireEnabled = true;
+		fireTableDataChanged();
+		//fireTableRowsUpdated(0, getRowCount());
+	}
+
+	/**
 	 * Add a unit to the model.
 	 *
 	 * @param newUnit Unit to add to the model.
@@ -122,11 +142,12 @@ abstract public class UnitTableModel extends AbstractTableModel implements Monit
 	protected void addUnit(Unit newUnit) {
 		if (!units.contains(newUnit)) {
 			units.add(newUnit);
-			refreshSize = true;
 			newUnit.addUnitListener(this);
 
-			// Must update the table as later the table may have extra rows
-			fireTableRowsInserted(getUnitNumber() - 1, getUnitNumber() - 1);
+			if (fireEnabled) {
+				int idx = units.indexOf(newUnit);
+				fireTableRowsInserted(idx, idx);
+			}
 		}
 	}
 
@@ -140,11 +161,10 @@ abstract public class UnitTableModel extends AbstractTableModel implements Monit
 			int index = getIndex(oldUnit);
 
 			units.remove(oldUnit);
-			refreshSize = true;
 			oldUnit.removeUnitListener(this);
 
-			// Inform listeners of new row
-			SwingUtilities.invokeLater(new RemoveUnitTableUpdater(index));
+			if (fireEnabled)
+				SwingUtilities.invokeLater(new RemoveUnitTableUpdater(index));
 		}
 	}
 
@@ -154,40 +174,18 @@ abstract public class UnitTableModel extends AbstractTableModel implements Monit
 	 * @param unit the unit
 	 * @return the index value.
 	 */
-	private int getIndex(Unit unit) {
-		final Iterator<Unit> it = units.iterator();
-		int idx = -1;
-		Unit u;
-		while (it.hasNext()) {
-			idx++;
-			u = it.next();
-			if (u.equals(unit)) {
-				return idx;
-			}
-		}
-		throw new IllegalStateException("Could not find index for unit " + unit);
-	}
-
-	/**
-	 * Adds a collection of units to the model.
-	 *
-	 * @param newUnits the units to add.
-	 */
-	protected void addAll(Collection<Unit> newUnits) {
-		Iterator<Unit> i = newUnits.iterator();
-		while (i.hasNext())
-			addUnit(i.next());
+	protected int getIndex(Unit unit) {
+		return units.indexOf(unit);
 	}
 
 	/**
 	 * Clears out units from the model.
 	 */
 	protected void clear() {
-		Iterator<Unit> i = units.iterator();
-		while (i.hasNext())
-			i.next().removeUnitListener(this);
+		for(Unit old: units) {
+			old.removeUnitListener(this);
+		}
 		units.clear();
-		refreshSize = true;
 		fireTableDataChanged();
 	}
 
@@ -201,40 +199,12 @@ abstract public class UnitTableModel extends AbstractTableModel implements Monit
 		return units.contains(unit);
 	}
 
-	/**
-	 * Gets the number of units in the model.
-	 *
-	 * @return number of units.
-	 */
-	protected int getUnitNumber() {
-		if (refreshSize) {
-			size = units == null ? 0 : units.size();
-			refreshSize = false;
-		}
-//		 if (units != null) 
-//			 return units.size();
-
-		return size;
-	}
-
-	protected boolean getRefreshSize() {
-		return refreshSize;
-	}
-
-	protected void setRefreshSize(boolean value) {
-		refreshSize = value;
-	}
-
-	protected Collection<Unit> getUnits() {
+	protected List<Unit> getUnits() {
 		return units;
 	}
 
 	protected int getSize() {
 		return units.size();
-	}
-
-	protected void setSize(int value) {
-		size = value;
 	}
 
 	/**
@@ -252,6 +222,7 @@ abstract public class UnitTableModel extends AbstractTableModel implements Monit
 	 * @param columnIndex Index of column.
 	 * @return Class of specified column.
 	 */
+	@Override
 	public Class<?> getColumnClass(int columnIndex) {
 		if ((columnIndex >= 0) && (columnIndex < columnTypes.length)) {
 			return columnTypes[columnIndex];
@@ -265,6 +236,7 @@ abstract public class UnitTableModel extends AbstractTableModel implements Monit
 	 * @param columnIndex Index of column.
 	 * @return name of specified column.
 	 */
+	@Override
 	public String getColumnName(int columnIndex) {
 		if ((columnIndex >= 0) && (columnIndex < columnNames.length)) {
 			return columnNames[columnIndex];
@@ -287,7 +259,7 @@ abstract public class UnitTableModel extends AbstractTableModel implements Monit
 	 * @return the number of Units.
 	 */
 	public int getRowCount() {
-		return getUnitNumber();
+		return units.size();
 	}
 
 	/**
@@ -308,29 +280,7 @@ abstract public class UnitTableModel extends AbstractTableModel implements Monit
 	protected Unit getUnit(int index) {
 		if (index > (getRowCount() - 1))
 			throw new IllegalStateException("Invalid index " + index + " for " + getRowCount() + " rows");
-		int idx = -1;
-		Iterator<Unit> it = units.iterator();
-		while (it.hasNext()) {
-			idx++;
-			if (idx == index) {
-				return it.next();
-			}
-			it.next();
-		}
-		throw new IllegalStateException("Could not find an index " + index);
-	}
-
-	/**
-	 * Gets the index of the row a given unit is at.
-	 *
-	 * @param unit the unit to find.
-	 * @return the row index or -1 if not in table model.
-	 */
-	protected int getUnitIndex(Unit unit) {
-		if ((units != null) && units.contains(unit))
-			return getIndex(unit);
-		else
-			return -1;
+		return units.get(index);
 	}
 
 	/**
@@ -347,7 +297,7 @@ abstract public class UnitTableModel extends AbstractTableModel implements Monit
 	 * Gets the model count string.
 	 */
 	public String getCountString() {
-		return "  " + Msg.getString(countingMsgKey, getUnitNumber());
+		return "  " + Msg.getString(countingMsgKey, getRowCount());
 	}
 
 	/**

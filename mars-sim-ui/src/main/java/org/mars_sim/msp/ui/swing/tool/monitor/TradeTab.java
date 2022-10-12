@@ -21,8 +21,6 @@ public class TradeTab extends TableTab {
 
 	/** The minimum 2 of decimal places to be displayed. */
 	private static final int TWO_DIGITS = 2;
-	/** The minimum 3 decimal places to be displayed. */
-//	private static final int THREE_DIGITS = 3;
 	
 	/**
 	 * constructor.
@@ -32,10 +30,7 @@ public class TradeTab extends TableTab {
 	 */
 	public TradeTab(Settlement selectedSettlement, final MonitorWindow window) {
 		// Use TableTab constructor
-		super(window, new TradeTableModel(selectedSettlement, window), true, false, MonitorWindow.TRADE_ICON);
-
-		// Override default cell renderer for formatting double values.
-//		table.setDefaultRenderer(Double.class, new NumberCellRenderer(NUM_DIGITS, true));
+		super(window, new TradeTableModel(selectedSettlement), true, false, MonitorWindow.TRADE_ICON);
 
 		TableColumnModel m = table.getColumnModel();
 		int init = TradeTableModel.NUM_INITIAL_COLUMNS;

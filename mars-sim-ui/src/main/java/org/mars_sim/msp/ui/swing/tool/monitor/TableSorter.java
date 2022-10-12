@@ -9,6 +9,9 @@ package org.mars_sim.msp.ui.swing.tool.monitor;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
+
+import org.mars_sim.msp.core.structure.Settlement;
+
 import java.util.Arrays;
 
 
@@ -26,7 +29,7 @@ public class TableSorter extends AbstractTableModel
     // Minimum time (milliseconds) between table sorts.
     private static final long SORTING_TIME_BUFFER = 500L;
 
-    private int indexes[];
+    private int [] indexes;
     private boolean sortAscending = false;
     private int sortedColumn;
     private MonitorModel sourceModel;
@@ -160,77 +163,28 @@ public class TableSorter extends AbstractTableModel
         }
     }
 
-    // This is a home-grown implementation which we have not had time
-    // to research - it may perform poorly in some circumstances. It
-    // requires twice the space of an in-place algorithm and makes
-    // NlogN assigments shuttling the values between the two
-    // arrays. The number of compares appears to vary between N-1 and
-    // NlogN depending on the initial order but the main reason for
-    // using it here is that, unlike qsort, it is stable.
-
-//    private void shuttlesort(int from[], int to[], int low, int high) {
-//        if (high - low < 2) {
-//            return;
-//        }
-//        int middle = (low + high)/2;
-//        shuttlesort(to, from, low, middle);
-//        shuttlesort(to, from, middle, high);
-//
-//        int p = low;
-//        int q = middle;
-
-        /* This is an optional short-cut; at each recursive call,
-        check to see if the elements in this subset are already
-        ordered.  If so, no further comparisons are needed; the
-        sub-array can just be copied.  The array must be copied rather
-        than assigned otherwise sister calls in the recursion might
-        get out of sinc.  When the number of elements is three they
-        are partitioned so that the first set, [low, mid), has one
-        element and and the second, [mid, high), has two. We skip the
-        optimisation when the number of elements is three or less as
-        the first compare in the normal merge will produce the same
-        sequence of steps. This optimisation seems to be worthwhile
-        for partially ordered lists but some analysis is needed to
-        find out how the performance drops to Nlog(N) as the initial
-        order diminishes - it may drop very quickly.  */
-
-//        if (high - low >= 4 && compare(from[middle-1], from[middle]) <= 0) {
-//            for (int i = low; i < high; i++) {
-//                to[i] = from[i];
-//            }
-//            return;
-//        }
-//
-//        // A normal merge.
-//
-//        for (int i = low; i < high; i++) {
-//            if (q >= high || (p < middle && compare(from[p], from[q]) <= 0)) {
-//                to[i] = from[p++];
-//            }
-//            else {
-//                to[i] = from[q++];
-//            }
-//        }
-//    }
-
-
+    @Override
     public int getColumnCount() {
         return sourceModel.getColumnCount();
     }
 
+    @Override
     public Class<?> getColumnClass(int columnIndex) {
         return sourceModel.getColumnClass(columnIndex);
     }
 
+    @Override
     public String getColumnName(int columnIndex) {
         return sourceModel.getColumnName(columnIndex);
     }
 
+    @Override
     public String getName() {
         if (sourceModel != null) return sourceModel.getName();
         else return "";
     }
 
+    @Override
     public int getRowCount() {
         if (sourceModel != null) return sourceModel.getRowCount();
         else return 0;
@@ -243,6 +197,7 @@ public class TableSorter extends AbstractTableModel
      * @param aColumn Column offset.
      * @return Value of cell.
      */
+    @Override
     public Object getValueAt(int aRow, int aColumn) {
     	if (indexes.length > aRow) {
     		return sourceModel.getValueAt(indexes[aRow], aColumn);
@@ -263,19 +218,6 @@ public class TableSorter extends AbstractTableModel
     	else return null;
     }
 
-//    public String getCause(int row) {
-//    	if (row < indexes.length)
-//    		return sourceModel.getCause(indexes[row]);
-//    	else return null;
-//    }
-//
-//    public String getWho(int row) {
-//    	if (row < indexes.length)
-//    		return sourceModel.getWho(indexes[row]);
-//    	else return null;
-//    }
-
-
     /**
      * The mapping only affects the contents of the data rows.
      * Pass all requests to these rows through the mapping array: "indexes".
@@ -283,6 +225,7 @@ public class TableSorter extends AbstractTableModel
      * @param aRow Row offset.
      * @param aColumn Column offset.
      */
+    @Override
     public void setValueAt(Object aValue, int aRow, int aColumn) {
         sourceModel.setValueAt(aValue, indexes[aRow], aColumn);
     }
@@ -290,6 +233,7 @@ public class TableSorter extends AbstractTableModel
     /**
      * Gets the model count string.
      */
+    @Override
     public String getCountString() {
     	return sourceModel.getCountString();
     }
@@ -348,8 +292,13 @@ public class TableSorter extends AbstractTableModel
     /**
      * Prepares the model for deletion.
      */
+    @Override
     public void destroy() {
-        // sourceModel.destroy();
-    	// sourceModel = null;
+        // Do nothing
+    }
+
+    @Override
+    public void setSettlementFilter(Settlement filter) {
+        sourceModel.setSettlementFilter(filter); 
     }
 }

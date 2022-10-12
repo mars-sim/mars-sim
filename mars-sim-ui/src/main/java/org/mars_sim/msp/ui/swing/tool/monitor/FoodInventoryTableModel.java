@@ -6,26 +6,16 @@
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
-import org.mars_sim.msp.core.GameManager;
-import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEvent;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitListener;
-import org.mars_sim.msp.core.UnitManager;
-import org.mars_sim.msp.core.UnitManagerEvent;
-import org.mars_sim.msp.core.UnitManagerEventType;
-import org.mars_sim.msp.core.UnitManagerListener;
-import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.food.Food;
 import org.mars_sim.msp.core.food.FoodUtil;
 import org.mars_sim.msp.core.goods.Good;
@@ -40,11 +30,11 @@ import org.mars_sim.msp.ui.swing.tool.Conversion;
  */
 @SuppressWarnings("serial")
 public class FoodInventoryTableModel extends AbstractTableModel
-implements UnitListener, MonitorModel, UnitManagerListener {
+implements UnitListener, MonitorModel {
 
 	private static final String FOOD_RESOURCES = " Food Resources";
 	
-	private static final String FOOD_COL = "Food - ";
+	private static final String FOOD_COL = "Food";
 	private static final String TYPE = "Type";
 	
 	private static final String DEMAND_COL = "Demand";
@@ -61,35 +51,21 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 	protected static final int NUM_INITIAL_COLUMNS = 2;
 	protected static final int NUM_DATA_COL = 7;
 	
-	private GameMode mode = GameManager.getGameMode();
-
 	// Data members
 	private List<Food> foodList;
-	private List<Settlement> settlements = new ArrayList<>();
 
-	private Settlement commanderSettlement;
 	private Settlement selectedSettlement;
 
-	private static UnitManager unitManager = Simulation.instance().getUnitManager();
 
 	/**
 	 * Constructor.
 	 */
 	public FoodInventoryTableModel(Settlement selectedSettlement) {
-		this.selectedSettlement = selectedSettlement;	
 		
 		// Initialize food list.
 		foodList = FoodUtil.getFoodList();
 
-		// Initialize settlements.
-		settlements.add(selectedSettlement);
-			
-		// Add table as listener to each settlement.
-		Iterator<Settlement> i = settlements.iterator();
-		while (i.hasNext()) i.next().addUnitListener(this);
-
-		// Add as unit manager listener.
-		unitManager.addUnitManagerListener(UnitType.SETTLEMENT, this);
+		setSettlementFilter(selectedSettlement);
 	}
 
 	/**
@@ -102,9 +78,8 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 		Unit unit = (Unit) event.getSource();
 		UnitEventType eventType = event.getType();
 		if (eventType == UnitEventType.FOOD_EVENT) {
-			if (event.getTarget() instanceof Good && unit instanceof Settlement) {
-				if ((mode == GameMode.COMMAND && unit.getName().equalsIgnoreCase(commanderSettlement.getName()))
-						|| unit.getName().equalsIgnoreCase(settlements.get(0).getName())) {
+			if (event.getTarget() instanceof Good) {
+				if (unit.equals(selectedSettlement)) {
 					SwingUtilities.invokeLater(new FoodTableUpdater(event));			
 				}
 			}
@@ -114,7 +89,6 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 	/**
 	 * Gets the model count string.
 	 */
-//	@Override
 	public String getCountString() {
 		return "  " + foodList.size() + FOOD_RESOURCES;
 	}
@@ -157,7 +131,7 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 	@Override
 	public String getColumnName(int columnIndex) {
 		if (columnIndex == 0) 
-			return FOOD_COL + settlements.get(0).getName();
+			return FOOD_COL;
 		else if (columnIndex == 1) 
 			return TYPE;
 		else {
@@ -196,7 +170,7 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 	}
 
 	public int getColumnCount() {
-		return settlements.size() * NUM_DATA_COL + NUM_INITIAL_COLUMNS;
+		return NUM_DATA_COL + NUM_INITIAL_COLUMNS;
 	}
 
 	public int getRowCount() {
@@ -266,11 +240,7 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 	@Override
 	public void destroy() {
 		// Remove as listener for all settlements.
-		Iterator<Settlement> i = settlements.iterator();
-		while (i.hasNext()) i.next().removeUnitListener(this);
-
-		// Remove as listener to unit manager.
-		unitManager.removeUnitManagerListener(UnitType.SETTLEMENT, this);
+		selectedSettlement.removeUnitListener(this);
 		
 		foodList = null;
 	}
@@ -291,43 +261,28 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 				fireTableDataChanged();
 			else {
 				int rowIndex = foodList.indexOf(event.getTarget());
-				int columnIndex = settlements.indexOf(event.getSource()) * NUM_DATA_COL + NUM_INITIAL_COLUMNS;
-				fireTableCellUpdated(rowIndex, columnIndex);
+				fireTableRowsUpdated(rowIndex, rowIndex);
 			}
 		}
 	}
 
-	@Override
-	public void unitManagerUpdate(UnitManagerEvent event) {
-		Unit unit = event.getUnit();
-		if (unit.getUnitType() == UnitType.SETTLEMENT
-				&& unit.getName().equalsIgnoreCase(settlements.get(0).getName())) {
-
-			Settlement settlement = (Settlement) unit;
-
-			if (UnitManagerEventType.ADD_UNIT == event.getEventType()) {
-				// If settlement is new, add to settlement list.
-				if (!settlements.contains(settlement)) {
-					settlements.add(settlement);
-					settlement.addUnitListener(this);
-				}
-			} else if (UnitManagerEventType.REMOVE_UNIT == event.getEventType()) {
-				// If settlement is gone, remove from settlement list.
-				if (settlements.contains(settlement)) {
-					settlements.remove(settlement);
-					settlement.removeUnitListener(this);
-				}
-			}
-
-			// Update table structure due to cells changing.
-			SwingUtilities.invokeLater(new Runnable() {
-				@Override
-				public void run() {
-					fireTableStructureChanged();
-				}
-			});
+	/**
+	 * Set the Settlement filter
+	 * @param filter Settlement
+	 */
+    public void setSettlementFilter(Settlement filter) {
+		if (selectedSettlement != null) {
+			selectedSettlement.removeUnitListener(this);
 		}
-	}
+
+		// Initialize settlements.
+		selectedSettlement = filter;	
+			
+		// Add table as listener to each settlement.
+		selectedSettlement.addUnitListener(this);
+
+		fireTableDataChanged();
+    }
 }
 
 

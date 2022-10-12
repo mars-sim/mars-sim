@@ -49,50 +49,46 @@ public class PersonTableModel extends UnitTableModel {
 
 	// Column indexes
 	/** Person name column. */
-	private final static int NAME = 0;
+	private static final int NAME = 0;
 	/** Task column. */
-	private final static int TASK = 1;
+	private static final int TASK = 1;
 	/** Mission column. */
-	private final static int MISSION_COL = 2;
+	private static final int MISSION_COL = 2;
 	/** Job column. */
-	private final static int JOB = 3;
+	private static final int JOB = 3;
 	/** Role column. */
-	private final static int ROLE = 4;
+	private static final int ROLE = 4;
 	/** Shift column. */
-	private final static int SHIFT = 5;
+	private static final int SHIFT = 5;
 	/** Location column. */
-	private final static int LOCATION = 6;
+	private static final int LOCATION = 6;
 	/** Locale column. */
-	private final static int LOCALE = 7;
-//	/** Gender column. */
-//	private final static int GENDER = 7;
-//	/** Personality column. */
-//	private final static int PERSONALITY = 8;
+	private static final int LOCALE = 7;
+
 	/** Health column. */
-	private final static int HEALTH = 8;
+	private static final int HEALTH = 8;
 	/** Energy/Hunger column. */
-	private final static int ENERGY = 9;
+	private static final int ENERGY = 9;
 	/** Water/Thirst column. */
-	private final static int WATER = 10;
+	private static final int WATER = 10;
 	/** Fatigue column. */
-	private final static int FATIGUE = 11;
+	private static final int FATIGUE = 11;
 	/** Stress column. */
-	private final static int STRESS = 12;
+	private static final int STRESS = 12;
 	/** Performance column. */
-	private final static int PERFORMANCE = 13;
+	private static final int PERFORMANCE = 13;
 	/** Emotion column. */
-	private final static int EMOTION = 14;
+	private static final int EMOTION = 14;
 
 	/** The number of Columns. */
-	private final static int COLUMNCOUNT = 15;
+	private static final int COLUMNCOUNT = 15;
 	/** Names of Columns. */
 	private static String columnNames[];
 	/** Types of Columns. */
 	private static Class<?> columnTypes[];
 
-	private final static String DEYDRATED = "Deydrated";
-//	private final static String THIRSTY = "Thirsty";
-	private final static String STARVING = "Starving";
+	private static final String DEYDRATED = "Deydrated";
+	private static final String STARVING = "Starving";
 	
 	/**
 	 * The static initializer creates the name & type arrays.
@@ -154,6 +150,8 @@ public class PersonTableModel extends UnitTableModel {
 	 */
 	private Map<Unit, Map<Integer, String>> performanceValueCache;
 
+	private boolean allAssociated;
+
 	/**
 	 * constructor. Constructs a PersonTableModel object that displays all people in
 	 * the simulation.
@@ -168,9 +166,9 @@ public class PersonTableModel extends UnitTableModel {
 		sourceType = ValidSourceType.ALL_PEOPLE;
 
 		if (mode == GameMode.COMMAND)
-			setSource(unitManager.getCommanderSettlement().getAllAssociatedPeople());
+			resetUnits(unitManager.getCommanderSettlement().getAllAssociatedPeople());
 		else
-			setSource(unitManager.getPeople());
+			resetUnits(unitManager.getPeople());
 
 		listenForUnits();
 	}
@@ -191,7 +189,7 @@ public class PersonTableModel extends UnitTableModel {
 
 		sourceType = ValidSourceType.VEHICLE_CREW;
 		this.vehicle = vehicle;
-		setSource(vehicle.getCrew());
+		resetUnits(vehicle.getCrew());
 		crewListener = new LocalCrewListener();
 		((Unit) vehicle).addUnitListener(crewListener);
 	}
@@ -212,19 +210,9 @@ public class PersonTableModel extends UnitTableModel {
 				(allAssociated ? "PersonTableModel.countingCitizens" : //$NON-NLS-1$
 								 "PersonTableModel.countingIndoor" //$NON-NLS-1$
 				), columnNames, columnTypes);
+		this.allAssociated = allAssociated;
 
-		this.settlement = settlement;
-		if (allAssociated) {
-			sourceType = ValidSourceType.SETTLEMENT_ALL_ASSOCIATED_PEOPLE;
-			setSource(settlement.getAllAssociatedPeople());
-			settlementListener = new AssociatedSettlementListener();
-			settlement.addUnitListener(settlementListener);
-		} else {
-			sourceType = ValidSourceType.SETTLEMENT_INHABITANTS;
-			setSource(settlement.getIndoorPeople());
-			settlementListener = new InhabitantSettlementListener();
-			settlement.addUnitListener(settlementListener);
-		}
+		setSettlementFilter(settlement);
 	}
 
 	/**
@@ -248,18 +236,30 @@ public class PersonTableModel extends UnitTableModel {
 				missionPeople.add((Person) member);
 			}
 		}
-		setSource(missionPeople);
+		resetUnits(missionPeople);
 		missionListener = new LocalMissionListener();
 		mission.addMissionListener(missionListener);
 	}
 
-	/**
-	 * Defines the source data from this table
-	 */
-	private void setSource(Collection<Person> source) {
-		Iterator<Person> iter = source.iterator();
-		while (iter.hasNext())
-			addUnit(iter.next());
+	@Override
+	public void setSettlementFilter(Settlement filter) {	
+		if (settlementListener != null) {
+			settlement.removeUnitListener(settlementListener);
+		}
+
+		this.settlement = filter;
+		if (allAssociated) {
+
+			sourceType = ValidSourceType.SETTLEMENT_ALL_ASSOCIATED_PEOPLE;
+			resetUnits(settlement.getAllAssociatedPeople());
+			settlementListener = new AssociatedSettlementListener();
+			settlement.addUnitListener(settlementListener);
+		} else {
+			sourceType = ValidSourceType.SETTLEMENT_INHABITANTS;
+			resetUnits(settlement.getIndoorPeople());
+			settlementListener = new InhabitantSettlementListener();
+			settlement.addUnitListener(settlementListener);
+		}
 	}
 
 	@Override
@@ -339,7 +339,7 @@ public class PersonTableModel extends UnitTableModel {
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		Object result = null;
 
-		if (rowIndex < getUnitNumber()) {
+		if (rowIndex < getRowCount()) {
 			Person person = (Person) getUnit(rowIndex);
 
 			switch (columnIndex) {
@@ -711,7 +711,7 @@ public class PersonTableModel extends UnitTableModel {
 
 			if (column != null && column > -1) {
 				Unit unit = (Unit) event.getSource();
-				tableModel.fireTableCellUpdated(tableModel.getUnitIndex(unit), column);
+				tableModel.fireTableCellUpdated(tableModel.getIndex(unit), column);
 			}
 		}
 	}

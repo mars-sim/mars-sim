@@ -44,32 +44,29 @@ public class RobotTableModel extends UnitTableModel {
 
 	// Column indexes
 	/** Robot name column. */
-	private final static int NAME = 0;
+	private static final int NAME = 0;
 	/** Gender column. */
-	private final static int TYPE = 1;
+	private static final int TYPE = 1;
 	/** Location column. */
-	private final static int LOCATION = 2;
+	private static final int LOCATION = 2;
 	/** Settlement column. */
-	private final static int SETTLEMENT_COL = 3;
+	private static final int SETTLEMENT_COL = 3;
 	/** Health column. */
-	private final static int HEALTH = 4;
+	private static final int HEALTH = 4;
 	/** Hunger column. */
-	private final static int BATTERY = 5;
-	/** Fatigue column. */
-	// private final static int FATIGUE = 6;
-	/** Stress column. */
-	// private final static int STRESS = 7;
+	private static final int BATTERY = 5;
+
 	/** Performance column. */
-	private final static int PERFORMANCE = 6;
+	private static final int PERFORMANCE = 6;
 	/** Job column. */
-	private final static int JOB = 7;
+	private static final int JOB = 7;
 	/** Task column. */
-	private final static int TASK = 8;
+	private static final int TASK = 8;
 	/** Mission column. */
-	private final static int MISSION_COL = 9;
+	private static final int MISSION_COL = 9;
 
 	/** The number of Columns. */
-	private final static int COLUMNCOUNT = 10;
+	private static final int COLUMNCOUNT = 10;
 	/** Names of Columns. */
 	private static String columnNames[];
 	/** Types of Columns. */
@@ -119,6 +116,7 @@ public class RobotTableModel extends UnitTableModel {
 	private UnitListener crewListener;
 	private UnitListener settlementListener;
 	private MissionListener missionListener;
+	private boolean allAssociated;
 
 	/**
 	 * constructor. Constructs a RobotTableModel object that displays all people in
@@ -134,9 +132,9 @@ public class RobotTableModel extends UnitTableModel {
 		sourceType = ValidSourceType.ALL_ROBOTS;
 
 		if (mode == GameMode.COMMAND)
-			setSource(unitManager.getCommanderSettlement().getRobots());
+			resetUnits(unitManager.getCommanderSettlement().getRobots());
 		else
-			setSource(unitManager.getRobots());
+			resetUnits(unitManager.getRobots());
 
 		listenForUnits();
 	}
@@ -155,7 +153,7 @@ public class RobotTableModel extends UnitTableModel {
 
 		sourceType = ValidSourceType.VEHICLE_ROBOTS;
 		this.vehicle = vehicle;
-		setSource(vehicle.getRobotCrew());
+		resetUnits(vehicle.getRobotCrew());
 		crewListener = new LocalCrewListener();
 		((Unit) vehicle).addUnitListener(crewListener);
 	}
@@ -177,37 +175,8 @@ public class RobotTableModel extends UnitTableModel {
 						"RobotTableModel.countingResidents" //$NON-NLS-1$
 				), columnNames, columnTypes);
 
-		this.settlement = settlement;
-		if (allAssociated) {
-			sourceType = ValidSourceType.SETTLEMENT_ALL_ASSOCIATED_ROBOTS;
-			setSource(settlement.getAllAssociatedRobots());
-			settlementListener = new AssociatedSettlementListener();
-			settlement.addUnitListener(settlementListener);
-		} else {
-			sourceType = ValidSourceType.SETTLEMENT_ROBOTS;
-			setSource(settlement.getRobots());
-			settlementListener = new InhabitantSettlementListener();
-			settlement.addUnitListener(settlementListener);
-		}
-	}
-
-	/**
-	 * Constructs a RobotTableModel object for a settlement.
-	 * 
-	 * @param settlement
-	 * @throws Exception
-	 */
-	public RobotTableModel(Settlement settlement) throws Exception {
-		super(UnitType.ROBOT, Msg.getString("RobotTableModel.nameAssociatedRobots", //$NON-NLS-1$
-				settlement.getName()),
-				"RobotTableModel.countingRobots", //$NON-NLS-1$
-				columnNames, columnTypes);
-
-		this.settlement = settlement;
-		sourceType = ValidSourceType.SETTLEMENT_ROBOTS;
-		setSource(settlement.getRobots());
-		settlementListener = new AssociatedSettlementListener(); //InhabitantSettlementListener();
-		settlement.addUnitListener(settlementListener);
+		this.allAssociated = allAssociated;
+		setSettlementFilter(settlement);
 	}
 
 	/**
@@ -231,18 +200,34 @@ public class RobotTableModel extends UnitTableModel {
 				missionRobots.add((Robot) member);
 			}
 		}
-		setSource(missionRobots);
+		resetUnits(missionRobots);
 		missionListener = new LocalMissionListener();
 		mission.addMissionListener(missionListener);
 	}
 
 	/**
-	 * Defines the source data from this table.
+	 * Set teh settlement filter for the Robot table
+	 * @param filter
 	 */
-	private void setSource(Collection<Robot> source) {
-		Iterator<Robot> iter = source.iterator();
-		while (iter.hasNext())
-			addUnit(iter.next());
+	@Override
+	public void setSettlementFilter(Settlement filter) {
+		if (settlementListener != null) {
+			settlement.removeUnitListener(settlementListener);
+		}
+		
+		this.settlement = filter;
+		if (allAssociated) {
+			sourceType = ValidSourceType.SETTLEMENT_ALL_ASSOCIATED_ROBOTS;
+			resetUnits(settlement.getAllAssociatedRobots());
+			settlementListener = new AssociatedSettlementListener();
+			settlement.addUnitListener(settlementListener);
+		}
+		else {
+			sourceType = ValidSourceType.SETTLEMENT_ROBOTS;
+			resetUnits(settlement.getRobots());
+			settlementListener = new InhabitantSettlementListener();
+			settlement.addUnitListener(settlementListener);
+		}
 	}
 
 	/**
@@ -260,10 +245,11 @@ public class RobotTableModel extends UnitTableModel {
 	 * @param rowIndex    Row index of the cell.
 	 * @param columnIndex Column index of the cell.
 	 */
+	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		Object result = null;
 
-		if (rowIndex < getUnitNumber()) {
+		if (rowIndex < getRowCount()) {
 			Robot robot = (Robot) getUnit(rowIndex);
 
 			switch (columnIndex) {
@@ -341,7 +327,7 @@ public class RobotTableModel extends UnitTableModel {
 	 * @param level
 	 * @return status
 	 */
-	public String getBatteryStatus(double level) {
+	private String getBatteryStatus(double level) {
 		String status = "N/A";
 		if (level < 10)
 			status = Msg.getString("RobotTableModel.column.battery.level1");
@@ -362,7 +348,7 @@ public class RobotTableModel extends UnitTableModel {
 	 * @param hunger
 	 * @return status
 	 */
-	public String getPerformanceStatus(double value) {
+	private String getPerformanceStatus(double value) {
 		String status = "N/A";
 		if (value > 98)
 			status = Msg.getString("RobotTableModel.column.performance.level1");
@@ -459,54 +445,19 @@ public class RobotTableModel extends UnitTableModel {
 			UnitEventType eventType = event.getType();
 
 			Integer column = EVENT_COLUMN_MAPPING.get(eventType);
-
-//			if (eventType == UnitEventType.NAME_EVENT) {
-//				
-//			}
-//			
-//			else if (eventType == UnitEventType.LOCATION_EVENT) {
-//				
-//			}
-//			else if (eventType == UnitEventType.ROBOT_POWER_EVENT) {
-//				
-//			}
-//			else if (eventType == UnitEventType.PERFORMANCE_EVENT) {
-//				
-//			}
-//			else if (eventType == UnitEventType.JOB_EVENT) {
-//				
-//			}
-//			else if (eventType == UnitEventType.TASK_EVENT) {
-//				
-//			}
-//			else if (eventType == UnitEventType.TASK_NAME_EVENT) {
-//				
-//			}
-//			else if (eventType == UnitEventType.TASK_ENDED_EVENT) {
-//				
-//			}
-//			else if (eventType == UnitEventType.TASK_SUBTASK_EVENT) {
-//				
-//			}
-//			else if (eventType == UnitEventType.MISSION_EVENT) {
-//				
-//			}
-//			else if (eventType == UnitEventType.DEATH_EVENT) {
-//				
-//			}
 			
 			if (column != null && column > -1) {
 				if (event.getSource() instanceof Unit) {
 					Unit source = (Unit) event.getSource();
 					if (source instanceof Robot) {
-						tableModel.fireTableCellUpdated(tableModel.getUnitIndex(source), column);
+						tableModel.fireTableCellUpdated(tableModel.getIndex(source), column);
 					}
 				}
 				
-				if (event.getTarget() instanceof Unit) {
+				else if (event.getTarget() instanceof Unit) {
 					Unit target = (Unit) event.getTarget();
 					if (target instanceof Robot) {
-						tableModel.fireTableCellUpdated(tableModel.getUnitIndex(target), column);
+						tableModel.fireTableCellUpdated(tableModel.getIndex(target), column);
 					}
 				}
 			}

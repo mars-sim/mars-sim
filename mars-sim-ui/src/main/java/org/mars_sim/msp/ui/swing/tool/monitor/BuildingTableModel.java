@@ -82,6 +82,9 @@ public class BuildingTableModel extends UnitTableModel {
 		columnTypes[POWER_GEN] = Double.class;
 	}
 
+
+	private Settlement selectedSettlement;
+
 	/**
 	 * Constructor.
 	 * 
@@ -96,13 +99,21 @@ public class BuildingTableModel extends UnitTableModel {
 		
 		listenForUnits();
 
-		BuildingManager bm = settlement.getBuildingManager();
-		for(Building b : bm.getBuildings()) {
-			addUnit(b);
-		}
+		setSettlementFilter(settlement);
 	}
 
+	@Override
+	public void setSettlementFilter(Settlement filter) {
+		if (selectedSettlement != null) {
+			selectedSettlement.removeUnitListener(this);
+		}
 
+		selectedSettlement = filter;
+ 		BuildingManager bm = selectedSettlement.getBuildingManager();
+		resetUnits(bm.getBuildings());
+
+		selectedSettlement.addUnitListener(this);
+	}
 
 	/**
 	 * Returns the value of a Cell.
@@ -114,7 +125,7 @@ public class BuildingTableModel extends UnitTableModel {
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		Object result = null;
 
-		if (rowIndex < getUnitNumber()) {
+		if (rowIndex < getRowCount()) {
 			Building building = (Building) getUnit(rowIndex);
 
 			switch (columnIndex) {
@@ -160,6 +171,14 @@ public class BuildingTableModel extends UnitTableModel {
 		return result;
 	}
 	
+	@Override
+	public void destroy() {
+		if (selectedSettlement != null) {
+			selectedSettlement.removeUnitListener(this);
+		}
+		super.destroy();
+	}
+	
 	/**
 	 * Catches unit update event.
 	 *
@@ -174,16 +193,12 @@ public class BuildingTableModel extends UnitTableModel {
 		int columnNum = -1;
 		
 		if (eventType == UnitEventType.REMOVE_BUILDING_EVENT) {
-			
-			unitIndex = getUnitIndex(unit);
-			fireTableRowsDeleted(unitIndex, unitIndex);
+			removeUnit(unit);
 		}
 		else if (eventType == UnitEventType.ADD_BUILDING_EVENT) {
 			// Determine the new row to be added
 			Building building = (Building)unit;
-			addUnit(building);
-			
-			fireTableStructureChanged();
+			addUnit(building);			
 		}
 
 		else { 

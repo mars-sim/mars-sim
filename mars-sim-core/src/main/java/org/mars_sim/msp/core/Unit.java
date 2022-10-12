@@ -9,10 +9,8 @@ package org.mars_sim.msp.core;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.Serializable;
-import java.util.Collections;
-import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.environment.SurfaceFeatures;
@@ -561,10 +559,12 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 		if (newListener == null)
 			throw new IllegalArgumentException();
 		if (listeners == null)
-			listeners = Collections.synchronizedList(new CopyOnWriteArrayList<UnitListener>());
+			listeners = new ArrayList<>();
 
-		if (!listeners.contains(newListener)) {
-			listeners.add(newListener);
+		synchronized(listeners) {	
+			if (!listeners.contains(newListener)) {
+				listeners.add(newListener);
+			}
 		}
 	}
 
@@ -578,7 +578,9 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 			throw new IllegalArgumentException();
 
 		if (listeners != null) {
-			listeners.remove(oldListener);
+			synchronized(listeners) {
+				listeners.remove(oldListener);
+			}
 		}
 	}
 
@@ -598,16 +600,13 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	 * @param target     the event target object or null if none.
 	 */
 	public final void fireUnitUpdate(UnitEventType updateType, Object target) {
-		if (listeners == null || listeners.size() < 1) {
-			// listeners = Collections.synchronizedList(new ArrayList<UnitListener>());
-			// we don't do anything if there's no listeners attached
+		if (listeners == null || listeners.isEmpty()) {
 			return;
 		}
 		final UnitEvent ue = new UnitEvent(this, updateType, target);
 		synchronized (listeners) {
-			Iterator<UnitListener> i = listeners.iterator();
-			while (i.hasNext()) {
-				i.next().unitUpdate(ue);
+			for(UnitListener i : listeners) {
+				i.unitUpdate(ue);
 			}
 		}
 	}

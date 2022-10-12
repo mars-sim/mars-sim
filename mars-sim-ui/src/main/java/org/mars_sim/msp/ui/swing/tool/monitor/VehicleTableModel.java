@@ -6,9 +6,7 @@
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -57,34 +55,34 @@ public class VehicleTableModel extends UnitTableModel {
 	private static String FALSE = "False";
 
 	// Column indexes
-	private final static int NAME = 0;
-	private final static int TYPE = 1;
-	private final static int HOME = 2;
-	private final static int LOCATION = 3;
-	private final static int DESTINATION = 4;
-	private final static int DESTDIST = 5;
-	private final static int MISSION = 6;
-	private final static int CREW = 7;
-	private final static int DRIVER = 8;
-	private final static int STATUS = 9;
-	private final static int BEACON = 10;
-	private final static int RESERVED = 11;
-	private final static int SPEED = 12;
-	private final static int MALFUNCTION = 13;
-	private final static int OXYGEN = 14;
-	private final static int METHANE = 15;
-	private final static int WATER = 16;
-	private final static int FOOD = 17;
-	private final static int DESSERT = 18;
-	private final static int ROCK_SAMPLES = 19;
-	private final static int ICE = 20;
+	private static final int NAME = 0;
+	private static final int TYPE = 1;
+	private static final int HOME = 2;
+	private static final int LOCATION = 3;
+	private static final int DESTINATION = 4;
+	private static final int DESTDIST = 5;
+	private static final int MISSION = 6;
+	private static final int CREW = 7;
+	private static final int DRIVER = 8;
+	private static final int STATUS = 9;
+	private static final int BEACON = 10;
+	private static final int RESERVED = 11;
+	private static final int SPEED = 12;
+	private static final int MALFUNCTION = 13;
+	private static final int OXYGEN = 14;
+	private static final int METHANE = 15;
+	private static final int WATER = 16;
+	private static final int FOOD = 17;
+	private static final int DESSERT = 18;
+	private static final int ROCK_SAMPLES = 19;
+	private static final int ICE = 20;
 	/** The number of Columns. */
-	private final static int COLUMNCOUNT = 21;
+	private static final int COLUMNCOUNT = 21;
 	/** Names of Columns. */
-	private static String columnNames[];
+	private static String[] columnNames;
 
 	/** Names of Columns. */
-	private static Class<?> columnTypes[];
+	private static Class<?>[] columnTypes;
 
 	/**
 	 * Class initialiser creates the static names and classes.
@@ -143,7 +141,7 @@ public class VehicleTableModel extends UnitTableModel {
 	private static final int ROCK_SAMPLES_ID = ResourceUtil.rockSamplesID;
 	private static final int ICE_ID = ResourceUtil.iceID;
 
-	private final static AmountResource [] availableDesserts = PreparingDessert.getArrayOfDessertsAR();
+	private static final AmountResource [] availableDesserts = PreparingDessert.getArrayOfDessertsAR();
 
 	private static UnitManager unitManager = Simulation.instance().getUnitManager();
 
@@ -160,7 +158,7 @@ public class VehicleTableModel extends UnitTableModel {
 
 	/**
 	 * Constructs a VehicleTableModel object. It creates the list of possible
-	 * Vehicles from the Unit manager.
+	 * Vehicles from the Unit manager.resetUnit
 	 *
 	 * @param unitManager Proxy manager contains displayable Vehicles.
 	 */
@@ -174,10 +172,10 @@ public class VehicleTableModel extends UnitTableModel {
 
 		if (mode == GameMode.COMMAND) {
 			commanderSettlement = unitManager.getCommanderSettlement();
-			setSource(commanderSettlement.getAllAssociatedVehicles());
+			resetUnits(commanderSettlement.getAllAssociatedVehicles());
 		}
 		else
-			setSource(unitManager.getVehicles());
+			resetUnits(unitManager.getVehicles());
 
 		listenForUnits();
 		missionManagerListener = new LocalMissionManagerListener();
@@ -191,9 +189,17 @@ public class VehicleTableModel extends UnitTableModel {
 			columnTypes
 		);
 
-		setSource(settlement.getAllAssociatedVehicles());
+		setSettlementFilter(settlement);
 
 		missionManagerListener = new LocalMissionManagerListener();
+	}
+
+	/**
+	 * Filter the vehicles to a settlement
+	 */
+	@Override
+	public void setSettlementFilter(Settlement filter) {
+		resetUnits(filter.getAllAssociatedVehicles());
 	}
 
 	/**
@@ -206,7 +212,7 @@ public class VehicleTableModel extends UnitTableModel {
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		Object result = null;
 
-		if (rowIndex < getUnitNumber()) {
+		if (rowIndex < getRowCount()) {
 			Vehicle vehicle = (Vehicle)getUnit(rowIndex);
 			Map<Integer, Double> resourceMap = resourceCache.get(vehicle);
 
@@ -402,17 +408,10 @@ public class VehicleTableModel extends UnitTableModel {
 
 		if (unit.getUnitType() == UnitType.VEHICLE) {
 			Vehicle vehicle = (Vehicle) unit;
-			int unitIndex = -1;
 			Object source = event.getTarget();
 			UnitEventType eventType = event.getType();
 
-			if (mode == GameMode.COMMAND) {
-				if (vehicle.getAssociatedSettlement().getName().equalsIgnoreCase(commanderSettlement.getName()))
-					unitIndex = 0;
-			}
-			else {
-				unitIndex = getUnitIndex(vehicle);
-			}
+			int unitIndex = getIndex(vehicle);
 
 			if (unitIndex > -1) {
 
@@ -500,16 +499,6 @@ public class VehicleTableModel extends UnitTableModel {
 				}
 			}
 		}
-	}
-
-	/**
-	 * Defines the source data from this table.
-	 * 
-	 * @param source
-	 */
-	private void setSource(Collection<Vehicle> source) {
-		Iterator<Vehicle> iter = source.iterator();
-		while(iter.hasNext()) addUnit(iter.next());
 	}
 
 	/**
@@ -714,7 +703,7 @@ public class VehicleTableModel extends UnitTableModel {
 				if (mission instanceof VehicleMission) {
 					Vehicle vehicle = ((VehicleMission) mission).getVehicle();
 					if (vehicle != null) {
-						int unitIndex = getUnitIndex(vehicle);
+						int unitIndex = getIndex(vehicle);
 						if (unitIndex > -1)
 							SwingUtilities.invokeLater(new VehicleTableCellUpdater(unitIndex, columnNum));
 					}

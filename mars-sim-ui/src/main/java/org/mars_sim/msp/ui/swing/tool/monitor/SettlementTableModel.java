@@ -7,9 +7,10 @@
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
 import java.text.DecimalFormat;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -39,42 +40,42 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 @SuppressWarnings("serial")
 public class SettlementTableModel extends UnitTableModel {
 
-	private final static Logger logger = Logger.getLogger(SettlementTableModel.class.getName());
+	private static final Logger logger = Logger.getLogger(SettlementTableModel.class.getName());
 
 	// Column indexes
-	private final static int NAME = 0;
-	private final static int POPULATION = 1;
-	private final static int PARKED = 2;
-	private final static int MISSION = 3;
-	private final static int COMPUTING_UNIT = 4;
-	private final static int POWER_GEN = 5;
-	private final static int POWER_LOAD = 6;
-	private final static int ENERGY_STORED = 7;
+	private static final int NAME = 0;
+	private static final int POPULATION = 1;
+	private static final int PARKED = 2;
+	private static final int MISSION = 3;
+	private static final int COMPUTING_UNIT = 4;
+	private static final int POWER_GEN = 5;
+	private static final int POWER_LOAD = 6;
+	private static final int ENERGY_STORED = 7;
 	
-	private final static int MALFUNCTION = 8;
+	private static final int MALFUNCTION = 8;
 
-	private final static int OXYGEN_COL = 9;
-	private final static int HYDROGEN_COL = 10;
-	private final static int METHANE_COL = 11;
-	private final static int METHANOL_COL = 12;
+	private static final int OXYGEN_COL = 9;
+	private static final int HYDROGEN_COL = 10;
+	private static final int METHANE_COL = 11;
+	private static final int METHANOL_COL = 12;
 	
-	private final static int WATER_COL = 13;
-	private final static int ICE_COL = 14;
+	private static final int WATER_COL = 13;
+	private static final int ICE_COL = 14;
 
-	private final static int CONCRETE_COL = 15;
-	private final static int CEMENT_COL = 16;
+	private static final int CONCRETE_COL = 15;
+	private static final int CEMENT_COL = 16;
 	
-	private final static int REGOLITHS_COL = 17;
-	private final static int ROCKS_COL = 18;
-	private final static int ORES_COL = 19;
-	private final static int MINERALS_COL = 20;
+	private static final int REGOLITHS_COL = 17;
+	private static final int ROCKS_COL = 18;
+	private static final int ORES_COL = 19;
+	private static final int MINERALS_COL = 20;
 
 	/** The number of Columns. */
-	private final static int COLUMNCOUNT = 21;
+	private static final int COLUMNCOUNT = 21;
 	/** Names of Columns. */
-	private final static String columnNames[];
+	private static final String columnNames[];
 	/** Types of columns. */
-	private final static Class<?> columnTypes[];
+	private static final Class<?> columnTypes[];
 
 	static {
 		columnNames = new String[COLUMNCOUNT];
@@ -170,10 +171,8 @@ public class SettlementTableModel extends UnitTableModel {
 		super(UnitType.SETTLEMENT, "Mars", "SettlementTableModel.countingSettlements",
 				columnNames, columnTypes);
 
-//		if (mode == GameMode.COMMAND)
-//			addUnit(unitManager.getCommanderSettlement());
-//		else
-			setSource(unitManager.getSettlements());
+		resourceCache = new HashMap<>();
+		resetUnits(unitManager.getSettlements());
 			
 		listenForUnits();
 	}
@@ -189,9 +188,23 @@ public class SettlementTableModel extends UnitTableModel {
 				"SettlementTableModel.countingSettlements", 
 				columnNames, columnTypes);
 
-		addUnit(settlement);
+		setSettlementFilter(settlement);
 
 		listenForUnits();
+	}
+
+	/**
+	 * Set the settlement filter for the Robot table
+	 * @param filter
+	 */
+	@Override
+	public void setSettlementFilter(Settlement filter) {
+
+		resourceCache = new HashMap<>();
+
+		List<Settlement> sList = new ArrayList<>();
+		sList.add(filter);
+		resetUnits(sList);
 	}
 
 	/**
@@ -204,8 +217,8 @@ public class SettlementTableModel extends UnitTableModel {
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		Object result = null;
 
-		if (rowIndex < getUnitNumber()) {
-			Settlement settle = (Settlement) getUnit(rowIndex);
+		if (rowIndex < getRowCount()) {
+			Settlement settle = (Settlement) getObject(rowIndex);
 			Map<Integer, Double> resourceMap = resourceCache.get(settle);
 
 			try {
@@ -379,7 +392,7 @@ public class SettlementTableModel extends UnitTableModel {
 	@Override
 	public void unitUpdate(UnitEvent event) {
 		Unit unit = (Unit) event.getSource();
-		int unitIndex = getUnitIndex(unit);
+		int unitIndex = getIndex(unit);
 		Object source = event.getTarget();
 		UnitEventType eventType = event.getType();
 
@@ -503,23 +516,9 @@ public class SettlementTableModel extends UnitTableModel {
 		}
 	}
 
-	/**
-	 * Defines the source data from this table.
-	 * 
-	 * @param source
-	 */
-	private void setSource(Collection<Settlement> source) {
-		Iterator<Settlement> iter = source.iterator();
-		while (iter.hasNext())
-			addUnit(iter.next());
-		
-		setSize(source.size());
-	}
 
 	@Override
 	protected void addUnit(Unit newUnit) {
-		if (resourceCache == null)
-			resourceCache = new HashMap<>();
 		if (!resourceCache.containsKey(newUnit)) {
 			try {
 				Map<Integer, Double> resourceMap = new HashMap<>();
@@ -557,9 +556,7 @@ public class SettlementTableModel extends UnitTableModel {
 	
 	@Override
 	protected void removeUnit(Unit oldUnit) {
-		if (resourceCache == null)
-			resourceCache = new HashMap<>();
-		if (resourceCache.containsKey(oldUnit)) {
+		if ((resourceCache != null) && resourceCache.containsKey(oldUnit)) {
 			Map<Integer, Double> resourceMap = resourceCache.get(oldUnit);
 			resourceMap.clear();
 			resourceCache.remove(oldUnit);

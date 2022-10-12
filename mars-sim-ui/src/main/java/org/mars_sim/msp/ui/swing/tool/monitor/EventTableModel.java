@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.events.HistoricalEventListener;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.events.SimpleEvent;
 import org.mars_sim.msp.core.person.EventType;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.notification.NotificationMenu;
@@ -34,8 +35,6 @@ import org.mars_sim.msp.ui.swing.notification.NotificationMenu;
 public class EventTableModel extends AbstractTableModel
 		implements MonitorModel, HistoricalEventListener{
 
-	/** default logger. */
-//	private static final Logger logger = Logger.getLogger(EventTableModel.class.getName());
 
 	private static final int MSG_CACHE = 5;
 
@@ -101,7 +100,6 @@ public class EventTableModel extends AbstractTableModel
 	private List<String> messageCache = new ArrayList<>();
 
 	private transient List<SimpleEvent> cachedEvents = new ArrayList<>();
-	private UnitManager unitManager;
 	private HistoricalEventManager eventManager;
 
 	/**
@@ -116,7 +114,6 @@ public class EventTableModel extends AbstractTableModel
 
 		// Add this model as an event listener.
 		Simulation sim = desktop.getSimulation();
-		this.unitManager = sim.getUnitManager();
 		this.eventManager = sim.getEventManager();
 		
 		// Update the cached events.
@@ -124,6 +121,12 @@ public class EventTableModel extends AbstractTableModel
 		
 		// Add listener only when fully constructed
 		eventManager.addListener(this);
+	}
+
+	@Override
+	public void setSettlementFilter(Settlement filter) {
+		// Events do not support filtering
+		throw new UnsupportedOperationException("Settlement filtering not supported");
 	}
 
 	private synchronized void updateCachedEvents() {
