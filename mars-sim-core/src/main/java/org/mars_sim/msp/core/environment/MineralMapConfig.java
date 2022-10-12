@@ -119,5 +119,9 @@ public class MineralMapConfig implements Serializable {
 		public List<String> getLocales() {
 			return locales;
 		}
+		
+		public String toString() {
+			return name;
+		}
 	}
 }

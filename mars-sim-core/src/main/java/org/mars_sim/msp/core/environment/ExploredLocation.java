@@ -63,12 +63,12 @@ public class ExploredLocation implements Serializable {
 		reserved = false;
 		this.numEstimationImprovement = estimationImprovement;
 		
-		double reserve = RandomUtil.getRandomDouble(10_000, 100_000);
+		double reserve = RandomUtil.getRandomDouble(5_000, 300_000);
 		totalMass = RandomUtil.computeGaussianWithLimit(reserve, .5, reserve * .1);
 		remainingMass = totalMass;
 		
 		logger.info(settlement + " - " + location.getFormattedString() 
-			+ "  random reserve: " + (int)totalMass + " kg.  Concentration: "
+			+ "   Estimated reserve: " + (int)totalMass + " kg.  Concentration: "
 			+ estimatedMineralConcentrations);
 	}
 
