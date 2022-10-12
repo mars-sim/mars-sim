@@ -103,7 +103,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 	 */
 	public ReviewMissionPlan(Person person) {
 		// Use Task constructor.
-		super(NAME, person, true, false, STRESS_MODIFIER, 30D + RandomUtil.getRandomInt(-10, 10));
+		super(NAME, person, true, false, STRESS_MODIFIER, SkillType.MANAGEMENT, RandomUtil.getRandomInt(20, 40));
 				
 		if (person.isInSettlement()) {
 
@@ -450,7 +450,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 
 		StringBuilder msg = new StringBuilder();
 		msg.append("Grading ").append(requestedBy).append("'s ").append(m.getName());
-		msg.append(" plan - ");
+		msg.append(" plan -");
 		msg.append(" Rating: ").append(rating); 
 		msg.append(", Rels: ").append(relation); 
 		msg.append(", Quals: ").append(qual); 
@@ -583,5 +583,4 @@ public class ReviewMissionPlan extends Task implements Serializable {
 			office.removeStaff();
 		}
 	}
-
 }

@@ -84,7 +84,6 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	private static Weather weather;
 	private static OrbitInfo orbitInfo;
 	
-	
 	private static List<Landmark> landmarks = null;
 
 	/**
@@ -588,7 +587,8 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	 */
 	public ExploredLocation addExploredLocation(Coordinates location,
 			int estimationImprovement, Settlement settlement) {
-
+		int initialPercent = 100;
+		
 		String [] mineralTypes = mineralMap.getMineralTypeNames();
 		Map<String, Double> initialMineralEstimations = new HashMap<>(mineralTypes.length);
 		for (String mineralType : mineralTypes) {
@@ -598,10 +598,10 @@ public class SurfaceFeatures implements Serializable, Temporal {
 			
 			// via the use of ExploredCommand			
 			if (estimationImprovement == Mining.MATURE_ESTIMATE_NUM) {
-				varianceMax = actual * MINERAL_ESTIMATION_VARIANCE / 2;
+				varianceMax = 1 + actual * MINERAL_ESTIMATION_VARIANCE / 2;
 			}
 			else {
-				varianceMax = actual * MINERAL_ESTIMATION_VARIANCE * 2;
+				varianceMax = 1 + actual * MINERAL_ESTIMATION_VARIANCE * 2;
 			}
 
 			estimated = actual + RandomUtil.getRandomDouble(-varianceMax, varianceMax);

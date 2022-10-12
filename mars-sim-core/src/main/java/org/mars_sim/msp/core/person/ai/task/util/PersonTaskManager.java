@@ -162,8 +162,8 @@ public class PersonTaskManager extends TaskManager {
 				if (probability > MAX_TASK_PROBABILITY) {
 					if (!mt.getName().toLowerCase().contains("sleep")) {
 						logger.log(person, Level.WARNING, 10_000,
-							mt.getName() + "'s probability is at all time high ("
-							+ Math.round(probability) + ").");
+							"Probability of '" + mt.getName() + "' at  "
+							+ Math.round(probability) + ".");
 					}
 					probability = MAX_TASK_PROBABILITY;
 				}

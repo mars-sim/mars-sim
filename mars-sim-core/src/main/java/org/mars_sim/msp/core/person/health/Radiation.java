@@ -38,7 +38,7 @@ public class Radiation implements Serializable {
 		return region;
 	}
 	
-	public RadiationType getradiationType() {
+	public RadiationType getRadiationType() {
 		return type;
 	}
 	
