@@ -512,6 +512,9 @@ public class RadiationExposure implements Serializable, Temporal {
 						eventMap.add(rad);
 					}	
 				}
+				else {
+					return false;
+				}
 
 				exposure = sep + gcr + baseline;
 				totalExposure += exposure;

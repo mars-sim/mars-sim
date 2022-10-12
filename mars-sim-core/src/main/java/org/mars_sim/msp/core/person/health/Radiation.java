@@ -44,6 +44,8 @@ public class Radiation implements Serializable {
 	
 	@Override
 	public String toString() {
-		return type.getName() + " - " + region.getName() + " - Dose: " + Math.round(amount * 10_000.0)/10_000.0;
+		String typeStr = type.getName();
+		String regionStr = region.getName();
+		return typeStr + " - " + regionStr + " - Dose: " + Math.round(amount * 10_000.0)/10_000.0;
 	}
 }

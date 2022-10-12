@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.environment;
 
 import java.awt.Color;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -496,7 +497,8 @@ public class TerrainElevation implements Serializable {
 	}
 
 	public static CollectionSite getCollectionSite(Coordinates newLocation) {
-		for (CollectionSite s: sites) {
+		// Create a shallow copy of sites to avoid ConcurrentModificationException
+		for (CollectionSite s:  new ArrayList<>(sites)) {
 			if (s.getLocation().equals(newLocation)) {
 				return s;
 			}

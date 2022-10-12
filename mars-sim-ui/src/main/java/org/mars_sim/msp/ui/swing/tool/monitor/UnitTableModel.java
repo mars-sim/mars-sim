@@ -131,7 +131,6 @@ abstract public class UnitTableModel extends AbstractTableModel implements Monit
 		// Just fire one table event for teh whole table
 		fireEnabled = true;
 		fireTableDataChanged();
-		//fireTableRowsUpdated(0, getRowCount());
 	}
 
 	/**

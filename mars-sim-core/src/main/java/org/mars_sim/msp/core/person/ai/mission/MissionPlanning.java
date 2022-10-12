@@ -68,22 +68,34 @@ public class MissionPlanning implements Serializable {
 			// have looked at the plan
 			int num = reviewers.size();
 			if (pop >= 48) {
-                return num > 5;
+                return num > 12;
+			}
+			else if (pop >= 42) {
+                return num > 11;
+			}
+			else if (pop >= 36) {
+                return num > 10;
+			}
+			else if (pop >= 30) {
+                return num > 9;
 			}
 			else if (pop >= 24) {
-                return num > 4;
+                return num > 8;
+			}
+			else if (pop >= 18) {
+                return num > 7;
 			}
 			else if (pop >= 12) {
-                return num > 3;
+                return num > 6;
 			}
 			else if (pop >= 10) {
-                return num > 2;
+                return num > 5;
 			}
 			else if (pop >= 8) {
-                return num > 2;
+                return num > 4;
 			}			
 			else if (pop >= 6) {
-                return num > 2;
+                return num > 3;
 			}	
 			else if (pop >= 4) {
                 return num > 2;

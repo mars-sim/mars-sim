@@ -22,11 +22,13 @@ import org.mars_sim.msp.core.structure.Settlement;
  */
 public class CollectIceMeta extends AbstractMetaMission {
 
+	private static final double VALUE = 3500D;
 
-	private static final double VALUE = 30D;
-
+	/** starting sol for this mission to commence. */
+	public final static int MIN_STARTING_SOL = 3;
+	
 	CollectIceMeta() {
-		super(MissionType.COLLECT_ICE, Set.of(JobType.AREOLOGIST, JobType.CHEMIST));
+		super(MissionType.COLLECT_ICE, Set.of(JobType.AREOLOGIST, JobType.CHEMIST, JobType.BOTANIST, JobType.CHEF));
 	}
 
 	@Override
@@ -45,7 +47,10 @@ public class CollectIceMeta extends AbstractMetaMission {
 
 			RoleType roleType = person.getRole().getType();
 
-			if (person.getMind().getJob() == JobType.CHEMIST
+			if (person.getMind().getJob() == JobType.AREOLOGIST
+					|| person.getMind().getJob() == JobType.CHEMIST
+					|| person.getMind().getJob() == JobType.BOTANIST
+					|| person.getMind().getJob() == JobType.CHEF
 					|| RoleType.MISSION_SPECIALIST == roleType
 					|| RoleType.CHIEF_OF_MISSION_PLANNING == roleType
 					|| RoleType.CHIEF_OF_AGRICULTURE == roleType
@@ -57,36 +62,40 @@ public class CollectIceMeta extends AbstractMetaMission {
 				missionProbability = 1D;
 	    		int numEmbarked = MissionUtil.numEmbarkingMissions(settlement);
 	    		int numThisMission = missionManager.numParticularMissions(MissionType.COLLECT_ICE, settlement);
-
+				int pop = settlement.getNumCitizens();
+				
 		   		// Check for # of embarking missions.
-	    		if (Math.max(1, settlement.getNumCitizens() / 8.0) < numEmbarked + numThisMission) {
+	    		if (Math.max(1, pop / 8.0) < numEmbarked + numThisMission) {
 	    			return 0;
 	    		}
 
-	    		if (numThisMission > 1)
+	    		if (numThisMission > Math.max(1, pop / 8.0)) {
 	    			return 0;
+	    		}
+
+	    		missionProbability = settlement.getIceProbabilityValue() / VALUE;
 
 	    		int f1 = numEmbarked + 1;
-	    		int f2 = 2*numThisMission + 1;
+	    		int f2 = numThisMission + 1;
 
-	    		missionProbability *= settlement.getNumCitizens() / VALUE / f1 / f2;
+	    		missionProbability *= (double)Math.max(1, pop / 8.0) / f1 / f2;
 
 				// Job modifier.
 	    		missionProbability *= getLeaderSuitability(person);
 				// If this town has a tourist objective, divided by bonus
 				missionProbability = missionProbability / settlement.getGoodsManager().getTourismFactor();
 
-				if (missionProbability > LIMIT)
-					missionProbability = LIMIT;
-
 				// if introvert, score  0 to  50 --> -2 to 0
 				// if extrovert, score 50 to 100 -->  0 to 2
 				// Reduce probability if introvert
 				int extrovert = person.getExtrovertmodifier();
-				missionProbability += extrovert;
+				missionProbability = missionProbability * (1 + extrovert/2.0);
 
 				if (missionProbability < 0)
 					missionProbability = 0;
+				
+				else if (missionProbability > LIMIT)
+					missionProbability = LIMIT;
 			}
 		}
 

@@ -551,7 +551,6 @@ public class SettlementTableModel extends UnitTableModel {
 			} catch (Exception e) {
 			}
 		}
-		super.addUnit(newUnit);
 	}
 	
 	@Override

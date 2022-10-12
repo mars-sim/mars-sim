@@ -562,7 +562,7 @@ public class Exploration extends EVAMission
 		    double concentration = entry.getValue();
 			int mineralResource = ResourceUtil.findIDbyAmountResourceName(mineralType);
 			double mineralValue = settlement.getGoodsManager().getGoodValuePoint(mineralResource);
-			double mineralAmount = (concentration / 100) * 10_000 * Mining.MINERAL_BASE_AMOUNT;
+			double mineralAmount = (concentration / 100) * 50_000 * Mining.MINERAL_BASE_AMOUNT;
 			result += mineralValue * mineralAmount;
 		}
 

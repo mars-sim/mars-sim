@@ -65,7 +65,7 @@ import com.alee.managers.tooltip.TooltipWay;
  * of which monitor a set of Units.
  */
 @SuppressWarnings("serial")
-public class MonitorWindow extends ToolWindow implements TableModelListener, ActionListener {
+public class MonitorWindow extends ToolWindow implements TableModelListener, ActionListener{
 
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(MonitorWindow.class.getName());
@@ -125,7 +125,6 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	private JTable rowTable;
 
 	private Settlement selectedSettlement;
-	private List<Settlement> settlementList;
 
 	private UnitManager unitManager;
 
@@ -152,10 +151,10 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		mainPane.add(topPane, BorderLayout.NORTH);
 
 		// Set up settlements
-		setupSettlements();
+		List<Settlement> initialSettlements = setupSettlements();
 		
 		// Create the settlement combo box
-        buildSettlementNameComboBox();
+        buildSettlementNameComboBox(initialSettlements);
 
 		// Create settlement pane
 		WebPanel settlementPane = new WebPanel(new BorderLayout(5, 5));
@@ -173,7 +172,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		tabsSection.setForeground(Color.DARK_GRAY);
 		
 		// Add all the tabs
-		addAllTabs();
+		addAllTabs(initialSettlements);
 		
 		// Hide settlement box at startup since the all settlement tab is being selected by default
 		setSettlementBox(true);
@@ -217,13 +216,13 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	/**
 	 * Adds all the tabs.
 	 */
-	public void addAllTabs() {
+	private void addAllTabs(List<Settlement> initialSettlements) {
 		// Add tabs into the table
 		try {
-			if (!settlementList.isEmpty())
-				this.selectedSettlement = settlementList.get(0);
+			if (!initialSettlements.isEmpty())
+				this.selectedSettlement = initialSettlements.get(0);
 			
-			if (getSettlements().size() > 1) {
+			if (initialSettlements.size() > 1) {
 				addTab(new UnitTab(this, new SettlementTableModel(), true, MARS_ICON));
 			}
 			
@@ -334,42 +333,29 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	 *
 	 * @return List<Settlement>
 	 */
-	public void setupSettlements() {
-		if (settlementList == null) {
-			List<Settlement> settlements = new ArrayList<>();
+	private List<Settlement> setupSettlements() {
+		List<Settlement> settlements = new ArrayList<>();
 
-			if (GameManager.getGameMode() == GameMode.COMMAND) {
-				settlements = unitManager.getCommanderSettlements();
-			}
-
-			else if (GameManager.getGameMode() == GameMode.SANDBOX) {
-				settlements.addAll(unitManager.getSettlements());
-			}
-
-			Collections.sort(settlements);
-			settlementList = settlements;
+		if (GameManager.getGameMode() == GameMode.COMMAND) {
+			settlements = unitManager.getCommanderSettlements();
 		}
+
+		else if (GameManager.getGameMode() == GameMode.SANDBOX) {
+			settlements.addAll(unitManager.getSettlements());
+		}
+
+		Collections.sort(settlements);
 		
-		if (!settlementList.isEmpty())
-			this.selectedSettlement = settlementList.get(0);
+		return settlements;
 	}
 
-	/**
-	 * Gets a list of settlements.
-	 *
-	 * @return List<Settlement>
-	 */
-	public List<Settlement> getSettlements() {
-		return settlementList;
-	}
-	
 	/**
 	 * Builds the settlement combo box/
 	 */
 	@SuppressWarnings("unchecked")
-	public void buildSettlementNameComboBox() {
+	private void buildSettlementNameComboBox(List<Settlement> startingSettlements) {
 
-		settlementComboBox = new WebComboBox(StyleId.comboboxHover, getSettlements());
+		settlementComboBox = new WebComboBox(StyleId.comboboxHover, startingSettlements);
 		settlementComboBox.setWidePopup(true);
 		settlementComboBox.setSize(getNameLength() * 12, 30);
 		settlementComboBox.setOpaque(false);
@@ -534,30 +520,9 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 			return;
 		
 		int index = tabsSection.indexOfComponent(selectedTab);
-		
-		if (settlementList.size() == 1) {
-			this.selectedSettlement = settlementList.get(0);
-			
-			if (selectedTab instanceof TradeTab) {
-				// Enable these buttons
-				buttonBar.setEnabled(true);
-				buttonMap.setEnabled(true);
-				buttonDetails.setEnabled(true);
-				buttonFilter.setEnabled(true);
 
-				int rowIndex = ((TableTab)selectedTab).getTable().getSelectedRow();
-
-				scrollToVisible(tradeTab.getTable(), rowIndex, 0);
-			}
-			
-			// Update the row count label with new numbers
-			rowCount.setText(selectedTab.getCountString());
-			
-			return;
-		}
-			
 		// if "Mars" tab is being selected 
-		else if (index == 0) {
+		if (index == 0) {
 			// Hide the settlement boxPieChart
 			setSettlementBox(true);
 			// Update the row count label with new numbers
@@ -809,6 +774,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 			filterCategories();
 		}
 	}
+
 
 	/**
 	 * Prepares tool window for deletion.

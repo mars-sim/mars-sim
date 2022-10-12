@@ -132,7 +132,7 @@ public class DeliveryMeta extends AbstractMetaMission {
 		else if (numThisMission > 1)
 			return 0;	
 		
-		int f2 = 2*numThisMission + 1;
+		int f2 = 2 * numThisMission + 1;
 		
 		missionProbability *= settlement.getNumCitizens() / f2 / 2D;
 		

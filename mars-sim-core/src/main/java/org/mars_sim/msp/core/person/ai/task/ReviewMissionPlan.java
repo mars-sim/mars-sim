@@ -95,7 +95,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 	// Data members
 	/** The administration building the person is using. */
 	private Administration office;
-	
+    
 	/**
 	 * Constructor. This is an effort-driven task.
 	 * 
@@ -178,9 +178,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
         
         if (missions.isEmpty())
         	endTask();
-        
-        GoodsManager goodsManager = reviewerSettlement.getGoodsManager();
-        
+            
 		// Iterates through each pending mission 
 		for(Mission m : missions) {
 			MissionPlanning mp = m.getPlan();
@@ -196,256 +194,47 @@ public class ReviewMissionPlan extends Task implements Serializable {
 		            }
 		            else {
 		            	// if not 100% reviewed
-		            	
+						Person p = m.getStartingPerson();
 						String reviewedBy = person.getName();
 						
-						Person p = m.getStartingPerson();
 						String requestedBy = p.getName();
 		
-		            	double score = 0;
-            			
-						
 						if (!reviewedBy.equals(requestedBy)
 								&& mp.isReviewerValid(reviewedBy, reviewerSettlement.getNumCitizens())) {
 							
+					    	// Check if it's 90% done
 						    if (is90Completed()) {
-						    	
-								logger.log(worker, Level.INFO, 15_000, "Reviewing " + requestedBy
-										+ "'s " + m.getName() + " mission plan.");
-								
-				            	// Use up to 90% of the time
+						        // Execute the review 
+						    	completeReview(m, p, reviewerSettlement, mp);
+						    
 								return 0; 
 						    }
 						    
-						    else {
-						    	MissionType mt = m.getMissionType();
+						    else {	
+								logger.log(worker, Level.INFO, 15_000, "Reviewing " + requestedBy
+											+ "'s " + m.getName() + " mission plan.");
+								// Add experience
+								addExperience(time);
+						    }
+						    						
+						    if (mp.getPercentComplete() >= 100D) {
+						    	// Go to the finished phase and finalize the approval
+						    	setPhase(APPROVING);
 						    	
-								List<JobAssignment> list = p.getJobHistory().getJobAssignmentList();
-								int last = list.size() - 1;
-								
-								// 1. Reviews requester's cumulative job rating
-								double rating = list.get(last).getJobRating();
-								double cumulative_rating = 0;
-								int size = list.size();
-								for (int j = 0; j < size; j++) {
-									cumulative_rating += list.get(j).getJobRating();
-								}
-								cumulative_rating = cumulative_rating / size;
-				
-								rating = (rating + cumulative_rating);
-										
-								// 2. Relationship Score 
-								
-								// 2a. Reviewer's view of the mission lead
-								double relationshipWithReviewer = RelationshipUtil.getOpinionOfPerson(person, p);
-									
-								double relationshipWithOthers = 0;
-								int num = reviewerSettlement.getAllAssociatedPeople().size();
-								for (Person pp : reviewerSettlement.getAllAssociatedPeople()) {
-									relationshipWithOthers += RelationshipUtil.getOpinionOfPerson(person, pp);
-								}
-								
-								// 2b. Others' view of the mission lead
-								relationshipWithOthers = (int)(relationshipWithOthers / num);
-								
-								int relation = (int)((relationshipWithReviewer + relationshipWithOthers) / 10D) ;
-								
-								// 3. Mission Qualification Score
-								double qual = 0;
-								
-								switch (mt) {
-								case AREOLOGY :
-								case BIOLOGY:
-								case METEOROLOGY:
-								case RESCUE_SALVAGE_VEHICLE:
-								case TRAVEL_TO_SETTLEMENT:
-									qual = .5;
-									break;
-
-								case COLLECT_REGOLITH:
-									qual = .15;
-									break;
-									
-								case COLLECT_ICE:
-								case EXPLORATION:
-									qual = .25;
-									break;
-			
-								case MINING:
-									qual = .3;
-									break;
-									
-								case TRADE:
-									qual = .35;
-									break;
-									
-								default:
-									qual = .4;
-						    	}
+						        return 0;
+						    }
 						    
-								qual = qual * m.getMissionQualification(person);
-								qual = 2.5 * Math.round(qual * 10.0)/10.0;
-								
-								// 4. Settlement objective score, is the Mission type
-								// is preferred for the Objective
-								double obj = 0;
-								ObjectiveType objective = reviewerSettlement.getObjective();
-								if (OBJECTIVE_TO_MISSION.getOrDefault(objective, Collections.emptySet()).contains(mt)) {
-									switch (objective) {
-									case BUILDERS_HAVEN:
-										obj += 5D * goodsManager.getBuildersFactor(); 
-										break;
-										
-									case CROP_FARM:
-										obj += 5D * goodsManager.getCropFarmFactor();
-										break;
-									
-									case TOURISM:
-										obj += 5D * goodsManager.getTourismFactor();
-										break;
-									
-									case TRADE_CENTER:
-										obj += 5D * goodsManager.getTradeFactor();
-										break;
-									
-									case TRANSPORTATION_HUB:
-										obj += 5D * goodsManager.getTransportationFactor();
-										break;
-									
-									case MANUFACTURING_DEPOT:
-										obj += 5D * goodsManager.getManufacturingFactor();
-										break;
-									default:
-										break;
-									}
-								}
-
-								// 5. emergency
-								int emer = 0;
-								if ((mt == MissionType.EMERGENCY_SUPPLY)
-										|| (mt == MissionType.RESCUE_SALVAGE_VEHICLE)) {
-									emer = 50;
-								}	
-								
-								// 6. Site Value
-								double siteValue = 0;
-								if (m instanceof SiteMission) {
-									siteValue = ((SiteMission)m).getTotalSiteScore(reviewerSettlement);
-									
-									// Why do we adjust these score ?
-									if (mt == MissionType.COLLECT_ICE) {
-										siteValue /= 40D;
-									}
-									else if (mt == MissionType.COLLECT_REGOLITH) {
-										siteValue /= 30D;
-									}
-									else if (mt == MissionType.MINING) {
-										siteValue /= 20D;
-									}
-									else if (mt == MissionType.EXPLORATION) {
-										siteValue /= 20D;
-									}
-								}
-
-								// 7. proposed route distance (-10 to 10 points)
-								int dist = 0;
-								if (m instanceof VehicleMission) {
-									int range = m.getAssociatedSettlement().getMissionRadius(mt);
-									if (range > 0) {
-										int proposed = (int)(((VehicleMission) m).getDistanceProposed());
-										
-										// Scoring rule:
-										// At range = 0, the score is 10
-										// At full range, the score is -10
-										// The score for half the range is zero.
-
-										// Calculate the dist score
-										dist = (int)(- 20.0 / range * proposed + 10);
-									}
-								}
-								
-								// 8. Leadership and Charisma
-								NaturalAttributeManager attrMgr = person.getNaturalAttributeManager();
-								int leadership = (int)(.075 * attrMgr
-													.getAttribute(NaturalAttributeType.LEADERSHIP)
-												+ .025 * attrMgr
-													.getAttribute(NaturalAttributeType.ATTRACTIVENESS));				
-		
-								// 9. reviewer role weight
-								RoleType role = person.getRole().getType();
-								int reviewerRole = 0;
-								
-								if (role == RoleType.PRESIDENT)
-									reviewerRole = 20;
-								else if (role == RoleType.MAYOR)
-									reviewerRole = 15;
-								else if (role == RoleType.COMMANDER)
-									reviewerRole = 10;
-								else if (role == RoleType.SUB_COMMANDER)
-									reviewerRole = 8;
-								else if (role == RoleType.CHIEF_OF_MISSION_PLANNING)
-									reviewerRole = 7;
-								else if (role == RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS)
-									reviewerRole = 6;
-								else if (role.isChief())
-									reviewerRole = 5;
-								else if (role == RoleType.MISSION_SPECIALIST)
-									reviewerRole = 4;
-								else
-									reviewerRole = 2;
-								
-								
-								// 10. luck
-								int luck = RandomUtil.getRandomInt(-5, 5);	
-								
-								// Future: 9. Go to him/her to have a chat
-								// Future: 10. mission lead's leadership/charisma
-								
-								score = Math.round((rating + relation + qual + obj + emer + siteValue + dist + leadership + reviewerRole + luck)* 10.0)/10.0;
-	
-								// Updates the mission plan status
-								missionManager.scoreMissionPlan(mp, score, person);
-
-								StringBuilder msg = new StringBuilder();
-								msg.append("Grading ").append(requestedBy).append("'s ").append(m.getName());
-								msg.append(" plan - ");
-								msg.append(" Rating: ").append(rating); 
-								msg.append(", Rels: ").append(relation); 
-								msg.append(", Quals: ").append(qual); 
-								msg.append(", Obj: ").append(obj);
-								msg.append(", Emer: ").append(emer);
-								msg.append(", Site: ").append(Math.round(siteValue*10.0)/10.0);
-								msg.append(", Dist: ").append(dist);
-								msg.append(", Lead: ").append(leadership); 							
-								msg.append(", Review: ").append(reviewerRole); 
-								msg.append(", Luck: ").append(luck); 
-								msg.append(" = Subtotal: ").append(score);
-								
-								logger.log(worker, Level.INFO, 0,  msg.toString());
-	
-							      // Add experience
-						        addExperience(time);
-					        
-								// Do only one review each time
-						        endTask();
+						    else if (mp.getPercentComplete() >= 60D) {
+						    	int sol = marsClock.getMissionSol();
+						    	int solRequest = m.getPlan().getMissionSol();
+						    	if (sol - solRequest > 7) {
+						    		// If no one else is able to offer the review after x days, 
+						    		// do allow the review to go through even if the reviewer is not valid
+						        	setPhase(APPROVING);
+						            return time * 0.2;
+						    	}
 						    }
 						}
-							
-						if (mp.getPercentComplete() >= 100D) {
-			            	// Go to the finished phase and finalize the approval
-			            	setPhase(APPROVING);
-			                return time * 0.2;
-			            }
-				        else if (mp.getPercentComplete() >= 60D) {
-				        	int sol = marsClock.getMissionSol();
-				        	int solRequest = m.getPlan().getMissionSol();
-				        	if (sol - solRequest > 7) {
-	    						// If no one else is able to offer the review after x days, 
-	    						// do allow the review to go through even if the reviewer is not valid
-				            	setPhase(APPROVING);
-				                return time * 0.2;
-				        	}
-				        }
 	
 		            } // end of else // if (mp.getPercentComplete() >= 100D) {
 		            
@@ -458,7 +247,225 @@ public class ReviewMissionPlan extends Task implements Serializable {
         return time * 0.2;
 	}
 
+	/**
+	 * Completes the review.
+	 * 
+	 * @param m
+	 * @param p
+	 * @param reviewerSettlement
+	 * @param mp
+	 */
+	private void completeReview(Mission m, Person p, Settlement reviewerSettlement, MissionPlanning mp) {
+		String requestedBy = p.getName();
+		
+	    GoodsManager goodsManager = reviewerSettlement.getGoodsManager();
+	    
+    	MissionType mt = m.getMissionType();
+    	
+		List<JobAssignment> list = p.getJobHistory().getJobAssignmentList();
+		int last = list.size() - 1;
+		
+		// 1. Reviews requester's cumulative job rating
+		double rating = list.get(last).getJobRating();
+		double cumulative_rating = 0;
+		int size = list.size();
+		for (int j = 0; j < size; j++) {
+			cumulative_rating += list.get(j).getJobRating();
+		}
+		cumulative_rating = cumulative_rating / size;
 
+		rating = (rating + cumulative_rating);
+				
+		// 2. Relationship Score 
+		
+		// 2a. Reviewer's view of the mission lead
+		double relationshipWithReviewer = RelationshipUtil.getOpinionOfPerson(person, p);
+			
+		double relationshipWithOthers = 0;
+		int num = reviewerSettlement.getAllAssociatedPeople().size();
+		for (Person pp : reviewerSettlement.getAllAssociatedPeople()) {
+			relationshipWithOthers += RelationshipUtil.getOpinionOfPerson(person, pp);
+		}
+		
+		// 2b. Others' view of the mission lead
+		relationshipWithOthers = (int)(relationshipWithOthers / num);
+		
+		int relation = (int)((relationshipWithReviewer + relationshipWithOthers) / 10D) ;
+		
+		// 3. Mission Qualification Score
+		double qual = 0;
+		
+		switch (mt) {
+		case AREOLOGY :
+		case BIOLOGY:
+		case METEOROLOGY:
+		case RESCUE_SALVAGE_VEHICLE:
+		case TRAVEL_TO_SETTLEMENT:
+			qual = .5;
+			break;
+
+		case COLLECT_REGOLITH:
+			qual = .15;
+			break;
+			
+		case COLLECT_ICE:
+		case EXPLORATION:
+			qual = .25;
+			break;
+
+		case MINING:
+			qual = .3;
+			break;
+			
+		case TRADE:
+			qual = .35;
+			break;
+			
+		default:
+			qual = .4;
+    	}
+    
+		qual = qual * m.getMissionQualification(person);
+		qual = 2.5 * Math.round(qual * 10.0)/10.0;
+		
+		// 4. Settlement objective score, is the Mission type
+		// is preferred for the Objective
+		double obj = 0;
+		ObjectiveType objective = reviewerSettlement.getObjective();
+		if (OBJECTIVE_TO_MISSION.getOrDefault(objective, Collections.emptySet()).contains(mt)) {
+			switch (objective) {
+			case BUILDERS_HAVEN:
+				obj += 5D * goodsManager.getBuildersFactor(); 
+				break;
+				
+			case CROP_FARM:
+				obj += 5D * goodsManager.getCropFarmFactor();
+				break;
+			
+			case TOURISM:
+				obj += 5D * goodsManager.getTourismFactor();
+				break;
+			
+			case TRADE_CENTER:
+				obj += 5D * goodsManager.getTradeFactor();
+				break;
+			
+			case TRANSPORTATION_HUB:
+				obj += 5D * goodsManager.getTransportationFactor();
+				break;
+			
+			case MANUFACTURING_DEPOT:
+				obj += 5D * goodsManager.getManufacturingFactor();
+				break;
+			default:
+				break;
+			}
+		}
+
+		// 5. emergency
+		int emer = 0;
+		if ((mt == MissionType.EMERGENCY_SUPPLY)
+				|| (mt == MissionType.RESCUE_SALVAGE_VEHICLE)) {
+			emer = 50;
+		}	
+		
+		// 6. Site Value
+		double siteValue = 0;
+		if (m instanceof SiteMission) {
+			siteValue = ((SiteMission)m).getTotalSiteScore(reviewerSettlement);
+			
+			// Why do we adjust these score ?
+			if (mt == MissionType.COLLECT_ICE) {
+				siteValue /= 40D;
+			}
+			else if (mt == MissionType.COLLECT_REGOLITH) {
+				siteValue /= 30D;
+			}
+			else if (mt == MissionType.MINING) {
+				siteValue /= 20D;
+			}
+			else if (mt == MissionType.EXPLORATION) {
+				siteValue /= 20D;
+			}
+		}
+
+		// 7. proposed route distance (-10 to 10 points)
+		int dist = 0;
+		if (m instanceof VehicleMission) {
+			int range = m.getAssociatedSettlement().getMissionRadius(mt);
+			if (range > 0) {
+				int proposed = (int)(((VehicleMission) m).getDistanceProposed());
+				
+				// Scoring rule:
+				// At range = 0, the score is 10
+				// At full range, the score is -10
+				// The score for half the range is zero.
+
+				// Calculate the dist score
+				dist = (int)(- 20.0 / range * proposed + 10);
+			}
+		}
+		
+		// 8. Leadership and Charisma
+		NaturalAttributeManager attrMgr = person.getNaturalAttributeManager();
+		int leadership = (int)(.075 * attrMgr
+							.getAttribute(NaturalAttributeType.LEADERSHIP)
+						+ .025 * attrMgr
+							.getAttribute(NaturalAttributeType.ATTRACTIVENESS));				
+
+		// 9. reviewer role weight
+		RoleType role = person.getRole().getType();
+		int reviewerRole = 0;
+		
+		if (role == RoleType.PRESIDENT)
+			reviewerRole = 20;
+		else if (role == RoleType.MAYOR)
+			reviewerRole = 15;
+		else if (role == RoleType.COMMANDER)
+			reviewerRole = 10;
+		else if (role == RoleType.SUB_COMMANDER)
+			reviewerRole = 8;
+		else if (role == RoleType.CHIEF_OF_MISSION_PLANNING)
+			reviewerRole = 7;
+		else if (role == RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS)
+			reviewerRole = 6;
+		else if (role.isChief())
+			reviewerRole = 5;
+		else if (role == RoleType.MISSION_SPECIALIST)
+			reviewerRole = 4;
+		else
+			reviewerRole = 2;
+		
+		
+		// 10. luck
+		int luck = RandomUtil.getRandomInt(-5, 5);	
+		
+		// Future: 9. Go to him/her to have a chat
+		// Future: 10. mission lead's leadership/charisma
+		
+		double score = Math.round((rating + relation + qual + obj + emer + siteValue + dist + leadership + reviewerRole + luck)* 10.0)/10.0;
+
+		// Updates the mission plan status
+		missionManager.scoreMissionPlan(mp, score, person);
+
+		StringBuilder msg = new StringBuilder();
+		msg.append("Grading ").append(requestedBy).append("'s ").append(m.getName());
+		msg.append(" plan - ");
+		msg.append(" Rating: ").append(rating); 
+		msg.append(", Rels: ").append(relation); 
+		msg.append(", Quals: ").append(qual); 
+		msg.append(", Obj: ").append(obj);
+		msg.append(", Emer: ").append(emer);
+		msg.append(", Site: ").append(Math.round(siteValue*10.0)/10.0);
+		msg.append(", Dist: ").append(dist);
+		msg.append(", Lead: ").append(leadership); 							
+		msg.append(", Review: ").append(reviewerRole); 
+		msg.append(", Luck: ").append(luck); 
+		msg.append(" = Subtotal: ").append(score);
+		
+		logger.log(worker, Level.INFO, 20_000,  msg.toString());
+	}
+	
 	/**
 	 * Sees if the task is at least 90% completed.
 	 * 

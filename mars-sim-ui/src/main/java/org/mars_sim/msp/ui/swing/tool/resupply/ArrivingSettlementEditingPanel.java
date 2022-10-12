@@ -729,7 +729,7 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 		
 		for (Settlement s: list) {
 			if (!coordinatesSet.add(s.getCoordinates())) {
-				System.out.println("Repeated coordinates: " + s.getCoordinates());
+//				System.out.println("Repeated coordinates: " + s.getCoordinates());
 				repeated = true;
 				break;
 			}
@@ -782,7 +782,7 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 			if (timeArrival < 0D) {
 				validation_result = false;
 				enableButton(false);
-				System.out.println("Invalid entry! Sol must be greater than zero.");
+//				System.out.println("Invalid entry! Sol must be greater than zero.");
 				errorString = Msg.getString("ArrivingSettlementEditingPanel.error.negativeSols"); //$NON-NLS-1$
 				errorLabel.setText(errorString);
 			} else {
@@ -821,7 +821,7 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 				while (i.hasNext()) {
 					int sol = i.next();
 					if (sol == (int) timeArrival) {
-						System.out.println("Invalid entry! Sol " + sol + " has already been taken.");
+//						System.out.println("Invalid entry! Sol " + sol + " has already been taken.");
 						validation_result = false;
 						good = false;
 						enableButton(false);

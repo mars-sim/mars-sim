@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.interplanetary.transport;
 
-import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventCategory;
 import org.mars_sim.msp.core.person.EventType;
