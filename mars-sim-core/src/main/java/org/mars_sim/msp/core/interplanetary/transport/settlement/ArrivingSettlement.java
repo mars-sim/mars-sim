@@ -68,11 +68,11 @@ public class ArrivingSettlement implements Transportable, Serializable {
 		this.populationNum = populationNum;
 		this.numOfRobots = numOfRobots;
 		
-		arrivalDate = new MarsClock(Simulation.instance().getMasterClock().getMarsClock());
-		arrivalDate.addTime(
-			(arrivalSols - 1) * 1000D
-			+ 100 
-			+ RandomUtil.getRandomDouble(890));
+//		arrivalDate = new MarsClock(Simulation.instance().getMasterClock().getMarsClock());
+//		arrivalDate.addTime(
+//			(arrivalSols - 1) * 1000D
+//			+ 100 
+//			+ RandomUtil.getRandomDouble(890));
 	}
 
 	/**
