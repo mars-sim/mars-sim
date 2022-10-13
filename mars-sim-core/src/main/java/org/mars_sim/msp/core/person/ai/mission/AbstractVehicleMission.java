@@ -209,7 +209,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		}
 
 		Worker startingMember = getStartingPerson();
-		logger.info(startingMember, "Started mission " + getName() + " using " + getVehicle().getName());
+		logger.info(startingMember, "Preparing " + getName() + " using " + getVehicle().getName() + ".");
 	}
 
 	/**

@@ -94,13 +94,18 @@ public class RandomMineralMap implements Serializable, MineralMap {
 		if (mineralMapConfig == null)
 			mineralMapConfig = SimulationConfig.instance().getMineralMapConfiguration();
 		
-		if (mineralMapConfig.getMineralTypes() == null)
+		List<MineralType> minerals = new ArrayList<>(mineralMapConfig.getMineralTypes());
+		if (minerals == null)
 			// This happens during maven tests 
 			// determineMineralConcentrations() is not needed for any maven tests.
 			return;
 		
+		Collections.shuffle(minerals);
+		int size = minerals.size(); 
+		int remainingConc = 100;
+		
 		try {
-			Iterator<MineralType> i = mineralMapConfig.getMineralTypes().iterator();
+			Iterator<MineralType> i = minerals.iterator();
 			while (i.hasNext()) {
 				MineralType mineralType = i.next();
 
@@ -118,7 +123,6 @@ public class RandomMineralMap implements Serializable, MineralMap {
 				}
 				Coordinates[] regionArray = regionSet.toArray(new Coordinates[regionSet.size()]);
 //				System.out.println("regionArray: " + regionArray.length);
-				double CONC = 100;
 				
 				if (regionArray.length > 0) {
 					// Determine individual mineral concentrations.
@@ -131,11 +135,18 @@ public class RandomMineralMap implements Serializable, MineralMap {
 						double pixelRadius = (Coordinates.MARS_CIRCUMFERENCE / W) / 2D;
 						double distance = RandomUtil.getRandomDouble(pixelRadius);
 						Coordinates location = regionLocation.getNewLocation(direction, distance);
-						double concentration = RandomUtil.getRandomDouble(CONC);
-//						System.out.println("1. " + mineralType.name + ": " + concentration);
+						double concentration = 0;
+						if (x != size - 1)
+							concentration = Math.round(RandomUtil.getRandomDouble(remainingConc *.5, remainingConc * 1.5) * 1000.0)/1000.0;
+						else
+							concentration = Math.round(remainingConc * 1000.0)/1000.0;					
+						if (concentration > 100)
+							concentration = 100;
 						mineralConcentrations.add(new MineralConcentration(location, concentration, mineralType.name));
 					}
-				} else {
+				} 
+				
+				else {
 					// If no locales, randomly distribute mineral on surface.
 					int concentrationNumber = Math.round(NON_REGION_FACTOR / getFrequencyModifier(mineralType.frequency));
 					for (int x = 0; x < concentrationNumber; x++) {
@@ -144,17 +155,22 @@ public class RandomMineralMap implements Serializable, MineralMap {
 						// Get a rand lon
 						double theta = Coordinates.getRandomLongitude();
 						Coordinates location = new Coordinates(phi, theta);
-						double concentration = RandomUtil.getRandomDouble(CONC);
-//						System.out.println("2. " + mineralType.name + ": " + concentration);
+						double concentration = 0;
+						if (x != size - 1)
+							concentration = Math.round(RandomUtil.getRandomDouble(remainingConc *.5, remainingConc * 1.5) * 1000.0)/1000.0;
+						else
+							concentration = Math.round(remainingConc * 1000.0)/1000.0;
+						if (concentration > 100)
+							concentration = 100;
 						mineralConcentrations.add(new MineralConcentration(location, concentration, mineralType.name));
 					}
 				}
+				
+				size++;
 			}
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, "Error creating random mineral map.", e);
 		}
-		
-//		System.out.println("mineralConcentrations: " + mineralConcentrations.size());
 	}
 
 	/**
@@ -364,5 +380,4 @@ public class RandomMineralMap implements Serializable, MineralMap {
 	public void destroy() {
 		mineralConcentrations = null;
 	}
-
 }

@@ -159,7 +159,7 @@ public class MissionManager implements Serializable, Temporal {
 						}
 					}
 				}
-				logger.config("Added '" + newMission.getName() + "' mission.");
+//				logger.config("Added '" + newMission.getName() + "' mission.");
 			}
 		}
 	}

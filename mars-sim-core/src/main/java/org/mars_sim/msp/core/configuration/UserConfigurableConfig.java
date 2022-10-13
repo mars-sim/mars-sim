@@ -176,9 +176,9 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 	public T getItem(String name) {
 		T found = knownItems.get(name);
 		if (found == null) {
-			// Then it's a load on dmand entry
+			// Then it's a load on demand entry
 			String file = getItemFilename(name);
-			logger.config("Loading an item on demand " + itemPrefix + " " + name);
+			logger.config("Loading a template on demand: '" + itemPrefix + " " + name + "'.");
 			loadItem(file, true);
 
 			found = knownItems.get(name);

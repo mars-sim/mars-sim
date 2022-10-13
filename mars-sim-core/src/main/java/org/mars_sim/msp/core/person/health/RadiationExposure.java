@@ -428,7 +428,6 @@ public class RadiationExposure implements Serializable, Temporal {
 
 			RadiationType radiationType = null;
 			BodyRegionType bodyRegionType = null;
-			Radiation rad = null;
 			
 			double totalExposure = 0;
 			double exposure = 0;
@@ -448,6 +447,8 @@ public class RadiationExposure implements Serializable, Temporal {
 
 			if (person.isOutside()) {
 				// Future: how to make radiation more consistent/less random by coordinates/locale
+			
+				Radiation rad = null;
 				
 				exposed = person.getAssociatedSettlement().getExposed();
 
@@ -520,8 +521,10 @@ public class RadiationExposure implements Serializable, Temporal {
 				totalExposure += exposure;
 				
 				if (totalExposure > 0 && rad != null) {
-					String str = EXPOSED_TO + Math.round(totalExposure * 10000.0) / 10000.0
-								+ DOSE_OF_RAD;
+					String str = EXPOSED_TO + rad.getRadiationType().getName()
+							+ " and received " 
+							+ Math.round(totalExposure * 10_000.0) / 10_000.0
+							+ DOSE_OF_RAD;
 
 					if (person.getVehicle() == null)
 						// if a person steps outside of the vehicle
