@@ -52,9 +52,9 @@ public class CropTableModel extends UnitTableModel {
 	private static int column_count = numCropCat + 3;
 
 	/** Names of Columns. */
-	private static String columnNames[];
+	private static String[] columnNames;
 	/** Types of columns. */
-	private static Class<?> columnTypes[];
+	private static Class<?>[] columnTypes;
 
 	static {
 		columnNames = new String[column_count];
@@ -93,14 +93,12 @@ public class CropTableModel extends UnitTableModel {
 
 	private Settlement selectedSettlement;
 
-	public CropTableModel(Settlement settlement) throws Exception {
+	public CropTableModel(Settlement settlement) {
 		super (UnitType.BUILDING, Msg.getString("CropTableModel.tabName"), //$NON-NLS-1$
 				"CropTableModel.countingCrops", //$NON-NLS-1$
 				columnNames, columnTypes);
-		cropCategoryList = new ArrayList<>();
-
-		createCatList();
-		
+		cropCategoryList = new ArrayList<>(List.of(CropCategory.values()));
+	
 		setSettlementFilter(settlement);
 
 		listenForUnits();
@@ -126,15 +124,6 @@ public class CropTableModel extends UnitTableModel {
 
 	}
 
-	/**
-	 * Creates the category list.
-	 */
-	private void createCatList() {
-		for (CropCategory type : CropCategory.values()) {
-			cropCategoryList.add(type);
-		}
-	}
-	
 	/**
 	 * Creates the building crop category map.
 	 */

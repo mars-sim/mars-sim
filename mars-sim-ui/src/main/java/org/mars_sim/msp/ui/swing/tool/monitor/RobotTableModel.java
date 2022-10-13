@@ -68,9 +68,9 @@ public class RobotTableModel extends UnitTableModel {
 	/** The number of Columns. */
 	private static final int COLUMNCOUNT = 10;
 	/** Names of Columns. */
-	private static String columnNames[];
+	private static String[] columnNames;
 	/** Types of Columns. */
-	private static Class<?> columnTypes[];
+	private static Class<?>[] columnTypes;
 
 	/**
 	 * The static initializer creates the name & type arrays.
@@ -124,7 +124,7 @@ public class RobotTableModel extends UnitTableModel {
 	 *
 	 * @param unitManager Manager containing Robot objects.
 	 */
-	public RobotTableModel(MainDesktopPane desktop) throws Exception {
+	public RobotTableModel(MainDesktopPane desktop) {
 		super(UnitType.ROBOT, Msg.getString("RobotTableModel.tabName"), //$NON-NLS-1$
 				"RobotTableModel.countingRobots", //$NON-NLS-1$
 				columnNames, columnTypes);
@@ -145,7 +145,7 @@ public class RobotTableModel extends UnitTableModel {
 	 *
 	 * @param vehicle Monitored vehicle Robot objects.
 	 */
-	public RobotTableModel(Crewable vehicle) throws Exception {
+	public RobotTableModel(Crewable vehicle)  {
 		super(UnitType.ROBOT, Msg.getString("RobotTableModel.nameRobots", //$NON-NLS-1$
 				((Unit) vehicle).getName()), "RobotTableModel.countingRobots", //$NON-NLS-1$
 				columnNames, 
@@ -166,7 +166,7 @@ public class RobotTableModel extends UnitTableModel {
 	 * @param allAssociated Are all robots associated with this settlement to be
 	 *                      displayed?
 	 */
-	public RobotTableModel(Settlement settlement, boolean allAssociated) throws Exception {
+	public RobotTableModel(Settlement settlement, boolean allAssociated) {
 		super (UnitType.ROBOT, (allAssociated ? Msg.getString("RobotTableModel.nameAssociatedRobots") //$NON-NLS-1$
 			 	: Msg.getString("RobotTableModel.nameRobots", //$NON-NLS-1$
 					settlement.getName())
@@ -185,7 +185,7 @@ public class RobotTableModel extends UnitTableModel {
 	 *
 	 * @param mission Monitored mission Robot objects.
 	 */
-	public RobotTableModel(Mission mission) throws Exception {
+	public RobotTableModel(Mission mission)  {
 		super(UnitType.ROBOT, Msg.getString("RobotTableModel.nameRobots", //$NON-NLS-1$
 				mission.getName()), "RobotTableModel.countingWorkers", //$NON-NLS-1$
 				columnNames, columnTypes);

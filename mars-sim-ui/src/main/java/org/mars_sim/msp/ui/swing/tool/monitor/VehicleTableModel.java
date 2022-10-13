@@ -21,7 +21,6 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEvent;
 import org.mars_sim.msp.core.UnitEventType;
-import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -143,8 +142,6 @@ public class VehicleTableModel extends UnitTableModel {
 
 	private static final AmountResource [] availableDesserts = PreparingDessert.getArrayOfDessertsAR();
 
-	private static UnitManager unitManager = Simulation.instance().getUnitManager();
-
 	private static MissionManager missionManager = Simulation.instance().getMissionManager();
 
 	// Data members
@@ -153,35 +150,8 @@ public class VehicleTableModel extends UnitTableModel {
 	private transient LocalMissionManagerListener missionManagerListener;
 
 	private Map<Vehicle, Map<Integer, Double>> resourceCache;
-
-	private Settlement commanderSettlement;
-
-	/**
-	 * Constructs a VehicleTableModel object. It creates the list of possible
-	 * Vehicles from the Unit manager.resetUnit
-	 *
-	 * @param unitManager Proxy manager contains displayable Vehicles.
-	 */
-	public VehicleTableModel() throws Exception {
-		super(UnitType.VEHICLE,
-			Msg.getString("VehicleTableModel.tabName"),
-			"VehicleTableModel.countingVehicles", //$NON-NLS-1$
-			columnNames,
-			columnTypes
-		);
-
-		if (mode == GameMode.COMMAND) {
-			commanderSettlement = unitManager.getCommanderSettlement();
-			resetUnits(commanderSettlement.getAllAssociatedVehicles());
-		}
-		else
-			resetUnits(unitManager.getVehicles());
-
-		listenForUnits();
-		missionManagerListener = new LocalMissionManagerListener();
-	}
-
-	public VehicleTableModel(Settlement settlement) throws Exception {
+	
+	public VehicleTableModel(Settlement settlement) {
 		super(UnitType.VEHICLE,
 			Msg.getString("VehicleTableModel.tabName"),
 			"VehicleTableModel.countingVehicles", //$NON-NLS-1$
@@ -608,12 +578,8 @@ public class VehicleTableModel extends UnitTableModel {
 		LocalMissionManagerListener() {
 			missionListener = new LocalMissionListener();
 
-			if (mode == GameMode.COMMAND) {
-				missions = missionManager.getMissionsForSettlement(commanderSettlement);
-			}
-			else {
-				missions = missionManager.getMissions();
-			}
+			missions = missionManager.getMissions();
+
 
 			for (Mission m : missions)
 				addMission(m);

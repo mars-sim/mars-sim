@@ -18,12 +18,9 @@ import java.util.logging.Logger;
 import javax.swing.SwingUtilities;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEvent;
 import org.mars_sim.msp.core.UnitEventType;
-import org.mars_sim.msp.core.UnitManager;
-
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.person.Person;
@@ -73,9 +70,9 @@ public class SettlementTableModel extends UnitTableModel {
 	/** The number of Columns. */
 	private static final int COLUMNCOUNT = 21;
 	/** Names of Columns. */
-	private static final String columnNames[];
+	private static final String[] columnNames;
 	/** Types of columns. */
-	private static final Class<?> columnTypes[];
+	private static final Class<?>[] columnTypes;
 
 	static {
 		columnNames = new String[COLUMNCOUNT];
@@ -134,7 +131,6 @@ public class SettlementTableModel extends UnitTableModel {
 
 	};
 
-	private static UnitManager unitManager = Simulation.instance().getUnitManager();
 
 	private static final DecimalFormat df = new DecimalFormat("#,###,##0");
 	private static final DecimalFormat df3 = new DecimalFormat("#,###,##0.000");
@@ -520,37 +516,36 @@ public class SettlementTableModel extends UnitTableModel {
 	@Override
 	protected void addUnit(Unit newUnit) {
 		if (!resourceCache.containsKey(newUnit)) {
-			try {
-				Map<Integer, Double> resourceMap = new HashMap<>();
-				Settlement settlement = (Settlement)newUnit;
-				resourceMap.put(OXYGEN_ID, getResourceStored(settlement, OXYGEN_ID));
-				resourceMap.put(HYDROGEN_ID, getResourceStored(settlement, HYDROGEN_ID));
-				resourceMap.put(METHANE_ID, getResourceStored(settlement, METHANE_ID));
-				resourceMap.put(METHANOL_ID, getResourceStored(settlement, METHANOL_ID));
-				
-				resourceMap.put(WATER_ID, getResourceStored(settlement, WATER_ID));
-				resourceMap.put(ICE_ID, getResourceStored(settlement, ICE_ID));
-				
-				resourceMap.put(CONCRETE_ID, getResourceStored(settlement, CONCRETE_ID));
-				resourceMap.put(CEMENT_ID, getResourceStored(settlement, CEMENT_ID));
+			Map<Integer, Double> resourceMap = new HashMap<>();
+			Settlement settlement = (Settlement)newUnit;
+			resourceMap.put(OXYGEN_ID, getResourceStored(settlement, OXYGEN_ID));
+			resourceMap.put(HYDROGEN_ID, getResourceStored(settlement, HYDROGEN_ID));
+			resourceMap.put(METHANE_ID, getResourceStored(settlement, METHANE_ID));
+			resourceMap.put(METHANOL_ID, getResourceStored(settlement, METHANOL_ID));
+			
+			resourceMap.put(WATER_ID, getResourceStored(settlement, WATER_ID));
+			resourceMap.put(ICE_ID, getResourceStored(settlement, ICE_ID));
+			
+			resourceMap.put(CONCRETE_ID, getResourceStored(settlement, CONCRETE_ID));
+			resourceMap.put(CEMENT_ID, getResourceStored(settlement, CEMENT_ID));
 
-				for (int i = 0; i < REGOLITH_IDS.length; i++) {
-					resourceMap.put(REGOLITH_IDS[i], getResourceStored(settlement, REGOLITH_IDS[i]));
-				}		
-				for (int i = 0; i < ORE_IDS.length; i++) {
-					resourceMap.put(ORE_IDS[i], getResourceStored(settlement, ORE_IDS[i]));
-				}			
-				for (int i = 0; i < MINERAL_IDS.length; i++) {
-					resourceMap.put(MINERAL_IDS[i], getResourceStored(settlement, MINERAL_IDS[i]));
-				}
-				for (int i = 0; i < ROCK_IDS.length; i++) {
-					resourceMap.put(ROCK_IDS[i], getResourceStored(settlement, ROCK_IDS[i]));
-				}
-	
-				resourceCache.put(newUnit, resourceMap);
-			} catch (Exception e) {
+			for (int i = 0; i < REGOLITH_IDS.length; i++) {
+				resourceMap.put(REGOLITH_IDS[i], getResourceStored(settlement, REGOLITH_IDS[i]));
+			}		
+			for (int i = 0; i < ORE_IDS.length; i++) {
+				resourceMap.put(ORE_IDS[i], getResourceStored(settlement, ORE_IDS[i]));
+			}			
+			for (int i = 0; i < MINERAL_IDS.length; i++) {
+				resourceMap.put(MINERAL_IDS[i], getResourceStored(settlement, MINERAL_IDS[i]));
 			}
+			for (int i = 0; i < ROCK_IDS.length; i++) {
+				resourceMap.put(ROCK_IDS[i], getResourceStored(settlement, ROCK_IDS[i]));
+			}
+
+			resourceCache.put(newUnit, resourceMap);
 		}
+
+		super.addUnit(newUnit);
 	}
 	
 	@Override

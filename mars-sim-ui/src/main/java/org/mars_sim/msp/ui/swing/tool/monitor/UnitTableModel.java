@@ -29,7 +29,7 @@ import org.mars_sim.msp.core.UnitType;
  * a partial implementation of the TableModel interface.
  */
 @SuppressWarnings("serial")
-abstract public class UnitTableModel extends AbstractTableModel implements MonitorModel, UnitListener {
+public abstract class UnitTableModel extends AbstractTableModel implements MonitorModel, UnitListener {
 
 	/**
 	 * UnitManagerListener inner class.
@@ -94,7 +94,7 @@ abstract public class UnitTableModel extends AbstractTableModel implements Monit
 	 * @param names          Names of the columns displayed.
 	 * @param types          The Classes of the individual columns.
 	 */
-	protected UnitTableModel(UnitType unitType, String name, String countingMsgKey, String names[], Class<?> types[]) throws Exception {
+	protected UnitTableModel(UnitType unitType, String name, String countingMsgKey, String[] names, Class<?>[] types) {
 		// Initialize data members
 		this.unitType = unitType;
 		this.name = name;
@@ -122,15 +122,20 @@ abstract public class UnitTableModel extends AbstractTableModel implements Monit
 			for(Unit old : oldUnits) {
 				removeUnit(old);
 			}
+			fireTableRowsDeleted(0, oldUnits.size()-1);
 		}
 
 		for(Unit newUnit : newUnits) {
 			addUnit(newUnit);
 		}
+		fireTableRowsInserted(0, getColumnCount()-1);
 
 		// Just fire one table event for teh whole table
 		fireEnabled = true;
-		fireTableDataChanged();
+		
+		// Should be able to fire a chaneg for the whole table but appears a race condition
+		// and extra row are rarely unrendered
+		//fireTableDataChanged();
 	}
 
 	/**
@@ -178,17 +183,6 @@ abstract public class UnitTableModel extends AbstractTableModel implements Monit
 	}
 
 	/**
-	 * Clears out units from the model.
-	 */
-	protected void clear() {
-		for(Unit old: units) {
-			old.removeUnitListener(this);
-		}
-		units.clear();
-		fireTableDataChanged();
-	}
-
-	/**
 	 * Checks if unit is in table model already.
 	 *
 	 * @param unit the unit to check.
@@ -202,15 +196,12 @@ abstract public class UnitTableModel extends AbstractTableModel implements Monit
 		return units;
 	}
 
-	protected int getSize() {
-		return units.size();
-	}
-
 	/**
 	 * Return the number of columns
 	 *
 	 * @return column count.
 	 */
+	@Override
 	public int getColumnCount() {
 		return columnNames.length;
 	}
@@ -248,6 +239,7 @@ abstract public class UnitTableModel extends AbstractTableModel implements Monit
 	 *
 	 * @return model name.
 	 */
+	@Override
 	public String getName() {
 		return name;
 	}
@@ -257,6 +249,7 @@ abstract public class UnitTableModel extends AbstractTableModel implements Monit
 	 *
 	 * @return the number of Units.
 	 */
+	@Override
 	public int getRowCount() {
 		return units.size();
 	}
@@ -288,6 +281,7 @@ abstract public class UnitTableModel extends AbstractTableModel implements Monit
 	 * @param row Indexes of Unit to retrieve.
 	 * @return Unit at specified position.
 	 */
+	@Override
 	public Object getObject(int row) {
 		return getUnit(row);
 	}
@@ -295,6 +289,7 @@ abstract public class UnitTableModel extends AbstractTableModel implements Monit
 	/**
 	 * Gets the model count string.
 	 */
+	@Override
 	public String getCountString() {
 		return "  " + Msg.getString(countingMsgKey, getRowCount());
 	}
@@ -334,10 +329,11 @@ abstract public class UnitTableModel extends AbstractTableModel implements Monit
 	 * Prepares the model for deletion.
 	 */
 	public void destroy() {
-		if (units != null) {
-			clear();
+		for(Unit old: units) {
+			old.removeUnitListener(this);
 		}
-		units = null;
+
+		units.clear();
 		if (umListener != null) {
 			unitManager.removeUnitManagerListener(unitType, umListener);
 		}

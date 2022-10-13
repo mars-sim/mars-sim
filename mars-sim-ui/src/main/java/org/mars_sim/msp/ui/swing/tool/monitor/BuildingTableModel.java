@@ -91,7 +91,7 @@ public class BuildingTableModel extends UnitTableModel {
 	 * @param settlement
 	 * @throws Exception
 	 */
-	public BuildingTableModel(Settlement settlement) throws Exception {
+	public BuildingTableModel(Settlement settlement) {
 		super(UnitType.BUILDING, Msg.getString("BuildingTableModel.nameBuildings", //$NON-NLS-1$
 				settlement.getName()),
 				"BuildingTableModel.countingBuilding", //$NON-NLS-1$

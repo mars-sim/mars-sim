@@ -16,7 +16,6 @@ import java.util.logging.Logger;
 
 import javax.swing.SwingUtilities;
 
-import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEvent;
@@ -35,7 +34,6 @@ import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Crewable;
-import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
 /**
  * The PersonTableModel that maintains a list of Person objects. By defaults the
@@ -83,9 +81,9 @@ public class PersonTableModel extends UnitTableModel {
 	/** The number of Columns. */
 	private static final int COLUMNCOUNT = 15;
 	/** Names of Columns. */
-	private static String columnNames[];
+	private static String[] columnNames;
 	/** Types of Columns. */
-	private static Class<?> columnTypes[];
+	private static Class<?>[] columnTypes;
 
 	private static final String DEYDRATED = "Deydrated";
 	private static final String STARVING = "Starving";
@@ -153,33 +151,12 @@ public class PersonTableModel extends UnitTableModel {
 	private boolean allAssociated;
 
 	/**
-	 * constructor. Constructs a PersonTableModel object that displays all people in
-	 * the simulation.
-	 *
-	 * @param unitManager Manager containing Person objects.
-	 */
-	public PersonTableModel(MainDesktopPane desktop) throws Exception {
-		super(UnitType.PERSON, Msg.getString("PersonTableModel.tabName"), //$NON-NLS-1$
-				"PersonTableModel.countingPeople", //$NON-NLS-1$
-				columnNames, columnTypes);
-
-		sourceType = ValidSourceType.ALL_PEOPLE;
-
-		if (mode == GameMode.COMMAND)
-			resetUnits(unitManager.getCommanderSettlement().getAllAssociatedPeople());
-		else
-			resetUnits(unitManager.getPeople());
-
-		listenForUnits();
-	}
-
-	/**
 	 * Constructs a PersonTableModel object that displays all people from the
 	 * specified vehicle.
 	 *
 	 * @param vehicle Monitored vehicle Person objects.
 	 */
-	public PersonTableModel(Crewable vehicle) throws Exception {
+	public PersonTableModel(Crewable vehicle) {
 		
 		super(UnitType.PERSON, Msg.getString("PersonTableModel.nameVehicle", //$NON-NLS-1$
 				((Unit)vehicle).getName()), 
@@ -202,7 +179,7 @@ public class PersonTableModel extends UnitTableModel {
 	 * @param allAssociated Are all people associated with this settlement to be
 	 *                      displayed?
 	 */
-	public PersonTableModel(Settlement settlement, boolean allAssociated) throws Exception {
+	public PersonTableModel(Settlement settlement, boolean allAssociated)  {
 		super (UnitType.PERSON, (allAssociated ? Msg.getString("PersonTableModel.nameAllCitizens") //$NON-NLS-1$
 				 : Msg.getString("PersonTableModel.nameIndoor", //$NON-NLS-1$
 					settlement.getName())
@@ -221,7 +198,7 @@ public class PersonTableModel extends UnitTableModel {
 	 *
 	 * @param mission Monitored mission Person objects.
 	 */
-	public PersonTableModel(Mission mission) throws Exception {
+	public PersonTableModel(Mission mission)  {
 		super(UnitType.PERSON, Msg.getString("PersonTableModel.nameMission", //$NON-NLS-1$
 				mission.getName()), "PersonTableModel.countingMissionMembers", //$NON-NLS-1$
 				columnNames, columnTypes);
