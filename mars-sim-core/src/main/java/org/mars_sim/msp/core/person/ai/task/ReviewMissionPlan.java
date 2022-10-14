@@ -180,68 +180,66 @@ public class ReviewMissionPlan extends Task implements Serializable {
         	endTask();
             
 		// Iterates through each pending mission 
-		for(Mission m : missions) {
+		for (Mission m : missions) {
 			MissionPlanning mp = m.getPlan();
 			
-			if (m.getPlan() != null) {
-	            PlanType status = mp.getStatus();
-	
-	            if (status != null && status == PlanType.PENDING) {
-		            if (mp.getPercentComplete() >= 100D) {
-		            	// Go to the finished phase and finalize the approval
-		            	setPhase(APPROVING);
-		                return time * .75; // return time is needed
-		            }
-		            else {
-		            	// if not 100% reviewed
-						Person p = m.getStartingPerson();
-						String reviewedBy = person.getName();
+        	if (m.getPlan() == null) {
+        		// Go to next mission
+        		continue;
+        	}
+
+            PlanType status = mp.getStatus();
+
+            if (status != null && status == PlanType.PENDING) {
+	            if (mp.getPercentComplete() >= 100) {
+	            	// Go to the finished phase and finalize the approval
+	            	setPhase(APPROVING);
+	            	
+	                return time / 4.0; // return time is needed
+	            }
+	            
+	            else if (mp.getPercentComplete() >= 60) {
+			    	int sol = marsClock.getMissionSol();
+			    	int solRequest = m.getPlan().getMissionSol();
+			    	if (sol - solRequest > 7) {
+			    		// If no one else is able to offer the review after x days, 
+			    		// do allow the review to go through even if the reviewer is not valid
+			        	setPhase(APPROVING);
+			        	
+			            return time / 4.0;
+			    	}
+			    }
+
+            	// if not 100% reviewed
+				Person p = m.getStartingPerson();
+				String reviewedBy = person.getName();
+				
+				String requestedBy = p.getName();
+
+				if (!reviewedBy.equals(requestedBy)
+						&& mp.isReviewerValid(reviewedBy, reviewerSettlement.getNumCitizens())) {
+					
+				    // Simulate the person has just spent 90% duration for this task
+				    // Now a mission score will be calculated
+				    if (isAlmostTimeCompleted()) {
+				        // Execute the review 
+				    	completeReview(m, p, reviewerSettlement, mp);
+				    		
+						logger.log(worker, Level.INFO, 0, "Done reviewing " + requestedBy
+										+ "'s " + m.getName() + " mission plan.");
+						// Add experience
+						addExperience(time);
 						
-						String requestedBy = p.getName();
-		
-						if (!reviewedBy.equals(requestedBy)
-								&& mp.isReviewerValid(reviewedBy, reviewerSettlement.getNumCitizens())) {
-							
-					    	// Check if it's 90% done
-						    if (is90Completed()) {
-						        // Execute the review 
-						    	completeReview(m, p, reviewerSettlement, mp);
-						    
-								return 0; 
-						    }
-						    
-						    else {	
-								logger.log(worker, Level.INFO, 15_000, "Reviewing " + requestedBy
-											+ "'s " + m.getName() + " mission plan.");
-								// Add experience
-								addExperience(time);
-						    }
-						    						
-						    if (mp.getPercentComplete() >= 100D) {
-						    	// Go to the finished phase and finalize the approval
-						    	setPhase(APPROVING);
-						    	
-						        return 0;
-						    }
-						    
-						    else if (mp.getPercentComplete() >= 60D) {
-						    	int sol = marsClock.getMissionSol();
-						    	int solRequest = m.getPlan().getMissionSol();
-						    	if (sol - solRequest > 7) {
-						    		// If no one else is able to offer the review after x days, 
-						    		// do allow the review to go through even if the reviewer is not valid
-						        	setPhase(APPROVING);
-						            return time * 0.2;
-						    	}
-						    }
-						}
-	
-		            } // end of else // if (mp.getPercentComplete() >= 100D) {
-		            
-		            // The break below prevents a person from reviewing another mission plan in the same period of time
-		            break;
-				} // if (status != null && status == PlanType.PENDING)
-			}
+						endTask();
+						
+						return 0;
+				    }
+				    else {
+				    	logger.log(worker, Level.INFO, 20_000, "Reviewing " + requestedBy
+								+ "'s " + m.getName() + " mission plan.");
+				    }
+				}
+			} // if (status != null && status == PlanType.PENDING)
 		} // end of while
 		
         return 0;
@@ -463,7 +461,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 		msg.append(", Luck: ").append(luck); 
 		msg.append(" = Subtotal: ").append(score);
 		
-		logger.log(worker, Level.INFO, 20_000,  msg.toString());
+		logger.log(worker, Level.INFO, 0,  msg.toString());
 	}
 	
 	/**
@@ -471,7 +469,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 	 * 
 	 * @return true if the task is at least 90% completed.
 	 */
-	private boolean is90Completed() {
+	private boolean isAlmostTimeCompleted() {
 		return getTimeCompleted() >= getDuration() * .9;
 	}
 
@@ -485,19 +483,11 @@ public class ReviewMissionPlan extends Task implements Serializable {
         
 		List<Mission> missions = missionManager.getPendingMissions(person.getAssociatedSettlement());
 	     
-		if (missions.size() == 0) 
+		if (missions.size() == 0) {
 			endTask();
+		}
 		
-	    if (missions.size() > 0 && is90Completed()) {
-	    	
-			logger.log(worker, Level.INFO, 5_000, "Going over the approval of some mission plans.");
-			
-        	// Use up to 90% of the time
-			return 0; 
-	    }
-	    
-	    else {
-        
+		else { 
 	 		// Iterates through each pending mission 
 			Iterator<Mission> i = missions.iterator();
 			while (i.hasNext()) {
@@ -508,8 +498,10 @@ public class ReviewMissionPlan extends Task implements Serializable {
 		            PlanType status = mp.getStatus();
 		
 		            if (status != null && status == PlanType.PENDING
-		            		&& mp.getPercentComplete() >= 60D) {
+		            		&& mp.getPercentComplete() >= 60) {
 		            							
+		        		logger.log(worker, Level.INFO, 0, "Going over the approval of mission plans.");
+		        	      
 						Person p = m.getStartingPerson();
 						String requestedBy = p.getName();
 					
@@ -548,7 +540,6 @@ public class ReviewMissionPlan extends Task implements Serializable {
 				        
 				        // Note: Do only one review each time
 				        return 0;
-				        
 					}
 				}
 			} // end of while
