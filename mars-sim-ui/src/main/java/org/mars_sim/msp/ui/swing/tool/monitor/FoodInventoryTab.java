@@ -6,10 +6,10 @@
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.NumberRenderer;
 
 /**
@@ -18,11 +18,6 @@ import org.mars_sim.msp.ui.swing.tool.NumberRenderer;
  */
 @SuppressWarnings("serial")
 public class FoodInventoryTab extends TableTab {
-	
-	/** The minimum 2 of decimal places to be displayed. */
-	private static final int TWO_DIGITS = 2;
-	/** The minimum 3 decimal places to be displayed. */
-	private static final int THREE_DIGITS = 3;
 	
 	/**
 	 * constructor.
@@ -34,22 +29,24 @@ public class FoodInventoryTab extends TableTab {
 		// Use TableTab constructor
 		super(window, new FoodInventoryTableModel(selectedSettlement), true, false, MonitorWindow.FOOD_ICON);
 	
-
 		TableColumnModel m = table.getColumnModel();
-		int init = FoodInventoryTableModel.NUM_INITIAL_COLUMNS;
-		int numCols = FoodInventoryTableModel.NUM_DATA_COL;
-		for (int i= 0; i < m.getColumnCount(); i++) {
-			if (i >= init) {
-				int col = i - init;
-				int c = col % numCols;
-				if (c == 2)
-					m.getColumn(i).setCellRenderer(new NumberCellRenderer(TWO_DIGITS, true));				
-				else if (c == 5 || c == 6)
-					m.getColumn(i).setCellRenderer(NumberRenderer.getCurrencyRenderer());
-				else 
-					m.getColumn(i).setCellRenderer(new NumberCellRenderer(THREE_DIGITS, true));
+		for (int i= FoodInventoryTableModel.NUM_INITIAL_COLUMNS; i < m.getColumnCount(); i++) {
+			TableCellRenderer r;
+			switch(i) {
+				case FoodInventoryTableModel.COST_COL:
+				case FoodInventoryTableModel.PRICE_COL:
+					r = NumberRenderer.getCurrencyRenderer();
+					break;
 
+				case FoodInventoryTableModel.MASS_COL:
+					r = DIGIT2_RENDERER;
+					break;
+
+				default:
+					r = DIGIT3_RENDERER;
 			}
+
+			m.getColumn(i).setCellRenderer(r);
 		}
 	}
 }

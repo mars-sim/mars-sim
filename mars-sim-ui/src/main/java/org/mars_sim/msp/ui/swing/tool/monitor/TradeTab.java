@@ -6,10 +6,10 @@
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.NumberRenderer;
 
 /**
@@ -19,9 +19,6 @@ import org.mars_sim.msp.ui.swing.tool.NumberRenderer;
 @SuppressWarnings("serial")
 public class TradeTab extends TableTab {
 
-	/** The minimum 2 of decimal places to be displayed. */
-	private static final int TWO_DIGITS = 2;
-	
 	/**
 	 * constructor.
 	 * 
@@ -33,21 +30,25 @@ public class TradeTab extends TableTab {
 		super(window, new TradeTableModel(selectedSettlement), true, false, MonitorWindow.TRADE_ICON);
 
 		TableColumnModel m = table.getColumnModel();
-		int init = TradeTableModel.NUM_INITIAL_COLUMNS;
-		int numCols = TradeTableModel.NUM_DATA_COL;
-		for (int i= 0; i < m.getColumnCount(); i++) {
-			if (i >= init) {
-				int col = i - init;
-				int c = col % numCols;
-				if (c == 2)
-					m.getColumn(i).setCellRenderer(NumberRenderer.getIntegerRenderer());
-				else if (c == 3)
-					m.getColumn(i).setCellRenderer(new NumberCellRenderer(TWO_DIGITS, true));				
-				else if (c == 6 || c == 7)
-					m.getColumn(i).setCellRenderer(NumberRenderer.getCurrencyRenderer());
-				else 
-					m.getColumn(i).setCellRenderer(new NumberCellRenderer(TWO_DIGITS, true));
+		for(int i = TradeTableModel.NUM_INITIAL_COLUMNS; i < m.getColumnCount(); i++) {
+			TableCellRenderer renderer;
+			switch(i) {
+				case TradeTableModel.PRICE_COL:
+					renderer = NumberRenderer.getCurrencyRenderer();
+					break;
+
+				case TradeTableModel.COST_COL:
+					renderer = NumberRenderer.getCurrencyRenderer();
+					break;
+
+				case TradeTableModel.QUANTITY_COL:
+					renderer = NumberRenderer.getIntegerRenderer();
+					break;
+
+				default:
+					renderer = DIGIT2_RENDERER;
 			}
+			m.getColumn(i).setCellRenderer(renderer);				
 		}
 	}
 }

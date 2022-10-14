@@ -6,11 +6,7 @@
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Logger;
-
-import javax.swing.SwingUtilities;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
@@ -26,7 +22,7 @@ import org.mars_sim.msp.core.structure.building.BuildingManager;
  * of the list is the Unit Manager. 
  */
 @SuppressWarnings("serial")
-public class BuildingTableModel extends UnitTableModel {
+public class BuildingTableModel extends UnitTableModel<Building> {
 
 	/** default logger. */
 	private static final Logger logger = Logger.getLogger(BuildingTableModel.class.getName());
@@ -48,19 +44,10 @@ public class BuildingTableModel extends UnitTableModel {
 	/** Types of Columns. */
 	private static Class<?>[] columnTypes;
 
-	private static List<UnitEventType> powerEvents = new ArrayList<>();
-
 	/**
 	 * The static initializer creates the name & type arrays.
 	 */
 	static {
-		
-		powerEvents.add(UnitEventType.POWER_MODE_EVENT);
-		powerEvents.add(UnitEventType.GENERATED_POWER_EVENT);
-		powerEvents.add(UnitEventType.STORED_POWER_EVENT);
-		powerEvents.add(UnitEventType.STORED_POWER_CAPACITY_EVENT);
-		powerEvents.add(UnitEventType.REQUIRED_POWER_EVENT);
-		powerEvents.add(UnitEventType.POWER_VALUE_EVENT);
 		
 		columnNames = new String[COLUMNCOUNT];
 		columnTypes = new Class[COLUMNCOUNT];
@@ -110,7 +97,7 @@ public class BuildingTableModel extends UnitTableModel {
 
 		selectedSettlement = filter;
  		BuildingManager bm = selectedSettlement.getBuildingManager();
-		resetUnits(bm.getBuildings());
+		resetEntities(bm.getBuildings());
 
 		selectedSettlement.addUnitListener(this);
 	}
@@ -122,50 +109,46 @@ public class BuildingTableModel extends UnitTableModel {
 	 * @param columnIndex Column index of the cell.
 	 */
 	@Override
-	public Object getValueAt(int rowIndex, int columnIndex) {
+	protected Object getEntityValue(Building building, int columnIndex) {
 		Object result = null;
 
-		if (rowIndex < getRowCount()) {
-			Building building = (Building) getUnit(rowIndex);
+		switch (columnIndex) {
 
-			switch (columnIndex) {
+		case NAME: 
+			result = building.getName();
+			break;
 
-			case NAME: 
-				result = building.getName();
-				break;
+		case TYPE: 
+			result = building.getBuildingType();
+			break;
+		
+		case CATEGORY:
+			result = building.getCategory().getName();
+			break;
 
-			case TYPE: 
-				result = building.getBuildingType();
-				break;
+		case POWER_MODE:
+			result = building.getPowerMode().getName();
+			break;
+						
+		case POWER_REQUIRED:
+			result =  building.getFullPowerRequired();
+			break;
 			
-			case CATEGORY:
-				result = building.getCategory().getName();
-				break;
-
-			case POWER_MODE:
-				result = building.getPowerMode().getName();
-				break;
-							
-			case POWER_REQUIRED:
-				result =  building.getFullPowerRequired();
-				break;
-				
-			case POWER_GEN:
-				if (building.getPowerGeneration() != null)
-					result =  building.getPowerGeneration().getGeneratedPower();
-				break;
-				
-			case HEAT_MODE:
-				result = building.getHeatMode().getPercentage();
-				break;
-				
-			case TEMPERATURE:
-				result = Math.round(building.getCurrentTemperature() * 10.0)/10.0;
-				break;
-				
-			default:
-				break;
-			}
+		case POWER_GEN:
+			if (building.getPowerGeneration() != null)
+				result =  building.getPowerGeneration().getGeneratedPower();
+			break;
+			
+		case HEAT_MODE:
+			result = building.getHeatMode().getPercentage();
+			break;
+			
+		case TEMPERATURE:
+			result = building.getCurrentTemperature();
+			break;
+			
+		default:
+			break;
 		}
 
 		return result;
@@ -188,51 +171,36 @@ public class BuildingTableModel extends UnitTableModel {
 	public void unitUpdate(UnitEvent event) {
 		Unit unit = (Unit) event.getSource();
 		UnitEventType eventType = event.getType();
-
-		int unitIndex = -1;
-		int columnNum = -1;
 		
 		if (eventType == UnitEventType.REMOVE_BUILDING_EVENT) {
-			removeUnit(unit);
+			removeEntity((Building) unit);
 		}
 		else if (eventType == UnitEventType.ADD_BUILDING_EVENT) {
 			// Determine the new row to be added
 			Building building = (Building)unit;
-			addUnit(building);			
+			addEntity(building);			
 		}
 
-		else { 
-			try {
-				for (UnitEventType type: powerEvents) {				
-					if (type == eventType) {
-						// Will fill in the codes here to update values in various columns
-					}
-				}
-			} catch (Exception e) {
-				logger.severe("unitUpdate not working: " + e.getMessage());
+		else if (event.getSource() instanceof Building) { 
+			int columnIndex = 51;
+			switch(eventType) {
+				case POWER_MODE_EVENT:
+					columnIndex = POWER_MODE;
+					break;
+				case GENERATED_POWER_EVENT:
+					columnIndex = POWER_GEN;
+					break;
+				case REQUIRED_POWER_EVENT:
+					columnIndex = POWER_REQUIRED;
+					break;
+				case HEAT_MODE_EVENT:
+					columnIndex = HEAT_MODE;
+					break;
+				default:
 			}
-		}
-			
-		if (columnNum > -1) {
-			SwingUtilities.invokeLater(new BuildingTableCellUpdater(unitIndex, columnNum));
-		}
-	}
-	
-	
-	/**
-	 * The class for updating the table cell.
-	 */
-	private class BuildingTableCellUpdater implements Runnable {
-		private int row;
-		private int column;
-
-		private BuildingTableCellUpdater(int row, int column) {
-			this.row = row;
-			this.column = column;
-		}
-
-		public void run() {
-			fireTableCellUpdated(row, column);
+			if (columnIndex > 0) {
+				entityValueUpdated((Building) event.getSource(), columnIndex, columnIndex);
+			}
 		}
 	}
 }

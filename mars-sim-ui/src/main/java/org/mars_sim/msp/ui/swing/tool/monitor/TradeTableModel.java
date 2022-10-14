@@ -6,10 +6,7 @@
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
-import java.util.List;
-
 import javax.swing.SwingUtilities;
-import javax.swing.table.AbstractTableModel;
 
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Msg;
@@ -27,39 +24,59 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.VehicleType;
-import org.mars_sim.msp.ui.swing.tool.Conversion;
 
 @SuppressWarnings("serial")
-public class TradeTableModel extends AbstractTableModel
-implements UnitListener, MonitorModel {
+public class TradeTableModel extends EntityTableModel<Good>
+implements UnitListener {
 
-	private static final String TRADE_GOODS = "Trade Goods";
-	
-	private static final String GOOD_COL = "Good - ";
-	private static final String CATEGORY_COL = "Category";
-	private static final String TYPE_COL = "Type";
+	static final int NUM_INITIAL_COLUMNS = 3;
+	private static final int NUM_DATA_COL = 8;
+	private static final int COLUMNCOUNT = NUM_INITIAL_COLUMNS + NUM_DATA_COL;
 
-	private static final String DEMAND_COL = "Demand";
-	private static final String SUPPLY_COL = "Supply";
-	private static final String QUANTITY_COL = "Quantity";
-	private static final String MASS_COL = "Tot Mass [kg]";
-	
-	private static final String NATIONAL_VP_COL = "National VP";
-	private static final String LOCAL_VP_COL = "Local VP";
+	/** Names of Columns. */
+	private static final String[] columnNames;
+	/** Types of columns. */
+	private static final Class<?>[] columnTypes;
 
-	private static final String COST_COL = "Cost [$]";
-	private static final String PRICE_COL = "Price [$]";
 
-	private static final String ONE_SPACE = " ";
-	private static final String TWO_SPACES = "  ";
+	private static final int DEMAND_COL = 3;
+	private static final int SUPPLY_COL = 4;
+	static final int QUANTITY_COL = 5;
+	private static final int MASS_COL = 6;
+	private static final int MARKET_COL = 7;
+	private static final int VALUE_COL = 8;
+	static final int COST_COL = 9;
+	static final int PRICE_COL = 10;
 
-	protected static final int NUM_INITIAL_COLUMNS = 3;
-	protected static final int NUM_DATA_COL = 8;
+	static {
+		columnNames = new String[NUM_INITIAL_COLUMNS + NUM_DATA_COL];
+		columnTypes = new Class[COLUMNCOUNT];
+		columnNames[0] = "Good";
+		columnTypes[0] = String.class;
+		columnNames[1] =  "Category";
+		columnTypes[1] = String.class;
+		columnNames[2] =  "Type";
+		columnTypes[2] = String.class;
+
+		columnNames[DEMAND_COL] =  "Demand";
+		columnTypes[DEMAND_COL] = Double.class;
+		columnNames[SUPPLY_COL] =  "Supply";
+		columnTypes[SUPPLY_COL] = Double.class;
+		columnNames[QUANTITY_COL] =  "Quantity";
+		columnTypes[QUANTITY_COL] = Double.class;
+		columnNames[MASS_COL] =  "Tot Mass [kg]";
+		columnTypes[MASS_COL] = Double.class;
+		columnNames[MARKET_COL] =  "National VP";
+		columnTypes[MARKET_COL] = Double.class;
+		columnNames[VALUE_COL] =  "Local VP";
+		columnTypes[VALUE_COL] = Double.class;
+		columnNames[COST_COL] =  "Cost [$]";
+		columnTypes[COST_COL] = Double.class;
+		columnNames[PRICE_COL] =  "Price [$]";
+		columnTypes[PRICE_COL] = Double.class;
+	};
 
 	// Data members
-
-	private List<Good> goodsList;
-	
 	private Settlement selectedSettlement;
 
 	/**
@@ -69,10 +86,12 @@ implements UnitListener, MonitorModel {
 	 * @param window
 	 */
 	public TradeTableModel(Settlement selectedSettlement) {
+		super(Msg.getString("TradeTableModel.tabName"), "TradeTableModel.counting", columnNames, columnTypes);
+
+		// Cache the data columns
+		setCachedColumns(NUM_INITIAL_COLUMNS, COLUMNCOUNT-1);
+
 		this.selectedSettlement = selectedSettlement;
-		
-		// Initialize goods list.
-		goodsList = GoodsUtil.getGoodsList();
 
 		setSettlementFilter(selectedSettlement);
 	}
@@ -86,10 +105,11 @@ implements UnitListener, MonitorModel {
 		// Initialize settlements.
 		selectedSettlement = filter;
 
+		// Initialize goods list.
+		resetEntities(GoodsUtil.getGoodsList());
+
 		// Add table as listener to each settlement.
 		selectedSettlement.addUnitListener(this);
-
-		fireTableDataChanged();
 	}
 	
 	/**
@@ -109,36 +129,6 @@ implements UnitListener, MonitorModel {
 		}
 	}
 
-
-	/**
-	 * Gets the model count string.
-	 */
-//	@Override
-	public String getCountString() {
-		return new StringBuilder(TWO_SPACES + goodsList.size() + ONE_SPACE + TRADE_GOODS).toString();
-	}
-
-	/**
-	 * Gets the name of this model. The name will be a description helping
-	 * the user understand the contents.
-	 *
-	 * @return Descriptive name.
-	 */
-	@Override
-	public String getName() {
-		return Msg.getString("TradeTableModel.tabName"); //$NON-NLS-1$
-	}
-
-	/**
-	 * Returns the object at the specified row indexes.
-	 *
-	 * @param row Index of the row object.
-	 * @return Object at the specified row.
-	 */
-	public Object getObject(int row) {
-		return goodsList.get(row);
-	}
-
 	/**
 	 * Has this model got a natural order that the model conforms to ?
 	 *
@@ -149,94 +139,36 @@ implements UnitListener, MonitorModel {
 	}
 
 	/**
-	 * Returns the name of the column requested.
-	 *
-	 * @param columnIndex Index of column.
-	 * @return name of specified column.
+	 * get the value for a Good property
+	 * @param selectedGood Good selected
+	 * @param columnIndex COlumn to get
 	 */
-	@Override
-	public String getColumnName(int columnIndex) {
-		if (columnIndex == 0) return GOOD_COL + selectedSettlement.getName();
-		else if (columnIndex == 1) return CATEGORY_COL;
-		else if (columnIndex == 2) return TYPE_COL;
-		else {
-			int col = columnIndex - NUM_INITIAL_COLUMNS;
-			int r = col % NUM_DATA_COL;
-			if (r == 0)
-				return DEMAND_COL;
-			else if (r == 1)
-				return SUPPLY_COL;
-			else if (r == 2)
-				return QUANTITY_COL;
-			else if (r == 3)
-				return MASS_COL;
-			else if (r == 4)
-				return NATIONAL_VP_COL;
-			else if (r == 5)
-				return LOCAL_VP_COL;
-			else if (r == 6)				
-				return COST_COL;
-			else
-				return PRICE_COL;
-		}
-	}
-
-	/**
-	 * Returns the type of the column requested.
-	 * 
-	 * @param columnIndex Index of column.
-	 * @return Class of specified column.
-	 */
-	@Override
-	public Class<?> getColumnClass(int columnIndex) {
-		if (columnIndex < NUM_INITIAL_COLUMNS)
-			return String.class;
-		else {
-			return Double.class;
-		}
-	}
-
-	public int getColumnCount() {
-		return NUM_DATA_COL + NUM_INITIAL_COLUMNS;
-	}
-
-	public int getRowCount() {
-		return goodsList.size();
-	}
-
-	public Object getValueAt(int rowIndex, int columnIndex) {
-		Good selectedGood = goodsList.get(rowIndex);
-		if (columnIndex == 0) {
-			return Conversion.capitalize(selectedGood.getName());
-		}
-
-		else if (columnIndex == 1) {
-			return Conversion.capitalize(getGoodCategoryName(selectedGood));
-		}
-
-		else if (columnIndex == 2) {
-			return Conversion.capitalize(selectedGood.getGoodType().getName());
-		}
-
-		else {
-			int col = columnIndex - NUM_INITIAL_COLUMNS;
-			int r = col % NUM_DATA_COL;
-			if (r == 0)
+	protected  Object getEntityValue(Good selectedGood, int columnIndex) {
+		switch(columnIndex) {
+			case 0:
+				return selectedGood.getName();
+			case 1:
+				return getGoodCategoryName(selectedGood);
+			case 2:
+				return selectedGood.getGoodType().getName();
+			case DEMAND_COL:
 				return selectedSettlement.getGoodsManager().getDemandValue(selectedGood);
-			else if (r == 1)
+			case SUPPLY_COL:
 				return selectedSettlement.getGoodsManager().getSupplyValue(selectedGood);
-			else if (r == 2)
+			case QUANTITY_COL:
 				return getQuantity(selectedSettlement, selectedGood.getID());
-			else if (r == 3)
+			case MASS_COL:
 				return getTotalMass(selectedSettlement, selectedGood);
-			else if (r == 4)
-				return Math.round(selectedGood.getInterMarketGoodValue()*100.0)/100.0;
-			else if (r == 5)
+			case MARKET_COL:
+				return selectedGood.getInterMarketGoodValue();
+			case VALUE_COL:
 				return selectedSettlement.getGoodsManager().getGoodValuePoint(selectedGood.getID());
-			else if (r == 6)
-				return Math.round(selectedGood.getCostOutput()*100.0)/100.0;
-			else
-				return Math.round(selectedSettlement.getGoodsManager().getPrice(selectedGood)*100.0)/100.0; 
+			case COST_COL:
+				return selectedGood.getCostOutput();
+			case PRICE_COL:
+				return selectedSettlement.getGoodsManager().getPrice(selectedGood);
+			default:
+				return null;
 		}
 	}
 
@@ -319,7 +251,7 @@ implements UnitListener, MonitorModel {
 	 * @param good
 	 * @return
 	 */
-	public String getGoodCategoryName(Good good) {
+	private static String getGoodCategoryName(Good good) {
 		return good.getCategory().getMsgKey();
 	}
 
@@ -328,11 +260,11 @@ implements UnitListener, MonitorModel {
 	 */
 	@Override
 	public void destroy() {
+		super.destroy();
+
 		// Remove as listener for all settlements.
 		selectedSettlement.removeUnitListener(this);
-	
-		goodsList.clear();
-		goodsList = null;
+
 		selectedSettlement = null;
 	}
 	
@@ -348,12 +280,8 @@ implements UnitListener, MonitorModel {
 		}
 
 		public void run() {
-			if (event.getTarget() == null)
-				fireTableDataChanged();
-			else {
-				int rowIndex = goodsList.indexOf(event.getTarget());
-				fireTableRowsUpdated(rowIndex, rowIndex);
-			}
+			// Update the data columns only
+			entityValueUpdated((Good)event.getTarget(), NUM_INITIAL_COLUMNS, COLUMNCOUNT-1);
 		}
 	}
 }

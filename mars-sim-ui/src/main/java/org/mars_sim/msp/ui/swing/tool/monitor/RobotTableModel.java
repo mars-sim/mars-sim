@@ -8,14 +8,12 @@ package org.mars_sim.msp.ui.swing.tool.monitor;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.Map;
 
 import javax.swing.SwingUtilities;
 
-import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEvent;
@@ -32,7 +30,6 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Crewable;
-import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
 /**
  * The RobotTableModel maintains a list of Robot objects. By defaults the source
@@ -40,7 +37,7 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
  * Columns.
  */
 @SuppressWarnings("serial")
-public class RobotTableModel extends UnitTableModel {
+public class RobotTableModel extends UnitTableModel<Robot> {
 
 	// Column indexes
 	/** Robot name column. */
@@ -71,6 +68,7 @@ public class RobotTableModel extends UnitTableModel {
 	private static String[] columnNames;
 	/** Types of Columns. */
 	private static Class<?>[] columnTypes;
+	private static final Map<UnitEventType, Integer> eventColumnMapping;
 
 	/**
 	 * The static initializer creates the name & type arrays.
@@ -98,6 +96,19 @@ public class RobotTableModel extends UnitTableModel {
 		columnTypes[MISSION_COL] = String.class;
 		columnNames[TASK] = Msg.getString("RobotTableModel.column.task"); //$NON-NLS-1$
 		columnTypes[TASK] = String.class;
+
+		eventColumnMapping = new EnumMap<>(UnitEventType.class);
+		eventColumnMapping.put(UnitEventType.NAME_EVENT, NAME);
+		eventColumnMapping.put(UnitEventType.LOCATION_EVENT, LOCATION);
+		eventColumnMapping.put(UnitEventType.ROBOT_POWER_EVENT, BATTERY);
+		eventColumnMapping.put(UnitEventType.PERFORMANCE_EVENT, PERFORMANCE);
+		eventColumnMapping.put(UnitEventType.JOB_EVENT, JOB);
+		eventColumnMapping.put(UnitEventType.TASK_EVENT, TASK);
+		eventColumnMapping.put(UnitEventType.TASK_NAME_EVENT, TASK);
+		eventColumnMapping.put(UnitEventType.TASK_ENDED_EVENT, TASK);
+		eventColumnMapping.put(UnitEventType.TASK_SUBTASK_EVENT, TASK);
+		eventColumnMapping.put(UnitEventType.MISSION_EVENT, MISSION_COL);
+		eventColumnMapping.put(UnitEventType.DEATH_EVENT, HEALTH);
 	}
 
 	/** inner enum with valid source types. */
@@ -119,27 +130,6 @@ public class RobotTableModel extends UnitTableModel {
 	private boolean allAssociated;
 
 	/**
-	 * constructor. Constructs a RobotTableModel object that displays all people in
-	 * the simulation.
-	 *
-	 * @param unitManager Manager containing Robot objects.
-	 */
-	public RobotTableModel(MainDesktopPane desktop) {
-		super(UnitType.ROBOT, Msg.getString("RobotTableModel.tabName"), //$NON-NLS-1$
-				"RobotTableModel.countingRobots", //$NON-NLS-1$
-				columnNames, columnTypes);
-
-		sourceType = ValidSourceType.ALL_ROBOTS;
-
-		if (mode == GameMode.COMMAND)
-			resetUnits(unitManager.getCommanderSettlement().getRobots());
-		else
-			resetUnits(unitManager.getRobots());
-
-		listenForUnits();
-	}
-
-	/**
 	 * Constructs a RobotTableModel object that displays all people from the
 	 * specified vehicle.
 	 *
@@ -153,8 +143,9 @@ public class RobotTableModel extends UnitTableModel {
 
 		sourceType = ValidSourceType.VEHICLE_ROBOTS;
 		this.vehicle = vehicle;
-		resetUnits(vehicle.getRobotCrew());
-		crewListener = new LocalCrewListener();
+		resetEntities(vehicle.getRobotCrew());
+		crewListener = new RobotChangeListener(UnitEventType.INVENTORY_STORING_UNIT_EVENT,
+										UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT);
 		((Unit) vehicle).addUnitListener(crewListener);
 	}
 
@@ -200,7 +191,7 @@ public class RobotTableModel extends UnitTableModel {
 				missionRobots.add((Robot) member);
 			}
 		}
-		resetUnits(missionRobots);
+		resetEntities(missionRobots);
 		missionListener = new LocalMissionListener();
 		mission.addMissionListener(missionListener);
 	}
@@ -218,14 +209,16 @@ public class RobotTableModel extends UnitTableModel {
 		this.settlement = filter;
 		if (allAssociated) {
 			sourceType = ValidSourceType.SETTLEMENT_ALL_ASSOCIATED_ROBOTS;
-			resetUnits(settlement.getAllAssociatedRobots());
-			settlementListener = new AssociatedSettlementListener();
+			resetEntities(settlement.getAllAssociatedRobots());
+			settlementListener = new RobotChangeListener(UnitEventType.ADD_ASSOCIATED_ROBOT_EVENT,
+														UnitEventType.REMOVE_ASSOCIATED_ROBOT_EVENT);
 			settlement.addUnitListener(settlementListener);
 		}
 		else {
 			sourceType = ValidSourceType.SETTLEMENT_ROBOTS;
-			resetUnits(settlement.getRobots());
-			settlementListener = new InhabitantSettlementListener();
+			resetEntities(settlement.getRobots());
+			settlementListener = new RobotChangeListener(UnitEventType.INVENTORY_STORING_UNIT_EVENT,
+														UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT);
 			settlement.addUnitListener(settlementListener);
 		}
 	}
@@ -236,7 +229,7 @@ public class RobotTableModel extends UnitTableModel {
 	 * @param event the unit event.
 	 */
 	public void unitUpdate(UnitEvent event) {
-		SwingUtilities.invokeLater(new RobotTableUpdater(event, this));
+		SwingUtilities.invokeLater(new RobotTableUpdater(event));
 	}
 
 	/**
@@ -246,76 +239,63 @@ public class RobotTableModel extends UnitTableModel {
 	 * @param columnIndex Column index of the cell.
 	 */
 	@Override
-	public Object getValueAt(int rowIndex, int columnIndex) {
+	protected Object getEntityValue(Robot robot, int columnIndex) {
 		Object result = null;
 
-		if (rowIndex < getRowCount()) {
-			Robot robot = (Robot) getUnit(rowIndex);
-
-			switch (columnIndex) {
-
-			case NAME: {
+		switch (columnIndex) {
+			case NAME: 
 				result = robot.getName();
-			}
 				break;
 
-			case TYPE: {
-				String typeStr = robot.getRobotType().getName();
-
-				result = typeStr;
-			}
+			case TYPE: 
+				result = robot.getRobotType().getName();
 				break;
 
-			case BATTERY: {
-				double kWh = robot.getSystemCondition().getcurrentEnergy();
-				// result = new Float(hunger).intValue();
+			case BATTERY: 
 				if (robot.getSystemCondition().isInoperable())
-					result = "";
+					result = null;
 				else
-					result = Math.round(kWh * 100.0)/100.0;
-			}
+					result = getBatteryStatus(robot.getSystemCondition().getcurrentEnergy());
 				break;
 
-			case HEALTH: {
-				{
-					if (robot.getSystemCondition().isInoperable())
-						result = "Inoperable";
-					else
-						result = "Operable";
-				}
-			}
+			case HEALTH: 
+				if (robot.getSystemCondition().isInoperable())
+					result = "Inoperable";
+				else
+					result = "Operable";
 				break;
 
-			case LOCATION: {
+			case PERFORMANCE:
+				result = getPerformanceStatus(robot.getSystemCondition().getPerformanceFactor());
+				break;
+
+			case LOCATION: 
 				result = robot.getLocationTag().getImmediateLocation();
-			}
 				break;
 
-			case SETTLEMENT_COL: {
+			case SETTLEMENT_COL: 
 				result = robot.getLocationTag().getLocale();
-			}
 				break;
 
-			case JOB: {
+			case JOB: 
 				result = RobotJob.getName(robot.getRobotType());
-			}
 				break;
 
-			case TASK: {
+			case TASK: 
 				// If the Robot is dead, there is no Task Manager
 				TaskManager mgr = robot.getBotMind().getBotTaskManager();
 				result = ((mgr != null) ? mgr.getTaskDescription(false) : null);
-			}
 				break;
 
-			case MISSION_COL: {
+			case MISSION_COL: 
 				Mission mission = robot.getBotMind().getMission();
 				if (mission != null) {
 					result = mission.getName();
 				}
-			}
 				break;
-			}
+		
+			default:
+				break;
 		}
 
 		return result;
@@ -327,7 +307,7 @@ public class RobotTableModel extends UnitTableModel {
 	 * @param level
 	 * @return status
 	 */
-	private String getBatteryStatus(double level) {
+	private static String getBatteryStatus(double level) {
 		String status = "N/A";
 		if (level < 10)
 			status = Msg.getString("RobotTableModel.column.battery.level1");
@@ -348,7 +328,7 @@ public class RobotTableModel extends UnitTableModel {
 	 * @param hunger
 	 * @return status
 	 */
-	private String getPerformanceStatus(double value) {
+	private static String getPerformanceStatus(double value) {
 		String status = "N/A";
 		if (value > 98)
 			status = Msg.getString("RobotTableModel.column.performance.level1");
@@ -384,107 +364,36 @@ public class RobotTableModel extends UnitTableModel {
 			settlement = null;
 		}
 	}
-
-	@Override
-	public boolean equals(Object o) {
-		boolean result = super.equals(o);
-
-		if (o instanceof RobotTableModel) {
-			RobotTableModel oModel = (RobotTableModel) o;
-			if (!sourceType.equals(oModel.sourceType))
-				result = false;
-		}
-
-		return result;
-	}
-
-	/**
-	 * Gets the hash code for this object.
-	 *
-	 * @return hash code.
-	 */
-	@Override
-	public int hashCode() {
-		return super.hashCode();
-	}
 	
 	/**
 	 * Inner class for updating the robot table.
 	 */
-	private static class RobotTableUpdater implements Runnable {
+	private class RobotTableUpdater implements Runnable {
 
-		static final Map<UnitEventType, Integer> EVENT_COLUMN_MAPPING;
-
-		static {
-			HashMap<UnitEventType, Integer> m = new HashMap<>();
-			m.put(UnitEventType.NAME_EVENT, NAME);
-			m.put(UnitEventType.LOCATION_EVENT, LOCATION);
-			m.put(UnitEventType.ROBOT_POWER_EVENT, BATTERY);
-			m.put(UnitEventType.PERFORMANCE_EVENT, PERFORMANCE);
-			m.put(UnitEventType.JOB_EVENT, JOB);
-			m.put(UnitEventType.TASK_EVENT, TASK);
-			m.put(UnitEventType.TASK_NAME_EVENT, TASK);
-			m.put(UnitEventType.TASK_ENDED_EVENT, TASK);
-			m.put(UnitEventType.TASK_SUBTASK_EVENT, TASK);
-			m.put(UnitEventType.MISSION_EVENT, MISSION_COL);
-			m.put(UnitEventType.DEATH_EVENT, HEALTH);
-			EVENT_COLUMN_MAPPING = Collections.unmodifiableMap(m);
-		}
 
 		private final UnitEvent event;
 
-		private final RobotTableModel tableModel;
-
-		private RobotTableUpdater(UnitEvent event, RobotTableModel tableModel) {
+		private RobotTableUpdater(UnitEvent event) {
 			this.event = event;
-			this.tableModel = tableModel;
 		}
 
 		@Override
 		public void run() {
 			UnitEventType eventType = event.getType();
 
-			Integer column = EVENT_COLUMN_MAPPING.get(eventType);
+			Integer column = eventColumnMapping.get(eventType);
 			
 			if (column != null && column > -1) {
-				if (event.getSource() instanceof Unit) {
-					Unit source = (Unit) event.getSource();
-					if (source instanceof Robot) {
-						tableModel.fireTableCellUpdated(tableModel.getIndex(source), column);
-					}
+				if (event.getSource() instanceof Robot) {
+					entityValueUpdated((Robot) event.getSource(), column, column);
 				}
 				
-				else if (event.getTarget() instanceof Unit) {
-					Unit target = (Unit) event.getTarget();
-					if (target instanceof Robot) {
-						tableModel.fireTableCellUpdated(tableModel.getIndex(target), column);
-					}
-				}
-			}
-		}
-	}
-
-	/**
-	 * UnitListener inner class for crewable vehicle.
-	 */
-	private class LocalCrewListener implements UnitListener {
-
-		/**
-		 * Catch unit update event.
-		 *
-		 * @param event the unit event.
-		 */
-		public void unitUpdate(UnitEvent event) {
-			UnitEventType eventType = event.getType();
-			Unit unit = (Unit) event.getTarget();
-			if (unit != null && unit.getUnitType() == UnitType.ROBOT) {
-				if (eventType == UnitEventType.INVENTORY_STORING_UNIT_EVENT) {
-					if (!containsUnit(unit))
-						addUnit(unit);
-				} else if (eventType == UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT) {
-					if (containsUnit(unit))
-						removeUnit(unit);
-				}
+				// else if (event.getTarget() instanceof Unit) {
+				// 	Unit target = (Unit) event.getTarget();
+				// 	if (target instanceof Robot) {
+				// 		tableModel.fireTableCellUpdated(tableModel.getIndex(target), column);
+				// 	}
+				// }
 			}
 		}
 	}
@@ -502,51 +411,29 @@ public class RobotTableModel extends UnitTableModel {
 		public void missionUpdate(MissionEvent event) {
 			MissionEventType eventType = event.getType();
 			Unit unit = (Unit) event.getTarget();
-			if (unit != null && unit.getUnitType() == UnitType.ROBOT) {
+			if (unit instanceof Robot) {
 				if (eventType == MissionEventType.ADD_MEMBER_EVENT) {
-					if (!containsUnit(unit))
-						addUnit(unit);
+					addEntity((Robot) unit);
 				}
 				else if (eventType == MissionEventType.REMOVE_MEMBER_EVENT) {
-					if (containsUnit(unit))
-						removeUnit(unit);
+					removeEntity((Robot) unit);
 				}
 			}
 		}
 	}
 
 	/**
-	 * UnitListener inner class for settlements for all inhabitants list.
+	 * UnitListener inner class for events where a Robot joins or leaves a Unit
 	 */
-	private class InhabitantSettlementListener implements UnitListener {
-		/**
-		 * Catch unit update event.
-		 *
-		 * @param event the unit event.
-		 */
-		public void unitUpdate(UnitEvent event) {
-			UnitEventType eventType = event.getType();
-			
-			if (eventType == UnitEventType.INVENTORY_STORING_UNIT_EVENT) {
-				Unit unit = (Unit) event.getTarget();
-				if (unit != null && unit.getUnitType() == UnitType.ROBOT) {
-					if (!containsUnit(unit))
-						addUnit(unit);
-				}
-			} else if (eventType == UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT) {
-				Unit unit = (Unit) event.getTarget();
-				if (unit != null && unit.getUnitType() == UnitType.ROBOT) {
-					if (containsUnit(unit))
-						removeUnit(unit);
-				}
-			}
-		}
-	}
+	private class RobotChangeListener implements UnitListener {
 
-	/**
-	 * UnitListener inner class for settlements for associated people list.
-	 */
-	private class AssociatedSettlementListener implements UnitListener {
+		private UnitEventType addEvent;
+		private UnitEventType removeEvent;
+
+		public RobotChangeListener(UnitEventType addEvent, UnitEventType removeEvent) {
+			this.addEvent = addEvent;
+			this.removeEvent = removeEvent;
+		}
 
 		/**
 		 * Catch unit update event.
@@ -555,17 +442,16 @@ public class RobotTableModel extends UnitTableModel {
 		 */
 		public void unitUpdate(UnitEvent event) {
 			UnitEventType eventType = event.getType();
-			if (eventType == UnitEventType.ADD_ASSOCIATED_ROBOT_EVENT) {	
-				Unit unit = (Unit) event.getTarget();
-				if (unit != null && unit.getUnitType() == UnitType.ROBOT) {
-					if (!containsUnit(unit))
-						addUnit(unit);
+			if (eventType == addEvent) {
+				Unit unit = (Unit)event.getTarget();
+				if (unit.getUnitType() == UnitType.ROBOT) {
+					addEntity((Robot) unit);
 				}
-			} else if (eventType == UnitEventType.REMOVE_ASSOCIATED_ROBOT_EVENT) {
-				Unit unit = (Unit) event.getTarget();
-				if (unit != null && unit.getUnitType() == UnitType.ROBOT) {
-					if (containsUnit(unit))
-						removeUnit(unit);
+			}
+			else if (eventType == removeEvent) {
+				Unit unit = (Unit)event.getTarget();
+				if (unit.getUnitType() == UnitType.ROBOT) {
+					removeEntity((Robot) unit);
 				}
 			}
 		}
