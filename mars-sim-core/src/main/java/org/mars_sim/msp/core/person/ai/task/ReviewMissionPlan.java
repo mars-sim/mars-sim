@@ -190,7 +190,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 		            if (mp.getPercentComplete() >= 100D) {
 		            	// Go to the finished phase and finalize the approval
 		            	setPhase(APPROVING);
-		                return time * .9; // return time is needed
+		                return time * .75; // return time is needed
 		            }
 		            else {
 		            	// if not 100% reviewed
@@ -244,7 +244,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 			}
 		} // end of while
 		
-        return time * 0.2;
+        return 0;
 	}
 
 	/**
