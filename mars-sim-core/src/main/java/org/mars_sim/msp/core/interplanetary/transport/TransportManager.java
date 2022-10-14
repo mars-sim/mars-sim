@@ -46,7 +46,7 @@ public class TransportManager implements Serializable, Temporal {
 
 	private transient HistoricalEventManager eventManager;
 	private transient SimulationConfig simConfig;
-	private transient Simulation sim;
+	private transient Simulation sim = Simulation.instance();
 
 	/**
 	 * Constructor.
@@ -102,6 +102,10 @@ public class TransportManager implements Serializable, Temporal {
 		transportItems.add(transportItem);
 		HistoricalEvent newEvent = new TransportEvent(transportItem, EventType.TRANSPORT_ITEM_CREATED,
 				"Mission Control", transportItem.getSettlementName());
+		if (sim == null)
+			sim = Simulation.instance();
+		if (eventManager == null)
+			eventManager = sim.getEventManager();
 		eventManager.registerNewEvent(newEvent);
 		logger.info("A transport item was added: " + transportItem.toString());
 	}
@@ -155,6 +159,10 @@ public class TransportManager implements Serializable, Temporal {
 		transportItem.setTransitState(TransitState.CANCELED);
 		HistoricalEvent cancelEvent = new TransportEvent(transportItem, EventType.TRANSPORT_ITEM_CANCELLED, "Reserved",
 				transportItem.getSettlementName());
+		if (sim == null)
+			sim = Simulation.instance();
+		if (eventManager == null)
+			eventManager = sim.getEventManager();
 		eventManager.registerNewEvent(cancelEvent);
 		logger.info("A transport item was cancelled: ");
 	}
@@ -175,6 +183,10 @@ public class TransportManager implements Serializable, Temporal {
 						transportItem.setTransitState(TransitState.IN_TRANSIT);
 						HistoricalEvent deliverEvent = new TransportEvent(transportItem, EventType.TRANSPORT_ITEM_LAUNCHED,
 								"A transport item launched", transportItem.getSettlementName());
+						if (sim == null)
+							sim = Simulation.instance();
+						if (eventManager == null)
+							eventManager = sim.getEventManager();
 						eventManager.registerNewEvent(deliverEvent);
 						logger.info("A transport item launched on " + transportItem.toString());
 					}
@@ -187,6 +199,10 @@ public class TransportManager implements Serializable, Temporal {
 						transportItem.performArrival(simConfig, sim);
 						HistoricalEvent arrivalEvent = new TransportEvent(transportItem, EventType.TRANSPORT_ITEM_ARRIVED,
 								transportItem.getSettlementName(), "A transport item arrived on Mars");
+						if (sim == null)
+							sim = Simulation.instance();
+						if (eventManager == null)
+							eventManager = sim.getEventManager();
 						eventManager.registerNewEvent(arrivalEvent);
 						logger.info("A transport item arrived at " + transportItem.toString());
 					}

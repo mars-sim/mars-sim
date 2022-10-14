@@ -737,6 +737,7 @@ public class Weather implements Serializable, Temporal {
 		}
 		else {
 			logger.warning(3_000L, "Weather data at " + c + " is not available.");
+			return;
 		}
 
 		int sunrise = 0;
