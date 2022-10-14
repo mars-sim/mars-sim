@@ -12,7 +12,6 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.MissionPlanning;
 import org.mars_sim.msp.core.person.ai.mission.PlanType;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
@@ -36,10 +35,11 @@ public class ReviewMissionPlanMeta extends MetaTask {
     
     private static final int PENALTY_FACTOR = 2;
     
+    private static final int VALUE = 500;
+    
     public ReviewMissionPlanMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
 		setTrait(TaskTrait.LEADERSHIP);
-
 	}
 
     @Override
@@ -61,9 +61,10 @@ public class ReviewMissionPlanMeta extends MetaTask {
         	Settlement target = person.getAssociatedSettlement();
 			int pop = target.getNumCitizens();
 
-        	MissionManager missionManager = Simulation.instance().getMissionManager();
-            List<Mission> missions = missionManager.getPendingMissions(target);
-
+            List<Mission> missions = Simulation.instance().getMissionManager().getPendingMissions(target);
+            if (missions.isEmpty())
+            	return 0;
+                
             for (Mission m : missions) {
             	
             	if (m.getPlan() == null) {
@@ -85,16 +86,18 @@ public class ReviewMissionPlanMeta extends MetaTask {
 						continue;
 					}
 
-                	result += missions.size() * 1500D / Math.max(4, Math.min(24, pop));                       	
+                	result += missions.size() * VALUE / Math.max(4, Math.min(24, pop));                       	
 
                 	// Add adjustment based on how many sol the request has since been submitted
                     // if the job assignment submitted date is > 1 sol
                     int sol = marsClock.getMissionSol();
                     int solRequest = m.getPlan().getMissionSol();
 
+                    double diff = sol - solRequest;
+                    
+                    boolean valid = mp.isReviewerValid(reviewedBy, pop);
                 	// Check if this reviewer has already exceeded the max # of reviews allowed
-					if (!mp.isReviewerValid(reviewedBy, pop)) {
-						double diff = sol - solRequest;
+					if (valid) {
 						if (diff == 0) {
 							result /= PENALTY_FACTOR;
 						}
@@ -106,7 +109,7 @@ public class ReviewMissionPlanMeta extends MetaTask {
 						else {
 							result += (sol - solRequest) * 100;
 						}
-					}                        
+					}
                 }
             }
             

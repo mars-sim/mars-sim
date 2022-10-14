@@ -85,7 +85,7 @@ public class MaintainBuilding extends Task implements Serializable {
 			else {
 				String des = Msg.getString(DETAIL, entity.getName()); //$NON-NLS-1$
 				setDescription(des);
-				logger.info(person, 4_000, des + ".");
+				logger.info(person, 30_000, des + ".");
 				// Walk to random location in building.
 				walkToRandomLocInBuilding((Building) entity, false);
 			}
@@ -121,7 +121,7 @@ public class MaintainBuilding extends Task implements Serializable {
 			else {
 				String des = Msg.getString(DETAIL, entity.getName()); //$NON-NLS-1$
 				setDescription(des);
-				logger.info(robot, 4_000, des + ".");
+				logger.info(robot, 30_000, des + ".");
 				// Walk to random location in building.
 				walkToRandomLocInBuilding((Building) entity, false);
 			}
