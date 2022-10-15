@@ -3343,19 +3343,16 @@ public class Settlement extends Structure implements Temporal,
 		sandAvailable = sandAvailable * sandAvailable - 1;
 		int reserve = (MIN_REGOLITH_RESERVE + MIN_SAND_RESERVE) * pop;
 		
-		if (regolithAvailable + sandAvailable > reserve + regolithDemand + sandDemand + regolithAvailable + sandAvailable) {
-			result = reserve - regolithDemand - sandDemand - regolithAvailable - sandAvailable;
+		if (regolithAvailable + sandAvailable > reserve + regolithDemand + sandDemand) {
+			result = reserve + regolithDemand + sandDemand - regolithAvailable - sandAvailable;
 		}
 		
-		else if (regolithAvailable + sandAvailable > reserve + regolithDemand + sandDemand) {
-			result = reserve - regolithDemand - sandDemand;
+		else if (regolithAvailable + sandAvailable > reserve) {
+			result = reserve - regolithAvailable - sandAvailable;
 		}
 
-		else if (regolithAvailable + sandAvailable > reserve) {
-			result = reserve;
-		}
 		else {
-			result = reserve + regolithDemand + sandDemand + regolithAvailable + sandAvailable;
+			result = reserve / pop;
 		}
 
 		if (result < 0)
@@ -3396,24 +3393,19 @@ public class Settlement extends Structure implements Temporal,
 		int pop = numCitizens;
 		int reserve = (MIN_WATER_RESERVE + MIN_ICE_RESERVE) * pop;
 
-		if (iceSupply + waterSupply > reserve 
-				+ iceDemand + waterDemand + iceSupply + waterSupply) {
-			result = reserve
-				- iceDemand - waterDemand - iceSupply - waterSupply;
+		if (iceSupply + waterSupply > reserve + iceDemand + waterDemand) {
+			result = reserve + iceDemand + waterDemand - iceSupply - waterSupply;
 		}
 		
-		else if (iceSupply + waterSupply > reserve + iceDemand + waterDemand) {
-			result = reserve - iceDemand - waterDemand;
+		else if (iceSupply + waterSupply > reserve) {
+			result = reserve - iceSupply - waterSupply;
 		}
 
 		// Prompt the collect ice mission to proceed more easily if water resource is
 		// dangerously low,
-		else if (waterSupply + iceSupply > reserve) {
-			// no change to missionProbability
-			result = reserve;
-		}
 		else {
-			result = reserve + waterDemand + iceDemand + waterSupply + iceSupply ;
+			// no change to missionProbability
+			result = reserve / pop;
 		}
 		
 		if (result < 0)

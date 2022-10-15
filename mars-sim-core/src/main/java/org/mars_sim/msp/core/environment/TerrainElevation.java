@@ -496,9 +496,9 @@ public class TerrainElevation implements Serializable {
 		sites.add(site);
 	}
 
-	public static CollectionSite getCollectionSite(Coordinates newLocation) {
+	public static synchronized CollectionSite getCollectionSite(Coordinates newLocation) {
 		// Create a shallow copy of sites to avoid ConcurrentModificationException
-		for (CollectionSite s:  new ArrayList<>(sites)) {
+		for (CollectionSite s:  sites) {
 			if (s.getLocation().equals(newLocation)) {
 				return s;
 			}

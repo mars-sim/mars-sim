@@ -151,7 +151,7 @@ public class Fishery extends Function {
 	    for (i = 0; i < numWeeds; i++)
 	       weeds.add(new Plant(WEED_SIZE, WEED_RATE));
 	    
-	    logger.log(building, Level.CONFIG, 0, "# of fish: " + numFish + "  # of weeds: " + numWeeds + ".");
+//	    logger.log(building, Level.CONFIG, 0, "# of fish: " + numFish + "  # of weeds: " + numWeeds + ".");
 	}
 
 
