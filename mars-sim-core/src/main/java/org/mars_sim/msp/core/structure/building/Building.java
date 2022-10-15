@@ -118,10 +118,11 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	boolean isImpactImminent = false;
 	/** Checked by getAllImmovableBoundedObjectsAtLocation() in LocalAreaUtil */
 	boolean inTransportMode = true;
+	
+	/** The designated zone where this building is located at. */
+	protected int zone;
 	/** Unique template id assigned for the settlement template of this building belong. */
 	protected int templateID;
-	/** The inhabitable ID for this building. */
-	//protected int inhabitableID = -1;
 	/** The base level for this building. -1 for in-ground, 0 for above-ground. */
 	protected int baseLevel;
 
@@ -197,7 +198,7 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	 * @throws BuildingException if building can not be created.
 	 */
 	public Building(BuildingTemplate template, BuildingManager manager) {
-		this(template.getID(), template.getBuildingType(), template.getBuildingName(), template.getBounds(), manager);
+		this(template.getID(), template.getZone(), template.getBuildingType(), template.getBuildingName(), template.getBounds(), manager);
 
 		buildingType = template.getBuildingType();
 		settlement = manager.getSettlement();
@@ -221,10 +222,11 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	 * @param manager      the building's building manager.
 	 * @throws BuildingException if building can not be created.
 	 */
-	public Building(int id, String buildingType, String name, BoundedObject bounds, BuildingManager manager) {
+	public Building(int id, int zone, String buildingType, String name, BoundedObject bounds, BuildingManager manager) {
 		super(name, manager.getSettlement().getCoordinates());
 
 		this.templateID = id;
+		this.zone = zone;
 		this.buildingType = buildingType;
 
 		this.settlement = manager.getSettlement();
@@ -1241,6 +1243,16 @@ public class Building extends Structure implements Malfunctionable, Indoor,
 	 */
 	public int getTemplateID() {
 		return templateID;
+	}
+
+	/**
+	 * Gets the zone # where this building is at. It's zero by default. 
+	 * Astronomy Observatory is located at zone 1.
+	 *
+	 * @return zone.
+	 */
+	public int getZone() {
+		return zone;
 	}
 
 	/**

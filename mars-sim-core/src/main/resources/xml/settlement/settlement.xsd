@@ -27,6 +27,7 @@
             <xs:attribute name="yloc" type="xs:decimal"/>
             <xs:attribute name="facing" type="xs:decimal"/>
             <xs:attribute name="id" type="xs:integer"/>
+            <xs:attribute name="zone" type="xs:integer"/>            
         </xs:complexType>
     </xs:element>
 

@@ -4,6 +4,7 @@
 	<!ELEMENT resupply (building*, vehicle*, equipment*, person?, resource*, part*, part-package*)>
 	<!ATTLIST resupply name CDATA #REQUIRED>
 	<!ELEMENT building EMPTY>
+	<!ATTLIST building zone CDATA #IMPLIED>	
 	<!ATTLIST building type CDATA #REQUIRED>
 	<!ATTLIST building width CDATA #IMPLIED>
 	<!ATTLIST building length CDATA #IMPLIED>
@@ -261,7 +262,7 @@
 
 	<resupply name="Resupply for Phase 3">
 
-		<building type="Astronomy Observatory" xloc="-55.0" yloc="-20.05" facing="90.0" />
+		<building zone ="1" type="Astronomy Observatory" xloc="-55.0" yloc="-20.05" facing="90.0" />
 		
 		<building type="MD4 Nuclear Reactor" xloc="120.0" yloc="-100" facing="0.0" />
 						

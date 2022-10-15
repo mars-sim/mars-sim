@@ -46,7 +46,7 @@ extends TestCase {
 		settlement = new MockSettlement();
         unitManager.addUnit(settlement);
         
-		garage = new Building(1, "Garage", "Garage", new BoundedObject(0D, 0D, 0D, 0D, 0D), settlement.getBuildingManager());
+		garage = new Building(1, 0, "Garage", "Garage", new BoundedObject(0D, 0D, 0D, 0D, 0D), settlement.getBuildingManager());
         unitManager.addUnit(garage);
         settlement.getBuildingManager().addBuilding(garage, false);
         surface = unitManager.getMarsSurface();

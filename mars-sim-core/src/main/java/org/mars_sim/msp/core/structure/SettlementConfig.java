@@ -59,6 +59,7 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 	private static final String DEFAULT_NUM_ROBOTS = "number-of-robots";
 	private static final String BUILDING = "building";
 	private static final String ID = "id";
+	private static final String ZONE = "zone";
 	private static final String TYPE = "type";
 	private static final String CONNECTION_LIST = "connection-list";
 	private static final String CONNECTION = "connection";
@@ -245,6 +246,7 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 
 			BoundedObject bounds = ConfigHelper.parseBoundedObject(buildingElement);
 
+			// Get the building id
 			int bid = -1;
 
 			if (buildingElement.getAttribute(ID) != null) {
@@ -257,7 +259,15 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 								+ settlementTemplateName + " is not unique.");
 			} else if (bid != -1)
 				existingIDs.add(bid);
-
+			
+			// Get the zone
+			int zone = 0;
+			
+			if (buildingElement.getAttribute(ZONE) != null) {
+				zone = Integer.parseInt(buildingElement.getAttributeValue(ZONE));
+			}
+			
+			// Get the building type
 			String buildingType = buildingElement.getAttributeValue(TYPE);
 			
 			if (buildingTypeIDMap.containsKey(buildingType)) {
@@ -273,7 +283,7 @@ public class SettlementConfig extends UserConfigurableConfig<SettlementTemplate>
 
 			String buildingNickName = buildingType + " " + buildingTypeID;
 
-			BuildingTemplate buildingTemplate = new BuildingTemplate(bid,
+			BuildingTemplate buildingTemplate = new BuildingTemplate(bid, zone, 
 					buildingType, buildingNickName, bounds);
 
 			template.addBuildingTemplate(buildingTemplate);

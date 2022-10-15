@@ -37,6 +37,7 @@ public class ResupplyConfig implements Serializable {
     // Element names
     private static final String RESUPPLY = "resupply";
     private static final String NAME = "name";
+    private static final String ZONE = "zone";
     private static final String BUILDING = "building";
     private static final String FACING = "facing";
     private static final String VEHICLE = "vehicle";
@@ -85,14 +86,24 @@ public class ResupplyConfig implements Serializable {
 	            resupplyTemplates.add(template);
 	
 	            template.name = resupplyElement.getAttributeValue(NAME);
-	
+
+				// Get the zone
+	            int zone = 0;
+	            
+	            String zoneString = resupplyElement.getAttributeValue(ZONE);
+	            
+	            if (zoneString != null) {
+	            	zone = Integer.parseInt(zoneString);
+	            	template.zone = zone;
+	            }
+	            	
 	            // Load buildings
 	            List<Element> buildingNodes = resupplyElement.getChildren(BUILDING);
 	            for (Element buildingElement : buildingNodes) {
 	                String buildingType = buildingElement.getAttributeValue(TYPE);
 	                BoundedObject bounds = ConfigHelper.parseBoundedObject(buildingElement);
 	
-	                template.buildings.add(new BuildingTemplate(0, buildingType,
+	                template.buildings.add(new BuildingTemplate(0, zone, buildingType,
 	                        buildingType, bounds));
 	
 	            }
@@ -317,11 +328,15 @@ public class ResupplyConfig implements Serializable {
         /** default serial id. */
         private static final long serialVersionUID = 1L;
 
+        private int zone = 0;
+        private int people;
+        
         private String name;
+        
         private List<BuildingTemplate> buildings;
+        
         private Map<String, Integer> vehicles;
         private Map<String, Integer> equipment;
-        private int people;
         private Map<AmountResource, Double> resources;
         private Map<Part, Integer> parts;
 

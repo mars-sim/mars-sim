@@ -24,6 +24,7 @@ public class BuildingTemplate implements Serializable, Comparable<BuildingTempla
 	private static final long serialVersionUID = 1L;
 
 	private int bid;
+	private int zone;
 	private int eVAAttachedBuildingID;
 	private BoundedObject bounds;
 
@@ -35,10 +36,11 @@ public class BuildingTemplate implements Serializable, Comparable<BuildingTempla
 	/*
 	 * * BuildingTemplate Constructor.
 	 */
-	public BuildingTemplate(int bid, String buildingType, String buildingName,
+	public BuildingTemplate(int bid, int zone, String buildingType, String buildingName,
 			BoundedObject bounds) {
 
 		this.bid = bid;
+		this.zone = zone;
 		this.buildingType = buildingType;
 		this.buildingName = buildingName;
 		this.bounds = bounds;
@@ -54,6 +56,16 @@ public class BuildingTemplate implements Serializable, Comparable<BuildingTempla
 		return bid;
 	}
 
+
+	/**
+	 * Gets the building zone.
+	 * 
+	 * @return zone.
+	 */
+	public int getZone() {
+		return zone;
+	}
+	
 	/**
 	 * Gets the building type.
 	 * 

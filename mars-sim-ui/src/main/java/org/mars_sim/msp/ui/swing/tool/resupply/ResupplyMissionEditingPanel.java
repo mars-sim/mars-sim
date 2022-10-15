@@ -815,7 +815,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 						String type = item.type.trim();
 						// NOTE: The parameters does NOT mater right now. When a building arrive,
 						// the parameters for each building's template will be re-assembled
-						newBuildings.add(new BuildingTemplate(0, type, type, new BoundedObject(0D, 0D, -1D, -1D, 0D)));
+						newBuildings.add(new BuildingTemplate(0, 0, type, type, new BoundedObject(0D, 0D, -1D, -1D, 0D)));
 					}
 				}
 			}
@@ -954,7 +954,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 						// NOTE: The parameters does NOT mater right now. When a building arrive,
 						// the parameters for each building's template will be re-assembled
 
-						newBuildings.add(new BuildingTemplate(0, type, type,
+						newBuildings.add(new BuildingTemplate(0, 0, type, type,
 											new BoundedObject(0D, 38D, 7D, 9D, 270D)));
 					}
 					

@@ -343,10 +343,13 @@ implements  LocalBoundedObject {
         int id = manager.getNextTemplateID();
         String buildingType = buildingStage.getInfo().getName();
         String uniqueName = manager.getBuildingNickName(buildingType);
-
-        Building newBuilding = new Building(id, buildingType, uniqueName,
+        
+        int zone = 0;
+        
+        Building newBuilding = new Building(id, zone, buildingType, uniqueName,
         		new BoundedObject(position, width, length, facing),
                 settlement.getBuildingManager());
+        
         manager.addBuilding(newBuilding, true);
 
         // Record completed building name.

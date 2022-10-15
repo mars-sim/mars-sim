@@ -201,7 +201,7 @@
         </connection-list>
     </building>
 
-    <building id="28" type="Astronomy Observatory" xloc="-55.0"
+    <building id="28" zone="1" type="Astronomy Observatory" xloc="-55.0"
         yloc="-20.0" facing="180.0">
         <connection-list>
             <connection id="29" xloc="-3.5" yloc="0.0" />

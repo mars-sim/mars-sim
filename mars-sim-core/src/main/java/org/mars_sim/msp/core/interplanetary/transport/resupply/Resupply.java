@@ -216,11 +216,13 @@ public class Resupply implements Serializable, Transportable {
 
 				int buildingID = buildingManager.getNextTemplateID();
 				
+				int zone = btemplate.getZone();
+				
 				int buildingTypeID = buildingManager.getNextBuildingTypeID(btemplate.getBuildingType());
 				// Note: scenario is null since template does NOT have a scenario string yet
 				String buildingNickName = btemplate.getBuildingType() + " " + buildingTypeID;
 
-				BuildingTemplate correctedTemplate = new BuildingTemplate(buildingID,
+				BuildingTemplate correctedTemplate = new BuildingTemplate(buildingID, zone,
 						btemplate.getBuildingType(), buildingNickName, correctedBounds);
 
 				checkTemplateAddBuilding(spec, correctedTemplate);
@@ -746,9 +748,11 @@ public class Resupply implements Serializable, Transportable {
 				int buildingID = buildingManager.getNextTemplateID();
 				int buildingTypeID = buildingManager.getNextBuildingTypeID(spec.getBuildingType());
 
+				int zone = 0;
+				
 				String buildingNickName = spec.getBuildingType() + " " + buildingTypeID;
 				// Note : ask for user to define the location for the new building as well
-				newPosition = new BuildingTemplate(buildingID,
+				newPosition = new BuildingTemplate(buildingID, zone,
 						spec.getBuildingType(), buildingNickName, new BoundedObject(0,  0, width, length, 0));
 
 				logger.config("Case 5: " + POSITIONING + buildingNickName + " at (0, 0)");
@@ -1078,12 +1082,14 @@ public class Resupply implements Serializable, Transportable {
 				int buildingID = buildingManager.getNextTemplateID();
 				int buildingTypeID = buildingManager.getNextBuildingTypeID(spec.getBuildingType());
 
+				int zone = 0;
+				
 				String buildingNickName = spec.getBuildingType() + " " + buildingTypeID;
 
 				logger.config(POSITIONING + "at (" + Math.round(rectCenterX * 10D) / 10D + ", "
 						+ Math.round(rectCenterY * 10D) / 10D + ") at " + Math.round(rectRotation) + " deg");
 
-				newPosition = new BuildingTemplate(buildingID, 
+				newPosition = new BuildingTemplate(buildingID, zone,
 						spec.getBuildingType(), buildingNickName, position);
 				break;
 			}
@@ -1171,9 +1177,11 @@ public class Resupply implements Serializable, Transportable {
 			int buildingID = buildingManager.getNextTemplateID();
 			int buildingTypeID = buildingManager.getNextBuildingTypeID(spec.getBuildingType());
 
+			int zone = 0;
+			
 			String buildingNickName = spec.getBuildingType() + " " + buildingTypeID;
 
-			newPosition = new BuildingTemplate(buildingID, spec.getBuildingType(), buildingNickName, 
+			newPosition = new BuildingTemplate(buildingID, zone, spec.getBuildingType(), buildingNickName, 
 					new BoundedObject(centerX, centerY, width, newLength,	facingDegrees));
 		}
 
