@@ -7,26 +7,16 @@
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 import javax.swing.SwingUtilities;
 
 import org.apache.commons.lang3.StringUtils;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEvent;
 import org.mars_sim.msp.core.UnitEventType;
-import org.mars_sim.msp.core.UnitManager;
-import org.mars_sim.msp.core.UnitManagerEvent;
-import org.mars_sim.msp.core.UnitManagerEventType;
-import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -39,7 +29,7 @@ import org.mars_sim.msp.core.structure.building.function.farming.Farming;
  * The CropTableModel keeps track of the quantity of the growing crops in each greenhouse by categories.
  */
 @SuppressWarnings("serial")
-public class CropTableModel extends UnitTableModel {
+public class CropTableModel extends UnitTableModel<Building> {
 
 	/** default logger. */
 	private static final Logger logger = Logger.getLogger(CropTableModel.class.getName());
@@ -52,15 +42,15 @@ public class CropTableModel extends UnitTableModel {
 	private static final int FIRST_CROP_CAT = INITIAL_COLS + 1;
 	
 	/** The total number of available crop category. */
-	private static int numCropCat = CropCategory.values().length;// = 14
+	private static int numCropCat = CropCategory.values().length;
 	
 	/** The number of Columns. */
 	private static int column_count = numCropCat + 3;
 
 	/** Names of Columns. */
-	private static String columnNames[];
+	private static String[] columnNames;
 	/** Types of columns. */
-	private static Class<?> columnTypes[];
+	private static Class<?>[] columnTypes;
 
 	static {
 		columnNames = new String[column_count];
@@ -81,136 +71,40 @@ public class CropTableModel extends UnitTableModel {
 
 	// Data members
 	/**
-	 * The listener for unit manager.
-	 */
-	private UnitManagerListener unitManagerListener;
-	/**
-	 * A list of settlements.
-	 */
-	private List<Settlement> paddedSettlements;
-	/**
 	 * A list of crop categories.
 	 */
 	private List<CropCategory> cropCategoryList;
-	/**
-	 * A list of greenhouse buildings.
-	 */
-	private List<Building> buildings;
-	/**
-	 * A map of greenhouse buildings with # of growing crops.
-	 */
-	private Map<Building, Integer> totalNumCropMap;
-	/**
-	 * A map of greenhouse buildings having a list of crop category and having a number of growing crops.
-	 */
-	private Map<Building, Map<CropCategory, Integer>> cropCatMap;
 
-	private Settlement selectedSettlement;
-
-	private static UnitManager unitManager = Simulation.instance().getUnitManager();
-
-	public CropTableModel(Settlement settlement) throws Exception {
-		super (Msg.getString("CropTableModel.tabName"), //$NON-NLS-1$
+	public CropTableModel(Settlement settlement) {
+		super (UnitType.BUILDING, Msg.getString("CropTableModel.tabName"), //$NON-NLS-1$
 				"CropTableModel.countingCrops", //$NON-NLS-1$
 				columnNames, columnTypes);
+		cropCategoryList = new ArrayList<>(List.of(CropCategory.values()));
 
-		selectedSettlement = settlement;
-		
-		totalNumCropMap = new ConcurrentHashMap<>();
-		cropCatMap = new ConcurrentHashMap<>();
+		// Cache all crop categories
+		setCachedColumns(INITIAL_COLS, FIRST_CROP_CAT + CropCategory.values().length);
+		setSettlementFilter(settlement);
 
-		buildings = new ArrayList<>();
-		cropCategoryList = new ArrayList<>();
-		paddedSettlements = new ArrayList<>();
-		
-		paddedSettlements.add(selectedSettlement);
-
-		init();
-
-		createCatList();
-		
-		createBuildingCropCatMap();
-		
-		updateCropCatMap();
+		listenForUnits();
 	}
-	
-	public void init() {
-		unitManagerListener = new LocalUnitManagerListener();
-		unitManager.addUnitManagerListener(unitManagerListener);
-	}
-	
+
 	/**
-	 * Creates the category list.
+	 * Filter the Greenhouses according to a Settlement
 	 */
-	public void createCatList() {
-		for (CropCategory type : CropCategory.values()) {
-			cropCategoryList.add(type);
-		}
-	}
-	
-	/**
-	 * Creates the building crop category map.
-	 */
-	public void createBuildingCropCatMap() {
-		Iterator<Settlement> i = paddedSettlements.iterator();
-		while (i.hasNext()) {
-			Settlement s = i.next();
-			List<Building> ghs = s.getBuildingManager().getBuildings(FunctionType.FARMING);
-			Collections.sort(ghs);
-			Iterator<Building> j = ghs.iterator();
-			while (j.hasNext()) {
-				Building b = j.next();
-				if (!buildings.contains(b)) {
-					buildings.add(b);
-					Map<CropCategory, Integer> map = new ConcurrentHashMap<>();
-					for (CropCategory type : CropCategory.values()) {
-						map.put(type, 0);
-					}
-					cropCatMap.put(b, map);
-				}
-			}
-		}
-	}
-	
-	/**
-	 * Updates the list of crops according to the category for each building.
-	 */
-	public void updateCropCatMap() {
-		setSource(buildings);
-		
-		try {
-			for (Building b: buildings) {
-				Iterator<Crop> k = b.getFarming().getCrops().iterator();
-				while (k.hasNext()) {
-					CropCategory cat = k.next().getCropSpec().getCropCategory();
-					Map<CropCategory, Integer> innerCatMap = null;
-					if (cropCatMap.containsKey(b)) {
-						innerCatMap = cropCatMap.get(b);
-						if (innerCatMap.containsKey(cat)) {
-							int num1 = innerCatMap.get(cat);
-							num1++;
-							innerCatMap.put(cat, num1);
-						}
-						else {
-							innerCatMap = new ConcurrentHashMap<>();
-							innerCatMap.put(cat, 1);
-						}
-					}
-				}
+	@Override
+	public boolean setSettlementFilter(Settlement filter) {
+		resetEntities(filter.getBuildingManager().getBuildings(FunctionType.FARMING));
 
-			}
-		} catch (Exception e) {
-			logger.severe("updateCropCatMap not working: " + e.getMessage());
-		}
+		return true;
 	}
-	
+
 	/**
 	 * Gives the position number for a particular crop group.
 	 *
 	 * @param String cropCat
 	 * @return a position number
 	 */
-	public int getCategoryNum(String cat) {
+	private int getCategoryNum(String cat) {
 		return CropCategory.valueOf(cat.toUpperCase()).ordinal();
 	}
 
@@ -219,9 +113,17 @@ public class CropTableModel extends UnitTableModel {
 	 *
 	 * @param return a number
 	 */
-	private Object getValueAtCropCat(int rowIndex, int cropColumn) {
-		int catNum = cropColumn - FIRST_CROP_CAT;
-		return cropCatMap.get(buildings.get(rowIndex)).get(cropCategoryList.get(catNum));
+	private Object getValueAtCropCat(Building greenhouse, int cropColumn) {
+		CropCategory cropCat = cropCategoryList.get(cropColumn - FIRST_CROP_CAT);
+
+		int num = 0;
+		for(Crop k : greenhouse.getFarming().getCrops()) {
+			CropCategory cat = k.getCropSpec().getCropCategory();
+			if (cat.equals(cropCat)) {
+				num++;
+			}
+		}
+		return num;
 	}
 
 	/**
@@ -230,83 +132,28 @@ public class CropTableModel extends UnitTableModel {
 	 * @param rowIndex    Row index of the cell.
 	 * @param columnIndex Column index of the cell.
 	 */
-	public Object getValueAt(int rowIndex, int columnIndex) {
+	@Override
+	public Object getEntityValue(Building greenhouse, int columnIndex) {
 		Object result = null;
 
-		int num = getRowCount();
-		if (rowIndex < num) {
-
-			try {
-				switch (columnIndex) {
-
-				case GREENHOUSE_NAME: {
-					String name = buildings.get(rowIndex).getNickName();
-					result = (Object) name;
-				}
-					break;
-
-				case SETTLEMENT_NAME: {
-					String i = buildings.get(rowIndex).getSettlement().getName();
-					result = (Object) i;
-				}
-					break;
-					
-				case INITIAL_COLS: {
-					result = (Object) getTotalNumOfAllCrops(buildings.get(rowIndex));
-				}
-					break;
-
-				default: {
-					result = getValueAtCropCat(rowIndex, columnIndex);
-				}
-					break;
-
-				}
-			} catch (Exception e) {
-				logger.severe("getValueAt not working: " + e.getMessage());
-			}
+		switch (columnIndex) {
+			case GREENHOUSE_NAME: 
+				result = greenhouse.getNickName();
+				break;
+			case SETTLEMENT_NAME: 
+				result = greenhouse.getSettlement().getName();
+				break;
+			case INITIAL_COLS: 
+				result = getTotalNumOfAllCrops(greenhouse);
+				break;
+			default: 
+				result = getValueAtCropCat(greenhouse, columnIndex);
+				break;
 		}
 
 		return result;
 	}
 
-	/**
-	 * Gets the number of units in the model.
-	 * 
-	 * Overload the super class (UnitTableModel)'s getUnitNumber()
-	 * @return number of units.
-	 */
-	protected int getUnitNumber() {
-		int result = 0;
-		if (totalNumCropMap != null && !totalNumCropMap.isEmpty()) {
-			for (Integer value : totalNumCropMap.values()) {
-				result = result + (int) value;
-			}
-		} else {
-			for (Building b : buildings) {
-				result += getTotalNumOfAllCrops(b);
-			}
-		}
-
-		return result;
-	}
-
-	/**
-	 * Gets the model count string.
-	 */
-	public String getCountString() {
-		return " " + Msg.getString("CropTableModel.countingCrops", //$NON-NLS-1$
-				Integer.toString(getUnitNumber()));
-	}
-
-	/**
-	 * Get the number of rows in the model.
-	 *
-	 * @return the number of Units in the super class.
-	 */
-	public int getRowCount() {
-		return buildings.size();
-	}
 
 	/**
 	 * Gets the total numbers of all crops in a greenhouse building
@@ -314,13 +161,8 @@ public class CropTableModel extends UnitTableModel {
 	 * @param b Building
 	 * @return total num of crops
 	 */
-	public int getTotalNumOfAllCrops(Building b) {
-		int num = 0;
-
-		num += b.getFarming().getCrops().size();
-
-		totalNumCropMap.put(b, num);
-		return num;
+	private int getTotalNumOfAllCrops(Building b) {
+		return b.getFarming().getCrops().size();
 	}
 
 	/**
@@ -328,9 +170,9 @@ public class CropTableModel extends UnitTableModel {
 	 *
 	 * @param event the unit event.
 	 */
+	@Override
 	public void unitUpdate(UnitEvent event) {
 		Unit unit = (Unit) event.getSource();
-		int unitIndex = getUnitIndex(unit);
 		UnitEventType eventType = event.getType();
 		Object target = event.getTarget();
 
@@ -345,160 +187,24 @@ public class CropTableModel extends UnitTableModel {
 		else if (eventType == UnitEventType.CROP_EVENT) {
 			Crop crop = (Crop) target;
 			CropCategory cat = crop.getCropSpec().getCropCategory();
-
-			try {
-				int tempColumnNum = -1;
-
-				tempColumnNum = getCategoryNum(cat.getName());
-
-				if (tempColumnNum > -1 && unitIndex > -1) {
-					// Only update cell if value as int has changed.
-					int currentValue = (Integer) getValueAt(unitIndex, tempColumnNum);
-					int newValue = getNewValue(unit, cat);
-
-					if (currentValue != newValue) {
-						columnNum = tempColumnNum;
-
-						Map<CropCategory, Integer> cropCache = cropCatMap.get(unit);
-						if (cropCache != null) {
-							cropCache.put(cat, newValue);
-						}
-					}
-				}
-			} catch (Exception e) {
-				logger.severe("unitUpdate not working: " + e.getMessage());
-			}
+			columnNum = getCategoryNum(cat.getName());
 		}
 		if (columnNum > -1) {
-			SwingUtilities.invokeLater(new FoodTableCellUpdater(unitIndex, columnNum));
+			SwingUtilities.invokeLater(new FoodTableCellUpdater((Building)unit, columnNum));
 		}
-	}
-
-	/**
-	 * Recomputes the total number of cropType having a particular cropCategory.
-	 * 
-	 * @param unit
-	 * @param cropCat
-	 * @return
-	 */
-	public int getNewValue(Unit unit, CropCategory cropCat) {
-		int result = 0;
-		
-		if (unit.getUnitType() == UnitType.SETTLEMENT) {
-			List<Building> greenhouses = ((Settlement) unit).getBuildingManager().getBuildings(FunctionType.FARMING);
-			Iterator<Building> i = greenhouses.iterator();
-	
-			while (i.hasNext()) {
-				try {
-					Farming farm = i.next().getFarming();
-					Iterator<Crop> j = farm.getCrops().iterator();
-					while (j.hasNext()) {
-						Crop crop = j.next();
-						CropCategory cat = crop.getCropSpec().getCropCategory();
-						// Match the crop name within the current list of crops having the same cropCategory
-						if (cat == cropCat) {
-							result++;
-							// Do not break here since other greenhouses may also have this crop category name
-						}
-					}
-				} catch (Exception e) {
-					logger.severe("getNewValue not working: " + e.getMessage());
-				}
-			}
-		}
-		else if (unit.getUnitType() == UnitType.BUILDING) {
-			Farming farm = ((Building)unit).getFarming();
-			Iterator<Crop> j = farm.getCrops().iterator();
-			while (j.hasNext()) {
-				Crop crop = j.next();
-				CropCategory cat = crop.getCropSpec().getCropCategory();
-				// Match the crop name within the current list of crops having the same cropCategory
-				if (cat == cropCat) {
-					result++;
-					// Do not break here since other greenhouses may also have this crop category name
-				}
-			}
-		}
-		
-		return result;
-	}
-
-	/**
-	 * Defines the source data from this table
-	 */
-	private void setSource(Collection<Building> source) {
-		Iterator<Building> iter = source.iterator();
-		while (iter.hasNext())
-			addUnit(iter.next());
-	}
-
-	// Need to find out how to call this method and how to associate it with TableTab.
-	public String getToolTip(int row, int col) {
-		StringBuilder tt = new StringBuilder();
-		Building b = buildings.get(row);
-		CropCategory cat = cropCategoryList.get(col);
-
-		Farming f = b.getFarming();
-		for (Crop c : f.getCrops()) {
-			CropCategory cat1 = c.getCropSpec().getCropCategory();
-			if (cat1 == cat)
-				tt.append(c.getCropName()).append(System.lineSeparator());
-		}
-		
-		
-		return tt.toString();
-	}
-
-	/**
-	 * Prepares the model for deletion.
-	 */
-	public void destroy() {
-		super.destroy();
-
-		unitManager.removeUnitManagerListener(unitManagerListener);
-		unitManagerListener = null;
-
-		cropCatMap = null;
-		buildings = null;
-		paddedSettlements = null;
-
 	}
 
 	private class FoodTableCellUpdater implements Runnable {
-		private int row;
+		private Building building;
 		private int column;
 
-		private FoodTableCellUpdater(int row, int column) {
-			this.row = row;
+		private FoodTableCellUpdater(Building building, int column) {
+			this.building = building;
 			this.column = column;
 		}
 
 		public void run() {
-			fireTableCellUpdated(row, column);
-		}
-	}
-
-	/**
-	 * UnitManagerListener inner class.
-	 */
-	private class LocalUnitManagerListener implements UnitManagerListener {
-
-		/**
-		 * Catch unit manager update event.
-		 *
-		 * @param event the unit event.
-		 */
-		public void unitManagerUpdate(UnitManagerEvent event) {
-			Unit unit = event.getUnit();
-			UnitManagerEventType eventType = event.getEventType();
-
-			if (unit.getUnitType() == UnitType.BUILDING) {
-				if (eventType == UnitManagerEventType.ADD_UNIT && !containsUnit(unit)) {
-					addUnit(unit);
-				} else if (eventType == UnitManagerEventType.REMOVE_UNIT && containsUnit(unit)) {
-					removeUnit(unit);
-				}
-			}
+			entityValueUpdated(building, column, column);
 		}
 	}
 }

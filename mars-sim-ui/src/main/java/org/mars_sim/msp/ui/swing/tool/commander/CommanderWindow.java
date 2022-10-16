@@ -44,9 +44,6 @@ import org.mars_sim.msp.core.UnitEvent;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitListener;
 import org.mars_sim.msp.core.UnitManager;
-import org.mars_sim.msp.core.UnitManagerEvent;
-import org.mars_sim.msp.core.UnitManagerListener;
-import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
@@ -936,7 +933,7 @@ public class CommanderWindow extends ToolWindow {
 	 * Inner class combo box model for settlements.
 	 */
 	public class SettlementComboBoxModel extends DefaultComboBoxModel<Object>
-		implements UnitManagerListener, UnitListener {
+		implements UnitListener {
 
 		/**
 		 * Constructor.
@@ -946,8 +943,6 @@ public class CommanderWindow extends ToolWindow {
 			super();
 			// Initialize settlement list.
 			updateSettlements();
-			// Add this as a unit manager listener.
-			unitManager.addUnitManagerListener(this);
 
 			// Add addUnitListener
 			Collection<Settlement> settlements = unitManager.getSettlements();
@@ -986,13 +981,6 @@ public class CommanderWindow extends ToolWindow {
 		}
 
 		@Override
-		public void unitManagerUpdate(UnitManagerEvent event) {
-			if (event.getUnit().getUnitType() == UnitType.SETTLEMENT) {
-				updateSettlements();
-			}
-		}
-
-		@Override
 		public void unitUpdate(UnitEvent event) {
 			// Note: Easily 100+ UnitEvent calls every second
 			UnitEventType eventType = event.getType();
@@ -1024,7 +1012,6 @@ public class CommanderWindow extends ToolWindow {
 		 * Prepares class for deletion.
 		 */
 		public void destroy() {
-			unitManager.removeUnitManagerListener(this);
 			Collection<Settlement> settlements = unitManager.getSettlements();
 			List<Settlement> settlementList = new ArrayList<>(settlements);
 			Iterator<Settlement> i = settlementList.iterator();

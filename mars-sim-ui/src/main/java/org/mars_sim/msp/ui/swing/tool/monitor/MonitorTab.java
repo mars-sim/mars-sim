@@ -91,14 +91,14 @@ public abstract class MonitorTab extends JPanel {
 	/**
 	 * Display property window controlling this view.
 	 */
-	abstract public void displayProps(MainDesktopPane desktop);
+	public abstract void displayProps(MainDesktopPane desktop);
 
 	/**
 	 * This return the selected objects that are current selected in this tab.
 	 *
 	 * @return List of objects selected in this tab.
 	 */
-	abstract protected List<?> getSelection();
+	protected abstract List<?> getSelection();
 
 	/**
 	 * Gets the tab count string.

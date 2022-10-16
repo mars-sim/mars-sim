@@ -33,6 +33,7 @@ import javax.swing.table.TableColumnModel;
 
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.RowNumberTable;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 
@@ -46,14 +47,14 @@ import com.alee.laf.scroll.WebScrollPane;
 @SuppressWarnings("serial")
 abstract class TableTab extends MonitorTab {
 
-	private JTableHeader header;
-	private TableCellRenderer tableCellRenderer;
+	protected static final NumberCellRenderer DIGIT2_RENDERER = new NumberCellRenderer(2, true);
+	protected static final NumberCellRenderer DIGIT3_RENDERER = new NumberCellRenderer(3, true);
+
 	private TableProperties propsWindow;
 
 	// These icons are used to render the sorting images on the column header
 	private static Icon ascendingIcon = null;
 	private static Icon descendingIcon = null;
-	// private final static Icon TABLEICON = ImageLoader.getIcon("Table");
 
 	/** Table component. */
 	protected JTable table;
@@ -94,6 +95,7 @@ abstract class TableTab extends MonitorTab {
 				 * Overriding table change so that selections aren't cleared when rows are
 				 * deleted.
 				 */
+				@Override
 				public void tableChanged(TableModelEvent e) {
 
 					if (e.getType() == TableModelEvent.DELETE) {
@@ -160,10 +162,9 @@ abstract class TableTab extends MonitorTab {
 			// Add a mouse listener for the mouse event selecting the sorted column
 			// Not the best way but no double click is provided on Header class
 			// Get the TableColumn header to display sorted column
-			header = (JTableHeader) table.getTableHeader();
-			// theRenderer = new TableHeaderRenderer(header.getDefaultRenderer());
-			// header.setDefaultRenderer(theRenderer);
+			JTableHeader header = (JTableHeader) table.getTableHeader();
 			header.addMouseListener(new MouseAdapter() {
+				@Override
 				public void mouseClicked(MouseEvent e) {
 					// Find the column at this point
 					int column = header.columnAtPoint(e.getPoint());
@@ -179,6 +180,7 @@ abstract class TableTab extends MonitorTab {
 				 * Overriding table change so that selections aren't cleared when rows are
 				 * deleted.
 				 */
+				@Override
 				public void tableChanged(TableModelEvent e) {
 
 					if (e.getType() == TableModelEvent.DELETE) {
@@ -274,8 +276,7 @@ abstract class TableTab extends MonitorTab {
 		    w = Math.max(w, maxWidth);
 
 			for (int row = 0; row < table.getRowCount(); row++) {
-				if (tableCellRenderer == null)
-					tableCellRenderer = table.getCellRenderer(row, col);
+				TableCellRenderer tableCellRenderer = table.getCellRenderer(row, col);
 				Component c = table.prepareRenderer(tableCellRenderer, row, col);
 				int width = c.getPreferredSize().width + table.getIntercellSpacing().width + 15;
 				preferredWidth = Math.max(width, preferredWidth);
@@ -405,11 +406,7 @@ abstract class TableTab extends MonitorTab {
 	}
 
 	public void destroy() {
-		// super.destroy();
-		header = null;
-		tableCellRenderer = null;
 		propsWindow = null;
-
 	}
 
 	/**

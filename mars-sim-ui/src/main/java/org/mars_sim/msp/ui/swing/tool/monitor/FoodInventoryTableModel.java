@@ -6,90 +6,82 @@
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import javax.swing.SwingUtilities;
-import javax.swing.table.AbstractTableModel;
 
-import org.mars_sim.msp.core.GameManager;
-import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEvent;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitListener;
-import org.mars_sim.msp.core.UnitManager;
-import org.mars_sim.msp.core.UnitManagerEvent;
-import org.mars_sim.msp.core.UnitManagerEventType;
-import org.mars_sim.msp.core.UnitManagerListener;
-import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.food.Food;
 import org.mars_sim.msp.core.food.FoodUtil;
 import org.mars_sim.msp.core.goods.Good;
 import org.mars_sim.msp.core.goods.GoodsUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.ui.swing.tool.Conversion;
 
 /**
  * This class model how food data is organized and displayed
  * within the Monitor Window for a settlement.
  */
 @SuppressWarnings("serial")
-public class FoodInventoryTableModel extends AbstractTableModel
-implements UnitListener, MonitorModel, UnitManagerListener {
-
-	private static final String FOOD_RESOURCES = " Food Resources";
-	
-	private static final String FOOD_COL = "Food - ";
-	private static final String TYPE = "Type";
-	
-	private static final String DEMAND_COL = "Demand";
-	private static final String SUPPLY_COL = "Supply";
-	
-	private static final String MASS_COL = "kg";
-	
-	private static final String LOCAL_VP_COL = "Local VP";
-	private static final String NATIONAL_VP_COL = "National VP";
-	private static final String COST_COL = "Cost [$]";
-	private static final String PRICE_COL = "Price [$]";
-
+public class FoodInventoryTableModel extends EntityTableModel<Food>
+implements UnitListener {
 	
 	protected static final int NUM_INITIAL_COLUMNS = 2;
 	protected static final int NUM_DATA_COL = 7;
+
+	/** Names of Columns. */
+	private static final String[] columnNames;
+	/** Types of columns. */
+	private static final Class<?>[] columnTypes;
+
+	private static final int DEMAND_COL = 2;
+	private static final int SUPPLY_COL = 3;
+	static final int MASS_COL = 4;
+	private static final int LOCAL_VP_COL = 5;
+	private static final int NATIONAL_VP_COL = 6;
+	static final int COST_COL = 7;
+	static final int PRICE_COL = 8;
+
 	
-	private GameMode mode = GameManager.getGameMode();
+	static {
+		columnNames = new String[NUM_INITIAL_COLUMNS + NUM_DATA_COL];
+		columnTypes = new Class[NUM_INITIAL_COLUMNS + NUM_DATA_COL];
 
-	// Data members
-	private List<Food> foodList;
-	private List<Settlement> settlements = new ArrayList<>();
+		columnNames[0] = "Food";
+		columnTypes[0] = String.class;
+		columnNames[1] =  "Type";
+		columnTypes[1] = String.class;
 
-	private Settlement commanderSettlement;
+		columnNames[DEMAND_COL] = "Demand";
+		columnTypes[DEMAND_COL] = Double.class;
+		columnNames[SUPPLY_COL] = "Supply";
+		columnTypes[SUPPLY_COL] = Double.class;
+		columnNames[MASS_COL] = "kg";
+		columnTypes[MASS_COL] = Double.class;
+		columnNames[LOCAL_VP_COL] = "Local VP";
+		columnTypes[LOCAL_VP_COL] = Double.class;
+		columnNames[NATIONAL_VP_COL] = "National VP";
+		columnTypes[NATIONAL_VP_COL] = Double.class;
+		columnNames[COST_COL] = "Cost [$]";
+		columnTypes[COST_COL] = Double.class;
+		columnNames[PRICE_COL] = "Price [$]";
+		columnTypes[PRICE_COL] = Double.class;
+	};
+
 	private Settlement selectedSettlement;
-
-	private static UnitManager unitManager = Simulation.instance().getUnitManager();
+	private boolean monitorSettlement = false;
 
 	/**
 	 * Constructor.
 	 */
 	public FoodInventoryTableModel(Settlement selectedSettlement) {
-		this.selectedSettlement = selectedSettlement;	
+		super(Msg.getString("FoodInventoryTableModel.tabName"), "FoodInventoryTabModel.foodCounting", columnNames, columnTypes);
 		
-		// Initialize food list.
-		foodList = FoodUtil.getFoodList();
+		setCachedColumns(DEMAND_COL, PRICE_COL);
 
-		// Initialize settlements.
-		settlements.add(selectedSettlement);
-			
-		// Add table as listener to each settlement.
-		Iterator<Settlement> i = settlements.iterator();
-		while (i.hasNext()) i.next().addUnitListener(this);
-
-		// Add as unit manager listener.
-		unitManager.addUnitManagerListener(this);
+		setSettlementFilter(selectedSettlement);
 	}
 
 	/**
@@ -102,42 +94,12 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 		Unit unit = (Unit) event.getSource();
 		UnitEventType eventType = event.getType();
 		if (eventType == UnitEventType.FOOD_EVENT) {
-			if (event.getTarget() instanceof Good && unit instanceof Settlement) {
-				if ((mode == GameMode.COMMAND && unit.getName().equalsIgnoreCase(commanderSettlement.getName()))
-						|| unit.getName().equalsIgnoreCase(settlements.get(0).getName())) {
+			if (event.getTarget() instanceof Good) {
+				if (unit.equals(selectedSettlement)) {
 					SwingUtilities.invokeLater(new FoodTableUpdater(event));			
 				}
 			}
 		}
-	}
-
-	/**
-	 * Gets the model count string.
-	 */
-//	@Override
-	public String getCountString() {
-		return "  " + foodList.size() + FOOD_RESOURCES;
-	}
-
-	/**
-	 * Get the name of this model. The name will be a description helping the user
-	 * understand the contents.
-	 *
-	 * @return Descriptive name.
-	 */
-	@Override
-	public String getName() {
-		return Msg.getString("FoodInventoryTableModel.tabName");
-	}
-
-	/**
-	 * Return the object at the specified row indexes.
-	 *
-	 * @param row Index of the row object.
-	 * @return Object at the specified row.
-	 */
-	public Object getObject(int row) {
-		return foodList.get(row);
 	}
 
 	/**
@@ -148,85 +110,29 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 		return false;
 	}
 
-	/**
-	 * Return the name of the column requested.
-	 *
-	 * @param columnIndex Index of column.
-	 * @return name of specified column.
-	 */
-	public String getColumnName(int columnIndex) {
-		if (columnIndex == 0) 
-			return FOOD_COL + settlements.get(0).getName();
-		else if (columnIndex == 1) 
-			return TYPE;
-		else {
-			int col = columnIndex - NUM_INITIAL_COLUMNS;
-			int r = col % NUM_DATA_COL;
-			if (r == 0)
-				return DEMAND_COL;
-			else if (r == 1)
-				return SUPPLY_COL;
-			else if (r == 2)
-				return MASS_COL;
-			else if (r == 3)
-				return NATIONAL_VP_COL;
-			else if (r == 4)
-				return LOCAL_VP_COL;
-			else if (r == 5)				
-				return COST_COL;
-			else
-				return PRICE_COL;
-		}
-	}
-
-	/**
-	 * Return the type of the column requested.
-	 *
-	 * @param columnIndex Index of column.
-	 * @return Class of specified column.
-	 */
-	public Class<?> getColumnClass(int columnIndex) {
-		if (columnIndex < NUM_INITIAL_COLUMNS)
-			return String.class;
-		else {
-			return Double.class;
-		}
-	}
-
-	public int getColumnCount() {
-		return settlements.size() * NUM_DATA_COL + NUM_INITIAL_COLUMNS;
-	}
-
-	public int getRowCount() {
-		return foodList.size();
-	}
-
-	public Object getValueAt(int rowIndex, int columnIndex) {
-		if (columnIndex == 0) {
-			return Conversion.capitalize(foodList.get(rowIndex).getName());
-		}
-
-		else if (columnIndex == 1) {
-			return Conversion.capitalize(foodList.get(rowIndex).getType());
-		}
-
-		else {
-			int col = columnIndex - NUM_INITIAL_COLUMNS;
-			int r = col % NUM_DATA_COL;
-			if (r == 0)
-				return selectedSettlement.getGoodsManager().getAmountDemandValue(foodList.get(rowIndex).getID());
-			else if (r == 1)
-				return selectedSettlement.getGoodsManager().getSupplyValue(foodList.get(rowIndex).getID());
-			else if (r == 2)
-				return getTotalMass(selectedSettlement, foodList.get(rowIndex));
-			else if (r == 3)
-				return Math.round(convertFoodToGood(foodList.get(rowIndex)).getInterMarketGoodValue()*100.0)/100.0;
-			else if (r == 4)
-				return selectedSettlement.getGoodsManager().getGoodValuePoint(foodList.get(rowIndex).getID());
-			else if (r == 5)
-				return Math.round(convertFoodToGood(foodList.get(rowIndex)).getCostOutput()*100.0)/100.0;
-			else
-				return Math.round(selectedSettlement.getGoodsManager().getPricePerItem(foodList.get(rowIndex).getID())*100.0)/100.0; 
+	protected Object getEntityValue(Food selectedFood, int columnIndex) {
+		switch(columnIndex) {
+			case 0:
+				return selectedFood.getName();
+			case 1:
+				return selectedFood.getType();
+			
+			case DEMAND_COL:
+				return selectedSettlement.getGoodsManager().getAmountDemandValue(selectedFood.getID());
+			case SUPPLY_COL:
+				return selectedSettlement.getGoodsManager().getSupplyValue(selectedFood.getID());
+			case MASS_COL:
+				return getTotalMass(selectedSettlement, selectedFood);
+			case LOCAL_VP_COL:
+				return convertFoodToGood(selectedFood).getInterMarketGoodValue();
+			case NATIONAL_VP_COL:
+				return selectedSettlement.getGoodsManager().getGoodValuePoint(selectedFood.getID());
+			case COST_COL:
+				return convertFoodToGood(selectedFood).getCostOutput();
+			case PRICE_COL:
+				return selectedSettlement.getGoodsManager().getPricePerItem(selectedFood.getID()); 
+			default:
+				return null;
 		}
 	}
 
@@ -236,7 +142,7 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 	 * @param food
 	 * @return
 	 */
-	private Good convertFoodToGood(Food food) {
+	private static Good convertFoodToGood(Food food) {
 		return GoodsUtil.getGood(food.getID());
 	}
 	
@@ -252,27 +158,38 @@ implements UnitListener, MonitorModel, UnitManagerListener {
     	
     	if (id < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
       		// For Amount Resource
-    		return Math.round(settlement.getAmountResourceStored(id) * 100.0)/100.0;
+    		return settlement.getAmountResourceStored(id);
     	}
     	
     	return null;
     }
     
 	/**
+	 * Set whether the changes to the Entities should be monitor for change. Set up the 
+	 * Unitlisteners for the selected Settlement where Food comes from for the table.
+	 * @param activate 
+	 */
+    public void setMonitorEntites(boolean activate) {
+		if (activate != monitorSettlement) {
+			if (activate) {
+				selectedSettlement.addUnitListener(this);
+			}
+			else {
+				selectedSettlement.removeUnitListener(this);
+			}
+			monitorSettlement = activate;
+		}
+	}
+
+	/**
 	 * Prepares the model for deletion.
 	 */
 	@Override
 	public void destroy() {
-		// Remove as listener for all settlements.
-		Iterator<Settlement> i = settlements.iterator();
-		while (i.hasNext()) i.next().removeUnitListener(this);
+		super.destroy();
 
-		// Remove as listener to unit manager.
-		unitManager.removeUnitManagerListener(this);
-		
-		foodList = null;
-//		commanderSettlement = null;
-		unitManager = null;
+		// Remove as listener for all settlements.
+		selectedSettlement.removeUnitListener(this);
 	}
 	
 	/**
@@ -287,47 +204,32 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 		}
 
 		public void run() {
-			if (event.getTarget() == null)
-				fireTableDataChanged();
-			else {
-				int rowIndex = foodList.indexOf(event.getTarget());
-				int columnIndex = settlements.indexOf(event.getSource()) * NUM_DATA_COL + NUM_INITIAL_COLUMNS;
-				fireTableCellUpdated(rowIndex, columnIndex);
-			}
+			entityValueUpdated((Food)event.getTarget(), DEMAND_COL, PRICE_COL);
 		}
 	}
 
-	@Override
-	public void unitManagerUpdate(UnitManagerEvent event) {
-		Unit unit = event.getUnit();
-		if (unit.getUnitType() == UnitType.SETTLEMENT
-				&& unit.getName().equalsIgnoreCase(settlements.get(0).getName())) {
-
-			Settlement settlement = (Settlement) unit;
-
-			if (UnitManagerEventType.ADD_UNIT == event.getEventType()) {
-				// If settlement is new, add to settlement list.
-				if (!settlements.contains(settlement)) {
-					settlements.add(settlement);
-					settlement.addUnitListener(this);
-				}
-			} else if (UnitManagerEventType.REMOVE_UNIT == event.getEventType()) {
-				// If settlement is gone, remove from settlement list.
-				if (settlements.contains(settlement)) {
-					settlements.remove(settlement);
-					settlement.removeUnitListener(this);
-				}
-			}
-
-			// Update table structure due to cells changing.
-			SwingUtilities.invokeLater(new Runnable() {
-				@Override
-				public void run() {
-					fireTableStructureChanged();
-				}
-			});
+	/**
+	 * Set the Settlement filter
+	 * @param filter Settlement
+	 */
+    public boolean setSettlementFilter(Settlement filter) {
+		if (selectedSettlement != null) {
+			selectedSettlement.removeUnitListener(this);
 		}
-	}
+
+		// Initialize settlements.
+		selectedSettlement = filter;	
+
+		// Initialize goods list.
+		resetEntities(FoodUtil.getFoodList());
+			
+		// Add table as listener to each settlement.
+		if (monitorSettlement) {
+			selectedSettlement.addUnitListener(this);
+		}
+
+		return true;
+    }
 }
 
 

@@ -9,23 +9,23 @@ package org.mars_sim.msp.core.structure.building.function.farming;
 
 public enum CropCategory {
 	
-	BULBS("bulbs"),
-	CORMS("corms"),
-	FLOWERS("flowers"),
-	FRUITS("fruits"),
+	BULBS("Blbs"),
+	CORMS("Corms"),
+	FLOWERS("Flowers"),
+	FRUITS("Fruits"),
 	
-	FUNGI("fungi"),
-	GRAINS("grains"),
-	GRASSES("grasses"),
-	LEAVES("leaves"),
+	FUNGI("Fungi"),
+	GRAINS("Grains"),
+	GRASSES("Grasses"),
+	LEAVES("Leaves"),
 	
-	LEGUMES("legumes"),
-	ROOTS("roots"),
-	SEEDS("seeds"),
+	LEGUMES("Legumes"),
+	ROOTS("Roots"),
+	SEEDS("Seeds"),
 	//SPICES("spices"),
 	
-	STEMS("stems"),
-	TUBERS("tubers");
+	STEMS("Stems"),
+	TUBERS("Tubers");
 	
 
 	private String name;

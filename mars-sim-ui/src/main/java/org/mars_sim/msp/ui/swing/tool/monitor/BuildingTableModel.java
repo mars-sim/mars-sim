@@ -6,19 +6,12 @@
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Logger;
-
-import javax.swing.SwingUtilities;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEvent;
 import org.mars_sim.msp.core.UnitEventType;
-import org.mars_sim.msp.core.UnitManagerEvent;
-import org.mars_sim.msp.core.UnitManagerEventType;
-import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -29,7 +22,7 @@ import org.mars_sim.msp.core.structure.building.BuildingManager;
  * of the list is the Unit Manager. 
  */
 @SuppressWarnings("serial")
-public class BuildingTableModel extends UnitTableModel {
+public class BuildingTableModel extends UnitTableModel<Building> {
 
 	/** default logger. */
 	private static final Logger logger = Logger.getLogger(BuildingTableModel.class.getName());
@@ -51,21 +44,10 @@ public class BuildingTableModel extends UnitTableModel {
 	/** Types of Columns. */
 	private static Class<?>[] columnTypes;
 
-	private UnitManagerListener unitManagerListener;
-
-	private static List<UnitEventType> powerEvents = new ArrayList<>();
-
 	/**
 	 * The static initializer creates the name & type arrays.
 	 */
 	static {
-		
-		powerEvents.add(UnitEventType.POWER_MODE_EVENT);
-		powerEvents.add(UnitEventType.GENERATED_POWER_EVENT);
-		powerEvents.add(UnitEventType.STORED_POWER_EVENT);
-		powerEvents.add(UnitEventType.STORED_POWER_CAPACITY_EVENT);
-		powerEvents.add(UnitEventType.REQUIRED_POWER_EVENT);
-		powerEvents.add(UnitEventType.POWER_VALUE_EVENT);
 		
 		columnNames = new String[COLUMNCOUNT];
 		columnTypes = new Class[COLUMNCOUNT];
@@ -87,28 +69,40 @@ public class BuildingTableModel extends UnitTableModel {
 		columnTypes[POWER_GEN] = Double.class;
 	}
 
+
+	private Settlement selectedSettlement;
+
 	/**
 	 * Constructor.
 	 * 
 	 * @param settlement
 	 * @throws Exception
 	 */
-	public BuildingTableModel(Settlement settlement) throws Exception {
-		super(Msg.getString("BuildingTableModel.nameBuildings", //$NON-NLS-1$
+	public BuildingTableModel(Settlement settlement) {
+		super(UnitType.BUILDING, Msg.getString("BuildingTableModel.nameBuildings", //$NON-NLS-1$
 				settlement.getName()),
 				"BuildingTableModel.countingBuilding", //$NON-NLS-1$
 				columnNames, columnTypes);
 		
-		unitManagerListener = new LocalUnitManagerListener();
-		unitManager.addUnitManagerListener(unitManagerListener);
+		listenForUnits();
 
-		BuildingManager bm = settlement.getBuildingManager();
-		for(Building b : bm.getBuildings()) {
-			addUnit(b);
-		}
+		setSettlementFilter(settlement);
 	}
 
+	@Override
+	public boolean setSettlementFilter(Settlement filter) {
+		if (selectedSettlement != null) {
+			selectedSettlement.removeUnitListener(this);
+		}
 
+		selectedSettlement = filter;
+ 		BuildingManager bm = selectedSettlement.getBuildingManager();
+		resetEntities(bm.getBuildings());
+
+		selectedSettlement.addUnitListener(this);
+
+		return true;
+	}
 
 	/**
 	 * Returns the value of a Cell.
@@ -116,53 +110,58 @@ public class BuildingTableModel extends UnitTableModel {
 	 * @param rowIndex    Row index of the cell.
 	 * @param columnIndex Column index of the cell.
 	 */
-	public Object getValueAt(int rowIndex, int columnIndex) {
+	@Override
+	protected Object getEntityValue(Building building, int columnIndex) {
 		Object result = null;
 
-		if (rowIndex < getUnitNumber()) {
-			Building building = (Building) getUnit(rowIndex);
+		switch (columnIndex) {
 
-			switch (columnIndex) {
+		case NAME: 
+			result = building.getName();
+			break;
 
-			case NAME: 
-				result = building.getName();
-				break;
+		case TYPE: 
+			result = building.getBuildingType();
+			break;
+		
+		case CATEGORY:
+			result = building.getCategory().getName();
+			break;
 
-			case TYPE: 
-				result = building.getBuildingType();
-				break;
+		case POWER_MODE:
+			result = building.getPowerMode().getName();
+			break;
+						
+		case POWER_REQUIRED:
+			result =  building.getFullPowerRequired();
+			break;
 			
-			case CATEGORY:
-				result = building.getCategory().getName();
-				break;
-
-			case POWER_MODE:
-				result = building.getPowerMode().getName();
-				break;
-							
-			case POWER_REQUIRED:
-				result =  building.getFullPowerRequired();
-				break;
-				
-			case POWER_GEN:
-				if (building.getPowerGeneration() != null)
-					result =  building.getPowerGeneration().getGeneratedPower();
-				break;
-				
-			case HEAT_MODE:
-				result = building.getHeatMode().getPercentage();
-				break;
-				
-			case TEMPERATURE:
-				result = Math.round(building.getCurrentTemperature() * 10.0)/10.0;
-				break;
-				
-			default:
-				break;
-			}
+		case POWER_GEN:
+			if (building.getPowerGeneration() != null)
+				result =  building.getPowerGeneration().getGeneratedPower();
+			break;
+			
+		case HEAT_MODE:
+			result = building.getHeatMode().getPercentage();
+			break;
+			
+		case TEMPERATURE:
+			result = building.getCurrentTemperature();
+			break;
+			
+		default:
+			break;
 		}
 
 		return result;
+	}
+	
+	@Override
+	public void destroy() {
+		if (selectedSettlement != null) {
+			selectedSettlement.removeUnitListener(this);
+		}
+		super.destroy();
 	}
 	
 	/**
@@ -170,89 +169,40 @@ public class BuildingTableModel extends UnitTableModel {
 	 *
 	 * @param event the unit event.
 	 */
+	@Override
 	public void unitUpdate(UnitEvent event) {
 		Unit unit = (Unit) event.getSource();
 		UnitEventType eventType = event.getType();
-
-		int unitIndex = -1;
-		int columnNum = -1;
 		
 		if (eventType == UnitEventType.REMOVE_BUILDING_EVENT) {
-			
-			unitIndex = getUnitIndex(unit);
-			fireTableRowsDeleted(unitIndex, unitIndex);
+			removeEntity((Building) unit);
 		}
 		else if (eventType == UnitEventType.ADD_BUILDING_EVENT) {
 			// Determine the new row to be added
 			Building building = (Building)unit;
-			addUnit(building);
-			
-			fireTableStructureChanged();
+			addEntity(building);			
 		}
 
-		else { 
-			try {
-				for (UnitEventType type: powerEvents) {				
-					if (type == eventType) {
-						// Will fill in the codes here to update values in various columns
-					}
-				}
-			} catch (Exception e) {
-				logger.severe("unitUpdate not working: " + e.getMessage());
+		else if (event.getSource() instanceof Building) { 
+			int columnIndex = 51;
+			switch(eventType) {
+				case POWER_MODE_EVENT:
+					columnIndex = POWER_MODE;
+					break;
+				case GENERATED_POWER_EVENT:
+					columnIndex = POWER_GEN;
+					break;
+				case REQUIRED_POWER_EVENT:
+					columnIndex = POWER_REQUIRED;
+					break;
+				case HEAT_MODE_EVENT:
+					columnIndex = HEAT_MODE;
+					break;
+				default:
 			}
-		}
-			
-		if (columnNum > -1) {
-			SwingUtilities.invokeLater(new BuildingTableCellUpdater(unitIndex, columnNum));
-		}
-	}
-	
-	/**
-	 * Prepares the model for deletion.
-	 */
-	@Override
-	public void destroy() {
-		super.destroy();
-	}
-	
-	/**
-	 * UnitManagerListener inner class.
-	 */
-	private class LocalUnitManagerListener implements UnitManagerListener {
-
-		/**
-		 * Catches unit manager update event.
-		 *
-		 * @param event the unit event.
-		 */
-		public void unitManagerUpdate(UnitManagerEvent event) {
-			Unit unit = event.getUnit();
-			UnitManagerEventType eventType = event.getEventType();
-
-			if (unit.getUnitType() == UnitType.BUILDING) {
-				if (eventType == UnitManagerEventType.ADD_UNIT && !containsUnit(unit)) {
-					addUnit(unit);
-				} else if (eventType == UnitManagerEventType.REMOVE_UNIT && containsUnit(unit)) {
-					removeUnit(unit);
-				}
+			if (columnIndex > 0) {
+				entityValueUpdated((Building) event.getSource(), columnIndex, columnIndex);
 			}
-		}
-	}
-	
-	/**
-	 * The class for updating the table cell.
-	 */
-	private class BuildingTableCellUpdater implements Runnable {
-		private int row;
-		private int column;
-
-		private BuildingTableCellUpdater(int row, int column) {
-			this.row = row;
-			this.column = column;
-		}
-
-		public void run() {
-			fireTableCellUpdated(row, column);
 		}
 	}
 }

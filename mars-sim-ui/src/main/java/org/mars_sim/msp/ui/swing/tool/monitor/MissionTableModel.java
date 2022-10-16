@@ -45,41 +45,41 @@ public class MissionTableModel extends AbstractTableModel
 
 	// Column indexes
 	/** Date filed column. */
-	private final static int DATE_FILED = 0;
+	private static final int DATE_FILED = 0;
 	/** Date Embarked column. */
-	private final static int DATE_EMBARKED = 1;
+	private static final int DATE_EMBARKED = 1;
 	/** Date Returned column. */
-	private final static int DATE_RETURNED = 2;
+	private static final int DATE_RETURNED = 2;
 	/** Starting member column. */
-	private final static int STARTING_MEMBER = 3;
+	private static final int STARTING_MEMBER = 3;
 	/** Name ID column. */
-	private final static int TYPE_ID = 4;
+	private static final int TYPE_ID = 4;
 	/** Description column. */
-	private final static int DESIGNATION = 5;
+	private static final int DESIGNATION = 5;
 	/** Phase column. */
-	private final static int PHASE = 6;
+	private static final int PHASE = 6;
 	/** Mission vehicle column. */
-	private final static int VEHICLE = 7;
+	private static final int VEHICLE = 7;
 	/** Starting settlement column. */
-	private final static int STARTING_SETTLEMENT = 8;
+	private static final int STARTING_SETTLEMENT = 8;
 	/** Member number column. */
-	private final static int MEMBER_NUM = 9;
+	private static final int MEMBER_NUM = 9;
 	/** Navpoint number column. */
-	private final static int NAVPOINT_NUM = 10;
+	private static final int NAVPOINT_NUM = 10;
 	/** Remaining distance to next navpoint column. */
-	private final static int REMAINING_DISTANCE_TO_NEXT_NAVPOINT = 11;
+	private static final int REMAINING_DISTANCE_TO_NEXT_NAVPOINT = 11;
 	/** Remaining distance column. */
-	private final static int TOTAL_REMAINING_DISTANCE = 12;
+	private static final int TOTAL_REMAINING_DISTANCE = 12;
 	/** Travelled distance column. */
-	private final static int TRAVELLED_DISTANCE = 13;
+	private static final int TRAVELLED_DISTANCE = 13;
 	/** Proposed route distance column. */
-	private final static int PROPOSED_ROUTE_DISTANCE = 14;
+	private static final int PROPOSED_ROUTE_DISTANCE = 14;
 	/** The number of Columns. */
-	private final static int COLUMNCOUNT = 15;
+	private static final int COLUMNCOUNT = 15;
 	/** Names of Columns. */
-	private static String columnNames[];
+	private static String[] columnNames;
 	/** Types of Columns. */
-	private static Class<?> columnTypes[];
+	private static Class<?>[] columnTypes;
 
 	private GameMode mode = GameManager.getGameMode();
 	
@@ -88,13 +88,11 @@ public class MissionTableModel extends AbstractTableModel
 	private Settlement commanderSettlement;
 
 	private DecimalFormat decFormatter = new DecimalFormat("#,###,##0.0");
+	private boolean monitorMissions = false;
 
 	private static MissionManager missionManager = Simulation.instance().getMissionManager();
 
-	/**
-	 * Constructor.
-	 */
-	public MissionTableModel() throws Exception {
+	static {
 		columnNames = new String[COLUMNCOUNT];
 		columnTypes = new Class[COLUMNCOUNT];
 		columnNames[DATE_FILED] = Msg.getString("MissionTableModel.column.filed"); //$NON-NLS-1$
@@ -127,6 +125,13 @@ public class MissionTableModel extends AbstractTableModel
 		columnTypes[REMAINING_DISTANCE_TO_NEXT_NAVPOINT] = Integer.class;		
 		columnNames[PROPOSED_ROUTE_DISTANCE] = Msg.getString("MissionTableModel.column.proposedDistance"); //$NON-NLS-1$
 		columnTypes[PROPOSED_ROUTE_DISTANCE] = Integer.class;
+	}
+
+	/**
+	 * Constructor.
+	 */
+	public MissionTableModel() {
+
 
 		if (mode == GameMode.COMMAND) {
 			commanderSettlement = Simulation.instance().getUnitManager().getCommanderSettlement();
@@ -140,16 +145,39 @@ public class MissionTableModel extends AbstractTableModel
 		}
 
 		missionManager.addListener(this);
-
-		if (!missionCache.isEmpty()) {
-			Iterator<Mission> i = missionCache.iterator();
-			while (i.hasNext()) {
-				Mission m = i.next();
-				if (!m.isDone()) {
-					m.addMissionListener(this);
+	}
+		
+	/**
+	 * Set whether the changes to the Missions should be monitor for change. Set up the 
+	 * Missionlisteners for the Mission in the table.
+	 * @param activate 
+	 */
+    public void setMonitorEntites(boolean activate) {
+		if (activate != monitorMissions) {
+			if (activate) {
+				for(Mission m : missionCache) {
+					if (!m.isDone()) {
+						m.addMissionListener(this);
+					}
 				}
 			}
+			else {
+				for(Mission m : missionCache) {
+					m.removeMissionListener(this);
+				}
+			}
+			monitorMissions = activate;
 		}
+	}
+
+
+	/**
+	 * Cannot filter missions by Settlement although is should be possible.
+	 */
+	@Override
+	public boolean setSettlementFilter(Settlement filter) {
+		// Mission doesn't support filtering ???
+		return false;
 	}
 
 	/**
@@ -158,6 +186,7 @@ public class MissionTableModel extends AbstractTableModel
 	 *
 	 * @return Descriptive name.
 	 */
+	@Override
 	public String getName() {
 		return Msg.getString("MissionTableModel.tabName"); //$NON-NLS-1$
 	}
@@ -167,6 +196,7 @@ public class MissionTableModel extends AbstractTableModel
 	 *
 	 * @param mission the new mission.
 	 */
+	@Override
 	public void addMission(Mission mission) {
 		if (missionCache.contains(mission))
 			return;
@@ -197,6 +227,7 @@ public class MissionTableModel extends AbstractTableModel
 	 *
 	 * @param mission the old mission.
 	 */
+	@Override
 	public void removeMission(Mission mission) {
 		if (missionCache.contains(mission)) {
 			int index = missionCache.indexOf(mission);
@@ -214,6 +245,7 @@ public class MissionTableModel extends AbstractTableModel
 	 * @param columnIndex Index of column.
 	 * @return Class of specified column.
 	 */
+	@Override
 	public Class<?> getColumnClass(int columnIndex) {
 		if ((columnIndex >= 0) && (columnIndex < columnTypes.length)) {
 			return columnTypes[columnIndex];
@@ -227,6 +259,7 @@ public class MissionTableModel extends AbstractTableModel
 	 * @param columnIndex Index of column.
 	 * @return name of specified column.
 	 */
+	@Override
 	public String getColumnName(int columnIndex) {
 		if ((columnIndex >= 0) && (columnIndex < columnNames.length)) {
 			return columnNames[columnIndex];
@@ -240,6 +273,7 @@ public class MissionTableModel extends AbstractTableModel
 	 * @param row Index of the row object.
 	 * @return Object at the specified row.
 	 */
+	@Override
 	public Object getObject(int row) {
 		return missionCache.get(row);
 	}
@@ -255,6 +289,7 @@ public class MissionTableModel extends AbstractTableModel
 	/**
 	 * Gets the model count string.
 	 */
+	@Override
 	public String getCountString() {
 		return "  " + Msg.getString("MissionTableModel.numberOfMissions", //$NON-NLS-2$
 				missionCache.size());
@@ -265,11 +300,12 @@ public class MissionTableModel extends AbstractTableModel
 	 *
 	 * @param event the mission event.
 	 */
+	@Override
 	public void missionUpdate(MissionEvent event) {
 
 		int index = missionCache.indexOf(event.getSource());
 
-		if (index > -1) {// && (index < missionCache.size())) {
+		if (index > -1) {
 			MissionEventType eventType = event.getType();
 
 			int column0 = -1;
@@ -314,9 +350,9 @@ public class MissionTableModel extends AbstractTableModel
 
 				if (eventType == MissionEventType.PHASE_EVENT
 						|| eventType == MissionEventType.PHASE_DESCRIPTION_EVENT)
-//							|| eventType == MissionEventType.END_MISSION_EVENT)
 					column6 = PHASE;
 
+				// TODO THis is pretty bad. Shoudl rework to only fire a single invokeLater uisng a columns range
 				if (column0 > -1)
 					SwingUtilities.invokeLater(new MissionTableCellUpdater(index, column1));
 				if (column1 > -1)
@@ -333,6 +369,7 @@ public class MissionTableModel extends AbstractTableModel
 		}
 	}
 
+	@Override
 	public int getRowCount() {
 		return missionCache.size();
 	}
@@ -342,6 +379,7 @@ public class MissionTableModel extends AbstractTableModel
 	 *
 	 * @return column count.
 	 */
+	@Override
 	public int getColumnCount() {
 		return COLUMNCOUNT;
 	}
@@ -352,6 +390,7 @@ public class MissionTableModel extends AbstractTableModel
 	 * @param rowIndex    Row index of the cell.
 	 * @param columnIndex Column index of the cell.
 	 */
+	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		Object result = null;
 
@@ -513,13 +552,12 @@ public class MissionTableModel extends AbstractTableModel
 	/**
 	 * Prepares the model for deletion.
 	 */
+	@Override
 	public void destroy() {
 		Object[] missions = missionCache.toArray();
 		for (int x = 0; x < missions.length; x++) {
 			removeMission((Mission) missions[x]);
 		}
-
-		missionManager = null;
 	}
 
 	/**

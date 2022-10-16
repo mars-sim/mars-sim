@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -72,7 +73,7 @@ public class UnitManager implements Serializable, Temporal {
 	private String originalBuild;
 
 	/** List of unit manager listeners. */
-	private transient Set<UnitManagerListener> listeners;
+	private transient Map<UnitType, Set<UnitManagerListener>> listeners;
 
 	private transient ExecutorService executor;
 
@@ -118,8 +119,6 @@ public class UnitManager implements Serializable, Temporal {
 		lookupEquipment  = new ConcurrentHashMap<>();
 		lookupVehicle    = new ConcurrentHashMap<>();
 		lookupBuilding   = new ConcurrentHashMap<>();
-
-		listeners = new HashSet<>();
 	}
 
 	/**
@@ -553,19 +552,18 @@ public class UnitManager implements Serializable, Temporal {
 	/**
 	 * Adds a unit manager listener
 	 *
+	 * @param source UnitType monitored
 	 * @param newListener the listener to add.
 	 */
-	public final void addUnitManagerListener(UnitManagerListener newListener) {
+	public final void addUnitManagerListener(UnitType source, UnitManagerListener newListener) {
 		if (listeners == null) {
-			listeners = new HashSet<>();
+			listeners = new EnumMap<>(UnitType.class);
 		}
 		synchronized(listeners) {
-			if (!listeners.contains(newListener)) {
-				listeners.add(newListener);
+			listeners.computeIfAbsent(source, k -> new HashSet<>()).add(newListener);
 
-				// Over adding listeners?
-				//logger.info("Added Listener #" + listeners.size() + " : " + newListener.toString());
-			}
+			// Over adding listeners?
+			//logger.info("Added Listener " + source + " #" + listeners.get(source).size() + " : " + newListener.toString());
 		}
 	}
 
@@ -574,15 +572,16 @@ public class UnitManager implements Serializable, Temporal {
 	 *
 	 * @param oldListener the listener to remove.
 	 */
-	public final void removeUnitManagerListener(UnitManagerListener oldListener) {
+	public final void removeUnitManagerListener(UnitType source, UnitManagerListener oldListener) {
 		if (listeners == null) {
 			// Will never happen
 			return;
 		}
 
 		synchronized(listeners) {
-			if (listeners.contains(oldListener)) {
-				listeners.remove(oldListener);
+			Set<UnitManagerListener> l = listeners.get(source);
+			if (l != null) {
+				l.remove(oldListener);
 			}
 		}
 	}
@@ -593,13 +592,18 @@ public class UnitManager implements Serializable, Temporal {
 	 * @param eventType the event type.
 	 * @param unit      the unit causing the event.
 	 */
-	public final void fireUnitManagerUpdate(UnitManagerEventType eventType, Unit unit) {
+	private final void fireUnitManagerUpdate(UnitManagerEventType eventType, Unit unit) {
 		if (listeners == null) {
 			return;
 		}
 		synchronized (listeners) {
-			for (UnitManagerListener listener : listeners) {
-				listener.unitManagerUpdate(new UnitManagerEvent(this, eventType, unit));
+			Set<UnitManagerListener> l = listeners.get(unit.getUnitType());
+			if (l != null) {
+				UnitManagerEvent e = new UnitManagerEvent(this, eventType, unit);
+
+				for (UnitManagerListener listener : l) {
+					listener.unitManagerUpdate(e);
+				}
 			}
 		}
 	}

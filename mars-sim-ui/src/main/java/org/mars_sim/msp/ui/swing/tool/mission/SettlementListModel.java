@@ -48,7 +48,7 @@ public class SettlementListModel extends AbstractListModel<Settlement> implement
 			addSettlement(i.next());
 
 		// Add list as unit manager listener.
-		unitManager.addUnitManagerListener(this);
+		unitManager.addUnitManagerListener(UnitType.SETTLEMENT, this);
 	}
 
 	/**
@@ -150,8 +150,7 @@ public class SettlementListModel extends AbstractListModel<Settlement> implement
 	public void destroy() {
 		settlements.clear();
 		settlements = null;
-		unitManager.removeUnitManagerListener(this);
-		unitManager = null;
+		unitManager.removeUnitManagerListener(UnitType.SETTLEMENT, this);
 	}
 
 	/**

@@ -9,6 +9,8 @@ package org.mars_sim.msp.ui.swing.tool.monitor;
 
 import javax.swing.table.TableModel;
 
+import org.mars_sim.msp.core.structure.Settlement;
+
 /**
  * This defines a table model for use in the Monitor tool.
  * The subclasses on this model could provide data on any Entity within the
@@ -48,4 +50,17 @@ interface MonitorModel extends TableModel {
 	 * Gets the model count string.
 	 */
 	public String getCountString();
+
+	/**
+	 * Set the Settlement as a filter
+	 * @param filter Settlement
+	 * @return 
+	 */
+	public boolean setSettlementFilter(Settlement filter);
+
+	/**
+	 * Set whether the changes to the Entities should be monitor for change.
+	 * @param activate 
+	 */
+    public void setMonitorEntites(boolean activate);
 }
