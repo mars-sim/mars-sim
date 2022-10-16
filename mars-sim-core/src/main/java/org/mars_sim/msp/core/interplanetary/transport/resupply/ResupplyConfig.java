@@ -328,7 +328,7 @@ public class ResupplyConfig implements Serializable {
         /** default serial id. */
         private static final long serialVersionUID = 1L;
 
-        private int zone = 0;
+        int zone = 0;
         private int people;
         
         private String name;

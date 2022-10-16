@@ -67,9 +67,6 @@ public class EatDrink extends Task {
 	private static final String JUICE = "juice";
 	private static final String MILK = "milk";
 	
-//	private static final int HUNGER_CEILING = 1000;
-//	private static final int THIRST_CEILING = PhysicalCondition.THIRST_CEILING_UPON_DRINKING;
-
 	// Static members
 	private static final int FOOD_ID = ResourceUtil.foodID;
 	private static final int WATER_ID = ResourceUtil.waterID;
@@ -137,8 +134,7 @@ public class EatDrink extends Task {
 		}
 		
 		double dur = getDuration();
-		eatingDuration = dur;// * MEAL_EATING_PROPORTION;
-//		dessertEatingDuration = dur;// * DESSERT_EATING_PROPORTION;
+		eatingDuration = dur;
 
 		foodConsumedPerServing = personConfig.getFoodConsumptionRate() / NUMBER_OF_MEAL_PER_SOL;			
 		millisolPerKgFood = HUNGER_RATIO_PER_FOOD_SERVING / foodConsumedPerServing; 
@@ -153,7 +149,7 @@ public class EatDrink extends Task {
 
 		double waterAmount = 0;
 
-		ResourceHolder rh = (ResourceHolder) person;
+		ResourceHolder rh = person;
 		foodAmount = rh.getAmountResourceStored(FOOD_ID);
 		waterAmount = rh.getAmountResourceStored(WATER_ID);
 		
@@ -185,87 +181,13 @@ public class EatDrink extends Task {
 		/////////////////////////////////////////////////
 
 		if (person.isInSettlement()) {
-			Building currentBuilding = BuildingManager.getBuilding(person);
-			if (currentBuilding != null && currentBuilding.getCategory() != BuildingCategory.EVA_AIRLOCK) {
-				// Check if there is a local dining building.
-	        	Building diningBuilding = getAvailableDiningBuilding(person.getSettlement());
-	        	
-	        	if (diningBuilding != null) {
-	        		// Initiates a walking task to go back to the settlement
-	        		walkToDiningLoc(diningBuilding, false);
-	        	}			
-			}
-
-			if (hungry && (foodAmount > 0 || meals > 0 || desserts > 0)) {
-				food = true;
-			}
-
-			if (thirsty && waterAmount > 0) {
-				water = true;
-			}
+			
+			checkSettlement(hungry, thirsty, waterAmount);
 		}
 
 		else if (person.isInVehicle()) {
 			
-			if (UnitType.VEHICLE == container.getUnitType()) {
-				Vehicle vehicle = (Vehicle)container;
-				
-				if (vehicle.isInSettlement()) {
-					// How to make a person walk out of vehicle back to settlement 
-					// if hunger is >500 ?
-					
-					rh = (ResourceHolder) vehicle.getSettlement();
-
-					if (foodAmount == 0)
-						foodAmount = rh.getAmountResourceStored(FOOD_ID);
-					if (waterAmount == 0)
-						waterAmount = rh.getAmountResourceStored(WATER_ID);
-					
-					if (hungry && (foodAmount > 0 || desserts > 0)) {
-						food = true;
-					}
-
-					if (thirsty && waterAmount > 0) {
-						water = true;
-					}
-					
-					if (food || water) {
-						
-						// Check if there is a local dining building.
-			        	Building diningBuilding = getAvailableDiningBuilding(vehicle.getSettlement());
-			        	
-			        	if (diningBuilding != null) {
-			        		// Initiates a walking task to go back to the settlement
-			        		walkToDiningLoc(diningBuilding, false);
-			        	}
-					}
-				}
-				else {
-					rh = (ResourceHolder) container;
-					if (foodAmount == 0)
-						foodAmount = rh.getAmountResourceStored(FOOD_ID);
-					if (waterAmount == 0)
-						waterAmount = rh.getAmountResourceStored(WATER_ID);
-					
-					if (hungry && (foodAmount > 0 || desserts > 0)) {
-						food = true;
-					}
-
-					if (thirsty && waterAmount > 0) {
-						water = true;
-					}
-				}
-			}
-			
-			else {
-				if (hungry && (foodAmount > 0 || desserts > 0)) {
-					food = true;
-				}
-
-				if (thirsty && waterAmount > 0) {
-					water = true;
-				}
-			}
+			checkVehicle(container, rh, hungry, thirsty, waterAmount);
 		}
 
 		else {
@@ -286,6 +208,89 @@ public class EatDrink extends Task {
 			goForWater();
 	}
 		
+	private void checkSettlement(boolean hungry, boolean thirsty, double waterAmount) {
+		Building currentBuilding = BuildingManager.getBuilding(person);
+		if (currentBuilding != null && currentBuilding.getCategory() != BuildingCategory.EVA_AIRLOCK) {
+			// Check if there is a local dining building.
+        	Building diningBuilding = getAvailableDiningBuilding(person.getSettlement());
+        	
+        	if (diningBuilding != null) {
+        		// Initiates a walking task to go back to the settlement
+        		walkToDiningLoc(diningBuilding, false);
+        	}			
+		}
+
+		if (hungry && (foodAmount > 0 || meals > 0 || desserts > 0)) {
+			food = true;
+		}
+
+		if (thirsty && waterAmount > 0) {
+			water = true;
+		}
+	}
+	
+	private void checkVehicle(Unit container, ResourceHolder rh, boolean hungry, boolean thirsty, double waterAmount) {
+		 
+		if (UnitType.VEHICLE == container.getUnitType()) {
+			Vehicle vehicle = (Vehicle)container;
+			
+			if (vehicle.isInSettlement()) {
+				// How to make a person walk out of vehicle back to settlement 
+				// if hunger is >500 ?
+				
+				rh = vehicle.getSettlement();
+
+				if (foodAmount == 0)
+					foodAmount = rh.getAmountResourceStored(FOOD_ID);
+				if (waterAmount == 0)
+					waterAmount = rh.getAmountResourceStored(WATER_ID);
+				
+				if (hungry && (foodAmount > 0 || desserts > 0)) {
+					food = true;
+				}
+
+				if (thirsty && waterAmount > 0) {
+					water = true;
+				}
+				
+				if (food || water) {
+					
+					// Check if there is a local dining building.
+		        	Building diningBuilding = getAvailableDiningBuilding(vehicle.getSettlement());
+		        	
+		        	if (diningBuilding != null) {
+		        		// Initiates a walking task to go back to the settlement
+		        		walkToDiningLoc(diningBuilding, false);
+		        	}
+				}
+			}
+			else {
+				rh = (ResourceHolder) container;
+				if (foodAmount == 0)
+					foodAmount = rh.getAmountResourceStored(FOOD_ID);
+				if (waterAmount == 0)
+					waterAmount = rh.getAmountResourceStored(WATER_ID);
+				
+				if (hungry && (foodAmount > 0 || desserts > 0)) {
+					food = true;
+				}
+
+				if (thirsty && waterAmount > 0) {
+					water = true;
+				}
+			}
+		}
+		
+		else {
+			if (hungry && (foodAmount > 0 || desserts > 0)) {
+				food = true;
+			}
+
+			if (thirsty && waterAmount > 0) {
+				water = true;
+			}
+		}
+	}
 	
 	private void goForFood() {
 
@@ -293,38 +298,8 @@ public class EatDrink extends Task {
 
 			if (CookMeal.isMealTime(person, 0)) {
 				
-				if (meals > 0) {
-					Building diningBuilding = EatDrink.getAvailableDiningBuilding(person, false);
-					if (diningBuilding != null) {
-						// Initialize task phase.
-						addPhase(LOOK_FOR_FOOD);
-						addPhase(EAT_MEAL);
-						setPhase(LOOK_FOR_FOOD);
-						
-						walkToDiningLoc(diningBuilding, false);
-					}
-
-					boolean want2Chat = true;
-					// See if a person wants to chat while eating
-					int score = person.getPreference().getPreferenceScore(new ConversationMeta());
-					if (score > 0)
-						want2Chat = true;
-					else if (score < 0)
-						want2Chat = false;
-					else {
-						int rand = RandomUtil.getRandomInt(1);
-						if (rand == 0)
-							want2Chat = false;
-					}
-
-					diningBuilding = EatDrink.getAvailableDiningBuilding(person, want2Chat);
-					if (diningBuilding != null)
-						// Walk to that building.
-						walkToActivitySpotInBuilding(diningBuilding, FunctionType.DINING, true);
-
-					// Take napkin from inventory if available.
-					if (person.getSettlement().retrieveAmountResource(ResourceUtil.napkinID, NAPKIN_MASS) > 0)
-						hasNapkin = true;
+				if (meals > 0) {				
+					goDining();
 				}
 				
 				else {
@@ -342,6 +317,42 @@ public class EatDrink extends Task {
 		}
 	}
 
+	private void goDining() {
+		
+		Building diningBuilding = EatDrink.getAvailableDiningBuilding(person, false);
+		if (diningBuilding != null) {
+			// Initialize task phase.
+			addPhase(LOOK_FOR_FOOD);
+			addPhase(EAT_MEAL);
+			setPhase(LOOK_FOR_FOOD);
+			
+			walkToDiningLoc(diningBuilding, false);
+		}
+
+		boolean want2Chat = true;
+		// See if a person wants to chat while eating
+		int score = person.getPreference().getPreferenceScore(new ConversationMeta());
+		if (score > 0)
+			want2Chat = true;
+		else if (score < 0)
+			want2Chat = false;
+		else {
+			int rand = RandomUtil.getRandomInt(1);
+			if (rand == 0)
+				want2Chat = false;
+		}
+
+		diningBuilding = EatDrink.getAvailableDiningBuilding(person, want2Chat);
+		if (diningBuilding != null)
+			// Walk to that building.
+			walkToActivitySpotInBuilding(diningBuilding, FunctionType.DINING, true);
+
+		// Take napkin from inventory if available.
+		if (person.getSettlement().retrieveAmountResource(ResourceUtil.napkinID, NAPKIN_MASS) > 0)
+			hasNapkin = true;
+	}
+	
+	
 	private void checkFoodDessertAmount() {
 		
 		if (foodAmount > 0 && desserts > 0) {
@@ -438,7 +449,7 @@ public class EatDrink extends Task {
 		}
 
 		if (DRINK_WATER.equals(getPhase())) {
-			return drinkingWaterPhase(time);
+			return drinkingWaterPhase();
 		} else if (LOOK_FOR_FOOD.equals(getPhase())) {
 			return lookingforFoodPhase(time);
 		} else if (EAT_MEAL.equals(getPhase())) {
@@ -461,14 +472,11 @@ public class EatDrink extends Task {
 	 * @return the amount of time (millisol) left after performing the drinking water
 	 *         phase.
 	 */
-	private double drinkingWaterPhase(double time) {
+	private double drinkingWaterPhase() {
 		
 		// Call to consume water
 		if (!person.getPhysicalCondition().drinkEnoughWater())
 			calculateWater(true);
-
-		// Note: must call endTask here to end this task
-//		endTask();
 
 		return 0;
 	}
@@ -574,10 +582,6 @@ public class EatDrink extends Task {
 				endTask();
 				return remainingTime;
 			}
-
-			// Also consume water with the preserved food
-//			if (!person.getPhysicalCondition().drinkEnoughWater())
-//				calculateWater(false);
 			
 			totalEatingTime += eatingTime;
 		}
@@ -620,18 +624,14 @@ public class EatDrink extends Task {
 			eatingTime = eatingDuration - totalEatingTime;
 		}
 		
-		if (eatingTime > 0 && cookedMeal != null) {
+		if (eatingTime > 0) {
 			
 			String s = Msg.getString("Task.description.eatDrink.cooked.eating.detail", cookedMeal.getName());
 			// Set description for eating cooked meal.
 			setDescription(s); //$NON-NLS-1$
 			// Eat cooked meal.
 			eatCookedMeal(eatingTime);
-
-			// Also consume water with the preserved food
-//			if (!person.getPhysicalCondition().drinkEnoughWater())
-//				calculateWater(false);
-			
+	
 			// If finished eating, change to dessert phase.
 			if (eatingTime < time) {
 				remainingTime = time - eatingTime;
@@ -781,7 +781,6 @@ public class EatDrink extends Task {
 
 	/**
 	 * Gets a resource from a provider.
-	 * TODO eventually everything will be a ResourceHolder
 	 * 
 	 * @param quantity amount to retrieve
 	 * @param resourceID Resource to retrieve
@@ -789,13 +788,7 @@ public class EatDrink extends Task {
 	 * @return Did retrieve all ?
 	 */
 	private boolean retrieveAnResource(double quantity, int resourceID, ResourceHolder provider) {
-		boolean result = false;
-		if (provider instanceof ResourceHolder) {
-			ResourceHolder rh = (ResourceHolder) provider;
-			return (rh.retrieveAmountResource(resourceID, quantity) == 0D);
-		}
-
-		return result;
+		return provider.retrieveAmountResource(resourceID, quantity) == 0D;
 	}
 
 
@@ -808,8 +801,7 @@ public class EatDrink extends Task {
 	 */
 	private double getAmountResourceStored(Unit provider, int resourceID) {
 		if (provider instanceof ResourceHolder) {
-			ResourceHolder rh = (ResourceHolder) provider;
-			return rh.getAmountResourceStored(resourceID);
+			return ((ResourceHolder) provider).getAmountResourceStored(resourceID);
 		}
 
 		return 0;
@@ -999,8 +991,12 @@ public class EatDrink extends Task {
 		
 		EVASuit suit = null;
 
-		if (containerUnit != null
-			&& containerUnit.getUnitType() == UnitType.PLANET) {
+		if (containerUnit == null) {
+			logger.severe(person, 10_000L, "'s container unit is null.");
+			endTask();
+		}
+		
+		else if (containerUnit.getUnitType() == UnitType.PLANET) {
 			// Doing EVA outside. Get water from one's EVA suit
 			suit = person.getSuit();
 		}
@@ -1043,13 +1039,11 @@ public class EatDrink extends Task {
 		
 				// Case 1: See if there's enough water in the bottle
 				if (availableAmount >= amount) {
-//					logger.info(person, 10_000L, "Drinking " + Math.round(amount * 100.0)/100.0 + " kg of water from thermal bottle.");
 					consumeWater(bottle, amount, waterOnly);
 					return;
 				}
 				else if (availableAmount > 0) {
 					amount = availableAmount;
-//					logger.info(person, 10_000L, "Drinking " + Math.round(amount * 100.0)/100.0 + " kg of water from thermal bottle.");
 					consumeWater(bottle, amount, waterOnly);
 					return;
 				}
@@ -1061,7 +1055,6 @@ public class EatDrink extends Task {
 					// Fill up the bottle with water
 					if (missing < 1) {
 						amount = 1 - missing;
-//						logger.info(person, 10_000L, "Filled up the bottle with " + Math.round(amount * 100.0)/100.0 + " kg of water.");
 						person.fillUpThermalBottle(amount);
 					}
 				}	
@@ -1075,12 +1068,10 @@ public class EatDrink extends Task {
 			// Test to see if there's enough water
 			if (available >= amount) {
 				consumeWater((ResourceHolder)containerUnit, amount, waterOnly);
-				return;
 			}
 			else if (available > 0) {
 				amount = available;
 				consumeWater((ResourceHolder)containerUnit, amount, waterOnly);
-				return;
 			}
 		}
 	}
@@ -1102,7 +1093,6 @@ public class EatDrink extends Task {
 		pc.recordFoodConsumption(amount, 3);
 
 		if (waterOnly) {
-//			logger.info(person, 10_000L, "Drinking " + Math.round(amount * 100.0)/100.0 + " kg of water.");
 			setDescription(Msg.getString("Task.description.eatDrink.water")); //$NON-NLS-1$
 		}
 
@@ -1127,8 +1117,8 @@ public class EatDrink extends Task {
             // Determine list of available dessert resources.
 			List<AmountResource> availableDessertResources = getAvailableDessertResources(dessertConsumedPerServing,
 					isThirsty);
-			if (availableDessertResources.size() > 0) {
-
+			
+			if (!availableDessertResources.isEmpty()) {
 				// Randomly choose available dessert resource.
 				int index = RandomUtil.getRandomInt(availableDessertResources.size() - 1);
 				unpreparedDessertAR = availableDessertResources.get(index);
@@ -1207,8 +1197,8 @@ public class EatDrink extends Task {
 			ResourceHolder rh = (ResourceHolder)containerUnit;
 			boolean option = true;
 
-			AmountResource[] ARs = PreparingDessert.getArrayOfDessertsAR();
-			for (AmountResource ar : ARs) {
+			AmountResource[] resources = PreparingDessert.getArrayOfDessertsAR();
+			for (AmountResource ar : resources) {
 				if (isThirsty)
 					option = ar.getName().contains(JUICE) || ar.getName().contains(MILK);
 
