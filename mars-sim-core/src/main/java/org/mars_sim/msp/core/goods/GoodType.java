@@ -26,42 +26,42 @@ public enum GoodType {
 	TISSUE				(Msg.getString("FoodType.tissue")), //$NON-NLS-1$ 
 
 	// non-food resources
-	GEMSTONE	("gemstone"),
-	MEDICAL 	("medical"),
-	MINERAL		("mineral"),
-	ORE			("ore"),
-	ROCK		("rock"),
-	REGOLITH	("regolith"),
-	WASTE		("waste"),
+	GEMSTONE	("Gemstone"),
+	MEDICAL 	("Medical"),
+	MINERAL		("Mineral"),
+	ORE			("Ore"),
+	ROCK		("Rock"),
+	REGOLITH	("Regolith"),
+	WASTE		("Waste"),
 	
 	// For amount resources
-    COMPOUND		("compound"),
+    COMPOUND		("Compound"),
     
 	// For Parts
-	ATTACHMENT		("attachment"),
-    CONSTRUCTION	("construction"),
-    ELECTRICAL		("electrical"),
-    ELECTRONIC		("electronic"),
-    KITCHEN			("kitchen"),
-    INSTRUMENT		("instrument"),
-    METALLIC		("metallic"),
-    RAW				("raw"),
-    TOOL			("tool"),
-    VEHICLE			("vehicle"),
+	ATTACHMENT		("Attachment"),
+    CONSTRUCTION	("Construction"),
+    ELECTRICAL		("Electrical"),
+    ELECTRONIC		("Electronic"),
+    KITCHEN			("Kitchen"),
+    INSTRUMENT		("Instrument"),
+    METALLIC		("Metallic"),
+    RAW				("Raw"),
+    TOOL			("Tool"),
+    VEHICLE			("Vehicle"),
     
 	// For both Amount Resources or Parts
 	CHEMICAL		(Msg.getString("FoodType.chemical")), //$NON-NLS-1$ 
-    ELEMENT			("element"),
-    UTILITY			("utility"),
+    ELEMENT			("Element"),
+    UTILITY			("Utility"),
     
     // For containers
-    CONTAINER		("container"),
-    EVA				("eva"),
+    CONTAINER		("Container"),
+    EVA				("EVA"),
     
     // For vehicles
-	VEHICLE_HEAVY		("vehicle heavy"),
-	VEHICLE_MEDIUM		("vehicle medium"),
-	VEHICLE_SMALL		("vehicle small"),
+	VEHICLE_HEAVY		("Vehicle Heavy"),
+	VEHICLE_MEDIUM		("Vehicle Medium"),
+	VEHICLE_SMALL		("Vehicle Small"),
     
     // For robots
     CHEFBOT				(Msg.getString("RobotType.chefBot")), //$NON-NLS-1$
