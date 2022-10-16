@@ -298,7 +298,12 @@ public class TableSorter extends AbstractTableModel
     }
 
     @Override
-    public void setSettlementFilter(Settlement filter) {
-        sourceModel.setSettlementFilter(filter); 
+    public boolean setSettlementFilter(Settlement filter) {
+        return sourceModel.setSettlementFilter(filter); 
+    }
+
+    @Override
+    public void setMonitorEntites(boolean activate) {
+        sourceModel.setMonitorEntites(activate);
     }
 }

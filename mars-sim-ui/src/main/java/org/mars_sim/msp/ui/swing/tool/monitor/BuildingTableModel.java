@@ -90,7 +90,7 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 	}
 
 	@Override
-	public void setSettlementFilter(Settlement filter) {
+	public boolean setSettlementFilter(Settlement filter) {
 		if (selectedSettlement != null) {
 			selectedSettlement.removeUnitListener(this);
 		}
@@ -100,6 +100,8 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 		resetEntities(bm.getBuildings());
 
 		selectedSettlement.addUnitListener(this);
+
+		return true;
 	}
 
 	/**

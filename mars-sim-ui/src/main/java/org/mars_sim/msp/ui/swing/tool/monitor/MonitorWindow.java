@@ -105,8 +105,6 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	private WebLabel rowCount;
 	/** The Tab showing historical events. */
 	private EventTab eventsTab;
-	/** The Tab for displaying goods. */
-	private TradeTab tradeTab;
 
 	private WebButton buttonPie;
 	private WebButton buttonBar;
@@ -121,14 +119,13 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	private WebComboBox settlementComboBox;
 	private WebPanel statusPanel;
 
-	private JTable table;
-	private JTable rowTable;
-
 	private Settlement selectedSettlement;
 
 	private UnitManager unitManager;
 
 	private UnitManagerListener umListener;
+
+	private MonitorTab previousTab;
 
 	/**
 	 * Constructor.
@@ -209,8 +206,8 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		int height = (desktopSize.height - windowSize.height - 100) / 2;
 		setLocation(width, height);
 		
-		// Update the row count label with new numbers
-		rowCount.setText(getSelectedTab().getCountString());
+		// Lastly activate the default tab
+		selectNewTab(getSelectedTab());
 	}
 
 	/**
@@ -218,41 +215,35 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	 */
 	private void addAllTabs(List<Settlement> initialSettlements) {
 		// Add tabs into the table
-		try {
-			if (!initialSettlements.isEmpty())
-				this.selectedSettlement = initialSettlements.get(0);
-			
-			if (initialSettlements.size() > 1) {
-				addTab(new UnitTab(this, new SettlementTableModel(), true, MARS_ICON));
-			}
-			
-			addTab(new UnitTab(this, new SettlementTableModel(selectedSettlement), true, COLONY_ICON));
-			addTab(new UnitTab(this, new PersonTableModel(selectedSettlement, true), true, PEOPLE_ICON));
-			addTab(new UnitTab(this, new RobotTableModel(selectedSettlement, true), true, BOT_ICON));
-			addTab(new UnitTab(this, new BuildingTableModel(selectedSettlement), true, BUILDING_ICON));
-			addTab(new UnitTab(this, new CropTableModel(selectedSettlement), true, CROP_ICON));
-			
-			addTab(new FoodInventoryTab(selectedSettlement, this));
-			
-			tradeTab = new TradeTab(selectedSettlement, this);
-			addTab(tradeTab);
-			
-			eventsTab = new EventTab(this, desktop);
-			addTab(eventsTab);
-			
-			addTab(new MissionTab(this));
-			addTab(new UnitTab(this, new VehicleTableModel(selectedSettlement), true, VEHICLE_ICON));
-
-		} catch (Exception e) {
-			// Note: May add calling e.printStackTrace() when debugging which tab has the exception.
-			logger.severe("Problems in adding tabs in MonitorWindow - " + e.getMessage());
+		if (!initialSettlements.isEmpty())
+			this.selectedSettlement = initialSettlements.get(0);
+		
+		if (initialSettlements.size() > 1) {
+			addTab(new UnitTab(this, new SettlementTableModel(), true, MARS_ICON));
 		}
+		
+		addTab(new UnitTab(this, new SettlementTableModel(selectedSettlement), true, COLONY_ICON));
+		addTab(new UnitTab(this, new PersonTableModel(selectedSettlement, true), true, PEOPLE_ICON));
+		addTab(new UnitTab(this, new RobotTableModel(selectedSettlement, true), true, BOT_ICON));
+		addTab(new UnitTab(this, new BuildingTableModel(selectedSettlement), true, BUILDING_ICON));
+		addTab(new UnitTab(this, new CropTableModel(selectedSettlement), true, CROP_ICON));
+		
+		addTab(new FoodInventoryTab(selectedSettlement, this));
+		
+		addTab(new TradeTab(selectedSettlement, this));
+		
+		eventsTab = new EventTab(this, desktop);
+		addTab(eventsTab);
+		
+		addTab(new MissionTab(this));
+		addTab(new UnitTab(this, new VehicleTableModel(selectedSettlement), true, VEHICLE_ICON));
+
 	}
 
 	/**
 	 * Adds the bottom bar.
 	 */
-	public void addBottomBar() {
+	private void addBottomBar() {
 		// Prepare row count label
 		rowCount = new WebLabel("  ");
 		rowCount.setPreferredSize(new Dimension(120, STATUS_HEIGHT));
@@ -314,7 +305,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	 *
 	 * @param model The new model to display.
 	 */
-	public void displayModel(UnitTableModel model) {
+	public void displayModel(UnitTableModel<?> model) {
 		int index = getModelIndex(model);
 		if (index != -1)
 			tabsSection.setSelectedIndex(index);
@@ -425,28 +416,12 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
     }
 
 	/**
-	 * Checks if a monitor tab contains this model.
-	 *
-	 * @param model the model to check for.
-	 * @return true if a tab contains the model.
-	 */
-	public boolean containsModel(UnitTableModel model) {
-		for (Component c: tabsSection.getComponents()) {
-			MonitorTab tab = (MonitorTab)c;
-			if (tab.getModel().equals(model)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	/**
 	 * Gets the index of the monitor tab with the model.
 	 *
 	 * @param model the model to check for.
 	 * @return tab index or -1 if none.
 	 */
-	public int getModelIndex(UnitTableModel model) {
+	public int getModelIndex(UnitTableModel<?> model) {
 		for (Component c: tabsSection.getComponents()) {
 			MonitorTab tab = (MonitorTab)c;
 			if (tab.getModel().equals(model)) {
@@ -461,7 +436,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	 */
 	private void createBarChart() {
 		MonitorModel model = getSelectedTab().getModel();
-		int columns[] = ColumnSelector.createBarSelector(desktop, model);
+		int[]columns = ColumnSelector.createBarSelector(desktop, model);
 
 		if (columns != null && columns.length > 0) {
 			MonitorTab bar = new BarChartTab(model, columns);
@@ -502,34 +477,13 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	}
 
 	/**
-	 * Gets the selected tab.
-	 * 
-	 * @return
-	 */
-	public int getSelectedTabIndex() {
-		return tabsSection.getSelectedIndex();
-	}
-
-	/**
 	 * Updates the tab content.
 	 */
-	public void updateTab() {
+	private void updateTab() {
 		
 		MonitorTab selectedTab = getSelectedTab();
 		if (selectedTab == null)
 			return;
-		
-		int index = tabsSection.indexOfComponent(selectedTab);
-
-		// if "Mars" tab is being selected 
-		if (index == 0) {
-			// Hide the settlement boxPieChart
-			setSettlementBox(true);
-			// Update the row count label with new numbers
-			rowCount.setText(selectedTab.getCountString());
-			
-			return;
-		}
 		
 		// Continue and recreate a new tab
 		selectNewTab(selectedTab);
@@ -549,80 +503,83 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		boolean enableFilter = false;
 		boolean enableSettlement = true;
 		
-		try {
-			TableTab tableTab = null;
+		MonitorModel tabTableModel = selectedTab.getModel();
 
-			if (selectedTab instanceof UnitTab) {
-				// Enable these buttons
-				UnitTableModel unitTableModel = (UnitTableModel)selectedTab.getModel();
-				enableDetails = true;
-				enableMap = true;
-				unitTableModel.setSettlementFilter(selectedSettlement);
-				
-			}
-			else if (selectedTab instanceof MissionTab) {
-				// Enable these buttons
-				enableDetails = true;
-				enableMission = true;
+		if (selectedTab instanceof UnitTab) {
+			// Enable these buttons
+			enableDetails = true;
+			enableMap = true;
 
-				// Hide the settlement box
-				enableSettlement = false;
-
-			}
-			else if (selectedTab instanceof EventTab) {
-				// Enable these buttons
-				enableDetails = true;
-				enableFilter = true;
-
-				// Hide the settlement box
-				enableSettlement = false;
-			}
-			else if (selectedTab instanceof FoodInventoryTab) {
-				FoodInventoryTableModel foodModel = (FoodInventoryTableModel) selectedTab.getModel();
-				foodModel.setSettlementFilter(selectedSettlement);
-
-			} else if (selectedTab instanceof TradeTab) {
-				// Enable these buttons
-				enableFilter = true;
-				
-				TradeTableModel tradeModel = (TradeTableModel)selectedTab.getModel();
-				int rowIndex = ((TableTab)selectedTab).getTable().getSelectedRow();
-				tradeModel.setSettlementFilter(selectedSettlement);
-
-				scrollToVisible(((TableTab)selectedTab).getTable(), rowIndex, 0);
-			}
-			else {
-				// Hide the settlement box
-				enableSettlement = false;
-			}
-
-			boolean enableBar = false;
-			boolean enablePie = false;
-			if (selectedTab instanceof TableTab) {
-				tableTab = (TableTab)selectedTab;
-				table = tableTab.getTable();
-				enableBar = true;
-				enablePie = true;
-			}
-
-
-			// Update the row count label with new numbers
-			rowCount.setText(selectedTab.getCountString());
+			// Is select by Settlement supported ?
+			enableSettlement = tabTableModel.setSettlementFilter(selectedSettlement);
 			
-			// Set the opaqueness of the settlement box
-			setSettlementBox(!enableSettlement);
-
-			buttonBar.setEnabled(enableBar);
-			buttonPie.setEnabled(enablePie);
-			buttonMap.setEnabled(enableMap);
-			buttonDetails.setEnabled(enableDetails);
-			buttonMissions.setEnabled(enableMission);
-			buttonFilter.setEnabled(enableFilter);
-			
-		} catch (Exception e) {
-			logger.severe("Problems in re-creating tabs in MonitorWindow: " + e.getMessage(), e);
 		}
+		else if (selectedTab instanceof MissionTab) {
+			// Enable these buttons
+			enableDetails = true;
+			enableMission = true;
+
+			// Hide the settlement box
+			enableSettlement = false;
+
+		}
+		else if (selectedTab instanceof EventTab) {
+			// Enable these buttons
+			enableDetails = true;
+			enableFilter = true;
+
+			// Hide the settlement box
+			enableSettlement = false;
+		}
+		else if (selectedTab instanceof FoodInventoryTab) {
+			tabTableModel.setSettlementFilter(selectedSettlement);
+
+		} else if (selectedTab instanceof TradeTab) {
+			// Enable these buttons
+			enableFilter = true;
+			
+			int rowIndex = ((TradeTab)selectedTab).getTable().getSelectedRow();
+			tabTableModel.setSettlementFilter(selectedSettlement);
+
+			scrollToVisible(((TradeTab)selectedTab).getTable(), rowIndex, 0);
+		}
+		else {
+			// Hide the settlement box
+			enableSettlement = false;
+		}
+
+		boolean enableBar = false;
+		boolean enablePie = false;
+		if (selectedTab instanceof TableTab) {
+			enableBar = true;
+			enablePie = true;
+		}
+
+		// Configure the listeners
+		boolean activiateListeners = true;
+		if (previousTab != null) {
+			// If a different tab then activate listeners
+			activiateListeners = !(previousTab.equals(selectedTab));
+			if (activiateListeners) {
+				previousTab.getModel().setMonitorEntites(false);
+			}
+		}
+		if (activiateListeners) {
+			tabTableModel.setMonitorEntites(true);
+		}
+		previousTab = selectedTab;
+
+		// Update the row count label with new numbers
+		rowCount.setText(selectedTab.getCountString());
 		
+		// Set the opaqueness of the settlement box
+		setSettlementBox(!enableSettlement);
+		buttonBar.setEnabled(enableBar);
+		buttonPie.setEnabled(enablePie);
+		buttonMap.setEnabled(enableMap);
+		buttonDetails.setEnabled(enableDetails);
+		buttonMissions.setEnabled(enableMission);
+		buttonFilter.setEnabled(enableFilter);
 	}
 
 	/**
@@ -632,7 +589,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	 * @param rowIndex
 	 * @param vColIndex
 	 */
-	public static void scrollToVisible(JTable table, int rowIndex, int vColIndex) {
+	private static void scrollToVisible(JTable table, int rowIndex, int vColIndex) {
         if (!(table.getParent() instanceof JViewport)) {
             return;
         }
@@ -729,9 +686,12 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	 * Refreshes the table theme style and row count.
 	 */
 	public void refreshTableStyle() {
-		if (table != null) {
+		MonitorTab selectedTab = getSelectedTab();
+
+		if (selectedTab instanceof TableTab) {
+			JTable table = ((TableTab) selectedTab).getTable();
 			TableStyle.setTableStyle(table);
-			rowTable = new RowNumberTable(table);
+			RowNumberTable rowTable = new RowNumberTable(table);
 			TableStyle.setTableStyle(rowTable);
 			MonitorTab selected = getSelectedTab();
 			if (selected == eventsTab) {
@@ -741,15 +701,6 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		}
 	}
 
-	/**
-	 * Gets the trade tab instance.
-	 * 
-	 * @return
-	 */
-	public TradeTab getTradeTab() {
-		return tradeTab;
-	}
-	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		Object source = e.getSource();

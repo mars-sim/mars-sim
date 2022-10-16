@@ -201,7 +201,7 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 	 * @param filter
 	 */
 	@Override
-	public void setSettlementFilter(Settlement filter) {
+	public boolean setSettlementFilter(Settlement filter) {
 		if (settlementListener != null) {
 			settlement.removeUnitListener(settlementListener);
 		}
@@ -221,6 +221,8 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 														UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT);
 			settlement.addUnitListener(settlementListener);
 		}
+
+		return true;
 	}
 
 	/**

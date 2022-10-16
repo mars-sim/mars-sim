@@ -161,8 +161,10 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 	 * Filter the vehicles to a settlement
 	 */
 	@Override
-	public void setSettlementFilter(Settlement filter) {
+	public boolean setSettlementFilter(Settlement filter) {
 		resetEntities(filter.getAllAssociatedVehicles());
+
+		return true;
 	}
 
 	/**

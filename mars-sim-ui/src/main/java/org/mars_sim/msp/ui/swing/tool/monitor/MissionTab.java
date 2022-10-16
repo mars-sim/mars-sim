@@ -23,7 +23,7 @@ public class MissionTab extends TableTab {
 	 * Constructor.
 	 * @throws Exception
 	 */
-	public MissionTab(final MonitorWindow window) throws Exception {
+	public MissionTab(final MonitorWindow window) {
 		// Use TableTab constructor
 		super(window, new MissionTableModel(), true, true, MonitorWindow.MISSION_ICON);
 	}

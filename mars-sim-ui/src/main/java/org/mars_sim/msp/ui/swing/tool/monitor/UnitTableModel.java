@@ -50,6 +50,8 @@ public abstract class UnitTableModel<T extends Unit> extends EntityTableModel<T>
 	private UnitManagerListener umListener;
 
 	private UnitType unitType;
+
+	private boolean monitorUnits = false;
 	
 	protected static UnitManager unitManager = Simulation.instance().getUnitManager();
 
@@ -79,6 +81,27 @@ public abstract class UnitTableModel<T extends Unit> extends EntityTableModel<T>
 
 	
 	/**
+	 * Set whether the changes to the Entities should be monitor for change. Set up the 
+	 * Unitlisteners for the Units in the table.
+	 * @param activate 
+	 */
+    public void setMonitorEntites(boolean activate) {
+		if (activate != monitorUnits) {
+			if (activate) {
+				for(Unit u : getEntities()) {
+					u.addUnitListener(this);
+				}
+			}
+			else {
+				for(Unit u : getEntities()) {
+					u.removeUnitListener(this);
+				}
+			}
+			monitorUnits = activate;
+		}
+	}
+
+	/**
 	 * Add a unit to the model. Attach a listner to the Unit
 	 *
 	 * @param newUnit Unit to add to the model.
@@ -86,7 +109,7 @@ public abstract class UnitTableModel<T extends Unit> extends EntityTableModel<T>
 	@Override
 	protected boolean addEntity(T newUnit) {
 		boolean added = super.addEntity(newUnit);
-		if (added) {
+		if (added && monitorUnits) {
 			newUnit.addUnitListener(this);
 		}
 		return added;

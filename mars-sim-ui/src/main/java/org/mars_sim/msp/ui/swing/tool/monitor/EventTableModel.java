@@ -124,9 +124,9 @@ public class EventTableModel extends AbstractTableModel
 	}
 
 	@Override
-	public void setSettlementFilter(Settlement filter) {
+	public boolean setSettlementFilter(Settlement filter) {
 		// Events do not support filtering
-		throw new UnsupportedOperationException("Settlement filtering not supported");
+		return false;
 	}
 
 	private synchronized void updateCachedEvents() {
@@ -852,6 +852,12 @@ public class EventTableModel extends AbstractTableModel
 		messageCache = null;
 		cachedEvents.clear();
 		cachedEvents = null;
+	}
+
+	@Override
+	public void setMonitorEntites(boolean activate) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

@@ -187,8 +187,9 @@ public class PersonTableModel extends UnitTableModel<Person> {
 				(allAssociated ? "PersonTableModel.countingCitizens" : //$NON-NLS-1$
 								 "PersonTableModel.countingIndoor" //$NON-NLS-1$
 				), columnNames, columnTypes);
-		this.allAssociated = allAssociated;
 		setupCache();
+		sourceType = (allAssociated ? ValidSourceType.SETTLEMENT_ALL_ASSOCIATED_PEOPLE
+							: ValidSourceType.SETTLEMENT_INHABITANTS);
 
 		setSettlementFilter(settlement);
 	}
@@ -226,26 +227,30 @@ public class PersonTableModel extends UnitTableModel<Person> {
 	}
 
 	@Override
-	public void setSettlementFilter(Settlement filter) {	
+	public boolean setSettlementFilter(Settlement filter) {	
+		if ((sourceType != ValidSourceType.SETTLEMENT_ALL_ASSOCIATED_PEOPLE) &&
+			(sourceType != ValidSourceType.SETTLEMENT_INHABITANTS)) {
+				return false;
+		}
+
 		if (settlementListener != null) {
 			settlement.removeUnitListener(settlementListener);
 		}
 
 		this.settlement = filter;
-		if (allAssociated) {
-
-			sourceType = ValidSourceType.SETTLEMENT_ALL_ASSOCIATED_PEOPLE;
+		if (sourceType == ValidSourceType.SETTLEMENT_ALL_ASSOCIATED_PEOPLE) {
 			resetEntities(settlement.getAllAssociatedPeople());
 			settlementListener = new PersonChangeListener(UnitEventType.ADD_ASSOCIATED_PERSON_EVENT,
 														UnitEventType.REMOVE_ASSOCIATED_PERSON_EVENT);
 			settlement.addUnitListener(settlementListener);
 		} else {
-			sourceType = ValidSourceType.SETTLEMENT_INHABITANTS;
 			resetEntities(settlement.getIndoorPeople());
 			settlementListener = new PersonChangeListener(UnitEventType.INVENTORY_STORING_UNIT_EVENT,
 														UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT);
 			settlement.addUnitListener(settlementListener);
 		}
+
+		return true;
 	}
 
 	/**

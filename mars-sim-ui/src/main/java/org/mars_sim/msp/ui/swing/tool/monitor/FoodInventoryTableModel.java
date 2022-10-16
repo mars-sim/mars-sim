@@ -71,12 +71,13 @@ implements UnitListener {
 	};
 
 	private Settlement selectedSettlement;
+	private boolean monitorSettlement = false;
 
 	/**
 	 * Constructor.
 	 */
 	public FoodInventoryTableModel(Settlement selectedSettlement) {
-		super(Msg.getString("FoodInventoryTableModel.tabName"), "FoodTabModel.foodCounting", columnNames, columnTypes);
+		super(Msg.getString("FoodInventoryTableModel.tabName"), "FoodInventoryTabModel.foodCounting", columnNames, columnTypes);
 		
 		setCachedColumns(DEMAND_COL, PRICE_COL);
 
@@ -164,6 +165,23 @@ implements UnitListener {
     }
     
 	/**
+	 * Set whether the changes to the Entities should be monitor for change. Set up the 
+	 * Unitlisteners for the selected Settlement where Food comes from for the table.
+	 * @param activate 
+	 */
+    public void setMonitorEntites(boolean activate) {
+		if (activate != monitorSettlement) {
+			if (activate) {
+				selectedSettlement.addUnitListener(this);
+			}
+			else {
+				selectedSettlement.removeUnitListener(this);
+			}
+			monitorSettlement = activate;
+		}
+	}
+
+	/**
 	 * Prepares the model for deletion.
 	 */
 	@Override
@@ -194,7 +212,7 @@ implements UnitListener {
 	 * Set the Settlement filter
 	 * @param filter Settlement
 	 */
-    public void setSettlementFilter(Settlement filter) {
+    public boolean setSettlementFilter(Settlement filter) {
 		if (selectedSettlement != null) {
 			selectedSettlement.removeUnitListener(this);
 		}
@@ -206,7 +224,11 @@ implements UnitListener {
 		resetEntities(FoodUtil.getFoodList());
 			
 		// Add table as listener to each settlement.
-		selectedSettlement.addUnitListener(this);
+		if (monitorSettlement) {
+			selectedSettlement.addUnitListener(this);
+		}
+
+		return true;
     }
 }
 

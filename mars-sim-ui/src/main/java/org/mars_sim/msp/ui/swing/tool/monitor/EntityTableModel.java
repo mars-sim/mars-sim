@@ -145,6 +145,14 @@ public abstract class EntityTableModel<T> extends AbstractTableModel
     }
 
     /**
+     * Get the Entities held withink the model.
+     * @return
+     */
+    protected List<T> getEntities() {
+        return entities;
+    }
+
+    /**
 	 * Get the Entity<T> at the specified row.
 	 *
 	 * @param index Index of the row.

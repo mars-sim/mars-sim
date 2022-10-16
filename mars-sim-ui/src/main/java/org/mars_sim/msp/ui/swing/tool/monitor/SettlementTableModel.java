@@ -144,6 +144,8 @@ public class SettlementTableModel extends UnitTableModel<Settlement> {
 	private static final int CONCRETE_ID = ResourceUtil.concreteID;
 	private static final int CEMENT_ID = ResourceUtil.cementID;
 
+	private boolean singleSettlement;
+
 	/**
 	 * Constructs a SettlementTableModel model that displays all Settlements in the
 	 * simulation.
@@ -151,6 +153,7 @@ public class SettlementTableModel extends UnitTableModel<Settlement> {
 	public SettlementTableModel() {
 		super(UnitType.SETTLEMENT, "Mars", "SettlementTableModel.countingSettlements",
 				columnNames, columnTypes);
+		singleSettlement = false;
 
 		setupCaches();
 		resetEntities(unitManager.getSettlements());
@@ -172,7 +175,7 @@ public class SettlementTableModel extends UnitTableModel<Settlement> {
 		super(UnitType.SETTLEMENT, Msg.getString("SettlementTableModel.tabName"), //$NON-NLS-2$
 				"SettlementTableModel.countingSettlements", 
 				columnNames, columnTypes);
-
+		singleSettlement = true;
 		setSettlementFilter(settlement);
 
 		listenForUnits();
@@ -183,11 +186,14 @@ public class SettlementTableModel extends UnitTableModel<Settlement> {
 	 * @param filter
 	 */
 	@Override
-	public void setSettlementFilter(Settlement filter) {
+	public boolean setSettlementFilter(Settlement filter) {
 
-		List<Settlement> sList = new ArrayList<>();
-		sList.add(filter);
-		resetEntities(sList);
+		if (singleSettlement) {
+			List<Settlement> sList = new ArrayList<>();
+			sList.add(filter);
+			resetEntities(sList);
+		}
+		return singleSettlement;
 	}
 
 	/**

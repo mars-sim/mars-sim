@@ -171,7 +171,7 @@ public class MainDesktopPane extends JDesktopPane
 			try {
 				prepareToolWindows();
 			} catch (Exception e) {
-				logger.log(Level.SEVERE, "Cannot prepare tool windows: " + e);
+				logger.log(Level.SEVERE, "Cannot prepare tool windows: " + e, e);
 			}
 		});
 
@@ -314,7 +314,7 @@ public class MainDesktopPane extends JDesktopPane
 	/*
 	 * Creates tool windows
 	 */
-	private void prepareToolWindows() throws Exception {
+	private void prepareToolWindows() {
 		synchronized (toolWindows) {
 		
 		// Prepare Commander Window
@@ -327,7 +327,6 @@ public class MainDesktopPane extends JDesktopPane
 				logger.severe("Commander Window not ready: " + e.getMessage());
 			}
 			toolWindows.add(commanderWindow);
-//			logger.config("toolWindows.add(commanderWindow)");
 //		}
 
 		// Prepare navigator window
@@ -338,7 +337,6 @@ public class MainDesktopPane extends JDesktopPane
 			logger.severe("Navigator Window not ready: " + e.getMessage());
 		}
 		toolWindows.add(navWindow);
-//		logger.config("toolWindows.add(navWindow)");
 
 		// Prepare search tool window
 		SearchWindow searchWindow = new SearchWindow(this);
@@ -348,7 +346,6 @@ public class MainDesktopPane extends JDesktopPane
 			logger.severe("Search Window not ready: " + e.getMessage());
 		}
 		toolWindows.add(searchWindow);
-//		logger.config("toolWindows.add(searchWindow)");
 
 		// Prepare time tool window
 		timeWindow = new TimeWindow(this);
@@ -358,7 +355,6 @@ public class MainDesktopPane extends JDesktopPane
 			logger.severe("Time Window not ready: " + e.getMessage());
 		}
 		toolWindows.add(timeWindow);
-//		logger.config("toolWindows.add(timeWindow)");
 
 		// Prepare settlement tool window
 		settlementWindow = new SettlementWindow(this);
@@ -369,7 +365,6 @@ public class MainDesktopPane extends JDesktopPane
 		}
 		toolWindows.add(settlementWindow);
 		setSettlementWindow(settlementWindow);
-//		logger.config("toolWindows.add(settlementWindow)");
 
 		// Prepare science tool window
 		ScienceWindow scienceWindow = new ScienceWindow(this);
@@ -379,7 +374,6 @@ public class MainDesktopPane extends JDesktopPane
 			logger.severe("Science Window not ready: " + e.getMessage());
 		}
 		toolWindows.add(scienceWindow);
-//		logger.config("toolWindows.add(scienceWindow)");
 
 		// Prepare guide tool window
 		GuideWindow guideWindow = new GuideWindow(this);
@@ -389,7 +383,6 @@ public class MainDesktopPane extends JDesktopPane
 			logger.severe("Guide Window not ready: " + e.getMessage());
 		}
 		toolWindows.add(guideWindow);
-//		logger.config("toolWindows.add(guideWindow)");
 
 		// Prepare monitor tool window
 		MonitorWindow monitorWindow = new MonitorWindow(this);
@@ -399,7 +392,6 @@ public class MainDesktopPane extends JDesktopPane
 			logger.severe("Monitor Window not ready: " + e.getMessage());
 		}
 		toolWindows.add(monitorWindow);
-//		logger.config("toolWindows.add(monitorWindow)");
 
 		// Prepare mission tool window
 		MissionWindow missionWindow = new MissionWindow(this);
@@ -409,7 +401,6 @@ public class MainDesktopPane extends JDesktopPane
 			logger.severe("Mission Window not ready: " + e.getMessage());
 		}
 		toolWindows.add(missionWindow);
-//		logger.config("toolWindows.add(missionWindow)");
 
 		// Prepare resupply tool window
 		ResupplyWindow resupplyWindow = new ResupplyWindow(this);
@@ -419,8 +410,6 @@ public class MainDesktopPane extends JDesktopPane
 			logger.severe("Resupply Window not ready: " + e.getMessage());
 		}
 		toolWindows.add(resupplyWindow);
-//		logger.config("toolWindows.add(resupplyWindow)");
-
 		}
 	}
 	
@@ -458,7 +447,7 @@ public class MainDesktopPane extends JDesktopPane
 	 *
 	 * @param model the new model to display
 	 */
-	public void addModel(UnitTableModel model) {
+	public void addModel(UnitTableModel<?> model) {
 		((MonitorWindow) getToolWindow(MonitorWindow.TITLE)).displayModel(model);
 		openToolWindow(MonitorWindow.TITLE);
 	}
@@ -809,7 +798,7 @@ public class MainDesktopPane extends JDesktopPane
 			try {
 				prepareToolWindows();
 			} catch (Exception e) {
-				logger.severe("Reseting desktop. Cannot prepare tool windows: " + e);
+				logger.log(Level.SEVERE, "Reseting desktop. Cannot prepare tool windows: " + e, e);
 			}
 		});
 

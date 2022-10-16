@@ -77,9 +77,9 @@ public class MissionTableModel extends AbstractTableModel
 	/** The number of Columns. */
 	private static final int COLUMNCOUNT = 15;
 	/** Names of Columns. */
-	private static String columnNames[];
+	private static String[] columnNames;
 	/** Types of Columns. */
-	private static Class<?> columnTypes[];
+	private static Class<?>[] columnTypes;
 
 	private GameMode mode = GameManager.getGameMode();
 	
@@ -88,6 +88,7 @@ public class MissionTableModel extends AbstractTableModel
 	private Settlement commanderSettlement;
 
 	private DecimalFormat decFormatter = new DecimalFormat("#,###,##0.0");
+	private boolean monitorMissions = false;
 
 	private static MissionManager missionManager = Simulation.instance().getMissionManager();
 
@@ -144,25 +145,39 @@ public class MissionTableModel extends AbstractTableModel
 		}
 
 		missionManager.addListener(this);
-
-		if (!missionCache.isEmpty()) {
-			Iterator<Mission> i = missionCache.iterator();
-			while (i.hasNext()) {
-				Mission m = i.next();
-				if (!m.isDone()) {
-					m.addMissionListener(this);
+	}
+		
+	/**
+	 * Set whether the changes to the Missions should be monitor for change. Set up the 
+	 * Missionlisteners for the Mission in the table.
+	 * @param activate 
+	 */
+    public void setMonitorEntites(boolean activate) {
+		if (activate != monitorMissions) {
+			if (activate) {
+				for(Mission m : missionCache) {
+					if (!m.isDone()) {
+						m.addMissionListener(this);
+					}
 				}
 			}
+			else {
+				for(Mission m : missionCache) {
+					m.removeMissionListener(this);
+				}
+			}
+			monitorMissions = activate;
 		}
 	}
+
 
 	/**
 	 * Cannot filter missions by Settlement although is should be possible.
 	 */
 	@Override
-	public void setSettlementFilter(Settlement filter) {
+	public boolean setSettlementFilter(Settlement filter) {
 		// Mission doesn't support filtering ???
-		throw new UnsupportedOperationException("Settlement filtering not supported");
+		return false;
 	}
 
 	/**

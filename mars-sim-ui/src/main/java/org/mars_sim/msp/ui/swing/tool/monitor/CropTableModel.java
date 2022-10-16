@@ -92,8 +92,10 @@ public class CropTableModel extends UnitTableModel<Building> {
 	 * Filter the Greenhouses according to a Settlement
 	 */
 	@Override
-	public void setSettlementFilter(Settlement filter) {
+	public boolean setSettlementFilter(Settlement filter) {
 		resetEntities(filter.getBuildingManager().getBuildings(FunctionType.FARMING));
+
+		return true;
 	}
 
 	/**

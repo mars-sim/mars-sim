@@ -78,6 +78,7 @@ implements UnitListener {
 
 	// Data members
 	private Settlement selectedSettlement;
+	private boolean monitorSettlement = false;
 
 	/**
 	 * Constructor 2.
@@ -97,7 +98,7 @@ implements UnitListener {
 	}
 	
 	@Override
-	public void setSettlementFilter(Settlement filter) {
+	public boolean setSettlementFilter(Settlement filter) {
 		if (selectedSettlement != null) {
 			selectedSettlement.removeUnitListener(this);
 		}
@@ -109,9 +110,31 @@ implements UnitListener {
 		resetEntities(GoodsUtil.getGoodsList());
 
 		// Add table as listener to each settlement.
-		selectedSettlement.addUnitListener(this);
+		if (monitorSettlement) {
+			selectedSettlement.addUnitListener(this);
+		}
+
+		return true;
 	}
 	
+	    
+	/**
+	 * Set whether the changes to the Entities should be monitor for change. Set up the 
+	 * Unitlisteners for the selected Settlement where Food comes from for the table.
+	 * @param activate 
+	 */
+    public void setMonitorEntites(boolean activate) {
+		if (activate != monitorSettlement) {
+			if (activate) {
+				selectedSettlement.addUnitListener(this);
+			}
+			else {
+				selectedSettlement.removeUnitListener(this);
+			}
+			monitorSettlement = activate;
+		}
+	}
+
 	/**
 	 * Catches unit update event.
 	 *

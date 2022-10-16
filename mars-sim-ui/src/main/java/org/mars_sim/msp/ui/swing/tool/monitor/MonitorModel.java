@@ -54,6 +54,13 @@ interface MonitorModel extends TableModel {
 	/**
 	 * Set the Settlement as a filter
 	 * @param filter Settlement
+	 * @return 
 	 */
-	public void setSettlementFilter(Settlement filter);
+	public boolean setSettlementFilter(Settlement filter);
+
+	/**
+	 * Set whether the changes to the Entities should be monitor for change.
+	 * @param activate 
+	 */
+    public void setMonitorEntites(boolean activate);
 }

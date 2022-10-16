@@ -9,9 +9,8 @@ package org.mars_sim.msp.core;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Logger;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.mars_sim.msp.core.environment.SurfaceFeatures;
 import org.mars_sim.msp.core.environment.Weather;
@@ -19,6 +18,7 @@ import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.location.LocationTag;
 import org.mars_sim.msp.core.logging.Loggable;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -40,7 +40,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static final Logger logger = Logger.getLogger(Unit.class.getName());
+	private static final SimLogger logger = SimLogger.getLogger(Unit.class.getName());
 
 	public static final int OUTER_SPACE_UNIT_ID = Integer.MAX_VALUE;
 	public static final int MARS_SURFACE_UNIT_ID = 0;
@@ -75,7 +75,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	protected LocationStateType currentStateType;
 
 	/** Unit listeners. */
-	private transient List<UnitListener> listeners;// = Collections.synchronizedList(new ArrayList<UnitListener>());
+	private transient Set<UnitListener> listeners;
 
 	protected static Simulation sim = Simulation.instance();
 	protected static SimulationConfig simulationConfig = SimulationConfig.instance();
@@ -141,7 +141,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 		// Initialize data members from parameters
 		this.name = name;
 		this.description = name;
-		this.baseMass = 0;// Double.MAX_VALUE;
+		this.baseMass = 0;
 
 		if (sim.getMasterClock() != null) {
 			// Needed for maven test
@@ -559,12 +559,11 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 		if (newListener == null)
 			throw new IllegalArgumentException();
 		if (listeners == null)
-			listeners = new ArrayList<>();
+			listeners = new HashSet<>();
 
 		synchronized(listeners) {	
-			if (!listeners.contains(newListener)) {
-				listeners.add(newListener);
-			}
+			//logger.info(this, "Add listeners #" + listeners.size() + " " + newListener.toString());
+			listeners.add(newListener);
 		}
 	}
 
@@ -579,6 +578,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 
 		if (listeners != null) {
 			synchronized(listeners) {
+				//logger.info(this, "Remove listeners #" + listeners.size() + " " + oldListener.toString());
 				listeners.remove(oldListener);
 			}
 		}
