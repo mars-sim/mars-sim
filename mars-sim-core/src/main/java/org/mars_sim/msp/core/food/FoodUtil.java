@@ -67,28 +67,11 @@ public class FoodUtil {
 			throw new IllegalArgumentException("Resource cannot be null");
 		}
 		
-		FoodType foodType = null;
 		GoodType type = resource.getGoodType();
 
-		if (type == GoodType.ANIMAL)
-			foodType = FoodType.ANIMAL;
-		else if (type == GoodType.CHEMICAL)
-			foodType = FoodType.CHEMICAL;
-		else if (type == GoodType.CROP)
-			foodType = FoodType.CROP;
-		else if (type == GoodType.DERIVED)
-			foodType = FoodType.DERIVED;
-		else if (type == GoodType.INSECT)
-			foodType = FoodType.INSECT;
-		else if (type == GoodType.OIL)
-			foodType = FoodType.OIL;
-		else if (type == GoodType.ORGANISM)
-			foodType = FoodType.ORGANISM;	
-		else if (type == GoodType.SOY_BASED)
-			foodType = FoodType.SOY_BASED;
-		else if (type == GoodType.TISSUE)
-			foodType = FoodType.TISSUE;
-		
+		// There is a direct mapping between the Foodtype enums to the equivalent
+		// GoodType enum
+		FoodType foodType = FoodType.valueOf(type.name());
 		return new Food(resource.getName(), resource, foodType, resource.getDemand());
 	}
 
