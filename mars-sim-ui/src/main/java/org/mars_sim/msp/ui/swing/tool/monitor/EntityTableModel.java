@@ -289,7 +289,6 @@ public abstract class EntityTableModel<T> extends AbstractTableModel
 	protected void entityValueUpdated(T entity, int firstCol, int lastCol) {
         int rowIndex = entities.indexOf(entity);
         if (rowIndex < 0) {
-            logger.warning("Entity not in model : " + entity.toString());
             return;
         }
 
