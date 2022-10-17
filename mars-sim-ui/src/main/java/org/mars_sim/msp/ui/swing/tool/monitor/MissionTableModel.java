@@ -8,7 +8,6 @@ package org.mars_sim.msp.ui.swing.tool.monitor;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.SwingUtilities;

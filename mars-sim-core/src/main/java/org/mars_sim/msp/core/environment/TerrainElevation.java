@@ -9,7 +9,6 @@ package org.mars_sim.msp.core.environment;
 
 import java.awt.Color;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -58,7 +57,7 @@ public class TerrainElevation implements Serializable {
 	private static final double ALBOR_THOLUS_PHI = 1.245184;
 	private static final double ALBOR_THOLUS_THETA = 2.615812;
 
-	private static final double RATE = 10;
+	private static final double RATE = 1;
 
 	private static MapData mapdata;
 
@@ -198,11 +197,11 @@ public class TerrainElevation implements Serializable {
 				rate *= Math.abs(elevation) / 50.0  - Math.abs(latitude) / 50.0;
 		}
 
-		if (rate > 100)
-			rate = 100;
+		if (rate > 200)
+			rate = 200;
 
-		if (rate < 20)
-			rate = 20;
+		if (rate < 1)
+			rate = 1;
 
 		site.setRegolithCollectionRate(rate);
 	}
@@ -246,11 +245,11 @@ public class TerrainElevation implements Serializable {
 				rate *= RandomUtil.getRandomDouble(10) + Math.abs(elevation) + Math.abs(latitude) / 75.0;
 		}
 
-		if (rate > 100)
-			rate = 100;
+		if (rate > 200)
+			rate = 200;
 
-		if (rate < 10)
-			rate = 10;
+		if (rate < 1)
+			rate = 1;
 
 		site.setIceCollectionRate(rate);
 	}
