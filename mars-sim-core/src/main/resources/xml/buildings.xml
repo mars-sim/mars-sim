@@ -2021,7 +2021,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	<building type="Atmospheric Processor" width="8.0" length="11.0" base-level="0"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="0" base-mass="1000">
 		<description> The Atmospheric Processor is an resource-processing
-		building providing black/water recyling, air processing and waste
+		building providing black/water recycling, air processing and waste
 		recycling functions for the settlement.
 		</description>
 
