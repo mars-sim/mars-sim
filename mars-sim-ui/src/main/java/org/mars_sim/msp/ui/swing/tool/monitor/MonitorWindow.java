@@ -698,6 +698,8 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 				// Update the row count label with new numbers
 				rowCount.setText(selected.getCountString());
 			}
+			
+			TableTab.adjustColumnWidth(table);
 		}
 	}
 

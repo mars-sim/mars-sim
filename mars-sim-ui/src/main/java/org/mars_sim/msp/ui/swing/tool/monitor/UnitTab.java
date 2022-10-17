@@ -37,5 +37,7 @@ extends TableTab {
 				tc.setCellRenderer(DIGIT2_RENDERER);
 			}			
 		}
+		
+		super.adjustColumnWidth(table);
 	}
 }

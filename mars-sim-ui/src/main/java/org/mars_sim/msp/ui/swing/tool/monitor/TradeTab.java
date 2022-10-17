@@ -50,5 +50,7 @@ public class TradeTab extends TableTab {
 			}
 			m.getColumn(i).setCellRenderer(renderer);				
 		}
+		
+		super.adjustColumnWidth(table);
 	}
 }

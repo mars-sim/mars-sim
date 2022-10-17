@@ -48,5 +48,7 @@ public class FoodInventoryTab extends TableTab {
 
 			m.getColumn(i).setCellRenderer(r);
 		}
+		
+		super.adjustColumnWidth(table);
 	}
 }
