@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
 import org.mars_sim.msp.core.Msg;
@@ -255,12 +256,9 @@ public abstract class EntityTableModel<T> extends AbstractTableModel
         // Pick a value out of the cache if suitable
         boolean useCache = cachedColumns.contains(columnIndex);
         if (useCache) {
-            Map<Integer, Object> rowValues = rowCache.get(entity);
-            if (rowValues != null) {
-                Object cachedValue = rowValues.get(columnIndex);
-                if (cachedValue != null) {
-                    return cachedValue;
-                }
+            Object cachedValue = getCacheValue(entity, columnIndex);
+            if (cachedValue != null) {
+                return cachedValue;
             }
         }
 
@@ -276,12 +274,21 @@ public abstract class EntityTableModel<T> extends AbstractTableModel
         return result;
     }
 
+    private Object getCacheValue(T entity, int columnIndex) {
+        Map<Integer, Object> rowValues = rowCache.get(entity);
+        if (rowValues != null) {
+            return rowValues.get(columnIndex);
+        }
+        return null;
+    }
+
     private void setCacheValue(T entity, int columnIndex, Object value) {
         rowCache.computeIfAbsent(entity, k -> new HashMap<Integer,Object>()).put(columnIndex, value);
     }
 
     /**
-     * A range of column values have changed.
+     * A range of column values have changed. This will recalculate any cached columns if needed
+     * and always fire a model change event asynchronously.
      * @param entity
      * @param firstCol
      * @param lastCol
@@ -294,9 +301,17 @@ public abstract class EntityTableModel<T> extends AbstractTableModel
 
         for(int i = firstCol; i<= lastCol; i++) {
             if (cachedColumns.contains(i)) {
-                setCacheValue(entity, i, null); // Clear cached value
+                // Recalculate cached value in this Thread to avoid problem
+                // with calculating dervied values in teh UI Thread
+                Object newValue = getEntityValue(entity, i);
+                Object cachedValue = getCacheValue(entity, i);
+                if ((cachedValue == null) || !cachedValue.equals(newValue)) {
+                    setCacheValue(entity, i, getEntityValue(entity, i));
+                }
             }
-            fireTableCellUpdated(rowIndex, i);
+
+            // Fire the cell update in the bacground thread
+            SwingUtilities.invokeLater(new TableCellUpdater(rowIndex, i));
         }
     }
 
@@ -313,4 +328,21 @@ public abstract class EntityTableModel<T> extends AbstractTableModel
      * may involve expensive calculations.
      */
     protected abstract Object getEntityValue(T entity, int column);
+
+    private class TableCellUpdater implements Runnable {
+
+        private int colIndex;
+        private int rowIndex;
+
+        public TableCellUpdater(int rowIndex, int colIndex) {
+            this.rowIndex = rowIndex;
+            this.colIndex = colIndex;
+        }
+
+        @Override
+        public void run() {
+            fireTableCellUpdated(rowIndex, colIndex);
+        }
+
+    }
 }

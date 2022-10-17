@@ -10,8 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-import javax.swing.SwingUtilities;
-
 import org.apache.commons.lang3.StringUtils;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
@@ -190,21 +188,7 @@ public class CropTableModel extends UnitTableModel<Building> {
 			columnNum = getCategoryNum(cat.getName());
 		}
 		if (columnNum > -1) {
-			SwingUtilities.invokeLater(new FoodTableCellUpdater((Building)unit, columnNum));
-		}
-	}
-
-	private class FoodTableCellUpdater implements Runnable {
-		private Building building;
-		private int column;
-
-		private FoodTableCellUpdater(Building building, int column) {
-			this.building = building;
-			this.column = column;
-		}
-
-		public void run() {
-			entityValueUpdated(building, column, column);
+			entityValueUpdated((Building) unit, columnNum, columnNum);
 		}
 	}
 }

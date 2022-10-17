@@ -11,8 +11,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 
-import javax.swing.SwingUtilities;
-
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEvent;
@@ -183,6 +181,8 @@ public class SettlementTableModel extends UnitTableModel<Settlement> {
 				"SettlementTableModel.countingSettlements", 
 				columnNames, columnTypes);
 		singleSettlement = true;
+		setupCaches();
+
 		setSettlementFilter(settlement);
 
 		listenForUnits();
@@ -453,22 +453,7 @@ public class SettlementTableModel extends UnitTableModel<Settlement> {
 		}
 
 		if (columnNum > -1) {
-			SwingUtilities.invokeLater(new SettlementTableCellUpdater((Settlement)unit, columnNum));
-		}
-	}
-
-	private class SettlementTableCellUpdater implements Runnable {
-
-		private Settlement settle;
-		private int column;
-
-		private SettlementTableCellUpdater(Settlement settle, int column) {
-			this.settle = settle;
-			this.column = column;
-		}
-
-		public void run() {
-			entityValueUpdated(settle, column, column);
+			entityValueUpdated((Settlement)unit, columnNum, columnNum);
 		}
 	}
 }

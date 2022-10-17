@@ -231,7 +231,12 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 	 * @param event the unit event.
 	 */
 	public void unitUpdate(UnitEvent event) {
-		SwingUtilities.invokeLater(new RobotTableUpdater(event));
+		
+		Integer column = eventColumnMapping.get(event.getType());
+			
+		if (column != null && (column > -1) && event.getSource() instanceof Robot) {
+			entityValueUpdated((Robot) event.getSource(), column, column);
+		}	
 	}
 
 	/**
@@ -365,40 +370,7 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 			settlementListener = null;
 			settlement = null;
 		}
-	}
-	
-	/**
-	 * Inner class for updating the robot table.
-	 */
-	private class RobotTableUpdater implements Runnable {
-
-
-		private final UnitEvent event;
-
-		private RobotTableUpdater(UnitEvent event) {
-			this.event = event;
-		}
-
-		@Override
-		public void run() {
-			UnitEventType eventType = event.getType();
-
-			Integer column = eventColumnMapping.get(eventType);
-			
-			if (column != null && column > -1) {
-				if (event.getSource() instanceof Robot) {
-					entityValueUpdated((Robot) event.getSource(), column, column);
-				}
-				
-				// else if (event.getTarget() instanceof Unit) {
-				// 	Unit target = (Unit) event.getTarget();
-				// 	if (target instanceof Robot) {
-				// 		tableModel.fireTableCellUpdated(tableModel.getIndex(target), column);
-				// 	}
-				// }
-			}
-		}
-	}
+	}	
 
 	/**
 	 * MissionListener inner class.

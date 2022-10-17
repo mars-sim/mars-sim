@@ -6,8 +6,6 @@
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
-import javax.swing.SwingUtilities;
-
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEvent;
@@ -96,7 +94,8 @@ implements UnitListener {
 		if (eventType == UnitEventType.FOOD_EVENT) {
 			if (event.getTarget() instanceof Good) {
 				if (unit.equals(selectedSettlement)) {
-					SwingUtilities.invokeLater(new FoodTableUpdater(event));			
+					// Update the whole row
+					entityValueUpdated((Food)event.getTarget(), DEMAND_COL, PRICE_COL);
 				}
 			}
 		}
@@ -190,22 +189,6 @@ implements UnitListener {
 
 		// Remove as listener for all settlements.
 		selectedSettlement.removeUnitListener(this);
-	}
-	
-	/**
-	 * Inner class for updating food table.
-	 */
-	private class FoodTableUpdater implements Runnable {
-
-		private UnitEvent event;
-
-		private FoodTableUpdater(UnitEvent event) {
-			this.event = event;
-		}
-
-		public void run() {
-			entityValueUpdated((Food)event.getTarget(), DEMAND_COL, PRICE_COL);
-		}
 	}
 
 	/**

@@ -13,8 +13,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import javax.swing.SwingUtilities;
-
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEvent;
@@ -260,7 +258,14 @@ public class PersonTableModel extends UnitTableModel<Person> {
 	 */
 	@Override
 	public void unitUpdate(UnitEvent event) {
-		SwingUtilities.invokeLater(new PersonTableUpdater(event));
+		UnitEventType eventType = event.getType();
+
+		Integer column = eventColumnMapping.get(eventType);
+
+		if (column != null && column > -1) {
+			Person unit = (Person) event.getSource();
+			entityValueUpdated(unit, column, column);
+		}
 	}
 
 	/**
@@ -433,31 +438,6 @@ public class PersonTableModel extends UnitTableModel<Person> {
 			settlement.removeUnitListener(settlementListener);
 			settlementListener = null;
 			settlement = null;
-		}
-	}
-
-
-	/**
-	 * Inner class for updating the person table.
-	 */
-	private class PersonTableUpdater implements Runnable {
-
-		private final UnitEvent event;
-
-		private PersonTableUpdater(UnitEvent event) {
-			this.event = event;
-		}
-
-		@Override
-		public void run() {
-			UnitEventType eventType = event.getType();
-
-			Integer column = eventColumnMapping.get(eventType);
-
-			if (column != null && column > -1) {
-				Person unit = (Person) event.getSource();
-				entityValueUpdated(unit, column, column);
-			}
 		}
 	}
 

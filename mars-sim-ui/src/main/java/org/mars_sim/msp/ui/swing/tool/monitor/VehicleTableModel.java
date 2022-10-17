@@ -9,8 +9,6 @@ package org.mars_sim.msp.ui.swing.tool.monitor;
 import java.util.List;
 import java.util.logging.Logger;
 
-import javax.swing.SwingUtilities;
-
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
@@ -379,7 +377,7 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 			}
 
 			if (columnNum > -1) {
-				SwingUtilities.invokeLater(new VehicleTableCellUpdater(vehicle, columnNum));
+				entityValueUpdated(vehicle, columnNum, columnNum);
 			}
 		}
 	}
@@ -459,24 +457,6 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 	}
 
 	/**
-	 * Inner class for updating a cell in the vehicle table.
-	 */
-	private class VehicleTableCellUpdater implements Runnable {
-
-		private Vehicle vehicle;
-		private int column;
-
-		private VehicleTableCellUpdater(Vehicle vehicle, int column) {
-			this.vehicle = vehicle;
-			this.column = column;
-		}
-
-		public void run() {
-			entityValueUpdated(vehicle, column, column);
-		}
-	}
-
-	/**
 	 * MissionListener inner class.
 	 */
 	private class LocalMissionListener implements MissionListener {
@@ -499,7 +479,7 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 				if (mission instanceof VehicleMission) {
 					Vehicle vehicle = ((VehicleMission) mission).getVehicle();
 					if (vehicle != null) {
-						SwingUtilities.invokeLater(new VehicleTableCellUpdater(vehicle, columnNum));
+						entityValueUpdated(vehicle, columnNum, columnNum);
 					}
 				}
 			}
