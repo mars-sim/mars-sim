@@ -275,7 +275,7 @@ public class BuildingPanelMaintenance extends BuildingFunctionPanel {
 				List<String> fList = standardMaintParts.get(p);
 				for (MaintenanceScope me: partConfig.getMaintenance(fList, p)) {
 					parts.add(p);
-					functions.add(Conversion.capitalize(me.getName()));
+					functions.add(me.getName());
 					max.add(me.getMaxNumber());
 					probability.add(me.getProbability());
 				}
@@ -321,7 +321,7 @@ public class BuildingPanelMaintenance extends BuildingFunctionPanel {
 				if (column == 0)
 					return WHITESPACE + Conversion.capitalize(parts.get(row).getName()) + WHITESPACE;
 				else if (column == 1)
-					return Conversion.capitalize(functions.get(row));
+					return functions.get(row);
 				else if (column == 2)
 					return max.get(row);
 				else if (column == 3)

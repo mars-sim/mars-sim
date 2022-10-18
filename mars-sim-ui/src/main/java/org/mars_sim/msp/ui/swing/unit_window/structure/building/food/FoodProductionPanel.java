@@ -90,7 +90,7 @@ public class FoodProductionPanel extends JPanel {
 		if (name.length() > processStringWidth)
 			name = name.substring(0, processStringWidth) + "...";
 		// 2014-11-19 Capitalized process names
-		JLabel nameLabel = new JLabel(Conversion.capitalize(name), JLabel.CENTER);
+		JLabel nameLabel = new JLabel(name, JLabel.CENTER);
 		namePane.add(nameLabel);
 
 		if (showBuilding) {

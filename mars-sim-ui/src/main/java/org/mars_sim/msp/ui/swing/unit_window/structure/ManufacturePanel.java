@@ -26,7 +26,6 @@ import org.mars_sim.msp.core.resource.ItemType;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.tool.Conversion;
 
 import com.alee.laf.panel.WebPanel;
 
@@ -87,7 +86,7 @@ public class ManufacturePanel extends WebPanel {
         }
         if (name.length() > processStringWidth) name = name.substring(0, processStringWidth) + "...";
 		// Capitalize process names
-        JLabel nameLabel = new JLabel(Conversion.capitalize(name), JLabel.CENTER);
+        JLabel nameLabel = new JLabel(name, JLabel.CENTER);
         namePane.add(nameLabel);
 
         if (showBuilding) {
@@ -167,8 +166,7 @@ public class ManufacturePanel extends WebPanel {
     public static String getToolTipString(ManufactureProcessInfo info, Building building) {
         StringBuilder result = new StringBuilder("<html>");
 
-        result.append("&emsp;&emsp;&emsp;&emsp;&nbsp;Process : ").append(Conversion.capitalize(info.getName())).append("<br>");
-    	//if (building != null) result.append("Building : ").append(building.getNickName()).append("<br>");
+        result.append("&emsp;&emsp;&emsp;&emsp;&nbsp;Process : ").append(info.getName()).append("<br>");
         result.append("&emsp;&emsp;&emsp;&nbsp;Labor Req : ").append(info.getWorkTimeRequired()).append(" millisols<br>");
         result.append("&emsp;&emsp;&emsp;&nbsp;&nbsp;Time Req : ").append(info.getProcessTimeRequired()).append(" millisols<br>");
         result.append("&emsp;&emsp;&emsp;Power Req : ").append(info.getPowerRequired()).append(" kW<br>");
@@ -182,8 +180,8 @@ public class ManufacturePanel extends WebPanel {
     	while (i.hasNext()) {
     		ManufactureProcessItem item = i.next();
     		// Capitalize process names
-            if (ii == 0) result.append(getItemAmountString(item)).append(" ").append(Conversion.capitalize(item.getName())).append("<br>");
-            else result.append("&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;").append(getItemAmountString(item)).append(" ").append(Conversion.capitalize(item.getName())).append("<br>");
+            if (ii == 0) result.append(getItemAmountString(item)).append(" ").append(item.getName()).append("<br>");
+            else result.append("&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;").append(getItemAmountString(item)).append(" ").append(item.getName()).append("<br>");
             ii++;
     	}
 
@@ -194,8 +192,8 @@ public class ManufacturePanel extends WebPanel {
     	while (j.hasNext()) {
     		ManufactureProcessItem item = j.next();
     		//  Capitalize process names
-            if (jj == 0) result.append(getItemAmountString(item)).append(" ").append(Conversion.capitalize(item.getName())).append("<br>");
-            else result.append("&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;").append(getItemAmountString(item)).append(" ").append(Conversion.capitalize(item.getName())).append("<br>");
+            if (jj == 0) result.append(getItemAmountString(item)).append(" ").append(item.getName()).append("<br>");
+            else result.append("&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;").append(getItemAmountString(item)).append(" ").append(item.getName()).append("<br>");
             jj++;
     	}
 

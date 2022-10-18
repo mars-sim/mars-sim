@@ -69,7 +69,6 @@ import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MarsClockFormat;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.resupply.SupplyTableModel.SupplyItem;
 
@@ -582,7 +581,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 				Iterator<String> j = types.iterator();
 				while (j.hasNext()) {
 					String type = j.next();
-					categoryCB.addItem(Conversion.capitalize(type));
+					categoryCB.addItem(type);
 				}
 				typeCBMap.put(category, categoryCB);
 			}

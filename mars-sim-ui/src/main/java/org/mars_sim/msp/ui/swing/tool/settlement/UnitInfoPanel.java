@@ -14,7 +14,6 @@ import java.util.List;
 
 import org.mars_sim.msp.ui.swing.ComponentMover;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.LineBreakPanel;
 
 import com.alee.laf.panel.WebPanel;
@@ -74,13 +73,13 @@ public class UnitInfoPanel extends WebPanel {
 //					+ description + "\n" + unitDescription + "\n\n";
 		
     	List<String> list = new ArrayList<>();
-    	list.add(Conversion.capitalize(unitName));
+    	list.add(unitName);
     	list.add(" \n");
     	list.add(type);
-    	list.add(Conversion.capitalize(unitType));
+    	list.add(unitType);
     	list.add(" \n");
     	list.add(description);
-    	list.add(Conversion.capitalize(unitDescription));
+    	list.add(unitDescription);
     	list.add(" \n");
     	
     	LineBreakPanel lineBreakPanel = new LineBreakPanel(list);

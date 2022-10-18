@@ -42,7 +42,6 @@ import org.mars_sim.msp.core.structure.building.function.FoodProduction;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.BuildingFunctionPanel;
 
 import com.alee.laf.button.WebButton;
@@ -344,7 +343,7 @@ public class BuildingPanelFoodProduction extends BuildingFunctionPanel {
 				FoodProductionProcessInfo info = (FoodProductionProcessInfo) value;
 				if (info != null) {
 					// Capitalize processName
-					String processName = Conversion.capitalize(info.getName());
+					String processName = info.getName();
 					if (processName.length() > processStringWidth)
 						processName = processName.substring(0, processStringWidth) + "...";
 					((JLabel) result).setText(processName);

@@ -157,8 +157,7 @@ public class SalvageProcessInfo implements Serializable, Comparable<SalvageProce
 		partSalvageList = null;
 	}
 
-	@Override
-	public String toString() {
+	public String getName() {
 		return "salvage " + itemName;
 	}
 }

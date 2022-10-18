@@ -36,7 +36,6 @@ import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
@@ -198,7 +197,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
                 }
                 else {
                     // If destination is coordinates, add destination text label.
-                    destinationTextCache = Conversion.capitalize(destinationPoint.getDescription());
+                    destinationTextCache = destinationPoint.getDescription();
                     destinationTextLabel.setText(destinationTextCache);
                     destinationLabelPanel.add(destinationTextLabel);
                 }
@@ -357,7 +356,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         	}
         	else {
         			// If destination is coordinates, update destination text label.
-        			destinationTextCache = Conversion.capitalize(destinationPoint.getDescription());
+        			destinationTextCache = destinationPoint.getDescription();
         			destinationTextLabel.setText(destinationTextCache);
         			addDestinationTextLabel();
                     destinationSettlementCache = null;

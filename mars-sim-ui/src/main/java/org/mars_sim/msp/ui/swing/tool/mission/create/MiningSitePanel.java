@@ -419,7 +419,7 @@ public class MiningSitePanel extends WizardPanel {
 
 		private MineralTableModel() {
 			mineralColors = mineralLayer.getMineralColors();
-			mineralNames = new ArrayList<String>(mineralColors.keySet());
+			mineralNames = new ArrayList<>(mineralColors.keySet());
 		}
 
 		public int getRowCount() {

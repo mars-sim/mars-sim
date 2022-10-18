@@ -32,7 +32,6 @@ import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.ModalInternalFrame;
-import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfo;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 
@@ -148,7 +147,7 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 
 		// Create name label
 		UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
-		String name = ONE_SPACE + Conversion.capitalize(unit.getShortenedName()) + ONE_SPACE;
+		String name = ONE_SPACE + unit.getShortenedName() + ONE_SPACE;
 
 		if (unit.getUnitType() == UnitType.PERSON) {
 			statusPanel.setPreferredSize(new Dimension(WIDTH / 8, 60));
@@ -295,15 +294,15 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 
 		if (p.getPhysicalCondition().isDead()) {
 			if (p.getAssociatedSettlement() != null)
-				townString = Conversion.capitalize(p.getAssociatedSettlement().getName());
+				townString = p.getAssociatedSettlement().getName();
 			else if (p.getBuriedSettlement() != null)
-				townString = Conversion.capitalize(p.getBuriedSettlement().getName());
+				townString = p.getBuriedSettlement().getName();
 			else if (p.getPhysicalCondition().getDeathDetails().getPlaceOfDeath() != null)
-				townString = Conversion.capitalize(p.getPhysicalCondition().getDeathDetails().getPlaceOfDeath());
+				townString = p.getPhysicalCondition().getDeathDetails().getPlaceOfDeath();
 		}
 
 		else if (p.getAssociatedSettlement() != null)
-			townString = Conversion.capitalize(p.getAssociatedSettlement().getName());
+			townString = p.getAssociatedSettlement().getName();
 
 		if (townString != null && !oldTownString.equals(townString)) {
 			oldJobString = townString;

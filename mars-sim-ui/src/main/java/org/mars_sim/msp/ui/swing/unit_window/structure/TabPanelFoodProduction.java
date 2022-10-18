@@ -49,7 +49,6 @@ import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.food.FoodProductionPanel;
 
@@ -481,7 +480,7 @@ public class TabPanelFoodProduction extends TabPanel {
 						processName = processName.substring(0, PROCESS_NAME_LENGTH)
 								+ Msg.getString("TabPanelFoodProduction.cutOff"); //$NON-NLS-1$
 
-					((JLabel) result).setText(Conversion.capitalize(processName));
+					((JLabel) result).setText(processName);
 					((JComponent) result).setToolTipText(FoodProductionPanel.getToolTipString(info, null));
 				}
 			}

@@ -257,7 +257,8 @@ public abstract class Vehicle extends Unit
 		if (unitManager == null)
 			unitManager = sim.getUnitManager();
 		
-		this.vehicleTypeString = vehicleTypeString.toLowerCase();
+		this.vehicleTypeString = vehicleTypeString;
+		
 		// Set description
 		setDescription(vehicleTypeString);
 		

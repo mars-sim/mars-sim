@@ -46,7 +46,6 @@ import org.mars_sim.msp.core.structure.building.function.Manufacture;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.unit_window.structure.ManufacturePanel;
 import org.mars_sim.msp.ui.swing.unit_window.structure.SalvagePanel;
 
@@ -470,7 +469,7 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 				ManufactureProcessInfo info = (ManufactureProcessInfo) value;
 				if (info != null) {
 					// Capitalized processName
-					String processName = Conversion.capitalize(info.getName());
+					String processName = info.getName();
 					if (processName.length() > processStringWidth)
 						processName = processName.substring(0, processStringWidth) + "...";
 					((JLabel) result).setText(processName);
@@ -480,7 +479,7 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 				SalvageProcessInfo info = (SalvageProcessInfo) value;
 				if (info != null) {
 					// Capitalized processName
-					String processName = Conversion.capitalize(info.toString());
+					String processName = info.getName();
 					if (processName.length() > processStringWidth)
 						processName = processName.substring(0, processStringWidth) + "...";
 					((JLabel) result).setText(processName);

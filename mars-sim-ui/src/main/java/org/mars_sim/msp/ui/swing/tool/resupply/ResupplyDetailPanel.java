@@ -45,7 +45,6 @@ import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
-import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
@@ -128,10 +127,6 @@ implements ClockListener, HistoricalEventListener {
 		destinationValueLabel = new JLabel("", SwingConstants.LEFT);
 		springPane.add(destinationValueLabel);
 
-		// Create state panel.
-		//JPanel statePane = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
-		//springPane.add(statePane);
-
 		// Create state title label.
 		JLabel stateTitleLabel = new JLabel("State : ", SwingConstants.RIGHT);
 		springPane.add(stateTitleLabel);
@@ -139,10 +134,6 @@ implements ClockListener, HistoricalEventListener {
 		// Create state value label.
 		stateValueLabel = new JLabel("", SwingConstants.LEFT);
 		springPane.add(stateValueLabel);
-
-		// Create launch date panel.
-		//JPanel launchDatePane = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
-		//springPane.add(launchDatePane);
 
 		// Create launch date title label.
 		JLabel launchDateTitleLabel = new JLabel("Launch Date : ", SwingConstants.RIGHT);
@@ -152,10 +143,6 @@ implements ClockListener, HistoricalEventListener {
 		launchDateValueLabel = new JLabel("", SwingConstants.LEFT);
 		springPane.add(launchDateValueLabel);
 
-		// Create arrival date panel.
-		//JPanel arrivalDatePane = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
-		//springPane.add(arrivalDatePane);
-
 		// Create arrival date title label.
 		JLabel arrivalDateTitleLabel = new JLabel("Arrival Date : ", SwingConstants.RIGHT);
 		springPane.add(arrivalDateTitleLabel);
@@ -164,10 +151,6 @@ implements ClockListener, HistoricalEventListener {
 		arrivalDateValueLabel = new JLabel("", SwingConstants.LEFT);
 		springPane.add(arrivalDateValueLabel);
 
-		// Create time arrival panel.
-		//JPanel timeArrivalPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
-		//springPane.add(timeArrivalPane);
-
 		// Create time arrival title label.
 		JLabel timeArrivalTitleLabel = new JLabel("Time Until Arrival : ", SwingConstants.RIGHT);
 		springPane.add(timeArrivalTitleLabel);
@@ -175,10 +158,6 @@ implements ClockListener, HistoricalEventListener {
 		// Create time arrival value label.
 		timeArrivalValueLabel = new JLabel("", SwingConstants.LEFT);
 		springPane.add(timeArrivalValueLabel);
-
-		// Create immigrants panel.
-		//JPanel immigrantsPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
-		//springPane.add(immigrantsPane);
 
 		// Create immigrants title label.
 		JLabel immigrantsTitleLabel = new JLabel("Immigrants : ", SwingConstants.RIGHT);
@@ -251,7 +230,7 @@ implements ClockListener, HistoricalEventListener {
 
 		templateLabel.setText(resupply.getTemplate().getName());
 		destinationValueLabel.setText(resupply.getSettlement().getName());
-		stateValueLabel.setText(Conversion.capitalize(resupply.getTransitState().getName()));
+		stateValueLabel.setText(resupply.getTransitState().getName());
 		launchDateValueLabel.setText(resupply.getLaunchDate().getDateString());
 		arrivalDateValueLabel.setText(resupply.getArrivalDate().getDateTimeStamp());
 		immigrantsValueLabel.setText(Integer.toString(resupply.getNewImmigrantNum()));
@@ -554,7 +533,7 @@ implements ClockListener, HistoricalEventListener {
 			while (j.hasNext()) {
 				AmountResource resourceType = j.next();
 				double amount = resources.get(resourceType);
-				String resourceName = Conversion.capitalize(resourceType.getName());
+				String resourceName = resourceType.getName();
 				Vector<Comparable<?>> rowData = new Vector<Comparable<?>>(2);
 				//rowData.add(resourceType);
 				rowData.add(resourceName);
@@ -618,7 +597,7 @@ implements ClockListener, HistoricalEventListener {
 				Part partType = j.next();
 				int num = parts.get(partType);
 				Vector<Comparable<?>> rowData = new Vector<Comparable<?>>(2);
-				String partName = Conversion.capitalize(partType.getName());
+				String partName = partType.getName();
 				rowData.add(partName);
 				//rowData.add(partType);
 				rowData.add(num);

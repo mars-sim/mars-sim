@@ -480,7 +480,7 @@ public class HelpGenerator {
 				description = "No Description is Available";
 			content = new StringBuffer()
 			.append("<h2>\"")
-			.append(Conversion.capitalize(vehicle))
+			.append(vehicle)
 			.append("\" Vehicle</h2>\n")
 			.append("</p></p>\n")
 
@@ -872,7 +872,7 @@ public class HelpGenerator {
 				description = "No Description is Available";
 			content = new StringBuffer()
 			.append("<h2>Process : \"")
-			.append(Conversion.capitalize(name))
+			.append(name)
 			.append("\"</h2>\n")
 			.append("1. Description :\n")
 			.append("<p><ul><li>")
