@@ -97,6 +97,11 @@
 	<equipment type="specimen box" number="40" />
     <equipment type="thermal bottle" number="8" />	
  	<equipment type="wheelbarrow" number="12" />
+
+    <!-- Life Support Resources -->
+	<resource type="food" amount="720" />
+	<resource type="water" amount="3600" />
+	<resource type="oxygen" amount="1440" />
  	
     <part-package name="package 1" number="1" />
 

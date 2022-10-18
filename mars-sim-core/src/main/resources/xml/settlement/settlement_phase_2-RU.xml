@@ -190,10 +190,10 @@
  	<equipment type="wheelbarrow" number="12" />
  	
 	<!-- Life Support Resources -->
-	<resource type="food" amount="4000.0" />
-	<resource type="water" amount="8000.0" />
-	<resource type="oxygen" amount="4000.0" />
-	
+	<resource type="food" amount="1440" />
+	<resource type="water" amount="7200" />
+	<resource type="oxygen" amount="2880" />
+ 
     <part-package name="package 2" number="1" />
     
     <resupply>
