@@ -14,7 +14,6 @@ import javax.swing.table.AbstractTableModel;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventCategory;
 import org.mars_sim.msp.core.events.HistoricalEventListener;
@@ -32,9 +31,7 @@ import org.mars_sim.msp.ui.swing.notification.NotificationMenu;
  * onto the existing Event Manager.
  */
 @SuppressWarnings("serial")
-public class EventTableModel extends AbstractTableModel
-		implements MonitorModel, HistoricalEventListener{
-
+public class EventTableModel extends AbstractTableModel implements MonitorModel, HistoricalEventListener{
 
 	private static final int MSG_CACHE = 5;
 

@@ -34,7 +34,7 @@ import org.mars_sim.msp.core.vehicle.Rover;
  * type.
  */
 public abstract class CollectResourcesMission extends EVAMission
-	implements  SiteMission {
+	implements SiteMission {
 
 
 	/** default serial id. */
@@ -85,7 +85,7 @@ public abstract class CollectResourcesMission extends EVAMission
 	 *                               mission.
 	 * @param numSites               The number of collection sites.
 	 * @param needsReview
-	 * @param minPeople              The mimimum number of people for the mission.
+	 * @param minPeople              The minimum number of people for the mission.
 	 * @throws MissionException if problem constructing mission.
 	 */
 	protected CollectResourcesMission(MissionType missionType, Person startingPerson, int resourceID,
@@ -141,9 +141,7 @@ public abstract class CollectResourcesMission extends EVAMission
 				// Find some sites
 				List<Coordinates> unorderedSites = null;
 				while (unorderedSites == null) {
-					unorderedSites = determineCollectionSites(startingLocation,
-							range,
-							numSites);
+					unorderedSites = determineCollectionSites(startingLocation, range, numSites);
 
 					if (!isValidScore(totalSiteScore)) {
 						totalSiteScore = 0;
@@ -163,7 +161,7 @@ public abstract class CollectResourcesMission extends EVAMission
 				addNavpoints(orderSites, (i -> PROPSPECTING_SITE + (i+1)));
 
 				double containerCap = ContainerUtil.getContainerCapacity(containerID);
-				this.siteResourceGoal = 2 *containerCap * containerNum / orderSites.size();
+				this.siteResourceGoal = 2 * containerCap * containerNum / orderSites.size();
 				logger.info(getVehicle(), "Target amount of resource per site: "
 						+ (int)siteResourceGoal + " kg of " + ResourceUtil.findAmountResourceName(resourceID)
 						+ ".");

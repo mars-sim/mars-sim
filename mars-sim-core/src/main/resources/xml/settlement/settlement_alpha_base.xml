@@ -224,15 +224,10 @@
         </connection-list>
     </building>
 
-    <building type="Solar Thermal Array" xloc="40.0"
-        yloc="-60.0" facing="0.0" />
-    <building type="Solar Thermal Array" xloc="40.0"
-        yloc="-80.0" facing="0.0" />
-
     <building type="Small Areothermal Well" xloc="60.0"
         yloc="-60.0" facing="0.0" />
     <building type="Small Areothermal Well" xloc="60.0"
-        yloc="-80.0" facing="0.0" />
+        yloc="-70.0" facing="0.0" />
 
     <building type="MD4 Nuclear Reactor" xloc="100.0"
         yloc="-100" facing="0.0" />
@@ -257,32 +252,38 @@
     <building type="ERV-B" xloc="200.0" yloc="-15.0"
         facing="0.0" />
 
-    <building type="Atmospheric Processor" xloc="20"
-        yloc="-50.0" facing="90.0" />
+
     <building type="Atmospheric Processor" xloc="20"
         yloc="-60.0" facing="90.0" />
     <building type="Atmospheric Processor" xloc="20"
         yloc="-70.0" facing="90.0" />
     <building type="Atmospheric Processor" xloc="20"
         yloc="-80.0" facing="90.0" />
-    <building type="Atmospheric Processor" xloc="20"
-        yloc="-90.0" facing="90.0" />
-    <building type="Atmospheric Processor" xloc="20"
-        yloc="-100.0" facing="90.0" />
-                                        
+        
+        
+    <building type="Large Sabatier Processor" xloc="0.0"
+        yloc="-60.0" facing="90.0" />                                        
     <building type="Large Sabatier Processor" xloc="0.0"
         yloc="-70.0" facing="90.0" />
     <building type="Large Sabatier Processor" xloc="0.0"
         yloc="-80.0" facing="90.0" />
-    <building type="Large Sabatier Processor" xloc="0.0"
-        yloc="-90.0" facing="90.0" />
-    <building type="Large Sabatier Processor" xloc="0.0"
-        yloc="-100.0" facing="90.0" />
-    <building type="Large Sabatier Processor" xloc="0.0"
-        yloc="-110.0" facing="90.0" />
-    <building type="Large Sabatier Processor" xloc="0.0"
-        yloc="-120.0" facing="90.0" />
 
+
+    <building type="Medium Battery Array" xloc="40.0"
+        yloc="-60.0" facing="0.0" /> 
+        
+    <building type="Solar Photovoltaic Array" xloc="40.0"
+        yloc="-70.0" facing="0.0" />
+    <building type="Solar Photovoltaic Array" xloc="40.0"
+        yloc="-80.0" facing="0.0" />
+        
+    <building type="Solar Thermal Array" xloc="40.0"
+        yloc="-90.0" facing="0.0" />
+    <building type="Solar Thermal Array" xloc="40.0"
+        yloc="-100.0" facing="0.0" />
+        
+       
+        
     <building type="Regolith Storage Bin" xloc="35.0" yloc="0.0"
         facing="90.0" />
     <building type="Sand Storage Bin" xloc="35.0" yloc="5.0"

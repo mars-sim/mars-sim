@@ -25,16 +25,16 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<libgdx.version>1.10.0</libgdx.version>
 		<lwjgl.version>3.2.3</lwjgl.version>
-		<kotlin.version>1.7.10</kotlin.version>
+		<kotlin.version>1.7.20</kotlin.version>
 		<!--  TextIO needs 1.8 -->
-		<slf4j.version>2.0.2</slf4j.version>
+		<slf4j.version>2.0.3</slf4j.version>
 		<commons-cli.version>1.5.0</commons-cli.version>
 		<commons-io.version>2.11.0</commons-io.version>
 		<commons-lang3.version>3.12.0</commons-lang3.version>
 		<commons-math3.version>3.6.1</commons-math3.version>	
   		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
   		<sonar.java.source>11</sonar.java.source>
-  		<native.maven.plugin.version>0.9.14</native.maven.plugin.version>
+  		<native.maven.plugin.version>0.9.15</native.maven.plugin.version>
 	</properties>
 	<dependencies>
 		<!-- Needed by graalvm -->
@@ -201,13 +201,13 @@
 				<!-- https://mvnrepository.com/artifact/com.github.spotbugs/spotbugs-maven-plugin -->
 				  <groupId>com.github.spotbugs</groupId>
 				  <artifactId>spotbugs-maven-plugin</artifactId>
-				  <version>4.7.2.0</version>
+				  <version>4.7.2.1</version>
 				  <dependencies>
 				    <!-- https://github.com/spotbugs/spotbugs -->
 				    <dependency>
 				      <groupId>com.github.spotbugs</groupId>
 				      <artifactId>spotbugs</artifactId>
-				      <version>4.7.2</version>
+				      <version>4.7.3</version>
 				    </dependency>
 				  </dependencies>
 				</plugin>
