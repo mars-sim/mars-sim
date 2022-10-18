@@ -23,7 +23,6 @@ import javax.swing.table.AbstractTableModel;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 
 /**
@@ -122,15 +121,15 @@ public abstract class AbstractStudyListPanel extends JPanel {
 				if (columnIndex == 0) 
 					result = study.getID() + "";
 				else if (columnIndex == 1) 
-					result = Conversion.capitalize(study.getScience().getName());
+					result = study.getScience().getName();
 				else if (columnIndex == 2) 
 					result = study.getDifficultyLevel() + "";
 				else if (columnIndex == 3) 
-					result = Conversion.capitalize(study.getPhase());
+					result = study.getPhase();
 				else if (columnIndex == 4)
-					result = Conversion.capitalize(researcherN);
+					result = researcherN;
 				else if (columnIndex == 5)
-					result = Conversion.capitalize(settlementN);
+					result = settlementN;
 			}
 			return result;
 		}

@@ -46,7 +46,6 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.tool.map.Map;
@@ -566,7 +565,7 @@ implements ListSelectionListener, MissionListener {
             	NavPoint navpoint = navpoints.get(row);
             	if (column == 0) return Msg.getString("NavpointPanel.column.navpoint") + " " + (row + 1); //$NON-NLS-1$
             	else if (column == 1) return navpoint.getLocation().getFormattedString();
-            	else if (column == 2) return Conversion.capitalize(navpoint.getDescription());
+            	else if (column == 2) return navpoint.getDescription();
             	else return Msg.getString("unknown"); //$NON-NLS-1$
             }   
             else return Msg.getString("unknown"); //$NON-NLS-1$

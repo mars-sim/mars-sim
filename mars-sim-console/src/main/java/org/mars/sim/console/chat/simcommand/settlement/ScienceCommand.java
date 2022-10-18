@@ -17,7 +17,6 @@ import org.mars.sim.console.chat.simcommand.StructuredResponse;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.tool.Conversion;
 
 public class ScienceCommand extends AbstractSettlementCommand {
 	public static final ChatCommand SCIENCE = new ScienceCommand();
@@ -68,7 +67,7 @@ public class ScienceCommand extends AbstractSettlementCommand {
 		int rank = 1;
 		for (ScienceScore item : list) {
 			ScienceType t = item.type;
-			String n = Conversion.capitalize(t.getName().toLowerCase());
+			String n = t.getName();
 
 			// 0 = succeed 	
 			// 1 = failed

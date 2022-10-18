@@ -36,13 +36,11 @@ import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
-import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.tool.science.ScienceWindow;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
-//import com.alee.managers.language.data.TooltipWay;
 import com.alee.managers.tooltip.TooltipManager;
 import com.alee.managers.tooltip.TooltipWay;
 
@@ -313,7 +311,7 @@ public class TabPanelScienceStudy extends TabPanel {
 				if (columnIndex == 0) 
 					result = study.getID() + "";
 				else if (columnIndex == 1)
-					result = Conversion.capitalize(study.toString());
+					result = study.getName();
 				else if (columnIndex == 2) {
 					if (person.equals(study.getPrimaryResearcher()))
 						result = Msg.getString("TabPanelScience.primary"); //$NON-NLS-1$

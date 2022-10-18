@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-import org.apache.commons.lang3.StringUtils;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEvent;
@@ -62,7 +61,7 @@ public class CropTableModel extends UnitTableModel<Building> {
 
 		for (CropCategory cat : CropCategory.values()) {
 			int idx = FIRST_CROP_CAT + cat.ordinal();
-			columnNames[idx] = StringUtils.capitalize(cat.getName());
+			columnNames[idx] = cat.getName();
 			columnTypes[idx] = Integer.class;
 		}
 	};

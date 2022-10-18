@@ -27,7 +27,6 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.vehicle.VehicleConfig;
-import org.mars_sim.msp.ui.swing.tool.Conversion;
 
 /** TODO externalize strings */
 @SuppressWarnings("serial")
@@ -104,7 +103,7 @@ extends AbstractTableModel {
 		while (j.hasNext()) {
 			AmountResource resource = j.next();
 			double amount = resupply.getNewResources().get(resource);
-			SupplyItem supplyItem = new SupplyItem(RESOURCE, Conversion.capitalize(resource.getName()), amount);
+			SupplyItem supplyItem = new SupplyItem(RESOURCE, resource.getName(), amount);
 			supplyList.add(supplyItem);
 		}
 
@@ -116,7 +115,7 @@ extends AbstractTableModel {
 		while (k.hasNext()) {
 			Part part = k.next();
 			int num = resupply.getNewParts().get(part);
-			SupplyItem supplyItem = new SupplyItem(PART, Conversion.capitalize(part.getName()), num);
+			SupplyItem supplyItem = new SupplyItem(PART, part.getName(), num);
 			supplyList.add(supplyItem);
 		}
 	}
@@ -151,7 +150,7 @@ extends AbstractTableModel {
 		while (j.hasNext()) {
 			String supplyType = j.next();
 			int num = supplyMap.get(supplyType);
-			SupplyItem supplyItem = new SupplyItem(category, Conversion.capitalize(supplyType), num);
+			SupplyItem supplyItem = new SupplyItem(category, supplyType, num);
 			supplyList.add(supplyItem);
 		}
 	}
@@ -189,7 +188,7 @@ extends AbstractTableModel {
 		if (rowIndex < supplyList.size()) {
 			SupplyItem item = supplyList.get(rowIndex);
 			if (colIndex == 0) result = item.category;
-			else if (colIndex == 1) result = Conversion.capitalize(item.type);
+			else if (colIndex == 1) result = item.type;
 			else if (colIndex == 2) result = item.number.intValue();
 		}
 		return result;
@@ -209,7 +208,7 @@ extends AbstractTableModel {
 				item.category = (String) value;
 			}
 			else if (col == 1) {
-				item.type = Conversion.capitalize((String) value);
+				item.type = (String) value;
 			}
 			else if (col == 2) {
 				try {

@@ -52,7 +52,6 @@ import org.mars_sim.msp.core.tool.AlphanumComparator;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
-import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 
@@ -366,16 +365,14 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         public Object getValueAt(int row, int column) {
             if (column == 0) {
     			// Capitalize Resource Names
-            	return Conversion.capitalize(keys.get(row).toString() + "  ");
+            	return keys.get(row).getName();
             }
             else if (column == 1) {
             	return formatter2.format(resources.get(keys.get(row)));
-//            	return Math.round(resources.get(keys.get(row)).doubleValue()*10.0)/10.0;
             }
             else if (column == 2) {
             	Number number = capacity.get(keys.get(row));
             	return (number == null) ? 0 + "": formatter0.format(number);
-//            	return capacity.get(keys.get(row)).intValue();
             }
             return 0 + "";
         }
@@ -502,7 +499,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         public Object getValueAt(int row, int column) {
             if (column == 0) {
     			// Capitalize Resource Names
-            	return Conversion.capitalize(keys.get(row).toString() + "  ");
+            	return keys.get(row).getName();
             }
             else if (column == 1) {
 				return formatter0.format(resources.get(keys.get(row)));
@@ -641,7 +638,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 					if (name != null && mass.get(name) != null)
 						return Math.round(mass.get(name)*100.0)/100.0;
 				}
-				else if (column == 3) return Conversion.capitalize(contentOwner.get(equipmentList.get(row).getName()) + WHITESPACE);
+				else if (column == 3) return contentOwner.get(equipmentList.get(row).getName());
 			}
 			return "unknown";
 		}

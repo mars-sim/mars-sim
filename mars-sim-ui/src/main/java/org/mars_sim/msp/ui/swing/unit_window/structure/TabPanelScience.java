@@ -32,7 +32,6 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
-import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.tool.science.ScienceWindow;
@@ -328,18 +327,18 @@ extends TabPanel {
 				if (columnIndex == 0) 
 					result = study.getID() + "";
 				else if (columnIndex == 1) 
-					result = Conversion.capitalize(study.getScience().getName());
+					result = study.getScience().getName();
 				else if (columnIndex == 2) 
 					result = study.getDifficultyLevel() + "";
 				else if (columnIndex == 3) {
-					if (study.isCompleted()) result = Conversion.capitalize(study.getCompletionState());
-					else result = Conversion.capitalize(study.getPhase());
+					if (study.isCompleted()) result = study.getCompletionState();
+					else result = study.getPhase();
 				}
 				else {
 					String researcherN = "";	
 					if (study.getPrimaryResearcher() != null) {
 						researcherN = study.getPrimaryResearcher().getName();
-						result = Conversion.capitalize(researcherN);
+						result = researcherN;
 					}
 				}
 

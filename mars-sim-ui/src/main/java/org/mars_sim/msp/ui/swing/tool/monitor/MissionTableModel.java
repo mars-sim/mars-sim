@@ -8,7 +8,6 @@ package org.mars_sim.msp.ui.swing.tool.monitor;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.SwingUtilities;
@@ -33,7 +32,6 @@ import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Vehicle;
-import org.mars_sim.msp.ui.swing.tool.Conversion;
 
 /**
  * This class model how mission data is organized and displayed
@@ -441,7 +439,7 @@ public class MissionTableModel extends AbstractTableModel
 						result = percent + "% Reviewed - Score: " + score + " [Min: " + min + "]";
 					}
 					else
-						result = Conversion.capitalize(mission.getPhaseDescription());
+						result = mission.getPhaseDescription();
 
 				}
 					break;

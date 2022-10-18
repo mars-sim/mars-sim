@@ -44,7 +44,6 @@ import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
-import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.VerticalLabelUI;
@@ -380,7 +379,7 @@ implements MouseListener {
     		List<Crop> crops = farm.getCrops();
             Crop crop = crops.get(row);
             CropSpec ct = crop.getCropSpec();
-        	cropName = Conversion.capitalize(crop.getCropName());
+        	cropName = crop.getCropName();
             cat = ct.getCropCategory().getName();
         	mass0 = ct.getEdibleBiomass();
         	water = 100 * ct.getEdibleWaterContent();
@@ -414,7 +413,7 @@ implements MouseListener {
         }
 
         if (col == -1) {
-        	cropName = Conversion.capitalize(n);
+        	cropName = n;
         	CropSpec cType = cropConfig.getCropTypeByName(n);
             cat = cType.getCropCategory().getName();
         	mass0 = cType.getEdibleBiomass();
@@ -700,7 +699,7 @@ implements MouseListener {
 				else if (condition > .2 ) return redDot;
 				else return redHalfDot;
 			}
-			else if (column == 1) return Conversion.capitalize(crop.getCropName());
+			else if (column == 1) return crop.getCropName();
 			else if (column == 2) return currentPhase.getName();
 			else if (column == 3) {
 				double growth = crop.getPercentGrowth();
@@ -708,7 +707,7 @@ implements MouseListener {
 					growth = 100;
 				return String.valueOf(growth) + "%";
 			}
-			else if (column == 4) return Conversion.capitalize(category);
+			else if (column == 4) return category;
 			else if (column == 5) return DECIMAL_PLACES1.format(crop.getCurrentWorkRequired());
 	
 			return null;
@@ -763,7 +762,7 @@ implements MouseListener {
 			Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 
 			if (value == null) {
-				setText(Conversion.capitalize(prompt));
+				setText(prompt);
 				return this;
 			}
 
