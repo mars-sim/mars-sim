@@ -57,10 +57,10 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 	/** default logger. */
 	private static final Logger logger = Logger.getLogger(LocationTabPanel.class.getName());
 
-	private static final String MAP_ICON = Msg.getString("icon.map"); //$NON-NLS-1$
+	private static final String LOCATE_ICON = Msg.getString("icon.locate"); //$NON-NLS-1$
 
-	private static final String LOCATOR_ORANGE = "locator48_orange";
-	private static final String LOCATOR_BLUE = "locator48_blue";
+	private static final String FIND_ORANGE = "locator48_orange";
+//	private static final String FIND_BLUE = "locator48_blue";
 
 	private static final String N = "N";
 	private static final String S = "S";
@@ -94,7 +94,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 	 */
 	public LocationTabPanel(Unit unit, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
-		super(null, ImageLoader.getNewIcon(MAP_ICON), Msg.getString("LocationTabPanel.title"), unit, desktop);
+		super(null, ImageLoader.getNewIcon(LOCATE_ICON), Msg.getString("LocationTabPanel.title"), unit, desktop);
 
 		locationStringCache = unit.getLocationTag().getExtendedLocation();
 		containerCache = unit.getContainerUnit();
@@ -184,7 +184,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 //        locationPanel.add(lcdElev, BorderLayout.NORTH);
 
 		// Create center map button
-		locatorButton = new WebButton(ImageLoader.getIcon(LOCATOR_ORANGE));
+		locatorButton = new WebButton(ImageLoader.getIcon(FIND_ORANGE));
 
 		locatorButton.setBorder(new EmptyBorder(1, 1, 1, 1));
 		locatorButton.addActionListener(this);
@@ -253,7 +253,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 	public void checkTheme(boolean firstRun) {
 		lcdText.setLcdColor(LcdColor.DARKBLUE_LCD);
 		gauge.setFrameDesign(FrameDesign.STEEL);
-		locatorButton.setIcon(ImageLoader.getIcon(LOCATOR_BLUE));
+//		locatorButton.setIcon(ImageLoader.getIcon(FIND_ORANGE));
 	}
 
 	private void setGauge(DisplayCircular gauge, double elevationCache) {

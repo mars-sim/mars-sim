@@ -93,6 +93,7 @@ public class TabPanelScienceStudy extends TabPanel {
 
 		// Create the studies label.
 		JLabel studiesLabel = new JLabel(Msg.getString("TabPanelScience.scientificStudies"), JLabel.CENTER); //$NON-NLS-1$
+		studiesLabel.setFont(ITALIC_FONT);
 		studiesPane.add(studiesLabel, BorderLayout.NORTH);
 
 		// Create the study scroll panel.
@@ -125,7 +126,7 @@ public class TabPanelScienceStudy extends TabPanel {
 		studiesPane.add(buttonPane, BorderLayout.SOUTH);
 
 		// Create the science tool button.
-		scienceToolButton = new JButton(ImageLoader.getIcon(Msg.getString("img.science"))); //$NON-NLS-1$
+		scienceToolButton = new JButton(ImageLoader.getIcon(Msg.getString("icon.science"))); //$NON-NLS-1$
 		scienceToolButton.setEnabled(false);
 		scienceToolButton.setMargin(new Insets(1, 1, 1, 1));
 		TooltipManager.setTooltip(scienceToolButton, Msg.getString("TabPanelScience.tooltip.science"), TooltipWay.down);
@@ -153,6 +154,7 @@ public class TabPanelScienceStudy extends TabPanel {
 		String totalAchievementString = DECIMAL_PLACES1.format(person.getTotalScientificAchievement());
 		totalAchievementLabel = new JLabel(
 				Msg.getString("TabPanelScience.totalAchievementCredit", totalAchievementString), JLabel.CENTER); //$NON-NLS-1$
+		totalAchievementLabel.setFont(ITALIC_FONT);
 		achievementLabelPane.add(totalAchievementLabel);
 
 		// Create the achievement scroll panel.

@@ -9,6 +9,7 @@ package org.mars_sim.msp.ui.swing.tool.science;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -37,6 +38,9 @@ import com.alee.managers.style.StyleId;
 @SuppressWarnings("serial")
 public class StudyDetailPanel
 extends JPanel {
+	
+	// Font used in tab panel title
+	protected static final Font TITLE_FONT = new Font("Serif", Font.BOLD, 16);
 
 	// Data members
 	private JLabel scienceFieldLabel;
@@ -74,6 +78,7 @@ extends JPanel {
 		setPreferredSize(new Dimension(425, -1));
 
 		JLabel titleLabel = new JLabel(Msg.getString("StudyDetailPanel.details"), JLabel.CENTER); //$NON-NLS-1$
+		titleLabel.setFont(TITLE_FONT);
 		add(titleLabel, BorderLayout.NORTH);
 
 		mainPane = Box.createVerticalBox();

@@ -234,8 +234,8 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 
 		// Prepare SpringLayout
 		SpringUtilities.makeCompactGrid(topSpringPanel, 2, 2, // rows, cols
-				80, 5, // initX, initY
-				5, 1); // xPad, yPad
+				150, 3, // initX, initY
+				3, 1); // xPad, yPad
 
 		WebPanel ratingPanel = new WebPanel(new BorderLayout());
 		northPanel.add(ratingPanel, BorderLayout.CENTER);

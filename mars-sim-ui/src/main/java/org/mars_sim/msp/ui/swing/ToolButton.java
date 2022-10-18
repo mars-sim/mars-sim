@@ -1,17 +1,17 @@
-/**
+/*
  * Mars Simulation Project
  * ToolButton.java
- * @version 3.2.0 2021-06-20
+ * @date 2022-10-18
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.swing;
 
+import java.awt.Color;
+
 import javax.swing.JButton;
 import javax.swing.JToolTip;
 import javax.swing.border.LineBorder;
-
-import java.awt.*;
 
 /**
  * The ToolButton class is a UI button for a tool window.
@@ -35,10 +35,11 @@ extends JButton {
 	 * @param imageName the name of the tool button image
 	 */
 	public ToolButton(String toolName, String imageName) {
-		// Use JButton constructor
 		super(ImageLoader.getIcon(imageName));
+		// Use JButton constructor
 		setOpaque(false);
-		setBackground(new Color(0,0,0,128));
+		setBackground(new Color(0, 0, 0, 128));
+//		setPreferredSize(new Dimension(30, 30));
 		setContentAreaFilled(false);
 		setBorderPainted(false);
 		// Initialize toolName

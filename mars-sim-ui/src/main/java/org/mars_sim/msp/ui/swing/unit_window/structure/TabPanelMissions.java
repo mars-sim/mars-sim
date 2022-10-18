@@ -139,7 +139,7 @@ extends TabPanel {
 		buttonPanel.add(innerButtonPanel, BorderLayout.NORTH);
 
 		// Create mission button.
-		missionButton = new JButton(ImageLoader.getIcon(Msg.getString("img.mission"))); //$NON-NLS-1$
+		missionButton = new JButton(ImageLoader.getIcon(Msg.getString("icon.mission"))); //$NON-NLS-1$
 		missionButton.setMargin(new Insets(1, 1, 1, 1));
 		missionButton.setToolTipText(Msg.getString("TabPanelMissions.tooltip.mission")); //$NON-NLS-1$
 		missionButton.setEnabled(false);

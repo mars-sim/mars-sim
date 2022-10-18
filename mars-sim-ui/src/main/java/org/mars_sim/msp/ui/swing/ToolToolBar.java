@@ -96,7 +96,7 @@ public class ToolToolBar extends WebToolBar implements ActionListener {
 		setStyleId(StyleId.toolbarAttachedNorth);
 
 		// Initialize data members
-		toolButtons = new Vector<ToolButton>();
+		toolButtons = new Vector<>();
 		this.parentMainWindow = parentMainWindow;
 
 		// Set name
@@ -104,11 +104,11 @@ public class ToolToolBar extends WebToolBar implements ActionListener {
 		// Fix tool bar
 		setFloatable(false);
 
-		setPreferredSize(new Dimension(0, 32));
+		setPreferredSize(new Dimension(0, 35));
 
 		setOpaque(false);
 
-		setBackground(new Color(0,0,0,128));
+		setBackground(new Color(0, 0, 0, 128));
 
 		// Prepare tool buttons
 		prepareToolButtons();
@@ -151,13 +151,13 @@ public class ToolToolBar extends WebToolBar implements ActionListener {
 		addSeparator(new Dimension(20, 20));
 
 		// Add Mars navigator button
-		ToolButton navButton = new ToolButton(NavigatorWindow.NAME, Msg.getString("img.planet")); //$NON-NLS-1$
+		ToolButton navButton = new ToolButton(NavigatorWindow.NAME, Msg.getString("icon.mars")); //$NON-NLS-1$
 		navButton.addActionListener(this);
 		add(navButton);
 		toolButtons.addElement(navButton);
 
 		// Add search tool button
-		ToolButton searchButton = new ToolButton(SearchWindow.NAME, Msg.getString("img.find")); //$NON-NLS-1$
+		ToolButton searchButton = new ToolButton(SearchWindow.NAME, Msg.getString("icon.find")); //$NON-NLS-1$
 		searchButton.addActionListener(this);
 		add(searchButton);
 		toolButtons.addElement(searchButton);
@@ -175,7 +175,7 @@ public class ToolToolBar extends WebToolBar implements ActionListener {
 		toolButtons.addElement(monitorButton);
 
 		// Add mission tool button
-		ToolButton missionButton = new ToolButton(MissionWindow.NAME, Msg.getString("img.mission")); //$NON-NLS-1$
+		ToolButton missionButton = new ToolButton(MissionWindow.NAME, Msg.getString("icon.mission")); //$NON-NLS-1$
 		missionButton.addActionListener(this);
 		add(missionButton);
 		toolButtons.addElement(missionButton);
@@ -187,7 +187,7 @@ public class ToolToolBar extends WebToolBar implements ActionListener {
 		toolButtons.addElement(settlementButton);
 
 		// Add science tool button
-		ToolButton scienceButton = new ToolButton(ScienceWindow.NAME, Msg.getString("img.science")); //$NON-NLS-1$
+		ToolButton scienceButton = new ToolButton(ScienceWindow.NAME, Msg.getString("icon.science")); //$NON-NLS-1$
 		scienceButton.addActionListener(this);
 		add(scienceButton);
 		toolButtons.addElement(scienceButton);

@@ -57,7 +57,7 @@ extends ToolWindow {
 		setContentPane(mainPane);
 
 		// Create lists panel.
-		WebPanel listsPane = new WebPanel(new GridLayout(2, 1));
+		WebPanel listsPane = new WebPanel(new GridLayout(2, 1, 0, 0));
 		mainPane.add(listsPane, BorderLayout.WEST);
 
 		ScientificStudyManager mgr = Simulation.instance().getScientificStudyManager();

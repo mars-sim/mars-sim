@@ -415,7 +415,7 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 		missionCenterPanel.add(missionButtonPanel, BorderLayout.NORTH);
 
 		// Prepare mission tool button.
-		missionButton = new WebButton(ImageLoader.getIcon(Msg.getString("img.mission"))); //$NON-NLS-1$
+		missionButton = new WebButton(ImageLoader.getIcon(Msg.getString("icon.mission"))); //$NON-NLS-1$
 		missionButton.setSize(20, 20);
 		missionButton.setMargin(new Insets(1, 1, 1, 1));
 		TooltipManager.setTooltip(missionButton, Msg.getString("TabPanelActivity.tooltip.mission"), TooltipWay.down);

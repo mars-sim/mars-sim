@@ -8,6 +8,7 @@ package org.mars_sim.msp.ui.swing.tool.science;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Rectangle;
 import java.util.List;
 
@@ -33,6 +34,9 @@ public abstract class AbstractStudyListPanel extends JPanel {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
+	
+	// Font used in tab panel title
+	protected static final Font TITLE_FONT = new Font("Serif", Font.BOLD, 16);
 	
 	private ScienceWindow scienceWindow;
 	private StudyTableModel studyTableModel;
@@ -186,6 +190,7 @@ public abstract class AbstractStudyListPanel extends JPanel {
 
 		// Create title label.
 		JLabel titleLabel = new JLabel(Msg.getString(msgTag + ".title"), JLabel.CENTER); //$NON-NLS-1$
+		titleLabel.setFont(TITLE_FONT);
 		add(titleLabel, BorderLayout.NORTH);
 
 		// Create list scroll pane.

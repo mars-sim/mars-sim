@@ -40,6 +40,7 @@ public abstract class TabPanel extends JScrollPane {
 
 	// Font used in tab panel title
 	protected static final Font TITLE_FONT = new Font("Serif", Font.BOLD, 16);
+	protected static final Font ITALIC_FONT = new Font(Font.DIALOG, Font.ITALIC, 12);
 	protected static final Font SUBTITLE_FONT = new Font("Serif", Font.BOLD, 14);
 	protected static final Font SUBTITLE_FONT_1 = new Font(Font.DIALOG, Font.BOLD, 14);
 

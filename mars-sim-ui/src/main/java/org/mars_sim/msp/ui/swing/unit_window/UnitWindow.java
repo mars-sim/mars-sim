@@ -53,8 +53,8 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 
 	// private BufferedImage image;
 	public static final String USER = Msg.getString("icon.user");
-	private static final String TOWN = Msg.getString("icon.town");
-	private static final String JOB = Msg.getString("icon.job");
+	private static final String TOWN = Msg.getString("icon.colony");
+	private static final String JOB = Msg.getString("icon.career");
 	private static final String ROLE = Msg.getString("icon.role");
 	private static final String SHIFT = Msg.getString("icon.shift");
 

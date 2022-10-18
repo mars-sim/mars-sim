@@ -61,7 +61,7 @@ public class ImageLoader {
 	public static ImageIcon getIcon(String imagename) {
 		return getIcon(imagename, PNG, IMAGE_DIR);
 	}
-
+	
 	/**
 	 * Loads the image icon with the specified name and a "png" image extension. This
 	 * operation may either create a new Image Icon of returned a previously created
@@ -80,25 +80,7 @@ public class ImageLoader {
 			return null;
 		}
 		
-		ImageIcon found = null;
-		String ext = PNG;
-		String fullImageName = imagename.endsWith(ext) ? imagename : imagename + "." + ext;
-		found = iconCache.get(fullImageName);
-		if (found == null) {
-			String fileName = fullImageName.startsWith(SLASH) ? fullImageName : SLASH + fullImageName;
-			// Don't use the system classloader in a webstart env
-			URL resource = ImageLoader.class.getResource(fileName);
-			// e.g. ClassLoader.getSystemResource(fileName)
-			if (resource == null) {
-    			logger.severe("'" + fileName + "' cannot be found");
-    		}
-
-			found = new ImageIcon(resource);
-
-			iconCache.put(fullImageName, found);
-		}
-
-		return found;
+		return getIcon(imagename, PNG, SLASH);
 	}
 
 	/**

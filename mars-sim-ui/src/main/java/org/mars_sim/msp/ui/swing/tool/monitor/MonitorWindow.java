@@ -91,7 +91,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	public static final String BUILDING_ICON = Msg.getString("icon.building"); //$NON-NLS-1$
 
 	public static final String TRASH_ICON = Msg.getString("icon.trash"); //$NON-NLS-1$
-	public static final String CENTERMAP_ICON = Msg.getString("icon.centermap"); //$NON-NLS-1$
+	public static final String LOCATE_ICON = Msg.getString("icon.locate"); //$NON-NLS-1$
 	public static final String FIND_ICON = Msg.getString("icon.find"); //$NON-NLS-1$
 	public static final String COLUMN_ICON = Msg.getString("icon.column"); //$NON-NLS-1$
 	public static final String FILTER_ICON = Msg.getString("icon.filter"); //$NON-NLS-1$
@@ -271,7 +271,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		statusPanel.add(buttonRemoveTab);
 
 		// Create buttons based on selection
-		buttonMap = new WebButton(ImageLoader.getNewIcon(CENTERMAP_ICON)); // $NON-NLS-1$
+		buttonMap = new WebButton(ImageLoader.getNewIcon(LOCATE_ICON)); // $NON-NLS-1$
 		TooltipManager.setTooltip(buttonMap, Msg.getString("MonitorWindow.tooltip.centerMap"), TooltipWay.up); //$NON-NLS-1$
 		buttonMap.addActionListener(this);
 		statusPanel.add(buttonMap);

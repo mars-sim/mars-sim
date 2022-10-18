@@ -170,14 +170,14 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		add(toolsMenu);
 
 		// Create Mars navigator menu item
-		ImageIcon marsnavigatoricon = new ImageIcon(getClass().getResource(Msg.getString("img.planet"))); //$NON-NLS-1$
+		ImageIcon marsnavigatoricon = new ImageIcon(getClass().getResource(Msg.getString("icon.mars"))); //$NON-NLS-1$
 		marsNavigatorItem = new JCheckBoxMenuItem(NavigatorWindow.NAME, marsnavigatoricon);
 		marsNavigatorItem.addActionListener(this);
 		marsNavigatorItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0, false));
 		toolsMenu.add(marsNavigatorItem);
 
 		// Create search tool menu item
-		ImageIcon searchicon = new ImageIcon(getClass().getResource(Msg.getString("img.find"))); //$NON-NLS-1$
+		ImageIcon searchicon = new ImageIcon(getClass().getResource(Msg.getString("icon.find"))); //$NON-NLS-1$
 		searchToolItem = new JCheckBoxMenuItem(SearchWindow.NAME, searchicon);
 		searchToolItem.addActionListener(this);
 		searchToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F2, 0, false));
@@ -198,7 +198,7 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		toolsMenu.add(monitorToolItem);
 
 		// Create mission tool menu item
-		ImageIcon missionicon = new ImageIcon(getClass().getResource(Msg.getString("img.mission"))); //$NON-NLS-1$
+		ImageIcon missionicon = new ImageIcon(getClass().getResource(Msg.getString("icon.mission"))); //$NON-NLS-1$
 		missionToolItem = new JCheckBoxMenuItem(MissionWindow.NAME, missionicon);
 		missionToolItem.addActionListener(this);
 		missionToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0, false));
@@ -212,7 +212,7 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		toolsMenu.add(settlementToolItem);
 
 		// Create science tool menu item
-		ImageIcon scienceicon = new ImageIcon(getClass().getResource(Msg.getString("img.science"))); //$NON-NLS-1$
+		ImageIcon scienceicon = new ImageIcon(getClass().getResource(Msg.getString("icon.science"))); //$NON-NLS-1$
 		scienceToolItem = new JCheckBoxMenuItem(ScienceWindow.NAME, scienceicon);
 		scienceToolItem.addActionListener(this);
 		scienceToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F7, 0, false));

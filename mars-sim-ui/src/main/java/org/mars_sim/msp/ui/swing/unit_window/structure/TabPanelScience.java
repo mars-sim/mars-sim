@@ -90,17 +90,15 @@ extends TabPanel {
 
 		// Create the studies panel.
 		WebPanel studiesPane = new WebPanel(new BorderLayout(5, 5));
-//		studiesPane.setBorder(new MarsPanelBorder());
 		mainPane.add(studiesPane);
 
 		// Create the studies label.
 		WebLabel studiesLabel = new WebLabel(Msg.getString("TabPanelScience.scientificStudies"), WebLabel.CENTER); //$NON-NLS-1$
-		studiesLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, 13));
+		studiesLabel.setFont(ITALIC_FONT);
 		studiesPane.add(studiesLabel, BorderLayout.NORTH);
 
 		// Create the study scroll panel.
 		WebScrollPane studyScrollPane = new WebScrollPane();
-//		studyScrollPane.setBorder(new MarsPanelBorder());
 		studyScrollPane.setHorizontalScrollBarPolicy(WebScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		studiesPane.add(studyScrollPane, BorderLayout.CENTER);
 
@@ -145,7 +143,7 @@ extends TabPanel {
 		studiesPane.add(buttonPane, BorderLayout.SOUTH);
 
 		// Create the science tool button.
-		scienceToolButton = new WebButton(ImageLoader.getIcon(Msg.getString("img.science"))); //$NON-NLS-1$
+		scienceToolButton = new WebButton(ImageLoader.getIcon(Msg.getString("icon.science"))); //$NON-NLS-1$
 		scienceToolButton.setEnabled(false);
 		scienceToolButton.setMargin(new Insets(1, 1, 1, 1));
 		scienceToolButton.setToolTipText(Msg.getString("TabPanelScience.tooltip.science")); //$NON-NLS-1$
@@ -167,6 +165,7 @@ extends TabPanel {
 
 		// Create the achievement label.
 		WebLabel achievementLabel = new WebLabel(Msg.getString("TabPanelScience.scientificAchievement"), WebLabel.CENTER); //$NON-NLS-1$
+		achievementLabel.setFont(TITLE_FONT);
 		achievementLabelPane.add(achievementLabel);
 
 		String totalAchievementString = DECIMAL_PLACES1.format(settlement.getTotalScientificAchievement());
@@ -174,8 +173,9 @@ extends TabPanel {
 			Msg.getString(
 				"TabPanelScience.totalAchievementCredit", //$NON-NLS-1$
 				totalAchievementString
-			),WebLabel.CENTER
+			), WebLabel.CENTER
 		);
+		totalAchievementLabel.setFont(ITALIC_FONT);	
 		achievementLabelPane.add(totalAchievementLabel);
 
 		// Create the achievement scroll panel.
