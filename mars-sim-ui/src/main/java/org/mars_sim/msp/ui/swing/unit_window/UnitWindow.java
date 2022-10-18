@@ -159,11 +159,11 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 			Font font = null;
 
 			if (MainWindow.OS.contains("linux")) {
-				new Font("DIALOG", Font.BOLD, 8);
+				font = new Font("DIALOG", Font.BOLD, 8);
 			} else {
-				new Font("DIALOG", Font.BOLD, 10);
+				font = new Font("DIALOG", Font.BOLD, 10);
 			}
-			nameLabel.setAlignmentX(Component.LEFT_ALIGNMENT);// .CENTER_ALIGNMENT);
+			nameLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 			nameLabel.setAlignmentY(Component.TOP_ALIGNMENT);
 			nameLabel.setFont(font);
 			nameLabel.setVerticalTextPosition(WebLabel.BOTTOM);

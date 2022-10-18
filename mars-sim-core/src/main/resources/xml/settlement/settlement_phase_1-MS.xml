@@ -101,10 +101,25 @@
     <!-- type: the type of resource (see resources.txt) -->
     <!-- amount: the amount of the resource (kg) -->
 
-    <!-- Mars Direct Mission Plan : (1). ERV - (a). Payload imported from
-        Earth - Consumables : 3400 kg Hydrogen feedstock : 6300 kg (b). Produced
-        on Mars : water : 18900 kg Oxygen : 16080 kg Methane : 8400 kg (2). Hab -
-        (a). Payload imported from Earth - Consumables : 7000 kg -->
+    <!-- Mars Direct Mission Plan : 
+    (1). ERV - 
+    	(a). Payload imported from Earth - 
+    		 Consumables - Hydrogen : 3400 kg  
+    		 Feedstock - Hydrogen : 6300 kg 
+        (b). Produced on Mars : 
+        	 Water : 18900 kg 
+        	 Oxygen : 16080 kg 
+        	 Methane : 8400 kg 
+    (2). Hab -
+        (a). Payload imported from Earth - 
+             Consumables - Hydrogen : 7000 kg 
+    -->
+
+    <!-- Life Support Resources -->
+	<resource type="food" amount="720" />
+	<resource type="water" amount="3600" />
+	<resource type="oxygen" amount="1440" />
+	
 
     <!-- Crop -->
     <!-- No starting crops for this template -->

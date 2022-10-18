@@ -335,11 +335,10 @@
     <equipment type="thermal bottle" number="24" />	
  	<equipment type="wheelbarrow" number="24" />
  
-    <!-- Resources -->
 	<!-- Life Support Resources -->
-	<resource type="food" amount="6000.0" />
-	<resource type="water" amount="12000.0" />
-	<resource type="oxygen" amount="6000.0" />
+	<resource type="food" amount="4320" />
+	<resource type="water" amount="21600" />
+	<resource type="oxygen" amount="8640" />
 
     <part-package name="package 4" number="1" />
     
