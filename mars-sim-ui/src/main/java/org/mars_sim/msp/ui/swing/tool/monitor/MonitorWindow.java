@@ -423,9 +423,11 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	 */
 	public int getModelIndex(UnitTableModel<?> model) {
 		for (Component c: tabsSection.getComponents()) {
-			MonitorTab tab = (MonitorTab)c;
-			if (tab.getModel().equals(model)) {
-				return tabsSection.indexOfComponent(c);
+			if (c instanceof MonitorTab) {
+				MonitorTab tab = (MonitorTab)c;
+				if (model.equals(tab.getModel())) {
+					return tabsSection.indexOfComponent(c);
+				}
 			}
 		}
 		return -1;

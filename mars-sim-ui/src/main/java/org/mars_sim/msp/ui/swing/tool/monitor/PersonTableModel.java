@@ -208,9 +208,7 @@ public class PersonTableModel extends UnitTableModel<Person> {
 		sourceType = ValidSourceType.MISSION_PEOPLE;
 		this.mission = mission;
 		Collection<Person> missionPeople = new ArrayList<>();
-		Iterator<Worker> i = mission.getMembers().iterator();
-		while (i.hasNext()) {
-			Worker member = i.next();
+		for(Worker member : mission.getMembers()) {
 			if (member.getUnitType() == UnitType.PERSON) {
 				missionPeople.add((Person) member);
 			}

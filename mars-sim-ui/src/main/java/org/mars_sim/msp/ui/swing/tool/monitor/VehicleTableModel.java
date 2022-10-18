@@ -31,7 +31,6 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Vehicle;
-import org.mars_sim.msp.ui.swing.tool.Conversion;
 
 /**
  * The VehicleTableModel that maintains a list of Vehicle objects.
@@ -108,23 +107,23 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 		columnNames[RESERVED] = "Reserved";
 		columnTypes[RESERVED] = String.class;
 		columnNames[SPEED] = "Speed";
-		columnTypes[SPEED] = Integer.class;
+		columnTypes[SPEED] = Number.class;
 		columnNames[MALFUNCTION] = "Malfunction";
 		columnTypes[MALFUNCTION] = String.class;
 		columnNames[OXYGEN] = "Oxygen";
-		columnTypes[OXYGEN] = Integer.class;
+		columnTypes[OXYGEN] = Number.class;
 		columnNames[METHANE] = "Methane";
-		columnTypes[METHANE] = Integer.class;
+		columnTypes[METHANE] = Number.class;
 		columnNames[WATER] = "Water";
-		columnTypes[WATER] = Integer.class;
+		columnTypes[WATER] = Number.class;
 		columnNames[FOOD] = "Food";
-		columnTypes[FOOD] = Integer.class;
+		columnTypes[FOOD] = Number.class;
 		columnNames[DESSERT] = "Dessert";
-		columnTypes[DESSERT] = Integer.class;
+		columnTypes[DESSERT] = Number.class;
 		columnNames[ROCK_SAMPLES] = "Rock Samples";
-		columnTypes[ROCK_SAMPLES] = Integer.class;
+		columnTypes[ROCK_SAMPLES] = Number.class;
 		columnNames[ICE] = "Ice";
-		columnTypes[ICE] = Integer.class;
+		columnTypes[ICE] = Number.class;
 	}
 
 	private static final int FOOD_ID = ResourceUtil.foodID;
@@ -213,7 +212,7 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 					if (destination.isSettlementAtNavpoint())
 						result = destination.getSettlement().getName();
 					else
-						result = Conversion.capitalize(destination.getDescription()) 
+						result = destination.getDescription()
 							+ " - " + destination.getLocation().getFormattedString();
 				}
 			} break;
