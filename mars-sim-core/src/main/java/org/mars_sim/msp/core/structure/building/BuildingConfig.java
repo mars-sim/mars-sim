@@ -406,7 +406,7 @@ public class BuildingConfig implements Serializable {
 			// Get input resources.
 			List<Element> inputNodes = processElement.getChildren(INPUT);
 			for (Element inputElement : inputNodes) {
-				String resourceName = inputElement.getAttributeValue(RESOURCE).toLowerCase();
+				String resourceName = inputElement.getAttributeValue(RESOURCE);
 				Integer id = ResourceUtil.findIDbyAmountResourceName(resourceName);
 				// Convert RATE [in kg/sol] to rate [in kg/millisol]
 				double rate = Double.parseDouble(inputElement.getAttributeValue(RATE)) / 1000.0;
@@ -417,7 +417,7 @@ public class BuildingConfig implements Serializable {
 			// Get output resources.
 			List<Element> outputNodes = processElement.getChildren(OUTPUT);
 			for (Element outputElement : outputNodes) {
-				String resourceName = outputElement.getAttributeValue(RESOURCE).toLowerCase();
+				String resourceName = outputElement.getAttributeValue(RESOURCE);
 				Integer id = ResourceUtil.findIDbyAmountResourceName(resourceName);
 				// Convert RATE [in kg/sol] to rate [in kg/millisol]
 				double rate = Double.parseDouble(outputElement.getAttributeValue(RATE)) / 1000.0;
@@ -471,7 +471,7 @@ public class BuildingConfig implements Serializable {
 			// Get input resources.
 			List<Element> inputNodes = processElement.getChildren(INPUT);
 			for (Element inputElement : inputNodes) {
-				String resourceName = inputElement.getAttributeValue(RESOURCE).toLowerCase();
+				String resourceName = inputElement.getAttributeValue(RESOURCE);
 				Integer id = ResourceUtil.findIDbyAmountResourceName(resourceName);
 				// Convert RATE [in kg/sol] to rate [in kg/millisol]
 				double rate = Double.parseDouble(inputElement.getAttributeValue(RATE)) / 1000D;
@@ -482,7 +482,7 @@ public class BuildingConfig implements Serializable {
 			// Get output resources.
 			List<Element> outputNodes = processElement.getChildren(OUTPUT);
 			for (Element outputElement : outputNodes) {
-				String resourceName = outputElement.getAttributeValue(RESOURCE).toLowerCase();
+				String resourceName = outputElement.getAttributeValue(RESOURCE);
 				Integer id = ResourceUtil.findIDbyAmountResourceName(resourceName);
 				// Convert RATE [in kg/sol] to rate [in kg/millisol]
 				double rate = Double.parseDouble(outputElement.getAttributeValue(RATE)) / 1000D;

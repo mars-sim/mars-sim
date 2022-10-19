@@ -73,11 +73,10 @@ public final class PartConfig implements Serializable {
 		List<Element> partNodes = root.getChildren(PART);
 		for (Element partElement : partNodes) {
 			nextID++;
-			String name = "";
 			String description = "no description available.";
 
 			// Get name.
-			name = partElement.getAttributeValue(NAME).toLowerCase();
+			String name = partElement.getAttributeValue(NAME);
 
 			// get description
 			Element descriptElem = partElement.getChild(DESCRIPTION);
@@ -95,7 +94,7 @@ public final class PartConfig implements Serializable {
 			// Get type.
 			String type = partElement.getAttributeValue(TYPE);
 			
-			GoodType goodType = GoodType.convertName2Enum(type.toLowerCase());
+			GoodType goodType = GoodType.convertName2Enum(type);
 			
 			if (type == null || goodType == null)
 				throw new IllegalStateException(
@@ -159,7 +158,7 @@ public final class PartConfig implements Serializable {
 		for (String s : scope) {
 			List<MaintenanceScope> m = scopes.get(s.toLowerCase());
 			if (m != null) {
-				results.addAll(scopes.get(s.toLowerCase()));
+				results.addAll(m);
 			}
 		}
 		return results ;

@@ -66,9 +66,9 @@ public class MineralMapConfig implements Serializable {
 		List<Element> minerals = root.getChildren(MINERAL);
 		for (Element mineral : minerals) {
 			// Get mineral name.
-			String name = mineral.getAttributeValue(NAME).toLowerCase().trim();
+			String name = mineral.getAttributeValue(NAME).trim();
 			// Get frequency.
-			String frequency = mineral.getAttributeValue(FREQUENCY).toLowerCase().trim();
+			String frequency = mineral.getAttributeValue(FREQUENCY).trim();
 			// Create mineralType.
 			MineralType mineralType = new MineralType(name, frequency);
 			// Get locales.
@@ -76,7 +76,7 @@ public class MineralMapConfig implements Serializable {
 			List<Element> locales = localeList.getChildren(LOCALE);
 
 			for (Element locale : locales) {
-				String localeName = locale.getAttributeValue(NAME).toLowerCase().trim();
+				String localeName = locale.getAttributeValue(NAME).trim();
 				mineralType.addLocale(localeName);
 			}
 

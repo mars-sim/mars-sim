@@ -58,15 +58,6 @@ public class Part extends ItemResource {
 	}
 
 	/**
-	 * Gets a set of all parts.
-	 *
-	 * @return set of parts.
-	 */
-	public static Set<Integer> getItemIDs() {
-		return ItemResourceUtil.getItemIDs();
-	}
-
-	/**
 	 * Compute the reliability
 	 */
 	public void computeReliability(int missionSol) {

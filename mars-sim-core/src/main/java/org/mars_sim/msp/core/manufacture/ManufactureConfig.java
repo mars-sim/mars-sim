@@ -82,7 +82,7 @@ public class ManufactureConfig implements Serializable {
 	 * @return list of manufacturing process information.
 	 * @throws Exception if error getting info.
 	 */
-	public synchronized void loadManufactureProcessList(Document manufactureDoc) {
+	private synchronized void loadManufactureProcessList(Document manufactureDoc) {
 		if (manufactureProcessList != null) {
 			// just in case if another thread is being created
 			return;
@@ -101,7 +101,7 @@ public class ManufactureConfig implements Serializable {
 			String name = "";
 			String description = "";
 
-			name = processElement.getAttributeValue(NAME).toLowerCase();
+			name = processElement.getAttributeValue(NAME);
 			
 			process.setName(name);
 			process.setTechLevelRequired(Integer.parseInt(processElement.getAttributeValue(TECH)));
@@ -157,7 +157,7 @@ public class ManufactureConfig implements Serializable {
 		for (Element resourceElement : resourceNodes) {
 			ManufactureProcessItem resourceItem = new ManufactureProcessItem();
 			resourceItem.setType(ItemType.AMOUNT_RESOURCE);
-			String resourceName = resourceElement.getAttributeValue(NAME).toLowerCase();
+			String resourceName = resourceElement.getAttributeValue(NAME);
 			AmountResource resource = ResourceUtil.findAmountResource(resourceName);
 			if (resource == null)
 				logger.severe(resourceName + " shows up in manufacturing.xml but doesn't exist in resources.xml.");

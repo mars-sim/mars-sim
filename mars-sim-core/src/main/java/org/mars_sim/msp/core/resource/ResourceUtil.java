@@ -138,7 +138,6 @@ public class ResourceUtil implements Serializable {
 	// Data members.
 	private static Map<String, AmountResource> amountResourceMap;
 	private static Map<Integer, AmountResource> amountResourceIDMap;
-	private static Map<Integer, String> arIDNameMap;
 	private static Set<AmountResource> resources;
 	private static List<AmountResource> sortedResources;
 	
@@ -241,7 +240,7 @@ public class ResourceUtil implements Serializable {
 	public static AmountResource rockSamplesAR;
 	public static AmountResource sandAR;
 
-	private static AmountResource[] ARs = new AmountResource[33];
+	//private static AmountResource[] ARs = new AmountResource[33];
 
 	/**
 	 * Creates the singleton instance.
@@ -271,7 +270,7 @@ public class ResourceUtil implements Serializable {
 	/**
 	 * Create a set of life support resources.
 	 */
-	public static void createLifeSupportResources() {
+	private static void createLifeSupportResources() {
 		lifeSupportResources = new HashSet<>();
 		for (AmountResource ar: resources) {
 			if (ar.isLifeSupport())
@@ -305,7 +304,7 @@ public class ResourceUtil implements Serializable {
 	/**
 	 * Create a set of essential resources.
 	 */
-	public static void createEssentialResources() {
+	private static void createEssentialResources() {
 		essentialResources = new HashSet<>();
 		for (Food f: FoodUtil.getFoodList()) {
 			essentialResources.add(f.getID());
@@ -357,35 +356,16 @@ public class ResourceUtil implements Serializable {
 		createMaps();
 		// Map the static instances
 		mapInstances();
-		// Create the Amount Resource array
-		createInstancesArray();
 	}
 
 	/**
 	 * Recreates the Amount Resource instances in all map
 	 */
 	public void initializeInstances() {
-		// Restores the Amount Resource array
-		restoreInstancesArray();
-		// Map the static instances
-		mapInstances();
 		// Create maps
 		createMaps();
-	}
-
-	/**
-	 * Restores the Amount Resource addresses
-	 */
-	public void restoreInstancesArray() {
-		for (AmountResource r : resources) {
-			for (AmountResource ar : ARs) {
-				if (r.getName().equals(ar.getName())) {
-					// Restore the AmountResource reference
-					r = ar;
-					break;
-				}
-			}
-		}
+		// Map the static instances
+		mapInstances();
 	}
 
 	/**
@@ -398,7 +378,7 @@ public class ResourceUtil implements Serializable {
 
 			Map<String, AmountResource> tempAmountResourceMap = new HashMap<>();
 			for (AmountResource resource : sortedResources) {
-				tempAmountResourceMap.put(resource.getName(), resource);
+				tempAmountResourceMap.put(resource.getName().toLowerCase(), resource);
 			}
 
 			Map<Integer, AmountResource> tempAmountResourceIDMap = new HashMap<>();
@@ -406,19 +386,13 @@ public class ResourceUtil implements Serializable {
 				tempAmountResourceIDMap.put(resource.getID(), resource);
 			}
 
-			Map<Integer, String> tempArIDNameMap = new HashMap<>();
-			for (AmountResource resource : sortedResources) {
-				tempArIDNameMap.put(resource.getID(), resource.getName());
-			}
-
 			// Create immutable internals
 			amountResourceMap = Collections.unmodifiableMap(tempAmountResourceMap);
 			amountResourceIDMap = Collections.unmodifiableMap(tempAmountResourceIDMap);
-			arIDNameMap = Collections.unmodifiableMap(tempArIDNameMap);
 		}
 	}
 
-	public static void mapInstances() {
+	private static void mapInstances() {
 
 		// AmountResource instances as Integer
 		foodID = findIDbyAmountResourceName(FOOD); // 1
@@ -533,20 +507,6 @@ public class ResourceUtil implements Serializable {
 		sandAR = findAmountResource(SAND);
 	}
 
-	public static void createInstancesArray() {
-
-		ARs = new AmountResource[] {
-				foodAR, waterAR, oxygenAR, carbonDioxideAR,
-				argonAR, nitrogenAR, coAR, hydrogenAR,
-				methaneAR,
-				iceAR,
-				greyWaterAR, blackWaterAR,
-				regolithAR, regolithBAR, regolithCAR, regolithDAR,
-				rockSamplesAR, sandAR,
-				NaClOAR,
-				};
-	}
-
 	/**
 	 * Finds an amount resource name by id.
 	 *
@@ -555,16 +515,7 @@ public class ResourceUtil implements Serializable {
 	 * @throws ResourceException if resource could not be found.
 	 */
 	public static String findAmountResourceName(int id) {
-		return arIDNameMap.get(id);
-	}
-
-	/**
-	 * Prints the capitalized name of the resource
-	 * @param id the resource's id.
-	 * @return capitalized name
-	 */
-	public static String printCapName(int id) {
-		return Conversion.capitalize(findAmountResourceName(id));
+		return findAmountResource(id).getName();
 	}
 
 	/**
@@ -576,10 +527,6 @@ public class ResourceUtil implements Serializable {
 	 */
 	public static AmountResource findAmountResource(int id) {
 		return amountResourceIDMap.get(id);
-	}
-
-	public static Map<Integer, AmountResource> getAmountResourceIDMap() {
-		return amountResourceIDMap;
 	}
 
 	/**
@@ -603,25 +550,7 @@ public class ResourceUtil implements Serializable {
 	 * @throws ResourceException if resource could not be found.
 	 */
 	public static int findIDbyAmountResourceName(String name) {
-		return getKeyByValue(arIDNameMap, name.toLowerCase());
-	}
-
-	/**
-	 * Returns the first matched key from a given value in a map for one-to-one
-	 * relationship
-	 *
-	 * @param map
-	 * @param value
-	 * @return key
-	 */
-	private static <T, E> T getKeyByValue(Map<T, E> map, E value) {
-		for (Entry<T, E> entry : map.entrySet()) {
-			if (Objects.equals(value, entry.getValue())) {
-				return entry.getKey();
-			}
-		}
-		logger.severe(value + " cannot be found.");
-		return null;
+		return findAmountResource(name).getID();
 	}
 
 	/**
@@ -652,7 +581,7 @@ public class ResourceUtil implements Serializable {
 		List<String> resourceNames = new ArrayList<>();
 		Iterator<AmountResource> i = resources.iterator();
 		while (i.hasNext()) {
-			resourceNames.add(i.next().getName().toLowerCase());
+			resourceNames.add(i.next().getName());
 		}
 		Collections.sort(resourceNames);
 		return resourceNames;
@@ -671,12 +600,4 @@ public class ResourceUtil implements Serializable {
 		
 		return false;
 	}
-	
-	public void destroy() {
-		resources = null;
-		amountResourceMap = null;
-		amountResourceIDMap = null;
-		arIDNameMap = null;
-	}
-
 }
