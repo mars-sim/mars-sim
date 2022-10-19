@@ -992,7 +992,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 
 		// Note: need to figure out why a mission vehicle's scope would contain 
 		// the following unneeded parts that must be removed:
-		parts = ItemResourceUtil.removePartMap(parts, ItemResourceUtil.UNNEEDED_PARTS);
+		parts = ItemResourceUtil.removePartMap(parts, ItemResourceUtil.UNNEEDED_PARTS_ID);
 
 		for (Map.Entry<Integer, Double> entry : parts.entrySet()) {
 			Integer id = entry.getKey();

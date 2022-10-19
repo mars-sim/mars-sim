@@ -96,7 +96,7 @@ public class ItemResourceUtil implements Serializable {
 	/**
 	 * Parts that are not needed to be fetched as repair parts for vehicle missions.
 	 */
-	public static final String[] UNNEEDED_PARTS = { 
+	private static final String[] UNNEEDED_PARTS = { 
 			LASER,					STEPPER_MOTOR,
 			OVEN,					BLENDER,
 			AUTOCLAVE,				REFRIGERATOR,
@@ -159,9 +159,11 @@ public class ItemResourceUtil implements Serializable {
 
 	private static PartConfig partConfig = SimulationConfig.instance().getPartConfiguration();
 	
-	public static final List<Integer> ATTACHMENTS_ID = new ArrayList<>();
-	public static final List<Integer> EVASUIT_PARTS_ID = new ArrayList<>();
-	public static final List<Integer> KITCHEN_WARE_ID = new ArrayList<>();
+	//TODO These should be configurable
+	public static List<Integer> ATTACHMENTS_ID;
+	public static List<Integer> EVASUIT_PARTS_ID;
+	public static List<Integer> KITCHEN_WARE_ID;
+	public static List<Integer> UNNEEDED_PARTS_ID;
 
 	/**
 	 * Constructor
@@ -228,24 +230,22 @@ public class ItemResourceUtil implements Serializable {
 		ironSheetID = findIDbyItemResourceName(IRON_SHEET);
 		steelIngotID = findIDbyItemResourceName(STEEL_INGOT);
 		steelSheetID = findIDbyItemResourceName(STEEL_SHEET);
-
-		// Create storable item ids reference
-//		wheelbarrowID = findIDbyItemResourceName(WHEELBARROW);
 		
-		for (int i = 0; i < ATTACHMENTS.length; i++) {
-			int id = findIDbyItemResourceName(ATTACHMENTS[i]);
-			ATTACHMENTS_ID.add(id);
-		}
+		ATTACHMENTS_ID = convertNamesToResourceIDs(ATTACHMENTS);
+		EVASUIT_PARTS_ID = convertNamesToResourceIDs(EVASUIT_PARTS);
+		KITCHEN_WARE_ID = convertNamesToResourceIDs(KITCHEN_WARE);
+		UNNEEDED_PARTS_ID = convertNamesToResourceIDs(UNNEEDED_PARTS);
+	}
 
-		for (int i = 0; i < EVASUIT_PARTS.length; i++) {
-			int id = findIDbyItemResourceName(EVASUIT_PARTS[i]);
-			EVASUIT_PARTS_ID.add(id);
+	private static List<Integer> convertNamesToResourceIDs(String [] names) {
+		List<Integer> ids = new ArrayList<>();
+		for (String n : names) {
+			ItemResource item = findItemResource(n);
+			if (item != null) {
+				ids.add(item.getID());
+			}
 		}
-
-		for (int i = 0; i < KITCHEN_WARE.length; i++) {
-			int id = findIDbyItemResourceName(KITCHEN_WARE[i]);
-			KITCHEN_WARE_ID.add(id);
-		}
+		return ids;
 	}
 
 	/**
@@ -361,14 +361,10 @@ public class ItemResourceUtil implements Serializable {
 		return findItemResource(name).getID();
 	}
 
-	public static Map<Integer, Double> removePartMap(Map<Integer, Double> parts, String[] unneeded) {
-		for (String n : unneeded) {
-			Integer i = ItemResourceUtil.findIDbyItemResourceName(n);
-			if (i != null) {
-				parts.remove(i);
-			}
+	public static Map<Integer, Double> removePartMap(Map<Integer, Double> parts, List<Integer> unneeded) {
+		for (Integer i : unneeded) {
+			parts.remove(i);
 		}
-
 		return parts;
 	}
 	

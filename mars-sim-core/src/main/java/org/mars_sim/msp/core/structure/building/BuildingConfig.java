@@ -554,7 +554,7 @@ public class BuildingConfig implements Serializable {
 
 		List<Element> resourceStorageNodes = storageElement.getChildren(RESOURCE_STORAGE);
 		for (Element resourceStorageElement : resourceStorageNodes) {
-			String resourceName = resourceStorageElement.getAttributeValue(RESOURCE).toLowerCase();
+			String resourceName = resourceStorageElement.getAttributeValue(RESOURCE);
 			Integer resource = ResourceUtil.findIDbyAmountResourceName(resourceName);
 			Double capacity = Double.valueOf(resourceStorageElement.getAttributeValue(CAPACITY));
 			storageMap.put(resource, capacity);
@@ -562,7 +562,7 @@ public class BuildingConfig implements Serializable {
 
 		List<Element> resourceInitialNodes = storageElement.getChildren(RESOURCE_INITIAL);
 		for (Element resourceInitialElement : resourceInitialNodes) {
-			String resourceName = resourceInitialElement.getAttributeValue(RESOURCE).toLowerCase();
+			String resourceName = resourceInitialElement.getAttributeValue(RESOURCE);
 			Integer resource = ResourceUtil.findIDbyAmountResourceName(resourceName);
 			Double amount = Double.valueOf(resourceInitialElement.getAttributeValue(AMOUNT));
 			initialMap.put(resource, amount);

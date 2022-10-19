@@ -129,7 +129,7 @@ public class VehicleConfig implements Serializable {
 			// cargo capacities
 			Element cargoElement = vehicleElement.getChild(CARGO);
 			if (cargoElement != null) {
-				Map<String, Double> cargoCapacityMap = new HashMap<String, Double>();
+				Map<Integer, Double> cargoCapacityMap = new HashMap<>();
 				double resourceCapacity = 0D;
 				List<Element> capacityList = cargoElement.getChildren(CAPACITY);
 				for (Element capacityElement : capacityList) {
@@ -138,19 +138,12 @@ public class VehicleConfig implements Serializable {
 					// toLowerCase() is crucial in matching resource name
 					String resource = capacityElement.getAttributeValue(RESOURCE).toLowerCase();
 
-					if (resource.equalsIgnoreCase("dessert")) {
-						cargoCapacityMap.put(resource, resourceCapacity);
-					}
-
-					else {
-						AmountResource ar = ResourceUtil.findAmountResource(resource);
-						if (ar == null)
-							logger.severe(
-									resource + " shows up in vehicles.xml but doesn't exist in resources.xml.");
-						else
-							cargoCapacityMap.put(resource, resourceCapacity);
-					}
-
+					AmountResource ar = ResourceUtil.findAmountResource(resource);
+					if (ar == null)
+						logger.severe(
+								resource + " shows up in vehicles.xml but doesn't exist in resources.xml.");
+					else
+						cargoCapacityMap.put(ar.getID(), resourceCapacity);
 				}
 
 				double totalCapacity = Double.parseDouble(cargoElement.getAttributeValue(TOTAL_CAPACITY));

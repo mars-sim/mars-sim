@@ -607,7 +607,7 @@ class VehicleGood extends Good {
 	private static double getVehicleRange(VehicleSpec v) {
 		double range = 0D;
 
-		double fuelCapacity = v.getCargoCapacity(METHANE);
+		double fuelCapacity = v.getCargoCapacity(ResourceUtil.methaneID);
 		double fuelEfficiency = v.getDriveTrainEff();
 		range = fuelCapacity * fuelEfficiency * Vehicle.SOFC_CONVERSION_EFFICIENCY;
 
@@ -620,7 +620,7 @@ class VehicleGood extends Good {
 
             // Check food capacity as range limit.
             double foodConsumptionRate = personConfig.getFoodConsumptionRate();
-            double foodCapacity = v.getCargoCapacity(ResourceUtil.FOOD);
+            double foodCapacity = v.getCargoCapacity(ResourceUtil.foodID);
             double foodSols = foodCapacity / (foodConsumptionRate * crewSize);
             double foodRange = distancePerSol * foodSols / 3D;
             if (foodRange < range)
@@ -628,7 +628,7 @@ class VehicleGood extends Good {
 
             // Check water capacity as range limit.
             double waterConsumptionRate = personConfig.getWaterConsumptionRate();
-            double waterCapacity = v.getCargoCapacity(ResourceUtil.WATER);
+            double waterCapacity = v.getCargoCapacity(ResourceUtil.waterID);
             double waterSols = waterCapacity / (waterConsumptionRate * crewSize);
             double waterRange = distancePerSol * waterSols / 3D;
             if (waterRange < range)
@@ -636,7 +636,7 @@ class VehicleGood extends Good {
 
             // Check oxygen capacity as range limit.
             double oxygenConsumptionRate = personConfig.getNominalO2ConsumptionRate();
-            double oxygenCapacity = v.getCargoCapacity(ResourceUtil.OXYGEN);
+            double oxygenCapacity = v.getCargoCapacity(ResourceUtil.oxygenID);
             double oxygenSols = oxygenCapacity / (oxygenConsumptionRate * crewSize);
             double oxygenRange = distancePerSol * oxygenSols / 3D;
             if (oxygenRange < range)

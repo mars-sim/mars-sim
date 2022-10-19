@@ -141,7 +141,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 			<capacity resource="food" value="256.0" />
 
 			<!-- Default: varies according to the type of vehicle -->
-			<capacity resource="dessert" value="120.0" />
+			<!--<capacity resource="dessert" value="120.0" />-->
 
 			<!-- Default: varies according to the type of vehicle -->
 			<capacity resource="rock samples" value="400.0" />
@@ -219,7 +219,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 			<capacity resource="water" value="500.0" />
 			
 			<capacity resource="food" value="512.0" />
-			<capacity resource="dessert" value="240.0" />
+			<!--<capacity resource="dessert" value="240.0" />-->
 
 			<capacity resource="food waste" value="80.0" />
 			<capacity resource="solid waste" value="160.0" />
@@ -268,7 +268,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 			<capacity resource="water" value="300.0" />
 
 			<capacity resource="food" value="128.0" />
-			<capacity resource="dessert" value="60" />
+			<!--<capacity resource="dessert" value="60" />-->
 
 			<capacity resource="food waste" value="20.0" />
 			<capacity resource="solid waste" value="40.0" />

@@ -366,7 +366,7 @@ public abstract class Vehicle extends Unit
 		eqmInventory = new EquipmentInventory(this, cargoCapacity);
 
 		// Set the capacities for each supported resource
-		Map<String, Double> capacities = spec.getCargoCapacityMap();
+		Map<Integer, Double> capacities = spec.getCargoCapacityMap();
 		if (capacities != null) {
 			eqmInventory.setResourceCapacityMap(capacities);
 		}
@@ -384,7 +384,7 @@ public abstract class Vehicle extends Unit
 		// Set the drivetrain efficiency [dimension-less] of the vehicle.
 		drivetrainEfficiency = spec.getDriveTrainEff();
 		// Gets the capacity [in kg] of vehicle's fuel tank
-		fuelCapacity = spec.getCargoCapacity(ResourceUtil.findAmountResourceName(getFuelType()));
+		fuelCapacity = spec.getCargoCapacity(getFuelType());
 		// Gets the energy capacity [kWh] based on a full tank of methane
 		energyCapacity = fuelCapacity / KG_PER_KWH;
 		// Gets the conversion factor for a specific vehicle
