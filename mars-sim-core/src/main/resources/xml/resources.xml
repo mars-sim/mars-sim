@@ -23,29 +23,29 @@
 	<!-- edible - Is the resource edible? -->
 
 	<!-- Life Support Resources -->
-	<resource name="food" type="derived" phase="solid" life-support="true" edible="true">Represents general freeze dried food.</resource>
-	<resource name="water" type="compound" phase="liquid" life-support="true">potable water</resource>
-	<resource name="oxygen" type="element" phase="gas" life-support="true" />
-	<resource name="carbon dioxide" type="compound" phase="gas" life-support="true"/>
+	<resource name="Food" type="derived" phase="solid" life-support="true" edible="true">Represents general freeze dried food.</resource>
+	<resource name="Water" type="compound" phase="liquid" life-support="true">potable water</resource>
+	<resource name="Oxygen" type="element" phase="gas" life-support="true" />
+	<resource name="Carbon Dioxide" type="compound" phase="gas" life-support="true"/>
 
-	<resource name="ice" type="compound" phase="solid">Extracted from ice-rich permafrost outside soil</resource>
+	<resource name="Ice" type="compound" phase="solid">Extracted from ice-rich permafrost outside soil</resource>
 
 	<!-- see https://space.stackexchange.com/questions/8449/is-there-a-cost-effective-way-to-obtain-nitrogen-argon-on-mars-for-usage-in-a-hu/8548 -->
 	<!-- Other Gas Resources -->
-	<resource name="hydrogen" type="element" phase="gas" demand=".15" />
+	<resource name="Hydrogen" type="element" phase="gas" demand=".15" />
 	
-	<resource name="methane" type="compound" phase="gas" demand=".15" />
-	<resource name="methanol" type="compound" phase="liquid">Methanol CH3OH can be used as a fuel source, solvent, pesticide, or 
+	<resource name="Methane" type="compound" phase="gas" demand=".15" />
+	<resource name="Methanol" type="compound" phase="liquid">Methanol CH3OH can be used as a fuel source, solvent, pesticide, or 
 	 a chemical feedstock for production of a range of important industrial chemicals such as polyester. 
 	 It appears as a colorless fairly volatile liquid with a faintly sweet pungent odor like that of ethyl alcohol. </resource>
 	 
-	<resource name="nitrogen" type="element" phase="gas"> N2 is an odorless gas </resource>
-	<resource name="argon" type="element" phase="gas"/>
+	<resource name="Nitrogen" type="element" phase="gas"> N2 is an odorless gas </resource>
+	<resource name="Argon" type="element" phase="gas"/>
 	
-	<resource name="carbon monoxide" type="compound" phase="gas" demand=".05" />
-	<resource name="chlorine" type="element" phase="gas"/>
-	<resource name="ethylene" type="compound" phase="gas" demand=".1" />
-	<resource name="acetylene" type="compound" phase="gas" demand=".01" >Acetylene is a colorless gas that has a strong 
+	<resource name="Carbon Monoxide" type="compound" phase="gas" demand=".05" />
+	<resource name="Chlorine" type="element" phase="gas"/>
+	<resource name="Ethylene" type="compound" phase="gas" demand=".1" />
+	<resource name="Acetylene" type="compound" phase="gas" demand=".01" >Acetylene is a colorless gas that has a strong 
 	 garlic-like odor. When combined with oxygen, it becomes very hot and is classified as the hottest fuel gas. 
 	 It is also the only fuel gas that can weld and cut steel, making it the preferred choice for welders.
 	 The welding process that uses acetylene is known as oxy-fuel cutting or gas cutting. Acetylene is 
@@ -54,143 +54,143 @@
 	 in perfumes, vitamins, polymers, solvents and other materials due to its versatility and ease of
 	 reactive control in comparison to other gases. It combines nicely with a variety of elements and
 	 compounds, making it the most important of starting materials for organic synthesis.</resource>
-	<resource name="sodium carbonate" type="compound" phase="solid">Na2CO3, also called washing soda,
+	<resource name="Sodium Carbonate" type="compound" phase="solid">Na2CO3, also called washing soda,
 		soda ash and soda crystals, is the water-soluble sodium salt of carbonic acid
 	</resource>
 	
 <!-- Elements -->
-	<resource name="iron powder" type="element" phase="solid" />
-	<resource name="manganese" type="element" phase="solid" />
+	<resource name="Iron Powder" type="element" phase="solid" />
+	<resource name="Manganese" type="element" phase="solid" />
 
 <!-- Wastes -->
-	<resource name="soil" type="waste" phase="solid">Soil is the mixture of minerals, organic matter, gases, liquids, and the myriad of organisms that together support plant life.</resource>
-	<resource name="compost" type="waste" phase="solid">Organic waste consists of decaying food waste and crop remains. </resource>
-	<resource name="crop waste" type="waste" phase="solid">Organic waste from a dead crop or inedible biomass after harvest. </resource>
+	<resource name="Soil" type="waste" phase="solid">Soil is the mixture of minerals, organic matter, gases, liquids, and the myriad of organisms that together support plant life.</resource>
+	<resource name="Compost" type="waste" phase="solid">Organic waste consists of decaying food waste and crop remains. </resource>
+	<resource name="Crop Waste" type="waste" phase="solid">Organic waste from a dead crop or inedible biomass after harvest. </resource>
 
-	<resource name="electronic waste" type="waste" phase="solid">Electronic waste comprises discarded electronic devices, circuit boards and scrap components.</resource>
-	<resource name="food waste" type="waste" phase="solid">Organic waste from leftover or expired food. </resource>
+	<resource name="Electronic Waste" type="waste" phase="solid">Electronic waste comprises discarded electronic devices, circuit boards and scrap components.</resource>
+	<resource name="Food Waste" type="waste" phase="solid">Organic waste from leftover or expired food. </resource>
 	<!-- <resource name="Manure" phase="solid">Human feces</resource> -->
 
-	<resource name="solid waste" type="waste" phase="solid">Solid waste predominantly is any garbage, refuse or rubbish generated in settlement. It can be converted into other wastes.</resource>
-	<resource name="toxic waste" type="waste" phase="solid">Toxic waste consists of biomedical waste, radioactive waste, hazardous material that require special handling </resource>
+	<resource name="Solid Waste" type="waste" phase="solid">Solid waste predominantly is any garbage, refuse or rubbish generated in settlement. It can be converted into other wastes.</resource>
+	<resource name="Toxic Waste" type="waste" phase="solid">Toxic waste consists of biomedical waste, radioactive waste, hazardous material that require special handling </resource>
 
-	<resource name="grey water" type="waste" phase="liquid">Sewage water from washing, bathing, cooking and cleaning and can be converted into use for crop irrigating.</resource>
-	<resource name="black water" type="waste" phase="liquid">Sewage water come into contact with fecal matter and potentially hosting harmful bacteria and disease-causing pathogens.
+	<resource name="Grey Water" type="waste" phase="liquid">Sewage water from washing, bathing, cooking and cleaning and can be converted into use for crop irrigating.</resource>
+	<resource name="Black Water" type="waste" phase="liquid">Sewage water come into contact with fecal matter and potentially hosting harmful bacteria and disease-causing pathogens.
 		Need special treatment to be useful.</resource>
 
 <!--	<resource name="Non-recyclable Waste" phase="solid" life-support="true">The "compacted" waste that cannot be recycled or broken down into other resources, as limited by the level of technology available to the settlement. </resource>
 -->
 
 <!-- Crop Produce -->
-	<resource name="blueberry" type="crop" phase="solid" edible="true"></resource>
-	<resource name="cabbage" type="crop" phase="solid" edible="true"></resource>
-	<resource name="carrot" type="crop" phase="solid" edible="true"></resource>
-	<resource name="celery" type="crop" phase="solid" edible="true"></resource>
-	<resource name="corn" type="crop" phase="solid" edible="true"></resource>
+	<resource name="Blueberry" type="crop" phase="solid" edible="true"></resource>
+	<resource name="Cabbage" type="crop" phase="solid" edible="true"></resource>
+	<resource name="Carrot" type="crop" phase="solid" edible="true"></resource>
+	<resource name="Celery" type="crop" phase="solid" edible="true"></resource>
+	<resource name="Corn" type="crop" phase="solid" edible="true"></resource>
 	
-	<resource name="cranberry" type="crop" phase="solid" edible="true"></resource>
-	<resource name="cucumber" type="crop" phase="solid" edible="true"></resource>
-	<resource name="garlic" type="crop" phase="solid" edible="true"></resource>
-	<resource name="ginger" type="crop" phase="solid" edible="true"></resource>
-	<resource name="green bell pepper" type="crop" phase="solid" edible="true"></resource>
+	<resource name="Cranberry" type="crop" phase="solid" edible="true"></resource>
+	<resource name="Cucumber" type="crop" phase="solid" edible="true"></resource>
+	<resource name="Garlic" type="crop" phase="solid" edible="true"></resource>
+	<resource name="Ginger" type="crop" phase="solid" edible="true"></resource>
+	<resource name="Green Bell Pepper" type="crop" phase="solid" edible="true"></resource>
 	
-	<resource name="kidney bean" type="crop" phase="solid" edible="true"></resource>
-	<resource name="lettuce" type="crop" phase="solid" edible="true"></resource>
-	<resource name="morel mushroom" type="crop" phase="solid" edible="true"></resource>
-	<resource name="peanut" type="crop" phase="solid" edible="true"></resource>
-	<resource name="peas" type="crop" phase="solid" edible="true"></resource>
+	<resource name="Kidney Bean" type="crop" phase="solid" edible="true"></resource>
+	<resource name="Lettuce" type="crop" phase="solid" edible="true"></resource>
+	<resource name="Morel Mushroom" type="crop" phase="solid" edible="true"></resource>
+	<resource name="Peanut" type="crop" phase="solid" edible="true"></resource>
+	<resource name="Peas" type="crop" phase="solid" edible="true"></resource>
 	
-	<resource name="potato" type="crop" phase="solid" edible="true"></resource>
-	<resource name="quinoa" type="crop" phase="solid" edible="true">A nutritious grain
+	<resource name="Potato" type="crop" phase="solid" edible="true"></resource>
+	<resource name="Quinoa" type="crop" phase="solid" edible="true">A nutritious grain
 		having most amino acids</resource>
-	<resource name="radish" type="crop" phase="solid" edible="true"></resource>
-	<resource name="red beet" type="crop" phase="solid" edible="true"></resource>
-	<resource name="rice" type="crop" phase="solid" edible="true"></resource>
+	<resource name="Radish" type="crop" phase="solid" edible="true"></resource>
+	<resource name="Red Beet" type="crop" phase="solid" edible="true"></resource>
+	<resource name="Rice" type="crop" phase="solid" edible="true"></resource>
 	
-	<resource name="sesame" type="crop" phase="solid" edible="true">A flowering plant--
+	<resource name="Sesame" type="crop" phase="solid" edible="true">A flowering plant--
 		source of sesame seeds</resource>
-	<resource name="soybean" type="crop" phase="solid" edible="true">Soybean seeds.</resource>
-	<resource name="spring onion" type="crop" phase="solid" edible="true"></resource>
-	<resource name="strawberry" type="crop" phase="solid" edible="true"></resource>
-	<resource name="sugarcane" type="crop" phase="solid" edible="true"></resource>
+	<resource name="Soybean" type="crop" phase="solid" edible="true">Soybean seeds.</resource>
+	<resource name="Spring Onion" type="crop" phase="solid" edible="true"></resource>
+	<resource name="Strawberry" type="crop" phase="solid" edible="true"></resource>
+	<resource name="Sugarcane" type="crop" phase="solid" edible="true"></resource>
 	
-	<resource name="sweet potato" type="crop" phase="solid" edible="true"></resource>
-	<resource name="swiss chard" type="crop" phase="solid" edible="true"></resource>
-	<resource name="taro" type="crop" phase="solid" edible="true"></resource>
-	<resource name="tomato" type="crop" phase="solid" edible="true"></resource>
-	<resource name="wheat" type="crop" phase="solid" edible="true">Wheat Kernels are
+	<resource name="Sweet Potato" type="crop" phase="solid" edible="true"></resource>
+	<resource name="Swiss Chard" type="crop" phase="solid" edible="true"></resource>
+	<resource name="Taro" type="crop" phase="solid" edible="true"></resource>
+	<resource name="Tomato" type="crop" phase="solid" edible="true"></resource>
+	<resource name="Wheat" type="crop" phase="solid" edible="true">Wheat Kernels are
 		seeds harvested from wheat crop. The kernel is the whole grain, made up of 3
 		edible parts – bran, germ, and endosperm – protected by an inedible husk </resource>
 		
-	<resource name="white mustard" type="crop" phase="solid" edible="true"></resource>		
-	<resource name="white onion" type="crop" phase="solid" edible="true"></resource>
-	<resource name="yam" type="crop" phase="solid" edible="true"></resource>
+	<resource name="White mustard" type="crop" phase="solid" edible="true"></resource>		
+	<resource name="White onion" type="crop" phase="solid" edible="true"></resource>
+	<resource name="Yam" type="crop" phase="solid" edible="true"></resource>
 
 <!-- Tissue culture from crop produce (Automatically generated by code) -->
 <!-- see https://en.wiki2.org/wiki/Plant_tissue_culture
 		 http://extension.psu.edu/plants/green-industry/news/2014/tissue-culture-finishing-for-greenhouse-growers-stage-iii-stage-iv -->
 
 <!-- Seeds from Crop Produce -->
-	<resource name="mustard seed" type="derived" phase="solid" edible="true">
+	<resource name="Mustard seed" type="derived" phase="solid" edible="true">
 		Seeds from white mustard plant</resource>
-	<resource name="sesame seed" type="derived" phase="solid" edible="true">
+	<resource name="Sesame seed" type="derived" phase="solid" edible="true">
 		Seeds from sesame plant.</resource>
 
 <!-- Soybean-derived food resources -->
-	<resource name="miso" type="soy-based" phase="solid" edible="true">Paste made from fermented soybeans and rice</resource>
-	<resource name="okara" type="soy-based" phase="solid" edible="true">The Soy Pulp consisting of insoluble parts of the soybean which
+	<resource name="Miso" type="soy-based" phase="solid" edible="true">Paste made from fermented soybeans and rice</resource>
+	<resource name="Okara" type="soy-based" phase="solid" edible="true">The Soy Pulp consisting of insoluble parts of the soybean which
 		 after pureed Soybean are filtered in the production of soymilk and tofu.</resource>
-	<resource name="soybean ash" type="soy-based" phase="solid" edible="true">Soybean extract composed of mainly Potassium, Phosphorus, Magnesium, and Calcium.</resource>
-	<resource name="soymilk" type="soy-based" phase="liquid" edible="true">Plant milk produced by soaking dry Soybean and grinding them with water.</resource>
-	<resource name="soy fiber" type="soy-based" phase="solid" edible="true">Light yellow, silky protein Soybean fiber .</resource>
-	<resource name="soy flour" type="soy-based" phase="solid" edible="true">Flour made from ground Soybean.</resource>
-	<resource name="soy protein" type="soy-based" phase="solid">Protein extract derived from Soybean.</resource>
-	<resource name="soy sauce" type="soy-based" phase="liquid" edible="true">Made from fermented soybeans</resource>
-	<resource name="soy sprout" type="soy-based" phase="solid" edible="true">Sprouted Soybean.</resource>
-	<resource name="tempeh" type="soy-based" phase="solid" edible="true">Tempeh made of Soybeans and/or waste okara.</resource>
-	<resource name="tofu" type="soy-based" phase="solid" edible="true">Tofu made of Coagulant and Soymilk from Soybean.</resource>
+	<resource name="Soybean ash" type="soy-based" phase="solid" edible="true">Soybean extract composed of mainly Potassium, Phosphorus, Magnesium, and Calcium.</resource>
+	<resource name="Soymilk" type="soy-based" phase="liquid" edible="true">Plant milk produced by soaking dry Soybean and grinding them with water.</resource>
+	<resource name="Soy fiber" type="soy-based" phase="solid" edible="true">Light yellow, silky protein Soybean fiber .</resource>
+	<resource name="Soy flour" type="soy-based" phase="solid" edible="true">Flour made from ground Soybean.</resource>
+	<resource name="Soy protein" type="soy-based" phase="solid">Protein extract derived from Soybean.</resource>
+	<resource name="Soy sauce" type="soy-based" phase="liquid" edible="true">Made from fermented soybeans</resource>
+	<resource name="Soy sprout" type="soy-based" phase="solid" edible="true">Sprouted Soybean.</resource>
+	<resource name="Tempeh" type="soy-based" phase="solid" edible="true">Tempeh made of Soybeans and/or waste okara.</resource>
+	<resource name="Tofu" type="soy-based" phase="solid" edible="true">Tofu made of Coagulant and Soymilk from Soybean.</resource>
 
 <!-- food resources derived from crop produce -->
-	<resource name="cane fiber" type="derived" phase="solid" edible="true">Fiber processed from Sugarcane.</resource>
-	<resource name="leaves" type="derived" phase="solid" edible="true">Edible leaves extracted during harvest. A filler fiber for meal</resource>
-	<resource name="sesame milk" type="derived" phase="liquid" edible="true">Plant milk produced by soaking dry Soybean and sesame seeds and grinding them with water.</resource>
-	<resource name="blueberry muffin" type="derived" phase="solid" edible="true"></resource>
-	<resource name="brown rice" type="derived" phase="solid" edible="true"></resource>
-	<resource name="cranberry juice" type="derived" phase="solid" edible="true">Juice made from Cranberries</resource>
-	<resource name="cranberry sauce" type="derived" phase="solid" edible="true">Sauce or relish made from Cranberries</resource>
-	<resource name="french fries" type="derived" phase="solid" edible="true">French fries made from potatoes.</resource>
+	<resource name="Cane fiber" type="derived" phase="solid" edible="true">Fiber processed from Sugarcane.</resource>
+	<resource name="Leaves" type="derived" phase="solid" edible="true">Edible leaves extracted during harvest. A filler fiber for meal</resource>
+	<resource name="Sesame milk" type="derived" phase="liquid" edible="true">Plant milk produced by soaking dry Soybean and sesame seeds and grinding them with water.</resource>
+	<resource name="Blueberry muffin" type="derived" phase="solid" edible="true"></resource>
+	<resource name="Brown rice" type="derived" phase="solid" edible="true"></resource>
+	<resource name="Cranberry juice" type="derived" phase="solid" edible="true">Juice made from Cranberries</resource>
+	<resource name="Cranberry sauce" type="derived" phase="solid" edible="true">Sauce or relish made from Cranberries</resource>
+	<resource name="French fries" type="derived" phase="solid" edible="true">French fries made from potatoes.</resource>
 <!-- Since garlic oil is not a neutral flavour (just like fish oil), it should not be used in place of generic oil -->
-	<resource name="garlic oil" type="derived" phase="liquid" edible="true">Oil pressed from garlic.</resource>
-	<resource name="granola bar" type="derived" phase="solid" edible="true">A popular breakfast and snack consisting of puffed grain, rolled oats, nuts, honey, dried fruits</resource>
-	<resource name="honey" type="derived" phase="liquid" edible="true">Honey extracted from bee hives</resource>
-	<resource name="ketchup" type="derived" phase="liquid" edible="true">Jam made from tomatoes.</resource>
-	<resource name="mustard" type="derived" phase="liquid" edible="true">Mustard made from mustard seed</resource>
-	<resource name="peanut butter" type="derived" phase="solid" edible="true"></resource>
-	<resource name="pizza dough" type="derived" phase="solid" edible="true"></resource>
-	<resource name="quinoa sprout" type="derived" phase="solid" edible="true">Sprouts from Quinoa</resource>
-	<resource name="rice noodle" type="derived" phase="solid" edible="true">Noodle made of Rice Flour.</resource>
-	<resource name="rice flour" type="derived" phase="solid" edible="true">Flour made from White Rice. </resource>
-	<resource name="rice vinegar" type="derived" phase="liquid" edible="true">Rice vinegar is more popular in the cuisines of East and Southeast Asia. It is available in "white" (light yellow), red, and black varieties.</resource>
-	<resource name="roasted peanut" type="derived" phase="solid" edible="true"></resource>
-	<resource name="sugarcane juice" type="derived" phase="liquid" edible="true">Juice made from Sugarcane</resource>
-	<resource name="sugar" type="derived" phase="solid" edible="true">Sugar processed from Sugarcane.</resource>
-	<resource name="veggie patty" type="derived" phase="solid" edible="true">Made of textured vegetable protein (like soy), legumes (beans), tofu, nuts, mushrooms, or grains or seeds, like wheat and flax. </resource>
-	<resource name="wheat noodle" type="derived" phase="solid" edible="true">Noodle made of Wheat Flour.</resource>
-	<resource name="wheat flour" type="derived" phase="solid" edible="true">Flour made from wheat kernel.</resource>
-	<resource name="wheat bun" type="derived" phase="solid" edible="true">fluffy Buns for holding Veggie Patty.</resource>
-	<resource name="wheat bread" type="derived" phase="solid" edible="true">Loaves of Bread for making sandwiches. </resource>
-	<resource name="white bread" type="derived" phase="solid" edible="true">French bread or loaves of bread made from flour. </resource>
-	<resource name="white bun" type="derived" phase="solid" edible="true">French bread or loaves of bread made from flour. </resource>
-	<resource name="white rice" type="derived" phase="solid" edible="true"></resource>
+	<resource name="Garlic oil" type="derived" phase="liquid" edible="true">Oil pressed from garlic.</resource>
+	<resource name="Granola bar" type="derived" phase="solid" edible="true">A popular breakfast and snack consisting of puffed grain, rolled oats, nuts, honey, dried fruits</resource>
+	<resource name="Honey" type="derived" phase="liquid" edible="true">Honey extracted from bee hives</resource>
+	<resource name="Ketchup" type="derived" phase="liquid" edible="true">Jam made from tomatoes.</resource>
+	<resource name="Mustard" type="derived" phase="liquid" edible="true">Mustard made from mustard seed</resource>
+	<resource name="Peanut butter" type="derived" phase="solid" edible="true"></resource>
+	<resource name="Pizza dough" type="derived" phase="solid" edible="true"></resource>
+	<resource name="Quinoa sprout" type="derived" phase="solid" edible="true">Sprouts from Quinoa</resource>
+	<resource name="Rice noodle" type="derived" phase="solid" edible="true">Noodle made of Rice Flour.</resource>
+	<resource name="Rice flour" type="derived" phase="solid" edible="true">Flour made from White Rice. </resource>
+	<resource name="Rice vinegar" type="derived" phase="liquid" edible="true">Rice vinegar is more popular in the cuisines of East and Southeast Asia. It is available in "white" (light yellow), red, and black varieties.</resource>
+	<resource name="Roasted peanut" type="derived" phase="solid" edible="true"></resource>
+	<resource name="Sugarcane juice" type="derived" phase="liquid" edible="true">Juice made from Sugarcane</resource>
+	<resource name="Sugar" type="derived" phase="solid" edible="true">Sugar processed from Sugarcane.</resource>
+	<resource name="Veggie patty" type="derived" phase="solid" edible="true">Made of textured vegetable protein (like soy), legumes (beans), tofu, nuts, mushrooms, or grains or seeds, like wheat and flax. </resource>
+	<resource name="Wheat noodle" type="derived" phase="solid" edible="true">Noodle made of Wheat Flour.</resource>
+	<resource name="Wheat flour" type="derived" phase="solid" edible="true">Flour made from wheat kernel.</resource>
+	<resource name="Wheat bun" type="derived" phase="solid" edible="true">fluffy Buns for holding Veggie Patty.</resource>
+	<resource name="Wheat bread" type="derived" phase="solid" edible="true">Loaves of Bread for making sandwiches. </resource>
+	<resource name="White bread" type="derived" phase="solid" edible="true">French bread or loaves of bread made from flour. </resource>
+	<resource name="White bun" type="derived" phase="solid" edible="true">French bread or loaves of bread made from flour. </resource>
+	<resource name="White rice" type="derived" phase="solid" edible="true"></resource>
 
 <!-- Types of oil -->
-	<resource name="sesame oil" type="oil" phase="liquid" edible="true">
+	<resource name="Sesame oil" type="oil" phase="liquid" edible="true">
 		Oil pressed from sesame seeds.</resource>
-	<resource name="rice bran oil" type="oil" phase="liquid" edible="true">
+	<resource name="Rice bran oil" type="oil" phase="liquid" edible="true">
 		Oil is extracted from the germ and inner husk of rice. </resource>
-	<resource name="peanut oil" type="oil" phase="liquid" edible="true">
+	<resource name="Peanut oil" type="oil" phase="liquid" edible="true">
 		Oil is extracted from peanuts.</resource>
-	<resource name="soybean oil" type="oil" phase="liquid" edible="true">
+	<resource name="Soybean oil" type="oil" phase="liquid" edible="true">
 		Oil derived from soybean.</resource>
 	
 <!-- Food resources derived from Bio-organism -->
@@ -201,15 +201,15 @@
 		This edible fungus is used to ferment 
 		tempeh. As the fungus grows, its mycelia grow throughout the edible medium, producing
 		an edible block.</resource>
-	<resource name="yeast" type="organism" phase="solid" edible="true">
+	<resource name="Yeast" type="organism" phase="solid" edible="true">
 		Yeasts are single-celled fungi. It is an essential Baking Ingredient for making bread.</resource>
 
 <!-- Chemical resources derived from insect -->
-	<resource name="beeswax" type="insect" phase="solid" edible="true"> 
+	<resource name="Beeswax" type="insect" phase="solid" edible="true"> 
 		a natural wax produced by honey as a lubricant,
 		waterproofing agent, an ingredient in cosmetics, a medicinal agent to help lower cholesterol levels, prevent
 		infections, and help protect the stomach from ulcers. </resource>
-	<resource name="propolis" type="insect" phase="liquid" edible="true">
+	<resource name="Propolis" type="insect" phase="liquid" edible="true">
 		Propolis or bee glue is a resinous
 		mixture collected by honey bees from tree buds,	sap flows, or other
 		botanical sources. Used as a sealant for unwanted open spaces in the
@@ -219,57 +219,57 @@
 		in cancer treatment and cancer prevention.	</resource>
 
 <!-- Food resources derived from fish -->
-	<resource name="fish meat" type="animal" phase="solid" edible="true">
+	<resource name="Fish meat" type="animal" phase="solid" edible="true">
 		meat from fish</resource>
 <!-- Since fish oil is not a neutral flavour (just like garlic oil), it should not be used in place of generic oil -->
-	<resource name="fish oil" type="animal" phase="liquid" edible="true">
+	<resource name="Fish oil" type="animal" phase="liquid" edible="true">
 		Oil derived from fish.</resource>
-	<resource name="fish patty" type="animal" phase="solid" edible="true">
+	<resource name="Fish patty" type="animal" phase="solid" edible="true">
 		patty made of fish meat</resource>
 
 <!-- Chemical food resources -->
-	<resource name="baking powder" type="chemical" phase="solid" edible="true">
+	<resource name="Baking powder" type="chemical" phase="solid" edible="true">
 		Baking powder contains sodium bicarbonate as well as the acidifying agent (cream of tartar), and also a drying agent (usually starch). </resource>
 
 <!-- Salt resources -->
-	<resource name="table salt" type="chemical" phase="solid" demand=".15" edible="true">
+	<resource name="Table salt" type="chemical" phase="solid" demand=".15" edible="true">
 		Food Grade Salt, is the common name for the substance sodium chloride (NaCI), which occurs in the form of transparent cubic crystals. </resource>
-	<resource name="rock salt" type="compound" phase="solid" demand="1.5">
+	<resource name="Rock salt" type="compound" phase="solid" demand="1.5">
 		Halite, commonly known as rock salt, is the mineral
 	 	form of sodium chloride (NaCl).</resource>
-	<resource name="epsom salt" type="chemical" phase="solid" demand=".5"> 
+	<resource name="Epsom salt" type="chemical" phase="solid" demand=".5"> 
 		Magnesium Sulfate as bath salt to
 		soothe sore muscles or for gardeners to improve crops. </resource>
 		
 <!-- Chemical for utility -->
-	<resource name="sodium hypochlorite" type="chemical" phase="liquid">
+	<resource name="Sodium hypochlorite" type="chemical" phase="liquid">
 		Sodium Hypochlorite is
 		one of the bleaching chemical for sanitizing soybean as well as pulp
 		bleaching during paper making </resource>
-	<resource name="bleaching chemical" type="chemical" phase="liquid">
+	<resource name="Bleaching chemical" type="chemical" phase="liquid">
 		Bleaching chemical
 		include chlorine dioxide, oxygen, or hydrogen peroxide. </resource>
-	<resource name="activated charcoal" type="chemical" phase="solid"> 
+	<resource name="Activated charcoal" type="chemical" phase="solid"> 
 		Activated charcoal's main use is as an
 	antidote in poisoning and in constructing water filter</resource>
-	<resource name="fertilizer" type="chemical" phase="solid" demand="4.5"> 
+	<resource name="Fertilizer" type="chemical" phase="solid" demand="4.5"> 
 		Inorganic nutrients for crop growth </resource>
-	<resource name="lime" type="chemical" phase="solid" demand=".01"> 
+	<resource name="Lime" type="chemical" phase="solid" demand=".01"> 
 		Lime is a calcium-containing inorganic
 		material in which carbonates, oxides, and hydroxides predominate. In the
 		strict sense of the term, lime is CaO or Ca(OH)2.</resource>
-	<resource name="polycarbonate resin" type="chemical" phase="solid" demand="1.5"> 
+	<resource name="Polycarbonate resin" type="chemical" phase="solid" demand="1.5"> 
 		These are partially bio-based
 		polycarbonates made use of renewable feedstocks (food waste) and CO2. See
 		https://www.bio.org/sites/default/files/Natalie%20Bittner.pdf. They
 		are strong, tough materials, easily worked, molded, and thermoformed.</resource>
-	<resource name="polyurethane" type="chemical" phase="solid" demand="10">
+	<resource name="Polyurethane" type="chemical" phase="solid" demand="10">
 		These bio-based polyurethane made
 		use of natural-oil polyols (NOPs) produced from renewable
 		raw materials such as soybean or vegetable oil. Polyurethanes are used
 		in the manufacturing of foot wears, solid plastic items, foams for
 		bedding and upholstery. </resource>
-	<resource name="polyester resin" type="chemical" phase="liquid" demand="0.015"> 
+	<resource name="Polyester resin" type="chemical" phase="liquid" demand="0.015"> 
 		Polyester resins are thermoplastic polymers. It's the most widely used resin systems in the marine industry. 
 	 By far the majority of dinghies, yachts and workboats built in composites make use of this 
 	 resin system. Polyesters are produced commercially both as saturated and unsaturated resins. 
@@ -281,21 +281,21 @@
 	 and holes that need to remain watertight. See comparison between polyester resin and 
 	 epoxy resin at https://www.pcepoxy.com/what-is-the-difference-between-epoxy-and-polyester-resin/
 	</resource>
-	<resource name="polyethylene" type="chemical" phase="solid" demand=".01">
+	<resource name="Polyethylene" type="chemical" phase="solid" demand=".01">
 		Polyethylene pellets or flakes.</resource>
-	<resource name="styrene" type="chemical" phase="liquid" demand=".015">
+	<resource name="Styrene" type="chemical" phase="liquid" demand=".015">
 		Synthetic styrene, which is chemically
 		identical to naturally occurring styrene, is manufactured as a chemical building block for
 		materials used to make packaging, insulation </resource>
-	<resource name="polystyrene" type="chemical" phase="solid" demand="2.5">
+	<resource name="Polystyrene" type="chemical" phase="solid" demand="2.5">
 		When styrene molecules are linked
 		together into a polymer, polystyrene is created. Polystyrene is an inert plastic that can
 		be used to make many products, such as disposable plates, cups and other foodservice
 		packaging products. </resource>
-	<resource name="bisphenol-a" type="chemical" phase="solid"> 
+	<resource name="Bisphenol-a" type="chemical" phase="solid"> 
 		The chemical used for reinforcing
 		plastic and for making polycarbonate</resource>
-	<resource name="ceramic electrolyte" type="chemical" phase="solid"> 
+	<resource name="Ceramic electrolyte" type="chemical" phase="solid"> 
 		The ceramic electrolyte 
 		is highly ion-conductive and chemically stable for making batteries and fuel cells. 
 		This solid metal oxide is an insulator that will not conduct electricity. However, it 
@@ -306,81 +306,81 @@
      https://www.pnas.org/content/117/50/31685
      https://scholarworks.wm.edu/cgi/viewcontent.cgi?article=6537&context=etd
 -->
-	<resource name="regolith-b" type="regolith" phase="solid"> 
+	<resource name="Regolith-B" type="regolith" phase="solid"> 
 		Type B Martian soil rich in poly-hydrated sulfate. 40% gypsum.</resource>
-	<resource name="regolith-c" type="regolith" phase="solid"> 
+	<resource name="Regolith-C" type="regolith" phase="solid"> 
 		Type C Martian soil rich in phyllo-silicate. 40% smectite.</resource>
-	<resource name="regolith-d" type="regolith" phase="solid"> 
+	<resource name="Regolith-D" type="regolith" phase="solid"> 
 		Type D Martian soil 23.5% basaltic.</resource>
-	<resource name="regolith" type="regolith" phase="solid"> 
+	<resource name="Regolith" type="regolith" phase="solid"> 
 		Unspecified type of Martian soil.</resource>
 
-	<resource name="gypsum" type="ore" phase="solid"> 
+	<resource name="Gypsum" type="ore" phase="solid"> 
 		Gypsum is a soft sulfate mineral composed of calcium sulfate dihydrate,
 		with the chemical formula CaSO4·2H2O. It is widely mined and used as a fertilizer. A typical regolith
 		derived mineral deposit in NASA Water ISRU Study Reference Case B</resource>
-	<resource name="basaltic" type="ore" phase="solid"> 
+	<resource name="Basaltic" type="ore" phase="solid"> 
 		Basalt is a common extrusive igneous rock formed from the rapid cooling
 		of basaltic lava exposed at or very near the surface of a planet. A typical regolith derived mineral deposit
 		in NASA Water ISRU Study Reference Case D</resource>
-	<resource name="smectite" type="ore" phase="solid"> 
+	<resource name="Smectite" type="ore" phase="solid"> 
 		Smectite is the name used for a group of phyllo-silicate mineral species.
 		It's a clay-like regolith derived mineral deposit in NASA Water ISRU Study Reference Case C. </resource>
-	<resource name="allophane" type="ore" phase="solid"> 
+	<resource name="Allophane" type="ore" phase="solid"> 
 		Allophane is an amorphous to poorly crystalline hydrous aluminium
 		silicate clay mineraloid. Its chemical formula is Al2O3·1.3-2·H2O. A regolith derived mineral deposit</resource>
-	<resource name="akaganeite" type="ore" phase="solid"> 
+	<resource name="Akaganeite" type="ore" phase="solid"> 
 		Akaganeite is an iron oxide-hydroxide / chloride mineral with
 		formula: Fe3+O e.g.; β-FeO. It is formed by the weathering of pyrrhotite. A regolith derived mineral deposit</resource>
-	<resource name="bassanite" type="ore" phase="solid"> 
+	<resource name="Bassanite" type="ore" phase="solid"> 
 		Bassanite is a calcium sulfate mineral with formula CaSO4·0.5
 		or 2CaSO4·H2O. In other words it has half a water per CaSO4 unit hence its synonym hemihydrate.
 		A regolith derived mineral deposit</resource>
 
 
 <!-- Assorted mineral compounds -->
-	<resource name="aluminum oxide" type="compound" phase="solid" demand=".05" />
-	<resource name="ammonia" type="compound" phase="solid"> NH3+ is an essential nutrient for plants</resource>
-	<resource name="calcium carbonate" type="compound" phase="solid" demand=".1" />
-	<resource name="calcium sulfate" type="compound" phase="solid" />
-	<resource name="iron oxide" type="compound" phase="solid"> oxide mineral such as Fe2O3</resource>
-	<resource name="iron chloride" type="compound" phase="solid"> Iron(III) chloride, also called ferric chloride,
+	<resource name="Aluminum oxide" type="compound" phase="solid" demand=".05" />
+	<resource name="Ammonia" type="compound" phase="solid"> NH3+ is an essential nutrient for plants</resource>
+	<resource name="Calcium carbonate" type="compound" phase="solid" demand=".1" />
+	<resource name="Calcium sulfate" type="compound" phase="solid" />
+	<resource name="Iron oxide" type="compound" phase="solid"> oxide mineral such as Fe2O3</resource>
+	<resource name="Iron chloride" type="compound" phase="solid"> Iron(III) chloride, also called ferric chloride,
 	is an industrial scale commodity chemical compound, with the formula FeCl3 and with
 	iron in the +3 oxidation state. When dissolved in water, iron(III) chloride undergoes
 	hydrolysis and gives off heat in an exothermic reaction. The resulting brown, acidic, and
 	corrosive solution is used as a flocculant in sewage treatment and drinking water production,
 	and as an etchant for copper-based metals in printed circuit boards. Extracted from akaganeite.</resource>
 
-	<resource name="iron hydroxide" type="compound" phase="solid"> Iron(II) hydroxide is a white solid, but even traces
+	<resource name="Iron hydroxide" type="compound" phase="solid"> Iron(II) hydroxide is a white solid, but even traces
 	of oxygen impart a greenish tinge. The air-oxidized solid is sometimes known as "green rust".
 	Extracted from akaganeite.</resource>
 
-	<resource name="nitrate" type="compound" phase="solid"> NO3 is an essential nutrient for plants</resource>
-	<resource name="nitrite" type="compound" phase="solid"> NO2 is an essential nutrient for plants</resource>
-	<resource name="potash lye" type="compound" phase="solid" demand="20"> Potassium Hydroxide</resource>
-	<resource name="sand" type="compound" phase="solid"> Soil with iron oxide removed. Used for making glass.</resource>
-	<resource name="silica" type="compound" phase="solid"> The word Silica came from the Latin silex. 
+	<resource name="Nitrate" type="compound" phase="solid"> NO3 is an essential nutrient for plants</resource>
+	<resource name="Nitrite" type="compound" phase="solid"> NO2 is an essential nutrient for plants</resource>
+	<resource name="Potash lye" type="compound" phase="solid" demand="20"> Potassium Hydroxide</resource>
+	<resource name="Sand" type="compound" phase="solid"> Soil with iron oxide removed. Used for making glass.</resource>
+	<resource name="Silica" type="compound" phase="solid"> The word Silica came from the Latin silex. 
 	 Also known as silicon dioxide, silica is an oxide of silicon with the chemical formula
 	 SiO2, most commonly found in nature as quartz and in various living
 	 organisms. In many parts of the world, silica is the major constituent
 	 of sand. </resource>
-	<resource name="sodium oxide" type="compound" phase="solid"> extracted from regolith.</resource>
+	<resource name="Sodium oxide" type="compound" phase="solid"> extracted from regolith.</resource>
 
 <!-- Utility items derived from crop harvest -->
-	<resource name="fiber cloth" type="utility" phase="solid" >Cloth made from Soy Fiber and cane fiber.</resource>
-	<resource name="napkin" type="utility" phase="solid" />
-	<resource name="paper" type="utility" phase="solid" />
-	<resource name="pulp" type="utility" phase="solid">Pulp is a mixture of cellulose fibers.</resource>
-	<resource name="toilet tissue" type="utility" phase="solid" />
+	<resource name="Fiber Cloth" type="utility" phase="solid" >Cloth made from Soy Fiber and cane fiber.</resource>
+	<resource name="Napkin" type="utility" phase="solid" />
+	<resource name="Paper" type="utility" phase="solid" />
+	<resource name="Pulp" type="utility" phase="solid">Pulp is a mixture of cellulose fibers.</resource>
+	<resource name="Toilet Tissue" type="utility" phase="solid" />
 
 <!-- Utility items derived from compound -->
-	<resource name="mylar" type="utility" phase="solid"> Mylar is paper that is coated with or made
+	<resource name="Mylar" type="utility" phase="solid"> Mylar is paper that is coated with or made
 	 from a polyester film BoPET material. BoPET (biaxially-oriented polyethylene terephthalate) is 
 	 a polyester film made from stretched polyethylene terephthalate (PET). Mylar has a high tensile 
 	 strength and is very durable yet flexible, making it perfect for packing materials, electrical 
 	 insulation, solar technology and countless other practical uses.</resource>
 	 
-	<resource name="aluminized mylar" type="utility" phase="solid"> Aluminized Mylar is a reflective, 
+	<resource name="Aluminized Mylar" type="utility" phase="solid"> Aluminized Mylar is a reflective, 
 	 electrical insulating material. It contains a coat of aluminum, resulting in a silver-colored radiant 
 	 barrier that reflects radiant heat and thermal radiation. It shields Space Stations against the 
 	 thermal radiation of the sun and the bitter cold of space. See 'Efficiency of aluminized mylar 
@@ -405,69 +405,69 @@
     May add Plagioclase, Feldspar, High-Ca Pyroxene, Low-Ca Pyroxene, Quartz,
     Amphibole, Silicates, etc. -->
 
-	<resource name="chalcopyrite" type="mineral" phase="solid">A copper iron sulfide (CuFeS2) mineral that
+	<resource name="Chalcopyrite" type="mineral" phase="solid">A copper iron sulfide (CuFeS2) mineral that
 	 crystallizes in the tetragonal system.</resource>
-	<resource name="goethite" type="mineral" phase="solid">An iron bearing oxyhydroxide mineral containing
+	<resource name="Goethite" type="mineral" phase="solid">An iron bearing oxyhydroxide mineral containing
 	 ferric iron. Found in soil and other low-temperature environments, Goethite has been
 	 well known	since ancient times for its use as a pigment (brown ochre). </resource>
-	<resource name="hematite" type="mineral" phase="solid">The mineral form of iron(III) oxide (Fe2O3).
+	<resource name="Hematite" type="mineral" phase="solid">The mineral form of iron(III) oxide (Fe2O3).
 	 Seen in abundance at Terra Meridiani near the equator at 0° longitude,
 	 and the Aram Chaos site near the Valles Marineris, and Aureum Chaos.
 	 https://en.wikipedia.org/wiki/Hematite#Mars</resource>
-	<resource name="kamacite" type="mineral" phase="solid">An alloy of iron and nickel, may originate from
+	<resource name="Kamacite" type="mineral" phase="solid">An alloy of iron and nickel, may originate from
 	 meteorites. The proportion iron:nickel is between 90:10 and 95:5; small quantities of
 	 other elements, such as cobalt or carbon may also be present. The mineral has a metallic
 	 luster, is gray and has no clear cleavage although its crystal structure is
 	 isometric-hexoctahedral.</resource>
-	<resource name="magnesite" type="mineral" phase="solid">A magnesium carbonate mineral MgCO3. Mixed
+	<resource name="Magnesite" type="mineral" phase="solid">A magnesium carbonate mineral MgCO3. Mixed
 	 crystals of iron(II) carbonate and magnesite (mixed crystals known as ankerite) possess
 	 a layered structure. These magnesites often are cryptocrystalline and contain silica in
 	 the form of opal or chert. Manganese, cobalt and nickel may also occur in small amounts.
 	 </resource>
-	<resource name="magnetite" type="mineral" phase="solid">A rock mineral and one of the main iron ores,
+	<resource name="Magnetite" type="mineral" phase="solid">A rock mineral and one of the main iron ores,
 	 with the chemical formula Fe3O4. It is one of the oxides of iron, and is ferrimagnetic;
 	 it is attracted to a magnet and can be magnetized to become a permanent magnet itself.
 	 </resource>
-	<resource name="malachite" type="mineral" phase="solid">A copper carbonate hydroxide mineral Cu2CO3(OH)2.
+	<resource name="Malachite" type="mineral" phase="solid">A copper carbonate hydroxide mineral Cu2CO3(OH)2.
 	 This opaque, green banded mineral crystallizes in the monoclinic crystal system, and most
 	 often forms botryoidal, fibrous, or stalagmitic masses, in fractures and spaces, deep
 	 underground, where the water table and hydrothermal fluids provide the means for chemical
 	 precipitation.</resource>
-	<resource name="olivine" type="mineral" phase="solid">A magnesium iron silicate (Mg2+, Fe2+)2SiO4. A type
+	<resource name="Olivine" type="mineral" phase="solid">A magnesium iron silicate (Mg2+, Fe2+)2SiO4. A type
 	 of nesosilicate or orthosilicate. Olivine incorporates only minor amounts of elements other
 	 than oxygen, silicon, magnesium and iron. Manganese and nickel commonly are the additional
 	 elements present in highest concentrations. Olivine gives its name to the group of minerals
 	 with a related structure (the olivine group)—which includes tephroite (Mn2SiO4),
 	 monticellite (CaMgSiO4) and kirschsteinite (CaFeSiO4).</resource>
-	<resource name="taenite" type="mineral" phase="solid">Taenite is a major constituent of iron meteorites.
+	<resource name="Taenite" type="mineral" phase="solid">Taenite is a major constituent of iron meteorites.
 	 An alloy of iron and nickel, with nickel proportions of 20% up to 65%. The name is derived
 	 from the Greek meaning band or ribbon. In octahedrites it is found in bands interleaving
 	 with kamacite forming Widmanstätten patterns, whereas in ataxites it is the dominant
 	 constituent. In octahedrites a fine intermixture with kamacite can occur, which is
 	 called plessite. Taenite is one of four known Fe-Ni meteorite minerals: The others are
 	 kamacite, tetrataenite, and antitaenite.</resource>
-	<resource name="sylvite" type="mineral" phase="solid">Or sylvine, is potassium chloride (KCl) in natural
+	<resource name="Sylvite" type="mineral" phase="solid">Or sylvine, is potassium chloride (KCl) in natural
 	 mineral form. It forms crystals in the isometric system very similar to normal rock salt,
 	 halite (NaCl). The two are, in fact, isomorphous. Sylvite is colorless to white with shades
 	 of yellow and red due to inclusions. </resource>
 
 
 	<!-- Types of Rocks. See https://geology.com/stories/13/rocks-on-mars/ -->
-	<resource name="rock samples" type="rock" phase="solid">Rock samples collected from explored sites.</resource>
-	<resource name="columnar basalt" type="rock"  phase="solid">Basalt is a dark-colored, fine-grained, igneous rock
+	<resource name="Rock samples" type="rock" phase="solid">Rock samples collected from explored sites.</resource>
+	<resource name="Columnar Basalt" type="rock"  phase="solid">Basalt is a dark-colored, fine-grained, igneous rock
 	 composed mainly of plagioclase and pyroxene minerals. It most commonly forms as an
 	 extrusive rock, such as a lava flow.</resource>
-	<resource name="granite" type="rock" phase="solid">The granitoid rocks on Mars may have formed when thick
+	<resource name="Granite" type="rock" phase="solid">The granitoid rocks on Mars may have formed when thick
 	 sequences of basaltic rocks were metamorphosed by moderate heat and pressure and then
 	 partially melted. Observed the craters' central peaks, they must have been dredged up from
 	 depths by the force of the crater-making impact. http://themis.asu.edu/node/5395.</resource>
-	<resource name="mudstone" type="rock" phase="solid">.</resource>
-	<resource name="sandstone" type="rock" phase="solid">.</resource>
-	<resource name="shale" type="rock" phase="solid">.</resource>
-	<resource name="conglomerate" type="rock" phase="solid">.</resource>
-	<resource name="cross bedding" type="rock" phase="solid">.</resource>
-	<resource name="meteorite" type="rock" phase="solid">.</resource>
-	<resource name="scoria" type="rock" phase="solid">.</resource>
+	<resource name="Mudstone" type="rock" phase="solid">.</resource>
+	<resource name="Sandstone" type="rock" phase="solid">.</resource>
+	<resource name="Shale" type="rock" phase="solid">.</resource>
+	<resource name="Conglomerate" type="rock" phase="solid">.</resource>
+	<resource name="Cross bedding" type="rock" phase="solid">.</resource>
+	<resource name="Meteorite" type="rock" phase="solid">.</resource>
+	<resource name="Scoria" type="rock" phase="solid">.</resource>
 	<!--resource name="sand dunes" type="rock" phase="solid">.</resource-->
 
 <!-- Mineral Elements
@@ -488,44 +488,44 @@
     see https://en.wikipedia.org/wiki/Ore_resources_on_Mars
 
     -->
-	<resource name="aluminum" type="element" phase="solid" demand=".15" >An element.</resource>
-	<resource name="calcium" type="element" phase="solid">An element.</resource>
-	<resource name="carbon" type="element" phase="solid" demand=".01" >Carbon powder</resource>
-	<resource name="chromium" type="element" phase="solid">An element.</resource>
-	<resource name="copper" type="element" phase="solid">An element.</resource>
-	<resource name="gold" type="element" phase="solid">An element.</resource>
-	<resource name="iron" type="element" phase="solid" demand=".1">An element.</resource>
-	<resource name="lithium" type="element" phase="solid">An element.</resource>
-	<resource name="magnesium" type="element" phase="solid">An element.</resource>
-	<resource name="nickel" type="element" phase="solid">An element.</resource>
-	<resource name="phosphorus" type="element" phase="solid">An element.</resource>
-	<resource name="platinum" type="element" phase="solid">An element.</resource>
-	<resource name="potassium" type="element" phase="solid">An element.</resource>
-	<resource name="silicon" type="element" phase="solid" demand=".15" >An element.</resource>
-	<resource name="silver" type="element" phase="solid">An element.</resource>
-	<resource name="sulfur" type="element" phase="solid">An element.</resource>
-	<resource name="tin" type="element" phase="solid">An element.</resource>
-	<resource name="titanium" type="element" phase="solid">An element.</resource>
-	<resource name="zinc" type="element" phase="solid">An element.</resource>
+	<resource name="Aluminum" type="element" phase="solid" demand=".15" >An element.</resource>
+	<resource name="Calcium" type="element" phase="solid">An element.</resource>
+	<resource name="Carbon" type="element" phase="solid" demand=".01" >Carbon powder</resource>
+	<resource name="Chromium" type="element" phase="solid">An element.</resource>
+	<resource name="Copper" type="element" phase="solid">An element.</resource>
+	<resource name="Gold" type="element" phase="solid">An element.</resource>
+	<resource name="Iron" type="element" phase="solid" demand=".1">An element.</resource>
+	<resource name="Lithium" type="element" phase="solid">An element.</resource>
+	<resource name="Magnesium" type="element" phase="solid">An element.</resource>
+	<resource name="Nickel" type="element" phase="solid">An element.</resource>
+	<resource name="Phosphorus" type="element" phase="solid">An element.</resource>
+	<resource name="Platinum" type="element" phase="solid">An element.</resource>
+	<resource name="Potassium" type="element" phase="solid">An element.</resource>
+	<resource name="Silicon" type="element" phase="solid" demand=".15" >An element.</resource>
+	<resource name="Silver" type="element" phase="solid">An element.</resource>
+	<resource name="Sulfur" type="element" phase="solid">An element.</resource>
+	<resource name="Tin" type="element" phase="solid">An element.</resource>
+	<resource name="Titanium" type="element" phase="solid">An element.</resource>
+	<resource name="Zinc" type="element" phase="solid">An element.</resource>
 
 
 <!-- Building Material -->
-	<resource name="cement" type="construction" phase="solid" >A Building Material.</resource>
-	<resource name="concrete" type="construction" phase="solid" >A Building Material.</resource>
-	<resource name="mortar" type="construction" phase="solid" >A Building Material.</resource>
+	<resource name="Cement" type="construction" phase="solid" >A Building Material.</resource>
+	<resource name="Concrete" type="construction" phase="solid" >A Building Material.</resource>
+	<resource name="Mortar" type="construction" phase="solid" >A Building Material.</resource>
 
 <!-- Drugs and Supplements -->
-	<resource name="immune booster" type="medical" phase="solid" >A Drug.</resource>
+	<resource name="Immune booster" type="medical" phase="solid" >A Drug.</resource>
 
 <!-- Bio-organisms -->
-	<resource name="acetic acid bacteria" type="organism" phase="solid">This bacteria has the ability to oxidize
+	<resource name="Acetic acid bacteria" type="organism" phase="solid">This bacteria has the ability to oxidize
 		many types of sugars and alcohols to organic acids as end products during fermentation
 		process. Useful for making vinegar.</resource>
-	<resource name="nitrospira spp" type="organism" phase="solid">Used in the oxidation of nitrite to nitrate
+	<resource name="Nitrospira SPP" type="organism" phase="solid">Used in the oxidation of nitrite to nitrate
 		(NO3−) in the nitrification of waste water.</resource>
-	<resource name="nitrosomonas spp" type="organism" phase="solid"> Used in the oxidation of ammonia (NH3)
+	<resource name="Nitrosomonas SPP" type="organism" phase="solid"> Used in the oxidation of ammonia (NH3)
 		to nitrite (NO2−) in the nitrification of waste water.</resource>
-	<resource name="rhizobia" type="organism" phase="solid"> Seen as organic fertilizer, the nitrogen fixing
+	<resource name="Rhizobia" type="organism" phase="solid"> Seen as organic fertilizer, the nitrogen fixing
 		bacteria that colonize the roots of their preferred plant partner and take nitrogen
 		from the air and convert it into ammonia, a form of nitrogen that plants can use.
 		In return, legumes feed the bacteria a steady diet of plant sugars.
@@ -536,8 +536,8 @@
 	-->
 
 <!-- Misc. -->
-	<resource name="glass" type="gemstone" phase="solid" demand="2" >For making vessels</resource>
-	<resource name="quartz" type="gemstone" phase="solid" demand="5" >For making electronic components</resource>
+	<resource name="Glass" type="gemstone" phase="solid" demand="2" >For making vessels</resource>
+	<resource name="Quartz" type="gemstone" phase="solid" demand="5" >For making electronic components</resource>
 
 
 </resource-list>

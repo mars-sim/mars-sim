@@ -16,7 +16,7 @@
 	<!-- http://en.wikipedia.org/wiki/Hematite -->
 	<!-- frequency - how common are the mineral concentrations? -->
 	<!-- Valid values: "common", "uncommon", "rare", "very_rare" -->
-	<mineral name="hematite" frequency="common">
+	<mineral name="Hematite" frequency="common">
 		<locale-list>
 			<!-- locale topographical regions the mineral is located. -->
 			<!-- Valid values: "volcanic", "sedimentary", "crater" -->
@@ -27,7 +27,7 @@
 	
 	<!-- Magnetite is an iron ore with volcanic and metamorphic origins. -->
 	<!-- http://en.wikipedia.org/wiki/Magnetite -->
-	<mineral name="magnetite" frequency="rare">
+	<mineral name="Magnetite" frequency="rare">
 		<locale-list>
 			<locale name="volcanic" />
 			<locale name="sedimentary" />
@@ -36,7 +36,7 @@
 	
 	<!-- Magnesite is a magnesium carbonate with metamorphic origins. -->
 	<!-- http://en.wikipedia.org/wiki/Magnesite -->
-	<mineral name="magnesite" frequency="rare">
+	<mineral name="Magnesite" frequency="rare">
 		<locale-list>
 			<locale name="sedimentary" />
 		</locale-list>
@@ -44,7 +44,7 @@
 	
 	<!-- Olivine is a magnesium iron silicate found in meteorites. -->
  	<!-- http://en.wikipedia.org/wiki/Olivine -->
-	<mineral name="olivine" frequency="uncommon">
+	<mineral name="Olivine" frequency="uncommon">
 		<locale-list>
 			<locale name="crater" />
 		</locale-list>
@@ -52,7 +52,7 @@
 	
 	<!-- Goethite is an iron ore that has metamorphic origins. -->
 	<!-- http://en.wikipedia.org/wiki/Goethite -->
-	<mineral name="goethite" frequency="common">
+	<mineral name="Goethite" frequency="common">
 		<locale-list>
 			<locale name="sedimentary" />
 		</locale-list>
@@ -60,7 +60,7 @@
 	
 	<!-- Kamacite is an iron-nickel mineral found in meteorites. -->
 	<!-- http://en.wikipedia.org/wiki/Kamacite -->
-	<mineral name="kamacite" frequency="common">
+	<mineral name="Kamacite" frequency="common">
 		<locale-list>
 			<locale name="crater" />
 		</locale-list>
@@ -68,7 +68,7 @@
 	
 	<!-- Taenite is an iron-nickel mineral found in meteorites. -->
 	<!-- http://en.wikipedia.org/wiki/Taenite -->
-	<mineral name="taenite" frequency="common">
+	<mineral name="Taenite" frequency="common">
 		<locale-list>
 			<locale name="crater" />
 		</locale-list>
@@ -76,7 +76,7 @@
 	
 	<!-- Chalcopyrite is a copper sulfide mineral. -->
 	<!-- http://en.wikipedia.org/wiki/Chalcopyrite -->
-	<mineral name="chalcopyrite" frequency="uncommon">
+	<mineral name="Chalcopyrite" frequency="uncommon">
 		<locale-list>
 			<locale name="sedimentary" />
 			<locale name="volcanic" />
@@ -85,7 +85,7 @@
 	
 	<!-- Malachite is a copper carbonate mineral. -->
 	<!-- http://en.wikipedia.org/wiki/Malachite -->
-	<mineral name="malachite" frequency="uncommon">
+	<mineral name="Malachite" frequency="uncommon">
 		<locale-list>
 			<locale name="sedimentary" />
 			<locale name="volcanic" />
@@ -94,7 +94,7 @@
 	
 	<!-- Sylvite is a salt concentration of potasium chloride. -->
 	<!-- http://en.wikipedia.org/wiki/Sylvite -->
-	<mineral name="sylvite" frequency="common">
+	<mineral name="Sylvite" frequency="common">
 		<locale-list>
 			<locale name="sedimentary" />
 		</locale-list>

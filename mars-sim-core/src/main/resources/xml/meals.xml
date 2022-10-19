@@ -164,14 +164,14 @@
 			<ingredient id="3" name="Leaves" proportion="0.125"/>			
 		</main-dish>
 
-		<main-dish id="16" name="filet sandwich" oil="0.05" salt="0.01" category="meal">
+		<main-dish id="16" name="Filet Sandwich" oil="0.05" salt="0.01" category="meal">
 			<ingredient id="0" name="fish patty" proportion="0.3"/>
 			<ingredient id="1" name="white bread" proportion="0.2"/>
 			<ingredient id="2" name="lettuce" proportion="0.15"/>
 			<ingredient id="3" name="tomato" proportion="0.15"/>
 		</main-dish>
 
-		<main-dish id="17" name="sushi plate" oil="0.05" salt="0.01" category="meal">
+		<main-dish id="17" name="Sushi Plate" oil="0.05" salt="0.01" category="meal">
 			<ingredient id="0" name="fish meat" proportion="0.3"/>
 			<ingredient id="1" name="morel mushroom" proportion="0.15"/>
 			<ingredient id="2" name="tofu" proportion="0.15"/>
@@ -179,7 +179,7 @@
 			<ingredient id="4" name="rice vinegar" proportion="0.05"/>
 		</main-dish>
 		
-		<main-dish id="18" name="garlic tofu and potatoes" oil="0.005" salt="0.01" category="meal">
+		<main-dish id="18" name="Garlic Tofu and Potatoes" oil="0.005" salt="0.01" category="meal">
 			<ingredient id="0" name="tofu" proportion="0.2"/>
 			<ingredient id="1" name="garlic oil" proportion="0.05"/>
 			<ingredient id="2" name="potato" proportion="0.5"/>
@@ -187,7 +187,7 @@
 			<ingredient id="4" name="leaves" proportion="0.03"/>
 		</main-dish>
 		
-		<main-dish id="19" name="garlic tempeh and potatoes" oil="0.005" salt="0.01" category="meal">
+		<main-dish id="19" name="Garlic Tempeh and Potatoes" oil="0.005" salt="0.01" category="meal">
 			<ingredient id="0" name="tempeh" proportion="0.2"/>
 			<ingredient id="1" name="garlic oil" proportion="0.05"/>
 			<ingredient id="2" name="potato" proportion="0.5"/>
@@ -252,7 +252,7 @@
 			<ingredient id="2" name="Water" proportion="0.25"/>
 		</side-dish>
 		
-		<side-dish id="10" name="ginger sesame tofu" oil="0.02" salt="0.005" category="meal">
+		<side-dish id="10" name="Ginger Sesame Tofu" oil="0.02" salt="0.005" category="meal">
 			<ingredient id="0" name="tofu" proportion="0.2"/>
 			<ingredient id="1" name="ginger" proportion="0.05"/>
 			<ingredient id="2" name="sesame" proportion="0.02"/>
@@ -262,7 +262,7 @@
 			<ingredient id="6" name="garlic oil" proportion="0.025"/>
 		</side-dish>
 		
-		<side-dish id="11" name="ginger sesame tempeh" oil="0.02" salt="0.005" category="meal">
+		<side-dish id="11" name="Ginger Sesame Tempeh" oil="0.02" salt="0.005" category="meal">
 			<ingredient id="0" name="tempeh" proportion="0.2"/>
 			<ingredient id="1" name="ginger" proportion="0.05"/>
 			<ingredient id="2" name="sesame" proportion="0.02"/>
@@ -272,7 +272,7 @@
 			<ingredient id="6" name="garlic oil" proportion="0.025"/>
 		</side-dish>
 		
-		<side-dish id="12" name="okara and veggies" oil="0.01" salt="0.005" category="meal">
+		<side-dish id="12" name="Okara and Veggies" oil="0.01" salt="0.005" category="meal">
 			<ingredient id="0" name="okara" proportion="0.25"/>
 			<ingredient id="1" name="carrot" proportion="0.05"/>
 			<ingredient id="2" name="spring onion" proportion="0.05"/>
@@ -314,4 +314,3 @@
 	</meal-list>
 
 </meal-configuration>
-

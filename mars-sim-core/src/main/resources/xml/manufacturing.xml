@@ -56,7 +56,7 @@ http://canada.marssociety.org/winnipeg/soil.html
 	calcium sulfate, potassium chloride, magnesium bromide, and calcium carbonate.
 -->
 	<!-- Purify Rock Salt to Food Grade Table Salt -->
-	<process name="purify rock salt into table/epsom salt and other compounds"
+	<process name="Purify rock salt into table/epsom salt and other compounds"
 	tech="1" skill="1" work-time="10.0" process-time="10"
 			power-required=".4">
 		<description> http://www.madehow.com/Volume-2/Salt.html
@@ -82,7 +82,7 @@ http://canada.marssociety.org/winnipeg/soil.html
 		</outputs>
 	</process>
 
-	<process name="make pulp from cane fiber and crop waste"
+	<process name="Make pulp from cane fiber and crop waste"
 			tech="2" skill="0"
 			work-time="50"
 			process-time="300"
@@ -99,7 +99,7 @@ http://canada.marssociety.org/winnipeg/soil.html
 		</outputs>
 	</process>
 
-	<process name="make pulp from cane fiber and crop waste (large batch)"
+	<process name="Make pulp from cane fiber and crop waste (large batch)"
 			tech="2" skill="2"
 			work-time="200"
 			process-time="800"
@@ -116,7 +116,7 @@ http://canada.marssociety.org/winnipeg/soil.html
 		</outputs>
 	</process>
 
-	<process name="make paper, napkin and toilet tissue from pulp"
+	<process name="Make paper, napkin and toilet tissue from pulp"
 			tech="1" skill="1"
 			work-time="50"
 			process-time="100"
@@ -132,7 +132,7 @@ http://canada.marssociety.org/winnipeg/soil.html
 		</outputs>
 	</process>
 
-	<process name="make paper, napkin and toilet tissue from pulp (large batch)"
+	<process name="Make paper, napkin and toilet tissue from pulp (large batch)"
 			tech="1" skill="1"
 			work-time="150"
 			process-time="500"
@@ -155,7 +155,7 @@ http://canada.marssociety.org/winnipeg/soil.html
 TODO 1: need to check the amount needed
 TODO 2: need to recruit chemist to monitor the process
 		 -->
-	<process name="make bleaching chemical for paper making"
+	<process name="Make bleaching chemical for paper making"
 			tech="2" skill="1"
 			work-time="10"
 			process-time="50"
@@ -173,7 +173,7 @@ TODO 2: need to recruit chemist to monitor the process
 		</outputs>
 	</process>
 
-	<process name="make bleaching chemical for paper making (large batch)"
+	<process name="Make bleaching chemical for paper making (large batch)"
 			tech="2" skill="1"
 			work-time="50"
 			process-time="200"
@@ -198,7 +198,7 @@ TODO: need to recruit chemist to monitor the process
 Note: 1 kg of H2 is 14.13 liter
 
 -->
-	<process name="make sodium hypochlorite for bleaching and sanitation"
+	<process name="Make sodium hypochlorite for bleaching and sanitation"
 			tech="2" skill="1"
 			work-time="10"
 			process-time="100"
@@ -214,7 +214,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="make sodium hypochlorite for bleaching and sanitation (large batch)"
+	<process name="Make sodium hypochlorite for bleaching and sanitation (large batch)"
 			tech="2" skill="1"
 			work-time="50"
 			process-time="400"
@@ -230,7 +230,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="make fertilizers for growing crops"
+	<process name="Make fertilizers for growing crops"
 			tech="2" skill="2"
 			work-time="25"
 			process-time="250"
@@ -259,7 +259,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="make fertilizers for growing crops (large batch)"
+	<process name="Make fertilizers for growing crops (large batch)"
 			tech="2" skill="2"
 			work-time="50"
 			process-time="500"
@@ -308,7 +308,7 @@ Note: 1 kg of H2 is 14.13 liter
 			Fe2O3 + 3C → 2Fe + 3CO
 -->
 
-	<process name="do carbon monoxide iron reduction"
+	<process name="Do carbon monoxide iron reduction"
 			tech="1" skill="1"
 			work-time="50"
 			process-time="200"
@@ -324,7 +324,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="do carbon monoxide iron reduction (large batch)"
+	<process name="Do carbon monoxide iron reduction (large batch)"
 			tech="1" skill="2"
 			work-time="250"
 			process-time="1000"
@@ -340,7 +340,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="do hydrogen iron reduction"
+	<process name="Do hydrogen iron reduction"
 			tech="1" skill="1"
 			work-time="50"
 			process-time="200"
@@ -357,7 +357,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="do hydrogen iron reduction (large batch)"
+	<process name="Do hydrogen iron reduction (large batch)"
 			tech="1" skill="2"
 			work-time="250"
 			process-time="1000"
@@ -375,7 +375,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces 5x 5kg iron ingots. -->
-	<process name="cast iron ingot" tech="2" skill="1" work-time="50" process-time="200"
+	<process name="Cast iron ingot" tech="2" skill="1" work-time="50" process-time="200"
 			power-required=".2">
 		<inputs>
 			<resource name="iron powder" amount="35.0" />
@@ -386,7 +386,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces 50x 5kg iron ingots. -->
-	<process name="cast iron ingot (large batch)" tech="2" skill="2" work-time="150" process-time="600"
+	<process name="Cast iron ingot (large batch)" tech="2" skill="2" work-time="150" process-time="600"
 			power-required="1.0">
 		<inputs>
 			<resource name="iron powder" amount="350.0" />
@@ -397,7 +397,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces 1m x 1m x 1mm (7.85kg) sheet of iron. -->
-	<process name="make iron sheet" tech="2" skill="2" work-time="50" process-time="200"
+	<process name="Make iron sheet" tech="2" skill="2" work-time="50" process-time="200"
 			power-required=".5">
 		<inputs>
 			<resource name="iron powder" amount="15.7" />
@@ -408,7 +408,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces 1m x 1m x 1mm (7.85kg) sheet of iron. -->
-	<process name="roll iron sheet" tech="2" skill="2" work-time="50" process-time="200"
+	<process name="Roll iron sheet" tech="2" skill="2" work-time="50" process-time="200"
 			power-required=".5">
 		<inputs>
 			<part name="iron ingot" number="8" />
@@ -420,7 +420,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces one 5kg aluminum ingots. -->
-	<process name="cast aluminum ingot"
+	<process name="Cast aluminum ingot"
 			tech="1" skill="1"
 			work-time="50"
 			process-time="50"
@@ -438,7 +438,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces 50x 1kg aluminum ingots. -->
-	<process name="cast aluminum ingot (large batch)" tech="1" skill="1" work-time="250" process-time="250"
+	<process name="Cast aluminum ingot (large batch)" tech="1" skill="1" work-time="250" process-time="250"
 			power-required="1">
 		<description>Al&lt;sub&gt;2&lt;/sub&gt;O&lt;sub&gt;3&lt;/sub&gt; + 3C -> 2Al + 3CO</description>
 		<inputs>
@@ -452,7 +452,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces 1m x 2m x 1mm (5kg) sheet of aluminum. -->
-	<process name="make aluminum sheet" tech="1" skill="1" work-time="50" process-time="20"
+	<process name="Make aluminum sheet" tech="1" skill="1" work-time="50" process-time="20"
 			power-required=".7">
 		<description>Al&lt;sub&gt;2&lt;/sub&gt;O&lt;sub&gt;3&lt;/sub&gt; + 3C -> 2Al + 3CO</description>
 		<inputs>
@@ -466,7 +466,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces 1m x 1m x 1mm (2.72kg) sheet of aluminum. Each Al ingot is 5kg-->
-	<process name="roll aluminum sheet" tech="1" skill="1" work-time="50" process-time="20"
+	<process name="Roll aluminum sheet" tech="1" skill="1" work-time="50" process-time="20"
 			power-required=".4">
 		<inputs>
 			<part name="aluminum ingot" number="2" />
@@ -477,7 +477,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="do pyrolyze reaction" tech="1" skill="1" work-time="25" process-time="20"
+	<process name="Do pyrolyze reaction" tech="1" skill="1" work-time="25" process-time="20"
 			power-required=".1">
 		<description>CH&lt;sub&gt;4&lt;/sub&gt; -> C + 2H&lt;sub&gt;2&lt;/sub&gt;</description>
 		<inputs>
@@ -489,7 +489,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="do advanced pyrolyze reaction" tech="2" skill="2" work-time="50" process-time="40"
+	<process name="Do advanced pyrolyze reaction" tech="2" skill="2" work-time="50" process-time="40"
 			power-required=".5">
 		<description>CH&lt;sub&gt;4&lt;/sub&gt; -> C + 2H&lt;sub&gt;2&lt;/sub&gt;</description>
 		<inputs>
@@ -502,7 +502,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces 5 5kg steel ingots. -->
-	<process name="do steel ingot alloying" tech="1" skill="1" work-time="10" process-time="20"
+	<process name="Do steel ingot alloying" tech="1" skill="1" work-time="10" process-time="20"
 			power-required=".1">
 		<inputs>
 			<resource name="iron powder" amount="25.0" />
@@ -514,7 +514,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces 50 5kg steel ingots. -->
-	<process name="do steel ingot alloying (large batch)" tech="1" skill="1" work-time="50" process-time="100"
+	<process name="Do steel ingot alloying (large batch)" tech="1" skill="1" work-time="50" process-time="100"
 			power-required=".5">
 		<inputs>
 			<resource name="iron powder" amount="250.0" />
@@ -526,7 +526,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces 1m x `m x 1mm (7.8kg) sheet of steel. -->
-	<process name="make steel sheet" tech="0" skill="0" work-time="50" process-time="10"
+	<process name="Make steel sheet" tech="0" skill="0" work-time="50" process-time="10"
 			power-required=".3">
 		<inputs>
 			<resource name="iron powder" amount="7.7" />
@@ -539,7 +539,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces 1m x 1m x 1mm (7.8kg) sheet of steel. -->
-	<process name="roll steel sheet" tech="0" skill="0" work-time="50" process-time="10"
+	<process name="Roll steel sheet" tech="0" skill="0" work-time="50" process-time="10"
 			power-required=".3">
 		<inputs>
 			<resource name="manganese" amount=".1" />		
@@ -552,7 +552,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces 0.05 kg spool of thick steel wire from 5 kg steel ingot. -->
-	<process name="draw steel wire" tech="0" skill="0" work-time="50" process-time="20"
+	<process name="Draw steel wire" tech="0" skill="0" work-time="50" process-time="20"
 			power-required=".2">
 		<inputs>
 			<part name="steel ingot" number="1" />
@@ -563,7 +563,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces 1kg of steel cable from 5kg steel ingot. -->
-	<process name="do steel cable winding" tech="0" skill="0" work-time="50" process-time="20"
+	<process name="Do steel cable winding" tech="0" skill="0" work-time="50" process-time="20"
 			power-required="0.1">
 		<inputs>
 			<part name="steel ingot" number="1" />
@@ -574,7 +574,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces 8x 1m x 2mm x 20cm steel pipe. -->
-	<process name="make steel pipe" tech="0" skill="0" work-time="50" process-time="20"
+	<process name="Make steel pipe" tech="0" skill="0" work-time="50" process-time="20"
 			power-required=".1">
 		<inputs>
 			<part name="steel sheet" number="1" />
@@ -586,7 +586,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces 8x 1m x 2mm x 20cm iron pipe. -->
-	<process name="make iron pipe" tech="0" skill="0" work-time="50" process-time="20"
+	<process name="Make iron pipe" tech="0" skill="0" work-time="50" process-time="20"
 			power-required=".1">
 		<inputs>
 			<part name="iron sheet" number="1" />
@@ -597,7 +597,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="make fire extinguisher" tech="2" skill="1" work-time="100" process-time="50"
+	<process name="Make fire extinguisher" tech="2" skill="1" work-time="100" process-time="50"
 			power-required="0.1">
 		<inputs>
 			<resource name="carbon dioxide" amount="10.0" />
@@ -611,7 +611,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="make steel valve" tech="2" skill="1" work-time="200" process-time="200"
+	<process name="Make steel valve" tech="2" skill="1" work-time="200" process-time="200"
 			power-required="0.1">
 		<inputs>
 			<part name="steel ingot" number="1" />
@@ -622,7 +622,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Using reinforced fiberglass wrapped in aluminum sheeting to make satellite dish. -->
-	<process name="make satellite dish" tech="2" skill="3" work-time="200" process-time="200"
+	<process name="Make satellite dish" tech="2" skill="3" work-time="200" process-time="200"
 			power-required="0.4">
 		<inputs>
 			<resource name="polyester resin" amount=".5" />
@@ -638,7 +638,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="make steel barrel" tech="1" skill="1" work-time="10" process-time="10"
+	<process name="Make steel barrel" tech="1" skill="1" work-time="10" process-time="10"
 			power-required="0.1">
 		<inputs>
 			<part name="steel sheet" number="1" />
@@ -648,7 +648,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="make polyethylene barrel" tech="1" skill="1" work-time="10" process-time="10"
+	<process name="Make polyethylene barrel" tech="1" skill="1" work-time="10" process-time="10"
 			power-required="0.1">
 		<inputs>
 			<resource name="polyethylene" amount="7.8" />
@@ -658,7 +658,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="make steel specimen box" tech="1" skill="1" work-time="10" process-time="10"
+	<process name="Make steel specimen box" tech="1" skill="1" work-time="10" process-time="10"
 			power-required=".1">
 		<inputs>
 			<part name="steel sheet" number="1" />
@@ -668,7 +668,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="make plastic specimen box" tech="1" skill="1" work-time="10" process-time="10"
+	<process name="Make plastic specimen box" tech="1" skill="1" work-time="10" process-time="10"
 			power-required=".1">
 		<inputs>
 			<resource name="polyethylene" amount="7.8" />
@@ -679,7 +679,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces 10kg steel canister. -->
-	<process name="make steel canister" tech="1" skill="1" work-time="10" process-time="10"
+	<process name="Make steel canister" tech="1" skill="1" work-time="10" process-time="10"
 			 power-required=".1">
 		<inputs>
 			<!-- one steel sheet weighs 7.8 kg -->
@@ -692,7 +692,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="make gas canister" tech="1" skill="1" work-time="5" process-time="5"
+	<process name="Make gas canister" tech="1" skill="1" work-time="5" process-time="5"
 			power-required="0.1">
 		<inputs>
 			<part name="steel canister" number="1" />
@@ -706,7 +706,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Using reinforced fiberglass wrapped in aluminum sheeting to make antenna. -->
-	<process name="make radio antenna" tech="2" skill="2" work-time="100" process-time="100"
+	<process name="Make radio antenna" tech="2" skill="2" work-time="100" process-time="100"
 			power-required=".3">
 		<inputs>
 			<resource name="polyester resin" amount=".5" />
@@ -722,7 +722,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="make suit heating unit" tech="2" skill="2" work-time="100" process-time="100"
+	<process name="Make suit heating unit" tech="2" skill="2" work-time="100" process-time="100"
 			power-required="0.3">
 		<inputs>
 			<part name="aluminum sheet" number="1" />
@@ -737,7 +737,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces 1kg plastic pipe. -->
-	<process name="make plastic pipe" tech="1" skill="1" work-time="100" process-time="400"
+	<process name="Make plastic pipe" tech="1" skill="1" work-time="100" process-time="400"
 			power-required=".1">
 		<inputs>
 			<resource name="polyethylene" amount="10.0" />
@@ -747,7 +747,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="make plastic bottle" tech="1" skill="1" work-time="100" process-time="100"
+	<process name="Make plastic bottle" tech="1" skill="1" work-time="100" process-time="100"
 			power-required=".1">
 		<inputs>
 			<resource name="polyethylene" amount="1.0" />
@@ -757,7 +757,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="make clear glass bottle" tech="2" skill="1" work-time="200" process-time="200"
+	<process name="Make clear glass bottle" tech="2" skill="1" work-time="200" process-time="200"
 			power-required=".1">
 		<inputs>
 			<resource name="sand" amount="1.0" />
@@ -767,7 +767,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="produce petri dish" tech="2" skill="2" work-time="50" process-time="40"
+	<process name="Produce petri dish" tech="2" skill="2" work-time="50" process-time="40"
 			power-required=".1">
 		<inputs>
 			<resource name="polystyrene" amount="1.5" />
@@ -777,7 +777,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 	
-	<process name="make gasket" tech="4" skill="2" work-time="100" process-time="200"
+	<process name="Make gasket" tech="4" skill="2" work-time="100" process-time="200"
 			power-required=".1">
 		<inputs>
 			<resource name="styrene" amount="2.0" />
@@ -788,7 +788,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Use fiberglass & styrene to make belt. -->
-	<process name="make timing belt" tech="4" skill="2" work-time="100" process-time="200"
+	<process name="Make timing belt" tech="4" skill="2" work-time="100" process-time="200"
 			power-required=".2">
 		<inputs>
 			<resource name="styrene" amount="1.0" />
@@ -799,7 +799,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="make plastic tubing" tech="4" skill="2" work-time="100" process-time="200"
+	<process name="Make plastic tubing" tech="4" skill="2" work-time="100" process-time="200"
 			power-required=".05">
 		<inputs>
 			<resource name="styrene" amount="1.0" />
@@ -809,7 +809,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="produce polyester resin" tech="2" skill="1" work-time="10" process-time="40"
+	<process name="Produce polyester resin" tech="2" skill="1" work-time="10" process-time="40"
 			power-required="0.05">
 		<description>
 			This is to produce unsaturated polyester resin (C&lt;sub&gt;10&lt;/sub&gt;H&lt;sub&gt;8&lt;/sub&gt;O&lt;sub&gt;4&lt;/sub&gt;).
@@ -826,7 +826,7 @@ Note: 1 kg of H2 is 14.13 liter
 
 	<!-- This is to produce unsaturated polyester resin (C10H8O4). -->
 	<!-- We don't have a detailed process for producing polyester, so we're just using component elements. -->
-	<process name="produce polyester resin (large batch)" tech="2" skill="1" work-time="50" process-time="200"
+	<process name="Produce polyester resin (large batch)" tech="2" skill="1" work-time="50" process-time="200"
 			power-required="0.1">
 		<inputs>
 			<resource name="carbon" amount="300.0" />
@@ -837,7 +837,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="roll mylar film" tech="2" skill="2" work-time="10" process-time="40"
+	<process name="Roll mylar film" tech="2" skill="2" work-time="10" process-time="40"
 			power-required="0.05">
 		<description>
 		 Mylar coated with evaporated aluminum on one side
@@ -851,7 +851,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 	
-	<process name="roll aluminized mylar foil" tech="2" skill="2" work-time="10" process-time="40"
+	<process name="Roll aluminized mylar foil" tech="2" skill="2" work-time="10" process-time="40"
 			power-required="0.05">
 		<description>
 		 Biaxially oriented PET film is metallized by vapor deposition of a thin film of 
@@ -867,7 +867,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 	
 	<!-- Epoxy uses bisphenol-a (C15H16O2) -->
-	<process name="make epoxy resin bottle" tech="3" skill="1" work-time="20" process-time="300"
+	<process name="Make epoxy resin bottle" tech="3" skill="1" work-time="20" process-time="300"
 			power-required="0.1">
 		<inputs>
 			<resource name="bisphenol-a" amount=".5" />
@@ -879,7 +879,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Using polyester resin as a lubricant. -->
-	<process name="make lubricant bottle" tech="3" skill="1" work-time="20" process-time="300"
+	<process name="Make lubricant bottle" tech="3" skill="1" work-time="20" process-time="300"
 			power-required="0.1">
 		<inputs>
 			<resource name="polyester resin" amount=".5" />
@@ -890,7 +890,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="make coolant bottle" tech="3" skill="1" work-time="20" process-time="300"
+	<process name="Make coolant bottle" tech="3" skill="1" work-time="20" process-time="300"
 			power-required="0.1">
 		<description>
 			Using ethylene glycol as a coolant.
@@ -906,7 +906,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="make airleak patch" tech="3" skill="1" work-time="20" process-time="100"
+	<process name="Make airleak patch" tech="3" skill="1" work-time="20" process-time="100"
 			power-required="0.1">
 		<inputs>
 			<resource name="polyester resin" amount="7.5" />
@@ -919,7 +919,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Spark plug insulator uses aluminum oxide ceramic -->
-	<process name="make spark plug" tech="2" skill="2" work-time="200" process-time="200"
+	<process name="Make spark plug" tech="2" skill="2" work-time="200" process-time="200"
 			power-required=".1">
 		<inputs>
 			<resource name="aluminum oxide" amount=".5" />
@@ -934,7 +934,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces 1kg spool of fiber glass. -->
-	<process name="draw optical fiber glass" tech="3" skill="1" work-time="50" process-time="100"
+	<process name="Draw optical fiber glass" tech="3" skill="1" work-time="50" process-time="100"
 			power-required=".1">
 		<inputs>
 			<resource name="sand" amount="2.0" />
@@ -945,7 +945,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
     <!-- Produces 10 1kg spools of fiber glass. -->
-	<process name="draw optical fiber glass (large batch)" tech="3" skill="2" work-time="150" process-time="300"
+	<process name="Draw optical fiber glass (large batch)" tech="3" skill="2" work-time="150" process-time="300"
 			power-required=".5">
 		<inputs>
 			<resource name="sand" amount="20.0" />
@@ -956,7 +956,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces 1m x 1m woven fiberglass cloth. -->
-	<process name="weave fiberglass cloth" tech="2" skill="1" work-time="10" process-time="100"
+	<process name="Weave fiberglass cloth" tech="2" skill="1" work-time="10" process-time="100"
 			power-required="0">
 		<inputs>
 			<part name="fiberglass" number="1" />
@@ -967,7 +967,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces 1m x 1m thin sheet of plastic. -->
-	<process name="do plastic sheet extrusion" tech="1" skill="1" work-time="20" process-time="200"
+	<process name="Do plastic sheet extrusion" tech="1" skill="1" work-time="20" process-time="200"
 			power-required=".2">
 		<inputs>
 			<resource name="polyester resin" amount="10.0" />
@@ -1013,7 +1013,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 	
 	<!-- Produces 1m x 1m x 1cm (26kg) sheet of glass. -->
-	<process name="make sheet glass" tech="2" skill="1" work-time="10" process-time="300"
+	<process name="Make sheet glass" tech="2" skill="1" work-time="10" process-time="300"
 			power-required=".2">
 		<inputs>
 			<resource name="sand" amount="26.0" />
@@ -1023,7 +1023,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="make garment" tech="2" skill="1" work-time="50" process-time="100"
+	<process name="Make garment" tech="2" skill="1" work-time="50" process-time="100"
 			power-required=".2">
 		<inputs>
 			<resource name="cane fiber" amount="0.2" />
@@ -1035,7 +1035,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="make eva helmet" tech="2" skill="2" work-time="100" process-time="300"
+	<process name="Make eva helmet" tech="2" skill="2" work-time="100" process-time="300"
 			power-required=".2">
 		<inputs>
 			<resource name="cane fiber" amount="0.2" />
@@ -1050,7 +1050,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="make helmet visor" tech="2" skill="2" work-time="100" process-time="200"
+	<process name="Make helmet visor" tech="2" skill="2" work-time="100" process-time="200"
 			power-required=".1">
 		<inputs>
 			<resource name="polycarbonate resin" amount=".2" />
@@ -1061,7 +1061,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="make pressure suit" tech="2" skill="2" work-time="100" process-time="300"
+	<process name="Make pressure suit" tech="2" skill="2" work-time="100" process-time="300"
 			power-required=".2">
 		<inputs>
 			<resource name="polyethylene" amount="0.2" />
@@ -1074,7 +1074,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="make coveralls" tech="2" skill="2" work-time="100" process-time="100"
+	<process name="Make coveralls" tech="2" skill="2" work-time="100" process-time="100"
 			power-required=".2">
 		<inputs>
 			<resource name="cane fiber" amount="0.2" />
@@ -1087,7 +1087,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="make eva gloves" tech="3" skill="3" work-time="100" process-time="100"
+	<process name="Make eva gloves" tech="3" skill="3" work-time="100" process-time="100"
 			power-required=".1">
 		<inputs>
 			<resource name="cane fiber" amount="0.1" />
@@ -1100,7 +1100,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="make eva boots" tech="3" skill="3" work-time="100" process-time="100"
+	<process name="Make eva boots" tech="3" skill="3" work-time="100" process-time="100"
 			power-required=".1">
 		<inputs>
 			<resource name="cane fiber" amount="0.2" />
@@ -1114,7 +1114,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="make eva pads" tech="3" skill="3" work-time="50" process-time="100"
+	<process name="Make eva pads" tech="3" skill="3" work-time="50" process-time="100"
 			power-required=".7">
 		<inputs>
 			<resource name="cane fiber" amount="0.1" />
@@ -1127,7 +1127,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="make eva backpack" tech="2" skill="2" work-time="100" process-time="200"
+	<process name="Make eva backpack" tech="2" skill="2" work-time="100" process-time="200"
 			power-required=".5">
 		<description>Polyethylene box with steel frame and fiberglass cloth straps.</description>
 		<inputs>
@@ -1149,7 +1149,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Using reinforced fiberglass wrapped in aluminum sheeting to make antenna. -->
-	<process name="make eva antenna" tech="2" skill="2" work-time="50" process-time="50"
+	<process name="Make eva antenna" tech="2" skill="2" work-time="50" process-time="50"
 			power-required=".3">
 		<inputs>
 			<resource name="polyester resin" amount=".5" />
@@ -1165,7 +1165,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="assemble eva suit" tech="2" skill="3" work-time="100" process-time="0"
+	<process name="Assemble EVA suit" tech="2" skill="3" work-time="100" process-time="0"
 			power-required="0.5">
 		<inputs>
 			<part name="eva helmet" number="1" />
@@ -1188,7 +1188,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="make work gloves" tech="1" skill="1" work-time="50" process-time="100"
+	<process name="Make work gloves" tech="1" skill="1" work-time="50" process-time="100"
 			power-required=".05">
 		<inputs>
 			<resource name="cane fiber" amount="0.1" />
@@ -1201,7 +1201,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Small wheels are made with steel sheets and steel wires. -->
-	<process name="make small wheels" tech="2" skill="2" work-time="100" process-time="200"
+	<process name="Make small wheels" tech="2" skill="2" work-time="100" process-time="200"
 			power-required="0.5">
 		<inputs>
 			<part name="steel sheet" number="1" />
@@ -1214,7 +1214,7 @@ Note: 1 kg of H2 is 14.13 liter
 
 
 	<!-- Rover tires are made with steel and steel wire. -->
-	<process name="make rover wheels" tech="2" skill="2" work-time="200" process-time="400"
+	<process name="Make rover wheels" tech="2" skill="2" work-time="200" process-time="400"
 			power-required="0.5">
 		<inputs>
 			<part name="steel sheet" number="2" />
@@ -1225,7 +1225,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="create small vehicle frame" tech="2" skill="2" work-time="550" process-time="550"
+	<process name="Make small vehicle frame" tech="2" skill="2" work-time="550" process-time="550"
 			power-required="3.0">
 		<inputs>
 			<resource name="acetylene" amount="0.5" />		
@@ -1236,7 +1236,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="create large vehicle frame" tech="2" skill="2" work-time="700" process-time="700"
+	<process name="Make large vehicle frame" tech="2" skill="2" work-time="700" process-time="700"
 			power-required="5.0">
 		<inputs>
 			<resource name="acetylene" amount="1.0" />	
@@ -1247,7 +1247,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="manufacture rover chassis panel" tech="3" skill="3" work-time="200" process-time="400"
+	<process name="Manufacture rover chassis panel" tech="3" skill="3" work-time="200" process-time="400"
 			power-required=".1">
 		<inputs>
 			<resource name="polyester resin" amount="25.0" />
@@ -1260,7 +1260,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="manufacture rover windshield" tech="3" skill="2" work-time="400" process-time="600"
+	<process name="Manufacture rover windshield" tech="3" skill="2" work-time="400" process-time="600"
 			power-required=".1">
 		<inputs>
 			<part name="glass sheet" number="4" />
@@ -1270,7 +1270,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="manufacture rover window" tech="3" skill="2" work-time="400" process-time="600"
+	<process name="Manufacture rover window" tech="3" skill="2" work-time="400" process-time="600"
 			power-required=".1">
 		<inputs>
 			<part name="glass sheet" number="2" />
@@ -1280,7 +1280,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="make winch" tech="1" skill="1" work-time="40" process-time="80"
+	<process name="Make winch" tech="1" skill="1" work-time="40" process-time="80"
 			power-required=".1">
 		<inputs>
 			<resource name="acetylene" amount="0.5" />			
@@ -1294,7 +1294,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="make socket wrench" tech="1" skill="1" work-time="20" process-time="40"
+	<process name="Make socket wrench" tech="1" skill="1" work-time="20" process-time="40"
 			power-required=".1">
 		<inputs>
 			<resource name="acetylene" amount="0.1" />			
@@ -1305,7 +1305,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="make pipe wrench" tech="1" skill="1" work-time="20" process-time="60"
+	<process name="Make pipe wrench" tech="1" skill="1" work-time="20" process-time="60"
 			power-required=".1">
 		<inputs>
 			<resource name="acetylene" amount="0.1" />	
@@ -1317,7 +1317,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="assemble rover generator" tech="2" skill="3" work-time="600" process-time="600"
+	<process name="Assemble rover generator" tech="2" skill="3" work-time="600" process-time="600"
 			power-required="1.0">
 		<inputs>
 			<resource name="acetylene" amount="0.3" />
@@ -1339,7 +1339,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="manufacture turbine generator" tech="3" skill="3" work-time="300" process-time="300"
+	<process name="Manufacture turbine generator" tech="3" skill="3" work-time="300" process-time="300"
 			power-required="1.0">
 		<inputs>
 			<resource name="acetylene" amount="0.3" />		
@@ -1355,7 +1355,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="manufacture small stepper motor" tech="3" skill="3" work-time="200" process-time="200"
+	<process name="Manufacture small stepper motor" tech="3" skill="3" work-time="200" process-time="200"
 			power-required=".2">
 		<inputs>
 			<part name="iron sheet" number="1" />
@@ -1372,7 +1372,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="manufacture small motor" tech="3" skill="3" work-time="200" process-time="200"
+	<process name="Manufacture small motor" tech="3" skill="3" work-time="200" process-time="200"
 			power-required=".2">
 		<inputs>
 			<part name="iron sheet" number="1" />
@@ -1387,7 +1387,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="manufacture large motor" tech="2" skill="3" work-time="800" process-time="400"
+	<process name="Manufacture large motor" tech="2" skill="3" work-time="800" process-time="400"
 			power-required=".3">
 		<inputs>
 			<part name="iron sheet" number="2" />
@@ -1402,7 +1402,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="manufacture rover control panel" tech="2" skill="3" work-time="400" process-time="400"
+	<process name="Manufacture rover control panel" tech="2" skill="3" work-time="400" process-time="400"
 			power-required="1.0">
 		<inputs>
 			<resource name="polyethylene" amount="3.0" />
@@ -1421,7 +1421,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="manufacture fuel tank" tech="2" skill="1" work-time="50" process-time="200"
+	<process name="Manufacture fuel tank" tech="2" skill="1" work-time="50" process-time="200"
 			power-required=".3">
 		<inputs>
 			<resource name="acetylene" amount="0.1" />	
@@ -1436,7 +1436,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="manufacture gas tank" tech="2" skill="1" work-time="50" process-time="200"
+	<process name="Manufacture gas tank" tech="2" skill="1" work-time="50" process-time="200"
 			power-required=".3">
 		<inputs>
 			<resource name="acetylene" amount="0.1" />		
@@ -1452,7 +1452,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- 2014-11-19 Added water tank -->
-	<process name="manufacture water tank" tech="2" skill="1" work-time="50" process-time="200"
+	<process name="Manufacture water tank" tech="2" skill="1" work-time="50" process-time="200"
 			power-required=".3">
 		<inputs>
 			<resource name="acetylene" amount="0.1" />		
@@ -1468,7 +1468,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 
-	<process name="make fuel pump" tech="3" skill="2" work-time="200" process-time="100"
+	<process name="Make fuel pump" tech="3" skill="2" work-time="200" process-time="100"
 			power-required="1.0">
 		<inputs>
 			<part name="iron ingot" number="3" />
@@ -1482,7 +1482,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="make oxygen pump" tech="3" skill="2" work-time="200" process-time="100"
+	<process name="Make oxygen pump" tech="3" skill="2" work-time="200" process-time="100"
 			power-required="1.0">
 		<inputs>
 			<part name="iron ingot" number="3" />
@@ -1497,7 +1497,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- 2014-11-19 Added carbon dioxide pump -->
-	<process name="make carbon dioxide pump" tech="3" skill="2" work-time="200" process-time="100"
+	<process name="Make carbon dioxide pump" tech="3" skill="2" work-time="200" process-time="100"
 			power-required="1.0">
 		<inputs>
 			<part name="iron ingot" number="3" />
@@ -1526,7 +1526,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>-->
 
 
-	<process name="manufacture utility vehicle control panel" tech="3" skill="3" work-time="500" process-time="200"
+	<process name="Manufacture utility vehicle control panel" tech="3" skill="3" work-time="500" process-time="200"
 			power-required="1.0">
 		<inputs>
 			<resource name="polyethylene" amount=".5" />
@@ -1566,7 +1566,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>-->
 
-	<process name="assemble delivery drone" tech="3" skill="3" work-time="750" process-time="750"
+	<process name="Assemble delivery drone" tech="3" skill="3" work-time="750" process-time="750"
 			power-required="2.0">
 		<inputs>
 			<resource name="acetylene" amount="0.5" />
@@ -1596,7 +1596,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="assemble light utility vehicle" tech="3" skill="3" work-time="1000" process-time="500"
+	<process name="Assemble light utility vehicle" tech="3" skill="3" work-time="1000" process-time="500"
 			power-required="2.0">
 		<inputs>
 			<resource name="acetylene" amount="1.0" />
@@ -1626,7 +1626,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="assemble explorer rover" tech="3" skill="4" work-time="2000" process-time="1000"
+	<process name="Assemble explorer rover" tech="3" skill="4" work-time="2000" process-time="1000"
 			power-required="4.0">
 		<inputs>
 			<resource name="acetylene" amount="2.0" />		
@@ -1666,7 +1666,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="assemble transport rover" tech="3" skill="4" work-time="2500" process-time="1000"
+	<process name="Assemble transport rover" tech="3" skill="4" work-time="2500" process-time="1000"
 			power-required="5.0">
 		<inputs>
 			<resource name="acetylene" amount="3.0" />		
@@ -1706,7 +1706,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="assemble cargo rover" tech="3" skill="4" work-time="2500" process-time="1000"
+	<process name="Assemble cargo rover" tech="3" skill="4" work-time="2500" process-time="1000"
 			power-required="6.0">
 		<inputs>
 			<resource name="acetylene" amount="3.0" />
@@ -1748,7 +1748,7 @@ Note: 1 kg of H2 is 14.13 liter
 
 
 	<!-- Produces 5 5kg ingots of steel. -->
-	<process name="do steel ingot nickel alloying" tech="1" skill="1" work-time="100" process-time="50"
+	<process name="Do steel ingot nickel alloying" tech="1" skill="1" work-time="100" process-time="50"
 			power-required="1.0">
 		<inputs>
 			<resource name="iron powder" amount="22.5" />
@@ -1761,7 +1761,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces 50 5kg ingots of steel. -->
-	<process name="do steel ingot nickel alloying (large batch)" tech="1" skill="1" work-time="500" process-time="250"
+	<process name="Do steel ingot nickel alloying (large batch)" tech="1" skill="1" work-time="500" process-time="250"
 			power-required="5.0">
 		<inputs>
 			<resource name="iron powder" amount="225.0" />
@@ -1774,7 +1774,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces a small spool of thin aluminum wire. -->
-	<process name="draw aluminum wire" tech="1" skill="1" work-time="50" process-time="20"
+	<process name="Draw aluminum wire" tech="1" skill="1" work-time="50" process-time="20"
 			power-required=".3">
 		<inputs>
 			<part name="aluminum sheet" number="1" />
@@ -1784,7 +1784,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 	
-	<process name="make electrical wire" tech="2" skill="0" work-time="200" process-time="400"
+	<process name="Make electrical wire" tech="2" skill="0" work-time="200" process-time="400"
 			power-required=".1">
 		<inputs>
 			<resource name="styrene" amount="1.0" />
@@ -1795,7 +1795,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="make aluminum power cable" tech="2" skill="1" work-time="200" process-time="400"
+	<process name="Make aluminum power cable" tech="2" skill="1" work-time="200" process-time="400"
 			power-required=".1">
 		<inputs>
 			<resource name="styrene" amount="1.0" />
@@ -1806,7 +1806,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="make wire connector" tech="2" skill="0" work-time="200" process-time="400"
+	<process name="Make wire connector" tech="2" skill="0" work-time="200" process-time="400"
 			power-required=".1">
 		<inputs>
 			<resource name="styrene" amount=".5" />
@@ -1818,7 +1818,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces 1m x 2m x 1mm (5kg) sheet of copper. -->
-	<process name="make copper sheet" tech="2" skill="1" work-time="200" process-time="20"
+	<process name="Make copper sheet" tech="2" skill="1" work-time="200" process-time="20"
 			power-required=".5">
 		<inputs>
 			<resource name="copper" amount="8.94" />
@@ -1829,7 +1829,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces 1kg spool of thin copper wire. -->
-	<process name="draw copper wire" tech="1" skill="0" work-time="300" process-time="20"
+	<process name="Draw copper wire" tech="1" skill="0" work-time="300" process-time="20"
 			power-required="2.0">
 		<inputs>
 			<part name="copper sheet" number="1" />
@@ -1839,7 +1839,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="make copper electrical wire" tech="1" skill="0" work-time="200" process-time="40"
+	<process name="Make copper electrical wire" tech="1" skill="0" work-time="200" process-time="40"
 			power-required=".5">
 		<inputs>
 			<resource name="styrene" amount="1.0" />
@@ -1850,7 +1850,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="make copper power cable" tech="1" skill="1" work-time="200" process-time="40"
+	<process name="Make copper power cable" tech="1" skill="1" work-time="200" process-time="40"
 			power-required=".5">
 		<inputs>
 			<resource name="styrene" amount="1.0" />
@@ -1861,7 +1861,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="make copper wire connector" tech="1" skill="1" work-time="200" process-time="40"
+	<process name="Make copper wire connector" tech="1" skill="1" work-time="200" process-time="40"
 			power-required=".3">
 		<inputs>
 			<resource name="styrene" amount=".5" />
@@ -1873,7 +1873,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces 1.011kg copper pipe. -->
-	<process name="make copper pipe" tech="1" skill="1" work-time="200" process-time="20"
+	<process name="Make copper pipe" tech="1" skill="1" work-time="200" process-time="20"
 			power-required=".5">
 		<inputs>
 			<part name="copper sheet" number="1" />
@@ -1884,7 +1884,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="make heating element" tech="2" skill="1" work-time="100" process-time="50"
+	<process name="Make heating element" tech="2" skill="1" work-time="100" process-time="50"
 			power-required="1.0">
 		<inputs>
 			<resource name="magnesium" amount=".25" />
@@ -1900,7 +1900,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="roll heat pipe from copper sheet" tech="2" skill="1" work-time="100" process-time="100"
+	<process name="Roll heat pipe from copper sheet" tech="2" skill="1" work-time="100" process-time="100"
 			power-required="1.0">
 		<inputs>
 			<part name="copper sheet" number="1" />
@@ -1910,7 +1910,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="roll heat pipe from aluminum sheet" tech="2" skill="1" work-time="100" process-time="100"
+	<process name="Roll heat pipe from aluminum sheet" tech="2" skill="1" work-time="100" process-time="100"
 			power-required="1.0">
 		<inputs>
 			<part name="aluminum sheet" number="1" />
@@ -1920,7 +1920,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="manufacture pneumatic drill" tech="2" skill="3" work-time="400" process-time="400"
+	<process name="Manufacture pneumatic drill" tech="2" skill="3" work-time="400" process-time="400"
 			power-required="1.0">
 		<inputs>
 			<part name="steel sheet" number="1" />
@@ -1937,7 +1937,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="assemble backhoe" tech="2" skill="3" work-time="400" process-time="400"
+	<process name="Assemble backhoe" tech="2" skill="3" work-time="400" process-time="400"
 			power-required="1.0">
 		<inputs>
 			<part name="steel sheet" number="1" />
@@ -1951,7 +1951,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="manufacture bulldozer blade" tech="2" skill="3" work-time="300" process-time="300"
+	<process name="Manufacture bulldozer blade" tech="2" skill="3" work-time="300" process-time="300"
 			power-required="1.0">
 		<inputs>
 			<part name="steel sheet" number="2" />
@@ -1962,7 +1962,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="manufacture crane boom" tech="2" skill="3" work-time="400" process-time="100"
+	<process name="Manufacture crane boom" tech="2" skill="3" work-time="400" process-time="100"
 			power-required="1.0">
 		<inputs>
 			<part name="steel sheet" number="4" />
@@ -1976,7 +1976,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="manufacture soil compactor" tech="2" skill="3" work-time="300" process-time="100"
+	<process name="Manufacture soil compactor" tech="2" skill="3" work-time="300" process-time="100"
 			power-required="1.0">
 		<inputs>
 			<part name="steel sheet" number="2" />
@@ -1987,7 +1987,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="manufacture steel truss" tech="0" skill="0" work-time="10" process-time="20"
+	<process name="Manufacture steel truss" tech="0" skill="0" work-time="10" process-time="20"
 			power-required="1.0">
 		<inputs>
 			<part name="steel ingot" number="10" />
@@ -1997,7 +1997,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="manufacture steel post" tech="0" skill="0" work-time="10" process-time="20"
+	<process name="Manufacture steel post" tech="0" skill="0" work-time="10" process-time="20"
 			power-required="1.0">
 		<inputs>
 			<part name="steel ingot" number="10" />
@@ -2007,7 +2007,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="fabricate turbine blade" tech="2" skill="3" work-time="200" process-time="200"
+	<process name="Fabricate turbine blade" tech="2" skill="3" work-time="200" process-time="200"
 			power-required="1.0">
 		<inputs>
 			<resource name="polyester resin" amount=".5" />
@@ -2019,7 +2019,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="fabricate solar panel" tech="3" skill="4" work-time="200" process-time="200"
+	<process name="Fabricate solar panel" tech="3" skill="4" work-time="200" process-time="200"
 			power-required="1.0">
 		<inputs>
 			<resource name="silicon" amount="25.0" />
@@ -2035,7 +2035,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="fabricate solar parabolic mirror" tech="3" skill="2" work-time="300" process-time="300"
+	<process name="Fabricate solar parabolic mirror" tech="3" skill="2" work-time="300" process-time="300"
 			power-required="1.0">
 		<inputs>
 			<part name="steel sheet" number="1" />
@@ -2048,7 +2048,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- glass tube forming -->
-	<process name="fabricate glass tube" tech="2" skill="2" work-time="100" process-time="200"
+	<process name="Fabricate glass tube" tech="2" skill="2" work-time="100" process-time="200"
 			power-required=".7">
 		<inputs>
 			<resource name="sand" amount="10.0" />
@@ -2059,7 +2059,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Brick manufacturing with regolith, water, heat and pressure. -->
-	<process name="bake regolith brick" tech="0" skill="0" work-time="5" process-time="50"
+	<process name="Bake regolith brick" tech="0" skill="0" work-time="5" process-time="50"
 			power-required=".1">
 		<inputs>
 			<resource name="regolith" amount="32.6" />
@@ -2072,7 +2072,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Brick manufacturing with sand, water, heat and pressure. -->
-	<process name="bake sand brick" tech="0" skill="0" work-time="5" process-time="50"
+	<process name="Bake sand brick" tech="0" skill="0" work-time="5" process-time="50"
 			power-required=".5">
 		<inputs>
 			<resource name="sand" amount="32.6" />
@@ -2085,7 +2085,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Brick manufacturing with regolith, water, heat and pressure. -->
-	<process name="bake regolith brick (large batch)" tech="0" skill="1" work-time="25" process-time="200"
+	<process name="Bake regolith brick (large batch)" tech="0" skill="1" work-time="25" process-time="200"
 			power-required=".1">
 		<inputs>
 			<resource name="regolith" amount="326.0" />
@@ -2098,7 +2098,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Brick manufacturing with sand, water, heat and pressure. -->
-	<process name="bake sand brick (large batch)" tech="0" skill="1" work-time="25" process-time="250"
+	<process name="Bake sand brick (large batch)" tech="0" skill="1" work-time="25" process-time="250"
 			power-required=".5">
 		<inputs>
 			<resource name="sand" amount="326.0" />
@@ -2114,7 +2114,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<!-- and chlorine gas  -->
 	<!-- 2 K+(aq) + 2H2O(l) + 2e− → H2(g) + 2 KOH(aq) -->
 	<!-- 2 Cl– — 2e− → Cl2(g) -->
-	<process name="do potassium chloride electrolysis" tech="1" skill="2" work-time="10.0"
+	<process name="Do potassium chloride electrolysis" tech="1" skill="2" work-time="10.0"
 			process-time="100" power-required="1.0">
 		<description>
 			2 K+(aq) + 2H&lt;sub&gt;2&lt;/sub&gt;O(l) + 2e− → H&lt;sub&gt;2&lt;/sub&gt;(g) + 2 KOH(aq)
@@ -2132,7 +2132,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 
-	<process name="manufacture chemical battery" tech="2" skill="3" work-time="500" process-time="50"
+	<process name="Manufacture chemical battery" tech="2" skill="3" work-time="500" process-time="50"
 			power-required="1.0">
 		<description> At operating voltage of 4.2V, the lithium content is 0.075g/Wh.
 		 For a cathode material (LiMn1.5Ni0.5O4) on a lithium ion battery, when cycled at C/30 
@@ -2157,7 +2157,7 @@ Note: 1 kg of H2 is 14.13 liter
 
 	<!-- Manufacturing a nickel-iron (NiFe) battery for use in EVA suits. -->
 	<!-- http://en.wikipedia.org/wiki/Nickel-iron_battery -->
-	<process name="manufacture eva battery" tech="2" skill="3" work-time="200" process-time="50"
+	<process name="Manufacture eva battery" tech="2" skill="3" work-time="200" process-time="50"
 			power-required="1.0">
 		<description>  Assume a small EVA battery has the capacity of 0.5kWh.
 		</description>			
@@ -2176,7 +2176,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Recycling steel scrap back into steel ingots. -->
-	<process name="recycle steel scrap" tech="0" skill="0" work-time="10" process-time="10"
+	<process name="Recycle steel scrap" tech="0" skill="0" work-time="10" process-time="10"
 			power-required=".2">
 		<inputs>
 			<part name="steel scrap" number="1" />
@@ -2187,7 +2187,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Recycling aluminum scrap back into aluminum ingots. -->
-	<process name="recycle aluminum scrap" tech="0" skill="0" work-time="10" process-time="10"
+	<process name="Recycle aluminum scrap" tech="0" skill="0" work-time="10" process-time="10"
 			power-required=".3">
 		<inputs>
 			<part name="aluminum scrap" number="1" />
@@ -2198,7 +2198,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Manufacturing a steel drill bit. -->
-	<process name="manufacture bore drill bit" tech="2" skill="2" work-time="300" process-time="150"
+	<process name="Manufacture bore drill bit" tech="2" skill="2" work-time="300" process-time="150"
 			power-required=".2">
 		<inputs>
 			<part name="steel ingot" number="5" />
@@ -2209,7 +2209,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Manufacturing a steel drill pipe. -->
-	<process name="manufacture bore drill pipe" tech="2" skill="2" work-time="100" process-time="150"
+	<process name="Manufacture bore drill pipe" tech="2" skill="2" work-time="100" process-time="150"
 			power-required=".2">
 		<inputs>
 			<part name="steel sheet" number="3" />
@@ -2220,7 +2220,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Assembling a drilling rig (light utility vehicle crane boom attachment). -->
-	<process name="assemble drilling rig" tech="2" skill="2" work-time="50" process-time="0.0"
+	<process name="Assemble drilling rig" tech="2" skill="2" work-time="50" process-time="0.0"
 			power-required="1.0">
 		<inputs>
 			<part name="motor - large" number="1" />
@@ -2233,7 +2233,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Manufacturing a copper condenser coil. -->
-	<process name="make condenser coil" tech="2" skill="2" work-time="150" process-time="25.0"
+	<process name="Make condenser coil" tech="2" skill="2" work-time="150" process-time="25.0"
 			power-required=".5">
 		<inputs>
 			<part name="copper pipe" number="2" />
@@ -2244,7 +2244,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Manufacturing a large water pump. -->
-	<process name="make large water pump" tech="1" skill="1" work-time="100" process-time="100"
+	<process name="Make large water pump" tech="1" skill="1" work-time="100" process-time="100"
 			power-required=".2">
 		<inputs>
 			<part name="iron ingot" number="2" />
@@ -2259,7 +2259,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Electrolyzing water into oxygen and hydrogen. -->
-	<process name="do water electrolysis" tech="0" skill="0" work-time="5" process-time="100" power-required="2.0">
+	<process name="Do water electrolysis" tech="0" skill="0" work-time="5" process-time="100" power-required="2.0">
 		<inputs>
 			<resource name="water" amount="10.0" />
 		</inputs>
@@ -2270,7 +2270,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Sabatier process converting co2 and hydrogen into water and methane. -->
-	<process name="do sabatier processing" tech="1" skill="0" work-time="5" process-time="100" power-required="2.0">
+	<process name="Do sabatier processing" tech="1" skill="0" work-time="5" process-time="100" power-required="2.0">
 		<inputs>
 			<resource name="carbon dioxide" amount="10.0" />
 			<resource name="hydrogen" amount="1.7" />
@@ -2282,7 +2282,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Reducing carbon dioxide in oxygen and carbon monoxide. -->
-	<process name="do CO2 reduction" tech="1" skill="0" work-time="5" process-time="100" power-required="1.0">
+	<process name="Do CO2 reduction" tech="1" skill="0" work-time="5" process-time="100" power-required="1.0">
 		<inputs>
 			<resource name="carbon dioxide" amount="10.0" />
 		</inputs>
@@ -2293,7 +2293,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- 2014-11-19 Added manufacturing a small water pump. -->
-	<process name="make small water pump" tech="1" skill="1" work-time="50" process-time="50"
+	<process name="Make small water pump" tech="1" skill="1" work-time="50" process-time="50"
 			power-required="1.0">
 		<inputs>
 			<part name="iron ingot" number="1" />
@@ -2308,7 +2308,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- 2015-05-19 Added manufacturing heat pump. -->
-	<process name="make heat pump" tech="1" skill="1" work-time="200" process-time="50"
+	<process name="Make heat pump" tech="1" skill="1" work-time="200" process-time="50"
 			power-required="1.0">
 		<inputs>
 			<part name="iron ingot" number="1" />
@@ -2326,7 +2326,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- 2014-11-19 Added manufacturing an air compressor. -->
-	<process name="make air compressor" tech="1" skill="1" work-time="200" process-time="50"
+	<process name="Make air compressor" tech="1" skill="1" work-time="200" process-time="50"
 			power-required="1.0">
 		<inputs>
 			<part name="aluminum wire" number="1" />
@@ -2340,7 +2340,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- 2014-11-19 Added manufacturing a food blender. -->
-	<process name="manufacture food blender" tech="1" skill="2" work-time="400" process-time="50"
+	<process name="Manufacture food blender" tech="1" skill="2" work-time="400" process-time="50"
 			power-required="1">
 		<inputs>
 			<part name="aluminum wire" number="1" />
@@ -2355,7 +2355,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- 2014-11-19 Added manufacturing an oven. -->
-	<process name="manufacture oven" tech="1" skill="2" work-time="500" process-time="50"
+	<process name="Manufacture oven" tech="1" skill="2" work-time="500" process-time="50"
 			power-required="1.0">
 		<inputs>
 			<part name="aluminum wire" number="1" />
@@ -2372,7 +2372,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- 2014-11-19 Added Manufacturing a microwave. -->
-	<process name="manufacture microwave" tech="1" skill="2" work-time="500" process-time="20"
+	<process name="Manufacture microwave" tech="1" skill="2" work-time="500" process-time="20"
 			power-required="1.0">
 		<inputs>
 			<part name="steel sheet" number="2" />
@@ -2391,7 +2391,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- 2014-11-19 Added manufacturing a ventilation fan. -->
-	<process name="manufacture ventilation fan" tech="1" skill="1" work-time="100" process-time="20"
+	<process name="Manufacture ventilation fan" tech="1" skill="1" work-time="100" process-time="20"
 			power-required=".5">
 		<inputs>
 			<part name="aluminum wire" number="1" />
@@ -2407,7 +2407,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- 2014-11-19 Added manufacturing a kitchen stove. -->
-	<process name="manufacture kitchen stove" tech="2" skill="1" work-time="300" process-time="100"
+	<process name="Manufacture kitchen stove" tech="2" skill="1" work-time="300" process-time="100"
 			power-required="1.0">
 		<inputs>
 			<part name="aluminum wire" number="2" />
@@ -2424,7 +2424,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- 2014-11-19 Added manufacturing a refrigerator. -->
-	<process name="manufacture refrigerator" tech="1" skill="2" work-time="700" process-time="50"
+	<process name="Manufacture refrigerator" tech="1" skill="2" work-time="700" process-time="50"
 			power-required="2.0">
 		<inputs>
 			<part name="aluminum wire" number="2" />
@@ -2441,7 +2441,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- 2014-11-19 Added manufacturing an autoclave. -->
-	<process name="manufacture autoclave" tech="2" skill="2" work-time="700" process-time="100"
+	<process name="Manufacture autoclave" tech="2" skill="2" work-time="700" process-time="100"
 			power-required="2.0">
 		<inputs>
 			<part name="aluminum wire" number="2" />
@@ -2462,7 +2462,7 @@ Note: 1 kg of H2 is 14.13 liter
 
 
 	<!-- 2015-02-16 Added making a mushroom containment kit. -->
-	<process name="make mushroom containment kit" tech="1" skill="2" work-time="50" process-time="50"
+	<process name="Make mushroom containment kit" tech="1" skill="2" work-time="50" process-time="50"
 			power-required=".2">
 		<inputs>
 			<part name="oxygen pump" number="2" />
@@ -2483,7 +2483,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- 2015-05-19 Added manufacturing navigation circuit board. -->
-	<process name="manufacture navigation circuit board" tech="3" skill="4" work-time="400" process-time="500"
+	<process name="Manufacture navigation circuit board" tech="3" skill="4" work-time="400" process-time="500"
 			power-required="1.0">
 		<inputs>
 			<part name="microcontroller" number="1" />
@@ -2500,7 +2500,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- 2015-05-19 Added manufacturing communications circuit board. -->
-	<process name="manufacture communications circuit board" tech="3" skill="4" work-time="400" process-time="500"
+	<process name="Manufacture communications circuit board" tech="3" skill="4" work-time="400" process-time="500"
 			power-required="1.0">
 		<inputs>
 			<part name="microcontroller" number="1" />
@@ -2517,7 +2517,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- 2015-05-19 Added manufacturing semiconductor wafer. -->
-	<process name="fabricate semiconductor wafer" tech="3" skill="4" work-time="400" process-time="800"
+	<process name="Fabricate semiconductor wafer" tech="3" skill="4" work-time="400" process-time="800"
 			power-required="1.0">
 		<inputs>
 			<resource name="silicon" amount="1.2" />
@@ -2528,7 +2528,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- 2015-05-19 Added manufacturing led bulb. -->
-	<process name="manufacture light emitting diode bulb" tech="3" skill="2" work-time="50" process-time="100"
+	<process name="Manufacture light emitting diode bulb" tech="3" skill="2" work-time="50" process-time="100"
 			power-required="0.2">
 		<inputs>
 			<part name="semiconductor wafer" number="1" />
@@ -2539,7 +2539,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Add manufacturing microcontroller. -->
-	<process name="manufacture microcontroller" tech="4" skill="4" work-time="400" process-time="200"
+	<process name="Manufacture microcontroller" tech="4" skill="4" work-time="400" process-time="200"
 			power-required="1.0">
 		<inputs>
 			<part name="semiconductor wafer" number="1" />
@@ -2550,7 +2550,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- 2015-05-19 Added manufacturing LED kit assembly. -->
-	<process name="make light emitting diode kit" tech="3" skill="2" work-time="100" process-time="50"
+	<process name="Make light emitting diode kit" tech="3" skill="2" work-time="100" process-time="50"
 			power-required="0.2">
 		<inputs>
 			<part name="aluminum sheet" number="1" />
@@ -2565,7 +2565,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="make flood light" tech="3" skill="2" work-time="90" process-time="20"
+	<process name="Make flood light" tech="3" skill="2" work-time="90" process-time="20"
 			power-required="0.2">
 		<inputs>
 			<resource name="styrene" amount=".5" />		
@@ -2581,7 +2581,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 	
 	<!-- 2015-05-19 Added manufacturing carbon dioxide laser. -->
-	<process name="manufacture carbon dioxide laser" tech="3" skill="4" work-time="400" process-time="600"
+	<process name="Manufacture carbon dioxide laser" tech="3" skill="4" work-time="400" process-time="600"
 			power-required="1.0">
 		<inputs>
 			<part name="semiconductor wafer" number="1" />
@@ -2600,7 +2600,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- 2015-05-19 Added manufacturing optical lens . -->
-	<process name="manufacture optical lens" tech="2" skill="2" work-time="200" process-time="300"
+	<process name="Manufacture optical lens" tech="2" skill="2" work-time="200" process-time="300"
 			power-required="0.5">
 		<inputs>
 			<part name="glass sheet" number="1" />
@@ -2611,7 +2611,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- 2019-10-14 Added manufacturing optical cable . -->
-	<process name="manufacture optical cable" tech="2" skill="2" work-time="200" process-time="200"
+	<process name="Manufacture optical cable" tech="2" skill="2" work-time="200" process-time="200"
 			power-required="0.5">
 		<inputs>
 			<part name="glass sheet" number="1" />
@@ -2622,7 +2622,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- 2015-05-19 Added manufacturing a helium–neon laser. -->
-	<process name="manufacture helium neon laser" tech="3" skill="4" work-time="400" process-time="600"
+	<process name="Manufacture helium neon laser" tech="3" skill="4" work-time="400" process-time="600"
 			power-required="2.0">
 		<inputs>
 			<part name="semiconductor wafer" number="1" />
@@ -2642,7 +2642,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- 2015-05-19 Added manufacturing an ls 3D printer. -->
-	<process name="manufacture laser sintering 3D printer" tech="3" skill="4" work-time="1000" process-time="1000"
+	<process name="Manufacture laser sintering 3D printer" tech="3" skill="4" work-time="1000" process-time="1000"
 			power-required="5.0">
 		<inputs>
 			<part name="aluminum wire" number="10" />
@@ -2671,7 +2671,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="make activated charcoal" tech="2" skill="2" work-time="100" process-time="100"
+	<process name="Make activated charcoal" tech="2" skill="2" work-time="100" process-time="100"
 			power-required="0.1">
 		<inputs>
 			<resource name="carbon" amount="1" />
@@ -2684,7 +2684,7 @@ Note: 1 kg of H2 is 14.13 liter
 
 
 	<!-- 2015-05-22 Added manufacturing pathogen filtering system. -->
-	<process name="manufacture pathogen filter" tech="2" skill="2" work-time="500" process-time="200"
+	<process name="Manufacture pathogen filter" tech="2" skill="2" work-time="500" process-time="200"
 			power-required=".1">
 		<inputs>
 			<part name="electrical wire" number="1" />
@@ -2700,7 +2700,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- 2015-05-22 Added manufacturing charcoal filter. -->
-	<process name="make charcoal filter" tech="2" skill="2" work-time="100" process-time="50"
+	<process name="Make charcoal filter" tech="2" skill="2" work-time="100" process-time="50"
 			power-required=".2">
 		<inputs>
 			<resource name="activated charcoal" amount="1" />
@@ -2713,7 +2713,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- A small transformer for stepping the voltage up and down for electrical appliances. -->
-	<process name="manufacture transformer" tech="3" skill="3" work-time="300" process-time="200"
+	<process name="Manufacture transformer" tech="3" skill="3" work-time="300" process-time="200"
 			power-required=".5">
 		<inputs>
 			<part name="steel sheet" number="1" />
@@ -2731,7 +2731,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 	
 	<!-- 2015-05-22 Added manufacturing electrostatic precipitator. -->
-	<process name="manufacture electrostatic precipitator" tech="3" skill="3" work-time="300" process-time="200"
+	<process name="Manufacture electrostatic precipitator" tech="3" skill="3" work-time="300" process-time="200"
 			power-required=".5">
 		<inputs>
 			<part name="pathogen filter" number="1" />
@@ -2747,7 +2747,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- 2015-05-22 Added manufacturing air duct. -->
-	<process name="manufacture large air duct" tech="1" skill="0" work-time="50" process-time="50"
+	<process name="Manufacture large air duct" tech="1" skill="0" work-time="50" process-time="50"
 			power-required=".3">
 		<inputs>
 			<part name="aluminum sheet" number="1" />
@@ -2758,7 +2758,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- 2015-05-22 Added manufacturing flexible hose. -->
-	<process name="manufacture flexible hose" tech="1" skill="0" work-time="50" process-time="50"
+	<process name="Manufacture flexible hose" tech="1" skill="0" work-time="50" process-time="50"
 			power-required=".3">
 		<inputs>
 			<resource name="polyethylene" amount=".5" />
@@ -2768,7 +2768,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="produce polycarbonate resin" tech="2" skill="2" work-time="100" process-time="200"
+	<process name="Produce polycarbonate resin" tech="2" skill="2" work-time="100" process-time="200"
 			power-required="0.5">
 		<inputs>
 			<resource name="ethylene" amount="1.0" />
@@ -2781,7 +2781,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="produce polyurethane" tech="3" skill="2" work-time="100" process-time="200"
+	<process name="Produce polyurethane" tech="3" skill="2" work-time="100" process-time="200"
 			power-required="0.5">
 		<inputs>
 			<resource name="crop waste" amount="2.0" />
@@ -2793,7 +2793,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces polycarbonate roofing. -->
-	<process name="manufacture polycarbonate roofing" tech="3" skill="2" work-time="100" process-time="200"
+	<process name="Manufacture polycarbonate roofing" tech="3" skill="2" work-time="100" process-time="200"
 			power-required="1.0">
 		<description>
 			Asahi/Chi Mei produces DPC (polycarbonate) from DMC which is produced via
@@ -2808,7 +2808,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="produce bisphenol-a" tech="3" skill="1" work-time="100" process-time="600"
+	<process name="Produce bisphenol-a" tech="3" skill="1" work-time="100" process-time="600"
 			power-required="0.2">
 		<description>
 			Bisphenol A (BPA), a colourless crystalline solid belonging to the family of organic compounds;
@@ -2824,7 +2824,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="make ceramic electrolyte" tech="2" skill="3" work-time="100" process-time="100"
+	<process name="Make ceramic electrolyte" tech="2" skill="3" work-time="100" process-time="100"
 			power-required=".2">
 		<description>
 			Ceramic electrolytes are critical for the production of batteries and fuel cells
@@ -2843,7 +2843,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 	
 	<!-- manufacturing methane solid oxide fuel cell. -->
-	<process name="make methane solid oxide fuel cells" tech="3" skill="3" work-time="200" process-time="50"
+	<process name="Make methane solid oxide fuel cells" tech="3" skill="3" work-time="200" process-time="50"
 			power-required="1">
 		<description>
 			Each methane solid oxide fuel cell (SOFC) can generate 200W. Each fuel cell weighs 0.2 kg.
@@ -2863,7 +2863,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- manufacturing methanol fuel cell. -->
-	<process name="make methanol fuel cells" tech="3" skill="4" work-time="200" process-time="50"
+	<process name="Make methanol fuel cells" tech="3" skill="4" work-time="200" process-time="50"
 			power-required="1">
 		<description>
 			Each methanol fuel cell (SOFC) can generate 200W. Each fuel cell weighs 0.2 kg.
@@ -2883,7 +2883,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 	
 	<!-- 2015-09-28 Added manufacturing fuel cell stack. -->
-	<process name="make methane fuel cell stack" tech="3" skill="4" work-time="800" process-time="100"
+	<process name="Make methane fuel cell stack" tech="3" skill="4" work-time="800" process-time="100"
 			power-required="2">
 		<description>
 			Each fuel cell stack comprises 75 solid oxide fuel cells at 15 kWe.
@@ -2902,7 +2902,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 	
-	<process name="make methanol fuel cell stack" tech="3" skill="4" work-time="800" process-time="100"
+	<process name="Make methanol fuel cell stack" tech="3" skill="4" work-time="800" process-time="100"
 			power-required="2">
 		<description>
 			Each fuel cell stack comprises 75 solid oxide fuel cells at 15 kW.
@@ -2922,7 +2922,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 	
 		<!-- 2016-05-08 Added turbopump manufacturing -->
-	<process name="manufacture turbopump" tech="3" skill="4" work-time="200" process-time="100"
+	<process name="Manufacture turbopump" tech="3" skill="4" work-time="200" process-time="100"
 			power-required="1">
 		<inputs>
 			<part name="steel sheet" number="1" />
@@ -2937,7 +2937,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 		<!-- 2017-09-11 Added make decontamination kit -->
-	<process name="make decontamination kit" tech="2" skill="2" work-time="100" process-time="100"
+	<process name="Make decontamination kit" tech="2" skill="2" work-time="100" process-time="100"
 			power-required="0.1">
 		<inputs>
 			<resource name="calcium carbonate" amount="0.1" />
@@ -2950,7 +2950,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 		<!-- 2017-09-11 Added manufacture resisters -->
-	<process name="manufacture resistors" tech="1" skill="2" work-time="50" process-time="200"
+	<process name="Manufacture resistors" tech="1" skill="2" work-time="50" process-time="200"
 			power-required="1">
 		<inputs>
 			<resource name="aluminum" amount="0.1" />
@@ -2966,7 +2966,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 		<!-- 2017-09-11 Added manufacture capacitors -->
-	<process name="manufacture capacitors" tech="1" skill="2" work-time="75" process-time="300"
+	<process name="Manufacture capacitors" tech="1" skill="2" work-time="75" process-time="300"
 			power-required="1">
 		<inputs>
 			<resource name="aluminum" amount="0.1" />
@@ -2986,7 +2986,7 @@ Note: 1 kg of H2 is 14.13 liter
 	https://en.wikipedia.org/wiki/Diode
 	Today, most diodes are made of silicon, but other semiconductors
 	such as selenium and germanium are sometimes used.	-->
-	<process name="manufacture diodes" tech="1" skill="2" work-time="200" process-time="500"
+	<process name="Manufacture diodes" tech="1" skill="2" work-time="200" process-time="500"
 			power-required="1">
 		<inputs>
 			<resource name="aluminum" amount="0.1" />
@@ -3000,7 +3000,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- 2017-09-11 Added manufacture logic board -->
-	<process name="manufacture logic board" tech="3" skill="2" work-time="200" process-time="300"
+	<process name="Manufacture logic board" tech="3" skill="2" work-time="200" process-time="300"
 			power-required="3">
 		<inputs>
 			<resource name="copper" amount="0.2" />
@@ -3019,7 +3019,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- 2022-06-15 Added manufacture plasma cutter -->
-	<process name="manufacture plasma cutter" tech="3" skill="2" work-time="200" process-time="100"
+	<process name="Manufacture plasma cutter" tech="3" skill="2" work-time="200" process-time="100"
 			power-required="1">
 		<inputs>
 			<resource name="copper" amount="0.2" />
@@ -3054,7 +3054,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Small wheels are made with steel sheets and steel wires. -->
-	<process name="make wheelbarrow" tech="1" skill="1" work-time="50" process-time="100"
+	<process name="Make wheelbarrow" tech="1" skill="1" work-time="50" process-time="100"
 			power-required="0.75">
 		<inputs>
 			<resource name="carbon" amount=".15" />		
