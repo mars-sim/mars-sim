@@ -576,6 +576,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		
 		// Set the opaqueness of the settlement box
 		setSettlementBox(!enableSettlement);
+		buttonRemoveTab.setEnabled(!selectedTab.getMandatory());
 		buttonBar.setEnabled(enableBar);
 		buttonPie.setEnabled(enablePie);
 		buttonMap.setEnabled(enableMap);

@@ -449,14 +449,15 @@ public class PersonTableModel extends UnitTableModel<Person> {
 		 * @param event the mission event.
 		 */
 		public void missionUpdate(MissionEvent event) {
-			MissionEventType eventType = event.getType();
-			Unit unit = (Unit)event.getTarget();
-			if (unit != null && unit.getUnitType() == UnitType.PERSON) {
+			Object target = event.getTarget();
+			if (target instanceof Person) {
+				MissionEventType eventType = event.getType();
+
 				if (eventType == MissionEventType.ADD_MEMBER_EVENT) {
-					addEntity((Person) unit);
+					addEntity((Person) target);
 				}
 				else if (eventType == MissionEventType.REMOVE_MEMBER_EVENT) {
-					removeEntity((Person) unit);
+					removeEntity((Person) target);
 				}
 			}
 		}
@@ -481,17 +482,16 @@ public class PersonTableModel extends UnitTableModel<Person> {
 		 * @param event the unit event.
 		 */
 		public void unitUpdate(UnitEvent event) {
+			Object target = event.getTarget();
 			UnitEventType eventType = event.getType();
 			if (eventType == addEvent) {
-				Unit unit = (Unit)event.getTarget();
-				if (unit.getUnitType() == UnitType.PERSON) {
-					addEntity((Person) unit);
+				if (target instanceof Person) {
+					addEntity((Person) target);
 				}
 			}
 			else if (eventType == removeEvent) {
-				Unit unit = (Unit)event.getTarget();
-				if (unit.getUnitType() == UnitType.PERSON) {
-					removeEntity((Person) unit);
+				if (target instanceof Person) {
+					removeEntity((Person) target);
 				}
 			}
 		}

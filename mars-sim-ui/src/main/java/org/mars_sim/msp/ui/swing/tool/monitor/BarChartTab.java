@@ -289,7 +289,7 @@ extends MonitorTab {
 	 * @param columns Indexes of columns to display.
 	 */
 	public BarChartTab(MonitorModel model, int []columns) {
-		super(model, false, ImageLoader.getNewIcon(MonitorWindow.BAR_ICON));
+		super(model, false, false, ImageLoader.getNewIcon(MonitorWindow.BAR_ICON));
 
 		String title = model.getName();
 		setName(title);

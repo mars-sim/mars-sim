@@ -30,18 +30,21 @@ public abstract class MonitorTab extends JPanel {
 	private MonitorModel model;
 	private Icon icon;
 	private boolean mandatory;
+	private boolean ownModel = true;
 
 	/**
 	 * Tee constructor that creates a view within a tab displaying the specified model.
 	 *
 	 * @param model     The model of entities to display.
 	 * @param mandatory This view is a mandatory view can can not be removed.
+	 * @param ownModel The model is owned by this tab and not shared
 	 * @param icon      Iconic representation.
 	 */
-	public MonitorTab(MonitorModel model, boolean mandatory, Icon icon) {
+	public MonitorTab(MonitorModel model, boolean mandatory, boolean ownModel, Icon icon) {
 		this.model = model;
 		this.icon = icon;
 		this.mandatory = mandatory;
+		this.ownModel = ownModel;
 
 		this.setOpaque(false);
 
@@ -53,7 +56,9 @@ public abstract class MonitorTab extends JPanel {
 	 * Remove this view.
 	 */
 	public void removeTab() {
-//		model.destroy();
+		if (ownModel) {
+			model.destroy();
+		}
 		model = null;
 	}
 

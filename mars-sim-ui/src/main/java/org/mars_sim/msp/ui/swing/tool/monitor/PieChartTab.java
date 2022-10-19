@@ -267,7 +267,7 @@ class PieChartTab extends MonitorTab {
      * @param column Index of the column to collate.
      */
     public PieChartTab(MonitorModel model, int column) {
-        super(model, false, ImageLoader.getNewIcon(MonitorWindow.PIE_ICON));
+        super(model, false, false, ImageLoader.getNewIcon(MonitorWindow.PIE_ICON));
 
         String title = model.getName() + " - " + model.getColumnName(column);
         setName(title);

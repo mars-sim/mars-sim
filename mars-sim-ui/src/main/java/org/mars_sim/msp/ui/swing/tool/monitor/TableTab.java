@@ -74,7 +74,7 @@ abstract class TableTab extends MonitorTab {
 	 */
 	public TableTab(final MonitorWindow window, final MonitorModel model, boolean mandatory, boolean singleSelection,
 			String icon) {
-		super(model, mandatory, ImageLoader.getNewIcon(icon));
+		super(model, mandatory, true, ImageLoader.getNewIcon(icon));
 	
 		// Can not create icons until UIManager is up and running
 		if (ascendingIcon == null) {

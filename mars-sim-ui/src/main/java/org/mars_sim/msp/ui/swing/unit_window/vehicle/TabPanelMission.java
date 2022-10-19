@@ -53,7 +53,7 @@ extends TabPanel {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(TabPanelMission.class.getName());
 
-	private static final String FLAG_ICON = Msg.getString("icon.flag"); //$NON-NLS-1$
+	private static final String FLAG_MISSION = Msg.getString("icon.mission"); //$NON-NLS-1$
 	
 	private WebTextArea missionTextArea;
 	private WebTextArea missionPhaseTextArea;
@@ -80,7 +80,7 @@ extends TabPanel {
 		// Use the TabPanel constructor
 		super(
 			Msg.getString("TabPanelMission.title"), //$NON-NLS-1$
-			ImageLoader.getNewIcon(FLAG_ICON),
+			ImageLoader.getNewIcon(FLAG_MISSION),
 			Msg.getString("TabPanelMission.title"), //$NON-NLS-1$
 			vehicle, desktop
 		);
