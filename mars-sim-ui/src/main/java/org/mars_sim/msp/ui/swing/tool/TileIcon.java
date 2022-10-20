@@ -15,11 +15,8 @@ import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.net.URL;
+
 import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.SwingUtilities;
-import javax.swing.border.EmptyBorder;
 
 /**
  * An <CODE>Icon</CODE> that repeats its image horizontally and vertically to

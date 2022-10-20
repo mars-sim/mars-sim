@@ -9,7 +9,6 @@ package org.mars_sim.msp.ui.swing.tool.monitor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Logger;
 

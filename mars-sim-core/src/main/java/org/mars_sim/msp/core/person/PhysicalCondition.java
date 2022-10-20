@@ -673,7 +673,9 @@ public class PhysicalCondition implements Serializable {
 		// kJoules += foodAmount * xdelta * Math.log(FOOD_COMPOSITION_ENERGY_RATIO /
 		// kJoules) / ENERGY_FACTOR;
 
-		if (kJoules > 19_000D) {
+		if (hunger <= 0)
+			kJoules = personalMaxEnergy;
+		else if (kJoules > 19_000D) {
 			kJoules += xdelta * .035;
 		} else if (kJoules > 17_000D) {
 			kJoules += xdelta * .06;
@@ -709,6 +711,7 @@ public class PhysicalCondition implements Serializable {
 		if (kJoules > personalMaxEnergy * 1.25) {
 			kJoules = personalMaxEnergy * 1.25;
 		}
+		
 		person.fireUnitUpdate(UnitEventType.HUNGER_EVENT);
 	}
 

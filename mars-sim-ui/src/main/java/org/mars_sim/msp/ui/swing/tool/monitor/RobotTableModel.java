@@ -12,8 +12,6 @@ import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import javax.swing.SwingUtilities;
-
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEvent;

@@ -65,7 +65,7 @@ public class TabPanelGeneral extends TabPanel {
 
 		// Prepare gender textfield
 		String gender = person.getGender().getName();
-		addTextField(infoPanel, Msg.getString("TabPanelGeneral.gender"), Conversion.capitalize(gender), null);
+		addTextField(infoPanel, Msg.getString("TabPanelGeneral.gender"), Conversion.capitalize(gender), 5, null);
 		
 		// Prepare birthdate and age textfield
 		birthDate = person.getBirthDate();
@@ -73,25 +73,25 @@ public class TabPanelGeneral extends TabPanel {
 			TAB_BIRTH_DATE_AGE,
 			birthDate,
 			Integer.toString(person.getAge())); //$NON-NLS-1$
-		birthDateTF = addTextField(infoPanel, Msg.getString("TabPanelGeneral.birthDate"), birthTxt, null);
+		birthDateTF = addTextField(infoPanel, Msg.getString("TabPanelGeneral.birthDate"), birthTxt, 16, null);
 
 		// Prepare birth location textfield
 		String birthLocation = person.getBirthplace();
 		addTextField(infoPanel, Msg.getString("TabPanelGeneral.birthLocation"), //$NON-NLS-1$
-				Conversion.capitalize(birthLocation), null);		
+				Conversion.capitalize(birthLocation), 13, null);		
 		
 		// Prepare birth location textfield
 		String country = person.getCountry();
 		addTextField(infoPanel, Msg.getString("TabPanelGeneral.country"), //$NON-NLS-1$
-				Conversion.capitalize(country), null);
+				Conversion.capitalize(country), 8, null);
 
 		// Prepare weight textfield
 		addTextField(infoPanel, Msg.getString("TabPanelGeneral.weight"), //$NON-NLS-1$
-				  							  DECIMAL_KG.format(person.getBaseMass()), null);
+				  							  DECIMAL_KG.format(person.getBaseMass()), 6, null);
 		
 		// Prepare height name label
 		addTextField(infoPanel, Msg.getString("TabPanelGeneral.height"), //$NON-NLS-1$
-					 DECIMAL_PLACES1.format(person.getHeight()) + " m", null);
+					 DECIMAL_PLACES1.format(person.getHeight()) + " m", 6, null);
 
 		// Prepare BMI label
 		double height = person.getHeight()/100D;
@@ -110,16 +110,16 @@ public class TabPanelGeneral extends TabPanel {
 		String BMItext = Msg.getString("TabPanelGeneral.bmiValue", //$NON-NLS-1$
 				Math.round(BMI*100.0)/100.0, weightClass);
 		addTextField(infoPanel, Msg.getString("TabPanelGeneral.bmi"), //$NON-NLS-1$
-				BMItext, null); 
+				BMItext, 10, null); 
 		
 		// Prepare loading cap label
 		addTextField(infoPanel, Msg.getString("TabPanelGeneral.loadCap"), //$NON-NLS-1$
-				DECIMAL_KG.format(person.getCarryingCapacity()), null); 
+				DECIMAL_KG.format(person.getCarryingCapacity()), 6, null); 
 		
 		// Use spring panel layout.
 		SpringUtilities.makeCompactGrid(infoPanel,
 		                                8, 2, //rows, cols
-		                                65, 2,        //initX, initY
+		                                100, 2,        //initX, initY
 		                                XPAD_DEFAULT, YPAD_DEFAULT);       //xPad, yPad
 	}
 	

@@ -542,16 +542,14 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 	 */
 	private class EquipmentTableModel extends AbstractTableModel {
 
-		/** default serial id. */
-		private static final long serialVersionUID = 1L;
-
 		private List<Equipment> equipmentList = new ArrayList<>();
+
 		private Map<String, String> types = new HashMap<>();
-		private Map<String, String> contentOwner = new HashMap<>();
 		private Map<String, Double> mass = new HashMap<>();
+		private Map<String, String> owner = new HashMap<>();
+		private Map<String, String> content = new HashMap<>();
 
 		private Unit unit;
-
 
 		/**
 		 * hidden constructor.
@@ -559,22 +557,23 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 		 */
 		public EquipmentTableModel(Unit unit) {
 			this.unit = unit;
-			loadModel(equipmentList, types, contentOwner, mass);
+			equipmentList = new ArrayList<>(((EquipmentOwner)unit).getEquipmentSet());
+			loadModel();
 		}
 
-  		private void loadModel(List<Equipment> equipmentList, Map<String, String> types, Map<String, String> contentOwner, Map<String, Double> mass) {
-
+  		private void loadModel() {
+  			
             if (unit.getUnitType() == UnitType.PERSON
             		|| unit.getUnitType() == UnitType.ROBOT
             		|| unit.getUnitType() == UnitType.VEHICLE
             		|| unit.getUnitType() == UnitType.SETTLEMENT
             		) {
-            	for (Equipment e : ((EquipmentOwner)unit).getEquipmentSet()) {
+            	for (Equipment e : equipmentList) {
 					String name = e.getName();
 					types.put(name, e.getEquipmentType().getName());
-					contentOwner.put(name, getContentOwner(e));
+					owner.put(name, getOwner(e));
+					content.put(name, getContent(e));
 					mass.put(name, e.getMass());
-					equipmentList.add(e);
 				}
             }
 
@@ -582,19 +581,19 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 			equipmentList.stream().sorted(new AlphanumComparator()).collect(Collectors.toList());
 		}
 
-		private String getContentOwner(Equipment e) {
+		private String getOwner(Equipment e) {
 			String s = "";
 			if (e.getEquipmentType() == EquipmentType.EVA_SUIT) {
 				Person p = e.getLastOwner();
 				if (p != null)
 					s = p.getName();
 			}
-//			else if (e instanceof Robot) {
-//				Person p = e.getLastOwner();
-//				if (p != null)
-//					s = p.getName();
-//			}
-			else if (e instanceof Container) {
+			return s;
+		}
+
+		private String getContent(Equipment e) {
+			String s = "";
+			if (e instanceof Container) {
 				int resource = ((Container)e).getResource();
 				if (resource != -1) {
 					s = ResourceUtil.findAmountResourceName(resource);
@@ -603,9 +602,9 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 
 			return s;
 		}
-
+		
 		public int getRowCount() {
-			return contentOwner.size();
+			return equipmentList.size();
 		}
 
 		public int getColumnCount() {
@@ -614,52 +613,59 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 
 		public Class<?> getColumnClass(int columnIndex) {
 			Class<?> dataType = super.getColumnClass(columnIndex);
-			if (columnIndex == 0) dataType = Equipment.class;
-			else if (columnIndex == 1) dataType = String.class;
-			else if (columnIndex == 2) dataType = Double.class;
+			if (columnIndex == 0) dataType = String.class;
+			else if (columnIndex == 1) dataType = Double.class;
+			else if (columnIndex == 2) dataType = String.class;
 			else if (columnIndex == 3) dataType = String.class;
 			return dataType;
 		}
 
 		public String getColumnName(int columnIndex) {
 			if (columnIndex == 0) return Msg.getString("InventoryTabPanel.Equipment.header.type"); //$NON-NLS-1$
-			else if (columnIndex == 1) return Msg.getString("InventoryTabPanel.Equipment.header.name"); //$NON-NLS-1$
-			else if (columnIndex == 2) return Msg.getString("InventoryTabPanel.Equipment.header.mass"); //$NON-NLS-1$
+			else if (columnIndex == 1) return Msg.getString("InventoryTabPanel.Equipment.header.mass"); //$NON-NLS-1$
+			else if (columnIndex == 2) return Msg.getString("InventoryTabPanel.Equipment.header.owner"); //$NON-NLS-1$			
 			else if (columnIndex == 3) return Msg.getString("InventoryTabPanel.Equipment.header.content"); //$NON-NLS-1$
 			else return "unknown";
 		}
 
 		public Object getValueAt(int row, int column) {
-			if (equipmentList != null && row >= 0 && row < contentOwner.size()) {
-				if (column == 0) return types.get(equipmentList.get(row).getName()) + WHITESPACE;
-				else if (column == 1) return equipmentList.get(row);
-				else if (column == 2) {
+			if (equipmentList != null && row >= 0 && row < owner.size()) {
+				if (column == 0) return equipmentList.get(row).getName();
+				else if (column == 1) {
 					String name = equipmentList.get(row).getName();
 					if (name != null && mass.get(name) != null)
 						return Math.round(mass.get(name)*100.0)/100.0;
 				}
-				else if (column == 3) return contentOwner.get(equipmentList.get(row).getName());
+				else if (column == 2) return owner.get(equipmentList.get(row).getName());
+				else if (column == 3) return content.get(equipmentList.get(row).getName());
 			}
 			return "unknown";
 		}
 
 		public void update() {
-			List<Equipment> newEquipment = new ArrayList<>();
-			Map<String, String> newTypes = new HashMap<>();
-			Map<String, String> newContentOwner = new HashMap<>();
-			Map<String, Double> newMass = new HashMap<>();
 
-			loadModel(newEquipment, newTypes, newContentOwner, newMass);
-
-    		if (equipmentList.size() != newEquipment.size()
-    				|| !newEquipment.equals(equipmentList)
-    				|| !newContentOwner.equals(contentOwner)
-    				|| !mass.equals(newMass)) {
-				equipmentList = newEquipment;
-				contentOwner = newContentOwner;
-				types = newTypes;
-				mass = newMass;
-				fireTableDataChanged();
+			if (unit.getUnitType() == UnitType.PERSON
+            		|| unit.getUnitType() == UnitType.ROBOT
+            		|| unit.getUnitType() == UnitType.VEHICLE
+            		|| unit.getUnitType() == UnitType.SETTLEMENT
+            		) {
+				
+				List<Equipment> newEquipmentList = new ArrayList<>(((EquipmentOwner)unit).getEquipmentSet());
+				
+				// Sort equipment alphabetically by name.
+				newEquipmentList.stream().sorted(new AlphanumComparator()).collect(Collectors.toList());
+				
+				if (equipmentList.size() != newEquipmentList.size()
+    				|| !equipmentList.equals(newEquipmentList)) {
+			
+	            	for (Equipment e : newEquipmentList) {
+						String name = e.getName();
+						types.put(name, e.getEquipmentType().getName());
+						owner.put(name, getOwner(e));
+						content.put(name, getContent(e));
+						mass.put(name, e.getMass());
+					}
+	            }
 			}
 		}
 	}
