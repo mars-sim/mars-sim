@@ -28,7 +28,6 @@ implements Serializable, Comparable<Food> {
 	private String name;
 	private String type;
 	
-	private Class<?> classType;
 	private Resource resource;
 	
 	private FoodType foodType;
@@ -41,12 +40,12 @@ implements Serializable, Comparable<Food> {
 	 * @param foodType the food's category.
 	 */
 	Food(String name, AmountResource ar, FoodType foodType, double demandMultiplier) {
-		if (name != null) this.name = name.trim().toLowerCase();
+		if (name != null)
+			this.name = name;
 		else throw new IllegalArgumentException("name cannot be null.");
 
 		if (ar != null) {
 			this.resource = ar;
-			this.classType = ar.getClass();
 			this.foodType = foodType;
 			this.type = foodType.getName();
 			this.demandMultiplier = demandMultiplier;
@@ -63,15 +62,6 @@ implements Serializable, Comparable<Food> {
 	 */
 	public String getName() {
 		return name;
-	}
-
-	/**
-	 * Gets the food's class.
-	 * 
-	 * @return class
-	 */
-	public Class<?> getClassType() {
-		return classType;
 	}
 
 	/**
@@ -130,20 +120,14 @@ implements Serializable, Comparable<Food> {
 		if (obj == null) return false;
 		if (this.getClass() != obj.getClass()) return false;
 		Food f = (Food) obj;
-		if (!classType.equals(f.classType)) return false;
-		return this.getName().equals(f.getName())
-				&& this.id == f.getID();
+		return this.id == f.getID();
 	}
-	
 
 	/**
 	 * Gets the hash code value.
 	 */
 	public int hashCode() {
-		int hashCode = name.hashCode() * getClass().hashCode();
-		if (resource != null) hashCode *= resource.hashCode();
-		hashCode *= foodType.hashCode();
-		return hashCode;
+		return id % 64;
 	}
 
 	/**
@@ -155,14 +139,5 @@ implements Serializable, Comparable<Food> {
 	 */
 	public int compareTo(Food o) {
 		return name.compareTo(o.name);
-	}
-	
-	/**
-	 * Prepare this window for deletion.
-	 */
-	public void destroy() {
-		classType = null;
-		resource = null;
-		foodType = null;
 	}
 }

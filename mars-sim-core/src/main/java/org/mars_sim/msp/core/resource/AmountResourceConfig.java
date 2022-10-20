@@ -63,15 +63,15 @@ public class AmountResourceConfig implements Serializable {
 			List<Element> resourceNodes = root.getChildren(RESOURCE);
 			for (Element resourceElement : resourceNodes) {
 
-				String name = resourceElement.getAttributeValue(NAME).toLowerCase();
+				String name = resourceElement.getAttributeValue(NAME);
 
 				String type = resourceElement.getAttributeValue(TYPE);
 
-				GoodType goodType = GoodType.convertName2Enum(type.toLowerCase());
+				GoodType goodType = GoodType.convertName2Enum(type);
 						
 				String description = resourceElement.getText();
 				// Get phase 
-				String phaseString = resourceElement.getAttributeValue(PHASE).toLowerCase();
+				String phaseString = resourceElement.getAttributeValue(PHASE);
 				// PhaseType phase = PhaseType.valueOf(phaseString);
 				PhaseType phaseType = PhaseType.fromString(phaseString);
 

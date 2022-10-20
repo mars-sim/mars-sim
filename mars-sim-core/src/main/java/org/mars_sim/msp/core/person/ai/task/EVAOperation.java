@@ -314,7 +314,11 @@ public abstract class EVAOperation extends Task {
     protected double walkToBin(double time) {
     	// Go to the drop off location
         if (person.isOutside()) {
-        	if (!person.getPosition().equals(dropOffLoc)) {
+			if (dropOffLoc == null) {
+				logger.severe(person, "No location for storage bin.");
+				endTask();
+			}
+        	else if (!person.getPosition().equals(dropOffLoc)) {
         		addSubTask(new WalkOutside(person, person.getPosition(),
         			dropOffLoc, true));
         	}

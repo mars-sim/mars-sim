@@ -17,7 +17,6 @@ import java.util.Set;
 
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.data.UnitSet;
-import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 
 /**
@@ -544,13 +543,8 @@ public class EquipmentInventory
 	 * TODO should be keyed on resourceID not string.
 	 * @param capacities
 	 */
-	public void setResourceCapacityMap(Map<String, Double> capacities) {
-		for (Entry<String, Double> v : capacities.entrySet()) {
-			AmountResource foundResource = ResourceUtil.findAmountResource(v.getKey());
-			if (foundResource != null) {
-				microInventory.setCapacity(foundResource.getID(), v.getValue());
-			}
-		}
+	public void setResourceCapacityMap(Map<Integer, Double> capacities) {
+		setResourceCapacityMap(capacities, false);
 	}
 
 	/**

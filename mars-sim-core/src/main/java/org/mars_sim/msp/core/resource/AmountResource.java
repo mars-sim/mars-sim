@@ -7,14 +7,12 @@
 
 package org.mars_sim.msp.core.resource;
 
-import java.io.Serializable;
-
 import org.mars_sim.msp.core.goods.GoodType;
 
 /**
  * The AmountResource class represents a type of resource measured in mass kg.
  */
-public final class AmountResource extends ResourceAbstract implements Serializable {
+public final class AmountResource extends ResourceAbstract {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 12L;
@@ -41,7 +39,6 @@ public final class AmountResource extends ResourceAbstract implements Serializab
 
 	private boolean lifeSupport;
 	
-	private int hashcode = -1;
 	/** By default, demandMultiplier is zero. */
 	private double demandMultiplier = 0;
 
@@ -62,13 +59,12 @@ public final class AmountResource extends ResourceAbstract implements Serializab
 	 */
 	public AmountResource(int id, String name, GoodType goodType, String description, 
 			PhaseType phase, double demand, boolean lifeSupport, boolean edible) {
-		super(name.toLowerCase(), id, description);
+		super(name, id, description);
 		this.goodType = goodType;
 		this.phase = phase;
 		this.demandMultiplier = demand;
 		this.lifeSupport = lifeSupport;
 		this.edible = edible;
-		this.hashcode = getName().toLowerCase().hashCode() * phase.hashCode();
 	}
 	
 	/**
@@ -121,7 +117,7 @@ public final class AmountResource extends ResourceAbstract implements Serializab
 	 */
 	@Override
 	public int hashCode() {
-		return hashcode;
+		return getID() % 128;
 	}
 
 	@Override
@@ -130,24 +126,6 @@ public final class AmountResource extends ResourceAbstract implements Serializab
 		if (obj == null) return false;
 		if (this.getClass() != obj.getClass()) return false;
 		AmountResource ar = (AmountResource) obj;
-		return this.getName().equalsIgnoreCase(ar.getName());
+		return this.getID() == ar.getID();
 	}
-
-	public void destroy() {
-
-//		amountResourceConfig = null;
-//		phase = null;
-//		foodAR = null;
-//		oxygenAR = null;
-//		waterAR = null;
-//		carbonDioxideAR = null;
-//	    tableSaltAR = null;
-//	    NaClOAR = null;
-//	    greyWaterAR = null;
-//	    foodWasteAR = null;
-//	    solidWasteAR = null;
-//	    napkinAR = null;
-
-	}
-
 }

@@ -124,7 +124,7 @@ public class CropConfig implements Serializable {
 		for (Element crop : crops) {
 			String name = "";
 			// Get name.
-			name = crop.getAttributeValue(NAME).toLowerCase();
+			name = crop.getAttributeValue(NAME);
 
 			// Get growing time.
 			String growingTimeStr = crop.getAttributeValue(GROWING_TIME);

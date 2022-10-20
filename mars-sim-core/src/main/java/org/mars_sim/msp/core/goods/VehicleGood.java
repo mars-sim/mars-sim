@@ -53,7 +53,6 @@ class VehicleGood extends Good {
 	private static final int LUV_VALUE = 10;
 	private static final int DRONE_VALUE = 50;
 
-    private static final String METHANE = "methane";
     private static final double SPEED_TO_DISTANCE = 2D / 60D / 60D / MarsClock.convertSecondsToMillisols(1D) * 1000D;
 
 	private double theoreticalRange;
@@ -65,10 +64,10 @@ class VehicleGood extends Good {
 	// Suitability of this vehicle type for different Missions
 	private transient Map<MissionType,Double> missionCapacities = new EnumMap<>(MissionType.class);
 
-    public VehicleGood(String name, VehicleSpec vs) {
-        super(name, VehicleType.convertName2ID(name));
+    public VehicleGood(VehicleSpec vs) {
+        super(vs.getName(), VehicleType.convertName2ID(vs.getName()));
 
-        this.vehicleType = VehicleType.convertNameToVehicleType(name);
+        this.vehicleType = VehicleType.convertNameToVehicleType(vs.getName());
         switch(vehicleType) {
 		case DELIVERY_DRONE:
 		case LUV:
@@ -85,7 +84,7 @@ class VehicleGood extends Good {
             break;
 
         default:
-            throw new IllegalArgumentException(name + " has unknown vehicle type.");
+            throw new IllegalArgumentException(vs.getName() + " has unknown vehicle type.");
         }
 
 		this.theoreticalRange = getVehicleRange(vs);
@@ -607,7 +606,7 @@ class VehicleGood extends Good {
 	private static double getVehicleRange(VehicleSpec v) {
 		double range = 0D;
 
-		double fuelCapacity = v.getCargoCapacity(METHANE);
+		double fuelCapacity = v.getCargoCapacity(ResourceUtil.methaneID);
 		double fuelEfficiency = v.getDriveTrainEff();
 		range = fuelCapacity * fuelEfficiency * Vehicle.SOFC_CONVERSION_EFFICIENCY;
 
@@ -620,7 +619,7 @@ class VehicleGood extends Good {
 
             // Check food capacity as range limit.
             double foodConsumptionRate = personConfig.getFoodConsumptionRate();
-            double foodCapacity = v.getCargoCapacity(ResourceUtil.FOOD);
+            double foodCapacity = v.getCargoCapacity(ResourceUtil.foodID);
             double foodSols = foodCapacity / (foodConsumptionRate * crewSize);
             double foodRange = distancePerSol * foodSols / 3D;
             if (foodRange < range)
@@ -628,7 +627,7 @@ class VehicleGood extends Good {
 
             // Check water capacity as range limit.
             double waterConsumptionRate = personConfig.getWaterConsumptionRate();
-            double waterCapacity = v.getCargoCapacity(ResourceUtil.WATER);
+            double waterCapacity = v.getCargoCapacity(ResourceUtil.waterID);
             double waterSols = waterCapacity / (waterConsumptionRate * crewSize);
             double waterRange = distancePerSol * waterSols / 3D;
             if (waterRange < range)
@@ -636,7 +635,7 @@ class VehicleGood extends Good {
 
             // Check oxygen capacity as range limit.
             double oxygenConsumptionRate = personConfig.getNominalO2ConsumptionRate();
-            double oxygenCapacity = v.getCargoCapacity(ResourceUtil.OXYGEN);
+            double oxygenCapacity = v.getCargoCapacity(ResourceUtil.oxygenID);
             double oxygenSols = oxygenCapacity / (oxygenConsumptionRate * crewSize);
             double oxygenRange = distancePerSol * oxygenSols / 3D;
             if (oxygenRange < range)

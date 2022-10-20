@@ -23,12 +23,13 @@ public class VehicleSpec implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 12L;
 
+	private String name;
 	private String description;
 	private double width, length;
 	private double drivetrainEff, baseSpeed, averagePower, emptyMass;
 	private int crewSize;
 	private double totalCapacity = 0D;
-	private Map<String, Double> cargoCapacityMap;
+	private Map<Integer, Double> cargoCapacityMap;
 	private boolean hasSickbay = false;
 	private int sickbayTechLevel = -1, sickbayBeds = 0;
 	private int labTechLevel = -1;
@@ -47,9 +48,10 @@ public class VehicleSpec implements Serializable {
 
 	private double terrainHandling;
 
-	public VehicleSpec(String description2, double drivetrainEff2, 
+	public VehicleSpec(String name, String description2, double drivetrainEff2, 
 			double baseSpeed2, double averagePower2,
 			double emptyMass2, int crewSize2) {
+		this.name = name;
 		this.description = description2;
 		this.drivetrainEff = drivetrainEff2;
 		this.baseSpeed = baseSpeed2;
@@ -72,14 +74,19 @@ public class VehicleSpec implements Serializable {
 	 * @param cargo {@link String}
 	 * @return {@link Double}
 	 */
-	public final double getCargoCapacity(String cargo) {
+	public final double getCargoCapacity(int resourceId) {
 		if (cargoCapacityMap != null) {
-			return cargoCapacityMap.getOrDefault(cargo, 0D);
+			return cargoCapacityMap.getOrDefault(resourceId, 0D);
 		}
 		
 		return 0D;
 	}
 
+	public String getName() {
+		return name;
+
+	}
+	
 	/** @return the description */
 	public final String getDescription() {
 		return description;
@@ -126,7 +133,7 @@ public class VehicleSpec implements Serializable {
 	}
 
 	/** @return the cargoCapacity */
-	public final Map<String, Double> getCargoCapacityMap() {
+	public final Map<Integer, Double> getCargoCapacityMap() {
 		return cargoCapacityMap;
 	}
 
@@ -243,7 +250,7 @@ public class VehicleSpec implements Serializable {
 		this.airlockExteriorLoc = airlockExteriorLoc;
 	}
 
-	void setCargoCapacity(double totalCapacity2, Map<String, Double> cargoCapacityMap2) {
+	void setCargoCapacity(double totalCapacity2, Map<Integer, Double> cargoCapacityMap2) {
 		this.totalCapacity = totalCapacity2;
 		this.cargoCapacityMap = cargoCapacityMap2;
 	}

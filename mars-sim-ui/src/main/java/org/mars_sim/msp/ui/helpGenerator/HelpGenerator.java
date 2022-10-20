@@ -309,6 +309,19 @@ public class HelpGenerator {
 		.append(SUFFIX);
 	}
 
+	
+	/**
+	 * Produces a link <code> a href = getPathResource(name) </code>
+	 * with the name as caption.
+	 * 
+	 * @param resourceName {@link String}
+	 * @return {@link String}
+	 */
+	private static final String getLinkResource(final int resourceId) {
+		String resourceName = ResourceUtil.findAmountResourceName(resourceId);
+		return link(getPathResource(resourceName), resourceName);
+	}
+
 	/**
 	 * Produces a link <code> a href = getPathResource(name) </code>
 	 * with the name as caption.
@@ -462,15 +475,14 @@ public class HelpGenerator {
 		generateFile(VEHICLE_DIR, getPathVehicles(),content);
 
 		// second loop over vehicle types to generate a help file for each one
-		String[] cargoArray = new String[] {
-			"hydrogen",
-			"methane",
-			ResourceUtil.OXYGEN,
-			ResourceUtil.WATER,
-			ResourceUtil.FOOD,
-			"dessert",
-			"rock samples",
-			"ice"
+		int[] cargoArray = new int[] {
+			ResourceUtil.hydrogenID,
+			ResourceUtil.methaneID,
+			ResourceUtil.oxygenID,
+			ResourceUtil.waterID,
+			ResourceUtil.foodID,
+			ResourceUtil.rockSamplesID,
+			ResourceUtil.iceID
 		};
 		VehicleConfig config = SimulationConfig.instance().getVehicleConfiguration();
 		for (String vehicle : vehicles) {
@@ -506,7 +518,7 @@ public class HelpGenerator {
 			}
 			helpFileTableRow(content,new String[] {"Base Speed",Double.toString(v.getBaseSpeed())});
 			helpFileTableRow(content,new String[] {"Total Cargo Capacity",Double.toString(v.getTotalCapacity())});
-			for (String cargo : cargoArray) {
+			for (int cargo : cargoArray) {
 				Double capacity = v.getCargoCapacity(cargo);
 				if (capacity > 0.0) {
 					StringBuffer caption = new StringBuffer()

@@ -180,7 +180,7 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 			} break;
 
 			case TYPE : {
-				result = vehicle.getDescription();
+				result = vehicle.getVehicleType().getName();
 			} break;
 
 			case HOME : {
