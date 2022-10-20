@@ -443,7 +443,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		if (columns != null && columns.length > 0) {
 			MonitorTab bar = new BarChartTab(model, columns);
 			addTab(bar);
-			selectNewTab(bar);
+			tabsSection.setSelectedComponent(bar);
 		}
 	}
 
@@ -457,7 +457,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 			if (column >= 0) {
 				MonitorTab pie = new PieChartTab(model, column);
 				addTab(pie);
-				selectNewTab(pie);
+				tabsSection.setSelectedComponent(pie);
 			}
 		}
 	}
