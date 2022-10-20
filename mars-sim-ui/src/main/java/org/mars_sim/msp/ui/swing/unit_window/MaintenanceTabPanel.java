@@ -244,7 +244,7 @@ public class MaintenanceTabPanel extends TabPanel {
     			Part p = ItemResourceUtil.findItemResource(id);
 				if (useHtml) 
 					buf.append("<br>");
-				buf.append(number).append(" ").append(Conversion.capitalize(p.getName()));
+				buf.append(number).append(" ").append(p.getName());
 				if (i.hasNext()) 
 					buf.append(", ");
 				else {

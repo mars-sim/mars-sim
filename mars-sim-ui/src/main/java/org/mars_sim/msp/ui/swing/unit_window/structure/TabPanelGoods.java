@@ -24,7 +24,6 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
-import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
@@ -161,7 +160,7 @@ public class TabPanelGoods extends TabPanel {
 			if (row < getRowCount()) {
 				Good good = (Good) goods.get(row);
 				// Capitalized good's names
-				if (column == 0) return Conversion.capitalize(good.getName()) + " ";
+				if (column == 0) return good.getName();
 				else if (column == 1) {
 					try {
 						// Note: twoDecimal format is in conflict with Table column number sorting

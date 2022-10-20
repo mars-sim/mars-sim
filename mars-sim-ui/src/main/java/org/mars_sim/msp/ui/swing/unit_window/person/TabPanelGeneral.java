@@ -17,7 +17,6 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
@@ -65,7 +64,7 @@ public class TabPanelGeneral extends TabPanel {
 
 		// Prepare gender textfield
 		String gender = person.getGender().getName();
-		addTextField(infoPanel, Msg.getString("TabPanelGeneral.gender"), Conversion.capitalize(gender), 5, null);
+		addTextField(infoPanel, Msg.getString("TabPanelGeneral.gender"), gender, 5, null);
 		
 		// Prepare birthdate and age textfield
 		birthDate = person.getBirthDate();
@@ -78,12 +77,12 @@ public class TabPanelGeneral extends TabPanel {
 		// Prepare birth location textfield
 		String birthLocation = person.getBirthplace();
 		addTextField(infoPanel, Msg.getString("TabPanelGeneral.birthLocation"), //$NON-NLS-1$
-				Conversion.capitalize(birthLocation), 13, null);		
+				birthLocation, 13, null);		
 		
 		// Prepare birth location textfield
 		String country = person.getCountry();
 		addTextField(infoPanel, Msg.getString("TabPanelGeneral.country"), //$NON-NLS-1$
-				Conversion.capitalize(country), 8, null);
+				country, 8, null);
 
 		// Prepare weight textfield
 		addTextField(infoPanel, Msg.getString("TabPanelGeneral.weight"), //$NON-NLS-1$

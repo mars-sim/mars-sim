@@ -35,7 +35,6 @@ import org.mars_sim.msp.core.structure.building.function.WasteProcessing;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 /**
@@ -230,7 +229,7 @@ public class TabPanelWasteProcesses extends TabPanel {
 				double rate = process.getMaxInputRate(resource) * 1000D;
 				String rateString = decFormatter.format(rate);
 				if (process.isAmbientInputResource(resource)) ambientStr = "*";
-				result.append(Conversion.capitalize(ResourceUtil.findAmountResource(resource).getName()))
+				result.append(ResourceUtil.findAmountResource(resource).getName())
 					.append(ambientStr).append(" @ ")
 					.append(rateString).append(" kg/sol<br>");
 				ii++;
@@ -243,7 +242,7 @@ public class TabPanelWasteProcesses extends TabPanel {
 				Integer resource = j.next();
 				double rate = process.getMaxOutputRate(resource) * 1000D;
 				String rateString = decFormatter.format(rate);
-				result.append(Conversion.capitalize(ResourceUtil.findAmountResource(resource).getName()))
+				result.append(ResourceUtil.findAmountResource(resource).getName())
 					.append(" @ ").append(rateString).append(" kg/sol<br>");
 				jj++;
 			}

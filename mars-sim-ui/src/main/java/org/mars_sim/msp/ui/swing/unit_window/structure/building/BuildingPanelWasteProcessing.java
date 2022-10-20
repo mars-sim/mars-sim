@@ -30,7 +30,6 @@ import org.mars_sim.msp.core.structure.building.function.WasteProcessing;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.tool.Conversion;
 
 /**
  * The BuildingPanelWasteProcessing class is a building function panel representing
@@ -168,7 +167,7 @@ public class BuildingPanelWasteProcessing extends BuildingFunctionPanel {
 			toggleButton.setToolTipText(Msg.getString("TabPanelWasteProcesses.tooltip.toggleButton")); //$NON-NLS-1$
 			add(toggleButton);
 			label = new JLabel(Msg.getString("TabPanelWasteProcesses.processLabel", //$NON-NLS-1$
-					building.getNickName(), Conversion.capitalize(process.getProcessName()))); 
+					building.getNickName(), process.getProcessName())); 
 			add(label);
 
 			// Load green and red dots.
@@ -206,7 +205,7 @@ public class BuildingPanelWasteProcessing extends BuildingFunctionPanel {
 				String rateString = decFormatter.format(rate);
 				if (process.isAmbientInputResource(resource)) 
 					ambientStr = "*";
-				result.append(Conversion.capitalize(ResourceUtil.findAmountResource(resource).getName()))
+				result.append(ResourceUtil.findAmountResource(resource).getName())
 					.append(ambientStr).append(" @ ")
 					.append(rateString).append(KG_SOL).append(BR);
 				ii++;
@@ -219,7 +218,7 @@ public class BuildingPanelWasteProcessing extends BuildingFunctionPanel {
 				Integer resource = j.next();
 				double rate = process.getMaxOutputRate(resource) * 1000D;
 				String rateString = decFormatter.format(rate);
-				result.append(Conversion.capitalize(ResourceUtil.findAmountResource(resource).getName()))
+				result.append(ResourceUtil.findAmountResource(resource).getName())
 					.append(" @ ").append(rateString).append(KG_SOL).append(BR);
 				jj++;
 			}

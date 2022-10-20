@@ -36,7 +36,6 @@ import org.mars_sim.msp.core.environment.ExploredLocation;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
-import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.map.CannedMarsMap;
 import org.mars_sim.msp.ui.swing.tool.map.EllipseLayer;
@@ -186,7 +185,7 @@ public class MiningSitePanel extends WizardPanel {
 		concentrationTableModel.addColumn("Concentration %");
 		String[] mineralTypes = surfaceFeatures.getMineralMap().getMineralTypeNames();
 		for (String mineralType : mineralTypes)
-			concentrationTableModel.addRow(new Object[] { Conversion.capitalize(mineralType), 0D });
+			concentrationTableModel.addRow(new Object[] { mineralType, 0D });
 		WebTable mineralConcentrationTable = new WebTable(concentrationTableModel);
 		mineralConcentrationTable.setBorder(new MarsPanelBorder());
 		mineralConcentrationTable.setRowSelectionAllowed(true);
@@ -452,7 +451,7 @@ public class MiningSitePanel extends WizardPanel {
 			if (row < getRowCount()) {
 				String mineralName = mineralNames.get(row);
 				if (column == 0) {
-					return Conversion.capitalize(mineralName);
+					return mineralName;
 				} else if (column == 1) {
 					return mineralColors.get(mineralName);
 				} else

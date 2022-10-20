@@ -138,7 +138,7 @@ extends TabPanel {
 		// Prepare activity label
 		FavoriteType activity = person.getFavorite().getFavoriteActivity();
 		WebPanel wrapper4 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		WebTextField activityTF = new WebTextField(Conversion.capitalize(activity.getName()));
+		WebTextField activityTF = new WebTextField(activity.getName());
 		activityTF.setEditable(false);
 		activityTF.setColumns(17);
 		//activityTF.requestFocus();

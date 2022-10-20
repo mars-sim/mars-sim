@@ -39,7 +39,6 @@ import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 /**
@@ -255,7 +254,7 @@ public class TabPanelResourceProcesses extends TabPanel implements ActionListene
 			toggleButton.setToolTipText(Msg.getString("TabPanelResourceProcesses.tooltip.toggleButton")); //$NON-NLS-1$
 			add(toggleButton);
 			label = new JLabel(Msg.getString("TabPanelResourceProcesses.processLabel", //$NON-NLS-1$
-					building.getNickName(), Conversion.capitalize(process.getProcessName()))); 
+					building.getNickName(), process.getProcessName())); 
 			add(label);
 
 			// Load green and red dots.
@@ -292,7 +291,7 @@ public class TabPanelResourceProcesses extends TabPanel implements ActionListene
 				String rateString = decFormatter.format(rate);
 				//result.append("&nbsp;&nbsp;&emsp;");
 				if (process.isAmbientInputResource(resource)) ambientStr = "*";
-				result.append(Conversion.capitalize(ResourceUtil.findAmountResource(resource).getName()))
+				result.append(ResourceUtil.findAmountResource(resource).getName())
 					.append(ambientStr).append(" @ ")
 					.append(rateString).append(" kg/sol<br>");
 				ii++;
@@ -305,7 +304,7 @@ public class TabPanelResourceProcesses extends TabPanel implements ActionListene
 				Integer resource = j.next();
 				double rate = process.getMaxOutputRate(resource) * 1000D;
 				String rateString = decFormatter.format(rate);
-				result.append(Conversion.capitalize(ResourceUtil.findAmountResource(resource).getName()))
+				result.append(ResourceUtil.findAmountResource(resource).getName())
 					.append(" @ ").append(rateString).append(" kg/sol<br>");
 				jj++;
 			}

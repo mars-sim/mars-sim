@@ -39,7 +39,6 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
-import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.MalfunctionPanel;
@@ -319,7 +318,7 @@ public class BuildingPanelMaintenance extends BuildingFunctionPanel {
 		public Object getValueAt(int row, int column) {
 			if (parts != null && row >= 0 && row < parts.size()) {
 				if (column == 0)
-					return WHITESPACE + Conversion.capitalize(parts.get(row).getName()) + WHITESPACE;
+					return WHITESPACE + parts.get(row).getName() + WHITESPACE;
 				else if (column == 1)
 					return functions.get(row);
 				else if (column == 2)

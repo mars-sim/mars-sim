@@ -22,7 +22,6 @@ import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionRepairWork;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.ui.swing.tool.Conversion;
 
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
@@ -196,7 +195,7 @@ extends WebPanel {
 				if (useHtml)
 					buf.append(BR);
 				buf.append(number).append(ONE_SPACE)
-						.append(Conversion.capitalize(ItemResourceUtil.findItemResource(part).getName()));
+						.append(ItemResourceUtil.findItemResource(part).getName());
 				if (i.hasNext())
 					buf.append(COMMA);
 				else {

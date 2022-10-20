@@ -36,7 +36,6 @@ import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.map.CannedMarsMap;
 import org.mars_sim.msp.ui.swing.tool.map.EllipseLayer;
@@ -775,7 +774,7 @@ class ExplorationSitesPanel extends WizardPanel {
 			if (row < getRowCount()) {
 				String mineralName = mineralNames.get(row);
 				if (column == 0) {
-					return Conversion.capitalize(mineralName);
+					return mineralName;
 				} else if (column == 1) {
 					return mineralColors.get(mineralName);
 				} else

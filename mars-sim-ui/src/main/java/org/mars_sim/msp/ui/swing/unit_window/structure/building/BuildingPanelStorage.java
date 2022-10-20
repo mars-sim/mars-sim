@@ -19,7 +19,6 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.tool.Conversion;
 
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
@@ -72,7 +71,7 @@ public class BuildingPanelStorage extends BuildingFunctionPanel {
 		for (Integer resource : keys) {
 			// Create resource label.
 			WebLabel resourceLabel = new WebLabel(
-					Conversion.capitalize(ResourceUtil.findAmountResourceName(resource))
+					ResourceUtil.findAmountResourceName(resource)
 					+ ":", WebLabel.LEFT);
 			resourceStoragePanel.add(resourceLabel);
 
