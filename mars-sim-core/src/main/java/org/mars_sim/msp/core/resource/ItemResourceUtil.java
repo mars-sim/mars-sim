@@ -267,21 +267,6 @@ public class ItemResourceUtil implements Serializable {
 	}
 
 	/**
-	 * Prepares maps for storing all item resources
-	 */
-	// public static void createTestMaps() {
-	// 	partSet = getItemResources();
-	// 	itemResourceMap = new HashMap<>();
-	// 	sortedParts = new CopyOnWriteArrayList<>(partSet);
-	// 	Collections.sort(sortedParts);
-
-	// 	partIDNameMap = new HashMap<>();
-	// 	for (Part p : sortedParts) {
-	// 		partIDNameMap.put(p.getID(), p.getName());
-	// 	}
-	// }
-
-	/**
 	 * Register a new part in all 3 item resource maps
 	 *
 	 * @param p {@link Part}

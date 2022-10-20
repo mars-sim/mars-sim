@@ -8,6 +8,7 @@ package org.mars_sim.msp.core.vehicle;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -100,7 +101,7 @@ public class VehicleConfig implements Serializable {
 		Element root = vehicleDoc.getRootElement();
 		List<Element> vehicleNodes = root.getChildren(VEHICLE);
 		for (Element vehicleElement : vehicleNodes) {
-			String type = vehicleElement.getAttributeValue(TYPE).toLowerCase();
+			String type = vehicleElement.getAttributeValue(TYPE);
 
 			// vehicle description
 			double width = Double.parseDouble(vehicleElement.getAttributeValue(WIDTH));
@@ -116,7 +117,7 @@ public class VehicleConfig implements Serializable {
 			double emptyMass = Double.parseDouble(vehicleElement.getChild(EMPTY_MASS).getAttributeValue(VALUE));
 			int crewSize = Integer.parseInt(vehicleElement.getChild(CREW_SIZE).getAttributeValue(VALUE));
 
-			VehicleSpec v = new VehicleSpec(description, drivetrainEff, baseSpeed, averagePower, emptyMass, crewSize);
+			VehicleSpec v = new VehicleSpec(type, description, drivetrainEff, baseSpeed, averagePower, emptyMass, crewSize);
 
 			v.setWidth(width);
 			v.setLength(length);
@@ -228,7 +229,7 @@ public class VehicleConfig implements Serializable {
 			}
 
 			// Keep results for later use
-			newMap.put(type, v);
+			newMap.put(type.toLowerCase(), v);
 		}
 		
 		map = Collections.unmodifiableMap(newMap);
@@ -240,8 +241,8 @@ public class VehicleConfig implements Serializable {
 	 * @return set of vehicle types as strings.
 	 * @throws Exception if error retrieving vehicle types.
 	 */
-	public Set<String> getVehicleTypes() {
-		return map.keySet();
+	public Collection<VehicleSpec> getVehicleSpecs() {
+		return Collections.unmodifiableCollection(map.values());
 	}
 
 	/**

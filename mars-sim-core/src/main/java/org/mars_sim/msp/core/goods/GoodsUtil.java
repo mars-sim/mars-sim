@@ -227,9 +227,8 @@ public class GoodsUtil {
      * @param newList
      */
     private static Map<Integer, Good> populateVehicles(Map<Integer, Good> newMap) {
-        for(String name : vehicleConfig.getVehicleTypes()) {
-            VehicleSpec vs = vehicleConfig.getVehicleSpec(name);
-            Good newGood = new VehicleGood(name, vs);
+        for(VehicleSpec vs : vehicleConfig.getVehicleSpecs()) {
+            Good newGood = new VehicleGood(vs);
             newMap.put(newGood.getID(), newGood);
         }
         return newMap;

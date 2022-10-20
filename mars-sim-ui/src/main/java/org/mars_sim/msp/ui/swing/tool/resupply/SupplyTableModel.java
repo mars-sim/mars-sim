@@ -286,8 +286,9 @@ extends AbstractTableModel {
 	 }
 
 	 public static List<String> getSortedVehicleTypes() {
-		 Set<String> vehicleTypes = vehicleConfig.getVehicleTypes();
-		 List<String> sortedVehicleTypes = new ArrayList<>(vehicleTypes);
+		 List<String> sortedVehicleTypes = vehicleConfig.getVehicleSpecs().stream()
+		 							.map(v -> v.getName())
+									.collect(Collectors.toList());
 		 Collections.sort(sortedVehicleTypes);
 		 return sortedVehicleTypes;
 	 }

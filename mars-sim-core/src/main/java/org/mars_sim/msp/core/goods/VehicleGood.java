@@ -53,7 +53,6 @@ class VehicleGood extends Good {
 	private static final int LUV_VALUE = 10;
 	private static final int DRONE_VALUE = 50;
 
-    private static final String METHANE = "methane";
     private static final double SPEED_TO_DISTANCE = 2D / 60D / 60D / MarsClock.convertSecondsToMillisols(1D) * 1000D;
 
 	private double theoreticalRange;
@@ -65,10 +64,10 @@ class VehicleGood extends Good {
 	// Suitability of this vehicle type for different Missions
 	private transient Map<MissionType,Double> missionCapacities = new EnumMap<>(MissionType.class);
 
-    public VehicleGood(String name, VehicleSpec vs) {
-        super(name, VehicleType.convertName2ID(name));
+    public VehicleGood(VehicleSpec vs) {
+        super(vs.getName(), VehicleType.convertName2ID(vs.getName()));
 
-        this.vehicleType = VehicleType.convertNameToVehicleType(name);
+        this.vehicleType = VehicleType.convertNameToVehicleType(vs.getName());
         switch(vehicleType) {
 		case DELIVERY_DRONE:
 		case LUV:
@@ -85,7 +84,7 @@ class VehicleGood extends Good {
             break;
 
         default:
-            throw new IllegalArgumentException(name + " has unknown vehicle type.");
+            throw new IllegalArgumentException(vs.getName() + " has unknown vehicle type.");
         }
 
 		this.theoreticalRange = getVehicleRange(vs);

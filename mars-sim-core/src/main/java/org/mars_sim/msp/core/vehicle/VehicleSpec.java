@@ -23,6 +23,7 @@ public class VehicleSpec implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 12L;
 
+	private String name;
 	private String description;
 	private double width, length;
 	private double drivetrainEff, baseSpeed, averagePower, emptyMass;
@@ -47,9 +48,10 @@ public class VehicleSpec implements Serializable {
 
 	private double terrainHandling;
 
-	public VehicleSpec(String description2, double drivetrainEff2, 
+	public VehicleSpec(String name, String description2, double drivetrainEff2, 
 			double baseSpeed2, double averagePower2,
 			double emptyMass2, int crewSize2) {
+		this.name = name;
 		this.description = description2;
 		this.drivetrainEff = drivetrainEff2;
 		this.baseSpeed = baseSpeed2;
@@ -80,6 +82,11 @@ public class VehicleSpec implements Serializable {
 		return 0D;
 	}
 
+	public String getName() {
+		return name;
+
+	}
+	
 	/** @return the description */
 	public final String getDescription() {
 		return description;
