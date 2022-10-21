@@ -51,8 +51,8 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 	public static final int WIDTH = 530;
 	public static final int HEIGHT = 620;
 
-	// private BufferedImage image;
 	public static final String USER = Msg.getString("icon.user");
+	
 	private static final String TOWN = Msg.getString("icon.colony");
 	private static final String JOB = Msg.getString("icon.career");
 	private static final String ROLE = Msg.getString("icon.role");
@@ -60,6 +60,8 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 
 	private static final String ONE_SPACE = " ";
 	private static final String TWO_SPACES = "  ";
+	private static final String SIX_SPACES = "      ";
+	
 	private static final String SHIFT_FROM = " Shift :  (From ";
 	private static final String TO = " to ";
 	private static final String MILLISOLS = " millisols)";
@@ -113,15 +115,12 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 
 		setFrameIcon(MainWindow.getLanderIcon());
 
-		if (unit.getUnitType() == UnitType.PERSON) {
+		if (unit.getUnitType() == UnitType.PERSON 
+				|| unit.getUnitType() == UnitType.SETTLEMENT) {
 			setMaximumSize(new Dimension(WIDTH, HEIGHT));
 			setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		}
-		else if (unit.getUnitType() == UnitType.SETTLEMENT) {
-			setMaximumSize(new Dimension(WIDTH, HEIGHT + 30));
-			setPreferredSize(new Dimension(WIDTH, HEIGHT + 30));
-		}
-		else { //if (unit instanceof Vehicle) {
+		else { // for robot, equipment and vehicle
 			setMaximumSize(new Dimension(WIDTH, HEIGHT - 50));
 			setPreferredSize(new Dimension(WIDTH, HEIGHT - 50));
 		}
@@ -147,14 +146,17 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 
 		// Create name label
 		UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
-		String name = ONE_SPACE + unit.getShortenedName() + ONE_SPACE;
+		String name = SIX_SPACES + unit.getShortenedName() + SIX_SPACES;
 
 		if (unit.getUnitType() == UnitType.PERSON) {
 			statusPanel.setPreferredSize(new Dimension(WIDTH / 8, 60));
-
+			
 			WebLabel nameLabel = new WebLabel(name, displayInfo.getButtonIcon(unit), SwingConstants.CENTER);
-			nameLabel.setMinimumSize(new Dimension(80, 60));
+			nameLabel.setMinimumSize(new Dimension(120, 60));
 
+			WebPanel namePane = new WebPanel(new BorderLayout(50, 0));
+			namePane.add(nameLabel, BorderLayout.CENTER);
+			
 			Font font = null;
 
 			if (MainWindow.OS.contains("linux")) {
@@ -168,7 +170,7 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 			nameLabel.setVerticalTextPosition(WebLabel.BOTTOM);
 			nameLabel.setHorizontalTextPosition(WebLabel.CENTER);
 
-			statusPanel.add(nameLabel);
+			statusPanel.add(namePane);
 
 			// Create description label if necessary.
 			if (hasDescription) {

@@ -2494,6 +2494,19 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
+	 * Gets the number of drones parked or garaged at the settlement.
+	 *
+	 * @return parked drones number
+	 */
+	public int getNumParkedDrones() {
+		return Math.toIntExact(ownedVehicles
+				.stream()
+				.filter(v -> v.getVehicleType() == VehicleType.DELIVERY_DRONE)
+				.filter(v -> this.equals(v.getSettlement()))
+				.collect(Collectors.counting()));
+	}
+	
+	/**
 	 * Gets a collection of drones parked or garaged at the settlement.
 	 *
 	 * @return Collection of parked drones
@@ -2546,12 +2559,15 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Gets the number of vehicles parked or garaged at the settlement.
+	 * Gets the number of vehicles (rovers, LUVs, and drones) parked or garaged at the settlement.
 	 *
 	 * @return parked vehicles number
 	 */
-	public int getParkedVehicleNum() {
-		return getParkedVehicles().size();
+	public int getNumParkedVehicles() {
+		return Math.toIntExact(ownedVehicles
+				.stream()
+				.filter(v -> this.equals(v.getSettlement()))
+				.collect(Collectors.counting()));
 	}
 
 	/**

@@ -219,7 +219,7 @@ public class SettlementTableModel extends UnitTableModel<Settlement> {
 				break;
 				
 			case PARKED: 
-				result = settle.getParkedVehicleNum();
+				result = settle.getNumParkedVehicles();
 				break;
 
 			case MISSION: 
