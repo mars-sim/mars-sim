@@ -30,7 +30,6 @@ import org.mars_sim.msp.core.person.ai.fav.Preference;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
-import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
@@ -40,8 +39,6 @@ import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
 import com.alee.laf.text.WebTextField;
-
-//import com.vdurmont.emoji.EmojiParser;
 
 /**
  * The TabPanelFavorite is a tab panel for general information about a person.
@@ -93,7 +90,7 @@ extends TabPanel {
 		// Prepare main dish label
 		String mainDish = person.getFavorite().getFavoriteMainDish();
 		WebPanel wrapper1 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		WebTextField mainDishTF = new WebTextField(Conversion.capitalize(mainDish));
+		WebTextField mainDishTF = new WebTextField(mainDish);
 		mainDishTF.setEditable(false);
 		mainDishTF.setColumns(17);
 		//mainDishTF.requestFocus();
@@ -108,7 +105,7 @@ extends TabPanel {
 		// Prepare side dish label
 		String sideDish = person.getFavorite().getFavoriteSideDish();
 		WebPanel wrapper2 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		WebTextField sideDishTF = new WebTextField(Conversion.capitalize(sideDish));
+		WebTextField sideDishTF = new WebTextField(sideDish);
 		sideDishTF.setEditable(false);
 		sideDishTF.setColumns(17);
 		//sideDishTF.requestFocus();
@@ -123,7 +120,7 @@ extends TabPanel {
 		// Prepare dessert label
 		String dessert = person.getFavorite().getFavoriteDessert();
 		WebPanel wrapper3 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		WebTextField dessertTF = new WebTextField(Conversion.capitalize(dessert));
+		WebTextField dessertTF = new WebTextField(dessert);
 		dessertTF.setEditable(false);
 		dessertTF.setColumns(17);
 		//dessertTF.requestFocus();

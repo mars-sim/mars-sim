@@ -19,7 +19,6 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
@@ -90,11 +89,11 @@ extends TabPanel {
 		JTextField objectiveTF = new JTextField();
 		if (person.getReportingAuthority() != null) {
 			objective = person.getReportingAuthority().getMissionAgenda().getObjectiveName();
-			TooltipManager.setTooltip (objectiveTF, Conversion.capitalize(objective), TooltipWay.down);
+			TooltipManager.setTooltip (objectiveTF, objective, TooltipWay.down);
 
 		}
 		//JLabel objectiveLabel = new JLabel(objective, JLabel.RIGHT);
-		objectiveTF.setText(Conversion.capitalize(objective));
+		objectiveTF.setText(objective);
 		objectiveTF.setEditable(false);
 		objectiveTF.setColumns(16);
 		objectiveTF.setCaretPosition(0);

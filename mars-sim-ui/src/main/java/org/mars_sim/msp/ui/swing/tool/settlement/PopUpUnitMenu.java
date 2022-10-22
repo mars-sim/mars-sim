@@ -40,7 +40,6 @@ import org.mars_sim.msp.ui.swing.ComponentMover;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 import org.mars_sim.msp.ui.swing.unit_window.structure.ConstructionSitesPanel;
 import com.alee.laf.desktoppane.WebInternalFrame;
@@ -165,8 +164,8 @@ public class PopUpUnitMenu extends WebPopupMenu {
                 if (unit.getUnitType() == UnitType.VEHICLE) {
                 	Vehicle vehicle = (Vehicle) unit;
                 	description = vehicle.getDescription(vehicle.getVehicleTypeString());
-                	type = Conversion.capitalize(vehicle.getVehicleTypeString());
-                	name = Conversion.capitalize(vehicle.getName());
+                	type = vehicle.getVehicleTypeString();
+                	name = vehicle.getName();
                 }
                 else if (unit.getUnitType() == UnitType.BUILDING) {
                 	Building building = (Building) unit;

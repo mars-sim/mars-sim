@@ -55,7 +55,6 @@ import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.SmartScroller;
 import org.mars_sim.msp.ui.swing.tool.VerticalLabelUI;
 import org.mars_sim.msp.ui.swing.toolwindow.ToolWindow;
@@ -921,7 +920,7 @@ public class CommanderWindow extends ToolWindow {
 			Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 
 			if (value == null) {
-				setText(Conversion.capitalize(prompt));
+				setText(prompt);
 				return this;
 			}
 

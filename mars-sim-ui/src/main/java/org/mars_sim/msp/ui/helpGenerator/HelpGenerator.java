@@ -32,7 +32,6 @@ import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.vehicle.VehicleConfig;
 import org.mars_sim.msp.core.vehicle.VehicleSpec;
-import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.resupply.SupplyTableModel;
 
 /*
@@ -197,7 +196,7 @@ public class HelpGenerator {
 	 * @param path the path of the html file.
 	 * @param content the String content of the html file.
 	 */
-	private static final void generateFile(String dir, final StringBuffer path, final StringBuffer content) {
+	private static final void generateFile(String dir, final String path, final String content) {
 		PrintWriter pw = null;
 		try {
 			String absPath = getAbsPath(dir);
@@ -231,82 +230,94 @@ public class HelpGenerator {
 		return s.replace(" ","_").replace("/","--");
 	}
 
-	private static final StringBuffer getPathVehicle(final String vehicle) {
+	private static final String getPathVehicle(final String vehicle) {
 		return new StringBuffer()
 		.append(VEHICLE)
 		.append(escape(vehicle))
-		.append(SUFFIX);
+		.append(SUFFIX)
+		.toString();
 	}
 
-	private static final StringBuffer getPathVehicles() {
+	private static final String getPathVehicles() {
 		return new StringBuffer()
 		.append(VEHICLES)
-		.append(SUFFIX);
+		.append(SUFFIX)
+		.toString();
 	}
 
-	private static final StringBuffer getPathResource(final String resource) {
+	private static final String getPathResource(final String resource) {
 		return new StringBuffer()
 		.append(RESOURCE)
 		.append(escape(resource))
-		.append(SUFFIX);
+		.append(SUFFIX)
+		.toString();
 	}
 
-	private static final StringBuffer getPathResources() {
+	private static final String getPathResources() {
 		return new StringBuffer()
 		.append(RESOURCES)
-		.append(SUFFIX);
+		.append(SUFFIX)
+		.toString();
 	}
 
-	private static final StringBuffer getPathPart(final String part) {
+	private static final String getPathPart(final String part) {
 		return new StringBuffer()
 		.append(PART)
 		.append(escape(part))
-		.append(SUFFIX);
+		.append(SUFFIX)
+		.toString();
 	}
 
-	private static final StringBuffer getPathParts() {
+	private static final String getPathParts() {
 		return new StringBuffer()
 		.append(PARTS)
-		.append(SUFFIX);
+		.append(SUFFIX)
+		.toString();
 	}
 
-	private static final StringBuffer getPathProcess(final String process) {
+	private static final String getPathProcess(final String process) {
 		return new StringBuffer()
 		.append(PROCESS)
 		.append(escape(process))
-		.append(SUFFIX);
+		.append(SUFFIX)
+		.toString();
 	}
 
-	private static final StringBuffer getPathProcesses() {
+	private static final String getPathProcesses() {
 		return new StringBuffer()
 		.append(PROCESSES)
-		.append(SUFFIX);
+		.append(SUFFIX)
+		.toString();
 	}
 
-	private static final StringBuffer getPathFoodProductionProcess(final String process) {
+	private static final String getPathFoodProductionProcess(final String process) {
 		return new StringBuffer()
 		.append(FOOD_PRODUCTION)
 		.append(escape(process))
-		.append(SUFFIX);
+		.append(SUFFIX)
+		.toString();
 	}
 
-	private static final StringBuffer getPathFoodProductionProcesses() {
+	private static final String getPathFoodProductionProcesses() {
 		return new StringBuffer()
 		.append(FOOD_PRODUCTIONS)
-		.append(SUFFIX);
+		.append(SUFFIX)
+		.toString();
 	}
 
-	private static final StringBuffer getPathEquipment(final String equipment) {
+	private static final String getPathEquipment(final String equipment) {
 		return new StringBuffer()
 		.append(EQUIPMENT)
 		.append(escape(equipment))
-		.append(SUFFIX);
+		.append(SUFFIX)
+		.toString();
 	}
 
-	private static final StringBuffer getPathEquipments() {
+	private static final String getPathEquipments() {
 		return new StringBuffer()
 		.append(EQUIPMENTS)
-		.append(SUFFIX);
+		.append(SUFFIX)
+		.toString();
 	}
 
 	
@@ -435,12 +446,12 @@ public class HelpGenerator {
 		return link(getPathParts(),caption);
 	}
 
-	private static final String link(final StringBuffer target, final String caption) {
+	private static final String link(final String target, final String caption) {
 		return new StringBuffer()
 		.append("<a href=\"")
 		.append(target)
 		.append("\">")
-		.append(Conversion.capitalize(caption))
+		.append(caption)
 		.append("</a>")
 		.toString();
 /*
@@ -464,6 +475,7 @@ public class HelpGenerator {
 		.append("<h2>Vehicles</h2>\n")
 		.append("<p>Types of Vehicles Featured for Mars Surface Operations:</p>")
 		.append("<ol>\n");
+
 		for (String vehicle : vehicles) {
 			content.append("<li>")
 			.append(getLinkVehicle(vehicle))
@@ -472,7 +484,7 @@ public class HelpGenerator {
 		content.append("</ol>");
 		helpFileHeader(content,"vehicles");
 		helpFileFooter(content);
-		generateFile(VEHICLE_DIR, getPathVehicles(),content);
+		generateFile(VEHICLE_DIR, getPathVehicles(),content.toString());
 
 		// second loop over vehicle types to generate a help file for each one
 		int[] cargoArray = new int[] {
@@ -557,7 +569,7 @@ public class HelpGenerator {
 			helpFileHeader(content, "Vehicle \"" + vehicle + "\"");
 			helpFileFooter(content);
 			
-			generateFile(VEHICLE_DIR, getPathVehicle(vehicle),content);
+			generateFile(VEHICLE_DIR, getPathVehicle(vehicle),content.toString());
 		}
 	}
 
@@ -584,7 +596,7 @@ public class HelpGenerator {
 				new String[] {
 					getLinkResource(name),
 					"   ",
-					Conversion.capitalize(resource.getPhase().getName()),
+					resource.getPhase().getName(),
 					life,
 					edible
 				}
@@ -595,7 +607,7 @@ public class HelpGenerator {
 
 		helpFileHeader(content,"resources");
 		helpFileFooter(content);
-		generateFile(RESOURCE_DIR, getPathResources(),content);
+		generateFile(RESOURCE_DIR, getPathResources(),content.toString());
 
 		// STEP 2 :
 	
@@ -610,9 +622,9 @@ public class HelpGenerator {
 				description = "No Description is Available";
 			content = new StringBuffer()
 			.append("<h2>Resource : \"")
-			.append(Conversion.capitalize(name))
+			.append(name)
 			.append("\" (")
-			.append(Conversion.capitalize(resource.getPhase().getName()))
+			.append(resource.getPhase().getName())
 			.append(")\t</h2>\n")
 			.append("<br/>")
 			.append("1. Description :<br/>\n")
@@ -699,7 +711,7 @@ public class HelpGenerator {
 			// finalize and generate help file
 			helpFileHeader(content,"Resource \"" + resource + "\"");
 			helpFileFooter(content);
-			generateFile(RESOURCE_DIR, getPathResource(name),content);
+			generateFile(RESOURCE_DIR, getPathResource(name),content.toString());
 
 		}
 	}
@@ -728,7 +740,7 @@ public class HelpGenerator {
 		content.append("</ul>\n");
 		helpFileHeader(content,"parts");
 		helpFileFooter(content);
-		generateFile(PART_DIR, getPathParts(),content);
+		generateFile(PART_DIR, getPathParts(),content.toString());
 
 		// second: loop over part types to generate a help file for each one
 		//for (Entry<String, ItemResource> entry : parts.entrySet()) {
@@ -743,7 +755,7 @@ public class HelpGenerator {
 				description = "No Description is Available";
 			content = new StringBuffer()
 			.append("<h2>Part : \"")
-			.append(Conversion.capitalize(name))
+			.append(name)
 			.append("\"</h2>\n")
 			.append("</p><br/>")
 
@@ -829,7 +841,7 @@ public class HelpGenerator {
 			// finalize and generate help file
 			helpFileHeader(content,"Part \"" + part + "\"");
 			helpFileFooter(content);
-			generateFile(PART_DIR, getPathPart(name),content);
+			generateFile(PART_DIR, getPathPart(name),content.toString());
 
 		}
 	}
@@ -873,7 +885,7 @@ public class HelpGenerator {
 		content.append("</table>\n");
 		helpFileHeader(content,"processes");
 		helpFileFooter(content);
-		generateFile(PROCESS_DIR, getPathProcesses(),content);
+		generateFile(PROCESS_DIR, getPathProcesses(),content.toString());
 
 		// second: loop over processes to generate a help file for each one
 		for (Entry<String,ManufactureProcessInfo> process : processes.entrySet()) {
@@ -941,7 +953,7 @@ public class HelpGenerator {
 			// finalize and generate help file
 			helpFileHeader(content,"Process \"" + name + "\"");
 			helpFileFooter(content);
-			generateFile(PROCESS_DIR, getPathProcess(name),content);
+			generateFile(PROCESS_DIR, getPathProcess(name),content.toString());
 		}
 	}
 
@@ -985,7 +997,7 @@ public class HelpGenerator {
 		content.append("</ol></table>\n");
 		helpFileHeader(content,"Food Production");
 		helpFileFooter(content);
-		generateFile(FOOD_DIR, getPathFoodProductionProcesses(),content);
+		generateFile(FOOD_DIR, getPathFoodProductionProcesses(),content.toString());
 
 		// second: loop over processes to generate a help file for each one
 		for (Entry<String,FoodProductionProcessInfo> process : processes.entrySet()) {
@@ -996,7 +1008,7 @@ public class HelpGenerator {
 				description = "No Description is Available";
 			content = new StringBuffer()
 			.append("<h2>Food Production \"")
-			.append(Conversion.capitalize(name))
+			.append(name)
 			.append("\"</h2>\n")
 
 			.append("1. Description :\n")
@@ -1055,7 +1067,7 @@ public class HelpGenerator {
 			// finalize and generate help file
 			helpFileHeader(content,"Food Production \"" + name + "\"");
 			helpFileFooter(content);
-			generateFile(FOOD_DIR, getPathFoodProductionProcess(name),content);
+			generateFile(FOOD_DIR, getPathFoodProductionProcess(name),content.toString());
 		}
 	}
 

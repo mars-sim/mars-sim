@@ -23,7 +23,6 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
@@ -86,14 +85,13 @@ public class TabPanelSponsorship extends TabPanel {
 		
 		// Prepare obj name label
 		JLabel objectiveNameLabel = new JLabel(Msg.getString("TabPanelSponsorship.objective"), JLabel.RIGHT); //$NON-NLS-1$
-		//objectiveNameLabel.setSize(2, 2);
 		infoPanel.add(objectiveNameLabel);
 
 		// Prepare obj tf
 		JTextField objectiveTF = new JTextField();
 		String objective = settlement.getSponsor().getMissionAgenda().getObjectiveName();
 		
-		objectiveTF.setText(Conversion.capitalize(objective));
+		objectiveTF.setText(objective);
 		objectiveTF.setEditable(false);
 		objectiveTF.setColumns(16);
 		objectiveTF.setCaretPosition(0);
@@ -109,7 +107,7 @@ public class TabPanelSponsorship extends TabPanel {
 		if (settlement.getTemplate() != null) {
 			template = settlement.getTemplate();
 		}
-		templateTF.setText(Conversion.capitalize(template));
+		templateTF.setText(template);
 		templateTF.setEditable(false);
 		templateTF.setColumns(8);
 		templateTF.setCaretPosition(0);

@@ -26,7 +26,6 @@ import org.mars_sim.msp.core.resource.ItemType;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.tool.Conversion;
 
 /**
  * A panel showing information about a foodProduction process.
@@ -176,7 +175,7 @@ public class FoodProductionPanel extends JPanel {
 	public static String getToolTipString(FoodProductionProcessInfo info, Building building) {
 		StringBuilder result = new StringBuilder("<html>");
 
-		result.append("&emsp;&emsp;&emsp;&emsp;&nbsp;Process : ").append(Conversion.capitalize(info.getName()))
+		result.append("&emsp;&emsp;&emsp;&emsp;&nbsp;Process : ").append(info.getName())
 				.append("<br>");
 		// 2014-11-19 Changed from getName() to getNickName()
 		// if (building != null) result.append("&emsp;&emsp;&emsp;&emsp;Building:
@@ -197,11 +196,11 @@ public class FoodProductionPanel extends JPanel {
 			FoodProductionProcessItem item = i.next();
 			// 2014-11-19 Capitalized process names
 			if (ii == 0)
-				result.append(getItemAmountString(item)).append(" ").append(Conversion.capitalize(item.getName()))
+				result.append(getItemAmountString(item)).append(" ").append(item.getName())
 						.append("<br>");
 			else
 				result.append("&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;")
-						.append(getItemAmountString(item)).append(" ").append(Conversion.capitalize(item.getName()))
+						.append(getItemAmountString(item)).append(" ").append(item.getName())
 						.append("<br>");
 			ii++;
 		}
@@ -214,11 +213,11 @@ public class FoodProductionPanel extends JPanel {
 			FoodProductionProcessItem item = j.next();
 			// 2014-11-19 Capitalized process names
 			if (jj == 0)
-				result.append(getItemAmountString(item)).append(" ").append(Conversion.capitalize(item.getName()))
+				result.append(getItemAmountString(item)).append(" ").append(item.getName())
 						.append("<br>");
 			else
 				result.append("&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;")
-						.append(getItemAmountString(item)).append(" ").append(Conversion.capitalize(item.getName()))
+						.append(getItemAmountString(item)).append(" ").append(item.getName())
 						.append("<br>");
 			jj++;
 		}
