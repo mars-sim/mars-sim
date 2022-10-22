@@ -75,7 +75,7 @@ public class Read extends Task implements Serializable {
 
 				if (rand == 0) {
 					// Find a dining place
-					Building dining = EatDrink.getAvailableDiningBuilding(person, false);
+					Building dining = BuildingManager.getAvailableDiningBuilding(person, false);
 					if (dining != null) {
 						walkToActivitySpotInBuilding(dining, FunctionType.DINING, true);
 					}

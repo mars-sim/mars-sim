@@ -2205,7 +2205,7 @@ public class Settlement extends Structure implements Temporal,
 	/**
 	 * Assigns a robot to be owned by the settlement.
 	 *
-	 * @param r
+	 * @param r the robot
 	 */
 	public boolean addOwnedRobot(Robot r) {
 		if (ownedRobots.contains(r))
@@ -2224,7 +2224,7 @@ public class Settlement extends Structure implements Temporal,
 	/**
 	 * Removes a robot from being owned by the settlement.
 	 *
-	 * @param r
+	 * @param r the robot
 	 */
 	public boolean removeOwnedRobot(Robot r) {
 		if (!ownedRobots.contains(r))
@@ -2240,7 +2240,7 @@ public class Settlement extends Structure implements Temporal,
 	/**
 	 * Assigns a robot to being within this settlement.
 	 *
-	 * @param r
+	 * @param r the robot
 	 */
 	public boolean addRobotsWithin(Robot r) {
 		if (robotsWithin.contains(r)) {
@@ -2255,7 +2255,7 @@ public class Settlement extends Structure implements Temporal,
 	/**
 	 * Removes a robot from being within this settlement.
 	 *
-	 * @param r
+	 * @param r the robot
 	 */
 	public boolean removeRobotsWithin(Robot r) {
 		if (!robotsWithin.contains(r)) {
@@ -2367,7 +2367,7 @@ public class Settlement extends Structure implements Temporal,
 	/**
 	 * Adds an equipment to be owned by the settlement
 	 *
-	 * @param e
+	 * @param e the equipment
 	 */
 	@Override
 	public boolean addEquipment(Equipment e) {
@@ -2383,7 +2383,7 @@ public class Settlement extends Structure implements Temporal,
 	/**
 	 * Removes an equipment from being owned by the settlement
 	 *
-	 * @param e
+	 * @param e the equipment
 	 */
 	@Override
 	public boolean removeEquipment(Equipment e) {

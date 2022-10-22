@@ -15,13 +15,13 @@ import java.util.stream.Stream;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.task.EatDrink;
+import org.mars_sim.msp.core.person.ai.task.Conversation;
 import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
-import org.mars_sim.msp.core.person.ai.task.Conversation;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -118,7 +118,7 @@ public class ConversationMeta extends MetaTask {
         if (currentBuilding == null || num == 0) {
         	
         	// Check if there is a local dining building.
-        	Building diningBuilding = EatDrink.getAvailableDiningBuilding(person, true);
+        	Building diningBuilding = BuildingManager.getAvailableDiningBuilding(person, true);
         	
         	if (diningBuilding != null) {
         		// Gets a list of people 

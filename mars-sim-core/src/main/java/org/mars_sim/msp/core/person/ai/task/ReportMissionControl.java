@@ -14,6 +14,7 @@ import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.Administration;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.Management;
@@ -68,7 +69,7 @@ public class ReportMissionControl extends Task implements Serializable {
 				}
 			}
 			else {
-				Building dining = EatDrink.getAvailableDiningBuilding(person, false);
+				Building dining = BuildingManager.getAvailableDiningBuilding(person, false);
 				// Note: dining building is optional
 				if (dining != null) {
 					// Walk to the dining building.

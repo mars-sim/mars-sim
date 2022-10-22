@@ -36,6 +36,7 @@ import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
 import org.mars_sim.msp.core.structure.ObjectiveType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.Administration;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.Management;
@@ -132,7 +133,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 					walkToTaskSpecificActivitySpotInBuilding(managementBuilding, FunctionType.MANAGEMENT, true);
 				}
 				else {	
-					Building dining = EatDrink.getAvailableDiningBuilding(person, false);
+					Building dining = BuildingManager.getAvailableDiningBuilding(person, false);
 					// Note: dining building is optional
 					if (dining != null) {
 						// Walk to the dining building.

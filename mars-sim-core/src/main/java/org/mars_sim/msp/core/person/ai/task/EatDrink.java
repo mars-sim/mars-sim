@@ -212,7 +212,7 @@ public class EatDrink extends Task {
 		Building currentBuilding = BuildingManager.getBuilding(person);
 		if (currentBuilding != null && currentBuilding.getCategory() != BuildingCategory.EVA_AIRLOCK) {
 			// Check if there is a local dining building.
-        	Building diningBuilding = getAvailableDiningBuilding(person.getSettlement());
+        	Building diningBuilding = BuildingManager.getAvailableDiningBuilding(person.getSettlement(), person);
         	
         	if (diningBuilding != null) {
         		// Initiates a walking task to go back to the settlement
@@ -256,7 +256,7 @@ public class EatDrink extends Task {
 				if (food || water) {
 					
 					// Check if there is a local dining building.
-		        	Building diningBuilding = getAvailableDiningBuilding(vehicle.getSettlement());
+		        	Building diningBuilding = BuildingManager.getAvailableDiningBuilding(person.getSettlement(), person);
 		        	
 		        	if (diningBuilding != null) {
 		        		// Initiates a walking task to go back to the settlement
@@ -319,7 +319,7 @@ public class EatDrink extends Task {
 
 	private void goDining() {
 		
-		Building diningBuilding = EatDrink.getAvailableDiningBuilding(person, false);
+		Building diningBuilding = BuildingManager.getAvailableDiningBuilding(person, false);
 		if (diningBuilding != null) {
 			// Initialize task phase.
 			addPhase(LOOK_FOR_FOOD);
@@ -342,7 +342,7 @@ public class EatDrink extends Task {
 				want2Chat = false;
 		}
 
-		diningBuilding = EatDrink.getAvailableDiningBuilding(person, want2Chat);
+		diningBuilding = BuildingManager.getAvailableDiningBuilding(person, want2Chat);
 		if (diningBuilding != null)
 			// Walk to that building.
 			walkToActivitySpotInBuilding(diningBuilding, FunctionType.DINING, true);
@@ -410,6 +410,7 @@ public class EatDrink extends Task {
 	private LocalPosition findDiningSpot(Building building) {
 
 		LocalPosition loc = building.getFunction(FunctionType.DINING).getAvailableActivitySpot(person);
+		
 		if (loc != null) {
 			return loc;
 		}
@@ -1215,66 +1216,6 @@ public class EatDrink extends Task {
 		return result;
 	}
 
-	/**
-	 * Gets an available dining building that the person can use. Returns null if no
-	 * dining building is currently available.
-	 *
-	 * @param person the person
-	 * @param canChat
-	 * @return available dining building
-	 * @throws BuildingException if error finding dining building.
-	 */
-	public static Building getAvailableDiningBuilding(Person person, boolean canChat) {
-		Building b = null;
-
-		// If this person is located in the settlement
-		if (person.isInSettlement()) {
-			Settlement settlement = person.getSettlement();
-			BuildingManager manager = settlement.getBuildingManager();
-			List<Building> list0 = manager.getBuildings(FunctionType.DINING);
-
-			List<Building> list1 = BuildingManager.getWalkableBuildings(person, list0);
-			if (canChat)
-				// Choose between the most crowded or the least crowded dining hall
-				list1 = BuildingManager.getChattyBuildings(list1);
-			else
-				list1 = BuildingManager.getLeastCrowdedBuildings(list1);
-
-			if (!list1.isEmpty()) {
-				Map<Building, Double> probs = BuildingManager.getBestRelationshipBuildings(person,
-						list1);
-				b = RandomUtil.getWeightedRandomObject(probs);
-			}
-			else if (!list0.isEmpty()) {
-				Map<Building, Double> probs = BuildingManager.getBestRelationshipBuildings(person,
-						list0);
-				b = RandomUtil.getWeightedRandomObject(probs);
-			}
-		}
-
-		return b;
-	}
-
-	/**
-	 * Gets an available dining building in the settlement. Returns null if no
-	 * dining building is currently available.
-	 *
-	 * @param settlement the settlement
-	 * @return available dining building
-	 * @throws BuildingException if error finding dining building.
-	 */
-	public static Building getAvailableDiningBuilding(Settlement settlement) {
-		Building b = null;
-		BuildingManager manager = settlement.getBuildingManager();
-		List<Building> list0 = manager.getBuildings(FunctionType.DINING);
-		 if (!list0.isEmpty()) {
-			int rand = RandomUtil.getRandomInt(list0.size()-1);
-			b = list0.get(rand);
-		}
-
-		return b;
-	}
-	
 	/**
 	 * Gets a kitchen in the person's settlement that currently has cooked meals.
 	 *

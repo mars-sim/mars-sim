@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.person.ai.task.EatDrink;
 import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -186,7 +187,7 @@ public class EatDrinkMeta extends MetaTask {
 				if (person.isInSettlement() || (vehicle != null && vehicle.isInSettlement())) {
 
 					// Check if there is a local dining building.
-					Building diningBuilding = EatDrink.getAvailableDiningBuilding(person, false);
+					Building diningBuilding = BuildingManager.getAvailableDiningBuilding(person, false);
 					if (diningBuilding != null) {
 						// Modify probability by social factors in dining building.
 						h0 *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, diningBuilding);

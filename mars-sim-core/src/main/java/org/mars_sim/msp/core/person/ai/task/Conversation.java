@@ -26,6 +26,7 @@ import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -189,7 +190,7 @@ implements Serializable {
         
         if (pool.size() == 0) {
         	// Go to a chatty chow hall
-            Building diningBuilding = EatDrink.getAvailableDiningBuilding(person, true);
+            Building diningBuilding = BuildingManager.getAvailableDiningBuilding(person, true);
             if (diningBuilding != null) {
             	// Walk to that building.
             	walkToActivitySpotInBuilding(diningBuilding, FunctionType.DINING, true);

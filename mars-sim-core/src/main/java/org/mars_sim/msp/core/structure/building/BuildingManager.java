@@ -685,20 +685,20 @@ public class BuildingManager implements Serializable {
 				buildings = person.getSettlement().getBuildingManager().getBuildingsWithScienceType(science);
 			}
 
-			if (buildings == null || buildings.size() == 0) {
+			if (buildings == null || buildings.isEmpty()) {
 				buildings = getBuildings(person, FunctionType.RESEARCH);
 			}
-			if (buildings == null || buildings.size() == 0) {
+			if (buildings == null || buildings.isEmpty()) {
 				buildings = getBuildings(person, FunctionType.ADMINISTRATION);
 			}
-			if (buildings == null || buildings.size() == 0) {
+			if (buildings == null || buildings.isEmpty()) {
 				buildings = getBuildings(person, FunctionType.DINING);
 			}
-			if (buildings == null || buildings.size() == 0) {
+			if (buildings == null || buildings.isEmpty()) {
 				buildings = getBuildings(person, FunctionType.LIVING_ACCOMMODATIONS);
 			}
 
-			if (buildings != null && buildings.size() > 0) {
+			if (buildings != null && !buildings.isEmpty()) {
 				Map<Building, Double> possibleBuildings = BuildingManager.getBestRelationshipBuildings(person,
 						buildings);
 				b = RandomUtil.getWeightedRandomObject(possibleBuildings);
@@ -707,7 +707,93 @@ public class BuildingManager implements Serializable {
 
 		return b;
 	}
+	
+	
+	/**
+	 * Gets a list of non-malfunctioned diners in the same zone.
+	 * 
+	 * @param person
+	 * @return
+	 */
+	public List<Building> getDiningBuildings(Person person) {
+		if (person.getBuildingLocation() != null) {
+			return getBuildings()
+					.stream()
+					.filter(b -> b.hasFunction(FunctionType.DINING)
+							&& b.getZone() == person.getBuildingLocation().getZone()
+							&& !b.getMalfunctionManager().hasMalfunction())
+					.collect(Collectors.toList());
+		}
+		
+		return getBuildings()
+				.stream()
+				.filter(b -> b.hasFunction(FunctionType.DINING)
+						&& b.getZone() == 0
+						&& !b.getMalfunctionManager().hasMalfunction())
+				.collect(Collectors.toList());
+	}
+	
+	/**
+	 * Gets an available dining building that the person can use. Returns null if no
+	 * dining building is currently available.
+	 *
+	 * @param person the person
+	 * @param canChat
+	 * @return available dining building
+	 * @throws BuildingException if error finding dining building.
+	 */
+	public static Building getAvailableDiningBuilding(Person person, boolean canChat) {
+		Building b = null;
 
+		// If this person is located in the settlement
+		if (person.isInSettlement()) {
+			Settlement settlement = person.getSettlement();
+			BuildingManager manager = settlement.getBuildingManager();
+			List<Building> list0 = manager.getDiningBuildings(person);
+
+			List<Building> list1 = BuildingManager.getWalkableBuildings(person, list0);
+			if (canChat)
+				// Choose between the most crowded or the least crowded dining hall
+				list1 = BuildingManager.getChattyBuildings(list1);
+			else
+				list1 = BuildingManager.getLeastCrowdedBuildings(list1);
+
+			if (!list1.isEmpty()) {
+				Map<Building, Double> probs = BuildingManager.getBestRelationshipBuildings(person,
+						list1);
+				b = RandomUtil.getWeightedRandomObject(probs);
+			}
+			else if (!list0.isEmpty()) {
+				Map<Building, Double> probs = BuildingManager.getBestRelationshipBuildings(person,
+						list0);
+				b = RandomUtil.getWeightedRandomObject(probs);
+			}
+		}
+
+		return b;
+	}
+
+	/**
+	 * Gets an available dining building in the settlement. Returns null if no
+	 * dining building is currently available.
+	 *
+	 * @param settlement the settlement
+	 * @return available dining building
+	 * @throws BuildingException if error finding dining building.
+	 */
+	public static Building getAvailableDiningBuilding(Settlement settlement, Person person) {
+		Building b = null;
+		BuildingManager manager = settlement.getBuildingManager();
+		List<Building> list0 = manager.getDiningBuildings(person);
+		 if (!list0.isEmpty()) {
+			int rand = RandomUtil.getRandomInt(list0.size()-1);
+			b = list0.get(rand);
+		}
+
+		return b;
+	}
+	
+	
 	/**
 	 * Gets a list of non-malfunctioned buildings with a particular function type.
 	 *
