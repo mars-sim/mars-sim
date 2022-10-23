@@ -90,9 +90,9 @@ extends TestCase {
 		
 		EquipmentOwner housing = (EquipmentOwner)settlement;
 		EVASuit suit = InventoryUtil.getGoodEVASuitNResource(settlement, person);
-		assertTrue("Wrong EVA suit name.", suit.getName().equals(suit0.getName()));
-		double mass = suit.getBaseMass();
-		assertTrue("EVA suit's empty mass is NOT correct.", mass == 14.05);
+		assertEquals("Wrong EVA suit name.", suit0.getName(), suit.getName());
+		double mass = ((int)(suit.getBaseMass() * 100D))/100D;
+		assertEquals("EVA suit's empty mass is NOT correct.", 14.05, mass);
 
 		// 1. Transfer the EVA suit from settlement/vehicle to person
 		suit.transfer(person);

@@ -28,6 +28,8 @@ extends TestCase {
 
 
 	private static final double CAPACITY_AMOUNT = 1000D;
+	private static final String PNEUMATIC_DRILL = "pneumatic drill";
+
 
 	private Settlement settlement = null;
 
@@ -106,7 +108,8 @@ extends TestCase {
 	 * Test method loading Equipment
 	 */
 	public void testItemOverloading() throws Exception {
-		Part drillPart = ItemResourceUtil.pneumaticDrill;
+		Part drillPart = (Part) ItemResourceUtil.findItemResource(PNEUMATIC_DRILL);
+
 
 		int maxDrills = 2;
 		EquipmentInventory inv = new EquipmentInventory(settlement, drillPart.getMassPerItem() * 2);

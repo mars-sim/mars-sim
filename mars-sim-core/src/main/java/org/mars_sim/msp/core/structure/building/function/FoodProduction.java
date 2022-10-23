@@ -50,8 +50,6 @@ public class FoodProduction extends Function {
 
 	private static final String CONCURRENT_PROCESSES = "concurrent-processes";
 
-	public static final String LASER_SINTERING_3D_PRINTER = ItemResourceUtil.LASER_SINTERING_3D_PRINTER;
-
 	// Data members.
 	private int techLevel;
 	private int numPrintersInUse;

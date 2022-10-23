@@ -37,11 +37,18 @@ extends TestCase {
 
 	// Extra amount to add to resouRce to handle double arithmetic mismatch
 	private static final double EXTRA_RESOURCE = 0.01D;
+	private static final String SMALL_HAMMER = "small hammer";
+	private static final String FIRE_EXTINGUSHER = "fire extinguisher";
+	private static final String PIPE_WRENCH = "pipe wrench";
+
 
 	private Settlement settlement = null;
 	private UnitManager unitManager;
 	private Vehicle vehicle;
 	private Person person;
+	private Integer pipeWrenchID;
+	private Integer smallHammerID;
+	private Integer fireExtinguisherID;
 
 	@Override
     public void setUp() throws Exception {
@@ -65,6 +72,10 @@ extends TestCase {
 
 		// Make the person strong to get loading quicker
 		person.getNaturalAttributeManager().setAttribute(NaturalAttributeType.STRENGTH, 40);
+
+		smallHammerID = ItemResourceUtil.findIDbyItemResourceName(SMALL_HAMMER);
+		fireExtinguisherID = ItemResourceUtil.findIDbyItemResourceName(FIRE_EXTINGUSHER);
+		pipeWrenchID = ItemResourceUtil.findIDbyItemResourceName(PIPE_WRENCH);
     }
 
 	/*
@@ -162,8 +173,8 @@ extends TestCase {
 	 */
 	public void testLoadRequiredItemResources() throws Exception {
 		Map<Integer, Number> requiredResourcesMap = new HashMap<>();
-		requiredResourcesMap.put(ItemResourceUtil.fireExtinguisherID, 1);
-		requiredResourcesMap.put(ItemResourceUtil.smallHammerID, 2);
+		requiredResourcesMap.put(fireExtinguisherID, 1);
+		requiredResourcesMap.put(smallHammerID, 2);
 
 		// Load the manifest
 		testLoading(100, requiredResourcesMap, Collections.emptyMap(),
@@ -175,11 +186,11 @@ extends TestCase {
 	 */
 	public void testLoadOptionalItemResources() throws Exception {
 		Map<Integer, Number> requiredResourcesMap = new HashMap<>();
-		requiredResourcesMap.put(ItemResourceUtil.fireExtinguisherID, 1);
-		requiredResourcesMap.put(ItemResourceUtil.smallHammerID, 2);
+		requiredResourcesMap.put(fireExtinguisherID, 1);
+		requiredResourcesMap.put(smallHammerID, 2);
 
 		Map<Integer, Number> optionalResourcesMap = new HashMap<>();
-		optionalResourcesMap.put(ItemResourceUtil.pipeWrenchID, 10D);
+		optionalResourcesMap.put(pipeWrenchID, 10D);
 
 		// Load the manifest
 		testLoading(100, requiredResourcesMap, optionalResourcesMap,
@@ -191,11 +202,11 @@ extends TestCase {
 	 */
 	public void testLoadMissingOptionalItemResources() throws Exception {
 		Map<Integer, Number> requiredResourcesMap = new HashMap<>();
-		requiredResourcesMap.put(ItemResourceUtil.fireExtinguisherID, 1);
-		requiredResourcesMap.put(ItemResourceUtil.smallHammerID, 2);
+		requiredResourcesMap.put(fireExtinguisherID, 1);
+		requiredResourcesMap.put(smallHammerID, 2);
 
 		Map<Integer, Number> optionalResourcesMap = new HashMap<>();
-		optionalResourcesMap.put(ItemResourceUtil.pipeWrenchID, 10D);
+		optionalResourcesMap.put(pipeWrenchID, 10D);
 
 		testLoadOptionalResources(100, requiredResourcesMap,
 								  optionalResourcesMap,
@@ -287,12 +298,12 @@ extends TestCase {
 
 		Map<Integer, Number> requiredResourcesMap = new HashMap<>();
 		requiredResourcesMap.put(ResourceUtil.foodID, 100D);
-		requiredResourcesMap.put(ItemResourceUtil.fireExtinguisherID, 1);
-		requiredResourcesMap.put(ItemResourceUtil.smallHammerID, 2);
+		requiredResourcesMap.put(fireExtinguisherID, 1);
+		requiredResourcesMap.put(smallHammerID, 2);
 
 		Map<Integer, Number> optionalResourcesMap = new HashMap<>();
 		optionalResourcesMap.put(ResourceUtil.co2ID, 4D);
-		optionalResourcesMap.put(ItemResourceUtil.pipeWrenchID, 5D);
+		optionalResourcesMap.put(pipeWrenchID, 5D);
 
 		// Load the manifest
 		testLoading(200, requiredResourcesMap, optionalResourcesMap,

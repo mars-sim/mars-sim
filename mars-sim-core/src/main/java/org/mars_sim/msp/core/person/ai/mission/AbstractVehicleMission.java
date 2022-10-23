@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.IntFunction;
@@ -83,7 +84,16 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	private static final MissionStatus UNREPAIRABLE_MALFUNCTION = new MissionStatus("Mission.status.unrepairable");
 
 	// Static members
-
+	private static Integer batteryID = ItemResourceUtil.findIDbyItemResourceName("chemical battery");
+	private static Integer wheelID = ItemResourceUtil.findIDbyItemResourceName("rover wheel");
+	private static Set<Integer> unNeededParts = ItemResourceUtil.convertNamesToResourceIDs(
+															new String[] {
+																	"laser", "stepper motor","oven",
+																	"blender", "refrigerator", "stove",
+																	"microwave", "polycarbonate roofing",
+																	"lens", "fiberglass", "sheet",
+																	"prism"});
+																	
 	// Travel Mission status
 	protected static final String AT_NAVPOINT = "At a navpoint";
 	protected static final String TRAVEL_TO_NAVPOINT = "Traveling to navpoint";
@@ -992,7 +1002,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 
 		// Note: need to figure out why a mission vehicle's scope would contain 
 		// the following unneeded parts that must be removed:
-		parts = ItemResourceUtil.removePartMap(parts, ItemResourceUtil.UNNEEDED_PARTS_ID);
+		parts = ItemResourceUtil.removePartMap(parts, unNeededParts);
 
 		for (Map.Entry<Integer, Double> entry : parts.entrySet()) {
 			Integer id = entry.getKey();
@@ -1007,16 +1017,14 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		// Manually override the number of wheels and battery needed for each mission
 		// since the automated process is not reliable
 		if (VehicleType.isRover(vehicle.getVehicleType())) {
-			Integer wheel = ItemResourceUtil.wheel.getID();
-			Integer battery = ItemResourceUtil.battery.getID();
-			
+
 			if (vehicle.getVehicleType() == VehicleType.EXPLORER_ROVER) 
-				result.computeIfAbsent(wheel, k -> 2);
+				result.computeIfAbsent(wheelID, k -> 2);
 			else if (vehicle.getVehicleType() == VehicleType.CARGO_ROVER
 					|| vehicle.getVehicleType() == VehicleType.TRANSPORT_ROVER) 
-				result.computeIfAbsent(wheel, k -> 4);
+				result.computeIfAbsent(wheelID, k -> 4);
 			
-			result.computeIfAbsent(battery, k -> 1);
+			result.computeIfAbsent(batteryID, k -> 1);
 		}
 		
 		return result;

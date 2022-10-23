@@ -28,6 +28,8 @@ import junit.framework.TestCase;
  */
 public class ConstructionStageTest extends TestCase {
 
+    private static final String SMALL_HAMMER = "small hammer";
+
     // Data members
     private ConstructionStageInfo foundationInfo;
 
@@ -37,8 +39,9 @@ public class ConstructionStageTest extends TestCase {
         SimulationConfig.instance().loadConfig();
         Simulation.instance().testRun();
 
+        Part smallHammer = (Part) ItemResourceUtil.findItemResource(SMALL_HAMMER);
         Map<Integer, Integer> parts = new HashMap<Integer, Integer>(1);
-        parts.put(ItemResourceUtil.smallHammer.getID(), 1);
+        parts.put(smallHammer.getID(), 1);
 
         Map<Integer, Double> resources = new HashMap<Integer, Double>(1);
         resources.put(ResourceUtil.methaneAR.getID(), 1D);

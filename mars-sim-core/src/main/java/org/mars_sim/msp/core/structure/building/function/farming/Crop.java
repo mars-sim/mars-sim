@@ -40,7 +40,7 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 	private static final int GREY_WATER_ID = ResourceUtil.greyWaterID;
 	private static final int CROP_WASTE_ID = ResourceUtil.cropWasteID;
 	private static final int FERTILIZER_ID = ResourceUtil.fertilizerID;
-	private static final int MUSHROOM_BOX_ID = ItemResourceUtil.mushroomBoxID;
+	private static final int MUSHROOM_BOX_ID = ItemResourceUtil.findIDbyItemResourceName("mushroom containment kit");
 
 	private static final int LIGHT_FACTOR = 0;
 	private static final int FERTILIZER_FACTOR = 1;
@@ -73,6 +73,9 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 	private static final double GAS_MODIFIER = 1.5;
 	
 	private static final double WATER_MODIFIER = 1.1;
+
+	private static final int PETRI_DISH_ID = ItemResourceUtil.findIDbyItemResourceName("petri dish");
+
 	
 	/**
 	 * The limiting factor that determines how fast and how much PAR can be absorbed
@@ -107,12 +110,6 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 	 * <p> 6nCO2 + 5nH2O ⇒ (C6H10O5)n + 6nO2
 	 */
 	private static final double CO2_TO_O2_RATIO = 32 / 44D; 
-
-	/**  only 42% are EM within 400 to 700 nm. */
-	// public static final double SOLAR_IRRADIANCE_TO_PAR_RATIO = .42; 
-
-	/** For Mars, the unit is mol/m2/s/Wm-2 . */
-	// public static final double WATT_TO_PHOTON_CONVERSION_RATIO = 4.609; 
 	
 	/** SurfaceFeatures.MEAN_SOLAR_IRRADIANCE * 4.56 * (not 88775.244)/1e6 = 237.2217 */
 	// public static final double MEAN_DAILY_PAR = 237.2217D ; // in [umol/m2/day]
@@ -272,8 +269,8 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 				currentPhaseWorkCompleted = 0;
 				logger.log(building, this, Level.INFO, 0, "No tissue-culture left. Restocking.");
 				// Need a petri dish
-				if (building.getSettlement().hasItemResource(ItemResourceUtil.petriDishID)) {
-					building.getSettlement().retrieveItemResource(ItemResourceUtil.petriDishID, 1);
+				if (building.getSettlement().hasItemResource(PETRI_DISH_ID)) {
+					building.getSettlement().retrieveItemResource(PETRI_DISH_ID, 1);
 				}
 				else
 					logger.log(building, this, Level.WARNING, 60_000, "No petri dish left for growing " + cropSpec.getName()
@@ -343,8 +340,8 @@ public class Crop implements Comparable<Crop>, Loggable, Serializable {
 			building.getSettlement().retrieveItemResource(MUSHROOM_BOX_ID, 1);
 		}
 		// Need a petri dish
-		if (building.getSettlement().hasItemResource(ItemResourceUtil.petriDishID)) {
-			building.getSettlement().retrieveItemResource(ItemResourceUtil.petriDishID, 1);
+		if (building.getSettlement().hasItemResource(PETRI_DISH_ID)) {
+			building.getSettlement().retrieveItemResource(PETRI_DISH_ID, 1);
 		}
 		else
 			logger.log(building, this, Level.WARNING, 60_000, 

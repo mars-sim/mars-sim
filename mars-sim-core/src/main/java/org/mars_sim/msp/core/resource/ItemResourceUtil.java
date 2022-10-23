@@ -8,9 +8,9 @@
 package org.mars_sim.msp.core.resource;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -24,50 +24,15 @@ public class ItemResourceUtil implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-//	private static final String WHEELBARROW = "wheelbarrow";
 	private static final String PRESSURE_SUIT = "pressure suit";
-	private static final String PETRI_DISH = "petri dish";
 	private static final String GARMENT = "garment";
 	
 	// Light utility vehicle attachment parts for mining or construction.
 	private static final String BACKHOE = "backhoe";
-	private static final String BULLDOZER_BLADE = "bulldozer blade";
-	private static final String CRANE_BOOM = "crane boom";
-	private static final String DRILLING_RIG = "drilling rig";
 	private static final String PNEUMATIC_DRILL = "pneumatic drill";
-	private static final String SOCKET_WRENCH = "socket wrench";
-	private static final String SOIL_COMPACTOR = "soil compactor";
 
 	// Tools
-	public static final String LASER_SINTERING_3D_PRINTER = "laser sintering 3d printer";
-
-	private static final String PIPE_WRENCH = "pipe wrench";
-	private static final String FIRE_EXTINGUSHER = "fire extinguisher";
-	private static final String WORK_GLOVES = "work gloves";
-	private static final String CONTAINMENT_KIT = "mushroom containment kit";
-	private static final String SMALL_HAMMER = "small hammer";
-
-	private static final String IRON_INGOT = "iron ingot";
-	private static final String STEEL_INGOT = "steel ingot";
-	private static final String IRON_SHEET = "iron sheet";
-	private static final String STEEL_SHEET = "steel sheet";
-
-	private static final String ROVER_WHEEL = "rover wheel";
-	private static final String CHEMICAL_BATTERY = "chemical battery";
-		
-	private static final String LASER = "laser";
-	private static final String STEPPER_MOTOR = "stepper motor";
-	private static final String OVEN = "oven";
-	private static final String BLENDER = "blender";
-	private static final String AUTOCLAVE = "autoclave";
-	private static final String REFRIGERATOR = "refrigerator";
-	private static final String STOVE = "stove";
-	private static final String MICROWAVE = "microwave";
-	private static final String POLY_ROOFING = "polycarbonate roofing";
-	private static final String LENS = "lens";
-	private static final String FIBERGLASS = "fiberglass";
-	private static final String SHEET = "sheet";
-	private static final String PRISM = "prism";
+	private static final String LASER_SINTERING_3D_PRINTER = "laser sintering 3d printer";
 	
 	/** 
 	 * Parts for creating an EVA Suit. 
@@ -81,74 +46,13 @@ public class ItemResourceUtil implements Serializable {
 			"eva battery",			"eva radio",
 	};
 
-	/** 
-	 * Light utility vehicle attachment parts for mining or construction. 
-	 */
-	private static final String[] ATTACHMENTS = {
-			BACKHOE,
-			BULLDOZER_BLADE,
-			CRANE_BOOM,
-			DRILLING_RIG,
-			PNEUMATIC_DRILL,
-			SOIL_COMPACTOR
-	};
-
-	/**
-	 * Parts that are not needed to be fetched as repair parts for vehicle missions.
-	 */
-	private static final String[] UNNEEDED_PARTS = { 
-			LASER,					STEPPER_MOTOR,
-			OVEN,					BLENDER,
-			AUTOCLAVE,				REFRIGERATOR,
-			STOVE,					MICROWAVE,
-			POLY_ROOFING,			LENS,
-			FIBERGLASS,				SHEET,
-			PRISM 
-	};
-
-	/**
-	 * Parts for cooking and food production.
-	 */
-	private static final String[] KITCHEN_WARE = {
-			AUTOCLAVE,			BLENDER,
-			MICROWAVE,			OVEN,
-			REFRIGERATOR,		STOVE};
-	
-	public static Part pneumaticDrill;
-	public static Part backhoePart;
-	public static Part socketWrench;
-	public static Part pipeWrench;
-
-	public static Part fireExtinguisher;
-	public static Part workGloves;
-	public static Part mushroomBox;
-	public static Part smallHammer;
-
-	public static Part wheel;
-	public static Part battery;
-
-	public static int wheelbarrowID;
-	
 	public static int garmentID;
 	public static int pressureSuitID;
-	public static int petriDishID;
 
 	public static int pneumaticDrillID;
 	public static int backhoeID;
-	public static int socketWrenchID;
-	public static int pipeWrenchID;
-
-	public static int fireExtinguisherID;
-	public static int workGlovesID;
-	public static int mushroomBoxID;
-	public static int smallHammerID;
 
 	public static int printerID;
-
-	public static int ironIngotID;
-	public static int ironSheetID;
-	public static int steelIngotID;
-	public static int steelSheetID;
 
 	private static Map<String, Part> itemResourceMap;
 	private static Map<Integer, Part> itemResourceIDMap;
@@ -160,10 +64,7 @@ public class ItemResourceUtil implements Serializable {
 	private static PartConfig partConfig = SimulationConfig.instance().getPartConfiguration();
 	
 	//TODO These should be configurable
-	public static List<Integer> ATTACHMENTS_ID;
-	public static List<Integer> EVASUIT_PARTS_ID;
-	public static List<Integer> KITCHEN_WARE_ID;
-	public static List<Integer> UNNEEDED_PARTS_ID;
+	public static Set<Integer> EVASUIT_PARTS_ID;
 
 	/**
 	 * Constructor
@@ -195,50 +96,26 @@ public class ItemResourceUtil implements Serializable {
 	 * Prepares the id's of a few item resources
 	 */
 	public static void createIDs() {
-		// Create parts reference
-		pneumaticDrill = (Part) findItemResource(PNEUMATIC_DRILL);
-		backhoePart = (Part) findItemResource(BACKHOE);
-		socketWrench = (Part) findItemResource(SOCKET_WRENCH);
-		pipeWrench = (Part) findItemResource(PIPE_WRENCH);
 
-		fireExtinguisher = (Part) findItemResource(FIRE_EXTINGUSHER);
-		workGloves = (Part) findItemResource(WORK_GLOVES);
-		mushroomBox = (Part) findItemResource(CONTAINMENT_KIT);
-		smallHammer = (Part) findItemResource(SMALL_HAMMER);
-
-		wheel = (Part) findItemResource(ROVER_WHEEL);
-		battery = (Part) findItemResource(CHEMICAL_BATTERY);
-		
 		// Create item ids reference
-		petriDishID = findIDbyItemResourceName(PETRI_DISH);
 		garmentID = findIDbyItemResourceName(GARMENT);
 		pressureSuitID = findIDbyItemResourceName(PRESSURE_SUIT);
 
 		pneumaticDrillID = findIDbyItemResourceName(PNEUMATIC_DRILL);
 		backhoeID = findIDbyItemResourceName(BACKHOE);
-		socketWrenchID = findIDbyItemResourceName(SOCKET_WRENCH);
-		pipeWrenchID = findIDbyItemResourceName(PIPE_WRENCH);
-
-		fireExtinguisherID = findIDbyItemResourceName(FIRE_EXTINGUSHER);
-		workGlovesID = findIDbyItemResourceName(WORK_GLOVES);
-		mushroomBoxID = findIDbyItemResourceName(CONTAINMENT_KIT);
-		smallHammerID = findIDbyItemResourceName(SMALL_HAMMER);
 
 		printerID = findIDbyItemResourceName(LASER_SINTERING_3D_PRINTER);
-
-		ironIngotID = findIDbyItemResourceName(IRON_INGOT);
-		ironSheetID = findIDbyItemResourceName(IRON_SHEET);
-		steelIngotID = findIDbyItemResourceName(STEEL_INGOT);
-		steelSheetID = findIDbyItemResourceName(STEEL_SHEET);
 		
-		ATTACHMENTS_ID = convertNamesToResourceIDs(ATTACHMENTS);
 		EVASUIT_PARTS_ID = convertNamesToResourceIDs(EVASUIT_PARTS);
-		KITCHEN_WARE_ID = convertNamesToResourceIDs(KITCHEN_WARE);
-		UNNEEDED_PARTS_ID = convertNamesToResourceIDs(UNNEEDED_PARTS);
 	}
 
-	private static List<Integer> convertNamesToResourceIDs(String [] names) {
-		List<Integer> ids = new ArrayList<>();
+	/**
+	 * Convet a array of ItemResources into their equivalent ID.
+	 * @param names
+	 * @return
+	 */
+	public static Set<Integer> convertNamesToResourceIDs(String [] names) {
+		Set<Integer> ids = new HashSet<>();
 		for (String n : names) {
 			ItemResource item = findItemResource(n);
 			if (item != null) {
@@ -346,7 +223,7 @@ public class ItemResourceUtil implements Serializable {
 		return findItemResource(name).getID();
 	}
 
-	public static Map<Integer, Double> removePartMap(Map<Integer, Double> parts, List<Integer> unneeded) {
+	public static Map<Integer, Double> removePartMap(Map<Integer, Double> parts, Set<Integer> unneeded) {
 		for (Integer i : unneeded) {
 			parts.remove(i);
 		}

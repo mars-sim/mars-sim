@@ -7,7 +7,9 @@
 package org.mars_sim.msp.core.goods;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.food.FoodProductionProcessInfo;
@@ -92,6 +94,15 @@ class PartGood extends Good {
 	private static final double INITIAL_PART_SUPPLY = 1;
 
 	private static final double MANUFACTURING_INPUT_FACTOR = 2D;
+
+	private static Set<Integer> kithenWare = ItemResourceUtil.convertNamesToResourceIDs(new String [] {
+																		"autoclave", "blender", "microwave",
+																		"oven", "refrigerator", "stove"});
+
+	private static Set<Integer> attachments = ItemResourceUtil.convertNamesToResourceIDs(new String [] {
+																		"backhoe", "bulldozer blade",
+																		"crane boom", "drilling rig",
+																		"pneumatic drill", "soil compactor"});
 
 	private double flattenDemand;
 	private double flattenRawDemand;
@@ -452,7 +463,7 @@ class PartGood extends Good {
 	 * @return demand
 	 */
 	private double getAttachmentPartsDemand(GoodsManager owner) {
-		if (ItemResourceUtil.ATTACHMENTS_ID.contains(getID())) {
+		if (attachments.contains(getID())) {
 			return ATTACHMENT_PARTS_DEMAND * (1 + owner.getDemandValue(this));
 		}
 		return 0;
@@ -739,7 +750,7 @@ class PartGood extends Good {
 	 * @return the flattened demand
 	 */
 	private double getKitchenPartDemand(GoodsManager owner) {
-		if (ItemResourceUtil.KITCHEN_WARE_ID.contains(getID())) {
+		if (kithenWare.contains(getID())) {
 			return owner.getDemandValue(this) * KITCHEN_DEMAND;
 		}
 		return 0;
