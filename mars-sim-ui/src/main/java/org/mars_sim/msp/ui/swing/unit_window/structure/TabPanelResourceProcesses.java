@@ -25,6 +25,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
@@ -91,12 +92,13 @@ public class TabPanelResourceProcesses extends TabPanel implements ActionListene
 		size = buildings.size();
 
 		// Create override check box panel.
-		JPanel topPanel = new JPanel(new GridLayout(1, 2, 2, 2));
+		JPanel topPanel = new JPanel(new GridLayout(1, 2, 0, 0));
 		content.add(topPanel, BorderLayout.NORTH);
 		
 		// Create override check box panel.
 		JPanel overrideCheckboxPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		topPanel.add(overrideCheckboxPane, BorderLayout.NORTH);
+		overrideCheckboxPane.setAlignmentY(BOTTOM_ALIGNMENT);
+		topPanel.add(overrideCheckboxPane);
 	
 		// Create override check box.
 		overrideCheckbox = new JCheckBox(Msg.getString("TabPanelResourceProcesses.checkbox.overrideResourceProcessToggling")); //$NON-NLS-1$
@@ -105,23 +107,25 @@ public class TabPanelResourceProcesses extends TabPanel implements ActionListene
 			setResourceProcessOverride(overrideCheckbox.isSelected())
 		);
 		overrideCheckbox.setSelected(settlement.getProcessOverride(OverrideType.RESOURCE_PROCESS));
+		
 		overrideCheckboxPane.add(overrideCheckbox);
 		
 		// Create level panel.
 		JPanel levelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		topPanel.add(levelPanel, BorderLayout.NORTH);
+		levelPanel.setAlignmentY(TOP_ALIGNMENT);
+		topPanel.add(levelPanel);
 		
-		JLabel levelLabel = new JLabel(" Overall Effort Level : ");
+		JLabel levelLabel = new JLabel("Overall Effort Level :");
 		levelPanel.add(levelLabel);
 			
 		// Prepare level combo box
 		String[] level = {"1", "2", "3", "4", "5"}; 
 		levelComboBox = new JComboBox<>(level);
-		levelPanel.add(levelComboBox);
 		levelComboBox.setSelectedItem("2");
 		levelComboBox.addActionListener(this);
-		 // add ItemListener levelComboBox.addItemListener(this)
         
+		levelPanel.add(levelComboBox);
+		
 		// Prepare process list panel.
 		processListPanel = new JPanel(new GridLayout(0, 1, 5, 1));
 		processListPanel.setAlignmentY(TOP_ALIGNMENT);

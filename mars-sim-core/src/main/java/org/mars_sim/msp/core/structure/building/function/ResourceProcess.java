@@ -42,6 +42,7 @@ public class ResourceProcess implements Serializable {
 	
 	/** The level of effort for this resource process. */	
 	private int level = 2;
+	
 	/** The time accumulated [in millisols]. */
 	private double accumulatedTime;
 
@@ -138,7 +139,6 @@ public class ResourceProcess implements Serializable {
 		toToggleOn = value;
 	}
 	
-
 	/**
 	 * Checks if the process has been flagged to be toggled on or off.
 	 *

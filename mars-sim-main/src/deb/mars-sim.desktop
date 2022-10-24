@@ -2,7 +2,7 @@
 Encoding=UTF-8
 Name=Mars Simulation Project
 Version=3.4.0
-Comment=A Simulation of future human settlements on the Red Planet.
+Comment=A Simulation of future human settlements on the Red Planet
 GenericName=mar-sim
 Exec=/usr/bin/mars-sim
 Icon=/usr/share/doc/mars-sim-main/icon.png

@@ -35,14 +35,21 @@ public class WasteProcess implements Serializable {
 	// How often should the process be checked? 
 	private static final double PROCESS_CHECK_FREQUENCY = 5D; // 200 times per sol
 	
+	/** Flag to toggle on or off. */
+	private boolean toToggleOn;
 	/** Flag for change. */
-	private boolean flag;
+	private boolean flag = false;
 	/** is this process running ? */
 	private boolean runningProcess;
+	
+	/** The level of effort for this resource process. */	
+	private int level = 2;
+	
 	/** The time accumulated [in millisols]. */
 	private double accumulatedTime;
 
 	private double currentProductionLevel;
+	
 	private double toggleRunningWorkTime;
 
 	private String name;
@@ -123,6 +130,24 @@ public class WasteProcess implements Serializable {
 	 */
 	public void setFlag(boolean value) {
 		flag = value;
+	}
+	
+	/**
+	 * Sets the process to be toggled on or off.
+	 *
+	 * @param value
+	 */
+	public void setToggleOn(boolean value) {
+		toToggleOn = value;
+	}
+	
+	/**
+	 * Checks if the process has been flagged to be toggled on or off.
+	 *
+	 * @return true if it was flagged to be toggled on. False if it was flagged to be off.
+	 */
+	public boolean isToggledOn() {
+		return toToggleOn;
 	}
 	
 	/**
