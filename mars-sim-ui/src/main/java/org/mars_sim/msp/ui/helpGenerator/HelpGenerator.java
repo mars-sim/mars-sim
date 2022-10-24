@@ -1141,7 +1141,7 @@ public class HelpGenerator {
 	 * Generates html help files for use in the in-game help and tutorial browser.
 	 */
 	public static final void generateHtmlHelpFiles() {
-		logger.log(Level.INFO,"Starting to generate help files");
+		logger.log(Level.INFO,"Starting to generate new help files");
 
 		logger.log(Level.INFO,"Vehicles htmls are at " + getAbsPath(VEHICLE_DIR).replaceAll("\\\\", "/"));
 		HelpGenerator.generateVehicleDescriptions();
