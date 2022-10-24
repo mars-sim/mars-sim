@@ -40,7 +40,9 @@ public class MEGDRMapReader {
 
 	// megt90n000cb.img has a resolution of 4 pixels per degree (or 0.25 by 0.25 degrees)
 	// map scale : 14.818 km per pixel
-	private static final String FILE = "/maps/megt90n000cb.img";
+	private static final String PATH = "/maps/";
+	static final String IMG_FILE = "megt90n000cb.img";
+	static final String FILE = PATH + IMG_FILE;
 	private static final String COMPRESSED = "720x1440_JavaFastPFOR_compressed";
 //	private static final String UNCOMPRESSED = "720x1440_uncompressed";
 

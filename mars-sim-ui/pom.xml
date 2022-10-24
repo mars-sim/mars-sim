@@ -7,7 +7,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<parent>
 		<groupId>com.github.mars-sim</groupId>
 		<artifactId>mars-sim</artifactId>
-		<version>pre-3.4.0</version>
+		<version>3.4.0</version>
 	</parent>
 	<artifactId>mars-sim-ui</artifactId>
 	<name>mars-sim-ui</name>
@@ -62,10 +62,10 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-transcoder/ : 126 KB
-			1.9 has java.lang.NoClassDefFoundError: org/apache/batik/i18n/Localizable, which is caused by a bug with Apache FOP
-			see http://stackoverflow.com/questions/43371411/apache-fop-2-2-migration-error-classnotfoundexception-org-apache-batik-i18n-l
-			if using 1.8 or 1.9, import org.apache.batik.anim.dom.SAXSVGDocumentFactory
-			if using 1.7, import org.apache.batik.dom.svg.SAXSVGDocumentFactory; -->
+			 1.9 has java.lang.NoClassDefFoundError: org/apache/batik/i18n/Localizable, which is caused by a bug with Apache FOP
+			 see http://stackoverflow.com/questions/43371411/apache-fop-2-2-migration-error-classnotfoundexception-org-apache-batik-i18n-l
+			 if using 1.8 or 1.9, import org.apache.batik.anim.dom.SAXSVGDocumentFactory
+			 if using 1.7, import org.apache.batik.dom.svg.SAXSVGDocumentFactory -->
 		<dependency>
 			<groupId>org.apache.xmlgraphics</groupId>
 			<artifactId>batik-transcoder</artifactId>
@@ -73,9 +73,9 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		</dependency>
 
 		<!-- http://www.jcraft.com/jorbis/
-		https://github.com/Trilarion/java-vorbis-support
-		https://github.com/Gagravarr/VorbisJava
-		https://mvnrepository.com/artifact/com.googlecode.soundlibs/jorbis : 97 KB-->
+			 https://github.com/Trilarion/java-vorbis-support
+			 https://github.com/Gagravarr/VorbisJava
+			 https://mvnrepository.com/artifact/com.googlecode.soundlibs/jorbis : 97 KB -->
 		<dependency>
 		    <groupId>com.googlecode.soundlibs</groupId>
 		    <artifactId>jorbis</artifactId>
@@ -83,8 +83,8 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		</dependency>
 
 		<!-- https://github.com/mgarin/weblaf
-		https://mvnrepository.com/artifact/com.weblookandfeel/weblaf-ui
-		https://oss.sonatype.org/content/repositories/snapshots/com/weblookandfeel/ -->
+			 https://mvnrepository.com/artifact/com.weblookandfeel/weblaf-ui
+			 https://oss.sonatype.org/content/repositories/snapshots/com/weblookandfeel/ -->
         <dependency>
             <groupId>com.weblookandfeel</groupId>
             <artifactId>weblaf-ui</artifactId>
