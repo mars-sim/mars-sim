@@ -77,12 +77,12 @@ public class TabPanelGeneral extends TabPanel {
 		// Prepare birth location textfield
 		String birthLocation = person.getBirthplace();
 		addTextField(infoPanel, Msg.getString("TabPanelGeneral.birthLocation"), //$NON-NLS-1$
-				birthLocation, 13, null);		
+				birthLocation, 17, null);		
 		
-		// Prepare birth location textfield
+		// Prepare country of origin textfield
 		String country = person.getCountry();
 		addTextField(infoPanel, Msg.getString("TabPanelGeneral.country"), //$NON-NLS-1$
-				country, 8, null);
+				country, 12, null);
 
 		// Prepare weight textfield
 		addTextField(infoPanel, Msg.getString("TabPanelGeneral.weight"), //$NON-NLS-1$
@@ -117,8 +117,8 @@ public class TabPanelGeneral extends TabPanel {
 		
 		// Use spring panel layout.
 		SpringUtilities.makeCompactGrid(infoPanel,
-		                                8, 2, //rows, cols
-		                                100, 2,        //initX, initY
+		                                8, 2,	//rows, cols
+		                                95, 2,	//initX, initY
 		                                XPAD_DEFAULT, YPAD_DEFAULT);       //xPad, yPad
 	}
 	

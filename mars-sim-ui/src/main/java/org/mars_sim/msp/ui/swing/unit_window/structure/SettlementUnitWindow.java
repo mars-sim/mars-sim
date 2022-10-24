@@ -76,25 +76,27 @@ public class SettlementUnitWindow extends UnitWindow {
 		// Create status panel
 		statusPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 
-		add(statusPanel, BorderLayout.NORTH);	
+		getContentPane().add(statusPanel, BorderLayout.NORTH);	
 		
 		initTopPanel(settlement);
 		
 		initTabPanel(settlement);
+
+		statusUpdate();
 	}
 	
 	
 	public void initTopPanel(Settlement settlement) {
-		statusPanel.setPreferredSize(new Dimension(WIDTH / 8, 60));
+		statusPanel.setPreferredSize(new Dimension(WIDTH / 8, UnitWindow.STATUS_HEIGHT));
 
 		// Create name label
 		UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
 		String name = SIX_SPACES + unit.getShortenedName() + SIX_SPACES;
 
-		statusPanel.setPreferredSize(new Dimension(WIDTH / 8, 60));
+		statusPanel.setPreferredSize(new Dimension(WIDTH / 8, UnitWindow.STATUS_HEIGHT));
 
 		WebLabel nameLabel = new WebLabel(name, displayInfo.getButtonIcon(unit), SwingConstants.CENTER);
-		nameLabel.setMinimumSize(new Dimension(120, 60));
+		nameLabel.setMinimumSize(new Dimension(120, UnitWindow.STATUS_HEIGHT));
 		
 		WebPanel namePane = new WebPanel(new BorderLayout(50, 0));
 		namePane.add(nameLabel, BorderLayout.CENTER);
@@ -173,14 +175,10 @@ public class SettlementUnitWindow extends UnitWindow {
 		rowPanel.add(templatePanel);
 
 		statusPanel.add(rowPanel);
-		rowPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
-		
+		rowPanel.setAlignmentX(Component.CENTER_ALIGNMENT);	
 		
 		sponsorLabel.setText(TWO_SPACES + settlement.getSponsor().getName());
 		templateLabel.setText(TWO_SPACES + settlement.getTemplate());
-		
-		
-		statusUpdate(settlement);
 	}
 	
 		
@@ -242,15 +240,6 @@ public class SettlementUnitWindow extends UnitWindow {
 		addTabIconPanels();
 	}
 
-	/*
-	 * Updates the status of an unit
-	 */
-	public void statusUpdate(Settlement settlement) {
-		popLabel.setText(TWO_SPACES + settlement.getIndoorPeopleCount() 
-				+ ONE_SPACE + "/" + ONE_SPACE + settlement.getNumCitizens());
-		vehLabel.setText(TWO_SPACES + settlement.getNumParkedVehicles() 
-				+ ONE_SPACE + "/" + ONE_SPACE + settlement.getOwnedVehicleNum());
-	}
 	
 	/**
 	 * Updates this window.
@@ -259,11 +248,34 @@ public class SettlementUnitWindow extends UnitWindow {
 	public void update() {
 		super.update();
 		
-		statusUpdate(settlement);
+		statusUpdate();
 	}
 
+	/*
+	 * Updates the status of the settlement
+	 */
+	public void statusUpdate() {
+		popLabel.setText(TWO_SPACES + settlement.getIndoorPeopleCount() 
+				+ ONE_SPACE + "/" + ONE_SPACE + settlement.getNumCitizens());
+		vehLabel.setText(TWO_SPACES + settlement.getNumParkedVehicles() 
+				+ ONE_SPACE + "/" + ONE_SPACE + settlement.getOwnedVehicleNum());
+	}
+	
 	@Override
 	public void stateChanged(ChangeEvent e) {
 	}
 
+	/**
+	 * Prepares unit window for deletion.
+	 */
+	public void destroy() {		
+		popLabel = null;
+		vehLabel = null;
+		sponsorLabel = null;
+		templateLabel = null;
+		
+		statusPanel = null;
+			
+		settlement = null;
+	}
 }
