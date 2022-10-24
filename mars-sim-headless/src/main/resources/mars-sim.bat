@@ -1,6 +1,6 @@
 :: Please replace the [$CURRENT_VERSION] with the correct build version in your jarfile 
-:: e.g. [$CURRENT_VERSION] as 3.1.2 or a build number such as 5348
+:: e.g. [$CURRENT_VERSION] such as 3.4.0 or a build number such as 7545
 @echo off
-call java -jar ./[$CURRENT_VERSION]_headless_java14.jar new
+call java -jar ./[$CURRENT_VERSION]_headless_java11.jar new
 echo Exit Code = %ERRORLEVEL%
 if "%ERRORLEVEL%" == "1" exit /B 1

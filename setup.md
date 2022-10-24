@@ -113,7 +113,9 @@ D. Batch Edition
 In Windows OS, double click on "mars-sim.bat" to begin.
 In Linux/MacOS, type "./mars-sim" to begin.
 
-Note 1: player may have to edit the content of the mars-sim.bat so that the jarfile name is being matched up.
+Note 1: player may have to use a text editor to edit the version 
+or build tag within mars-sim.bat so as to match up with the name
+of the jarfile.
 
         
 ---------------------------------------------------------------------
@@ -215,7 +217,8 @@ where the jar file is at.
 
 B. Headless Mode
 
-To load the default saved sim without the graphic interface, note the console will still be displayed, type :
+To load the default saved sim without the graphic interface, 
+type in :
 
 > java -jar mars-sim-[$VERSION].jar -nogui -load
 
