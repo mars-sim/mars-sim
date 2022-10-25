@@ -68,6 +68,7 @@ public class BuildingConfig implements Serializable {
 
 	private static final String DEFAULT = "default";
 	
+	private static final String PROCESS_ENGINE = "process-engine";
 	private static final String PROCESS = "process";
 	private static final String INPUT = "input";
 	private static final String OUTPUT = "output";
@@ -93,7 +94,6 @@ public class BuildingConfig implements Serializable {
 	private static final String ACTIVITY_SPOT = "activity-spot";
 	private static final String BED_LOCATION = "bed-location";
 
-	private static final String HEAT_REQUIRED = "heat-required";
 	private static final String HEAT_SOURCE = "heat-source";
 	private static final String THERMAL_GENERATION = "thermal-generation";
 
@@ -110,14 +110,15 @@ public class BuildingConfig implements Serializable {
 	 * Constructor.
 	 *
 	 * @param buildingDoc DOM document with building configuration
+	 * @param resProcConfig 
 	 */
-	public BuildingConfig(Document buildingDoc) {
+	public BuildingConfig(Document buildingDoc, ResourceProcessConfig resProcConfig) {
 
 		List<Element> buildingNodes = buildingDoc.getRootElement().getChildren(BUILDING);
 		for (Element buildingElement : buildingNodes) {
 			String buildingType = buildingElement.getAttributeValue(BUILDING_TYPE);
 			String key = generateSpecKey(buildingType);
-			buildSpecMap.put(key, parseBuilding(buildingType, buildingElement));
+			buildSpecMap.put(key, parseBuilding(buildingType, buildingElement, resProcConfig));
 		}
 	}
 
@@ -135,9 +136,10 @@ public class BuildingConfig implements Serializable {
 	 *
 	 * @param buildingTypeName
 	 * @param buildingElement
+	 * @param resProcConfig 
 	 * @return
 	 */
-	private BuildingSpec parseBuilding(String buildingTypeName, Element buildingElement) {
+	private BuildingSpec parseBuilding(String buildingTypeName, Element buildingElement, ResourceProcessConfig resProcConfig) {
 		Element descElement = buildingElement.getChild(DESCRIPTION);
 		String desc = descElement.getValue().trim();
 		desc = desc.replaceAll("\\t+", "").replaceAll("\\s+", " ").replace("   ", " ").replace("  ", " ");
@@ -236,7 +238,7 @@ public class BuildingConfig implements Serializable {
 
 		Element resourceProcessingElement = functionsElement.getChild(RESOURCE_PROCESSING);
 		if (resourceProcessingElement != null) {
-			parseResourceProcessing(newSpec, resourceProcessingElement);
+			parseResourceProcessing(resProcConfig, newSpec, resourceProcessingElement);
 		}
 
 		Element wasteProcessingElement = functionsElement.getChild(WASTE_PROCESSING);
@@ -371,61 +373,16 @@ public class BuildingConfig implements Serializable {
 	 * @param newSpec
 	 * @param resourceProcessingElement
 	 */
-	private void parseResourceProcessing(BuildingSpec newSpec, Element resourceProcessingElement) {
-		List<ResourceProcessSpec> resourceProcesses = new ArrayList<>();
+	private void parseResourceProcessing(ResourceProcessConfig resProcConfig, BuildingSpec newSpec,
+										 Element resourceProcessingElement) {
+		List<ResourceProcessEngine> resourceProcesses = new ArrayList<>();
 
-		List<Element> resourceProcessNodes = resourceProcessingElement.getChildren(PROCESS);
+		List<Element> resourceProcessNodes = resourceProcessingElement.getChildren(PROCESS_ENGINE);
 
 		for (Element processElement : resourceProcessNodes) {
-
-			String defaultString = processElement.getAttributeValue(DEFAULT);
-			boolean defaultOn = !defaultString.equals("off");
-
-            double powerRequired = Double.parseDouble(processElement.getAttributeValue(POWER_REQUIRED));
-
-            int modules = 1;
-
-            String mods = processElement.getAttributeValue(NUMBER_MODULES);
-
-            if (mods != null)
-            	modules = Integer.parseInt(mods);
-
-			ResourceProcessSpec process = new ResourceProcessSpec(processElement.getAttributeValue(NAME), modules, powerRequired,
-					defaultOn);
-
-			// Check optional attrs
-			String duration = processElement.getAttributeValue(TOGGLE_DURATION);
-			if (duration != null) {
-				process.setToggleDuration(Integer.parseInt(duration));
-			}
-			String periodicity = processElement.getAttributeValue(TOGGLE_PERIODICITY);
-			if (periodicity != null) {
-				process.setTogglePeriodicity(Integer.parseInt(periodicity));
-			}
-
-			// Get input resources.
-			List<Element> inputNodes = processElement.getChildren(INPUT);
-			for (Element inputElement : inputNodes) {
-				String resourceName = inputElement.getAttributeValue(RESOURCE);
-				Integer id = ResourceUtil.findIDbyAmountResourceName(resourceName);
-				// Convert RATE [in kg/sol] to rate [in kg/millisol]
-				double rate = Double.parseDouble(inputElement.getAttributeValue(RATE)) / 1000.0;
-				boolean ambient = Boolean.valueOf(inputElement.getAttributeValue(AMBIENT));
-				process.addMaxInputResourceRate(id, rate, ambient);
-			}
-
-			// Get output resources.
-			List<Element> outputNodes = processElement.getChildren(OUTPUT);
-			for (Element outputElement : outputNodes) {
-				String resourceName = outputElement.getAttributeValue(RESOURCE);
-				Integer id = ResourceUtil.findIDbyAmountResourceName(resourceName);
-				// Convert RATE [in kg/sol] to rate [in kg/millisol]
-				double rate = Double.parseDouble(outputElement.getAttributeValue(RATE)) / 1000.0;
-				boolean ambient = Boolean.valueOf(outputElement.getAttributeValue(AMBIENT));
-				process.addMaxOutputResourceRate(id, rate, ambient);
-			}
-
-			resourceProcesses.add(process);
+			String name = processElement.getAttributeValue(NAME);
+			int modules = ConfigHelper.getOptionalAttributeInt(processElement, NUMBER_MODULES, 1);
+			resourceProcesses.add(new ResourceProcessEngine(resProcConfig.getProcessSpec(name), modules));
 		}
 		newSpec.setResourceProcess(resourceProcesses);
 	}
@@ -660,7 +617,7 @@ public class BuildingConfig implements Serializable {
 	 * @return a list of resource processes.
 	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
-	public List<ResourceProcessSpec> getResourceProcesses(String buildingType) {
+	public List<ResourceProcessEngine> getResourceProcesses(String buildingType) {
 		return getBuildingSpec(buildingType).getResourceProcess();
 	}
 

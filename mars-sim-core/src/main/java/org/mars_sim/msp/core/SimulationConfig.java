@@ -55,6 +55,7 @@ import org.mars_sim.msp.core.robot.RobotConfig;
 import org.mars_sim.msp.core.science.ScienceConfig;
 import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
+import org.mars_sim.msp.core.structure.building.ResourceProcessConfig;
 import org.mars_sim.msp.core.structure.building.function.cooking.MealConfig;
 import org.mars_sim.msp.core.structure.building.function.farming.CropConfig;
 import org.mars_sim.msp.core.structure.construction.ConstructionConfig;
@@ -90,6 +91,7 @@ public class SimulationConfig implements Serializable {
 	private static final String CROP_FILE = "crops";
 	private static final String LANDMARK_FILE = "landmarks";
 	private static final String MINERAL_MAP_FILE = "minerals";
+	private static final String RESPROCESS_FILE = "resourceprocess";
 	private static final String BUILDING_FILE = "buildings";
 	private static final String PART_FILE = "parts";
 	private static final String PART_PACKAGE_FILE = "part_packages";
@@ -126,6 +128,7 @@ public class SimulationConfig implements Serializable {
 	private static final String BOOST = "boost";
 	private static final String NAME = "name";
 	private static final String EVA_LIGHT = "min-eva-light";
+
 
 	private transient String marsStartDate = null;
 	private transient String earthStartDate = null;
@@ -1037,7 +1040,8 @@ public class SimulationConfig implements Serializable {
 		malfunctionConfig = new MalfunctionConfig(parseXMLFileAsJDOMDocument(MALFUNCTION_FILE, true));
 		cropConfig = new CropConfig(parseXMLFileAsJDOMDocument(CROP_FILE, true), personConfig);
 		vehicleConfig = new VehicleConfig(parseXMLFileAsJDOMDocument(VEHICLE_FILE, true));
-		buildingConfig = new BuildingConfig(parseXMLFileAsJDOMDocument(BUILDING_FILE, true));
+		ResourceProcessConfig resourceProcessConfig = new ResourceProcessConfig(parseXMLFileAsJDOMDocument(RESPROCESS_FILE, true));
+		buildingConfig = new BuildingConfig(parseXMLFileAsJDOMDocument(BUILDING_FILE, true), resourceProcessConfig);
 		resupplyConfig = new ResupplyConfig(parseXMLFileAsJDOMDocument(RESUPPLY_FILE, true), partPackageConfig);
 		settlementConfig = new SettlementConfig(parseXMLFileAsJDOMDocument(SETTLEMENT_FILE, true), partPackageConfig);
 		manufactureConfig = new ManufactureConfig(parseXMLFileAsJDOMDocument(MANUFACTURE_FILE, true));

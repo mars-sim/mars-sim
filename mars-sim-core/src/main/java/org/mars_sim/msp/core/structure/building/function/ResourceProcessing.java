@@ -14,7 +14,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.FunctionSpec;
-import org.mars_sim.msp.core.structure.building.ResourceProcessSpec;
+import org.mars_sim.msp.core.structure.building.ResourceProcessEngine;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
 
@@ -54,7 +54,7 @@ public class ResourceProcessing extends Function {
 
 		powerDownProcessingLevel = spec.getDoubleProperty(POWER_DOWN_LEVEL);
 		resourceProcesses = new ArrayList<>();
-		for (ResourceProcessSpec pSpec : buildingConfig.getResourceProcesses(building.getBuildingType())) {
+		for (ResourceProcessEngine pSpec : buildingConfig.getResourceProcesses(building.getBuildingType())) {
 			resourceProcesses.add(new ResourceProcess(pSpec));
 		}
 	}
@@ -71,7 +71,7 @@ public class ResourceProcessing extends Function {
 	public static double getFunctionValue(String type, boolean newBuilding, Settlement settlement) {
 
 		double result = 0D;
-		for(ResourceProcessSpec process :buildingConfig.getResourceProcesses(type)) {
+		for(ResourceProcessEngine process :buildingConfig.getResourceProcesses(type)) {
 			double processValue = 0D;
 			for (int outResource : process.getOutputResources()) {
 				if (!process.isWasteOutputResource(outResource)) {

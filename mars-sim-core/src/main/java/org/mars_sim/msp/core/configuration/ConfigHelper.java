@@ -56,4 +56,16 @@ public class ConfigHelper {
 		return new LocalPosition(x, y);
 	}
 
+	
+	/**
+	 * A generic extract to get an optional Attribute as int value
+	 */
+	public static int getOptionalAttributeInt(Element sourceElement, String attrName, int defaultInt) {
+		int result = defaultInt;
+		String txt = sourceElement.getAttributeValue(attrName);
+		if (txt != null) {
+			result = Integer.parseInt(txt);
+		}
+		return result;
+	}
 }
