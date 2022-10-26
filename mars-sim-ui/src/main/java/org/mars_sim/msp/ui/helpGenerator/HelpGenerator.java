@@ -1120,7 +1120,7 @@ public class HelpGenerator {
 	}
 
 	private static String getAbsPath(String dir) {
-		String absPath = null;
+		String absPath = "Wrong path";
 		try {
 			absPath = new File(
 					HelpGenerator

@@ -187,7 +187,7 @@ public class EatDrink extends Task {
 
 		else if (person.isInVehicle()) {
 			
-			checkVehicle(container, rh, hungry, thirsty, waterAmount);
+			checkVehicle(container, hungry, thirsty, waterAmount);
 		}
 
 		else {
@@ -229,7 +229,7 @@ public class EatDrink extends Task {
 		}
 	}
 	
-	private void checkVehicle(Unit container, ResourceHolder rh, boolean hungry, boolean thirsty, double waterAmount) {
+	private void checkVehicle(Unit container, boolean hungry, boolean thirsty, double waterAmount) {
 		 
 		if (UnitType.VEHICLE == container.getUnitType()) {
 			Vehicle vehicle = (Vehicle)container;
@@ -238,7 +238,7 @@ public class EatDrink extends Task {
 				// How to make a person walk out of vehicle back to settlement 
 				// if hunger is >500 ?
 				
-				rh = vehicle.getSettlement();
+				ResourceHolder rh = vehicle.getSettlement();
 
 				if (foodAmount == 0)
 					foodAmount = rh.getAmountResourceStored(FOOD_ID);
@@ -265,7 +265,7 @@ public class EatDrink extends Task {
 				}
 			}
 			else {
-				rh = (ResourceHolder) container;
+				ResourceHolder rh = (ResourceHolder) container;
 				if (foodAmount == 0)
 					foodAmount = rh.getAmountResourceStored(FOOD_ID);
 				if (waterAmount == 0)
@@ -1050,7 +1050,7 @@ public class EatDrink extends Task {
 				}
 				
 				// Case 2: See if the person needs to fill up the empty bottle
-				if (availableAmount == 0.0) {
+				if (availableAmount == 0.0 && containerUnit != null) {
 					// Retrieve the water from settlement/vehicle
 					double missing = ((ResourceHolder)containerUnit).retrieveAmountResource(WATER_ID, 1);
 					// Fill up the bottle with water
@@ -1061,18 +1061,20 @@ public class EatDrink extends Task {
 				}	
 			}
 			
-			int level = person.getAssociatedSettlement().getWaterRationLevel();
-			amount = Math.max(MIN, amount / level);
-			
-			// for either in settlement or vehicle
-			double available = getAmountResourceStored(containerUnit, WATER_ID);
-			// Test to see if there's enough water
-			if (available >= amount) {
-				consumeWater((ResourceHolder)containerUnit, amount, waterOnly);
-			}
-			else if (available > 0) {
-				amount = available;
-				consumeWater((ResourceHolder)containerUnit, amount, waterOnly);
+			if (containerUnit != null)  {
+				int level = person.getAssociatedSettlement().getWaterRationLevel();
+				amount = Math.max(MIN, amount / level);
+				
+				// for either in settlement or vehicle
+				double available = getAmountResourceStored(containerUnit, WATER_ID);
+				// Test to see if there's enough water
+				if (available >= amount) {
+					consumeWater((ResourceHolder)containerUnit, amount, waterOnly);
+				}
+				else if (available > 0) {
+					amount = available;
+					consumeWater((ResourceHolder)containerUnit, amount, waterOnly);
+				}
 			}
 		}
 	}

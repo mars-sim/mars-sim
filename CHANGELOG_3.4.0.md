@@ -5,14 +5,14 @@ Copyright (C) 2022 Scott Davis
 
 ------------------------------------------|---------------------
 
-## v3.4.0 (build 7553) - 2022-10-24
+## v3.4.0 (build 7556) - 2022-10-26
 
 ### ISSUES ADDRESSED :
 
 ### CORE ENGINE IMPROVEMENTS :
   <LI>Base Mass : Add base mass to all buildings, in preparation for calculating overall rocket payload mass. </LI>
   <LI> Building : Add building general info such as dimensions and mass. </LI>
-  <LI>Computing : Add computing function and skill. Track computing resource. </LI>
+  <LI>Computing : Add computing function and skill. Track computing resource usage. </LI>
   <LI>   Filter : New Settlement filter and Building tab to the Monitor Tool. </LI>
   <LI>Inventory : Replace with lightweight inventory for all units. Revamp the storage of resources/equipment and transfer of person/vehicle between locales.</LI>
   <LI>  Mission : Restructure and simplify handling of Mission.</LI>
@@ -45,6 +45,7 @@ Copyright (C) 2022 Scott Davis
   <LI>    Mission : Fix the mission selection. Correct Navigation tab.</LI>
   <LI> Settlement : Correct settlement selection in Monitor Tool. </LI>
   <LI>    Trading : Consider loading/unloading edge cases for Trading/Delivery. </LI>
+  <LI>  Transport : Correct handling of arriving settlement by transport manager.</LI>
   <LI>    Vehicle : Correct vehicle fuel calculation.</LI>
 
 

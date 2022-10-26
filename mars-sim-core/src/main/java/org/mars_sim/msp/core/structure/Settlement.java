@@ -3368,7 +3368,7 @@ public class Settlement extends Structure implements Temporal,
 		}
 
 		else {
-			result = reserve / pop;
+			result = 1.0 * reserve / pop ;
 		}
 
 		if (result < 0)
@@ -3421,7 +3421,7 @@ public class Settlement extends Structure implements Temporal,
 		// dangerously low,
 		else {
 			// no change to missionProbability
-			result = reserve / pop;
+			result = 1.0 * reserve / pop;
 		}
 		
 		if (result < 0)

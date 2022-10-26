@@ -704,7 +704,7 @@ public class PhysicalCondition implements Serializable {
 		} else if (kJoules > ENERGY_THRESHOLD / 8) {
 			kJoules += xdelta * 1.3;	
 		} else
-			kJoules = ENERGY_THRESHOLD / 8;
+			kJoules = ENERGY_THRESHOLD / 8.0;
 
 		circadian.eatFood(xdelta / 1000D);
 

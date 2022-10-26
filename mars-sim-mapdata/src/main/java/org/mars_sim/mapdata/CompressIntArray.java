@@ -102,41 +102,45 @@ public class CompressIntArray {
         byte[] data = ByteStreams.toByteArray(inputStream);
         
         
-        if (data != null)
+        if (data != null) {
         	System.out.println("The byte array has a length of " + data.length + ".");
+            // we determine cardinality
+            int[] answer = new int[data.length/2];//720*1440];
+            
+            for(int i = 0 ; i < answer.length; ++i) {
+    			// Combine the 2 bytes into a 16-bit number
+            	answer[i] =  (data[2*i] << 8) | (data[2*i+1] & 0xff);
+//    			if (i % WIDTH == 0) System.out.println();
+//    			System.out.print(elevation[i] + " " + buffer[0] + " " + buffer[1] + " " + el2[i]);
+    			i++;
+    		}
+    		
+//            int card = 0;
+//            for (int k = 0 ; k < data.length; ++k) {
+//                int bv = data[k] & 0xFF;
+//                card += Integer.bitCount(bv);
+//            }
+    //
+//            int pos = 0;
+//            for (int k = 0 ; k < data.length; ++k) {
+//                int bv = data[k] & 0xFF;
+//                for(int b = 0 ; b < 8; ++b)
+//                    if ( ( (bv >> b) & 1 ) == 1) {
+//                        answer[pos++] = b + k * 8;
+//                    }
+//            }
+//            
+//            if (pos != card) throw new RuntimeException("bug");
+            
+
+        	System.out.println("The int array has a length of " + answer.length + ".");
+        	
+            return answer;
+        }
         else
         	System.out.println("The byte array is null.");
-        // we determine cardinality
-        int[] answer = new int[data.length/2];//720*1440];
         
-        for(int i = 0 ; i < answer.length; ++i) {
-			// Combine the 2 bytes into a 16-bit number
-        	answer[i] =  (data[2*i] << 8) | (data[2*i+1] & 0xff);
-//			if (i % WIDTH == 0) System.out.println();
-//			System.out.print(elevation[i] + " " + buffer[0] + " " + buffer[1] + " " + el2[i]);
-			i++;
-		}
-		
-//        int card = 0;
-//        for (int k = 0 ; k < data.length; ++k) {
-//            int bv = data[k] & 0xFF;
-//            card += Integer.bitCount(bv);
-//        }
-//
-//        int pos = 0;
-//        for (int k = 0 ; k < data.length; ++k) {
-//            int bv = data[k] & 0xFF;
-//            for(int b = 0 ; b < 8; ++b)
-//                if ( ( (bv >> b) & 1 ) == 1) {
-//                    answer[pos++] = b + k * 8;
-//                }
-//        }
-//        
-//        if (pos != card) throw new RuntimeException("bug");
-      
-    	System.out.println("The int array has a length of " + answer.length + ".");
-    	
-        return answer;
+        return null;
     }
 
 	public void zipFile(File srcFile, File zipFile) throws IOException {
@@ -153,33 +157,33 @@ public class CompressIntArray {
 	}
     
     
-    public static void toZip(String filename) throws IOException {
-    	
-    	InputStream inputStream = MEGDRMapReader.class.getResourceAsStream(filename);
-//        byte[] data = ByteStreams.toByteArray(inputStream);
-    	
-    	String zipOutFile = filename.replace(".img", ".zip");
-    	
-    	System.out.println("zipOutFile: " + zipOutFile);
-    	
-        FileOutputStream fos = new FileOutputStream(zipOutFile);
-        ZipOutputStream zipOut = new ZipOutputStream(fos);
-        
-        File fileToZip = new File(inputStream.toString());
-   
-        FileInputStream fis = new FileInputStream(fileToZip);
-        
-        ZipEntry zipEntry = new ZipEntry(fileToZip.getName());
-        zipOut.putNextEntry(zipEntry);
-        byte[] bytes = new byte[1024];
-        int length;
-        while((length = fis.read(bytes)) >= 0) {
-            zipOut.write(bytes, 0, length);
-        }
-        zipOut.close();
-        fis.close();
-        fos.close();
-    }
+//    public static void toZip(String filename) throws IOException {
+//    	
+//    	InputStream inputStream = MEGDRMapReader.class.getResourceAsStream(filename);
+////        byte[] data = ByteStreams.toByteArray(inputStream);
+//    	
+//    	String zipOutFile = filename.replace(".img", ".zip");
+//    	
+//    	System.out.println("zipOutFile: " + zipOutFile);
+//    	
+//        FileOutputStream fos = new FileOutputStream(zipOutFile);
+//        ZipOutputStream zipOut = new ZipOutputStream(fos);
+//        
+//        File fileToZip = new File(inputStream.toString());
+//   
+//        FileInputStream fis = new FileInputStream(fileToZip);
+//        
+//        ZipEntry zipEntry = new ZipEntry(fileToZip.getName());
+//        zipOut.putNextEntry(zipEntry);
+//        byte[] bytes = new byte[1024];
+//        int length;
+//        while((length = fis.read(bytes)) >= 0) {
+//            zipOut.write(bytes, 0, length);
+//        }
+//        zipOut.close();
+//        fis.close();
+//        fos.close();
+//    }
     
     
     public static void zipStats(String filename) throws IOException {
@@ -193,30 +197,30 @@ public class CompressIntArray {
         if (data != null) {
         	System.out.println("The byte array has a length of " + data.length + ".");
 //        	System.out.println("The byte array: " + data);
+        	
+            File fileToZip = new File(inputStream.toString());
+            
+            long bef = System.nanoTime();
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ZipOutputStream zos = new ZipOutputStream(baos);
+            zos.setLevel(9);
+            ZipEntry entry = new ZipEntry(fileToZip.getName());//.toString().replace(".img", ".zip"));
+            entry.setSize(data.length);
+            zos.putNextEntry(entry);
+            zos.write(data);
+            zos.closeEntry();
+            zos.close();
+            
+            byte[] result = baos.toByteArray();
+            long aft = System.nanoTime();
+            
+            System.out.println("Zip encoding speed: " + data.length*1000.0/(aft-bef) + " million of bytes per second.");
+            System.out.println("Zip compression ratio at best level: " + data.length * 1.0 / result.length);
         }
         else
         	System.out.println("The byte array is null.");
         
         System.out.println("Trying to compress the original bitmap using zip...");
-
-        File fileToZip = new File(inputStream.toString());
-        
-        long bef = System.nanoTime();
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ZipOutputStream zos = new ZipOutputStream(baos);
-        zos.setLevel(9);
-        ZipEntry entry = new ZipEntry(fileToZip.getName());//.toString().replace(".img", ".zip"));
-        entry.setSize(data.length);
-        zos.putNextEntry(entry);
-        zos.write(data);
-        zos.closeEntry();
-        zos.close();
-        
-        byte[] result = baos.toByteArray();
-        long aft = System.nanoTime();
-        
-        System.out.println("Zip encoding speed: " + data.length*1000.0/(aft-bef) + " million of bytes per second.");
-        System.out.println("Zip compression ratio at best level: " + data.length * 1.0 / result.length);
     }
  
     public static byte[] readFileIntoByteArray(String filename) throws IOException {

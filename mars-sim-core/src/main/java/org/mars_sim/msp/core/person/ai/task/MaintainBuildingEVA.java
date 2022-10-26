@@ -135,6 +135,17 @@ implements Serializable {
 		if (checkReadiness(time, true) > 0)
 			return time;
 		
+
+		// Gets the building with the worst condition
+		if (entity == null) {
+			entity = getWorstBuilding();
+			
+			if (entity == null) {
+				checkLocation();
+				return 0;
+			}
+		}
+		
 		MalfunctionManager manager = entity.getMalfunctionManager();
 		boolean malfunction = manager.hasMalfunction();
 		boolean finishedMaintenance = (manager.getEffectiveTimeSinceLastMaintenance() < 1000D);
@@ -154,14 +165,6 @@ implements Serializable {
 		if (mechanicSkill > 1) {
 		    workTime += workTime * (.4D * mechanicSkill);
 		}
-
-		// Gets the building with the worst condition
-		if (entity == null) {
-			entity = getWorstBuilding();
-			String des = Msg.getString(DETAIL, entity.getName()); //$NON-NLS-1$
-			setDescription(des);
-			logger.info(worker, 4_000, des + ".");
-		}
 		
 		if (MaintainBuilding.hasMaintenanceParts(settlement, entity)) {
 			
@@ -177,18 +180,14 @@ implements Serializable {
 				manager.maintainWithParts(part, number - numMissing);
 			}
 			
-        }
-		else {
-			// Gets the building with the worst condition
-			entity = getWorstBuilding();
 			String des = Msg.getString(DETAIL, entity.getName()); //$NON-NLS-1$
 			setDescription(des);
 			logger.info(worker, 4_000, des + ".");
-		}
-		
-		if (entity == null) {
-			checkLocation();
-			return 0;
+			
+        }
+		else {
+			// Gets the new entity
+			entity = null;
 		}
 
         // Add work to the maintenance

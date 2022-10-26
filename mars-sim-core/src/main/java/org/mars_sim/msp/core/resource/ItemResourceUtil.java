@@ -213,14 +213,19 @@ public class ItemResourceUtil implements Serializable {
 	}
 
 	/**
-	 * Finds an amount resource by name.
+	 * Finds the id of the item resource by name.
 	 *
 	 * @param name the name of the resource.
 	 * @return resource
 	 * @throws ResourceException if resource could not be found.
 	 */
+	
 	public static Integer findIDbyItemResourceName(String name) {
-		return findItemResource(name).getID();
+		ItemResource ir = findItemResource(name);
+		if (ir != null)
+			return ir.getID();
+		
+		return 0;
 	}
 
 	public static Map<Integer, Double> removePartMap(Map<Integer, Double> parts, Set<Integer> unneeded) {
