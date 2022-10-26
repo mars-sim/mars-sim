@@ -80,7 +80,7 @@ public abstract class ProcessSpecConfig<T extends ProcessSpec> implements Serial
 			Integer id = ResourceUtil.findIDbyAmountResourceName(resourceName);
 			// Convert RATE [in kg/sol] to rate [in kg/millisol]
 			double rate = Double.parseDouble(inputElement.getAttributeValue(RATE)) / 1000.0;
-			boolean ambient = Boolean.parseBoolean(inputElement.getAttributeValue(AMBIENT));
+			boolean ambient = ConfigHelper.getOptionalAttributeBool(inputElement, AMBIENT, false);
 			process.addMaxInputResourceRate(id, rate, ambient);
 		}
 
@@ -91,7 +91,8 @@ public abstract class ProcessSpecConfig<T extends ProcessSpec> implements Serial
 			Integer id = ResourceUtil.findIDbyAmountResourceName(resourceName);
 			// Convert RATE [in kg/sol] to rate [in kg/millisol]
 			double rate = Double.parseDouble(outputElement.getAttributeValue(RATE)) / 1000.0;
-			boolean waste = Boolean.parseBoolean(outputElement.getAttributeValue(WASTE));
+			boolean waste = ConfigHelper.getOptionalAttributeBool(outputElement, WASTE, false);
+
 			process.addMaxOutputResourceRate(id, rate, waste);
 		}
 

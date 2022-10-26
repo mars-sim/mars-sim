@@ -118,7 +118,7 @@
 	<!ATTLIST heat-source consumption-rate CDATA #IMPLIED>
 	<!ELEMENT thermal-storage EMPTY>
 	<!ATTLIST thermal-storage capacity CDATA #REQUIRED>
-	<!ELEMENT waste-processing (process+, activity?)>
+	<!ELEMENT waste-processing (process-engine+, activity?)>
 	<!ATTLIST waste-processing power-down-level CDATA #REQUIRED>
 	<!ELEMENT preparing-dessert (activity?)>
 	<!ATTLIST preparing-dessert capacity CDATA #REQUIRED>
@@ -127,24 +127,6 @@
 	<!ATTLIST process-engine name CDATA #REQUIRED>
 	<!ATTLIST process-engine number-modules CDATA #IMPLIED>
 
-	<!ELEMENT process (description?, input+, output+)>
-	<!ATTLIST process name CDATA #REQUIRED>
-	<!ATTLIST process power-required CDATA #REQUIRED>
-	<!ATTLIST process default (on|off) #REQUIRED>
-	<!ATTLIST process toggle-duration CDATA #IMPLIED>
-	<!ATTLIST process toggle-periodicity CDATA #IMPLIED>
-	<!ATTLIST process number-modules CDATA #IMPLIED>
-	
-	<!ELEMENT input EMPTY>
-	<!ATTLIST input resource CDATA #REQUIRED>
-	<!ATTLIST input rate CDATA #REQUIRED>
-	<!ATTLIST input ambient (true|false) #REQUIRED>
-	
-	<!ELEMENT output EMPTY>
-	<!ATTLIST output resource CDATA #REQUIRED>
-	<!ATTLIST output rate CDATA #REQUIRED>
-	<!ATTLIST output ambient (true|false) #REQUIRED>
-	
 	<!ELEMENT storage (resource-storage*, resource-initial*)>
 	<!ATTLIST storage capacity CDATA #REQUIRED>
 	<!ELEMENT resource-storage EMPTY>
@@ -504,144 +486,15 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</thermal-generation>
 
 			<waste-processing power-down-level="0.0">
-
-			<!-- NASA's Regenerative ECLSS Water Recovery System (WRS)
-			consumes a time averaged 743 W-hr/hr in overall.
-
-			NASA's Waste Processing Assembly (WPA) removes free gas
-			and solid materials such as hair and lint, before the water
-			goes through a series of multifiltration beds for further
-			purification. It consumes about 320 W-hr/hr aboard ISS.
-
-			https://www.nasa.gov/centers/marshall/pdf/104840main_eclss.pdf
-			https://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/20090033097.pdf
-
-			It uses the state-of-the-art forward osmosis secondary treatment
-			system (FOST) as well as Synthetic Biological Membrane (SBM)
-			developed at NASA Ames.
-
-			We assume a waste processor capable of daily processsing
-			40 kg grey water (with .5 kg Cl2) and generate 38 kg clean
-			water and 2 kg of solid waste. Note that .5 kg of water is lost
-			through evaporation.
-			-->
 				<!-- Grey Water Recycling process for cleaning grey water. -->
-				<process name="Grey Water Processor" power-required=".32" default="off">
-					<!-- Input: grey water, oxygen, chlorine  -->
-					<!-- resource: the resource added to the process. -->
-					<!-- See resources.xml -->
-					<!-- rate: the rate (kg/sol) the resource is added -->
-					<!-- ambient: true if resource is freely available from outside -->
-					<!--          false if supplied from settlement's inventory. -->
-
-					<input resource="grey water" rate="40.0" ambient="false" />
-					<!-- Residual requirement for using chlorine in water treatment
-					     is 0.25 to 1 mg of Cl gas per kg of water. Thus 40 kg water
-					     requires 10 mg of Cl gas -->
-					<input resource="chlorine" rate=".00001" ambient="false" />
-
-					<!-- Output : clean water, solid waste -->
-					<!-- resource: the resource resulting from the process. -->
-					<!-- See resources.xml -->
-					<!-- rate: the rate (kg/sol) the resource is produced -->
-					<!-- ambient: true if resource is vented outside -->
-					<!--          false if kept by settlement's inventory. -->
-					<output resource="water" rate="38" ambient="false" />
-					<output resource="solid waste" rate="2" ambient="false" />
-				</process>
-
-				<!-- NASA's Urine Processor Assembly (UPA) uses low pressure
-				vacuum distillation process is used to recover water from
-		 		urine. The entire process occurs within a rotating
-				distillation assembly that compensates for the absence
-				of gravity and therefore aids in the separation of liquids
-				and gases in space.
-
-				UPA is designed to process a nominal load of 9 kg/day
-				(19.8 lbs/day) of wastewater consisting of urine and flush.
-				It uses a time average of 315 W-hr/hr
-
-				Product water from the Urine Processor is combined with
-				all other wastewaters and delivered to the Water Processor
-				for treatment.
-
-				We assume a urine/fece processor capable of daily processsing
-				20 kg black water and generate 17 kg grey water and
-				2 kg of toxic waste. There is a lost of 1 kg of water.
-				-->
-				<process name="Black Water Processor" power-required=".315" default="off">
-					<input resource="black water" rate="20" ambient="false" />
-					<!-- Residual requirement for using chlorine in water treatment
-					     is 0.25 to 1 mg of Cl gas per kg of water. Thus 20 kg water
-					     requires 20 mg of Cl gas -->
-					<input resource="chlorine" rate=".00002" ambient="false" />
-					<input resource="nitrospira spp" rate="0.02" ambient="false" />
-					<input resource="nitrosomonas spp" rate="0.02" ambient="false" />
-
-					<output resource="grey water" rate="17" ambient="false" />
-					<output resource="toxic waste" rate="1" ambient="false" />
-					<output resource="nitrogen" rate=".5" ambient="false" />
-					<output resource="nitrite" rate=".5" ambient="false" />
-					<output resource="nitrate" rate=".5" ambient="false" />
-					<output resource="phosphorus" rate=".5" ambient="false" />
-				</process>
-
-
-				<!-- For Waste Management
-				https://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/20160003882.pdf
-				http://www.nasa.gov/audience/foreducators/k-4/features/F_Recycling_for_Moon.html
-				-->
-				<process name= "Solid Waste Management" power-required=".2" default="off">
-					<input resource="solid waste" rate="10" ambient="false" />
-					<output resource="fertilizer" rate="1" ambient="false" />
-					<output resource="compost" rate="7" ambient="false" />
-					<output resource="carbon" rate="2" ambient="false" />
-				</process>				
-
-				<process name= "Food Waste Management" power-required=".2" default="off">
-					<input resource="food waste" rate="10" ambient="false" />
-					<output resource="fertilizer" rate="1" ambient="false" />					
-					<output resource="compost" rate="7" ambient="false" />
-					<output resource="carbon" rate="2" ambient="false" />					
-				</process>		
-
-				<process name= "Hazard Waste Incineration" power-required=".5" default="off">
-					<input resource="toxic waste" rate="10" ambient="false" />
-					<output resource="carbon" rate="10" ambient="false" />					
-				</process>		
-	
-				<process name= "Electronic Waste Disposal" power-required=".5" default="off">
-					<input resource="electronic waste" rate="10" ambient="false" />
-					<output resource="carbon" rate="10" ambient="false" />					
-				</process>
-
-				<process name= "Soil Generation" power-required=".1" default="off">
-					<input resource="crop waste" rate="5" ambient="false" />
-					<input resource="compost" rate="5" ambient="false" />
-					<output resource="soil" rate="10" ambient="false" />					
-				</process>
-																				
-				<!-- TODO: chemist can isolate these bacteria and grow them in the lab
-
-			 	Note 1: https://microbewiki.kenyon.edu/index.php/Nitrospira.
-
-				Nitrospira are nitrite-oxidizing bacteria that are important
-				for healthy marine ecosystems/habitats and find their use in wastewater treatment plants.
-				If the ammonia/nitrite/nitrate cycle is thrown off, the ecosystems suffers and fish can get sick or die.
-
-				Note 2: http://www.dep.state.fl.us/legal/Rules/drinkingwater/62-555.pdf
-
-				All suppliers of water shall maintain a minimum free chlorine residual of 0.2 milligram per liter,
-
-				The precursor technology is based on an experimental device
-				being researched in by NASA called Vortical Oxidative Reactor
-				Technology Experiment (VORTEX).
-
-				Burning, or oxidizing, organic waste would produce four major
-				by-products: ash, carbon dioxide, water and heat. Ash can be
-				converted to fertilizer for farming.
-				-->
-				
+				<process-engine name="Grey Water Processor"/>
+				<process-engine name="Black Water Processor"/>
+				<process-engine name= "Solid Waste Management"/>
+				<process-engine name= "Food Waste Management"/>
+				<process-engine name= "Hazard Waste Incineration"/>
+				<process-engine name= "Electronic Waste Disposal"/>
+				<process-engine name= "Soil Generation"/>
+		
 				<activity>
 					<activity-spot xloc="-1.38" yloc="-3.36" />
 					<activity-spot xloc="-1.92" yloc="-3.11" />
@@ -1206,62 +1059,13 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</storage>
 			
 			<waste-processing power-down-level="0.0">
-			    <!-- The grey water processor below is 3 times more powerful
-			         than the one fund in Lander Hab or Outpost Hub  -->
-				<process name="Grey Water Processor" power-required="1" default="off">
-					<input resource="grey water" rate="120.0" ambient="false" />
-					<input resource="chlorine" rate="1.5" ambient="false" />
-
-					<output resource="water" rate="114" ambient="false" />
-					<output resource="solid waste" rate="6" ambient="false" />
-				</process>
-				<!-- The black water processor below is 3 times more powerful
-				     than the one found in Lander Hab or Outpost Hub  -->
-				<process name="Black Water Processor" power-required="0.8" default="off">
-					<input resource="black water" rate="60" ambient="false" />
-					<input resource="chlorine" rate="0.3" ambient="false" />
-					<input resource="nitrospira spp" rate="0.06" ambient="false" />
-					<input resource="nitrosomonas spp" rate="0.06" ambient="false" />
-
-					<output resource="grey water" rate="51" ambient="false" />
-					<output resource="toxic waste" rate="3" ambient="false" />
-					<output resource="nitrogen" rate="1.5" ambient="false" />
-					<output resource="nitrite" rate="1.5" ambient="false" />
-					<output resource="nitrate" rate="1.5" ambient="false" />
-					<output resource="phosphorus" rate="1.5" ambient="false" />
-				</process>
-
-				<!-- The Solid Waste Management below is 4 times more powerful
-				     than the one found in Lander Hab or Outpost Hub  -->
-				<process name= "Solid Waste Management" power-required=".6" default="off">
-					<input resource="solid waste" rate="40" ambient="false" />
-					<output resource="fertilizer" rate="4" ambient="false" />
-					<output resource="compost" rate="28" ambient="false" />
-					<output resource="carbon" rate="8" ambient="false" />
-				</process>				
-
-				<process name= "Food Waste Management" power-required=".6" default="off">
-					<input resource="food waste" rate="40" ambient="false" />
-					<output resource="fertilizer" rate="4" ambient="false" />					
-					<output resource="compost" rate="28" ambient="false" />
-					<output resource="carbon" rate="8" ambient="false" />					
-				</process>		
-
-				<process name= "Hazard Waste Incineration" power-required="1.5" default="off">
-					<input resource="toxic waste" rate="40" ambient="false" />
-					<output resource="carbon" rate="40" ambient="false" />					
-				</process>		
-	
-				<process name= "Electronic Waste Disposal" power-required="1.5" default="off">
-					<input resource="electronic waste" rate="40" ambient="false" />
-					<output resource="carbon" rate="40" ambient="false" />					
-				</process>
-				
-				<process name= "Soil Generation" power-required=".3" default="off">
-					<input resource="crop waste" rate="20" ambient="false" />
-					<input resource="compost" rate="20" ambient="false" />
-					<output resource="soil" rate="40" ambient="false" />					
-				</process>
+				<process-engine name="Grey Water Processor"  number-modules="3"/>
+				<process-engine name="Black Water Processor" number-modules="3"/>
+				<process-engine name= "Solid Waste Management" number-modules="3"/>
+				<process-engine name= "Food Waste Management" number-modules="4"/>
+				<process-engine name= "Hazard Waste Incineration" number-modules="4"/>
+				<process-engine name= "Electronic Waste Disposal"  number-modules="3"/>
+				<process-engine name= "Soil Generation" number-modules="3"/>
 								
 			</waste-processing>
 						
@@ -2794,58 +2598,13 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</thermal-generation>
 
 			<waste-processing power-down-level="0.0">
-				<process name="Grey Water Processor" power-required=".32" default="off">
-					<input resource="grey water" rate="40.0" ambient="false" />
-					<input resource="chlorine" rate="0.5" ambient="false" />
-
-					<output resource="water" rate="38" ambient="false" />
-					<output resource="solid waste" rate="2" ambient="false" />
-
-				</process>
-					<process name="Black Water Processor" power-required=".315" default="off">
-					<input resource="black water" rate="20" ambient="false" />
-					<input resource="chlorine" rate="0.1" ambient="false" />
-					<input resource="nitrospira spp" rate="0.02" ambient="false" />
-					<input resource="nitrosomonas spp" rate="0.02" ambient="false" />
-
-					<output resource="grey water" rate="17" ambient="false" />
-					<output resource="toxic waste" rate="1" ambient="false" />
-					<output resource="nitrogen" rate=".5" ambient="false" />
-					<output resource="nitrite" rate=".5" ambient="false" />
-					<output resource="nitrate" rate=".5" ambient="false" />
-					<output resource="phosphorus" rate=".5" ambient="false" />
-				</process>
-
-				<process name= "Solid Waste Management" power-required=".2" default="off">
-					<input resource="solid waste" rate="10" ambient="false" />
-					<output resource="fertilizer" rate="1" ambient="false" />
-					<output resource="compost" rate="7" ambient="false" />
-					<output resource="carbon" rate="2" ambient="false" />
-				</process>				
-
-				<process name= "Food Waste Management" power-required=".2" default="off">
-					<input resource="food waste" rate="10" ambient="false" />
-					<output resource="fertilizer" rate="1" ambient="false" />					
-					<output resource="compost" rate="7" ambient="false" />
-					<output resource="carbon" rate="2" ambient="false" />					
-				</process>		
-
-				<process name= "Hazard Waste Incineration" power-required=".5" default="off">
-					<input resource="toxic waste" rate="10" ambient="false" />
-					<output resource="carbon" rate="10" ambient="false" />					
-				</process>		
-	
-				<process name= "Electronic Waste Disposal" power-required=".5" default="off">
-					<input resource="electronic waste" rate="10" ambient="false" />
-					<output resource="carbon" rate="10" ambient="false" />					
-				</process>
-
-				<process name= "Soil Generation" power-required=".1" default="off">
-					<input resource="crop waste" rate="5" ambient="false" />
-					<input resource="compost" rate="5" ambient="false" />
-					<output resource="soil" rate="10" ambient="false" />					
-				</process>
-				
+				<process-engine name="Grey Water Processor"/>
+				<process-engine name="Black Water Processor"/>
+				<process-engine name= "Solid Waste Management"/>
+				<process-engine name= "Food Waste Management"/>
+				<process-engine name= "Hazard Waste Incineration"/>
+				<process-engine name= "Electronic Waste Disposal"/>
+				<process-engine name= "Soil Generation"/>
 			</waste-processing>			
 			
 		</functions>

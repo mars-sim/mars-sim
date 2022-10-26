@@ -8,6 +8,7 @@ package org.mars_sim.msp.core.structure.building;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
+import org.mars_sim.msp.core.configuration.ConfigHelper;
 import org.mars_sim.msp.core.process.ProcessSpecConfig;
 
 /**
@@ -15,7 +16,7 @@ import org.mars_sim.msp.core.process.ProcessSpecConfig;
  */
 public class ResourceProcessConfig extends ProcessSpecConfig<ResourceProcessSpec> {
 
-    private static final String DEFAULT = "default";
+    private static final String DEFAULT = "defaultOn";
 
     public ResourceProcessConfig(Document processDoc) {
         super(processDoc);
@@ -26,7 +27,7 @@ public class ResourceProcessConfig extends ProcessSpecConfig<ResourceProcessSpec
             int processTime, int workTime) {
 
         String defaultString = processElement.getAttributeValue(DEFAULT);
-        boolean defaultOn = (defaultString != null) && defaultString.equalsIgnoreCase("on");
+        boolean defaultOn = ConfigHelper.getOptionalAttributeBool(processElement, DEFAULT, false);
     
         return new ResourceProcessSpec(name, powerRequired, processTime, workTime, defaultOn);
     }

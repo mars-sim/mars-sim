@@ -7,14 +7,12 @@
 package org.mars_sim.msp.core.structure.building.function;
 
 import java.io.Serializable;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.WasteProcessSpec;
+import org.mars_sim.msp.core.structure.building.ResourceProcessEngine;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
 
@@ -49,7 +47,7 @@ public class WasteProcess implements Serializable {
 
 	private int[] timeLimit = new int[] {1, 0};
 
-	private WasteProcessSpec definition;
+	private ResourceProcessEngine definition;
 
 	private static MarsClock marsClock;
 
@@ -61,11 +59,11 @@ public class WasteProcess implements Serializable {
 	 * @param defaultOn     true of process is on by default, false if off by
 	 *                      default.
 	 */
-	public WasteProcess(WasteProcessSpec spec) {
-		this.name = spec.getName();
-		runningProcess = spec.getDefaultOn();
+	public WasteProcess(ResourceProcessEngine wspec) {
+		this.name = wspec.getName();
+		runningProcess = wspec.getDefaultOn();
 		currentProductionLevel = 1D;
-		this.definition = spec;
+		this.definition = wspec;
 
 		// Assume it is the start of time
 		resetToggleTime(1, 0);
@@ -133,7 +131,7 @@ public class WasteProcess implements Serializable {
 	 */
 	public boolean addToggleWorkTime(double time) {
 		toggleRunningWorkTime += time;
-		if (toggleRunningWorkTime >= definition.getToggleDuration()) {
+		if (toggleRunningWorkTime >= definition.getWorkTime()) {
 			toggleRunningWorkTime = 0D;
 			
 			runningProcess = !runningProcess;
@@ -227,17 +225,12 @@ public class WasteProcess implements Serializable {
 			if (accumulatedTime >= newCheckPeriod) {
 				// Compute the remaining accumulatedTime
 				accumulatedTime -= newCheckPeriod;
-//				logger.info(settlement, 30_000, name + "  pulse width: " + Math.round(time * 10000.0)/10000.0 
-//						+ "  accumulatedTime: " + Math.round(accumulatedTime * 100.0)/100.0 
-//						+ "  processInterval: " + processInterval);
 	
 				double bottleneck = 1D;
 
 				// Input resources from inventory.
-				Map<Integer, Double> maxInputResourceRates = definition.getMaxInputRates();
-				for (Entry<Integer, Double> input : maxInputResourceRates.entrySet()) {
-					Integer resource = input.getKey();
-					double maxRate = input.getValue();
+				for(Integer resource : definition.getInputResources()) {
+					double maxRate = definition.getMaxInputRate(resource);
 					double resourceRate = maxRate * level;
 					double required = resourceRate * accumulatedTime;
 					double stored = settlement.getAmountResourceStored(resource);
@@ -280,10 +273,8 @@ public class WasteProcess implements Serializable {
 					level = bottleneck;
 				
 				// Output resources to inventory.
-				Map<Integer, Double> maxOutputResourceRates = definition.getMaxOutputRates();
-				for (Entry<Integer, Double> output : maxOutputResourceRates.entrySet()) {
-					Integer resource = output.getKey();
-					double maxRate = output.getValue();
+				for(Integer resource : definition.getOutputResources()) {
+					double maxRate = definition.getMaxOutputRate(resource);
 					double resourceRate = maxRate * level;
 					double required = resourceRate * accumulatedTime;
 					double remainingCap = settlement.getAmountResourceRemainingCapacity(resource);
@@ -383,7 +374,7 @@ public class WasteProcess implements Serializable {
 	 */
 	private void resetToggleTime(int sol, int millisols) {
 		// Compute the time limit
-		millisols += definition.getTogglePeriodicity();
+		millisols += definition.getProcessTime();
 		if (millisols >= 1000) {
 			millisols = millisols - 1000;
 			sol = sol + 1;
@@ -399,7 +390,7 @@ public class WasteProcess implements Serializable {
 	 * @return
 	 */
 	public double[] getToggleSwitchDuration() {
-		return new double[] {toggleRunningWorkTime, definition.getToggleDuration()};
+		return new double[] {toggleRunningWorkTime, definition.getWorkTime()};
 	}
 
 }

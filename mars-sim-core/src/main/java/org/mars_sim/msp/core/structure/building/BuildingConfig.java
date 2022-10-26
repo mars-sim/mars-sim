@@ -65,17 +65,8 @@ public class BuildingConfig implements Serializable {
 
 	private static final String BASE_POWER = "base-power";
 	private static final String BASE_POWER_DOWN_POWER = "base-power-down-power";
-
-	private static final String DEFAULT = "default";
 	
 	private static final String PROCESS_ENGINE = "process-engine";
-	private static final String PROCESS = "process";
-	private static final String INPUT = "input";
-	private static final String OUTPUT = "output";
-	private static final String TOGGLE_PERIODICITY = "toggle-periodicity";
-	private static final String TOGGLE_DURATION = "toggle-duration";
-	private static final String RATE = "rate";
-	private static final String AMBIENT = "ambient";
 	private static final String STORAGE = "storage";
 	private static final String RESOURCE_STORAGE = "resource-storage";
 	private static final String RESOURCE_INITIAL = "resource-initial";
@@ -238,12 +229,12 @@ public class BuildingConfig implements Serializable {
 
 		Element resourceProcessingElement = functionsElement.getChild(RESOURCE_PROCESSING);
 		if (resourceProcessingElement != null) {
-			parseResourceProcessing(resProcConfig, newSpec, resourceProcessingElement);
+			newSpec.setResourceProcess(parseResourceProcessing(resProcConfig, resourceProcessingElement));
 		}
 
 		Element wasteProcessingElement = functionsElement.getChild(WASTE_PROCESSING);
 		if (wasteProcessingElement != null) {
-			parseWasteProcessing(newSpec, wasteProcessingElement);
+			newSpec.setWasteProcess(parseResourceProcessing(resProcConfig, wasteProcessingElement));
 		}
 
 		Element vehicleElement = functionsElement.getChild(VEHICLE_MAINTENANCE);
@@ -368,12 +359,12 @@ public class BuildingConfig implements Serializable {
 	}
 
 	/**
-	 * Parses the specific Resource processing function details.
+	 * Parses the specific Resource processing process-engine nodes and create a list of ResourceProcessingEngine
 	 * 
-	 * @param newSpec
 	 * @param resourceProcessingElement
+	 * @return 
 	 */
-	private void parseResourceProcessing(ResourceProcessConfig resProcConfig, BuildingSpec newSpec,
+	private List<ResourceProcessEngine> parseResourceProcessing(ResourceProcessConfig resProcConfig,
 										 Element resourceProcessingElement) {
 		List<ResourceProcessEngine> resourceProcesses = new ArrayList<>();
 
@@ -384,72 +375,8 @@ public class BuildingConfig implements Serializable {
 			int modules = ConfigHelper.getOptionalAttributeInt(processElement, NUMBER_MODULES, 1);
 			resourceProcesses.add(new ResourceProcessEngine(resProcConfig.getProcessSpec(name), modules));
 		}
-		newSpec.setResourceProcess(resourceProcesses);
-	}
 
-	/**
-	 * Parses the specific Waste processing function details.
-	 * 
-	 * @param newSpec
-	 * @param wasteProcessingElement
-	 */
-	private void parseWasteProcessing(BuildingSpec newSpec, Element wasteProcessingElement) {
-		List<WasteProcessSpec> processes = new ArrayList<>();
-
-		List<Element> processNodes = wasteProcessingElement.getChildren(PROCESS);
-
-		for (Element processElement : processNodes) {
-
-			String defaultString = processElement.getAttributeValue(DEFAULT);
-			boolean defaultOn = !defaultString.equals("off");
-
-            double powerRequired = Double.parseDouble(processElement.getAttributeValue(POWER_REQUIRED));
-
-            int modules = 1;
-
-            String mods = processElement.getAttributeValue(NUMBER_MODULES);
-
-            if (mods != null)
-            	modules = Integer.parseInt(mods);
-
-			WasteProcessSpec process = new WasteProcessSpec(processElement.getAttributeValue(NAME), modules, powerRequired,
-					defaultOn);
-
-			// Check optional attrs
-			String duration = processElement.getAttributeValue(TOGGLE_DURATION);
-			if (duration != null) {
-				process.setToggleDuration(Integer.parseInt(duration));
-			}
-			String periodicity = processElement.getAttributeValue(TOGGLE_PERIODICITY);
-			if (periodicity != null) {
-				process.setTogglePeriodicity(Integer.parseInt(periodicity));
-			}
-
-			// Get input resources.
-			List<Element> inputNodes = processElement.getChildren(INPUT);
-			for (Element inputElement : inputNodes) {
-				String resourceName = inputElement.getAttributeValue(RESOURCE);
-				Integer id = ResourceUtil.findIDbyAmountResourceName(resourceName);
-				// Convert RATE [in kg/sol] to rate [in kg/millisol]
-				double rate = Double.parseDouble(inputElement.getAttributeValue(RATE)) / 1000D;
-				boolean ambient = Boolean.parseBoolean(inputElement.getAttributeValue(AMBIENT));
-				process.addMaxInputRate(id, rate, ambient);
-			}
-
-			// Get output resources.
-			List<Element> outputNodes = processElement.getChildren(OUTPUT);
-			for (Element outputElement : outputNodes) {
-				String resourceName = outputElement.getAttributeValue(RESOURCE);
-				Integer id = ResourceUtil.findIDbyAmountResourceName(resourceName);
-				// Convert RATE [in kg/sol] to rate [in kg/millisol]
-				double rate = Double.parseDouble(outputElement.getAttributeValue(RATE)) / 1000D;
-				boolean ambient = Boolean.parseBoolean(outputElement.getAttributeValue(AMBIENT));
-				process.addMaxOutputRate(id, rate, ambient);
-			}
-
-			processes.add(process);
-		}
-		newSpec.setWasteProcess(processes);
+		return resourceProcesses;
 	}
 	
 	/**
@@ -628,7 +555,7 @@ public class BuildingConfig implements Serializable {
 	 * @return a list of waste processes.
 	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
-	public List<WasteProcessSpec> getWasteProcesses(String buildingType) {
+	public List<ResourceProcessEngine> getWasteProcesses(String buildingType) {
 		return getBuildingSpec(buildingType).getWasteProcess();
 	}
 
@@ -637,7 +564,7 @@ public class BuildingConfig implements Serializable {
 	 *
 	 * @param buildingType the type of the building.
 	 * @return list of storage capacities
-	 * @throws Exception if building type cannot be found or XML parsing error.
+	 * @thrList<ResourceProcessEngine>ing type cannot be found or XML parsing error.
 	 */
 	public Map<Integer, Double> getStorageCapacities(String buildingType) {
 		return getBuildingSpec(buildingType).getStorage();
