@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="https://maven.apache.org/POM/4.0.0" xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://maven.apache.org/POM/4.0.0 https://maven.apache.org/maven-v4_0_0.xsd">
 	<!-- ************************************************************************************************* -->
 	<!-- * General Section * -->
 	<!-- ************************************************************************************************* -->
@@ -20,7 +20,7 @@
         <junit.version>4.13.2</junit.version>
 		<timestamp>${maven.build.timestamp}</timestamp>
 		<maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
-		<!-- Set file encoding to UTF-8. See http://stackoverflow.com/questions/3017695/how-to-configure-encoding-in-maven#3018152 -->
+		<!-- Set file encoding to UTF-8. See https://stackoverflow.com/questions/3017695/how-to-configure-encoding-in-maven#3018152 -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<libgdx.version>1.10.0</libgdx.version>
@@ -353,7 +353,7 @@
 	<repositories>
 		<repository>
 	        <id>maven-central-repo</id>
-	        <url>http://repo1.maven.org/maven2</url>
+	        <url>https://repo1.maven.org/maven2</url>
 	        <releases>
                 <enabled>true</enabled>
             </releases>
