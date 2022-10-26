@@ -119,7 +119,7 @@
 		<module>mars-sim-console</module>
 		<module>mars-sim-main</module>
 		<module>mars-sim-headless</module>
-		<module>mars-sim-base</module>
+		<!--module>mars-sim-base</module-->
 	</modules>
   
 	<!-- ************************************************************************************************* -->
