@@ -46,35 +46,36 @@ public class CompressIntArray {
         
         int[] data = null;
 		try {
-//			zipStats(filename);
 			data = fromBitsetFileToArray(filename);
 			
-	        System.out.println("Compressing " + data.length + " integers...");
-	        
-	        int[] compressed = iic.compress(data);
-	        int[] recov = iic.uncompress(compressed);
-	        
-	        System.out.println("Compressing " + data.length*4/1024 + " KB to " + compressed.length*4/1024 + " KB.");
-	        System.out.println("Recovering back to " + recov.length*4/1024 + " KB.");
-	        System.out.println("Ratio: " + Math.round(data.length*1.0/compressed.length));
-
-	        if(!Arrays.equals(recov,data)) throw new RuntimeException("Warning: Bug(s) encountered.");
-
-	        long bef,aft;
-	        bef = System.nanoTime();
-	        recov = iic.uncompress(compressed);
-	        aft = System.nanoTime();
-
-	        System.out.println("Decoding speed: " + Math.round(data.length*1000.0/(aft-bef)) + " millions of integers per second.");
-
-	        bef = System.nanoTime();
-	        compressed = iic.compress(data);
-	        aft = System.nanoTime();
-
-	        System.out.println("Encoding speed: " + Math.round(data.length*1000.0/(aft-bef)) + " millions of integers per second.");
-	        System.out.println("Note: with a bit of effort, speed can be much higher.");
-	        System.out.println();
-	        
+			if (data != null && data != new int[0]) {
+		        System.out.println("Compressing " + data.length + " integers...");
+		        
+		        int[] compressed = iic.compress(data);
+		        int[] recov = iic.uncompress(compressed);
+		        
+		        System.out.println("Compressing " + data.length*4/1024 + " KB to " + compressed.length*4/1024 + " KB.");
+		        System.out.println("Recovering back to " + recov.length*4/1024 + " KB.");
+		        System.out.println("Ratio: " + Math.round(data.length*1.0/compressed.length));
+	
+		        if(!Arrays.equals(recov,data)) throw new RuntimeException("Warning: Bug(s) encountered.");
+	
+		        long bef,aft;
+		        bef = System.nanoTime();
+		        recov = iic.uncompress(compressed);
+		        aft = System.nanoTime();
+	
+		        System.out.println("Decoding speed: " + Math.round(data.length*1000.0/(aft-bef)) + " millions of integers per second.");
+	
+		        bef = System.nanoTime();
+		        compressed = iic.compress(data);
+		        aft = System.nanoTime();
+	
+		        System.out.println("Encoding speed: " + Math.round(data.length*1000.0/(aft-bef)) + " millions of integers per second.");
+		        System.out.println("Note: with a bit of effort, speed can be much higher.");
+		        System.out.println();
+			}
+			
 	        ////////////////////////////////////////////
 	        
 	        
@@ -93,11 +94,6 @@ public class CompressIntArray {
     }
 
     public static int[] fromBitsetFileToArray(String filename) throws IOException {
-//        Path path = Paths.get(filename);
-//        System.out.println("path: " + path);
-//        byte[] data = Files.readAllBytes(path);
-//        byte[] data = readFileIntoByteArray(filename);
-    	
     	InputStream inputStream = MEGDRMapReader.class.getResourceAsStream(filename);
         byte[] data = ByteStreams.toByteArray(inputStream);
         
@@ -140,7 +136,7 @@ public class CompressIntArray {
         else
         	System.out.println("The byte array is null.");
         
-        return null;
+        return new int[0];
     }
 
 	public void zipFile(File srcFile, File zipFile) throws IOException {
@@ -157,47 +153,13 @@ public class CompressIntArray {
 	}
     
     
-//    public static void toZip(String filename) throws IOException {
-//    	
-//    	InputStream inputStream = MEGDRMapReader.class.getResourceAsStream(filename);
-////        byte[] data = ByteStreams.toByteArray(inputStream);
-//    	
-//    	String zipOutFile = filename.replace(".img", ".zip");
-//    	
-//    	System.out.println("zipOutFile: " + zipOutFile);
-//    	
-//        FileOutputStream fos = new FileOutputStream(zipOutFile);
-//        ZipOutputStream zipOut = new ZipOutputStream(fos);
-//        
-//        File fileToZip = new File(inputStream.toString());
-//   
-//        FileInputStream fis = new FileInputStream(fileToZip);
-//        
-//        ZipEntry zipEntry = new ZipEntry(fileToZip.getName());
-//        zipOut.putNextEntry(zipEntry);
-//        byte[] bytes = new byte[1024];
-//        int length;
-//        while((length = fis.read(bytes)) >= 0) {
-//            zipOut.write(bytes, 0, length);
-//        }
-//        zipOut.close();
-//        fis.close();
-//        fos.close();
-//    }
-    
-    
-    public static void zipStats(String filename) throws IOException {
-//        Path path = Paths.get(filename);
-//        byte[] data = Files.readAllBytes(path);
-//        byte[] data = readFileIntoByteArray(filename);
-        
+    public static void zipStats(String filename) throws IOException {     
     	InputStream inputStream = MEGDRMapReader.class.getResourceAsStream(filename);
         byte[] data = ByteStreams.toByteArray(inputStream);
         
         if (data != null) {
         	System.out.println("The byte array has a length of " + data.length + ".");
-//        	System.out.println("The byte array: " + data);
-        	
+       	
             File fileToZip = new File(inputStream.toString());
             
             long bef = System.nanoTime();

@@ -625,27 +625,27 @@ public class PhysicalCondition implements Serializable {
 			kJoules = 250;
 		}
 		else if (kJoules < 500) {
-			kJoules -= xdelta * .4;
+			kJoules -= xdelta * .2;
 		} else if (kJoules < 1000) {
-			kJoules -= xdelta * .45;
+			kJoules -= xdelta * .25;
 		} else if (kJoules < 3000) {
-			kJoules -= xdelta * .5;
+			kJoules -= xdelta * .3;
 		} else if (kJoules < 5000) {
-			kJoules -= xdelta * .55;
+			kJoules -= xdelta * .35;
 		} else if (kJoules < 7000) {
-			kJoules -= xdelta * .6;
+			kJoules -= xdelta * .4;
 		} else if (kJoules < 9000) {
-			kJoules -= xdelta * .65;
+			kJoules -= xdelta * .45;
 		} else if (kJoules < 11000) {
-			kJoules -= xdelta * .7;
+			kJoules -= xdelta * .5;
 		} else if (kJoules < 13000) {
-			kJoules -= xdelta * .75;
+			kJoules -= xdelta * .55;
 		} else if (kJoules < 15000) {
-			kJoules -= xdelta * .8;			
+			kJoules -= xdelta * .6;			
 		} else if (kJoules < 17000) {
-			kJoules -= xdelta * .85;	
+			kJoules -= xdelta * .65;	
 		} else
-			kJoules -= xdelta * .9;
+			kJoules -= xdelta * .7;
 
 		person.fireUnitUpdate(UnitEventType.HUNGER_EVENT);
 	}

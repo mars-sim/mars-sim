@@ -104,7 +104,7 @@ public class PersonTaskManager extends TaskManager {
 					if (person.isOutside()) {
 						// Take more energy to be in EVA doing work
 						// Future: should also consider skill level and strength and body weight
-						reduceEnergy(energyTime * 1.5);
+						reduceEnergy(energyTime * 1.25);
 					} else {
 						// Expend nominal energy based on activity.
 						reduceEnergy(energyTime);

@@ -452,7 +452,7 @@ public class CircadianClock implements Serializable {
 		awake = value;
 	}
 
-	/***
+	/**
 	 * Eats food to regulate hormones
 	 * 
 	 * @param time

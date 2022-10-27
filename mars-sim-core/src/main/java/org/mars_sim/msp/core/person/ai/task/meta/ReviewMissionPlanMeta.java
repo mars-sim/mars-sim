@@ -35,7 +35,7 @@ public class ReviewMissionPlanMeta extends MetaTask {
     
     private static final int PENALTY_FACTOR = 2;
     
-    private static final int VALUE = 500;
+    private static final double VALUE = 500.0;
     
     public ReviewMissionPlanMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
@@ -93,7 +93,7 @@ public class ReviewMissionPlanMeta extends MetaTask {
                     int sol = marsClock.getMissionSol();
                     int solRequest = m.getPlan().getMissionSol();
 
-                    double diff = sol - solRequest;
+                    int diff = sol - solRequest;
                     
                     boolean valid = mp.isReviewerValid(reviewedBy, pop);
                 	// Check if this reviewer has already exceeded the max # of reviews allowed
@@ -107,7 +107,7 @@ public class ReviewMissionPlanMeta extends MetaTask {
 							result += 800;
 						}
 						else {
-							result += (sol - solRequest) * 100;
+							result += (sol - solRequest) * 100.0;
 						}
 					}
                 }
