@@ -6,6 +6,7 @@
  */
 package org.mars_sim.msp.core.structure.building;
 
+import java.io.Serializable;
 import java.util.Set;
 
 /**
@@ -13,7 +14,10 @@ import java.util.Set;
  * a number of modules. The oinput, output and power of the processSpec is multiplied by the number of modules.
  * It is a shared configuration entity.
  */
-public class ResourceProcessEngine {
+public class ResourceProcessEngine implements Serializable {
+
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
     private int modules;
     private ResourceProcessSpec processSpec;
