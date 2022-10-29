@@ -13,7 +13,7 @@ import org.mars.sim.console.chat.simcommand.StructuredResponse;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
-import org.mars_sim.msp.core.structure.building.function.WasteProcess;
+import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
 import org.mars_sim.msp.core.structure.building.function.WasteProcessing;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MarsClockFormat;
@@ -46,7 +46,7 @@ public class WasteProcessCommand extends AbstractSettlementCommand {
 			String bName = building.getName();
 			WasteProcessing processor = building.getWasteProcessing();
 		
-			for(WasteProcess p : processor.getProcesses()) {
+			for(ResourceProcess p : processor.getProcesses()) {
 				int[] remainingTime = p.getTimeLimit();
 				int remainingMilliSol = ((remainingTime[0] * 1000) + remainingTime[1]) - missionMilliSol;
 

@@ -31,7 +31,7 @@ public class WasteProcessing extends Function {
 
 	private double powerDownProcessingLevel;
 
-	private List<WasteProcess> wasteProcesses;
+	private List<ResourceProcess> wasteProcesses;
 
 	/**
 	 * Constructor.
@@ -45,7 +45,7 @@ public class WasteProcessing extends Function {
 		powerDownProcessingLevel = spec.getDoubleProperty(POWER_DOWN_LEVEL);
 		wasteProcesses = new ArrayList<>();
 		for (ResourceProcessEngine wspec : buildingConfig.getWasteProcesses(building.getBuildingType())) {
-			wasteProcesses.add(new WasteProcess(wspec));
+			wasteProcesses.add(new ResourceProcess(wspec));
 		}
 	}
 
@@ -114,7 +114,7 @@ public class WasteProcessing extends Function {
 	 *
 	 * @return list of processes.
 	 */
-	public List<WasteProcess> getProcesses() {
+	public List<ResourceProcess> getProcesses() {
 		return wasteProcesses;
 	}
 
@@ -144,9 +144,8 @@ public class WasteProcessing extends Function {
 			else if (getBuilding().getPowerMode() == PowerMode.POWER_DOWN)
 				productionLevel = powerDownProcessingLevel;
 			// Run each resource process.
-			Iterator<WasteProcess> i = wasteProcesses.iterator();
-			while (i.hasNext()) {
-				i.next().processResources(pulse, productionLevel, getBuilding().getSettlement());
+			for(ResourceProcess p : wasteProcesses) {
+				p.processResources(pulse, productionLevel, getBuilding().getSettlement());
 			}
 		}
 		return valid;
@@ -160,9 +159,7 @@ public class WasteProcessing extends Function {
 	@Override
 	public double getFullPowerRequired() {
 		double result = 0D;
-		Iterator<WasteProcess> i = wasteProcesses.iterator();
-		while (i.hasNext()) {
-			WasteProcess process = i.next();
+		for(ResourceProcess process : wasteProcesses) {
 			if (process.isProcessRunning()) {
 				result += process.getPowerRequired();
 			}
@@ -178,9 +175,7 @@ public class WasteProcessing extends Function {
 	@Override
 	public double getPoweredDownPowerRequired() {
 		double result = 0D;
-		Iterator<WasteProcess> i = wasteProcesses.iterator();
-		while (i.hasNext()) {
-			WasteProcess process = i.next();
+		for(ResourceProcess process : wasteProcesses) {
 			if (process.isProcessRunning()) {
 				result += process.getPowerRequired();
 			}
