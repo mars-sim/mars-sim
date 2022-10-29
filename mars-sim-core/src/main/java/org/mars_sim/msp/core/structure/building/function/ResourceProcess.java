@@ -344,9 +344,7 @@ public class ResourceProcess implements Serializable {
 						break;
 					}
 				}
-			} 
-			else
-				level = 0D;
+			}
 
 			// Set the current production level.
 			currentProductionLevel = level;

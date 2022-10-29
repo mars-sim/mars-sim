@@ -36,6 +36,9 @@ import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.structure.Airlock;
+import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
+import org.mars_sim.msp.core.structure.building.function.ResourceProcessor;
+import org.mars_sim.msp.core.time.MarsClockFormat;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
@@ -46,7 +49,7 @@ public class CommandHelper {
 	
 	public static final int MALFUNCTION_WIDTH = 28;
 	public static final int BUILIDNG_WIDTH = 26;
-	public static final int PROCESS_WIDTH = 30;
+	public static final int PROCESS_WIDTH = 55;
 	//Width of a Person value
 	public static final int PERSON_WIDTH = 22;
 	// Width of a Job vlaue
@@ -71,6 +74,8 @@ public class CommandHelper {
 	public static final String MILLISOL_FORMAT = "%.1f millisol";
 	public static final String KMPH_FORMAT = "%.2f km/h";
     public static final String MONEY_FORMAT = "$%,.2f";
+	private static final String DUE_FORMAT = "In %d:" + MarsClockFormat.TRUNCATED_TIME_FORMAT;
+
 	
 	private CommandHelper() {
 		// Do nothing
@@ -483,5 +488,51 @@ public class CommandHelper {
 		} while (!good);
 		
 		return new Coordinates(lat1, lon1);
+	}
+
+	/**
+	 * Output the processes that a Resource Processor is runnings. Put these in a table.
+	 * @param response Output destination
+	 * @param processType The name of the process type column
+	 * @param currentMSol The currnet mars time
+	 * @param bName The hosting Building name
+	 * @param processor Host of the processes
+	 */
+	public static void outputProcesses(StructuredResponse response, String processType, int currentMSol, String bName,
+										ResourceProcessor processor) {
+
+		// Build table label by palceing the building name before the process type
+		// Works as PROCESS_WIDTh is very large
+		int width = PROCESS_WIDTH - processType.length();
+		StringBuilder firstColumn = new StringBuilder();
+		firstColumn.append(String.format("%-" + width + "s", bName));
+		firstColumn.append(processType);
+
+		response.appendTableHeading(firstColumn.toString(), PROCESS_WIDTH,
+					"Active", "Level", "Toggle");
+		for(ResourceProcess p : processor.getProcesses()) {
+			int[] remainingTime = p.getTimeLimit();
+			int remainingMilliSol = ((remainingTime[0] * 1000) + remainingTime[1]) - currentMSol;
+
+			String nextToggle = null;
+			if (remainingMilliSol <= 0) {
+				// Toggling is active
+				double[] toggleTime = p.getToggleSwitchDuration();
+				if (toggleTime[0] == 0D) {
+					nextToggle = "Due";
+				}
+				else {
+					nextToggle = String.format(PERC_FORMAT, toggleTime[0]/toggleTime[1]);
+				}
+			}
+			else {
+				int remainingSol = (remainingMilliSol/1000);
+				remainingMilliSol = remainingMilliSol % 1000;
+				nextToggle = String.format(DUE_FORMAT, remainingSol, remainingMilliSol);
+			}
+
+			response.appendTableRow(p.getProcessName(), p.isProcessRunning(),
+									p.getCurrentProductionLevel(), nextToggle);
+		}
 	}
 }

@@ -474,6 +474,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 					continue;
 				}	
 				
+				// This is bad and the logic is very fragile being based on the Process Name !!
 				String name = process.getProcessName().toLowerCase();
 				
 				boolean sab = name.equalsIgnoreCase(ResourceProcessing.SABATIER);
