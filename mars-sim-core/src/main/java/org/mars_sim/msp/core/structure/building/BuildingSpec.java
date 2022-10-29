@@ -25,8 +25,7 @@ public class BuildingSpec {
 	// Empty list constants
 	private static final List<SourceSpec> EMPTY_SOURCE = new ArrayList<>();
 	private static final List<ScienceType> EMPTY_SCIENCE = new ArrayList<>();
-	private static final List<ResourceProcessSpec> EMPTY_RESOURCE = new ArrayList<>();
-	private static final List<WasteProcessSpec> EMPTY_WASTE_RESOURCE = new ArrayList<>();
+	private static final List<ResourceProcessEngine> EMPTY_RESOURCE = new ArrayList<>();
 	
 	private int baseLevel;
 	private int maintenanceTime;
@@ -57,8 +56,8 @@ public class BuildingSpec {
 	
 	private List<ScienceType> scienceType = EMPTY_SCIENCE;
 	
-	private List<ResourceProcessSpec> resourceProcess = EMPTY_RESOURCE;
-	private List<WasteProcessSpec> wasteProcess = EMPTY_WASTE_RESOURCE;
+	private List<ResourceProcessEngine> resourceProcess = EMPTY_RESOURCE;
+	private List<ResourceProcessEngine> wasteProcess = EMPTY_RESOURCE;
 
 	private List<LocalPosition> beds;
 	private List<LocalPosition> parking;
@@ -203,19 +202,19 @@ public class BuildingSpec {
 		return scienceType;
 	}
 
-	public void setResourceProcess(List<ResourceProcessSpec> resourceProcess) {
-		this.resourceProcess = resourceProcess;
+	public void setResourceProcess(List<ResourceProcessEngine> resourceProcesses) {
+		this.resourceProcess = resourceProcesses;
 	}
 
-	public List<ResourceProcessSpec> getResourceProcess() {
+	public List<ResourceProcessEngine> getResourceProcess() {
 		return resourceProcess;
 	}
 	
-	public void setWasteProcess(List<WasteProcessSpec> wasteProcess) {
-		this.wasteProcess = wasteProcess;
+	public void setWasteProcess(List<ResourceProcessEngine> list) {
+		this.wasteProcess = list;
 	}
 
-	public List<WasteProcessSpec> getWasteProcess() {
+	public List<ResourceProcessEngine> getWasteProcess() {
 		return wasteProcess;
 	}
 	

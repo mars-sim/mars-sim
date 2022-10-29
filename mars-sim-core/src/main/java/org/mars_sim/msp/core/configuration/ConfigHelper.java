@@ -55,5 +55,36 @@ public class ConfigHelper {
 		
 		return new LocalPosition(x, y);
 	}
+	
+	/**
+	 * A generic extract to get an optional Attribute as int value
+	 * @param sourceElement The XML Element to extract Attribute from
+	 * @param attrname Attribute name to look for
+	 * @param defaultInt Default int value if the attribute is not present
+	 * @return The Attribute value converted to an int OR the default
+	 */
+	public static int getOptionalAttributeInt(Element sourceElement, String attrName, int defaultInt) {
+		int result = defaultInt;
+		String txt = sourceElement.getAttributeValue(attrName);
+		if (txt != null) {
+			result = Integer.parseInt(txt);
+		}
+		return result;
+	}
 
+	/**
+	 * A generic extract to get an optional Attribute as bool value
+	 * @param sourceElement The XML Element to extract Attribute from
+	 * @param attrname Attribute name to look for
+	 * @param defaultBool Default boolean value if the attribute is not present
+	 * @return The Attribute value converted to an int OR the default
+	 */
+    public static boolean getOptionalAttributeBool(Element sourceElement, String attrName, boolean defaultBool) {
+		boolean result = defaultBool;
+		String txt = sourceElement.getAttributeValue(attrName);
+		if (txt != null) {
+			result = Boolean.parseBoolean(txt);
+		}
+		return result;
+    }
 }

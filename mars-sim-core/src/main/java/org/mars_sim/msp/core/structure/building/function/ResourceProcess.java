@@ -14,6 +14,7 @@ import java.util.Set;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.ResourceProcessEngine;
 import org.mars_sim.msp.core.structure.building.ResourceProcessSpec;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -54,23 +55,20 @@ public class ResourceProcess implements Serializable {
 
 	private int[] timeLimit = new int[] {1, 0};
 
-	private ResourceProcessSpec definition;
+	private ResourceProcessEngine engine;
 
 	private static MarsClock marsClock;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param name          the name of the process.
-	 * @param powerRequired the amount of power required to run the process (kW).
-	 * @param defaultOn     true of process is on by default, false if off by
-	 *                      default.
+	 * @param engine The processing engine that this Process manages
 	 */
-	public ResourceProcess(ResourceProcessSpec definition) {
-		this.name = definition.getName();
-		runningProcess = definition.getDefaultOn();
+	public ResourceProcess(ResourceProcessEngine engine) {
+		this.name = engine.getName();
+		runningProcess = engine.getDefaultOn();
 		currentProductionLevel = 1D;
-		this.definition = definition;
+		this.engine = engine;
 
 		// Assume it is the start of time
 		resetToggleTime(1, 0);
@@ -156,7 +154,7 @@ public class ResourceProcess implements Serializable {
 	 */
 	public boolean addToggleWorkTime(double time) {
 		toggleRunningWorkTime += time;
-		if (toggleRunningWorkTime >= definition.getToggleDuration()) {
+		if (toggleRunningWorkTime >= engine.getWorkTime()) {
 			toggleRunningWorkTime = 0D;
 			
 			runningProcess = !runningProcess;
@@ -171,7 +169,7 @@ public class ResourceProcess implements Serializable {
 	}
 
 	public double getRemainingToggleWorkTime() {
-		double time = definition.getToggleDuration() - toggleRunningWorkTime;
+		double time = engine.getWorkTime() - toggleRunningWorkTime;
 		if (time > 0)
 			return time;
 		else
@@ -184,11 +182,11 @@ public class ResourceProcess implements Serializable {
 	 * @return set of resources.
 	 */
 	public Set<Integer> getInputResources() {
-		return definition.getInputResources();
+		return engine.getInputResources();
 	}
 
 	public int getNumModules() {
-		return definition.getNumModules();
+		return engine.getModules();
 	}
 	
 	/**
@@ -197,7 +195,7 @@ public class ResourceProcess implements Serializable {
 	 * @return rate in kg/millisol.
 	 */
 	public double getMaxInputRate(Integer resource) {
-		return definition.getMaxInputRate(resource);
+		return engine.getMaxInputRate(resource);
 	}
 
 	/**
@@ -207,7 +205,7 @@ public class ResourceProcess implements Serializable {
 	 * @return true if ambient resource.
 	 */
 	public boolean isAmbientInputResource(Integer resource) {
-		return definition.isAmbientInputResource(resource);
+		return engine.isAmbientInputResource(resource);
 	}
 
 	public boolean isInSitu(int resource) {
@@ -220,7 +218,7 @@ public class ResourceProcess implements Serializable {
 	 * @return set of resources.
 	 */
 	public Set<Integer> getOutputResources() {
-		return definition.getOutputResources();
+		return engine.getOutputResources();
 	}
 
 	/**
@@ -229,7 +227,7 @@ public class ResourceProcess implements Serializable {
 	 * @return rate in kg/millisol.
 	 */
 	public double getMaxOutputRate(Integer resource) {
-		return definition.getMaxOutputRate(resource);
+		return engine.getMaxOutputRate(resource);
 	}
 
 	/**
@@ -239,7 +237,7 @@ public class ResourceProcess implements Serializable {
 	 * @return true if waste output.
 	 */
 	public boolean isWasteOutputResource(Integer resource) {
-		return definition.isWasteOutputResource(resource);
+		return engine.isWasteOutputResource(resource);
 	}
 
 	/**
@@ -273,10 +271,8 @@ public class ResourceProcess implements Serializable {
 				double bottleneck = 1D;
 
 				// Input resources from inventory.
-				Map<Integer, Double> maxInputResourceRates = definition.getMaxInputRates();
-				for (Entry<Integer, Double> input : maxInputResourceRates.entrySet()) {
-					Integer resource = input.getKey();
-					double maxRate = input.getValue();
+				for(Integer resource : engine.getInputResources()) {
+					double maxRate = engine.getMaxInputRate(resource);
 					double resourceRate = maxRate * level;
 					double required = resourceRate * accumulatedTime;
 					double stored = settlement.getAmountResourceStored(resource);
@@ -319,10 +315,8 @@ public class ResourceProcess implements Serializable {
 					level = bottleneck;
 				
 				// Output resources to inventory.
-				Map<Integer, Double> maxOutputResourceRates = definition.getMaxOutputRates();
-				for (Entry<Integer, Double> output : maxOutputResourceRates.entrySet()) {
-					Integer resource = output.getKey();
-					double maxRate = output.getValue();
+				for(Integer resource : engine.getOutputResources()) {
+					double maxRate = engine.getMaxOutputRate(resource);
 					double resourceRate = maxRate * level;
 					double required = resourceRate * accumulatedTime;
 					double remainingCap = settlement.getAmountResourceRemainingCapacity(resource);
@@ -362,36 +356,6 @@ public class ResourceProcess implements Serializable {
 		}
 	}
 
-	/**
-	 * Finds the bottleneck of input resources from inventory pool.
-	 *
-	 * @param time      (millisols)
-	 * @param inventory the inventory pool the process uses.
-	 * @return bottleneck (0.0D - 1.0D)
-	 * @throws Exception if error getting input bottleneck.
-	 */
-	private double getInputBottleneck(double time, Settlement settlement) {
-
-		// Check for illegal argument.
-		if (time < 0D)
-			throw new IllegalArgumentException("time must be > 0D");
-
-		double bottleneck = 1D;
-		Map<Integer, Double> maxInputResourceRates = definition.getMaxInputRates();
-		for (Entry<Integer, Double> input : maxInputResourceRates.entrySet()) {
-			Integer resource = input.getKey();
-			double maxRate = input.getValue();
-			double desiredResourceAmount = maxRate * time;
-			double stored = settlement.getAmountResourceStored(resource);
-			double proportionAvailable = 1D;
-			if (desiredResourceAmount > 0D)
-				proportionAvailable = stored / desiredResourceAmount;
-			if (bottleneck > proportionAvailable)
-				bottleneck = proportionAvailable;
-		}
-
-		return bottleneck;
-	}
 
 	/**
 	 * Gets the string value for this object.
@@ -408,7 +372,7 @@ public class ResourceProcess implements Serializable {
 	 * @return power (kW).
 	 */
 	public double getPowerRequired() {
-		return definition.getPowerRequired();
+		return engine.getPowerRequired();
 	}
 
 	/**
@@ -454,7 +418,7 @@ public class ResourceProcess implements Serializable {
 	 */
 	private void resetToggleTime(int sol, int millisols) {
 		// Compute the time limit
-		millisols += definition.getTogglePeriodicity();
+		millisols += engine.getProcessTime();
 		if (millisols >= 1000) {
 			millisols = millisols - 1000;
 			sol = sol + 1;
@@ -471,7 +435,7 @@ public class ResourceProcess implements Serializable {
 	 * @return
 	 */
 	public double[] getToggleSwitchDuration() {
-		return new double[] {toggleRunningWorkTime, definition.getToggleDuration()};
+		return new double[] {toggleRunningWorkTime, engine.getWorkTime()};
 	}
 
 	public void setLevel(int level) {

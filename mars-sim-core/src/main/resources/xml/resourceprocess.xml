@@ -1,0 +1,810 @@
+<?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
+<!DOCTYPE process-list [
+	<!ELEMENT process-list (process*)>
+	<!ELEMENT process (description?, input+, output+)>
+	<!ATTLIST process name CDATA #REQUIRED>
+	<!ATTLIST process power-required CDATA #REQUIRED>
+	<!ATTLIST process defaultOn (true|false) #IMPLIED>
+	<!ATTLIST process process-time CDATA #IMPLIED>
+	<!ATTLIST process work-time CDATA #IMPLIED>
+	
+	<!ELEMENT description (#PCDATA)>
+
+	<!ELEMENT input EMPTY>
+	<!ATTLIST input resource CDATA #REQUIRED>
+	<!ATTLIST input rate CDATA #REQUIRED>
+	<!ATTLIST input ambient (true|false) #IMPLIED>
+	
+	<!ELEMENT output EMPTY>
+	<!ATTLIST output resource CDATA #REQUIRED>
+	<!ATTLIST output rate CDATA #REQUIRED>
+	<!ATTLIST output waste (true|false) #IMPLIED>
+]>
+
+<process-list>
+	<!-- A. Sabatier process :
+
+		CO2 + 4H2 -> CH4 + 2H2O, exothermic heat = -165 kJ/mol
+
+		CO2 : 44 g/mol
+		4H2 : 8 g/mol
+		CH4 : 16 g/mol
+		2H2O : 36 g/mol
+
+		B. The Reverse Water Gas Shift (RWGS) process is a
+		candidate technology for water and oxygen production
+		on Mars. RWGS uses carbon dioxide and hydrogen as
+		reactants to produce oxygen and carbon monoxide with a
+		copper on alumina catalyst, or in the precsence of an
+		iron-chrome catalyst.
+
+		CO2 + H2 = CO + H2O
+
+		Because the RWGS reaction is only mildly endothermic (at 400 deg C,
+		9 kcal/mole for RWGS compared to 57 kcal/mole for water electrolysis),
+		it's better than just having the water electrolysis alone.
+
+		Moreover, since the thermal power required by the RWGS is less than that
+		produced by the Sabatier reactor and their operating temperatures are comparable, a
+		Sabatier reactor can be used to provide the heat required to drive the RWGS
+		reactor.
+
+		C. Sabatier with Reverse Water Gas Shift (RWGS) :
+
+		3CO2 + 6H2 -> CH4 + 2CO + 4H2O, exothermic heat = -83 kJ/mol
+
+		3CO2 : 132 g/mol
+		6H2 : 12 g/mol
+		CH4 : 16 g/mol
+		2CO : 56 g/mol
+		4H2O : 72 g/mol
+
+		The primary disadvantage of the Sabatier process is that twice
+		as much hydrogen is consumed as can be recovered by the
+		electrolysis of the produced water.
+
+		In one in-situ propellant prooduction system (ISPP), it uses
+		Sabatier and Reverse Water Gas Shift (RWGS) to convert H2
+		and CO2 into OX and CH4 (with CO as waste).  It requires 470 W
+		to produce 1 kg of propellant per sol, per Zurin's paper on
+		"Integrated Mars In-Situ Propellant Production System.
+
+		We assume a system that's 4 times more efficient in producing
+		CH4 below
+
+		CO2 : 39.6 kg/sol
+		4H2 : 3.6 kg/sol
+		CH4 : 4.8 kg/sol
+		2CO : 16.8 g/mol
+		4H2O : 21.6 kg/sol
+	-->
+	<process name="Sabatier RWGS Reactor" power-required="0.12" defaultOn="true">
+	<!-- rate: the input/output resource rate [in kg/sol] -->
+		<input resource="carbon dioxide" rate="39.6" ambient="true" />
+		<input resource="hydrogen" rate="3.6"  />
+		<output resource="methane" rate="4.8"  />
+		<output resource="carbon monoxide" rate="16.8"  />
+		<output resource="water" rate="21.6"  />
+	</process>
+
+	<!-- 
+	In recent years, under the SpaceCraft Oxygen Recovery (SCOR) program, NASA seeks to increase oxygen recovery 
+	beyond the state of the art (42%) to at least 75% and approaching 100%.
+			
+	Space oxygen recovery technologies implemented include carbon formation reactors (CFR) 
+	and methane pyrolysis assembly (PPA) reactors. 
+			
+	1. The Continuous Bosch Reactor - aims to produce water and elemental carbon from hydrogen 
+	and carbon dioxide. Highly efficient for utilization of hydrogen, it would replace the 
+	current state-of-the-art Sabatier reactor.
+	
+	2. Hydrogen Recovery by Carbon Vapor Deposition - aims to do what Sabatier lacks: recover 
+	hydrogen. The Sabatier is limited in its ability to recover oxygen from carbon dioxide 
+	due to an insufficient amount of hydrogen. The Sabatier requires additional hydrogen 
+	due to the production of the byproduct methane. If hydrogen can be recovered from this 
+	byproduct, it can be sent back to the Sabatier to react with carbon dioxide and produce 
+	additional oxygen.
+	
+	- A high-temperature solid oxide co-electrolyzer (SOCE) is to be combined with a carbon
+	formation reactor.
+	
+	-->
+	
+	<!-- 
+	Based on Bosch System : 
+			2CO -> CO2 + C(s)
+		CO + H2 -> H2O + C(s)
+	
+	3CO + H2 -> CO2 + H2O + 2C(s)
+	
+	Challenges : 
+	1. power consumption - high temperature endothermic reactions, catalyst resupply, volume/mass.
+		-->
+		
+	<process name="Carbon Formation Reactor" power-required="0.05" >
+		<description> The Continuous Bosch (C-Bosch) Reactor reduces CO2 to C(s) and H20 using H2. 
+			It aims to produce water and elemental carbon from hydrogen and carbon dioxide. 
+		</description> 
+		<input resource="carbon monoxide" rate="84.0"  />
+		<input resource="hydrogen" rate="2.0"  />
+		<output resource="carbon dioxide" rate="44.0" waste="true" />
+		<output resource="water" rate="18.0"  />
+		<output resource="carbon" rate="24.0"  />
+	</process>
+	
+	<process name="Plasma Pyrolysis Assembly (PPA) Reactor" power-required="0.05" >
+		<description>
+			By partial pyrolysis in microwave generated plasma, methane is converted to 
+			hydrogen and acetylene:					  
+						2CH4 -> 3H2 + C2H2
+						
+			Hydrogen separation carried out with electrochemical cell stack. 
+			
+			H2 recovered from CH4 and sent to Sabatier to recover additional O2 from CO2
+			- ~50% O2 recovery with Sabatier
+			- Potentially >85% total O2 recovery with PPA
+			- Acetylene must be removed from PPA outlet stream before hydrogen 
+				can be sent to Sabatier
+		</description> 
+		<input resource="methane" rate="32.0"  />
+		<output resource="acetylene" rate="6.0"  />
+		<output resource="hydrogen" rate="26.0"  />
+	</process>
+	
+	<!-- Oxygen Generation System can split water into H2 and O2.
+
+	NASA's Oxygen Generation System is designed to generate
+	oxygen from 5 to 20 pounds (2.3 to 9 kg) of oxygen per day
+	during continuous operation and a normal rate of 12 pounds
+	(5.4 kg) of oxygen per day during cyclic operation.
+
+	The Oxygen Generation System will accommodate the testing
+	of an experimental Carbon Dioxide Reduction Assembly
+	(CReA). Once deployed, the reduction assembly will cause
+	hydrogen produced by the Oxygen Generation Assembly to
+	react with carbon dioxide removed from the cabin atmosphere
+	to produce water and methane.
+
+	Oxygen Generator Assembly (OGA) uses 1312 W of power.
+
+	Available water electrolysis units using solid polymer
+	electrolytes are highly efficient (>90%) and extremely rugged,
+	as they have been designed for nuclear submarine use with
+	specifications that include resistance to depth charge attack,
+	per Zubrin, et al.
+
+	During normal operations on the ISS, approximately 23 L water
+	per day is used by the OGS with a constant current of 50 ampere
+	to each electrolytic cell in the OGS system
+
+	2H2O -> 2H2 + O2
+
+	2H2O : 36 g/mol
+	2H2 : 4 g/mol
+	O2 : 32 g/mol
+
+	50A * 120 = 6kW
+
+	We assume by use of nanosheet and synthesizing appropriate electrocatalyst, 
+	a much lower power usage of 125W system is required for splitting 18 kg water 
+	into 2 kg H2 and 16 kg O2.
+	
+	Reference: 
+	1. https://www.nasa.gov/centers/marshall/pdf/104840main_eclss.pdf
+	2. https://www.quora.com/How-is-oxygen-generated-on-the-ISS
+	3. https://www.nasa.gov/pdf/570243main_OxygenGen_CHEM_ST.pdf
+	4. https://www.sciencedaily.com/releases/2021/03/210317141722.htm
+	5. https://www.researchgate.net/publication/265608781_Decoupled_catalytic_hydrogen_evolution_from_a_molecular_metal_oxide_redox_mediator_in_water_splitting
+	-->
+	<process name="Oxygen Generation System" power-required="0.25" defaultOn="true">
+		<input resource="water" rate="72"  />
+		<output resource="hydrogen" rate="8"  />
+		<output resource="oxygen" rate="64"  />
+	</process>
+	
+	<process name="Low Temperature Plasma CO2 Decomposition" power-required="0.1" defaultOn="true">
+		<description> 
+			The atmosphere is mainly CO2, so there is no need to capture it and plasma can 
+			be ignited in ambient Martian atmosphere. The traces of Ar and N2 present can only
+			help: argon aids shaping the electron energy distribution to higher energies, contributing
+			to an increased efficiency of this decomposition process.
+			The pressure on Mars – of 600 Pa (4.5 Torr), about 150 times lower than on Earth 
+			– is close to the ideal for advantageous plasma operation, so there is no need 
+			to use vacuum pumps or compressors on the first steps of the process.
+			See https://www.europhysicsnews.org/articles/epn/pdf/2018/03/epn2018493p15.pdf
+		</description>
+		<input resource="carbon dioxide" rate="35.2" ambient="true" />
+		<output resource="carbon monoxide" rate="11.2"  />
+		<output resource="oxygen" rate="12.8"  />
+	</process>
+	
+	<process name="Carbon Dioxide Pump" power-required="0.4" >
+		<input resource="carbon dioxide" rate="40.0" ambient="true" />
+		<output resource="carbon dioxide" rate="40.0"  />
+	</process>
+
+	<!-- Synthesis gas (or Syngas) is used to produce methanol as in the following reaction.
+		https://www.essentialchemicalindustry.org/chemicals/methanol.html 
+	-->
+	<process name="Syngas Plant" power-required=".1" >
+		<input resource="carbon dioxide" rate="44" ambient="true" />
+		<input resource="hydrogen" rate="6.0"  />
+		<output resource="water" rate="18.0"  />
+		<output resource="methanol" rate="32.0"  />
+	</process>
+
+	<process name="Melt and Filter ice" power-required="1" >
+		<description> Melting permafrost ice and filtering the water. 
+			Requires 450kJ/kg extraction energy.
+			Specific heat capacity of ice is 2.09 J/g/C			
+			e.g. For 1 mol of ice, from -25 C to 0 C
+			= 18 g * 2.09 * (0 -(-25)) = 0.941 kJ			
+			To transition from ice to liquid, it takes a total of 6.02 kJ/mol			
+			Specific heat capacity of water is 4.18 J/g/C			
+			To warm liquid water to vapor, it takes a total of 7.52 kJ/mol			
+			It's (.941 + 6.02) kJ / 18 g = 386.7 kJ / kg				
+			For 1 kg, heating for 25 millisols,
+			Heat req = 386.7 kJ/(88.775244*25) = 0.1742 kW / kg			
+			or 1.3939 kW for 8 kg of ice							
+			See "Water and Brines on Mars: Current Evidence and Implications for MSL", 2013										
+			Note: assume using vacuum chamber, microwaving, or field effects, electrocatalysis, 
+			or other techniques to reduce power usage of ice melting by ~10-fold.	
+		</description>
+		<input resource="ice" rate="40.0"  />
+		
+		<output resource="water" rate="30.0"  />
+		<output resource="regolith" rate="7.5"  />
+		<!-- Amount of rock salt or Halite is arbitrary. Need more research -->
+		<output resource="rock salt" rate="2.5"  />
+	</process>
+	
+	<process name="Convert regolith to ores with sand" power-required="0.2" >
+		<description> A Mars Aqueous Regolith Extract (MARE) was prepared from the Phoenix
+		analogue regolith and analyzed by ion chromatography. The MARE contained (mg/L) 
+		Nitrogen-containing species NO3- has 773 and NO2- has 6.9 
+		</description>
+		<input resource="regolith" rate="100.0"  />
+
+		<output resource="basaltic" rate="5.0"  />
+		<output resource="gypsum" rate="5.0"  />
+		<output resource="smectite" rate="2.0"  />
+		<output resource="allophane" rate="2.0"  />
+		<output resource="akaganeite" rate="2.0"  />
+		<output resource="bassanite" rate="2.0"  />
+
+		<output resource="sand" rate="80.0"  />
+		<output resource="oxygen" rate="2.0"  />
+	</process>
+				
+	<process name="Extract nitrogen compounds from regolith" power-required="0.01" >
+		<input resource="regolith" rate="5.0"  />
+		
+		<output resource="nitrate" rate="1.0"  />
+		<output resource="nitrite" rate="0.2"  />
+		<output resource="nitrogen" rate="1.0"  />
+		<output resource="ammonia" rate="1.0"  />
+		<output resource="argon" rate="0.1"  />
+	</process>
+
+
+	<process name="Process regolith-B rich in poly-hydrated sulfate"
+		power-required="0.03" >
+		<description>
+			Gypsum is CaSO&lt;sub&gt;4&lt;/sub&gt; * 2H&lt;sub&gt;2&lt;/sub&gt;O.
+			This is Case B (Deposit Type : Poly-hydrated) in NASA Mars ISRU Water Study,
+					40% gypsum;
+					3% allophane;
+					3% akaganeite;
+					3% smectite;
+		</description>
+			<input resource="regolith-B" rate="50.0"  />
+			<output resource="gypsum" rate="20.0"  />
+			<output resource="allophane" rate="1.5"  />
+			<output resource="akaganeite" rate="1.5"  />
+			<output resource="smectite" rate="1.5"  />
+			<output resource="sand" rate="20.0"  />
+	</process>
+
+	<process name="Process Regolith-C rich in phyllo-silicate" power-required="0.03" >
+		<description>
+			Gypsum is CaSO&lt;sub&gt;4&lt;/sub&gt; * 2H&lt;sub&gt;2&lt;/sub&gt;O.
+			This is Case C (Deposit Type : Clay) in NASA Mars ISRU Water Study,
+					40% smectite;
+					3% allophane;
+					3% akaganeite;
+					3% bassanite;
+		</description>
+			<input resource="regolith-C" rate="50.0"  />
+			<output resource="smectite" rate="20.0"  />
+			<output resource="allophane" rate="1.5"  />
+			<output resource="akaganeite" rate="1.5"  />
+			<output resource="bassanite" rate="1.5"  />
+			<output resource="sand" rate="20.0"  />
+	</process>
+
+
+	<process name="Process Regolith-D rich in basaltic" power-required="0.03" >
+		<description>
+			Gypsum is CaSO&lt;sub&gt;4&lt;/sub&gt; * 2H&lt;sub&gt;2&lt;/sub&gt;O.
+			This is Case D (Deposit Type : typical regolith) in NASA Mars ISRU Water Study,
+					23.5% basaltic;
+					3% allophane;
+					3% akaganeite;
+					3% bassanite;
+					3% smectite;
+		</description>
+			<input resource="regolith-D" rate ="50.0"  />
+			<output resource="basaltic" rate="11.75"  />
+			<output resource="smectite" rate="1.5"  />
+			<output resource="allophane" rate="1.5"  />
+			<output resource="akaganeite" rate="1.5"  />
+			<output resource="bassanite" rate="1.5"  />
+			<output resource="sand" rate="25.0"  />
+			<!-- According to http://canada.marssociety.org/winnipeg/soil.html
+			regolith is estimated to contain 11.3% sodium bicarbonate (baking
+			soda) and 1.15% of sodium chloride (table salt) -->
+			<output resource="baking powder" rate="4.0"  />
+			<output resource="table salt" rate="0.4"  />
+	</process>
+
+	<!-- https://geologyscience.com/minerals/hematite/ -->
+	<process name="Do hematite smelting" power-required="1.3" >
+		<input resource="hematite" rate="25.0"  />
+		<input resource="carbon monoxide" rate=".5"  />
+		<output resource="iron powder" rate="2.0"  />
+		<output resource="iron oxide" rate="20.0"  />
+		<output resource="manganese" rate="2.0"  />						
+		<output resource="carbon dioxide" rate=".5"  />
+	</process>
+
+	<process name="Do magnetite smelting" power-required="1.3" >
+			<input resource="magnetite" rate="25.0"  />
+			<input resource="carbon monoxide" rate=".5"  />
+			<output resource="iron powder" rate="1.0"  />
+			<output resource="iron oxide" rate="21.0"  />									
+			<output resource="carbon dioxide" rate=".5"  />
+			<output resource="oxygen" rate="2.0"  />						
+	</process>
+
+	<!-- https://geologyscience.com/minerals/goethite/ -->
+	<process name="Do goethite smelting" power-required="1.3" >
+			<input resource="goethite" rate="50.0"  />
+			<input resource="carbon monoxide" rate=".5"  />
+			<output resource="iron powder" rate="2.0"  />
+			<output resource="iron oxide" rate="18.0"  />	
+			<output resource="iron hydroxide" rate="5.0"  />											
+			<output resource="magnesium" rate="2.0"  />						
+			<output resource="carbon dioxide" rate="1.0"  />
+	</process>
+
+	<process name="Do olivine smelting" power-required="1.3" >
+			<input resource="olivine" rate="50.0"  />
+			<input resource="carbon monoxide" rate="32.5"  />
+			<output resource="magnesium" rate="11.6"  />
+			<output resource="iron powder" rate="11.6"  />
+			<output resource="silicon" rate="8.1"  />
+			<output resource="carbon dioxide" rate="51.2"  />
+	</process>
+
+	<process name="Do magnesite smelting" power-required="1.3" >
+			<input resource="magnesite" rate="50.0"  />
+			<input resource="carbon monoxide" rate="16.6"  />
+			<output resource="magnesium" rate="14.4"  />
+			<output resource="carbon dioxide" rate="52.2"  />
+			<output resource="silica" rate="5"  />
+	</process>
+
+	<process name="Do Kamacite smelting" power-required="1.3" >
+			<input resource="kamacite" rate="50.0"  />
+			<output resource="iron powder" rate="45.0"  />
+			<output resource="nickel" rate="5.0"  />
+	</process>
+
+	<process name="Do Taenite smelting" power-required="1.3" >
+			<input resource="taenite" rate="50.0"  />
+			<output resource="iron powder" rate="20.0"  />
+			<output resource="nickel" rate="30.0"  />
+	</process>
+
+	<process name="Do Chalcopyrite smelting"  power-required="1.3" >
+			<input resource="chalcopyrite" rate="50.0"  />
+			<output resource="copper" rate="17.3" />
+			<output resource="iron powder" rate="15.2"   />
+			<output resource="sulfur" rate="17.5"  />
+	</process>
+
+	<process name="Do Malachite smelting" power-required="1.3" >
+			<input resource="malachite" rate="50.0"  />
+			<input resource="carbon" rate="2.7"  />
+			<output resource="copper" rate="28.7"  />
+			<output resource="carbon dioxide" rate="19.9"  />
+			<output resource="grey water" rate="4.1"  />
+	</process>
+
+	<process name="Extract minerals from basaltic deposits" power-required="0.1" >
+			<input resource="basaltic" rate="50.0"  />
+			<output resource="aluminum oxide" rate="8.0"  />
+			<output resource="magnesium" rate="6.0"  />
+			<output resource="manganese" rate="2.0"  />						
+			<output resource="sodium oxide" rate="5.0"  />
+			<output resource="potassium" rate="3.0"  />
+			<output resource="titanium" rate="3.0"  />
+			<output resource="iron oxide" rate="3.0"  />
+			<output resource="sand" rate="5.0"  />
+			<output resource="grey water" rate="10.0"  />
+	</process>
+
+	<process name="extract minerals from smectite deposits" power-required="0.1" >
+			<input resource="smectite" rate="50.0"  />
+			<output resource="aluminum oxide" rate="9.0"  />
+			<output resource="lithium" rate="0.5"  />
+			<output resource="magnesium" rate="4.0"  />
+			<output resource="manganese" rate="2.0"  />						
+			<output resource="sodium oxide" rate="2.0"  />
+			<output resource="potassium" rate="2.0"  />
+			<output resource="calcium" rate="4.0"  />
+			<output resource="iron oxide" rate="2.0"  />
+			<output resource="rock salt" rate="4.0"  />
+			<output resource="sand" rate="10.0"  />
+			<output resource="grey water" rate="2.0"  />
+	</process>
+
+	<process name="extract minerals from allophane deposits" power-required="0.2" >
+			<input resource="allophane" rate="50.0"  />
+			<output resource="aluminum oxide" rate="30.0"  />
+			<output resource="silica" rate="1.0"  />
+			<output resource="sand" rate="6.0"  />
+			<output resource="grey water" rate="10.0"  />
+	</process>
+
+	<!-- http://www.handbookofmineralogy.org/pdfs/akaganeite.pdf 
+		https://agupubs.onlinelibrary.wiley.com/doi/pdf/10.1029/2018JE005630 -->
+	<process name="Extract minerals from akaganeite deposits" power-required="0.1" >
+			<input resource="akaganeite" rate="50.0"  />
+			<output resource="iron oxide" rate="29.0"  />
+			<output resource="manganese" rate="0.2"  />						
+			<output resource="iron hydroxide" rate="10.0"  />
+			<output resource="iron chloride" rate="2.0"  />
+			<output resource="potash lye" rate="0.1"  />
+			<output resource="grey water" rate="1.0"  />
+	</process>
+			
+	<process name="Extract minerals from bassanite deposits" power-required="0.1" >
+		<input resource="bassanite" rate="50.0"  />
+		<output resource="calcium sulfate" rate="45.0"  />
+		<output resource="grey water" rate="3.0"  />
+	</process>
+		
+	<process name="Extract minerals from sand" power-required="0.2" >
+		<description>Typically, manufactured glass contains around 15% sodium oxide, 70% silica
+			(silicon dioxide) and 9% lime (calcium oxide). The sodium carbonate "soda"
+			serves as a flux to lower the temperature at which the silica melts.
+			https://en.wikipedia.org/wiki/Sodium_oxide
+			https://www.nasa.gov/sites/default/files/atoms/files/isru-isfr-mrs-nr.pdf
+		</description>
+		<input resource="sand" rate="40.0"  />					
+		<input resource="sodium carbonate" rate="5.0"  />
+
+		<output resource="aluminum oxide" rate="2.0"  />
+		<output resource="aluminum" rate="8.0"  />
+		<output resource="iron powder" rate="1.0"  />					
+		<output resource="sulfur" rate="4.0"  />					
+		<output resource="silica" rate="13.0"  />
+		<output resource="silicon" rate="2.0"  />
+		<output resource="glass" rate="15.0"  />	
+	</process>
+
+	<!-- Process for reducing gypsum to calcium carbonate using carbon. -->
+	<!-- Wrapping two processes: -->
+	<!-- CaSO4*2H2O (gypsum) + 2C -> CaS + 2CO2 + 2H2O -->
+	<!-- CaS + H2O + CO2 -> CaCO3 (calcium carbonate) + H2S -->
+	<!-- Note: ignoring hydrogen sulfide as waste for now. -->
+	<process name="Reduce gypsum to calcium carbonate with carbon" power-required=".03" >
+		<description>
+			Reducing gypsum to calcium carbonate using carbon. Gypsum on earth has up to 8.6 % water. Wrapping two processes below:
+			CaSO&lt;sub&gt;4&lt;/sub&gt; * 2H&lt;sub&gt;2&lt;/sub&gt;O (gypsum) + 2C -> CaS + 2CO&lt;sub&gt;2&lt;/sub&gt; + 2H&lt;sub&gt;2&lt;/sub&gt;O
+			CaS + H&lt;sub&gt;2&lt;/sub&gt;O + CO&lt;sub&gt;2&lt;/sub&gt; -> CaCO&lt;sub&gt;3&lt;/sub&gt; (calcium carbonate) + H&lt;sub&gt;2&lt;/sub&gt;S
+			Note: ignoring hydrogen sulfide as waste for now. 
+		</description>
+		<input resource="gypsum" rate="50.0"  />
+		<input resource="carbon" rate="7.0"  />
+
+		<output resource="calcium sulfate" rate="2.0"  />
+		<output resource="calcium carbonate" rate="27.0"  />
+		<output resource="carbon dioxide" rate="12.7" waste="true" />
+		<output resource="grey water" rate="5.2"  />
+	</process>
+
+	<process name="Reduce gypsum to calcium carbonate with carbon monoxide" power-required=".1" >
+		<description>
+			Process for reducing gypsum to calcium carbonate using carbon monoxide.
+			Wrapping two processes:
+			CaSO4*2H2O (gypsum) + 4CO -> CaS + 4CO2 + 2H2O
+			CaS + H2O + CO2 -> CaCO3 (calcium carbonate) + H2S
+			Note: ignoring hydrogen sulfide as waste for now.
+		</description>
+		<input resource="gypsum" rate="50.0"  />
+		<input resource="carbon monoxide" rate="32.5"  />
+		
+		<output resource="calcium sulfate" rate="2.0"  />
+		<output resource="calcium carbonate" rate="27.0"  />
+		<output resource="carbon dioxide" rate="38.1" waste="true" />
+		<output resource="grey water" rate="5.2"  />
+	</process>
+
+
+	<process name="Reduce gypsum to calcium carbonate with hydrogen" power-required=".03" >
+		<description>
+			Process for reducing gypsum to calcium carbonate using hydrogen.
+			Wrapping two processes:
+			CaSO4*2H2O (gypsum) + 4H2 -> CaS + 6H2O
+			CaS + H2O + CO2 -> CaCO3 (calcium carbonate) + H2S
+			Note: ignoring hydrogen sulfide as waste for now.
+		</description>					
+		<input resource="gypsum" rate="50.0"  />
+		<input resource="hydrogen" rate="2.3"  />
+		<input resource="carbon dioxide" rate="12.8" ambient="true" />
+
+		<output resource="calcium sulfate" rate="2.0"  />					
+		<output resource="calcium carbonate" rate="27.0"  />
+		<output resource="grey water" rate="26.0"  />
+	</process>
+				
+	<process name="make quartz from silica" power-required="0.5" >
+		<input resource="silica" rate="45.0"  />
+		<input resource="calcium carbonate" rate="1.0"  />
+		<input resource="sodium carbonate" rate="1.0"  />
+		
+		<output resource="quartz" rate="40.0"  />
+	</process>
+
+	<process name="Make soda from sodium oxide" power-required=".03" >
+		<description>
+			Soda is sodium carbonate. That is a salt. Sodium exists in Martian regolith as an
+			oxide or super oxide and can be converted into soda. Dissolve the sodium oxide
+			in water, then bubble carbon dioxide through the water. Oxygen will be released and soda created.
+			Boil down the result to extract the water and you have soda.
+		</description>	
+		<input resource="sodium oxide" rate="10.0"  />
+		<input resource="water" rate="1.0"  />	
+		<input resource="carbon dioxide" rate="1.0" ambient="true" />
+		
+		<output resource="sodium carbonate" rate="5.0"  />
+	</process>
+
+	<process name="Make cement" power-required=".1" >
+		<input resource="regolith" rate="35.0"  />
+		<input resource="gypsum" rate="5.0"  />
+		<input resource="aluminum oxide" rate="2.5"  />
+		<input resource="iron oxide" rate="2.5"  />
+		<input resource="silica" rate="5.0"  />
+
+		<output resource="cement" rate="5.0"  />
+	</process>
+
+	<process name="Mix sulfur concrete" power-required="0.2" >
+		<description>
+		Makes sulfur concrete using sulfur as the cement, with sand and regolith as aggregates.
+		1. https://www.fastcompany.com/3055172/why-martian-concrete-might-be-the-best-building-material-in-the-solar-system
+		2. https://www.frontiersin.org/articles/10.3389/fmats.2019.00083/full
+		3. https://www.howden.com/en-us/articles/cement/how-is-cement-made
+		4. https://www.cnet.com/news/concrete-for-mars-shelters-made-from-martian-materials/
+		5. https://phys.org/news/2016-01-martian-concrete-materials-red-planet.html
+		6. [Construction by Contour Crafting using Sulfur Concrete with Planetary Applications](http://utw10945.utweb.utexas.edu/sites/default/files/2015/2015-141-Khoshnevis.pdf)
+		7. https://cen.acs.org/articles/96/i1/build-settlements-Mars-ll-need.html
+		8. https://pubs.acs.org/doi/pdf/10.1021/acscentsci.7b00538
+		9. https://www.technologyreview.com/2016/01/05/109321/materials-scientists-make-martian-concrete/
+		10. https://www.azom.com/news.aspx?newsID=43710
+		11. https://www.sustainableconcrete.org.uk/MPA-ACP/media/SustainableCon-Media-Library/Pdfs%20-%20Performance%20reports/TIC_innovation_Feb19.pdf
+		12. [Facile preparation of sulfur polymer cement via low-temperature curing](https://repository.hanyang.ac.kr/bitstream/20.500.11754/112544/1/Facile%20preparation%20of%20sulfur%20polymer%20cement%20via%20lowtemperature%20curing.pdf)
+		13. [Characterization of a sustainable sulfur polymer concrete using activated fillers](https://www.researchgate.net/publication/290653757_Characterization_of_a_sustainable_sulfur_polymer_concrete_using_activated_fillers)
+		</description>						
+		<input resource="sulfur" rate="25.0"  />
+		<input resource="sand" rate="35.0"  />
+		<input resource="cement" rate="60.0"  />
+		<input resource="polyethylene" rate="1.0"  />
+
+		<output resource="concrete" rate="120.0"  />
+	</process>
+
+	<!-- Same as concrete mixing but using lime in place of cement. -->
+	<process name="Mix limecrete" power-required="0.2" >
+		<input resource="sulfur" rate="10.0"  />
+		<input resource="sand" rate="40.0"  />
+		<input resource="lime" rate="50.0"  />
+		<input resource="polyethylene" rate="1.0"  />
+
+		<output resource="concrete" rate="100.0"  />
+	</process>
+
+	<process name="Make magnesium-based concrete" power-required="0.5" >
+		<description> 
+			Serpentinization : olivine (Mg,Fe)2 + SiO4 produces H2 and Mg(OH)2, 
+			which in terms produce water 
+			
+			Decarbonation : MgCO3 at 670 C gives CO2 and MgO. Use Mg silica hydrate as binder
+
+			63 kg of [(Mg Fe)2 SiO4] + 9 kg of H2O -> 1 kg of H2 + 71 kg * [2 MgO + 2 FeO + SiO2]
+
+			SiO2 - amorphous silica
+			MgO:Si paste - Mg Silicate Hydrate (MSH) binder
+			
+			See 'Constructing Mars: Concrete and Energy Production from Serpentinization Products' 
+			https://agupubs.onlinelibrary.wiley.com/doi/pdf/10.1029/2017EA000353 
+		</description>
+		<input resource="olivine" rate="63.0"  />
+		<input resource="water" rate="9.0"  />
+
+		<output resource="hydrogen" rate="1.0"  />
+		<output resource="concrete" rate="71.0"  />
+	</process>
+
+	<process name="Produce Ethylene" power-required="0.05" >
+		<description>
+			2CO + 4H&lt;sub&gt;2&lt;/sub&gt; -> C&lt;sub&gt;2&lt;/sub&gt;H&lt;sub&gt;4&lt;/sub&gt; (ethylene) + 2H&lt;sub&gt;2&lt;/sub&gt;O
+			Requires iron catalyst.
+		</description>
+		<input resource="carbon dioxide" rate="100.0"  ambient="true" />
+		<input resource="hydrogen" rate="15.0"   />
+		<input resource="iron powder" rate="0.05"   />
+		<output resource="ethylene" rate="50.0"   />
+		<output resource="grey water" rate="64.2"  />
+		<output resource="iron powder" rate="0.05"  />
+	</process>
+
+	<process name="Produce Polyethylene" power-required="0.001" >
+		<description>
+			This reaction occurs when ethylene (aka ethene) is heated 
+			and put under pressure in the presence of a catalyst. 
+			Assuming 10% loss during production.
+		</description>
+		<input resource="ethylene" rate="5.0"  />
+		<output resource="polyethylene" rate="4.5"  />
+	</process>
+
+	<process name="Produce Styrene" power-required=".002" >
+		<description>
+			Wrapping four processes into one as follows: 
+			3C + CaO -> CaC2 + CO
+			CaC2 + H2O -> C2H2 (acetylene) + CaO
+			3C2H2 (acetylene) -> (condensed) C6H6 (benzene)
+			C6H6 (benzene) + C2H4 (ethylene) -> C2H3C6H5 (styrene)
+		</description>	
+		<input resource="carbon" rate="32.12"  />
+		<input resource="lime" rate="2.0"  />
+		<input resource="water" rate="16.05"  />
+		<input resource="ethylene" rate="8.34"  />
+		<output resource="carbon monoxide" rate="24.97"  />
+		<output resource="styrene" rate="30.95"  />
+	</process>
+
+	<process name="Produce Polystyrene" power-required=".005" >
+		<input resource="styrene" rate="5"  />
+		<output resource="polystyrene" rate="5"  />
+	</process>
+
+	<process name="Bake calcium carbonate to lime" power-required=".1"  >
+		<description>
+			CaCO3 (calcium carbonate) -> CaO (lime) + CO2 
+		</description>	
+		<input resource="calcium carbonate" rate="50.0"  />
+		<output resource="lime" rate="27.8"  />
+		<output resource="carbon dioxide" rate="21.8"  />
+	</process>
+
+	<!-- NASA's Regenerative ECLSS Water Recovery System (WRS)
+	consumes a time averaged 743 W-hr/hr in overall.
+
+	NASA's Waste Processing Assembly (WPA) removes free gas
+	and solid materials such as hair and lint, before the water
+	goes through a series of multifiltration beds for further
+	purification. It consumes about 320 W-hr/hr aboard ISS.
+
+	https://www.nasa.gov/centers/marshall/pdf/104840main_eclss.pdf
+	https://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/20090033097.pdf
+
+	It uses the state-of-the-art forward osmosis secondary treatment
+	system (FOST) as well as Synthetic Biological Membrane (SBM)
+	developed at NASA Ames.
+
+	We assume a waste processor capable of daily processsing
+	40 kg grey water (with .5 kg Cl2) and generate 38 kg clean
+	water and 2 kg of solid waste. Note that .5 kg of water is lost
+	through evaporation.
+	-->
+	<!-- Grey Water Recycling process for cleaning grey water. -->
+	<process name="Grey Water Processor" power-required=".32" >
+		<!-- Input: grey water, oxygen, chlorine  -->
+		<!-- resource: the resource added to the process. -->
+		<!-- See resources.xml -->
+		<!-- rate: the rate (kg/sol) the resource is added -->
+		<!-- ambient: true if resource is freely available from outside -->
+		<!--          false if supplied from settlement's inventory. -->
+
+		<input resource="grey water" rate="40.0"  />
+		<!-- Residual requirement for using chlorine in water treatment
+				is 0.25 to 1 mg of Cl gas per kg of water. Thus 40 kg water
+				requires 10 mg of Cl gas -->
+		<input resource="chlorine" rate=".00001"  />
+
+		<!-- Output : clean water, solid waste -->
+		<!-- resource: the resource resulting from the process. -->
+		<!-- See resources.xml -->
+		<!-- rate: the rate (kg/sol) the resource is produced -->
+		<!-- ambient: true if resource is vented outside -->
+		<!--          false if kept by settlement's inventory. -->
+		<output resource="water" rate="38"  />
+		<output resource="solid waste" rate="2"  />
+	</process>
+
+	<!-- NASA's Urine Processor Assembly (UPA) uses low pressure
+	vacuum distillation process is used to recover water from
+	urine. The entire process occurs within a rotating
+	distillation assembly that compensates for the absence
+	of gravity and therefore aids in the separation of liquids
+	and gases in space.
+
+	UPA is designed to process a nominal load of 9 kg/day
+	(19.8 lbs/day) of wastewater consisting of urine and flush.
+	It uses a time average of 315 W-hr/hr
+
+	Product water from the Urine Processor is combined with
+	all other wastewaters and delivered to the Water Processor
+	for treatment.
+
+	We assume a urine/fece processor capable of daily processsing
+	20 kg black water and generate 17 kg grey water and
+	2 kg of toxic waste. There is a lost of 1 kg of water.
+	-->
+	<process name="Black Water Processor" power-required=".315" >
+		<input resource="black water" rate="20"  />
+		<!-- Residual requirement for using chlorine in water treatment
+				is 0.25 to 1 mg of Cl gas per kg of water. Thus 20 kg water
+				requires 20 mg of Cl gas -->
+		<input resource="chlorine" rate=".00002"  />
+		<input resource="nitrospira spp" rate="0.02"  />
+		<input resource="nitrosomonas spp" rate="0.02"  />
+
+		<output resource="grey water" rate="17"  />
+		<output resource="toxic waste" rate="1"  />
+		<output resource="nitrogen" rate=".5"  />
+		<output resource="nitrite" rate=".5"  />
+		<output resource="nitrate" rate=".5"  />
+		<output resource="phosphorus" rate=".5"  />
+	</process>
+
+	<!-- For Waste Management
+	https://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/20160003882.pdf
+	http://www.nasa.gov/audience/foreducators/k-4/features/F_Recycling_for_Moon.html
+	-->
+	<process name= "Solid Waste Management" power-required=".2" >
+		<input resource="solid waste" rate="10"  />
+		<output resource="fertilizer" rate="1"  />
+		<output resource="compost" rate="7"  />
+		<output resource="carbon" rate="2"  />
+	</process>				
+
+	<process name= "Food Waste Management" power-required=".2" >
+		<input resource="food waste" rate="10"  />
+		<output resource="fertilizer" rate="1"  />					
+		<output resource="compost" rate="7"  />
+		<output resource="carbon" rate="2"  />					
+	</process>		
+
+	<process name= "Hazard Waste Incineration" power-required=".5" >
+		<input resource="toxic waste" rate="10"  />
+		<output resource="carbon" rate="10"  />					
+	</process>		
+
+	<process name= "Electronic Waste Disposal" power-required=".5" >
+		<input resource="electronic waste" rate="10"  />
+		<output resource="carbon" rate="10"  />					
+	</process>
+
+	<process name= "Soil Generation" power-required=".1" >
+		<input resource="crop waste" rate="5"  />
+		<input resource="compost" rate="5"  />
+		<output resource="soil" rate="10"  />					
+	</process>
+
+</process-list>
