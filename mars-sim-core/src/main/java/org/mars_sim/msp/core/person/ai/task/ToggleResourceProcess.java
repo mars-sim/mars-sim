@@ -43,19 +43,18 @@ public class ToggleResourceProcess extends Task implements Serializable {
 	private static SimLogger logger = SimLogger.getLogger(ToggleResourceProcess.class.getName());
 
 	/** Task name */
+	private static final String NAME = Msg.getString("Task.description.toggleResourceProcess"); //$NON-NLS-1$
 	private static final String TOGGLE_ON = Msg.getString("Task.description.toggleResourceProcess.on"); //$NON-NLS-1$
 	private static final String TOGGLE_OFF = Msg.getString("Task.description.toggleResourceProcess.off"); //$NON-NLS-1$
-
 
 	/** The stress modified per millisol. */
 	private static final double FACTOR = 1_000;
 	private static final double STRESS_MODIFIER = .25D;
 	private static final double SMALL_AMOUNT = 0.000001;
 	
-	
 	/** Task phases. */
-	private static final TaskPhase TOGGLING = new TaskPhase(Msg.getString("Task.phase.toggleProcess")); //$NON-NLS-1$
-	private static final TaskPhase FINISHED = new TaskPhase(Msg.getString("Task.phase.toggleProcess.finished")); //$NON-NLS-1$
+	private static final TaskPhase TOGGLING = new TaskPhase(Msg.getString("Task.phase.toggleResourceProcess.toggling")); //$NON-NLS-1$
+	private static final TaskPhase FINISHED = new TaskPhase(Msg.getString("Task.phase.toggleResourceProcess.finished")); //$NON-NLS-1$
 
 	private static final String OFF = "off";
 	private static final String ON = "on";
@@ -77,7 +76,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 	 * @param worker the worker performing the task.
 	 */
 	public ToggleResourceProcess(Worker worker) {
-        super(TOGGLE_ON, worker, true, false, STRESS_MODIFIER, SkillType.MECHANICS, 100D, 20D);
+        super(NAME, worker, true, false, STRESS_MODIFIER, SkillType.MECHANICS, 100D, 20D);
 
         SimpleEntry<Building, SimpleEntry<ResourceProcess, Double>> entry = worker.getSettlement().retrieveFirstResourceProcess();
         if (entry == null) {
@@ -99,9 +98,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 	 * @param entry
 	 */
 	private void init(SimpleEntry<Building, SimpleEntry<ResourceProcess, Double>> entry) {
-//		logger.info(worker, entry.getKey() + "   " + entry.getValue().getKey() 
-//			+ " (score: " + entry.getValue().getValue().intValue() + ") will be toggled.");
-      
+    
   		resourceProcessBuilding = entry.getKey();
   		process = entry.getValue().getKey();
   		
@@ -129,11 +126,11 @@ public class ToggleResourceProcess extends Task implements Serializable {
 		if (!toBeToggledOn) {
 			setName(TOGGLE_OFF);
 			setDescription(TOGGLE_OFF);
-			logger.info(resourceProcessBuilding, worker + ": Attempting to toggle off '" + process + "'.");
+			logger.info(resourceProcessBuilding, process + " : " + worker + " made an attempt to toggle it off.");
 		}
 		else {
 			setDescription(TOGGLE_ON);
-			logger.info(resourceProcessBuilding, worker + ": Attempting to toggle on '" + process + "'.");
+			logger.info(resourceProcessBuilding, process + " : " + worker + " made an attempt to toggle it on.");
 		}
 
 		if (resourceProcessBuilding.hasFunction(FunctionType.LIFE_SUPPORT))
@@ -236,21 +233,14 @@ public class ToggleResourceProcess extends Task implements Serializable {
 
 			// Reset the change flag to false
 			process.setFlag(false);
-			
-			if (resourceProcessBuilding != null) {
-				
-				if (resourceProcessBuilding.hasFunction(FunctionType.LIFE_SUPPORT))
-					logger.log(worker, Level.INFO, 1_000,
-						   "Done manually toggled " + toggle + " '" + process.getProcessName()
-						   + "' inside " + worker.getBuildingLocation().getName()
-						   + ".");
-				else
-					logger.log(worker, Level.INFO, 1_000,
-							"Done remotely toggled " + toggle + " '" + process.getProcessName()
-					       + "' for " + resourceProcessBuilding.getName()
-					       + ".");
-			}
-			
+
+			if (resourceProcessBuilding.hasFunction(FunctionType.LIFE_SUPPORT))				
+				logger.info(resourceProcessBuilding, process + " : " + worker 
+						+ " just toggled it " + toggle + " manually.");
+			else
+				logger.info(resourceProcessBuilding, process + " : " + worker 
+						+ " just toggled it " + toggle + " remotely.");
+
 			// Only need to run the finished phase once and for all
 			isFinished = true;
 			

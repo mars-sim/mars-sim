@@ -22,12 +22,10 @@ public class ResourceProcessEngine implements Serializable {
     private int modules;
     private ResourceProcessSpec processSpec;
 
-    
     ResourceProcessEngine(ResourceProcessSpec processSpec, int modules) {
         this.modules = modules;
         this.processSpec = processSpec;
     }
-
 
     public boolean getDefaultOn() {
         return processSpec.getDefaultOn();
@@ -74,7 +72,7 @@ public class ResourceProcessEngine implements Serializable {
     }
 
     /**
-     * How mant modules does this resource process engine have ?
+     * How many modules does this resource process engine have ?
      */
     public int getModules() {
         return modules;

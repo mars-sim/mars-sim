@@ -153,6 +153,7 @@ public class ResourceProcessing extends Function {
 				productionLevel = 1D;
 			else if (getBuilding().getPowerMode() == PowerMode.POWER_DOWN)
 				productionLevel = powerDownProcessingLevel;
+			
 			// Run each resource process.
 			Iterator<ResourceProcess> i = resourceProcesses.iterator();
 			while (i.hasNext()) {
