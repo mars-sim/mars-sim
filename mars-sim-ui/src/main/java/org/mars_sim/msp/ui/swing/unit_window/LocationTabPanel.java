@@ -57,7 +57,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 	/** default logger. */
 	private static final Logger logger = Logger.getLogger(LocationTabPanel.class.getName());
 
-	private static final String LOCATE_ICON = Msg.getString("icon.locate"); //$NON-NLS-1$
+	private static final String MAP_ICON = Msg.getString("icon.map"); //$NON-NLS-1$
 
 	private static final String FIND_ORANGE = "locator48_orange";
 //	private static final String FIND_BLUE = "locator48_blue";
@@ -94,7 +94,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener{
 	 */
 	public LocationTabPanel(Unit unit, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
-		super(null, ImageLoader.getNewIcon(LOCATE_ICON), Msg.getString("LocationTabPanel.title"), unit, desktop);
+		super(null, ImageLoader.getNewIcon(MAP_ICON), Msg.getString("LocationTabPanel.title"), unit, desktop);
 
 		locationStringCache = unit.getLocationTag().getExtendedLocation();
 		containerCache = unit.getContainerUnit();

@@ -174,12 +174,12 @@ public class RadiationExposure implements Serializable, Temporal {
 	 */
 	private static final int WHOLE_BODY_DOSE = 1000; 
 
-	private static final String BL_STRING = "Baseline";
-	private static final String GCR_STRING = "Galactic Comsic Radiation";
-	private static final String SEP_STRING = "Solar Energetic Particles ";
-	private static final String BFO_STRING = "Blood-Forming Organs";
-	private static final String OCULAR_STRING = "Ocular";
-	private static final String SKIN_STRING = "SKin";
+//	private static final String BL_STRING = "Baseline";
+//	private static final String GCR_STRING = "Galactic Comsic Radiation";
+//	private static final String SEP_STRING = "Solar Energetic Particles ";
+//	private static final String BFO_STRING = "Blood-Forming Organs";
+//	private static final String OCULAR_STRING = "Ocular";
+//	private static final String SKIN_STRING = "SKin";
 	private static final String EXPOSED_TO = "Exposed to ";
 	private static final String DOSE_OF_RAD = " mSv dose of radiation";
 	private static final String EVA_OPERATION = " during an EVA operation.";

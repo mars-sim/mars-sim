@@ -62,10 +62,7 @@ public class ToolToolBar extends WebToolBar implements ActionListener {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-//	private static final int ICON_H = 16;
-//	private static final int ICON_W = 16;
-//	private static final int EMPTY_W = GameManager.mode == GameMode.COMMAND  ? MainWindow.WIDTH - (15 + 4) * 18 - 330 : MainWindow.WIDTH - (15 + 4) * 18 - 300;//735;
-//	private static final int EMPTY_H = 32;
+	private static final int HEIGHT = 36;
 
 	public static final String WIKI_URL = Msg.getString("ToolToolBar.calendar.url"); //$NON-NLS-1$
 	public static final String WIKI_TEXT = Msg.getString("ToolToolBar.calendar.title"); //$NON-NLS-1$
@@ -104,7 +101,7 @@ public class ToolToolBar extends WebToolBar implements ActionListener {
 		// Fix tool bar
 		setFloatable(false);
 
-		setPreferredSize(new Dimension(0, 35));
+		setPreferredSize(new Dimension(0, HEIGHT));
 
 		setOpaque(false);
 
@@ -119,22 +116,6 @@ public class ToolToolBar extends WebToolBar implements ActionListener {
 
 	/** Prepares tool buttons */
 	private void prepareToolButtons() {
-
-//		ToolButton openButton = new ToolButton(Msg.getString("mainMenu.open"), Msg.getString("img.open")); //$NON-NLS-1$ //$NON-NLS-2$
-//		openButton.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent e) {
-//				parentMainWindow.loadSimulation(false);
-//			};
-//		});
-//		add(openButton);
-//
-//		ToolButton openAutosaveButton = new ToolButton(Msg.getString("mainMenu.openAutosave"), Msg.getString("img.openAutosave")); //$NON-NLS-1$ //$NON-NLS-2$
-//		openAutosaveButton.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent e) {
-//				parentMainWindow.loadSimulation(true);
-//			};
-//		});
-//		add(openAutosaveButton);
 
 		ToolButton saveButton = new ToolButton(Msg.getString("mainMenu.save"), Msg.getString("img.save")); //$NON-NLS-1$ //$NON-NLS-2$
 		saveButton.addActionListener(e -> parentMainWindow.saveSimulation(true));
@@ -163,13 +144,13 @@ public class ToolToolBar extends WebToolBar implements ActionListener {
 		toolButtons.addElement(searchButton);
 
 		// Add time tool button
-		ToolButton timeButton = new ToolButton(TimeWindow.NAME, Msg.getString("img.time")); //$NON-NLS-1$
+		ToolButton timeButton = new ToolButton(TimeWindow.NAME, Msg.getString("icon.time")); //$NON-NLS-1$
 		timeButton.addActionListener(this);
 		add(timeButton);
 		toolButtons.addElement(timeButton);
 
 		// Add monitor tool button
-		ToolButton monitorButton = new ToolButton(MonitorWindow.TITLE, Msg.getString("img.monitor")); //$NON-NLS-1$
+		ToolButton monitorButton = new ToolButton(MonitorWindow.TITLE, Msg.getString("icon.monitor")); //$NON-NLS-1$
 		monitorButton.addActionListener(this);
 		add(monitorButton);
 		toolButtons.addElement(monitorButton);
@@ -181,7 +162,7 @@ public class ToolToolBar extends WebToolBar implements ActionListener {
 		toolButtons.addElement(missionButton);
 
 		// Add settlement tool button
-		ToolButton settlementButton = new ToolButton(SettlementWindow.NAME, Msg.getString("img.settlementMapTool")); //$NON-NLS-1$
+		ToolButton settlementButton = new ToolButton(SettlementWindow.NAME, Msg.getString("icon.map")); //$NON-NLS-1$
 		settlementButton.addActionListener(this);
 		add(settlementButton);
 		toolButtons.addElement(settlementButton);
