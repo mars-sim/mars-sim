@@ -74,7 +74,7 @@ public class CommandHelper {
 	public static final String MILLISOL_FORMAT = "%.1f millisol";
 	public static final String KMPH_FORMAT = "%.2f km/h";
     public static final String MONEY_FORMAT = "$%,.2f";
-	private static final String DUE_FORMAT = "In %d:" + MarsClockFormat.TRUNCATED_TIME_FORMAT;
+	private static final String DUE_FORMAT = "%d:" + MarsClockFormat.TRUNCATED_TIME_FORMAT;
 
 	
 	private CommandHelper() {
@@ -519,7 +519,7 @@ public class CommandHelper {
 				// Toggling is active
 				double[] toggleTime = p.getToggleSwitchDuration();
 				if (toggleTime[0] == 0D) {
-					nextToggle = "Due";
+					nextToggle = "Due @ " + String.format(DUE_FORMAT, remainingTime[0], remainingTime[1]);
 				}
 				else {
 					nextToggle = String.format(PERC_FORMAT, toggleTime[0]/toggleTime[1]);
@@ -528,7 +528,7 @@ public class CommandHelper {
 			else {
 				int remainingSol = (remainingMilliSol/1000);
 				remainingMilliSol = remainingMilliSol % 1000;
-				nextToggle = String.format(DUE_FORMAT, remainingSol, remainingMilliSol);
+				nextToggle = "In - " + String.format(DUE_FORMAT, remainingSol, remainingMilliSol);
 			}
 
 			response.appendTableRow(p.getProcessName(), p.isProcessRunning(),

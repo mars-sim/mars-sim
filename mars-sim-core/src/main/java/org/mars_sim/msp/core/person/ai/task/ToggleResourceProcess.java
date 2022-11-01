@@ -7,7 +7,6 @@
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.io.Serializable;
-import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -34,7 +33,7 @@ import org.mars_sim.msp.core.tool.RandomUtil;
  * The ToggleResourceProcess class is an EVA task for toggling a particular
  * automated resource process on or off.
  */
-public class ToggleResourceProcess extends Task implements Serializable {
+public class ToggleResourceProcess extends Task {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -42,16 +41,84 @@ public class ToggleResourceProcess extends Task implements Serializable {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(ToggleResourceProcess.class.getName());
 
+	/**
+	 * A Class that hold the selecd most suitable Resource Process to toggle
+	 */
+	public static class SelectedResourceProcess implements Serializable {
+		private static final long serialVersionUID = 1L;
+
+		private ResourceProcess process;
+		private Building building;
+		private double score;
+
+		SelectedResourceProcess(Building building, ResourceProcess process, double score) {
+			this.process = process;
+			this.building = building;
+			this.score = score;
+		}
+
+		public double getScore() {
+			return score;
+		}
+
+		public ResourceProcess getProcess() {
+			return process;
+		}
+
+		public Building getBuilding() {
+			return building;
+		}
+
+		
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			long temp = Double.doubleToLongBits(score);
+			result = prime * (int) (temp ^ (temp >>> 32));
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			SelectedResourceProcess other = (SelectedResourceProcess) obj;
+			if (process == null) {
+				if (other.process != null)
+					return false;
+			} else if (!process.equals(other.process))
+				return false;
+			if (building == null) {
+				if (other.building != null)
+					return false;
+			} else if (!building.equals(other.building))
+				return false;
+			if (Double.doubleToLongBits(score) != Double.doubleToLongBits(other.score))
+				return false;
+			return true;
+		}
+
+		@Override
+		public String toString() {
+			return "SelectedResourceProcess [process=" + process.getProcessName() + ", building=" + building.getName() + ", score=" + score + "]";
+		}
+
+
+	}
+
 	/** Task name */
 	private static final String TOGGLE_ON = Msg.getString("Task.description.toggleResourceProcess.on"); //$NON-NLS-1$
 	private static final String TOGGLE_OFF = Msg.getString("Task.description.toggleResourceProcess.off"); //$NON-NLS-1$
-
 
 	/** The stress modified per millisol. */
 	private static final double FACTOR = 1_000;
 	private static final double STRESS_MODIFIER = .25D;
 	private static final double SMALL_AMOUNT = 0.000001;
-	
 	
 	/** Task phases. */
 	private static final TaskPhase TOGGLING = new TaskPhase(Msg.getString("Task.phase.toggleProcess")); //$NON-NLS-1$
@@ -79,7 +146,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 	public ToggleResourceProcess(Worker worker) {
         super(TOGGLE_ON, worker, true, false, STRESS_MODIFIER, SkillType.MECHANICS, 100D, 20D);
 
-        SimpleEntry<Building, SimpleEntry<ResourceProcess, Double>> entry = worker.getSettlement().retrieveFirstResourceProcess();
+        SelectedResourceProcess entry = worker.getSettlement().retrieveFirstResourceProcess();
         if (entry == null) {
         	entry = ToggleResourceProcess.getResourceProcessingBuilding(worker);
             
@@ -98,12 +165,9 @@ public class ToggleResourceProcess extends Task implements Serializable {
 	 * 
 	 * @param entry
 	 */
-	private void init(SimpleEntry<Building, SimpleEntry<ResourceProcess, Double>> entry) {
-//		logger.info(worker, entry.getKey() + "   " + entry.getValue().getKey() 
-//			+ " (score: " + entry.getValue().getValue().intValue() + ") will be toggled.");
-      
-  		resourceProcessBuilding = entry.getKey();
-  		process = entry.getValue().getKey();
+	private void init(SelectedResourceProcess entry) {
+       	resourceProcessBuilding = entry.getBuilding();
+  		process = entry.getProcess();
   		
   		if (resourceProcessBuilding != null || process != null) {
 
@@ -340,59 +404,51 @@ public class ToggleResourceProcess extends Task implements Serializable {
 	 * @param worker the worker.
 	 * @return SimpleEntry containing the building with the resource process to toggle, or null if none.
 	 */
-	public static SimpleEntry<Building, SimpleEntry<ResourceProcess, Double>> getResourceProcessingBuilding(Worker worker) {
-		Building selectedbuilding = null;
-		ResourceProcess mostPosProcess = null;
-		ResourceProcess mostNegProcess = null;
+	public static SelectedResourceProcess getResourceProcessingBuilding(Worker worker) {
+		SelectedResourceProcess mostPosEntry = null;
+		SelectedResourceProcess mostNegEntry = null;
 		double highest = 0;
 		double lowest = 0;
-		SimpleEntry<ResourceProcess, Double> entry = null;
 	
 		Settlement settlement = worker.getSettlement();
 		if (settlement != null) {
-			Iterator<Building> i = settlement.getBuildingManager().getBuildings(FunctionType.RESOURCE_PROCESSING).iterator();
-			while (i.hasNext()) {
-				Building building = i.next();
+
+			for(Building building : settlement.getBuildingManager().getBuildings(FunctionType.RESOURCE_PROCESSING)) {
 				// In this building, select the best resource to compete
-				entry = selectMostPosNegResourceProcess(building);	
-//				logger.info(worker, "" + building + "  entry: " + entry);
+				SelectedResourceProcess entry = selectMostPosNegResourceProcess(building);	
+				if (entry == null) {
+					continue;
+				}			
+
+				ResourceProcess process = entry.getProcess();
+				double score = entry.getScore();
+
 				// Check if this resource process is in the cache list.
 				// If true, go to the next one
 				if (settlement.getResourceProcessList().contains(entry)) {
 					logger.info(building, "Already contained " + entry);
 					continue;
 				}
-				
-				ResourceProcess process = entry.getKey();
-				double score = entry.getValue();
-						
-				if (process == null) {
-//					logger.info(building, "process is null.");
-					continue;
-				}
-			
-				if (process != null && process.isToggleAvailable() && !process.isFlagged()) {
+
+				if (process.isToggleAvailable() && !process.isFlagged()) {
 					if (score >= highest) {
 						highest = score;
-						mostPosProcess = process;
-						selectedbuilding = building;
+						mostPosEntry = entry;
 					}
 					else if (score <= lowest) {
 						lowest = score;
-						mostNegProcess = process;
-						selectedbuilding = building;
+						mostNegEntry = entry;
 					}
 				}
 			}
 		}
 			
-		SimpleEntry<Building, SimpleEntry<ResourceProcess, Double>> buildingProcess = null;
-		
-		if (mostPosProcess != null && highest >= Math.abs(lowest)) {
-			buildingProcess = new SimpleEntry<>(selectedbuilding, new SimpleEntry<>(mostPosProcess, highest));
+		SelectedResourceProcess buildingProcess = null;
+		if (mostPosEntry != null && highest >= Math.abs(lowest)) {
+			buildingProcess = mostPosEntry;
 		}
-		else if (mostNegProcess != null){
-			buildingProcess = new SimpleEntry<>(selectedbuilding, new SimpleEntry<>(mostNegProcess, lowest));
+		else if (mostNegEntry != null){
+			buildingProcess = mostNegEntry;
 		}
 		
 		return buildingProcess;
@@ -404,31 +460,29 @@ public class ToggleResourceProcess extends Task implements Serializable {
 	 * @param building the building
 	 * @return the resource process to toggle or null if none.
 	 */
-	public static SimpleEntry<ResourceProcess, Double> selectMostPosNegResourceProcess(Building building) {
+	public static SelectedResourceProcess selectMostPosNegResourceProcess(Building building) {
 		ResourceProcess mostPosProcess = null;
 		ResourceProcess mostNegProcess = null;
 		double highest = 0;
 		double lowest = 0;
 		
-		GoodsManager goodsManager = building.getSettlement().getGoodsManager();
-		double regStored = building.getSettlement().getAmountResourceStored(ResourceUtil.regolithID);
-		double iceStored = building.getSettlement().getAmountResourceStored(ResourceUtil.iceID);
+		Settlement settlement = building.getSettlement();
+		GoodsManager goodsManager = settlement.getGoodsManager();
+		double regStored = settlement.getAmountResourceStored(ResourceUtil.regolithID);
+		double iceStored = settlement.getAmountResourceStored(ResourceUtil.iceID);
 
 		double hydrogenVP = goodsManager.getGoodValuePoint(ResourceUtil.hydrogenID);
 		double methaneVP = goodsManager.getGoodValuePoint(ResourceUtil.methaneID);
 		double waterVP = goodsManager.getGoodValuePoint(ResourceUtil.waterID);
 		double oxygenVP = goodsManager.getGoodValuePoint(ResourceUtil.oxygenID);
 
-		Iterator<ResourceProcess> i = building.getResourceProcessing().getProcesses().iterator();
-		while (i.hasNext()) {
-			ResourceProcess process = i.next();
+		for(ResourceProcess process : building.getResourceProcessing().getProcesses()) {
 			if (process.isToggleAvailable() && !process.isFlagged()) {
-				double score = computeResourceScore(building.getSettlement(), process);
-//				logger.info(building, process + "  score: " + score);
+				double score = computeResourceScore(settlement, process);
 
 				// Check if settlement is missing one or more of the output resources.
 				// Will multiply by 10 internally within computeResourcesValue() in ToggleResourceProcess
-				if (isEmptyOutputResourceInProcess(building.getSettlement(), process)) {
+				if (isEmptyOutputResourceInProcess(settlement, process)) {
 					// will push for toggling on this process to produce more output resources
 					if (process.isProcessRunning()) {
 						// no need to change it
@@ -442,7 +496,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 				// NOTE: Need to detect if the output resource is dwindling 
 
 				// Check if settlement is missing one or more of the input resources.
-				if (isEmptyInputResourceInProcess(building.getSettlement(), process)) {
+				if (isEmptyInputResourceInProcess(settlement, process)) {
 					if (process.isProcessRunning()) {
 						// will need to push for toggling off this process since input resource is insufficient 
 						score *= FACTOR;
@@ -451,9 +505,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 						continue;
 					}
 				}
-				
-//				logger.info(worker, "1. " + process + "  result: " + result);
-				
+								
 				if (score > 0 && process.isProcessRunning()) {
 					// let it continue running. No need to turn it off.
 					continue;
@@ -525,10 +577,13 @@ public class ToggleResourceProcess extends Task implements Serializable {
 			}
 		}
 		
-		if (highest >= Math.abs(lowest))
-			return new SimpleEntry<>(mostPosProcess, highest);
-		else
-			return new SimpleEntry<>(mostNegProcess, lowest);
+		SelectedResourceProcess result = null;
+		if ((mostPosProcess != null) && (highest >= Math.abs(lowest)))
+			result = new SelectedResourceProcess(building, mostPosProcess, highest);
+		else if (mostNegProcess != null)
+			result =  new SelectedResourceProcess(building, mostNegProcess, lowest);
+
+		return result;
 	}
 
 	/**
