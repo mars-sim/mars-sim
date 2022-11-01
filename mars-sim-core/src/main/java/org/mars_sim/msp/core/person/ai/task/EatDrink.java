@@ -1009,12 +1009,12 @@ public class EatDrink extends Task {
 			
 			// Test to see if there's enough water
 			if (available >= amount) {
-				logger.info(person, 10_000L, "Drinking " + Math.round(amount * 100.0)/100.0 + " kg of water from EVA suit.");
+				logger.info(person, 10_000L, "Drinking " + Math.round(amount * 100.0)/100.0 + " kg of water from " + suit.getName() + ".");
 				consumeWater(suit, amount, waterOnly);
 			}
 			else if (available > 0) {
 				amount = available;
-				logger.info(person, 10_000L, "Drinking " + Math.round(amount * 100.0)/100.0 + " kg of water from EVA suit.");
+				logger.info(person, 10_000L, "Drinking " + Math.round(amount * 100.0)/100.0 + " kg of water from " + suit.getName() + ".");
 				consumeWater(suit, amount, waterOnly);
 			}
 		}

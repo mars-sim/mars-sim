@@ -453,38 +453,55 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	 * @param destination {@link Unit} the destination container unit
 	 */
 	public boolean transfer(Unit destination) {
-		boolean transferred = false;
+		boolean canRetrieve = false;
+		boolean canStore = false;
+//		boolean transferred = false;
 		Unit cu = getContainerUnit();
 
 		if (cu.getUnitType() == UnitType.SETTLEMENT) {
-			transferred = ((Settlement)cu).removeEquipment(this);
+			canRetrieve = ((Settlement)cu).removeEquipment(this);
 		}
 		else if (cu.getUnitType() == UnitType.PLANET) {
 			// do nothing. mars surface currently doesn't track equipment
-			transferred = true;
+			canRetrieve = true;
 		}
 		else {
-			transferred = ((EquipmentOwner)cu).removeEquipment(this);
+			canRetrieve = ((EquipmentOwner)cu).removeEquipment(this);
 		}
 
-		if (transferred) {
+		if (!canRetrieve) {
+				logger.warning(this + " could not be retrieved from "
+						+ cu + ".");
+				// NOTE: need to revert back the retrieval action
+		}
+		else {	
 
 			if (destination.getUnitType() == UnitType.SETTLEMENT) {
-				transferred = ((Settlement)destination).addEquipment(this);
+				canStore = ((Settlement)destination).addEquipment(this);
 			}
 			else if (destination.getUnitType() == UnitType.PLANET) {
 				// do nothing. mars surface currently doesn't track equipment
-				transferred = true;
+				canStore = true;
 			}
 			else {
-				transferred = ((EquipmentOwner)destination).addEquipment(this);
+				canStore = ((EquipmentOwner)destination).addEquipment(this);
 			}
 
-			if (!transferred) {
-				logger.warning(this, "Could not be transferred from '"
-						+ cu + " to '" 
+			if (!canStore) {
+				logger.warning(this, "Could not be stored into "
 						+ destination + "'.");
-				// NOTE: need to revert back the storage action
+				
+				// Need to go back the original container
+				boolean canStoreBack = ((EquipmentOwner)cu).addEquipment(this);
+				if (canStoreBack) {
+					logger.warning(this, "Just stored back into "
+							+ cu + "'.");
+				}
+				else {
+					logger.warning(this, "Could not be stored back into "
+							+ cu + "'.");
+				}
+				
 			}
 			else {
 				// Set the new container unit (which will internally set the container unit id)
@@ -495,12 +512,8 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 				getContainerUnit().fireUnitUpdate(UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT, this);
 			}
 		}
-		else {
-			logger.warning(this + " could not be retrieved from " + cu + ".");
-			// NOTE: need to revert back the retrieval action
-		}
-
-		return transferred;
+		
+		return canRetrieve && canStore;
 	}
 
 	/**

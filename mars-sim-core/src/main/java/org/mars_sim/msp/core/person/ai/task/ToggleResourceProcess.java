@@ -102,7 +102,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
   		resourceProcessBuilding = entry.getKey();
   		process = entry.getValue().getKey();
   		
-  		if (resourceProcessBuilding != null || process != null) {
+  		if (resourceProcessBuilding != null && process != null) {
 
   	        if (worker.isInSettlement()) {
   	        	setupResourceProcess();
