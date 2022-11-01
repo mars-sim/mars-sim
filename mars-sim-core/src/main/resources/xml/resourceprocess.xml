@@ -434,7 +434,7 @@
 			<output resource="grey water" rate="10.0"  />
 	</process>
 
-	<process name="extract minerals from smectite deposits" power-required="0.1" >
+	<process name="Extract minerals from smectite deposits" power-required="0.1" >
 			<input resource="smectite" rate="50.0"  />
 			<output resource="aluminum oxide" rate="9.0"  />
 			<output resource="lithium" rate="0.5"  />
@@ -449,7 +449,7 @@
 			<output resource="grey water" rate="2.0"  />
 	</process>
 
-	<process name="extract minerals from allophane deposits" power-required="0.2" >
+	<process name="Extract minerals from allophane deposits" power-required="0.2" >
 			<input resource="allophane" rate="50.0"  />
 			<output resource="aluminum oxide" rate="30.0"  />
 			<output resource="silica" rate="1.0"  />
@@ -550,7 +550,7 @@
 		<output resource="grey water" rate="26.0"  />
 	</process>
 				
-	<process name="make quartz from silica" power-required="0.5" >
+	<process name="Make quartz from silica" power-required="0.5" >
 		<input resource="silica" rate="45.0"  />
 		<input resource="calcium carbonate" rate="1.0"  />
 		<input resource="sodium carbonate" rate="1.0"  />
@@ -777,31 +777,31 @@
 	https://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/20160003882.pdf
 	http://www.nasa.gov/audience/foreducators/k-4/features/F_Recycling_for_Moon.html
 	-->
-	<process name= "Solid Waste Management" power-required=".2" >
+	<process name="Solid Waste Management" power-required=".2" >
 		<input resource="solid waste" rate="10"  />
 		<output resource="fertilizer" rate="1"  />
 		<output resource="compost" rate="7"  />
 		<output resource="carbon" rate="2"  />
 	</process>				
 
-	<process name= "Food Waste Management" power-required=".2" >
+	<process name="Food Waste Management" power-required=".2" >
 		<input resource="food waste" rate="10"  />
 		<output resource="fertilizer" rate="1"  />					
 		<output resource="compost" rate="7"  />
 		<output resource="carbon" rate="2"  />					
 	</process>		
 
-	<process name= "Hazard Waste Incineration" power-required=".5" >
+	<process name="Hazard Waste Incineration" power-required=".5" >
 		<input resource="toxic waste" rate="10"  />
 		<output resource="carbon" rate="10"  />					
 	</process>		
 
-	<process name= "Electronic Waste Disposal" power-required=".5" >
+	<process name="Electronic Waste Disposal" power-required=".5" >
 		<input resource="electronic waste" rate="10"  />
 		<output resource="carbon" rate="10"  />					
 	</process>
 
-	<process name= "Soil Generation" power-required=".1" >
+	<process name="Soil Generation" power-required=".1" >
 		<input resource="crop waste" rate="5"  />
 		<input resource="compost" rate="5"  />
 		<output resource="soil" rate="10"  />					

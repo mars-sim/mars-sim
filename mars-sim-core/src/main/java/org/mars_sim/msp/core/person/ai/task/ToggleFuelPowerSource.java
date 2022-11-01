@@ -487,14 +487,14 @@ implements Serializable {
         String toggle = "off";
         if (toggleOn) toggle = "on";
 
-        logger.log(person, Level.FINE, 30_000L,
+        logger.log(person, Level.INFO, 30_000L,
 				"Turning " + toggle + " " + powerSource.getType()
                 + " in " + building.getNickName() + ".");
 
         // Check if an accident happens during toggle power source.
         checkForAccident(time);
 
-        return time - workTime;
+        return 0;
     }
 
 
