@@ -184,14 +184,14 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		toolsMenu.add(searchToolItem);
 
 		// Create time tool menu item
-		ImageIcon timeicon = new ImageIcon(getClass().getResource(Msg.getString("img.time"))); //$NON-NLS-1$
+		ImageIcon timeicon = new ImageIcon(getClass().getResource(Msg.getString("icon.time"))); //$NON-NLS-1$
 		timeToolItem = new JCheckBoxMenuItem(TimeWindow.NAME, timeicon);
 		timeToolItem.addActionListener(this);
 		timeToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0, false));
 		toolsMenu.add(timeToolItem);
 
 		// Create monitor tool menu item
-		ImageIcon monitoricon = new ImageIcon(getClass().getResource(Msg.getString("img.monitor"))); //$NON-NLS-1$
+		ImageIcon monitoricon = new ImageIcon(getClass().getResource(Msg.getString("icon.monitor"))); //$NON-NLS-1$
 		monitorToolItem = new JCheckBoxMenuItem(MonitorWindow.TITLE, monitoricon);
 		monitorToolItem.addActionListener(this);
 		monitorToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F4, 0, false));
@@ -205,7 +205,7 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		toolsMenu.add(missionToolItem);
 
 		// Create settlement map tool menu item
-		ImageIcon settlementtoolicon = new ImageIcon(getClass().getResource(Msg.getString("img.settlementMapTool"))); //$NON-NLS-1$
+		ImageIcon settlementtoolicon = new ImageIcon(getClass().getResource(Msg.getString("icon.map"))); //$NON-NLS-1$
 		settlementToolItem = new JCheckBoxMenuItem(SettlementWindow.NAME, settlementtoolicon);
 		settlementToolItem.addActionListener(this);
 		settlementToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F6, 0, false));

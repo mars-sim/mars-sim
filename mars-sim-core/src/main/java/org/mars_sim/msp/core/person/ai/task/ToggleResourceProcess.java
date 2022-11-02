@@ -168,15 +168,11 @@ public class ToggleResourceProcess extends Task {
 		resourceProcessBuilding = entry.getBuilding();
 		process = entry.getProcess();
 
-		if (resourceProcessBuilding != null || process != null) {
-
-			if (worker.isInSettlement()) {
-				setupResourceProcess();
-			} else {
-				clearTask("Not in Settlement.");
-			}
-		} else {
-			clearTask("No need of toggling resource processes.");
+		if (worker.isInSettlement()) {
+			setupResourceProcess();
+		}
+		else {
+			clearTask("Not in Settlement.");
 		}
 	}
 
