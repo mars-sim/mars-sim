@@ -70,7 +70,7 @@ public class CommandHelper {
 	public static final String DOUBLE_FORMAT = "%.2f";
 	public static final String KG_FORMAT = "%.2f kg";
 	public static final String KM_FORMAT = "%.2f km";
-	public static final String PERC_FORMAT = "%.1f%%";
+	public static final String PERC_FORMAT = "%.0f%%";
 	public static final String MILLISOL_FORMAT = "%.1f millisol";
 	public static final String KMPH_FORMAT = "%.2f km/h";
     public static final String MONEY_FORMAT = "$%,.2f";
@@ -522,7 +522,8 @@ public class CommandHelper {
 					nextToggle = "Due @ " + String.format(DUE_FORMAT, remainingTime[0], remainingTime[1]);
 				}
 				else {
-					nextToggle = String.format(PERC_FORMAT, toggleTime[0]/toggleTime[1]);
+					nextToggle = (p.isFlagged() ? "Active " : "Inactive ")
+									+ String.format(PERC_FORMAT, (100D * toggleTime[0])/toggleTime[1]);
 				}
 			}
 			else {

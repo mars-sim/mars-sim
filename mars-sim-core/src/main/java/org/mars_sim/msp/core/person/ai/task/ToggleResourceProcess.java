@@ -206,6 +206,7 @@ public class ToggleResourceProcess extends Task {
 		addPhase(FINISHED);
 
 		setPhase(TOGGLING);
+		process.setFlag(true);
 	}
 
 	@Override
@@ -291,9 +292,6 @@ public class ToggleResourceProcess extends Task {
 				process.setProcessRunning(false);
 			}
 
-			// Reset the change flag to false
-			process.setFlag(false);
-
 			if (resourceProcessBuilding.hasFunction(FunctionType.LIFE_SUPPORT))
 				logger.info(resourceProcessBuilding, process + " : " + worker
 						+ " just toggled it " + toggle + " manually.");
@@ -355,6 +353,19 @@ public class ToggleResourceProcess extends Task {
 	private void clearTask(String text) {
 		logger.log(worker, Level.INFO, 20_000, text);
 		endTask();
+	}
+
+	
+	/**
+	 * This method is part of the Task Life Cycle. It is called once
+	 * and only once per Task when it is ended. Release the flag on the Resoruceprocess as the Task has ended.
+	 * Subclasses should override to receive callback when the Task is ending.
+	 */
+	@Override
+	protected void clearDown() {
+		if (process != null) {
+			process.setFlag(false);
+		}
 	}
 
 	/**
@@ -569,30 +580,6 @@ public class ToggleResourceProcess extends Task {
 	}
 
 	/**
-	 * Gets the resource process for toggling.
-	 *
-	 * @param building the building
-	 * @return the resource process to toggle or null if none.
-	 */
-	public static ResourceProcess getResourceProcess(Building building) {
-		ResourceProcess result = null;
-		double bestDiff = 0D;
-		Iterator<ResourceProcess> i = building.getResourceProcessing().getProcesses().iterator();
-		while (i.hasNext()) {
-			ResourceProcess process = i.next();
-			if (process.isToggleAvailable()) {
-				double score = computeResourceScore(building.getSettlement(), process);
-				if (score > bestDiff) {
-					bestDiff = score;
-					result = process;
-				}
-			}
-		}
-
-		return result;
-	}
-
-	/**
 	 * Gets the composite resource score based on the ratio of
 	 * VPs of outputs to VPs of inputs for a resource process.
 	 *
@@ -601,10 +588,17 @@ public class ToggleResourceProcess extends Task {
 	 * @return the resource score (0 = no need to change); positive number -> demand
 	 *         to toggle on; negative number -> demand to toggle off
 	 */
-	public static double computeResourceScore(Settlement settlement, ResourceProcess process) {
+	private static double computeResourceScore(Settlement settlement, ResourceProcess process) {
 		double inputValue = computeResourcesValue(settlement, process, true);
 		double outputValue = computeResourcesValue(settlement, process, false);
-		return outputValue - inputValue;
+		double score = outputValue - inputValue;
+
+		// Score is influence if a Toggle is active but no one working. Finish Toggles that have started
+		double[] toggleTime = process.getToggleSwitchDuration();
+		if ((toggleTime[0] > 0) && !process.isFlagged()) {
+			score = (score * 2) + (100D * ((toggleTime[1] - toggleTime[0])/toggleTime[1]));
+		}
+		return score;
 	}
 
 	/**
