@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Simulation.java
- * @date 2022-07-28
+ * @date 2022-11-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.core;
@@ -288,7 +288,27 @@ public class Simulation implements ClockListener, Serializable {
 		unitManager.setOriginalBuild(Simulation.BUILD);
 	}
 
-
+	public void runSocietySim() {
+		Simulation sim = instance();
+		
+		// Create marsClock instance
+		masterClock = new MasterClock(256);
+		MarsClock marsClock = masterClock.getMarsClock();
+//		EarthClock earthClock = masterClock.getEarthClock();
+		
+		// Create orbit info
+		orbitInfo = new OrbitInfo(marsClock);
+		// Create weather
+		weather = new Weather();
+		Weather.initializeInstances(sim, marsClock, orbitInfo);
+		
+		// Create surface features
+		surfaceFeatures = new SurfaceFeatures();
+//		SurfaceFeatures.initializeInstances(this, simulationConfig.getLandmarkConfiguration(),
+//				marsClock, orbitInfo, weather);
+	}
+		
+	
 	public void testRun() {
 		Simulation sim = Simulation.instance();
 		simulationConfig = SimulationConfig.instance();

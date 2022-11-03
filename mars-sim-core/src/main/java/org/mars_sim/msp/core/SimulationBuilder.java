@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * SimulationBuilder.java
- * @date 2022-09-15
+ * @date 2022-11-02
  * @author Barry Evans
  */
 package org.mars_sim.msp.core;
@@ -45,6 +45,7 @@ public class SimulationBuilder {
 	private static final String CREW_ARG = "crew";
 	private static final String DIAGNOSTICS_ARG = "diags";
 	private static final String SCENARIO_ARG = "scenario";
+	private static final String WHITESPACES = "---------------------------------------------------";
 	
 	private static final Logger logger = Logger.getLogger(SimulationBuilder.class.getName());
 	
@@ -255,7 +256,6 @@ public class SimulationBuilder {
 	 */
 	public Simulation start() {
 		Version version = java.lang.Runtime.version();
-		String WHITESPACES = "---------------------------------------------------";
 		logger.config(WHITESPACES);
 		logger.config("    Java Version Full String = " + version);
 		logger.config("Java Version Feature Element = " + version.feature());
@@ -265,7 +265,6 @@ public class SimulationBuilder {
 		logger.config("          Java Version Build = " + version.build().orElse(0));
 		logger.config("  Java additional build Info = " + version.optional().orElse("None"));
 		logger.config("       Java Pre-Release Info = " + version.pre().orElse("NA"));
-		logger.config(WHITESPACES);
 		
 		// Load xml files but not until arguments parsed since it may change 
 		// the data directory
@@ -325,6 +324,27 @@ public class SimulationBuilder {
 		return sim;
 	}
 
+	/**
+	 * Starts the society Simulation.
+	 * 
+	 */
+	public void startSocietySim() {
+		Version version = java.lang.Runtime.version();
+		logger.config(WHITESPACES);
+		logger.config("    Java Version Full String = " + version);
+		logger.config("Java Version Feature Element = " + version.feature());
+		logger.config("Java Version Interim Element = " + version.interim());
+		logger.config("  Java Patch Element Version = " + version.patch());
+		logger.config(" Java Update Element Version = " + version.update());
+		logger.config("          Java Version Build = " + version.build().orElse(0));
+		logger.config("  Java additional build Info = " + version.optional().orElse("None"));
+		logger.config("       Java Pre-Release Info = " + version.pre().orElse("NA"));
+		
+		// Clock is always first
+		Simulation sim = Simulation.instance();
+		sim.runSocietySim();
+	}
+	
 	/**
 	 * Loads a previously saved simulation.
 	 * 

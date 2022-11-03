@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MarsProject.java
- * @date 2022-08-08
+ * @date 2022-11-02
  * @author Scott Davis
  */
 package org.mars_sim.main;
@@ -166,6 +166,20 @@ public class MarsProject {
 							builder.setSimFile(filePath);
 						}
 					}
+					else if (type == 3) {
+						// Proceed with configuring the society mode
+						logger.config("Configuring the society mode...");
+						
+						builder.startSocietySim();
+
+						// Start the wait layer
+						InteractiveTerm.startLayer();
+
+						// Start beryx console
+						startConsoleThread();
+						
+						return;
+					}
 					else {
 						// Check out crew flag
 						builder.setUseCrews(interactiveTerm.getUseCrew());
@@ -193,7 +207,7 @@ public class MarsProject {
 	}
 
 	/**
-	 * Checks what switches or arguments have been provided
+	 * Checks what switches or arguments have been provided.
 	 * 
 	 * @param builder
 	 * @param args
@@ -267,7 +281,7 @@ public class MarsProject {
 	}
 
 	/**
-	 * Starts the scenario editor
+	 * Starts the scenario editor.
 	 * 
 	 * @param builder
 	 */
@@ -383,7 +397,7 @@ public class MarsProject {
 
 
 	/**
-	 * Runs the main window 
+	 * Runs the main window.
 	 * 
 	 * @param cleanUI
 	 */
@@ -415,7 +429,7 @@ public class MarsProject {
 	}
 
 	/**
-	 * The ConsoleTask allows running the beryx console in a thread
+	 * The ConsoleTask allows running the beryx console in a thread.
 	 */
 	class ConsoleTask implements Runnable {
 
@@ -429,7 +443,7 @@ public class MarsProject {
 	}
 
 	/**
-	 * The main starting method for the application
+	 * The main starting method for the application.
 	 *
 	 * @param args the command line arguments
 	 */

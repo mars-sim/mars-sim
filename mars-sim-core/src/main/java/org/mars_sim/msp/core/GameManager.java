@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * GameManager.java
- * @date 2021-11-30
+ * @date 2022-11-02
  * @author Manny Kung
  */
 
@@ -21,7 +21,7 @@ public class GameManager {
 
     /** The GameMode enums. */
     public enum GameMode {
-        SANDBOX, COMMAND;
+        COMMAND, SANDBOX, SOCIETY;
     }
 
     /** An instance of GameMode. */

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * InteractiveTerm.java
- * @date 2021-11-29
+ * @date 2022-11-02
  * @author Manny Kung
  */
 package org.mars.sim.console;
@@ -119,7 +119,7 @@ public class InteractiveTerm {
 	
 	
 	/**
-	 * Selects the game mode
+	 * Selects the game mode.
 	 *
 	 * @return
 	 */
@@ -231,16 +231,18 @@ public class InteractiveTerm {
 				+ System.lineSeparator()
 				+ EXIT_OPTION_0
 				+ System.lineSeparator()
-				+ "1. Command Mode  (Experimental only)"
+				+ "1. Command Mode (Experimental only)"
 				+ System.lineSeparator()
 				+ "2. Sandbox Mode"
+				+ System.lineSeparator()
+				+ "3. Society Mode (Experimental only)"
 				+ System.lineSeparator()
 				+ System.lineSeparator()
 				);
 	}
 	
 	/**
-	 * Selects the game mode
+	 * Selects the game mode.
 	 *
 	 * @return
 	 */
@@ -249,7 +251,7 @@ public class InteractiveTerm {
 
 		printModeSelectionMenu();
 		
-        handler.addStringTask("input", "Select the Game Mode:", false).addChoices("0", "1", "2").constrainInputToChoices();
+        handler.addStringTask("input", "Select the Game Mode:", false).addChoices("0", "1", "2", "3").constrainInputToChoices();
         handler.executeOneTask();
 
         if (GameManager.input.equals("0")) {
@@ -260,7 +262,7 @@ public class InteractiveTerm {
         }
         else if (GameManager.input.equals("1")) {
         	marsTerminal.print(System.lineSeparator());
-			marsTerminal.print("Go to Command Mode...");
+			marsTerminal.print("Go to Command Mode.");
         	marsTerminal.print(System.lineSeparator());
 
         	modeChoice = configureCommandMode(false);
@@ -268,12 +270,20 @@ public class InteractiveTerm {
 
         else if (GameManager.input.equals("2")) {
         	marsTerminal.print(System.lineSeparator());
-			marsTerminal.print("Go to Sandbox Mode...");
+			marsTerminal.print("Go to Sandbox Mode.");
         	marsTerminal.print(System.lineSeparator());
 
         	modeChoice = configureSandoxMode();
         }
 
+        else if (GameManager.input.equals("3")) {
+        	marsTerminal.print(System.lineSeparator());
+			marsTerminal.print("Go to Society Mode.");
+        	marsTerminal.print(System.lineSeparator());
+
+        	modeChoice = configureSocietyMode();
+        }
+        
 		marsTerminal.print(System.lineSeparator());
 
         return modeChoice;
@@ -525,6 +535,23 @@ public class InteractiveTerm {
     	return sandboxCfg;
 	}
 
+	/**
+	 * Configures the society mode
+	 *
+	 * @return
+	 */
+	private int configureSocietyMode() {
+		int societyCfg = 3;
+
+		GameManager.setGameMode(GameMode.SOCIETY);
+
+		marsTerminal.print(System.lineSeparator());
+		marsTerminal.print("Starting the Society Simulation.");
+    	marsTerminal.print(System.lineSeparator());
+
+		return societyCfg;
+	}
+		
 	/**
 	 * Loads the previously saved commander profile
 	 */
