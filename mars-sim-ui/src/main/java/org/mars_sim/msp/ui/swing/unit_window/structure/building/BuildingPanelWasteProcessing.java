@@ -25,7 +25,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.function.WasteProcess;
+import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
 import org.mars_sim.msp.core.structure.building.function.WasteProcessing;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -57,7 +57,7 @@ public class BuildingPanelWasteProcessing extends BuildingFunctionPanel {
 	
 	// Data members
 	private WasteProcessing processor;
-	private List<WasteProcess> processes;
+	private List<ResourceProcess> processes;
 	private JPanel processListPanel;
 	
 	/**
@@ -104,9 +104,7 @@ public class BuildingPanelWasteProcessing extends BuildingFunctionPanel {
 		processListPanel.removeAll();
 
 		// Add a label for each process in each processing building.
-		Iterator<WasteProcess> j = processes.iterator();
-		while (j.hasNext()) {
-			WasteProcess process = j.next();
+		for(ResourceProcess process : processes) {
 			processListPanel.add(new WasteProcessPanel(process, building));
 		}
 	}
@@ -131,7 +129,7 @@ public class BuildingPanelWasteProcessing extends BuildingFunctionPanel {
 		private static final long serialVersionUID = 1L;
 
 		// Data members.
-		private WasteProcess process;
+		private ResourceProcess process;
 		private JLabel label;
 		private JButton toggleButton;
 		private ImageIcon dotGreen;
@@ -141,21 +139,21 @@ public class BuildingPanelWasteProcessing extends BuildingFunctionPanel {
 		/**
 		 * Constructor.
 		 * 
-		 * @param process the resource process.
+		 * @param process2 the resource process.
 		 * @param building the building the process is in.
 		 */
-		WasteProcessPanel(WasteProcess process, Building building) {
+		WasteProcessPanel(ResourceProcess process2, Building building) {
 			// Use JPanel constructor.
 			super();
 
 			setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
 
-			this.process = process;
+			this.process = process2;
 
 			toggleButton = new JButton();
 			toggleButton.setMargin(new Insets(0, 0, 0, 0));
 			toggleButton.addActionListener(e -> {
-					WasteProcess p = getProcess();
+					ResourceProcess p = getProcess();
 					boolean isRunning = p.isProcessRunning();
 					p.setProcessRunning(!isRunning);
 					update();
@@ -167,14 +165,14 @@ public class BuildingPanelWasteProcessing extends BuildingFunctionPanel {
 			toggleButton.setToolTipText(Msg.getString("TabPanelWasteProcesses.tooltip.toggleButton")); //$NON-NLS-1$
 			add(toggleButton);
 			label = new JLabel(Msg.getString("TabPanelWasteProcesses.processLabel", //$NON-NLS-1$
-					building.getNickName(), process.getProcessName())); 
+					building.getNickName(), process2.getProcessName())); 
 			add(label);
 
 			// Load green and red dots.
 			dotGreen = ImageLoader.getIcon(Msg.getString("img.dotGreen_full")); //$NON-NLS-1$
 			dotRed = ImageLoader.getIcon(Msg.getString("img.dotRed")); //$NON-NLS-1$
 
-			if (process.isProcessRunning()) toggleButton.setIcon(dotGreen);
+			if (process2.isProcessRunning()) toggleButton.setIcon(dotGreen);
 			else toggleButton.setIcon(dotRed);
 
 			setToolTipText(getToolTipString(building));
@@ -237,7 +235,7 @@ public class BuildingPanelWasteProcessing extends BuildingFunctionPanel {
 			else toggleButton.setIcon(dotRed);
 		}
 
-		private WasteProcess getProcess() {
+		private ResourceProcess getProcess() {
 			return process;
 		}
 	}	

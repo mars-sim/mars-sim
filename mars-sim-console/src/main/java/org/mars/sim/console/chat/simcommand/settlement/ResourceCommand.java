@@ -24,7 +24,6 @@ import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcessing;
-import org.mars_sim.msp.core.structure.building.function.WasteProcess;
 import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 
 public class ResourceCommand extends AbstractSettlementCommand {
@@ -229,7 +228,7 @@ public class ResourceCommand extends AbstractSettlementCommand {
 		// Prints output from waste processing
 		double output2 = 0;
 		for (Building b : settlement.getBuildingManager().getBuildings(FunctionType.WASTE_PROCESSING)) {
-			for (WasteProcess p : b.getWasteProcessing().getProcesses()) {
+			for (ResourceProcess p : b.getWasteProcessing().getProcesses()) {
 				if (p.isProcessRunning())
 					output2 += p.getMaxOutputRate(id);
 			}

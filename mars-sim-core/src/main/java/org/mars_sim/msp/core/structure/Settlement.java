@@ -64,6 +64,7 @@ import org.mars_sim.msp.core.person.ai.task.DayDream;
 import org.mars_sim.msp.core.person.ai.task.EatDrink;
 import org.mars_sim.msp.core.person.ai.task.Read;
 import org.mars_sim.msp.core.person.ai.task.Relax;
+import org.mars_sim.msp.core.person.ai.task.ToggleResourceProcess.SelectedResourceProcess;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.person.health.RadiationExposure;
@@ -357,7 +358,7 @@ public class Settlement extends Structure implements Temporal,
 	/** The settlement's list of robots within. */
 	private Set<Robot> robotsWithin;
 
-	private List<SimpleEntry<Building, SimpleEntry<ResourceProcess, Double>>> resourceProcessList = new ArrayList<>();
+	private List<SelectedResourceProcess> resourceProcessList = new ArrayList<>();
 	
 	private SimpleEntry<Malfunction, Malfunctionable> malfunctionPair;
 	
@@ -1105,12 +1106,10 @@ public class Settlement extends Structure implements Temporal,
 			
 			if (!resourceProcessList.isEmpty() && resourceProcessList.size() > 1) {
 				int size = resourceProcessList.size();
-				SimpleEntry<Building, SimpleEntry<ResourceProcess, Double>> entry =
+				SelectedResourceProcess entry =
 						resourceProcessList.get(0);
 		        logger.info(this, "resourceProcessList has a total of " + size 
-		        		+ " entries. Now removing the first entry '" + entry.getKey() 
-		        		+ " " + entry.getValue().getKey() 
-		        		+ " (score: " + entry.getValue().getValue().intValue() + ") ."
+		        		+ " entries. Now removing the first entry '" + entry + ") ."
 		        		);
 				resourceProcessList.remove(0);
 			}
@@ -4121,19 +4120,18 @@ public class Settlement extends Structure implements Temporal,
 	}
 	
 	
-	public List<SimpleEntry<Building, SimpleEntry<ResourceProcess, Double>>> getResourceProcessList() {
+	public List<SelectedResourceProcess> getResourceProcessList() {
 		return resourceProcessList;
 	}
 	
-	public void addResourceProcess(SimpleEntry<Building, SimpleEntry<ResourceProcess, Double>> process) {
-		if (!resourceProcessList.contains(process))
-			resourceProcessList.add(process);
+	public void addResourceProcess(SelectedResourceProcess entry) {
+		if (!resourceProcessList.contains(entry))
+			resourceProcessList.add(entry);
 	}
 
-	public SimpleEntry<Building, SimpleEntry<ResourceProcess, Double>> retrieveFirstResourceProcess() {
+	public SelectedResourceProcess retrieveFirstResourceProcess() {
 		if (!resourceProcessList.isEmpty()) {
-			SimpleEntry<Building, SimpleEntry<ResourceProcess, Double>> process = resourceProcessList.get(0);
-//			logger.info(process.getKey(), "Selected '" + process.getValue().getKey() + "' from " + resourceProcessList.size() + " flagged process(es).");
+			SelectedResourceProcess process = resourceProcessList.get(0);
 			resourceProcessList.remove(0);
 			return process;
 		}
@@ -4152,13 +4150,6 @@ public class Settlement extends Structure implements Temporal,
 		malfunctionPair = pair;
 	}
 	
-	public SimpleEntry<Malfunction, Malfunctionable> getMalfunctionPair() {
-		if (malfunctionPair != null) {
-			return malfunctionPair;
-		}
-		return null;
-	}
-		
 	public SimpleEntry<Malfunction, Malfunctionable> retrieveMalfunctionPair() {
 		if (malfunctionPair != null) {
 			SimpleEntry<Malfunction, Malfunctionable> pair = malfunctionPair;

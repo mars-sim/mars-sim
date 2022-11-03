@@ -30,7 +30,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
-import org.mars_sim.msp.core.structure.building.function.WasteProcess;
+import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
 import org.mars_sim.msp.core.structure.building.function.WasteProcessing;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -114,9 +114,7 @@ public class TabPanelWasteProcesses extends TabPanel {
 		while (i.hasNext()) {
 			Building building = i.next();
 			WasteProcessing processing = building.getWasteProcessing();
-			Iterator<WasteProcess> j = processing.getProcesses().iterator();
-			while (j.hasNext()) {
-				WasteProcess process = j.next();
+			for(ResourceProcess process : processing.getProcesses()) {
 				processListPanel.add(new WasteProcessPanel(process, building));
 			}
 		}
@@ -170,7 +168,7 @@ public class TabPanelWasteProcesses extends TabPanel {
 		private static final long serialVersionUID = 1L;
 
 		// Data members.
-		private WasteProcess process;
+		private ResourceProcess process;
 		private JLabel label;
 		private JButton toggleButton;
 		private ImageIcon dotGreen;
@@ -179,34 +177,34 @@ public class TabPanelWasteProcesses extends TabPanel {
 
 		/**
 		 * Constructor.
-		 * @param process the waste process.
+		 * @param process2 the waste process.
 		 * @param building the building the process is in.
 		 */
-		WasteProcessPanel(WasteProcess process, Building building) {
+		WasteProcessPanel(ResourceProcess process2, Building building) {
 			// Use JPanel constructor.
 			super();
 
 			setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
 
-			this.process = process;
+			this.process = process2;
 
 			toggleButton = new JButton();
 			toggleButton.setMargin(new Insets(0, 0, 0, 0));
 			toggleButton.addActionListener(e -> {
-				WasteProcess p = getProcess();
+				ResourceProcess p = getProcess();
 				p.setProcessRunning(!p.isProcessRunning());
 				update();
 			});
 			toggleButton.setToolTipText(Msg.getString("TabPanelWasteProcesses.tooltip.toggleButton")); //$NON-NLS-1$
 			add(toggleButton);
-			label = new JLabel(Msg.getString("TabPanelWasteProcesses.processLabel", building.getNickName(), process.getProcessName())); //$NON-NLS-1$
+			label = new JLabel(Msg.getString("TabPanelWasteProcesses.processLabel", building.getNickName(), process2.getProcessName())); //$NON-NLS-1$
 			add(label);
 
 			// Load green and red dots.
 			dotGreen = ImageLoader.getIcon(Msg.getString("img.dotGreen_full")); //$NON-NLS-1$
 			dotRed = ImageLoader.getIcon(Msg.getString("img.dotRed")); //$NON-NLS-1$
 
-			if (process.isProcessRunning()) toggleButton.setIcon(dotGreen);
+			if (process2.isProcessRunning()) toggleButton.setIcon(dotGreen);
 			else toggleButton.setIcon(dotRed);
 
 			setToolTipText(getToolTipString(building));
@@ -261,7 +259,7 @@ public class TabPanelWasteProcesses extends TabPanel {
 			else toggleButton.setIcon(dotRed);
 		}
 
-		private WasteProcess getProcess() {
+		private ResourceProcess getProcess() {
 			return process;
 		}
 	}

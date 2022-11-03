@@ -6,20 +6,18 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.util.AbstractMap.SimpleEntry;
-
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.task.ToggleResourceProcess;
+import org.mars_sim.msp.core.person.ai.task.ToggleResourceProcess.SelectedResourceProcess;
 import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.OverrideType;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
 
 /**
@@ -86,14 +84,14 @@ public class ToggleResourceProcessMeta extends MetaTask {
 	        	return CAP;
 	        } 
 	        
-	        SimpleEntry<Building, SimpleEntry<ResourceProcess, Double>> entry = 
+	        SelectedResourceProcess entry = 
 	        		ToggleResourceProcess.getResourceProcessingBuilding(worker);
-	        if (entry == null)
+	        if (entry == null) {
 		    	return 0;
+			}
 	        
-//			Building resourceProcessBuilding = entry.getKey();
-			ResourceProcess process = entry.getValue().getKey();
-			double score = entry.getValue().getValue();
+			ResourceProcess process = entry.getProcess();
+			double score = entry.getScore();
 			result = score;
 						
 			boolean toggleOn = true;
@@ -106,7 +104,7 @@ public class ToggleResourceProcessMeta extends MetaTask {
 				
 	        if (result > THRESHOLD) {
 	        	settlement.addResourceProcess(entry);
-	        	process.setFlag(true);
+	        	//process.setFlag(true);
 	        	process.setToggleOn(toggleOn);
 	        	result = CAP;
 	        }

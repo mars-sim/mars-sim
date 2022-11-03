@@ -344,9 +344,7 @@ public class ResourceProcess implements Serializable {
 						break;
 					}
 				}
-			} 
-			else
-				level = 0D;
+			}
 
 			// Set the current production level.
 			currentProductionLevel = level;
@@ -384,7 +382,8 @@ public class ResourceProcess implements Serializable {
             return millisol > timeLimit[1];
 		}
 		else {
-            return millisol > timeLimit[1] + 1000;
+			// Toggleing has rolled over the day
+            return sol > timeLimit[0];
 		}
 	}
 
