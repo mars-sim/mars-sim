@@ -1552,7 +1552,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @param m  {@link MissionManager}
 	 * @param pc  {@link PersonConfig}
 	 */
-	public static void initializeInstances(MasterClock ms, MarsClock c, HistoricalEventManager e, UnitManager u,
+	static void initializeInstances(MasterClock ms, MarsClock c, HistoricalEventManager e, UnitManager u,
 			ScientificStudyManager s, SurfaceFeatures sf, OrbitInfo oi, MissionManager m, PersonConfig pc) {
 		masterClock = ms;
 		marsClock = c;

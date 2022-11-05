@@ -52,17 +52,14 @@ public abstract class MetaTask {
 				TaskTrait.TREATMENT,
 				TaskTrait.LEADERSHIP,
 				TaskTrait.MEDICAL);
-
-	// If a person Job is not the preferred old
-	private static final double JOB_BOOST = 1.25D;
 	
 	/** Probability penalty for starting a non-job-related task. */
 	private static final double NON_JOB_PENALTY = .25D;
 	
-	private static Simulation sim = Simulation.instance();
+
 	/** The static instance of the mars clock */
-	protected static MarsClock marsClock = sim.getMasterClock().getMarsClock();
-	protected static SurfaceFeatures surfaceFeatures = sim.getSurfaceFeatures();
+	protected static MarsClock marsClock;
+	protected static SurfaceFeatures surfaceFeatures;
 	
 	private String name;
 	private WorkerType workerType;
@@ -323,4 +320,11 @@ public abstract class MetaTask {
         return score;
 	}
 
+	/**
+	 * Attached to the common controllign classes.
+	 */
+	static void initialiseInstances(Simulation sim) {
+		marsClock = sim.getMasterClock().getMarsClock();
+		surfaceFeatures = sim.getSurfaceFeatures();
+	}
 }

@@ -12,9 +12,10 @@ import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.SimulationFiles;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
@@ -761,10 +762,14 @@ public abstract class TaskManager implements Serializable, Temporal {
 	/**
 	 * Reloads instances after loading from a saved sim.
 	 * 
-	 * @param clock
+	 * @param sim
 	 */
-	public static void initializeInstances(MarsClock clock) {
-		marsClock = clock;
-	}
+	public static void initializeInstances(Simulation sim, SimulationConfig conf) {
+		marsClock = sim.getMasterClock().getMarsClock();
 
+		MetaTask.initialiseInstances(sim);
+		Task.initializeInstances(sim.getMasterClock(), marsClock, sim.getEventManager(), sim.getUnitManager(),
+									sim.getScientificStudyManager(), sim.getSurfaceFeatures(), sim.getOrbitInfo(),
+						sim.getMissionManager(), conf.getPersonConfig());
+	}
 }

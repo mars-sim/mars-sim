@@ -33,8 +33,6 @@ public class PersonTaskManager extends TaskManager {
 	private static TaskCache defaultInsideTasks;
 	private static TaskCache defaultOutsideTasks;
 
-	private static final int MAX_TASK_PROBABILITY = 35_000;
-
 	// Data members
 	/** The mind of the person the task manager is responsible for. */
 	private Mind mind;

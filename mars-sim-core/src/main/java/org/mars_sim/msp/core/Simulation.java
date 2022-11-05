@@ -57,7 +57,6 @@ import org.mars_sim.msp.core.person.ai.role.Role;
 import org.mars_sim.msp.core.person.ai.role.RoleUtil;
 import org.mars_sim.msp.core.person.ai.social.Relation;
 import org.mars_sim.msp.core.person.ai.task.util.MetaTaskUtil;
-import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskManager;
 import org.mars_sim.msp.core.person.ai.task.util.TaskSchedule;
 import org.mars_sim.msp.core.person.health.HealthProblem;
@@ -405,11 +404,12 @@ public class Simulation implements ClockListener, Serializable {
 
 		medicalManager = new MedicalManager();
 		scientificStudyManager = new ScientificStudyManager();
+		eventManager = new HistoricalEventManager();
 
 		// Initialize units prior to starting the unit manager
 		Unit.initializeInstances(masterClock, marsClock, earthClock, this, 
 				weather, surfaceFeatures, missionManager);
-		TaskManager.initializeInstances(marsClock);
+		TaskManager.initializeInstances(this, simulationConfig);
 
 		// Initialize UnitManager instance
 		unitManager = new UnitManager();
@@ -441,7 +441,6 @@ public class Simulation implements ClockListener, Serializable {
 		// Initialize meta tasks
 		MetaTaskUtil.initializeMetaTasks();
 
-		eventManager = new HistoricalEventManager();
 		transportManager = new TransportManager(simulationConfig, this);
 
         // Initialize ManufactureUtil
@@ -467,8 +466,7 @@ public class Simulation implements ClockListener, Serializable {
 		// Set instances for classes that extend Unit and Task and Mission
 		AbstractMission.initializeInstances(this, marsClock, eventManager, unitManager,
 				surfaceFeatures, missionManager, pc);
-		Task.initializeInstances(masterClock, marsClock, eventManager, unitManager,
-				scientificStudyManager, surfaceFeatures, orbitInfo, missionManager, pc);
+
 		LocalAreaUtil.initializeInstances(unitManager, marsClock);
 		
 		doneInitializing = true;
@@ -721,7 +719,7 @@ public class Simulation implements ClockListener, Serializable {
 		PhysicalCondition.initializeInstances(this, masterClock, marsClock, medicalManager);
 		RadiationExposure.initializeInstances(masterClock, marsClock);
 		Role.initializeInstances(marsClock);
-		TaskManager.initializeInstances(marsClock);
+		TaskManager.initializeInstances(this, simulationConfig);
 		HealthProblem.initializeInstances(medicalManager, eventManager);
 
 		// Re-initialize Structure related class
@@ -739,9 +737,6 @@ public class Simulation implements ClockListener, Serializable {
 		RobotJob.initializeInstances(unitManager, missionManager);
 //		CreditEvent.initializeInstances(unitManager, missionManager);
 
-		// Re-initialize Task related class
-		Task.initializeInstances(masterClock, marsClock, eventManager, unitManager,
-				scientificStudyManager, surfaceFeatures, orbitInfo, missionManager, pc);
 		LocalAreaUtil.initializeInstances(unitManager, marsClock);
 		
 		// Re-initialize Mission related class
