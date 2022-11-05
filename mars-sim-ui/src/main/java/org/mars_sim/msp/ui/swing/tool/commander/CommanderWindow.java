@@ -47,6 +47,7 @@ import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
+import org.mars_sim.msp.core.person.ai.task.util.TaskJob;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -101,9 +102,6 @@ public class CommanderWindow extends ToolWindow {
 	public static final String ACCEPT_NO = "Accept NO Trading initiated by other settlements";
 	public static final String SEE_RIGHT = ".    -->";
 
-	// Private members
-	private String deletingTaskType;
-
 	private final Font SERIF = new Font("Serif", Font.PLAIN, 10);
 	private final Font DIALOG = new Font( "Dialog", Font.PLAIN, 14);
 
@@ -115,7 +113,7 @@ public class CommanderWindow extends ToolWindow {
 	private WebComboBox settlementListBox;
 	
 	private ListModel listModel;
-	private JList<String> list;
+	private JList<TaskJob> list;
 	private JTextArea logBookTA;
 
 	private WebPanel emptyPanel = new WebPanel();
@@ -475,7 +473,7 @@ public class CommanderWindow extends ToolWindow {
 		listModel = new ListModel();
 
 		// Create list
-		list = new JList<String>(listModel);
+		list = new JList<>(listModel);
 		listScrollPanel.setViewportView(list);
 		list.addListSelectionListener(event -> {
 		        if (!event.getValueIsAdjusting() && event != null){
@@ -796,10 +794,9 @@ public class CommanderWindow extends ToolWindow {
 	 * Picks a task and delete it.
 	 */
 	public void deleteATask() {
-		String n = (String) list.getSelectedValue();
+		TaskJob n = list.getSelectedValue();
 		if (n != null) {
-			deletingTaskType = n;
-			((Person) personComboBox.getSelectedItem()).getMind().getTaskManager().deleteAPendingTask(deletingTaskType);
+			((Person) personComboBox.getSelectedItem()).getMind().getTaskManager().deleteAPendingTask(n);
 			logBookTA.append("Delete '" + n + "' from the list of task orders.\n");
 		}
 		else
@@ -843,26 +840,26 @@ public class CommanderWindow extends ToolWindow {
 	/**
 	 * Lists model for the tasks in queue.
 	 */
-	private class ListModel extends AbstractListModel<String> {
+	private class ListModel extends AbstractListModel<TaskJob> {
 
 	    /** default serial id. */
 	    private static final long serialVersionUID = 1L;
 
-	    private List<String> list = new ArrayList<>();
+	    private List<TaskJob> list = new ArrayList<>();
 
 	    private ListModel() {
 	    	Person selected = (Person) personComboBox.getSelectedItem();
 
 	    	if (selected != null) {
-	        	List<String> tasks = selected.getMind().getTaskManager().getPendingTasks();
+	        	List<TaskJob> tasks = selected.getMind().getTaskManager().getPendingTasks();
 		        if (tasks != null)
 		        	list.addAll(tasks);
 	    	}
 	    }
 
         @Override
-        public String getElementAt(int index) {
-        	String result = null;
+        public TaskJob getElementAt(int index) {
+        	TaskJob result = null;
 
             if ((index >= 0) && (index < list.size())) {
                 result = list.get(index);
@@ -883,18 +880,13 @@ public class CommanderWindow extends ToolWindow {
          */
         public void update() {
 
-        	List<String> newTasks = ((Person) personComboBox.getSelectedItem()).getMind().getTaskManager().getPendingTasks();
+        	List<TaskJob> newTasks = ((Person) personComboBox.getSelectedItem()).getMind().getTaskManager().getPendingTasks();
 
         	if (newTasks != null) {
 	    		// if the list contains duplicate items, it somehow pass this test
-	    		if (list.size() != newTasks.size() || !list.containsAll(newTasks) || !newTasks.containsAll(list)) {
-	                List<String> oldList = list;
-	                List<String> tempList = new ArrayList<String>(newTasks);
-	
-	                list = tempList;
+	    		if (list.size() != newTasks.size() || !list.containsAll(newTasks) || !newTasks.containsAll(list)) {	
+	                list = new ArrayList<>(newTasks);
 	                fireContentsChanged(this, 0, getSize());
-
-	                oldList.clear();
 	    		}
         	}
         }

@@ -228,9 +228,9 @@ public class PersonTaskManager extends TaskManager {
 	public void startNewTask() {
 		// Check if there are any assigned tasks that are pending
 		if (!getPendingTasks().isEmpty()) {
-			MetaTask metaTask = getAPendingMetaTask();
-			if (metaTask != null) {
-				Task newTask = metaTask.constructInstance(person);
+			TaskJob pending = getPendingTask();
+			if (pending != null) {
+				Task newTask = pending.createTask(person);
 				startTask(newTask);
 			}
 

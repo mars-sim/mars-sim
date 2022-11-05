@@ -18,10 +18,14 @@ public class BasicTaskJob implements TaskJob {
     private static final double MAX_TASK_SCORE = 35_000;
 
     private double score;
-    private MetaTask mt;
+    private String taskName;
+
+    // MetaTask cannot be serialised
+    private transient MetaTask mt;
 
     BasicTaskJob(MetaTask metaTask, double score) {
         this.mt = metaTask;
+        this.taskName = mt.getName();
 
         if (Double.isNaN(score) || Double.isInfinite(score) || (score > MAX_TASK_SCORE)) {
             score = MAX_TASK_SCORE;
@@ -36,16 +40,31 @@ public class BasicTaskJob implements TaskJob {
 
     @Override
     public String getDescription() {
-        return mt.getName();
+        return taskName;
     }
 
+    /**
+     * Reconnects to the MetaTask even fter a deserialised instance.
+     */
+    private MetaTask getMeta() {
+        if (mt == null) {
+            mt = MetaTaskUtil.getMetaTask(taskName);
+        }
+
+        return mt;
+    }
     @Override
     public Task createTask(Person person) {
-        return mt.constructInstance(person);
+        return getMeta().constructInstance(person);
     }
 
     @Override
     public Task createTask(Robot robot) {
-        return mt.constructInstance(robot);
+        return getMeta().constructInstance(robot);
+    }
+
+    @Override
+    public String toString() {
+        return getDescription();
     }
 }

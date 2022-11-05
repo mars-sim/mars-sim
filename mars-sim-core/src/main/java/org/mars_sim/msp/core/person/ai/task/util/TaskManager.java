@@ -156,7 +156,7 @@ public abstract class TaskManager implements Serializable, Temporal {
 	/** The last activity. */
 	private OneActivity lastActivity = null;
 	/** The list of pending of tasks. */
-	private List<String> pendingTasks;
+	private List<TaskJob> pendingTasks;
 	
 
 	protected TaskManager(Unit worker) {
@@ -692,7 +692,7 @@ public abstract class TaskManager implements Serializable, Temporal {
 	 *
 	 * @return
 	 */
-	public List<String> getPendingTasks() {
+	public List<TaskJob> getPendingTasks() {
 		return pendingTasks;
 	}
 	
@@ -703,10 +703,17 @@ public abstract class TaskManager implements Serializable, Temporal {
 	 * @param allowDuplicate
 	 * @return
 	 */
-	public boolean addAPendingTask(String task, boolean allowDuplicate) {
+	public boolean addAPendingTask(String taskName, boolean allowDuplicate) {
+		MetaTask mt = convertTask2MetaTask(taskName);
+		if (mt == null) {
+			logger.warning(worker, "Cannot find pending task called " + taskName);
+			return false;
+		}
+
+		BasicTaskJob task = new BasicTaskJob(mt, 0);
 		if (allowDuplicate || !pendingTasks.contains(task)) {
 			pendingTasks.add(task);
-			logger.info(worker, 20_000L, "Given a new task order of '" + task + "'.");
+			logger.info(worker, 20_000L, "Given a new task order of '" + task.getDescription() + "'.");
 			return true;
 		}
 
@@ -718,7 +725,7 @@ public abstract class TaskManager implements Serializable, Temporal {
 	 *
 	 * @param task
 	 */
-	public void deleteAPendingTask(String task) {
+	public void deleteAPendingTask(TaskJob task) {
 		pendingTasks.remove(task);
 		logger.info(worker, "Removed the task order of '" + task + "'.");
 	}
@@ -728,11 +735,11 @@ public abstract class TaskManager implements Serializable, Temporal {
 	 *
 	 * @return
 	 */
-	protected MetaTask getAPendingMetaTask() {
+	protected TaskJob getPendingTask() {
 		if (!pendingTasks.isEmpty()) {
-			String firstTask = pendingTasks.get(0);
+			TaskJob firstTask = pendingTasks.get(0);
 			pendingTasks.remove(firstTask);
-			return convertTask2MetaTask(firstTask);
+			return firstTask;
 		}
 		return null;
 	}

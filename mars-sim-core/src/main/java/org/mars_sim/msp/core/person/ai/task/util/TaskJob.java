@@ -6,6 +6,8 @@
  */
 package org.mars_sim.msp.core.person.ai.task.util;
 
+import java.io.Serializable;
+
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
 
@@ -13,7 +15,7 @@ import org.mars_sim.msp.core.robot.Robot;
  * This rerpresents a potential Task that can be xecuted. The Task has a score for the benefit of
  * doing the Task. 
  */
-public interface TaskJob {
+public interface TaskJob extends Serializable {
 
     /**
      * Retrns the score benefit of running this Task.

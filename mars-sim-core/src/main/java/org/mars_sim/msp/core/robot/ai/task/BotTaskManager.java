@@ -194,9 +194,9 @@ public class BotTaskManager extends TaskManager {
 	public void startNewTask() {
 		// Check if there are any assigned tasks that are pending
 		if (!getPendingTasks().isEmpty()) {
-			MetaTask metaTask = getAPendingMetaTask();
-			if (metaTask != null) {
-				Task newTask = metaTask.constructInstance(robot);
+			TaskJob pending = getPendingTask();
+			if (pending != null) {
+				Task newTask = pending.createTask(robot);
 				startTask(newTask);
 			}
 
