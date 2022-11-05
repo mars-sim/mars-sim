@@ -304,8 +304,6 @@ public class Simulation implements ClockListener, Serializable {
 		
 		// Create surface features
 		surfaceFeatures = new SurfaceFeatures();
-//		SurfaceFeatures.initializeInstances(this, simulationConfig.getLandmarkConfiguration(),
-//				marsClock, orbitInfo, weather);
 	}
 		
 	
