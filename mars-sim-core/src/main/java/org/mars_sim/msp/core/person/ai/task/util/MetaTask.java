@@ -6,8 +6,10 @@
  */
 package org.mars_sim.msp.core.person.ai.task.util;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.mars_sim.msp.core.Simulation;
@@ -235,6 +237,41 @@ public abstract class MetaTask {
 	 */
 	public double getProbability(Robot robot) {
 		throw new UnsupportedOperationException("Can not calculated the probability of " + name + " for Robot.");
+	}
+	
+	/**
+	 * Gets the list of Task that this Person can perform all individually scored.
+	 * 
+	 * @param person the Person to perform the task.
+	 * @return List of TasksJob specifications.
+	 */
+	public List<TaskJob> getTaskJobs(Person person) {
+		return createTaskJob(getProbability(person));
+	}
+
+	/**
+	 * Gets the list of Task that this Robot can perform all individually scored.
+	 * 
+	 * @param robot the robot to perform the task.
+	 * @return List of TasksJob specifications.
+	 */
+	public List<TaskJob> getTaskJobs(Robot robot) {
+		return createTaskJob(getProbability(robot));
+	}
+
+	/**
+	 * Creates a TaskJob instance delegate where this instance handles Task creation.
+	 * @param score Score to the job to create.
+	 */
+	private List<TaskJob> createTaskJob(double score) {
+		// This is a convience to avoid a massive rework in the subclasses.
+		if (score <= 0) {
+			return null;
+		}
+
+		List<TaskJob> result = new ArrayList<>(1);
+		result.add(new BasicTaskJob(this, score));
+		return result;
 	}
 
 	/**

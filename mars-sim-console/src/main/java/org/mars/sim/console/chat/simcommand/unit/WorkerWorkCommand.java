@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.TaskManager;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.person.ai.task.util.TaskCache;
+import org.mars_sim.msp.core.person.ai.task.util.TaskJob;
 
 /** 
  * What work in terms of Tasks is available for this Person to do
@@ -54,16 +55,11 @@ public class WorkerWorkCommand extends AbstractUnitCommand {
 		double sum = tasks.getTotal();
 		response.appendTableHeading("Task", CommandHelper.TASK_WIDTH, 
 									"P Score", 9,
-									"P %", 6,
-									"Trait", 25, 
-									"Favourite", 18);
-		for (Entry<MetaTask, Double> item : tasks.getTasks().entrySet()) {
-			MetaTask mt = item.getKey();
-			response.appendTableRow(mt.getName(), 
-									item.getValue(),
-									Math.round(item.getValue()/sum*10_000.0)/100.0,							
-									mt.getTraits(),
-									mt.getFavourites()
+									"P %", 6);
+		for (TaskJob item : tasks.getTasks()) {
+			response.appendTableRow(item.getDescription(), 
+									item.getScore(),
+									String.format(CommandHelper.PERC1_FORMAT, (100D * item.getScore())/sum)
 									);
 		}
 		

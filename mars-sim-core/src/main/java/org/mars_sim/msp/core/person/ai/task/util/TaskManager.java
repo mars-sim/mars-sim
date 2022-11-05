@@ -502,7 +502,7 @@ public abstract class TaskManager implements Serializable, Temporal {
 	 */
 	public void startNewTask() {
 		Task selectedTask = null;
-		MetaTask selectedMetaTask = null;
+		TaskJob selectedMetaTask = null;
 
 		// If cache is not current, calculate the probabilities.
 		if (!useCache()) {
@@ -540,7 +540,7 @@ public abstract class TaskManager implements Serializable, Temporal {
 	 * @param selectedMetaTask Type of task to create.
 	 * @return New Task.
 	 */
-	protected abstract Task createTask(MetaTask selectedMetaTask);
+	protected abstract Task createTask(TaskJob selectedMetaTask);
 
 	/**
 	 * Returns the last calculated probability map.
@@ -562,8 +562,8 @@ public abstract class TaskManager implements Serializable, Temporal {
 			diagnosticFile.println("Worker:" + worker.getName());
 			diagnosticFile.println(current.getContext());				
 			diagnosticFile.println("Total:" + current.getTotal());
-			for (Entry<MetaTask, Double> task : taskProbCache.getTasks().entrySet()) {
-				diagnosticFile.println(task.getKey().getName() + ":" + task.getValue());
+			for (TaskJob task : taskProbCache.getTasks()) {
+				diagnosticFile.println(task.getDescription() + ":" + task.getScore());
 			}
 			
 			diagnosticFile.println();
