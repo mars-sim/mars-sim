@@ -6,13 +6,10 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
@@ -21,7 +18,6 @@ import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.farming.Crop;
 import org.mars_sim.msp.core.structure.building.function.farming.CropSpec;
@@ -33,7 +29,7 @@ import org.mars_sim.msp.core.tool.RandomUtil;
  * The TendGreenhouse class is a task for tending the greenhouse in a
  * settlement. This is an effort driven task.
  */
-public class TendGreenhouse extends Task implements Serializable {
+public class TendGreenhouse extends Task {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -76,8 +72,9 @@ public class TendGreenhouse extends Task implements Serializable {
 	 * Constructor.
 	 *
 	 * @param person the person performing the task.
+	 * @param farm Farm needing tender
 	 */
-	public TendGreenhouse(Person person) {
+	public TendGreenhouse(Person person, Farming greenhouse) {
 		// Use Task constructor
 		super(NAME, person, false, false, STRESS_MODIFIER, SkillType.BOTANY, 100D, 10D);
 
@@ -87,21 +84,13 @@ public class TendGreenhouse extends Task implements Serializable {
 		}
 
 		// Get available greenhouse if any.
-		Building farmBuilding = getAvailableGreenhouse(person);
+		this.greenhouse = greenhouse;
 
-		if (farmBuilding != null) {
-			
-			greenhouse = farmBuilding.getFarming();
-			// Walk to greenhouse.
-			walkToTaskSpecificActivitySpotInBuilding(farmBuilding, FunctionType.FARMING, false);
+		// Walk to greenhouse.
+		walkToTaskSpecificActivitySpotInBuilding(greenhouse.getBuilding(), FunctionType.FARMING, false);
 
-			selectTask();
-		}
-		
-		else {
-			logger.log(person, Level.WARNING, 0, "Could not find a greenhouse to tend.");
-			endTask();
-		}
+		// Plant a crop or tending a crop
+		selectTask();
 	}
 
 	/**
@@ -109,7 +98,7 @@ public class TendGreenhouse extends Task implements Serializable {
 	 *
 	 * @param robot the robot performing the task.
 	 */
-	public TendGreenhouse(Robot robot) {
+	public TendGreenhouse(Robot robot, Farming greenhouse) {
 		// Use Task constructor
 		super(NAME, robot, false, false, 0, SkillType.BOTANY, 100D, 50D);
 
@@ -119,35 +108,26 @@ public class TendGreenhouse extends Task implements Serializable {
 			return;
 		}
 
-		// Get available greenhouse if any.
-		Building farmBuilding = getAvailableGreenhouse(robot);
-		if (farmBuilding != null) {
-			greenhouse = farmBuilding.getFarming();
+		this.greenhouse = greenhouse;
 
-			// Checks quickly to see if a needy crop is available
-			needyCrop = greenhouse.getNeedyCrop();
+		// Checks quickly to see if a needy crop is available	
+		needyCrop = greenhouse.getNeedyCrop();		
+		if (needyCrop != null) {
+			// Walk to greenhouse.
+			walkToTaskSpecificActivitySpotInBuilding(greenhouse.getBuilding(), FunctionType.FARMING, false);
 			
-			if (needyCrop != null) {
-				// Walk to greenhouse.
-				walkToTaskSpecificActivitySpotInBuilding(farmBuilding, FunctionType.FARMING, false);
-				
-				acceptedTask = TENDING;
+			acceptedTask = TENDING;
 
-				addPhase(TENDING);
-				setPhase(TENDING);
-			}
-			else {
-				acceptedTask = CLEANING;
-			}
-			
-			// Initialize phase
-			addPhase(acceptedTask);
-			setPhase(acceptedTask);
+			addPhase(TENDING);
+			setPhase(TENDING);
 		}
 		else {
-			endTask();
-			return;
+			acceptedTask = CLEANING;
 		}
+		
+		// Initialize phase
+		addPhase(acceptedTask);
+		setPhase(acceptedTask);
 	}
 
 	@Override
@@ -171,84 +151,34 @@ public class TendGreenhouse extends Task implements Serializable {
 		}
 	}
 
+	/**
+	 * Select a suitab le sub-task in the greenhouse
+	 */
 	private void selectTask() {
-
-		// Plant a crop or tending a crop
 		if (greenhouse.getNumCrops2Plant() > 0) {
 			acceptedTask = TRANSFERRING_SEEDLING;
-			addPhase(acceptedTask);
-			setPhase(acceptedTask);
 		}
-		
-		else {
-		
-			double tendingNeed = person.getSettlement().getCropsTendingNeed();
-			
-			if (tendingNeed > 500) {
-	
-				// Checks quickly to see if a needy crop is available
-				needyCrop = greenhouse.getNeedyCrop();
-				
-				if (needyCrop != null) {
-					acceptedTask = TENDING;
-					
-					addPhase(acceptedTask);
-					setPhase(acceptedTask);
-				}
-				
-				else 
-					endTask();
-			}
-			else 	
-				calculateProbability(tendingNeed);
-		}
-	}
-	
-	public void calculateProbability(double tendingNeed) {
-	
-		int probability = (int)(tendingNeed/10.0 + RandomUtil.getRandomInt(-10, 10));
-		if (probability > 15)
-			probability = 15;
-		else if (probability < 0)
-			probability = 4;
-		
-		int rand = RandomUtil.getRandomInt(probability);
+		else {	
+			// Choose the activity from the base 4 non-crop tasks then 2 slots per needy crop.
+			int probability = 4 + greenhouse.getNumNeedTending() * 2;
+			int rand = RandomUtil.getRandomInt(probability);
 
-		if (rand == 0)
-			acceptedTask = INSPECTING;
-
-		else if (rand == 1)
-			acceptedTask = CLEANING;
-
-		else if (rand == 2)
-			acceptedTask = SAMPLING;
-
-		else if (rand == 3)
-			acceptedTask = GROWING_TISSUE;
-
-		else {
-			
-			// Checks quickly to see if a needy crop is available
-			needyCrop = greenhouse.getNeedyCrop();
-			
-			if (needyCrop != null) {
-				acceptedTask = TENDING;
-			}
-			
+			if (rand == 0)
+				acceptedTask = INSPECTING;
+			else if (rand == 1)
+				acceptedTask = CLEANING;
+			else if (rand == 2)
+				acceptedTask = SAMPLING;
+			else if (rand == 3)
+				acceptedTask = GROWING_TISSUE;
 			else {
-				rand = RandomUtil.getRandomInt(3);
-				
-				if (rand == 0)
+				needyCrop = greenhouse.getNeedyCrop();
+				if (needyCrop == null) {
+					// Hmm shouldn't happen
 					acceptedTask = INSPECTING;
-	
-				else if (rand == 1)
-					acceptedTask = CLEANING;
-	
-				else if (rand == 2)
-					acceptedTask = GROWING_TISSUE;
-				
+				}
 				else {
-					acceptedTask = SAMPLING;
+					acceptedTask = TENDING;
 				}
 			}
 		}
@@ -673,75 +603,5 @@ public class TendGreenhouse extends Task implements Serializable {
 	 */
 	public Farming getGreenhouse() {
 		return greenhouse;
-	}
-
-	/**
-	 * Gets an available greenhouse that the person can use. Returns null if no
-	 * greenhouse is currently available.
-	 *
-	 * @param person the person
-	 * @return available greenhouse
-	 */
-	public static Building getAvailableGreenhouse(Unit unit) {
-		Building result = null;
-		Person person = null;
-		Robot robot = null;
-		BuildingManager buildingManager;
-
-		if (unit.getUnitType() == UnitType.PERSON) {
-			person = (Person) unit;
-			if (person.isInSettlement()) {
-				buildingManager = person.getSettlement().getBuildingManager();
-				List<Building> farmBuildings = buildingManager.getFarmsNeedingWork();
-
-				if (farmBuildings != null) {
-					if (!farmBuildings.isEmpty()) {
-						if (farmBuildings.size() > 0) {
-							Map<Building, Double> farmBuildingProbs = BuildingManager
-									.getBestRelationshipBuildings(person, farmBuildings);
-							result = RandomUtil.getWeightedRandomObject(farmBuildingProbs);
-						}
-					}
-				}
-			}
-		}
-
-		else {
-			robot = (Robot) unit;
-			if (robot.isInSettlement()) {
-				buildingManager = robot.getSettlement().getBuildingManager();
-				List<Building> farmBuildings = buildingManager.getFarmsNeedingWork();
-
-				// Choose the building the robot is at.
-				if (farmBuildings != null) {
-					if (!farmBuildings.isEmpty()) {
-						for (Building b : farmBuildings) {
-							if (b == robot.getBuildingLocation())
-								return b;
-							// Note: choose the farmBuilding closest to the robot
-							// Note: check if other robots are already in this farmBuilding, i.e. checking
-							// for the crowdliness of this farmBuilding
-						}
-
-						if (farmBuildings.size() > 0) {
-							result = farmBuildings.get(RandomUtil.getRandomInt(0, farmBuildings.size() - 1));
-						}
-					}
-				}
-
-				// Note: add person's good/bad feeling toward robots
-//                int size = farmBuildings.size();
-//                //System.out.println("size is "+size);
-//                int selected = 0;
-//                if (size == 0)
-//                	result = null;
-//                if (size >= 1) {
-//                	selected = RandomUtil.getRandomInt(size-1);
-//                	result = farmBuildings.get(selected);
-//                }
-				// System.out.println("getAvailableGreenhouse() : selected is "+selected);
-			}
-		}
-		return result;
 	}
 }

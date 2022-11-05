@@ -53,7 +53,7 @@ public class WorkerWorkCommand extends AbstractUnitCommand {
 		
 		TaskCache tasks = tm.getLatestTaskProbability();
 		double sum = tasks.getTotal();
-		response.appendTableHeading("Task", CommandHelper.TASK_WIDTH, 
+		response.appendTableHeading("Task", 45, 
 									"P Score", 9,
 									"P %", 6);
 		for (TaskJob item : tasks.getTasks()) {
