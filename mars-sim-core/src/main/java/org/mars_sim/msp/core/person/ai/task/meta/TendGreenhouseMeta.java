@@ -72,6 +72,9 @@ public class TendGreenhouseMeta extends MetaTask {
     private static final String NAME = Msg.getString(
             "Task.description.tendGreenhouse"); //$NON-NLS-1$
 
+    // Desired number of active farmers per form
+    private static final int MAX_FARMERS = 2;
+
     public TendGreenhouseMeta() {
 		super(NAME, WorkerType.BOTH, TaskScope.ANY_HOUR);
 		setFavorite(FavoriteType.TENDING_GARDEN);
@@ -89,20 +92,21 @@ public class TendGreenhouseMeta extends MetaTask {
 
             for(Building b : person.getSettlement().getBuildingManager().getFarmsNeedingWork()) {
                 Farming farm = b.getFarming();
+                if (farm.getFarmerNum() < MAX_FARMERS) {
+                    double result = getFarmScore(farm);
 
-                double result = getFarmScore(farm);
+                    // Crowding modifier.
+                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, b);
+                    result *= TaskProbabilityUtil.getRelationshipModifier(person, b);
 
-                // Crowding modifier.
-                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, b);
-                result *= TaskProbabilityUtil.getRelationshipModifier(person, b);
+                    // Settlement factors
+                    result *= goodsFactor;
+                    
+                    result = applyPersonModifier(result, person);
 
-                // Settlement factors
-                result *= goodsFactor;
-                
-                result = applyPersonModifier(result, person);
-
-                if (result > 0) {
-                    tasks.add(new CropTaskJob(farm, result));
+                    if (result > 0) {
+                        tasks.add(new CropTaskJob(farm, result));
+                    }
                 }
             }
         }

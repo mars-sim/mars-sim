@@ -9,12 +9,14 @@ package org.mars_sim.msp.core.structure.building.function;
 import java.io.Serializable;
 import java.util.Set;
 
+import org.mars_sim.msp.core.goods.GoodsManager;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.ResourceProcessEngine;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * The ResourceProcess class represents a process of converting one set of
@@ -31,9 +33,7 @@ public class ResourceProcess implements Serializable {
 	// How often should the process be checked? 
 	private static final double PROCESS_CHECK_FREQUENCY = 5D; // 200 times per sol
 	
-	/** Flag to toggle on or off. */
-	private boolean toToggleOn;
-	/** Flag for change. */
+	/** Flag for active change. */
 	private boolean flag = false;
 	/** is this process running ? */
 	private boolean runningProcess;
@@ -67,8 +67,8 @@ public class ResourceProcess implements Serializable {
 		currentProductionLevel = 1D;
 		this.engine = engine;
 
-		// Assume it is the start of time
-		resetToggleTime(1, 0);
+		// Add some randomness, today is sol 1
+		resetToggleTime(1, 100 + RandomUtil.getRandomInt(engine.getProcessTime()));
 	}
 
 	/**
@@ -123,24 +123,6 @@ public class ResourceProcess implements Serializable {
 	 */
 	public void setFlag(boolean value) {
 		flag = value;
-	}
-	
-	/**
-	 * Sets the process to be toggled on or off.
-	 *
-	 * @param value
-	 */
-	public void setToggleOn(boolean value) {
-		toToggleOn = value;
-	}
-	
-	/**
-	 * Checks if the process has been flagged to be toggled on or off.
-	 *
-	 * @return true if it was flagged to be toggled on. False if it was flagged to be off.
-	 */
-	public boolean isToggledOn() {
-		return toToggleOn;
 	}
 	
 	/**
@@ -441,5 +423,121 @@ public class ResourceProcess implements Serializable {
 	public int getLevel() {
 		return level;
 	}
+
+	/**
+	 * Checks if a resource process has all input resources.
+	 *
+	 * @param settlement the settlement the resource is at.
+	 * @return false if any input resources are empty.
+	 */
+	public boolean isInputsPresent(Settlement settlement) {
+
+		for(int resource: getInputResources()) {
+			if (!isAmbientInputResource(resource)) {
+				double stored = settlement.getAmountResourceStored(resource);
+				if (stored < SMALL_AMOUNT) {
+					return false;
+				}
+			}
+		}
+
+		return true;
+	}
+
+
+	/**
+	 * Checks if a resource process has no output resources.
+	 *
+	 * @param settlement the settlement the resource is at.
+	 * @return true if any output resources are empty.
+	 */
+	public boolean isEmptyOutputs(Settlement settlement) {
+
+		for(int resource : getOutputResources()) {
+			double stored = settlement.getAmountResourceStored(resource);
+			if (stored < SMALL_AMOUNT) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	
+	/**
+	 * Gets the total value of a resource process's input or output.
+	 *
+	 * @param settlement the settlement for the resource process.
+	 * @param input      is the resource value for the input?
+	 * @return the total value for the input or output.
+	 */
+	public double getResourcesValue(Settlement settlement, boolean input) {
+		double score = 0D;
+		double benchmarkValue = 0;
+
+		Set<Integer> set = null;
+		if (input)
+			set = getInputResources();
+		else
+			set = getOutputResources();
+
+		GoodsManager gm = settlement.getGoodsManager();
+		for (int resource : set) {
+			// Gets the vp for this resource
+			double vp = gm.getGoodValuePoint(resource);
+
+			// Gets the supply of this resource
+			// Note: use supply instead of stored amount.
+			// Stored amount is slower and more time consuming
+			double supply = gm.getSupplyValue(resource);
+
+			if (input) {
+
+				double rate = getMaxInputRate(resource) / getNumModules() * 1000;
+				// Limit the vp so as to favor the production of output resources
+				double modVp = Math.max(.01, Math.min(20, vp / 10));
+				// The original value without being affected by vp and supply
+				benchmarkValue += rate;
+
+				// if this resource is ambient
+				// that the settlement doesn't need to supply (e.g. carbon dioxide),
+				// then it won't need to check how much it has in stock
+				// and it will not be affected by its vp and supply
+				if (isAmbientInputResource(resource)) {
+					score += rate / Math.max(10, supply) / 10;
+				} else if (isInSitu(resource)) {
+					score += rate / supply / supply / 10;
+				} else
+					score += ((rate * modVp) / supply);
+			}
+
+			else {
+				// Gets the remaining amount of this resource
+				double remain = settlement.getAmountResourceRemainingCapacity(resource);
+
+				if (remain == 0.0)
+					return 0;
+
+				double rate = getMaxOutputRate(resource) / getNumModules() * 1000;
+
+				// For output value
+				if (rate > remain) {
+					rate = remain;
+				}
+
+				benchmarkValue += rate;
+
+				// if this resource is ambient or a waste product
+				// that the settlement won't keep (e.g. carbon dioxide),
+				// then it won't need to check how much it has in stock
+				// and it will not be affected by its vp and supply
+				if (isWasteOutputResource(resource)) {
+					score += rate * (1 + level) * 2;
+				} else
+					score += ((rate * vp) / supply) * (1 + level) * 2;
+			}
+		}
+
+		return (score - benchmarkValue);
+	}
 }

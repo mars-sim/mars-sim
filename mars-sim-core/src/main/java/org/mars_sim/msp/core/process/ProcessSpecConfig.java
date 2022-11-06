@@ -69,7 +69,7 @@ public abstract class ProcessSpecConfig<T extends ProcessSpec> implements Serial
 
 		String name = processElement.getAttributeValue(NAME);
         double powerRequired = Double.parseDouble(processElement.getAttributeValue(POWER_REQUIRED));
-		int processTime = ConfigHelper.getOptionalAttributeInt(processElement, PROCESS_TIME, 100);
+		int processTime = ConfigHelper.getOptionalAttributeInt(processElement, PROCESS_TIME, 200);
 		int workTime = ConfigHelper.getOptionalAttributeInt(processElement, WORK_TIME, 10);
 		T process = createProcess(processElement, name, powerRequired, processTime, workTime);
 

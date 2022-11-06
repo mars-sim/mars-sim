@@ -64,7 +64,6 @@ import org.mars_sim.msp.core.person.ai.task.DayDream;
 import org.mars_sim.msp.core.person.ai.task.EatDrink;
 import org.mars_sim.msp.core.person.ai.task.Read;
 import org.mars_sim.msp.core.person.ai.task.Relax;
-import org.mars_sim.msp.core.person.ai.task.ToggleResourceProcess.SelectedResourceProcess;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.person.health.RadiationExposure;
@@ -354,8 +353,6 @@ public class Settlement extends Structure implements Temporal,
 	private Set<Person> peopleWithin;
 	/** The settlement's list of robots within. */
 	private Set<Robot> robotsWithin;
-
-	private List<SelectedResourceProcess> resourceProcessList = new ArrayList<>();
 	
 	private SimpleEntry<Malfunction, Malfunctionable> malfunctionPair;
 	
@@ -1096,16 +1093,6 @@ public class Settlement extends Structure implements Temporal,
 
 			if (remainder == 8) {
 				regolithProbabilityValue = computeRegolithProbability();
-			}
-			
-			if (!resourceProcessList.isEmpty() && resourceProcessList.size() > 1) {
-				int size = resourceProcessList.size();
-				SelectedResourceProcess entry =
-						resourceProcessList.get(0);
-		        logger.info(this, "resourceProcessList has a total of " + size 
-		        		+ " entries. Now removing the first entry '" + entry + ") ."
-		        		);
-				resourceProcessList.remove(0);
 			}
 		}
 	}
@@ -4079,33 +4066,6 @@ public class Settlement extends Structure implements Temporal,
 	@Override
 	public Unit getHolder() {
 		return this;
-	}
-	
-	
-	public List<SelectedResourceProcess> getResourceProcessList() {
-		return resourceProcessList;
-	}
-	
-	public void addResourceProcess(SelectedResourceProcess entry) {
-		if (!resourceProcessList.contains(entry))
-			resourceProcessList.add(entry);
-	}
-
-	public SelectedResourceProcess retrieveFirstResourceProcess() {
-		if (!resourceProcessList.isEmpty()) {
-			SelectedResourceProcess process = resourceProcessList.get(0);
-			resourceProcessList.remove(0);
-			return process;
-		}
-		
-		return null;
-	}
-	
-	public boolean canRetrieveFirstResourceProcess() {
-		if (!resourceProcessList.isEmpty()) { 
-			return true;
-		}
-		return false;
 	}
 	
 	public void saveMalfunctionPair(SimpleEntry<Malfunction, Malfunctionable> pair) {
