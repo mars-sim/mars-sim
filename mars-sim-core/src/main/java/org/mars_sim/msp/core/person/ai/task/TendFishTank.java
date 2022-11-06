@@ -6,14 +6,10 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -21,7 +17,6 @@ import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.farming.Fishery;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -30,7 +25,7 @@ import org.mars_sim.msp.core.tool.RandomUtil;
  * The TendFishTank class is a task for tending the fishery in a
  * settlement. This is an effort driven task.
  */
-public class TendFishTank extends Task implements Serializable {
+public class TendFishTank extends Task {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -74,7 +69,7 @@ public class TendFishTank extends Task implements Serializable {
 	 * 
 	 * @param person the person performing the task.
 	 */
-	public TendFishTank(Person person) {
+	public TendFishTank(Person person, Fishery fishTank) {
 		// Use Task constructor
 		super(NAME, person, false, false, STRESS_MODIFIER, SkillType.BIOLOGY, 100D);
 
@@ -84,33 +79,28 @@ public class TendFishTank extends Task implements Serializable {
 		}
 
 		// Get available greenhouse if any.
-		building = getAvailableFishTank(person);
-		if (building != null) {
-			
-			fishTank = building.getFishery();
+		this.fishTank = fishTank;
+		this.building = fishTank.getBuilding();
 
-			// Walk to fish tank.
-			walkToTaskSpecificActivitySpotInBuilding(building, FunctionType.FISHERY, false);	
+		// Walk to fish tank.
+		walkToTaskSpecificActivitySpotInBuilding(building, FunctionType.FISHERY, false);	
 
-			if (fishTank.getSurplusStock() > 0) {
-				// Do fishing
-				setPhase(CATCHING);
-				addPhase(CATCHING);
-			}
-			else if (fishTank.getWeedDemand() > 0) {
-				setPhase(TENDING);
-				addPhase(TENDING);
-				addPhase(INSPECTING);
-				addPhase(CLEANING);
-			}
-			else {
-				setPhase(INSPECTING);
-				addPhase(INSPECTING);
-				addPhase(CLEANING);
-			}
+		if (fishTank.getSurplusStock() > 0) {
+			// Do fishing
+			setPhase(CATCHING);
+			addPhase(CATCHING);
 		}
-		else
-			endTask();
+		else if (fishTank.getWeedDemand() > 0) {
+			setPhase(TENDING);
+			addPhase(TENDING);
+			addPhase(INSPECTING);
+			addPhase(CLEANING);
+		}
+		else {
+			setPhase(INSPECTING);
+			addPhase(INSPECTING);
+			addPhase(CLEANING);
+		}
 	}
 
 	/**
@@ -118,7 +108,7 @@ public class TendFishTank extends Task implements Serializable {
 	 * 
 	 * @param robot the robot performing the task.
 	 */
-	public TendFishTank(Robot robot) {
+	public TendFishTank(Robot robot, Fishery fishTank) {
 		// Use Task constructor
 		super(NAME, robot, false, false, 0, SkillType.BIOLOGY, 50D);
 
@@ -129,22 +119,16 @@ public class TendFishTank extends Task implements Serializable {
 		}
 
 		// Get available greenhouse if any.
-		building = getAvailableFishTank(robot);
-		if (building != null) {		
-			
-			fishTank = building.getFishery();
+		this.fishTank = fishTank;
+		this.building = fishTank.getBuilding();
 
-			// Walk to fishtank.
-			walkToTaskSpecificActivitySpotInBuilding(building, FunctionType.FISHERY, false);
-			
-			// Initialize phase
-			// Robots do not do anything with water
-			setPhase(CLEANING);
-			addPhase(CLEANING);
-			
-		} else {
-			endTask();
-		}
+		// Walk to fishtank.
+		walkToTaskSpecificActivitySpotInBuilding(building, FunctionType.FISHERY, false);
+		
+		// Initialize phase
+		// Robots do not do anything with water
+		setPhase(CLEANING);
+		addPhase(CLEANING);
 	}
 
 	@Override
@@ -387,52 +371,5 @@ public class TendFishTank extends Task implements Serializable {
 			endTask();
 		
 		return 0;
-	}
-
-
-	/**
-	 * Gets an available building with fish tanks that the person can use. Returns null if no
-	 * greenhouse is currently available.
-	 * 
-	 * @param person the person
-	 * @return available fish tanks
-	 */
-	public static Building getAvailableFishTank(Unit unit) {
-		Building result = null;
-		Person person = null;
-		Robot robot = null;
-		BuildingManager buildingManager;
-
-		if (unit.getUnitType() == UnitType.PERSON) {
-			person = (Person) unit;
-			if (person.isInSettlement()) {
-				buildingManager = person.getSettlement().getBuildingManager();
-				List<Building> buildings = buildingManager.getBuildings(FunctionType.FISHERY);
-
-				if (!buildings.isEmpty()) {
-					Map<Building, Double> buildingProb = BuildingManager
-							.getBestRelationshipBuildings(person, buildings);
-					result = RandomUtil.getWeightedRandomObject(buildingProb);
-				}
-			}
-		}
-
-		else {
-			robot = (Robot) unit;
-			if (robot.isInSettlement()) {
-				buildingManager = robot.getSettlement().getBuildingManager();
-				List<Building> buildings = buildingManager.getBuildings(FunctionType.FISHERY);
-
-				// Choose the building the robot is at.
-				if (buildings.contains(robot.getBuildingLocation())) {
-					return robot.getBuildingLocation();
-				}
-
-				if (!buildings.isEmpty()) {
-					result = buildings.get(RandomUtil.getRandomInt(0, buildings.size() - 1));
-				}
-			}
-		}
-		return result;
 	}
 }

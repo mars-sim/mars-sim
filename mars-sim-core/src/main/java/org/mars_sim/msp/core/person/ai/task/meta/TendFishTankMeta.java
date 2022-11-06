@@ -6,7 +6,8 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.util.logging.Level;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -16,16 +17,52 @@ import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.task.TendFishTank;
 import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
+import org.mars_sim.msp.core.person.ai.task.util.TaskJob;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.farming.Fishery;
 
 /**
  * Meta task for the Tend Fish Tank task.
  */
 public class TendFishTankMeta extends MetaTask {
+
+    /**
+     * Represents a Job needed in a Fishery
+     */
+    private static class FishTaskJob implements TaskJob {
+
+        private double score;
+        private Fishery tank;
+
+        public FishTaskJob(Fishery tank, double score) {
+            this.tank = tank;
+            this.score = score;
+        }
+
+        @Override
+        public double getScore() {
+            return score;
+        }
+
+        @Override
+        public String getDescription() {
+            return "Tend fishtank @ " + tank.getBuilding().getName();
+        }
+
+        @Override
+        public Task createTask(Person person) {
+            return new TendFishTank(person, tank);
+        }
+
+        @Override
+        public Task createTask(Robot robot) {
+            return new TendFishTank(robot, tank);
+        }
+    }
 
     private static final SimLogger logger = SimLogger.getLogger(TendFishTankMeta.class.getName());
     
@@ -42,89 +79,68 @@ public class TendFishTankMeta extends MetaTask {
 		setTrait(TaskTrait.ARTISTIC, TaskTrait.RELAXATION);
 	}
 
+    /**
+     * Create a task for any Fishery that needs assistence
+     */
     @Override
-    public Task constructInstance(Person person) {
-        return new TendFishTank(person);
-    }
+    public List<TaskJob> getTaskJobs(Person person) {
 
-    @Override
-    public double getProbability(Person person) {
-
-        double result = 0D;
+        List<TaskJob> tasks = new ArrayList<>();
 
         if (person.isInSettlement()) {
+            List<Building> buildings = person.getSettlement().getBuildingManager().getBuildings(FunctionType.FISHERY);
+            for(Building building : buildings) {
+                Fishery fishTank = building.getFishery();
+                double result = (fishTank.getUncleaned().size() + fishTank.getUninspected().size()) *3D;
 
-            try {
-                // See if there is an available greenhouse.
-                Building building = TendFishTank.getAvailableFishTank(person);
-                if (building != null) {
+                result += (fishTank.getSurplusStock() * 10D);
+                result += fishTank.getWeedDemand();
+                
+                // Crowding modifier.
+                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
+                result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
 
-                    int outstandingTasks = getOutstandingTask(building);
-
-                    result += outstandingTasks * 2D;
-
-                    if (result <= 0) result = 0;
-                    
-                    // Crowding modifier.
-                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
-                    result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
-
-                    result = applyPersonModifier(result, person);
+                result = applyPersonModifier(result, person);
+                if (result > CAP)
+                    result = CAP;
+                
+                if (result > 0) {
+                    tasks.add(new FishTaskJob(fishTank, result));
                 }
             }
-            catch (Exception e) {
-                logger.log(Level.SEVERE, "Problem calculating Person probability", e);
-            }
         }
-        
-        if (result > CAP)
-        	result = CAP;
-        
-        return result;
+        return tasks;
     }
 
-	@Override
-	public Task constructInstance(Robot robot) {
-        return new TendFishTank(robot);
-	}
 
-	@Override
-	public double getProbability(Robot robot) {
+    /**
+     * Create a task for any Fishery that needs assistence
+     */
+    @Override
+    public List<TaskJob> getTaskJobs(Robot robot) {
 
-        double result = 0D;
+        List<TaskJob> tasks = new ArrayList<>();
 
-        if (robot.getRobotType() == RobotType.GARDENBOT && robot.isInSettlement()) {
+        if (robot.isInSettlement() && (robot.getRobotType() == RobotType.GARDENBOT)) {
+            List<Building> buildings = robot.getSettlement().getBuildingManager().getBuildings(FunctionType.FISHERY);
+            for(Building building : buildings) {
+                double result = 0D;
 
-            try {
-                // See if there is an available greenhouse.
-                Building building = TendFishTank.getAvailableFishTank(robot);
-                if (building != null) {
- 
-                    int outstandingTasks = getOutstandingTask(building);
+                Fishery fishTank = building.getFishery();
 
-                    result += outstandingTasks * 50D;
-    	            // Effort-driven task modifier.
-    	            result *= robot.getPerformanceRating();
+                // Robots just clean at the moment
+                int outstandingTasks = fishTank.getUncleaned().size();
+
+                result += outstandingTasks * 50D;
+                // Effort-driven task modifier.
+                result *= robot.getPerformanceRating();
+
+                if (result > 0) {
+                    tasks.add(new FishTaskJob(fishTank, result));
                 }
-            }
-            catch (Exception e) {
-                logger.log(Level.SEVERE, "Problem calculating Robot probability", e);
             }
         }
 
-        return result;
-	}
-
-	/**
-	 * Basic approach of counting up things that can be done.
-	 * 
-	 * @param building
-	 * @return
-	 */
-	private int getOutstandingTask(Building building) {
-		Fishery fistTank = building.getFishery();
-		
-		return  fistTank.getUncleaned().size() + fistTank.getUninspected().size() + fistTank.getSurplusStock()
-				+ fistTank.getWeedDemand();
+        return tasks;
 	}
 }
