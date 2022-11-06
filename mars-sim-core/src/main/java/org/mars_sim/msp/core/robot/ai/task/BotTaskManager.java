@@ -14,6 +14,7 @@ import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.MetaTaskUtil;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskCache;
+import org.mars_sim.msp.core.person.ai.task.util.TaskJob;
 import org.mars_sim.msp.core.person.ai.task.util.TaskManager;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.BotMind;
@@ -59,8 +60,8 @@ public class BotTaskManager extends TaskManager {
 	}
 
 	@Override
-	protected Task createTask(MetaTask selectedMetaTask) {
-		return selectedMetaTask.constructInstance(robot);
+	protected Task createTask(TaskJob selectedWork) {
+		return selectedWork.createTask(robot);
 	}
 	
 
@@ -165,10 +166,10 @@ public class BotTaskManager extends TaskManager {
 		
 		// Determine probabilities.
 		for (MetaTask mt : mtList) {
-			double probability = mt.getProbability(robot);
+			List<TaskJob> job = mt.getTaskJobs(robot);
 	
-			if ((probability > 0D) && (!Double.isNaN(probability)) && (!Double.isInfinite(probability))) {
-				newCache.put(mt, probability);
+			if (job != null) {
+				newCache.add(job);
 			}
 		}
 		
@@ -181,7 +182,7 @@ public class BotTaskManager extends TaskManager {
 	private static synchronized TaskCache getChargeTaskMap() {
 		if (chargeMap == null) {
 			chargeMap = new TaskCache("Robot Charge");
-			chargeMap.put(new ChargeMeta(), 1D);
+			chargeMap.putDefault(new ChargeMeta());
 		}
 		return chargeMap;
 	}
@@ -193,9 +194,9 @@ public class BotTaskManager extends TaskManager {
 	public void startNewTask() {
 		// Check if there are any assigned tasks that are pending
 		if (!getPendingTasks().isEmpty()) {
-			MetaTask metaTask = getAPendingMetaTask();
-			if (metaTask != null) {
-				Task newTask = metaTask.constructInstance(robot);
+			TaskJob pending = getPendingTask();
+			if (pending != null) {
+				Task newTask = pending.createTask(robot);
 				startTask(newTask);
 			}
 

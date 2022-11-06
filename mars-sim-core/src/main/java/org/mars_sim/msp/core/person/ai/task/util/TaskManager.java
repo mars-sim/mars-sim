@@ -12,9 +12,10 @@ import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.SimulationFiles;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
@@ -155,7 +156,7 @@ public abstract class TaskManager implements Serializable, Temporal {
 	/** The last activity. */
 	private OneActivity lastActivity = null;
 	/** The list of pending of tasks. */
-	private List<String> pendingTasks;
+	private List<TaskJob> pendingTasks;
 	
 
 	protected TaskManager(Unit worker) {
@@ -502,7 +503,7 @@ public abstract class TaskManager implements Serializable, Temporal {
 	 */
 	public void startNewTask() {
 		Task selectedTask = null;
-		MetaTask selectedMetaTask = null;
+		TaskJob selectedMetaTask = null;
 
 		// If cache is not current, calculate the probabilities.
 		if (!useCache()) {
@@ -540,7 +541,7 @@ public abstract class TaskManager implements Serializable, Temporal {
 	 * @param selectedMetaTask Type of task to create.
 	 * @return New Task.
 	 */
-	protected abstract Task createTask(MetaTask selectedMetaTask);
+	protected abstract Task createTask(TaskJob selectedMetaTask);
 
 	/**
 	 * Returns the last calculated probability map.
@@ -562,8 +563,8 @@ public abstract class TaskManager implements Serializable, Temporal {
 			diagnosticFile.println("Worker:" + worker.getName());
 			diagnosticFile.println(current.getContext());				
 			diagnosticFile.println("Total:" + current.getTotal());
-			for (Entry<MetaTask, Double> task : taskProbCache.getTasks().entrySet()) {
-				diagnosticFile.println(task.getKey().getName() + ":" + task.getValue());
+			for (TaskJob task : taskProbCache.getTasks()) {
+				diagnosticFile.println(task.getDescription() + ":" + task.getScore());
 			}
 			
 			diagnosticFile.println();
@@ -691,7 +692,7 @@ public abstract class TaskManager implements Serializable, Temporal {
 	 *
 	 * @return
 	 */
-	public List<String> getPendingTasks() {
+	public List<TaskJob> getPendingTasks() {
 		return pendingTasks;
 	}
 	
@@ -702,10 +703,17 @@ public abstract class TaskManager implements Serializable, Temporal {
 	 * @param allowDuplicate
 	 * @return
 	 */
-	public boolean addAPendingTask(String task, boolean allowDuplicate) {
+	public boolean addAPendingTask(String taskName, boolean allowDuplicate) {
+		MetaTask mt = convertTask2MetaTask(taskName);
+		if (mt == null) {
+			logger.warning(worker, "Cannot find pending task called " + taskName);
+			return false;
+		}
+
+		BasicTaskJob task = new BasicTaskJob(mt, 0);
 		if (allowDuplicate || !pendingTasks.contains(task)) {
 			pendingTasks.add(task);
-			logger.info(worker, 20_000L, "Given a new task order of '" + task + "'.");
+			logger.info(worker, 20_000L, "Given a new task order of '" + task.getDescription() + "'.");
 			return true;
 		}
 
@@ -717,7 +725,7 @@ public abstract class TaskManager implements Serializable, Temporal {
 	 *
 	 * @param task
 	 */
-	public void deleteAPendingTask(String task) {
+	public void deleteAPendingTask(TaskJob task) {
 		pendingTasks.remove(task);
 		logger.info(worker, "Removed the task order of '" + task + "'.");
 	}
@@ -727,11 +735,11 @@ public abstract class TaskManager implements Serializable, Temporal {
 	 *
 	 * @return
 	 */
-	protected MetaTask getAPendingMetaTask() {
+	protected TaskJob getPendingTask() {
 		if (!pendingTasks.isEmpty()) {
-			String firstTask = pendingTasks.get(0);
+			TaskJob firstTask = pendingTasks.get(0);
 			pendingTasks.remove(firstTask);
-			return convertTask2MetaTask(firstTask);
+			return firstTask;
 		}
 		return null;
 	}
@@ -761,10 +769,14 @@ public abstract class TaskManager implements Serializable, Temporal {
 	/**
 	 * Reloads instances after loading from a saved sim.
 	 * 
-	 * @param clock
+	 * @param sim
 	 */
-	public static void initializeInstances(MarsClock clock) {
-		marsClock = clock;
-	}
+	public static void initializeInstances(Simulation sim, SimulationConfig conf) {
+		marsClock = sim.getMasterClock().getMarsClock();
 
+		MetaTask.initialiseInstances(sim);
+		Task.initializeInstances(sim.getMasterClock(), marsClock, sim.getEventManager(), sim.getUnitManager(),
+									sim.getScientificStudyManager(), sim.getSurfaceFeatures(), sim.getOrbitInfo(),
+						sim.getMissionManager(), conf.getPersonConfig());
+	}
 }

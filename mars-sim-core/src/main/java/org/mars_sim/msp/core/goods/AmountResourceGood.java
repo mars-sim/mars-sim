@@ -1292,7 +1292,8 @@ class AmountResourceGood extends Good {
 		else if (resource == ResourceUtil.epsomSaltID)
 			return demand * EPSOM_SALT_VALUE_MODIFIER;
 		else if (resource == ResourceUtil.soilID)
-			return demand * settlement.getCropsNeedingTending() * SOIL_VALUE_MODIFIER;
+			// TODO Should be based on growing area
+			return demand * settlement.getTotalCropArea() * SOIL_VALUE_MODIFIER;
 		else if (resource == ResourceUtil.cementID) {
 			double cementDemand = owner.getAmountDemandValue(ResourceUtil.cementID);
 			double concreteDemand = owner.getAmountDemandValue(ResourceUtil.concreteID);

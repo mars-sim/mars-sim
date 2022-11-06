@@ -6,8 +6,10 @@
  */
 package org.mars_sim.msp.core.person.ai.task.util;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.mars_sim.msp.core.Simulation;
@@ -15,7 +17,6 @@ import org.mars_sim.msp.core.environment.SurfaceFeatures;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
-import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.time.MarsClock;
 
@@ -24,11 +25,6 @@ import org.mars_sim.msp.core.time.MarsClock;
  * constructing task instances.
  */
 public abstract class MetaTask {
-	
-	protected static final int FOOD_ID = ResourceUtil.foodID;
-	protected static final int WATER_ID = ResourceUtil.waterID;
-	protected static final int ICE_ID = ResourceUtil.iceID;
-	protected static final int REGOLITH_ID = ResourceUtil.regolithID;
 	
 	/**
 	 *  Defines the type of Worker support by this Task
@@ -50,17 +46,14 @@ public abstract class MetaTask {
 				TaskTrait.TREATMENT,
 				TaskTrait.LEADERSHIP,
 				TaskTrait.MEDICAL);
-
-	// If a person Job is not the preferred old
-	private static final double JOB_BOOST = 1.25D;
 	
 	/** Probability penalty for starting a non-job-related task. */
 	private static final double NON_JOB_PENALTY = .25D;
 	
-	private static Simulation sim = Simulation.instance();
+
 	/** The static instance of the mars clock */
-	protected static MarsClock marsClock = sim.getMasterClock().getMarsClock();
-	protected static SurfaceFeatures surfaceFeatures = sim.getSurfaceFeatures();
+	protected static MarsClock marsClock;
+	protected static SurfaceFeatures surfaceFeatures;
 	
 	private String name;
 	private WorkerType workerType;
@@ -236,6 +229,41 @@ public abstract class MetaTask {
 	public double getProbability(Robot robot) {
 		throw new UnsupportedOperationException("Can not calculated the probability of " + name + " for Robot.");
 	}
+	
+	/**
+	 * Gets the list of Task that this Person can perform all individually scored.
+	 * 
+	 * @param person the Person to perform the task.
+	 * @return List of TasksJob specifications.
+	 */
+	public List<TaskJob> getTaskJobs(Person person) {
+		return createTaskJob(getProbability(person));
+	}
+
+	/**
+	 * Gets the list of Task that this Robot can perform all individually scored.
+	 * 
+	 * @param robot the robot to perform the task.
+	 * @return List of TasksJob specifications.
+	 */
+	public List<TaskJob> getTaskJobs(Robot robot) {
+		return createTaskJob(getProbability(robot));
+	}
+
+	/**
+	 * Creates a TaskJob instance delegate where this instance handles Task creation.
+	 * @param score Score to the job to create.
+	 */
+	private List<TaskJob> createTaskJob(double score) {
+		// This is a convience to avoid a massive rework in the subclasses.
+		if (score <= 0) {
+			return null;
+		}
+
+		List<TaskJob> result = new ArrayList<>(1);
+		result.add(new BasicTaskJob(this, score));
+		return result;
+	}
 
 	/**
 	 * This will apply a number of modifier to the current score based on the Person.
@@ -286,4 +314,11 @@ public abstract class MetaTask {
         return score;
 	}
 
+	/**
+	 * Attached to the common controllign classes.
+	 */
+	static void initialiseInstances(Simulation sim) {
+		marsClock = sim.getMasterClock().getMarsClock();
+		surfaceFeatures = sim.getSurfaceFeatures();
+	}
 }

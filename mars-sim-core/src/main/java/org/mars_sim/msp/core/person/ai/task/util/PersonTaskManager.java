@@ -7,15 +7,13 @@
 package org.mars_sim.msp.core.person.ai.task.util;
 
 import java.util.List;
-import java.util.logging.Level;
 
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.job.util.ShiftType;
 import org.mars_sim.msp.core.person.ai.task.Walk;
-import org.mars_sim.msp.core.person.ai.task.util.MetaTask.TaskScope;
-import org.mars_sim.msp.core.person.ai.task.util.MetaTask.WorkerType;
+import org.mars_sim.msp.core.robot.Robot;
 
 /**
  * The PersonTaskManager class keeps track of a person's current task and can randomly
@@ -34,8 +32,6 @@ public class PersonTaskManager extends TaskManager {
 
 	private static TaskCache defaultInsideTasks;
 	private static TaskCache defaultOutsideTasks;
-
-	private static final int MAX_TASK_PROBABILITY = 35_000;
 
 	// Data members
 	/** The mind of the person the task manager is responsible for. */
@@ -157,18 +153,9 @@ public class PersonTaskManager extends TaskManager {
 
 		// Determine probabilities.
 		for (MetaTask mt : mtList) {
-			double probability = mt.getProbability(person);
-			if ((probability > 0D) && (!Double.isNaN(probability)) && (!Double.isInfinite(probability))) {
-				if (probability > MAX_TASK_PROBABILITY) {
-					if (!mt.getName().toLowerCase().contains("sleep")) {
-						logger.log(person, Level.WARNING, 10_000,
-							"Probability of '" + mt.getName() + "' at  "
-							+ Math.round(probability) + ".");
-					}
-					probability = MAX_TASK_PROBABILITY;
-				}
-
-				newCache.put(mt, probability);
+			List<TaskJob> job = mt.getTaskJobs(person);
+			if (job != null) {
+				newCache.add(job);
 			}
 		}
 
@@ -194,9 +181,8 @@ public class PersonTaskManager extends TaskManager {
 		if (defaultInsideTasks == null) {
 			defaultInsideTasks = new TaskCache("Default Inside");
 
-			// TODO Not great that we use the class name to do lookups
-			defaultInsideTasks.put(MetaTaskUtil.getMetaTask("SleepMeta"), 1D);
-			defaultInsideTasks.put(MetaTaskUtil.getMetaTask("EatDrinkMeta"), 1D);
+			defaultInsideTasks.putDefault(MetaTaskUtil.getMetaTask("SleepMeta"));
+			defaultInsideTasks.putDefault(MetaTaskUtil.getMetaTask("EatDrinkMeta"));
 		}
 		return defaultInsideTasks;
 	}
@@ -209,17 +195,29 @@ public class PersonTaskManager extends TaskManager {
 			defaultOutsideTasks = new TaskCache("Default Outside");
 
 			// Create a MetaTask to return inside
-			MetaTask walkBack = new MetaTask("Return Inside", WorkerType.PERSON, TaskScope.ANY_HOUR) {
-				/** 
-				 * Force a return to the base
-				 */
+			TaskJob walkBack = new TaskJob() {
 				@Override
-				public Task constructInstance(Person person) {
+				public double getScore() {
+					return 1D;
+				}
+
+				@Override
+				public String getDescription() {
+					return "Return Inside";
+				}
+
+				@Override
+				public Task createTask(Person person) {
 					logger.info(person, "Returning inside to find work.");
 					return new Walk(person);
+				}
+
+				@Override
+				public Task createTask(Robot robot) {
+					throw new UnsupportedOperationException();
 				}	
 			};
-			defaultOutsideTasks.put(walkBack, 1D);
+			defaultOutsideTasks.put(walkBack);
 		}
 		return defaultOutsideTasks;
 	}
@@ -230,9 +228,9 @@ public class PersonTaskManager extends TaskManager {
 	public void startNewTask() {
 		// Check if there are any assigned tasks that are pending
 		if (!getPendingTasks().isEmpty()) {
-			MetaTask metaTask = getAPendingMetaTask();
-			if (metaTask != null) {
-				Task newTask = metaTask.constructInstance(person);
+			TaskJob pending = getPendingTask();
+			if (pending != null) {
+				Task newTask = pending.createTask(person);
 				startTask(newTask);
 			}
 
@@ -258,7 +256,7 @@ public class PersonTaskManager extends TaskManager {
 	}
 
 	@Override
-	protected Task createTask(MetaTask selectedMetaTask) {
-		return selectedMetaTask.constructInstance(mind.getPerson());
+	protected Task createTask(TaskJob selectedWork) {
+		return selectedWork.createTask(mind.getPerson());
 	}
 }

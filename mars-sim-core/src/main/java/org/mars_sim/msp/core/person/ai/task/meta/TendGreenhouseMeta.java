@@ -6,9 +6,12 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.goods.GoodsManager;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
@@ -16,19 +19,51 @@ import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.task.TendGreenhouse;
 import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
+import org.mars_sim.msp.core.person.ai.task.util.TaskJob;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 
 /**
  * Meta task for the Tend Greenhouse task.
  */
 public class TendGreenhouseMeta extends MetaTask {
 
+    private static class CropTaskJob implements TaskJob {
+
+        private double score;
+        private Farming farm;
+
+        public CropTaskJob(Farming farm, double score) {
+            this.farm = farm;
+            this.score = score;
+        }
+
+        @Override
+        public double getScore() {
+            return score;
+        }
+
+        @Override
+        public String getDescription() {
+            return "Tend crop @ " + farm.getBuilding().getName();
+        }
+
+        @Override
+        public Task createTask(Person person) {
+            return new TendGreenhouse(person, farm);
+        }
+
+        @Override
+        public Task createTask(Robot robot) {
+            return new TendGreenhouse(robot, farm);
+        }
+
+    }
+
     private static final double VALUE = 2;
-    
-    private static final int CAP = 4_000;
     
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(TendGreenhouseMeta.class.getName());
@@ -45,89 +80,71 @@ public class TendGreenhouseMeta extends MetaTask {
 	}
 
     @Override
-    public Task constructInstance(Person person) {
-        return new TendGreenhouse(person);
-    }
+    public List<TaskJob> getTaskJobs(Person person) {
 
-    @Override
-    public double getProbability(Person person) {
-
-        double result = 0D;
-
+        List<TaskJob> tasks = new ArrayList<>();
         if (person.isInSettlement()) {
-            
-            try {
-                // See if there is an available greenhouse.
-                Building farmingBuilding = TendGreenhouse.getAvailableGreenhouse(person);
-                if (farmingBuilding != null) {
-  	
-                    int needyCropsNum = person.getSettlement().getCropsNeedingTending();
-                    if (needyCropsNum == 0)
-                    	return 0;
-                    
-                    double tendingNeed = person.getSettlement().getCropsTendingNeed();
+            GoodsManager gm = person.getSettlement().getGoodsManager();
+            double goodsFactor = gm.getCropFarmFactor() + gm.getTourismFactor();
 
-                    result = tendingNeed * VALUE;
-                    
-                    if (result <= 0) result = 0;
-                    
-                    // Crowding modifier.
-                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, farmingBuilding);
-                    result *= TaskProbabilityUtil.getRelationshipModifier(person, farmingBuilding);
+            for(Building b : person.getSettlement().getBuildingManager().getFarmsNeedingWork()) {
+                Farming farm = b.getFarming();
 
-                    // Settlement factors
-            		result *= (person.getSettlement().getGoodsManager().getCropFarmFactor()
-            				+ person.getAssociatedSettlement().getGoodsManager().getTourismFactor());
-            		
-                    result = applyPersonModifier(result, person);
-                    
-                    if (result > CAP)
-                    	result = CAP;
+                double result = getFarmScore(farm);
+
+                // Crowding modifier.
+                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, b);
+                result *= TaskProbabilityUtil.getRelationshipModifier(person, b);
+
+                // Settlement factors
+                result *= goodsFactor;
+                
+                result = applyPersonModifier(result, person);
+
+                if (result > 0) {
+                    tasks.add(new CropTaskJob(farm, result));
                 }
-            }
-            catch (Exception e) {
-            	logger.log(Level.SEVERE, person + " cannot calculate probability : " + e.getMessage());
             }
         }
 
-        return result;
+        return tasks;
     }
 
-	@Override
-	public Task constructInstance(Robot robot) {
-        return new TendGreenhouse(robot);
-	}
+    
+    @Override
+    public List<TaskJob> getTaskJobs(Robot robot) {
 
-	@Override
-	public double getProbability(Robot robot) {
+        List<TaskJob> tasks = new ArrayList<>();
+        if (robot.isInSettlement() && robot.getRobotType() == RobotType.GARDENBOT) {
+            GoodsManager gm = robot.getSettlement().getGoodsManager();
+            double goodsFactor = gm.getCropFarmFactor() + gm.getTourismFactor();
 
-        double result = 0D;
+            for(Building b : robot.getSettlement().getBuildingManager().getFarmsNeedingWork()) {
+                Farming farm = b.getFarming();
 
-        if (robot.getRobotType() == RobotType.GARDENBOT && robot.isInSettlement()) {
+                double result = getFarmScore(farm);
 
-            try {
-                // See if there is an available greenhouse.
-                Building farmingBuilding = TendGreenhouse.getAvailableGreenhouse(robot);
-                if (farmingBuilding != null) {
- 
-                    int needyCropsNum = robot.getSettlement().getCropsNeedingTending();
-                    if (needyCropsNum == 0)
-                    	return 0;
-                    
-                    double tendingNeed = robot.getSettlement().getCropsTendingNeed();
-                    result = tendingNeed * VALUE;
-                    
-    	            // Effort-driven task modifier.
-    	            result *= robot.getPerformanceRating();
+                // Crowding modifier.
+                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(robot, b);
+
+                // Settlement factors
+                result *= goodsFactor;
+
+                if (result > 0) {
+                    tasks.add(new CropTaskJob(farm, result));
                 }
             }
-            catch (Exception e) {
-                logger.log(Level.SEVERE, robot + " cannot calculate probability : " + e.getMessage());
-            }
-
-
         }
 
-        return result;
-	}
+        return tasks;
+    }
+
+    /**
+     * Get a score for a farm
+     */
+    private static double getFarmScore(Farming farm) {
+        // This was originally multipled by VALUE but score was too high
+        return farm.getTendingNeed();
+    }
+
 }

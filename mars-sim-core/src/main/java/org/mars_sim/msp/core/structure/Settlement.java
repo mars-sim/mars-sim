@@ -82,7 +82,6 @@ import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorMana
 import org.mars_sim.msp.core.structure.building.function.EVA;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
-import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
 import org.mars_sim.msp.core.structure.construction.ConstructionManager;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -221,10 +220,6 @@ public class Settlement extends Structure implements Temporal,
 	private int numOnCall;
 	/** number of people with work shift "Off" */
 	private int numOff;
-	/** The cache for the numbers of crops that need tending. */
-	private int cropsNeedTendingNum = 5;
-	/** The tending need of of the crops. */
-	private int cropsTendingNeed = 0;
 	/** The cache for millisol. */
 	private int millisolCache = -5;
 	/** Numbers of citizens of this settlement. */
@@ -276,6 +271,8 @@ public class Settlement extends Structure implements Temporal,
 	private double methaneProbabilityValue = 0;
 	/** The settlement's outside temperature. */
 	private double outside_temperature;
+	/** Total Crop area */
+	private double cropArea = -1;
 
 	/** The settlement terrain profile. */
 	public double[] terrainProfile = new double[2];
@@ -943,9 +940,6 @@ public class Settlement extends Structure implements Temporal,
 		if (!isValid(pulse)) {
 			return false;
 		}
-
-		// Updates how much crops need tending
-		computeCropTendingNeed(pulse);
 
 		// what to take into consideration the presence of robots ?
 		// If no current population at settlement for one sol, power down the
@@ -3230,31 +3224,22 @@ public class Settlement extends Structure implements Temporal,
 	 */
 	public double getObjectiveLevel(ObjectiveType objectiveType) {
 
-		if (objectiveType == ObjectiveType.CROP_FARM) {
-			return goodsManager.getCropFarmFactor();
+		switch(objectiveType) {
+			case CROP_FARM:
+				return goodsManager.getCropFarmFactor();
+			case MANUFACTURING_DEPOT:
+				return goodsManager.getManufacturingFactor();
+			case RESEARCH_CAMPUS:
+				return goodsManager.getResearchFactor();
+			case TRANSPORTATION_HUB:
+				return goodsManager.getTransportationFactor();
+			case TRADE_CENTER:
+				return goodsManager.getTradeFactor();
+			case TOURISM:
+				return goodsManager.getTourismFactor();
+			default:
+				return -1;
 		}
-
-		else if (objectiveType == ObjectiveType.MANUFACTURING_DEPOT) {
-			return goodsManager.getManufacturingFactor();
-		}
-
-		else if (objectiveType == ObjectiveType.RESEARCH_CAMPUS) {
-			return goodsManager.getResearchFactor();
-		}
-
-		else if (objectiveType == ObjectiveType.TRANSPORTATION_HUB) {
-			return goodsManager.getTransportationFactor();
-		}
-
-		else if (objectiveType == ObjectiveType.TRADE_CENTER) {
-			return goodsManager.getTradeFactor();
-		}
-
-		else if (objectiveType == ObjectiveType.TOURISM) {
-			return goodsManager.getTourismFactor();
-		}
-
-		return -1;
 	}
 
 	/**
@@ -3294,42 +3279,19 @@ public class Settlement extends Structure implements Temporal,
 	}
 
 	/**
-	 * Gets the number of crops that currently need work this Sol.
-	 *
-	 * @return number of crops.
+	 * Get the total area of Crops in this Settlement
 	 */
-	public int getCropsNeedingTending() {
-		return cropsNeedTendingNum;
-	}
-
-	/**
-	 * Gets the tending need of the crops in greenhouses.
-	 *
-	 * @return tending need
-	 */
-	public double getCropsTendingNeed() {
-		return cropsTendingNeed;
-	}
-	
-	/**
-	 * Compute how much the crops need tending. Add a buffer of 5 millisol.
-	 * 
-	 * @param now Current time
-	 */
-	private void computeCropTendingNeed(ClockPulse pulse) {
-		int msol = pulse.getMarsTime().getMillisolInt();
-
-		// Check for the day rolling over
-		if (pulse.isNewSol() || (millisolCache + 5) < msol) {
-			millisolCache = msol;
-			cropsTendingNeed = 0;
-			cropsNeedTendingNum = 0;
+	public double getTotalCropArea() {
+		if (cropArea < 0D) {
+			cropArea = 0D;
+			
 			for (Building b : buildingManager.getBuildings(FunctionType.FARMING)) {
-				cropsNeedTendingNum += b.getFarming().getNumNeedTending();
-				cropsTendingNeed += b.getFarming().getTendingNeed();
+				cropArea += b.getFarming().getGrowingArea();
 			}
 		}
-	}
+
+		return cropArea;
+	} 
 	
 	/**
 	 * Computes the probability of the presence of regolith

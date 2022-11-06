@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.person.ai.task.CookMeal;
 import org.mars_sim.msp.core.person.ai.task.EatDrink;
 import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
@@ -32,6 +33,9 @@ public class EatDrinkMeta extends MetaTask {
 	private static final String NAME = Msg.getString("Task.description.eatDrink"); //$NON-NLS-1$
 
 	private static final int CAP = 6_000;
+		
+	private static final int FOOD_ID = ResourceUtil.foodID;
+	private static final int WATER_ID = ResourceUtil.waterID;
 	
     public EatDrinkMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.ANY_HOUR);
