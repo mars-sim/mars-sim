@@ -6,7 +6,8 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.util.AbstractMap.SimpleEntry;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -22,8 +23,8 @@ import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.task.RepairInsideMalfunction;
 import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
+import org.mars_sim.msp.core.person.ai.task.util.TaskJob;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
-import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -34,6 +35,39 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  */
 public class RepairInsideMalfunctionMeta extends MetaTask {
 
+	private static class RepairTaskJob implements TaskJob {
+		private Malfunctionable entity;
+		private Malfunction mal;
+		private double score;
+
+		public RepairTaskJob(Malfunctionable entity, Malfunction mal, double score) {
+			this.entity = entity;
+			this.mal = mal;
+			this.score = score;
+		}
+
+		@Override
+		public double getScore() {
+			return score;
+		}
+
+		@Override
+		public String getDescription() {
+			return "Repair " + mal.getName() + " @ " + entity;
+		}
+
+		@Override
+		public Task createTask(Person person) {
+			return new RepairInsideMalfunction(person, entity, mal);
+		}
+
+		@Override
+		public Task createTask(Robot robot) {
+			return new RepairInsideMalfunction(robot, entity, mal);
+		}
+
+	}
+
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(RepairInsideMalfunctionMeta.class.getName());
 	
@@ -41,9 +75,7 @@ public class RepairInsideMalfunctionMeta extends MetaTask {
     private static final String NAME = Msg.getString(
             "Task.description.repairMalfunction"); //$NON-NLS-1$
 
-	private static final int WEIGHT = 300;
-	
-	private static final int CAP = 6000;
+	private static final int WEIGHT = 5;
 	
     public RepairInsideMalfunctionMeta() {
 		super(NAME, WorkerType.BOTH, TaskScope.ANY_HOUR);
@@ -52,48 +84,54 @@ public class RepairInsideMalfunctionMeta extends MetaTask {
 		setPreferredJob(JobType.MECHANICS);
 	}
 
+	/**
+	 * Get repair tasks suitable for this Person to do inside.
+	 */
     @Override
-    public Task constructInstance(Person person) {
-        return new RepairInsideMalfunction(person);
-    }
+    public List<TaskJob> getTaskJobs(Person person) {
 
-    @Override
-    public double getProbability(Person person) {
+		List<TaskJob> tasks = null;
 
-        double result = 0D;
+        if (person.isInSettlement()) {
+			double factor = applyPersonModifier(1D, person);
 
-        if (person.isInside()) { 
-        	    
-            // Probability affected by the person's stress and fatigue.
-            if (!person.getPhysicalCondition().isFitByLevel(1000, 70, 1000))
-            	return 0;
-            
-            if (person.isInSettlement()) {
-            	result = computeProbability(person.getSettlement(), person);
-            }
-
-	        result = applyPersonModifier(result, person);
-        }
-        
-        if (result > CAP)
-        	result = CAP;
-        
-        return result;
-    }
-
-
-    private double computeProbability(Settlement settlement, Worker worker) {
-
-		if (worker.getSettlement().canRetrieveMalfunctionPair()) {
-			return CAP;
+			tasks = getRepairTasks(person.getSettlement(), factor, MalfunctionRepairWork.INSIDE);
 		}
-    	
-        double result = 0;
-        double highestScore = 0;
-        
-        Malfunction highestScoreMalfunction = null;
-        Malfunctionable highestScoreEntity = null;
- 
+
+            // Probability affected by the person's stress and fatigue.
+            // if (!person.getPhysicalCondition().isFitByLevel(1000, 70, 1000))
+            // 	return 0;
+            
+            // 	result = computeProbability(person.getSettlement(), person);
+            // }
+
+        return tasks;
+	}
+
+	/**
+	 * Get the repair takss suitable for this Robot.
+	 */
+    @Override
+    public List<TaskJob> getTaskJobs(Robot robot) {
+
+		List<TaskJob> tasks = null;
+
+        if (robot.getRobotType() == RobotType.REPAIRBOT) {
+			double factor = robot.getPerformanceRating();
+
+			tasks = getRepairTasks(robot.getSettlement(), factor, MalfunctionRepairWork.INSIDE);
+		}
+
+        return tasks;
+	}
+	
+	/**
+	 * Creates a list of Task Jobs for the active malfunctions.
+	 */
+    private static List<TaskJob> getRepairTasks(Settlement settlement, double factor, MalfunctionRepairWork workType) {
+
+		List<TaskJob> tasks = new ArrayList<>();
+		
         // Add probability for all malfunctionable entities in person's local.
         for (Malfunctionable entity : MalfunctionFactory.getAssociatedMalfunctionables(settlement)) {
         	
@@ -110,40 +148,15 @@ public class RepairInsideMalfunctionMeta extends MetaTask {
             	Malfunction mal = manager.getMostSeriousMalfunctionInNeed(MalfunctionRepairWork.INSIDE);
 
             	if (mal != null) {
-            		highestScoreMalfunction = mal; 
-            		highestScoreEntity = entity;
+					double score = scoreMalfunction(settlement, mal);
+					score *= factor;
+
+					tasks.add(new RepairTaskJob(entity, mal, score));
 	            }
-            	
-            	else {
-    	            for (Malfunction malfunction : manager.getAllInsideMalfunctions()) {
-    	            	
-    	            	// Since it fails to find the most serious malfunction earlier
-    	            	if (mal == null) {
-    	            		mal = malfunction;
-    		            }
-    	            	
-    	            	double score = scoreMalfunction(settlement, malfunction);
-    	            	if (score >= highestScore) {
-    	            		highestScoreMalfunction = malfunction; 
-    	            		highestScoreEntity = entity;
-    	            	}
-    	                result += score;
-    	                
-    	            }
-            	}
             }
         }
-        
-        if (result > 0 && highestScoreMalfunction !=  null && highestScoreEntity != null) {
-	        // Create the malfunction pair for storage
-			SimpleEntry<Malfunction, Malfunctionable> highestScorePair = new SimpleEntry<>(highestScoreMalfunction, highestScoreEntity);
-	        // Save the malfunction pair in the settlement
-	        settlement.saveMalfunctionPair(highestScorePair);
-	        
-	        logger.info(worker, "mal: " + highestScoreMalfunction);
-        }
-        
-        return result;
+
+		return tasks;
     }
     
     /**
@@ -156,7 +169,7 @@ public class RepairInsideMalfunctionMeta extends MetaTask {
     	double result = 0D;
 		if (!malfunction.isWorkDone(MalfunctionRepairWork.INSIDE)
 				&& (malfunction.numRepairerSlotsEmpty(MalfunctionRepairWork.INSIDE) > 0)) {
-	        result = ((WEIGHT * malfunction.getSeverity()) / 100D);
+	        result = WEIGHT * malfunction.getSeverity();
 	        
 	        if (RepairHelper.hasRepairParts(settlement, malfunction)) {
 	    		result *= 2;
@@ -165,23 +178,4 @@ public class RepairInsideMalfunctionMeta extends MetaTask {
     	
 		return result;
     }
-    
-	@Override
-	public Task constructInstance(Robot robot) {
-        return new RepairInsideMalfunction(robot);
-	}
-
-	@Override
-	public double getProbability(Robot robot) {
-        double result = 0D;
-
-        if (robot.getRobotType() == RobotType.REPAIRBOT) {
-        	// Calculate probability
-	      	result = computeProbability(robot.getSettlement(), robot);
-		    // Effort-driven task modifier.
-		    result *= robot.getPerformanceRating();
-        }
-
-        return result;
-	}
 }

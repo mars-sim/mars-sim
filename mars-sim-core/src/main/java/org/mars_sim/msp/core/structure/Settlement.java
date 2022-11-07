@@ -7,7 +7,6 @@
 
 package org.mars_sim.msp.core.structure;
 
-import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
@@ -46,8 +45,6 @@ import org.mars_sim.msp.core.goods.CreditManager;
 import org.mars_sim.msp.core.goods.GoodsManager;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.logging.SimLogger;
-import org.mars_sim.msp.core.malfunction.Malfunction;
-import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.Commander;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
@@ -353,8 +350,6 @@ public class Settlement extends Structure implements Temporal,
 	private Set<Person> peopleWithin;
 	/** The settlement's list of robots within. */
 	private Set<Robot> robotsWithin;
-	
-	private SimpleEntry<Malfunction, Malfunctionable> malfunctionPair;
 	
 	private static SettlementConfig settlementConfig = SimulationConfig.instance().getSettlementConfiguration();
 	private static PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
@@ -4066,27 +4061,6 @@ public class Settlement extends Structure implements Temporal,
 	@Override
 	public Unit getHolder() {
 		return this;
-	}
-	
-	public void saveMalfunctionPair(SimpleEntry<Malfunction, Malfunctionable> pair) {
-		malfunctionPair = pair;
-	}
-	
-	public SimpleEntry<Malfunction, Malfunctionable> retrieveMalfunctionPair() {
-		if (malfunctionPair != null) {
-			SimpleEntry<Malfunction, Malfunctionable> pair = malfunctionPair;
-			malfunctionPair = null;
-			return pair;
-		}
-		
-		return null;
-	}
-	
-	public boolean canRetrieveMalfunctionPair() {
-		if (malfunctionPair == null) { 
-			return false;
-		}
-		return true;
 	}
 	
 	/**

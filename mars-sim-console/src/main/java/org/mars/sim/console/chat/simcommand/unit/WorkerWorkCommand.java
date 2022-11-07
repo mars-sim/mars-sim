@@ -15,10 +15,13 @@ import org.mars.sim.console.chat.simcommand.CommandHelper;
 import org.mars.sim.console.chat.simcommand.StructuredResponse;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.job.util.ShiftType;
 import org.mars_sim.msp.core.person.ai.task.util.TaskCache;
 import org.mars_sim.msp.core.person.ai.task.util.TaskJob;
 import org.mars_sim.msp.core.person.ai.task.util.TaskManager;
+import org.mars_sim.msp.core.person.ai.task.util.TaskSchedule;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
+import org.mars_sim.msp.core.time.MarsClock;
 
 /** 
  * What work in terms of Tasks is available for this Person to do
@@ -48,6 +51,18 @@ public class WorkerWorkCommand extends AbstractUnitCommand {
 			Person p = (Person)source;
 			response.appendLabeledString("Job", p.getMind().getJob().getName());
 			response.appendLabeledString("Favourite", p.getFavorite().getFavoriteActivity().getName());
+
+			// Revisit as part of Issue #743
+			MarsClock marsClock = context.getSim().getMasterClock().getMarsClock();
+			String shift = "Off Shift";
+			TaskSchedule taskSchedule = p.getTaskSchedule();
+			if (taskSchedule.getShiftType() == ShiftType.ON_CALL) {
+				shift = "On Call";
+			}
+			else if (taskSchedule.isShiftHour(marsClock.getMillisolInt())) {
+				shift = "On Shift";
+			}
+			response.appendLabeledString("Shift", shift);
 		}
 
 		// List pending tasks first

@@ -6,20 +6,13 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.AbstractMap.SimpleEntry;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitType;
-import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.Malfunction;
-import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
-import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.MalfunctionRepairWork;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.malfunction.RepairHelper;
@@ -38,7 +31,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * The RepairInsideMalfunction class is a task to repair a malfunction.
  */
-public class RepairInsideMalfunction extends Task implements Repair, Serializable {
+public class RepairInsideMalfunction extends Task implements Repair {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -72,106 +65,39 @@ public class RepairInsideMalfunction extends Task implements Repair, Serializabl
 	 *
 	 * @param person the person to perform the task
 	 */
-	public RepairInsideMalfunction(Person person) {
+	public RepairInsideMalfunction(Person person, Malfunctionable ent, Malfunction mal) {
 		super(NAME, person, true, false, STRESS_MODIFIER, SkillType.MECHANICS,
 			  25D, 100D + RandomUtil.getRandomDouble(10D));
-		initRepair();
+		initRepair(ent, mal);
 	}
 
 
-	public RepairInsideMalfunction(Robot robot) {
+	public RepairInsideMalfunction(Robot robot, Malfunctionable ent, Malfunction mal) {
 		super(NAME, robot, true, false, STRESS_MODIFIER, SkillType.MECHANICS,
 			  25D, 100D);
-		initRepair();
+		initRepair(ent, mal);
 	}
 
-	/**
-	 * Chooses the malfunctioning entity.
-	 */
-	private void chooseEntity() {
 
-		if (worker.isInSettlement() || worker.isInVehicleInGarage()) {
-
-			if (worker.getSettlement().canRetrieveMalfunctionPair()) {
-			    // Load the malfunction pair in the settlement
-				SimpleEntry<Malfunction, Malfunctionable> pair = worker.getAssociatedSettlement().retrieveMalfunctionPair();    
-				if (pair != null) {
-					entity = pair.getValue();
-					malfunction = pair.getKey();
-				}
-				else {
-					// Get the malfunctioning entity.
-					for (Malfunctionable next : MalfunctionFactory.getLocalMalfunctionables(worker)) {
-						Malfunction potential = next.getMalfunctionManager().getMostSeriousMalfunctionInNeed(MalfunctionRepairWork.INSIDE);
-						if (potential != null) {
-							entity = next;
-							malfunction = potential;
-							break; // Stop searching
-						}
-					}
-				}
-			}
-		}
-		
-		else if (worker.isInVehicle()) {
-			// Get the malfunctioning entity.
-			for (Malfunctionable next : MalfunctionFactory.getLocalMalfunctionables(worker)) {
-				Malfunction potential = next.getMalfunctionManager().getMostSeriousMalfunctionInNeed(MalfunctionRepairWork.INSIDE);
-				if (potential != null) {
-					entity = next;
-					malfunction = potential;
-					break; // Stop searching
-				}
-			}
-		}
-	}
-	
 	/**
 	 * Finds a repair with available slots and register for the work.
 	 */
-	private void initRepair() {
+	private void initRepair(Malfunctionable ent, Malfunction mal) {
 		if (worker.isOutside()) {
 			endTask();
 			return;
 		}
 
-		// Choose the malfunction and the entity
-		chooseEntity();
-
-		if (entity != null && malfunction != null) {
-			// Prep up for repair
-			prepareForRepair();
-		}
-		else if (worker.isInSettlement() || worker.isInVehicleInGarage()) {
-			for (Malfunctionable next : MalfunctionFactory.getAssociatedMalfunctionables(worker.getSettlement())) {
-				List<Malfunction> list = next.getMalfunctionManager().getMalfunctions();
-				if (!list.isEmpty()) {
-					Malfunction potential = next.getMalfunctionManager().getMostSeriousMalfunctionInNeed(MalfunctionRepairWork.INSIDE);
-					entity = next;
-					malfunction = potential;
-					break; // Stop searching
-				}
-			}
-			
-			if (entity != null && malfunction != null) {
-				// Prep up for repair
-				prepareForRepair();
-			}
-			else {
-				logger.warning(worker, 30_000, "Could not find a malfunction to work on in my vicinity.");
-				endTask();
-			}
-		}
-		else {
-			logger.warning(worker, 30_000, "Could not find a malfunction to work on in my vicinity.");
+		if (mal.isWorkDone(MalfunctionRepairWork.INSIDE)) {
+			logger.warning(worker, 30_000, "Inside repair work already completed.");
 			endTask();
 		}
-	}
 
-	/**
-	 * Prepares for a repair.
-	 */
-	private void prepareForRepair() {
+		// Prep up for repair
+		entity = ent;
+		malfunction = mal;
+		logger.info(worker, "Starting repair " + malfunction.getName());
+
 		// Add person to location of malfunction if possible.
 		addPersonOrRobotToMalfunctionLocation(entity);
 
@@ -280,94 +206,6 @@ public class RepairInsideMalfunction extends Task implements Repair, Serializabl
 
 		return workTimeLeft;
 	}
-
-
-	/**
-	 * Gets a malfunctionable entity with a normal malfunction for a user.
-	 *
-	 * @param person the person.
-	 * @return malfunctionable entity.
-	 */
-	public static Malfunctionable getMalfunctionEntity(Person person) {
-		Malfunctionable result = null;
-
-		Iterator<Malfunctionable> i = MalfunctionFactory.getLocalMalfunctionables(person).iterator();
-		while (i.hasNext() && (result == null)) {
-			Malfunctionable entity = i.next();
-			
-			List<Malfunction> malfunctions = entity.getMalfunctionManager().getMalfunctions();
-			for (Malfunction m: malfunctions) {
-				if (m.hasWorkType(MalfunctionRepairWork.INSIDE)) {
-					if (entity.getUnitType() == UnitType.BUILDING) {
-						Building building = (Building) entity;
-						if (building.hasFunction(FunctionType.LIFE_SUPPORT)) {
-							result = entity;
-						}
-					}
-					else if (entity.getUnitType() == UnitType.VEHICLE) {
-						Vehicle vehicle = (Vehicle) entity;
-						if (vehicle.isInAGarage()) {
-							result = entity;
-						}
-					}
-					else if (entity.getUnitType() == UnitType.EQUIPMENT) {
-						Equipment equipment = (Equipment) entity;
-						if (equipment.isInside()) {
-							result = entity;
-						}
-					}
-					else if (entity.getUnitType() == UnitType.SETTLEMENT) {
-						logger.warning(entity, "entity is " + entity);
-					}
-				}
-			}
-		}
-
-		return result;
-	}
-
-	/**
-	 * Gets a reparable malfunction requiring an EVA for a given entity.
-	 *
-	 * @param person the person to repair.
-	 * @param entity the entity with a malfunction.
-	 * @return malfunction requiring an EVA repair or null if none found.
-	 */
-	public static Malfunction getMalfunction(Person person, Malfunctionable entity) {
-
-		MalfunctionManager manager = entity.getMalfunctionManager();
-
-		// Check if entity has any malfunctions.
-		for (Malfunction malfunction : manager.getMalfunctions()) {
-			try {
-				if (malfunction.hasWorkType(MalfunctionRepairWork.INSIDE)
-					&& RepairHelper.hasRepairParts(person.getContainerUnit(), malfunction)) {
-					return malfunction;
-				}
-			} catch (Exception e) {
-				logger.log(entity, Level.WARNING, 2000, "Problems in top container unit's malfunction: " + e.getMessage());
-			}
-		}
-
-		// Check if entity needs no EVA and has any normal malfunctions.
-		if (!requiresEVA(person, entity)) {
-			for(Malfunction malfunction : manager.getAllInsideMalfunctions()) {
-				try {
-					if (RepairHelper.hasRepairParts(person, malfunction)) {
-						return malfunction;
-					}
-				} catch (Exception e) {
-					logger.log(entity, Level.WARNING, 2000, "Problems in general malfunction's repair parts: " + e.getMessage());
-				}
-			}
-		}
-
-		if (manager.hasMalfunction()) {
-			logger.log(entity, Level.WARNING, 2000, "No parts available for any malfunction");
-		}
-		return null;
-	}
-
 
 	/**
 	 * Check if a malfunctionable entity requires an EVA to repair.
