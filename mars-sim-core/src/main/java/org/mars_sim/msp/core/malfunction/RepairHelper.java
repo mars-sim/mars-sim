@@ -14,7 +14,9 @@ import java.util.logging.Level;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.EquipmentOwner;
 import org.mars_sim.msp.core.logging.SimLogger;
+import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * This is a helper class for completing Repair activities on a Malfunction
@@ -70,7 +72,7 @@ public final class RepairHelper {
 	 * @param malfunction
 	 * @return
 	 */
-	public static boolean hasRepairParts(Unit containerUnit, Malfunction malfunction) {
+	public static boolean hasRepairParts(EquipmentOwner containerUnit, Malfunction malfunction) {
 
 		boolean result = true;
 
@@ -83,7 +85,7 @@ public final class RepairHelper {
 		for (Entry<Integer, Integer> item : malfunction.getRepairParts().entrySet()) {
 			Integer id = item.getKey();
 			int number = item.getValue();
-			if (((EquipmentOwner)containerUnit).getItemResourceStored(id) < number) {
+			if (containerUnit.getItemResourceStored(id) < number) {
 				result = false;
 			}
 		}
@@ -98,7 +100,7 @@ public final class RepairHelper {
 	 * @param malfunction
 	 * @return 
 	 */
-	public static void claimRepairParts(Unit containerUnit, Malfunction malfunction) {
+	public static void claimRepairParts(EquipmentOwner containerUnit, Malfunction malfunction) {
 		Map<Integer, Integer> needed = malfunction.getRepairParts();
 		if (!needed.isEmpty()) {
 			// Take a copy because source will get modified
@@ -108,10 +110,27 @@ public final class RepairHelper {
 			for (Entry<Integer, Integer> part : parts.entrySet()) {
 				Integer id = part.getKey();
 				int number = part.getValue();
-				((EquipmentOwner)containerUnit).retrieveItemResource(id, number);
+				containerUnit.retrieveItemResource(id, number);
 				// Add in the repair part
 				malfunction.repairWithParts(id, number, containerUnit);
 			}
 		}
+	}
+
+	/**
+	 * Find the closest store for Repair parts to a Worker.
+	 * @param repairer
+	 * @return
+	 */
+	public static EquipmentOwner getClosestRepairStore(Worker repairer) {
+		EquipmentOwner partStore;
+		if (repairer.isInVehicle()) {
+			partStore = repairer.getVehicle();
+		}
+		else {
+			partStore = repairer.getSettlement();
+		}
+
+		return partStore;
 	}
 }

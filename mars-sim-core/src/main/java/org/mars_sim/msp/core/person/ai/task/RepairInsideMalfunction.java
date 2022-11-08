@@ -9,8 +9,8 @@ package org.mars_sim.msp.core.person.ai.task;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitType;
+import org.mars_sim.msp.core.equipment.EquipmentOwner;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionRepairWork;
@@ -60,6 +60,8 @@ public class RepairInsideMalfunction extends Task implements Repair {
 
 	private Malfunction malfunction;
 
+	private EquipmentOwner partStore;
+
 	/**
 	 * Constructor
 	 *
@@ -91,12 +93,15 @@ public class RepairInsideMalfunction extends Task implements Repair {
 		if (mal.isWorkDone(MalfunctionRepairWork.INSIDE)) {
 			logger.warning(worker, 30_000, "Inside repair work already completed.");
 			endTask();
+			return;
 		}
 
 		// Prep up for repair
 		entity = ent;
 		malfunction = mal;
 		logger.info(worker, "Starting repair " + malfunction.getName());
+		this.partStore = RepairHelper.getClosestRepairStore(worker);
+
 
 		// Add person to location of malfunction if possible.
 		addPersonOrRobotToMalfunctionLocation(entity);
@@ -160,25 +165,19 @@ public class RepairInsideMalfunction extends Task implements Repair {
 		} else if (mechanicSkill > 1) {
 			workTime += workTime * (.2D * mechanicSkill);
 		}
-
-		Unit containerUnit = worker.getContainerUnit();
-		if (containerUnit.getUnitType() == UnitType.PLANET) {
-			logger.log(worker, Level.INFO, 0, "Not inside.");
-			endTask();
-		}
 		
 		// Add repair parts if necessary.
-		if (RepairHelper.hasRepairParts(containerUnit, malfunction)) {
+		if (RepairHelper.hasRepairParts(partStore, malfunction)) {
 			setDescription(Msg.getString("Task.description.repairMalfunction.detail", malfunction.getName(),
 					entity.getName())); // $NON-NLS-1$
 
 			if (!worker.isOutside()) {
-				logger.log(worker, Level.INFO, 10_000, "Parts for repairing malfunction '" + malfunction + "' available from " + containerUnit.getName() + ".");
-				RepairHelper.claimRepairParts(containerUnit, malfunction);
+				logger.log(worker, Level.INFO, 10_000, "Parts for repairing malfunction '" + malfunction + "' available from " + entity.getName() + ".");
+				RepairHelper.claimRepairParts(partStore, malfunction);
 			}
 		} 
 		else {
-			logger.log(worker, Level.INFO, 10_000, "Parts for repairing malfunction '" + malfunction + "' NOT available from " + containerUnit.getName() + ".");
+			logger.log(worker, Level.INFO, 10_000, "Parts for repairing malfunction '" + malfunction + "' NOT available from " + entity.getName() + ".");
 		}
 		
 		// Add experience
@@ -190,7 +189,7 @@ public class RepairInsideMalfunction extends Task implements Repair {
 		// Add EVA work to malfunction.
 		double workTimeLeft = 0D;
 		if (!malfunction.isWorkDone(MalfunctionRepairWork.INSIDE)) {
-			logger.log(worker, Level.FINE, 10_000, "Performing inside repair on malfunction '" + malfunction + "' at " + containerUnit.getName() + ".");
+			logger.log(worker, Level.FINE, 10_000, "Performing inside repair on malfunction '" + malfunction + "' at " + entity.getName() + ".");
 			// Add work to malfunction.
 			workTimeLeft = malfunction.addWorkTime(MalfunctionRepairWork.INSIDE, workTime, worker.getName());
 		}

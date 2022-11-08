@@ -6,31 +6,25 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.UnitType;
+import org.mars_sim.msp.core.equipment.EquipmentOwner;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.Malfunction;
-import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
-import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.MalfunctionRepairWork;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.malfunction.RepairHelper;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
 
 /**
  * The RepairEVAMalfunction class is a task to repair a malfunction requiring an
  * EVA.
  */
-public class RepairEVAMalfunction extends EVAOperation implements Repair, Serializable {
+public class RepairEVAMalfunction extends EVAOperation implements Repair {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -53,10 +47,10 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 	/** The malfunction to be repaired. */
 	private Malfunction malfunction;
 
-	/** The container unit the person started the mission in. */
-	private Unit containerUnit;
+	/** Where to the parts come from */
+	private EquipmentOwner partStore;
 
-	public RepairEVAMalfunction(Person person) {
+	public RepairEVAMalfunction(Person person, Malfunctionable entity, Malfunction malfunction) {
 		super(NAME, person, true, 25, SkillType.MECHANICS);
 
 		if (!person.isNominallyFit()) {
@@ -64,118 +58,34 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
         	return;
 		}
 
-		if (person.isInSettlement()) {
-			containerUnit = person.getSettlement();
-		}
-		else if (person.isInSettlementVicinity()) {
-			containerUnit = person.getNearbySettlement();
-		}
-		else if (person.isInVehicle()){
-			containerUnit = person.getVehicle();
-		}
-		else if (person.getMission() != null) {
-			// if the person is out on mission and not within a settlement vicinity
-			Mission mission = person.getMission();
-			containerUnit = ((VehicleMission)mission).getVehicle();
+		if (malfunction.numRepairerSlotsEmpty(MalfunctionRepairWork.EVA) == 0
+					|| malfunction.isWorkDone(MalfunctionRepairWork.EVA)) {
+			logger.warning(person, "EVA Repair not needed @ " + malfunction.getName());
+			endTask();
+			return;
 		}
 
-		if (containerUnit != null) {
-			chooseEntity();
-		}
+		this.entity = entity;
+		this.malfunction = malfunction;
+		this.partStore = RepairHelper.getClosestRepairStore(person);
 
 		// Start if found
-		if (entity != null) {
-			setDescription(Msg.getString("Task.description.repairEVAMalfunction.detail", malfunction.getName(),
-					entity.getName())); // $NON-NLS-1$
+		setDescription(Msg.getString("Task.description.repairEVAMalfunction.detail", malfunction.getName(),
+				entity.getName())); // $NON-NLS-1$
 
-			// Determine location for repairing malfunction.
-			setOutsideLocation((LocalBoundedObject) entity);
+		// Determine location for repairing malfunction.
+		setOutsideLocation((LocalBoundedObject) entity);
 
-			// Can fail to get a path and Task will be Done
-			if (!isDone()) {
-	            setPhase(WALK_TO_OUTSIDE_SITE);
+		// Can fail to get a path and Task will be Done
+		if (!isDone()) {
+			setPhase(WALK_TO_OUTSIDE_SITE);
 
-				RepairHelper.prepareRepair(malfunction, person, MalfunctionRepairWork.EVA, entity);
+			RepairHelper.prepareRepair(malfunction, person, MalfunctionRepairWork.EVA, entity);
 
-				// Initialize phase
-				addPhase(REPAIRING);
-			}
-		}
-		else {
-			checkLocation();
+			// Initialize phase
+			addPhase(REPAIRING);
 		}
 	}
-
-	/**
-	 * Chooses the malfunctioning entity.
-	 */
-	private void chooseEntity() {
-		// Get the malfunctioning entity.
-		for (Malfunctionable next : MalfunctionFactory.getLocalMalfunctionables(worker)) {
-			Malfunction potential = next.getMalfunctionManager().getMostSeriousMalfunctionInNeed(MalfunctionRepairWork.EVA);
-			if (potential != null) {
-				entity = next;
-				malfunction = potential;
-				break; // Stop searching
-			}
-		}
-	}
-
-	public static Malfunctionable getEVAMalfunctionEntity(Person person) {
-		Malfunctionable result = null;
-
-		for (Malfunctionable entity : MalfunctionFactory.getLocalMalfunctionables(person)) {
-			Malfunction malfunction0 = getRepairableEVAMalfunction(person, entity);
-			if (malfunction0 != null) {
-				return entity;
-			}
-
-			MalfunctionManager manager = entity.getMalfunctionManager();
-			Unit container = person.getTopContainerUnit();
-
-			// Check if entity has any EVA malfunctions.
-			for (Malfunction malfunction1 : manager.getAllEVAMalfunctions()) {
-				try {
-					if (RepairHelper.hasRepairParts(container, malfunction1)) {
-						return entity;
-					}
-				} catch (Exception e) {
-		          	logger.severe("Problems calling RepairEVAMalfunction's hasRepairPartsForMalfunction(): "+ e.getMessage());
-				}
-			}
-		}
-
-		return result;
-	}
-
-	/**
-	 * Gets a reparable malfunction requiring an EVA for a given entity.
-	 *
-	 * @param person the person to repair.
-	 * @param entity the entity with a malfunction.
-	 * @return malfunction requiring an EVA repair or null if none found.
-	 */
-	public static Malfunction getRepairableEVAMalfunction(Person person, Malfunctionable entity) {
-		MalfunctionManager manager = entity.getMalfunctionManager();
-
-		// Check if entity has any EVA malfunctions.
-		for (Malfunction malfunction : manager.getAllEVAMalfunctions()) {
-			try {
-				if (RepairHelper.hasRepairParts(person.getContainerUnit(),
-						malfunction)) {
-					return malfunction;
-				}
-			} catch (Exception e) {
-	          	logger.log(Level.SEVERE, "Problems calling RepairEVAMalfunction's hasRepairPartsForMalfunction(): "+ e.getMessage());
-			}
-		}
-
-		if (manager.hasMalfunction()) {
-			logger.log(entity, Level.WARNING, 2000, "No parts available for any malfunction");
-		}
-		return null;
-	}
-
 
 	@Override
 	protected TaskPhase getOutsideSitePhase() {
@@ -221,13 +131,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
     		return time;
         }
 
-		double workTime = 0;
-		if (worker.getUnitType() == UnitType.PERSON) {
-			workTime = time;
-		} else {
-			// A robot moves slower than a person and incurs penalty on workTime
-			workTime = time / 2;
-		}
+		double workTime = time;
 
 		// Determine effective work time based on "Mechanic" skill.
 		int mechanicSkill = worker.getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
@@ -237,13 +141,13 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 		if (mechanicSkill > 1)
 			workTime += workTime * (.2D * mechanicSkill);
 
-		if (RepairHelper.hasRepairParts(containerUnit, malfunction)) {
-			logger.log(worker, Level.FINE, 10_000, "Parts for repairing malfunction '" + malfunction + "' available from " + containerUnit.getName() + ".");
-			RepairHelper.claimRepairParts(containerUnit, malfunction);
+		if (RepairHelper.hasRepairParts(partStore, malfunction)) {
+			logger.log(worker, Level.FINE, 10_000, "Parts for repairing malfunction '" + malfunction + "' available @ " + entity.getName() + ".");
+			RepairHelper.claimRepairParts(partStore, malfunction);
 		}
 
 		else {
-			logger.log(worker, Level.FINE, 10_000, "Parts for repairing malfunction '" + malfunction + "' not available from " + containerUnit.getName() + ".");
+			logger.log(worker, Level.FINE, 10_000, "Parts for repairing malfunction '" + malfunction + "' not available @ " + entity.getName() + ".");
 			checkLocation();
             return remainingTime;
 		}
@@ -258,7 +162,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 		double workTimeLeft = 0D;
 		// Check if there are no more malfunctions.
 		if (!malfunction.isWorkDone(MalfunctionRepairWork.EVA)) {
-			logger.log(worker, Level.FINE, 10_000, "Performing EVA repair on malfunction '" + malfunction + "' at " + containerUnit.getName() + ".");
+			logger.log(worker, Level.FINE, 10_000, "Performing EVA repair on malfunction '" + malfunction + "' @ " + entity.getName() + ".");
 			// Add EVA work to malfunction.
 			workTimeLeft = malfunction.addWorkTime(MalfunctionRepairWork.EVA, workTime, worker.getName());
 		}
@@ -277,7 +181,6 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 	public Malfunctionable getEntity() {
 		return entity;
 	}
-
 
 	/**
 	 * Worker leaves the malfunction effort

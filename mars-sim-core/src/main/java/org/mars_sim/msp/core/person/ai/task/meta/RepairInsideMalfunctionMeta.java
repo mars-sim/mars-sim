@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.equipment.EquipmentOwner;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
@@ -75,7 +77,7 @@ public class RepairInsideMalfunctionMeta extends MetaTask {
     private static final String NAME = Msg.getString(
             "Task.description.repairMalfunction"); //$NON-NLS-1$
 
-	private static final int WEIGHT = 5;
+	private static final double WEIGHT = 5D;
 	
     public RepairInsideMalfunctionMeta() {
 		super(NAME, WorkerType.BOTH, TaskScope.ANY_HOUR);
@@ -98,13 +100,6 @@ public class RepairInsideMalfunctionMeta extends MetaTask {
 			tasks = getRepairTasks(person.getSettlement(), factor, MalfunctionRepairWork.INSIDE);
 		}
 
-            // Probability affected by the person's stress and fatigue.
-            // if (!person.getPhysicalCondition().isFitByLevel(1000, 70, 1000))
-            // 	return 0;
-            
-            // 	result = computeProbability(person.getSettlement(), person);
-            // }
-
         return tasks;
 	}
 
@@ -126,9 +121,9 @@ public class RepairInsideMalfunctionMeta extends MetaTask {
 	}
 	
 	/**
-	 * Creates a list of Task Jobs for the active malfunctions.
+	 * Creates a list of Task Jobs for the active malfunctions at a Settlement. Apply a factor to the scores
 	 */
-    private static List<TaskJob> getRepairTasks(Settlement settlement, double factor, MalfunctionRepairWork workType) {
+    public static List<TaskJob> getRepairTasks(Settlement settlement, double factor, MalfunctionRepairWork workType) {
 
 		List<TaskJob> tasks = new ArrayList<>();
 		
@@ -145,10 +140,10 @@ public class RepairInsideMalfunctionMeta extends MetaTask {
             
             if (manager.hasMalfunction()) {
             	// Pick the worst malfunction
-            	Malfunction mal = manager.getMostSeriousMalfunctionInNeed(MalfunctionRepairWork.INSIDE);
+            	Malfunction mal = manager.getMostSeriousMalfunctionInNeed(workType);
 
             	if (mal != null) {
-					double score = scoreMalfunction(settlement, mal);
+					double score = scoreMalfunction(settlement, mal, workType);
 					score *= factor;
 
 					tasks.add(new RepairTaskJob(entity, mal, score));
@@ -165,13 +160,13 @@ public class RepairInsideMalfunctionMeta extends MetaTask {
      * @param malfunction
      * @return
      */
-    private static double scoreMalfunction(Settlement settlement, Malfunction malfunction) {    
+    public static double scoreMalfunction(EquipmentOwner partsStore, Malfunction malfunction, MalfunctionRepairWork workType) {    
     	double result = 0D;
-		if (!malfunction.isWorkDone(MalfunctionRepairWork.INSIDE)
-				&& (malfunction.numRepairerSlotsEmpty(MalfunctionRepairWork.INSIDE) > 0)) {
+		if (!malfunction.isWorkDone(workType)
+				&& (malfunction.numRepairerSlotsEmpty(workType) > 0)) {
 	        result = WEIGHT * malfunction.getSeverity();
 	        
-	        if (RepairHelper.hasRepairParts(settlement, malfunction)) {
+	        if (RepairHelper.hasRepairParts(partsStore, malfunction)) {
 	    		result *= 2;
 	    	}
 		}

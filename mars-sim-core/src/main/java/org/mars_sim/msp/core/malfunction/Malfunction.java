@@ -16,16 +16,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.UnitType;
+import org.mars_sim.msp.core.equipment.EquipmentOwner;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.MalfunctionMeta.EffortSpec;
 import org.mars_sim.msp.core.person.health.ComplaintType;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
-import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.tool.RandomUtil;
-import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * The Malfunction class represents a malfunction in a vehicle, structure or
@@ -620,15 +617,13 @@ public class Malfunction implements Serializable {
 	 * @param number the number used for repair.
 	 * @param inv the inventory
 	 */
-	public void repairWithParts(Integer id, int number, Unit containerUnit) {
+	public void repairWithParts(Integer id, int number, EquipmentOwner containerUnit) {
 		if (!repairParts.containsKey(id)) {
-			logger.severe(containerUnit, ItemResourceUtil.findItemResourceName(id) + "' - Not needed for repairs.");
 			return;
 		}
 
 		int numberNeeded = repairParts.get(id);
 		if (number > numberNeeded) {
-			logger.severe(containerUnit, "number " + number + " is greater that number of parts needed: " + numberNeeded);
 			return;
 		}
 		
@@ -637,16 +632,7 @@ public class Malfunction implements Serializable {
 		//  Add producing solid waste
 		double mass = ItemResourceUtil.findItemResource(id).getMassPerItem();
 		if (mass > 0) {
-
-			if (containerUnit.getUnitType() == UnitType.SETTLEMENT) {
-				((Settlement)containerUnit).storeAmountResource(ResourceUtil.solidWasteID, mass);
-			}
-			else if (containerUnit.getUnitType() == UnitType.VEHICLE) {
-				((Vehicle)containerUnit).storeAmountResource(ResourceUtil.solidWasteID, mass);
-			}
-			else {
-				logger.warning(containerUnit, 10_000L, "Can't find a place to store " + ResourceUtil.solidWasteID + ".");
-			}
+			containerUnit.storeAmountResource(ResourceUtil.solidWasteID, mass);
 		}
 
 		if (numberNeeded > 0) {
