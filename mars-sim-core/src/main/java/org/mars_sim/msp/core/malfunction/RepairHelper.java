@@ -11,12 +11,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.EquipmentOwner;
 import org.mars_sim.msp.core.logging.SimLogger;
-import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
-import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * This is a helper class for completing Repair activities on a Malfunction
