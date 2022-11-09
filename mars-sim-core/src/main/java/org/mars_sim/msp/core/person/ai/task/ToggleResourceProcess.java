@@ -252,17 +252,6 @@ public class ToggleResourceProcess extends Task {
 			clearTask("Management space unavailable.");
 		}
 	}
-
-	/**
-	 * Prints the log text and ends the task.
-	 *
-	 * @param text
-	 */
-	private void clearTask(String text) {
-		logger.log(worker, Level.INFO, 20_000, text);
-		endTask();
-	}
-
 	
 	/**
 	 * This method is part of the Task Life Cycle. It is called once
@@ -274,6 +263,7 @@ public class ToggleResourceProcess extends Task {
 		if (process != null) {
 			process.setFlag(false);
 		}
+		super.clearDown();
 	}
 
 	/**

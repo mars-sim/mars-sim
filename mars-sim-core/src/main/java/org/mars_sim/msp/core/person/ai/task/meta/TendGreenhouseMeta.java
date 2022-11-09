@@ -102,7 +102,7 @@ public class TendGreenhouseMeta extends MetaTask {
                     // Settlement factors
                     result *= goodsFactor;
                     
-                    result = applyPersonModifier(result, person);
+                    result *= getPersonModifier(person);
 
                     if (result > 0) {
                         tasks.add(new CropTaskJob(farm, result));

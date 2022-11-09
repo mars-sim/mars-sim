@@ -100,7 +100,7 @@ public class TendFishTankMeta extends MetaTask {
                 result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
                 result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
 
-                result = applyPersonModifier(result, person);
+                result *= getPersonModifier(person);
                 if (result > CAP)
                     result = CAP;
                 

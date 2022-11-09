@@ -270,7 +270,7 @@ public class ToggleResourceProcessMeta extends MetaTask {
 		if (bestProcess != null) {
 			if (isPerson) {
 				// Not great
-				bestScore = applyJobModifier(bestScore, (Person) worker);
+				bestScore *= getPersonModifier((Person) worker);
 			}
 			return new ToggleProcessJob(building, bestProcess, bestScore);
 		}

@@ -274,15 +274,30 @@ public abstract class MetaTask {
 	 * @param score Current base score
 	 * @param person Person scoring Task
 	 * @return Modified score.
+	 * @deprecated Use {@link #getPersonModifier(Person)}
 	 */
 	protected double applyPersonModifier(double score, Person person) {
-        
+		return score * getPersonModifier(person);
+	}
+
+	/**
+	 * This will apply a number of modifier to the current score based on the Person to produce a modifier.
+	 * 1. If the task has a Trait that is performance related the Person's performance rating is applied as a modifier
+	 * 2. Apply the Job start modifier for this task
+	 * 3. Apply the Persons individual preference to this Task
+	 * 
+	 * @param person Person scoring Task
+	 * @return Modified score.
+	 */
+	protected double getPersonModifier(Person person) {
+        double score = 1D;
+
         // Effort-driven task modifier.
 		if (effortDriven) {
 			score *= person.getPerformanceRating();
 		}
 		
-		score = applyJobModifier(score, person);
+		score *= getJobModifier(person);
 
         score = score * (1D + (person.getPreference().getPreferenceScore(this)/5D));
 
@@ -297,12 +312,12 @@ public abstract class MetaTask {
 	 * 2. Task must have Preferred Jobs
 	 * 3. If the Person's job is not in the Preferred list then a penalty is applied.
 	 * 
-	 * @param result
 	 * @param person
 	 * @return
 	 */
-	protected double applyJobModifier(double score, Person person) {
-		
+	protected double getJobModifier(Person person) {
+		double score = 1D;
+
         // Job modifier. If not my job then a penalty.
 		// But only if the Task has preferred jobs defined
         JobType job = person.getMind().getJob();

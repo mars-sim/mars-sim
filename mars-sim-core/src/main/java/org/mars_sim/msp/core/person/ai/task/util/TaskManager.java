@@ -503,7 +503,7 @@ public abstract class TaskManager implements Serializable, Temporal {
 	 */
 	public void startNewTask() {
 		Task selectedTask = null;
-		TaskJob selectedMetaTask = null;
+		TaskJob selectedJob = null;
 
 		// If cache is not current, calculate the probabilities.
 		if (!useCache()) {
@@ -522,11 +522,11 @@ public abstract class TaskManager implements Serializable, Temporal {
 			return;
 		}
 		else {
-			selectedMetaTask = taskProbCache.getRandomSelection();
+			selectedJob = taskProbCache.getRandomSelection();
 		}
 
 		// Call constructInstance of the selected Meta Task to commence the ai task
-		selectedTask = createTask(selectedMetaTask);
+		selectedTask = createTask(selectedJob);
 
 		// Start this new task
 		startTask(selectedTask);

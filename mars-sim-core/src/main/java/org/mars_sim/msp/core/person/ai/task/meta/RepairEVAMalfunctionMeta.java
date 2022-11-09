@@ -115,7 +115,7 @@ public class RepairEVAMalfunctionMeta extends MetaTask {
 					double score = RepairInsideMalfunctionMeta.scoreMalfunction(person.getVehicle(), malfunction,
 																	MalfunctionRepairWork.EVA);
 					if (score > 0) {
-						score = applyPersonModifier(score, person);
+						score *= getPersonModifier(person);
 						List<TaskJob> tasks = new ArrayList<>();
 						tasks.add(new RepairEVATaskJob(entity, malfunction, score));
 						return tasks;
@@ -169,7 +169,7 @@ public class RepairEVAMalfunctionMeta extends MetaTask {
             	if (mal != null) {
 					double score = RepairInsideMalfunctionMeta.scoreMalfunction(settlement, mal, MalfunctionRepairWork.EVA);
 					if (score > 0) {
-						score = applyPersonModifier(score, person);
+						score *= getPersonModifier(person);
 						score *= radFactor;
 						tasks.add(new RepairEVATaskJob(entity, mal, score));
 					}

@@ -66,14 +66,7 @@ public class ExamineBodyMeta extends MetaTask {
 			}
 
 			// Effort-driven task modifier.
-			result *= person.getPerformanceRating();
-
-			int numDoctor = JobUtil.numJobs(JobType.DOCTOR, person.getSettlement());
-
-			// Job modifier.
-			if (numDoctor > 0) {
-				result = applyJobModifier(result, person);
-			}
+			result *= getPersonModifier(person);
 
 			double skill = person.getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
 
@@ -81,7 +74,6 @@ public class ExamineBodyMeta extends MetaTask {
 				skill = .5;
 			result *= skill;
 
-			result = result + result * person.getPreference().getPreferenceScore(this) / 5D;
 
 			if (result < 0)
 				result = 0;

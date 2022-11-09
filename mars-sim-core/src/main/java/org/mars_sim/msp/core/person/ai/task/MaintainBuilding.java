@@ -6,11 +6,8 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import org.mars_sim.msp.core.Msg;
@@ -35,7 +32,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * The task for performing preventive maintenance on buildings.
  */
-public class MaintainBuilding extends Task implements Serializable {
+public class MaintainBuilding extends Task  {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -64,7 +61,7 @@ public class MaintainBuilding extends Task implements Serializable {
 	 *
 	 * @param person the person to perform the task
 	 */
-	public MaintainBuilding(Person person) {
+	public MaintainBuilding(Person person, Building entity) {
 		super(NAME, person, true, false, STRESS_MODIFIER, SkillType.MECHANICS, 100D,
 				RandomUtil.getRandomDouble(5, 20));
 
@@ -73,34 +70,10 @@ public class MaintainBuilding extends Task implements Serializable {
 			return;
 		}
 
-		entity = getWorstBuilding();
-
-		if (entity != null) {
-			
-			if (!MaintainBuilding.hasMaintenanceParts(person.getSettlement(), entity)) {		
-				endTask();
-			    return;
-			}
-
-			else {
-				String des = Msg.getString(DETAIL, entity.getName()); //$NON-NLS-1$
-				setDescription(des);
-				logger.info(person, 30_000, des + ".");
-				// Walk to random location in building.
-				walkToRandomLocInBuilding((Building) entity, false);
-			}
-
-			// Initialize phase.
-			addPhase(MAINTAIN);
-			setPhase(MAINTAIN);
-		}
-
-		else {
-			endTask();
-		}
+		init(entity);
 	}
 
-	public MaintainBuilding(Robot robot) {
+	public MaintainBuilding(Robot robot, Building entity) {
 		super(NAME, robot, true, false, STRESS_MODIFIER, SkillType.MECHANICS, 100D,
 				RandomUtil.getRandomDouble(10, 40));
 
@@ -109,31 +82,36 @@ public class MaintainBuilding extends Task implements Serializable {
 			return;
 		}
 
-		entity = getWorstBuilding();
+		init(entity);
+	}
 
-		if (entity != null) {
+	/**
+	 * Setup the maintenance activity.
+	 * @param entity Target for work.
+	 */
+	private void init(Building building) {
+		this.entity = building;
 
-			if (!MaintainBuilding.hasMaintenanceParts(robot.getSettlement(), entity)) {		
-				endTask();
-			    return;
-			}
-
-			else {
-				String des = Msg.getString(DETAIL, entity.getName()); //$NON-NLS-1$
-				setDescription(des);
-				logger.info(robot, 30_000, des + ".");
-				// Walk to random location in building.
-				walkToRandomLocInBuilding((Building) entity, false);
-			}
-
-			// Initialize phase.
-			addPhase(MAINTAIN);
-			setPhase(MAINTAIN);
+		if (!MaintainBuilding.hasMaintenanceParts(worker.getSettlement(), entity)) {		
+			clearTask("No parts");
+			return;
+		}
+		MalfunctionManager manager = building.getMalfunctionManager();
+		double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();
+		if (effectiveTime < 10D) {
+			clearTask("Maintenance already done");
+			return;
 		}
 
-		else {
-			endTask();
-		}
+		String des = Msg.getString(DETAIL, entity.getName()); //$NON-NLS-1$
+		setDescription(des);
+		logger.info(worker, 30_000, des + ".");
+		// Walk to random location in building.
+		walkToRandomLocInBuilding(building, false);
+
+		// Initialize phase.
+		addPhase(MAINTAIN);
+		setPhase(MAINTAIN);
 	}
 
 	@Override
@@ -331,28 +309,6 @@ public class MaintainBuilding extends Task implements Serializable {
 			}
 		}
 
-		return result;
-	}
-	
-	/**
-	 * Gets the building with worst condition to maintain.
-	 * 
-	 * @return
-	 */
-	public Malfunctionable getWorstBuilding() {
-		Malfunctionable result = null;
-		double worstCondition = 100;
-		List<Building> list = worker.getAssociatedSettlement().getBuildingManager().getBuildings();
-		Collections.shuffle(list);
-		for (Building building: list) {
-			if (building.hasFunction(FunctionType.LIFE_SUPPORT)) {
-				double condition = building.getMalfunctionManager().getWearCondition();
-				if (condition < worstCondition) {
-					worstCondition = condition;
-					result = building;
-				}
-			}
-		}
 		return result;
 	}
 }

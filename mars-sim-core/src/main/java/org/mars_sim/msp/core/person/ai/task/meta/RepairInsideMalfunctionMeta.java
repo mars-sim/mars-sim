@@ -95,7 +95,7 @@ public class RepairInsideMalfunctionMeta extends MetaTask {
 		List<TaskJob> tasks = null;
 
         if (person.isInSettlement()) {
-			double factor = applyPersonModifier(1D, person);
+			double factor = getPersonModifier(person);
 
 			tasks = getRepairTasks(person.getSettlement(), factor, MalfunctionRepairWork.INSIDE);
 		}
