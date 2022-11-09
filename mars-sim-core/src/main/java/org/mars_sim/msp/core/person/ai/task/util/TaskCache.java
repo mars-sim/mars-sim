@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.person.ai.task.util;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
@@ -19,9 +20,21 @@ public class TaskCache {
 	private List<TaskJob> tasks = new ArrayList<>();
     private double totalProb = 0;
     private String context;
+    private MarsClock createdOn;
+    private TaskJob lastEntry;
 
-    public TaskCache(String context) {
+    /**
+     * Create a cache of Tasks. A cache can work in transient mode where selected entries are removed.
+     * A static mode means entries are fixed and never removed.
+     * 
+     * @param context Descriptive context of the purpose
+     * @param createdOn If this is non-null then the cache works in transient mode.
+     */
+    public TaskCache(String context, MarsClock createdOn) {
         this.context = context;
+        if (createdOn != null) {
+            this.createdOn = new MarsClock(createdOn);
+        }
     }
 
     /**
@@ -49,6 +62,13 @@ public class TaskCache {
     }
 
     /**
+     * When was this cache instance created.
+     */
+    public MarsClock getCreatedOn() {
+        return createdOn;
+    }
+
+    /**
      * Get the total probability score for all tasks.
      * @return
      */
@@ -71,6 +91,13 @@ public class TaskCache {
         return tasks;
     }
 
+    /**
+     * What was the last entry selected and removed from this cache?
+     */
+    public TaskJob getLastSelected() {
+        return lastEntry;
+    }
+
     /** 
      * Choose a Task to work at random.
     */
@@ -81,7 +108,12 @@ public class TaskCache {
         for (TaskJob entry: tasks) {
             double probWeight = entry.getScore();
             if (r <= probWeight) {
-                // Select this task
+                // THis is a transient cache so remove the selected entry
+                if (createdOn != null) {
+                    lastEntry = entry;
+                    tasks.remove(entry);
+                    totalProb -= entry.getScore();
+                }
                 return entry;
             }
             else {

@@ -29,8 +29,11 @@ import org.mars_sim.msp.core.structure.building.function.FunctionType;
  * Meta task for maintaining buildings.
  */
 public class MaintainBuildingMeta extends MetaTask {
-/**
-     * Represents a Job needed in a Fishery
+	// The percentage of the component expected lifetime for the maintenance period
+	private static final double MIN_MAINT_PERC_OF_WEAR = 0.2;
+
+	/**
+     * Represents a Job needed for intenral maintenance on a Building
      */
     private static class MaintainTaskJob implements TaskJob {
 
@@ -62,18 +65,14 @@ public class MaintainBuildingMeta extends MetaTask {
             return new MaintainBuilding(robot, target);
         }
     }
-	/**
-	 *
-	 */
-	private static final double MIN_MAINTENANCE_PERIOD = 100D;
 
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.maintainBuilding"); //$NON-NLS-1$
 	
-	private static final double ROBOT_FACTOR = 50;
+	private static final double ROBOT_FACTOR = 2D;
 
 	// Lower threshold to avoid excessive jobs being created
-	private static final double LOW_THRESHOLD = 10D;
+	private static final double LOW_THRESHOLD = 2D;
 	
     public MaintainBuildingMeta() {
 		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
@@ -117,18 +116,10 @@ public class MaintainBuildingMeta extends MetaTask {
 	
 		for (Building building: settlement.getBuildingManager().getBuildings()) {
 			
-			MalfunctionManager manager = building.getMalfunctionManager();
-			boolean hasNoMalfunction = !manager.hasMalfunction();
-			boolean hasParts = MaintainBuilding.hasMaintenanceParts(settlement, building);
-			boolean inhabitableBuilding = building.hasFunction(FunctionType.LIFE_SUPPORT);
-
-			double condition = manager.getAdjustedCondition();
-			double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();
-			// Note: look for buildings that are NOT malfunction since
-			// malfunctioned building are being taken care of by the two Repair*Malfunction tasks
-			if (hasNoMalfunction && inhabitableBuilding && hasParts && (effectiveTime >= MIN_MAINTENANCE_PERIOD)) {
-				double score = (100 - condition) + (effectiveTime - MIN_MAINTENANCE_PERIOD);
-				score *= (factor * 2);
+			boolean habitableBuilding = building.hasFunction(FunctionType.LIFE_SUPPORT);
+			if (habitableBuilding) {
+				double score = scoreMaintenance(building);
+				score *= factor;
 				if (score >= LOW_THRESHOLD) {
 					tasks.add(new MaintainTaskJob(building, score));
 				}
@@ -136,5 +127,29 @@ public class MaintainBuildingMeta extends MetaTask {
 		}
 
 		return tasks;
+	}
+
+	/**
+	 * Score the building  in terms of need for maintenance. Considers malfunction, condition & time
+	 * since last maintenance.
+	 * @param building
+	 */
+	public static double scoreMaintenance(Building building) {
+		MalfunctionManager manager = building.getMalfunctionManager();
+		boolean hasNoMalfunction = !manager.hasMalfunction();
+		boolean hasParts = MaintainBuilding.hasMaintenanceParts(building.getSettlement(), building);
+
+		double score = 0D;
+		double condition = manager.getAdjustedCondition();
+		double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();
+		double minMaintenance = manager.getMaintenancePeriod();
+		// Note: look for buildings that are NOT malfunction since
+		// malfunctioned building are being taken care of by the two Repair*Malfunction tasks
+		if (hasNoMalfunction && hasParts && (effectiveTime >= minMaintenance)) {
+			// Score is based on condition plus %age overdue
+			score = (100 - condition) + ((effectiveTime - minMaintenance)*100D/minMaintenance);
+		}
+
+		return score;
 	}
 }

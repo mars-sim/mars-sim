@@ -124,7 +124,7 @@ public class MaintainGarageVehicleMeta extends MetaTask {
 				continue;
 			
 			double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();
-			boolean minTime = (effectiveTime >= 1000D);
+			boolean minTime = (effectiveTime >= manager.getMaintenancePeriod());
 			if (hasParts && minTime) {
 				double entityProb = effectiveTime / 5;
 				if (entityProb > 1000D) {

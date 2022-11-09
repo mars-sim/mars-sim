@@ -128,7 +128,8 @@ public class EatDrink extends Task {
 		if (pc.eatTooMuch()
 			// Checks if this person has drank enough water already
 			&& pc.drinkEnoughWater()) {
-			endTask();
+			clearTask("Consumed enough today already.");
+			return;
 		}
 		
 		double dur = getDuration();

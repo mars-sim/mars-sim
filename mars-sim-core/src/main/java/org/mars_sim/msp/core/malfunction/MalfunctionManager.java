@@ -115,6 +115,8 @@ public class MalfunctionManager implements Serializable, Temporal {
 	private double maintenanceWorkTime;
 	/** The completed. */
 	private double maintenanceTimeCompleted;
+	/** The periodic maintenance window */
+	private double maintenancePeriod;
 	/** The percentage of the malfunctionable's condition from wear and tear. 0% = worn out -> 100% = new condition. */
 	private double currentWearCondition;
 	/** The cumulative time [in millisols] since active use. */
@@ -170,9 +172,14 @@ public class MalfunctionManager implements Serializable, Temporal {
 		malfunctions = new CopyOnWriteArrayList<>();
 		
 		this.maintenanceWorkTime = maintenanceWorkTime;
-		baseWearLifeTime = wearLifeTime;
-		
-		double preUseTime = RandomUtil.getRandomDouble(100);
+		this.baseWearLifeTime = wearLifeTime;
+
+		// Assume the maintenace period is 20% of the component lifetime
+		this.maintenancePeriod = wearLifeTime * 0.2D;
+
+		// Assume that a random value since the last maintenance but biased
+		// towards below the maintenance period
+		double preUseTime = RandomUtil.getRandomDouble(maintenancePeriod * 1.1);
 		currentWearLifeTime = wearLifeTime - preUseTime;
 		cumulativeTime = preUseTime;
 		effectiveTimeSinceLastMaintenance = preUseTime;
@@ -828,6 +835,13 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 */
 	public double getEffectiveTimeSinceLastMaintenance() {
 		return effectiveTimeSinceLastMaintenance;
+	}
+
+	/**
+	 * The regular maintenance period for this component.
+	 */
+	public double getMaintenancePeriod() {
+		return maintenancePeriod;
 	}
 
 	/**

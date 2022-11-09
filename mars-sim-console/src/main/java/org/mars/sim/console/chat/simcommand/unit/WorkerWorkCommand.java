@@ -15,11 +15,9 @@ import org.mars.sim.console.chat.simcommand.CommandHelper;
 import org.mars.sim.console.chat.simcommand.StructuredResponse;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.job.util.ShiftType;
 import org.mars_sim.msp.core.person.ai.task.util.TaskCache;
 import org.mars_sim.msp.core.person.ai.task.util.TaskJob;
 import org.mars_sim.msp.core.person.ai.task.util.TaskManager;
-import org.mars_sim.msp.core.person.ai.task.util.TaskSchedule;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.time.MarsClock;
 
@@ -51,18 +49,6 @@ public class WorkerWorkCommand extends AbstractUnitCommand {
 			Person p = (Person)source;
 			response.appendLabeledString("Job", p.getMind().getJob().getName());
 			response.appendLabeledString("Favourite", p.getFavorite().getFavoriteActivity().getName());
-
-			// Revisit as part of Issue #743
-			MarsClock marsClock = context.getSim().getMasterClock().getMarsClock();
-			String shift = "Off Shift";
-			TaskSchedule taskSchedule = p.getTaskSchedule();
-			if (taskSchedule.getShiftType() == ShiftType.ON_CALL) {
-				shift = "On Call";
-			}
-			else if (taskSchedule.isShiftHour(marsClock.getMillisolInt())) {
-				shift = "On Shift";
-			}
-			response.appendLabeledString("Shift", shift);
 		}
 
 		// List pending tasks first
@@ -81,10 +67,25 @@ public class WorkerWorkCommand extends AbstractUnitCommand {
 			response.append("No Tasks planned yet");
 		}
 		else {
+			response.appendLabeledString("Context", tasks.getContext());
+
+			MarsClock cacheCreated = tasks.getCreatedOn();
+			if (cacheCreated != null) {
+				response.appendLabeledString("Created On", cacheCreated.getDateTimeStamp());
+			}
+
 			double sum = tasks.getTotal();
 			response.appendTableHeading("Potential Task", 45, 
 										"P Score", 9,
 										"P %", 6);
+
+			// Display the last selected as 1st entry
+			TaskJob lastSelected = tasks.getLastSelected();
+			if (lastSelected != null) {
+				response.appendTableRow(lastSelected.getDescription(), 
+										lastSelected.getScore(), "active");
+			}
+			// Jobs in the cache
 			for (TaskJob item : tasks.getTasks()) {
 				response.appendTableRow(item.getDescription(), 
 										item.getScore(),

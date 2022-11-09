@@ -149,7 +149,7 @@ public class PersonTaskManager extends TaskManager {
 		}
 
 		// Create new taskProbCache
-		TaskCache newCache = new TaskCache(shiftDesc);
+		TaskCache newCache = new TaskCache(shiftDesc, marsClock);
 
 		// Determine probabilities.
 		for (MetaTask mt : mtList) {
@@ -179,7 +179,7 @@ public class PersonTaskManager extends TaskManager {
 	 */
 	private static synchronized TaskCache getDefaultInsideTasks() {
 		if (defaultInsideTasks == null) {
-			defaultInsideTasks = new TaskCache("Default Inside");
+			defaultInsideTasks = new TaskCache("Default Inside", null);
 
 			defaultInsideTasks.putDefault(MetaTaskUtil.getMetaTask("SleepMeta"));
 			defaultInsideTasks.putDefault(MetaTaskUtil.getMetaTask("EatDrinkMeta"));
@@ -192,7 +192,7 @@ public class PersonTaskManager extends TaskManager {
 	 */
 	private static synchronized TaskCache getDefaultOutsideTasks() {
 		if (defaultOutsideTasks == null) {
-			defaultOutsideTasks = new TaskCache("Default Outside");
+			defaultOutsideTasks = new TaskCache("Default Outside", null);
 
 			// Create a MetaTask to return inside
 			TaskJob walkBack = new TaskJob() {

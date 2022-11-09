@@ -31,8 +31,7 @@ import org.mars_sim.msp.core.tool.RandomUtil;
  * The task for performing preventive maintenance on malfunctionable entities outdoors.
  */
 public class MaintainBuildingEVA
-extends EVAOperation
-implements Serializable {
+extends EVAOperation {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -60,7 +59,7 @@ implements Serializable {
 	 * Constructor.
 	 * @param person the person to perform the task
 	 */
-	public MaintainBuildingEVA(Person person) {
+	public MaintainBuildingEVA(Person person, Building target) {
 		super(NAME, person, true, RandomUtil.getRandomDouble(90, 100), SkillType.MECHANICS);
 
 		if (!person.isNominallyFit()) {
@@ -73,25 +72,23 @@ implements Serializable {
         	checkLocation();
         	return;
         }
-        	
-		entity = getWorstBuilding();
-
-		if (entity != null) {
-			if (!MaintainBuilding.hasMaintenanceParts(settlement, entity)) {		
-				checkLocation();
-			    return;
-			}
-
-			else {
-				String des = Msg.getString(DETAIL, entity.getName()); //$NON-NLS-1$
-				setDescription(des);
-				logger.info(person, 4_000, des + ".");
-			}
+        
+		// Check suitability
+		entity = target;
+		if (!MaintainBuilding.hasMaintenanceParts(worker.getSettlement(), entity)) {		
+			clearTask("No parts");
+			return;
+		}
+		MalfunctionManager manager = target.getMalfunctionManager();
+		double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();
+		if (effectiveTime < 10D) {
+			clearTask("Maintenance already done");
+			return;
 		}
 
-		else {
-			checkLocation();
-		}
+		String des = Msg.getString(DETAIL, entity.getName()); //$NON-NLS-1$
+		setDescription(des);
+		logger.info(person, 4_000, des + ".");
         
 	    // Determine location for maintenance.
         setOutsideLocation((LocalBoundedObject) entity);

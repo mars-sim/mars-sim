@@ -146,9 +146,6 @@ public abstract class TaskManager implements Serializable, Temporal {
 	// Data members
 	/** The timestamp (with 2 decimal place) of the task to be recorded. */
 	private double now = -1;
-	/** The cache for msol. */
-	private double msolCache = -1.0;
-
 
 
 	/** The history of tasks. */
@@ -475,21 +472,6 @@ public abstract class TaskManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * Checks if task probability cache should be used.
-	 * 
-	 * @return true if cache should be used.
-	 */
-	protected boolean useCache() {
-		double msol = marsClock.getMillisol();
-		double diff = msol - msolCache;
-		if (diff > TASK_MILLISOLS) {
-			msolCache = msol;
-			return false;
-		}
-		return true;
-	}
-
-	/**
 	 * Calculates and caches the probabilities.
 	 * 
 	 * This will NOT use the cache but assumes the callers know when a cahce can be used or not used. 
@@ -505,8 +487,10 @@ public abstract class TaskManager implements Serializable, Temporal {
 		Task selectedTask = null;
 		TaskJob selectedJob = null;
 
-		// If cache is not current, calculate the probabilities.
-		if (!useCache()) {
+		// If cache is not current, calculate the probabilities. If it is a static cache, i.e. no createdOn then
+		// ignore the cache
+		if ((taskProbCache == null)  || (taskProbCache.getCreatedOn() == null) || taskProbCache.getTasks().isEmpty()
+				|| (marsClock.getMillisol() - taskProbCache.getCreatedOn().getMillisol()) > TASK_MILLISOLS) {
 			taskProbCache = rebuildTaskCache();
 			
 			// Output shift
@@ -515,10 +499,10 @@ public abstract class TaskManager implements Serializable, Temporal {
 			}
 		}
 
-		if (taskProbCache.getTasks().isEmpty()) {
+		if (taskProbCache.getTasks().isEmpty()) { 
 			// SHhould never happen since TaskManagers have to return a populated list
 			// with doable defaults if needed
-			logger.severe(worker, "No normal Tasks available.");
+			logger.severe(worker, "No normal Tasks available in " + taskProbCache.getContext());
 			return;
 		}
 		else {
@@ -530,9 +514,6 @@ public abstract class TaskManager implements Serializable, Temporal {
 
 		// Start this new task
 		startTask(selectedTask);
-
-		// Clear time cache.
-		msolCache = -1;	
 	}
 
 	/**

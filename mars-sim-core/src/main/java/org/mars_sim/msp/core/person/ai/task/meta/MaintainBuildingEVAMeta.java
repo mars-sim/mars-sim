@@ -6,6 +6,9 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.person.Person;
@@ -16,7 +19,9 @@ import org.mars_sim.msp.core.person.ai.task.MaintainBuilding;
 import org.mars_sim.msp.core.person.ai.task.MaintainBuildingEVA;
 import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
+import org.mars_sim.msp.core.person.ai.task.util.TaskJob;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
+import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
@@ -25,14 +30,44 @@ import org.mars_sim.msp.core.structure.building.function.FunctionType;
  * Meta task for the MaintainBuildingEVA task.
  */
 public class MaintainBuildingEVAMeta extends MetaTask {
+/**
+     * Represents a Job needed for external maintenance on a Building
+     */
+    private static class MaintainTaskJob implements TaskJob {
+
+        private double score;
+        private Building target;
+
+        public MaintainTaskJob(Building target, double score) {
+            this.target = target;
+            this.score = score;
+        }
+
+        @Override
+        public double getScore() {
+            return score;
+        }
+
+        @Override
+        public String getDescription() {
+            return "EVA Maintenance @ " + target.getName();
+        }
+
+        @Override
+        public Task createTask(Person person) {
+            return new MaintainBuildingEVA(person, target);
+        }
+
+        @Override
+        public Task createTask(Robot robot) {
+            throw new UnsupportedOperationException("Robots cannot do outside maintenance");
+        }
+    }
 
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.maintainBuildingEVA"); //$NON-NLS-1$
-
-	private static final int CAP = 3_000;
-	
-	private static final double FACTOR = 400;
+	private static final double LOW_THRESHOLD = 2D;
 	
     public MaintainBuildingEVAMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
@@ -41,92 +76,75 @@ public class MaintainBuildingEVAMeta extends MetaTask {
 		setPreferredJob(JobType.MECHANICS);
 	}
 
+	/**
+	 * Find any building that need external EVA maintenance
+	 */
     @Override
-    public Task constructInstance(Person person) {
-        return new MaintainBuildingEVA(person);
-    }
-
-    @Override
-    public double getProbability(Person person) {
+    public List<TaskJob> getTaskJobs(Person person) {
 
     	Settlement settlement = person.getSettlement();
         
         if (settlement == null)
-        	return 0;
+        	return null;
         	  	
         // Check if an airlock is available
         if (EVAOperation.getWalkableAvailableAirlock(person, false) == null)
-    		return 0;
+    		return null;
 
         // Check if it is night time.
         if (EVAOperation.isGettingDark(person))
-        	return 0;
+			return null;
 
         // Checks if the person's settlement is at meal time and is hungry
         if (EVAOperation.isHungryAtMealTime(person))
-        	return 0;
+			return null;
         
         // Checks if the person is physically fit for heavy EVA tasks
 		if (!EVAOperation.isEVAFit(person))
-			return 0;
+			return null;
         	
     	// Check for radiation events
     	boolean[] exposed = settlement.getExposed();
 
 		if (exposed[2]) {// SEP can give lethal dose of radiation
-			return 0;
+			return null;
 		}
 		
-		double result = getSettlementProbability(settlement);
-
-        if (settlement.getIndoorPeopleCount() > settlement.getPopulationCapacity())
-            result *= 2D;
-        
-        double shiftBonus = person.getTaskSchedule().obtainScoreAtStartOfShift();
-        
-        // Encourage to get this task done early in a work shift
-        result *= shiftBonus / 10;
-        
-        result = applyPersonModifier(result, person);
+		double factor = 2D;
+		factor *= getPersonModifier(person);
 
     	if (exposed[0]) {
-			result = result/2D;// Baseline can give a fair amount dose of radiation
+			factor = factor/2D;// Baseline can give a fair amount dose of radiation
 		}
 
     	if (exposed[1]) {// GCR can give nearly lethal dose of radiation
-			result = result/4D;
+			factor = factor/4D;
 		}
 
-        if (result < 0) result = 0;
+        if (factor < 0) 
+			return null;
 
-        if (result > CAP)
-        	result = CAP;
-        
-        return result;
+        return getSettlementTasks(settlement, factor);
     }
 
-	public double getSettlementProbability(Settlement settlement) {
-		double result = 0D;
-
+		/**
+	 * Find any buildings that need internal maintenance
+	 */
+	private List<TaskJob> getSettlementTasks(Settlement settlement, double factor) {
+		List<TaskJob>  tasks = new ArrayList<>();
+	
 		for (Building building: settlement.getBuildingManager().getBuildings()) {
 			
-			MalfunctionManager manager = building.getMalfunctionManager();
-			boolean hasNoMalfunction = !manager.hasMalfunction();
-			boolean hasParts = MaintainBuilding.hasMaintenanceParts(settlement, building);
-			boolean uninhabitableBuilding = !building.hasFunction(FunctionType.LIFE_SUPPORT);
-			
-			double condition = manager.getAdjustedCondition();
-			double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();
-			boolean minTime = (effectiveTime >= 100D);
-			// Note: look for buildings that are NOT malfunction since
-			// malfunctioned building are being taken care of by the two Repair*Malfunction tasks
-			if (hasNoMalfunction && uninhabitableBuilding && hasParts && minTime) {
-				result += (100 - condition);
+			boolean inhabitableBuilding = !building.hasFunction(FunctionType.LIFE_SUPPORT);
+			if (inhabitableBuilding) {
+				double score = MaintainBuildingMeta.scoreMaintenance(building);
+				score *= factor;
+				if (score >= LOW_THRESHOLD) {
+					tasks.add(new MaintainTaskJob(building, score));
+				}
 			}
 		}
-		
-		result *= FACTOR;
-	
-		return result;
+
+		return tasks;
 	}
 }
