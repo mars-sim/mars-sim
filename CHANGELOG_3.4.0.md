@@ -5,27 +5,28 @@ Copyright (C) 2022 Scott Davis
 
 ------------------------------------------|---------------------
 
-## v3.4.0 (build 7564) - 2022-11-01
+## v3.4.0 (build 7592) - 2022-11-09
 
 ### ISSUES ADDRESSED :
 
 ### CORE ENGINE IMPROVEMENTS :
-  <LI>Base Mass : Add base mass to all buildings, in preparation for calculating overall rocket payload mass. </LI>
-  <LI> Building : Add building general info such as dimensions and mass. </LI>
-  <LI>Computing : Add computing function and skill. Track computing resource usage. </LI>
-  <LI>   Filter : New Settlement filter and Building tab to the Monitor Tool. </LI>
-  <LI>Inventory : Replace with lightweight inventory for all units. Revamp the storage of resources/equipment and transfer of person/vehicle between locales.</LI>
-  <LI>  Mission : Restructure and simplify handling of Mission.</LI>
-  <LI>    Parts : Add wearing garment. </LI>
-  <LI>   Person : Track exercise. Make a person's carrying capacity to be age-dependent.</LI>
-  <LI>    Robot : Track battery capacity and charging.</LI>
-  <LI>  Trading : Compute and relate the cost, profit, and price of trade goods.</LI>
-  <LI> Scenario : Arriving future Settlements are configured from a scenario. Scenarios can be exported and shared. </LI>
-  <LI>     Site : Explore, claim and track mining sites.</LI>
-  <LI>   Social : Remove global relationship graph and simplify codes.</LI>
-  <LI> Sunlight : Predict sunrise and sunset at each settlement. Track actual sunrise and sunset time.</LI>
-  <LI>  Vehicle : Rework vehicle specifications. Refine fuel economy calculation.</LI>
-  <LI>    Waste : Split grey/black water & solid waste management resource processes into a separate waste processing function.</LI>
+  <LI>  Base Mass : Add base mass to all buildings, in preparation for calculating overall rocket payload mass. </LI>
+  <LI>   Building : Add building general info such as dimensions and mass. </LI>
+  <LI>  Computing : Add computing function and skill. Track computing resource usage. </LI>
+  <LI>     Filter : New Settlement filter and Building tab to the Monitor Tool. </LI>
+  <LI>  Inventory : Replace with lightweight inventory for all units. Revamp the storage of resources/equipment and transfer of person/vehicle between locales.</LI>
+  <LI>    Mission : Restructure and simplify handling of Mission.</LI>
+  <LI>      Parts : Add wearing garment. </LI>
+  <LI>     Person : Track exercise. Make a person's carrying capacity to be age-dependent.</LI>
+  <LI >Processing : Unify resource and waste processes, food production and manufacturing under common super class.</LI>  
+  <LI>      Robot : Track battery capacity and charging.</LI>
+  <LI>    Trading : Compute and relate the cost, profit, and price of trade goods.</LI>
+  <LI>   Scenario : Arriving future Settlements are configured from a scenario. Scenarios can be exported and shared. </LI>
+  <LI>       Site : Explore, claim and track mining sites.</LI>
+  <LI>     Social : Remove global relationship graph and simplify codes.</LI>
+  <LI>   Sunlight : Predict sunrise and sunset at each settlement. Track actual sunrise and sunset time.</LI>
+  <LI>  Meta Task : Add TaskJob and remove duplicate computation of outstanding tasks.</LI>
+  <LI>    Vehicle : Rework vehicle specifications. Refine fuel economy calculation.</LI>
 
   
 ### UI IMPROVEMENT :
