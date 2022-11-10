@@ -87,19 +87,9 @@ public class LoadVehicleEVAMeta extends MetaTask {
 
     	if (settlement != null) {
 
-        	boolean[] exposed = {false, false, false};
-
-        	if (settlement != null) {
-        		// Check for radiation events
-        		exposed = settlement.getExposed();
-        	}
-
-			if (exposed[2]) { // SEP can give lethal dose of radiation
-	            return 0;
-			}
-
    			double score = person.getPhysicalCondition().computeHealthScore();
-   			
+			score *= getRadiationModifier(settlement);
+
 	        // Check all vehicle missions occurring at the settlement.
 	        try {
 	            List<Mission> missions = LoadVehicleGarage.getAllMissionsNeedingLoading(settlement, false);
@@ -130,16 +120,7 @@ public class LoadVehicleEVAMeta extends MetaTask {
 	        // Encourage to get this task done early in a work shift
 	        result *= shiftBonus / 10;
 	        
-	        result = applyPersonModifier(result, person);
-
-	    	if (exposed[0]) {
-				result = result/3D;// Baseline can give a fair amount dose of radiation
-			}
-
-	    	if (exposed[1]) {// GCR can give nearly lethal dose of radiation
-				result = result/6D;
-			}
-
+	        result *= getPersonModifier(person);
     	}
 
         if (result < 0)

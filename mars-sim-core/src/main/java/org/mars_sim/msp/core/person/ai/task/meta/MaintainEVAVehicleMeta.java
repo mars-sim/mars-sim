@@ -53,13 +53,6 @@ public class MaintainEVAVehicleMeta extends MetaTask {
             
         	Settlement settlement = person.getAssociatedSettlement();
         	
-        	// Check for radiation events
-        	boolean[] exposed = settlement.getExposed();
-
-    		if (exposed[2]) {// SEP can give lethal dose of radiation
-    			return 0;
-    		}
-
             // Check if an airlock is available
             if (EVAOperation.getWalkableAvailableAirlock(person, false) == null)
 	    		return 0;
@@ -128,15 +121,8 @@ public class MaintainEVAVehicleMeta extends MetaTask {
                 // Encourage to get this task done early in a work shift
                 result *= shiftBonus / 10;
                 
-	            result = applyPersonModifier(result, person);
-	            
-	        	if (exposed[0]) {
-	    			result = result/2D;// Baseline can give a fair amount dose of radiation
-	    		}
-	
-	        	if (exposed[1]) {// GCR can give nearly lethal dose of radiation
-	    			result = result/4D;
-	    		}
+	            result *= getPersonModifier(person);
+				result *= getRadiationModifier(settlement);
 	
 	            if (result < 0D) {
 	                result = 0D;

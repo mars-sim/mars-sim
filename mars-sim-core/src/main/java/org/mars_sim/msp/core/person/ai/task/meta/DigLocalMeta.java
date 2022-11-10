@@ -66,14 +66,6 @@ public abstract class DigLocalMeta extends MetaTask {
     		return 0;
         }
      
-        //Checked for radiation events
-    	boolean[] exposed = settlement.getExposed();
-
-		if (exposed[2]) {
-			// SEP can give lethal dose of radiation
-            return 0;
-		}
-      
         // Checks if the person is physically fit for heavy EVA tasks
 		if (!EVAOperation.isEVAFit(person))
 			return 0;
@@ -104,7 +96,9 @@ public abstract class DigLocalMeta extends MetaTask {
         
         result -= stress * 2 + fatigue/2 + hunger/2 - exerciseMillisols;
 
-        if (result < 0)
+        result *= getRadiationModifier(settlement);
+
+        if (result <= 0)
         	return 0;
 
 	    int indoor = settlement.getIndoorPeopleCount(); 
@@ -137,17 +131,7 @@ public abstract class DigLocalMeta extends MetaTask {
         if (result <= 0)
             return 0;
 
-        result = applyPersonModifier(result, person);
-
-    	if (exposed[0]) {
-    		// Baseline can give a fair amount dose of radiation
-			result /= 50D;
-		}
-
-    	if (exposed[1]) {
-    		// GCR can give nearly lethal dose of radiation
-			result /= 100D;
-		}
+        result *= getPersonModifier(person);
 
         if (result > CAP)
         	result = CAP;

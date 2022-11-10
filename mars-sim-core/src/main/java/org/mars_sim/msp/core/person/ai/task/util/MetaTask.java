@@ -18,6 +18,8 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.structure.RadiationStatus;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 
 /**
@@ -328,6 +330,34 @@ public abstract class MetaTask {
         
         return score;
 	}
+
+	/**
+	 * Get the modifier value for a Task score based on the Radiation events occuring
+	 * at a Settlement. Events will scale down teh modifier towards zero.
+	 * @param settlement
+	 * @return
+	 */
+    protected double getRadiationModifier(Settlement settlement) {
+        RadiationStatus exposed = settlement.getExposed();
+        double result = 1D;
+
+        if (exposed.isSEPEvent()) {
+            // SEP event stops all activities so zero factor
+            result = 0D;
+        }
+
+    	if (exposed.isBaselineEvent()) {
+    		// Baseline can give a fair amount dose of radiation
+			result /= 50D;
+		}
+
+    	if (exposed.isGCREvent()) {
+    		// GCR can give nearly lethal dose of radiation
+			result /= 100D;
+		}
+
+        return result;
+    }
 
 	/**
 	 * Attached to the common controllign classes.

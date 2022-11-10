@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.hazard.HazardEvent;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.structure.RadiationStatus;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
@@ -443,16 +444,14 @@ public class RadiationExposure implements Serializable, Temporal {
 			// Future: compute radiation if a person steps outside of a rover on a mission
 			// somewhere on Mars
 			
-			boolean[] exposed = new boolean[]{false, false, false};
-
 			if (person.isOutside()) {
 				// Future: how to make radiation more consistent/less random by coordinates/locale
 			
 				Radiation rad = null;
 				
-				exposed = person.getAssociatedSettlement().getExposed();
+				RadiationStatus exposed = person.getAssociatedSettlement().getExposed();
 
-				if (exposed[1])
+				if (exposed.isGCREvent())
 					shield_factor = RandomUtil.getRandomDouble(1); // arbitrary
 				// NOTE: SEP may shield off GCR as shown in Curiosity's RAD data
 				// since GCR flux is modulated by solar activity.
@@ -472,7 +471,7 @@ public class RadiationExposure implements Serializable, Temporal {
 				List<Radiation> eventMap = new ArrayList<>();
 				
 				double baselevel = 0;
-				if (exposed[2]) {
+				if (exposed.isSEPEvent()) {
 					radiationType = RadiationType.SEP;
 
 					baselevel = 0.0; 
@@ -486,7 +485,7 @@ public class RadiationExposure implements Serializable, Temporal {
 					}	
 				}
 				// for now, if SEP happens, ignore GCR and Baseline
-				else if (exposed[1]) {
+				else if (exposed.isGCREvent()) {
 					radiationType = RadiationType.GCR;
 					baselevel = GCR_RAD_PER_SOL * time / 100D;
 					// according
@@ -502,7 +501,7 @@ public class RadiationExposure implements Serializable, Temporal {
 					}	
 				}
 				// for now, if GCR happens, ignore Baseline
-				else if (exposed[0]) {
+				else if (exposed.isBaselineEvent()) {
 					radiationType = RadiationType.BASELINE;
 					baselevel = BASELINE_RAD_PER_SOL * time / RADIATION_CHECK_FREQ;
 					// arbitrary

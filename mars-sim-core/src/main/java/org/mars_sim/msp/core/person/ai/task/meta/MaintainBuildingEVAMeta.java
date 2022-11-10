@@ -104,24 +104,11 @@ public class MaintainBuildingEVAMeta extends MetaTask {
 			return null;
         	
     	// Check for radiation events
-    	boolean[] exposed = settlement.getExposed();
-
-		if (exposed[2]) {// SEP can give lethal dose of radiation
-			return null;
-		}
-		
 		double factor = 2D;
 		factor *= getPersonModifier(person);
+		factor *= getRadiationModifier(settlement);
 
-    	if (exposed[0]) {
-			factor = factor/2D;// Baseline can give a fair amount dose of radiation
-		}
-
-    	if (exposed[1]) {// GCR can give nearly lethal dose of radiation
-			factor = factor/4D;
-		}
-
-        if (factor < 0) 
+        if (factor <= 0) 
 			return null;
 
         return getSettlementTasks(settlement, factor);

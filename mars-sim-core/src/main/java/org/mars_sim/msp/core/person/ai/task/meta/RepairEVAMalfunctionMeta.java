@@ -137,20 +137,11 @@ public class RepairEVAMalfunctionMeta extends MetaTask {
 		Settlement settlement = person.getSettlement();
 
 		// Check for radiation events
-		boolean[] exposed = settlement.getExposed();
-		if (exposed[2]) { // SEP can give lethal dose of radiation
+		double radFactor = getRadiationModifier(settlement);
+		if (radFactor == 0) {
 			return tasks;
 		}
-
-		double radFactor = 1D;
-		if (exposed[0]) {
-			radFactor = radFactor / 10; // Baseline can give a fair amount dose of radiation
-		}
-
-		if (exposed[1]) {// GCR can give nearly lethal dose of radiation
-			radFactor = radFactor / 20;
-		}
-
+		
         // Add probability for all malfunctionable entities in person's local.
         for (Malfunctionable entity : MalfunctionFactory.getAssociatedMalfunctionables(settlement)) {
         	
