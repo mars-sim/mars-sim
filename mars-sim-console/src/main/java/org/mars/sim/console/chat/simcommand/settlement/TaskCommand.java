@@ -16,6 +16,8 @@ import org.mars.sim.console.chat.Conversation;
 import org.mars.sim.console.chat.simcommand.CommandHelper;
 import org.mars.sim.console.chat.simcommand.StructuredResponse;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.job.util.ShiftType;
+import org.mars_sim.msp.core.person.ai.task.util.TaskSchedule;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 
@@ -41,7 +43,8 @@ public class TaskCommand extends AbstractSettlementCommand {
 		response.appendText("(A). Settlers");
 		response.appendTableHeading("Task", CommandHelper.TASK_WIDTH, "People", -CommandHelper.PERSON_WIDTH,
 									"Shift");
-		
+		int currentMillisoc = context.getSim().getMasterClock().getMarsClock().getMillisolInt();
+
 		Map<String, List<Person>> map = settlement.getAllAssociatedPeople().stream()
 				.collect(Collectors.groupingBy(Person::getTaskDescription));
 
@@ -57,7 +60,16 @@ public class TaskCommand extends AbstractSettlementCommand {
 
 			// Add the rows for each person
 			for (Person p : plist) {
-				response.appendTableRow(tableGroup, p.getName(), p.getShiftType().getName());
+				String shiftDesc;
+				TaskSchedule taskSchedule = p.getTaskSchedule();
+				if (taskSchedule.getShiftType() == ShiftType.ON_CALL) {
+					shiftDesc = "OnCall";
+				}
+				else {
+					shiftDesc = taskSchedule.getShiftType().getName()
+						+ (taskSchedule.isShiftHour(currentMillisoc) ? " OnDuty" : " OffDuty");
+				}
+				response.appendTableRow(tableGroup, p.getName(), shiftDesc);
 				tableGroup = ""; // Reset table subgroup
 			}
 		}

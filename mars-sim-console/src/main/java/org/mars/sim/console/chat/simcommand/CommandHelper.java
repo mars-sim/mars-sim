@@ -512,25 +512,25 @@ public class CommandHelper {
 		response.appendTableHeading(firstColumn.toString(), PROCESS_WIDTH,
 					"Active", "Level", "Toggle");
 		for(ResourceProcess p : processor.getProcesses()) {
-			int[] remainingTime = p.getTimeLimit();
-			int remainingMilliSol = ((remainingTime[0] * 1000) + remainingTime[1]) - currentMSol;
-
 			String nextToggle = null;
-			if (remainingMilliSol <= 0) {
-				// Toggling is active
+			if (p.isToggleAvailable()) {
+				// Toggling is available
 				double[] toggleTime = p.getToggleSwitchDuration();
 				if (toggleTime[0] == 0D) {
-					nextToggle = "Due @ " + String.format(DUE_FORMAT, remainingTime[0], remainingTime[1]);
+					nextToggle = "Available ";
 				}
 				else {
-					nextToggle = (p.isFlagged() ? "Active " : "Inactive ")
-									+ String.format(PERC_FORMAT, (100D * toggleTime[0])/toggleTime[1]);
+					nextToggle = String.format(PERC_FORMAT, (100D * toggleTime[0])/toggleTime[1]);
+				}
+				
+				// Flag if it is being currently toggled by someone
+				if (p.isFlagged()) {
+					nextToggle = "Active " + nextToggle;
 				}
 			}
 			else {
-				int remainingSol = (remainingMilliSol/1000);
-				remainingMilliSol = remainingMilliSol % 1000;
-				nextToggle = "In - " + String.format(DUE_FORMAT, remainingSol, remainingMilliSol);
+				int[] remainingTime = p.getTimeLimit();
+				nextToggle = "Due @ " + String.format(DUE_FORMAT, remainingTime[0], remainingTime[1]);
 			}
 
 			response.appendTableRow(p.getProcessName(), p.isProcessRunning(),

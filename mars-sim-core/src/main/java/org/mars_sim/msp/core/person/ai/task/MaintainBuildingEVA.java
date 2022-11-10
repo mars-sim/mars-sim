@@ -6,11 +6,8 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import org.mars_sim.msp.core.CollectionUtils;
@@ -24,7 +21,6 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
@@ -132,17 +128,6 @@ extends EVAOperation {
 		if (checkReadiness(time, true) > 0)
 			return time;
 		
-
-		// Gets the building with the worst condition
-		if (entity == null) {
-			entity = getWorstBuilding();
-			
-			if (entity == null) {
-				checkLocation();
-				return 0;
-			}
-		}
-		
 		MalfunctionManager manager = entity.getMalfunctionManager();
 		boolean malfunction = manager.hasMalfunction();
 		boolean finishedMaintenance = (manager.getEffectiveTimeSinceLastMaintenance() < 1000D);
@@ -183,10 +168,8 @@ extends EVAOperation {
 			
         }
 		else {
-			// Gets the new entity
-			entity = null;
+			clearTask("No spare parts for maintenance");
 		}
-
         // Add work to the maintenance
 		manager.addMaintenanceWorkTime(workTime);
 		
@@ -208,28 +191,5 @@ extends EVAOperation {
 
 		int skill = worker.getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
 		checkForAccident(entity, time, 0.005D, skill, entity.getName());
-	}
-
-
-	/**
-	 * Gets the building with worst condition to maintain.
-	 * 
-	 * @return
-	 */
-	public Malfunctionable getWorstBuilding() {
-		Malfunctionable result = null;
-		double worstCondition = 100;
-		List<Building> list = worker.getAssociatedSettlement().getBuildingManager().getBuildings();
-		Collections.shuffle(list);
-		for (Building building: list) {
-			if (!building.hasFunction(FunctionType.LIFE_SUPPORT)) {
-				double condition = building.getMalfunctionManager().getWearCondition();
-				if (condition < worstCondition) {
-					worstCondition = condition;
-					result = building;
-				}
-			}
-		}
-		return result;
 	}
 }
