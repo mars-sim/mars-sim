@@ -15,6 +15,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.task.TendFishTank;
+import org.mars_sim.msp.core.person.ai.task.util.AbstractTaskJob;
 import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskJob;
@@ -33,24 +34,13 @@ public class TendFishTankMeta extends MetaTask {
     /**
      * Represents a Job needed in a Fishery
      */
-    private static class FishTaskJob implements TaskJob {
+    private static class FishTaskJob extends AbstractTaskJob {
 
-        private double score;
         private Fishery tank;
 
         public FishTaskJob(Fishery tank, double score) {
+            super("Tend fishtank @ " + tank.getBuilding().getName(), score);
             this.tank = tank;
-            this.score = score;
-        }
-
-        @Override
-        public double getScore() {
-            return score;
-        }
-
-        @Override
-        public String getDescription() {
-            return "Tend fishtank @ " + tank.getBuilding().getName();
         }
 
         @Override

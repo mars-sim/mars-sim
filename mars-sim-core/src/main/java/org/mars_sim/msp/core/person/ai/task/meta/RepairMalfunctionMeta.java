@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core.person.ai.task.meta;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.mars_sim.msp.core.Msg;
@@ -21,40 +22,45 @@ import org.mars_sim.msp.core.malfunction.RepairHelper;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
+import org.mars_sim.msp.core.person.ai.task.RepairEVAMalfunction;
 import org.mars_sim.msp.core.person.ai.task.RepairInsideMalfunction;
+import org.mars_sim.msp.core.person.ai.task.util.AbstractTaskJob;
 import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskJob;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
-import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * Meta task for the RepairMalfunction task.
  */
-public class RepairInsideMalfunctionMeta extends MetaTask {
-
-	private static class RepairTaskJob implements TaskJob {
+public class RepairMalfunctionMeta extends MetaTask {
+	
+	private static class RepairEVATaskJob extends AbstractTaskJob {
 		private Malfunctionable entity;
 		private Malfunction mal;
-		private double score;
 
-		public RepairTaskJob(Malfunctionable entity, Malfunction mal, double score) {
+		public RepairEVATaskJob(Malfunctionable entity, Malfunction mal, double score) {
+			super("Repair EVA " + mal.getName() + " @ " + entity, score);
 			this.entity = entity;
 			this.mal = mal;
-			this.score = score;
 		}
 
 		@Override
-		public double getScore() {
-			return score;
+		public Task createTask(Person person) {
+			return new RepairEVAMalfunction(person, entity, mal);
 		}
+	}
 
-		@Override
-		public String getDescription() {
-			return "Repair " + mal.getName() + " @ " + entity;
+	private static class RepairInsideTaskJob extends AbstractTaskJob {
+		private Malfunctionable entity;
+		private Malfunction mal;
+
+		public RepairInsideTaskJob(Malfunctionable entity, Malfunction mal, double score) {
+			super("Repair " + mal.getName() + " @ " + entity, score);
+			this.entity = entity;
+			this.mal = mal;
 		}
 
 		@Override
@@ -70,7 +76,7 @@ public class RepairInsideMalfunctionMeta extends MetaTask {
 	}
 
 	/** default logger. */
-	private static SimLogger logger = SimLogger.getLogger(RepairInsideMalfunctionMeta.class.getName());
+	private static SimLogger logger = SimLogger.getLogger(RepairMalfunctionMeta.class.getName());
 	
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -78,7 +84,7 @@ public class RepairInsideMalfunctionMeta extends MetaTask {
 
 	private static final double WEIGHT = 5D;
 	
-    public RepairInsideMalfunctionMeta() {
+    public RepairMalfunctionMeta() {
 		super(NAME, WorkerType.BOTH, TaskScope.ANY_HOUR);
 		setFavorite(FavoriteType.OPERATION, FavoriteType.TINKERING);
 		setTrait(TaskTrait.AGILITY, TaskTrait.STRENGTH);
@@ -93,17 +99,30 @@ public class RepairInsideMalfunctionMeta extends MetaTask {
 
 		List<TaskJob> tasks = null;
 
-        if (person.isInSettlement()) {
+        if (person.isInSettlement() || person.isInVehicle()) {
 			double factor = getPersonModifier(person);
 
-			tasks = getRepairTasks(person.getSettlement(), factor, MalfunctionRepairWork.INSIDE);
+			double evaFactor = factor * getRadiationModifier(person.getAssociatedSettlement());
+			evaFactor *= getEVAModifier(person);
+
+			EquipmentOwner partStore;
+			Collection<Malfunctionable> source;
+			if (person.isInSettlement()) {
+				partStore = person.getSettlement();
+				source = MalfunctionFactory.getAssociatedMalfunctionables(person.getSettlement());
+			}
+			else {
+				partStore = RepairHelper.getClosestRepairStore(person);
+				source = MalfunctionFactory.getMalfunctionables(person.getVehicle());
+			}
+			tasks = getRepairTasks(source, partStore, factor, evaFactor);
 		}
 
         return tasks;
 	}
 
 	/**
-	 * Get the repair takss suitable for this Robot.
+	 * Get the repair tasks suitable for this Robot.
 	 */
     @Override
     public List<TaskJob> getTaskJobs(Robot robot) {
@@ -113,47 +132,60 @@ public class RepairInsideMalfunctionMeta extends MetaTask {
         if (robot.getRobotType() == RobotType.REPAIRBOT) {
 			double factor = robot.getPerformanceRating();
 
-			tasks = getRepairTasks(robot.getSettlement(), factor, MalfunctionRepairWork.INSIDE);
+			tasks = getRepairTasks(MalfunctionFactory.getAssociatedMalfunctionables(robot.getSettlement()),
+									robot.getSettlement(), factor, 0D);
 		}
 
         return tasks;
 	}
 	
 	/**
-	 * Creates a list of Task Jobs for the active malfunctions at a Settlement. Apply a factor to the scores
+	 * Create any repair tasks needed for a set of Malfunctionable.
+	 * @parma source Source of repair tasks
+	 * @param partStore Where any needed Parts come from
+	 * @param insideFactor Score factor for inside repairs
+	 * @param evaFactor Score factor for EVA repairs
 	 */
-    public static List<TaskJob> getRepairTasks(Settlement settlement, double factor, MalfunctionRepairWork workType) {
+    private static List<TaskJob> getRepairTasks(Collection<Malfunctionable> source, EquipmentOwner partStore, double insideFactor, double evaFactor) {
 
 		List<TaskJob> tasks = new ArrayList<>();
 		
         // Add probability for all malfunctionable entities in person's local.
-        for (Malfunctionable entity : MalfunctionFactory.getAssociatedMalfunctionables(settlement)) {
-        	
-            if (entity instanceof Robot && entity instanceof Vehicle) {
-            	// Note: robot's malfunction is not currently modeled
-            	// vehicle malfunctions are handled by other meta tasks
-            	continue;
-            }
-	
-            MalfunctionManager manager = entity.getMalfunctionManager();
-            
-            if (manager.hasMalfunction()) {
-            	// Pick the worst malfunction
-            	Malfunction mal = manager.getMostSeriousMalfunctionInNeed(workType);
+        for (Malfunctionable entity : source) {
+			if (entity instanceof Robot) {
+				// Note: robot's malfunction is not currently modeled
+				// vehicle malfunctions are handled by other meta tasks
+				continue;
+			}
 
-            	if (mal != null) {
-					double score = scoreMalfunction(settlement, mal, workType);
-					score *= factor;
+			MalfunctionManager manager = entity.getMalfunctionManager();
+			
+			if (manager.hasMalfunction()) {
+				// Pick the worst inside malfunction
+				Malfunction mal = manager.getMostSeriousMalfunctionInNeed(MalfunctionRepairWork.INSIDE);
+				if (mal != null) {
+					double score = scoreMalfunction(partStore, mal, MalfunctionRepairWork.INSIDE);
+					score *= insideFactor;
 
-					tasks.add(new RepairTaskJob(entity, mal, score));
-	            }
-            }
-        }
+					tasks.add(new RepairInsideTaskJob(entity, mal, score));
+				}
 
+				if (evaFactor > 0) {
+					// Pick any EVA repair activities
+					Malfunction evamal = manager.getMostSeriousMalfunctionInNeed(MalfunctionRepairWork.EVA);
+					if (evamal != null) {
+						double score = scoreMalfunction(partStore, evamal, MalfunctionRepairWork.EVA);
+						score *= evaFactor;
+
+						tasks.add(new RepairEVATaskJob(entity, evamal, score));
+					}
+				}
+			}
+		}
 		return tasks;
-    }
-    
-    /**
+	}
+
+	/**
      * Gets the initial score of the malfunction.
      * 
      * @param malfunction

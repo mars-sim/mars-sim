@@ -195,26 +195,11 @@ public class PersonTaskManager extends TaskManager {
 			defaultOutsideTasks = new TaskCache("Default Outside", null);
 
 			// Create a MetaTask to return inside
-			TaskJob walkBack = new TaskJob() {
-				@Override
-				public double getScore() {
-					return 1D;
-				}
-
-				@Override
-				public String getDescription() {
-					return "Return Inside";
-				}
-
+			TaskJob walkBack = new AbstractTaskJob("Return Inside", 1D) {
 				@Override
 				public Task createTask(Person person) {
 					logger.info(person, "Returning inside to find work.");
 					return new Walk(person);
-				}
-
-				@Override
-				public Task createTask(Robot robot) {
-					throw new UnsupportedOperationException();
 				}	
 			};
 			defaultOutsideTasks.put(walkBack);

@@ -15,6 +15,8 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.task.MaintainBuilding;
+import org.mars_sim.msp.core.person.ai.task.MaintainBuildingEVA;
+import org.mars_sim.msp.core.person.ai.task.util.AbstractTaskJob;
 import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskJob;
@@ -29,30 +31,16 @@ import org.mars_sim.msp.core.structure.building.function.FunctionType;
  * Meta task for maintaining buildings.
  */
 public class MaintainBuildingMeta extends MetaTask {
-	// The percentage of the component expected lifetime for the maintenance period
-	private static final double MIN_MAINT_PERC_OF_WEAR = 0.2;
-
 	/**
      * Represents a Job needed for intenral maintenance on a Building
      */
-    private static class MaintainTaskJob implements TaskJob {
+    private static class MaintainInsideTaskJob extends AbstractTaskJob {
 
-        private double score;
         private Building target;
 
-        public MaintainTaskJob(Building target, double score) {
+        public MaintainInsideTaskJob(Building target, double score) {
+			super("Maintain @ " + target.getName(), score);
             this.target = target;
-            this.score = score;
-        }
-
-        @Override
-        public double getScore() {
-            return score;
-        }
-
-        @Override
-        public String getDescription() {
-            return "Maintain @ " + target.getName();
         }
 
         @Override
@@ -65,6 +53,25 @@ public class MaintainBuildingMeta extends MetaTask {
             return new MaintainBuilding(robot, target);
         }
     }
+
+	/**
+     * Represents a Job needed for external maintenance on a Building
+     */
+    private static class MaintainEVATaskJob extends AbstractTaskJob {
+
+        private Building target;
+
+        public MaintainEVATaskJob(Building target, double score) {
+			super("EVA Maintenance @ " + target.getName(), score);
+            this.target = target;
+        }
+
+        @Override
+        public Task createTask(Person person) {
+            return new MaintainBuildingEVA(person, target);
+        }
+    }
+
 
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.maintainBuilding"); //$NON-NLS-1$
@@ -88,10 +95,16 @@ public class MaintainBuildingMeta extends MetaTask {
 		
 		if (settlement != null) {
             double factor = getPersonModifier(person);
-			return getSettlementTasks(settlement, factor);
+
+			// EVA factor is the radition and teh EVA modifiers applied extra
+			double evaFactor = getRadiationModifier(settlement) * factor;
+			evaFactor *= getEVAModifier(person);
+
+			return getSettlementTasks(settlement, factor, evaFactor);
 		}
 		return null;
 	}
+
 
 	/**
 	 * Get any maintenance jobs that can be performbed by a Robot. TThe Robot
@@ -103,25 +116,31 @@ public class MaintainBuildingMeta extends MetaTask {
         
 		Settlement settlement = robot.getSettlement();
 		if ((settlement != null) && (robot.getRobotType() == RobotType.REPAIRBOT)) {
-			return getSettlementTasks(settlement, ROBOT_FACTOR);
+			return getSettlementTasks(settlement, ROBOT_FACTOR, 0D);
 		}
 		return null;
 	}
 
 	/**
-	 * Find any buildings that need internal maintenance
+	 * Find any buildings that need maintenance. These can crete either inside or EVA maintenance
 	 */
-	private List<TaskJob> getSettlementTasks(Settlement settlement, double factor) {
+	private List<TaskJob> getSettlementTasks(Settlement settlement, double insideFactor, double evaFactor) {
 		List<TaskJob>  tasks = new ArrayList<>();
 	
 		for (Building building: settlement.getBuildingManager().getBuildings()) {
-			
+			double score = scoreMaintenance(building);
+
 			boolean habitableBuilding = building.hasFunction(FunctionType.LIFE_SUPPORT);
 			if (habitableBuilding) {
-				double score = scoreMaintenance(building);
-				score *= factor;
+				score *= insideFactor;
 				if (score >= LOW_THRESHOLD) {
-					tasks.add(new MaintainTaskJob(building, score));
+					tasks.add(new MaintainInsideTaskJob(building, score));
+				}
+			}
+			else if (evaFactor > 0) {
+				score *= evaFactor;
+				if (score >= LOW_THRESHOLD) {
+					tasks.add(new MaintainEVATaskJob(building, score));
 				}
 			}
 		}
@@ -145,7 +164,7 @@ public class MaintainBuildingMeta extends MetaTask {
 		double minMaintenance = manager.getMaintenancePeriod();
 		// Note: look for buildings that are NOT malfunction since
 		// malfunctioned building are being taken care of by the two Repair*Malfunction tasks
-		if (hasNoMalfunction && hasParts && (effectiveTime >= minMaintenance)) {
+		if (hasNoMalfunction && hasParts && (effectiveTime >= (minMaintenance * 0.9D))) {
 			// Score is based on condition plus %age overdue
 			score = (100 - condition) + ((effectiveTime - minMaintenance)*100D/minMaintenance);
 		}

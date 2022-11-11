@@ -16,6 +16,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.task.TendGreenhouse;
+import org.mars_sim.msp.core.person.ai.task.util.AbstractTaskJob;
 import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskJob;
@@ -30,24 +31,13 @@ import org.mars_sim.msp.core.structure.building.function.farming.Farming;
  */
 public class TendGreenhouseMeta extends MetaTask {
 
-    private static class CropTaskJob implements TaskJob {
+    private static class CropTaskJob extends AbstractTaskJob {
 
-        private double score;
         private Farming farm;
 
         public CropTaskJob(Farming farm, double score) {
+            super("Tend crop @ " + farm.getBuilding().getName(), score);
             this.farm = farm;
-            this.score = score;
-        }
-
-        @Override
-        public double getScore() {
-            return score;
-        }
-
-        @Override
-        public String getDescription() {
-            return "Tend crop @ " + farm.getBuilding().getName();
         }
 
         @Override
@@ -61,8 +51,6 @@ public class TendGreenhouseMeta extends MetaTask {
         }
 
     }
-
-    private static final double VALUE = 2;
     
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(TendGreenhouseMeta.class.getName());

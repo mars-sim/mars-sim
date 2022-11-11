@@ -13,34 +13,14 @@ import org.mars_sim.msp.core.robot.Robot;
  * This is an implementation of a TaskJob that delegates the Task creation to a
  * MetaTask instance. Tasks have no extra entities defined in the creation.
  */
-public class BasicTaskJob implements TaskJob {
-
-    private static final double MAX_TASK_SCORE = 35_000;
-
-    private double score;
-    private String taskName;
+public class BasicTaskJob extends AbstractTaskJob {
 
     // MetaTask cannot be serialised
     private transient MetaTask mt;
 
     BasicTaskJob(MetaTask metaTask, double score) {
+        super(metaTask.getName(), score);
         this.mt = metaTask;
-        this.taskName = mt.getName();
-
-        if (Double.isNaN(score) || Double.isInfinite(score) || (score > MAX_TASK_SCORE)) {
-            score = MAX_TASK_SCORE;
-        }
-        this.score = score;
-    }
-
-    @Override
-    public double getScore() {
-        return score;
-    }
-
-    @Override
-    public String getDescription() {
-        return taskName;
     }
 
     /**
@@ -48,7 +28,7 @@ public class BasicTaskJob implements TaskJob {
      */
     private MetaTask getMeta() {
         if (mt == null) {
-            mt = MetaTaskUtil.getMetaTask(taskName);
+            mt = MetaTaskUtil.getMetaTask(getDescription());
         }
 
         return mt;
@@ -61,10 +41,5 @@ public class BasicTaskJob implements TaskJob {
     @Override
     public Task createTask(Robot robot) {
         return getMeta().constructInstance(robot);
-    }
-
-    @Override
-    public String toString() {
-        return getDescription();
     }
 }

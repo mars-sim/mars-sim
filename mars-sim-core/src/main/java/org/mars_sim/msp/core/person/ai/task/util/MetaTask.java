@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.environment.SurfaceFeatures;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
+import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.RadiationStatus;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -358,6 +359,29 @@ public abstract class MetaTask {
 
         return result;
     }
+
+	/**
+	 * Get the modifier for a Person doing an EVA Operation
+	 */
+	protected double getEVAModifier(Person person) {
+		// Check if an airlock is available
+		if (EVAOperation.getWalkableAvailableAirlock(person, false) == null)
+			return 0;
+
+		// Check if it is night time.
+		if (EVAOperation.isGettingDark(person))
+			return 0;
+
+		// Checks if the person's settlement is at meal time and is hungry
+		if (EVAOperation.isHungryAtMealTime(person))
+			return 0;
+		
+		// Checks if the person is physically fit for heavy EVA tasks
+		if (!EVAOperation.isEVAFit(person))
+			return 0;
+		
+		return 1D;
+	}
 
 	/**
 	 * Attached to the common controllign classes.

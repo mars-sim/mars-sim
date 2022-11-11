@@ -16,6 +16,7 @@ import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.ToggleFuelPowerSource;
+import org.mars_sim.msp.core.person.ai.task.util.AbstractTaskJob;
 import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskJob;
@@ -38,37 +39,21 @@ public class ToggleFuelPowerSourceMeta extends MetaTask {
 	/**
      * Represents a Job needed in a Fishery
      */
-    private static class PowerTaskJob implements TaskJob {
+    private static class PowerTaskJob extends AbstractTaskJob {
 
-        private double score;
 		private FuelPowerSource powerSource;
 		private Building building;
 
         public PowerTaskJob(Building building, FuelPowerSource powerSource, double score) {
+            super("Toggle " + powerSource.getType().getName() + " @ " + building.getName(), score);
 			this.building = building;
 			this.powerSource = powerSource;
-			this.score = score;
 		}
-
-		@Override
-        public double getScore() {
-            return score;
-        }
-
-        @Override
-        public String getDescription() {
-            return "Toggle " + powerSource.getType().getName() + " @ " + building.getName();
-        }
 
         @Override
         public Task createTask(Person person) {
             return new ToggleFuelPowerSource(person, building, powerSource);
         }
-
-        @Override
-        public Task createTask(Robot robot) {
-			throw new UnsupportedOperationException("Robots cannot toggle power");
-		}
     }
 
     /** default logger. */

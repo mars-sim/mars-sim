@@ -15,6 +15,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.task.ToggleResourceProcess;
+import org.mars_sim.msp.core.person.ai.task.util.AbstractTaskJob;
 import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskJob;
@@ -36,30 +37,15 @@ public class ToggleResourceProcessMeta extends MetaTask {
 	/**
 	 * Represents a job to toggle a Resource process in a building.
 	 */
-    private static class ToggleProcessJob implements TaskJob {
+    private static class ToggleProcessJob extends AbstractTaskJob {
 
-        private double score;
         private Building processBuilding;
 		private ResourceProcess process;
 
         public ToggleProcessJob(Building processBuilding, ResourceProcess process, double score) {
+			super("Toggle " + process.getProcessName() + " @ " + processBuilding.getName(), score);
             this.processBuilding = processBuilding;
 			this.process = process;
-
-			if (score > CAP) {
-				score = CAP;
-			}
-            this.score = score;
-        }
-
-        @Override
-        public double getScore() {
-            return score;
-        }
-
-        @Override
-        public String getDescription() {
-            return "Toggle " + process.getProcessName() + " @ " + processBuilding.getName();
         }
 
         @Override
@@ -80,8 +66,6 @@ public class ToggleResourceProcessMeta extends MetaTask {
 	private static final String NAME = Msg.getString("Task.description.toggleResourceProcess"); //$NON-NLS-1$
 	
 	private static final double FACTOR = 1_000;
-
-	private static final int CAP = 1_000;
 	
     public ToggleResourceProcessMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
