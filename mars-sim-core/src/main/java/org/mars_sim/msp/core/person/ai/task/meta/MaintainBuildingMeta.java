@@ -77,9 +77,6 @@ public class MaintainBuildingMeta extends MetaTask {
 	private static final String NAME = Msg.getString("Task.description.maintainBuilding"); //$NON-NLS-1$
 	
 	private static final double ROBOT_FACTOR = 2D;
-
-	// Lower threshold to avoid excessive jobs being created
-	private static final double LOW_THRESHOLD = 2D;
 	
     public MaintainBuildingMeta() {
 		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
@@ -133,13 +130,13 @@ public class MaintainBuildingMeta extends MetaTask {
 			boolean habitableBuilding = building.hasFunction(FunctionType.LIFE_SUPPORT);
 			if (habitableBuilding) {
 				score *= insideFactor;
-				if (score >= LOW_THRESHOLD) {
+				if (score > 0) {
 					tasks.add(new MaintainInsideTaskJob(building, score));
 				}
 			}
 			else if (evaFactor > 0) {
 				score *= evaFactor;
-				if (score >= LOW_THRESHOLD) {
+				if (score > 0) {
 					tasks.add(new MaintainEVATaskJob(building, score));
 				}
 			}
@@ -156,7 +153,7 @@ public class MaintainBuildingMeta extends MetaTask {
 	public static double scoreMaintenance(Building building) {
 		MalfunctionManager manager = building.getMalfunctionManager();
 		boolean hasNoMalfunction = !manager.hasMalfunction();
-		boolean hasParts = MaintainBuilding.hasMaintenanceParts(building.getSettlement(), building);
+		boolean hasParts = manager.hasMaintenanceParts(building.getSettlement());
 
 		double score = 0D;
 		double condition = manager.getAdjustedCondition();

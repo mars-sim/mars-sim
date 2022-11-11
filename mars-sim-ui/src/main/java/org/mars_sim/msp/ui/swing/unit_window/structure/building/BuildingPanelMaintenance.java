@@ -55,6 +55,7 @@ import com.alee.laf.scroll.WebScrollPane;
 public class BuildingPanelMaintenance extends BuildingFunctionPanel {
 
 	private static final String SPANNER_ICON = Msg.getString("icon.spanner"); //$NON-NLS-1$
+	private static final String REPAIR_PARTS_NEEDED = "Parts Needed:";
 
 	/** Cached value for the wear condition. */
 	private double wearConditionCache;
@@ -233,7 +234,7 @@ public class BuildingPanelMaintenance extends BuildingFunctionPanel {
 	 * @return string.
 	 */
 	private String getPartsString(boolean useHtml) {
-		return MalfunctionPanel.getPartsString(manager.getMaintenanceParts(), useHtml).toString();
+		return MalfunctionPanel.getPartsString(REPAIR_PARTS_NEEDED, manager.getMaintenanceParts(), useHtml).toString();
 	}
 
 	/**

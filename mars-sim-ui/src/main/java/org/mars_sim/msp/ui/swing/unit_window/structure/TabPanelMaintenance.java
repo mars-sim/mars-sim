@@ -40,6 +40,7 @@ import com.alee.managers.tooltip.TooltipWay;
 public class TabPanelMaintenance extends TabPanel {
 
 	private static final String SPANNER_ICON = Msg.getString("icon.spanner"); //$NON-NLS-1$
+	private static final String REPAIR_PARTS_NEEDED = "Parts Needed : ";
 
 	/** The Settlement instance. */
 	private Settlement settlement;
@@ -187,11 +188,11 @@ public class TabPanelMaintenance extends TabPanel {
 
 			// Prepare parts label.
 			Map<Integer, Integer> parts = manager.getMaintenanceParts();
-			partsLabel = new WebLabel(MalfunctionPanel.getPartsString(parts, false), SwingConstants.CENTER);
+			partsLabel = new WebLabel(MalfunctionPanel.getPartsString(REPAIR_PARTS_NEEDED, parts, false), SwingConstants.CENTER);
 			partsLabel.setPreferredSize(new Dimension(-1, -1));
 			add(partsLabel);
 
-			TooltipManager.setTooltip(partsLabel, MalfunctionPanel.getPartsString(parts, false), TooltipWay.down);
+			TooltipManager.setTooltip(partsLabel, MalfunctionPanel.getPartsString(REPAIR_PARTS_NEEDED, parts, false), TooltipWay.down);
 		}
 
 		/**
@@ -221,7 +222,7 @@ public class TabPanelMaintenance extends TabPanel {
 			Map<Integer, Integer> parts = manager.getMaintenanceParts();
 
 			// Update parts label.
-			partsLabel.setText(MalfunctionPanel.getPartsString(parts, false));
+			partsLabel.setText(MalfunctionPanel.getPartsString(REPAIR_PARTS_NEEDED, parts, false));
 		}
 
 		private String getToolTipString() {

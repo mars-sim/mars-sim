@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -25,6 +26,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.equipment.EquipmentOwner;
 import org.mars_sim.msp.core.equipment.ResourceHolder;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
@@ -55,6 +57,8 @@ import org.mars_sim.msp.core.tool.RandomUtil;
  * Each building has its own MalfunctionManager
  */
 public class MalfunctionManager implements Serializable, Temporal {
+
+	private static final String PERC_CHANGE = "%.1f %% --> %.1f %%";
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -92,8 +96,6 @@ public class MalfunctionManager implements Serializable, Temporal {
 	private static final String OXYGEN = "Oxygen";
 	private static final String PROBABLE_CAUSE = ". Probable Cause: ";
 	private static final String CAUSED_BY = " Caused by '";
-	private static final String ACTS_OF_GOD = "Acts of God";
-	private static final String ARROW = "  -->  ";
 
 	private static final int SCORE_DEFAULT = 50;
 
@@ -359,44 +361,34 @@ public class MalfunctionManager implements Serializable, Temporal {
 
 			// Compute the new reliability and failure rate for this malfunction
 			Part part = ItemResourceUtil.findItemResource(p.getKey());
-			String part_name = part.getName();
+			String partName = part.getName();
 
-			double old_rel = part.getReliability();
-			double old_prob = getRepairPartProbability(malfunction, part_name);
-			double old_failure = (100 - old_rel) * old_prob / 100D;
-			double old_mal_prob_failure = malfunction.getProbability();
-			double old_MTBF = part.getMTBF();
+			double oldRel = part.getReliability();
+			double oldProb = getRepairPartProbability(malfunction, partName);
+			double oldFailure = (100 - oldRel) * oldProb / 100D;
+			double oldMalProbFailure = malfunction.getProbability();
+			double oldMTBF = part.getMTBF();
 
 			// Record the number of failure
 			// and recompute the new reliability
 			part.setFailure(num, currentTime.getMissionSol());
 
 			// Need to calculate the new probability for the whole MalfunctionMeta object
-			// String name = p.getName();
-			double new_rel = part.getReliability();
-			double new_prob = getRepairPartProbability(malfunction, part_name);
-			double new_failure = (100 - new_rel) * new_prob / 100D;
-			double new_mal_prob_failure = (old_mal_prob_failure + new_failure) / 2.0;
-			double new_MTBF = part.getMTBF();
+			double newRel = part.getReliability();
+			double newProb = getRepairPartProbability(malfunction, partName);
+			double newFailure = (100 - newRel) * newProb / 100D;
+			double newMalProbFailure = (oldMalProbFailure + newFailure) / 2.0;
+			double newMTBF = part.getMTBF();
 
-			logger.warning("           *** Part : " + part_name + " ***");
-
-			logger.warning(" (1).   Reliability : " + addWhiteSpace(Math.round(old_rel * 1000.0) / 1000.0 + " % ")
-							+ ARROW + addWhiteSpace(Math.round(new_rel * 1000.0) / 1000.0 + " % "));
-
-			logger.warning(" (2).  Failure Rate : " + addWhiteSpace(Math.round(old_failure * 1000.0) / 1000.0 + " % ")
-							+ ARROW + addWhiteSpace(Math.round(new_failure * 1000.0) / 1000.0 + " % "));
-
-			logger.warning(" (3).          MTBF : " + addWhiteSpace(Math.round(old_MTBF * 1000.0) / 1000.0 + " hr")
-							+ ARROW + addWhiteSpace(Math.round(new_MTBF * 1000.0) / 1000.0 + " hr"));
-
-//			logger.warning("          *** Malfunction : " + malfunction.getName() + " ***");
-
-			logger.warning(" (4).   Probability : " + addWhiteSpace(Math.round(old_mal_prob_failure * 1000.0) / 1000.0 + " % ")
-							+ ARROW + addWhiteSpace(Math.round(new_mal_prob_failure * 1000.0) / 1000.0 + " % "));
+			logger.warning("           *** Part : " + partName + " ***");
+			logger.warning(" (1).   Reliability : " + String.format(PERC_CHANGE, oldRel, newRel));
+			logger.warning(" (2).  Failure Rate : " + String.format(PERC_CHANGE, oldFailure, newFailure));
+			logger.warning(" (3).          MTBF : " + String.format("%.1f hr --> %.1f hr", oldMTBF, newMTBF));
+			logger.warning(" (4).   Probability : " + String.format(PERC_CHANGE, oldMalProbFailure, 
+												newMalProbFailure));
 
 			// Modify the probability of failure for this particular malfunction
-			malfunction.setProbability(new_mal_prob_failure);
+			malfunction.setProbability(newMalProbFailure);
 		}
 
 		issueMedicalComplaints(malfunction);
@@ -424,25 +416,6 @@ public class MalfunctionManager implements Serializable, Temporal {
 			}
 		}
 		return result;
-	}
-
-	/**
-	 * Adds whitespace.
-	 *
-	 * @param text
-	 * @return
-	 */
-	public String addWhiteSpace(String text) {
-		StringBuffer s = new StringBuffer();
-		int max = 11;
-		int size = text.length();
-
-		for (int j = 0; j < (max-size); j++) {
-			s.append(" ");
-		}
-		s.append(text);
-
-		return s.toString();
 	}
 
 	/**
@@ -606,33 +579,10 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 */
 	private void resetModifiers(int type) {
 		// compare from previous modifier
-//		logger.info("Reseting modifiers type " + type );
 		if (type == 0) {
 			oxygenFlowModifier = 100D;
 			logger.log(entity, Level.WARNING, 5_000, "The oxygen flow retrictor had been fixed");
 		}
-//
-//		else if (type == 1) {
-//			waterFlowModifier = 100D;
-//			LogConsolidated.log(Level.WARNING, 0, sourceName,
-//					"[" + entity.getLocale() + "] The water flow retrictor has been fixed in "
-//					+ entity.getImmediateLocation(), null);
-//		}
-//
-//		else if (type == 2) {
-//			airPressureModifier = 100D;
-//			LogConsolidated.log(Level.WARNING, 0, sourceName,
-//				"[" + entity.getLocale() + "] The air pressure regulator has been fixed in "
-//				+ entity.getImmediateLocation(), null);
-//		}
-//
-//		else if (type == 3) {
-//			temperatureModifier = 100D;
-//			LogConsolidated.log(Level.WARNING, 0, sourceName,
-//					"[" + entity.getLocale() + "] The temperature regulator has been fixed in "
-//					+ entity.getImmediateLocation(), null);
-//
-//		}
 	}
 
 	/**
@@ -925,33 +875,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	public double getOxygenFlowModifier() {
 		return oxygenFlowModifier;
 	}
-//
-//	/**
-//	 * Gets the water flow modifier.
-//	 *
-//	 * @return modifier
-//	 */
-//	public double getWaterFlowModifier() {
-//		return waterFlowModifier;
-//	}
-//
-//	/**
-//	 * Gets the air flow modifier.
-//	 *
-//	 * @return modifier
-//	 */
-//	public double getAirPressureModifier() {
-//		return airPressureModifier;
-//	}
-//
-//	/**
-//	 * Gets the temperature modifier.
-//	 *
-//	 * @return modifier
-//	 */
-//	public double getTemperatureModifier() {
-//		return temperatureModifier;
-//	}
+
 
 	/**
 	 * Gets the unit associated with this malfunctionable.
@@ -995,35 +919,44 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 */
 	public Map<Integer, Integer> getMaintenanceParts() {
 		if (partsNeededForMaintenance == null)
-			partsNeededForMaintenance = new ConcurrentHashMap<>();
-		return new ConcurrentHashMap<>(partsNeededForMaintenance);
+			partsNeededForMaintenance = new HashMap<>();
+		return Collections.unmodifiableMap(partsNeededForMaintenance);
 	}
 
 	/**
-	 * Adds a number of a part to the entity for maintenance.
-	 *
-	 * @param part   the part.
-	 * @param number the number used.
+	 * Check the any of the maintenance parts are available in a part store. Only at least one
+	 * part is required to trigger some level of maintenance. 
+	 * @param partStore Store to provide parts
 	 */
-	public void maintainWithParts(Integer part, int number) {
-		if (part == null)
-			throw new IllegalArgumentException("part is null");
-		if (partsNeededForMaintenance.containsKey(part)) {
-			int numberNeeded = partsNeededForMaintenance.get(part);
-			if (number > numberNeeded)
-				throw new IllegalArgumentException(
-						"number " + number + " is greater that number of parts needed: " + numberNeeded);
-			else {
-				numberNeeded -= number;
-				if (numberNeeded > 0)
-					// Consume the number of parts available 
-					// and reset the number needed for this part
-					partsNeededForMaintenance.put(part, numberNeeded);
-				else
-					partsNeededForMaintenance.remove(part);
+	public boolean hasMaintenanceParts(EquipmentOwner partStore) {
+		for( Entry<Integer, Integer> entry: partsNeededForMaintenance.entrySet()) {
+			Integer part = entry.getKey();
+			int number = entry.getValue();
+			if (partStore.getItemResourceStored(part) >= number) {
+				return true;
 			}
-		} else
-			throw new IllegalArgumentException("Part " + part + " is not needed for maintenance.");
+		}
+		return false;
+	}
+
+	/**
+	 * Transfser the required parts for the maintenance from a part store.
+	 * @param partStore Sotre to retrieve parts from
+	 */
+	public void transferMaintenanceParts(EquipmentOwner partStore) {
+		Map<Integer,Integer> newParts = new HashMap<>();
+		for( Entry<Integer, Integer> entry: partsNeededForMaintenance.entrySet()) {
+			Integer part = entry.getKey();
+			int number = entry.getValue();
+			int numMissing = partStore.retrieveItemResource(part, number);
+
+			// Any part still outstanding record for later
+			if (numMissing > 0) {
+				newParts.put(part, numMissing);
+			}        
+		}
+
+		partsNeededForMaintenance = newParts;
 	}
 
 	/**

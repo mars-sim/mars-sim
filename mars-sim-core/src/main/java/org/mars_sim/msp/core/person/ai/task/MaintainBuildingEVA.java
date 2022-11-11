@@ -71,11 +71,11 @@ extends EVAOperation {
         
 		// Check suitability
 		entity = target;
-		if (!MaintainBuilding.hasMaintenanceParts(worker.getSettlement(), entity)) {		
+		MalfunctionManager manager = target.getMalfunctionManager();
+		if (!manager.hasMaintenanceParts(worker.getSettlement())) {		
 			clearTask("No parts");
 			return;
 		}
-		MalfunctionManager manager = target.getMalfunctionManager();
 		double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();
 		if (effectiveTime < 10D) {
 			clearTask("Maintenance already done");
@@ -148,19 +148,8 @@ extends EVAOperation {
 		    workTime += workTime * (.4D * mechanicSkill);
 		}
 		
-		if (MaintainBuilding.hasMaintenanceParts(settlement, entity)) {
-			
-			// Note: should allow replace one part at a time
-			// and not to wait till all the parts are available
-			Map<Integer, Integer> parts = new HashMap<>(manager.getMaintenanceParts());
-			Iterator<Integer> j = parts.keySet().iterator();
-			while (j.hasNext()) {
-				Integer part = j.next();
-				int number = parts.get(part);
-				int numMissing = settlement.retrieveItemResource(part, number);
-		        // Consume the number of repair parts that are available.
-				manager.maintainWithParts(part, number - numMissing);
-			}
+		if (manager.hasMaintenanceParts(settlement)) {
+			manager.transferMaintenanceParts(settlement);
 			
 			String des = Msg.getString(DETAIL, entity.getName()); //$NON-NLS-1$
 			setDescription(des);

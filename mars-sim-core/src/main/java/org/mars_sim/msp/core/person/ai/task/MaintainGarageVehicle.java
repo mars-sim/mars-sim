@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -40,7 +39,7 @@ import org.mars_sim.msp.core.vehicle.VehicleType;
  * The MaintainGarageVehicle class is a task for performing preventive
  * maintenance on ground vehicles in a garage.
  */
-public class MaintainGarageVehicle extends Task implements Serializable {
+public class MaintainGarageVehicle extends Task {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -209,19 +208,11 @@ public class MaintainGarageVehicle extends Task implements Serializable {
 		}
 
 		// Add repair parts if necessary.
-		if (MaintainBuilding.hasMaintenanceParts(worker.getTopContainerUnit(), vehicle)) {	
-			Settlement settlement = worker.getSettlement();
-
-			Map<Integer, Integer> parts = new HashMap<>(manager.getMaintenanceParts());
-			Iterator<Integer> j = parts.keySet().iterator();
-			while (j.hasNext()) {
-				Integer part = j.next();
-				int number = parts.get(part);
-				// This is within a garage in a settlement
-				settlement.retrieveItemResource(part, number);
-				manager.maintainWithParts(part, number);
-			}
-		} else {
+		Settlement settlement = worker.getSettlement();
+		if (manager.hasMaintenanceParts(settlement)) {	
+			manager.transferMaintenanceParts(settlement);
+		}
+		else {
 			endTask();
 			return time;
 		}
@@ -361,7 +352,7 @@ public class MaintainGarageVehicle extends Task implements Serializable {
 		if (hasMalfunction)
 			return 0;
 
-		if (!MaintainBuilding.hasMaintenanceParts(mechanic, vehicle)) 
+		if (!manager.hasMaintenanceParts(mechanic.getSettlement())) 
 			return 0;
 		
 		

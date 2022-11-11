@@ -36,7 +36,6 @@ public class MalfunctionPanel
 extends WebPanel {
 
 	private static final String REPAIR_WORK_REQUIRED = "Repair Work Required :";
-	private static final String REPAIR_PARTS_NEEDED = "Repair Parts Needed : ";
 	private static final String NONE = "None.";
 	private static final String ONE_SPACE = " ";
 	private static final String COMMA = ", ";
@@ -49,6 +48,7 @@ extends WebPanel {
 	private static final String HTML_END = "</html>";
 	
 	private static final Font FONT_BOLD_14 = new Font("Serif", Font.BOLD, 14);
+	private static final String REPAIR_PARTS_NEEDED = "Parts Needed:";
 	
 	// Data members
 	public int progressCache = 0;
@@ -160,8 +160,8 @@ extends WebPanel {
 			repairBarModel.setValue(percentComplete);
 		}
 		
-		// Update parts label.
-		String parts = getPartsString(malfunction.getRepairParts(), false);
+		// Update parts label.REPAIR_PARTS_NEEDED
+		String parts = getPartsString(REPAIR_PARTS_NEEDED, malfunction.getRepairParts(), false);
 		if (partsCache.equalsIgnoreCase(parts)) {
 			partsCache = parts;
 			partsLabel.setText(parts);
@@ -176,7 +176,7 @@ extends WebPanel {
 	 */
 	private String getPartsString() {
 		Map<Integer, Integer> parts = malfunction.getRepairParts();
-		return getPartsString(parts, false).toString();
+		return getPartsString(REPAIR_PARTS_NEEDED, parts, false).toString();
 	}
 
 	/**
@@ -184,9 +184,9 @@ extends WebPanel {
 	 * 
 	 * @return string.
 	 */
-	public static String getPartsString(Map<Integer, Integer> parts, boolean useHtml) {
+	public static String getPartsString(String title, Map<Integer, Integer> parts, boolean useHtml) {
 
-		StringBuilder buf = new StringBuilder(REPAIR_PARTS_NEEDED);
+		StringBuilder buf = new StringBuilder(title);
 		if (parts.size() > 0) {
 			Iterator<Integer> i = parts.keySet().iterator();
 			while (i.hasNext()) {
@@ -235,7 +235,7 @@ extends WebPanel {
 			}
 		}
 
-		result.append(MalfunctionPanel.getPartsString(malfunction.getRepairParts(), false));
+		result.append(MalfunctionPanel.getPartsString(REPAIR_PARTS_NEEDED, malfunction.getRepairParts(), false));
 		result.append(HTML_END);
 
 		return result.toString();

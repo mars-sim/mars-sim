@@ -118,7 +118,7 @@ public class MaintainGarageVehicleMeta extends MetaTask {
 			if (hasMalfunction)
 				continue;
 			
-			boolean hasParts = MaintainBuilding.hasMaintenanceParts(mechanic, vehicle);
+			boolean hasParts = manager.hasMaintenanceParts(mechanic.getSettlement());
 			// Go to the next Vehicle if repair parts are not available
 			if (!hasParts)
 				continue;

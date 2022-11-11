@@ -13,7 +13,6 @@ import java.awt.GridLayout;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.Map;
 
 import javax.swing.BoundedRangeModel;
 import javax.swing.BoxLayout;
@@ -27,8 +26,6 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
-import org.mars_sim.msp.core.resource.ItemResourceUtil;
-import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
@@ -232,29 +229,10 @@ public class MaintenanceTabPanel extends TabPanel {
      */
     private String getPartsString(boolean useHtml) {
     	Malfunctionable malfunctionable = (Malfunctionable) getUnit();
-        StringBuilder buf = new StringBuilder("Needed Parts: ");
 
-    	Map<Integer, Integer> parts = malfunctionable.getMalfunctionManager().getMaintenanceParts();
-    	if (parts.size() > 0) {
-    		Iterator<Integer> i = parts.keySet().iterator();
-    		while (i.hasNext()) {
-    			Integer id = i.next();
-    			int number = parts.get(id);
-    			Part p = ItemResourceUtil.findItemResource(id);
-				if (useHtml) 
-					buf.append("<br>");
-				buf.append(number).append(" ").append(p.getName());
-				if (i.hasNext()) 
-					buf.append(", ");
-				else {
-					buf.append(".");
-					if (useHtml) buf.append("<br>");
-				}
-      		}
-    	}
-    	else buf.append("None.");
-
-    	return buf.toString();
+        return MalfunctionPanel.getPartsString("Needed Parts: ",
+                                        malfunctionable.getMalfunctionManager().getMaintenanceParts(),
+                                        useHtml).toString();
     }
 
 	/**
