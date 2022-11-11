@@ -13,7 +13,6 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.job.util.ShiftType;
 import org.mars_sim.msp.core.person.ai.task.Walk;
-import org.mars_sim.msp.core.robot.Robot;
 
 /**
  * The PersonTaskManager class keeps track of a person's current task and can randomly

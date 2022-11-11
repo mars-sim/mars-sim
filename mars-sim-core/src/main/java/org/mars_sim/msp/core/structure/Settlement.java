@@ -158,16 +158,16 @@ public class Settlement extends Structure implements Temporal,
 				REGOLITH_ID };
 	}
 	
-	// Threshold to adjust filtering rate
+	/** Threshold to adjust filtering rate. */
 	private static final double GREY_WATER_THRESHOLD = 0.00001;
-
+	/** Safe low temperature range. */
 	public static final double SAFE_TEMPERATURE_RANGE = 18;
-	// Initial mission passing score
+	/** Initial mission passing score. */
 	private static final double INITIAL_MISSION_SCORE = 400D;
-	// Hvae a maximum mission score that can be recorded
+	/** Hvae a maximum mission score that can be recorded. */
 	private static final double MAX_MISSION_SCORE = 1000D;
 
-	/** Normal air pressure [in kPa] */
+	/** Normal air pressure [in kPa]. */
 	private static final double NORMAL_AIR_PRESSURE = 34D;
 
 	/** The settlement water consumption */

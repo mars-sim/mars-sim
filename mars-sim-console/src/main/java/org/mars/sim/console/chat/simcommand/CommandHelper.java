@@ -492,17 +492,17 @@ public class CommandHelper {
 	}
 
 	/**
-	 * Output the processes that a Resource Processor is runnings. Put these in a table.
+	 * Output the processes that a Resource Processor is running. Put these in a table.
 	 * @param response Output destination
 	 * @param processType The name of the process type column
-	 * @param currentMSol The currnet mars time
+	 * @param currentMSol The current mars time
 	 * @param bName The hosting Building name
 	 * @param processor Host of the processes
 	 */
 	public static void outputProcesses(StructuredResponse response, String processType, int currentMSol, String bName,
 										ResourceProcessor processor) {
 
-		// Build table label by palceing the building name before the process type
+		// Build table label by placing the building name before the process type
 		// Works as PROCESS_WIDTh is very large
 		int width = PROCESS_WIDTH - processType.length();
 		StringBuilder firstColumn = new StringBuilder();

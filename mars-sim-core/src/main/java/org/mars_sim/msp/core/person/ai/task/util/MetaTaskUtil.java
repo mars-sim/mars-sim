@@ -49,7 +49,6 @@ import org.mars_sim.msp.core.person.ai.task.meta.ProposeScientificStudyMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.ReadMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.RecordActivityMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.RelaxMeta;
-import org.mars_sim.msp.core.person.ai.task.meta.RepairInsideMalfunctionMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.ReportMissionControlMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.RequestMedicalTreatmentMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.RespondToStudyInvitationMeta;
@@ -147,7 +146,6 @@ public class MetaTaskUtil {
 		allMetaTasks.add(new ReadMeta());
 		allMetaTasks.add(new RecordActivityMeta());
 		allMetaTasks.add(new RelaxMeta());
-		allMetaTasks.add(new RepairInsideMalfunctionMeta());
 		allMetaTasks.add(new ReportMissionControlMeta());
 		allMetaTasks.add(new RequestMedicalTreatmentMeta());
 		allMetaTasks.add(new RestingMedicalRecoveryMeta());
