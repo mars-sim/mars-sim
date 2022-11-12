@@ -7,10 +7,6 @@
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.CollectionUtils;
@@ -20,7 +16,6 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -56,8 +51,9 @@ implements Serializable {
      * Constructor.
      * 
      * @param person the person to perform the task
+     * @param target
      */
-    public MaintainEVAVehicle(Person person) {
+    public MaintainEVAVehicle(Person person, Vehicle target) {
         super(NAME, person, true, 25, SkillType.MECHANICS);
 
 		if (!person.isNominallyFit()) {
@@ -71,29 +67,31 @@ implements Serializable {
      	}
      	
         // Choose an available needy ground vehicle.
-        vehicle = getNeedyGroundVehicle(person);
-        if (vehicle != null) {
-        	// Add the rover to a garage if possible.
-			if (settlement.getBuildingManager().addToGarage(vehicle)) {
-				// no need of doing EVA
-				checkLocation();
-	        	return;
-			}
-			
-            vehicle.setReservedForMaintenance(true);
-            vehicle.addSecondaryStatus(StatusType.MAINTENANCE);
-            // Determine location for maintenance.
-            setOutsideLocation(vehicle);
-            
-            // Initialize phase.
-            addPhase(MAINTAIN_VEHICLE);
+        vehicle = target;
+        if (vehicle.isReservedForMaintenance()) {
+            clearTask(vehicle.getName() + " already reserved for EVA maintenance");
+            checkLocation();
+            return;
+        }
 
-            logger.finest(person.getName() + " started maintainEVAVehicle task.");
+        // Add the rover to a garage if possible.
+        if (settlement.getBuildingManager().addToGarage(vehicle)) {
+            // no need of doing EVA
+            checkLocation();
+            return;
         }
-        else {
-        	checkLocation();
-        	return;
-        }
+        
+        vehicle.setReservedForMaintenance(true);
+        vehicle.addSecondaryStatus(StatusType.MAINTENANCE);
+        setDescription(Msg.getString("Task.description.maintainEVAVehicle.detail", vehicle.getName()));
+
+        // Determine location for maintenance.
+        setOutsideLocation(vehicle);
+        
+        // Initialize phase.
+        addPhase(MAINTAIN_VEHICLE);
+
+        logger.finest(person.getName() + " started maintainEVAVehicle task.");
     }
 
 
@@ -199,52 +197,5 @@ implements Serializable {
         // Mechanic skill modification.
         int skill = person.getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
         checkForAccident(vehicle, time, 0.001D, skill, vehicle.getName());
-    }
-
-    /**
-     * Gets a ground vehicle that requires maintenance in a local garage.
-     * Returns null if none available.
-     * 
-     * @param person person checking.
-     * @return ground vehicle
-     * @throws Exception if error finding needy vehicle.
-     */
-    private Vehicle getNeedyGroundVehicle(Person person) {
-
-        Vehicle result = null;
-
-        // Find all vehicles that can be maintained.
-        List<Vehicle> availableVehicles = MaintainGarageVehicle.getAllVehicleCandidates(person, true);
-
-        // Populate vehicles and probabilities.
-        Map<Vehicle, Double> vehicleProb = new HashMap<>(availableVehicles.size());
-        Iterator<Vehicle> i = availableVehicles.iterator();
-        while (i.hasNext()) {
-            Vehicle vehicle = i.next();
-            if (!vehicle.getSettlement().getBuildingManager().addToGarage(vehicle)) {
-	            double prob = MaintainGarageVehicle.getProbabilityWeight(vehicle, person);
-	            if (prob > 0D) {
-	                vehicleProb.put(vehicle, prob);
-	            }
-			}
-        }
-
-        // Randomly determine needy vehicle.
-        if (!vehicleProb.isEmpty()) {
-            result = RandomUtil.getWeightedRandomObject(vehicleProb);
-                   
-            if (result != null) {
-            	
-	            if (settlement.getBuildingManager().addToGarage(result)) {
-	            	result = null;
-	            }
-	            else {
-	                setDescription(Msg.getString("Task.description.maintainEVAVehicle.detail",
-	                        result.getName())); //$NON-NLS-1$
-	            }
-	        }
-        }
-
-        return result;
     }
 }

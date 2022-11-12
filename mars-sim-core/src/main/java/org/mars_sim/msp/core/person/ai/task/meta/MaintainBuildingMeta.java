@@ -11,6 +11,7 @@ import java.util.List;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
+import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
@@ -146,21 +147,22 @@ public class MaintainBuildingMeta extends MetaTask {
 	}
 
 	/**
-	 * Score the building  in terms of need for maintenance. Considers malfunction, condition & time
+	 * Score the entity in terms of need for maintenance. Considers malfunction, condition & time
 	 * since last maintenance.
-	 * @param building
+	 * @param entity
 	 */
-	public static double scoreMaintenance(Building building) {
-		MalfunctionManager manager = building.getMalfunctionManager();
+	public static double scoreMaintenance(Malfunctionable entity) {
+		MalfunctionManager manager = entity.getMalfunctionManager();
 		boolean hasNoMalfunction = !manager.hasMalfunction();
-		boolean hasParts = manager.hasMaintenanceParts(building.getSettlement());
+		boolean hasParts = manager.hasMaintenanceParts(entity.getAssociatedSettlement());
 
 		double score = 0D;
 		double condition = manager.getAdjustedCondition();
 		double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();
 		double minMaintenance = manager.getMaintenancePeriod();
-		// Note: look for buildings that are NOT malfunction since
-		// malfunctioned building are being taken care of by the two Repair*Malfunction tasks
+		
+		// Note: look for entities that are NOT malfunction since
+		// malfunctioned entities are being taken care of by the two Repair*Malfunction tasks
 		if (hasNoMalfunction && hasParts && (effectiveTime >= (minMaintenance * 0.9D))) {
 			// Score is based on condition plus %age overdue
 			score = (100 - condition) + ((effectiveTime - minMaintenance)*100D/minMaintenance);

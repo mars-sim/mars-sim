@@ -6,29 +6,20 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
-import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
-import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
-import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Flyer;
 import org.mars_sim.msp.core.vehicle.StatusType;
@@ -65,98 +56,74 @@ public class MaintainGarageVehicle extends Task {
 
 	/**
 	 * Constructor.
+	 * @param target
 	 * 
 	 * @param person the person to perform the task
 	 */
-	public MaintainGarageVehicle(Worker unit) {
+	public MaintainGarageVehicle(Worker unit, Vehicle target) {
 		super(NAME, unit, true, false, STRESS_MODIFIER, SkillType.MECHANICS, 100D);
 
-		if (unit instanceof Person) {
-			Person lperson = (Person) unit;
-
-			// Choose an available needy ground vehicle.
-			vehicle = getNeedyGroundVehicle(lperson);
-			if (vehicle != null) {
-				vehicle.setReservedForMaintenance(true);
-	            vehicle.addSecondaryStatus(StatusType.MAINTENANCE);
-			}
-			else
-				endTask();
+		// Choose an available needy ground vehicle.
+		vehicle = target;
+		if (vehicle.isReservedForMaintenance()) {
+			clearTask(vehicle.getName() + " already reserved for Maintenance.");
+			return;
 		}
 
-		else {
-			Robot lrobot = (Robot) unit;
-
-			// Choose an available needy ground vehicle.
-			vehicle = getNeedyGroundVehicle(lrobot);
-			if (vehicle != null) {
-				vehicle.setReservedForMaintenance(true);
-	            vehicle.addSecondaryStatus(StatusType.MAINTENANCE);
-			}
-			else
-				endTask();
-		}
+		vehicle.setReservedForMaintenance(true);
+		vehicle.addSecondaryStatus(StatusType.MAINTENANCE);
+        setDescription(Msg.getString("Task.description.maintainGarageVehicle.detail", vehicle.getName()));
 
 		// Determine the garage it's in.
-		if (vehicle != null) {
-			Building building = vehicle.getGarage();
-			if (building != null) {
-				try {
-					garage = building.getVehicleMaintenance();
-					// Walk to garage.
-					walkToTaskSpecificActivitySpotInBuilding(building, FunctionType.VEHICLE_MAINTENANCE, false);
-				} catch (Exception e) {
-					logger.severe(unit, "Problem walking to vehicle's garage activity spot", e);
-				}
-			} else {
-				// If not in a garage, try to add it to a garage with empty space.
-				Settlement settlement = worker.getSettlement();
+		Building building = vehicle.getGarage();
+		if (building != null) {
+			garage = building.getVehicleMaintenance();
+			// Walk to garage.
+			walkToTaskSpecificActivitySpotInBuilding(building, FunctionType.VEHICLE_MAINTENANCE, false);
+		}
+		else {
+			// If not in a garage, try to add it to a garage with empty space.
+			Settlement settlement = worker.getSettlement();
 
-				Iterator<Building> j = settlement.getBuildingManager()
-						.getBuildings(FunctionType.VEHICLE_MAINTENANCE).iterator();
-				while (j.hasNext() && (garage == null)) {
-					try {
-						Building garageBuilding = j.next();
-						VehicleMaintenance garageTemp = garageBuilding.getVehicleMaintenance();
-						
-						if (vehicle.getVehicleType() == VehicleType.DELIVERY_DRONE) {
-							if (garageTemp.getFlyerCapacity() > 0) {
-								garage = garageTemp;
-								garage.addFlyer((Flyer)vehicle);
-	
-								// Walk to garage.
-								walkToTaskSpecificActivitySpotInBuilding(garageBuilding, FunctionType.VEHICLE_MAINTENANCE, false);
-								break;
-							}							
-						}
-						else {
-							if (garageTemp.getAvailableCapacity() > 0) {
-								garage = garageTemp;
-								garage.addVehicle(vehicle);
-	
-								// Walk to garage.
-								walkToTaskSpecificActivitySpotInBuilding(garageBuilding, FunctionType.VEHICLE_MAINTENANCE, false);
-								break;
-							}
-						}
-					} catch (Exception e) {
-						logger.severe(unit, "Problem walking to building activity spot", e);
+			Iterator<Building> j = settlement.getBuildingManager()
+					.getBuildings(FunctionType.VEHICLE_MAINTENANCE).iterator();
+			while (j.hasNext() && (garage == null)) {
+				Building garageBuilding = j.next();
+				VehicleMaintenance garageTemp = garageBuilding.getVehicleMaintenance();
+					
+				if (vehicle.getVehicleType() == VehicleType.DELIVERY_DRONE) {
+					if (garageTemp.getFlyerCapacity() > 0) {
+						garage = garageTemp;
+						garage.addFlyer((Flyer)vehicle);
+
+						// Walk to garage.
+						walkToTaskSpecificActivitySpotInBuilding(garageBuilding, FunctionType.VEHICLE_MAINTENANCE, false);
+						break;
+					}							
+				}
+				else {
+					if (garageTemp.getAvailableCapacity() > 0) {
+						garage = garageTemp;
+						garage.addVehicle(vehicle);
+
+						// Walk to garage.
+						walkToTaskSpecificActivitySpotInBuilding(garageBuilding, FunctionType.VEHICLE_MAINTENANCE, false);
+						break;
 					}
 				}
 			}
 		}
 
 		// End task if vehicle or garage not available.
-		if ((vehicle == null) || (garage == null)) {
-			endTask();
+		if (garage == null) {
+			clearTask(vehicle.getName() + " Can not find available garage for maintenance");
 		}
-		else {
-			logger.log(worker, Level.FINER, 0, "Starting maintainGarageVehicle task on " + vehicle.getName());
-		
-			// Initialize phase
-			addPhase(MAINTAIN_VEHICLE);
-			setPhase(MAINTAIN_VEHICLE);
-		}
+
+		logger.log(worker, Level.FINER, 0, "Starting maintainGarageVehicle task on " + vehicle.getName());
+	
+		// Initialize phase
+		addPhase(MAINTAIN_VEHICLE);
+		setPhase(MAINTAIN_VEHICLE);
 	}
 
 	@Override
@@ -270,100 +237,5 @@ public class MaintainGarageVehicle extends Task {
 			}
 		}
 		super.clearDown();
-	}
-
-	/**
-	 * Gets all ground vehicles requiring maintenance. Candidate list be filtered
-	 * for just outside Vehicles.
-	 * 
-	 * @param mechanic Worker checking.
-	 * @param mustBeOutside
-	 * @return collection of ground vehicles available for maintenance.
-	 */
-	public static List<Vehicle> getAllVehicleCandidates(Worker mechanic, boolean mustBeOutside) {
-		Settlement home = mechanic.getSettlement();
-		if (home != null) {
-			// Vehicle must not be reserved for Mission nor maintenance
-			return home.getParkedVehicles().stream()
-				.filter(v -> ((v.getUnitType() == UnitType.VEHICLE) 
-							&& !v.isReserved()
-							&& (!mustBeOutside || !v.isInAGarage())))
-				.collect(Collectors.toList());
-		}
-		return Collections.emptyList();
-	}
-
-	/**
-	 * Gets a ground vehicle that requires maintenance in a local garage. Returns
-	 * null if none available.
-	 * 
-	 * @param person person checking.
-	 * @return ground vehicle
-	 */
-	private Vehicle getNeedyGroundVehicle(Worker mechanic) {
-
-		Vehicle result = null;
-
-		// Find all vehicles that can be maintained.
-		List<Vehicle> availableVehicles = getAllVehicleCandidates(mechanic, false);
-
-		// Populate vehicles and probabilities.
-		Map<Vehicle, Double> vehicleProb = new HashMap<>(availableVehicles.size());
-		for (Vehicle vehicle : availableVehicles) {
-			double prob = getProbabilityWeight(vehicle, mechanic);
-			if (prob > 0D) {
-				vehicleProb.put(vehicle, prob);
-			}
-		}
-
-		// Randomly determine needy vehicle.
-		if (!vehicleProb.isEmpty()) {
-			result = RandomUtil.getWeightedRandomObject(vehicleProb);
-		}
-
-		if (result != null) {
-            if (!worker.getSettlement().getBuildingManager().addToGarage(result)) {
-            	result = null;
-            }
-            else {
-                setDescription(Msg.getString("Task.description.maintainGarageVehicle.detail",
-                        result.getName())); //$NON-NLS-1$
-            }
-		}
-
-		return result;
-	}
-
-	/**
-	 * Gets the probability weight for a vehicle.
-	 * 
-	 * @param vehicle the vehicle.
-	 * @return the probability weight.
-	 */
-	public static double getProbabilityWeight(Vehicle vehicle, Worker mechanic) {
-		double result = 0D;
-		MalfunctionManager manager = vehicle.getMalfunctionManager();
-		boolean tethered = vehicle.isBeingTowed() || (vehicle.getTowingVehicle() != null);
-		if (tethered)
-			return 0;
-		// Note: look for vehicles that have no malfunctions since
-		// malfunctioned vehicles are being taken care of by the two Repair*VehicleMalfunction tasks
-		boolean hasMalfunction = manager.hasMalfunction();
-		if (hasMalfunction)
-			return 0;
-
-		if (!manager.hasMaintenanceParts(mechanic.getSettlement())) 
-			return 0;
-		
-		
-		double mileageSinceLastM = vehicle.getDistanceLastMaintenance();		
-		
-		double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();
-		boolean minTime = (effectiveTime >= 1000D || mileageSinceLastM > 3000);
-
-		if (minTime) {
-			result = effectiveTime;
-		}
-		return result;
 	}
 }
