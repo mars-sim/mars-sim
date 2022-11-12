@@ -181,6 +181,9 @@ public class MarsProjectFXGL extends GameApplication {
 			if (useGUI) {
 //				setupMainWindow(false);
 				launch(args);
+				
+		        // Dispose the Splash Window
+		        MainWindow.disposeSplash();
 			}
 		}
 		catch(Exception e) {

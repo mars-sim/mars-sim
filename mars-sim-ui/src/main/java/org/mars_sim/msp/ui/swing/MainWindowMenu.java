@@ -135,7 +135,7 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		fileMenu.add(new JSeparator());
 
 		// Create save menu item
-		ImageIcon saveicon = new ImageIcon(getClass().getResource(Msg.getString("img.save"))); //$NON-NLS-1$
+		ImageIcon saveicon = new ImageIcon(getClass().getResource(Msg.getString("icon.save"))); //$NON-NLS-1$
 		saveItem = new JMenuItem(Msg.getString("mainMenu.save"), saveicon); //$NON-NLS-1$
 		saveItem.addActionListener(this);
 		saveItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK, false));
@@ -143,7 +143,7 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		fileMenu.add(saveItem);
 
 		// Create save as menu item
-		ImageIcon saveasicon = new ImageIcon(getClass().getResource(Msg.getString("img.saveAs"))); //$NON-NLS-1$
+		ImageIcon saveasicon = new ImageIcon(getClass().getResource(Msg.getString("icon.saveAs"))); //$NON-NLS-1$
 		saveAsItem = new JMenuItem(Msg.getString("mainMenu.saveAs"), saveasicon); //$NON-NLS-1$
 		saveAsItem.addActionListener(this);
 		saveAsItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, KeyEvent.CTRL_DOWN_MASK, false));
@@ -156,7 +156,7 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 //		add(new JSeparator());
 
 		// Create exit menu item
-		ImageIcon exiticon = new ImageIcon(getClass().getResource(Msg.getString("img.exit"))); //$NON-NLS-1$
+		ImageIcon exiticon = new ImageIcon(getClass().getResource(Msg.getString("icon.exit"))); //$NON-NLS-1$
 		exitItem = new JMenuItem(Msg.getString("mainMenu.exit"), exiticon); //$NON-NLS-1$
 		exitItem.addActionListener(this);
 		exitItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, KeyEvent.CTRL_DOWN_MASK, false));
@@ -219,7 +219,7 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		toolsMenu.add(scienceToolItem);
 
 		// Create resupply tool menu item
-		ImageIcon resupplyicon = new ImageIcon(getClass().getResource(Msg.getString("img.resupply"))); //$NON-NLS-1$
+		ImageIcon resupplyicon = new ImageIcon(getClass().getResource(Msg.getString("icon.resupply"))); //$NON-NLS-1$
 		resupplyToolItem = new JCheckBoxMenuItem(ResupplyWindow.NAME, resupplyicon);
 		resupplyToolItem.addActionListener(this);
 		resupplyToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F8, 0, false));
@@ -227,7 +227,7 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 
 //		if (GameManager.getGameMode() == GameMode.COMMAND) {
 			// Create commander dashboard menu item
-			ImageIcon commandericon = new ImageIcon(getClass().getResource(Msg.getString("img.dashboard"))); //$NON-NLS-1$
+			ImageIcon commandericon = new ImageIcon(getClass().getResource(Msg.getString("icon.dashboard"))); //$NON-NLS-1$
 			commanderDashboardItem = new JCheckBoxMenuItem(CommanderWindow.NAME, commandericon);
 			commanderDashboardItem.addActionListener(this);
 			commanderDashboardItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0, false));
