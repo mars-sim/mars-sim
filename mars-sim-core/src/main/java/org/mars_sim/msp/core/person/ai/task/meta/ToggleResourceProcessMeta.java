@@ -28,7 +28,6 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcessing;
-import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * Meta task for the ToggleResourceProcess task.
@@ -66,6 +65,7 @@ public class ToggleResourceProcessMeta extends MetaTask {
 	private static final String NAME = Msg.getString("Task.description.toggleResourceProcess"); //$NON-NLS-1$
 	
 	private static final double FACTOR = 1_000;
+	private static final double URGENT_FACTOR = 20;
 	
     public ToggleResourceProcessMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
@@ -96,6 +96,10 @@ public class ToggleResourceProcessMeta extends MetaTask {
 	private List<TaskJob> buildTaskJobs(Worker worker, boolean isPerson) {
 		List<TaskJob> tasks = new ArrayList<>();
 
+		if (!worker.isInSettlement()) {
+			return tasks;
+		}
+		
 		Settlement settlement = worker.getSettlement();
 		
 		if ((settlement != null) && !settlement.getProcessOverride(OverrideType.RESOURCE_PROCESS)) {
@@ -151,7 +155,7 @@ public class ToggleResourceProcessMeta extends MetaTask {
 						continue;
 					} else {
 						// will need to push for toggling on this process since output resource is zero
-						score *= FACTOR;
+						score *= URGENT_FACTOR;
 					}
 				}
 
@@ -162,7 +166,7 @@ public class ToggleResourceProcessMeta extends MetaTask {
 					if (process.isProcessRunning()) {
 						// will need to push for toggling off this process since input resource is
 						// insufficient
-						score *= FACTOR;
+						score *= URGENT_FACTOR;
 					} else {
 						// no need to turn it on
 						continue;
@@ -176,12 +180,12 @@ public class ToggleResourceProcessMeta extends MetaTask {
 
 				else if (score < 0 && process.isProcessRunning()) {
 					// need to shut it down
-					score *= FACTOR;
+					score *= URGENT_FACTOR;
 				}
 
 				else if (score > 0 && !process.isProcessRunning()) {
 					// need to turn it on
-					score *= FACTOR;
+					score *= URGENT_FACTOR;
 				}
 
 				else if (score < 0 && !process.isProcessRunning()) {
@@ -200,11 +204,11 @@ public class ToggleResourceProcessMeta extends MetaTask {
 				boolean ogs = name.equalsIgnoreCase(ResourceProcessing.OGS);
 
 				if (reg) {
-					score *= goodsManager.getAmountDemandValue(ResourceUtil.regolithID) * (1 + regStored * FACTOR);
+					score *= goodsManager.getAmountDemandValue(ResourceUtil.regolithID) * (1 + regStored);
 				}
 
 				else if (ice) {
-					score *= goodsManager.getAmountDemandValue(ResourceUtil.iceID) * (1 + iceStored * FACTOR);
+					score *= goodsManager.getAmountDemandValue(ResourceUtil.iceID) * (1 + iceStored);
 				}
 
 				else if (ppa) {
@@ -222,12 +226,6 @@ public class ToggleResourceProcessMeta extends MetaTask {
 				else if (ogs) {
 					score *= hydrogenVP * oxygenVP / waterVP;
 				}
-
-				// Randomize it to give other processes a chance
-				if (score > 0.0)
-					score = RandomUtil.getRandomDouble(score * .2, score * 5);
-				else if (score < 0.0)
-					score = -RandomUtil.getRandomDouble(-score * .2, -score * 5);
 
 				if (score >= highest) {
 					highest = score;

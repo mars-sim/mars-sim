@@ -7,8 +7,6 @@
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
@@ -17,15 +15,12 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.logging.SimLogger;
-import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
@@ -68,191 +63,52 @@ public class LoadVehicleGarage extends Task implements Serializable {
 	private LoadingController loadController;
 	
 	/**
-	 * Constructor.
-	 * 
-	 * @param person the person performing the task.
-	 */
-	public LoadVehicleGarage(Person person) {
-		// Use Task constructor
-		super(NAME, person, true, false, STRESS_MODIFIER,
-				RandomUtil.getRandomDouble(50D) + 10D);
-
-		vehicleMission = getMissionNeedingLoading(person.getSettlement(), true);
-		if (vehicleMission == null) {
-			endTask();
-			return;
-		}
-		
-		initLoad(person);
-	}
-	
-	/**
-	 * Initialise the load task
-	 * @param starter
-	 */
-	private void initLoad(Worker starter) {
-		settlement = starter.getSettlement();
-		if (settlement == null) {
-			endTask();
-			return;
-		}
-
-		vehicle = vehicleMission.getVehicle();
-		if (vehicle == null) {
-			endTask();
-			return;
-		}
-		else {
-			// Rover may already be in the Garage
-			Building garage = vehicle.getGarage();
-			
-			if (garage == null) {
-				// Add the rover to a garage if possible
-				garage = settlement.getBuildingManager().addToGarageBuilding(vehicle);
-			
-				// End task if vehicle or garage not available
-				if (garage == null) {
-					endTask();
-					return;
-				}
-			}
-			
-			// Walk to garage.
-			walkToTaskSpecificActivitySpotInBuilding(garage, FunctionType.VEHICLE_MAINTENANCE, false);
-		
-			setDescription(Msg.getString("Task.description.loadVehicleGarage.detail", vehicle.getName())); // $NON-NLS-1$
-			
-			loadController = vehicleMission.getLoadingPlan();
-			
-			// Initialize task phase
-			addPhase(LOADING);
-			setPhase(LOADING);
-		}
-	}
-
-	public LoadVehicleGarage(Robot robot) {
-		// Use Task constructor
-		super(NAME, robot, true, false, STRESS_MODIFIER,
-				RandomUtil.getRandomDouble(50D) + 10D);
-
-		vehicleMission = getMissionNeedingLoading(robot.getSettlement(), true);
-		if (vehicleMission == null) {
-			endTask();
-			return;
-		}
-		
-		initLoad(robot);
-	}
-
-	/**
 	 * Constructor
 	 * 
 	 * @param person            the person performing the task.
 	 * @param mission           the vehicle to be loaded.
 	 */
-	public LoadVehicleGarage(Person person, VehicleMission mission) {
+	public LoadVehicleGarage(Worker worker, VehicleMission mission) {
 		// Use Task constructor.
-		super("Loading vehicle", person, true, false, STRESS_MODIFIER,
+		super("Loading vehicle", worker, true, false, STRESS_MODIFIER,
 				RandomUtil.getRandomDouble(50D) + 10D);
 		this.vehicleMission = mission;
-		
-		initLoad(person);
-	}
 
-	public LoadVehicleGarage(Robot robot, VehicleMission mission) {
-		// Use Task constructor.
-		super("Loading vehicle", robot, true, false, STRESS_MODIFIER,
-				RandomUtil.getRandomDouble(50D) + 10D);
-		this.vehicleMission = mission;
-		
-		initLoad(robot);
-	}
-
-	/**
-	 * Gets a list of all embarking vehicle missions at a settlement with vehicle
-	 * currently in a garage.
-	 * 
-	 * @param settlement the settlement.
-	 * @param addToGarage Should the found vehicle be added to the garage
-	 * @return list of vehicle missions.
-	 * @throws Exception if error finding missions.
-	 */
-	public static int numAllMissionsNeedingLoading(Settlement settlement, boolean addToGarage) {
-		int num = 0;
-
-		for(Mission mission : missionManager.getMissions()) {
-			if (mission instanceof VehicleMission) {
-				VehicleMission vehicleMission = (VehicleMission) mission;
-				LoadingController plan = vehicleMission.getLoadingPlan();
-
-				// Must have a local Loading Plan that is not complete
-				if ((plan != null) && plan.getSettlement().equals(settlement) && !plan.isCompleted()) {
-					Vehicle vehicle = vehicleMission.getVehicle();
-					if (vehicle == null)
-						continue;
-					
-					if ((addToGarage && settlement.getBuildingManager().addToGarage(vehicle)
-						|| !addToGarage && !settlement.getBuildingManager().isInGarage(vehicle))) {
-							num++;
-					}
-				}
-			}
+		settlement = worker.getSettlement();
+		if (settlement == null) {
+			clearTask("Worker no in settlement");
+			return;
 		}
 
-		return num;
-	}
+		vehicle = vehicleMission.getVehicle();
+		if (vehicle == null) {
+			clearTask("Mission has no vehicle");
+			return;
+		}
+		loadController = vehicleMission.getLoadingPlan();
+
+		// Rover may already be in the Garage
+		Building garage = vehicle.getGarage();
+		if (garage == null) {
+			// Add the rover to a garage if possible
+			garage = settlement.getBuildingManager().addToGarageBuilding(vehicle);
+		
+			// End task if vehicle or garage not available
+			if (garage == null) {
+				clearTask("Cannot put in garage");
+				return;
+			}
+		}
+		
+		// Walk to garage.
+		walkToTaskSpecificActivitySpotInBuilding(garage, FunctionType.VEHICLE_MAINTENANCE, false);
 	
-	/**
-	 * Gets a list of all embarking vehicle missions at a settlement with vehicle
-	 * currently in a garage.
-	 * 
-	 * @param settlement the settlement.
-	 * @param addToGarage Should the found vehicle be added to the garage
-	 * @return list of vehicle missions.
-	 * @throws Exception if error finding missions.
-	 */
-	public static List<Mission> getAllMissionsNeedingLoading(Settlement settlement, boolean addToGarage) {
-
-		List<Mission> result = new ArrayList<>();
-		for(Mission mission : missionManager.getMissions()) {
-			if (mission instanceof VehicleMission) {
-				VehicleMission vehicleMission = (VehicleMission) mission;
-				LoadingController plan = vehicleMission.getLoadingPlan();
-
-				// Must have a local Loading Plan that is not complete
-				if ((plan != null) && plan.getSettlement().equals(settlement) && !plan.isCompleted()) {
-					Vehicle vehicle = vehicleMission.getVehicle();
-					if (vehicle == null)
-						continue;
-					
-					if ((addToGarage && settlement.getBuildingManager().addToGarage(vehicle)
-						|| !addToGarage && !settlement.getBuildingManager().isInGarage(vehicle))) {
-							result.add(vehicleMission);
-					}
-				}
-			}
-		}
-
-		return result;
-	}
-
-	/**
-	 * Gets a random vehicle mission loading at the settlement.
-	 * 
-	 * @return vehicle mission.
-	 * @throws Exception if error finding vehicle mission.
-	 */
-	public static VehicleMission getMissionNeedingLoading(Settlement settlement, boolean addToGarage) {
-
-		VehicleMission result = null;
-		List<Mission> loadingMissions = getAllMissionsNeedingLoading(settlement, addToGarage);
-
-		if (!loadingMissions.isEmpty()) {
-			int index = RandomUtil.getRandomInt(loadingMissions.size() - 1);
-			result = (VehicleMission) loadingMissions.get(index);
-		}
-
-		return result;
+		setDescription(Msg.getString("Task.description.loadVehicleGarage.detail", vehicle.getName())); // $NON-NLS-1$
+		
+		
+		// Initialize task phase
+		addPhase(LOADING);
+		setPhase(LOADING);
 	}
 
 	/**

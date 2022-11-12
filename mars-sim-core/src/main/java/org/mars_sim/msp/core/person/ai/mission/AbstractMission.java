@@ -732,17 +732,6 @@ public abstract class AbstractMission implements Mission, Temporal {
 			members.clear();
 		}
 	}
-
-	/**
-	 * Assigns a particular pending task for the worker
-	 * 
-	 * @param worker
-	 * @param task string
-	 * @return
-	 */
-	protected boolean assignPendingTask(Worker worker, String task) {
-		return worker.getTaskManager().addAPendingTask(task, false);
-	}
 	
 	/**
 	 * Checks if a person has any issues in starting a new task.

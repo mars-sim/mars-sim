@@ -1,6 +1,6 @@
 /*
  * Mars Simulation Project
- * MaintainGarageVehicleMeta.java
+ * MaintainVehicleMeta.java
  * @date 2022-09-20
  * @author Scott Davis
  */
@@ -103,7 +103,7 @@ public class MaintainVehicleMeta extends MetaTask {
 	}
 
 	/**
-	 * Get a collection of Tasks for any Vehcile maintenance that is required.
+	 * Get a collection of Tasks for any Vehicle maintenance that is required.
 	 * @param settlement Settlement to scan for vehicles
 	 * @param insideFactor Score modifier for inside jobs
 	 * @param evaFactor Score modifier for EVA tasks
@@ -156,7 +156,7 @@ public class MaintainVehicleMeta extends MetaTask {
 	 * Count the number of available garages spaces in a Settlement.
 	 * @param settlement Location to check.
 	 */
-	private static int getGarageSpaces(Settlement settlement) {
+	public static int getGarageSpaces(Settlement settlement) {
 		int garageSpaces = 0;
 		for(Building j : settlement.getBuildingManager().getBuildings(FunctionType.VEHICLE_MAINTENANCE)) {
 			VehicleMaintenance garage = j.getVehicleParking();

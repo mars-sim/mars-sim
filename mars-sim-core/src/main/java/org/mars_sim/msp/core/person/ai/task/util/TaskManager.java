@@ -692,12 +692,22 @@ public abstract class TaskManager implements Serializable, Temporal {
 		}
 
 		BasicTaskJob task = new BasicTaskJob(mt, 0);
+		return addPendingTask(task, allowDuplicate);
+	}
+	
+	/**
+	 * Adds a pending task if it is not in the pendingTask list yet.
+	 *
+	 * @param task
+	 * @param allowDuplicate
+	 * @return
+	 */
+	public boolean addPendingTask(TaskJob task, boolean allowDuplicate) {
 		if (allowDuplicate || !pendingTasks.contains(task)) {
 			pendingTasks.add(task);
 			logger.info(worker, 20_000L, "Given a new task order of '" + task.getDescription() + "'.");
 			return true;
 		}
-
 		return false;
 	}
 
@@ -755,7 +765,7 @@ public abstract class TaskManager implements Serializable, Temporal {
 	public static void initializeInstances(Simulation sim, SimulationConfig conf) {
 		marsClock = sim.getMasterClock().getMarsClock();
 
-		MetaTask.initialiseInstances(sim);
+		MetaTaskUtil.initialiseInstances(sim);
 		Task.initializeInstances(sim.getMasterClock(), marsClock, sim.getEventManager(), sim.getUnitManager(),
 									sim.getScientificStudyManager(), sim.getSurfaceFeatures(), sim.getOrbitInfo(),
 						sim.getMissionManager(), conf.getPersonConfig());

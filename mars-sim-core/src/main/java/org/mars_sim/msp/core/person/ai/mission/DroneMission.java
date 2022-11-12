@@ -16,6 +16,8 @@ import org.mars_sim.msp.core.person.ai.job.util.ShiftType;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.OperateVehicle;
 import org.mars_sim.msp.core.person.ai.task.PilotDrone;
+import org.mars_sim.msp.core.person.ai.task.meta.LoadVehicleMeta;
+import org.mars_sim.msp.core.person.ai.task.util.TaskJob;
 import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.robot.Robot;
@@ -186,7 +188,7 @@ public abstract class DroneMission extends AbstractVehicleMission {
 		}
 
 		// Add the drone to a garage if possible.
-		boolean	isDroneInAGarage = settlement.getBuildingManager().addToGarage(v);
+		settlement.getBuildingManager().addToGarage(v);
 
 		// Load vehicle if not fully loaded.
 		if (!isVehicleLoaded()) {
@@ -194,22 +196,11 @@ public abstract class DroneMission extends AbstractVehicleMission {
 				// Load drone
 				// Random chance of having person load (this allows person to do other things
 				// sometimes)
-				if (RandomUtil.lessThanRandPercent(50)) {
-					if (member instanceof Person) {
-						Person person = (Person) member;
-						if (isDroneInAGarage && !person.getMind().getTaskManager().hasSameTask("LoadVehicleGarage")) {
-							person.getMind().getTaskManager().addAPendingTask("LoadVehicleGarage", false);
-						} else if (person.isNominallyFit() && !person.getMind().getTaskManager().hasSameTask("LoadVehicleEVA")) {
-							person.getMind().getTaskManager().addAPendingTask("LoadVehicleEVA", false);
-						}
-					}
-				}
-			}
-			else {
-				if (member instanceof Person) {
+				if (RandomUtil.lessThanRandPercent(50) && member instanceof Person) {
 					Person person = (Person) member;
-					if (person.isNominallyFit() && !person.getMind().getTaskManager().hasSameTask("LoadVehicleEVA")) {
-						person.getMind().getTaskManager().addAPendingTask("LoadVehicleEVA", false);
+					TaskJob job = LoadVehicleMeta.createLoadJob(this, settlement);
+					if (job != null) {
+						person.getMind().getTaskManager().addPendingTask(job, false);
 					}
 				}
 			}

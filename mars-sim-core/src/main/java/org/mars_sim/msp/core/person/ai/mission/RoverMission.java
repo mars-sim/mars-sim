@@ -36,6 +36,8 @@ import org.mars_sim.msp.core.person.ai.task.RequestMedicalTreatment;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.Walk;
+import org.mars_sim.msp.core.person.ai.task.meta.LoadVehicleMeta;
+import org.mars_sim.msp.core.person.ai.task.util.TaskJob;
 import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.robot.Robot;
@@ -317,23 +319,10 @@ public abstract class RoverMission extends AbstractVehicleMission {
 				if (m != null && m != this)
 					hasAnotherMission = true;
 				if (!hasAnotherMission) {
-					if (isRoverInAGarage && !person.getMind().getTaskManager().hasSameTask(LoadVehicleGarage.SIMPLE_NAME)) {
-						person.getMind().getTaskManager().addAPendingTask(LoadVehicleGarage.SIMPLE_NAME, false);
-					} else if (person.isNominallyFit() && !person.getMind().getTaskManager().hasSameTask(LoadVehicleEVA.SIMPLE_NAME)) {
-						person.getMind().getTaskManager().addAPendingTask(LoadVehicleEVA.SIMPLE_NAME, false);
+					TaskJob job = LoadVehicleMeta.createLoadJob(this, settlement);
+					if (job != null) {
+						person.getMind().getTaskManager().addPendingTask(job, false);
 					}
-				}
-			}
-			else {
-				Robot robot = (Robot) member;
-
-				boolean hasAnotherMission = false;
-				Mission m = robot.getMission();
-				if (m != null && m != this)
-					hasAnotherMission = true;
-				if (!hasAnotherMission
-					&& isRoverInAGarage && !robot.getTaskManager().hasSameTask(LoadVehicleGarage.SIMPLE_NAME)) {
-						robot.getTaskManager().addAPendingTask(LoadVehicleGarage.SIMPLE_NAME, false);
 				}
 			}
 		}

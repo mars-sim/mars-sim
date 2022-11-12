@@ -48,76 +48,8 @@ public class LoadVehicleEVA extends EVAOperation {
 
 	private LoadingController loadingPlan;
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param person the person performing the task.
-	 */
-	public LoadVehicleEVA(Person person) {
-		// Use Task constructor
-		super(NAME, person, true, 20D + RandomUtil.getRandomInt(5) - RandomUtil.getRandomInt(5), null);
-		
-		if (!person.isNominallyFit()) {
-			checkLocation();
-        	return;
-		}
-		
-		settlement = CollectionUtils.findSettlement(person.getCoordinates());
-		if (settlement == null) {
-			checkLocation();
-        	return;
-		}
-		
-        if (!anyVehiclesNeedEVA(settlement)) {
-        	checkLocation();
-        	return;
-        }
-
-		vehicleMission = LoadVehicleGarage.getMissionNeedingLoading(settlement,
-																	false);
-		if (vehicleMission == null) {
-			checkLocation();
-			return;
-		}		
-			
-		initLoad(person);
-		
-		// Check the location of the vehicle only after 
-		// the target vehicle is found
-		if (settlement.getBuildingManager().isInGarage(vehicle)) {
-			checkLocation();
-        	return;
-		}
-	}
 	
-	private void initLoad(Person starter) {	
-		vehicle = vehicleMission.getVehicle();
-		if (vehicle != null) {
-			
-			setDescription(Msg.getString("Task.description.loadVehicleEVA.detail", vehicle.getName())); // $NON-NLS-1$
-
-			// Add the rover to a garage if possible.
-			if (settlement.getBuildingManager().addToGarage(vehicle)) {
-				// no need of doing EVA
-				checkLocation();
-	        	return;
-			}
-
-			loadingPlan = vehicleMission.getLoadingPlan();
-			
-			// Determine location for loading.
-			setOutsideLocation(vehicle);
-
-			// Initialize task phase
-			addPhase(LOADING);
-		}
-		else {
-			// no need of doing EVA
-			checkLocation();
-		}
-	}
-
-	/**
+		/**
 	 * Constructor
 	 * 
 	 * @param person            the person performing the task.
@@ -149,8 +81,26 @@ public class LoadVehicleEVA extends EVAOperation {
         	return;
 		}
 		
-		initLoad(person);
+		vehicle = vehicleMission.getVehicle();
+
+		setDescription(Msg.getString("Task.description.loadVehicleEVA.detail", vehicle.getName())); // $NON-NLS-1$
+
+		// Add the rover to a garage if possible.
+		if (settlement.getBuildingManager().addToGarage(vehicle)) {
+			// no need of doing EVA
+			checkLocation();
+			return;
+		}
+
+		loadingPlan = vehicleMission.getLoadingPlan();
+		
+		// Determine location for loading.
+		setOutsideLocation(vehicle);
+
+		// Initialize task phase
+		addPhase(LOADING);
 	}
+
 
 
 	@Override
@@ -216,23 +166,6 @@ public class LoadVehicleEVA extends EVAOperation {
 		checkForAccident(time);
 		
 		return 0;
-	}
-
-	/**
-	 * Checks if any vehicle need EVA operation
-	 * 
-	 * @param settlement
-	 * @return
-	 */
-	private static boolean anyVehiclesNeedEVA(Settlement settlement) {
-
-		for(Vehicle vehicle : settlement.getParkedVehicles()) {
-			if (vehicle.isReservedForMission()
-					&& !settlement.getBuildingManager().isInGarage(vehicle)) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	/**

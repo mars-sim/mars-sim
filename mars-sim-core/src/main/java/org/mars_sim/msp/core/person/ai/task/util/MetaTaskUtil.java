@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.ai.task.meta.*;
 import org.mars_sim.msp.core.person.ai.task.util.MetaTask.TaskScope;
 import org.mars_sim.msp.core.person.ai.task.util.MetaTask.WorkerType;
@@ -64,8 +65,7 @@ public class MetaTaskUtil {
 		allMetaTasks.add(new ConversationMeta());
 		allMetaTasks.add(new InviteStudyCollaboratorMeta());
 		allMetaTasks.add(new ListenToMusicMeta());
-		allMetaTasks.add(new LoadVehicleEVAMeta());
-		allMetaTasks.add(new LoadVehicleGarageMeta());
+		allMetaTasks.add(new LoadVehicleMeta());
 		allMetaTasks.add(new MaintainVehicleMeta());
 		allMetaTasks.add(new MaintainBuildingMeta());
 		allMetaTasks.add(new ManufactureConstructionMaterialsMeta());
@@ -202,4 +202,12 @@ public class MetaTaskUtil {
 	public static List<MetaTask> getRobotMetaTasks() {
 		return robotMetaTasks;
 	}
+
+	/**
+	 * Load any references that MetaTasks need
+	 */
+    static void initialiseInstances(Simulation sim) {
+		MetaTask.initialiseInstances(sim);
+		LoadVehicleMeta.initialiseInstances(sim);
+    }
 }
