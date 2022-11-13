@@ -116,13 +116,13 @@ extends Task {
     }    
     
     /**
-     * Checks if containers need resource consolidation at the person's location.
-     * @param person the person.
+     * Checks if containers need resource consolidation at the worker's location.
+     * 
+     * @param worker the worker.
      * @return true if containers need resource consolidation.
      */
-    public static boolean needResourceConsolidation(Worker person) {
-    	Unit container = person.getTopContainerUnit();
-        return needsConsolidation(container);
+    public static boolean needResourceConsolidation(Worker worker) {
+        return needsConsolidation(worker.getTopContainerUnit());
     }
     
     /**
