@@ -19,6 +19,8 @@ import org.mars_sim.msp.core.SimulationListener;
 
 public class SaveCommand extends ChatCommand {
 
+	private String status = null;
+
 	public SaveCommand() {
 		super(TopLevel.SIMULATION_GROUP, "sv", "save", "Save the simulation");
 		setInteractive(true);
@@ -33,18 +35,14 @@ public class SaveCommand extends ChatCommand {
         if ("Y".equalsIgnoreCase(toSave)) {
             context.println("Saving Simulation...");
 
+			status = "NotCompleted";
 			CompletableFuture<Boolean> lock = new CompletableFuture<>();
-				context.getSim().requestSave(null, action -> {
-					if (SimulationListener.SAVE_COMPLETED.equals(action)) {
-						lock.complete(true);
-					}
-				});
+			context.getSim().requestSave(null, action -> {
+				status = action;
+				lock.complete(true);
+			});
 
 			// Print the size of all serialized objects
-//			context.println("");
-//			context.println("Method 1 - Using Outputstream as a Counter");
-//			context.println("");
-//			context.println(context.getSim().printObjectSize(0).toString());
 			context.println("");
 			context.println("Use byte arrays to show the heap size of serialized objects");
 			context.println("");
@@ -61,11 +59,11 @@ public class SaveCommand extends ChatCommand {
 				context.println("Problem executing the save wait: " + e);
 				return false;
 			}
-			
+
+			context.println("Done Saving. : " + status);
+			context.println("");			
         }
 
-		context.println("Done Saving.");
-		context.println("");
 		
 		return true;
 	}

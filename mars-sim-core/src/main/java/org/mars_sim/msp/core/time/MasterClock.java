@@ -829,7 +829,9 @@ public class MasterClock implements Serializable {
 	 * @param showPane
 	 */
 	private void firePauseChange(boolean isPaused, boolean showPane) {
-		clockListenerTasks.forEach(cl -> cl.listener.pauseChange(isPaused, showPane));
+		if (clockListenerTasks != null) {
+			clockListenerTasks.forEach(cl -> cl.listener.pauseChange(isPaused, showPane));
+		}
 	}
 
 	/**

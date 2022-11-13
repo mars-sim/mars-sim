@@ -52,7 +52,7 @@ public class ClockPulse {
 	 * @param master
 	 * @param newSol Has a new Mars day started with this pulse?
 	 */
-	ClockPulse(long id, double elapsed, MarsClock marsTime, EarthClock earthTime, MasterClock master, 
+	public ClockPulse(long id, double elapsed, MarsClock marsTime, EarthClock earthTime, MasterClock master, 
 			boolean newSol, boolean newMSol) {
 		super();
 		

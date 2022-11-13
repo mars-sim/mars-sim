@@ -357,6 +357,8 @@ public class Simulation implements ClockListener, Serializable {
 		Airlock.initializeInstances(unitManager, marsSurface, marsClock);
 		// Initialize instances in TaskSchedule
 		TaskSchedule.initializeInstances(marsClock);
+
+		doneInitializing = true;
 	}
 
 	/**
@@ -827,10 +829,10 @@ public class Simulation implements ClockListener, Serializable {
 			file.getParentFile().mkdirs();
 		}
 
-		checkHeapSizeSerialize(type, file, srcPath, destPath);
+		boolean success = checkHeapSizeSerialize(type, file, srcPath, destPath);
 			
 		if (callback != null) {
-			callback.eventPerformed(SimulationListener.SAVE_COMPLETED);
+			callback.eventPerformed(success ? SimulationListener.SAVE_COMPLETED : SimulationListener.SAVE_FAILED);
 		}
 
 		// Restarts the master clock and adds back the Simulation clock listener
@@ -840,7 +842,8 @@ public class Simulation implements ClockListener, Serializable {
 		masterClock.restart();
 	}
 
-	private void checkHeapSizeSerialize(SaveType type, File file, Path  srcPath, Path destPath) {
+	private boolean checkHeapSizeSerialize(SaveType type, File file, Path  srcPath, Path destPath) {
+		boolean sucessful = false;
 		try {
 			// Get maximum size of heap in bytes. The heap cannot grow beyond this size.// Any attempt will result in an OutOfMemoryException.
 			long heapMaxSize = Runtime.getRuntime().maxMemory();
@@ -855,7 +858,7 @@ public class Simulation implements ClockListener, Serializable {
 				// Save local machine timestamp
 				// Serialize the file
 				lastSaveTimeStamp = new Date();
-				boolean sucessful = serialize(type, file, srcPath, destPath);
+				sucessful = serialize(type, file, srcPath, destPath);
 	
 				if (sucessful && (type == SaveType.AUTOSAVE)) {
 					// Purge old auto backups
@@ -870,6 +873,8 @@ public class Simulation implements ClockListener, Serializable {
 		catch (IOException ioe) {
 			logger.severe("Problem saving simulation " + ioe.getMessage());
 		}
+
+		return sucessful;
 	}
 	
 	/**

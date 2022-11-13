@@ -15,6 +15,7 @@ public interface SimulationListener {
      * Event action when a save is completed
      */
     public static final String SAVE_COMPLETED = "SaveCompleted";
+    public static final String SAVE_FAILED = "SaveFailed";
 
     /**
      * The Simulation has performed an event
