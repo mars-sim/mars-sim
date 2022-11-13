@@ -85,6 +85,11 @@ public class MaintainGarageVehicle extends Task {
 			// If not in a garage, try to add it to a garage with empty space.
 			Settlement settlement = worker.getSettlement();
 
+			if (settlement == null) {
+				clearTask(worker.getName() + " not in a settlement.");
+				return;
+			}
+			
 			Iterator<Building> j = settlement.getBuildingManager()
 					.getBuildings(FunctionType.VEHICLE_MAINTENANCE).iterator();
 			while (j.hasNext() && (garage == null)) {
