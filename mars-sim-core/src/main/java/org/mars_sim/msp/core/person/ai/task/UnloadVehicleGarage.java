@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -18,15 +17,12 @@ import org.mars_sim.msp.core.equipment.ResourceHolder;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
-import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -35,13 +31,12 @@ import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Towing;
 import org.mars_sim.msp.core.vehicle.Vehicle;
-import org.mars_sim.msp.core.vehicle.VehicleType;
 
 /**
  * The UnloadVehicleGarage class is a task for unloading fuel and supplies from
  * a vehicle in a vehicle maintenance garage.
  */
-public class UnloadVehicleGarage extends Task implements Serializable {
+public class UnloadVehicleGarage extends Task {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -58,9 +53,6 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.unloadVehicleGarage"); //$NON-NLS-1$
-
-	/** Simple Task name */
-	public static final String SIMPLE_NAME = UnloadVehicleGarage.class.getSimpleName();
 	
 	/** Task phases. */
 	private static final TaskPhase UNLOADING = new TaskPhase(Msg.getString("Task.phase.unloading")); //$NON-NLS-1$
@@ -69,13 +61,10 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 	 * The amount of resources (kg) one person of average strength can unload per
 	 * millisol.
 	 */
-	private static double UNLOAD_RATE = 20D;
+	private static final double UNLOAD_RATE = 20D;
 
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = .1D;
-
-	/** The duration of the task (millisols). */
-	private static final double DURATION = RandomUtil.getRandomDouble(40D) + 10D;
 
 	// Data members
 	/** The vehicle that needs to be unloaded. */
@@ -84,138 +73,36 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 	private Settlement settlement;
 
 	/**
-	 * Constructor.
-	 *
-	 * @param person the person to perform the task.
-	 */
-	public UnloadVehicleGarage(Person person) {
-		// Use Task constructor.
-		super(NAME, person, true, false, STRESS_MODIFIER, DURATION);
-
-		if (person.isOutside()) {
-			endTask();
-		}
-
-		settlement = person.getSettlement();
-
-		if (settlement != null) {
-			init(person);
-		}
-	}
-
-	/**
-	 * Constructor.
-	 *
-	 * @param person the robot to perform the task.
-	 */
-	public UnloadVehicleGarage(Robot robot) {
-		// Use Task constructor.
-		super(NAME, robot, true, false, STRESS_MODIFIER, DURATION);
-
-		if (robot.isOutside()) {
-			endTask();
-		}
-
-		settlement = robot.getSettlement();
-
-		if (settlement != null) {
-			init(robot);
-		}
-	}
-
-	/**
-	 * Initialises the task.
-	 * 
-	 * @param starter
-	 */
-	private void init(Worker starter) {
-
-		VehicleMission mission = getMissionNeedingUnloading();
-		if (mission != null) {
-			vehicle = mission.getVehicle();
-		} else {
-			List<Vehicle> nonMissionVehicles = getNonMissionVehiclesNeedingUnloading(settlement);
-			if (nonMissionVehicles.size() > 0) {
-				vehicle = nonMissionVehicles.get(RandomUtil.getRandomInt(nonMissionVehicles.size() - 1));
-			}
-		}
-
-		if (vehicle != null) {
-
-			initLoad(starter);
-
-			logger.log(starter, Level.FINE, 0, "Going to unload " + vehicle.getName() + ".");
-		}
-		else {
-			endTask();
-		}
-	}
-
-
-	/**
-	 * Constructor
-	 *
-	 * @param person  the person to perform the task
-	 * @param vehicle the vehicle to be unloaded
-	 */
-	public UnloadVehicleGarage(Person person, Vehicle vehicle) {
-		// Use Task constructor.
-		super("Unloading vehicle", person, true, false, STRESS_MODIFIER, DURATION);
-
-		if (person.isOutside()) {
-			endTask();
-		}
-
-		this.vehicle = vehicle;
-
-		settlement = person.getSettlement();
-
-		if (vehicle != null && settlement != null) {
-			initLoad(person);
-			logger.log(person, Level.FINE, 0, "Going to unload " + vehicle.getName() + ".");
-		}
-		else
-			endTask();
-	}
-
-	/**
 	 * Constructor
 	 *
 	 * @param robot the robot to perform the task
 	 * @param vehicle the vehicle to be unloaded
 	 */
-	public UnloadVehicleGarage(Robot robot, Vehicle vehicle) {
+	public UnloadVehicleGarage(Worker worker, Vehicle vehicle) {
 		// Use Task constructor.
-		super("Unloading vehicle", robot, true, false, STRESS_MODIFIER, DURATION);
+		super("Unloading vehicle", worker, true, false, STRESS_MODIFIER,
+					RandomUtil.getRandomDouble(40D) + 10D);
 
-		if (robot.isOutside()) {
+		if (worker.isOutside()) {
 			endTask();
 		}
 
 		this.vehicle = vehicle;
 
-		settlement = robot.getSettlement();
+		settlement = worker.getSettlement();
 
-		if (vehicle != null && settlement != null) {
-			initLoad(robot);
-			logger.log(robot, Level.FINER, 0, "Going to unload " + vehicle.getName());
+		if (isFullyUnloaded(vehicle)) {
+			clearTask(vehicle.getName() + " already unloaded");
+			return;
 		}
-		else
-			endTask();
+		logger.log(worker, Level.FINER, 0, "Going to unload " + vehicle.getName());
 
-	}
-
-	/**
-	 * Initialise the load task
-	 * @param starter
-	 */
-	private void initLoad(Worker starter) {
 		// Add the vehicle to a garage if possible
 		Building garage = settlement.getBuildingManager().addToGarageBuilding(vehicle);
 
 		// End task if vehicle or garage not available
 		if (garage == null) {
-			endTask();
+			clearTask(vehicle.getName() + " no garage found");
 			return;
 		}
 
@@ -228,207 +115,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 		addPhase(UNLOADING);
 		setPhase(UNLOADING);
 	}
-
-	/**
-	 * Gets a list of vehicles that need unloading and aren't reserved for a
-	 * mission.
-	 *
-	 * @param settlement the settlement the vehicle is at.
-	 * @return list of vehicles.
-	 */
-	public static List<Vehicle> getNonMissionVehiclesNeedingUnloading(Settlement settlement) {
-		List<Vehicle> result = new ArrayList<>();
-
-		if (settlement != null) {
-			Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
-			while (i.hasNext()) {
-				Vehicle vehicle = i.next();
-				boolean needsUnloading = false;
-				if (VehicleType.isRover(vehicle.getVehicleType()) && !vehicle.isReserved()
-						&& (vehicle.getAssociatedSettlementID() == settlement.getIdentifier())) {
-					int peopleOnboard = ((Crewable)vehicle).getCrewNum();
-					if (peopleOnboard == 0) {
-						if (vehicle.getStoredMass() > 0D) {
-							needsUnloading = true;
-						}
-						if (vehicle instanceof Towing) {
-							if (((Towing) vehicle).getTowedVehicle() != null) {
-								needsUnloading = true;
-							}
-						}
-					}
-
-					int robotsOnboard = ((Crewable)vehicle).getRobotCrewNum();
-					if (robotsOnboard == 0) {
-						if (vehicle.getStoredMass() > 0D) {
-							needsUnloading = true;
-						}
-						if (vehicle instanceof Towing) {
-							if (((Towing) vehicle).getTowedVehicle() != null) {
-								needsUnloading = true;
-							}
-						}
-					}
-
-				}
-				if (needsUnloading && settlement.getBuildingManager().addToGarage(vehicle)) {
-					result.add(vehicle);
-				}
-			}
-		}
-
-		return result;
-	}
-
-	/**
-	 * Gets the number of vehicles that need unloading and aren't reserved for a
-	 * mission.
-	 *
-	 * @param settlement the settlement the vehicle is at.
-	 * @return number of vehicles.
-	 */
-	public static int numNonMissionVehiclesNeedingUnloading(Settlement settlement) {
-		int num = 0;
-
-		Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
-		while (i.hasNext()) {
-			Vehicle vehicle = i.next();
-			boolean needsUnloading = false;
-			if (VehicleType.isRover(vehicle.getVehicleType()) && !vehicle.isReserved()
-					&& (vehicle.getAssociatedSettlementID() == settlement.getIdentifier())) {
-				needsUnloading = checkVehicle(vehicle);
-			}
-			
-			if (needsUnloading) {
-				num++;
-			}
-		}
-
-		return num;
-	}
 	
-	public static boolean checkVehicle(Vehicle vehicle) {
-		boolean needsUnloading = false;
-		
-		int peopleOnboard = ((Crewable)vehicle).getCrewNum();
-		if (peopleOnboard == 0) {
-			needsUnloading = isVehicleEmpty(vehicle, peopleOnboard);
-		}
-
-		int robotsOnboard = ((Crewable)vehicle).getRobotCrewNum();
-		if (robotsOnboard == 0) {
-			needsUnloading = isVehicleEmpty(vehicle, robotsOnboard);
-		}
-		
-		return needsUnloading;
-	}
-	
-	public static boolean isVehicleEmpty(Vehicle vehicle, int peopleOnboard) {
-		boolean needsUnloading = false;
-		
-		if (vehicle.getStoredMass() > 0D) {
-			needsUnloading = true;
-		}
-		if (vehicle instanceof Towing
-			&& ((Towing) vehicle).getTowedVehicle() != null) {
-				needsUnloading = true;
-		}
-		
-		return needsUnloading;
-	}
-	
-	/**
-	 * Gets a list of all disembarking vehicle missions at a settlement.
-	 *
-	 * @param settlement the settlement.
-	 * @param addToGarage
-	 * @return list of vehicle missions.
-	 */
-	public static List<Mission> getAllMissionsNeedingUnloading(Settlement settlement, boolean addToGarage) {
-
-		List<Mission> result = new ArrayList<>();
-
-		for (Mission mission : missionManager.getMissions()) {
-			if (mission instanceof VehicleMission) {
-				VehicleMission vehicleMission = (VehicleMission) mission;
-
-				if (vehicleMission.isVehicleUnloadableHere(settlement)) {
-					Vehicle vehicle = vehicleMission.getVehicle();
-					if (vehicle == null)
-						continue;
-					if (vehicle instanceof Crewable) {
-						Crewable c = (Crewable)vehicle;
-						if (c.getCrewNum() > 0 || c.getRobotCrewNum() > 0) {
-							// Has occupants so skip it
-							continue;
-						}
-					}
-
-					// If looking for garaged vehicles; then add to garage otherwise
-					// check vehicle is not in garage
-					if (!isFullyUnloaded(vehicle)
-						&& (addToGarage && settlement.getBuildingManager().addToGarage(vehicle)
-						|| !addToGarage && !settlement.getBuildingManager().isInGarage(vehicle))) {
-							result.add(vehicleMission);
-					}
-				}
-			}
-		}
-
-		return result;
-	}
-
-	/**
-	 * Gets a number of disembarking vehicle missions at a settlement.
-	 *
-	 * @param settlement the settlement.
-	 * @param addToGarage
-	 * @return number of vehicle missions.
-	 */
-	public static int numMissionsNeedingUnloading(Settlement settlement, boolean addToGarage) {
-		int num = 0;
-
-		for (Mission mission : missionManager.getMissions()) {
-			if (mission instanceof VehicleMission) {
-				VehicleMission vehicleMission = (VehicleMission) mission;
-
-				if (vehicleMission.isVehicleUnloadableHere(settlement)) {
-					Vehicle vehicle = vehicleMission.getVehicle();
-					if (vehicle == null)
-						continue;
-					
-					// If looking for garaged vehicles; then add to garage otherwise
-					// check vehicle is not in garage
-					if (!isFullyUnloaded(vehicle)
-						&& (addToGarage && settlement.getBuildingManager().addToGarage(vehicle)
-						|| !addToGarage && !settlement.getBuildingManager().isInGarage(vehicle))) {
-							num++;
-					}
-				}
-			}
-		}
-
-		return num;
-	}
-	
-	/**
-	 * Gets a random vehicle mission unloading at the settlement.
-	 *
-	 * @return vehicle mission.
-	 */
-	private VehicleMission getMissionNeedingUnloading() {
-
-		VehicleMission result = null;
-		List<Mission> unloadingMissions = getAllMissionsNeedingUnloading(settlement, true);
-
-		if (!unloadingMissions.isEmpty()) {
-			int index = RandomUtil.getRandomInt(unloadingMissions.size() - 1);
-			result = (VehicleMission) unloadingMissions.get(index);
-		}
-
-		return result;
-	}
-
 	/**
 	 * Gets the vehicle being unloaded.
 	 *

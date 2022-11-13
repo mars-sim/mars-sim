@@ -29,14 +29,12 @@ import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.job.util.ShiftType;
 import org.mars_sim.msp.core.person.ai.task.DriveGroundVehicle;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
-import org.mars_sim.msp.core.person.ai.task.LoadVehicleEVA;
-import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.OperateVehicle;
 import org.mars_sim.msp.core.person.ai.task.RequestMedicalTreatment;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
-import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.Walk;
 import org.mars_sim.msp.core.person.ai.task.meta.LoadVehicleMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.UnloadVehicleMeta;
 import org.mars_sim.msp.core.person.ai.task.util.TaskJob;
 import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
 import org.mars_sim.msp.core.person.ai.task.util.Worker;
@@ -568,13 +566,9 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		if (m != null && !m.equals(this))
 			return;
 
-		if (isInAGarage() && !person.getMind().getTaskManager().hasSameTask(UnloadVehicleGarage.SIMPLE_NAME)) {
-			person.getMind().getTaskManager().addAPendingTask(UnloadVehicleGarage.SIMPLE_NAME, false);
-		}
-
-		else if (person.isNominallyFit() && !EVAOperation.isGettingDark(person)
-				&& !person.getMind().getTaskManager().hasSameTask(UnloadVehicleEVA.SIMPLE_NAME)) {
-			person.getMind().getTaskManager().addAPendingTask(UnloadVehicleEVA.SIMPLE_NAME, false);
+		TaskJob job = UnloadVehicleMeta.createUnloadJob(person.getSettlement(), rover);
+		if (job != null) {
+			person.getMind().getTaskManager().addPendingTask(job, false);
 		}
 	}
 

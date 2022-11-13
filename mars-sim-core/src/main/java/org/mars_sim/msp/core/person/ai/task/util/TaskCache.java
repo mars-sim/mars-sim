@@ -21,7 +21,7 @@ public class TaskCache {
     private double totalProb = 0;
     private String context;
     private MarsClock createdOn;
-    private TaskJob lastEntry;
+    private TaskJob lastSelected;
 
     /**
      * Create a cache of Tasks. A cache can work in transient mode where selected entries are removed.
@@ -95,13 +95,15 @@ public class TaskCache {
      * What was the last entry selected and removed from this cache?
      */
     public TaskJob getLastSelected() {
-        return lastEntry;
+        return lastSelected;
     }
 
     /** 
      * Choose a Task to work at random.
     */
-    TaskJob getRandomSelection() {			
+    TaskJob getRandomSelection() {		
+        TaskJob lastEntry = null;
+
         // Comes up with a random double based on probability
         double r = RandomUtil.getRandomDouble(totalProb);
         // Determine which task is selected.
@@ -110,18 +112,18 @@ public class TaskCache {
             if (r <= probWeight) {
                 // THis is a transient cache so remove the selected entry
                 if (createdOn != null) {
-                    lastEntry = entry;
+                    lastSelected = entry;
                     tasks.remove(entry);
                     totalProb -= entry.getScore();
                 }
                 return entry;
             }
-            else {
-                r -= probWeight;
-            }
+            
+            r -= probWeight;
+            lastEntry = entry;
         }
 
-        // Should never get here
-        return null;
+        // Should never get here but return the last one
+        return lastEntry;
     }
 }

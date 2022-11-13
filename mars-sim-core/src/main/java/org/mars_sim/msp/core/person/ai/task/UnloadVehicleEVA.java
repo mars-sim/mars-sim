@@ -6,11 +6,8 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
@@ -21,8 +18,6 @@ import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
-import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.task.util.TaskPhase;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
@@ -31,7 +26,6 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Crewable;
-import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Towing;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -39,7 +33,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  * The UnloadVehicleEVA class is a task for unloading fuel and supplies from a
  * vehicle when the vehicle is outside.
  */
-public class UnloadVehicleEVA extends EVAOperation implements Serializable {
+public class UnloadVehicleEVA extends EVAOperation {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -56,9 +50,6 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 	
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.unloadVehicleEVA"); //$NON-NLS-1$
-
-	/** Simple Task name */
-	public static final String SIMPLE_NAME = UnloadVehicleEVA.class.getSimpleName();
 	
 	/** Task phases. */
 	private static final TaskPhase UNLOADING = new TaskPhase(Msg.getString("Task.phase.unloading")); //$NON-NLS-1$
@@ -67,7 +58,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 	 * The amount of resources (kg) one person of average strength can unload per
 	 * millisol.
 	 */
-	private static double UNLOAD_RATE = 20D;
+	private static final double UNLOAD_RATE = 20D;
 
 	// Data members
 	/** The vehicle that needs to be unloaded. */
@@ -75,60 +66,6 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 	/** The settlement the person is unloading to. */
 	private Settlement settlement;
 
-	/**
-	 * Constructor
-	 * 
-	 * @param person the person to perform the task.
-	 */
-	public UnloadVehicleEVA(Person person) {
-		// Use EVAOperation constructor.
-		super(NAME, person, true, 25, null);
-
-		if (!person.isNominallyFit()) {
-			checkLocation();
-        	return;
-		}
-		
-		settlement = CollectionUtils.findSettlement(person.getCoordinates());
-		if (settlement == null) {
-			checkLocation();
-		}
-		
-		VehicleMission mission = getMissionNeedingUnloading();
-		if (mission != null) {
-			vehicle = mission.getVehicle();
-		} else {
-			List<Vehicle> nonMissionVehicles = getNonMissionVehiclesNeedingUnloading(settlement);
-			if (nonMissionVehicles.size() > 0) {
-				vehicle = nonMissionVehicles.get(RandomUtil.getRandomInt(nonMissionVehicles.size() - 1));
-			}
-		}
-		
-		if (vehicle != null) {
-
-			setDescription(Msg.getString("Task.description.unloadVehicleEVA.detail", vehicle.getName())); // $NON-NLS-1$
-
-			// Add the rover to a garage if possible.
-			if (settlement.getBuildingManager().addToGarage(vehicle)) {
-				// no need of doing EVA
-				checkLocation();
-	        	return;
-			}
-			
-			// Determine location for unloading.
-			setOutsideLocation(vehicle);
-
-			// Initialize task phase
-			addPhase(UNLOADING);
-
-			// NOTE: EVAOperation will set the phase. Do NOT do it here
-//			setPhase(UNLOADING); 
-			logger.log(person, Level.FINE, 20_000, "Going to unload "  + vehicle.getName() + ".");
-
-		} else {
-			checkLocation();
-		}
-	}
 
 	/**
 	 * Constructor
@@ -364,91 +301,6 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 		return remainingTime;
 	}
 	
-
-	/**
-	 * Gets a list of vehicles that need unloading and aren't reserved for a
-	 * mission.
-	 * 
-	 * @param settlement the settlement the vehicle is at.
-	 * @return list of vehicles.
-	 */
-	public static List<Vehicle> getNonMissionVehiclesNeedingUnloading(Settlement settlement) {
-		List<Vehicle> result = new ArrayList<>();
-
-		if (settlement != null) {
-			Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
-			while (i.hasNext()) {
-				Vehicle vehicle = i.next();
-				boolean needsUnloading = false;
-				// Find unreserved vehicle parked at their home base. Visiting vehicles
-				// should not unloaded outside a mission
-				if (vehicle instanceof Rover && !vehicle.isReserved() &&
-						(vehicle.getAssociatedSettlementID() == settlement.getIdentifier())) {
-					int peopleOnboard = ((Crewable)vehicle).getCrewNum();
-					if (peopleOnboard == 0) {
-						if (!settlement.getBuildingManager().isInGarage(vehicle)) {
-							if (vehicle.getStoredMass() > 0D) {
-								needsUnloading = true;
-							}
-							if (vehicle instanceof Towing) {
-								if (((Towing) vehicle).getTowedVehicle() != null) {
-									needsUnloading = true;
-								}
-							}
-						}
-					}
-
-					int robotsOnboard = ((Crewable)vehicle).getRobotCrewNum();
-					if (robotsOnboard == 0) {
-						if (!settlement.getBuildingManager().isInGarage(vehicle)) {
-							if (vehicle.getStoredMass() > 0D) {
-								needsUnloading = true;
-							}
-							if (vehicle instanceof Towing) {
-								if (((Towing) vehicle).getTowedVehicle() != null) {
-									needsUnloading = true;
-								}
-							}
-						}
-					}
-				}
-				
-				if (needsUnloading) {
-					result.add(vehicle);
-				}
-			}
-		}
-
-		return result;
-	}
-
-	/**
-	 * Gets a list of all disembarking vehicle missions at a settlement.
-	 * 
-	 * @param settlement the settlement.
-	 * @return list of vehicle missions.
-	 */
-	public static List<Mission> getAllMissionsNeedingUnloading(Settlement settlement) {
-		return UnloadVehicleGarage.getAllMissionsNeedingUnloading(settlement, false);
-	}
-
-	/**
-	 * Gets a random vehicle mission unloading at the settlement.
-	 * 
-	 * @return vehicle mission.
-	 */
-	private VehicleMission getMissionNeedingUnloading() {
-
-		VehicleMission result = null;
-		List<Mission> unloadingMissions = UnloadVehicleGarage.getAllMissionsNeedingUnloading(worker.getSettlement(), false);
-
-		if (unloadingMissions.size() > 0) {
-			int index = RandomUtil.getRandomInt(unloadingMissions.size() - 1);
-			result = (VehicleMission) unloadingMissions.get(index);
-		}
-
-		return result;
-	}
 
 	/**
 	 * Gets the vehicle being unloaded.

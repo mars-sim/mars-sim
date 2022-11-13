@@ -1954,7 +1954,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	@Override
 	public boolean isVehicleUnloadableHere(Settlement settlement) {
 		// It is either a local mission unloading
-		return DISEMBARKING.equals(getPhase())
+		return (vehicle != null) && DISEMBARKING.equals(getPhase())
 					&& getAssociatedSettlement().equals(settlement);
 	}
 

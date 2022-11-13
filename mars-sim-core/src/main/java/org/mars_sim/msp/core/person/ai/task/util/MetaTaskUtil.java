@@ -105,8 +105,7 @@ public class MetaTaskUtil {
 		allMetaTasks.add(new ToggleFuelPowerSourceMeta());
 		allMetaTasks.add(new ToggleResourceProcessMeta());
 		allMetaTasks.add(new TreatMedicalPatientMeta());
-		allMetaTasks.add(new UnloadVehicleEVAMeta());
-		allMetaTasks.add(new UnloadVehicleGarageMeta());
+		allMetaTasks.add(new UnloadVehicleMeta());
 		allMetaTasks.add(new WorkoutMeta());
 		allMetaTasks.add(new WriteReportMeta());
 		allMetaTasks.add(new YogaMeta());
@@ -209,5 +208,6 @@ public class MetaTaskUtil {
     static void initialiseInstances(Simulation sim) {
 		MetaTask.initialiseInstances(sim);
 		LoadVehicleMeta.initialiseInstances(sim);
+		UnloadVehicleMeta.initialiseInstances(sim);
     }
 }
