@@ -82,6 +82,7 @@ public class VehicleSpecCommand extends ChatCommand {
 		buffer.appendLabeledString("Initial Fuel Economy", String.format(KM_PER_KG_FORMAT, source.getInitialFuelEconomy()));
 		buffer.appendLabeledString("Instantaneous Fuel Economy", String.format(KM_PER_KG_FORMAT, source.getIFuelEconomy()));
 		buffer.appendLabeledString("Cumulative Fuel Economy", String.format(KM_PER_KG_FORMAT, source.getCumFuelEconomy()));
+		buffer.appendLabeledString("Conservative Fuel Economy", String.format(KM_PER_KG_FORMAT, source.getConservativeFuelEconomy()));
 		buffer.appendLabeledString("Base Fuel Consumption", String.format(WH_PER_KM_FORMAT, source.getBaseFuelConsumption()));
 		buffer.appendLabeledString("Instantaneous Fuel Consumption", String.format(WH_PER_KM_FORMAT, source.getIFuelConsumption()));
 		buffer.appendLabeledString("Cumulative Fuel Consumption", String.format(WH_PER_KM_FORMAT, source.getCumFuelConsumption()));	
