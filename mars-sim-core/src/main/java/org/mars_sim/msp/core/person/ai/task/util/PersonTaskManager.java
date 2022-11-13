@@ -224,6 +224,12 @@ public class PersonTaskManager extends TaskManager {
 		super.startNewTask();
 	}
 
+
+	@Override
+	protected Task createTask(TaskJob selectedWork) {
+		return selectedWork.createTask(mind.getPerson());
+	}
+	
 	@Override
 	public void reinit() {
 		person = mind.getPerson();
@@ -237,10 +243,5 @@ public class PersonTaskManager extends TaskManager {
 	public void destroy() {
 		mind = null;
 		person = null;
-	}
-
-	@Override
-	protected Task createTask(TaskJob selectedWork) {
-		return selectedWork.createTask(mind.getPerson());
 	}
 }
