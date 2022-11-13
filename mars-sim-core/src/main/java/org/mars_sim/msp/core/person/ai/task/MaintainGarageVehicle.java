@@ -31,8 +31,6 @@ import org.mars_sim.msp.core.vehicle.VehicleType;
  * maintenance on ground vehicles in a garage.
  */
 public class MaintainGarageVehicle extends Task {
-
-	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
@@ -220,20 +218,23 @@ public class MaintainGarageVehicle extends Task {
 			
 			vehicle.setReservedForMaintenance(false);
 	        vehicle.removeSecondaryStatus(StatusType.MAINTENANCE);
-	        
-			if (vehicle instanceof Crewable) {
-				Crewable crewableVehicle = (Crewable) vehicle;
-				if (crewableVehicle.getCrewNum() == 0 && crewableVehicle.getRobotCrewNum() == 0) {
-					garage.removeVehicle(vehicle, false);
+
+			// Terminated early befor ethe Garage was selected ?
+			if (garage != null) {
+				if (vehicle instanceof Crewable) {
+					Crewable crewableVehicle = (Crewable) vehicle;
+					if (crewableVehicle.getCrewNum() == 0 && crewableVehicle.getRobotCrewNum() == 0) {
+						garage.removeVehicle(vehicle, false);
+					}
+					else
+						garage.removeVehicle(vehicle, true);
+				} else {
+					if (vehicle.getVehicleType() == VehicleType.DELIVERY_DRONE) {
+						garage.removeFlyer((Flyer)vehicle);
+					}
+					else
+						garage.removeVehicle(vehicle, false);
 				}
-				else
-					garage.removeVehicle(vehicle, true);
-			} else {
-				if (vehicle.getVehicleType() == VehicleType.DELIVERY_DRONE) {
-					garage.removeFlyer((Flyer)vehicle);
-				}
-				else
-					garage.removeVehicle(vehicle, false);
 			}
 		}
 		super.clearDown();
