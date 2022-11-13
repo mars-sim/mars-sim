@@ -625,13 +625,13 @@ public abstract class OperateVehicle extends Task {
         // Derive the mass of fuel needed
         double fuelUsed = energyUsed * vehicle.getFuelConv();
 
-        // Case 3 : fuel needed is less than available (juust used up the last drop of fuel). Update fuelUsed.
+        // Case 3 : fuel needed is less than available (just used up the last drop of fuel). Update fuelUsed.
 		if (fuelUsed > remainingFuel) {
 			// Limit the fuel to be used
 			fuelUsed = remainingFuel;
 			
 			// Recompute the new distance it could travel
-			d_km = vehicle.getEstimatedFuelEconomy() * fuelUsed;
+			d_km = vehicle.getConservativeFuelEconomy() * fuelUsed;
 			
 			logger.log(vehicle, Level.WARNING,  20_000L, "fuelUsed: " +  Math.round(fuelUsed * 1000.0)/1000.0  + " kg" 
 					+ "new d_km: " +  Math.round(d_km * 1000.0)/1000.0  + " km.");

@@ -503,17 +503,16 @@ public abstract class TaskManager implements Serializable, Temporal {
 			// SHhould never happen since TaskManagers have to return a populated list
 			// with doable defaults if needed
 			logger.severe(worker, "No normal Tasks available in " + taskProbCache.getContext());
-			return;
 		}
 		else {
 			selectedJob = taskProbCache.getRandomSelection();
+
+			// Call constructInstance of the selected Meta Task to commence the ai task
+			selectedTask = createTask(selectedJob);
+
+			// Start this new task
+			startTask(selectedTask);
 		}
-
-		// Call constructInstance of the selected Meta Task to commence the ai task
-		selectedTask = createTask(selectedJob);
-
-		// Start this new task
-		startTask(selectedTask);
 	}
 
 	/**

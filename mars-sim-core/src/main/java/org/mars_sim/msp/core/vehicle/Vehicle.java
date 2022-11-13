@@ -109,6 +109,9 @@ public abstract class Vehicle extends Unit
 	/** Estimated Number of hours traveled each day. **/
 	private static final int ESTIMATED_TRAVEL_HOURS_PER_SOL = 16;
 
+	/** The factor for estimating the adjusted fuel economy. */
+	private static final double FE_FACTOR = 3.0;
+	
 	// Format for unit
 //	private static final String KWH = " kWh   ";
 //	private static final String KG = " kg   ";
@@ -493,7 +496,7 @@ public abstract class Vehicle extends Unit
 			// Gets the base fuel consumption [in Wh/km] of this vehicle
 			baseFuelConsumption =  energyCapacity * 1000.0 / baseRange;
 
-			// // Accounts for the occupant consumables and personal possession
+			// Accounts for the occupant consumables and personal possession
 			beginningMass = getBaseMass() + estimatedTotalCrewWeight + 8 * (50 + 100);
 			// Accounts for the reduced occupant consumables
 			endMass = getBaseMass() + estimatedTotalCrewWeight + 8 * 100;				
@@ -1279,6 +1282,15 @@ public abstract class Vehicle extends Unit
 		return estimatedFuelEconomy;
 	}
 
+	/**
+	 * Gets the conservative average fuel consumption of the vehicle [km/kg] for a trip.
+	 *
+	 * @return
+	 */
+	public double getConservativeFuelEconomy() {
+		return (getCumFuelEconomy() + getEstimatedFuelEconomy()) / FE_FACTOR;
+	}
+	
 	/**
 	 * Gets the drivetrain efficiency of the vehicle.
 	 *

@@ -117,15 +117,15 @@ public class ToolToolBar extends WebToolBar implements ActionListener {
 	/** Prepares tool buttons */
 	private void prepareToolButtons() {
 
-		ToolButton saveButton = new ToolButton(Msg.getString("mainMenu.save"), Msg.getString("img.save")); //$NON-NLS-1$ //$NON-NLS-2$
+		ToolButton saveButton = new ToolButton(Msg.getString("mainMenu.save"), Msg.getString("icon.save")); //$NON-NLS-1$ //$NON-NLS-2$
 		saveButton.addActionListener(e -> parentMainWindow.saveSimulation(true));
 		add(saveButton);
 
-		ToolButton saveAsButton = new ToolButton(Msg.getString("mainMenu.saveAs"), Msg.getString("img.saveAs")); //$NON-NLS-1$ //$NON-NLS-2$
+		ToolButton saveAsButton = new ToolButton(Msg.getString("mainMenu.saveAs"), Msg.getString("icon.saveAs")); //$NON-NLS-1$ //$NON-NLS-2$
 		saveAsButton.addActionListener(e -> parentMainWindow.saveSimulation(false));
 		add(saveAsButton);
 
-		ToolButton exitButton = new ToolButton(Msg.getString("mainMenu.exit"), Msg.getString("img.exit")); //$NON-NLS-1$ //$NON-NLS-2$
+		ToolButton exitButton = new ToolButton(Msg.getString("mainMenu.exit"), Msg.getString("icon.exit")); //$NON-NLS-1$ //$NON-NLS-2$
 		exitButton.addActionListener(e -> parentMainWindow.exitSimulation());
 		add(exitButton);
 
@@ -174,7 +174,7 @@ public class ToolToolBar extends WebToolBar implements ActionListener {
 		toolButtons.addElement(scienceButton);
 
 		// Add resupply tool button
-		ToolButton resupplyButton = new ToolButton(ResupplyWindow.NAME, Msg.getString("img.resupply")); //$NON-NLS-1$
+		ToolButton resupplyButton = new ToolButton(ResupplyWindow.NAME, Msg.getString("icon.resupply")); //$NON-NLS-1$
 		resupplyButton.addActionListener(this);
 		add(resupplyButton);
 		toolButtons.addElement(resupplyButton);
@@ -182,7 +182,7 @@ public class ToolToolBar extends WebToolBar implements ActionListener {
 		// Add the command dashboard button
 //		if (GameManager.getGameMode() == GameMode.COMMAND) {
 			// Add commander dashboard button
-			ToolButton dashboardButton = new ToolButton(CommanderWindow.NAME, Msg.getString("img.dashboard")); //$NON-NLS-1$
+			ToolButton dashboardButton = new ToolButton(CommanderWindow.NAME, Msg.getString("icon.dashboard")); //$NON-NLS-1$
 			dashboardButton.addActionListener(this);
 			add(dashboardButton);
 			toolButtons.addElement(dashboardButton);

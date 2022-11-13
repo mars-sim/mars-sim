@@ -86,6 +86,7 @@ import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.core.vehicle.VehicleType;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
@@ -1183,7 +1184,7 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 			else if (columnIndex == 1)
 				return Msg.getString("MainDetailPanel.column.task"); //$NON-NLS-1$
 			else
-				return "Boarded";
+				return Msg.getString("MainDetailPanel.column.onboard"); //$NON-NLS-1$
 		}
 
 		/**
@@ -1202,7 +1203,7 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 				else if (column == 1)
 					return member.getTaskDescription();
 				else {
-					if (boarded(member))
+					if (isOnboard(member))
 						return "Y";
 					else
 						return "N";
@@ -1217,12 +1218,19 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 		 * @param member
 		 * @return
 		 */
-		boolean boarded(Worker member) {
-			if (mission instanceof VehicleMission) {			
+		boolean isOnboard(Worker member) {
+			if (mission instanceof VehicleMission) {		
 				if (member.getUnitType() == UnitType.PERSON) {
-					Rover r = (Rover)(((VehicleMission)mission).getVehicle());
-					if (r != null && r.isCrewmember((Person)member))
-						return true;
+					Vehicle v = ((VehicleMission)mission).getVehicle();
+					if (v.getVehicleType() == VehicleType.DELIVERY_DRONE) {
+						return false;
+					}
+					else if (v instanceof Rover) {
+						Rover r = (Rover) v;
+						if (r != null && r.isCrewmember((Person)member)) {
+							return true;
+						}
+					}
 				}
 			}
 			return false;

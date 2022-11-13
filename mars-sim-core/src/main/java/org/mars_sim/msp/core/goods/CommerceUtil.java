@@ -450,7 +450,7 @@ public final class CommerceUtil {
 		// Get required fuel.
 		Good fuelGood = GoodsUtil.getGood(delivery.getFuelType());
 		neededResources.put(fuelGood, (int) MissionUtil.getFuelNeededForTrip(delivery, distance, 
-				(delivery.getCumFuelEconomy() + delivery.getEstimatedFuelEconomy()) / FE_FACTOR, false));
+				delivery.getConservativeFuelEconomy(), false));
 
 		if (delivery instanceof Crewable) {
 			// Needs a crew

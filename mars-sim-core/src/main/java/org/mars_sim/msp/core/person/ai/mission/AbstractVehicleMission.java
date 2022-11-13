@@ -960,7 +960,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 
 			// Must use the same logic in all cases otherwise too few fuel will be loaded
 			amount = MissionUtil.getFuelNeededForTrip(vehicle, distance, 
-							vehicle.getEstimatedFuelEconomy(), useMargin);
+							vehicle.getConservativeFuelEconomy(), useMargin);
 
 			result.put(vehicle.getFuelType(), amount);
 			
