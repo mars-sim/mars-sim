@@ -6,18 +6,12 @@
  */
 package org.mars_sim.msp.core.robot.ai.job;
 
-import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.task.CookMeal;
-import org.mars_sim.msp.core.person.ai.task.PrepareDessert;
-import org.mars_sim.msp.core.person.ai.task.ProduceFood;
-import org.mars_sim.msp.core.person.ai.task.Sleep;
-import org.mars_sim.msp.core.person.ai.task.Teach;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -30,7 +24,7 @@ import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDesser
  */
 public class Chefbot
 extends RobotJob
-implements Serializable {
+{
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -38,14 +32,7 @@ implements Serializable {
 	/** constructor. */
 	public Chefbot() {
 		// Use Job constructor
-		super(Chefbot.class);
-
-		// Add chef-related tasks.		
-		jobTasks.add(CookMeal.class);
-		jobTasks.add(PrepareDessert.class);
-		jobTasks.add(ProduceFood.class);
-		jobTasks.add(Sleep.class);
-		jobTasks.add(Teach.class);
+		super();
 	}
 
 	/**

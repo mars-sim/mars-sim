@@ -6,21 +6,12 @@
  */
 package org.mars_sim.msp.core.robot.ai.job;
 
-import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.task.ManufactureConstructionMaterials;
-import org.mars_sim.msp.core.person.ai.task.ManufactureGood;
-import org.mars_sim.msp.core.person.ai.task.ProduceFood;
-import org.mars_sim.msp.core.person.ai.task.SalvageGood;
-import org.mars_sim.msp.core.person.ai.task.Sleep;
-import org.mars_sim.msp.core.person.ai.task.Teach;
-import org.mars_sim.msp.core.person.ai.task.ToggleFuelPowerSource;
-import org.mars_sim.msp.core.person.ai.task.ToggleResourceProcess;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -31,26 +22,14 @@ import org.mars_sim.msp.core.structure.building.function.Manufacture;
  * The Makerbot class represents an engineer job focusing on manufacturing goods
  */
 public class Makerbot
-extends RobotJob
-implements Serializable {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
+extends RobotJob {
 
 	//	private static final Logger logger = Logger.getLogger(Engineer.class.getName());
 
 	/** Constructor. */
 	public Makerbot() {
 		// Use Job constructor
-		super(Makerbot.class);
-		jobTasks.add(ManufactureConstructionMaterials.class);
-		jobTasks.add(ManufactureGood.class);
-		jobTasks.add(SalvageGood.class);
-		jobTasks.add(ProduceFood.class);
-		jobTasks.add(Sleep.class);
-		jobTasks.add(Teach.class);
-		jobTasks.add(ToggleResourceProcess.class);
-		jobTasks.add(ToggleFuelPowerSource.class);
+		super();
 	}
 
 	/**

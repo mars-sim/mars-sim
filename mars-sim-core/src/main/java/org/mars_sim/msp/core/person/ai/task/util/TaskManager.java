@@ -684,7 +684,7 @@ public abstract class TaskManager implements Serializable, Temporal {
 	 * @return
 	 */
 	public boolean addAPendingTask(String taskName, boolean allowDuplicate) {
-		MetaTask mt = convertTask2MetaTask(taskName);
+		MetaTask mt = MetaTaskUtil.getMetaTask(taskName);
 		if (mt == null) {
 			logger.warning(worker, "Cannot find pending task called " + taskName);
 			return false;
@@ -734,15 +734,6 @@ public abstract class TaskManager implements Serializable, Temporal {
 		return null;
 	}
 
-	/**
-	 * Converts a task to its corresponding meta task
-	 *
-	 * @param a task
-	 */
-	private static MetaTask convertTask2MetaTask(String task) {
-		return MetaTaskUtil.getMetaTask(task.replaceAll(" ","") + "Meta");
-	}
-	
 	/**
 	 * Checks if the worker is currently performing this task.
 	 * 

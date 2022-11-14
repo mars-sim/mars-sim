@@ -157,8 +157,6 @@ public class BotTaskManager extends TaskManager {
 					robotTasks.computeIfAbsent(rt, k -> new ArrayList<>()).addAll(anyRobot);
 				}
 			}
-
-			logger.info("Build Robot Task maps " + robotTasks);
 		}
 	}
 
@@ -184,7 +182,8 @@ public class BotTaskManager extends TaskManager {
 		TaskCache newCache = new TaskCache("Robot", marsClock);
 		
 		// Determine probabilities.
-		for (MetaTask mt : robotTasks.get(robot.getRobotType())) {
+		List<MetaTask> potentials = robotTasks.get(robot.getRobotType());
+		for (MetaTask mt : potentials) {
 			List<TaskJob> job = mt.getTaskJobs(robot);
 	
 			if (job != null) {

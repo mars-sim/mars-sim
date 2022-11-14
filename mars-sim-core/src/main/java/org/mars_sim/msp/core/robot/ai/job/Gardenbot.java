@@ -6,17 +6,12 @@
  */
 package org.mars_sim.msp.core.robot.ai.job;
 
-import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.task.Sleep;
-import org.mars_sim.msp.core.person.ai.task.Teach;
-import org.mars_sim.msp.core.person.ai.task.TendFishTank;
-import org.mars_sim.msp.core.person.ai.task.TendGreenhouse;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -27,8 +22,7 @@ import org.mars_sim.msp.core.structure.building.function.farming.Farming;
  * The Gardenbot class represents a job for a gardenbot.
  */
 public class Gardenbot
-extends RobotJob
-implements Serializable {
+extends RobotJob {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -40,12 +34,7 @@ implements Serializable {
 	 */
 	public Gardenbot() {
 		// Use Job constructor
-		super(Gardenbot.class);
-
-		jobTasks.add(TendGreenhouse.class);
-		jobTasks.add(TendFishTank.class);
-		jobTasks.add(Sleep.class);
-		jobTasks.add(Teach.class);
+		super();
 	}
 
 	/**

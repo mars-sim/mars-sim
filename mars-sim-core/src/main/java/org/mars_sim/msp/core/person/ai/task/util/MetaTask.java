@@ -140,19 +140,6 @@ public abstract class MetaTask {
 	}
 	
 	/**
-	 * Is this job type preferred ?
-	 * 
-	 * @param type
-	 * @return
-	 */
-	public boolean isPreferredJob(JobType type) {
-		if (preferredJobs.contains(type))
-			return true;
-		
-		return false;
-	}
-	
-	/**
 	 * Returns the scope for this Task is be done.
 	 * 
 	 */

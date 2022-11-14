@@ -6,17 +6,12 @@
  */
 package org.mars_sim.msp.core.robot.ai.job;
 
-import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.task.PrescribeMedication;
-import org.mars_sim.msp.core.person.ai.task.Sleep;
-import org.mars_sim.msp.core.person.ai.task.Teach;
-import org.mars_sim.msp.core.person.ai.task.TreatMedicalPatient;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -27,8 +22,7 @@ import org.mars_sim.msp.core.structure.building.function.MedicalCare;
  * The Medicbot class represents a job for an medical treatment expert.
  */
 public class Medicbot
-extends RobotJob
-implements Serializable {
+extends RobotJob {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -36,12 +30,7 @@ implements Serializable {
 	/** Constructor. */
 	public Medicbot() {
 		// Use Job constructor
-		super(Medicbot.class);
-
-		jobTasks.add(PrescribeMedication.class);
-		jobTasks.add(TreatMedicalPatient.class);
-		jobTasks.add(Sleep.class);
-		jobTasks.add(Teach.class);
+		super();
 	}
 
 	/**
