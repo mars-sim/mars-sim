@@ -16,7 +16,7 @@ import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.task.ConstructBuilding;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
-import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
+import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -24,7 +24,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 /**
  * Meta task for the ConstructBuilding task.
  */
-public class ConstructBuildingMeta extends MetaTask {
+public class ConstructBuildingMeta extends FactoryMetaTask {
 
 
     /** default logger. */
@@ -78,7 +78,7 @@ public class ConstructBuildingMeta extends MetaTask {
             result = getProbability(settlement);
         }
 
-        return applyPersonModifier(result, person);
+        return result * getPersonModifier(person);
     }
 
 

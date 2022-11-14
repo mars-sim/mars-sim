@@ -83,8 +83,8 @@ public class TendGreenhouseMeta extends MetaTask {
                     double result = getFarmScore(farm);
 
                     // Crowding modifier.
-                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, b);
-                    result *= TaskProbabilityUtil.getRelationshipModifier(person, b);
+                    result *= getBuildingModifier(b, person);
+
 
                     // Settlement factors
                     result *= goodsFactor;

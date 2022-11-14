@@ -17,7 +17,7 @@ import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.SalvageBuilding;
-import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
+import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.robot.Robot;
@@ -26,7 +26,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 /**
  * Meta task for the SalvageBuilding task.
  */
-public class SalvageBuildingMeta extends MetaTask {
+public class SalvageBuildingMeta extends FactoryMetaTask {
 
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -84,7 +84,7 @@ public class SalvageBuildingMeta extends MetaTask {
                 result *= 2D;
             }
 
-            result = applyPersonModifier(result, person);
+            result *= getPersonModifier(person);
         }
 
         return result;

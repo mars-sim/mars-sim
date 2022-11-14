@@ -14,7 +14,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.task.OptimizeSystem;
-import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
+import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -22,7 +22,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 /**
  * Meta task for the OptimizeSystem task.
  */
-public class OptimizeSystemMeta extends MetaTask {
+public class OptimizeSystemMeta extends FactoryMetaTask {
 
 	/** default logger. */
 	private static final Logger logger = Logger.getLogger(OptimizeSystemMeta.class.getName());
@@ -51,13 +51,13 @@ public class OptimizeSystemMeta extends MetaTask {
 		if (person.isInSettlement()) {
             
 			try {
-				result += 0;
+				result += 10;
 		        
 			} catch (Exception e) {
 				logger.log(Level.SEVERE, "getProbability()", e);
 			}
 
-			result = applyPersonModifier(result, person);
+			result *= getPersonModifier(person);
 		}
 
 		return result;

@@ -16,7 +16,7 @@ import org.mars_sim.msp.core.person.ai.job.util.JobAssignment;
 import org.mars_sim.msp.core.person.ai.job.util.JobAssignmentType;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.person.ai.task.ReviewJobReassignment;
-import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
+import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -27,7 +27,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * The Meta task for the ReviewJobReassignment task.
  */
-public class ReviewJobReassignmentMeta extends MetaTask {
+public class ReviewJobReassignmentMeta extends FactoryMetaTask {
 
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -129,13 +129,10 @@ public class ReviewJobReassignmentMeta extends MetaTask {
 	                if (result > 0D) {
 	                    // Get an available office space.
 	                    Building building = Administration.getAvailableOffice(person);
-	                    if (building != null) {
-	                        result += 100D;
-	                        result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
-	                        result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
-	                    }
+						result += 100D;
+						result *= getBuildingModifier(building, person);
 
-	                    result = applyPersonModifier(result, person);
+	                    result *= getPersonModifier(person);
 	                }
                     
                     if (result < 0) {

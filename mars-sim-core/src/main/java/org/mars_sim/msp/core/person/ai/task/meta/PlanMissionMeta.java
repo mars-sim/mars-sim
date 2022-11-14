@@ -11,7 +11,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.person.ai.task.PlanMission;
-import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
+import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.Administration;
@@ -19,7 +19,7 @@ import org.mars_sim.msp.core.structure.building.function.Administration;
 /**
  * The Meta task for the PlanMission task.
  */
-public class PlanMissionMeta extends MetaTask {
+public class PlanMissionMeta extends FactoryMetaTask {
 
     /** Task name */
     private static final String NAME = Msg.getString("Task.description.planMission"); //$NON-NLS-1$
@@ -73,12 +73,9 @@ public class PlanMissionMeta extends MetaTask {
             	
                 // Get an available office space.
                 Building building = Administration.getAvailableOffice(person);
-                if (building != null) {
-                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
-                    result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
-                }
+                result *= getBuildingModifier(building, person);
 
-                result = applyPersonModifier(result, person);
+                result *= getPersonModifier(person);
             }
             
             if (result < 0) {

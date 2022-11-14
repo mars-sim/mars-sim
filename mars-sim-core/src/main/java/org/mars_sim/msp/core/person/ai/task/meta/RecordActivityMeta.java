@@ -12,7 +12,7 @@ import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.person.ai.task.RecordActivity;
-import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
+import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -20,7 +20,7 @@ import org.mars_sim.msp.core.tool.RandomUtil;
 /**
  * Meta task for the RecordActivity task.
  */
-public class RecordActivityMeta extends MetaTask {
+public class RecordActivityMeta extends FactoryMetaTask {
 
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -59,7 +59,7 @@ public class RecordActivityMeta extends MetaTask {
         	result += RandomUtil.getRandomDouble(200);
         }
 
-        result = applyPersonModifier(result, person);
+        result *= getPersonModifier(person);
 
         if (person.isInside()) {
 

@@ -14,7 +14,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.task.PeerReviewStudyPaper;
-import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
+import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.science.ScienceType;
@@ -25,7 +25,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * Meta task for the PeerReviewStudyPaper task.
  */
-public class PeerReviewStudyPaperMeta extends MetaTask {
+public class PeerReviewStudyPaperMeta extends FactoryMetaTask {
 
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -89,7 +89,7 @@ public class PeerReviewStudyPaperMeta extends MetaTask {
     	        	result += 10D;
             }
 
-	        result = applyPersonModifier(result, person);
+	        result *= getPersonModifier(person);
         }
 
         return result;

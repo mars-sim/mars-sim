@@ -14,7 +14,7 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.task.SalvageGood;
-import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
+import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.structure.OverrideType;
@@ -24,7 +24,7 @@ import org.mars_sim.msp.core.time.MarsClock;
 /**
  * Meta task for the SalvageGood task.
  */
-public class SalvageGoodMeta extends MetaTask {
+public class SalvageGoodMeta extends FactoryMetaTask {
 
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -74,8 +74,7 @@ public class SalvageGoodMeta extends MetaTask {
                 result = 1D;
 
                 // Crowding modifier.
-                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, manufacturingBuilding);
-                result *= TaskProbabilityUtil.getRelationshipModifier(person, manufacturingBuilding);
+                result *= getBuildingModifier(manufacturingBuilding, person);
 
                 // Salvaging good value modifier.
                 result *= SalvageGood.getHighestSalvagingProcessValue(person, manufacturingBuilding);
@@ -92,7 +91,7 @@ public class SalvageGoodMeta extends MetaTask {
                     result += 10D;
                 }
 
-                result = applyPersonModifier(result, person);
+                result *= getPersonModifier(person);
             }
         }
 

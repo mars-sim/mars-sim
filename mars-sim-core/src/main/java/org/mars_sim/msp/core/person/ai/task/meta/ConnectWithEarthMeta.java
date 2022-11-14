@@ -12,7 +12,7 @@ import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.job.util.ShiftType;
 import org.mars_sim.msp.core.person.ai.task.ConnectWithEarth;
-import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
+import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -22,7 +22,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * Meta task for the ConnectWithEarth task.
  */
-public class ConnectWithEarthMeta extends MetaTask {
+public class ConnectWithEarthMeta extends FactoryMetaTask {
 
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -79,8 +79,7 @@ public class ConnectWithEarthMeta extends MetaTask {
             	result += 5;
             	// A comm facility has terminal equipment that provides communication access with Earth
             	// It is necessary
-                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
-                result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
+                result *= getBuildingModifier(building, person);
             }
             
             else if (person.isInVehicle()) {	

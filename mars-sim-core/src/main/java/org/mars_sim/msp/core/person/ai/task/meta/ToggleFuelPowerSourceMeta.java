@@ -111,8 +111,7 @@ public class ToggleFuelPowerSourceMeta extends MetaTask {
 	            double score = bestDiff * FACTOR;
 				if (building.hasFunction(FunctionType.LIFE_SUPPORT)) {
 					// Factor in building crowding and relationship factors.
-					score *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
-					score *= TaskProbabilityUtil.getRelationshipModifier(person, building);
+                    score *= getBuildingModifier(building, person);
 				}
 				score *= getPersonModifier(person);
 

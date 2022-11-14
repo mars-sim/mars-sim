@@ -12,7 +12,7 @@ import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.role.Role;
 import org.mars_sim.msp.core.person.ai.task.ProposeScientificStudy;
-import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
+import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.science.ScienceType;
@@ -25,7 +25,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * Meta task for the ProposeScientificStudy task.
  */
-public class ProposeScientificStudyMeta extends MetaTask {
+public class ProposeScientificStudyMeta extends FactoryMetaTask {
 
     private static final double FACTOR = 2D;
 
@@ -121,10 +121,7 @@ public class ProposeScientificStudyMeta extends MetaTask {
 	        // Crowding modifier
 	        if (person.isInSettlement()) {
 	            Building b = BuildingManager.getAvailableBuilding(study, person);
-	            if (b != null) {
-	                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, b);
-	                result *= TaskProbabilityUtil.getRelationshipModifier(person, b);
-	            }
+				result *= getBuildingModifier(b, person);
 	        }
 
 	        else if (person.isInVehicle()) {
@@ -141,7 +138,7 @@ public class ProposeScientificStudyMeta extends MetaTask {
 	        }
 
 	        result *= FACTOR * person.getAssociatedSettlement().getGoodsManager().getResearchFactor();
-	        result = applyPersonModifier(result, person);
+	        result *= getPersonModifier(person);
         }
 
         if (result < 0) result = 0;

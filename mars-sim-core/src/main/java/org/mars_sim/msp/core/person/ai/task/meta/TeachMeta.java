@@ -11,7 +11,7 @@ import java.util.Collection;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.Teach;
-import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
+import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.robot.Robot;
@@ -22,7 +22,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * Meta task for the Teach task.
  */
-public class TeachMeta extends MetaTask {
+public class TeachMeta extends FactoryMetaTask {
 
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -77,11 +77,8 @@ public class TeachMeta extends MetaTask {
 	            for (Person student : potentialStudents) {
 	                Building building = BuildingManager.getBuilding(student);
 	
-	                if (building != null) {
-	                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person,
-	                            building);
-	                    result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
-	                }
+					result *= getBuildingModifier(building, student);
+
 	            }
 	           
     	        // Add Preference modifier

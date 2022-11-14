@@ -18,9 +18,11 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
+import org.mars_sim.msp.core.person.ai.task.meta.TaskProbabilityUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.RadiationStatus;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.MarsClock;
 
 /**
@@ -253,6 +255,7 @@ public abstract class MetaTask {
 		return createTaskJob(getProbability(robot));
 	}
 
+		
 	/**
 	 * Creates a TaskJob instance delegate where this instance handles Task creation.
 	 * @param score Score to the job to create.
@@ -266,21 +269,6 @@ public abstract class MetaTask {
 		List<TaskJob> result = new ArrayList<>(1);
 		result.add(new BasicTaskJob(this, score));
 		return result;
-	}
-
-	/**
-	 * This will apply a number of modifier to the current score based on the Person.
-	 * 1. If the task has a Trait that is performance related the Person's performance rating is applied as a modifier
-	 * 2. Apply the Job start modifier for this task
-	 * 3. Apply the Persons individual preference to this Task
-	 * 
-	 * @param score Current base score
-	 * @param person Person scoring Task
-	 * @return Modified score.
-	 * @deprecated Use {@link #getPersonModifier(Person)}
-	 */
-	protected double applyPersonModifier(double score, Person person) {
-		return score * getPersonModifier(person);
 	}
 
 	/**
@@ -338,7 +326,7 @@ public abstract class MetaTask {
 	 * @param settlement
 	 * @return
 	 */
-    protected double getRadiationModifier(Settlement settlement) {
+    protected static double getRadiationModifier(Settlement settlement) {
         RadiationStatus exposed = settlement.getExposed();
         double result = 1D;
 
@@ -363,7 +351,7 @@ public abstract class MetaTask {
 	/**
 	 * Get the modifier for a Person doing an EVA Operation
 	 */
-	protected double getEVAModifier(Person person) {
+	protected static double getEVAModifier(Person person) {
 		// Check if an airlock is available
 		if (EVAOperation.getWalkableAvailableAirlock(person, false) == null)
 			return 0;
@@ -381,6 +369,21 @@ public abstract class MetaTask {
 			return 0;
 		
 		return 1D;
+	}
+
+	
+	/**
+	 * Get the modifier for a Person using a Building.
+	 * @param building Bulding the Person is entering
+	 * @param person Person working
+	 */
+	protected static double getBuildingModifier(Building building, Person person) {
+		double result = 1D;
+		if (building != null) {
+			result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
+			result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
+		}
+		return result;
 	}
 
 	/**

@@ -10,7 +10,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.person.ai.task.WriteReport;
-import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
+import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -19,7 +19,7 @@ import org.mars_sim.msp.core.structure.building.function.Administration;
 /**
  * Meta task for the WriteReport task.
  */
-public class WriteReportMeta extends MetaTask {
+public class WriteReportMeta extends FactoryMetaTask {
 
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -76,16 +76,12 @@ public class WriteReportMeta extends MetaTask {
 	            Building building = Administration.getAvailableOffice(person);
 
 	            // Note: if an office space is not available such as in a vehicle, one can still write reports!
-	            if (building != null) {
-	                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
-	                result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
-	            }
+	            result *= getBuildingModifier(building, person);
 
-	            result = applyPersonModifier(result, person);
+	            result *= getPersonModifier(person);
         	}
 //    	}
         
-        //System.out.println("result : " + result);
         return result;
     }
 }

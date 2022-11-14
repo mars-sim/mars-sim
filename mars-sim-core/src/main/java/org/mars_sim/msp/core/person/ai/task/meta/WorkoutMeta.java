@@ -11,7 +11,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.task.Workout;
-import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
+import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -20,7 +20,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * Meta task for the Workout task.
  */
-public class WorkoutMeta extends MetaTask {
+public class WorkoutMeta extends FactoryMetaTask {
 
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -84,12 +84,8 @@ public class WorkoutMeta extends MetaTask {
             
             // Get an available gym.
             Building building = Workout.getAvailableGym(person);
-            
-            if (building != null) {
-                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
-                result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
-            }
-                 
+            result *= getBuildingModifier(building, person);
+  
             if (person.isInVehicle()) {	
     	        // Check if person is in a moving rover.
     	        if (Vehicle.inMovingRover(person)) {

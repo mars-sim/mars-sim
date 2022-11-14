@@ -14,7 +14,7 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.fav.FavoriteType;
 import org.mars_sim.msp.core.person.ai.job.util.JobType;
 import org.mars_sim.msp.core.person.ai.task.ManufactureGood;
-import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
+import org.mars_sim.msp.core.person.ai.task.util.FactoryMetaTask;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
 import org.mars_sim.msp.core.person.ai.task.util.TaskTrait;
 import org.mars_sim.msp.core.robot.Robot;
@@ -24,7 +24,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 /**
  * Meta task for the ManufactureGood task.
  */
-public class ManufactureGoodMeta extends MetaTask {
+public class ManufactureGoodMeta extends FactoryMetaTask {
 
     private static final double CAP = 3_000D; 
     
@@ -85,14 +85,14 @@ public class ManufactureGoodMeta extends MetaTask {
                 result = result - hunger / 10D;
 
                 // Crowding modifier.
-                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, manufacturingBuilding);
-                result *= TaskProbabilityUtil.getRelationshipModifier(person, manufacturingBuilding);
+                result *= getBuildingModifier(manufacturingBuilding, person);
+
 
                 // Manufacturing good value modifier.
                 result *= ManufactureGood.getHighestManufacturingProcessValue(person, manufacturingBuilding);
         		result *= person.getSettlement().getGoodsManager().getManufacturingFactor();
 
-                result = applyPersonModifier(result, person);
+                result *= getPersonModifier(person);
                 
                 // Capping the probability as manufacturing process values can be very large numbers.
                 if (result > CAP) {
