@@ -334,7 +334,7 @@ implements ActionListener {
 					if (column == 0) 
 						result = robot.getName();
 					else if (column == 1) 
-						result = RobotJob.getName(robot.getRobotType());
+						result = robot.getRobotType().getName();
 					else if (column == 2) {
 						Mission mission = robot.getBotMind().getMission();
 						if (mission != null) result = mission.getName();
@@ -460,7 +460,7 @@ implements ActionListener {
 					if (column == 0) 
 						result = robot.getName();
 					else if (column == 1) 
-						result = RobotJob.getName(robot.getRobotType());
+						result = robot.getRobotType().getName();
 					else if (column == 2) {
 						Mission mission = robot.getBotMind().getMission();
 						if (mission != null) result = mission.getName();

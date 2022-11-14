@@ -87,6 +87,7 @@ public class UnloadVehicleMeta extends MetaTask {
 		setFavorite(FavoriteType.OPERATION);
 		setTrait(TaskTrait.STRENGTH);
 		setPreferredJob(JobType.LOADERS);
+        addPreferredRobot(RobotType.DELIVERYBOT);
 	}
 
     @Override
@@ -110,7 +111,7 @@ public class UnloadVehicleMeta extends MetaTask {
     public List<TaskJob> getTaskJobs(Robot robot) {
 
         List<TaskJob> tasks = null;
-		if (robot.isInSettlement() && robot.getRobotType() == RobotType.DELIVERYBOT) {
+		if (robot.isInSettlement()) {
 			double modifier = robot.getPerformanceRating();
 
 			tasks = getSettlementTasks(robot.getSettlement(), modifier, 0D);

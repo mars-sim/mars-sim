@@ -505,13 +505,8 @@ public class Resupply implements Serializable, Transportable {
 			// Set name at its parent class "Unit"
 			robot.setName(newName);
 
-			String jobName = RobotJob.getName(robotType);
-			if (jobName != null) {
-				RobotJob robotJob = JobUtil.getRobotJob(robotType.getName());
-				if (robotJob != null) {
-					robot.getBotMind().setRobotJob(robotJob, true);
-				}
-			}
+			RobotJob robotJob = JobUtil.getRobotJob(robotType);
+			robot.getBotMind().setRobotJob(robotJob, true);
 
 			unitManager.addUnit(robot);
 

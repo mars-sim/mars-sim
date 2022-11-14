@@ -73,6 +73,8 @@ public class MaintainVehicleMeta extends MetaTask {
 		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
 		
 		setPreferredJob(JobType.MECHANICS);
+
+		addPreferredRobot(RobotType.REPAIRBOT);
 	}
 
 	@Override
@@ -94,7 +96,7 @@ public class MaintainVehicleMeta extends MetaTask {
     public List<TaskJob> getTaskJobs(Robot robot) {
 
         List<TaskJob> tasks = null;
-		if (robot.isInSettlement() && robot.getRobotType() == RobotType.REPAIRBOT) {
+		if (robot.isInSettlement()) {
 			double modifier = robot.getPerformanceRating();
 
 			tasks = getSettlementTasks(robot.getSettlement(), modifier, 0D);

@@ -36,6 +36,7 @@ import org.mars_sim.msp.core.person.ai.job.Reporter;
 import org.mars_sim.msp.core.person.ai.job.Technician;
 import org.mars_sim.msp.core.person.ai.job.Trader;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.robot.ai.job.Chefbot;
 import org.mars_sim.msp.core.robot.ai.job.Constructionbot;
 import org.mars_sim.msp.core.robot.ai.job.Deliverybot;
@@ -59,7 +60,7 @@ public final class JobUtil {
 	// Data members
 	/** List of the jobs in the simulation. */
 	private static Map<JobType, Job> jobSpecs;
-	private static List<RobotJob> robotJobs;
+	private static Map<RobotType, RobotJob> robotJobs;
 
 	/**
 	 * Private constructor for static utility class.
@@ -110,18 +111,18 @@ public final class JobUtil {
 	/**
 	 * Initialize robotJobs list.
 	 */
-	private static void loadRobotJobs() {
+	private static synchronized void loadRobotJobs() {
 		if (robotJobs == null) {
-			List<RobotJob> newJobs = new ArrayList<>();
-			newJobs.add(new Chefbot());
-			newJobs.add(new Constructionbot());
-			newJobs.add(new Deliverybot());
-			newJobs.add(new Gardenbot());
-			newJobs.add(new Makerbot());
-			newJobs.add(new Medicbot());
-			newJobs.add(new Repairbot());
+			Map<RobotType,RobotJob> newJobs = new EnumMap<>(RobotType.class);
+			newJobs.put(RobotType.CHEFBOT, new Chefbot());
+			newJobs.put(RobotType.CONSTRUCTIONBOT, new Constructionbot());
+			newJobs.put(RobotType.DELIVERYBOT, new Deliverybot());
+			newJobs.put(RobotType.GARDENBOT, new Gardenbot());
+			newJobs.put(RobotType.MAKERBOT, new Makerbot());
+			newJobs.put(RobotType.MEDICBOT, new Medicbot());
+			newJobs.put(RobotType.REPAIRBOT, new Repairbot());
 			
-			robotJobs = Collections.unmodifiableList(newJobs);
+			robotJobs = newJobs;
 		}
 	}
 
@@ -152,20 +153,15 @@ public final class JobUtil {
 	}
 
 	/**
-	 * Gets the robot job class from its job class name
+	 * Gets the robot job class from its type
 	 * 
-	 * @param jobClassName
+	 * @param robotType
 	 * @return
 	 */
-	public static RobotJob getRobotJob(String jobClassName) {
+	public static RobotJob getRobotJob(RobotType robotType) {
 		if (robotJobs == null)
 			loadRobotJobs();
-		for (RobotJob robotJob : robotJobs) {
-			if (robotJob.getClass().getSimpleName().compareToIgnoreCase(jobClassName) == 0) {
-				return robotJob;
-			}
-		}
-		return null;
+		return robotJobs.get(robotType);
 	}
 
 	/**

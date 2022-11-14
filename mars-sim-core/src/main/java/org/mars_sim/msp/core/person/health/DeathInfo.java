@@ -375,13 +375,6 @@ public class DeathInfo implements Serializable {
 		return job;
 	}
 
-	public String getRobotJob() {
-		if (robotJob != null)
-			return RobotJob.getName(robotType);
-		else
-			return "   --";
-	}
-
 	/**
 	 * Gets the mission the person was on at time of death.
 	 * 

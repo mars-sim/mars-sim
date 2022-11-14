@@ -7,7 +7,10 @@
 package org.mars_sim.msp.core.robot.ai.task;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.task.util.MetaTask;
@@ -17,6 +20,7 @@ import org.mars_sim.msp.core.person.ai.task.util.TaskCache;
 import org.mars_sim.msp.core.person.ai.task.util.TaskJob;
 import org.mars_sim.msp.core.person.ai.task.util.TaskManager;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.robot.ai.BotMind;
 import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -35,6 +39,8 @@ public class BotTaskManager extends TaskManager {
 	private static SimLogger logger = SimLogger.getLogger(BotTaskManager.class.getName());
 
 	private static TaskCache chargeMap;
+	private static Map<RobotType,List<MetaTask>> robotTasks;
+
 
 	// Data members
 	/** The mind of the robot. */
@@ -44,8 +50,7 @@ public class BotTaskManager extends TaskManager {
 	
 	/** The robot instance. */
 	private transient Robot robot = null;
-	
-	private transient List<MetaTask> mtList;
+
 
 	/**
 	 * Constructor.
@@ -125,7 +130,38 @@ public class BotTaskManager extends TaskManager {
 
 	}
 
-	
+	/**
+	 * Build the assignments of RobotType to MetaTasks. This takes any Meta type and
+	 * uses the preferred Robot to filter.
+	 */
+	private static synchronized void buildRobotTasks() {
+		if (robotTasks == null) {
+			robotTasks = new EnumMap<>(RobotType.class);
+
+			List<MetaTask> anyRobot = new ArrayList<>();
+			for(MetaTask mt : MetaTaskUtil.getRobotMetaTasks()) {
+				Set<RobotType> possibleRobots = mt.getPreferredRobot();
+				if (possibleRobots.isEmpty()) {
+					anyRobot.add(mt);
+				}
+				else {
+					for(RobotType rt : possibleRobots) {
+						robotTasks.computeIfAbsent(rt, k -> new ArrayList<>()).add(mt);
+					}
+				}
+			}
+
+			// If there are anyRobot tasks then add them to every possible Robot type
+			if (!anyRobot.isEmpty()) {
+				for(RobotType rt : RobotType.values()) {
+					robotTasks.computeIfAbsent(rt, k -> new ArrayList<>()).addAll(anyRobot);
+				}
+			}
+
+			logger.info("Build Robot Task maps " + robotTasks);
+		}
+	}
+
 	/**
 	 * Calculates and caches the probabilities.
 	 */
@@ -140,32 +176,15 @@ public class BotTaskManager extends TaskManager {
 		}
 		
 		// Create a task list based on probability
-		if (mtList == null) {
-			List<MetaTask> list = MetaTaskUtil.getRobotMetaTasks();
-			List<MetaTask> newList = new ArrayList<>();
-	
-			// Determine probabilities.
-			for (MetaTask mt : list) {
-				// Get task name
-				String taskName = mt.getClass().getSimpleName().replaceAll("Meta", "");
-		        // Prevent bots from performing tasks not being programmed for
-		     	RobotJob job = robot.getBotMind().getRobotJob();
-		     	if (job != null) {
-		     		double mod = job.getStartTaskProbabilityModifier(taskName);
-		     		if (mod > 0) {
-		     			newList.add(mt);
-		     		}
-		     	}
-			}
-			
-			mtList = newList;
+		if (robotTasks == null) {
+			buildRobotTasks();
 		}
 		
 		// Reset taskProbCache and totalProbCache
 		TaskCache newCache = new TaskCache("Robot", marsClock);
 		
 		// Determine probabilities.
-		for (MetaTask mt : mtList) {
+		for (MetaTask mt : robotTasks.get(robot.getRobotType())) {
 			List<TaskJob> job = mt.getTaskJobs(robot);
 	
 			if (job != null) {

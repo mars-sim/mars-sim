@@ -30,6 +30,8 @@ public class ConsolidateContainersMeta extends MetaTask {
 		
 		setFavorite(FavoriteType.OPERATION, FavoriteType.TINKERING);
 		setTrait(TaskTrait.STRENGTH);
+
+        addPreferredRobot(RobotType.DELIVERYBOT);
 	}
 
     @Override
@@ -71,7 +73,7 @@ public class ConsolidateContainersMeta extends MetaTask {
 
         double result = 0D;
 
-        if (robot.getRobotType() == RobotType.DELIVERYBOT && robot.isInside()) {
+        if (robot.isInside()) {
 
             // Check if there are local containers that need resource consolidation.
             if (ConsolidateContainers.needResourceConsolidation(robot)) {
