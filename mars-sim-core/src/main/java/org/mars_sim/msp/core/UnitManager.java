@@ -359,8 +359,10 @@ public class UnitManager implements Serializable, Temporal {
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
 		if (pulse.isNewSol() || justLoaded) {
-			// Compute reliability daily for each part
-			factory.computePartReliability(pulse.getMarsTime().getMissionSol());
+			if (factory != null) {
+				// Compute reliability daily for each part
+				factory.computePartReliability(pulse.getMarsTime().getMissionSol());
+			}
 			justLoaded = false;
 		}
 

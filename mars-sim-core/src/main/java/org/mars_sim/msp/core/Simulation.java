@@ -437,6 +437,8 @@ public class Simulation implements ClockListener, Serializable {
 		Function.initializeInstances(bc, marsClock, pc, cc, surfaceFeatures,
 								     weather, unitManager);
 		Crop.initializeInstances(cc);
+		Job.initializeInstances(unitManager, missionManager);
+
 
 		// Initialize meta tasks
 		MetaTaskUtil.initializeMetaTasks();

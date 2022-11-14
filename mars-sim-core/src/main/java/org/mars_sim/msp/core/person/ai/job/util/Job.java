@@ -12,7 +12,6 @@ import java.util.EnumMap;
 import java.util.Map;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.Person;
@@ -42,8 +41,8 @@ public abstract class Job {
 	private Map<RoleType, Double> jobProspects;
 	private JobType jobType;
 
-	protected static MissionManager missionManager = Simulation.instance().getMissionManager();
-	protected static UnitManager unitManager = Simulation.instance().getUnitManager();
+	protected static MissionManager missionManager;
+	protected static UnitManager unitManager;
 	
 	/**
 	 * Constructor.
