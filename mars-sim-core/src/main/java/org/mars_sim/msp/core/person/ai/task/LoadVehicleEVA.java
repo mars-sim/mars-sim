@@ -82,7 +82,12 @@ public class LoadVehicleEVA extends EVAOperation {
 		}
 		
 		vehicle = vehicleMission.getVehicle();
-
+		if (vehicle == null) {
+			// Mission must be done
+			checkLocation();
+			return;
+		}
+ 
 		setDescription(Msg.getString("Task.description.loadVehicleEVA.detail", vehicle.getName())); // $NON-NLS-1$
 
 		// Add the rover to a garage if possible.

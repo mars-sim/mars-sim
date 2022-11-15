@@ -204,8 +204,8 @@ public class MetaTaskUtil {
 	public static MetaTask getMetaTypeFromTask(Task task) {
 		String s = task.getClass().getSimpleName();
 		String ss = s.replace("EVA", "")
-				.replace("Garage", "")
-				.replace("Building", "");
+				.replace("Inside", "")
+				.replace("Garage", "");
 		String metaTaskName = ss.trim() + "Meta";
 	
 		MetaTask mt = getMetaTask(metaTaskName);

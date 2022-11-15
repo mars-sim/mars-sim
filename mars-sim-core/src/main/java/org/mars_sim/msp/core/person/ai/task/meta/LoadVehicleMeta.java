@@ -72,7 +72,7 @@ public class LoadVehicleMeta extends MetaTask {
 
     /** Task name */
     private static final String NAME = Msg.getString(
-            "Task.description.loadVehicleGarage"); //$NON-NLS-1$
+            "Task.description.loadVehicle"); //$NON-NLS-1$
 
     private static final double GARAGE_DEFAULT_SCORE = 500D;
 

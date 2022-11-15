@@ -265,17 +265,8 @@ public class Teach extends Task implements Serializable {
 			int studentSkill = student.getSkillManager().getSkillLevel(taskSkill);
 			double studentExp = student.getSkillManager().getCumulativeExperience(taskSkill);
 
-			int teacherSkill = 0;
-			double teacherExp = 0;
-			
-			if (worker.getUnitType() == UnitType.PERSON) {
-				teacherSkill = person.getSkillManager().getSkillLevel(taskSkill);
-				teacherExp = person.getSkillManager().getCumulativeExperience(taskSkill);
-			}
-			else {
-				teacherSkill = robot.getSkillManager().getSkillLevel(taskSkill);
-				teacherExp = robot.getSkillManager().getCumulativeExperience(taskSkill);
-			}
+			int teacherSkill = worker.getSkillManager().getSkillLevel(taskSkill);
+			double teacherExp = worker.getSkillManager().getCumulativeExperience(taskSkill);
 	
 			int points = teacherSkill - studentSkill;
 			double reward = exp / 60 * RandomUtil.getRandomDouble(1);
@@ -296,11 +287,7 @@ public class Teach extends Task implements Serializable {
 				// Add exp to student
 				student.getSkillManager().addExperience(taskSkill, learned, time);
 				// Add exp to teacher
-				if (worker.getUnitType() == UnitType.PERSON) {
-					person.getSkillManager().addExperience(taskSkill, reward, time);
-				}
-				else
-					robot.getSkillManager().addExperience(taskSkill, reward, time);
+				worker.getSkillManager().addExperience(taskSkill, reward, time);
 	        }
 		}
 	}

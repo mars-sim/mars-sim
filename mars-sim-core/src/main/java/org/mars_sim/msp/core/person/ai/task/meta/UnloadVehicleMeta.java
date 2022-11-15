@@ -73,7 +73,7 @@ public class UnloadVehicleMeta extends MetaTask {
 
     /** Task name */
     private static final String NAME = Msg.getString(
-            "Task.description.unloadVehicleGarage"); //$NON-NLS-1$
+            "Task.description.unloadVehicle"); //$NON-NLS-1$
 
     private static final double BASE_SCORE = 300D;
 

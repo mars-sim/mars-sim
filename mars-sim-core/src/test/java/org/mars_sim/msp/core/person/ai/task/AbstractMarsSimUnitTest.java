@@ -1,6 +1,8 @@
 package org.mars_sim.msp.core.person.ai.task;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import org.junit.Before;
 import org.mars_sim.msp.core.LocalPosition;
@@ -10,8 +12,11 @@ import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.environment.MarsSurface;
 import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
+import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.task.util.PersonTaskManager;
 import org.mars_sim.msp.core.person.ai.task.util.Task;
+import org.mars_sim.msp.core.person.ai.task.util.Worker;
 import org.mars_sim.msp.core.structure.MockSettlement;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -37,6 +42,7 @@ public abstract class AbstractMarsSimUnitTest extends TestCase {
 	protected MarsSurface surface;
 	protected Simulation sim;
 	private FunctionSpec evaFunction;
+	protected SimulationConfig simConfig;
 
 	public AbstractMarsSimUnitTest() {
 		super();
@@ -49,7 +55,7 @@ public abstract class AbstractMarsSimUnitTest extends TestCase {
 	@Before
 	public void setUp() {
 	    // Create new simulation instance.
-	    SimulationConfig simConfig = SimulationConfig.instance();
+	    simConfig = SimulationConfig.instance();
 	    simConfig.loadConfig();
 	    
 	    sim = Simulation.instance();
@@ -73,7 +79,9 @@ public abstract class AbstractMarsSimUnitTest extends TestCase {
 	
 	protected Rover buildRover(Settlement settlement, String name, LocalPosition parked) {
 	    Rover rover1 = new Rover(name, "Explorer Rover", settlement);
-	    rover1.setParkedLocation(parked, 0D);
+		if (parked != null) {
+	    	rover1.setParkedLocation(parked, 0D);
+		}
 	    unitManager.addUnit(rover1);
 	    return rover1;
 	}
@@ -119,6 +127,8 @@ public abstract class AbstractMarsSimUnitTest extends TestCase {
 	protected Settlement buildSettlement() {
 		Settlement settlement = new MockSettlement();
 		unitManager.addUnit(settlement);
+
+		settlement.setNumShift(1);
 		return settlement;
 	}
 
@@ -135,6 +145,23 @@ public abstract class AbstractMarsSimUnitTest extends TestCase {
 		
 		unitManager.addUnit(person);
 		return person;
+	}
+
+	/**
+	 * Build a psuedo vehcile mission that can be used in tests
+	 */
+	protected VehicleMission  buildMission(Settlement starting, Person leader) {
+		// Need a vehicle
+		Rover rover = buildRover(starting, "loader", null);
+
+		Building garage = buildBuilding(starting.getBuildingManager(), new LocalPosition(0,0), 0D, 1);
+		BuildingManager.addPersonToActivitySpot(leader, garage);
+
+		List<Worker> members = new ArrayList<>();
+		members.add(leader);
+
+		Settlement destination = buildSettlement();
+		return new TravelToSettlement(members, destination, rover);
 	}
 
 	/**

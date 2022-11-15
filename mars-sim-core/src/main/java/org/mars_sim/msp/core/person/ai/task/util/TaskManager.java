@@ -586,7 +586,10 @@ public abstract class TaskManager implements Serializable, Temporal {
 		if (changed.getPhase() != null)
 			newPhase = changed.getPhase().getName();
 		
-		if (!newDescription.equals("") && (lastActivity == null 
+		// If there is no details; then skip it
+		// Also compare to the last activity
+		if (!newDescription.equals("") && !newPhase.equals("")
+			&& (lastActivity == null 
 				|| !newDescription.equals(lastActivity.description)
 				|| !newPhase.equals(lastActivity.phase))) {
 			
