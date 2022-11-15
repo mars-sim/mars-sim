@@ -67,6 +67,8 @@ public class TendGreenhouseMeta extends MetaTask {
 		setFavorite(FavoriteType.TENDING_GARDEN);
 		setPreferredJob(JobType.BOTANIST, JobType.BIOLOGIST);
 		setTrait(TaskTrait.ARTISTIC, TaskTrait.RELAXATION);
+
+        addPreferredRobot(RobotType.GARDENBOT);
 	}
 
     @Override
@@ -106,7 +108,7 @@ public class TendGreenhouseMeta extends MetaTask {
     public List<TaskJob> getTaskJobs(Robot robot) {
 
         List<TaskJob> tasks = new ArrayList<>();
-        if (robot.isInSettlement() && robot.getRobotType() == RobotType.GARDENBOT) {
+        if (robot.isInSettlement()) {
             GoodsManager gm = robot.getSettlement().getGoodsManager();
             double goodsFactor = gm.getCropFarmFactor() + gm.getTourismFactor();
 

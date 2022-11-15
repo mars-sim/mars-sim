@@ -7,20 +7,13 @@
 
 package org.mars_sim.msp.core.robot.ai.job;
 
-import java.io.Serializable;
-
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.task.MaintainGarageVehicle;
-import org.mars_sim.msp.core.person.ai.task.MaintainBuilding;
-import org.mars_sim.msp.core.person.ai.task.RepairInsideMalfunction;
-import org.mars_sim.msp.core.person.ai.task.Sleep;
-import org.mars_sim.msp.core.person.ai.task.Teach;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 
-public class Repairbot extends RobotJob implements Serializable {
+public class Repairbot extends RobotJob  {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -30,18 +23,7 @@ public class Repairbot extends RobotJob implements Serializable {
 	 */
 	public Repairbot() {
 		// Use Job constructor
-		super(Repairbot.class);
-
-		// Add technician-related tasks.
-		jobTasks.add(MaintainBuilding.class);
-		jobTasks.add(MaintainGarageVehicle.class);
-		// jobTasks.add(MaintainBuildingEVA.class); //check to what extend the walking bug is
-		// affecting the outdoor portion of this task
-		// jobTasks.add(RepairEVAMalfunction.class); //check to what extend the walking
-		// bug is affecting the outdoor portion of this task
-		jobTasks.add(RepairInsideMalfunction.class);
-		jobTasks.add(Sleep.class);
-		jobTasks.add(Teach.class);
+		super();
 	}
 
 	/**

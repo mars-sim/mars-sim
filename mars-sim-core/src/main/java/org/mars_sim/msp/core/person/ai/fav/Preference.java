@@ -35,8 +35,6 @@ public class Preference implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-	/** Meta static string. */
-	private static final String META = "Meta";
 
 	/** A string list of Tasks. */
 	private List<String> taskList;
@@ -274,25 +272,10 @@ public class Preference implements Serializable {
 	 * @param metaTask {@link MetaTask}
 	 * @return string name of a meta task
 	 */
-	public static String getStringName(MetaTask metaTask) {
+	private static String getStringName(MetaTask metaTask) {
 		String s = metaTask.getClass().getSimpleName();
 		String ss = s.replaceAll("(?!^)([A-Z])", " $1")
 				.replace("Meta", "")
-				.replace("E V A ", "EVA ")
-				.replace("With ", "with ")
-				.replace("To ", "to ");
-		return ss.trim();
-	}
-
-	/**
-	 * Obtains the proper string name of a task.
-	 * 
-	 * @param task {@link Task}
-	 * @return string name of a task
-	 */
-	public static String getStringName(Task task) {
-		String s = task.getClass().getSimpleName();
-		String ss = s.replaceAll("(?!^)([A-Z])", " $1")
 				.replace("E V A ", "EVA ")
 				.replace("With ", "with ")
 				.replace("To ", "to ");
@@ -325,7 +308,7 @@ public class Preference implements Serializable {
 	 * @param          true if it is due
 	 */
 	public void setTaskDue(Task task, boolean value) {
-		MetaTask mt = convertTask2MetaTask(task);
+		MetaTask mt = MetaTaskUtil.getMetaTypeFromTask(task);
 
 		// if this accomplished meta task is once-a-day task, remove it.
 		if (value && onceADayMap.get(mt) != null && !onceADayMap.isEmpty())
@@ -340,18 +323,6 @@ public class Preference implements Serializable {
 			} else
 				taskAccomplishedMap.put(mt, value);
 
-	}
-
-	/**
-	 * Converts a task to its corresponding meta task.
-	 * 
-	 * @param a task
-	 */
-	public static MetaTask convertTask2MetaTask(Task task) {
-		MetaTask result = null;
-		String name = task.getTaskSimpleName();
-		result = MetaTaskUtil.getMetaTask(name + META);
-		return result;
 	}
 
 	public Map<String, Integer> getScoreStringMap() {

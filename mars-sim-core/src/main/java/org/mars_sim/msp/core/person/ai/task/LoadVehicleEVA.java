@@ -77,6 +77,11 @@ public class LoadVehicleEVA extends EVAOperation {
 		}
 		
 		vehicle = vehicleMission.getVehicle();
+		if (vehicle == null) {
+			// Mission must be done
+			checkLocation();
+			return;
+		}
 		
 		if (settlement.getBuildingManager().isInGarage(vehicle)) {
 			checkLocation();
@@ -100,8 +105,6 @@ public class LoadVehicleEVA extends EVAOperation {
 		// Initialize task phase
 		addPhase(LOADING);
 	}
-
-
 
 	@Override
 	protected double performMappedPhase(double time) {
